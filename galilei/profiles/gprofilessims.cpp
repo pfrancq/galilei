@@ -44,6 +44,7 @@
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
 #include <sessions/gsession.h>
+#include <sessions/gplugins.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -597,7 +598,7 @@ GProfilesSims::GProfilesSims(GSession* session,bool iff, bool memory) throw(std:
 	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
-	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();
@@ -614,7 +615,7 @@ void GProfilesSims::ReInit(void) throw(std::bad_alloc)
 
 	if (!GetMemory()) return;
 	Sims.Clear();
-	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();
@@ -631,7 +632,7 @@ void GProfilesSims::UseIFF(bool iff) throw(std::bad_alloc)
 	GLang* Lang;
 
 	IFF=iff;
-	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();

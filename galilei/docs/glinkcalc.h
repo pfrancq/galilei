@@ -135,7 +135,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryLinkCalc(GLinkCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryLinkCalc,GLinkCalc,GLinkCalcManager>(mng,n,f,"GFactoryLinkCalc") {}
+		 : GFactoryPlugin<GFactoryLinkCalc,GLinkCalc,GLinkCalcManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
@@ -209,6 +209,10 @@ extern "C"                                                                      
 	GFactoryLinkCalc* FactoryCreate(GLinkCalcManager* mng,const char* l)                  \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("LinkCalc");                                                               \
 	}                                                                                     \
 }
 

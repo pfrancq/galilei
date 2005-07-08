@@ -47,7 +47,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_STATSCALC_VERSION "1.0"
+#define API_STATSCALC_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
@@ -134,7 +134,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryStatsCalc(GStatsCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryStatsCalc,GStatsCalc,GStatsCalcManager>(mng,n,f,"GFactoryStatsCalc") {}
+		 : GFactoryPlugin<GFactoryStatsCalc,GStatsCalc,GStatsCalcManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
@@ -155,13 +155,13 @@ typedef GFactoryStatsCalc* GFactoryStatsCalcInit(GStatsCalcManager*,const char*)
 class TheFactory : public GFactoryStatsCalc                                               \
 {                                                                                         \
 private:                                                                                  \
-	static GFactoryStatsCalc* Inst;                                                       \
+	static GFactoryStatsCalc* Inst;   \
 	TheFactory(GStatsCalcManager* mng,const char* l) : GFactoryStatsCalc(mng,name,l)      \
 	{                                                                                     \
 		C::CreateParams(this);                                                            \
 	}                                                                                     \
 	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
+public:                \
 	static GFactoryStatsCalc* CreateInst(GStatsCalcManager* mng,const char* l)            \
 	{                                                                                     \
 		if(!Inst)                                                                         \
@@ -208,6 +208,10 @@ extern "C"                                                                      
 	GFactoryStatsCalc* FactoryCreate(GStatsCalcManager* mng,const char* l)                \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("StatsCalc");                                                              \
 	}                                                                                     \
 }
 

@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2005 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -141,7 +141,7 @@ protected:
 
 public:
 
-/**
+	/**
 	* Constructor.
 	* @param str             Storage manager.
 	*/
@@ -217,9 +217,6 @@ public:
 	*/
 	GSessionParams* GetSessionParams(void) const {return(SessParams);}
 
-	//--------------------------------------------------------------------------
-	// Assign identifier methods
-
 	/**
 	* Assign an identifier to a new data of a given dictionary.
 	* @param data           Data.
@@ -244,17 +241,6 @@ public:
 	* @param sub             Subprofile.
 	*/
 	virtual void AssignId(GSubProfile* sub);
-
-	/**
-	* @name Documents method.
-	*/
-	//@{
-
-
-	//@}
-
-	//--------------------------------------------------------------------------
-	// Computing methods
 
 	/**
 	* Create a XML structure with the content of a document. The structure
@@ -307,6 +293,7 @@ public:
 	/**
 	* Compute a profile.
 	* @param rec            Receiver for the signals.
+	* @param profile        Profile to compute.
 	* @param modified       Recompute only modified elements or all.
 	* @param save           Save modified elements.
 	* @param saveLinks      Save links informations.

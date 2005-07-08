@@ -39,7 +39,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <engines/gmetaenginemanager.h>
-#include <engines/gmetaengine.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -52,47 +51,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMetaEngineManager::GMetaEngineManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryMetaEngine,true,true>(10,5),GPluginManager("MetaEngine",paths),Current(0)
+GMetaEngineManager::GMetaEngineManager(void)
+	: GPluginManager<GMetaEngineManager,GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngine>("MetaEngine",API_METAENGINE_VERSION),Current(0)
 {
-	LoadPlugins<GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngineManager>("GFactoryMetaEngine",this,*paths,API_METAENGINE_VERSION, dlg);
 }
 
 
 //------------------------------------------------------------------------------
-void GMetaEngineManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryMetaEngine> CurM;
-	GMetaEngine* meta;
-
-	CurM.Set(*this);
-	for(CurM.Start();!CurM.End();CurM.Next())
-	{
-		meta=CurM()->GetPlugin();
-		if(meta)
-			meta->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GMetaEngineManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryMetaEngine> CurM;
-	GMetaEngine* meta;
-
-	CurM.Set(*this);
-	for(CurM.Start();!CurM.End();CurM.Next())
-	{
-		meta=CurM()->GetPlugin();
-		if(meta)
-			meta->Disconnect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GMetaEngineManager::SetCurrentMethod(const char* name) throw(GException)
+void GMetaEngineManager::SetCurrentMethod(const char* name)
 {
 	GFactoryMetaEngine* fac;
 	GMetaEngine* tmp;
@@ -116,20 +82,10 @@ GMetaEngine* GMetaEngineManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryMetaEngine> GMetaEngineManager::GetMetaEnginesCursor(void)
-{
-	R::RCursor<GFactoryMetaEngine> cur(*this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 void GMetaEngineManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryMetaEngine> Cur;
-
 	if(!t) return;
-	Cur=GetMetaEnginesCursor();
+	R::RCursor<GFactoryMetaEngine> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -147,8 +103,7 @@ void GMetaEngineManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GMetaEngineManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryMetaEngine> Cur;
-	Cur=GetMetaEnginesCursor();
+	R::RCursor<GFactoryMetaEngine> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

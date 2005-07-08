@@ -38,7 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <infos/glang.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Languages.
 */
-class GLangManager : public R::RContainer<GFactoryLang,true,true>, public GPluginManager
+class GLangManager : public GPluginManager<GLangManager,GFactoryLang,GFactoryLangInit,GLang>
 {
 	/**
 	* Must be the dictionnaries (and stoplists) be loaded.
@@ -64,23 +64,9 @@ public:
 
 	/**
 	* Constructor of the manager.
-	* @param path            Path to find the plugins.
 	* @param load            Must the dictionnaries be loaded?
-	* @param dlg             Load the existing dialog.
 	*/
-	GLangManager(R::RContainer<RString, true, false>* paths,bool load,bool dlg=true) throw(std::bad_alloc,GException);
-
-	/**
-	* Connect to a Session.
-	* @param session         Session.
-	*/
-	void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         Session.
-	*/
-	void Disconnect(GSession* session) throw(GException);
+	GLangManager(bool load);
 
 	/**
 	* Find the language corresponding to a given code.
@@ -93,12 +79,6 @@ public:
 	* Look if the dictionnaries must be loaded
 	*/
 	bool LoadDict(void) const {return(Load);}
-
-	/**
-	* Create a cursor on the container of plugins representing the languages.
-	* @return GFactoryLangCursor.
-	*/
-	R::RCursor<GFactoryLang> GetLangsCursor(void);
 
 	/**
 	* Read config of the manager

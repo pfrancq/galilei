@@ -38,7 +38,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <sessions/gplugins.h>
+#include <profiles/gprofilecalc.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Profile Computing Methods Manager.
 */
-class GProfileCalcManager : public R::RContainer<GFactoryProfileCalc,true,true>, public GPluginManager
+class GProfileCalcManager : public GPluginManager<GProfileCalcManager,GFactoryProfileCalc,GFactoryProfileCalcInit,GProfileCalc>
 {
 	/**
 	* Method currently selected.
@@ -64,28 +65,14 @@ public:
 
 	/**
 	* Construct the profile computing methods manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Load the existing dialog.
 	*/
-	GProfileCalcManager(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	void Disconnect(GSession* session) throw(GException);
+	GProfileCalcManager(void);
 
 	/**
 	* Set the current method.
 	* @param name            Name of the method.
 	*/
-	void SetCurrentMethod(const char* name) throw(GException);
+	void SetCurrentMethod(const char* name);
 
 	/**
 	* Get the current method.
@@ -94,19 +81,13 @@ public:
 	GProfileCalc* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the profile computing methods managed.
-	* @return GFactoryProfileCalcCursor.
-	*/
-	R::RCursor<GFactoryProfileCalc> GetProfileCalcsCursor(void);
-
-	/**
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

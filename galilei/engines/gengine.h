@@ -50,7 +50,7 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_ENGINE_VERSION "1.0"
+#define API_ENGINE_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
@@ -172,7 +172,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryEngine(GEngineManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryEngine,GEngine,GEngineManager>(mng,n,f,"GFactoryEngine") {}
+		 : GFactoryPlugin<GFactoryEngine,GEngine,GEngineManager>(mng,n,f) {}
 
 
 	/**
@@ -247,6 +247,10 @@ extern "C"                                                                      
 	GFactoryEngine* FactoryCreate(GEngineManager* mng,const char* l)                      \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("Engine");                                                                 \
 	}                                                                                     \
 }
 

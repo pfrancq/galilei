@@ -82,15 +82,15 @@ int GFilterManagerCURL::WriteTmpFile(void* buffer, size_t size, size_t nmemb, vo
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterManagerCURL::GFilterManagerCURL(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: GFilterManager(paths,dlg)
+GFilterManagerCURL::GFilterManagerCURL(void)
+	: GFilterManager()
 {
 	Lib = curl_easy_init();
 }
 
 
 //------------------------------------------------------------------------------
-const char* GFilterManagerCURL::DetermineMIMEType(const char* tmpfile) throw(GException)
+const char* GFilterManagerCURL::DetermineMIMEType(const char* tmpfile)
 {
 	char* MIME;
 
@@ -102,7 +102,7 @@ const char* GFilterManagerCURL::DetermineMIMEType(const char* tmpfile) throw(GEx
 
 
 //------------------------------------------------------------------------------
-void GFilterManagerCURL::Download(const char* URL,RString& tmpFile) throw(GException)
+void GFilterManagerCURL::Download(const char* URL,RString& tmpFile)
 {
 	struct DwnFile tmpfile;
 	int err;
@@ -126,7 +126,7 @@ void GFilterManagerCURL::Download(const char* URL,RString& tmpFile) throw(GExcep
 
 
 //------------------------------------------------------------------------------
-void GFilterManagerCURL::Delete(RString& tmpFile) throw(GException)
+void GFilterManagerCURL::Delete(RString& tmpFile)
 {
 	remove(tmpFile);
 }

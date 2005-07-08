@@ -38,11 +38,9 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gstatscalcmanager.h>
-#include <sessions/gstatscalc.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
-
 
 
 
@@ -53,42 +51,9 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsCalcManager::GStatsCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryStatsCalc,true,true>(10,5),GPluginManager("StatsCalc",paths)
+GStatsCalcManager::GStatsCalcManager(void)
+	: GPluginManager<GStatsCalcManager,GFactoryStatsCalc,GFactoryStatsCalcInit,GStatsCalc>("StatsCalc",API_STATSCALC_VERSION)
 {
-	LoadPlugins<GFactoryStatsCalc,GFactoryStatsCalcInit,GStatsCalcManager>("GFactoryStatsCalc",this,*paths,API_STATSCALC_VERSION, dlg);
-}
-
-
-//------------------------------------------------------------------------------
-void GStatsCalcManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryStatsCalc> Cur;
-	GStatsCalc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStatsCalcManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryStatsCalc> Cur;
-	GStatsCalc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
 }
 
 
@@ -105,20 +70,10 @@ GStatsCalc* GStatsCalcManager::Get(const char* name)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryStatsCalc> GStatsCalcManager::GetStatsCalcsCursor(void)
-{
-	R::RCursor<GFactoryStatsCalc> cur(*this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 void GStatsCalcManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryStatsCalc> Cur;
-
 	if(!t) return;
-	Cur=GetStatsCalcsCursor();
+	R::RCursor<GFactoryStatsCalc> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -129,8 +84,7 @@ void GStatsCalcManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GStatsCalcManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryStatsCalc> Cur;
-	Cur=GetStatsCalcsCursor();
+	R::RCursor<GFactoryStatsCalc> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

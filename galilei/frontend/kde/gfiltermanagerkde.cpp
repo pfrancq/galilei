@@ -58,14 +58,14 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GFilterManagerKDE::GFilterManagerKDE(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: GFilterManager(paths,dlg)
+GALILEI::GFilterManagerKDE::GFilterManagerKDE(void)
+	: GFilterManager()
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GFilterManagerKDE::Download(const char* URL,RString& tmpFile) throw(GException)
+void GALILEI::GFilterManagerKDE::Download(const char* URL,RString& tmpFile)
 {
 	QString tmp("");
 
@@ -77,7 +77,7 @@ void GALILEI::GFilterManagerKDE::Download(const char* URL,RString& tmpFile) thro
 
 
 //-----------------------------------------------------------------------------
-const char* GALILEI::GFilterManagerKDE::DetermineMIMEType(const char* tmpfile) throw(GException)
+const char* GALILEI::GFilterManagerKDE::DetermineMIMEType(const char* tmpfile)
 {
 	const char* res;
 
@@ -92,7 +92,7 @@ const char* GALILEI::GFilterManagerKDE::DetermineMIMEType(const char* tmpfile) t
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GFilterManagerKDE::Delete(RString& tmpFile) throw(GException)
+void GALILEI::GFilterManagerKDE::Delete(RString& tmpFile)
 {
 	KIO::NetAccess::removeTempFile(ToQString(tmpFile));
 }

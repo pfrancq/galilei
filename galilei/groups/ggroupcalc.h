@@ -126,7 +126,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryGroupCalc(GGroupCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>(mng,n,f,"GFactoryGroupCalc") {}
+		 : GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
@@ -200,6 +200,10 @@ extern "C"                                                                      
 	GFactoryGroupCalc* FactoryCreate(GGroupCalcManager* mng,const char* l)                \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("GroupCalc");                                                              \
 	}                                                                                     \
 }
 

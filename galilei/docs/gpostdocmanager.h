@@ -38,7 +38,9 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <sessions/gplugins.h>
+#include <docs/gpostdoc.h>
+
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
@@ -52,42 +54,23 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Documents Post-Analysis Methods Manager.
 */
-class GPostDocManager : public R::RContainer<GFactoryPostDoc,true,true>, public GPluginManager
+class GPostDocManager : public GPluginManager<GPostDocManager,GFactoryPostDoc,GFactoryPostDocInit,GPostDoc>
 {
 public:
 
 	/**
 	* Constructor of a manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Load the existing dialog.
 	*/
-	GPostDocManager(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(GException);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	void Disconnect(GSession* session) throw(GException);
-
-	/**
-	* Get a cursor on the factories handled by the manager.
-	*/
-	R::RCursor<GFactoryPostDoc> GetPostDocsCursor(void);
+	GPostDocManager(void);
 
 	/**
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

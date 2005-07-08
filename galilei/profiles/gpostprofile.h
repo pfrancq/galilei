@@ -47,7 +47,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_POSTGROUP_VERSION "1.0"
+#define API_POSTPROFILE_VERSION "2.0"
 
 
 
@@ -152,24 +152,24 @@ public:
 typedef GFactoryPostProfile* GFactoryPostProfileInit(GPostProfileManager*,const char*);
 
 //------------------------------------------------------------------------------
-#define CREATE_POSTPROFILE_FACTORY(name,C)                                                  \
-class TheFactory : public GFactoryPostProfile                                               \
+#define CREATE_POSTPROFILE_FACTORY(name,C)                                                \
+class TheFactory : public GFactoryPostProfile                                             \
 {                                                                                         \
 private:                                                                                  \
-	static GFactoryPostProfile* Inst;                                                       \
-	TheFactory(GPostProfileManager* mng,const char* l) : GFactoryPostProfile(mng,name,l)      \
+	static GFactoryPostProfile* Inst;                                                     \
+	TheFactory(GPostProfileManager* mng,const char* l) : GFactoryPostProfile(mng,name,l)  \
 	{                                                                                     \
-		C::CreateParams(this);                                                \
+		C::CreateParams(this);                                                            \
 	}                                                                                     \
 	virtual ~TheFactory(void) {}                                                          \
 public:                                                                                   \
-	static GFactoryPostProfile* CreateInst(GPostProfileManager* mng,const char* l)            \
+	static GFactoryPostProfile* CreateInst(GPostProfileManager* mng,const char* l)        \
 	{                                                                                     \
 		if(!Inst)                                                                         \
 			Inst = new TheFactory(mng,l);                                                 \
 		return(Inst);                                                                     \
 	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_POSTGROUP_VERSION);}        \
+	virtual const char* GetAPIVersion(void) const {return(API_POSTPROFILE_VERSION);}      \
 	virtual void Create(void) throw(GException)                                           \
 	{                                                                                     \
 		if(Plugin) return;                                                                \
@@ -202,13 +202,17 @@ public:                                                                         
 	}                                                                                     \
 };                                                                                        \
                                                                                           \
-GFactoryPostProfile* TheFactory::Inst = 0;                                                  \
+GFactoryPostProfile* TheFactory::Inst = 0;                                                \
                                                                                           \
 extern "C"                                                                                \
 {                                                                                         \
-	GFactoryPostProfile* FactoryCreate(GPostProfileManager* mng,const char* l)                \
+	GFactoryPostProfile* FactoryCreate(GPostProfileManager* mng,const char* l)            \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("PostProfile");                                                            \
 	}                                                                                     \
 }
 

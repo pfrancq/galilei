@@ -38,7 +38,9 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <sessions/gplugins.h>
+#include <engines/gengine.h>
+
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
@@ -52,34 +54,14 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short search engine Manager.
 */
-class GEngineManager : public R::RContainer<GFactoryEngine,true,true> , public GPluginManager
+class GEngineManager : public GPluginManager<GEngineManager,GFactoryEngine,GFactoryEngineInit,GEngine>
 {
 public:
 
 	/**
 	* Constructor of a manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Load the existing dialog.
 	*/
-	GEngineManager(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	void Disconnect(GSession* session) throw(GException);
-
-	/**
-	* Get a cursor over the factories handled by the manager.
-	* @return GFactoryEngineCursor
-	*/
-	R::RCursor<GFactoryEngine> GetEnginesCursor(void);
+	GEngineManager(void);
 
 	/**
 	* Get the engine corresponding to the "name"
@@ -92,10 +74,10 @@ public:
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

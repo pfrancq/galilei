@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2005 by the Université libre de Bruxelles.
 
 	Authors:
 
@@ -99,6 +99,7 @@ using namespace R;
 #include <docs/gdocproxymem.h>
 #include <profiles/gsubprofileproxymem.h>
 #include <profiles/gprofileproxymem.h>
+#include <sessions/gplugins.h>
 using namespace GALILEI;
 
 
@@ -159,12 +160,7 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 //------------------------------------------------------------------------------
 void GSession::Connect(void)
 {
-	RCursor<GPluginManager> cur = GPluginManager::GetCursor();
-
-	for(cur.Start();!cur.End();cur.Next())
-	{
-		cur()->Connect(this);
-	}
+	GPluginManagers::PluginManagers.Connect(this);
 
 	// Create Similarities Managers (IFF used by default)
 	if(SessParams)
@@ -185,7 +181,7 @@ void GSession::Connect(void)
 //------------------------------------------------------------------------------
 GDocXML* GSession::CreateDocXML(GDoc* doc)
 {
-	return((dynamic_cast<GFilterManager*>(GPluginManager::GetManager("Filter")))->CreateDocXML(doc));
+	return((dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->CreateDocXML(doc));
 }
 
 
@@ -229,7 +225,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
 	bool Cont;               // Continue the analysuis
 
 	// Verify that the textanalyse method is selected
-	Analyse=(dynamic_cast<GDocAnalyseManager*>(GPluginManager::GetManager("DocAnalyse")))->GetCurrentMethod();
+	Analyse=(dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse")))->GetCurrentMethod();
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
@@ -259,7 +255,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
 				if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
 				{
 					if (!Docs()->GetLang()) undefLang=true;
-					xml=(dynamic_cast<GFilterManager*>(GPluginManager::GetManager("Filter")))->CreateDocXML(Docs());
+					xml=(dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->CreateDocXML(Docs());
 					if(xml)
 					{
 						Docs()->InitFailed();
@@ -323,7 +319,7 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save)
 	bool Cont;               // Continue the analysuis
 
 	// Verify that the textanalyse method is selected
-	Analyse=(dynamic_cast<GDocAnalyseManager*>(GPluginManager::GetManager("DocAnalyse")))->GetCurrentMethod();
+	Analyse=(dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse")))->GetCurrentMethod();
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
@@ -353,7 +349,7 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save)
 				if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
 				{
 					if (!Docs()->GetLang()) undefLang=true;
-					xml=(dynamic_cast<GFilterManager*>(GPluginManager::GetManager("Filter")))->CreateDocXML(Docs());
+					xml=(dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->CreateDocXML(Docs());
 					if(xml)
 					{
 						Docs()->InitFailed();
@@ -408,7 +404,7 @@ void GSession::ComputePostDoc(GSlot* rec)
 	char tmp[100];
 
 	// Run all post-group methods that are enabled
-	R::RCursor<GFactoryPostDoc> PostDocs=(dynamic_cast<GPostDocManager*>(GPluginManager::GetManager("PostDoc")))->GetPostDocsCursor();
+	R::RCursor<GFactoryPostDoc> PostDocs=(dynamic_cast<GPostDocManager*>(GPluginManagers::PluginManagers.GetManager("PostDoc")))->GetFactories();
 
 	if(rec)
 		rec->Interact();
@@ -434,7 +430,7 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 {
 	GMetaEngine* metaEngine;
 	// Verify that a meta engine is selected
-	metaEngine=(dynamic_cast<GMetaEngineManager*>(GPluginManager::GetManager("MetaEngine")))->GetCurrentMethod();
+	metaEngine=(dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine")))->GetCurrentMethod();
 	if(!metaEngine)
 		throw GException("No meta engine method chosen.");
 	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
@@ -596,8 +592,8 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 {
 	RCursor<GSubProfile> Subs;
 	R::RCursor<GProfile> Prof=GetProfilesCursor();
-	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod();
-	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod();
+	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc")))->GetCurrentMethod();
+	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc")))->GetCurrentMethod();
 
 	//runs the pre profiling methods;
 	ComputePreProfile(rec);
@@ -669,8 +665,8 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 //------------------------------------------------------------------------------
 void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,bool saveLinks)
 {
-	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManager::GetManager("ProfileCalc")))->GetCurrentMethod();
-	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManager::GetManager("LinkCalc")))->GetCurrentMethod();
+	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc")))->GetCurrentMethod();
+	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc")))->GetCurrentMethod();
 
 	//runs the pre profiling methods;
 //	ComputePreProfile(rec);
@@ -741,7 +737,7 @@ void GSession::ComputePreProfile(GSlot* rec)
 	char tmp[100];
 
 	// Run all post-group methods that are enabled
-	R::RCursor<GFactoryPreProfile> PreProfile=(dynamic_cast<GPreProfileManager*>(GPluginManager::GetManager("PreProfile")))->GetPreProfileCursor();
+	R::RCursor<GFactoryPreProfile> PreProfile=(dynamic_cast<GPreProfileManager*>(GPluginManagers::PluginManagers.GetManager("PreProfile")))->GetFactories();
 
 	if(rec)
 		rec->Interact();
@@ -768,7 +764,7 @@ void GSession::ComputePostProfile(GSlot* rec)
 	char tmp[100];
 
 	// Run all post-group methods that are enabled
-	R::RCursor<GFactoryPostProfile> PostProfile=(dynamic_cast<GPostProfileManager*>(GPluginManager::GetManager("PostProfile")))->GetPostProfileCursor();
+	R::RCursor<GFactoryPostProfile> PostProfile=(dynamic_cast<GPostProfileManager*>(GPluginManagers::PluginManagers.GetManager("PostProfile")))->GetFactories();
 
 	if(rec)
 		rec->Interact();
@@ -792,7 +788,7 @@ void GSession::ComputePostProfile(GSlot* rec)
 //------------------------------------------------------------------------------
 void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
 {
-	GGrouping* Grouping=(dynamic_cast<GGroupingManager*>(GPluginManager::GetManager("Grouping")))->GetCurrentMethod();
+	GGrouping* Grouping=(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod();
 
 	// Verify that there is a method to cluster the subprofile
 	if(!Grouping)
@@ -816,7 +812,7 @@ void GSession::ComputePostGroup(GSlot* rec)
 	char tmp[100];
 
 	// Run all post-group methods that are enabled
-	R::RCursor<GFactoryPostGroup> PostGroups=(dynamic_cast<GPostGroupManager*>(GPluginManager::GetManager("PostGroup")))->GetPostGroupsCursor();
+	R::RCursor<GFactoryPostGroup> PostGroups=(dynamic_cast<GPostGroupManager*>(GPluginManagers::PluginManagers.GetManager("PostGroup")))->GetFactories();
 
 	if(rec)
 		rec->Interact();
@@ -877,7 +873,7 @@ void GSession::CopyIdealGroups(bool save)
 	GGroupCalc* CalcDesc;
 
 	// Get current grouping description method
-	CalcDesc=(dynamic_cast<GGroupCalcManager*>(GPluginManager::GetManager("GroupCalc")))->GetCurrentMethod();
+	CalcDesc=(dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc")))->GetCurrentMethod();
 
 	// Clear current group
 	ClearGroups();
@@ -1089,11 +1085,7 @@ GSession::~GSession(void)
 		GUsers::Clear();
 		GDocs::Clear();
 
-		RCursor<GPluginManager> cur = GPluginManager::GetCursor();
-		for(cur.Start();!cur.End();cur.Next())
-		{
-			cur()->Disconnect(this);
-		}
+		GPluginManagers::PluginManagers.Disconnect(this);
 
 		// Delete stuctures
 		if(Random) delete Random;

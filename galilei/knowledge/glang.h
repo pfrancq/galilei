@@ -53,7 +53,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_LANG_VERSION "1.0"
+#define API_LANG_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
@@ -293,13 +293,7 @@ public:
 	* @param c               Code of the language.
 	*/
 	GFactoryLang(GLangManager* mng,const char* n,const char* f,const char* c)
-		: GFactoryPlugin<GFactoryLang,GLang,GLangManager>(mng,n,f,"GFactoryLang") {strcpy(Code,c);}
-
-	/**
-	* Compare function like strcmp used in particular for RContainer class.
-	* @param lang           Factory used for the comparaison.
-	*/
-	int Compare(const GFactoryLang* lang) const {return(strcmp(Code,lang->Code));}
+		: GFactoryPlugin<GFactoryLang,GLang,GLangManager>(mng,n,f) {strcpy(Code,c);}
 
 	/**
 	* Compare function like strcmp used in particular for RContainer class.
@@ -385,6 +379,10 @@ extern "C"                                                                      
 	GFactoryLang* FactoryCreate(GLangManager* mng,const char* l)                          \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("Lang");                                                                   \
 	}                                                                                     \
 }
 

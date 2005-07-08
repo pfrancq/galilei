@@ -38,7 +38,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gpostdocmanager.h>
-#include <docs/gpostdoc.h>
 #include <sessions/gsession.h>
 using namespace GALILEI;
 using namespace R;
@@ -52,60 +51,19 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostDocManager::GPostDocManager(RContainer<RString, true, false>* paths,bool dlg) throw(GException)
-	: RContainer<GFactoryPostDoc,true,true>(10,5) ,GPluginManager("PostDoc",paths)
+GPostDocManager::GPostDocManager(void)
+	: GPluginManager<GPostDocManager,GFactoryPostDoc,GFactoryPostDocInit,GPostDoc>("PostDoc",API_POSTDOC_VERSION)
 {
-	LoadPlugins<GFactoryPostDoc,GFactoryPostDocInit,GPostDocManager>("GFactoryPostDoc",this,*paths,API_POSTDOC_VERSION, dlg);
-}
-
-
-//------------------------------------------------------------------------------
-void GPostDocManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryPostDoc> Cur;
-	GPostDoc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GPostDocManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryPostDoc> Cur;
-	GPostDoc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GFactoryPostDoc> GPostDocManager::GetPostDocsCursor(void)
-{
-	R::RCursor<GFactoryPostDoc> cur(*this);
-	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
 void GPostDocManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryPostDoc> Cur;
+	;
 
 	if(!t) return;
-	Cur=GetPostDocsCursor();
+	R::RCursor<GFactoryPostDoc> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -116,8 +74,7 @@ void GPostDocManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GPostDocManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryPostDoc> Cur;
-	Cur=GetPostDocsCursor();
+	R::RCursor<GFactoryPostDoc> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

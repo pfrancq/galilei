@@ -38,9 +38,9 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggroupingmanager.h>
-#include <groups/ggrouping.h>
 using namespace GALILEI;
 using namespace R;
+
 
 
 //------------------------------------------------------------------------------
@@ -50,47 +50,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupingManager::GGroupingManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryGrouping,true,true>(10,5), GPluginManager("Grouping",paths),Current(0)
+GGroupingManager::GGroupingManager(void)
+	: GPluginManager<GGroupingManager,GFactoryGrouping,GFactoryGroupingInit,GGrouping>("Grouping",API_GROUPING_VERSION),Current(0)
 {
-	LoadPlugins<GFactoryGrouping,GFactoryGroupingInit,GGroupingManager>("GFactoryGrouping",this,*paths,API_GROUPING_VERSION, dlg);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroupingManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryGrouping> Cur;
-	GGrouping* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GGroupingManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryGrouping> Cur;
-	GGrouping* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GGroupingManager::SetCurrentMethod(const char* name) throw(GException)
+void GGroupingManager::SetCurrentMethod(const char* name)
 {
 	GFactoryGrouping* fac;
 	GGrouping* tmp;
@@ -114,20 +81,10 @@ GGrouping* GGroupingManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryGrouping> GGroupingManager::GetGroupingsCursor(void)
-{
-	R::RCursor<GFactoryGrouping> cur(*this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 void GGroupingManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryGrouping> Cur;
-
 	if(!t) return;
-	Cur=GetGroupingsCursor();
+	R::RCursor<GFactoryGrouping> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -145,8 +102,7 @@ void GGroupingManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GGroupingManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryGrouping> Cur;
-	Cur=GetGroupingsCursor();
+	R::RCursor<GFactoryGrouping> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

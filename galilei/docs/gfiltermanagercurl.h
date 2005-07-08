@@ -68,10 +68,8 @@ public:
 
 	/**
 	* Construct the URL manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Should the dialog box be loaded.
 	*/
-	GFilterManagerCURL(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
+	GFilterManagerCURL(void);
 
 protected:
 
@@ -88,7 +86,7 @@ public:
 	* @param tmpfile        Temporary file created.
 	* @return Name fo of the MIME type.
 	*/
-	virtual const char* DetermineMIMEType(const char* tmpfile) throw(GException);
+	virtual const char* DetermineMIMEType(const char* tmpfile);
 
 protected:
 
@@ -97,14 +95,14 @@ protected:
 	* @param URL            URL of the document.
 	* @param tmpFile        Temporary file created.
 	*/
-	virtual void Download(const char* URL,R::RString& tmpFile) throw(GException);
+	virtual void Download(const char* URL,R::RString& tmpFile);
 
 	/**
 	* Delete a temporary copy of a file created by the manager. This method is
 	* only called if a temporary file was really created.
 	* @param tmpFile        Temporary file to delete.
 	*/
-	virtual void Delete(R::RString& tmpFile) throw(GException);
+	virtual void Delete(R::RString& tmpFile);
 
 public:
 

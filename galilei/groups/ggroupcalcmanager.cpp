@@ -38,9 +38,9 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/ggroupcalcmanager.h>
-#include <groups/ggroupcalc.h>
 using namespace GALILEI;
 using namespace R;
+
 
 
 //------------------------------------------------------------------------------
@@ -50,47 +50,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupCalcManager::GGroupCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryGroupCalc,true,true>(10,5),GPluginManager("GroupCalc",paths), Current(0)
+GGroupCalcManager::GGroupCalcManager(void)
+	: GPluginManager<GGroupCalcManager,GFactoryGroupCalc,GFactoryGroupCalcInit,GGroupCalc>("GroupCalc",API_GROUPCALC_VERSION), Current(0)
 {
-	LoadPlugins<GFactoryGroupCalc,GFactoryGroupCalcInit,GGroupCalcManager>("GFactoryGroupCalc",this,*paths,API_GROUPCALC_VERSION, dlg);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroupCalcManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryGroupCalc> Cur;
-	GGroupCalc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GGroupCalcManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryGroupCalc> Cur;
-	GGroupCalc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GGroupCalcManager::SetCurrentMethod(const char* name) throw(GException)
+void GGroupCalcManager::SetCurrentMethod(const char* name)
 {
 	GFactoryGroupCalc* fac;
 	GGroupCalc* tmp;
@@ -114,20 +81,10 @@ GGroupCalc* GGroupCalcManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryGroupCalc> GGroupCalcManager::GetGroupCalcsCursor(void)
-{
-	R::RCursor<GFactoryGroupCalc> cur(*this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 void GGroupCalcManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryGroupCalc> Cur;
-
 	if(!t) return;
-	Cur=GetGroupCalcsCursor();
+	R::RCursor<GFactoryGroupCalc> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -145,8 +102,7 @@ void GGroupCalcManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GGroupCalcManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryGroupCalc> Cur;
-	Cur=GetGroupCalcsCursor();
+	R::RCursor<GFactoryGroupCalc> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

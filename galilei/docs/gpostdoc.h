@@ -47,7 +47,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_POSTDOC_VERSION "1.0"
+#define API_POSTDOC_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
@@ -210,6 +210,10 @@ extern "C"                                                                      
 	GFactoryPostDoc* FactoryCreate(GPostDocManager* mng,const char* l)                    \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("PostDoc");                                                                \
 	}                                                                                     \
 }
 

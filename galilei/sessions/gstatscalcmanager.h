@@ -38,7 +38,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <sessions/gplugins.h>
+#include <sessions/gstatscalc.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,28 +54,14 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Statistics Methods Manager.
 */
-class GStatsCalcManager : public R::RContainer<GFactoryStatsCalc,true,true> , public GPluginManager
+class GStatsCalcManager : public GPluginManager<GStatsCalcManager,GFactoryStatsCalc,GFactoryStatsCalcInit,GStatsCalc>
 {
 public:
 
 	/**
 	* Construct the statistics methods manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Load the existing dialog.
 	*/
-	GStatsCalcManager(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	void Disconnect(GSession* session) throw(GException);
+	GStatsCalcManager(void);
 
 	/**
 	* Get a particular statistics method.
@@ -84,19 +71,13 @@ public:
 	GStatsCalc* Get(const char* name);
 
 	/**
-	* Get a cursor over the statistics methods managed.
-	* return GFactoryStatsCalcCursor.
-	*/
-	R::RCursor<GFactoryStatsCalc> GetStatsCalcsCursor(void);
-
-	/**
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

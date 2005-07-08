@@ -38,7 +38,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <docs/glinkcalc.h>
+#include <sessions/gplugins.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short Link Methods Manager.
 */
-class GLinkCalcManager : public R::RContainer<GFactoryLinkCalc,true,true>, public GPluginManager
+class GLinkCalcManager : public GPluginManager<GLinkCalcManager,GFactoryLinkCalc,GFactoryLinkCalcInit,GLinkCalc>
 {
 	/**
 	* Method currently selected.
@@ -64,28 +65,14 @@ public:
 
 	/**
 	* Constructor of a manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Load the existing dialog.
 	*/
-	GLinkCalcManager(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	void Disconnect(GSession* session) throw(GException);
+	GLinkCalcManager(void);
 
 	/**
 	* Set the current method.
 	* @param name            Name of the method.
 	*/
-	void SetCurrentMethod(const char* name) throw(GException);
+	void SetCurrentMethod(const char* name);
 
 	/**
 	* Get the current method.
@@ -94,19 +81,13 @@ public:
 	GLinkCalc* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the factories handled by the manager.
-	* @return GFactoryLinkCalcCursor
-	*/
-	R::RCursor<GFactoryLinkCalc> GetLinkCalcsCursor(void);
-
-	/**
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

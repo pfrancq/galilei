@@ -80,7 +80,7 @@ GPreProfile::~GPreProfile(void)
 
 //------------------------------------------------------------------------------
 GFactoryPreProfile::GFactoryPreProfile(GPreProfileManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPreProfile,GPreProfile,GPreProfileManager>(mng,n,f,"GFactoryPreProfile")
+		 : GFactoryPlugin<GFactoryPreProfile,GPreProfile,GPreProfileManager>(mng,n,f)
 {
 	//insert a "Level" parameter
 	InsertPtr(new GParamUInt("Level",mng->GetNb()));

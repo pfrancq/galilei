@@ -38,7 +38,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gpreprofilemanager.h>
-#include <profiles/gpreprofile.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -51,60 +50,17 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPreProfileManager::GPreProfileManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryPreProfile,true,true>(10,5),GPluginManager("PreProfile",paths)
+GPreProfileManager::GPreProfileManager(void)
+	: GPluginManager<GPreProfileManager,GFactoryPreProfile,GFactoryPreProfileInit,GPreProfile>("PreProfile",API_PREPROFILE_VERSION)
 {
-	LoadPlugins<GFactoryPreProfile,GFactoryPreProfileInit,GPreProfileManager>("GFactoryPreProfile",this,*paths,API_PREPROFILE_VERSION, dlg);
-}
-
-
-//------------------------------------------------------------------------------
-void GPreProfileManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryPreProfile> Cur;
-	GPreProfile* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GPreProfileManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryPreProfile> Cur;
-	GPreProfile* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-R::RCursor<GFactoryPreProfile> GPreProfileManager::GetPreProfileCursor(void)
-{
-	R::RCursor<GFactoryPreProfile> cur(*this);
-	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
 void GPreProfileManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryPreProfile> Cur;
-
 	if(!t) return;
-	Cur=GetPreProfileCursor();
+	R::RCursor<GFactoryPreProfile> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -115,8 +71,7 @@ void GPreProfileManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GPreProfileManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryPreProfile> Cur;
-	Cur=GetPreProfileCursor();
+	R::RCursor<GFactoryPreProfile> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

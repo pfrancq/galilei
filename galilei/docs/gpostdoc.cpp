@@ -79,7 +79,7 @@ GPostDoc::~GPostDoc(void)
 
 //------------------------------------------------------------------------------
 GFactoryPostDoc::GFactoryPostDoc(GPostDocManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>(mng,n,f,"GFactoryPostDoc")
+		 : GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>(mng,n,f)
 {
 	//insert a "Level" parameter
 	InsertPtr(new GParamUInt("Level",mng->GetNb()));

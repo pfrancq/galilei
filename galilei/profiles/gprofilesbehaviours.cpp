@@ -39,6 +39,7 @@
 #include <profiles/gusers.h>
 #include <infos/glang.h>
 #include <sessions/gsession.h>
+#include <sessions/gplugins.h>
 #include <infos/glangmanager.h>
 using namespace R;
 using namespace GALILEI;
@@ -410,7 +411,7 @@ GProfilesBehaviours::GProfilesBehaviours(GSession* session,bool memory) throw(st
 
 	agree=Session->GetSessionParams()->GetUInt("SameBehaviourMinDocs");
 	disagree=Session->GetSessionParams()->GetUInt("DiffBehaviourMinDocs");
-	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();
@@ -432,7 +433,7 @@ void GProfilesBehaviours::ReInit(void) throw(std::bad_alloc)
 	Ratios.Clear();
 	agree=Session->GetSessionParams()->GetUInt("SameBehaviourMinDocs");
 	disagree=Session->GetSessionParams()->GetUInt("DiffBehaviourMinDocs");
-	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();
@@ -448,7 +449,7 @@ void GProfilesBehaviours::Update(void) throw(std::bad_alloc)
 	R::RCursor<GFactoryLang> Langs;
 	GLang* Lang;
 
-	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		Lang=Langs()->GetPlugin();

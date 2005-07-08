@@ -47,7 +47,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_POSTGROUP_VERSION "1.0"
+#define API_POSTGROUP_VERSION "2.0"
 
 
 
@@ -217,6 +217,10 @@ extern "C"                                                                      
 	GFactoryPostGroup* FactoryCreate(GPostGroupManager* mng,const char* l)                \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("PostGroup");                                                              \
 	}                                                                                     \
 }
 

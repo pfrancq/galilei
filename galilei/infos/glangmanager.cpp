@@ -39,7 +39,6 @@
 //------------------------------------------------------------------------------
 // include file for Galilei
 #include <infos/glangmanager.h>
-#include <infos/glang.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -51,42 +50,9 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLangManager::GLangManager(RContainer<RString, true, false>* paths,bool load,bool dlg) throw(std::bad_alloc,GException)
-  : RContainer<GFactoryLang,true,true>(10,5),GPluginManager("Lang",paths), Load(load)
+GLangManager::GLangManager(bool load)
+  : GPluginManager<GLangManager,GFactoryLang,GFactoryLangInit,GLang>("Lang",API_LANG_VERSION), Load(load)
 {
-	LoadPlugins<GFactoryLang,GFactoryLangInit,GLangManager>("GFactoryLang",this,*paths,API_LANG_VERSION, dlg);
-}
-
-
-//------------------------------------------------------------------------------
-void GLangManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryLang> Cur;
-	GLang* lang;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		lang=Cur()->GetPlugin();
-		if(lang)
-			lang->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GLangManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryLang> Cur;
-	GLang* lang;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		lang=Cur()->GetPlugin();
-		if(lang)
-			lang->Disconnect(session);
-	}
 }
 
 
@@ -105,20 +71,12 @@ GLang* GLangManager::GetLang(const char* code) const
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryLang> GLangManager::GetLangsCursor(void)
-{
-	R::RCursor<GFactoryLang> cur(*this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 void GLangManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryLang> Cur;
 
 	if(!t) return;
-	Cur=GetLangsCursor();
+	Cur=GetFactories();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -130,7 +88,7 @@ void GLangManager::ReadConfig(RXMLTag* t)
 void GLangManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
 	R::RCursor<GFactoryLang> Cur;
-	Cur=GetLangsCursor();
+	Cur=GetFactories();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

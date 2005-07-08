@@ -39,7 +39,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <engines/genginemanager.h>
-#include <engines/gengine.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -52,50 +51,11 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngineManager::GEngineManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: R::RContainer<GFactoryEngine,true,true>(10,5),GPluginManager("Engine",paths)
+GEngineManager::GEngineManager(void)
+	: GPluginManager<GEngineManager,GFactoryEngine,GFactoryEngineInit,GEngine>("Engine",API_ENGINE_VERSION)
 {
-	LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>("GFactoryEngine",this,*paths,API_ENGINE_VERSION, dlg);
-/*	RCursor<RString> Cur(*paths);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RString Path(*Cur());
-		Path+="/engines";
-		LoadPlugins<GFactoryEngine,GFactoryEngineInit,GEngineManager>(this,Path.Latin1(),API_ENGINE_VERSION, dlg);
-	}*/
 }
 
-
-//------------------------------------------------------------------------------
-void GEngineManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryEngine> Cur;
-	GEngine* eng;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		eng=Cur()->GetPlugin();
-		if(eng)
-			eng->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GEngineManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryEngine> Cur;
-	GEngine* eng;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		eng=Cur()->GetPlugin();
-		if(eng)
-			eng->Disconnect(session);
-	}
-}
 
 //------------------------------------------------------------------------------
 GEngine* GEngineManager::GetEngine(R::RString name)
@@ -105,20 +65,10 @@ GEngine* GEngineManager::GetEngine(R::RString name)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryEngine> GEngineManager::GetEnginesCursor(void)
-{
-	R::RCursor<GFactoryEngine> cur(*this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 void GEngineManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryEngine> Cur;
-
 	if(!t) return;
-	Cur=GetEnginesCursor();
+	R::RCursor<GFactoryEngine> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -129,8 +79,7 @@ void GEngineManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GEngineManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryEngine> Cur;
-	Cur=GetEnginesCursor();
+	R::RCursor<GFactoryEngine> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

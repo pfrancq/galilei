@@ -38,7 +38,9 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <sessions/gplugins.h>
+#include <groups/ggroupcalc.h>
+
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
@@ -52,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Group Comuting Methods Manager.
 */
-class GGroupCalcManager : public R::RContainer<GFactoryGroupCalc,true,true>, public GPluginManager
+class GGroupCalcManager : public GPluginManager<GGroupCalcManager,GFactoryGroupCalc,GFactoryGroupCalcInit,GGroupCalc>
 {
 	/**
 	* Method currently selected.
@@ -63,28 +65,14 @@ public:
 
 	/**
 	* Construct the group computing method manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Load the existing dialog.
 	*/
-	GGroupCalcManager(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	void Disconnect(GSession* session) throw(GException);
+	GGroupCalcManager(void);
 
 	/**
 	* Set the current method.
 	* @param name            Name of the method.
 	*/
-	void SetCurrentMethod(const char* name) throw(GException);
+	void SetCurrentMethod(const char* name);
 
 	/**
 	* Get the current method.
@@ -93,18 +81,13 @@ public:
 	GGroupCalc* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the grouping computing methods.
-	*/
-	R::RCursor<GFactoryGroupCalc> GetGroupCalcsCursor(void);
-
-	/**
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

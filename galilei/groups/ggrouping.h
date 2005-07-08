@@ -48,7 +48,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_GROUPING_VERSION "1.0"
+#define API_GROUPING_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
@@ -162,7 +162,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryGrouping(GGroupingManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>(mng,n,f,"GFactoryGrouping") {}
+		 : GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
@@ -236,6 +236,10 @@ extern "C"                                                                      
 	GFactoryGrouping* FactoryCreate(GGroupingManager* mng,const char* l)                  \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("Grouping");                                                               \
 	}                                                                                     \
 }
 

@@ -80,7 +80,7 @@ GPostProfile::~GPostProfile(void)
 
 //------------------------------------------------------------------------------
 GFactoryPostProfile::GFactoryPostProfile(GPostProfileManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPostProfile,GPostProfile,GPostProfileManager>(mng,n,f,"GFactoryPostProfile")
+		 : GFactoryPlugin<GFactoryPostProfile,GPostProfile,GPostProfileManager>(mng,n,f)
 {
 	//insert a "Level" parameter
 	InsertPtr(new GParamUInt("Level",mng->GetNb()));

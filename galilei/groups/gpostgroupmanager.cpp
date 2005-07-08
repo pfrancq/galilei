@@ -51,60 +51,17 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostGroupManager::GPostGroupManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryPostGroup,true,true>(10,5),GPluginManager("PostGroup",paths)
+GPostGroupManager::GPostGroupManager(void)
+	: GPluginManager<GPostGroupManager,GFactoryPostGroup,GFactoryPostGroupInit,GPostGroup>("PostGroup",API_POSTGROUP_VERSION)
 {
-	LoadPlugins<GFactoryPostGroup,GFactoryPostGroupInit,GPostGroupManager>("GFactoryPostGroup",this,*paths,API_POSTGROUP_VERSION, dlg);
-}
-
-
-//------------------------------------------------------------------------------
-void GPostGroupManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryPostGroup> Cur;
-	GPostGroup* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GPostGroupManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryPostGroup> Cur;
-	GPostGroup* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-R::RCursor<GFactoryPostGroup> GPostGroupManager::GetPostGroupsCursor(void)
-{
-	R::RCursor<GFactoryPostGroup> cur(*this);
-	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
 void GPostGroupManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryPostGroup> Cur;
-
 	if(!t) return;
-	Cur=GetPostGroupsCursor();
+	R::RCursor<GFactoryPostGroup> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -115,8 +72,7 @@ void GPostGroupManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GPostGroupManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryPostGroup> Cur;
-	Cur=GetPostGroupsCursor();
+	R::RCursor<GFactoryPostGroup> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

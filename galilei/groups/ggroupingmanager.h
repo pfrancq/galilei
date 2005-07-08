@@ -38,7 +38,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <sessions/gplugins.h>
+#include <groups/ggrouping.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Grouping Methods Manager.
 */
-class GGroupingManager : public R::RContainer<GFactoryGrouping,true,true>,public GPluginManager
+class GGroupingManager : public GPluginManager<GGroupingManager,GFactoryGrouping,GFactoryGroupingInit,GGrouping>
 {
 	/**
 	* Method currently selected.
@@ -64,28 +65,14 @@ public:
 
 	/**
 	* Construct the grouping methods manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Load the existing dialog.
 	*/
-	GGroupingManager(R::RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
-
-	/**
-	* Connect to a Session.
-	* @param session         Session.
-	*/
-	void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         Session.
-	*/
-	void Disconnect(GSession* session) throw(GException);
+	GGroupingManager(void);
 
 	/**
 	* Set the current method.
 	* @param name            Name of the method.
 	*/
-	void SetCurrentMethod(const char* name) throw(GException);
+	void SetCurrentMethod(const char* name);
 
 	/**
 	* Get the current method.
@@ -94,18 +81,13 @@ public:
 	GGrouping* GetCurrentMethod(void);
 
 	/**
-	* Get a cursor over the grouping methods.
-	*/
-	R::RCursor<GFactoryGrouping> GetGroupingsCursor(void);
-
-	/**
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

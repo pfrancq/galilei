@@ -45,7 +45,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gfiltermanager.h>
-#include <docs/gfilter.h>
 #include <docs/gdoc.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
@@ -105,12 +104,11 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: R::RContainer<GFactoryFilter,true,true>(10,5),GPluginManager("Filter",paths), MIMES(50,25),
+GFilterManager::GFilterManager(void)
+	: GPluginManager<GFilterManager,GFactoryFilter,GFactoryFilterInit,GFilter>("Filter",API_FILTER_VERSION), MIMES(50,25),
 	  Exts(50,25)
 {
 	RString MIME;
-	LoadPlugins<GFactoryFilter,GFactoryFilterInit,GFilterManager>("GFactoryFilter",this,*paths,API_FILTER_VERSION, dlg);
 
 	// Try to open list of MIME types
 	try
@@ -141,13 +139,13 @@ GFilterManager::GFilterManager(RContainer<RString, true, false>* paths,bool dlg)
 
 
 //------------------------------------------------------------------------------
-void GFilterManager::Download(const char*,RString&) throw(GException)
+void GFilterManager::Download(const char*,RString&)
 {
 }
 
 
 //------------------------------------------------------------------------------
-const char* GFilterManager::DetermineMIMEType(const char* tmpfile) throw(GException)
+const char* GFilterManager::DetermineMIMEType(const char* tmpfile)
 {
 	RCursor<GMIMEExt> Cur(Exts);
 
@@ -160,13 +158,13 @@ const char* GFilterManager::DetermineMIMEType(const char* tmpfile) throw(GExcept
 
 
 //------------------------------------------------------------------------------
-void GFilterManager::Delete(RString&) throw(GException)
+void GFilterManager::Delete(RString&)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GDocXML* GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
+GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 {
 	RString tmpFile(250);
 	char tmp[250];
@@ -247,7 +245,7 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GFilterManager::AddMIME(const char* mime,GFilter* f) throw(std::bad_alloc)
+void GFilterManager::AddMIME(const char* mime,GFilter* f)
 {
 	MIMES.InsertPtr(new GMIMEFilter(mime,f));
 }
@@ -286,20 +284,10 @@ const char* GFilterManager::GetMIMEType(const char* mime) const
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryFilter> GFilterManager::GetFiltersCursor(void)
-{
-	R::RCursor<GFactoryFilter> cur(*this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 void GFilterManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryFilter> Cur;
-
 	if(!t) return;
-	Cur=GetFiltersCursor();
+	R::RCursor<GFactoryFilter> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -310,8 +298,7 @@ void GFilterManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GFilterManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryFilter> Cur;
-	Cur=GetFiltersCursor();
+	R::RCursor<GFactoryFilter> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

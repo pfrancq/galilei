@@ -38,7 +38,9 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <sessions/gplugins.h>
+#include <engines/gmetaengine.h>
+
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
@@ -52,7 +54,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short search engine Manager.
 */
-class GMetaEngineManager : public R::RContainer<GFactoryMetaEngine,true,true> , public GPluginManager
+class GMetaEngineManager : public GPluginManager<GMetaEngineManager,GFactoryMetaEngine,GFactoryMetaEngineInit,GMetaEngine>
 {
 	/**
 	* Method currently selected.
@@ -63,34 +65,14 @@ public:
 
 	/**
 	* Constructor of a manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Load the existing dialog.
 	*/
-	GMetaEngineManager(RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	void Disconnect(GSession* session) throw(GException);
-
-	/**
-	* Get a cursor over the meta engine factories handled by the manager.
-	* @return GFactoryEngineCursor
-	*/
-	R::RCursor<GFactoryMetaEngine> GetMetaEnginesCursor(void);
+	GMetaEngineManager(void);
 
 	/**
 	* Set the current method.
 	* @param name            Name of the method.
 	*/
-	void SetCurrentMethod(const char* name) throw(GException);
+	void SetCurrentMethod(const char* name);
 
 	/**
 	* Get the current method.
@@ -102,10 +84,10 @@ public:
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

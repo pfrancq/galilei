@@ -79,7 +79,7 @@ GPostGroup::~GPostGroup(void)
 
 //------------------------------------------------------------------------------
 GFactoryPostGroup::GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f,"GFactoryPostGroup")
+		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f)
 {
 	//insert a "Level" parameter
 	InsertPtr(new GParamUInt("Level",mng->GetNb()));

@@ -38,7 +38,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gprofilecalcmanager.h>
-#include <profiles/gprofilecalc.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -51,47 +50,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfileCalcManager::GProfileCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryProfileCalc,true,true>(10,5),GPluginManager("ProfileCalc",paths), Current(0)
+GProfileCalcManager::GProfileCalcManager(void)
+	: GPluginManager<GProfileCalcManager,GFactoryProfileCalc,GFactoryProfileCalcInit,GProfileCalc>("ProfileCalc",API_PROFILECALC_VERSION), Current(0)
 {
-	LoadPlugins<GFactoryProfileCalc,GFactoryProfileCalcInit,GProfileCalcManager>("GFactoryProfileCalc",this,*paths,API_PROFILECALC_VERSION, dlg);
 }
 
 
 //------------------------------------------------------------------------------
-void GProfileCalcManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryProfileCalc> Cur;
-	GProfileCalc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GProfileCalcManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryProfileCalc> Cur;
-	GProfileCalc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GProfileCalcManager::SetCurrentMethod(const char* name) throw(GException)
+void GProfileCalcManager::SetCurrentMethod(const char* name)
 {
 	GFactoryProfileCalc* fac;
 	GProfileCalc* tmp;
@@ -115,20 +81,10 @@ GProfileCalc* GProfileCalcManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryProfileCalc> GProfileCalcManager::GetProfileCalcsCursor(void)
-{
-	R::RCursor<GFactoryProfileCalc> cur(*this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 void GProfileCalcManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryProfileCalc> Cur;
-
 	if(!t) return;
-	Cur=GetProfileCalcsCursor();
+	R::RCursor<GFactoryProfileCalc> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -146,8 +102,7 @@ void GProfileCalcManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GProfileCalcManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryProfileCalc> Cur;
-	Cur=GetProfileCalcsCursor();
+	R::RCursor<GFactoryProfileCalc> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

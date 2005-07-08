@@ -138,7 +138,7 @@ void GIndexer::RunQuery(R::RString query,R::RContainer<GInfo,true,false>& docs) 
 		}
 
 		// For each existing language, insert the corresponding stem
-		RCursor<GFactoryLang> Cur=Langs->GetLangsCursor();
+		RCursor<GFactoryLang> Cur=Langs->GetFactories();
 		Word=query.Mid(pos,len);
 		for(Cur.Start(),New=0;!Cur.End();Cur.Next())
 		{

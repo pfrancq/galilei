@@ -39,6 +39,7 @@
 #include <groups/ggroups.h>
 #include <docs/gdocproxy.h>
 #include <sessions/gsession.h>
+#include <sessions/gplugins.h>
 #include <sessions/gstorage.h>
 #include <infos/glang.h>
 #include <infos/glangmanager.h>
@@ -428,7 +429,7 @@ void GSubjects::ComputeTotal(void)
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
-	Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		lang=Langs()->GetPlugin();
@@ -786,7 +787,7 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 	// Catch all the ideal groups for this subject
 	// It is suppose that the subject of the group is the subject of any
 	// subprofile contained in it.
-	RCursor<GFactoryLang> Langs=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLangsCursor();
+	RCursor<GFactoryLang> Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		GLang* lang=Langs()->GetPlugin();

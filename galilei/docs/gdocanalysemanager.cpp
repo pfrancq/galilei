@@ -51,47 +51,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyseManager::GDocAnalyseManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryDocAnalyse,true,true>(10,5), GPluginManager("DocAnalyse",paths),Current(0)
+GDocAnalyseManager::GDocAnalyseManager(void)
+	: GPluginManager<GDocAnalyseManager,GFactoryDocAnalyse,GFactoryDocAnalyseInit,GDocAnalyse>("DocAnalyse",API_DOCANALYSE_VERSION), Current(0)
 {
-	LoadPlugins<GFactoryDocAnalyse,GFactoryDocAnalyseInit,GDocAnalyseManager>("GFactoryDocAnalyse",this,*paths,API_DOCANALYSE_VERSION, dlg);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyseManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryDocAnalyse> Cur;
-	GDocAnalyse* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GDocAnalyseManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryDocAnalyse> Cur;
-	GDocAnalyse* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GDocAnalyseManager::SetCurrentMethod(const char* name) throw(GException)
+void GDocAnalyseManager::SetCurrentMethod(const char* name)
 {
 	GFactoryDocAnalyse* fac;
 	GDocAnalyse* tmp;
@@ -115,20 +82,12 @@ GDocAnalyse* GDocAnalyseManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryDocAnalyse> GDocAnalyseManager::GetDocAnalysesCursor(void)
-{
-	R::RCursor<GFactoryDocAnalyse> cur(*this);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
 void GDocAnalyseManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryDocAnalyse> Cur;
 
 	if(!t) return;
-	Cur=GetDocAnalysesCursor();
+	Cur=GetFactories();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -147,7 +106,7 @@ void GDocAnalyseManager::ReadConfig(RXMLTag* t)
 void GDocAnalyseManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
 	R::RCursor<GFactoryDocAnalyse> Cur;
-	Cur=GetDocAnalysesCursor();
+	Cur=GetFactories();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

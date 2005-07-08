@@ -38,7 +38,9 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gplugin.h>
+#include <sessions/gplugins.h>
+#include <docs/gfilter.h>
+
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
@@ -56,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic URL Manager.
 */
-class GFilterManager : public R::RContainer<GFactoryFilter,true,true> , public GPluginManager
+class GFilterManager : public GPluginManager<GFilterManager,GFactoryFilter,GFactoryFilterInit,GFilter>
 {
 protected:
 
@@ -77,10 +79,8 @@ public:
 
 	/**
 	* Construct the filter manager.
-	* @param path            Path to find the plugins.
-	* @param dlg             Should the dialog box be loaded.
 	*/
-	GFilterManager(RContainer<RString, true, false>* paths,bool dlg=true) throw(std::bad_alloc,GException);
+	GFilterManager(void);
 
 protected:
 
@@ -89,7 +89,7 @@ protected:
 	* @param URL            URL of the document.
 	* @param tmpFile        Temporary file created.
 	*/
-	virtual void Download(const char* URL,R::RString& tmpFile) throw(GException);
+	virtual void Download(const char* URL,R::RString& tmpFile);
 
 public:
 
@@ -100,7 +100,7 @@ public:
 	* @param tmpfile        Temporary file created.
 	* @return Name fo of the MIME type.
 	*/
-	virtual const char* DetermineMIMEType(const char* tmpfile) throw(GException);
+	virtual const char* DetermineMIMEType(const char* tmpfile);
 
 protected:
 
@@ -109,7 +109,7 @@ protected:
 	* only called if a temporary file was really created.
 	* @param tmpFile        Temporary file to delete.
 	*/
-	virtual void Delete(R::RString& tmpFile) throw(GException);
+	virtual void Delete(R::RString& tmpFile);
 
 public:
 
@@ -119,14 +119,14 @@ public:
 	* @param doc            Document to analyze
 	* Return Pointer to a GDocXML.
 	*/
-	GDocXML* CreateDocXML(GDoc* doc) throw(GException);
+	GDocXML* CreateDocXML(GDoc* doc);
 
 	/**
 	* Add a pair (MIME type,filter).
 	* @param mime           Name of the MIME type.
 	* @param f              Pointer to the filter.
 	*/
-	void AddMIME(const char* mime,GFilter* f) throw(std::bad_alloc);
+	void AddMIME(const char* mime,GFilter* f);
 
 	/**
 	* Delete all the MIME type associated with a filter.
@@ -143,19 +143,13 @@ public:
 	const char* GetMIMEType(const char* mime) const;
 
 	/**
-	* Get a cursor over the filters of the system.
-	* @return GFactoryFilterCursor.
-	*/
-	R::RCursor<GFactoryFilter> GetFiltersCursor(void);
-	
-	/**
 	* Read config of the manager
 	*/
 	virtual void ReadConfig(RXMLTag* t);
-	
+
 	/**
 	* Store config of the manager
-	*/	
+	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 
 	/**

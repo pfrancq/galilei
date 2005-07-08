@@ -6,7 +6,7 @@
 
 	Generic Plug-In - Header.
 
-	Copyright 2003-2004 by the Université libre de Bruxelles.
+	Copyright 2003-2005 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -66,63 +66,69 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
+* Type of a function used to show the about box of a plugin.
+*/
+typedef void (*About_t)();
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+/**
 * The GPluginManager class provides a template for a generic plug-in.
-* @author Vandaele Valery
+* @author Pascal Francq
 * @short Plug-ins manager.
 */
-class GPluginManager
+class GGenericPluginManager
 {
+protected:
+
 	/**
 	* The name of the manager
 	*/
 	R::RString Name;
 
 	/**
-	* The path of the current manager
+	* Version of the manager
 	*/
-	R::RContainer<RString, true, false>* Paths;
-
-public :
-	/**
-	* A static container containing all the managers.
-	*/
-	static R::RContainer<GPluginManager,false,true> Managers;
+	R::RString Version;
 
 public :
 	/**
 	* Constructor for the manager of plug-ins manager
 	*/
-	GPluginManager(R::RString name,R::RContainer<RString, true, false>* paths);
+	GGenericPluginManager(R::RString name,R::RString version);
 
 	/**
 	* Connect to the session.
 	*/
-	virtual void Connect(GSession* sess);
+	virtual void Connect(GSession* sess)=0;
 
 	/**
 	* Disconnect to the session.
 	*/
-	virtual void Disconnect(GSession* sess);
+	virtual void Disconnect(GSession* sess)=0;
+
+	/**
+	* Load a plug-in and its dialog boxes.
+	* @param dll             Name of the dynamic link library.
+	* @param handle          Handle to the library contaioning the plug-in.
+	* @param handleDlg       Handle to the library contaioning the dialogs.
+	*/
+	virtual void Load(const R::RString& dll,void* handle,void* handleDlg)=0;
 
 	/**
 	* Read Config for the current manager.
 	*/
-	virtual void ReadConfig(R::RXMLTag* t);
+	virtual void ReadConfig(R::RXMLTag* t)=0;
 
 	/**
 	* Save Config for the current manager.
 	*/
-	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t)=0;
 
 	/**
 	* Method used to compare element from a Container.
 	*/
-	int Compare(const GPluginManager* pm) const;
-
-	/**
-	* Method used to compare element from a Container.
-	*/
-	int Compare(const GPluginManager& pm) const;
+	int Compare(const GGenericPluginManager& pm) const;
 
 	/**
 	* Method used to compare element from a Container.
@@ -132,30 +138,99 @@ public :
 	/**
 	* Get the name of the current Manager.
 	*/
-	R::RString GetName(void) const{return Name;};
+	R::RString GetName(void) const {return(Name);}
 
 	/**
-	* Get the path associated to the current manager.
+	* Get the name of the current Manager.
 	*/
-	R::RContainer<RString, true, false>* GetPaths(void) const{return Paths;};
-
-	/**
-	* Get the manager associated to the "name".
-	* @param name         The name of the manager to be found
-	* @return GPluginManager The plug-ins manager.
-	*/
-	static GPluginManager* GetManager(R::RString name);
-
-	/**
-	* Get a cursor over all the managers.
-	* @return GPluginManager A cursor on the managers
-	*/
-	static R::RCursor<GPluginManager> GetCursor(void);
+	R::RString GetVersion(void) const {return(Version);}
 
 	/**
 	* The destructor.
 	*/
-	virtual ~GPluginManager(void);
+	virtual ~GGenericPluginManager(void);
+};
+
+
+//-----------------------------------------------------------------------------
+template<class mng,class factory,class factoryInit,class plugin>
+	class GPluginManager : public GGenericPluginManager, public R::RContainer<factory,true,true>
+{
+public:
+
+	/**
+	* Constructor for the manager of plug-ins manager
+	*/
+	GPluginManager(R::RString name,R::RString version)
+		: GGenericPluginManager(name,version), R::RContainer<factory,true,true>(20,10)
+		 {}
+
+	virtual void Load(const R::RString& dll,void* handle,void* handleDlg)
+	{
+		char* error;
+
+		// Try to create the factory
+		factoryInit* initFac= (factoryInit*) dlsym(handle,"FactoryCreate");
+		error=dlerror();
+		if(error)
+		{
+			cerr<<error<<endl;
+			return;
+		}
+		factory *myfactory= initFac(dynamic_cast<mng*>(this),dll);
+
+		// Verify the versions of the factory and the session
+		if(strcmp(Version,myfactory->GetAPIVersion()))
+			return;
+
+		// Register main plugin
+		InsertPtr(myfactory);
+
+		// Try to create the dialogs if necessary
+		if(!handleDlg)
+			return;
+		About_t about = (About_t) dlsym(handleDlg,"About");
+		error=dlerror();
+		if(!error)
+			myfactory->SetAbout(about);
+		void* config= dlsym(handleDlg,"Configure");
+		error=dlerror();
+		if(!error)
+			myfactory->SetConfig(config);
+	}
+
+	virtual void Connect(GSession* session)
+	{
+		R::RCursor<factory> Cur;
+		plugin* calc;
+
+		Cur.Set(*this);
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			calc=Cur()->GetPlugin();
+			if(calc)
+				calc->Connect(session);
+		}
+	}
+
+	virtual void Disconnect(GSession* session)
+	{
+		R::RCursor<factory> Cur;
+		plugin* calc;
+
+		Cur.Set(*this);
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			calc=Cur()->GetPlugin();
+			if(calc)
+				calc->Disconnect(session);
+		}
+	}
+
+	R::RCursor<factory> GetFactories(void) const
+	{
+		return(R::RCursor<factory>(*this));
+	}
 };
 
 
@@ -184,6 +259,16 @@ public:
 	GPlugin(factory* fac) : Factory(fac) {}
 
 	/**
+	* Connect to the session.
+	*/
+	virtual void Connect(GSession*) {};
+
+	/**
+	* Disconnect to the session.
+	*/
+	virtual void Disconnect(GSession*) {};
+
+	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void) {}
@@ -199,13 +284,6 @@ public:
 	virtual ~GPlugin(void) {}
 };
 
-
-//-----------------------------------------------------------------------------
-/**
-* Type of a function used to show the about box of a plugin.
-*/
-typedef void (*About_t)();
-//-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
@@ -242,11 +320,6 @@ protected:
 	R::RString Lib;
 
 	/**
-	* Category of the library.
-	*/
-	R::RString CatLib;
-
-	/**
 	* Pointer to a function showing the about box.
 	*/
 	About_t AboutDlg;
@@ -267,17 +340,16 @@ protected:
 	*/
 	void* HandleDlg;
 
-
 public:
+
 	/**
 	* Constructor.
 	* @param m               Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
-	* @param c               Category of the Factory/Plugin.
 	*/
-	GFactoryPlugin(mng* m,const char* n,const char* f,const char* c)
-		: GParams(n), Mng(m), Plugin(0), Lib(f), CatLib(c), AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0) {}
+	GFactoryPlugin(mng* m,const char* n,const char* f)
+		: GParams(n), Mng(m), Plugin(0), Lib(f), AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0) {}
 
 	/**
 	* Get the manager of the factory.
@@ -314,11 +386,6 @@ public:
 	* Method needed by R::RContainer.
 	*/
 	int Compare(const factory& f) const {return(Name.Compare(f.Name));}
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const factory* f) const {return(Name.Compare(f->Name));}
 
 	/**
 	* Method needed by R::RContainer.
@@ -403,11 +470,6 @@ public:
 	RString GetLib(void) const {return(Lib);}
 
 	/**
-	* Get the category of the plugin.
-	*/
-	RString GetCatLib(void) const {return(CatLib);}
-
-	/**
 	* Return the version of the plugin.
 	*/
 	const char* GetVersion(void) const {return(this->Version);}
@@ -474,125 +536,6 @@ public:
 			dlclose(HandleDlg);
 	}
 };
-
-
-//-----------------------------------------------------------------------------
-/**
-* Starting from a directory, this function looks for all shared libraries in the
-* sub-dirs and add them in the containers.
-* @param dir                 Root directory to scan.
-* @param plugins             Strings for each main plug-ins.
-* @param dlgs                Strings for each dialog plug-ins.
-*
-*/
-void FindPlugins(const R::RString dir,R::RContainer<R::RString,true,false>& plugins,R::RContainer<R::RString,true,false>& dlgs);
-
-
-//-----------------------------------------------------------------------------
-R::RString FindPlugin(const R::RString plugin,const R::RContainer<R::RString,true,false>& plugins);
-
-
-//-----------------------------------------------------------------------------
-/**
-* Template function to load a given type of plugins in a given directory.
-* @param factory            Generic Factory.
-* @param factoryInit        Type of the function used to initialize a factory.
-* @param manager            Type of the manager.
-* @param cat                Category of the plug-in.
-* @param mng                Pointer to the manager.
-* @param path               Path of the directory to look at.
-* @param API_version        The API version of the plugins handled.
-* @param dlg                Specify if the dialog boxes shared libraries must be
-*                           loaded (true) or not (false).
-*/
-template<class factory,class factoryInit,class manager>
-	void LoadPlugins(const R::RString& cat,manager* mng,R::RContainer<R::RString,true,false>& dirs, const char* API_version,bool dlg) throw(std::bad_alloc, GException)
-{
-	RString Msg;
-	RString Dlg;
-	RString Short;
-	R::RContainer<R::RString,true,false> PlugIns(50,25);
-	R::RContainer<R::RString,true,false> Dlgs(50,25);
-	char* error;
-
-	// Find the plugins
-	R::RCursor<RString> Path(dirs);
-	for(Path.Start();!Path.End();Path.Next())
-		FindPlugins(*Path(),PlugIns,Dlgs);
-
-	// Go through the main plug-ins
-	R::RCursor<RString> Cur(PlugIns);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		// Create the factory
-		void *handle=dlopen(Cur()->Latin1(),RTLD_LAZY);
-		if(!handle)
-		{
-			char *error=dlerror();
-			Msg+="ERROR :";
-			Msg+=error;
-			continue;
-		}
-		factoryInit* initFac= (factoryInit*) dlsym(handle,"FactoryCreate");
-		error=dlerror();
-		if(error)
-		{
-			Msg+="ERROR :";
-			Msg+=error;
-			continue;
-		}
-		Short=Cur()->Mid(Cur()->Find(RTextFile::GetDirSeparator(),-1)+1);
-		factory *myfactory= initFac(mng,Short);
-
-		// Verify if it is the right category
-		if(cat.Compare(myfactory->GetCatLib()))
-			continue;
-
-		// Verify the versions of the factory and the session
-		if(strcmp(API_version,myfactory->GetAPIVersion()))
-		{
-			Msg+=(*Cur())+" plug-in not compatible with API Version\n";
-			continue;
-		}
-
-		// Register main plugin
-		mng->InsertPtr(myfactory);
-
-
-		// Look if dialogs shoudl be loaded and if a corresponding dialog
-		// plug-in exist.
-		if(!dlg) continue;
-		Dlg=Short.Mid(0,Short.GetLen()-3)+"_dlg.so";
-		Dlg=FindPlugin(Dlg,Dlgs);
-		if(Dlg.IsEmpty()) continue;
-
-		// Register About method
-		void* handleDLG=dlopen(Dlg.Latin1(),RTLD_LAZY);
-		if (handleDLG == NULL)
-		{
-			continue;
-		}
-		About_t about = (About_t) dlsym(handleDLG,"About");
-		error=dlerror();
-		if(error)
-		{
-			continue;
-		}
-		myfactory->SetAbout(about);
-
-		// Register Config method
-		void* config= dlsym(handleDLG,"Configure");
-		error=dlerror();
-		if(error)
-		{
-			continue;
-		}
-		myfactory->SetConfig(config);
-	}
-	// If something in Msg -> error
-	if(Msg.GetLen())
-		throw(GException(Msg));
-}
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

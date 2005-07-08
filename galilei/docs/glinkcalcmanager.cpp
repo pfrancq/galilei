@@ -50,47 +50,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLinkCalcManager::GLinkCalcManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryLinkCalc,true,true>(10,5),GPluginManager("LinkCalc",paths), Current(0)
+GLinkCalcManager::GLinkCalcManager(void)
+	: GPluginManager<GLinkCalcManager,GFactoryLinkCalc,GFactoryLinkCalcInit,GLinkCalc>("LinkCalc",API_LINKCALC_VERSION), Current(0)
 {
-	LoadPlugins<GFactoryLinkCalc,GFactoryLinkCalcInit,GLinkCalcManager>("GFactoryLinkCalc",this,*paths,API_LINKCALC_VERSION, dlg);
 }
 
 
 //------------------------------------------------------------------------------
-void GLinkCalcManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryLinkCalc> Cur;
-	GLinkCalc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GLinkCalcManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryLinkCalc> Cur;
-	GLinkCalc* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GLinkCalcManager::SetCurrentMethod(const char* name) throw(GException)
+void GLinkCalcManager::SetCurrentMethod(const char* name)
 {
 	GFactoryLinkCalc* fac;
 	GLinkCalc* tmp;
@@ -114,19 +81,12 @@ GLinkCalc* GLinkCalcManager::GetCurrentMethod(void)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GFactoryLinkCalc> GLinkCalcManager::GetLinkCalcsCursor(void)
-{
-	return(R::RCursor<GFactoryLinkCalc>(*this));
-}
-
-
-//------------------------------------------------------------------------------
 void GLinkCalcManager::ReadConfig(RXMLTag* t)
 {
 	R::RCursor<GFactoryLinkCalc> Cur;
 
 	if(!t) return;
-	Cur=GetLinkCalcsCursor();
+	Cur=GetFactories();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -145,7 +105,7 @@ void GLinkCalcManager::ReadConfig(RXMLTag* t)
 void GLinkCalcManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
 	R::RCursor<GFactoryLinkCalc> Cur;
-	Cur=GetLinkCalcsCursor();
+	Cur=GetFactories();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);

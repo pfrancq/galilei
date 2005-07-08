@@ -47,7 +47,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_PREPROFILE_VERSION "1.0"
+#define API_PREPROFILE_VERSION "2.0"
 
 
 
@@ -152,24 +152,24 @@ public:
 typedef GFactoryPreProfile* GFactoryPreProfileInit(GPreProfileManager*,const char*);
 
 //------------------------------------------------------------------------------
-#define CREATE_PREPROFILE_FACTORY(name,C)                                                  \
-class TheFactory : public GFactoryPreProfile                                               \
+#define CREATE_PREPROFILE_FACTORY(name,C)                                                 \
+class TheFactory : public GFactoryPreProfile                                              \
 {                                                                                         \
 private:                                                                                  \
-	static GFactoryPreProfile* Inst;                                                       \
-	TheFactory(GPreProfileManager* mng,const char* l) : GFactoryPreProfile(mng,name,l)      \
+	static GFactoryPreProfile* Inst;                                                      \
+	TheFactory(GPreProfileManager* mng,const char* l) : GFactoryPreProfile(mng,name,l)    \
 	{                                                                                     \
-		C::CreateParams(this);                                                \
+		C::CreateParams(this);                                                            \
 	}                                                                                     \
 	virtual ~TheFactory(void) {}                                                          \
 public:                                                                                   \
-	static GFactoryPreProfile* CreateInst(GPreProfileManager* mng,const char* l)            \
+	static GFactoryPreProfile* CreateInst(GPreProfileManager* mng,const char* l)          \
 	{                                                                                     \
 		if(!Inst)                                                                         \
 			Inst = new TheFactory(mng,l);                                                 \
 		return(Inst);                                                                     \
 	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_PREPROFILE_VERSION);}        \
+	virtual const char* GetAPIVersion(void) const {return(API_PREPROFILE_VERSION);}       \
 	virtual void Create(void) throw(GException)                                           \
 	{                                                                                     \
 		if(Plugin) return;                                                                \
@@ -202,13 +202,17 @@ public:                                                                         
 	}                                                                                     \
 };                                                                                        \
                                                                                           \
-GFactoryPreProfile* TheFactory::Inst = 0;                                                  \
+GFactoryPreProfile* TheFactory::Inst = 0;                                                 \
                                                                                           \
 extern "C"                                                                                \
 {                                                                                         \
-	GFactoryPreProfile* FactoryCreate(GPreProfileManager* mng,const char* l)                \
+	GFactoryPreProfile* FactoryCreate(GPreProfileManager* mng,const char* l)              \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("PreProfile");                                                             \
 	}                                                                                     \
 }
 

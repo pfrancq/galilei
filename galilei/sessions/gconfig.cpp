@@ -68,8 +68,8 @@
 #include <docs/gdocanalysemanager.h>
 #include <groups/gpostgroup.h>
 #include <groups/gpostgroupmanager.h>
-
 #include <sessions/gplugin.h>
+#include <sessions/gplugins.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -91,7 +91,7 @@ GConfig::GConfig(const char* f) throw(std::bad_alloc)
 	AddTag(Root,SessionParams=new RXMLTag("galileiconfig:session"));
 
 	//Insert a tag for every manager of plugins
-	RCursor<GPluginManager> cur(GPluginManager::GetCursor());
+	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetCursor());
 	for(cur.Start();!cur.End();cur.Next())
 	{
 		n="";
@@ -114,7 +114,7 @@ void GConfig::Load(void) throw(GException)
 		File.Open(R::RIO::Read);
 		SessionParams=GetTop()->GetTag("galileiconfig:session");
 
-		RCursor<GPluginManager> cur(GPluginManager::GetCursor());
+		RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetCursor());
 		RXMLTag* t;
 
 		for(cur.Start();!cur.End();cur.Next())
@@ -128,8 +128,6 @@ void GConfig::Load(void) throw(GException)
 	}
 	catch(...)
 	{
-/*		Filters=0;
-		ProfileCalcs=0;*/
 		throw GException("Problem loading config file.");
 	}
 }
@@ -140,8 +138,7 @@ void GConfig::Save(void) throw(GException)
 {
 	RString n;
 
-	//GPluginManager::GetManager("Filter")->SaveConfig(this,GetTop()->GetTag("galileiconfig:filters"));
-	RCursor<GPluginManager> cur(GPluginManager::GetCursor());
+	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetCursor());
 	RXMLTag* t;
 
 	for(cur.Start();!cur.End();cur.Next())

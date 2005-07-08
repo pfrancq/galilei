@@ -126,7 +126,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryProfileCalc(GProfileCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>(mng,n,f,"GFactoryProfileCalc") {}
+		 : GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
@@ -200,6 +200,10 @@ extern "C"                                                                      
 	GFactoryProfileCalc* FactoryCreate(GProfileCalcManager* mng,const char* l)            \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("ProfileCalc");                                                            \
 	}                                                                                     \
 }
 

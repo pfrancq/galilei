@@ -47,7 +47,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_FILTER_VERSION "1.0"
+#define API_FILTER_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
@@ -188,7 +188,7 @@ public:
 	* @param f               Lib of the Factory/Plugin.
 	*/
 	GFactoryFilter(GFilterManager* mng,RString n,RString f)
-		: GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f,"GFactoryFilter") {}
+		: GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f) {}
 
 	/**
 	* Destructor.
@@ -247,6 +247,10 @@ extern "C"                                                                      
 	GFactoryFilter* FactoryCreate(GFilterManager* mng,const char* l)                      \
 	{                                                                                     \
 		return(TheFactory::CreateInst(mng,l));                                            \
+	}                                                                                     \
+	const char* LibType(void)                                                             \
+	{                                                                                     \
+		return("Filter");                                                                 \
 	}                                                                                     \
 }
 

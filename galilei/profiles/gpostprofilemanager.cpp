@@ -38,7 +38,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gpostprofilemanager.h>
-#include <profiles/gpostprofile.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -51,60 +50,17 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostProfileManager::GPostProfileManager(RContainer<RString, true, false>* paths,bool dlg) throw(std::bad_alloc,GException)
-	: RContainer<GFactoryPostProfile,true,true>(10,5),GPluginManager("PostProfile",paths)
+GPostProfileManager::GPostProfileManager(void)
+	: GPluginManager<GPostProfileManager,GFactoryPostProfile,GFactoryPostProfileInit,GPostProfile>("PostProfile",API_POSTPROFILE_VERSION)
 {
-	LoadPlugins<GFactoryPostProfile,GFactoryPostProfileInit,GPostProfileManager>("GFactoryPostProfile",this,*paths,API_POSTGROUP_VERSION, dlg);
-}
-
-
-//------------------------------------------------------------------------------
-void GPostProfileManager::Connect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryPostProfile> Cur;
-	GPostProfile* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Connect(session);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GPostProfileManager::Disconnect(GSession* session) throw(GException)
-{
-	R::RCursor<GFactoryPostProfile> Cur;
-	GPostProfile* calc;
-
-	Cur.Set(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		calc=Cur()->GetPlugin();
-		if(calc)
-			calc->Disconnect(session);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-R::RCursor<GFactoryPostProfile> GPostProfileManager::GetPostProfileCursor(void)
-{
-	R::RCursor<GFactoryPostProfile> cur(*this);
-	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
 void GPostProfileManager::ReadConfig(RXMLTag* t)
 {
-	R::RCursor<GFactoryPostProfile> Cur;
-
 	if(!t) return;
-	Cur=GetPostProfileCursor();
+	R::RCursor<GFactoryPostProfile> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->ReadConfig(t);
@@ -115,8 +71,7 @@ void GPostProfileManager::ReadConfig(RXMLTag* t)
 //------------------------------------------------------------------------------
 void GPostProfileManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 {
-	R::RCursor<GFactoryPostProfile> Cur;
-	Cur=GetPostProfileCursor();
+	R::RCursor<GFactoryPostProfile> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Cur()->SaveConfig(xml,t);
