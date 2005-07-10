@@ -6,7 +6,7 @@
 
 	A PDF filter - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -30,7 +30,7 @@
 
 
 // #define OPI_SUPPORT 0
-// 
+//
 // #define MULTITHREADED _REENTRANT
 
 
@@ -64,7 +64,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterpdf.h>
-#include <docs/gfiltermanager.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;

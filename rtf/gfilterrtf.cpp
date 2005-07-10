@@ -32,7 +32,6 @@
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterrtf.h>
-#include <docs/gfiltermanager.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;

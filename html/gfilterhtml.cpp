@@ -29,35 +29,22 @@
 */
 
 
-/*
-//------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <ctype.h>
-#include <string.h>
-#include <iostream> // for cout only.
-#include <stdio.h>
-#include <sys/stat.h>
-#ifdef _BSD_SOURCE
-	#include <unistd.h>
-#else
-	#include <io.h>
-#endif
-#include <fcntl.h>
-*/
 
 //------------------------------------------------------------------------------
 // include files for R
 #include <ghtmlconverter.h>
 #include <rstd/rxmlfile.h>
 
+
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterhtml.h>
-#include <docs/gfiltermanager.h>
+#include <docs/gfilter.h>
 #include <docs/gdocxml.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
+
 
 
 //------------------------------------------------------------------------------

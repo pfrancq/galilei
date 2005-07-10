@@ -6,7 +6,7 @@
 
 	A MSDoc filter - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
@@ -45,7 +45,6 @@
 // include files for GALILEI
 #include <gfiltermsdoc.h>
 #include <docs/gdocxml.h>
-#include <docs/gfiltermanager.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

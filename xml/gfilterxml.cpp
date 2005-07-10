@@ -34,7 +34,6 @@
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterxml.h>
-#include <docs/gfiltermanager.h>
 #include <docs/gdocxml.h>
 #include <rstd/rxmlfile.h>
 #include <rstd/rxmlattr.h>
