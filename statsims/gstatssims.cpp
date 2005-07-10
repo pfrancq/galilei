@@ -42,7 +42,6 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/glangmanager.h>
 #include <infos/glang.h>
 #include <sessions/gsession.h>
 #include <groups/gsubject.h>
