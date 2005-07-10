@@ -39,6 +39,7 @@
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -48,7 +49,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_GROUPING_VERSION "2.0"
+#define API_GROUPING_VERSION "2"
 
 
 //------------------------------------------------------------------------------
@@ -61,11 +62,6 @@ namespace GALILEI{
 class GGrouping : public GPlugin<GFactoryGrouping>
 {
 protected:
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
 
 	/**
 	* Current language treated.
@@ -104,13 +100,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session) throw(GException);
+	virtual void Connect(GSession* session);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session) throw(GException);
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Set the ideal groups.
@@ -147,7 +143,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryGrouping represent a factory for a given grouping method.
 * @author Pascal Francq
 * @short Generic Grouping Factory.
@@ -155,7 +151,8 @@ public:
 class GFactoryGrouping : public GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -163,85 +160,35 @@ public:
 	*/
 	GFactoryGrouping(GGroupingManager* mng,const char* n,const char* f)
 		 : GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>(mng,n,f) {}
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryGrouping(void) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a grouping factory.
+* The GGroupingManager class provides a representation for a manager
+* responsible to manage all the grouping methods.
+* @author Pascal Francq
+* @short Grouping Methods Manager.
 */
-typedef GFactoryGrouping* GFactoryGroupingInit(GGroupingManager*,const char*);
+class GGroupingManager : public GPluginManager<GGroupingManager,GFactoryGrouping,GGrouping>
+{
+public:
+
+	/**
+	* Construct the grouping methods manager.
+	*/
+	GGroupingManager(void);
+
+	/**
+	* Destructor of a grouping methods manager.
+	*/
+	virtual ~GGroupingManager(void);
+};
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_GROUPING_FACTORY(name,C)                                                   \
-class TheFactory : public GFactoryGrouping                                                \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryGrouping* Inst;                                                        \
-	TheFactory(GGroupingManager* mng,const char* l) : GFactoryGrouping(mng,name,l)        \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryGrouping* CreateInst(GGroupingManager* mng,const char* l)              \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_GROUPING_VERSION);}         \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryGrouping* TheFactory::Inst = 0;                                                   \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryGrouping* FactoryCreate(GGroupingManager* mng,const char* l)                  \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("Grouping");                                                               \
-	}                                                                                     \
-}
+#define CREATE_GROUPING_FACTORY(name,plugin)\
+	CREATE_FACTORY(GGroupingManager,GFactoryGrouping,GGrouping,plugin,"Grouping",API_GROUPING_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

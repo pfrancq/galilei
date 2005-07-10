@@ -33,7 +33,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <profiles/gpreprofile.h>
-#include <profiles/gpreprofilemanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -47,22 +46,8 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GPreProfile::GPreProfile(GFactoryPreProfile* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryPreProfile>(fac), Session(0)
+	: GPlugin<GFactoryPreProfile>(fac)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GPreProfile::Connect(GSession* session) throw(GException)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GPreProfile::Disconnect(GSession*) throw(GException)
-{
-	Session=0;
 }
 
 
@@ -72,58 +57,21 @@ GPreProfile::~GPreProfile(void)
 }
 
 
+
 //------------------------------------------------------------------------------
 //
-//  GFactoryPreProfile
+// class GPreProfileManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFactoryPreProfile::GFactoryPreProfile(GPreProfileManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPreProfile,GPreProfile,GPreProfileManager>(mng,n,f)
+GPreProfileManager::GPreProfileManager(void)
+	: GPluginManager<GPreProfileManager,GFactoryPreProfile,GPreProfile>("PreProfile",API_PREPROFILE_VERSION,ptOrdered)
 {
-	//insert a "Level" parameter
-	InsertPtr(new GParamUInt("Level",mng->GetNb()));
 }
 
 
 //------------------------------------------------------------------------------
-int GFactoryPreProfile::Compare(const GFactoryPreProfile& f) const
+GPreProfileManager::~GPreProfileManager(void)
 {
-	int a=GetUInt("Level")-f.GetUInt("Level");
-	if(!a)
-		a=Name.Compare(f.Name);
-	return(a);
-}
-
-
-//------------------------------------------------------------------------------
-int GFactoryPreProfile::Compare(const GFactoryPreProfile* f) const
-{
-	int a=GetUInt("Level")-f->GetUInt("Level");
-	if(!a)
-		a=Name.Compare(f->Name);
-	return(a);
-}
-
-
-//------------------------------------------------------------------------------
-int GFactoryPreProfile::Compare(unsigned int level) const
-{
-	return(GetUInt("Level")-level);
-}
-
-
-//------------------------------------------------------------------------------
-int GFactoryPreProfile::sortOrder(const void* a,const void* b)
-{
-	unsigned int alevel=(*((GFactoryPreProfile**)(a)))->GetUInt("Level");
-	unsigned int blevel=(*((GFactoryPreProfile**)(b)))->GetUInt("Level");
-
-	if(alevel==blevel)
-		return((*((GFactoryPreProfile**)(a)))->Name.Compare((*((GFactoryPreProfile**)(b)))->Name));
-	if(alevel>blevel)
-		return(1);
-	else
-		return(-1);
 }

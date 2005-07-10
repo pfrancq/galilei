@@ -64,175 +64,13 @@ using namespace R;
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
+
 //-----------------------------------------------------------------------------
 /**
 * Type of a function used to show the about box of a plugin.
 */
 typedef void (*About_t)();
 //-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-/**
-* The GPluginManager class provides a template for a generic plug-in.
-* @author Pascal Francq
-* @short Plug-ins manager.
-*/
-class GGenericPluginManager
-{
-protected:
-
-	/**
-	* The name of the manager
-	*/
-	R::RString Name;
-
-	/**
-	* Version of the manager
-	*/
-	R::RString Version;
-
-public :
-	/**
-	* Constructor for the manager of plug-ins manager
-	*/
-	GGenericPluginManager(R::RString name,R::RString version);
-
-	/**
-	* Connect to the session.
-	*/
-	virtual void Connect(GSession* sess)=0;
-
-	/**
-	* Disconnect to the session.
-	*/
-	virtual void Disconnect(GSession* sess)=0;
-
-	/**
-	* Load a plug-in and its dialog boxes.
-	* @param dll             Name of the dynamic link library.
-	* @param handle          Handle to the library contaioning the plug-in.
-	* @param handleDlg       Handle to the library contaioning the dialogs.
-	*/
-	virtual void Load(const R::RString& dll,void* handle,void* handleDlg)=0;
-
-	/**
-	* Read Config for the current manager.
-	*/
-	virtual void ReadConfig(R::RXMLTag* t)=0;
-
-	/**
-	* Save Config for the current manager.
-	*/
-	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t)=0;
-
-	/**
-	* Method used to compare element from a Container.
-	*/
-	int Compare(const GGenericPluginManager& pm) const;
-
-	/**
-	* Method used to compare element from a Container.
-	*/
-	int Compare(const R::RString& name) const;
-
-	/**
-	* Get the name of the current Manager.
-	*/
-	R::RString GetName(void) const {return(Name);}
-
-	/**
-	* Get the name of the current Manager.
-	*/
-	R::RString GetVersion(void) const {return(Version);}
-
-	/**
-	* The destructor.
-	*/
-	virtual ~GGenericPluginManager(void);
-};
-
-
-//-----------------------------------------------------------------------------
-template<class mng,class factory,class factoryInit,class plugin>
-	class GPluginManager : public GGenericPluginManager, public R::RContainer<factory,true,true>
-{
-public:
-
-	/**
-	* Constructor for the manager of plug-ins manager
-	*/
-	GPluginManager(R::RString name,R::RString version)
-		: GGenericPluginManager(name,version), R::RContainer<factory,true,true>(20,10)
-		 {}
-
-	virtual void Load(const R::RString& dll,void* handle,void* handleDlg)
-	{
-		char* error;
-
-		// Try to create the factory
-		factoryInit* initFac= (factoryInit*) dlsym(handle,"FactoryCreate");
-		error=dlerror();
-		if(error)
-		{
-			cerr<<error<<endl;
-			return;
-		}
-		factory *myfactory= initFac(dynamic_cast<mng*>(this),dll);
-
-		// Verify the versions of the factory and the session
-		if(strcmp(Version,myfactory->GetAPIVersion()))
-			return;
-
-		// Register main plugin
-		InsertPtr(myfactory);
-
-		// Try to create the dialogs if necessary
-		if(!handleDlg)
-			return;
-		About_t about = (About_t) dlsym(handleDlg,"About");
-		error=dlerror();
-		if(!error)
-			myfactory->SetAbout(about);
-		void* config= dlsym(handleDlg,"Configure");
-		error=dlerror();
-		if(!error)
-			myfactory->SetConfig(config);
-	}
-
-	virtual void Connect(GSession* session)
-	{
-		R::RCursor<factory> Cur;
-		plugin* calc;
-
-		Cur.Set(*this);
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			calc=Cur()->GetPlugin();
-			if(calc)
-				calc->Connect(session);
-		}
-	}
-
-	virtual void Disconnect(GSession* session)
-	{
-		R::RCursor<factory> Cur;
-		plugin* calc;
-
-		Cur.Set(*this);
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			calc=Cur()->GetPlugin();
-			if(calc)
-				calc->Disconnect(session);
-		}
-	}
-
-	R::RCursor<factory> GetFactories(void) const
-	{
-		return(R::RCursor<factory>(*this));
-	}
-};
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -250,28 +88,36 @@ protected:
 	*/
 	factory* Factory;
 
+	/**
+	* Session.
+	*/
+	GSession* Session;
+
+
 public:
 
 	/**
 	* Constructor of the plugin.
 	* @param fac            Factory.
 	*/
-	GPlugin(factory* fac) : Factory(fac) {}
+	GPlugin(factory* fac);
 
 	/**
 	* Connect to the session.
+	* @param session         Pointer to the session.
 	*/
-	virtual void Connect(GSession*) {};
+	virtual void Connect(GSession* session);
 
 	/**
 	* Disconnect to the session.
+	* @param session         Pointer to the session.
 	*/
-	virtual void Disconnect(GSession*) {};
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Configurations were applied from the factory.
 	*/
-	virtual void ApplyConfig(void) {}
+	virtual void ApplyConfig(void);
 
 	/**
 	* Get the factory of the plugin.
@@ -279,9 +125,20 @@ public:
 	factory* GetFactory(void) const {return(Factory);}
 
 	/**
+	* Compararison method needed by R::RContainer.
+	* @param plugin          Plugin to compare.
+	*/
+	int Compare(const GPlugin& plugin) const;
+
+	/**
+	* Get the name of the Plug-in
+	*/
+	R::RString GetPlugInName(void) const;
+
+	/**
 	* Destructor of the plugin.
 	*/
-	virtual ~GPlugin(void) {}
+	virtual ~GPlugin(void);
 };
 
 
@@ -340,6 +197,11 @@ protected:
 	*/
 	void* HandleDlg;
 
+	/**
+	* Specific order of the plug-in in the list.
+	*/
+	int Level;
+
 public:
 
 	/**
@@ -348,8 +210,7 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPlugin(mng* m,const char* n,const char* f)
-		: GParams(n), Mng(m), Plugin(0), Lib(f), AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0) {}
+	GFactoryPlugin(mng* m,const char* n,const char* f);
 
 	/**
 	* Get the manager of the factory.
@@ -373,7 +234,6 @@ public:
 	* Set the handler of the library.
 	* @param handle         Handle of the library.
 	*/
-
 	void SetHandler(void* handle) {Handle=handle;}
 
 	/**
@@ -383,68 +243,107 @@ public:
 	void SetDlgHandler(void* handleDlg) {HandleDlg=handleDlg;}
 
 	/**
-	* Method needed by R::RContainer.
+	* Comparison method needed by R::RContainer.
+	* @param f               Factory to compare.
 	*/
-	int Compare(const factory& f) const {return(Name.Compare(f.Name));}
+	int Compare(const factory& f) const;
 
 	/**
-	* Method needed by R::RContainer.
+	* Comparison method needed by R::RContainer.
+	* @param name            Name to compare.
 	*/
-	int Compare(const char* n) const {return(Name.Compare(n));}
+	int Compare(const RString& name) const;
+
+	/**
+	* Comparison method needed by R::RContainer.
+	* @param level           Level to compare.
+	*/
+	int Compare(const unsigned int level) const;
+
+	/**
+	* Get the level of the plug-in.
+	* @return int.
+	*/
+	int GetLevel(void) const {return(Level);}
+
+	virtual plugin* NewPlugIn(void)=0;
+	virtual void DeletePlugIn(plugin* plug)=0;
 
 	/**
 	* Create a plugin.
 	*/
-	virtual void Create(void) throw(GException)= 0;
+	virtual void Create(void) throw(GException)
+	{
+		if(Plugin) return;
+		Plugin=NewPlugIn();
+		Plugin->ApplyConfig();
+		Mng->EnablePlugIn(Plugin);
+	}
+
 
 	/**
 	* Create a plugin.
 	*/
-	virtual void Delete(void) throw(GException)= 0;
+	virtual void Delete(void) throw(GException)
+	{
+		if(!Plugin) return;
+		Mng->DisablePlugIn(Plugin);
+		DeletePlugIn(Plugin);
+		Plugin=0;
+	}
 
 	/**
 	* Create a plugin.
 	*/
-	virtual void Create(GSession*) throw(GException)= 0;
+	virtual void Create(GSession* session) throw(GException)
+	{
+		if(!Plugin)
+		{
+			Plugin=NewPlugIn();
+			Plugin->ApplyConfig();
+			Mng->EnablePlugIn(Plugin);
+		}
+		if(session)
+			Plugin->Connect(session);
+	}
 
 	/**
 	* Create a plugin.
 	*/
-	virtual void Delete(GSession*) throw(GException)= 0;
+	virtual void Delete(GSession* session) throw(GException)
+	{
+		if(!Plugin) return;
+		if(session)
+			Plugin->Disconnect(session);
+		Mng->DisablePlugIn(Plugin);
+		DeletePlugIn(Plugin);
+		Plugin=0;
+	}
 
 	/**
 	* Show 'about' information.
 	*/
-	void About(void)
-	{
-		if(AboutDlg)
-			AboutDlg();
-	}
+	void About(void);
 
 	/**
 	* Configure the parameters.
 	*/
-	void Configure(void)
-	{
-		if(ConfigDlg)
-		{
-			Configure_t config= (Configure_t) ConfigDlg ;
-			config(dynamic_cast<factory*>(this));
-		}
-	}
+	void Configure(void);
 
 	/**
 	* Apply the configuration eventually to the plugin.
 	*/
-	void Apply(void) {if(Plugin) Plugin->ApplyConfig();}
+	void Apply(void);
 
 	/**
 	* Specify if an about box exist.
+	* @return bool
 	*/
 	bool HasAbout(void) const {return(AboutDlg);}
 
 	/**
 	* Specify if a configure box exist.
+	* @return bool
 	*/
 	bool HasConfigure(void) const {return(ConfigDlg);}
 
@@ -478,30 +377,7 @@ public:
 	* Read a configuration from a XML Tag.
 	* @param parent          Parent Tag.
 	*/
-	void ReadConfig(R::RXMLTag* parent)
-	{
-		R::RCursor<R::RXMLTag> Cur(parent->GetNodes());
-		R::RXMLTag* tag=0;
-
-		// Find Tag
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			if((Cur()->GetName()=="plugin")&&(Cur()->GetAttrValue("name")==Name))
-			{
-				tag=Cur();
-				break;
-			}
-		}
-		if(!tag) return;
-
-		// Read Info
-		if(tag->GetAttrValue("enable")=="True")
-			Create();
-		GParams::ReadConfig(tag);
-
-		// Apply the information.
-		Apply();
-	}
+	void ReadConfig(R::RXMLTag* parent);
 
 	/**
 	* Save a configuration to a XML Tag.
@@ -509,33 +385,58 @@ public:
 	* @param xml             XML Structure.
 	* @param parent          Parent tag.
 	*/
-	void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent)
-	{
-		R::RXMLTag* tag=new R::RXMLTag("plugin");
-		tag->InsertAttr("name",Name);
-		xml->AddTag(parent,tag);
-		if(Plugin)
-			tag->InsertAttr("enable","True");
-		else
-			tag->InsertAttr("enable","False");
-		GParams::SaveConfig(xml,tag);
-	}
+	void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent);
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GFactoryPlugin(void)
-	{
-		if(Plugin)
-			delete Plugin;
-
-		if (Handle)
-			dlclose(Handle);
-
-		if (HandleDlg)
-			dlclose(HandleDlg);
-	}
+	virtual ~GFactoryPlugin(void);
 };
+
+//-------------------------------------------------------------------------------
+#define CREATE_FACTORY(manager,factory,genericplugin,plugin,lib,API,name)                    \
+	class TheFactory : public factory                                           \
+{                \
+	static factory* Inst;                \
+	TheFactory(manager* mng,const char* l) : factory(mng,name,l)                \
+	{                \
+		plugin::CreateParams(this);                \
+	}                \
+	virtual ~TheFactory(void) {}                \
+public:                \
+	static factory* CreateInst(manager* mng,const char* l)                \
+	{                \
+		if(!Inst)                \
+			Inst = new TheFactory(mng,l);                \
+		return(Inst);                \
+	}                \
+	virtual const char* GetAPIVersion(void)      const {return(API);}                                \
+		                                \
+	virtual genericplugin* NewPlugIn(void)                \
+	{                \
+		return(new plugin(this));                \
+	}                \
+	virtual void DeletePlugIn(genericplugin* plug)                \
+	{                \
+		delete plug;                \
+	}                \
+};                \
+factory* TheFactory::Inst = 0;  \
+                \
+extern "C" factory* FactoryCreate(manager* mng,const char* l)                \
+{                \
+	return(TheFactory::CreateInst(mng,l));                \
+}                \
+extern "C" const char* LibType(void)                \
+{                \
+	return(lib);                \
+}
+
+
+
+//-----------------------------------------------------------------------------
+// Template implementation
+#include <sessions/gplugin.hh>
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

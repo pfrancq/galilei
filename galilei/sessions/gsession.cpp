@@ -46,7 +46,6 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <infos/gdict.h>
 #include <infos/gwordlist.h>
 #include <sessions/gsession.h>
@@ -54,21 +53,15 @@ using namespace R;
 #include <sessions/gslot.h>
 #include <sessions/gsessionprg.h>
 #include <sessions/gstatscalc.h>
-#include <sessions/gstatscalcmanager.h>
 #include <docs/gdoc.h>
 #include <docs/gdocanalyse.h>
-#include <docs/gdocanalysemanager.h>
 #include <docs/gdocxml.h>
 #include <docs/gdocprofsims.h>
 #include <docs/glinkcalc.h>
-#include <docs/glinkcalcmanager.h>
 #include <docs/glink.h>
 #include <docs/gpostdoc.h>
-#include <docs/gpostdocmanager.h>
 #include <engines/gengine.h>
 #include <engines/gmetaengine.h>
-#include <engines/genginemanager.h>
-#include <engines/gmetaenginemanager.h>
 #include <engines/genginedoc.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
@@ -77,29 +70,22 @@ using namespace R;
 #include <profiles/gprofilesbehaviours.h>
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofilecalc.h>
-#include <profiles/gprofilecalcmanager.h>
 #include <profiles/gpreprofile.h>
 #include <profiles/gpostprofile.h>
-#include <profiles/gpreprofilemanager.h>
-#include <profiles/gpostprofilemanager.h>
 #include <groups/ggroups.h>
 #include <groups/ggroup.h>
 #include <groups/ggrouping.h>
-#include <groups/ggroupingmanager.h>
 #include <groups/ggroupcalc.h>
-#include <groups/ggroupcalcmanager.h>
 #include <groups/gsubjects.h>
-#include <docs/gfiltermanager.h>
 #include <docs/gfilter.h>
 #include <docs/gpostdoc.h>
 #include <infos/gweightinfo.h>
 #include <historic/ggroupshistory.h>
 #include <groups/gpostgroup.h>
-#include <groups/gpostgroupmanager.h>
 #include <docs/gdocproxymem.h>
 #include <profiles/gsubprofileproxymem.h>
 #include <profiles/gprofileproxymem.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 
 

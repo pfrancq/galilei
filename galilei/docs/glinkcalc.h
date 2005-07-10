@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 //include file for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -58,12 +59,7 @@ namespace GALILEI{
 */
 class GLinkCalc : public GPlugin<GFactoryLinkCalc>
 {
-protected :
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
+protected:
 
 	/**
 	* Container of outgoing links.
@@ -75,7 +71,7 @@ protected :
 	*/
 	static bool Inited;
 
-public :
+public:
 
 	/**
 	* Construct the computing method.
@@ -90,16 +86,10 @@ public :
 	virtual void Compute(GProfile* prof) throw(GException)=0;
 
 	/**
-	* Connect to a Session.
-	* @param session        Session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
 	* Disconnect from a Session.
 	* @param session        Session.
 	*/
-	virtual void Disconnect(GSession* session) throw(GException);
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Init the algorithm for link computation
@@ -120,7 +110,7 @@ public :
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryLinkCalc represent a factory for a given link method.
 * @author Vandaele Valery
 * @short Generic Link Factory.
@@ -128,7 +118,8 @@ public :
 class GFactoryLinkCalc : public GFactoryPlugin<GFactoryLinkCalc,GLinkCalc,GLinkCalcManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -136,85 +127,35 @@ public:
 	*/
 	GFactoryLinkCalc(GLinkCalcManager* mng,const char* n,const char* f)
 		 : GFactoryPlugin<GFactoryLinkCalc,GLinkCalc,GLinkCalcManager>(mng,n,f) {}
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryLinkCalc(void) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a link factory.
+* The GLinkCalcManager class provides a representation for a manager
+* responsible to manage all the links computing methods.
+* @author Vandaele Valery
+* @short Link Methods Manager.
 */
-typedef GFactoryLinkCalc* GFactoryLinkCalcInit(GLinkCalcManager*,const char*);
+class GLinkCalcManager : public GPluginManager<GLinkCalcManager,GFactoryLinkCalc,GLinkCalc>
+{
+public:
+
+	/**
+	* Constructor of a manager.
+	*/
+	GLinkCalcManager(void);
+
+	/**
+	* Destructor of the manager.
+	*/
+	virtual ~GLinkCalcManager(void);
+};
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_LINKCALC_FACTORY(name,C)                                                   \
-class TheFactory : public GFactoryLinkCalc                                                \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryLinkCalc* Inst;                                                        \
-	TheFactory(GLinkCalcManager* mng,const char* l) : GFactoryLinkCalc(mng,name,l)        \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryLinkCalc* CreateInst(GLinkCalcManager* mng,const char* l)              \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_LINKCALC_VERSION);}         \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryLinkCalc* TheFactory::Inst = 0;                                                   \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryLinkCalc* FactoryCreate(GLinkCalcManager* mng,const char* l)                  \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("LinkCalc");                                                               \
-	}                                                                                     \
-}
+#define CREATE_LINKCALC_FACTORY(name,plugin)\
+	CREATE_FACTORY(GLinkCalcManager,GFactoryLinkCalc,GLinkCalc,plugin,"LinkCalc",API_LINKCALC_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

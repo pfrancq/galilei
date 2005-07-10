@@ -39,8 +39,7 @@
 #include <profiles/gusers.h>
 #include <infos/glang.h>
 #include <sessions/gsession.h>
-#include <sessions/gplugins.h>
-#include <infos/glangmanager.h>
+#include <sessions/gpluginmanagers.h>
 using namespace R;
 using namespace GALILEI;
 

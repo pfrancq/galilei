@@ -39,10 +39,9 @@
 #include <groups/ggroups.h>
 #include <docs/gdocproxy.h>
 #include <sessions/gsession.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 #include <sessions/gstorage.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 using namespace R;

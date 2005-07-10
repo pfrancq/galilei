@@ -41,7 +41,6 @@
 // include files for GALILEI
 #include <infos/gdict.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <infos/ginfo.h>
 #include <infos/ginfolist.h>
 #include <infos/gword.h>
@@ -65,7 +64,7 @@
 #include <historic/gweightinfoshistory.h>
 #include <engines/gindexer.h>
 #include <engines/gwordoccurs.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -546,7 +545,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 		RQuery SubProfiles(Db,"SELECT subprofileid,langid,attached,groupid,updated,calculated,profileid FROM subprofiles");
 		for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 		{
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(SubProfiles[1]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(SubProfiles[1]);
 			if(!lang)
 				throw GException(RString("Error in loading subprofiles: no language defined with code '")+SubProfiles[1]+RString("'"));
 			prof=session->GetProfile(atoi(SubProfiles[6]));
@@ -563,7 +562,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 		{
 			// Get the id
 			idx=atoi(sel[0]);
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(sel[2]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(sel[2]);
 
 			// If not the same -> new subprofile
 			if(idx!=subprofileid)
@@ -775,7 +774,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			docid=atoi(quer[0]);
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(quer[4]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(quer[4]);
 			doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8]));
 			session->InsertDoc(doc);
 		}
@@ -793,7 +792,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		{
 			// Get the id
 			idx=atoi(sel[0]);
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(sel[2]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(sel[2]);
 
 			// If not the same -> new doc
 			if(idx!=docid)
@@ -887,7 +886,7 @@ void GStorageMySQL::LoadDocs(GSession* session,GInfoList& list,GLang* lang) thro
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			docid=atoi(quer[0]);
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(quer[4]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(quer[4]);
 			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8])));
 		}
 
@@ -969,7 +968,7 @@ void GStorageMySQL::LoadNewDocs(GSession* session) throw(std::bad_alloc,GExcepti
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			docid=atoi(quer[0]);
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(quer[4]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(quer[4]);
 			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8])));
 		}
 	}
@@ -1356,7 +1355,7 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 		RQuery group2(Db,"SELECT groupid,langid FROM groups");
 		for(group2.Start();!group2.End();group2.Next())
 		{
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(group2[1]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(group2[1]);
 			group=new GGroup(atoi(group2[0]),lang,true);
 			session->InsertGroup(group);
 		}
@@ -1366,7 +1365,7 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 		{
 			// Get the id
 			idx=atoi(sel[0]);
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(sel[2]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(sel[2]);
 
 			// If not the same -> new group
 			if(idx!=groupid)
@@ -1461,7 +1460,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(GSession* session,unsigned i
 			v=atoi(grquery[0]);
 
 			//get lang
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(grquery[2]);
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(grquery[2]);
 
 			// If group id changed -> new group needed
 			if((v!=groupid))

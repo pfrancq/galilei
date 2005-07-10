@@ -33,7 +33,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gpostgroup.h>
-#include <groups/gpostgroupmanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -47,22 +46,8 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GPostGroup::GPostGroup(GFactoryPostGroup* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryPostGroup>(fac), Session(0)
+	: GPlugin<GFactoryPostGroup>(fac)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GPostGroup::Connect(GSession* session) throw(GException)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GPostGroup::Disconnect(GSession*) throw(GException)
-{
-	Session=0;
 }
 
 
@@ -71,58 +56,22 @@ GPostGroup::~GPostGroup(void)
 {
 }
 
+
+
 //------------------------------------------------------------------------------
 //
-//  GFactoryPostGroup
+// class GPostGroupManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFactoryPostGroup::GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f)
+GPostGroupManager::GPostGroupManager(void)
+	: GPluginManager<GPostGroupManager,GFactoryPostGroup,GPostGroup>("PostGroup",API_POSTGROUP_VERSION,ptOrdered)
 {
-	//insert a "Level" parameter
-	InsertPtr(new GParamUInt("Level",mng->GetNb()));
 }
 
 
 //------------------------------------------------------------------------------
-int GFactoryPostGroup::Compare(const GFactoryPostGroup& f) const
+GPostGroupManager::~GPostGroupManager(void)
 {
-	int a=GetUInt("Level")-f.GetUInt("Level");
-	if(!a)
-		a=Name.Compare(f.Name);
-	return(a);
-}
-
-
-//------------------------------------------------------------------------------
-int GFactoryPostGroup::Compare(const GFactoryPostGroup* f) const
-{
-	int a=GetUInt("Level")-f->GetUInt("Level");
-	if(!a)
-		a=Name.Compare(f->Name);
-	return(a);
-}
-
-
-//------------------------------------------------------------------------------
-int GFactoryPostGroup::Compare(unsigned int level) const
-{
-	return(GetUInt("Level")-level);
-}
-
-
-//------------------------------------------------------------------------------
-int GFactoryPostGroup::sortOrder(const void* a,const void* b)
-{
-	unsigned int alevel=(*((GFactoryPostGroup**)(a)))->GetUInt("Level");
-	unsigned int blevel=(*((GFactoryPostGroup**)(b)))->GetUInt("Level");
-
-	if(alevel==blevel)
-		return((*((GFactoryPostGroup**)(a)))->Name.Compare((*((GFactoryPostGroup**)(b)))->Name));
-	if(alevel>blevel)
-		return(1);
-	else
-		return(-1);
 }

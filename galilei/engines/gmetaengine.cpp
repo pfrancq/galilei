@@ -6,7 +6,7 @@
 
 	Meta Engine for extraction of results from different search engines - Implementation.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -55,26 +55,32 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GMetaEngine::GMetaEngine(GFactoryMetaEngine* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryMetaEngine>(fac), Session(0)
+	: GPlugin<GFactoryMetaEngine>(fac)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GMetaEngine::Connect(GSession* session) throw(GException)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GMetaEngine::Disconnect(GSession*) throw(GException)
-{
-	Session=0;
 }
 
 
 //------------------------------------------------------------------------------
 GMetaEngine::~GMetaEngine(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GMetaEngineManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GMetaEngineManager::GMetaEngineManager(void)
+	: GPluginManager<GMetaEngineManager,GFactoryMetaEngine,GMetaEngine>("MetaEngine",API_METAENGINE_VERSION,ptSelect)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GMetaEngineManager::~GMetaEngineManager(void)
 {
 }

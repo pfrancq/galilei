@@ -43,6 +43,7 @@
 //------------------------------------------------------------------------------
 //include file for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 #include <engines/genginedoc.h>
 
 
@@ -63,23 +64,10 @@ namespace GALILEI{
 class GEngine : public GPlugin<GFactoryEngine>
 {
 protected:
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
 	/**
 	* Pointer to an instance of the library.
 	*/
 	CURL* Lib;
-
-private:
-
-	/**
-	* The name of the engine
-	*/
-	R::RString Name;
 
 	/**
 	* The weigth associated to the engine
@@ -94,18 +82,6 @@ public:
 	GEngine(GFactoryEngine* fac) throw(std::bad_alloc,R::RIOException);
 
 	/**
-	* Connect to a Session.
-	* @param session        Session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session        Session.
-	*/
-	virtual void Disconnect(GSession* session) throw(GException);
-
-	/**
 	* Process the Engine extraction. All results will be extracted, the url of the next page...
 	* @param keyWords        The set of keywords to be searched
 	*/
@@ -116,11 +92,6 @@ public:
 	*@return double         The weight.
 	*/
 	virtual double GetEngineWeight(void)=0;
-
-	/**
-	* Get the name of the engine
-	*/
-	R::RString GetName(void) const {return Name;}
 
 	/**
 	* Get the weight associated to the engine
@@ -135,21 +106,6 @@ public:
 	void SetEngineWeight(float w) {Weight=w;};
 
 	/**
-	* Compare this object with another one
-	*/
-	int Compare(const GEngine* eng) const;
-
-	/**
-	* Compare this object with another one
-	*/
-	int Compare(const GEngine& eng) const;
-
-	/**
-	* Compare this object with another one
-	*/
-	int Compare(const R::RString& name) const;
-
-	/**
 	* Destructor of the search engine.
 	*/
 	virtual ~GEngine(void);
@@ -157,7 +113,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryEngine represent a factory for a given link method.
 * @author Vandaele Valery
 * @short Generic Search engine Factory.
@@ -165,7 +121,8 @@ public:
 class GFactoryEngine : public GFactoryPlugin<GFactoryEngine,GEngine,GEngineManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -173,86 +130,37 @@ public:
 	*/
 	GFactoryEngine(GEngineManager* mng,const char* n,const char* f)
 		 : GFactoryPlugin<GFactoryEngine,GEngine,GEngineManager>(mng,n,f) {}
-
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryEngine(void) {}
 };
+
+
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a link factory.
+* The GEngineManager class provides a representation for a manager
+* responsible to manage all the search engines.
+* @author Vandaele Valery
+* @short search engine Manager.
 */
-typedef GFactoryEngine* GFactoryEngineInit(GEngineManager*,const char*);
+class GEngineManager : public GPluginManager<GEngineManager,GFactoryEngine,GEngine>
+{
+public:
+
+	/**
+	* Constructor of a manager.
+	*/
+	GEngineManager(void);
+
+	/**
+	* Destructor of the manager.
+	*/
+	virtual ~GEngineManager(void);
+};
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_ENGINE_FACTORY(name,C)                                                     \
-class TheFactory : public GFactoryEngine                                                  \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryEngine* Inst;                                                          \
-	TheFactory(GEngineManager* mng,const char* l) : GFactoryEngine(mng,name,l)            \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryEngine* CreateInst(GEngineManager* mng,const char* l)                  \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_ENGINE_VERSION);}           \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryEngine* TheFactory::Inst = 0;                                                     \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryEngine* FactoryCreate(GEngineManager* mng,const char* l)                      \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("Engine");                                                                 \
-	}                                                                                     \
-}
+#define CREATE_ENGINE_FACTORY(name,plugin)\
+	CREATE_FACTORY(GEngineManager,GFactoryEngine,GEngine,plugin,"Engine",API_ENGINE_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

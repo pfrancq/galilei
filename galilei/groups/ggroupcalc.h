@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -64,13 +65,6 @@ class GGroupRef;
 */
 class GGroupCalc : public GPlugin<GFactoryGroupCalc>
 {
-protected:
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
 public:
 
 	/**
@@ -80,28 +74,10 @@ public:
 	GGroupCalc(GFactoryGroupCalc* fac) throw(std::bad_alloc);
 
 	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session) throw(GException);
-
-	/**
 	* Compute a group.
 	* @param grp            Reference to the group to compute.
 	*/
 	virtual void Compute(GGroup* grp) throw(GException)=0;
-
-	/**
-	* Get the name of the model used for the description.
-	* @return C String.
-	*/
-	virtual const char* GetModelName(void) const=0;
 
 	/**
 	* Destructor.
@@ -111,7 +87,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryGroupCalc represent a factory for a given group computing method.
 * @author Pascal Francq
 * @short Generic Grouping Computing Factory.
@@ -119,7 +95,8 @@ public:
 class GFactoryGroupCalc : public GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -127,85 +104,35 @@ public:
 	*/
 	GFactoryGroupCalc(GGroupCalcManager* mng,const char* n,const char* f)
 		 : GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>(mng,n,f) {}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GGroupCalcManager class provides a representation for a manager
+* responsible to manage all the group computing methods.
+* @author Pascal Francq
+* @short Group Comuting Methods Manager.
+*/
+class GGroupCalcManager : public GPluginManager<GGroupCalcManager,GFactoryGroupCalc,GGroupCalc>
+{
+public:
 
 	/**
-	* Destructor.
+	* Construct the group computing method manager.
 	*/
-	virtual ~GFactoryGroupCalc(void) {}
+	GGroupCalcManager(void);
+
+	/**
+	* Destructor of the group computing methods manager.
+	*/
+	virtual ~GGroupCalcManager(void);
 };
 
 
 //------------------------------------------------------------------------------
-/**
-* Signature of the method used to initiliaze a group computing factory.
-*/
-typedef GFactoryGroupCalc* GFactoryGroupCalcInit(GGroupCalcManager*,const char*);
-
-
-//------------------------------------------------------------------------------
-#define CREATE_GROUPCALC_FACTORY(name,C)                                                  \
-class TheFactory : public GFactoryGroupCalc                                               \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryGroupCalc* Inst;                                                       \
-	TheFactory(GGroupCalcManager* mng,const char* l) : GFactoryGroupCalc(mng,name,l)      \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryGroupCalc* CreateInst(GGroupCalcManager* mng,const char* l)            \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_GROUPCALC_VERSION);}        \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryGroupCalc* TheFactory::Inst = 0;                                                  \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryGroupCalc* FactoryCreate(GGroupCalcManager* mng,const char* l)                \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("GroupCalc");                                                              \
-	}                                                                                     \
-}
+#define CREATE_GROUPCALC_FACTORY(name,plugin)\
+	CREATE_FACTORY(GGroupCalcManager,GFactoryGroupCalc,GGroupCalc,plugin,"GroupCalc",API_GROUPCALC_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -58,26 +58,32 @@ const unsigned int MaxWordLen=50;
 
 //------------------------------------------------------------------------------
 GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryDocAnalyse>(fac), Session(0), Doc(0)
+	: GPlugin<GFactoryDocAnalyse>(fac), Doc(0)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GDocAnalyse::Connect(GSession* session) throw(GException)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GDocAnalyse::Disconnect(GSession*) throw(GException)
-{
-	Session=0;
 }
 
 
 //------------------------------------------------------------------------------
 GDocAnalyse::~GDocAnalyse(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GDocAnalyseManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GDocAnalyseManager::GDocAnalyseManager(void)
+	: GPluginManager<GDocAnalyseManager,GFactoryDocAnalyse,GDocAnalyse>("DocAnalyse",API_DOCANALYSE_VERSION,ptSelect)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GDocAnalyseManager::~GDocAnalyseManager(void)
 {
 }

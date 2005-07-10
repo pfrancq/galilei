@@ -41,8 +41,6 @@ using namespace GALILEI;
 using namespace R;
 
 
-RContainer<GLinks,true,true> GLinkCalc::Links_Out(100,50);
-bool GLinkCalc::Inited=false;
 
 //------------------------------------------------------------------------------
 //
@@ -51,8 +49,12 @@ bool GLinkCalc::Inited=false;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+RContainer<GLinks,true,true> GLinkCalc::Links_Out(100,50);
+bool GLinkCalc::Inited=false;
+
+//------------------------------------------------------------------------------
 GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryLinkCalc>(fac), Session(0)
+	: GPlugin<GFactoryLinkCalc>(fac)
 {
 }
 
@@ -119,14 +121,7 @@ void GLinkCalc::AddDoc(GDoc* doc) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GLinkCalc::Connect(GSession* session) throw(GException)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GLinkCalc::Disconnect(GSession*) throw(GException)
+void GLinkCalc::Disconnect(GSession*)
 {
 	Session=0;
 	Inited=false;
@@ -135,5 +130,25 @@ void GLinkCalc::Disconnect(GSession*) throw(GException)
 
 //------------------------------------------------------------------------------
 GLinkCalc::~GLinkCalc(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GLinkCalcManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GLinkCalcManager::GLinkCalcManager(void)
+	: GPluginManager<GLinkCalcManager,GFactoryLinkCalc,GLinkCalc>("LinkCalc",API_LINKCALC_VERSION,ptSelect)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GLinkCalcManager::~GLinkCalcManager(void)
 {
 }

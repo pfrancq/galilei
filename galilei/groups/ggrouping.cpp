@@ -34,14 +34,13 @@
 // include files for GALILEI
 #include <groups/ggrouping.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <groups/ggroupcalc.h>
-#include <groups/ggroupcalcmanager.h>
 #include <groups/ggroup.h>
 #include <groups/ggroups.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
 #include <sessions/gsession.h>
+#include <sessions/gpluginmanagers.h>
 #include <sessions/gstorage.h>
 #include <sessions/gslot.h>
 using namespace R;
@@ -69,7 +68,7 @@ GGrouping::GGrouping(GFactoryGrouping* fac) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGrouping::Connect(GSession* session) throw(GException)
+void GGrouping::Connect(GSession* session)
 {
 	Session=session;
 	Groups=session;
@@ -78,7 +77,7 @@ void GGrouping::Connect(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GGrouping::Disconnect(GSession*) throw(GException)
+void GGrouping::Disconnect(GSession*)
 {
 	Session=0;
 	Groups=0;
@@ -142,5 +141,25 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 
 //------------------------------------------------------------------------------
 GGrouping::~GGrouping(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GGroupingManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GGroupingManager::GGroupingManager(void)
+	: GPluginManager<GGroupingManager,GFactoryGrouping,GGrouping>("Grouping",API_GROUPING_VERSION,ptSelect)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GGroupingManager::~GGroupingManager(void)
 {
 }

@@ -39,23 +39,17 @@
 // include files for GALILEI
 #include <sessions/gsessionprg.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <groups/ggrouping.h>
-#include <groups/ggroupingmanager.h>
-#include <groups/ggroupcalcmanager.h>
 #include <groups/ggroupcalc.h>
 #include <groups/gsubjects.h>
 #include <profiles/gprofilecalc.h>
-#include <profiles/gprofilecalcmanager.h>
 #include <docs/glinkcalc.h>
-#include <docs/glinkcalcmanager.h>
-#include <sessions/gstatscalcmanager.h>
 #include <sessions/gstatscalc.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
 #include <sessions/gslot.h>
 #include <sessions/gmixidealgroups.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -976,7 +970,7 @@ void GSetStatParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,fal
 	mng=dynamic_cast<GStatsCalcManager*>(GPluginManagers::PluginManagers.GetManager("StatsCalc"));
 	if(!mng)
 		throw RException("No statistics method selected.");
-	calc=mng->Get((*args)[0]->GetValue(prg));
+	calc=mng->GetPlugIn((*args)[0]->GetValue(prg));
 	if(!calc)
 		throw RException("No statistics method selected.");
 	calc->GetFactory()->Set((*args)[1]->GetValue(prg),(*args)[2]->GetValue(prg));
@@ -987,7 +981,6 @@ void GSetStatParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,fal
 //------------------------------------------------------------------------------
 void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args) throw(RException)
 {
-	R::RCursor<GFactoryStatsCalc> Cur;
 	GStatsCalc* Calc;
 	RXMLStruct xml;
 	RXMLTag* Root;
@@ -1005,7 +998,7 @@ void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args
 	xml.AddTag(0,Root);
 
 	// Compute the statistics
-	Cur.Set(*Mng);
+	R::RCursor<GFactoryStatsCalc> Cur(Mng->GetFactories());
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
 		Calc=Cur()->GetPlugin();

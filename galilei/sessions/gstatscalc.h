@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -59,13 +60,6 @@ namespace GALILEI{
 */
 class GStatsCalc : public GPlugin<GFactoryStatsCalc>
 {
-protected:
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
 public:
 
 	/**
@@ -73,18 +67,6 @@ public:
 	* @param fac             Factory of the plugin.
 	*/
 	GStatsCalc(GFactoryStatsCalc* fac) throw(std::bad_alloc);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Compute the statistics.
@@ -119,7 +101,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryStatsCalc represent a factory for a given statistics method.
 * @author Pascal Francq
 * @short Generic Statistics Factory.
@@ -127,7 +109,8 @@ public:
 class GFactoryStatsCalc : public GFactoryPlugin<GFactoryStatsCalc,GStatsCalc,GStatsCalcManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -135,85 +118,35 @@ public:
 	*/
 	GFactoryStatsCalc(GStatsCalcManager* mng,const char* n,const char* f)
 		 : GFactoryPlugin<GFactoryStatsCalc,GStatsCalc,GStatsCalcManager>(mng,n,f) {}
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryStatsCalc(void) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a statistics factory.
+* The GStatsCalcManager class provides a representation for a manager
+* responsible to manage all the statistics.
+* @author Pascal Francq
+* @short Statistics Methods Manager.
 */
-typedef GFactoryStatsCalc* GFactoryStatsCalcInit(GStatsCalcManager*,const char*);
+class GStatsCalcManager : public GPluginManager<GStatsCalcManager,GFactoryStatsCalc,GStatsCalc>
+{
+public:
+
+	/**
+	* Construct the statistics methods manager.
+	*/
+	GStatsCalcManager(void);
+
+	/**
+	* Destructor of the statistics methods manager.
+	*/
+	virtual ~GStatsCalcManager(void);
+};
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_STATSCALC_FACTORY(name,C)                                                  \
-class TheFactory : public GFactoryStatsCalc                                               \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryStatsCalc* Inst;   \
-	TheFactory(GStatsCalcManager* mng,const char* l) : GFactoryStatsCalc(mng,name,l)      \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                \
-	static GFactoryStatsCalc* CreateInst(GStatsCalcManager* mng,const char* l)            \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_STATSCALC_VERSION);}        \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryStatsCalc* TheFactory::Inst = 0;                                                  \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryStatsCalc* FactoryCreate(GStatsCalcManager* mng,const char* l)                \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("StatsCalc");                                                              \
-	}                                                                                     \
-}
+#define CREATE_STATSCALC_FACTORY(name,plugin)\
+	CREATE_FACTORY(GStatsCalcManager,GFactoryStatsCalc,GStatsCalc,plugin,"StatsCalc",API_STATSCALC_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

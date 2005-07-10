@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include file for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 #include <engines/genginedoc.h>
 
 
@@ -48,7 +49,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_METAENGINE_VERSION "1.0"
+#define API_METAENGINE_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
@@ -60,31 +61,12 @@ namespace GALILEI{
 */
 class GMetaEngine : public GPlugin<GFactoryMetaEngine>
 {
-protected:
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
 public:
 
 	/**
 	* Construct the extractor for the Yahoo engine.
 	*/
 	GMetaEngine(GFactoryMetaEngine* fac) throw(std::bad_alloc);
-
-	/**
-	* Connect to a Session.
-	* @param session        Session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session        Session.
-	*/
-	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Send a query to the meta Search engine
@@ -132,7 +114,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryMetaEngine represent a factory for a given meta engine.
 * @author Vandaele Valery
 * @short Generic meta engine Factory.
@@ -140,7 +122,8 @@ public:
 class GFactoryMetaEngine : public GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GMetaEngineManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -148,85 +131,35 @@ public:
 	*/
 	GFactoryMetaEngine(GMetaEngineManager* mng,const char* n,const char* f)
 		 : GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GMetaEngineManager>(mng,n,f) {}
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryMetaEngine(void) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a meta engine factory.
+* The GMetaEngineManager class provides a representation for a manager
+* responsible to manage all the search engines.
+* @author Vandaele Valery
+* @short search engine Manager.
 */
-typedef GFactoryMetaEngine* GFactoryMetaEngineInit(GMetaEngineManager*,const char*);
+class GMetaEngineManager : public GPluginManager<GMetaEngineManager,GFactoryMetaEngine,GMetaEngine>
+{
+public:
+
+	/**
+	* Constructor of a manager.
+	*/
+	GMetaEngineManager(void);
+
+	/**
+	* Destructor of the manager.
+	*/
+	virtual ~GMetaEngineManager(void);
+};
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_METAENGINE_FACTORY(name,C)                                                 \
-class TheFactory : public GFactoryMetaEngine                                              \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryMetaEngine* Inst;                                                      \
-	TheFactory(GMetaEngineManager* mng,const char* l) : GFactoryMetaEngine(mng,name,l)    \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryMetaEngine* CreateInst(GMetaEngineManager* mng,const char* l)          \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_METAENGINE_VERSION);}       \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryMetaEngine* TheFactory::Inst = 0;                                                 \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryMetaEngine* FactoryCreate(GMetaEngineManager* mng,const char* l)              \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("MetaEngine");                                                             \
-	}                                                                                     \
-}
+#define CREATE_METAENGINE_FACTORY(name,plugin)\
+	CREATE_FACTORY(GMetaEngineManager,GFactoryMetaEngine,GMetaEngine,plugin,"MetaEngine",API_METAENGINE_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

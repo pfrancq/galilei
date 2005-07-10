@@ -42,9 +42,8 @@
 #include <profiles/gsubprofile.h>
 #include <profiles/gprofile.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <sessions/gsession.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 

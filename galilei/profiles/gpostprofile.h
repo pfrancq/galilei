@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -60,13 +61,6 @@ namespace GALILEI{
 */
 class GPostProfile : public GPlugin<GFactoryPostProfile>
 {
-protected:
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
 public:
 
 	/**
@@ -74,18 +68,6 @@ public:
 	* @param fac             Factory of the plugin.
 	*/
 	GPostProfile(GFactoryPostProfile* fac) throw(std::bad_alloc);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Run the post-group method.
@@ -100,7 +82,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryPostProfile represent a factory for a given post grouping method.
 * @author Pascal Francq
 * @short Generic Post Grouping Factory.
@@ -108,114 +90,44 @@ public:
 class GFactoryPostProfile : public GFactoryPlugin<GFactoryPostProfile,GPostProfile,GPostProfileManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPostProfile(GPostProfileManager* mng,const char* n,const char* f);
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const GFactoryPostProfile& f) const;
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const GFactoryPostProfile* f) const;
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(unsigned int level) const;
-
-	/**
-	* Static function used to order the factory by level.
-	* @param a              Pointer to the first object.
-	* @param b              Pointer to the second object.
-	*/
-	static int sortOrder(const void* a,const void* b);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryPostProfile(void) {}
+	GFactoryPostProfile(GPostProfileManager* mng,const char* n,const char* f)
+		: GFactoryPlugin<GFactoryPostProfile,GPostProfile,GPostProfileManager>(mng,n,f) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a post profiling factory.
+* The GPostProfileManager class provides a representation for a manager
+* responsible to manage all the postprofile computing methods.
+* @author David Wartel
+* @short Post-Profile Computing Methods Manager.
 */
-typedef GFactoryPostProfile* GFactoryPostProfileInit(GPostProfileManager*,const char*);
+class GPostProfileManager : public GPluginManager<GPostProfileManager,GFactoryPostProfile,GPostProfile>
+{
+public:
+
+	/**
+	* Construct the post-group computing methods manager.
+	*/
+	GPostProfileManager(void);
+
+	/**
+	* Destruct the post-group computing methods manager.
+	*/
+	virtual ~GPostProfileManager(void);
+};
+
 
 //------------------------------------------------------------------------------
-#define CREATE_POSTPROFILE_FACTORY(name,C)                                                \
-class TheFactory : public GFactoryPostProfile                                             \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryPostProfile* Inst;                                                     \
-	TheFactory(GPostProfileManager* mng,const char* l) : GFactoryPostProfile(mng,name,l)  \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryPostProfile* CreateInst(GPostProfileManager* mng,const char* l)        \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_POSTPROFILE_VERSION);}      \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryPostProfile* TheFactory::Inst = 0;                                                \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryPostProfile* FactoryCreate(GPostProfileManager* mng,const char* l)            \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("PostProfile");                                                            \
-	}                                                                                     \
-}
-
+#define CREATE_POSTPROFILE_FACTORY(name,plugin)\
+	CREATE_FACTORY(GPostProfileManager,GFactoryPostProfile,GPostProfile,plugin,"PostProfile",API_POSTPROFILE_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

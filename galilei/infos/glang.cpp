@@ -33,7 +33,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <infos/gdict.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
@@ -69,7 +68,7 @@ public:
 
 //------------------------------------------------------------------------------
 GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(std::bad_alloc)
-	: RLang(lang,code), GPlugin<GFactoryLang>(fac), Session(0), Dict(0), Stop(0),
+	: RLang(lang,code), GPlugin<GFactoryLang>(fac), Dict(0), Stop(0),
 	  SkipWords(50,20)
 {
 	SkipWords.InsertPtr(new SkipWord("min"));
@@ -105,7 +104,7 @@ GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(std::
 
 
 //------------------------------------------------------------------------------
-void GLang::Connect(GSession* session) throw(GException)
+void GLang::Connect(GSession* session)
 {
 	Session=session;
 	if((Dict&&Stop)||(!Factory->GetMng()->LoadDict()))
@@ -118,7 +117,7 @@ void GLang::Connect(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GLang::Disconnect(GSession* /*session*/) throw(GException)
+void GLang::Disconnect(GSession* /*session*/)
 {
 	Session=0;
 	if((!Dict)&&(!Stop)) return;
@@ -290,4 +289,24 @@ GLang::~GLang(void)
 		delete Dict;
 	if(Stop)
 		delete Stop;
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GLangManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GLangManager::GLangManager(bool load)
+  : GPluginManager<GLangManager,GFactoryLang,GLang>("Lang",API_LANG_VERSION,ptList), Load(load)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GLangManager::~GLangManager(void)
+{
 }

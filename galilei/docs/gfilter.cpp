@@ -31,10 +31,22 @@
 
 
 //------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <ctype.h>
+#include <stdexcept>
+#include <fnmatch.h>
+
+
+//------------------------------------------------------------------------------
+// include files for R Library
+#include <rstd/rxmlfile.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <docs/gdocxml.h>
+#include <docs/gdoc.h>
 #include <docs/gfilter.h>
-#include <docs/gfiltermanager.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -447,5 +459,242 @@ void GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* attach) thr
 
 //------------------------------------------------------------------------------
 GFilter::~GFilter(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GFilterManager::GMIMEFilter
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GFilterManager::GMIMEFilter
+{
+public:
+	RString Name;
+	GFilter* Filter;
+
+	GMIMEFilter(const char* n,GFilter* f) : Name(n), Filter(f) {}
+	int Compare(const GMIMEFilter* f) const {return(Name.Compare(f->Name));}
+	int Compare(const GMIMEFilter& f) const {return(Name.Compare(f.Name));}
+	int Compare(const R::RString& t) const {return(Name.Compare(t));}
+	int Compare(const char* t) const {return(Name.Compare(t));}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GFilterManager::GMIMEExt
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GFilterManager::GMIMEExt
+{
+public:
+	RString Name;
+	RString Ext;
+
+	GMIMEExt(const RString& n,const RString& e) : Name(n), Ext(e) {}
+	int Compare(const GMIMEExt* f) const {return(Name.Compare(f->Ext));}
+	int Compare(const GMIMEExt& f) const {return(Name.Compare(f.Ext));}
+	int Compare(const R::RString& e) const {return(Name.Compare(e));}
+	int Compare(const char* e) const {return(Name.Compare(e));}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GFilterManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GFilterManager::GFilterManager(void)
+	: GPluginManager<GFilterManager,GFactoryFilter,GFilter>("Filter",API_FILTER_VERSION,ptList), MIMES(50,25),
+	  Exts(50,25)
+{
+	RString MIME;
+
+	// Try to open list of MIME types
+	try
+	{
+		RXMLStruct xml;
+		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
+		R::RCursor<RXMLTag> Cur,Cur2;
+
+		File.Open(R::RIO::Read);
+
+		// Go trough all MIME types
+		Cur=xml.GetTag("mimeTypes")->GetNodes();
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			MIME=Cur()->GetAttrValue("code");
+
+			// Go through all file extension
+			Cur2=Cur()->GetNodes();
+			for(Cur2.Start();!Cur2.End();Cur2.Next())
+				Exts.InsertPtr(new GMIMEExt(MIME,Cur2()->GetAttrValue("ext")));
+		}
+	}
+	catch(...)
+	{
+		// No MIME types found
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterManager::Download(const char*,RString&)
+{
+}
+
+
+//------------------------------------------------------------------------------
+const char* GFilterManager::DetermineMIMEType(const char* tmpfile)
+{
+	RCursor<GMIMEExt> Cur(Exts);
+
+	// Go through each extension
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if(fnmatch(Cur()->Ext.Latin1(),tmpfile,0)!=FNM_NOMATCH)
+			return(Cur()->Name.Latin1());
+	return(0);
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterManager::Delete(RString&)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
+{
+	RString tmpFile(250);
+	char tmp[250];
+	const char* ptr;
+	int i;
+	GDocXML* xml=0;
+	bool Dwn;
+	bool Url;
+	GMIMEFilter* f=0;
+	RString mime;
+
+	// Look for the protocol
+	ptr=doc->GetURL();
+	i=0;
+	while((*ptr)&&(isalnum(*ptr)))
+	{
+		i++;
+		ptr++;
+	}
+
+	// If ':' find -> it is an URL
+	if(i)
+		Url=((*ptr)==':');
+	else
+		Url=false;
+
+	// if URL and protocol different than 'file' -> Download it
+	if(Url&&strncasecmp(doc->GetURL(),"file",i))
+	{
+
+		// if the download can't be done an error is then send
+		Download(doc->GetURL(),tmpFile);
+		Dwn=true;
+	}
+	else
+	{
+		// If URL skip 'file:'
+		if(Url)
+		{
+			strcpy(tmp,doc->GetURL());
+			// Move the all string (include the ending 0) from 5 characters.
+			memcpy(tmp,&tmp[5],strlen(tmp)-4);
+			tmpFile=tmp;
+		}
+		else
+			tmpFile=doc->GetURL();
+		Dwn=false;
+	}
+
+	// Verify if the MIME type is defined -> if not try to guess
+	mime=doc->GetMIMEType();
+	if(mime.IsEmpty())
+	{
+		mime=DetermineMIMEType(tmpFile);
+		if(!mime.IsEmpty())
+			doc->SetMIMEType(mime);
+	}
+
+	// Create a DocXML.
+	xml=new GDocXML(doc->GetURL(),tmpFile);
+
+	// If MIME type defined -> analyze it.
+	if(!mime.IsEmpty())
+	{
+		xml->AddFormat(mime);
+		f=MIMES.GetPtr<const char*>(mime);
+		if(f)
+			f->Filter->Analyze(xml);
+	}
+
+	// Delete it
+	if(Dwn)
+		Delete(tmpFile);
+
+	// Return XML structure
+	return(xml);
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterManager::AddMIME(const char* mime,GFilter* f)
+{
+	MIMES.InsertPtr(new GMIMEFilter(mime,f));
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterManager::DelMIMES(GFilter* f)
+{
+	RContainer<GMIMEFilter,false,false> Rem(5,5);
+
+	// Find All MIMES types to deleted
+	RCursor<GMIMEFilter> Cur(MIMES);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Cur()->Filter==f)
+			Rem.InsertPtr(Cur());
+	}
+
+	// Delete all MIMES
+	Cur.Set(Rem);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		MIMES.DeletePtr(Cur());
+}
+
+
+//------------------------------------------------------------------------------
+const char* GFilterManager::GetMIMEType(const char* mime) const
+{
+	GMIMEFilter* fil;
+
+	if(!mime) return(0);
+	fil=MIMES.GetPtr<const char*>(mime);
+	if(!fil) return(0);
+	return(fil->Name);
+}
+
+
+//------------------------------------------------------------------------------
+GFilterManager::~GFilterManager(void)
 {
 }

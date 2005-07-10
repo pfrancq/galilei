@@ -39,35 +39,3 @@ using namespace std;
 
 
 
-//------------------------------------------------------------------------------
-//
-// GPlugin Manager class
-//
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-GGenericPluginManager::GGenericPluginManager(RString name,RString version)
-	: Name(name),Version(version)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-int GGenericPluginManager::Compare(const GGenericPluginManager& pm) const
-{
-	return(Name.Compare(pm.GetName()));
-}
-
-
-//-----------------------------------------------------------------------------
-int GGenericPluginManager::Compare(const RString& name) const
-{
-	return(Name.Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-GGenericPluginManager::~GGenericPluginManager(void)
-{
-}

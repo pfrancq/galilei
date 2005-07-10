@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -67,11 +68,6 @@ class GProfileCalc : public GPlugin<GFactoryProfileCalc>
 protected:
 
 	/**
-	* Session.
-	*/
-	GSession* Session;
-
-	/**
 	* Current subprofile to compute.
 	*/
 	GSubProfile* SubProfile;
@@ -83,18 +79,6 @@ public:
 	* @param fac             Factory of the plugin.
 	*/
 	GProfileCalc(GFactoryProfileCalc* fac) throw(std::bad_alloc);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Compute a subprofile.
@@ -110,7 +94,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryProfileCalc represent a factory for a given profile computing
 * method.
 * @author Pascal Francq
@@ -119,7 +103,8 @@ public:
 class GFactoryProfileCalc : public GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -127,85 +112,35 @@ public:
 	*/
 	GFactoryProfileCalc(GProfileCalcManager* mng,const char* n,const char* f)
 		 : GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>(mng,n,f) {}
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryProfileCalc(void) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a profile computing factory.
+* The GProfileCalcManager class provides a representation for a manager
+* responsible to manage all the profile computing methods.
+* @author Pascal Francq
+* @short Profile Computing Methods Manager.
 */
-typedef GFactoryProfileCalc* GFactoryProfileCalcInit(GProfileCalcManager*,const char*);
+class GProfileCalcManager : public GPluginManager<GProfileCalcManager,GFactoryProfileCalc,GProfileCalc>
+{
+public:
+
+	/**
+	* Construct the profile computing methods manager.
+	*/
+	GProfileCalcManager(void);
+
+	/**
+	* Destructor of the profile computing methods manager.
+	*/
+	virtual ~GProfileCalcManager(void);
+};
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_PROFILECALC_FACTORY(name,C)                                                \
-class TheFactory : public GFactoryProfileCalc                                             \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryProfileCalc* Inst;                                                     \
-	TheFactory(GProfileCalcManager* mng,const char* l) : GFactoryProfileCalc(mng,name,l)  \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryProfileCalc* CreateInst(GProfileCalcManager* mng,const char* l)        \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_PROFILECALC_VERSION);}      \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryProfileCalc* TheFactory::Inst = 0;                                                \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryProfileCalc* FactoryCreate(GProfileCalcManager* mng,const char* l)            \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("ProfileCalc");                                                            \
-	}                                                                                     \
-}
+#define CREATE_PROFILECALC_FACTORY(name,plugin)\
+	CREATE_FACTORY(GProfileCalcManager,GFactoryProfileCalc,GProfileCalc,plugin,"ProfileCalc",API_PROFILECALC_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include file for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -59,13 +60,6 @@ namespace GALILEI{
 */
 class GPostDoc : public GPlugin<GFactoryPostDoc>
 {
-protected :
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
 public :
 
 	/**
@@ -73,18 +67,6 @@ public :
 	* @param fac             Factory of the plugin.
 	*/
 	GPostDoc(GFactoryPostDoc* fac) throw(std::bad_alloc);
-
-	/**
-	* Connect to a Session.
-	* @param session         Session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         Session.
-	*/
-	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Run the method.
@@ -99,7 +81,7 @@ public :
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryPostDoc represent a factory for a given document post analysis
 * method.
 * @author Nicolas Kumps
@@ -108,115 +90,44 @@ public :
 class GFactoryPostDoc : public GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPostDoc(GPostDocManager* mng,const char* n,const char* f);
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const GFactoryPostDoc& f) const;
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const GFactoryPostDoc* f) const;
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(unsigned int level) const;
-
-	/**
-	* Static function used to order the factory by level.
-	* @param a              Pointer to the first object.
-	* @param b              Pointer to the second object.
-	*/
-	static int sortOrder(const void* a,const void* b);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryPostDoc(void) {}
+	GFactoryPostDoc(GPostDocManager* mng,const char* n,const char* f)
+		: GFactoryPlugin<GFactoryPostDoc,GPostDoc,GPostDocManager>(mng,n,f) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a document post analysis factory.
+* The GPostDocManager class provides a representation for a manager
+* responsible to manage all the documents post-analysis methods.
+* @author Pascal Francq
+* @short Documents Post-Analysis Methods Manager.
 */
-typedef GFactoryPostDoc* GFactoryPostDocInit(GPostDocManager*,const char*);
+class GPostDocManager : public GPluginManager<GPostDocManager,GFactoryPostDoc,GPostDoc>
+{
+public:
+
+	/**
+	* Constructor of a manager.
+	*/
+	GPostDocManager(void);
+
+	/**
+	* Destructor of the manager.
+	*/
+	virtual ~GPostDocManager(void);
+};
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_POSTDOC_FACTORY(name,C)                                                    \
-class TheFactory : public GFactoryPostDoc                                                 \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryPostDoc* Inst;                                                         \
-	TheFactory(GPostDocManager* mng,const char* l) : GFactoryPostDoc(mng,name,l)          \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryPostDoc* CreateInst(GPostDocManager* mng,const char* l)                \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_POSTDOC_VERSION);}          \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryPostDoc* TheFactory::Inst = 0;                                                    \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryPostDoc* FactoryCreate(GPostDocManager* mng,const char* l)                    \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("PostDoc");                                                                \
-	}                                                                                     \
-}
-
+#define CREATE_POSTDOC_FACTORY(name,plugin)\
+	CREATE_FACTORY(GPostDocManager,GFactoryPostDoc,GPostDoc,plugin,"PostDoc",API_POSTDOC_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

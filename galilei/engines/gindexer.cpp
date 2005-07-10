@@ -34,7 +34,6 @@
 // include file for GALILEI
 #include <engines/gindexer.h>
 #include <engines/gwordoccurs.h>
-#include <infos/glangmanager.h>
 #include <infos/glang.h>
 #include <infos/ginfo.h>
 using namespace GALILEI;

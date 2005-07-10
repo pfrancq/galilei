@@ -6,7 +6,7 @@
 
 	Generic Statistics Method - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,22 +52,8 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GStatsCalc::GStatsCalc(GFactoryStatsCalc* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryStatsCalc>(fac), Session(0)
+	: GPlugin<GFactoryStatsCalc>(fac)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GStatsCalc::Connect(GSession* session) throw(GException)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GStatsCalc::Disconnect(GSession*) throw(GException)
-{
-	Session=0;
 }
 
 
@@ -91,5 +77,25 @@ void GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,RString 
 
 //------------------------------------------------------------------------------
 GStatsCalc::~GStatsCalc(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GStatsCalcManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GStatsCalcManager::GStatsCalcManager(void)
+	: GPluginManager<GStatsCalcManager,GFactoryStatsCalc,GStatsCalc>("StatsCalc",API_STATSCALC_VERSION,ptList)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GStatsCalcManager::~GStatsCalcManager(void)
 {
 }

@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -60,13 +61,6 @@ namespace GALILEI{
 */
 class GPreProfile : public GPlugin<GFactoryPreProfile>
 {
-protected:
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
 public:
 
 	/**
@@ -74,18 +68,6 @@ public:
 	* @param fac             Factory of the plugin.
 	*/
 	GPreProfile(GFactoryPreProfile* fac) throw(std::bad_alloc);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Run the pre-group method.
@@ -100,7 +82,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryPreProfile represent a factory for a given pre grouping method.
 * @author Pascal Francq
 * @short Generic Pre Grouping Factory.
@@ -108,114 +90,44 @@ public:
 class GFactoryPreProfile : public GFactoryPlugin<GFactoryPreProfile,GPreProfile,GPreProfileManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPreProfile(GPreProfileManager* mng,const char* n,const char* f);
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const GFactoryPreProfile& f) const;
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const GFactoryPreProfile* f) const;
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(unsigned int level) const;
-
-	/**
-	* Static function used to order the factory by level.
-	* @param a              Pointer to the first object.
-	* @param b              Pointer to the second object.
-	*/
-	static int sortOrder(const void* a,const void* b);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryPreProfile(void) {}
+	GFactoryPreProfile(GPreProfileManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryPreProfile,GPreProfile,GPreProfileManager>(mng,n,f) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a pre profiling factory.
+* The GPreProfileManager class provides a representation for a manager
+* responsible to manage all the preprofile computing methods.
+* @author David Wartel
+* @short Post-Profile Computing Methods Manager.
 */
-typedef GFactoryPreProfile* GFactoryPreProfileInit(GPreProfileManager*,const char*);
+class GPreProfileManager : public GPluginManager<GPreProfileManager,GFactoryPreProfile,GPreProfile>
+{
+public:
+
+	/**
+	* Construct the pre-group computing methods manager.
+	*/
+	GPreProfileManager(void);
+
+	/**
+	* Destruct the pre-group computing methods manager.
+	*/
+	virtual ~GPreProfileManager(void);
+};
+
 
 //------------------------------------------------------------------------------
-#define CREATE_PREPROFILE_FACTORY(name,C)                                                 \
-class TheFactory : public GFactoryPreProfile                                              \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryPreProfile* Inst;                                                      \
-	TheFactory(GPreProfileManager* mng,const char* l) : GFactoryPreProfile(mng,name,l)    \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryPreProfile* CreateInst(GPreProfileManager* mng,const char* l)          \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_PREPROFILE_VERSION);}       \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryPreProfile* TheFactory::Inst = 0;                                                 \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryPreProfile* FactoryCreate(GPreProfileManager* mng,const char* l)              \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("PreProfile");                                                             \
-	}                                                                                     \
-}
-
+#define CREATE_PREPROFILE_FACTORY(name,plugin)\
+	CREATE_FACTORY(GPreProfileManager,GFactoryPreProfile,GPreProfile,plugin,"PreProfile",API_PREPROFILE_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -38,10 +38,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 #include <docs/gdocprofsims.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <docs/gdocs.h>
 #include <docs/gdoc.h>
 #include <profiles/gsubprofile.h>

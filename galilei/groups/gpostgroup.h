@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -50,7 +51,6 @@ namespace GALILEI{
 #define API_POSTGROUP_VERSION "2.0"
 
 
-
 //------------------------------------------------------------------------------
 /**
 * The GPostGroup class provides a representation for a generic method to compute
@@ -60,13 +60,6 @@ namespace GALILEI{
 */
 class GPostGroup : public GPlugin<GFactoryPostGroup>
 {
-protected:
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
 public:
 
 	/**
@@ -74,18 +67,6 @@ public:
 	* @param fac             Factory of the plugin.
 	*/
 	GPostGroup(GFactoryPostGroup* fac) throw(std::bad_alloc);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session) throw(GException);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session) throw(GException);
 
 	/**
 	* Run the post-group method.
@@ -100,130 +81,52 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryPostGroup represent a factory for a given post grouping method.
 * @author Pascal Francq
 * @short Generic Post Grouping Factory.
 */
 class GFactoryPostGroup : public GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>
 {
-
 public:
 
-	/**
-	* Level of the plugin: specifies in wich order to apply the plugin
-	*/
-	unsigned int Level;
-
-public:
-	/**
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f);
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const GFactoryPostGroup& f) const;
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const GFactoryPostGroup* f) const;
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(unsigned int level) const;
-
-	/**
-	* Static function used to order the factory by level.
-	* @param a              Pointer to the first object.
-	* @param b              Pointer to the second object.
-	*/
-	static int sortOrder(const void* a,const void* b);
-
-	/**
-	* Destructor.
-	*/
-//	virtual ~GFactoryPostGroup(void) {}
+	GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f)
+	 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a post grouping factory.
+* The GPostGroupManager class provides a representation for a manager
+* responsible to manage all the postgroup computing methods.
+* @author Vandaele Valery
+* @short Post-Group Computing Methods Manager.
 */
-typedef GFactoryPostGroup* GFactoryPostGroupInit(GPostGroupManager*,const char*);
+class GPostGroupManager : public GPluginManager<GPostGroupManager,GFactoryPostGroup,GPostGroup>
+{
+public:
+
+	/**
+	* Construct the post-group computing methods manager.
+	*/
+	GPostGroupManager(void);
+
+	/**
+	* Destruct the post-group computing methods manager.
+	*/
+	virtual ~GPostGroupManager(void);
+};
+
 
 //------------------------------------------------------------------------------
-#define CREATE_POSTGROUP_FACTORY(name,C)                                                  \
-class TheFactory : public GFactoryPostGroup                                               \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryPostGroup* Inst;                                                       \
-	TheFactory(GPostGroupManager* mng,const char* l) : GFactoryPostGroup(mng,name,l)      \
-	{                                                                                     \
-		C::CreateParams(this);                                                \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryPostGroup* CreateInst(GPostGroupManager* mng,const char* l)            \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_POSTGROUP_VERSION);}        \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-};                                                                                        \
-                                                                                          \
-GFactoryPostGroup* TheFactory::Inst = 0;                                                  \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryPostGroup* FactoryCreate(GPostGroupManager* mng,const char* l)                \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("PostGroup");                                                              \
-	}                                                                                     \
-}
-
+#define CREATE_POSTGROUP_FACTORY(name,plugin)\
+	CREATE_FACTORY(GPostGroupManager,GFactoryPostGroup,GPostGroup,plugin,"PostGroup",API_POSTGROUP_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

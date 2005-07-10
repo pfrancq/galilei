@@ -45,26 +45,32 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GProfileCalc::GProfileCalc(GFactoryProfileCalc* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryProfileCalc>(fac), Session(0), SubProfile(0)
+	: GPlugin<GFactoryProfileCalc>(fac), SubProfile(0)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GProfileCalc::Connect(GSession* session) throw(GException)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GProfileCalc::Disconnect(GSession*) throw(GException)
-{
-	Session=0;
 }
 
 
 //------------------------------------------------------------------------------
 GProfileCalc::~GProfileCalc(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GProfileCalcManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GProfileCalcManager::GProfileCalcManager(void)
+	: GPluginManager<GProfileCalcManager,GFactoryProfileCalc,GProfileCalc>("ProfileCalc",API_PROFILECALC_VERSION,ptSelect)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GProfileCalcManager::~GProfileCalcManager(void)
 {
 }

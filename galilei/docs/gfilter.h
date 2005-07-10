@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -173,7 +174,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
+/*
 * The GFactoryDocFilter represent a factory for a given filter.
 * @author Pascal Francq
 * @short Generic Filter Factory.
@@ -181,7 +182,8 @@ public:
 class GFactoryFilter : public GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>
 {
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -189,70 +191,114 @@ public:
 	*/
 	GFactoryFilter(GFilterManager* mng,RString n,RString f)
 		: GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f) {}
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryFilter(void) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a filter factory.
+* The GFilterManager class provides a representation for a generic manager that
+* handles :
+* - Plugins of filters.
+* - A list of association between a MIME type and a filter.
+* - URL, by downloading the file and making a local copy available (this copy
+*   has to be remove after the analysis).
+* @author Pascal Francq
+* @short Generic URL Manager.
 */
-typedef GFactoryFilter* GFactoryFilterInit(GFilterManager*,const char*);
+class GFilterManager : public GPluginManager<GFilterManager,GFactoryFilter,GFilter>
+{
+protected:
+
+	class GMIMEFilter;
+	class GMIMEExt;
+
+	/**
+	* List of all pairs (MIME type,filter) available.
+	*/
+	R::RContainer<GMIMEFilter,true,true> MIMES;
+
+	/**
+	* List of all pairs (extension, MIME type) available.
+	*/
+	R::RContainer<GMIMEExt,true,true> Exts;
+
+public:
+
+	/**
+	* Construct the filter manager.
+	*/
+	GFilterManager(void);
+
+protected:
+
+	/**
+	* Download and store locally a document given by an URL.
+	* @param URL            URL of the document.
+	* @param tmpFile        Temporary file created.
+	*/
+	virtual void Download(const char* URL,R::RString& tmpFile);
+
+public:
+
+	/**
+	* Try to guess the MIME types of a temporary file. By default, this method
+	* looks in the list of association between the file extension and a MIME
+	* type.
+	* @param tmpfile        Temporary file created.
+	* @return Name fo of the MIME type.
+	*/
+	virtual const char* DetermineMIMEType(const char* tmpfile);
+
+protected:
+
+	/**
+	* Delete a temporary copy of a file created by the manager. This method is
+	* only called if a temporary file was really created.
+	* @param tmpFile        Temporary file to delete.
+	*/
+	virtual void Delete(R::RString& tmpFile);
+
+public:
+
+	/**
+	* Transform a file into a GDocXML document. Try to find the MIME type of the
+	* document if not specified.
+	* @param doc            Document to analyze
+	* Return Pointer to a GDocXML.
+	*/
+	GDocXML* CreateDocXML(GDoc* doc);
+
+	/**
+	* Add a pair (MIME type,filter).
+	* @param mime           Name of the MIME type.
+	* @param f              Pointer to the filter.
+	*/
+	void AddMIME(const char* mime,GFilter* f);
+
+	/**
+	* Delete all the MIME type associated with a filter.
+	* @param f              Pointer to the filter.
+	*/
+	void DelMIMES(GFilter* f);
+
+	/**
+	* Get the name of a filter associated with a given MIME type.
+	* @param mime           Name of the MIME type.
+	* @return C string containing the name of the filter (or null if no filter
+	*         was found).
+	*/
+	const char* GetMIMEType(const char* mime) const;
+
+	/**
+	* Destructor of filter manager.
+	*/
+	virtual ~GFilterManager(void);
+};
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_FILTER_FACTORY(name,C)                                                     \
-class TheFactory : public GFactoryFilter                                                  \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryFilter* Inst;                                                          \
-	TheFactory(GFilterManager* mng,const char* l) : GFactoryFilter(mng,name,l)            \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryFilter* CreateInst(GFilterManager* mng,const char* l)                  \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_FILTER_VERSION);}           \
-	virtual void Create(void) throw(GException)                                           \
-	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
-	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		Mng->DelMIMES(Plugin);                                                            \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession*) throw(GException)  {}                                  \
-	virtual void Delete(GSession*) throw(GException)  {}                                  \
-};                                                                                        \
-                                                                                          \
-GFactoryFilter* TheFactory::Inst = 0;                                                     \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryFilter* FactoryCreate(GFilterManager* mng,const char* l)                      \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("Filter");                                                                 \
-	}                                                                                     \
-}
+#define CREATE_FILTER_FACTORY(name,plugin)\
+	CREATE_FACTORY(GFilterManager,GFactoryFilter,GFilter,plugin,"Filter",API_FILTER_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

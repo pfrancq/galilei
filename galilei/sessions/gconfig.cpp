@@ -41,35 +41,22 @@
 // include files for GALILEI
 #include <sessions/gconfig.h>
 #include <sessions/gplugin.h>
-#include <docs/gfiltermanager.h>
 #include <docs/gfilter.h>
 #include <engines/gengine.h>
 #include <engines/gmetaengine.h>
-#include <engines/genginemanager.h>
-#include <engines/gmetaenginemanager.h>
-#include <profiles/gprofilecalcmanager.h>
 #include <profiles/gprofilecalc.h>
-#include <profiles/gpostprofilemanager.h>
 #include <profiles/gpostprofile.h>
-#include <groups/ggroupingmanager.h>
 #include <groups/ggrouping.h>
-#include <groups/ggroupcalcmanager.h>
 #include <groups/ggroupcalc.h>
-#include <sessions/gstatscalcmanager.h>
 #include <sessions/gstatscalc.h>
 #include <sessions/gsession.h>
-#include <docs/glinkcalcmanager.h>
 #include <docs/glinkcalc.h>
-#include <docs/gpostdocmanager.h>
 #include <docs/gpostdoc.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <docs/gdocanalyse.h>
-#include <docs/gdocanalysemanager.h>
 #include <groups/gpostgroup.h>
-#include <groups/gpostgroupmanager.h>
 #include <sessions/gplugin.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -85,8 +72,6 @@ using namespace GALILEI;
 GConfig::GConfig(const char* f) throw(std::bad_alloc)
 	: RXMLStruct(), FileName(f)
 {
-	RString n;
-
 	AddTag(0,Root=new RXMLTag("rdf:RDF"));
 	AddTag(Root,SessionParams=new RXMLTag("galileiconfig:session"));
 
@@ -94,7 +79,7 @@ GConfig::GConfig(const char* f) throw(std::bad_alloc)
 	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetCursor());
 	for(cur.Start();!cur.End();cur.Next())
 	{
-		n="";
+		RString n;
 		n+=RChar::ToLower(cur()->GetName()[static_cast<size_t>(0)]);
 		n+=cur()->GetName().Mid(1);
 		AddTag(Root,new RXMLTag("galileiconfig:"+n));
@@ -105,8 +90,6 @@ GConfig::GConfig(const char* f) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GConfig::Load(void) throw(GException)
 {
-	RString n;
-
 	Clear();
 	try
 	{
@@ -119,7 +102,7 @@ void GConfig::Load(void) throw(GException)
 
 		for(cur.Start();!cur.End();cur.Next())
 		{
-			n="";
+			RString n;
 			n+=RChar::ToLower(cur()->GetName()[static_cast<size_t>(0)]);
 			n+=cur()->GetName().Mid(1);
 			t=GetTop()->GetTag("galileiconfig:"+n);
@@ -136,14 +119,12 @@ void GConfig::Load(void) throw(GException)
 //------------------------------------------------------------------------------
 void GConfig::Save(void) throw(GException)
 {
-	RString n;
-
 	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetCursor());
 	RXMLTag* t;
 
 	for(cur.Start();!cur.End();cur.Next())
 	{
-		n="";
+		RString n;
 		n+=RChar::ToLower(cur()->GetName()[static_cast<size_t>(0)]);
 		n+=cur()->GetName().Mid(1);
 		t=GetTop()->GetTag("galileiconfig:"+n);

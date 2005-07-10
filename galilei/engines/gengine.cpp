@@ -6,7 +6,7 @@
 
 	Generic extractor of results from a search engine - Implementation.
 
-	Copyright 2004 by the Université Libre de Bruxelles.
+	Copyright 2004 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -40,9 +40,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <engines/gengine.h>
-#include <rstd/rdownload.h>
-#include <rstd/rstd.h>
-#include <curl/curl.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -57,47 +54,32 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GEngine::GEngine(GFactoryEngine* fac) throw(std::bad_alloc,RIOException)
-	: GPlugin<GFactoryEngine>(fac), Session(0),Weight(1)
+	: GPlugin<GFactoryEngine>(fac), Weight(1)
 {
-}
-
-
-//------------------------------------------------------------------------------
-int GEngine::Compare(const GEngine* eng) const
-{
-	return(Name.Compare(eng->GetName()));
-}
-
-
-//------------------------------------------------------------------------------
-int GEngine::Compare(const GEngine& eng) const
-{
-	return(Name.Compare(eng.GetName()));
-}
-
-
-//------------------------------------------------------------------------------
-int GEngine::Compare(const RString& name) const
-{
-	return(Name.Compare(name));
-}
-
-
-//------------------------------------------------------------------------------
-void GEngine::Connect(GSession* session) throw(GException)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GEngine::Disconnect(GSession*) throw(GException)
-{
-	Session=0;
 }
 
 
 //------------------------------------------------------------------------------
 GEngine::~GEngine(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GEngineManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GEngineManager::GEngineManager(void)
+	: GPluginManager<GEngineManager,GFactoryEngine,GEngine>("Engine",API_ENGINE_VERSION,ptList)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GEngineManager::~GEngineManager(void)
 {
 }

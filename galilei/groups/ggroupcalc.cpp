@@ -6,7 +6,7 @@
 
 	Generic Group Description Computing Method - Implementation.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -46,26 +46,32 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GGroupCalc::GGroupCalc(GFactoryGroupCalc* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryGroupCalc>(fac), Session(0)
+	: GPlugin<GFactoryGroupCalc>(fac)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GGroupCalc::Connect(GSession* session) throw(GException)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GGroupCalc::Disconnect(GSession*) throw(GException)
-{
-	Session=0;
 }
 
 
 //------------------------------------------------------------------------------
 GGroupCalc::~GGroupCalc(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GGroupCalcManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GGroupCalcManager::GGroupCalcManager(void)
+	: GPluginManager<GGroupCalcManager,GFactoryGroupCalc,GGroupCalc>("GroupCalc",API_GROUPCALC_VERSION,ptSelect)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GGroupCalcManager::~GGroupCalcManager(void)
 {
 }

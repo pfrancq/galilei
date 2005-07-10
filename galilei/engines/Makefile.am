@@ -4,9 +4,9 @@ AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
 SUBDIRS =
-libgalilei_engines_la_SOURCES = genginedoc.cpp granking.cpp gengine.cpp genginemanager.cpp \
-	gmetaengine.cpp gmetaenginemanager.cpp gwordoccurs.cpp gindexer.cpp
+libgalilei_engines_la_SOURCES = genginedoc.cpp granking.cpp gengine.cpp \
+	gmetaengine.cpp gwordoccurs.cpp gindexer.cpp
 
 enginesincludedir = $(includedir)/galilei/engines
-enginesinclude_HEADERS = genginedoc.h granking.h gengine.h genginemanager.h \
-	gmetaengine.h gmetaenginemanager.h gwordoccurs.h gindexer.h
+enginesinclude_HEADERS = genginedoc.h granking.h gengine.h gmetaengine.h \
+	gwordoccurs.h gindexer.h

@@ -44,6 +44,7 @@
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
@@ -76,11 +77,6 @@ protected:
 	class SkipWord;
 
 	/**
-	* Session responsible for the dictionary.
-	*/
-	GSession* Session;
-
-	/**
 	* Dictionary of data.
 	*/
 	GDict* Dict;
@@ -110,13 +106,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session) throw(GException);
+	virtual void Connect(GSession* session);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session) throw(GException);
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compare two languages by comparing their code.
@@ -272,7 +268,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-/**
+/*
 * The GFactoryLang represent a factory for a given language.
 * @author Pascal Francq
 * @short Generic Language Factory.
@@ -285,7 +281,8 @@ class GFactoryLang : public GFactoryPlugin<GFactoryLang,GLang,GLangManager>
 	char Code[3];
 
 public:
-	/**
+
+	/*
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -295,30 +292,52 @@ public:
 	GFactoryLang(GLangManager* mng,const char* n,const char* f,const char* c)
 		: GFactoryPlugin<GFactoryLang,GLang,GLangManager>(mng,n,f) {strcpy(Code,c);}
 
-	/**
+	/*
 	* Compare function like strcmp used in particular for RContainer class.
 	* @param lang           Factory used for the comparaison.
 	*/
 	int Compare(const GFactoryLang& lang) const {return(strcmp(Code,lang.Code));}
 
-	/**
+	/*
 	* Compare function like strcmp used in particular for RContainer class.
 	* @param code           Code used for the comparaison.
 	*/
 	int Compare(const char* code) const {return(strcmp(Code,code));}
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GFactoryLang(void) {}
 };
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* Signature of the method used to initiliaze a language factory.
+* The GLangManager class provides a representation for a manager for the languages
+* handled by the system. In fact, each language is a plugin.
+* @author Pascal Francq
+* @short Languages.
 */
-typedef GFactoryLang* GFactoryLangInit(GLangManager*,const char*);
+class GLangManager : public GPluginManager<GLangManager,GFactoryLang,GLang>
+{
+	/**
+	* Must be the dictionnaries (and stoplists) be loaded.
+	*/
+	bool Load;
+
+public:
+
+	/**
+	* Constructor of the manager.
+	* @param load            Must the dictionnaries be loaded?
+	*/
+	GLangManager(bool load);
+
+	/**
+	* Look if the dictionnaries must be loaded
+	*/
+	bool LoadDict(void) const {return(Load);}
+
+	/**
+	* Destructor of the manager.
+	*/
+	virtual ~GLangManager(void);
+};
 
 
 //------------------------------------------------------------------------------
@@ -339,35 +358,13 @@ public:                                                                         
 			Inst = new TheFactory(mng,l);                                                 \
 		return(Inst);                                                                     \
 	}                                                                                     \
-	virtual void Create(void) throw(GException)                                           \
+	virtual GLang* NewPlugIn(void)                                                       \
 	{                                                                                     \
-		if(Plugin) return;                                                                \
-		Plugin=new C(this);                                                               \
-		Plugin->ApplyConfig();                                                            \
+		return(new C(this));                                                              \
 	}                                                                                     \
-	virtual void Delete(void) throw(GException)                                           \
+	virtual void DeletePlugIn(GLang* plug)                                               \
 	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
-	}                                                                                     \
-	virtual void Create(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin)                                                                       \
-		{                                                                                 \
-			Plugin=new C(this);                                                           \
-			Plugin->ApplyConfig();                                                        \
-		}                                                                                 \
-		if(ses)                                                                           \
-			Plugin->Connect(ses);                                                         \
-	}                                                                                     \
-	virtual void Delete(GSession* ses) throw(GException)                                  \
-	{                                                                                     \
-		if(!Plugin) return;                                                               \
-		if(ses)                                                                           \
-			Plugin->Disconnect(ses);                                                      \
-		delete Plugin;                                                                    \
-		Plugin=0;                                                                         \
+		delete plug;                                                                      \
 	}                                                                                     \
 	virtual const char* GetAPIVersion(void) const {return(API_LANG_VERSION);}             \
 };                                                                                        \
