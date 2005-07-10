@@ -319,7 +319,7 @@ protected:
 	* @param documentid            Corresponding document id.
 	*/
 	void ConstructInfos(unsigned int documentid) throw(GException);
-	
+
 	/**
 	* Insert into database a couple word/stem
 	* @param stemid            Corresponding stemmed word id.

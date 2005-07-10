@@ -51,13 +51,13 @@
 #include <infos/gword.h>
 #include <infos/gweightinfo.h>
 #include <infos/gdict.h>
-#include <infos/glangmanager.h>
 #include <sessions/gsession.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 #include <sessions/gstorage.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
+
 
 
 //-----------------------------------------------------------------------------
@@ -273,7 +273,7 @@ void GTextAnalyse::VerifyDirect(void) throw(bad_alloc)
 		delete[] Direct;
 		Direct=ptr;
 		for(i=2500+1,ptr=&Direct[NbDirect];--i;ptr++)
-			(*ptr)=new WordWeight((dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNb());
+			(*ptr)=new WordWeight((dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNbFactories());
 		NbDirect+=2500;
 	}
 }
@@ -407,7 +407,7 @@ void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 		w=(*Section)[Index];
 		if(FindLang)
 		{
-			for(i=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNb()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
+			for(i=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNbFactories()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
 			{
 				if(*is)
 					(*tmp2)++;
