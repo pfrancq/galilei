@@ -6,7 +6,7 @@
 
 	Spanish Language - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel(dwartel@ulb.ac.be).
@@ -69,7 +69,7 @@ public:
 	GLangES(GFactoryLang* fac) throw(std::bad_alloc);
 
 	/**
-	* Function that return stemming of a word. 
+	* Function that return stemming of a word.
 	* @param _kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/

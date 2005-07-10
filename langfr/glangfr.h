@@ -6,7 +6,7 @@
 
 	French Language - Header.
 
-	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
+	Copyright 2001 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -97,7 +97,7 @@ private:
 	*/
 	inline bool IsVowel(char c)
 	{
-		return((c=='a')||(c=='e')||(c=='i')||(c=='o')||(c=='u')||(c=='é')||(c=='è')||(c=='ê')||(c=='à')||(c=='â'));
+		return((c=='a')||(c=='e')||(c=='i')||(c=='o')||(c=='u')||((c>=(char)129)&&(c<=(char)151))||(c==(char)153)||(c==(char)154)||((c>=(char)160)&&(c<=(char)165)));
 	}
 
 	/**

@@ -6,7 +6,7 @@
 
 	Dutch Language - Header.
 
-	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
+	Copyright 2001 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Nicolas Kumps (nkumps@ulb.ac.be).
@@ -39,7 +39,6 @@
 // include files for GALILEI
 #include <sessions/galilei.h>
 #include <infos/glang.h>
-
 
 
 //-----------------------------------------------------------------------------
@@ -127,7 +126,7 @@ private:
 	*/
 	inline bool IsVowel(char c)
 	{
-		return((c=='a')||(c=='ä')||(c=='á')||(c=='e')||(c=='é')||(c=='è')||(c=='ë')||(c=='i')||(c=='í')||(c=='o')||(c=='ó')||(c=='ö')||(c=='u')||(c=='ú')||(c=='ü'));
+		return((c=='a')||(c=='e')||(c=='i')||(c=='o')||(c=='u')||((c>=(char)129)&&(c<=(char)151))||(c==(char)153)||(c==(char)154)||((c>=(char)160)&&(c<=(char)165)));
 	}
 
 	/**

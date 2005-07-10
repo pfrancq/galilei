@@ -6,7 +6,7 @@
 
 	German Language - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
