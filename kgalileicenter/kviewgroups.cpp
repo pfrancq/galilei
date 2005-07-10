@@ -45,7 +45,7 @@
 #include <sessions/gsession.h>
 #include <frontend/kde/qlistviewitemtype.h>
 #include <frontend/kde/rqt.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 

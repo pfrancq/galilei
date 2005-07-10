@@ -60,7 +60,7 @@ using namespace R;
 #include <infos/glang.h>
 #include <infos/gdict.h>
 #include <infos/gweightinfo.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -364,7 +364,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			if(!strcmp(dlg.ProfilesFile->url(),""))
 				return;
 			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Profiles");
-			if(!Dlg.Run(new QExportMatrix("Profiles", dlg.ProfilesFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+			if(!Dlg.Run(new QExportMatrix("Profiles", dlg.ProfilesFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(dlg.CBLangs->text(dlg.CBLangs->currentItem()).latin1()), false)))
 				return;
 		}
 
@@ -374,7 +374,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			if(!strcmp(dlg.DocumentsFile->url(),""))
 				return;
 			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Documents");
-			if(!Dlg.Run(new QExportMatrix("Documents", dlg.DocumentsFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+			if(!Dlg.Run(new QExportMatrix("Documents", dlg.DocumentsFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(dlg.CBLangs->text(dlg.CBLangs->currentItem()).latin1()), false)))
 				return;
 		}
 
@@ -384,7 +384,7 @@ void KGALILEICenterApp::slotExportMatrix(void)
 			if(!strcmp(dlg.GroupsFile->url(),""))
 				return;
 			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Groups");
-			if(!Dlg.Run(new QExportMatrix("Groups", dlg.GroupsFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(dlg.CBLangs->text(dlg.CBLangs->currentItem())), false)))
+			if(!Dlg.Run(new QExportMatrix("Groups", dlg.GroupsFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(dlg.CBLangs->text(dlg.CBLangs->currentItem()).latin1()), false)))
 				return;
 		}
 	}

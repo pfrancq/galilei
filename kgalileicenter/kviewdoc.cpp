@@ -56,7 +56,7 @@ using namespace R;
 #include <infos/glang.h>
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 
 

@@ -44,19 +44,19 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <sessions/galilei.h>
-#include <infos/glangmanager.h>
-#include <docs/glinkcalcmanager.h>
-#include <docs/gdocanalysemanager.h>
-#include <docs/gpostdocmanager.h>
-#include <engines/genginemanager.h>
-#include <engines/gmetaenginemanager.h>
-#include <profiles/gprofilecalcmanager.h>
-#include <groups/ggroupingmanager.h>
-#include <groups/ggroupcalcmanager.h>
+#include <infos/glang.h>
+#include <docs/glinkcalc.h>
+#include <docs/gdocanalyse.h>
+#include <docs/gpostdoc.h>
+#include <engines/gengine.h>
+#include <engines/gmetaengine.h>
+#include <profiles/gprofilecalc.h>
+#include <groups/ggrouping.h>
+#include <groups/ggroupcalc.h>
 #include <sessions/gsession.h>
-#include <groups/gpostgroupmanager.h>
-#include <profiles/gpostprofilemanager.h>
-#include <sessions/gstatscalcmanager.h>
+#include <groups/gpostgroup.h>
+#include <profiles/gpostprofile.h>
+#include <sessions/gstatscalc.h>
 #include <frontend/kde/gfiltermanagerkde.h>
 using namespace GALILEI;
 

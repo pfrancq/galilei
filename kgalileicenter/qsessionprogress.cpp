@@ -74,7 +74,7 @@
 #include <groups/ggrouping.h>
 #include <groups/ggroup.h>
 #include <groups/gsubjects.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 

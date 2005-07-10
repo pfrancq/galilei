@@ -37,9 +37,8 @@
 #include <frontend/kde/rqt.h>
 #include <docs/gdoc.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <sessions/gsession.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -155,7 +154,7 @@ void KViewDocs::CreateDocsListView(void)
 	R::RCursor<GDoc> CurDocs=Doc->GetSession()->GetDocsCursor();
 	R::RCursor<GFactoryLang> CurLang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	GLang* lang;
-	RContainer<LangItem,true,true> LangItems((dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNb());
+	RContainer<LangItem,true,true> LangItems((dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNbFactories());
 	const char* t;
 	const char det[]="Unknown";
 	const char* ptr;

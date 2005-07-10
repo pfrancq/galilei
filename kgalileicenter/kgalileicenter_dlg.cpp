@@ -43,20 +43,18 @@
 #include <frontend/kde/gfiltermanagerkde.h>
 #include <frontend/kde/qlistviewitemtype.h>
 #include <sessions/gsession.h>
-#include <sessions/gstatscalcmanager.h>
+#include <sessions/gstatscalc.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gpreprofile.h>
 #include <profiles/gpostprofile.h>
-#include <profiles/gpreprofilemanager.h>
-#include <profiles/gpostprofilemanager.h>
 #include <groups/ggrouping.h>
 #include <groups/gpostgroup.h>
 #include <profiles/gprofilecalc.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <engines/gengine.h>
 #include <engines/gmetaengine.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -183,10 +181,10 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.PluginsPath->setURL(ToQString(paths));
 
 	//sort POST_X Managers;
-	dynamic_cast<GPostDocManager*>(GPluginManagers::PluginManagers.GetManager("PostDoc"))->ReOrder(GFactoryPostDoc::sortOrder);
-	dynamic_cast<GPreProfileManager*>(GPluginManagers::PluginManagers.GetManager("PreProfile"))->ReOrder(GFactoryPreProfile::sortOrder);
-	dynamic_cast<GPostProfileManager*>(GPluginManagers::PluginManagers.GetManager("PostProfile"))->ReOrder(GFactoryPreProfile::sortOrder);
-	dynamic_cast<GPostGroupManager*>(GPluginManagers::PluginManagers.GetManager("PostGroup"))->ReOrder(GFactoryPreProfile::sortOrder);
+	dynamic_cast<GPostDocManager*>(GPluginManagers::PluginManagers.GetManager("PostDoc"))->ReOrder();
+	dynamic_cast<GPreProfileManager*>(GPluginManagers::PluginManagers.GetManager("PreProfile"))->ReOrder();
+	dynamic_cast<GPostProfileManager*>(GPluginManagers::PluginManagers.GetManager("PostProfile"))->ReOrder();
+	dynamic_cast<GPostGroupManager*>(GPluginManagers::PluginManagers.GetManager("PostGroup"))->ReOrder();
 
 	// Goes through managers
 	dlg.changeFilter(Init<GFactoryFilter,GFilter,QFilterItem>(dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter"))->GetFactories(),dlg.Filters,dlg.EnableFilter));
@@ -232,11 +230,10 @@ void KGALILEICenterApp::slotPlugins(void)
 			QMessageBox::information(this,"Plug-Ins Path has changed","You changed the plugins path, please restart KGALILEICenter.");
 		}
 
-		dynamic_cast<GPostDocManager*>(GPluginManagers::PluginManagers.GetManager("PostDoc"))->ReOrder(GFactoryPostDoc::sortOrder);
-		dynamic_cast<GPreProfileManager*>(GPluginManagers::PluginManagers.GetManager("PreProfile"))->ReOrder(GFactoryPreProfile::sortOrder);
-		dynamic_cast<GPostProfileManager*>(GPluginManagers::PluginManagers.GetManager("PostProfile"))->ReOrder(GFactoryPreProfile::sortOrder);
-		dynamic_cast<GPostGroupManager*>(GPluginManagers::PluginManagers.GetManager("PostGroup"))->ReOrder(GFactoryPreProfile::sortOrder);
-
+		dynamic_cast<GPostDocManager*>(GPluginManagers::PluginManagers.GetManager("PostDoc"))->ReOrder();
+		dynamic_cast<GPreProfileManager*>(GPluginManagers::PluginManagers.GetManager("PreProfile"))->ReOrder();
+		dynamic_cast<GPostProfileManager*>(GPluginManagers::PluginManagers.GetManager("PostProfile"))->ReOrder();
+		dynamic_cast<GPostGroupManager*>(GPluginManagers::PluginManagers.GetManager("PostGroup"))->ReOrder();
 
 		// Goes through managers
 		try
@@ -263,42 +260,42 @@ void KGALILEICenterApp::slotPlugins(void)
 		// Set current method
 		try
 		{
-			dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc"))->SetCurrentMethod(dlg.CurrentProfileCalc->currentText());
+			dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc"))->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1());
 		}
 		catch(GException)
 		{
 		}
 		try
 		{
-			dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping"))->SetCurrentMethod(dlg.CurrentGrouping->currentText());
+			dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping"))->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1());
 		}
 		catch(GException)
 		{
 		}
 		try
 		{
-			dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc"))->SetCurrentMethod(dlg.CurrentGroupCalc->currentText());
+			dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc"))->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1());
 		}
 		catch(GException)
 		{
 		}
 		try
 		{
-			dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc"))->SetCurrentMethod(dlg.CurrentLinkCalc->currentText());
+			dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc"))->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1());
 		}
 		catch(GException)
 		{
 		}
 		try
 		{
-			dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse"))->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText());
+			dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse"))->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1());
 		}
 		catch(GException)
 		{
 		}
 		try
 		{
-			dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->SetCurrentMethod(dlg.CurrentMetaEngine->currentText());
+			dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1());
 		}
 		catch(GException)
 		{

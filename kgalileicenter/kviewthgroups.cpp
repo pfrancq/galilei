@@ -41,7 +41,6 @@ using namespace R;
 // include files for GALILEI
 #include <sessions/gsession.h>
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <profiles/guser.h>
 #include <profiles/gprofile.h>
 #include <profiles/gsubprofile.h>
@@ -49,7 +48,7 @@ using namespace R;
 #include <groups/ggroups.h>
 #include <groups/gsubjects.h>
 #include <frontend/kde/qlistviewitemtype.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 
 
@@ -165,7 +164,7 @@ void KViewThGroups::LoadGroups(const char* filename)
 	Groups=new GGroups(nb);
 	for(i=0;i<nb;i++)
 	{
-		lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetLang(f.GetWord());
+		lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(f.GetWord());
 		f>>nbprof;
 		Groups->InsertGroup(group=new GGroup(i,lang,false));
 		for(j=nbprof+1;--j;)

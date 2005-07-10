@@ -40,9 +40,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <infos/glang.h>
-#include <infos/glangmanager.h>
 #include <sessions/gsession.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -141,7 +140,7 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	char tmp[10];
 
 	GLangManager* langMng=dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang"));
-	Lang=langMng->GetLang(code);
+	Lang=langMng->GetPlugIn(code);
 
 	// initialisation of the tab widget
 	Indexes=new QLabel(this,"Indexes");

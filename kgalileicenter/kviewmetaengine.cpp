@@ -40,7 +40,7 @@
 // include files for GALILEI
 #include <sessions/gsession.h>
 #include <sessions/gstorage.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 #include <engines/genginedoc.h>
 #include <engines/gmetaengine.h>
 #include <frontend/kde/rqt.h>

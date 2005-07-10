@@ -42,9 +42,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include file for GALILEI
 #include <sessions/gsession.h>
-#include <sessions/gstatscalcmanager.h>
 #include <sessions/gstatscalc.h>
-#include <sessions/gplugins.h>
+#include <sessions/gpluginmanagers.h>
 using namespace GALILEI;
 
 
@@ -138,8 +137,6 @@ void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
 //-----------------------------------------------------------------------------
 void KViewStats::ComputeStats(void)
 {
-	R::RCursor<GFactoryStatsCalc> Cur;
-	GStatsCalc* Calc;
 	RXMLStruct xml;
 	RXMLTag* Root;
 
@@ -151,7 +148,7 @@ void KViewStats::ComputeStats(void)
 		QMessageBox::critical(this,"KGALILEICenter","No manager for the statistics plug-ins");
 		return;
 	}
-	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", Mng->GetNb()+1 ,this, "progress", TRUE );
+	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", Mng->GetNbPlugIns()+1 ,this, "progress", TRUE );
 
 
 	// Create the root node
@@ -162,19 +159,15 @@ void KViewStats::ComputeStats(void)
 	Dlg.setMinimumDuration(0);
 	Dlg.setProgress(0);
 	KApplication::kApplication()->processEvents();
-	Cur.Set(*Mng);
+	R::RCursor<GStatsCalc> Cur(Mng->GetPlugIns());
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
 		Dlg.setProgress(i);
-		Dlg.setLabelText(ToQString(Cur()->GetName()));
+		Dlg.setLabelText(ToQString(Cur()->GetPlugInName()));
 		KApplication::kApplication()->processEvents();
 		if(Dlg.wasCancelled())
 			break;
-		Calc=Cur()->GetPlugin();
-		if(Calc)
-		{
-			Calc->Compute(&xml,*Root);
-		}
+		Cur()->Compute(&xml,*Root);
 	}
 	Dlg.setProgress(i);
 
