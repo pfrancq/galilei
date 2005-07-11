@@ -161,14 +161,16 @@ void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
 {
 	R::RCursor<GSubject> Subs;
 	unsigned int compt;
+	unsigned int nbprof,nbsocial;
 	GSubject** tab(0);
 	GSubject** ptr;
 	unsigned int i;
 
 	// Suppose all subjects are not chosen
+	nbsocial=0;
 	Subs.Set(*this);
 	for(Subs.Start();!Subs.End();Subs.Next())
-		Subs()->SetUsed(false);
+		Subs()->SetUsed(Session,false,0,nbsocial);
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[RTree<GSubject,true,false>::GetMaxPos()+1];
@@ -179,8 +181,15 @@ void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
 	compt=static_cast<unsigned int>((GetNbNodes()*PercSubjects)/100)+1;
 	for(ptr=tab,i=GetNbNodes()+1;(--i)&&compt;ptr++)
 	{
+		// Verify that there is enough documents
 		if((*ptr)->GetNbDocs()<NbMinDocsSubject) continue;
-		(*ptr)->SetUsed(true);
+
+		// Number of (social) profiles that will assess documents
+		nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
+		nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
+
+		// Set the topic to used and create profiles
+		(*ptr)->SetUsed(Session,true,nbprof,nbsocial);
 		compt--;
 	}
 
@@ -232,22 +241,10 @@ void GSubjects::CreateSet(void) throw(std::bad_alloc)
 		maxDocsKO=static_cast<unsigned int>(Subs()->GetNbDocs()*PercKO/100);
 		maxDocsH=static_cast<unsigned int>(maxDocsOK*PercH/100);
 
-		// Go through the nbprof first profiles attached to the subject
+		// Assess documents
 		Prof=Subs()->GetProfilesCursor();
-		for(Prof.Start(),nbprof++;(!Prof.End())&&(--nbprof);Prof.Next())
-		{
-			// Look if current subprofile is social or not
-			if(nbsocial)
-			{
-				Prof()->SetSocial(true);
-				nbsocial--;
-			}
-			else
-				Prof()->SetSocial(false);
-
-			// Judges documents
+		for(Prof.Start();!Prof.End();Prof.Next())
 			ProfileAssess(Groups,Prof(),Subs(),maxDocsOK,maxDocsKO,maxDocsH);
-		}
 	}
 }
 
@@ -698,42 +695,26 @@ bool GSubjects::AddTopic(bool Save) throw(std::bad_alloc)
 
 	// If no subject found -> do nothing
 	if(!newSubject) return(false);
-	newSubject->SetUsed(true);
 
 	// Copy the documents of the same language of the session in Docs;
 	NbDocs=Session->FillDocs(tmpDocs);
 
-	// Number of subprofiles that will judge documents
-	if(NbProfMax>newSubject->GetNbProfiles())
-		NbProfMax=newSubject->GetNbProfiles();
-	if(NbProfMin>newSubject->GetNbProfiles())
-		NbProfMin=newSubject->GetNbProfiles();
+	// Number of (social) subprofiles that will judge documents
 	nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
-
-	// Number of profiles that are social
 	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
+
+	newSubject->SetUsed(Session,true,nbprof,nbsocial);
 
 	// Number of documents to judged by each subprofile
 	maxDocsOK=static_cast<unsigned int>(newSubject->GetNbDocs()*PercOK/100);
 	maxDocsKO=static_cast<unsigned int>(newSubject->GetNbDocs()*PercKO/100);
 	maxDocsH=static_cast<unsigned int>(maxDocsOK*PercH/100);
 
-	// Go through the nbprof first profiles attached to the subject
+	// Assess documents
 	Prof=newSubject->GetProfilesCursor();
-	for(Prof.Start(),nbprof++;(!Prof.End())&&(--nbprof);Prof.Next())
-	{
-		// Look if current subprofile is social or not
-		if(nbsocial)
-		{
-			Prof()->SetSocial(true);
-			nbsocial--;
-		}
-		else
-			Prof()->SetSocial(false);
-
-		// Judges documents
+	for(Prof.Start();!Prof.End();Prof.Next())
 		ProfileAssess(Groups,Prof(),newSubject,maxDocsOK,maxDocsKO,maxDocsH);
-	}
+
 	if(Save)
 	{
 		Session->GetStorage()->SaveFdbks(Session);
@@ -761,8 +742,9 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 	// Apply Config
 	Apply();
 
-	//Randomly choose the number of profiles.
+	//Randomly choose the number of (social) profiles.
 	nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
+	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
@@ -808,41 +790,17 @@ unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
 	// Copy the documents of the same language of the session in Docs;
 	NbDocs=Session->FillDocs(tmpDocs);
 
-	// Number of profiles that are social
-	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
-
 	// Number of documents to judged by each subprofile
 	maxDocsOK=static_cast<unsigned int>(usedSubject->GetNbDocs()*PercOK/100);
 	maxDocsKO=static_cast<unsigned int>(usedSubject->GetNbDocs()*PercKO/100);
 	maxDocsH=static_cast<unsigned int>(maxDocsOK*PercH/100);
 
-	// Go through the nbprof first subprofiles attached to the subject
-	nbprofilescreated=0;
+	usedSubject->SetUsed(Session,true,nbprof,nbsocial);
+
+	// Assess documents
 	Prof=usedSubject->GetProfilesCursor();
-	Prof.Start();
-	while((!Prof.End())&&(nbprofilescreated<nbprof))
-	{
-		// Check if the profile is free
-		if(Prof()->GetNbAssessedDocs())
-		{
-			Prof.Next(); continue;
-		}
-		// Look if current profile is social or not
-		if(nbsocial)
-		{
-			Prof()->SetSocial(true);
-			nbsocial--;
-		}
-		else
-			Prof()->SetSocial(false);
-
-		// Judges documents
+	for(Prof.Start();!Prof.End();Prof.Next())
 		ProfileAssess(Groups,Prof(),usedSubject,maxDocsOK,maxDocsKO,maxDocsH);
-
-		//increment Prof and number of created profiles
-		Prof.Next();
-		nbprofilescreated++;
-	}
 
 	// optional saving
 	if(Save)
@@ -1033,7 +991,7 @@ bool GSubjects::IsFromSubject(unsigned int docid,const GSubject* s)
 	R::RContainer<GSubject,false,false>* line=Docs[docid];
 	if(!line)
 		return(false);
-	return(line->IsIn(s));
+	return(line->IsIn(*s));
 }
 
 
@@ -1061,7 +1019,7 @@ bool GSubjects::IsFromParentSubject(unsigned int docid,const GSubject* s)
 	{
 		if(Sub()==s)
 			continue;
-		if(line->IsIn(Sub()))
+		if(line->IsIn(*Sub()))
 			return(true);
 	}
 	return(false);

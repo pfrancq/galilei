@@ -35,11 +35,14 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <groups/gsubject.h>
-//#include <profiles/gsubprofile.h>
+#include <groups/gsubjects.h>
+#include <sessions/gsession.h>
 #include <profiles/gprofile.h>
+#include <profiles/guser.h>
 #include <docs/gdoc.h>
 using namespace R;
 using namespace GALILEI;
+using namespace std;
 
 
 
@@ -50,17 +53,10 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubject::GSubject(unsigned int id,const char* name,bool u) throw(std::bad_alloc)
+GSubject::GSubject(unsigned int id,const char* name,bool u)
 	 : RNode<GSubject,false>(10,2), Id(id), Name(name), Used(u),
 	   Docs(1000,500), Profiles(10,5)
 {
-}
-
-
-//------------------------------------------------------------------------------
-int GSubject::Compare(const GSubject* sub) const
-{
-	return(Id-sub->Id);
 }
 
 
@@ -79,7 +75,7 @@ int GSubject::Compare(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-int GSubject::Compare(const char* name) const
+int GSubject::Compare(const RString& name) const
 {
 	return(Name.Compare(name));
 }
@@ -152,9 +148,49 @@ RString GSubject::GetFullName(void) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::SetUsed(bool b)
+void GSubject::SetUsed(GSession* session,bool used,size_t nbprofiles,unsigned int& nbsocial)
 {
-	Used=b;
+	GProfile* prof;
+	static const RString UserNames[]={"Pascal Francq","Alain Delchambre","Hugues Bersini","Francois Heinderyckx",
+		"Faiza Gaultier","Marco Saerens","Marjorie Paternostre","David Wartel","Valery Vandaele","Nicolas Kumps","Julien Lamoral",
+		"Sarah Rolfo","Jean-Baptiste Valsamis","Jean-Pierre Devroey","Herve Gilson"};
+
+	Used=used;
+	if(Used)
+	{
+		// Verify that they are enough users -> If not, create new ones
+		if(session->GetNbUsers()<nbprofiles+Profiles.GetNb())
+		{
+			size_t maxusers=sizeof(UserNames)/sizeof(char*);
+			size_t newusers=nbprofiles+Profiles.GetNb()-session->GetNbUsers()+1;
+			for(size_t i=session->GetNbUsers();(--newusers)&&(i<maxusers);i++)
+			{
+				session->InsertUser(new GUser(session->GUsers::GetNewId(otUser),UserNames[i],UserNames[i],session->GetSubjects()->GetNbNodes()));
+			}
+			for(newusers++;--newusers;)
+			{
+				RString Usr("User"+itou(session->GetNbUsers()+1));
+				session->InsertUser(new GUser(session->GUsers::GetNewId(otUser),Usr,Usr,session->GetSubjects()->GetNbNodes()));
+			}
+		}
+
+		// For each user without a profile in this topic, create one.
+		RCursor<GUser> Cur(session->GetUsersCursor());
+		for(/*nbprofiles,*/Cur.Start();(nbprofiles)&&(!Cur.End());Cur.Next())
+		{
+			if(Cur()->GetPtr(Name,false))
+				continue;
+			session->InsertProfile(prof=new GProfile(Cur(),session->GUsers::GetNewId(otProfile),Name,nbsocial,5));
+			if(nbsocial)
+				nbsocial--;
+			session->GetSubjects()->InsertProfileSubject(prof,Id);
+			nbprofiles--;
+		}
+	}
+	else
+	{
+		Profiles.Clear();
+	}
 }
 
 

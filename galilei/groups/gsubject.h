@@ -98,15 +98,7 @@ public:
 	* @param name            Name of the subject.
 	* @param u               Used?
 	*/
-	GSubject(unsigned int id,const char* name,bool u) throw(std::bad_alloc);
-
-	/**
-	* Compare two subjects by comparing their identificator.
-	* @see R::RContainer
-	* @param sub             Pointer to a subject.
-	* @return int
-	*/
-	int Compare(const GSubject* sub) const;
+	GSubject(unsigned int id,const char* name,bool u);
 
 	/**
 	* Compare two subjects by comparing their identificator.
@@ -130,7 +122,7 @@ public:
 	* @param name            String.
 	* @return int
 	*/
-	int Compare(const char* name) const;
+	int Compare(const R::RString& name) const;
 
 	/**
 	* Insert a document to the list of those contained in the subject.
@@ -193,9 +185,15 @@ public:
 	bool IsUsed(void) const {return(Used);}
 
 	/**
-	* Set the status of the subject.
+	* Set the status of the subject. When the subject is not used anymore, no
+	* more profiles are associated to it. It is possible to add a given number
+	* of profiles to the subject. Eventually, new users are created.
+	* @param session         Session.
+	* @param used            Is the subject used.
+	* @param nbprofiles      Number of profiles to create for this subject.
+	* @param nbsocial        Number of social profiles still to create.
 	*/
-	void SetUsed(bool b);
+	void SetUsed(GSession* session,bool used,size_t nbprofiles,unsigned int& nbsocial);
 
 	/**
 	* Create a group for a given language with the subprofiles having a
