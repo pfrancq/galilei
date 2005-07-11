@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GPlugins.h
+	GPluginManagers.h
 
-	Generic Plug-In Managers - Header.
+	Manager of Plug-Ins Managers - Header.
 
 	Copyright 2005 by the Université libre de Bruxelles.
 
@@ -31,39 +31,20 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPluginsH
-#define GPluginsH
-
-
-//------------------------------------------------------------------------------
-// include file for R
-#include <rstd/rxmltag.h>
-#include <rstd/rxmlstruct.h>
-
-//-----------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <ctype.h>
-#include <stdexcept>
-#include <dirent.h>
-using namespace std;
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include file for dlopen
-#include <dlfcn.h>
+#ifndef GPluginManagersH
+#define GPluginManagersH
 
 
 //-----------------------------------------------------------------------------
 // include file for GALILEI
 #include <sessions/galilei.h>
-#include <sessions/gparams.h>
-#include <sessions/gplugin.h>
+#include <sessions/gpluginmanager.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
 
 //-----------------------------------------------------------------------------
 /**
@@ -83,13 +64,15 @@ public:
 
 	/**
 	* Connect to the session.
+	* @param session         Pointer to the session.
 	*/
-	void Connect(GSession* sess);
+	void Connect(GSession* session);
 
 	/**
 	* Disconnect to the session.
+	* @param session         Pointer to the session.
 	*/
-	void Disconnect(GSession* sess);
+	void Disconnect(GSession* session);
 
 protected:
 
@@ -104,6 +87,12 @@ protected:
 
 public:
 
+	/*
+	* Load all plug-ins and their dialog boxes.
+	* @param dll             Name of the dynamic link library.
+	* @param handle          Handle to the library contaioning the plug-in.
+	* @param handleDlg       Handle to the library contaioning the dialogs.
+	*/
 	void Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg=true);
 
 	/**

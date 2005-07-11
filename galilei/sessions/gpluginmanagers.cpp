@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GPlugins.cpp
+	GPluginManagers.cpp
 
-	Generic Plug-In Managers - Implementation.
+	Manager of Plug-Ins Managers - Implementation.
 
-	Copyright 2003-2004 by the Université libre de Bruxelles.
+	Copyright 2005 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -30,29 +30,40 @@
 
 
 
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <sessions/gplugins.h>
-#include <infos/glangmanager.h>
-#include <docs/glinkcalcmanager.h>
-#include <docs/gdocanalysemanager.h>
-#include <docs/gpostdocmanager.h>
-#include <docs/gfiltermanager.h>
-#include <engines/genginemanager.h>
-#include <engines/gmetaenginemanager.h>
-#include <groups/ggroupcalcmanager.h>
-#include <groups/ggroupingmanager.h>
-#include <groups/gpostgroupmanager.h>
-#include <profiles/gprofilecalcmanager.h>
-#include <profiles/gpostprofilemanager.h>
-#include <profiles/gpreprofilemanager.h>
-#include <sessions/gstatscalcmanager.h>
-using namespace GALILEI;
-using namespace R;
+//-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <ctype.h>
+#include <stdexcept>
+#include <dirent.h>
 using namespace std;
 
 
-GPluginManagers GPluginManagers::PluginManagers;
+
+//-----------------------------------------------------------------------------
+// include file for dlopen
+#include <dlfcn.h>
+
+
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <sessions/gpluginmanagers.h>
+#include <infos/glang.h>
+#include <docs/glinkcalc.h>
+#include <docs/gdocanalyse.h>
+#include <docs/gpostdoc.h>
+#include <docs/gfilter.h>
+#include <engines/gengine.h>
+#include <engines/gmetaengine.h>
+#include <groups/ggroupcalc.h>
+#include <groups/ggrouping.h>
+#include <groups/gpostgroup.h>
+#include <profiles/gprofilecalc.h>
+#include <profiles/gpostprofile.h>
+#include <profiles/gpreprofile.h>
+#include <sessions/gstatscalc.h>
+using namespace GALILEI;
+using namespace R;
+
 
 
 //------------------------------------------------------------------------------
@@ -60,6 +71,10 @@ GPluginManagers GPluginManagers::PluginManagers;
 // GGPluginManagers::PluginManagers
 //
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Static variables
+GPluginManagers GPluginManagers::PluginManagers;
 
 //------------------------------------------------------------------------------
 GPluginManagers::GPluginManagers(void)
@@ -154,12 +169,9 @@ void GPluginManagers::FindPlugins(const RString dir,RContainer<RString,true,fals
 
 
 //-----------------------------------------------------------------------------
-// Internal type to check the type fo the librayr
-typedef const char* LibTypeFc(void);
-
-//-----------------------------------------------------------------------------
 void GPluginManagers::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg)
 {
+	typedef const char* LibTypeFc(void); // Internal Type
 	R::RContainer<R::RString,true,false> PlugIns(50,25);
 	R::RContainer<R::RString,true,false> Dlgs(50,25);
 	char* error;
@@ -186,7 +198,7 @@ void GPluginManagers::Load(const R::RContainer<R::RString,true,false>& dirs,bool
 			cerr<<error<<endl;
 			continue;
 		}
-		RString Lib(LibType());
+		const char* Lib=LibType();
 		GGenericPluginManager* Manager=GetPtr(Lib);
 		if(!Manager)
 			continue;

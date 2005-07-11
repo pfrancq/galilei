@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GPreProfileManager.cpp
+	GPlugins.cpp
 
-	Post-Profile Computing Methods Manager- Implementation.
+	Generic Plug-In Managers - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2005 by the Université libre de Bruxelles.
 
 	Authors:
-		David Wartel (dwartel@ulb.ac.be).
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,55 +31,42 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <ctype.h>
-#include <stdexcept>
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gpreprofilemanager.h>
+#include <sessions/gpluginmanager.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-// class GPreProfileManager
+// GPlugin Manager class
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPreProfileManager::GPreProfileManager(void)
-	: GPluginManager<GPreProfileManager,GFactoryPreProfile,GFactoryPreProfileInit,GPreProfile>("PreProfile",API_PREPROFILE_VERSION)
+GGenericPluginManager::GGenericPluginManager(RString name,RString version,tPluginsType type)
+	: Name(name), Version(version), PluginsType(type)
 {
 }
 
 
-//------------------------------------------------------------------------------
-void GPreProfileManager::ReadConfig(RXMLTag* t)
+//-----------------------------------------------------------------------------
+int GGenericPluginManager::Compare(const GGenericPluginManager& pm) const
 {
-	if(!t) return;
-	R::RCursor<GFactoryPreProfile> Cur(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		Cur()->ReadConfig(t);
-	}
+	return(Name.Compare(pm.GetName()));
 }
 
 
-//------------------------------------------------------------------------------
-void GPreProfileManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+//-----------------------------------------------------------------------------
+int GGenericPluginManager::Compare(const RString& name) const
 {
-	R::RCursor<GFactoryPreProfile> Cur(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		Cur()->SaveConfig(xml,t);
-	}
+	return(Name.Compare(name));
 }
 
 
-//------------------------------------------------------------------------------
-GPreProfileManager::~GPreProfileManager(void)
+//-----------------------------------------------------------------------------
+GGenericPluginManager::~GGenericPluginManager(void)
 {
 }
