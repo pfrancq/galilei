@@ -76,13 +76,15 @@ int main(int argc, char *argv[])
 	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
 		VERSION, description, KAboutData::License_GPL,year, 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Project Manager"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Nicolas Kumps",I18N_NOOP("Researcher"), "nkumps@ulb.ac.be");
-	aboutData.addAuthor("Marjorie Paternostre",I18N_NOOP("Researcher"), "Marjorie.Paternostre@ulb.ac.be");
-	aboutData.addAuthor("Stéphane Rideau",I18N_NOOP("Researcher"), 0);
-	aboutData.addAuthor("Valery Vandaele",I18N_NOOP("Researcher"), "vvandaele@ulb.ac.be");
-	aboutData.addAuthor("David Wartel",I18N_NOOP("Researcher"), "dwartel@ulb.ac.be");
+	aboutData.addCredit("Nicolas Kumps",I18N_NOOP("Past Researcher"), 0);
+	aboutData.addCredit("Marjorie Paternostre",I18N_NOOP("Past Researcher"),0);
+	aboutData.addCredit("Stéphane Rideau",I18N_NOOP("Past Researcher"), 0);
+	aboutData.addCredit("Valery Vandaele",I18N_NOOP("Researcher"), "");
+	aboutData.addAuthor("David Wartel",I18N_NOOP("Consultant"), "david.wartel@e-parkos.com");
 	aboutData.addCredit("Marco Saerens",I18N_NOOP("Professor"), "saerens@isys.ucl.ac.be");
-
+	aboutData.addAuthor("Jean-Baptiste Valsamis",I18N_NOOP("Past Researcher"),"jvalsami@ulb.ac.be");
+	aboutData.addCredit("Faiza Gaultier",I18N_NOOP("Senior Researcher"),"fabbaci@ulb.ac.be");
+	aboutData.addCredit("Sarah Rolfo",I18N_NOOP("Past Researcher"),0);
 	KCmdLineArgs::init( argc, argv, &aboutData );
 	KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
 
