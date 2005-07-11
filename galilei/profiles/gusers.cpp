@@ -89,9 +89,7 @@ RCursor<GSubProfile> GUsers::GSubProfiles::GetSubProfilesCursor(void)
 
 //------------------------------------------------------------------------------
 GUsers::GUsers(unsigned int u,unsigned int p) throw(std::bad_alloc)
-	: RContainer<GUser,true,true>(u,u/2),
-	  Profiles(new RContainer<GProfile,true,true>(p,p/2)),
-	  SubProfiles(new RContainer<GSubProfiles,true,true>(p,p/2))
+	: RContainer<GUser,true,true>(u,u/2), Profiles(p,p/2), SubProfiles(p,p/2)
 {
 }
 
@@ -127,27 +125,26 @@ unsigned int GUsers::GetNewId(tObjType obj) throw(GException)
 	switch(obj)
 	{
 		case otProfile:
-			if(Profiles->GetNb())
-				id=(*Profiles)[GetNb()-1]->GetId()+1;
+			if(Profiles.GetNb())
+				id=Profiles[Profiles.GetMaxPos()]->GetId()+1;  // Not [GetNb()-1] because first profile has an identificator of 1
 			else
 				id=1;
 			break;
 
 		case otSubProfile:
-			Cur.Set(*SubProfiles);
+			Cur.Set(SubProfiles);
 			for(Cur.Start(),id=0;!Cur.End();Cur.Next())
 			{
 				if(!Cur()->GetNb()) continue;
-				i=(*Cur())[Cur()->GetNb()-1]->GetId();
+				i=(*Cur())[Cur()->GetMaxPos()]->GetId()+1;
 				if(id<i)
 					id=i;
 			}
-			id++;
 			break;
 
 		case otUser:
 			if(GetNb())
-				id=(*this)[GetNb()-1]->GetId()+1;
+				id=(*this)[GetMaxPos()]->GetId()+1; // Not [GetNb()-1] because first user has an identificator of 1
 			else
 				id=1;
 			break;
@@ -163,29 +160,28 @@ unsigned int GUsers::GetNewId(tObjType obj) throw(GException)
 //------------------------------------------------------------------------------
 void GUsers::InsertProfile(GProfile* p) throw(std::bad_alloc)
 {
-	Profiles->InsertPtrAt(p,p->GetId());
+	Profiles.InsertPtrAt(p,p->GetId());
 }
 
 
 //------------------------------------------------------------------------------
 GProfile* GUsers::GetProfile(const unsigned int id) const
 {
-	return(const_cast<GProfile*>((*Profiles)[id]));
+	return(const_cast<GProfile*>(Profiles[id]));
 }
 
 
 //------------------------------------------------------------------------------
 R::RCursor<GProfile> GUsers::GetProfilesCursor(void)
 {
-	R::RCursor<GProfile> cur(*Profiles);
-	return(cur);
+	return(R::RCursor<GProfile>(Profiles));
 }
 
 
 //------------------------------------------------------------------------------
 unsigned int GUsers::GetProfilesNb(void) const
 {
-	return(Profiles->GetNb());
+	return(Profiles.GetNb());
 }
 
 
@@ -196,9 +192,9 @@ void GUsers::InsertSubProfile(GSubProfile* s) throw(std::bad_alloc,GException)
 	GSubProfiles* list;
 
 	l=s->GetLang();
-	list=SubProfiles->GetPtr<const GLang*>(l);
+	list=SubProfiles.GetPtr<const GLang*>(l);
 	if(!list)
-		SubProfiles->InsertPtr(list=new GSubProfiles(l,Profiles->GetMaxNb()));
+		SubProfiles.InsertPtr(list=new GSubProfiles(l,Profiles.GetMaxNb()));
 //	list->InsertPtrAt(s,s->GetId());
 	list->InsertPtr(s);
 }
@@ -207,10 +203,9 @@ void GUsers::InsertSubProfile(GSubProfile* s) throw(std::bad_alloc,GException)
 //------------------------------------------------------------------------------
 GSubProfile* GUsers::GetSubProfile(const unsigned int id) const throw(GException)
 {
-	RCursor<GSubProfiles> Cur;
 	GSubProfile* ptr;
 
-	Cur.Set(*SubProfiles);
+	RCursor<GSubProfiles> Cur(SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		//ptr=Cur()->GetPtrAt(id);
@@ -225,38 +220,29 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id) const throw(GException
 //------------------------------------------------------------------------------
 GSubProfile* GUsers::GetSubProfile(const unsigned int id,GLang* lang) const throw(GException)
 {
-	//return(SubProfiles->GetPtr<const GLang*>(lang)->GetPtrAt(id));
-	return(SubProfiles->GetPtr<const GLang*>(lang)->GetPtr(id));
+	GSubProfiles* subs=SubProfiles.GetPtr(lang);
+	if(subs)
+		return(subs->GetPtr(id));
+	return(0);
 }
 
 
 //------------------------------------------------------------------------------
 RCursor<GSubProfile> GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
 {
-	GSubProfiles* ptr=SubProfiles->GetPtr<const GLang*>(lang);
+	GSubProfiles* ptr=SubProfiles.GetPtr(lang);
 	if(ptr)
 		return(ptr->GetSubProfilesCursor());
-	RCursor<GSubProfile> cur;
-	return(cur);
+	return(RCursor<GSubProfile>());
 }
 
 
 //------------------------------------------------------------------------------
-void GUsers::ClearSubProfiles(void)
+void GUsers::ClearUsers(void)
 {
-	// Empty information
-	R::RContainer<GWeightInfo,false,true> Empty(60,30);
-
-	RCursor<GSubProfiles> Cur;
-	RCursor<GSubProfile> Cur2;
-
-	Cur.Set(*SubProfiles);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		Cur2.Set(*Cur());
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-			Cur2()->Update(&Empty,true);
-	}
+	SubProfiles.Clear();
+	Profiles.Clear();
+	R::RContainer<GUser,true,true>::Clear();
 }
 
 

@@ -1005,7 +1005,7 @@ void GSession::ReInit(bool)
 	// Clean subprofiles and feedbacks
 	ClearGroups();
 	ClearFdbks();
-	ClearSubProfiles();
+	ClearUsers();
 
 	// Re-Init the sims and behaviorsbetween documents and subprofiles
 	if (!SessParams->GetBool("DebugSim"))

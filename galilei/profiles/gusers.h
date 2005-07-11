@@ -61,12 +61,12 @@ class GUsers : public R::RContainer<GUser,true,true>
 	/**
 	* Profiles handled by the system.
 	*/
-	std::auto_ptr< R::RContainer<GProfile,true,true> > Profiles;
+	R::RContainer<GProfile,true,true> Profiles;
 
 	/**
 	* SubProfiles handled by the system.
 	*/
-	std::auto_ptr< R::RContainer<GSubProfiles,true,true> > SubProfiles;
+	R::RContainer<GSubProfiles,true,true> SubProfiles;
 
 public:
 
@@ -86,14 +86,14 @@ public:
 	* Get the number of users treated by the system.
 	* @returns Number of Users.
 	*/
-	unsigned int GetNbUsers(void) const {return(GetNb());}
+	size_t GetNbUsers(void) const {return(GetNb());}
 
 	/**
 	* Get an identificator that can be assigned to a new object.
 	* @param obj             Object type (otProfile,otSubProfile,otUser).
 	* @return unsigned int
 	*/
-	unsigned int GetNewId(tObjType obj) throw(GException);
+	size_t GetNewId(tObjType obj) throw(GException);
 
 	/**
 	* Insert an user in the container.
@@ -128,7 +128,7 @@ public:
 	/**
 	* Get the number of profiles defined in the system.
 	*/
-	unsigned int GetProfilesNb(void) const;
+	size_t GetProfilesNb(void) const;
 
 	/**
 	* Insert a subprofiles in the container.
@@ -156,9 +156,9 @@ public:
 	R::RCursor<GSubProfile> GetSubProfilesCursor(GLang* lang) throw(GException);
 
 	/**
-	* Clear all the subprofiles.
+	* Clear all the users.
 	*/
-	void ClearSubProfiles(void);
+	void ClearUsers(void);
 
 	/**
 	* Destructor of the users.

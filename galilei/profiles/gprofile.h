@@ -216,12 +216,12 @@ public:
 	int Compare(const GProfile& profile) const;
 
 	/**
-	* Compare two profiles by comparing their identificator.
+	* Compare a name with the one of a profile.
 	* @see R::RContainer
-	* @param profile         Pointer to a profile.
+	* @param name            Name to compare.
 	* @return int
 	*/
-	int Compare(const GProfile* profile) const;
+	int Compare(const R::RString& name) const;
 
 	/**
 	* Compare an identificator of a profile with another one.

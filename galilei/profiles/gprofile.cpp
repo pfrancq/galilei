@@ -158,9 +158,9 @@ int GProfile::Compare(const GProfile &profile) const
 
 
 //------------------------------------------------------------------------------
-int GProfile::Compare(const GProfile *profile) const
+int GProfile::Compare(const RString& name) const
 {
-	return(Id-profile->Id);
+	return(Name.Compare(name));
 }
 
 
