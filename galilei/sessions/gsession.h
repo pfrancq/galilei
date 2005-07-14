@@ -40,12 +40,12 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <profiles/gusers.h>
-#include <docs/gdocs.h>
-#include <engines/genginedoc.h>
-#include <groups/ggroups.h>
-#include <sessions/gparams.h>
+#include <galilei.h>
+#include <gusers.h>
+#include <gdocs.h>
+#include <genginedoc.h>
+#include <ggroups.h>
+#include <gparams.h>
 
 
 //------------------------------------------------------------------------------

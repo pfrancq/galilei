@@ -34,12 +34,12 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/gsubject.h>
-#include <groups/gsubjects.h>
-#include <sessions/gsession.h>
-#include <profiles/gprofile.h>
-#include <profiles/guser.h>
-#include <docs/gdoc.h>
+#include <gsubject.h>
+#include <gsubjects.h>
+#include <gsession.h>
+#include <gprofile.h>
+#include <guser.h>
+#include <gdoc.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;

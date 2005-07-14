@@ -39,8 +39,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <engines/gengine.h>
-#include <engines/gmetaengine.h>
+#include <gengine.h>
+#include <gmetaengine.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

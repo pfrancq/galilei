@@ -32,11 +32,11 @@
 
 //------------------------------------------------------------------------------
 // include file for GALILEI
-#include <infos/gdata.h>
-#include <infos/gdict.h>
-#include <infos/gwordlist.h>
-#include <infos/glang.h>
-#include <sessions/gsession.h>
+#include <gdata.h>
+#include <gdict.h>
+#include <gwordlist.h>
+#include <glang.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 

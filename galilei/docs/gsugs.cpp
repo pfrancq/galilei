@@ -32,8 +32,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gsugs.h>
-#include <docs/gdoc.h>
+#include <gsugs.h>
+#include <gdoc.h>
 using namespace GALILEI;
 
 

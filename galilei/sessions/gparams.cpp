@@ -31,7 +31,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gparams.h>
+#include <gparams.h>
 using namespace GALILEI;
 using namespace R;
 

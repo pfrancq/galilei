@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/gpostgroup.h>
+#include <gpostgroup.h>
 using namespace GALILEI;
 using namespace R;
 

@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gprofilecalc.h>
+#include <gprofilecalc.h>
 using namespace GALILEI;
 
 

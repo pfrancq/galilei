@@ -32,17 +32,17 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggrouping.h>
-#include <infos/glang.h>
-#include <groups/ggroupcalc.h>
-#include <groups/ggroup.h>
-#include <groups/ggroups.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
-#include <sessions/gsession.h>
-#include <sessions/gpluginmanagers.h>
-#include <sessions/gstorage.h>
-#include <sessions/gslot.h>
+#include <ggrouping.h>
+#include <glang.h>
+#include <ggroupcalc.h>
+#include <ggroup.h>
+#include <ggroups.h>
+#include <gprofile.h>
+#include <gsubprofile.h>
+#include <gsession.h>
+#include <gpluginmanagers.h>
+#include <gstorage.h>
+#include <gslot.h>
 using namespace R;
 using namespace GALILEI;
 

@@ -38,7 +38,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gstatscalc.h>
+#include <gstatscalc.h>
 #include <rstd/rxmlfile.h>
 using namespace GALILEI;
 

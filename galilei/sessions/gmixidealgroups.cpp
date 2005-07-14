@@ -41,15 +41,15 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gmixidealgroups.h>
-#include <sessions/gsession.h>
-#include <sessions/gstorage.h>
-#include <sessions/gslot.h>
-#include <infos/glang.h>
-#include <groups/ggroups.h>
-#include <groups/ggroup.h>
-#include <groups/gsubject.h>
-#include <profiles/gsubprofile.h>
+#include <gmixidealgroups.h>
+#include <gsession.h>
+#include <gstorage.h>
+#include <gslot.h>
+#include <glang.h>
+#include <ggroups.h>
+#include <ggroup.h>
+#include <gsubject.h>
+#include <gsubprofile.h>
 using namespace GALILEI;
 
 

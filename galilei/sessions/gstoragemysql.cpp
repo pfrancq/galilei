@@ -39,32 +39,32 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/gdict.h>
-#include <infos/glang.h>
-#include <infos/ginfo.h>
-#include <infos/ginfolist.h>
-#include <infos/gword.h>
-#include <infos/gwordlist.h>
-#include <infos/gweightinfo.h>
-#include <infos/gweightinfos.h>
-#include <docs/gdocproxy.h>
-#include <docs/glink.h>
-#include <docs/gsugs.h>
-#include <profiles/guser.h>
-#include <profiles/gusers.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
-#include <sessions/gstoragemysql.h>
-#include <sessions/gslot.h>
-#include <groups/ggroup.h>
-#include <groups/gsubjects.h>
-#include <groups/gsubject.h>
-#include <sessions/gsession.h>
-#include <historic/ggroupshistory.h>
-#include <historic/gweightinfoshistory.h>
-#include <engines/gindexer.h>
-#include <engines/gwordoccurs.h>
-#include <sessions/gpluginmanagers.h>
+#include <gdict.h>
+#include <glang.h>
+#include <ginfo.h>
+#include <ginfolist.h>
+#include <gword.h>
+#include <gwordlist.h>
+#include <gweightinfo.h>
+#include <gweightinfos.h>
+#include <gdocproxy.h>
+#include <glink.h>
+#include <gsugs.h>
+#include <guser.h>
+#include <gusers.h>
+#include <gprofile.h>
+#include <gsubprofile.h>
+#include <gstoragemysql.h>
+#include <gslot.h>
+#include <ggroup.h>
+#include <gsubjects.h>
+#include <gsubject.h>
+#include <gsession.h>
+#include <ggroupshistory.h>
+#include <gweightinfoshistory.h>
+#include <gindexer.h>
+#include <gwordoccurs.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 

@@ -6,7 +6,7 @@
 
 	DocXML representing the document content - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocxml.h>
+#include <gdocxml.h>
 using namespace GALILEI;
 using namespace R;
 

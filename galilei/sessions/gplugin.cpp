@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gplugin.h>
+#include <gplugin.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

@@ -42,9 +42,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <sessions/gplugin.h>
-#include <sessions/gpluginmanager.h>
+#include <galilei.h>
+#include <gplugin.h>
+#include <gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------

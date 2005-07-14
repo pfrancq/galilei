@@ -46,21 +46,21 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gpluginmanagers.h>
-#include <infos/glang.h>
-#include <docs/glinkcalc.h>
-#include <docs/gdocanalyse.h>
-#include <docs/gpostdoc.h>
-#include <docs/gfilter.h>
-#include <engines/gengine.h>
-#include <engines/gmetaengine.h>
-#include <groups/ggroupcalc.h>
-#include <groups/ggrouping.h>
-#include <groups/gpostgroup.h>
-#include <profiles/gprofilecalc.h>
-#include <profiles/gpostprofile.h>
-#include <profiles/gpreprofile.h>
-#include <sessions/gstatscalc.h>
+#include <gpluginmanagers.h>
+#include <glang.h>
+#include <glinkcalc.h>
+#include <gdocanalyse.h>
+#include <gpostdoc.h>
+#include <gfilter.h>
+#include <gengine.h>
+#include <gmetaengine.h>
+#include <ggroupcalc.h>
+#include <ggrouping.h>
+#include <gpostgroup.h>
+#include <gprofilecalc.h>
+#include <gpostprofile.h>
+#include <gpreprofile.h>
+#include <gstatscalc.h>
 using namespace GALILEI;
 using namespace R;
 

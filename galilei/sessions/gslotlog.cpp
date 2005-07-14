@@ -32,10 +32,10 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gslotlog.h>
-#include <docs/gdoc.h>
-#include <profiles/gprofile.h>
-#include <infos/glang.h>
+#include <gslotlog.h>
+#include <gdoc.h>
+#include <gprofile.h>
+#include <glang.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

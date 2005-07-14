@@ -32,9 +32,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include<profiles/guser.h>
-#include<profiles/gprofile.h>
-#include<profiles/gsubprofile.h>
+#include<guser.h>
+#include<gprofile.h>
+#include<gsubprofile.h>
 using namespace GALILEI;
 using namespace R;
 

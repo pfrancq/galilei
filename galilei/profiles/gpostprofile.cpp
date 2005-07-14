@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gpostprofile.h>
+#include <gpostprofile.h>
 using namespace GALILEI;
 using namespace R;
 

@@ -6,10 +6,10 @@
 
 	Widget to show the groups history - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
-		David Wartel <dwartel@ulb.ac.be>	
+		David Wartel <dwartel@ulb.ac.be>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -38,7 +38,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
+#include <galilei.h>
 
 
 //-----------------------------------------------------------------------------

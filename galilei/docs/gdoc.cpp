@@ -32,12 +32,12 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdoc.h>
-#include <docs/glink.h>
-#include <infos/glang.h>
-#include <profiles/gprofileproxy.h>
-#include <infos/gweightinfo.h>
-#include <sessions/gsession.h>
+#include <gdoc.h>
+#include <glink.h>
+#include <glang.h>
+#include <gprofileproxy.h>
+#include <gweightinfo.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 

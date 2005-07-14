@@ -45,8 +45,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <sessions/gparams.h>
+#include <galilei.h>
+#include <gparams.h>
 
 
 //-----------------------------------------------------------------------------

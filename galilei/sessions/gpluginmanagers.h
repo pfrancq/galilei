@@ -37,8 +37,8 @@
 
 //-----------------------------------------------------------------------------
 // include file for GALILEI
-#include <sessions/galilei.h>
-#include <sessions/gpluginmanager.h>
+#include <galilei.h>
+#include <gpluginmanager.h>
 
 
 //-----------------------------------------------------------------------------

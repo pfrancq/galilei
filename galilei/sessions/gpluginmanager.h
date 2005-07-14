@@ -56,9 +56,9 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include file for GALILEI
-#include <sessions/galilei.h>
-#include <sessions/gparams.h>
-#include <sessions/gplugin.h>
+#include <galilei.h>
+#include <gparams.h>
+#include <gplugin.h>
 
 
 //-----------------------------------------------------------------------------
@@ -320,7 +320,7 @@ public:
 
 //-----------------------------------------------------------------------------
 // Template implementation
-#include <sessions/gpluginmanager.hh>
+#include <gpluginmanager.hh>
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

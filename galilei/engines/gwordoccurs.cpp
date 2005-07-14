@@ -32,8 +32,8 @@
 
 //-----------------------------------------------------------------------------
 // include file for Galilei
-#include <infos/ginfo.h>
-#include <engines/gwordoccurs.h>
+#include <ginfo.h>
+#include <gwordoccurs.h>
 using namespace GALILEI;
 using namespace R;
 

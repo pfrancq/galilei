@@ -36,8 +36,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocxml.h>
-#include <sessions/gparam.h>
+#include <gdocxml.h>
+#include <gparam.h>
 using namespace GALILEI;
 using namespace R;
 

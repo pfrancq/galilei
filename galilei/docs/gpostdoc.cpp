@@ -31,7 +31,7 @@
 
 //------------------------------------------------------------------------------
 // include file for GALILEI
-#include <docs/gpostdoc.h>
+#include <gpostdoc.h>
 using namespace GALILEI;
 using namespace R;
 

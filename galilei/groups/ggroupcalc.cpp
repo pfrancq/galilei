@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggroupcalc.h>
+#include <ggroupcalc.h>
 using namespace GALILEI;
 using namespace R;
 

@@ -37,11 +37,11 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/gweightinfos.h>
-#include <infos/gweightinfo.h>
-#include <infos/glang.h>
-#include <infos/gdict.h>
-#include <infos/gword.h>
+#include <gweightinfos.h>
+#include <gweightinfo.h>
+#include <glang.h>
+#include <gdict.h>
+#include <gword.h>
 using namespace GALILEI;
 using namespace R;
 

@@ -11,6 +11,12 @@ AM_INIT_AUTOMAKE(galilei, 1.86)
 AC_C_BIGENDIAN
 
 
+AC_SUBST(INCLUDES_GALILEI, '-I$(top_builddir)/galilei/docs -I$(top_builddir)/galilei/infos -I$(top_builddir)/galilei/groups -I$(top_builddir)/galilei/historic -I$(top_builddir)/galilei/infos -I$(top_builddir)/galilei/profiles -I$(top_builddir)/galilei/sessions -I$(top_builddir)/galilei/engines')
+
+FRONTEND=""
+FRONTEND_LIB=""
+
+
 #--------------------- CHECK THE USE OF KDE FRONTEND ---------
 
 AC_ARG_ENABLE(kde, [  --enable-kde            enable kde frontend for plugins [[default=no]]],,enable_kde=no)
@@ -24,7 +30,8 @@ if test "$enable_kde" != "no"; then
 	KDE_USE_QT
 	AC_PATH_KDE
 	AC_CHECK_KDEMAXPATHLEN
-	FRONTEND="kde"
+	FRONTEND="$FRONTEND kde"
+	FRONTEND_LIB="$FRONTEND_LIB frontend/kde/libkde_galilei.la"
 	CXXFLAGS="$CXXFLAGS -D_USE_KDE"
 	echo " -----------------------------------"
 	echo " -- KDE Frontend will be compiled --"
@@ -32,6 +39,7 @@ if test "$enable_kde" != "no"; then
 fi
 
 AC_SUBST(FRONTEND)
+AC_SUBST(FRONTEND_LIB)
 
 
 #--------------------- END CHECK THE USE OF KDE FRONTEND -----

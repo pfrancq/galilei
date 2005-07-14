@@ -32,10 +32,10 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/glang.h>
-#include <infos/gdict.h>
-#include <sessions/gsession.h>
-#include <sessions/gstorage.h>
+#include <glang.h>
+#include <gdict.h>
+#include <gsession.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
 

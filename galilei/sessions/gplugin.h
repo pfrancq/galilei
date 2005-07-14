@@ -56,8 +56,8 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include file for GALILEI
-#include <sessions/galilei.h>
-#include <sessions/gparams.h>
+#include <galilei.h>
+#include <gparams.h>
 
 
 //-----------------------------------------------------------------------------
@@ -436,7 +436,7 @@ extern "C" const char* LibType(void)                \
 
 //-----------------------------------------------------------------------------
 // Template implementation
-#include <sessions/gplugin.hh>
+#include <gplugin.hh>
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

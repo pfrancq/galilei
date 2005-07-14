@@ -42,14 +42,15 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/glang.h>
-#include <frontend/kde/qgsubprofiles.h>
-#include <profiles/gsubprofile.h>
-#include <infos/gweightinfo.h>
-#include <sessions/gsession.h>
-#include <sessions/gstorage.h>
+#include <glang.h>
+#include <qgsubprofiles.h>
+#include <gsubprofile.h>
+#include <gweightinfo.h>
+#include <gsession.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
+
 
 
 //-----------------------------------------------------------------------------

@@ -49,8 +49,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <engines/granking.h>
+#include <galilei.h>
+#include <granking.h>
 
 
 //------------------------------------------------------------------------------

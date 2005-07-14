@@ -33,13 +33,13 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gprofilesbehaviours.h>
-#include <profiles/gsubprofile.h>
-#include <profiles/gprofile.h>
-#include <profiles/gusers.h>
-#include <infos/glang.h>
-#include <sessions/gsession.h>
-#include <sessions/gpluginmanagers.h>
+#include <gprofilesbehaviours.h>
+#include <gsubprofile.h>
+#include <gprofile.h>
+#include <gusers.h>
+#include <glang.h>
+#include <gsession.h>
+#include <gpluginmanagers.h>
 using namespace R;
 using namespace GALILEI;
 

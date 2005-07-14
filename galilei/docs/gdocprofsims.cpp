@@ -38,14 +38,14 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gpluginmanagers.h>
-#include <docs/gdocprofsims.h>
-#include <infos/glang.h>
-#include <docs/gdocs.h>
-#include <docs/gdoc.h>
-#include <profiles/gsubprofile.h>
-#include <profiles/gusers.h>
-#include <sessions/gsession.h>
+#include <gpluginmanagers.h>
+#include <gdocprofsims.h>
+#include <glang.h>
+#include <gdocs.h>
+#include <gdoc.h>
+#include <gsubprofile.h>
+#include <gusers.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 

@@ -37,8 +37,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include<infos/gweightinfo.h>
-#include<infos/glang.h>
+#include<gweightinfo.h>
+#include<glang.h>
 using namespace GALILEI;
 using namespace R;
 

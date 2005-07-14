@@ -47,8 +47,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gstorage.h>
-#include <sessions/galilei.h>
+#include <gstorage.h>
+#include <galilei.h>
 
 
 //------------------------------------------------------------------------------

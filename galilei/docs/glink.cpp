@@ -31,7 +31,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/glink.h>
+#include <glink.h>
 using namespace GALILEI;
 
 

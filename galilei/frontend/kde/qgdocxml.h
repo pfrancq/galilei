@@ -7,7 +7,7 @@
 
 	Widget to show a XML structure of a document - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -44,7 +44,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocxml.h>
+#include <gdocxml.h>
 
 
 //-----------------------------------------------------------------------------

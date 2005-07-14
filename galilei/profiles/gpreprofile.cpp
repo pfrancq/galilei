@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gpreprofile.h>
+#include <gpreprofile.h>
 using namespace GALILEI;
 using namespace R;
 

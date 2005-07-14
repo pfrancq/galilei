@@ -34,16 +34,16 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/gsubjects.h>
-#include <groups/gsubject.h>
-#include <groups/ggroups.h>
-#include <docs/gdocproxy.h>
-#include <sessions/gsession.h>
-#include <sessions/gpluginmanagers.h>
-#include <sessions/gstorage.h>
-#include <infos/glang.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
+#include <gsubjects.h>
+#include <gsubject.h>
+#include <ggroups.h>
+#include <gdocproxy.h>
+#include <gsession.h>
+#include <gpluginmanagers.h>
+#include <gstorage.h>
+#include <glang.h>
+#include <gprofile.h>
+#include <gsubprofile.h>
 using namespace R;
 using namespace GALILEI;
 

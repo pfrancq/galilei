@@ -9,7 +9,7 @@
 	Copyright 2002 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		
+
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -38,13 +38,13 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/gprofile.h>
-#include <historic/ggrouphistory.h>
-#include <historic/ggroupshistory.h>
-#include <groups/gsubject.h>
-#include <profiles/gsubprofile.h>
-#include <profiles/guser.h>
-#include <historic/gweightinfoshistory.h>
+#include <gprofile.h>
+#include <ggrouphistory.h>
+#include <ggroupshistory.h>
+#include <gsubject.h>
+#include <gsubprofile.h>
+#include <guser.h>
+#include <gweightinfoshistory.h>
 #include <qlistviewitemtype.h>
 #include <qggroupshistory.h>
 #include <frontend/kde/rqt.h>

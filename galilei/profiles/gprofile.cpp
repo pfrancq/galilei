@@ -32,11 +32,11 @@
 
 //------------------------------------------------------------------------------
 // include filess for GALILEI
-#include <profiles/gprofile.h>
-#include <sessions/gsession.h>
-#include <profiles/guser.h>
-#include <profiles/gsubprofile.h>
-#include <docs/gdocproxy.h>
+#include <gprofile.h>
+#include <gsession.h>
+#include <guser.h>
+#include <gsubprofile.h>
+#include <gdocproxy.h>
 using namespace GALILEI;
 using namespace R;
 

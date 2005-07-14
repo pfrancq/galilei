@@ -32,8 +32,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <historic/ggrouphistory.h>
-#include <historic/gweightinfoshistory.h>
+#include <ggrouphistory.h>
+#include <gweightinfoshistory.h>
 using namespace GALILEI;
 using namespace R;
 

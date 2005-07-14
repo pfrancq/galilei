@@ -39,7 +39,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <engines/genginedoc.h>
+#include <genginedoc.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

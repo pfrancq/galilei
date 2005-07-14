@@ -31,7 +31,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gstorage.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
 

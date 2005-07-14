@@ -32,9 +32,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocs.h>
-#include <docs/gdoc.h>
-#include <infos/glang.h>
+#include <gdocs.h>
+#include <gdoc.h>
+#include <glang.h>
 using namespace GALILEI;
 using namespace R;
 

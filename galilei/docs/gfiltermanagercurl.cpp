@@ -37,8 +37,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gfiltermanagercurl.h>
-#include <docs/gfilter.h>
+#include <gfiltermanagercurl.h>
+#include <gfilter.h>
 using namespace GALILEI;
 using namespace R;
 

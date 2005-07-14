@@ -32,11 +32,11 @@
 
 //------------------------------------------------------------------------------
 //include file for GALILEI
-#include <docs/glinkcalc.h>
-#include <docs/glink.h>
-#include <docs/glinks.h>
-#include <docs/gdoc.h>
-#include <sessions/gsession.h>
+#include <glinkcalc.h>
+#include <glink.h>
+#include <glinks.h>
+#include <gdoc.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 

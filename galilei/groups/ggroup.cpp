@@ -37,11 +37,11 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggroup.h>
-#include <docs/gdocproxy.h>
-#include <profiles/gsubprofile.h>
-#include <sessions/gsession.h>
-#include <infos/gweightinfo.h>
+#include <ggroup.h>
+#include <gdocproxy.h>
+#include <gsubprofile.h>
+#include <gsession.h>
+#include <gweightinfo.h>
 using namespace GALILEI;
 using namespace R;
 

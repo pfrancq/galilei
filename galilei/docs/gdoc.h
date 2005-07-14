@@ -37,9 +37,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <infos/gweightinfos.h>
-#include <groups/gsubject.h>
+#include <galilei.h>
+#include <gweightinfos.h>
+#include <gsubject.h>
 
 
 //------------------------------------------------------------------------------

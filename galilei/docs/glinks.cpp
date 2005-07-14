@@ -31,8 +31,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/glinks.h>
-#include <docs/glink.h>
+#include <glinks.h>
+#include <glink.h>
 using namespace GALILEI;
 using namespace R;
 

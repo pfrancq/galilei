@@ -44,9 +44,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocxml.h>
-#include <docs/gdoc.h>
-#include <docs/gfilter.h>
+#include <gdocxml.h>
+#include <gdoc.h>
+#include <gfilter.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -519,17 +519,15 @@ GFilterManager::GFilterManager(void)
 	: GPluginManager<GFilterManager,GFactoryFilter,GFilter>("Filter",API_FILTER_VERSION,ptList), MIMES(50,25),
 	  Exts(50,25)
 {
-	RString MIME;
-
 	// Try to open list of MIME types
 	try
 	{
+		RString MIME;
 		RXMLStruct xml;
 		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
 		R::RCursor<RXMLTag> Cur,Cur2;
 
 		File.Open(R::RIO::Read);
-
 		// Go trough all MIME types
 		Cur=xml.GetTag("mimeTypes")->GetNodes();
 		for(Cur.Start();!Cur.End();Cur.Next())
@@ -539,12 +537,13 @@ GFilterManager::GFilterManager(void)
 			// Go through all file extension
 			Cur2=Cur()->GetNodes();
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
+			{
 				Exts.InsertPtr(new GMIMEExt(MIME,Cur2()->GetAttrValue("ext")));
+			}
 		}
 	}
 	catch(...)
 	{
-		// No MIME types found
 	}
 }
 

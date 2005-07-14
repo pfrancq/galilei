@@ -32,9 +32,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <historic/gweightinfoshistory.h>
-#include <infos/gweightinfo.h>
-#include <profiles/gsubprofile.h>
+#include <gweightinfoshistory.h>
+#include <gweightinfo.h>
+#include <gsubprofile.h>
 using namespace GALILEI;
 using namespace R;
 

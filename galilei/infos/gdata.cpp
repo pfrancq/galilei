@@ -32,7 +32,7 @@
 
 //-----------------------------------------------------------------------------
 // include file for Galilei
-#include <infos/gdata.h>
+#include <gdata.h>
 using namespace GALILEI;
 using namespace R;
 

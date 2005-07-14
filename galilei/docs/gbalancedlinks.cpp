@@ -31,8 +31,8 @@
 
 //------------------------------------------------------------------------------
 //include file for GALILEI
-#include <docs/gbalancedlinks.h>
-#include <docs/glink.h>
+#include <gbalancedlinks.h>
+#include <glink.h>
 using namespace GALILEI;
 using namespace R;
 

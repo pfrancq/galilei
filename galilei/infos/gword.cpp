@@ -32,7 +32,7 @@
 
 //-----------------------------------------------------------------------------
 // include file for Galilei
-#include <infos/gword.h>
+#include <gword.h>
 using namespace GALILEI;
 using namespace R;
 

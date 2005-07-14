@@ -37,19 +37,19 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsessionprg.h>
-#include <infos/glang.h>
-#include <groups/ggrouping.h>
-#include <groups/ggroupcalc.h>
-#include <groups/gsubjects.h>
-#include <profiles/gprofilecalc.h>
-#include <docs/glinkcalc.h>
-#include <sessions/gstatscalc.h>
-#include <sessions/gsession.h>
-#include <sessions/gstorage.h>
-#include <sessions/gslot.h>
-#include <sessions/gmixidealgroups.h>
-#include <sessions/gpluginmanagers.h>
+#include <gsessionprg.h>
+#include <glang.h>
+#include <ggrouping.h>
+#include <ggroupcalc.h>
+#include <gsubjects.h>
+#include <gprofilecalc.h>
+#include <glinkcalc.h>
+#include <gstatscalc.h>
+#include <gsession.h>
+#include <gstorage.h>
+#include <gslot.h>
+#include <gmixidealgroups.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

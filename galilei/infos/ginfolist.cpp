@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/ginfolist.h>
+#include <ginfolist.h>
 using namespace GALILEI;
 using namespace R;
 

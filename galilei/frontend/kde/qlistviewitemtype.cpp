@@ -6,10 +6,10 @@
 
 	Widget to show a subprofile desciption in vector model - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
-		
+
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,12 +32,12 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <groups/ggroup.h>
-#include <profiles/guser.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
-#include <historic/gweightinfoshistory.h>
-#include <docs/gdoc.h>
+#include <ggroup.h>
+#include <guser.h>
+#include <gprofile.h>
+#include <gsubprofile.h>
+#include <gweightinfoshistory.h>
+#include <gdoc.h>
 using namespace GALILEI;
 
 
@@ -194,7 +194,7 @@ GALILEI::QListViewItemType::QListViewItemType(GEngineDoc* engineDoc, QListView* 
 	Obj.EngineDoc=engineDoc;
 	Level=0;
 }
-  
+
 
 //-----------------------------------------------------------------------------
 void GALILEI::QListViewItemType::paintCell( QPainter * p, const QColorGroup & cg, int column, int width, int align )

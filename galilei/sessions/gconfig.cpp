@@ -39,24 +39,24 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gconfig.h>
-#include <sessions/gplugin.h>
-#include <docs/gfilter.h>
-#include <engines/gengine.h>
-#include <engines/gmetaengine.h>
-#include <profiles/gprofilecalc.h>
-#include <profiles/gpostprofile.h>
-#include <groups/ggrouping.h>
-#include <groups/ggroupcalc.h>
-#include <sessions/gstatscalc.h>
-#include <sessions/gsession.h>
-#include <docs/glinkcalc.h>
-#include <docs/gpostdoc.h>
-#include <infos/glang.h>
-#include <docs/gdocanalyse.h>
-#include <groups/gpostgroup.h>
-#include <sessions/gplugin.h>
-#include <sessions/gpluginmanagers.h>
+#include <gconfig.h>
+#include <gplugin.h>
+#include <gfilter.h>
+#include <gengine.h>
+#include <gmetaengine.h>
+#include <gprofilecalc.h>
+#include <gpostprofile.h>
+#include <ggrouping.h>
+#include <ggroupcalc.h>
+#include <gstatscalc.h>
+#include <gsession.h>
+#include <glinkcalc.h>
+#include <gpostdoc.h>
+#include <glang.h>
+#include <gdocanalyse.h>
+#include <gpostgroup.h>
+#include <gplugin.h>
+#include <gpluginmanagers.h>
 using namespace R;
 using namespace GALILEI;
 

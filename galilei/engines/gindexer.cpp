@@ -32,10 +32,10 @@
 
 //------------------------------------------------------------------------------
 // include file for GALILEI
-#include <engines/gindexer.h>
-#include <engines/gwordoccurs.h>
-#include <infos/glang.h>
-#include <infos/ginfo.h>
+#include <gindexer.h>
+#include <gwordoccurs.h>
+#include <glang.h>
+#include <ginfo.h>
 using namespace GALILEI;
 using namespace R;
 

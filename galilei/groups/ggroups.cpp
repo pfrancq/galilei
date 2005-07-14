@@ -32,10 +32,10 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include<groups/ggroups.h>
-#include<groups/ggroup.h>
-#include<infos/glang.h>
-#include<profiles/gsubprofile.h>
+#include<ggroups.h>
+#include<ggroup.h>
+#include<glang.h>
+#include<gsubprofile.h>
 using namespace GALILEI;
 using namespace R;
 
