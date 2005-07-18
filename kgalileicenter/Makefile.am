@@ -13,7 +13,7 @@ kgalileicenter_SOURCES = qchooseparent.ui qhistorydlg.ui qfilldatabase.ui \
 	kviewsom.cpp ksommap.cpp kviewmetaengine.cpp kgalileicenter.cpp main.cpp  
 	
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
-kgalileicenter_LDADD = /usr/lib/libmysqlclient.la $(LIB_R) $(LIB_GALILEI) \
+kgalileicenter_LDADD = /usr/lib/libmysqlclient.la $(LIB_R) $(LIB_GALILEI) $(LIBKDE_GALILEI) \
 	$(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
 
 SUBDIRS =
