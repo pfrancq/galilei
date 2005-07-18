@@ -38,25 +38,25 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rxmlfile.h>
-#include <frontend/kde/rqt.h>
+#include <rxmlfile.h>
+#include <rqt.h>
 using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/gweightinfo.h>
-#include <infos/gweightinfos.h>
-#include <frontend/kde/qlistviewitemtype.h>
-#include <frontend/kde/qgdocxml.h>
-#include <docs/gdoc.h>
-#include <docs/gdocxml.h>
-#include <profiles/guser.h>
-#include <profiles/gprofileproxy.h>
-#include <infos/glang.h>
-#include <sessions/gsession.h>
-#include <sessions/gstorage.h>
-#include <sessions/gpluginmanagers.h>
+#include <gweightinfo.h>
+#include <gweightinfos.h>
+#include <qlistviewitemtype.h>
+#include <qgdocxml.h>
+#include <gdoc.h>
+#include <gdocxml.h>
+#include <guser.h>
+#include <gprofileproxy.h>
+#include <glang.h>
+#include <gsession.h>
+#include <gstorage.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 
 
@@ -340,7 +340,9 @@ void KViewDoc::CreateDocXML(void)
 	if(Struct)
 	{
 		XML->SetDocXML(Struct);
-		InfoMIME->setText(1,ToQString(Struct->GetTag("dc:format")->GetContent()));
+		RXMLTag* tag=Struct->GetTag("dc:format");
+		if(tag)
+			InfoMIME->setText(1,ToQString(tag->GetContent()));
 		bDocXML=true;
 	}
 }

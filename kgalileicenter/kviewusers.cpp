@@ -32,15 +32,15 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <frontend/kde/rqt.h>
-#include <rstd/rcursor.h>
+#include <rqt.h>
+#include <rcursor.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsession.h>
-#include <profiles/guser.h>
-#include <profiles/gprofile.h>
+#include <gsession.h>
+#include <guser.h>
+#include <gprofile.h>
 using namespace GALILEI;
 using namespace R;
 

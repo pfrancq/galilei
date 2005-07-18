@@ -43,7 +43,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gstoragemysql.h>
+#include <gstoragemysql.h>
 using namespace GALILEI;
 
 

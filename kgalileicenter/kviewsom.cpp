@@ -38,23 +38,23 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include<frontend/kde/rqt.h>
+#include<rqt.h>
 using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/gweightinfo.h>
-#include <infos/gweightinfos.h>
-#include <frontend/kde/qlistviewitemtype.h>
-#include <frontend/kde/qgdocxml.h>
-#include <docs/gdoc.h>
-#include <docs/gdocxml.h>
-#include <profiles/guser.h>
-#include <profiles/gprofile.h>
-#include <infos/glang.h>
-#include <sessions/gsession.h>
-#include <sessions/gstorage.h>
+#include <gweightinfo.h>
+#include <gweightinfos.h>
+#include <qlistviewitemtype.h>
+#include <qgdocxml.h>
+#include <gdoc.h>
+#include <gdocxml.h>
+#include <guser.h>
+#include <gprofile.h>
+#include <glang.h>
+#include <gsession.h>
+#include <gstorage.h>
 using namespace GALILEI;
 
 
@@ -118,7 +118,7 @@ KViewSom::KViewSom(KDoc* doc,  QWidget* parent,const char* name, const char* dat
 	mapboxL->addWidget(SomMap);
 
 	//map buttons
-	QHBoxLayout* buttonsLayout=new QHBoxLayout(0,0,0,"buttonLayout");	
+	QHBoxLayout* buttonsLayout=new QHBoxLayout(0,0,0,"buttonLayout");
 	QSpacerItem* spacer = new QSpacerItem( 20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 	//load map button
 	loadMapButton=new QPushButton(mapbox,"LoadMap");

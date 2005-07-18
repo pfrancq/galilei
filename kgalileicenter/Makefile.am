@@ -3,13 +3,15 @@ bin_PROGRAMS = kgalileicenter
 
 ## INCLUDES were found outside kdevelop specific part
 
-kgalileicenter_SOURCES = qhistorydlg.ui kviewhistory.cpp qfilldatabase.ui \
-	qchooseparent.ui	qcreatedatabase.ui qmixidealconfig.ui qexportmatrixdlg.ui 	kviewprg.cpp \
+kgalileicenter_SOURCES = qchooseparent.ui qhistorydlg.ui qfilldatabase.ui \
+		qcreatedatabase.ui qmixidealconfig.ui qexportmatrixdlg.ui qplugins.ui \
+		qsessionoptions.ui qconnectmysql.ui qchoosemap.ui qsommapconfig.ui qsimulationdlg.ui \
+		kviewhistory.cpp kviewprg.cpp \
 		kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp 	qsessionprogress.cpp \
-	qconnectmysql.ui kviewusers.cpp kviewthgroups.cpp 	kviewprofile.cpp kviewgroups.cpp \
+	 kviewusers.cpp kviewthgroups.cpp 	kviewprofile.cpp kviewgroups.cpp \
 	kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kviewstats.cpp 	kview.cpp kdoc.cpp \
-	kviewsom.cpp ksommap.cpp kviewmetaengine.cpp kgalileicenter.cpp main.cpp qplugins.ui \
-	qsessionoptions.ui 	qchoosemap.ui qsommapconfig.ui qsimulationdlg.ui
+	kviewsom.cpp ksommap.cpp kviewmetaengine.cpp kgalileicenter.cpp main.cpp  
+	
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
 kgalileicenter_LDADD = /usr/lib/libmysqlclient.la $(LIB_R) $(LIB_GALILEI) \
 	$(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
@@ -38,7 +40,6 @@ install-data-local:
 # set the include path for X, qt and KDE
 INCLUDES = $(all_includes)
 
-#-I$(GALILEI_LIB) -I$(R_LIB) -I$(QTWIDGETS_LIB)
 METASOURCES = AUTO
 
 rcdir = $(kde_datadir)/kgalileicenter

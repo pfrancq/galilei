@@ -39,28 +39,28 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rxmlfile.h>
-#include <rstd/rstring.h>
-#include <rstd/rcontainer.h>
-#include <rdb/rmysql.h>
-#include <frontend/kde/rqt.h>
+#include <rxmlfile.h>
+#include <rstring.h>
+#include <rcontainer.h>
+#include <rmysql.h>
+#include <rqt.h>
 using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocxml.h>
-#include <sessions/gstoragemysql.h>
-#include <profiles/gsubprofile.h>
-#include <profiles/gsubprofile.h>
-#include <groups/ggroup.h>
-#include <groups/gsubject.h>
-#include <groups/gsubjects.h>
-#include <sessions/gmixidealgroups.h>
-#include <infos/glang.h>
-#include <infos/gdict.h>
-#include <infos/gweightinfo.h>
-#include <sessions/gpluginmanagers.h>
+#include <gdocxml.h>
+#include <gstoragemysql.h>
+#include <gsubprofile.h>
+#include <gsubprofile.h>
+#include <ggroup.h>
+#include <gsubject.h>
+#include <gsubjects.h>
+#include <gmixidealgroups.h>
+#include <glang.h>
+#include <gdict.h>
+#include <gweightinfo.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace std;
 

@@ -32,7 +32,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsession.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 

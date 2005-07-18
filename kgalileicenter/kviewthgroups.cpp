@@ -32,23 +32,23 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rtextfile.h>
-#include <frontend/kde/rqt.h>
+#include <rtextfile.h>
+#include <rqt.h>
 using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsession.h>
-#include <infos/glang.h>
-#include <profiles/guser.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
-#include <groups/ggroup.h>
-#include <groups/ggroups.h>
-#include <groups/gsubjects.h>
-#include <frontend/kde/qlistviewitemtype.h>
-#include <sessions/gpluginmanagers.h>
+#include <gsession.h>
+#include <glang.h>
+#include <guser.h>
+#include <gprofile.h>
+#include <gsubprofile.h>
+#include <ggroup.h>
+#include <ggroups.h>
+#include <gsubjects.h>
+#include <qlistviewitemtype.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 
 

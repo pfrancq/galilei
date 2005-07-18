@@ -32,29 +32,29 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <frontend/kde/rqt.h>
+#include <rqt.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdoc.h>
-#include <docs/gpostdoc.h>
-#include <infos/glang.h>
-#include <frontend/kde/gfiltermanagerkde.h>
-#include <frontend/kde/qlistviewitemtype.h>
-#include <sessions/gsession.h>
-#include <sessions/gstatscalc.h>
-#include <profiles/guser.h>
-#include <profiles/gprofile.h>
-#include <profiles/gpreprofile.h>
-#include <profiles/gpostprofile.h>
-#include <groups/ggrouping.h>
-#include <groups/gpostgroup.h>
-#include <profiles/gprofilecalc.h>
-#include <infos/glang.h>
-#include <engines/gengine.h>
-#include <engines/gmetaengine.h>
-#include <sessions/gpluginmanagers.h>
+#include <gdoc.h>
+#include <gpostdoc.h>
+#include <glang.h>
+#include <gfiltermanagerkde.h>
+#include <qlistviewitemtype.h>
+#include <gsession.h>
+#include <gstatscalc.h>
+#include <guser.h>
+#include <gprofile.h>
+#include <gpreprofile.h>
+#include <gpostprofile.h>
+#include <ggrouping.h>
+#include <gpostgroup.h>
+#include <gprofilecalc.h>
+#include <glang.h>
+#include <gengine.h>
+#include <gmetaengine.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace std;
 

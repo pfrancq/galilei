@@ -14,9 +14,9 @@
 #include "knuminput.h"
 
 // include for R project
-#include <rstd/rstring.h>
-#include <rdb/rmysql.h>
-#include <frontend/kde/rqt.h>
+#include <rstring.h>
+#include <rmysql.h>
+#include <rqt.h>
 
 void QFillEmptyDatabase::ChangeParent( int s )
 {

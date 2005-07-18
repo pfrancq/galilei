@@ -37,8 +37,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <sessions/gslot.h>
+#include <galilei.h>
+#include <gslot.h>
 using namespace GALILEI;
 using namespace R;
 

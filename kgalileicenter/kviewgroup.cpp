@@ -32,23 +32,23 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rstring.h>
-#include <rstd/rtextfile.h>
+#include <rstring.h>
+#include <rtextfile.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/glang.h>
-#include <sessions/gsession.h>
-#include <sessions/gstorage.h>
-#include <docs/gdocproxy.h>
-#include <groups/ggroup.h>
-#include <profiles/guser.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
-#include <frontend/kde/qlistviewitemtype.h>
-#include <frontend/kde/rqt.h>
-#include <infos/gweightinfo.h>
+#include <glang.h>
+#include <gsession.h>
+#include <gstorage.h>
+#include <gdocproxy.h>
+#include <ggroup.h>
+#include <guser.h>
+#include <gprofile.h>
+#include <gsubprofile.h>
+#include <qlistviewitemtype.h>
+#include <rqt.h>
+#include <gweightinfo.h>
 using namespace GALILEI;
 using namespace R;
 

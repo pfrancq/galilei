@@ -32,18 +32,18 @@
 
 //-----------------------------------------------------------------------------
 // include file for R Project
-#include <rstd/rxmlstruct.h>
-#include <rstd/rstring.h>
-#include <rstd/rtextfile.h>
-#include <frontend/kde/rqt.h>
+#include <rxmlstruct.h>
+#include <rstring.h>
+#include <rtextfile.h>
+#include <rqt.h>
 using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include file for GALILEI
-#include <sessions/gsession.h>
-#include <sessions/gstatscalc.h>
-#include <sessions/gpluginmanagers.h>
+#include <gsession.h>
+#include <gstatscalc.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 
 

@@ -32,11 +32,11 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gstoragemysql.h>
-#include <sessions/gconfig.h>
-#include <sessions/gpluginmanagers.h>
-#include <profiles/gpreprofile.h>
-#include <profiles/gpostprofile.h>
+#include <gstoragemysql.h>
+#include <gconfig.h>
+#include <gpluginmanagers.h>
+#include <gpreprofile.h>
+#include <gpostprofile.h>
 using namespace GALILEI;
 using namespace R;
 

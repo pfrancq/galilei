@@ -37,12 +37,12 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
+#include <rcontainer.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <frontend/kde/qlistviewitemtype.h>
+#include <qlistviewitemtype.h>
 using namespace GALILEI;
 
 

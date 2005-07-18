@@ -33,19 +33,19 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <profiles/guser.h>
-#include <profiles/gprofile.h>
-#include <profiles/gsubprofile.h>
-#include <groups/ggroup.h>
-#include <infos/glang.h>
-#include <infos/gdict.h>
-#include <infos/gdata.h>
-#include <infos/gweightinfo.h>
-#include <groups/ggroups.h>
-#include <sessions/gsession.h>
-#include <frontend/kde/qlistviewitemtype.h>
-#include <frontend/kde/rqt.h>
-#include <sessions/gpluginmanagers.h>
+#include <guser.h>
+#include <gprofile.h>
+#include <gsubprofile.h>
+#include <ggroup.h>
+#include <glang.h>
+#include <gdict.h>
+#include <gdata.h>
+#include <gweightinfo.h>
+#include <ggroups.h>
+#include <gsession.h>
+#include <qlistviewitemtype.h>
+#include <rqt.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 

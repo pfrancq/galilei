@@ -37,13 +37,13 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
+#include <rcontainer.h>
 using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
+#include <galilei.h>
 using namespace GALILEI;
 
 

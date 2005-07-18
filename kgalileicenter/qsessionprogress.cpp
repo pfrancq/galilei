@@ -40,7 +40,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <frontend/kde/rqt.h>
+#include <rqt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -59,22 +59,22 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gsession.h>
-#include <sessions/gstorage.h>
-#include <docs/gdoc.h>
-#include <infos/glang.h>
-#include <docs/gdocanalyse.h>
-#include <docs/gdocxml.h>
-#include <docs/gpostdoc.h>
-#include <docs/gdoc.h>
-#include <profiles/guser.h>
-#include <sessions/gsession.h>
-#include <profiles/gprofile.h>
-#include <profiles/gprofilecalc.h>
-#include <groups/ggrouping.h>
-#include <groups/ggroup.h>
-#include <groups/gsubjects.h>
-#include <sessions/gpluginmanagers.h>
+#include <gsession.h>
+#include <gstorage.h>
+#include <gdoc.h>
+#include <glang.h>
+#include <gdocanalyse.h>
+#include <gdocxml.h>
+#include <gpostdoc.h>
+#include <gdoc.h>
+#include <guser.h>
+#include <gsession.h>
+#include <gprofile.h>
+#include <gprofilecalc.h>
+#include <ggrouping.h>
+#include <ggroup.h>
+#include <gsubjects.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 

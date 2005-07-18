@@ -37,20 +37,20 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocanalyse.h>
-#include <docs/gfilter.h>
-#include <docs/glinkcalc.h>
-#include <docs/gpostdoc.h>
-#include <engines/gengine.h>
-#include <engines/gmetaengine.h>
-#include <groups/ggroupcalc.h>
-#include <groups/ggrouping.h>
-#include <groups/gpostgroup.h>
-#include <infos/glang.h>
-#include <profiles/gpostprofile.h>
-#include <profiles/gpreprofile.h>
-#include <profiles/gprofilecalc.h>
-#include <sessions/gstatscalc.h>
+#include <gdocanalyse.h>
+#include <gfilter.h>
+#include <glinkcalc.h>
+#include <gpostdoc.h>
+#include <gengine.h>
+#include <gmetaengine.h>
+#include <ggroupcalc.h>
+#include <ggrouping.h>
+#include <gpostgroup.h>
+#include <glang.h>
+#include <gpostprofile.h>
+#include <gpreprofile.h>
+#include <gprofilecalc.h>
+#include <gstatscalc.h>
 using namespace GALILEI;
 
 

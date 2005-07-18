@@ -7,7 +7,7 @@
 
 	Window to display history of groups - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -38,21 +38,21 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rpromethee/rpromcriterion.h>
+#include <rpromcriterion.h>
 using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <historic/gweightinfoshistory.h>
-#include <historic/ggroupshistory.h>
+#include <gweightinfoshistory.h>
+#include <ggroupshistory.h>
 using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
 // include files for QtWidgets
-#include <frontend/kde/qggroupshistory.h>
-#include <frontend/kde/qlistviewitemtype.h>
+#include <qggroupshistory.h>
+#include <qlistviewitemtype.h>
 
 
 //-----------------------------------------------------------------------------
@@ -126,7 +126,7 @@ class KViewHistory : public KView
 	* Toolbar of theview.
 	*/
 	QMenuBar* ToolBar;
-	
+
 	/**
 	* Identificator of the current showed solution.
 	*/
@@ -244,7 +244,7 @@ private slots:
 	*  funtion to show relationship.
 	*/
 	void slotClearRelationShip(void) {RelationShip->clear();};
- 
+
 public:
 
 	/**
@@ -266,7 +266,7 @@ public:
 	* Destructor for the view.
 	*/
 	virtual ~KViewHistory(void);
-	
+
 };
 
 

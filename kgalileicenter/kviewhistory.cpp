@@ -37,27 +37,27 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rcontainer.h>
+#include <rcontainer.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/glang.h>
-#include <groups/ggroups.h>
-#include <groups/ggroup.h>
-#include <groups/gsubject.h>
-#include <profiles/gsubprofile.h>
-#include <profiles/gprofilessims.h>
-#include <profiles/gprofile.h>
-#include <sessions/gsession.h>
-#include <infos/gweightinfos.h>
-#include <infos/gweightinfo.h>
+#include <glang.h>
+#include <ggroups.h>
+#include <ggroup.h>
+#include <gsubject.h>
+#include <gsubprofile.h>
+#include <gprofilessims.h>
+#include <gprofile.h>
+#include <gsession.h>
+#include <gweightinfos.h>
+#include <gweightinfo.h>
 using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
 // include files for qtwidgetsI
-#include <frontend/kde/qlistviewitemtype.h>
+#include <qlistviewitemtype.h>
 
 
 //-----------------------------------------------------------------------------

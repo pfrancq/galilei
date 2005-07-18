@@ -20,6 +20,7 @@
     <general>
       <mainprogram>kgalileicenter</mainprogram>
       <useconfiguration>default</useconfiguration>
+      <activetarget>kgalileicenter/kgalileicenter</activetarget>
     </general>
     <configure>
       <configargs>--prefix=/usr --enable-debug\s</configargs>
@@ -33,18 +34,19 @@
         <envvar value="1" name="WANT_AUTOCONF_2_5" />
         <envvar value="1" name="WANT_AUTOMAKE_1_6" />
       </envvars>
+      <prio>0</prio>
     </make>
     <compiler>
       <cflags/>
       <cxxflags>\s-O0 -g3 -Wall</cxxflags>
     </compiler>
     <run>
-      <mainprogram>kgalileicenter/.libs/kgalileicenter</mainprogram>
+      <mainprogram/>
       <programargs/>
       <terminal>false</terminal>
       <envvars/>
       <autocompile>true</autocompile>
-      <directoryradio>build</directoryradio>
+      <directoryradio>executable</directoryradio>
       <customdirectory>/</customdirectory>
     </run>
     <configurations>
@@ -63,6 +65,7 @@
         <cflags/>
         <cxxflags/>
         <f77flags/>
+        <envvars/>
       </default>
     </configurations>
   </kdevautoproject>
@@ -217,4 +220,11 @@
     <recursivewhencommitremove>true</recursivewhencommitremove>
     <revertoptions>-C</revertoptions>
   </kdevcvsservice>
+  <kdevdocumentation>
+    <projectdoc>
+      <docsystem/>
+      <docurl/>
+      <usermanualurl/>
+    </projectdoc>
+  </kdevdocumentation>
 </kdevelop>

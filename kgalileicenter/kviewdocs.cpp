@@ -33,12 +33,12 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <frontend/kde/qlistviewitemtype.h>
-#include <frontend/kde/rqt.h>
-#include <docs/gdoc.h>
-#include <infos/glang.h>
-#include <sessions/gsession.h>
-#include <sessions/gpluginmanagers.h>
+#include <qlistviewitemtype.h>
+#include <rqt.h>
+#include <gdoc.h>
+#include <glang.h>
+#include <gsession.h>
+#include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
 

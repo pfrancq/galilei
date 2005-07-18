@@ -37,7 +37,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rdblhashcontainer.h>
+#include <rdblhashcontainer.h>
 using namespace R;
 
 

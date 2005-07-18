@@ -37,8 +37,8 @@
 
 //-----------------------------------------------------------------------------
 // forward class declaration for GALIEI
-#include <sessions/gslot.h>
-#include <rdb/rmysql.h>
+#include <gslot.h>
+#include <rmysql.h>
 using namespace GALILEI;
 using namespace R;
 
