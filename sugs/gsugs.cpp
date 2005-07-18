@@ -41,14 +41,14 @@
 
 //------------------------------------------------------------------------------
 //include files for GALILEI
-#include <sessions/gsession.h>
-#include <profiles/gprofileproxy.h>
-#include <profiles/gsubprofile.h>
-#include <docs/gdocproxy.h>
-#include <groups/ggroups.h>
-#include <groups/ggroup.h>
-#include <infos/glangproxy.h>
-#include <sessions/gstorage.h>
+#include <gsession.h>
+#include <gprofileproxy.h>
+#include <gsubprofile.h>
+#include <gdocproxy.h>
+#include <ggroups.h>
+#include <ggroup.h>
+#include <glangproxy.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace std;
 
