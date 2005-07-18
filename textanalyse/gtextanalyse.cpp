@@ -39,21 +39,21 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rrecfile.h>
+#include <rrecfile.h>
 
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gtextanalyse.h>
-#include <docs/gdoc.h>
-#include <docs/gdocxml.h>
-#include <infos/gword.h>
-#include <infos/gweightinfo.h>
-#include <infos/gdict.h>
-#include <sessions/gsession.h>
-#include <sessions/gpluginmanagers.h>
-#include <sessions/gstorage.h>
+#include <gdoc.h>
+#include <gdocxml.h>
+#include <gword.h>
+#include <gweightinfo.h>
+#include <gdict.h>
+#include <gsession.h>
+#include <gpluginmanagers.h>
+#include <gstorage.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -528,7 +528,7 @@ void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 	}
 	else
 	{
-		RCursor<RXMLTag> Cur(*tag);
+		RCursor<RXMLTag> Cur(tag->GetNodes());
 		for(Cur.Start();!Cur.End();Cur.Next())
 			AnalyseTag(Cur(),weight);
 	}
@@ -603,7 +603,7 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 
 //		type=0;
 //		format=0;
-		RCursor<RXMLTag> Cur(*tag);
+		RCursor<RXMLTag> Cur(tag->GetNodes());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			if (Cur()->GetName()=="dc:identifier")
@@ -661,7 +661,7 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 	}
 	else
 	{
-		RCursor<RXMLTag> Cur(*tag);
+		RCursor<RXMLTag> Cur(tag->GetNodes());
 		for(Cur.Start();!Cur.End();Cur.Next())
 			AnalyseLinksTag(Cur(),externalLinks,DocsToAdd);
 	}

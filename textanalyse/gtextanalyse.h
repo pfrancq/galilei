@@ -37,14 +37,14 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rdblhashcontainer.h>
+#include <rdblhashcontainer.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <docs/gdocanalyse.h>
-#include <infos/glang.h>
+#include <galilei.h>
+#include <gdocanalyse.h>
+#include <glang.h>
 
 
 //-----------------------------------------------------------------------------
