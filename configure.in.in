@@ -32,7 +32,6 @@ if test "$enable_kde" != "no"; then
 	AC_PATH_KDE
 	AC_CHECK_KDEMAXPATHLEN
 	FRONTEND="$FRONTEND kde"
-	FRONTEND_LIB="$FRONTEND_LIB frontend/kde/libkde_galilei.la"
 	CXXFLAGS="$CXXFLAGS -D_USE_KDE"
 fi
 
@@ -55,7 +54,7 @@ then
 fi
 
 ##--------------- Call the macro for 'R' -----------------------
-R_CHK("rcore rmath",$FRONTEND)
+R_CHK("rcore rmath roptimization",$FRONTEND)
 
 
 
