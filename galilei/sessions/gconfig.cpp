@@ -32,9 +32,9 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rio.h>
-#include <rstd/rxmlfile.h>
-//#include <rstd/rxmltag.h>
+#include <rio.h>
+#include <rxmlfile.h>
+//#include <rxmltag.h>
 
 
 //------------------------------------------------------------------------------

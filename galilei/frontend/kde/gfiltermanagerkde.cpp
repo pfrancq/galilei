@@ -34,7 +34,7 @@
 // include files for GALILEI
 #include <gfiltermanagerkde.h>
 #include <gfilter.h>
-#include <frontend/kde/rqt.h>
+#include <rqt.h>
 using namespace GALILEI;
 using namespace R;
 

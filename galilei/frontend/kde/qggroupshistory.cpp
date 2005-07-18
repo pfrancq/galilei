@@ -32,7 +32,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <rstd/rcursor.h>
+#include <rcursor.h>
+#include <rqt.h>
 using namespace R;
 
 
@@ -47,7 +48,6 @@ using namespace R;
 #include <gweightinfoshistory.h>
 #include <qlistviewitemtype.h>
 #include <qggroupshistory.h>
-#include <frontend/kde/rqt.h>
 using namespace GALILEI;
 
 

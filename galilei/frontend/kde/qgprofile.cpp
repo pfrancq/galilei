@@ -49,7 +49,7 @@
 // include files for GALILEI
 #include <qgprofile.h>
 #include <gprofile.h>
-#include <frontend/kde/rqt.h>
+#include <rqt.h>
 using namespace GALILEI;
 using namespace R;
 

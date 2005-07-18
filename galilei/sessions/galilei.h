@@ -37,15 +37,15 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rstd.h>
-#include <rstd/rdate.h>
-#include <rstd/rlang.h>
-#include <rstd/rstring.h>
-#include <rstd/rcontainer.h>
-#include <rstd/rcursor.h>
-#include <rstd/rxmltag.h>
-#include <rstd/rtextfile.h>
-#include <rstd/random.h>
+#include <rstd.h>
+#include <rdate.h>
+#include <rlang.h>
+#include <rstring.h>
+#include <rcontainer.h>
+#include <rcursor.h>
+#include <rxmltag.h>
+#include <rtextfile.h>
+#include <random.h>
 
 
 //------------------------------------------------------------------------------

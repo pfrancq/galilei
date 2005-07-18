@@ -37,8 +37,8 @@
 
 //------------------------------------------------------------------------------
 // include file for R
-#include <rstd/rxmltag.h>
-#include <rstd/rxmlstruct.h>
+#include <rxmltag.h>
+#include <rxmlstruct.h>
 
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++

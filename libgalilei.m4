@@ -16,37 +16,36 @@
 # ---- def function to check for a specific GALILEI includes on the system
 AC_DEFUN(GALILEI_INC_CHK,[
 	GALILEI_INC_DIR=""
-	#str="$1/$2"
-	str="galilei.h"
 	for i in $GALILEI_INC_PATH ; do
-#		test -f $i/$str                    && GALILEI_INC_DIR=$i && break
-#		test -f $i/sessions/$str           && GALILEI_INC_DIR=$i/docs $i/engines $i/groups $i/historic $i/infos $i/profiles $i/sessions && GALILEI_INSTALL="yes" && break
-		#test -f $i/galilei/$str              && GALILEI_INC_DIR=$i/galilei/$1 && break
-		if test -f $i/galilei/sessions/$str ; then
-			GALILEI_INC_DIR="-I$i/galilei/docs -I$i/galilei/engines -I$i/galilei/groups -I$i/galilei/historic -I$i/galilei/infos -I$i/galilei/profiles -I$i/galilei/sessions"
-			GALILEI_INSTALL="yes"
+		if test -f $i/$1/$2 ; then
+			GALILEI_INC_DIR="-I$i/$1"
+			add="$i/$1"
+			break
 		fi
-		if test -f $i/$str ; then
+		if test -f $i/galilei/$2 ; then
+			GALILEI_INC_DIR="-I$i/galilei"
+			GALILEI_INSTALL="yes"
+			add="$i/galilei"
+			break
+		fi
+		if test -f $i/$2 ; then
 			GALILEI_INC_DIR="-I$i"
+			GALILEI_INSTALL="yes"
+			add="$i"
 			break
 		fi
 	done
-	AC_MSG_CHECKING(for GALILEI headers)
 	if test -z "$GALILEI_INC_DIR"; then
 		if test "x$GALILEI_INC_PATH" != "x"; then
-			AC_MSG_RESULT(no)
-			AC_MSG_ERROR(Cannot find GALILEI headers under $i)
+			AC_MSG_ERROR($3)
 		else
-			AC_MSG_RESULT(no)
-			AC_MSG_ERROR(Cannot find GALILEI headers.  Use --with-galilei-includes=DIR to specify non-default path.)
+			AC_MSG_ERROR($3 Use --with-galilei-includes=DIR to specify non-default path.)
 		fi
 	fi
-	AC_MSG_RESULT(yes in $i)
-
-	if test "x$i" != "x$PAST_GALILEI_INC_DIR"; then
+	if test "x$add" != "x$PAST_GALILEI_INC_DIR"; then
 		CPPFLAGS="$GALILEI_INC_DIR $CPPFLAGS"
 	fi
-	PAST_GALILEI_INC_DIR="$i"
+	PAST_GALILEI_INC_DIR="$add"
 ])
 
 
@@ -77,7 +76,7 @@ AC_DEFUN(GALILEI_ALL_INC_CHK,[
 	if test "x$GALILEI_LIB" != "x" ; then
 		GALILEI_INC_PATH=$GALILEI_LIB
 	else
-		GALILEI_INC_PATH="/usr/include /usr/include/galilei /usr/local /usr/local/include /usr/local/include/galilei ${prefix}/include/galilei"
+		GALILEI_INC_PATH="/usr/include /usr/local /usr/local/include ${prefix}/include"
 	fi
 	AC_ARG_WITH(galilei-includes,
 		AC_HELP_STRING(
@@ -85,28 +84,22 @@ AC_DEFUN(GALILEI_ALL_INC_CHK,[
 			[where the GALILEI includes are, default: [/usr/include/galilei]. ]),
 		GALILEI_INC_PATH="$withval")
 
-	# ---- end arg for configure ----
-
-
 	# ---- check the presence of the includes for all the GALILEI libraries
-	#GALILEI_INC_CHK(docs,gdocs.h)
-	#GALILEI_INC_CHK(engines,gengine.h)
-	#GALILEI_INC_CHK(groups,ggroups.h)
-	#GALILEI_INC_CHK(historic,ggrouphistory.h)
-	#GALILEI_INC_CHK(infos,gdict.h)
-	#GALILEI_INC_CHK(profiles, gprofile.h)
-	#GALILEI_INC_CHK(sessions,gsession.h)
-	GALILEI_INC_CHK()
+	GALILEI_INC_CHK(galilei/docs,gdocs.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/engines,gengine.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/groups,ggroups.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/historic,ggrouphistory.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/infos,gdict.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/profiles, gprofile.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/sessions,gsession.h,Cannot find GALILEI headers.)
 
 	for l in $1 ; do
 		if test "$l" = "kde"; then
-			# ---- check the presence of the includes for all the GALILEI frontend libraries ----
-			#GALILEI_INC_CHK(frontend/kde,qlistviewitemtype.h)
-            if test "GALILEI_INSTALL" != "yes" ; then
-				CPPFLAGS="-I$i/galilei/frontend/kde $CPPFLAGS"
-			fi
+			GALILEI_INC_CHK(galilei/frontend/kde,qlistviewitemtype.h,Cannot find GALILEI headers for KDE frontend.)
 		fi
 	done
+	MSG="$MSG, headers $i"
+	AC_MSG_RESULT($MSG)
 ])
 # --- end def function -----
 
@@ -130,63 +123,28 @@ AC_DEFUN(GALILEI_ALL_LIB_CHK,[
 
 	# ---- end arg for configure ----
 
-# ---- check the presence of all GALILEI libraries
-	for l in galilei; do
-
-		#AC_MSG_CHECKING(checking for lib$l)
-		for i in $GALILEI_LIB_PATH ; do
-			GALILEI_LIB_CHK($i/$l,libgalilei)
-			GALILEI_LIB_CHK($i,libgalilei)
-			GALILEI_LIB_CHK($i/galilei,libgalilei)
+	# ---- check the presence of all GALILEI libraries
+	GALILEI_LIB_DIR=""
+	for i in $GALILEI_LIB_PATH ; do
+		for t in $i/galilei $i; do
+			str="$t/libgalilei.*"
+			for j in `echo $str`; do
+				if test -r $j; then
+					GALILEI_LIB_DIR=$j
+					break 2
+				fi
+			done
 		done
-		AC_MSG_CHECKING(for GALILEI libraries)
 		if test -z "$GALILEI_LIB_DIR"; then
-			AC_MSG_RESULT(no)
 			AC_MSG_ERROR(Cannot find GALILEI libraries)
-		else
-			AC_MSG_RESULT(yes in $GALILEI_LIB_DIR)
 		fi
 		if test "x$GALILEI_LIB_DIR" != "x$PAST_GALILEI_LIB_DIR"; then
 			LDFLAGS="-L$GALILEI_LIB_DIR $LDFLAGS"
 		fi
 		PAST_GALILEI_LIB_DIR="$GALILEI_LIB_DIR"
-		LIB_GALILEI="$GALILEI_LIB_DIR/libgalilei.la $LIB_GALILEI"
-
+		LIB_GALILEI="$GALILEI_LIB_DIR $LIB_GALILEI"
 	done
-
-	# ---- check the presence of all R frontend libraries ----
-	# --------------------------------------------------------------
-#	for l in $1 ; do
-#
-#		if test "$l" = "kde"; then
-#			for i in $GALILEI_LIB_PATH ; do
-#				GALILEI_LIB_CHK($i/frontend/kde,libkde_galilei)
-#				GALILEI_LIB_CHK($i,libkde_galilei)
-#				GALILEI_LIB_CHK($i/galilei,libkde_galilei)
-#			done
-
-#			AC_MSG_CHECKING(for libkde_galilei)
-#			if test -z "$GALILEI_LIB_DIR"; then
-#				AC_MSG_RESULT(no)
-#				AC_MSG_ERROR(Cannot find libkde_galilei.
-#No GUI will be available for GALILEI libraries.
-#Verify that GALILEI was installed
-#using the --enable-kde=yes option !!!
-#-------------------------------------)
-
-#			else
-#				AC_MSG_RESULT(yes in $GALILEI_LIB_DIR)
-
-#				if test "x$GALILEI_LIB_DIR" != "x$PAST_GALILEI_LIB_DIR"; then
-
-#					LDFLAGS="-L$GALILEI_LIB_DIR $LDFLAGS"
-#				fi
-#				LIB_GALILEI="$GALILEI_LIB_DIR/libkde_galilei.la $LIB_GALILEI"
-#			fi
-
-#			PAST_GALILEI_LIB_DIR="$GALILEI_LIB_DIR"
-#		fi
-#	done
+	MSG="libraries $i"
 ])
 
 
@@ -195,8 +153,9 @@ AC_DEFUN(GALILEI_ALL_LIB_CHK,[
 #
 # ---- def function to check for all GALILEI includes and libraries on the system
 AC_DEFUN(GALILEI_CHK,[
-	GALILEI_ALL_INC_CHK($1)
+	AC_MSG_CHECKING(for GALILEI)
 	GALILEI_ALL_LIB_CHK($1)
+	GALILEI_ALL_INC_CHK($1)
 	AC_SUBST(LIB_GALILEI)
 ])
 # --- end def function -----

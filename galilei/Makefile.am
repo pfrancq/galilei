@@ -13,4 +13,4 @@ libgalilei_la_SOURCES     =
 libgalilei_la_LDFLAGS     = -no-undefined -version-info 2:0:0
 libgalilei_la_LIBADD      = infos/libgalilei_infos.la docs/libgalilei_docs.la profiles/libgalilei_profiles.la \
 	groups/libgalilei_groups.la engines/libgalilei_engines.la historic/libgalilei_historic.la sessions/libgalilei_sessions.la \
-	$(FRONTEND_LIB) 
+	 $(FRONTEND_LIB)

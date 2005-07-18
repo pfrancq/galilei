@@ -34,8 +34,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <rstd/random.h>
-#include <rstd/rcontainer.h>
+#include <random.h>
+#include <rcontainer.h>
 using namespace R;
 
 

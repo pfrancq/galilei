@@ -37,9 +37,9 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rprg/rprgfunc.h>
-#include <rprg/rprgclass.h>
-#include <rprg/rprg.h>
+#include <rprgfunc.h>
+#include <rprgclass.h>
+#include <rprg.h>
 
 
 //------------------------------------------------------------------------------

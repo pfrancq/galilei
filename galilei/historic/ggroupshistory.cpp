@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include<rstd/rdate.h>
+#include<rdate.h>
 using namespace R;
 
 

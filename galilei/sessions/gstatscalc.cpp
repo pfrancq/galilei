@@ -32,14 +32,14 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rstd/rxmlfile.h>
+#include <rxmlfile.h>
 using namespace R;
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gstatscalc.h>
-#include <rstd/rxmlfile.h>
+#include <rxmlfile.h>
 using namespace GALILEI;
 
 

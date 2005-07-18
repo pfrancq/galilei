@@ -36,8 +36,8 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rxmltag.h>
-#include <rpromethee/rpromcriterion.h>
+#include <rxmltag.h>
+#include <rpromcriterion.h>
 
 
 //------------------------------------------------------------------------------

@@ -37,9 +37,9 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/random.h>
-#include <rstd/rcursor.h>
-#include <rstd/rtextfile.h>
+#include <random.h>
+#include <rcursor.h>
+#include <rtextfile.h>
 using namespace R;
 
 

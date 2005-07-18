@@ -39,8 +39,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rtree.h>
-#include <rmath/rvectorint.h>
+#include <rtree.h>
+#include <rvectorint.h>
 
 
 //-----------------------------------------------------------------------------

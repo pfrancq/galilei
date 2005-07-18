@@ -43,7 +43,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <qgdocxml.h>
-#include <frontend/kde/rqt.h>
+#include <rqt.h>
 using namespace GALILEI;
 using namespace R;
 

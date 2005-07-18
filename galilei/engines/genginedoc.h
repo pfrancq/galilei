@@ -42,9 +42,9 @@
 
 //------------------------------------------------------------------------------
 // include files for R library
-#include <rstd/rstd.h>
-#include <rstd/rstring.h>
-#include <rstd/rcontainer.h>
+#include <rstd.h>
+#include <rstring.h>
+#include <rcontainer.h>
 
 
 //------------------------------------------------------------------------------
