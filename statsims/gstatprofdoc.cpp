@@ -31,13 +31,13 @@
 
 //------------------------------------------------------------------------------
 //include file for GALILEI
-#include <infos/glang.h>
-#include <docs/gdoc.h>
-#include <profiles/gsubprofile.h>
-#include <profiles/gprofile.h>
-#include <sessions/gsession.h>
-#include <sessions/gstatscalc.h>
-#include <sessions/gpluginmanagers.h>
+#include <glang.h>
+#include <gdoc.h>
+#include <gsubprofile.h>
+#include <gprofile.h>
+#include <gsession.h>
+#include <gstatscalc.h>
+#include <gpluginmanagers.h>
 
 
 //------------------------------------------------------------------------------

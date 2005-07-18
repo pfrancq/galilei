@@ -37,17 +37,17 @@
 
 //------------------------------------------------------------------------------
 // include files for R Library
-#include <rstd/rxmlstruct.h>
+#include <rxmlstruct.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <infos/glang.h>
-#include <sessions/gsession.h>
-#include <groups/gsubject.h>
-#include <groups/gsubjects.h>
-#include <docs/gdoc.h>
-#include <profiles/gsubprofile.h>
+#include <glang.h>
+#include <gsession.h>
+#include <gsubject.h>
+#include <gsubjects.h>
+#include <gdoc.h>
+#include <gsubprofile.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

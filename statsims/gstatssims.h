@@ -37,8 +37,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <sessions/gstatscalc.h>
+#include <galilei.h>
+#include <gstatscalc.h>
 
 
 //-----------------------------------------------------------------------------

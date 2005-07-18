@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gpluginmanagers.h>
+#include <gpluginmanagers.h>
 
 
 //------------------------------------------------------------------------------
@@ -191,7 +191,7 @@ public:
 //
 //------------------------------------------------------------------------------
 
-#include <sessions/gstatscalc.h>
+#include <gstatscalc.h>
 //------------------------------------------------------------------------------
 template<class E,class C>
 	GStatSimElements<E,C>::GStatSimElements(GSession* ses,RTextFile* f,bool g,bool l)

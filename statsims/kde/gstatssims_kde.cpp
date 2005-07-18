@@ -6,7 +6,7 @@
 
 	A KDE about box for the groups evaluation. - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/gstatscalc.h>
+#include <gstatscalc.h>
 using namespace GALILEI;
 
 
