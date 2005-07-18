@@ -1,18 +1,19 @@
 INCLUDES = -I$(top_srcdir) $(all_includes) $(INCLUDES_GALILEI)
-noinst_LTLIBRARIES =  libkde_galilei.la
-AM_CFLAGS =
-AM_CXXFLAGS =
-AM_FFLAGS =
+
+AUTOMAKE_OPTIONS        = foreign
 
 SUBDIRS =
 
-libkde_galilei_la_METASOURCES = AUTO
+lib_LTLIBRARIES         = libgalileikde.la
 
-galileiincludedir = $(includedir)/galilei
-galileiinclude_HEADERS = qgprofile.h  qgdocxml.h qgsubprofiles.h \
+libgalileikde_la_METASOURCES = AUTO
+
+galileikdeincludedir = $(includedir)/galilei
+galileikdeinclude_HEADERS = qgprofile.h  qgdocxml.h qgsubprofiles.h \
 		qlistviewitemtype.h qggroupshistory.h gfiltermanagerkde.h
-libkde_galilei_la_LIBADD = /usr/lib/libmysqlclient.la $(LIB_R)
-libkde_galilei_la_SOURCES =  qgprofile.cpp qgdocxml.cpp  \
+libgalileikde_la_LIBADD = ../../libgalilei.la $(LIB_KIO) $(LIBKDE_R)
+libgalileikde_la_LDFLAGS     = -no-undefined -version-info 2:0:0
+libgalileikde_la_SOURCES =  qgprofile.cpp qgdocxml.cpp  \
 				qgsubprofiles.cpp qlistviewitemtype.cpp qggroupshistory.cpp \
 				gfiltermanagerkde.cpp
 
