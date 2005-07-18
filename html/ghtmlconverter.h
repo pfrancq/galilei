@@ -37,12 +37,12 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rxmlfile.h>
+#include <rxmlfile.h>
 
 //------------------------------------------------------------------------------
 // include files for GALILEI Project
-#include <docs/gdocxml.h>
-#include <docs/gfilter.h>
+#include <gdocxml.h>
+#include <gfilter.h>
 //------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------

@@ -37,8 +37,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <docs/gfilter.h>
+#include <galilei.h>
+#include <gfilter.h>
 
 
 

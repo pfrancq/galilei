@@ -66,8 +66,8 @@ tH1->tH6		The tag represents the heading style of a part of the doc
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <docs/gfilter.h>
+#include <galilei.h>
+#include <gfilter.h>
 
 
 //-----------------------------------------------------------------------------

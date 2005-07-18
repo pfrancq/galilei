@@ -38,8 +38,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Library
-#include <rstd/rstring.h>
-#include <rstd/rchar.h>
+#include <rstring.h>
+#include <rchar.h>
 
 
 

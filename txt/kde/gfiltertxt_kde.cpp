@@ -6,7 +6,7 @@
 
 	A KDE about box for the text filter - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gfilter.h>
+#include <gfilter.h>
 using namespace GALILEI;
 
 

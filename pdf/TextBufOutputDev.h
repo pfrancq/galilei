@@ -12,8 +12,8 @@
 #define TEXTBUFOUTPUTDEV_H
 
 #include <aconf.h>
-#include <rstd/rstd.h>
-#include <rstd/rstring.h>
+#include <rstd.h>
+#include <rstring.h>
 
 #ifdef USE_GCC_PRAGMAS
 #pragma interface

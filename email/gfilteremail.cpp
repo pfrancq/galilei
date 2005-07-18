@@ -37,7 +37,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gdocxml.h>
+#include <gdocxml.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

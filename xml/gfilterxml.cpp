@@ -34,9 +34,9 @@
 //---------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterxml.h>
-#include <docs/gdocxml.h>
-#include <rstd/rxmlfile.h>
-#include <rstd/rxmlattr.h>
+#include <gdocxml.h>
+#include <rxmlfile.h>
+#include <rxmlattr.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

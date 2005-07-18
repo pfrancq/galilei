@@ -44,7 +44,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfiltermsdoc.h>
-#include <docs/gdocxml.h>
+#include <gdocxml.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

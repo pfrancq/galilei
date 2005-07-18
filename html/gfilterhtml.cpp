@@ -33,14 +33,14 @@
 //------------------------------------------------------------------------------
 // include files for R
 #include <ghtmlconverter.h>
-#include <rstd/rxmlfile.h>
+#include <rxmlfile.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilterhtml.h>
-#include <docs/gfilter.h>
-#include <docs/gdocxml.h>
+#include <gfilter.h>
+#include <gdocxml.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
