@@ -4,7 +4,7 @@ AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE(upgalilei, 1.86)
 
 #--------------- Check R and GALILEI ------------------
-R_CHK()
+R_CHK("rcore rmath roptimization")
 GALILEI_CHK()
 
 

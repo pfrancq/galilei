@@ -47,33 +47,33 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rstd/rxmlfile.h>
-#include <rstd/rxmlstruct.h>
+#include <rxmlfile.h>
+#include <rxmlstruct.h>
 using namespace R;
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <docs/gfiltermanagercurl.h>
-#include <docs/glinkcalcmanager.h>
-#include <profiles/gprofilecalcmanager.h>
-#include <profiles/gprofilecalc.h>
-#include <profiles/gpostprofilemanager.h>
-#include <groups/ggroupingmanager.h>
-#include <groups/ggroupcalcmanager.h>
-#include <sessions/gstatscalcmanager.h>
-#include <sessions/gstoragemysql.h>
-#include <sessions/gsession.h>
-#include <sessions/gplugins.h>
-#include <sessions/gconfig.h>
-#include <sessions/gslotlog.h>
-#include <groups/gpostgroupmanager.h>
-#include <docs/gpostdocmanager.h>
-#include <docs/gdocanalysemanager.h>
-#include <infos/glangmanager.h>
+#include <galilei.h>
+/*#include <gfiltermanagercurl.h>
+#include <glinkcalcmanager.h>
+#include <gprofilecalcmanager.h>*/
+#include <gprofilecalc.h>
+/*#include <gpostprofilemanager.h>
+#include <ggroupingmanager.h>
+#include <ggroupcalcmanager.h>
+#include <gstatscalcmanager.h>*/
+#include <gstoragemysql.h>
+#include <gsession.h>
+#include <gpluginmanagers.h>
+#include <gconfig.h>
+#include <gslotlog.h>
+/*#include <gpostgroupmanager.h>
+#include <gpostdocmanager.h>
+#include <gdocanalysemanager.h>
+#include <glangmanager.h>*/
 using namespace GALILEI;
-using namespace R;
+
 
 
 //------------------------------------------------------------------------------
@@ -145,7 +145,7 @@ int main(int argc, char *argv[])
 
 		//------------------------------------------------------------------------------
 		// Managers
-		PluginManagers.Load(lib,false);
+		GPluginManagers::PluginManagers.Load(lib,false);
 
 		Tag=Config.GetTag("Config");
 		if(!Tag)

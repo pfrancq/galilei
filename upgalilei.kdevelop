@@ -24,7 +24,7 @@
       <useconfiguration>default</useconfiguration>
     </general>
     <run>
-      <mainprogram>src/upgalilei</mainprogram>
+      <mainprogram>src/.libs/upgalilei</mainprogram>
       <programargs/>
       <terminal>false</terminal>
       <envvars/>
