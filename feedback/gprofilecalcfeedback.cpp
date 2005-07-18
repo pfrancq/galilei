@@ -40,11 +40,11 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofilecalcfeedback.h>
-#include <docs/gdocproxy.h>
-#include <profiles/gsubprofile.h>
-#include <infos/gweightinfo.h>
-#include <infos/glang.h>
-#include <sessions/gsession.h>
+#include <gdocproxy.h>
+#include <gsubprofile.h>
+#include <gweightinfo.h>
+#include <glang.h>
+#include <gsession.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
