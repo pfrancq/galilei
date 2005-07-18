@@ -16,13 +16,6 @@ AM_INIT_AUTOMAKE(kgalileicenter,1.86)
 R_CHK("rcore rmath roptimization",kde)
 GALILEI_CHK(kde)
 
-
-#--------------------- CHECK FOR RDEBUG ----------------------
-if test "$enable_debug" != "no"; then
-	CXXFLAGS="$CXXFLAGS -D_RDEBUG"
-fi
-
-
 CXXFLAGS="$NOOPT_CXXFLAGS" dnl __kdevelop[noopt]__
 CFLAGS="$NOOPT_CFLAGS" dnl __kdevelop[noopt]__
 CXXFLAGS="$CXXFLAGS $USE_EXCEPTIONS" dnl __kdevelop[exc]__
