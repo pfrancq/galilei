@@ -145,6 +145,20 @@ AC_DEFUN(GALILEI_ALL_LIB_CHK,[
 		LIB_GALILEI="$GALILEI_LIB_DIR $LIB_GALILEI"
 	done
 	MSG="libraries $i"
+	GALILEIKDE_LIB_DIR=""
+	for i in $GALILEI_LIB_PATH ; do
+		for t in $i/galilei/frontend/kde $i/galilei $i; do
+			str="$t/libgalileikde.*"
+			for j in `echo $str`; do
+				if test -r $j; then
+					GALILEIKDE_LIB_DIR=$j
+					break 2
+				fi
+			done
+		done
+		PAST_GALILEIKDE_LIB_DIR="$GALILEIKDE_LIB_DIR"
+		LIBKDE_GALILEI="$GALILEIKDE_LIB_DIR $LIBKDE_GALILEI"
+	done
 ])
 
 
@@ -157,5 +171,6 @@ AC_DEFUN(GALILEI_CHK,[
 	GALILEI_ALL_LIB_CHK($1)
 	GALILEI_ALL_INC_CHK($1)
 	AC_SUBST(LIB_GALILEI)
+	AC_SUBST(LIBKDE_GALILEI)
 ])
 # --- end def function -----
