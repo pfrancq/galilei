@@ -38,12 +38,12 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <ggroupcalcgravitation.h>
-#include <groups/ggroup.h>
-#include <sessions/gsession.h>
-#include <profiles/gsubprofile.h>
-#include <infos/ginfo.h>
-#include <infos/gweightinfo.h>
-#include <infos/gweightinfos.h>
+#include <ggroup.h>
+#include <gsession.h>
+#include <gsubprofile.h>
+#include <ginfo.h>
+#include <gweightinfo.h>
+#include <gweightinfos.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
