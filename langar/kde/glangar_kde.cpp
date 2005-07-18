@@ -6,7 +6,7 @@
 
 	A KDE about box for HTML filter - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -33,13 +33,13 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <frontend/kde/rqt.h>
+#include <rqt.h>
 using namespace R;
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gfilter.h>
+#include <gfilter.h>
 #include <../glangar.h>
 using namespace GALILEI;
 

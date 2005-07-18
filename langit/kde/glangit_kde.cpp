@@ -6,7 +6,7 @@
 
 	A KDE about box for Italian language - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <docs/gfilter.h>
+#include <gfilter.h>
 using namespace GALILEI;
 
 

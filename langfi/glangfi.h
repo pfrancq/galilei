@@ -37,8 +37,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <sessions/galilei.h>
-#include <infos/glang.h>
+#include <galilei.h>
+#include <glang.h>
 
 
 //-----------------------------------------------------------------------------

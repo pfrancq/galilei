@@ -40,7 +40,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <rstd/rtextfile.h>
+#include <rtextfile.h>
 using namespace R;
 
 

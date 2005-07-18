@@ -39,7 +39,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R
-#include <rstd/rstring.h>
+#include <rstring.h>
 using namespace R;
 
 
