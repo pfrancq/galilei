@@ -51,7 +51,7 @@ using namespace std;
 #include <glinkcalc.h>
 #include <gdocanalyse.h>
 #include <gpostdoc.h>
-#include <gfilter.h>
+#include <gfiltermanagercurl.h>
 #include <gengine.h>
 #include <gmetaengine.h>
 #include <ggroupcalc.h>
@@ -84,7 +84,7 @@ GPluginManagers::GPluginManagers(void)
 	InsertPtr(new GLinkCalcManager());
 	InsertPtr(new GDocAnalyseManager());
 	InsertPtr(new GPostDocManager());
-	InsertPtr(new GFilterManager());
+	InsertPtr(new GFilterManagerCURL());
 	InsertPtr(new GEngineManager());
 	InsertPtr(new GMetaEngineManager());
 	InsertPtr(new GGroupCalcManager());
