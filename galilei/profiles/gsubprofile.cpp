@@ -218,7 +218,7 @@ bool GSubProfile::SameDescription(const GFdbk* fdbk) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
+unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
@@ -250,7 +250,7 @@ unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof)
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof)
+unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
@@ -279,7 +279,7 @@ unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof)
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
+unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
@@ -313,18 +313,16 @@ unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof)
 
 
 //------------------------------------------------------------------------------
-RCursor<GFdbk> GSubProfile::GetFdbks(void)
+RCursor<GFdbk> GSubProfile::GetFdbks(void) const
 {
-	RCursor<GFdbk> cur(Fdbks);
-	return(cur);
+	return(RCursor<GFdbk>(Fdbks));
 }
 
 
 //------------------------------------------------------------------------------
-RCursor<GWeightInfo> GSubProfile::GetWeightInfoCursor(void)
+RCursor<GWeightInfo> GSubProfile::GetWeightInfoCursor(void) const
 {
-	RCursor<GWeightInfo> cur(*this);
-	return(cur);
+	return(RCursor<GWeightInfo>(*this));
 }
 
 

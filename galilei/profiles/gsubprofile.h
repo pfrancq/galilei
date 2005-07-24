@@ -261,7 +261,7 @@ proxy:
 	* @param prof            Pointer to a subprofile.
 	* @return unsigned int.
 	*/
-	unsigned int GetCommonOKDocs(const GSubProfile* prof);
+	unsigned int GetCommonOKDocs(const GSubProfile* prof) const;
 
 	/**
 	* Get the number of common document between two subprofiles. In
@@ -270,7 +270,7 @@ proxy:
 	* @param prof            Pointer to a subprofile.
 	* @return unsigned int.
 	*/
-	unsigned int GetCommonDocs(const GSubProfile* prof) ;
+	unsigned int GetCommonDocs(const GSubProfile* prof) const;
 
 	/**
 	* Get the number of common document with different judgement between two
@@ -279,7 +279,7 @@ proxy:
 	* @param prof            Pointer to a subprofile.
 	* @return unsigned int.
 	*/
-	unsigned int GetCommonDiffDocs(const GSubProfile* prof);
+	unsigned int GetCommonDiffDocs(const GSubProfile* prof) const;
 
 	/**
 	* Get the number of assessed documents.
@@ -291,12 +291,12 @@ proxy:
 	* Get a cursor on the feedback for the profile.
 	* @return GFdbkCursor.
 	*/
-	R::RCursor<GFdbk> GetFdbks(void);
+	R::RCursor<GFdbk> GetFdbks(void) const;
 
 	/**
 	* Get a Cursor on the weighted information entities.
 	*/
-	R::RCursor<GWeightInfo> GetWeightInfoCursor(void);
+	R::RCursor<GWeightInfo> GetWeightInfoCursor(void) const;
 
 	/**
 	* Get the number of elements of the vector that are not null.

@@ -58,26 +58,18 @@ public:
 	GLang* Lang;                 // Language
 
 	// Constructor and Compare methods.
-	GSubProfiles(GLang* lang,unsigned int s) throw(std::bad_alloc)
+	GSubProfiles(GLang* lang,unsigned int s)
 		: RContainer<GSubProfile,true,true>(s,s/2), Lang(lang) {}
 	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
 	int Compare(const GSubProfiles& s) const {return(Lang->Compare(s.Lang));}
 	int Compare(const GSubProfiles* s) const {return(Lang->Compare(s->Lang));}
 
 	// Get a cursor over the subprofiles of the system.
-	RCursor<GSubProfile> GetSubProfilesCursor(void);
+	RCursor<GSubProfile> GetSubProfilesCursor(void) const {return(RCursor<GSubProfile>(*this));}
 
 	// Destructor.
 	virtual ~GSubProfiles(void) {}
 };
-
-
-//------------------------------------------------------------------------------
-RCursor<GSubProfile> GUsers::GSubProfiles::GetSubProfilesCursor(void)
-{
-	RCursor<GSubProfile> cur(*this);
-	return(cur);
-}
 
 
 
@@ -88,22 +80,21 @@ RCursor<GSubProfile> GUsers::GSubProfiles::GetSubProfilesCursor(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GUsers::GUsers(unsigned int u,unsigned int p) throw(std::bad_alloc)
+GUsers::GUsers(unsigned int u,unsigned int p)
 	: RContainer<GUser,true,true>(u,u/2), Profiles(p,p/2), SubProfiles(p,p/2)
 {
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GUser> GUsers::GetUsersCursor(void)
+R::RCursor<GUser> GUsers::GetUsersCursor(void) const
 {
-	R::RCursor<GUser> cur(*this);
-	return(cur);
+	return(R::RCursor<GUser>(*this));
 }
 
 
 //------------------------------------------------------------------------------
-void GUsers::InsertUser(GUser* usr) throw(std::bad_alloc)
+void GUsers::InsertUser(GUser* usr)
 {
 	InsertPtrAt(usr,usr->GetId(),true);
 }
@@ -117,7 +108,7 @@ GUser* GUsers::GetUser(unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GUsers::GetNewId(tObjType obj) throw(GException)
+unsigned int GUsers::GetNewId(tObjType obj)
 {
 	unsigned int id,i;
 	RCursor<GSubProfiles> Cur;
@@ -158,7 +149,7 @@ unsigned int GUsers::GetNewId(tObjType obj) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GUsers::InsertProfile(GProfile* p) throw(std::bad_alloc)
+void GUsers::InsertProfile(GProfile* p)
 {
 	Profiles.InsertPtrAt(p,p->GetId());
 }
@@ -172,7 +163,7 @@ GProfile* GUsers::GetProfile(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GProfile> GUsers::GetProfilesCursor(void)
+R::RCursor<GProfile> GUsers::GetProfilesCursor(void) const
 {
 	return(R::RCursor<GProfile>(Profiles));
 }
@@ -186,7 +177,7 @@ unsigned int GUsers::GetProfilesNb(void) const
 
 
 //------------------------------------------------------------------------------
-void GUsers::InsertSubProfile(GSubProfile* s) throw(std::bad_alloc,GException)
+void GUsers::InsertSubProfile(GSubProfile* s)
 {
 	GLang* l;
 	GSubProfiles* list;
@@ -201,7 +192,7 @@ void GUsers::InsertSubProfile(GSubProfile* s) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-GSubProfile* GUsers::GetSubProfile(const unsigned int id) const throw(GException)
+GSubProfile* GUsers::GetSubProfile(const unsigned int id) const
 {
 	GSubProfile* ptr;
 
@@ -218,7 +209,7 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id) const throw(GException
 
 
 //------------------------------------------------------------------------------
-GSubProfile* GUsers::GetSubProfile(const unsigned int id,GLang* lang) const throw(GException)
+GSubProfile* GUsers::GetSubProfile(const unsigned int id,const GLang* lang) const
 {
 	GSubProfiles* subs=SubProfiles.GetPtr(lang);
 	if(subs)
@@ -228,7 +219,7 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id,GLang* lang) const thro
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GUsers::GetSubProfilesCursor(GLang* lang) throw(GException)
+RCursor<GSubProfile> GUsers::GetSubProfilesCursor(const GLang* lang) const
 {
 	GSubProfiles* ptr=SubProfiles.GetPtr(lang);
 	if(ptr)

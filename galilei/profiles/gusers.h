@@ -75,12 +75,12 @@ public:
 	* @param u               Initial number of users.
 	* @param p               Initial number of profiles.
 	*/
-	GUsers(unsigned int u,unsigned int p) throw(std::bad_alloc);
+	GUsers(unsigned int u,unsigned int p);
 
 	/**
 	* Get a cursor over the users used in the system.
 	*/
-	R::RCursor<GUser> GetUsersCursor(void);
+	R::RCursor<GUser> GetUsersCursor(void) const;
 
 	/**
 	* Get the number of users treated by the system.
@@ -93,13 +93,13 @@ public:
 	* @param obj             Object type (otProfile,otSubProfile,otUser).
 	* @return unsigned int
 	*/
-	size_t GetNewId(tObjType obj) throw(GException);
+	size_t GetNewId(tObjType obj);
 
 	/**
 	* Insert an user in the container.
 	* @param usr             Pointer to the user to insert.
 	*/
-	void InsertUser(GUser* usr) throw(std::bad_alloc);
+	void InsertUser(GUser* usr);
 
 	/**
 	* Get a user from the container.
@@ -112,7 +112,7 @@ public:
 	* Insert a new profile in the container.
 	* @param p               Pointer to the profile to add.
 	*/
-	void InsertProfile(GProfile* p) throw(std::bad_alloc);
+	void InsertProfile(GProfile* p);
 
 	/**
 	* Get a profile with a specific identifier.
@@ -123,7 +123,7 @@ public:
 	/**
 	* Get a cursor over the profiles of the system.
 	*/
-	R::RCursor<GProfile> GetProfilesCursor(void);
+	R::RCursor<GProfile> GetProfilesCursor(void) const;
 
 	/**
 	* Get the number of profiles defined in the system.
@@ -134,26 +134,26 @@ public:
 	* Insert a subprofiles in the container.
 	* @param s              Pointer to the subprofile to add.
 	*/
-	void InsertSubProfile(GSubProfile* s) throw(std::bad_alloc,GException);
+	void InsertSubProfile(GSubProfile* s);
 
 	/**
 	* Get a subprofile with a specific identifier.
 	* @param id             Identifier.
 	*/
-	GSubProfile* GetSubProfile(const unsigned int id) const throw(GException);
+	GSubProfile* GetSubProfile(const unsigned int id) const;
 
 	/**
 	* Get a subprofile with a specific identifier.
 	* @param id             Identifier.
 	* @param lang           Language.
 	*/
-	GSubProfile* GetSubProfile(const unsigned int id,GLang* lang) const throw(GException);
+	GSubProfile* GetSubProfile(const unsigned int id,const GLang* lang) const;
 
 	/**
 	* Get a cursor over the subprofiles of the system for a given language.
 	* @param lang           Language.
 	*/
-	R::RCursor<GSubProfile> GetSubProfilesCursor(GLang* lang) throw(GException);
+	R::RCursor<GSubProfile> GetSubProfilesCursor(const GLang* lang) const;
 
 	/**
 	* Clear all the users.
