@@ -57,7 +57,7 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "fr", I18N_NOOP("French Language"),
+	KAboutData aboutData( "en", I18N_NOOP("English Language"),
 		"1.0", description, KAboutData::License_GPL,
 		"(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
