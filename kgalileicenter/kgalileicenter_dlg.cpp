@@ -51,6 +51,7 @@
 #include <ggrouping.h>
 #include <gpostgroup.h>
 #include <gprofilecalc.h>
+#include <gprofilessims.h>
 #include <glang.h>
 #include <gengine.h>
 #include <gmetaengine.h>
@@ -201,6 +202,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.changeDocAnalyse(Init<GFactoryDocAnalyse,GDocAnalyse,QDocAnalyseItem>(dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse"))->GetFactories(),dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse,dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse"))->GetCurrentMethod()));
 	dlg.changeEngine(Init<GFactoryEngine,GEngine,QEngineItem>(dynamic_cast<GEngineManager*>(GPluginManagers::PluginManagers.GetManager("Engine"))->GetFactories(),dlg.Engines,dlg.EnableEngine));
 	dlg.changeMetaEngine(Init<GFactoryMetaEngine,GMetaEngine,QMetaEngineItem>(dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->GetFactories(),dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine,dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->GetCurrentMethod()));
+	dlg.changeProfilesSims(Init<GFactoryProfilesSims,GProfilesSims,QProfilesSimsItem>(dynamic_cast<GProfilesSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesSims"))->GetFactories(),dlg.ProfilesSims,dlg.EnableProfilesSims,dlg.CurrentProfilesSims,dynamic_cast<GProfilesSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesSims"))->GetCurrentMethod()));
 
 	dlg.MainTab->setCurrentPage(DlgMainTabIdx);
 	dlg.DocsTab->setCurrentPage(DlgDocsTabIdx);
@@ -252,6 +254,7 @@ void KGALILEICenterApp::slotPlugins(void)
 			Done<QPostGroupItem>(dlg.PostGroups,this);
 			Done<QEngineItem>(dlg.Engines);
 			Done<QMetaEngineItem>(dlg.MetaEngines,this);
+			Done<QProfilesSimsItem>(dlg.ProfilesSims,this);
 		}
 		catch(GException& e)
 		{
@@ -296,6 +299,13 @@ void KGALILEICenterApp::slotPlugins(void)
 		try
 		{
 			dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1());
+		}
+		catch(GException)
+		{
+		}
+		try
+		{
+			dynamic_cast<GProfilesSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesSims"))->SetCurrentMethod(dlg.CurrentProfilesSims->currentText().latin1());
 		}
 		catch(GException)
 		{

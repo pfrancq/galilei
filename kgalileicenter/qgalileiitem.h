@@ -6,7 +6,7 @@
 
 	Specific Item - Header.
 
-	Copyright 1999-2003 by the Université Libre de Bruxelles.
+	Copyright 1999-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,6 +51,7 @@
 #include <gpreprofile.h>
 #include <gprofilecalc.h>
 #include <gstatscalc.h>
+#include <gprofilessims.h>
 using namespace GALILEI;
 
 
@@ -218,6 +219,18 @@ public:
 	GFactoryMetaEngine* Fac;
 	bool Enable;
 	QMetaEngineItem(QListView* lst,GFactoryMetaEngine* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QProfilesSimsItem : public QListViewItem
+{
+public:
+	GFactoryProfilesSims* Fac;
+	bool Enable;
+	QProfilesSimsItem(QListView* lst,GFactoryProfilesSims* fac,const char* desc,QListViewItem* after=0)
 		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}
