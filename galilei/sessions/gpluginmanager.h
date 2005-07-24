@@ -188,6 +188,11 @@ public :
 template<class mng,class factory,class plugin>
 	class GPluginManager : public GGenericPluginManager, private R::RContainer<factory,true,true>, private R::RContainer<plugin,false,true>
 {
+protected:
+
+	/**
+	* Current selected plug-in.
+	*/
 	plugin* Current;
 
 public:

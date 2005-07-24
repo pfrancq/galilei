@@ -61,6 +61,7 @@ using namespace std;
 #include <gpostprofile.h>
 #include <gpreprofile.h>
 #include <gstatscalc.h>
+#include <gprofilessims.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -94,6 +95,7 @@ GPluginManagers::GPluginManagers(void)
 	InsertPtr(new GPreProfileManager());
 	InsertPtr(new GPostProfileManager());
 	InsertPtr(new GStatsCalcManager());
+	InsertPtr(new GProfilesSimsManager());
 }
 
 

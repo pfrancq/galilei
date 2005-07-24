@@ -67,7 +67,6 @@ using namespace R;
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <gprofilessims.h>
-#include <gprofilesbehaviours.h>
 #include <gsubprofile.h>
 #include <gprofilecalc.h>
 #include <gpreprofile.h>
@@ -105,7 +104,7 @@ bool GSession::ExternBreak=false;
 //------------------------------------------------------------------------------
 GSession::GSession(GStorage* str)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(0,0),
-	  GGroups(0), Subjects(0),ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
+	  GGroups(0), Subjects(0),ProfilesSims(0), DocProfSims(0), Random(0),
 	  SessParams(0), Storage(str)
 {
 	// Init Part
@@ -123,9 +122,7 @@ GSession::GSession(GStorage* str)
 GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
 	  GGroups(str->GetNbSaved(otGroup)), Subjects(0),
-//	: GDocs(2000), GUsers(2000,2000),
-//	  GGroups(200), Subjects(0), Fdbks(100,50),
-	ProfilesSims(0), ProfilesBehaviours(0), DocProfSims(0), Random(0),
+	  ProfilesSims(0), DocProfSims(0), Random(0),
 	  SessParams(sessparams), Storage(str)
 {
 	// Init Part
@@ -149,17 +146,6 @@ void GSession::Connect(void)
 	GPluginManagers::PluginManagers.Connect(this);
 
 	// Create Similarities Managers (IFF used by default)
-	if(SessParams)
-	{
-		DebugSim=SessParams->GetBool("DebugSim");
-		DebugBehaviour=SessParams->GetBool("DebugBehaviour");
-		DebugMinSim=SessParams->GetBool("DebugMinSim");
-		AutomaticMinSim=SessParams->GetBool("AutomaticMinSim");
-		if(!DebugSim)
-			ProfilesSims = new GProfilesSims(this,true, true);
-		if(!DebugBehaviour)
-			ProfilesBehaviours = new GProfilesBehaviours(this,true);
-	}
 	DocProfSims = new GDocProfSims(this,true,false);
 }
 
@@ -168,6 +154,13 @@ void GSession::Connect(void)
 GDocXML* GSession::CreateDocXML(GDoc* doc)
 {
 	return((dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->CreateDocXML(doc));
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetSims(GProfilesSimsManager* sims)
+{
+	ProfilesSims=sims;
 }
 
 
@@ -412,6 +405,16 @@ void GSession::ComputePostDoc(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
+void GSession::AddModifiedProfile(GSubProfile* sub)
+{
+	if(ProfilesSims)
+		ProfilesSims->AddModifiedProfile(sub);
+/*	if(DocProfSims)
+		DocProfSims->AddModifiedProfile(sub);*/
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 {
 	GMetaEngine* metaEngine;
@@ -421,32 +424,6 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 		throw GException("No meta engine method chosen.");
 	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
 	metaEngine->Process();
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::UpdateBehaviours(void)
-{
-	if(!DebugBehaviour)
-		ProfilesBehaviours->Update();
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::UpdateProfilesSims(void)
-{
-	if(!DebugSim)
-		ProfilesSims->Update();
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AddModifiedProfile(GSubProfile* sub)
-{
-	if(ProfilesSims)
-		ProfilesSims->AddModifiedProfile(sub);
-	if(ProfilesBehaviours)
-		ProfilesBehaviours->AddModifiedProfile(sub);
 }
 
 
@@ -471,71 +448,14 @@ double GSession::GetSimDocProf(unsigned int doc,unsigned int sub)
 }
 
 
-//------------------------------------------------------------------------------
-void GSession::UseIFFProfs(bool iff)
-{
-	ProfilesSims->UseIFF(iff);
-}
 
 
 //------------------------------------------------------------------------------
-double GSession::GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2)
+/*double GSession::GetMinSimilarity(const GLang* lang)
 {
-	if(DebugSim)
-		return(sub1->SimilarityIFF(sub2));
-	return(ProfilesSims->GetSim(sub1,sub2));
-
-}
-
-
-//------------------------------------------------------------------------------
-double GSession::GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2)
-{
-	double nbcommon, okratio;
-
-	if(DebugBehaviour)
-	{
-		nbcommon=sub1->GetCommonDocs(sub2);
-		if(nbcommon&&nbcommon>=SessParams->GetUInt("SameBehaviourMinDocs"))
-			okratio=sub1->GetCommonOKDocs(sub2)/nbcommon;
- 		else
-			okratio=0.0;
-		return okratio;
-	}
-	else
-		return(ProfilesBehaviours->GetAgreementRatio(sub1,sub2));
-}
-
-
-//------------------------------------------------------------------------------
-double GSession::GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2)
-{
-	double nbcommon, diffratio;
-
-	if(DebugBehaviour)
-	{
-		nbcommon=sub1->GetCommonDocs(sub2);
-		if (nbcommon&&nbcommon>=SessParams->GetUInt("DiffBehaviourMinDocs"))
-			diffratio=sub1->GetCommonDiffDocs(sub2)/nbcommon;
- 		else diffratio=0.0;
-		return diffratio;
-	}
-	else
-		return(ProfilesBehaviours->GetDisagreementRatio(sub1,sub2));
-}
-
-
-//------------------------------------------------------------------------------
-double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate)
-{
-	//if min sim is not automatic, returnthe fixed value
-	if(!AutomaticMinSim)
-	{
-		return(SessParams->GetDouble("MinSim"));
-	}
-
 	//if debug mode, force min sim recomputing
-	if(DebugMinSim)
+, double deviationrate=1.5F
+if(DebugMinSim)
 	{
 		double tmpsim, simssum, deviation, MeanSim;
 		unsigned int nbcomp, i, j;
@@ -567,10 +487,10 @@ double GSession::GetMinimumOfSimilarity(GLang* lang, double deviationrate)
 	}
 	//else return the stored min sim
 	else
-	{
-		return(ProfilesSims->GetMinimumOfSimilarity(lang,deviationrate));
-	}
-}
+	if(ProfilesSims)
+		return(ProfilesSims->GetMinSimilarity(lang));
+	return(0.0);
+}*/
 
 
 //------------------------------------------------------------------------------
@@ -617,12 +537,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 
 					// add the mofified profile to the list of modified profiles (if it is defined!)
 					if (Subs()->IsDefined())
-					{
-						if(!DebugSim)
-							ProfilesSims->AddModifiedProfile(Subs());
-						if(!DebugBehaviour)
-							ProfilesBehaviours->AddModifiedProfile(Subs());
-					}
+						AddModifiedProfile(Subs());
 				}
 			}
 			catch(GException& e)
@@ -636,12 +551,8 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 		Storage->SaveLinks(this);
 
 	// update the state of all the sims.
-	if(!DebugSim)
+	if(!ProfilesSims)
 		ProfilesSims->Update();
-
-	//update the state of the behaviours
-	if (!DebugBehaviour)
-		ProfilesBehaviours->Update();
 
 	//runs the post profiling methds;
 	ComputePostProfile(rec);
@@ -686,13 +597,8 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,
 				}
 
 				// add the mofified profile to the list of modified profiles (if it is defined!)
-				if (Subs()->IsDefined())
-				{
-					if(!DebugSim)
-						ProfilesSims->AddModifiedProfile(Subs());
-					if(!DebugBehaviour)
-						ProfilesBehaviours->AddModifiedProfile(Subs());
-				}
+				if(Subs()->IsDefined())
+					AddModifiedProfile(Subs());
 			}
 		}
 		catch(GException& e)
@@ -705,12 +611,8 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,
 		Storage->SaveLinks(this);
 
 	// update the state of all the sims.
-	if(!DebugSim)
+	if(ProfilesSims)
 		ProfilesSims->Update();
-
-	//update the state of the behaviours
-	if (!DebugBehaviour)
-		ProfilesBehaviours->Update();
 
 	//runs the post profiling methds;
 //	ComputePostProfile(rec);
@@ -781,8 +683,8 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GExce
 		throw GException("No grouping method chosen.");
 
 	// Update the similarities and the behaviors of the subprofiles
-	UpdateBehaviours();
-	UpdateProfilesSims();
+	if(ProfilesSims)
+		ProfilesSims->Update();
 
     // Group the subprofiles
 	Grouping->Grouping(rec,modified,save);
@@ -1008,10 +910,8 @@ void GSession::ReInit(bool)
 	ClearUsers();
 
 	// Re-Init the sims and behaviorsbetween documents and subprofiles
-	if (!SessParams->GetBool("DebugSim"))
+	if(ProfilesSims)
 		ProfilesSims->ReInit();
-	if (!SessParams->GetBool("DebugBehaviour"))
-		ProfilesBehaviours->ReInit();
 	DocProfSims->ReInit();
 }
 
@@ -1063,8 +963,6 @@ GSession::~GSession(void)
 	{
 		// Delete Similarities Managers
 		if(DocProfSims) delete DocProfSims;
-		if(ProfilesBehaviours) delete ProfilesBehaviours;
-		if(ProfilesSims) delete ProfilesSims;
 
 		// Clear all entities
 		ClearGroups();

@@ -139,8 +139,6 @@ class GFdbk;
 class GProfileCalc;
 class GFactoryProfileCalc;
 class GProfileCalcManager;
-class GProfilesSims;
-class GProfilesBehaviours;
 class GPreProfile;
 class GPostProfile;
 class GFactoryPreProfile;
@@ -192,6 +190,13 @@ class GParam;
 class GConfig;
 class GSessionParams;
 class GStorage;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Similarities Part
+class GProfilesSims;
+class GProfilesSimsManager;
+class GFactoryProfilesSims;
 
 
 //------------------------------------------------------------------------------

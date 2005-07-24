@@ -76,12 +76,7 @@ protected:
 	/**
 	* Similarities between the subprofiles.
 	*/
-	GProfilesSims* ProfilesSims;
-
-	/**
-	* Agreement and disagreement ratios between the subprofiles.
-	*/
-	GProfilesBehaviours* ProfilesBehaviours;
+	GProfilesSimsManager* ProfilesSims;
 
 	/**
 	*  Similarities between documents and subprofiles.
@@ -118,26 +113,6 @@ protected:
 	* possible what it currently does.
 	*/
 	static bool ExternBreak;
-
-	/**
-	* Debug mode for computing similarities.
-	*/
-	bool DebugSim;
-
-	/**
-	* Debug mode for computing behaviors.
-	*/
-	bool DebugBehaviour;
-
-	/**
-	* Debug mode for computing the minimum of similarity.
-	*/
-	bool DebugMinSim;
-
-	/**
-	* Is the minimum similarity fixed?
-	*/
-	bool AutomaticMinSim;
 
 public:
 
@@ -180,16 +155,6 @@ public:
 
 	/**
 	* Connect the session to managers.
-	* @param langs           Languages Manager.
-	* @param umng            URL Manager.
-	* @param dmng            Document Analysis Methods Manager.
-	* @param pmng            Subprofile Computing Methods Manager.
-	* @param gmng            Grouping Methods Manager.
-	* @param gcmng           Group Computing Methods Manager.
-	* @param smng            Statistics Methods Manager.
-	* @param pdmng           Documents Post-Analysis Methods Manager.
-	* @param ppmng           Post-Profile Computing Methods Manager
-	* @param pgmng           Post-Group Computing Methods Manager
 	*/
 	void Connect(void);
 
@@ -210,6 +175,17 @@ public:
 	* @return Pointer to GSubjects.
 	*/
 	GSubjects* GetSubjects(void) {return(Subjects);}
+
+	/**
+	* Set the manager for the similarities between (sub)profiles.
+	* @param sims            Pointer to the manager.
+	*/
+	void SetSims(GProfilesSimsManager* sims);
+
+	/**
+	* Get the manager for the similarities between (sub)profiles.
+	*/
+	GProfilesSimsManager* GetProfilesSims(void) const {return(ProfilesSims);}
 
 	/**
 	* Get the parameters of the session.
@@ -328,58 +304,10 @@ public:
 	void ComputePostGroup(GSlot* rec);
 
 	/**
-	* Set if the Inverse Frequency Factor should be used for the similarities
-	* between (sub)profiles.
-	* @param iff             Use Inverse Frequency Factor.
-	*/
-	void UseIFFProfs(bool iff);
-
-	/**
-	* Return the similarity between two subProfiles .
-	* @param sub1           The Pointer to the first subprofile
-	* @param sub2           The Pointer to the second subprofile
-	*/
-	double GetSimProf(const GSubProfile* sub1,const GSubProfile* sub2);
-
-	/**
-	* Update the state of agreement and disagreement ratios between the
-	* subprofiles.
-	*/
-	void UpdateBehaviours(void);
-
-	/**
-	* Update the state of agreement and disagreement ratios between the
-	* subprofiles.
-	*/
-	void UpdateProfilesSims(void);
-
-	/**
 	* Add a subprofile to the list of the modified one.
 	* @param sub             Pointer to the subprofile.
 	*/
 	void AddModifiedProfile(GSubProfile* sub);
-
-	/**
-	* Return the disagreement ratio between two subprofiles .
-	* @param sub1           The Pointer to the first subprofile
-	* @param sub2           The Pointer to the second subprofile
-	*/
-	double GetDisagreementRatio(GSubProfile* sub1,GSubProfile* sub2);
-
-	/**
-	* Return the agreement ratio between two subprofiles .
-	* @param sub1           The Pointer to the first subprofile
-	* @param sub2           The Pointer to the second subprofile
-	*/
-	double GetAgreementRatio(GSubProfile* sub1,GSubProfile* sub2);
-
-	/**
-	* Get the minimum of similarityof the subprofiles, needed by clusteirng
-	* algorithms.
-	* @param lang            Language.
-	* @param deviationrate   factor of the standart deviation.
-	*/
-	double GetMinimumOfSimilarity(GLang* lang, double deviationrate=1.5);
 
 	/**
 	* Set if the Inverse Frequency Factor should be used for the similarities
