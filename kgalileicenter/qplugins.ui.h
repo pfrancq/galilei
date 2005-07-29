@@ -720,3 +720,79 @@ void QPlugins::slotProfilesSimsEnable( bool state )
 	if(!f) return;
 	f->Enable=state;
 }
+
+
+void QPlugins::changeProfilesDocsSims( QListViewItem * item )
+{
+	if(!item) return;
+	QProfilesDocsSimsItem* f=dynamic_cast<QProfilesDocsSimsItem*>(item);
+	if(!f) return;
+	EnableProfilesDocsSims->setChecked(f->Enable);
+	ConfigProfilesDocsSims->setEnabled(f->Fac->HasConfigure());
+	AboutProfilesDocsSims->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::changeGroupsDocsSims( QListViewItem * item )
+{
+	if(!item) return;
+	QGroupsDocsSimsItem* f=dynamic_cast<QGroupsDocsSimsItem*>(item);
+	if(!f) return;
+	EnableGroupsDocsSims->setChecked(f->Enable);
+	ConfigGroupsDocsSims->setEnabled(f->Fac->HasConfigure());
+	AboutGroupsDocsSims->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::slotAboutProfilesDocsSims()
+{
+	if(!ProfilesDocsSims->currentItem()) return;
+	QProfilesDocsSimsItem* f=dynamic_cast<QProfilesDocsSimsItem*>(ProfilesDocsSims->currentItem());
+	if(!f) return;
+	f->Fac->About();
+}
+
+
+void QPlugins::slotAboutGroupsDocsSims()
+{
+	if(!GroupsDocsSims->currentItem()) return;
+	QGroupsDocsSimsItem* f=dynamic_cast<QGroupsDocsSimsItem*>(GroupsDocsSims->currentItem());
+	if(!f) return;
+	f->Fac->About();
+}
+
+
+void QPlugins::slotConfigProfilesDocsSims()
+{
+	if(!ProfilesDocsSims->currentItem()) return;
+	QProfilesDocsSimsItem* f=dynamic_cast<QProfilesDocsSimsItem*>(ProfilesDocsSims->currentItem());
+	if(!f) return;
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotConfigGroupsDocsSims()
+{
+	if(!GroupsDocsSims->currentItem()) return;
+	QGroupsDocsSimsItem* f=dynamic_cast<QGroupsDocsSimsItem*>(GroupsDocsSims->currentItem());
+	if(!f) return;
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotProfilesDocsSimsEnable( bool state )
+{
+	if(!ProfilesDocsSims->currentItem()) return;
+	QProfilesDocsSimsItem* f=dynamic_cast<QProfilesDocsSimsItem*>(ProfilesDocsSims->currentItem());
+	if(!f) return;
+	f->Enable=state;
+}
+
+
+void QPlugins::slotGroupsDocsSimsEnable( bool state )
+{
+	if(!GroupsDocsSims->currentItem()) return;
+	QGroupsDocsSimsItem* f=dynamic_cast<QGroupsDocsSimsItem*>(GroupsDocsSims->currentItem());
+	if(!f) return;
+	f->Enable=state;
+}

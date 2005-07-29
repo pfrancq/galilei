@@ -46,6 +46,7 @@ using namespace std;
 #include <kapp.h>
 #include <qmessagebox.h>
 
+
 //-----------------------------------------------------------------------------
 // include files for current application
 #include "kgalileicenter.h"

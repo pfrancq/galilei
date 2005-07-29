@@ -52,6 +52,7 @@
 #include <gpostgroup.h>
 #include <gprofilecalc.h>
 #include <gprofilessims.h>
+#include <gprofilesdocssims.h>
 #include <glang.h>
 #include <gengine.h>
 #include <gmetaengine.h>
@@ -203,6 +204,8 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.changeEngine(Init<GFactoryEngine,GEngine,QEngineItem>(dynamic_cast<GEngineManager*>(GPluginManagers::PluginManagers.GetManager("Engine"))->GetFactories(),dlg.Engines,dlg.EnableEngine));
 	dlg.changeMetaEngine(Init<GFactoryMetaEngine,GMetaEngine,QMetaEngineItem>(dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->GetFactories(),dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine,dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->GetCurrentMethod()));
 	dlg.changeProfilesSims(Init<GFactoryProfilesSims,GProfilesSims,QProfilesSimsItem>(dynamic_cast<GProfilesSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesSims"))->GetFactories(),dlg.ProfilesSims,dlg.EnableProfilesSims,dlg.CurrentProfilesSims,dynamic_cast<GProfilesSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesSims"))->GetCurrentMethod()));
+	dlg.changeProfilesDocsSims(Init<GFactoryProfilesDocsSims,GProfilesDocsSims,QProfilesDocsSimsItem>(dynamic_cast<GProfilesDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesDocsSims"))->GetFactories(),dlg.ProfilesDocsSims,dlg.EnableProfilesDocsSims,dlg.CurrentProfilesDocsSims,dynamic_cast<GProfilesDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesDocsSims"))->GetCurrentMethod()));
+	dlg.changeGroupsDocsSims(Init<GFactoryGroupsDocsSims,GGroupsDocsSims,QGroupsDocsSimsItem>(dynamic_cast<GGroupsDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("GroupsDocsSims"))->GetFactories(),dlg.GroupsDocsSims,dlg.EnableGroupsDocsSims,dlg.CurrentGroupsDocsSims,dynamic_cast<GGroupsDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("GroupsDocsSims"))->GetCurrentMethod()));
 
 	dlg.MainTab->setCurrentPage(DlgMainTabIdx);
 	dlg.DocsTab->setCurrentPage(DlgDocsTabIdx);
@@ -255,6 +258,8 @@ void KGALILEICenterApp::slotPlugins(void)
 			Done<QEngineItem>(dlg.Engines);
 			Done<QMetaEngineItem>(dlg.MetaEngines,this);
 			Done<QProfilesSimsItem>(dlg.ProfilesSims,this);
+			Done<QProfilesDocsSimsItem>(dlg.ProfilesDocsSims,this);
+			Done<QGroupsDocsSimsItem>(dlg.GroupsDocsSims,this);
 		}
 		catch(GException& e)
 		{
@@ -306,6 +311,20 @@ void KGALILEICenterApp::slotPlugins(void)
 		try
 		{
 			dynamic_cast<GProfilesSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesSims"))->SetCurrentMethod(dlg.CurrentProfilesSims->currentText().latin1());
+		}
+		catch(GException)
+		{
+		}
+		try
+		{
+			dynamic_cast<GProfilesDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesDocsSims"))->SetCurrentMethod(dlg.CurrentProfilesDocsSims->currentText().latin1());
+		}
+		catch(GException)
+		{
+		}
+		try
+		{
+			dynamic_cast<GGroupsDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("GroupsDocsSims"))->SetCurrentMethod(dlg.CurrentGroupsDocsSims->currentText().latin1());
 		}
 		catch(GException)
 		{

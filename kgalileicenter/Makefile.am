@@ -10,10 +10,10 @@ kgalileicenter_SOURCES = qchooseparent.ui qhistorydlg.ui qfilldatabase.ui \
 		kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp 	qsessionprogress.cpp \
 	 kviewusers.cpp kviewthgroups.cpp 	kviewprofile.cpp kviewgroups.cpp \
 	kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kviewstats.cpp 	kview.cpp kdoc.cpp \
-	kviewsom.cpp ksommap.cpp kviewmetaengine.cpp kgalileicenter.cpp main.cpp  
-	
+	kviewsom.cpp ksommap.cpp kviewmetaengine.cpp kgalileicenter.cpp main.cpp
+
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
-kgalileicenter_LDADD = /usr/lib/libmysqlclient.la $(LIB_R) $(LIB_GALILEI) $(LIBKDE_GALILEI) \
+kgalileicenter_LDADD = $(LIB_R) $(LIB_GALILEI) $(LIBKDE_GALILEI) \
 	$(LIB_KFILE) $(LIB_KDEUI) $(LIB_KDECORE) $(LIB_QT) $(LIBSOCKET)
 
 SUBDIRS =
@@ -36,7 +36,7 @@ KDE_ICON = kgalileicenter konquerorHub konquerorAutho
 install-data-local:
 	$(mkinstalldirs) /usr/share/galilei/sql/
 	$(INSTALL_DATA) $(srcdir)/sql/*.sql /usr/share/galilei/sql/
-	
+
 # set the include path for X, qt and KDE
 INCLUDES = $(all_includes)
 
@@ -51,8 +51,8 @@ messages: rc.cpp
 	 $(XGETTEXT) $$LIST -o $(podir)/kgalileicenter.pot; \
 	fi
 
-AM_CFLAGS = 
-AM_CXXFLAGS = 
+AM_CFLAGS =
+AM_CXXFLAGS =
 AM_FFLAGS =
 
 
