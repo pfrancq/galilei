@@ -118,7 +118,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubjects::GSubjects(GSession* session) throw(std::bad_alloc)
+GSubjects::GSubjects(GSession* session)
 	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Session(session),
 	  tmpDocs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(0),
 	  GroupsScore(100,50), Profiles(1000), Docs(5000)
@@ -157,7 +157,7 @@ void GSubjects::Apply(void)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
+void GSubjects::ChooseSubjects(void)
 {
 	R::RCursor<GSubject> Subs;
 	unsigned int compt;
@@ -199,7 +199,7 @@ void GSubjects::ChooseSubjects(void) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::CreateSet(void) throw(std::bad_alloc)
+void GSubjects::CreateSet(void)
 {
 	RCursor<GSubject> Subs;
 	RCursor<GProfile> Prof;
@@ -324,7 +324,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 
 
 //------------------------------------------------------------------------------
-GGroup* GSubjects::GetIdealGroup(GSubProfile* sub) const throw(GException)
+GGroup* GSubjects::GetIdealGroup(GSubProfile* sub) const
 {
 	return(IdealGroups->GetGroup(sub));
 }
@@ -524,7 +524,7 @@ void GSubjects::ComputeTotal(void)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::CreateIdeal(bool Save) throw(std::bad_alloc)
+void GSubjects::CreateIdeal(bool Save)
 {
 	// Apply Config
 	Apply();
@@ -548,7 +548,7 @@ void GSubjects::CreateIdeal(bool Save) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
+void GSubjects::FdbksCycle(bool Save)
 {
 	R::RCursor<GGroup> Grps;
 	RCursor<GSubProfile> SubProfile;
@@ -598,7 +598,7 @@ void GSubjects::FdbksCycle(bool Save) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::AddAssessments(bool Save) throw(std::bad_alloc)
+void GSubjects::AddAssessments(bool Save)
 {
 	R::RCursor<GSubject> Subs;
 	RCursor<GProfile> Prof;
@@ -662,7 +662,7 @@ void GSubjects::AddAssessments(bool Save) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-bool GSubjects::AddTopic(bool Save) throw(std::bad_alloc)
+bool GSubjects::AddTopic(bool Save)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -725,7 +725,7 @@ bool GSubjects::AddTopic(bool Save) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubjects::AddProfiles(bool Save) throw(std::bad_alloc)
+unsigned int GSubjects::AddProfiles(bool Save)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -865,7 +865,7 @@ double GSubjects::ComputePercAss(void)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::ClearLastAdded(void) throw(std::bad_alloc)
+void GSubjects::ClearLastAdded(void)
 {
 	LastAdded.Clear();
 }
@@ -879,7 +879,7 @@ GSubject* GSubjects::GetSubject(unsigned int id)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::Clear(void) throw(std::bad_alloc)
+void GSubjects::Clear(void)
 {
 	RTree<GSubject,true,false>::Clear();
 	Profiles.Clear();

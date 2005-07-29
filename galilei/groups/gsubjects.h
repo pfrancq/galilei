@@ -195,7 +195,7 @@ public:
 	* Constructor of the subjects.
 	* @param session         Session.
 	*/
-	GSubjects(GSession* session) throw(std::bad_alloc);
+	GSubjects(GSession* session);
 
 	/**
 	* Assign the values of the parameters to the corresponding variables.
@@ -207,12 +207,12 @@ protected:
 	/**
 	* Choose the subjects that will be used.
 	*/
-	void ChooseSubjects(void) throw(std::bad_alloc);
+	void ChooseSubjects(void);
 
 	/**
 	* Create the set based on the subjects used.
 	*/
-	void CreateSet(void) throw(std::bad_alloc);
+	void CreateSet(void);
 
 	/**
 	* Simulatation of assessments for a profile on a given subject.
@@ -229,7 +229,7 @@ protected:
 	* Get the ideal group of the subprofile.
 	* @param sub            SubProfile.
 	*/
-	GGroup* GetIdealGroup(GSubProfile* sub) const throw(GException);
+	GGroup* GetIdealGroup(GSubProfile* sub) const;
 
 	/**
 	* Compute the Recall and the Precision.
@@ -249,33 +249,33 @@ public:
 	* Create randomly the judgment for all the users.
 	* @param Save           Save the results.
 	*/
-	void CreateIdeal(bool Save) throw(std::bad_alloc);
+	void CreateIdeal(bool Save);
 
 	/**
 	* Create new feedback for the different users of the system.
 	* @param Save           Save the results.
 	*/
-	void FdbksCycle(bool Save) throw(std::bad_alloc);
+	void FdbksCycle(bool Save);
 
 	/**
 	* Add assessments to the profiles creates.
 	* @param Save           Save the results.
 	*/
-	void AddAssessments(bool Save) throw(std::bad_alloc);
+	void AddAssessments(bool Save);
 
 	/**
 	* Add profiles of a new not used topic.
 	* @param Save      Save the results.
 	* @return true if a not used topic was found.
 	*/
-	bool AddTopic(bool Save) throw(std::bad_alloc);
+	bool AddTopic(bool Save);
 
 	/**
 	* Add judgements for some new not used profiles.
 	* @param Save      Save the results.
 	* @return Number of profiles created.
 	*/
-	unsigned int AddProfiles(bool Save) throw(std::bad_alloc);
+	unsigned int AddProfiles(bool Save);
 
 	/**
 	* Computed the percentage of correct assignments for the subprofiles last
@@ -287,7 +287,7 @@ public:
 	/**
 	* Clear the container of last added subprofiles.
 	*/
-	void ClearLastAdded(void) throw(std::bad_alloc);
+	void ClearLastAdded(void);
 
 	/**
 	* Get a subject.
@@ -299,7 +299,7 @@ public:
 	/**
 	* Clear the subjects.
 	*/
-	void Clear(void) throw(std::bad_alloc);
+	void Clear(void);
 
 	/**
 	* Compare the clustering.

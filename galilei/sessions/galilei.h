@@ -98,7 +98,6 @@ class GDocAnalyseManager;
 class GPostDoc;
 class GPostDocManager;
 class GFactoryPostDoc;
-class GDocProfSims;
 class GDocs;
 class GDocSim;
 class GDocsSim;
@@ -181,6 +180,7 @@ class GTests;
 class GSession;
 class GSessionPrg;
 class GSlot;
+class GSignalHandler;
 class GStatsCalc;
 class GFactoryStatsCalc;
 class GStatsCalcManager;
@@ -197,6 +197,12 @@ class GStorage;
 class GProfilesSims;
 class GProfilesSimsManager;
 class GFactoryProfilesSims;
+class GProfilesDocsSims;
+class GProfilesDocsSimsManager;
+class GFactoryProfilesDocsSims;
+class GGroupsDocsSims;
+class GGroupsDocsSimsManager;
+class GFactoryGroupsDocsSims;
 
 
 //------------------------------------------------------------------------------
@@ -242,6 +248,19 @@ enum tObjState
 	osUpdated=4               /** Object is updated and needs to be save.*/,
 	osDelete=5                /** Object must be deleted.*/,
 	osNotNeeded=6             /** Object is not needed.*/
+};
+
+
+//------------------------------------------------------------------------------
+/**
+* GALILEI event.
+*/
+enum tEvent
+{
+	eUnknow                   /** Unknow sevent.*/,
+	eObjCreated               /** An object was created.*/,
+	eObjModified              /** An object was modified.*/,
+	eObjDeleted               /** An Object will be deleted.*/
 };
 
 

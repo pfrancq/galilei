@@ -56,7 +56,6 @@ using namespace R;
 #include <gdoc.h>
 #include <gdocanalyse.h>
 #include <gdocxml.h>
-#include <gdocprofsims.h>
 #include <glinkcalc.h>
 #include <glink.h>
 #include <gpostdoc.h>
@@ -67,6 +66,8 @@ using namespace R;
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <gprofilessims.h>
+#include <gprofilesdocssims.h>
+#include <ggroupsdocssims.h>
 #include <gsubprofile.h>
 #include <gprofilecalc.h>
 #include <gpreprofile.h>
@@ -90,6 +91,13 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
+// Static variables
+R::RContainer<GSignalHandler,false,false> GSession::Handlers(30,20);
+GPluginManagers GPluginManagers::PluginManagers;
+
+
+
+//------------------------------------------------------------------------------
 //
 // GSession
 //
@@ -104,7 +112,7 @@ bool GSession::ExternBreak=false;
 //------------------------------------------------------------------------------
 GSession::GSession(GStorage* str)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(0,0),
-	  GGroups(0), Subjects(0),ProfilesSims(0), DocProfSims(0), Random(0),
+	  GGroups(0), Subjects(0), ProfilesSims(0), ProfilesDocsSims(0), GroupsDocsSims(0), Random(0),
 	  SessParams(0), Storage(str)
 {
 	// Init Part
@@ -122,7 +130,7 @@ GSession::GSession(GStorage* str)
 GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
 	  GGroups(str->GetNbSaved(otGroup)), Subjects(0),
-	  ProfilesSims(0), DocProfSims(0), Random(0),
+	  ProfilesSims(0), ProfilesDocsSims(0), GroupsDocsSims(0), Random(0),
 	  SessParams(sessparams), Storage(str)
 {
 	// Init Part
@@ -144,9 +152,6 @@ GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
 void GSession::Connect(void)
 {
 	GPluginManagers::PluginManagers.Connect(this);
-
-	// Create Similarities Managers (IFF used by default)
-	DocProfSims = new GDocProfSims(this,true,false);
 }
 
 
@@ -161,6 +166,20 @@ GDocXML* GSession::CreateDocXML(GDoc* doc)
 void GSession::SetSims(GProfilesSimsManager* sims)
 {
 	ProfilesSims=sims;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetSims(GProfilesDocsSimsManager* sims)
+{
+	ProfilesDocsSims=sims;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetSims(GGroupsDocsSimsManager* sims)
+{
+	GroupsDocsSims=sims;
 }
 
 
@@ -405,16 +424,6 @@ void GSession::ComputePostDoc(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::AddModifiedProfile(GSubProfile* sub)
-{
-	if(ProfilesSims)
-		ProfilesSims->AddModifiedProfile(sub);
-/*	if(DocProfSims)
-		DocProfSims->AddModifiedProfile(sub);*/
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 {
 	GMetaEngine* metaEngine;
@@ -425,72 +434,6 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
 	metaEngine->Process();
 }
-
-
-//------------------------------------------------------------------------------
-void GSession::UseIFFDocProf(bool iff)
-{
-	DocProfSims->UseIFF(iff);
-}
-
-
-//------------------------------------------------------------------------------
-double GSession::GetSimDocProf(const GDoc* doc,const GSubProfile* sub)
-{
-	return(DocProfSims->GetSim(doc,sub));
-}
-
-
-//------------------------------------------------------------------------------
-double GSession::GetSimDocProf(unsigned int doc,unsigned int sub)
-{
-	return(DocProfSims->GetSim(GetDoc(doc),GetSubProfile(sub)));
-}
-
-
-
-
-//------------------------------------------------------------------------------
-/*double GSession::GetMinSimilarity(const GLang* lang)
-{
-	//if debug mode, force min sim recomputing
-, double deviationrate=1.5F
-if(DebugMinSim)
-	{
-		double tmpsim, simssum, deviation, MeanSim;
-		unsigned int nbcomp, i, j;
-		RCursor<GSubProfile> s(this->GetSubProfilesCursor(lang));
-		RCursor<GSubProfile> s2(this->GetSubProfilesCursor(lang));
-
-		simssum=deviation=0.0;
-		nbcomp=0;
-
-		for(s.Start(),i=0,j=s.GetNb();--j;s.Next(),i++)
-		{
-			if (!s()->IsDefined()) continue;
-			for(s2.GoTo(i+1);!s2.End();s2.Next())
-			{
-				if (!s2()->IsDefined()) continue;
-				tmpsim=s()->SimilarityIFF(s2());
-				simssum+=tmpsim;
-				deviation+=tmpsim*tmpsim;
-				nbcomp++;
-			}
-		}
-		if (nbcomp)
-		{
-			MeanSim=simssum/double(nbcomp);
-			deviation/=double(nbcomp);
-			deviation-=MeanSim*MeanSim;
-		}
-		return(MeanSim+deviationrate*sqrt(deviation));
-	}
-	//else return the stored min sim
-	else
-	if(ProfilesSims)
-		return(ProfilesSims->GetMinSimilarity(lang));
-	return(0.0);
-}*/
 
 
 //------------------------------------------------------------------------------
@@ -534,10 +477,6 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 					{
 						Storage->SaveSubProfile(Subs());
 					}
-
-					// add the mofified profile to the list of modified profiles (if it is defined!)
-					if (Subs()->IsDefined())
-						AddModifiedProfile(Subs());
 				}
 			}
 			catch(GException& e)
@@ -549,10 +488,6 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 	//Save the best computed Links (As Hub and Authority)
 	if((saveLinks) &&(LinkCalc))
 		Storage->SaveLinks(this);
-
-	// update the state of all the sims.
-	if(!ProfilesSims)
-		ProfilesSims->Update();
 
 	//runs the post profiling methds;
 	ComputePostProfile(rec);
@@ -595,10 +530,6 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,
 				{
 					Storage->SaveSubProfile(Subs());
 				}
-
-				// add the mofified profile to the list of modified profiles (if it is defined!)
-				if(Subs()->IsDefined())
-					AddModifiedProfile(Subs());
 			}
 		}
 		catch(GException& e)
@@ -609,10 +540,6 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,
 	//Save the best computed Links (As Hub and Authority)
 	if((saveLinks) &&(LinkCalc))
 		Storage->SaveLinks(this);
-
-	// update the state of all the sims.
-	if(ProfilesSims)
-		ProfilesSims->Update();
 
 	//runs the post profiling methds;
 //	ComputePostProfile(rec);
@@ -681,10 +608,6 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GExce
 	// Verify that there is a method to cluster the subprofile
 	if(!Grouping)
 		throw GException("No grouping method chosen.");
-
-	// Update the similarities and the behaviors of the subprofiles
-	if(ProfilesSims)
-		ProfilesSims->Update();
 
     // Group the subprofiles
 	Grouping->Grouping(rec,modified,save);
@@ -908,11 +831,6 @@ void GSession::ReInit(bool)
 	ClearGroups();
 	ClearFdbks();
 	ClearUsers();
-
-	// Re-Init the sims and behaviorsbetween documents and subprofiles
-	if(ProfilesSims)
-		ProfilesSims->ReInit();
-	DocProfSims->ReInit();
 }
 
 
@@ -961,9 +879,6 @@ GSession::~GSession(void)
 {
 	try
 	{
-		// Delete Similarities Managers
-		if(DocProfSims) delete DocProfSims;
-
 		// Clear all entities
 		ClearGroups();
 		GUsers::Clear();

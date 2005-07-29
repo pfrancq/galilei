@@ -42,6 +42,7 @@
 #include <gsubprofile.h>
 #include <gsession.h>
 #include <gweightinfo.h>
+#include <gprofilesdocssims.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -78,18 +79,20 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroup::GGroup(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc)
+GGroup::GGroup(unsigned int id,GLang* lang,bool com)
 	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(60), Id(id),
 	  State(osUpToDate), Lang(lang), Community(com)
 {
+	GSession::Event(this,eObjCreated);
 }
 
 
 //------------------------------------------------------------------------------
-GGroup::GGroup(GLang* lang,bool com) throw(std::bad_alloc)
+GGroup::GGroup(GLang* lang,bool com)
 	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(60), Id(cNoRef),
 	  State(osCreated), Lang(lang), Community(com)
 {
+	GSession::Event(this,eObjCreated);
 }
 
 
@@ -145,7 +148,7 @@ bool GGroup::IsEmpty(void) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::SetId(unsigned int id) throw(GException)
+void GGroup::SetId(unsigned int id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a group");
@@ -168,7 +171,7 @@ bool GGroup::IsIn(const GSubProfile* sp) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::DeleteSubProfile(GSubProfile* sp) throw(std::bad_alloc)
+void GGroup::DeleteSubProfile(GSubProfile* sp)
 {
 	if(Community)
 		sp->SetGroup(0);
@@ -178,7 +181,7 @@ void GGroup::DeleteSubProfile(GSubProfile* sp) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGroup::InsertSubProfile(GSubProfile* sp) throw(std::bad_alloc)
+void GGroup::InsertSubProfile(GSubProfile* sp)
 {
 	R::RContainer<GSubProfile,false,true>::InsertPtr(sp);
 	State=osUpdated;
@@ -188,14 +191,14 @@ void GGroup::InsertSubProfile(GSubProfile* sp) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGroup::InsertPtr(GSubProfile* sp) throw(std::bad_alloc)
+void GGroup::InsertPtr(GSubProfile* sp)
 {
 	InsertSubProfile(sp);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroup::DeleteSubProfiles(void) throw(std::bad_alloc)
+void GGroup::DeleteSubProfiles(void)
 {
 	RCursor<GSubProfile> Sub;
 
@@ -210,7 +213,7 @@ void GGroup::DeleteSubProfiles(void) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GGroup::GetSubProfilesCursor(void)
+RCursor<GSubProfile> GGroup::GetSubProfilesCursor(void) const
 {
 	RCursor<GSubProfile> cur(*this);
 	return(cur);
@@ -218,7 +221,7 @@ RCursor<GSubProfile> GGroup::GetSubProfilesCursor(void)
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GGroup::GetCursor(void)
+RCursor<GSubProfile> GGroup::GetCursor(void) const
 {
 	return(GetSubProfilesCursor());
 }
@@ -245,7 +248,7 @@ unsigned int GGroup::GetNbSubProfiles(void) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc)
+void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* s) const
 {
 	RCursor<GSubProfile> sub(*this);
 	RCursor<GFdbk> Fdbks;
@@ -299,7 +302,7 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* 
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc)
+void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const
 {
 	RCursor<GSubProfile> sub(*this);
 	RCursor<GFdbk> Fdbks;
@@ -326,7 +329,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 				// Verify if already inserted in Docs.
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
-				Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetSimDocProf(Fdbks()->GetDoc()->GetId(),s->GetId())));
+				Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetProfilesDocsSims()->GetSimilarity(session->GetDoc(Fdbks()->GetDoc()->GetId()),s)));
 			}
 			continue;
 		}
@@ -344,7 +347,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDoc()->GetId()))) continue;
 
 			// Insert it.
-			Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetSimDocProf(Fdbks()->GetDoc()->GetId(),s->GetId())));
+			Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetProfilesDocsSims()->GetSimilarity(session->GetDoc(Fdbks()->GetDoc()->GetId()),s)));
 		}
 	}
 
@@ -425,7 +428,7 @@ double GGroup::Similarity(const GGroup* desc) const
 
 
 //------------------------------------------------------------------------------
-double GGroup::SimilarityIFF(const GGroup* desc) const throw(GException)
+double GGroup::SimilarityIFF(const GGroup* desc) const
 {
 	return(GWeightInfos::SimilarityIFF(desc,otGroup,Lang));
 }
@@ -439,7 +442,7 @@ double GGroup::Similarity(const GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-double GGroup::SimilarityIFF(const GDoc* doc) const throw(GException)
+double GGroup::SimilarityIFF(const GDoc* doc) const
 {
 	return(GWeightInfos::SimilarityIFF(doc,otDocGroup,Lang));
 }
@@ -453,7 +456,7 @@ double GGroup::Similarity(const GSubProfile* doc) const
 
 
 //------------------------------------------------------------------------------
-double GGroup::SimilarityIFF(const GSubProfile* doc) const throw(GException)
+double GGroup::SimilarityIFF(const GSubProfile* doc) const
 {
 	return(GWeightInfos::SimilarityIFF(doc,otSubProfileGroup,Lang));
 }
@@ -487,6 +490,9 @@ void GGroup::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 	// Update its references
 	if(Lang&&Community)
 		AddRefs(otGroup,Lang);
+
+	// Emit an event that it was modified
+	GSession::Event(this,eObjModified);
 }
 
 
@@ -500,6 +506,7 @@ void GGroup::HasUpdate(unsigned int,bool)
 //------------------------------------------------------------------------------
 GGroup::~GGroup(void)
 {
+	GSession::Event(this,eObjDeleted);
 	try
 	{
 		if(Community)

@@ -64,6 +64,7 @@ GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,co
 	}
 	else
 		State=osUpToDate;
+	GSession::Event(this,eObjCreated);
 }
 
 
@@ -276,6 +277,9 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 	RCursor<GProfileProxy> Cur(Fdbks);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->HasUpdate(Id,computed);
+
+	// Emit an event that it was modified
+	GSession::Event(this,eObjModified);
 }
 
 
@@ -343,6 +347,7 @@ R::RCursor<GLink> GDoc::GetLinkCursor(void)
 //------------------------------------------------------------------------------
 GDoc::~GDoc(void)
 {
+	GSession::Event(this,eObjDeleted);
 	try
 	{
 		// If document have a language -> remove its references

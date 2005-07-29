@@ -68,6 +68,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,
 	Profile->InsertPtr(this);
 	if(grp)
 		grp->InsertSubProfile(this);
+	GSession::Event(this,eObjCreated);
 }
 
 
@@ -79,6 +80,7 @@ GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang)
 		throw GException("Subprofile has no parent profile");
 	session->AssignId(this);
 	Profile->InsertPtr(this);
+	GSession::Event(this,eObjCreated);
 }
 
 
@@ -415,6 +417,9 @@ void GSubProfile::Update(R::RContainer<GWeightInfo,false,true>* infos,bool compu
 	// Signal to the its group that it was modified
 	if(Group)
 		Group->HasUpdate(Id,computed);
+
+	// Emit an event that it was modified
+	GSession::Event(this,eObjModified);
 }
 
 
@@ -429,6 +434,7 @@ void GSubProfile::ClearFdbks(void)
 //------------------------------------------------------------------------------
 GSubProfile::~GSubProfile(void)
 {
+	GSession::Event(this,eObjDeleted);
 	try
 	{
 		// Remove its references

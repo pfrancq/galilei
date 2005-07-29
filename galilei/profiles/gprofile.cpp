@@ -147,6 +147,7 @@ GProfile::GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned i
 	if(!User)
 		throw GException("Profile "+itou(id)+" has no parent user");
 	User->InsertPtr(this);
+	GSession::Event(this,eObjCreated);
 }
 
 
@@ -325,4 +326,5 @@ void GProfile::Update(void)
 //------------------------------------------------------------------------------
 GProfile::~GProfile(void)
 {
+	GSession::Event(this,eObjDeleted);
 }

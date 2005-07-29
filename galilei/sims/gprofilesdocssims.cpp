@@ -2,14 +2,15 @@
 
 	GALILEI Research Project
 
-	GUser.cpp
+	GProfilesDocsSims.cpp
 
-	User - Implementation.
+	Generic Computing of Similarities between profiles and documents - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,9 +33,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <guser.h>
-#include <gprofile.h>
-#include <gsubprofile.h>
+#include <gprofilesdocssims.h>
 #include <gsession.h>
 using namespace GALILEI;
 using namespace R;
@@ -43,73 +42,72 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GUser
+//  GProfilesDocsSims
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GUser::GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(std::bad_alloc)
-	: RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
-	  FullName(fullname)
+GProfilesDocsSims::GProfilesDocsSims(GFactoryProfilesDocsSims* fac)
+	: GPlugin<GFactoryProfilesDocsSims>(fac)
 {
-	GSession::Event(this,eObjCreated);
 }
 
 
 //------------------------------------------------------------------------------
-int GUser::Compare(const GUser &user) const
+GProfilesDocsSims::~GProfilesDocsSims(void)
 {
-	return(Id-user.Id);
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GProfilesDocsSimsManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GProfilesDocsSimsManager::GProfilesDocsSimsManager(void)
+	: GPluginManager<GProfilesDocsSimsManager,GFactoryProfilesDocsSims,GProfilesDocsSims>("ProfilesDocsSims",API_PROFILESDOCSSIMS_VERSION,ptSelect)
+{
 }
 
 
 //------------------------------------------------------------------------------
-int GUser::Compare(const GUser *user) const
+void GProfilesDocsSimsManager::Connect(GSession* session)
 {
-	return(Id-user->Id);
+	GPluginManager<GProfilesDocsSimsManager,GFactoryProfilesDocsSims,GProfilesDocsSims>::Connect(session);
+	if(session)
+		session->SetSims(this);
 }
 
 
 //------------------------------------------------------------------------------
-int GUser::Compare(const unsigned int id) const
+void GProfilesDocsSimsManager::Disconnect(GSession* session)
 {
-	return(Id-id);
+	GPluginManager<GProfilesDocsSimsManager,GFactoryProfilesDocsSims,GProfilesDocsSims>::Disconnect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GUser::SetId(unsigned int id) throw(GException)
+double GProfilesDocsSimsManager::GetSimilarity(const GDoc* doc,const GSubProfile* sub)
 {
-	if(Id==cNoRef)
-		throw GException("Cannot assign cNoRef to a user");
-	Id=id;
+	if(!Current)
+		throw GException("No profiles/documents similarities plug-in selected");
+	return(Current->GetSimilarity(doc,sub));
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GProfile> GUser::GetProfilesCursor(void)
+double GProfilesDocsSimsManager::GetMinSimilarity(const GLang* lang)
 {
-	R::RCursor<GProfile> cur(*this);
-	return(cur);
+	if(!Current)
+		throw GException("No profiles/documents similarities plug-in selected");
+	return(Current->GetMinSimilarity(lang));
 }
 
 
 //------------------------------------------------------------------------------
-RString GUser::GetName(void) const
+GProfilesDocsSimsManager::~GProfilesDocsSimsManager(void)
 {
-	return(Name);
-}
-
-
-//------------------------------------------------------------------------------
-RString GUser::GetFullName(void) const
-{
-	return(FullName);
-}
-
-
-//------------------------------------------------------------------------------
-GUser::~GUser(void)
-{
-	GSession::Event(this,eObjDeleted);
 }

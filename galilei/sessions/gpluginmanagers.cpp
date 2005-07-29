@@ -62,6 +62,8 @@ using namespace std;
 #include <gpreprofile.h>
 #include <gstatscalc.h>
 #include <gprofilessims.h>
+#include <gprofilesdocssims.h>
+#include <ggroupsdocssims.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -72,10 +74,6 @@ using namespace R;
 // GGPluginManagers::PluginManagers
 //
 //------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Static variables
-GPluginManagers GPluginManagers::PluginManagers;
 
 //------------------------------------------------------------------------------
 GPluginManagers::GPluginManagers(void)
@@ -96,6 +94,8 @@ GPluginManagers::GPluginManagers(void)
 	InsertPtr(new GPostProfileManager());
 	InsertPtr(new GStatsCalcManager());
 	InsertPtr(new GProfilesSimsManager());
+	InsertPtr(new GProfilesDocsSimsManager());
+	InsertPtr(new GGroupsDocsSimsManager());
 }
 
 
@@ -190,7 +190,10 @@ void GPluginManagers::Load(const R::RContainer<R::RString,true,false>& dirs,bool
 		// Get a hangle
 		void *handle=dlopen(Cur()->Latin1(),RTLD_LAZY);
 		if(!handle)
+		{
+			cerr<<dlerror()<<endl;
 			continue;
+		}
 
 		// Find the category and the manager
 		LibTypeFc* LibType=(LibTypeFc*)dlsym(handle,"LibType");

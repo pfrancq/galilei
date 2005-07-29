@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.h
+	GProfilesSims.h
 
-	List of SubProfiles for a given Language - Implementation.
+	Generic Computing of Similarities between profiles - Implementation.
 
 	Copyright 2003-2005 by the Université Libre de Bruxelles.
 
@@ -42,7 +42,6 @@
 #include <gpluginmanager.h>
 
 
-
 //------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
@@ -66,22 +65,9 @@ public:
 
 	/**
 	* Constructor of the similarities between subprofiles.
-	* @param session         Session.
-	* @param iff             Use Inverse Frequency Factor.
-	* @param memory      use container to stock sims?
+	* @param fac             Plug-in factory.
 	*/
 	GProfilesSims(GFactoryProfilesSims* fac);
-
-	/**
-	* Re-initialize the similarities. This method can be used for testing
-	* purpose when it is necessary to start from different initial conditions.
-	*/
-	virtual void ReInit(void)=0;
-
-	/**
-	*  update the similairties
-	*/
-	virtual void Update(void)=0;
 
 	/**
 	* Get the similarity between two subprofiles.
@@ -125,12 +111,6 @@ public:
 	* @param lang            Language.
 	*/
 	virtual double GetMinAgreementRatio(const GLang* lang)=0;
-
-	/**
-	* Add a subprofile to the list of the modified one.
-	* @param sub             Pointer to the subprofile.
-	*/
-	virtual void AddModifiedProfile(GSubProfile* sub);
 
 	/**
 	* Destructor.
@@ -190,17 +170,6 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
-	* Re-initialize the similarities. This method can be used for testing
-	* purpose when it is necessary to start from different initial conditions.
-	*/
-	void ReInit(void);
-
-	/**
-	*  Update the similarities after changes.
-	*/
-	void Update(void);
-
-	/**
 	* Get the similarity between two subprofiles using the current method.
 	* @param sub1            Pointer to the first subprofile.
 	* @param sub2            Pointer to the second subprofile.
@@ -243,12 +212,6 @@ public:
 	* @param lang            Language.
 	*/
 	double GetMinAgreementRatio(const GLang* lang);
-
-	/**
-	* Add a subprofile to the list of the modified one.
-	* @param sub             Pointer to the subprofile.
-	*/
-	void AddModifiedProfile(GSubProfile* sub);
 
 	/**
 	* Destructor of manager.

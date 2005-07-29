@@ -4,7 +4,7 @@ AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
 SUBDIRS =
-libgalilei_engines_la_LIBADD = /usr/lib/libmysqlclient.la $(LIB_R)
+libgalilei_engines_la_LIBADD = $(LIB_R)
 libgalilei_engines_la_SOURCES = genginedoc.cpp granking.cpp gengine.cpp \
 	gmetaengine.cpp gwordoccurs.cpp gindexer.cpp
 

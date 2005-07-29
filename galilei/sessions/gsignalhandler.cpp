@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GUser.cpp
+	GSignalHandler.cpp
 
-	User - Implementation.
+	Generic Signal Handler for GALILEI Session - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,10 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <guser.h>
-#include <gprofile.h>
-#include <gsubprofile.h>
-#include <gsession.h>
+#include <gsignalhandler.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -43,73 +40,60 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GUser
+//  class GSignalHandler
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GUser::GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(std::bad_alloc)
-	: RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
-	  FullName(fullname)
+GSignalHandler::GSignalHandler(void)
 {
-	GSession::Event(this,eObjCreated);
 }
 
 
 //------------------------------------------------------------------------------
-int GUser::Compare(const GUser &user) const
+int GSignalHandler::Compare(const GSignalHandler& handler) const
 {
-	return(Id-user.Id);
+	return(this-(&handler));
 }
 
 
 //------------------------------------------------------------------------------
-int GUser::Compare(const GUser *user) const
+void GSignalHandler::Event(GLang*, tEvent)
 {
-	return(Id-user->Id);
 }
 
 
 //------------------------------------------------------------------------------
-int GUser::Compare(const unsigned int id) const
+void GSignalHandler::Event(GDoc*, tEvent)
 {
-	return(Id-id);
 }
 
 
 //------------------------------------------------------------------------------
-void GUser::SetId(unsigned int id) throw(GException)
+void GSignalHandler::Event(GUser*, tEvent)
 {
-	if(Id==cNoRef)
-		throw GException("Cannot assign cNoRef to a user");
-	Id=id;
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GProfile> GUser::GetProfilesCursor(void)
+void GSignalHandler::Event(GProfile*, tEvent)
 {
-	R::RCursor<GProfile> cur(*this);
-	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-RString GUser::GetName(void) const
+void GSignalHandler::Event(GSubProfile*, tEvent)
 {
-	return(Name);
 }
 
 
 //------------------------------------------------------------------------------
-RString GUser::GetFullName(void) const
+void GSignalHandler::Event(GGroup*, tEvent)
 {
-	return(FullName);
 }
 
 
 //------------------------------------------------------------------------------
-GUser::~GUser(void)
+GSignalHandler::~GSignalHandler(void)
 {
-	GSession::Event(this,eObjDeleted);
 }

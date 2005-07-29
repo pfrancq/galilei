@@ -46,6 +46,7 @@
 #include <genginedoc.h>
 #include <ggroups.h>
 #include <gparams.h>
+#include <gsignalhandler.h>
 
 
 //------------------------------------------------------------------------------
@@ -81,7 +82,12 @@ protected:
 	/**
 	*  Similarities between documents and subprofiles.
 	*/
-	GDocProfSims* DocProfSims;
+	GProfilesDocsSimsManager* ProfilesDocsSims;
+
+	/**
+	*  Similarities between documents and groupss.
+	*/
+	GGroupsDocsSimsManager* GroupsDocsSims;
 
 	/**
 	* Current seek for this session.
@@ -113,6 +119,11 @@ protected:
 	* possible what it currently does.
 	*/
 	static bool ExternBreak;
+
+	/**
+	* Handlers of GALILEi signals.
+	*/
+	static R::RContainer<GSignalHandler,false,false> Handlers;
 
 public:
 
@@ -186,6 +197,28 @@ public:
 	* Get the manager for the similarities between (sub)profiles.
 	*/
 	GProfilesSimsManager* GetProfilesSims(void) const {return(ProfilesSims);}
+
+	/**
+	* Set the manager for the similarities between (sub)profiles/documents.
+	* @param sims            Pointer to the manager.
+	*/
+	void SetSims(GProfilesDocsSimsManager* sims);
+
+	/**
+	* Get the manager for the similarities between (sub)profiles/documents.
+	*/
+	GProfilesDocsSimsManager* GetProfilesDocsSims(void) const {return(ProfilesDocsSims);}
+
+	/**
+	* Set the manager for the similarities between groups/documents.
+	* @param sims            Pointer to the manager.
+	*/
+	void SetSims(GGroupsDocsSimsManager* sims);
+
+	/**
+	* Get the manager for the similarities between groups/documents.
+	*/
+	GGroupsDocsSimsManager* GetGroupsDocsSims(void) const {return(GroupsDocsSims);}
 
 	/**
 	* Get the parameters of the session.
@@ -304,33 +337,6 @@ public:
 	void ComputePostGroup(GSlot* rec);
 
 	/**
-	* Add a subprofile to the list of the modified one.
-	* @param sub             Pointer to the subprofile.
-	*/
-	void AddModifiedProfile(GSubProfile* sub);
-
-	/**
-	* Set if the Inverse Frequency Factor should be used for the similarities
-	* between documents and (sub)profiles.
-	* @param iff             Use Inverse Frequency Factor.
-	*/
-	void UseIFFDocProf(bool iff);
-
-	/**
-	* Return the similarity between a document and a subProfiles.
-	* @param doc           The Pointer to the document.
-	* @param sub           The Pointer to the subprofile.
-	*/
-	double GetSimDocProf(const GDoc* doc,const GSubProfile* sub);
-
-	/**
-	* Return the similarity between a document and a subProfiles.
-	* @param doc           Identificator of the document.
-	* @param sub           Identificator of the subprofile.
-	*/
-	double GetSimDocProf(unsigned int doc,unsigned int sub);
-
-	/**
 	* Insert a new Feedback.
 	* @param p                Identificator of the profile.
 	* @param d                Identificator of the document.
@@ -445,6 +451,33 @@ public:
 	* @return GDocProxy*
 	*/
 	void New(GProfileProxy* &ptr,unsigned int id);
+
+	/**
+	* Add a handler to the list of handlers.
+	* @param handler         Pointer to the handler.
+	*/
+	static void AddHandler(GSignalHandler* handler) {Handlers.InsertPtr(handler);}
+
+	/**
+	* Delete a handler from the list of handlers.
+	* @param handler         Pointer to the handler.
+	*/
+
+	static void DeleteHandler(GSignalHandler* handler) {Handlers.DeletePtr(*handler);}
+
+	/**
+	* Emit a signal for a given object.
+	* @param O               Class of the object.
+	* @param obj             Pointer to the object.
+	* @param event           Event.
+	*/
+	template<class O> static void Event(O* obj, tEvent event)
+	{
+		if(!obj) return;
+		R::RCursor<GSignalHandler> Handlers(GSession::Handlers);
+		for(Handlers.Start();!Handlers.End();Handlers.Next())
+			Handlers()->Event(obj,event);
+	}
 
 	/**
 	* Destructor.

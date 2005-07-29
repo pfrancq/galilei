@@ -4,7 +4,7 @@ AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
 SUBDIRS =
-libgalilei_infos_la_LIBADD = /usr/lib/libmysqlclient.la $(LIB_R)
+libgalilei_infos_la_LIBADD = $(LIB_R)
 libgalilei_infos_la_SOURCES = ginfo.cpp gweightinfos.cpp gweightinfo.cpp \
 	gdata.cpp gdict.cpp glang.cpp gword.cpp gwordlist.cpp ginfolist.cpp
 infosincludedir = $(includedir)/galilei

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.cpp
+	GProfilesSims.cpp
 
-	List of SubProfiles for a given Language - Implementation.
+	Generic Computing of Similarities between profiles - Implementation.
 
 	Copyright 2003-2005 by the Université Libre de Bruxelles.
 
@@ -32,16 +32,8 @@
 
 
 //------------------------------------------------------------------------------
-// include standard api files
-#include <math.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gprofilessims.h>
-#include <gsubprofile.h>
-#include <gprofile.h>
-#include <glang.h>
 #include <gsession.h>
 using namespace GALILEI;
 using namespace R;
@@ -57,12 +49,6 @@ using namespace R;
 //------------------------------------------------------------------------------
 GProfilesSims::GProfilesSims(GFactoryProfilesSims* fac)
 	: GPlugin<GFactoryProfilesSims>(fac)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GProfilesSims::AddModifiedProfile(GSubProfile*)
 {
 }
 
@@ -100,22 +86,6 @@ void GProfilesSimsManager::Connect(GSession* session)
 void GProfilesSimsManager::Disconnect(GSession* session)
 {
 	GPluginManager<GProfilesSimsManager,GFactoryProfilesSims,GProfilesSims>::Disconnect(session);
-}
-
-
-//------------------------------------------------------------------------------
-void GProfilesSimsManager::ReInit(void)
-{
-	if(Current)
-		Current->ReInit();
-}
-
-
-//------------------------------------------------------------------------------
-void GProfilesSimsManager::Update(void)
-{
-	if(Current)
-		Current->Update();
 }
 
 
@@ -170,14 +140,6 @@ double GProfilesSimsManager::GetMinAgreementRatio(const GLang* lang)
 	if(!Current)
 		throw GException("No profiles similarities plug-in selected");
 	return(Current->GetMinAgreementRatio(lang));
-}
-
-
-//------------------------------------------------------------------------------
-void GProfilesSimsManager::AddModifiedProfile(GSubProfile* sub)
-{
-	if(Current)
-		Current->AddModifiedProfile(sub);
 }
 
 

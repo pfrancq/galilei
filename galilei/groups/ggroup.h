@@ -84,14 +84,14 @@ public:
 	* @param lang           Language.
 	* @param com            Community.
 	*/
-	GGroup(unsigned int id,GLang* lang,bool com) throw(std::bad_alloc);
+	GGroup(unsigned int id,GLang* lang,bool com);
 
 	/**
 	* Construct a group with an invalid identificator.
 	* @param lang           Language.
 	* @param com            Community.
 	*/
-	GGroup(GLang* lang,bool com) throw(std::bad_alloc);
+	GGroup(GLang* lang,bool com);
 
 private:
 
@@ -155,7 +155,7 @@ public:
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
-	void SetId(unsigned int id) throw(GException);
+	void SetId(unsigned int id);
 
 	/**
 	* Get a Cursor on the weighted information entities.
@@ -193,7 +193,7 @@ public:
 	* of the subprofile is set to null).
 	* @param sp             SubProfile to delete.
 	*/
-	void DeleteSubProfile(GSubProfile* sp) throw(std::bad_alloc);
+	void DeleteSubProfile(GSubProfile* sp);
 
 	/**
 	* Insert a subprofile in the group. If the group is a community, the
@@ -201,7 +201,7 @@ public:
 	* of the subprofile is set to null).
 	* @param sp             SubProfile to insert.
 	*/
-	void InsertSubProfile(GSubProfile* sp) throw(std::bad_alloc);
+	void InsertSubProfile(GSubProfile* sp);
 
 	/**
 	* Insert a subprofile in the group. This signature is needed by a generic
@@ -209,24 +209,24 @@ public:
 	* @param sp             SubProfile to insert.
 	* @see R::RGroupingKMeans.
 	*/
-	void InsertPtr(GSubProfile* sp) throw(std::bad_alloc);
+	void InsertPtr(GSubProfile* sp);
 
 	 /**
 	* Delete all subprofiles.
 	*/
-	void DeleteSubProfiles(void) throw(std::bad_alloc);
+	void DeleteSubProfiles(void);
 
 	/**
 	* Get a cursor over the subprofiles.
 	*/
-	R::RCursor<GSubProfile> GetSubProfilesCursor(void);
+	R::RCursor<GSubProfile> GetSubProfilesCursor(void) const;
 
 	/**
 	* Get a cursor over the subprofiles. This signature is needed by a generic
 	* k-Means.
 	* @see R::RGroupingKMeans.
 	*/
-	R::RCursor<GSubProfile> GetCursor(void);
+	R::RCursor<GSubProfile> GetCursor(void) const;
 
 	/**
 	* Compute the number of subprofiles of a given group that are also in the
@@ -247,7 +247,7 @@ public:
 	* @param docs           Documents not assessed.
 	* @param s              Subprofile.
 	*/
-	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>* docs, GSubProfile* s) const throw(std::bad_alloc);
+	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>* docs, GSubProfile* s) const;
 
 	/**
 	* Construct the list of all relevant documents of the subprofiles of a
@@ -258,7 +258,7 @@ public:
 	* @param session        Session.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(R::RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const throw(std::bad_alloc);
+	void NotJudgedDocsRelList(R::RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const;
 
 	/**
 	* Compute the relevant subprofile, i.e. the subprofiles whith the highest
@@ -295,7 +295,7 @@ public:
 	* Frequence Factor (IFF).
 	* @param doc             Pointer to a document.
 	*/
-	double SimilarityIFF(const GDoc* doc) const throw(GException);
+	double SimilarityIFF(const GDoc* doc) const;
 
 	/**
 	* Compute the similarity between a group and subprofile.
@@ -308,7 +308,7 @@ public:
 	* Frequence Factor (IFF).
 	* @param sub             Pointer to a subprofile.
 	*/
-	double SimilarityIFF(const GSubProfile* sub) const throw(GException);
+	double SimilarityIFF(const GSubProfile* sub) const;
 
 	/**
 	* Compute the similarity between groups.
@@ -321,7 +321,7 @@ public:
 	* (IFF).
 	* @param grp             Pointer to a group.
 	*/
-	double SimilarityIFF(const GGroup* grp) const throw(GException);
+	double SimilarityIFF(const GGroup* grp) const;
 
 	/**
 	* Clear the vector representing the group.

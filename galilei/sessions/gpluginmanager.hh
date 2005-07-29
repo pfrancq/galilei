@@ -80,7 +80,7 @@ template<class mng,class factory,class plugin>
 	char* error;
 
 	// Try to create the factory
-	FactoryInit* initFac= (FactoryInit*) dlsym(handle,"FactoryCreate");
+	FactoryInit* initFac= reinterpret_cast<FactoryInit*>(dlsym(handle,"FactoryCreate"));
 	error=dlerror();
 	if(error)
 	{
@@ -99,7 +99,7 @@ template<class mng,class factory,class plugin>
 	// Try to create the dialogs if necessary
 	if(!handleDlg)
 		return;
-	About_t about = (About_t) dlsym(handleDlg,"About");
+	About_t about = reinterpret_cast<About_t>(dlsym(handleDlg,"About"));
 	error=dlerror();
 	if(!error)
 		myfactory->SetAbout(about);
