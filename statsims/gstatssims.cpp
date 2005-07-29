@@ -48,6 +48,7 @@
 #include <gsubjects.h>
 #include <gdoc.h>
 #include <gsubprofile.h>
+#include <gprofilesdocssims.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -150,6 +151,8 @@ public:
 	bool HasSubject(GGroup* grp)
 	{return(!grp->IsEmpty());}
 
+	virtual double Similarity(GDoc* doc,GGroup* grp) {return(0.0);}
+
 	bool SameSubject(GGroup* grp,GDoc* doc)
 	{
 		// Suppose subject of the group is subject of the first subprofile
@@ -185,6 +188,8 @@ public:
 
 	RCursor<GSubProfile> GetElementCursor(GLang* Lang)
 	{return(Session->GetSubProfilesCursor(Lang));}
+
+	virtual double Similarity(GDoc* doc,GSubProfile* sub) {return(Session->GetProfilesDocsSims()->GetSimilarity(doc,sub));}
 
 	bool HasSubject(GSubProfile* sub)
 	{return(Session->GetSubjects()->GetSubject(sub));}
