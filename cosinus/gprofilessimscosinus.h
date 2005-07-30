@@ -39,6 +39,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gprofilessims.h>
+#include <gsignalhandler.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq and Valery Vandaele
 * @short SubProfiles.
 */
-class GProfilesSimsCosinus : public GProfilesSims
+class GProfilesSimsCosinus : public GProfilesSims, public GSignalHandler
 {
 	// Internal class
 	class GProfilesSim;
@@ -96,6 +97,8 @@ class GProfilesSimsCosinus : public GProfilesSims
 
 	double MinDisagreement;
 
+	bool NeedUpdate;
+
 public:
 
 	/**
@@ -111,18 +114,10 @@ public:
 	*/
 	virtual void ApplyConfig(void);
 
-	void Create(void);
-
-	/**
-	* Re-initialize the similarities. This method can be used for testing
-	* purpose when it is necessary to start from different initial conditions.
-	*/
-	virtual void ReInit(void);
-
 	/**
 	*  update the similairties
 	*/
-	virtual void Update(void);
+	void Update(void);
 
 	/**
 	* Get the similarity between two subprofiles.
@@ -158,10 +153,18 @@ public:
 	virtual double GetMinAgreementRatio(const GLang* lang);
 
 	/**
-	* Add a subprofile to the list of the modified one.
-	* @param sub             Pointer to the subprofile.
+	* A specific subprofile has changed.
+	* @param sub             Subprofile.
+	* @param event           Event.
 	*/
-	virtual void AddModifiedProfile(GSubProfile* sub);
+	virtual void Event(GLang* lang, tEvent event);
+
+	/**
+	* A specific subprofile has changed.
+	* @param sub             Subprofile.
+	* @param event           Event.
+	*/
+	virtual void Event(GSubProfile* sub, tEvent event);
 
 	/**
 	* Create the parameters.
@@ -173,8 +176,6 @@ public:
 	* Destructor.
 	*/
 	virtual ~GProfilesSimsCosinus(void);
-
-	friend class GProfilesSim;
 };
 
 

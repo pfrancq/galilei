@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroupcalc.h>
+#include <gprofilessims.h>
 using namespace GALILEI;
 
 
@@ -58,7 +58,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for Current
-#include <dlgconfig_qt.h>
+#include <dlgconfigprofiles_qt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -85,9 +85,9 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryGroupCalc* params)
+void Configure(GFactoryProfilesSims* params)
 {
- 	DlgConfig_Qt dlg;
+ 	DlgConfigProfiles_Qt dlg;
 
 	dlg.MinSameDocs->setValue(params->GetUInt("MinSameDocs"));
 	dlg.MinDiffDocs->setValue(params->GetUInt("MinDiffDocs"));
