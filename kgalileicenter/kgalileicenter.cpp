@@ -171,7 +171,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		try
 		{
 			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName,dbEncoding);
-			Sess = new GSession(Doc->GetStorage(),&SessionParams,true);
+			Sess = new GSession(Doc->GetStorage(),true);
 			Doc->SetSession(Sess);
 			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
 			if(dlg.Run(new QLoadSession()))

@@ -162,14 +162,12 @@ void KGALILEICenterApp::initActions(void)
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
-
 	// Menu "Settings"
 	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection());
 	viewStatusBar = KStdAction::showStatusbar(this, SLOT(slotViewStatusBar()), actionCollection());
 	viewToolBar->setStatusText(i18n("Enables/disables the toolbar"));
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
 	plugins=new KAction(i18n("&Plug-Ins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
-	sessionOptions=new KAction(i18n("&Session Options"),"configure",0,this,SLOT(slotSessionOptions()),actionCollection(),"sessionOptions");
 
 	// Menu "Window"
 	windowTile = new KAction(i18n("&Tile"), 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
@@ -259,7 +257,6 @@ void KGALILEICenterApp::saveOptions(void)
 	try
 	{
 		GConfig Conf("/etc/galilei/galilei.galileiconfig");
-		Conf.Store(SessionParams);
 		Conf.Save();
 	}
 	catch(...)
@@ -346,7 +343,6 @@ void KGALILEICenterApp::readGALILEIOptions(void)
 	{
 		GConfig Conf("/etc/galilei/galilei.galileiconfig");
 		Conf.Load();
-		Conf.Read(SessionParams);
 	}
 	catch(...)
 	{

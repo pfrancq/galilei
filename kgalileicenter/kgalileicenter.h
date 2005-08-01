@@ -116,11 +116,6 @@ class KGALILEICenterApp : public KMainWindow
 	KConfig* Config;
 
 	/**
-	* Parameters of the session.
-	*/
-	GSessionParams SessionParams;
-
-	/**
 	* Database server's host.
 	*/
 	R::RString dbHost;
@@ -510,11 +505,6 @@ private slots:
 	void slotPlugins(void);
 
 	/**
-	* configure the parameters of the sessions
-	*/
-	void slotSessionOptions(void);
-
-	/**
 	* Run a program text file.
 	*/
 	void slotRunProgram(void);
@@ -620,7 +610,6 @@ public:
 	KAction* textEnglish;
 
 	KAction* plugins;
-	KAction* sessionOptions;
 
 	KAction* runProgram;
 
