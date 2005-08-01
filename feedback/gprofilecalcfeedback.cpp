@@ -40,7 +40,7 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <gprofilecalcfeedback.h>
-#include <gdocproxy.h>
+#include <gdoc.h>
 #include <gsubprofile.h>
 #include <gweightinfo.h>
 #include <glang.h>
@@ -137,15 +137,11 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 			NbDocs++;
 
 			// Update number of documents where appear each index term.
-			Words=Docs()->GetDoc()->GetWeightInfoCursor();
+			Words=Docs()->GetDoc()->GetInfos();
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				w=NbDocsWords.GetInsertPtr(GInfo(*Words()));
 				(*w)+=1.0;
-				if((Words()->GetId()==14)||(Words()->GetId()==23192))
-				{
-					cout<<Words()->GetId()<<": "<<w->GetWeight()<<endl;
-				}
 			}
 		}
 	}
@@ -182,7 +178,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 		}
 
 		// Add total number of words and the occurences of each word of the current document.
-		Words=Docs()->GetDoc()->GetWeightInfoCursor();
+		Words=Docs()->GetDoc()->GetInfos();
 		MaxFreq=Docs()->GetDoc()->GetMaxWeight();
 		for(Words.Start();!Words.End();Words.Next())
 		{
@@ -195,7 +191,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 
 			// If local idf is needed, multiply the frequence by it
 			if(idf)
-				Freq*=log(TotalRef/static_cast<double>(SubProfile->GetLang()->GetRef(Words()->GetId(),otDoc)));;
+				Freq*=log(TotalRef/static_cast<double>(SubProfile->GetLang()->GetRef(Words()->GetId(),otDoc)));
 
 			// Add the frequence to the global vector
 			if(Add)
@@ -273,7 +269,7 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
 	{
 		unsigned int i,TotalRef;
 
-		Cur=subprofile->GetWeightInfoCursor();
+		Cur=subprofile->GetInfos();
 		TotalRef=subprofile->GetLang()->GetRef(otDoc);
 		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 		{
