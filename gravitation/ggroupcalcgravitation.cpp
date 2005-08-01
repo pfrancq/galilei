@@ -111,7 +111,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 	for(Sub.Start();!Sub.End();Sub.Next())
 	{
 		// Go trough the words of the current subprofile
-		RCursor<GWeightInfo> Cur=Sub()->GetWeightInfoCursor();
+		RCursor<GWeightInfo> Cur(Sub()->GetInfos());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			ins=Vector.GetInsertPtr<unsigned int>(Cur()->GetId());
