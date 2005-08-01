@@ -151,7 +151,7 @@ public:
 	bool HasSubject(GGroup* grp)
 	{return(!grp->IsEmpty());}
 
-	virtual double Similarity(GDoc* doc,GGroup* grp) {return(0.0);}
+	virtual double Similarity(GDoc*,GGroup*) {return(0.0);}
 
 	bool SameSubject(GGroup* grp,GDoc* doc)
 	{

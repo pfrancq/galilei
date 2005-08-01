@@ -274,7 +274,7 @@ template<class E,class C>
 
 				if(Global)
 				{
-					tmp=Cur1()->SimilarityIFF(Cur2());
+					tmp=Cur1()->SimilarityIFF(*Cur2(),otSubProfile,Cur1()->GetLang());
 					if(Same)
 					{
 						SimIntraG+=tmp;
@@ -289,7 +289,7 @@ template<class E,class C>
 
 				if(Local)
 				{
-					tmp=Cur1()->Similarity(Cur2());
+					tmp=Cur1()->Similarity(*Cur2());
 					if(Same)
 					{
 						SimIntraL+=tmp;
