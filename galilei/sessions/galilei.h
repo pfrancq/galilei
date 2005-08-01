@@ -76,7 +76,6 @@ class GWeightInfo;
 class GWeightInfos;
 class GInfosWeightsHistory;
 class GLang;
-class GLangProxy;
 class GFactoryLang;
 class GLangManager;
 class GData;
@@ -92,7 +91,6 @@ class GFilter;
 class GFactoryFilter;
 class GFilterManager;
 class GDoc;
-class GDocProxy;
 class GDocAnalyse;
 class GDocAnalyseManager;
 class GPostDoc;
@@ -131,9 +129,7 @@ class GIndexer;
 class GUsers;
 class GUser;
 class GProfile;
-class GProfileProxy;
 class GSubProfile;
-class GSubProfileProxy;
 class GFdbk;
 class GProfileCalc;
 class GFactoryProfileCalc;
@@ -282,17 +278,6 @@ enum tDocAssessment
 	djMaskJudg=15               /** Mask for the judgement of the doc.*/,
 	djMaskHubAuto=48            /** Mask for the Hub or Autority.*/
 
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* Models used to describe subprofiles.
-*/
-enum tSubProfileDesc
-{
-	sdNothing=0               /** Unknow Model.*/,
-	sdVector=1                /** Vector Model.*/
 };
 
 

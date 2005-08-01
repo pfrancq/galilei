@@ -146,8 +146,6 @@ public:
 	*/
 	int Compare(const char* code) const;
 
-proxy:
-
 	/**
 	* During the analysis of a document, some words beginning with a number may
 	* appear as valid with respect to the rules, but these words do not

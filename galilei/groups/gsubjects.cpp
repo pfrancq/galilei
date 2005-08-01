@@ -37,7 +37,7 @@
 #include <gsubjects.h>
 #include <gsubject.h>
 #include <ggroups.h>
-#include <gdocproxy.h>
+#include <gdoc.h>
 #include <gsession.h>
 #include <gpluginmanagers.h>
 #include <gstorage.h>

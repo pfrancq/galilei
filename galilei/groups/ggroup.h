@@ -158,11 +158,6 @@ public:
 	void SetId(unsigned int id);
 
 	/**
-	* Get a Cursor on the weighted information entities.
-	*/
-	R::RCursor<GWeightInfo> GetWeightInfoCursor(void);
-
-	/**
 	* Return the state of the group.
 	* @returns GALILEI::tObjState value.
 	*/
@@ -283,45 +278,6 @@ public:
 	* @returns result.
 	*/
 	double ComputeSumSim(const GSubProfile* s,bool iff) const;
-
-	/**
-	* Compute the similarity between a group and a document.
-	* @param doc             Pointer to a document.
-	*/
-	double Similarity(const GDoc* doc) const;
-
-	/**
-	* Compute a similarity between a group and a document using a Inverse
-	* Frequence Factor (IFF).
-	* @param doc             Pointer to a document.
-	*/
-	double SimilarityIFF(const GDoc* doc) const;
-
-	/**
-	* Compute the similarity between a group and subprofile.
-	* @param sub             Pointer to a subprofile.
-	*/
-	double Similarity(const GSubProfile* sub) const;
-
-	/**
-	* Compute a similarity between a group and a subprofile using a Inverse
-	* Frequence Factor (IFF).
-	* @param sub             Pointer to a subprofile.
-	*/
-	double SimilarityIFF(const GSubProfile* sub) const;
-
-	/**
-	* Compute the similarity between groups.
-	* @param grp             Pointer to a group.
-	*/
-	double Similarity(const GGroup* grp) const;
-
-	/**
-	* Compute a similarity between two groups using a Inverse Frequence Factor
-	* (IFF).
-	* @param grp             Pointer to a group.
-	*/
-	double SimilarityIFF(const GGroup* grp) const;
 
 	/**
 	* Clear the vector representing the group.

@@ -56,7 +56,7 @@ class GFdbk
 	/**
 	* Document assessed.
 	*/
-	GDocProxy* Doc;
+	GDoc* Doc;
 
 	/**
 	* Assessment of the profile.
@@ -72,11 +72,11 @@ public:
 
 	/**
 	* Constructor.
-	* @param id               Identificator of the document.
+	* @param doc              Document.
 	* @param fdbk             Assessment.
 	* @param updated          Date.
 	*/
-	GFdbk(unsigned int id,tDocAssessment fdbk,R::RDate& updated);
+	GFdbk(GDoc* doc,tDocAssessment fdbk,R::RDate& updated);
 
 	/**
 	* Compare two assessements to order them using the document identificator.
@@ -120,7 +120,7 @@ public:
 	* Get the document assessed.
 	* @returns Pointer to the document.
 	*/
-	GDocProxy* GetDoc(void) const {return(Doc);}
+	GDoc* GetDoc(void) const {return(Doc);}
 
 	/**
 	* Get the date of the assessment on the document.
@@ -231,8 +231,6 @@ public:
 	*/
 	int Compare(const unsigned int id) const;
 
-proxy:
-
 	/**
 	* Get the identificator of the profile.
 	* @return Identificator.
@@ -243,7 +241,7 @@ proxy:
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
-	void SetId(unsigned int id)  throw(GException);
+	void SetId(unsigned int id);
 
 	/**
 	* Get the name of the profile.
@@ -302,27 +300,27 @@ proxy:
 	* Get a Cursor on the feedback for the profile.
 	* @return GFdbkCursor.
 	*/
-	R::RCursor<GFdbk> GetFdbks(void);
+	R::RCursor<GFdbk> GetFdbks(void) const;
 
 	/**
 	* Get a Cursor on the subprofiles.
 	* @return RCursor<GSubProfile>.
 	*/
-	R::RCursor<GSubProfile> GetSubProfilesCursor(void);
+	R::RCursor<GSubProfile> GetSubProfilesCursor(void) const;
 
 	/**
 	* Insert an assessment to the list of the profile.
-	* @param id               Identificator of the document.
+	* @param doc              Document.
 	* @param assess           Assessment.
 	* @param date             Date.
 	*/
-	void InsertFdbk(unsigned int id,tDocAssessment assess,R::RDate date) throw(std::bad_alloc);
+	void InsertFdbk(GDoc* doc,tDocAssessment assess,R::RDate date);
 
 	/**
 	* Delete an assessment from the list of the profile.
 	* @param id               Identificator of the document.
 	*/
-	void DeleteFdbk(unsigned int id) throw(std::bad_alloc);
+	void DeleteFdbk(unsigned int id);
 
 	/**
 	* Clear the assessment of the profile.

@@ -136,7 +136,7 @@ void GALILEI::QGSubProfiles::SubProfile::Construct(void)
 
 	// Read 'Ok'
 	Vector->clear();
-	RCursor<GWeightInfo> Cur=Desc->GetWeightInfoCursor();
+	RCursor<GWeightInfo> Cur(Desc->GetInfos());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		new LocalItem(Vector,ToQString(Session->GetStorage()->LoadWord(Cur()->GetId(),Desc->GetLang()->GetCode())),Cur()->GetWeight());

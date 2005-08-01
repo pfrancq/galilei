@@ -100,7 +100,7 @@ protected:
 	/**
 	* Profiles which have assessed the document.
 	*/
-	R::RContainer<GProfileProxy,true,true> Fdbks;
+	R::RContainer<GProfile,false,true> Fdbks;
 
 	/**
 	* Count the number of downloads failed.
@@ -132,7 +132,7 @@ public:
 	* @param nbf            Number of assessments.
 	* @param ownerid             Owner Identifier of the document.
 	*/
-	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RString& u,const R::RString& a,unsigned int f,unsigned int ownerid,unsigned int nbf=100) throw(std::bad_alloc);
+	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RString& u,const R::RString& a,unsigned int f,unsigned int ownerid,unsigned int nbf=100);
 
 	/**
 	* Construct a document.
@@ -140,7 +140,7 @@ public:
 	* @param name           Name of the document.
 	* @param mime           MIME type of the document.
 	*/
-	GDoc(const R::RString& url,const R::RString& name,const R::RString& mime) throw(std::bad_alloc);
+	GDoc(const R::RString& url,const R::RString& name,const R::RString& mime);
 
 	/**
 	* Compare two documents by comparing their identificator.
@@ -174,8 +174,6 @@ public:
 	*/
 	int Compare(const GLang* lang) const;
 
-proxy:
-
 	/**
 	* Verify if the document is defined. By default, a document is suppose to be
 	* undefined.
@@ -199,7 +197,7 @@ proxy:
 	* Set the name of the document.
 	* @param name            Name.
 	*/
-	void SetName(const R::RString& name) throw(std::bad_alloc);
+	void SetName(const R::RString& name);
 
 	/**
 	* Get the date of the last update of the document content.
@@ -252,7 +250,7 @@ proxy:
 	* Set the identifier of the document.
 	* @param id             Identifier.
 	*/
-	void SetId(unsigned int id) throw(GException);
+	void SetId(unsigned int id);
 
 	/**
 	* Get the owner identificator of the document.
@@ -283,77 +281,21 @@ proxy:
 
 	/**
 	* Get a cursor on the profiles which have assesses the documents.
-	* @return R::RCursor<GProfileProxy>.
+	* @return R::RCursor<GProfile>.
 	*/
-	R::RCursor<GProfileProxy> GetFdbks(void);
-
-	/**
-	* Get a Cursor on the weighted information entities.
-	*/
-	R::RCursor<GWeightInfo> GetWeightInfoCursor(void);
-
-	/**
-	* Get the list of information entities representing the document.
-	* @return Constant pointer to a GWeightInfos.
-	*/
-	const GWeightInfos* GetInfos(void) const {return(this);}
-
-	/**
-	* Compute the maximal weight of the information entities in the document.
-	* @return double.
-	*/
-	double GetMaxWeight(void) const throw(GException) {return(GWeightInfos::GetMaxWeight());}
-
-	/**
-	* Compute a similarity between two documents.
-	* @param doc             Pointer to a document.
-	*/
-	double Similarity(const GDoc* doc) const;
-
-	/**
-	* Compute a similarity between two documents using a Inverse Frequence
-	* Factor (IFF).
-	* @param doc             Pointer to a document.
-	*/
-	double SimilarityIFF(const GDoc* doc) const throw(GException);
-
-	/**
-	* Compute a similarity between a document and a subprofile.
-	* @param sub             Pointer to a subprofile.
-	*/
-	double Similarity(const GSubProfile* sub) const;
-
-	/**
-	* Compute a similarity between a document and a subprofile using a Inverse
-	* Frequence Factor (IFF).
-	* @param sub             Pointer to a subprofile.
-	*/
-	double SimilarityIFF(const GSubProfile* sub) const throw(GException);
-
-	/**
-	* Compute a similarity between a document and a group.
-	* @param grp             Pointer to a group.
-	*/
-	double Similarity(const GGroup* grp) const;
-
-	/**
-	* Compute a similarity between a document and a group using a Inverse
-	* Frequence Factor (IFF).
-	* @param grp             Pointer to a group.
-	*/
-	double SimilarityIFF(const GGroup* grp) const throw(GException);
+	R::RCursor<GProfile> GetFdbks(void) const;
 
 	/**
 	* Add a profile to the list of those which have assess the document.
-	* @param id               Identificator of the profile.
+	* @param prof            Profile.
 	*/
-	void InsertFdbk(unsigned int id) throw(std::bad_alloc);
+	void InsertFdbk(GProfile* prof);
 
 	/**
 	* Delete a profile from the list of those which have assess the document.
 	* @param id               Identificator of the profile.
 	*/
-	void DeleteFdbk(unsigned int id) throw(std::bad_alloc);
+	void DeleteFdbk(unsigned int id);
 
 	/**
 	* Clear all the assessments on the document.
@@ -369,28 +311,23 @@ proxy:
 	* Get the number of outgoing links
 	* @return unsigned int.
 	*/
-	unsigned int GetNbLinks(void);
-
-	/**
-	* Add a new link to the document
-	* @param doc            The document representing the link to be inserted.
-	*/
-	void InsertLink(const GDoc* doc) throw(std::bad_alloc);
+	unsigned int GetNbLinks(void) const;
 
 	/**
 	* Add a new link to the document and set the number of occurences of this
 	* link.
 	* @param doc             The Document representing the link to be inserted.
-	* @param nbOccurs        The number of occurences of the link inside the
-	*                        document.
+	* @param nboccurs        The number of occurences of the link inside the
+	*                        document. If the number of occurences is set to 0,
+	*                        an occurence number of 1 is used.
 	*/
-	void InsertLink(const GDoc* doc, unsigned int nbOccurs) throw(std::bad_alloc);
+	void InsertLink(const GDoc* doc, unsigned int nboccurs=0);
 
 	/**
 	* Get a cursor on the Links of the document.
 	* @return GLinkCursor.
 	*/
-	R::RCursor<GLink> GetLinkCursor(void);
+	R::RCursor<GLink> GetLinkCursor(void) const;
 
 	/**
 	* Update the document by assigning it a set of information and a language.

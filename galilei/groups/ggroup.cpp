@@ -38,7 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggroup.h>
-#include <gdocproxy.h>
+#include <gdoc.h>
 #include <gsubprofile.h>
 #include <gsession.h>
 #include <gweightinfo.h>
@@ -403,62 +403,11 @@ double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
 	{
 		if(sub()==s) continue;
 		if(iff)
-			sum=sum+s->SimilarityIFF(sub());
+			sum=sum+s->SimilarityIFF(*sub(),otSubProfileGroup,Lang);
 		else
-			sum=sum+s->Similarity(sub());
+			sum=sum+s->Similarity(*sub());
 	}
 	return(sum);
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GWeightInfo> GGroup::GetWeightInfoCursor(void)
-{
-	RCursor<GWeightInfo> cur(*this);
-	return(cur);
-}
-
-
-
-//------------------------------------------------------------------------------
-double GGroup::Similarity(const GGroup* desc) const
-{
-	return(GWeightInfos::Similarity(desc));
-}
-
-
-//------------------------------------------------------------------------------
-double GGroup::SimilarityIFF(const GGroup* desc) const
-{
-	return(GWeightInfos::SimilarityIFF(desc,otGroup,Lang));
-}
-
-
-//------------------------------------------------------------------------------
-double GGroup::Similarity(const GDoc* doc) const
-{
-	return(GWeightInfos::Similarity(doc));
-}
-
-
-//------------------------------------------------------------------------------
-double GGroup::SimilarityIFF(const GDoc* doc) const
-{
-	return(GWeightInfos::SimilarityIFF(doc,otDocGroup,Lang));
-}
-
-
-//------------------------------------------------------------------------------
-double GGroup::Similarity(const GSubProfile* doc) const
-{
-	return(GWeightInfos::Similarity(doc));
-}
-
-
-//------------------------------------------------------------------------------
-double GGroup::SimilarityIFF(const GSubProfile* doc) const
-{
-	return(GWeightInfos::SimilarityIFF(doc,otSubProfileGroup,Lang));
 }
 
 

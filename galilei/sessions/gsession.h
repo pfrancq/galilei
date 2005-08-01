@@ -427,32 +427,6 @@ public:
 	virtual void ExportMatrix(GSlot* rec,const char* type, const char* filename, GLang* lang, bool label);
 
 	/**
-	* Create a proxy on a document and return a pointer to it. The caller is
-	* responsible for the desallocation.
-	* @param ptr              Reference to a pointer that will hold the proxy.
-	* @param id               Identificator of the document.
-	*/
-	void New(GDocProxy* &ptr,unsigned int id);
-
-	/**
-	* Create a proxy on a subprofile and return a pointer to it. The caller is
-	* responsible for the desallocation.
-	* @param ptr              Reference to a pointer that will hold the proxy.
-	* @param id               Identificator of the subprofile.
-	* @return GDocProxy*
-	*/
-	void New(GSubProfileProxy* &ptr,unsigned int id);
-
-	/**
-	* Create a proxy on a profile and return a pointer to it. The caller is
-	* responsible for the desallocation.
-	* @param ptr              Reference to a pointer that will hold the proxy.
-	* @param id               Identificator of the subprofile.
-	* @return GDocProxy*
-	*/
-	void New(GProfileProxy* &ptr,unsigned int id);
-
-	/**
 	* Add a handler to the list of handlers.
 	* @param handler         Pointer to the handler.
 	*/
@@ -484,21 +458,6 @@ public:
 	*/
 	virtual ~GSession(void);
 };
-
-
-//------------------------------------------------------------------------------
-/**
-* Function used to create a proxy on an object idenfified by an identificator.
-* @param C                Class of the object
-* @param id               Identificator of the subprofile.
-* @return GDocProxy*
-*/
-template<class C> C* New(unsigned int id)
-{
-	C* ptr;
-	GSession::Get()->New(ptr,id);
-	return(ptr);
-}
 
 
 //------------------------------------------------------------------------------

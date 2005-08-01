@@ -82,9 +82,6 @@ using namespace R;
 #include <gweightinfo.h>
 #include <ggroupshistory.h>
 #include <gpostgroup.h>
-#include <gdocproxymem.h>
-#include <gsubprofileproxymem.h>
-#include <gprofileproxymem.h>
 #include <gpluginmanagers.h>
 using namespace GALILEI;
 
@@ -652,8 +649,8 @@ void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R:
 
 	if((!doc)||(!prof))
 		return;
-	prof->InsertFdbk(d,assess,date);
-	doc->InsertFdbk(p);
+	prof->InsertFdbk(doc,assess,date);
+	doc->InsertFdbk(prof);
 }
 
 
@@ -838,39 +835,6 @@ void GSession::ReInit(bool)
 void GSession::ExportMatrix(GSlot* rec, const char* type, const char* filename, GLang* lang, bool label)
 {
 	Storage->ExportMatrix(this, rec, type, filename, lang, label);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::New(GDocProxy* &ptr,unsigned int id)
-{
-	GDoc* doc=GetDoc(id);
-	if(!doc)
-		ptr=0;
-	else
-		ptr=new GDocProxyMem(doc);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::New(GSubProfileProxy* &ptr,unsigned int id)
-{
-	GSubProfile* sub=GetSubProfile(id);
-	if(!sub)
-		ptr=0;
-	else
-		ptr=new GSubProfileProxyMem(sub);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::New(GProfileProxy* &ptr,unsigned int id)
-{
-	GProfile* prof=GetProfile(id);
-	if(!prof)
-		ptr=0;
-	else
-		ptr=new GProfileProxyMem(prof);
 }
 
 

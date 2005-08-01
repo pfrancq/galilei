@@ -9,7 +9,6 @@ libgalilei_profiles_la_SOURCES = gprofilecalc.cpp  \
 	gsubprofile.cpp gusers.cpp gprofile.cpp gpostprofile.cpp  guser.cpp \
 	gpreprofile.cpp
 profilesincludedir = $(includedir)/galilei
-profilesinclude_HEADERS = gprofilecalc.h gusers.h gprofile.h \
-	 gsubprofile.h guser.h gsubprofileproxy.h \
-	gsubprofileproxymem.h gprofileproxy.h gprofileproxymem.h gpostprofile.h gpreprofile.h
+profilesinclude_HEADERS = gprofilecalc.h gusers.h gprofile.h gsubprofile.h \
+	guser.h gpostprofile.h gpreprofile.h
 

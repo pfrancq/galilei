@@ -12,4 +12,4 @@ libgalilei_docs_la_SOURCES = gbalancedlinks.cpp gdoc.cpp gdocs.cpp gsugs.cpp \
 docsincludedir = $(includedir)/galilei
 docsinclude_HEADERS = gbalancedlinks.h gdocanalyse.h gdocxml.h glinkcalc.h \
 	glinks.h gdoc.h gdocs.h gsugs.h glink.h gpostdoc.h gfilter.h \
-	gfiltermanagercurl.h gdocproxy.h gdocproxymem.h
+	gfiltermanagercurl.h

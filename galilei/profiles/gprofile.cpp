@@ -36,7 +36,7 @@
 #include <gsession.h>
 #include <guser.h>
 #include <gsubprofile.h>
-#include <gdocproxy.h>
+#include <gdoc.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -49,8 +49,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFdbk::GFdbk(unsigned int id,tDocAssessment fdbk,RDate& updated)
-  : Doc(New<GDocProxy>(id)), Fdbk(fdbk), Updated(updated)
+GFdbk::GFdbk(GDoc* doc,tDocAssessment fdbk,RDate& updated)
+  : Doc(doc), Fdbk(fdbk), Updated(updated)
 {
 }
 
@@ -127,8 +127,6 @@ tDocAssessment GFdbk::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRandom* 
 //------------------------------------------------------------------------------
 GFdbk::~GFdbk(void)
 {
-	if(Doc)
-		delete Doc;
 }
 
 
@@ -173,7 +171,7 @@ int GProfile::Compare(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::SetId(unsigned int id) throw(GException)
+void GProfile::SetId(unsigned int id)
 {
 	if(Id==cNoRef)
 		throw GException("Cannot assign cNoRef to a profile");
@@ -240,30 +238,28 @@ unsigned int GProfile::GetNbAssessedDocs(void) const
 
 
 //------------------------------------------------------------------------------
-RCursor<GFdbk> GProfile::GetFdbks(void)
+RCursor<GFdbk> GProfile::GetFdbks(void) const
 {
-	RCursor<GFdbk> cur(Fdbks);
-	return(cur);
+	return(RCursor<GFdbk>(Fdbks));
 }
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GProfile::GetSubProfilesCursor(void)
+RCursor<GSubProfile> GProfile::GetSubProfilesCursor(void) const
 {
-	RCursor<GSubProfile> cur(*this);
-	return(cur);
+	return(RCursor<GSubProfile>(*this));
 }
 
 
 //------------------------------------------------------------------------------
-void GProfile::InsertFdbk(unsigned int id,tDocAssessment assess,R::RDate date) throw(std::bad_alloc)
+void GProfile::InsertFdbk(GDoc* doc,tDocAssessment assess,R::RDate date)
 {
-	Fdbks.InsertPtr(new GFdbk(id,assess,date));
+	Fdbks.InsertPtr(new GFdbk(doc,assess,date));
 }
 
 
 //------------------------------------------------------------------------------
-void GProfile::DeleteFdbk(unsigned int id) throw(std::bad_alloc)
+void GProfile::DeleteFdbk(unsigned int id)
 {
 	Fdbks.DeletePtr(Fdbks.GetPtr<unsigned int>(id));
 }

@@ -34,7 +34,7 @@
 // include files for GALILEI
 #include <gsubprofile.h>
 #include <gprofile.h>
-#include <gdocproxy.h>
+#include <gdoc.h>
 #include <gweightinfo.h>
 #include <glang.h>
 #include <ggroup.h>
@@ -113,7 +113,7 @@ int GSubProfile::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc)
+void GSubProfile::InsertFdbk(GFdbk* fdbk)
 {
 	Fdbks.InsertPtr(fdbk);
 
@@ -135,7 +135,7 @@ void GSubProfile::InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::SetId(unsigned int id) throw(GException)
+void GSubProfile::SetId(unsigned int id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a subprofile");
@@ -318,69 +318,6 @@ unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) const
 RCursor<GFdbk> GSubProfile::GetFdbks(void) const
 {
 	return(RCursor<GFdbk>(Fdbks));
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GWeightInfo> GSubProfile::GetWeightInfoCursor(void) const
-{
-	return(RCursor<GWeightInfo>(*this));
-}
-
-
-//------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GDoc* doc) const
-{
-	return(GWeightInfos::Similarity(doc));
-}
-
-
-//------------------------------------------------------------------------------
-double GSubProfile::SimilarityIFF(const GDoc* doc) const throw(GException)
-{
-	return(GWeightInfos::SimilarityIFF(doc,otDocSubProfile,Lang));
-}
-
-
-//------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GDocProxy* doc) const
-{
-	return(GWeightInfos::Similarity(doc->GetInfos()));
-}
-
-
-//------------------------------------------------------------------------------
-double GSubProfile::SimilarityIFF(const GDocProxy* doc) const throw(GException)
-{
-	return(GWeightInfos::SimilarityIFF(doc->GetInfos(),otDocSubProfile,Lang));
-}
-
-
-//------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GSubProfile* sub) const
-{
-	return(GWeightInfos::Similarity(sub));
-}
-
-
-//------------------------------------------------------------------------------
-double GSubProfile::SimilarityIFF(const GSubProfile* sub) const throw(GException)
-{
-	return(GWeightInfos::SimilarityIFF(sub,otSubProfile,Lang));
-}
-
-
-//------------------------------------------------------------------------------
-double GSubProfile::Similarity(const GGroup* grp) const
-{
-	return(GWeightInfos::Similarity(grp));
-}
-
-
-//------------------------------------------------------------------------------
-double GSubProfile::SimilarityIFF(const GGroup* grp) const throw(GException)
-{
-	return(GWeightInfos::SimilarityIFF(grp,otSubProfileGroup,Lang));
 }
 
 

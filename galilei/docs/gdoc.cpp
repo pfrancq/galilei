@@ -35,7 +35,6 @@
 #include <gdoc.h>
 #include <glink.h>
 #include <glang.h>
-#include <gprofileproxy.h>
 #include <gweightinfo.h>
 #include <gsession.h>
 using namespace GALILEI;
@@ -50,7 +49,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int ownerid,unsigned int nbf) throw(std::bad_alloc)
+GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int ownerid,unsigned int nbf)
 	:  GWeightInfos(60), URL(url), Name(name), Id(id),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
 	  Failed(f), LinkSet(5,2)/*,Subjects(2,1)*/, OwnerId(ownerid)
@@ -69,7 +68,7 @@ GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,co
 
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RString& url,const RString& name,const RString& mime) throw(std::bad_alloc)
+GDoc::GDoc(const RString& url,const RString& name,const RString& mime)
 	: GWeightInfos(60), URL(url), Name(name), Id(cNoRef),
 	  Lang(0), MIMEType(mime), Updated(), Computed(), Fdbks(50,25),
 	  Failed(0), LinkSet(5,2)//,Subjects(2,1)
@@ -136,7 +135,7 @@ RString GDoc::GetName(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::SetName(const R::RString& name) throw(std::bad_alloc)
+void GDoc::SetName(const R::RString& name)
 {
 	Name=name;
 }
@@ -185,7 +184,7 @@ void GDoc::SetState(tObjState state)
 
 
 //------------------------------------------------------------------------------
-void GDoc::SetId(unsigned int id) throw(GException)
+void GDoc::SetId(unsigned int id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a document");
@@ -194,58 +193,9 @@ void GDoc::SetId(unsigned int id) throw(GException)
 
 
 //------------------------------------------------------------------------------
-RCursor<GProfileProxy> GDoc::GetFdbks(void)
+RCursor<GProfile> GDoc::GetFdbks(void) const
 {
-	return(RCursor<GProfileProxy>(Fdbks));
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GWeightInfo> GDoc::GetWeightInfoCursor(void)
-{
-	return(RCursor<GWeightInfo>(*this));
-}
-
-
-//------------------------------------------------------------------------------
-double GDoc::Similarity(const GDoc* doc) const
-{
-	return(GWeightInfos::Similarity(doc));
-}
-
-
-//------------------------------------------------------------------------------
-double GDoc::SimilarityIFF(const GDoc* doc) const throw(GException)
-{
-	return(GWeightInfos::SimilarityIFF(doc,otDoc,Lang));
-}
-
-
-//------------------------------------------------------------------------------
-double GDoc::Similarity(const GSubProfile* sub) const
-{
-	return(GWeightInfos::Similarity(sub));
-}
-
-
-//------------------------------------------------------------------------------
-double GDoc::SimilarityIFF(const GSubProfile* sub) const throw(GException)
-{
-	return(GWeightInfos::SimilarityIFF(sub,otDocSubProfile,Lang));
-}
-
-
-//------------------------------------------------------------------------------
-double GDoc::Similarity(const GGroup* grp) const
-{
-	return(GWeightInfos::Similarity(grp));
-}
-
-
-//------------------------------------------------------------------------------
-double GDoc::SimilarityIFF(const GGroup* grp) const throw(GException)
-{
-	return(GWeightInfos::SimilarityIFF(grp,otDocGroup,Lang));
+	return(RCursor<GProfile>(Fdbks));
 }
 
 
@@ -274,7 +224,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 		AddRefs(otDoc,Lang);
 
 	// Signal to the profiles that the document has changed
-	RCursor<GProfileProxy> Cur(Fdbks);
+	RCursor<GProfile> Cur(Fdbks);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->HasUpdate(Id,computed);
 
@@ -284,16 +234,16 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 
 
 //------------------------------------------------------------------------------
-void GDoc::InsertFdbk(unsigned int id) throw(std::bad_alloc)
+void GDoc::InsertFdbk(GProfile* prof)
 {
-	Fdbks.InsertPtr(GALILEI::New<GProfileProxy>(id));
+	Fdbks.InsertPtr(prof);
 }
 
 
 //------------------------------------------------------------------------------
-void GDoc::DeleteFdbk(unsigned int id) throw(std::bad_alloc)
+void GDoc::DeleteFdbk(unsigned int id)
 {
-	Fdbks.DeletePtr(Fdbks.GetPtr<unsigned int>(id));
+	Fdbks.DeletePtr(id);
 }
 
 
@@ -312,33 +262,23 @@ unsigned int GDoc::GetNbFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GDoc::GetNbLinks(void)
+unsigned int GDoc::GetNbLinks(void) const
 {
-	unsigned int res = LinkSet.GetNb();
-	return(res);
+	return(LinkSet.GetNb());
 }
 
 
 //------------------------------------------------------------------------------
-void GDoc::InsertLink(const GDoc* doc) throw(std::bad_alloc)
+void GDoc::InsertLink(const GDoc* doc,unsigned int nboccurs)
 {
-	GLink* link ;
-	link = LinkSet.GetInsertPtr(doc);
-	link->IncOccurs();
+	GLink* link=LinkSet.GetInsertPtr(doc);
+	if(nboccurs)
+		link->SetOccurs(nboccurs);
 }
 
 
 //------------------------------------------------------------------------------
-void GDoc::InsertLink(const GDoc* doc,unsigned int nbOccurs) throw(std::bad_alloc)
-{
-	GLink* link ;
-	link = LinkSet.GetInsertPtr(doc);
-	link->SetOccurs(nbOccurs);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GLink> GDoc::GetLinkCursor(void)
+R::RCursor<GLink> GDoc::GetLinkCursor(void) const
 {
 	return(R::RCursor<GLink>(LinkSet));
 }

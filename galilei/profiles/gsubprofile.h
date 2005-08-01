@@ -155,13 +155,11 @@ public:
 	*/
 	int Compare(const GLang* lang) const;
 
-proxy:
-
 	/**
 	* Insert a document into the list of those used to compute the subprofile.
 	* @param fddk             Pointer to the feedback.
 	*/
-	void InsertFdbk(GFdbk* fdbk) throw(std::bad_alloc);
+	void InsertFdbk(GFdbk* fdbk);
 
 	/**
 	* Get the identificator of the subprofile.
@@ -173,7 +171,7 @@ proxy:
 	* Set the identificator.
 	* @param id             Identificator.
 	*/
-	void SetId(unsigned int id) throw(GException);
+	void SetId(unsigned int id);
 
 	/**
 	* Get the state of the subprofile.
@@ -294,66 +292,9 @@ proxy:
 	R::RCursor<GFdbk> GetFdbks(void) const;
 
 	/**
-	* Get a Cursor on the weighted information entities.
-	*/
-	R::RCursor<GWeightInfo> GetWeightInfoCursor(void) const;
-
-	/**
 	* Get the number of elements of the vector that are not null.
 	*/
 	unsigned int GetNbNoNull(void) const;
-
-	/**
-	* Compute the similarity between a subprofile and a document.
-	* @param doc             Pointer to a document.
-	*/
-	double Similarity(const GDoc* doc) const;
-
-	/**
-	* Compute the similarity between a subprofile and a document using a Inverse
-	* Frequence Factor (IFF).
-	* @param doc             Pointer to a document.
-	*/
-	double SimilarityIFF(const GDoc* doc) const throw(GException);
-
-	/**
-	* Compute the similarity between a subprofile and a document.
-	* @param doc             Pointer to a proxy on a document.
-	*/
-	double Similarity(const GDocProxy* doc) const;
-
-	/**
-	* Compute the similarity between a subprofile and a document using a Inverse
-	* Frequence Factor (IFF).
-	* @param doc             Pointer to a proxy on a document.
-	*/
-	double SimilarityIFF(const GDocProxy* doc) const throw(GException);
-
-	/**
-	* Compute the similarity between subprofiles.
-	* @param sub             Pointer to a subprofile.
-	*/
-	double Similarity(const GSubProfile* sub) const;
-
-	/**
-	* Compute the similarity between subprofiles using a Inverse Frequence
-	* Factor (IFF).
-	* @param sub             Pointer to a subprofile.
-	*/
-	double SimilarityIFF(const GSubProfile* sub) const throw(GException);
-
-	/**
-	* Compute the similarity between a subprofile and a group.
-	* @param grp             Pointer to a group.
-	*/
-	double Similarity(const GGroup* grp) const;
-
-	/**
-	* Compute the similarity between a subprofile and a group using a Inverse
-	* Frequence Factor (IFF).
-	* @param grp             Pointer to a group.
-	*/
-	double SimilarityIFF(const GGroup* grp) const throw(GException);
 
 	/**
 	* Update the subprofile by assigning it a set of information and a language.

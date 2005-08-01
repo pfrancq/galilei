@@ -47,7 +47,6 @@
 #include <gwordlist.h>
 #include <gweightinfo.h>
 #include <gweightinfos.h>
-#include <gdocproxy.h>
 #include <glink.h>
 #include <gsugs.h>
 #include <guser.h>
@@ -441,7 +440,7 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 		sSql="DELETE FROM subprofilesbykwds WHERE langid='"+l+"' AND subprofileid="+itou(sub->GetId());
 		RQuery deletekwds(Db,sSql);
 
-		Cur=sub->GetWeightInfoCursor();
+		Cur=sub->GetInfos();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			sSql="INSERT INTO subprofilesbykwds(subprofileid,kwdid,weight, langid) VALUES("+itou(sub->GetId())+","+itou(Cur()->GetId())+",'"+dtou(Cur()->GetWeight())+"','"+l+"')";
@@ -464,7 +463,7 @@ void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int histor
 	try
 	{
 		// Save subprofiles
-		Cur=sub->GetWeightInfoCursor();
+		Cur=sub->GetInfos();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			RString sSql("INSERT INTO historicsubprofiles(historicID,subprofileid,kwdid,weight, date, langid) VALUES("+
@@ -1083,7 +1082,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
 			l=doc->GetLang()->GetCode();
 			sSql="DELETE FROM htmlsbykwds WHERE langid='"+l+"' AND htmlid="+id;
 			RQuery deletekwds(Db,sSql);
-			Words=doc->GetWeightInfoCursor();
+			Words=doc->GetInfos();
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				sSql="INSERT INTO htmlsbykwds(htmlid,kwdid,occurs, langid) VALUES("+id+","+itou(Words()->GetId())+",'"+dtou(Words()->GetWeight())+"','"+l+"')";
@@ -1138,7 +1137,7 @@ void GStorageMySQL::SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)
 		if(doc->GetLang())
 		{
 			l=doc->GetLang()->GetCode();
-			Words=doc->GetWeightInfoCursor();
+			Words=doc->GetInfos();
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				if((Words()->GetId()>=n)&&(Words()->GetWeight()>0))
