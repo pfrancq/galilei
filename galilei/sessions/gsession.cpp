@@ -107,28 +107,11 @@ bool GSession::ExternBreak=false;
 
 
 //------------------------------------------------------------------------------
-GSession::GSession(GStorage* str)
-	: GDocs(str->GetNbSaved(otDoc)), GUsers(0,0),
-	  GGroups(0), Subjects(0), ProfilesSims(0), ProfilesDocsSims(0), GroupsDocsSims(0), Random(0),
-	  SessParams(0), Storage(str)
-{
-	// Init Part
-	if(!Session)
-		Session=this;
-	CurrentRandom=0;
-	Random = new RRandomGood(CurrentRandom);
-
-	// create the groups history manager.
-	GroupsHistoryMng=new GGroupsHistoryManager(this,2);
-}
-
-
-//------------------------------------------------------------------------------
-GSession::GSession(GStorage* str,GSessionParams* sessparams,bool tests)
+GSession::GSession(GStorage* str,bool tests)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
 	  GGroups(str->GetNbSaved(otGroup)), Subjects(0),
 	  ProfilesSims(0), ProfilesDocsSims(0), GroupsDocsSims(0), Random(0),
-	  SessParams(sessparams), Storage(str)
+	  Storage(str)
 {
 	// Init Part
 	if(!Session)
@@ -860,30 +843,4 @@ GSession::~GSession(void)
 	}
 	Session=0;
 	ExternBreak=false;
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GSessionParams
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GSessionParams::GSessionParams(void)
-	: GParams("Session Parameters")
-{
-	GParam* p;
-	InsertPtr(p=new GParamUInt("SameBehaviourMinDocs",7));
-	InsertPtr(p=new GParamUInt("DiffBehaviourMinDocs",4));
-	InsertPtr(p=new GParamDouble("NullSimLevel",0.00001));
-	InsertPtr(p=new GParamBool("SaveGroupsHistory",false));
-	InsertPtr(p=new GParamBool("SaveProfilesHistory",false));
-	InsertPtr(p=new GParamBool("DebugSim",false));
-	InsertPtr(p=new GParamBool("DebugBehaviour",false));
-	InsertPtr(p=new GParamBool("DebugMinSim",false));
-	InsertPtr(p=new GParamDouble("MinSim",0.05));
-	InsertPtr(p=new GParamBool("AutomaticMinSim",true));
-	InsertPtr(p=new GParamString("PathtoBinary","/var/galilei/bin/"));
 }

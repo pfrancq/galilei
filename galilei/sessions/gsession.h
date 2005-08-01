@@ -100,11 +100,6 @@ protected:
 	R::RRandom* Random;
 
 	/**
-	* Session Parameters
-	*/
-	GSessionParams* SessParams;
-
-	/**
 	* Storage manager.
 	*/
 	GStorage* Storage;
@@ -130,16 +125,9 @@ public:
 	/**
 	* Constructor.
 	* @param str             Storage manager.
-	*/
-	GSession(GStorage* str);
-
-	/**
-	* Constructor.
-	* @param str             Storage manager.
-	* @param sessparams      Parameters of the session.
 	* @param tests           Test mode.
 	*/
-	GSession(GStorage* str,GSessionParams* sessparams,bool tests);
+	GSession(GStorage* str,bool tests=false);
 
 	/**
 	* Get a pointer to the unique session of the process.
@@ -219,12 +207,6 @@ public:
 	* Get the manager for the similarities between groups/documents.
 	*/
 	GGroupsDocsSimsManager* GetGroupsDocsSims(void) const {return(GroupsDocsSims);}
-
-	/**
-	* Get the parameters of the session.
-	* @return Pointer to GSessionParams.
-	*/
-	GSessionParams* GetSessionParams(void) const {return(SessParams);}
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
@@ -457,29 +439,6 @@ public:
 	* Destructor.
 	*/
 	virtual ~GSession(void);
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GSessionParams represents  the parameter used to create the session.
-* @short GSession Parameters.
-*/
-class GSessionParams : public GParams
-{
-
-public:
-
-	/**
-	* constuctor
-	*/
-	GSessionParams(void);
-
-	/**
-	* Destructor
-	*/
-	~GSessionParams(void) {};
-
 };
 
 

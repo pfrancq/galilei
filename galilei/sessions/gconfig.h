@@ -69,7 +69,7 @@ class GConfig : R::RXMLStruct
 	* Tag holding the main categories.
 	*/
 	R::RXMLTag* Root;
-	
+
 	/**
 	* Document Analysis Methods.
 	*/
@@ -92,18 +92,6 @@ public:
 	* Save a file in the structure.
 	*/
 	void Save(void) throw(GException);
-
-	/**
-	* Read the Session params in the structure.
-	* @param p             Session parameters.
-	*/
-	void Read(GSessionParams& p);
-
-	/**
-	* Store the Session params in the structure.
-	* @param p             Session parameters.
-	*/
-	void Store(GSessionParams& p);
 
 	/**
 	* Destructor.

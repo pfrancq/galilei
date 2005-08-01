@@ -142,28 +142,6 @@ void GConfig::Save(void) throw(GException)
 }
 
 
-//------------------------------------------------------------------------------
-void GConfig::Read(GSessionParams& p)
-{
-	if (!SessionParams) return;
-	try
-	{
-		p.ReadConfig(SessionParams);
-	}
-	catch(GException)
-	{
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GConfig::Store(GSessionParams& p)
-{
-	if (!SessionParams) return;
-	p.SaveConfig(this,SessionParams);
-}
-
-
 //-----------------------------------------------------------------------------
 GConfig::~GConfig(void)
 {

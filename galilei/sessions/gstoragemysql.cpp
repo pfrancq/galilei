@@ -1255,8 +1255,7 @@ void GStorageMySQL::SaveGroupsHistory(GSession* session) throw(GException)
 		}
 
 		//save the profiles history if needed.
-		if(session->GetSessionParams()->GetBool("SaveProfilesHistory"))
-			SaveHistoricProfiles(session, historicID);
+		SaveHistoricProfiles(session, historicID);
 	}
 	catch(RMySQLError e)
 	{
