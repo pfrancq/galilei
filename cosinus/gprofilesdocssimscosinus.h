@@ -118,6 +118,8 @@ public:
 	*/
 	double GetNullSimLevel(void) {return NullSimLevel;}
 
+	double ComputeSim(const GDoc* doc ,const GSubProfile* sub) const;
+
 	/**
 	* Get the similarity between a document and a subprofile.
 	* @param doc             Pointer to the document.

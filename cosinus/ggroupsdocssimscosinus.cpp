@@ -181,9 +181,9 @@ void GGroupsDocsSimsCosinus::GDocGrpSim::AnalyseSim(GSims* sim,const GDoc* doc,c
 	if(doc->GetLang()!=grp->GetLang()) return;
 	if((!doc->IsDefined())||(!grp->IsDefined())) return;
 	if(Manager->IDF)
-		tmp=doc->SimilarityIFF(grp);
+		tmp=doc->SimilarityIFF(*grp,otDocGroup,doc->GetLang());
 	else
-		tmp=doc->Similarity(grp);
+		tmp=doc->Similarity(*grp);
 	if(fabs(tmp)<Manager->NullSimLevel) return;
 	sim->InsertPtr(new GSim(grp->GetId(),tmp,osUpdated));
 }
@@ -199,9 +199,9 @@ double GGroupsDocsSimsCosinus::GDocGrpSim::GetSim(const GDoc* doc,const GGroup* 
 	if(!Manager->Memory)
 	{
 		if(Manager->IDF)
-			return (doc->SimilarityIFF(grp));
+			return (doc->SimilarityIFF(*grp,otDocGroup,doc->GetLang()));
 		else
-			return (doc->Similarity(grp));
+			return (doc->Similarity(*grp));
 	}
 
 	s=Sims->GetPtr<unsigned int>(doc->GetId());
@@ -213,9 +213,9 @@ double GGroupsDocsSimsCosinus::GDocGrpSim::GetSim(const GDoc* doc,const GGroup* 
 	{
 		s2->State = osUpToDate;
 		if(Manager->IDF)
-			s2->Sim=doc->SimilarityIFF(grp);
+			s2->Sim=doc->SimilarityIFF(*grp,otDocGroup,doc->GetLang());
 		else
-			s2->Sim=doc->Similarity(grp);
+			s2->Sim=doc->Similarity(*grp);
 		if(fabs(s2->Sim)<Manager->NullSimLevel) s2->Sim=0.0;
 		return (s2->Sim);
 	}
@@ -340,9 +340,9 @@ double GGroupsDocsSimsCosinus::GetSimilarity(const GDoc* doc,const GGroup* grp)
 	{
 		double Sim;
 		if(IDF)
-			Sim=doc->SimilarityIFF(grp);
+			Sim=doc->SimilarityIFF(*grp,otDocGroup,doc->GetLang());
 		else
-			Sim=doc->Similarity(grp);
+			Sim=doc->Similarity(*grp);
 		if(fabs(Sim)<NullSimLevel) Sim=0.0;
 		return(0.0);
 	}

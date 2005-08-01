@@ -152,9 +152,7 @@ public:
 
 
 	// Update the deviation od similarities.
-	void UpdateDeviationAndMeanSim(RCursor<GSubProfile> subprofiles) throw (GException); // general function
-	void UpdateDevMeanSim(RCursor<GSubProfile> subprofiles) throw (GException); // memory on
-	void RecomputeDevMeanSim(RCursor<GSubProfile> subprofiles) throw (GException); //memory off
+	double GetMinSimilarity(void);
 
 	// Add a subprofile to the listof the modified one.
 	void AddModifiedProfile(const GSubProfile* s);
@@ -251,28 +249,9 @@ GProfilesSimsCosinus::GProfilesSim::GProfilesSim(GProfilesSimsCosinus* manager,G
 //------------------------------------------------------------------------------
 void GProfilesSimsCosinus::GProfilesSim::Compute(const GSubProfile* sub1,const GSubProfile* sub2,double& sim,double& agree,double& disagree) const
 {
-	unsigned int nbsame, nbdiff;
-	double nbcommon;
-	double zero=Manager->NullSimLevel;
-
-	if(Manager->ISF)
-		sim=sub1->SimilarityIFF(sub2);
-	else
-		sim=sub1->Similarity(sub2);
-	if(fabs(sim)<zero)
-		sim=0.0;
-	agree=disagree=0.0;
-	nbsame=sub1->GetCommonOKDocs(sub2);
-	nbdiff=sub1->GetCommonDiffDocs(sub2);
-	nbcommon=double(sub1->GetCommonDocs(sub2));
-	if(nbcommon&&nbcommon>=Manager->MinDiffDocs)
-		disagree=nbdiff/nbcommon;
-	if(fabs(disagree)<zero)
-		disagree=0.0;
-	if(nbcommon&&nbcommon>=Manager->MinSameDocs)
-		agree=nbsame/nbcommon;
-	if(fabs(agree)<zero)
- 		agree=0.0;
+	sim=Manager->ComputeSim(sub1,sub2);
+	disagree=Manager->ComputeDisagree(sub1,sub2);
+	agree=Manager->ComputeAgree(sub1,sub2);
 }
 
 
@@ -300,15 +279,6 @@ double GProfilesSimsCosinus::GProfilesSim::GetSim(const GSubProfile* sub1,const 
 
 	if(sub1->GetId()==sub2->GetId())
 		return (1.0);
-
-	//if memory is false, re-calculate similarity
-	if(!Manager->Memory)
-	{
-		if (Manager->ISF)
-			return (sub1->SimilarityIFF(sub2));
-		else
-			 return (sub1->Similarity(sub2));
-	}
 	GSim* s2=GetRatio(sub1,sub2);
 	if(s2)
 		return(s2->Sim);
@@ -465,8 +435,6 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void) throw(std::bad_alloc)
 
 	//reset the number of modified subprofiles.
 	ModifiedProfs->Clear();
-//	#warning osDelete to add
-//	#warning when all the sim between the subprofiles are computed -> set Profile State to osUpdated
 }
 
 
@@ -505,17 +473,7 @@ GSims* GProfilesSimsCosinus::GProfilesSim::AddNewSims(GSubProfile* sub)
 
 
 //------------------------------------------------------------------------------
-void GProfilesSimsCosinus::GProfilesSim::UpdateDeviationAndMeanSim(RCursor<GSubProfile> subprofiles) throw (GException)
-{
-	if(Manager->Memory)
-		UpdateDevMeanSim(subprofiles);
-	else
-		RecomputeDevMeanSim(subprofiles);
-}
-
-
-//------------------------------------------------------------------------------
-void GProfilesSimsCosinus::GProfilesSim::UpdateDevMeanSim(RCursor<GSubProfile> subprofiles) throw (GException)
+double GProfilesSimsCosinus::GProfilesSim::GetMinSimilarity(void)
 {
 	GSim* sim;
 	GSims* sims;
@@ -524,11 +482,14 @@ void GProfilesSimsCosinus::GProfilesSim::UpdateDevMeanSim(RCursor<GSubProfile> s
 	double oldsim,newsim;
 	double newmean, oldmean, newdev, olddev;
 	RCursor<GSubProfile> subprofiles2;
+	double deviationrate=1.5;
 
 	nbcomp=0;
 	oldmean=MeanSim; olddev=Deviation;
 	newmean=OldNbComp*oldmean;
 	newdev=OldNbComp*(olddev+(oldmean*oldmean));
+
+	RCursor<GSubProfile> subprofiles(Manager->Session->GetSubProfilesCursor(Lang));
 	subprofiles2=subprofiles;
 
 	for(subprofiles.Start(),i=0;!subprofiles.End();subprofiles.Next(),i++)
@@ -579,44 +540,8 @@ void GProfilesSimsCosinus::GProfilesSim::UpdateDevMeanSim(RCursor<GSubProfile> s
 		throw GException(tmp);
 	}
 	OldNbComp=nbcomp;
-}
 
-
-//------------------------------------------------------------------------------
-void GProfilesSimsCosinus::GProfilesSim::RecomputeDevMeanSim(RCursor<GSubProfile> subprofiles) throw (GException)
-{
-	unsigned int i,j, nbcomp;
-	double simssum, deviation, tmpsim;
-	RCursor<GSubProfile> s2;
-
-	simssum=deviation=0.0;
-	nbcomp=0;
-	s2=subprofiles;
-
-	for(subprofiles.Start(),i=0,j=subprofiles.GetNb();--j;subprofiles.Next(),i++)
-	{
-		if (!subprofiles()->IsDefined()) continue;
-		for(s2.GoTo(i+1);!s2.End();s2.Next())
-		{
-			if (!s2()->IsDefined()) continue;
-			tmpsim=GetSim(subprofiles(),s2());
-			simssum+=tmpsim;
-			deviation+=tmpsim*tmpsim;
-			nbcomp++;
-		}
-	}
-
-	if (nbcomp)
-	{
-		MeanSim=simssum/double(nbcomp);
-		deviation/=double(nbcomp);
-		deviation-=MeanSim*MeanSim;
-		Deviation=deviation;
-	}
-	else
-		MeanSim=Deviation=0.0;
-	if (Deviation <0.0)
-		throw(GException("Negative Deviation in profiles similarities"));
+	return(MeanSim+deviationrate*sqrt(Deviation));
 }
 
 
@@ -691,10 +616,40 @@ void GProfilesSimsCosinus::Update(void)
 
 
 //------------------------------------------------------------------------------
+double GProfilesSimsCosinus::ComputeSim(const GSubProfile* sub1,const GSubProfile* sub2) const
+{
+	double sim;
+
+	if((!ISF)&&(!IDF))
+		sim=sub1->Similarity(*sub2);
+	else
+	{
+		if(ISF)
+		{
+			if(IDF)
+				sim=sub1->SimilarityIFF2(*sub2,otDoc,otSubProfile,sub1->GetLang());
+			else
+				sim=sub1->SimilarityIFF(*sub2,otSubProfile,sub1->GetLang());
+		}
+		else
+			sim=sub1->SimilarityIFF(*sub2,otDoc,sub1->GetLang());
+	}
+	if(fabs(sim)<NullSimLevel)
+		sim=0.0;
+	return(sim);
+}
+
+
+//------------------------------------------------------------------------------
 double GProfilesSimsCosinus::GetSimilarity(const GSubProfile* sub1,const GSubProfile* sub2)
 {
 	if(sub1->GetLang()!=sub2->GetLang())
 		throw GException("Cannot compare two subprofiles of a different language");
+
+	//if memory is false, re-calculate similarity
+	if(!Memory)
+		return(ComputeSim(sub1,sub2));
+
 	if(NeedUpdate)
 		Update();
 	GProfilesSim* ProfSim = Sims.GetPtr<GLang*>(sub1->GetLang());
@@ -703,21 +658,79 @@ double GProfilesSimsCosinus::GetSimilarity(const GSubProfile* sub1,const GSubPro
 
 
 //------------------------------------------------------------------------------
+double GProfilesSimsCosinus::ComputeMinSim(const GLang* lang)
+{
+	unsigned int i,j, nbcomp;
+	double simssum, deviation, tmpsim,Deviation,MeanSim;
+	RCursor<GSubProfile> s2;
+	double deviationrate=1.5;
+
+	simssum=deviation=0.0;
+	nbcomp=0;
+
+	RCursor<GSubProfile> subprofiles(Session->GetSubProfilesCursor(lang));
+	s2=subprofiles;
+	for(subprofiles.Start(),i=0,j=subprofiles.GetNb();--j;subprofiles.Next(),i++)
+	{
+		if (!subprofiles()->IsDefined()) continue;
+		for(s2.GoTo(i+1);!s2.End();s2.Next())
+		{
+			if (!s2()->IsDefined()) continue;
+			tmpsim=GetSimilarity(subprofiles(),s2());
+			simssum+=tmpsim;
+			deviation+=tmpsim*tmpsim;
+			nbcomp++;
+		}
+	}
+
+	if (nbcomp)
+	{
+		MeanSim=simssum/double(nbcomp);
+		deviation/=double(nbcomp);
+		deviation-=MeanSim*MeanSim;
+		Deviation=deviation;
+	}
+	else
+		MeanSim=Deviation=0.0;
+	if (Deviation <0.0)
+		throw(GException("Negative Deviation in profiles similarities"));
+
+	return(MeanSim+deviationrate*sqrt(Deviation));
+}
+
+
+//------------------------------------------------------------------------------
 double GProfilesSimsCosinus::GetMinSimilarity(const GLang* lang)
 {
-	double deviationrate=1.5;
-	double minSim;
-
 	if(!AutomaticMinSim)
 		return(MinSim);
+
+	if(!Memory)
+		return(ComputeMinSim(lang));
+
 	if(NeedUpdate)
 		Update();
 	GProfilesSim* profSim = Sims.GetPtr<const GLang*>(lang);
 	if(!profSim)
 		throw GException("Language not defined");
-	profSim->UpdateDeviationAndMeanSim(Session->GetSubProfilesCursor(lang));
-	minSim=profSim->MeanSim+deviationrate*sqrt(profSim->Deviation);
-	return(minSim);
+	return(profSim->GetMinSimilarity());
+}
+
+
+//------------------------------------------------------------------------------
+double GProfilesSimsCosinus::ComputeAgree(const GSubProfile* sub1,const GSubProfile* sub2) const
+{
+	double agree=0.0;
+	unsigned int nbsame;
+	double nbcommon;
+
+	nbsame=sub1->GetCommonOKDocs(sub2);
+	nbcommon=double(sub1->GetCommonDocs(sub2));
+	if(nbcommon>=MinSameDocs)
+		agree=nbsame/nbcommon;
+	if(fabs(agree)<NullSimLevel)
+		agree=0.0;
+	return(agree);
 }
 
 
@@ -726,6 +739,11 @@ double GProfilesSimsCosinus::GetAgreementRatio(const GSubProfile* sub1,const GSu
 {
 	if(sub1->GetLang()!=sub2->GetLang())
 		throw GException("Cannot compare two subprofiles of a different language");
+
+	//if memory is false, re-calculate
+	if(!Memory)
+		return(ComputeAgree(sub1,sub2));
+
 	if(NeedUpdate)
 		Update();
 	GProfilesSim* ProfSim = Sims.GetPtr<const GLang*>(sub1->GetLang());
@@ -739,12 +757,33 @@ double GProfilesSimsCosinus::GetMinAgreementRatio(const GLang*)
 	return(MinAgreement);
 }
 
+//------------------------------------------------------------------------------
+double GProfilesSimsCosinus::ComputeDisagree(const GSubProfile* sub1,const GSubProfile* sub2) const
+{
+	unsigned int nbdiff;
+	double nbcommon;
+	double disagree=0.0;
+
+	nbdiff=sub1->GetCommonDiffDocs(sub2);
+	nbcommon=double(sub1->GetCommonDocs(sub2));
+	if(nbcommon>=MinDiffDocs)
+		disagree=nbdiff/nbcommon;
+	if(fabs(disagree)<NullSimLevel)
+		disagree=0.0;
+	return(disagree);
+}
+
 
 //------------------------------------------------------------------------------
 double GProfilesSimsCosinus::GetDisagreementRatio(const GSubProfile* sub1,const GSubProfile* sub2)
 {
 	if(sub1->GetLang()!=sub2->GetLang())
 		throw GException("Cannot compare two subprofiles of a different language");
+
+	//if memory is false, re-calculate
+	if(!Memory)
+		return(ComputeDisagree(sub1,sub2));
+
 	if(NeedUpdate)
 		Update();
 	GProfilesSim* ProfSim = Sims.GetPtr<const GLang*>(sub1->GetLang());

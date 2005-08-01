@@ -119,12 +119,16 @@ public:
 	*/
 	void Update(void);
 
+	double ComputeSim(const GSubProfile* sub1,const GSubProfile* sub2) const;
+
 	/**
 	* Get the similarity between two subprofiles.
 	* @param sub1            Pointer to the first subprofile.
 	* @param sub2            Pointer to the second subprofile.
 	*/
 	virtual double GetSimilarity(const GSubProfile* sub1,const GSubProfile* sub2);
+
+	double ComputeMinSim(const GLang* lang);
 
 	/**
 	* Get the minimum of similarityof the subprofiles, needed by clusteirng
@@ -134,12 +138,16 @@ public:
 	*/
 	virtual double GetMinSimilarity(const GLang* lang);
 
+	double ComputeDisagree(const GSubProfile* sub1,const GSubProfile* sub2) const;
+
 	/**
 	* Return the disagreement ratio between two subprofiles .
 	* @param sub1           The Pointer to the first subprofile
 	* @param sub2           The Pointer to the second subprofile
 	*/
 	virtual double GetDisagreementRatio(const GSubProfile* sub1,const GSubProfile* sub2);
+
+	double ComputeAgree(const GSubProfile* sub1,const GSubProfile* sub2) const;
 
 	virtual double GetMinDisagreementRatio(const GLang* lang);
 

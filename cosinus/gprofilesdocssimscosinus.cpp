@@ -181,10 +181,7 @@ void GProfilesDocsSimsCosinus::GDocProfSim::AnalyseSim(GSims* sim,const GDoc* do
 
 	if(doc->GetLang()!=sub->GetLang()) return;
 	if((!doc->IsDefined())||(!sub->IsDefined())) return;
-	if(Manager->IDF)
-		tmp=doc->SimilarityIFF(sub);
-	else
-		tmp=doc->Similarity(sub);
+	tmp=Manager->ComputeSim(doc,sub);
 	if(fabs(tmp)<Manager->NullSimLevel) return;
 	sim->InsertPtr(new GSim(sub->GetId(),tmp,osUpdated));
 }
@@ -196,15 +193,6 @@ double GProfilesDocsSimsCosinus::GDocProfSim::GetSim(const GDoc* doc,const GSubP
 	GSims* s;
 	GSim* s2;
 
-	//if memory is false, re-calculate similarity
-	if(!Manager->Memory)
-	{
-		if(Manager->IDF)
-			return (doc->SimilarityIFF(sub));
-		else
-			 return (doc->Similarity(sub));
-	}
-
 	s=Sims->GetPtr<unsigned int>(doc->GetId());
 	if(!s) return(0.0);
 	s2=s->GetPtr<unsigned int>(sub->GetId());
@@ -213,11 +201,7 @@ double GProfilesDocsSimsCosinus::GDocProfSim::GetSim(const GDoc* doc,const GSubP
 	if(s2->State == osModified)
 	{
 		s2->State = osUpToDate;
-		if(Manager->IDF)
-			s2->Sim=doc->SimilarityIFF(sub);
-		else
-			s2->Sim=doc->Similarity(sub);
-		if(fabs(s2->Sim)<Manager->NullSimLevel) s2->Sim=0.0;
+		s2->Sim=Manager->ComputeSim(doc,sub);
 		return (s2->Sim);
 	}
 	if (s2->State == osDelete)  return (0.0);   //-------------------------A MODIFIER
@@ -333,20 +317,40 @@ void GProfilesDocsSimsCosinus::Update(void)
 
 
 //------------------------------------------------------------------------------
+double GProfilesDocsSimsCosinus::ComputeSim(const GDoc* doc,const GSubProfile* sub) const
+{
+	double sim;
+
+	if((!ISF)&&(!IDF))
+		sim=doc->Similarity(*sub);
+	else
+	{
+		if(ISF)
+		{
+			if(IDF)
+				sim=doc->SimilarityIFF2(*sub,otDoc,otDocSubProfile,sub->GetLang());
+			else
+				sim=doc->SimilarityIFF(*sub,otDocSubProfile,sub->GetLang());
+		}
+		else
+			sim=doc->SimilarityIFF(*sub,otDoc,sub->GetLang());
+	}
+	if(fabs(sim)<NullSimLevel)
+		sim=0.0;
+	return(sim);
+}
+
+
+//------------------------------------------------------------------------------
 double GProfilesDocsSimsCosinus::GetSimilarity(const GDoc* doc,const GSubProfile* sub)
 {
 	if(doc->GetLang()!=sub->GetLang())
 		throw GException("Cannot compare a document and subprofile of a different language");
+
+	//if memory is false, re-calculate similarity
 	if(!Memory)
-	{
-		double Sim;
-		if(IDF)
-			Sim=doc->SimilarityIFF(sub);
-		else
-			Sim=doc->Similarity(sub);
-		if(fabs(Sim)<NullSimLevel) Sim=0.0;
-		return(0.0);
-	}
+		return(ComputeSim(doc,sub));
+
 	if(NeedUpdate)
 		Update();
 	GDocProfSim* docProfSim = Sims.GetPtr<GLang*>(doc->GetLang());
