@@ -42,12 +42,12 @@
 //------------------------------------------------------------------------------
 //include files for GALILEI
 #include <gsession.h>
-#include <gprofileproxy.h>
+#include <gprofile.h>
 #include <gsubprofile.h>
-#include <gdocproxy.h>
+#include <gdoc.h>
 #include <ggroups.h>
 #include <ggroup.h>
-#include <glangproxy.h>
+#include <glang.h>
 #include <gstorage.h>
 using namespace GALILEI;
 using namespace std;
