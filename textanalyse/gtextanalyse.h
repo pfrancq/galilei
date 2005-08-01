@@ -228,6 +228,8 @@ class GTextAnalyse : public GDocAnalyse
 	*/
 	double NormalRatio;
 
+	R::RString PathtoBinary;
+
 public:
 
 	/**

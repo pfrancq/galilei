@@ -54,6 +54,7 @@ using namespace GALILEI;
 #include <klocale.h>
 #include <kaboutapplication.h>
 #include <knuminput.h>
+#include <kurlrequester.h>
 
 
 //-----------------------------------------------------------------------------
@@ -98,11 +99,14 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.StoreFullWords->setChecked(params->GetBool("StoreFullWords"));
 	dlg.NonLetterWords->setChecked(params->GetBool("NonLetterWords"));
 	dlg.Distance->setChecked(params->GetBool("Distance"));
+	dlg.PathtoBinary->setEnabled(params->GetBool("Distance"));
+	dlg.PathtoBinary->setMode(KFile::Directory);
+	dlg.PathtoBinary->setURL(params->GetString("PathtoBinary"));
 	dlg.UseExternalLinks->setChecked(params->GetBool("UseExternalLinks"));
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
 	dlg.NbSameOccur->setValue(params->GetUInt("NbSameOccur"));
 	dlg.NormalRatio->setValue(params->GetDouble("NormalRatio"));
-	dlg.NbSameOccur->setEnabled(params->GetBool("Filtering"));
+	dlg.NbSameOccur->setEnabled(params->GetBool("NbSameOccur"));
 	dlg.NormalRatio->setEnabled(params->GetBool("Filtering"));
 	dlg.groupFiltering->setEnabled(params->GetBool("NonLetterWords"));
 	if(dlg.exec())
@@ -119,6 +123,7 @@ void Configure(GFactoryDocAnalyse* params)
 		params->Set("Filtering",dlg.Filtering->isChecked());
 		params->Set("NbSameOccur",dlg.NbSameOccur->value());
 		params->Set("NormalRatio",dlg.NormalRatio->value());
+		params->Set("PathtoBinary",RString(dlg.PathtoBinary->url().ascii()));
 		params->Apply();
 	}
 }

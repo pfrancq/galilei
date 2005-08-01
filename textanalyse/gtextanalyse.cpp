@@ -156,6 +156,7 @@ void GTextAnalyse::ApplyConfig(void)
 	Filtering=Factory->GetBool("Filtering");
 	NbSameOccur=Factory->GetUInt("NbSameOccur");
 	NormalRatio=Factory->GetDouble("NormalRatio");
+	PathtoBinary=Factory->GetString("PathtoBinary");
 }
 
 
@@ -750,7 +751,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 	{
 		DIR* dp;
 		RString name;
-		name=Session->GetSessionParams()->GetString("PathtoBinary");
+		name=PathtoBinary;
 		dp=opendir(name);
 		if(!dp)
 			throw GException("the specified path doesn't exist.");
@@ -905,6 +906,7 @@ void GTextAnalyse::CreateParams(GParams* params)
 	params->InsertPtr(new GParamBool("Filtering",true));
 	params->InsertPtr(new GParamUInt("NbSameOccur",3));
 	params->InsertPtr(new GParamDouble("NormalRatio",0.3));
+	params->InsertPtr(new GParamString("PathtoBinary","/var/galilei/bin/"));
 }
 
 

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>476</width>
-            <height>574</height>
+            <width>409</width>
+            <height>555</height>
         </rect>
     </property>
     <property name="caption">
@@ -299,20 +299,6 @@ When the languages are not static, the language of a document is always determin
                 </property>
                 <widget class="QCheckBox">
                     <property name="name">
-                        <cstring>Distance</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Create distance files [Distance]</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Set if the distance files must be created.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>When a document is analysed, it is possible to create &lt;b&gt;distance files&lt;/b&gt;. These files contain information on the distances between words in the document. This information is used by the post-doc traitment.</string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
                         <cstring>UseExternalLinks</cstring>
                     </property>
                     <property name="text">
@@ -325,6 +311,60 @@ When the languages are not static, the language of a document is always determin
                         <string>When a document is analysed, it is possible to create for each link in the document, a new document in the system. These documents will be then analysed.&lt;br&gt;
 Be carefull, because it can explose the size of information on documents.</string>
                     </property>
+                </widget>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>Distance</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Create distance files [Distance]</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Set if the distance files must be created.</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>When a document is analysed, it is possible to create &lt;b&gt;distance files&lt;/b&gt;. These files contain information on the distances between words in the document. This information is used by the post-doc traitment.</string>
+                    </property>
+                </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout44</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QLabel">
+                            <property name="name">
+                                <cstring>textLabel2_2_2</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Path to binary files</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer40</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>51</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KURLRequester">
+                            <property name="name">
+                                <cstring>PathtoBinary</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
                 </widget>
             </vbox>
         </widget>
@@ -460,7 +500,7 @@ Be carefull, because it can explose the size of information on documents.</strin
             <property name="sizeHint">
                 <size>
                     <width>31</width>
-                    <height>16</height>
+                    <height>20</height>
                 </size>
             </property>
         </spacer>
@@ -563,6 +603,12 @@ Be carefull, because it can explose the size of information on documents.</strin
         <receiver>groupFiltering</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
+    <connection>
+        <sender>Distance</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>PathtoBinary</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">dlgconfig_qt.ui.h</include>
@@ -577,6 +623,9 @@ Be carefull, because it can explose the size of information on documents.</strin
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
