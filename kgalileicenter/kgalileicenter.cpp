@@ -738,7 +738,7 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 			KApplication::kApplication()->processEvents();
 			RTextFile file(name.Latin1());
 			file.Open(RIO::Create);
-			RCursor<GWeightInfo> Words=Docs()->GetWeightInfoCursor();
+			RCursor<GWeightInfo> Words(Docs()->GetInfos());
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				for(unsigned int i=lround(Words()->GetWeight())+1;--i;)

@@ -52,7 +52,7 @@ using namespace R;
 #include <gdoc.h>
 #include <gdocxml.h>
 #include <guser.h>
-#include <gprofileproxy.h>
+#include <gprofile.h>
 #include <glang.h>
 #include <gsession.h>
 #include <gstorage.h>
@@ -200,7 +200,7 @@ void KViewDoc::ConstructFdbks(void)
 
 
 	// Add Judgements for profile.
-	RCursor<GProfileProxy> Profiles=Document->GetFdbks();
+	RCursor<GProfile> Profiles=Document->GetFdbks();
 	for(Profiles.Start();!Profiles.End();Profiles.Next())
 	{
 		switch(Profiles()->GetFdbk(Document->GetId())->GetFdbk())
@@ -258,7 +258,7 @@ void KViewDoc::ConstructResults(void)
 	};
 	Results->clear();
 	if(!Document->GetLang()) return;
-	RCursor<GWeightInfo> Words=Document->GetWeightInfoCursor();
+	RCursor<GWeightInfo> Words(Document->GetInfos());
 	for (Words.Start();!Words.End();Words.Next())
 	{
 		new LocalItem(Results,ToQString(Doc->GetSession()->GetStorage()->LoadWord(Words()->GetId(),Document->GetLang()->GetCode())), Words()->GetWeight());

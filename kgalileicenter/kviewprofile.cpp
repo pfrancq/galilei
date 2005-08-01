@@ -44,7 +44,7 @@
 #include <guser.h>
 #include <gprofile.h>
 #include <gsubprofile.h>
-#include <gdocproxy.h>
+#include <gdoc.h>
 #include <ggroup.h>
 #include <ggroups.h>
 #include <gsession.h>

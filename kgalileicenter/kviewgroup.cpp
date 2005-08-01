@@ -41,7 +41,7 @@
 #include <glang.h>
 #include <gsession.h>
 #include <gstorage.h>
-#include <gdocproxy.h>
+#include <gdoc.h>
 #include <ggroup.h>
 #include <guser.h>
 #include <gprofile.h>
@@ -219,7 +219,7 @@ void KViewGroup::ConstructDocs(void)
 	}
 
 	// Insert documents.
-	RCursor<GDocProxy> docs2(OkDocs);
+	RCursor<GDoc> docs2(OkDocs);
 	for(docs2.Start();!docs2.End();docs2.Next())
 	{
 		doc=GSession::Get()->GetDoc(docs2()->GetId());
@@ -256,7 +256,7 @@ void KViewGroup::ConstructDescription(void)
 
 	// Read 'Ok'
 	Vector->clear();
-	RCursor<GWeightInfo> Words=Group->GetWeightInfoCursor();
+	RCursor<GWeightInfo> Words(Group->GetInfos());
 	for (Words.Start();!Words.End();Words.Next())
 	{
 		new LocalItem(Vector,ToQString(Doc->GetSession()->GetStorage()->LoadWord(Words()->GetId(),Group->GetLang()->GetCode())), Words()->GetWeight());
@@ -316,7 +316,7 @@ void KViewGroup::slotMenu(int)
 	Res<<"<?xml version=\"1.0\" ?>\n<!DOCTYPE Hierarchical-Data>\n<Hierarchical-Data>\n\t<Objects>\n";
 
 	// Write Docs
-	RCursor<GDocProxy> theDocs(OkDocs);
+	RCursor<GDoc> theDocs(OkDocs);
 	for(theDocs.Start(),i=0,maxsize=0,tab=0;!theDocs.End();theDocs.Next(),i++)
 	{
 		doc=GSession::Get()->GetDoc(theDocs()->GetId());

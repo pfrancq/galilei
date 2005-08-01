@@ -42,7 +42,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocproxy.h>
+#include <gdoc.h>
 namespace GALILEI
 {
 	class GGroup;
@@ -103,7 +103,7 @@ class KViewGroup : public KView
 	/**
 	* List of documents assessed as relevant.
 	*/
-	R::RContainer<GALILEI::GDocProxy,false,true> OkDocs;
+	R::RContainer<GALILEI::GDoc,false,true> OkDocs;
 
 public:
 
