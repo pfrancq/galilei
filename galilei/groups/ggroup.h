@@ -251,26 +251,24 @@ public:
 	/**
 	* Compute the relevant subprofile, i.e. the subprofiles whith the highest
 	* average similarity with all the other subprofiles.
-	* @param iff             Use the Inverse Frequency Factor.
 	* @returns Pointer to GSubProfile representing the relevant one.
 	*/
-	GSubProfile* RelevantSubProfile(bool iff) const;
+	GSubProfile* RelevantSubProfile(void) const;
 
 	/**
 	* Compute the relevant subprofile
 	* @see R::RGroupingKMeans<cGroup, cObj, cGroupData, cGroups>.
 	* @returns Pointer to GSubProfile representing the relevant one.
 	*/
-	GSubProfile* RelevantObj(void) const {return(RelevantSubProfile(true));}
+	GSubProfile* RelevantObj(void) const {return(RelevantSubProfile());}
 
 	/**
 	* Compute the sum of the similarities of a given subprofile to all the
 	* others.
 	* @param s               Subprofile used as reference.
-	* @param iff             Use the Inverse Frequency Factor.
 	* @returns result.
 	*/
-	double ComputeSumSim(const GSubProfile* s,bool iff) const;
+	double ComputeSumSim(const GSubProfile* s) const;
 
 	/**
 	* Clear the vector representing the group.

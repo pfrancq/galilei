@@ -44,6 +44,7 @@
 #include <gstorage.h>
 #include <gweightinfo.h>
 #include <gprofilesdocssims.h>
+#include <gprofilessims.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -359,7 +360,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 
 
 //------------------------------------------------------------------------------
-GSubProfile* GGroup::RelevantSubProfile(bool iff) const
+GSubProfile* GGroup::RelevantSubProfile(void) const
 {
 	GSubProfile* rel;
 	RCursor<GSubProfile> sub(*this);
@@ -371,12 +372,12 @@ GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 
 	// Suppose the first element is the most relevant.
 	rel=const_cast<GSubProfile*>(R::RContainer<GSubProfile,false,true>::operator[](0));
-	refsum=ComputeSumSim(rel,iff);
+	refsum=ComputeSumSim(rel);
 
 	// Look if in the other objects, there is a better one
 	for(sub.Start();!sub.End();sub.Next())
 	{
-		sum=ComputeSumSim(sub(),iff);
+		sum=ComputeSumSim(sub());
 		if (sum>=refsum)
 		{
 			rel=sub();
@@ -390,18 +391,17 @@ GSubProfile* GGroup::RelevantSubProfile(bool iff) const
 
 
 //------------------------------------------------------------------------------
-double GGroup::ComputeSumSim(const GSubProfile* s,bool iff) const
+double GGroup::ComputeSumSim(const GSubProfile* s) const
 {
 	double sum;
-	RCursor<GSubProfile> sub(*this);
 
+	if((!GSession::Get())||(!GSession::Get()->GetProfilesSims()))
+		throw GException("No profiles similarities");
+	RCursor<GSubProfile> sub(*this);
 	for(sub.Start(),sum=0.0;!sub.End();sub.Next())
 	{
 		if(sub()==s) continue;
-		if(iff)
-			sum=sum+s->SimilarityIFF(*sub(),otSubProfileGroup,Lang);
-		else
-			sum=sum+s->Similarity(*sub());
+		sum+=GSession::Get()->GetProfilesSims()->GetSimilarity(s,sub());
 	}
 	return(sum);
 }
