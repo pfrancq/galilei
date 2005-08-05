@@ -107,7 +107,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 	if(!grp->GetNbSubProfiles()) return;
 
 	// Go through the subprofiles and sum the weigths.
-	Sub=grp->GetSubProfilesCursor();
+	Sub=grp->GetSubProfiles();
 	for(Sub.Start();!Sub.End();Sub.Next())
 	{
 		// Go trough the words of the current subprofile
