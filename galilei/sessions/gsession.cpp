@@ -151,6 +151,7 @@ R::RString GetObjType(tObjType objtype)
 			return(RString("assessment"));
 			break;
 	}
+	return(RString("unknow"));
 }
 
 
@@ -190,6 +191,7 @@ R::RString GetState(tObjState state)
 			return(RString("must load information"));
 			break;
 	}
+	return(RString("unknow"));
 }
 
 
@@ -211,6 +213,7 @@ R::RString GetEvent(tEvent event)
 			return(RString("object deleted"));
 			break;
 	}
+	return(RString("unknow"));
 }
 
 
@@ -244,6 +247,7 @@ R::RString GetAssessment(tDocAssessment assessment)
 			return(RString("mask for hub/autority"));
 			break;
 	}
+	return(RString("unknow"));
 }
 
 
@@ -268,6 +272,7 @@ R::RString GetInfoType(tInfoType infotype)
 			return(RString("document"));
 			break;
 	}
+	return(RString("unknow"));
 }
 
 
@@ -432,6 +437,13 @@ void GSession::SetSims(GProfilesDocsSimsManager* sims)
 void GSession::SetSims(GGroupsDocsSimsManager* sims)
 {
 	GroupsDocsSims=sims;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetSims(GProfilesGroupsSimsManager* sims)
+{
+	ProfilesGroupsSims=sims;
 }
 
 

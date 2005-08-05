@@ -64,6 +64,7 @@ using namespace std;
 #include <gprofilessims.h>
 #include <gprofilesdocssims.h>
 #include <ggroupsdocssims.h>
+#include <gprofilesgroupssims.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -96,6 +97,7 @@ GPluginManagers::GPluginManagers(void)
 	InsertPtr(new GProfilesSimsManager());
 	InsertPtr(new GProfilesDocsSimsManager());
 	InsertPtr(new GGroupsDocsSimsManager());
+	InsertPtr(new GProfilesGroupsSimsManager());
 }
 
 

@@ -198,6 +198,9 @@ class GFactoryProfilesDocsSims;
 class GGroupsDocsSims;
 class GGroupsDocsSimsManager;
 class GFactoryGroupsDocsSims;
+class GProfilesGroupsSims;
+class GProfilesGroupsSimsManager;
+class GFactoryProfilesGroupsSims;
 
 
 //------------------------------------------------------------------------------

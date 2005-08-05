@@ -393,43 +393,44 @@ public:
 	virtual ~GFactoryPlugin(void);
 };
 
+
 //-------------------------------------------------------------------------------
-#define CREATE_FACTORY(manager,factory,genericplugin,plugin,lib,API,name)                    \
-	class TheFactory : public factory                                           \
-{                \
-	static factory* Inst;                \
-	TheFactory(manager* mng,const char* l) : factory(mng,name,l)                \
-	{                \
-		plugin::CreateParams(this);                \
-	}                \
-	virtual ~TheFactory(void) {}                \
-public:                \
-	static factory* CreateInst(manager* mng,const char* l)                \
-	{                \
-		if(!Inst)                \
-			Inst = new TheFactory(mng,l);                \
-		return(Inst);                \
-	}                \
-	virtual const char* GetAPIVersion(void)      const {return(API);}                                \
-		                                \
-	virtual genericplugin* NewPlugIn(void)                \
-	{                \
-		return(new plugin(this));                \
-	}                \
-	virtual void DeletePlugIn(genericplugin* plug)                \
-	{                \
-		delete plug;                \
-	}                \
-};                \
-factory* TheFactory::Inst = 0;  \
-                \
-extern "C" factory* FactoryCreate(manager* mng,const char* l)                \
-{                \
-	return(TheFactory::CreateInst(mng,l));                \
-}                \
-extern "C" const char* LibType(void)                \
-{                \
-	return(lib);                \
+#define CREATE_FACTORY(manager,factory,genericplugin,plugin,lib,API,name)      \
+	class TheFactory : public factory                                          \
+{                                                                              \
+	static factory* Inst;                                                      \
+	TheFactory(manager* mng,const char* l) : factory(mng,name,l)               \
+	{                                                                          \
+		plugin::CreateParams(this);                                            \
+	}                                                                          \
+	virtual ~TheFactory(void) {}                                               \
+public:                                                                        \
+	static factory* CreateInst(manager* mng,const char* l)                     \
+	{                                                                          \
+		if(!Inst)                                                              \
+			Inst = new TheFactory(mng,l);                                      \
+		return(Inst);                                                          \
+	}                                                                          \
+	virtual const char* GetAPIVersion(void)      const {return(API);}          \
+		                                                                       \
+	virtual genericplugin* NewPlugIn(void)                                     \
+	{                                                                          \
+		return(new plugin(this));                                              \
+	}                                                                          \
+	virtual void DeletePlugIn(genericplugin* plug)                             \
+	{                                                                          \
+		delete plug;                                                           \
+	}                                                                          \
+};                                                                             \
+factory* TheFactory::Inst = 0;                                                 \
+                                                                               \
+extern "C" factory* FactoryCreate(manager* mng,const char* l)                  \
+{                                                                              \
+	return(TheFactory::CreateInst(mng,l));                                     \
+}                                                                              \
+extern "C" const char* LibType(void)                                           \
+{                                                                              \
+	return(lib);                                                               \
 }
 
 

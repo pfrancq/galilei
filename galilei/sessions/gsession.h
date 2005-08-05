@@ -85,9 +85,14 @@ protected:
 	GProfilesDocsSimsManager* ProfilesDocsSims;
 
 	/**
-	*  Similarities between documents and groupss.
+	*  Similarities between documents and groups.
 	*/
 	GGroupsDocsSimsManager* GroupsDocsSims;
+
+	/**
+	*  Similarities between profiles and groups.
+	*/
+	GProfilesGroupsSimsManager* ProfilesGroupsSims;
 
 	/**
 	* Current seek for this session.
@@ -273,6 +278,17 @@ public:
 	* Get the manager for the similarities between groups/documents.
 	*/
 	GGroupsDocsSimsManager* GetGroupsDocsSims(void) const {return(GroupsDocsSims);}
+
+	/**
+	* Set the manager for the similarities between groups/profiles.
+	* @param sims            Pointer to the manager.
+	*/
+	void SetSims(GProfilesGroupsSimsManager* sims);
+
+	/**
+	* Get the manager for the similarities between profiles/documents.
+	*/
+	GProfilesGroupsSimsManager* GetProfilesGroupsSims(void) const {return(ProfilesGroupsSims);}
 
 	/**
 	* Set the slot for the session.
