@@ -137,7 +137,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 			NbDocs++;
 
 			// Update number of documents where appear each index term.
-			Words=Docs()->GetDoc()->GetInfos();
+			Words=Session->GetDoc(Docs()->GetDocId())->GetInfos();
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				w=NbDocsWords.GetInsertPtr(GInfo(*Words()));
@@ -178,8 +178,9 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 		}
 
 		// Add total number of words and the occurences of each word of the current document.
-		Words=Docs()->GetDoc()->GetInfos();
-		MaxFreq=Docs()->GetDoc()->GetMaxWeight();
+		GDoc* doc=Session->GetDoc(Docs()->GetDocId());
+		Words=doc->GetInfos();
+		MaxFreq=doc->GetMaxWeight();
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			w=Vectors.GetInsertPtr(GInfo(*Words()));
