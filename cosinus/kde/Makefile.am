@@ -1,5 +1,5 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)
-lib_LTLIBRARIES =  libprofilessimscosinus_dlg.la libprofilesdocssimscosinus_dlg.la libgroupsdocssimscosinus_dlg.la
+lib_LTLIBRARIES =  libprofilessimscosinus_dlg.la libprofilesdocssimscosinus_dlg.la libgroupsdocssimscosinus_dlg.la libprofilesgroupssimscosinus_dlg.la
 libprofilessimscosinus_dlg_la_LDFLAGS = -module -avoid-version
 libprofilessimscosinus_dlg_la_SOURCES = dlgconfigprofiles_qt.ui gprofilessimscosinus_kde.cpp
 libprofilessimscosinus_dlg_la_LIBADD=
@@ -9,6 +9,8 @@ libprofilesdocssimscosinus_dlg_la_LIBADD=
 libgroupsdocssimscosinus_dlg_la_LDFLAGS = -module -avoid-version
 libgroupsdocssimscosinus_dlg_la_SOURCES = dlgconfiggroupsdocs_qt.ui ggroupsdocssimscosinus_kde.cpp
 libgroupsdocssimscosinus_dlg_la_LIBADD=
-
+libprofilesgroupssimscosinus_dlg_la_LDFLAGS = -module -avoid-version
+libprofilesgroupssimscosinus_dlg_la_SOURCES = dlgconfigprofilesgroups_qt.ui gprofilesgroupssimscosinus_kde.cpp
+libprofilesgroupssimscosinus_dlg_la_LIBADD=
 SUBDIRS =
 
