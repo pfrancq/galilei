@@ -169,7 +169,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbEncoding=FromQString(dlg.cbEncoding->currentText());
 		try
 		{
-			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName,dbEncoding);
+			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName,dbEncoding,RDate::GetToday());
 			Sess = new GSession(Doc->GetStorage(),docAlwaysSave->isChecked(),!(docAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()),
 			                    profileAlwaysSave->isChecked(),!(profileAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()),groupAlwaysSave->isChecked(),
 			                    useExistingGroups->isChecked()||(!sessionAlwaysCalc->isChecked()));
@@ -725,7 +725,7 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 		KApplication::kApplication()->processEvents();
 		RString pre(dir.latin1());
 		pre+="/doc";
-		RCursor<GDoc> Docs=Doc->GetSession()->GetDocsCursor();
+		RCursor<GDoc> Docs=Doc->GetSession()->GetDocs();
 		unsigned int nb;
 		for(Docs.Start(),nb=0;!Docs.End();Docs.Next(),nb++)
 		{

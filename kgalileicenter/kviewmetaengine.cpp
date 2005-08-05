@@ -189,7 +189,7 @@ GEngineDoc* KViewMetaEngine::GetCurrentEngineDoc(void)
 void KViewMetaEngine::CreateMetaEngineResultsListView(void)
 {
 	R::RCursor<GEngineDoc> engCur;
-	engCur=(dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine")))->GetCurrentMethod()->GetEngineDocsCursor();
+	engCur=(dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine")))->GetCurrentMethod()->GetEngineDocs();
 	QListViewItemType* urlitem=0, *afteritem=0;
 	QListViewItemType* desc;
 	unsigned int i=1;

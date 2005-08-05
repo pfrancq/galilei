@@ -207,7 +207,7 @@ void KViewThGroups::ConstructThGroups(void)
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		R::RCursor<GGroup> grs=Groups->GetGroupsCursor(lang);
+		R::RCursor<GGroup> grs=Groups->GetGroups(lang);
 		QListViewItemType* grsitem = new QListViewItemType(thGroups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for(grs.Start(); !grs.End(); grs.Next())
@@ -215,7 +215,7 @@ void KViewThGroups::ConstructThGroups(void)
 			GGroup* gr=grs();
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
 			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-			Sub=grs()->GetSubProfilesCursor();
+			Sub=grs()->GetSubProfiles();
 			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
 				GSubProfile* sub=Sub();
@@ -245,7 +245,7 @@ void KViewThGroups::ConstructGroups(void)
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroupsCursor(lang);
+		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroups(lang);
 		QListViewItemType* grsitem = new QListViewItemType(prGroups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		for (grs.Start(); !grs.End(); grs.Next())
@@ -255,7 +255,7 @@ void KViewThGroups::ConstructGroups(void)
 			sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
 			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group",tmp1,tmp2);
 			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-			Sub=grs()->GetSubProfilesCursor();
+			Sub=grs()->GetSubProfiles();
 			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
 				GSubProfile* sub=Sub();

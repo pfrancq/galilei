@@ -6,7 +6,7 @@
 
 	Document representing a GALILEI session - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -38,7 +38,7 @@
 //-----------------------------------------------------------------------------
 #ifdef HAVE_CONFIG_H
 #include <config.h>
-#endif 
+#endif
 
 
 //-----------------------------------------------------------------------------
@@ -133,7 +133,7 @@ public:
 	* @param db             The database.
 	* @param encoding       Encoding of the database.
 	*/
-	KDoc(KGALILEICenterApp* owner,R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString encoding) throw(std::bad_alloc,GException);
+	KDoc(KGALILEICenterApp* owner,R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString encoding,const R::RDate& filter) throw(std::bad_alloc,GException);
 
 	/**
 	* Set the session corresponding of the document.

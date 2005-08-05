@@ -254,7 +254,7 @@ void KViewProfile::ConstructGroups(void)
 	{
 		lang=CurLang()->GetPlugin();
 		if(!lang) continue;
-		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroupsCursor(lang);
+		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroups(lang);
 		QListViewItemType* grsitem = new QListViewItemType(Groups,ToQString(lang->GetName()));
 		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		sub=Profile->GetSubProfile(lang);
@@ -263,7 +263,7 @@ void KViewProfile::ConstructGroups(void)
 		{
 			GGroup* gr=grs();
 			if(!gr->IsIn(sub)) continue;
-			Sub=grs()->GetSubProfilesCursor();
+			Sub=grs()->GetSubProfiles();
 			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
 				GSubProfile* sub=Sub();

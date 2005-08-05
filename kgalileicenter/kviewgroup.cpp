@@ -136,7 +136,7 @@ void KViewGroup::ConstructProfiles(void)
 	RCursor<GSubProfile> Sub;
 
 	Profiles->clear();
-	Sub=Group->GetSubProfilesCursor();
+	Sub=Group->GetSubProfiles();
 	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
 				GSubProfile* sub=Sub();
@@ -199,7 +199,7 @@ void KViewGroup::ConstructDocs(void)
 
 	// Goes trough the subprofiles of the group
 	// And put in OkDocs all the relevant documents
-	Sub=Group->GetSubProfilesCursor();
+	Sub=Group->GetSubProfiles();
 	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
 		GSubProfile* sub=Sub();

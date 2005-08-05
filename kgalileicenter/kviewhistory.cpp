@@ -379,7 +379,7 @@ void KViewHistory::DisplayRelationShip(GGroupHistory* grp)
 	grpitem->setSelected(true);
 
 	//display children
-	cur= grp->GetChildrenCursor();
+	cur= grp->GetChildrens();
 	for (cur.Start(); !cur.End(); cur.Next())
 		DisplayChildrenRelationShip(cur(), grpitem);
 }
@@ -400,7 +400,7 @@ void KViewHistory::DisplayChildrenRelationShip(GGroupHistory* grp, QListViewItem
 	sprintf(num2,"%u-%u-%u",grp->GetParent()->GetDate().GetYear(),grp->GetParent()->GetDate().GetMonth(),
 		grp->GetParent()->GetDate().GetDay());
 	grpitem=new QListViewItemType(grp, attach, tmp, "children", num1, num2);
-	cur= grp->GetChildrenCursor();
+	cur= grp->GetChildrens();
 	for (cur.Start(); !cur.End(); cur.Next())
 		DisplayChildrenRelationShip(cur(), grpitem);
 	grpitem->setOpen(true);
