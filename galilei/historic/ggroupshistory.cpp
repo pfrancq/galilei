@@ -64,7 +64,7 @@ GGroupsHistoryManager::GGroupsHistoryManager(GSession* session,unsigned int max)
 
 
 //-------------------------------------------------------------------------------
-R::RCursor<GGroupsHistory> GGroupsHistoryManager::GetGroupsHistoryCursor(void)
+R::RCursor<GGroupsHistory> GGroupsHistoryManager::GetGroupsHistory(void)
 {
 	R::RCursor<GGroupsHistory> cur(*this);
 	return(cur);

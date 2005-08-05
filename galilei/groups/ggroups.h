@@ -52,23 +52,14 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Session Groups.
 */
-class GGroups : protected R::RContainer<GGroup,true,true>
+class GGroups
 {
-protected:
+	class Intern;
 
-	// Internal Class
-	class GGroupsLang;
-	class GFreeId;
-
-	/**
-	* Groups ordered by language and identificator.
+	/*
+	* Internal data.
 	*/
-	R::RContainer<GGroupsLang,true,true> GroupsLang;
-
-	/**
-	* List of all "free" identificators that could be used for a group.
-	*/
-	R::RContainer<GFreeId,true,true> FreeIds;
+	Intern* Data;
 
 public:
 
@@ -82,14 +73,14 @@ public:
 	* Get a cursor on all the groups.
 	* @return GGroupCursor.
 	*/
-	R::RCursor<GGroup> GetGroupsCursor(void) const;
+	R::RCursor<GGroup> GetGroups(void) const;
 
 	/**
 	* Get a cursor on the groups of a given langage.
 	* @param lang            Language of the groups.
 	* @return GGroupCursor.
 	*/
-	R::RCursor<GGroup> GetGroupsCursor(GLang* lang);
+	R::RCursor<GGroup> GetGroups(GLang* lang);
 
 	/**
 	* Insert a group. The group is also stored in the container correspondong to
@@ -122,7 +113,7 @@ public:
 	* Get the number of groups handled.
 	* @returns Number of groups.
 	*/
-	unsigned int GetNbGroups(void) const {return(GetNb());}
+	unsigned int GetNbGroups(void) const;
 
 	/**
 	* Get the number of groups of a given langauge handled.

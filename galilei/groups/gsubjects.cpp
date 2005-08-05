@@ -242,7 +242,7 @@ void GSubjects::CreateSet(void)
 		maxDocsH=static_cast<unsigned int>(maxDocsOK*PercH/100);
 
 		// Assess documents
-		Prof=Subs()->GetProfilesCursor();
+		Prof=Subs()->GetProfiles();
 		for(Prof.Start();!Prof.End();Prof.Next())
 			ProfileAssess(Groups,Prof(),Subs(),maxDocsOK,maxDocsKO,maxDocsH);
 	}
@@ -352,7 +352,7 @@ void GSubjects::ComputeRecallPrecision(void)
 		if(!NbGrp) continue;
 		if(NbGrp==1)
 		{
-			Sub=Grp()->Group->GetSubProfilesCursor();
+			Sub=Grp()->Group->GetSubProfiles();
 			Sub.Start();
 			thGrp=GetIdealGroup(Sub());
 			if((!thGrp)||(thGrp->GetLang()!=Grp()->Group->GetLang()))
@@ -365,7 +365,7 @@ void GSubjects::ComputeRecallPrecision(void)
 		}
 		else
 		{
-			Sub=Grp()->Group->GetSubProfilesCursor();
+			Sub=Grp()->Group->GetSubProfiles();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				thGrp=GetIdealGroup(Sub());
@@ -430,9 +430,9 @@ void GSubjects::ComputeTotal(void)
 	{
 		lang=Langs()->GetPlugin();
 		if(!lang) continue;
-		GroupsIdeal=IdealGroups->GetGroupsCursor(lang);
+		GroupsIdeal=IdealGroups->GetGroups(lang);
 		NbRows=GroupsIdeal.GetNb();
-		NbCols=Session->GetGroupsCursor(lang).GetNb();
+		NbCols=Session->GetGroups(lang).GetNb();
 		if(NbRows>MaxRows) MaxRows=NbRows;
 		if(NbCols>MaxCols) MaxCols=NbCols;
 	}
@@ -452,9 +452,9 @@ void GSubjects::ComputeTotal(void)
 
 		// Compute number of elements in ideal and computed groups.
 		// and assign the groups to the current language.
-		GroupsIdeal=IdealGroups->GetGroupsCursor(lang);
+		GroupsIdeal=IdealGroups->GetGroups(lang);
 		NbRows=GroupsIdeal.GetNb();
-		GroupsComputed=Session->GetGroupsCursor(lang);
+		GroupsComputed=Session->GetGroups(lang);
 		NbCols=GroupsComputed.GetNb();
 		if((!NbRows)||(!NbCols))
 			continue;
@@ -478,7 +478,7 @@ void GSubjects::ComputeTotal(void)
 		for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
 		{
 			memset(VectorColsTemp,0,NbCols*sizeof(double));
-			Sub=GroupsIdeal()->GetSubProfilesCursor();
+			Sub=GroupsIdeal()->GetSubProfiles();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				VectorRows[row]++;
@@ -560,11 +560,11 @@ void GSubjects::FdbksCycle(void)
 	Apply();
 
 	// Go through the languages
-	Grps=Session->GetGroupsCursor();
+	Grps=Session->GetGroups();
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Go through the subprofile contained in the group.
-		SubProfile=Grps()->GetSubProfilesCursor();
+		SubProfile=Grps()->GetSubProfiles();
 		for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
 		{
 			Grps()->NotJudgedDocsRelList(&NewDocs,SubProfile(),Session);
@@ -623,7 +623,7 @@ void GSubjects::AddAssessments(void)
 		NbDocs=Session->FillDocs(tmpDocs);
 
 		// Go through the profiles attached to the subject
-		Prof=Subs()->GetProfilesCursor();
+		Prof=Subs()->GetProfiles();
 		for(Prof.Start();!Prof.End();Prof.Next())
 		{
 			// Look if current profile has already judged documents.
@@ -716,7 +716,7 @@ bool GSubjects::AddTopic(void)
 	maxDocsH=static_cast<unsigned int>(maxDocsOK*PercH/100);
 
 	// Assess documents
-	Prof=newSubject->GetProfilesCursor();
+	Prof=newSubject->GetProfiles();
 	for(Prof.Start();!Prof.End();Prof.Next())
 		ProfileAssess(Groups,Prof(),newSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
@@ -778,10 +778,10 @@ unsigned int GSubjects::AddProfiles(void)
 	{
 		GLang* lang=Langs()->GetPlugin();
 		if(!lang) continue;
-		CurGrps=IdealGroups->GetGroupsCursor(lang);
+		CurGrps=IdealGroups->GetGroups(lang);
 		for(CurGrps.Start(),Grp=0;!CurGrps.End();CurGrps.Next())
 		{
-			Sub=CurGrps()->GetSubProfilesCursor();
+			Sub=CurGrps()->GetSubProfiles();
 			Sub.Start();
 			if(Sub.End()) continue;
 			if(GetSubject(Sub())->GetId()==usedSubject->GetId())
@@ -803,7 +803,7 @@ unsigned int GSubjects::AddProfiles(void)
 	usedSubject->SetUsed(Session,true,nbprof,nbsocial);
 
 	// Assess documents
-	Prof=usedSubject->GetProfilesCursor();
+	Prof=usedSubject->GetProfiles();
 	for(Prof.Start();!Prof.End();Prof.Next())
 		ProfileAssess(Groups,Prof(),usedSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
@@ -830,7 +830,7 @@ double GSubjects::ComputePercAss(void)
 	GLang* Lang;
 
 	Cur1.Set(LastAdded);
-	Cur2=Session->GetProfilesCursor();
+	Cur2=Session->GetProfiles();
 	if(Cur1.GetNb()<1)
 	{
 		PercAss=1.0;
@@ -897,7 +897,7 @@ void GSubjects::Compare(void)
 	R::RCursor<GGroup> Cur;
 
 	GroupsScore.Clear();
-	Cur=Session->GetGroupsCursor();
+	Cur=Session->GetGroups();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		GroupsScore.InsertPtr(new GroupScore(Cur()));
@@ -1032,14 +1032,14 @@ bool GSubjects::IsFromParentSubject(unsigned int docid,const GSubject* s)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GSubject> GSubjects::GetSubjectCursor(GDoc* doc)
+R::RCursor<GSubject> GSubjects::GetSubjects(GDoc* doc)
 {
-	return(GetSubjectCursor(doc->GetId()));
+	return(GetSubjects(doc->GetId()));
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GSubject> GSubjects::GetSubjectCursor(unsigned int docid)
+R::RCursor<GSubject> GSubjects::GetSubjects(unsigned int docid)
 {
 	R::RCursor<GSubject> cur;
 	R::RContainer<GSubject,false,false>* line=Docs[docid];

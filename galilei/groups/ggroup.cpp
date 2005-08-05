@@ -210,17 +210,16 @@ void GGroup::DeleteSubProfiles(void)
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GGroup::GetSubProfilesCursor(void) const
+RCursor<GSubProfile> GGroup::GetSubProfiles(void) const
 {
-	RCursor<GSubProfile> cur(*this);
-	return(cur);
+	return(RCursor<GSubProfile>(*this));
 }
 
 
 //------------------------------------------------------------------------------
 RCursor<GSubProfile> GGroup::GetCursor(void) const
 {
-	return(GetSubProfilesCursor());
+	return(GetSubProfiles());
 }
 
 

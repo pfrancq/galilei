@@ -106,7 +106,7 @@ public:
 	* Get a cursor over all the managers.
 	* @return GPluginManager A cursor on the managers
 	*/
-	R::RCursor<GGenericPluginManager> GetCursor(void);
+	R::RCursor<GGenericPluginManager> GetManagers(void);
 
 	/**
 	* The destructor.

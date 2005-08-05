@@ -58,20 +58,14 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Session Documents.
 */
-class GDocs : protected R::RContainer<GDoc,true,true>
+class GDocs
 {
-	class GDocsLang;
-	class GDocRefURL;
+	class Intern;
 
-	/**
-	* Documents ordered by language and identificator.
+	/*
+	* Internal data.
 	*/
-	R::RContainer<GDocsLang,true,true> DocsLang;
-
-	/**
-	* Documents ordered by URL.
-	*/
-	R::RContainer<GDocRefURL,true,true> DocsRefUrl;
+	Intern* Data;
 
 public:
 
@@ -79,20 +73,18 @@ public:
 	* Constructor.
 	* @param nb             Maximal number of documents to allocate initially.
 	*/
-	GDocs(unsigned int nb) throw(std::bad_alloc);
+	GDocs(unsigned int nb);
 
 	/**
 	* Get a cursor on all the documents.
-	* @return GDocCursor.
 	*/
-	R::RCursor<GDoc> GetDocsCursor(void);
+	R::RCursor<GDoc> GetDocs(void) const;
 
 	/**
 	* Get a cursor on the documents of a given langage.
 	* @param lang            Language of the documents.
-	* @return GDocCursor.
 	*/
-	R::RCursor<GDoc> GetDocsCursor(GLang* lang) throw(GException);
+	R::RCursor<GDoc> GetDocs(GLang* lang) const;
 
 	/**
 	* Fill a given array with all the documents of a given language. The array
@@ -104,19 +96,19 @@ public:
 	* @returns Size of the data (including the null pointers) copied in the
 	* array.
 	*/
-	unsigned int FillDocs(GDoc** docs) throw(GException,std::bad_alloc);
+	unsigned int FillDocs(GDoc** docs);
 
 	/**
 	* Get the number of documents handled.
 	* @returns Number of documents.
 	*/
-	unsigned int GetNbDocs(void) const {return(GetNb());}
+	unsigned int GetNbDocs(void) const;
 
 	/**
 	* Get the maximum position of documents handled.
 	* @returns Number of documents.
 	*/
-	unsigned int GetMaxPosDoc(void) const {return(GetMaxPos());}
+	unsigned int GetMaxPosDoc(void) const;
 
 	/**
 	* Get the number of documents handled for a given langage.
@@ -135,7 +127,7 @@ public:
 	* Insert a document. The document is stored in the different containers.
 	* @param d               Pointer to the document.
 	*/
-	void InsertDoc(GDoc* d) throw(std::bad_alloc);
+	void InsertDoc(GDoc* d);
 
 	/**
 	* Move a document from the container holding all the documents with an
@@ -143,21 +135,21 @@ public:
 	* method supposes that the documents was previously in the unkown container.
 	* @param d               Pointer to the document.
 	*/
-	void MoveDoc(GDoc* d) throw(std::bad_alloc);
+	void MoveDoc(GDoc* d);
 
 	/**
 	* Get a document corresponding to a given identificator.
 	* @param id         Identificator of the document.
 	* @return Pointer to GDoc.
 	*/
-	GDoc* GetDoc(unsigned int id) throw(std::bad_alloc, GException);
+	GDoc* GetDoc(unsigned int id);
 
 	/**
 	* Get a document corresponding to a given URL.
 	* @param url        URL of the document.
 	* @return Pointer to GDoc or null if the document does no exist.
 	*/
-	GDoc* GetDoc(const char* url) throw(std::bad_alloc);
+	GDoc* GetDoc(const char* url);
 
 	/**
 	* Clear all the documents.
@@ -176,4 +168,3 @@ public:
 
 //------------------------------------------------------------------------------
 #endif
-

@@ -89,7 +89,7 @@ void GSubject::Insert(GDoc* doc)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GDoc> GALILEI::GSubject::GetDocsCursor(void)
+R::RCursor<GDoc> GALILEI::GSubject::GetDocs(void)
 {
 	R::RCursor<GDoc> cur(Docs);
 	return(cur);
@@ -111,7 +111,7 @@ void GSubject::Insert(GProfile* profile)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GProfile> GALILEI::GSubject::GetProfilesCursor(void)
+R::RCursor<GProfile> GALILEI::GSubject::GetProfiles(void)
 {
 	R::RCursor<GProfile> cur(Profiles);
 	return(cur);
@@ -175,7 +175,7 @@ void GSubject::SetUsed(GSession* session,bool used,size_t nbprofiles,unsigned in
 		}
 
 		// For each user without a profile in this topic, create one.
-		RCursor<GUser> Cur(session->GetUsersCursor());
+		RCursor<GUser> Cur(session->GetUsers());
 		for(/*nbprofiles,*/Cur.Start();(nbprofiles)&&(!Cur.End());Cur.Next())
 		{
 			if(Cur()->GetPtr(Name,false))

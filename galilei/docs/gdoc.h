@@ -311,9 +311,8 @@ public:
 
 	/**
 	* Get a cursor on the Links of the document.
-	* @return GLinkCursor.
 	*/
-	R::RCursor<GLink> GetLinkCursor(void) const;
+	R::RCursor<GLink> GetLinks(void) const;
 
 	/**
 	* Update the document by assigning it a set of information and a language.

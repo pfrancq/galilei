@@ -134,7 +134,7 @@ public:
 	* Get a cursor over the documents contained in the subject.
 	* @return GDocCursor.
 	*/
-	R::RCursor<GDoc> GetDocsCursor(void);
+	R::RCursor<GDoc> GetDocs(void);
 
 	/**
 	* Get the number of documents associated to this subject.
@@ -152,7 +152,7 @@ public:
 	* Get a cursor over the profiles contained in the subject.
 	* @return GDocCursor.
 	*/
-	R::RCursor<GProfile> GetProfilesCursor(void);
+	R::RCursor<GProfile> GetProfiles(void);
 
 	/**
 	* Get the number of profiles associated to this subject.

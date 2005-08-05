@@ -83,9 +83,8 @@ public:
 
 	/**
 	* Create a cursor for the list of words.
-	* @return GWordCursor.
 	*/
-	R::RCursor<GWord> GetWordCursor(void) const;
+	R::RCursor<GWord> GetWords(void) const;
 
 	/**
 	* This method creates a copy of a list.

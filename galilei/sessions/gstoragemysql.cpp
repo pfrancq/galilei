@@ -76,8 +76,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorageMySQL::GStorageMySQL(RString host,RString user,RString pwd,RString db,RString coding,bool all) throw(std::bad_alloc,GException)
-	: GStorage(db,all), Db(0)
+GStorageMySQL::GStorageMySQL(RString host,RString user,RString pwd,RString db,RString coding,bool all,const R::RDate& filter) throw(std::bad_alloc,GException)
+	: GStorage(db,all,filter), Db(0)
 {
 	try
 	{
@@ -433,7 +433,7 @@ void GStorageMySQL::SaveWordList(GDict* dic,GWordList* w) throw(GException)
 
 	try
 	{
-		Cur=w->GetWordCursor();
+		Cur=w->GetWords();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			RString sSql("INSERT INTO kwdsbygroups(grid,kwdid,langid) VALUES ('"+itou(dynamic_cast<GData*>(w)->GetId())+"','"+itou(Cur()->GetId())+"','"+RString(dic->GetLang()->GetCode())+"')");
@@ -529,7 +529,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 {
 	unsigned int profid;
 	unsigned int social;
-	RCursor<GSubProfile> CurSub=prof->GetSubProfilesCursor();
+	RCursor<GSubProfile> CurSub=prof->GetSubProfiles();
 
 	try
 	{
@@ -662,10 +662,10 @@ void GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
 	{
 		RQuery del(Db,"DELETE from idealgroup");
 
-		groups=idealgroup->GetGroupsCursor();
+		groups=idealgroup->GetGroups();
 		for(groups.Start();!groups.End();groups.Next())
 		{
-			sub=groups()->GetSubProfilesCursor();
+			sub=groups()->GetSubProfiles();
 			for(sub.Start();!sub.End();sub.Next())
 			{
 				sSql="INSERT INTO idealgroup(profileid,langid,groupid) VALUES("+itou(sub()->GetId())+",'"+sub()->GetLang()->GetCode()+"',"+itou(groups()->GetId())+")";
@@ -997,7 +997,7 @@ void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 		RQuery delete1(Db,"DELETE FROM htmlsbyprofiles");
 
 		// Reinsert all the feedbacks
-		RCursor<GProfile> Profiles=session->GetProfilesCursor();
+		RCursor<GProfile> Profiles=session->GetProfiles();
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
 		{
 			Fdbks=Profiles()->GetFdbks();
@@ -1042,7 +1042,7 @@ void GStorageMySQL::SaveLinks(GSession* session) throw(GException)
 		RQuery delete1(Db,"DELETE FROM htmlsbyprofiles WHERE judgement='H' OR judgement='A'");
 
 		// Reinsert all the feedbacks
-		RCursor<GProfile> Profiles=session->GetProfilesCursor();
+		RCursor<GProfile> Profiles=session->GetProfiles();
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
 		{
 			Fdbks=Profiles()->GetFdbks();
@@ -1116,7 +1116,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
 
 		// Update links to others documents
 		RQuery deletelinks(Db,"DELETE FROM htmlsbylinks WHERE htmlid="+id);
-		lcur= doc->GetLinkCursor();
+		lcur= doc->GetLinks();
 		for ( lcur.Start(); ! lcur.End(); lcur.Next())
 		{
 			sSql="INSERT INTO htmlsbylinks(htmlid,linkid,occurs) VALUES("+id+","+itou(lcur()->GetId())+","+itou(lcur()->GetOccurs())+")";
@@ -1201,14 +1201,14 @@ void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 			RQuery delete2(Db,sSql);
 		}
 
-		GroupsCursor=session->GetGroupsCursor();
+		GroupsCursor=session->GetGroups();
 		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
 		{
 			sSql="INSERT INTO groups(groupid,langid,updated,calculated) VALUES("+itou(GroupsCursor()->GetId())+",'"+RString(GroupsCursor()->GetLang()->GetCode())+"',"+RQuery::SQLValue(GroupsCursor()->GetUpdated())+","+RQuery::SQLValue(GroupsCursor()->GetComputed())+")";
 			RQuery insert1(Db,sSql);
 
 			// Save SubProfiles infos
-			Sub=GroupsCursor()->GetSubProfilesCursor();
+			Sub=GroupsCursor()->GetSubProfiles();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				sSql="UPDATE subprofiles SET groupid="+itou(GroupsCursor()->GetId())+",attached="+RQuery::SQLValue(Sub()->GetAttached())+" WHERE subprofileid="+itou(Sub()->GetId());
@@ -1250,10 +1250,10 @@ void GStorageMySQL::SaveGroupsHistory(GSession* session) throw(GException)
 		historicID++;
 
 		// save the groups in history
-		GroupsCursor=session->GetGroupsCursor();
+		GroupsCursor=session->GetGroups();
 		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
 		{
-			Sub=GroupsCursor()->GetSubProfilesCursor();
+			Sub=GroupsCursor()->GetSubProfiles();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				sSql="INSERT INTO historicgroups SET date=CURDATE(), historicID="+itou(historicID)+",groupid="+itou(GroupsCursor()->GetId())+
@@ -1303,10 +1303,10 @@ void GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool h
 			RQuery delete1(Db,"DELETE FROM "+database);
 		}
 
-		grp=mixedgroups->GetGroupsCursor();
+		grp=mixedgroups->GetGroups();
 		for(grp.Start();!grp.End();grp.Next())
 		{
-			Sub=grp()->GetSubProfilesCursor();
+			Sub=grp()->GetSubProfiles();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				sSql="INSERT INTO "+database+"("+field+",groupid,lang,subprofileid) VALUES("+
@@ -1327,12 +1327,12 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 {
 	try
 	{
-		R::RCursor<GProfile> curProf=session->GetProfilesCursor() ;
+		R::RCursor<GProfile> curProf=session->GetProfiles() ;
 
 		// Save the Subprofile
 		for(curProf.Start();!curProf.End();curProf.Next())
 		{
-			RCursor<GSubProfile> curSub=curProf()->GetSubProfilesCursor();
+			RCursor<GSubProfile> curSub=curProf()->GetSubProfiles();
 			for(curSub.Start();!curSub.End();curSub.Next())
 				SaveSubProfileInHistory(curSub(), historicID);
 		}

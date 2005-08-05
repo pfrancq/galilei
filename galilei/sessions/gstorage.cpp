@@ -45,8 +45,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorage::GStorage(RString n,bool all) throw(std::bad_alloc,GException)
-	: Name(n), LoadAll(all)
+GStorage::GStorage(RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException)
+	: Name(n), LoadAll(all), Filter(filter)
 {
 }
 

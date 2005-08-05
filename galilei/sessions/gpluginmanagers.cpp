@@ -242,7 +242,7 @@ GGenericPluginManager* GPluginManagers::GetManager(const RString& name)
 
 
 //-----------------------------------------------------------------------------
-RCursor<GGenericPluginManager> GPluginManagers::GetCursor(void)
+RCursor<GGenericPluginManager> GPluginManagers::GetManagers(void)
 {
 	return(RCursor<GGenericPluginManager>(*this));
 }

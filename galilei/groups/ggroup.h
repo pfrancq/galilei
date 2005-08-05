@@ -207,7 +207,7 @@ public:
 	/**
 	* Get a cursor over the subprofiles.
 	*/
-	R::RCursor<GSubProfile> GetSubProfilesCursor(void) const;
+	R::RCursor<GSubProfile> GetSubProfiles(void) const;
 
 	/**
 	* Get a cursor over the subprofiles. This signature is needed by a generic

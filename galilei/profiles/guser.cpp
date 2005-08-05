@@ -87,7 +87,7 @@ void GUser::SetId(unsigned int id) throw(GException)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GProfile> GUser::GetProfilesCursor(void)
+R::RCursor<GProfile> GUser::GetProfiles(void)
 {
 	R::RCursor<GProfile> cur(*this);
 	return(cur);

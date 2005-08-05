@@ -76,14 +76,20 @@ protected:
 	*/
 	bool LoadAll;
 
+	/**
+	* Date used to filter when load from the storage.
+	*/
+	R::RDate Filter;
+
 public:
 
 	/**
 	* Constructor.
 	* @param n              Name.
 	* @param all            Load all?
+	* @param filter         Date used to filter the entry to load.
 	*/
-	GStorage(R::RString n,bool all) throw(std::bad_alloc,GException);
+	GStorage(R::RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException);
 
 	/**
 	* Compute the number of objects of a given type which are saved.

@@ -43,12 +43,12 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-// class GDocs:: GDocsLang
+// class GDocsLang
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GDocs::GDocsLang : public R::RContainer<GDoc,false,true>
+class GDocsLang : public R::RContainer<GDoc,false,true>
 {
 public:
 	GLang* Lang;
@@ -63,7 +63,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-int GDocs::GDocsLang::Compare(const GDocsLang& docLang) const
+int GDocsLang::Compare(const GDocsLang& docLang) const
 {
 	if(!Lang)
 	{
@@ -76,7 +76,7 @@ int GDocs::GDocsLang::Compare(const GDocsLang& docLang) const
 
 
 //-----------------------------------------------------------------------------
-int GDocs::GDocsLang::Compare(const GLang* lang) const
+int GDocsLang::Compare(const GLang* lang) const
 {
 	if(!Lang)
 	{
@@ -89,7 +89,7 @@ int GDocs::GDocsLang::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GDocs::GDocsLang::Clear(void)
+void GDocsLang::Clear(void)
 {
 	if(Lang&&Lang->GetDict())
 		Lang->GetDict()->Clear(otDoc);
@@ -100,12 +100,12 @@ void GDocs::GDocsLang::Clear(void)
 
 //------------------------------------------------------------------------------
 //
-// class GDocs:: GDocRefURL
+// class GDocRefURL
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GDocs::GDocRefURL
+class GDocRefURL
 {
 public:
 	GDoc* Doc;
@@ -120,32 +120,53 @@ public:
 
 //-----------------------------------------------------------------------------
 //
+// class GDocs::Intern
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class GDocs::Intern : public R::RContainer<GDoc,true,true>
+{
+public:
+	R::RContainer<GDocsLang,true,true> DocsLang; // Documents ordered by language and identificator.
+	R::RContainer<GDocRefURL,true,true> DocsRefUrl; // Documents ordered by URL.
+
+	Intern(unsigned int nb)
+		: RContainer<GDoc,true,true>(nb+(nb/2),nb/2), DocsLang(2,1),
+	  	DocsRefUrl(nb+(nb/2),nb/2)
+	{}
+};
+
+
+
+//-----------------------------------------------------------------------------
+//
 // class GDocs
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GDocs::GDocs(unsigned int nb) throw(std::bad_alloc)
-	: RContainer<GDoc,true,true>(nb+(nb/2),nb/2), DocsLang(2,1),
-	  DocsRefUrl(nb+(nb/2),nb/2)
+GDocs::GDocs(unsigned int nb)
+	: Data(0)
 {
+	Data=new Intern(nb);
 }
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDoc> GDocs::GetDocsCursor(void)
+R::RCursor<GDoc> GDocs::GetDocs(void) const
 {
-	return(R::RCursor<GDoc>(*this));
+	return(R::RCursor<GDoc>(*Data));
 }
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDoc> GDocs::GetDocsCursor(GLang* lang) throw(GException)
+R::RCursor<GDoc> GDocs::GetDocs(GLang* lang) const
 {
 	GDocsLang* ptr;
 	R::RCursor<GDoc> cur;
 
-	ptr=DocsLang.GetPtr<GLang*>(lang);
+	ptr=Data->DocsLang.GetPtr<GLang*>(lang);
 	if(!ptr)
 	{
 		cur.Clear();
@@ -157,16 +178,30 @@ R::RCursor<GDoc> GDocs::GetDocsCursor(GLang* lang) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GDocs::FillDocs(GDoc** docs) throw(GException,std::bad_alloc)
+unsigned int GDocs::GetNbDocs(void) const
 {
-	return(GetTab(docs));
+	return(Data->GetNb());
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GDocs::GetMaxPosDoc(void) const
+{
+	return(Data->GetMaxPos());
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GDocs::FillDocs(GDoc** docs)
+{
+	return(Data->GetTab(docs));
 }
 
 
 //-------------------------------------------------------------------------------
 unsigned int GDocs::GetNbDocs(GLang* lang) const
 {
-	GDocsLang* docL = DocsLang.GetPtr<GLang*>(lang);
+	GDocsLang* docL = Data->DocsLang.GetPtr<GLang*>(lang);
 	if (!docL) return 1;
 	return(docL->GetNb());
 }
@@ -175,13 +210,13 @@ unsigned int GDocs::GetNbDocs(GLang* lang) const
 //------------------------------------------------------------------------------
 unsigned int GDocs::GetNewId(void) const
 {
-	if(!GetNb()) return(1);
-	return((*this)[GetNb()-1]->GetId()+1);
+	if(!Data->GetNb()) return(1);
+	return((*Data)[Data->GetNb()-1]->GetId()+1);
 }
 
 
 //-----------------------------------------------------------------------------
-void GDocs::InsertDoc(GDoc* d) throw(std::bad_alloc)
+void GDocs::InsertDoc(GDoc* d)
 {
 	GDocsLang* docsLang;
 
@@ -190,38 +225,38 @@ void GDocs::InsertDoc(GDoc* d) throw(std::bad_alloc)
 		d->SetId(GetNewId());
 
 	// Insert the document
-	InsertPtrAt(d,d->GetId());
-	docsLang = DocsLang.GetInsertPtr<GLang*>(d->GetLang());
+	Data->InsertPtrAt(d,d->GetId());
+	docsLang = Data->DocsLang.GetInsertPtr<GLang*>(d->GetLang());
 	docsLang->InsertPtr(d);
 
 	//insert the doc in the DocsRefUrl container.
-	DocsRefUrl.InsertPtr(new GDocRefURL(d));
+	Data->DocsRefUrl.InsertPtr(new GDocRefURL(d));
 }
 
 
 //-----------------------------------------------------------------------------
-void GDocs::MoveDoc(GDoc* d) throw(std::bad_alloc)
+void GDocs::MoveDoc(GDoc* d)
 {
 	GDocsLang* docsLang;
 
 	// Remove doc from container of docs with no language
-	docsLang=DocsLang.GetPtr<GLang*>(0);
+	docsLang=Data->DocsLang.GetPtr<GLang*>(0);
 	docsLang->DeletePtr(d);
 
 	// Move doc to container of appropriated language.
-	docsLang=DocsLang.GetInsertPtr(d->GetLang());
+	docsLang=Data->DocsLang.GetInsertPtr(d->GetLang());
 	docsLang->InsertPtr(d);
 }
 
 
 //-------------------------------------------------------------------------------
-GDoc* GDocs::GetDoc(unsigned int id) throw(std::bad_alloc, GException)
+GDoc* GDocs::GetDoc(unsigned int id)
 {
 	GDoc* d;
 
-	if(id>GetMaxPos())
+	if(id>Data->GetMaxPos())
 		return(0);
-	d=(*this)[id];
+	d=(*Data)[id];
 	if(!d)
 		throw GException("Unknown document");
 	return(d);
@@ -229,11 +264,11 @@ GDoc* GDocs::GetDoc(unsigned int id) throw(std::bad_alloc, GException)
 
 
 //-------------------------------------------------------------------------------
-GDoc* GDocs::GetDoc(const char* url) throw(std::bad_alloc)
+GDoc* GDocs::GetDoc(const char* url)
 {
 	GDocRefURL* ref;
 
-	ref=DocsRefUrl.GetPtr(url);
+	ref=Data->DocsRefUrl.GetPtr(url);
 	if(!ref) return(0);
 	return(ref->Doc);
 }
@@ -242,11 +277,11 @@ GDoc* GDocs::GetDoc(const char* url) throw(std::bad_alloc)
 //-----------------------------------------------------------------------------
 void GDocs::Clear(void)
 {
-	RCursor<GDocsLang> Cur(DocsLang);
+	RCursor<GDocsLang> Cur(Data->DocsLang);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Clear();
-	DocsRefUrl.Clear();
-	R::RContainer<GDoc,true,true>::Clear();
+	Data->DocsRefUrl.Clear();
+	Data->R::RContainer<GDoc,true,true>::Clear();
 }
 
 

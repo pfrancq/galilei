@@ -118,7 +118,7 @@ public:
 	/**+
 	* Get a cursor over the profiles of user.
 	*/
-	R::RCursor<GProfile> GetProfilesCursor(void);
+	R::RCursor<GProfile> GetProfiles(void);
 
 	/**
 	* Get the name of the user.

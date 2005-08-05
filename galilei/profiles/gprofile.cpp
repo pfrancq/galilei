@@ -266,7 +266,7 @@ RCursor<GFdbk> GProfile::GetFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GProfile::GetSubProfilesCursor(void) const
+RCursor<GSubProfile> GProfile::GetSubProfiles(void) const
 {
 	return(RCursor<GSubProfile>(*this));
 }

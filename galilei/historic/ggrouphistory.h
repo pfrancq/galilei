@@ -168,9 +168,8 @@ public:
 
 	/**
 	* Get a cursor on all children groups.
-	* @return GGroupHistoryCursor.
 	*/
-	R::RCursor<GGroupHistory> GetChildrenCursor(void);
+	R::RCursor<GGroupHistory> GetChildrens(void);
 
 	/**
 	* Get the groupment containing the group.

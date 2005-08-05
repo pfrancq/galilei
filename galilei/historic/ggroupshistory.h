@@ -69,9 +69,8 @@ public :
 
 	/**
 	* Get a cursor on the history of all groupments.
-	* @return GGroupCursor.
 	*/
-	R::RCursor<GGroupsHistory> GetGroupsHistoryCursor(void);
+	R::RCursor<GGroupsHistory> GetGroupsHistory(void);
 
 	/**
 	* Check which groups are modified.

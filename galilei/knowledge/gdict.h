@@ -195,7 +195,7 @@ public:
 	* type.
 	* @param type            Information type.
 	*/
-	R::RCursor<GData> GetDataCursor(tInfoType type);
+	R::RCursor<GData> GetDatas(tInfoType type);
 
 	/**
 	* Get the name of the dictionary.

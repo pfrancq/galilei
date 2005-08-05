@@ -53,20 +53,14 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Users.
 */
-class GUsers : public R::RContainer<GUser,true,true>
+class GUsers
 {
-	// Internal class
-	class GSubProfiles;
+	class Intern;
 
-	/**
-	* Profiles handled by the system.
+	/*
+	* Internal data.
 	*/
-	R::RContainer<GProfile,true,true> Profiles;
-
-	/**
-	* SubProfiles handled by the system.
-	*/
-	R::RContainer<GSubProfiles,true,true> SubProfiles;
+	Intern* Data;
 
 public:
 
@@ -80,13 +74,13 @@ public:
 	/**
 	* Get a cursor over the users used in the system.
 	*/
-	R::RCursor<GUser> GetUsersCursor(void) const;
+	R::RCursor<GUser> GetUsers(void) const;
 
 	/**
 	* Get the number of users treated by the system.
 	* @returns Number of Users.
 	*/
-	size_t GetNbUsers(void) const {return(GetNb());}
+	size_t GetNbUsers(void) const;
 
 	/**
 	* Get an identificator that can be assigned to a new object.
@@ -123,7 +117,7 @@ public:
 	/**
 	* Get a cursor over the profiles of the system.
 	*/
-	R::RCursor<GProfile> GetProfilesCursor(void) const;
+	R::RCursor<GProfile> GetProfiles(void) const;
 
 	/**
 	* Get the number of profiles defined in the system.
@@ -153,7 +147,7 @@ public:
 	* Get a cursor over the subprofiles of the system for a given language.
 	* @param lang           Language.
 	*/
-	R::RCursor<GSubProfile> GetSubProfilesCursor(const GLang* lang) const;
+	R::RCursor<GSubProfile> GetSubProfiles(const GLang* lang) const;
 
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.

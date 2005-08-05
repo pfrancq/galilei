@@ -62,7 +62,7 @@ GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc)
 //------------------------------------------------------------------------------
 void GLinkCalc::InitGraph(void) throw(GException)
 {
-	R::RCursor<GDoc> cur = Session->GetDocsCursor();
+	R::RCursor<GDoc> cur = Session->GetDocs();
 	R::RCursor<GLink> lcur;
 	GLinks* links_out=0;
 	int size=0;
@@ -81,7 +81,7 @@ void GLinkCalc::InitGraph(void) throw(GException)
 		{
 			if (!cur()->GetNbLinks()) continue;
 			links_out=Links_Out.GetPtr(cur()->GetId());
-			lcur = cur()->GetLinkCursor();
+			lcur = cur()->GetLinks();
 			size += lcur.GetNb() * sizeof(GLink);
 
 			for (lcur.Start();!lcur.End();lcur.Next())
@@ -108,7 +108,7 @@ void GLinkCalc::AddDoc(GDoc* doc) throw(GException)
 	{
 		Links_Out.InsertPtr(new GLinks(doc) );
 		links_out =Links_Out.GetPtr(doc->GetId());
-		lcur= doc->GetLinkCursor();
+		lcur= doc->GetLinks();
 
 		for (lcur.Start();!lcur.End();lcur.Next())
 		{

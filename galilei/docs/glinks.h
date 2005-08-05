@@ -82,9 +82,8 @@ public:
 
 	/**
 	* Get a cursor on the list of links.
-	* @return GLinkCursor.
 	*/
-	R::RCursor<GLink> GetLinkCursor(void);
+	R::RCursor<GLink> GetLinks(void);
 
 	/**
 	* Compare two lists by comparing their identificator.

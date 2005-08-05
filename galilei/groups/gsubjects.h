@@ -395,16 +395,14 @@ public:
 	/**
 	* Get a Cursor on the subjects of a given document.
 	* @param doc            Pointer to the document.
-	* @return GSubjectCursor.
 	*/
-	R::RCursor<GSubject> GetSubjectCursor(GDoc* doc);
+	R::RCursor<GSubject> GetSubjects(GDoc* doc);
 
 	/**
 	* Get a Cursor on the subjects of a given document.
 	* @param docid          Identificator of the document.
-	* @return GSubjectCursor.
 	*/
-	R::RCursor<GSubject> GetSubjectCursor(unsigned int docid);
+	R::RCursor<GSubject> GetSubjects(unsigned int docid);
 
 	/**
 	* Get the number of subjects associated with a given document.

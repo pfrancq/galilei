@@ -263,7 +263,7 @@ void GDoc::InsertLink(const GDoc* doc,unsigned int nboccurs)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GLink> GDoc::GetLinkCursor(void) const
+R::RCursor<GLink> GDoc::GetLinks(void) const
 {
 	return(R::RCursor<GLink>(LinkSet));
 }

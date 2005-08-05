@@ -97,7 +97,7 @@ public:
 	* Get a cursor of the documents from the search engines
 	* @return GEngineDocCursor
 	*/
-	virtual R::RCursor<GEngineDoc> GetEngineDocsCursor(void) throw(GException)=0;
+	virtual R::RCursor<GEngineDoc> GetEngineDocs(void) throw(GException)=0;
 
 	/**
 	* return the number of results that must be used

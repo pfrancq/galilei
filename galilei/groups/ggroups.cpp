@@ -46,12 +46,12 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-// class GGroups::GFreeId
+// class GFreeId
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GGroups::GFreeId
+class GFreeId
 {
 public:
 	unsigned int Id;          // Identificator.
@@ -69,12 +69,12 @@ public:
 
 //------------------------------------------------------------------------------
 //
-// class GGroups::GGroupsLang
+// class GGroupsLang
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GGroups::GGroupsLang : public R::RContainer<GGroup,false,true>
+class GGroupsLang : public R::RContainer<GGroup,false,true>
 {
 public:
 
@@ -95,7 +95,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
+GGroup* GGroupsLang::GetGroup(const GSubProfile* sub)
 {
 	R::RCursor<GGroup> Groups;
 
@@ -112,33 +112,60 @@ GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 
 //------------------------------------------------------------------------------
 //
+// class GGroups::Intern
+//
+//------------------------------------------------------------------------------
+
+class GGroups::Intern : public R::RContainer<GGroup,true,true>
+{
+public:
+
+	/*
+	* Groups ordered by language and identificator.
+	*/
+	R::RContainer<GGroupsLang,true,true> GroupsLang;
+
+	/*
+	* List of all "free" identificators that could be used for a group.
+	*/
+	R::RContainer<GFreeId,true,true> FreeIds;
+
+	Intern(unsigned int g) 	: RContainer<GGroup,true,true>(g+(g/2),g/2), GroupsLang(20,10),
+	  FreeIds(50,25)
+	{
+	}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
 // class GGroups
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 GGroups::GGroups(unsigned int g)
-	: RContainer<GGroup,true,true>(g+(g/2),g/2), GroupsLang(20,10),
-	  FreeIds(50,25)
+	: Data(0)
 {
+	Data=new Intern(g);
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GGroup> GGroups::GetGroupsCursor(void) const
+R::RCursor<GGroup> GGroups::GetGroups(void) const
 {
-	R::RCursor<GGroup> cur(*this);
-	return(cur);
+	return(R::RCursor<GGroup>(*Data));
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GGroup> GGroups::GetGroupsCursor(GLang* lang)
+R::RCursor<GGroup> GGroups::GetGroups(GLang* lang)
 {
 	GGroupsLang* ptr;
 	R::RCursor<GGroup> cur;
 
-	ptr=GroupsLang.GetPtr<GLang*>(lang);
+	ptr=Data->GroupsLang.GetPtr<GLang*>(lang);
 	if(!ptr)
 	{
 		cur.Clear();
@@ -154,8 +181,8 @@ void GGroups::InsertGroup(GGroup* grp)
 {
 	GGroupsLang* groupsLang;
 
-	InsertPtr(grp);
-	groupsLang = GroupsLang.GetInsertPtr<GLang*>(grp->GetLang());
+	Data->InsertPtr(grp);
+	groupsLang = Data->GroupsLang.GetInsertPtr<GLang*>(grp->GetLang());
 	groupsLang->InsertPtr(grp);
 }
 
@@ -165,10 +192,10 @@ void GGroups::DeleteGroup(GGroup* grp)
 {
 	GGroupsLang* groupsLang;
 
-	groupsLang = GroupsLang.GetInsertPtr<GLang*>(grp->GetLang());
+	groupsLang = Data->GroupsLang.GetInsertPtr<GLang*>(grp->GetLang());
 	groupsLang->DeletePtr(grp);
-	FreeIds.InsertPtr(new GFreeId(grp->GetId()));
-	DeletePtr(grp);
+	Data->FreeIds.InsertPtr(new GFreeId(grp->GetId()));
+	Data->DeletePtr(grp);
 }
 
 
@@ -177,7 +204,7 @@ GGroup* GGroups::GetGroup(const GSubProfile* sub)
 {
 	GGroupsLang* groupsLang;
 
-	groupsLang = GroupsLang.GetInsertPtr<GLang*>(sub->GetLang());
+	groupsLang = Data->GroupsLang.GetInsertPtr<GLang*>(sub->GetLang());
 	if(!groupsLang)
 		throw GException("No language defined");
 	return(groupsLang->GetGroup(sub));
@@ -189,8 +216,15 @@ GGroup* GGroups::GetGroup(unsigned int id) const
 {
 	GGroup* grp;
 
-	grp=GetPtr<unsigned int>(id);
+	grp=Data->GetPtr<unsigned int>(id);
 	return(grp);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GGroups::GetNbGroups(void) const
+{
+	return(Data->GetNb());
 }
 
 
@@ -199,7 +233,7 @@ unsigned int GGroups::GetNbGroups(GLang* lang) const
 {
 	GGroupsLang* grps;
 
-	grps=GroupsLang.GetPtr<const GLang*>(lang);
+	grps=Data->GroupsLang.GetPtr<const GLang*>(lang);
 	if(!grps)
 		return(0);
 	return(grps->GetNb());
@@ -211,14 +245,14 @@ unsigned int GGroups::GetNewId(void) const
 {
 	// Is there a free identificator
 	// -> Take the first one.
-	if(FreeIds.GetNb())
+	if(Data->FreeIds.GetNb())
 	{
-		unsigned int id=FreeIds[0]->Id;
-		delete FreeIds[0];
+		unsigned int id=Data->FreeIds[0]->Id;
+		delete Data->FreeIds[0];
 		return(id);
 	}
-	if(!GetNb()) return(1);
-	return((*this)[GetNb()-1]->GetId()+1);
+	if(!Data->GetNb()) return(1);
+	return((*Data)[Data->GetNb()-1]->GetId()+1);
 }
 
 
@@ -226,7 +260,7 @@ unsigned int GGroups::GetNewId(void) const
 void GGroups::Clear(GLang* lang)
 {
 	size_t i,nb;
-	GGroupsLang* grps=GroupsLang.GetPtr<const GLang*>(lang);
+	GGroupsLang* grps=Data->GroupsLang.GetPtr<const GLang*>(lang);
 	GGroup* grp;
 
 	// Go through the groups and delete all invalid groups.
@@ -237,7 +271,7 @@ void GGroups::Clear(GLang* lang)
 	for(nb=grps->GetNb(),i=0;i<nb;i++)
 	{
 		grp=(*grps)[i];
-		DeletePtr(grp);
+		Data->DeletePtr(grp);
 	}
 	grps->Clear();
 }
@@ -246,7 +280,7 @@ void GGroups::Clear(GLang* lang)
 //------------------------------------------------------------------------------
 void GGroups::ClearGroups(void)
 {
-	RCursor<GGroupsLang> Groups(GroupsLang);
+	RCursor<GGroupsLang> Groups(Data->GroupsLang);
 	for(Groups.Start();!Groups.End();Groups.Next())
 	{
 		Clear(Groups()->Lang);

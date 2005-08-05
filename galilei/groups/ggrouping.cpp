@@ -108,7 +108,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 
 		// Go through the profiles corresponding to the language and that are
 		// to inserted.
-		cur=Session->GetSubProfilesCursor(Lang);
+		cur=Session->GetSubProfiles(Lang);
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			#ifdef GROUP_SUBPROFILES_NOT_DEFINED
@@ -128,7 +128,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 	CalcDesc=(dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc")))->GetCurrentMethod();
 	if(CalcDesc)
 	{
-		Groups=Session->GetGroupsCursor();
+		Groups=Session->GetGroups();
 		for(Groups.Start();!Groups.End();Groups.Next())
 			CalcDesc->Compute(Groups());
 	}
@@ -137,7 +137,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 	if(save)
 	{
 		Session->GetStorage()->SaveGroups(Session);
-		Groups=Session->GetGroupsCursor();
+		Groups=Session->GetGroups();
 		for(Groups.Start();!Groups.End();Groups.Next())
 			Groups()->SetState(osSaved);
 	}

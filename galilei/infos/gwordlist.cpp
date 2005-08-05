@@ -72,7 +72,7 @@ void GWordList::InsertWord(const GWord* word)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GWord> GWordList::GetWordCursor(void) const
+R::RCursor<GWord> GWordList::GetWords(void) const
 {
 	R::RCursor<GWord> cur(*this);
 	return(cur);

@@ -169,7 +169,7 @@ GALILEI::QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProf
 	connect(Lang,SIGNAL(activated(int)),this,SLOT(slotLangChanged(int)));
 
 	// For each subprofile create a widget
-	s=Profile->GetSubProfilesCursor();
+	s=Profile->GetSubProfiles();
 	for(s.Start();!s.End();s.Next())
 	{
 		// If language is not handled -> do not treat it

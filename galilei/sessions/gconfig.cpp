@@ -76,7 +76,7 @@ GConfig::GConfig(const char* f) throw(std::bad_alloc)
 	AddTag(Root,SessionParams=new RXMLTag("galileiconfig:session"));
 
 	//Insert a tag for every manager of plugins
-	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetCursor());
+	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetManagers());
 	for(cur.Start();!cur.End();cur.Next())
 	{
 		RString n;
@@ -97,7 +97,7 @@ void GConfig::Load(void) throw(GException)
 		File.Open(R::RIO::Read);
 		SessionParams=GetTop()->GetTag("galileiconfig:session");
 
-		RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetCursor());
+		RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetManagers());
 		RXMLTag* t;
 
 		for(cur.Start();!cur.End();cur.Next())
@@ -119,7 +119,7 @@ void GConfig::Load(void) throw(GException)
 //------------------------------------------------------------------------------
 void GConfig::Save(void) throw(GException)
 {
-	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetCursor());
+	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetManagers());
 	RXMLTag* t;
 
 	for(cur.Start();!cur.End();cur.Next())

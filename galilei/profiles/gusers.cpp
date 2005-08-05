@@ -54,13 +54,13 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 //
-//  GUsers::GSubProfiles
+//  GSubProfiles
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // Set of subprofiles of a given language.
-class GUsers::GSubProfiles : public R::RContainer<GSubProfile,true,true>
+class GSubProfiles : public R::RContainer<GSubProfile,true,true>
 {
 public:
 
@@ -74,7 +74,7 @@ public:
 	int Compare(const GSubProfiles* s) const {return(Lang->Compare(s->Lang));}
 
 	// Get a cursor over the subprofiles of the system.
-	RCursor<GSubProfile> GetSubProfilesCursor(void) const {return(RCursor<GSubProfile>(*this));}
+	RCursor<GSubProfile> GetSubProfiles(void) const {return(RCursor<GSubProfile>(*this));}
 
 	void Clear(void);
 
@@ -84,12 +84,31 @@ public:
 
 
 //------------------------------------------------------------------------------
-void GUsers::GSubProfiles::Clear(void)
+void GSubProfiles::Clear(void)
 {
 	if(Lang&&Lang->GetDict())
 		Lang->GetDict()->Clear(otSubProfile);
 	R::RContainer<GSubProfile,true,true>::Clear();
 }
+
+
+
+//------------------------------------------------------------------------------
+//
+//  GUsers::Intern
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GUsers::Intern : public R::RContainer<GUser,true,true>
+{
+public:
+	R::RContainer<GProfile,true,true> Profiles; // Profiles handled by the system.
+	R::RContainer<GSubProfiles,true,true> SubProfiles; // SubProfiles handled by the system.
+
+	Intern(unsigned int u,unsigned int p)
+		: RContainer<GUser,true,true>(u,u/2), Profiles(p,p/2), SubProfiles(p,p/2) {}
+};
 
 
 
@@ -101,31 +120,39 @@ void GUsers::GSubProfiles::Clear(void)
 
 //------------------------------------------------------------------------------
 GUsers::GUsers(unsigned int u,unsigned int p)
-	: RContainer<GUser,true,true>(u,u/2), Profiles(p,p/2), SubProfiles(p,p/2)
+	: Data(0)//RContainer<GUser,true,true>(u,u/2), Profiles(p,p/2), SubProfiles(p,p/2)
 {
+	Data=new Intern(u,p);
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GUser> GUsers::GetUsersCursor(void) const
+R::RCursor<GUser> GUsers::GetUsers(void) const
 {
-	return(R::RCursor<GUser>(*this));
+	return(R::RCursor<GUser>(*Data));
 }
 
 
 //------------------------------------------------------------------------------
 void GUsers::InsertUser(GUser* usr)
 {
-	InsertPtrAt(usr,usr->GetId(),true);
+	Data->InsertPtrAt(usr,usr->GetId(),true);
 }
 
 
 //------------------------------------------------------------------------------
 GUser* GUsers::GetUser(unsigned int id) const
 {
-	if(id>GetMaxPos())
+	if(id>Data->GetMaxPos())
 		return(0);
-	return(const_cast<GUser*>((*this)[id]));
+	return(const_cast<GUser*>((*Data)[id]));
+}
+
+
+//------------------------------------------------------------------------------
+size_t GUsers::GetNbUsers(void) const
+{
+	return(Data->GetNb());
 }
 
 
@@ -138,14 +165,14 @@ unsigned int GUsers::GetNewId(tObjType obj)
 	switch(obj)
 	{
 		case otProfile:
-			if(Profiles.GetNb())
-				id=Profiles[Profiles.GetMaxPos()]->GetId()+1;  // Not [GetNb()-1] because first profile has an identificator of 1
+			if(Data->Profiles.GetNb())
+				id=Data->Profiles[Data->Profiles.GetMaxPos()]->GetId()+1;  // Not [GetNb()-1] because first profile has an identificator of 1
 			else
 				id=1;
 			break;
 
 		case otSubProfile:
-			Cur.Set(SubProfiles);
+			Cur.Set(Data->SubProfiles);
 			for(Cur.Start(),id=0;!Cur.End();Cur.Next())
 			{
 				if(!Cur()->GetNb()) continue;
@@ -156,8 +183,8 @@ unsigned int GUsers::GetNewId(tObjType obj)
 			break;
 
 		case otUser:
-			if(GetNb())
-				id=(*this)[GetMaxPos()]->GetId()+1; // Not [GetNb()-1] because first user has an identificator of 1
+			if(Data->GetNb())
+				id=(*Data)[Data->GetMaxPos()]->GetId()+1; // Not [GetNb()-1] because first user has an identificator of 1
 			else
 				id=1;
 			break;
@@ -173,30 +200,30 @@ unsigned int GUsers::GetNewId(tObjType obj)
 //------------------------------------------------------------------------------
 void GUsers::InsertProfile(GProfile* p)
 {
-	Profiles.InsertPtrAt(p,p->GetId());
+	Data->Profiles.InsertPtrAt(p,p->GetId());
 }
 
 
 //------------------------------------------------------------------------------
 GProfile* GUsers::GetProfile(const unsigned int id) const
 {
-	if(id>Profiles.GetMaxPos())
+	if(id>Data->Profiles.GetMaxPos())
 		return(0);
-	return(const_cast<GProfile*>(Profiles[id]));
+	return(const_cast<GProfile*>(Data->Profiles[id]));
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GProfile> GUsers::GetProfilesCursor(void) const
+R::RCursor<GProfile> GUsers::GetProfiles(void) const
 {
-	return(R::RCursor<GProfile>(Profiles));
+	return(R::RCursor<GProfile>(Data->Profiles));
 }
 
 
 //------------------------------------------------------------------------------
 unsigned int GUsers::GetProfilesNb(void) const
 {
-	return(Profiles.GetNb());
+	return(Data->Profiles.GetNb());
 }
 
 
@@ -207,9 +234,9 @@ void GUsers::InsertSubProfile(GSubProfile* s)
 	GSubProfiles* list;
 
 	l=s->GetLang();
-	list=SubProfiles.GetPtr<const GLang*>(l);
+	list=Data->SubProfiles.GetPtr<const GLang*>(l);
 	if(!list)
-		SubProfiles.InsertPtr(list=new GSubProfiles(l,Profiles.GetMaxNb()));
+		Data->SubProfiles.InsertPtr(list=new GSubProfiles(l,Data->Profiles.GetMaxNb()));
 //	list->InsertPtrAt(s,s->GetId());
 	list->InsertPtr(s);
 }
@@ -220,7 +247,7 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id) const
 {
 	GSubProfile* ptr;
 
-	RCursor<GSubProfiles> Cur(SubProfiles);
+	RCursor<GSubProfiles> Cur(Data->SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		//ptr=Cur()->GetPtrAt(id);
@@ -235,7 +262,7 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id) const
 //------------------------------------------------------------------------------
 GSubProfile* GUsers::GetSubProfile(const unsigned int id,const GLang* lang) const
 {
-	GSubProfiles* subs=SubProfiles.GetPtr(lang);
+	GSubProfiles* subs=Data->SubProfiles.GetPtr(lang);
 	if(subs)
 		return(subs->GetPtr(id));
 	return(0);
@@ -243,11 +270,11 @@ GSubProfile* GUsers::GetSubProfile(const unsigned int id,const GLang* lang) cons
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GUsers::GetSubProfilesCursor(const GLang* lang) const
+RCursor<GSubProfile> GUsers::GetSubProfiles(const GLang* lang) const
 {
-	GSubProfiles* ptr=SubProfiles.GetPtr(lang);
+	GSubProfiles* ptr=Data->SubProfiles.GetPtr(lang);
 	if(ptr)
-		return(ptr->GetSubProfilesCursor());
+		return(ptr->GetSubProfiles());
 	return(RCursor<GSubProfile>());
 }
 
@@ -261,7 +288,7 @@ void GUsers::UpdateProfiles(unsigned int docid)
 
 	// If there are some profile -> propagate in memory
 	GDoc* doc=session->GetDoc(docid);
-	if(doc&&Profiles.GetNb())
+	if(doc&&Data->Profiles.GetNb())
 	{
 		RVectorInt<true>* fdbks=doc->GetFdbks();
 		if(fdbks)
@@ -285,11 +312,11 @@ void GUsers::UpdateProfiles(unsigned int docid)
 //------------------------------------------------------------------------------
 void GUsers::ClearUsers(void)
 {
-	RCursor<GSubProfiles> Cur(SubProfiles);
+	RCursor<GSubProfiles> Cur(Data->SubProfiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Clear();
-	Profiles.Clear();
-	R::RContainer<GUser,true,true>::Clear();
+	Data->Profiles.Clear();
+	Data->R::RContainer<GUser,true,true>::Clear();
 }
 
 

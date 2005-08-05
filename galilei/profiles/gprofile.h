@@ -322,7 +322,6 @@ public:
 
 	/**
 	* Get a Cursor on the feedback for the profile.
-	* @return GFdbkCursor.
 	*/
 	R::RCursor<GFdbk> GetFdbks(void) const;
 
@@ -330,7 +329,7 @@ public:
 	* Get a Cursor on the subprofiles.
 	* @return RCursor<GSubProfile>.
 	*/
-	R::RCursor<GSubProfile> GetSubProfilesCursor(void) const;
+	R::RCursor<GSubProfile> GetSubProfiles(void) const;
 
 	/**
 	* Insert an assessment to the list of the profile.

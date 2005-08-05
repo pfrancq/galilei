@@ -487,7 +487,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 {
 	bool undefLang;
 	GDocXML* xml=0;
-	R::RCursor<GDoc> Docs=GetDocsCursor();
+	R::RCursor<GDoc> Docs=GetDocs();
 	RContainer<GDoc,false,true> tmpDocs(5,2);
 	GDocAnalyse* Analyse;
 	RString err;
@@ -581,7 +581,7 @@ void GSession::AnalyseNewDocs(GSlot* rec)
 {
 	bool undefLang;
 	GDocXML* xml=0;
-	R::RCursor<GDoc> Docs=GetDocsCursor();
+	R::RCursor<GDoc> Docs=GetDocs();
 	RContainer<GDoc,false,true> tmpDocs(5,2);
 	GDocAnalyse* Analyse;
 	RString err;
@@ -714,7 +714,7 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 void GSession::CalcProfiles(GSlot* rec)
 {
 	RCursor<GSubProfile> Subs;
-	R::RCursor<GProfile> Prof=GetProfilesCursor();
+	R::RCursor<GProfile> Prof=GetProfiles();
 	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc")))->GetCurrentMethod();
 	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc")))->GetCurrentMethod();
 
@@ -733,7 +733,7 @@ void GSession::CalcProfiles(GSlot* rec)
 		//Calc Links on the profile description
 		if(LinkCalc)
 			LinkCalc->Compute(Prof());
-		Subs=Prof()->GetSubProfilesCursor();
+		Subs=Prof()->GetSubProfiles();
 		for(Subs.Start();!Subs.End();Subs.Next())
 		{
 			if(rec)
@@ -787,7 +787,7 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile)
 	//Calc Links on the profile description
 	if(LinkCalc)
 		LinkCalc->Compute(profile);
-	RCursor<GSubProfile> Subs(profile->GetSubProfilesCursor());
+	RCursor<GSubProfile> Subs(profile->GetSubProfiles());
 	for(Subs.Start();!Subs.End();Subs.Next())
 	{
 		if(rec)
@@ -944,12 +944,12 @@ void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R:
 //------------------------------------------------------------------------------
 void GSession::ClearFdbks(void)
 {
-	RCursor<GDoc> Docs(*this);
+	RCursor<GDoc> Docs(GetDocs());
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		Docs()->ClearFdbks();
 	}
-	RCursor<GProfile> Profiles=GetProfilesCursor();
+	RCursor<GProfile> Profiles=GetProfiles();
 	for(Profiles.Start();!Profiles.End();Profiles.Next())
 	{
 		Profiles()->ClearFdbks();
@@ -974,7 +974,7 @@ void GSession::CopyIdealGroups(void)
 	ClearGroups();
 
 	// Go through each languages
-	Grps=Subjects->GetIdealGroups()->GetGroupsCursor();
+	Grps=Subjects->GetIdealGroups()->GetGroups();
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Create a new group in groups
@@ -983,7 +983,7 @@ void GSession::CopyIdealGroups(void)
 		InsertGroup(grp);
 
 		// Go through each subprofile
-		Sub=Grps()->GetSubProfilesCursor();
+		Sub=Grps()->GetSubProfiles();
 		for(Sub.Start();!Sub.End();Sub.Next())
 		{
 			grp->InsertSubProfile(Sub());
@@ -996,7 +996,7 @@ void GSession::CopyIdealGroups(void)
 	if(SaveGroups)
 	{
 		Storage->SaveGroups(this);
-		RCursor<GGroup> Groups(Session->GetGroupsCursor());
+		RCursor<GGroup> Groups(Session->GetGroups());
 		for(Groups.Start();!Groups.End();Groups.Next())
 			Groups()->SetState(osSaved);
 	}
@@ -1015,7 +1015,7 @@ void GSession::RunPrg(GSlot* rec,const char* filename)
 void GSession::DocsFilter(int nbdocs,int nboccurs)
 {
 	//The number of word in current lang.
-	R::RCursor<GDoc> DocCursorTemp =GetDocsCursor();
+	R::RCursor<GDoc> DocCursorTemp =GetDocs();
 	DocCursorTemp.Start();
 
 	int NbKwd;
@@ -1033,7 +1033,7 @@ void GSession::DocsFilter(int nbdocs,int nboccurs)
 		j[i]=0;
 		k[i]=0;
 	}
-	R::RCursor<GDoc> DocCursor=GetDocsCursor();
+	R::RCursor<GDoc> DocCursor=GetDocs();
 	for(DocCursor.Start();!DocCursor.End();DocCursor.Next())
 	{
 		GDoc* Doc=DocCursor();

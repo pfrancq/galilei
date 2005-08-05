@@ -95,7 +95,7 @@ int GEngineDoc::Compare(const GEngineDoc& d) const
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GRanking> GEngineDoc::GetRankingsCursor(void) throw(GException)
+R::RCursor<GRanking> GEngineDoc::GetRankings(void) throw(GException)
 {
 	R::RCursor<GRanking> cur(Rankings);
 	return(cur);

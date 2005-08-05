@@ -174,7 +174,7 @@ GData* GDict::GetData(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GData> GDict::GetDataCursor(tInfoType type)
+R::RCursor<GData> GDict::GetDatas(tInfoType type)
 {
 	R::RCursor<GData> cur;
 	GDataTypes* tp;
