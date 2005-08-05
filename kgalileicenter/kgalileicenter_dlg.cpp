@@ -234,6 +234,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.changeProfilesSims(Init<GFactoryProfilesSims,GProfilesSims,QProfilesSimsItem>(dynamic_cast<GProfilesSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesSims"))->GetFactories(),dlg.ProfilesSims,dlg.EnableProfilesSims,dlg.CurrentProfilesSims,dynamic_cast<GProfilesSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesSims"))->GetCurrentMethod()));
 	dlg.changeProfilesDocsSims(Init<GFactoryProfilesDocsSims,GProfilesDocsSims,QProfilesDocsSimsItem>(dynamic_cast<GProfilesDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesDocsSims"))->GetFactories(),dlg.ProfilesDocsSims,dlg.EnableProfilesDocsSims,dlg.CurrentProfilesDocsSims,dynamic_cast<GProfilesDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesDocsSims"))->GetCurrentMethod()));
 	dlg.changeGroupsDocsSims(Init<GFactoryGroupsDocsSims,GGroupsDocsSims,QGroupsDocsSimsItem>(dynamic_cast<GGroupsDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("GroupsDocsSims"))->GetFactories(),dlg.GroupsDocsSims,dlg.EnableGroupsDocsSims,dlg.CurrentGroupsDocsSims,dynamic_cast<GGroupsDocsSimsManager*>(GPluginManagers::PluginManagers.GetManager("GroupsDocsSims"))->GetCurrentMethod()));
+	dlg.changeProfilesGroupsSims(Init<GFactoryProfilesGroupsSims,GProfilesGroupsSims,QProfilesGroupsSimsItem>(dynamic_cast<GProfilesGroupsSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesGroupsSims"))->GetFactories(),dlg.ProfilesGroupsSims,dlg.EnableProfilesGroupsSims,dlg.CurrentProfilesGroupsSims,dynamic_cast<GProfilesGroupsSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesGroupsSims"))->GetCurrentMethod()));
 
 	dlg.MainTab->setCurrentPage(DlgMainTabIdx);
 	dlg.DocsTab->setCurrentPage(DlgDocsTabIdx);
@@ -288,6 +289,7 @@ void KGALILEICenterApp::slotPlugins(void)
 			Done<QProfilesSimsItem>(dlg.ProfilesSims,this);
 			Done<QProfilesDocsSimsItem>(dlg.ProfilesDocsSims,this);
 			Done<QGroupsDocsSimsItem>(dlg.GroupsDocsSims,this);
+			Done<QProfilesGroupsSimsItem>(dlg.ProfilesGroupsSims,this);
 		}
 		catch(GException& e)
 		{
@@ -357,11 +359,17 @@ void KGALILEICenterApp::slotPlugins(void)
 		catch(GException)
 		{
 		}
+		try
+		{
+			dynamic_cast<GProfilesGroupsSimsManager*>(GPluginManagers::PluginManagers.GetManager("ProfilesGroupsSims"))->SetCurrentMethod(dlg.CurrentProfilesGroupsSims->currentText().latin1());
+		}
+		catch(GException)
+		{
+		}
 	}
 	DlgMainTabIdx=dlg.MainTab->currentPageIndex();
 	DlgDocsTabIdx=dlg.DocsTab->currentPageIndex();
 	DlgProfilesTabIdx=dlg.ProfilesTab->currentPageIndex();
 	DlgCommunitiesTabIdx=dlg.CommunitiesTab->currentPageIndex();
 	DlgSearchTabIdx=dlg.SearchTab->currentPageIndex();
-
 }

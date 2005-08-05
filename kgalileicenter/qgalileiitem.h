@@ -54,6 +54,7 @@
 #include <gprofilessims.h>
 #include <gprofilesdocssims.h>
 #include <ggroupsdocssims.h>
+#include <gprofilesgroupssims.h>
 using namespace GALILEI;
 
 
@@ -257,6 +258,18 @@ public:
 	GFactoryGroupsDocsSims* Fac;
 	bool Enable;
 	QGroupsDocsSimsItem(QListView* lst,GFactoryGroupsDocsSims* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QProfilesGroupsSimsItem : public QListViewItem
+{
+public:
+	GFactoryProfilesGroupsSims* Fac;
+	bool Enable;
+	QProfilesGroupsSimsItem(QListView* lst,GFactoryProfilesGroupsSims* fac,const char* desc,QListViewItem* after=0)
 		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

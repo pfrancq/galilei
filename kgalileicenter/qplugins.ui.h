@@ -796,3 +796,41 @@ void QPlugins::slotGroupsDocsSimsEnable( bool state )
 	if(!f) return;
 	f->Enable=state;
 }
+
+
+void QPlugins::changeProfilesGroupsSims( QListViewItem * item )
+{
+	if(!item) return;
+	QProfilesGroupsSimsItem* f=dynamic_cast<QProfilesGroupsSimsItem*>(item);
+	if(!f) return;
+	EnableProfilesGroupsSims->setChecked(f->Enable);
+	ConfigProfilesGroupsSims->setEnabled(f->Fac->HasConfigure());
+	AboutProfilesGroupsSims->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::slotAboutProfilesGroupsSims()
+{
+	if(!ProfilesGroupsSims->currentItem()) return;
+	QProfilesGroupsSimsItem* f=dynamic_cast<QProfilesGroupsSimsItem*>(ProfilesGroupsSims->currentItem());
+	if(!f) return;
+	f->Fac->About();
+}
+
+
+void QPlugins::slotConfigProfilesGroupsSims()
+{
+	if(!ProfilesGroupsSims->currentItem()) return;
+	QProfilesGroupsSimsItem* f=dynamic_cast<QProfilesGroupsSimsItem*>(ProfilesGroupsSims->currentItem());
+	if(!f) return;
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotProfilesGroupsSimsEnable( bool state )
+{
+	if(!ProfilesGroupsSims->currentItem()) return;
+	QProfilesGroupsSimsItem* f=dynamic_cast<QProfilesGroupsSimsItem*>(ProfilesGroupsSims->currentItem());
+	if(!f) return;
+	f->Enable=state;
+}
