@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
 
 	// Init Part
 	cout<<"GALILEI Update Version "<<VERSION<<endl;
-	cout<<"Copyright 1999-2004 by the Université Libre de Bruxelles"<<endl;
+	cout<<"Copyright 1999-2005 by the Université Libre de Bruxelles"<<endl;
 
 	// Analyze parameters
 	for(int i=0;i<argc;i++)
@@ -153,11 +153,6 @@ int main(int argc, char *argv[])
 		GConfig Conf(Tag->GetAttrValue("File"));
 		Conf.Load();
 
-		// Options
-		GSessionParams SessionParams;
-		SessionParams.Set("SameBehaviourMinDocs",15);
-		SessionParams.Set("DiffBehaviourMinDocs",15);
-
 		// Create Log files
 		Log=new GSlotLog(Config.GetTag("Log")->GetAttrValue("File"));
 		Log->WriteLog("GALILEI Update started");
@@ -169,7 +164,7 @@ int main(int argc, char *argv[])
 							Config.GetTag("World")->GetAttrValue("Pwd"),
 							Config.GetTag("World")->GetAttrValue("Name"),
 							Config.GetTag("World")->GetAttrValue("Encoding"));
-		GSession Session(&Str,&SessionParams,false);
+		GSession Session(&Str,true,true,true,true,true,true);
 		Session.Connect();
 		Log->WriteLog("Session created");
 
@@ -188,19 +183,19 @@ int main(int argc, char *argv[])
 		if(DoDocs)
 		{
 			cout<<"Analyse Documents ...";
-			Session.AnalyseDocs(Log,true);
+			Session.AnalyseDocs(Log);
 			cout<<"OK"<<endl;
 		}
 		if(DoProfiles)
 		{
 			cout<<"Compute Profiles ...";
-			Session.CalcProfiles(Log,true,true,true);
+			Session.CalcProfiles(Log);
 			cout<<"OK"<<endl;
 		}
 		if(DoGroups)
 		{
 			cout<<"Groups Profiles ...";
-			Session.GroupingProfiles(Log,true,true);
+			Session.GroupingProfiles(Log);
 			cout<<"OK"<<endl;
 		}
 		Log->WriteLog("Session updated");
