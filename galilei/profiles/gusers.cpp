@@ -31,12 +31,21 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R Project
+#include <rvectorint.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gusers.h>
 #include <guser.h>
+#include <gsession.h>
+#include <gstorage.h>
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <glang.h>
+#include <gdict.h>
+#include <gdoc.h>
 #include <gweightinfo.h>
 using namespace R;
 using namespace GALILEI;
@@ -67,9 +76,20 @@ public:
 	// Get a cursor over the subprofiles of the system.
 	RCursor<GSubProfile> GetSubProfilesCursor(void) const {return(RCursor<GSubProfile>(*this));}
 
+	void Clear(void);
+
 	// Destructor.
 	virtual ~GSubProfiles(void) {}
 };
+
+
+//------------------------------------------------------------------------------
+void GUsers::GSubProfiles::Clear(void)
+{
+	if(Lang&&Lang->GetDict())
+		Lang->GetDict()->Clear(otSubProfile);
+	R::RContainer<GSubProfile,true,true>::Clear();
+}
 
 
 
@@ -103,6 +123,8 @@ void GUsers::InsertUser(GUser* usr)
 //------------------------------------------------------------------------------
 GUser* GUsers::GetUser(unsigned int id) const
 {
+	if(id>GetMaxPos())
+		return(0);
 	return(const_cast<GUser*>((*this)[id]));
 }
 
@@ -158,6 +180,8 @@ void GUsers::InsertProfile(GProfile* p)
 //------------------------------------------------------------------------------
 GProfile* GUsers::GetProfile(const unsigned int id) const
 {
+	if(id>Profiles.GetMaxPos())
+		return(0);
 	return(const_cast<GProfile*>(Profiles[id]));
 }
 
@@ -229,9 +253,37 @@ RCursor<GSubProfile> GUsers::GetSubProfilesCursor(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
+void GUsers::UpdateProfiles(GDoc* doc)
+{
+	// If there are some profile -> propagate in memory
+	if(Profiles.GetNb())
+	{
+		RVectorInt<true>* fdbks=doc->GetFdbks();
+		if(fdbks)
+		{
+			for(fdbks->Start();!fdbks->End();fdbks->Next())
+			{
+				GProfile* prof=GetProfile((*fdbks)());
+				if(!prof)
+					continue;
+				prof->HasUpdate(doc);
+			}
+		}
+	}
+
+	// Use database
+	GSession* session=GSession::Get();
+	if(session&&session->GetStorage()&&(!session->GetStorage()->MustLoadAll()))
+		session->GetStorage()->UpdateProfiles(doc);
+}
+
+
+//------------------------------------------------------------------------------
 void GUsers::ClearUsers(void)
 {
-	SubProfiles.Clear();
+	RCursor<GSubProfiles> Cur(SubProfiles);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Clear();
 	Profiles.Clear();
 	R::RContainer<GUser,true,true>::Clear();
 }

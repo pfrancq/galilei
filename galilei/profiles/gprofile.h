@@ -64,7 +64,12 @@ class GFdbk
 	tDocAssessment Fdbk;
 
 	/**
-	* Last update of this assessment.
+	* When the assessment was made.
+	*/
+	R::RDate When;
+
+	/**
+	* Date of the update of the assessments (document was modified).
 	*/
 	R::RDate Updated;
 
@@ -72,16 +77,17 @@ public:
 
 	/**
 	* Constructor.
-	* @param doc              Document.
-	* @param fdbk             Assessment.
-	* @param updated          Date.
+	* @param doc             Document.
+	* @param fdbk            Assessment.
+	* @param when            Date.
+	* @param updated         Update.
 	*/
-	GFdbk(GDoc* doc,tDocAssessment fdbk,R::RDate& updated);
+	GFdbk(GDoc* doc,tDocAssessment fdbk,const R::RDate& when,const R::RDate& updated);
 
 	/**
 	* Compare two assessements to order them using the document identificator.
 	* @see R::RContainer
-	* @param fdbk             Assessement.
+	* @param fdbk            Assessement.
 	* @return int
 	*/
 	int Compare(const GFdbk& fdbk) const;
@@ -89,7 +95,7 @@ public:
 	/**
 	* Compare two assessements to order them using the document identificator.
 	* @see R::RContainer
-	* @param fdbk             Pointer to an assessement.
+	* @param fdbk            Pointer to an assessement.
 	* @return int
 	*/
 	int Compare(const GFdbk* fdbk) const;
@@ -98,17 +104,17 @@ public:
 	* Compare the document assessed with another document using their
 	* identificators.
 	* @see R::RContainer
-	* @param doc              Identificator of the document.
+	* @param doc             Identificator of the document.
 	* @return int
 	*/
 	int Compare(unsigned int id) const;
 
 	/**
-	* Update the assessment on a given date.
-	* @param fdbk             Assessment.
-	* @param date             Date.
+	* New assessment.
+	* @param fdbk            Assessment.
+	* @param date            Date.
 	*/
-	void UpdateFdbk(tDocAssessment fdbk,R::RDate date);
+	void NewFdbk(tDocAssessment fdbk,const R::RDate& date);
 
 	/**
 	* Get the assessment for the document.
@@ -126,7 +132,25 @@ public:
 	* Get the date of the assessment on the document.
 	* @returns R::RDate.
 	*/
+	R::RDate GetWhen(void) const;
+
+	/**
+	* Get the date of modification of the document.
+	* @returns R::RDate.
+	*/
 	R::RDate GetUpdated(void) const;
+
+	/**
+	* Must the assessment be used to compute the profile computed the last time
+	* at a given date.
+	* @param computed        Date of the last computing.
+	*/
+	bool MustUse(const R::RDate& computed) const;
+
+	/**
+	* The document assessed was updated.
+	*/
+	void HasUpdate(void);
 
 	/**
 	* Create an erronous assessment with a given percentage. The percentage
@@ -143,9 +167,9 @@ public:
 	* - If the original assessment is irrelevant, the changed assessment has a
 	*   probability of 0.75 to be fuzzy relevant and a probability of 0.25 to be
 	*   relevant.
-	* @param fdbk           Original assessment.
-	* @param PercErr        Percentage of error.
-	* @param rand           Pointer to the random number generator to use.
+	* @param fdbk            Original assessment.
+	* @param PercErr         Percentage of error.
+	* @param rand            Pointer to the random number generator to use.
 	* @returns tDocAssessment
 	*/
 	static tDocAssessment ErrorJudgment(tDocAssessment fdbk,double PercErr,R::RRandom* rand);
@@ -198,12 +222,12 @@ public:
 
     /**
 	* Constructor of a profile.
-	* @param usr            User of the profile.
-	* @param id             Identificator of the profile.
-	* @param name           Name of the profile.
-	* @param s              Social?
-	* @param nb             Number of subprofiles.
-	* @param nbf            Number of Feedbacks.
+	* @param usr             User of the profile.
+	* @param id              Identificator of the profile.
+	* @param name            Name of the profile.
+	* @param s               Social?
+	* @param nb              Number of subprofiles.
+	* @param nbf             Number of Feedbacks.
 	*/
 	GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf=100);
 
@@ -239,7 +263,7 @@ public:
 
 	/**
 	* Set the identifier.
-	* @param id             Identifier.
+	* @param id              Identifier.
 	*/
 	void SetId(unsigned int id);
 
@@ -263,13 +287,13 @@ public:
 
 	/**
 	* Set if the profile is social.
-	* @param social         social  value.
+	* @param social          Social value.
 	*/
 	void SetSocial(bool social);
 
 	/**
 	* Get the subprofile corresponding to a given language.
-	* @param lang           Pointer to the language.
+	* @param lang            Pointer to the language.
 	* @return Pointer to the subprofile.
 	*/
 	GSubProfile* GetSubProfile(const GLang* lang) const;
@@ -277,15 +301,15 @@ public:
 	/**
 	* Get the subprofile corresponding to a given language. If not found, insert
 	* it.
-	* @param lang           Pointer to the language.
-	* @param s                  Session.
+	* @param lang            Pointer to the language.
+	* @param s               Session.
 	* @return Pointer to the subprofile.
 	*/
 	GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s);
 
 	/**
 	* Get the number of assessed documents of a given language.
-	* @param lang           Pointer to the language.
+	* @param lang            Pointer to the language.
 	* @returns unsigned int.
 	*/
 	unsigned int GetNbAssessedDocs(const GLang* lang) const;
@@ -310,15 +334,15 @@ public:
 
 	/**
 	* Insert an assessment to the list of the profile.
-	* @param doc              Document.
-	* @param assess           Assessment.
-	* @param date             Date.
+	* @param doc             Document.
+	* @param assess          Assessment.
+	* @param date            Date.
 	*/
-	void InsertFdbk(GDoc* doc,tDocAssessment assess,R::RDate date);
+	void InsertFdbk(GDoc* doc,tDocAssessment assess,const R::RDate& date);
 
 	/**
 	* Delete an assessment from the list of the profile.
-	* @param id               Identificator of the document.
+	* @param id              Identificator of the document.
 	*/
 	void DeleteFdbk(unsigned int id);
 
@@ -329,18 +353,15 @@ public:
 
 	/**
 	* Get the feedback of the profile on a specific document.
-	* @param id               Identificator of the document.
+	* @param id              Identificator of the document.
 	*/
 	GFdbk* GetFdbk(unsigned int id) const;
 
 	/**
-	* This method is call by a document when it was modified (either because it
-	* as analyzed for the first time or because the content has changed).
-	* @param id               Identificator of the document.
-	* @param computed         The update is called after a computation (and not
-	*                         after a loading from a database).
+	* This method is call by a document when it was modified.
+	* @param doc             Document.
 	*/
-	void HasUpdate(unsigned int id,bool computed);
+	void HasUpdate(GDoc* doc);
 
 	/**
 	* Update the profile. In practice, it constructs for each subprofile the

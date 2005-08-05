@@ -62,11 +62,6 @@ protected:
 	unsigned int Id;
 
 	/**
-	* State of the group.
-	*/
-	tObjState State;
-
-	/**
 	* Language of the group.
 	*/
 	GLang* Lang;
@@ -76,22 +71,27 @@ protected:
 	*/
 	bool Community;
 
+	/**
+	* Date of the update (profiles have changed).
+	*/
+	R::RDate Updated;
+
+	/**
+	* Date of last subprofile computing.
+	*/
+	R::RDate Computed;
+
 public:
 
 	/**
 	* Construct a group with a specific identificator.
-	* @param id             Identificator.
-	* @param lang           Language.
-	* @param com            Community.
+	* @param id              Identificator.
+	* @param lang            Language.
+	* @param com             Community.
+	* @param u               Date of the last updated.
+	* @param c               Date of the last computation.
 	*/
-	GGroup(unsigned int id,GLang* lang,bool com);
-
-	/**
-	* Construct a group with an invalid identificator.
-	* @param lang           Language.
-	* @param com            Community.
-	*/
-	GGroup(GLang* lang,bool com);
+	GGroup(unsigned int id,GLang* lang,bool com,const R::RDate& u,const R::RDate& c);
 
 private:
 
@@ -127,17 +127,16 @@ public:
 	int Compare(const unsigned int id) const;
 
 	/**
-	* Verify if the group is defined. By default, a document is suppose to be
-	* undefined.
-	* @return false.
+	* Get the date of the last update of the subprofile.
+	* @returns R::RDate.
 	*/
-	bool IsDefined(void) const;
+	R::RDate GetUpdated(void) const;
 
 	/**
-	* Verify if the group is empty, i.e. it does not have any subprofiles.
-	* @return bool.
+	* Get the date of the last analysis of the subprofile.
+	* @returns R::RDate.
 	*/
-	bool IsEmpty(void) const;
+	R::RDate GetComputed(void) const;
 
 	/**
 	* Look if the group is a community.
@@ -153,21 +152,15 @@ public:
 
 	/**
 	* Set the identifier.
-	* @param id             Identifier.
+	* @param id              Identifier.
 	*/
 	void SetId(unsigned int id);
 
 	/**
-	* Return the state of the group.
-	* @returns GALILEI::tObjState value.
+	* Load information from the current storage.
+	* @param infos           Container hold
 	*/
-	tObjState GetState(void) const {return(State);}
-
-	/**
-	* Set the state of the group.
-	* @param state          New state.
-	*/
-	void SetState(tObjState state);
+	virtual void LoadInfos(void) const;
 
 	/**
 	* Get the language of the set of groups.
@@ -177,7 +170,7 @@ public:
 
 	/**
 	* Look if a given subprofile is contained in the group.
-	* @param sp             SubProfile to Search.
+	* @param sp              SubProfile to Search.
 	* @return true if the subprofile is contained, false else.
 	*/
 	bool IsIn(const GSubProfile* sp) const;
@@ -186,7 +179,7 @@ public:
 	* Delete a subprofile from the group. If the group is a community, the
 	* method modifies the assignation of the subprofile (the 'Group' pointer).
 	* of the subprofile is set to null).
-	* @param sp             SubProfile to delete.
+	* @param sp              SubProfile to delete.
 	*/
 	void DeleteSubProfile(GSubProfile* sp);
 
@@ -194,14 +187,14 @@ public:
 	* Insert a subprofile in the group. If the group is a community, the
 	* method modifies the assignation of the subprofile (the 'Group' pointer).
 	* of the subprofile is set to null).
-	* @param sp             SubProfile to insert.
+	* @param sp              SubProfile to insert.
 	*/
 	void InsertSubProfile(GSubProfile* sp);
 
 	/**
 	* Insert a subprofile in the group. This signature is needed by a generic
 	* k-Means.
-	* @param sp             SubProfile to insert.
+	* @param sp              SubProfile to insert.
 	* @see R::RGroupingKMeans.
 	*/
 	void InsertPtr(GSubProfile* sp);
@@ -226,7 +219,7 @@ public:
 	/**
 	* Compute the number of subprofiles of a given group that are also in the
 	* current one.
-	* @param grp            Group.
+	* @param grp             Group.
 	*/
 	unsigned int GetNbSubProfiles(const GGroup* grp) const;
 
@@ -239,8 +232,8 @@ public:
 	* Construct the list of all feedbacks of the subprofiles of a group not
 	* already assessed by a given subprofile. If a document is assessed multiple
 	* times differently, most important OK>N>KO>H.
-	* @param docs           Documents not assessed.
-	* @param s              Subprofile.
+	* @param docs            Documents not assessed.
+	* @param s               Subprofile.
 	*/
 	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>* docs, GSubProfile* s) const;
 
@@ -248,9 +241,9 @@ public:
 	* Construct the list of all relevant documents of the subprofiles of a
 	* group not already assessed by a given subprofile and ordered in descending
 	* order of their similarity with the chosen subprofile.
-	* @param docs           Documents not assessed.
-	* @param s              Subprofile.
-	* @param session        Session.
+	* @param docs            Documents not assessed.
+	* @param s               Subprofile.
+	* @param session         Session.
 	* \warning This method uses an internal container which is not optimal.
 	*/
 	void NotJudgedDocsRelList(R::RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const;
@@ -273,8 +266,8 @@ public:
 	/**
 	* Compute the sum of the similarities of a given subprofile to all the
 	* others.
-	* @param s              Subprofile used as reference.
-	* @param iff            Use the Inverse Frequency Factor.
+	* @param s               Subprofile used as reference.
+	* @param iff             Use the Inverse Frequency Factor.
 	* @returns result.
 	*/
 	double ComputeSumSim(const GSubProfile* s,bool iff) const;
@@ -286,21 +279,19 @@ public:
 
 	/**
 	* Update the group by assigning it a set of information and a language.
-	* @param infos            Pointer to the information.
-	* @param computed         The update is called after a computation (and not
-	*                         after a loading from a database).
+	* @param lang            Pointer to the language.
+	* @param infos           Pointer to the information.
+	* @param computed        The update is called after a computation (and not
+	*                        after a loading from a database).
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed);
+	void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed);
 
 	/**
-	* This method is call by a subprofile when it was modified (either because it
-	* as analyzed for the first time or because the content has changed).
-	* @param id               Identificator of the subprofile.
-	* @param computed         The update is called after a computation (and not
-	*                         after a loading from a database).
+	* This method is call by a subprofile when it was modified.
+	* @param sub             Subprofile modified.
 	*/
-	void HasUpdate(unsigned int id,bool computed);
+	void HasUpdate(GSubProfile* sub);
 
 	/**
 	* Destructor of a group.

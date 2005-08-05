@@ -6,7 +6,7 @@
 
 	Dictionary - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,13 +52,13 @@ using namespace R;
 class GDict::GDataTypes : public R::RContainer<GData,false,false>
 {
 public:
-	GInfoType Type;
+	tInfoType Type;
 
-	GDataTypes(unsigned int ml,GInfoType type)
+	GDataTypes(unsigned int ml,tInfoType type)
 		: RContainer<GData,false,false>(ml+(ml/4),ml/4), Type(type) {}
 	int Compare(const GDataTypes& d) const {return(Type-d.Type);}
 	int Compare(const GDataTypes* d) const {return(Type-d->Type);}
-	int Compare(const GInfoType t) const {return(Type-t);}
+	int Compare(const tInfoType t) const {return(Type-t);}
 };
 
 
@@ -70,10 +70,10 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDict::GDict(const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st) throw(std::bad_alloc)
+GDict::GDict(const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
 	: RDblHashContainer<GData,27,27,true>(ml+(ml/4),ml/4), Direct(0),
 	  MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false),
-	  Stop(st), NbRefDocs(0), NbRefSubProfiles(0), NbRefGroups(0), DataTypes(3)
+	  Stop(st), NbRefDocs(refdocs), NbRefSubProfiles(refsubprofiles), NbRefGroups(refgroups), DataTypes(3)
 {
 	Direct=new GData*[MaxId];
 	memset(Direct,0,MaxId*sizeof(GData*));
@@ -93,7 +93,7 @@ void GDict::Clear(void)
 
 
 //------------------------------------------------------------------------------
-void GDict::PutDirect(GData* data) throw(std::bad_alloc)
+void GDict::PutDirect(GData* data)
 {
 	GData **tmp;
 	unsigned n;
@@ -113,7 +113,7 @@ void GDict::PutDirect(GData* data) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-unsigned int GDict::InsertData(const GData* data) throw(std::bad_alloc, GException)
+unsigned int GDict::InsertData(const GData* data)
 {
 	GData* ptr;
 	bool InDirect=false;
@@ -134,7 +134,7 @@ unsigned int GDict::InsertData(const GData* data) throw(std::bad_alloc, GExcepti
 	{
 		ptr=data->CreateCopy();
 		InsertPtr(ptr);
-		DataTypes.GetPtr<GInfoType>(ptr->GetType())->InsertPtr(ptr);
+		DataTypes.GetPtr<tInfoType>(ptr->GetType())->InsertPtr(ptr);
 		InDirect=true;
 	}
 
@@ -154,18 +154,18 @@ unsigned int GDict::InsertData(const GData* data) throw(std::bad_alloc, GExcepti
 
 
 //------------------------------------------------------------------------------
-void GDict::DeleteData(GData* data) throw(std::bad_alloc, GException)
+void GDict::DeleteData(GData* data)
 {
 	if((!data)||(data->GetId()>MaxId))
 		throw GException("Cannot delete data");
 	Direct[data->GetId()]=0;
-	DataTypes.GetPtr<GInfoType>(data->GetType())->DeletePtr(data);
+	DataTypes.GetPtr<tInfoType>(data->GetType())->DeletePtr(data);
 	DeletePtr(data);
 }
 
 
 //------------------------------------------------------------------------------
-GData* GDict::GetData(const unsigned int id) const throw(GException)
+GData* GDict::GetData(const unsigned int id) const
 {
 	if(id>MaxId)
 		throw GException("Cannot access data");
@@ -174,12 +174,12 @@ GData* GDict::GetData(const unsigned int id) const throw(GException)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GData> GDict::GetDataCursor(GInfoType type) throw(std::bad_alloc,GException)
+R::RCursor<GData> GDict::GetDataCursor(tInfoType type)
 {
 	R::RCursor<GData> cur;
 	GDataTypes* tp;
 
-	tp=DataTypes.GetPtr<GInfoType>(type);
+	tp=DataTypes.GetPtr<tInfoType>(type);
 	if(!tp)
 		throw GException("Unknown information type");
 	cur.Set(*tp);
@@ -188,18 +188,18 @@ R::RCursor<GData> GDict::GetDataCursor(GInfoType type) throw(std::bad_alloc,GExc
 
 
 //------------------------------------------------------------------------------
-RString GDict::GetName(void) const throw(std::bad_alloc)
+RString GDict::GetName(void) const
 {
 	return(Name);
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GDict::GetNbDatas(GInfoType type) const throw(GException)
+unsigned int GDict::GetNbDatas(tInfoType type) const
 {
 	GDataTypes* tp;
 
-	tp=DataTypes.GetPtr<GInfoType>(type);
+	tp=DataTypes.GetPtr<tInfoType>(type);
 	if(!tp)
 		throw GException("Unknown information type");
 	return(tp->GetNb());
@@ -221,29 +221,29 @@ GData* GDict::GetData(const RString& name) const
 
 
 //------------------------------------------------------------------------------
-void GDict::IncRef(unsigned int id,tObjType ObjType) throw(GException)
+unsigned int GDict::IncRef(unsigned int id,tObjType ObjType)
 {
 	GData* data;
 
 	if((id>MaxId)||(!(data=Direct[id])))
 		throw GException("Cannot access data");
-	data->IncRef(ObjType);
+	return(data->IncRef(ObjType));
 }
 
 
 //------------------------------------------------------------------------------
-void GDict::DecRef(unsigned int id,tObjType ObjType) throw(GException)
+unsigned int GDict::DecRef(unsigned int id,tObjType ObjType)
 {
 	GData* data;
 
 	if((id>MaxId)||(!(data=Direct[id])))
 		throw GException("Cannot access data");
-	data->DecRef(ObjType);
+	return(data->DecRef(ObjType));
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GDict::GetRef(unsigned int id,tObjType ObjType) throw(GException)
+unsigned int GDict::GetRef(unsigned int id,tObjType ObjType)
 {
 	GData* data;
 
@@ -254,18 +254,18 @@ unsigned int GDict::GetRef(unsigned int id,tObjType ObjType) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GDict::IncRef(tObjType ObjType) throw(GException)
+unsigned int GDict::IncRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
 		case otDoc:
-			NbRefDocs++;
+			return(++NbRefDocs);
 			break;
 		case otSubProfile:
-			NbRefSubProfiles++;
+			return(++NbRefSubProfiles);
 			break;
 		case otGroup:
-			NbRefGroups++;
+			return(++NbRefGroups);
 			break;
 		default:
 			throw GException ("Unkown type to increase");
@@ -275,24 +275,24 @@ void GDict::IncRef(tObjType ObjType) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GDict::DecRef(tObjType ObjType) throw(GException)
+unsigned int GDict::DecRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
 		case otDoc:
 			if(!NbRefDocs)
 				throw GException("Cannot decrease null number of references for documents");
-			NbRefDocs--;
+			return(--NbRefDocs);
 			break;
 		case otSubProfile:
 			if(!NbRefSubProfiles)
 				throw GException("Cannot decrease null number of references for subprofiles");
-			NbRefSubProfiles--;
+			return(--NbRefSubProfiles);
 			break;
 		case otGroup:
 			if(!NbRefGroups)
 				throw GException("Cannot decrease null number of references for groups");
-			NbRefGroups--;
+			return(--NbRefGroups);
 			break;
 		default:
 			throw GException ("Unkown type to decrease");
@@ -320,6 +320,53 @@ unsigned int GDict::GetRef(tObjType ObjType)
 			break;
 	}
 	return(0);
+}
+
+
+//------------------------------------------------------------------------------
+void GDict::Clear(tObjType ObjType)
+{
+	RContainer<GData,true,true>*** ptr;
+	RContainer<GData,true,true>** ptr2;
+	unsigned int i,j;
+
+	for(i=27+1,ptr=Hash;--i;ptr++)
+		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+		{
+			RCursor<GData> datas(**ptr2);
+			for(datas.Start();!datas.End();datas.Next())
+				datas()->Clear(ObjType);
+		}
+
+	switch(ObjType)
+	{
+		case otDoc:
+			NbRefDocs=0;
+			break;
+		case otSubProfile:
+			NbRefSubProfiles=0;
+			break;
+		case otGroup:
+			NbRefGroups=0;
+			break;
+		case otDocSubProfile:
+			NbRefDocs=0;
+			NbRefSubProfiles=0;
+			break;
+		case otDocGroup:
+			NbRefDocs=0;
+			NbRefGroups=0;
+			break;
+		case otSubProfileGroup:
+			NbRefSubProfiles=0;
+			NbRefGroups=0;
+			break;
+		default:
+			NbRefDocs=0;
+			NbRefSubProfiles=0;
+			NbRefGroups=0;
+			break;
+	}
 }
 
 

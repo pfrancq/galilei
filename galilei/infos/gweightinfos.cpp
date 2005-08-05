@@ -55,14 +55,14 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(unsigned int max)
-	: RContainer<GWeightInfo,true,true>(max,50)
+	: RContainer<GWeightInfo,true,true>(max,50), State(osCreated)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(const GWeightInfos& w)
-	: RContainer<GWeightInfo,true,true>(w)
+	: RContainer<GWeightInfo,true,true>(w), State(w.State)
 {
 }
 
@@ -71,6 +71,7 @@ GWeightInfos::GWeightInfos(const GWeightInfos& w)
 GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& w)
 {
 	RContainer<GWeightInfo,true,true>::operator=(w);
+	State=w.State;
 	return(*this);
 }
 
@@ -79,6 +80,7 @@ GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& w)
 GWeightInfos& GWeightInfos::operator=(const RContainer<GWeightInfo,false,true>& w)
 {
 	RContainer<GWeightInfo,true,true>::operator=(w);
+	State=osUpToDate;
 	return(*this);
 }
 
@@ -87,6 +89,7 @@ GWeightInfos& GWeightInfos::operator=(const RContainer<GWeightInfo,false,true>& 
 void GWeightInfos::Copy(const GWeightInfos& src)
 {
 	RContainer<GWeightInfo,true,true>::Copy(src);
+	State=src.State;
 }
 
 
@@ -112,8 +115,40 @@ void GWeightInfos::Clear(void)
 
 
 //------------------------------------------------------------------------------
-RCursor<GWeightInfo> GWeightInfos::GetInfos(void)
+tObjState GWeightInfos::GetState(void) const
 {
+	return(State);
+}
+
+
+//------------------------------------------------------------------------------
+void GWeightInfos::SetState(tObjState state)
+{
+	if((State==osNeedLoad)&&(state==osDelete))
+	{
+		// Force to load the description since the references must be decreased
+		// in the destructor.
+		const_cast<GWeightInfos*>(this)->State=osOnDemand;      // The object is on-demand of loading
+		LoadInfos();           // Load it.
+	}
+	State=state;
+}
+
+
+//------------------------------------------------------------------------------
+void GWeightInfos::LoadInfos(void) const
+{
+}
+
+
+//------------------------------------------------------------------------------
+RCursor<GWeightInfo> GWeightInfos::GetInfos() const
+{
+	if(State==osNeedLoad)
+	{
+		const_cast<GWeightInfos*>(this)->State=osOnDemand;      // The object is on-demand of loading
+		LoadInfos();           // Load it.
+	}
 	return(RCursor<GWeightInfo>(*this));
 }
 
@@ -135,7 +170,24 @@ void GWeightInfos::DeleteInfo(GWeightInfo* info)
 //------------------------------------------------------------------------------
 GWeightInfo* GWeightInfos::GetInfo(unsigned int id) const
 {
+	if(State==osNeedLoad)
+	{
+		const_cast<GWeightInfos*>(this)->State=osOnDemand;      // The object is on-demand of loading
+		LoadInfos();           // Load it.
+	}
 	return(GetPtr<unsigned int>(id));
+}
+
+
+//------------------------------------------------------------------------------
+size_t GWeightInfos::GetNb(void) const
+{
+ 	if(State==osNeedLoad)
+	{
+		const_cast<GWeightInfos*>(this)->State=osOnDemand;      // The object is on-demand of loading
+		LoadInfos();           // Load it.
+	}
+	return(R::RContainer<GWeightInfo,true,true>::GetNb());
 }
 
 
@@ -456,6 +508,7 @@ void GWeightInfos::RecomputeIFF(tObjType ObjType,GLang* lang)
 
 	if(!lang)
 		throw GException("No Language defined");
+	if(!GetNb()) return;
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start(),max=GetMaxAbsWeight();!ptr.End();ptr.Next())
 	{
@@ -478,6 +531,7 @@ void GWeightInfos::RecomputeQuery(tObjType ObjType,GLang* lang)
 
 	if(!lang)
 		throw GException("No Language defined");
+	if(!GetNb()) return;
 	for(i=lang->GetDict()->GetDataMaxId()+1,words=lang->GetDatas();--i;words++)
 	{
 		if((!(*words))||(!lang->GetRef((*words)->GetId(),ObjType))) continue;

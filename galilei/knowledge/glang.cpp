@@ -6,7 +6,7 @@
 
 	Generic Language - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -67,7 +67,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(std::bad_alloc)
+GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code)
 	: RLang(lang,code), GPlugin<GFactoryLang>(fac), Dict(0), Stop(0),
 	  SkipWords(50,20)
 {
@@ -108,12 +108,6 @@ GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code) throw(std::
 void GLang::Connect(GSession* session)
 {
 	Session=session;
-	if((Dict&&Stop)||(!Factory->GetMng()->LoadDict()))
-		return;
-	if(!Dict)
-		session->GetStorage()->LoadDic(Dict,this,false);
-	if(!Stop)
-		session->GetStorage()->LoadDic(Stop,this,true);
 }
 
 
@@ -121,7 +115,6 @@ void GLang::Connect(GSession* session)
 void GLang::Disconnect(GSession* /*session*/)
 {
 	Session=0;
-	if((!Dict)&&(!Stop)) return;
 	if(Dict)
 	{
 		delete Dict;
@@ -168,22 +161,24 @@ int GLang::Compare(const char* code) const
 
 
 //------------------------------------------------------------------------------
-void GLang::SkipSequence(const RString& word) throw(std::bad_alloc)
+void GLang::SkipSequence(const RString& word)
 {
 	SkipWords.InsertPtr(new SkipWord(word));
 }
 
 
 //------------------------------------------------------------------------------
-RString GLang::GetStemming(const RString& _kwd) throw(GException)
+/*RString GLang::GetStemming(const RString& _kwd) throw(GException)
 {
 	return(_kwd.ToLower());
-}
+}*/
 
 
 //------------------------------------------------------------------------------
 GDict* GLang::GetDict(void) const
 {
+	if((!Dict)&&(Session)&&(Session->GetStorage()))
+		Session->GetStorage()->LoadDic(const_cast<GLang*>(this)->Dict,const_cast<GLang*>(this),false);
 	return(Dict);
 }
 
@@ -191,93 +186,85 @@ GDict* GLang::GetDict(void) const
 //------------------------------------------------------------------------------
 GDict* GLang::GetStop(void) const
 {
+	if((!Stop)&&(Session)&&(Session->GetStorage()))
+		Session->GetStorage()->LoadDic(const_cast<GLang*>(this)->Stop,const_cast<GLang*>(this),true);
 	return(Stop);
 }
 
 
 //------------------------------------------------------------------------------
-bool GLang::InStop(const RString& name) const throw(GException)
+bool GLang::InStop(const RString& name) const
 {
-	if(!Stop)
-		throw GException("No dictionary of stopwords defined.");
-	return(Stop->IsIn(name));
+	return(GetStop()->IsIn(name));
 }
 
 
 //------------------------------------------------------------------------------
-void GLang::IncRef(unsigned int id,tObjType ObjType) throw(GException)
+void GLang::IncRef(unsigned int id,tObjType ObjType)
 {
-	if(!Dict)
-		throw GException("No dictionary of data defined.");
-	Dict->IncRef(id,ObjType);
+	unsigned int nb=GetDict()->IncRef(id,ObjType);
+	if(Session&&Session->MustSave(ObjType)&&Session->GetStorage())
+		Session->GetStorage()->SaveRefs(ObjType,this,id,nb);
 }
 
 
 //------------------------------------------------------------------------------
-void GLang::DecRef(unsigned int id,tObjType ObjType) throw(GException)
+void GLang::DecRef(unsigned int id,tObjType ObjType)
 {
-	if(!Dict)
-		throw GException("No dictionary of data defined.");
-	Dict->DecRef(id,ObjType);
+	unsigned int nb=GetDict()->DecRef(id,ObjType);
+	if(Session&&Session->MustSave(ObjType)&&Session->GetStorage())
+		Session->GetStorage()->SaveRefs(ObjType,this,id,nb);
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GLang::GetRef(unsigned int id,tObjType ObjType) throw(GException)
+unsigned int GLang::GetRef(unsigned int id,tObjType ObjType)
 {
-	if(!Dict)
-		throw GException("No dictionary of data defined.");
-	return(Dict->GetRef(id,ObjType));
+	return(GetDict()->GetRef(id,ObjType));
 }
 
 
 //------------------------------------------------------------------------------
-void GLang::IncRef(tObjType ObjType) throw(GException)
+void GLang::IncRef(tObjType ObjType)
 {
-	if(!Dict)
-		throw GException("No dictionary of data defined.");
-	Dict->IncRef(ObjType);
+	unsigned int nb=GetDict()->IncRef(ObjType);
+	if(Session&&Session->MustSave(ObjType)&&Session->GetStorage())
+		Session->GetStorage()->SaveRefs(ObjType,this,nb);
 }
 
 
 //------------------------------------------------------------------------------
-void GLang::DecRef(tObjType ObjType) throw(GException)
+void GLang::DecRef(tObjType ObjType)
 {
-	if(!Dict)
-		throw GException("No dictionary of data defined.");
-	Dict->DecRef(ObjType);
+	unsigned int nb=GetDict()->DecRef(ObjType);
+	if(Session&&Session->MustSave(ObjType)&&Session->GetStorage())
+		Session->GetStorage()->SaveRefs(ObjType,this,nb);
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GLang::GetRef(tObjType ObjType) throw(GException)
+unsigned int GLang::GetRef(tObjType ObjType) const
 {
-	if(!Dict)
-		throw GException("No dictionary of data defined.");
-	return(Dict->GetRef(ObjType));
+	return(GetDict()->GetRef(ObjType));
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GLang::GetTotal(void) const throw(GException)
+unsigned int GLang::GetTotal(void) const
 {
-	if(!Dict)
-		throw GException("No dictionary of data defined.");
-	return(Dict->GetNbDatas());
+	return(GetDict()->GetNbDatas());
 }
 
 
 //------------------------------------------------------------------------------
-const GData** GLang::GetDatas(void) const throw(GException)
+const GData** GLang::GetDatas(void) const
 {
-	if(!Dict)
-		throw GException("No dictionary of data defined.");
-	return(const_cast<const GData**>(Dict->GetDatas()));
+	return(const_cast<const GData**>(GetDict()->GetDatas()));
 }
 
 
 //------------------------------------------------------------------------------
-bool GLang::MustSkipSequence(const RChar* seq) throw(GException)
+bool GLang::MustSkipSequence(const RChar* seq)
 {
 	return(SkipWords.IsIn<const RChar*>(seq));
 }
@@ -302,8 +289,8 @@ GLang::~GLang(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLangManager::GLangManager(bool load)
-  : GPluginManager<GLangManager,GFactoryLang,GLang>("Lang",API_LANG_VERSION,ptList), Load(load)
+GLangManager::GLangManager(void)
+  : GPluginManager<GLangManager,GFactoryLang,GLang>("Lang",API_LANG_VERSION,ptList)
 {
 }
 

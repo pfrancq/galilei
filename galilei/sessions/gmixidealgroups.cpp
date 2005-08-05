@@ -152,7 +152,7 @@ bool GALILEI::GMixIdealGroups::SplitGroups(void)
 
 	// choose a place to split and put the first elements in g2
 
-	g2=new GGroup(MixedGroups->GetNewId(), g1->GetLang(), false);
+	g2=new GGroup(MixedGroups->GetNewId(), g1->GetLang(), false,RDate(""),RDate(""));
 	r1=Rand->Value(g1->GetNbSubProfiles());
 	for(s=TabS,i=r1+1;--i;)
 	{
@@ -180,7 +180,7 @@ void GALILEI::GMixIdealGroups::RandomGroups(void)
 	for (igrpscur.Start(); !igrpscur.End(); igrpscur.Next())
 	{
 		igrp=igrpscur();
-		grp=new GGroup(igrp->GetId(), igrp->GetLang(), false);
+		grp=new GGroup(igrp->GetId(), igrp->GetLang(), false,RDate(""),RDate(""));
 		MixedGroups->InsertGroup(grp);
 	}
 
@@ -237,7 +237,7 @@ void GALILEI::GMixIdealGroups::Run(GSlot* g)
 		if(Split&&DoSplit)
 		{
 			if(g)
-				g->receiveNextChromosome(i);
+				g->NextChromosome(i);
 			InitMixedGroups(1);
 			if(!MixedGroups->GetNbGroups(CurrentLang)) break;
 			r=Rand->Value(Level)+1;
@@ -251,7 +251,7 @@ void GALILEI::GMixIdealGroups::Run(GSlot* g)
 			if(!DoSplit)               // If no split was done -> reused ideal
 			{
 				if(g)
-					g->receiveNextChromosome(i);
+					g->NextChromosome(i);
 				InitMixedGroups(2);
 			}
 			if(!MixedGroups->GetNbGroups(CurrentLang)) break;
@@ -280,7 +280,7 @@ void GALILEI::GMixIdealGroups::Run(GSlot* g)
 	if(Random)
 	{
 		if(g)
-			g->receiveNextChromosome(i++);
+			g->NextChromosome(i++);
 		RandomGroups();
 		StockInDatabase(id++);
 		nbgroups++;
@@ -288,7 +288,7 @@ void GALILEI::GMixIdealGroups::Run(GSlot* g)
 	if(Ideal)
 	{
 		if(g)
-			g->receiveNextChromosome(i);
+			g->NextChromosome(i);
 		InitMixedGroups(cNoRef);
 		StockInDatabase(id);
 	}
@@ -308,7 +308,7 @@ void GALILEI::GMixIdealGroups::InitMixedGroups(unsigned int mingroups)
 	for (grpscur.Start(); !grpscur.End(); grpscur.Next())
 	{
 			igrp=grpscur();
-			grp=new GGroup(igrp->GetId(), igrp->GetLang(), false);
+			grp=new GGroup(igrp->GetId(), igrp->GetLang(), false,RDate(""),RDate(""));
 			subs=igrp->GetSubProfilesCursor();
 			for (subs.Start(); !subs.End();subs.Next())
 				grp->InsertSubProfile(subs());

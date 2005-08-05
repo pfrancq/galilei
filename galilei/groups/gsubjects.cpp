@@ -121,7 +121,7 @@ public:
 GSubjects::GSubjects(GSession* session)
 	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Session(session),
 	  tmpDocs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(0),
-	  GroupsScore(100,50), Profiles(1000), Docs(5000)
+	  GroupsScore(100,50), Profiles(1000), Docs(5000), SaveSimulation(false)
 {
 	GParams::InsertPtr(new GParamDouble("PercOK",10.0));
 	GParams::InsertPtr(new GParamDouble("PercKO",10.0));
@@ -279,7 +279,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 				GGroup* NewGrp;
 
 				// A ideal group must be created
-				IdealGroups->InsertGroup(NewGrp=new GGroup(IdealGroups->GetNbGroups(),Lang,false));
+				IdealGroups->InsertGroup(NewGrp=new GGroup(IdealGroups->GetNbGroups(),Lang,false,RDate(""),RDate("")));
 				groups.InsertPtr(Grp=new GroupLang(Lang,NewGrp));
 			}
 
@@ -524,13 +524,15 @@ void GSubjects::ComputeTotal(void)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::CreateIdeal(bool Save)
+void GSubjects::CreateIdeal(bool save)
 {
 	// Apply Config
 	Apply();
 
+	SaveSimulation=save;
+
 	// Re-init the session
-	Session->ReInit(Save);
+	Session->ReInit();
 
 	// Remove the ideal clustering
 	IdealGroups->ClearGroups();
@@ -539,7 +541,7 @@ void GSubjects::CreateIdeal(bool Save)
 		tmpDocs=new GDoc*[Session->GetMaxPosDoc()+1];
 	ChooseSubjects();
 	CreateSet();
-	if(Save)
+	if(SaveSimulation)
 	{
 		Session->GetStorage()->SaveFdbks(Session);
 		Session->GetStorage()->SaveIdealGroupment(IdealGroups);
@@ -548,7 +550,7 @@ void GSubjects::CreateIdeal(bool Save)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::FdbksCycle(bool Save)
+void GSubjects::FdbksCycle(void)
 {
 	R::RCursor<GGroup> Grps;
 	RCursor<GSubProfile> SubProfile;
@@ -592,13 +594,13 @@ void GSubjects::FdbksCycle(bool Save)
 		}
 	}
 
-	if(Save)
+	if(SaveSimulation)
 		Session->GetStorage()->SaveFdbks(Session);
 }
 
 
 //------------------------------------------------------------------------------
-void GSubjects::AddAssessments(bool Save)
+void GSubjects::AddAssessments(void)
 {
 	R::RCursor<GSubject> Subs;
 	RCursor<GProfile> Prof;
@@ -654,7 +656,7 @@ void GSubjects::AddAssessments(bool Save)
 			}
 		}
 	}
-	if(Save)
+	if(SaveSimulation)
 	{
 		Session->GetStorage()->SaveFdbks(Session);
 	}
@@ -662,7 +664,7 @@ void GSubjects::AddAssessments(bool Save)
 
 
 //------------------------------------------------------------------------------
-bool GSubjects::AddTopic(bool Save)
+bool GSubjects::AddTopic(void)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -715,7 +717,7 @@ bool GSubjects::AddTopic(bool Save)
 	for(Prof.Start();!Prof.End();Prof.Next())
 		ProfileAssess(Groups,Prof(),newSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
-	if(Save)
+	if(SaveSimulation)
 	{
 		Session->GetStorage()->SaveFdbks(Session);
 		Session->GetStorage()->SaveIdealGroupment(IdealGroups);
@@ -725,7 +727,7 @@ bool GSubjects::AddTopic(bool Save)
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubjects::AddProfiles(bool Save)
+unsigned int GSubjects::AddProfiles(void)
 {
 	GSubject** tab;
 	GSubject** ptr;
@@ -803,7 +805,7 @@ unsigned int GSubjects::AddProfiles(bool Save)
 		ProfileAssess(Groups,Prof(),usedSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
 	// optional saving
-	if(Save)
+	if(SaveSimulation)
 	{
 		Session->GetStorage()->SaveFdbks(Session);
 		Session->GetStorage()->SaveIdealGroupment(IdealGroups);

@@ -6,7 +6,7 @@
 
 	Program running a Session object - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2005 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -112,7 +112,7 @@ public:
 	* Percentage of correct assignments for the subprofiles last added.
 	*/
 	double PercAss;
-	
+
 	/**
 	* First profile computing has be done.
 	*/
@@ -122,16 +122,6 @@ public:
 	* First groupment has be done.
 	*/
 	bool FirstGroup;
-
-	/**
-	* When Autosave is true, after each computing, the results is saved.
-	*/
-	bool AutoSave;
-
-	/**
-	* When Autosave is true, after each computing, the results is saved.
-	*/
-	bool AutoSaveLinks;
 
 	/**
 	* When TrackNewProfile is true, the system
@@ -147,7 +137,7 @@ public:
 	* Create a class.
 	* @param s              Session.
 	*/
-	GPrgClassSession(GSession* s) throw(std::bad_alloc);
+	GPrgClassSession(GSession* s);
 
 	/**
 	* Destructor.
@@ -172,7 +162,7 @@ public:
 	* @param s              Session.
 	* @param o              Generic output class.
 	*/
-	GSessionPrg(R::RString f,GSession* s,R::RPrgOutput* o) throw(std::bad_alloc,GException);
+	GSessionPrg(R::RString f,GSession* s,R::RPrgOutput* o);
 
 	/**
 	* Destructor.

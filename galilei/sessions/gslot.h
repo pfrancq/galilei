@@ -6,7 +6,7 @@
 
 	Generic Slot for a GALILEI Session - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2005 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -64,55 +64,66 @@ public:
 	/**
 	* Constructor.
 	*/
-	GSlot(void) throw(std::bad_alloc,R::RException);
+	GSlot(void);
 
 	/**
 	* The traitment for a specific document will begin.
-	* @param doc            Document.
+	* @param doc             Document.
 	*/
-	virtual void receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,R::RException);
+	virtual void NextDoc(const GDoc* doc);
 
 	/**
 	* The traitment for a specific document will begin.
-	* @param prof           Profile.
+	* @param prof            Profile.
 	*/
-	virtual void receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,R::RException);
+	virtual void NextProfile(const GProfile* prof);
 
 	/**
 	* The traitment for a specific profile will begin.
-	* @param prof           Profile.
+	* @param prof            Profile.
 	*/
-	virtual void receiveNextProfileExport(const GProfile* prof) throw(std::bad_alloc,R::RException);
+	virtual void NextProfileExport(const GProfile* prof);
 
 	/**
 	* The traitment for a specific document will begin.
-	* @param doc           Document
+	* @param doc             Document
 	*/
-	virtual void receiveNextDocumentExport(const GDoc* doc) throw(std::bad_alloc,R::RException);
+	virtual void NextDocumentExport(const GDoc* doc);
 
 	/**
 	* The traitment for a specific group will begin.
-	* @param grp           Group.
+	* @param grp             Group.
 	*/
-	virtual void receiveNextGroupExport(const GGroup* grp) throw(std::bad_alloc,R::RException);
+	virtual void NextGroupExport(const GGroup* grp);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.
-	* @param lang           Pointer to the current lang.
+	* @param lang            Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang) throw(std::bad_alloc,R::RException);
+	virtual void NextGroupLang(const GLang* lang);
 
 	/**
 	* The traitment for a specific chromosome will begin.
-	* @param id             Identificator of the chromosome.
+	* @param id              Identificator of the chromosome.
 	*/
-	virtual void receiveNextChromosome(unsigned int id) throw(std::bad_alloc,R::RException);
+	virtual void NextChromosome(unsigned int id);
 
 	/**
 	* The traitment for a specific method will begin.
-	* @param num            Number of the current step.
+	* @param num             Number of the current step.
 	*/
-	virtual void receiveNextMethod(unsigned int num) throw(std::bad_alloc,R::RException);
+	virtual void NextMethod(unsigned int num);
+
+	/**
+	* Start a job.
+	* @param job             Description of ther job.
+	*/
+	virtual void StartJob(const R::RString job);
+
+	/**
+	* End of the last started job.
+	*/
+	virtual void EndJob(void);
 
 	/**
 	* This is used by the caller to interact. Typically, it is used to give the

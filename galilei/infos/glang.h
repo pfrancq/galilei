@@ -6,7 +6,7 @@
 
 	Generic Language - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -100,7 +100,7 @@ public:
 	* @param lang           Name of the language.
 	* @param code           Code of the language.
 	*/
-	GLang(GFactoryLang* fac,const R::RString& lang,const char* code) throw(std::bad_alloc);
+	GLang(GFactoryLang* fac,const R::RString& lang,const char* code);
 
 	/**
 	* Connect to a Session.
@@ -156,7 +156,7 @@ public:
 	* after the numbers must be given (example "nd" for "2nd", "3nd", ...).
 	* @param word            Word to skip.
 	*/
-	void SkipSequence(const R::RString& word) throw(std::bad_alloc);
+	void SkipSequence(const R::RString& word);
 
 	/**
 	* Function that computes the stem of a word. Of course, this method must be
@@ -164,7 +164,7 @@ public:
 	* @param kwd            Word for which the stem must be computed.
 	* @return A R::RString representing the stem of the word.
 	*/
-	virtual R::RString GetStemming(const R::RString& kwd) throw(GException);
+	virtual R::RString GetStemming(const R::RString& kwd)=0;
 
 	/**
 	* Get the session.
@@ -190,7 +190,7 @@ public:
 	* @param name            Name to lookup.
 	* @return true if it was found in the dictionary of stopwords.
 	*/
-	bool InStop(const R::RString& name) const throw(GException);
+	bool InStop(const R::RString& name) const;
 
 	/**
 	* Increase the number of objects of a given type that make a reference to a
@@ -198,7 +198,7 @@ public:
 	* @param id             Identificator of the data.
 	* @param ObjType        Type of the object.
 	*/
-	void IncRef(unsigned int id,tObjType ObjType) throw(GException);
+	void IncRef(unsigned int id,tObjType ObjType);
 
 	/**
 	* Decrease the number of objects of a given type that make a reference to a
@@ -206,7 +206,7 @@ public:
 	* @param id             Identificator of the data.
 	* @param ObjType        Type of the object.
 	*/
-	void DecRef(unsigned int id,tObjType ObjType) throw(GException);
+	void DecRef(unsigned int id,tObjType ObjType);
 
 	/**
 	* Get the number of objects of a given type that make a reference to a data.
@@ -214,47 +214,47 @@ public:
 	* @param ObjType        Type of the object.
 	* @return unsigned int.
 	*/
-	unsigned int GetRef(unsigned int id,tObjType ObjType) throw(GException);
+	unsigned int GetRef(unsigned int id,tObjType ObjType);
 
 	/**
 	* Increase the number of objects of a given type using the dictionary of the
 	* language.
 	* @param ObjType        Type of the object.
 	*/
-	void IncRef(tObjType ObjType) throw(GException);
+	void IncRef(tObjType ObjType);
 
 	/**
 	* Decrease the number of objects of a given type using the dictionary of the
 	* language.
 	* @param ObjType        Type of the object.
 	*/
-	void DecRef(tObjType ObjType) throw(GException);
+	void DecRef(tObjType ObjType);
 
 	/**
 	* Get the number of objects of a given type using the dictionary of the
 	* language.
 	* @param ObjType        Type of the object.
 	*/
-	unsigned int GetRef(tObjType ObjType) throw(GException);
+	unsigned int GetRef(tObjType ObjType) const;
 
 	/**
 	* Get the number of elements contained in the dictionary of data.
 	* @returns unsigned int.
 	*/
-	unsigned int GetTotal(void) const throw(GException);
+	unsigned int GetTotal(void) const;
 
 	/**
 	* Get the list of the elements currently defined in the dictionary of data.
 	* @returns const pointer to array of GWord*.
 	*/
-	const GData** GetDatas(void) const throw(GException);
+	const GData** GetDatas(void) const;
 
 	/**
 	* Look if a given sequence must be skipped.
 	* @param seq             Sequence.
 	* @return true if the sequence must be skipped.
 	*/
-	bool MustSkipSequence(const R::RChar* seq) throw(GException);
+	bool MustSkipSequence(const R::RChar* seq);
 
 public:
 
@@ -313,23 +313,12 @@ public:
 */
 class GLangManager : public GPluginManager<GLangManager,GFactoryLang,GLang>
 {
-	/**
-	* Must be the dictionnaries (and stoplists) be loaded.
-	*/
-	bool Load;
-
 public:
 
 	/**
 	* Constructor of the manager.
-	* @param load            Must the dictionnaries be loaded?
 	*/
-	GLangManager(bool load);
-
-	/**
-	* Look if the dictionnaries must be loaded
-	*/
-	bool LoadDict(void) const {return(Load);}
+	GLangManager(void);
 
 	/**
 	* Destructor of the manager.
@@ -356,11 +345,11 @@ public:                                                                         
 			Inst = new TheFactory(mng,l);                                                 \
 		return(Inst);                                                                     \
 	}                                                                                     \
-	virtual GLang* NewPlugIn(void)                                                       \
+	virtual GLang* NewPlugIn(void)                                                        \
 	{                                                                                     \
 		return(new C(this));                                                              \
 	}                                                                                     \
-	virtual void DeletePlugIn(GLang* plug)                                               \
+	virtual void DeletePlugIn(GLang* plug)                                                \
 	{                                                                                     \
 		delete plug;                                                                      \
 	}                                                                                     \

@@ -49,8 +49,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFdbk::GFdbk(GDoc* doc,tDocAssessment fdbk,RDate& updated)
-  : Doc(doc), Fdbk(fdbk), Updated(updated)
+GFdbk::GFdbk(GDoc* doc,tDocAssessment fdbk,const RDate& when,const R::RDate& updated)
+  : Doc(doc), Fdbk(fdbk), When(when), Updated(updated)
 {
 }
 
@@ -77,10 +77,17 @@ int GFdbk::Compare(const unsigned id) const
 
 
 //------------------------------------------------------------------------------
-void GFdbk::UpdateFdbk(tDocAssessment fdbk,RDate date)
+void GFdbk::NewFdbk(tDocAssessment fdbk,const RDate& date)
 {
 	Fdbk=fdbk;
-	Updated=date;
+	When=date;
+}
+
+
+//------------------------------------------------------------------------------
+RDate GFdbk::GetWhen(void) const
+{
+	return(When);
 }
 
 
@@ -88,6 +95,20 @@ void GFdbk::UpdateFdbk(tDocAssessment fdbk,RDate date)
 RDate GFdbk::GetUpdated(void) const
 {
 	return(Updated);
+}
+
+
+//------------------------------------------------------------------------------
+bool GFdbk::MustUse(const R::RDate& computed) const
+{
+	return((When>computed)||(Updated>computed));
+}
+
+
+//------------------------------------------------------------------------------
+void GFdbk::HasUpdate(void)
+{
+	Updated.SetToday();
 }
 
 
@@ -215,7 +236,7 @@ GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 	// If subprofile does not exist -> create it
 	if(!sub)
 	{
-		sub=new GSubProfile(s,this,lang);
+		sub=new GSubProfile(this,cNoRef,lang,0,RDate(""),RDate(""),RDate(""));
 		s->InsertSubProfile(sub);
 	}
 
@@ -252,9 +273,9 @@ RCursor<GSubProfile> GProfile::GetSubProfilesCursor(void) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::InsertFdbk(GDoc* doc,tDocAssessment assess,R::RDate date)
+void GProfile::InsertFdbk(GDoc* doc,tDocAssessment assess,const R::RDate& date)
 {
-	Fdbks.InsertPtr(new GFdbk(doc,assess,date));
+	Fdbks.InsertPtr(new GFdbk(doc,assess,date,doc->GetUpdated()));
 }
 
 
@@ -280,9 +301,11 @@ GFdbk* GProfile::GetFdbk(unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::HasUpdate(unsigned int,bool)
+void GProfile::HasUpdate(GDoc* doc)
 {
-/*	GDoc* doc=GSession::Get()->GetDoc(id);*/
+	GFdbk* fdbk=Fdbks.GetPtr(doc->GetId());
+	if(fdbk)
+		fdbk->HasUpdate();
 }
 
 
@@ -309,7 +332,7 @@ void GProfile::Update(void)
 		sub=GetPtr<const GLang*>(lang,false);
 		if(!sub)
 		{
-			sub=new GSubProfile(GSession::Get(),this,lang);
+			sub=new GSubProfile(this,cNoRef,lang,0,RDate(""),RDate(""),RDate(""));
 			GSession::Get()->InsertSubProfile(sub);
 		}
 

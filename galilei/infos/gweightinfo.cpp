@@ -51,14 +51,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned int id,GInfoType type)
+GWeightInfo::GWeightInfo(unsigned int id,tInfoType type)
   : GInfo(id,type), Weight(0.0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned int id,double w,GInfoType type)
+GWeightInfo::GWeightInfo(unsigned int id,double w,tInfoType type)
   : GInfo(id,type), Weight(w)
 {
 }

@@ -6,7 +6,7 @@
 
 	Word (or stem) - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -45,44 +45,37 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GWord::GWord(void) throw(std::bad_alloc)
-  : GData("",infoWord)
+GWord::GWord(void)
+  : GData(cNoRef,"",infoWord,0,0,0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const RString& word) throw(std::bad_alloc)
-  : GData(word,infoWord)
+GALILEI::GWord::GWord(const RString& word)
+  : GData(cNoRef,word,infoWord,0,0,0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(unsigned id,const RString& word) throw(std::bad_alloc)
-  : GData(id,word,infoWord)
+GALILEI::GWord::GWord(unsigned id,const RString& word,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
+  : GData(id,word,infoWord,refdocs,refsubprofiles,refgroups)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const GWord& word) throw(std::bad_alloc)
+GALILEI::GWord::GWord(const GWord& word)
   : GData(word)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const GWord* word) throw(std::bad_alloc)
-  : GData(word)
+GData* GWord::CreateCopy(void) const
 {
-}
-
-
-//-----------------------------------------------------------------------------
-GData* GWord::CreateCopy(void) const throw(std::bad_alloc)
-{
-	GWord* ptr=new GWord(this);
+	GWord* ptr=new GWord(*this);
 	return(ptr);
 }
 
@@ -91,5 +84,3 @@ GData* GWord::CreateCopy(void) const throw(std::bad_alloc)
 GALILEI::GWord::~GWord(void)
 {
 }
-
-

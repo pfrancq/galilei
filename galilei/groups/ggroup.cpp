@@ -41,6 +41,7 @@
 #include <gdoc.h>
 #include <gsubprofile.h>
 #include <gsession.h>
+#include <gstorage.h>
 #include <gweightinfo.h>
 #include <gprofilesdocssims.h>
 using namespace GALILEI;
@@ -79,18 +80,9 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroup::GGroup(unsigned int id,GLang* lang,bool com)
+GGroup::GGroup(unsigned int id,GLang* lang,bool com,const R::RDate& u,const R::RDate& c)
 	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(60), Id(id),
-	  State(osUpToDate), Lang(lang), Community(com)
-{
-	GSession::Event(this,eObjCreated);
-}
-
-
-//------------------------------------------------------------------------------
-GGroup::GGroup(GLang* lang,bool com)
-	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(60), Id(cNoRef),
-	  State(osCreated), Lang(lang), Community(com)
+	  /*State(osUpToDate),*/Lang(lang), Community(com),  Updated(u), Computed(c)
 {
 	GSession::Event(this,eObjCreated);
 }
@@ -134,16 +126,27 @@ int GGroup::Compare(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
-bool GGroup::IsDefined(void) const
+void GGroup::LoadInfos(void) const
 {
-	return(!GWeightInfos::IsEmpty());
+	RContainer<GWeightInfo,false,true> Infos(1000,500);
+	GSession* session=GSession::Get();
+	if(session&&session->GetStorage())
+		session->GetStorage()->LoadInfos(Infos,Lang,otGroup,Id);
+	const_cast<GGroup*>(this)->Update(Lang,&Infos,false);
 }
 
 
 //------------------------------------------------------------------------------
-bool GGroup::IsEmpty(void) const
+RDate GGroup::GetUpdated(void) const
 {
-	return(GWeightInfos::IsEmpty());
+	return(Updated);
+}
+
+
+//------------------------------------------------------------------------------
+RDate GGroup::GetComputed(void) const
+{
+	return(Computed);
 }
 
 
@@ -153,13 +156,6 @@ void GGroup::SetId(unsigned int id)
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a group");
 	Id=id;
-}
-
-
-//------------------------------------------------------------------------------
-void GGroup::SetState(tObjState state)
-{
-	State=state;
 }
 
 
@@ -176,7 +172,7 @@ void GGroup::DeleteSubProfile(GSubProfile* sp)
 	if(Community)
 		sp->SetGroup(0);
 	R::RContainer<GSubProfile,false,true>::DeletePtr(sp);
-	State=osUpdated;
+//	State=osUpdated;
 }
 
 
@@ -184,7 +180,7 @@ void GGroup::DeleteSubProfile(GSubProfile* sp)
 void GGroup::InsertSubProfile(GSubProfile* sp)
 {
 	R::RContainer<GSubProfile,false,true>::InsertPtr(sp);
-	State=osUpdated;
+//	State=osUpdated;
 	if(Community)
 		sp->SetGroup(this);
 }
@@ -202,7 +198,7 @@ void GGroup::DeleteSubProfiles(void)
 {
 	RCursor<GSubProfile> Sub;
 
-	State=osUpdated;
+//	State=osUpdated;
 	if(Community)
 	{
 		Sub.Set(*this);
@@ -419,25 +415,29 @@ void GGroup::Clear(void)
 
 
 //------------------------------------------------------------------------------
-void GGroup::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
+void GGroup::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
 	// Remove its references
-	if(Lang&&Community)
+	if(computed&&Lang&&Community)
 		DelRefs(otGroup,Lang);
 
 	// Assign information
 	GWeightInfos::Clear();
+	Lang=lang;
 	if(computed)
 	{
 		State=osUpdated;
+		Computed.SetToday();
 	}
+	else
+		State=osUpToDate;
 	GWeightInfos::operator=(*infos);
 
 	// Clear infos
 	infos->Clear();
 
 	// Update its references
-	if(Lang&&Community)
+	if(computed&&Lang&&Community)
 		AddRefs(otGroup,Lang);
 
 	// Emit an event that it was modified
@@ -446,9 +446,10 @@ void GGroup::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 
 
 //------------------------------------------------------------------------------
-void GGroup::HasUpdate(unsigned int,bool)
+void GGroup::HasUpdate(GSubProfile* sub)
 {
-	State=osModified;
+	if(R::RContainer<GSubProfile,false,true>::GetPtr(sub))
+		Updated.SetToday();
 }
 
 
@@ -464,7 +465,7 @@ GGroup::~GGroup(void)
 			Sub.Set(*this);
 			for(Sub.Start();!Sub.End();Sub.Next())
 				Sub()->SetGroup(0);
-			if(Lang)
+			if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
 				DelRefs(otGroup,Lang);
 		}
 	}

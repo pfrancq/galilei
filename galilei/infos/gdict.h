@@ -6,7 +6,7 @@
 
 	Dictionary - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -128,16 +128,19 @@ public:
 
 	/**
 	* Constructor of the dictionary.
-	* @param name           Name of the dictionary.
-	* @param desc           Description of the dictionary.
-	* @param lang           Corresponding language.
-	* @param m              Total maximal number of data to create at
-	*                       initialisation.
-	* @param ml             Maximal number of data to create at initialisation
-	*                       for the different letters.
-	* @param st             Are the data stopwords?
+	* @param name            Name of the dictionary.
+	* @param desc            Description of the dictionary.
+	* @param lang            Corresponding language.
+	* @param m               Total maximal number of data to create at
+	*                        initialisation.
+	* @param ml              Maximal number of data to create at initialisation
+	*                        for the different letters.
+	* @param st              Are the data stopwords?
+	* @param refdocs         Number of documents referenced.
+	* @param refsubprofiles  Number of subprofiles referenced.
+	* @param refgroups       Number of groups referenced.
 	*/
-	GDict(const R::RString& name,const R::RString& desc,GLang* lang,unsigned m,unsigned ml,bool st) throw(std::bad_alloc);
+	GDict(const R::RString& name,const R::RString& desc,GLang* lang,unsigned m,unsigned ml,bool st,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups);
 
 	/**
 	* Clear the dictionary.
@@ -150,7 +153,7 @@ private:
 	* Put a data in direct.
 	* @param data           Pointer to the data to insert.
 	*/
-	void PutDirect(GData* data) throw(std::bad_alloc);
+	void PutDirect(GData* data);
 
 public:
 
@@ -160,20 +163,20 @@ public:
 	* @param data            Data to insert.
 	* @return Identificator of the data inserted in the dictionary.
 	*/
-	unsigned int InsertData(const GData* data) throw(std::bad_alloc, GException);
+	unsigned int InsertData(const GData* data);
 
 	/**
 	* Delete a given data from the dictionary.
 	* @param data            Data to delete.
 	*/
-	void DeleteData(GData* data) throw(std::bad_alloc, GException);
+	void DeleteData(GData* data);
 
 	/**
 	* Get the data with a specific identificator.
 	* @param id             Identificator.
 	* @return Pointer to a GData.
 	*/
-	GData* GetData(const unsigned int id) const throw(GException);
+	GData* GetData(const unsigned int id) const;
 
 	/**
 	* Get the highest identificator of the data stored by the dictionary.
@@ -192,13 +195,13 @@ public:
 	* type.
 	* @param type            Information type.
 	*/
-	R::RCursor<GData> GetDataCursor(GInfoType type) throw(std::bad_alloc,GException);
+	R::RCursor<GData> GetDataCursor(tInfoType type);
 
 	/**
 	* Get the name of the dictionary.
 	* @returns RString.
 	*/
-	R::RString GetName(void) const throw(std::bad_alloc);
+	R::RString GetName(void) const;
 
 	/**
 	* Get the language holding the dictionary.
@@ -217,7 +220,7 @@ public:
 	* information type.
 	* @param type            Information type.
 	*/
-	unsigned int GetNbDatas(GInfoType type) const throw(GException);
+	unsigned int GetNbDatas(tInfoType type) const;
 
 	/**
 	* Look if a given data is in the dictionary.
@@ -239,21 +242,25 @@ public:
 	*/
 	bool IsStopList(void) const {return(Stop);}
 
+private:
+
 	/**
 	* Increase the number of objects of a given type that make a reference to a
 	* data.
 	* @param id             Identificator of the data.
 	* @param ObjType        Type of the object.
+	* @return New number of references.
 	*/
-	void IncRef(unsigned int id,tObjType ObjType) throw(GException);
+	unsigned int IncRef(unsigned int id,tObjType ObjType);
 
 	/**
 	* Decrease the number of objects of a given type that make a reference to a
 	* data.
 	* @param id             Identificator of the data.
 	* @param ObjType        Type of the object.
+	* @return New number of references.
 	*/
-	void DecRef(unsigned int id,tObjType ObjType) throw(GException);
+	unsigned int DecRef(unsigned int id,tObjType ObjType);
 
 	/**
 	* Get the number of objects of a given type that make a reference to a data.
@@ -261,19 +268,21 @@ public:
 	* @param ObjType        Type of the object.
 	* @return unsigned int.
 	*/
-	unsigned int GetRef(unsigned int id,tObjType ObjType) throw(GException);
+	unsigned int GetRef(unsigned int id,tObjType ObjType);
 
 	/**
 	* Increase the number of objects of a given type using the dictionary.
 	* @param ObjType        Type of the object.
+	* @return New number of references.
 	*/
-	void IncRef(tObjType ObjType) throw(GException);
+	unsigned int IncRef(tObjType ObjType);
 
 	/**
 	* Decrease the number of objects of a given type using the dictionary.
 	* @param ObjType        Type of the object.
+	* @return New number of references.
 	*/
-	void DecRef(tObjType ObjType) throw(GException);
+	unsigned int DecRef(tObjType ObjType);
 
 	/**
 	* Decrease the number of objects of a given type using the dictionary.
@@ -281,10 +290,20 @@ public:
 	*/
 	unsigned int GetRef(tObjType ObjType);
 
+public:
+
+	/**
+	* Clear the number of objects of a given type using the dictionary.
+	* @param ObjType        Type of the object.
+	*/
+	void Clear(tObjType ObjType);
+
 	/**
 	* Destructor of the dictionary.
 	*/
 	virtual ~GDict(void);
+
+	friend class GLang;
 };
 
 

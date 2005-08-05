@@ -6,7 +6,7 @@
 
 	Log File Slot - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003-2005 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -70,44 +70,50 @@ public:
 	* Constructor.
 	* @param name            Name of the file.
 	*/
-	GSlotLog(const char* name) throw(std::bad_alloc,R::RException);
+	GSlotLog(const char* name);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param doc            Document.
 	*/
-	virtual void receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,R::RException);
+	virtual void NextDoc(const GDoc* doc);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param prof           Profile.
 	*/
-	virtual void receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,R::RException);
+	virtual void NextProfile(const GProfile* prof);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang) throw(std::bad_alloc,R::RException);
+	virtual void NextGroupLang(const GLang* lang);
 
 	/**
 	* Method called when executing a sequence of instruction to output some
 	* information.
 	* @param str            String to output.
 	*/
-	virtual void WriteStr(const char* str) throw(std::bad_alloc,R::RException);
+	virtual void WriteStr(const char* str);
 
 	/**
 	* The traitment for a specific chromosome will begin.
 	* @param id             Identificator of the chromosome.
 	*/
-	virtual void receiveNextChromosome(unsigned int id) throw(std::bad_alloc,R::RException);
+	virtual void NextChromosome(unsigned int id);
 
 	/**
 	* The traitment for a specific method will begin.
 	* @param num            Number of the current step.
 	*/
-	virtual void receiveNextMethod(unsigned int num) throw(std::bad_alloc,R::RException);
+	virtual void NextMethod(unsigned int num);
+
+	/**
+	* Start a job.
+	* @param job             Description of ther job.
+	*/
+	virtual void StartJob(const R::RString job);
 
 	/**
 	* Destructor.

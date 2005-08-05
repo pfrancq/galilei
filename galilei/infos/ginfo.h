@@ -66,7 +66,7 @@ protected:
 	/**
 	* Type of the information entity.
 	*/
-	GInfoType Type;
+	tInfoType Type;
 
 public:
 
@@ -75,7 +75,7 @@ public:
 	* @param id              Identificator of the information entity.
 	* @param type            Type of the information entity.
 	*/
-	GInfo(unsigned int id,GInfoType type=infoWord);
+	GInfo(unsigned int id,tInfoType type=infoWord);
 
 	/**
 	* Copy constructor for an information entity.
@@ -137,9 +137,9 @@ public:
 
 	/**
 	* Get the type of the information.
-	* @return GInfoType.
+	* @return tInfoType.
 	*/
-	GInfoType InfoType(void) const {return(Type);}
+	tInfoType InfoType(void) const {return(Type);}
 
 	/**
 	* Verifies if two information entities have the same type.

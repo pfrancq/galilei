@@ -69,7 +69,7 @@ public:
 	* @param id              Identificator of the information entity.
 	* @param type            Type of the information entity.
 	*/
-	GWeightInfo(unsigned int id,GInfoType type=infoWord);
+	GWeightInfo(unsigned int id,tInfoType type=infoWord);
 
 	/**
 	* Constructor of a weighed information entity.
@@ -77,7 +77,7 @@ public:
 	* @param w              Weight of the information entity.
 	* @param type           Type of the information.
 	*/
-	GWeightInfo(unsigned int id,double w,GInfoType type=infoWord);
+	GWeightInfo(unsigned int id,double w,tInfoType type=infoWord);
 
 	/**
 	* Copy constructor of a weighed information entity.

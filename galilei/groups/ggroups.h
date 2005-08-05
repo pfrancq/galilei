@@ -82,41 +82,41 @@ public:
 	* Get a cursor on all the groups.
 	* @return GGroupCursor.
 	*/
-	R::RCursor<GGroup> GetGroupsCursor(void);
+	R::RCursor<GGroup> GetGroupsCursor(void) const;
 
 	/**
 	* Get a cursor on the groups of a given langage.
 	* @param lang            Language of the groups.
 	* @return GGroupCursor.
 	*/
-	R::RCursor<GGroup> GetGroupsCursor(GLang* lang) throw(GException);
+	R::RCursor<GGroup> GetGroupsCursor(GLang* lang);
 
 	/**
 	* Insert a group. The group is also stored in the container correspondong to
 	* its language.
 	* @param grp             Pointer to the group.
 	*/
-	void InsertGroup(GGroup* grp) throw(std::bad_alloc);
+	void InsertGroup(GGroup* grp);
 
 	/**
 	* Delete a group.
 	* @param grp             Pointer to the group.
 	*/
-	void DeleteGroup(GGroup* grp) throw(std::bad_alloc);
+	void DeleteGroup(GGroup* grp);
 
 	/**
 	* Get the group where the given subprofile is attached.
 	* @param sub            Subprofile used.
 	* @returns Pointer to the group.
 	*/
-	GGroup* GetGroup(const GSubProfile* sub) throw(GException);
+	GGroup* GetGroup(const GSubProfile* sub);
 
 	/**
 	* Get a group corresponding to a given identificator.
 	* @param id         Identificator of the group.
 	* @return Pointer to GGroup.
 	*/
-	GGroup* GetGroup(unsigned int id) throw(std::bad_alloc);
+	GGroup* GetGroup(unsigned int id) const;
 
 	/**
 	* Get the number of groups handled.
@@ -147,6 +147,12 @@ public:
 	* Clear all the groups.
 	*/
 	void ClearGroups(void);
+
+	/**
+	* A subprofile was updated and the corresponding groups must be updated.
+	* @param sub             Subprofile modified.
+	*/
+	void UpdateGroups(GSubProfile* sub);
 
 	/**
 	* Destructor of the groups.

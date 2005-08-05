@@ -73,7 +73,7 @@ protected :
 	/**
 	* Type of the data.
 	*/
-	GInfoType Type;
+	tInfoType Type;
 
 	/**
 	* Number of references in documents.
@@ -93,31 +93,21 @@ protected :
 public:
 
 	/**
-	* Construct a data. Its idenfiticator is invalid (cNoRef).
-	* @param name           Name.
-	* @param type           Type of the data.
-	*/
-	GData(const R::RString& name,GInfoType type) throw(std::bad_alloc);
-
-	/**
 	* Construct a data with a known identificator.
 	* @param id             Identificator of the data.
 	* @param name           Name.
 	* @param type           Type of the data.
+	* @param refdocs         Number of documents referenced.
+	* @param refsubprofiles  Number of subprofiles referenced.
+	* @param refgroups       Number of groups referenced.
 	*/
-	GData(unsigned int id,const R::RString& name,GInfoType type) throw(std::bad_alloc);
+	GData(unsigned int id,const R::RString& name,tInfoType type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups);
 
 	/**
 	* Copy constructor of a data.
 	* @param d               Data.
 	*/
-	GData(const GData& d) throw(std::bad_alloc);
-
-	/**
-	* Copy constructor of a data.
-	* @param d              Pointer to a data.
-	*/
-	GData(const GData* d) throw(std::bad_alloc);
+	GData(const GData& d);
 
 	/**
 	* Compare the names of two data (work like the 'strcmp' function of ANSI
@@ -167,15 +157,7 @@ public:
 	* Assignment operator for data.
 	* @param d               Data.
 	*/
-	GData& operator=(const GData& d) throw(std::bad_alloc);
-
-	/**
-	* Compute the first hash index of the name of a data.
-	* @see R::RHashContainer
-	* @param d               Pointer to a data.
-	*/
-	static int HashIndex(const GData* d)
-		{return(R::RString::HashIndex(d->Name));}
+	GData& operator=(const GData& d);
 
 	/**
 	* Compute the first hash index of the name of a data.
@@ -184,6 +166,14 @@ public:
 	*/
 	static int HashIndex(const GData& d)
 		{return(R::RString::HashIndex(d.Name));}
+
+	/**
+	* Compute the first hash index of the name of a data.
+	* @see R::RHashContainer
+	* @param d               Data.
+	*/
+	static int HashIndex(const GData* d)
+		{return(R::RString::HashIndex(d->Name));}
 
 	/**
 	* Compute the first hash index of a string.
@@ -212,7 +202,7 @@ public:
 	/**
 	* Compute the second hash index of the name of a data.
 	* @see R::RHashContainer
-	* @param d               Pointer to a data.
+	* @param d               Data.
 	*/
 	static int HashIndex2(const GData* d)
 		{return(R::RString::HashIndex2(d->Name));}
@@ -235,9 +225,9 @@ public:
 
 	/**
 	* Get the type of the data.
-	* @return GInfoType.
+	* @return tInfoType.
 	*/
-	GInfoType GetType(void) const {return(Type);}
+	tInfoType GetType(void) const {return(Type);}
 
 	/**
 	* Set the Identificator of the word.
@@ -259,13 +249,13 @@ public:
 	* Increase the number of references on this data for a given object type.
 	* @param ObjType        Type of the reference.
 	*/
-	void IncRef(tObjType ObjType) throw(GException);
+	unsigned int IncRef(tObjType ObjType);
 
 	/**
 	* Decrease the number of references on this data for a given object type.
 	* @param ObjType        Type of the reference.
 	*/
-	void DecRef(tObjType ObjType) throw(GException);
+	unsigned int DecRef(tObjType ObjType);
 
 	/**
 	* Get the number of references on this data for a given object type.
@@ -275,7 +265,13 @@ public:
 	unsigned int GetRef(tObjType ObjType) const;
 
 	/**
-	* Clear the information of the data.
+	* Clear the information of the data link to a specific object.
+	* @param ObjType        Type of the object.
+	*/
+	virtual void Clear(tObjType ObjType);
+
+	/**
+	* Clear all the information of the data.
 	*/
 	virtual void Clear(void);
 
@@ -285,7 +281,7 @@ public:
 	* first time it find its.
 	* @return Pointer to a GData.
 	*/
-	virtual GData* CreateCopy(void) const throw(std::bad_alloc)=0;
+	virtual GData* CreateCopy(void) const=0;
 
 	/**
 	* Test if the data is considered as empty. By default, every data defined by

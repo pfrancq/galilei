@@ -6,7 +6,7 @@
 
 	Generic Slot for GALILEI Session - Implementation.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2005 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -45,56 +45,68 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSlot::GSlot(void) throw(std::bad_alloc,RException)
+GSlot::GSlot(void)
 	: RPrgOutput()
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextDoc(const GDoc*) throw(std::bad_alloc,RException)
+void GSlot::NextDoc(const GDoc*)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextProfile(const GProfile*) throw(std::bad_alloc,RException)
+void GSlot::NextProfile(const GProfile*)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextProfileExport(const GProfile*) throw(std::bad_alloc,RException)
+void GSlot::NextProfileExport(const GProfile*)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextDocumentExport(const GDoc*) throw(std::bad_alloc,RException)
+void GSlot::NextDocumentExport(const GDoc*)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextGroupExport(const GGroup*) throw(std::bad_alloc,RException)
+void GSlot::NextGroupExport(const GGroup*)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextGroupLang(const GLang*) throw(std::bad_alloc,RException)
+void GSlot::NextGroupLang(const GLang*)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextChromosome(unsigned int) throw(std::bad_alloc,RException)
+void GSlot::NextChromosome(unsigned int)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::receiveNextMethod(unsigned int) throw(std::bad_alloc,RException)
+void GSlot::NextMethod(unsigned int)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GSlot::StartJob(const R::RString)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GSlot::EndJob(void)
 {
 }
 

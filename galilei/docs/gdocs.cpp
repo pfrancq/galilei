@@ -35,6 +35,7 @@
 #include <gdocs.h>
 #include <gdoc.h>
 #include <glang.h>
+#include <gdict.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -56,6 +57,7 @@ public:
 		: RContainer<GDoc,false,true>(10000,5000), Lang(lang) {}
 	int Compare(const GDocsLang& docLang) const;
 	int Compare(const GLang* lang) const;
+	void Clear(void);
 	virtual ~GDocsLang(void) {}
 };
 
@@ -83,6 +85,14 @@ int GDocs::GDocsLang::Compare(const GLang* lang) const
 	}
 	if(!lang) return(1);
 	return(Lang->Compare(lang));
+}
+
+//------------------------------------------------------------------------------
+void GDocs::GDocsLang::Clear(void)
+{
+	if(Lang&&Lang->GetDict())
+		Lang->GetDict()->Clear(otDoc);
+	R::RContainer<GDoc,false,true>::Clear();
 }
 
 
@@ -208,6 +218,8 @@ GDoc* GDocs::GetDoc(unsigned int id) throw(std::bad_alloc, GException)
 {
 	GDoc* d;
 
+	if(id>GetMaxPos())
+		return(0);
 	d=(*this)[id];
 	if(!d)
 		throw GException("Unknown document");
@@ -229,7 +241,9 @@ GDoc* GDocs::GetDoc(const char* url) throw(std::bad_alloc)
 //-----------------------------------------------------------------------------
 void GDocs::Clear(void)
 {
-	DocsLang.Clear();
+	RCursor<GDocsLang> Cur(DocsLang);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Clear();
 	DocsRefUrl.Clear();
 	R::RContainer<GDoc,true,true>::Clear();
 }

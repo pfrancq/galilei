@@ -6,7 +6,7 @@
 
 	Generic Storage Manager - Header.
 
-	Copyright 2003-2004 by the Université libre de Bruxelles.
+	Copyright 2003-2005 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -70,13 +70,20 @@ protected:
 	*/
 	R::RString Name;
 
+	/**
+	* All the objects must be loaded (true) or only those which are modified
+	* (false).
+	*/
+	bool LoadAll;
+
 public:
 
 	/**
 	* Constructor.
 	* @param n              Name.
+	* @param all            Load all?
 	*/
-	GStorage(R::RString n) throw(std::bad_alloc,GException);
+	GStorage(R::RString n,bool all) throw(std::bad_alloc,GException);
 
 	/**
 	* Compute the number of objects of a given type which are saved.
@@ -86,11 +93,55 @@ public:
 	virtual unsigned int GetNbSaved(tObjType type) throw(GException)=0;
 
 	/**
+	* Are all the object loaded or just the modified ones.
+	*/
+	bool MustLoadAll(void) const {return(LoadAll);}
+
+	/**
 	* Assign an identifier to a new data of a given dictionary.
 	* @param data           Data.
 	* @param dict           Dictionary.
 	*/
 	virtual void AssignId(GData* data,const GDict* dict) throw(GException)=0;
+
+	/**
+	* A document was updated and the corresponding feedbacks must be updated.
+	* @param doc             Document modified.
+	*/
+	virtual void UpdateProfiles(GDoc* doc)=0;
+
+	/**
+	* A subprofile was updated and the corresponding groups must be updated.
+	* @param sub             Subprofile modified.
+	*/
+	virtual void UpdateGroups(GSubProfile* sub)=0;
+
+	/**
+	* Save the references of a given object type and for a given information
+	* entity.
+	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param lang            Language of the object.
+	* @param id              Identificator of the information entity.
+	* @param refs            Number of references.
+	*/
+	virtual void SaveRefs(tObjType type,GLang* lang,size_t id,size_t refs)=0;
+
+	/**
+	* Save the references of a given object type.
+	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param lang            Language of the object.
+	* @param refs            Number of references.
+	*/
+	virtual void SaveRefs(tObjType type,GLang* lang,size_t refs)=0;
+
+	/**
+	* Load the description of a given object.
+	* @param infos           Container that will hold the description.
+	* @param lang            Language of the object.
+	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param id              Identificator of the object.
+	*/
+	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,GLang* lang,tObjType type,size_t id)=0;
 
 	/**
 	* Loading a dictionary/stoplist.

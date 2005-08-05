@@ -32,10 +32,13 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include<ggroups.h>
-#include<ggroup.h>
-#include<glang.h>
-#include<gsubprofile.h>
+#include <ggroups.h>
+#include <ggroup.h>
+#include <glang.h>
+#include <gdict.h>
+#include <gsubprofile.h>
+#include <gsession.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -78,7 +81,7 @@ public:
 	GLang* Lang;              // Language
 
 	// Constructor and Compare methods.
-	GGroupsLang(GLang* lang) throw(std::bad_alloc)
+	GGroupsLang(GLang* lang)
 		: RContainer<GGroup,false,true>(20,10), Lang(lang) {}
 	int Compare(const GGroupsLang& groups) const {return(Lang->Compare(*groups.Lang));}
 	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
@@ -115,14 +118,14 @@ GGroup* GGroups::GGroupsLang::GetGroup(const GSubProfile* sub)
 
 //------------------------------------------------------------------------------
 GGroups::GGroups(unsigned int g)
-	: RContainer<GGroup,true,true>(g+(g/2),g/2), GroupsLang(2,1),
+	: RContainer<GGroup,true,true>(g+(g/2),g/2), GroupsLang(20,10),
 	  FreeIds(50,25)
 {
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GGroup> GGroups::GetGroupsCursor(void)
+R::RCursor<GGroup> GGroups::GetGroupsCursor(void) const
 {
 	R::RCursor<GGroup> cur(*this);
 	return(cur);
@@ -130,7 +133,7 @@ R::RCursor<GGroup> GGroups::GetGroupsCursor(void)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GGroup> GGroups::GetGroupsCursor(GLang* lang) throw(GException)
+R::RCursor<GGroup> GGroups::GetGroupsCursor(GLang* lang)
 {
 	GGroupsLang* ptr;
 	R::RCursor<GGroup> cur;
@@ -147,7 +150,7 @@ R::RCursor<GGroup> GGroups::GetGroupsCursor(GLang* lang) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GGroups::InsertGroup(GGroup* grp) throw(std::bad_alloc)
+void GGroups::InsertGroup(GGroup* grp)
 {
 	GGroupsLang* groupsLang;
 
@@ -158,7 +161,7 @@ void GGroups::InsertGroup(GGroup* grp) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGroups::DeleteGroup(GGroup* grp) throw(std::bad_alloc)
+void GGroups::DeleteGroup(GGroup* grp)
 {
 	GGroupsLang* groupsLang;
 
@@ -170,7 +173,7 @@ void GGroups::DeleteGroup(GGroup* grp) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-GGroup* GGroups::GetGroup(const GSubProfile* sub) throw(GException)
+GGroup* GGroups::GetGroup(const GSubProfile* sub)
 {
 	GGroupsLang* groupsLang;
 
@@ -182,7 +185,7 @@ GGroup* GGroups::GetGroup(const GSubProfile* sub) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GGroup* GGroups::GetGroup(unsigned int id) throw(std::bad_alloc)
+GGroup* GGroups::GetGroup(unsigned int id) const
 {
 	GGroup* grp;
 
@@ -222,18 +225,21 @@ unsigned int GGroups::GetNewId(void) const
 //------------------------------------------------------------------------------
 void GGroups::Clear(GLang* lang)
 {
-	unsigned int i;
+	size_t i,nb;
 	GGroupsLang* grps=GroupsLang.GetPtr<const GLang*>(lang);
 	GGroup* grp;
 
 	// Go through the groups and delete all invalid groups.
 	if(!grps) return;
-	for(i=grps->GetNb()+1;--i;)
+
+	if(lang&&lang->GetDict())
+		lang->GetDict()->Clear(otGroup);
+	for(nb=grps->GetNb(),i=0;i<nb;i++)
 	{
-		grp=(*grps)[0];
-		grps->DeletePtr(grp);
+		grp=(*grps)[i];
 		DeletePtr(grp);
 	}
+	grps->Clear();
 }
 
 
@@ -245,6 +251,20 @@ void GGroups::ClearGroups(void)
 	{
 		Clear(Groups()->Lang);
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GGroups::UpdateGroups(GSubProfile* sub)
+{
+	// If there is a group -> propagate in memory
+	if(sub->GetGroup())
+		sub->GetGroup()->HasUpdate(sub);
+
+	// Use database
+	GSession* session=GSession::Get();
+	if(session&&session->GetStorage()&&(!session->GetStorage()->MustLoadAll()))
+		session->GetStorage()->UpdateGroups(sub);
 }
 
 

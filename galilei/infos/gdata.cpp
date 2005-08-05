@@ -6,7 +6,7 @@
 
 	 (or stem) - Implementation.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -45,33 +45,17 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GData::GData(const RString& name,GInfoType type) throw(std::bad_alloc)
-	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0), NbRefSubProfiles(0),
-	  NbRefGroups(0)
+GData::GData(unsigned id,const RString& name,tInfoType type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
+	: Id(id), Name(name), Type(type), NbRefDocs(refdocs), NbRefSubProfiles(refsubprofiles),
+	  NbRefGroups(refgroups)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GData::GData(unsigned id,const RString& name,GInfoType type) throw(std::bad_alloc)
-	: Id(id), Name(name), Type(type), NbRefDocs(0), NbRefSubProfiles(0),
-	  NbRefGroups(0)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GData::GData(const GData& d) throw(std::bad_alloc)
+GData::GData(const GData& d)
 	: Id(d.Id), Name(d.Name), Type(d.Type), NbRefDocs(d.NbRefDocs),
 	  NbRefSubProfiles(d.NbRefSubProfiles), NbRefGroups(d.NbRefGroups)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GData::GData(const GData* d) throw(std::bad_alloc)
-  : Id(d->Id), Name(d->Name), Type(d->Type), NbRefDocs(d->NbRefDocs),
-    NbRefSubProfiles(d->NbRefSubProfiles), NbRefGroups(d->NbRefGroups)
 {
 }
 
@@ -112,7 +96,7 @@ int GData::Compare(const unsigned int id) const
 
 
 //-----------------------------------------------------------------------------
-GData& GData::operator=(const GData& d) throw(std::bad_alloc)
+GData& GData::operator=(const GData& d)
 {
 	Id=d.Id;
 	Name=d.Name;
@@ -139,48 +123,48 @@ RString GData::GetName(void) const
 
 
 //-----------------------------------------------------------------------------
-void GData::IncRef(tObjType ObjType) throw(GException)
+unsigned int GData::IncRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
 		case otDoc:
-			NbRefDocs++;
+			return(++NbRefDocs);
 			break;
 		case otSubProfile:
-			NbRefSubProfiles++;
+			return(++NbRefSubProfiles);
 			break;
 		case otGroup:
-			NbRefGroups++;
+			return(++NbRefGroups);
 			break;
 		default:
-			throw GException ("Unkown type to increase");
+			throw GException ("Unkown type to increase data "+itou(Id));
 			break;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GData::DecRef(tObjType ObjType) throw(GException)
+unsigned int GData::DecRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
 		case otDoc:
 			if(!NbRefDocs)
-				throw GException("Cannot decrease null number of references for documents");
-			NbRefDocs--;
+				throw GException("Cannot decrease null number of references for documents for data "+itou(Id));
+			return(--NbRefDocs);
 			break;
 		case otSubProfile:
 			if(!NbRefSubProfiles)
-				throw GException("Cannot decrease null number of references for subprofiles");
-			NbRefSubProfiles--;
+				throw GException("Cannot decrease null number of references for subprofiles for data "+itou(Id));
+			return(--NbRefSubProfiles);
 			break;
 		case otGroup:
 			if(!NbRefGroups)
-				throw GException("Cannot decrease null number of references for groups");
-			NbRefGroups--;
+				throw GException("Cannot decrease null number of references for groups for data "+itou(Id));
+			return(--NbRefGroups);
 			break;
 		default:
-			throw GException ("Unkown type to decrease");
+			throw GException ("Unkown type to decrease data "+itou(Id));
 			break;
 	}
 }
@@ -214,6 +198,41 @@ unsigned int GData::GetRef(tObjType ObjType) const
 			break;
 	}
 	return(0);
+}
+
+
+//-----------------------------------------------------------------------------
+void GData::Clear(tObjType ObjType)
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			NbRefDocs=0;
+			break;
+		case otSubProfile:
+			NbRefSubProfiles=0;
+			break;
+		case otGroup:
+			NbRefGroups=0;
+			break;
+		case otDocSubProfile:
+			NbRefDocs=0;
+			NbRefSubProfiles=0;
+			break;
+		case otDocGroup:
+			NbRefDocs=0;
+			NbRefGroups=0;
+			break;
+		case otSubProfileGroup:
+			NbRefSubProfiles=0;
+			NbRefGroups=0;
+			break;
+		default:
+			NbRefDocs=0;
+			NbRefSubProfiles=0;
+			NbRefGroups=0;
+			break;
+	}
 }
 
 

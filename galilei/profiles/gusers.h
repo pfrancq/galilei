@@ -156,6 +156,12 @@ public:
 	R::RCursor<GSubProfile> GetSubProfilesCursor(const GLang* lang) const;
 
 	/**
+	* A document was updated and the corresponding feedbacks must be updated.
+	* @param doc             Document modified.
+	*/
+	void UpdateProfiles(GDoc* doc);
+
+	/**
 	* Clear all the users.
 	*/
 	void ClearUsers(void);

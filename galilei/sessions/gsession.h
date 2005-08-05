@@ -120,14 +120,54 @@ protected:
 	*/
 	static R::RContainer<GSignalHandler,false,false> Handlers;
 
+	/**
+	* Must the documents be saved after computed?
+	*/
+	bool SaveDocs;
+
+	/**
+	* Must the subprofiles be saved after computed?
+	*/
+	bool SaveSubProfiles;
+
+	/**
+	* Must the groups be saved after computed?
+	*/
+	bool SaveGroups;
+
+	/**
+	* Compute only the modified documents.
+	*/
+	bool ComputeModifiedDocs;
+
+	/**
+	* Compute only the modified subprofiles.
+	*/
+	bool ComputeModifiedSubProfiles;
+
+	/**
+	* Use the modified groups.
+	*/
+	bool ComputeModifiedGroups;
+
+	/**
+	* Slot for the session.
+	*/
+	GSlot* Slot;
+
 public:
 
 	/**
 	* Constructor.
 	* @param str             Storage manager.
-	* @param tests           Test mode.
+	* @param savedocs        Save documents after computation.
+	* @param modifieddocs    Computed only modified documents.
+	* @param savesubprofiles Save subprofiles after computation.
+	* @param modifiedsubprofiles Computed only modified subprofiles.
+	* @param savegroups      Save groups after computation.
+	* @param modifiedgroups  Use modified groups.
 	*/
-	GSession(GStorage* str,bool tests=false);
+	GSession(GStorage* str,bool savedocs,bool modifieddocs,bool savesubprofiles,bool modifiedsubprofiles,bool savegroups,bool modifiedgroups);
 
 	/**
 	* Get a pointer to the unique session of the process.
@@ -153,6 +193,32 @@ public:
 	static void ResetBreak(void) {ExternBreak=false;}
 
 	/**
+	* Must the objects be saved after computation.
+	* @param objtype        Type of the object.
+	*/
+	bool MustSave(tObjType objtype) const;
+
+	/**
+	* Must only the modified objects be computed.
+	* @param objtype        Type of the object.
+	*/
+	bool ComputeModified(tObjType objtype) const;
+
+	/**
+	* Must the objects be saved.
+	* @param objtype        Type of the object.
+	* @param save           Save the objects after computation?
+	*/
+	void SetSave(tObjType objtype,bool save=true);
+
+	/**
+	* Must only the modified objects be computed.
+	* @param objtype        Type of the object.
+	* @param modified       Computed only modified objects?
+	*/
+	void SetComputeModified(tObjType objtype,bool modified=true);
+
+	/**
 	* Connect the session to managers.
 	*/
 	void Connect(void);
@@ -173,7 +239,7 @@ public:
 	* Get the subjects defined.
 	* @return Pointer to GSubjects.
 	*/
-	GSubjects* GetSubjects(void) {return(Subjects);}
+	GSubjects* GetSubjects(void);
 
 	/**
 	* Set the manager for the similarities between (sub)profiles.
@@ -207,6 +273,16 @@ public:
 	* Get the manager for the similarities between groups/documents.
 	*/
 	GGroupsDocsSimsManager* GetGroupsDocsSims(void) const {return(GroupsDocsSims);}
+
+	/**
+	* Set the slot for the session.
+	*/
+	void SetSlot(GSlot* slot);
+
+	/**
+	* Get the slot of the session.
+	*/
+	GSlot* GetSlot(void) const {return(Slot);}
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
@@ -245,19 +321,15 @@ public:
 	* Analyse the documents. At the end, all the enabled post-docs methods are
 	* run.
 	* @param rec             Receiver for the signals.
-	* @param modified        Recompute only modified elements or all.
-	* @param save            Document must be saved.
 	*/
-	void AnalyseDocs(GSlot* rec=0,bool modified=true,bool save=true);
+	void AnalyseDocs(GSlot* rec=0);
 
 	/**
 	* Analyse the documents. At the end, all the enabled post-docs methods are
 	* run.
 	* @param rec             Receiver for the signals.
-	* @param modified        Recompute only modified elements or all.
-	* @param save            Document must be saved.
 	*/
-	void AnalyseNewDocs(GSlot* rec=0,bool modified=true,bool save=true);
+	void AnalyseNewDocs(GSlot* rec=0);
 
 	/**
 	* run post-grouping methods are called.
@@ -275,21 +347,15 @@ public:
 	/**
 	* Compute the (sub)profiles.
 	* @param rec            Receiver for the signals.
-	* @param modified       Recompute only modified elements or all.
-	* @param save           Save modified elements.
-	* @param saveLinks      Save links informations.
 	*/
-	void CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks);
+	void CalcProfiles(GSlot* rec);
 
 	/**
 	* Compute a profile.
 	* @param rec            Receiver for the signals.
 	* @param profile        Profile to compute.
-	* @param modified       Recompute only modified elements or all.
-	* @param save           Save modified elements.
-	* @param saveLinks      Save links informations.
 	*/
-	void CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,bool saveLinks);
+	void CalcProfile(GSlot* rec,GProfile* profile);
 
 	/**
 	* run pre-profiling methods are called.
@@ -307,10 +373,8 @@ public:
 	* Groups the subprofile into virtual communities. At the end, all the
 	* enabled post-grouping methods are called.
 	* @param rec            Receiver of the signals.
-	* @param modified       Recompute only modified elements or all.
-	* @param save           Save modified elements.
 	*/
-	void GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException);
+	void GroupingProfiles(GSlot* rec)  throw(GException);
 
 	/**
 	* run post-grouping methods are called.
@@ -334,9 +398,8 @@ public:
 
 	/**
 	* Copy the ideal groupment in the current one.
-	* @param save           Save modified elements.
 	*/
-	void CopyIdealGroups(bool save);
+	void CopyIdealGroups(void);
 
 	/**
 	* Get a cursor over the filters of the system.
@@ -394,9 +457,8 @@ public:
 
 	/**
 	* Re-init the session (clear all containers).
-	* @param Save           must the reinit be saved?
 	*/
-	void ReInit(bool Save);
+	void ReInit(void);
 
 	/**
 	* Export the vectors/words matrix

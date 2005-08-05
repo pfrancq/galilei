@@ -55,6 +55,13 @@ namespace GALILEI{
 */
 class GWeightInfos : public R::RContainer<GWeightInfo,true,true>
 {
+protected:
+
+	/**
+	* State of the object.
+	*/
+	tObjState State;
+
 public:
 
 	/**
@@ -95,9 +102,27 @@ public:
 	static int sortOrder(const void* a,const void* b);
 
 	/**
+	* Return the state of the document.
+	* @returns tObjState value.
+	*/
+	tObjState GetState(void) const;
+
+	/**
+	* Set the state of the document.
+	* @param state           New state.
+	*/
+	void SetState(tObjState state);
+
+	/**
+	* Load information from the current storage.
+	* @param infos           Container hold
+	*/
+	virtual void LoadInfos(void) const;
+
+	/**
 	* Get a Cursor on the weighted information entities.
 	*/
-	R::RCursor<GWeightInfo> GetInfos(void);
+	R::RCursor<GWeightInfo> GetInfos(void) const;
 
 	/**
 	* Insert an information.
@@ -122,11 +147,23 @@ public:
 	*/
 	void Clear(void);
 
+	 /**
+ 	* Get the number of elements in the container.
+ 	* @return size_t.
+ 	*/
+ 	size_t GetNb(void) const;
+
 	/**
 	* Verify if a list is empty.
 	* @return bool
 	*/
 	bool IsEmpty(void) const {return(!GetNb());}
+
+	/**
+	* Verify if a list is not empty.
+	* @return bool
+	*/
+	bool IsDefined(void) const {return(GetNb());}
 
 	/**
 	* Compute the maximal weight of the information entities in the list. The

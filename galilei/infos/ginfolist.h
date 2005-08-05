@@ -61,7 +61,7 @@ public:
 	* @param id              Identificator of the information entity.
 	* @param type            Type of the information entity.
 	*/
-	GInfoList(unsigned int id,GInfoType type=infoWordList) throw(std::bad_alloc);
+	GInfoList(unsigned int id,tInfoType type=infoWordList) throw(std::bad_alloc);
 
 	/**
 	* Copy constructor for a list of information entities.

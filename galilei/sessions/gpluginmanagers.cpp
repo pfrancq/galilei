@@ -79,7 +79,7 @@ using namespace R;
 GPluginManagers::GPluginManagers(void)
 	: RContainer<GGenericPluginManager,true,true>(20,10)
 {
-	InsertPtr(new GLangManager(true));
+	InsertPtr(new GLangManager());
 	InsertPtr(new GLinkCalcManager());
 	InsertPtr(new GDocAnalyseManager());
 	InsertPtr(new GPostDocManager());

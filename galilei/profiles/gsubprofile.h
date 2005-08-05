@@ -77,11 +77,6 @@ protected:
 	GGroup* Group;
 
 	/**
-	* State of the subprofile.
-	*/
-	tObjState State;
-
-	/**
 	* Date of the attachment of the subprofile into the group.
 	*/
 	R::RDate Attached;
@@ -109,19 +104,11 @@ public:
 	* @param id              Identifier.
 	* @param lang            Language of the subprofile.
 	* @param grp             Group.
-	* @param a               String representing the date where it was attached.
-	* @param u               String representing the date of the last updated.
-	* @param c               String representing the date of the last computation.
+	* @param a               Date where it was attached.
+	* @param u               Date of the last updated.
+	* @param c               Date of the last computation.
 	*/
-	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,const char* a,const char* u,const char* c);
-
-	/**
-	* Constructor of the subprofile.
-	* @param session         Session.
-	* @param prof            Profile.
-	* @param lang            Language of the subprofile.
-	*/
-	GSubProfile(GSession* session,GProfile* prof,GLang* lang);
+	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,R::RDate a,R::RDate u,R::RDate c);
 
 	/**
 	* Compare two subprofiles by comparing their identificator.
@@ -156,6 +143,12 @@ public:
 	int Compare(const GLang* lang) const;
 
 	/**
+	* Load information from the current storage.
+	* @param infos           Container hold
+	*/
+	virtual void LoadInfos(void) const;
+
+	/**
 	* Insert a document into the list of those used to compute the subprofile.
 	* @param fddk             Pointer to the feedback.
 	*/
@@ -174,18 +167,6 @@ public:
 	void SetId(unsigned int id);
 
 	/**
-	* Get the state of the subprofile.
-	* @return tObjState.
-	*/
-	tObjState GetState(void) const {return(State);}
-
-	/**
-	* Set the state of the subprofile
-	* @param state           New state of the subprofile.
-	*/
-	void SetState(tObjState state);
-
-	/**
 	* Get the language of the subprofile.
 	* @return Pointer to the GLang.
 	*/
@@ -198,16 +179,9 @@ public:
 	GProfile* GetProfile(void) const {return(Profile);}
 
 	/**
-	* Verify if the subprofile is defined, i.e. it has a list of information
-	* entities.
+	* Verify if the subprofile must be (re-)computed.
 	*/
-	bool IsDefined(void) const;
-
-	/**
-	* Verify if the subprofile can be computed, i.e. when some documents are
-	* associated to it.
-	*/
-	bool CanCompute(void);
+	bool MustCompute(void) const;
 
 	/**
 	* Get the group holding the subprofile.
@@ -240,17 +214,10 @@ public:
 	R::RDate GetComputed(void) const;
 
 	/**
-	* See if the subprofile was updated until the last time he was inserted into
-	* a group.
+	* Verify if the subprofile must be (re-)grouped.
 	* @returns Boolean.
 	*/
-	bool IsUpdated(void) const;
-
-	/**
-	* Look if a given document has the same description since the last time it
-	* was used to compute the subprofile.
-	*/
-	bool SameDescription(const GFdbk* fdbk) const;
+	bool MustGroup(void) const;
 
 	/**
 	* Get the number of common OK document between two subprofiles. In
@@ -292,18 +259,14 @@ public:
 	R::RCursor<GFdbk> GetFdbks(void) const;
 
 	/**
-	* Get the number of elements of the vector that are not null.
-	*/
-	unsigned int GetNbNoNull(void) const;
-
-	/**
 	* Update the subprofile by assigning it a set of information and a language.
+	* @param lang             Pointer to the language.
 	* @param infos            Pointer to the information.
 	* @param computed         The update is called after a computation (and not
 	*                         after a loading from a database).
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed);
+	void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed);
 
 	/**
 	* Clear all the assessments of the subprofile.

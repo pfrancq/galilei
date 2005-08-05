@@ -31,12 +31,18 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R Project
+#include <rvectorint.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdoc.h>
 #include <glink.h>
 #include <glang.h>
 #include <gweightinfo.h>
 #include <gsession.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -49,46 +55,21 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const RString& u,const RString& a,unsigned int f,unsigned int ownerid,unsigned int nbf)
+GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,unsigned int f,unsigned int ownerid)
 	:  GWeightInfos(60), URL(url), Name(name), Id(id),
-	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(nbf+nbf/2,nbf/2),
-	  Failed(f), LinkSet(5,2)/*,Subjects(2,1)*/, OwnerId(ownerid)
+	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(0),
+	  Failed(f), LinkSet(5,2), OwnerId(ownerid)
 {
-	if(Updated>Computed)
-	{
-		if(Computed==RDate::null)
-			State=osCreated;
-		else
-			State=osModified;
-	}
-	else
-		State=osUpToDate;
 	GSession::Event(this,eObjCreated);
 }
 
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RString& url,const RString& name,const RString& mime)
-	: GWeightInfos(60), URL(url), Name(name), Id(cNoRef),
-	  Lang(0), MIMEType(mime), Updated(), Computed(), Fdbks(50,25),
-	  Failed(0), LinkSet(5,2)//,Subjects(2,1)
+bool GDoc::MustCompute(void) const
 {
-	if(Updated>Computed)
-	{
-		if(Computed==RDate::null)
-			State=osCreated;
-		else
-			State=osModified;
-	}
-	else
-		State=osUpToDate;
-}
-
-
-//------------------------------------------------------------------------------
-bool GDoc::IsDefined(void) const
-{
-	return(!GWeightInfos::IsEmpty());
+	if(Updated<Computed)
+		return(false);
+	return(true);
 }
 
 
@@ -117,6 +98,17 @@ int GDoc::Compare(const unsigned id) const
 int GDoc::Compare(const GLang* lang) const
 {
 	return(Lang->Compare(lang));
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::LoadInfos(void) const
+{
+	RContainer<GWeightInfo,false,true> Infos(1000,500);
+	GSession* session=GSession::Get();
+	if(session&&session->GetStorage())
+		session->GetStorage()->LoadInfos(Infos,Lang,otDoc,Id);
+	const_cast<GDoc*>(this)->Update(Lang,&Infos,false);
 }
 
 
@@ -170,20 +162,6 @@ void GDoc::SetMIMEType(const RString& mime)
 
 
 //------------------------------------------------------------------------------
-tObjState GDoc::GetState(void) const
-{
-	return(State);
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::SetState(tObjState state)
-{
-	State=state;
-}
-
-
-//------------------------------------------------------------------------------
 void GDoc::SetId(unsigned int id)
 {
 	if(id==cNoRef)
@@ -193,17 +171,17 @@ void GDoc::SetId(unsigned int id)
 
 
 //------------------------------------------------------------------------------
-RCursor<GProfile> GDoc::GetFdbks(void) const
+R::RVectorInt<true>* GDoc::GetFdbks(void) const
 {
-	return(RCursor<GProfile>(Fdbks));
+	return(Fdbks);
 }
 
 
 //------------------------------------------------------------------------------
 void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
-	// If document had a language (and a dictionnary) -> remove its references
-	if(Lang&&Lang->GetDict())
+	// If document had a language -> remove its references
+	if(computed&&Lang)
 		DelRefs(otDoc,Lang);
 
 	// Assign language and information
@@ -213,20 +191,21 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 	{
 		State=osUpdated;
 		Computed.SetToday();
+
+		// Update the profiles that have assessed it.
+		if(GSession::Get())
+			GSession::Get()->UpdateProfiles(this);
 	}
+	else
+		State=osUpToDate;
 	GWeightInfos::operator=(*infos);
 
 	// Clear infos
 	infos->Clear();
 
-	// if document has a language (and a dictionnary) -> update its references
-	if(Lang&&Lang->GetDict())
+	// If document has a language -> update its references
+	if(computed&&Lang)
 		AddRefs(otDoc,Lang);
-
-	// Signal to the profiles that the document has changed
-	RCursor<GProfile> Cur(Fdbks);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->HasUpdate(Id,computed);
 
 	// Emit an event that it was modified
 	GSession::Event(this,eObjModified);
@@ -234,30 +213,36 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 
 
 //------------------------------------------------------------------------------
-void GDoc::InsertFdbk(GProfile* prof)
+void GDoc::InsertFdbk(unsigned int id)
 {
-	Fdbks.InsertPtr(prof);
+	if(!Fdbks)
+		Fdbks=new R::RVectorInt<true>(500);
+	Fdbks->Insert(id);
 }
 
 
 //------------------------------------------------------------------------------
 void GDoc::DeleteFdbk(unsigned int id)
 {
-	Fdbks.DeletePtr(id);
+	if(Fdbks)
+		Fdbks->Delete(id);
 }
 
 
 //------------------------------------------------------------------------------
 void GDoc::ClearFdbks(void)
 {
- 	Fdbks.Clear();
+ 	if(Fdbks)
+		Fdbks->Reset();
 }
 
 
 //------------------------------------------------------------------------------
 unsigned int GDoc::GetNbFdbks(void) const
 {
-	return(Fdbks.GetNb());
+	if(Fdbks)
+		return(Fdbks->GetNbInt());
+	return(0);
 }
 
 
@@ -291,7 +276,7 @@ GDoc::~GDoc(void)
 	try
 	{
 		// If document have a language -> remove its references
-		if(Lang)
+		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
 			DelRefs(otDoc,Lang);
 	}
 	catch(...)

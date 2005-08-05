@@ -189,6 +189,11 @@ protected:
 	*/
 	R::RContainer<R::RContainer<GSubject,false,false>,true,false> Docs;
 
+	/**
+	* Must the simulation be saved?
+	*/
+	bool SaveSimulation;
+
 public:
 
 	/**
@@ -253,29 +258,25 @@ public:
 
 	/**
 	* Create new feedback for the different users of the system.
-	* @param Save           Save the results.
 	*/
-	void FdbksCycle(bool Save);
+	void FdbksCycle(void);
 
 	/**
 	* Add assessments to the profiles creates.
-	* @param Save           Save the results.
 	*/
-	void AddAssessments(bool Save);
+	void AddAssessments(void);
 
 	/**
 	* Add profiles of a new not used topic.
-	* @param Save      Save the results.
 	* @return true if a not used topic was found.
 	*/
-	bool AddTopic(bool Save);
+	bool AddTopic(void);
 
 	/**
 	* Add judgements for some new not used profiles.
-	* @param Save      Save the results.
 	* @return Number of profiles created.
 	*/
-	unsigned int AddProfiles(bool Save);
+	unsigned int AddProfiles(void);
 
 	/**
 	* Computed the percentage of correct assignments for the subprofiles last

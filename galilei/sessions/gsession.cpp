@@ -88,9 +88,187 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-// Static variables
+//
+// Static Variables
+//
+//------------------------------------------------------------------------------
 R::RContainer<GSignalHandler,false,false> GSession::Handlers(30,20);
 GPluginManagers GPluginManagers::PluginManagers;
+
+
+
+//------------------------------------------------------------------------------
+//
+// General functions
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+R::RString GetObjType(tObjType objtype)
+{
+	switch(objtype)
+	{
+		case otNoClass:
+			return(RString("unknow"));
+			break;
+		case otSession:
+			return(RString("session"));
+			break;
+		case otDoc:
+			return(RString("document"));
+			break;
+		case otDocs:
+			return(RString("documents"));
+			break;
+		case otUsers:
+			return(RString("users"));
+			break;
+		case otUser:
+			return(RString("user"));
+			break;
+		case otProfile:
+			return(RString("profile"));
+			break;
+		case otSubProfile:
+			return(RString("subProfile"));
+			break;
+		case otGroups:
+			return(RString("groups"));
+			break;
+		case otGroup:
+			return(RString("group"));
+			break;
+		case otDocSubProfile:
+			return(RString("document or subprofile"));
+			break;
+		case otDocGroup:
+			return(RString("document or group"));
+			break;
+		case otSubProfileGroup:
+			return(RString("subprofile or group"));
+			break;
+		case otFdbk:
+			return(RString("assessment"));
+			break;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+R::RString GetState(tObjState state)
+{
+	switch(state)
+	{
+		case osUnknow:
+			return(RString("unknow"));
+			break;
+		case osCreated:
+			return(RString("created"));
+			break;
+		case osUpToDate:
+			return(RString("up to date"));
+			break;
+		case osModified:
+			return(RString("modified"));
+			break;
+		case osUpdated:
+			return(RString("updated"));
+			break;
+		case osSaved:
+			return(RString("saved"));
+			break;
+		case osDelete:
+			return(RString("deleted"));
+			break;
+		case osNotNeeded:
+			return(RString("not needed"));
+			break;
+		case osOnDemand:
+			return(RString("demands information"));
+			break;
+		case osNeedLoad:
+			return(RString("must load information"));
+			break;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+R::RString GetEvent(tEvent event)
+{
+	switch(event)
+	{
+		case eUnknow:
+			return(RString("Unknow"));
+			break;
+		case eObjCreated:
+			return(RString("object created"));
+			break;
+		case eObjModified:
+			return(RString("object modified"));
+			break;
+		case eObjDeleted:
+			return(RString("object deleted"));
+			break;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+R::RString GetAssessment(tDocAssessment assessment)
+{
+	switch(assessment)
+	{
+		case djUnknow:
+			return(RString("unknow"));
+			break;
+		case djOK:
+			return(RString("relevant"));
+			break;
+		case djKO:
+			return(RString("fuzzy relevant"));
+			break;
+		case djOutScope:
+			return(RString("irrelevant"));
+			break;
+		case djHub:
+			return(RString("hub"));
+			break;
+		case djAutority:
+			return(RString("autority"));
+			break;
+		case djMaskJudg:
+			return(RString("mask for assessments"));
+			break;
+		case djMaskHubAuto:
+			return(RString("mask for hub/autority"));
+			break;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+R::RString GetInfoType(tInfoType infotype)
+{
+	switch(infotype)
+	{
+		case infoNothing:
+			return(RString("unknow"));
+			break;
+		case infoWord:
+			return(RString("word"));
+			break;
+		case infoWordList:
+			return(RString("list of words"));
+			break;
+		case infoWordOccurs:
+			return(RString("list of occurences of a word"));
+			break;
+		case infoDoc:
+			return(RString("document"));
+			break;
+	}
+}
 
 
 
@@ -107,11 +285,12 @@ bool GSession::ExternBreak=false;
 
 
 //------------------------------------------------------------------------------
-GSession::GSession(GStorage* str,bool tests)
+GSession::GSession(GStorage* str,bool savedocs,bool modifieddocs,bool savesubprofiles,bool modifiedsubprofiles,bool savegroups,bool modifiedgroups)
 	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
-	  GGroups(str->GetNbSaved(otGroup)), Subjects(0),
-	  ProfilesSims(0), ProfilesDocsSims(0), GroupsDocsSims(0), Random(0),
-	  Storage(str)
+	  GGroups(str->GetNbSaved(otGroup)), Subjects(0), ProfilesSims(0), ProfilesDocsSims(0),
+	  GroupsDocsSims(0), Random(0), Storage(str),  SaveDocs(savedocs),
+	  SaveSubProfiles(savesubprofiles), SaveGroups(savegroups), ComputeModifiedDocs(modifieddocs),
+	  ComputeModifiedSubProfiles(modifiedsubprofiles), ComputeModifiedGroups(modifiedgroups), Slot(0)
 {
 	// Init Part
 	if(!Session)
@@ -119,12 +298,92 @@ GSession::GSession(GStorage* str,bool tests)
 	CurrentRandom=0;
 	Random = new RRandomGood(CurrentRandom);
 
-	// Create SubjectTree
-	if(tests)
-		Subjects=new GSubjects(this);
-
 	// create the groups history manager.
 	GroupsHistoryMng=new GGroupsHistoryManager(this,2);
+}
+
+
+//------------------------------------------------------------------------------
+bool GSession::MustSave(tObjType objtype) const
+{
+	switch(objtype)
+	{
+		case otDoc:
+			return(SaveDocs);
+			break;
+		case otSubProfile:
+			return(SaveSubProfiles);
+			break;
+		case otGroup:
+			return(SaveGroups);
+			break;
+		default:
+			throw GException(itou(objtype)+": Invalid object type for session parameters.");
+			return(false);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+bool GSession::ComputeModified(tObjType objtype) const
+{
+	switch(objtype)
+	{
+		case otDoc:
+			return(ComputeModifiedDocs);
+			break;
+		case otSubProfile:
+			return(ComputeModifiedSubProfiles);
+			break;
+		case otGroup:
+			return(ComputeModifiedGroups);
+			break;
+		default:
+			throw GException(itou(objtype)+": Invalid object type for session parameters.");
+			return(false);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetSave(tObjType objtype,bool save)
+{
+	switch(objtype)
+	{
+		case otDoc:
+			SaveDocs=save;
+			break;
+		case otSubProfile:
+			SaveSubProfiles=save;
+			break;
+		case otGroup:
+			SaveGroups=save;
+			break;
+		default:
+			throw GException(itou(objtype)+": Invalid object type for session parameters.");
+			break;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetComputeModified(tObjType objtype,bool modified)
+{
+	switch(objtype)
+	{
+		case otDoc:
+			ComputeModifiedDocs=modified;
+			break;
+		case otSubProfile:
+			ComputeModifiedSubProfiles=modified;
+			break;
+		case otGroup:
+			ComputeModifiedGroups=modified;
+			break;
+		default:
+			throw GException(itou(objtype)+": Invalid object type for session parameters.");
+			break;
+	}
 }
 
 
@@ -139,6 +398,19 @@ void GSession::Connect(void)
 GDocXML* GSession::CreateDocXML(GDoc* doc)
 {
 	return((dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->CreateDocXML(doc));
+}
+
+
+//------------------------------------------------------------------------------
+GSubjects* GSession::GetSubjects(void)
+{
+	if(!Subjects)
+	{
+		Subjects=new GSubjects(this);
+		if(Storage)
+			Storage->LoadSubjectTree(Session);
+	}
+	return(Subjects);
 }
 
 
@@ -160,6 +432,13 @@ void GSession::SetSims(GProfilesDocsSimsManager* sims)
 void GSession::SetSims(GGroupsDocsSimsManager* sims)
 {
 	GroupsDocsSims=sims;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetSlot(GSlot* slot)
+{
+	Slot=slot;
 }
 
 
@@ -192,7 +471,7 @@ void GSession::AssignId(GSubProfile* sub)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
+void GSession::AnalyseDocs(GSlot* rec)
 {
 	bool undefLang;
 	GDocXML* xml=0;
@@ -220,17 +499,17 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
 		// Go through the existing documents
 		for(Docs.Start();!Docs.End();Docs.Next())
 		{
-			if(modified&&(Docs()->GetState()==osUpToDate)) continue;
+			if(ComputeModifiedDocs&&(!Docs()->MustCompute())) continue;
 			if(rec)
 			{
 				rec->Interact();
-				rec->receiveNextDoc(Docs());
+				rec->NextDoc(Docs());
 			}
 			if(ExternBreak) return;
 			undefLang=false;
 			try
 			{
-				if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
+				if((!ComputeModifiedDocs)||(Docs()->MustCompute()))
 				{
 					if (!Docs()->GetLang()) undefLang=true;
 					xml=(dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->CreateDocXML(Docs());
@@ -248,11 +527,11 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
 					else
 						Docs()->IncFailed();
 				}
-				if(save)
+				if(SaveDocs)
+				{
 					Storage->SaveDoc(Docs());
-
-				if(Docs()->GetState()==osUpdated)
 					Docs()->SetState(osUpToDate);
+				}
 			}
 			catch(GException& e)
 			{
@@ -286,7 +565,7 @@ void GSession::AnalyseDocs(GSlot* rec,bool modified,bool save)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save)
+void GSession::AnalyseNewDocs(GSlot* rec)
 {
 	bool undefLang;
 	GDocXML* xml=0;
@@ -314,17 +593,17 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save)
 		// Go through the existing documents
 		for(Docs.Start();!Docs.End();Docs.Next())
 		{
-			if(modified&&(Docs()->GetState()==osUpToDate)) continue;
+			if(ComputeModifiedDocs&&(!Docs()->MustCompute())) continue;
 			if(rec)
 			{
 				rec->Interact();
-				rec->receiveNextDoc(Docs());
+				rec->NextDoc(Docs());
 			}
 			if(ExternBreak) return;
 			undefLang=false;
 			try
 			{
-				if(((!modified)||(Docs()->GetState()!=osUpdated))||((Docs()->GetState()!=osNotNeeded)))
+				if((!ComputeModifiedDocs)||(Docs()->MustCompute()))
 				{
 					if (!Docs()->GetLang()) undefLang=true;
 					xml=(dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->CreateDocXML(Docs());
@@ -342,11 +621,12 @@ void GSession::AnalyseNewDocs(GSlot* rec,bool modified,bool save)
 					else
 						Docs()->IncFailed();
 				}
-				if(save)
+				if(SaveDocs)
+				{
 					Storage->SaveDoc(Docs());
-
-				if(Docs()->GetState()==osUpdated)
-					Docs()->SetState(osUpToDate);
+					if(Docs()->GetState()==osUpdated)
+						Docs()->SetState(osUpToDate);
+				}
 			}
 			catch(GException& e)
 			{
@@ -417,7 +697,7 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 
 
 //------------------------------------------------------------------------------
-void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
+void GSession::CalcProfiles(GSlot* rec)
 {
 	RCursor<GSubProfile> Subs;
 	R::RCursor<GProfile> Prof=GetProfilesCursor();
@@ -434,7 +714,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		if(rec)
-			rec->receiveNextProfile(Prof());
+			rec->NextProfile(Prof());
 		Prof()->Update();
 		//Calc Links on the profile description
 		if(LinkCalc)
@@ -446,14 +726,14 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 				rec->Interact();
 
 			if(ExternBreak) return;
-			if(modified&&(Subs()->GetState()==osUpToDate)) continue;
+			if(ComputeModifiedSubProfiles&&(!Subs()->MustCompute())) continue;
 			try
 			{
-				if((!modified)||(Subs()->GetState()!=osUpdated))
+				if((!ComputeModifiedSubProfiles)||(Subs()->MustCompute()))
 				{
 					Profiling->Compute(Subs());
 
-					if(save)
+					if(SaveSubProfiles)
 					{
 						Storage->SaveSubProfile(Subs());
 					}
@@ -466,7 +746,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 	}
 
 	//Save the best computed Links (As Hub and Authority)
-	if((saveLinks) &&(LinkCalc))
+	if((SaveSubProfiles)&&(LinkCalc))
 		Storage->SaveLinks(this);
 
 	//runs the post profiling methds;
@@ -475,7 +755,7 @@ void GSession::CalcProfiles(GSlot* rec,bool modified,bool save,bool saveLinks)
 
 
 //------------------------------------------------------------------------------
-void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,bool saveLinks)
+void GSession::CalcProfile(GSlot* rec,GProfile* profile)
 {
 	GProfileCalc* Profiling=(dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc")))->GetCurrentMethod();
 	GLinkCalc* LinkCalc=(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc")))->GetCurrentMethod();
@@ -487,7 +767,7 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,
 	if(!Profiling)
 		throw GException("No computing method chosen.");
 	if(rec)
-		rec->receiveNextProfile(profile);
+		rec->NextProfile(profile);
 	profile->Update();
 	//Calc Links on the profile description
 	if(LinkCalc)
@@ -499,14 +779,14 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,
 			rec->Interact();
 
 		if(ExternBreak) return;
-		if(modified&&(Subs()->GetState()==osUpToDate)) continue;
+		if(ComputeModifiedSubProfiles&&(!Subs()->MustCompute())) continue;
 		try
 		{
-			if((!modified)||(Subs()->GetState()!=osUpdated))
+			if((!ComputeModifiedSubProfiles)||(Subs()->MustCompute()))
 			{
 				Profiling->Compute(Subs());
 
-				if(save)
+				if(SaveSubProfiles)
 				{
 					Storage->SaveSubProfile(Subs());
 				}
@@ -518,7 +798,7 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile,bool modified,bool save,
 	}
 
 	//Save the best computed Links (As Hub and Authority)
-	if((saveLinks) &&(LinkCalc))
+	if((SaveSubProfiles)&&(LinkCalc))
 		Storage->SaveLinks(this);
 
 	//runs the post profiling methds;
@@ -581,7 +861,7 @@ void GSession::ComputePostProfile(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GException)
+void GSession::GroupingProfiles(GSlot* rec)  throw(GException)
 {
 	GGrouping* Grouping=(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod();
 
@@ -590,7 +870,7 @@ void GSession::GroupingProfiles(GSlot* rec,bool modified,bool save)  throw(GExce
 		throw GException("No grouping method chosen.");
 
     // Group the subprofiles
-	Grouping->Grouping(rec,modified,save);
+	Grouping->Grouping(rec,ComputeModifiedGroups,SaveGroups);
 
 	// Run all post-group methods that are enabled
 	ComputePostGroup(rec);
@@ -633,7 +913,7 @@ void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R:
 	if((!doc)||(!prof))
 		return;
 	prof->InsertFdbk(doc,assess,date);
-	doc->InsertFdbk(prof);
+	doc->InsertFdbk(p);
 }
 
 
@@ -654,7 +934,7 @@ void GSession::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::CopyIdealGroups(bool save)
+void GSession::CopyIdealGroups(void)
 {
 	R::RCursor<GGroup> Grps;
 //	GGroupCursor Ideal;
@@ -674,7 +954,7 @@ void GSession::CopyIdealGroups(bool save)
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Create a new group in groups
-		grp=new GGroup(cNoRef,Grps()->GetLang(),true);
+		grp=new GGroup(cNoRef,Grps()->GetLang(),true,RDate(""),RDate(""));
 		AssignId(grp);
 		InsertGroup(grp);
 
@@ -689,7 +969,7 @@ void GSession::CopyIdealGroups(bool save)
 		CalcDesc->Compute(grp);
 	}
 
-	if(save)
+	if(SaveGroups)
 		Storage->SaveGroups(this);
 }
 
@@ -805,9 +1085,9 @@ void GSession::LoadHistoricGroupsByDate(RString mindate,RString maxdate)
 
 
 //------------------------------------------------------------------------------
-void GSession::ReInit(bool)
+void GSession::ReInit(void)
 {
-	// Clean subprofiles and feedbacks
+	// Clean groups, feedbacks and users.
 	ClearGroups();
 	ClearFdbks();
 	ClearUsers();
@@ -826,17 +1106,12 @@ GSession::~GSession(void)
 {
 	try
 	{
-		// Clear all entities
-		ClearGroups();
-		GUsers::Clear();
-		GDocs::Clear();
-
 		GPluginManagers::PluginManagers.Disconnect(this);
 
 		// Delete stuctures
-		if(Random) delete Random;
-		if(Subjects) delete Subjects;
-		if(GroupsHistoryMng) delete GroupsHistoryMng;
+		delete Random;
+		delete Subjects;
+		delete GroupsHistoryMng;
 	}
 	catch(...)
 	{

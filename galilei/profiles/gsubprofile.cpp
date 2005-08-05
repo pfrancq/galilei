@@ -39,6 +39,7 @@
 #include <glang.h>
 #include <ggroup.h>
 #include <gsession.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -51,35 +52,16 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,const char* a,const char* u, const char* c)
+GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,R::RDate a,R::RDate u,R::RDate c)
 	: GWeightInfos(60), Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
 {
 	if(!Profile)
 		throw GException("Subprofile "+itou(id)+" has no parent profile");
-	if(Updated>=Computed)
-	{
-		if(Computed==RDate::null)
-			State=osCreated;
-		else
-			State=osModified;
-	}
-	else
-		State=osUpToDate;
+	if((Id==cNoRef)&&(GSession::Get()))
+		GSession::Get()->AssignId(this);
 	Profile->InsertPtr(this);
 	if(grp)
 		grp->InsertSubProfile(this);
-	GSession::Event(this,eObjCreated);
-}
-
-
-//------------------------------------------------------------------------------
-GSubProfile::GSubProfile(GSession* session,GProfile *prof,GLang *lang)
-	: GWeightInfos(60), Id(cNoRef), Profile(prof), Lang(lang), Group(0), State(osCreated), Attached(""), Updated(""), Computed(""), Fdbks(20,10)
-{
-	if(!Profile)
-		throw GException("Subprofile has no parent profile");
-	session->AssignId(this);
-	Profile->InsertPtr(this);
 	GSession::Event(this,eObjCreated);
 }
 
@@ -113,23 +95,25 @@ int GSubProfile::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
+void GSubProfile::LoadInfos(void) const
+{
+	RContainer<GWeightInfo,false,true> Infos(1000,500);
+	GSession* session=GSession::Get();
+	if(session&&session->GetStorage())
+		session->GetStorage()->LoadInfos(Infos,Lang,otSubProfile,Id);
+	const_cast<GSubProfile*>(this)->Update(Lang,&Infos,false);
+}
+
+
+//------------------------------------------------------------------------------
 void GSubProfile::InsertFdbk(GFdbk* fdbk)
 {
 	Fdbks.InsertPtr(fdbk);
 
-	// If the subprofiles is not modified -> verify if it becomes modified
-	if((State!=osModified)&&(State!=osCreated))
+	if(fdbk->MustUse(Computed))
 	{
-		// It is modified in two cases:
-		// 1. The assessment is newer than the profile.
-		// 2. The document assessed was recomputed after the profile.
-		bool Up=fdbk->GetUpdated()>=Updated;
-		if(Up||(fdbk->GetDoc()->GetComputed()>=Computed))
-		{
-			State=osModified;
-			if(Up)
-				Updated.SetToday();
-		}
+		State=osModified;
+		Updated.SetToday();
 	}
 }
 
@@ -140,31 +124,6 @@ void GSubProfile::SetId(unsigned int id)
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a subprofile");
 	Id=id;
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfile::SetState(tObjState state)
-{
-	GGroup* grp;
-	State=state;
-
-	// If the profile was updated
-	//   -> the group containing the subprofile is modified.
-	//   -> the subprofile was just computed
-	if(State==osUpdated)
-	{
-		grp=GetGroup();
-		if(grp)
-			grp->SetState(osModified);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-bool GSubProfile::IsDefined(void) const
-{
-	return(GetNb());
 }
 
 
@@ -199,23 +158,20 @@ RDate GSubProfile::GetComputed(void) const
 
 
 //------------------------------------------------------------------------------
-bool GSubProfile::IsUpdated(void) const
+bool GSubProfile::MustGroup(void) const
 {
 	return(Attached<Updated);
 }
 
 
 //------------------------------------------------------------------------------
-bool GSubProfile::CanCompute(void)
+bool GSubProfile::MustCompute(void) const
 {
-	return(Fdbks.GetNb());
-}
-
-
-//------------------------------------------------------------------------------
-bool GSubProfile::SameDescription(const GFdbk* fdbk) const
-{
-	return((fdbk->GetUpdated()<Computed)&&(fdbk->GetDoc()->GetComputed()<Computed));
+	if(!Fdbks.GetNb())
+		return(false);
+	if(Updated<Computed)
+		return(false);
+	return(true);
 }
 
 
@@ -322,38 +278,34 @@ RCursor<GFdbk> GSubProfile::GetFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubProfile::GetNbNoNull(void) const
-{
-	return(GetNb());
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfile::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
+void GSubProfile::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
 	// Remove its references
-	if(Lang)
+	if(computed&&Lang)
 		DelRefs(otSubProfile,Lang);
 
 	// Assign information
 	GWeightInfos::Clear();
+	Lang=lang;
 	if(computed)
 	{
 		State=osUpdated;
 		Computed.SetToday();
+
+		// Update the group were it belongs
+		if(GSession::Get())
+			GSession::Get()->UpdateGroups(this);
 	}
+	else
+		State=osUpToDate;
 	GWeightInfos::operator=(*infos);
 
 	// Clear infos
 	infos->Clear();
 
 	// Update its references
-	if(Lang)
+	if(computed&&Lang)
 		AddRefs(otSubProfile,Lang);
-
-	// Signal to the its group that it was modified
-	if(Group)
-		Group->HasUpdate(Id,computed);
 
 	// Emit an event that it was modified
 	GSession::Event(this,eObjModified);
@@ -375,7 +327,7 @@ GSubProfile::~GSubProfile(void)
 	try
 	{
 		// Remove its references
-		if(Lang)
+		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
 			DelRefs(otSubProfile,Lang);
 	}
 	catch(...)

@@ -197,7 +197,7 @@ void GSubject::SetUsed(GSession* session,bool used,size_t nbprofiles,unsigned in
 //------------------------------------------------------------------------------
 GGroup* GSubject::CreateGroup(GLang* lang) const
 {
-	GGroup* Group=new GGroup(Id,lang,false);
+	GGroup* Group=new GGroup(Id,lang,false,RDate(""),RDate(""));
 	RCursor<GProfile> Cur(Profiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{

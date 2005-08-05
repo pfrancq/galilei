@@ -232,18 +232,37 @@ enum tObjType
 
 //------------------------------------------------------------------------------
 /**
+* Get a string representing a type of objects.
+* @param objtype             Type.
+*/
+R::RString GetObjType(tObjType objtype);
+
+
+//------------------------------------------------------------------------------
+/**
 * States of a given GALILEI object.
 */
 enum tObjState
 {
-	osUnknow=0                /** Unknow state.*/,
-	osCreated=1               /** Object was created.*/,
-	osUpToDate=2              /** Object is up to date.*/,
-	osModified=3              /** Object was modified and computation must be update.*/,
-	osUpdated=4               /** Object is updated and needs to be save.*/,
-	osDelete=5                /** Object must be deleted.*/,
-	osNotNeeded=6             /** Object is not needed.*/
+	osUnknow                  /** Unknow state.*/,
+	osCreated                 /** Object was created.*/,
+	osUpToDate                /** Object is up to date.*/,
+	osModified                /** Object was modified and computation must be update.*/,
+	osUpdated                 /** Object is updated and needs to be save.*/,
+	osSaved                   /** Object was saved.*/,
+	osDelete                  /** Object must be deleted.*/,
+	osNotNeeded               /** Object is not needed.*/,
+	osOnDemand                /** Object demands to load information. */,
+	osNeedLoad                /** Object must load information.*/
 };
+
+
+//------------------------------------------------------------------------------
+/**
+* Get a string representing a state of objects.
+* @param state               State.
+*/
+R::RString GetState(tObjState state);
 
 
 //------------------------------------------------------------------------------
@@ -252,7 +271,7 @@ enum tObjState
 */
 enum tEvent
 {
-	eUnknow                   /** Unknow sevent.*/,
+	eUnknow                   /** Unknow event.*/,
 	eObjCreated               /** An object was created.*/,
 	eObjModified              /** An object was modified.*/,
 	eObjDeleted               /** An Object will be deleted.*/
@@ -261,20 +280,28 @@ enum tEvent
 
 //------------------------------------------------------------------------------
 /**
+* Get a string representing a event.
+* @param event               Event.
+*/
+R::RString GetEvent(tEvent event);
+
+
+//------------------------------------------------------------------------------
+/**
 * Judgments over a document.
 */
 enum tDocAssessment
 {
-	 // the 4 first bits are used to express the judgemnet of the Doc (OK,KO,N,HS)
-	 // the 5th and 6th bits are used to express the status of the Doc (Hub, Autority )
-	 // the masks are used to separate the judgement and the status of a doc.
+	// the 4 first bits are used to express the assessment of the Doc (OK,KO,N)
+	// the 5th and 6th bits are used to express the status of the Doc (Hub, Autority )
+	// the masks are used to separate the assessment and the status of a doc.
 	djUnknow=0                  /** Unknow judgement.*/,
 	djOK=1                      /** Document is relevant.*/,
 	djKO=2                      /** Document is fuzzy relevant.*/,
 	djOutScope=8                /** Document is irrelevant.*/,
 	djHub=16                    /** Document is a Hub.*/,
 	djAutority=32               /** Document is an Autority.*/,
-	djMaskJudg=15               /** Mask for the judgement of the doc.*/,
+	djMaskJudg=15               /** Mask for the assessment of the doc.*/,
 	djMaskHubAuto=48            /** Mask for the Hub or Autority.*/
 
 };
@@ -282,17 +309,33 @@ enum tDocAssessment
 
 //------------------------------------------------------------------------------
 /**
+* Get a string representing an assessment.
+* @param assessment          Assessment.
+*/
+R::RString GetAssessment(tDocAssessment assessment);
+
+
+//------------------------------------------------------------------------------
+/**
 * Models used to describe informations.
 */
-enum GInfoType
+enum tInfoType
 {
-	infoNothing=0                  /** No type defined.*/,
-	infoWord=1                     /** A word (or stem). */,
-	infoWordList=2                 /** List of words.*/,
-	infoWordOccurs=3               /** List of occurences of a word in the
+	infoNothing                    /** No type defined.*/,
+	infoWord                       /** A word (or stem). */,
+	infoWordList                   /** List of words.*/,
+	infoWordOccurs                 /** List of occurences of a word in the
 	                                   documents.*/,
-	infoDoc=3                      /** Document.*/
+	infoDoc                        /** Document.*/
 };
+
+
+//------------------------------------------------------------------------------
+/**
+* Get a string representing a type of information.
+* @param infotype            Type of information.
+*/
+R::RString GetInfoType(tInfoType infotype);
 
 
 //------------------------------------------------------------------------------

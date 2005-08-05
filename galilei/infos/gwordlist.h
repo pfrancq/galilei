@@ -63,32 +63,35 @@ public:
 	* Constructor of a list of words.
 	* @param id              Identificator of the list.
 	* @param name            Name of the list.
+	* @param refdocs         Number of documents referenced.
+	* @param refsubprofiles  Number of subprofiles referenced.
+	* @param refgroups       Number of groups referenced.
 	*/
-	GWordList(unsigned int id,const R::RString& name) throw(std::bad_alloc);
+	GWordList(unsigned int id,const R::RString& name,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups);
 
 	/**
 	* Copy constructor fot a list of words.
 	* @param list            List.
 	*/
-	GWordList(const GWordList& list) throw(std::bad_alloc);
+	GWordList(const GWordList& list);
 
 	/**
 	* Insert a new word in the list.
 	* @param word             Pointer to the word to insert.
 	*/
-	void InsertWord(const GWord* word) throw(std::bad_alloc);
+	void InsertWord(const GWord* word);
 
 	/**
 	* Create a cursor for the list of words.
 	* @return GWordCursor.
 	*/
-	R::RCursor<GWord> GetWordCursor(void) throw(std::bad_alloc);
+	R::RCursor<GWord> GetWordCursor(void) const;
 
 	/**
 	* This method creates a copy of a list.
 	* @return Pointer to a GData.
 	*/
-	virtual GData* CreateCopy(void) const throw(std::bad_alloc);
+	virtual GData* CreateCopy(void) const;
 
 	/**
 	* Test if the list is empty.

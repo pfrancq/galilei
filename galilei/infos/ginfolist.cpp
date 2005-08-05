@@ -6,7 +6,7 @@
 
 	List of information entities - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -45,7 +45,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GInfoList::GInfoList(unsigned int id,GInfoType type) throw(std::bad_alloc)
+GInfoList::GInfoList(unsigned int id,tInfoType type) throw(std::bad_alloc)
 	: GInfo(id,type), RContainer<GInfo,true,true>(30,10)
 {
 }

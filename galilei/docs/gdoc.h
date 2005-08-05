@@ -43,6 +43,13 @@
 
 
 //------------------------------------------------------------------------------
+// forward class declaration
+namespace R{
+	template<bool bOrder> class RVectorInt;
+}
+
+
+//------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
@@ -78,11 +85,6 @@ protected:
 	GLang* Lang;
 
 	/**
-	* State of the document.
-	*/
-	tObjState State;
-
-	/**
 	* MIME Type of the document.
 	*/
 	R::RString MIMEType;
@@ -98,9 +100,9 @@ protected:
 	R::RDate Computed;
 
 	/**
-	* Profiles which have assessed the document.
+	* Identificator of the profiles which have assessed the document.
 	*/
-	R::RContainer<GProfile,false,true> Fdbks;
+	R::RVectorInt<true>* Fdbks;
 
 	/**
 	* Count the number of downloads failed.
@@ -121,26 +123,17 @@ public:
 
 	/**
 	* Construct a document.
-	* @param url            URL of the document.
-	* @param name           Name of the document.
-	* @param id             Identifier of the document.
-	* @param lang           Language of the document.
-	* @param mime           MIME type of the document.
-	* @param u              String representing the date of the last update.
-	* @param a              String representing the date of the last analysis.
-	* @param f              Number of fails.
-	* @param nbf            Number of assessments.
-	* @param ownerid             Owner Identifier of the document.
+	* @param url             URL of the document.
+	* @param name            Name of the document.
+	* @param id              Identifier of the document.
+	* @param lang            Language of the document.
+	* @param mime            MIME type of the document.
+	* @param u               Date of the last update.
+	* @param a               Date of the last analysis.
+	* @param f               Number of fails.
+	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RString& u,const R::RString& a,unsigned int f,unsigned int ownerid,unsigned int nbf=100);
-
-	/**
-	* Construct a document.
-	* @param url            URL of the document.
-	* @param name           Name of the document.
-	* @param mime           MIME type of the document.
-	*/
-	GDoc(const R::RString& url,const R::RString& name,const R::RString& mime);
+	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,unsigned int f,unsigned int ownerid);
 
 	/**
 	* Compare two documents by comparing their identificator.
@@ -175,11 +168,10 @@ public:
 	int Compare(const GLang* lang) const;
 
 	/**
-	* Verify if the document is defined. By default, a document is suppose to be
-	* undefined.
-	* @return false.
+	* Load information from the current storage.
+	* @param infos           Container hold
 	*/
-	bool IsDefined(void) const;
+	virtual void LoadInfos(void) const;
 
 	/**
 	* Get the URL.
@@ -224,16 +216,9 @@ public:
 	void SetMIMEType(const R::RString& mime);
 
 	/**
-	* Return the state of the document.
-	* @returns tObjState value.
+	* Verify if the document must be (re-)computed.
 	*/
-	tObjState GetState(void) const;
-
-	/**
-	* Set the state of the document.
-	* @param state          New state.
-	*/
-	void SetState(tObjState state);
+	bool MustCompute(void) const;
 
 	/**
 	* @return Pointer to the Language.
@@ -248,7 +233,7 @@ public:
 
 	/**
 	* Set the identifier of the document.
-	* @param id             Identifier.
+	* @param id              Identifier.
 	*/
 	void SetId(unsigned int id);
 
@@ -280,20 +265,21 @@ public:
 	void DecFailed(void) {Failed--;}
 
 	/**
-	* Get a cursor on the profiles which have assesses the documents.
-	* @return R::RCursor<GProfile>.
+	* Get a cursor on the identificator of the profiles which have assesses the
+	* documents.
+	* @return R::RVectorInt*.
 	*/
-	R::RCursor<GProfile> GetFdbks(void) const;
+	R::RVectorInt<true>* GetFdbks(void) const;
 
 	/**
 	* Add a profile to the list of those which have assess the document.
-	* @param prof            Profile.
+	* @param id              Identificator of the profile.
 	*/
-	void InsertFdbk(GProfile* prof);
+	void InsertFdbk(unsigned int id);
 
 	/**
 	* Delete a profile from the list of those which have assess the document.
-	* @param id               Identificator of the profile.
+	* @param id              Identificator of the profile.
 	*/
 	void DeleteFdbk(unsigned int id);
 
@@ -331,10 +317,10 @@ public:
 
 	/**
 	* Update the document by assigning it a set of information and a language.
-	* @param lang             Pointer to the language.
-	* @param infos            Pointer to the information.
-	* @param computed         The update is called after a computation (and not
-	*                         after a loading from a database).
+	* @param lang            Pointer to the language.
+	* @param infos           Pointer to the information.
+	* @param computed        The update is called after a computation (and not
+	*                        after a loading from a database).
 	* \warning The container infos is cleared by this method.
 	*/
 	void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed);

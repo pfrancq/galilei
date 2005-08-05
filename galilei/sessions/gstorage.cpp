@@ -6,9 +6,10 @@
 
 	Generic Storage Manager - Implementation.
 
-	Copyright 2003-2004 by the Université libre de Bruxelles.
+	Copyright 2003-2005 by the Université libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -44,8 +45,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorage::GStorage(RString n) throw(std::bad_alloc,GException)
-	: Name(n)
+GStorage::GStorage(RString n,bool all) throw(std::bad_alloc,GException)
+	: Name(n), LoadAll(all)
 {
 }
 

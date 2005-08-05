@@ -80,7 +80,7 @@ public:
 	* @param db             Name of the database.
 	* @param coding         Coding used by the MySQL database.
 	*/
-	GStorageMySQL(R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString coding="Latin1") throw(std::bad_alloc,GException);
+	GStorageMySQL(R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString coding="Latin1",bool all=true) throw(std::bad_alloc,GException);
 
 protected:
 
@@ -127,6 +127,45 @@ public:
 	* @param dict           Dictionary.
 	*/
 	virtual void AssignId(GData* data,const GDict* dict) throw(GException);
+
+	/**
+	* A document was updated and the corresponding feedbacks must be updated.
+	* @param doc             Document modified.
+	*/
+	virtual void UpdateProfiles(GDoc* doc);
+
+	/**
+	* A subprofile was updated and the corresponding groups must be updated.
+	* @param sub             Subprofile modified.
+	*/
+	virtual void UpdateGroups(GSubProfile* sub);
+
+	/**
+	* Save the references of a given object type and for a given information
+	* entity.
+	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param lang            Language of the object.
+	* @param id              Identificator of the information entity.
+	* @param refs            Number of references.
+	*/
+	virtual void SaveRefs(tObjType type,GLang* lang,size_t id,size_t refs);
+
+	/**
+	* Save the references of a given object type.
+	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param lang            Language of the object.
+	* @param refs            Number of references.
+	*/
+	virtual void SaveRefs(tObjType type,GLang* lang,size_t refs);
+
+	/**
+	* Load the description of a given object.
+	* @param infos           Container that will hold the description.
+	* @param lang            Language of the object.
+	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param id              Identificator of the object.
+	*/
+	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,GLang* lang,tObjType type,size_t id);
 
 	/**
 	* Loading a dictionary/stoplist.

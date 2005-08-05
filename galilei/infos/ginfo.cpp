@@ -46,7 +46,7 @@ using namespace R;
 
 
 //------------------------------------------------------------------------------
-GInfo::GInfo(unsigned int id,GInfoType type)
+GInfo::GInfo(unsigned int id,tInfoType type)
 	: Id(id), Type(type)
 {
 }
