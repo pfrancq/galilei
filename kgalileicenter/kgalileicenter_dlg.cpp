@@ -88,7 +88,7 @@ using namespace std;
 #include "kviewusers.h"
 #include "kviewdoc.h"
 #include "kviewprofile.h"
-#include "qsessionoptions.h"
+#include "qsessionprogress.h"
 #include "qplugins.h"
 #include "qgalileiitem.h"
 
@@ -99,6 +99,34 @@ using namespace std;
 // class KGALILEICenterApp
 //
 //-----------------------------------------------------------------------------
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::StartJob(const R::RString job)
+{
+	if(!QSessionProgressDlg::Main)
+	{
+		QSessionProgressDlg* Jobs=new QSessionProgressDlg(this,Doc->GetSession(),"Job",false);
+		QSessionProgressDlg::Main->PutText(job+"...");
+		Jobs->Begin();
+	}
+	else
+	{
+		QSessionProgressDlg::NbJobs++;
+		QSessionProgressDlg::Main->PutText(job+"...");
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::EndJob(void)
+{
+	if(!(--QSessionProgressDlg::NbJobs))
+	{
+		delete QSessionProgressDlg::Main;
+	}
+}
+
 
 //-----------------------------------------------------------------------------
 template<class Cursor,class Met,class Item>

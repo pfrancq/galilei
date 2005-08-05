@@ -83,7 +83,8 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
-	: KMainWindow(0,"KGALILEICenterApp"), dbHost(),dbName(),dbUser(),dbPwd(),pluginsPath(10,5),Doc(0)
+	: KMainWindow(0,"KGALILEICenterApp"), dbHost(),dbName(),dbUser(),dbPwd(),pluginsPath(10,5),
+	  Doc(0)
 {
 	Config=kapp->config();
 	initStatusBar();
@@ -112,6 +113,7 @@ void KGALILEICenterApp::initActions(void)
 {
 	// Menu "Connect"
 	sessionAlwaysCalc=new KToggleAction(i18n("Enables/disables session Recomputing"),0,0,0,actionCollection(),"sessionAlwaysCalc");
+	connect(sessionAlwaysCalc,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
 	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
 	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
 	createDatabase=new KAction(i18n("Create &Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
@@ -124,15 +126,18 @@ void KGALILEICenterApp::initActions(void)
 
 	// Menu "Users"
 	profileAlwaysCalc=new KToggleAction(i18n("Enables/disables users Recomputing"),0,0,0,actionCollection(),"profileAlwaysCalc");
+	connect(profileAlwaysCalc,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
 	profileAlwaysSave=new KToggleAction(i18n("Enables/disables users Saving"),0,0,0,actionCollection(),"profileAlwaysSave");
-	linkAlwaysSave=new KToggleAction(i18n("Enables/disables links Saving"),0,0,0,actionCollection(),"linkAlwaysSave");
+	connect(profileAlwaysSave,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
 	profileCalc=new KAction(i18n("Calc &Profile"),"run",0,this,SLOT(slotProfileCalc()),actionCollection(),"profileCalc");
 
 	// Menu "Groups"
-	groupAlwaysCalc=new KToggleAction(i18n("Enables/disables groups Recomputing"),0,0,0,actionCollection(),"groupAlwaysCalc");
+	useExistingGroups=new KToggleAction(i18n("Use existing groups for incremental clustering"),0,0,0,actionCollection(),"groupAlwaysCalc");
+	connect(useExistingGroups,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
 	groupAlwaysSave=new KToggleAction(i18n("Enables/disables groups Saving"),0,0,0,actionCollection(),"groupAlwaysSave");
+	connect(groupAlwaysSave,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	postgroupCalc=new KAction(i18n("Compute &PostGroup"),"exec",0,this,SLOT(slotPostGroupCalc()),actionCollection(),"postgroupCalc");
@@ -141,7 +146,9 @@ void KGALILEICenterApp::initActions(void)
 
 	// Menu "Document"
 	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
+	connect(docAlwaysCalc,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
 	docAlwaysSave=new KToggleAction(i18n("Enables/disables documents Saving"),0,0,0,actionCollection(),"docAlwaysSave");
+	connect(docAlwaysSave,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
 	showDocs=new KAction(i18n("Show &Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
@@ -224,9 +231,8 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Always Calc Session",sessionAlwaysCalc->isChecked());
 	Config->writeEntry("Always Calc Profiles",profileAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Profiles",profileAlwaysSave->isChecked());
-	Config->writeEntry("Always Save Links",linkAlwaysSave->isChecked());
-	Config->writeEntry("Always Calc Groups",groupAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
+	Config->writeEntry("Use Existing Groups",useExistingGroups->isChecked());
 	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
 	Config->writeEntry("Always Save Docs",docAlwaysSave->isChecked());
 	RCursor<RString> cPath(pluginsPath);
@@ -286,10 +292,9 @@ void KGALILEICenterApp::readOptions(void)
 	// Always Calc Enable/Disable
 	sessionAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Session",false));
 	profileAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Profiles",false));
-	profileAlwaysSave->setChecked(Config->readBoolEntry("Always Save Profiles",true));
-	linkAlwaysSave->setChecked(Config->readBoolEntry("Always Save Links",true));
-	groupAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Groups",false));
-	groupAlwaysSave->setChecked(Config->readBoolEntry("Always Save Groups",true));
+	profileAlwaysSave->setChecked(Config->readBoolEntry("Always Save Profiles",false));
+	useExistingGroups->setChecked(Config->readBoolEntry("Use Existing Groups",false));
+	groupAlwaysSave->setChecked(Config->readBoolEntry("Always Save Groups",false));
 	docAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Docs",false));
 	docAlwaysSave->setChecked(Config->readBoolEntry("Always Save Docs",false));
 

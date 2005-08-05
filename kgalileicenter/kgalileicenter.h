@@ -58,6 +58,8 @@
 #include <gpostprofile.h>
 #include <gstatscalc.h>
 #include <gfiltermanagerkde.h>
+#include <qprogressdialog.h>
+#include <gslot.h>
 using namespace GALILEI;
 
 
@@ -106,7 +108,7 @@ class KView;
 * @author Pascal Francq.
 * @short Main Window.
 */
-class KGALILEICenterApp : public KMainWindow
+class KGALILEICenterApp : public KMainWindow, public GSlot
 {
 	Q_OBJECT
 
@@ -181,11 +183,6 @@ class KGALILEICenterApp : public KMainWindow
 	*/
 	QString ErrMsgList;
 
-	/**
-	* progressDlg -> maintain the progress of database creation
-	*/
-	QSessionProgressDlg *d;
-
 	// Current tabs selected in the plug-ins dialog box
 	int DlgMainTabIdx;
 	int DlgDocsTabIdx;
@@ -201,6 +198,17 @@ public:
 	* @see initMenuBar initToolBar
 	*/
 	KGALILEICenterApp(void) throw(GException);
+
+	/**
+	* Start a job.
+	* @param job             Description of ther job.
+	*/
+	virtual void StartJob(const R::RString job);
+
+	/**
+	* End of the last started job.
+	*/
+	virtual void EndJob(void);
 
 	/**
 	* Returns a pointer to the document connected to the view.
@@ -538,6 +546,11 @@ private slots:
 	*/
 	void slotStatusMsg(const QString& text);
 
+	/**
+	* A modifier of the session has changed.
+	*/
+	void slotChangeModifiers(void);
+
 public slots:
 
 	/**
@@ -575,13 +588,12 @@ public:
 
 	KToggleAction* profileAlwaysCalc;
 	KToggleAction* profileAlwaysSave;
-	KToggleAction* linkAlwaysSave;
 	KAction* showUsers;
 	KAction* profileCalc;
 	KAction* profilesCalc;
 
-	KToggleAction* groupAlwaysCalc;
 	KToggleAction* groupAlwaysSave;
+	KToggleAction* useExistingGroups;
 	KAction* showGroups;
 	KAction* groupsCalc;
 	KAction* postgroupCalc;

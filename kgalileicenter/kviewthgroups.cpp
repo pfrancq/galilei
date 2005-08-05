@@ -166,7 +166,7 @@ void KViewThGroups::LoadGroups(const char* filename)
 	{
 		lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(f.GetWord());
 		f>>nbprof;
-		Groups->InsertGroup(group=new GGroup(i,lang,false));
+		Groups->InsertGroup(group=new GGroup(i,lang,false,RDate(""),RDate("")));
 		for(j=nbprof+1;--j;)
 		{
 			f>>id;

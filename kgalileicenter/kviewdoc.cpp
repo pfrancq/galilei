@@ -40,6 +40,7 @@ using namespace std;
 // include files for R Project
 #include <rxmlfile.h>
 #include <rqt.h>
+#include <rvectorint.h>
 using namespace R;
 
 
@@ -142,7 +143,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDoc(file,file,cNoRef,0,(static_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->GetMIMEType(mime),"","",0,0);
+	Document=new GDoc(file,file,cNoRef,0,(static_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->GetMIMEType(mime),RDate(""),RDate(""),0,0);
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
@@ -200,10 +201,19 @@ void KViewDoc::ConstructFdbks(void)
 
 
 	// Add Judgements for profile.
-	RCursor<GProfile> Profiles=Document->GetFdbks();
-	for(Profiles.Start();!Profiles.End();Profiles.Next())
+
+	RVectorInt<true>* Profiles=Document->GetFdbks();
+	if(!Profiles)
+		return;
+	for(Profiles->Start();!Profiles->End();Profiles->Next())
 	{
-		switch(Profiles()->GetFdbk(Document->GetId())->GetFdbk())
+		prof=getDocument()->GetSession()->GetProfile((*Profiles)());
+		if(!prof)
+			continue;
+		GFdbk* fdbk=prof->GetFdbk(Document->GetId());
+		if(!fdbk)
+			continue;
+		switch(fdbk->GetFdbk())
 		{
 			case djOK:
 				p=ok;
@@ -225,8 +235,7 @@ void KViewDoc::ConstructFdbks(void)
 				break;
 		}
 		if(!p) continue;
-		prof=GSession::Get()->GetProfile(Profiles()->GetId());
-		d=Profiles()->GetFdbk(Document->GetId())->GetUpdated();
+		d=fdbk->GetWhen();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 		QListViewItemType* prof2 = new QListViewItemType(prof,p,ToQString(prof->GetName()),ToQString(prof->GetUser()->GetFullName()),sDate);
 		prof2->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));

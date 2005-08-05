@@ -49,6 +49,7 @@
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qmessagebox.h>
+#include <qlayout.h>
 
 
 //-----------------------------------------------------------------------------
@@ -110,6 +111,7 @@ void QSessionThread::run(void)
 {
 	bool cancel=true;
 
+	QSessionProgressDlg::NbJobs++;
 	try
 	{
 		DoIt();
@@ -151,10 +153,6 @@ void QLoadSession::DoIt(void)
 {
 	Parent->PutText("Loading Dicionnaries/Stoplists ...");
 	Session->Connect();
-	if(GSession::Break())
-		return;
-	Parent->PutText("Load Subject Tree ...");
-	Session->GetStorage()->LoadSubjectTree(Session);
 	if(GSession::Break())
 		return;
 	Parent->PutText("Loading Documents ...");
@@ -550,7 +548,7 @@ void QAnalyzeXML::DoIt(void)
 void QAnalyzeDocs::DoIt(void)
 {
 	Parent->PutText("Analyse Documents ...");
-	Session->AnalyseDocs(Parent,Modified,Save);
+	Session->AnalyseDocs(Parent);
 }
 
 
@@ -558,7 +556,7 @@ void QAnalyzeDocs::DoIt(void)
 void QComputeProfiles::DoIt(void)
 {
 	Parent->PutText("Compute Profiles ...");
-	Session->CalcProfiles(Parent,Modified,Save,SaveLinks);
+	Session->CalcProfiles(Parent);
 }
 
 
@@ -566,7 +564,7 @@ void QComputeProfiles::DoIt(void)
 void QComputeProfile::DoIt(void)
 {
 	Parent->PutText("Compute Profile ...");
-	Session->CalcProfile(Parent,Profile,Modified,Save,SaveLinks);
+	Session->CalcProfile(Parent,Profile);
 }
 
 
@@ -574,7 +572,7 @@ void QComputeProfile::DoIt(void)
 void QGroupProfiles::DoIt(void)
 {
 	Parent->PutText("Groups Profiles ...");
-	Session->GroupingProfiles(Parent,Modified,Save);
+	Session->GroupingProfiles(Parent);
 }
 
 
@@ -583,7 +581,7 @@ void QCreateIdealGroups::DoIt(void)
 {
 	Parent->PutText("Create Ideal Groups ...");
 	Session->GetSubjects()->Apply();
-	Session->GetSubjects()->CreateIdeal(Save);
+	Session->GetSubjects()->CreateIdeal(false);
 }
 
 
@@ -592,7 +590,7 @@ void QMakeFdbks::DoIt(void)
 {
 	Parent->PutText("Make feedbacks ...");
 	Session->GetSubjects()->Apply();
-	Session->GetSubjects()->FdbksCycle(Save);
+	Session->GetSubjects()->FdbksCycle();
 }
 
 
@@ -616,17 +614,17 @@ void QExportMatrix::DoIt(void)
 void QComputeAll::DoIt(void)
 {
 	Parent->PutText("Analyse Documents ...");
-	Session->AnalyseDocs(Parent,Modified);
+	Session->AnalyseDocs(Parent);
 	if(GSession::Break())
 		return;
 	Parent->PutText("Compute Profiles ...");
-	Session->CalcProfiles(Parent,Modified,Save,SaveLinks);
+	Session->CalcProfiles(Parent);
 	if(GSession::Break())
 		return;
 	if(GSession::Break())
 		return;
 	Parent->PutText("Groups Profiles ...");
-	Session->GroupingProfiles(Parent,Modified,Save);
+	Session->GroupingProfiles(Parent);
 }
 
 
@@ -674,35 +672,57 @@ void QFillMIMETypes::DoIt(void)
 //
 //-----------------------------------------------------------------------------
 
+QSessionProgressDlg* QSessionProgressDlg::Main=0;
+unsigned int QSessionProgressDlg::NbJobs=0;
+
+
 //-----------------------------------------------------------------------------
-QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(std::bad_alloc,RException)
-    : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), Session(s), Task(0), Running(false)
+QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c,bool cancel)
+    : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), btnOk(0), Session(s), Task(0),
+	  Running(false)
 {
-	resize(600, 78 );
+	resize(200, 28 );
 	setCaption(i18n(c));
 
-	btnOk = new QPushButton( this, "buttonOk_2" );
-	btnOk->setGeometry( QRect( 260, 50, 80, 22 ) );
-	btnOk->setText( i18n( "&OK" ) );
-	btnOk->setAutoDefault( TRUE );
-	btnOk->setDefault( TRUE );
-
-	Line = new QFrame( this, "Line1" );
-	Line->setGeometry( QRect( 0, 30, 600, 20 ) );
-	Line->setFrameStyle( QFrame::HLine | QFrame::Sunken );
+	QVBoxLayout* Layout = new QVBoxLayout( this, 11, 6, "QConnectMySQLLayout");
 
 	txtRem = new QLabel( this, "txtRem" );
-	txtRem->setGeometry( QRect( 10, 10, 580, 20 ) );
+	txtRem->setGeometry( QRect( 10, 10, 80, 20 ) );
 	txtRem->setText(c+QString(" ..."));
+	Layout->addWidget(txtRem);
 
-	connect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
+	if(cancel)
+	{
+		Line = new QFrame( this, "Line1" );
+		//Line->setGeometry( QRect( 0, 30, 600, 20 ) );
+		Line->setFrameStyle( QFrame::HLine | QFrame::Sunken );
+		Layout->addWidget(Line);
+
+	    QHBoxLayout* HLayout = new QHBoxLayout( 0, 0, 6, "layout9_2");
+    	QSpacerItem* spacer5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    	HLayout->addItem( spacer5 );
+		btnOk = new QPushButton( this, "buttonOk_2" );
+		btnOk->setGeometry( QRect( 260, 50, 80, 22 ) );
+		btnOk->setText( i18n( "&OK" ) );
+		btnOk->setAutoDefault( TRUE );
+		btnOk->setDefault( TRUE );
+		HLayout->addWidget(btnOk);
+		spacer5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+    	HLayout->addItem( spacer5 );
+		Layout->addItem(HLayout);
+		connect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
+	}
+	if(!Main)
+		Main=this;
+	NbJobs=0;
 }
 
 
 //-----------------------------------------------------------------------------
 bool QSessionProgressDlg::Run(QSessionThread* task)
 {
-	btnOk->setText(i18n("&Cancel"));
+	if(btnOk)
+		btnOk->setText(i18n("&Cancel"));
 	KApplication::kApplication()->processEvents();
 	Task=task;
 	Task->Set(Session,this);
@@ -724,35 +744,35 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextGroupLang(const GLang* lang) throw(std::bad_alloc,RException)
+void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 {
 	txtRem->setText(QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...");
 }
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,RException)
+void QSessionProgressDlg::NextDoc(const GDoc* doc)
 {
 	txtRem->setText(QString("Analyse Doc '")+ToQString(doc->GetName())+"' ...");
 }
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,RException)
+void QSessionProgressDlg::NextProfile(const GProfile* prof)
 {
 	txtRem->setText(QString("Analyse Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...");
 }
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextProfileExport(const GProfile* prof) throw(std::bad_alloc,RException)
+void QSessionProgressDlg::NextProfileExport(const GProfile* prof)
 {
 	txtRem->setText("Exporting Profile "+QString::number(prof->GetId())+ToQString(prof->GetName()));
 }
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextGroupExport(const GGroup* grp) throw(std::bad_alloc,RException)
+void QSessionProgressDlg::NextGroupExport(const GGroup* grp)
 {
 	char tmp[100];
 	sprintf(tmp,"Exporting  Group %u", grp->GetId());
@@ -761,7 +781,7 @@ void QSessionProgressDlg::receiveNextGroupExport(const GGroup* grp) throw(std::b
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextDocumentExport(const GDoc* doc) throw(std::bad_alloc,RException)
+void QSessionProgressDlg::NextDocumentExport(const GDoc* doc)
 {
 	char tmp[100];
 	sprintf(tmp,"Exporting  Document %u", doc->GetId());
@@ -769,7 +789,7 @@ void QSessionProgressDlg::receiveNextDocumentExport(const GDoc* doc) throw(std::
 }
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveNextChromosome(unsigned int id) throw(std::bad_alloc,RException)
+void QSessionProgressDlg::NextChromosome(unsigned int id)
 {
 	char tmp[50];
 
@@ -788,7 +808,8 @@ void QSessionProgressDlg::receiveButton()
 		return;
 	}
 	// Ah ah, something runs -> ask to break it
-	btnOk->setEnabled(false);
+	if(btnOk)
+		btnOk->setEnabled(false);
 	GSession::SetBreak();
 }
 
@@ -803,8 +824,9 @@ void QSessionProgressDlg::PutText(const char* text)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::Begin(void)
 {
-	txtRem->setText("Cancel");
-	btnOk->setEnabled(true);
+	QSessionProgressDlg::NbJobs++;
+	if(btnOk)
+		btnOk->setEnabled(true);
 	show();
 	KApplication::kApplication()->processEvents();
 }
@@ -819,12 +841,17 @@ void QSessionProgressDlg::Finish(bool Cancel)
 	}
 	if(!Cancel)
 		txtRem->setText("Finish");
-	btnOk->setEnabled(true);
-	btnOk->setText(i18n("&OK"));
+	if(btnOk)
+	{
+		btnOk->setEnabled(true);
+		btnOk->setText(i18n("&OK"));
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 QSessionProgressDlg::~QSessionProgressDlg(void)
 {
+	Main=0;
+	NbJobs=0;
 }

@@ -179,15 +179,11 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * Analyse all the documents.
-* @param modified   Recompute only modified elements or all.
-* @param save       Save the computed elements.
 */
 class QAnalyzeDocs : public QSessionThread
 {
-	bool Modified;
-	bool Save;
 public:
-	QAnalyzeDocs(bool modified=true,bool save=true) : Modified(modified), Save(save) {}
+	QAnalyzeDocs(void) {}
 	virtual void DoIt(void);
 };
 
@@ -195,17 +191,11 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * Compute the profiles.
-* @param modified       Recompute only modified elements or all.
-* @param save           Save modified elements.
-* @param saveLinks      Save modified links informations
 */
 class QComputeProfiles : public QSessionThread
 {
-	bool Modified;
-	bool Save;
-	bool SaveLinks;
 public:
-	QComputeProfiles(bool modified,bool save,bool saveLinks) : Modified(modified), Save(save), SaveLinks(saveLinks) {}
+	QComputeProfiles(void) {}
 	virtual void DoIt(void);
 };
 
@@ -213,18 +203,12 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * Compute a given profile.
-* @param modified       Recompute only modified elements or all.
-* @param save           Save modified elements.
-* @param saveLinks      Save modified links informations
 */
 class QComputeProfile : public QSessionThread
 {
 	GProfile* Profile;
-	bool Modified;
-	bool Save;
-	bool SaveLinks;
 public:
-	QComputeProfile(GProfile* profile,bool modified,bool save,bool saveLinks) : Profile(profile), Modified(modified), Save(save), SaveLinks(saveLinks) {}
+	QComputeProfile(GProfile* profile) : Profile(profile) {}
 	virtual void DoIt(void);
 };
 
@@ -232,15 +216,11 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * Groups the profiles.
-* @param modified       Recompute only modified elements or all.
-* @param save           Save modified elements.
 */
 class QGroupProfiles : public QSessionThread
 {
-	bool Modified;
-	bool Save;
 public:
-	QGroupProfiles(bool modified,bool save) : Modified(modified), Save(save){}
+	QGroupProfiles(void) {}
 	virtual void DoIt(void);
 };
 
@@ -252,9 +232,8 @@ public:
 */
 class QCreateIdealGroups : public QSessionThread
 {
-	bool Save;
 public:
-	QCreateIdealGroups(bool save) : Save(save){}
+	QCreateIdealGroups(void) {}
 	virtual void DoIt(void);
 };
 
@@ -266,9 +245,8 @@ public:
 */
 class QMakeFdbks : public QSessionThread
 {
-	bool Save;
 public:
-	QMakeFdbks(bool save) : Save(save){}
+	QMakeFdbks(void) {}
 	virtual void DoIt(void);
 };
 
@@ -314,12 +292,8 @@ public:
 */
 class QComputeAll : public QSessionThread
 {
-	bool Modified;
-	bool Save;
-	bool SaveLinks;
 public:
-	QComputeAll(bool modified,bool save,bool saveLinks)
-		: Modified(modified), Save(save), SaveLinks(saveLinks) {}
+	QComputeAll(void) {}
 	virtual void DoIt(void);
 };
 
@@ -383,13 +357,17 @@ class QSessionProgressDlg : public QSemiModal, public GSlot
 
 public:
 
+	static unsigned int NbJobs;
+	static QSessionProgressDlg* Main;
+
 	/**
 	* Constructor.
 	* @param parent         Parent widget.
 	* @param s              Session from which to load.
 	* @param c              Caption of the dialog box.
+	* @param cancel         Cancel Button?
 	*/
-	QSessionProgressDlg(QWidget* parent,GSession* s,const char* c) throw(std::bad_alloc,RException);
+	QSessionProgressDlg(QWidget* parent,GSession* s,const char* c,bool cancel=true);
 
 	/**
 	* Run a thread "in" this dialog box.
@@ -401,43 +379,43 @@ public:
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang) throw(std::bad_alloc,RException);
+	virtual void NextGroupLang(const GLang* lang);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param doc            Document.
 	*/
-	virtual void receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,RException);
+	virtual void NextDoc(const GDoc* doc);
 
 	/**
 	* The traitment for a specific profile will begin.
 	* @param prof           Profile.
 	*/
-	virtual void receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,RException);
+	virtual void NextProfile(const GProfile* prof);
 
 	/**
 	* The export for a specific profile will begin.
 	* @param prof           Profile.
 	*/
-	virtual void receiveNextProfileExport(const GProfile* prof) throw(std::bad_alloc,RException);
+	virtual void NextProfileExport(const GProfile* prof);
 
 	/**
 	* The export for a specific group will begin.
 	* @param grp           Group.
 	*/
-	virtual void receiveNextGroupExport(const GGroup* grp) throw(std::bad_alloc,RException);
+	virtual void NextGroupExport(const GGroup* grp);
 
 	/**
 	* The export for a specific document will begin.
 	* @param doc           Document
 	*/
-	virtual void receiveNextDocumentExport(const GDoc* doc) throw(std::bad_alloc,RException);
+	virtual void NextDocumentExport(const GDoc* doc);
 
 	/**
 	* The traitment for a specific chromosome will begin.
 	* @param id             Identificator of the chromosome.
 	*/
-	virtual void receiveNextChromosome(unsigned int id) throw(std::bad_alloc,RException);
+	virtual void NextChromosome(unsigned int id);
 
 public slots:
 

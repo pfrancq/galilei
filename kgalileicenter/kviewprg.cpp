@@ -132,7 +132,7 @@ void KViewPrg::MyThread::run(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,RString name,int wflags) throw(std::bad_alloc,RException)
+KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,RString name,int wflags)
 	: KView(doc,parent,name,wflags), GSlot(), Name(name), Prg(0)
 {
 	// Window proprieties
@@ -152,28 +152,28 @@ void KViewPrg::update(unsigned int /*cmd*/)
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::receiveNextDoc(const GDoc*) throw(std::bad_alloc,RException)
+void KViewPrg::NextDoc(const GDoc*)
 {
 	KApplication::kApplication()->processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::receiveNextProfile(const GProfile*) throw(std::bad_alloc,RException)
+void KViewPrg::NextProfile(const GProfile*)
 {
 	KApplication::kApplication()->processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::NextGroupLang(const GLang*) throw(std::bad_alloc,RException)
+void KViewPrg::NextGroupLang(const GLang*)
 {
 	KApplication::kApplication()->processEvents();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::WriteStr(const char* str) throw(std::bad_alloc,RException)
+void KViewPrg::WriteStr(const char* str)
 {
 	Output->append(str);
 	KApplication::kApplication()->processEvents();
@@ -209,6 +209,7 @@ void KViewPrg::endPrg(void)
 	delete Prg;
 	Prg=0;
 }
+
 
 //-----------------------------------------------------------------------------
 bool KViewPrg::canClose(void)

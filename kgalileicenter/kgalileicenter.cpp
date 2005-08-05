@@ -153,7 +153,6 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	QConnectMySQL dlg(this,0,true);
 	QString method;
 	GSession* Sess;
-//	QSessionProgressDlg* d=0;
 
 	dlg.txtDb->setText(ToQString(dbName));
 	dlg.txtLogin->setText(ToQString(dbUser));
@@ -171,8 +170,11 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		try
 		{
 			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName,dbEncoding);
-			Sess = new GSession(Doc->GetStorage(),true);
+			Sess = new GSession(Doc->GetStorage(),docAlwaysSave->isChecked(),!(docAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()),
+			                    profileAlwaysSave->isChecked(),!(profileAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()),groupAlwaysSave->isChecked(),
+			                    useExistingGroups->isChecked()||(!sessionAlwaysCalc->isChecked()));
 			Doc->SetSession(Sess);
+			Sess->SetSlot(this);
 			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
 			if(dlg.Run(new QLoadSession()))
 			{
@@ -210,7 +212,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 void KGALILEICenterApp::slotSessionCompute(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Complete Session");
-	if(!Dlg.Run(new QComputeAll(!sessionAlwaysCalc->isChecked(),profileAlwaysSave->isChecked()||groupAlwaysSave->isChecked(),linkAlwaysSave->isChecked())))
+	if(!Dlg.Run(new QComputeAll()))
 		return;
 	Doc->updateAllViews(0);
 	Doc->updateAllViews(1);
@@ -453,7 +455,7 @@ void KGALILEICenterApp::slotShowUsers(void)
 void KGALILEICenterApp::slotProfilesCalc(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Profiles");
-	if(!Dlg.Run(new QComputeProfiles(!profileAlwaysCalc->isChecked(),profileAlwaysSave->isChecked(),linkAlwaysSave->isChecked())))
+	if(!Dlg.Run(new QComputeProfiles()))
 		return;
 	Doc->updateAllViews(1);
 	//test whether a linking method has been used during Profile computation.
@@ -487,7 +489,7 @@ void KGALILEICenterApp::slotShowGroups(void)
 void KGALILEICenterApp::slotGroupsCalc(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Make Groups");
-	if(!Dlg.Run(new QGroupProfiles(!groupAlwaysCalc->isChecked(),groupAlwaysSave->isChecked())))
+	if(!Dlg.Run(new QGroupProfiles()))
 		return;
 	Doc->updateAllViews(2);
 }
@@ -528,7 +530,7 @@ void KGALILEICenterApp::slotSimulationDlg(void)
 void KGALILEICenterApp::slotGroupsCreate(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Groups");
-	Dlg.Run(new QCreateIdealGroups(groupAlwaysSave->isChecked()));
+	Dlg.Run(new QCreateIdealGroups());
 	Doc->updateAllViews(2);
 }
 
@@ -537,7 +539,7 @@ void KGALILEICenterApp::slotGroupsCreate(void)
 void KGALILEICenterApp::slotDoFdbks(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Feedback Cycle");
-	Dlg.Run(new QMakeFdbks(profileAlwaysSave->isChecked()));
+	Dlg.Run(new QMakeFdbks());
 	Doc->updateAllViews(1);
 }
 
@@ -706,7 +708,7 @@ void KGALILEICenterApp::slotDocAnalyse(void)
 void KGALILEICenterApp::slotDocsAnalyse(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Analyse Documents");
-	if(!Dlg.Run(new QAnalyzeDocs(!docAlwaysCalc->isChecked(),docAlwaysSave->isChecked())))
+	if(!Dlg.Run(new QAnalyzeDocs()))
 		return;
 	Doc->updateAllViews(0);
 }
@@ -969,6 +971,21 @@ void KGALILEICenterApp::slotStatusMsg(const QString& text)
 {
 	statusBar()->clear();
 	statusBar()->changeItem(text,1);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotChangeModifiers(void)
+{
+	if(Doc&&Doc->GetSession())
+	{
+		Doc->GetSession()->SetSave(otDoc,docAlwaysSave->isChecked());
+		Doc->GetSession()->SetComputeModified(otDoc,!(docAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()));
+		Doc->GetSession()->SetSave(otSubProfile,profileAlwaysSave->isChecked());
+		Doc->GetSession()->SetComputeModified(otSubProfile,!(profileAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()));
+		Doc->GetSession()->SetSave(otGroup,groupAlwaysSave->isChecked());
+		Doc->GetSession()->SetComputeModified(otGroup,useExistingGroups->isChecked()||(!sessionAlwaysCalc->isChecked()));
+	}
 }
 
 

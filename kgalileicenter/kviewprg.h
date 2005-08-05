@@ -89,7 +89,7 @@ public:
 	* @param name           Name of the program.
 	* @param wflags         Flags.
 	*/
-	KViewPrg(KDoc* doc,QWidget* parent,RString name,int wflags) throw(std::bad_alloc,RException);
+	KViewPrg(KDoc* doc,QWidget* parent,RString name,int wflags);
 
 	/**
 	* Return the type of the window.
@@ -106,26 +106,26 @@ public:
 	* The traitment for a specific document will begin.
 	* @param doc            Document.
 	*/
-	virtual void receiveNextDoc(const GDoc* doc) throw(std::bad_alloc,RException);
+	virtual void NextDoc(const GDoc* doc);
 
 	/**
 	* The traitment for a specific document will begin.
 	* @param prof           Profile.
 	*/
-	virtual void receiveNextProfile(const GProfile* prof) throw(std::bad_alloc,RException);
+	virtual void NextProfile(const GProfile* prof);
 
 	/**
 	* Method called by GGrouping each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
-	virtual void NextGroupLang(const GLang* lang) throw(std::bad_alloc,RException);
+	virtual void NextGroupLang(const GLang* lang);
 
 	/**
 	* Method called when executing a sequence of instruction to output some
 	* information.
 	* @param str            String to output.
 	*/
-	virtual void WriteStr(const char* str) throw(std::bad_alloc,RException);
+	virtual void WriteStr(const char* str);
 
 	/**
 	* Verify if Qt has nothing to do.

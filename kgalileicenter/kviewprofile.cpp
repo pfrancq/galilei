@@ -442,7 +442,7 @@ void KViewProfile::GetListSubPov(GInOutputBase* /*datainput*/)
 void KViewProfile::ComputeProfile(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Profile");
-	if(!Dlg.Run(new QComputeProfile(Profile,false,false,false)))
+	if(!Dlg.Run(new QComputeProfile(Profile)))
 		return;
 	General->slotProfileChanged();
 	Desc->slotProfileChanged();
