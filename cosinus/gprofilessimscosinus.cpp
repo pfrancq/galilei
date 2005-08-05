@@ -182,7 +182,7 @@ GProfilesSimsCosinus::GProfilesSim::GProfilesSim(GProfilesSimsCosinus* manager,G
 		return;
 
 	//initialize the container of GSims (calculate size)
-	RCursor<GSubProfile> s(Manager->Session->GetSubProfilesCursor(Lang));
+	RCursor<GSubProfile> s(Manager->Session->GetSubProfiles(Lang));
 	for(s.Start(),i=0; !s.End(); s.Next())
 		if(s()->GetProfile()->GetId()>i)
 			i=s()->GetProfile()->GetId();
@@ -376,14 +376,14 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void) throw(std::bad_alloc)
 	if(!Sims)
 	{
 		unsigned int i;
-		RCursor<GSubProfile> s(Manager->Session->GetSubProfilesCursor(Lang));
+		RCursor<GSubProfile> s(Manager->Session->GetSubProfiles(Lang));
 		for(s.Start(),i=0; !s.End(); s.Next())
 			if(s()->GetProfile()->GetId()>i)
 				i=s()->GetProfile()->GetId();
 		Sims=new RContainer<GSims,true,false>(i+1);
 	}
 
-	subscur2=Manager->Session->GetSubProfilesCursor(Lang);
+	subscur2=Manager->Session->GetSubProfiles(Lang);
 	if(!subscur.GetNb()) return;
 
 	// change status of modified subprofiles and add sims of created subprofiles
@@ -448,7 +448,7 @@ GSims* GProfilesSimsCosinus::GProfilesSim::AddNewSims(GSubProfile* sub)
 		return(0);
 	sims=new GSims(sub->GetProfile()->GetId(),sub->GetProfile()->GetId());
 	Sims->InsertPtrAt(sims, sub->GetProfile()->GetId());
-	subcur=Manager->Session->GetSubProfilesCursor(Lang);
+	subcur=Manager->Session->GetSubProfiles(Lang);
 	for (subcur.Start(); !subcur.End(); subcur.Next())
 	{
 		if (subcur()->GetProfile()->GetId()<sub->GetProfile()->GetId())
@@ -489,7 +489,7 @@ double GProfilesSimsCosinus::GProfilesSim::GetMinSimilarity(void)
 	newmean=OldNbComp*oldmean;
 	newdev=OldNbComp*(olddev+(oldmean*oldmean));
 
-	RCursor<GSubProfile> subprofiles(Manager->Session->GetSubProfilesCursor(Lang));
+	RCursor<GSubProfile> subprofiles(Manager->Session->GetSubProfiles(Lang));
 	subprofiles2=subprofiles;
 
 	for(subprofiles.Start(),i=0;!subprofiles.End();subprofiles.Next(),i++)
@@ -668,7 +668,7 @@ double GProfilesSimsCosinus::ComputeMinSim(const GLang* lang)
 	simssum=deviation=0.0;
 	nbcomp=0;
 
-	RCursor<GSubProfile> subprofiles(Session->GetSubProfilesCursor(lang));
+	RCursor<GSubProfile> subprofiles(Session->GetSubProfiles(lang));
 	s2=subprofiles;
 	for(subprofiles.Start(),i=0,j=subprofiles.GetNb();--j;subprofiles.Next(),i++)
 	{

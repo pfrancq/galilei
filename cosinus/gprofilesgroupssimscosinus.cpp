@@ -154,13 +154,13 @@ GProfilesGroupsSimsCosinus::GProfileGrpSim::GProfileGrpSim(GProfilesGroupsSimsCo
 		return;
 
 	//initialize the container of GSims (calculate size)
-	RCursor<GSubProfile> d(Manager->Session->GetSubProfilesCursor(Lang));
+	RCursor<GSubProfile> d(Manager->Session->GetSubProfiles(Lang));
 	for(d.Start(),i=0; !d.End(); d.Next())
 		if(d()->GetId()>i)
 			i=d()->GetId();
 	Sims=new RContainer<GSims,true,true>(i+1,1);
 
-	RCursor<GGroup> s(Manager->Session->GetGroupsCursor(l));
+	RCursor<GGroup> s(Manager->Session->GetGroups(l));
 	Cur_d= d;
 	Cur_p=s;
 	nbrSubProf = Cur_p.GetNb() ;
@@ -243,15 +243,15 @@ void  GProfilesGroupsSimsCosinus::GProfileGrpSim::Update(void)
 	if(!Sims)
 	{
 		unsigned int i;
-		RCursor<GSubProfile> d(Manager->Session->GetSubProfilesCursor(Lang));
+		RCursor<GSubProfile> d(Manager->Session->GetSubProfiles(Lang));
 		for(d.Start(),i=0; !d.End(); d.Next())
 			if(d()->GetId()>i)
 				i=d()->GetId();
 		Sims=new RContainer<GSims,true,true>(i+1,1);
 	}
 
-	Cur_d = Manager->Session->GetSubProfilesCursor(Lang);
-	Cur_p = Manager->Session->GetGroupsCursor(Lang);
+	Cur_d = Manager->Session->GetSubProfiles(Lang);
+	Cur_p = Manager->Session->GetGroups(Lang);
 	nbrSubProf = Cur_p.GetNb() ;
 
 	// The type of similarity hasn't changed -> some values of sim can be UpToDate
