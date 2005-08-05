@@ -255,16 +255,20 @@ void GGroups::ClearGroups(void)
 
 
 //------------------------------------------------------------------------------
-void GGroups::UpdateGroups(GSubProfile* sub)
+void GGroups::UpdateGroups(unsigned int subid)
 {
+	GSession* session=GSession::Get();
+	if(!session)
+		return;
+
 	// If there is a group -> propagate in memory
-	if(sub->GetGroup())
+	GSubProfile* sub=session->GetSubProfile(subid);
+	if(sub&&sub->GetGroup())
 		sub->GetGroup()->HasUpdate(sub);
 
 	// Use database
-	GSession* session=GSession::Get();
-	if(session&&session->GetStorage()&&(!session->GetStorage()->MustLoadAll()))
-		session->GetStorage()->UpdateGroups(sub);
+	if(session->GetStorage()&&((!session->GetStorage()->MustLoadAll())||(session->MustSave(otGroup))))
+		session->GetStorage()->UpdateGroups(subid);
 }
 
 

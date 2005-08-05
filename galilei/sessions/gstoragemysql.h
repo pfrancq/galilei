@@ -130,15 +130,15 @@ public:
 
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
-	* @param doc             Document modified.
+	* @param docid           Identificator of the document.
 	*/
-	virtual void UpdateProfiles(GDoc* doc);
+	virtual void UpdateProfiles(unsigned int docid);
 
 	/**
 	* A subprofile was updated and the corresponding groups must be updated.
-	* @param sub             Subprofile modified.
+	* @param subid           Identificator of the subprofile.
 	*/
-	virtual void UpdateGroups(GSubProfile* sub);
+	virtual void UpdateGroups(unsigned int subid);
 
 	/**
 	* Save the references of a given object type and for a given information

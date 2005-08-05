@@ -195,7 +195,7 @@ unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof) const
 		if(!(f & djOK)) continue;
 		// Look for the same document in the other profile. If not found or the
 		// document is not "good" -> Nothing
-		cor=prof->GetProfile()->GetFdbk(fdbks()->GetDoc()->GetId());
+		cor=prof->GetProfile()->GetFdbk(fdbks()->GetDocId());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 		if(!(f & djOK)) continue;
@@ -225,7 +225,7 @@ unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof) const
 		f=Fdbks()->GetFdbk();
 		// Look for the same document in the other profile. If not found or the
 		// document is not "good" -> Nothing
-		cor=prof->GetProfile()->GetFdbk(Fdbks()->GetDoc()->GetId());
+		cor=prof->GetProfile()->GetFdbk(Fdbks()->GetDocId());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 
@@ -257,7 +257,7 @@ unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) const
 
 		// If the document was not judged by the other profile or have not the
 		// same judgment -> Nothing
-		cor=prof->GetProfile()->GetFdbk(Fdbks()->GetDoc()->GetId());
+		cor=prof->GetProfile()->GetFdbk(Fdbks()->GetDocId());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 		bOK2=(f & djOK);
@@ -294,7 +294,7 @@ void GSubProfile::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* info
 
 		// Update the group were it belongs
 		if(GSession::Get())
-			GSession::Get()->UpdateGroups(this);
+			GSession::Get()->UpdateGroups(Id);
 	}
 	else
 		State=osUpToDate;

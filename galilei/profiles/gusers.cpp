@@ -253,10 +253,15 @@ RCursor<GSubProfile> GUsers::GetSubProfilesCursor(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GUsers::UpdateProfiles(GDoc* doc)
+void GUsers::UpdateProfiles(unsigned int docid)
 {
+	GSession* session=GSession::Get();
+	if(!session)
+		return;
+
 	// If there are some profile -> propagate in memory
-	if(Profiles.GetNb())
+	GDoc* doc=session->GetDoc(docid);
+	if(doc&&Profiles.GetNb())
 	{
 		RVectorInt<true>* fdbks=doc->GetFdbks();
 		if(fdbks)
@@ -266,15 +271,14 @@ void GUsers::UpdateProfiles(GDoc* doc)
 				GProfile* prof=GetProfile((*fdbks)());
 				if(!prof)
 					continue;
-				prof->HasUpdate(doc);
+				prof->HasUpdate(docid);
 			}
 		}
 	}
 
 	// Use database
-	GSession* session=GSession::Get();
-	if(session&&session->GetStorage()&&(!session->GetStorage()->MustLoadAll()))
-		session->GetStorage()->UpdateProfiles(doc);
+	if(session->GetStorage()&&((!session->GetStorage()->MustLoadAll()))||(session->MustSave(otSubProfile)))
+		session->GetStorage()->UpdateProfiles(docid);
 }
 
 

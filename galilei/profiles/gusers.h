@@ -157,9 +157,9 @@ public:
 
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
-	* @param doc             Document modified.
+	* @param docid           Identificator of the document.
 	*/
-	void UpdateProfiles(GDoc* doc);
+	void UpdateProfiles(unsigned int docid);
 
 	/**
 	* Clear all the users.

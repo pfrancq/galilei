@@ -49,8 +49,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFdbk::GFdbk(GDoc* doc,tDocAssessment fdbk,const RDate& when,const R::RDate& updated)
-  : Doc(doc), Fdbk(fdbk), When(when), Updated(updated)
+GFdbk::GFdbk(unsigned int docid,tDocAssessment fdbk,const RDate& when,const R::RDate& updated)
+  : DocId(docid), Fdbk(fdbk), When(when), Updated(updated)
 {
 }
 
@@ -58,21 +58,21 @@ GFdbk::GFdbk(GDoc* doc,tDocAssessment fdbk,const RDate& when,const R::RDate& upd
 //------------------------------------------------------------------------------
 int GFdbk::Compare(const GFdbk& profdoc) const
 {
-	return(Doc->GetId()-profdoc.Doc->GetId());
+	return(DocId-profdoc.DocId);
 }
 
 
 //------------------------------------------------------------------------------
 int GFdbk::Compare(const GFdbk* profdoc) const
 {
-	return(Doc->GetId()-profdoc->Doc->GetId());
+	return(DocId-profdoc->DocId);
 }
 
 
 //------------------------------------------------------------------------------
 int GFdbk::Compare(const unsigned id) const
 {
-	return(Doc->GetId()-id);
+	return(DocId-id);
 }
 
 
@@ -273,16 +273,16 @@ RCursor<GSubProfile> GProfile::GetSubProfilesCursor(void) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::InsertFdbk(GDoc* doc,tDocAssessment assess,const R::RDate& date)
+void GProfile::InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
 {
-	Fdbks.InsertPtr(new GFdbk(doc,assess,date,doc->GetUpdated()));
+	Fdbks.InsertPtr(new GFdbk(docid,assess,date,update));
 }
 
 
 //------------------------------------------------------------------------------
-void GProfile::DeleteFdbk(unsigned int id)
+void GProfile::DeleteFdbk(unsigned int docid)
 {
-	Fdbks.DeletePtr(Fdbks.GetPtr<unsigned int>(id));
+	Fdbks.DeletePtr(Fdbks.GetPtr<unsigned int>(docid));
 }
 
 
@@ -294,16 +294,16 @@ void GProfile::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-GFdbk* GProfile::GetFdbk(unsigned int id) const
+GFdbk* GProfile::GetFdbk(unsigned int docid) const
 {
-	return(Fdbks.GetPtr<unsigned int>(id));
+	return(Fdbks.GetPtr<unsigned int>(docid));
 }
 
 
 //------------------------------------------------------------------------------
-void GProfile::HasUpdate(GDoc* doc)
+void GProfile::HasUpdate(unsigned int docid)
 {
-	GFdbk* fdbk=Fdbks.GetPtr(doc->GetId());
+	GFdbk* fdbk=Fdbks.GetPtr(docid);
 	if(fdbk)
 		fdbk->HasUpdate();
 }
@@ -320,13 +320,19 @@ void GProfile::Update(void)
 	for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 		SubProfiles()->ClearFdbks();
 
+	GSession* session=GSession::Get();
+	if(!session)
+		return;
+
 	// Go through each assessed document
 	// If a language is defined -> put it in the corresponding subprofile.
 	RCursor<GFdbk> Docs(Fdbks);
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		lang=Docs()->GetDoc()->GetLang();
-		if((!lang)||(!Docs()->GetDoc()->IsDefined())) continue;
+		GDoc* doc=session->GetDoc(Docs()->GetDocId());
+		if(!doc) continue;
+		lang=doc->GetLang();
+		if((!lang)||(!doc->IsDefined())) continue;
 
 		// Get the subprofile (if subprofile does not exist -> create it).
 		sub=GetPtr<const GLang*>(lang,false);

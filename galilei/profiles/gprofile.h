@@ -54,9 +54,9 @@ namespace GALILEI{
 class GFdbk
 {
 	/**
-	* Document assessed.
+	* Identificator of the document assessed.
 	*/
-	GDoc* Doc;
+	unsigned int DocId;
 
 	/**
 	* Assessment of the profile.
@@ -77,12 +77,12 @@ public:
 
 	/**
 	* Constructor.
-	* @param doc             Document.
+	* @param docid           Identificator of the document.
 	* @param fdbk            Assessment.
 	* @param when            Date.
 	* @param updated         Update.
 	*/
-	GFdbk(GDoc* doc,tDocAssessment fdbk,const R::RDate& when,const R::RDate& updated);
+	GFdbk(unsigned int docid,tDocAssessment fdbk,const R::RDate& when,const R::RDate& updated);
 
 	/**
 	* Compare two assessements to order them using the document identificator.
@@ -123,10 +123,10 @@ public:
 	tDocAssessment GetFdbk(void) const {return(Fdbk);}
 
 	/**
-	* Get the document assessed.
-	* @returns Pointer to the document.
+	* Get the identificator of the document assessed.
+	* @returns unsigned int.
 	*/
-	GDoc* GetDoc(void) const {return(Doc);}
+	unsigned int GetDocId(void) const {return(DocId);}
 
 	/**
 	* Get the date of the assessment on the document.
@@ -334,17 +334,18 @@ public:
 
 	/**
 	* Insert an assessment to the list of the profile.
-	* @param doc             Document.
+	* @param docid           Identificator of the document.
 	* @param assess          Assessment.
 	* @param date            Date.
+	* @param update          Last update of the document.
 	*/
-	void InsertFdbk(GDoc* doc,tDocAssessment assess,const R::RDate& date);
+	void InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update);
 
 	/**
 	* Delete an assessment from the list of the profile.
-	* @param id              Identificator of the document.
+	* @param docid           Identificator of the document.
 	*/
-	void DeleteFdbk(unsigned int id);
+	void DeleteFdbk(unsigned int docid);
 
 	/**
 	* Clear the assessment of the profile.
@@ -353,15 +354,15 @@ public:
 
 	/**
 	* Get the feedback of the profile on a specific document.
-	* @param id              Identificator of the document.
+	* @param docid           Identificator of the document.
 	*/
-	GFdbk* GetFdbk(unsigned int id) const;
+	GFdbk* GetFdbk(unsigned int docid) const;
 
 	/**
 	* This method is call by a document when it was modified.
-	* @param doc             Document.
+	* @param docid           Identificator of the document.
 	*/
-	void HasUpdate(GDoc* doc);
+	void HasUpdate(unsigned int docid);
 
 	/**
 	* Update the profile. In practice, it constructs for each subprofile the
@@ -372,7 +373,7 @@ public:
 
 public:
 
-	/*
+	/**
 	* Destructor of the profile.
 	*/
 	~GProfile(void);

@@ -87,6 +87,7 @@ int GDocs::GDocsLang::Compare(const GLang* lang) const
 	return(Lang->Compare(lang));
 }
 
+
 //------------------------------------------------------------------------------
 void GDocs::GDocsLang::Clear(void)
 {

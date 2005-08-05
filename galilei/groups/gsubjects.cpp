@@ -295,7 +295,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 			if(nbDocsOK)
 			{
 				nbDocsOK--;
-				Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
+				Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 			}
 		}
 		else
@@ -306,7 +306,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 				if(nbDocsKO)
 				{
 					nbDocsKO--;
-					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 				}
 			}
 			else
@@ -315,7 +315,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 				if(nbDocsH)
 				{
 					nbDocsH--;
-					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 				}
 			}
 		}
@@ -571,22 +571,25 @@ void GSubjects::FdbksCycle(void)
 			RCursor<GFdbk> Cur(NewDocs);
 			for(Cur.Start(),i=NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
 			{
+				GDoc* doc=Session->GetDoc(Cur()->GetDocId());
+				if(!doc)
+					continue;
 				// Look if 'OK'
-				if(IsFromSubject(Cur()->GetDoc()->GetId(),GetSubject(SubProfile())))
+				if(IsFromSubject(Cur()->GetDocId(),GetSubject(SubProfile())))
 				{
-					Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 				}
 				else
 				{
 					// Look If 'KO'
-					if(IsFromParentSubject(Cur()->GetDoc()->GetId(),GetSubject(SubProfile())))
+					if(IsFromParentSubject(Cur()->GetDocId(),GetSubject(SubProfile())))
 					{
-						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 					}
 					else
 					{
 						// Must be H
-						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDoc()->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 					}
 				}
 			}
@@ -639,18 +642,18 @@ void GSubjects::AddAssessments(void)
 				// Look if 'OK'
 				if(IsFromSubject((*ptr),Subs()))
 				{
-					Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday());
+					Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 				}
 				else
 				{
 					// Look If 'KO'
 					if(IsFromParentSubject((*ptr),Subs()))
 					{
-						Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 					}
 					else
 					{
-						Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday());
+						Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 					}
 				}
 			}

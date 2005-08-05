@@ -150,9 +150,9 @@ public:
 
 	/**
 	* A subprofile was updated and the corresponding groups must be updated.
-	* @param sub             Subprofile modified.
+	* @param subid           Identificator of the subprofile.
 	*/
-	void UpdateGroups(GSubProfile* sub);
+	void UpdateGroups(unsigned int subid);
 
 	/**
 	* Destructor of the groups.

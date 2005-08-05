@@ -135,7 +135,12 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 
 	// Save if necessary
 	if(save)
+	{
 		Session->GetStorage()->SaveGroups(Session);
+		Groups=Session->GetGroupsCursor();
+		for(Groups.Start();!Groups.End();Groups.Next())
+			Groups()->SetState(osSaved);
+	}
 }
 
 

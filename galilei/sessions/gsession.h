@@ -404,8 +404,9 @@ public:
 	* @param d                Identificator of the document.
 	* @param assess           Feedback.
 	* @param date             Date on the last feedback.
+	* @param update           Date on the last update of the document.
 	*/
-	void InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date);
+	void InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date,R::RDate update);
 
 	/**
 	* Clear all the feedbacks.

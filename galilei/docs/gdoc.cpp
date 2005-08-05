@@ -194,7 +194,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 
 		// Update the profiles that have assessed it.
 		if(GSession::Get())
-			GSession::Get()->UpdateProfiles(this);
+			GSession::Get()->UpdateProfiles(Id);
 	}
 	else
 		State=osUpToDate;

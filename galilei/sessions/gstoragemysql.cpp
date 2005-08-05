@@ -716,7 +716,7 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 	try
 	{
 		// Load feedbacks
-		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2 FROM htmlsbyprofiles");
+		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,updated FROM htmlsbyprofiles");
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
 			switch(fdbks[1][static_cast<size_t>(0)].Unicode())
@@ -750,7 +750,7 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 						break;
 				}
 			}
-			session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),jug,RDate(fdbks[3]));
+			session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),jug,RDate(fdbks[3]),RDate(fdbks[4]));
 		}
 	}
 	catch(RMySQLError e)
@@ -1017,7 +1017,7 @@ void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 					default:
 						throw GException("No Valid Assessment");
 				}
-				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2,updated) VALUES("+itou(Fdbks()->GetDoc()->GetId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetWhen())+","+RQuery::SQLValue(Fdbks()->GetUpdated())+")";
+				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2,updated) VALUES("+itou(Fdbks()->GetDocId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetWhen())+","+RQuery::SQLValue(Fdbks()->GetUpdated())+")";
 				RQuery fdbks(Db,sSql);
 			}
 		}
@@ -1059,7 +1059,7 @@ void GStorageMySQL::SaveLinks(GSession* session) throw(GException)
 					default:
 						continue;
 				}
-				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDoc()->GetId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetWhen())+")";
+				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2) VALUES("+itou(Fdbks()->GetDocId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetWhen())+")";
 				RQuery fdbks(Db,sSql);
 			}
 		}
@@ -1345,18 +1345,16 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::UpdateProfiles(GDoc* doc)
+void GStorageMySQL::UpdateProfiles(unsigned int docid)
 {
-	RQuery Up(Db,"UPDATE htmlsbyprofiles SET updated=CURDATE() WHERE htmlid="+itou(doc->GetId()));
+	RQuery Up(Db,"UPDATE htmlsbyprofiles SET updated=CURDATE() WHERE htmlid="+itou(docid));
 }
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::UpdateGroups(GSubProfile* sub)
+void GStorageMySQL::UpdateGroups(unsigned int subid)
 {
-	GGroup* grp=sub->GetGroup();
-	if(grp)
-		RQuery Up(Db,"UPDATE groups SET updated=CURDATE() WHERE groupid="+itou(grp->GetId()));
+	RQuery Up(Db,"UPDATE groups,subprofiles SET groups.updated=CURDATE() WHERE groups.groupid=subprofiles.groupid AND subprofiles.subprofileid="+itou(subid));
 }
 
 

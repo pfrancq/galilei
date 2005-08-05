@@ -542,7 +542,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 				if(SaveDocs)
 				{
 					Storage->SaveDoc(Docs());
-					Docs()->SetState(osUpToDate);
+					Docs()->SetState(osSaved);
 				}
 			}
 			catch(GException& e)
@@ -636,8 +636,7 @@ void GSession::AnalyseNewDocs(GSlot* rec)
 				if(SaveDocs)
 				{
 					Storage->SaveDoc(Docs());
-					if(Docs()->GetState()==osUpdated)
-						Docs()->SetState(osUpToDate);
+					Docs()->SetState(osSaved);
 				}
 			}
 			catch(GException& e)
@@ -687,8 +686,11 @@ void GSession::ComputePostDoc(GSlot* rec)
 		if(ExternBreak) return;
 		if(PostDocs()->GetPlugin())
 		{
-			sprintf(tmp, "PostDoc : Running %s",PostDocs()->GetName().Latin1());
-			rec->WriteStr(tmp);
+			if(rec)
+			{
+				sprintf(tmp, "PostDoc : Running %s",PostDocs()->GetName().Latin1());
+				rec->WriteStr(tmp);
+			}
 			PostDocs()->GetPlugin()->Run();
 		}
 	}
@@ -748,6 +750,7 @@ void GSession::CalcProfiles(GSlot* rec)
 					if(SaveSubProfiles)
 					{
 						Storage->SaveSubProfile(Subs());
+						Subs()->SetState(osSaved);
 					}
 				}
 			}
@@ -757,7 +760,7 @@ void GSession::CalcProfiles(GSlot* rec)
 		}
 	}
 
-	//Save the best computed Links (As Hub and Authority)
+	// Save the best computed Links (As Hub and Authority)
 	if((SaveSubProfiles)&&(LinkCalc))
 		Storage->SaveLinks(this);
 
@@ -801,6 +804,7 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile)
 				if(SaveSubProfiles)
 				{
 					Storage->SaveSubProfile(Subs());
+					Subs()->SetState(osSaved);
 				}
 			}
 		}
@@ -809,7 +813,7 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile)
 		}
 	}
 
-	//Save the best computed Links (As Hub and Authority)
+	// Save the best computed Links (As Hub and Authority)
 	if((SaveSubProfiles)&&(LinkCalc))
 		Storage->SaveLinks(this);
 
@@ -837,8 +841,11 @@ void GSession::ComputePreProfile(GSlot* rec)
 		if(ExternBreak) return;
 		if(PreProfile()->GetPlugin())
 		{
-			sprintf(tmp, "PostProfile : Running %s",PreProfile()->GetName().Latin1());
-			rec->WriteStr(tmp);
+			if(rec)
+			{
+				sprintf(tmp, "PostProfile : Running %s",PreProfile()->GetName().Latin1());
+				rec->WriteStr(tmp);
+			}
 			PreProfile()->GetPlugin()->Run();
 		}
 	}
@@ -864,8 +871,11 @@ void GSession::ComputePostProfile(GSlot* rec)
 		if(ExternBreak) return;
 		if(PostProfile()->GetPlugin())
 		{
-			sprintf(tmp, "PostProfile : Running %s",PostProfile()->GetName().Latin1());
-			rec->WriteStr(tmp);
+			if(rec)
+			{
+				sprintf(tmp, "PostProfile : Running %s",PostProfile()->GetName().Latin1());
+				rec->WriteStr(tmp);
+			}
 			PostProfile()->GetPlugin()->Run();
 		}
 	}
@@ -908,8 +918,11 @@ void GSession::ComputePostGroup(GSlot* rec)
 		if(ExternBreak) return;
 		if(PostGroups()->GetPlugin())
 		{
-			sprintf(tmp, "PostGroup : Running %s",PostGroups()->GetName().Latin1());
-			rec->WriteStr(tmp);
+			if(rec)
+			{
+				sprintf(tmp, "PostGroup : Running %s",PostGroups()->GetName().Latin1());
+				rec->WriteStr(tmp);
+			}
 			PostGroups()->GetPlugin()->Run();
 		}
 	}
@@ -917,15 +930,14 @@ void GSession::ComputePostGroup(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date)
+void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date,R::RDate update)
 {
 	GProfile* prof=GetProfile(p);
+	if(prof)
+		prof->InsertFdbk(d,assess,date,update);
 	GDoc* doc=GetDoc(d);
-
-	if((!doc)||(!prof))
-		return;
-	prof->InsertFdbk(doc,assess,date);
-	doc->InsertFdbk(p);
+	if(doc)
+		doc->InsertFdbk(p);
 }
 
 
@@ -982,7 +994,12 @@ void GSession::CopyIdealGroups(void)
 	}
 
 	if(SaveGroups)
+	{
 		Storage->SaveGroups(this);
+		RCursor<GGroup> Groups(Session->GetGroupsCursor());
+		for(Groups.Start();!Groups.End();Groups.Next())
+			Groups()->SetState(osSaved);
+	}
 }
 
 

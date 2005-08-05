@@ -68,7 +68,7 @@ public:
 	int Compare(const GFdbkRef&) const {return(-1);}
 	int Compare(const GFdbk* d) const
 	{
-		return(Doc->GetDoc()->GetId()-d->GetDoc()->GetId());
+		return(Doc->GetDocId()-d->GetDocId());
 	}
 };
 
@@ -264,7 +264,7 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* 
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify that it was not judged by s
-			if(s->GetProfile()->GetFdbk(Fdbks()->GetDoc()->GetId())) continue;
+			if(s->GetProfile()->GetFdbk(Fdbks()->GetDocId())) continue;
 
 			// Verify if already inserted:
 			// If not -> insert it in docs.
@@ -326,7 +326,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 				// Verify if already inserted in Docs.
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
-				Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetProfilesDocsSims()->GetSimilarity(session->GetDoc(Fdbks()->GetDoc()->GetId()),s)));
+				Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetProfilesDocsSims()->GetSimilarity(session->GetDoc(Fdbks()->GetDocId()),s)));
 			}
 			continue;
 		}
@@ -341,10 +341,10 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 
 			// Verify if already inserted in Docs or if it was not judged by the
 			// subprofile s.
-			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDoc()->GetId()))) continue;
+			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDocId()))) continue;
 
 			// Insert it.
-			Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetProfilesDocsSims()->GetSimilarity(session->GetDoc(Fdbks()->GetDoc()->GetId()),s)));
+			Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetProfilesDocsSims()->GetSimilarity(session->GetDoc(Fdbks()->GetDocId()),s)));
 		}
 	}
 
