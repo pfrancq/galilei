@@ -148,7 +148,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
 	}
 
 	// Update the group.
-	grp->Update(&Infos,true);
+	grp->Update(grp->GetLang(),&Infos,true);
 }
 
 
