@@ -131,7 +131,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 			if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
 
 			// If incremental mode and document has no change -> continue
-			if(IncrementalMode&&SubProfile->SameDescription(Docs())) continue;
+			if(IncrementalMode&&(!Docs()->MustUse(SubProfile->GetUpdated()))) continue;
 
 			// Add total number of document judged for the current language
 			NbDocs++;
@@ -156,7 +156,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
 
 		// If incremental mode and document has no change -> continue
-		if(IncrementalMode&&SubProfile->SameDescription(Docs())) continue;
+		if(IncrementalMode&&(!Docs()->MustUse(SubProfile->GetUpdated()))) continue;
 
 		// Find list in function of the feedback
 		switch(Docs()->GetFdbk() & djMaskJudg )
@@ -288,7 +288,7 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
 	ComputeSubProfile();
 
 	// Set the Variable of the subprofile
-	subprofile->Update(&Infos,true);
+	subprofile->Update(subprofile->GetLang(),&Infos,true);
 }
 
 
