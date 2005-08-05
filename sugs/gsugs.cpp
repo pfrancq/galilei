@@ -136,7 +136,7 @@ void GSugs::Run(void) throw(GException)
 						sprintf(tmp,"S%u",i);
 						break;
 				}
-				Session->GetStorage()->AddDummyEntry("sugs",Sub()->GetId(),tmp,Doc()->GetDoc()->GetId());
+				Session->GetStorage()->AddDummyEntry("sugs",Sub()->GetId(),tmp,Doc()->GetDocId());
 			}
 		}
 	}
