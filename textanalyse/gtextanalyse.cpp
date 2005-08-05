@@ -40,7 +40,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rrecfile.h>
-
+#include <rdate.h>
 
 
 //-----------------------------------------------------------------------------
@@ -647,9 +647,10 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 				{
 					if(externalLinks)
 					{
-						tmpDoc=new GDoc(url,url,"text/html");
+						tmpDoc=new GDoc(url,url,cNoRef,0,"text/html",RDate(""),RDate(""),0,cNoRef);
 						Session->AssignId(tmpDoc);
 						DocsToAdd->InsertPtr(tmpDoc);
+
 						tmpDoc->SetState(osNotNeeded);
 					}
 				}
