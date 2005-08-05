@@ -147,8 +147,8 @@ public:
 	virtual double GetSimilarity(const GDoc* doc,const GGroup* grp);
 
 	/**
-	* Get the minimum of similarityof the subprofiles, needed by clusteirng
-	* algorithms using the current method.
+	* Get the minimum of similarity between documents and groups for the
+	* current method.
 	* @param lang            Language.
 	*/
 	double GetMinSimilarity(const GLang* lang);

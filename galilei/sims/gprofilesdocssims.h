@@ -148,8 +148,8 @@ public:
 	double GetSimilarity(const GDoc* doc,const GSubProfile* sub);
 
 	/**
-	* Get the minimum of similarityof the subprofiles, needed by clusteirng
-	* algorithms using the current method.
+	* Get the minimum of similarity between documents and subprofiles for the
+	* current method.
 	* @param lang            Language.
 	*/
 	double GetMinSimilarity(const GLang* lang);

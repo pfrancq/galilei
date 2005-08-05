@@ -177,8 +177,7 @@ public:
 	double GetSimilarity(const GSubProfile* sub1,const GSubProfile* sub2);
 
 	/**
-	* Get the minimum of similarityof the subprofiles, needed by clusteirng
-	* algorithms using the current method.
+	* Get the minimum of similarity between subprofiles for the current method.
 	* @param lang            Language.
 	*/
 	double GetMinSimilarity(const GLang* lang);
