@@ -108,11 +108,11 @@ void GSugs::Run(void) throw(GException)
 
 	// -1- Store sugestion with description= S+order
 	// Go through the groups
-	Grps=Session->GetGroupsCursor();
+	Grps=Session->GetGroups();
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Go through the subprofiles
-		Sub=Grps()->GetSubProfilesCursor();
+		Sub=Grps()->GetSubProfiles();
 		for(Sub.Start();!Sub.End();Sub.Next())
 		{
 			// Get all relevant documents ordered
