@@ -210,11 +210,15 @@ void KViewGroup::ConstructDocs(void)
 			if(docs()->GetFdbk()!=djOK)
 				continue;
 
-			// If doc already in OkDocs -> goes next
-			if(OkDocs.IsIn(docs()->GetDoc()))
+			GDoc* doc=getDocument()->GetSession()->GetDoc(docs()->GetDocId());
+			if(!doc)
 				continue;
 
-			OkDocs.InsertPtr(docs()->GetDoc());
+			// If doc already in OkDocs -> goes next
+			if(OkDocs.IsIn(doc))
+				continue;
+
+			OkDocs.InsertPtr(doc);
 		}
 	}
 

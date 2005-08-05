@@ -181,7 +181,7 @@ void KViewProfile::ConstructFdbks(void)
 				break;
 		}
 		if(!p) continue;
-		doc=GSession::Get()->GetDoc(Docs()->GetDoc()->GetId());
+		doc=GSession::Get()->GetDoc(Docs()->GetDocId());
 		d=doc->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),sDate);
@@ -229,7 +229,7 @@ void KViewProfile::ConstructLinks(void)
 				break;
 		}
 		if(!p) continue;
-		doc=GSession::Get()->GetDoc(Docs()->GetDoc()->GetId());
+		doc=GSession::Get()->GetDoc(Docs()->GetDocId());
 		d=doc->GetUpdated();
 		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),sDate);
