@@ -97,9 +97,9 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 	sum=tmp=nbSame=nbDiff=0.0;
 	MeanNbProf=MeanSame=MeanDiff=0.0;
 
-	Docs = Session->GetDocsCursor();
-	Profs1= Session->GetProfilesCursor();
-	Profs2= Session->GetProfilesCursor();
+	Docs = Session->GetDocs();
+	Profs1= Session->GetProfiles();
+	Profs2= Session->GetProfiles();
 	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 
 	// Compute the average of number of profiles having juged the same doc.

@@ -79,11 +79,11 @@ public:
 		: GStatSimElements<GDoc,R::RCursor<GDoc> >(ses,f,g,l) {}
 
 	R::RCursor<GDoc> GetElementCursor(GLang* Lang)
-	{ return(Session->GetDocsCursor(Lang));}
+	{ return(Session->GetDocs(Lang));}
 
 	bool SameSubject(GDoc* doc1,GDoc* doc2)
 	{
-		R::RCursor<GSubject> Subjects(Session->GetSubjects()->GetSubjectCursor(doc1));
+		R::RCursor<GSubject> Subjects(Session->GetSubjects()->GetSubjects(doc1));
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
 			if(Session->GetSubjects()->IsFromSubject(doc2,Subjects()))
 				return(true);
@@ -95,7 +95,7 @@ public:
 
 	virtual void OverlapTopics(GDoc* doc,bool global)
 	{
-		R::RCursor<GSubject> Subjects=Session->GetSubjects()->GetSubjectCursor(doc);
+		R::RCursor<GSubject> Subjects=Session->GetSubjects()->GetSubjects(doc);
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
 		{
 			LocalStat* t=Sub.GetInsertPtr<GSubject*>(Subjects());
@@ -117,7 +117,7 @@ public:
 		: GStatSimElements<GSubProfile,RCursor<GSubProfile> >(ses,f,g,l) {}
 
 	RCursor<GSubProfile> GetElementCursor(GLang* Lang)
-	{return(Session->GetSubProfilesCursor(Lang));}
+	{return(Session->GetSubProfiles(Lang));}
 
 	bool SameSubject(GSubProfile* sub1,GSubProfile* sub2)
 	{return(Session->GetSubjects()->GetSubject(sub1)==Session->GetSubjects()->GetSubject(sub2));}
@@ -146,7 +146,7 @@ public:
 		: GStatSimDocs<GGroup,R::RCursor<GGroup> >(ses,f,g,l) {}
 
 	R::RCursor<GGroup> GetElementCursor(GLang* Lang)
-	{ return(Session->GetGroupsCursor(Lang));}
+	{ return(Session->GetGroups(Lang));}
 
 	bool HasSubject(GGroup* grp)
 	{return(!grp->IsEmpty());}
@@ -157,7 +157,7 @@ public:
 	{
 		// Suppose subject of the group is subject of the first subprofile
 		// contained
-		RCursor<GSubProfile> Subp=grp->GetSubProfilesCursor();
+		RCursor<GSubProfile> Subp=grp->GetSubProfiles();
 		Subp.Start();
 		return(Session->GetSubjects()->IsFromSubject(doc,Session->GetSubjects()->GetSubject(Subp())));
 	}
@@ -166,7 +166,7 @@ public:
 	{
 		// Suppose subject of the group is subject of the first subprofile
 		// contained
-		RCursor<GSubProfile> Subp=grp->GetSubProfilesCursor();
+		RCursor<GSubProfile> Subp=grp->GetSubProfiles();
 		Subp.Start();
 		LocalStat* t=Sub.GetInsertPtr<GSubject*>(Session->GetSubjects()->GetSubject(Subp()));
 		if(global)
@@ -187,7 +187,7 @@ public:
 		: GStatSimDocs<GSubProfile,RCursor<GSubProfile> >(ses,f,g,l) {}
 
 	RCursor<GSubProfile> GetElementCursor(GLang* Lang)
-	{return(Session->GetSubProfilesCursor(Lang));}
+	{return(Session->GetSubProfiles(Lang));}
 
 	virtual double Similarity(GDoc* doc,GSubProfile* sub) {return(Session->GetProfilesDocsSims()->GetSimilarity(doc,sub));}
 
