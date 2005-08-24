@@ -45,7 +45,6 @@
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <gdoc.h>
-#include <ggroups.h>
 #include <ggroup.h>
 #include <glang.h>
 #include <gstorage.h>
