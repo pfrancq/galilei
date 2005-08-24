@@ -422,19 +422,9 @@ private slots:
 	void slotPostGroupCalc(void);
 
 	/**
-	* Compare the current grouping with a theoritic one given in a file.
-	*/
-	void slotGroupingCompareFromFile(void);
-
-	/**
 	* Compare the current grouping with the grouping in memory.
 	*/
 	void slotGroupingCompare(void);
-
-	/**
-	* mix the ideal groupment.
-	*/
-	void slotMixIdealGroups(void);
 
 	/**
 	* Show the documents window.
@@ -601,9 +591,7 @@ public:
 	KAction* simulationDlg;
 	KAction* groupingCreate;
 	KAction* doFdbks;
-	KAction* groupingCompareFromFile;
 	KAction* groupingCompare;
-	KAction* mixIdealGroups;
 	KAction* showGroupsHistory;
 
 	KToggleAction* docAlwaysCalc;

@@ -154,23 +154,19 @@ void QLoadSession::DoIt(void)
 	Parent->PutText("Loading Dicionnaries/Stoplists ...");
 	Session->Connect();
 	if(GSession::Break())
-		return;
+		throw GException("Abord");
 	Parent->PutText("Loading Documents ...");
 	Session->GetStorage()->LoadDocs(Session);
 	if(GSession::Break())
-		return;
+		throw GException("Abord");
 	Parent->PutText("Load Groups ...");
 	Session->GetStorage()->LoadGroups(Session);
 	if(GSession::Break())
-		return;
+		throw GException("Abord");
 	Parent->PutText("Load Users/Profiles/SubProfiles ...");
 	Session->GetStorage()->LoadUsers(Session);
 	if(GSession::Break())
-		return;
-	Parent->PutText("Load Ideal Groups ...");
-	Session->GetStorage()->LoadIdealGroupment(Session);
-	if(GSession::Break())
-		return;
+		throw GException("Abord");
 	Parent->PutText("Load Users Feedbacks ...");
 	Session->GetStorage()->LoadFdbks(Session);
 }

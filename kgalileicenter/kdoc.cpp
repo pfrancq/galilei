@@ -65,13 +65,13 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KDoc::KDoc(KGALILEICenterApp* owner,RString host,RString user,RString pwd,RString db,RString encoding,const RDate& filter) throw(std::bad_alloc,GException)
+KDoc::KDoc(KGALILEICenterApp* owner,RString host,RString user,RString pwd,RString db,RString encoding,bool all,const RDate& filter) throw(std::bad_alloc,GException)
 	: QObject(), Session(0), WinDocs(0),
 	  WinUsers(0), WinGroups(0), Owner(owner), Db(0)
 {
 	pViewList = new QList<KView>;
 	pViewList->setAutoDelete(true);
-	Db=new GStorageMySQL(host,user,pwd,db,encoding,true,filter);
+	Db=new GStorageMySQL(host,user,pwd,db,encoding,all,filter);
 }
 
 

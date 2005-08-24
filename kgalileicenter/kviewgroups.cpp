@@ -41,7 +41,6 @@
 #include <gdict.h>
 #include <gdata.h>
 #include <gweightinfo.h>
-#include <ggroups.h>
 #include <gsession.h>
 #include <qlistviewitemtype.h>
 #include <rqt.h>

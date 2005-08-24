@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>QConnectMySQL</class>
 <widget class="QDialog">
     <property name="name">
@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>197</width>
-            <height>190</height>
+            <width>319</width>
+            <height>407</height>
         </rect>
     </property>
     <property name="caption">
@@ -276,6 +276,49 @@
                 </widget>
             </hbox>
         </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>All</cstring>
+            </property>
+            <property name="text">
+                <string>Load all o&amp;bjects?</string>
+            </property>
+            <property name="accel">
+                <string>Alt+B</string>
+            </property>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>groupBox1</cstring>
+            </property>
+            <property name="title">
+                <string>Date Filtering</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="KDatePicker">
+                    <property name="name">
+                        <cstring>Filter</cstring>
+                    </property>
+                </widget>
+            </vbox>
+        </widget>
+        <widget class="Line">
+            <property name="name">
+                <cstring>line1</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
+            <property name="orientation">
+                <enum>Horizontal</enum>
+            </property>
+        </widget>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>layout9</cstring>
@@ -310,7 +353,7 @@
                         </font>
                     </property>
                     <property name="text">
-                        <string>&amp;Cancel</string>
+                        <string>C&amp;ancel</string>
                     </property>
                 </widget>
                 <widget class="QPushButton">
@@ -325,6 +368,9 @@
                     <property name="text">
                         <string>C&amp;onnect</string>
                     </property>
+                    <property name="accel">
+                        <string>Alt+O</string>
+                    </property>
                     <property name="default">
                         <bool>true</bool>
                     </property>
@@ -333,9 +379,11 @@
         </widget>
     </vbox>
 </widget>
+<customwidgets>
+</customwidgets>
 <images>
     <image name="image0">
-        <data format="XPM.GZ" length="530">789c55cec14e84301485e13d4fd1d01d318c75a686c9c447d0b834312e2eb72ded623419c78531bebbf7b454a040e0ff282dbb4ebd3c3faa6ed77c5ee99a5871a48beadcd7f9fcfdfaf6f0d3b4e65ee134cab4374ddb2b564f1fef1ecf3259e9db3c901169c91e2d2147e4b01f4c793bd51cf6c884a403193a2009c996efca645f932d32209dc781d4c820a34c763543c87fb81a5ac6c6a48968dc1841c67e63a398dc66635e6131763e2396a362ec4200ea653d9e7c00ea2ce55b8e3366a956b1ffb79ea307fac48bc92649304d2b03c549aec58458f6a994cd611dd968a66c6569aed4b7bfa7e60fbda37fff</data>
+        <data format="PNG" length="350">89504e470d0a1a0a0000000d49484452000000100000001008060000001ff3ff610000012549444154388d9591416ac2401486bf095e22e0c2ecea11f24205150f61107a9152909cc412e32d22589c2bd8ddb8107289c274d349666a6a755679e1ffbeccfba3b4d63c72d254ac3f0f1e85f447f7bededf29f0210702cc175add25a8f7309b76f37ca1957b8efca0885891704707b8af02d8af2ed30a44c45a6b391e8ef4495edfc2d949221f36c6100fe32b499a8afd5d9ebb91026cb12e984d67c4c3b80d3597866c92616d57a25f9ecb0d004e9f278040e26ea25446b1be0603c17f926c92a1f5350c1069ad55b5ab5ab8ded734972608959bb2b758f829d149e4594846492031c660cea68fed56707f61fbbec59c4dbb4e324a82b9ef28a085572f2b00f265cef869dc7653edaa3f3b18f8b00b8988cd9739c04d1840959bd2fab03baeb45b30c0371088aef98f38a7550000000049454e44ae426082</data>
     </image>
 </images>
 <connections>
@@ -360,5 +408,13 @@
     <tabstop>btnCancel</tabstop>
     <tabstop>btnConnect</tabstop>
 </tabstops>
+<includes>
+    <include location="local" impldecl="in implementation">qconnectmysql.ui.h</include>
+</includes>
 <layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>kdatepicker.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kdatetbl.h</includehint>
+</includehints>
 </UI>

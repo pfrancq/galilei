@@ -56,7 +56,6 @@ using namespace R;
 #include <ggroup.h>
 #include <gsubject.h>
 #include <gsubjects.h>
-#include <gmixidealgroups.h>
 #include <glang.h>
 #include <gdict.h>
 #include <gweightinfo.h>
@@ -75,6 +74,7 @@ using namespace std;
 #include <qradiobutton.h>
 #include <qcombobox.h>
 #include <qspinbox.h>
+#include <kdatepicker.h>
 
 
 //-----------------------------------------------------------------------------
@@ -115,7 +115,6 @@ using namespace std;
 #include "kviewsom.h"
 #include "qconnectmysql.h"
 #include "qsessionprogress.h"
-#include "qmixidealconfig.h"
 #include "qcreatedatabase.h"
 #include "qfilldatabase.h"
 #include "qhistorydlg.h"
@@ -159,6 +158,8 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	dlg.txtPwd->setText(ToQString(dbPwd));
 	dlg.txtHost->setText(ToQString(dbHost));
 	dlg.cbEncoding->setCurrentText(ToQString(dbEncoding));
+	dlg.Filter->setDate(QDate::currentDate());
+	dlg.All->setChecked(true);
 	if(dlg.exec())
 	{
 		slotStatusMsg(i18n("Connecting..."));
@@ -169,12 +170,11 @@ void KGALILEICenterApp::slotSessionConnect(void)
 		dbEncoding=FromQString(dlg.cbEncoding->currentText());
 		try
 		{
-			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName,dbEncoding,RDate::GetToday());
-			Sess = new GSession(Doc->GetStorage(),docAlwaysSave->isChecked(),!(docAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()),
-			                    profileAlwaysSave->isChecked(),!(profileAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()),groupAlwaysSave->isChecked(),
-			                    useExistingGroups->isChecked()||(!sessionAlwaysCalc->isChecked()));
+			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName,dbEncoding,dlg.All->isChecked(),RDate(FromQString(dlg.Filter->date().toString(Qt::ISODate))));
+			Sess = new GSession(Doc->GetStorage());
 			Doc->SetSession(Sess);
 			Sess->SetSlot(this);
+ 			slotChangeModifiers();
 			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
 			if(dlg.Run(new QLoadSession()))
 			{
@@ -658,24 +658,10 @@ void KGALILEICenterApp::slotViewSOM(QListViewItem* item)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGroupingCompareFromFile(void)
-{
-	slotStatusMsg(i18n("Opening file..."));
-	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.grp|Ideal Groupement files"), this, i18n("Open File..."));
-	if(!url.isEmpty())
-	{
-		createClient(Doc,new KViewThGroups(Doc,url.path(),pWorkspace,"View Theoritical Groups",0));
-	}
-	slotStatusMsg(i18n("Ready."));
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotGroupingCompare(void)
 {
 	if(Doc->GetSession()->GetSubjects())
-		createClient(Doc,new KViewThGroups(Doc,Doc->GetSession()->GetSubjects()->GetIdealGroups(),pWorkspace,"View Theoritical Groups",0));
+		createClient(Doc,new KViewThGroups(Doc,Doc->GetSession()->GetSubjects(),pWorkspace,"View Theoritical Groups",0));
 }
 
 
@@ -1019,57 +1005,6 @@ void KGALILEICenterApp::slotRunProgram(void)
 		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
 	}
 	KIO::NetAccess::removeTempFile( tmpfile );
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotMixIdealGroups(void)
- {
-	GMixIdealGroups* mix;
-	unsigned int nbgroups, level;
-	bool random, ideal, merge, split;
-
-	try
-	{
-		QMixIdealConfig dlg(this,0,true);
-		if(!dlg.exec()) return;
-		slotStatusMsg(i18n("Connecting..."));
-		nbgroups=dlg.LENbMixedGroups->text().toUInt();
-		level=dlg.LELevel->text().toUInt();
-		random=dlg.RBRandom->isChecked();
-		ideal=dlg.RBIdeal->isChecked();
-		merge=dlg.RBMerge->isChecked();
-		split=dlg.RBSplit->isChecked();
-
-		// Initialise the dialog box
-		QSessionProgressDlg* d=new QSessionProgressDlg(this,Doc->GetSession(),"Mix Ideal Groups");
-		d->Begin();
-
-		// Init Part
-		d->PutText("Initialisation");
-
-		// Create new solution
-		d->PutText("Create new solutions");
-		mix = new GMixIdealGroups(Doc->GetSession(),(Doc->GetSession()->GetSubjects()->GetIdealGroups()), nbgroups, level, merge, split, random,ideal);
-		mix->Run(d);
-		d->Finish(true);
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-	}
-	catch(R::RMySQLError& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - RDB Exception",QString(e.GetMsg()));
-	}
-	catch(std::bad_alloc)
-	{
-		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
-	}
-	catch(...)
-	{
-		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
-	}
 }
 
 

@@ -45,8 +45,8 @@ using namespace R;
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <ggroup.h>
-#include <ggroups.h>
 #include <gsubjects.h>
+#include <gsubject.h>
 #include <qlistviewitemtype.h>
 #include <gpluginmanagers.h>
 using namespace GALILEI;
@@ -80,8 +80,8 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-KViewThGroups::KViewThGroups(KDoc* doc,GGroups* idealgroup,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Groups(idealgroup), DeleteGroups(false)
+KViewThGroups::KViewThGroups(KDoc* doc,GSubjects* subjects,QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags), Subjects(subjects)
 {
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 
@@ -110,73 +110,6 @@ KViewThGroups::KViewThGroups(KDoc* doc,GGroups* idealgroup,QWidget* parent,const
 	connect(prGroups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	ConstructGroups();
 
-}
-
-
-//-----------------------------------------------------------------------------
-KViewThGroups::KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Groups(0), DeleteGroups(true)
-{
-	LoadGroups(filename);
-	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
-
-	// initialisation of the tab widget
-	Infos=new QTabWidget(this);
-	Infos->resize(size());
-
-	// Theoritic groupement
-	thGroups = new QListView(this);
-	Infos->insertTab(thGroups,"Ideal Groupement");
-	thGroups->resize(size());
-	thGroups->addColumn(QString("Profiles"));
-	thGroups->addColumn(QString("Users"));
-	thGroups->setRootIsDecorated(true);
-	connect(thGroups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	ConstructThGroups();
-
-	// Theoritic groupement
-	prGroups = new QListView(this);
-	Infos->insertTab(prGroups,"Computed Groupement");
-	prGroups->resize(size());
-	prGroups->addColumn(QString("Profiles"));
-	prGroups->addColumn(QString("Precision"));
-	prGroups->addColumn(QString("Recall"));
-	prGroups->setRootIsDecorated(true);
-	connect(prGroups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	ConstructGroups();
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewThGroups::LoadGroups(const char* filename)
-{
-	unsigned int nb;
-	unsigned int i,j,id;
-	GGroup* group;
-	unsigned int nbprof;
-	GLang* lang;
-	GProfile* prof;
-	GSubProfile* sub;
-
-	RTextFile f(filename);
-	f.Open(RIO::Read);
-	f>>nb;
-	Groups=new GGroups(nb);
-	for(i=0;i<nb;i++)
-	{
-		lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(f.GetWord());
-		f>>nbprof;
-		Groups->InsertGroup(group=new GGroup(i,lang,false,RDate(""),RDate("")));
-		for(j=nbprof+1;--j;)
-		{
-			f>>id;
-			prof=Doc->GetSession()->GetProfile(id);
-			if(!prof) continue;
-			sub=prof->GetSubProfile(lang);
-			if(!sub) continue;
-			group->InsertSubProfile(sub);
-		}
-	}
 }
 
 
@@ -197,31 +130,42 @@ GGroup* KViewThGroups::GetCurrentGroup(void)
 //-----------------------------------------------------------------------------
 void KViewThGroups::ConstructThGroups(void)
 {
-	R::RCursor<GFactoryLang> CurLang;
-	GLang* lang;
 	RCursor<GSubProfile> Sub;
+	QListViewItemType* gritem=0;
 
 	thGroups->clear();
-	CurLang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
+
+	// Get the active languages
+	RCursor<GLang> Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIns();
+
+	// Go through each subjects
+	R::RCursor<GSubject> Grps(*getDocument()->GetSession()->GetSubjects());
+	for(Grps.Start();!Grps.End();Grps.Next())
 	{
-		lang=CurLang()->GetPlugin();
-		if(!lang) continue;
-		R::RCursor<GGroup> grs=Groups->GetGroups(lang);
-		QListViewItemType* grsitem = new QListViewItemType(thGroups,ToQString(lang->GetName()));
-		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-		for(grs.Start(); !grs.End(); grs.Next())
+		if(!Grps()->GetNbProfiles())
+			continue;
+
+		gritem= new QListViewItemType(Grps(),thGroups,ToQString(Grps()->GetName()));
+		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
+
+		// Go trough each lang
+		for(Langs.Start();!Langs.End();Langs.Next())
 		{
-			GGroup* gr=grs();
-			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group");
-			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-			Sub=grs()->GetSubProfiles();
+			// If the subject has no subprofiles -> next one.
+			if(!Grps()->GetNbSubProfiles(Langs()))
+				continue;
+
+			QListViewItemType* grsitem = new QListViewItemType(gritem,ToQString(Langs()->GetName()));
+			grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
+			Sub=Grps()->GetSubProfiles(Langs());
 			for(Sub.Start(); !Sub.End(); Sub.Next())
 			{
 				GSubProfile* sub=Sub();
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()));
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()));
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
+			if(!grsitem->childCount())
+				gritem->takeItem(grsitem);
 		}
 	}
 }
@@ -285,6 +229,4 @@ void KViewThGroups::resizeEvent(QResizeEvent *)
 //-----------------------------------------------------------------------------
 KViewThGroups::~KViewThGroups(void)
 {
-	if(Groups&&DeleteGroups)
-		delete Groups;
 }

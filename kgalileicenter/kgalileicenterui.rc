@@ -68,10 +68,7 @@
 		<Action name="groupingCreate"/>
 		<Action name="doFdbks"/>
 		<Separator/>
-		<Action name="groupingCompareFromFile"/>
 		<Action name="groupingCompare"/>
-		<Separator/>
-		<Action name="mixIdealGroups"/>
 		<Separator/>
 		<Action name="textFrench"/>
 		<Action name="textEnglish"/>

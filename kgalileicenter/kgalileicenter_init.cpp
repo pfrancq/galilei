@@ -163,9 +163,7 @@ void KGALILEICenterApp::initActions(void)
 	simulationDlg=new KAction(i18n("Simulation &Parameters"),0,this,SLOT(slotSimulationDlg()),actionCollection(),"simulationDlg");
 	groupingCreate=new KAction(i18n("&Create Ideal Groups"),0,0,this,SLOT(slotGroupsCreate()),actionCollection(),"groupingCreate");
 	doFdbks=new KAction(i18n("&Feedback Cycle"),0,0,this,SLOT(slotDoFdbks()),actionCollection(),"doFdbks");
-	groupingCompareFromFile=new KAction(i18n("Ideal clustering from &File"),"fileopen",0,this,SLOT(slotGroupingCompareFromFile()),actionCollection(),"groupingCompareFromFile");
-	groupingCompare=new KAction(i18n("Ideal clustering  from &Memory"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
-	mixIdealGroups=new KAction(i18n("Load&Mix Ideal Groups"),"exec",0,this,SLOT(slotMixIdealGroups()),actionCollection(),"mixIdealGroups");
+	groupingCompare=new KAction(i18n("Ideal clustering"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
@@ -396,14 +394,12 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	sessionExportMatrix->setEnabled(true);
 	doFdbks->setEnabled(true);
 	groupingCompare->setEnabled(true);
-	groupingCompareFromFile->setEnabled(true);
 	somView->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
 	groupsCalc->setEnabled(true);
 	groupingCreate->setEnabled(true);
 	postgroupCalc->setEnabled(true);
-	mixIdealGroups->setEnabled(true);
 	showGroupsHistory->setEnabled(true);
 	showDocs->setEnabled(true);
 	docAnalyse->setEnabled(true);
@@ -428,7 +424,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	sessionExportMatrix->setEnabled(false);
 	doFdbks->setEnabled(false);
 	groupingCompare->setEnabled(false);
-	groupingCompareFromFile->setEnabled(false);
 	somView->setEnabled(false);
 	textFrench->setEnabled(false);
 	textEnglish->setEnabled(false);
@@ -438,7 +433,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	groupsCalc->setEnabled(false);
 	groupingCreate->setEnabled(false);
 	postgroupCalc->setEnabled(false);
-	mixIdealGroups->setEnabled(false);
 	showGroupsHistory->setEnabled(false);
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);

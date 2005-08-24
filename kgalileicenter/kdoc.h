@@ -132,8 +132,10 @@ public:
 	* @param passwd         The passwd.
 	* @param db             The database.
 	* @param encoding       Encoding of the database.
+	* @param all            All objects must be loaded?
+	* @param filter         Date filter.
 	*/
-	KDoc(KGALILEICenterApp* owner,R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString encoding,const R::RDate& filter) throw(std::bad_alloc,GException);
+	KDoc(KGALILEICenterApp* owner,R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString encoding,bool all,const R::RDate& filter) throw(std::bad_alloc,GException);
 
 	/**
 	* Set the session corresponding of the document.

@@ -6,7 +6,7 @@
 
 	Window to manipulate theoritical groups - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -75,7 +75,7 @@ class KViewThGroups : public KView
 	/**
 	* Ideal Groups.
 	*/
-	GGroups* Groups;
+	GSubjects* Subjects;
 
 	/**
 	* Widget to handle the different information of the document.
@@ -92,22 +92,7 @@ class KViewThGroups : public KView
 	*/
 	QListView* prGroups;
 
-	/**
-	* Delete the groups
-	*/
-	bool DeleteGroups;
-
 public:
-
-	/**
-	* Constructor for the view
-	* @param doc            Document instance that the view represents.
-	* @param filename       Name of the file containing the ideal groupement.
-	* @param parent         Parent of the window.
-	* @param name           Name of the window.
-	* @param wflags         Flags.
-	*/
-	KViewThGroups(KDoc* doc,const char* filename,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Constructor for the view
@@ -117,7 +102,7 @@ public:
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewThGroups(KDoc* doc,GGroups* idealgroup,QWidget* parent,const char* name,int wflags);
+	KViewThGroups(KDoc* doc,GSubjects* subjects,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
@@ -147,12 +132,6 @@ public:
 	virtual void update(unsigned int cmd);
 
 protected:
-
-	/**
-	* Load the groups from the file.
-	* @param filename       Name of the file containing the ideal groupement.
-	*/
-	void LoadGroups(const char* filename);
 
 	/**
 	* Called when the main window is resize by the user.

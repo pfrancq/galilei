@@ -43,7 +43,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <glang.h>
-#include <ggroups.h>
 #include <ggroup.h>
 #include <gsubject.h>
 #include <gsubprofile.h>

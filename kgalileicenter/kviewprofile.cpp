@@ -46,7 +46,6 @@
 #include <gsubprofile.h>
 #include <gdoc.h>
 #include <ggroup.h>
-#include <ggroups.h>
 #include <gsession.h>
 #include <qlistviewitemtype.h>
 #include <qgsubprofiles.h>
