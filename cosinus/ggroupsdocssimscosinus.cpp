@@ -40,10 +40,8 @@
 #include <gpluginmanagers.h>
 #include <ggroupsdocssimscosinus.h>
 #include <glang.h>
-#include <gdocs.h>
 #include <gdoc.h>
 #include <gsubprofile.h>
-#include <gusers.h>
 #include <gsession.h>
 using namespace GALILEI;
 using namespace R;
