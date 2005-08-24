@@ -20,7 +20,7 @@
   </general>
   <kdevautoproject>
     <general>
-      <activetarget>galilei/libgalilei.la</activetarget>
+      <activetarget>galilei/sessions/libgalilei_sessions.la</activetarget>
       <useconfiguration>default</useconfiguration>
     </general>
     <run>
