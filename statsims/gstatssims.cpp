@@ -320,7 +320,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 	{
 		tag2=new RXMLTag("Profiles/Groups");
 		xml->AddTag(tag,tag2);
-		GStatSimProfGrp Stat(Session,Session->GetSubjects()->GetIdealGroups(),Details,WithFactors,WithoutFactors);
+		GStatSimProfGrp Stat(Session,Session->GetSubjects(),Details,WithFactors,WithoutFactors);
 		Stat.Run(this,xml,tag2);
 	}
 
