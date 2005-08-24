@@ -9,6 +9,7 @@
 	Copyright 2001-2005 by the Université libre de Bruxelles.
 
 	Authors:
+		GALILEI Team (pfrancq@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -72,7 +73,6 @@ using namespace R;
 #include <gprofilecalc.h>
 #include <gpreprofile.h>
 #include <gpostprofile.h>
-#include <ggroups.h>
 #include <ggroup.h>
 #include <ggrouping.h>
 #include <ggroupcalc.h>
@@ -86,195 +86,260 @@ using namespace R;
 using namespace GALILEI;
 
 
-
 //------------------------------------------------------------------------------
 //
-// Static Variables
-//
-//------------------------------------------------------------------------------
-R::RContainer<GSignalHandler,false,false> GSession::Handlers(30,20);
-GPluginManagers GPluginManagers::PluginManagers;
-
-
-
-//------------------------------------------------------------------------------
-//
-// General functions
+// class GFreeId
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-R::RString GetObjType(tObjType objtype)
+class GFreeId
 {
-	switch(objtype)
+public:
+	unsigned int Id;          // Identificator.
+
+	// Constructor and Compare methods.
+	GFreeId(unsigned int id) : Id(id) {}
+	int Compare(const GFreeId& f) const {return(Id-f.Id);}
+	int Compare(unsigned int id) const {return(Id-id);}
+
+	// Destructor
+	~GFreeId(void) {}
+};
+
+
+//------------------------------------------------------------------------------
+//
+// class GDocsLang
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GDocsLang : public R::RContainer<GDoc,false,true>
+{
+public:
+	GLang* Lang;
+
+	GDocsLang(GLang* lang) throw(std::bad_alloc)
+		: RContainer<GDoc,false,true>(10000,5000), Lang(lang) {}
+	int Compare(const GDocsLang& docLang) const;
+	int Compare(const GLang* lang) const;
+	void Clear(void);
+	virtual ~GDocsLang(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+int GDocsLang::Compare(const GDocsLang& docLang) const
+{
+	if(!Lang)
 	{
-		case otNoClass:
-			return(RString("unknow"));
-			break;
-		case otSession:
-			return(RString("session"));
-			break;
-		case otDoc:
-			return(RString("document"));
-			break;
-		case otDocs:
-			return(RString("documents"));
-			break;
-		case otUsers:
-			return(RString("users"));
-			break;
-		case otUser:
-			return(RString("user"));
-			break;
-		case otProfile:
-			return(RString("profile"));
-			break;
-		case otSubProfile:
-			return(RString("subProfile"));
-			break;
-		case otGroups:
-			return(RString("groups"));
-			break;
-		case otGroup:
-			return(RString("group"));
-			break;
-		case otDocSubProfile:
-			return(RString("document or subprofile"));
-			break;
-		case otDocGroup:
-			return(RString("document or group"));
-			break;
-		case otSubProfileGroup:
-			return(RString("subprofile or group"));
-			break;
-		case otFdbk:
-			return(RString("assessment"));
-			break;
+		if(!docLang.Lang) return(0);
+		return(-1);
 	}
-	return(RString("unknow"));
+	if(!docLang.Lang) return(1);
+	return(Lang->Compare(*docLang.Lang));
+}
+
+
+//-----------------------------------------------------------------------------
+int GDocsLang::Compare(const GLang* lang) const
+{
+	if(!Lang)
+	{
+		if(!lang) return(0);
+		return(-1);
+	}
+	if(!lang) return(1);
+	return(Lang->Compare(lang));
 }
 
 
 //------------------------------------------------------------------------------
-R::RString GetState(tObjState state)
+void GDocsLang::Clear(void)
 {
-	switch(state)
-	{
-		case osUnknow:
-			return(RString("unknow"));
-			break;
-		case osCreated:
-			return(RString("created"));
-			break;
-		case osUpToDate:
-			return(RString("up to date"));
-			break;
-		case osModified:
-			return(RString("modified"));
-			break;
-		case osUpdated:
-			return(RString("updated"));
-			break;
-		case osSaved:
-			return(RString("saved"));
-			break;
-		case osDelete:
-			return(RString("deleted"));
-			break;
-		case osNotNeeded:
-			return(RString("not needed"));
-			break;
-		case osOnDemand:
-			return(RString("demands information"));
-			break;
-		case osNeedLoad:
-			return(RString("must load information"));
-			break;
-	}
-	return(RString("unknow"));
+	if(Lang&&Lang->GetDict())
+		Lang->GetDict()->Clear(otDoc);
+	R::RContainer<GDoc,false,true>::Clear();
 }
+
 
 
 //------------------------------------------------------------------------------
-R::RString GetEvent(tEvent event)
+//
+// class GDocRefURL
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GDocRefURL
 {
-	switch(event)
-	{
-		case eUnknow:
-			return(RString("Unknow"));
-			break;
-		case eObjCreated:
-			return(RString("object created"));
-			break;
-		case eObjModified:
-			return(RString("object modified"));
-			break;
-		case eObjDeleted:
-			return(RString("object deleted"));
-			break;
-	}
-	return(RString("unknow"));
-}
+public:
+	GDoc* Doc;
+
+	GDocRefURL(GDoc* d) : Doc(d) {}
+	int Compare(const GDocRefURL& doc) const {return(Doc->GetURL().Compare(doc.Doc->GetURL()));}
+	int Compare(const char* url) const  {return(Doc->GetURL().Compare(url));}
+	~GDocRefURL(void) {}
+};
+
 
 
 //------------------------------------------------------------------------------
-R::RString GetAssessment(tDocAssessment assessment)
+//
+// class GGroupsLang
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GGroupsLang : public R::RContainer<GGroup,false,true>
 {
-	switch(assessment)
-	{
-		case djUnknow:
-			return(RString("unknow"));
-			break;
-		case djOK:
-			return(RString("relevant"));
-			break;
-		case djKO:
-			return(RString("fuzzy relevant"));
-			break;
-		case djOutScope:
-			return(RString("irrelevant"));
-			break;
-		case djHub:
-			return(RString("hub"));
-			break;
-		case djAutority:
-			return(RString("autority"));
-			break;
-		case djMaskJudg:
-			return(RString("mask for assessments"));
-			break;
-		case djMaskHubAuto:
-			return(RString("mask for hub/autority"));
-			break;
-	}
-	return(RString("unknow"));
-}
+public:
+
+	GLang* Lang;              // Language
+
+	// Constructor and Compare methods.
+	GGroupsLang(GLang* lang)
+		: RContainer<GGroup,false,true>(20,10), Lang(lang) {}
+	int Compare(const GGroupsLang& groups) const {return(Lang->Compare(*groups.Lang));}
+	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
+
+	// Get the group of a given subprofile
+	GGroup* GetGroup(const GSubProfile* sub);
+
+	// Destructor
+	~GGroupsLang(void) {}
+};
 
 
 //------------------------------------------------------------------------------
-R::RString GetInfoType(tInfoType infotype)
+GGroup* GGroupsLang::GetGroup(const GSubProfile* sub)
 {
-	switch(infotype)
+	R::RCursor<GGroup> Groups;
+
+	Groups.Set(*this);
+	for(Groups.Start();!Groups.End();Groups.Next())
 	{
-		case infoNothing:
-			return(RString("unknow"));
-			break;
-		case infoWord:
-			return(RString("word"));
-			break;
-		case infoWordList:
-			return(RString("list of words"));
-			break;
-		case infoWordOccurs:
-			return(RString("list of occurences of a word"));
-			break;
-		case infoDoc:
-			return(RString("document"));
-			break;
+		if(Groups()->IsIn(sub))
+			return(Groups());
 	}
-	return(RString("unknow"));
+	return(0);
 }
 
+
+
+//------------------------------------------------------------------------------
+//
+//  GSubProfiles
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Set of subprofiles of a given language.
+class GSubProfiles : public R::RContainer<GSubProfile,true,true>
+{
+public:
+
+	GLang* Lang;                 // Language
+
+	// Constructor and Compare methods.
+	GSubProfiles(GLang* lang,unsigned int s)
+		: RContainer<GSubProfile,true,true>(s,s/2), Lang(lang) {}
+	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
+	int Compare(const GSubProfiles& s) const {return(Lang->Compare(s.Lang));}
+	int Compare(const GSubProfiles* s) const {return(Lang->Compare(s->Lang));}
+
+	// Get a cursor over the subprofiles of the system.
+	RCursor<GSubProfile> GetSubProfiles(void) const {return(RCursor<GSubProfile>(*this));}
+
+	void Clear(void);
+
+	// Destructor.
+	virtual ~GSubProfiles(void) {}
+};
+
+
+//------------------------------------------------------------------------------
+void GSubProfiles::Clear(void)
+{
+/*	if(Lang&&Lang->GetDict())
+		Lang->GetDict()->Clear(otSubProfile);*/
+	R::RContainer<GSubProfile,true,true>::Clear();
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// GSession::Intern
+//
+//------------------------------------------------------------------------------
+
+class GSession::Intern
+{
+public:
+	GSubjects* Subjects;                                              // Subjects.
+	GGroupsHistoryManager* GroupsHistoryMng;                          // Historic group manager
+	GProfilesSimsManager* ProfilesSims;                               // Subprofiles/Subprofiles similarities
+	GProfilesDocsSimsManager* ProfilesDocsSims;                       // Subprofiles/Documents similarities
+	GGroupsDocsSimsManager* GroupsDocsSims;                           // Groups/Documents similarities
+	GProfilesGroupsSimsManager* ProfilesGroupsSims;                   // Subprofiles/Groups similarities
+	int CurrentRandom;                                                // Current seek for this session.
+	R::RRandom* Random;                                               // Random number generator
+	GStorage* Storage;                                                // Storage manager
+	static GSession* Session;                                         // Static pointer to the session
+	static bool ExternBreak;                                          // Should the session stop as soon as possible?
+	bool SaveDocs;                                                    // Must the documents be saved after computed?
+	bool SaveSubProfiles;                                             // Must the subprofiles be saved after computed?
+	bool SaveGroups;                                                  // Must the groups be saved after computed?
+	bool ComputeModifiedDocs;                                         // Compute only the modified documents.
+	bool ComputeModifiedSubProfiles;                                  // Compute only the modified subprofiles.
+	bool UseExistingGroups;                                           // Use the existing groups.
+	GSlot* Slot;                                                      // Slot for the session
+
+	R::RContainer<GDoc,true,true> Docs;
+	R::RContainer<GDocsLang,true,true> DocsLang; // Documents ordered by language and identificator.
+	R::RContainer<GDocRefURL,true,true> DocsRefUrl; // Documents ordered by URL.
+	R::RContainer<GUser,true,true> Users;
+	R::RContainer<GProfile,true,true> Profiles; // Profiles handled by the system.
+	R::RContainer<GSubProfiles,true,true> SubProfiles; // SubProfiles handled by the system.
+	R::RContainer<GGroup,true,true> Groups;
+	R::RContainer<GGroupsLang,true,true> GroupsLang;
+	R::RContainer<GFreeId,true,true> FreeIds;
+	unsigned int MaxDocs;
+	unsigned int MaxSubProfiles;
+	unsigned int MaxGroups;
+
+	Intern(GStorage* str,unsigned int mdocs,unsigned int maxsub,unsigned int maxgroups,unsigned int d,unsigned int u,unsigned int p,unsigned int g,unsigned int nblangs)
+		: Subjects(0), GroupsHistoryMng(0), ProfilesSims(0), ProfilesDocsSims(0),
+	  GroupsDocsSims(0), Random(0), Storage(str),  SaveDocs(true),
+	  SaveSubProfiles(true), SaveGroups(true), ComputeModifiedDocs(true),
+	  ComputeModifiedSubProfiles(true), UseExistingGroups(true), Slot(0),
+		Docs(d+(d/2),d/2), DocsLang(nblangs), DocsRefUrl(d+(d/2),d/2),
+		Users(u,u/2), Profiles(p,p/2), SubProfiles(nblangs),
+		Groups(g+(g/2),g/2),  GroupsLang(nblangs), FreeIds(50,25),
+		MaxDocs(mdocs), MaxSubProfiles(maxsub), MaxGroups(maxgroups)
+	{
+		CurrentRandom=0;
+		Random = new RRandomGood(CurrentRandom);
+	}
+
+	~Intern(void)
+	{
+		delete Random;
+		delete Subjects;
+		delete GroupsHistoryMng;
+		Session=0;
+		ExternBreak=false;
+	}
+};
+
+
+
+//------------------------------------------------------------------------------
+// Global variables
+GSession* GSession::Intern::Session=0;
+bool GSession::Intern::ExternBreak=false;
 
 
 //------------------------------------------------------------------------------
@@ -284,27 +349,44 @@ R::RString GetInfoType(tInfoType infotype)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-// Global variables
-GSession* GSession::Session=0;
-bool GSession::ExternBreak=false;
+GSession::GSession(GStorage* str,unsigned int maxdocs,unsigned int maxsubprofiles,unsigned int maxgroups)
+	: Data(0)
+{
+	if(!str)
+		throw GException("No Storage");
+
+	// Init Part
+	Data=new Intern(str,maxdocs,maxsubprofiles,maxgroups,str->GetNbSaved(otDoc),str->GetNbSaved(otUser),str->GetNbSaved(otProfile),str->GetNbSaved(otGroup),str->GetNbSaved(otLang));
+	if(!Intern::Session)
+		Intern::Session=this;
+}
 
 
 //------------------------------------------------------------------------------
-GSession::GSession(GStorage* str,bool savedocs,bool modifieddocs,bool savesubprofiles,bool modifiedsubprofiles,bool savegroups,bool modifiedgroups)
-	: GDocs(str->GetNbSaved(otDoc)), GUsers(str->GetNbSaved(otUser),str->GetNbSaved(otProfile)),
-	  GGroups(str->GetNbSaved(otGroup)), Subjects(0), ProfilesSims(0), ProfilesDocsSims(0),
-	  GroupsDocsSims(0), Random(0), Storage(str),  SaveDocs(savedocs),
-	  SaveSubProfiles(savesubprofiles), SaveGroups(savegroups), ComputeModifiedDocs(modifieddocs),
-	  ComputeModifiedSubProfiles(modifiedsubprofiles), ComputeModifiedGroups(modifiedgroups), Slot(0)
+GSession* GSession::Get(void)
 {
-	// Init Part
-	if(!Session)
-		Session=this;
-	CurrentRandom=0;
-	Random = new RRandomGood(CurrentRandom);
+	return(Intern::Session);
+}
 
-	// create the groups history manager.
-	GroupsHistoryMng=new GGroupsHistoryManager(this,2);
+
+//------------------------------------------------------------------------------
+bool GSession::Break(void)
+{
+	return(Intern::ExternBreak);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetBreak(void)
+{
+	Intern::ExternBreak=true;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ResetBreak(void)
+{
+	Intern::ExternBreak=false;
 }
 
 
@@ -314,13 +396,13 @@ bool GSession::MustSave(tObjType objtype) const
 	switch(objtype)
 	{
 		case otDoc:
-			return(SaveDocs);
+			return(Data->SaveDocs);
 			break;
 		case otSubProfile:
-			return(SaveSubProfiles);
+			return(Data->SaveSubProfiles);
 			break;
 		case otGroup:
-			return(SaveGroups);
+			return(Data->SaveGroups);
 			break;
 		default:
 			throw GException(itou(objtype)+": Invalid object type for session parameters.");
@@ -335,13 +417,13 @@ bool GSession::ComputeModified(tObjType objtype) const
 	switch(objtype)
 	{
 		case otDoc:
-			return(ComputeModifiedDocs);
+			return(Data->ComputeModifiedDocs);
 			break;
 		case otSubProfile:
-			return(ComputeModifiedSubProfiles);
+			return(Data->ComputeModifiedSubProfiles);
 			break;
 		case otGroup:
-			return(ComputeModifiedGroups);
+			return(Data->UseExistingGroups);
 			break;
 		default:
 			throw GException(itou(objtype)+": Invalid object type for session parameters.");
@@ -356,13 +438,13 @@ void GSession::SetSave(tObjType objtype,bool save)
 	switch(objtype)
 	{
 		case otDoc:
-			SaveDocs=save;
+			Data->SaveDocs=save;
 			break;
 		case otSubProfile:
-			SaveSubProfiles=save;
+			Data->SaveSubProfiles=save;
 			break;
 		case otGroup:
-			SaveGroups=save;
+			Data->SaveGroups=save;
 			break;
 		default:
 			throw GException(itou(objtype)+": Invalid object type for session parameters.");
@@ -377,13 +459,13 @@ void GSession::SetComputeModified(tObjType objtype,bool modified)
 	switch(objtype)
 	{
 		case otDoc:
-			ComputeModifiedDocs=modified;
+			Data->ComputeModifiedDocs=modified;
 			break;
 		case otSubProfile:
-			ComputeModifiedSubProfiles=modified;
+			Data->ComputeModifiedSubProfiles=modified;
 			break;
 		case otGroup:
-			ComputeModifiedGroups=modified;
+			Data->UseExistingGroups=modified;
 			break;
 		default:
 			throw GException(itou(objtype)+": Invalid object type for session parameters.");
@@ -398,6 +480,145 @@ void GSession::Connect(void)
 	GPluginManagers::PluginManagers.Connect(this);
 }
 
+//-----------------------------------------------------------------------------
+R::RCursor<GDoc> GSession::GetDocs(void) const
+{
+	return(R::RCursor<GDoc>(Data->Docs));
+}
+
+
+//-----------------------------------------------------------------------------
+R::RCursor<GDoc> GSession::GetDocs(GLang* lang) const
+{
+	GDocsLang* ptr;
+	R::RCursor<GDoc> cur;
+
+	ptr=Data->DocsLang.GetPtr<GLang*>(lang);
+	if(!ptr)
+	{
+		cur.Clear();
+		return(cur);
+	}
+	cur.Set(*ptr);
+	return(cur);
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GSession::GetNbDocs(void) const
+{
+	return(Data->Docs.GetNb());
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GSession::GetMaxPosDoc(void) const
+{
+	return(Data->Docs.GetMaxPos());
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GSession::FillDocs(GDoc** docs)
+{
+	return(Data->Docs.GetTab(docs));
+}
+
+
+//-------------------------------------------------------------------------------
+unsigned int GSession::GetNbDocs(GLang* lang) const
+{
+	GDocsLang* docL = Data->DocsLang.GetPtr<GLang*>(lang);
+	if (!docL) return 1;
+	return(docL->GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSession::GetNewId(void) const
+{
+	if(!Data->Docs.GetNb()) return(1);
+	return(Data->Docs[Data->Docs.GetNb()-1]->GetId()+1);
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::InsertDoc(GDoc* d)
+{
+	GDocsLang* docsLang;
+
+	// Test if the document has an id
+	if(d->GetId()==cNoRef)
+		d->SetId(GetNewId());
+
+	// Insert the document
+	Data->Docs.InsertPtrAt(d,d->GetId());
+	docsLang = Data->DocsLang.GetInsertPtr<GLang*>(d->GetLang());
+	docsLang->InsertPtr(d);
+
+	//insert the doc in the DocsRefUrl container.
+	Data->DocsRefUrl.InsertPtr(new GDocRefURL(d));
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::MoveDoc(GDoc* d)
+{
+	GDocsLang* docsLang;
+
+	// Remove doc from container of docs with no language
+	docsLang=Data->DocsLang.GetPtr<GLang*>(0);
+	docsLang->DeletePtr(d);
+
+	// Move doc to container of appropriated language.
+	docsLang=Data->DocsLang.GetInsertPtr(d->GetLang());
+	docsLang->InsertPtr(d);
+}
+
+
+//-------------------------------------------------------------------------------
+GDoc* GSession::GetDoc(unsigned int id,bool load) const
+{
+	GDoc* d;
+
+	if(id>Data->Docs.GetMaxPos())
+		return(0);
+	d=Data->Docs[id];
+	if(d)
+		return(d);
+	if(!load)
+		return(0);
+	if(Data->Storage->IsAllInMemory())
+		throw GException("Unknown document");
+	d=Data->Storage->LoadDoc(const_cast<GSession*>(this),id);
+	if(!d)
+		throw GException("Unknown document");
+	const_cast<GSession*>(this)->InsertDoc(d);
+	return(d);
+}
+
+
+//-------------------------------------------------------------------------------
+GDoc* GSession::GetDoc(const char* url)
+{
+	GDocRefURL* ref;
+
+	ref=Data->DocsRefUrl.GetPtr(url);
+	if(!ref) return(0);
+	return(ref->Doc);
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::ClearDocs(void)
+{
+	RCursor<GDocsLang> Cur(Data->DocsLang);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Clear();
+	Data->DocsRefUrl.Clear();
+	Data->Docs.Clear();
+}
+
 
 //------------------------------------------------------------------------------
 GDocXML* GSession::CreateDocXML(GDoc* doc)
@@ -407,78 +628,143 @@ GDocXML* GSession::CreateDocXML(GDoc* doc)
 
 
 //------------------------------------------------------------------------------
-GSubjects* GSession::GetSubjects(void)
+GGroupsHistoryManager* GSession::GetGroupsHistoryManager(void) const
 {
-	if(!Subjects)
+	if(!Data->GroupsHistoryMng)
+		const_cast<GSession*>(this)->Data->GroupsHistoryMng=new GGroupsHistoryManager(const_cast<GSession*>(this),20);
+	return(Data->GroupsHistoryMng);
+}
+
+
+//------------------------------------------------------------------------------
+GStorage* GSession::GetStorage(void) const
+{
+	return(Data->Storage);
+}
+
+
+//------------------------------------------------------------------------------
+GSubjects* GSession::GetSubjects(bool load) const
+{
+	if((!Data->Subjects)&&(load))
 	{
-		Subjects=new GSubjects(this);
-		if(Storage)
-			Storage->LoadSubjectTree(Session);
+		Data->Subjects=new GSubjects(const_cast<GSession*>(this));
+		if(Data->Storage)
+			const_cast<GSession*>(this)->Data->Storage->LoadSubjects(const_cast<GSession*>(this));
 	}
-	return(Subjects);
+	return(Data->Subjects);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::SetSims(GProfilesSimsManager* sims)
 {
-	ProfilesSims=sims;
+	Data->ProfilesSims=sims;
+}
+
+
+//------------------------------------------------------------------------------
+GProfilesSimsManager* GSession::GetProfilesSims(void) const
+{
+	return(Data->ProfilesSims);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::SetSims(GProfilesDocsSimsManager* sims)
 {
-	ProfilesDocsSims=sims;
+	Data->ProfilesDocsSims=sims;
+}
+
+
+//------------------------------------------------------------------------------
+GProfilesDocsSimsManager* GSession::GetProfilesDocsSims(void) const
+{
+	return(Data->ProfilesDocsSims);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::SetSims(GGroupsDocsSimsManager* sims)
 {
-	GroupsDocsSims=sims;
+	Data->GroupsDocsSims=sims;
+}
+
+
+//------------------------------------------------------------------------------
+GGroupsDocsSimsManager* GSession::GetGroupsDocsSims(void) const
+{
+	return(Data->GroupsDocsSims);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::SetSims(GProfilesGroupsSimsManager* sims)
 {
-	ProfilesGroupsSims=sims;
+	Data->ProfilesGroupsSims=sims;
+}
+
+
+//------------------------------------------------------------------------------
+GProfilesGroupsSimsManager* GSession::GetProfilesGroupsSims(void) const
+{
+	return(Data->ProfilesGroupsSims);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::SetSlot(GSlot* slot)
 {
-	Slot=slot;
+	Data->Slot=slot;
+}
+
+
+//------------------------------------------------------------------------------
+GSlot* GSession::GetSlot(void) const
+{
+	return(Data->Slot);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::AssignId(GData* data,const GDict* dict)
 {
-	Storage->AssignId(data,dict);
+	Data->Storage->AssignId(data,dict);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::AssignId(GGroup* grp)
 {
-	grp->SetId(GGroups::GetNewId());
+	// Is there a free identificator
+	// -> Take the first one.
+	if(Data->FreeIds.GetNb())
+	{
+		unsigned int id=Data->FreeIds[0]->Id;
+		delete Data->FreeIds[0];
+		grp->SetId(id);
+		return;
+	}
+	if(!Data->Groups.GetNb())
+	{
+		grp->SetId(1);
+		return;
+	}
+	grp->SetId(Data->Groups[Data->Groups.GetNb()-1]->GetId()+1);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::AssignId(GDoc* doc)
 {
-	doc->SetId(GDocs::GetNewId());
+	doc->SetId(GetNewId());
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::AssignId(GSubProfile* sub)
 {
-	sub->SetId(GUsers::GetNewId(otSubProfile));
+	sub->SetId(GetNewId(otSubProfile));
 }
 
 
@@ -501,7 +787,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
 	{
-		err= "Documents Filtering and Analysis on Data Set : "+Storage->GetName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
+		err= "Documents Filtering and Analysis on Data Set : "+Data->Storage->GetName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
 		rec->WriteStr(err.Latin1());
 	}
 
@@ -511,17 +797,17 @@ void GSession::AnalyseDocs(GSlot* rec)
 		// Go through the existing documents
 		for(Docs.Start();!Docs.End();Docs.Next())
 		{
-			if(ComputeModifiedDocs&&(!Docs()->MustCompute())) continue;
+			if(Data->ComputeModifiedDocs&&(!Docs()->MustCompute())) continue;
 			if(rec)
 			{
 				rec->Interact();
 				rec->NextDoc(Docs());
 			}
-			if(ExternBreak) return;
+			if(Intern::ExternBreak) return;
 			undefLang=false;
 			try
 			{
-				if((!ComputeModifiedDocs)||(Docs()->MustCompute()))
+				if((!Data->ComputeModifiedDocs)||(Docs()->MustCompute()))
 				{
 					if (!Docs()->GetLang()) undefLang=true;
 					xml=(dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->CreateDocXML(Docs());
@@ -539,9 +825,9 @@ void GSession::AnalyseDocs(GSlot* rec)
 					else
 						Docs()->IncFailed();
 				}
-				if(SaveDocs)
+				if(Data->SaveDocs)
 				{
-					Storage->SaveDoc(Docs());
+					Data->Storage->SaveDoc(Docs());
 					Docs()->SetState(osSaved);
 				}
 			}
@@ -595,7 +881,7 @@ void GSession::AnalyseNewDocs(GSlot* rec)
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
 	{
-		err= "Documents Filtering and Analysis on Data Set : "+Storage->GetName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
+		err= "Documents Filtering and Analysis on Data Set : "+Data->Storage->GetName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear());
 		rec->WriteStr(err.Latin1());
 	}
 
@@ -605,17 +891,17 @@ void GSession::AnalyseNewDocs(GSlot* rec)
 		// Go through the existing documents
 		for(Docs.Start();!Docs.End();Docs.Next())
 		{
-			if(ComputeModifiedDocs&&(!Docs()->MustCompute())) continue;
+			if(Data->ComputeModifiedDocs&&(!Docs()->MustCompute())) continue;
 			if(rec)
 			{
 				rec->Interact();
 				rec->NextDoc(Docs());
 			}
-			if(ExternBreak) return;
+			if(Intern::ExternBreak) return;
 			undefLang=false;
 			try
 			{
-				if((!ComputeModifiedDocs)||(Docs()->MustCompute()))
+				if((!Data->ComputeModifiedDocs)||(Docs()->MustCompute()))
 				{
 					if (!Docs()->GetLang()) undefLang=true;
 					xml=(dynamic_cast<GFilterManager*>(GPluginManagers::PluginManagers.GetManager("Filter")))->CreateDocXML(Docs());
@@ -633,9 +919,9 @@ void GSession::AnalyseNewDocs(GSlot* rec)
 					else
 						Docs()->IncFailed();
 				}
-				if(SaveDocs)
+				if(Data->SaveDocs)
 				{
-					Storage->SaveDoc(Docs());
+					Data->Storage->SaveDoc(Docs());
 					Docs()->SetState(osSaved);
 				}
 			}
@@ -677,13 +963,13 @@ void GSession::ComputePostDoc(GSlot* rec)
 
 	if(rec)
 		rec->Interact();
-	if(ExternBreak) return;
+	if(Intern::ExternBreak) return;
 
 	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
 	{
 		if(rec)
 			rec->Interact();
-		if(ExternBreak) return;
+		if(Intern::ExternBreak) return;
 		if(PostDocs()->GetPlugin())
 		{
 			if(rec)
@@ -711,6 +997,195 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 
 
 //------------------------------------------------------------------------------
+R::RCursor<GUser> GSession::GetUsers(void) const
+{
+	return(R::RCursor<GUser>(Data->Users));
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::InsertUser(GUser* usr)
+{
+	Data->Users.InsertPtrAt(usr,usr->GetId(),true);
+}
+
+
+//------------------------------------------------------------------------------
+GUser* GSession::GetUser(unsigned int id,bool load) const
+{
+	GUser* u;
+
+	if(id>Data->Users.GetMaxPos())
+		return(0);
+	u=Data->Users[id];
+	if(u)
+		return(u);
+	if(!load)
+		return(0);
+	if(Data->Storage->IsAllInMemory())
+		throw GException("Unknown user");
+	u=Data->Storage->LoadUser(const_cast<GSession*>(this),id);
+	if(!u)
+		throw GException("Unknown user");
+	const_cast<GSession*>(this)->InsertUser(u);
+	return(u);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSession::GetNbUsers(void) const
+{
+	return(Data->Users.GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSession::GetNewId(tObjType obj)
+{
+	unsigned int id,i;
+	RCursor<GSubProfiles> Cur;
+
+	switch(obj)
+	{
+		case otProfile:
+			if(Data->Profiles.GetNb())
+				id=Data->Profiles[Data->Profiles.GetMaxPos()]->GetId()+1;  // Not [GetNb()-1] because first profile has an identificator of 1
+			else
+				id=1;
+			break;
+
+		case otSubProfile:
+			Cur.Set(Data->SubProfiles);
+			for(Cur.Start(),id=0;!Cur.End();Cur.Next())
+			{
+				if(!Cur()->GetNb()) continue;
+				i=(*Cur())[Cur()->GetMaxPos()]->GetId()+1;
+				if(id<i)
+					id=i;
+			}
+			break;
+
+		case otUser:
+			if(Data->Users.GetNb())
+				id=Data->Users[Data->Users.GetMaxPos()]->GetId()+1; // Not [GetNb()-1] because first user has an identificator of 1
+			else
+				id=1;
+			break;
+
+		default:
+			throw GException("No a valid type");
+			break;
+	}
+	return(id);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::InsertProfile(GProfile* p)
+{
+	Data->Profiles.InsertPtrAt(p,p->GetId());
+}
+
+
+//------------------------------------------------------------------------------
+GProfile* GSession::GetProfile(unsigned int id,bool load) const
+{
+	GProfile* p;
+
+	if(id>Data->Profiles.GetMaxPos())
+		return(0);
+	p=Data->Profiles[id];
+	if(p)
+		return(p);
+	if(!load)
+		return(0);
+	if(Data->Storage->IsAllInMemory())
+		throw GException("Unknown profile");
+	p=Data->Storage->LoadProfile(const_cast<GSession*>(this),id);
+	if(!p)
+		throw GException("Unknown profile");
+	const_cast<GSession*>(this)->InsertProfile(p);
+	return(p);
+}
+
+
+//------------------------------------------------------------------------------
+R::RCursor<GProfile> GSession::GetProfiles(void) const
+{
+	return(R::RCursor<GProfile>(Data->Profiles));
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSession::GetProfilesNb(void) const
+{
+	return(Data->Profiles.GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::InsertSubProfile(GSubProfile* s)
+{
+	GLang* l;
+	GSubProfiles* list;
+
+	l=s->GetLang();
+	list=Data->SubProfiles.GetPtr<const GLang*>(l);
+	if(!list)
+		Data->SubProfiles.InsertPtr(list=new GSubProfiles(l,Data->Profiles.GetMaxNb()));
+//	list->InsertPtrAt(s,s->GetId());
+	list->InsertPtr(s);
+}
+
+
+//------------------------------------------------------------------------------
+GSubProfile* GSession::GetSubProfile(unsigned int id,const GLang* lang,bool load) const
+{
+	GSubProfile* s;
+
+	if(lang)
+	{
+		GSubProfiles* subs=Data->SubProfiles.GetPtr(lang);
+		if(subs)
+		{
+			s=subs->GetPtr(id);
+			if(s)
+				return(s);
+		}
+	}
+	else
+	{
+		RCursor<GSubProfiles> Cur(Data->SubProfiles);
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			s=Cur()->GetPtr(id);
+			if(s)
+				return(s);
+		}
+	}
+	if(!load)
+		return(0);
+	if(Data->Storage->IsAllInMemory())
+		throw GException("Unknown subprofile");
+	s=Data->Storage->LoadSubProfile(const_cast<GSession*>(this),id);
+	if(!s)
+		throw GException("Unknown subprofile");
+	const_cast<GSession*>(this)->InsertSubProfile(s);
+	return(s);
+}
+
+
+//------------------------------------------------------------------------------
+RCursor<GSubProfile> GSession::GetSubProfiles(const GLang* lang) const
+{
+	GSubProfiles* ptr=Data->SubProfiles.GetPtr(lang);
+	if(ptr)
+		return(ptr->GetSubProfiles());
+	return(RCursor<GSubProfile>());
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::CalcProfiles(GSlot* rec)
 {
 	RCursor<GSubProfile> Subs;
@@ -729,7 +1204,7 @@ void GSession::CalcProfiles(GSlot* rec)
 	{
 		if(rec)
 			rec->NextProfile(Prof());
-		Prof()->Update();
+		Prof()->DispatchFdbks();
 		//Calc Links on the profile description
 		if(LinkCalc)
 			LinkCalc->Compute(Prof());
@@ -739,17 +1214,17 @@ void GSession::CalcProfiles(GSlot* rec)
 			if(rec)
 				rec->Interact();
 
-			if(ExternBreak) return;
-			if(ComputeModifiedSubProfiles&&(!Subs()->MustCompute())) continue;
+			if(Intern::ExternBreak) return;
+			if(Data->ComputeModifiedSubProfiles&&(!Subs()->MustCompute())) continue;
 			try
 			{
-				if((!ComputeModifiedSubProfiles)||(Subs()->MustCompute()))
+				if((!Data->ComputeModifiedSubProfiles)||(Subs()->MustCompute()))
 				{
 					Profiling->Compute(Subs());
 
-					if(SaveSubProfiles)
+					if(Data->SaveSubProfiles)
 					{
-						Storage->SaveSubProfile(Subs());
+						Data->Storage->SaveSubProfile(Subs());
 						Subs()->SetState(osSaved);
 					}
 				}
@@ -761,8 +1236,8 @@ void GSession::CalcProfiles(GSlot* rec)
 	}
 
 	// Save the best computed Links (As Hub and Authority)
-	if((SaveSubProfiles)&&(LinkCalc))
-		Storage->SaveLinks(this);
+	if((Data->SaveSubProfiles)&&(LinkCalc))
+		Data->Storage->SaveLinks(this);
 
 	//runs the post profiling methds;
 	ComputePostProfile(rec);
@@ -783,7 +1258,7 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile)
 		throw GException("No computing method chosen.");
 	if(rec)
 		rec->NextProfile(profile);
-	profile->Update();
+	profile->DispatchFdbks();
 	//Calc Links on the profile description
 	if(LinkCalc)
 		LinkCalc->Compute(profile);
@@ -793,17 +1268,17 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile)
 		if(rec)
 			rec->Interact();
 
-		if(ExternBreak) return;
-		if(ComputeModifiedSubProfiles&&(!Subs()->MustCompute())) continue;
+		if(Intern::ExternBreak) return;
+		if(Data->ComputeModifiedSubProfiles&&(!Subs()->MustCompute())) continue;
 		try
 		{
-			if((!ComputeModifiedSubProfiles)||(Subs()->MustCompute()))
+			if((!Data->ComputeModifiedSubProfiles)||(Subs()->MustCompute()))
 			{
 				Profiling->Compute(Subs());
 
-				if(SaveSubProfiles)
+				if(Data->SaveSubProfiles)
 				{
-					Storage->SaveSubProfile(Subs());
+					Data->Storage->SaveSubProfile(Subs());
 					Subs()->SetState(osSaved);
 				}
 			}
@@ -814,8 +1289,8 @@ void GSession::CalcProfile(GSlot* rec,GProfile* profile)
 	}
 
 	// Save the best computed Links (As Hub and Authority)
-	if((SaveSubProfiles)&&(LinkCalc))
-		Storage->SaveLinks(this);
+	if((Data->SaveSubProfiles)&&(LinkCalc))
+		Data->Storage->SaveLinks(this);
 
 	//runs the post profiling methds;
 //	ComputePostProfile(rec);
@@ -832,13 +1307,13 @@ void GSession::ComputePreProfile(GSlot* rec)
 
 	if(rec)
 		rec->Interact();
-	if(ExternBreak) return;
+	if(Intern::ExternBreak) return;
 
 	for(PreProfile.Start();!PreProfile.End();PreProfile.Next())
 	{
 		if(rec)
 			rec->Interact();
-		if(ExternBreak) return;
+		if(Intern::ExternBreak) return;
 		if(PreProfile()->GetPlugin())
 		{
 			if(rec)
@@ -862,13 +1337,13 @@ void GSession::ComputePostProfile(GSlot* rec)
 
 	if(rec)
 		rec->Interact();
-	if(ExternBreak) return;
+	if(Intern::ExternBreak) return;
 
 	for(PostProfile.Start();!PostProfile.End();PostProfile.Next())
 	{
 		if(rec)
 			rec->Interact();
-		if(ExternBreak) return;
+		if(Intern::ExternBreak) return;
 		if(PostProfile()->GetPlugin())
 		{
 			if(rec)
@@ -883,7 +1358,7 @@ void GSession::ComputePostProfile(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::GroupingProfiles(GSlot* rec)  throw(GException)
+void GSession::GroupingProfiles(GSlot* rec)
 {
 	GGrouping* Grouping=(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod();
 
@@ -892,7 +1367,7 @@ void GSession::GroupingProfiles(GSlot* rec)  throw(GException)
 		throw GException("No grouping method chosen.");
 
     // Group the subprofiles
-	Grouping->Grouping(rec,ComputeModifiedGroups,SaveGroups);
+	Grouping->Grouping(rec,Data->UseExistingGroups,Data->SaveGroups);
 
 	// Run all post-group methods that are enabled
 	ComputePostGroup(rec);
@@ -909,13 +1384,13 @@ void GSession::ComputePostGroup(GSlot* rec)
 
 	if(rec)
 		rec->Interact();
-	if(ExternBreak) return;
+	if(Intern::ExternBreak) return;
 
 	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
 	{
 		if(rec)
 			rec->Interact();
-		if(ExternBreak) return;
+		if(Intern::ExternBreak) return;
 		if(PostGroups()->GetPlugin())
 		{
 			if(rec)
@@ -932,10 +1407,10 @@ void GSession::ComputePostGroup(GSlot* rec)
 //------------------------------------------------------------------------------
 void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date,R::RDate update)
 {
-	GProfile* prof=GetProfile(p);
+	GProfile* prof=GetProfile(p,false);
 	if(prof)
 		prof->InsertFdbk(d,assess,date,update);
-	GDoc* doc=GetDoc(d);
+	GDoc* doc=GetDoc(d,false);
 	if(doc)
 		doc->InsertFdbk(p);
 }
@@ -958,45 +1433,183 @@ void GSession::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
+R::RCursor<GGroup> GSession::GetGroups(void) const
+{
+	return(R::RCursor<GGroup>(Data->Groups));
+}
+
+
+//------------------------------------------------------------------------------
+R::RCursor<GGroup> GSession::GetGroups(GLang* lang)
+{
+	GGroupsLang* ptr;
+	R::RCursor<GGroup> cur;
+
+	ptr=Data->GroupsLang.GetPtr<GLang*>(lang);
+	if(!ptr)
+	{
+		cur.Clear();
+		return(cur);
+	}
+	cur.Set(*ptr);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::InsertGroup(GGroup* grp)
+{
+	GGroupsLang* groupsLang;
+
+	Data->Groups.InsertPtr(grp);
+	groupsLang = Data->GroupsLang.GetInsertPtr<GLang*>(grp->GetLang());
+	groupsLang->InsertPtr(grp);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::DeleteGroup(GGroup* grp)
+{
+	GGroupsLang* groupsLang=Data->GroupsLang.GetInsertPtr<GLang*>(grp->GetLang());
+	if(groupsLang)
+		groupsLang->DeletePtr(grp);
+	Data->FreeIds.InsertPtr(new GFreeId(grp->GetId()));
+	Data->Groups.DeletePtr(grp);
+}
+
+
+//------------------------------------------------------------------------------
+GGroup* GSession::GetGroup(const GSubProfile* sub,bool load) const
+{
+	GGroupsLang* groupsLang=Data->GroupsLang.GetInsertPtr<GLang*>(sub->GetLang());
+	if(!groupsLang)
+		throw GException("No language defined");
+	GGroup* grp=groupsLang->GetGroup(sub);
+	if(grp)
+		return(grp);
+	if(!load)
+		return(0);
+	if(Data->Storage->IsAllInMemory())
+		throw GException("Unknown group "+itou(sub->GetGroupId()));
+	grp=Data->Storage->LoadGroup(const_cast<GSession*>(this),sub->GetGroupId());
+	if(!grp)
+		throw GException("Unknown group "+itou(sub->GetGroupId()));
+	const_cast<GSession*>(this)->InsertGroup(grp);
+	return(grp);
+}
+
+
+//------------------------------------------------------------------------------
+GGroup*GSession::GetGroup(unsigned int id,bool load) const
+{
+	GGroup* grp=Data->Groups.GetPtr<unsigned int>(id);
+	if(grp)
+		return(grp);
+	if(!load)
+		return(0);
+	if(Data->Storage->IsAllInMemory())
+		throw GException("Unknown group "+itou(id));
+	grp=Data->Storage->LoadGroup(const_cast<GSession*>(this),id);
+	if(!grp)
+		throw GException("Unknown group "+itou(id));
+	const_cast<GSession*>(this)->InsertGroup(grp);
+	return(grp);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSession::GetNbGroups(void) const
+{
+	return(Data->Groups.GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSession::GetNbGroups(GLang* lang) const
+{
+	GGroupsLang* grps;
+
+	grps=Data->GroupsLang.GetPtr<const GLang*>(lang);
+	if(!grps)
+		return(0);
+	return(grps->GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::Clear(GLang* lang)
+{
+	size_t i,nb;
+	GGroupsLang* grps=Data->GroupsLang.GetPtr<const GLang*>(lang);
+	GGroup* grp;
+
+	// Go through the groups and delete all invalid groups.
+	if(!grps) return;
+
+	if(lang&&lang->GetDict())
+		lang->GetDict()->Clear(otGroup);
+	for(nb=grps->GetNb(),i=0;i<nb;i++)
+	{
+		grp=(*grps)[i];
+		Data->Groups.DeletePtr(grp);
+	}
+	grps->Clear();
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::CopyIdealGroups(void)
 {
-	R::RCursor<GGroup> Grps;
-//	GGroupCursor Ideal;
 	RCursor<GSubProfile> Sub;
-//	GGroups* grps;
 	GGroup* grp;
 	GGroupCalc* CalcDesc;
 
 	// Get current grouping description method
 	CalcDesc=(dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc")))->GetCurrentMethod();
 
-	// Clear current group
-	ClearGroups();
-
-	// Go through each languages
-	Grps=Subjects->GetIdealGroups()->GetGroups();
-	for(Grps.Start();!Grps.End();Grps.Next())
+	// Clear current clustering
+	RCursor<GGroupsLang> Groups(Data->GroupsLang);
+	for(Groups.Start();!Groups.End();Groups.Next())
 	{
-		// Create a new group in groups
-		grp=new GGroup(cNoRef,Grps()->GetLang(),true,RDate(""),RDate(""));
-		AssignId(grp);
-		InsertGroup(grp);
-
-		// Go through each subprofile
-		Sub=Grps()->GetSubProfiles();
-		for(Sub.Start();!Sub.End();Sub.Next())
-		{
-			grp->InsertSubProfile(Sub());
-		}
-
-		// Compute Description
-		CalcDesc->Compute(grp);
+		Clear(Groups()->Lang);
 	}
 
-	if(SaveGroups)
+	// Get the active languages
+	RCursor<GLang> Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIns();
+
+	// Go through each subjects
+	R::RCursor<GSubject> Grps(*Data->Subjects);
+	for(Grps.Start();!Grps.End();Grps.Next())
 	{
-		Storage->SaveGroups(this);
-		RCursor<GGroup> Groups(Session->GetGroups());
+		// Go trough each lang
+		for(Langs.Start();!Langs.End();Langs.Next())
+		{
+			// If the subject has no subprofiles -> next one.
+			if(!Grps()->GetNbSubProfiles(Langs()))
+				continue;
+
+			// Create a new group in groups
+			grp=new GGroup(cNoRef,Langs(),true,RDate(""),RDate(""));
+			AssignId(grp);
+			InsertGroup(grp);
+
+			// Go through each subprofile
+			Sub=Grps()->GetSubProfiles(Langs());
+			for(Sub.Start();!Sub.End();Sub.Next())
+			{
+				grp->InsertSubProfile(Sub());
+			}
+
+			// Compute Description
+			if(CalcDesc)
+				CalcDesc->Compute(grp);
+		}
+	}
+
+	if(Data->SaveGroups)
+	{
+		Data->Storage->SaveGroups(this);
+		RCursor<GGroup> Groups(GetGroups());
 		for(Groups.Start();!Groups.End();Groups.Next())
 			Groups()->SetState(osSaved);
 	}
@@ -1083,15 +1696,29 @@ void GSession::DocsFilter(int nbdocs,int nboccurs)
 //------------------------------------------------------------------------------
 void GSession::SetCurrentRandom(int rand)
 {
-	CurrentRandom=rand;
-	Random->Reset(CurrentRandom);
+	Data->CurrentRandom=rand;
+	Data->Random->Reset(Data->CurrentRandom);
+}
+
+
+//------------------------------------------------------------------------------
+int GSession::GetCurrentRandom(void) const
+{
+	return(Data->CurrentRandom);
 }
 
 
 //------------------------------------------------------------------------------
 int GSession::GetCurrentRandomValue(unsigned int max)
 {
-	return(int(Random->Value(max)));
+	return(int(Data->Random->Value(max)));
+}
+
+
+//------------------------------------------------------------------------------
+R::RRandom* GSession::GetRandom(void) const
+{
+	return(Data->Random);
 }
 
 
@@ -1102,49 +1729,97 @@ void GSession::LoadHistoricGroupsById(unsigned int mingen, unsigned int maxgen)
 
 	// fill the container
 	for (i=mingen; i<maxgen+1; i++)
-		GroupsHistoryMng->InsertGroupsHistory(Storage->LoadAnHistoricGroups(this, i));
+		Data->GroupsHistoryMng->InsertGroupsHistory(Data->Storage->LoadAnHistoricGroups(this, i));
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::LoadHistoricGroupsByDate(RString mindate,RString maxdate)
 {
-	Storage->LoadHistoricGroupsByDate(this,mindate,maxdate);
+	Data->Storage->LoadHistoricGroupsByDate(this,mindate,maxdate);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::ReInit(void)
 {
-	// Clean groups, feedbacks and users.
-	ClearGroups();
+	if(Data->Subjects)
+		Data->Subjects->ReInit();
+
+	// Clear groups
+	RCursor<GGroupsLang> Groups(Data->GroupsLang);
+	for(Groups.Start();!Groups.End();Groups.Next())
+	{
+		Clear(Groups()->Lang);
+	}
+	Data->Groups.Clear();
+
+	// Clear Fdbks
 	ClearFdbks();
-	ClearUsers();
+
+	// Clear Users
+	RCursor<GSubProfiles> Cur(Data->SubProfiles);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Clear();
+	Data->Profiles.Clear();
+	Data->Users.Clear();
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::ExportMatrix(GSlot* rec, const char* type, const char* filename, GLang* lang, bool label)
 {
-	Storage->ExportMatrix(this, rec, type, filename, lang, label);
+	Data->Storage->ExportMatrix(this, rec, type, filename, lang, label);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::UpdateProfiles(unsigned int docid)
+{
+	// If there are some profile -> propagate in memory
+	GDoc* doc=GetDoc(docid);
+	if(doc)
+	{
+		RVectorInt<true>* fdbks=doc->GetFdbks();
+		if(fdbks)
+		{
+			for(fdbks->Start();!fdbks->End();fdbks->Next())
+			{
+				GProfile* prof=GetProfile((*fdbks)());
+				if(!prof)
+					continue;
+				prof->HasUpdate(docid);
+			}
+		}
+	}
+
+	// Use database
+	if((!Data->Storage->IsAllInMemory())||(Data->SaveSubProfiles))
+		Data->Storage->UpdateProfiles(docid);
+}
+
+
+
+//------------------------------------------------------------------------------
+void GSession::UpdateGroups(unsigned int subid)
+{
+	// If there is a group -> propagate in memory
+	GSubProfile* sub=GetSubProfile(subid,0,false);
+	if(sub)
+	{
+		GGroup* grp=GetGroup(sub->GetGroupId(),false);
+		if(grp)
+			grp->HasUpdate(sub);
+	}
+
+	// Use database
+	if((!Data->Storage->IsAllInMemory())||(Data->SaveGroups))
+		Data->Storage->UpdateGroups(subid);
 }
 
 
 //------------------------------------------------------------------------------
 GSession::~GSession(void)
 {
-	try
-	{
-		GPluginManagers::PluginManagers.Disconnect(this);
-
-		// Delete stuctures
-		delete Random;
-		delete Subjects;
-		delete GroupsHistoryMng;
-	}
-	catch(...)
-	{
-	}
-	Session=0;
-	ExternBreak=false;
+	delete Data;
 }
