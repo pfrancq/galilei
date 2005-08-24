@@ -193,12 +193,9 @@ void GTextAnalyse::Connect(GSession* session) throw(GException)
 //-----------------------------------------------------------------------------
 void GTextAnalyse::Disconnect(GSession* session) throw(GException)
 {
-
 	WordWeight** ptr;
 	GWord** pt;
 	unsigned int i;
-
-	if(!Session) return;
 
 	// Local Structure
 	if(Weights)
@@ -231,7 +228,8 @@ void GTextAnalyse::Disconnect(GSession* session) throw(GException)
 		Sl=0;
 	}
 
-	GDocAnalyse::Disconnect(session);
+	if(Session)
+		GDocAnalyse::Disconnect(session);
 }
 
 
@@ -914,6 +912,7 @@ void GTextAnalyse::CreateParams(GParams* params)
 //-----------------------------------------------------------------------------
 GTextAnalyse::~GTextAnalyse(void)
 {
+	Disconnect(0);
 	// Clear Infos
 	// Rem: Since Infos is not responsible for allocation/desallocation
 	//      -> parse it to prevent memory leaks
