@@ -36,7 +36,6 @@
 // include files for GALILEI
 #include <gsubjects.h>
 #include <gsubject.h>
-#include <ggroups.h>
 #include <gdoc.h>
 #include <gsession.h>
 #include <gpluginmanagers.h>
@@ -56,7 +55,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GSubjects::GGroupId
+class GGroupId
 {
 public:
 	int GrpId;       // Group Identificator.
@@ -77,7 +76,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GSubjects::GroupScore
+class GroupScore
 {
 public:
 	GGroup* Group;                 // Pointer to the group.
@@ -91,9 +90,10 @@ public:
 };
 
 
+
 //------------------------------------------------------------------------------
 //
-//  GroupLang
+//  GSubjects::GroupLang
 //
 //------------------------------------------------------------------------------
 
@@ -113,16 +113,64 @@ public:
 
 //------------------------------------------------------------------------------
 //
+// class GSubjects::Intern
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GSubjects::Intern
+{
+public:
+
+	GSession* Session;                                                   // Session.
+	double PercOK;                                                       // Percentage of relevant documents to create.
+	double PercKO;                                                       // Percentage of fuzzy relevant documents to create.
+	double PercH;                                                        // Percentage of irrelevant documents to create (Computed as a percentage of the relevant documents created).
+	double PercErr;                                                      //  Percentage of documents assessed whith an error.
+	double PercSubjects;                                                 // Percentage of subjects to use.
+	unsigned int NbMinDocsSubject;                                       // Minimal number of documents in a subject to use it.
+	unsigned int NbProfMax;                                              //  Maximal number of profiles to create in a subject.
+	unsigned int NbProfMin;                                              // Minimal number of profiles to create in a subject.
+	double PercSocial;                                                   // Percentage of profiles that are social.
+	GDoc** tmpDocs;                                                      // Temporary Array of documents.
+	unsigned int NbDocs;                                                 // Number of documents actually managed.
+	R::RContainer<GFdbk,false,false> NewDocs;                            // New documents to assess.
+	R::RContainer<GSubProfile,false,true> LastAdded;                     // Lastest added subprofiles.
+	unsigned int NbDocsAssess;                                           // Number of documents to be assessed during a feeddback process.
+	double Precision;                                                    // Precision of the clustering.
+	double Recall;                                                       // Recall of the clustering.
+	double Total;                                                        // Total comparaison between for the clustering.
+	R::RContainer<GroupScore,true,true> GroupsScore;                     // Score of a given group.
+	R::RContainer<GSubject,false,false> Profiles;                        // Subjects for the profiles.
+	R::RContainer<R::RContainer<GSubject,false,false>,true,false> Docs;  // Subjects for the documents.
+	bool SaveSimulation;                                                 // Must the simulation be saved?
+
+	Intern(GSession* session) :  Session(session),
+	  tmpDocs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25),
+	  GroupsScore(100,50), Profiles(1000), Docs(5000), SaveSimulation(false)
+	{
+	}
+
+	~Intern(void)
+	{
+//		delete IdealGroups;
+		delete[] tmpDocs;
+	}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
 // class GSubjects
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(GSession* session)
-	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Session(session),
-	  tmpDocs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25), IdealGroups(0),
-	  GroupsScore(100,50), Profiles(1000), Docs(5000), SaveSimulation(false)
+	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Data(0)
 {
+	Data=new Intern(session);
 	GParams::InsertPtr(new GParamDouble("PercOK",10.0));
 	GParams::InsertPtr(new GParamDouble("PercKO",10.0));
 	GParams::InsertPtr(new GParamDouble("PercH",50.0));
@@ -133,8 +181,6 @@ GSubjects::GSubjects(GSession* session)
 	GParams::InsertPtr(new GParamDouble("PercSubjects",100.0));
 	GParams::InsertPtr(new GParamUInt("NbMinDocsSubject",50));
 	GParams::InsertPtr(new GParamUInt("NbDocsAssess",30));
-	GParams::InsertPtr(new GParamBool("idf",true));
-	IdealGroups=new GGroups(100);
 	Apply();
 }
 
@@ -142,17 +188,26 @@ GSubjects::GSubjects(GSession* session)
 //------------------------------------------------------------------------------
 void GSubjects::Apply(void)
 {
-	PercOK=GetDouble("PercOK");
-	PercKO=GetDouble("PercKO");
-	PercH=GetDouble("PercH");
-	PercErr=GetDouble("PercErr");
-	NbProfMin=GetUInt("NbProfMin");
-	NbProfMax=GetUInt("NbProfMax");
-	PercSocial=GetDouble("PercSocial");
-	PercSubjects=GetDouble("PercSubjects");
-	NbMinDocsSubject=GetUInt("NbMinDocsSubject");
-	NbDocsAssess=GetUInt("NbDocsAssess");
-	IFF=GetBool("idf");
+	Data->PercOK=GetDouble("PercOK");
+	Data->PercKO=GetDouble("PercKO");
+	Data->PercH=GetDouble("PercH");
+	Data->PercErr=GetDouble("PercErr");
+	Data->NbProfMin=GetUInt("NbProfMin");
+	Data->NbProfMax=GetUInt("NbProfMax");
+	Data->PercSocial=GetDouble("PercSocial");
+	Data->PercSubjects=GetDouble("PercSubjects");
+	Data->NbMinDocsSubject=GetUInt("NbMinDocsSubject");
+	Data->NbDocsAssess=GetUInt("NbDocsAssess");
+}
+
+
+//------------------------------------------------------------------------------
+void GSubjects::ReInit(void)
+{
+	// Re-init the subjects
+	RCursor<GSubject> Subjects(*this);
+	for(Subjects.Start();!Subjects.End();Subjects.Next())
+		Subjects()->ReInit();
 }
 
 
@@ -166,30 +221,24 @@ void GSubjects::ChooseSubjects(void)
 	GSubject** ptr;
 	unsigned int i;
 
-	// Suppose all subjects are not chosen
-	nbsocial=0;
-	Subs.Set(*this);
-	for(Subs.Start();!Subs.End();Subs.Next())
-		Subs()->SetUsed(Session,false,0,nbsocial);
-
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[RTree<GSubject,true,false>::GetMaxPos()+1];
 	RTree<GSubject,true,false>::GetTab(tab);
-	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
+	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
-	compt=static_cast<unsigned int>((GetNbNodes()*PercSubjects)/100)+1;
+	compt=static_cast<unsigned int>((GetNbNodes()*Data->PercSubjects)/100)+1;
 	for(ptr=tab,i=GetNbNodes()+1;(--i)&&compt;ptr++)
 	{
 		// Verify that there is enough documents
-		if((*ptr)->GetNbDocs()<NbMinDocsSubject) continue;
+		if((*ptr)->GetNbDocs()<Data->NbMinDocsSubject) continue;
 
 		// Number of (social) profiles that will assess documents
-		nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
-		nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
+		nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
+		nbsocial=static_cast<unsigned int>(nbprof*Data->PercSocial/100);
 
 		// Set the topic to used and create profiles
-		(*ptr)->SetUsed(Session,true,nbprof,nbsocial);
+		(*ptr)->SetUsed(Data->Session,nbprof,nbsocial);
 		compt--;
 	}
 
@@ -209,9 +258,9 @@ void GSubjects::CreateSet(void)
 	RContainer<GroupLang,true,true> Groups(20);          // Groups created for a given subject
 
 	// Init Part
-	LastAdded.Clear();
-	if(!tmpDocs)
-		tmpDocs=new GDoc*[Session->GetMaxPosDoc()+1];
+	Data->LastAdded.Clear();
+	if(!Data->tmpDocs)
+		Data->tmpDocs=new GDoc*[Data->Session->GetMaxPosDoc()+1];
 
 	// Go through all the subjects which are used
 	Subs.Set(*this);
@@ -224,22 +273,22 @@ void GSubjects::CreateSet(void)
 		Groups.Clear();
 
 		// Copy the documents of the session in Docs;
-		NbDocs=Session->FillDocs(tmpDocs);
+		Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
 
 		// Number of profiles that will assess documents
-		if(NbProfMax>Subs()->GetNbProfiles())
-			NbProfMax=Subs()->GetNbProfiles();
-		if(NbProfMin>Subs()->GetNbProfiles())
-			NbProfMin=Subs()->GetNbProfiles();
-		nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
+		if(Data->NbProfMax>Subs()->GetNbProfiles())
+			Data->NbProfMax=Subs()->GetNbProfiles();
+		if(Data->NbProfMin>Subs()->GetNbProfiles())
+			Data->NbProfMin=Subs()->GetNbProfiles();
+		nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
 
 		// Number of profiles that are social
-		nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
+		nbsocial=static_cast<unsigned int>(nbprof*Data->PercSocial/100);
 
 		// Number of documents to judged by each subprofile
-		maxDocsOK=static_cast<unsigned int>(Subs()->GetNbDocs()*PercOK/100);
-		maxDocsKO=static_cast<unsigned int>(Subs()->GetNbDocs()*PercKO/100);
-		maxDocsH=static_cast<unsigned int>(maxDocsOK*PercH/100);
+		maxDocsOK=static_cast<unsigned int>(Subs()->GetNbDocs()*Data->PercOK/100);
+		maxDocsKO=static_cast<unsigned int>(Subs()->GetNbDocs()*Data->PercKO/100);
+		maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->PercH/100);
 
 		// Assess documents
 		Prof=Subs()->GetProfiles();
@@ -256,12 +305,13 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 	unsigned int i;
 	GDoc** ptr;
 	RContainer<GLang,false,true> Langs(20);         // Langs already used
+	GSubProfile* subprofile;
 
 	// Mix the documents
-	Session->GetRandom()->RandOrder<GDoc*>(tmpDocs,NbDocs);
+	Data->Session->GetRandom()->RandOrder<GDoc*>(Data->tmpDocs,Data->NbDocs);
 
 	// Go trought the documents to create the judgements
-	for(i=NbDocs+1,ptr=tmpDocs,nbDocsOK=maxDocsOK,nbDocsKO=maxDocsKO,nbDocsH=maxDocsH;(--i)&&((nbDocsOK)||(nbDocsKO)||(nbDocsH));ptr++)
+	for(i=Data->NbDocs+1,ptr=Data->tmpDocs,nbDocsOK=maxDocsOK,nbDocsKO=maxDocsKO,nbDocsH=maxDocsH;(--i)&&((nbDocsOK)||(nbDocsKO)||(nbDocsH));ptr++)
 	{
 		// Pointer cannot be null
 		if(!(*ptr))
@@ -273,19 +323,20 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 			continue;
 		if(!Langs.IsIn(Lang))
 		{
-			GroupLang* Grp=groups.GetPtr<GLang*>(Lang);
+/*			GroupLang* Grp=groups.GetPtr<GLang*>(Lang);
 			if(!Grp)
 			{
 				GGroup* NewGrp;
 
 				// A ideal group must be created
-				IdealGroups->InsertGroup(NewGrp=new GGroup(IdealGroups->GetNbGroups(),Lang,false,RDate(""),RDate("")));
+				Data->IdealGroups->InsertGroup(NewGrp=new GGroup(Data->IdealGroups->GetNbGroups(),Lang,false,RDate(""),RDate("")));
 				groups.InsertPtr(Grp=new GroupLang(Lang,NewGrp));
 			}
 
 			// and the corresponding subprofile inserted
-			Grp->Group->InsertSubProfile(prof->GetInsertSubProfile(Lang,Session));
-			LastAdded.InsertPtr(prof->GetInsertSubProfile(Lang,Session));
+			Grp->Group->InsertSubProfile(prof->GetInsertSubProfile(Lang,Data->Session));*/
+			Data->LastAdded.InsertPtr(subprofile=prof->GetInsertSubProfile(Lang,Data->Session));
+			sub->InsertSubProfile(subprofile);
 			Langs.InsertPtr(Lang);
 		}
 
@@ -295,7 +346,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 			if(nbDocsOK)
 			{
 				nbDocsOK--;
-				Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+				Data->Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 			}
 		}
 		else
@@ -306,7 +357,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 				if(nbDocsKO)
 				{
 					nbDocsKO--;
-					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+					Data->Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 				}
 			}
 			else
@@ -315,7 +366,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 				if(nbDocsH)
 				{
 					nbDocsH--;
-					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+					Data->Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 				}
 			}
 		}
@@ -324,9 +375,15 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 
 
 //------------------------------------------------------------------------------
-GGroup* GSubjects::GetIdealGroup(GSubProfile* sub) const
+GSubject* GSubjects::GetIdealGroup(GSubProfile* sub) const
 {
-	return(IdealGroups->GetGroup(sub));
+//	return(Data->IdealGroups->GetGroup(sub));
+	GSubject* subject;
+
+	RCursor<GSubject> Cur(*Top);
+	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
+		subject=Cur()->GetIdealGroup(sub);
+	return(subject);
 }
 
 
@@ -335,15 +392,17 @@ void GSubjects::ComputeRecallPrecision(void)
 {
 	R::RCursor<GroupScore> Grp;
 	RCursor<GSubProfile> Sub;
-	GGroup* thGrp;
+	//GGroup* thGrp;
+	GSubject* thGrp;
 	unsigned int NbGrp;
 	unsigned int InGrp;
 	unsigned int InthGrp;
 	unsigned int NbProf;
+	unsigned int nbsub;
 
-	Precision=Recall=0.0;
+	Data->Precision=Data->Recall=0.0;
 	NbProf=0;
-	Grp.Set(GroupsScore);
+	Grp.Set(Data->GroupsScore);
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
 		NbGrp=Grp()->Group->GetNbSubProfiles();
@@ -355,13 +414,18 @@ void GSubjects::ComputeRecallPrecision(void)
 			Sub=Grp()->Group->GetSubProfiles();
 			Sub.Start();
 			thGrp=GetIdealGroup(Sub());
-			if((!thGrp)||(thGrp->GetLang()!=Grp()->Group->GetLang()))
+//			if((!thGrp)||(thGrp->GetLang()!=Grp()->Group->GetLang()))
+//				return;
+			if(!thGrp)
+				continue;
+			nbsub=thGrp->GetNbSubProfiles(Grp()->Group->GetLang());
+			if(!nbsub)
 				continue;
 			Grp()->Precision=1.0;
-			if(thGrp->GetNbSubProfiles()==1)
+			if(nbsub==1)
 				Grp()->Recall=1.0;
-			Precision+=Grp()->Precision;
-			Recall+=Grp()->Recall;
+			Data->Precision+=Grp()->Precision;
+			Data->Recall+=Grp()->Recall;
 		}
 		else
 		{
@@ -369,9 +433,14 @@ void GSubjects::ComputeRecallPrecision(void)
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				thGrp=GetIdealGroup(Sub());
-				if((!thGrp)||(thGrp->GetLang()!=Grp()->Group->GetLang()))
+//				if((!thGrp)||(!thGrp->GetLang()!=Grp()->Group->GetLang()))
+//					continue;
+				if(!thGrp)
 					continue;
-				if(thGrp->GetNbSubProfiles()==1)
+				nbsub=thGrp->GetNbSubProfiles(Grp()->Group->GetLang());
+				if(!nbsub)
+					continue;
+				if(nbsub==1)
 				{
 					Grp()->Recall+=1.0;
 				}
@@ -382,27 +451,39 @@ void GSubjects::ComputeRecallPrecision(void)
 						Grp()->Precision+=((double)(InthGrp))/((double)(NbGrp-1));
 					InGrp=Grp()->Group->GetNbSubProfiles(thGrp)-1;
 					if(InGrp)
-						Grp()->Recall+=((double)(InGrp))/((double)(thGrp->GetNbSubProfiles()-1));
+						Grp()->Recall+=((double)(InGrp))/((double)(nbsub-1));
 				}
 			}
-			Precision+=Grp()->Precision;
-			Recall+=Grp()->Recall;
+			Data->Precision+=Grp()->Precision;
+			Data->Recall+=Grp()->Recall;
 			Grp()->Precision/=NbGrp;
 			Grp()->Recall/=NbGrp;
 		}
 	}
 	if(NbProf)
 	{
-		Precision/=(double)NbProf;
-		Recall/=(double)NbProf;
+		Data->Precision/=(double)NbProf;
+		Data->Recall/=(double)NbProf;
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+unsigned int GSubjects::GetNbIdealGroups(const GLang* lang) const
+{
+	unsigned int nb;
+
+	RCursor<GSubject> Cur(*Top);
+	for(Cur.Start(),nb=0;!Cur.End();Cur.Next())
+		nb+=Cur()->GetNbIdealGroups(lang);
+	return(nb);
 }
 
 
 //-----------------------------------------------------------------------------
 void GSubjects::ComputeTotal(void)
 {
-	RCursor<GGroup> GroupsIdeal;                 // Pointer to the ideal groups for a given language
+//	RCursor<GGroup> GroupsIdeal;                 // Pointer to the ideal groups for a given language
 	RCursor<GGroup> GroupsComputed;               // Pointer to the computed groups for a given language
 	GGroup* GroupComputed;                        // Pointer to a computed group
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
@@ -420,7 +501,7 @@ void GSubjects::ComputeTotal(void)
 	RCursor<GSubProfile> Sub;
 
 	// Init part
-	Total=0.0;
+	Data->Total=0.0;
 	NbSubProfiles=0;
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
@@ -430,9 +511,9 @@ void GSubjects::ComputeTotal(void)
 	{
 		lang=Langs()->GetPlugin();
 		if(!lang) continue;
-		GroupsIdeal=IdealGroups->GetGroups(lang);
-		NbRows=GroupsIdeal.GetNb();
-		NbCols=Session->GetGroups(lang).GetNb();
+//		GroupsIdeal=Data->IdealGroups->GetGroups(lang);
+		NbRows=GetNbIdealGroups(lang);
+		NbCols=Data->Session->GetGroups(lang).GetNb();
 		if(NbRows>MaxRows) MaxRows=NbRows;
 		if(NbCols>MaxCols) MaxCols=NbCols;
 	}
@@ -452,9 +533,10 @@ void GSubjects::ComputeTotal(void)
 
 		// Compute number of elements in ideal and computed groups.
 		// and assign the groups to the current language.
-		GroupsIdeal=IdealGroups->GetGroups(lang);
-		NbRows=GroupsIdeal.GetNb();
-		GroupsComputed=Session->GetGroups(lang);
+		//GroupsIdeal=Data->IdealGroups->GetGroups(lang);
+		//NbRows=GroupsIdeal.GetNb();
+		NbRows=GetNbIdealGroups(lang);
+		GroupsComputed=Data->Session->GetGroups(lang);
 		NbCols=GroupsComputed.GetNb();
 		if((!NbRows)||(!NbCols))
 			continue;
@@ -475,15 +557,19 @@ void GSubjects::ComputeTotal(void)
 		// -> Compute the differents terms of the total
 		int row,position;
 		row=0;
+		//for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
+		RCursor<GSubject> GroupsIdeal(*this);
 		for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
 		{
+			if(!GroupsIdeal()->GetNbSubProfiles(lang))
+				continue;
 			memset(VectorColsTemp,0,NbCols*sizeof(double));
-			Sub=GroupsIdeal()->GetSubProfiles();
+			Sub=GroupsIdeal()->GetSubProfiles(lang);
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				VectorRows[row]++;
 				NbTot++;
-				GroupComputed=Sub()->GetGroup();
+				GroupComputed=Data->Session->GetGroup(Sub()->GetGroupId());
 				if(!GroupComputed)
 					continue;
 				position=GroupsId.GetPtr(GroupComputed->GetId())->position;
@@ -507,14 +593,14 @@ void GSubjects::ComputeTotal(void)
 		else
 			subtotal=1.0;
 		NbSubProfiles+=NbTot;
-		Total+=subtotal*NbTot;
+		Data->Total+=subtotal*NbTot;
 	}
 
 	// Compute Total
 	if(NbSubProfiles)
-		Total=Total/static_cast<double>(NbSubProfiles);
+		Data->Total=Data->Total/static_cast<double>(NbSubProfiles);
 	else
-		Total=0.0;
+		Data->Total=0.0;
 
 	//delete the vectors
 	if (VectorRows) delete[] VectorRows;
@@ -529,22 +615,22 @@ void GSubjects::CreateIdeal(bool save)
 	// Apply Config
 	Apply();
 
-	SaveSimulation=save;
+	Data->SaveSimulation=save;
 
 	// Re-init the session
-	Session->ReInit();
+	Data->Session->ReInit();
 
 	// Remove the ideal clustering
-	IdealGroups->ClearGroups();
+//	GetIdealGroups()->ClearGroups();
 
-	if(!tmpDocs)
-		tmpDocs=new GDoc*[Session->GetMaxPosDoc()+1];
+	if(!Data->tmpDocs)
+		Data->tmpDocs=new GDoc*[Data->Session->GetMaxPosDoc()+1];
 	ChooseSubjects();
 	CreateSet();
-	if(SaveSimulation)
+	if(Data->SaveSimulation)
 	{
-		Session->GetStorage()->SaveFdbks(Session);
-		Session->GetStorage()->SaveIdealGroupment(IdealGroups);
+		Data->Session->GetStorage()->SaveFdbks(Data->Session);
+//		Data->Session->GetStorage()->SaveIdealGroupment(Data->IdealGroups);
 	}
 }
 
@@ -560,36 +646,36 @@ void GSubjects::FdbksCycle(void)
 	Apply();
 
 	// Go through the languages
-	Grps=Session->GetGroups();
+	Grps=Data->Session->GetGroups();
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Go through the subprofile contained in the group.
 		SubProfile=Grps()->GetSubProfiles();
 		for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
 		{
-			Grps()->NotJudgedDocsRelList(&NewDocs,SubProfile(),Session);
-			RCursor<GFdbk> Cur(NewDocs);
-			for(Cur.Start(),i=NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
+			Grps()->NotJudgedDocsRelList(&Data->NewDocs,SubProfile(),Data->Session);
+			RCursor<GFdbk> Cur(Data->NewDocs);
+			for(Cur.Start(),i=Data->NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
 			{
-				GDoc* doc=Session->GetDoc(Cur()->GetDocId());
+				GDoc* doc=Data->Session->GetDoc(Cur()->GetDocId());
 				if(!doc)
 					continue;
 				// Look if 'OK'
 				if(IsFromSubject(Cur()->GetDocId(),GetSubject(SubProfile())))
 				{
-					Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+					Data->Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djOK,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 				}
 				else
 				{
 					// Look If 'KO'
 					if(IsFromParentSubject(Cur()->GetDocId(),GetSubject(SubProfile())))
 					{
-						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						Data->Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djKO,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 					}
 					else
 					{
 						// Must be H
-						Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						Data->Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djOutScope,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 					}
 				}
 			}
@@ -597,8 +683,8 @@ void GSubjects::FdbksCycle(void)
 		}
 	}
 
-	if(SaveSimulation)
-		Session->GetStorage()->SaveFdbks(Session);
+	if(Data->SaveSimulation)
+		Data->Session->GetStorage()->SaveFdbks(Data->Session);
 }
 
 
@@ -620,7 +706,7 @@ void GSubjects::AddAssessments(void)
 		if(!Subs()->IsUsed()) continue;
 
 		// Copy the documents of the session in Docs;
-		NbDocs=Session->FillDocs(tmpDocs);
+		Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
 
 		// Go through the profiles attached to the subject
 		Prof=Subs()->GetProfiles();
@@ -631,10 +717,10 @@ void GSubjects::AddAssessments(void)
 				continue;
 
 			// Mix the documents
-			Session->GetRandom()->RandOrder<GDoc*>(tmpDocs,NbDocs);
+			Data->Session->GetRandom()->RandOrder<GDoc*>(Data->tmpDocs,Data->NbDocs);
 
 			// Go trought the documents to create the judgements
-			for(i=NbDocsAssess+1,ptr=tmpDocs;--i;ptr++)
+			for(i=Data->NbDocsAssess+1,ptr=Data->tmpDocs;--i;ptr++)
 			{
 				// Verify that the document is not already assigned to the profile
 				if(Prof()->GetFdbk((*ptr)->GetId())) continue;
@@ -642,26 +728,26 @@ void GSubjects::AddAssessments(void)
 				// Look if 'OK'
 				if(IsFromSubject((*ptr),Subs()))
 				{
-					Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+					Data->Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 				}
 				else
 				{
 					// Look If 'KO'
 					if(IsFromParentSubject((*ptr),Subs()))
 					{
-						Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+						Data->Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 					}
 					else
 					{
-						Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+						Data->Session->InsertFdbk(Prof()->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 					}
 				}
 			}
 		}
 	}
-	if(SaveSimulation)
+	if(Data->SaveSimulation)
 	{
-		Session->GetStorage()->SaveFdbks(Session);
+		Data->Session->GetStorage()->SaveFdbks(Data->Session);
 	}
 }
 
@@ -684,12 +770,12 @@ bool GSubjects::AddTopic(void)
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
 	RTree<GSubject,true,false>::GetTab(tab);
-	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
+	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Find the first not used subject having at least NbMinDocsSubject documents.
 	for(ptr=tab,i=GetNbNodes()+1,newSubject=0;--i;ptr++)
 	{
-		if((*ptr)->GetNbDocs()<NbMinDocsSubject) continue;
+		if((*ptr)->GetNbDocs()<Data->NbMinDocsSubject) continue;
 		if((*ptr)->IsUsed()) continue;
 		newSubject=(*ptr);
 		break;
@@ -702,28 +788,28 @@ bool GSubjects::AddTopic(void)
 	if(!newSubject) return(false);
 
 	// Copy the documents of the same language of the session in Docs;
-	NbDocs=Session->FillDocs(tmpDocs);
+	Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
 
 	// Number of (social) subprofiles that will judge documents
-	nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
-	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
+	nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
+	nbsocial=static_cast<unsigned int>(nbprof*Data->PercSocial/100);
 
-	newSubject->SetUsed(Session,true,nbprof,nbsocial);
+	newSubject->SetUsed(Data->Session,nbprof,nbsocial);
 
 	// Number of documents to judged by each subprofile
-	maxDocsOK=static_cast<unsigned int>(newSubject->GetNbDocs()*PercOK/100);
-	maxDocsKO=static_cast<unsigned int>(newSubject->GetNbDocs()*PercKO/100);
-	maxDocsH=static_cast<unsigned int>(maxDocsOK*PercH/100);
+	maxDocsOK=static_cast<unsigned int>(newSubject->GetNbDocs()*Data->PercOK/100);
+	maxDocsKO=static_cast<unsigned int>(newSubject->GetNbDocs()*Data->PercKO/100);
+	maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->PercH/100);
 
 	// Assess documents
 	Prof=newSubject->GetProfiles();
 	for(Prof.Start();!Prof.End();Prof.Next())
 		ProfileAssess(Groups,Prof(),newSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
-	if(SaveSimulation)
+	if(Data->SaveSimulation)
 	{
-		Session->GetStorage()->SaveFdbks(Session);
-		Session->GetStorage()->SaveIdealGroupment(IdealGroups);
+		Data->Session->GetStorage()->SaveFdbks(Data->Session);
+//		Data->Session->GetStorage()->SaveIdealGroupment(Data->IdealGroups);
 	}
 	return(true);
 }
@@ -748,13 +834,13 @@ unsigned int GSubjects::AddProfiles(void)
 	Apply();
 
 	//Randomly choose the number of (social) profiles.
-	nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
-	nbsocial=static_cast<unsigned int>(nbprof*PercSocial/100);
+	nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
+	nbsocial=static_cast<unsigned int>(nbprof*Data->PercSocial/100);
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
 	RTree<GSubject,true,false>::GetTab(tab);
-	Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
+	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Find the first used subject having at least NbMinDocsSubject documents.
 	for(ptr=tab,i=GetNbNodes()+1,usedSubject=0;--i;ptr++)
@@ -768,17 +854,18 @@ unsigned int GSubjects::AddProfiles(void)
 	delete[] tab;
 
 	// If no subject found -> do nothing
-	if(!usedSubject) return 0;
+	if(!usedSubject)
+		return(0);
 
 	// Catch all the ideal groups for this subject
 	// It is suppose that the subject of the group is the subject of any
 	// subprofile contained in it.
-	RCursor<GFactoryLang> Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+/*	RCursor<GFactoryLang> Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		GLang* lang=Langs()->GetPlugin();
 		if(!lang) continue;
-		CurGrps=IdealGroups->GetGroups(lang);
+		CurGrps=Data->IdealGroups->GetGroups(lang);
 		for(CurGrps.Start(),Grp=0;!CurGrps.End();CurGrps.Next())
 		{
 			Sub=CurGrps()->GetSubProfiles();
@@ -790,17 +877,17 @@ unsigned int GSubjects::AddProfiles(void)
 				break;
 			}
 		}
-	}
+	}*/
 
 	// Copy the documents of the same language of the session in Docs;
-	NbDocs=Session->FillDocs(tmpDocs);
+	Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
 
 	// Number of documents to judged by each subprofile
-	maxDocsOK=static_cast<unsigned int>(usedSubject->GetNbDocs()*PercOK/100);
-	maxDocsKO=static_cast<unsigned int>(usedSubject->GetNbDocs()*PercKO/100);
-	maxDocsH=static_cast<unsigned int>(maxDocsOK*PercH/100);
+	maxDocsOK=static_cast<unsigned int>(usedSubject->GetNbDocs()*Data->PercOK/100);
+	maxDocsKO=static_cast<unsigned int>(usedSubject->GetNbDocs()*Data->PercKO/100);
+	maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->PercH/100);
 
-	usedSubject->SetUsed(Session,true,nbprof,nbsocial);
+	usedSubject->SetUsed(Data->Session,nbprof,nbsocial);
 
 	// Assess documents
 	Prof=usedSubject->GetProfiles();
@@ -808,10 +895,10 @@ unsigned int GSubjects::AddProfiles(void)
 		ProfileAssess(Groups,Prof(),usedSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
 	// optional saving
-	if(SaveSimulation)
+	if(Data->SaveSimulation)
 	{
-		Session->GetStorage()->SaveFdbks(Session);
-		Session->GetStorage()->SaveIdealGroupment(IdealGroups);
+		Data->Session->GetStorage()->SaveFdbks(Data->Session);
+//		Data->Session->GetStorage()->SaveIdealGroupment(Data->IdealGroups);
 	}
 
 	//returns the number of created profiles
@@ -829,8 +916,8 @@ double GSubjects::ComputePercAss(void)
 	double PercAss;
 	GLang* Lang;
 
-	Cur1.Set(LastAdded);
-	Cur2=Session->GetProfiles();
+	Cur1.Set(Data->LastAdded);
+	Cur2=Data->Session->GetProfiles();
 	if(Cur1.GetNb()<1)
 	{
 		PercAss=1.0;
@@ -858,7 +945,7 @@ double GSubjects::ComputePercAss(void)
 
 			// Make comparaisons
 			nb++;
-			if(Cur1()->GetGroup()==Sub->GetGroup()) PercAss+=1.0;
+			if(Cur1()->GetGroupId()==Sub->GetGroupId()) PercAss+=1.0;
 		}
 	}
 	if(!nb)
@@ -872,7 +959,7 @@ double GSubjects::ComputePercAss(void)
 //------------------------------------------------------------------------------
 void GSubjects::ClearLastAdded(void)
 {
-	LastAdded.Clear();
+	Data->LastAdded.Clear();
 }
 
 
@@ -887,7 +974,7 @@ GSubject* GSubjects::GetSubject(unsigned int id)
 void GSubjects::Clear(void)
 {
 	RTree<GSubject,true,false>::Clear();
-	Profiles.Clear();
+	Data->Profiles.Clear();
 }
 
 
@@ -896,11 +983,11 @@ void GSubjects::Compare(void)
 {
 	R::RCursor<GGroup> Cur;
 
-	GroupsScore.Clear();
-	Cur=Session->GetGroups();
+	Data->GroupsScore.Clear();
+	Cur=Data->Session->GetGroups();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		GroupsScore.InsertPtr(new GroupScore(Cur()));
+		Data->GroupsScore.InsertPtr(new GroupScore(Cur()));
 	}
 	ComputeRecallPrecision();
 	ComputeTotal();
@@ -908,9 +995,30 @@ void GSubjects::Compare(void)
 
 
 //------------------------------------------------------------------------------
-double GSubjects::GetPrecision(GGroup* grp)
+double GSubjects::GetPrecision(void) const
 {
-	GroupScore* g=GroupsScore.GetPtr<const GGroup*>(grp);
+	return(Data->Precision);
+}
+
+
+//------------------------------------------------------------------------------
+double GSubjects::GetRecall(void) const
+{
+	return(Data->Recall);
+}
+
+
+//------------------------------------------------------------------------------
+double GSubjects::GetTotal(void) const
+{
+	return(Data->Total);
+}
+
+
+//------------------------------------------------------------------------------
+double GSubjects::GetPrecision(GGroup* grp) const
+{
+	GroupScore* g=Data->GroupsScore.GetPtr<const GGroup*>(grp);
 
 	if(!g) return(0.0);
 	return(g->Precision);
@@ -918,9 +1026,9 @@ double GSubjects::GetPrecision(GGroup* grp)
 
 
 //------------------------------------------------------------------------------
-double GSubjects::GetRecall(GGroup* grp)
+double GSubjects::GetRecall(GGroup* grp) const
 {
-	GroupScore* g=GroupsScore.GetPtr<const GGroup*>(grp);
+	GroupScore* g=Data->GroupsScore.GetPtr<const GGroup*>(grp);
 
 	if(!g) return(0.0);
 	return(g->Recall);
@@ -928,10 +1036,15 @@ double GSubjects::GetRecall(GGroup* grp)
 
 
 //------------------------------------------------------------------------------
-GGroups* GSubjects::GetIdealGroups(void)
+/*GGroups* GSubjects::GetIdealGroups(void) const
 {
-	return(IdealGroups);
-}
+	if(!Data->IdealGroups)
+	{
+		Data->IdealGroups=new GGroups(Data->Session->GetStorage(),0);
+		Data->Session->GetStorage()->LoadIdealGroupment(Data->Session);
+	}
+	return(Data->IdealGroups);
+}*/
 
 
 //------------------------------------------------------------------------------
@@ -941,8 +1054,19 @@ void GSubjects::InsertProfileSubject(GProfile* profile,unsigned int subjectid)
 
 	if(!subject)
 		return;
-	Profiles.InsertPtrAt(subject,profile->GetId(),true);
+	Data->Profiles.InsertPtrAt(subject,profile->GetId(),true);
 	subject->Insert(profile);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubjects::InsertSubProfileSubject(GSubProfile* subprofile,unsigned int subjectid)
+{
+	GSubject* subject=RTree<GSubject,true,false>::GetPtr<unsigned int>(subjectid);
+
+	if(!subject)
+		return;
+	subject->InsertSubProfile(subprofile);
 }
 
 
@@ -951,7 +1075,7 @@ GSubject* GSubjects::GetSubject(GSubProfile* sub)
 {
 	if(!sub)
 		return(0);
-	return(Profiles[sub->GetProfile()->GetId()]);
+	return(Data->Profiles[sub->GetProfile()->GetId()]);
 }
 
 
@@ -962,18 +1086,18 @@ void GSubjects::InsertDocSubject(GDoc* doc,unsigned int subjectid)
 	if(!subject)
 		return;
 	R::RContainer<GSubject,false,false>* line;
-	if(Docs.GetMaxPos()<doc->GetId())
+	if(Data->Docs.GetMaxPos()<doc->GetId())
 	{
 		line=new R::RContainer<GSubject,false,false>(10,5);
-		Docs.InsertPtrAt(line,doc->GetId(),true);
+		Data->Docs.InsertPtrAt(line,doc->GetId(),true);
 	}
 	else
 	{
-		line=Docs[doc->GetId()];
+		line=Data->Docs[doc->GetId()];
 		if(!line)
 		{
 			line=new R::RContainer<GSubject,false,false>(10,5);
-			Docs.InsertPtrAt(line,doc->GetId(),true);
+			Data->Docs.InsertPtrAt(line,doc->GetId(),true);
 		}
 	}
 	line->InsertPtr(subject);
@@ -991,9 +1115,9 @@ bool GSubjects::IsFromSubject(GDoc* doc,const GSubject* s)
 //------------------------------------------------------------------------------
 bool GSubjects::IsFromSubject(unsigned int docid,const GSubject* s)
 {
-	if(Docs.GetMaxPos()<docid)
+	if(Data->Docs.GetMaxPos()<docid)
 		return(false);
-	R::RContainer<GSubject,false,false>* line=Docs[docid];
+	R::RContainer<GSubject,false,false>* line=Data->Docs[docid];
 	if(!line)
 		return(false);
 	return(line->IsIn(*s));
@@ -1012,9 +1136,9 @@ bool GSubjects::IsFromParentSubject(unsigned int docid,const GSubject* s)
 {
 	if(!s->Parent)
 		return(false);
-	if(Docs.GetMaxPos()<docid)
+	if(Data->Docs.GetMaxPos()<docid)
 		return(false);
-	R::RContainer<GSubject,false,false>* line=Docs[docid];
+	R::RContainer<GSubject,false,false>* line=Data->Docs[docid];
 	if(!line)
 		return(false);
 	R::RCursor<GSubject> Sub;
@@ -1042,7 +1166,7 @@ R::RCursor<GSubject> GSubjects::GetSubjects(GDoc* doc)
 R::RCursor<GSubject> GSubjects::GetSubjects(unsigned int docid)
 {
 	R::RCursor<GSubject> cur;
-	R::RContainer<GSubject,false,false>* line=Docs[docid];
+	R::RContainer<GSubject,false,false>* line=Data->Docs[docid];
 	if(line)
 		cur.Set(*line);
 	return(cur);
@@ -1059,7 +1183,7 @@ unsigned int GSubjects::GetNbSubjects(GDoc* doc)
 //------------------------------------------------------------------------------
 unsigned int GSubjects::GetNbSubjects(unsigned int docid)
 {
-	R::RContainer<GSubject,false,false>* line=Docs[docid];
+	R::RContainer<GSubject,false,false>* line=Data->Docs[docid];
 	if(!line)
 		return(0);
 	return(line->GetNb());
@@ -1069,8 +1193,5 @@ unsigned int GSubjects::GetNbSubjects(unsigned int docid)
 //------------------------------------------------------------------------------
 GSubjects::~GSubjects(void)
 {
-	if(IdealGroups)
-		delete IdealGroups;
-	if(tmpDocs)
-		delete[] tmpDocs;
+	delete Data;
 }

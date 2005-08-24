@@ -68,131 +68,13 @@ class GSubjects : public R::RTree<GSubject,true,false>, public GParams
 {
 protected:
 
-	// Internal Classes
-	class GroupScore;
-	class GGroupId;
+	class Intern;
 	class GroupLang;
 
-	/**
-	* Session.
+	/*
+	* Internal data.
 	*/
-	GSession* Session;
-
-	/**
-	* Percentage of relevant documents to create.
-	*/
-	double PercOK;
-
-	/**
-	* Percentage of fuzzy relevant documents to create.
-	*/
-	double PercKO;
-
-	/**
-	* Percentage of irrelevant documents to create (Computed as a percentage of
-	* the relevant documents created).
-	*/
-	double PercH;
-
-	/**
-	* Percentage of documents assessed whith an error.
-	*/
-	double PercErr;
-
-	/**
-	* Percentage of subjects to use.
-	*/
-	double PercSubjects;
-
-	/**
-	* Minimal number of documents in a subject to use it.
-	*/
-	unsigned int NbMinDocsSubject;
-
-	/**
-	* Maximal number of profiles to create in a subject.
-	*/
-	unsigned int NbProfMax;
-
-	/**
-	* Minimal number of profiles to create in a subject.
-	*/
-	unsigned int NbProfMin;
-
-	/**
-	* Percentage of profiles that are social.
-	*/
-	double PercSocial;
-
-	/**
-	* Temporary Array of documents.
-	*/
-	GDoc** tmpDocs;
-
-	/**
-	* Number of documents actually managed.
-	*/
-	unsigned int NbDocs;
-
-	/**
-	* New documents to assess.
-	*/
-	R::RContainer<GFdbk,false,false> NewDocs;
-
-	/**
-	* Lastest added subprofiles.
-	*/
-	R::RContainer<GSubProfile,false,true> LastAdded;
-
-	/**
-	* Number of documents to be assessed during a feeddback process.
-	*/
-	unsigned int NbDocsAssess;
-
-	/**
-	* Inverse Frequency Factor must be used.
-	*/
-	bool IFF;
-
-	/**
-	* Ideal groups created.
-	*/
-	GGroups* IdealGroups;
-
-	/**
-	* Precision of the clustering.
-	*/
-	double Precision;
-
-	/**
-	* Recall of the clustering.
-	*/
-	double Recall;
-
-	/**
-	* Total comparaison between for the clustering.
-	*/
-	double Total;
-
-	/**
-	* SubProfiles that where changed and must be grouped again.
-	*/
-	R::RContainer<GroupScore,true,true> GroupsScore;
-
-	/**
-	* Subjects for the profiles.
-	*/
-	R::RContainer<GSubject,false,false> Profiles;
-
-	/**
-	* Subjects for the documents.
-	*/
-	R::RContainer<R::RContainer<GSubject,false,false>,true,false> Docs;
-
-	/**
-	* Must the simulation be saved?
-	*/
-	bool SaveSimulation;
+	Intern* Data;
 
 public:
 
@@ -206,6 +88,10 @@ public:
 	* Assign the values of the parameters to the corresponding variables.
 	*/
 	void Apply(void);
+
+	/**
+	*/
+	void ReInit(void);
 
 protected:
 
@@ -234,7 +120,7 @@ protected:
 	* Get the ideal group of the subprofile.
 	* @param sub            SubProfile.
 	*/
-	GGroup* GetIdealGroup(GSubProfile* sub) const;
+	GSubject* GetIdealGroup(GSubProfile* sub) const;
 
 	/**
 	* Compute the Recall and the Precision.
@@ -310,35 +196,36 @@ public:
 	/**
 	* Get the total precision of the groupement.
 	*/
-	double GetPrecision(void) const {return(Precision);}
+	double GetPrecision(void) const;
 
 	/**
 	* Get the total recall of the groupement.
 	*/
-	double GetRecall(void) const {return(Recall);}
+	double GetRecall(void) const;
 
 	/**
 	* Get the total recall of the groupement.
 	*/
-	double GetTotal(void) const {return(Total);}
+	double GetTotal(void) const;
 
 	/**
 	* Get the precision of a group.
 	* @param grp            Group.
 	*/
-	double GetPrecision(GGroup* grp);
+	double GetPrecision(GGroup* grp) const;
 
 	/**
 	* Get the total recall of a group.
 	* @param grp            Group.
 	*/
-	double GetRecall(GGroup* grp);
+	double GetRecall(GGroup* grp) const;
 
 	/**
-	* Get the ideal groups of the session
-	* @return Pointer to R::RContainer<GGroups,true,true>.
+	* Get the ideal groups of the session.
 	*/
-	GGroups* GetIdealGroups(void);
+//	GGroups* GetIdealGroups(void) const;
+
+	unsigned int GetNbIdealGroups(const GLang* lang) const;
 
 	/**
 	* Add a given profile to a subject.
@@ -346,6 +233,13 @@ public:
 	* @param subjectid      Identificator of the subject.
 	*/
 	void InsertProfileSubject(GProfile* profile,unsigned int subjectid);
+
+	/**
+	* Add a given profile to a subject.
+	* @param subprofile     Pointer to the profile.
+	* @param subjectid      Identificator of the subject.
+	*/
+	void InsertSubProfileSubject(GSubProfile* subprofile,unsigned int subjectid);
 
 	/**
 	* Get the subject of a given subprofile.

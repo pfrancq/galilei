@@ -63,32 +63,12 @@ namespace GALILEI{
 */
 class GSubject: public R::RNode<GSubject,false>
 {
-protected:
+	class Intern;
 
-	/**
-	* Identificator of the subject.
+	/*
+	* Internal data.
 	*/
-	unsigned int Id;
-
-	/**
-	* Name of the subject.
-	*/
-	R::RString Name;
-
-	/**
-	* Determine if the subject is used.
-	*/
-	bool Used;
-
-	/**
-	* Documents in the subject.
-	*/
-	R::RContainer<GDoc,false,true> Docs;
-
-	/**
-	* Groups of subprofiles attached to this subject.
-	*/
-	R::RContainer<GProfile,false,true> Profiles;
+	Intern* Data;
 
 public:
 
@@ -123,6 +103,43 @@ public:
 	* @return int
 	*/
 	int Compare(const R::RString& name) const;
+
+	/**
+	* Get the ideal group of the subprofile.
+	* @param sub            SubProfile.
+	*/
+	GSubject* GetIdealGroup(GSubProfile* sub) const;
+
+	/**
+	*/
+	bool IsIn(GSubProfile* sub) const;
+
+	/**
+	*/
+	unsigned int GetNbIdealGroups(const GLang* lang) const;
+
+	/**
+	*/
+	unsigned int GetNbSubProfiles(const GLang* lang) const;
+
+	/**
+	* Insert a subprofiles in the container.
+	* @param s              Pointer to the subprofile to add.
+	*/
+	void InsertSubProfile(GSubProfile* s);
+
+	/**
+	* Get a cursor over the subprofiles of the system for a given language.
+	* @param lang           Language.
+	*/
+	R::RCursor<GSubProfile> GetSubProfiles(const GLang* lang) const;
+
+	/**
+	* Compute the number of subprofiles of a given group that are also in the
+	* current one.
+	* @param grp             Group.
+	*/
+	unsigned int GetNbSubProfiles(const GGroup* grp) const;
 
 	/**
 	* Insert a document to the list of those contained in the subject.
@@ -176,24 +193,23 @@ public:
 	* Get the identificator of the Subject.
 	* @returns The id of the subject.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	unsigned int GetId(void) const;
 
 	/**
 	* Verify if the subject is used.
 	* @return bool.
 	*/
-	bool IsUsed(void) const {return(Used);}
+	bool IsUsed(void) const;
 
 	/**
 	* Set the status of the subject. When the subject is not used anymore, no
 	* more profiles are associated to it. It is possible to add a given number
 	* of profiles to the subject. Eventually, new users are created.
 	* @param session         Session.
-	* @param used            Is the subject used.
 	* @param nbprofiles      Number of profiles to create for this subject.
 	* @param nbsocial        Number of social profiles still to create.
 	*/
-	void SetUsed(GSession* session,bool used,size_t nbprofiles,unsigned int& nbsocial);
+	void SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocial);
 
 	/**
 	* Create a group for a given language with the subprofiles having a
@@ -202,7 +218,11 @@ public:
 	* @param lang            Pointer to the language.
 	* @return Pointer to the group.
 	*/
-	GGroup* CreateGroup(GLang* lang) const;
+//	GGroup* CreateGroup(GLang* lang) const;
+
+	/**
+	*/
+	void ReInit(void);
 
 	/**
 	* Destructor of a subject.

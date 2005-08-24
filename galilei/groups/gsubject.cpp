@@ -38,12 +38,62 @@
 #include <gsubjects.h>
 #include <gsession.h>
 #include <gprofile.h>
+#include <gsubprofile.h>
 #include <guser.h>
+#include <glang.h>
 #include <gdoc.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
 
+
+
+//------------------------------------------------------------------------------
+//
+//  GSubProfiles
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Set of subprofiles of a given language.
+class GSubProfiles : public R::RContainer<GSubProfile,false,true>
+{
+public:
+
+	GLang* Lang;                 // Language
+
+	// Constructor and Compare methods.
+	GSubProfiles(GLang* lang,unsigned int s)
+		: RContainer<GSubProfile,false,true>(s,s/2), Lang(lang) {}
+	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
+	int Compare(const GSubProfiles& s) const {return(Lang->Compare(s.Lang));}
+	int Compare(const GSubProfiles* s) const {return(Lang->Compare(s->Lang));}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GSubject::Intern
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GSubject::Intern
+{
+public:
+
+	unsigned int Id;                                        // Identificator of the subject.
+	R::RString Name;                                        // Name of the subject.
+	bool Used;                                              // Determine if the subject is used.
+	R::RContainer<GDoc,false,true> Docs;                    // Profiles attached to this subject.
+	R::RContainer<GProfile,false,true> Profiles;            // Profiles attached to this subject.
+	R::RContainer<GSubProfiles,true,true> SubProfiles;      // SubProfiles attached to this subject.
+
+	Intern(unsigned int id,const char* name,bool u) :
+	 Id(id), Name(name), Used(u), Docs(1000,500), Profiles(10,5), SubProfiles(10,5)
+	{}
+};
 
 
 //------------------------------------------------------------------------------
@@ -54,44 +104,155 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GSubject::GSubject(unsigned int id,const char* name,bool u)
-	 : RNode<GSubject,false>(10,2), Id(id), Name(name), Used(u),
-	   Docs(1000,500), Profiles(10,5)
+	 : RNode<GSubject,false>(10,2), Data(0)
 {
+	Data=new Intern(id,name,u);
 }
 
 
 //------------------------------------------------------------------------------
 int GSubject::Compare(const GSubject& sub) const
 {
-	return(Id-sub.Id);
+	return(Data->Id-sub.Data->Id);
 }
 
 
 //------------------------------------------------------------------------------
 int GSubject::Compare(const unsigned int id) const
 {
-	return(Id-id);
+	return(Data->Id-id);
 }
 
 
 //------------------------------------------------------------------------------
 int GSubject::Compare(const RString& name) const
 {
-	return(Name.Compare(name));
+	return(Data->Name.Compare(name));
 }
 
 
 //------------------------------------------------------------------------------
 void GSubject::Insert(GDoc* doc)
 {
-	Docs.InsertPtr(doc);
+	Data->Docs.InsertPtr(doc);
+}
+
+
+//------------------------------------------------------------------------------
+GSubject* GSubject::GetIdealGroup(GSubProfile* sub) const
+{
+	GSubject* subject;
+
+	RCursor<GProfile> Prof(Data->Profiles);
+	for(Prof.Start();!Prof.End();Prof.Next())
+	{
+		if(Prof()->IsIn(sub))
+			return(const_cast<GSubject*>(this));
+	}
+	RCursor<GSubject> Cur(*this);
+	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
+		subject=Cur()->GetIdealGroup(sub);
+	return(subject);
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubject::IsIn(GSubProfile* sub) const
+{
+	RCursor<GProfile> Prof(Data->Profiles);
+	for(Prof.Start();!Prof.End();Prof.Next())
+	{
+		if(Prof()->IsIn(sub))
+			return(true);
+	}
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSubject::GetNbIdealGroups(const GLang* lang) const
+{
+	GSubject* subject;
+	unsigned int nb;
+
+	RCursor<GProfile> Prof(Data->Profiles);
+	for(Prof.Start(),nb=0;!Prof.End();Prof.Next())
+	{
+		if(Prof()->IsIn(lang,false))
+		{
+			nb++;
+			break;
+		}
+	}
+	RCursor<GSubject> Cur(*this);
+	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
+		nb+=Cur()->GetNbIdealGroups(lang);
+	return(nb);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSubject::GetNbSubProfiles(const GLang* lang) const
+{
+	unsigned int nb;
+
+	RCursor<GProfile> Prof(Data->Profiles);
+	for(Prof.Start(),nb=0;!Prof.End();Prof.Next())
+	{
+		if(Prof()->IsIn(lang,false))
+			nb++;
+	}
+	return(nb);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubject::InsertSubProfile(GSubProfile* s)
+{
+	GLang* l;
+	GSubProfiles* list;
+
+	l=s->GetLang();
+	list=Data->SubProfiles.GetPtr<const GLang*>(l);
+	if(!list)
+		Data->SubProfiles.InsertPtr(list=new GSubProfiles(l,Data->Profiles.GetMaxNb()));
+//	list->InsertPtrAt(s,s->GetId());
+	if(!list->IsIn(s))
+		list->InsertPtr(s);
+}
+
+
+//------------------------------------------------------------------------------
+RCursor<GSubProfile> GSubject::GetSubProfiles(const GLang* lang) const
+{
+	GSubProfiles* ptr=Data->SubProfiles.GetPtr(lang);
+	if(ptr)
+		return(RCursor<GSubProfile>(*ptr));
+	return(RCursor<GSubProfile>());
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GSubject::GetNbSubProfiles(const GGroup* grp) const
+{
+	unsigned int tot;
+	RCursor<GProfile> sub(Data->Profiles);
+	GLang* lang=grp->GetLang();
+
+	for(sub.Start(),tot=0;!sub.End();sub.Next())
+	{
+		GSubProfile* subprofile=sub()->GetSubProfile(lang);
+		if((subprofile)&&(grp->IsIn(subprofile)))
+			tot++;
+	}
+	return(tot);
 }
 
 
 //------------------------------------------------------------------------------
 R::RCursor<GDoc> GALILEI::GSubject::GetDocs(void)
 {
-	R::RCursor<GDoc> cur(Docs);
+	R::RCursor<GDoc> cur(Data->Docs);
 	return(cur);
 }
 
@@ -99,21 +260,21 @@ R::RCursor<GDoc> GALILEI::GSubject::GetDocs(void)
 //------------------------------------------------------------------------------
 unsigned int GALILEI::GSubject::GetNbDocs(void) const
 {
-	return(Docs.GetNb());
+	return(Data->Docs.GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 void GSubject::Insert(GProfile* profile)
 {
-	Profiles.InsertPtr(profile);
+	Data->Profiles.InsertPtr(profile);
 }
 
 
 //------------------------------------------------------------------------------
 R::RCursor<GProfile> GALILEI::GSubject::GetProfiles(void)
 {
-	R::RCursor<GProfile> cur(Profiles);
+	R::RCursor<GProfile> cur(Data->Profiles);
 	return(cur);
 }
 
@@ -121,21 +282,21 @@ R::RCursor<GProfile> GALILEI::GSubject::GetProfiles(void)
 //------------------------------------------------------------------------------
 unsigned int GALILEI::GSubject::GetNbProfiles(void) const
 {
-	return(Profiles.GetNb());
+	return(Data->Profiles.GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 RString GSubject::GetName(void) const
 {
-	return(Name);
+	return(Data->Name);
 }
 
 
 //------------------------------------------------------------------------------
 RString GSubject::GetFullName(void) const
 {
-	RString ret=Name;
+	RString ret=Data->Name;
 	GSubject* parent=GetParent();
 
 	while(parent)
@@ -148,57 +309,64 @@ RString GSubject::GetFullName(void) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::SetUsed(GSession* session,bool used,size_t nbprofiles,unsigned int& nbsocial)
+unsigned int GSubject::GetId(void) const
+{
+	return(Data->Id);
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubject::IsUsed(void) const
+{
+	return(Data->Used);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubject::SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocial)
 {
 	GProfile* prof;
 	static const RString UserNames[]={"Pascal Francq","Alain Delchambre","Hugues Bersini","Francois Heinderyckx",
 		"Faiza Gaultier","Marco Saerens","Marjorie Paternostre","David Wartel","Valery Vandaele","Nicolas Kumps","Julien Lamoral",
 		"Sarah Rolfo","Jean-Baptiste Valsamis","Jean-Pierre Devroey","Herve Gilson"};
 
-	Used=used;
-	if(Used)
+	Data->Used=true;
+	// Verify that they are enough users -> If not, create new ones
+	if(session->GetNbUsers()<nbprofiles+Data->Profiles.GetNb())
 	{
-		// Verify that they are enough users -> If not, create new ones
-		if(session->GetNbUsers()<nbprofiles+Profiles.GetNb())
+		size_t maxusers=sizeof(UserNames)/sizeof(char*);
+		size_t newusers=nbprofiles+Data->Profiles.GetNb()-session->GetNbUsers()+1;
+		for(size_t i=session->GetNbUsers();(--newusers)&&(i<maxusers);i++)
 		{
-			size_t maxusers=sizeof(UserNames)/sizeof(char*);
-			size_t newusers=nbprofiles+Profiles.GetNb()-session->GetNbUsers()+1;
-			for(size_t i=session->GetNbUsers();(--newusers)&&(i<maxusers);i++)
-			{
-				session->InsertUser(new GUser(session->GUsers::GetNewId(otUser),UserNames[i],UserNames[i],session->GetSubjects()->GetNbNodes()));
-			}
-			for(newusers++;--newusers;)
-			{
-				RString Usr("User"+itou(session->GetNbUsers()+1));
-				session->InsertUser(new GUser(session->GUsers::GetNewId(otUser),Usr,Usr,session->GetSubjects()->GetNbNodes()));
-			}
+			session->InsertUser(new GUser(session->GetNewId(otUser),UserNames[i],UserNames[i],session->GetSubjects()->GetNbNodes()));
 		}
-
-		// For each user without a profile in this topic, create one.
-		RCursor<GUser> Cur(session->GetUsers());
-		for(/*nbprofiles,*/Cur.Start();(nbprofiles)&&(!Cur.End());Cur.Next())
+		for(newusers++;--newusers;)
 		{
-			if(Cur()->GetPtr(Name,false))
-				continue;
-			session->InsertProfile(prof=new GProfile(Cur(),session->GUsers::GetNewId(otProfile),Name,nbsocial,5));
-			if(nbsocial)
-				nbsocial--;
-			session->GetSubjects()->InsertProfileSubject(prof,Id);
-			nbprofiles--;
+			RString Usr("User"+itou(session->GetNbUsers()+1));
+			session->InsertUser(new GUser(session->GetNewId(otUser),Usr,Usr,session->GetSubjects()->GetNbNodes()));
 		}
 	}
-	else
+
+	// For each user without a profile in this topic, create one.
+	RCursor<GUser> Cur(session->GetUsers());
+	for(/*nbprofiles,*/Cur.Start();(nbprofiles)&&(!Cur.End());Cur.Next())
 	{
-		Profiles.Clear();
+		if(Cur()->GetPtr(Data->Name,false))
+			continue;
+		session->InsertProfile(prof=new GProfile(Cur(),session->GetNewId(otProfile),Data->Name,nbsocial,5));
+		if(nbsocial)
+			nbsocial--;
+		session->GetSubjects()->InsertProfileSubject(prof,Data->Id);
+		nbprofiles--;
 	}
 }
 
 
 //------------------------------------------------------------------------------
-GGroup* GSubject::CreateGroup(GLang* lang) const
+/*GGroup* GSubject::CreateGroup(GLang* lang) const
 {
-	GGroup* Group=new GGroup(Id,lang,false,RDate(""),RDate(""));
-	RCursor<GProfile> Cur(Profiles);
+	GGroup* Group=new GGroup(Data->Id,lang,false,RDate(""),RDate(""));
+	RCursor<GProfile> Cur(Data->Profiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		GSubProfile* sub=Cur()->GetSubProfile(lang);
@@ -206,10 +374,27 @@ GGroup* GSubject::CreateGroup(GLang* lang) const
 			Group->InsertSubProfile(sub);
 	}
 	return(Group);
+}*/
+
+
+//------------------------------------------------------------------------------
+void GSubject::ReInit(void)
+{
+/*	RCursor<GSubProfiles> Cur(Data->SubProfiles);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		RCursor<GSubProfile> Cur2(*Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+			cout<<Cur2()->GetId()<<endl;
+	}*/
+	Data->Profiles.Clear();
+	Data->SubProfiles.Clear();
+	Data->Used=false;
 }
 
 
 //------------------------------------------------------------------------------
 GSubject::~GSubject(void)
 {
+	delete Data;
 }
