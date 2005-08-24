@@ -96,7 +96,6 @@ class GDocAnalyseManager;
 class GPostDoc;
 class GPostDocManager;
 class GFactoryPostDoc;
-class GDocs;
 class GDocSim;
 class GDocsSim;
 class GDocXML;
@@ -126,7 +125,6 @@ class GIndexer;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Profiles Part
-class GUsers;
 class GUser;
 class GProfile;
 class GSubProfile;
@@ -144,11 +142,7 @@ class GPostProfileManager;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Groups Part
-class GGroups;
-class GGroupsHistory;
-class GGroupsHistoryManager;
 class GGroup;
-class GGroupHistory;
 class GGrouping;
 class GFactoryGrouping;
 class GGroupingManager;
@@ -167,6 +161,7 @@ class GFactoryPostGroup;
 class GWeightInfosHistory;
 class GGroupHistory;
 class GGroupsHistory;
+class GGroupsHistoryManager;
 
 
 //------------------------------------------------------------------------------
@@ -229,7 +224,8 @@ enum tObjType
 	otDocSubProfile=10           /** Document or SubProfile.*/,
 	otDocGroup=11                /** Document or Group.*/,
 	otSubProfileGroup=12         /** SubProfile or Group.*/,
-	otFdbk=13                    /** Assessment of a document by a profile.*/
+	otFdbk=13                    /** Assessment of a document by a profile.*/,
+	otLang=14                    /** Language. */
 };
 
 
