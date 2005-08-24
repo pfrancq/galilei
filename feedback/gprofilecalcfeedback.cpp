@@ -42,6 +42,7 @@
 #include <gprofilecalcfeedback.h>
 #include <gdoc.h>
 #include <gsubprofile.h>
+#include <gprofile.h>
 #include <gweightinfo.h>
 #include <glang.h>
 #include <gsession.h>
@@ -131,7 +132,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 			if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
 
 			// If incremental mode and document has no change -> continue
-			if(IncrementalMode&&(!Docs()->MustUse(SubProfile->GetUpdated()))) continue;
+			if(IncrementalMode&&(!Docs()->MustUse(SubProfile))) continue;
 
 			// Add total number of document judged for the current language
 			NbDocs++;
@@ -156,7 +157,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
 
 		// If incremental mode and document has no change -> continue
-		if(IncrementalMode&&(!Docs()->MustUse(SubProfile->GetUpdated()))) continue;
+		if(IncrementalMode&&(!Docs()->MustUse(SubProfile))) continue;
 
 		// Find list in function of the feedback
 		switch(Docs()->GetFdbk() & djMaskJudg )
