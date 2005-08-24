@@ -212,28 +212,41 @@ public:
 	virtual void SaveWordList(GDict* dic,GWordList* w) throw(GException);
 
 	/**
+	* Method that load a document that is stored.
+	* @param session         Session.
+	* @param docid           Identificator of the document.
+	*/
+	virtual GDoc* LoadDoc(GSession* session,unsigned int docid);
+
+	/**
 	* Load the documents.
 	* @param session        Session.
 	*/
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
-	* Method that load the documents having given information in their
-	* description from where they are stored. This method must be overloaded.
-	* @param session        Session.
-	* @param list           List of information that must be contained in the documents.
-	* @param code           Code of the languague.
+	* Method that load a user that is stored.
+	* @param session         Session.
+	* @param userid          Identificator of the user.
 	*/
-	virtual void LoadDocs(GSession* session,GInfoList& list,GLang* lang) throw(std::bad_alloc,GException);
+	virtual GUser* LoadUser(GSession* session,unsigned int userid);
 
 	/**
-	* Load the new documents.
-	* @param session        Session.
+	* Method that load a profile that is stored.
+	* @param session         Session.
+	* @param profileid       Identificator of the profile.
 	*/
-	virtual void LoadNewDocs(GSession* session) throw(std::bad_alloc,GException);
+	virtual GProfile* LoadProfile(GSession* session,unsigned int profileid);
 
 	/**
-	* Load the users.
+	* Method that load a subprofile that is stored.
+	* @param session         Session.
+	* @param subprofileid    Identificator of the subprofile.
+	*/
+	virtual GSubProfile* LoadSubProfile(GSession* session,unsigned int subprofileid);
+
+	/**
+	* Load the subprofiles (and profiles and users).
 	* @param session         Session.
 	*/
 	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException);
@@ -245,28 +258,23 @@ public:
 	virtual void LoadFdbks(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
+	* Method that load a group that is stored.
+	* @param session         Session.
+	* @param groupid         Identificator of the group.
+	*/
+	virtual GGroup* LoadGroup(GSession* session,unsigned int groupid);
+
+	/**
 	* Load the groups.
 	* @param session        Session.
 	*/
 	virtual void LoadGroups(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
-	* Load the Subjectree.
+	* Load the Subjects.
 	* @param session        Session.
 	*/
-	virtual void LoadSubjectTree(GSession* session) throw(std::bad_alloc,GException);
-
-	/**
-	* Load the ideal groupment.
-	* @param session        Session.
-	*/
-	virtual void LoadIdealGroupment(GSession* session) throw(std::bad_alloc,GException);
-
-	/**
-	* Save the ideal groupment
-	* @param idealgroup   The ideal container of group
-	*/
-	virtual void SaveIdealGroupment(GGroups* idealgroup) throw(GException);
+	virtual void LoadSubjects(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
 	* Save a document.
@@ -331,7 +339,7 @@ public:
 	* @param id             Identificator.
 	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic=false) throw(GException);
+	virtual void SaveMixedGroups(GSession* mixedgroups,unsigned int id, bool historic=false) throw(GException);
 
 	/**
 	* Save the Profiles in history.

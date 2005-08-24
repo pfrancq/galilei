@@ -40,7 +40,6 @@ using namespace R;
 // include files for GALILEI
 #include <ggroupshistory.h>
 #include <gweightinfoshistory.h>
-#include <ggroups.h>
 #include <gsubprofile.h>
 #include <gsubject.h>
 #include <gsession.h>

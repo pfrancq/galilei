@@ -48,7 +48,6 @@
 #include <gsession.h>
 #include <gstorage.h>
 #include <gslot.h>
-#include <gmixidealgroups.h>
 #include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
@@ -179,20 +178,12 @@ public:
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
+
 //------------------------------------------------------------------------------
 class GCreateIdealI : public GSM
 {
 public:
 	GCreateIdealI(GPrgClassSession* o) : GSM("CreateIdeal",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
-};
-
-
-//------------------------------------------------------------------------------
-class GMixIdealI : public GSM
-{
-public:
-	GMixIdealI(GPrgClassSession* o) : GSM("MixIdeal",o) {}
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
@@ -532,11 +523,6 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,
 	o->WriteStr(tmp);
 	if(args->GetNb()==1)
 		(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->SetCurrentMethod((*args)[0]->GetValue(prg));
-	if(Owner->Session->GetSubjects()->GetIdealGroups())
-	{
-		GGrouping* algo=(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod();
-		algo->SetIdealGroups(Owner->Session->GetSubjects()->GetIdealGroups());
-	}
 	if(!(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod())
 		throw RException (" No Grouping Method chosen.");
 	(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod()->ApplyConfig();
@@ -558,23 +544,6 @@ void GCreateIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->CreateIdeal(Owner->Session->MustSave(otDoc)&&Owner->Session->MustSave(otSubProfile)&&Owner->Session->MustSave(otGroup));
 	Owner->FirstGroup=Owner->FirstProfile=false;
-}
-
-
-//------------------------------------------------------------------------------
-void GMixIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
-{
-	if(args->GetNb()>1)
-		throw RException("The method needs maximum one parameter.");
-	if(args->GetNb()==1)
-		sprintf(tmp,"Creating Mixed Groups: Settings=\"%s\"",(*args)[0]->GetValue(prg));
-	else
-		sprintf(tmp,"Creating Mixed Groups");
-	o->WriteStr(tmp);
-	GMixIdealGroups mix(Owner->Session,Owner->Session->GetSubjects()->GetIdealGroups());
-	if(args->GetNb()==1)
-		mix.SetSettings((*args)[0]->GetValue(prg));
-	mix.Run(0);
 }
 
 
@@ -710,11 +679,6 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 		rec->WriteStr("Group Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	if(Owner->Session->GetSubjects()->GetIdealGroups())
-	{
-		GGrouping* algo=(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod();
-		algo->SetIdealGroups(Owner->Session->GetSubjects()->GetIdealGroups());
-	}
 	(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod()->ApplyConfig();
 	(dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc")))->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->SetComputeModified(otGroup,Owner->FirstGroup);
@@ -1017,7 +981,6 @@ GPrgClassSession::GPrgClassSession(GSession* s)
 	Methods.InsertPtr(new GComputeProfilesI(this));
 	Methods.InsertPtr(new GGroupProfilesI(this));
 	Methods.InsertPtr(new GCreateIdealI(this));
-	Methods.InsertPtr(new GMixIdealI(this));
 	Methods.InsertPtr(new GFdbksCycleI(this));
 	Methods.InsertPtr(new GCompareIdealI(this));
 	Methods.InsertPtr(new GSetSubjectsParamI(this));

@@ -45,6 +45,7 @@
 #include <glang.h>
 #include <qgsubprofiles.h>
 #include <gsubprofile.h>
+#include <gprofile.h>
 #include <gweightinfo.h>
 #include <gsession.h>
 #include <gstorage.h>

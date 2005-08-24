@@ -6,7 +6,7 @@
 
 	List view itelm representing a GALILEI type - Header.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2002 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -57,6 +57,7 @@ class GSubProfile;
 class GWeightInfosHistory;
 class GDoc;
 class GEngineDoc;
+class GSubject;
 
 
 //-----------------------------------------------------------------------------
@@ -73,7 +74,7 @@ public:
 	/**
 	* Pointer to the element representend by the QListViewItemType.
 	*/
-	union 
+	union
 	{
 		GGroup* Group;
 		GUser* User;
@@ -83,6 +84,7 @@ public:
 		GGroupHistory* GroupHistory;
 		GDoc* Doc;
 		GEngineDoc* EngineDoc;
+		GSubject* Subject;
 	} Obj;
 
 
@@ -94,10 +96,10 @@ public:
 	/**
 	* Enumeration type of the item.
 	*/
-	enum tType {tNothing,tGroup,tUser,tProfile,tSubProfile,tGiwwh, tGroupHistory,tDocument,tEngineDoc};
+	enum tType {tNothing,tGroup,tUser,tProfile,tSubProfile,tGiwwh,tGroupHistory,tDocument,tEngineDoc,tSubject};
 
 	/**
-	* type of the item  
+	* type of the item
 	*/
 	tType Type;
 
@@ -125,6 +127,11 @@ public:
 	* constructor for a group, attached to a listviewitem.
 	*/
 	QListViewItemType(GGroup* group, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+
+	/**
+	* constructor for a subject, attached to a listviewitem.
+	*/
+	QListViewItemType(GSubject* subject, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
 	* constructor for a profile, attached to a listviewitem.
@@ -180,7 +187,7 @@ public:
 	* constructor for a enginedoc, attached to a listview.
 	*/
 	QListViewItemType(GEngineDoc* engineDoc, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
-	
+
 	/**
 	* method to color the item.
 	*/

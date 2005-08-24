@@ -36,7 +36,6 @@
 #include <glang.h>
 #include <ggroupcalc.h>
 #include <ggroup.h>
-#include <ggroups.h>
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <gsession.h>
@@ -61,27 +60,8 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GGrouping::GGrouping(GFactoryGrouping* fac) throw(std::bad_alloc)
-	: GPlugin<GFactoryGrouping>(fac), Lang(0), Groups(0), SubProfiles(100,50),
-	  IdealGroups(0)
+	: GPlugin<GFactoryGrouping>(fac), Lang(0), SubProfiles(100,50)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GGrouping::Connect(GSession* session)
-{
-	Session=session;
-	Groups=session;
-	IdealGroups=0;
-}
-
-
-//------------------------------------------------------------------------------
-void GGrouping::Disconnect(GSession*)
-{
-	Session=0;
-	Groups=0;
-	IdealGroups=0;
 }
 
 

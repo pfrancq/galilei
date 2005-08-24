@@ -63,7 +63,7 @@ public :
 	/**
 	* Constructor.
 	* @param session         Session.
-	* @param max             Maximal number of word created at initialisation.
+	* @param max             Number of steps to handle.
 	*/
 	GGroupsHistoryManager(GSession* session,unsigned int max) throw(std::bad_alloc);
 

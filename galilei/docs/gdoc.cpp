@@ -275,6 +275,9 @@ GDoc::~GDoc(void)
 	GSession::Event(this,eObjDeleted);
 	try
 	{
+		// Delete feedbacks vector
+		delete Fdbks;
+
 		// If document have a language -> remove its references
 		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
 			DelRefs(otDoc,Lang);

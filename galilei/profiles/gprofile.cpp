@@ -99,9 +99,23 @@ RDate GFdbk::GetUpdated(void) const
 
 
 //------------------------------------------------------------------------------
-bool GFdbk::MustUse(const R::RDate& computed) const
+bool GFdbk::MustUse(const GProfile* profile) const
 {
-	return((When>computed)||(Updated>computed));
+	// Go trough each subprofile to verify if one is "older" than the assessment
+	RCursor<GSubProfile> Cur(profile->GetSubProfiles());
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if((When>Cur()->GetComputed())||(Updated>Cur()->GetComputed()));
+			return(true);
+	}
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+bool GFdbk::MustUse(const GSubProfile* subprofile) const
+{
+	return((When>subprofile->GetComputed())||(Updated>subprofile->GetComputed()));
 }
 
 
@@ -236,7 +250,7 @@ GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 	// If subprofile does not exist -> create it
 	if(!sub)
 	{
-		sub=new GSubProfile(this,cNoRef,lang,0,RDate(""),RDate(""),RDate(""));
+		sub=new GSubProfile(this,cNoRef,lang,cNoRef,RDate(""),RDate(""),RDate(""));
 		s->InsertSubProfile(sub);
 	}
 
@@ -310,7 +324,7 @@ void GProfile::HasUpdate(unsigned int docid)
 
 
 //------------------------------------------------------------------------------
-void GProfile::Update(void)
+void GProfile::DispatchFdbks(void)
 {
 	GSubProfile* sub;
 	GLang* lang;
@@ -329,6 +343,7 @@ void GProfile::Update(void)
 	RCursor<GFdbk> Docs(Fdbks);
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
+		if(!Docs()->MustUse(this)) continue;
 		GDoc* doc=session->GetDoc(Docs()->GetDocId());
 		if(!doc) continue;
 		lang=doc->GetLang();
@@ -338,7 +353,7 @@ void GProfile::Update(void)
 		sub=GetPtr<const GLang*>(lang,false);
 		if(!sub)
 		{
-			sub=new GSubProfile(this,cNoRef,lang,0,RDate(""),RDate(""),RDate(""));
+			sub=new GSubProfile(this,cNoRef,lang,cNoRef,RDate(""),RDate(""),RDate(""));
 			GSession::Get()->InsertSubProfile(sub);
 		}
 

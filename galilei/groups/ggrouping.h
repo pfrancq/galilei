@@ -69,11 +69,6 @@ protected:
 	GLang* Lang;
 
 	/**
-	* Pointer to groups to form.
-	*/
-	GGroups* Groups;
-
-	/**
 	* SubProfiles that must be grouped.
 	*/
 	R::RContainer<GSubProfile,false,true> SubProfiles;
@@ -83,11 +78,6 @@ protected:
 	*/
 	bool Modified;
 
-	/**
-	* Ideal clustering.
-	*/
-	GGroups* IdealGroups;
-
 public:
 
 	/**
@@ -95,24 +85,6 @@ public:
 	* @param fac             Factory of the plugin.
 	*/
 	GGrouping(GFactoryGrouping* fac) throw(std::bad_alloc);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session);
-
-	/**
-	* Set the ideal groups.
-	* @param ideal          Pointer to the ideal groups.
-	*/
-	void SetIdealGroups(GGroups* ideal){IdealGroups=ideal;}
 
 protected:
 

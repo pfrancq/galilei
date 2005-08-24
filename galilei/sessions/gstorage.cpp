@@ -46,8 +46,30 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GStorage::GStorage(RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException)
-	: Name(n), LoadAll(all), Filter(filter)
+	: Name(n), LoadAll(all), Filter(filter), Filtering(filter!=RDate::GetToday()),
+	  AllMemory(LoadAll&&(!Filtering)), Cmds(30,15)
 {
+}
+
+
+//------------------------------------------------------------------------------
+bool GStorage::IsAllInMemory(void) const
+{
+	return(AllMemory);
+}
+
+
+//------------------------------------------------------------------------------
+bool GStorage::UseFiltering(void) const
+{
+	return(Filtering);
+}
+
+
+//------------------------------------------------------------------------------
+R::RDate GStorage::GetFilter(void) const
+{
+	return(Filter);
 }
 
 
@@ -59,7 +81,16 @@ RString GStorage::GetName(void) const
 
 
 //------------------------------------------------------------------------------
+void GStorage::ExecuteCmd(const R::RXMLTag& inst,void* caller)
+{
+	GStorageCmd* cmd=Cmds.GetPtr(inst.GetName());
+	if(!cmd)
+		throw GException("Command '"+inst.GetName()+"' not support on storage "+Name);
+	cmd->Run(this,inst,caller);
+}
+
+
+//------------------------------------------------------------------------------
 GStorage::~GStorage(void)
 {
-
 }

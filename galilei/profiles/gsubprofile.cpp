@@ -52,16 +52,20 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,GGroup* grp,R::RDate a,R::RDate u,R::RDate c)
-	: GWeightInfos(60), Id(id), Profile(prof), Lang(lang), Group(grp), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
+GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,unsigned int grpid,R::RDate a,R::RDate u,R::RDate c)
+	: GWeightInfos(60), Id(id), Profile(prof), Lang(lang), GroupId(grpid), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
 {
 	if(!Profile)
 		throw GException("Subprofile "+itou(id)+" has no parent profile");
 	if((Id==cNoRef)&&(GSession::Get()))
 		GSession::Get()->AssignId(this);
 	Profile->InsertPtr(this);
-	if(grp)
-		grp->InsertSubProfile(this);
+	if((GroupId!=cNoRef)&&(GSession::Get()))
+	{
+		GGroup* grp=GSession::Get()->GetGroup(GroupId);
+		if(grp)
+			grp->InsertSubProfile(this);
+	}
 	GSession::Event(this,eObjCreated);
 }
 
@@ -109,8 +113,7 @@ void GSubProfile::LoadInfos(void) const
 void GSubProfile::InsertFdbk(GFdbk* fdbk)
 {
 	Fdbks.InsertPtr(fdbk);
-
-	if(fdbk->MustUse(Computed))
+	if(fdbk->MustUse(this))
 	{
 		State=osModified;
 		Updated.SetToday();
@@ -128,10 +131,10 @@ void GSubProfile::SetId(unsigned int id)
 
 
 //------------------------------------------------------------------------------
-void GSubProfile::SetGroup(GGroup* grp)
+void GSubProfile::SetGroup(unsigned int groupid)
 {
-	Group=grp;
-	if(grp)
+	GroupId=groupid;
+	if(GroupId!=cNoRef)
 		Attached.SetToday();
 }
 
@@ -326,6 +329,14 @@ GSubProfile::~GSubProfile(void)
 	GSession::Event(this,eObjDeleted);
 	try
 	{
+		// Remove it from its group if necessary
+		if((GroupId!=cNoRef)&&(GSession::Get()))
+		{
+			GGroup* grp=GSession::Get()->GetGroup(GroupId);
+			if(grp)
+				grp->DeleteSubProfile(this);
+		}
+
 		// Remove its references
 		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
 			DelRefs(otSubProfile,Lang);

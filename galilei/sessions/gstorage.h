@@ -56,6 +56,49 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
+* This class represents a generic command that a storage must execute.
+* @author Pascal Francq
+* @short Generic Storage Command.
+*/
+class GStorageCmd
+{
+	/**
+	* Name of the command.
+	*/
+	R::RString Cmd;
+public:
+
+	/**
+	* Constructor of a command.
+	* @param cmd             Name of the command.
+	*/
+	GStorageCmd(const R::RString cmd) : Cmd(cmd) {}
+
+	/**
+	* Compare two commands.
+	* @param cmd             Command to compare to.
+	*/
+	int Compare(const GStorageCmd& cmd) const {return(Cmd.Compare(cmd.Cmd));}
+
+	/**
+	* Compare a command with a name.
+	* @param cmd             Name to compare to.
+	*/
+	int Compare(const R::RString& cmd) const {return(Cmd.Compare(cmd));}
+
+	/**
+	* Run the command.
+	* @param storage         Pointer to the command.
+	* @param inst            XML tag representing the instruction.
+	* @param caller          Caller of the function.
+	*/
+	virtual void Run(GStorage* storage,const R::RXMLTag& inst,void* caller)=0;
+	virtual ~GStorageCmd(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * The GStorage provides a representation for a storage manager. This storage
 * manager is responsible to load and save data.
 * @author GALILEI Team
@@ -81,13 +124,29 @@ protected:
 	*/
 	R::RDate Filter;
 
+	/**
+	* Is there a filter (Filter date is not the current one).
+	*/
+	bool Filtering;
+
+	/**
+	* All objects are in memory.
+	*/
+	bool AllMemory;
+
+	/**
+	* All available commands.
+	*/
+	R::RContainer<GStorageCmd,true,true> Cmds;
+
 public:
 
 	/**
 	* Constructor.
 	* @param n              Name.
 	* @param all            Load all?
-	* @param filter         Date used to filter the entry to load.
+	* @param filter         Date used to filter the entry to load. If the
+	*                       current is used, no filtering is done.
 	*/
 	GStorage(R::RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException);
 
@@ -99,9 +158,25 @@ public:
 	virtual unsigned int GetNbSaved(tObjType type) throw(GException)=0;
 
 	/**
-	* Are all the object loaded or just the modified ones.
+	* Are all the object loaded or just some of them (modified or because
+	* filters).
 	*/
-	bool MustLoadAll(void) const {return(LoadAll);}
+	bool IsAllInMemory(void) const;
+
+	/**
+	* Using a date for filtering.
+	*/
+	bool UseFiltering(void) const;
+
+	/**
+	*  Get the filtering date.
+	*/
+	R::RDate GetFilter(void) const;
+
+	/**
+	* Return the name of the current database.
+	*/
+	R::RString GetName(void) const;
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
@@ -193,6 +268,13 @@ public:
 	virtual void SaveWordList(GDict* dic,GWordList* w) throw(GException)=0;
 
 	/**
+	* Method that load a document that is stored.
+	* @param session         Session.
+	* @param docid           Identificator of the document
+	*/
+	virtual GDoc* LoadDoc(GSession* session,unsigned int docid)=0;
+
+	/**
 	* Method that load the documents from where they are stored. This method
 	* must be overloaded.
 	* @param session        Session.
@@ -200,19 +282,25 @@ public:
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
-	* Method that load the documents having given information in their
-	* description from where they are stored. This method must be overloaded.
-	* @param session        Session.
-	* @param list           List of information that must be contained in the documents.
-	* @param code           Code of the languague.
+	* Method that load a user that is stored.
+	* @param session         Session.
+	* @param userid          Identificator of the user.
 	*/
-	virtual void LoadDocs(GSession* session,GInfoList& list,GLang* lang) throw(std::bad_alloc,GException)=0;
+	virtual GUser* LoadUser(GSession* session,unsigned int userid)=0;
 
 	/**
-	* Load the new documents.
-	* @param session        Session.
+	* Method that load a profile that is stored.
+	* @param session         Session.
+	* @param profileid       Identificator of the profile.
 	*/
-	virtual void LoadNewDocs(GSession* session) throw(std::bad_alloc,GException)=0;
+	virtual GProfile* LoadProfile(GSession* session,unsigned int profileid)=0;
+
+	/**
+	* Method that load a subprofile that is stored.
+	* @param session         Session.
+	* @param subprofileid    Identificator of the subprofile.
+	*/
+	virtual GSubProfile* LoadSubProfile(GSession* session,unsigned int subprofileid)=0;
 
 	/**
 	* Save a document where it is stored. This method is called after an
@@ -236,7 +324,7 @@ public:
 	virtual void SaveSubProfile(GSubProfile* sub) throw(GException)=0;
 
 	/**
-	* Load the Users.
+	* Load the subprofiles (and the profiles and the users).
 	* @param session        Session.
 	*/
 	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException)=0;
@@ -248,10 +336,10 @@ public:
 	virtual void LoadFdbks(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
-	* Load the SubjectTree.
+	* Load the Subjects.
 	* @param session        Session.
 	*/
-	virtual void LoadSubjectTree(GSession* session) throw(std::bad_alloc,GException)=0;
+	virtual void LoadSubjects(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Save the groups of the session
@@ -259,7 +347,7 @@ public:
 	* @param id             Identificator.
 	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
 	*/
-	virtual void SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic=false) throw(GException)=0;
+	virtual void SaveMixedGroups(GSession* mixedgroups,unsigned int id, bool historic=false) throw(GException)=0;
 
 	/**
 	* Save profiles in history
@@ -269,16 +357,18 @@ public:
 	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicID) throw(GException)=0;
 
 	/**
-	* Return the name of the current database.
-	*/
-	R::RString GetName(void) const;
-
-	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
 	* can be a SQL file.
 	* @param filename       Name of the file.
 	*/
 	virtual void ExecuteData(const char* filename) throw(GException)=0;
+
+	/**
+	* Method that load a group that is stored.
+	* @param session         Session.
+	* @param groupid         Identificator of the group.
+	*/
+	virtual GGroup* LoadGroup(GSession* session,unsigned int groupid)=0;
 
 	/**
 	* Load the groups.
@@ -297,18 +387,6 @@ public:
 	* @param session        Session.
 	*/
 	virtual void SaveGroupsHistory(GSession* session) throw(GException)=0;
-
-	/**
-	* Load the ideal groupment.
-	* @param session        Session.
-	*/
-	virtual void LoadIdealGroupment(GSession* session) throw(std::bad_alloc,GException)=0;
-
-	/**
-	* Save the ideal groupment
-	* @param idealgroup     The ideal container of group
-	*/
-	virtual void SaveIdealGroupment(GGroups* idealgroup) throw(GException)=0;
 
 	/**
 	* Save the feedbaks
@@ -446,6 +524,13 @@ public:
 	* @param label          Display words id and vectors id ?
 	*/
 	virtual void ExportMatrix(GSession* session,GSlot* rec,R::RString type,R::RString filename,GLang* lang,bool label)=0;
+
+	/**
+	* Execute a command.
+	* @param inst            XML Tag representing a command and its parameters.
+	* @param caller          Caller of the function.
+	*/
+	void ExecuteCmd(const R::RXMLTag& inst,void* caller);
 
 	/**
 	* Destructor.

@@ -221,7 +221,7 @@ public:
 	* current one.
 	* @param grp             Group.
 	*/
-	unsigned int GetNbSubProfiles(const GGroup* grp) const;
+	unsigned int GetNbSubProfiles(const GSubject* subject) const;
 
 	/**
 	* Get the number of subprofiles in the group.

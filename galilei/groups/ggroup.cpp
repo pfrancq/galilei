@@ -40,7 +40,9 @@
 #include <ggroup.h>
 #include <gdoc.h>
 #include <gsubprofile.h>
+#include <gprofile.h>
 #include <gsession.h>
+#include <gsubject.h>
 #include <gstorage.h>
 #include <gweightinfo.h>
 #include <gprofilesdocssims.h>
@@ -183,7 +185,7 @@ void GGroup::InsertSubProfile(GSubProfile* sp)
 	R::RContainer<GSubProfile,false,true>::InsertPtr(sp);
 //	State=osUpdated;
 	if(Community)
-		sp->SetGroup(this);
+		sp->SetGroup(Id);
 }
 
 
@@ -224,13 +226,13 @@ RCursor<GSubProfile> GGroup::GetCursor(void) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GGroup::GetNbSubProfiles(const GGroup* grp) const
+unsigned int GGroup::GetNbSubProfiles(const GSubject* subject) const
 {
 	unsigned int tot;
 	RCursor<GSubProfile> sub(*this);
 
 	for(sub.Start(),tot=0;!sub.End();sub.Next())
-		if(grp->IsIn(sub()))
+		if(subject->IsIn(sub()))
 			tot++;
 	return(tot);
 }
@@ -463,7 +465,7 @@ GGroup::~GGroup(void)
 			RCursor<GSubProfile> Sub;
 			Sub.Set(*this);
 			for(Sub.Start();!Sub.End();Sub.Next())
-				Sub()->SetGroup(0);
+				Sub()->SetGroup(cNoRef);
 			if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
 				DelRefs(otGroup,Lang);
 		}

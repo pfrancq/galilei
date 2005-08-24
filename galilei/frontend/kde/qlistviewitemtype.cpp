@@ -89,11 +89,21 @@ GALILEI::QListViewItemType::QListViewItemType(GUser* user, QListView* parent,QSt
 	Level=0;
 }
 
+
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GGroup* group, QListViewItem* parent,QString str1,QString str2,QString str3)
 	: QListViewItem(parent,str1,str2,str3), Type(tGroup)
 {
 	Obj.Group=group;
+	Level=0;
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::QListViewItemType::QListViewItemType(GSubject* subject, QListView* parent,QString str1,QString str2,QString str3)
+	: QListViewItem(parent,str1,str2,str3), Type(tGroup)
+{
+	Obj.Subject=subject;
 	Level=0;
 }
 

@@ -141,11 +141,16 @@ public:
 	R::RDate GetUpdated(void) const;
 
 	/**
-	* Must the assessment be used to compute the profile computed the last time
-	* at a given date.
-	* @param computed        Date of the last computing.
+	* Must the assessment be used to compute a profile.
+	* @param profile         Profile.
 	*/
-	bool MustUse(const R::RDate& computed) const;
+	bool MustUse(const GProfile* profile) const;
+
+	/**
+	* Must the assessment be used to compute a subprofile.
+	* @param subprofile      Subprofile.
+	*/
+	bool MustUse(const GSubProfile* subprofile) const;
 
 	/**
 	* The document assessed was updated.
@@ -364,11 +369,10 @@ public:
 	void HasUpdate(unsigned int docid);
 
 	/**
-	* Update the profile. In practice, it constructs for each subprofile the
-	* list of assessed documents from the corresponding language.
-	* subprofiles.
+	* Construct for each subprofile the list of assessed documents from the
+	* corresponding language.
 	*/
-	void Update(void);
+	void DispatchFdbks(void);
 
 public:
 

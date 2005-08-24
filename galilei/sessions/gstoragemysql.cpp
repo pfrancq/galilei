@@ -50,7 +50,6 @@
 #include <glink.h>
 #include <gsugs.h>
 #include <guser.h>
-#include <gusers.h>
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <gstoragemysql.h>
@@ -148,6 +147,9 @@ unsigned int GStorageMySQL::GetNbSaved(tObjType type) throw(GException)
 
 			case otFdbk:
 				return(GetCount("htmlsbyprofiles"));
+
+			case otLang:
+				return(GetCount("languages"));
 
 			default:
 				return(0);
@@ -559,34 +561,90 @@ void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 
 
 //------------------------------------------------------------------------------
+GUser* GStorageMySQL::LoadUser(GSession*,unsigned int userid)
+{
+	RQuery User(Db, "SELECT userid,user,fullname FROM users WHERE userid="+itou(userid));
+	User.Start();
+	if(!User.GetNb())
+		return(0);
+	return(new GUser(atoi(User[0]),User[1],User[2],10));
+}
+
+
+//------------------------------------------------------------------------------
+GProfile* GStorageMySQL::LoadProfile(GSession* session,unsigned int profileid)
+{
+	RQuery Profile(Db,"SELECT profileid,description,social,userid FROM profiles WHERE profileid="+itou(profileid));
+	Profile.Start();
+	if(!Profile.GetNb())
+		return(0);
+	GUser* user=session->GetUser(atoi(Profile[3]));
+	if(!user)
+		throw GException("Profile "+Profile[0]+" has no parent user");
+	return(new GProfile(user,atoi(Profile[0]),Profile[1],(atoi(Profile[2])==1),5));
+}
+
+
+//------------------------------------------------------------------------------
+GSubProfile* GStorageMySQL::LoadSubProfile(GSession* session,unsigned int subprofileid)
+{
+	RQuery SubProfile(Db,"SELECT subprofileid,langid,attached,groupid,updated,calculated,profileid FROM subprofiles WHERE subprofileid="+itou(subprofileid));
+	SubProfile.Start();
+	if(!SubProfile.GetNb())
+		return(0);
+	GLang *lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(SubProfile[1]);
+	if(!lang)
+		return(0);
+	GProfile* prof=session->GetProfile(atoi(SubProfile[6]));
+	if(!prof)
+		throw GException("Subprofile "+SubProfile[0]+" has no parent profile");
+	unsigned int groupid=atoi(SubProfile[3]);
+	if(!groupid)
+		groupid=cNoRef;
+	GSubProfile* sub=new GSubProfile(prof,atoi(SubProfile[0]),lang,groupid,SubProfile[2],GetMySQLToDate(SubProfile[4]),GetMySQLToDate(SubProfile[5]));
+	sub->SetState(osNeedLoad);
+	return(sub);
+}
+
+
+//------------------------------------------------------------------------------
 void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException)
 {
-	RString sSql;
 	GProfile* prof;
-	R::RCursor<GFactoryLang> langs;
 	GLang* lang;
 	GSubProfile* sub;
-	RContainer<GWeightInfo,false,true> Infos(1000,500);
 
-	// Go through the users
 	try
 	{
-		// Load users
-		RQuery Users(Db, "SELECT userid,user,fullname FROM users");
-		for(Users.Start();!Users.End();Users.Next())
-            session->InsertUser(new GUser(atoi(Users[0]),Users[1],Users[2],10));
-
-		// Load profiles
-		RQuery Profiles(Db,"SELECT profileid,description,social,topicid,userid FROM profiles");
-		for(Profiles.Start();!Profiles.End();Profiles.Next())
+		if(IsAllInMemory()) // If everything must be in memory -> load all the users and the profiles
 		{
-			session->InsertProfile(prof=new GProfile(session->GetUser(atoi(Profiles[4])),atoi(Profiles[0]),Profiles[1],(atoi(Profiles[2])==1),5));
-			if(session->GetSubjects())
-				session->GetSubjects()->InsertProfileSubject(prof,atoi(Profiles[3]));
+			// Load users
+			RQuery Users(Db, "SELECT userid,user,fullname FROM users");
+			for(Users.Start();!Users.End();Users.Next())
+				session->InsertUser(new GUser(atoi(Users[0]),Users[1],Users[2],10));
+
+			// Load profiles
+			RQuery Profiles(Db,"SELECT profileid,description,social,userid FROM profiles");
+			for(Profiles.Start();!Profiles.End();Profiles.Next())
+			{
+				GUser* user=session->GetUser(atoi(Profiles[3]));
+				session->InsertProfile(new GProfile(user,atoi(Profiles[0]),Profiles[1],(atoi(Profiles[2])==1),5));
+			}
 		}
 
 		// Load subprofiles
-		RQuery SubProfiles(Db,"SELECT subprofileid,langid,attached,groupid,updated,calculated,profileid FROM subprofiles");
+		RString Sql("SELECT subprofileid,langid,attached,groupid,updated,calculated,profileid FROM subprofiles");
+		if(!LoadAll)
+			Sql+=" WHERE calculated<updated";
+		if(Filtering)
+		{
+			if(LoadAll)
+				Sql+=" WHERE ";
+			else
+				Sql+=" OR ";
+			Sql+="((updated>="+RQuery::SQLValue(Filter)+") OR (calculated>="+RQuery::SQLValue(Filter)+") OR (attached>="+RQuery::SQLValue(Filter)+"))";
+		}
+		RQuery SubProfiles(Db,Sql);
 		for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 		{
 			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(SubProfiles[1]);
@@ -595,9 +653,10 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 			prof=session->GetProfile(atoi(SubProfiles[6]));
 			if(!prof)
 				throw GException("Subprofile "+SubProfiles[0]+" has no parent profile");
-			session->InsertSubProfile(sub=new GSubProfile(prof,atoi(SubProfiles[0]),lang,
-			                                     session->GetGroup(atoi(SubProfiles[3])),SubProfiles[2],
-			                                     GetMySQLToDate(SubProfiles[4]),GetMySQLToDate(SubProfiles[5])));
+			unsigned int groupid=atoi(SubProfiles[3]);
+			if(!groupid)
+				groupid=cNoRef;
+			session->InsertSubProfile(sub=new GSubProfile(prof,atoi(SubProfiles[0]),lang,groupid,SubProfiles[2],GetMySQLToDate(SubProfiles[4]),GetMySQLToDate(SubProfiles[5])));
 			sub->SetState(osNeedLoad);
 		}
 	}
@@ -609,79 +668,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadIdealGroupment(GSession* session) throw(std::bad_alloc,GException)
-{
-	GGroups* groups;
-	GGroup* group;
-	R::RCursor<GLang> Langs;
-	RString sSql;
-	GSubProfile* subp;
-
-	try
-	{
-		if(!session->GetSubjects()) return;
-		groups=session->GetSubjects()->GetIdealGroups();
-		groups->ClearGroups();
-
-		Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIns();
-		for(Langs.Start();!Langs.End();Langs.Next())
-		{
-			sSql="SELECT DISTINCT(groupid) FROM idealgroup WHERE langid='"+RString(Langs()->GetCode())+"'";
-			RQuery sel(Db,sSql);
-			for(sel.Start();!sel.End();sel.Next())
-			{
-				groups->InsertGroup(group=new GGroup(atoi(sel[0]),Langs(),false,RDate(""),RDate("")));
-				sSql="SELECT profileid FROM idealgroup where groupid="+sel[0];
-				RQuery sub(Db,sSql);
-				for(sub.Start();!sub.End();sub.Next())
-				{
-					subp=session->GetSubProfile(atoi(sub[0]));
-					if(subp)
-						group->InsertSubProfile(subp);
-				}
-				if(!group->GetNbSubProfiles())
-					groups->DeleteGroup(group);
-			}
-		}
-	}
-	catch(RMySQLError e)
-	{
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::SaveIdealGroupment(GGroups* idealgroup) throw(GException)
-{
-	R::RCursor<GGroup> groups;
-	RCursor<GSubProfile> sub;
-	RString sSql;
-
-	try
-	{
-		RQuery del(Db,"DELETE from idealgroup");
-
-		groups=idealgroup->GetGroups();
-		for(groups.Start();!groups.End();groups.Next())
-		{
-			sub=groups()->GetSubProfiles();
-			for(sub.Start();!sub.End();sub.Next())
-			{
-				sSql="INSERT INTO idealgroup(profileid,langid,groupid) VALUES("+itou(sub()->GetId())+",'"+sub()->GetLang()->GetCode()+"',"+itou(groups()->GetId())+")";
-				RQuery insert(Db,sSql);
-			}
-		}
-	}
-	catch(RMySQLError e)
-	{
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::LoadSubjectTree(GSession* session) throw(std::bad_alloc,GException)
+void GStorageMySQL::LoadSubjects(GSession* session) throw(std::bad_alloc,GException)
 {
 	RString sSql;
 	GSubject* subject;
@@ -689,8 +676,15 @@ void GStorageMySQL::LoadSubjectTree(GSession* session) throw(std::bad_alloc,GExc
 
 	try
 	{
+		// Verify the subjects exist and clear them
 		if(!session->GetSubjects()) return;
+
+		if(GSession::Get()&&GSession::Get()->GetSlot())
+			GSession::Get()->GetSlot()->StartJob("Load subjects");
+
 		session->GetSubjects()->Clear();
+
+		// Load the subjects
 		RQuery sub(Db,"SELECT topicid,name,used FROM topics WHERE parent=0");
 		for(sub.Start();!sub.End();sub.Next())
 		{
@@ -700,9 +694,30 @@ void GStorageMySQL::LoadSubjectTree(GSession* session) throw(std::bad_alloc,GExc
 			for(subsub.Start();!subsub.End();subsub.Next())
 				session->GetSubjects()->AddNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],atoi(subsub[2])));
 		}
+
+		//  Make Link between documents and subjects
+		RQuery docs(Db,"SELECT htmlid,topicid FROM topicsbyhtmls");
+		for(docs.Start();!docs.End();docs.Next())
+		{
+			GDoc* d=session->GetDoc(atoi(docs[0]));
+			if(!d) continue;
+			session->GetSubjects()->InsertDocSubject(d,atoi(docs[1]));
+		}
+
+		// Make links between profiles and subjects
+		RQuery profiles(Db,"SELECT profileid,topicid FROM profiles");
+		for(profiles.Start();!profiles.End();profiles.Next())
+		{
+			GProfile* prof=session->GetProfile(atoi(profiles[0]));
+			session->GetSubjects()->InsertProfileSubject(prof,atoi(profiles[1]));
+		}
+		if(GSession::Get()&&GSession::Get()->GetSlot())
+			GSession::Get()->GetSlot()->EndJob();
 	}
 	catch(RMySQLError e)
 	{
+		if(GSession::Get()&&GSession::Get()->GetSlot())
+			GSession::Get()->GetSlot()->EndJob();
 		throw GException(e.GetMsg());
 	}
 }
@@ -847,17 +862,53 @@ void GStorageMySQL::LoadInfos(RContainer<GWeightInfo,false,true>& infos,GLang* l
 
 
 //------------------------------------------------------------------------------
+GDoc* GStorageMySQL::LoadDoc(GSession* session,unsigned int docid)
+{
+	GDoc* doc;
+
+	RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed,owner FROM htmls WHERE htmlid="+itou(docid));
+	quer.Start();
+	if(!quer.GetNb())
+		return(0);
+
+	// Verify that the langague is active
+	GLang* lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(quer[4]);
+	if((!lang)&&(!quer[4].IsEmpty()))
+		return(0);
+
+	doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8]));
+	doc->SetState(osNeedLoad);
+
+	// Load the links of the document loaded.
+	RQuery querLinks (Db,"SELECT htmlid,linkid,occurs FROM htmlsbylinks WHERE htmlid="+itou(docid));
+	for(querLinks.Start(); !querLinks.End() ; querLinks.Next())
+		doc->InsertLink(session->GetDoc(atoi(querLinks[1])), atoi(querLinks[2]));
+
+	return(doc);
+}
+
+
+//------------------------------------------------------------------------------
 void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 {
 	GDoc* doc;
 	GLang* lang;
-	GDoc* d;
 	unsigned int docid;
-	RContainer<GWeightInfo,false,true> Infos(1000,500);
 
 	try
 	{
-		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed, owner FROM htmls");
+		RString Sql("SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed,owner FROM htmls");
+		if(!LoadAll)
+			Sql+=" WHERE calculated<updated";
+		if(Filtering)
+		{
+			if(LoadAll)
+				Sql+=" WHERE ";
+			else
+				Sql+=" OR ";
+			Sql+="((updated>="+RQuery::SQLValue(Filter)+") OR (calculated>="+RQuery::SQLValue(Filter)+"))";
+		}
+		RQuery quer(Db,Sql);
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			// Verify that the langague is active
@@ -869,25 +920,11 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 			doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8]));
 			session->InsertDoc(doc);
 			doc->SetState(osNeedLoad);
-		}
 
-		// Load the links of the document loaded.
-		RQuery querLinks (Db,"SELECT htmlid,linkid,occurs FROM htmlsbylinks");
-		for (querLinks.Start(); !querLinks.End() ; querLinks.Next())
-		{
-			session->GetDoc(atoi(querLinks[0]))->InsertLink(session->GetDoc(atoi(querLinks[1])), atoi(querLinks[2]));
-		}
-
-		//  Make Link between documents and topics
-		if(session->GetSubjects())
-		{
-			RQuery subdocs(Db,"SELECT htmlid,topicid FROM topicsbyhtmls");
-			for(subdocs.Start();!subdocs.End();subdocs.Next())
-			{
-				d=session->GetDoc(atoi(subdocs[0]));
-				if(!d) continue;
-				session->GetSubjects()->InsertDocSubject(d,atoi(subdocs[1]));
-			}
+			// Load the links of the document loaded.
+			RQuery querLinks (Db,"SELECT htmlid,linkid,occurs FROM htmlsbylinks WHERE htmlid="+itou(docid));
+			for(querLinks.Start(); !querLinks.End() ; querLinks.Next())
+				doc->InsertLink(session->GetDoc(atoi(querLinks[1])), atoi(querLinks[2]));
 		}
 	}
 	catch(RMySQLError e)
@@ -895,92 +932,6 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		throw GException(e.GetMsg());
 	}
 
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::LoadDocs(GSession* session,GInfoList& list,GLang* lang) throw(std::bad_alloc,GException)
-{
-	GDoc* doc;
-	R::RCursor<GFactoryLang> langs;
-	unsigned int docid;
-	RContainer<GWeightInfo,false,true> Infos(1000,500);
- 	RString sSql;
-
-	if((!list.GetNb())||(!lang))
-		return;
-	try
-	{
-		// Create a SQL clause with all documents id having all the information contained
-		//select distinct(htmlid),count(htmlid) as t  from htmlsbykwds where langid='en' and (kwdid=37 or kwdid=2016)  group by htmlid having t=2
-		sSql="SELECT DISTINCT(htmlid), count(htmlid) as t from htmlsbykwds WHERE langid='"+RString(lang->GetCode())+"' and (";
-		RCursor<GInfo> List(list);
-		for(List.Start();!List.End();)
-		{
-			sSql+="kwdid="+itou(List()->GetId());
-			List.Next();
-			if(!List.End())
-				sSql+=" or ";
-		}
-		sSql+=")  group by htmlid having t="+itou(list.GetNb());
-		RQuery DocsId(Db,sSql);
-		sSql=" WHERE ";
-		for(DocsId.Start();!DocsId.End();)
-		{
-			sSql+="htmlid="+DocsId[0];
-			DocsId.Next();
-			if(!DocsId.End())
-				sSql+=" or ";
-		}
-
-		//
-		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed, ownerid FROM htmls"+sSql);
-		for(quer.Start();!quer.End();quer.Next())
-		{
-			docid=atoi(quer[0]);
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(quer[4]);
-			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8])));
-			doc->SetState(osNeedLoad);
-		}
-
-		// Load the links of the document loaded.
-		RQuery querLinks (Db,"SELECT htmlid,linkid,occurs FROM htmlsbylinks"+sSql);
-		for (querLinks.Start(); !querLinks.End() ; querLinks.Next())
-		{
-			session->GetDoc(atoi(querLinks[0]))->InsertLink(session->GetDoc(atoi(querLinks[1])), atoi(querLinks[2]));
-		}
-	}
-	catch(RMySQLError e)
-	{
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::LoadNewDocs(GSession* session) throw(std::bad_alloc,GException)
-{
-	GDoc* doc;
-	GLang* lang;
-	int docid;
-	R::RCursor<GFactoryLang> langs;
-
-	try
-	{
-		dynamic_cast<GDocs*>(session)->Clear();
-		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed, ownerid FROM htmls WHERE calculated < updated");
-		for(quer.Start();!quer.End();quer.Next())
-		{
-			docid=atoi(quer[0]);
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(quer[4]);
-			session->InsertDoc(doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]),atoi(quer[8])));
-			doc->SetState(osNeedLoad);
-		}
-	}
-	catch(RMySQLError e)
-	{
-		throw GException(e.GetMsg());
-	}
 }
 
 
@@ -1273,7 +1224,7 @@ void GStorageMySQL::SaveGroupsHistory(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveMixedGroups(GGroups* mixedgroups,unsigned int id, bool historic) throw(GException)
+void GStorageMySQL::SaveMixedGroups(GSession* mixedgroups,unsigned int id, bool historic) throw(GException)
 {
 	RString sSql;
 	RString database;
@@ -1359,23 +1310,49 @@ void GStorageMySQL::UpdateGroups(unsigned int subid)
 
 
 //------------------------------------------------------------------------------
+GGroup* GStorageMySQL::LoadGroup(GSession*,unsigned int groupid)
+{
+	RQuery Group(Db,"SELECT groupid,langid,updated,calculated FROM groups WHERE groupid="+itou(groupid));
+	Group.Start();
+	if(!Group.GetNb())
+		return(0);
+	GLang* lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(Group[1]);
+	if(!lang)
+		return(0);
+	GGroup* group=new GGroup(atoi(Group[0]),lang,true,Group[2],Group[3]);
+	group->SetState(osNeedLoad);
+	return(group);
+}
+
+
+//------------------------------------------------------------------------------
 void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GException)
 {
 	GGroup* group;
 	R::RCursor<GGroup> GroupsCursor;
 	GLang* lang;
 	R::RCursor<GFactoryLang> langs;
-	RContainer<GWeightInfo,false,true> Infos(1000,500);
 
 	try
 	{
-		RQuery group2(Db,"SELECT groupid,langid,updated,calculated FROM groups");
-		for(group2.Start();!group2.End();group2.Next())
+		RString Sql("SELECT groupid,langid,updated,calculated FROM groups");
+		if(!LoadAll)
+			Sql+=" WHERE calculated<updated";
+		if(Filtering)
 		{
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(group2[1]);
+			if(LoadAll)
+				Sql+=" WHERE ";
+			else
+				Sql+=" OR ";
+			Sql+="((updated>="+RQuery::SQLValue(Filter)+") OR (calculated>="+RQuery::SQLValue(Filter)+"))";
+		}
+		RQuery Groups(Db,Sql);
+		for(Groups.Start();!Groups.End();Groups.Next())
+		{
+			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(Groups[1]);
 			if(!lang)
 				continue;
-			group=new GGroup(atoi(group2[0]),lang,true,group2[2],group2[3]);
+			group=new GGroup(atoi(Groups[0]),lang,true,Groups[2],Groups[3]);
 			group->SetState(osNeedLoad);
 			session->InsertGroup(group);
 		}
@@ -1460,7 +1437,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(GSession* session,unsigned i
 
 			// Create the historic subprofile and add it to the group
 			subprofid=atoi(grquery[1]);
-			historicsubprof=new GWeightInfosHistory(session->GetSubProfile(subprofid),100);
+			historicsubprof=new GWeightInfosHistory(session->GetSubProfile(subprofid,0),100);
 			grp->AddSubProfile(historicsubprof);
 			historicsubprof->SetParent(grp);
 
@@ -1865,7 +1842,7 @@ void GALILEI::GStorageMySQL::ExportMatrix(GSession* sess,GSlot* rec,RString type
 		memset(wvector,0,(maxid+1)*sizeof(double));
 		if(type=="Profiles")
 		{
-			rec->NextProfileExport(sess->GetSubProfile(atoi(entities[0]))->GetProfile());
+			rec->NextProfileExport(sess->GetSubProfile(atoi(entities[0]),0)->GetProfile());
 			sSql="SELECT weight,kwdid FROM subprofilesbykwds WHERE langid='"+RString(lang->GetCode())+"' AND subprofileid="+entities[0];
 		}
 		else if(type=="Documents")

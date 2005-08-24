@@ -59,7 +59,7 @@ protected:
 	/**
 	* Identifier of the subprofile.
 	*/
-	unsigned Id;
+	unsigned int Id;
 
 	/**
 	* Owner profile of the subprofile.
@@ -72,9 +72,9 @@ protected:
 	GLang* Lang;
 
 	/**
-	* Corresponding Group.
+	* Identificator of the corresponding group.
 	*/
-	GGroup* Group;
+	unsigned int GroupId;
 
 	/**
 	* Date of the attachment of the subprofile into the group.
@@ -103,12 +103,12 @@ public:
 	* @param prof            Profile.
 	* @param id              Identifier.
 	* @param lang            Language of the subprofile.
-	* @param grp             Group.
+	* @param grpid           Group identificator.
 	* @param a               Date where it was attached.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,GGroup* grp,R::RDate a,R::RDate u,R::RDate c);
+	GSubProfile(GProfile* prof,unsigned int id,GLang* lang,unsigned int grpid,R::RDate a,R::RDate u,R::RDate c);
 
 	/**
 	* Compare two subprofiles by comparing their identificator.
@@ -185,15 +185,14 @@ public:
 
 	/**
 	* Get the group holding the subprofile.
-	* @returns Pointer to GGroup.
 	*/
-	GGroup* GetGroup(void) const {return(Group);}
+	unsigned int GetGroupId(void) const {return(GroupId);}
 
 	/**
 	* Set the group holding the subprofile.
-	* @param grp            Pointer to the group.
+	* @param grpid           Identificator of the group.
 	*/
-	void SetGroup(GGroup* grp);
+	void SetGroup(unsigned int groupid);
 
 	/**
 	* Get the date of the last attachment.
