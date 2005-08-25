@@ -100,7 +100,7 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 	Docs = Session->GetDocs();
 	Profs1= Session->GetProfiles();
 	Profs2= Session->GetProfiles();
-	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+	Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 
 	// Compute the average of number of profiles having juged the same doc.
 
