@@ -299,7 +299,7 @@ GProfilesGroupsSimsCosinus::GProfilesGroupsSimsCosinus::GProfilesGroupsSimsCosin
 	GSession::AddHandler(this);
 	if(!Memory) return;
 	Sims.Clear();
-	R::RCursor<GLang> Langs((dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIns());
+	R::RCursor<GLang> Langs(GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns());
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Sims.InsertPtr(new GProfileGrpSim(this,Langs()));
 }
