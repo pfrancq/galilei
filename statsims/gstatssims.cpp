@@ -190,7 +190,7 @@ public:
 	RCursor<GSubProfile> GetElementCursor(GLang* Lang)
 	{return(Session->GetSubProfiles(Lang));}
 
-	virtual double Similarity(GDoc* doc,GSubProfile* sub) {return(GPluginManagers::GetManager<GProfilesDocsSims>("ProfilesDocsSims")->GetSimilarity(doc,sub));}
+	virtual double Similarity(GDoc* doc,GSubProfile* sub) {return(GPluginManagers::GetManager<GProfilesDocsSimsManager>("ProfilesDocsSims")->GetCurrentMethod()->GetSimilarity(doc,sub));}
 
 	bool HasSubject(GSubProfile* sub)
 	{return(Session->GetSubjects()->GetSubject(sub));}
