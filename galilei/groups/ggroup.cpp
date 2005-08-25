@@ -309,7 +309,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 	RContainer<GFdbkRef,true,false> Docs(50,25);
 
 	// Similarities
-	GProfilesDocsSims* ProfilesDocsSims=GPluginManagers::GetManager<GProfilesDocsSims>("ProfilesDocsSims");
+	GProfilesDocsSims* ProfilesDocsSims=GPluginManagers::GetManager<GProfilesDocsSimsManager>("ProfilesDocsSims")->GetCurrentMethod();
 
 	// Clear container.
 	docs->Clear();
@@ -401,7 +401,7 @@ double GGroup::ComputeSumSim(const GSubProfile* s) const
 	double sum;
 
 	// Similarities
-	GProfilesSims* ProfilesSims=GPluginManagers::GetManager<GProfilesSims>("ProfilesSims");
+	GProfilesSims* ProfilesSims=GPluginManagers::GetManager<GProfilesSimsManager>("ProfilesSims")->GetCurrentMethod();
 
 	if(!ProfilesSims)
 		throw GException("No profiles similarities");
