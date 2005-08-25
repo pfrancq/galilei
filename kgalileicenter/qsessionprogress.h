@@ -130,12 +130,12 @@ class QFillDB : public QSessionThread
 	RString CatDirectory;
 	int Depth;
 	RString ParentName;
-	GFilterManagerKDE* FilterManager;
+	GFilterManager* FilterManager;
 
 	RDb* Db;
 	int CurrentDocId;
 public:
-	QFillDB(RString dbName,RString host,RString user,RString pass,RString catDir,int depth, RString parentName, GFilterManagerKDE* mng) : DbName(dbName), Host(host), User(user),Pass(pass),CatDirectory(catDir),Depth(depth),ParentName(parentName), FilterManager(mng),Db(0),CurrentDocId(0) {}
+	QFillDB(RString dbName,RString host,RString user,RString pass,RString catDir,int depth, RString parentName, GFilterManager* mng) : DbName(dbName), Host(host), User(user),Pass(pass),CatDirectory(catDir),Depth(depth),ParentName(parentName), FilterManager(mng),Db(0),CurrentDocId(0) {}
 	virtual void DoIt(void);
 private:
 	int CreateCategory(RString name,int parentId);
@@ -253,39 +253,6 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Run the Post-clustering algorithm.
-*/
-class QComputePostGroup : public QSessionThread
-{
-public:
-	QComputePostGroup(void) {}
-	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Export the documents/words matrix in R.
-* @param type           type of export ("Profiles", "Documents" or "Groups")
-* @param filrname       export file name
-* @param lang           lang of the export
-* @param label          display words id aned vectors id ?
-*/
-class QExportMatrix : public QSessionThread
-{
-	const char* Type;
-	const char* Name;
-	GLang* Lang;
-	bool Label;
-public:
-	QExportMatrix(const char* type, const char* filename, GLang* lang, bool label)
-		: Type(type), Name(filename), Lang(lang), Label(label) {}
-	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
 * Compute all the elements.
 * @param modified       Recompute only modified elements or all.
 * @param save           Save modified elements.
@@ -392,24 +359,6 @@ public:
 	* @param prof           Profile.
 	*/
 	virtual void NextProfile(const GProfile* prof);
-
-	/**
-	* The export for a specific profile will begin.
-	* @param prof           Profile.
-	*/
-	virtual void NextProfileExport(const GProfile* prof);
-
-	/**
-	* The export for a specific group will begin.
-	* @param grp           Group.
-	*/
-	virtual void NextGroupExport(const GGroup* grp);
-
-	/**
-	* The export for a specific document will begin.
-	* @param doc           Document
-	*/
-	virtual void NextDocumentExport(const GDoc* doc);
 
 	/**
 	* The traitment for a specific chromosome will begin.

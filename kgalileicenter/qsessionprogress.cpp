@@ -152,7 +152,7 @@ QLoadSession::QLoadSession(void)
 void QLoadSession::DoIt(void)
 {
 	Parent->PutText("Loading Dicionnaries/Stoplists ...");
-	Session->Connect();
+// 	Session->Connect();
 	if(GSession::Break())
 		throw GException("Abord");
 	Parent->PutText("Loading Documents ...");
@@ -519,24 +519,14 @@ void QCreateDocXML::DoIt(void)
 		delete XML;
 		XML=0;
 	}
-	XML=Session->CreateDocXML(Doc);
+	XML=GPluginManagers::GetManager<GFilterManager>("Filter")->CreateDocXML(Doc);
 }
 
 
 //-----------------------------------------------------------------------------
 void QAnalyzeXML::DoIt(void)
 {
-	if(!XML)
-	{
-		Parent->PutText("Creating XML Structure ...");
-		XML=Session->CreateDocXML(Doc);
-	}
-	if(GSession::Break())
-		return;
-	Parent->PutText("Analysing XML Structure ...");
-	if(!(dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse")))->GetCurrentMethod())
-		throw GException("Error: No Text Analyse method chosen.");
-	(dynamic_cast<GDocAnalyseManager*>(GPluginManagers::PluginManagers.GetManager("DocAnalyse")))->GetCurrentMethod()->Analyze(XML,Doc);
+	Session->AnalyseDoc(XML,Doc,0,Parent);
 }
 
 
@@ -560,7 +550,7 @@ void QComputeProfiles::DoIt(void)
 void QComputeProfile::DoIt(void)
 {
 	Parent->PutText("Compute Profile ...");
-	Session->CalcProfile(Parent,Profile);
+	Session->CalcProfile(Profile,Parent);
 }
 
 
@@ -587,22 +577,6 @@ void QMakeFdbks::DoIt(void)
 	Parent->PutText("Make feedbacks ...");
 	Session->GetSubjects()->Apply();
 	Session->GetSubjects()->FdbksCycle();
-}
-
-
-//-----------------------------------------------------------------------------
-void QComputePostGroup::DoIt(void)
-{
-	Parent->PutText("Computing PostGroup ...");
-	Session->ComputePostGroup(Parent);
-}
-
-
-//-----------------------------------------------------------------------------
-void QExportMatrix::DoIt(void)
-{
-	Parent->PutText("Export vectors/words matrix...");
-	Session->ExportMatrix(Parent,Type,Name,Lang,Label);
 }
 
 
@@ -759,30 +733,6 @@ void QSessionProgressDlg::NextProfile(const GProfile* prof)
 	txtRem->setText(QString("Analyse Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...");
 }
 
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextProfileExport(const GProfile* prof)
-{
-	txtRem->setText("Exporting Profile "+QString::number(prof->GetId())+ToQString(prof->GetName()));
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextGroupExport(const GGroup* grp)
-{
-	char tmp[100];
-	sprintf(tmp,"Exporting  Group %u", grp->GetId());
-	txtRem->setText(tmp);
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextDocumentExport(const GDoc* doc)
-{
-	char tmp[100];
-	sprintf(tmp,"Exporting  Document %u", doc->GetId());
-	txtRem->setText(tmp);
-}
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextChromosome(unsigned int id)

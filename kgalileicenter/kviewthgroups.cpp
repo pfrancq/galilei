@@ -136,7 +136,7 @@ void KViewThGroups::ConstructThGroups(void)
 	thGroups->clear();
 
 	// Get the active languages
-	RCursor<GLang> Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIns();
+	RCursor<GLang> Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns();
 
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(*getDocument()->GetSession()->GetSubjects());
@@ -184,7 +184,7 @@ void KViewThGroups::ConstructGroups(void)
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
 	prGroups->clear();
-	CurLang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+	CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();

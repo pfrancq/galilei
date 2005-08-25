@@ -152,15 +152,15 @@ GDoc* KViewDocs::GetCurrentDoc(void)
 void KViewDocs::CreateDocsListView(void)
 {
 	R::RCursor<GDoc> CurDocs=Doc->GetSession()->GetDocs();
-	R::RCursor<GFactoryLang> CurLang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+	R::RCursor<GFactoryLang> CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 	GLang* lang;
-	RContainer<LangItem,true,true> LangItems((dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNbFactories());
+	RContainer<LangItem,true,true> LangItems(GPluginManagers::GetManager<GLangManager>("Lang")->GetNbFactories());
 	const char* t;
 	const char det[]="Unknown";
 	const char* ptr;
 
 	// Go trough each language and create a Item.
-	CurLang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+	CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 	for(CurLang.Start(); !CurLang.End(); CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();

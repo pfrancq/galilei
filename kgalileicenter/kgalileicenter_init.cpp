@@ -117,7 +117,6 @@ void KGALILEICenterApp::initActions(void)
 	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
 	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
 	createDatabase=new KAction(i18n("Create &Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
-	sessionExportMatrix=new KAction(i18n("Export Matrix from Database"),"exec",0,this,SLOT(slotExportMatrix()),actionCollection(),"sessionExportMatrix");
 	fillEmptyDb=new KAction(i18n("&Fill Empty Database"),"exec",0,this,SLOT(slotFillEmptyDb()),actionCollection(),"fillEmptyDb");
 	runProgram=new KAction(i18n("&Run Program"),"rebuild",0,this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
@@ -140,7 +139,6 @@ void KGALILEICenterApp::initActions(void)
 	connect(groupAlwaysSave,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
-	postgroupCalc=new KAction(i18n("Compute &PostGroup"),"exec",0,this,SLOT(slotPostGroupCalc()),actionCollection(),"postgroupCalc");
 	somView=new KAction(i18n("View Self-Organizing Map"),"exec",0,this,SLOT(slotChooseSOM()),actionCollection(),"somView");
 	showGroupsHistory=new KAction(i18n("Show Groups &History"),"exec",0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
 
@@ -391,7 +389,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	profileCalc->setEnabled(true);
 	simulationDlg->setEnabled(true);
 	sessionCompute->setEnabled(true);
-	sessionExportMatrix->setEnabled(true);
 	doFdbks->setEnabled(true);
 	groupingCompare->setEnabled(true);
 	somView->setEnabled(true);
@@ -399,7 +396,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	textEnglish->setEnabled(true);
 	groupsCalc->setEnabled(true);
 	groupingCreate->setEnabled(true);
-	postgroupCalc->setEnabled(true);
 	showGroupsHistory->setEnabled(true);
 	showDocs->setEnabled(true);
 	docAnalyse->setEnabled(true);
@@ -421,7 +417,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	profileCalc->setEnabled(false);
 	simulationDlg->setEnabled(false);
 	sessionCompute->setEnabled(false);
-	sessionExportMatrix->setEnabled(false);
 	doFdbks->setEnabled(false);
 	groupingCompare->setEnabled(false);
 	somView->setEnabled(false);
@@ -432,7 +427,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	analyseXML->setEnabled(false);
 	groupsCalc->setEnabled(false);
 	groupingCreate->setEnabled(false);
-	postgroupCalc->setEnabled(false);
 	showGroupsHistory->setEnabled(false);
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);

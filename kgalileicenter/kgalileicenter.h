@@ -362,11 +362,6 @@ private slots:
 	void slotCreateDatabase(void);
 
 	/**
-	* slot to export a matrix from database.
-	*/
-	void slotExportMatrix(void);
-
-	/**
 	* Show the users' window.
 	*/
 	void slotShowUsers(void);
@@ -415,11 +410,6 @@ private slots:
 	* Make a feedback cycle.
 	*/
 	void slotDoFdbks(void);
-
-	/**
-	* Compute the post-groups.
-	*/
-	void slotPostGroupCalc(void);
 
 	/**
 	* Compare the current grouping with the grouping in memory.
@@ -570,7 +560,6 @@ public:
 	KAction* sessionCompute;
 	KAction* sessionStats;
 	KAction* createDatabase;
-	KAction* sessionExportMatrix;
 	KAction* sessionDisconnect;
 	KAction* fillEmptyDb;
 	KAction* sessionQuit;
@@ -586,7 +575,6 @@ public:
 	KToggleAction* useExistingGroups;
 	KAction* showGroups;
 	KAction* groupsCalc;
-	KAction* postgroupCalc;
 	KAction* somView;
 	KAction* simulationDlg;
 	KAction* groupingCreate;

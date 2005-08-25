@@ -218,7 +218,7 @@ void KGALILEICenterApp::slotSessionCompute(void)
 	Doc->updateAllViews(1);
 	Doc->updateAllViews(2);
 
-	if(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc"))->GetCurrentMethod())
+	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod())
 	{
 		Doc->updateAllViews(3);
 	}
@@ -342,58 +342,6 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotExportMatrix(void)
-{
-	QExportMatrixDlg dlg(this, 0, true);
-	R::RCursor<GFactoryLang> langs;
-	langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
-	for (langs.Start(); !langs.End(); langs.Next())
-	{
-		if (!langs()->GetPlugin()) continue;
-		dlg.CBLangs->insertItem(langs()->GetPlugin()->GetCode());
-	}
-
-	//set the mode to file dialog widgets
-	dlg.ProfilesFile->setMode(KFile::File);
-	dlg.DocumentsFile->setMode(KFile::File);
-	dlg.GroupsFile->setMode(KFile::File);
-
-	if (dlg.exec())
-	{
-		if(dlg.CBProfiles->isChecked())
-		{
-			//check if output file has been set
-			if(!strcmp(dlg.ProfilesFile->url(),""))
-				return;
-			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Profiles");
-			if(!Dlg.Run(new QExportMatrix("Profiles", dlg.ProfilesFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(dlg.CBLangs->text(dlg.CBLangs->currentItem()).latin1()), false)))
-				return;
-		}
-
-		if(dlg.CBDocuments->isChecked())
-		{
-			//check if output file has been set
-			if(!strcmp(dlg.DocumentsFile->url(),""))
-				return;
-			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Documents");
-			if(!Dlg.Run(new QExportMatrix("Documents", dlg.DocumentsFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(dlg.CBLangs->text(dlg.CBLangs->currentItem()).latin1()), false)))
-				return;
-		}
-
-		if(dlg.CBGroups->isChecked())
-		{
-			//check if output file has been set
-			if(!strcmp(dlg.GroupsFile->url(),""))
-				return;
-			QSessionProgressDlg Dlg(this,Doc->GetSession(),"Export Groups");
-			if(!Dlg.Run(new QExportMatrix("Groups", dlg.GroupsFile->url(), (dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(dlg.CBLangs->text(dlg.CBLangs->currentItem()).latin1()), false)))
-				return;
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotFillEmptyDb(void)
 {
 	QFillEmptyDatabase dlg(this,0,true);
@@ -438,7 +386,7 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		}
 
 		QSessionProgressDlg Dlg(this,0,"Fill Database");
-		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,depth,parentName,dynamic_cast<GFilterManagerKDE*>(GPluginManagers::PluginManagers.GetManager("Filter")))))
+		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,depth,parentName,GPluginManagers::GetManager<GFilterManager>("Filter"))))
 			return;
 	}
 }
@@ -460,7 +408,7 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 	Doc->updateAllViews(1);
 	//test whether a linking method has been used during Profile computation.
 	//if true -->refresh Links
-	if(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc"))->GetCurrentMethod())
+	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod())
 	{
 		Doc->updateAllViews(3);
 	}
@@ -545,14 +493,6 @@ void KGALILEICenterApp::slotDoFdbks(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotPostGroupCalc(void)
-{
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute PostGroup");
-	Dlg.Run(new QComputePostGroup());
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotChooseSOM(void)
 {
 	QChooseMap* dlg=new QChooseMap(pWorkspace);
@@ -577,7 +517,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 	{
 		if((*select)[2]=="groups")
 		{
-			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+			R::RCursor<GFactoryLang> langscur=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -593,7 +533,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="profiles")
 		{
-			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+			R::RCursor<GFactoryLang> langscur=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -609,7 +549,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="documents")
 		{
-			R::RCursor<GFactoryLang> langscur=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+			R::RCursor<GFactoryLang> langscur=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -789,7 +729,7 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotQueryMetaEngine(void)
 {
-	if(!(dynamic_cast<GMetaEngineManager*>(GPluginManagers::PluginManagers.GetManager("MetaEngine"))->GetCurrentMethod()))
+	if(!GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod())
 	{
 		QMessageBox::information(this," Error "," No Meta Engine Method selected!!");
 		return;
@@ -840,7 +780,7 @@ void KGALILEICenterApp::slotShowHistory(void)
 	R::RCursor<GFactoryLang> curlang;
 	unsigned int size, min, max;
 
-	curlang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+	curlang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 	size=Doc->GetSession()->GetStorage()->GetHistorySize();
 
 	if (!size)

@@ -11,8 +11,6 @@
 			<Action name="fillEmptyDb"/>
 		</Menu>
 		<separator/>
-		<Action name="sessionExportMatrix"/>
-		<separator/>
 		<Action name="sessionCompute"/>
 		<Action name="runProgram"/>
 		<separator/>
@@ -36,11 +34,6 @@
 		<Separator/>
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>
-		<Separator/>
-		<!--<Menu name="Post-Clustering"><text>&amp;Post Clustering</text>-->
-		<Action name="postgroupCalc"/>
-		<!--	<Action name="somView"/>-->
-		<!--</Menu>-->
 		<Separator/>
 		<Action name="showGroupsHistory"/>
 	</Menu>

@@ -139,7 +139,7 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 	char tmp[10];
 
-	GLangManager* langMng=dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang"));
+	GLangManager* langMng=GPluginManagers::GetManager<GLangManager>("Lang");
 	Lang=langMng->GetPlugIn(code);
 
 	// initialisation of the tab widget
