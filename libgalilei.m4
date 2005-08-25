@@ -85,9 +85,9 @@ AC_DEFUN(GALILEI_ALL_INC_CHK,[
 		GALILEI_INC_PATH="$withval")
 
 	# ---- check the presence of the includes for all the GALILEI libraries
-	GALILEI_INC_CHK(galilei/docs,gdocs.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/docs,gdoc.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/engines,gengine.h,Cannot find GALILEI headers.)
-	GALILEI_INC_CHK(galilei/groups,ggroups.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/groups,ggroup.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/historic,ggrouphistory.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/infos,gdict.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/profiles, gprofile.h,Cannot find GALILEI headers.)
