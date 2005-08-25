@@ -152,7 +152,7 @@ QLoadSession::QLoadSession(void)
 void QLoadSession::DoIt(void)
 {
 	Parent->PutText("Loading Dicionnaries/Stoplists ...");
-// 	Session->Connect();
+ 	Session->Connect();
 	if(GSession::Break())
 		throw GException("Abord");
 	Parent->PutText("Loading Documents ...");
