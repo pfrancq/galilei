@@ -79,6 +79,7 @@ public:
 	* @param pwd            Password of the user.
 	* @param db             Name of the database.
 	* @param coding         Coding used by the MySQL database.
+	* @param all            Load all data (true) or only the modified one (false).
 	* @param filter         Date used to filter the entry to load.
 	*/
 	GStorageMySQL(R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString coding,bool all,const R::RDate& filter) throw(std::bad_alloc,GException);

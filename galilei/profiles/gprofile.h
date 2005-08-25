@@ -104,7 +104,7 @@ public:
 	* Compare the document assessed with another document using their
 	* identificators.
 	* @see R::RContainer
-	* @param doc             Identificator of the document.
+	* @param id              Identificator of the document.
 	* @return int
 	*/
 	int Compare(unsigned int id) const;

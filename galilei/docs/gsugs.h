@@ -86,7 +86,7 @@ public:
 	/**
 	* Compare two destinators by comparing their identificator.
 	* @see R::RContainer
-	* @param doc             Document.
+	* @param subs            Suggestion.
 	* @return int
 	*/
 	int Compare(const GSugs& sugs) const;
@@ -94,7 +94,7 @@ public:
 	/**
 	* Compare two destinators by comparing their identificator.
 	* @see R::RContainer
-	* @param doc             Pointer to the document.
+	* @param subs            Suggestion.
 	* @return int
 	*/
 	int Compare(const GSugs* sugs) const;

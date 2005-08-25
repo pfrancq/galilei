@@ -42,6 +42,7 @@
 #include <gsubprofile.h>
 #include <gprofile.h>
 #include <gsession.h>
+#include <gpluginmanagers.h>
 #include <gsubject.h>
 #include <gstorage.h>
 #include <gweightinfo.h>
@@ -307,6 +308,9 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 	tDocAssessment j;
 	RContainer<GFdbkRef,true,false> Docs(50,25);
 
+	// Similarities
+	GProfilesDocsSims* ProfilesDocsSims=GPluginManagers::GetManager<GProfilesDocsSims>("ProfilesDocsSims");
+
 	// Clear container.
 	docs->Clear();
 
@@ -327,7 +331,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 				// Verify if already inserted in Docs.
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
-				Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetProfilesDocsSims()->GetSimilarity(session->GetDoc(Fdbks()->GetDocId()),s)));
+				Docs.InsertPtr(new GFdbkRef(Fdbks(),ProfilesDocsSims->GetSimilarity(session->GetDoc(Fdbks()->GetDocId()),s)));
 			}
 			continue;
 		}
@@ -345,7 +349,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDocId()))) continue;
 
 			// Insert it.
-			Docs.InsertPtr(new GFdbkRef(Fdbks(),session->GetProfilesDocsSims()->GetSimilarity(session->GetDoc(Fdbks()->GetDocId()),s)));
+			Docs.InsertPtr(new GFdbkRef(Fdbks(),ProfilesDocsSims->GetSimilarity(session->GetDoc(Fdbks()->GetDocId()),s)));
 		}
 	}
 
@@ -396,13 +400,16 @@ double GGroup::ComputeSumSim(const GSubProfile* s) const
 {
 	double sum;
 
-	if((!GSession::Get())||(!GSession::Get()->GetProfilesSims()))
+	// Similarities
+	GProfilesSims* ProfilesSims=GPluginManagers::GetManager<GProfilesSims>("ProfilesSims");
+
+	if(!ProfilesSims)
 		throw GException("No profiles similarities");
 	RCursor<GSubProfile> sub(*this);
 	for(sub.Start(),sum=0.0;!sub.End();sub.Next())
 	{
 		if(sub()==s) continue;
-		sum+=GSession::Get()->GetProfilesSims()->GetSimilarity(s,sub());
+		sum+=ProfilesSims->GetSimilarity(s,sub());
 	}
 	return(sum);
 }

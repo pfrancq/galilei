@@ -115,7 +115,6 @@ public:
 
 	/**
 	* Load information from the current storage.
-	* @param infos           Container hold
 	*/
 	virtual void LoadInfos(void) const;
 

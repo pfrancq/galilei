@@ -46,9 +46,23 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GStorage::GStorage(RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException)
-	: Name(n), LoadAll(all), Filter(filter), Filtering(filter!=RDate::GetToday()),
+	: Session(0), Name(n), LoadAll(all), Filter(filter), Filtering(filter!=RDate::GetToday()),
 	  AllMemory(LoadAll&&(!Filtering)), Cmds(30,15)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void GStorage::Connect(GSession* session)
+{
+	Session=session;
+}
+
+
+//------------------------------------------------------------------------------
+void GStorage::Disconnect(GSession*)
+{
+	Session=0;
 }
 
 
@@ -77,6 +91,13 @@ R::RDate GStorage::GetFilter(void) const
 RString GStorage::GetName(void) const
 {
 	return(Name);
+}
+
+
+//------------------------------------------------------------------------------
+bool GStorage::IsCmdSupported(const R::RString cmd) const
+{
+	return(Cmds.IsIn(cmd));
 }
 
 

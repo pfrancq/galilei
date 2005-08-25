@@ -100,7 +100,7 @@ public:
 
 	/**
 	* Get a given data from the dictionary.
-	* @param name            Name fo the data to look for.
+	* @param word            Name fo the data to look for.
 	* @return Pointer to the data.
 	*/
 	GWordOccurs* GetWord(const R::RString& word) const;

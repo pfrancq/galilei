@@ -72,7 +72,7 @@ public:
 	* Send a query to the meta Search engine
 	* all the available search engines are processed with the query.
 	* @param keyWords        The set of keywords on witch the query will be based
-	* @param NbResuls        The number of results to retreive from each search engine
+	* @param useAllkwds      Use all keywords?
 	*/
 	virtual void Query(R::RContainer<R::RString,true,false> &keyWords, bool useAllKwds)=0;
 

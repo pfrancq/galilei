@@ -144,13 +144,12 @@ public:
 
 	/**
 	* Load information from the current storage.
-	* @param infos           Container hold
 	*/
 	virtual void LoadInfos(void) const;
 
 	/**
 	* Insert a document into the list of those used to compute the subprofile.
-	* @param fddk             Pointer to the feedback.
+	* @param fdbk             Pointer to the feedback.
 	*/
 	void InsertFdbk(GFdbk* fdbk);
 
@@ -190,7 +189,7 @@ public:
 
 	/**
 	* Set the group holding the subprofile.
-	* @param grpid           Identificator of the group.
+	* @param groupid         Identificator of the group.
 	*/
 	void SetGroup(unsigned int groupid);
 

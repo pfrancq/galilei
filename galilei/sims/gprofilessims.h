@@ -80,7 +80,6 @@ public:
 	* Get the minimum of similarityof the subprofiles, needed by clusteirng
 	* algorithms.
 	* @param lang            Language.
-	* @param deviationrate   factor of the standart deviation.
 	*/
 	virtual double GetMinSimilarity(const GLang* lang)=0;
 
@@ -156,18 +155,6 @@ public:
 	* Constructor.
 	*/
 	GProfilesSimsManager(void);
-
-	/**
-	* Connect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Disconnect(GSession* session);
 
 	/**
 	* Get the similarity between two subprofiles using the current method.

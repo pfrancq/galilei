@@ -103,7 +103,6 @@ public:
 	* @param modified       Should the method restart from the current
 	*                       clustering (true) or start from scratch (false).
 	* @param save           Save modified elements.
-	* @param savehistory    Save history of grouping.
 	*/
 	void Grouping(GSlot* rec,bool modified,bool save) throw(GException);
 

@@ -129,18 +129,6 @@ public:
 	GProfilesDocsSimsManager(void);
 
 	/**
-	* Connect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Disconnect(GSession* session);
-
-	/**
 	* Get the similarity between a subprofiles and a document.
 	* @param doc             Pointer to the document.
 	* @param sub             Pointer to the subprofile.

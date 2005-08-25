@@ -74,22 +74,6 @@ GProfilesDocsSimsManager::GProfilesDocsSimsManager(void)
 
 
 //------------------------------------------------------------------------------
-void GProfilesDocsSimsManager::Connect(GSession* session)
-{
-	GPluginManager<GProfilesDocsSimsManager,GFactoryProfilesDocsSims,GProfilesDocsSims>::Connect(session);
-	if(session)
-		session->SetSims(this);
-}
-
-
-//------------------------------------------------------------------------------
-void GProfilesDocsSimsManager::Disconnect(GSession* session)
-{
-	GPluginManager<GProfilesDocsSimsManager,GFactoryProfilesDocsSims,GProfilesDocsSims>::Disconnect(session);
-}
-
-
-//------------------------------------------------------------------------------
 double GProfilesDocsSimsManager::GetSimilarity(const GDoc* doc,const GSubProfile* sub)
 {
 	if(!Current)

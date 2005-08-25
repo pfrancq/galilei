@@ -76,7 +76,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 	Modified=modified;
 
 	// Go trough each language.
-	CurLang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+	CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		Lang=CurLang()->GetPlugin();
@@ -105,7 +105,7 @@ void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
 	Lang=0;
 
 	// Compute the description of the groups and Save the information.
-	CalcDesc=(dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc")))->GetCurrentMethod();
+	CalcDesc=GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
 	if(CalcDesc)
 	{
 		Groups=Session->GetGroups();

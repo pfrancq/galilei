@@ -103,8 +103,11 @@ public:
 
 	/**
 	* Construct the document.
-	* @param path            Path to find the plugins.
-	* @param dlg             Should the dialog box be loaded.
+	* @param url             URL of the document.
+	* @param title           Title of the document.
+	* @param description     Description of the document.
+	* @param rank            Ranking of the document.
+	* @param engine          Name of the engine that retrieves it.
 	*/
 	GEngineDoc(R::RString url,R::RString title,R::RString description,int rank, R::RString engine);
 
@@ -166,21 +169,18 @@ public:
 	/**
 	* Method to compare two GEngineDoc
 	* @param d           The element to compare
-	* @results int       The result of the comparaison
 	*/
 	int Compare(const GEngineDoc& d) const;
 
 	/**
 	* Method to compare two GEngineDoc
 	* @param d           The element to compare
-	* @results int       The result of the comparaison
 	*/
 	int Compare(const GEngineDoc* d) const;
 
 	/**
 	* Method to compare GEngineDoc
 	* @param url         The url to compare
-	* @results int       The result of the comparaison
 	*/
 	int Compare(const R::RString url) const;
 

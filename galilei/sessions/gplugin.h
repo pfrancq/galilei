@@ -266,7 +266,14 @@ public:
 	*/
 	int GetLevel(void) const {return(Level);}
 
+	/**
+	* Create a new plug-in and eventually connect it to the session.
+	*/
 	virtual plugin* NewPlugIn(void)=0;
+
+	/**
+	* Delete a plug-in and eventually disconnect it to the session.
+	*/
 	virtual void DeletePlugIn(plugin* plug)=0;
 
 	/**

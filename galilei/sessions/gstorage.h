@@ -66,6 +66,7 @@ class GStorageCmd
 	* Name of the command.
 	*/
 	R::RString Cmd;
+
 public:
 
 	/**
@@ -93,6 +94,10 @@ public:
 	* @param caller          Caller of the function.
 	*/
 	virtual void Run(GStorage* storage,const R::RXMLTag& inst,void* caller)=0;
+
+	/**
+	* Destructor.
+	*/
 	virtual ~GStorageCmd(void) {}
 };
 
@@ -107,6 +112,11 @@ public:
 class GStorage
 {
 protected:
+
+	/**
+	* Session connected to the storage.
+	*/
+	GSession* Session;
 
 	/**
 	* Name of the storage manager.
@@ -149,6 +159,18 @@ public:
 	*                       current is used, no filtering is done.
 	*/
 	GStorage(R::RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException);
+
+	/**
+	* Connect to the session.
+	* @param session         Pointer to the session.
+	*/
+	virtual void Connect(GSession* session);
+
+	/**
+	* Disconnect to the session.
+	* @param session         Pointer to the session.
+	*/
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compute the number of objects of a given type which are saved.
@@ -524,6 +546,12 @@ public:
 	* @param label          Display words id and vectors id ?
 	*/
 	virtual void ExportMatrix(GSession* session,GSlot* rec,R::RString type,R::RString filename,GLang* lang,bool label)=0;
+
+	/**
+	* Verify if a given command is supported by the storage.
+	* @param cmd             Name of the command.
+	*/
+	bool IsCmdSupported(const R::RString cmd) const;
 
 	/**
 	* Execute a command.

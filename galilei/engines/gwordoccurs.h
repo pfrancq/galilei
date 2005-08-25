@@ -76,7 +76,7 @@ public:
 	* Compare the names of two data (work like the 'strcmp' function of ANSI
 	* C/C++).
 	* @see R::RContainer and R::RHashContainer.
-	* @param d               Data.
+	* @param word            Data.
 	* @return int
 	*/
 	int Compare(const GWordOccurs& word) const;
@@ -85,7 +85,7 @@ public:
 	* Compare the names of two data (work like the 'strcmp' function of ANSI
 	* C/C++).
 	* @see R::RContainer and R::RHashContainer.
-	* @param d              Pointer to a data.
+	* @param word            Pointer to a data.
 	* @return int
 	*/
 	int Compare(const GWordOccurs* word) const;
@@ -94,7 +94,7 @@ public:
 	* Compare the name of a data and a string (work like the 'strcmp' function
 	* of ANSI C/C++).
 	* @see R::RContainer and R::RHashContainer.
-	* @param name           String.
+	* @param name            Name.
 	* @return int
 	*/
 	int Compare(const R::RString& name) const;
@@ -119,7 +119,7 @@ public:
 	/**
 	* Compute the first hash index of the name of a data.
 	* @see R::RHashContainer
-	* @param d               Data.
+	* @param word            Data.
 	*/
 	static int HashIndex(const GWordOccurs& word)
 		{return(R::RString::HashIndex(word.Word));}
@@ -127,7 +127,7 @@ public:
 	/**
 	* Compute the first hash index of a string.
 	* @see R::RHashContainer
-	* @param name           String.
+	* @param word            String.
 	*/
 	static int HashIndex(const R::RString& word)
 		{return(R::RString::HashIndex(word));}
@@ -135,7 +135,7 @@ public:
 	/**
 	* Compute the first hash index of an array of characters.
 	* @see R::RHashContainer
-	* @param name           Pointer to the array.
+	* @param word           Pointer to the array.
 	*/
 	static int HashIndex(const R::RChar* word)
 		{return(R::RString::HashIndex(word));}
@@ -143,7 +143,7 @@ public:
 	/**
 	* Compute the second hash index of the name of a data.
 	* @see R::RHashContainer
-	* @param d               Data.
+	* @param word            Data.
 	*/
 	static int HashIndex2(const GWordOccurs& word)
 		{return(R::RString::HashIndex2(word.Word));}
@@ -151,7 +151,7 @@ public:
 	/**
 	* Compute the second hash index of the name of a data.
 	* @see R::RHashContainer
-	* @param d               Pointer to a data.
+	* @param word            Pointer to a data.
 	*/
 	static int HashIndex2(const GWordOccurs* word)
 		{return(R::RString::HashIndex2(word->Word));}
@@ -159,7 +159,7 @@ public:
 	/**
 	* Compute the second hash index of an array of characters.
 	* @see R::RHashContainer
-	* @param name           Pointer to to the array.
+	* @param word           Pointer to to the array.
 	*/
 	static int HashIndex2(const R::RChar* word)
 		{return(R::RString::HashIndex2(word));}
@@ -167,7 +167,7 @@ public:
 	/**
 	* Compute the second hash index of a string.
 	* @see R::RHashContainer
-	* @param name           String.
+	* @param word           String.
 	*/
 	static int HashIndex2(const R::RString& word)
 		{return(R::RString::HashIndex2(word));}

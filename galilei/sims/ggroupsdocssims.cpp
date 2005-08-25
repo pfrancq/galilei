@@ -74,22 +74,6 @@ GGroupsDocsSimsManager::GGroupsDocsSimsManager(void)
 
 
 //------------------------------------------------------------------------------
-void GGroupsDocsSimsManager::Connect(GSession* session)
-{
-	GPluginManager<GGroupsDocsSimsManager,GFactoryGroupsDocsSims,GGroupsDocsSims>::Connect(session);
-	if(session)
-		session->SetSims(this);
-}
-
-
-//------------------------------------------------------------------------------
-void GGroupsDocsSimsManager::Disconnect(GSession* session)
-{
-	GPluginManager<GGroupsDocsSimsManager,GFactoryGroupsDocsSims,GGroupsDocsSims>::Disconnect(session);
-}
-
-
-//------------------------------------------------------------------------------
 double GGroupsDocsSimsManager::GetSimilarity(const GDoc* doc,const GGroup* grp)
 {
 	if(!Current)

@@ -74,22 +74,6 @@ GProfilesGroupsSimsManager::GProfilesGroupsSimsManager(void)
 
 
 //------------------------------------------------------------------------------
-void GProfilesGroupsSimsManager::Connect(GSession* session)
-{
-	GPluginManager<GProfilesGroupsSimsManager,GFactoryProfilesGroupsSims,GProfilesGroupsSims>::Connect(session);
-	if(session)
-		session->SetSims(this);
-}
-
-
-//------------------------------------------------------------------------------
-void GProfilesGroupsSimsManager::Disconnect(GSession* session)
-{
-	GPluginManager<GProfilesGroupsSimsManager,GFactoryProfilesGroupsSims,GProfilesGroupsSims>::Disconnect(session);
-}
-
-
-//------------------------------------------------------------------------------
 double GProfilesGroupsSimsManager::GetSimilarity(const GSubProfile* sub,const GGroup* grp)
 {
 	if(!Current)

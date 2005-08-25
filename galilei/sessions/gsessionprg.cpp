@@ -417,7 +417,7 @@ void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true
 		throw RException("The method needs one parameter to specify the name of the link computing method (or \"None\").");
 	sprintf(tmp,"Link Computing Method: %s",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
-	(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc")))->SetCurrentMethod((*args)[0]->GetValue(prg));
+	GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod((*args)[0]->GetValue(prg));
 }
 
 
@@ -499,12 +499,12 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tru
 		strcpy(tmp,"Compute Profiles: Current Method");
 	o->WriteStr(tmp);
 	if(args->GetNb()==1)
-		(dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc")))->SetCurrentMethod((*args)[0]->GetValue(prg));
-	if((dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc")))->GetCurrentMethod())
-		(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc")))->GetCurrentMethod()->ApplyConfig();
-	if(!(dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc")))->GetCurrentMethod())
+		GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod((*args)[0]->GetValue(prg));
+	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod())
+		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod()->ApplyConfig();
+	if(!GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod())
 		throw GException (" No Profiling Method chosen.");
-	(dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc")))->GetCurrentMethod()->ApplyConfig();
+	GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->SetComputeModified(otSubProfile,Owner->FirstProfile);
 	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o));
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
@@ -522,13 +522,13 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,
 		strcpy(tmp,"Group Profiles: Current Method");
 	o->WriteStr(tmp);
 	if(args->GetNb()==1)
-		(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->SetCurrentMethod((*args)[0]->GetValue(prg));
-	if(!(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod())
+		GPluginManagers::GetManager<GGroupingManager>("Grouping")->SetCurrentMethod((*args)[0]->GetValue(prg));
+	if(!GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod())
 		throw RException (" No Grouping Method chosen.");
-	(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod()->ApplyConfig();
-	if(!(dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc")))->GetCurrentMethod())
+	GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()->ApplyConfig();
+	if(!GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod())
 		throw RException (" No Group Description Method chosen.");
-	(dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc")))->GetCurrentMethod()->ApplyConfig();
+	GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->SetComputeModified(otGroup,Owner->FirstGroup);
 	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o));
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
@@ -609,7 +609,7 @@ void GSetComputingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,tru
 
 	if(args->GetNb()!=2)
 		throw RException("Method needs two parameters");
-	calc=(dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc")))->GetCurrentMethod();
+	calc=GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod();
 	if(!calc)
 		throw RException("No profiling method selected.");
 	calc->GetFactory()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
@@ -623,7 +623,7 @@ void GSetGroupingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true
 
 	if(args->GetNb()!=2)
 		throw RException("Method needs two parameters.");
-	calc=(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod();
+	calc=GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod();
 	if(!calc)
 		throw RException("No grouping computing method selected.");
 	calc->GetFactory()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
@@ -665,9 +665,9 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 		rec->WriteStr("Compute Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	if((dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc")))->GetCurrentMethod())
-		(dynamic_cast<GLinkCalcManager*>(GPluginManagers::PluginManagers.GetManager("LinkCalc")))->GetCurrentMethod()->ApplyConfig();
-	(dynamic_cast<GProfileCalcManager*>(GPluginManagers::PluginManagers.GetManager("ProfileCalc")))->GetCurrentMethod()->ApplyConfig();
+	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod())
+		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod()->ApplyConfig();
+	GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->SetComputeModified(otSubProfile,Owner->FirstProfile);
 	Owner->Session->CalcProfiles(rec);
 	if(!Owner->FirstProfile) Owner->FirstProfile=true;
@@ -679,8 +679,8 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 		rec->WriteStr("Group Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	(dynamic_cast<GGroupingManager*>(GPluginManagers::PluginManagers.GetManager("Grouping")))->GetCurrentMethod()->ApplyConfig();
-	(dynamic_cast<GGroupCalcManager*>(GPluginManagers::PluginManagers.GetManager("GroupCalc")))->GetCurrentMethod()->ApplyConfig();
+	GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()->ApplyConfig();
+	GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->SetComputeModified(otGroup,Owner->FirstGroup);
 	Owner->Session->GroupingProfiles(rec);
 	if(!Owner->FirstGroup) Owner->FirstGroup=true;
@@ -914,7 +914,7 @@ void GSetStatParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,fal
 
 	if(args->GetNb()!=3)
 		throw RException("Method needs three parameters");
-	mng=dynamic_cast<GStatsCalcManager*>(GPluginManagers::PluginManagers.GetManager("StatsCalc"));
+	mng=GPluginManagers::GetManager<GStatsCalcManager>("StatsCalc");
 	if(!mng)
 		throw RException("No statistics method selected.");
 	calc=mng->GetPlugIn((*args)[0]->GetValue(prg));
@@ -936,7 +936,7 @@ void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args
 	if(args->GetNb())
 		throw RException("Method needs no parameter");
 
-	GStatsCalcManager* Mng=(dynamic_cast<GStatsCalcManager*>(GPluginManagers::PluginManagers.GetManager("StatsCalc")));
+	GStatsCalcManager* Mng=GPluginManagers::GetManager<GStatsCalcManager>("StatsCalc");
 	if(!Mng)
 		throw RException("No manager for the statistics plug-ins");
 

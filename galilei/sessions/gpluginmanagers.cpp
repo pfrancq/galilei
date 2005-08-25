@@ -235,13 +235,6 @@ void GPluginManagers::Load(const R::RContainer<R::RString,true,false>& dirs,bool
 
 
 //-----------------------------------------------------------------------------
-GGenericPluginManager* GPluginManagers::GetManager(const RString& name)
-{
-	return(GetPtr(name));
-}
-
-
-//-----------------------------------------------------------------------------
 RCursor<GGenericPluginManager> GPluginManagers::GetManagers(void)
 {
 	return(RCursor<GGenericPluginManager>(*this));

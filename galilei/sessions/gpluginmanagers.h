@@ -55,6 +55,10 @@ namespace GALILEI{
 class GPluginManagers : public R::RContainer<GGenericPluginManager,true,true>
 {
 public:
+
+	/**
+	* The Manager of Plug-Ins.
+	*/
 	static GPluginManagers PluginManagers;
 
 	/**
@@ -89,9 +93,8 @@ public:
 
 	/*
 	* Load all plug-ins and their dialog boxes.
-	* @param dll             Name of the dynamic link library.
-	* @param handle          Handle to the library contaioning the plug-in.
-	* @param handleDlg       Handle to the library contaioning the dialogs.
+	* @param dirs            Directories to search in.
+	* @param dlg             Should the dialog boxes be loaded?
 	*/
 	void Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg=true);
 
@@ -100,7 +103,10 @@ public:
 	* @param name         The name of the manager to be found
 	* @return GPluginManager The plug-ins manager.
 	*/
-	GGenericPluginManager* GetManager(const R::RString& name);
+	template<class Manager> static Manager* GetManager(const R::RString& name)
+	{
+		return(dynamic_cast<Manager*>(PluginManagers.GetPtr(name)));
+	}
 
 	/**
 	* Get a cursor over all the managers.

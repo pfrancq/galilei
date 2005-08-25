@@ -338,12 +338,16 @@ void GSubject::SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocia
 		size_t newusers=nbprofiles+Data->Profiles.GetNb()-session->GetNbUsers()+1;
 		for(size_t i=session->GetNbUsers();(--newusers)&&(i<maxusers);i++)
 		{
-			session->InsertUser(new GUser(session->GetNewId(otUser),UserNames[i],UserNames[i],session->GetSubjects()->GetNbNodes()));
+			GUser* user=new GUser(cNoRef,UserNames[i],UserNames[i],session->GetSubjects()->GetNbNodes());
+			session->AssignId(user);
+			session->InsertUser(user);
 		}
 		for(newusers++;--newusers;)
 		{
 			RString Usr("User"+itou(session->GetNbUsers()+1));
-			session->InsertUser(new GUser(session->GetNewId(otUser),Usr,Usr,session->GetSubjects()->GetNbNodes()));
+			GUser* user=new GUser(cNoRef,Usr,Usr,session->GetSubjects()->GetNbNodes());
+			session->AssignId(user);
+			session->InsertUser(user);
 		}
 	}
 
@@ -353,7 +357,9 @@ void GSubject::SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocia
 	{
 		if(Cur()->GetPtr(Data->Name,false))
 			continue;
-		session->InsertProfile(prof=new GProfile(Cur(),session->GetNewId(otProfile),Data->Name,nbsocial,5));
+		prof=new GProfile(Cur(),cNoRef,Data->Name,nbsocial,5);
+		session->AssignId(prof);
+		session->InsertProfile(prof);
 		if(nbsocial)
 			nbsocial--;
 		session->GetSubjects()->InsertProfileSubject(prof,Data->Id);

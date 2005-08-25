@@ -81,26 +81,26 @@ public:
 
 	/**
 	* Construct a ranking.
-	* @param path            Path to find the plugins.
-	* @param dlg             Should the dialog box be loaded.
+	* @param rank            Given ranking.
+	* @param engine          Name of the enfine.
 	*/
 	GRanking(int rank,R::RString engine);
 
 	/**
-	* Get the name of the engine the ranking is associated with
-	* @return RString         The name of the search engine
+	* Get the name of the engine the ranking is associated with.
+	* @return Name of the search engine.
 	*/
 	R::RString GetEngine(void) const {return Engine;};
 
 	/**
-	* Get the rank of the current element
-	* @return int             the value of the ranking
+	* Get the rank of the current element.
+	* @return Value of the ranking.
 	*/
 	int GetRank(void) const {return Rank;};
 
 	/**
 	* Set a new ranking value
-	* @param                  the new ranking value
+	* @param rank            New ranking value.
 	*/
 	void SetRank(int rank) {Rank=rank;};
 

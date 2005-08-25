@@ -592,7 +592,7 @@ GSubProfile* GStorageMySQL::LoadSubProfile(GSession* session,unsigned int subpro
 	SubProfile.Start();
 	if(!SubProfile.GetNb())
 		return(0);
-	GLang *lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(SubProfile[1]);
+	GLang *lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(SubProfile[1]);
 	if(!lang)
 		return(0);
 	GProfile* prof=session->GetProfile(atoi(SubProfile[6]));
@@ -647,7 +647,7 @@ void GStorageMySQL::LoadUsers(GSession* session) throw(std::bad_alloc,GException
 		RQuery SubProfiles(Db,Sql);
 		for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 		{
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(SubProfiles[1]);
+			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(SubProfiles[1]);
 			if(!lang)
 				continue;
 			prof=session->GetProfile(atoi(SubProfiles[6]));
@@ -872,7 +872,7 @@ GDoc* GStorageMySQL::LoadDoc(GSession* session,unsigned int docid)
 		return(0);
 
 	// Verify that the langague is active
-	GLang* lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(quer[4]);
+	GLang* lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(quer[4]);
 	if((!lang)&&(!quer[4].IsEmpty()))
 		return(0);
 
@@ -912,7 +912,7 @@ void GStorageMySQL::LoadDocs(GSession* session) throw(std::bad_alloc,GException)
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			// Verify that the langague is active
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(quer[4]);
+			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(quer[4]);
 			if((!lang)&&(!quer[4].IsEmpty()))
 				continue;
 
@@ -1143,7 +1143,7 @@ void GStorageMySQL::SaveGroups(GSession* session) throw(GException)
 	try
 	{
 		RQuery delete1(Db,"DELETE FROM groups");
-		langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+		langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 		for(langs.Start();!langs.End();langs.Next())
 		{
 			lang=langs()->GetPlugin();
@@ -1316,7 +1316,7 @@ GGroup* GStorageMySQL::LoadGroup(GSession*,unsigned int groupid)
 	Group.Start();
 	if(!Group.GetNb())
 		return(0);
-	GLang* lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(Group[1]);
+	GLang* lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(Group[1]);
 	if(!lang)
 		return(0);
 	GGroup* group=new GGroup(atoi(Group[0]),lang,true,Group[2],Group[3]);
@@ -1349,7 +1349,7 @@ void GStorageMySQL::LoadGroups(GSession* session) throw(std::bad_alloc,GExceptio
 		RQuery Groups(Db,Sql);
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(Groups[1]);
+			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(Groups[1]);
 			if(!lang)
 				continue;
 			group=new GGroup(atoi(Groups[0]),lang,true,Groups[2],Groups[3]);
@@ -1424,7 +1424,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(GSession* session,unsigned i
 			v=atoi(grquery[0]);
 
 			//get lang
-			lang=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetPlugIn(grquery[2]);
+			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(grquery[2]);
 
 			// If group id changed -> new group needed
 			if((v!=groupid))

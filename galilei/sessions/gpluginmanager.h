@@ -245,14 +245,14 @@ public:
 
 	/**
 	* Read config of the manager.
-	* @param parent          Parent Tag.
+	* @param t               Tag.
 	*/
 	virtual void ReadConfig(RXMLTag* t);
 
 	/**
 	* Store config of the manager.
 	* @param xml             XML Structure.
-	* @param parent          Parent tag.
+	* @param t               Tag.
 	*/
 	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
 

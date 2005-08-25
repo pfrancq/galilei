@@ -86,27 +86,20 @@ public:
 	GSession(GStorage* str,unsigned int maxdocs=0,unsigned int maxsubprofiles=0,unsigned int maxgroups=0);
 
 	/**
-	* Get a pointer to the unique session of the process.
-	* @return Pointer to a GSession.
+	* Connect the session to managers.
 	*/
-	static GSession* Get(void);
+	void Connect(void);
+
+
+	//-----------------------------------------------------
+	/** @name General Methods
+	*/
+	// @{
 
 	/**
-	* See if the session must break.
+	* Re-init the session (clear all containers).
 	*/
-	static bool Break(void);
-
-	/**
-	* Ask to session to break as soon as possible. The method ResetBreak should
-	* be called to allow the session to do something again.
-	*/
-	static void SetBreak(void);
-
-	/**
-	* Reset the break on a session. This method must be called after a SetBreak
-	* to allow the session to do something again.
-	*/
-	static void ResetBreak(void);
+	void ReInit(void);
 
 	/**
 	* Must the objects be saved after computation.
@@ -135,11 +128,6 @@ public:
 	void SetComputeModified(tObjType objtype,bool modified=true);
 
 	/**
-	* Connect the session to managers.
-	*/
-	void Connect(void);
-
-	/**
 	* Get the historic groups manager.
 	* @return Pointer to GGroupsHistoryMng.
 	*/
@@ -159,50 +147,6 @@ public:
 	GSubjects* GetSubjects(bool load=true) const;
 
 	/**
-	* Set the manager for the similarities between (sub)profiles.
-	* @param sims            Pointer to the manager.
-	*/
-	void SetSims(GProfilesSimsManager* sims);
-
-	/**
-	* Get the manager for the similarities between (sub)profiles.
-	*/
-	GProfilesSimsManager* GetProfilesSims(void) const;
-
-	/**
-	* Set the manager for the similarities between (sub)profiles/documents.
-	* @param sims            Pointer to the manager.
-	*/
-	void SetSims(GProfilesDocsSimsManager* sims);
-
-	/**
-	* Get the manager for the similarities between (sub)profiles/documents.
-	*/
-	GProfilesDocsSimsManager* GetProfilesDocsSims(void) const;
-
-	/**
-	* Set the manager for the similarities between groups/documents.
-	* @param sims            Pointer to the manager.
-	*/
-	void SetSims(GGroupsDocsSimsManager* sims);
-
-	/**
-	* Get the manager for the similarities between groups/documents.
-	*/
-	GGroupsDocsSimsManager* GetGroupsDocsSims(void) const;
-
-	/**
-	* Set the manager for the similarities between groups/profiles.
-	* @param sims            Pointer to the manager.
-	*/
-	void SetSims(GProfilesGroupsSimsManager* sims);
-
-	/**
-	* Get the manager for the similarities between profiles/documents.
-	*/
-	GProfilesGroupsSimsManager* GetProfilesGroupsSims(void) const;
-
-	/**
 	* Set the slot for the session.
 	*/
 	void SetSlot(GSlot* slot);
@@ -213,52 +157,49 @@ public:
 	GSlot* GetSlot(void) const;
 
 	/**
-	* Assign an identifier to a new data of a given dictionary.
-	* @param data           Data.
-	* @param dict           Dictionary.
+	* Run a "program" for this session.
+	* @param rec            Slot that receive information.
+	* @param filename       Name of the file.
 	*/
-	virtual void AssignId(GData* data,const GDict* dict);
+	void RunPrg(GSlot* rec,const char* filename);
 
 	/**
-	* Assign an identifier to a new group.
-	* @param grp            Group.
+	* Set The Current RandomSeed.
+	* @param rand             The current RandomSeed.
 	*/
-	virtual void AssignId(GGroup* grp);
+	void SetCurrentRandom(int rand);
 
 	/**
-	* Assign an identifier to a new document.
-	* @param doc            Document.
+	* Get The Current RandomSeed.
+	* @return The current RandomSeed.
 	*/
-	virtual void AssignId(GDoc* doc);
+	int GetCurrentRandom(void) const;
 
 	/**
-	* Assign an identifier to a new subprofile.
-	* @param sub             Subprofile.
+	* Get The Current Random Value.
+	* @param max              The max Random Value.
+	* @return The current Random value * max.
 	*/
-	virtual void AssignId(GSubProfile* sub);
+	int GetCurrentRandomValue(unsigned int max);
+
+	/**
+	* Get the random number generator.
+	* @returns Pointer to RMath::RRandom;
+	*/
+	R::RRandom* GetRandom(void) const;
+
+	//@} General methods
+
+
+	//-----------------------------------------------------
+	/** @name Documents Methods
+	*/
+	// @{
 
 	/**
 	* Get a cursor on all the documents.
 	*/
 	R::RCursor<GDoc> GetDocs(void) const;
-
-	/**
-	* Get a cursor on the documents of a given langage.
-	* @param lang            Language of the documents.
-	*/
-	R::RCursor<GDoc> GetDocs(GLang* lang) const;
-
-	/**
-	* Fill a given array with all the documents of a given language. The array
-	* must be created and must be large enough to hold all the documents. It
-	* can contained null pointers.
-	* @see This method is used in GSubjects to create assessments for
-	*      profiles during a simulation of a real system.
-	* @param docs            Pointer to the array.
-	* @returns Size of the data (including the null pointers) copied in the
-	* array.
-	*/
-	unsigned int FillDocs(GDoc** docs);
 
 	/**
 	* Get the number of documents handled.
@@ -273,6 +214,12 @@ public:
 	unsigned int GetMaxPosDoc(void) const;
 
 	/**
+	* Get a cursor on the documents of a given langage.
+	* @param lang            Language of the documents.
+	*/
+	R::RCursor<GDoc> GetDocs(GLang* lang) const;
+
+	/**
 	* Get the number of documents handled for a given langage.
 	* @param lang          Langage of the documents
 	* @returns Number of documents of this language.
@@ -280,10 +227,45 @@ public:
 	unsigned int GetNbDocs(GLang* lang) const;
 
 	/**
-	* Get an identificator that can be assigned to a new document.
-	* @return unsigned int
+	* Fill a given array with all the documents of a given language. The array
+	* must be created and must be large enough to hold all the documents. It
+	* can contained null pointers.
+	* @see This method is used in GSubjects to create assessments for
+	*      profiles during a simulation of a real system.
+	* @param docs            Pointer to the array.
+	* @returns Size of the data (including the null pointers) copied in the
+	* array.
 	*/
-	unsigned int GetNewId(void) const;
+	unsigned int FillDocs(GDoc** docs);
+
+	/**
+	* Get a document corresponding to a given identificator.
+	* @param id              Identificator of the document.
+	* @param load            If set to true, the document is eventually loaded into
+	*                        memory.
+	*/
+	GDoc* GetDoc(unsigned int id,bool load=true) const;
+
+	/**
+	* Get a document corresponding to a given URL.
+	* @param url        URL of the document.
+	* @param load            If set to true, the document is eventually loaded into
+	*                        memory.
+	*/
+	GDoc* GetDoc(const char* url,bool load=true) const;
+
+	/**
+	* Assign an identifier to a new data of a given dictionary.
+	* @param data           Data.
+	* @param dict           Dictionary.
+	*/
+	void AssignId(GData* data,const GDict* dict);
+
+	/**
+	* Assign an identifier to a new document.
+	* @param doc            Document.
+	*/
+	void AssignId(GDoc* doc);
 
 	/**
 	* Insert a document. The document is stored in the different containers.
@@ -300,33 +282,9 @@ public:
 	void MoveDoc(GDoc* d);
 
 	/**
-	* Get a document corresponding to a given identificator.
-	* @param id              Identificator of the document.
-	* @param load            If set to true, the document is eventually loaded into
-	*                        memory.
-	* @return Pointer to GDoc.
-	*/
-	GDoc* GetDoc(unsigned int id,bool load=true) const;
-
-	/**
-	* Get a document corresponding to a given URL.
-	* @param url        URL of the document.
-	* @return Pointer to GDoc or null if the document does no exist.
-	*/
-	GDoc* GetDoc(const char* url);
-
-	/**
 	* Clear all the documents.
 	*/
 	void ClearDocs(void);
-
-	/**
-	* Create a XML structure with the content of a document. The structure
-	* created has to be desallocate by the caller.
-	* @param doc             Document to analyse.
-	* @return Pointer to a GDocXML structure.
-	*/
-	GDocXML* CreateDocXML(GDoc* doc);
 
 	/**
 	* Analyse the documents. At the end, all the enabled post-docs methods are
@@ -336,17 +294,16 @@ public:
 	void AnalyseDocs(GSlot* rec=0);
 
 	/**
-	* Analyse the documents. At the end, all the enabled post-docs methods are
-	* run.
+	* Analyse a document.
+	* @param xml             DocXML representation of the document. If the
+	*                        pointer is null, the XML structure is created and
+	*                        it must be released by the caller.
+	* @param doc             Pointer to the document to analyse.
+	* @param newdocs         Pointer to a container of new documents added
+	*                        after the analysis of the links.
 	* @param rec             Receiver for the signals.
 	*/
-	void AnalyseNewDocs(GSlot* rec=0);
-
-	/**
-	* run post-grouping methods are called.
-	* @param rec            Receiver of the signals.
-	*/
-	void ComputePostDoc(GSlot* rec);
+	void AnalyseDoc(GDocXML* &xml,GDoc* doc,R::RContainer<GDoc,false,true>* newdocs=0,GSlot* rec=0);
 
 	/**
 	* Send a Query to the Meta engine selected. The pages are researched, ranked and return
@@ -354,6 +311,14 @@ public:
 	* @param &results       The set of results returned by the meta engine
 	*/
 	void QueryMetaEngine(R::RContainer<R::RString,true,false> &keyWords);
+
+	//@} Documents
+
+
+	//-----------------------------------------------------
+	/** @name Users/Profiles/Subprofiles Methods
+	*/
+	// @{
 
 	/**
 	* Get a cursor over the users used in the system.
@@ -367,20 +332,7 @@ public:
 	size_t GetNbUsers(void) const;
 
 	/**
-	* Get an identificator that can be assigned to a new object.
-	* @param obj             Object type (otProfile,otSubProfile,otUser).
-	* @return unsigned int
-	*/
-	size_t GetNewId(tObjType obj);
-
-	/**
-	* Insert an user in the container.
-	* @param usr             Pointer to the user to insert.
-	*/
-	void InsertUser(GUser* usr);
-
-	/**
-	* Get a user from the container.
+	* Get a user.
 	* @param id              Identificator.
 	* @param load            If set to true, the document is eventually loaded into
 	*                        memory.
@@ -388,18 +340,16 @@ public:
 	GUser* GetUser(unsigned int id,bool load=true) const;
 
 	/**
-	* Insert a new profile in the container.
-	* @param p               Pointer to the profile to add.
+	* Assign an identifier to a new user.
+	* @param user            Pointer to the user.
 	*/
-	void InsertProfile(GProfile* p);
+	void AssignId(GUser* user);
 
 	/**
-	* Get a profile with a specific identifier.
-	* @param id              Identifier.
-	* @param load            If set to true, the document is eventually loaded into
-	*                        memory.
+	* Insert an user.
+	* @param user            Pointer to the user to insert.
 	*/
-	GProfile* GetProfile(const unsigned int id,bool load=true) const;
+	void InsertUser(GUser* user);
 
 	/**
 	* Get a cursor over the profiles of the system.
@@ -412,10 +362,37 @@ public:
 	size_t GetProfilesNb(void) const;
 
 	/**
-	* Insert a subprofiles in the container.
-	* @param s              Pointer to the subprofile to add.
+	* Get a profile with a specific identifier.
+	* @param id              Identifier.
+	* @param load            If set to true, the document is eventually loaded into
+	*                        memory.
 	*/
-	void InsertSubProfile(GSubProfile* s);
+	GProfile* GetProfile(const unsigned int id,bool load=true) const;
+
+	/**
+	* Assign an identifier to a new user.
+	* @param p               Pointer to the profile.
+	*/
+	void AssignId(GProfile* p);
+
+	/**
+	* Insert a new profile.
+	* @param p               Pointer to the profile to add.
+	*/
+	void InsertProfile(GProfile* p);
+
+	/**
+	* Get a cursor over the subprofiles of the system for a given language.
+	* @param lang           Language.
+	*/
+	R::RCursor<GSubProfile> GetSubProfiles(const GLang* lang) const;
+
+	/**
+	* Get the number of subprofiles defined in the system for a given language.
+	* @param lang            Language. If null, the total number of subprofiles
+	*                        is computed.
+	*/
+	size_t GetSubProfilesNb(const GLang* lang) const;
 
 	/**
 	* Get a subprofile with a specific identifier.
@@ -428,48 +405,41 @@ public:
 	GSubProfile* GetSubProfile(const unsigned int id,const GLang* lang,bool load=true) const;
 
 	/**
-	* Get a cursor over the subprofiles of the system for a given language.
-	* @param lang           Language.
+	* Assign an identifier to a new subprofile.
+	* @param sub             Subprofile.
 	*/
-	R::RCursor<GSubProfile> GetSubProfiles(const GLang* lang) const;
+	void AssignId(GSubProfile* sub);
 
 	/**
-	* Compute the (sub)profiles.
+	* Insert a subprofiles in the container.
+	* @param s              Pointer to the subprofile to add.
+	*/
+	void InsertSubProfile(GSubProfile* s);
+
+	/**
+	* Clear the subprofiles of a given language.
+	* @param lang       Language of the groups to delete.
+	*/
+	void ClearSubprofiles(GLang* lang);
+
+	/**
+	* Compute the profiles.
 	* @param rec            Receiver for the signals.
 	*/
-	void CalcProfiles(GSlot* rec);
+	void CalcProfiles(GSlot* rec=0);
 
 	/**
 	* Compute a profile.
 	* @param rec            Receiver for the signals.
 	* @param profile        Profile to compute.
 	*/
-	void CalcProfile(GSlot* rec,GProfile* profile);
+	void CalcProfile(GProfile* profile,GSlot* rec=0);
 
 	/**
-	* run pre-profiling methods are called.
-	* @param rec            Receiver of the signals.
+	* A document was updated and the corresponding feedbacks must be updated.
+	* @param docid           Identificator of the document.
 	*/
-	void ComputePreProfile(GSlot* rec);
-
-	/**
-	* run post-profiling methods are called.
-	* @param rec            Receiver of the signals.
-	*/
-	void ComputePostProfile(GSlot* rec);
-
-	/**
-	* Groups the subprofile into virtual communities. At the end, all the
-	* enabled post-grouping methods are called.
-	* @param rec            Receiver of the signals.
-	*/
-	void GroupingProfiles(GSlot* rec);
-
-	/**
-	* run post-grouping methods are called.
-	* @param rec            Receiver of the signals.
-	*/
-	void ComputePostGroup(GSlot* rec);
+	void UpdateProfiles(unsigned int docid);
 
 	/**
 	* Insert a new Feedback.
@@ -486,11 +456,25 @@ public:
 	*/
 	void ClearFdbks(void);
 
+	// @} Users/Profiles/Subprofiles
+
+
+	//-----------------------------------------------------
+	/** @name Groups Methods
+	*/
+	// @{
+
 	/**
 	* Get a cursor on all the groups.
 	* @return GGroupCursor.
 	*/
 	R::RCursor<GGroup> GetGroups(void) const;
+
+	/**
+	* Get the number of groups handled.
+	* @returns Number of groups.
+	*/
+	unsigned int GetNbGroups(void) const;
 
 	/**
 	* Get a cursor on the groups of a given langage.
@@ -500,17 +484,10 @@ public:
 	R::RCursor<GGroup> GetGroups(GLang* lang);
 
 	/**
-	* Insert a group. The group is also stored in the container correspondong to
-	* its language.
-	* @param grp             Pointer to the group.
+	* Get the number of groups of a given langauge handled.
+	* @returns Number of groups.
 	*/
-	void InsertGroup(GGroup* grp);
-
-	/**
-	* Delete a group.
-	* @param grp             Pointer to the group.
-	*/
-	void DeleteGroup(GGroup* grp);
+	unsigned int GetNbGroups(GLang* lang) const;
 
 	/**
 	* Get the group where the given subprofile is attached.
@@ -531,71 +508,41 @@ public:
 	GGroup* GetGroup(unsigned int id,bool load=true) const;
 
 	/**
-	* Get the number of groups handled.
-	* @returns Number of groups.
+	* Assign an identifier to a new group.
+	* @param grp            Group.
 	*/
-	unsigned int GetNbGroups(void) const;
+	void AssignId(GGroup* grp);
 
 	/**
-	* Get the number of groups of a given langauge handled.
-	* @returns Number of groups.
+	* Insert a group. The group is also stored in the container correspondong to
+	* its language.
+	* @param grp             Pointer to the group.
 	*/
-	unsigned int GetNbGroups(GLang* lang) const;
+	void InsertGroup(GGroup* grp);
+
+	/**
+	* Delete a group.
+	* @param grp             Pointer to the group.
+	*/
+	void DeleteGroup(GGroup* grp);
 
 	/**
 	* Clear the groups of a given language.
 	* @param lang       Language of the groups to delete.
 	*/
-	void Clear(GLang* lang);
+	void ClearGroups(GLang* lang);
+
+	/**
+	* Groups the subprofile into virtual communities. At the end, all the
+	* enabled post-grouping methods are called.
+	* @param rec            Receiver of the signals.
+	*/
+	void GroupingProfiles(GSlot* rec);
 
 	/**
 	* Copy the ideal groupment in the current one.
 	*/
 	void CopyIdealGroups(void);
-
-	/**
-	* Get a cursor over the filters of the system.
-	*/
-	R::RCursor<GFactoryFilter> GetFiltersCursor(void);
-
-	/**
-	* Run a "program" for this session.
-	* @param rec            Slot that receive information.
-	* @param filename       Name of the file.
-	*/
-	void RunPrg(GSlot* rec,const char* filename);
-
-	/**
-	* Run the filter on the docments
-	* @param nbdocs         The number of docs where the word must be present
-	* @param nboccurs       The minimal occurs for the word in a document
-	*/
-	void DocsFilter(int nbdocs,int nboccurs);
-
-	/**
-	* Get The Current RandomSeed.
-	* @return The current RandomSeed.
-	*/
-	int GetCurrentRandom(void) const;
-
-	/**
-	* Set The Current RandomSeed.
-	* @param rand             The current RandomSeed.
-	*/
-	void SetCurrentRandom(int rand);
-
-	/**
-	* Get The Current Random Value.
-	* @param max              The max Random Value.
-	* @return The current Random value * max.
-	*/
-	int GetCurrentRandomValue(unsigned int max);
-
-	/**
-	* Get the random number generator.
-	* @returns Pointer to RMath::RRandom;
-	*/
-	R::RRandom* GetRandom(void) const;
 
 	/**
 	* load the historic groups.
@@ -608,19 +555,37 @@ public:
 	void LoadHistoricGroupsByDate(R::RString mindate, R::RString maxdate);
 
 	/**
-	* Re-init the session (clear all containers).
+	* A subprofile was updated and the corresponding groups must be updated.
+	* @param subid           Identificator of the subprofile.
 	*/
-	void ReInit(void);
+	void UpdateGroups(unsigned int subid);
+
+	// @} Groups
+
+
+	//-----------------------------------------------------
+	/**
+	* Get a pointer to the unique session of the process.
+	* @return Pointer to a GSession.
+	*/
+	static GSession* Get(void);
 
 	/**
-	* Export the vectors/words matrix
-	* @param rec            Slot that can receive ionformation.
-	* @param type           type of export ("Profiles", "Documents" or "Groups")
-	* @param filename       export file name
-	* @param lang           lang of the export
-	* @param label          display words id aned vectors id ?
+	* See if the session must break.
 	*/
-	virtual void ExportMatrix(GSlot* rec,const char* type, const char* filename, GLang* lang, bool label);
+	static bool Break(void);
+
+	/**
+	* Ask to session to break as soon as possible. The method ResetBreak should
+	* be called to allow the session to do something again.
+	*/
+	static void SetBreak(void);
+
+	/**
+	* Reset the break on a session. This method must be called after a SetBreak
+	* to allow the session to do something again.
+	*/
+	static void ResetBreak(void);
 
 	/**
 	* Add a handler to the list of handlers.
@@ -648,18 +613,6 @@ public:
 		for(Handlers.Start();!Handlers.End();Handlers.Next())
 			Handlers()->Event(obj,event);
 	}
-
-	/**
-	* A document was updated and the corresponding feedbacks must be updated.
-	* @param docid           Identificator of the document.
-	*/
-	void UpdateProfiles(unsigned int docid);
-
-	/**
-	* A subprofile was updated and the corresponding groups must be updated.
-	* @param subid           Identificator of the subprofile.
-	*/
-	void UpdateGroups(unsigned int subid);
 
 	/**
 	* Destructor.

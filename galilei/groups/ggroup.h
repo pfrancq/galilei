@@ -158,7 +158,6 @@ public:
 
 	/**
 	* Load information from the current storage.
-	* @param infos           Container hold
 	*/
 	virtual void LoadInfos(void) const;
 
@@ -219,7 +218,7 @@ public:
 	/**
 	* Compute the number of subprofiles of a given group that are also in the
 	* current one.
-	* @param grp             Group.
+	* @param subject         Pointer to the subject.
 	*/
 	unsigned int GetNbSubProfiles(const GSubject* subject) const;
 

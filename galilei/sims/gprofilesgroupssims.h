@@ -127,18 +127,6 @@ public:
 	GProfilesGroupsSimsManager(void);
 
 	/**
-	* Connect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Disconnect(GSession* session);
-
-	/**
 	* Get the similarity between a group and a subprofile.
 	* @param sub             Pointer to the subprofile.
 	* @param grp             Pointer to the group.

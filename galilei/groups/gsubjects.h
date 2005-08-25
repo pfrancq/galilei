@@ -69,7 +69,6 @@ class GSubjects : public R::RTree<GSubject,true,false>, public GParams
 protected:
 
 	class Intern;
-	class GroupLang;
 
 	/*
 	* Internal data.
@@ -107,14 +106,13 @@ protected:
 
 	/**
 	* Simulatation of assessments for a profile on a given subject.
-	* @param groups         Container of groups associated with a given subject.
 	* @param prof           Profile that assesses the documents.
 	* @param sub            Subject.
 	* @param maxDocsOK      Maximal relevant Documents to assess.
 	* @param maxDocsKO      Maximal fuzzy relevant Documents to assess.
 	* @param maxDocsH       Maximal irrelevant Documents to assess.
 	*/
-	void ProfileAssess(R::RContainer<GroupLang,true,true>& groups,GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH);
+	void ProfileAssess(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH);
 
 	/**
 	* Get the ideal group of the subprofile.

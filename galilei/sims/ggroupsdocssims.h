@@ -128,18 +128,6 @@ public:
 	GGroupsDocsSimsManager(void);
 
 	/**
-	* Connect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Disconnect(GSession* session);
-
-	/**
 	* Get the similarity between a group and a document.
 	* @param doc             Pointer to the document.
 	* @param grp             Pointer to the group.

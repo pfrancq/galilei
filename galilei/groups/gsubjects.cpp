@@ -93,26 +93,6 @@ public:
 
 //------------------------------------------------------------------------------
 //
-//  GSubjects::GroupLang
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-class GSubjects::GroupLang
-{
-public:
-	GLang* Lang;
-	GGroup* Group;
-
-	GroupLang(GLang* lang,GGroup* group) : Lang(lang), Group(group) {}
-	int Compare(const GroupLang& grp) const { return(Lang->Compare(*grp.Lang));}
-	int Compare(const GLang* lang) const { return(Lang->Compare(lang));}
-};
-
-
-
-//------------------------------------------------------------------------------
-//
 // class GSubjects::Intern
 //
 //------------------------------------------------------------------------------
@@ -255,7 +235,7 @@ void GSubjects::CreateSet(void)
 	unsigned int nbprof,nbsocial;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 	RCursor<GFactoryLang> CurLang;
-	RContainer<GroupLang,true,true> Groups(20);          // Groups created for a given subject
+//	RContainer<GroupLang,true,true> Groups(20);          // Groups created for a given subject
 
 	// Init Part
 	Data->LastAdded.Clear();
@@ -268,9 +248,6 @@ void GSubjects::CreateSet(void)
 	{
 		if(!Subs()->IsUsed())
 			continue;
-
-		// Clear the created groups
-		Groups.Clear();
 
 		// Copy the documents of the session in Docs;
 		Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
@@ -293,13 +270,13 @@ void GSubjects::CreateSet(void)
 		// Assess documents
 		Prof=Subs()->GetProfiles();
 		for(Prof.Start();!Prof.End();Prof.Next())
-			ProfileAssess(Groups,Prof(),Subs(),maxDocsOK,maxDocsKO,maxDocsH);
+			ProfileAssess(Prof(),Subs(),maxDocsOK,maxDocsKO,maxDocsH);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH)
+void GSubjects::ProfileAssess(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH)
 {
 	unsigned int nbDocsOK,nbDocsKO,nbDocsH;
 	unsigned int i;
@@ -323,18 +300,7 @@ void GSubjects::ProfileAssess(RContainer<GroupLang,true,true>& groups,GProfile* 
 			continue;
 		if(!Langs.IsIn(Lang))
 		{
-/*			GroupLang* Grp=groups.GetPtr<GLang*>(Lang);
-			if(!Grp)
-			{
-				GGroup* NewGrp;
-
-				// A ideal group must be created
-				Data->IdealGroups->InsertGroup(NewGrp=new GGroup(Data->IdealGroups->GetNbGroups(),Lang,false,RDate(""),RDate("")));
-				groups.InsertPtr(Grp=new GroupLang(Lang,NewGrp));
-			}
-
-			// and the corresponding subprofile inserted
-			Grp->Group->InsertSubProfile(prof->GetInsertSubProfile(Lang,Data->Session));*/
+			// Corresponding subprofile inserted
 			Data->LastAdded.InsertPtr(subprofile=prof->GetInsertSubProfile(Lang,Data->Session));
 			sub->InsertSubProfile(subprofile);
 			Langs.InsertPtr(Lang);
@@ -506,7 +472,7 @@ void GSubjects::ComputeTotal(void)
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
-	Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+	Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		lang=Langs()->GetPlugin();
@@ -762,7 +728,6 @@ bool GSubjects::AddTopic(void)
 	RCursor<GProfile> Prof;
 	unsigned int nbprof,nbsocial;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
-	RContainer<GroupLang,true,true> Groups(20);          // Groups created for a given subject
 
 	// Apply Config
 	Apply();
@@ -804,7 +769,7 @@ bool GSubjects::AddTopic(void)
 	// Assess documents
 	Prof=newSubject->GetProfiles();
 	for(Prof.Start();!Prof.End();Prof.Next())
-		ProfileAssess(Groups,Prof(),newSubject,maxDocsOK,maxDocsKO,maxDocsH);
+		ProfileAssess(Prof(),newSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
 	if(Data->SaveSimulation)
 	{
@@ -825,10 +790,8 @@ unsigned int GSubjects::AddProfiles(void)
 	GSubject* usedSubject;
 	RCursor<GProfile> Prof;
 	R::RCursor<GGroup> CurGrps;
-	GGroup* Grp;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 	RCursor<GSubProfile> Sub;
-	RContainer<GroupLang,true,true> Groups(20);          // Groups created for a given subject
 
 	// Apply Config
 	Apply();
@@ -857,28 +820,6 @@ unsigned int GSubjects::AddProfiles(void)
 	if(!usedSubject)
 		return(0);
 
-	// Catch all the ideal groups for this subject
-	// It is suppose that the subject of the group is the subject of any
-	// subprofile contained in it.
-/*	RCursor<GFactoryLang> Langs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
-	for(Langs.Start();!Langs.End();Langs.Next())
-	{
-		GLang* lang=Langs()->GetPlugin();
-		if(!lang) continue;
-		CurGrps=Data->IdealGroups->GetGroups(lang);
-		for(CurGrps.Start(),Grp=0;!CurGrps.End();CurGrps.Next())
-		{
-			Sub=CurGrps()->GetSubProfiles();
-			Sub.Start();
-			if(Sub.End()) continue;
-			if(GetSubject(Sub())->GetId()==usedSubject->GetId())
-			{
-				Groups.InsertPtr(new GroupLang(lang,CurGrps()));
-				break;
-			}
-		}
-	}*/
-
 	// Copy the documents of the same language of the session in Docs;
 	Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
 
@@ -892,7 +833,7 @@ unsigned int GSubjects::AddProfiles(void)
 	// Assess documents
 	Prof=usedSubject->GetProfiles();
 	for(Prof.Start();!Prof.End();Prof.Next())
-		ProfileAssess(Groups,Prof(),usedSubject,maxDocsOK,maxDocsKO,maxDocsH);
+		ProfileAssess(Prof(),usedSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
 	// optional saving
 	if(Data->SaveSimulation)
