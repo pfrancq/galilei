@@ -172,7 +172,7 @@ void GTextAnalyse::Connect(GSession* session) throw(GException)
 	GDocAnalyse::Connect(session);
 
 	// Create local structures
-	CurLangs=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetFactories();
+	CurLangs=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
 	Sl=new unsigned int[CurLangs.GetNb()];
 	Sldiff=new unsigned int[CurLangs.GetNb()];
 	Weights=new RDblHashContainer<WordWeight,27,27,false>(500,250);
@@ -272,7 +272,7 @@ void GTextAnalyse::VerifyDirect(void) throw(bad_alloc)
 		delete[] Direct;
 		Direct=ptr;
 		for(i=2500+1,ptr=&Direct[NbDirect];--i;ptr++)
-			(*ptr)=new WordWeight((dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNbFactories());
+			(*ptr)=new WordWeight(GPluginManagers::GetManager<GLangManager>("Lang")->GetNbFactories());
 		NbDirect+=2500;
 	}
 }
@@ -406,7 +406,7 @@ void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 		w=(*Section)[Index];
 		if(FindLang)
 		{
-			for(i=(dynamic_cast<GLangManager*>(GPluginManagers::PluginManagers.GetManager("Lang")))->GetNbFactories()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
+			for(i=GPluginManagers::GetManager<GLangManager>("Lang")->GetNbFactories()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
 			{
 				if(*is)
 					(*tmp2)++;
@@ -863,7 +863,8 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 	// Analyse the content of link tags
 	link = xml->GetLinks ();
 	RAssert(link);
-	AnalyseLinksTag(link,UseExternalLinks,tmpDocs);
+	if(tmpDocs)
+		AnalyseLinksTag(link,UseExternalLinks,tmpDocs);
 
 	// Determine the Language if necessary.
 	if(FindLang)
