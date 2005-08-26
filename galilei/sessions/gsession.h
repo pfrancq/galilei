@@ -85,16 +85,22 @@ public:
 	*/
 	GSession(GStorage* str,unsigned int maxdocs=0,unsigned int maxsubprofiles=0,unsigned int maxgroups=0);
 
+	//-----------------------------------------------------
+	/** @name General Methods
+	*/
+	// @{
+
 	/**
 	* Connect the session to managers.
 	*/
 	void Connect(void);
 
-
-	//-----------------------------------------------------
-	/** @name General Methods
+	/**
+	* Force some objects to be re-computed even if they are updated.
+	* @param type            Type of the objects. Only 'otDocs', 'otUsers' and
+	*                        'otGroups' are allowed.
 	*/
-	// @{
+	void ForceReCompute(tObjType type);
 
 	/**
 	* Re-init the session (clear all containers).
@@ -102,30 +108,15 @@ public:
 	void ReInit(void);
 
 	/**
-	* Must the objects be saved after computation.
-	* @param objtype        Type of the object.
+	* Verify if the results of the computations must be saved.
 	*/
-	bool MustSave(tObjType objtype) const;
+	bool MustSaveResults(void) const;
 
 	/**
-	* Must only the modified objects be computed.
-	* @param objtype        Type of the object.
-	*/
-	bool ComputeModified(tObjType objtype) const;
-
-	/**
-	* Must the objects be saved.
-	* @param objtype        Type of the object.
+	* Set if the results of the computation must be saved or not.
 	* @param save           Save the objects after computation?
 	*/
-	void SetSave(tObjType objtype,bool save=true);
-
-	/**
-	* Must only the modified objects be computed.
-	* @param objtype        Type of the object.
-	* @param modified       Computed only modified objects?
-	*/
-	void SetComputeModified(tObjType objtype,bool modified=true);
+	void SetSaveResults(bool save=true);
 
 	/**
 	* Get the historic groups manager.

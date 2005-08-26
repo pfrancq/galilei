@@ -73,11 +73,6 @@ protected:
 	*/
 	R::RContainer<GSubProfile,false,true> SubProfiles;
 
-	/**
-	* Should the method starts from the current clustering.
-	*/
-	bool Modified;
-
 public:
 
 	/**
@@ -100,11 +95,9 @@ public:
 	/**
 	* Make the groups.
 	* @param rec            Receiver of the signals.
-	* @param modified       Should the method restart from the current
-	*                       clustering (true) or start from scratch (false).
 	* @param save           Save modified elements.
 	*/
-	void Grouping(GSlot* rec,bool modified,bool save) throw(GException);
+	void Grouping(GSlot* rec,bool save) throw(GException);
 
 	/**
 	* Destructor of tghe grouping method.

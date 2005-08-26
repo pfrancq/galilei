@@ -114,16 +114,6 @@ public:
 	double PercAss;
 
 	/**
-	* First profile computing has be done.
-	*/
-	bool FirstProfile;
-
-	/**
-	* First groupment has be done.
-	*/
-	bool FirstGroup;
-
-	/**
 	* When TrackNewProfile is true, the system
 	*/
 	bool TrackNewProfiles;

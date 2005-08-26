@@ -203,7 +203,7 @@ bool GLang::InStop(const RString& name) const
 void GLang::IncRef(unsigned int id,tObjType ObjType)
 {
 	unsigned int nb=GetDict()->IncRef(id,ObjType);
-	if(Session&&Session->MustSave(ObjType)&&Session->GetStorage())
+	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(ObjType,this,id,nb);
 }
 
@@ -212,7 +212,7 @@ void GLang::IncRef(unsigned int id,tObjType ObjType)
 void GLang::DecRef(unsigned int id,tObjType ObjType)
 {
 	unsigned int nb=GetDict()->DecRef(id,ObjType);
-	if(Session&&Session->MustSave(ObjType)&&Session->GetStorage())
+	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(ObjType,this,id,nb);
 }
 
@@ -228,7 +228,7 @@ unsigned int GLang::GetRef(unsigned int id,tObjType ObjType)
 void GLang::IncRef(tObjType ObjType)
 {
 	unsigned int nb=GetDict()->IncRef(ObjType);
-	if(Session&&Session->MustSave(ObjType)&&Session->GetStorage())
+	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(ObjType,this,nb);
 }
 
@@ -237,7 +237,7 @@ void GLang::IncRef(tObjType ObjType)
 void GLang::DecRef(tObjType ObjType)
 {
 	unsigned int nb=GetDict()->DecRef(ObjType);
-	if(Session&&Session->MustSave(ObjType)&&Session->GetStorage())
+	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(ObjType,this,nb);
 }
 

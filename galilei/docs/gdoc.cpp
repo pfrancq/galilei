@@ -102,6 +102,17 @@ int GDoc::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
+void GDoc::ClearInfos(void)
+{
+	// Clear the information
+	GWeightInfos::Clear();
+
+	// Make sure that it will be re-computed
+	Computed=RDate::null;
+}
+
+
+//------------------------------------------------------------------------------
 void GDoc::LoadInfos(void) const
 {
 	RContainer<GWeightInfo,false,true> Infos(1000,500);

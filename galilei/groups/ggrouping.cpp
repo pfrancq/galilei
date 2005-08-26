@@ -66,14 +66,12 @@ GGrouping::GGrouping(GFactoryGrouping* fac) throw(std::bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GGrouping::Grouping(GSlot* rec,bool modified,bool save) throw(GException)
+void GGrouping::Grouping(GSlot* rec,bool save) throw(GException)
 {
 	R::RCursor<GFactoryLang> CurLang;
 	GGroupCalc* CalcDesc;
 	RCursor<GSubProfile> cur;
 	R::RCursor<GGroup> Groups;
-
-	Modified=modified;
 
 	// Go trough each language.
 	CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();

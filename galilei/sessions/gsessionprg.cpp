@@ -117,15 +117,6 @@ public:
 
 
 //------------------------------------------------------------------------------
-class GSetAutoSaveI : public GSM
-{
-public:
-	GSetAutoSaveI(GPrgClassSession* o) : GSM("SetAutoSave",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
-};
-
-
-//------------------------------------------------------------------------------
 class GTestI : public GSM
 {
 public:
@@ -325,6 +316,24 @@ public:
 };
 
 
+//------------------------------------------------------------------------------
+class GForceReComputeI: public GSM
+{
+public:
+	GForceReComputeI(GPrgClassSession* o) : GSM("ForceReCompute",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+};
+
+
+//------------------------------------------------------------------------------
+class GSetSaveResultsI: public GSM
+{
+public:
+	GSetSaveResultsI(GPrgClassSession* o) : GSM("SetSaveResults",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+};
+
+
 
 //------------------------------------------------------------------------------
 //
@@ -421,29 +430,6 @@ void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true
 }
 
 
-
-//------------------------------------------------------------------------------
-void GSetAutoSaveI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
-{
-	if(args->GetNb()!=1)
-		throw RException("The method needs one parameter (\"0\" or \"1\") to specify if the results must be stored.");
-	if(((*args)[0]->GetValue(prg))[0]=='0')
-	{
-		o->WriteStr("Set AutoSave: false");
-		Owner->Session->SetSave(otDoc,false);
-		Owner->Session->SetSave(otSubProfile,false);
-		Owner->Session->SetSave(otGroup,false);
-	}
-	else
-	{
-		o->WriteStr("Set AutoSave: true");
-		Owner->Session->SetSave(otDoc,true);
-		Owner->Session->SetSave(otSubProfile,true);
-		Owner->Session->SetSave(otGroup,true);
-	}
-}
-
-
 //------------------------------------------------------------------------------
 void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
 {
@@ -483,7 +469,6 @@ void GModifyProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,fal
 {
 	if(args->GetNb())
 		throw RException("The method needs no parameters.");
-	Owner->FirstProfile=false;
 	o->WriteStr("Profiles are considered as modified");
 }
 
@@ -505,9 +490,7 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tru
 	if(!GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod())
 		throw GException (" No Profiling Method chosen.");
 	GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->SetComputeModified(otSubProfile,Owner->FirstProfile);
 	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o));
-	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 }
 
 
@@ -529,9 +512,7 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,
 	if(!GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod())
 		throw RException (" No Group Description Method chosen.");
 	GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->SetComputeModified(otGroup,Owner->FirstGroup);
 	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o));
-	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 }
 
 
@@ -542,8 +523,7 @@ void GCreateIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 		throw RException("Method needs no parameters.");
 	o->WriteStr("Create Ideal Groups");
 	Owner->Session->GetSubjects()->Apply();
-	Owner->Session->GetSubjects()->CreateIdeal(Owner->Session->MustSave(otDoc)&&Owner->Session->MustSave(otSubProfile)&&Owner->Session->MustSave(otGroup));
-	Owner->FirstGroup=Owner->FirstProfile=false;
+	Owner->Session->GetSubjects()->CreateIdeal(Owner->Session->MustSaveResults());
 }
 
 
@@ -668,9 +648,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod())
 		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod()->ApplyConfig();
 	GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->SetComputeModified(otSubProfile,Owner->FirstProfile);
 	Owner->Session->CalcProfiles(rec);
-	if(!Owner->FirstProfile) Owner->FirstProfile=true;
 
 	// Group Profiles
 	if(rec)
@@ -681,9 +659,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 	if(GSession::Break()) return;
 	GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()->ApplyConfig();
 	GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->SetComputeModified(otGroup,Owner->FirstGroup);
 	Owner->Session->GroupingProfiles(rec);
-	if(!Owner->FirstGroup) Owner->FirstGroup=true;
 
 	// Compare Ideal
 	if(rec)
@@ -957,6 +933,36 @@ void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args
 }
 
 
+//------------------------------------------------------------------------------
+void GForceReComputeI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
+{
+	tObjType type=otNoClass;
+
+	if(args->GetNb()!=1)
+		throw RException("Method needs one parameter");
+	RString objects=(*args)[0]->GetValue(prg);
+	if(objects=="Users")
+		type=otUsers;
+	if(objects=="Docs")
+		type=otDocs;
+	if(objects=="Groups")
+		type=otGroups;
+	Owner->Session->ForceReCompute(type);
+}
+
+
+//------------------------------------------------------------------------------
+void GSetSaveResultsI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
+{
+	if(args->GetNb()!=1)
+		throw RException("Method needs one parameter");
+	if(((*args)[0]->GetValue(prg))[0]=='0')
+		Owner->Session->SetSaveResults(false);
+	else
+		Owner->Session->SetSaveResults(true);
+}
+
+
 
 //------------------------------------------------------------------------------
 //
@@ -973,7 +979,6 @@ GPrgClassSession::GPrgClassSession(GSession* s)
 	Methods.InsertPtr(new GGOutputI(this));
 	Methods.InsertPtr(new GSOutputI(this));
 	Methods.InsertPtr(new GSetLinksMethodI(this));
-	Methods.InsertPtr(new GSetAutoSaveI(this));
 	Methods.InsertPtr(new GTestI(this));
 	Methods.InsertPtr(new GLogI(this));
 	Methods.InsertPtr(new GSqlI(this));
@@ -997,6 +1002,8 @@ GPrgClassSession::GPrgClassSession(GSession* s)
 	Methods.InsertPtr(new GSetRandI(this));
 	Methods.InsertPtr(new GSetStatParamI(this));
 	Methods.InsertPtr(new GRunStatI(this));
+	Methods.InsertPtr(new GForceReComputeI(this));
+	Methods.InsertPtr(new GSetSaveResultsI(this));
 }
 
 

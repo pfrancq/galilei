@@ -285,12 +285,7 @@ public:
 	GStorage* Storage;                                                // Storage manager
 	static GSession* Session;                                         // Static pointer to the session
 	static bool ExternBreak;                                          // Should the session stop as soon as possible?
-	bool SaveDocs;                                                    // Must the documents be saved after computed?
-	bool SaveSubProfiles;                                             // Must the subprofiles be saved after computed?
-	bool SaveGroups;                                                  // Must the groups be saved after computed?
-	bool ComputeModifiedDocs;                                         // Compute only the modified documents.
-	bool ComputeModifiedSubProfiles;                                  // Compute only the modified subprofiles.
-	bool UseExistingGroups;                                           // Use the existing groups.
+	bool SaveResults;                                                 // Must the results be saved after computed?
 	GSlot* Slot;                                                      // Slot for the session
 
 	R::RContainer<GDoc,true,true> Docs;
@@ -307,10 +302,8 @@ public:
 	unsigned int MaxGroups;
 
 	Intern(GStorage* str,unsigned int mdocs,unsigned int maxsub,unsigned int maxgroups,unsigned int d,unsigned int u,unsigned int p,unsigned int g,unsigned int nblangs)
-		: Subjects(0), GroupsHistoryMng(0)/*, ProfilesSims(0), ProfilesDocsSims(0),
-	  GroupsDocsSims(0)*/, Random(0), Storage(str),  SaveDocs(true),
-	  SaveSubProfiles(true), SaveGroups(true), ComputeModifiedDocs(true),
-	  ComputeModifiedSubProfiles(true), UseExistingGroups(true), Slot(0),
+		: Subjects(0), GroupsHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
+	  Slot(0),
 		Docs(d+(d/2),d/2), DocsLang(nblangs), DocsRefUrl(d+(d/2),d/2),
 		Users(u,u/2), Profiles(p,p/2), SubProfiles(nblangs),
 		Groups(g+(g/2),g/2),  GroupsLang(nblangs), FreeIds(50,25),
@@ -361,6 +354,13 @@ GSession::GSession(GStorage* str,unsigned int maxdocs,unsigned int maxsubprofile
 }
 
 
+
+//------------------------------------------------------------------------------
+//
+// GSession::General
+//
+//------------------------------------------------------------------------------
+
 //------------------------------------------------------------------------------
 void GSession::Connect(void)
 {
@@ -368,12 +368,37 @@ void GSession::Connect(void)
 }
 
 
+//------------------------------------------------------------------------------
+void GSession::ForceReCompute(tObjType type)
+{
+	if(type==otDocs)
+	{
+		// Clear the information of the documents
+		RCursor<GDoc> Docs(Data->Docs);
+		for(Docs.Start();!Docs.End();Docs.Next())
+			Docs()->ClearInfos();
+	}
+	else if(type==otUsers)
+	{
+		// Delete the subprofiles
+		RCursor<GSubProfiles> Cur(Data->SubProfiles);
+		for(Cur.Start();!Cur.End();Cur.Next())
+			Cur()->Clear();
+	}
+	else if(type==otGroups)
+	{
+		// Delete the groups
+		RCursor<GGroupsLang> Groups(Data->GroupsLang);
+		for(Groups.Start();!Groups.End();Groups.Next())
+		{
+			ClearGroups(Groups()->Lang);
+		}
+		Data->Groups.Clear();
+	}
+	else
+		throw GException("Only 'otDocs', 'otUsers' and 'otGroups' are allowed.");
+}
 
-//------------------------------------------------------------------------------
-//
-// GSession::General
-//
-//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 void GSession::ReInit(void)
@@ -402,86 +427,16 @@ void GSession::ReInit(void)
 
 
 //------------------------------------------------------------------------------
-bool GSession::MustSave(tObjType objtype) const
+bool GSession::MustSaveResults(void) const
 {
-	switch(objtype)
-	{
-		case otDoc:
-			return(Data->SaveDocs);
-			break;
-		case otSubProfile:
-			return(Data->SaveSubProfiles);
-			break;
-		case otGroup:
-			return(Data->SaveGroups);
-			break;
-		default:
-			throw GException(itou(objtype)+": Invalid object type for session parameters.");
-			return(false);
-	}
+	return(Data->SaveResults);
 }
 
 
 //------------------------------------------------------------------------------
-bool GSession::ComputeModified(tObjType objtype) const
+void GSession::SetSaveResults(bool save)
 {
-	switch(objtype)
-	{
-		case otDoc:
-			return(Data->ComputeModifiedDocs);
-			break;
-		case otSubProfile:
-			return(Data->ComputeModifiedSubProfiles);
-			break;
-		case otGroup:
-			return(Data->UseExistingGroups);
-			break;
-		default:
-			throw GException(itou(objtype)+": Invalid object type for session parameters.");
-			return(false);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::SetSave(tObjType objtype,bool save)
-{
-	switch(objtype)
-	{
-		case otDoc:
-			Data->SaveDocs=save;
-			break;
-		case otSubProfile:
-			Data->SaveSubProfiles=save;
-			break;
-		case otGroup:
-			Data->SaveGroups=save;
-			break;
-		default:
-			throw GException(itou(objtype)+": Invalid object type for session parameters.");
-			break;
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::SetComputeModified(tObjType objtype,bool modified)
-{
-	switch(objtype)
-	{
-		case otDoc:
-			Data->ComputeModifiedDocs=modified;
-			break;
-		case otSubProfile:
-			Data->ComputeModifiedSubProfiles=modified;
-			break;
-		case otGroup:
-			Data->UseExistingGroups=modified;
-			break;
-		default:
-			throw GException(itou(objtype)+": Invalid object type for session parameters.");
-			break;
-	}
+	Data->SaveResults=save;
 }
 
 
@@ -799,7 +754,7 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,RContainer<GDoc,false,true>* n
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
-	if(Data->ComputeModifiedDocs&&(!doc->MustCompute())) return;
+	if(!doc->MustCompute()) return;
 	if(rec)
 	{
 		rec->Interact();
@@ -807,24 +762,22 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,RContainer<GDoc,false,true>* n
 	}
 	if(Intern::ExternBreak) return;
 	undefLang=false;
-	if((!Data->ComputeModifiedDocs)||(doc->MustCompute()))
+	if(!doc->GetLang())
+		undefLang=true;
+	if(!xml)
+		xml=GPluginManagers::GetManager<GFilterManager>("Filter")->CreateDocXML(doc);
+	if(xml)
 	{
-		if(!doc->GetLang()) undefLang=true;
-		if(!xml)
-			xml=GPluginManagers::GetManager<GFilterManager>("Filter")->CreateDocXML(doc);
-		if(xml)
+		doc->InitFailed();
+		Analyse->Analyze(xml,doc,newdocs);
+		if((undefLang)&&(doc->GetLang()))
 		{
-			doc->InitFailed();
-			Analyse->Analyze(xml,doc,newdocs);
-			if((undefLang)&&(doc->GetLang()))
-			{
-				MoveDoc(doc);
-			}
+			MoveDoc(doc);
 		}
-		else
-			doc->IncFailed();
 	}
-	if(Data->SaveDocs)
+	else
+		doc->IncFailed();
+	if(Data->SaveResults)
 	{
 		Data->Storage->SaveDoc(doc);
 		doc->SetState(osSaved);
@@ -1097,7 +1050,7 @@ void GSession::CalcProfiles(GSlot* rec)
 	}
 
 	// Save the best computed Links (As Hub and Authority)
-	if((Data->SaveSubProfiles)&&(LinkCalc))
+	if((Data->SaveResults)&&(LinkCalc))
 		Data->Storage->SaveLinks(this);
 
 	// Run all post-profiles methods that are enabled
@@ -1141,16 +1094,12 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 			rec->Interact();
 
 		if(Intern::ExternBreak) return;
-		if(Data->ComputeModifiedSubProfiles&&(!Subs()->MustCompute())) continue;
-		if((!Data->ComputeModifiedSubProfiles)||(Subs()->MustCompute()))
+		if(!Subs()->MustCompute()) continue;
+		Profiling->Compute(Subs());
+		if(Data->SaveResults)
 		{
-			Profiling->Compute(Subs());
-
-			if(Data->SaveSubProfiles)
-			{
-				Data->Storage->SaveSubProfile(Subs());
-				Subs()->SetState(osSaved);
-			}
+			Data->Storage->SaveSubProfile(Subs());
+			Subs()->SetState(osSaved);
 		}
 	}
 }
@@ -1177,7 +1126,7 @@ void GSession::UpdateProfiles(unsigned int docid)
 	}
 
 	// Use database
-	if((!Data->Storage->IsAllInMemory())||(Data->SaveSubProfiles))
+	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
 		Data->Storage->UpdateProfiles(docid);
 }
 
@@ -1373,7 +1322,7 @@ void GSession::GroupingProfiles(GSlot* rec)
 		throw GException("No grouping method chosen.");
 
     // Group the subprofiles
-	Grouping->Grouping(rec,Data->UseExistingGroups,Data->SaveGroups);
+	Grouping->Grouping(rec,Data->SaveResults);
 
 	// Run all post-group methods that are enabled
 	R::RCursor<GPostGroup> PostGroups=GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->GetPlugIns();
@@ -1438,7 +1387,7 @@ void GSession::CopyIdealGroups(void)
 		}
 	}
 
-	if(Data->SaveGroups)
+	if(Data->SaveResults)
 	{
 		Data->Storage->SaveGroups(this);
 		RCursor<GGroup> Groups(GetGroups());
@@ -1479,7 +1428,7 @@ void GSession::UpdateGroups(unsigned int subid)
 	}
 
 	// Use database
-	if((!Data->Storage->IsAllInMemory())||(Data->SaveGroups))
+	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
 		Data->Storage->UpdateGroups(subid);
 }
 

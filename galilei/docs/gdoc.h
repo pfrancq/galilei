@@ -168,6 +168,11 @@ public:
 	int Compare(const GLang* lang) const;
 
 	/**
+	* Clear the information associated with the document.
+	*/
+	void ClearInfos(void);
+
+	/**
 	* Load information from the current storage.
 	*/
 	virtual void LoadInfos(void) const;
