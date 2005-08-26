@@ -1034,7 +1034,7 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::UpdateProfiles(unsigned int docid)
+void GSession::UpdateProfiles(unsigned int docid,GLang* lang)
 {
 	// If there are some profile -> propagate in memory
 	GDoc* doc=GetDoc(docid);
@@ -1048,23 +1048,23 @@ void GSession::UpdateProfiles(unsigned int docid)
 				GProfile* prof=GetProfile((*fdbks)());
 				if(!prof)
 					continue;
-				prof->HasUpdate(docid);
+				prof->HasUpdate(docid,lang);
 			}
 		}
 	}
 
 	// Use database
 	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
-		Data->Storage->UpdateProfiles(docid);
+		Data->Storage->UpdateProfiles(docid,lang);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date,R::RDate update)
+void GSession::InsertFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate update)
 {
 	GProfile* prof=GetProfile(p,false);
 	if(prof)
-		prof->InsertFdbk(d,assess,date,update);
+		prof->InsertFdbk(d,lang,assess,date,update);
 	GDoc* doc=GetDoc(d,false);
 	if(doc)
 		doc->InsertFdbk(p);

@@ -49,8 +49,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFdbk::GFdbk(unsigned int docid,tDocAssessment fdbk,const RDate& when,const R::RDate& updated)
-  : DocId(docid), Fdbk(fdbk), When(when), Updated(updated)
+GFdbk::GFdbk(unsigned int docid,GLang* lang,tDocAssessment fdbk,const RDate& when,const R::RDate& updated)
+  : DocId(docid), Fdbk(fdbk), When(when), Updated(updated), Lang(lang)
 {
 }
 
@@ -58,104 +58,90 @@ GFdbk::GFdbk(unsigned int docid,tDocAssessment fdbk,const RDate& when,const R::R
 //------------------------------------------------------------------------------
 int GFdbk::Compare(const GFdbk& profdoc) const
 {
- return(DocId-profdoc.DocId);
+	return(DocId-profdoc.DocId);
 }
 
 
 //------------------------------------------------------------------------------
 int GFdbk::Compare(const GFdbk* profdoc) const
 {
- return(DocId-profdoc->DocId);
+	return(DocId-profdoc->DocId);
 }
 
 
 //------------------------------------------------------------------------------
 int GFdbk::Compare(const unsigned id) const
 {
- return(DocId-id);
+	return(DocId-id);
 }
 
 
 //------------------------------------------------------------------------------
 void GFdbk::NewFdbk(tDocAssessment fdbk,const RDate& date)
 {
- Fdbk=fdbk;
- When=date;
+	Fdbk=fdbk;
+	When=date;
 }
 
 
 //------------------------------------------------------------------------------
 RDate GFdbk::GetWhen(void) const
 {
- return(When);
+	return(When);
 }
 
 
 //------------------------------------------------------------------------------
 RDate GFdbk::GetUpdated(void) const
 {
- return(Updated);
-}
-
-
-//------------------------------------------------------------------------------
-bool GFdbk::MustUse(const GProfile* profile) const
-{
- // Go trough each subprofile to verify if one is "older" than the assessment
- RCursor<GSubProfile> Cur(profile->GetSubProfiles());
- for(Cur.Start();!Cur.End();Cur.Next())
- {
-  if((When>Cur()->GetComputed())||(Updated>Cur()->GetComputed()));
-   return(true);
- }
- return(false);
+	return(Updated);
 }
 
 
 //------------------------------------------------------------------------------
 bool GFdbk::MustUse(const GSubProfile* subprofile) const
 {
- return((When>subprofile->GetComputed())||(Updated>subprofile->GetComputed()));
+	return((When>subprofile->GetComputed())||(Updated>subprofile->GetComputed()));
 }
 
 
 //------------------------------------------------------------------------------
-void GFdbk::HasUpdate(void)
+void GFdbk::HasUpdate(GLang* lang)
 {
- Updated.SetToday();
+	Updated.SetToday();
+	Lang=lang;
 }
 
 
 //------------------------------------------------------------------------------
 tDocAssessment GFdbk::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRandom* rand)
 {
- double random=rand->Value()*100+1.0;
+	double random=rand->Value()*100+1.0;
 
- // If there is Random change the judgment.
- if(random<PercErr)
- {
-  random=rand->Value()*100+1.0;;
-  switch(fdbk & djMaskJudg)
-  {
-   case djOK:
-    if(random<25.0)
-     return(djOutScope);
-    else
-     return(djKO);
-   case djKO:
-    if(random<50.0)
-     return(djOK);
-    else
-     return(djOutScope);
-   case djOutScope:
-    if(random<25.0)
-     return(djOK);
-    else
-     return(djKO);
-    break;
-  }
- }
- return(fdbk);
+	// If there is Random change the judgment.
+	if(random<PercErr)
+	{
+		random=rand->Value()*100+1.0;;
+		switch(fdbk & djMaskJudg)
+		{
+			case djOK:
+				if(random<25.0)
+					return(djOutScope);
+				else
+					return(djKO);
+			case djKO:
+				if(random<50.0)
+					return(djOK);
+				else
+					return(djOutScope);
+			case djOutScope:
+				if(random<25.0)
+					return(djOK);
+				else
+					return(djKO);
+		}
+	}
+	return(fdbk);
 }
 
 
@@ -177,54 +163,54 @@ GProfile::GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned i
   : RContainer<GSubProfile,false,true>(nb,nb/2), User(usr),Id(id), Name(name),
     Fdbks(nbf+nbf/2,nbf/2), Social(s)
 {
- if(!User)
-  throw GException("Profile "+itou(id)+" has no parent user");
- User->InsertPtr(this);
- GSession::Event(this,eObjCreated);
+	if(!User)
+	throw GException("Profile "+itou(id)+" has no parent user");
+	User->InsertPtr(this);
+	GSession::Event(this,eObjCreated);
 }
 
 
 //------------------------------------------------------------------------------
 int GProfile::Compare(const GProfile &profile) const
 {
- return(Id-profile.Id);
+	return(Id-profile.Id);
 }
 
 
 //------------------------------------------------------------------------------
 int GProfile::Compare(const RString& name) const
 {
- return(Name.Compare(name));
+	return(Name.Compare(name));
 }
 
 
 //------------------------------------------------------------------------------
 int GProfile::Compare(const unsigned int id) const
 {
- return(Id-id);
+ 	return(Id-id);
 }
 
 
 //------------------------------------------------------------------------------
 void GProfile::SetId(unsigned int id)
 {
- if(id==cNoRef)
-  throw GException("Cannot assign cNoRef to a profile");
- Id=id;
+	if(id==cNoRef)
+		throw GException("Cannot assign cNoRef to a profile");
+	Id=id;
 }
 
 
 //------------------------------------------------------------------------------
 RString GProfile::GetName(void) const
 {
- return(Name);
+	return(Name);
 }
 
 
 //------------------------------------------------------------------------------
 void GProfile::SetSocial(bool social)
 {
- Social=social;
+	Social=social;
 }
 
 
@@ -250,7 +236,7 @@ GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 	// If subprofile does not exist -> create it
 	if(!sub)
 	{
-		sub=new GSubProfile(this,cNoRef,lang,cNoRef,RDate(""),RDate(""),RDate(""));
+		sub=new GSubProfile(this,cNoRef,lang,cNoRef,RDate::null,RDate::null,RDate::null);
 		s->InsertSubProfile(sub);
 	}
 
@@ -287,9 +273,9 @@ RCursor<GSubProfile> GProfile::GetSubProfiles(void) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
+void GProfile::InsertFdbk(unsigned int docid,GLang* lang,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
 {
-	Fdbks.InsertPtr(new GFdbk(docid,assess,date,update));
+	Fdbks.InsertPtr(new GFdbk(docid,lang,assess,date,update));
 }
 
 
@@ -315,11 +301,11 @@ GFdbk* GProfile::GetFdbk(unsigned int docid) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::HasUpdate(unsigned int docid)
+void GProfile::HasUpdate(unsigned int docid,GLang* lang)
 {
 	GFdbk* fdbk=Fdbks.GetPtr(docid);
 	if(fdbk)
-		fdbk->HasUpdate();
+		fdbk->HasUpdate(lang);
 }
 
 
@@ -327,7 +313,6 @@ void GProfile::HasUpdate(unsigned int docid)
 void GProfile::DispatchFdbks(void)
 {
 	GSubProfile* sub;
-	GLang* lang;
 
 	// Go through each subprofiles and clear the feedbacks
 	RCursor<GSubProfile> SubProfiles(*this);
@@ -343,28 +328,28 @@ void GProfile::DispatchFdbks(void)
 	RCursor<GFdbk> Docs(Fdbks);
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		if(!Docs()->MustUse(this)) continue;
+		if(!Docs()->GetLang()) continue;
+
+		// Get the subprofile (if subprofile does not exist -> create it)
+		sub=GetPtr<const GLang*>(Docs()->GetLang(),false);
+		if(!sub)
+		{
+			sub=new GSubProfile(this,cNoRef,Docs()->GetLang(),cNoRef,RDate::null,RDate::null,RDate::null);
+			GSession::Get()->InsertSubProfile(sub);
+		}
+		if(!Docs()->MustUse(sub))
+			continue;
+
+		// Get the document : if it exists and is defined -> add it
 		GDoc* doc=session->GetDoc(Docs()->GetDocId());
-		if(!doc) continue;
-		lang=doc->GetLang();
-		if((!lang)||(!doc->IsDefined())) continue;
-
-		// Get the subprofile (if subprofile does not exist -> create it).
-  sub=GetPtr<const GLang*>(lang,false);
-  if(!sub)
-  {
-   sub=new GSubProfile(this,cNoRef,lang,cNoRef,RDate(""),RDate(""),RDate(""));
-   GSession::Get()->InsertSubProfile(sub);
-  }
-
-  // Add the assessment
-  sub->InsertFdbk(Docs());
- }
+		if((!doc)||(!doc->IsDefined())) continue;
+		sub->InsertFdbk(Docs());
+	}
 }
 
 
 //------------------------------------------------------------------------------
 GProfile::~GProfile(void)
 {
- GSession::Event(this,eObjDeleted);
+	GSession::Event(this,eObjDeleted);
 }

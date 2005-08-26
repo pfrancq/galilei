@@ -210,8 +210,9 @@ public:
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identificator of the document.
+	* @param lang            Language of the document.
 	*/
-	virtual void UpdateProfiles(unsigned int docid)=0;
+	virtual void UpdateProfiles(unsigned int docid,GLang* lang)=0;
 
 	/**
 	* A subprofile was updated and the corresponding groups must be updated.

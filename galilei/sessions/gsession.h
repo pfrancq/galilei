@@ -429,18 +429,20 @@ public:
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identificator of the document.
+	* @param lang            Language of the document.
 	*/
-	void UpdateProfiles(unsigned int docid);
+	void UpdateProfiles(unsigned int docid,GLang* lang);
 
 	/**
 	* Insert a new Feedback.
 	* @param p                Identificator of the profile.
 	* @param d                Identificator of the document.
+	* @param lang            Language of the document.
 	* @param assess           Feedback.
 	* @param date             Date on the last feedback.
 	* @param update           Date on the last update of the document.
 	*/
-	void InsertFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date,R::RDate update);
+	void InsertFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate update);
 
 	/**
 	* Clear all the feedbacks.

@@ -727,11 +727,13 @@ void GStorageMySQL::LoadSubjects(GSession* session) throw(std::bad_alloc,GExcept
 void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException)
 {
 	tDocAssessment jug;
+	GLangManager* Langs=GPluginManagers::GetManager<GLangManager>("Lang");
 
 	try
 	{
+
 		// Load feedbacks
-		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,updated FROM htmlsbyprofiles");
+		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,updated,langid FROM htmlsbyprofiles");
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
 			switch(fdbks[1][static_cast<size_t>(0)].Unicode())
@@ -765,7 +767,7 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 						break;
 				}
 			}
-			session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),jug,RDate(fdbks[3]),RDate(fdbks[4]));
+			session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),Langs->GetPlugIn(fdbks[5]),jug,RDate(fdbks[3]),RDate(fdbks[4]));
 		}
 	}
 	catch(RMySQLError e)
@@ -968,7 +970,7 @@ void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 					default:
 						throw GException("No Valid Assessment");
 				}
-				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2,updated) VALUES("+itou(Fdbks()->GetDocId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetWhen())+","+RQuery::SQLValue(Fdbks()->GetUpdated())+")";
+				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2,updated,langid) VALUES("+itou(Fdbks()->GetDocId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetWhen())+","+RQuery::SQLValue(Fdbks()->GetUpdated())+","+RQuery::SQLValue(Fdbks()->GetLang()->GetCode())+")";
 				RQuery fdbks(Db,sSql);
 			}
 		}
@@ -1296,9 +1298,9 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::UpdateProfiles(unsigned int docid)
+void GStorageMySQL::UpdateProfiles(unsigned int docid,GLang* lang)
 {
-	RQuery Up(Db,"UPDATE htmlsbyprofiles SET updated=CURDATE() WHERE htmlid="+itou(docid));
+	RQuery Up(Db,"UPDATE htmlsbyprofiles SET updated=CURDATE(),langid="+RString(lang->GetCode())+" WHERE htmlid="+itou(docid));
 }
 
 

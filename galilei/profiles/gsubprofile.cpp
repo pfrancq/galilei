@@ -62,7 +62,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,unsigned int
 	Profile->InsertPtr(this);
 	if((GroupId!=cNoRef)&&(GSession::Get()))
 	{
-		GGroup* grp=GSession::Get()->GetGroup(GroupId);
+		GGroup* grp=GSession::Get()->GetGroup(GroupId,false);
 		if(grp)
 			grp->InsertSubProfile(this);
 	}
@@ -113,11 +113,8 @@ void GSubProfile::LoadInfos(void) const
 void GSubProfile::InsertFdbk(GFdbk* fdbk)
 {
 	Fdbks.InsertPtr(fdbk);
-	if(fdbk->MustUse(this))
-	{
-		State=osModified;
-		Updated.SetToday();
-	}
+	State=osModified;
+	Updated.SetToday();
 }
 
 

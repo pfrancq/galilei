@@ -73,16 +73,22 @@ class GFdbk
 	*/
 	R::RDate Updated;
 
+	/**
+	* Language of the document assessed.
+	*/
+	GLang* Lang;
+
 public:
 
 	/**
 	* Constructor.
 	* @param docid           Identificator of the document.
+	* @param lang            Language of the document.
 	* @param fdbk            Assessment.
 	* @param when            Date.
 	* @param updated         Update.
 	*/
-	GFdbk(unsigned int docid,tDocAssessment fdbk,const R::RDate& when,const R::RDate& updated);
+	GFdbk(unsigned int docid,GLang* lang,tDocAssessment fdbk,const R::RDate& when,const R::RDate& updated);
 
 	/**
 	* Compare two assessements to order them using the document identificator.
@@ -141,10 +147,10 @@ public:
 	R::RDate GetUpdated(void) const;
 
 	/**
-	* Must the assessment be used to compute a profile.
-	* @param profile         Profile.
+	* Get the language of the subprofile.
+	* @return Pointer to the GLang.
 	*/
-	bool MustUse(const GProfile* profile) const;
+	GLang* GetLang(void) const {return(Lang);}
 
 	/**
 	* Must the assessment be used to compute a subprofile.
@@ -154,8 +160,9 @@ public:
 
 	/**
 	* The document assessed was updated.
+	* @param lang            Language of the document.
 	*/
-	void HasUpdate(void);
+	void HasUpdate(GLang* lang);
 
 	/**
 	* Create an erronous assessment with a given percentage. The percentage
@@ -339,11 +346,12 @@ public:
 	/**
 	* Insert an assessment to the list of the profile.
 	* @param docid           Identificator of the document.
+	* @param lang            Language of the document.
 	* @param assess          Assessment.
 	* @param date            Date.
 	* @param update          Last update of the document.
 	*/
-	void InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update);
+	void InsertFdbk(unsigned int docid,GLang* lang,tDocAssessment assess,const R::RDate& date,const R::RDate& update);
 
 	/**
 	* Delete an assessment from the list of the profile.
@@ -365,8 +373,9 @@ public:
 	/**
 	* This method is call by a document when it was modified.
 	* @param docid           Identificator of the document.
+	* @param lang            Language of the document.
 	*/
-	void HasUpdate(unsigned int docid);
+	void HasUpdate(unsigned int docid,GLang* lang);
 
 	/**
 	* Construct for each subprofile the list of assessed documents from the
