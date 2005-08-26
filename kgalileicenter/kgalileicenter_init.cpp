@@ -112,8 +112,8 @@ KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
 void KGALILEICenterApp::initActions(void)
 {
 	// Menu "Connect"
-	sessionAlwaysCalc=new KToggleAction(i18n("Enables/disables session Recomputing"),0,0,0,actionCollection(),"sessionAlwaysCalc");
-	connect(sessionAlwaysCalc,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
+	sessionSave=new KToggleAction(i18n("Save Results"),0,0,0,actionCollection(),"sessionSave");
+	connect(sessionSave,SIGNAL(toggled(bool)),this,SLOT(slotSaveModifier()));
 	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
 	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
 	createDatabase=new KAction(i18n("Create &Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
@@ -124,29 +124,20 @@ void KGALILEICenterApp::initActions(void)
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
 
 	// Menu "Users"
-	profileAlwaysCalc=new KToggleAction(i18n("Enables/disables users Recomputing"),0,0,0,actionCollection(),"profileAlwaysCalc");
-	connect(profileAlwaysCalc,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
-	profileAlwaysSave=new KToggleAction(i18n("Enables/disables users Saving"),0,0,0,actionCollection(),"profileAlwaysSave");
-	connect(profileAlwaysSave,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
+	usersClear=new KAction(i18n("&Force Re-computing Users"),0,0,this,SLOT(slotUsersClear()),actionCollection(),"usersClear");
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
 	profileCalc=new KAction(i18n("Calc &Profile"),"run",0,this,SLOT(slotProfileCalc()),actionCollection(),"profileCalc");
 
 	// Menu "Groups"
-	useExistingGroups=new KToggleAction(i18n("Use existing groups for incremental clustering"),0,0,0,actionCollection(),"groupAlwaysCalc");
-	connect(useExistingGroups,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
-	groupAlwaysSave=new KToggleAction(i18n("Enables/disables groups Saving"),0,0,0,actionCollection(),"groupAlwaysSave");
-	connect(groupAlwaysSave,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
+	groupsClear=new KAction(i18n("&Force Re-computing Groups"),0,0,this,SLOT(slotGroupsClear()),actionCollection(),"groupsClear");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	somView=new KAction(i18n("View Self-Organizing Map"),"exec",0,this,SLOT(slotChooseSOM()),actionCollection(),"somView");
 	showGroupsHistory=new KAction(i18n("Show Groups &History"),"exec",0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
 
 	// Menu "Document"
-	docAlwaysCalc=new KToggleAction(i18n("Enables/disables documents Recomputing"),0,0,0,actionCollection(),"docAlwaysCalc");
-	connect(docAlwaysCalc,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
-	docAlwaysSave=new KToggleAction(i18n("Enables/disables documents Saving"),0,0,0,actionCollection(),"docAlwaysSave");
-	connect(docAlwaysSave,SIGNAL(toggled(bool)),this,SLOT(slotChangeModifiers()));
+	docsClear=new KAction(i18n("&Force Re-computing Documents"),0,0,this,SLOT(slotDocsClear()),actionCollection(),"docsClear");
 	showDocs=new KAction(i18n("Show &Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
@@ -224,13 +215,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Show Toolbar", toolBar()->isVisible());
 	Config->writeEntry("Show Statusbar",statusBar()->isVisible());
 	Config->writeEntry("ToolBarPos", (int) toolBar("mainToolBar")->barPos());
-	Config->writeEntry("Always Calc Session",sessionAlwaysCalc->isChecked());
-	Config->writeEntry("Always Calc Profiles",profileAlwaysCalc->isChecked());
-	Config->writeEntry("Always Save Profiles",profileAlwaysSave->isChecked());
-	Config->writeEntry("Always Save Groups",groupAlwaysSave->isChecked());
-	Config->writeEntry("Use Existing Groups",useExistingGroups->isChecked());
-	Config->writeEntry("Always Calc Docs",docAlwaysCalc->isChecked());
-	Config->writeEntry("Always Save Docs",docAlwaysSave->isChecked());
+	Config->writeEntry("Save Results",sessionSave->isChecked());
 	RCursor<RString> cPath(pluginsPath);
 	for(cPath.Start();!cPath.End();cPath.Next())
 		paths+=(*cPath())+RString(";");
@@ -286,13 +271,7 @@ void KGALILEICenterApp::readOptions(void)
 	toolBar("mainToolBar")->setBarPos(toolBarPos);
 
 	// Always Calc Enable/Disable
-	sessionAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Session",false));
-	profileAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Profiles",false));
-	profileAlwaysSave->setChecked(Config->readBoolEntry("Always Save Profiles",false));
-	useExistingGroups->setChecked(Config->readBoolEntry("Use Existing Groups",false));
-	groupAlwaysSave->setChecked(Config->readBoolEntry("Always Save Groups",false));
-	docAlwaysCalc->setChecked(Config->readBoolEntry("Always Calc Docs",false));
-	docAlwaysSave->setChecked(Config->readBoolEntry("Always Save Docs",false));
+	sessionSave->setChecked(Config->readBoolEntry("Save Results",false));
 
 	//plugins path
 	RString pluginsPaths=Config->readPathEntry("PluginsPath","/home").ascii();
@@ -404,6 +383,10 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	queryMetaEngine->setEnabled(true);
 	runProgram->setEnabled(true);
 	sessionStats->setEnabled(true);
+	sessionSave->setEnabled(true);
+	docsClear->setEnabled(true);
+	usersClear->setEnabled(true);
+	groupsClear->setEnabled(true);
 }
 
 
@@ -435,6 +418,10 @@ void KGALILEICenterApp::DisableAllActions(void)
 	queryMetaEngine->setEnabled(false);
 	runProgram->setEnabled(false);
 	sessionStats->setEnabled(false);
+	sessionSave->setEnabled(false);
+	docsClear->setEnabled(false);
+	usersClear->setEnabled(false);
+	groupsClear->setEnabled(false);
 }
 
 

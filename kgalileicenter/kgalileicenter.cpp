@@ -174,7 +174,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			Sess = new GSession(Doc->GetStorage());
 			Doc->SetSession(Sess);
 			Sess->SetSlot(this);
- 			slotChangeModifiers();
+ 			slotSaveModifier();
 			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
 			if(dlg.Run(new QLoadSession()))
 			{
@@ -901,17 +901,34 @@ void KGALILEICenterApp::slotStatusMsg(const QString& text)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotChangeModifiers(void)
+void KGALILEICenterApp::slotSaveModifier(void)
 {
 	if(Doc&&Doc->GetSession())
-	{
-		Doc->GetSession()->SetSave(otDoc,docAlwaysSave->isChecked());
-		Doc->GetSession()->SetComputeModified(otDoc,!(docAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()));
-		Doc->GetSession()->SetSave(otSubProfile,profileAlwaysSave->isChecked());
-		Doc->GetSession()->SetComputeModified(otSubProfile,!(profileAlwaysCalc->isChecked()||sessionAlwaysCalc->isChecked()));
-		Doc->GetSession()->SetSave(otGroup,groupAlwaysSave->isChecked());
-		Doc->GetSession()->SetComputeModified(otGroup,useExistingGroups->isChecked()||(!sessionAlwaysCalc->isChecked()));
-	}
+		Doc->GetSession()->SetSaveResults(sessionSave->isChecked());
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotDocsClear()
+{
+	if(Doc&&Doc->GetSession())
+		Doc->GetSession()->ForceReCompute(otDocs);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotUsersClear()
+{
+	if(Doc&&Doc->GetSession())
+		Doc->GetSession()->ForceReCompute(otUsers);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotGroupsClear()
+{
+	if(Doc&&Doc->GetSession())
+		Doc->GetSession()->ForceReCompute(otGroups);
 }
 
 

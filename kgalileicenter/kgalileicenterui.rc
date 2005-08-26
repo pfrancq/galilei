@@ -2,7 +2,7 @@
 <kpartgui name="kgalileicenter" version="0.1">
 <MenuBar>
 	<Menu name="connect"><text>&amp;Session</text>
-		<Action name="sessionAlwaysCalc"/>
+		<Action name="sessionSave"/>
 		<Separator/>
 		<Action name="sessionConnect"/>
 		<Action name="sessionDisconnect"/>
@@ -20,8 +20,7 @@
 		<Action name="sessionQuit"/>
 	</Menu>
 	<Menu name="Users"><text>&amp;Users</text>
-		<Action name="profileAlwaysCalc"/>
-		<Action name="profileAlwaysSave"/>
+		<Action name="usersClear"/>
 		<Separator/>
 		<Action name="showUsers"/>
 		<Separator/>
@@ -29,8 +28,7 @@
 		<Action name="profilesCalc"/>
 	</Menu>
 	<Menu name="Groups"><text>&amp;Groups</text>
-		<Action name="groupAlwaysCalc"/>
-		<Action name="groupAlwaysSave"/>
+		<Action name="groupsClear"/>
 		<Separator/>
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>
@@ -38,8 +36,7 @@
 		<Action name="showGroupsHistory"/>
 	</Menu>
 	<Menu name="Documents"><text>&amp;Documents</text>
-		<Action name="docAlwaysCalc"/>
-		<Action name="docAlwaysSave"/>
+		<Action name="docsClear"/>
 		<Separator/>
 		<Action name="showDocs"/>
 		<separator/>

@@ -204,6 +204,7 @@ void KViewMetaEngine::CreateMetaEngineResultsListView(void)
 		afteritem=urlitem;
 
 		desc=new QListViewItemType(engCur(), urlitem,"desc: ",ToQString(engCur()->GetDescription()));
+		desc->setMultiLinesEnabled(true);
 		i++;
 		if(i>nbRes)
 			break;

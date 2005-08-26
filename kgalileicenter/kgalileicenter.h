@@ -527,9 +527,24 @@ private slots:
 	void slotStatusMsg(const QString& text);
 
 	/**
-	* A modifier of the session has changed.
+	* The save flag was changed.
 	*/
-	void slotChangeModifiers(void);
+	void slotSaveModifier(void);
+
+	/**
+	* Clear the docs.
+	*/
+	void slotDocsClear();
+
+	/**
+	* Clear the users.
+	*/
+	void slotUsersClear();
+
+	/**
+	* Clear the groups.
+	*/
+	void slotGroupsClear();
 
 public slots:
 
@@ -555,7 +570,7 @@ public:
 public:
 
 	// KAction pointers to enable/disable actions
-	KToggleAction* sessionAlwaysCalc;
+	KToggleAction* sessionSave;
 	KAction* sessionConnect;
 	KAction* sessionCompute;
 	KAction* sessionStats;
@@ -565,16 +580,14 @@ public:
 	KAction* sessionQuit;
 
 
-	KToggleAction* profileAlwaysCalc;
-	KToggleAction* profileAlwaysSave;
 	KAction* showUsers;
 	KAction* profileCalc;
 	KAction* profilesCalc;
+	KAction* usersClear;
 
-	KToggleAction* groupAlwaysSave;
-	KToggleAction* useExistingGroups;
 	KAction* showGroups;
 	KAction* groupsCalc;
+	KAction* groupsClear;
 	KAction* somView;
 	KAction* simulationDlg;
 	KAction* groupingCreate;
@@ -582,12 +595,11 @@ public:
 	KAction* groupingCompare;
 	KAction* showGroupsHistory;
 
-	KToggleAction* docAlwaysCalc;
-	KToggleAction* docAlwaysSave;
 	KAction* showDocs;
 	KAction* docAnalyse;
 	KAction* docsAnalyse;
 	KAction* docsIndexer;
+	KAction* docsClear;
 	KAction* createXML;
 	KAction* saveXML;
 	KAction* analyseXML;
