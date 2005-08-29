@@ -46,9 +46,11 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GStorage::GStorage(RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException)
-	: Session(0), Name(n), LoadAll(all), Filter(filter), Filtering(filter!=RDate::GetToday()),
+	: Session(0), Name(n), LoadAll(all), Filter(filter), Filtering(false),
 	  AllMemory(LoadAll&&(!Filtering)), Cmds(30,15)
 {
+	RDate today=RDate::GetToday();
+	Filtering=(filter.GetYear()!=today.GetYear())||(filter.GetMonth()!=today.GetMonth())||(filter.GetDay()!=today.GetDay());
 }
 
 

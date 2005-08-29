@@ -733,7 +733,7 @@ void GStorageMySQL::LoadFdbks(GSession* session) throw(std::bad_alloc,GException
 	{
 
 		// Load feedbacks
-		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,updated,langid FROM htmlsbyprofiles");
+		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,computed,langid FROM htmlsbyprofiles");
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
 			switch(fdbks[1][static_cast<size_t>(0)].Unicode())
@@ -970,7 +970,7 @@ void GStorageMySQL::SaveFdbks(GSession* session) throw(GException)
 					default:
 						throw GException("No Valid Assessment");
 				}
-				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2,updated,langid) VALUES("+itou(Fdbks()->GetDocId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetWhen())+","+RQuery::SQLValue(Fdbks()->GetUpdated())+","+RQuery::SQLValue(Fdbks()->GetLang()->GetCode())+")";
+				sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2,computed,langid) VALUES("+itou(Fdbks()->GetDocId())+",'"+j+"',"+itou(Profiles()->GetId())+","+RQuery::SQLValue(Fdbks()->GetWhen())+","+RQuery::SQLValue(Fdbks()->GetComputed())+","+RQuery::SQLValue(Fdbks()->GetLang()->GetCode())+")";
 				RQuery fdbks(Db,sSql);
 			}
 		}
@@ -1300,7 +1300,7 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 //------------------------------------------------------------------------------
 void GStorageMySQL::UpdateProfiles(unsigned int docid,GLang* lang)
 {
-	RQuery Up(Db,"UPDATE htmlsbyprofiles SET updated=CURDATE(),langid="+RString(lang->GetCode())+" WHERE htmlid="+itou(docid));
+	RQuery Up(Db,"UPDATE htmlsbyprofiles SET computed=CURDATE(),langid="+RString(lang->GetCode())+" WHERE htmlid="+itou(docid));
 }
 
 

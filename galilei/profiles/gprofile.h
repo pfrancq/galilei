@@ -69,9 +69,9 @@ class GFdbk
 	R::RDate When;
 
 	/**
-	* Date of the update of the assessments (document was modified).
+	* Date of the last computation of the document when it was modified.
 	*/
-	R::RDate Updated;
+	R::RDate Computed;
 
 	/**
 	* Language of the document assessed.
@@ -86,9 +86,9 @@ public:
 	* @param lang            Language of the document.
 	* @param fdbk            Assessment.
 	* @param when            Date.
-	* @param updated         Update.
+	* @param computed        Last computation.
 	*/
-	GFdbk(unsigned int docid,GLang* lang,tDocAssessment fdbk,const R::RDate& when,const R::RDate& updated);
+	GFdbk(unsigned int docid,GLang* lang,tDocAssessment fdbk,const R::RDate& when,const R::RDate& computed);
 
 	/**
 	* Compare two assessements to order them using the document identificator.
@@ -141,10 +141,10 @@ public:
 	R::RDate GetWhen(void) const;
 
 	/**
-	* Get the date of modification of the document.
+	* Get the date of last computation of the document.
 	* @returns R::RDate.
 	*/
-	R::RDate GetUpdated(void) const;
+	R::RDate GetComputed(void) const;
 
 	/**
 	* Get the language of the subprofile.

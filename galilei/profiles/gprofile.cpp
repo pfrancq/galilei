@@ -49,8 +49,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFdbk::GFdbk(unsigned int docid,GLang* lang,tDocAssessment fdbk,const RDate& when,const R::RDate& updated)
-  : DocId(docid), Fdbk(fdbk), When(when), Updated(updated), Lang(lang)
+GFdbk::GFdbk(unsigned int docid,GLang* lang,tDocAssessment fdbk,const RDate& when,const R::RDate& computed)
+  : DocId(docid), Fdbk(fdbk), When(when), Computed(computed), Lang(lang)
 {
 }
 
@@ -92,23 +92,23 @@ RDate GFdbk::GetWhen(void) const
 
 
 //------------------------------------------------------------------------------
-RDate GFdbk::GetUpdated(void) const
+RDate GFdbk::GetComputed(void) const
 {
-	return(Updated);
+	return(Computed);
 }
 
 
 //------------------------------------------------------------------------------
 bool GFdbk::MustUse(const GSubProfile* subprofile) const
 {
-	return((When>subprofile->GetComputed())||(Updated>subprofile->GetComputed()));
+	return((When>subprofile->GetComputed())||(Computed>subprofile->GetComputed()));
 }
 
 
 //------------------------------------------------------------------------------
 void GFdbk::HasUpdate(GLang* lang)
 {
-	Updated.SetToday();
+	Computed.SetToday();
 	Lang=lang;
 }
 
