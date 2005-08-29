@@ -144,7 +144,6 @@ void KViewProfile::ConstructFdbks(void)
 {
 	QListViewItem *p;
 	RDate d;
-	char sDate[20];
 	RCursor<GFdbk> Docs;
 	RCursor<GSubProfile> SubCur;
 	GDoc* doc;
@@ -182,8 +181,7 @@ void KViewProfile::ConstructFdbks(void)
 		if(!p) continue;
 		doc=GSession::Get()->GetDoc(Docs()->GetDocId());
 		d=doc->GetUpdated();
-		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),sDate);
+		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),ToQString(d));
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
 	}
 }
@@ -195,7 +193,6 @@ void KViewProfile::ConstructLinks(void)
 	QListViewItem *p;
 	RDate d;
 	RString iconName="";
-	char sDate[20];
 	RCursor<GFdbk> Docs;
 	RCursor<GSubProfile> SubCur;
 	GDoc* doc;
@@ -230,8 +227,7 @@ void KViewProfile::ConstructLinks(void)
 		if(!p) continue;
 		doc=GSession::Get()->GetDoc(Docs()->GetDocId());
 		d=doc->GetUpdated();
-		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),sDate);
+		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),ToQString(d));
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon(ToQString(iconName),KIcon::Small)));
 	}
 }
@@ -243,7 +239,6 @@ void KViewProfile::ConstructGroups(void)
 	GSubProfile* sub;
 	R::RCursor<GFactoryLang> CurLang;
 	GLang* lang;
-	char sDate[20];
 	RDate d;
 	RCursor<GSubProfile> Sub;
 
@@ -268,8 +263,7 @@ void KViewProfile::ConstructGroups(void)
 				GSubProfile* sub=Sub();
 
 				d=sub->GetAttached();
-				sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
+				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),ToQString(d));
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}
@@ -313,128 +307,6 @@ void KViewProfile::resizeEvent(QResizeEvent *)
 {
 	Infos->resize(size());
 }
-
-
-
-//-----------------------------------------------------------------------------
-void KViewProfile::ConstructPov(GProfile* /*profile*/)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-char* KViewProfile::GetNameDoc(char* /*longname*/)
-{
-/*	int len = 0;
-	int l = 0;
-	int i = 0;
-	int k = 0;
-	char shortname[128];
-
-	memset(shortname,0,128);
-	len = strlen(longname);
-	for( i = len; longname[i] != '/'; i--, l++)
-	;
-	for(k = 0 ; l > 0 ; l--, i++, k++)
-		shortname[k] = longname[i];
-		return shortname;*/
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewProfile::ConstructPov2(GProfile* /*profile*/)
-{
-/*	GInOutputBase *datainput = NULL;
-	GInOutputBase *listdoc;
-	GStandardInOutPutCursor Outpt;
-	GStandardInOutPutCursor  scan;
-	GStandardInOutPutCursor  liste;
-	GLang *lang;
-	int i, pos;
-	int rows[200][200];
-	int x = 200;
-	int y = 200;
-	int j,k,l;
-	int z;
-	unsigned int result;
-	char lword[128];
-	QListViewItem *p = 0;
-
-	lang=(dynamic_cast<GLangManager*>(GPluginManager::GetManager("Lang")))->GetLang("en");   // A CORRIGER ERREUR POUR DEVELOPPEMENT
-	datainput = Doc->GetSession()->LoadPointOfView(profile->GetSubProfile(lang));
-
-	for(j = 0; j < x; j++)
-		for(k=0; k < y; k++)
-			rows[j][k] = -1;
-
-	if(datainput)
-	{
-		Outpt = datainput->GetGStandardInOutPutCursor();
-		scan = datainput->GetGStandardInOutPutCursor();
-		Pov->clear();
-		for( i = 1, pos = 0; Doc->GetSession()->LevelExist(i,profile->GetSubProfile(lang)->GetId()); i++) // scan all the levels
-		{
-			for(Outpt.Start(); !Outpt.End(); Outpt.Next()) // for each level scan the container
-		  	{
-				if(i == 1 && Outpt()->GetLevel() == 1) // heads
-				{
-						rows[pos][0] = Outpt()->GetIdw();
-						pos++;
-						QListViewItemType* heads = new QListViewItemType(Pov,Outpt()->GetWord());
-						heads->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-						// construit la liste de ce headword
-
-					for(scan.Start(); !scan.End(); scan.Next()) // for each level scan the container
-		  			{
-						if(scan()->GetLevel() == 1)
-							continue;
-						for( k = 0; (result = scan()->GetParentPos(k)) != 0; k++)
-						{
-     	 			   			if(result == Outpt()->GetIdw())
-							{
-								for( j = 0; rows[j][0] != -1; j++)
-								{
-									for( l = 0; rows[j][l] != -1; l++)
-									{
-										if(result == rows[j][l])
-										{
-											z = 0;
-									   		while( rows[j][z] != -1) z++;
-											rows[j][z] = scan()->GetIdw();
-											if(listdoc = Doc->GetSession()->GetDocList(profile->GetSubProfile(lang)->GetGroup()->GetId(),scan()->GetCurProfile()->GetId(), scan()->GetIdw())) // recupere liste documents
-		       									{
-												liste = listdoc->GetGStandardInOutPutCursor();
-												memset(lword,0,128);
-												sprintf(lword,"%s",scan()->GetWord());
-												QListViewItemType* subitem=new QListViewItemType(heads,lword);
-												subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-*/
-}
-
-//-----------------------------------------------------------------------------
-void KViewProfile::GetListSubPov(GInOutputBase* /*datainput*/)
-{
-/*
-	for ( int i = 0 ; i < 10; i++ )
-	{
-		new QListViewItem( Pov, (*datainput->StdInOutPut)()->GetWord() );
-	}
-*/
-}
-
-//tableau contenant les Qlist
 
 
 //-----------------------------------------------------------------------------

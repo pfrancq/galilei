@@ -143,7 +143,6 @@ void KViewGroups::ConstructGroups(void)
 {
 	R::RCursor<GFactoryLang> CurLang;
 	GLang* lang;
-	char sDate[20];
 	RDate d;
 	RCursor<GSubProfile> Sub;
 
@@ -166,9 +165,8 @@ void KViewGroups::ConstructGroups(void)
 			{
 				GSubProfile* sub=Sub();
 				d=sub->GetAttached();
-				sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
 				//QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
-				QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
+				QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),ToQString(d));
 				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 			}
 		}

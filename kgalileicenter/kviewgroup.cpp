@@ -131,7 +131,6 @@ KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,in
 //-----------------------------------------------------------------------------
 void KViewGroup::ConstructProfiles(void)
 {
-	char sDate[20];
 	RDate d;
 	RCursor<GSubProfile> Sub;
 
@@ -141,8 +140,7 @@ void KViewGroup::ConstructProfiles(void)
 	{
 				GSubProfile* sub=Sub();
 		d=sub->GetAttached();
-		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),Profiles,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),sDate);
+		QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),Profiles,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),ToQString(d));
 		subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find",KIcon::Small)));
 	}
 }
@@ -188,7 +186,6 @@ void KViewGroup::ConstructGeneral(void)
 void KViewGroup::ConstructDocs(void)
 {
 	RDate d;
-	char sDate[20];
 	RCursor<GFdbk> docs;
 	RCursor<GSubProfile> Sub;
 	GDoc* doc;
@@ -228,8 +225,7 @@ void KViewGroup::ConstructDocs(void)
 	{
 		doc=GSession::Get()->GetDoc(docs2()->GetId());
 		d=doc->GetUpdated();
-		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof = new QListViewItemType(doc,Docs,ToQString(doc->GetName()),ToQString(doc->GetURL()),sDate);
+		QListViewItemType* prof = new QListViewItemType(doc,Docs,ToQString(doc->GetName()),ToQString(doc->GetURL()),ToQString(d));
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror",KIcon::Small)));
 	}
 }

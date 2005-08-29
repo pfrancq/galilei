@@ -178,7 +178,6 @@ void KViewDoc::ConstructFdbks(void)
 {
 	QListViewItem *p;
 	GProfile* prof;
-	char sDate[20];
 	RDate d;
 
 	if(!Fdbks) return;
@@ -236,8 +235,7 @@ void KViewDoc::ConstructFdbks(void)
 		}
 		if(!p) continue;
 		d=fdbk->GetWhen();
-		sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-		QListViewItemType* prof2 = new QListViewItemType(prof,p,ToQString(prof->GetName()),ToQString(prof->GetUser()->GetFullName()),sDate);
+		QListViewItemType* prof2 = new QListViewItemType(prof,p,ToQString(prof->GetName()),ToQString(prof->GetUser()->GetFullName()),ToQString(d));
 		prof2->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
 	}
 }
@@ -292,11 +290,9 @@ void KViewDoc::ConstructGeneral(void)
 	else
 		new QListViewItem(General,"Language","Unknow");
 	d=Document->GetUpdated();
-	sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-	new QListViewItem(General,"Last Updated",sDate);
+	new QListViewItem(General,"Last Updated",ToQString(d));
 	d=Document->GetComputed();
-	sprintf(sDate,"%i/%i/%i",d.GetDay(),d.GetMonth(),d.GetYear());
-	new QListViewItem(General,"Last Analysed",sDate);
+	new QListViewItem(General,"Last Analysed",ToQString(d));
 	switch(Document->GetState())
 	{
 		case osUpToDate:

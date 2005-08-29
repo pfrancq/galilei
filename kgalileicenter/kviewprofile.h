@@ -6,7 +6,7 @@
 
 	Window to manipulate a given profile - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -163,26 +163,6 @@ public:
 	* Construct the user' widget.
 	*/
 	void ConstructUser(void);
-
-	/**
-	* Construct the Pov widget.
-	*/
-	void ConstructPov(GProfile *profile);
-
-	/**
-	* Construct the second Pov widget.
-	*/
-	void ConstructPov2(GProfile *profile);
-
-	/**
-	* get the short name of the document.
-	*/
-	char * GetNameDoc(char *name);
-
-	/**
-	* Construct le list of POV for a given POV (level 0).
-	*/
-	void GetListSubPov(GInOutputBase *datainput);
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.

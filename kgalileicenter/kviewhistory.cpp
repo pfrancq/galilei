@@ -38,6 +38,7 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rcontainer.h>
+#include <rqt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -174,8 +175,7 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 
 	// Solutions Part
 	Solution = new QGGroupsHistory(TabWidget,(*Groups)[0]);
-	sprintf(tmp,"Solution (%u) [%u-%u-%u]",CurId,((*Groups)[0])->GetDate().GetYear(),
-		((*Groups)[0])->GetDate().GetMonth(),((*Groups)[0])->GetDate().GetDay());
+	sprintf(tmp,"Solution (%u) %s",CurId,((*Groups)[0])->GetDate().ToString().Latin1());
 	TabWidget->insertTab(Solution,tmp);
 	Solution->setGroups((*Groups)[0]);
 	Solution->setChanged();
@@ -217,8 +217,7 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 			Solution->setChanged();
 			SelectedSubProfiles->Clear();
 			SimsView->clear();
-			sprintf(tmp,"Solution (%u) [%u-%u-%u]",CurId, grps->GetDate().GetYear(),
-				grps->GetDate().GetMonth(),grps->GetDate().GetDay());
+			sprintf(tmp,"Solution (%u) [%s]",CurId, grps->GetDate().ToString().Latin1());
 			TabWidget->changeTab(Solution,tmp);
 			break;
 		case Key_PageDown:
@@ -227,8 +226,7 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 			grps=Groups->GetPtr(CurId);
 			Solution->setGroups(grps);
 			Solution->setChanged();
-			sprintf(tmp,"Solution (%u) [%u-%u-%u]",CurId,grps->GetDate().GetYear(),
-				grps->GetDate().GetMonth(),grps->GetDate().GetDay());
+			sprintf(tmp,"Solution (%u) [%s]",CurId,grps->GetDate().ToString().Latin1());
 			TabWidget->changeTab(Solution,tmp);
 			break;
 		default:
@@ -329,7 +327,7 @@ void KViewHistory::DisplaySimilarities(void)
 	unsigned int i;
 	double similarity;
 	QListViewItem* sim;
-	char num1[50], num2[50], num3[50], id[10], date[50];
+	char num1[50], num2[50], num3[50], id[10];
 
 	//clear the list view
 	SimsView->clear();
@@ -349,10 +347,7 @@ void KViewHistory::DisplaySimilarities(void)
 			sprintf(num2,"%u",cInfos2()->GetId());
 			sprintf(num3,"%f",similarity);
 			sprintf(id, "%u",cInfos1()->GetParent()->GetParent()->GetId());
-			sprintf(date,"%u-%u-%u",cInfos1()->GetParent()->GetParent()->GetDate().GetYear(),
- 				cInfos1()->GetParent()->GetParent()->GetDate().GetMonth(),
-				cInfos1()->GetParent()->GetParent()->GetDate().GetDay());
-			sim=new QListViewItem(SimsView, num1, num2, num3,id, date);
+			sim=new QListViewItem(SimsView, num1, num2, num3,id, ToQString(cInfos1()->GetParent()->GetParent()->GetDate()));
 		}
 	}
 
@@ -366,14 +361,11 @@ void KViewHistory::DisplayRelationShip(GGroupHistory* grp)
 	R::RCursor<GGroupHistory> cur;
 	QListViewItemType* grpitem;
 	char num1[50];
-	char num2[50];
 
 	//display this group
 	sprintf(tmp,"Group %u" ,grp->GetId());
 	sprintf(num1,"%u",grp->GetParent()->GetId());
-	sprintf(num2,"%u-%u-%u",grp->GetParent()->GetDate().GetYear(),grp->GetParent()->GetDate().GetMonth(),
-		grp->GetParent()->GetDate().GetDay());
-	grpitem=new QListViewItemType(grp, RelationShip, tmp, 0, num1, num2);
+	grpitem=new QListViewItemType(grp, RelationShip, tmp, 0, num1,ToQString(grp->GetParent()->GetDate()));
 	grpitem->setOpen(true);
 	grpitem->setSelected(true);
 
@@ -391,14 +383,11 @@ void KViewHistory::DisplayChildrenRelationShip(GGroupHistory* grp, QListViewItem
 	R::RCursor<GGroupHistory> cur;
 	QListViewItemType* grpitem;
 	char num1[50];
-	char num2[50];
 
 	//recursive method to display all children
 	sprintf(tmp,"Group %u" ,grp->GetId());
 	sprintf(num1,"%u",grp->GetParent()->GetId());
-	sprintf(num2,"%u-%u-%u",grp->GetParent()->GetDate().GetYear(),grp->GetParent()->GetDate().GetMonth(),
-		grp->GetParent()->GetDate().GetDay());
-	grpitem=new QListViewItemType(grp, attach, tmp, "children", num1, num2);
+	grpitem=new QListViewItemType(grp, attach, tmp, "children", num1, ToQString(grp->GetParent()->GetDate()));
 	cur= grp->GetChildrens();
 	for (cur.Start(); !cur.End(); cur.Next())
 		DisplayChildrenRelationShip(cur(), grpitem);
