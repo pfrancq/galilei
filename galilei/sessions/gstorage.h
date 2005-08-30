@@ -67,25 +67,42 @@ class GStorageCmd
 	*/
 	R::RString Cmd;
 
+	/**
+	* Session connected to the storage.
+	*/
+	GSession* Session;
+
 public:
 
 	/**
 	* Constructor of a command.
 	* @param cmd             Name of the command.
 	*/
-	GStorageCmd(const R::RString cmd) : Cmd(cmd) {}
+	GStorageCmd(const R::RString cmd);
 
 	/**
 	* Compare two commands.
 	* @param cmd             Command to compare to.
 	*/
-	int Compare(const GStorageCmd& cmd) const {return(Cmd.Compare(cmd.Cmd));}
+	int Compare(const GStorageCmd& cmd) const;
 
 	/**
 	* Compare a command with a name.
 	* @param cmd             Name to compare to.
 	*/
-	int Compare(const R::RString& cmd) const {return(Cmd.Compare(cmd));}
+	int Compare(const R::RString& cmd) const;
+
+	/**
+	* Connect to the session.
+	* @param session         Pointer to the session.
+	*/
+	virtual void Connect(GSession* session);
+
+	/**
+	* Disconnect to the session.
+	* @param session         Pointer to the session.
+	*/
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Run the command.
@@ -98,7 +115,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GStorageCmd(void) {}
+	virtual ~GStorageCmd(void);
 };
 
 
@@ -160,6 +177,11 @@ public:
 	*/
 	GStorage(R::RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException);
 
+	//-----------------------------------------------------
+	/** @name General Methods
+	*/
+	// @{
+
 	/**
 	* Connect to the session.
 	* @param session         Pointer to the session.
@@ -201,42 +223,59 @@ public:
 	R::RString GetName(void) const;
 
 	/**
-	* Assign an identifier to a new data of a given dictionary.
-	* @param data           Data.
-	* @param dict           Dictionary.
+	* Verify if a given command is supported by the storage.
+	* @param cmd             Name of the command.
 	*/
-	virtual void AssignId(GData* data,const GDict* dict) throw(GException)=0;
+	bool IsCmdSupported(const R::RString cmd) const;
 
 	/**
-	* A document was updated and the corresponding feedbacks must be updated.
-	* @param docid           Identificator of the document.
-	* @param lang            Language of the document.
+	* Execute a command.
+	* @param inst            XML Tag representing a command and its parameters.
+	* @param caller          Caller of the function.
 	*/
-	virtual void UpdateProfiles(unsigned int docid,GLang* lang)=0;
+	void ExecuteCmd(const R::RXMLTag& inst,void* caller);
 
 	/**
-	* A subprofile was updated and the corresponding groups must be updated.
-	* @param subid           Identificator of the subprofile.
+	* Create a dummy table to store different kid of
+	* data.
+	* @param name           Name of the dummy object.
 	*/
-	virtual void UpdateGroups(unsigned int subid)=0;
+	virtual void CreateDummy(R::RString name) throw(GException)=0;
 
 	/**
-	* Save the references of a given object type and for a given information
-	* entity.
-	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
-	* @param lang            Language of the object.
-	* @param id              Identificator of the information entity.
-	* @param refs            Number of references.
+	* Delete all the data of a given dummy table.
+	* @ param name          Name of the dummy object.
 	*/
-	virtual void SaveRefs(tObjType type,GLang* lang,size_t id,size_t refs)=0;
+	virtual void ClearDummy(R::RString name) throw(GException)=0;
 
 	/**
-	* Save the references of a given object type.
-	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
-	* @param lang            Language of the object.
-	* @param refs            Number of references.
+	* Add a dummy entry into a dummy table;
+	* @param name           Name of the dummy table.
+	* @param id             Identificator of the dymmy entry.
+	* @param desc           Description of the dymmy entry.
+	* @param parentid       Identificator of the parent.
 	*/
-	virtual void SaveRefs(tObjType type,GLang* lang,size_t refs)=0;
+	virtual void AddDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid) throw(GException)=0;
+
+	/**
+	* Select a dummy entry from a dummy table;
+	* @param name           Name of the dummy table.
+	* @param id             Identificator of the dymmy entry.
+	* @param desc           Description of the dymmy entry.
+	* @param parentid       Identificator of the parent.
+	* @param filter         Filter to set the fields on which the select is done.
+	*/
+	virtual R::RQuery* SelectDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException)=0;
+
+	/**
+	* Clear a dummy entry from a dummy table;
+	* @param name           Name of the dummy table.
+	* @param id             Identificator of the dymmy entry.
+	* @param desc           Description of the dymmy entry.
+	* @param parentid       Identificator of the parent.
+	* @param filter         Filter to set the fields on which the select is done.
+	*/
+	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException)=0;
 
 	/**
 	* Load the description of a given object.
@@ -246,6 +285,40 @@ public:
 	* @param id              Identificator of the object.
 	*/
 	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,GLang* lang,tObjType type,size_t id)=0;
+
+	/**
+	* Load the Subjects.
+	* @param session        Session.
+	*/
+	virtual void LoadSubjects(GSession* session) throw(std::bad_alloc,GException)=0;
+
+	/**
+	* Execute a sequence of steps needed to construct data. Typically, this
+	* can be a SQL file.
+	* @param filename       Name of the file.
+	*/
+	virtual void ExecuteData(const R::RString& filename) throw(GException)=0;
+
+	//@} General methods
+
+
+	//-----------------------------------------------------
+	/** @name Documents Methods
+	*/
+	// @{
+
+	/**
+	* Assign an identifier to a new data of a given dictionary.
+	* @param data           Data.
+	* @param dict           Dictionary.
+	*/
+	virtual void AssignId(GData* data,const GDict* dict) throw(GException)=0;
+
+	/**
+	* Assign an identifier to a new document.
+	* @param doc            Document.
+	*/
+	virtual void AssignId(GDoc* doc)=0;
 
 	/**
 	* Loading a dictionary/stoplist.
@@ -277,20 +350,6 @@ public:
 	virtual unsigned int LoadWord(const R::RString word,const char* code) throw(std::bad_alloc,GException)=0;
 
 	/**
-	* Load a specific wordlist from a dictionary.
-	* @param w              WordList to load.
-	* @param lang           Languague.
-	*/
-	virtual void LoadWordList(GWordList* w,GLang* lang) throw(std::bad_alloc,GException)=0;
-
-	/**
-	* Save a specific wordlist in the database.
-	* @param dic            Pointer to the dictionary.
-	* @param w              WordList to save.
-	*/
-	virtual void SaveWordList(GDict* dic,GWordList* w) throw(GException)=0;
-
-	/**
 	* Method that load a document that is stored.
 	* @param session         Session.
 	* @param docid           Identificator of the document
@@ -303,6 +362,53 @@ public:
 	* @param session        Session.
 	*/
 	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException)=0;
+
+	/**
+	* Save a data in the database.
+	* @param data            Data.
+	* @param lang            Languague.
+	*/
+	virtual void SaveData(GData* data,GLang* lang)  throw(std::bad_alloc,GException)=0;
+
+	/**
+	* Save the references of a given object type and for a given information
+	* entity.
+	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param lang            Language of the object.
+	* @param id              Identificator of the information entity.
+	* @param refs            Number of references.
+	*/
+	virtual void SaveRefs(tObjType type,GLang* lang,size_t id,size_t refs)=0;
+
+	/**
+	* Save the references of a given object type.
+	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param lang            Language of the object.
+	* @param refs            Number of references.
+	*/
+	virtual void SaveRefs(tObjType type,GLang* lang,size_t refs)=0;
+
+	/**
+	* Save a document where it is stored. This method is called after an
+	* analsyis of a document if the result has to be saved. This method must be
+	* overloaded.
+	* @param doc        Document to save.
+	*/
+	virtual void SaveDoc(GDoc* doc) throw(GException)=0;
+
+	//@} Documents
+
+
+	//-----------------------------------------------------
+	/** @name Users/Profiles/Subprofiles Methods
+	*/
+	// @{
+
+	/**
+	* Load the subprofiles (and the profiles and the users).
+	* @param session        Session.
+	*/
+	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Method that load a user that is stored.
@@ -326,51 +432,17 @@ public:
 	virtual GSubProfile* LoadSubProfile(GSession* session,unsigned int subprofileid)=0;
 
 	/**
-	* Save a document where it is stored. This method is called after an
-	* analsyis of a document if the result has to be saved. This method must be
-	* overloaded.
-	* @param doc        Document to save.
+	* A document was updated and the corresponding feedbacks must be updated.
+	* @param docid           Identificator of the document.
+	* @param lang            Language of the document.
 	*/
-	virtual void SaveDoc(GDoc* doc) throw(GException)=0;
+	virtual void UpdateProfiles(unsigned int docid,GLang* lang)=0;
 
 	/**
 	* Save a profile.
 	* @param prof           Profile to save.
 	*/
 	virtual void SaveProfile(GProfile* prof) throw(GException)=0;
-
-	/**
-	* Save information about the groupement (Group and attachment date) of
-	* a subprofile. For a complete save, call Save(const GProfile*).
-	* @param sub        Subprofile to save.
-	*/
-	virtual void SaveSubProfile(GSubProfile* sub) throw(GException)=0;
-
-	/**
-	* Load the subprofiles (and the profiles and the users).
-	* @param session        Session.
-	*/
-	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException)=0;
-
-	/**
-	* Load the Feedbacks.
-	* @param session        Session.
-	*/
-	virtual void LoadFdbks(GSession* session) throw(std::bad_alloc,GException)=0;
-
-	/**
-	* Load the Subjects.
-	* @param session        Session.
-	*/
-	virtual void LoadSubjects(GSession* session) throw(std::bad_alloc,GException)=0;
-
-	/**
-	* Save the groups of the session
-	* @param mixedgroups    groups to save
-	* @param id             Identificator.
-	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
-	*/
-	virtual void SaveMixedGroups(GSession* mixedgroups,unsigned int id, bool historic=false) throw(GException)=0;
 
 	/**
 	* Save profiles in history
@@ -380,11 +452,26 @@ public:
 	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicID) throw(GException)=0;
 
 	/**
-	* Execute a sequence of steps needed to construct data. Typically, this
-	* can be a SQL file.
-	* @param filename       Name of the file.
+	* Save information about the groupement (Group and attachment date) of
+	* a subprofile. For a complete save, call Save(const GProfile*).
+	* @param sub        Subprofile to save.
 	*/
-	virtual void ExecuteData(const char* filename) throw(GException)=0;
+	virtual void SaveSubProfile(GSubProfile* sub) throw(GException)=0;
+
+	// @} Users/Profiles/Subprofiles
+
+
+	//-----------------------------------------------------
+	/** @name Groups Methods
+	*/
+	// @{
+
+	/**
+	* Load the groups.
+	* @param session        Session.
+	*/
+	virtual void LoadGroups(GSession* session) throw(std::bad_alloc,GException)=0;
+
 
 	/**
 	* Method that load a group that is stored.
@@ -394,10 +481,10 @@ public:
 	virtual GGroup* LoadGroup(GSession* session,unsigned int groupid)=0;
 
 	/**
-	* Load the groups.
-	* @param session        Session.
+	* A subprofile was updated and the corresponding groups must be updated.
+	* @param subid           Identificator of the subprofile.
 	*/
-	virtual void LoadGroups(GSession* session) throw(std::bad_alloc,GException)=0;
+	virtual void UpdateGroups(unsigned int subid)=0;
 
 	/**
 	* Save the groups of the session.
@@ -410,25 +497,6 @@ public:
 	* @param session        Session.
 	*/
 	virtual void SaveGroupsHistory(GSession* session) throw(GException)=0;
-
-	/**
-	* Save the feedbaks
-	* @param session        Session.
-	*/
-	virtual void SaveFdbks(GSession* session) throw(GException)=0;
-
-	/**
-	* Save the links.
-	* @param session        Session.
-	*/
-	virtual void SaveLinks(GSession* session) throw(GException)=0;
-
-	/**
-	* Save clusters of words in a document.
-	* @param doc            Document to save.
-	* @param n              Id of the first cluster of words.
-	*/
-	virtual void SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException)=0;
 
 	/**
 	* Load an historic groups.
@@ -495,71 +563,7 @@ public:
 	*/
 	virtual void GetSugsTests(R::RContainer<R::RString,true,true>& res)=0;
 
-	/**
-	* Create a dummy table to store different kid of
-	* data.
-	* @param name           Name of the dummy object.
-	*/
-	virtual void CreateDummy(R::RString name) throw(GException)=0;
-
-	/**
-	* Delete all the data of a given dummy table.
-	* @ param name          Name of the dummy object.
-	*/
-	virtual void ClearDummy(R::RString name) throw(GException)=0;
-
-	/**
-	* Add a dummy entry into a dummy table;
-	* @param name           Name of the dummy table.
-	* @param id             Identificator of the dymmy entry.
-	* @param desc           Description of the dymmy entry.
-	* @param parentid       Identificator of the parent.
-	*/
-	virtual void AddDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid) throw(GException)=0;
-
-	/**
-	* Select a dummy entry from a dummy table;
-	* @param name           Name of the dummy table.
-	* @param id             Identificator of the dymmy entry.
-	* @param desc           Description of the dymmy entry.
-	* @param parentid       Identificator of the parent.
-	* @param filter         Filter to set the fields on which the select is done.
-	*/
-	virtual R::RQuery* SelectDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException)=0;
-
-	/**
-	* Clear a dummy entry from a dummy table;
-	* @param name           Name of the dummy table.
-	* @param id             Identificator of the dymmy entry.
-	* @param desc           Description of the dymmy entry.
-	* @param parentid       Identificator of the parent.
-	* @param filter         Filter to set the fields on which the select is done.
-	*/
-	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException)=0;
-
-	/**
-	* Export the vectors/words matrix
-	* @param session        Session.
-	* @param rec            Slot to receive information.
-	* @param type           Type of export ("Profiles", "Documents" or "Groups").
-	* @param filename       Export file name.
-	* @param lang           Language of the export.
-	* @param label          Display words id and vectors id ?
-	*/
-	virtual void ExportMatrix(GSession* session,GSlot* rec,R::RString type,R::RString filename,GLang* lang,bool label)=0;
-
-	/**
-	* Verify if a given command is supported by the storage.
-	* @param cmd             Name of the command.
-	*/
-	bool IsCmdSupported(const R::RString cmd) const;
-
-	/**
-	* Execute a command.
-	* @param inst            XML Tag representing a command and its parameters.
-	* @param caller          Caller of the function.
-	*/
-	void ExecuteCmd(const R::RXMLTag& inst,void* caller);
+	// @} Groups
 
 	/**
 	* Destructor.

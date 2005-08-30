@@ -37,6 +37,54 @@ using namespace GALILEI;
 using namespace R;
 
 
+//------------------------------------------------------------------------------
+//
+// GStorageCmd
+//
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+GStorageCmd::GStorageCmd(const R::RString cmd)
+	: Cmd(cmd), Session(0)
+{
+}
+
+
+//------------------------------------------------------------------------------
+int GStorageCmd::Compare(const GStorageCmd& cmd) const
+{
+	return(Cmd.Compare(cmd.Cmd));
+}
+
+
+//------------------------------------------------------------------------------
+int GStorageCmd::Compare(const R::RString& cmd) const
+{
+	return(Cmd.Compare(cmd));
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageCmd::Connect(GSession* session)
+{
+	Session=session;
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageCmd::Disconnect(GSession*)
+{
+	Session=0;
+}
+
+
+//------------------------------------------------------------------------------
+GStorageCmd::~GStorageCmd(void)
+{
+}
+
+
 
 //------------------------------------------------------------------------------
 //
@@ -58,12 +106,18 @@ GStorage::GStorage(RString n,bool all,const R::RDate& filter) throw(std::bad_all
 void GStorage::Connect(GSession* session)
 {
 	Session=session;
+	RCursor<GStorageCmd> Cur(Cmds);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Connect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GStorage::Disconnect(GSession*)
+void GStorage::Disconnect(GSession* session)
 {
+	RCursor<GStorageCmd> Cur(Cmds);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Disconnect(session);
 	Session=0;
 }
 

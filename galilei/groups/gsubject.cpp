@@ -170,6 +170,13 @@ bool GSubject::IsIn(GSubProfile* sub) const
 
 
 //------------------------------------------------------------------------------
+bool GSubject::IsIn(GProfile* prof) const
+{
+	return(Data->Profiles.IsIn(*prof));
+}
+
+
+//------------------------------------------------------------------------------
 unsigned int GSubject::GetNbIdealGroups(const GLang* lang) const
 {
 	GSubject* subject;

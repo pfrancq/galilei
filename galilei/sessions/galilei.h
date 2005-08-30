@@ -302,7 +302,6 @@ enum tDocAssessment
 	djAutority=32               /** Document is an Autority.*/,
 	djMaskJudg=15               /** Mask for the assessment of the doc.*/,
 	djMaskHubAuto=48            /** Mask for the Hub or Autority.*/
-
 };
 
 
@@ -312,6 +311,20 @@ enum tDocAssessment
 * @param assessment          Assessment.
 */
 R::RString GetAssessment(tDocAssessment assessment);
+
+//------------------------------------------------------------------------------
+/**
+* Get a string representing the code of an assessment.
+* @param assessment          Assessment.
+*/
+R::RString GetAssessmentCode(tDocAssessment assessment);
+
+//------------------------------------------------------------------------------
+/**
+* Get a string representing the code of an assessment.
+* @param assessment          Assessment.
+*/
+tDocAssessment GetAssessmentType(const R::RString& assessment);
 
 
 //------------------------------------------------------------------------------

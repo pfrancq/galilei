@@ -246,6 +246,12 @@ public:
 	GSubject* GetSubject(GSubProfile* sub);
 
 	/**
+	* Get the subject of a given profile.
+	* @param prof            Pointer to the profile.
+	*/
+	GSubject* GetSubject(GProfile* prof);
+
+	/**
 	* Add a given document to a subject.
 	* @param doc            Pointer to the document.
 	* @param subjectid      Identificator of the subject.

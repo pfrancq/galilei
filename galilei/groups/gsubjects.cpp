@@ -595,8 +595,9 @@ void GSubjects::CreateIdeal(bool save)
 	CreateSet();
 	if(Data->SaveSimulation)
 	{
-		Data->Session->GetStorage()->SaveFdbks(Data->Session);
-//		Data->Session->GetStorage()->SaveIdealGroupment(Data->IdealGroups);
+		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
+			Data->Session->GetStorage()->SaveProfile(Profiles());
 	}
 }
 
@@ -650,7 +651,11 @@ void GSubjects::FdbksCycle(void)
 	}
 
 	if(Data->SaveSimulation)
-		Data->Session->GetStorage()->SaveFdbks(Data->Session);
+	{
+		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
+			Data->Session->GetStorage()->SaveProfile(Profiles());
+	}
 }
 
 
@@ -713,7 +718,9 @@ void GSubjects::AddAssessments(void)
 	}
 	if(Data->SaveSimulation)
 	{
-		Data->Session->GetStorage()->SaveFdbks(Data->Session);
+		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
+			Data->Session->GetStorage()->SaveProfile(Profiles());
 	}
 }
 
@@ -773,8 +780,9 @@ bool GSubjects::AddTopic(void)
 
 	if(Data->SaveSimulation)
 	{
-		Data->Session->GetStorage()->SaveFdbks(Data->Session);
-//		Data->Session->GetStorage()->SaveIdealGroupment(Data->IdealGroups);
+		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
+			Data->Session->GetStorage()->SaveProfile(Profiles());
 	}
 	return(true);
 }
@@ -838,8 +846,9 @@ unsigned int GSubjects::AddProfiles(void)
 	// optional saving
 	if(Data->SaveSimulation)
 	{
-		Data->Session->GetStorage()->SaveFdbks(Data->Session);
-//		Data->Session->GetStorage()->SaveIdealGroupment(Data->IdealGroups);
+		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
+			Data->Session->GetStorage()->SaveProfile(Profiles());
 	}
 
 	//returns the number of created profiles
@@ -1017,6 +1026,17 @@ GSubject* GSubjects::GetSubject(GSubProfile* sub)
 	if(!sub)
 		return(0);
 	return(Data->Profiles[sub->GetProfile()->GetId()]);
+}
+
+
+//------------------------------------------------------------------------------
+GSubject* GSubjects::GetSubject(GProfile* prof)
+{
+	RCursor<GSubject> Subjects(*this);
+	for(Subjects.Start();!Subjects.End();Subjects.Next())
+		if(Subjects()->IsIn(prof))
+			return(Subjects());
+	return(0);
 }
 
 

@@ -116,6 +116,10 @@ public:
 
 	/**
 	*/
+	bool IsIn(GProfile* prof) const;
+
+	/**
+	*/
 	unsigned int GetNbIdealGroups(const GLang* lang) const;
 
 	/**

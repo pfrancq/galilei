@@ -962,7 +962,6 @@ void GSession::CalcProfiles(GSlot* rec)
 {
 	RCursor<GSubProfile> Subs;
 	R::RCursor<GProfile> Prof=GetProfiles();
-	GLinkCalc* LinkCalc=GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod();
 
 	// Run all pre-profile methods that are enabled
 	R::RCursor<GPreProfile> PreProfile=GPluginManagers::GetManager<GPreProfileManager>("PreProfile")->GetPlugIns();
@@ -986,10 +985,6 @@ void GSession::CalcProfiles(GSlot* rec)
 		{
 		}
 	}
-
-	// Save the best computed Links (As Hub and Authority)
-	if((Data->SaveResults)&&(LinkCalc))
-		Data->Storage->SaveLinks(this);
 
 	// Run all post-profiles methods that are enabled
 	R::RCursor<GPostProfile> PostProfile=GPluginManagers::GetManager<GPostProfileManager>("PostProfile")->GetPlugIns();
@@ -1040,6 +1035,8 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 			Subs()->SetState(osSaved);
 		}
 	}
+	if(Data->SaveResults&&(Subs()->GetId()!=cNoRef))
+		Data->Storage->SaveProfile(profile);
 }
 
 

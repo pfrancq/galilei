@@ -58,7 +58,7 @@ GPluginManagers GPluginManagers::PluginManagers;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-R::RString GetObjType(tObjType objtype)
+R::RString GALILEI::GetObjType(tObjType objtype)
 {
 	switch(objtype)
 	{
@@ -113,7 +113,7 @@ R::RString GetObjType(tObjType objtype)
 
 
 //------------------------------------------------------------------------------
-R::RString GetState(tObjState state)
+R::RString GALILEI::GetState(tObjState state)
 {
 	switch(state)
 	{
@@ -153,7 +153,7 @@ R::RString GetState(tObjState state)
 
 
 //------------------------------------------------------------------------------
-R::RString GetEvent(tEvent event)
+R::RString GALILEI::GetEvent(tEvent event)
 {
 	switch(event)
 	{
@@ -175,41 +175,87 @@ R::RString GetEvent(tEvent event)
 
 
 //------------------------------------------------------------------------------
-R::RString GetAssessment(tDocAssessment assessment)
+R::RString GALILEI::GetAssessment(tDocAssessment assessment)
 {
-	switch(assessment)
-	{
-		case djUnknow:
-			return(RString("unknow"));
-			break;
-		case djOK:
-			return(RString("relevant"));
-			break;
-		case djKO:
-			return(RString("fuzzy relevant"));
-			break;
-		case djOutScope:
-			return(RString("irrelevant"));
-			break;
-		case djHub:
-			return(RString("hub"));
-			break;
-		case djAutority:
-			return(RString("autority"));
-			break;
-		case djMaskJudg:
-			return(RString("mask for assessments"));
-			break;
-		case djMaskHubAuto:
-			return(RString("mask for hub/autority"));
-			break;
-	}
-	return(RString("unknow"));
+	RString str;
+
+	if(assessment&djUnknow)
+		str="unknow";
+	if(assessment&djOK)
+	str="relevant";
+	if(assessment&djKO)
+		str="fuzzy relevant";
+	if(assessment&djOutScope)
+		str="irrelevant";
+	if(assessment&djHub)
+		str+="/hub";
+	if(assessment&djAutority)
+		str+="/autority";
+	return(str);
 }
 
 
 //------------------------------------------------------------------------------
-R::RString GetInfoType(tInfoType infotype)
+R::RString GALILEI::GetAssessmentCode(tDocAssessment assessment)
+{
+	RString code;
+
+	if(assessment&djOK)
+		code="O";
+	if(assessment&djKO)
+		code="K";
+	if(assessment&djOutScope)
+		code="H";
+	if(assessment&djHub)
+		code+="H";
+	if(assessment&djAutority)
+		code+="A";
+	return(code);
+}
+
+
+//-----------------------------------------------------------------------------
+tDocAssessment GALILEI::GetAssessmentType(const R::RString& assessment)
+{
+	tDocAssessment jug;
+
+	// Normal assessment
+	switch(assessment[static_cast<size_t>(0)].Unicode())
+	{
+		case 'O':
+			jug=djOK;
+			break;
+		case 'K':
+			jug=djKO;
+			break;
+		case 'H':
+			jug= djOutScope;
+			break;
+		default:
+			jug=djUnknow;
+			break;
+	}
+	if(assessment.GetLen()==1)
+		return(jug);
+
+	// Eventually hub or authority
+	switch(assessment[static_cast<size_t>(1)].Unicode())
+	{
+		case 'H':
+			jug = tDocAssessment(jug | djHub);
+			break;
+		case 'A':
+			jug = tDocAssessment(jug | djAutority);
+			break;
+		default:
+			break;
+	}
+	return(jug);
+}
+
+
+//------------------------------------------------------------------------------
+R::RString GALILEI::GetInfoType(tInfoType infotype)
 {
 	switch(infotype)
 	{

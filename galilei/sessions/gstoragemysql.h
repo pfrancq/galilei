@@ -131,6 +131,12 @@ public:
 	virtual void AssignId(GData* data,const GDict* dict) throw(GException);
 
 	/**
+	* Assign an identifier to a new document.
+	* @param doc            Document.
+	*/
+	virtual void AssignId(GDoc* doc);
+
+	/**
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identificator of the document.
 	* @param lang            Language of the document.
@@ -200,18 +206,11 @@ public:
 	virtual unsigned int LoadWord(const R::RString word,const char* code) throw(std::bad_alloc,GException);
 
 	/**
-	* Load a specific wordlist from a dictionary.
-	* @param w              WordList to load.
-	* @param lang           Languague.
+	* Save a data in the database.
+	* @param data            Data.
+	* @param lang            Languague.
 	*/
-	virtual void LoadWordList(GWordList* w,GLang* lang) throw(std::bad_alloc,GException);
-
-	/**
-	* Save a specific wordlist in the database.
-	* @param dic            Pointer to the dictionary.
-	* @param w              WordList to save.
-	*/
-	virtual void SaveWordList(GDict* dic,GWordList* w) throw(GException);
+	virtual void SaveData(GData* data,GLang* lang)  throw(std::bad_alloc,GException);
 
 	/**
 	* Method that load a document that is stored.
@@ -254,12 +253,6 @@ public:
 	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException);
 
 	/**
-	* Load the users Feedback.
-	* @param session        Session.
-	*/
-	virtual void LoadFdbks(GSession* session) throw(std::bad_alloc,GException);
-
-	/**
 	* Method that load a group that is stored.
 	* @param session         Session.
 	* @param groupid         Identificator of the group.
@@ -283,25 +276,6 @@ public:
 	* @param doc            Document to save.
 	*/
 	virtual void SaveDoc(GDoc* doc) throw(GException);
-
-	/**
-	* Save clusters of words in a document.
-	* @param doc            Document to save.
-	* @param n              Id of the first cluster of words.
-	*/
-	virtual void SaveUpDatedDoc(GDoc* doc,unsigned n) throw(GException);
-
-	/**
-	* Save a the users feedback.
-	* @param session        Session.
-	*/
-	virtual void SaveFdbks(GSession* session) throw(GException);
-
-	/*
-	* Save Links of the users feedback.
-	* @param session        Session.
-	*/
-	virtual void SaveLinks(GSession* session) throw(GException);
 
 	/**
 	* Save information about the groupement (Group and attachment date) of
@@ -336,14 +310,6 @@ public:
 	virtual void SaveGroupsHistory(GSession* session) throw(GException);
 
 	/**
-	* Save the mixed groups of the session.
-	* @param mixedgroups    groups to save.
-	* @param id             Identificator.
-	* @param historic       if false,  groups will be saved in 'tempchromo', if true in 'historic'
-	*/
-	virtual void SaveMixedGroups(GSession* mixedgroups,unsigned int id, bool historic=false) throw(GException);
-
-	/**
 	* Save the Profiles in history.
 	* @param session        Session.
 	* @param historicID     Identificator of the historic.
@@ -355,7 +321,7 @@ public:
 	* can be a SQL file.
 	* @param filename       Name of the file.
 	*/
-	virtual void ExecuteData(const char* filename) throw(GException);
+	virtual void ExecuteData(const R::RString& filename) throw(GException);
 
 	/**
 	* Load an historic groups.
@@ -462,17 +428,6 @@ public:
 	* @param filter            Filter to set the fields on which the select is done.
 	*/
 	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException);
-
-	/**
-	* Export the vectors/words matrix
-	* @param session        Session.
-	* @param rec            Slot to receive information.
-	* @param type           Type of export ("Profiles", "Documents" or "Groups").
-	* @param filename       Export file name.
-	* @param lang           Language of the export.
-	* @param label          Display words id and vectors id ?
-	*/
-	virtual void ExportMatrix(GSession* session, GSlot* rec,R::RString type,R::RString filename,GLang* lang,bool label=false);
 
 	/**
 	* Destructor.
