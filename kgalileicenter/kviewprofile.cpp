@@ -210,19 +210,16 @@ void KViewProfile::ConstructLinks(void)
 	Docs=Profile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		switch(Docs()->GetFdbk())
+		p=0;
+		if(Docs()->GetFdbk()&djAutority)
 		{
-			case (djOK | djAutority):
-				p=la;
-				iconName="konquerorAutho.png";
-				break;
-			case (djOK | djHub):
-				p=lh;
-				iconName="konquerorHub.png";
-				break;
-			default:
-				p=0;
-				break;
+			p=la;
+			iconName="konquerorAutho.png";
+		}
+		if(Docs()->GetFdbk()&djHub)
+		{
+			p=lh;
+			iconName="konquerorHub.png";
 		}
 		if(!p) continue;
 		doc=GSession::Get()->GetDoc(Docs()->GetDocId());

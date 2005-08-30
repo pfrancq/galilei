@@ -163,12 +163,8 @@ void QLoadSession::DoIt(void)
 	Session->GetStorage()->LoadGroups(Session);
 	if(GSession::Break())
 		throw GException("Abord");
-	Parent->PutText("Load Users/Profiles/SubProfiles ...");
+	Parent->PutText("Load Users/Profiles/Feedbacks/SubProfiles ...");
 	Session->GetStorage()->LoadUsers(Session);
-	if(GSession::Break())
-		throw GException("Abord");
-	Parent->PutText("Load Users Feedbacks ...");
-	Session->GetStorage()->LoadFdbks(Session);
 }
 
 
