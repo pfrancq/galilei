@@ -134,11 +134,15 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 			// If incremental mode and document has no change -> continue
 			if(IncrementalMode&&(!Docs()->MustUse(SubProfile))) continue;
 
+			// Get the document : if it exists and is defined -> add it
+			GDoc* doc=Session->GetDoc(Docs()->GetDocId());
+			if((!doc)||(!doc->IsDefined())) continue;
+
 			// Add total number of document judged for the current language
 			NbDocs++;
 
 			// Update number of documents where appear each index term.
-			Words=Session->GetDoc(Docs()->GetDocId())->GetInfos();
+			Words=doc->GetInfos();
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				w=NbDocsWords.GetInsertPtr(GInfo(*Words()));
@@ -158,6 +162,10 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 
 		// If incremental mode and document has no change -> continue
 		if(IncrementalMode&&(!Docs()->MustUse(SubProfile))) continue;
+
+		// Get the document : if it exists and is defined -> add it
+		GDoc* doc=Session->GetDoc(Docs()->GetDocId());
+		if((!doc)||(!doc->IsDefined())) continue;
 
 		// Find list in function of the feedback
 		switch(Docs()->GetFdbk() & djMaskJudg )
@@ -179,7 +187,6 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 		}
 
 		// Add total number of words and the occurences of each word of the current document.
-		GDoc* doc=Session->GetDoc(Docs()->GetDocId());
 		Words=doc->GetInfos();
 		MaxFreq=doc->GetMaxWeight();
 		for(Words.Start();!Words.End();Words.Next())
