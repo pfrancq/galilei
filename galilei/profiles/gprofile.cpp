@@ -236,7 +236,7 @@ GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 	// If subprofile does not exist -> create it
 	if(!sub)
 	{
-		sub=new GSubProfile(this,cNoRef,lang,cNoRef,RDate::null,RDate::null,RDate::null);
+		sub=new GSubProfile(this,cNoRef,lang,cNoRef,RDate::null,RDate::GetToday(),RDate::null);
 		s->InsertSubProfile(sub);
 	}
 
@@ -334,15 +334,9 @@ void GProfile::DispatchFdbks(void)
 		sub=GetPtr<const GLang*>(Docs()->GetLang(),false);
 		if(!sub)
 		{
-			sub=new GSubProfile(this,cNoRef,Docs()->GetLang(),cNoRef,RDate::null,RDate::null,RDate::null);
+			sub=new GSubProfile(this,cNoRef,Docs()->GetLang(),cNoRef,RDate::null,RDate::GetToday(),RDate::null);
 			GSession::Get()->InsertSubProfile(sub);
 		}
-		if(!Docs()->MustUse(sub))
-			continue;
-
-		// Get the document : if it exists and is defined -> add it
-		GDoc* doc=session->GetDoc(Docs()->GetDocId());
-		if((!doc)||(!doc->IsDefined())) continue;
 		sub->InsertFdbk(Docs());
 	}
 }
