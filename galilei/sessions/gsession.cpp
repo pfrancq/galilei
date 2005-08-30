@@ -304,7 +304,11 @@ void GSession::ForceReCompute(tObjType type)
 		// Delete the subprofiles
 		RCursor<PerLang> Cur(Data->Langs);
 		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			if((Cur()->Lang)&&(Cur()->Lang->GetDict()))
+				Cur()->Lang->GetDict()->Clear(otSubProfile);
 			Cur()->SubProfiles.Clear();
+		}
 	}
 	else if(type==otGroups)
 	{
@@ -341,7 +345,11 @@ void GSession::ReInit(void)
 	// Clear Users
 	RCursor<PerLang> Cur(Data->Langs);
 	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if((Cur()->Lang)&&(Cur()->Lang->GetDict()))
+			Cur()->Lang->GetDict()->Clear(otSubProfile);
 		Cur()->SubProfiles.Clear();
+	}
 	Data->Profiles.Clear();
 	Data->Users.Clear();
 }
@@ -941,6 +949,8 @@ void GSession::InsertSubProfile(GSubProfile* s)
 //------------------------------------------------------------------------------
 void GSession::ClearSubprofiles(GLang* lang)
 {
+	if((lang)&&(lang->GetDict()))
+		lang->GetDict()->Clear(otSubProfile);
 	PerLang* ptr=Data->Langs.GetPtr(lang);
 	if(ptr)
 		ptr->SubProfiles.Clear();
