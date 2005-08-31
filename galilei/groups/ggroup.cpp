@@ -261,11 +261,15 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* 
 	{
 		if(sub()==s) continue;
 
-		// Go through the judgments
-		Fdbks=sub()->GetFdbks();
+		// Go through the assessments of the profile grouped together through this subprofile
+		Fdbks=sub()->GetProfile()->GetFdbks();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
-			// Verify that it was not judged by s
+			// Verify that it is the right language
+			if(Fdbks()->GetLang()!=s->GetLang())
+				continue;
+
+			// Verify that it was not assessed by the corresponding profile
 			if(s->GetProfile()->GetFdbk(Fdbks()->GetDocId())) continue;
 
 			// Verify if already inserted:
@@ -320,8 +324,8 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 		//If current treated subprofile is the subprofile "s" ->Then only add links docs
 		if(sub()==s)
 		{
-			// Go through the judgments
-			Fdbks=sub()->GetFdbks();
+			// Go through the assessments of the profile grouped together through this subprofile
+			Fdbks=sub()->GetProfile()->GetFdbks();
 			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 			{
 				// Verify if the document is a relevant hub or authority.
@@ -336,16 +340,16 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 			continue;
 		}
 
-		// Go through the judgments
-		Fdbks=sub()->GetFdbks();
+		// Go through the assessments of the profile grouped together through this subprofile
+		Fdbks=sub()->GetProfile()->GetFdbks();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify if the document is relevant.
 			j=Fdbks()->GetFdbk();
 			if(!(j & djOK)) continue;
 
-			// Verify if already inserted in Docs or if it was not judged by the
-			// subprofile s.
+			// Verify if already inserted in Docs or if it was not assessed by the
+			// corresponding profile.
 			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDocId()))) continue;
 
 			// Insert it.
