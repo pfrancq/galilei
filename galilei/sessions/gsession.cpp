@@ -1035,7 +1035,7 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 			Subs()->SetState(osSaved);
 		}
 	}
-	if(Data->SaveResults&&(Subs()->GetId()!=cNoRef))
+	if(Data->SaveResults&&(profile->GetId()!=cNoRef))
 		Data->Storage->SaveProfile(profile);
 }
 

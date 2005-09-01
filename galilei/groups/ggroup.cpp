@@ -328,6 +328,10 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 			Fdbks=sub()->GetProfile()->GetFdbks();
 			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 			{
+				// Verify that it is the right language
+				if(Fdbks()->GetLang()!=s->GetLang())
+					continue;
+
 				// Verify if the document is a relevant hub or authority.
 				j=Fdbks()->GetFdbk();
 				if(!( (j & (djOK & djHub)) || (j & (djOK & djAutority)))) continue;

@@ -576,7 +576,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 				else
 					sSql+=",topicid=0";
 			}
-			sSql=+" WHERE profileid="+itou(profid);
+			sSql+=" WHERE profileid="+itou(profid);
 			RQuery Update(Db,sSql);
 		}
 
@@ -1123,7 +1123,7 @@ void GStorageMySQL::SaveHistoricProfiles(GSession* session,unsigned int historic
 //------------------------------------------------------------------------------
 void GStorageMySQL::UpdateProfiles(unsigned int docid,GLang* lang)
 {
-	RQuery Up(Db,"UPDATE htmlsbyprofiles SET computed=CURDATE(),langid="+RString(lang->GetCode())+" WHERE htmlid="+itou(docid));
+	RQuery Up(Db,"UPDATE htmlsbyprofiles SET computed=CURDATE(),langid="+RQuery::SQLValue(lang->GetCode())+" WHERE htmlid="+itou(docid));
 }
 
 
