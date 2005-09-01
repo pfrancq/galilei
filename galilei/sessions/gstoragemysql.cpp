@@ -592,7 +592,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
 			RQuery Insert(Db,sSql);
 		}
 		// Update other information from the documents
-		RQuery Update(Db,"UPDATE htmls,htmlsbyprofiles SET htmlsbyprofiles.langid=htmls.langid, htmlsbyprofiles.computed=htmls.computed WHERE htmlsbyprofiles.htmlid=htmls.htmlid AND profileid="+itou(prof->GetId()));
+		RQuery Update(Db,"UPDATE htmls,htmlsbyprofiles SET htmlsbyprofiles.langid=htmls.langid, htmlsbyprofiles.computed=htmls.calculated WHERE htmlsbyprofiles.htmlid=htmls.htmlid AND profileid="+itou(prof->GetId()));
 	}
 	catch(RMySQLError e)
 	{
