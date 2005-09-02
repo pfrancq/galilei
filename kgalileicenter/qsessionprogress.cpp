@@ -156,15 +156,15 @@ void QLoadSession::DoIt(void)
 	if(GSession::Break())
 		throw GException("Abord");
 	Parent->PutText("Loading Documents ...");
-	Session->GetStorage()->LoadDocs(Session);
+	Session->GetStorage()->LoadDocs();
 	if(GSession::Break())
 		throw GException("Abord");
 	Parent->PutText("Load Groups ...");
-	Session->GetStorage()->LoadGroups(Session);
+	Session->GetStorage()->LoadGroups();
 	if(GSession::Break())
 		throw GException("Abord");
 	Parent->PutText("Load Users/Profiles/Feedbacks/SubProfiles ...");
-	Session->GetStorage()->LoadUsers(Session);
+	Session->GetStorage()->LoadUsers();
 }
 
 
