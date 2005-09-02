@@ -107,6 +107,9 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 		case otLang:
 			return(RString("language"));
 			break;
+		case otHistory:
+			return(RString("history"));
+			break;
 	}
 	return(RString("unknow"));
 }

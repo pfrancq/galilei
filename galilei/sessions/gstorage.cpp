@@ -45,8 +45,8 @@ using namespace R;
 
 
 //------------------------------------------------------------------------------
-GStorageCmd::GStorageCmd(const R::RString cmd)
-	: Cmd(cmd), Session(0)
+GStorageCmd::GStorageCmd(const R::RString cmd,const R::RString storage)
+	: Cmd(cmd), Storage(storage)
 {
 }
 
@@ -66,16 +66,28 @@ int GStorageCmd::Compare(const R::RString& cmd) const
 
 
 //------------------------------------------------------------------------------
-void GStorageCmd::Connect(GSession* session)
+RString GStorageCmd::GetName(void) const
 {
-	Session=session;
+	return(Cmd);
 }
 
 
 //------------------------------------------------------------------------------
-void GStorageCmd::Disconnect(GSession*)
+RString GStorageCmd::GetStorage(void) const
 {
-	Session=0;
+	return(Storage);
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageCmd::Connect(GStorage*)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageCmd::Disconnect(GStorage*)
+{
 }
 
 
@@ -106,18 +118,12 @@ GStorage::GStorage(RString n,bool all,const R::RDate& filter) throw(std::bad_all
 void GStorage::Connect(GSession* session)
 {
 	Session=session;
-	RCursor<GStorageCmd> Cur(Cmds);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Connect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GStorage::Disconnect(GSession* session)
+void GStorage::Disconnect(GSession*)
 {
-	RCursor<GStorageCmd> Cur(Cmds);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Disconnect(session);
 	Session=0;
 }
 
@@ -164,6 +170,18 @@ void GStorage::ExecuteCmd(const R::RXMLTag& inst,void* caller)
 	if(!cmd)
 		throw GException("Command '"+inst.GetName()+"' not support on storage "+Name);
 	cmd->Run(this,inst,caller);
+}
+
+
+//------------------------------------------------------------------------------
+void GStorage::InsertCmd(GStorageCmd* cmd)
+{
+	if(Name!=cmd->GetStorage())
+		return;
+	if(Cmds.IsIn(cmd->GetName()))
+		return;
+	Cmds.InsertPtr(cmd);
+	cmd->Connect(this);
 }
 
 

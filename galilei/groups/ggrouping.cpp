@@ -114,7 +114,7 @@ void GGrouping::Grouping(GSlot* rec,bool save) throw(GException)
 	// Save if necessary
 	if(save)
 	{
-		Session->GetStorage()->SaveGroups(Session);
+		Session->GetStorage()->SaveGroups();
 		Groups=Session->GetGroups();
 		for(Groups.Start();!Groups.End();Groups.Next())
 			Groups()->SetState(osSaved);

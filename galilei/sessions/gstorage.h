@@ -68,17 +68,18 @@ class GStorageCmd
 	R::RString Cmd;
 
 	/**
-	* Session connected to the storage.
+	* Name of the storage manager supported.
 	*/
-	GSession* Session;
+	R::RString Storage;
 
 public:
 
 	/**
 	* Constructor of a command.
 	* @param cmd             Name of the command.
+	* @param storage         Name of the storage.
 	*/
-	GStorageCmd(const R::RString cmd);
+	GStorageCmd(const R::RString cmd,const R::RString storage);
 
 	/**
 	* Compare two commands.
@@ -93,16 +94,26 @@ public:
 	int Compare(const R::RString& cmd) const;
 
 	/**
-	* Connect to the session.
-	* @param session         Pointer to the session.
+	* Get the name of the command.
 	*/
-	virtual void Connect(GSession* session);
+	R::RString GetName(void) const;
 
 	/**
-	* Disconnect to the session.
-	* @param session         Pointer to the session.
+	* Get the name of the storage.
 	*/
-	virtual void Disconnect(GSession* session);
+	R::RString GetStorage(void) const;
+
+	/**
+	* Connect to a storage.
+	* @param session         Pointer to the storage.
+	*/
+	virtual void Connect(GStorage* storage);
+
+	/**
+	* Disconnect to the storage.
+	* @param session         Pointer to the storage.
+	*/
+	virtual void Disconnect(GStorage* storage);
 
 	/**
 	* Run the command.
@@ -170,10 +181,10 @@ public:
 
 	/**
 	* Constructor.
-	* @param n              Name.
-	* @param all            Load all?
-	* @param filter         Date used to filter the entry to load. If the
-	*                       current is used, no filtering is done.
+	* @param n               Name.
+	* @param all             Load all?
+	* @param filter          Date used to filter the entry to load. If the
+	*                        current is used, no filtering is done.
 	*/
 	GStorage(R::RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException);
 
@@ -236,44 +247,52 @@ public:
 	void ExecuteCmd(const R::RXMLTag& inst,void* caller);
 
 	/**
+	* Insert a new command in the storage. The command is inserted if :
+	* -# The name of the storage must be compatible with the one of the command.
+	* -# Another command with the same name does not exist.
+	* @param                 cmd Command to insert.
+	*/
+	void InsertCmd(GStorageCmd* cmd);
+
+	/**
 	* Create a dummy table to store different kid of
 	* data.
-	* @param name           Name of the dummy object.
+	* @param name            Name of the dummy object.
 	*/
 	virtual void CreateDummy(R::RString name) throw(GException)=0;
 
 	/**
 	* Delete all the data of a given dummy table.
-	* @ param name          Name of the dummy object.
+	* @ param name           Name of the dummy object.
 	*/
 	virtual void ClearDummy(R::RString name) throw(GException)=0;
 
 	/**
-	* Add a dummy entry into a dummy table;
-	* @param name           Name of the dummy table.
-	* @param id             Identificator of the dymmy entry.
-	* @param desc           Description of the dymmy entry.
-	* @param parentid       Identificator of the parent.
+	* Add a dummy entry into  a dummy table;
+	* @param name            Name of the dummy table.
+	* @param id              Identificator of the dymmy entry.
+	* @param desc            Description of the dymmy entry.
+	* @param parentid        Identificator of the parent.
 	*/
 	virtual void AddDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid) throw(GException)=0;
 
 	/**
 	* Select a dummy entry from a dummy table;
-	* @param name           Name of the dummy table.
-	* @param id             Identificator of the dymmy entry.
-	* @param desc           Description of the dymmy entry.
-	* @param parentid       Identificator of the parent.
-	* @param filter         Filter to set the fields on which the select is done.
+	* @param name            Name of the dummy table.
+	* @param id              Identificator of the dymmy entry.
+	* @param desc            Description of the dymmy entry.
+	* @param parentid        Identificator of the parent.
+	* @param filter          Filter to set the fields on which the select is done.
 	*/
 	virtual R::RQuery* SelectDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException)=0;
 
 	/**
 	* Clear a dummy entry from a dummy table;
-	* @param name           Name of the dummy table.
-	* @param id             Identificator of the dymmy entry.
-	* @param desc           Description of the dymmy entry.
-	* @param parentid       Identificator of the parent.
-	* @param filter         Filter to set the fields on which the select is done.
+	* @param name            Name of the dummy table.
+	* @param id              Identificator of the dymmy entry.
+	* @param desc            Description of the dymmy entry.
+	* @param parentid        Identificator of the parent.
+	* @param filter          Filter to set the fields on which the select is done.
 	*/
 	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException)=0;
 
@@ -288,16 +307,27 @@ public:
 
 	/**
 	* Load the Subjects.
-	* @param session        Session.
 	*/
-	virtual void LoadSubjects(GSession* session) throw(std::bad_alloc,GException)=0;
+	virtual void LoadSubjects(void) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
 	* can be a SQL file.
-	* @param filename       Name of the file.
+	* @param filename        Name of the file.
 	*/
 	virtual void ExecuteData(const R::RString& filename) throw(GException)=0;
+
+	/**
+	* Prepare a given number of suggestions for a test.
+	* @param name            Name of the test.
+	*/
+	virtual void CreateSugs(const R::RString& name)=0;
+
+	/**
+	* Get the different tests that were made.
+	* @param res             Container that will hold the names.
+	*/
+	virtual void GetSugsTests(R::RContainer<R::RString,true,true>& res)=0;
 
 	//@} General methods
 
@@ -309,59 +339,57 @@ public:
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
-	* @param data           Data.
-	* @param dict           Dictionary.
+	* @param data            Data.
+	* @param dict            Dictionary.
 	*/
 	virtual void AssignId(GData* data,const GDict* dict) throw(GException)=0;
 
 	/**
 	* Assign an identifier to a new document.
-	* @param doc            Document.
+	* @param doc             Document.
 	*/
 	virtual void AssignId(GDoc* doc)=0;
 
 	/**
 	* Loading a dictionary/stoplist.
-	* @param dic            Pointer to the dictionary.
-	* @param lang           Languague.
-	* @param s              Is it a stop list.
+	* @param dic             Pointer to the dictionary.
+	* @param lang            Languague.
+	* @param s               Is it a stop list.
 	*/
 	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Load an indexer.
-	* @param indexer        Pointer to the indexer.
-	* @param langs          Pointer to the langs.
+	* @param indexer         Pointer to the indexer.
+	* @param langs           Pointer to the langs.
 	*/
 	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs)=0;
 
 	/**
 	* Load a specific word from a dictionary.
-	* @param id             Idenfificator of the word.
-	* @param code           Code of the languague.
+	* @param id              Idenfificator of the word.
+	* @param code            Code of the languague.
 	*/
 	virtual R::RString LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Load the identificator of a specific word from a dictionary.
-	* @param word           Word.
-	* @param code           Code of the languague.
+	* @param word            Word.
+	* @param code            Code of the languague.
 	*/
 	virtual unsigned int LoadWord(const R::RString word,const char* code) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Method that load a document that is stored.
-	* @param session         Session.
 	* @param docid           Identificator of the document
 	*/
-	virtual GDoc* LoadDoc(GSession* session,unsigned int docid)=0;
+	virtual GDoc* LoadDoc(unsigned int docid)=0;
 
 	/**
 	* Method that load the documents from where they are stored. This method
 	* must be overloaded.
-	* @param session        Session.
 	*/
-	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException)=0;
+	virtual void LoadDocs(void) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Save a data in the database.
@@ -392,7 +420,7 @@ public:
 	* Save a document where it is stored. This method is called after an
 	* analsyis of a document if the result has to be saved. This method must be
 	* overloaded.
-	* @param doc        Document to save.
+	* @param doc             Document to save.
 	*/
 	virtual void SaveDoc(GDoc* doc) throw(GException)=0;
 
@@ -406,30 +434,33 @@ public:
 
 	/**
 	* Load the subprofiles (and the profiles and the users).
-	* @param session        Session.
 	*/
-	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException)=0;
+	virtual void LoadUsers(void) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Method that load a user that is stored.
-	* @param session         Session.
 	* @param userid          Identificator of the user.
 	*/
-	virtual GUser* LoadUser(GSession* session,unsigned int userid)=0;
+	virtual GUser* LoadUser(unsigned int userid)=0;
 
 	/**
 	* Method that load a profile that is stored.
-	* @param session         Session.
 	* @param profileid       Identificator of the profile.
 	*/
-	virtual GProfile* LoadProfile(GSession* session,unsigned int profileid)=0;
+	virtual GProfile* LoadProfile(unsigned int profileid)=0;
 
 	/**
 	* Method that load a subprofile that is stored.
-	* @param session         Session.
 	* @param subprofileid    Identificator of the subprofile.
 	*/
-	virtual GSubProfile* LoadSubProfile(GSession* session,unsigned int subprofileid)=0;
+	virtual GSubProfile* LoadSubProfile(unsigned int subprofileid)=0;
+
+	/**
+	* Load the list of suggestions for the profiles for a given test.
+	* @param name            Name of the test.
+	* @param res             Container that will hold the suggestions.
+	*/
+	virtual void GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,true,false>& res)=0;
 
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
@@ -440,23 +471,32 @@ public:
 
 	/**
 	* Save a profile.
-	* @param prof           Profile to save.
+	* @param prof            Profile to save.
 	*/
 	virtual void SaveProfile(GProfile* prof) throw(GException)=0;
 
 	/**
 	* Save profiles in history
-	* @param session        Session.
-	* @param historicID     id of the historic.
+	* @param historicID      Identificator of the historic.
 	*/
-	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicID) throw(GException)=0;
+	virtual void SaveHistoricProfiles(unsigned int historicID) throw(GException)=0;
 
 	/**
 	* Save information about the groupement (Group and attachment date) of
 	* a subprofile. For a complete save, call Save(const GProfile*).
-	* @param sub        Subprofile to save.
+	* @param sub             Subprofile to save.
 	*/
 	virtual void SaveSubProfile(GSubProfile* sub) throw(GException)=0;
+
+	/**
+	* Add a suggestion for a given profile and a given test.
+	* @param name            Name of the test.
+	* @param profileid       Identificator of the profile.
+	* @param docid           Identificator of the document to suggest.
+	* @param rank            Ranking of the document.
+	*/
+	virtual void AddSugsProfile(const R::RString& name,unsigned int profileid,unsigned int docid,unsigned int rank)=0;
+
 
 	// @} Users/Profiles/Subprofiles
 
@@ -468,17 +508,40 @@ public:
 
 	/**
 	* Load the groups.
-	* @param session        Session.
 	*/
-	virtual void LoadGroups(GSession* session) throw(std::bad_alloc,GException)=0;
-
+	virtual void LoadGroups(void) throw(std::bad_alloc,GException)=0;
 
 	/**
 	* Method that load a group that is stored.
-	* @param session         Session.
 	* @param groupid         Identificator of the group.
 	*/
-	virtual GGroup* LoadGroup(GSession* session,unsigned int groupid)=0;
+	virtual GGroup* LoadGroup(unsigned int groupid)=0;
+
+	/**
+	* Load an historic groups.
+	* @param historicID      Identificator of the historic.
+	* @return Pointer to a historic group.
+	*/
+	virtual GGroupsHistory* LoadAnHistoricGroups(unsigned int historicID) throw(std::bad_alloc,GException)=0;
+
+	/**
+	* Load the historic groups.
+	* @param mindate         Date of the first historic to load.
+	* @param maxdate         Date of the last historic to load.
+	*/
+	virtual void LoadHistoricGroupsByDate(R::RString mindate, R::RString maxdate)=0;
+
+	/**
+	* Load the list of suggestions for the groups for a given test.
+	* @param name            Name of the test.
+	* @param res             Container that will hold the suggestions.
+	*/
+	virtual void GetSugsGroups(const R::RString& name,R::RContainer<GSugs,true,false>& res)=0;
+
+	/**
+	* Returns the number of historic groups stored in the database.
+	*/
+	virtual unsigned int GetHistorySize(void) throw(GException)=0;
 
 	/**
 	* A subprofile was updated and the corresponding groups must be updated.
@@ -488,80 +551,22 @@ public:
 
 	/**
 	* Save the groups of the session.
-	* @param session        Session.
 	*/
-	virtual void SaveGroups(GSession* session) throw(GException)=0;
+	virtual void SaveGroups(void) throw(GException)=0;
 
 	/**
 	* Save the groups in history.
-	* @param session        Session.
 	*/
-	virtual void SaveGroupsHistory(GSession* session) throw(GException)=0;
-
-	/**
-	* Load an historic groups.
-	* @param session        Session.
-	* @param historicID     Identificator of the historic.
-	* @return Pointer to a historic group.
-	*/
-	virtual GGroupsHistory* LoadAnHistoricGroups(GSession* session,unsigned int historicID) throw(std::bad_alloc,GException)=0;
-
-	/**
-	* Load the historic groups.
-	* @param session        Session.
-	* @param mindate        Date of the first historic to load.
-	* @param maxdate        Date of the last historic to load.
-	*/
-	virtual void LoadHistoricGroupsByDate(GSession* session,R::RString mindate, R::RString maxdate)=0;
-
-	/**
-	* Returns the number of historic groups stored in the database.
-	*/
-	virtual unsigned int GetHistorySize(void) throw(GException)=0;
-
-	/**
-	* Prepare a given number of suggestions for a test.
-	* @param name           Name of the test.
-	*/
-	virtual void CreateSugs(const R::RString& name)=0;
-
-	/**
-	* Add a suggestion for a given profile and a given test.
-	* @param name           Name of the test.
-	* @param profileid      Identificator of the profile.
-	* @param docid          Identificator of the document to suggest.
-	* @param rank           Ranking of the document.
-	*/
-	virtual void AddSugsProfile(const R::RString& name,unsigned int profileid,unsigned int docid,unsigned int rank)=0;
+	virtual void SaveGroupsHistory(void) throw(GException)=0;
 
 	/**
 	* Add a suggestion for a given community and a given test.
-	* @param name           Name of the test.
-	* @param groupid      Identificator of the community.
-	* @param docid          Identificator of the document to suggest.
-	* @param rank           Ranking of the document.
+	* @param name            Name of the test.
+	* @param groupid         Identificator of the community.
+	* @param docid           Identificator of the document to suggest.
+	* @param rank            Ranking of the document.
 	*/
 	virtual void AddSugsGroup(const R::RString& name,unsigned int groupid,unsigned int docid,unsigned int rank)=0;
-
-	/**
-	* Load the list of suggestions for the profiles for a given test.
-	* @param name           Name of the test.
-	* @param res            Container that will hold the suggestions.
-	*/
-	virtual void GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,true,false>& res)=0;
-
-	/**
-	* Load the list of suggestions for the groups for a given test.
-	* @param name           Name of the test.
-	* @param res            Container that will hold the suggestions.
-	*/
-	virtual void GetSugsGroups(const R::RString& name,R::RContainer<GSugs,true,false>& res)=0;
-
-	/**
-	* Get the different tests that were made.
-	* @param res            Container that will hold the names.
-	*/
-	virtual void GetSugsTests(R::RContainer<R::RString,true,true>& res)=0;
 
 	// @} Groups
 

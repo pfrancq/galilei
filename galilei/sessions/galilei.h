@@ -225,7 +225,8 @@ enum tObjType
 	otDocGroup=11                /** Document or Group.*/,
 	otSubProfileGroup=12         /** SubProfile or Group.*/,
 	otFdbk=13                    /** Assessment of a document by a profile.*/,
-	otLang=14                    /** Language. */
+	otLang=14                    /** Language. */,
+	otHistory=15                 /** History */
 };
 
 
