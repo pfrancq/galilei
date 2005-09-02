@@ -392,7 +392,7 @@ GSubjects* GSession::GetSubjects(bool load) const
 	{
 		Data->Subjects=new GSubjects(const_cast<GSession*>(this));
 		if(Data->Storage)
-			const_cast<GSession*>(this)->Data->Storage->LoadSubjects(const_cast<GSession*>(this));
+			const_cast<GSession*>(this)->Data->Storage->LoadSubjects();
 	}
 	return(Data->Subjects);
 }
@@ -524,7 +524,7 @@ GDoc* GSession::GetDoc(unsigned int id,bool load) const
 		return(0);
 	if(Data->Storage->IsAllInMemory())
 		throw GException("Unknown document");
-	d=Data->Storage->LoadDoc(const_cast<GSession*>(this),id);
+	d=Data->Storage->LoadDoc(id);
 	if(!d)
 		throw GException("Unknown document");
 	const_cast<GSession*>(this)->InsertDoc(d);
@@ -766,7 +766,7 @@ GUser* GSession::GetUser(unsigned int id,bool load) const
 		return(0);
 	if(Data->Storage->IsAllInMemory())
 		throw GException("Unknown user");
-	u=Data->Storage->LoadUser(const_cast<GSession*>(this),id);
+	u=Data->Storage->LoadUser(id);
 	if(!u)
 		throw GException("Unknown user");
 	const_cast<GSession*>(this)->InsertUser(u);
@@ -821,7 +821,7 @@ GProfile* GSession::GetProfile(unsigned int id,bool load) const
 		return(0);
 	if(Data->Storage->IsAllInMemory())
 		throw GException("Unknown profile");
-	p=Data->Storage->LoadProfile(const_cast<GSession*>(this),id);
+	p=Data->Storage->LoadProfile(id);
 	if(!p)
 		throw GException("Unknown profile");
 	const_cast<GSession*>(this)->InsertProfile(p);
@@ -906,7 +906,7 @@ GSubProfile* GSession::GetSubProfile(unsigned int id,const GLang* lang,bool load
 		return(0);
 	if(Data->Storage->IsAllInMemory())
 		throw GException("Unknown subprofile");
-	s=Data->Storage->LoadSubProfile(const_cast<GSession*>(this),id);
+	s=Data->Storage->LoadSubProfile(id);
 	if(!s)
 		throw GException("Unknown subprofile");
 	const_cast<GSession*>(this)->InsertSubProfile(s);
@@ -1157,7 +1157,7 @@ GGroup* GSession::GetGroup(const GSubProfile* sub,bool load) const
 		return(0);
 	if(Data->Storage->IsAllInMemory())
 		throw GException("Unknown group "+itou(sub->GetGroupId()));
-	grp=Data->Storage->LoadGroup(const_cast<GSession*>(this),sub->GetGroupId());
+	grp=Data->Storage->LoadGroup(sub->GetGroupId());
 	if(!grp)
 		throw GException("Unknown group "+itou(sub->GetGroupId()));
 	const_cast<GSession*>(this)->InsertGroup(grp);
@@ -1175,7 +1175,7 @@ GGroup*GSession::GetGroup(unsigned int id,bool load) const
 		return(0);
 	if(Data->Storage->IsAllInMemory())
 		throw GException("Unknown group "+itou(id));
-	grp=Data->Storage->LoadGroup(const_cast<GSession*>(this),id);
+	grp=Data->Storage->LoadGroup(id);
 	if(!grp)
 		throw GException("Unknown group "+itou(id));
 	const_cast<GSession*>(this)->InsertGroup(grp);
@@ -1326,7 +1326,7 @@ void GSession::CopyIdealGroups(void)
 
 	if(Data->SaveResults)
 	{
-		Data->Storage->SaveGroups(this);
+		Data->Storage->SaveGroups();
 		RCursor<GGroup> Groups(GetGroups());
 		for(Groups.Start();!Groups.End();Groups.Next())
 			Groups()->SetState(osSaved);
@@ -1341,14 +1341,14 @@ void GSession::LoadHistoricGroupsById(unsigned int mingen, unsigned int maxgen)
 
 	// fill the container
 	for (i=mingen; i<maxgen+1; i++)
-		Data->GroupsHistoryMng->InsertGroupsHistory(Data->Storage->LoadAnHistoricGroups(this, i));
+		Data->GroupsHistoryMng->InsertGroupsHistory(Data->Storage->LoadAnHistoricGroups(i));
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::LoadHistoricGroupsByDate(RString mindate,RString maxdate)
 {
-	Data->Storage->LoadHistoricGroupsByDate(this,mindate,maxdate);
+	Data->Storage->LoadHistoricGroupsByDate(mindate,maxdate);
 }
 
 

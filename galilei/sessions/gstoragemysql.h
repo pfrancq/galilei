@@ -214,62 +214,53 @@ public:
 
 	/**
 	* Method that load a document that is stored.
-	* @param session         Session.
 	* @param docid           Identificator of the document.
 	*/
-	virtual GDoc* LoadDoc(GSession* session,unsigned int docid);
+	virtual GDoc* LoadDoc(unsigned int docid);
 
 	/**
 	* Load the documents.
-	* @param session        Session.
 	*/
-	virtual void LoadDocs(GSession* session) throw(std::bad_alloc,GException);
+	virtual void LoadDocs(void) throw(std::bad_alloc,GException);
 
 	/**
 	* Method that load a user that is stored.
-	* @param session         Session.
 	* @param userid          Identificator of the user.
 	*/
-	virtual GUser* LoadUser(GSession* session,unsigned int userid);
+	virtual GUser* LoadUser(unsigned int userid);
 
 	/**
 	* Method that load a profile that is stored.
-	* @param session         Session.
 	* @param profileid       Identificator of the profile.
 	*/
-	virtual GProfile* LoadProfile(GSession* session,unsigned int profileid);
+	virtual GProfile* LoadProfile(unsigned int profileid);
 
 	/**
 	* Method that load a subprofile that is stored.
-	* @param session         Session.
 	* @param subprofileid    Identificator of the subprofile.
 	*/
-	virtual GSubProfile* LoadSubProfile(GSession* session,unsigned int subprofileid);
+	virtual GSubProfile* LoadSubProfile(unsigned int subprofileid);
 
 	/**
 	* Load the subprofiles (and profiles and users).
-	* @param session         Session.
 	*/
-	virtual void LoadUsers(GSession* session) throw(std::bad_alloc,GException);
+	virtual void LoadUsers(void) throw(std::bad_alloc,GException);
 
 	/**
 	* Method that load a group that is stored.
-	* @param session         Session.
 	* @param groupid         Identificator of the group.
 	*/
-	virtual GGroup* LoadGroup(GSession* session,unsigned int groupid);
+	virtual GGroup* LoadGroup(unsigned int groupid);
 
 	/**
 	* Load the groups.
-	* @param session        Session.
 	*/
-	virtual void LoadGroups(GSession* session) throw(std::bad_alloc,GException);
+	virtual void LoadGroups(void) throw(std::bad_alloc,GException);
 
 	/**
 	* Load the Subjects.
-	* @param session        Session.
 	*/
-	virtual void LoadSubjects(GSession* session) throw(std::bad_alloc,GException);
+	virtual void LoadSubjects(void) throw(std::bad_alloc,GException);
 
 	/**
 	* Save a document.
@@ -299,22 +290,19 @@ public:
 
 	/**
 	* Save the groups description.
-	* @param session        Session.
 	*/
-	virtual void SaveGroups(GSession* session) throw(GException);
+	virtual void SaveGroups(void) throw(GException);
 
 	/**
 	* Save the groups in history.
-	* @param session        Session.
 	*/
-	virtual void SaveGroupsHistory(GSession* session) throw(GException);
+	virtual void SaveGroupsHistory(void) throw(GException);
 
 	/**
 	* Save the Profiles in history.
-	* @param session        Session.
 	* @param historicID     Identificator of the historic.
 	*/
-	virtual void SaveHistoricProfiles(GSession* session,unsigned int historicID) throw(GException);
+	virtual void SaveHistoricProfiles(unsigned int historicID) throw(GException);
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
@@ -325,19 +313,17 @@ public:
 
 	/**
 	* Load an historic groups.
-	* @param session        Session.
 	* @param historicID     Identificator of the historic.
 	* @return Pointer to a historic group.
 	*/
-	GGroupsHistory* LoadAnHistoricGroups(GSession* session, unsigned int historicID) throw(std::bad_alloc,GException);
+	GGroupsHistory* LoadAnHistoricGroups(unsigned int historicID) throw(std::bad_alloc,GException);
 
 	/**
 	* Load the historic groups.
-	* @param session        Session.
 	* @param mindate        Date of the first historic to load.
 	* @param maxdate        Date of the last historic to load.
 	*/
-	void LoadHistoricGroupsByDate(GSession* session, R::RString mindate, R::RString maxdate);
+	void LoadHistoricGroupsByDate(R::RString mindate, R::RString maxdate);
 
 	/**
 	* @return the number of historic groups stored in database.
