@@ -76,7 +76,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GStorageMySQL::GStorageMySQL(RString host,RString user,RString pwd,RString db,RString coding,bool all,const R::RDate& filter) throw(std::bad_alloc,GException)
-	: GStorage(db,all,filter), Db(0)
+	: GStorage("MySQL",all,filter), Db(0)
 {
 	try
 	{

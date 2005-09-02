@@ -175,7 +175,12 @@ protected:
 	/**
 	* All available commands.
 	*/
-	R::RContainer<GStorageCmd,true,true> Cmds;
+	R::RContainer<GStorageCmd,false,true> Cmds;
+
+	/**
+	* All available commands.
+	*/
+	static R::RContainer<GStorageCmd,true,true> RegisteredCmds;
 
 public:
 
@@ -252,7 +257,7 @@ public:
 	* -# Another command with the same name does not exist.
 	* @param                 cmd Command to insert.
 	*/
-	void InsertCmd(GStorageCmd* cmd);
+	static void InsertCmd(GStorageCmd* cmd);
 
 	/**
 	* Create a dummy table to store different kid of

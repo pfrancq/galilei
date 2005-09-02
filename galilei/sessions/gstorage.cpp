@@ -54,7 +54,10 @@ GStorageCmd::GStorageCmd(const R::RString cmd,const R::RString storage)
 //------------------------------------------------------------------------------
 int GStorageCmd::Compare(const GStorageCmd& cmd) const
 {
-	return(Cmd.Compare(cmd.Cmd));
+	int i=Cmd.Compare(cmd.Cmd);
+	if(i)
+		return(i);
+	return(Storage.Compare(cmd.Storage));
 }
 
 
@@ -118,6 +121,17 @@ GStorage::GStorage(RString n,bool all,const R::RDate& filter) throw(std::bad_all
 void GStorage::Connect(GSession* session)
 {
 	Session=session;
+
+	RCursor<GStorageCmd> Cur(RegisteredCmds);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Name!=Cur()->GetStorage())
+			continue;
+		if(Cmds.IsIn(*Cur()))
+			continue;
+		Cmds.InsertPtr(Cur());
+		Cur()->Connect(this);
+	}
 }
 
 
@@ -176,12 +190,7 @@ void GStorage::ExecuteCmd(const R::RXMLTag& inst,void* caller)
 //------------------------------------------------------------------------------
 void GStorage::InsertCmd(GStorageCmd* cmd)
 {
-	if(Name!=cmd->GetStorage())
-		return;
-	if(Cmds.IsIn(cmd->GetName()))
-		return;
-	Cmds.InsertPtr(cmd);
-	cmd->Connect(this);
+	RegisteredCmds.InsertPtr(cmd);
 }
 
 
