@@ -82,7 +82,6 @@ void GSugs::ApplyConfig(void)
 void GSugs::Connect(GSession* session) throw(GException)
 {
 	GPostGroup::Connect(session);
-	Session->GetStorage()->CreateDummy("sugs");
 }
 
 
@@ -103,7 +102,8 @@ void GSugs::Run(void) throw(GException)
 	char tmp[10];
 
 	// Clear the table
-	Session->GetStorage()->ClearDummy("sugs");
+	RDate Now(RDate::GetToday());
+	Session->GetStorage()->CreateSugs(Now);
 
 	// -1- Store sugestion with description= S+order
 	// Go through the groups
@@ -120,23 +120,7 @@ void GSugs::Run(void) throw(GException)
 			// Store them in the database
 			Doc.Set(Docs);
 			for(Doc.Start(),i=0;!Doc.End();Doc.Next(),i++)
-			{
-				switch(Doc()->GetFdbk())
-				{
-					case (djOK | djHub):
-						sprintf(tmp,"H%u",i);
-						break;
-
-					case (djOK | djAutority):
-						sprintf(tmp,"A%u",i);
-						break;
-
-					default :
-						sprintf(tmp,"S%u",i);
-						break;
-				}
-				Session->GetStorage()->AddDummyEntry("sugs",Sub()->GetId(),tmp,Doc()->GetDocId());
-			}
+				Session->GetStorage()->AddSugsProfile(Now,Sub()->GetProfile()->GetId(),Doc()->GetDocId(),i);
 		}
 	}
 
