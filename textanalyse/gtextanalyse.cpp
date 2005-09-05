@@ -755,7 +755,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 		if(!dp)
 			throw GException("the specified path doesn't exist.");
 		closedir(dp);
-		name+=Session->GetStorage()->GetName();
+		name+=Session->GetStorage()->GetFactory()->GetName();
 		dp=opendir(name);
 		if(!dp)
 			mkdir(name,448);
