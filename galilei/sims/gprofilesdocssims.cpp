@@ -78,7 +78,7 @@ double GProfilesDocsSimsManager::GetSimilarity(const GDoc* doc,const GSubProfile
 {
 	if(!Current)
 		throw GException("No profiles/documents similarities plug-in selected");
-	return(Current->GetSimilarity(doc,sub));
+	return(Current->GetPlugin()->GetSimilarity(doc,sub));
 }
 
 
@@ -87,7 +87,7 @@ double GProfilesDocsSimsManager::GetMinSimilarity(const GLang* lang)
 {
 	if(!Current)
 		throw GException("No profiles/documents similarities plug-in selected");
-	return(Current->GetMinSimilarity(lang));
+	return(Current->GetPlugin()->GetMinSimilarity(lang));
 }
 
 

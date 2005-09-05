@@ -78,7 +78,7 @@ double GProfilesGroupsSimsManager::GetSimilarity(const GSubProfile* sub,const GG
 {
 	if(!Current)
 		throw GException("No groups/profiles similarities plug-in selected");
-	return(Current->GetSimilarity(sub,grp));
+	return(Current->GetPlugin()->GetSimilarity(sub,grp));
 }
 
 
@@ -87,7 +87,7 @@ double GProfilesGroupsSimsManager::GetMinSimilarity(const GLang* lang)
 {
 	if(!Current)
 		throw GException("No groups/profiles similarities plug-in selected");
-	return(Current->GetMinSimilarity(lang));
+	return(Current->GetPlugin()->GetMinSimilarity(lang));
 }
 
 

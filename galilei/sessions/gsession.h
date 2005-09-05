@@ -75,7 +75,7 @@ public:
 
 	/**
 	* Constructor.
-	* @param str             Storage manager.
+	* @param slot            Pointer to the slot.
 	* @param maxdocs         Maximum number of documents to allocate. If zero,
 	*                        everything is allocated.
 	* @param maxsubprofiles  Maximum number of subprofiles to allocate. If
@@ -83,7 +83,7 @@ public:
 	* @param maxgroups       Maximum number of groups to allocate. If zero,
 	*                        everything is allocated.
 	*/
-	GSession(GStorage* str,unsigned int maxdocs=0,unsigned int maxsubprofiles=0,unsigned int maxgroups=0);
+	GSession(GSlot* slot=0,unsigned int maxdocs=0,unsigned int maxsubprofiles=0,unsigned int maxgroups=0);
 
 	//-----------------------------------------------------
 	/** @name General Methods
@@ -91,9 +91,9 @@ public:
 	// @{
 
 	/**
-	* Connect the session to managers.
+	* Init the session.
 	*/
-	void Connect(void);
+	void Init(void);
 
 	/**
 	* Force some objects to be re-computed even if they are updated.
@@ -139,6 +139,7 @@ public:
 
 	/**
 	* Set the slot for the session.
+	* @param slot            Pointer to the slot.
 	*/
 	void SetSlot(GSlot* slot);
 

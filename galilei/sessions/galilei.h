@@ -180,6 +180,8 @@ class GParams;
 class GParam;
 class GConfig;
 class GStorage;
+class GStorageManager;
+class GFactoryStorage;
 
 
 //------------------------------------------------------------------------------

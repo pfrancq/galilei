@@ -46,12 +46,17 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <gplugin.h>
+#include <gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// API VERSION
+#define API_STORAGE_VERSION "2.0"
 
 
 //-----------------------------------------------------------------------------
@@ -137,19 +142,9 @@ public:
 * @author GALILEI Team
 * @short Generic Storage Manager.
 */
-class GStorage
+class GStorage : public GPlugin<GFactoryStorage>
 {
 protected:
-
-	/**
-	* Session connected to the storage.
-	*/
-	GSession* Session;
-
-	/**
-	* Name of the storage manager.
-	*/
-	R::RString Name;
 
 	/**
 	* All the objects must be loaded (true) or only those which are modified
@@ -186,17 +181,19 @@ public:
 
 	/**
 	* Constructor.
-	* @param n               Name.
-	* @param all             Load all?
-	* @param filter          Date used to filter the entry to load. If the
-	*                        current is used, no filtering is done.
+	* @param fac             Factory of the plugin.
 	*/
-	GStorage(R::RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException);
+	GStorage(GFactoryStorage* fac) throw(std::bad_alloc,GException);
 
 	//-----------------------------------------------------
 	/** @name General Methods
 	*/
 	// @{
+
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
 
 	/**
 	* Connect to the session.
@@ -232,11 +229,6 @@ public:
 	*  Get the filtering date.
 	*/
 	R::RDate GetFilter(void) const;
-
-	/**
-	* Return the name of the current database.
-	*/
-	R::RString GetName(void) const;
 
 	/**
 	* Verify if a given command is supported by the storage.
@@ -580,6 +572,100 @@ public:
 	*/
 	virtual ~GStorage(void);
 };
+
+
+//------------------------------------------------------------------------------
+/*
+* The GFactoryStorage represent a factory for a given storage.
+* @author Pascal Francq
+* @short Generic Storage Factory.
+*/
+class GFactoryStorage : public GFactoryPlugin<GFactoryStorage,GStorage,GStorageManager>
+{
+public:
+
+	/*
+	* Constructor.
+	* @param mng             Manager of the plugin.
+	* @param n               Name of the Factory/Plugin.
+	* @param f               Lib of the Factory/Plugin.
+	*/
+	GFactoryStorage(GStorageManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryStorage,GStorage,GStorageManager>(mng,n,f) {}
+
+	/**
+	* Update a database.
+	*/
+	virtual void UpdateSchema(const R::RXMLStruct& schema)=0;
+};
+
+
+//------------------------------------------------------------------------------
+/**
+* The GStorageManager class provides a representation for a manager
+* responsible to manage all storages.
+* @author Pascal Francq
+* @short Storages Manager.
+*/
+class GStorageManager : public GPluginManager<GStorageManager,GFactoryStorage,GStorage>
+{
+public:
+
+	/**
+	* Construct the storages manager.
+	*/
+	GStorageManager(void);
+
+	/**
+	* Destructor of the storages manager.
+	*/
+	virtual ~GStorageManager(void);
+};
+
+
+//-------------------------------------------------------------------------------
+#define CREATE_DBFACTORY(manager,factory,genericplugin,plugin,lib,API,name)    \
+	class TheFactory : public factory                                          \
+{                                                                              \
+	static factory* Inst;                                                      \
+	TheFactory(manager* mng,const char* l) : factory(mng,name,l)               \
+	{                                                                          \
+		plugin::CreateParams(this);                                            \
+	}                                                                          \
+	virtual ~TheFactory(void) {}                                               \
+public:                                                                        \
+	static factory* CreateInst(manager* mng,const char* l)                     \
+	{                                                                          \
+		if(!Inst)                                                              \
+			Inst = new TheFactory(mng,l);                                      \
+		return(Inst);                                                          \
+	}                                                                          \
+	virtual const char* GetAPIVersion(void)      const {return(API);}          \
+	virtual void UpdateSchema(const R::RXMLStruct& schema);                    \
+	virtual genericplugin* NewPlugIn(void)                                     \
+	{                                                                          \
+		return(new plugin(this));                                              \
+	}                                                                          \
+	virtual void DeletePlugIn(genericplugin* plug)                             \
+	{                                                                          \
+		delete plug;                                                           \
+	}                                                                          \
+};                                                                             \
+factory* TheFactory::Inst = 0;                                                 \
+                                                                               \
+extern "C" factory* FactoryCreate(manager* mng,const char* l)                  \
+{                                                                              \
+	return(TheFactory::CreateInst(mng,l));                                     \
+}                                                                              \
+extern "C" const char* LibType(void)                                           \
+{                                                                              \
+	return(lib);                                                               \
+}
+
+
+//-------------------------------------------------------------------------------
+#define CREATE_STORAGE_FACTORY(name,plugin)\
+	CREATE_DBFACTORY(GStorageManager,GFactoryStorage,GStorage,plugin,"Storage",API_STORAGE_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

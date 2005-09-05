@@ -178,7 +178,7 @@ template<class mng,class factory,class plugin>
 	if(PluginsType!=ptSelect)
 		return;
 	if(Current)
-		t->InsertAttr("current",Current->GetFactory()->GetName());
+		t->InsertAttr("current",Current->GetName());
 	else
 		t->InsertAttr("current","None");
 }
@@ -251,11 +251,25 @@ template<class mng,class factory,class plugin>
 {
 	if(PluginsType!=ptSelect)
 		return;
-	factory* fac=GetFactory(name);
-	if(fac)
-		Current=fac->GetPlugin();
-	else
-		Current=0;
+	Current=GetFactory(name);
 	if(!Current)
 		throw GException(RString("No plug-in '")+name+"' availaible for "+Name+".");
+}
+
+
+//------------------------------------------------------------------------------
+template<class mng,class factory,class plugin>
+	plugin* GPluginManager<mng,factory,plugin>::GetCurrentMethod(void) const
+{
+	if(!Current)
+		return(0);
+	return(Current->GetPlugin());
+}
+
+
+//------------------------------------------------------------------------------
+template<class mng,class factory,class plugin>
+	factory* GPluginManager<mng,factory,plugin>::GetCurrentFactory(void) const
+{
+	return(Current);
 }

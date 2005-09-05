@@ -108,24 +108,30 @@ GStorageCmd::~GStorageCmd(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorage::GStorage(RString n,bool all,const R::RDate& filter) throw(std::bad_alloc,GException)
-	: Session(0), Name(n), LoadAll(all), Filter(filter), Filtering(false),
-	  AllMemory(LoadAll&&(!Filtering)), Cmds(30,15)
+GStorage::GStorage(GFactoryStorage* fac) throw(std::bad_alloc,GException)
+	: GPlugin<GFactoryStorage>(fac), LoadAll(true), Filter(RDate::GetToday()), Filtering(false),
+	  AllMemory(true), Cmds(30,15)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GStorage::ApplyConfig(void)
 {
 	RDate today=RDate::GetToday();
-	Filtering=(filter.GetYear()!=today.GetYear())||(filter.GetMonth()!=today.GetMonth())||(filter.GetDay()!=today.GetDay());
+	Filtering=(Filter.GetYear()!=today.GetYear())||(Filter.GetMonth()!=today.GetMonth())||(Filter.GetDay()!=today.GetDay());
+	AllMemory=(LoadAll&&(!Filtering));
 }
 
 
 //------------------------------------------------------------------------------
 void GStorage::Connect(GSession* session)
 {
-	Session=session;
-
+	GPlugin<GFactoryStorage>::Connect(session);
 	RCursor<GStorageCmd> Cur(RegisteredCmds);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if(Name!=Cur()->GetStorage())
+		if(Factory->GetName()!=Cur()->GetStorage())
 			continue;
 		if(Cmds.IsIn(*Cur()))
 			continue;
@@ -136,9 +142,16 @@ void GStorage::Connect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GStorage::Disconnect(GSession*)
+void GStorage::Disconnect(GSession* session)
 {
-	Session=0;
+	RCursor<GStorageCmd> Cur(RegisteredCmds);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Factory->GetName()!=Cur()->GetStorage())
+			continue;
+		Cur()->Disconnect(this);
+	}
+	GPlugin<GFactoryStorage>::Connect(session);
 }
 
 
@@ -164,13 +177,6 @@ R::RDate GStorage::GetFilter(void) const
 
 
 //------------------------------------------------------------------------------
-RString GStorage::GetName(void) const
-{
-	return(Name);
-}
-
-
-//------------------------------------------------------------------------------
 bool GStorage::IsCmdSupported(const R::RString cmd) const
 {
 	return(Cmds.IsIn(cmd));
@@ -182,7 +188,7 @@ void GStorage::ExecuteCmd(const R::RXMLTag& inst,void* caller)
 {
 	GStorageCmd* cmd=Cmds.GetPtr(inst.GetName());
 	if(!cmd)
-		throw GException("Command '"+inst.GetName()+"' not support on storage "+Name);
+		throw GException("Command '"+inst.GetName()+"' not support on storage "+Factory->GetName());
 	cmd->Run(this,inst,caller);
 }
 
@@ -196,5 +202,25 @@ void GStorage::InsertCmd(GStorageCmd* cmd)
 
 //------------------------------------------------------------------------------
 GStorage::~GStorage(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GStorageManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GStorageManager::GStorageManager(void)
+	: GPluginManager<GStorageManager,GFactoryStorage,GStorage>("Storage",API_STORAGE_VERSION,ptSelect)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GStorageManager::~GStorageManager(void)
 {
 }

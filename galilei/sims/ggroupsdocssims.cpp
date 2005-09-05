@@ -78,7 +78,7 @@ double GGroupsDocsSimsManager::GetSimilarity(const GDoc* doc,const GGroup* grp)
 {
 	if(!Current)
 		throw GException("No groups/documents similarities plug-in selected");
-	return(Current->GetSimilarity(doc,grp));
+	return(Current->GetPlugin()->GetSimilarity(doc,grp));
 }
 
 
@@ -87,7 +87,7 @@ double GGroupsDocsSimsManager::GetMinSimilarity(const GLang* lang)
 {
 	if(!Current)
 		throw GException("No groups/documents similarities plug-in selected");
-	return(Current->GetMinSimilarity(lang));
+	return(Current->GetPlugin()->GetMinSimilarity(lang));
 }
 
 

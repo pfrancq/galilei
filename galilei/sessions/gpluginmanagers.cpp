@@ -65,6 +65,7 @@ using namespace std;
 #include <gprofilesdocssims.h>
 #include <ggroupsdocssims.h>
 #include <gprofilesgroupssims.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -80,6 +81,7 @@ using namespace R;
 GPluginManagers::GPluginManagers(void)
 	: RContainer<GGenericPluginManager,true,true>(20,10)
 {
+	InsertPtr(new GStorageManager());
 	InsertPtr(new GLangManager());
 	InsertPtr(new GLinkCalcManager());
 	InsertPtr(new GDocAnalyseManager());

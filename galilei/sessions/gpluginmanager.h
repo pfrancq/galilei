@@ -193,7 +193,7 @@ protected:
 	/**
 	* Current selected plug-in.
 	*/
-	plugin* Current;
+	factory* Current;
 
 public:
 
@@ -319,7 +319,14 @@ public:
 	* @return Pointer to the plugin, or null if no plug-in is selected or
 	* if the list does not need to select one.
 	*/
-	virtual plugin* GetCurrentMethod(void) const {return(Current);}
+	virtual plugin* GetCurrentMethod(void) const;
+
+	/**
+	* Get the current factory.
+	* @return Pointer to the factory, or null if no plug-in is selected or
+	* if the list does not need to select one.
+	*/
+	virtual factory* GetCurrentFactory(void) const;
 };
 
 

@@ -93,7 +93,6 @@ protected:
 	*/
 	GSession* Session;
 
-
 public:
 
 	/**
@@ -286,7 +285,6 @@ public:
 		Plugin->ApplyConfig();
 		Mng->EnablePlugIn(Plugin);
 	}
-
 
 	/**
 	* Create a plugin.

@@ -260,18 +260,27 @@ bool GSession::Intern::ExternBreak=false;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSession::GSession(GStorage* str,unsigned int maxdocs,unsigned int maxsubprofiles,unsigned int maxgroups)
+GSession::GSession(GSlot* slot,unsigned int maxdocs,unsigned int maxsubprofiles,unsigned int maxgroups)
 	: Data(0)
 {
-	if(!str)
+	GFactoryStorage* fac=GPluginManagers::GetManager<GStorageManager>("Storage")->GetCurrentFactory();
+	if(!fac)
 		throw GException("No Storage");
 
+	// Create the storage
+	fac->Create();
+
 	// Init Part
-	Data=new Intern(str,maxdocs,maxsubprofiles,maxgroups,str->GetNbSaved(otDoc),str->GetNbSaved(otUser),str->GetNbSaved(otProfile),str->GetNbSaved(otGroup),str->GetNbSaved(otLang));
+	Data=new Intern(fac->GetPlugin(),maxdocs,maxsubprofiles,maxgroups,
+			fac->GetPlugin()->GetNbSaved(otDoc),
+			fac->GetPlugin()->GetNbSaved(otUser),
+			fac->GetPlugin()->GetNbSaved(otProfile),
+			fac->GetPlugin()->GetNbSaved(otGroup),
+			fac->GetPlugin()->GetNbSaved(otLang));
+	Data->Slot=slot;
+
 	if(!Intern::Session)
 		Intern::Session=this;
-
-	str->Connect(this);
 }
 
 
@@ -283,8 +292,9 @@ GSession::GSession(GStorage* str,unsigned int maxdocs,unsigned int maxsubprofile
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GSession::Connect(void)
+void GSession::Init(void)
 {
+	// Connect to the manager
 	GPluginManagers::PluginManagers.Connect(this);
 }
 
@@ -623,7 +633,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
 	{
-		RString err("Documents Filtering and Analysis on Data Set : "+Data->Storage->GetName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear()));
+		RString err("Documents Filtering and Analysis on Data Set : "+Data->Storage->GetFactory()->GetName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear()));
 		rec->WriteStr("Analyse documents");
 	}
 
@@ -1415,8 +1425,11 @@ void GSession::ResetBreak(void)
 //------------------------------------------------------------------------------
 GSession::~GSession(void)
 {
-	if(Data->Storage)
-		Data->Storage->Disconnect(this);
+	// Disconnect to the manager
+	GPluginManagers::PluginManagers.Disconnect(this);
+
+	// Delete the storage
+	Data->Storage->GetFactory()->Delete();
 
 	delete Data;
 }

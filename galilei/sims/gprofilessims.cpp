@@ -78,7 +78,7 @@ double GProfilesSimsManager::GetSimilarity(const GSubProfile* sub1,const GSubPro
 {
 	if(!Current)
 		throw GException("No profiles similarities plug-in selected");
-	return(Current->GetSimilarity(sub1,sub2));
+	return(Current->GetPlugin()->GetSimilarity(sub1,sub2));
 }
 
 
@@ -87,7 +87,7 @@ double GProfilesSimsManager::GetMinSimilarity(const GLang* lang)
 {
 	if(!Current)
 		throw GException("No profiles similarities plug-in selected");
-	return(Current->GetMinSimilarity(lang));
+	return(Current->GetPlugin()->GetMinSimilarity(lang));
 }
 
 
@@ -96,7 +96,7 @@ double GProfilesSimsManager::GetDisagreementRatio(const GSubProfile* sub1,const 
 {
 	if(!Current)
 		throw GException("No profiles similarities plug-in selected");
-	return(Current->GetDisagreementRatio(sub1,sub2));
+	return(Current->GetPlugin()->GetDisagreementRatio(sub1,sub2));
 }
 
 
@@ -105,7 +105,7 @@ double GProfilesSimsManager::GetMinDisagreementRatio(const GLang* lang)
 {
 	if(!Current)
 		throw GException("No profiles similarities plug-in selected");
-	return(Current->GetMinDisagreementRatio(lang));
+	return(Current->GetPlugin()->GetMinDisagreementRatio(lang));
 }
 
 
@@ -114,7 +114,7 @@ double GProfilesSimsManager::GetAgreementRatio(const GSubProfile* sub1,const GSu
 {
 	if(!Current)
 		throw GException("No profiles similarities plug-in selected");
-	return(Current->GetAgreementRatio(sub1,sub2));
+	return(Current->GetPlugin()->GetAgreementRatio(sub1,sub2));
 }
 
 
@@ -123,7 +123,7 @@ double GProfilesSimsManager::GetMinAgreementRatio(const GLang* lang)
 {
 	if(!Current)
 		throw GException("No profiles similarities plug-in selected");
-	return(Current->GetMinAgreementRatio(lang));
+	return(Current->GetPlugin()->GetMinAgreementRatio(lang));
 }
 
 
