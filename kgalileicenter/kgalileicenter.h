@@ -118,31 +118,6 @@ class KGALILEICenterApp : public KMainWindow, public GSlot
 	KConfig* Config;
 
 	/**
-	* Database server's host.
-	*/
-	R::RString dbHost;
-
-	/**
-	* Database's name.
-	*/
-	R::RString dbName;
-
-	/**
-	* Name of the user used to access the database.
-	*/
-	R::RString dbUser;
-
-	/**
-	* Password used to access the database.
-	*/
-	R::RString dbPwd;
-
-	/**
-	* Enconding of the database.
-	*/
-	R::RString dbEncoding;
-
-	/**
 	* path to plugins.
 	*/
 	R::RContainer<RString, true,false> pluginsPath;

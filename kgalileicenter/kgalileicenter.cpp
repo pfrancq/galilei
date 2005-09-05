@@ -50,7 +50,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdocxml.h>
-#include <gstoragemysql.h>
+#include <gstorage.h>
 #include <gsubprofile.h>
 #include <gsubprofile.h>
 #include <ggroup.h>
@@ -149,62 +149,46 @@ GSession* KGALILEICenterApp::getSession(void) const
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionConnect(void)
 {
-	QConnectMySQL dlg(this,0,true);
 	QString method;
 	GSession* Sess;
 
-	dlg.txtDb->setText(ToQString(dbName));
-	dlg.txtLogin->setText(ToQString(dbUser));
-	dlg.txtPwd->setText(ToQString(dbPwd));
-	dlg.txtHost->setText(ToQString(dbHost));
-	dlg.cbEncoding->setCurrentText(ToQString(dbEncoding));
-	dlg.Filter->setDate(QDate::currentDate());
-	dlg.All->setChecked(true);
-	if(dlg.exec())
+	slotStatusMsg(i18n("Connecting..."));
+	try
 	{
-		slotStatusMsg(i18n("Connecting..."));
-		dbName=FromQString(dlg.txtDb->text());
-		dbHost=FromQString(dlg.txtHost->text());
-		dbUser=FromQString(dlg.txtLogin->text());
-		dbPwd=FromQString(dlg.txtPwd->text());
-		dbEncoding=FromQString(dlg.cbEncoding->currentText());
-		try
+		Doc=new KDoc(this);
+		Sess = new GSession(this);
+		Doc->SetSession(Sess);
+		Sess->Init();
+			slotSaveModifier();
+		QSessionProgressDlg dlg(this,Sess,"Loading from Database");
+		if(dlg.Run(new QLoadSession()))
 		{
-			Doc=new KDoc(this,dbHost,dbUser,dbPwd,dbName,dbEncoding,dlg.All->isChecked(),RDate(FromQString(dlg.Filter->date().toString(Qt::ISODate))));
-			Sess = new GSession(Doc->GetStorage());
-			Doc->SetSession(Sess);
-			Sess->SetSlot(this);
- 			slotSaveModifier();
-			QSessionProgressDlg dlg(this,Sess,"Loading from Database");
-			if(dlg.Run(new QLoadSession()))
+			sessionConnect->setEnabled(false);
+			UpdateMenusEntries();
+			dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
+		}
+		else
+		{
+			if(Doc)
 			{
-				sessionConnect->setEnabled(false);
-				UpdateMenusEntries();
-				dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
-			}
-			else
-			{
-				if(Doc)
-				{
-					delete Doc;
-					Doc=0;
-				}
+				delete Doc;
+				Doc=0;
 			}
 		}
-		catch(GException& e)
-		{
-			QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
 /*			if(Doc)
 			{
 				delete Doc;*/
-				Doc=0;
+			Doc=0;
 //			}
 /*			if(d)
 				d->close();*/
-			return;
-		}
-		slotStatusMsg(i18n("User "+ToQString(dbUser)+" connected to database "+ToQString(dbName)+" on "+ToQString(dbHost)));
+		return;
 	}
+	slotStatusMsg(i18n("Connected"));
 }
 
 

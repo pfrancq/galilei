@@ -57,6 +57,7 @@
 #include <gengine.h>
 #include <gmetaengine.h>
 #include <gpluginmanagers.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -129,13 +130,17 @@ void KGALILEICenterApp::EndJob(void)
 
 
 //-----------------------------------------------------------------------------
-template<class Cursor,class Met,class Item>
-	QListViewItem* Init(R::RCursor<Cursor> Cur,QListView* lst,QCheckBox* enable,QComboBox* sel=0,Met* current=0)
+template<class Factory,class Manager,class Item>
+	QListViewItem* Init(RString manager,QListView* lst,QCheckBox* enable,QComboBox* sel=0)
 {
 	QListViewItem* def;
 	QListViewItem* cur;
 	QString str;
 	int idx;
+
+	Manager* Mng=GPluginManagers::GetManager<Manager>(manager);
+	R::RCursor<Factory> Cur(Mng->GetFactories());
+	Factory* current=Mng->GetCurrentFactory();
 
 	// Goes through the profiles computing method
 	def=cur=0;
@@ -152,7 +157,7 @@ template<class Cursor,class Met,class Item>
 		if(sel)
 		{
 			sel->insertItem(ToQString(Cur()->GetName()),idx);
-			if((Cur()->GetPlugin())&&(Cur()->GetPlugin()==current))
+			if(Cur()==current)
 				sel->setCurrentItem(idx);
 		}
 		if(!def)
@@ -161,7 +166,8 @@ template<class Cursor,class Met,class Item>
 	if(def)
 	{
 		lst->setSelected(def,true);
-		enable->setEnabled(true);
+		if(enable)
+			enable->setEnabled(true);
 		if(sel)
 			sel->setEnabled(true);
 	}
@@ -217,24 +223,25 @@ void KGALILEICenterApp::slotPlugins(void)
 	GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->ReOrder();
 
 	// Goes through managers
-	dlg.changeFilter(Init<GFactoryFilter,GFilter,QFilterItem>(GPluginManagers::GetManager<GFilterManager>("Filter")->GetFactories(),dlg.Filters,dlg.EnableFilter));
-	dlg.changeProfileCalc(Init<GFactoryProfileCalc,GProfileCalc,QProfileCalcItem>(GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetFactories(),dlg.ProfileCalcs,dlg.EnableProfileCalc,dlg.CurrentProfileCalc,GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()));
-	dlg.changeGrouping(Init<GFactoryGrouping,GGrouping,QGroupingItem>(GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetFactories(),dlg.Groupings,dlg.EnableGrouping,dlg.CurrentGrouping,GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()));
-	dlg.changeGroupCalc(Init<GFactoryGroupCalc,GGroupCalc,QGroupCalcItem>(GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetFactories(),dlg.GroupCalcs,dlg.EnableGroupCalc,dlg.CurrentGroupCalc,GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()));
-	dlg.changeStatCalc(Init<GFactoryStatsCalc,GStatsCalc,QStatsCalcItem>(GPluginManagers::GetManager<GStatsCalcManager>("StatsCalc")->GetFactories(),dlg.Stats,dlg.EnableStat));
-	dlg.changeLinkCalc(Init<GFactoryLinkCalc,GLinkCalc,QLinkCalcItem>(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetFactories(),dlg.LinkCalcs,dlg.EnableLinkCalc,dlg.CurrentLinkCalc,GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod()));
-	dlg.changePostDoc(Init<GFactoryPostDoc,GPostDoc,QPostDocItem>(GPluginManagers::GetManager<GPostDocManager>("PostDoc")->GetFactories(),dlg.PostDocs,dlg.EnablePostDoc));
-	dlg.changePreProfile(Init<GFactoryPreProfile,GPreProfile,QPreProfileItem>(GPluginManagers::GetManager<GPreProfileManager>("PreProfile")->GetFactories(),dlg.PreProfile,dlg.EnablePreProfile));
-	dlg.changePostProfile(Init<GFactoryPostProfile,GPostProfile,QPostProfileItem>(GPluginManagers::GetManager<GPostProfileManager>("PostProfile")->GetFactories(),dlg.PostProfile,dlg.EnablePostProfile));
-	dlg.changePostGroup(Init<GFactoryPostGroup,GPostGroup,QPostGroupItem>(GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->GetFactories(),dlg.PostGroups,dlg.EnablePostGroup));
-	dlg.changeLang(Init<GFactoryLang,GLang,QLangItem>(GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories(),dlg.Langs,dlg.EnableLang));
-	dlg.changeDocAnalyse(Init<GFactoryDocAnalyse,GDocAnalyse,QDocAnalyseItem>(GPluginManagers::GetManager<GDocAnalyseManager>("DocAnalyse")->GetFactories(),dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse,GPluginManagers::GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod()));
-	dlg.changeEngine(Init<GFactoryEngine,GEngine,QEngineItem>(GPluginManagers::GetManager<GEngineManager>("Engine")->GetFactories(),dlg.Engines,dlg.EnableEngine));
-	dlg.changeMetaEngine(Init<GFactoryMetaEngine,GMetaEngine,QMetaEngineItem>(GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->GetFactories(),dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine,GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()));
-	dlg.changeProfilesSims(Init<GFactoryProfilesSims,GProfilesSims,QProfilesSimsItem>(GPluginManagers::GetManager<GProfilesSimsManager>("ProfilesSims")->GetFactories(),dlg.ProfilesSims,dlg.EnableProfilesSims,dlg.CurrentProfilesSims,GPluginManagers::GetManager<GProfilesSimsManager>("ProfilesSims")->GetCurrentMethod()));
-	dlg.changeProfilesDocsSims(Init<GFactoryProfilesDocsSims,GProfilesDocsSims,QProfilesDocsSimsItem>(GPluginManagers::GetManager<GProfilesDocsSimsManager>("ProfilesDocsSims")->GetFactories(),dlg.ProfilesDocsSims,dlg.EnableProfilesDocsSims,dlg.CurrentProfilesDocsSims,GPluginManagers::GetManager<GProfilesDocsSimsManager>("ProfilesDocsSims")->GetCurrentMethod()));
-	dlg.changeGroupsDocsSims(Init<GFactoryGroupsDocsSims,GGroupsDocsSims,QGroupsDocsSimsItem>(GPluginManagers::GetManager<GGroupsDocsSimsManager>("GroupsDocsSims")->GetFactories(),dlg.GroupsDocsSims,dlg.EnableGroupsDocsSims,dlg.CurrentGroupsDocsSims,GPluginManagers::GetManager<GGroupsDocsSimsManager>("GroupsDocsSims")->GetCurrentMethod()));
-	dlg.changeProfilesGroupsSims(Init<GFactoryProfilesGroupsSims,GProfilesGroupsSims,QProfilesGroupsSimsItem>(GPluginManagers::GetManager<GProfilesGroupsSimsManager>("ProfilesGroupsSims")->GetFactories(),dlg.ProfilesGroupsSims,dlg.EnableProfilesGroupsSims,dlg.CurrentProfilesGroupsSims,GPluginManagers::GetManager<GProfilesGroupsSimsManager>("ProfilesGroupsSims")->GetCurrentMethod()));
+	dlg.changeFilter(Init<GFactoryFilter,GFilterManager,QFilterItem>("Filter",dlg.Filters,dlg.EnableFilter));
+	dlg.changeProfileCalc(Init<GFactoryProfileCalc,GProfileCalcManager,QProfileCalcItem>("ProfileCalc",dlg.ProfileCalcs,dlg.EnableProfileCalc,dlg.CurrentProfileCalc));
+	dlg.changeGrouping(Init<GFactoryGrouping,GGroupingManager,QGroupingItem>("Grouping",dlg.Groupings,dlg.EnableGrouping,dlg.CurrentGrouping));
+	dlg.changeGroupCalc(Init<GFactoryGroupCalc,GGroupCalcManager,QGroupCalcItem>("GroupCalc",dlg.GroupCalcs,dlg.EnableGroupCalc,dlg.CurrentGroupCalc));
+	dlg.changeStatCalc(Init<GFactoryStatsCalc,GStatsCalcManager,QStatsCalcItem>("StatsCalc",dlg.Stats,dlg.EnableStat));
+	dlg.changeLinkCalc(Init<GFactoryLinkCalc,GLinkCalcManager,QLinkCalcItem>("LinkCalc",dlg.LinkCalcs,dlg.EnableLinkCalc,dlg.CurrentLinkCalc));
+	dlg.changePostDoc(Init<GFactoryPostDoc,GPostDocManager,QPostDocItem>("PostDoc",dlg.PostDocs,dlg.EnablePostDoc));
+	dlg.changePreProfile(Init<GFactoryPreProfile,GPreProfileManager,QPreProfileItem>("PreProfile",dlg.PreProfile,dlg.EnablePreProfile));
+	dlg.changePostProfile(Init<GFactoryPostProfile,GPostProfileManager,QPostProfileItem>("PostProfile",dlg.PostProfile,dlg.EnablePostProfile));
+	dlg.changePostGroup(Init<GFactoryPostGroup,GPostGroupManager,QPostGroupItem>("PostGroup",dlg.PostGroups,dlg.EnablePostGroup));
+	dlg.changeLang(Init<GFactoryLang,GLangManager,QLangItem>("Lang",dlg.Langs,dlg.EnableLang));
+	dlg.changeDocAnalyse(Init<GFactoryDocAnalyse,GDocAnalyseManager,QDocAnalyseItem>("DocAnalyse",dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse));
+	dlg.changeEngine(Init<GFactoryEngine,GEngineManager,QEngineItem>("Engine",dlg.Engines,dlg.EnableEngine));
+	dlg.changeMetaEngine(Init<GFactoryMetaEngine,GMetaEngineManager,QMetaEngineItem>("MetaEngine",dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine));
+	dlg.changeProfilesSims(Init<GFactoryProfilesSims,GProfilesSimsManager,QProfilesSimsItem>("ProfilesSims",dlg.ProfilesSims,dlg.EnableProfilesSims,dlg.CurrentProfilesSims));
+	dlg.changeProfilesDocsSims(Init<GFactoryProfilesDocsSims,GProfilesDocsSimsManager,QProfilesDocsSimsItem>("ProfilesDocsSims",dlg.ProfilesDocsSims,dlg.EnableProfilesDocsSims,dlg.CurrentProfilesDocsSims));
+	dlg.changeGroupsDocsSims(Init<GFactoryGroupsDocsSims,GGroupsDocsSimsManager,QGroupsDocsSimsItem>("GroupsDocsSims",dlg.GroupsDocsSims,dlg.EnableGroupsDocsSims,dlg.CurrentGroupsDocsSims));
+	dlg.changeProfilesGroupsSims(Init<GFactoryProfilesGroupsSims,GProfilesGroupsSimsManager,QProfilesGroupsSimsItem>("ProfilesGroupsSims",dlg.ProfilesGroupsSims,dlg.EnableProfilesGroupsSims,dlg.CurrentProfilesGroupsSims));
+	dlg.changeStorage(Init<GFactoryStorage,GStorageManager,QStorageItem>("Storage",dlg.Storages,0,dlg.CurrentStorage));
 
 	dlg.MainTab->setCurrentPage(DlgMainTabIdx);
 	dlg.DocsTab->setCurrentPage(DlgDocsTabIdx);
@@ -362,6 +369,13 @@ void KGALILEICenterApp::slotPlugins(void)
 		try
 		{
 			GPluginManagers::GetManager<GProfilesGroupsSimsManager>("ProfilesGroupsSims")->SetCurrentMethod(dlg.CurrentProfilesGroupsSims->currentText().latin1());
+		}
+		catch(GException)
+		{
+		}
+		try
+		{
+			GPluginManagers::GetManager<GStorageManager>("Storage")->SetCurrentMethod(dlg.CurrentStorage->currentText().latin1());
 		}
 		catch(GException)
 		{

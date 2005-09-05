@@ -4,8 +4,8 @@ bin_PROGRAMS = kgalileicenter
 ## INCLUDES were found outside kdevelop specific part
 
 kgalileicenter_SOURCES = qchooseparent.ui qhistorydlg.ui qfilldatabase.ui \
-	qcreatedatabase.ui qexportmatrixdlg.ui qplugins.ui qconnectmysql.ui qchoosemap.ui \
-	qsommapconfig.ui qsimulationdlg.ui kviewhistory.cpp kviewprg.cpp kgalileicenter_init.cpp \
+	qcreatedatabase.ui qexportmatrixdlg.ui qplugins.ui qchoosemap.ui qsommapconfig.ui \
+	qsimulationdlg.ui kviewhistory.cpp kviewprg.cpp kgalileicenter_init.cpp \
 	kgalileicenter_dlg.cpp kviewstems.cpp qsessionprogress.cpp kviewusers.cpp kviewthgroups.cpp \
 	kviewprofile.cpp kviewgroups.cpp kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp \
 	kviewstats.cpp kview.cpp kdoc.cpp kviewsom.cpp ksommap.cpp kviewmetaengine.cpp \

@@ -32,7 +32,6 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gstoragemysql.h>
 #include <gconfig.h>
 #include <gpluginmanagers.h>
 #include <gpreprofile.h>
@@ -83,8 +82,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
-	: KMainWindow(0,"KGALILEICenterApp"), dbHost(),dbName(),dbUser(),dbPwd(),pluginsPath(10,5),
-	  Doc(0)
+	: KMainWindow(0,"KGALILEICenterApp"), pluginsPath(10,5), Doc(0)
 {
 	Config=kapp->config();
 	initStatusBar();
@@ -221,13 +219,6 @@ void KGALILEICenterApp::saveOptions(void)
 		paths+=(*cPath())+RString(";");
 	Config->writeEntry("PluginsPath", paths);
 
-	Config->setGroup("Database Options");
-	Config->writeEntry("Host", dbHost);
-	Config->writeEntry("Name", dbName);
-	Config->writeEntry("User", dbUser);
-	Config->writeEntry("Password", dbPwd);
-	Config->writeEntry("Encoding", dbEncoding);
-
 	// Save options for database creation
 	Config->writeEntry("CreateDbSQLpath",CreateDbSQLpath);
 	Config->writeEntry("CreateDbUseStopList",CreateDbUseStopList);
@@ -292,13 +283,6 @@ void KGALILEICenterApp::readOptions(void)
 	{
 		resize(size);
 	}
-
-	Config->setGroup("Database Options");
-	dbHost=Config->readEntry("Host","127.0.0.1").ascii();
-	dbName=Config->readEntry("Name","galilei").ascii();
-	dbUser=Config->readEntry("User","root").ascii();
-	dbPwd=Config->readEntry("Password","").ascii();
-	dbEncoding=Config->readEntry("Encoding","latin1").ascii();
 
 	// Read create database options
 	CreateDbSQLpath=Config->readEntry("CreateDbPath","/usr/share/galilei/sql/").ascii();

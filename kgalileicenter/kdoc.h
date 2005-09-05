@@ -43,7 +43,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gstoragemysql.h>
+#include <gsession.h>
 using namespace GALILEI;
 
 
@@ -117,11 +117,6 @@ class KDoc : public QObject//, public GStorageMySQL
 	*/
 	KGALILEICenterApp* Owner;
 
-	/**
-	* A GALILEI Database.
-	*/
-	GStorageMySQL* Db;
-
 public:
 
 	/**
@@ -135,7 +130,7 @@ public:
 	* @param all            All objects must be loaded?
 	* @param filter         Date filter.
 	*/
-	KDoc(KGALILEICenterApp* owner,R::RString host,R::RString user,R::RString pwd,R::RString db,R::RString encoding,bool all,const R::RDate& filter) throw(std::bad_alloc,GException);
+	KDoc(KGALILEICenterApp* owner) throw(std::bad_alloc,GException);
 
 	/**
 	* Set the session corresponding of the document.
@@ -148,11 +143,6 @@ public:
 	* @returns Pointer to a GALILEI::GSession.
 	*/
 	GALILEI::GSession* GetSession(void) {return(Session);}
-
-	/**
-	* Get the storage representing GALILEI data.
-	*/
-	GStorage* GetStorage(void) const {return(Db);}
 
 	/**
 	* Get the window showing the documents.

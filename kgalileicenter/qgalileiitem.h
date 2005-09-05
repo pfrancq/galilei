@@ -55,6 +55,7 @@
 #include <gprofilesdocssims.h>
 #include <ggroupsdocssims.h>
 #include <gprofilesgroupssims.h>
+#include <gstorage.h>
 using namespace GALILEI;
 
 
@@ -270,6 +271,18 @@ public:
 	GFactoryProfilesGroupsSims* Fac;
 	bool Enable;
 	QProfilesGroupsSimsItem(QListView* lst,GFactoryProfilesGroupsSims* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QStorageItem : public QListViewItem
+{
+public:
+	GFactoryStorage* Fac;
+	bool Enable;
+	QStorageItem(QListView* lst,GFactoryStorage* fac,const char* desc,QListViewItem* after=0)
 		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

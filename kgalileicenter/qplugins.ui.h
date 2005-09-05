@@ -834,3 +834,31 @@ void QPlugins::slotProfilesGroupsSimsEnable( bool state )
 	if(!f) return;
 	f->Enable=state;
 }
+
+
+void QPlugins::changeStorage( QListViewItem * item )
+{
+	if(!item) return;
+	QStorageItem* f=dynamic_cast<QStorageItem*>(item);
+	if(!f) return;
+	ConfigStorage->setEnabled(f->Fac->HasConfigure());
+	AboutStorage->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::slotAboutStorage()
+{
+	if(!Storages->currentItem()) return;
+	QStorageItem* f=dynamic_cast<QStorageItem*>(Storages->currentItem());
+	if(!f) return;
+	f->Fac->About();
+}
+
+
+void QPlugins::slotConfigStorage()
+{
+	if(!Storages->currentItem()) return;
+	QStorageItem* f=dynamic_cast<QStorageItem*>(Storages->currentItem());
+	if(!f) return;
+	f->Fac->Configure();
+}
