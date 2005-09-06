@@ -48,7 +48,7 @@
 #include <gsubjects.h>
 #include <gdoc.h>
 #include <gsubprofile.h>
-#include <gprofilesdocssims.h>
+#include <gmeasure.h>
 #include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
@@ -190,7 +190,7 @@ public:
 	RCursor<GSubProfile> GetElementCursor(GLang* Lang)
 	{return(Session->GetSubProfiles(Lang));}
 
-	virtual double Similarity(GDoc* doc,GSubProfile* sub) {return(GPluginManagers::GetManager<GProfilesDocsSimsManager>("ProfilesDocsSims")->GetCurrentMethod()->GetSimilarity(doc,sub));}
+	virtual double Similarity(GDoc* doc,GSubProfile* sub) {return(GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities")->GetMeasure(doc->GetId(),sub->GetId()));}
 
 	bool HasSubject(GSubProfile* sub)
 	{return(Session->GetSubjects()->GetSubject(sub));}
