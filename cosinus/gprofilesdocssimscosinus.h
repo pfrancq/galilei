@@ -38,7 +38,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofilesdocssims.h>
+#include <gmeasure.h>
 #include <gsignalhandler.h>
 
 
@@ -54,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq and Valery Vandaele
 * @short SubProfiles-Documents Similarities.
 */
-class GProfilesDocsSimsCosinus : public GProfilesDocsSims, public GSignalHandler
+class GProfilesDocsSimsCosinus : public GMeasure, public GSignalHandler
 {
 	// Internal class
 	class GDocProfSim;
@@ -101,7 +101,7 @@ public:
 	* @param iff             Use Inverse Frequency Factor.
 	* @param memory      use container to stock sims?
 	*/
-	GProfilesDocsSimsCosinus(GFactoryProfilesDocsSims* fac);
+	GProfilesDocsSimsCosinus(GFactoryMeasure* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -120,14 +120,11 @@ public:
 
 	double ComputeSim(const GDoc* doc ,const GSubProfile* sub) const;
 
-	/**
-	* Get the similarity between a document and a subprofile.
-	* @param doc             Pointer to the document.
-	* @param sub             Pointer to the subprofile.
-	*/
-	virtual double GetSimilarity(const GDoc* doc,const GSubProfile* sub);
+	virtual double GetMeasure(unsigned int id1,unsigned int id2,unsigned int measure);
 
-	virtual double GetMinSimilarity(const GLang* lang);
+	virtual double GetMinMeasure(const GLang* lang,unsigned int measure);
+
+	virtual double GetMinMeasure(unsigned int) {return(0.0);}
 
 	/**
 	* A specific subprofile has changed.

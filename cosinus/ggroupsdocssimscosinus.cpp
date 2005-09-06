@@ -293,8 +293,8 @@ void  GGroupsDocsSimsCosinus::GDocGrpSim::Update(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupsDocsSimsCosinus::GGroupsDocsSimsCosinus::GGroupsDocsSimsCosinus(GFactoryGroupsDocsSims* fac)
-	: GGroupsDocsSims(fac), GSignalHandler(), Sims(10,5), IDF(true), Memory(false), NeedUpdate(false)
+GGroupsDocsSimsCosinus::GGroupsDocsSimsCosinus::GGroupsDocsSimsCosinus(GFactoryMeasure* fac)
+	: GMeasure(fac), GSignalHandler(), Sims(10,5), IDF(true), Memory(false), NeedUpdate(false)
 {
 	GSession::AddHandler(this);
 	if(!Memory) return;
@@ -330,8 +330,11 @@ void GGroupsDocsSimsCosinus::Update(void)
 
 
 //------------------------------------------------------------------------------
-double GGroupsDocsSimsCosinus::GetSimilarity(const GDoc* doc,const GGroup* grp)
+double GGroupsDocsSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,unsigned int)
 {
+	GDoc* doc=Session->GetDoc(id1,0);
+	GGroup* grp=Session->GetGroup(id2,0);
+
 	if(doc->GetLang()!=grp->GetLang())
 		throw GException("Cannot compare a document and subprofile of a different language");
 	if(!Memory)
@@ -354,7 +357,7 @@ double GGroupsDocsSimsCosinus::GetSimilarity(const GDoc* doc,const GGroup* grp)
 
 
 //------------------------------------------------------------------------------
-double GGroupsDocsSimsCosinus::GetMinSimilarity(const GLang*)
+double GGroupsDocsSimsCosinus::GetMinMeasure(const GLang*,unsigned int)
 {
 	return(MinSim);
 }
@@ -484,4 +487,4 @@ GGroupsDocsSimsCosinus::~GGroupsDocsSimsCosinus(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_GROUPSDOCSSIMS_FACTORY("Cosinus Method",GGroupsDocsSimsCosinus)
+CREATE_MEASURE_FACTORY("Documents/Groups Similarities","Cosinus Method",GGroupsDocsSimsCosinus)

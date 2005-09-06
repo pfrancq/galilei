@@ -58,13 +58,13 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for Current
-#include <dlgconfigprofiles_qt.h>
+#include <dlgconfigdisagree_qt.h>
 
 
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("The cosinus method is used to computed the similarities between the subprofiles.");
+	I18N_NOOP("The count method is used to computed the disagreements between the subprofiles.");
 
 
 //------------------------------------------------------------------------------
@@ -74,7 +74,7 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "cosinus", I18N_NOOP("Cosinus Method"),
+	KAboutData aboutData( "count", I18N_NOOP("Count Method"),
 		"1.0", description, KAboutData::License_GPL,
 		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Contributor"), "pfrancq@ulb.ac.be");
@@ -89,27 +89,19 @@ void Configure(GFactoryMeasure* params)
 {
  	DlgConfigProfiles_Qt dlg;
 
+	dlg.MinDiffDocs->setValue(params->GetUInt("MinDiffDocs"));
 	dlg.NullSimLevel->setPrecision(10);
 	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
-	dlg.ISF->setChecked(params->GetBool("ISF"));
-	dlg.IDF->setChecked(params->GetBool("IDF"));
 	dlg.Memory->setChecked(params->GetBool("Memory"));
 	dlg.DebugSim->setChecked(params->GetBool("Debug"));
-	dlg.DebugMinSim->setChecked(params->GetBool("DebugMinSim"));
-	dlg.MinSim->setValue(params->GetDouble("MinSim"));
-	dlg.MinSim->setEnabled(params->GetBool("DebugMinSim"));
-	dlg.AutomaticMinSim->setChecked(params->GetBool("AutomaticMinSim"));
-
+	dlg.MinDisagreement->setValue(params->GetDouble("MinDisagreement"));
 	if(dlg.exec())
 	{
+		params->Set("MinDiffDocs",dlg.MinDiffDocs->value());
 		params->Set("NullSimLevel",dlg.NullSimLevel->value());
-		params->Set("ISF",dlg.ISF->isChecked());
-		params->Set("IDF",dlg.IDF->isChecked());
 		params->Set("Memory",dlg.Memory->isChecked());
 		params->Set("Debug",dlg.DebugSim->isChecked());
-		params->Set("DebugMinSim",dlg.DebugMinSim->isChecked());
-		params->Set("MinSim",dlg.MinSim->value());
-		params->Set("AutomaticMinSim",dlg.AutomaticMinSim->isChecked());
+		params->Set("MinDisagreement",dlg.MinDisagreement->value());
 		params->Apply();
  	}
 }

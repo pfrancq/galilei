@@ -32,7 +32,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroupsdocssims.h>
+#include <gmeasure.h>
 using namespace GALILEI;
 
 
@@ -85,7 +85,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryGroupsDocsSims* params)
+void Configure(GFactoryMeasure* params)
 {
  	DlgConfigGroupsDocs_Qt dlg;
 

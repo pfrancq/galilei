@@ -278,8 +278,8 @@ void  GProfilesDocsSimsCosinus::GDocProfSim::Update(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfilesDocsSimsCosinus::GProfilesDocsSimsCosinus::GProfilesDocsSimsCosinus(GFactoryProfilesDocsSims* fac)
-	: GProfilesDocsSims(fac), GSignalHandler(), Sims(10,5), IDF(true), Memory(false), NeedUpdate(false)
+GProfilesDocsSimsCosinus::GProfilesDocsSimsCosinus::GProfilesDocsSimsCosinus(GFactoryMeasure* fac)
+	: GMeasure(fac), GSignalHandler(), Sims(10,5), IDF(true), Memory(false), NeedUpdate(false)
 {
 	GSession::AddHandler(this);
 	if(!Memory) return;
@@ -340,8 +340,11 @@ double GProfilesDocsSimsCosinus::ComputeSim(const GDoc* doc,const GSubProfile* s
 
 
 //------------------------------------------------------------------------------
-double GProfilesDocsSimsCosinus::GetSimilarity(const GDoc* doc,const GSubProfile* sub)
+double GProfilesDocsSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,unsigned int)
 {
+	GDoc* doc=Session->GetDoc(id1,0);
+	GSubProfile* sub=Session->GetSubProfile(id2,0);
+
 	if(doc->GetLang()!=sub->GetLang())
 		throw GException("Cannot compare a document and subprofile of a different language");
 
@@ -359,7 +362,7 @@ double GProfilesDocsSimsCosinus::GetSimilarity(const GDoc* doc,const GSubProfile
 
 
 //------------------------------------------------------------------------------
-double GProfilesDocsSimsCosinus::GetMinSimilarity(const GLang*)
+double GProfilesDocsSimsCosinus::GetMinMeasure(const GLang*,unsigned int)
 {
 	return(MinSim);
 }
@@ -489,4 +492,4 @@ GProfilesDocsSimsCosinus::~GProfilesDocsSimsCosinus(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_PROFILESDOCSSIMS_FACTORY("Cosinus Method",GProfilesDocsSimsCosinus)
+CREATE_MEASURE_FACTORY("Profiles/Documents Similarities","Cosinus Method",GProfilesDocsSimsCosinus)

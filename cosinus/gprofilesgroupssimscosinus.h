@@ -37,7 +37,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofilesgroupssims.h>
+#include <gmeasure.h>
 #include <gsignalhandler.h>
 
 
@@ -53,7 +53,7 @@ namespace GALILEI{
 * @author Pascal Francq and Valery Vandaele
 * @short Groups-Documents Similarities.
 */
-class GProfilesGroupsSimsCosinus : public GProfilesGroupsSims, public GSignalHandler
+class GProfilesGroupsSimsCosinus : public GMeasure, public GSignalHandler
 {
 	// Internal class
 	class GProfileGrpSim;
@@ -100,7 +100,7 @@ public:
 	* @param iff             Use Inverse Frequency Factor.
 	* @param memory      use container to stock sims?
 	*/
-	GProfilesGroupsSimsCosinus(GFactoryProfilesGroupsSims* fac);
+	GProfilesGroupsSimsCosinus(GFactoryMeasure* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -117,14 +117,11 @@ public:
 	*/
 	double GetNullSimLevel(void) {return NullSimLevel;}
 
-	/**
-	* Get the similarity between a subprofile and a group.
-	* @param sub             Pointer to the subprofile.
-	* @param grp             Pointer tot he group.
-	*/
-	virtual double GetSimilarity(const GSubProfile* sub,const GGroup* grp);
+	virtual double GetMeasure(unsigned int id1,unsigned int id2,unsigned int measure);
 
-	virtual double GetMinSimilarity(const GLang* lang);
+	virtual double GetMinMeasure(const GLang* lang,unsigned int measure);
+
+	virtual double GetMinMeasure(unsigned int) {return(0.0);}
 
 	/**
 	* A specific subprofile has changed.
