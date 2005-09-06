@@ -170,12 +170,7 @@ protected:
 	/**
 	* All available commands.
 	*/
-	R::RContainer<GStorageCmd,false,true> Cmds;
-
-	/**
-	* All available commands.
-	*/
-	static R::RContainer<GStorageCmd,true,true> RegisteredCmds;
+	R::RContainer<GStorageCmd,false,true> Commands;
 
 public:
 
@@ -249,7 +244,7 @@ public:
 	* -# Another command with the same name does not exist.
 	* @param                 cmd Command to insert.
 	*/
-	static void InsertCmd(GStorageCmd* cmd);
+	void InsertCmd(GStorageCmd* cmd);
 
 	/**
 	* Create a dummy table to store different kid of
@@ -582,6 +577,7 @@ public:
 */
 class GFactoryStorage : public GFactoryPlugin<GFactoryStorage,GStorage,GStorageManager>
 {
+
 public:
 
 	/*
@@ -609,12 +605,37 @@ public:
 */
 class GStorageManager : public GPluginManager<GStorageManager,GFactoryStorage,GStorage>
 {
+private:
+
+	/**
+	* All available commands.
+	*/
+	R::RContainer<GStorageCmd,false,true> Commands;
+
 public:
 
 	/**
 	* Construct the storages manager.
 	*/
 	GStorageManager(void);
+
+	/**
+	* Signal that a plug-in was enabled.
+	* @param plug            Plug-in enabled.
+	*/
+	virtual void EnablePlugIn(GStorage* plug);
+
+	/**
+	* Signal that a plug-in was disabled.
+	* @param plug            Plug-in disabled.
+	*/
+	virtual void DisablePlugIn(GStorage* plug);
+
+	
+	/**
+	* Add a specific command
+	*/
+	bool InsertCmd(GStorageCmd* cmd);
 
 	/**
 	* Destructor of the storages manager.

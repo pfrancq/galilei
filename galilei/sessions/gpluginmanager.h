@@ -286,13 +286,13 @@ public:
 	* Signal that a plug-in was enabled.
 	* @param plug            Plug-in enabled.
 	*/
-	void EnablePlugIn(plugin* plug);
+	virtual void EnablePlugIn(plugin* plug);
 
 	/**
 	* Signal that a plug-in was disabled.
 	* @param plug            Plug-in disabled.
 	*/
-	void DisablePlugIn(plugin* plug);
+	virtual void DisablePlugIn(plugin* plug);
 
 	/**
 	* Get the number of enabled plug-ins.

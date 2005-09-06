@@ -48,7 +48,6 @@ using namespace R;
 //
 //------------------------------------------------------------------------------
 R::RContainer<GSignalHandler,false,false> GSession::Handlers(30,20);
-R::RContainer<GStorageCmd,true,true> GStorage::RegisteredCmds(50,50);
 GPluginManagers GPluginManagers::PluginManagers;
 
 
