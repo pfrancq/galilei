@@ -74,9 +74,9 @@ typedef void (*About_t)();
 
 //-----------------------------------------------------------------------------
 /**
-* The GPLugin class provides a template for a generic plugin.
+* The GPlugin class provides a template for a generic plug-in.
 * @author Pascal Francq
-* @short Generic Plugin.
+* @short Generic Plug-in.
 */
 template<class factory>
 	class GPlugin
@@ -141,10 +141,9 @@ public:
 };
 
 
-
 //-----------------------------------------------------------------------------
 /**
-* The GPLuginPlugin class provides a template for a generic plugin factory. A
+* The GFactoryPlugin class provides a template for a generic plugin factory. A
 * factory handles the loading of the dynamic library containing the plugin.
 * @author Pascal Francq
 * @short Generic Plugin Factory.
@@ -153,6 +152,7 @@ template<class factory,class plugin,class mng>
 	class GFactoryPlugin : public GParams
 {
 public:
+
 	/**
 	* Type of a function used to show dialog box of a plugin.
 	*/
@@ -437,7 +437,6 @@ extern "C" const char* LibType(void)                                           \
 {                                                                              \
 	return(lib);                                                               \
 }
-
 
 
 //-----------------------------------------------------------------------------

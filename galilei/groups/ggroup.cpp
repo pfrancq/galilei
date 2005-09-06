@@ -46,8 +46,7 @@
 #include <gsubject.h>
 #include <gstorage.h>
 #include <gweightinfo.h>
-#include <gprofilesdocssims.h>
-#include <gprofilessims.h>
+#include <gmeasure.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -313,7 +312,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 	RContainer<GFdbkRef,true,false> Docs(50,25);
 
 	// Similarities
-	GProfilesDocsSims* ProfilesDocsSims=GPluginManagers::GetManager<GProfilesDocsSimsManager>("ProfilesDocsSims")->GetCurrentMethod();
+	GMeasure* ProfilesDocsSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 
 	// Clear container.
 	docs->Clear();
@@ -339,7 +338,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 				// Verify if already inserted in Docs.
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
-				Docs.InsertPtr(new GFdbkRef(Fdbks(),ProfilesDocsSims->GetSimilarity(session->GetDoc(Fdbks()->GetDocId()),s)));
+				Docs.InsertPtr(new GFdbkRef(Fdbks(),ProfilesDocsSims->GetMeasure(Fdbks()->GetDocId(),s->GetId())));
 			}
 			continue;
 		}
@@ -357,7 +356,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDocId()))) continue;
 
 			// Insert it.
-			Docs.InsertPtr(new GFdbkRef(Fdbks(),ProfilesDocsSims->GetSimilarity(session->GetDoc(Fdbks()->GetDocId()),s)));
+			Docs.InsertPtr(new GFdbkRef(Fdbks(),ProfilesDocsSims->GetMeasure(Fdbks()->GetDocId(),s->GetId())));
 		}
 	}
 
@@ -409,15 +408,15 @@ double GGroup::ComputeSumSim(const GSubProfile* s) const
 	double sum;
 
 	// Similarities
-	GProfilesSims* ProfilesSims=GPluginManagers::GetManager<GProfilesSimsManager>("ProfilesSims")->GetCurrentMethod();
+	GMeasure* ProfilesSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
 
 	if(!ProfilesSims)
-		throw GException("No profiles similarities");
+		throw GException("No profiles/documents similarities");
 	RCursor<GSubProfile> sub(*this);
 	for(sub.Start(),sum=0.0;!sub.End();sub.Next())
 	{
 		if(sub()==s) continue;
-		sum+=ProfilesSims->GetSimilarity(s,sub());
+		sum+=ProfilesSims->GetMeasure(s->GetId(),sub()->GetId());
 	}
 	return(sum);
 }

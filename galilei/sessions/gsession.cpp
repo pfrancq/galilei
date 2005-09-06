@@ -66,9 +66,6 @@ using namespace R;
 #include <guser.h>
 #include <gprofile.h>
 #include <gsubprofile.h>
-#include <gprofilessims.h>
-#include <gprofilesdocssims.h>
-#include <ggroupsdocssims.h>
 #include <gsubprofile.h>
 #include <gprofilecalc.h>
 #include <gpreprofile.h>
@@ -1014,7 +1011,7 @@ void GSession::CalcProfiles(GSlot* rec)
 void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 {
 	GProfileCalc* Profiling=GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod();
-	GLinkCalc* LinkCalc=GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod();
+	GLinkCalc* LinkCalc=GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false);
 
 	if(!Profiling)
 		throw GException("No computing method chosen.");

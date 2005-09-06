@@ -106,7 +106,8 @@ void GConfig::Load(void) throw(GException)
 			n+=RChar::ToLower(cur()->GetName()[static_cast<size_t>(0)]);
 			n+=cur()->GetName().Mid(1);
 			t=GetTop()->GetTag("galileiconfig:"+n);
-			cur()->ReadConfig(t);
+			if(t)
+				cur()->ReadConfig(t);
 		}
 	}
 	catch(...)
@@ -128,7 +129,8 @@ void GConfig::Save(void) throw(GException)
 		n+=RChar::ToLower(cur()->GetName()[static_cast<size_t>(0)]);
 		n+=cur()->GetName().Mid(1);
 		t=GetTop()->GetTag("galileiconfig:"+n);
-		cur()->SaveConfig(this,t);
+		if(t)
+			cur()->SaveConfig(this,t);
 	}
 	try
 	{

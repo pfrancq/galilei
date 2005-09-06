@@ -156,13 +156,7 @@ template<class mng,class factory,class plugin>
 	}
 	if(PluginsType!=ptSelect)
 		return;
-	try
-	{
-		SetCurrentMethod(t->GetAttrValue("current"));
-	}
-	catch(GException)
-	{
-	}
+	SetCurrentMethod(t->GetAttrValue("current"),false);
 }
 
 
@@ -196,9 +190,13 @@ template<class mng,class factory,class plugin>
 
 //-----------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	factory* GPluginManager<mng,factory,plugin>::GetFactory(const R::RString& name) const
+	factory* GPluginManager<mng,factory,plugin>::GetFactory(const R::RString& name,bool need) const
 {
-	return(R::RContainer<factory,true,true>::GetPtr(name,PluginsType!=ptOrdered));
+	factory* fac;
+	fac=R::RContainer<factory,true,true>::GetPtr(name,PluginsType!=ptOrdered);
+	if((!fac)&need)
+		throw GException(RString("No plug-in '")+name+"' availaible for "+Name+".");
+	return(fac);
 }
 
 
@@ -228,11 +226,13 @@ template<class mng,class factory,class plugin>
 
 //-----------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	plugin* GPluginManager<mng,factory,plugin>::GetPlugIn(const R::RString& name) const
+	plugin* GPluginManager<mng,factory,plugin>::GetPlugIn(const R::RString& name,bool need) const
 {
 	factory* fac=GetFactory(name);
 	if(fac)
 		return(fac->GetPlugin());
+	if(need)
+		throw GException(RString("No plug-in '")+name+"' availaible for "+Name+".");
 	return(0);
 }
 
@@ -247,29 +247,36 @@ template<class mng,class factory,class plugin>
 
 //------------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	void GPluginManager<mng,factory,plugin>::SetCurrentMethod(const R::RString& name)
+	void GPluginManager<mng,factory,plugin>::SetCurrentMethod(const R::RString& name,bool need)
 {
 	if(PluginsType!=ptSelect)
 		return;
-	Current=GetFactory(name);
-	if(!Current)
+	Current=GetFactory(name,need);
+	if((!Current)&&need)
 		throw GException(RString("No plug-in '")+name+"' availaible for "+Name+".");
 }
 
 
 //------------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	plugin* GPluginManager<mng,factory,plugin>::GetCurrentMethod(void) const
+	plugin* GPluginManager<mng,factory,plugin>::GetCurrentMethod(bool need) const
 {
+	if((!Current)&&need)
+		throw GException("No current plug-in availaible for "+Name+".");
 	if(!Current)
 		return(0);
-	return(Current->GetPlugin());
+	plugin* plug=Current->GetPlugin();
+	if((!plug)&&need)
+		throw GException("No current plug-in availaible for "+Name+".");
+	return(plug);
 }
 
 
 //------------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	factory* GPluginManager<mng,factory,plugin>::GetCurrentFactory(void) const
+	factory* GPluginManager<mng,factory,plugin>::GetCurrentFactory(bool need) const
 {
+	if((!Current)&&need)
+		throw GException("No current plug-in availaible for "+Name+".");
 	return(Current);
 }

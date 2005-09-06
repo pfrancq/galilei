@@ -182,22 +182,10 @@ class GConfig;
 class GStorage;
 class GStorageManager;
 class GFactoryStorage;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Similarities Part
-class GProfilesSims;
-class GProfilesSimsManager;
-class GFactoryProfilesSims;
-class GProfilesDocsSims;
-class GProfilesDocsSimsManager;
-class GFactoryProfilesDocsSims;
-class GGroupsDocsSims;
-class GGroupsDocsSimsManager;
-class GFactoryGroupsDocsSims;
-class GProfilesGroupsSims;
-class GProfilesGroupsSimsManager;
-class GFactoryProfilesGroupsSims;
+class GMeasure;
+class GMeasureManager;
+class GFactoryMeasure;
+class GTypeMeasureManager;
 
 
 //------------------------------------------------------------------------------

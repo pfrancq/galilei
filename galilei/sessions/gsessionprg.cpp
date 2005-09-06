@@ -426,7 +426,7 @@ void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true
 		throw RException("The method needs one parameter to specify the name of the link computing method (or \"None\").");
 	sprintf(tmp,"Link Computing Method: %s",(*args)[0]->GetValue(prg));
 	o->WriteStr(tmp);
-	GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod((*args)[0]->GetValue(prg));
+	GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod((*args)[0]->GetValue(prg),false);
 }
 
 
@@ -484,9 +484,9 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tru
 		strcpy(tmp,"Compute Profiles: Current Method");
 	o->WriteStr(tmp);
 	if(args->GetNb()==1)
-		GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod((*args)[0]->GetValue(prg));
-	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod())
-		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod()->ApplyConfig();
+		GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod((*args)[0]->GetValue(prg),false);
+	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
+		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false)->ApplyConfig();
 	if(!GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod())
 		throw GException (" No Profiling Method chosen.");
 	GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
@@ -645,8 +645,8 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 		rec->WriteStr("Compute Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod())
-		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod()->ApplyConfig();
+	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
+		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false)->ApplyConfig();
 	GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->CalcProfiles(rec);
 

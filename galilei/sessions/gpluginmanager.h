@@ -265,9 +265,12 @@ public:
 	/**
 	* Get a pointer to a given factory.
 	* @param name            Name of the factory.
-	* @return Pointer to the factory, or null if the name does not exist.
+	* @param need            If the parameter is true and the plug-in does not
+	*                        exist, generate an exception.
+	* @return Pointer to the factory, or null/exception if the factory does not
+	* exist.
 	*/
-	factory* GetFactory(const R::RString& name) const;
+	factory* GetFactory(const R::RString& name,bool need=true) const;
 
 	/**
 	* Get the number of factories registered.
@@ -299,9 +302,12 @@ public:
 	/**
 	* Get a pointer to a given plug-in.
 	* @param name            Name of the plug-in.
-	* @return Pointer to the plug-in, or null if the name does not exist.
+	* @param need            If the parameter is true and the plug-in does not
+	*                        exist, generate an exception.
+	* @return Pointer to the plug-in, or null/exception if the name does not
+	* exist.
 	*/
-	plugin* GetPlugIn(const R::RString& name) const;
+	plugin* GetPlugIn(const R::RString& name,bool need=true) const;
 
 	/**
 	* Get a cursor over the enabled plug-ins.
@@ -311,22 +317,28 @@ public:
 	/**
 	* Set the current method if the plug-ins must have a selected one.
 	* @param name            Name of the method.
+	* @param need            If the parameter is true and the plug-in does not
+	*                        exist, generate an exception.
 	*/
-	virtual void SetCurrentMethod(const R::RString& name);
+	virtual void SetCurrentMethod(const R::RString& name,bool need=true);
 
 	/**
 	* Get the current method.
-	* @return Pointer to the plugin, or null if no plug-in is selected or
-	* if the list does not need to select one.
+	* @param need            If the parameter is true and the plug-in does not
+	*                        exist, generate an exception.
+	* @return Pointer to the plugin, or null/exception if no plug-in is
+	* selected or if the list does not need to select one.
 	*/
-	virtual plugin* GetCurrentMethod(void) const;
+	virtual plugin* GetCurrentMethod(bool need=true) const;
 
 	/**
 	* Get the current factory.
-	* @return Pointer to the factory, or null if no plug-in is selected or
-	* if the list does not need to select one.
+	* @param need            If the parameter is true and the plug-in does not
+	*                        exist, generate an exception.
+	* @return Pointer to the factory, or null/exception if no plug-in is
+	* selected or if the list does not need to select one.
 	*/
-	virtual factory* GetCurrentFactory(void) const;
+	virtual factory* GetCurrentFactory(bool need=true) const;
 };
 
 

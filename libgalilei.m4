@@ -91,9 +91,7 @@ AC_DEFUN(GALILEI_ALL_INC_CHK,[
 	GALILEI_INC_CHK(galilei/historic,ggrouphistory.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/infos,gdict.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/profiles, gprofile.h,Cannot find GALILEI headers.)
-	GALILEI_INC_CHK(galilei/sims,gprofilessims.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/sessions,gsession.h,Cannot find GALILEI headers.)
-	GALILEI_INC_CHK(galilei/sims,gprofilessims.h,Cannot find GALILEI headers.)
 
 	for l in $1 ; do
 		if test "$l" = "kde"; then

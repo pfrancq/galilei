@@ -61,11 +61,8 @@ using namespace std;
 #include <gpostprofile.h>
 #include <gpreprofile.h>
 #include <gstatscalc.h>
-#include <gprofilessims.h>
-#include <gprofilesdocssims.h>
-#include <ggroupsdocssims.h>
-#include <gprofilesgroupssims.h>
 #include <gstorage.h>
+#include <gmeasure.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -96,10 +93,7 @@ GPluginManagers::GPluginManagers(void)
 	InsertPtr(new GPreProfileManager());
 	InsertPtr(new GPostProfileManager());
 	InsertPtr(new GStatsCalcManager());
-	InsertPtr(new GProfilesSimsManager());
-	InsertPtr(new GProfilesDocsSimsManager());
-	InsertPtr(new GGroupsDocsSimsManager());
-	InsertPtr(new GProfilesGroupsSimsManager());
+	InsertPtr(new GMeasureManager());
 }
 
 
