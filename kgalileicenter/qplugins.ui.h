@@ -20,50 +20,50 @@ void QPlugins::init()
 
 void QPlugins::changeFilter(QListViewItem* item)
 {
-	if(!item) return;
-	QFilterItem* f=dynamic_cast<QFilterItem*>(item);
-	if(!f) return;
-	EnableFilter->setChecked(f->Enable);
-	ConfigFilter->setEnabled(f->Fac->HasConfigure());
-	AboutFilter->setEnabled(f->Fac->HasAbout());
+ if(!item) return;
+ QFilterItem* f=dynamic_cast<QFilterItem*>(item);
+ if(!f) return;
+ EnableFilter->setChecked(f->Enable);
+ ConfigFilter->setEnabled(f->Fac->HasConfigure());
+ AboutFilter->setEnabled(f->Fac->HasAbout());
 }
 
 
 void QPlugins::slotAboutFilter()
 {
-	if(!Filters->currentItem()) return;
-	QFilterItem* f=dynamic_cast<QFilterItem*>(Filters->currentItem());
-	if(!f) return;
-	f->Fac->About();
+ if(!Filters->currentItem()) return;
+ QFilterItem* f=dynamic_cast<QFilterItem*>(Filters->currentItem());
+ if(!f) return;
+ f->Fac->About();
 }
 
 
 void QPlugins::slotConfigFilter()
 {
-	if(!Filters->currentItem()) return;
-	QFilterItem* f=dynamic_cast<QFilterItem*>(Filters->currentItem());
-	if(!f) return;
-	f->Fac->Configure();
+ if(!Filters->currentItem()) return;
+ QFilterItem* f=dynamic_cast<QFilterItem*>(Filters->currentItem());
+ if(!f) return;
+ f->Fac->Configure();
 }
 
 
 void QPlugins::slotFilterEnable( bool state )
 {
-	if(!Filters->currentItem()) return;
-	QFilterItem* f=dynamic_cast<QFilterItem*>(Filters->currentItem());
-	if(!f) return;
-	f->Enable=state;
+ if(!Filters->currentItem()) return;
+ QFilterItem* f=dynamic_cast<QFilterItem*>(Filters->currentItem());
+ if(!f) return;
+ f->Enable=state;
 }
 
 
 void QPlugins::changeProfileCalc( QListViewItem * item )
 {
-	if(!item) return;
-	QProfileCalcItem* f=dynamic_cast<QProfileCalcItem*>(item);
-	if(!f) return;
-	EnableProfileCalc->setChecked(f->Enable);
-	ConfigProfileCalc->setEnabled(f->Fac->HasConfigure());
-	AboutProfileCalc->setEnabled(f->Fac->HasAbout());
+ if(!item) return;
+ QProfileCalcItem* f=dynamic_cast<QProfileCalcItem*>(item);
+ if(!f) return;
+ EnableProfileCalc->setChecked(f->Enable);
+ ConfigProfileCalc->setEnabled(f->Fac->HasConfigure());
+ AboutProfileCalc->setEnabled(f->Fac->HasAbout());
 }
 
 
@@ -617,248 +617,96 @@ void QPlugins::updateLevels(void)
 	unsigned int level;
 
 	QListViewItemIterator it(PostGroups);
-	for (level=0; it.current();++it, level++)
-	{
-		QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(it.current());
-		f->Fac->Set("Level",level);
-	}
+ for (level=0; it.current();++it, level++)
+ {
+  QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(it.current());
+  f->Fac->Set("Level",level);
+ }
 
-	QListViewItemIterator it2(PostDocs);
-	for (level=0; it2.current();++it2, level++)
-	{
-		QPostDocItem* f=dynamic_cast<QPostDocItem*>(it2.current());
-		f->Fac->Set("Level",level);
-	}
+ QListViewItemIterator it2(PostDocs);
+ for (level=0; it2.current();++it2, level++)
+ {
+  QPostDocItem* f=dynamic_cast<QPostDocItem*>(it2.current());
+  f->Fac->Set("Level",level);
+ }
 
-	QListViewItemIterator it3(PreProfile);
-	for (level=0; it3.current();++it3, level++)
-	{
-		QPreProfileItem* f=dynamic_cast<QPreProfileItem*>(it3.current());
-		f->Fac->Set("Level",level);
-	}
+ QListViewItemIterator it3(PreProfile);
+ for (level=0; it3.current();++it3, level++)
+ {
+  QPreProfileItem* f=dynamic_cast<QPreProfileItem*>(it3.current());
+  f->Fac->Set("Level",level);
+ }
 
-	QListViewItemIterator it4(PostProfile);
-	for (level=0; it4.current();++it4, level++)
-	{
-		QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(it4.current());
-		f->Fac->Set("Level",level);
-	}
+ QListViewItemIterator it4(PostProfile);
+ for (level=0; it4.current();++it4, level++)
+ {
+  QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(it4.current());
+  f->Fac->Set("Level",level);
+ }
 }
 
 
 void QPlugins::changeEngine(QListViewItem* item)
 {
-	if(!item) return;
-	QEngineItem* f=dynamic_cast<QEngineItem*>(item);
-	if(!f) return;
-	EnableEngine->setChecked(f->Enable);
-	ConfigEngine->setEnabled(f->Fac->HasConfigure());
-	AboutEngine->setEnabled(f->Fac->HasAbout());
+ if(!item) return;
+ QEngineItem* f=dynamic_cast<QEngineItem*>(item);
+ if(!f) return;
+ EnableEngine->setChecked(f->Enable);
+ ConfigEngine->setEnabled(f->Fac->HasConfigure());
+ AboutEngine->setEnabled(f->Fac->HasAbout());
 }
 
 
 void QPlugins::slotAboutEngine()
 {
-	if(!Engines->currentItem()) return;
-	QEngineItem* f=dynamic_cast<QEngineItem*>(Engines->currentItem());
-	if(!f) return;
-	f->Fac->About();
+ if(!Engines->currentItem()) return;
+ QEngineItem* f=dynamic_cast<QEngineItem*>(Engines->currentItem());
+ if(!f) return;
+ f->Fac->About();
 }
 
 
 void QPlugins::slotConfigEngine()
 {
-	if(!Engines->currentItem()) return;
-	QEngineItem* f=dynamic_cast<QEngineItem*>(Engines->currentItem());
-	if(!f) return;
-	f->Fac->Configure();
+ if(!Engines->currentItem()) return;
+ QEngineItem* f=dynamic_cast<QEngineItem*>(Engines->currentItem());
+ if(!f) return;
+ f->Fac->Configure();
 }
 
 
 void QPlugins::slotEngineEnable( bool state )
 {
-	if(!Engines->currentItem()) return;
-	QEngineItem* f=dynamic_cast<QEngineItem*>(Engines->currentItem());
-	if(!f) return;
-	f->Enable=state;
-}
-
-
-void QPlugins::slotConfigProfilesSims()
-{
-	if(!ProfilesSims->currentItem()) return;
-	QProfilesSimsItem* f=dynamic_cast<QProfilesSimsItem*>(ProfilesSims->currentItem());
-	if(!f) return;
-	f->Fac->Configure();
-}
-
-
-void QPlugins::slotAboutProfilesSims()
-{
-	if(!ProfilesSims->currentItem()) return;
-	QProfilesSimsItem* f=dynamic_cast<QProfilesSimsItem*>(ProfilesSims->currentItem());
-	if(!f) return;
-	f->Fac->About();
-}
-
-
-void QPlugins::changeProfilesSims( QListViewItem * item )
-{
- 	if(!item) return;
-	QProfilesSimsItem* f=dynamic_cast<QProfilesSimsItem*>(item);
-	if(!f) return;
-	EnableProfilesSims->setChecked(f->Enable);
-	ConfigProfilesSims->setEnabled(f->Fac->HasConfigure());
-	AboutProfilesSims->setEnabled(f->Fac->HasAbout());
-}
-
-
-void QPlugins::slotProfilesSimsEnable( bool state )
-{
-	if(!ProfilesSims->currentItem()) return;
-	QProfilesSimsItem* f=dynamic_cast<QProfilesSimsItem*>(ProfilesSims->currentItem());
-	if(!f) return;
-	f->Enable=state;
-}
-
-
-void QPlugins::changeProfilesDocsSims( QListViewItem * item )
-{
-	if(!item) return;
-	QProfilesDocsSimsItem* f=dynamic_cast<QProfilesDocsSimsItem*>(item);
-	if(!f) return;
-	EnableProfilesDocsSims->setChecked(f->Enable);
-	ConfigProfilesDocsSims->setEnabled(f->Fac->HasConfigure());
-	AboutProfilesDocsSims->setEnabled(f->Fac->HasAbout());
-}
-
-
-void QPlugins::changeGroupsDocsSims( QListViewItem * item )
-{
-	if(!item) return;
-	QGroupsDocsSimsItem* f=dynamic_cast<QGroupsDocsSimsItem*>(item);
-	if(!f) return;
-	EnableGroupsDocsSims->setChecked(f->Enable);
-	ConfigGroupsDocsSims->setEnabled(f->Fac->HasConfigure());
-	AboutGroupsDocsSims->setEnabled(f->Fac->HasAbout());
-}
-
-
-void QPlugins::slotAboutProfilesDocsSims()
-{
-	if(!ProfilesDocsSims->currentItem()) return;
-	QProfilesDocsSimsItem* f=dynamic_cast<QProfilesDocsSimsItem*>(ProfilesDocsSims->currentItem());
-	if(!f) return;
-	f->Fac->About();
-}
-
-
-void QPlugins::slotAboutGroupsDocsSims()
-{
-	if(!GroupsDocsSims->currentItem()) return;
-	QGroupsDocsSimsItem* f=dynamic_cast<QGroupsDocsSimsItem*>(GroupsDocsSims->currentItem());
-	if(!f) return;
-	f->Fac->About();
-}
-
-
-void QPlugins::slotConfigProfilesDocsSims()
-{
-	if(!ProfilesDocsSims->currentItem()) return;
-	QProfilesDocsSimsItem* f=dynamic_cast<QProfilesDocsSimsItem*>(ProfilesDocsSims->currentItem());
-	if(!f) return;
-	f->Fac->Configure();
-}
-
-
-void QPlugins::slotConfigGroupsDocsSims()
-{
-	if(!GroupsDocsSims->currentItem()) return;
-	QGroupsDocsSimsItem* f=dynamic_cast<QGroupsDocsSimsItem*>(GroupsDocsSims->currentItem());
-	if(!f) return;
-	f->Fac->Configure();
-}
-
-
-void QPlugins::slotProfilesDocsSimsEnable( bool state )
-{
-	if(!ProfilesDocsSims->currentItem()) return;
-	QProfilesDocsSimsItem* f=dynamic_cast<QProfilesDocsSimsItem*>(ProfilesDocsSims->currentItem());
-	if(!f) return;
-	f->Enable=state;
-}
-
-
-void QPlugins::slotGroupsDocsSimsEnable( bool state )
-{
-	if(!GroupsDocsSims->currentItem()) return;
-	QGroupsDocsSimsItem* f=dynamic_cast<QGroupsDocsSimsItem*>(GroupsDocsSims->currentItem());
-	if(!f) return;
-	f->Enable=state;
-}
-
-
-void QPlugins::changeProfilesGroupsSims( QListViewItem * item )
-{
-	if(!item) return;
-	QProfilesGroupsSimsItem* f=dynamic_cast<QProfilesGroupsSimsItem*>(item);
-	if(!f) return;
-	EnableProfilesGroupsSims->setChecked(f->Enable);
-	ConfigProfilesGroupsSims->setEnabled(f->Fac->HasConfigure());
-	AboutProfilesGroupsSims->setEnabled(f->Fac->HasAbout());
-}
-
-
-void QPlugins::slotAboutProfilesGroupsSims()
-{
-	if(!ProfilesGroupsSims->currentItem()) return;
-	QProfilesGroupsSimsItem* f=dynamic_cast<QProfilesGroupsSimsItem*>(ProfilesGroupsSims->currentItem());
-	if(!f) return;
-	f->Fac->About();
-}
-
-
-void QPlugins::slotConfigProfilesGroupsSims()
-{
-	if(!ProfilesGroupsSims->currentItem()) return;
-	QProfilesGroupsSimsItem* f=dynamic_cast<QProfilesGroupsSimsItem*>(ProfilesGroupsSims->currentItem());
-	if(!f) return;
-	f->Fac->Configure();
-}
-
-
-void QPlugins::slotProfilesGroupsSimsEnable( bool state )
-{
-	if(!ProfilesGroupsSims->currentItem()) return;
-	QProfilesGroupsSimsItem* f=dynamic_cast<QProfilesGroupsSimsItem*>(ProfilesGroupsSims->currentItem());
-	if(!f) return;
-	f->Enable=state;
+ if(!Engines->currentItem()) return;
+ QEngineItem* f=dynamic_cast<QEngineItem*>(Engines->currentItem());
+ if(!f) return;
+ f->Enable=state;
 }
 
 
 void QPlugins::changeStorage( QListViewItem * item )
 {
-	if(!item) return;
-	QStorageItem* f=dynamic_cast<QStorageItem*>(item);
-	if(!f) return;
-	ConfigStorage->setEnabled(f->Fac->HasConfigure());
-	AboutStorage->setEnabled(f->Fac->HasAbout());
+ if(!item) return;
+ QStorageItem* f=dynamic_cast<QStorageItem*>(item);
+ if(!f) return;
+ ConfigStorage->setEnabled(f->Fac->HasConfigure());
+ AboutStorage->setEnabled(f->Fac->HasAbout());
 }
 
 
 void QPlugins::slotAboutStorage()
 {
-	if(!Storages->currentItem()) return;
-	QStorageItem* f=dynamic_cast<QStorageItem*>(Storages->currentItem());
-	if(!f) return;
-	f->Fac->About();
+ if(!Storages->currentItem()) return;
+ QStorageItem* f=dynamic_cast<QStorageItem*>(Storages->currentItem());
+ if(!f) return;
+ f->Fac->About();
 }
 
 
 void QPlugins::slotConfigStorage()
 {
-	if(!Storages->currentItem()) return;
-	QStorageItem* f=dynamic_cast<QStorageItem*>(Storages->currentItem());
-	if(!f) return;
-	f->Fac->Configure();
+ if(!Storages->currentItem()) return;
+ QStorageItem* f=dynamic_cast<QStorageItem*>(Storages->currentItem());
+ if(!f) return;
+ f->Fac->Configure();
 }

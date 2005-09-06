@@ -47,7 +47,6 @@
 #include <ggroup.h>
 #include <gsubject.h>
 #include <gsubprofile.h>
-#include <gprofilessims.h>
 #include <gprofile.h>
 #include <gsession.h>
 #include <gweightinfos.h>
@@ -83,7 +82,7 @@ using namespace GALILEI;
 KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid,
 	 const char* mindate, const char* maxdate, bool bdate)
 	: KView(doc,parent,name,wflags),
-	  Global(global), MinGen(minid), MaxGen(maxid),MinDate(mindate), MaxDate(maxdate), CurId(0),  SubProfiles(0), Groups(0),  Sims(0), bDate(bdate)
+	  Global(global), MinGen(minid), MaxGen(maxid),MinDate(mindate), MaxDate(maxdate), CurId(0),  SubProfiles(0), Groups(0),  bDate(bdate)
 {
 	static char tmp[100];
 
@@ -402,8 +401,6 @@ KViewHistory::~KViewHistory(void)
 		Groups->Clear();
 	if(SubProfiles)
 		delete SubProfiles;
-	if(Sims)
-		delete Sims;
 	if(TabWidget)
 		delete (TabWidget);
 	if(SimsView)

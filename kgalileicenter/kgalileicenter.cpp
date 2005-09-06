@@ -202,7 +202,7 @@ void KGALILEICenterApp::slotSessionCompute(void)
 	Doc->updateAllViews(1);
 	Doc->updateAllViews(2);
 
-	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod())
+	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
 	{
 		Doc->updateAllViews(3);
 	}
@@ -392,7 +392,7 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 	Doc->updateAllViews(1);
 	//test whether a linking method has been used during Profile computation.
 	//if true -->refresh Links
-	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod())
+	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
 	{
 		Doc->updateAllViews(3);
 	}
@@ -713,7 +713,7 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotQueryMetaEngine(void)
 {
-	if(!GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod())
+	if(!GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod(false))
 	{
 		QMessageBox::information(this," Error "," No Meta Engine Method selected!!");
 		return;

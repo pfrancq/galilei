@@ -51,13 +51,12 @@
 #include <ggrouping.h>
 #include <gpostgroup.h>
 #include <gprofilecalc.h>
-#include <gprofilessims.h>
-#include <gprofilesdocssims.h>
 #include <glang.h>
 #include <gengine.h>
 #include <gmetaengine.h>
 #include <gpluginmanagers.h>
 #include <gstorage.h>
+#include <gmeasure.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -90,9 +89,88 @@ using namespace std;
 #include "kviewdoc.h"
 #include "kviewprofile.h"
 #include "qsessionprogress.h"
-#include "qplugins.h"
 #include "qgalileiitem.h"
 
+
+
+
+QMyPlugins::QMyPlugins(KGALILEICenterApp* app,QString title)
+		: QPlugins(app,title), Tabs(30,15)
+	{
+		    connect(EnableMeasure,SIGNAL(toggled(bool)),this,SLOT(slotMeasureEnable(bool)));
+		    connect(ConfigMeasure,SIGNAL(clicked()),this,SLOT(slotConfigMeasure()));
+    		connect(AboutMeasure,SIGNAL(clicked()),this,SLOT(slotAboutMeasure()));
+			connect(Measures,SIGNAL(currentChanged(QWidget*)),this,SLOT(slotChangeCat(QWidget*)));
+			connect(CurrentMeasure,SIGNAL(activated(const QString&)),this,SLOT(changeCurrent(const QString&)));
+	}
+
+
+	void QMyPlugins::slotChangeCat(QWidget*)
+	{
+		int idx;
+		QString str;
+		GTypeMeasureManager* Manager=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Tabs[Measures->currentPageIndex()]->Type);
+		RCursor<GFactoryMeasure> Cur(Manager->GetFactories());
+		QString current=Tabs[Measures->currentPageIndex()]->Current;
+		CurrentMeasure->clear();
+		CurrentMeasure->insertItem("None",0);
+		for(Cur.Start(),idx=1;!Cur.End();Cur.Next(),idx++)
+		{
+			str=ToQString(Cur()->GetName());
+			str+=" [";
+			str+=ToQString(Cur()->GetLib());
+			str+="]";
+			CurrentMeasure->insertItem(ToQString(Cur()->GetName()),idx);
+			if(Cur()->GetName()==FromQString(current))
+				CurrentMeasure->setCurrentItem(idx);
+		}
+		CurrentMeasure->setEnabled(idx>1);
+		EnableMeasure->setEnabled(idx>1);
+		ConfigMeasure->setEnabled(idx>1);
+		AboutMeasure->setEnabled(idx>1);
+		changeMeasure(Tabs[Measures->currentPageIndex()]->List->currentItem());
+	}
+
+	void QMyPlugins::changeMeasure( QListViewItem * item )
+	{
+		if(!item) return;
+		QMeasureItem* f=dynamic_cast<QMeasureItem*>(item);
+		if(!f) return;
+		EnableMeasure->setChecked(f->Enable);
+		ConfigMeasure->setEnabled(f->Fac->HasConfigure());
+		AboutMeasure->setEnabled(f->Fac->HasAbout());
+	}
+
+
+	void QMyPlugins::slotAboutMeasure()
+	{
+		if(!Tabs[Measures->currentPageIndex()]->List->currentItem()) return;
+		QMeasureItem* f=dynamic_cast<QMeasureItem*>(Tabs[Measures->currentPageIndex()]->List->currentItem());
+		if(!f) return;
+		f->Fac->About();
+	}
+
+
+	void QMyPlugins::slotConfigMeasure()
+	{
+		if(!Tabs[Measures->currentPageIndex()]->List->currentItem()) return;
+		QMeasureItem* f=dynamic_cast<QMeasureItem*>(Tabs[Measures->currentPageIndex()]->List->currentItem());
+		if(!f) return;
+		f->Fac->Configure();
+	}
+
+	void QMyPlugins::slotMeasureEnable( bool state )
+	{
+		if(!Tabs[Measures->currentPageIndex()]->List->currentItem()) return;
+		QMeasureItem* f=dynamic_cast<QMeasureItem*>(Tabs[Measures->currentPageIndex()]->List->currentItem());
+		if(!f) return;
+		f->Enable=state;
+	}
+
+void QMyPlugins::changeCurrent(const QString& string)
+{
+	Tabs[Measures->currentPageIndex()]->Current=string;
+}
 
 
 //-----------------------------------------------------------------------------
@@ -140,7 +218,7 @@ template<class Factory,class Manager,class Item>
 
 	Manager* Mng=GPluginManagers::GetManager<Manager>(manager);
 	R::RCursor<Factory> Cur(Mng->GetFactories());
-	Factory* current=Mng->GetCurrentFactory();
+	Factory* current=Mng->GetCurrentFactory(false);
 
 	// Goes through the profiles computing method
 	def=cur=0;
@@ -202,10 +280,68 @@ template<class Item>
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::InitMeasure(QMyPlugins* dlg)
+{
+	QString str;
+	int tabs,idx;
+
+	GMeasureManager* Manager=GPluginManagers::GetManager<GMeasureManager>("Measures");
+	R::RCursor<GTypeMeasureManager> Cur(Manager->GetMeasureCategories());
+	for(Cur.Start(),tabs=0;!Cur.End();Cur.Next(),tabs++)
+	{
+		QMyPlugins::Tab* tab=new QMyPlugins::Tab(Cur()->GetName(),new QListView(dlg->Measures));
+		dlg->Measures->insertTab(tab->List,ToQString(Cur()->GetName()),tabs);
+		dlg->Tabs.InsertPtrAt(tab,tabs);
+		if(Cur()->GetCurrentFactory(false))
+			tab->Current=ToQString(Cur()->GetCurrentFactory(false)->GetName());
+		else
+			tab->Current="None";
+		tab->List->addColumn( tr2i18n( "Method" ) );
+		tab->List->setResizePolicy( QScrollView::Manual );
+		tab->List->setResizeMode( QListView::AllColumns );
+    	connect(tab->List,SIGNAL(selectionChanged(QListViewItem*)),dlg,SLOT(changeMeasure(QListViewItem*)));
+
+		//TabPageLayout->addWidget( Storages );
+		RCursor<GFactoryMeasure> Cur2(Cur()->GetFactories());
+		QMeasureItem* ptr=0;
+		for(Cur2.Start(),idx=0;!Cur2.End();Cur2.Next(),idx++)
+		{
+			str=ToQString(Cur2()->GetName());
+			str+=" [";
+			str+=ToQString(Cur2()->GetLib());
+			str+="]";
+			ptr=new QMeasureItem(tab->List,Cur2(),str,ptr);
+		}
+		tab->List->setEnabled(idx>0);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::DoneMeasure(QMyPlugins* dlg)
+{
+	RCursor<QMyPlugins::Tab> Cur(dlg->Tabs);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		QMeasureItem* item=dynamic_cast<QMeasureItem*>(Cur()->List->firstChild());
+		while(item)
+		{
+			if(item->Enable)
+				item->Fac->Create(getSession());
+			else
+				item->Fac->Delete(getSession());
+			item=dynamic_cast<QMeasureItem*>(item->itemBelow());
+		}
+		GPluginManagers::GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Cur()->Type)->SetCurrentMethod(Cur()->Current.latin1(),false);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotPlugins(void)
 {
 
-	QPlugins dlg(this,"Plug-Ins Dialog");
+	QMyPlugins dlg(this,"Plug-Ins Dialog");
 	QString str;
 
 	//set the plugins path
@@ -237,11 +373,8 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.changeDocAnalyse(Init<GFactoryDocAnalyse,GDocAnalyseManager,QDocAnalyseItem>("DocAnalyse",dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse));
 	dlg.changeEngine(Init<GFactoryEngine,GEngineManager,QEngineItem>("Engine",dlg.Engines,dlg.EnableEngine));
 	dlg.changeMetaEngine(Init<GFactoryMetaEngine,GMetaEngineManager,QMetaEngineItem>("MetaEngine",dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine));
-	dlg.changeProfilesSims(Init<GFactoryProfilesSims,GProfilesSimsManager,QProfilesSimsItem>("ProfilesSims",dlg.ProfilesSims,dlg.EnableProfilesSims,dlg.CurrentProfilesSims));
-	dlg.changeProfilesDocsSims(Init<GFactoryProfilesDocsSims,GProfilesDocsSimsManager,QProfilesDocsSimsItem>("ProfilesDocsSims",dlg.ProfilesDocsSims,dlg.EnableProfilesDocsSims,dlg.CurrentProfilesDocsSims));
-	dlg.changeGroupsDocsSims(Init<GFactoryGroupsDocsSims,GGroupsDocsSimsManager,QGroupsDocsSimsItem>("GroupsDocsSims",dlg.GroupsDocsSims,dlg.EnableGroupsDocsSims,dlg.CurrentGroupsDocsSims));
-	dlg.changeProfilesGroupsSims(Init<GFactoryProfilesGroupsSims,GProfilesGroupsSimsManager,QProfilesGroupsSimsItem>("ProfilesGroupsSims",dlg.ProfilesGroupsSims,dlg.EnableProfilesGroupsSims,dlg.CurrentProfilesGroupsSims));
 	dlg.changeStorage(Init<GFactoryStorage,GStorageManager,QStorageItem>("Storage",dlg.Storages,0,dlg.CurrentStorage));
+	InitMeasure(&dlg);
 
 	dlg.MainTab->setCurrentPage(DlgMainTabIdx);
 	dlg.DocsTab->setCurrentPage(DlgDocsTabIdx);
@@ -277,109 +410,30 @@ void KGALILEICenterApp::slotPlugins(void)
 		GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->ReOrder();
 
 		// Goes through managers
-		try
-		{
-			Done<QFilterItem>(dlg.Filters);
-			Done<QProfileCalcItem>(dlg.ProfileCalcs,this);
-			Done<QGroupingItem>(dlg.Groupings,this);
-			Done<QGroupCalcItem>(dlg.GroupCalcs,this);
-			Done<QStatsCalcItem>(dlg.Stats);
-			Done<QLinkCalcItem>(dlg.LinkCalcs,this);
-			Done<QPostDocItem>(dlg.PostDocs,this);
-			Done<QPreProfileItem>(dlg.PreProfile,this);
-			Done<QPostProfileItem>(dlg.PostProfile,this);
-			Done<QLangItem>(dlg.Langs,this);
-			Done<QDocAnalyseItem>(dlg.DocAnalyses,this);
-			Done<QPostGroupItem>(dlg.PostGroups,this);
-			Done<QEngineItem>(dlg.Engines);
-			Done<QMetaEngineItem>(dlg.MetaEngines,this);
-			Done<QProfilesSimsItem>(dlg.ProfilesSims,this);
-			Done<QProfilesDocsSimsItem>(dlg.ProfilesDocsSims,this);
-			Done<QGroupsDocsSimsItem>(dlg.GroupsDocsSims,this);
-			Done<QProfilesGroupsSimsItem>(dlg.ProfilesGroupsSims,this);
-		}
-		catch(GException& e)
-		{
-			std::cerr<<e.GetMsg()<<std::endl;
-		}
+		Done<QFilterItem>(dlg.Filters);
+		Done<QProfileCalcItem>(dlg.ProfileCalcs,this);
+		Done<QGroupingItem>(dlg.Groupings,this);
+		Done<QGroupCalcItem>(dlg.GroupCalcs,this);
+		Done<QStatsCalcItem>(dlg.Stats);
+		Done<QLinkCalcItem>(dlg.LinkCalcs,this);
+		Done<QPostDocItem>(dlg.PostDocs,this);
+		Done<QPreProfileItem>(dlg.PreProfile,this);
+		Done<QPostProfileItem>(dlg.PostProfile,this);
+		Done<QLangItem>(dlg.Langs,this);
+		Done<QDocAnalyseItem>(dlg.DocAnalyses,this);
+		Done<QPostGroupItem>(dlg.PostGroups,this);
+		Done<QEngineItem>(dlg.Engines);
+		Done<QMetaEngineItem>(dlg.MetaEngines,this);
+		DoneMeasure(&dlg);
+
 		// Set current method
-		try
-		{
-			GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GGroupingManager>("Grouping")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GProfilesSimsManager>("ProfilesSims")->SetCurrentMethod(dlg.CurrentProfilesSims->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GProfilesDocsSimsManager>("ProfilesDocsSims")->SetCurrentMethod(dlg.CurrentProfilesDocsSims->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GGroupsDocsSimsManager>("GroupsDocsSims")->SetCurrentMethod(dlg.CurrentGroupsDocsSims->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GProfilesGroupsSimsManager>("ProfilesGroupsSims")->SetCurrentMethod(dlg.CurrentProfilesGroupsSims->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
-		try
-		{
-			GPluginManagers::GetManager<GStorageManager>("Storage")->SetCurrentMethod(dlg.CurrentStorage->currentText().latin1());
-		}
-		catch(GException)
-		{
-		}
+		GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1(),false);
+		GPluginManagers::GetManager<GGroupingManager>("Grouping")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1(),false);
+		GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
+		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1(),false);
+		GPluginManagers::GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1(),false);
+		GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1(),false);
+		GPluginManagers::GetManager<GStorageManager>("Storage")->SetCurrentMethod(dlg.CurrentStorage->currentText().latin1(),false);
 	}
 	DlgMainTabIdx=dlg.MainTab->currentPageIndex();
 	DlgDocsTabIdx=dlg.DocsTab->currentPageIndex();

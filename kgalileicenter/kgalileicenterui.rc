@@ -33,7 +33,8 @@
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>
 		<Separator/>
-		<Action name="showGroupsHistory"/>
+		<Action name="somView"/>
+		<Action name="showGroupsHistorys"/>
 	</Menu>
 	<Menu name="Documents"><text>&amp;Documents</text>
 		<Action name="docsClear"/>

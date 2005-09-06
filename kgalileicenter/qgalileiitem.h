@@ -51,11 +51,8 @@
 #include <gpreprofile.h>
 #include <gprofilecalc.h>
 #include <gstatscalc.h>
-#include <gprofilessims.h>
-#include <gprofilesdocssims.h>
-#include <ggroupsdocssims.h>
-#include <gprofilesgroupssims.h>
 #include <gstorage.h>
+#include <gmeasure.h>
 using namespace GALILEI;
 
 
@@ -229,60 +226,24 @@ public:
 };
 
 
-class QProfilesSimsItem : public QListViewItem
-{
-public:
-	GFactoryProfilesSims* Fac;
-	bool Enable;
-	QProfilesSimsItem(QListView* lst,GFactoryProfilesSims* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
-	{
-	}
-};
-
-
-class QProfilesDocsSimsItem : public QListViewItem
-{
-public:
-	GFactoryProfilesDocsSims* Fac;
-	bool Enable;
-	QProfilesDocsSimsItem(QListView* lst,GFactoryProfilesDocsSims* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
-	{
-	}
-};
-
-
-class QGroupsDocsSimsItem : public QListViewItem
-{
-public:
-	GFactoryGroupsDocsSims* Fac;
-	bool Enable;
-	QGroupsDocsSimsItem(QListView* lst,GFactoryGroupsDocsSims* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
-	{
-	}
-};
-
-
-class QProfilesGroupsSimsItem : public QListViewItem
-{
-public:
-	GFactoryProfilesGroupsSims* Fac;
-	bool Enable;
-	QProfilesGroupsSimsItem(QListView* lst,GFactoryProfilesGroupsSims* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
-	{
-	}
-};
-
-
 class QStorageItem : public QListViewItem
 {
 public:
 	GFactoryStorage* Fac;
-	bool Enable;
+
 	QStorageItem(QListView* lst,GFactoryStorage* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac)
+	{
+	}
+};
+
+
+class QMeasureItem : public QListViewItem
+{
+public:
+	GFactoryMeasure* Fac;
+	bool Enable;
+	QMeasureItem(QListView* lst,GFactoryMeasure* fac,const char* desc,QListViewItem* after=0)
 		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
 	{
 	}

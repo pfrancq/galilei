@@ -148,11 +148,6 @@ class KViewHistory : public KView
 	R::RContainer<GWeightInfosHistory,false,true>* SelectedSubProfiles;
 
 	/**
-	* Similarities between the subprofiles to group.
-	*/
-	GProfilesSims* Sims;
-
-	/**
 	* historic is loaded by date if true, else by Id.
 	*/
 	bool bDate;

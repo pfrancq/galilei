@@ -26,6 +26,12 @@
             <property name="name">
                 <cstring>groupBox1</cstring>
             </property>
+            <property name="frameShape">
+                <enum>GroupBoxPanel</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
+            </property>
             <property name="title">
                 <string>General Options</string>
             </property>
@@ -1785,627 +1791,133 @@
                             <cstring>TabPage</cstring>
                         </property>
                         <attribute name="title">
-                            <string>Similarities</string>
+                            <string>Measures</string>
                         </attribute>
                         <vbox>
                             <property name="name">
                                 <cstring>unnamed</cstring>
                             </property>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout4_2_2_2_2_2</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_3_2_2_2_2</cstring>
+                                        </property>
+                                        <property name="sizePolicy">
+                                            <sizepolicy>
+                                                <hsizetype>0</hsizetype>
+                                                <vsizetype>5</vsizetype>
+                                                <horstretch>0</horstretch>
+                                                <verstretch>0</verstretch>
+                                            </sizepolicy>
+                                        </property>
+                                        <property name="text">
+                                            <string>Current Method</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Choose current method</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer4_3_2_2_2_2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Fixed</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>20</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="QComboBox">
+                                        <property name="name">
+                                            <cstring>CurrentMeasure</cstring>
+                                        </property>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Choose current method</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
                             <widget class="QTabWidget">
                                 <property name="name">
-                                    <cstring>SimilaritiesTab</cstring>
+                                    <cstring>Measures</cstring>
                                 </property>
-                                <widget class="QWidget">
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout3_3_2_2_2_2</cstring>
+                                </property>
+                                <hbox>
                                     <property name="name">
-                                        <cstring>tab</cstring>
+                                        <cstring>unnamed</cstring>
                                     </property>
-                                    <attribute name="title">
-                                        <string>Profiles/Profiles</string>
-                                    </attribute>
-                                    <vbox>
+                                    <widget class="QPushButton">
                                         <property name="name">
-                                            <cstring>unnamed</cstring>
+                                            <cstring>ConfigMeasure</cstring>
                                         </property>
-                                        <widget class="QLayoutWidget">
-                                            <property name="name">
-                                                <cstring>layout57</cstring>
-                                            </property>
-                                            <hbox>
-                                                <property name="name">
-                                                    <cstring>unnamed</cstring>
-                                                </property>
-                                                <widget class="QLabel">
-                                                    <property name="name">
-                                                        <cstring>textLabel1_2_2_2</cstring>
-                                                    </property>
-                                                    <property name="sizePolicy">
-                                                        <sizepolicy>
-                                                            <hsizetype>0</hsizetype>
-                                                            <vsizetype>0</vsizetype>
-                                                            <horstretch>0</horstretch>
-                                                            <verstretch>0</verstretch>
-                                                        </sizepolicy>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Current Method</string>
-                                                    </property>
-                                                    <property name="toolTip" stdset="0">
-                                                        <string>Choose current method</string>
-                                                    </property>
-                                                </widget>
-                                                <spacer>
-                                                    <property name="name">
-                                                        <cstring>spacer4_2_2_2</cstring>
-                                                    </property>
-                                                    <property name="orientation">
-                                                        <enum>Horizontal</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>Fixed</enum>
-                                                    </property>
-                                                    <property name="sizeHint">
-                                                        <size>
-                                                            <width>20</width>
-                                                            <height>20</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                                <widget class="QComboBox">
-                                                    <property name="name">
-                                                        <cstring>CurrentProfilesSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="duplicatesEnabled">
-                                                        <bool>true</bool>
-                                                    </property>
-                                                    <property name="toolTip" stdset="0">
-                                                        <string>Choose current method</string>
-                                                    </property>
-                                                </widget>
-                                            </hbox>
-                                        </widget>
-                                        <widget class="QListView">
-                                            <column>
-                                                <property name="text">
-                                                    <string>Profiles/Profiles Similarities Methods</string>
-                                                </property>
-                                                <property name="clickable">
-                                                    <bool>true</bool>
-                                                </property>
-                                                <property name="resizable">
-                                                    <bool>true</bool>
-                                                </property>
-                                            </column>
-                                            <property name="name">
-                                                <cstring>ProfilesSims</cstring>
-                                            </property>
-                                            <property name="resizePolicy">
-                                                <enum>Manual</enum>
-                                            </property>
-                                            <property name="resizeMode">
-                                                <enum>AllColumns</enum>
-                                            </property>
-                                        </widget>
-                                        <widget class="QLayoutWidget">
-                                            <property name="name">
-                                                <cstring>layout77_2_2</cstring>
-                                            </property>
-                                            <hbox>
-                                                <property name="name">
-                                                    <cstring>unnamed</cstring>
-                                                </property>
-                                                <widget class="QPushButton">
-                                                    <property name="name">
-                                                        <cstring>ConfigProfilesSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Configure</string>
-                                                    </property>
-                                                </widget>
-                                                <widget class="QPushButton">
-                                                    <property name="name">
-                                                        <cstring>AboutProfilesSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>About</string>
-                                                    </property>
-                                                </widget>
-                                                <spacer>
-                                                    <property name="name">
-                                                        <cstring>spacer3_2_2_2</cstring>
-                                                    </property>
-                                                    <property name="orientation">
-                                                        <enum>Horizontal</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>Expanding</enum>
-                                                    </property>
-                                                    <property name="sizeHint">
-                                                        <size>
-                                                            <width>296</width>
-                                                            <height>20</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                                <widget class="QCheckBox">
-                                                    <property name="name">
-                                                        <cstring>EnableProfilesSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Enable method</string>
-                                                    </property>
-                                                </widget>
-                                            </hbox>
-                                        </widget>
-                                    </vbox>
-                                </widget>
-                                <widget class="QWidget">
-                                    <property name="name">
-                                        <cstring>tab</cstring>
-                                    </property>
-                                    <attribute name="title">
-                                        <string>Profiles/Documents</string>
-                                    </attribute>
-                                    <vbox>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>Configure</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QPushButton">
                                         <property name="name">
-                                            <cstring>unnamed</cstring>
+                                            <cstring>AboutMeasure</cstring>
                                         </property>
-                                        <widget class="QLayoutWidget">
-                                            <property name="name">
-                                                <cstring>layout4_2_2_2</cstring>
-                                            </property>
-                                            <hbox>
-                                                <property name="name">
-                                                    <cstring>unnamed</cstring>
-                                                </property>
-                                                <widget class="QLabel">
-                                                    <property name="name">
-                                                        <cstring>textLabel1_3_2_2</cstring>
-                                                    </property>
-                                                    <property name="sizePolicy">
-                                                        <sizepolicy>
-                                                            <hsizetype>0</hsizetype>
-                                                            <vsizetype>5</vsizetype>
-                                                            <horstretch>0</horstretch>
-                                                            <verstretch>0</verstretch>
-                                                        </sizepolicy>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Current Method</string>
-                                                    </property>
-                                                    <property name="toolTip" stdset="0">
-                                                        <string>Choose current method</string>
-                                                    </property>
-                                                </widget>
-                                                <spacer>
-                                                    <property name="name">
-                                                        <cstring>spacer4_3_2_2</cstring>
-                                                    </property>
-                                                    <property name="orientation">
-                                                        <enum>Horizontal</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>Fixed</enum>
-                                                    </property>
-                                                    <property name="sizeHint">
-                                                        <size>
-                                                            <width>20</width>
-                                                            <height>20</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                                <widget class="QComboBox">
-                                                    <property name="name">
-                                                        <cstring>CurrentProfilesDocsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="toolTip" stdset="0">
-                                                        <string>Choose current method</string>
-                                                    </property>
-                                                </widget>
-                                            </hbox>
-                                        </widget>
-                                        <widget class="QListView">
-                                            <column>
-                                                <property name="text">
-                                                    <string>Profiles/Documents Similarities Methods</string>
-                                                </property>
-                                                <property name="clickable">
-                                                    <bool>true</bool>
-                                                </property>
-                                                <property name="resizable">
-                                                    <bool>true</bool>
-                                                </property>
-                                            </column>
-                                            <property name="name">
-                                                <cstring>ProfilesDocsSims</cstring>
-                                            </property>
-                                            <property name="resizePolicy">
-                                                <enum>Manual</enum>
-                                            </property>
-                                            <property name="resizeMode">
-                                                <enum>AllColumns</enum>
-                                            </property>
-                                        </widget>
-                                        <widget class="QLayoutWidget">
-                                            <property name="name">
-                                                <cstring>layout3_3_2_2</cstring>
-                                            </property>
-                                            <hbox>
-                                                <property name="name">
-                                                    <cstring>unnamed</cstring>
-                                                </property>
-                                                <widget class="QPushButton">
-                                                    <property name="name">
-                                                        <cstring>ConfigProfilesDocsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Configure</string>
-                                                    </property>
-                                                </widget>
-                                                <widget class="QPushButton">
-                                                    <property name="name">
-                                                        <cstring>AboutProfilesDocsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>About</string>
-                                                    </property>
-                                                </widget>
-                                                <spacer>
-                                                    <property name="name">
-                                                        <cstring>spacer3_3_2_2</cstring>
-                                                    </property>
-                                                    <property name="orientation">
-                                                        <enum>Horizontal</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>Expanding</enum>
-                                                    </property>
-                                                    <property name="sizeHint">
-                                                        <size>
-                                                            <width>40</width>
-                                                            <height>20</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                                <widget class="QCheckBox">
-                                                    <property name="name">
-                                                        <cstring>EnableProfilesDocsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Enable method</string>
-                                                    </property>
-                                                </widget>
-                                            </hbox>
-                                        </widget>
-                                    </vbox>
-                                </widget>
-                                <widget class="QWidget">
-                                    <property name="name">
-                                        <cstring>TabPage</cstring>
-                                    </property>
-                                    <attribute name="title">
-                                        <string>Communities/Documents</string>
-                                    </attribute>
-                                    <vbox>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>About</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
                                         <property name="name">
-                                            <cstring>unnamed</cstring>
+                                            <cstring>spacer3_3_2_2_2_2</cstring>
                                         </property>
-                                        <widget class="QLayoutWidget">
-                                            <property name="name">
-                                                <cstring>layout4_2_2_2_2</cstring>
-                                            </property>
-                                            <hbox>
-                                                <property name="name">
-                                                    <cstring>unnamed</cstring>
-                                                </property>
-                                                <widget class="QLabel">
-                                                    <property name="name">
-                                                        <cstring>textLabel1_3_2_2_2</cstring>
-                                                    </property>
-                                                    <property name="sizePolicy">
-                                                        <sizepolicy>
-                                                            <hsizetype>0</hsizetype>
-                                                            <vsizetype>5</vsizetype>
-                                                            <horstretch>0</horstretch>
-                                                            <verstretch>0</verstretch>
-                                                        </sizepolicy>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Current Method</string>
-                                                    </property>
-                                                    <property name="toolTip" stdset="0">
-                                                        <string>Choose current method</string>
-                                                    </property>
-                                                </widget>
-                                                <spacer>
-                                                    <property name="name">
-                                                        <cstring>spacer4_3_2_2_2</cstring>
-                                                    </property>
-                                                    <property name="orientation">
-                                                        <enum>Horizontal</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>Fixed</enum>
-                                                    </property>
-                                                    <property name="sizeHint">
-                                                        <size>
-                                                            <width>20</width>
-                                                            <height>20</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                                <widget class="QComboBox">
-                                                    <property name="name">
-                                                        <cstring>CurrentGroupsDocsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="toolTip" stdset="0">
-                                                        <string>Choose current method</string>
-                                                    </property>
-                                                </widget>
-                                            </hbox>
-                                        </widget>
-                                        <widget class="QListView">
-                                            <column>
-                                                <property name="text">
-                                                    <string>Groups/Documents Similarities Methods</string>
-                                                </property>
-                                                <property name="clickable">
-                                                    <bool>true</bool>
-                                                </property>
-                                                <property name="resizable">
-                                                    <bool>true</bool>
-                                                </property>
-                                            </column>
-                                            <property name="name">
-                                                <cstring>GroupsDocsSims</cstring>
-                                            </property>
-                                            <property name="resizePolicy">
-                                                <enum>Manual</enum>
-                                            </property>
-                                            <property name="resizeMode">
-                                                <enum>AllColumns</enum>
-                                            </property>
-                                        </widget>
-                                        <widget class="QLayoutWidget">
-                                            <property name="name">
-                                                <cstring>layout3_3_2_2_2</cstring>
-                                            </property>
-                                            <hbox>
-                                                <property name="name">
-                                                    <cstring>unnamed</cstring>
-                                                </property>
-                                                <widget class="QPushButton">
-                                                    <property name="name">
-                                                        <cstring>ConfigGroupsDocsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Configure</string>
-                                                    </property>
-                                                </widget>
-                                                <widget class="QPushButton">
-                                                    <property name="name">
-                                                        <cstring>AboutGroupsDocsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>About</string>
-                                                    </property>
-                                                </widget>
-                                                <spacer>
-                                                    <property name="name">
-                                                        <cstring>spacer3_3_2_2_2</cstring>
-                                                    </property>
-                                                    <property name="orientation">
-                                                        <enum>Horizontal</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>Expanding</enum>
-                                                    </property>
-                                                    <property name="sizeHint">
-                                                        <size>
-                                                            <width>40</width>
-                                                            <height>20</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                                <widget class="QCheckBox">
-                                                    <property name="name">
-                                                        <cstring>EnableGroupsDocsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Enable method</string>
-                                                    </property>
-                                                </widget>
-                                            </hbox>
-                                        </widget>
-                                    </vbox>
-                                </widget>
-                                <widget class="QWidget">
-                                    <property name="name">
-                                        <cstring>TabPage</cstring>
-                                    </property>
-                                    <attribute name="title">
-                                        <string>Profiles/Communities</string>
-                                    </attribute>
-                                    <vbox>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="QCheckBox">
                                         <property name="name">
-                                            <cstring>unnamed</cstring>
+                                            <cstring>EnableMeasure</cstring>
                                         </property>
-                                        <widget class="QLayoutWidget">
-                                            <property name="name">
-                                                <cstring>layout4_2_2_2_2_3</cstring>
-                                            </property>
-                                            <hbox>
-                                                <property name="name">
-                                                    <cstring>unnamed</cstring>
-                                                </property>
-                                                <widget class="QLabel">
-                                                    <property name="name">
-                                                        <cstring>textLabel1_3_2_2_2_3</cstring>
-                                                    </property>
-                                                    <property name="sizePolicy">
-                                                        <sizepolicy>
-                                                            <hsizetype>0</hsizetype>
-                                                            <vsizetype>5</vsizetype>
-                                                            <horstretch>0</horstretch>
-                                                            <verstretch>0</verstretch>
-                                                        </sizepolicy>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Current Method</string>
-                                                    </property>
-                                                    <property name="toolTip" stdset="0">
-                                                        <string>Choose current method</string>
-                                                    </property>
-                                                </widget>
-                                                <spacer>
-                                                    <property name="name">
-                                                        <cstring>spacer4_3_2_2_2_3</cstring>
-                                                    </property>
-                                                    <property name="orientation">
-                                                        <enum>Horizontal</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>Fixed</enum>
-                                                    </property>
-                                                    <property name="sizeHint">
-                                                        <size>
-                                                            <width>20</width>
-                                                            <height>20</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                                <widget class="QComboBox">
-                                                    <property name="name">
-                                                        <cstring>CurrentProfilesGroupsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="toolTip" stdset="0">
-                                                        <string>Choose current method</string>
-                                                    </property>
-                                                </widget>
-                                            </hbox>
-                                        </widget>
-                                        <widget class="QListView">
-                                            <column>
-                                                <property name="text">
-                                                    <string>Profiles/Groups Similarities Methods</string>
-                                                </property>
-                                                <property name="clickable">
-                                                    <bool>true</bool>
-                                                </property>
-                                                <property name="resizable">
-                                                    <bool>true</bool>
-                                                </property>
-                                            </column>
-                                            <property name="name">
-                                                <cstring>ProfilesGroupsSims</cstring>
-                                            </property>
-                                            <property name="resizePolicy">
-                                                <enum>Manual</enum>
-                                            </property>
-                                            <property name="resizeMode">
-                                                <enum>AllColumns</enum>
-                                            </property>
-                                        </widget>
-                                        <widget class="QLayoutWidget">
-                                            <property name="name">
-                                                <cstring>layout3_3_2_2_2_3</cstring>
-                                            </property>
-                                            <hbox>
-                                                <property name="name">
-                                                    <cstring>unnamed</cstring>
-                                                </property>
-                                                <widget class="QPushButton">
-                                                    <property name="name">
-                                                        <cstring>ConfigProfilesGroupsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Configure</string>
-                                                    </property>
-                                                </widget>
-                                                <widget class="QPushButton">
-                                                    <property name="name">
-                                                        <cstring>AboutProfilesGroupsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>About</string>
-                                                    </property>
-                                                </widget>
-                                                <spacer>
-                                                    <property name="name">
-                                                        <cstring>spacer3_3_2_2_2_3</cstring>
-                                                    </property>
-                                                    <property name="orientation">
-                                                        <enum>Horizontal</enum>
-                                                    </property>
-                                                    <property name="sizeType">
-                                                        <enum>Expanding</enum>
-                                                    </property>
-                                                    <property name="sizeHint">
-                                                        <size>
-                                                            <width>40</width>
-                                                            <height>20</height>
-                                                        </size>
-                                                    </property>
-                                                </spacer>
-                                                <widget class="QCheckBox">
-                                                    <property name="name">
-                                                        <cstring>EnableProfilesGroupsSims</cstring>
-                                                    </property>
-                                                    <property name="enabled">
-                                                        <bool>false</bool>
-                                                    </property>
-                                                    <property name="text">
-                                                        <string>Enable method</string>
-                                                    </property>
-                                                </widget>
-                                            </hbox>
-                                        </widget>
-                                    </vbox>
-                                </widget>
+                                        <property name="enabled">
+                                            <bool>false</bool>
+                                        </property>
+                                        <property name="text">
+                                            <string>Enable method</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
                             </widget>
                         </vbox>
                     </widget>
@@ -3238,102 +2750,6 @@
         <slot>accept()</slot>
     </connection>
     <connection>
-        <sender>ConfigProfilesSims</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigProfilesSims()</slot>
-    </connection>
-    <connection>
-        <sender>AboutProfilesSims</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutProfilesSims()</slot>
-    </connection>
-    <connection>
-        <sender>ProfilesSims</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeProfileCalc(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>EnableProfilesSims</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotProfilesSimsEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigProfilesDocsSims</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigProfilesDocsSims()</slot>
-    </connection>
-    <connection>
-        <sender>AboutProfilesDocsSims</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutProfilesDocsSims()</slot>
-    </connection>
-    <connection>
-        <sender>EnableProfilesDocsSims</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotProfilesDocsSimsEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>ProfilesDocsSims</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeProfilesDocsSims(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>GroupsDocsSims</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeGroupsDocsSims(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>EnableGroupsDocsSims</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotGroupsDocsSimsEnable(bool)</slot>
-    </connection>
-    <connection>
-        <sender>AboutGroupsDocsSims</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutGroupsDocsSims()</slot>
-    </connection>
-    <connection>
-        <sender>ConfigGroupsDocsSims</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigGroupsDocsSims()</slot>
-    </connection>
-    <connection>
-        <sender>ProfilesGroupsSims</sender>
-        <signal>selectionChanged(QListViewItem*)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>changeProfilesGroupsSims(QListViewItem*)</slot>
-    </connection>
-    <connection>
-        <sender>ConfigProfilesGroupsSims</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotConfigProfilesGroupsSims()</slot>
-    </connection>
-    <connection>
-        <sender>AboutProfilesGroupsSims</sender>
-        <signal>clicked()</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotAboutProfilesGroupsSims()</slot>
-    </connection>
-    <connection>
-        <sender>EnableProfilesGroupsSims</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>QPlugins</receiver>
-        <slot>slotProfilesGroupsSimsEnable(bool)</slot>
-    </connection>
-    <connection>
         <sender>Storages</sender>
         <signal>selectionChanged(QListViewItem*)</signal>
         <receiver>QPlugins</receiver>
@@ -3473,22 +2889,6 @@
     <slot>slotAboutEngine()</slot>
     <slot>slotConfigEngine()</slot>
     <slot>slotEngineEnable( bool state )</slot>
-    <slot>slotConfigProfilesSims()</slot>
-    <slot>slotAboutProfilesSims()</slot>
-    <slot>changeProfilesSims( QListViewItem * item )</slot>
-    <slot>slotProfilesSimsEnable( bool state )</slot>
-    <slot>changeProfilesDocsSims( QListViewItem * item )</slot>
-    <slot>changeGroupsDocsSims( QListViewItem * item )</slot>
-    <slot>slotAboutProfilesDocsSims()</slot>
-    <slot>slotAboutGroupsDocsSims()</slot>
-    <slot>slotConfigProfilesDocsSims()</slot>
-    <slot>slotConfigGroupsDocsSims()</slot>
-    <slot>slotProfilesDocsSimsEnable( bool state )</slot>
-    <slot>slotGroupsDocsSimsEnable( bool state )</slot>
-    <slot>changeProfilesGroupsSims( QListViewItem * item )</slot>
-    <slot>slotAboutProfilesGroupsSims()</slot>
-    <slot>slotConfigProfilesGroupsSims()</slot>
-    <slot>slotProfilesGroupsSimsEnable( bool state )</slot>
     <slot>changeStorage( QListViewItem * item )</slot>
     <slot>slotAboutStorage()</slot>
     <slot>slotConfigStorage()</slot>
