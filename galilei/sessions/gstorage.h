@@ -178,7 +178,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GStorage(GFactoryStorage* fac) throw(std::bad_alloc,GException);
+	GStorage(GFactoryStorage* fac);
 
 	//-----------------------------------------------------
 	/** @name General Methods
@@ -207,7 +207,7 @@ public:
 	* @param type            Type of the objects.
 	* @return Number of objects.
 	*/
-	virtual unsigned int GetNbSaved(tObjType type) throw(GException)=0;
+	virtual unsigned int GetNbSaved(tObjType type)=0;
 
 	/**
 	* Are all the object loaded or just some of them (modified or because
@@ -251,13 +251,13 @@ public:
 	* data.
 	* @param name            Name of the dummy object.
 	*/
-	virtual void CreateDummy(R::RString name) throw(GException)=0;
+	virtual void CreateDummy(R::RString name)=0;
 
 	/**
 	* Delete all the data of a given dummy table.
 	* @ param name           Name of the dummy object.
 	*/
-	virtual void ClearDummy(R::RString name) throw(GException)=0;
+	virtual void ClearDummy(R::RString name)=0;
 
 	/**
 	* Add a dummy entry into  a dummy table;
@@ -266,7 +266,7 @@ public:
 	* @param desc            Description of the dymmy entry.
 	* @param parentid        Identificator of the parent.
 	*/
-	virtual void AddDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid) throw(GException)=0;
+	virtual void AddDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid)=0;
 
 	/**
 	* Select a dummy entry from a dummy table;
@@ -276,7 +276,7 @@ public:
 	* @param parentid        Identificator of the parent.
 	* @param filter          Filter to set the fields on which the select is done.
 	*/
-	virtual R::RQuery* SelectDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException)=0;
+	virtual R::RQuery* SelectDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter)=0;
 
 	/**
 	* Clear a dummy entry from a dummy table;
@@ -286,7 +286,7 @@ public:
 	* @param parentid        Identificator of the parent.
 	* @param filter          Filter to set the fields on which the select is done.
 	*/
-	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException)=0;
+	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter)=0;
 
 	/**
 	* Load the description of a given object.
@@ -300,14 +300,14 @@ public:
 	/**
 	* Load the Subjects.
 	*/
-	virtual void LoadSubjects(void) throw(std::bad_alloc,GException)=0;
+	virtual void LoadSubjects(void)=0;
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
 	* can be a SQL file.
 	* @param filename        Name of the file.
 	*/
-	virtual void ExecuteData(const R::RString& filename) throw(GException)=0;
+	virtual void ExecuteData(const R::RString& filename)=0;
 
 	/**
 	* Prepare a given number of suggestions for a test.
@@ -334,7 +334,7 @@ public:
 	* @param data            Data.
 	* @param dict            Dictionary.
 	*/
-	virtual void AssignId(GData* data,const GDict* dict) throw(GException)=0;
+	virtual void AssignId(GData* data,const GDict* dict)=0;
 
 	/**
 	* Assign an identifier to a new document.
@@ -348,7 +348,7 @@ public:
 	* @param lang            Languague.
 	* @param s               Is it a stop list.
 	*/
-	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException)=0;
+	virtual void LoadDic(GDict* &dic,GLang* lang,bool s)=0;
 
 	/**
 	* Load an indexer.
@@ -362,14 +362,14 @@ public:
 	* @param id              Idenfificator of the word.
 	* @param code            Code of the languague.
 	*/
-	virtual R::RString LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException)=0;
+	virtual R::RString LoadWord(unsigned int id,const char* code)=0;
 
 	/**
 	* Load the identificator of a specific word from a dictionary.
 	* @param word            Word.
 	* @param code            Code of the languague.
 	*/
-	virtual unsigned int LoadWord(const R::RString word,const char* code) throw(std::bad_alloc,GException)=0;
+	virtual unsigned int LoadWord(const R::RString word,const char* code)=0;
 
 	/**
 	* Method that load a document that is stored.
@@ -381,14 +381,14 @@ public:
 	* Method that load the documents from where they are stored. This method
 	* must be overloaded.
 	*/
-	virtual void LoadDocs(void) throw(std::bad_alloc,GException)=0;
+	virtual void LoadDocs(void)=0;
 
 	/**
 	* Save a data in the database.
 	* @param data            Data.
 	* @param lang            Languague.
 	*/
-	virtual void SaveData(GData* data,GLang* lang)  throw(std::bad_alloc,GException)=0;
+	virtual void SaveData(GData* data,GLang* lang)=0;
 
 	/**
 	* Save the references of a given object type and for a given information
@@ -414,7 +414,7 @@ public:
 	* overloaded.
 	* @param doc             Document to save.
 	*/
-	virtual void SaveDoc(GDoc* doc) throw(GException)=0;
+	virtual void SaveDoc(GDoc* doc)=0;
 
 	//@} Documents
 
@@ -427,7 +427,7 @@ public:
 	/**
 	* Load the subprofiles (and the profiles and the users).
 	*/
-	virtual void LoadUsers(void) throw(std::bad_alloc,GException)=0;
+	virtual void LoadUsers(void)=0;
 
 	/**
 	* Method that load a user that is stored.
@@ -462,23 +462,41 @@ public:
 	virtual void UpdateProfiles(unsigned int docid,GLang* lang)=0;
 
 	/**
+	* Assign an identifier to a new user.
+	* @param user            Pointer to the user.
+	*/
+	virtual void AssignId(GUser* user)=0;
+
+	/**
+	* Assign an identifier to a new profile.
+	* @param p               Pointer to the profile.
+	*/
+	virtual void AssignId(GProfile* p)=0;
+
+	/**
 	* Save a profile.
 	* @param prof            Profile to save.
 	*/
-	virtual void SaveProfile(GProfile* prof) throw(GException)=0;
+	virtual void SaveProfile(GProfile* prof)=0;
 
 	/**
 	* Save profiles in history
 	* @param historicID      Identificator of the historic.
 	*/
-	virtual void SaveHistoricProfiles(unsigned int historicID) throw(GException)=0;
+	virtual void SaveHistoricProfiles(unsigned int historicID)=0;
+
+	/**
+	* Assign an identifier to a new subprofile.
+	* @param sub             Subprofile.
+	*/
+	virtual void AssignId(GSubProfile* sub)=0;
 
 	/**
 	* Save information about the groupement (Group and attachment date) of
 	* a subprofile. For a complete save, call Save(const GProfile*).
 	* @param sub             Subprofile to save.
 	*/
-	virtual void SaveSubProfile(GSubProfile* sub) throw(GException)=0;
+	virtual void SaveSubProfile(GSubProfile* sub)=0;
 
 	/**
 	* Add a suggestion for a given profile and a given test.
@@ -501,7 +519,7 @@ public:
 	/**
 	* Load the groups.
 	*/
-	virtual void LoadGroups(void) throw(std::bad_alloc,GException)=0;
+	virtual void LoadGroups(void)=0;
 
 	/**
 	* Method that load a group that is stored.
@@ -514,7 +532,7 @@ public:
 	* @param historicID      Identificator of the historic.
 	* @return Pointer to a historic group.
 	*/
-	virtual GGroupsHistory* LoadAnHistoricGroups(unsigned int historicID) throw(std::bad_alloc,GException)=0;
+	virtual GGroupsHistory* LoadAnHistoricGroups(unsigned int historicID)=0;
 
 	/**
 	* Load the historic groups.
@@ -533,7 +551,7 @@ public:
 	/**
 	* Returns the number of historic groups stored in the database.
 	*/
-	virtual unsigned int GetHistorySize(void) throw(GException)=0;
+	virtual unsigned int GetHistorySize(void)=0;
 
 	/**
 	* A subprofile was updated and the corresponding groups must be updated.
@@ -542,14 +560,20 @@ public:
 	virtual void UpdateGroups(unsigned int subid)=0;
 
 	/**
+	* Assign an identifier to a new group.
+	* @param grp            Group.
+	*/
+	virtual void AssignId(GGroup* grp)=0;
+
+	/**
 	* Save the groups of the session.
 	*/
-	virtual void SaveGroups(void) throw(GException)=0;
+	virtual void SaveGroups(void)=0;
 
 	/**
 	* Save the groups in history.
 	*/
-	virtual void SaveGroupsHistory(void) throw(GException)=0;
+	virtual void SaveGroupsHistory(void)=0;
 
 	/**
 	* Add a suggestion for a given community and a given test.
@@ -631,7 +655,7 @@ public:
 	*/
 	virtual void DisablePlugIn(GStorage* plug);
 
-	
+
 	/**
 	* Add a specific command
 	*/

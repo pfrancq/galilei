@@ -108,7 +108,7 @@ GStorageCmd::~GStorageCmd(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorage::GStorage(GFactoryStorage* fac) throw(std::bad_alloc,GException)
+GStorage::GStorage(GFactoryStorage* fac)
 	: GPlugin<GFactoryStorage>(fac), LoadAll(true), Filter(RDate::GetToday()), Filtering(false),
 	  AllMemory(true), Commands(30,15)
 {
@@ -215,10 +215,10 @@ GStorageManager::GStorageManager(void)
 //------------------------------------------------------------------------------
 void GStorageManager::EnablePlugIn(GStorage* plug)
 {
-	//enable plugin
+	// Enable plugin
 	GPluginManager<GStorageManager,GFactoryStorage,GStorage>::EnablePlugIn(plug);
 
-	//dispatch commands for this plugin
+	// Dispatch commands for this plugin
 	RCursor<GStorageCmd> Cur(Commands);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
@@ -231,7 +231,7 @@ void GStorageManager::EnablePlugIn(GStorage* plug)
 //------------------------------------------------------------------------------
 void GStorageManager::DisablePlugIn(GStorage* plug)
 {
-	//disable plugin
+	// Disable plugin
 	GPluginManager<GStorageManager,GFactoryStorage,GStorage>::DisablePlugIn(plug);
 }
 
@@ -239,11 +239,11 @@ void GStorageManager::DisablePlugIn(GStorage* plug)
 //------------------------------------------------------------------------------
 bool GStorageManager::InsertCmd(GStorageCmd* cmd)
 {
-	///register command in commands container
+	// Register command in commands container
 	if (Commands.GetPtr(*cmd))
-		return false;	
+		return false;
 	Commands.InsertPtr(cmd);
-	
+
 	//get current plugin and test if command must be inserted into it
 	GStorage* store=GetCurrentMethod();
 	if(store && store->GetFactory()->GetName()==cmd->GetStorage())
