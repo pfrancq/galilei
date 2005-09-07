@@ -362,7 +362,7 @@ public:
 	GProfile* GetProfile(const unsigned int id,bool load=true) const;
 
 	/**
-	* Assign an identifier to a new user.
+	* Assign an identifier to a new profile.
 	* @param p               Pointer to the profile.
 	*/
 	void AssignId(GProfile* p);
