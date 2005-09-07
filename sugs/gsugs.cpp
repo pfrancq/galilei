@@ -48,6 +48,8 @@
 #include <ggroup.h>
 #include <glang.h>
 #include <gstorage.h>
+#include <gpluginmanagers.h>
+#include <gmeasure.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -67,7 +69,7 @@ GSugs::GSugs(GFactoryPostGroup* fac) throw(bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GSugs::CreateParams(GParams* params)
+void GSugs::CreateParams(GParams*)
 {
 }
 
@@ -99,11 +101,13 @@ void GSugs::Run(void) throw(GException)
 	RCursor<GSubProfile> Sub;
 	RCursor<GFdbk> Doc;
 	unsigned int i;
-	char tmp[10];
 
 	// Clear the table
 	RDate Now(RDate::GetToday());
 	Session->GetStorage()->CreateSugs(Now);
+
+	// Similarities
+	GMeasure* ProfilesDocsSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 
 	// -1- Store sugestion with description= S+order
 	// Go through the groups
@@ -115,7 +119,7 @@ void GSugs::Run(void) throw(GException)
 		for(Sub.Start();!Sub.End();Sub.Next())
 		{
 			// Get all relevant documents ordered
-			Grps()->NotJudgedDocsRelList(&Docs,Sub(),Session);
+			Grps()->NotJudgedDocsRelList(ProfilesDocsSims,&Docs,Sub(),Session);
 
 			// Store them in the database
 			Doc.Set(Docs);
