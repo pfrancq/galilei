@@ -842,6 +842,7 @@ void GStorageMySQL::LoadSubjects(void)
 		for(profiles.Start();!profiles.End();profiles.Next())
 		{
 			GProfile* prof=Session->GetProfile(atoi(profiles[0]));
+			if(!prof) continue;
 			Session->GetSubjects()->InsertProfileSubject(prof,atoi(profiles[1]));
 		}
 		if(Session->GetSlot())
