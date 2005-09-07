@@ -75,7 +75,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorageMySQL::GStorageMySQL(GFactoryStorage* fac) throw(std::bad_alloc,GException)
+GStorageMySQL::GStorageMySQL(GFactoryStorage* fac)
 	: GStorage(fac), Db(0)
 {
 }
@@ -142,7 +142,7 @@ void GStorageMySQL::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::GetCount(RString tbl) throw(RMySQLError)
+unsigned int GStorageMySQL::GetCount(RString tbl)
 {
 	RString c;
 	RString sSql("SELECT COUNT(*) FROM "+tbl);
@@ -156,7 +156,7 @@ unsigned int GStorageMySQL::GetCount(RString tbl) throw(RMySQLError)
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::GetMax(RString tbl,RString fld) throw(RMySQLError)
+unsigned int GStorageMySQL::GetMax(RString tbl,RString fld)
 {
 	RString sSql("SELECT MAX("+fld+") FROM "+tbl);
 	RString c;
@@ -179,7 +179,7 @@ RString GStorageMySQL::GetMySQLToDate(RString date)
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::GetNbSaved(tObjType type) throw(GException)
+unsigned int GStorageMySQL::GetNbSaved(tObjType type)
 {
 	try
 	{
@@ -215,7 +215,7 @@ unsigned int GStorageMySQL::GetNbSaved(tObjType type) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AssignId(GData* data,const GDict* dict) throw(GException)
+void GStorageMySQL::AssignId(GData* data,const GDict* dict)
 {
 	RString sSql;
 
@@ -266,7 +266,7 @@ void GStorageMySQL::AssignId(GDoc* doc)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException)
+void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s)
 {
 	unsigned int MaxCount=100;
 	unsigned int MaxId=0;
@@ -436,7 +436,7 @@ void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 
 
 //------------------------------------------------------------------------------
-RString GStorageMySQL::LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException)
+RString GStorageMySQL::LoadWord(unsigned int id,const char* code)
 {
 	try
 	{
@@ -458,7 +458,7 @@ RString GStorageMySQL::LoadWord(unsigned int id,const char* code) throw(std::bad
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::LoadWord(const R::RString word,const char* code) throw(std::bad_alloc,GException)
+unsigned int GStorageMySQL::LoadWord(const R::RString word,const char* code)
 {
 	try
 	{
@@ -480,7 +480,7 @@ unsigned int GStorageMySQL::LoadWord(const R::RString word,const char* code) thr
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveData(GData* data,GLang* lang)  throw(std::bad_alloc,GException)
+void GStorageMySQL::SaveData(GData* data,GLang* lang)
 {
 	RString Sql;
 
@@ -508,7 +508,13 @@ void GStorageMySQL::SaveData(GData* data,GLang* lang)  throw(std::bad_alloc,GExc
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
+void GStorageMySQL::AssignId(GSubProfile* sub)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveSubProfile(GSubProfile* sub)
 {
 	RString sSql;
 	RCursor<GWeightInfo> Cur;
@@ -556,7 +562,7 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int historicID) throw(GException)
+void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int historicID)
 {
 	RCursor<GWeightInfo> Cur;
 
@@ -578,8 +584,20 @@ void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int histor
 }
 
 
- //------------------------------------------------------------------------------
-void GStorageMySQL::SaveProfile(GProfile* prof) throw(GException)
+//------------------------------------------------------------------------------
+void GStorageMySQL::AssignId(GUser* user)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::AssignId(GProfile* p)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveProfile(GProfile* prof)
 {
 	unsigned int profid;
 	unsigned int social;
@@ -717,7 +735,7 @@ GSubProfile* GStorageMySQL::LoadSubProfile(unsigned int subprofileid)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadUsers(void) throw(std::bad_alloc,GException)
+void GStorageMySQL::LoadUsers(void)
 {
 	GProfile* prof;
 	GLang* lang;
@@ -783,7 +801,7 @@ void GStorageMySQL::LoadUsers(void) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadSubjects(void) throw(std::bad_alloc,GException)
+void GStorageMySQL::LoadSubjects(void)
 {
 	RString sSql;
 	GSubject* subject;
@@ -952,7 +970,7 @@ GDoc* GStorageMySQL::LoadDoc(unsigned int docid)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadDocs(void) throw(std::bad_alloc,GException)
+void GStorageMySQL::LoadDocs(void)
 {
 	GDoc* doc;
 	GLang* lang;
@@ -999,7 +1017,7 @@ void GStorageMySQL::LoadDocs(void) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
+void GStorageMySQL::SaveDoc(GDoc* doc)
 {
 	RString sSql;
 	RString l;
@@ -1058,7 +1076,13 @@ void GStorageMySQL::SaveDoc(GDoc* doc) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveGroups(void) throw(GException)
+void GStorageMySQL::AssignId(GGroup* grp)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveGroups(void)
 {
 	RCursor<GWeightInfo> WordCur;
 	R::RCursor<GGroup> GroupsCursor;
@@ -1110,7 +1134,7 @@ void GStorageMySQL::SaveGroups(void) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveGroupsHistory(void) throw(GException)
+void GStorageMySQL::SaveGroupsHistory(void)
 {
 	R::RCursor<GGroup> GroupsCursor;
 	RCursor<GSubProfile> Sub;
@@ -1151,7 +1175,7 @@ void GStorageMySQL::SaveGroupsHistory(void) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveHistoricProfiles(unsigned int historicID) throw(GException)
+void GStorageMySQL::SaveHistoricProfiles(unsigned int historicID)
 {
 	try
 	{
@@ -1203,7 +1227,7 @@ GGroup* GStorageMySQL::LoadGroup(unsigned int groupid)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadGroups(void) throw(std::bad_alloc,GException)
+void GStorageMySQL::LoadGroups(void)
 {
 	GGroup* group;
 	R::RCursor<GGroup> GroupsCursor;
@@ -1242,7 +1266,7 @@ void GStorageMySQL::LoadGroups(void) throw(std::bad_alloc,GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::ExecuteData(const R::RString& filename) throw(GException)
+void GStorageMySQL::ExecuteData(const R::RString& filename)
 {
 	try
 	{
@@ -1271,7 +1295,7 @@ void GStorageMySQL::ExecuteData(const R::RString& filename) throw(GException)
 
 
 //------------------------------------------------------------------------------
-GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID) throw(std::bad_alloc,GException)
+GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 {
 	RString sSql;
 	GGroupHistory* grp;
@@ -1348,7 +1372,7 @@ void GStorageMySQL::LoadHistoricGroupsByDate(R::RString mindate, R::RString maxd
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::GetHistorySize(void) throw(GException)
+unsigned int GStorageMySQL::GetHistorySize(void)
 {
 	try
 	{
@@ -1524,7 +1548,7 @@ void GStorageMySQL::GetSugsTests(R::RContainer<R::RString,true,true>& res)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::CreateDummy(RString name) throw(GException)
+void GStorageMySQL::CreateDummy(RString name)
 {
 	RString sSql;
 
@@ -1542,7 +1566,7 @@ void GStorageMySQL::CreateDummy(RString name) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::ClearDummy(RString name) throw(GException)
+void GStorageMySQL::ClearDummy(RString name)
 {
 	try
 	{
@@ -1557,7 +1581,7 @@ void GStorageMySQL::ClearDummy(RString name) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddDummyEntry(RString name,unsigned int id,RString desc,unsigned int parentid) throw(GException)
+void GStorageMySQL::AddDummyEntry(RString name,unsigned int id,RString desc,unsigned int parentid)
 {
 	RString sSql;
 
@@ -1574,7 +1598,7 @@ void GStorageMySQL::AddDummyEntry(RString name,unsigned int id,RString desc,unsi
 
 
 //------------------------------------------------------------------------------
-RQuery* GStorageMySQL::SelectDummyEntry(RString name,unsigned int id,RString desc,unsigned int parentid,unsigned int filter) throw(GException)
+RQuery* GStorageMySQL::SelectDummyEntry(RString name,unsigned int id,RString desc,unsigned int parentid,unsigned int filter)
 {
 	RString sSql;
 	RQuery* select;
@@ -1620,7 +1644,7 @@ RQuery* GStorageMySQL::SelectDummyEntry(RString name,unsigned int id,RString des
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::ClearDummyEntry(RString name,unsigned int id,RString desc, unsigned int parentid,unsigned int filter) throw(GException)
+void GStorageMySQL::ClearDummyEntry(RString name,unsigned int id,RString desc, unsigned int parentid,unsigned int filter)
 {
 	RString sSql;
 

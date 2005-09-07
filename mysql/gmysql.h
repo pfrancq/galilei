@@ -82,7 +82,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GStorageMySQL(GFactoryStorage* fac) throw(std::bad_alloc,GException);
+	GStorageMySQL(GFactoryStorage* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -96,7 +96,7 @@ protected:
 	* @param tbl            Table to analyse.
 	* @returns Number of rows.
 	*/
-	virtual unsigned int GetCount(R::RString tbl) throw(R::RMySQLError);
+	virtual unsigned int GetCount(R::RString tbl);
 
 	/**
 	* Count the maximal value for a field of a table.
@@ -104,7 +104,7 @@ protected:
 	* @param fld            Field to analyse.
 	* @returns Maximal value.
 	*/
-	unsigned int GetMax(R::RString tbl,R::RString fld) throw(R::RMySQLError);
+	unsigned int GetMax(R::RString tbl,R::RString fld);
 
 	/**
 	* Transform a MySQL date into a C string, in particular when the
@@ -126,14 +126,14 @@ public:
 	* @param type            Type of the objects.
 	* @return Number of objects.
 	*/
-	virtual unsigned int GetNbSaved(tObjType type) throw(GException);
+	virtual unsigned int GetNbSaved(tObjType type);
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
 	* @param data           Data.
 	* @param dict           Dictionary.
 	*/
-	virtual void AssignId(GData* data,const GDict* dict) throw(GException);
+	virtual void AssignId(GData* data,const GDict* dict);
 
 	/**
 	* Assign an identifier to a new document.
@@ -187,7 +187,7 @@ public:
 	* @param lang           Languague.
 	* @param s              Is it a stop list.
 	*/
-	virtual void LoadDic(GDict* &dic,GLang* lang,bool s) throw(std::bad_alloc,GException);
+	virtual void LoadDic(GDict* &dic,GLang* lang,bool s);
 
 	/**
 	* Load an indexer.
@@ -201,21 +201,21 @@ public:
 	* @param id             Idenfificator of the word.
 	* @param code           Code of the languague.
 	*/
-	virtual R::RString LoadWord(unsigned int id,const char* code) throw(std::bad_alloc,GException);
+	virtual R::RString LoadWord(unsigned int id,const char* code);
 
 	/**
 	* Load the identificator of a specific word from a dictionary.
 	* @param word           Word.
 	* @param code           Code of the languague.
 	*/
-	virtual unsigned int LoadWord(const R::RString word,const char* code) throw(std::bad_alloc,GException);
+	virtual unsigned int LoadWord(const R::RString word,const char* code);
 
 	/**
 	* Save a data in the database.
 	* @param data            Data.
 	* @param lang            Languague.
 	*/
-	virtual void SaveData(GData* data,GLang* lang)  throw(std::bad_alloc,GException);
+	virtual void SaveData(GData* data,GLang* lang);
 
 	/**
 	* Method that load a document that is stored.
@@ -226,7 +226,7 @@ public:
 	/**
 	* Load the documents.
 	*/
-	virtual void LoadDocs(void) throw(std::bad_alloc,GException);
+	virtual void LoadDocs(void);
 
 	/**
 	* Method that load a user that is stored.
@@ -249,7 +249,7 @@ public:
 	/**
 	* Load the subprofiles (and profiles and users).
 	*/
-	virtual void LoadUsers(void) throw(std::bad_alloc,GException);
+	virtual void LoadUsers(void);
 
 	/**
 	* Method that load a group that is stored.
@@ -260,68 +260,92 @@ public:
 	/**
 	* Load the groups.
 	*/
-	virtual void LoadGroups(void) throw(std::bad_alloc,GException);
+	virtual void LoadGroups(void);
 
 	/**
 	* Load the Subjects.
 	*/
-	virtual void LoadSubjects(void) throw(std::bad_alloc,GException);
+	virtual void LoadSubjects(void);
 
 	/**
 	* Save a document.
 	* @param doc            Document to save.
 	*/
-	virtual void SaveDoc(GDoc* doc) throw(GException);
+	virtual void SaveDoc(GDoc* doc);
+
+	/**
+	* Assign an identifier to a new subprofile.
+	* @param sub             Subprofile.
+	*/
+	virtual void AssignId(GSubProfile* sub);
 
 	/**
 	* Save information about the groupement (Group and attachment date) of
 	* a subprofile. For a complete save, call Save(const GProfile*).
 	* @param sub        Subprofile to save.
 	*/
-	virtual void SaveSubProfile(GSubProfile* sub) throw(GException);
+	virtual void SaveSubProfile(GSubProfile* sub);
 
 	/**
 	* Save Subprofiles in histoty
 	* @param sub            Subprofile to save.
 	* @param historicID     Identificator of the historic.
 	*/
-	virtual void SaveSubProfileInHistory(GSubProfile* sub, unsigned int historicID) throw(GException);
+	virtual void SaveSubProfileInHistory(GSubProfile* sub, unsigned int historicID);
+
+	/**
+	* Assign an identifier to a new user.
+	* @param user            Pointer to the user.
+	*/
+	virtual void AssignId(GUser* user);
+
+	/**
+	* Assign an identifier to a new profile.
+	* @param p               Pointer to the profile.
+	*/
+	virtual void AssignId(GProfile* p);
 
 	/**
 	* Save a profile.
 	* @param prof       Profile to save.
 	*/
-	virtual void SaveProfile(GProfile* prof) throw(GException);
+	virtual void SaveProfile(GProfile* prof);
+
+	/**
+	* Assign an identifier to a new group.
+	* @param grp            Group.
+	*/
+	virtual void AssignId(GGroup* grp);
 
 	/**
 	* Save the groups description.
 	*/
-	virtual void SaveGroups(void) throw(GException);
+	virtual void SaveGroups(void);
 
 	/**
 	* Save the groups in history.
 	*/
-	virtual void SaveGroupsHistory(void) throw(GException);
+	virtual void SaveGroupsHistory(void);
 
 	/**
 	* Save the Profiles in history.
 	* @param historicID     Identificator of the historic.
 	*/
-	virtual void SaveHistoricProfiles(unsigned int historicID) throw(GException);
+	virtual void SaveHistoricProfiles(unsigned int historicID);
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
 	* can be a SQL file.
 	* @param filename       Name of the file.
 	*/
-	virtual void ExecuteData(const R::RString& filename) throw(GException);
+	virtual void ExecuteData(const R::RString& filename);
 
 	/**
 	* Load an historic groups.
 	* @param historicID     Identificator of the historic.
 	* @return Pointer to a historic group.
 	*/
-	GGroupsHistory* LoadAnHistoricGroups(unsigned int historicID) throw(std::bad_alloc,GException);
+	GGroupsHistory* LoadAnHistoricGroups(unsigned int historicID);
 
 	/**
 	* Load the historic groups.
@@ -333,7 +357,7 @@ public:
 	/**
 	* @return the number of historic groups stored in database.
 	*/
-	virtual unsigned int GetHistorySize(void) throw(GException);
+	virtual unsigned int GetHistorySize(void);
 
 	/**
 	* Prepare a given number of suggestions for a test.
@@ -383,13 +407,13 @@ public:
 	* Create a dummy table to store different kid of data.
 	* @param name              name of the dummy object.
 	*/
-	virtual void CreateDummy(R::RString name) throw(GException);
+	virtual void CreateDummy(R::RString name);
 
 	/**
 	* Delete all the data of a given dummy table.
 	* @param name              name of the dummy object.
 	*/
-	virtual void ClearDummy(R::RString name) throw(GException);
+	virtual void ClearDummy(R::RString name);
 
 	/**
 	* Add a dummy entry into a dummy table;
@@ -398,7 +422,7 @@ public:
 	* @param desc              Description of the dymmy entry.
 	* @param parentid          Identificator of the parent.
 	*/
-	virtual void AddDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid) throw(GException);
+	virtual void AddDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid);
 
 	/**
 	* Select a dummy entry from a dummy table;
@@ -408,7 +432,7 @@ public:
 	* @param parentid          Identificator of the parent.
 	* @param filter            Filter to set the fields on which the select is done.
 	*/
-	virtual R::RQuery* SelectDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException);
+	virtual R::RQuery* SelectDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter);
 
 	/**
 	* Clear a dummy entry from a dummy table;
@@ -418,7 +442,7 @@ public:
 	* @param parentid          Identificator of the parent.
 	* @param filter            Filter to set the fields on which the select is done.
 	*/
-	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter) throw(GException);
+	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter);
 
 	/**
 	* Create the parameters.
