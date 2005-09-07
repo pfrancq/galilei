@@ -43,6 +43,7 @@
 #include <glang.h>
 #include <gprofile.h>
 #include <gsubprofile.h>
+#include <gmeasure.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -612,6 +613,9 @@ void GSubjects::FdbksCycle(void)
 	// Apply Config
 	Apply();
 
+	// Similarities
+	GMeasure* ProfilesDocsSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+
 	// Go through the languages
 	Grps=Data->Session->GetGroups();
 	for(Grps.Start();!Grps.End();Grps.Next())
@@ -620,7 +624,7 @@ void GSubjects::FdbksCycle(void)
 		SubProfile=Grps()->GetSubProfiles();
 		for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
 		{
-			Grps()->NotJudgedDocsRelList(&Data->NewDocs,SubProfile(),Data->Session);
+			Grps()->NotJudgedDocsRelList(ProfilesDocsSims,&Data->NewDocs,SubProfile(),Data->Session);
 			RCursor<GFdbk> Cur(Data->NewDocs);
 			for(Cur.Start(),i=Data->NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
 			{

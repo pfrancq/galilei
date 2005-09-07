@@ -304,15 +304,15 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* 
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const
+void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const
 {
 	RCursor<GSubProfile> sub(*this);
 	RCursor<GFdbk> Fdbks;
 	tDocAssessment j;
 	RContainer<GFdbkRef,true,false> Docs(50,25);
 
-	// Similarities
-	GMeasure* ProfilesDocsSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+	if(!measure)
+		throw GException("No profiles/documents similarities");
 
 	// Clear container.
 	docs->Clear();
@@ -338,7 +338,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 				// Verify if already inserted in Docs.
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
-				Docs.InsertPtr(new GFdbkRef(Fdbks(),ProfilesDocsSims->GetMeasure(Fdbks()->GetDocId(),s->GetId())));
+				Docs.InsertPtr(new GFdbkRef(Fdbks(),measure->GetMeasure(Fdbks()->GetDocId(),s->GetId())));
 			}
 			continue;
 		}
@@ -356,7 +356,7 @@ void GGroup::NotJudgedDocsRelList(RContainer<GFdbk,false,false>* docs, GSubProfi
 			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDocId()))) continue;
 
 			// Insert it.
-			Docs.InsertPtr(new GFdbkRef(Fdbks(),ProfilesDocsSims->GetMeasure(Fdbks()->GetDocId(),s->GetId())));
+			Docs.InsertPtr(new GFdbkRef(Fdbks(),measure->GetMeasure(Fdbks()->GetDocId(),s->GetId())));
 		}
 	}
 
@@ -378,18 +378,21 @@ GSubProfile* GGroup::RelevantSubProfile(void) const
 	RCursor<GSubProfile> sub(*this);
 	double refsum,sum;
 
+	// Similarities
+	GMeasure* ProfilesSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
+
 	// If no objects -> No relevant one.
 	if(!R::RContainer<GSubProfile,false,true>::GetNb())
 		return(0);
 
 	// Suppose the first element is the most relevant.
 	rel=const_cast<GSubProfile*>(R::RContainer<GSubProfile,false,true>::operator[](0));
-	refsum=ComputeSumSim(rel);
+	refsum=ComputeSumSim(ProfilesSims,rel);
 
 	// Look if in the other objects, there is a better one
 	for(sub.Start();!sub.End();sub.Next())
 	{
-		sum=ComputeSumSim(sub());
+		sum=ComputeSumSim(ProfilesSims,sub());
 		if (sum>=refsum)
 		{
 			rel=sub();
@@ -403,20 +406,17 @@ GSubProfile* GGroup::RelevantSubProfile(void) const
 
 
 //------------------------------------------------------------------------------
-double GGroup::ComputeSumSim(const GSubProfile* s) const
+double GGroup::ComputeSumSim(GMeasure* measure,const GSubProfile* s) const
 {
 	double sum;
 
-	// Similarities
-	GMeasure* ProfilesSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
-
-	if(!ProfilesSims)
-		throw GException("No profiles/documents similarities");
+	if(!measure)
+		throw GException("No profiles similarities");
 	RCursor<GSubProfile> sub(*this);
 	for(sub.Start(),sum=0.0;!sub.End();sub.Next())
 	{
 		if(sub()==s) continue;
-		sum+=ProfilesSims->GetMeasure(s->GetId(),sub()->GetId());
+		sum+=measure->GetMeasure(s->GetId(),sub()->GetId());
 	}
 	return(sum);
 }

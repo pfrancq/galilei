@@ -240,12 +240,13 @@ public:
 	* Construct the list of all relevant documents of the subprofiles of a
 	* group not already assessed by a given subprofile and ordered in descending
 	* order of their similarity with the chosen subprofile.
+	* @param measure         The measure used to compute the similarities.
 	* @param docs            Documents not assessed.
 	* @param s               Subprofile.
 	* @param session         Session.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(R::RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const;
+	void NotJudgedDocsRelList(GMeasure* measure,R::RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const;
 
 	/**
 	* Compute the relevant subprofile, i.e. the subprofiles whith the highest
@@ -264,10 +265,11 @@ public:
 	/**
 	* Compute the sum of the similarities of a given subprofile to all the
 	* others.
+	* @param measure         The measure used to compute the similarities.
 	* @param s               Subprofile used as reference.
 	* @returns result.
 	*/
-	double ComputeSumSim(const GSubProfile* s) const;
+	double ComputeSumSim(GMeasure* measure,const GSubProfile* s) const;
 
 	/**
 	* Clear the vector representing the group.
