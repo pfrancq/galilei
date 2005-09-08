@@ -355,7 +355,8 @@ void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
 	if((Filtering)&&(!ValidWord(word))) return;
 
 	// Find the section of double hash table concerned by the current word.
-	Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
+	//Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
+	Section=(*(*Weights)[WordWeight::HashIndex(word)])[WordWeight::HashIndex2(word)];
 
 	// Find the index where the word is or must be.
 	Index=Section->GetIndex<const RString>(word,Find);
