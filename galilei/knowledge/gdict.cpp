@@ -326,17 +326,17 @@ unsigned int GDict::GetRef(tObjType ObjType)
 //------------------------------------------------------------------------------
 void GDict::Clear(tObjType ObjType)
 {
-	RContainer<GData,true,true>*** ptr;
-	RContainer<GData,true,true>** ptr2;
-	unsigned int i,j;
-
-	for(i=27+1,ptr=Hash;--i;ptr++)
-		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+	RCursor<GDict::Hash> Cur(GetCursor());
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		RCursor<GDict::Hash2> Cur2(*Cur());
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			RCursor<GData> datas(**ptr2);
-			for(datas.Start();!datas.End();datas.Next())
-				datas()->Clear(ObjType);
+			RCursor<GData> Cur3(*Cur2());
+			for(Cur3.Start();!Cur3.End();Cur3.Next())
+				Cur3()->Clear(ObjType);
 		}
+	}
 
 	switch(ObjType)
 	{
