@@ -272,7 +272,7 @@ void KViewStems::ConstructTh(char index,char index2)
 	GrWord* gptr;
 
 	thGroups->clear();
-	ptr2=Roots->Hash[index][index2];
+	ptr2=(*(*Roots)[index])[index2];
 	RCursor<GrWord> cGr(*ptr2);
 	for(cGr.Start();!cGr.End();cGr.Next())
 	{
@@ -299,7 +299,7 @@ void KViewStems::ConstructPr(char index,char index2)
 	GrWord* gptr;
 
 	prGroups->clear();
-	ptr2=Stems->Hash[index][index2];
+	ptr2=(*(*Stems)[index])[index2];
 	RCursor<GrWord> cGr(*ptr2);
 	for(cGr.Start();!cGr.End();cGr.Next())
 	{
@@ -344,179 +344,179 @@ unsigned int KViewStems::GetNbWords(GrWord* grp1,GrWord* grp2)
 //-----------------------------------------------------------------------------
 void KViewStems::ComputeRecallPrecision(void)
 {
-	GrWord* root;
-	GrWord* stem;
-	unsigned int NbStem;
-	unsigned int InStem;
-	unsigned int InRoot;
-	double NbWords;
-	char tmp[100];
-	RContainer<GrWord,true,true>*** ptr;
-	RContainer<GrWord,true,true>** ptr2;
-	unsigned int i,j;
-
-	Precision=Recall=0.0;
-	NbWords=0.0;
-	for(i=27+1,ptr=Stems->Hash;--i;ptr++)
-	{
-		for(j=27+1,ptr2=*ptr;--j;ptr2++)
-		{
-			RCursor<GrWord> cWord(**ptr2);
-			for(cWord.Start();!cWord.End();cWord.Next())
-			{
-				stem=cWord();
-				NbStem=stem->Words.GetNb();
-				NbWords+=NbStem;
-				stem->Precision=stem->Recall=0.0;
-				if(!NbStem) continue;
-				if(NbStem==1)
-				{
-					root=stem->Words[0]->Root;
-					if(!root) continue;
-					stem->Precision=1.0;
-					if(root->Words.GetNb()==1);
-						stem->Recall=1.0;
-					Precision+=stem->Precision;
-					Recall+=stem->Recall;
-				}
-				else
-				{
-					RCursor<Word> cWord2(stem->Words);
-					for(cWord2.Start();!cWord2.End();cWord2.Next())
-					{
-						root=cWord2()->Root;
-						if(!root) continue;
-						if(root->Words.GetNb()==1)
-						{
-							stem->Recall+=1.0;
-						}
-						else
-						{
-							InRoot=GetNbWords(root,stem)-1;
-							if(InRoot)
-								stem->Precision+=((double)(InRoot))/((double)(NbStem-1));
-							InStem=GetNbWords(stem,root)-1;
-							if(InStem)
-								stem->Recall+=((double)(InStem))/((double)(root->Words.GetNb()-1));
-						}
-					}
-					Precision+=stem->Precision;
-					Recall+=stem->Recall;
-					stem->Precision/=NbStem;
-					stem->Recall/=NbStem;
-				}
-			}
-		}
-	}
-	if(NbWords)
-	{
-		Precision/=NbWords;
-		Recall/=NbWords;
-	}
-	sprintf(tmp," - Precision=%1.3f - Recall=%1.3f",Precision,Recall);
-	setCaption(caption()+tmp);
+// 	GrWord* root;
+// 	GrWord* stem;
+// 	unsigned int NbStem;
+// 	unsigned int InStem;
+// 	unsigned int InRoot;
+// 	double NbWords;
+// 	char tmp[100];
+// 	RContainer<GrWord,true,true>*** ptr;
+// 	RContainer<GrWord,true,true>** ptr2;
+// 	unsigned int i,j;
+//
+// 	Precision=Recall=0.0;
+// 	NbWords=0.0;
+// 	for(i=27+1,ptr=Stems->Hash;--i;ptr++)
+// 	{
+// 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+// 		{
+// 			RCursor<GrWord> cWord(**ptr2);
+// 			for(cWord.Start();!cWord.End();cWord.Next())
+// 			{
+// 				stem=cWord();
+// 				NbStem=stem->Words.GetNb();
+// 				NbWords+=NbStem;
+// 				stem->Precision=stem->Recall=0.0;
+// 				if(!NbStem) continue;
+// 				if(NbStem==1)
+// 				{
+// 					root=stem->Words[0]->Root;
+// 					if(!root) continue;
+// 					stem->Precision=1.0;
+// 					if(root->Words.GetNb()==1);
+// 						stem->Recall=1.0;
+// 					Precision+=stem->Precision;
+// 					Recall+=stem->Recall;
+// 				}
+// 				else
+// 				{
+// 					RCursor<Word> cWord2(stem->Words);
+// 					for(cWord2.Start();!cWord2.End();cWord2.Next())
+// 					{
+// 						root=cWord2()->Root;
+// 						if(!root) continue;
+// 						if(root->Words.GetNb()==1)
+// 						{
+// 							stem->Recall+=1.0;
+// 						}
+// 						else
+// 						{
+// 							InRoot=GetNbWords(root,stem)-1;
+// 							if(InRoot)
+// 								stem->Precision+=((double)(InRoot))/((double)(NbStem-1));
+// 							InStem=GetNbWords(stem,root)-1;
+// 							if(InStem)
+// 								stem->Recall+=((double)(InStem))/((double)(root->Words.GetNb()-1));
+// 						}
+// 					}
+// 					Precision+=stem->Precision;
+// 					Recall+=stem->Recall;
+// 					stem->Precision/=NbStem;
+// 					stem->Recall/=NbStem;
+// 				}
+// 			}
+// 		}
+// 	}
+// 	if(NbWords)
+// 	{
+// 		Precision/=NbWords;
+// 		Recall/=NbWords;
+// 	}
+// 	sprintf(tmp," - Precision=%1.3f - Recall=%1.3f",Precision,Recall);
+// 	setCaption(caption()+tmp);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewStems::ComputeTotal(void)
 {
-	GrWord* root;
-	unsigned int NbRows,NbCols;                   // Rows and Cols for matrix
-	unsigned int NbWords;                         // Number of Words.
-	double* VectorRows;                           // Sum of the rows of the matrix
-	double* VectorCols;                           // Sum of the columns of the matrix
-	double* VectorColsTemp;                       // temp sum of the columns of the matrix
-	double* vec;
-	unsigned int row,col;
-	double a,b,c,d,num,den;
-	RContainer<GrWord,true,true>*** ptr;
-	RContainer<GrWord,true,true>** ptr2;
-	unsigned int i,j;
-	char tmp[100];
-
-	// Init part
-	NbWords=0;
-	Total=0.0;
-	NbRows=Roots->GetNb();
-	NbCols=Stems->GetNb();
-	if((!NbRows)||(!NbCols)) return;
-	VectorRows=new double[NbRows];
-	VectorCols=new double[NbCols];
-	VectorColsTemp=new double[NbCols];
-	memset(VectorRows,0,NbRows*sizeof(double));
-	memset(VectorCols,0,NbCols*sizeof(double));
-	a=b=c=d=0.0;
-
-	// Construction of the container for relation between root and rows in the matrix.
-	RContainer<GrWordId,true,true> RootsId(NbRows,NbRows/2);
-	for(i=27+1,row=0,ptr=Roots->Hash;--i;ptr++)
-		for(j=27+1,ptr2=*ptr;--j;ptr2++)
-		{
-			RCursor<GrWord> cGr(**ptr2);
-			for(cGr.Start();!cGr.End();cGr.Next())
-				RootsId.InsertPtr(new GrWordId(cGr(),row++));
-		}
-
-	// Construction of the container for relation between stem and column in the matrix.
-	RContainer<GrWordId,true,true> StemsId(NbCols,NbCols/2);
-	for(i=27+1,col=0,ptr=Stems->Hash;--i;ptr++)
-		for(j=27+1,ptr2=*ptr;--j;ptr2++)
-		{
-			RCursor<GrWord> cGr(**ptr2);
-			for(cGr.Start();!cGr.End();cGr.Next())
-				StemsId.InsertPtr(new GrWordId(cGr(),col++));
-		}
-
-	// Element i,j of the matrix is the number of words who are in the ith root
-	// and jth stem.
-	for(i=27+1,ptr=Roots->Hash;--i;ptr++)
-	{
-		for(j=27+1,ptr2=*ptr;--j;ptr2++)
-		{
-			RCursor<GrWord> cGr(**ptr2);
-			for(cGr.Start();!cGr.End();cGr.Next())
-			{
-				memset(VectorColsTemp,0,NbCols*sizeof(double));
-				root=cGr();
-				row=RootsId.GetPtr<const GrWord*>(root)->Pos;
-				// for each word in this root add 1 in the case corresponding to the
-				// id of the computedgroup where the subprofile is.
-				RCursor<Word> cWord(root->Words);
-				for(cWord.Start();!cWord.End();cWord.Next())
-				{
-					col=StemsId.GetPtr<const GrWord*>(cWord()->Stem)->Pos;
-					VectorRows[row]++;
-					VectorCols[col]++;
-					VectorColsTemp[col]++;
-					NbWords++;
-				}
-				for(col=NbCols+1,vec=VectorColsTemp;--col;vec++)
-					a+=(((*vec)*((*vec)-1))/2);
-			}
-		}
-	}
-
-	// Calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
-	for(col=NbCols+1,vec=VectorCols;--col;vec++)
-		b+=(((*vec)*((*vec)-1))/2);
-	for(row=NbRows+1,vec=VectorRows;--row;vec++)
-		c+=(((*vec)*((*vec)-1))/2);
-	d=(NbWords*(NbWords-1))/2;
-	num=a-((b*c)/d);
-	den=(0.5*(b+c))-(b*c/d);
-	if(den)
-		Total=num/den;
-	else
-		Total=1.0;
-
-	//delete the vectors
-	if (VectorRows) delete[] VectorRows;
-	if (VectorCols) delete[] VectorCols;
-	if (VectorColsTemp) delete[] VectorColsTemp;
-
-	sprintf(tmp," - Total=%1.3f",Total);
-	setCaption(caption()+tmp);
+// 	GrWord* root;
+// 	unsigned int NbRows,NbCols;                   // Rows and Cols for matrix
+// 	unsigned int NbWords;                         // Number of Words.
+// 	double* VectorRows;                           // Sum of the rows of the matrix
+// 	double* VectorCols;                           // Sum of the columns of the matrix
+// 	double* VectorColsTemp;                       // temp sum of the columns of the matrix
+// 	double* vec;
+// 	unsigned int row,col;
+// 	double a,b,c,d,num,den;
+// 	RContainer<GrWord,true,true>*** ptr;
+// 	RContainer<GrWord,true,true>** ptr2;
+// 	unsigned int i,j;
+// 	char tmp[100];
+//
+// 	// Init part
+// 	NbWords=0;
+// 	Total=0.0;
+// 	NbRows=Roots->GetNb();
+// 	NbCols=Stems->GetNb();
+// 	if((!NbRows)||(!NbCols)) return;
+// 	VectorRows=new double[NbRows];
+// 	VectorCols=new double[NbCols];
+// 	VectorColsTemp=new double[NbCols];
+// 	memset(VectorRows,0,NbRows*sizeof(double));
+// 	memset(VectorCols,0,NbCols*sizeof(double));
+// 	a=b=c=d=0.0;
+//
+// 	// Construction of the container for relation between root and rows in the matrix.
+// 	RContainer<GrWordId,true,true> RootsId(NbRows,NbRows/2);
+// 	for(i=27+1,row=0,ptr=Roots->Hash;--i;ptr++)
+// 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+// 		{
+// 			RCursor<GrWord> cGr(**ptr2);
+// 			for(cGr.Start();!cGr.End();cGr.Next())
+// 				RootsId.InsertPtr(new GrWordId(cGr(),row++));
+// 		}
+//
+// 	// Construction of the container for relation between stem and column in the matrix.
+// 	RContainer<GrWordId,true,true> StemsId(NbCols,NbCols/2);
+// 	for(i=27+1,col=0,ptr=Stems->Hash;--i;ptr++)
+// 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+// 		{
+// 			RCursor<GrWord> cGr(**ptr2);
+// 			for(cGr.Start();!cGr.End();cGr.Next())
+// 				StemsId.InsertPtr(new GrWordId(cGr(),col++));
+// 		}
+//
+// 	// Element i,j of the matrix is the number of words who are in the ith root
+// 	// and jth stem.
+// 	for(i=27+1,ptr=Roots->Hash;--i;ptr++)
+// 	{
+// 		for(j=27+1,ptr2=*ptr;--j;ptr2++)
+// 		{
+// 			RCursor<GrWord> cGr(**ptr2);
+// 			for(cGr.Start();!cGr.End();cGr.Next())
+// 			{
+// 				memset(VectorColsTemp,0,NbCols*sizeof(double));
+// 				root=cGr();
+// 				row=RootsId.GetPtr<const GrWord*>(root)->Pos;
+// 				// for each word in this root add 1 in the case corresponding to the
+// 				// id of the computedgroup where the subprofile is.
+// 				RCursor<Word> cWord(root->Words);
+// 				for(cWord.Start();!cWord.End();cWord.Next())
+// 				{
+// 					col=StemsId.GetPtr<const GrWord*>(cWord()->Stem)->Pos;
+// 					VectorRows[row]++;
+// 					VectorCols[col]++;
+// 					VectorColsTemp[col]++;
+// 					NbWords++;
+// 				}
+// 				for(col=NbCols+1,vec=VectorColsTemp;--col;vec++)
+// 					a+=(((*vec)*((*vec)-1))/2);
+// 			}
+// 		}
+// 	}
+//
+// 	// Calculation of the different terms of the total = a-(b*c)/d)/((1/2*(b+c))-(b*c)/d)
+// 	for(col=NbCols+1,vec=VectorCols;--col;vec++)
+// 		b+=(((*vec)*((*vec)-1))/2);
+// 	for(row=NbRows+1,vec=VectorRows;--row;vec++)
+// 		c+=(((*vec)*((*vec)-1))/2);
+// 	d=(NbWords*(NbWords-1))/2;
+// 	num=a-((b*c)/d);
+// 	den=(0.5*(b+c))-(b*c/d);
+// 	if(den)
+// 		Total=num/den;
+// 	else
+// 		Total=1.0;
+//
+// 	//delete the vectors
+// 	if (VectorRows) delete[] VectorRows;
+// 	if (VectorCols) delete[] VectorCols;
+// 	if (VectorColsTemp) delete[] VectorColsTemp;
+//
+// 	sprintf(tmp," - Total=%1.3f",Total);
+// 	setCaption(caption()+tmp);
 }
 
 
