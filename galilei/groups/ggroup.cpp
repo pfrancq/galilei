@@ -347,6 +347,10 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 		Fdbks=sub()->GetProfile()->GetFdbks();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
+			// Verify that it is the right language
+			if(Fdbks()->GetLang()!=s->GetLang())
+				continue;
+
 			// Verify if the document is relevant.
 			j=Fdbks()->GetFdbk();
 			if(!(j & djOK)) continue;
