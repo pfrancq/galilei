@@ -139,7 +139,7 @@ void KViewThGroups::ConstructThGroups(void)
 	RCursor<GLang> Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns();
 
 	// Go through each subjects
-	R::RCursor<GSubject> Grps(*getDocument()->GetSession()->GetSubjects());
+	R::RCursor<GSubject> Grps(getDocument()->GetSession()->GetSubjects()->GetNodes());
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		if(!Grps()->GetNbProfiles())
