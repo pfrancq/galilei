@@ -113,7 +113,6 @@ using namespace std;
 #include "kviewprofile.h"
 #include "kviewhistory.h"
 #include "kviewsom.h"
-#include "qconnectmysql.h"
 #include "qsessionprogress.h"
 #include "qcreatedatabase.h"
 #include "qfilldatabase.h"
