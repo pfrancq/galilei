@@ -148,7 +148,7 @@ void GALILEI::QGDocXML::slotSelectionTag(QListViewItem* item)
 	{
 		TagInfos->setTabEnabled(TagAttributes,true);
 		TagAttributes->clear();
-		Cur=t->Tag->GetAttr();
+		Cur=t->Tag->GetAttrs();
 		for(Cur.Start();!Cur.End();Cur.Next())
 			new QListViewItem(TagAttributes,ToQString(Cur()->GetName()),ToQString(Cur()->GetValue()));
 		TagInfos->setTabEnabled(TagContent,false);
