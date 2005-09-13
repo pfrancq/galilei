@@ -313,7 +313,7 @@ bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 	Pos=Begin;
 	while(!Pos->IsNull())
 	{
-		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+		Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
 		SkipSpaces();
 		Begin=Pos;
 		// Paragraph are supposed to be terminated by at least one blank line

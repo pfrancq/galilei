@@ -825,7 +825,7 @@ void GHTMLConverter::Text(const RString& text) throw(RIOException)
 	{
 		//If No paragraph opened -> create it
 		if(!ParTag)
-			Doc->AddTag(CurTag,ParTag=new RXMLTag("docxml:p"));
+			Doc->AddTag(CurTag,ParTag=new RXMLTag(Doc,"docxml:p"));
 
 		Filter->AnalyzeBlock(text,ParTag);
 	}

@@ -186,7 +186,7 @@ void GFilterMSDoc::WriteParagraph(RString par)
 	if ( !par.IsEmpty() )
 	{
 		part=Doc->GetContent();
-		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+		Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
 		AnalyzeBlock(par,tag);
 	}
 

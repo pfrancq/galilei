@@ -81,7 +81,7 @@ bool GFilterTXT::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 		while(!Src.Eof())
 		{
-			Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+			Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
 
 			if(Read)
 			{

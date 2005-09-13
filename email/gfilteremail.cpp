@@ -215,7 +215,7 @@ bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 
 		while((!Read)||(!Src.Eof()))
 		{
-			Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+			Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
 
 			// If necessary -> read a new line f
 			if(!Read)
