@@ -1400,9 +1400,13 @@ void GStorageMySQL::CreateSugs(const R::RString& name)
 		RQuery create(Db,sSql);
 		sSql="CREATE TABLE IF NOT EXISTS sugsbygroups (groupid INT(11), htmlid INT(11), rank INT(11), test TEXT)";
 		RQuery create2(Db,sSql);
-		sSql="DELETE FROM sugsbyprofiles WHERE test="+RQuery::SQLValue(name);
+		sSql="DELETE FROM sugsbyprofiles";
+		if(!name.IsEmpty())
+			sSql+=" WHERE test="+RQuery::SQLValue(name);
 		RQuery create3(Db,sSql);
-		sSql="DELETE FROM sugsbygroups WHERE test="+RQuery::SQLValue(name);
+		sSql="DELETE FROM sugsbygroups";
+		if(!name.IsEmpty())
+			sSql+=" WHERE test="+RQuery::SQLValue(name);
 		RQuery create4(Db,sSql);
 	}
 	catch(RMySQLError e)

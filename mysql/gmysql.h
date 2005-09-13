@@ -360,7 +360,8 @@ public:
 	virtual unsigned int GetHistorySize(void);
 
 	/**
-	* Prepare a given number of suggestions for a test.
+	* Prepare a given number of suggestions for a test. If the name is null,
+	* all the tests must be deleted.
 	* @param name           Name of the test.
 	*/
 	virtual void CreateSugs(const R::RString& name);
