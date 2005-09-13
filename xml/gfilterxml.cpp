@@ -396,7 +396,7 @@ void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) throw(bad_alloc,GExc
 	if(!(currentTag->GetName() == "xmlConverter")) return;
 
 	//Read filter name
-	xmlAttrCur=currentTag->GetAttr();
+	xmlAttrCur=currentTag->GetAttrs();
 	for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 	{
 		if(xmlAttrCur()->GetName() == "name")
@@ -445,7 +445,7 @@ void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def) throw(GExcepti
 		if(tagCur()->GetName()=="tag")
 		{
 			tagName=docxmlName=parentName="";
-			xmlAttrCur=tagCur()->GetAttr();
+			xmlAttrCur=tagCur()->GetAttrs();
 			for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 			{
 				if( xmlAttrCur()->GetName()=="name")
@@ -491,7 +491,7 @@ void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) throw(GE
 		if(tagCur()->GetName()=="attribut")
 		{
 			tagName=docxmlName=value="";
-			xmlAttrCur=tagCur()->GetAttr();
+			xmlAttrCur=tagCur()->GetAttrs();
 			for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 			{
 				if( xmlAttrCur()->GetName()=="name")
@@ -519,7 +519,7 @@ void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) throw(GE
 					if(subTagCur()->GetName()=="attribut")
 					{
 						tagName=docxmlName=value="";
-						xmlAttrCur=subTagCur()->GetAttr();
+						xmlAttrCur=subTagCur()->GetAttrs();
 						for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 						{
 							if( xmlAttrCur()->GetName()=="name")
@@ -560,7 +560,7 @@ void GFilterXML::FillMimeDefinition(RXMLTag* currentTag,Def* def) throw(GExcepti
 		//Tag Read must have the name "mimeType"
 		if(tagCur()->GetName()=="mimeType")
 		{
-			xmlAttrCur=tagCur()->GetAttr();
+			xmlAttrCur=tagCur()->GetAttrs();
 			for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 			{
 				//Attribut name contents the name of the current mimeType
