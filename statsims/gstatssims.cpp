@@ -264,7 +264,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 	RTextFile* Details=0;
 
 	// Init Main XML Tag
-	tag=new RXMLTag(Factory->GetName());
+	tag=new RXMLTag(xml,Factory->GetName());
 	xml->AddTag(&res,tag);
 
 	// Create Details File if necessary
@@ -284,42 +284,42 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 	// Compute Statistics
 	if(Docs)
 	{
-		tag2=new RXMLTag("Documents");
+		tag2=new RXMLTag(xml,"Documents");
 		xml->AddTag(tag,tag2);
 		GStatSimDoc Stat(Session,Details,WithFactors,WithoutFactors);
 		Stat.Run(this,xml,tag2);
 	}
 	if(ProfDoc)
 	{
-		tag2=new RXMLTag("Documents-Profiles");
+		tag2=new RXMLTag(xml,"Documents-Profiles");
 		xml->AddTag(tag,tag2);
 		GStatSimDocProf Stat(Session,Details,WithFactors,WithoutFactors);
 		Stat.Run(this,xml,tag2);
 	}
 	if(GroupDoc)
 	{
-		tag2=new RXMLTag("Documents-Groups");
+		tag2=new RXMLTag(xml,"Documents-Groups");
 		xml->AddTag(tag,tag2);
 		GStatSimDocGrp Stat(Session,Details,WithFactors,WithoutFactors);
 		Stat.Run(this,xml,tag2);
 	}
 	if(Profiles)
 	{
-		tag2=new RXMLTag("Profiles");
+		tag2=new RXMLTag(xml,"Profiles");
 		xml->AddTag(tag,tag2);
 		GStatSimSubProf Stat(Session,Details,WithFactors,WithoutFactors);
 		Stat.Run(this,xml,tag2);
 	}
 	if(SameDocProf)
 	{
-		tag2=new RXMLTag("Profiles/Common Documents");
+		tag2=new RXMLTag(xml,"Profiles/Common Documents");
 		xml->AddTag(tag,tag2);
 		GStatProfDoc Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(GroupProf)
 	{
-		tag2=new RXMLTag("Profiles/Groups");
+		tag2=new RXMLTag(xml,"Profiles/Groups");
 		xml->AddTag(tag,tag2);
 		GStatSimProfGrp Stat(Session,Session->GetSubjects(),Details,WithFactors,WithoutFactors);
 		Stat.Run(this,xml,tag2);

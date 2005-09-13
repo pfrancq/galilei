@@ -379,10 +379,10 @@ template<class E,class C>
 
 			if(!LangTag)
 			{
-				LangTag=new RXMLTag(lang->GetName());
+				LangTag=new RXMLTag(xml,lang->GetName());
 				xml->AddTag(tag,LangTag);
 			}
-			RXMLTag *t=new RXMLTag("With IF");
+			RXMLTag *t=new RXMLTag(xml,"With IF");
 			xml->AddTag(LangTag,t);
 			calc->AddTag(xml,t,"MeanIntra",MeanIntraMG);
 			calc->AddTag(xml,t,"MeanExtra",MeanExtraMG);
@@ -401,10 +401,10 @@ template<class E,class C>
 
 			if(!LangTag)
 			{
-				LangTag=new RXMLTag(lang->GetName());
+				LangTag=new RXMLTag(xml,lang->GetName());
 				xml->AddTag(tag,LangTag);
 			}
-			RXMLTag *t=new RXMLTag("Without IF");
+			RXMLTag *t=new RXMLTag(xml,"Without IF");
 			xml->AddTag(LangTag,t);
 			calc->AddTag(xml,t,"MeanIntra",MeanIntraML);
 			calc->AddTag(xml,t,"MeanExtra",MeanExtraML);
@@ -416,11 +416,11 @@ template<class E,class C>
 	// Compute topics statistics
 	R::RCursor<LocalStat> LocalStats(Sub);
 	if(!LocalStats.GetNb()) return;
-	LangTag=new RXMLTag("Topics");
+	LangTag=new RXMLTag(xml,"Topics");
 	xml->AddTag(tag,LangTag);
 	for(LocalStats.Start(),GOverlapG=0,GOverlapL=0;!LocalStats.End();LocalStats.Next())
 	{
-		RXMLTag *t=new RXMLTag(LocalStats()->Sub->GetName());
+		RXMLTag *t=new RXMLTag(xml,LocalStats()->Sub->GetName());
 		xml->AddTag(LangTag,t);
 		if(LocalStats()->OverlapG)
 		{
