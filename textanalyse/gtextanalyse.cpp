@@ -847,11 +847,11 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 	AnalyseTag(content,1.0);
 
 	// Look if a title meta is defined
-	Title=metadata->GetPtr<const char*>("dc:title");
+	Title=metadata->GetNode("dc:title");
 	if(Title)
 	{
 		Name="";
-		Tags.Set(*Title);
+		Tags=Title->GetNodes();
 		for(Tags.Start();!Tags.End();Tags.Next())
 		{
 			if(Tags()->GetName()!="docxml:sentence") continue;
