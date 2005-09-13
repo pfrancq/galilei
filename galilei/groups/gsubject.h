@@ -61,7 +61,7 @@ namespace GALILEI{
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subject
 */
-class GSubject: public R::RNode<GSubject,false>
+class GSubject: public R::RNode<GSubject,true,false>
 {
 	class Intern;
 
@@ -74,11 +74,12 @@ public:
 
 	/**
 	* Constructor of a subject.
+	* @param subjects        Subjects.
 	* @param id              Identificator of the subject.
 	* @param name            Name of the subject.
 	* @param u               Used?
 	*/
-	GSubject(unsigned int id,const char* name,bool u);
+	GSubject(GSubjects* subjects,unsigned int id,const char* name,bool u);
 
 	/**
 	* Compare two subjects by comparing their identificator.

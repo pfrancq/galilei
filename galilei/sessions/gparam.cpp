@@ -111,7 +111,7 @@ void GParam::SaveConfig(RXMLStruct* xml,RXMLTag* parent)
 {
 	RXMLTag* tag;
 
-	tag=new RXMLTag("param");
+	tag=new RXMLTag(xml,"param");
 	tag->InsertAttr("name",Name);
 	WriteAttributes(tag);
 	xml->AddTag(parent,tag);

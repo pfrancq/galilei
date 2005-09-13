@@ -186,7 +186,7 @@ void GSubjects::Apply(void)
 void GSubjects::ReInit(void)
 {
 	// Re-init the subjects
-	RCursor<GSubject> Subjects(*this);
+	RCursor<GSubject> Subjects(GetNodes());
 	for(Subjects.Start();!Subjects.End();Subjects.Next())
 		Subjects()->ReInit();
 }
@@ -203,7 +203,7 @@ void GSubjects::ChooseSubjects(void)
 	unsigned int i;
 
 	// Randomly mix the subjects in tab
-	tab=new GSubject*[RTree<GSubject,true,false>::GetMaxPos()+1];
+	tab=new GSubject*[GetNbNodes()];
 	RTree<GSubject,true,false>::GetTab(tab);
 	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
@@ -231,7 +231,6 @@ void GSubjects::ChooseSubjects(void)
 //------------------------------------------------------------------------------
 void GSubjects::CreateSet(void)
 {
-	RCursor<GSubject> Subs;
 	RCursor<GProfile> Prof;
 	unsigned int nbprof,nbsocial;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
@@ -244,7 +243,7 @@ void GSubjects::CreateSet(void)
 		Data->tmpDocs=new GDoc*[Data->Session->GetMaxPosDoc()+1];
 
 	// Go through all the subjects which are used
-	Subs.Set(*this);
+	RCursor<GSubject> Subs(GetNodes());
 	for(Subs.Start();!Subs.End();Subs.Next())
 	{
 		if(!Subs()->IsUsed())
@@ -344,10 +343,9 @@ void GSubjects::ProfileAssess(GProfile* prof,GSubject* sub,unsigned int maxDocsO
 //------------------------------------------------------------------------------
 GSubject* GSubjects::GetIdealGroup(GSubProfile* sub) const
 {
-//	return(Data->IdealGroups->GetGroup(sub));
 	GSubject* subject;
 
-	RCursor<GSubject> Cur(*Top);
+	RCursor<GSubject> Cur(Top->GetNodes());
 	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
 		subject=Cur()->GetIdealGroup(sub);
 	return(subject);
@@ -440,7 +438,7 @@ unsigned int GSubjects::GetNbIdealGroups(const GLang* lang) const
 {
 	unsigned int nb;
 
-	RCursor<GSubject> Cur(*Top);
+	RCursor<GSubject> Cur(Top->GetNodes());
 	for(Cur.Start(),nb=0;!Cur.End();Cur.Next())
 		nb+=Cur()->GetNbIdealGroups(lang);
 	return(nb);
@@ -525,7 +523,7 @@ void GSubjects::ComputeTotal(void)
 		int row,position;
 		row=0;
 		//for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
-		RCursor<GSubject> GroupsIdeal(*this);
+		RCursor<GSubject> GroupsIdeal(GetNodes());
 		for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
 		{
 			if(!GroupsIdeal()->GetNbSubProfiles(lang))
@@ -666,7 +664,6 @@ void GSubjects::FdbksCycle(void)
 //------------------------------------------------------------------------------
 void GSubjects::AddAssessments(void)
 {
-	R::RCursor<GSubject> Subs;
 	RCursor<GProfile> Prof;
 	unsigned int i;
 	GDoc** ptr;
@@ -675,7 +672,7 @@ void GSubjects::AddAssessments(void)
 	Apply();
 
 	// Go through all the subjects which are used
-	Subs.Set(*this);
+	R::RCursor<GSubject> Subs(GetNodes());
 	for(Subs.Start();!Subs.End();Subs.Next())
 	{
 		if(!Subs()->IsUsed()) continue;
@@ -920,7 +917,7 @@ void GSubjects::ClearLastAdded(void)
 //------------------------------------------------------------------------------
 GSubject* GSubjects::GetSubject(unsigned int id)
 {
-	return(RTree<GSubject,true,false>::GetPtr<unsigned int>(id));
+	return(RTree<GSubject,true,false>::GetNode<unsigned int>(id,false));
 }
 
 
@@ -1004,7 +1001,7 @@ double GSubjects::GetRecall(GGroup* grp) const
 //------------------------------------------------------------------------------
 void GSubjects::InsertProfileSubject(GProfile* profile,unsigned int subjectid)
 {
-	GSubject* subject=RTree<GSubject,true,false>::GetPtr<unsigned int>(subjectid);
+	GSubject* subject=RTree<GSubject,true,false>::GetNode<unsigned int>(subjectid,false);
 
 	if(!subject)
 		return;
@@ -1016,7 +1013,7 @@ void GSubjects::InsertProfileSubject(GProfile* profile,unsigned int subjectid)
 //------------------------------------------------------------------------------
 void GSubjects::InsertSubProfileSubject(GSubProfile* subprofile,unsigned int subjectid)
 {
-	GSubject* subject=RTree<GSubject,true,false>::GetPtr<unsigned int>(subjectid);
+	GSubject* subject=RTree<GSubject,true,false>::GetNode<unsigned int>(subjectid,false);
 
 	if(!subject)
 		return;
@@ -1036,7 +1033,7 @@ GSubject* GSubjects::GetSubject(GSubProfile* sub)
 //------------------------------------------------------------------------------
 GSubject* GSubjects::GetSubject(GProfile* prof)
 {
-	RCursor<GSubject> Subjects(*this);
+	RCursor<GSubject> Subjects(GetNodes());
 	for(Subjects.Start();!Subjects.End();Subjects.Next())
 		if(Subjects()->IsIn(prof))
 			return(Subjects());
@@ -1047,7 +1044,7 @@ GSubject* GSubjects::GetSubject(GProfile* prof)
 //------------------------------------------------------------------------------
 void GSubjects::InsertDocSubject(GDoc* doc,unsigned int subjectid)
 {
-	GSubject* subject=RTree<GSubject,true,false>::GetPtr<unsigned int>(subjectid);
+	GSubject* subject=RTree<GSubject,true,false>::GetNode<unsigned int>(subjectid,false);
 	if(!subject)
 		return;
 	R::RContainer<GSubject,false,false>* line;
@@ -1106,9 +1103,8 @@ bool GSubjects::IsFromParentSubject(unsigned int docid,const GSubject* s)
 	R::RContainer<GSubject,false,false>* line=Data->Docs[docid];
 	if(!line)
 		return(false);
-	R::RCursor<GSubject> Sub;
 
-	Sub.Set(*s->Parent);
+	R::RCursor<GSubject> Sub(s->GetParent()->GetNodes());
 	for(Sub.Start();!Sub.End();Sub.Next())
 	{
 		if(Sub()==s)

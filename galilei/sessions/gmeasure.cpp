@@ -220,7 +220,7 @@ void GMeasureManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
 		for(size_t i=1;i<Cur()->GetName().GetLen();i++)
 			if((!Cur()->GetName()[i].IsSpace())&&(Cur()->GetName()[i]!='/'))
 				n+=Cur()->GetName()[i];
-		RXMLTag* s=new RXMLTag(n);
+		RXMLTag* s=new RXMLTag(xml,n);
 		xml->AddTag(t,s);
 		Cur()->SaveConfig(xml,s);
 	}

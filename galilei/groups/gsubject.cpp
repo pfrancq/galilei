@@ -103,8 +103,8 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubject::GSubject(unsigned int id,const char* name,bool u)
-	 : RNode<GSubject,false>(10,2), Data(0)
+GSubject::GSubject(GSubjects* subjects,unsigned int id,const char* name,bool u)
+	 : RNode<GSubject,true,false>(subjects), Data(0)
 {
 	Data=new Intern(id,name,u);
 }
@@ -149,7 +149,7 @@ GSubject* GSubject::GetIdealGroup(GSubProfile* sub) const
 		if(Prof()->IsIn(sub))
 			return(const_cast<GSubject*>(this));
 	}
-	RCursor<GSubject> Cur(*this);
+	RCursor<GSubject> Cur(GetNodes());
 	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
 		subject=Cur()->GetIdealGroup(sub);
 	return(subject);
@@ -191,7 +191,7 @@ unsigned int GSubject::GetNbIdealGroups(const GLang* lang) const
 			break;
 		}
 	}
-	RCursor<GSubject> Cur(*this);
+	RCursor<GSubject> Cur(GetNodes());
 	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
 		nb+=Cur()->GetNbIdealGroups(lang);
 	return(nb);

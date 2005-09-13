@@ -1302,7 +1302,7 @@ void GSession::CopyIdealGroups(void)
 	RCursor<GLang> Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns();
 
 	// Go through each subjects
-	R::RCursor<GSubject> Grps(*Data->Subjects);
+	R::RCursor<GSubject> Grps(Data->Subjects->GetNodes());
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Go trough each lang

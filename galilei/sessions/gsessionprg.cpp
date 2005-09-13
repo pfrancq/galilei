@@ -917,7 +917,7 @@ void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args
 		throw RException("No manager for the statistics plug-ins");
 
 	// Create the root node
-	Root=new RXMLTag("Statistics");
+	Root=new RXMLTag(&xml,"Statistics");
 	xml.AddTag(0,Root);
 
 	// Compute the statistics
