@@ -711,9 +711,11 @@ GProfile* GStorageMySQL::LoadProfile(unsigned int profileid)
 	{
 		Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),Langs->GetPlugIn(fdbks[5]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
 		// Since the profile is not in the session -> we must manually insert the profile.
-		prof->InsertFdbk(atoi(fdbks[0]),Langs->GetPlugIn(fdbks[5]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
+		GLang* lang=Langs->GetPlugIn(fdbks[5],false);
+		if(!lang)
+			continue;
+		prof->InsertFdbk(atoi(fdbks[0]),lang,GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
 	}
-
 	return(prof);
 }
 
@@ -725,7 +727,7 @@ GSubProfile* GStorageMySQL::LoadSubProfile(unsigned int subprofileid)
 	SubProfile.Start();
 	if(!SubProfile.GetNb())
 		return(0);
-	GLang *lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(SubProfile[1]);
+	GLang *lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(SubProfile[1],false);
 	if(!lang)
 		return(0);
 	GProfile* prof=Session->GetProfile(atoi(SubProfile[6]));
@@ -768,7 +770,12 @@ void GStorageMySQL::LoadUsers(void)
 			// Load feedbacks
 			RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,computed,langid FROM htmlsbyprofiles");
 			for(fdbks.Start();!fdbks.End();fdbks.Next())
-				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),Langs->GetPlugIn(fdbks[5]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
+			{
+				lang=Langs->GetPlugIn(fdbks[5],false);
+				if(!lang)
+					continue;
+				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),lang,GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
+			}
 		}
 
 		// Load subprofiles
@@ -786,7 +793,7 @@ void GStorageMySQL::LoadUsers(void)
 		RQuery SubProfiles(Db,Sql);
 		for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
 		{
-			lang=Langs->GetPlugIn(SubProfiles[1]);
+			lang=Langs->GetPlugIn(SubProfiles[1],false);
 			if(!lang)
 				continue;
 			prof=Session->GetProfile(atoi(SubProfiles[6]));
@@ -960,7 +967,7 @@ GDoc* GStorageMySQL::LoadDoc(unsigned int docid)
 		return(0);
 
 	// Verify that the langague is active
-	GLang* lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(quer[4]);
+	GLang* lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(quer[4],false);
 	if((!lang)&&(!quer[4].IsEmpty()))
 		return(0);
 
@@ -1000,7 +1007,7 @@ void GStorageMySQL::LoadDocs(void)
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			// Verify that the langague is active
-			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(quer[4]);
+			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(quer[4],false);
 			if((!lang)&&(!quer[4].IsEmpty()))
 				continue;
 
@@ -1224,7 +1231,7 @@ GGroup* GStorageMySQL::LoadGroup(unsigned int groupid)
 	Group.Start();
 	if(!Group.GetNb())
 		return(0);
-	GLang* lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(Group[1]);
+	GLang* lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(Group[1],false);
 	if(!lang)
 		return(0);
 	GGroup* group=new GGroup(atoi(Group[0]),lang,true,Group[2],Group[3]);
@@ -1257,7 +1264,7 @@ void GStorageMySQL::LoadGroups(void)
 		RQuery Groups(Db,Sql);
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
-			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(Groups[1]);
+			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(Groups[1],false);
 			if(!lang)
 				continue;
 			group=new GGroup(atoi(Groups[0]),lang,true,Groups[2],Groups[3]);
