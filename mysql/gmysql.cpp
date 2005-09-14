@@ -127,6 +127,12 @@ void GStorageMySQL::ApplyConfig(void)
 		Encoding=encoding;
 		Changes=true;
 	}
+	bool filtering=Factory->GetBool("Filtering");
+	if(Filtering!=filtering)
+	{
+		Filtering=filtering;
+		Changes=true;
+	}
 	if(!Changes)
 		return;
 	GStorage::ApplyConfig();
@@ -1699,6 +1705,7 @@ void GStorageMySQL::CreateParams(GParams* params)
 	params->InsertPtr(new GParamString("User","root"));
 	params->InsertPtr(new GParamString("Password",""));
 	params->InsertPtr(new GParamString("Database",""));
+	params->InsertPtr(new GParamBool("Filtering",false));
 	params->InsertPtr(new GParamString("Filter",""));
 	params->InsertPtr(new GParamString("Encoding","Latin1"));
 	params->InsertPtr(new GParamBool("All",true));

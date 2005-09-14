@@ -96,8 +96,11 @@ void Configure(GFactoryStorage* params)
 	dlg.txtPwd->setText(params->GetString("Password"));
 	dlg.txtHost->setText(params->GetString("Host"));
 	dlg.cbEncoding->setCurrentText(params->GetString("Encoding"));
-	dlg.Filter->setDate(QDate::currentDate());
-	dlg.All->setChecked(true);
+	dlg.Filter->setDate(QDate::fromString(params->GetString("Filter"),Qt::ISODate));
+	dlg.Modified->setChecked(!params->GetBool("All"));
+	dlg.Filtering->setChecked(params->GetBool("Filtering"));
+	dlg.Filter->setEnabled(params->GetBool("Filtering"));
+	dlg.groupBox1_2->setEnabled(params->GetBool("Filtering"));
 	if(dlg.exec())
 	{
 		params->Set("Database",dlg.txtDb->text());
@@ -105,8 +108,9 @@ void Configure(GFactoryStorage* params)
 		params->Set("User",dlg.txtLogin->text());
 		params->Set("Password",dlg.txtPwd->text());
 		params->Set("Encoding",dlg.cbEncoding->currentText());
-		params->Set("All",dlg.All->isChecked());
+		params->Set("All",!dlg.Modified->isChecked());
 		params->Set("Filter",dlg.Filter->date().toString(Qt::ISODate));
+		params->Set("Filtering",dlg.Filtering->isChecked());
 	}
 }
 

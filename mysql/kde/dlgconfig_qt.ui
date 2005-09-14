@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>317</width>
-            <height>463</height>
+            <width>341</width>
+            <height>536</height>
         </rect>
     </property>
     <property name="caption">
@@ -291,10 +291,10 @@
         </widget>
         <widget class="QGroupBox">
             <property name="name">
-                <cstring>groupBox1_2</cstring>
+                <cstring>groupBox3</cstring>
             </property>
             <property name="title">
-                <string>Date Filtering</string>
+                <string>Filtering</string>
             </property>
             <vbox>
                 <property name="name">
@@ -302,19 +302,40 @@
                 </property>
                 <widget class="QCheckBox">
                     <property name="name">
-                        <cstring>All</cstring>
+                        <cstring>Filtering</cstring>
                     </property>
                     <property name="text">
-                        <string>Load all o&amp;bjects?</string>
-                    </property>
-                    <property name="accel">
-                        <string>Alt+B</string>
+                        <string>Active Filtering</string>
                     </property>
                 </widget>
-                <widget class="KDatePicker">
+                <widget class="QCheckBox">
                     <property name="name">
-                        <cstring>Filter</cstring>
+                        <cstring>Modified</cstring>
                     </property>
+                    <property name="text">
+                        <string>Only Modified Objects</string>
+                    </property>
+                    <property name="accel">
+                        <string></string>
+                    </property>
+                </widget>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>groupBox1_2</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Only Objects Having a Date</string>
+                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="KDatePicker">
+                            <property name="name">
+                                <cstring>Filter</cstring>
+                            </property>
+                        </widget>
+                    </vbox>
                 </widget>
             </vbox>
         </widget>
@@ -398,6 +419,18 @@
         <signal>clicked()</signal>
         <receiver>DlgConfig_Qt</receiver>
         <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>Filtering</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>Modified</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>Filtering</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>groupBox1_2</receiver>
+        <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
 <includes>
