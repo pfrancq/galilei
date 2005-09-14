@@ -55,23 +55,12 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-/*#include <gfiltermanagercurl.h>
-#include <glinkcalcmanager.h>
-#include <gprofilecalcmanager.h>*/
 #include <gprofilecalc.h>
-/*#include <gpostprofilemanager.h>
-#include <ggroupingmanager.h>
-#include <ggroupcalcmanager.h>
-#include <gstatscalcmanager.h>*/
-#include <gstoragemysql.h>
 #include <gsession.h>
+#include <gstorage.h>
 #include <gpluginmanagers.h>
 #include <gconfig.h>
 #include <gslotlog.h>
-/*#include <gpostgroupmanager.h>
-#include <gpostdocmanager.h>
-#include <gdocanalysemanager.h>
-#include <glangmanager.h>*/
 using namespace GALILEI;
 
 
@@ -138,52 +127,46 @@ int main(int argc, char *argv[])
 		cout<<"Read Config ..."<<endl;
 		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config);
 		ConfigFile.Open(RIO::Read);
+
 		Tag=Config.GetTag("Plugins");
 		if(!Tag)
 			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
 		lib.InsertPtr(new RString(Tag->GetAttrValue("Dir")));
 
+		// Create Log files
+		Log=new GSlotLog(Config.GetTag("Log")->GetAttrValue("File"));
+		Log->WriteLog("GALILEI Update started");
+
 		//------------------------------------------------------------------------------
 		// Managers
 		GPluginManagers::PluginManagers.Load(lib,false);
-
 		Tag=Config.GetTag("Config");
 		if(!Tag)
 			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
 		GConfig Conf(Tag->GetAttrValue("File"));
 		Conf.Load();
 
-		// Create Log files
-		Log=new GSlotLog(Config.GetTag("Log")->GetAttrValue("File"));
-		Log->WriteLog("GALILEI Update started");
-		cout<<"Connect to Session ..."<<endl;
-
 		// Init Session
-		GStorageMySQL Str(Config.GetTag("World")->GetAttrValue("Host"),
-							Config.GetTag("World")->GetAttrValue("User"),
-							Config.GetTag("World")->GetAttrValue("Pwd"),
-							Config.GetTag("World")->GetAttrValue("Name"),
-							Config.GetTag("World")->GetAttrValue("Encoding"));
-		GSession Session(&Str,true,true,true,true,true,true);
-		Session.Connect();
+		GSession Session=GSession();
 		Log->WriteLog("Session created");
-
-		// Load Data from MySQL database
+		
+		//connect plugins
+		GPluginManagers::PluginManagers.Connect(&Session);
+		Log->WriteLog("Plugins connected to session");
+		
+		//load data
 		if(DoDocs||DoProfiles)
-			Str.LoadDocs(&Session);
+			Session.GetStorage()->LoadDocs();
 		if(DoGroups)
-			Str.LoadGroups(&Session);
+			Session.GetStorage()->LoadGroups();
 		if(DoProfiles||DoGroups)
-		{
-			Str.LoadUsers(&Session);
-			Str.LoadFdbks(&Session);
-		}
+			Session.GetStorage()->LoadUsers();
 		Log->WriteLog("Data loaded");
-
 		if(DoDocs)
 		{
 			cout<<"Analyse Documents ...";
 			Session.AnalyseDocs(Log);
+			Log->WriteLog("Documents analysed");
 			cout<<"OK"<<endl;
 		}
 		if(DoProfiles)
@@ -191,12 +174,14 @@ int main(int argc, char *argv[])
 			cout<<"Compute Profiles ...";
 			Session.CalcProfiles(Log);
 			cout<<"OK"<<endl;
+			Log->WriteLog("Profiles computed");
 		}
 		if(DoGroups)
 		{
 			cout<<"Groups Profiles ...";
 			Session.GroupingProfiles(Log);
 			cout<<"OK"<<endl;
+			Log->WriteLog("Groups computed");
 		}
 		Log->WriteLog("Session updated");
 
