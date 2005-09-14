@@ -118,8 +118,6 @@ GStorage::GStorage(GFactoryStorage* fac)
 //------------------------------------------------------------------------------
 void GStorage::ApplyConfig(void)
 {
-	RDate today=RDate::GetToday();
-	Filtering=(Filter.GetYear()!=today.GetYear())||(Filter.GetMonth()!=today.GetMonth())||(Filter.GetDay()!=today.GetDay());
 	AllMemory=(LoadAll&&(!Filtering));
 }
 
