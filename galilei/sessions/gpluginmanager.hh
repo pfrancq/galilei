@@ -228,7 +228,7 @@ template<class mng,class factory,class plugin>
 template<class mng,class factory,class plugin>
 	plugin* GPluginManager<mng,factory,plugin>::GetPlugIn(const R::RString& name,bool need) const
 {
-	factory* fac=GetFactory(name);
+	factory* fac=GetFactory(name,need);
 	if(fac)
 		return(fac->GetPlugin());
 	if(need)
