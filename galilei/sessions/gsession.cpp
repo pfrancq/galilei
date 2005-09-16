@@ -558,6 +558,14 @@ void GSession::AssignId(GData* data,const GDict* dict)
 //------------------------------------------------------------------------------
 void GSession::AssignId(GDoc* doc)
 {
+	// If all documents are not in memory -> use the database
+	if(!Data->Storage->IsAllInMemory())
+	{
+		Data->Storage->AssignId(doc);
+		return;
+	}
+
+	// The first document has the identificator 1
 	if(!Data->Docs.GetNb())
 	{
 		doc->SetId(1);
@@ -782,6 +790,14 @@ GUser* GSession::GetUser(unsigned int id,bool load) const
 //------------------------------------------------------------------------------
 void GSession::AssignId(GUser* user)
 {
+	// If all users are not in memory -> use the database
+	if(!Data->Storage->IsAllInMemory())
+	{
+		Data->Storage->AssignId(user);
+		return;
+	}
+
+	// The first user has the identificator 1
 	if(Data->Users.GetNb())
 		user->SetId(Data->Users[Data->Users.GetMaxPos()]->GetId()+1); // Not [GetNb()-1] because first user has an identificator of 1
 	else
@@ -837,6 +853,14 @@ GProfile* GSession::GetProfile(unsigned int id,bool load) const
 //------------------------------------------------------------------------------
 void GSession::AssignId(GProfile* p)
 {
+	// If all profiles are not in memory -> use the database
+	if(!Data->Storage->IsAllInMemory())
+	{
+		Data->Storage->AssignId(p);
+		return;
+	}
+
+	// The first profile has the identificator 1
 	if(Data->Profiles.GetNb())
 		p->SetId(Data->Profiles[Data->Profiles.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first profile has an identificator of 1
 	else
@@ -922,6 +946,14 @@ GSubProfile* GSession::GetSubProfile(unsigned int id,const GLang* lang,bool load
 //------------------------------------------------------------------------------
 void GSession::AssignId(GSubProfile* sub)
 {
+	// If all documents are not in memory -> use the database
+	if(!Data->Storage->IsAllInMemory())
+	{
+		Data->Storage->AssignId(sub);
+		return;
+	}
+
+	// The first subprofile has the identificator 1
 	unsigned int id,i;
 	RCursor<PerLang> Cur(Data->Langs);
 	for(Cur.Start(),id=0;!Cur.End();Cur.Next())
@@ -1191,8 +1223,15 @@ GGroup*GSession::GetGroup(unsigned int id,bool load) const
 //------------------------------------------------------------------------------
 void GSession::AssignId(GGroup* grp)
 {
-	// Is there a free identificator
-	// -> Take the first one.
+	// If all groups are not in memory -> use the database
+	if(!Data->Storage->IsAllInMemory())
+	{
+		Data->Storage->AssignId(grp);
+		return;
+	}
+
+	// The first group has the identificator 1
+	// Is there a free identificator -> Take the first one.
 	if(Data->FreeIds.GetNb())
 	{
 		unsigned int id=Data->FreeIds[0]->Id;
