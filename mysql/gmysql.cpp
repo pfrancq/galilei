@@ -258,11 +258,17 @@ void GStorageMySQL::AssignId(GData* data,const GDict* dict)
 //------------------------------------------------------------------------------
 void GStorageMySQL::AssignId(GDoc* doc)
 {
-	RString sSql;
-
 	try
 	{
-		#pragma Implement this method.
+		// Reserved an identificator
+		RString sSql=RString("INSERT INTO htmls(html,title,langid) VALUES("+RQuery::SQLValue(doc->GetURL())+","+RQuery::SQLValue(doc->GetName())+",'"+doc->GetLang()->GetCode()+"')");
+		RQuery Insert(Db,sSql);
+
+		// Get the id and assign it to the document
+		sSql=RString("SELECT htmlid FROM htmls WHERE htmlid=LAST_INSERT_ID()");
+		RQuery Get(Db,sSql);
+		Get.Start();
+		doc->SetId(atoi(Get[0]));
 	}
 	catch(RMySQLError e)
 	{
@@ -516,6 +522,22 @@ void GStorageMySQL::SaveData(GData* data,GLang* lang)
 //------------------------------------------------------------------------------
 void GStorageMySQL::AssignId(GSubProfile* sub)
 {
+	try
+	{
+		// Reserved an identificator
+		RString sSql=RString("INSERT INTO subprofiles(profileid,langid) VALUES("+itou(sub->GetProfile()->GetId())+",'"+sub->GetLang()->GetCode()+"')");
+		RQuery Insert(Db,sSql);
+
+		// Get the id and assign it to the subprofile
+		sSql=RString("SELECT subprofileid FROM subprofiles WHERE subprofileid=LAST_INSERT_ID()");
+		RQuery Get(Db,sSql);
+		Get.Start();
+		sub->SetId(atoi(Get[0]));
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
 }
 
 
@@ -593,12 +615,44 @@ void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int histor
 //------------------------------------------------------------------------------
 void GStorageMySQL::AssignId(GUser* user)
 {
+	try
+	{
+		// Reserved an identificator
+		RString sSql=RString("INSERT INTO users(user,fullname) VALUES("+RQuery::SQLValue(user->GetName())+","+RQuery::SQLValue(user->GetFullName())+")");
+		RQuery Insert(Db,sSql);
+
+		// Get the id and assign it to the user
+		sSql=RString("SELECT userid FROM users WHERE userid=LAST_INSERT_ID()");
+		RQuery Get(Db,sSql);
+		Get.Start();
+		user->SetId(atoi(Get[0]));
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
 }
 
 
 //------------------------------------------------------------------------------
 void GStorageMySQL::AssignId(GProfile* p)
 {
+	try
+	{
+		// Reserved an identificator
+		RString sSql=RString("INSERT INTO profiles(userid,description) VALUES("+itou(p->GetUser()->GetId())+","+RQuery::SQLValue(p->GetName())+")");
+		RQuery Insert(Db,sSql);
+
+		// Get the id and assign it to the profile
+		sSql=RString("SELECT profileid FROM profiles WHERE profileid=LAST_INSERT_ID()");
+		RQuery Get(Db,sSql);
+		Get.Start();
+		p->SetId(atoi(Get[0]));
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
 }
 
 
@@ -1092,6 +1146,22 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 //------------------------------------------------------------------------------
 void GStorageMySQL::AssignId(GGroup* grp)
 {
+	try
+	{
+		// Reserved an identificator
+		RString sSql=RString("INSERT INTO groups(langid) VALUES('"+RString(grp->GetLang()->GetCode())+"')");
+		RQuery Insert(Db,sSql);
+
+		// Get the id and assign it to the group
+		sSql=RString("SELECT groupid FROM groups WHERE groupid=LAST_INSERT_ID()");
+		RQuery Get(Db,sSql);
+		Get.Start();
+		grp->SetId(atoi(Get[0]));
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
 }
 
 
