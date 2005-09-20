@@ -767,7 +767,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 			mkdir(name,448);
 		closedir(dp);
 		name+="/Doc";
-		name+=itou(Doc->GetId());
+		name+=RString::Number(Doc->GetId());
 		try
 		{
 			R::RRecFile<GWord,sizeof(unsigned int),false> f(name);
