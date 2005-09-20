@@ -39,7 +39,7 @@ void QFillEmptyDatabase::InsertSubItem(R::RDb& db,int parentId,QListViewItem* it
 	QListViewItem* t;
 	R::RString sSQL("");
 
-	sSQL="SELECT * FROM topics where parent="+R::itou(parentId);
+	sSQL="SELECT * FROM topics where parent="+R::RString::Number(parentId);
 	R::RQuery insert(db,sSQL);
 
 	for(insert.Start();!insert.End();insert.Next())

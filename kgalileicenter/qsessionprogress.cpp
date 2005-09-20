@@ -389,8 +389,8 @@ void QFillDB::DoIt(void)
 		usersId.InsertPtr(new RString(userId[0]));
 	}
 
-	sSql="SELECT * FROM topics WHERE  topicid>"+itou(nbTopicsAtBegin);
-//	sSql="SELECT * FROM topics WHERE parent !=0 and topicid>"+itou(nbTopicsAtBegin);
+	sSql="SELECT * FROM topics WHERE  topicid>"+RString::Number(nbTopicsAtBegin);
+//	sSql="SELECT * FROM topics WHERE parent !=0 and topicid>"+RString::Number(nbTopicsAtBegin);
 	RQuery topics(Db,sSql);
 	for(topics.Start();!topics.End();topics.Next())
 	{
@@ -406,7 +406,7 @@ void QFillDB::DoIt(void)
 				sSql="INSERT INTO profiles SET description='"+topics[1]+"',updated='2004-01-01',userid="+(*userCur())+",topicid="+topics[0];
 //				sSql="INSERT INTO profiles SET description='"+topics2[0]+"/"+topics[1]+"',updated='2004-01-01',userid="+userCur()+",topicid="+topics[0];
 				RQuery prof(Db,sSql);
-				sSql="INSERT INTO subprofiles SET langid='en', attached='2001-01-01', profileid="+itou(++profileid);
+				sSql="INSERT INTO subprofiles SET langid='en', attached='2001-01-01', profileid="+RString::Number(++profileid);
 				RQuery subprof(Db,sSql);
 			}
 		}
@@ -419,17 +419,17 @@ int QFillDB::CreateCategory(RString name,int parentId)
 {
 	RString sSql("");
 	int catId;
-	sSql="SELECT topicid FROM topics WHERE name='" +name +"' AND parent=" + itou(parentId);
+	sSql="SELECT topicid FROM topics WHERE name='" +name +"' AND parent=" + RString::Number(parentId);
 	RQuery cat(Db,sSql);
 	cat.Start();
 	if((!cat.End())&&(cat[0]))
 		catId=atoi(cat[0]);
 	else
 	{
-		sSql="INSERT INTO topics SET name='"+name+"',langid='en',parent="+itou(parentId);
+		sSql="INSERT INTO topics SET name='"+name+"',langid='en',parent="+RString::Number(parentId);
 		RQuery insert(Db,sSql);
 
-		sSql="SELECT topicid FROM topics WHERE name='" +name +"' AND parent=" + itou(parentId);
+		sSql="SELECT topicid FROM topics WHERE name='" +name +"' AND parent=" + RString::Number(parentId);
 		RQuery get(Db,sSql);
 		get.Start();
 		if(get[0])
@@ -463,7 +463,7 @@ void QFillDB::InsertDocument(RString path,int parentId)
 			CurrentDocId++;
 
 			//Insert docid and topicid in htmlsbytopics
-			sSql="INSERT INTO topicsbyhtmls SET topicid="+itou(parentId)+",htmlid="+itou(CurrentDocId);
+			sSql="INSERT INTO topicsbyhtmls SET topicid="+RString::Number(parentId)+",htmlid="+RString::Number(CurrentDocId);
 			RQuery insert2(Db,sSql);
 		}
 	}

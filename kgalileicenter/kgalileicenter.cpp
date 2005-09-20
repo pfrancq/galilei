@@ -644,7 +644,7 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 			KApplication::kApplication()->processEvents();
 			if(!Docs()->GetLang())
 				continue;
-			RString name=pre+itou(Docs()->GetId())+".txt";
+			RString name=pre+RString::Number(Docs()->GetId())+".txt";
 			dlg.setLabel(name.Latin1());
 			KApplication::kApplication()->processEvents();
 			RTextFile file(name.Latin1());
