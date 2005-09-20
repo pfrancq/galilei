@@ -351,7 +351,7 @@ void GSubject::SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocia
 		}
 		for(newusers++;--newusers;)
 		{
-			RString Usr("User"+itou(session->GetNbUsers()+1));
+			RString Usr("User"+RString::Number(session->GetNbUsers()+1));
 			GUser* user=new GUser(cNoRef,Usr,Usr,session->GetSubjects()->GetNbNodes());
 			session->AssignId(user);
 			session->InsertUser(user);

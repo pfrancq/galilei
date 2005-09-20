@@ -61,7 +61,7 @@ GStatsCalc::GStatsCalc(GFactoryStatsCalc* fac) throw(std::bad_alloc)
 void GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,double val)
 {
 	RXMLTag* tag=new RXMLTag(xml,element);
-	tag->InsertAttr("Value",dtou(val));
+	tag->InsertAttr("Value",RString::Number(val));
 	xml->AddTag(parent,tag);
 }
 

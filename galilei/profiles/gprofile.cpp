@@ -164,7 +164,7 @@ GProfile::GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned i
     Fdbks(nbf+nbf/2,nbf/2), Social(s)
 {
 	if(!User)
-	throw GException("Profile "+itou(id)+" has no parent user");
+	throw GException("Profile "+RString::Number(id)+" has no parent user");
 	User->InsertPtr(this);
 	GSession::Event(this,eObjCreated);
 }

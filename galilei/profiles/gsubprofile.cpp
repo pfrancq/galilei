@@ -56,7 +56,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,unsigned int
 	: GWeightInfos(60), Id(id), Profile(prof), Lang(lang), GroupId(grpid), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
 {
 	if(!Profile)
-		throw GException("Subprofile "+itou(id)+" has no parent profile");
+		throw GException("Subprofile "+RString::Number(id)+" has no parent profile");
 	if((Id==cNoRef)&&(GSession::Get()))
 		GSession::Get()->AssignId(this);
 	Profile->InsertPtr(this);

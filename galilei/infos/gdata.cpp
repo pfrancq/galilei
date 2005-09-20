@@ -137,7 +137,7 @@ unsigned int GData::IncRef(tObjType ObjType)
 			return(++NbRefGroups);
 			break;
 		default:
-			throw GException ("Unkown type to increase data "+itou(Id));
+			throw GException ("Unkown type to increase data "+RString::Number(Id));
 			break;
 	}
 }
@@ -150,21 +150,21 @@ unsigned int GData::DecRef(tObjType ObjType)
 	{
 		case otDoc:
 			if(!NbRefDocs)
-				throw GException("Cannot decrease null number of references for documents for data "+itou(Id));
+				throw GException("Cannot decrease null number of references for documents for data "+RString::Number(Id));
 			return(--NbRefDocs);
 			break;
 		case otSubProfile:
 			if(!NbRefSubProfiles)
-				throw GException("Cannot decrease null number of references for subprofiles for data "+itou(Id));
+				throw GException("Cannot decrease null number of references for subprofiles for data "+RString::Number(Id));
 			return(--NbRefSubProfiles);
 			break;
 		case otGroup:
 			if(!NbRefGroups)
-				throw GException("Cannot decrease null number of references for groups for data "+itou(Id));
+				throw GException("Cannot decrease null number of references for groups for data "+RString::Number(Id));
 			return(--NbRefGroups);
 			break;
 		default:
-			throw GException ("Unkown type to decrease data "+itou(Id));
+			throw GException ("Unkown type to decrease data "+RString::Number(Id));
 			break;
 	}
 }

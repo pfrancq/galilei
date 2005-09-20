@@ -636,7 +636,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
 	{
-		RString err("Documents Filtering and Analysis on Data Set : "+Data->Storage->GetFactory()->GetName()+ " on : " +itou(RDate::GetToday().GetDay())+"/"+ itou(RDate::GetToday().GetMonth())+"/"+itou(RDate::GetToday().GetYear()));
+		RString err("Documents Filtering and Analysis on Data Set : "+Data->Storage->GetFactory()->GetName()+ " on : " +RString::Number(RDate::GetToday().GetDay())+"/"+ RString::Number(RDate::GetToday().GetMonth())+"/"+RString::Number(RDate::GetToday().GetYear()));
 		rec->WriteStr("Analyse documents");
 	}
 
@@ -822,7 +822,7 @@ R::RCursor<GProfile> GSession::GetProfiles(void) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSession::GetProfilesNb(void) const
+size_t GSession::GetProfilesNb(void) const
 {
 	return(Data->Profiles.GetNb());
 }
@@ -880,7 +880,7 @@ void GSession::InsertProfile(GProfile* p)
 //------------------------------------------------------------------------------
 RCursor<GSubProfile> GSession::GetSubProfiles(const GLang* lang) const
 {
-	PerLang* ptr=Data->Langs.GetPtr(lang);
+	PerLang* ptr=const_cast<GSession*>(this)->Data->Langs.GetInsertPtr(const_cast<GLang*>(lang));
 	if(ptr)
 		return(RCursor<GSubProfile>(ptr->SubProfiles));
 	return(RCursor<GSubProfile>());
@@ -946,7 +946,7 @@ GSubProfile* GSession::GetSubProfile(unsigned int id,const GLang* lang,bool load
 //------------------------------------------------------------------------------
 void GSession::AssignId(GSubProfile* sub)
 {
-	// If all documents are not in memory -> use the database
+	// If all subprofiles are not in memory -> use the database
 	if(!Data->Storage->IsAllInMemory())
 	{
 		Data->Storage->AssignId(sub);
@@ -1193,10 +1193,10 @@ GGroup* GSession::GetGroup(const GSubProfile* sub,bool load) const
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
-		throw GException("Unknown group "+itou(sub->GetGroupId()));
+		throw GException("Unknown group "+RString::Number(sub->GetGroupId()));
 	grp=Data->Storage->LoadGroup(sub->GetGroupId());
 	if(!grp)
-		throw GException("Unknown group "+itou(sub->GetGroupId()));
+		throw GException("Unknown group "+RString::Number(sub->GetGroupId()));
 	const_cast<GSession*>(this)->InsertGroup(grp);
 	return(grp);
 }
@@ -1211,10 +1211,10 @@ GGroup*GSession::GetGroup(unsigned int id,bool load) const
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
-		throw GException("Unknown group "+itou(id));
+		throw GException("Unknown group "+RString::Number(id));
 	grp=Data->Storage->LoadGroup(id);
 	if(!grp)
-		throw GException("Unknown group "+itou(id));
+		throw GException("Unknown group "+RString::Number(id));
 	const_cast<GSession*>(this)->InsertGroup(grp);
 	return(grp);
 }

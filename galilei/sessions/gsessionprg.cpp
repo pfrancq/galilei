@@ -723,7 +723,7 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 		{
 			// Set TestName
 			NbStep++;
-			Owner->TestName=itou(NbStep);
+			Owner->TestName=RString::Number(NbStep);
 
 			// Create Feedbacks
 			if(rec)
@@ -746,7 +746,7 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 		NbStep++;
 
 		// Set TestName
-		Owner->TestName=itou(NbStep);
+		Owner->TestName=RString::Number(NbStep);
 
 		// Create 1 new profile
 		if(rec)
