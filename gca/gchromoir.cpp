@@ -140,7 +140,7 @@ void GALILEI::GChromoIR::RandomConstruct(void) throw(eGA)
 {
 	// Look if already a solution in the session
 	if(Instance->Session->GetNbGroups(Instance->Lang))
-		 ConstructChromo(Instance->Session);
+		ConstructChromo(Instance->Session);
 
 	// Call classic heuristic for non-assigned objects
 	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::RandomConstruct();
