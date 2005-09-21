@@ -186,6 +186,11 @@ public:
 	// @{
 
 	/**
+	* Initialize the access to the storage.
+	*/
+	virtual void InitAccess(void)=0;
+
+	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
@@ -611,8 +616,27 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryStorage(GStorageManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryStorage,GStorage,GStorageManager>(mng,n,f) {}
+	GFactoryStorage(GStorageManager* mng,const char* n,const char* f);
+
+	/**
+	* Save a configuration to a XML Tag. Compare to the standard plugin
+	* factory, all storage are 'disabled' by default.
+	* this tag.
+	* @param xml             XML Structure.
+	* @param parent          Parent tag.
+	*/
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent);
+
+	/**
+	* Create a plugin. Call the method 'InitAccess' from GStorage.
+	*/
+	virtual void Create(void) throw(GException);
+
+	/**
+	* Create a plugin. If there is a current session, generate an exception.
+	*/
+	virtual void Create(GSession* session) throw(GException);
+
 
 	/**
 	* Update a database.

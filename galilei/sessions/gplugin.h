@@ -382,7 +382,7 @@ public:
 	* Read a configuration from a XML Tag.
 	* @param parent          Parent Tag.
 	*/
-	void ReadConfig(R::RXMLTag* parent);
+	virtual void ReadConfig(R::RXMLTag* parent);
 
 	/**
 	* Save a configuration to a XML Tag.
@@ -390,7 +390,7 @@ public:
 	* @param xml             XML Structure.
 	* @param parent          Parent tag.
 	*/
-	void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent);
+	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent);
 
 	/**
 	* Destructor.

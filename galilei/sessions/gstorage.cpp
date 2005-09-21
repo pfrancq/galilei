@@ -196,6 +196,50 @@ GStorage::~GStorage(void)
 }
 
 
+//------------------------------------------------------------------------------
+//
+// class GFactoryStorage
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GFactoryStorage::GFactoryStorage(GStorageManager* mng,const char* n,const char* f)
+	: GFactoryPlugin<GFactoryStorage,GStorage,GStorageManager>(mng,n,f)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void GFactoryStorage::SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent)
+{
+	R::RXMLTag* tag=new R::RXMLTag(xml,"plugin");
+	tag->InsertAttr("name",Name);
+	xml->AddTag(parent,tag);
+	tag->InsertAttr("enable","False");
+	GParams::SaveConfig(xml,tag);
+}
+
+
+//-----------------------------------------------------------------------------
+void GFactoryStorage::Create(void) throw(GException)
+{
+	if(Plugin) return;
+	Plugin=NewPlugIn();
+	Plugin->ApplyConfig();
+ 	Plugin->InitAccess();
+	Mng->EnablePlugIn(Plugin);
+}
+
+
+//-----------------------------------------------------------------------------
+void GFactoryStorage::Create(GSession* session) throw(GException)
+{
+	if(session)
+		throw GException("Cannot create storage when a session is already created");
+	Create();
+}
+
+
 
 //------------------------------------------------------------------------------
 //
