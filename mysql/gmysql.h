@@ -85,6 +85,11 @@ public:
 	GStorageMySQL(GFactoryStorage* fac);
 
 	/**
+	* Init the access to the MySQL database.
+	*/
+	virtual void InitAccess(void);
+
+	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);

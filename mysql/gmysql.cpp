@@ -80,62 +80,10 @@ GStorageMySQL::GStorageMySQL(GFactoryStorage* fac)
 {
 }
 
-//-----------------------------------------------------------------------------
-void GStorageMySQL::ApplyConfig(void)
-{
-	bool Changes=false;
 
-	RString host=Factory->GetString("Host");
-	if(Host!=host)
-	{
-		Host=host;
-		Changes=true;
-	}
-	RString user=Factory->GetString("User");
-	if(User!=user)
-	{
-		User=user;
-		Changes=true;
-	}
-	RString password=Factory->GetString("Password");
-	if(Password!=password)
-	{
-		Password=password;
-		Changes=true;
-	}
-	RString database=Factory->GetString("Database");
-	if(Database!=database)
-	{
-		Database=database;
-		Changes=true;
-	}
-	RDate filter(Factory->GetString("Filter"));
-	if(Filter!=filter)
-	{
-		Filter=filter;
-		Changes=true;
-	}
-	bool all=Factory->GetBool("All");
-	if(LoadAll!=all)
-	{
-		LoadAll=all;
-		Changes=true;
-	}
-	RString encoding=Factory->GetString("Encoding");
-	if(Encoding!=encoding)
-	{
-		Encoding=encoding;
-		Changes=true;
-	}
-	bool filtering=Factory->GetBool("Filtering");
-	if(Filtering!=filtering)
-	{
-		Filtering=filtering;
-		Changes=true;
-	}
-	if(!Changes)
-		return;
-	GStorage::ApplyConfig();
+//-----------------------------------------------------------------------------
+void GStorageMySQL::InitAccess(void)
+{
 	try
 	{
 		Db.reset(new RDb(Host,User,Password,Database,Encoding));
@@ -144,6 +92,21 @@ void GStorageMySQL::ApplyConfig(void)
 	{
 		throw GException(e.GetMsg());
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GStorageMySQL::ApplyConfig(void)
+{
+	Host=Factory->GetString("Host");
+	User=Factory->GetString("User");
+	Password=Factory->GetString("Password");
+	Database=Factory->GetString("Database");
+	Filter.SetDate(Factory->GetString("Filter"));
+	LoadAll=Factory->GetBool("All");
+	Encoding=Factory->GetString("Encoding");
+	Filtering=Factory->GetBool("Filtering");
+	GStorage::ApplyConfig();
 }
 
 
