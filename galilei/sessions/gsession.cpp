@@ -262,6 +262,10 @@ GSession::GSession(GSlot* slot,unsigned int maxdocs,unsigned int maxsubprofiles,
 	if(!fac)
 		throw GException("No Storage");
 
+	// Delete the storage if necessary
+	if(fac->GetPlugin())
+		fac->Delete();
+
 	// Create the storage
 	fac->Create();
 
