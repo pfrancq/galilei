@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 	aboutData.addCredit("Nicolas Kumps",I18N_NOOP("Past Researcher"), 0);
 	aboutData.addCredit("Marjorie Paternostre",I18N_NOOP("Past Researcher"),0);
 	aboutData.addCredit("Stéphane Rideau",I18N_NOOP("Past Researcher"), 0);
-	aboutData.addCredit("Valery Vandaele",I18N_NOOP("Researcher"), "");
+	aboutData.addCredit("Valery Vandaele",I18N_NOOP("Past Researcher"), "");
 	aboutData.addAuthor("David Wartel",I18N_NOOP("Consultant"), "david.wartel@e-parkos.com");
 	aboutData.addCredit("Marco Saerens",I18N_NOOP("Professor"), "saerens@isys.ucl.ac.be");
 	aboutData.addAuthor("Jean-Baptiste Valsamis",I18N_NOOP("Past Researcher"),"jvalsami@ulb.ac.be");
