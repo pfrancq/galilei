@@ -107,10 +107,10 @@ public:
 	double PercOK;                                                       // Percentage of relevant documents to create.
 	double PercKO;                                                       // Percentage of fuzzy relevant documents to create.
 	double PercH;                                                        // Percentage of irrelevant documents to create (Computed as a percentage of the relevant documents created).
-	double PercErr;                                                      //  Percentage of documents assessed whith an error.
+	double PercErr;                                                      // Percentage of documents assessed whith an error.
 	double PercSubjects;                                                 // Percentage of subjects to use.
 	unsigned int NbMinDocsSubject;                                       // Minimal number of documents in a subject to use it.
-	unsigned int NbProfMax;                                              //  Maximal number of profiles to create in a subject.
+	unsigned int NbProfMax;                                              // Maximal number of profiles to create in a subject.
 	unsigned int NbProfMin;                                              // Minimal number of profiles to create in a subject.
 	double PercSocial;                                                   // Percentage of profiles that are social.
 	GDoc** tmpDocs;                                                      // Temporary Array of documents.
@@ -795,7 +795,7 @@ unsigned int GSubjects::AddProfiles(void)
 	GSubject** tab;
 	GSubject** ptr;
 	unsigned int i;
-	unsigned int nbprof, nbsocial, nbprofilescreated;
+	unsigned int nbprof, nbsocial;
 	GSubject* usedSubject;
 	RCursor<GProfile> Prof;
 	R::RCursor<GGroup> CurGrps;
@@ -852,8 +852,8 @@ unsigned int GSubjects::AddProfiles(void)
 			Data->Session->GetStorage()->SaveProfile(Profiles());
 	}
 
-	//returns the number of created profiles
-	return(nbprofilescreated);
+	// Return the number of created profiles
+	return(Prof.GetNb());
 }
 
 

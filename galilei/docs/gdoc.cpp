@@ -244,7 +244,7 @@ void GDoc::DeleteFdbk(unsigned int id)
 void GDoc::ClearFdbks(void)
 {
  	if(Fdbks)
-		Fdbks->Reset();
+		Fdbks->Clear();
 }
 
 

@@ -833,6 +833,13 @@ size_t GSession::GetProfilesNb(void) const
 
 
 //------------------------------------------------------------------------------
+size_t GSession::GetMaxProfileId(void) const
+{
+	return(Data->Profiles[Data->Profiles.GetMaxPos()]->GetId());
+}
+
+
+//------------------------------------------------------------------------------
 GProfile* GSession::GetProfile(unsigned int id,bool load) const
 {
 	GProfile* p;

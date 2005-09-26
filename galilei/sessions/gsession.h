@@ -354,6 +354,11 @@ public:
 	size_t GetProfilesNb(void) const;
 
 	/**
+	* Get the highest identificator assign to a profile.
+	*/
+	size_t GetMaxProfileId(void) const;
+
+	/**
 	* Get a profile with a specific identifier.
 	* @param id              Identifier.
 	* @param load            If set to true, the document is eventually loaded into

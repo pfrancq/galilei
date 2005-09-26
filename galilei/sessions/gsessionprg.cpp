@@ -699,11 +699,11 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 	unsigned int nbminprof,nbmaxprof;
 	GSlot* rec=dynamic_cast<GSlot*>(o);
 
-	if(args->GetNb()!=5)
-		throw RException("Method needs five parameters.");
-	sprintf(tmp,"Real Life: Settings=\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+	if(args->GetNb()!=4)
+		throw RException("Method needs four parameters.");
+	sprintf(tmp,"Real Life: Settings=\"%s\",\"%s\",\"%s\",\"%s\"",
 	        (*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg),(*args)[2]->GetValue(prg),
-	        (*args)[3]->GetValue(prg),(*args)[4]->GetValue(prg));
+	        (*args)[3]->GetValue(prg));
 	if(rec)
 	{
 		rec->Interact();
@@ -755,58 +755,57 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 			rec->WriteStr("Create 1 new profile");
 		}
 		if(GSession::Break()) return;
+
+		// One profile must be created
+		nbminprof=Owner->Session->GetSubjects()->GetUInt("NbProfMin");
+		nbmaxprof=Owner->Session->GetSubjects()->GetUInt("NbProfMax");
+		Owner->Session->GetSubjects()->Set("NbProfMin",1);
+		Owner->Session->GetSubjects()->Set("NbProfMax",1);
+		Owner->Session->GetSubjects()->Apply();
+
+		// Look if new topic or existing one
 		if(Random->Value()<Proba)
 		{
 			// Create One profile of an existing topic
-			nbminprof=Owner->Session->GetSubjects()->GetUInt("NbProfMin");
-			nbmaxprof=Owner->Session->GetSubjects()->GetUInt("NbProfMax");
-			Owner->Session->GetSubjects()->Set("NbProfMin",1);
-			Owner->Session->GetSubjects()->Set("NbProfMax",1);
-			Owner->Session->GetSubjects()->Apply();
 			NewProf=Owner->Session->GetSubjects()->AddProfiles();
 			Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
 			Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
 
 			if(NewProf)
 				What[0]='E';
-			else
-			{
-				What[0]='F';
-				Owner->Session->GetSubjects()->Apply();
-				Owner->Session->GetSubjects()->FdbksCycle();
-			}
 		}
 		else
 		{
 			// Create one profile of a new topic
-			Owner->Session->GetSubjects()->Apply();
 			if(Owner->Session->GetSubjects()->AddTopic())
 			{
 				What[0]='N';
+				NewProf=1;
 			}
 			else
 			{
-				Proba=1.0;
-				nbminprof=Owner->Session->GetSubjects()->GetUInt("NbProfMin");
-				nbmaxprof=Owner->Session->GetSubjects()->GetUInt("NbProfMax");
-				Owner->Session->GetSubjects()->Set("NbProfMin",1);
-				Owner->Session->GetSubjects()->Set("NbProfMax",1);
-				Owner->Session->GetSubjects()->Apply();
+				Proba=1.0;  // Cannot create any new topic
 				NewProf=Owner->Session->GetSubjects()->AddProfiles();
 				Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
 				Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
 
 				if(NewProf)
 					What[0]='E';
-				else
-				{
-					What[0]='F';
-					Owner->Session->GetSubjects()->Apply();
-					Owner->Session->GetSubjects()->FdbksCycle();
-				}
 			}
 		}
+		Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
+		Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
 		Owner->Session->GetSubjects()->Apply();
+
+		// If no profile was created -> normal feedback cycle
+		if(!NewProf)
+		{
+			What[0]='F';
+			Owner->Session->GetSubjects()->Apply();
+			Owner->Session->GetSubjects()->FdbksCycle();
+		}
+
+		// Compute, Group and Compare
 		CommonTasks(o);
 
 		// Verify Nb Steps
