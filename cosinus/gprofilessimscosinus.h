@@ -64,33 +64,14 @@ class GProfilesSimsCosinus : public GMeasure, public GSignalHandler
 	*/
 	R::RContainer<GProfilesSim,true,true> Sims;
 
-	bool IDF;
-
-	/**
-	* Inverse Frequency Factor must be used to compute the similarities.
-	*/
-	bool ISF;
-
-	/*
-	* Must the sims be stock in a container
-	* or be recomputed each time
-	*/
-	bool Memory;
-
 	/**
 	* level under which a similarity is cinsidered as null;
 	*/
 	double NullSimLevel;
 
-	bool Debug;
-
-	bool DebugMinSim;
-
 	double MinSim;
 
 	bool AutomaticMinSim;
-
-	bool NeedUpdate;
 
 public:
 
@@ -107,20 +88,11 @@ public:
 	*/
 	virtual void ApplyConfig(void);
 
-	/**
-	*  update the similairties
-	*/
-	void Update(void);
-
-	double ComputeSim(const GSubProfile* sub1,const GSubProfile* sub2) const;
-
 	virtual double GetMeasure(unsigned int id1,unsigned int id2,unsigned int measure);
 
 	virtual double GetMinMeasure(const GLang* lang,unsigned int measure);
 
-	virtual double GetMinMeasure(unsigned int) {return(0.0);}
-
-	double ComputeMinSim(const GLang* lang);
+	virtual double GetMinMeasure(unsigned int);
 
 	/**
 	* A specific subprofile has changed.

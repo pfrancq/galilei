@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>438</width>
-            <height>288</height>
+            <width>334</width>
+            <height>144</height>
         </rect>
     </property>
     <property name="caption">
@@ -22,248 +22,98 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QTabWidget">
+        <widget class="QGroupBox">
             <property name="name">
-                <cstring>tabWidget2</cstring>
+                <cstring>groupBox17</cstring>
             </property>
-            <property name="tabShape">
-                <enum>Rounded</enum>
+            <property name="title">
+                <string>Similarities Computing</string>
             </property>
-            <widget class="QWidget">
+            <vbox>
                 <property name="name">
-                    <cstring>tab</cstring>
+                    <cstring>unnamed</cstring>
                 </property>
-                <attribute name="title">
-                    <string>General</string>
-                </attribute>
-                <vbox>
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>layout43</cstring>
                     </property>
-                    <widget class="QGroupBox">
+                    <hbox>
                         <property name="name">
-                            <cstring>groupBox19</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                        <property name="title">
-                            <string>Ressources</string>
-                        </property>
-                        <vbox>
+                        <widget class="QLabel">
                             <property name="name">
-                                <cstring>unnamed</cstring>
+                                <cstring>textLabel1_2_2</cstring>
                             </property>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>Memory</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Store Similarities in Memory</string>
-                                </property>
-                            </widget>
-                        </vbox>
-                    </widget>
-                    <widget class="QGroupBox">
-                        <property name="name">
-                            <cstring>groupBox14</cstring>
-                        </property>
-                        <property name="title">
-                            <string>Debug</string>
-                        </property>
-                        <vbox>
+                            <property name="text">
+                                <string>Null Similarity Level :</string>
+                            </property>
+                        </widget>
+                        <spacer>
                             <property name="name">
-                                <cstring>unnamed</cstring>
+                                <cstring>spacer8</cstring>
                             </property>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>DebugSim</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Debug similarities</string>
-                                </property>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>DebugMinSim</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Debug minimum of similarity</string>
-                                </property>
-                            </widget>
-                        </vbox>
-                    </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer22</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>30</height>
-                            </size>
-                        </property>
-                    </spacer>
-                </vbox>
-            </widget>
-            <widget class="QWidget">
-                <property name="name">
-                    <cstring>tab</cstring>
-                </property>
-                <attribute name="title">
-                    <string>Similarities</string>
-                </attribute>
-                <vbox>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>140</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KDoubleNumInput">
+                            <property name="name">
+                                <cstring>NullSimLevel</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+                <widget class="QLayoutWidget">
                     <property name="name">
-                        <cstring>unnamed</cstring>
+                        <cstring>layout8</cstring>
                     </property>
-                    <widget class="QGroupBox">
+                    <hbox>
                         <property name="name">
-                            <cstring>groupBox17</cstring>
+                            <cstring>unnamed</cstring>
                         </property>
-                        <property name="title">
-                            <string>Similarities Computing</string>
-                        </property>
-                        <vbox>
+                        <widget class="QCheckBox">
                             <property name="name">
-                                <cstring>unnamed</cstring>
+                                <cstring>StaticMinSim</cstring>
                             </property>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout43</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel1_2_2</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Null Similarity Level :</string>
-                                        </property>
-                                    </widget>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer8</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>Expanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>140</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                    <widget class="KDoubleNumInput">
-                                        <property name="name">
-                                            <cstring>NullSimLevel</cstring>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout44</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QCheckBox">
-                                        <property name="name">
-                                            <cstring>AutomaticMinSim</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Automatic Minimum Similarity Computing</string>
-                                        </property>
-                                        <property name="checked">
-                                            <bool>true</bool>
-                                        </property>
-                                    </widget>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer8_2</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>Expanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>65</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                    <widget class="KDoubleNumInput">
-                                        <property name="name">
-                                            <cstring>MinSim</cstring>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                        </vbox>
-                    </widget>
-                    <widget class="QGroupBox">
-                        <property name="name">
-                            <cstring>groupBox15</cstring>
-                        </property>
-                        <property name="title">
-                            <string>Inverse Frenquency Factors</string>
-                        </property>
-                        <vbox>
+                            <property name="text">
+                                <string>Static minimum of similarity</string>
+                            </property>
+                        </widget>
+                        <spacer>
                             <property name="name">
-                                <cstring>unnamed</cstring>
+                                <cstring>spacer8_2</cstring>
                             </property>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>IDF</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Inverse Document Frequency (idf)</string>
-                                </property>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>ISF</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Inverse Subprofile Frequency (isf)</string>
-                                </property>
-                            </widget>
-                        </vbox>
-                    </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer21</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>220</height>
-                            </size>
-                        </property>
-                    </spacer>
-                </vbox>
-            </widget>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KDoubleNumInput">
+                            <property name="name">
+                                <cstring>MinSim</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
@@ -345,12 +195,6 @@
         <signal>clicked()</signal>
         <receiver>DlgConfigProfiles_Qt</receiver>
         <slot>reject()</slot>
-    </connection>
-    <connection>
-        <sender>AutomaticMinSim</sender>
-        <signal>toggled(bool)</signal>
-        <receiver>MinSim</receiver>
-        <slot>setDisabled(bool)</slot>
     </connection>
 </connections>
 <includes>

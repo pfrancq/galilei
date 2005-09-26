@@ -91,25 +91,14 @@ void Configure(GFactoryMeasure* params)
 
 	dlg.NullSimLevel->setPrecision(10);
 	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
-	dlg.ISF->setChecked(params->GetBool("ISF"));
-	dlg.IDF->setChecked(params->GetBool("IDF"));
-	dlg.Memory->setChecked(params->GetBool("Memory"));
-	dlg.DebugSim->setChecked(params->GetBool("Debug"));
-	dlg.DebugMinSim->setChecked(params->GetBool("DebugMinSim"));
 	dlg.MinSim->setValue(params->GetDouble("MinSim"));
-	dlg.MinSim->setEnabled(params->GetBool("DebugMinSim"));
-	dlg.AutomaticMinSim->setChecked(params->GetBool("AutomaticMinSim"));
+	dlg.StaticMinSim->setChecked(!params->GetBool("AutomaticMinSim"));
 
 	if(dlg.exec())
 	{
 		params->Set("NullSimLevel",dlg.NullSimLevel->value());
-		params->Set("ISF",dlg.ISF->isChecked());
-		params->Set("IDF",dlg.IDF->isChecked());
-		params->Set("Memory",dlg.Memory->isChecked());
-		params->Set("Debug",dlg.DebugSim->isChecked());
-		params->Set("DebugMinSim",dlg.DebugMinSim->isChecked());
 		params->Set("MinSim",dlg.MinSim->value());
-		params->Set("AutomaticMinSim",dlg.AutomaticMinSim->isChecked());
+		params->Set("AutomaticMinSim",!dlg.StaticMinSim->isChecked());
 		params->Apply();
  	}
 }
