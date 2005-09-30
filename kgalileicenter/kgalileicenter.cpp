@@ -929,6 +929,8 @@ void KGALILEICenterApp::slotChangeDebug(void)
 		try
 		{
 			Debug=new RDebugXML(debug.ascii());
+			if(Doc)
+				Doc->GetSession()->SetDebug(Debug);
 		}
 		catch(...)
 		{
