@@ -46,6 +46,7 @@
 #include <rxmltag.h>
 #include <rtextfile.h>
 #include <random.h>
+#include <rdebug.h>
 
 
 //------------------------------------------------------------------------------

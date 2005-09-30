@@ -208,6 +208,7 @@ public:
 	static bool ExternBreak;                                          // Should the session stop as soon as possible?
 	bool SaveResults;                                                 // Must the results be saved after computed?
 	GSlot* Slot;                                                      // Slot for the session
+	R::RDebug* Debug;                                                 // Debug output for the session
 	R::RContainer<PerLang,true,true> Langs;                           // Documents, Subprofiles and Groups divided by language.
 	R::RContainer<GDoc,true,true> Docs;                               // Documents handled by the system.
 	R::RContainer<GDocRefURL,true,true> DocsRefUrl;                   // Documents ordered by URL.
@@ -255,7 +256,7 @@ bool GSession::Intern::ExternBreak=false;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSession::GSession(GSlot* slot,unsigned int maxdocs,unsigned int maxsubprofiles,unsigned int maxgroups)
+GSession::GSession(GSlot* slot,R::RDebug* debug,unsigned int maxdocs,unsigned int maxsubprofiles,unsigned int maxgroups)
 	: Data(0)
 {
 	GFactoryStorage* fac=GPluginManagers::GetManager<GStorageManager>("Storage")->GetCurrentFactory();
@@ -277,6 +278,7 @@ GSession::GSession(GSlot* slot,unsigned int maxdocs,unsigned int maxsubprofiles,
 			fac->GetPlugin()->GetNbSaved(otGroup),
 			fac->GetPlugin()->GetNbSaved(otLang));
 	Data->Slot=slot;
+	Data->Debug=debug;
 
 	if(!Intern::Session)
 		Intern::Session=this;
@@ -418,6 +420,20 @@ void GSession::SetSlot(GSlot* slot)
 GSlot* GSession::GetSlot(void) const
 {
 	return(Data->Slot);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetDebug(R::RDebug* debug)
+{
+	Data->Debug=debug;
+}
+
+
+//------------------------------------------------------------------------------
+R::RDebug* GSession::GetDebug(void) const
+{
+	return(Data->Debug);
 }
 
 

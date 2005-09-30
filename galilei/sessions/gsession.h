@@ -83,7 +83,7 @@ public:
 	* @param maxgroups       Maximum number of groups to allocate. If zero,
 	*                        everything is allocated.
 	*/
-	GSession(GSlot* slot=0,unsigned int maxdocs=0,unsigned int maxsubprofiles=0,unsigned int maxgroups=0);
+	GSession(GSlot* slot=0,R::RDebug* debug=0,unsigned int maxdocs=0,unsigned int maxsubprofiles=0,unsigned int maxgroups=0);
 
 	//-----------------------------------------------------
 	/** @name General Methods
@@ -147,6 +147,17 @@ public:
 	* Get the slot of the session.
 	*/
 	GSlot* GetSlot(void) const;
+
+	/**
+	* Set the object managing the debug output.
+	* @param debug           Pointer to the "debugger".
+	*/
+	void SetDebug(R::RDebug* debug);
+
+	/**
+	* Get a pointer over the object managing the debug output.
+	*/
+	R::RDebug* GetDebug(void) const;
 
 	/**
 	* Run a "program" for this session.
