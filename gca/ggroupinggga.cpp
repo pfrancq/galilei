@@ -178,7 +178,6 @@ void GGroupingGGA::Run(void) throw(GException)
 {
 	unsigned int i;
 	GObjIR* obj;
-	//RDebugXML file(RString("/home/pfrancq/text")+Lang->GetCode()+".xml","GIR","Pascal Francq");
 
 	if(!SubProfiles.GetNb()) return;
 
@@ -191,7 +190,7 @@ void GGroupingGGA::Run(void) throw(GException)
 		RCursor<GSubProfile> Cur2(SubProfiles);
 		for(Cur2.Start(),i=0;!Cur2.End();Cur2.Next(),i++)
 			Objs->InsertPtr(obj=new GObjIR(i,Cur2()));
-		Instance=new GInstIR(Session,Lang,Objs,&Params,0);
+		Instance=new GInstIR(Session,Lang,Objs,&Params,Session->GetDebug());
 		Instance->Init(&data);
 		Instance->Run();
 		ConstructGroupsFromChromo(Instance->BestChromosome);
@@ -246,7 +245,7 @@ void GGroupingGGA::CreateParams(GParams* params)
 //-----------------------------------------------------------------------------
 GGroupingGGA::~GGroupingGGA(void)
 {
-	if(Objs) delete Objs;
+	delete Objs;
 }
 
 
