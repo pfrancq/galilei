@@ -155,7 +155,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	try
 	{
 		Doc=new KDoc(this);
-		Sess = new GSession(this);
+		Sess = new GSession(this,Debug);
 		Doc->SetSession(Sess);
 		Sess->Init();
 			slotSaveModifier();
@@ -912,6 +912,29 @@ void KGALILEICenterApp::slotGroupsClear()
 {
 	if(Doc&&Doc->GetSession())
 		Doc->GetSession()->ForceReCompute(otGroups);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotChangeDebug(void)
+{
+	QString debug("");
+	if(Debug)
+		debug=Debug->GetName().Latin1();
+	debug=KFileDialog::getSaveFileName(debug,"*.xml",this,i18n("Debug Output..."));
+	delete Debug;
+	Debug=0;
+	if(!debug.isEmpty())
+	{
+		try
+		{
+			Debug=new RDebugXML(debug.ascii());
+		}
+		catch(...)
+		{
+			QMessageBox::critical(this,"KGALILEICenter","Error when creating "+debug);
+		}
+	}
 }
 
 

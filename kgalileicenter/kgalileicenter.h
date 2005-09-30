@@ -160,6 +160,11 @@ class KGALILEICenterApp : public KMainWindow, public GSlot
 	*/
 	QString ErrMsgList;
 
+	/**
+	* Debugger.
+	*/
+	RDebugXML* Debug;
+
 	// Current tabs selected in the plug-ins dialog box
 	int DlgMainTabIdx;
 	int DlgDocsTabIdx;
@@ -523,6 +528,11 @@ private slots:
 	*/
 	void slotGroupsClear();
 
+	/**
+	* Change the file used for debug.
+	*/
+	void slotChangeDebug(void);
+
 public slots:
 
 	/**
@@ -590,6 +600,7 @@ public:
 	KAction* textEnglish;
 
 	KAction* plugins;
+	KAction* changeDebug;
 
 	KAction* runProgram;
 

@@ -82,7 +82,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
-	: KMainWindow(0,"KGALILEICenterApp"), pluginsPath(10,5), Doc(0)
+	: KMainWindow(0,"KGALILEICenterApp"), pluginsPath(10,5), Doc(0), Debug(0)
 {
 	Config=kapp->config();
 	initStatusBar();
@@ -160,6 +160,7 @@ void KGALILEICenterApp::initActions(void)
 	viewToolBar->setStatusText(i18n("Enables/disables the toolbar"));
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
 	plugins=new KAction(i18n("&Plug-Ins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
+	changeDebug=new KAction(i18n("Specify &Debugger Output"),"save",0,this,SLOT(slotChangeDebug()),actionCollection(),"changeDebug");
 
 	// Menu "Window"
 	windowTile = new KAction(i18n("&Tile"), 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
@@ -218,6 +219,10 @@ void KGALILEICenterApp::saveOptions(void)
 	for(cPath.Start();!cPath.End();cPath.Next())
 		paths+=(*cPath())+RString(";");
 	Config->writeEntry("PluginsPath", paths);
+	if(Debug)
+		Config->writeEntry("Debug File",Debug->GetName());
+	else
+		Config->writeEntry("Debug File","");
 
 	// Save options for database creation
 	Config->writeEntry("CreateDbSQLpath",CreateDbSQLpath);
@@ -282,6 +287,16 @@ void KGALILEICenterApp::readOptions(void)
 	if(!size.isEmpty())
 	{
 		resize(size);
+	}
+
+	QString name=Config->readEntry("Debug File");
+	try
+	{
+		if(!name.isEmpty())
+			Debug=new RDebugXML(name.ascii());
+	}
+	catch(...)
+	{
 	}
 
 	// Read create database options
