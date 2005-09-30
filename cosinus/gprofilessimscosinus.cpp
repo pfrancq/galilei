@@ -414,6 +414,8 @@ void GProfilesSimsCosinus::Event(GSubProfile* sub, tEvent event)
 			profSim->Created.Insert(sub->GetProfile()->GetId());
 			if(profSim->Deleted.IsIn(sub->GetProfile()->GetId()))
 				profSim->Deleted.Delete(sub->GetProfile()->GetId());
+			if(profSim->Modified.IsIn(sub->GetProfile()->GetId()))
+				profSim->Modified.Delete(sub->GetProfile()->GetId());
 			profSim->NeedUpdate=true;
 			break;
 		case eObjModified:
