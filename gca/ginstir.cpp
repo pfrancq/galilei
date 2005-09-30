@@ -124,7 +124,7 @@ GThreadDataIR::~GThreadDataIR(void)
 
 //-----------------------------------------------------------------------------
 GInstIR::GInstIR(GSession* ses,GLang* l,RObjs<GObjIR>* objs,GIRParams* p,RDebug *debug) throw(bad_alloc)
-	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(p->PopSize,objs,FirstFit,debug),
+	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(p->PopSize,objs,FirstFit,"GCA",debug),
 	  GIRProm(p), Params(p), Sols(0), Session(ses), Lang(l), NoSocialSubProfiles(objs->GetNb()),
 	  Ratios(objs->GetNb()), ProfilesSims(GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities"))
 	, ProfilesAgree(GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements"))
