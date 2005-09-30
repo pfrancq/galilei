@@ -327,6 +327,11 @@ public:
 	*/
 	virtual void GetSugsTests(R::RContainer<R::RString,true,true>& res)=0;
 
+	/**
+	* Clear the information of a given object type from the storage.
+	*/
+	virtual void Clear(tObjType objtype)=0;
+
 	//@} General methods
 
 
@@ -478,6 +483,12 @@ public:
 	* @param p               Pointer to the profile.
 	*/
 	virtual void AssignId(GProfile* p)=0;
+
+	/**
+	* Save a user.
+	* @param user            User to save.
+	*/
+	virtual void SaveUser(GUser* user)=0;
 
 	/**
 	* Save a profile.
