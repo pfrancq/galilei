@@ -111,6 +111,28 @@ void GStorageMySQL::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
+void GStorageMySQL::Clear(tObjType objtype)
+{
+	RString sSql("DELETE FROM ");
+	switch(objtype)
+	{
+		case otUser:
+			sSql+="users";
+			break;
+		case otProfile:
+			sSql+="profiles";
+			break;
+		case otSubProfile:
+			sSql+="subprofiles";
+			break;
+		default:
+			throw GException("Cannot clear"+GetObjType(objtype)+" from storage");
+	}
+	RQuery Delete(Db,sSql);
+}
+
+
+//------------------------------------------------------------------------------
 unsigned int GStorageMySQL::GetCount(RString tbl)
 {
 	RString c;
@@ -620,6 +642,41 @@ void GStorageMySQL::AssignId(GProfile* p)
 
 
 //------------------------------------------------------------------------------
+void GStorageMySQL::SaveUser(GUser* user)
+{
+	unsigned int userid;
+	RString sSql;
+
+	try
+	{
+		userid=user->GetId();
+
+		// Test if the user already exists.
+		sSql="SELECT COUNT(1) FROM users WHERE userid="+RString::Number(userid);
+		RQuery Test(Db,sSql);
+		Test.Start();
+		if(!atoi(Test[0]))
+		{
+			// Insert the user
+			sSql="INSERT INTO users(userid,user,fullname) VALUES("+RString::Number(userid)+","+RQuery::SQLValue(user->GetName())+","+RQuery::SQLValue(user->GetFullName())+")";
+			RQuery Insert(Db,sSql);
+		}
+		else
+		{
+			// Update the user
+			sSql="UPDATE users SET user="+RQuery::SQLValue(user->GetName())+",fullname="+RQuery::SQLValue(user->GetFullName());
+			sSql+=" WHERE userid="+RString::Number(userid);
+			RQuery Update(Db,sSql);
+		}
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GStorageMySQL::SaveProfile(GProfile* prof)
 {
 	unsigned int profid;
@@ -643,24 +700,25 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		if(!atoi(Test[0]))
 		{
 			// Insert the profile (if subjects -> save topicid)
-			sSql="INSERT INTO profiles(profileid,description,social";
+			sSql="INSERT INTO profiles(profileid,description,social,userid";
 			if(Session->GetSubjects(false))
 				sSql+=",topicid";
-			sSql+=" VALUES("+RString::Number(profid)+","+RQuery::SQLValue(prof->GetName())+","+RString::Number(social);
+			sSql+=") VALUES("+RString::Number(profid)+","+RQuery::SQLValue(prof->GetName())+","+RString::Number(social)+","+RString::Number(prof->GetUser()->GetId());
 			if(Session->GetSubjects(false))
 			{
 				GSubject* sub=Session->GetSubjects(false)->GetSubject(prof);
 				if(sub)
-					sSql+=",topicid="+RString::Number(sub->GetId());
+					sSql+=","+RString::Number(sub->GetId());
 				else
-					sSql+=",topicid=0";
+					sSql+=",0";
 			}
 			sSql+=")";
+			RQuery Insert(Db,sSql);
 		}
 		else
 		{
 			// Update the profile (if subjects -> save topicid)
-			sSql="UPDATE profiles SET description="+RQuery::SQLValue(prof->GetName())+",social="+RString::Number(social);
+			sSql="UPDATE profiles SET description="+RQuery::SQLValue(prof->GetName())+",social="+RString::Number(social)+",userid="+RString::Number(prof->GetUser()->GetId());
 			if(Session->GetSubjects(false))
 			{
 				GSubject* sub=Session->GetSubjects(false)->GetSubject(prof);

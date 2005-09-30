@@ -127,6 +127,11 @@ public:
 	R::RDb* GetDb(void) {return(Db.get());}
 
 	/**
+	* Clear the information of a given object type from the storage.
+	*/
+	virtual void Clear(tObjType objtype);
+
+	/**
 	* Compute the number of objects of a given type which are saved.
 	* @param type            Type of the objects.
 	* @return Number of objects.
@@ -309,6 +314,12 @@ public:
 	* @param p               Pointer to the profile.
 	*/
 	virtual void AssignId(GProfile* p);
+
+	/**
+	* Save a user.
+	* @param user            User to save.
+	*/
+	virtual void SaveUser(GUser* user);
 
 	/**
 	* Save a profile.
