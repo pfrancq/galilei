@@ -594,6 +594,12 @@ void GSubjects::CreateIdeal(bool save)
 	CreateSet();
 	if(Data->SaveSimulation)
 	{
+		Data->Session->GetStorage()->Clear(otUser);
+		Data->Session->GetStorage()->Clear(otProfile);
+		Data->Session->GetStorage()->Clear(otSubProfile);
+		RCursor<GUser> Users(Data->Session->GetUsers());
+		for(Users.Start();!Users.End();Users.Next())
+			Data->Session->GetStorage()->SaveUser(Users());
 		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
 			Data->Session->GetStorage()->SaveProfile(Profiles());
@@ -781,6 +787,9 @@ bool GSubjects::AddTopic(void)
 
 	if(Data->SaveSimulation)
 	{
+		RCursor<GUser> Users(Data->Session->GetUsers());
+		for(Users.Start();!Users.End();Users.Next())
+			Data->Session->GetStorage()->SaveUser(Users());
 		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
 			Data->Session->GetStorage()->SaveProfile(Profiles());
