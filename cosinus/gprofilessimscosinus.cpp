@@ -66,7 +66,7 @@ using namespace R;
 class GProfilesSimsCosinus::GProfilesSim
 {
 public:
-	double** Sims;
+	double** Values;
 	GLang* Lang;                                          // Language
 	double Deviation;                                     // Standart deviation of similarities
 	GProfilesSimsCosinus* Manager;                               //manger of the gprofsim
@@ -83,7 +83,7 @@ public:
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesSim& profilesSim) const {return(Lang->Compare(*profilesSim.Lang));}
 
-
+	double Compute(GSubProfile* sub1,GSubProfile* sub2);
 	void Update(void);
 	void UpdateDeviation(size_t oldnbcomp,double oldsim,double newsim,int what);
 
@@ -94,7 +94,7 @@ public:
 
 //------------------------------------------------------------------------------
 GProfilesSimsCosinus::GProfilesSim::GProfilesSim(GProfilesSimsCosinus* manager,GLang* lang)
-	:  Sims(0), Lang(lang), Deviation(0.0), Manager(manager), NbLines(0), NeedUpdate(false), Created(300), Modified(300), Deleted(300), MeanSim(0.0)
+	:  Values(0), Lang(lang), Deviation(0.0), Manager(manager), NbLines(0), NeedUpdate(false), Created(300), Modified(300), Deleted(300), MeanSim(0.0)
 {
 }
 
@@ -123,6 +123,13 @@ void GProfilesSimsCosinus::GProfilesSim::UpdateDeviation(size_t oldnbcomp,double
 
 
 //------------------------------------------------------------------------------
+double GProfilesSimsCosinus::GProfilesSim::Compute(GSubProfile* sub1,GSubProfile* sub2)
+{
+	return(sub1->SimilarityIFF2(*sub2,otDoc,otSubProfile,Lang));
+}
+
+
+//------------------------------------------------------------------------------
 void GProfilesSimsCosinus::GProfilesSim::Update(void)
 {
 	// if memory is false, no update is needed
@@ -136,19 +143,19 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void)
 	if(NbLines<MaxLines)
 	{
 		double** tmp=new double*[MaxLines];
-		if(Sims)
+		if(Values)
 		{
-			memcpy(tmp,Sims,NbLines*sizeof(double*));
-			delete[] Sims;
+			memcpy(tmp,Values,NbLines*sizeof(double*));
+			delete[] Values;
 		}
-		Sims=tmp;
+		Values=tmp;
 		memset(&tmp[NbLines],0,(MaxLines-NbLines)*sizeof(double*));
 		NbLines=MaxLines;
 	}
 
 	// Go thourgh all lines/cols (line=profileid+2);
 	size_t i;
-	double** cur=Sims;
+	double** cur=Values;
 	for(i=0;i<NbLines;i++,cur++)
 	{
 		// Verify if this line must be deleted?
@@ -156,11 +163,11 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void)
 		{
 			// Go trough the cols
 			size_t j;
-			double* sims;
-			for(j=0,sims=(*cur);j<i+1;j++,sims++)
+			double* vals;
+			for(j=0,vals=(*cur);j<i+1;j++,vals++)
 			{
 				if(Manager->AutomaticMinSim)
-					UpdateDeviation(NbComp,(*sims),0,-1);
+					UpdateDeviation(NbComp,(*vals),0,-1);
 				NbComp--;
 			}
 			delete[] (*cur);
@@ -192,14 +199,14 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void)
 
 			// Go trough the cols
 			size_t j;
-			double* sims;
-			for(j=0,sims=(*cur);j<i+1;j++,sims++)
+			double* vals;
+			for(j=0,vals=(*cur);j<i+1;j++,vals++)
 			{
 				if(Deleted.IsIn(j+1))
 				{
 					if(Manager->AutomaticMinSim)
-						UpdateDeviation(NbComp,(*sims),0.0,-1);
-					(*sims)=0.0;
+						UpdateDeviation(NbComp,(*vals),0.0,-1);
+					(*vals)=0.0;
 					NbComp--;
 				}
 				else
@@ -210,20 +217,20 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void)
 					GSubProfile* sub2=prof2->GetSubProfile(Lang);
 					if(!sub2)
 						continue;
-					double sim=sub1->SimilarityIFF2(*sub2,otDoc,otSubProfile,Lang);
-					if(sim<Manager->NullSimLevel)
-						sim=0.0;
+					double val=Compute(sub1,sub2);
+					if(val<Manager->NullSimLevel)
+						val=0.0;
 					if(New)
 					{
 						if(Manager->AutomaticMinSim)
-							UpdateDeviation(NbComp,0.0,sim,1);
+							UpdateDeviation(NbComp,0.0,val,1);
 					}
 					else
 					{
 						if(Manager->AutomaticMinSim)
-							UpdateDeviation(NbComp,(*sims),sim,0);
+							UpdateDeviation(NbComp,(*vals),val,0);
 					}
-					(*sims)=sim;
+					(*vals)=val;
 					if(New)
 						NbComp++;
 				}
@@ -233,14 +240,14 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void)
 
 		// Go trough the cols
 		size_t j;
-		double* sims;
-		for(j=0,sims=(*cur);j<i+1;j++,sims++)
+		double* vals;
+		for(j=0,vals=(*cur);j<i+1;j++,vals++)
 		{
 			if(Deleted.IsIn(j+1))
 			{
 				if(Manager->AutomaticMinSim)
-					UpdateDeviation(NbComp,(*sims),0.0,-1);
-				(*sims)=0.0;
+					UpdateDeviation(NbComp,(*vals),0.0,-1);
+				(*vals)=0.0;
 				NbComp--;
 			}
 
@@ -252,12 +259,12 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void)
 				GSubProfile* sub2=prof2->GetSubProfile(Lang);
 				if(!sub2)
 					continue;
-				double sim=sub1->SimilarityIFF2(*sub2,otDoc,otSubProfile,Lang);
-				if(sim<Manager->NullSimLevel)
-					sim=0.0;
+				double val=Compute(sub1,sub2);
+				if(val<Manager->NullSimLevel)
+					val=0.0;
 				if(Manager->AutomaticMinSim)
-					UpdateDeviation(NbComp,(*sims),sim,0);
-				(*sims)=sim;
+					UpdateDeviation(NbComp,(*vals),val,0);
+				(*vals)=val;
 			}
 
 			if(Created.IsIn(j+1))
@@ -268,12 +275,12 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void)
 				GSubProfile* sub2=prof2->GetSubProfile(Lang);
 				if(!sub2)
 					continue;
-				double sim=sub1->SimilarityIFF2(*sub2,otDoc,otSubProfile,Lang);
-				if(sim<Manager->NullSimLevel)
-					sim=0.0;
+				double val=Compute(sub1,sub2);
+				if(val<Manager->NullSimLevel)
+					val=0.0;
 				if(Manager->AutomaticMinSim)
-					UpdateDeviation(NbComp,0.0,sim,1);
-				(*sims)=sim;
+					UpdateDeviation(NbComp,0.0,val,1);
+				(*vals)=val;
 				NbComp++;
 			}
 		}
@@ -288,13 +295,13 @@ void GProfilesSimsCosinus::GProfilesSim::Update(void)
 //------------------------------------------------------------------------------
 GProfilesSimsCosinus::GProfilesSim::~GProfilesSim(void)
 {
-	if(Sims)
+	if(Values)
 	{
 		double** tmp;
 		size_t i;
-		for(tmp=Sims,i=NbLines+1;--i;tmp++)
+		for(tmp=Values,i=NbLines+1;--i;tmp++)
 			delete[] (*tmp);
-		delete[] Sims;
+		delete[] Values;
 	}
 }
 
@@ -308,12 +315,12 @@ GProfilesSimsCosinus::GProfilesSim::~GProfilesSim(void)
 
 //------------------------------------------------------------------------------
 GProfilesSimsCosinus::GProfilesSimsCosinus(GFactoryMeasure* fac)
-	: GMeasure(fac), GSignalHandler(), Sims(10,5), NullSimLevel(0.000001), MinSim(0.5), AutomaticMinSim(true)
+	: GMeasure(fac), GSignalHandler(), Values(10,5), NullSimLevel(0.000001), MinSim(0.5), AutomaticMinSim(true)
 {
 	GSession::AddHandler(this);
 	R::RCursor<GLang> Langs(GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns());
 	for(Langs.Start();!Langs.End();Langs.Next())
-		Sims.InsertPtr(new GProfilesSim(this,Langs()));
+		Values.InsertPtr(new GProfilesSim(this,Langs()));
 }
 
 
@@ -340,7 +347,7 @@ double GProfilesSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,unsign
 		throw GException("Cannot compare two subprofiles of a different language");
 
 	// Get the language
-	GProfilesSim* profSim=Sims.GetPtr<GLang*>(sub1->GetLang());
+	GProfilesSim* profSim=Values.GetPtr<GLang*>(sub1->GetLang());
 	if(!profSim)
 		throw GException("Language not defined");
 	if(profSim->NeedUpdate)
@@ -355,7 +362,7 @@ double GProfilesSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,unsign
 		id1=id2;
 		id2=tmp;
 	}
-	return(profSim->Sims[id1-2][id2-1]);
+	return(profSim->Values[id1-2][id2-1]);
 }
 
 
@@ -367,7 +374,7 @@ double GProfilesSimsCosinus::GetMinMeasure(const GLang* lang,unsigned int)
 	if(!AutomaticMinSim)
 		return(MinSim);
 
-	GProfilesSim* profSim=Sims.GetPtr(lang);
+	GProfilesSim* profSim=Values.GetPtr(lang);
 	if(!profSim)
 		throw GException("Language not defined");
 	if(profSim->NeedUpdate)
@@ -389,10 +396,10 @@ void GProfilesSimsCosinus::Event(GLang* lang, tEvent event)
 	switch(event)
 	{
 		case eObjCreated:
-			Sims.InsertPtr(new GProfilesSim(this,lang));
+			Values.InsertPtr(new GProfilesSim(this,lang));
 			break;
 		case eObjDeleted:
-			Sims.DeletePtr(*lang);
+			Values.DeletePtr(*lang);
 			break;
 		default:
 			break;
@@ -408,7 +415,7 @@ void GProfilesSimsCosinus::Event(GSubProfile* sub, tEvent event)
 	switch(event)
 	{
 		case eObjCreated:
-			profSim=Sims.GetPtr<GLang*>(sub->GetLang());
+			profSim=Values.GetPtr<GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");
 			profSim->Created.Insert(sub->GetProfile()->GetId());
@@ -419,7 +426,7 @@ void GProfilesSimsCosinus::Event(GSubProfile* sub, tEvent event)
 			profSim->NeedUpdate=true;
 			break;
 		case eObjModified:
-			profSim=Sims.GetPtr<GLang*>(sub->GetLang());
+			profSim=Values.GetPtr<GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");
 			if(!profSim->Created.IsIn(sub->GetProfile()->GetId()))
@@ -429,7 +436,7 @@ void GProfilesSimsCosinus::Event(GSubProfile* sub, tEvent event)
 			profSim->NeedUpdate=true;
 			break;
 		case eObjDeleted:
-			profSim = Sims.GetPtr<const GLang*>(sub->GetLang());
+			profSim = Values.GetPtr<const GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");
 			if(profSim->Created.IsIn(sub->GetProfile()->GetId()))

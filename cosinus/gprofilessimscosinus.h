@@ -62,7 +62,7 @@ class GProfilesSimsCosinus : public GMeasure, public GSignalHandler
 	/**
 	* Similarities.
 	*/
-	R::RContainer<GProfilesSim,true,true> Sims;
+	R::RContainer<GProfilesSim,true,true> Values;
 
 	/**
 	* level under which a similarity is cinsidered as null;
