@@ -92,15 +92,11 @@ void Configure(GFactoryMeasure* params)
 	dlg.MinDiffDocs->setValue(params->GetUInt("MinDiffDocs"));
 	dlg.NullSimLevel->setPrecision(10);
 	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
-	dlg.Memory->setChecked(params->GetBool("Memory"));
-	dlg.DebugSim->setChecked(params->GetBool("Debug"));
 	dlg.MinDisagreement->setValue(params->GetDouble("MinDisagreement"));
 	if(dlg.exec())
 	{
 		params->Set("MinDiffDocs",dlg.MinDiffDocs->value());
 		params->Set("NullSimLevel",dlg.NullSimLevel->value());
-		params->Set("Memory",dlg.Memory->isChecked());
-		params->Set("Debug",dlg.DebugSim->isChecked());
 		params->Set("MinDisagreement",dlg.MinDisagreement->value());
 		params->Apply();
  	}

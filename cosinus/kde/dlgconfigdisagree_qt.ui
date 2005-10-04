@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>414</width>
-            <height>263</height>
+            <width>333</width>
+            <height>154</height>
         </rect>
     </property>
     <property name="caption">
@@ -22,197 +22,152 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>groupBox19</cstring>
+                <cstring>layout3</cstring>
             </property>
-            <property name="title">
-                <string>Ressources</string>
-            </property>
-            <vbox>
+            <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QCheckBox">
+                <widget class="QLabel">
                     <property name="name">
-                        <cstring>Memory</cstring>
+                        <cstring>textLabel1_2</cstring>
                     </property>
                     <property name="text">
-                        <string>Store Similarities in Memory</string>
+                        <string>Minimum Number of Common Documents</string>
                     </property>
                 </widget>
-                <widget class="QCheckBox">
+                <spacer>
                     <property name="name">
-                        <cstring>DebugSim</cstring>
+                        <cstring>spacer2</cstring>
                     </property>
-                    <property name="text">
-                        <string>Debug similarities</string>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QSpinBox">
+                    <property name="name">
+                        <cstring>MinDiffDocs</cstring>
                     </property>
                 </widget>
-            </vbox>
+            </hbox>
         </widget>
-        <widget class="QGroupBox">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>groupBox2</cstring>
+                <cstring>layout45_2</cstring>
             </property>
-            <property name="title">
-                <string>Hard Constraints</string>
-            </property>
-            <vbox>
+            <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLayoutWidget">
+                <widget class="QLabel">
                     <property name="name">
-                        <cstring>layout3</cstring>
+                        <cstring>textLabel8_2</cstring>
                     </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel1_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Minimum Number of Common Documents</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer2</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QSpinBox">
-                            <property name="name">
-                                <cstring>MinDiffDocs</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
+                    <property name="text">
+                        <string>Minimum Disagreement Ratio</string>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Set a threshold for the minimum disagreement ratio between two profiles to avoid them to be grouped together.</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>If the &lt;b&gt;disagreement ratio&lt;/b&gt; between two subprofiles is greater or equal to the &lt;b&gt;Minimum Disagreement Threshold&lt;/b&gt;, the two profiles can never be grouped together.</string>
+                    </property>
                 </widget>
-                <widget class="QLayoutWidget">
+                <spacer>
                     <property name="name">
-                        <cstring>layout45_2</cstring>
+                        <cstring>spacer101_2</cstring>
                     </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel8_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Minimum Disagreement Ratio</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Set a threshold for the minimum disagreement ratio between two profiles to avoid them to be grouped together.</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>If the &lt;b&gt;disagreement ratio&lt;/b&gt; between two subprofiles is greater or equal to the &lt;b&gt;Minimum Disagreement Threshold&lt;/b&gt;, the two profiles can never be grouped together.</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer101_2</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KDoubleNumInput">
-                            <property name="name">
-                                <cstring>MinDisagreement</cstring>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Set a threshold for the minimum disagreement ratio between two profiles to avoid them to be grouped together.</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>If the &lt;b&gt;disagreement ratio&lt;/b&gt; between two subprofiles is greater or equal to the &lt;b&gt;Minimum Disagreement Threshold&lt;/b&gt;, the two profiles can never be grouped together.</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="KDoubleNumInput">
                     <property name="name">
-                        <cstring>layout43</cstring>
+                        <cstring>MinDisagreement</cstring>
                     </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel1_2_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Null Similarity Level :</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer8</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>140</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KDoubleNumInput">
-                            <property name="name">
-                                <cstring>NullSimLevel</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
+                    <property name="toolTip" stdset="0">
+                        <string>Set a threshold for the minimum disagreement ratio between two profiles to avoid them to be grouped together.</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>If the &lt;b&gt;disagreement ratio&lt;/b&gt; between two subprofiles is greater or equal to the &lt;b&gt;Minimum Disagreement Threshold&lt;/b&gt;, the two profiles can never be grouped together.</string>
+                    </property>
                 </widget>
-            </vbox>
+            </hbox>
         </widget>
-        <spacer>
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>spacer22</cstring>
+                <cstring>layout43</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel1_2_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Null Similarity Level :</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer8</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>140</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="KDoubleNumInput">
+                    <property name="name">
+                        <cstring>NullSimLevel</cstring>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="Line">
+            <property name="name">
+                <cstring>line1</cstring>
+            </property>
+            <property name="frameShape">
+                <enum>HLine</enum>
+            </property>
+            <property name="frameShadow">
+                <enum>Sunken</enum>
             </property>
             <property name="orientation">
-                <enum>Vertical</enum>
+                <enum>Horizontal</enum>
             </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>20</width>
-                    <height>80</height>
-                </size>
-            </property>
-        </spacer>
+        </widget>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>Layout1</cstring>

@@ -92,15 +92,11 @@ void Configure(GFactoryMeasure* params)
 	dlg.MinSameDocs->setValue(params->GetUInt("MinSameDocs"));
 	dlg.NullSimLevel->setPrecision(10);
 	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
-	dlg.Memory->setChecked(params->GetBool("Memory"));
-	dlg.DebugSim->setChecked(params->GetBool("Debug"));
 	dlg.MinAgreement->setValue(params->GetDouble("MinAgreement"));
 	if(dlg.exec())
 	{
 		params->Set("MinSameDocs",dlg.MinSameDocs->value());
 		params->Set("NullSimLevel",dlg.NullSimLevel->value());
-		params->Set("Memory",dlg.Memory->isChecked());
-		params->Set("Debug",dlg.DebugSim->isChecked());
 		params->Set("MinAgreement",dlg.MinAgreement->value());
 		params->Apply();
  	}

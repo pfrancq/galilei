@@ -62,28 +62,16 @@ class GProfilesSimsCosinus : public GMeasure, public GSignalHandler
 	/**
 	* Similarities.
 	*/
-	R::RContainer<GProfilesSim,true,true> Sims;
-
-	/*
-	* Must the sims be stock in a container
-	* or be recomputed each time
-	*/
-	bool Memory;
+	R::RContainer<GProfilesSim,true,true> Values;
 
 	/**
 	* level under which a similarity is cinsidered as null;
 	*/
 	double NullSimLevel;
 
-	unsigned int MinSameDocs;
-
-	bool Debug;
-
-
 	double MinAgreement;
 
-
-	bool NeedUpdate;
+	unsigned int MinSameDocs;
 
 public:
 
@@ -100,18 +88,11 @@ public:
 	*/
 	virtual void ApplyConfig(void);
 
-	/**
-	*  update the similairties
-	*/
-	void Update(void);
-
-	double ComputeAgree(const GSubProfile* sub1,const GSubProfile* sub2) const;
-
 	virtual double GetMeasure(unsigned int id1,unsigned int id2,unsigned int measure);
 
 	virtual double GetMinMeasure(const GLang* lang,unsigned int measure);
 
-	virtual double GetMinMeasure(unsigned int) {return(MinAgreement);}
+	virtual double GetMinMeasure(unsigned int);
 
 	/**
 	* A specific subprofile has changed.

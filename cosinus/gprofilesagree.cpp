@@ -37,6 +37,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rvectorint.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gprofilesagree.h>
 #include <gsubprofile.h>
@@ -46,53 +51,6 @@
 #include <gpluginmanagers.h>
 using namespace GALILEI;
 using namespace R;
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GSim
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Class representing a similarity with a subprofile.
-class GSim
-{
-public:
-	unsigned int SubId;      // identifier of the second profile
-	double AgreementRatio;     // Agreement ratio.
-	tObjState State;         // State of the similarity.
-
-
-	GSim(unsigned int id,double agree,tObjState state = osUpToDate)
-		: SubId(id), AgreementRatio(agree), State(state)
-		  {
-		  }
-	int Compare(const GSim* s) const {return(SubId-s->SubId);}
-	int Compare(const unsigned int id) const {return(SubId-id);}
-};
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GSims
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Class representing all the similarities for a given subprofile.
-class GSims : public RContainer<GSim,true,false>
-{
-public:
-	unsigned int SubId;         // Identifier of the first profile
-
-	GSims(unsigned int id,unsigned int max)
-		: RContainer<GSim,true,false>(max,max/2), SubId(id) {}
-	int Compare(const GSims* s) const {return(SubId-s->SubId);}
-	int Compare(const unsigned int id) const {return(SubId-id);}
-};
 
 
 
@@ -108,12 +66,14 @@ public:
 class GProfilesSimsCosinus::GProfilesSim
 {
 public:
-
-	R::RContainer<GSims,true,false>* Sims;  // Similarities
+	double** Values;
 	GLang* Lang;                                          // Language
 	GProfilesSimsCosinus* Manager;                               //manger of the gprofsim
-	// Identificators of modified (and defined) )profiles
-	RContainer<GSubProfile,false,true>* ModifiedProfs;
+	size_t NbLines;
+	bool NeedUpdate;
+	RVectorInt<true> Created;
+	RVectorInt<true> Modified;
+	RVectorInt<true> Deleted;
 
 	// Constructor and Compare methods.
 	GProfilesSim(GProfilesSimsCosinus* manager,GLang* lang);
@@ -121,27 +81,8 @@ public:
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const GProfilesSim& profilesSim) const {return(Lang->Compare(*profilesSim.Lang));}
 
-	// compute the similarity betwwen tow subprofiles
-	// param nullsim: if true, the sim is set to 0.0 (but we know that the sim is not null and has to exist!)
-	void Analyse(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2,bool isnull=false);
-	void Compute(const GSubProfile* sub1,const GSubProfile* sub2,double& agree) const;
-
-	GSim* GetRatio(const GSubProfile* sub1,const GSubProfile* sub2) const;
-
-	// Get the similarities between two profiles.
-	double GetAgreementRatio(const GSubProfile* s1,const GSubProfile* s2) const;
-
-	// Update the state of the profiles sims : If the subprofile has changed
-	// the corresponding sim will be set to state="osModified".
-	// If the similarity for a given subprofile doesn't exist, the element
-	// is created but not computed ( -> state to osModified )
-	void Update(void) throw(std::bad_alloc);
-
-	// add a new GSims fo a new subprofile subprof
-	GSims* AddNewSims(GSubProfile* subprof);
-
-	// Add a subprofile to the listof the modified one.
-	void AddModifiedProfile(const GSubProfile* s);
+	double Compute(GSubProfile* sub1,GSubProfile* sub2);
+	void Update(void);
 
 	// Destructor.
 	virtual ~GProfilesSim(void);
@@ -150,262 +91,175 @@ public:
 
 //------------------------------------------------------------------------------
 GProfilesSimsCosinus::GProfilesSim::GProfilesSim(GProfilesSimsCosinus* manager,GLang* lang)
-	:  Sims(0), Lang(lang), Manager(manager), ModifiedProfs(0)
+	:  Values(0), Lang(lang), Manager(manager), NbLines(0), NeedUpdate(false), Created(300), Modified(300), Deleted(300)
 {
-
-	RCursor<GSubProfile> Cur1, Cur2;
-	unsigned int i,pos;
-	GSims* sim;
-	RCursor<GSubProfile> s2;
-
-	//initialize table of modified subprofiles;
-	ModifiedProfs=new RContainer<GSubProfile,false,true>(5000,5000);
-
-	// if memory is false, we don't stock a container of similarities.
-	// sims will be re-calculated eacht time.
-	if((!Manager->Memory)||(!Manager->Session))
-		return;
-
-	//initialize the container of GSims (calculate size)
-	RCursor<GSubProfile> s(Manager->Session->GetSubProfiles(Lang));
-	for(s.Start(),i=0; !s.End(); s.Next())
-		if(s()->GetProfile()->GetId()>i)
-			i=s()->GetProfile()->GetId();
-	Sims=new RContainer<GSims,true,false>(i+1);
-
-	//builds the left inferior triangular matrix.
-	Cur1=s;
-	Cur2=s;
-	if(!Cur1.GetNb()) return;
-	for(Cur1.Start(), i=0; !Cur1.End();Cur1.Next(),i++)
-	{
-		// if the profile is the first one -> no need to create sim
-		if (Cur1()->GetProfile()->GetId()==1) continue;
-		pos=Cur1()->GetProfile()->GetId();
-		sim=new GSims(pos,pos);
-		Sims->InsertPtrAt(sim,pos);
-		//if the sub is not defined, no need to analyse sim (but the simS must be created!!)
-		if (!Cur1()->IsDefined()) continue;
-		for(Cur2.Start(); !Cur2.End(); Cur2.Next())
-		{
-			if (!Cur2()->IsDefined()) continue;
-			if (Cur2()->GetId()==Cur1()->GetId()) continue;
-			if(Cur1()->GetProfile()->GetId()>Cur2()->GetProfile()->GetId())
-		 		Analyse(sim,Cur1(),Cur2());
-		}
-	}
 }
 
 
 //------------------------------------------------------------------------------
-void GProfilesSimsCosinus::GProfilesSim::Compute(const GSubProfile* sub1,const GSubProfile* sub2,double& agree) const
+double GProfilesSimsCosinus::GProfilesSim::Compute(GSubProfile* sub1,GSubProfile* sub2)
 {
-	agree=Manager->ComputeAgree(sub1,sub2);
+	double agree=0.0;
+	unsigned int nbsame;
+	double nbcommon;
+
+	nbsame=sub1->GetCommonOKDocs(sub2);
+	nbcommon=double(sub1->GetCommonDocs(sub2));
+	if(nbcommon>=Manager->MinSameDocs)
+		agree=nbsame/nbcommon;
+	return(agree);
 }
 
 
 //------------------------------------------------------------------------------
-void GProfilesSimsCosinus::GProfilesSim::Analyse(GSims* sim,const GSubProfile* sub1,const GSubProfile* sub2,bool isnull)
+void GProfilesSimsCosinus::GProfilesSim::Update(void)
 {
-	double pcsame;
-	unsigned int pos;
-
-	pos=sub2->GetProfile()->GetId();
-	if(pos>=sub1->GetProfile()->GetId())
-		throw (GException("Out of Range in Analyse similarities !"));
-	Compute(sub1,sub2,pcsame);
-	if(isnull)
-		sim->InsertPtrAt(new GSim(pos,pcsame,osUpdated),pos);
-	else
-		if(pcsame!=0.0)
-			sim->InsertPtrAt(new GSim(pos,pcsame,osUpdated), pos);
-}
-
-
-//------------------------------------------------------------------------------
-GSim* GProfilesSimsCosinus::GProfilesSim::GetRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
-{
-	unsigned int i,j,tmp;
-
-	// get the position of the subprofiles in the double container
-	i = sub1->GetProfile()->GetId();
-	j = sub2->GetProfile()->GetId();
-
-	// the first indice i must be the highest one
-	if (i<j)
-	{
-		tmp=i;
-		i=j;
-		j=tmp;
-	}
-
-	if(Sims->GetMaxPos()<i)
-		return(0);
-	GSims* s=(*Sims)[i];
-	if(!s) return(0);
-	if(s->GetMaxPos()<j)
-		return(0);
-	GSim* s2=(*s)[j];
-	if(!s2) return(0);
-
-	if( (s2->State == osUpdated) || (s2->State == osUpToDate))
-		return(s2);
-
-	if(s2->State == osModified)
-	{
-		double pcsame;
-
-		Compute(sub1,sub2,pcsame);
-		s2->State = osUpToDate ;
-		s2->AgreementRatio=pcsame;
-		return(s2);
-	}
-
-	if (s2->State == osDelete)  return(0);   //-------------------------A MODIFIER
-
-
-	return(0);
-}
-
-
-//------------------------------------------------------------------------------
-double GProfilesSimsCosinus::GProfilesSim::GetAgreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
-{
-	GSim* b;
-
-	if(sub1->GetId()==sub2->GetId()) return(1.0);
-	b=GetRatio(sub1,sub2);
-	if(!b) return(0.0);
-	return(b->AgreementRatio);
-}
-
-
-//------------------------------------------------------------------------------
-void GProfilesSimsCosinus::GProfilesSim::Update(void) throw(std::bad_alloc)
-{
-	GSims* sims;
-	GSim* sim;
-	RCursor<GSubProfile> subscur;
-	RCursor<GSubProfile> subscur2;
-	subscur.Set(*ModifiedProfs);
-
 	// if memory is false, no update is needed
 	// since sims are claulctaed each time
-	if((!Manager->Memory)||(!Manager->Session))
+	if(!Manager->Session)
 		return;
 
-	//initialize the container of GSims (calculate size)
-	if(!Sims)
+	// Add the lines (if necessary)
+	size_t MaxLines=Manager->Session->GetMaxProfileId()-1;
+	size_t NbComp=(NbLines*(NbLines-1))/2;
+	if(NbLines<MaxLines)
 	{
-		unsigned int i;
-		RCursor<GSubProfile> s(Manager->Session->GetSubProfiles(Lang));
-		for(s.Start(),i=0; !s.End(); s.Next())
-			if(s()->GetProfile()->GetId()>i)
-				i=s()->GetProfile()->GetId();
-		Sims=new RContainer<GSims,true,false>(i+1);
+		double** tmp=new double*[MaxLines];
+		if(Values)
+		{
+			memcpy(tmp,Values,NbLines*sizeof(double*));
+			delete[] Values;
+		}
+		Values=tmp;
+		memset(&tmp[NbLines],0,(MaxLines-NbLines)*sizeof(double*));
+		NbLines=MaxLines;
 	}
 
-	subscur2=Manager->Session->GetSubProfiles(Lang);
-	if(!subscur.GetNb()) return;
-
-	// change status of modified subprofiles and add sims of created subprofiles
-	for(subscur.Start(); !subscur.End(); subscur.Next())
+	// Go thourgh all lines/cols (line=profileid+2);
+	size_t i;
+	double** cur=Values;
+	for(i=0;i<NbLines;i++,cur++)
 	{
-		if(!subscur()->IsDefined())
-			continue;
-		if(Sims->GetMaxPos()<subscur()->GetProfile()->GetId())
-			sims=AddNewSims(subscur());
-		else
+		// Verify if this line must be deleted?
+		if((Deleted.IsIn(i+2))&&(*cur))
 		{
-			sims = (*Sims)[subscur()->GetProfile()->GetId()];
-			if(!sims)
-				sims=AddNewSims(subscur());
-			else
+			// Go trough the cols
+			NbComp-=(i+1);
+			delete[] (*cur);
+			(*cur)=0;
+			continue;
+		}
+
+		GProfile* prof1=Manager->Session->GetProfile(i+2,false);
+		if(!prof1)
+			continue;
+		GSubProfile* sub1=prof1->GetSubProfile(Lang);
+		if(!sub1)
+			continue;
+
+		// Verify if all this line is modified
+		if((Modified.IsIn(i+2))||(Created.IsIn(i+2)))
+		{
+			bool New;
+
+			// If line not created -> do it and put everything at 0
+			if(!(*cur))
 			{
-				for(subscur2.Start(); !subscur2.End(); subscur2.Next())
+				(*cur)=new double[i+1];
+				memset(*cur,0,sizeof(double)*(i+1));
+				New=true;
+			}
+			else
+				New=false;
+
+			// Go trough the cols
+			size_t j;
+			double* vals;
+			for(j=0,vals=(*cur);j<i+1;j++,vals++)
+			{
+				if(Deleted.IsIn(j+1))
 				{
-					if(!subscur2()->IsDefined()) continue;
-					//take only less ID
-					if(!(subscur()->GetProfile()->GetId()>subscur2()->GetProfile()->GetId())) continue;
-					if(sims->GetMaxPos()<subscur2()->GetProfile()->GetId())
-						Analyse(sims, subscur(), subscur2(),true);
-					else
-					{
-						sim=(*sims)[subscur2()->GetProfile()->GetId()];
-						if(!sim)
-							Analyse(sims, subscur(), subscur2(),true);
-					}
+					(*vals)=0.0;
+					NbComp--;
+				}
+				else
+				{
+					GProfile* prof2=Manager->Session->GetProfile(j+1,false);
+					if(!prof2)
+						continue;
+					GSubProfile* sub2=prof2->GetSubProfile(Lang);
+					if(!sub2)
+						continue;
+					double val=Compute(sub1,sub2);
+					if(val<Manager->NullSimLevel)
+						val=0.0;
+					(*vals)=val;
+					if(New)
+						NbComp++;
 				}
 			}
+			continue;
 		}
-	}
 
-	RCursor<GSims> Cur(*Sims);
-	for (Cur.Start();!Cur.End();Cur.Next())
-	{
-		RCursor<GSim> Cur2(*Cur());
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-			Cur2()->State=osModified;
-	}
-
-	//reset the number of modified subprofiles.
-	ModifiedProfs->Clear();
-}
-
-
-//------------------------------------------------------------------------------
-GSims* GProfilesSimsCosinus::GProfilesSim::AddNewSims(GSubProfile* sub)
-{
-	GSims* sims, *tmpsims;
-	RCursor<GSubProfile> subcur;
-
-	if((!sub->IsDefined())||(!Manager->Session))
-		return(0);
-	sims=new GSims(sub->GetProfile()->GetId(),sub->GetProfile()->GetId());
-	Sims->InsertPtrAt(sims, sub->GetProfile()->GetId());
-	subcur=Manager->Session->GetSubProfiles(Lang);
-	for (subcur.Start(); !subcur.End(); subcur.Next())
-	{
-		if (subcur()->GetProfile()->GetId()<sub->GetProfile()->GetId())
+		// Go trough the cols
+		size_t j;
+		double* vals;
+		for(j=0,vals=(*cur);j<i+1;j++,vals++)
 		{
-			// if the sim exists, it hs to be set to 0.0 not to influence deviation!
-			Analyse(sims, sub,subcur(), true);
-		}
-		if (subcur()->GetProfile()->GetId()>sub->GetProfile()->GetId())
-		{
-			if(Sims->GetMaxPos()<subcur()->GetProfile()->GetId())
-				continue;
-			tmpsims=(*Sims)[subcur()->GetProfile()->GetId()];
-			if(tmpsims)
+			if(Deleted.IsIn(j+1))
 			{
-				// if the sim exists, it hs to be set to 0.0 not to influene devaition!
-				Analyse(tmpsims, subcur(), sub,true);
+				(*vals)=0.0;
+				NbComp--;
+			}
+
+			if(Modified.IsIn(j+1))
+			{
+				GProfile* prof2=Manager->Session->GetProfile(j+1,false);
+				if(!prof2)
+					continue;
+				GSubProfile* sub2=prof2->GetSubProfile(Lang);
+				if(!sub2)
+					continue;
+				double val=Compute(sub1,sub2);
+				if(val<Manager->NullSimLevel)
+					val=0.0;
+				(*vals)=val;
+			}
+
+			if(Created.IsIn(j+1))
+			{
+				GProfile* prof2=Manager->Session->GetProfile(j+1,false);
+				if(!prof2)
+					continue;
+				GSubProfile* sub2=prof2->GetSubProfile(Lang);
+				if(!sub2)
+					continue;
+				double val=Compute(sub1,sub2);
+				if(val<Manager->NullSimLevel)
+					val=0.0;
+				(*vals)=val;
+				NbComp++;
 			}
 		}
 	}
-	return sims;
-}
-
-
-
-//------------------------------------------------------------------------------
-void GProfilesSimsCosinus::GProfilesSim::AddModifiedProfile(const GSubProfile* s)
-{
-	if(Manager->Memory)
-	{
-		if(!ModifiedProfs->GetPtr(s))
-			ModifiedProfs->InsertPtr(s);
-	}
+	Deleted.Clear();
+	Created.Clear();
+	Modified.Clear();
+	NeedUpdate=false;
 }
 
 
 //------------------------------------------------------------------------------
 GProfilesSimsCosinus::GProfilesSim::~GProfilesSim(void)
 {
-	if (Sims)
-		delete Sims;
-	if(ModifiedProfs)
-		delete ModifiedProfs;
+	if(Values)
+	{
+		double** tmp;
+		size_t i;
+		for(tmp=Values,i=NbLines+1;--i;tmp++)
+			delete[] (*tmp);
+		delete[] Values;
+	}
 }
 
 
@@ -418,15 +272,12 @@ GProfilesSimsCosinus::GProfilesSim::~GProfilesSim(void)
 
 //------------------------------------------------------------------------------
 GProfilesSimsCosinus::GProfilesSimsCosinus(GFactoryMeasure* fac)
-	: GMeasure(fac), GSignalHandler(), Sims(10,5), Memory(true),
-	  NullSimLevel(0.000001), MinSameDocs(7), Debug(false),
-	  NeedUpdate(false)
+	: GMeasure(fac), GSignalHandler(), Values(10,5), NullSimLevel(0.000001), MinAgreement(0.5), MinSameDocs(10)
 {
 	GSession::AddHandler(this);
-	if(!Memory) return;
 	R::RCursor<GLang> Langs(GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns());
 	for(Langs.Start();!Langs.End();Langs.Next())
-		Sims.InsertPtr(new GProfilesSim(this,Langs()));
+		Values.InsertPtr(new GProfilesSim(this,Langs()));
 }
 
 
@@ -434,58 +285,41 @@ GProfilesSimsCosinus::GProfilesSimsCosinus(GFactoryMeasure* fac)
 void GProfilesSimsCosinus::ApplyConfig(void)
 {
 	MinSameDocs=Factory->GetUInt("MinSameDocs");
-		NullSimLevel=Factory->GetDouble("NullSimLevel");
-	Memory=Factory->GetBool("Memory");
-	Debug=Factory->GetBool("Debug");
+	NullSimLevel=Factory->GetDouble("NullSimLevel");
 	MinAgreement=Factory->GetDouble("MinAgreement");
-}
-
-
-//------------------------------------------------------------------------------
-void GProfilesSimsCosinus::Update(void)
-{
-	RCursor<GProfilesSim> Cur(Sims);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Update();
-	NeedUpdate=false;
-}
-
-
-
-//------------------------------------------------------------------------------
-double GProfilesSimsCosinus::ComputeAgree(const GSubProfile* sub1,const GSubProfile* sub2) const
-{
-	double agree=0.0;
-	unsigned int nbsame;
-	double nbcommon;
-
-	nbsame=sub1->GetCommonOKDocs(sub2);
-	nbcommon=double(sub1->GetCommonDocs(sub2));
-	if(nbcommon>=MinSameDocs)
-		agree=nbsame/nbcommon;
-	if(fabs(agree)<NullSimLevel)
-		agree=0.0;
-	return(agree);
 }
 
 
 //------------------------------------------------------------------------------
 double GProfilesSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,unsigned int)
 {
+	// If same subprofile -> return 1
+	if(id1==id2)
+		return(1.0);
+
+	// Get the subprofiles and verify that they defined in the same language
 	GSubProfile* sub1=Session->GetSubProfile(id1,0);
 	GSubProfile* sub2=Session->GetSubProfile(id2,0);
-
 	if(sub1->GetLang()!=sub2->GetLang())
 		throw GException("Cannot compare two subprofiles of a different language");
 
-	//if memory is false, re-calculate
-	if(!Memory)
-		return(ComputeAgree(sub1,sub2));
+	// Get the language
+	GProfilesSim* profSim=Values.GetPtr<GLang*>(sub1->GetLang());
+	if(!profSim)
+		throw GException("Language not defined");
+	if(profSim->NeedUpdate)
+		profSim->Update();
 
-	if(NeedUpdate)
-		Update();
-	GProfilesSim* ProfSim = Sims.GetPtr<const GLang*>(sub1->GetLang());
-	return(ProfSim->GetAgreementRatio(sub1,sub2));
+	// Get the sims (use the identificators of the profile)
+	id1=sub1->GetProfile()->GetId();
+	id2=sub2->GetProfile()->GetId();
+	if(id1<id2)
+	{
+		size_t tmp=id1;
+		id1=id2;
+		id2=tmp;
+	}
+	return(profSim->Values[id1-2][id2-1]);
 }
 
 
@@ -497,16 +331,22 @@ double GProfilesSimsCosinus::GetMinMeasure(const GLang*,unsigned int)
 
 
 //------------------------------------------------------------------------------
+double GProfilesSimsCosinus::GetMinMeasure(unsigned int)
+{
+	return(MinAgreement);
+}
+
+
+//------------------------------------------------------------------------------
 void GProfilesSimsCosinus::Event(GLang* lang, tEvent event)
 {
-	if(!Memory) return;
 	switch(event)
 	{
 		case eObjCreated:
-			Sims.InsertPtr(new GProfilesSim(this,lang));
+			Values.InsertPtr(new GProfilesSim(this,lang));
 			break;
 		case eObjDeleted:
-			Sims.DeletePtr(*lang);
+			Values.DeletePtr(*lang);
 			break;
 		default:
 			break;
@@ -517,38 +357,41 @@ void GProfilesSimsCosinus::Event(GLang* lang, tEvent event)
 //------------------------------------------------------------------------------
 void GProfilesSimsCosinus::Event(GSubProfile* sub, tEvent event)
 {
-	if(!Memory) return;
 	GProfilesSim* profSim;
-	RCursor<GSims> Sub;
 
 	switch(event)
 	{
 		case eObjCreated:
-		case eObjModified:
-			profSim=Sims.GetPtr<GLang*>(sub->GetLang());
+			profSim=Values.GetPtr<GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");
-			profSim->AddModifiedProfile(sub);
-			NeedUpdate=true;
+			profSim->Created.Insert(sub->GetProfile()->GetId());
+			if(profSim->Deleted.IsIn(sub->GetProfile()->GetId()))
+				profSim->Deleted.Delete(sub->GetProfile()->GetId());
+			if(profSim->Modified.IsIn(sub->GetProfile()->GetId()))
+				profSim->Modified.Delete(sub->GetProfile()->GetId());
+			profSim->NeedUpdate=true;
+			break;
+		case eObjModified:
+			profSim=Values.GetPtr<GLang*>(sub->GetLang());
+			if(!profSim)
+				throw GException("Language not defined");
+			if(!profSim->Created.IsIn(sub->GetProfile()->GetId()))
+				profSim->Modified.Insert(sub->GetProfile()->GetId());
+			if(profSim->Deleted.IsIn(sub->GetProfile()->GetId()))
+				profSim->Deleted.Delete(sub->GetProfile()->GetId());
+			profSim->NeedUpdate=true;
 			break;
 		case eObjDeleted:
-			profSim = Sims.GetPtr<const GLang*>(sub->GetLang());
+			profSim = Values.GetPtr<const GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");
-			if(profSim->Sims)
-			{
-				Sub.Set(*profSim->Sims);
-				for(Sub.Start();!Sub.End();Sub.Next())
-				{
-					if(Sub()->SubId>sub->GetProfile()->GetId())
-						continue;
-					if(sub->GetProfile()->GetId()<Sub()->GetMaxPos())
-						Sub()->DeletePtrAt(sub->GetProfile()->GetId(),false);
-				}
-				if(sub->GetProfile()->GetId()<profSim->Sims->GetMaxPos())
-					profSim->Sims->DeletePtrAt(sub->GetProfile()->GetId(),false);
-			}
-			profSim->ModifiedProfs->DeletePtr(sub);
+			if(profSim->Created.IsIn(sub->GetProfile()->GetId()))
+				profSim->Created.Delete(sub->GetProfile()->GetId());
+			if(profSim->Modified.IsIn(sub->GetProfile()->GetId()))
+				profSim->Modified.Delete(sub->GetProfile()->GetId());
+			profSim->Deleted.Insert(sub->GetProfile()->GetId());
+			profSim->NeedUpdate=true;
 			break;
 		default:
 			break;
@@ -561,8 +404,6 @@ void GProfilesSimsCosinus::CreateParams(GParams* params)
 {
 	params->InsertPtr(new GParamUInt("MinSameDocs",7));
 	params->InsertPtr(new GParamDouble("NullSimLevel",0.00001));
-	params->InsertPtr(new GParamBool("Memory",true));
-	params->InsertPtr(new GParamBool("Debug",false));
 	params->InsertPtr(new GParamDouble("MinAgreement",0.6));
 }
 
