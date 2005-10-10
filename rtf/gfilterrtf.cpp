@@ -385,7 +385,7 @@ bool GFilterRTF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
 		throw GException("Unexcepted exception");
 	}
 
-	Doc->GetContent()->DeleteEmptyTags(Doc);
+	Doc->GetContent()->DeleteEmptySubNodes();
 	return(true);
 }
 
