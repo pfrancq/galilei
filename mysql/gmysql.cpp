@@ -906,10 +906,11 @@ void GStorageMySQL::LoadSubjects(void)
 		Session->GetSubjects()->Clear();
 
 		// Load the subjects
+		GSubject* Top=Session->GetSubjects()->GetTop();
 		RQuery sub(Db,"SELECT topicid,name,used FROM topics WHERE parent=0");
 		for(sub.Start();!sub.End();sub.Next())
 		{
-			Session->GetSubjects()->InsertNode(0,subject=new GSubject(Session->GetSubjects(),atoi(sub[0]),sub[1],atoi(sub[2])));
+			Session->GetSubjects()->InsertNode(Top,subject=new GSubject(Session->GetSubjects(),atoi(sub[0]),sub[1],atoi(sub[2])));
 			sSql="SELECT topicid,name,used FROM topics WHERE parent="+sub[0];
 			RQuery subsub(*Db,sSql);
 			for(subsub.Start();!subsub.End();subsub.Next())
