@@ -275,6 +275,11 @@ unsigned int GALILEI::GSubject::GetNbDocs(void) const
 void GSubject::Insert(GProfile* profile)
 {
 	Data->Profiles.InsertPtr(profile);
+
+	// Go trought the subprofiles
+	RCursor<GSubProfile> Sub(profile->GetSubProfiles());
+	for(Sub.Start();!Sub.End();Sub.Next())
+		InsertSubProfile(Sub());
 }
 
 

@@ -152,6 +152,7 @@ GSubjects::GSubjects(GSession* session)
 	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Data(0)
 {
 	Data=new Intern(session);
+	InsertNode(0,new GSubject(this,0,"Subjects",false));
 	GParams::InsertPtr(new GParamDouble("PercOK",10.0));
 	GParams::InsertPtr(new GParamDouble("PercKO",10.0));
 	GParams::InsertPtr(new GParamDouble("PercH",50.0));
@@ -532,6 +533,8 @@ void GSubjects::ComputeTotal(void)
 			Sub=GroupsIdeal()->GetSubProfiles(lang);
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
+				if(Sub()->GetGroupId()==cNoRef)
+					continue;
 				VectorRows[row]++;
 				NbTot++;
 				GroupComputed=Data->Session->GetGroup(Sub()->GetGroupId());
@@ -935,6 +938,7 @@ void GSubjects::Clear(void)
 {
 	RTree<GSubject,true,false>::Clear();
 	Data->Profiles.Clear();
+	InsertNode(0,new GSubject(this,0,"Subjects",false));
 }
 
 
