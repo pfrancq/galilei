@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
 		Tag=Config.GetTag("Plugins");
 		if(!Tag)
 			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
-		lib.InsertPtr(new RString(Tag->GetAttrValue("Dir")));
+		Tag->GetAttrValue("Dir").Split(lib,';');
 
 		// Create Log files
 		Log=new GSlotLog(Config.GetTag("Log")->GetAttrValue("File"));
@@ -149,12 +149,14 @@ int main(int argc, char *argv[])
 		// Init Session
 		GSession Session=GSession();
 		Log->WriteLog("Session created");
-		
+
 		//connect plugins
 		GPluginManagers::PluginManagers.Connect(&Session);
 		Log->WriteLog("Plugins connected to session");
-		
+
 		//load data
+		cout<<"Load Data ...";
+		cout.flush();
 		if(DoDocs||DoProfiles)
 			Session.GetStorage()->LoadDocs();
 		if(DoGroups)
@@ -162,9 +164,11 @@ int main(int argc, char *argv[])
 		if(DoProfiles||DoGroups)
 			Session.GetStorage()->LoadUsers();
 		Log->WriteLog("Data loaded");
+		cout<<"OK"<<endl;
 		if(DoDocs)
 		{
 			cout<<"Analyse Documents ...";
+			cout.flush();
 			Session.AnalyseDocs(Log);
 			Log->WriteLog("Documents analysed");
 			cout<<"OK"<<endl;
@@ -172,6 +176,7 @@ int main(int argc, char *argv[])
 		if(DoProfiles)
 		{
 			cout<<"Compute Profiles ...";
+			cout.flush();
 			Session.CalcProfiles(Log);
 			cout<<"OK"<<endl;
 			Log->WriteLog("Profiles computed");
@@ -179,6 +184,7 @@ int main(int argc, char *argv[])
 		if(DoGroups)
 		{
 			cout<<"Groups Profiles ...";
+			cout.flush();
 			Session.GroupingProfiles(Log);
 			cout<<"OK"<<endl;
 			Log->WriteLog("Groups computed");
