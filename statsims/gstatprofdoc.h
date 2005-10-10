@@ -5,7 +5,7 @@
 
 	Statistics on doc juged by the profiles. - Header.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be)
@@ -46,7 +46,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GStatProfDoc class provides statistics on the documents juged by the profiles. 
+* The GStatProfDoc class provides statistics on the documents juged by the profiles.
 * @author  Vandaele Valery
 * @short Statisctics on profiles and documents.
 */
@@ -73,11 +73,15 @@ protected :
 	* Mean of Desagreement Ratio between profiles.
 	*/
 	double MeanDiff;
-	
+
 	/**
 	* Statistics Output file.
 	*/
 	R::RTextFile* File;
+
+	/**
+	*/
+	GMeasure* Measure;
 
 
 public :
@@ -121,7 +125,7 @@ public :
 	*/
 	void WriteLine(void);
 
-	
+
 	/**
 	* destructor of GStatProfDoc
 	* @param1 [param1 name]    [param1 description]

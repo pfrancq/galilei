@@ -31,6 +31,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rcursor.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gpluginmanagers.h>
 
@@ -42,7 +47,7 @@
 * @author Pascal Francq.
 * @short Similarities between elements.
 */
-template<class E,class C>
+template<class E1,class E2>
 	class GStatSimElements
 {
 public:
@@ -52,10 +57,9 @@ public:
 	{
 	public:
 		GSubject* Sub;
-		bool OverlapL;
-		bool OverlapG;
+		bool Overlap;
 
-		LocalStat(GSubject* s) : Sub(s), OverlapL(false), OverlapG(false) {}
+		LocalStat(GSubject* s) : Sub(s), Overlap(false) {}
 		int Compare(const LocalStat& l) const {return(Sub->Compare(*l.Sub));}
 		int Compare(const GSubject& s) const {return(Sub->Compare(s));}
 	};
@@ -68,64 +72,29 @@ protected:
 	GSession* Session;
 
 	/**
-	* The Mean of the Mean intra group similarity (Without IF).
+	* The Mean of the Mean intra group similarity.
 	*/
-	double MeanIntraML;
+	double MeanIntra;
 
 	/**
-	* The Mean of the Mean extra group similarity (Without IF).
+	* The Mean of the Mean extra group similarity.
 	*/
-	double MeanExtraML;
+	double MeanExtra;
 
 	/**
-	* Ratio Rie (Without IF).
+	* Ratio Rie.
 	*/
-	double RieL;
+	double Rie;
 
 	/**
 	* Global Overlap Factor (Without IF).
 	*/
-	double GOverlapL;
+	double GOverlap;
 
 	/**
 	* Overlap Factor (Without IF).
 	*/
-	double OverlapL;
-
-	/**
-	* The Mean of the Mean intra group similarity (With IF).
-	*/
-	double MeanIntraMG;
-
-	/**
-	* The Mean of the Mean extra group similarity (With IF).
-	*/
-	double MeanExtraMG;
-
-	/**
-	* Ratio Rie (With IF).
-	*/
-	double RieG;
-
-	/**
-	* Global Overlap Factor (With IF).
-	*/
-	double GOverlapG;
-
-	/**
-	* Overlap Factor (With IF).
-	*/
-	double OverlapG;
-
-	/**
-	* Similarities with IF must be calculated.
-	*/
-	bool Global;
-
-	/**
-	* Similarities without IF must be calculated.
-	*/
-	bool Local;
+	double Overlap;
 
 	/**
 	* Statistics Output file.
@@ -137,45 +106,33 @@ protected:
 	*/
 	R::RContainer<LocalStat,true,true> Sub;
 
+	/**
+	*/
+	GMeasure* Measure;
+
+	unsigned int nbElements;
+
 public:
 
 	/**
 	* Constructor.
 	* @param ses            The  galilei session.
 	* @param f              File.
-	* @param g              Similarities with IF.
-	* @param l              Similarities without IF.
 	*/
-	GStatSimElements(GSession* ses,R::RTextFile* f,bool g,bool l);
+	GStatSimElements(GSession* ses,R::RTextFile* f);
 
-	/**
-	* Method that must return a cursor of the elements. This method must be
-	* overloaded.
-	*/
-	virtual C GetElementCursor(GLang*)  {C Cur; return(Cur);}
+	virtual R::RCursor<E1> GetE1Cursor(GSubject* sub,GLang* lang)=0;
 
-	/**
-	* Method that test if two elements are of the subject. This method must be
-	* overloaded.
-	*/
-	virtual bool SameSubject(E*,E*) {return(false);}
-
-	/**
-	* Method that verifies if a subject is assigned to a given element. This
-	* method must be overloaded.
-	*/
-	virtual bool HasSubject(E*) {return(false);}
-
-	/**
-	* Update local statistics to made all the subjects of an element overlapped.
-	* This method must be overloaded.
-	*/
-	virtual void OverlapTopics(E*,bool) {}
+	virtual R::RCursor<E2> GetE2Cursor(GSubject* sub,GLang* lang)=0;
 
 	/**
 	* Compute the similarities statistics.
 	*/
 	void Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag);
+
+	/**
+	*/
+	void ComputeSubject(GStatsCalc* calc,GSubject* sub,GLang* lang,RXMLStruct* xml,RXMLTag* parent);
 
 	/**
 	* Destructor for the main view.
@@ -193,252 +150,165 @@ public:
 
 #include <gstatscalc.h>
 //------------------------------------------------------------------------------
-template<class E,class C>
-	GStatSimElements<E,C>::GStatSimElements(GSession* ses,RTextFile* f,bool g,bool l)
-	: Session(ses), Global(g), Local(l), File(f), Sub(100,50)
+template<class E1,class E2>
+	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,RTextFile* f)
+	: Session(ses), File(f), Sub(100,50)
 {
 	if(File)
 	{
 		(*File)<<"Id";
-		if(Global) (*File)<<"RieGlobal";
-		if(Local) (*File)<<"RieLocal";
+		(*File)<<"Rie";
 		(*File)<<endl;
 	}
 }
 
 
 //------------------------------------------------------------------------------
-template<class E,class C>
-	void GStatSimElements<E,C>::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
+template<class E1,class E2>
+	void GStatSimElements<E1,E2>::ComputeSubject(GStatsCalc* calc,GSubject* sub,GLang* lang,RXMLStruct* xml,RXMLTag* parent)
 {
-	R::RCursor<GFactoryLang> Langs;
-	GLang* lang;
-	C Cur1;
-	C Cur2;
-	R::RCursor<GSubject> Sub1;
-	double SimIntraL;
-	double SimExtraL;
-	double SimIntraG;
-	double SimExtraG;
+	double SimIntra;
+	double SimExtra;
 	double tmp;
 	unsigned int nbIntra;
 	unsigned int nbExtra;
-	unsigned int nbElements;
 	bool Same;
-	double MinIntraL;
-	double MaxExtraL;
-	double MinIntraG;
-	double MaxExtraG;
-	RXMLTag* LangTag;
+	double MinIntra;
+	double MaxExtra;
 
-	// Go through the languages
-	Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
-	for(Langs.Start();!Langs.End();Langs.Next())
+	// Create tag
+	RXMLTag* Tag=new RXMLTag(xml,sub->GetName());
+	xml->AddTag(parent,Tag);
+
+	// Init Local Data
+	SimIntra=SimExtra=0.0;
+	nbIntra=nbExtra=0;
+	MinIntra=1.1;
+	MaxExtra=-1.1;
+
+	// Go through each element of this subject
+	R::RCursor<E1> Cur1(GetE1Cursor(sub,lang));
+	for(Cur1.Start();!Cur1.End();Cur1.Next())
 	{
-		LangTag=0;
-		nbElements=0;
-		lang=Langs()->GetPlugin();
-		if(!lang) continue;
+		if(Cur1()->GetLang()!=lang) continue;
+		if(!Cur1()->IsDefined()) continue;
 
-		// Initialization
-		OverlapL=MeanExtraML=MeanIntraML=0.0;
-		OverlapG=MeanExtraMG=MeanIntraMG=0.0;
-		Sub.Clear();
-		Cur1=GetElementCursor(lang);
-		Cur2=GetElementCursor(lang);
-
-		// Go through each element
-		for(Cur1.Start();!Cur1.End();Cur1.Next())
+		// Go trough the other subjects
+		R::RCursor<GSubject> Subs2(Session->GetSubjects()->GetNodes());
+		for(Subs2.Start();!Subs2.End();Subs2.Next())
 		{
-			if(!Cur1()->IsDefined()) continue;
-			nbElements++;
-
-			// Init Local Data
-			SimIntraG=SimExtraG=SimIntraL=SimExtraL=0.0;
-			nbIntra=nbExtra=0;
-			MinIntraG=MinIntraL=1.1;
-			MaxExtraG=MaxExtraL=-1.1;
+			// Look if Same topic
+			Same=(sub==Subs2());
 
 			// Go through to other elements
+			R::RCursor<E2> Cur2(GetE2Cursor(Subs2(),lang));
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 			{
-				if(Cur1()==Cur2()) continue;
+				if(Cur2()->GetLang()!=lang) continue;
 				if(!Cur2()->IsDefined()) continue;
 
-				// Look if Same topic
-				Same=SameSubject(Cur1(),Cur2());
+				tmp=Measure->GetMeasure(Cur1()->GetId(),Cur2()->GetId());
 				if(Same)
+				{
 					nbIntra++;
+					SimIntra+=tmp;
+					if(tmp<MinIntra) MinIntra=tmp;
+				}
 				else
+				{
 					nbExtra++;
-
-				if(Global)
-				{
-					tmp=Cur1()->SimilarityIFF(*Cur2(),otSubProfile,Cur1()->GetLang());
-					if(Same)
-					{
-						SimIntraG+=tmp;
-						if(tmp<MinIntraG) MinIntraG=tmp;
-					}
-					else
-					{
-						SimExtraG+=tmp;
-						if(tmp>MaxExtraG) MaxExtraG=tmp;
-					}
+					SimExtra+=tmp;
+					if(tmp>MaxExtra) MaxExtra=tmp;
 				}
-
-				if(Local)
-				{
-					tmp=Cur1()->Similarity(*Cur2());
-					if(Same)
-					{
-						SimIntraL+=tmp;
-						if(tmp<MinIntraL) MinIntraL=tmp;
-					}
-					else
-					{
-						SimExtraL+=tmp;
-						if(tmp>MaxExtraL) MaxExtraL=tmp;
-					}
-				}
-			}
-
-			// Compute Overlap
-			if(Global&&(MaxExtraG>MinIntraG))
-			{
-				OverlapG++;
-				OverlapTopics(Cur1(),true);
-			}
-			if(Local&&(MaxExtraL>MinIntraL))
-			{
-				OverlapL++;
-				OverlapTopics(Cur1(),false);
-			}
-
-			// Compute Rie for current element
-			if(Global)
-			{
-				if(nbIntra)
-					SimIntraG/=nbIntra;
-				else
-					SimIntraG=1.0;
-				if(nbExtra)
-					SimExtraG/=nbExtra;
-				else
-					SimExtraG=1.0;
-				MeanIntraMG+=SimIntraG;
-				MeanExtraMG+=SimExtraG;
-			}
-			if(Local)
-			{
-				if(nbIntra)
-					SimIntraL/=nbIntra;
-				else
-					SimIntraL=1.0;
-				if(nbExtra)
-					SimExtraL/=nbExtra;
-				else
-					SimExtraL=1.0;
-				MeanIntraML+=SimIntraL;
-				MeanExtraML+=SimExtraL;
-			}
-			if(File)
-			{
-				(*File)<<Cur1()->GetId();
-				if(Global)
-				{
-					if(SimIntraL==0.0)
-						tmp=0.0;
-					else
-						tmp=(SimIntraL-SimExtraL)/SimIntraL;
-					(*File)<<tmp;
-				}
-				if(Local)
-				{
-					if(SimIntraL==0.0)
-						tmp=0.0;
-					else
-						tmp=(SimIntraL-SimExtraL)/SimIntraL;
-					(*File)<<tmp;
-				}
-				(*File)<<endl;
 			}
 		}
+	}
+
+	// Compute Overlap for current subject
+	if(MaxExtra>MinIntra)
+		Overlap++;
+
+	// Compute Rie for current element
+	if(nbIntra)
+	{
+		SimIntra/=nbIntra;
+		MeanIntra+=SimIntra;
+		calc->AddTag(xml,Tag,"Min Intra",MinIntra);
+		calc->AddTag(xml,Tag,"Mean Intra",SimIntra);
+	}
+
+	if(nbExtra)
+	{
+		SimExtra/=nbExtra;
+		MeanExtra+=SimExtra;
+		calc->AddTag(xml,Tag,"Max Extra",MaxExtra);
+		calc->AddTag(xml,Tag,"Mean Extra",SimExtra);
+	}
+
+	if(nbIntra||nbExtra)
+		nbElements++;
+
+	if(SimIntra!=0.0)
+	{
+		tmp=(SimIntra-SimExtra)/SimIntra;
+		if(File)
+			(*File)<<Cur1()->GetId()<<tmp<<endl;
+		calc->AddTag(xml,Tag,"Rie",tmp);
+	}
+
+	// Go trough Subtopic
+	R::RCursor<GSubject> Cur(sub->GetNodes());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		ComputeSubject(calc,Cur(),lang,xml,Tag);
+
+	if(Tag->IsEmpty())
+		xml->DeleteTag(Tag);
+}
+
+
+//------------------------------------------------------------------------------
+template<class E1,class E2>
+	void GStatSimElements<E1,E2>::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
+{
+	RXMLTag* LangTag;
+
+
+	// Go through the languages
+	R::RCursor<GLang> Langs(GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns());
+	R::RCursor<GSubject> Subs1(Session->GetSubjects()->GetTop()->GetNodes());
+	for(Langs.Start();!Langs.End();Langs.Next())
+	{
+		nbElements=0;
+		LangTag=new RXMLTag(xml,Langs()->GetName());
+		xml->AddTag(tag,LangTag);
+
+		// Initialization
+		Overlap=MeanExtra=MeanIntra=0.0;
+		Sub.Clear();
+
+		// Go trough the subjects
+		for(Subs1.Start();!Subs1.End();Subs1.Next())
+			ComputeSubject(calc,Subs1(),Langs(),xml,LangTag);
 
 		// Compute elements statistics
-		if(!nbElements) continue;
-		if(Global)
+		if(nbElements)
 		{
-			MeanIntraMG/=nbElements;
-			MeanExtraMG/=nbElements;
-			if(MeanIntraMG==0.0)
-				RieG=0.0;
+			MeanIntra/=nbElements;
+			MeanExtra/=nbElements;
+			if(MeanIntra==0.0)
+				Rie=0.0;
 			else
-				RieG=(MeanIntraMG-MeanExtraMG)/MeanIntraMG;
-			OverlapG/=nbElements;
+				Rie=(MeanIntra-MeanExtra)/MeanIntra;
+			Overlap/=nbElements;
 
-			if(!LangTag)
-			{
-				LangTag=new RXMLTag(xml,lang->GetName());
-				xml->AddTag(tag,LangTag);
-			}
-			RXMLTag *t=new RXMLTag(xml,"With IF");
-			xml->AddTag(LangTag,t);
-			calc->AddTag(xml,t,"MeanIntra",MeanIntraMG);
-			calc->AddTag(xml,t,"MeanExtra",MeanExtraMG);
-			calc->AddTag(xml,t,"Rie",RieG);
-			calc->AddTag(xml,t,"Global Overlap",OverlapG);
+			calc->AddTag(xml,LangTag,"Mean Intra",MeanIntra);
+			calc->AddTag(xml,LangTag,"Mean Extra",MeanExtra);
+			calc->AddTag(xml,LangTag,"Rie",Rie);
+			calc->AddTag(xml,LangTag,"Overlap",Overlap);
+			calc->AddTag(xml,LangTag,"Min Measure",Measure->GetMinMeasure(Langs()));
 		}
-		if(Local)
-		{
-			MeanIntraML/=nbElements;
-			MeanExtraML/=nbElements;
-			if(MeanIntraML==0.0)
-				RieL=0.0;
-			else
-				RieL=(MeanIntraML-MeanExtraML)/MeanIntraML;
-			OverlapL/=nbElements;
 
-			if(!LangTag)
-			{
-				LangTag=new RXMLTag(xml,lang->GetName());
-				xml->AddTag(tag,LangTag);
-			}
-			RXMLTag *t=new RXMLTag(xml,"Without IF");
-			xml->AddTag(LangTag,t);
-			calc->AddTag(xml,t,"MeanIntra",MeanIntraML);
-			calc->AddTag(xml,t,"MeanExtra",MeanExtraML);
-			calc->AddTag(xml,t,"Rie",RieL);
-			calc->AddTag(xml,t,"Global Overlap",OverlapL);
-		}
+		if(LangTag->IsEmpty())
+			xml->DeleteTag(LangTag);
 	}
-
-	// Compute topics statistics
-	R::RCursor<LocalStat> LocalStats(Sub);
-	if(!LocalStats.GetNb()) return;
-	LangTag=new RXMLTag(xml,"Topics");
-	xml->AddTag(tag,LangTag);
-	for(LocalStats.Start(),GOverlapG=0,GOverlapL=0;!LocalStats.End();LocalStats.Next())
-	{
-		RXMLTag *t=new RXMLTag(xml,LocalStats()->Sub->GetName());
-		xml->AddTag(LangTag,t);
-		if(LocalStats()->OverlapG)
-		{
-			GOverlapG++;
-			calc->AddTag(xml,t,"Overlap with IF","true");
-		}
-		else
-			calc->AddTag(xml,t,"Overlap with IF","false");
-		if(LocalStats()->OverlapL)
-		{
-			GOverlapL++;
-			calc->AddTag(xml,t,"Overlap without IF","true");
-		}
-		else
-			calc->AddTag(xml,t,"Overlap without IF","false");
-	}
-	GOverlapG/=LocalStats.GetNb();
-	GOverlapL/=LocalStats.GetNb();
-	calc->AddTag(xml,LangTag,"Overlap with IF",GOverlapG);
-	calc->AddTag(xml,LangTag,"Overlap without IF",GOverlapL);
 }

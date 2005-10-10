@@ -73,78 +73,62 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // Statistics between documents
-class GStatSimDoc : public GStatSimElements<GDoc,R::RCursor<GDoc> >
+class GStatSimDoc : public GStatSimElements<GDoc,GDoc>
 {
 public:
-	GStatSimDoc(GSession* ses,R::RTextFile* f,bool g,bool l)
-		: GStatSimElements<GDoc,R::RCursor<GDoc> >(ses,f,g,l) {}
-
-	R::RCursor<GDoc> GetElementCursor(GLang* Lang)
-	{ return(Session->GetDocs(Lang));}
-
-	bool SameSubject(GDoc* doc1,GDoc* doc2)
+	GStatSimDoc(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,f)
 	{
-		R::RCursor<GSubject> Subjects(Session->GetSubjects()->GetSubjects(doc1));
-		for(Subjects.Start();!Subjects.End();Subjects.Next())
-			if(Session->GetSubjects()->IsFromSubject(doc2,Subjects()))
-				return(true);
-		return(false);
+		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
 	}
 
-	bool HasSubject(GDoc* doc)
-	{return(Session->GetSubjects()->GetNbSubjects(doc));}
-
-	virtual void OverlapTopics(GDoc* doc,bool global)
+	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub,GLang*)
 	{
-		R::RCursor<GSubject> Subjects=Session->GetSubjects()->GetSubjects(doc);
-		for(Subjects.Start();!Subjects.End();Subjects.Next())
-		{
-			LocalStat* t=Sub.GetInsertPtr<GSubject*>(Subjects());
-			if(global)
-				t->OverlapG=true;
-			else
-				t->OverlapL=true;
-		}
+		return(R::RCursor<GDoc>(sub->GetDocs()));
+	}
+
+	virtual R::RCursor<GDoc> GetE2Cursor(GSubject* sub,GLang*)
+	{
+		return(R::RCursor<GDoc>(sub->GetDocs()));
 	}
 };
 
 
 //------------------------------------------------------------------------------
 // Statistics between subprofiles
-class GStatSimSubProf : public GStatSimElements<GSubProfile,RCursor<GSubProfile> >
+class GStatSimSubProf : public GStatSimElements<GSubProfile,GSubProfile>
 {
 public:
-	GStatSimSubProf(GSession* ses,R::RTextFile* f,bool g,bool l)
-		: GStatSimElements<GSubProfile,RCursor<GSubProfile> >(ses,f,g,l) {}
 
-	RCursor<GSubProfile> GetElementCursor(GLang* Lang)
-	{return(Session->GetSubProfiles(Lang));}
-
-	bool SameSubject(GSubProfile* sub1,GSubProfile* sub2)
-	{return(Session->GetSubjects()->GetSubject(sub1)==Session->GetSubjects()->GetSubject(sub2));}
-
-	bool HasSubject(GSubProfile* sub)
-	{return(Session->GetSubjects()->GetSubject(sub));}
-
-	virtual void OverlapTopics(GSubProfile* sub,bool global)
+	GStatSimSubProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GSubProfile>(ses,f)
 	{
-		LocalStat* t=Sub.GetInsertPtr<GSubject*>(Session->GetSubjects()->GetSubject(sub));
-		if(global)
-			t->OverlapG=true;
-		else
-			t->OverlapL=true;
+		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
+	}
+
+	virtual R::RCursor<GSubProfile> GetE1Cursor(GSubject* sub,GLang* lang)
+	{
+		return(R::RCursor<GSubProfile>(sub->GetSubProfiles(lang)));
+	}
+
+	virtual R::RCursor<GSubProfile> GetE2Cursor(GSubject* sub,GLang* lang)
+	{
+		return(R::RCursor<GSubProfile>(sub->GetSubProfiles(lang)));
 	}
 };
 
 
 //------------------------------------------------------------------------------
-// Statistics between documents/groups
-class GStatSimDocGrp : public GStatSimDocs<GGroup,R::RCursor<GGroup> >
+// Statistics betweengroups
+class GStatSimDocGrp : public GStatSimDocs<GGroup,R::RCursor<GGroup> > // GStatSimElements<GGroup,GGroup> //
 {
 public:
 
 	GStatSimDocGrp(GSession* ses,R::RTextFile* f,bool g,bool l)
-		: GStatSimDocs<GGroup,R::RCursor<GGroup> >(ses,f,g,l) {}
+	//	GStatSimDocGrp(GSession* ses,R::RTextFile* f)
+		: GStatSimDocs<GGroup,R::RCursor<GGroup> >(ses,f,g,l)
+		// : GStatSimElements<GGroup,GGroup>(ses,f)
+		{
+			Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Groups Similarities");
+		}
 
 	R::RCursor<GGroup> GetElementCursor(GLang* Lang)
 	{ return(Session->GetGroups(Lang));}
@@ -152,7 +136,7 @@ public:
 	bool HasSubject(GGroup* grp)
 	{return(!grp->IsEmpty());}
 
-	virtual double Similarity(GDoc*,GGroup*) {return(0.0);}
+	virtual double Similarity(GDoc* doc,GGroup* group) {return(Measure->GetMeasure(doc->GetId(),group->GetId()));}
 
 	bool SameSubject(GGroup* grp,GDoc* doc)
 	{
@@ -175,38 +159,37 @@ public:
 		else
 			t->OverlapL=true;
 	}
+/*	virtual R::RCursor<GSubProfile> GetE1Cursor(GSubject* sub,GLang* lang)
+	{
+		return(R::RCursor<GGroup>(sub->GetSubProfiles(lang)));
+	}
+
+	virtual R::RCursor<GSubProfile> GetE2Cursor(GSubject* sub,GLang* lang)
+	{
+		return(R::RCursor<GG>(sub->GetSubProfiles(lang)));
+	}*/
 };
 
 
 //------------------------------------------------------------------------------
 // Statistics between documents/groups
-class GStatSimDocProf : public GStatSimDocs<GSubProfile,RCursor<GSubProfile> >
+class GStatSimDocProf : public GStatSimElements<GDoc,GSubProfile>
 {
 public:
 
-	GStatSimDocProf(GSession* ses,R::RTextFile* f,bool g,bool l)
-		: GStatSimDocs<GSubProfile,RCursor<GSubProfile> >(ses,f,g,l) {}
-
-	RCursor<GSubProfile> GetElementCursor(GLang* Lang)
-	{return(Session->GetSubProfiles(Lang));}
-
-	virtual double Similarity(GDoc* doc,GSubProfile* sub) {return(GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities")->GetMeasure(doc->GetId(),sub->GetId()));}
-
-	bool HasSubject(GSubProfile* sub)
-	{return(Session->GetSubjects()->GetSubject(sub));}
-
-	bool SameSubject(GSubProfile* sub,GDoc* doc)
+	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GSubProfile>(ses,f)
 	{
-		return(Session->GetSubjects()->IsFromSubject(doc,Session->GetSubjects()->GetSubject(sub)));
+		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 	}
 
-	virtual void OverlapTopics(GSubProfile* sub,bool global)
+	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub,GLang*)
 	{
-		LocalStat* t=Sub.GetInsertPtr<GSubject*>(Session->GetSubjects()->GetSubject(sub));
-		if(global)
-			t->OverlapG=true;
-		else
-			t->OverlapL=true;
+		return(R::RCursor<GDoc>(sub->GetDocs()));
+	}
+
+	virtual R::RCursor<GSubProfile> GetE2Cursor(GSubject* sub,GLang* lang)
+	{
+		return(R::RCursor<GSubProfile>(sub->GetSubProfiles(lang)));
 	}
 };
 
@@ -286,14 +269,14 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 	{
 		tag2=new RXMLTag(xml,"Documents");
 		xml->AddTag(tag,tag2);
-		GStatSimDoc Stat(Session,Details,WithFactors,WithoutFactors);
+		GStatSimDoc Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(ProfDoc)
 	{
 		tag2=new RXMLTag(xml,"Documents-Profiles");
 		xml->AddTag(tag,tag2);
-		GStatSimDocProf Stat(Session,Details,WithFactors,WithoutFactors);
+		GStatSimDocProf Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(GroupDoc)
@@ -307,7 +290,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 	{
 		tag2=new RXMLTag(xml,"Profiles");
 		xml->AddTag(tag,tag2);
-		GStatSimSubProf Stat(Session,Details,WithFactors,WithoutFactors);
+		GStatSimSubProf Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(SameDocProf)

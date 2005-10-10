@@ -136,11 +136,17 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 		{
 //			if(!Profs()->GetSubProfile()->GetProfile()->IsSocial())
 //				NoSocialSubProfiles.InsertPtr(Profs1());
+			GSubProfile* Sub1=Profs1()->GetSubProfile(lang);
+			if(!Sub1)
+				continue;
 			for(Profs2.GoTo(i+1);!Profs2.End();Profs2.Next())
 			{
-				tmp=Profs1()->GetSubProfile(lang)->GetCommonDocs(Profs2()->GetSubProfile(lang));
-				nbSame=Profs1()->GetSubProfile(lang)->GetCommonOKDocs(Profs2()->GetSubProfile(lang));
-				nbDiff=Profs1()->GetSubProfile(lang)->GetCommonDiffDocs(Profs2()->GetSubProfile(lang));
+				GSubProfile* Sub2=Profs2()->GetSubProfile(lang);
+				if(!Sub2)
+					continue;
+				tmp=Sub1->GetCommonDocs(Sub2);
+				nbSame=Sub1->GetCommonOKDocs(Sub2);
+				nbDiff=Sub1->GetCommonDiffDocs(Sub2);
 
 				if(tmp)
 				{

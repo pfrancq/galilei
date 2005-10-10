@@ -105,6 +105,10 @@ class GStatsSims : public GStatsCalc
 	*/
 	bool WithoutFactors;
 
+	/**
+	*/
+	GMeasure* Measure;
+
 public:
 
 	/**
