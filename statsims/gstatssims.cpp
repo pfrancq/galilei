@@ -58,10 +58,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 // include statistics files
 #include <gstatsimelements.h>
-#include <gstatsimdocs.h>
 #include <gstatssims.h>
 #include <gstatprofdoc.h>
-#include <gstatsimprofgrp.h>
 
 
 
@@ -117,62 +115,30 @@ public:
 
 
 //------------------------------------------------------------------------------
-// Statistics betweengroups
-class GStatSimDocGrp : public GStatSimDocs<GGroup,R::RCursor<GGroup> > // GStatSimElements<GGroup,GGroup> //
+// Statistics between groups and documents
+class GStatSimDocGrp : public GStatSimElements<GDoc,GGroup>
 {
 public:
 
-	GStatSimDocGrp(GSession* ses,R::RTextFile* f,bool g,bool l)
-	//	GStatSimDocGrp(GSession* ses,R::RTextFile* f)
-		: GStatSimDocs<GGroup,R::RCursor<GGroup> >(ses,f,g,l)
-		// : GStatSimElements<GGroup,GGroup>(ses,f)
-		{
-			Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Groups Similarities");
-		}
-
-	R::RCursor<GGroup> GetElementCursor(GLang* Lang)
-	{ return(Session->GetGroups(Lang));}
-
-	bool HasSubject(GGroup* grp)
-	{return(!grp->IsEmpty());}
-
-	virtual double Similarity(GDoc* doc,GGroup* group) {return(Measure->GetMeasure(doc->GetId(),group->GetId()));}
-
-	bool SameSubject(GGroup* grp,GDoc* doc)
+	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GGroup>(ses,f)
 	{
-		// Suppose subject of the group is subject of the first subprofile
-		// contained
-		RCursor<GSubProfile> Subp=grp->GetSubProfiles();
-		Subp.Start();
-		return(Session->GetSubjects()->IsFromSubject(doc,Session->GetSubjects()->GetSubject(Subp())));
+		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Groups Similarities");
 	}
 
-	virtual void OverlapTopics(GGroup* grp,bool global)
+	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub,GLang*)
 	{
-		// Suppose subject of the group is subject of the first subprofile
-		// contained
-		RCursor<GSubProfile> Subp=grp->GetSubProfiles();
-		Subp.Start();
-		LocalStat* t=Sub.GetInsertPtr<GSubject*>(Session->GetSubjects()->GetSubject(Subp()));
-		if(global)
-			t->OverlapG=true;
-		else
-			t->OverlapL=true;
-	}
-/*	virtual R::RCursor<GSubProfile> GetE1Cursor(GSubject* sub,GLang* lang)
-	{
-		return(R::RCursor<GGroup>(sub->GetSubProfiles(lang)));
+		return(sub->GetDocs());
 	}
 
-	virtual R::RCursor<GSubProfile> GetE2Cursor(GSubject* sub,GLang* lang)
+	virtual R::RCursor<GGroup> GetE2Cursor(GSubject* sub,GLang*)
 	{
-		return(R::RCursor<GG>(sub->GetSubProfiles(lang)));
-	}*/
+		return(sub->GetGroups());
+	}
 };
 
 
 //------------------------------------------------------------------------------
-// Statistics between documents/groups
+// Statistics between documents/profiles
 class GStatSimDocProf : public GStatSimElements<GDoc,GSubProfile>
 {
 public:
@@ -190,6 +156,29 @@ public:
 	virtual R::RCursor<GSubProfile> GetE2Cursor(GSubject* sub,GLang* lang)
 	{
 		return(R::RCursor<GSubProfile>(sub->GetSubProfiles(lang)));
+	}
+};
+
+
+//------------------------------------------------------------------------------
+// Statistics between groups and profiles
+class GStatSimProfGrp : public GStatSimElements<GSubProfile,GGroup>
+{
+public:
+
+	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GGroup>(ses,f)
+	{
+		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Groups Similarities");
+	}
+
+	virtual R::RCursor<GSubProfile> GetE1Cursor(GSubject* sub,GLang* lang)
+	{
+		return(sub->GetSubProfiles(lang));
+	}
+
+	virtual R::RCursor<GGroup> GetE2Cursor(GSubject* sub,GLang*)
+	{
+		return(sub->GetGroups());
 	}
 };
 
@@ -219,8 +208,6 @@ void GStatsSims::ApplyConfig(void)
 	GroupProf=Factory->GetBool("GroupProf");
 	File=Factory->GetBool("File");
 	Name=Factory->GetString("Name");
-	WithFactors=Factory->GetBool("WithFactors");
-	WithoutFactors=Factory->GetBool("WithoutFactors");
 }
 
 
@@ -264,6 +251,10 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 		}
 	}
 
+	// Verify if the ideal group should be created
+	if(GroupDoc||GroupProf)
+		Session->CopyIdealGroups();
+
 	// Compute Statistics
 	if(Docs)
 	{
@@ -283,7 +274,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 	{
 		tag2=new RXMLTag(xml,"Documents-Groups");
 		xml->AddTag(tag,tag2);
-		GStatSimDocGrp Stat(Session,Details,WithFactors,WithoutFactors);
+		GStatSimDocGrp Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(Profiles)
@@ -295,16 +286,16 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
 	}
 	if(SameDocProf)
 	{
-		tag2=new RXMLTag(xml,"Profiles/Common Documents");
+		tag2=new RXMLTag(xml,"Profiles-Common-Documents");
 		xml->AddTag(tag,tag2);
 		GStatProfDoc Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(GroupProf)
 	{
-		tag2=new RXMLTag(xml,"Profiles/Groups");
+		tag2=new RXMLTag(xml,"Profiles-Groups");
 		xml->AddTag(tag,tag2);
-		GStatSimProfGrp Stat(Session,Session->GetSubjects(),Details,WithFactors,WithoutFactors);
+		GStatSimProfGrp Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 
@@ -325,8 +316,6 @@ void GStatsSims::CreateParams(GParams* params)
 	params->InsertPtr(new GParamBool("GroupProf",false));
 	params->InsertPtr(new GParamBool("File",false));
 	params->InsertPtr(new GParamString("Name",""));
-	params->InsertPtr(new GParamBool("WithFactors",true));
-	params->InsertPtr(new GParamBool("WithoutFactors",true));
 }
 
 

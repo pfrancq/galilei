@@ -98,8 +98,6 @@ void Configure(GFactoryStatsCalc* params)
 	dlg.File->setChecked(params->GetBool("File"));
 	dlg.Name->setURL(params->GetString("Name"));
 	dlg.Name->setEnabled(params->GetBool("File"));
-	dlg.WithFactors->setChecked(params->GetBool("WithFactors"));
-	dlg.WithoutFactors->setChecked(params->GetBool("WithoutFactors"));
 	if(dlg.exec())
 	{
 		params->Set("Docs",dlg.Docs->isChecked());
@@ -110,8 +108,6 @@ void Configure(GFactoryStatsCalc* params)
 		params->Set("GroupProf",dlg.GroupProf->isChecked());
 		params->Set("File",dlg.File->isChecked());
 		params->Set("Name",dlg.Name->url());
-		params->Set("WithFactors",dlg.WithFactors->isChecked());
-		params->Set("WithoutFactors",dlg.WithoutFactors->isChecked());
  		params->Apply();
  	}
 }

@@ -96,16 +96,6 @@ class GStatsSims : public GStatsCalc
 	R::RString Name;
 
 	/**
-	* Determine if the statistics should be computed with the idf/isf factors.
-	*/
-	bool WithFactors;
-
-	/**
-	* Determine if the statistics should be computed withoutom the idf/isf factors.
-	*/
-	bool WithoutFactors;
-
-	/**
 	*/
 	GMeasure* Measure;
 

@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>570</width>
-            <height>420</height>
+            <height>335</height>
         </rect>
     </property>
     <property name="caption">
@@ -83,22 +83,6 @@
                             </property>
                         </widget>
                     </hbox>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>WithFactors</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Stats with idf/isf factors [WithFactors]</string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>WithoutFactors</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Stats without idf/isf factors [WithoutFactors]</string>
-                    </property>
                 </widget>
             </vbox>
         </widget>
