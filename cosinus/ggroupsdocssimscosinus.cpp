@@ -345,7 +345,7 @@ double GGroupsDocsSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,unsi
 		else
 			Sim=doc->Similarity(*grp);
 		if(fabs(Sim)<NullSimLevel) Sim=0.0;
-		return(0.0);
+		return(Sim);
 	}
 	if(NeedUpdate)
 		Update();

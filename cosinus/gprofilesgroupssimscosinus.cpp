@@ -345,7 +345,7 @@ double GProfilesGroupsSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,
 		else
 			Sim=sub->Similarity(*grp);
 		if(fabs(Sim)<NullSimLevel) Sim=0.0;
-		return(0.0);
+		return(Sim);
 	}
 	if(NeedUpdate)
 		Update();
