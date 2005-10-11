@@ -89,9 +89,10 @@ public:
 	R::RContainer<GDoc,false,true> Docs;                    // Profiles attached to this subject.
 	R::RContainer<GProfile,false,true> Profiles;            // Profiles attached to this subject.
 	R::RContainer<GSubProfiles,true,true> SubProfiles;      // SubProfiles attached to this subject.
+	R::RContainer<GGroup,false,true> Groups;                // Groups attached to this subject.
 
 	Intern(unsigned int id,const char* name,bool u) :
-	 Id(id), Name(name), Used(u), Docs(1000,500), Profiles(10,5), SubProfiles(10,5)
+	 Id(id), Name(name), Used(u), Docs(1000,500), Profiles(10,5), SubProfiles(10,5), Groups(10,5)
 	{}
 };
 
@@ -177,10 +178,31 @@ bool GSubject::IsIn(GProfile* prof) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubject::GetNbIdealGroups(const GLang* lang) const
+void GSubject::InsertGroup(GGroup* grp)
+{
+	Data->Groups.InsertPtr(grp);
+}
+
+
+//------------------------------------------------------------------------------
+RCursor<GGroup> GSubject::GetGroups(void) const
+{
+	return(RCursor<GGroup>(Data->Groups));
+}
+
+
+//------------------------------------------------------------------------------
+void GSubject::ClearGroups(void)
+{
+	Data->Groups.Clear();
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSubject::GetNbIdealGroups(const GLang* lang) const
 {
 	GSubject* subject;
-	unsigned int nb;
+	size_t nb;
 
 	RCursor<GProfile> Prof(Data->Profiles);
 	for(Prof.Start(),nb=0;!Prof.End();Prof.Next())
@@ -240,9 +262,9 @@ RCursor<GSubProfile> GSubject::GetSubProfiles(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubject::GetNbSubProfiles(const GGroup* grp) const
+size_t GSubject::GetNbSubProfiles(const GGroup* grp) const
 {
-	unsigned int tot;
+	size_t tot;
 	RCursor<GProfile> sub(Data->Profiles);
 	GLang* lang=grp->GetLang();
 
@@ -381,32 +403,11 @@ void GSubject::SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocia
 
 
 //------------------------------------------------------------------------------
-/*GGroup* GSubject::CreateGroup(GLang* lang) const
-{
-	GGroup* Group=new GGroup(Data->Id,lang,false,RDate(""),RDate(""));
-	RCursor<GProfile> Cur(Data->Profiles);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		GSubProfile* sub=Cur()->GetSubProfile(lang);
-		if(sub)
-			Group->InsertSubProfile(sub);
-	}
-	return(Group);
-}*/
-
-
-//------------------------------------------------------------------------------
 void GSubject::ReInit(void)
 {
-/*	RCursor<GSubProfiles> Cur(Data->SubProfiles);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RCursor<GSubProfile> Cur2(*Cur());
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-			cout<<Cur2()->GetId()<<endl;
-	}*/
 	Data->Profiles.Clear();
 	Data->SubProfiles.Clear();
+	Data->Groups.Clear();
 	Data->Used=false;
 }
 

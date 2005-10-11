@@ -1368,9 +1368,12 @@ void GSession::CopyIdealGroups(void)
 	RCursor<GLang> Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns();
 
 	// Go through each subjects
-	R::RCursor<GSubject> Grps(Data->Subjects->GetNodes());
+	R::RCursor<GSubject> Grps(GetSubjects()->GetNodes());
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
+		// Clear the groups associated to the subject
+		Grps()->ClearGroups();
+
 		// Go trough each lang
 		for(Langs.Start();!Langs.End();Langs.Next())
 		{
@@ -1378,10 +1381,11 @@ void GSession::CopyIdealGroups(void)
 			if(!Grps()->GetNbSubProfiles(Langs()))
 				continue;
 
-			// Create a new group in groups
+			// Create a new group in groups and associated with the current groups
 			grp=new GGroup(cNoRef,Langs(),true,RDate(""),RDate(""));
 			AssignId(grp);
 			InsertGroup(grp);
+			Grps()->InsertGroup(grp);
 
 			// Go through each subprofile
 			Sub=Grps()->GetSubProfiles(Langs());

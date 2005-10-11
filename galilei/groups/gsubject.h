@@ -112,23 +112,55 @@ public:
 	GSubject* GetIdealGroup(GSubProfile* sub) const;
 
 	/**
+	* Verify if a subprofile is part of the subject.
+	* @param sub             Pointer to the subprofile.
 	*/
 	bool IsIn(GSubProfile* sub) const;
 
 	/**
+	* Verify if a profile is part of the subject.
+	* @param prof            Pointer to the profile.
 	*/
 	bool IsIn(GProfile* prof) const;
 
 	/**
+	* Add a group to the subject. This method can only be used when the current
+	* clustering becomes the ideal one.
+	* @see GSession::CopyIdealGroups
+	* @param grp             Pointer to the group.
 	*/
-	unsigned int GetNbIdealGroups(const GLang* lang) const;
+	void InsertGroup(GGroup* grp);
 
 	/**
+	* Get a cursor over the groups of the subject. This method can only be
+	* used when the current clustering becomes the ideal one.
+	* @see GSession::CopyIdealGroups
+	* @param lang           Language.
 	*/
-	unsigned int GetNbSubProfiles(const GLang* lang) const;
+	R::RCursor<GGroup> GetGroups(void) const;
 
 	/**
-	* Insert a subprofiles in the container.
+	* Clear the groups. This method can only be used when the current
+	* clustering becomes the ideal one.
+	* @see GSession::CopyIdealGroups
+	*/
+	void ClearGroups(void);
+
+	/**
+	* Get the number of groups associated to a the subject (and its
+	* sub-subjects).
+	* @param lang            Language of the groups.
+	*/
+	size_t GetNbIdealGroups(const GLang* lang) const;
+
+	/**
+	* Get the number of subprofiles associated to the subject.
+	* @param lang            Language of the subprofiles.
+	*/
+	size_t GetNbSubProfiles(const GLang* lang) const;
+
+	/**
+	* Add a subprofiles to the subject.
 	* @param s              Pointer to the subprofile to add.
 	*/
 	void InsertSubProfile(GSubProfile* s);
