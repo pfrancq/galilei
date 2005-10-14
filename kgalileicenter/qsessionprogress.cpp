@@ -571,7 +571,16 @@ void QMakeFdbks::DoIt(void)
 {
 	Parent->PutText("Make feedbacks ...");
 	Session->GetSubjects()->Apply();
-	Session->GetSubjects()->FdbksCycle();
+	Session->GetSubjects()->DocumentSharing();
+}
+
+
+//-----------------------------------------------------------------------------
+void QMakeAssessments::DoIt(void)
+{
+	Parent->PutText("Make assessments ...");
+	Session->GetSubjects()->Apply();
+	Session->GetSubjects()->AddAssessments();
 }
 
 

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>362</width>
-            <height>313</height>
+            <width>434</width>
+            <height>323</height>
         </rect>
     </property>
     <property name="caption">
@@ -50,7 +50,7 @@
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout2</cstring>
+                                    <cstring>layout12</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -61,7 +61,7 @@
                                             <cstring>textLabel1</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Percentage of topics used:</string>
+                                            <string>Number of topics used:</string>
                                         </property>
                                     </widget>
                                     <spacer>
@@ -76,21 +76,29 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>22</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KDoubleNumInput">
                                         <property name="name">
-                                            <cstring>PercSubjects</cstring>
+                                            <cstring>NbSubjects</cstring>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>RelSubjects</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Percentage</string>
                                         </property>
                                     </widget>
                                 </hbox>
                             </widget>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout2_2</cstring>
+                                    <cstring>layout17</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -116,12 +124,12 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>161</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KIntNumInput">
                                         <property name="name">
                                             <cstring>NbMinDocsSubject</cstring>
                                         </property>
@@ -143,7 +151,7 @@
                         <property name="sizeHint">
                             <size>
                                 <width>20</width>
-                                <height>220</height>
+                                <height>40</height>
                             </size>
                         </property>
                     </spacer>
@@ -173,7 +181,7 @@
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout3</cstring>
+                                    <cstring>layout18</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -199,12 +207,12 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>142</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KIntNumInput">
                                         <property name="name">
                                             <cstring>NbProfMin</cstring>
                                         </property>
@@ -213,7 +221,7 @@
                             </widget>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout3_2</cstring>
+                                    <cstring>layout19</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -239,12 +247,12 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>140</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KIntNumInput">
                                         <property name="name">
                                             <cstring>NbProfMax</cstring>
                                         </property>
@@ -253,7 +261,7 @@
                             </widget>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout3_2_2</cstring>
+                                    <cstring>layout13</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -279,12 +287,12 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>86</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KDoubleNumInput">
                                         <property name="name">
                                             <cstring>PercSocial</cstring>
                                         </property>
@@ -336,7 +344,7 @@
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout2_3</cstring>
+                                    <cstring>layout14</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -362,21 +370,29 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>37</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KDoubleNumInput">
                                         <property name="name">
-                                            <cstring>PercOK</cstring>
+                                            <cstring>NbOK</cstring>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>RelOK</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Percentage</string>
                                         </property>
                                     </widget>
                                 </hbox>
                             </widget>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout2_3_2</cstring>
+                                    <cstring>layout15</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -402,27 +418,29 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>16</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KDoubleNumInput">
                                         <property name="name">
-                                            <cstring>PercKO</cstring>
+                                            <cstring>NbKO</cstring>
                                         </property>
-                                        <property name="minimumSize">
-                                            <size>
-                                                <width>30</width>
-                                                <height>0</height>
-                                            </size>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>RelKO</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Percentage</string>
                                         </property>
                                     </widget>
                                 </hbox>
                             </widget>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout2_3_3</cstring>
+                                    <cstring>layout17</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -448,14 +466,22 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>32</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KDoubleNumInput">
                                         <property name="name">
-                                            <cstring>PercH</cstring>
+                                            <cstring>NbH</cstring>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>RelH</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Percentage</string>
                                         </property>
                                     </widget>
                                 </hbox>
@@ -475,7 +501,7 @@
                             </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout2_3_3_2</cstring>
+                                    <cstring>layout18</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -501,12 +527,12 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>32</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KDoubleNumInput">
                                         <property name="name">
                                             <cstring>PercErr</cstring>
                                         </property>
@@ -515,7 +541,7 @@
                             </widget>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout2_3_3_2_2</cstring>
+                                    <cstring>layout25</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
@@ -541,12 +567,12 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>165</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
-                                    <widget class="QLineEdit">
+                                    <widget class="KIntNumInput">
                                         <property name="name">
                                             <cstring>NbDocsAssess</cstring>
                                         </property>
@@ -568,7 +594,7 @@
                         <property name="sizeHint">
                             <size>
                                 <width>20</width>
-                                <height>170</height>
+                                <height>16</height>
                             </size>
                         </property>
                     </spacer>
@@ -655,6 +681,8 @@
         </widget>
     </vbox>
 </widget>
+<customwidgets>
+</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>
@@ -669,5 +697,30 @@
         <slot>reject()</slot>
     </connection>
 </connections>
+<includes>
+    <include location="local" impldecl="in implementation">qsimulationdlg.ui.h</include>
+</includes>
 <layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+</includehints>
 </UI>

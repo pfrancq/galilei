@@ -150,6 +150,7 @@ void KGALILEICenterApp::initActions(void)
 	simulationDlg=new KAction(i18n("Simulation &Parameters"),0,this,SLOT(slotSimulationDlg()),actionCollection(),"simulationDlg");
 	groupingCreate=new KAction(i18n("&Create Ideal Groups"),0,0,this,SLOT(slotGroupsCreate()),actionCollection(),"groupingCreate");
 	doFdbks=new KAction(i18n("&Feedback Cycle"),0,0,this,SLOT(slotDoFdbks()),actionCollection(),"doFdbks");
+	doAssessments=new KAction(i18n("&Assessments Cycle"),0,0,this,SLOT(slotDoAssessments()),actionCollection(),"doAssessments");
 	groupingCompare=new KAction(i18n("Ideal clustering"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
@@ -167,6 +168,11 @@ void KGALILEICenterApp::initActions(void)
 	windowCascade = new KAction(i18n("&Cascade"), 0, this, SLOT(slotWindowCascade()), actionCollection(),"window_cascade");
 	windowMenu = new KActionMenu(i18n("&Window"), actionCollection(), "window_menu");
 	connect(windowMenu->popupMenu(),SIGNAL(aboutToShow()),this,SLOT(windowMenuAboutToShow()));
+
+	// Help Menu
+	helpProgram = new KAction(i18n("List of all classes"), 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
+/*	helpProgram=new KAction("List of all classes",0,0,this,SLOT(slotHelpProgram()),this);
+	menuBar()->insertItem ("&Help",helpProgram);*/
 
 	createGUI();
 }
@@ -368,6 +374,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	simulationDlg->setEnabled(true);
 	sessionCompute->setEnabled(true);
 	doFdbks->setEnabled(true);
+	doAssessments->setEnabled(true);
 	groupingCompare->setEnabled(true);
 	somView->setEnabled(true);
 	textFrench->setEnabled(true);
@@ -400,6 +407,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	simulationDlg->setEnabled(false);
 	sessionCompute->setEnabled(false);
 	doFdbks->setEnabled(false);
+	doAssessments->setEnabled(false);
 	groupingCompare->setEnabled(false);
 	somView->setEnabled(false);
 	textFrench->setEnabled(false);

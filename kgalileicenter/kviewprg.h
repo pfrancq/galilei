@@ -125,7 +125,7 @@ public:
 	* information.
 	* @param str            String to output.
 	*/
-	virtual void WriteStr(const char* str);
+	virtual void WriteStr(const RString& str);
 
 	/**
 	* Verify if Qt has nothing to do.

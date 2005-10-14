@@ -394,6 +394,11 @@ private slots:
 	void slotDoFdbks(void);
 
 	/**
+	* Make a assessments cycle.
+	*/
+	void slotDoAssessments(void);
+
+	/**
 	* Compare the current grouping with the grouping in memory.
 	*/
 	void slotGroupingCompare(void);
@@ -478,6 +483,11 @@ private slots:
 	* Run a program text file.
 	*/
 	void slotRunProgram(void);
+
+	/**
+	* Show help on program.
+	*/
+	void slotHelpProgram(void);
 
 	/**
 	* Gets called when the window menu is activated; recreates the window menu
@@ -582,6 +592,7 @@ public:
 	KAction* simulationDlg;
 	KAction* groupingCreate;
 	KAction* doFdbks;
+	KAction* doAssessments;
 	KAction* groupingCompare;
 	KAction* showGroupsHistory;
 
@@ -609,6 +620,7 @@ public:
 	KToggleAction* viewToolBar;
 	KToggleAction* viewStatusBar;
 	KActionMenu* windowMenu;
+	KAction* helpProgram;
 
 	friend class QSessionProgressDlg;
 };

@@ -58,6 +58,7 @@
 		<Separator/>
 		<Action name="groupingCreate"/>
 		<Action name="doFdbks"/>
+		<Action name="doAssessments"/>
 		<Separator/>
 		<Action name="groupingCompare"/>
 		<Separator/>
@@ -70,6 +71,9 @@
 		<Action name="changeDebug"/>
 	</Menu>
 	<Action name="window_menu"/>
+	<Menu name="help"><text>&amp;Help</text>
+		<Action name="helpProgram"/>
+	 </Menu>
 </MenuBar>
 <ToolBar fullWidth="true" name="mainToolBar">
 	<Action name="sessionConnect"/>

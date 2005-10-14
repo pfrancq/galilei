@@ -241,12 +241,23 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * Make a feedback cycle.
-* @param save           Save modified elements.
 */
 class QMakeFdbks : public QSessionThread
 {
 public:
 	QMakeFdbks(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Make a assessment cycle.
+*/
+class QMakeAssessments : public QSessionThread
+{
+public:
+	QMakeAssessments(void) {}
 	virtual void DoIt(void);
 };
 

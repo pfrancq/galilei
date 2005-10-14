@@ -431,28 +431,36 @@ void KGALILEICenterApp::slotSimulationDlg(void)
 {
 	QSimulationDlg dlg(this);
 
-	dlg.PercOK->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercOK")));
-	dlg.PercKO->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercKO")));
-	dlg.PercH->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercH")));
-	dlg.PercErr->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercErr")));
-	dlg.NbProfMin->setText(QString::number(Doc->GetSession()->GetSubjects()->GetUInt("NbProfMin")));
-	dlg.NbProfMax->setText(QString::number(Doc->GetSession()->GetSubjects()->GetUInt("NbProfMax")));
-	dlg.PercSocial->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercSocial")));
-	dlg.PercSubjects->setText(QString::number(Doc->GetSession()->GetSubjects()->GetDouble("PercSubjects")));
-	dlg.NbMinDocsSubject->setText(QString::number(Doc->GetSession()->GetSubjects()->GetUInt("NbMinDocsSubject")));
-	dlg.NbDocsAssess->setText(QString::number(Doc->GetSession()->GetSubjects()->GetUInt("NbDocsAssess")));
+	dlg.NbOK->setValue(Doc->GetSession()->GetSubjects()->GetDouble("NbOK"));
+	dlg.RelOK->setChecked(Doc->GetSession()->GetSubjects()->GetBool("RelOK"));
+	dlg.NbKO->setValue(Doc->GetSession()->GetSubjects()->GetDouble("NbKO"));
+	dlg.RelKO->setChecked(Doc->GetSession()->GetSubjects()->GetBool("RelKO"));
+	dlg.NbH->setValue(Doc->GetSession()->GetSubjects()->GetDouble("NbH"));
+	dlg.RelH->setChecked(Doc->GetSession()->GetSubjects()->GetBool("RelH"));
+	dlg.PercErr->setValue(Doc->GetSession()->GetSubjects()->GetDouble("PercErr"));
+	dlg.NbProfMin->setValue(Doc->GetSession()->GetSubjects()->GetUInt("NbProfMin"));
+	dlg.NbProfMax->setValue(Doc->GetSession()->GetSubjects()->GetUInt("NbProfMax"));
+	dlg.PercSocial->setValue(Doc->GetSession()->GetSubjects()->GetDouble("PercSocial"));
+	dlg.NbSubjects->setValue(Doc->GetSession()->GetSubjects()->GetDouble("NbSubjects"));
+	dlg.RelSubjects->setChecked(Doc->GetSession()->GetSubjects()->GetBool("RelSubjects"));
+	dlg.NbMinDocsSubject->setValue(Doc->GetSession()->GetSubjects()->GetUInt("NbMinDocsSubject"));
+	dlg.NbDocsAssess->setValue(Doc->GetSession()->GetSubjects()->GetUInt("NbDocsAssess"));
 	if(dlg.exec())
 	{
-		Doc->GetSession()->GetSubjects()->Set("PercOK",dlg.PercOK->text().toDouble());
-		Doc->GetSession()->GetSubjects()->Set("PercKO",dlg.PercKO->text().toDouble());
-		Doc->GetSession()->GetSubjects()->Set("PercH",dlg.PercH->text().toDouble());
-		Doc->GetSession()->GetSubjects()->Set("PercErr",dlg.PercErr->text().toDouble());
-		Doc->GetSession()->GetSubjects()->Set("NbProfMin",dlg.NbProfMin->text().toUInt());
-		Doc->GetSession()->GetSubjects()->Set("NbProfMax",dlg.NbProfMax->text().toUInt());
-		Doc->GetSession()->GetSubjects()->Set("PercSocial",dlg.PercSocial->text().toDouble());
-		Doc->GetSession()->GetSubjects()->Set("PercSubjects",dlg.PercSubjects->text().toDouble());
-		Doc->GetSession()->GetSubjects()->Set("NbMinDocsSubject",dlg.NbMinDocsSubject->text().toUInt());
-		Doc->GetSession()->GetSubjects()->Set("NbDocsAssess",dlg.NbDocsAssess->text().toUInt());
+		Doc->GetSession()->GetSubjects()->Set("NbOK",dlg.NbOK->value());
+		Doc->GetSession()->GetSubjects()->Set("RelOK",dlg.RelOK->isChecked());
+		Doc->GetSession()->GetSubjects()->Set("NbKO",dlg.NbKO->value());
+		Doc->GetSession()->GetSubjects()->Set("RelKO",dlg.RelKO->isChecked());
+		Doc->GetSession()->GetSubjects()->Set("NbH",dlg.NbH->value());
+		Doc->GetSession()->GetSubjects()->Set("RelH",dlg.RelH->isChecked());
+		Doc->GetSession()->GetSubjects()->Set("PercErr",dlg.PercErr->value());
+		Doc->GetSession()->GetSubjects()->Set("NbProfMin",dlg.NbProfMin->value());
+		Doc->GetSession()->GetSubjects()->Set("NbProfMax",dlg.NbProfMax->value());
+		Doc->GetSession()->GetSubjects()->Set("PercSocial",dlg.PercSocial->value());
+		Doc->GetSession()->GetSubjects()->Set("NbSubjects",dlg.NbSubjects->value());
+		Doc->GetSession()->GetSubjects()->Set("RelSubjects",dlg.RelSubjects->isChecked());
+		Doc->GetSession()->GetSubjects()->Set("NbMinDocsSubject",dlg.NbMinDocsSubject->value());
+		Doc->GetSession()->GetSubjects()->Set("NbDocsAssess",dlg.NbDocsAssess->value());
 	}
 }
 
@@ -471,6 +479,15 @@ void KGALILEICenterApp::slotDoFdbks(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Feedback Cycle");
 	Dlg.Run(new QMakeFdbks());
+	Doc->updateAllViews(1);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotDoAssessments(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Assessments Cycle");
+	Dlg.Run(new QMakeAssessments());
 	Doc->updateAllViews(1);
 }
 
@@ -970,6 +987,28 @@ void KGALILEICenterApp::slotRunProgram(void)
 		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
 	}
 	KIO::NetAccess::removeTempFile( tmpfile );
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotHelpProgram(void)
+{
+	KViewPrg* o;
+
+	KApplication::kApplication()->processEvents();
+	try
+	{
+		createClient(Doc,o=new KViewPrg(Doc,pWorkspace,"",0));
+		o->run();
+	}
+	catch(std::bad_alloc)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
+	}
 }
 
 

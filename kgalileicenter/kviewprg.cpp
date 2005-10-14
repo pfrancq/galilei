@@ -38,6 +38,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsession.h>
+#include <gsessionprg.h>
 
 
 //-----------------------------------------------------------------------------
@@ -173,9 +174,9 @@ void KViewPrg::NextGroupLang(const GLang*)
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::WriteStr(const char* str)
+void KViewPrg::WriteStr(const RString& str)
 {
-	Output->append(str);
+	Output->append(ToQString(str));
 	KApplication::kApplication()->processEvents();
 }
 
@@ -191,8 +192,28 @@ void KViewPrg::Interact(void)
 void KViewPrg::run(void)
 {
 	KApplication::kApplication()->processEvents();
-	Prg=new MyThread(Doc->GetSession(),this,Name);
-	Prg->run();
+	if(Name.IsEmpty())
+	{
+		GSessionPrg Prg("",0,0);
+		RCursor<RPrgClass> Classes(Prg.GetClasses());
+		for(Classes.Start();!Classes.End();Classes.Next())
+		{
+			QString Help;
+			Help="<H1>"+ToQString(Classes()->GetName())+"</H1><DL>";
+			RCursor<RPrgFunc> Methods(Classes()->GetMethods());
+			for(Methods.Start();!Methods.End();Methods.Next())
+			{
+				Help+="<DT><B>"+ToQString(Methods()->GetName())+"</B></DT><DD>"+ToQString(Methods()->GetDescription())+"</DD>";
+			}
+			Help+="</DL>";
+			Output->append(Help);
+		}
+	}
+	else
+	{
+		Prg=new MyThread(Doc->GetSession(),this,Name);
+		Prg->run();
+	}
 }
 
 
