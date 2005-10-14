@@ -95,7 +95,7 @@ public:
 	* information.
 	* @param str            String to output.
 	*/
-	virtual void WriteStr(const char* str);
+	virtual void WriteStr(const R::RString& str);
 
 	/**
 	* The traitment for a specific chromosome will begin.

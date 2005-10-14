@@ -441,6 +441,7 @@ R::RDebug* GSession::GetDebug(void) const
 void GSession::RunPrg(GSlot* rec,const char* filename)
 {
 	GSessionPrg Prg(filename,this,rec);
+	Prg.Load();
 	Prg.Exec();
 }
 

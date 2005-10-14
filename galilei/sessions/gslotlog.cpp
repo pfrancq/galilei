@@ -81,7 +81,7 @@ void GSlotLog::NextGroupLang(const GLang* lang)
 
 
 //------------------------------------------------------------------------------
-void GSlotLog::WriteStr(const char*)
+void GSlotLog::WriteStr(const RString&)
 {
 }
 
