@@ -104,11 +104,15 @@ class GSubjects::Intern
 public:
 
 	GSession* Session;                                                   // Session.
-	double PercOK;                                                       // Percentage of relevant documents to create.
-	double PercKO;                                                       // Percentage of fuzzy relevant documents to create.
-	double PercH;                                                        // Percentage of irrelevant documents to create (Computed as a percentage of the relevant documents created).
+	double NbOK;                                                         // Nb of relevant documents to create.
+	bool RelOK;                                                          // Number of Ok are relative or absolut.
+	double NbKO;                                                         // Nb of fuzzy relevant documents to create.
+	bool RelKO;                                                          // Number of KO are relative or absolut.
+	double NbH;                                                          // Nb of irrelevant documents to create.
+	bool RelH;                                                           // Number of H are relative (computed as a percentage of the relevant documents created) or absolut.
 	double PercErr;                                                      // Percentage of documents assessed whith an error.
-	double PercSubjects;                                                 // Percentage of subjects to use.
+	double NbSubjects;                                                   // Percentage of subjects to use.
+	bool RelSubjects;                                                    // Number of subjects are relative or absolut.
 	unsigned int NbMinDocsSubject;                                       // Minimal number of documents in a subject to use it.
 	unsigned int NbProfMax;                                              // Maximal number of profiles to create in a subject.
 	unsigned int NbProfMin;                                              // Minimal number of profiles to create in a subject.
@@ -134,7 +138,6 @@ public:
 
 	~Intern(void)
 	{
-//		delete IdealGroups;
 		delete[] tmpDocs;
 	}
 };
@@ -153,14 +156,18 @@ GSubjects::GSubjects(GSession* session)
 {
 	Data=new Intern(session);
 	InsertNode(0,new GSubject(this,0,"Subjects",false));
-	GParams::InsertPtr(new GParamDouble("PercOK",10.0));
-	GParams::InsertPtr(new GParamDouble("PercKO",10.0));
-	GParams::InsertPtr(new GParamDouble("PercH",50.0));
+	GParams::InsertPtr(new GParamDouble("NbOK",10.0));
+	GParams::InsertPtr(new GParamBool("RelOK",true));
+	GParams::InsertPtr(new GParamDouble("NbKO",10.0));
+	GParams::InsertPtr(new GParamBool("RelKO",true));
+	GParams::InsertPtr(new GParamDouble("NbH",50.0));
+	GParams::InsertPtr(new GParamBool("RelH",true));
 	GParams::InsertPtr(new GParamDouble("PercErr",0.0));
 	GParams::InsertPtr(new GParamUInt("NbProfMin",2));
 	GParams::InsertPtr(new GParamUInt("NbProfMax",10));
 	GParams::InsertPtr(new GParamDouble("PercSocial",100.0));
-	GParams::InsertPtr(new GParamDouble("PercSubjects",100.0));
+	GParams::InsertPtr(new GParamDouble("NbSubjects",100.0));
+	GParams::InsertPtr(new GParamBool("RelSubjects",true));
 	GParams::InsertPtr(new GParamUInt("NbMinDocsSubject",50));
 	GParams::InsertPtr(new GParamUInt("NbDocsAssess",30));
 	Apply();
@@ -170,14 +177,18 @@ GSubjects::GSubjects(GSession* session)
 //------------------------------------------------------------------------------
 void GSubjects::Apply(void)
 {
-	Data->PercOK=GetDouble("PercOK");
-	Data->PercKO=GetDouble("PercKO");
-	Data->PercH=GetDouble("PercH");
+	Data->NbOK=GetDouble("NbOK");
+	Data->RelOK=GetBool("RelOK");
+	Data->NbKO=GetDouble("NbKO");
+	Data->RelKO=GetBool("RelKO");
+	Data->NbH=GetDouble("NbH");
+	Data->RelH=GetBool("RelH");
 	Data->PercErr=GetDouble("PercErr");
 	Data->NbProfMin=GetUInt("NbProfMin");
 	Data->NbProfMax=GetUInt("NbProfMax");
 	Data->PercSocial=GetDouble("PercSocial");
-	Data->PercSubjects=GetDouble("PercSubjects");
+	Data->NbSubjects=GetDouble("NbSubjects");
+	Data->RelSubjects=GetBool("RelSubjects");
 	Data->NbMinDocsSubject=GetUInt("NbMinDocsSubject");
 	Data->NbDocsAssess=GetUInt("NbDocsAssess");
 }
@@ -209,7 +220,10 @@ void GSubjects::ChooseSubjects(void)
 	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
-	compt=static_cast<unsigned int>((GetNbNodes()*Data->PercSubjects)/100)+1;
+	if(Data->RelSubjects)
+		compt=static_cast<unsigned int>((GetNbNodes()*Data->NbSubjects)/100)+1;
+	else
+		compt=static_cast<unsigned int>(Data->NbSubjects);
 	for(ptr=tab,i=GetNbNodes()+1;(--i)&&compt;ptr++)
 	{
 		// Verify that there is enough documents
@@ -236,7 +250,6 @@ void GSubjects::CreateSet(void)
 	unsigned int nbprof,nbsocial;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 	RCursor<GFactoryLang> CurLang;
-//	RContainer<GroupLang,true,true> Groups(20);          // Groups created for a given subject
 
 	// Init Part
 	Data->LastAdded.Clear();
@@ -263,10 +276,19 @@ void GSubjects::CreateSet(void)
 		// Number of profiles that are social
 		nbsocial=static_cast<unsigned int>(nbprof*Data->PercSocial/100);
 
-		// Number of documents to judged by each subprofile
-		maxDocsOK=static_cast<unsigned int>(Subs()->GetNbDocs()*Data->PercOK/100);
-		maxDocsKO=static_cast<unsigned int>(Subs()->GetNbDocs()*Data->PercKO/100);
-		maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->PercH/100);
+		// Number of documents to judged by each profile
+		if(Data->RelOK)
+			maxDocsOK=static_cast<unsigned int>(Subs()->GetNbDocs()*Data->NbOK/100);
+		else
+			maxDocsOK=static_cast<unsigned int>(Data->NbOK);
+		if(Data->RelKO)
+			maxDocsKO=static_cast<unsigned int>(Subs()->GetNbDocs()*Data->NbKO/100);
+		else
+			maxDocsKO=static_cast<unsigned int>(Data->NbKO);
+		if(Data->RelH)
+			maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->NbH/100);
+		else
+			maxDocsH=static_cast<unsigned int>(Data->NbH);
 
 		// Assess documents
 		Prof=Subs()->GetProfiles();
@@ -588,9 +610,6 @@ void GSubjects::CreateIdeal(bool save)
 	// Re-init the session
 	Data->Session->ReInit();
 
-	// Remove the ideal clustering
-//	GetIdealGroups()->ClearGroups();
-
 	if(!Data->tmpDocs)
 		Data->tmpDocs=new GDoc*[Data->Session->GetMaxPosDoc()+1];
 	ChooseSubjects();
@@ -611,7 +630,7 @@ void GSubjects::CreateIdeal(bool save)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::FdbksCycle(void)
+void GSubjects::DocumentSharing(void)
 {
 	R::RCursor<GGroup> Grps;
 	RCursor<GSubProfile> SubProfile;
@@ -778,10 +797,20 @@ bool GSubjects::AddTopic(void)
 
 	newSubject->SetUsed(Data->Session,nbprof,nbsocial);
 
-	// Number of documents to judged by each subprofile
-	maxDocsOK=static_cast<unsigned int>(newSubject->GetNbDocs()*Data->PercOK/100);
-	maxDocsKO=static_cast<unsigned int>(newSubject->GetNbDocs()*Data->PercKO/100);
-	maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->PercH/100);
+	// Number of documents to judged by each profile
+	if(Data->RelOK)
+		maxDocsOK=static_cast<unsigned int>(newSubject->GetNbDocs()*Data->NbOK/100);
+	else
+		maxDocsOK=static_cast<unsigned int>(Data->NbOK);
+	if(Data->RelKO)
+		maxDocsKO=static_cast<unsigned int>(newSubject->GetNbDocs()*Data->NbKO/100);
+	else
+		maxDocsKO=static_cast<unsigned int>(Data->NbKO);
+	if(Data->RelH)
+		maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->NbH/100);
+	else
+		maxDocsH=static_cast<unsigned int>(Data->NbH);
+
 
 	// Assess documents
 	Prof=newSubject->GetProfiles();
@@ -844,10 +873,20 @@ unsigned int GSubjects::AddProfiles(void)
 	// Copy the documents of the same language of the session in Docs;
 	Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
 
-	// Number of documents to judged by each subprofile
-	maxDocsOK=static_cast<unsigned int>(usedSubject->GetNbDocs()*Data->PercOK/100);
-	maxDocsKO=static_cast<unsigned int>(usedSubject->GetNbDocs()*Data->PercKO/100);
-	maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->PercH/100);
+	// Number of documents to judged by each profile
+	if(Data->RelOK)
+		maxDocsOK=static_cast<unsigned int>(usedSubject->GetNbDocs()*Data->NbOK/100);
+	else
+		maxDocsOK=static_cast<unsigned int>(Data->NbOK);
+	if(Data->RelKO)
+		maxDocsKO=static_cast<unsigned int>(usedSubject->GetNbDocs()*Data->NbKO/100);
+	else
+		maxDocsKO=static_cast<unsigned int>(Data->NbKO);
+	if(Data->RelH)
+		maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->NbH/100);
+	else
+		maxDocsH=static_cast<unsigned int>(Data->NbH);
+
 
 	usedSubject->SetUsed(Data->Session,nbprof,nbsocial);
 
@@ -997,18 +1036,6 @@ double GSubjects::GetRecall(GGroup* grp) const
 	if(!g) return(0.0);
 	return(g->Recall);
 }
-
-
-//------------------------------------------------------------------------------
-/*GGroups* GSubjects::GetIdealGroups(void) const
-{
-	if(!Data->IdealGroups)
-	{
-		Data->IdealGroups=new GGroups(Data->Session->GetStorage(),0);
-		Data->Session->GetStorage()->LoadIdealGroupment(Data->Session);
-	}
-	return(Data->IdealGroups);
-}*/
 
 
 //------------------------------------------------------------------------------

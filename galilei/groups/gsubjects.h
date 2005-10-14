@@ -141,12 +141,14 @@ public:
 	void CreateIdeal(bool Save);
 
 	/**
-	* Create new feedback for the different users of the system.
+	* Simulate that documents are shared inside the different communities and
+	* that the first NbDocsAssess documents are assessed.
 	*/
-	void FdbksCycle(void);
+	void DocumentSharing(void);
 
 	/**
-	* Add assessments to the profiles creates.
+	* Simulate that existing profiles assess randomly NbDocsAssess choosen
+	* documents.
 	*/
 	void AddAssessments(void);
 
@@ -219,10 +221,9 @@ public:
 	double GetRecall(GGroup* grp) const;
 
 	/**
-	* Get the ideal groups of the session.
+	* Compute the number of ideal groups for a given topic (and its sub-topics)
+	* in a given language.
 	*/
-//	GGroups* GetIdealGroups(void) const;
-
 	unsigned int GetNbIdealGroups(const GLang* lang) const;
 
 	/**
