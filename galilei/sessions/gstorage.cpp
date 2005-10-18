@@ -145,6 +145,13 @@ void GStorage::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
+void* GStorage::GetInfos(void)
+{
+	return(0);
+}
+
+
+//------------------------------------------------------------------------------
 bool GStorage::IsAllInMemory(void) const
 {
 	return(AllMemory);
@@ -281,18 +288,18 @@ void GStorageManager::DisablePlugIn(GStorage* plug)
 //------------------------------------------------------------------------------
 bool GStorageManager::InsertCmd(GStorageCmd* cmd)
 {
-	// Register command in commands container
-	if (Commands.GetPtr(*cmd))
-		return false;
+	// Verify that the command does not exists
+	if(Commands.GetPtr(*cmd))
+		return(false);
 	Commands.InsertPtr(cmd);
 
 	//get current plugin and test if command must be inserted into it
 	GStorage* store=GetCurrentMethod();
 	if(store && store->GetFactory()->GetName()==cmd->GetStorage())
 		store->InsertCmd(cmd);
-
-	return true;
+	return(true);
 }
+
 
 //------------------------------------------------------------------------------
 GStorageManager::~GStorageManager(void)

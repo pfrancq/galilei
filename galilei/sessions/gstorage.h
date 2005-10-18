@@ -215,6 +215,13 @@ public:
 	virtual unsigned int GetNbSaved(tObjType type)=0;
 
 	/**
+	* Get a pointer to a structure that should represent the storage. It can be
+	* used to give access to some internal methods specific to a given storage.
+	* It should be used carefully.
+	*/
+	virtual void* GetInfos(void);
+
+	/**
 	* Are all the object loaded or just some of them (modified or because
 	* filters).
 	*/
