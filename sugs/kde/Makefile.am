@@ -1,7 +1,7 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)
 postgroupslib_LTLIBRARIES =  libsugs_dlg.la
 libsugs_dlg_la_LDFLAGS = -module -avoid-version
-libsugs_dlg_la_SOURCES = gsugs_kde.cpp
+libsugs_dlg_la_SOURCES = dlgconfig_qt.ui gsugs_kde.cpp
 libsugs_dlg_la_LIBADD=
 AM_CFLAGS =
 AM_CXXFLAGS =

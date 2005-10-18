@@ -6,7 +6,7 @@
 
 	A KDE about box for the statistical method. - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -27,6 +27,13 @@
 	Boston, MA  02111-1307  USA
 
 */
+
+
+
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <gpostgroup.h>
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -51,7 +58,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for Current
-//#include <dlgconfig_qt.h>
+#include <dlgconfig_qt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -76,6 +83,24 @@ void About(void)
 }
 
 
- //------------------------------------------------------------------------------
+//------------------------------------------------------------------------------
+void Configure(GFactoryPostGroup* params)
+{
+	DlgConfig_Qt dlg;
+
+	dlg.NbSugs->setValue(params->GetUInt("NbSugs"));
+	dlg.UseLevels->setChecked(params->GetBool("UseLevels"));
+	dlg.UseGroupsSugs->setChecked(params->GetBool("UseGroupsSugs"));
+	if (dlg.exec())
+	{
+		params->Set("NbSugs", dlg.NbSugs->value());
+		params->Set("UseLevels", dlg.UseLevels->isChecked());
+		params->Set("UseGroupsSugs", dlg.UseGroupsSugs->isChecked());
+		params->Apply();
+	}
+}
+
+
+//------------------------------------------------------------------------------
  }
  //------------------------------------------------------------------------------

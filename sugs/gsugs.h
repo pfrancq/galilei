@@ -1,4 +1,4 @@
-                                                                                 /*
+/*
 
 	GALILEI Research Project
 
@@ -6,7 +6,11 @@
 
 	Create suggestions - Header.
 
-	(C) 2001 by Pjascal Francq, Vandaele Valery.
+	Copyright 2003-2005 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -46,15 +50,21 @@ namespace GALILEI{
 /**
 * The GSugs provides a method to compute for each profile a set of potential
 * relevant documents ordred by similarity.
-* @author Pascal Francq, Vandaele Valery
+* @author Pascal Francq
 * @short Suggestions.
 */
-class GSugs  : public GPostGroup
+class GSugs : public GPostGroup
 {
 	/**
 	* Array of documents.
 	*/
-	R::RContainer<GFdbk,false,false> Docs;
+	R::RContainer<GFdbk,false,false>* Docs;
+
+	bool UseGroupsSugs;
+
+	bool UseLevels;
+
+	unsigned int NbSugs;
 
 public:
 

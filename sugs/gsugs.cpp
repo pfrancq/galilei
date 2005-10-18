@@ -6,7 +6,11 @@
 
 	Create suggestions  - Implementation
 
-	(C) 2001 by Pascal Franq, Vandaele Valery.
+	Copyright 2003-2005 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -40,6 +44,11 @@
 
 
 //------------------------------------------------------------------------------
+//include files for R
+#include <rmysql.h>
+
+
+//------------------------------------------------------------------------------
 //include files for GALILEI
 #include <gsession.h>
 #include <gprofile.h>
@@ -50,8 +59,57 @@
 #include <gstorage.h>
 #include <gpluginmanagers.h>
 #include <gmeasure.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace std;
+
+
+
+
+//------------------------------------------------------------------------------
+//
+//  GComputeSubProfileSugsCmd
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GComputeSubProfileSugsCmd : public GStorageCmd
+{
+public:
+	GComputeSubProfileSugsCmd(void) : GStorageCmd("ComputeSubProfileSugsCmd", "MySQL") {}
+	virtual void Run(GStorage* storage,const R::RXMLTag& inst,void* caller);
+	~GComputeSubProfileSugsCmd() {}
+};
+
+
+//------------------------------------------------------------------------------
+void GComputeSubProfileSugsCmd::Run(GStorage* storage,const R::RXMLTag& inst,void* caller)
+{
+	// Get all the parameters
+	GProfile* prof=static_cast<GProfile*>(caller);
+	RDb* storeMySQL=static_cast<RDb*>(storage->GetInfos());;
+	RString Sql;
+
+	try
+	{
+		Sql="DELETE FROM sugsbyprofiles WHERE profileid="+RString::Number(prof->GetId());
+		RQuery initsugs(storeMySQL,Sql);
+		Sql="INSERT INTO sugsbyprofiles(profileid,test,htmlid,rank) ";
+		Sql+="SELECT "+RString::Number(prof->GetId())+",'From other members',htmlid,htmlsbygroups.score FROM htmlsbygroups,subprofiles,profiles ";
+		Sql+="WHERE htmlsbygroups.groupid=subprofiles.groupid and subprofiles.groupid AND subprofiles.profileid=profiles.profileid AND profiles.profileid="+RString::Number(prof->GetId())+" AND htmlid NOT IN ";
+		Sql+="(SELECT htmlid FROM htmlsbyprofiles WHERE profileid="+RString::Number(prof->GetId())+") ";
+		Sql+="ORDER BY htmlsbygroups.score LIMIT "+inst.GetAttrValue("NbSugs");
+		RQuery insertsugs(storeMySQL,Sql);
+	}
+	catch(RException& e)
+	{
+		throw GException(e.GetMsg());
+	}
+	catch(...)
+	{
+		throw GException("Unknown problem");
+	}
+}
 
 
 
@@ -63,20 +121,26 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GSugs::GSugs(GFactoryPostGroup* fac) throw(bad_alloc)
-		: GPostGroup(fac), Docs(2000,500)
+		: GPostGroup(fac), Docs(0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSugs::CreateParams(GParams*)
+void GSugs::CreateParams(GParams* params)
 {
+	params->InsertPtr(new GParamUInt("NbSugs",50));
+	params->InsertPtr(new GParamBool("UseLevels",false));
+	params->InsertPtr(new GParamBool("UseGroupsSugs",false));
 }
 
 
 //------------------------------------------------------------------------------
 void GSugs::ApplyConfig(void)
 {
+	NbSugs=Factory->GetUInt("NbSugs");
+	UseLevels=Factory->GetBool("UseLevels");
+	UseGroupsSugs=Factory->GetBool("UseGroupsSugs");
 }
 
 
@@ -84,6 +148,9 @@ void GSugs::ApplyConfig(void)
 void GSugs::Connect(GSession* session) throw(GException)
 {
 	GPostGroup::Connect(session);
+	GComputeSubProfileSugsCmd* command=new GComputeSubProfileSugsCmd();
+	if(!GPluginManagers::GetManager<GStorageManager>("Storage")->InsertCmd(command))
+		delete command;
 }
 
 
@@ -97,43 +164,60 @@ void GSugs::Disconnect(GSession* session) throw(GException)
 //------------------------------------------------------------------------------
 void GSugs::Run(void) throw(GException)
 {
-	R::RCursor<GGroup> Grps;
-	RCursor<GSubProfile> Sub;
-	RCursor<GFdbk> Doc;
-	unsigned int i;
-
-	// Clear the table
-	RDate Now(RDate::GetToday());
-	Session->GetStorage()->CreateSugs(Now);
-
-	// Similarities
-	GMeasure* ProfilesDocsSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
-
-	// -1- Store sugestion with description= S+order
-	// Go through the groups
-	Grps=Session->GetGroups();
-	for(Grps.Start();!Grps.End();Grps.Next())
+	if(!UseLevels)
 	{
-		// Go through the subprofiles
-		Sub=Grps()->GetSubProfiles();
-		for(Sub.Start();!Sub.End();Sub.Next())
-		{
-			// Get all relevant documents ordered
-			Grps()->NotJudgedDocsRelList(ProfilesDocsSims,&Docs,Sub(),Session);
+		if(!Docs)
+			Docs=new R::RContainer<GFdbk,false,false>(2000,500);
 
-			// Store them in the database
-			Doc.Set(Docs);
-			for(Doc.Start(),i=0;!Doc.End();Doc.Next(),i++)
-				Session->GetStorage()->AddSugsProfile(Now,Sub()->GetProfile()->GetId(),Doc()->GetDocId(),i);
+		R::RCursor<GGroup> Grps;
+		RCursor<GSubProfile> Sub;
+		RCursor<GFdbk> Doc;
+		unsigned int i;
+
+		// Clear the table
+		RDate Now(RDate::GetToday());
+		Session->GetStorage()->CreateSugs(Now);
+
+		// Similarities
+		GMeasure* ProfilesDocsSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+
+		// -1- Store sugestion with description= S+order
+		// Go through the groups
+		Grps=Session->GetGroups();
+		for(Grps.Start();!Grps.End();Grps.Next())
+		{
+			// Go through the subprofiles
+			Sub=Grps()->GetSubProfiles();
+			for(Sub.Start();!Sub.End();Sub.Next())
+			{
+				// Get all relevant documents ordered
+				Grps()->NotJudgedDocsRelList(ProfilesDocsSims,Docs,Sub(),Session);
+
+				// Store them in the database
+				Doc.Set(*Docs);
+				for(Doc.Start(),i=0;!Doc.End();Doc.Next(),i++)
+					Session->GetStorage()->AddSugsProfile(Now,Sub()->GetProfile()->GetId(),Doc()->GetDocId(),i);
+			}
 		}
 	}
-
+	else
+	{
+		RXMLTag tag(0,"ComputeSubProfileSugsCmd");
+		tag.InsertAttr("NbSugs",RString::Number(NbSugs));
+		RCursor<GProfile> Profiles(Session->GetProfiles());
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
+		{
+			void* caller=static_cast<void*>(Profiles());
+			Session->GetStorage()->ExecuteCmd(tag,caller);
+		}
+	}
 }
 
 
 //------------------------------------------------------------------------------
 GSugs::~GSugs(void)
 {
+	delete Docs;
 }
 
 
