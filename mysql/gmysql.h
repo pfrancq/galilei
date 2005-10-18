@@ -124,7 +124,7 @@ public:
 	/**
 	* Get the database.
 	*/
-	R::RDb* GetDb(void) {return(Db.get());}
+	virtual void* GetInfos(void) {return(Db.get());}
 
 	/**
 	* Clear the information of a given object type from the storage.
