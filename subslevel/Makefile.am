@@ -1,0 +1,9 @@
+INCLUDES = $(all_includes) -I$(top_srcdir)
+pkglib_LTLIBRARIES =  libsubprofileslevel.la
+libsubprofileslevel_la_LDFLAGS = -module -avoid-version
+libsubprofileslevel_la_SOURCES = gsubprofileslevel.cpp
+libsubprofileslevel_la_LIBADD=
+AM_CFLAGS =
+AM_CXXFLAGS =
+AM_FFLAGS =
+SUBDIRS = $(FRONTEND)

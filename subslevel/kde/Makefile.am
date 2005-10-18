@@ -1,0 +1,9 @@
+INCLUDES = $(all_includes) -I$(top_srcdir)
+pkglib_LTLIBRARIES =  libsubprofileslevel_dlg.la
+libsubprofileslevel_dlg_la_LDFLAGS = -module -avoid-version
+libsubprofileslevel_dlg_la_SOURCES = dlgconfig_qt.ui gsubprofileslevel_kde.cpp
+libsubprofileslevel_dlg_la_LIBADD=
+AM_CFLAGS =
+AM_CXXFLAGS =
+AM_FFLAGS =
+SUBDIRS =
