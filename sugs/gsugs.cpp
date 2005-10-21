@@ -77,13 +77,13 @@ class GComputeSubProfileSugsCmd : public GStorageCmd
 {
 public:
 	GComputeSubProfileSugsCmd(void) : GStorageCmd("ComputeSubProfileSugsCmd", "MySQL") {}
-	virtual void Run(GStorage* storage,const R::RXMLTag& inst,void* caller);
+	virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller);
 	~GComputeSubProfileSugsCmd() {}
 };
 
 
 //------------------------------------------------------------------------------
-void GComputeSubProfileSugsCmd::Run(GStorage* storage,const R::RXMLTag& inst,void* caller)
+void GComputeSubProfileSugsCmd::Run(GStorage* storage,const GStorageTag& inst,void* caller)
 {
 	// Get all the parameters
 	GProfile* prof=static_cast<GProfile*>(caller);
@@ -138,6 +138,7 @@ void GSugs::CreateParams(GParams* params)
 //------------------------------------------------------------------------------
 void GSugs::ApplyConfig(void)
 {
+	GPostGroup::ApplyConfig();
 	NbSugs=Factory->GetUInt("NbSugs");
 	UseLevels=Factory->GetBool("UseLevels");
 	UseGroupsSugs=Factory->GetBool("UseGroupsSugs");
@@ -202,7 +203,7 @@ void GSugs::Run(void) throw(GException)
 	}
 	else
 	{
-		RXMLTag tag(0,"ComputeSubProfileSugsCmd");
+		GStorageTag tag(0,"Compute SubProfileSugs Cmd");
 		tag.InsertAttr("NbSugs",RString::Number(NbSugs));
 		RCursor<GProfile> Profiles(Session->GetProfiles());
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
