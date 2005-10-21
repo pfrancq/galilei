@@ -258,8 +258,11 @@ template<class Item>
 	void Done(QListView* lst,KGALILEICenterApp* app=0)
 {
 	Item* item=dynamic_cast<Item*>(lst->firstChild());
+	unsigned int i=0;
 	while(item)
 	{
+		item->Fac->Set("Level",i++);
+		item->Fac->Apply();
 		if(app)
 		{
 			if(item->Enable)
@@ -393,21 +396,14 @@ void KGALILEICenterApp::slotPlugins(void)
 			{
 				if (!pluginsPaths.Mid(0,findindex).IsEmpty())
 					pluginsPath.InsertPtr(new RString(pluginsPaths.Mid(0,findindex)));
-				cout <<" path2="<<pluginsPaths.Mid(0,findindex)<<endl;
 				pluginsPaths=pluginsPaths.Mid(findindex+1);
 				pluginsPaths.FindStr(";",0);
 				findindex=pluginsPaths.FindStr(";",0);
 			}
-			cout <<" path3="<<pluginsPaths.Mid(0,findindex)<<endl;
 			if (!pluginsPaths.IsEmpty())
 			pluginsPath.InsertPtr(new RString(pluginsPaths));
 			QMessageBox::information(this,"Plug-Ins Path has changed","You changed the plugins path, please restart KGALILEICenter.");
 		}
-
-		GPluginManagers::GetManager<GPostDocManager>("PostDoc")->ReOrder();
-		GPluginManagers::GetManager<GPreProfileManager>("PreProfile")->ReOrder();
-		GPluginManagers::GetManager<GPostProfileManager>("PostProfile")->ReOrder();
-		GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->ReOrder();
 
 		// Goes through managers
 		Done<QFilterItem>(dlg.Filters);
@@ -425,6 +421,11 @@ void KGALILEICenterApp::slotPlugins(void)
 		Done<QEngineItem>(dlg.Engines);
 		Done<QMetaEngineItem>(dlg.MetaEngines,this);
 		DoneMeasure(&dlg);
+
+		GPluginManagers::GetManager<GPostDocManager>("PostDoc")->ReOrder();
+		GPluginManagers::GetManager<GPreProfileManager>("PreProfile")->ReOrder();
+		GPluginManagers::GetManager<GPostProfileManager>("PostProfile")->ReOrder();
+		GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->ReOrder();
 
 		// Set current method
 		GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1(),false);
