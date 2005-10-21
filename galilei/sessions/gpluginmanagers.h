@@ -91,7 +91,7 @@ protected:
 
 public:
 
-	/*
+	/**
 	* Load all plug-ins and their dialog boxes.
 	* @param dirs            Directories to search in.
 	* @param dlg             Should the dialog boxes be loaded?

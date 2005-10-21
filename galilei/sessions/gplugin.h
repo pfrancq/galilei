@@ -396,6 +396,9 @@ public:
 	* Destructor.
 	*/
 	virtual ~GFactoryPlugin(void);
+
+	// friend class
+	friend class GPlugin<factory>;
 };
 
 

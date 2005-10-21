@@ -41,6 +41,8 @@ template<class factory>
 	GPlugin<factory>::GPlugin(factory* fac)
 	  	: Factory(fac), Session(0)
 {
+	if(!fac)
+		std::cout<<"Big Problem"<<std::endl;
 }
 
 
@@ -64,6 +66,7 @@ template<class factory>
 template<class factory>
 	void GPlugin<factory>::ApplyConfig(void)
 {
+	Factory->Level=Factory->GetInt("Level");
 }
 
 
