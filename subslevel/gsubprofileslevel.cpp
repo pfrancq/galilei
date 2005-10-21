@@ -96,7 +96,7 @@ GSubProfilesLevelCmd::GSubProfilesLevelCmd(void) : GStorageCmd("SubProfilesLevel
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevelCmd::Run(GStorage* storage,const R::RXMLTag& inst,void* caller)
+void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* caller)
 {
 	RString sql;
 	GGroup* grp;
@@ -175,7 +175,7 @@ GDocsLevelCmd::GDocsLevelCmd(void) : GStorageCmd("DocsLevelCMD", "MySQL")
 
 
 //------------------------------------------------------------------------------
-void GDocsLevelCmd::Run(GStorage* storage,const R::RXMLTag&,void*)
+void GDocsLevelCmd::Run(GStorage* storage,const GStorageTag&,void*)
 {
 	try
 	{
@@ -225,6 +225,7 @@ void GSubProfilesLevel::CreateParams(GParams* params)
 //------------------------------------------------------------------------------
 void GSubProfilesLevel::ApplyConfig(void)
 {
+	GPostGroup::ApplyConfig();
 	NbLevels=Factory->GetUInt("NbLevels");
 }
 
@@ -255,7 +256,7 @@ void GSubProfilesLevel::Run(void) throw(GException)
 {
 	if (!NbLevels)
 		throw GException ("[Compute Subprofiles Level]: Error: number of levels is null !");
-	RXMLTag tag(0,"SubProfilesLevelCMD");
+	GStorageTag tag(0,"SubProfilesLevel CMD");
 	tag.InsertAttr("NbLevels",RString::Number(NbLevels));
 	RCursor<GGroup> Groups(Session->GetGroups());
 	for(Groups.Start();!Groups.End();Groups.Next())
@@ -263,7 +264,7 @@ void GSubProfilesLevel::Run(void) throw(GException)
 		void* caller=static_cast<void*>(Groups());
 		Session->GetStorage()->ExecuteCmd(tag,caller);
 	}
-	RXMLTag tag2(0,"DocsLevelCMD");
+	GStorageTag tag2(0,"DocsLevel CMD");
 	Session->GetStorage()->ExecuteCmd(tag2,0);
 }
 

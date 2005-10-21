@@ -64,7 +64,7 @@ public:
 	* @param inst            XML tag representing the instruction.
 	* @param caller          Caller of the function.
 	*/
-	virtual void Run(GStorage* storage,const R::RXMLTag& inst,void* caller);
+	virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller);
 
 	/**
 	* Constructor of a command.
@@ -90,7 +90,7 @@ class GDocsLevelCmd : public GStorageCmd
 		 * @param inst            XML tag representing the instruction.
 		 * @param caller          Caller of the function.
 	 */
-		virtual void Run(GStorage* storage,const R::RXMLTag& inst,void* caller);
+		virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller);
 
 	/**
 		 * Constructor of a command.
