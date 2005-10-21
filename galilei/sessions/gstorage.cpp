@@ -37,6 +37,22 @@ using namespace GALILEI;
 using namespace R;
 
 
+
+//------------------------------------------------------------------------------
+//
+// GStorageTag
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GStorageTag::GStorageTag(RXMLStruct* xml,const RString& cmd)
+	: RXMLTag(xml,"StorageCmd")
+{
+	InsertAttr("nameCmd",cmd);
+}
+
+
+
 //------------------------------------------------------------------------------
 //
 // GStorageCmd
@@ -180,11 +196,11 @@ bool GStorage::IsCmdSupported(const R::RString cmd) const
 
 
 //------------------------------------------------------------------------------
-void GStorage::ExecuteCmd(const R::RXMLTag& inst,void* caller)
+void GStorage::ExecuteCmd(const GStorageTag& inst,void* caller)
 {
-	GStorageCmd* cmd=Commands.GetPtr(inst.GetName());
+	GStorageCmd* cmd=Commands.GetPtr(inst.GetAttrValue("nameCmd"));
 	if(!cmd)
-		throw GException("Command '"+inst.GetName()+"' not support on storage "+Factory->GetName());
+		throw GException("Command '"+inst.GetAttrValue("nameCmd")+"' not support on storage "+Factory->GetName());
 	cmd->Run(this,inst,caller);
 }
 

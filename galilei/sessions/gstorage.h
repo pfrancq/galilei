@@ -42,6 +42,7 @@
 // include files for R
 #include <rstring.h>
 #include <rmysql.h>
+#include <rxmltag.h>
 
 
 //------------------------------------------------------------------------------
@@ -57,6 +58,24 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 // API VERSION
 #define API_STORAGE_VERSION "2.0"
+
+
+//-----------------------------------------------------------------------------
+/**
+* This class represent a XML tag containing a storage command.
+* @author Pascal Francq
+* @short Generic XML Storage tag.
+*/
+class GStorageTag : public R::RXMLTag
+{
+public:
+
+	/**
+	* Construct a XML Tag.
+	* @param cmd             Name of the cmd.
+	*/
+	GStorageTag(RXMLStruct* xml,const RString& cmd);
+};
 
 
 //-----------------------------------------------------------------------------
@@ -126,7 +145,7 @@ public:
 	* @param inst            XML tag representing the instruction.
 	* @param caller          Caller of the function.
 	*/
-	virtual void Run(GStorage* storage,const R::RXMLTag& inst,void* caller)=0;
+	virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller)=0;
 
 	/**
 	* Destructor.
@@ -248,7 +267,7 @@ public:
 	* @param inst            XML Tag representing a command and its parameters.
 	* @param caller          Caller of the function.
 	*/
-	void ExecuteCmd(const R::RXMLTag& inst,void* caller);
+	void ExecuteCmd(const GStorageTag& inst,void* caller);
 
 	/**
 	* Insert a new command in the storage. The command is inserted if :
