@@ -35,6 +35,14 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
+#include <ctype.h>
+#include <sys/stat.h>
+#ifdef _BSD_SOURCE
+	#include <unistd.h>
+#else
+	#include <io.h>
+#endif
+#include <fcntl.h>
 using namespace std;
 
 
@@ -126,6 +134,8 @@ void GPluginManagers::FindPlugins(const RString dir,RContainer<RString,true,fals
 	struct dirent* ep;
 	RString Path(dir);
 	RString Name;
+	struct stat statbuf;
+	int handle;
 
 	dp=opendir(Path);
 	Path+=RFile::GetDirSeparator();
@@ -135,9 +145,14 @@ void GPluginManagers::FindPlugins(const RString dir,RContainer<RString,true,fals
 		// Name og the 'file"
 		Name=ep->d_name;
 
+		// Open file
+		handle=open(Path+Name,O_RDONLY);
+		fstat(handle, &statbuf);
+
 		// Look if it is a directoy
-		if(ep->d_type==DT_DIR)
+		if(S_ISDIR(statbuf.st_mode))
 		{
+			close(handle);
 			// If not '.' and '..' -> goes though it
 			if((Name!=".")&&(Name!=".."))
 				FindPlugins(Path+Name,plugins,dlgs);
@@ -145,9 +160,14 @@ void GPluginManagers::FindPlugins(const RString dir,RContainer<RString,true,fals
 		}
 
 		// Must be a regular file
-		if(ep->d_type!=DT_REG)
+		//if(ep->d_type!=DT_REG)
+		if(!S_ISREG(statbuf.st_mode))
+		{
+			close(handle);
 			continue;
+		}
 
+		close(handle);
 		// Must be a library finishing with '.so'
 		if(Name.GetLen()<3)
 			continue;
