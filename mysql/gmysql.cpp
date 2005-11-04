@@ -586,7 +586,7 @@ void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int histor
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			RString sSql("INSERT INTO historicsubprofiles(historicID,subprofileid,kwdid,weight, date, langid) VALUES("+
-					RString::Number(historicID)+","+RString::Number(sub->GetId())+","+RString::Number(Cur()->GetId())+"'"+RString::Number(Cur()->GetWeight())+"',CURDATE()),'"+RString(sub->GetLang()->GetCode())+"'");
+					RString::Number(historicID)+","+RString::Number(sub->GetId())+","+RString::Number(Cur()->GetId())+"'"+RString::Number(Cur()->GetWeight())+"',CURDATE(),'"+RString(sub->GetLang()->GetCode())+"')");
 			RQuery insertkwds(Db,sSql);
 		}
 	}
