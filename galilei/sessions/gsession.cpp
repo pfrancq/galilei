@@ -524,7 +524,8 @@ R::RCursor<GDoc> GSession::GetDocs(GLang* lang) const
 unsigned int GSession::GetNbDocs(GLang* lang) const
 {
 	PerLang* docL = Data->Langs.GetPtr<GLang*>(lang);
-	if(!docL) return 1;
+	if(!docL)
+		return(0);
 	return(docL->Docs.GetNb());
 }
 
