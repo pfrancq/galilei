@@ -293,6 +293,29 @@ public:
 	void ClearFdbks(void);
 
 	/**
+	* Get the number of common profiles which have assess both documents as
+	* relevant.
+	* @param doc            Pointer to a document.
+	* @return unsigned int.
+	*/
+	unsigned int GetCommonOKProfiles(const GDoc* docc) const;
+
+	/**
+	* Get the number of common profiles which have assess both documents.
+	* @param doc            Pointer to a document.
+	* @return unsigned int.
+	*/
+	unsigned int GetCommonProfiles(const GDoc* doc) const;
+
+	/**
+	* Get the number of common profiles which have assess both documents
+	* differently.
+	* @param doc            Pointer to a document.
+	* @return unsigned int.
+	*/
+	unsigned int GetCommonDiffProfiles(const GDoc* doc) const;
+
+	/**
 	* Get the number of times the documents was assessed.
 	*/
 	unsigned int GetNbFdbks(void) const;

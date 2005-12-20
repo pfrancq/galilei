@@ -43,6 +43,7 @@
 #include <gweightinfo.h>
 #include <gsession.h>
 #include <gstorage.h>
+#include <gprofile.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -245,6 +246,126 @@ void GDoc::ClearFdbks(void)
 {
  	if(Fdbks)
 		Fdbks->Clear();
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GDoc::GetCommonOKProfiles(const GDoc* doc) const
+{
+	tDocAssessment f;
+	GFdbk* cor;
+	unsigned int nb;
+
+	GSession* Session=GSession::Get();
+	if(!Session)
+		throw GException("No current session");
+
+	// Verify that the two documents have the same language
+	if(Lang!=doc->Lang) return(0);
+	nb=0;
+
+	// Go through the profiles that have asses this documents
+	for(Fdbks->Start();!Fdbks->End();Fdbks->Next())
+	{
+		// Find the corresponding feedback
+		GProfile* Profile=Session->GetProfile((*Fdbks)(),true);
+		if(!Profile)
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+		cor=Profile->GetFdbk(Id);
+		if(!cor)
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+
+		// If the assessment was not "OK"  -> Nothing
+		f=cor->GetFdbk();
+		if(!(f & djOK)) continue;
+
+		// Search if the second document was also assessed as relevant by the profile
+		cor=Profile->GetFdbk(doc->GetId());
+		if(!cor)
+			continue;
+		f=cor->GetFdbk();
+		if(!(f & djOK)) continue;
+
+		// Increase the number of common profiles
+		nb++;
+	}
+	return(nb);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GDoc::GetCommonProfiles(const GDoc* doc) const
+{
+	GFdbk* cor;
+	unsigned int nb;
+
+	GSession* Session=GSession::Get();
+	if(!Session)
+		throw GException("No current session");
+
+	// Verify that the two documents have the same language
+	if(Lang!=doc->Lang) return(0);
+	nb=0;
+
+	// Go through the profiles that have asses this documents
+	for(Fdbks->Start();!Fdbks->End();Fdbks->Next())
+	{
+		// Find the corresponding feedback
+		GProfile* Profile=Session->GetProfile((*Fdbks)(),true);
+		if(!Profile)
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+		cor=Profile->GetFdbk(Id);
+		if(!cor)
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+
+		// Search if the second document was also assessed by the profile
+		cor=Profile->GetFdbk(doc->GetId());
+		if(cor)
+			nb++;
+	}
+	return(nb);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GDoc::GetCommonDiffProfiles(const GDoc* doc) const
+{
+	GFdbk* cor;
+	unsigned int nb;
+	bool IsOK1;
+	bool IsOK2;
+
+	GSession* Session=GSession::Get();
+	if(!Session)
+		throw GException("No current session");
+
+	// Verify that the two documents have the same language
+	if(Lang!=doc->Lang) return(0);
+	nb=0;
+
+	// Go through the profiles that have asses this documents
+	for(Fdbks->Start();!Fdbks->End();Fdbks->Next())
+	{
+		// Find the corresponding feedback
+		GProfile* Profile=Session->GetProfile((*Fdbks)(),true);
+		if(!Profile)
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+		cor=Profile->GetFdbk(Id);
+		if(!cor)
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+		IsOK1=(cor->GetFdbk() & djOK);
+
+		// Search if the second document was also assessed differently by the profile
+		cor=Profile->GetFdbk(doc->GetId());
+		if(!cor)
+			continue;
+		IsOK2=(cor->GetFdbk() & djOK);
+
+		// Increase the number of common profiles
+		if((IsOK1&&(!IsOK2))||((!IsOK1)&&IsOK2))
+			nb++;
+	}
+	return(nb);
 }
 
 
