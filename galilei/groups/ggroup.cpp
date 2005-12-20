@@ -304,7 +304,7 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* 
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const
+void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession*) const
 {
 	RCursor<GSubProfile> sub(*this);
 	RCursor<GFdbk> Fdbks;
