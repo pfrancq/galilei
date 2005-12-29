@@ -59,7 +59,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac) throw(bad_alloc)
+GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac) 
 	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
 	  FuzzyFactor(0.25), IrrelFactor(0.75), Positive(false), Localisf(false), idf(true),
 	  Vectors(5000), NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
@@ -86,21 +86,21 @@ void GProfileCalcFeedback::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Connect(GSession* session) throw(GException)
+void GProfileCalcFeedback::Connect(GSession* session) 
 {
 	GProfileCalc::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Disconnect(GSession* session) throw(GException)
+void GProfileCalcFeedback::Disconnect(GSession* session) 
 {
 	GProfileCalc::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
+void GProfileCalcFeedback::ComputeGlobal(void) 
 {
 	RCursor<GWeightInfo> Words;
 	RCursor<GFdbk> Docs;
@@ -213,7 +213,7 @@ void GProfileCalcFeedback::ComputeGlobal(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeSubProfile(void) throw(bad_alloc,GException)
+void GProfileCalcFeedback::ComputeSubProfile(void) 
 {
 	GWeightInfo** ptr;
 	unsigned int i,nb,nb2;
@@ -260,7 +260,7 @@ void GProfileCalcFeedback::ComputeSubProfile(void) throw(bad_alloc,GException)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Compute(GSubProfile* subprofile) throw(GException)
+void GProfileCalcFeedback::Compute(GSubProfile* subprofile) 
 {
 	SubProfile=subprofile;
 	GWeightInfo* ptr;
