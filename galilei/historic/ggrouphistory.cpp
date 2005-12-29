@@ -46,7 +46,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc)
+GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps)
 	: RContainer<GWeightInfosHistory,false,true>(20,10), Id(id), Lang(lang),
 	  Modified(false), Parent(grps), Childrens(2,2)
 {

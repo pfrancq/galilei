@@ -93,7 +93,7 @@ public:
 	* @param lang           Language.
 	* @param grps           Parent.
 	*/
-	GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps) throw(std::bad_alloc);
+	GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps);
 
 	/**
 	* Get the identificator of the group.

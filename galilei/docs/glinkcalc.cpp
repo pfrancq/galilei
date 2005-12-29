@@ -53,14 +53,14 @@ RContainer<GLinks,true,true> GLinkCalc::Links_Out(100,50);
 bool GLinkCalc::Inited=false;
 
 //------------------------------------------------------------------------------
-GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc)
+GLinkCalc::GLinkCalc(GFactoryLinkCalc* fac)
 	: GPlugin<GFactoryLinkCalc>(fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GLinkCalc::InitGraph(void) throw(GException)
+void GLinkCalc::InitGraph(void)
 {
 	R::RCursor<GDoc> cur = Session->GetDocs();
 	R::RCursor<GLink> lcur;
@@ -96,7 +96,7 @@ void GLinkCalc::InitGraph(void) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GLinkCalc::AddDoc(GDoc* doc) throw(GException)
+void GLinkCalc::AddDoc(GDoc* doc)
 {
 	R::RCursor<GLink> lcur;
 	GLinks* links_out=0;

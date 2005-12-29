@@ -79,13 +79,13 @@ public:
 	/**
 	* Construct the extractor for the Yahoo engine.
 	*/
-	GEngine(GFactoryEngine* fac) throw(std::bad_alloc,R::RIOException);
+	GEngine(GFactoryEngine* fac);
 
 	/**
 	* Process the Engine extraction. All results will be extracted, the url of the next page...
 	* @param keyWords        The set of keywords to be searched
 	*/
-	virtual void Process(R::RContainer<R::RString,false,false>& keyWords) throw(GException)=0;
+	virtual void Process(R::RContainer<R::RString,false,false>& keyWords)=0;
 
 	/**
 	* Get the weight associated to this engine

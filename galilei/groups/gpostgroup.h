@@ -66,12 +66,12 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GPostGroup(GFactoryPostGroup* fac) throw(std::bad_alloc);
+	GPostGroup(GFactoryPostGroup* fac);
 
 	/**
 	* Run the post-group method.
 	*/
-	virtual void Run(void) throw(GException)=0 ;
+	virtual void Run(void)=0;
 
 	/**
 	* Destructor.

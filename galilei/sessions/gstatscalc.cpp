@@ -51,7 +51,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsCalc::GStatsCalc(GFactoryStatsCalc* fac) throw(std::bad_alloc)
+GStatsCalc::GStatsCalc(GFactoryStatsCalc* fac)
 	: GPlugin<GFactoryStatsCalc>(fac)
 {
 }

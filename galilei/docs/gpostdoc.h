@@ -66,12 +66,12 @@ public :
 	* Constructor of the documents post-analysis method.
 	* @param fac             Factory of the plugin.
 	*/
-	GPostDoc(GFactoryPostDoc* fac) throw(std::bad_alloc);
+	GPostDoc(GFactoryPostDoc* fac);
 
 	/**
 	* Run the method.
 	*/
-	virtual void Run(void) throw(GException)=0;
+	virtual void Run(void)=0;
 
 	/**
 	* Destructor of the documents post-analysis method.

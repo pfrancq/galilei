@@ -72,7 +72,7 @@ public:
 	* Constructor of the document analysis method.
 	* @param fac             Factory of the plugin.
 	*/
-	GDocAnalyse(GFactoryDocAnalyse* fac) throw(std::bad_alloc);
+	GDocAnalyse(GFactoryDocAnalyse* fac);
 
 	/**
 	* Analyse a XML representation of a document for a session and store the
@@ -85,7 +85,7 @@ public:
 	* @param tmpDocs        Container that will hold the references of the added
 	*                       docs.
 	*/
-	virtual void Analyze(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0) throw(GException)=0;
+	virtual void Analyze(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0)=0;
 
 	/**
 	* Destructor of the document analysis method.

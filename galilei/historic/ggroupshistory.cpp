@@ -56,7 +56,7 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-GGroupsHistoryManager::GGroupsHistoryManager(GSession* session,unsigned int max) throw(std::bad_alloc)
+GGroupsHistoryManager::GGroupsHistoryManager(GSession* session,unsigned int max)
 	: RContainer<GGroupsHistory,true,true>(max,max/2), Session(session)
 {
 }
@@ -71,7 +71,7 @@ R::RCursor<GGroupsHistory> GGroupsHistoryManager::GetGroupsHistory(void)
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc)
+void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen)
 {
 	R::RCursor<GGroupsHistory> Cur(*this);
 
@@ -81,7 +81,7 @@ void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen) throw(std::
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistoryManager::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
+void GGroupsHistoryManager::CheckWellGroupedSubProfs(void)
 {
 	R::RCursor<GGroupsHistory> Cur(*this);
 
@@ -94,7 +94,7 @@ void GGroupsHistoryManager::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistoryManager::CheckNewProfiles(void) throw(std::bad_alloc)
+void GGroupsHistoryManager::CheckNewProfiles(void)
 {
 	R::RCursor<GGroupsHistory> Cur(*this);
 
@@ -104,7 +104,7 @@ void GGroupsHistoryManager::CheckNewProfiles(void) throw(std::bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxgen) throw(std::bad_alloc)
+void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxgen)
 {
 	unsigned int  i, maxoccurs, nbchildren;
 	GGroupsHistory *nextgrps;
@@ -179,7 +179,7 @@ void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxge
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistoryManager::InsertGroupsHistory(GGroupsHistory* gh) throw(std::bad_alloc)
+void GGroupsHistoryManager::InsertGroupsHistory(GGroupsHistory* gh)
 {
 	this->InsertPtr(gh);
 	gh->SetManager(this);
@@ -207,7 +207,7 @@ GGroupsHistoryManager::~GGroupsHistoryManager(void)
 
 
 //------------------------------------------------------------------------------
-GGroupsHistory::GGroupsHistory(unsigned int id, RString date) throw(std::bad_alloc)
+GGroupsHistory::GGroupsHistory(unsigned int id, RString date)
 	: RContainer<GGroupHistory,true,true>(20,10)
 {
 	Id=id;
@@ -223,7 +223,7 @@ R::RDate GGroupsHistory::GetDate(void) const
 
 
 //------------------------------------------------------------------------------
-GWeightInfosHistory* GGroupsHistory::GetSubProfile(unsigned int id) throw(GException)
+GWeightInfosHistory* GGroupsHistory::GetSubProfile(unsigned int id)
 {
 	RCursor<GGroupHistory> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -266,7 +266,7 @@ void GGroupsHistory::SetManager(GGroupsHistoryManager* m)
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistory::CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc)
+void GGroupsHistory::CheckModifiedGroups(unsigned int minGen)
 {
 	RContainer<GWeightInfosHistory,false,true>* lastsubs;
 	GGroupsHistory* lastgroups;
@@ -337,7 +337,7 @@ void GGroupsHistory::CheckModifiedGroups(unsigned int minGen) throw(std::bad_all
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistory::SetGroupsSubject(void) throw(std::bad_alloc)
+void GGroupsHistory::SetGroupsSubject(void)
 {
 	GGroupHistory* grp;
 	GSubject* mainsubject;
@@ -387,7 +387,7 @@ void GGroupsHistory::SetGroupsSubject(void) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistory::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
+void GGroupsHistory::CheckWellGroupedSubProfs(void)
 {
 	RCursor<GGroupHistory> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -403,7 +403,7 @@ void GGroupsHistory::CheckWellGroupedSubProfs(void) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistory::CheckNewProfiles(void) throw(std::bad_alloc)
+void GGroupsHistory::CheckNewProfiles(void)
 {
 	R::RContainer<GWeightInfosHistory,false,true>* lastsubs;
 	GGroupsHistory* lastgroups;

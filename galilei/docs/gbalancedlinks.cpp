@@ -45,14 +45,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GBalancedLinks::GBalancedLinks(GDoc* d,double w) throw(std::bad_alloc, GException)
+GBalancedLinks::GBalancedLinks(GDoc* d,double w)
 	: GLinks(d) , Weight(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GBalancedLinks::GBalancedLinks(GDoc* d) throw(std::bad_alloc, GException)
+GBalancedLinks::GBalancedLinks(GDoc* d)
 	: GLinks(d) , Weight(1)
 {
 }

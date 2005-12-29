@@ -45,14 +45,14 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GInfoList::GInfoList(unsigned int id,tInfoType type) throw(std::bad_alloc)
+GInfoList::GInfoList(unsigned int id,tInfoType type)
 	: GInfo(id,type), RContainer<GInfo,true,true>(30,10)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GInfoList::GInfoList(const GInfoList& i) throw(std::bad_alloc)
+GInfoList::GInfoList(const GInfoList& i)
 	: GInfo(i), RContainer<GInfo,true,true>(i)
 {
 }
@@ -80,7 +80,7 @@ int GInfoList::Compare(const GInfoList& i) const
 
 
 //------------------------------------------------------------------------------
-GInfoList& GInfoList::operator=(const GInfoList& i) throw(std::bad_alloc)
+GInfoList& GInfoList::operator=(const GInfoList& i)
 {
 	RContainer<GInfo,true,true>::operator=(i);
 	GInfo::operator=(i);

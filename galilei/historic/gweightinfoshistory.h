@@ -6,7 +6,7 @@
 
 	List of weighted information entities for history - Header.
 
-	Copyright 2002-2003 by the Université Libre de Bruxelles.
+	Copyright 2002-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -83,7 +83,7 @@ public :
 	* @param sub             Subprofile.
 	* @param max             Maximal number of word created at initialisation.
 	*/
-	GWeightInfosHistory(GSubProfile* sub, unsigned int max) throw(std::bad_alloc);
+	GWeightInfosHistory(GSubProfile* sub, unsigned int max);
 
 	/**
 	* Compare two lists by comparing the identificator of their subprofile.

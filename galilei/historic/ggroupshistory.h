@@ -65,7 +65,7 @@ public :
 	* @param session         Session.
 	* @param max             Number of steps to handle.
 	*/
-	GGroupsHistoryManager(GSession* session,unsigned int max) throw(std::bad_alloc);
+	GGroupsHistoryManager(GSession* session,unsigned int max);
 
 	/**
 	* Get a cursor on the history of all groupments.
@@ -75,29 +75,29 @@ public :
 	/**
 	* Check which groups are modified.
 	*/
-	void CheckModifiedGroups(unsigned int minGen)  throw(std::bad_alloc);
+	void CheckModifiedGroups(unsigned int minGen);
 
 	/**
 	* Check which subprofiles are correctly grouped.
 	*/
-	void CheckWellGroupedSubProfs(void)  throw(std::bad_alloc);
+	void CheckWellGroupedSubProfs(void);
 
 	/**
 	* Check which subprofiles are new.
 	*/
-	void CheckNewProfiles(void)  throw(std::bad_alloc);
+	void CheckNewProfiles(void);
 
 	/**
 	* Creates relationship between historic groups.
 	* #param maxgen          Identificators of the last history to use.
 	*/
-	void CreateGroupsRelationship(unsigned int maxgen) throw(std::bad_alloc);
+	void CreateGroupsRelationship(unsigned int maxgen);
 
 	/**
 	* Insert a history of a groupment.
 	* @param gh              History of a groupment.
 	*/
-	void InsertGroupsHistory(GGroupsHistory* gh)  throw(std::bad_alloc);
+	void InsertGroupsHistory(GGroupsHistory* gh);
 
 	/**
 	* Get the associated session.
@@ -142,7 +142,7 @@ public :
 	* @param id              Identificator of the historic.
 	* @param date            Date of the history.
 	*/
-	GGroupsHistory(unsigned int id, R::RString date) throw(std::bad_alloc);
+	GGroupsHistory(unsigned int id, R::RString date);
 
 	/**
 	* Get the identificator of the groupment.
@@ -161,7 +161,7 @@ public :
 	* @param id              Identificator.
 	* @return Pointer to a GWeightInfosHistory.
 	*/
-	GWeightInfosHistory* GetSubProfile(unsigned int id) throw(GException);
+	GWeightInfosHistory* GetSubProfile(unsigned int id);
 
 	/**
 	* Compare two histories of groupment by comparing their identificator.
@@ -196,22 +196,22 @@ public :
 	/**
 	* Check which groups are modified.
 	*/
-	void CheckModifiedGroups(unsigned int minGen) throw(std::bad_alloc);
+	void CheckModifiedGroups(unsigned int minGen);
 
 	/**
 	* Set the main topic associated to each history of groupment.
 	*/
-	void SetGroupsSubject(void) throw(std::bad_alloc);
+	void SetGroupsSubject(void);
 
 	/**
 	* Check which subprofiles are correctly grouped.
 	*/
-	void CheckWellGroupedSubProfs(void) throw(std::bad_alloc);
+	void CheckWellGroupedSubProfs(void);
 
 	/**
 	* Check which subprofiles are new.
 	*/
-	void CheckNewProfiles(void) throw(std::bad_alloc);
+	void CheckNewProfiles(void);
 
 	/**
 	*   Destructor

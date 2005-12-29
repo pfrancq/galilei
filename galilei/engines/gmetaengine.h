@@ -66,7 +66,7 @@ public:
 	/**
 	* Construct the extractor for the Yahoo engine.
 	*/
-	GMetaEngine(GFactoryMetaEngine* fac) throw(std::bad_alloc);
+	GMetaEngine(GFactoryMetaEngine* fac);
 
 	/**
 	* Send a query to the meta Search engine
@@ -81,7 +81,7 @@ public:
 	* The results are first sorted (using the gobal ranking)
 	* and then stored in the RContainer
 	*/
-	virtual void Process() throw(R::RIOException)=0;
+	virtual void Process(void)=0;
 
 	/**
 	* Add a result from the engine
@@ -97,7 +97,7 @@ public:
 	* Get a cursor of the documents from the search engines
 	* @return GEngineDocCursor
 	*/
-	virtual R::RCursor<GEngineDoc> GetEngineDocs(void) throw(GException)=0;
+	virtual R::RCursor<GEngineDoc> GetEngineDocs(void)=0;
 
 	/**
 	* return the number of results that must be used

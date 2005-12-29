@@ -46,7 +46,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GWordOccurs::GWordOccurs(R::RString word) throw(std::bad_alloc)
+GWordOccurs::GWordOccurs(R::RString word)
   : Word(word), Docs(50,50)
 {
 }

@@ -264,6 +264,9 @@ unsigned int GDoc::GetCommonOKProfiles(const GDoc* doc) const
 	if(Lang!=doc->Lang) return(0);
 	nb=0;
 
+	if((!Fdbks)||(!doc->Fdbks))
+		return(0);
+
 	// Go through the profiles that have asses this documents
 	for(Fdbks->Start();!Fdbks->End();Fdbks->Next())
 	{
@@ -307,6 +310,9 @@ unsigned int GDoc::GetCommonProfiles(const GDoc* doc) const
 	if(Lang!=doc->Lang) return(0);
 	nb=0;
 
+	if((!Fdbks)||(!doc->Fdbks))
+		return(0);
+
 	// Go through the profiles that have asses this documents
 	for(Fdbks->Start();!Fdbks->End();Fdbks->Next())
 	{
@@ -342,6 +348,9 @@ unsigned int GDoc::GetCommonDiffProfiles(const GDoc* doc) const
 	// Verify that the two documents have the same language
 	if(Lang!=doc->Lang) return(0);
 	nb=0;
+
+	if((!Fdbks)||(!doc->Fdbks))
+		return(0);
 
 	// Go through the profiles that have asses this documents
 	for(Fdbks->Start();!Fdbks->End();Fdbks->Next())

@@ -50,7 +50,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GParam::GParam(const char* n) throw(std::bad_alloc)
+GParam::GParam(const char* n)
 	: Name(n)
 {
 }
@@ -222,7 +222,7 @@ GParam::~GParam(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GParamInt::GParamInt(const char* n,int d) throw(std::bad_alloc)
+GParamInt::GParamInt(const char* n,int d)
 	: GParam(n), Value(d)
 {
 }
@@ -292,7 +292,7 @@ GParamInt::~GParamInt(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GParamUInt::GParamUInt(const char* n,unsigned int d) throw(std::bad_alloc)
+GParamUInt::GParamUInt(const char* n,unsigned int d)
 	: GParam(n), Value(d)
 {
 }
@@ -362,7 +362,7 @@ GParamUInt::~GParamUInt(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GParamDouble::GParamDouble(const char* n,double d) throw(std::bad_alloc)
+GParamDouble::GParamDouble(const char* n,double d)
 	: GParam(n), Value(d)
 {
 }
@@ -424,7 +424,7 @@ GParamDouble::~GParamDouble(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GParamString::GParamString(const char* n,const char* d) throw(std::bad_alloc)
+GParamString::GParamString(const char* n,const char* d)
 	: GParam(n), Value(d)
 {
 }
@@ -472,7 +472,7 @@ GParamString::~GParamString(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GParamProm::GParamProm(const char* n,RPromCriterionParams* d) throw(std::bad_alloc)
+GParamProm::GParamProm(const char* n,RPromCriterionParams* d)
 	: GParam(n), Value(d)
 {
 }
@@ -544,7 +544,7 @@ GParamProm::~GParamProm(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GParamBool::GParamBool(const char* n,bool d) throw(std::bad_alloc)
+GParamBool::GParamBool(const char* n,bool d)
 	: GParam(n), Value(d)
 {
 }

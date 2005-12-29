@@ -66,7 +66,7 @@ public:
 	* Construct the list of parameters.
 	* @param n               Name of the parameter.
 	*/
-	GParams(const R::RString& n) throw(std::bad_alloc);
+	GParams(const R::RString& n);
 
 	/**
 	* Get the name of the set of parameters.

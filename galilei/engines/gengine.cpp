@@ -53,7 +53,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngine::GEngine(GFactoryEngine* fac) throw(std::bad_alloc,RIOException)
+GEngine::GEngine(GFactoryEngine* fac)
 	: GPlugin<GFactoryEngine>(fac), Weight(1)
 {
 }

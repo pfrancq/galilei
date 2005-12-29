@@ -45,7 +45,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostGroup::GPostGroup(GFactoryPostGroup* fac) throw(std::bad_alloc)
+GPostGroup::GPostGroup(GFactoryPostGroup* fac)
 	: GPlugin<GFactoryPostGroup>(fac)
 {
 }

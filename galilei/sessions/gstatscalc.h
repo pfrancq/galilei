@@ -66,14 +66,14 @@ public:
 	* Construct the statistics method.
 	* @param fac             Factory of the plugin.
 	*/
-	GStatsCalc(GFactoryStatsCalc* fac) throw(std::bad_alloc);
+	GStatsCalc(GFactoryStatsCalc* fac);
 
 	/**
 	* Compute the statistics.
 	* @param xml             XML Structure.
 	* @param res             XML tag that will be hold the results.
 	*/
-	virtual void Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)=0;
+	virtual void Compute(R::RXMLStruct* xml,R::RXMLTag& res)=0;
 
 	/**
 	* Add a tag representing an element with a value.

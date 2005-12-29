@@ -79,7 +79,7 @@ public:
 	* Constructor of the grouping method.
 	* @param fac             Factory of the plugin.
 	*/
-	GGrouping(GFactoryGrouping* fac) throw(std::bad_alloc);
+	GGrouping(GFactoryGrouping* fac);
 
 protected:
 
@@ -88,7 +88,7 @@ protected:
 	* subprofiles for a given language. This variables must be set before
 	* calling this function. This is done by the Grouping method.
 	*/
-	virtual void Run(void) throw(GException)=0;
+	virtual void Run(void)=0;
 
 public:
 
@@ -97,7 +97,7 @@ public:
 	* @param rec            Receiver of the signals.
 	* @param save           Save modified elements.
 	*/
-	void Grouping(GSlot* rec,bool save) throw(GException);
+	void Grouping(GSlot* rec,bool save);
 
 	/**
 	* Destructor of tghe grouping method.

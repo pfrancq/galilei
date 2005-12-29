@@ -54,7 +54,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMetaEngine::GMetaEngine(GFactoryMetaEngine* fac) throw(std::bad_alloc)
+GMetaEngine::GMetaEngine(GFactoryMetaEngine* fac)
 	: GPlugin<GFactoryMetaEngine>(fac)
 {
 }

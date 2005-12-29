@@ -71,13 +71,13 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GGroupCalc(GFactoryGroupCalc* fac) throw(std::bad_alloc);
+	GGroupCalc(GFactoryGroupCalc* fac);
 
 	/**
 	* Compute a group.
 	* @param grp            Reference to the group to compute.
 	*/
-	virtual void Compute(GGroup* grp) throw(GException)=0;
+	virtual void Compute(GGroup* grp)=0;
 
 	/**
 	* Destructor.

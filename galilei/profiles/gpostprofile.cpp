@@ -45,7 +45,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostProfile::GPostProfile(GFactoryPostProfile* fac) throw(std::bad_alloc)
+GPostProfile::GPostProfile(GFactoryPostProfile* fac)
 	: GPlugin<GFactoryPostProfile>(fac)
 {
 }

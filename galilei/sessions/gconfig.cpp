@@ -69,7 +69,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GConfig::GConfig(const char* f) throw(std::bad_alloc)
+GConfig::GConfig(const char* f)
 	: RXMLStruct(), FileName(f)
 {
 	AddTag(0,Root=new RXMLTag(this,"rdf:RDF"));
@@ -88,7 +88,7 @@ GConfig::GConfig(const char* f) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Load(void) throw(GException)
+void GConfig::Load(void)
 {
 	Clear();
 	try
@@ -118,7 +118,7 @@ void GConfig::Load(void) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GConfig::Save(void) throw(GException)
+void GConfig::Save(void)
 {
 	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetManagers());
 	RXMLTag* t;

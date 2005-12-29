@@ -78,13 +78,13 @@ public:
 	* Construct the computing method.
 	* @param fac             Factory of the plugin.
 	*/
-	GProfileCalc(GFactoryProfileCalc* fac) throw(std::bad_alloc);
+	GProfileCalc(GFactoryProfileCalc* fac);
 
 	/**
 	* Compute a subprofile.
 	* @param subprofile      Reference to the subprofile to compute.
 	*/
-	virtual void Compute(GSubProfile* subprofile) throw(GException)=0;
+	virtual void Compute(GSubProfile* subprofile)=0;
 
 	/**
 	* Destructor of the computing method.

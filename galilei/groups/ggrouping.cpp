@@ -59,14 +59,14 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGrouping::GGrouping(GFactoryGrouping* fac) throw(std::bad_alloc)
+GGrouping::GGrouping(GFactoryGrouping* fac)
 	: GPlugin<GFactoryGrouping>(fac), Lang(0), SubProfiles(100,50)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GGrouping::Grouping(GSlot* rec,bool save) throw(GException)
+void GGrouping::Grouping(GSlot* rec,bool save)
 {
 	R::RCursor<GFactoryLang> CurLang;
 	GGroupCalc* CalcDesc;

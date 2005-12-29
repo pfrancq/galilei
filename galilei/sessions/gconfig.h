@@ -81,17 +81,17 @@ public:
 	* Constructor.
 	* @param f               Name of the file.
 	*/
-	GConfig(const char* f) throw(std::bad_alloc);
+	GConfig(const char* f);
 
 	/**
 	* Load a file in the structure.
 	*/
-	void Load(void) throw(GException);
+	void Load(void);
 
 	/**
 	* Save a file in the structure.
 	*/
-	void Save(void) throw(GException);
+	void Save(void);
 
 	/**
 	* Destructor.

@@ -45,7 +45,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLinks::GLinks(GDoc* d) throw(std::bad_alloc, GException)
+GLinks::GLinks(GDoc* d)
 	: RContainer<GLink,false,true>(3,2), Doc(d)
 {
 	if(!d)

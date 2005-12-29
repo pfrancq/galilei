@@ -278,7 +278,7 @@ public:
 	/**
 	* Create a plugin.
 	*/
-	virtual void Create(void) throw(GException)
+	virtual void Create(void)
 	{
 		if(Plugin) return;
 		Plugin=NewPlugIn();
@@ -289,7 +289,7 @@ public:
 	/**
 	* Create a plugin.
 	*/
-	virtual void Delete(void) throw(GException)
+	virtual void Delete(void)
 	{
 		if(!Plugin) return;
 		Mng->DisablePlugIn(Plugin);
@@ -300,7 +300,7 @@ public:
 	/**
 	* Create a plugin.
 	*/
-	virtual void Create(GSession* session) throw(GException)
+	virtual void Create(GSession* session)
 	{
 		if(!Plugin)
 		{
@@ -315,7 +315,7 @@ public:
 	/**
 	* Create a plugin.
 	*/
-	virtual void Delete(GSession* session) throw(GException)
+	virtual void Delete(GSession* session)
 	{
 		if(!Plugin) return;
 		if(session)

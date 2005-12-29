@@ -168,7 +168,7 @@ void GLang::SkipSequence(const RString& word)
 
 
 //------------------------------------------------------------------------------
-/*RString GLang::GetStemming(const RString& _kwd) throw(GException)
+/*RString GLang::GetStemming(const RString& _kwd)
 {
 	return(_kwd.ToLower());
 }*/

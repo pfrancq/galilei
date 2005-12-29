@@ -70,7 +70,7 @@ public:
 	* Constructor of a word.
 	* @param word            Word.
 	*/
-	GWordOccurs(R::RString word) throw(std::bad_alloc);
+	GWordOccurs(R::RString word);
 
 	/**
 	* Compare the names of two data (work like the 'strcmp' function of ANSI

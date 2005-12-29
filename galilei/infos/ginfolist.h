@@ -61,13 +61,13 @@ public:
 	* @param id              Identificator of the information entity.
 	* @param type            Type of the information entity.
 	*/
-	GInfoList(unsigned int id,tInfoType type=infoWordList) throw(std::bad_alloc);
+	GInfoList(unsigned int id,tInfoType type=infoWordList);
 
 	/**
 	* Copy constructor for a list of information entities.
 	* @param i               Information entity representing a list.
 	*/
-	GInfoList(const GInfoList& i) throw(std::bad_alloc);
+	GInfoList(const GInfoList& i);
 
 	/**
 	* Compare an identificator with the corresponding one of the list.
@@ -104,7 +104,7 @@ public:
 	* Assignment operator for lists of information entities.
 	* @param i               Information entity representing a list.
 	*/
-	GInfoList& operator=(const GInfoList& i) throw(std::bad_alloc);
+	GInfoList& operator=(const GInfoList& i);
 
 	/**
 	* The method verifies if two lists contain exactly the same information

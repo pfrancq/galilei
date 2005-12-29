@@ -77,7 +77,7 @@ public:
 	* @param fullname       FullName of the user.
 	* @param nb             Number of profiles.
 	*/
-	GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb) throw(std::bad_alloc);
+	GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb);
 
 	/**
 	* Compare two users by comparing their identificator.
@@ -113,7 +113,7 @@ public:
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
-	void SetId(unsigned int id) throw(GException);
+	void SetId(unsigned int id);
 
 	/**+
 	* Get a cursor over the profiles of user.

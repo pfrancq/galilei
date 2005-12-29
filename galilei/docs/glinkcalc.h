@@ -77,13 +77,13 @@ public:
 	* Construct the computing method.
 	* @param fac            Factory of the plugin.
 	*/
-	GLinkCalc(GFactoryLinkCalc* fac) throw(std::bad_alloc);
+	GLinkCalc(GFactoryLinkCalc* fac);
 
 	/**
 	* Compute the links for a given subprofile.
 	* @param prof            Reference to the profile to compute.
 	*/
-	virtual void Compute(GProfile* prof) throw(GException)=0;
+	virtual void Compute(GProfile* prof)=0;
 
 	/**
 	* Disconnect from a Session.
@@ -94,13 +94,13 @@ public:
 	/**
 	* Init the algorithm for link computation
 	*/
-	void InitGraph(void) throw(GException);
+	void InitGraph(void);
 
 	/**
 	* Add a new doc (not present in the initAlgo phase).
 	* @param doc            Document.
 	*/
-	void AddDoc(GDoc* doc) throw(GException);
+	void AddDoc(GDoc* doc);
 
 	/**
 	* destructor of GLinkCalc

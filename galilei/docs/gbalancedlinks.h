@@ -68,13 +68,13 @@ public :
 	* @param doc             Document containing the links.
 	* @param weight          Weight associated with the link.
 	*/
-	GBalancedLinks(GDoc* doc,double weight) throw(std::bad_alloc, GException);
+	GBalancedLinks(GDoc* doc,double weight);
 
 	/**
 	* Constructor of a weighted list of links.
 	* @param doc             Document containing the links.
 	*/
-	GBalancedLinks(GDoc* doc) throw(std::bad_alloc, GException);
+	GBalancedLinks(GDoc* doc);
 
 	/**
 	* Get the identificator of the document.

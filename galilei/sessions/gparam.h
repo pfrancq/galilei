@@ -71,7 +71,7 @@ public:
 	* Constructor of the parameter.
 	* @param n               Name of the parameter.
 	*/
-	GParam(const char* n) throw(std::bad_alloc);
+	GParam(const char* n);
 
 	/**
 	* Compare the names of two parameters (work like the 'strcmp' function of
@@ -238,7 +238,7 @@ public:
 	* @param n               Name of the parameter.
 	* @param d               Default value.
 	*/
-	GParamInt(const char* n,int d=0) throw(std::bad_alloc);
+	GParamInt(const char* n,int d=0);
 
 	/**
 	* Read attributes from a tag.
@@ -303,7 +303,7 @@ public:
 	* @param n               Name of the parameter.
 	* @param d               Default value.
 	*/
-	GParamUInt(const char* n,unsigned int d=0) throw(std::bad_alloc);
+	GParamUInt(const char* n,unsigned int d=0);
 
 	/**
 	* Read attributes from a tag.
@@ -368,7 +368,7 @@ public:
 	* @param n               Name of the parameter.
 	* @param d               Default value.
 	*/
-	GParamDouble(const char* n,double d=0.0) throw(std::bad_alloc);
+	GParamDouble(const char* n,double d=0.0);
 
 	/**
 	* Read attributes from a tag.
@@ -427,7 +427,7 @@ public:
 	* @param n               Name of the parameter.
 	* @param d               Default value.
 	*/
-	GParamString(const char* n,const char* d=0) throw(std::bad_alloc);
+	GParamString(const char* n,const char* d=0);
 
 	/**
 	* Read attributes from a tag.
@@ -480,7 +480,7 @@ public:
 	* @param n               Name of the parameter.
 	* @param d               Default value.
 	*/
-	GParamProm(const char* n,R::RPromCriterionParams* d=0) throw(std::bad_alloc);
+	GParamProm(const char* n,R::RPromCriterionParams* d=0);
 
 	/**
 	* Read attributes from a tag.
@@ -539,7 +539,7 @@ public:
 	* @param n               Name of the parameter.
 	* @param d               Default value.
 	*/
-	GParamBool(const char* n,bool d=false) throw(std::bad_alloc);
+	GParamBool(const char* n,bool d=false);
 
 	/**
 	* Read attributes from a tag.

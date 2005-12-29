@@ -67,12 +67,12 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GPreProfile(GFactoryPreProfile* fac) throw(std::bad_alloc);
+	GPreProfile(GFactoryPreProfile* fac);
 
 	/**
 	* Run the pre-group method.
 	*/
-	virtual void Run(void) throw(GException)=0 ;
+	virtual void Run(void)=0;
 
 	/**
 	* Destructor.

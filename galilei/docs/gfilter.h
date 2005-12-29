@@ -75,7 +75,7 @@ public:
 	* Construct the filter.
 	* @param fac            Factory.
 	*/
-	GFilter(GFactoryFilter* fac) throw(std::bad_alloc);
+	GFilter(GFactoryFilter* fac);
 
 protected:
 
@@ -83,13 +83,13 @@ protected:
 	* Add a specific MIME-Type for the filter.
 	* @param mime           Name of the MIME-Type.
 	*/
-	void AddMIME(const char* mime) throw(std::bad_alloc);
+	void AddMIME(const char* mime);
 
 	/**
 	* Add a specific MIME-Type for the filter.
 	* @param mime           Name of the MIME-Type.
 	*/
-	void AddMIME(RString mime) throw(std::bad_alloc);
+	void AddMIME(RString mime);
 
 	/**
 	* Test if a given character represent the end of a sentence.
@@ -118,21 +118,21 @@ public:
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(char* block,R::RXMLTag* attach) throw(std::bad_alloc,GException);
+	void AnalyzeBlock(char* block,R::RXMLTag* attach);
 
 	/**
 	* Analyse a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(R::RChar* block,R::RXMLTag* attach) throw(std::bad_alloc,GException);
+	void AnalyzeBlock(R::RChar* block,R::RXMLTag* attach);
 
 	/**
 	* Analyse a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(const R::RString& block,R::RXMLTag* attach) throw(std::bad_alloc,GException);
+	void AnalyzeBlock(const R::RString& block,R::RXMLTag* attach);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -140,7 +140,7 @@ public:
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeKeywords(char* list,char sep,R::RXMLTag* attach) throw(std::bad_alloc,GException);
+	void AnalyzeKeywords(char* list,char sep,R::RXMLTag* attach);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -148,7 +148,7 @@ public:
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeKeywords(R::RChar* list,R::RChar sep,R::RXMLTag* attach) throw(std::bad_alloc,GException);
+	void AnalyzeKeywords(R::RChar* list,R::RChar sep,R::RXMLTag* attach);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -156,7 +156,7 @@ public:
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLTag* attach) throw(std::bad_alloc,GException);
+	void AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLTag* attach);
 
 	/**
 	* Analyze the document and construct the DocXML document with the
@@ -164,7 +164,7 @@ public:
 	* child classes.
 	* @param doc            XML Document that will represent the document.
 	*/
-	virtual bool Analyze(GDocXML* doc) throw(std::bad_alloc,GException)=0;
+	virtual bool Analyze(GDocXML* doc)=0;
 
 	/**
 	* Destructor of the filter.

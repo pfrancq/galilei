@@ -44,7 +44,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GParams::GParams(const RString& n) throw(std::bad_alloc)
+GParams::GParams(const RString& n)
 	: RContainer<GParam,true,true>(10,5), Name(n)
 {
 }

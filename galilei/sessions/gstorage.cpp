@@ -244,7 +244,7 @@ void GFactoryStorage::SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent)
 
 
 //-----------------------------------------------------------------------------
-void GFactoryStorage::Create(void) throw(GException)
+void GFactoryStorage::Create(void)
 {
 	if(Plugin) return;
 	Plugin=NewPlugIn();
@@ -255,7 +255,7 @@ void GFactoryStorage::Create(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GFactoryStorage::Create(GSession* session) throw(GException)
+void GFactoryStorage::Create(GSession* session)
 {
 	if(session)
 		throw GException("Cannot create storage when a session is already created");

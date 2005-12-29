@@ -667,13 +667,12 @@ public:
 	/**
 	* Create a plugin. Call the method 'InitAccess' from GStorage.
 	*/
-	virtual void Create(void) throw(GException);
+	virtual void Create(void);
 
 	/**
 	* Create a plugin. If there is a current session, generate an exception.
 	*/
-	virtual void Create(GSession* session) throw(GException);
-
+	virtual void Create(GSession* session);
 
 	/**
 	* Update a database.

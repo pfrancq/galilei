@@ -59,27 +59,27 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilter::GFilter(GFactoryFilter* fac) throw(std::bad_alloc)
+GFilter::GFilter(GFactoryFilter* fac)
 	: GPlugin<GFactoryFilter>(fac), Doc(0)
 {
 }
 
 
 //---------------------------------------------------------------------------
-void GFilter::AddMIME(const char* name) throw(std::bad_alloc)
+void GFilter::AddMIME(const char* name)
 {
 	GetFactory()->GetMng()->AddMIME(name,this);
 }
 
 
 //---------------------------------------------------------------------------
-void GFilter::AddMIME(RString name) throw(std::bad_alloc)
+void GFilter::AddMIME(RString name)
 {
 	GetFactory()->GetMng()->AddMIME(name,this);
 }
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(std::bad_alloc,GException)
+void GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 {
 	char* ptr;
 	char* hold;
@@ -172,7 +172,7 @@ void GFilter::AnalyzeBlock(char* block,RXMLTag* attach) throw(std::bad_alloc,GEx
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(std::bad_alloc,GException)
+void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
 {
 	RChar* ptr;
 	RChar* hold;
@@ -266,7 +266,7 @@ void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach) throw(std::bad_alloc,GE
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach) throw(std::bad_alloc,GException)
+void GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 {
 	RXMLTag* sent;
 	int pos;
@@ -350,7 +350,7 @@ void GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach) throw(std::bad_
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) throw(std::bad_alloc,GException)
+void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 {
 	char* ptr;
 	RXMLTag* kwd;
@@ -388,7 +388,7 @@ void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach) throw(std::ba
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) throw(std::bad_alloc,GException)
+void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach)
 {
 	RChar* ptr;
 	RXMLTag* kwd;
@@ -426,7 +426,7 @@ void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach) throw(std::
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* attach) throw(std::bad_alloc,GException)
+void GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* attach)
 {
 	RCharCursor Cur;
 	RXMLTag* kwd;

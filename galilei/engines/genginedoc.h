@@ -188,7 +188,7 @@ public:
 	* Get a cursor on the ranking of the engineDoc.
 	* @return GRankingCursor.
 	*/
-	R::RCursor<GRanking> GetRankings(void) throw(GException);
+	R::RCursor<GRanking> GetRankings(void);
 
 	/**
 	* Destructor of the URL manager.

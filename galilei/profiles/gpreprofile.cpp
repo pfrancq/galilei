@@ -45,7 +45,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPreProfile::GPreProfile(GFactoryPreProfile* fac) throw(std::bad_alloc)
+GPreProfile::GPreProfile(GFactoryPreProfile* fac)
 	: GPlugin<GFactoryPreProfile>(fac)
 {
 }
