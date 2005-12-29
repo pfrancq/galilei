@@ -63,7 +63,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGroupingGGA::GGroupingGGA(GFactoryGrouping* fac) throw(bad_alloc)
+GGroupingGGA::GGroupingGGA(GFactoryGrouping* fac)
 	: GGrouping(fac), Objs(0)
 {
 }
@@ -89,21 +89,21 @@ void GGroupingGGA::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::Connect(GSession* session) throw(GException)
+void GGroupingGGA::Connect(GSession* session)
 {
 	GGrouping::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::Disconnect(GSession* session) throw(GException)
+void GGroupingGGA::Disconnect(GSession* session)
 {
 	GGrouping::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::Init(void) throw(bad_alloc)
+void GGroupingGGA::Init(void)
 {
 }
 
@@ -152,7 +152,7 @@ bool GGroupingGGA::IsValid(GGroup* /*grp*/)
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo) throw(bad_alloc)
+void GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo)
 {
 	GGroup* g;
 	unsigned int* tab;
@@ -174,7 +174,7 @@ void GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::Run(void) throw(GException)
+void GGroupingGGA::Run(void)
 {
 	unsigned int i;
 	GObjIR* obj;

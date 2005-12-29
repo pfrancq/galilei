@@ -67,7 +67,7 @@ void GIRHeuristic::Init(GChromoIR* groups)
 
 
 //-----------------------------------------------------------------------------
-GGroupIR* GIRHeuristic::FindGroup(void) throw(eGA)
+GGroupIR* GIRHeuristic::FindGroup(void)
 {
 	GGroupIR* grp;
 	double maxsim;
@@ -111,7 +111,7 @@ GGroupIR* GIRHeuristic::FindGroup(void) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
-void GIRHeuristic::PostRun(void) throw(eGA)
+void GIRHeuristic::PostRun(void)
 {
 	GObjIR* obj;
 	R::RCursor<GGroupIR> Cur1(Groups->Used),Cur2(Groups->Used);

@@ -57,7 +57,7 @@ using namespace std;
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GIRProm::GIRProm(GIRParams* p) throw(bad_alloc)
+GALILEI::GIRProm::GIRProm(GIRParams* p)
 	: RPromKernel("GALILEI",20,10), Params(p),CritSimJ(0), CritAgreement(0),
 	  CritDisagreement(0)
 {

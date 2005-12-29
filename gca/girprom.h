@@ -87,7 +87,7 @@ public:
 	* Constructor.
 	* @param p              Parameters.
 	*/
-	GIRProm(GIRParams* p) throw(std::bad_alloc);
+	GIRProm(GIRParams* p);
 
 	/**
 	* Assign chromosome as a solution.

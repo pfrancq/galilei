@@ -66,7 +66,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
+GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id)
 	: RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
 	  ToDel(0), CritSimJ(0.0), CritAgreement(0.0), CritDisagreement(1.0), Protos(Used.GetMaxNb()),
 	  thProm(0), thSols(0)
@@ -76,7 +76,7 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Init(GThreadDataIR* thData) throw(bad_alloc)
+void GALILEI::GChromoIR::Init(GThreadDataIR* thData)
 {
 	// Parent Initialisation
 	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(thData);
@@ -99,7 +99,7 @@ int GALILEI::GChromoIR::Compare(const GChromoIR* c) const
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::ConstructChromo(GSession* grps) throw(eGA)
+void GALILEI::GChromoIR::ConstructChromo(GSession* grps)
 {
 	R::RCursor<GGroup> Grp;
 	RCursor<GSubProfile> SubProfile;
@@ -136,7 +136,7 @@ void GALILEI::GChromoIR::ConstructChromo(GSession* grps) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::RandomConstruct(void) throw(eGA)
+void GALILEI::GChromoIR::RandomConstruct(void)
 {
 	// Look if already a solution in the session
 	if(Instance->Session->GetNbGroups(Instance->Lang))
@@ -148,7 +148,7 @@ void GALILEI::GChromoIR::RandomConstruct(void) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Evaluate(void) throw(eGA)
+void GALILEI::GChromoIR::Evaluate(void)
 {
 	unsigned int i;
 	double min;
@@ -185,7 +185,7 @@ void GALILEI::GChromoIR::Evaluate(void) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::ReAllocate(void) throw(eGA)
+void GALILEI::GChromoIR::ReAllocate(void)
 {
 	unsigned int nb;
 	double sim,maxsim;
@@ -264,7 +264,7 @@ void GALILEI::GChromoIR::ReAllocate(void) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GChromoIR::CalcNewProtosNb(void) throw(eGA)
+unsigned int GALILEI::GChromoIR::CalcNewProtosNb(void)
 {
 	unsigned int count;
 	R::RCursor<GGroupIR> Grp;
@@ -284,7 +284,7 @@ unsigned int GALILEI::GChromoIR::CalcNewProtosNb(void) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::DoKMeans(void) throw(eGA)
+void GALILEI::GChromoIR::DoKMeans(void)
 {
 	unsigned int itermax;
 	double error,minerror;
@@ -326,7 +326,7 @@ void GALILEI::GChromoIR::DoKMeans(void) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::DivideWorstSubProfiles(void) throw(eGA)
+void GALILEI::GChromoIR::DivideWorstSubProfiles(void)
 {
 	R::RCursor<GGroupIR> Grp;
 	unsigned int i;
@@ -411,7 +411,7 @@ void GALILEI::GChromoIR::DivideWorstSubProfiles(void) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::MergeBestSubProfiles(void) throw(eGA)
+void GALILEI::GChromoIR::MergeBestSubProfiles(void)
 {
 	R::RCursor<GObjIR> Cur,Cur2;
 	unsigned int i,j;
@@ -515,7 +515,7 @@ void GALILEI::GChromoIR::TreatSocialSubProfiles(bool rel)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Optimisation(void) throw(eGA)
+void GALILEI::GChromoIR::Optimisation(void)
 {
 	unsigned int i;
 	unsigned int nb;
@@ -579,7 +579,7 @@ void GALILEI::GChromoIR::Optimisation(void) throw(eGA)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Modify(void) throw(eGA)
+void GALILEI::GChromoIR::Modify(void)
 {
 	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Mutation();
 }

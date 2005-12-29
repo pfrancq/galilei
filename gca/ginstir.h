@@ -106,7 +106,7 @@ public:
 	/**
 	* Initialise thje data.
 	*/
-	virtual void Init(void) throw(std::bad_alloc);
+	virtual void Init(void);
 
 	/**
 	* Destruct the data.
@@ -176,18 +176,18 @@ public:
 	* @param p              Parameters.
 	* @param debug          Debugger.
 	*/
-	GInstIR(GSession* ses,GLang* l,R::RObjs<GObjIR>* objs,GIRParams* p,R::RDebug *debug) throw(std::bad_alloc);
+	GInstIR(GSession* ses,GLang* l,R::RObjs<GObjIR>* objs,GIRParams* p,R::RDebug *debug);
 
 	/**
 	* Initialisation of the instance.
 	* @param gdata          The Data to use for the construction of the groups.
 	*/
-	virtual void Init(GGroupDataIR* gdata) throw(std::bad_alloc);
+	virtual void Init(GGroupDataIR* gdata);
 
 	/**
 	* Create a specific heuristic for the IR problem.
 	*/
-	virtual R::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* CreateHeuristic(void) throw(std::bad_alloc);
+	virtual R::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* CreateHeuristic(void);
 
 	/**
 	* Get the GA object corresponding to a subprofile.
@@ -212,7 +212,7 @@ public:
 	/**
 	* Apply PROMETHEE to classify the chromosomes.
 	*/
-	virtual void PostEvaluate(void) throw(R::eGA);
+	virtual void PostEvaluate(void);
 
 	/**
 	* return the Language actually grouped.

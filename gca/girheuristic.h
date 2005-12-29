@@ -81,12 +81,12 @@ public:
 	/**
 	* Find a group for the next object.
 	*/
-	virtual GGroupIR* FindGroup(void) throw(R::eGA);
+	virtual GGroupIR* FindGroup(void);
 
 	/**
 	* Verify that no social profiles is alone.
 	*/
-	virtual void PostRun(void) throw(R::eGA);
+	virtual void PostRun(void);
 
 	/**
 	* Destruct the grouping heuristic.

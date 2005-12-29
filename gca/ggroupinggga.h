@@ -77,7 +77,7 @@ public:
 	* Constructor.
 	* @param f              Factory.
 	*/
-	GGroupingGGA(GFactoryGrouping* fac) throw(std::bad_alloc);
+	GGroupingGGA(GFactoryGrouping* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -88,23 +88,23 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session) throw(GException);
+	virtual void Connect(GSession* session);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session) throw(GException);
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Initialisation of the method.
 	*/
-	virtual void Init(void) throw(std::bad_alloc);
+	virtual void Init(void);
 
 	/**
 	* Construct the groups of the session based on a chromosome.
 	*/
-	void ConstructGroupsFromChromo(GChromoIR* chromo) throw(std::bad_alloc);
+	void ConstructGroupsFromChromo(GChromoIR* chromo);
 
 protected:
 
@@ -135,7 +135,7 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void) throw(GException);
+	virtual void Run(void);
 
 public:
 

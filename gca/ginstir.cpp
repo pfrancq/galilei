@@ -80,7 +80,7 @@ GThreadDataIR::GThreadDataIR(GInstIR* owner)
 
 
 //-----------------------------------------------------------------------------
-void GThreadDataIR::Init(void) throw(bad_alloc)
+void GThreadDataIR::Init(void)
 {
 	GGroupDataIR data;
 	unsigned int i;
@@ -123,7 +123,7 @@ GThreadDataIR::~GThreadDataIR(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GInstIR::GInstIR(GSession* ses,GLang* l,RObjs<GObjIR>* objs,GIRParams* p,RDebug *debug) throw(bad_alloc)
+GInstIR::GInstIR(GSession* ses,GLang* l,RObjs<GObjIR>* objs,GIRParams* p,RDebug *debug)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(p->PopSize,objs,FirstFit,"GCA",debug),
 	  GIRProm(p), Params(p), Sols(0), Session(ses), Lang(l), NoSocialSubProfiles(objs->GetNb()),
 	  Ratios(objs->GetNb()), ProfilesSims(GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities"))
@@ -155,7 +155,7 @@ GInstIR::GInstIR(GSession* ses,GLang* l,RObjs<GObjIR>* objs,GIRParams* p,RDebug 
 
 
 //-----------------------------------------------------------------------------
-void GInstIR::Init(GGroupDataIR* gdata) throw(std::bad_alloc)
+void GInstIR::Init(GGroupDataIR* gdata)
 {
 	// Init the GGA
 	RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(gdata);
@@ -185,7 +185,7 @@ void GInstIR::Init(GGroupDataIR* gdata) throw(std::bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* GInstIR::CreateHeuristic(void) throw(bad_alloc)
+RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* GInstIR::CreateHeuristic(void)
 {
 	return(new GIRHeuristic(Random,Objs,Ratios,Debug));
 }
@@ -226,7 +226,7 @@ void GInstIR::WriteChromoInfo(GChromoIR* c)
 
 
 //-----------------------------------------------------------------------------
-void GInstIR::PostEvaluate(void) throw(eGA)
+void GInstIR::PostEvaluate(void)
 {
 	unsigned int i;
 	GChromoIR** C;

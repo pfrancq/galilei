@@ -141,13 +141,13 @@ public:
 	* @param inst           The instance of the problem.
 	* @param id             The identificator of the chromosome.
 	*/
-	GChromoIR(GInstIR* inst,unsigned int id) throw(std::bad_alloc);
+	GChromoIR(GInstIR* inst,unsigned int id);
 
 	/**
 	* Initialisation of the chromosome.
 	* @param thData         Pointer to the "thread-dependent" data.
 	*/
-	virtual void Init(GThreadDataIR* thData) throw(std::bad_alloc);
+	virtual void Init(GThreadDataIR* thData);
 
 	/**
 	* Method needed by R::RContainer.
@@ -157,43 +157,43 @@ public:
 	/**
 	* Construct the chromosome to be the same as grps.
 	*/
-	void ConstructChromo(GSession* grps) throw(R::eGA);
+	void ConstructChromo(GSession* grps);
 
 	/**
 	* Construct a valid solution.
 	* @return The function must retrun true if a solution has been constructed.
 	*/
-	virtual void RandomConstruct(void) throw(R::eGA);
+	virtual void RandomConstruct(void);
 
 	/**
 	* Evaluation of the chromosome.
 	*/
-	virtual void Evaluate(void) throw(R::eGA);
+	virtual void Evaluate(void);
 
 	/**
 	*  Reallocate the objects to the groups based on the different prototypes.
 	*/
-	void ReAllocate(void) throw(R::eGA);
+	void ReAllocate(void);
 
 	/**
 	* Calc the number of new prototypes until the last K-Means iteration.
 	*/
-	unsigned int CalcNewProtosNb(void) throw(R::eGA);
+	unsigned int CalcNewProtosNb(void);
 
 	/**
 	* Perform a K-Means on the chromosome.
 	*/
-	void DoKMeans(void) throw(R::eGA);
+	void DoKMeans(void);
 
 	/**
 	* Divide the group containing the two most dissimilar subprofiles.
 	*/
-	void DivideWorstSubProfiles(void) throw(R::eGA);
+	void DivideWorstSubProfiles(void);
 
 	/**
 	* Merge the two groups containing the two most similar subprofiles.
 	*/
-	void MergeBestSubProfiles(void) throw(R::eGA);
+	void MergeBestSubProfiles(void);
 
 	/**
 	* Treat the social subprofiles, i.e. if these subprofiles are alone in a
@@ -207,12 +207,12 @@ public:
 	/**
 	* Perform an optimisation.
 	*/
-	virtual void Optimisation(void) throw(R::eGA);
+	virtual void Optimisation(void);
 
 	/**
 	* Do the standard mutation of the GGA.
 	*/
-	virtual void Modify(void) throw(R::eGA);
+	virtual void Modify(void);
 
 	/**
 	* Look if two subprofiles are in the same group or not.
