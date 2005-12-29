@@ -236,7 +236,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GTextAnalyse(GFactoryDocAnalyse* fac) throw(std::bad_alloc);
+	GTextAnalyse(GFactoryDocAnalyse* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -247,13 +247,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session) throw(GException);
+	virtual void Connect(GSession* session);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session) throw(GException);
+	virtual void Disconnect(GSession* session);
 
 protected:
 
@@ -265,7 +265,7 @@ protected:
 	/**
 	* Verify the size of direct and reallocate when necessary.
 	*/
-	void VerifyDirect(void) throw(std::bad_alloc);
+	void VerifyDirect(void);
 
 	/**
 	* See if a given word is a valid one, don't content text and numbers that
@@ -276,14 +276,14 @@ protected:
 	/**
 	* Verify the size of direct and reallocate when necessary.
 	*/
-	void VerifyOrder(void) throw(std::bad_alloc);
+	void VerifyOrder(void);
 
 	/**
 	* Add a word to the document.
 	* @param word           Word to add.
 	* @param weight         Weights of the words added during this analyze.
 	*/
-	void AddWord(const R::RString word,double weight) throw(std::bad_alloc);
+	void AddWord(const R::RString word,double weight);
 
 	/**
 	* This function construct a word.
@@ -298,14 +298,14 @@ protected:
 	* @param tag            Tag to analyse.
 	* @param weight         Weights of the words added during this analyze.
 	*/
-	void AnalyseTag(R::RXMLTag* tag,double weight) throw(GException);
+	void AnalyseTag(R::RXMLTag* tag,double weight);
 
 	/**
 	* Analyse a link tag.
 	* @param tag            Tag to analyse.
 	* @param tmpDocs        A pointer to a container of docs to maintain the documents to be added.
 	*/
-	void AnalyseLinksTag(R::RXMLTag* tag,bool externalLinks ,R::RContainer<GDoc,false,true>* DocsToAdd) throw(GException);
+	void AnalyseLinksTag(R::RXMLTag* tag,bool externalLinks ,R::RContainer<GDoc,false,true>* DocsToAdd);
 
 	/**
 	* This methods determine the language of the current structure studied,
@@ -313,14 +313,14 @@ protected:
 	* contained in the document and with a minimal value for the ratio of
 	* stopwords that are in the document.
 	*/
-	void DetermineLang(void) throw(GException);
+	void DetermineLang(void);
 
 	/**
 	* Construct the information about the current document and store it in
 	* Words.
 	* @param documentid            Corresponding document id.
 	*/
-	void ConstructInfos(unsigned int documentid) throw(GException);
+	void ConstructInfos(unsigned int documentid);
 
 	/**
 	* Insert into database a couple word/stem
@@ -342,7 +342,7 @@ public:
 	* @param doc            Corresponding document.
 	* @param tmpDocs        Container that will hold the added docs.
 	*/
-	virtual void Analyze(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0) throw(GException);
+	virtual void Analyze(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0);
 
 	/**
 	* Create the parameters.

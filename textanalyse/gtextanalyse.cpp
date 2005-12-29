@@ -82,7 +82,7 @@ public:
 	double Weight;
 	bool OnlyLetters;
 
-	WordWeight(unsigned int nb) throw(bad_alloc);
+	WordWeight(unsigned int nb);
 	inline void Clear(void) {Word=""; Nb=0; Weight=0.0;}
 
 	int Compare(const WordWeight& word) const
@@ -111,7 +111,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-GTextAnalyse::WordWeight::WordWeight(unsigned int nb) throw(bad_alloc)
+GTextAnalyse::WordWeight::WordWeight(unsigned int nb) 
 	:  Word(MaxWordLen+1), InStop(0)
 {
 	InStop=new bool[nb];
@@ -134,7 +134,7 @@ GTextAnalyse::WordWeight::~WordWeight(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac) throw(bad_alloc)
+GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac) 
 	: GDocAnalyse(fac), Weights(0), Infos(5000,2500), Direct(0), NbDirect(5000),
 	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0)
 {
@@ -161,7 +161,7 @@ void GTextAnalyse::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Connect(GSession* session) throw(GException)
+void GTextAnalyse::Connect(GSession* session) 
 {
 	WordWeight** ptr;
 	GWord** pt;
@@ -191,7 +191,7 @@ void GTextAnalyse::Connect(GSession* session) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Disconnect(GSession* session) throw(GException)
+void GTextAnalyse::Disconnect(GSession* session) 
 {
 	WordWeight** ptr;
 	GWord** pt;
@@ -260,7 +260,7 @@ void GTextAnalyse::Clear(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::VerifyDirect(void) throw(bad_alloc)
+void GTextAnalyse::VerifyDirect(void) 
 {
 	unsigned int i;
 	WordWeight** ptr;
@@ -279,7 +279,7 @@ void GTextAnalyse::VerifyDirect(void) throw(bad_alloc)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::VerifyOrder(void) throw(bad_alloc)
+void GTextAnalyse::VerifyOrder(void) 
 {
 	unsigned int i;
 	GWord** ptr;
@@ -339,7 +339,7 @@ bool GTextAnalyse::ValidWord(const RString kwd)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AddWord(const RString word,double weight) throw(bad_alloc)
+void GTextAnalyse::AddWord(const RString word,double weight) 
 {
 	bool Find;
 	unsigned int Index;
@@ -516,7 +516,7 @@ BeginExtract:
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
+void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) 
 {
 	const RChar* ptr;
 
@@ -536,7 +536,7 @@ void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 
 
 ////-----------------------------------------------------------------------------
-//void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) throw(GException)
+//void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) 
 //{
 //	const char* ptr;
 //	const char* endPtr;
@@ -580,12 +580,12 @@ void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) throw(GException)
 //		for (tag->Start();!tag->End();tag->Next())
 //			AnalyseLinksTag((*tag)(),externalLinks,DocsToAdd);
 //	}
-//#pragma warn "ici il faut rajouter les proprietes des liens." ;
+//#pragma warn "ici il faut rajouter les proprietes des liens.";
 //}
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,false,true>* DocsToAdd) throw(GException)
+void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,false,true>* DocsToAdd) 
 {
 //	const char* ptr;
 //	const char* endPtr;
@@ -671,7 +671,7 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::DetermineLang(void) throw(GException)
+void GTextAnalyse::DetermineLang(void) 
 {
 	double Frac,MinFrac;
 	unsigned int i;
@@ -701,7 +701,7 @@ void GTextAnalyse::DetermineLang(void) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
+void GTextAnalyse::ConstructInfos(unsigned int docid) 
 {
 	WordWeight** wrd;
 	GWeightInfo* Occur;
@@ -815,7 +815,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid) throw(GException)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* tmpDocs) throw(GException)
+void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* tmpDocs) 
 {
 	RXMLTag* content;
 	RXMLTag* metadata;
