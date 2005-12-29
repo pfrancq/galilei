@@ -124,7 +124,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GSubProfilesLevel(GFactoryPostGroup* fac) throw(std::bad_alloc, GException);
+	GSubProfilesLevel(GFactoryPostGroup* fac);
 
 	/**
 	* Create the parameters.
@@ -141,18 +141,18 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session) throw(GException);
+	virtual void Connect(GSession* session);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session) throw(GException);
+	virtual void Disconnect(GSession* session);
 
     /**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void) throw(GException);
+	virtual void Run(void);
 
 	/**
 	* Destructor.

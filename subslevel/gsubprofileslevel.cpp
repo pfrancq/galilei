@@ -209,7 +209,7 @@ GDocsLevelCmd::~GDocsLevelCmd(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfilesLevel::GSubProfilesLevel(GFactoryPostGroup* fac) throw(bad_alloc,GException)
+GSubProfilesLevel::GSubProfilesLevel(GFactoryPostGroup* fac) 
 		: GPostGroup(fac), Docs(2000,500)
 {
 }
@@ -231,7 +231,7 @@ void GSubProfilesLevel::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::Connect(GSession* session) throw(GException)
+void GSubProfilesLevel::Connect(GSession* session) 
 {
 	// Try to insert the command, eventually, delete it
 	GPostGroup::Connect(session);
@@ -245,14 +245,14 @@ void GSubProfilesLevel::Connect(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::Disconnect(GSession* session) throw(GException)
+void GSubProfilesLevel::Disconnect(GSession* session) 
 {
 	GPostGroup::Disconnect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::Run(void) throw(GException)
+void GSubProfilesLevel::Run(void) 
 {
 	if (!NbLevels)
 		throw GException ("[Compute Subprofiles Level]: Error: number of levels is null !");
