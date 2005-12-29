@@ -88,7 +88,7 @@ GFilterPDF::GFilterPDF(GFactoryFilter* fac)
 
 
 //------------------------------------------------------------------------------
-bool GFilterPDF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+bool GFilterPDF::Analyze(GDocXML* doc)
 {
 	RXMLTag* part;
 	RXMLTag* tag;

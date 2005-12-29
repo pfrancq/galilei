@@ -62,7 +62,7 @@ GFilterHTML::GFilterHTML(GFactoryFilter* fac)
 
 
 //------------------------------------------------------------------------------
-bool GFilterHTML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+bool GFilterHTML::Analyze(GDocXML* doc)
 {
 	try
 	{

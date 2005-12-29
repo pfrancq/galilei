@@ -120,7 +120,7 @@ GString *appendToPath(GString *path, char *fileName) {
   p1 = p0 + path->getLength() - 1;
   if (!strcmp(fileName, "-")) {
     if (*p1 == ']') {
-      for (p2 = p1; p2 > p0 && *p2 != '.' && *p2 != '['; --p2) ;
+      for (p2 = p1; p2 > p0 && *p2 != '.' && *p2 != '['; --p2);
       if (*p2 == '[')
 	++p2;
       path->del(p2 - p0, p1 - p2);
@@ -404,9 +404,9 @@ GString *makePathAbsolute(GString *path) {
     } else {
       p1 = path->getCString() + 1;
 #ifdef __EMX__
-      for (p2 = p1; *p2 && *p2 != '/' && *p2 != '\\'; ++p2) ;
+      for (p2 = p1; *p2 && *p2 != '/' && *p2 != '\\'; ++p2);
 #else
-      for (p2 = p1; *p2 && *p2 != '/'; ++p2) ;
+      for (p2 = p1; *p2 && *p2 != '/'; ++p2);
 #endif
       if ((n = p2 - p1) > PATH_MAX)
 	n = PATH_MAX;

@@ -177,7 +177,7 @@ void GFilterPS::StrToBuffer(const char* str)
 
 
 //------------------------------------------------------------------------------
-bool GFilterPS::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+bool GFilterPS::Analyze(GDocXML* doc) 
 {
 	RXMLTag* part;
 	RXMLTag* tag;

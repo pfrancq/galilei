@@ -74,7 +74,7 @@ public:
 	* @param code           Code.
 	* @param c              Character.
 	*/
-	CodeToChar(const char* code,R::RChar c) throw(std::bad_alloc);
+	CodeToChar(const char* code,R::RChar c);
 
 	/**
 	* Utilised by R::RContainer

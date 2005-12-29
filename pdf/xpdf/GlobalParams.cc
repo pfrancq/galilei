@@ -294,15 +294,15 @@ void GlobalParams::parseFile(GString *fileName, FILE *f) {
     tokens = new GList();
     p1 = buf;
     while (*p1) {
-      for (; *p1 && isspace(*p1); ++p1) ;
+      for (; *p1 && isspace(*p1); ++p1);
       if (!*p1) {
 	break;
       }
       if (*p1 == '"' || *p1 == '\'') {
-	for (p2 = p1 + 1; *p2 && *p2 != *p1; ++p2) ;
+	for (p2 = p1 + 1; *p2 && *p2 != *p1; ++p2);
 	++p1;
       } else {
-	for (p2 = p1 + 1; *p2 && !isspace(*p2); ++p2) ;
+	for (p2 = p1 + 1; *p2 && !isspace(*p2); ++p2);
       }
       tokens->append(new GString(p1, p2 - p1));
       p1 = *p2 ? p2 + 1 : p2;

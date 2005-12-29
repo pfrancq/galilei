@@ -6,7 +6,7 @@
 
 	A PDF filter - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -85,7 +85,7 @@ public:
 	* about its content.
 	* @param doc            XML Structure that will represent the document.
 	*/
-	virtual bool Analyze(GDocXML* doc) throw(std::bad_alloc,GException);
+	virtual bool Analyze(GDocXML* doc);
 
 protected:
 

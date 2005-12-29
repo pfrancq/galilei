@@ -158,7 +158,7 @@ public:
 	* about its content.
 	* @param doc            XML Structure that will represent the document.
 	*/
-	virtual bool Analyze(GDocXML* doc) throw(std::bad_alloc,GException);
+	virtual bool Analyze(GDocXML* doc);
 
 	/**
 	* Configurations were applied from the factory.
@@ -174,7 +174,7 @@ protected:
 	* @param parentTag        the parent tag in the docxml structure.
 	* @return RXMLTag         pointer to the inserted tag in docxml structure
 	*/
-	RXMLTag* InsertTag(tTag t,RXMLTag* parentTag) throw(std::bad_alloc,GException);
+	RXMLTag* InsertTag(tTag t,RXMLTag* parentTag);
 
 	/**
 	* Analyse Tag
@@ -182,38 +182,38 @@ protected:
 	* @param curTag            the last tag added to the structure.
 	* @param parentTag         the parent Tag in docxml(to which the curTag must be added)
 	*/
-	void AnalyseTag(RXMLTag* curTag,RXMLTag* currentTagParent,RXMLTag* parentTag) throw(std::bad_alloc,GException);
+	void AnalyseTag(RXMLTag* curTag,RXMLTag* currentTagParent,RXMLTag* parentTag);
 
 	/**
 	* Analyse attributes
 	* @param currentTag            the tag to insert in docxml struct
 	*/
-	void AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent) throw(bad_alloc,GException);
+	void AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent);
 
 	/**
 	* Load the different tags definitions from files
 	*/
-	void LoadDefinitions(void) throw(GException);
+	void LoadDefinitions(void);
 
 	/**
 	* Read the content of the filter definition
 	*/
-	void FillFilterDefinitions(R::RXMLTag* tag) throw(bad_alloc,GException);
+	void FillFilterDefinitions(R::RXMLTag* tag);
 
 	/**
 	* read the content of the tags definitions
 	*/
-	void FillTagsDefinition(R::RXMLTag* currentTag,Def* def) throw(GException);
+	void FillTagsDefinition(R::RXMLTag* currentTag,Def* def);
 
 	/**
 	* read the content of the attributes tags definitions
 	*/
-	void FillAttributesDefinition(RXMLTag* currentTag,Tag* t) throw(GException);
+	void FillAttributesDefinition(RXMLTag* currentTag,Tag* t);
 
 	/**
 	* read the content of the mimeTypes definitions
 	*/
-	void FillMimeDefinition(R::RXMLTag* currentTag, Def* def) throw(GException);
+	void FillMimeDefinition(R::RXMLTag* currentTag, Def* def);
 
 	/**
 	* Convert a RString into a tTag Enum
@@ -234,7 +234,7 @@ protected:
 public:
 
 	//-----------------------------------------------------------------------------
-	//virtual void Connect(GSession* session) throw(GException);
+	//virtual void Connect(GSession* session);
 
 	/**
 	* Create the parameters.

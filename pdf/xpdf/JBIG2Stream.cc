@@ -720,7 +720,7 @@ void JBIG2HuffmanDecoder::buildTable(JBIG2HuffmanTable *table, Guint len) {
   // - all other entries with prefixLen = 0
   // (on entry, table[len] has prefixLen = 0, rangeLen = EOT)
   for (i = 0; i < len; ++i) {
-    for (j = i; j < len && table[j].prefixLen == 0; ++j) ;
+    for (j = i; j < len && table[j].prefixLen == 0; ++j);
     if (j == len) {
       break;
     }

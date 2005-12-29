@@ -97,7 +97,7 @@ public:
 	* @param xmlstruct      The XML tree associated with the file.
 	* @param encoding       The encoding scheme of the file.
 	*/
-	GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,const R::RString& encoding="Latin1") throw(std::bad_alloc,R::RIOException);
+	GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,const R::RString& encoding="Latin1");
 
 	/**
 	* Construct a HTML file to read.
@@ -105,7 +105,7 @@ public:
 	* @param xmlstruct      The XML tree associated with the file.
 	* @param encoding       The encoding scheme of the file.
 	*/
-	GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,const R::RString& encoding="Latin1") throw(std::bad_alloc,R::RIOException);
+	GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,const R::RString& encoding="Latin1");
 
 	/**
 	* Set the doctype of the XML document. The doctype is transform in lowercase
@@ -113,14 +113,14 @@ public:
 	* exception occurs.
 	* @param docType        Name of the encoding.
 	*/
-	virtual void SetDocType(const R::RString& docType) throw(R::RIOException);
+	virtual void SetDocType(const R::RString& docType);
 
 protected:
 
 	/**
 	* This methode creates all the tags valid for the HTML version supported.
 	*/
-	void InitValidTags(void) throw(std::bad_alloc);
+	void InitValidTags(void);
 
 	/**
 	* Test if a given character represent the end of a sentence.
@@ -145,7 +145,7 @@ public:
 	* @remarks The namespace are not treated for the moment, so the namespaceURI
 	*          and lname parameters are always empty.
 	*/
-	virtual void BeginTag(const R::RString& namespaceURI, const R::RString& lName, const R::RString& name,R::RContainer<R::RXMLAttr,true,true>& attrs) throw(R::RIOException);
+	virtual void BeginTag(const R::RString& namespaceURI, const R::RString& lName, const R::RString& name,R::RContainer<R::RXMLAttr,true,true>& attrs);
 
 	/**
 	* Function called each time a tag was treated when reading a XML file.
@@ -156,26 +156,26 @@ public:
 	* @remarks The namespace are not treated for the moment, so the namespaceURI
 	*          and lname parameters are always empty.
 	*/
-	virtual void EndTag(const R::RString& namespaceURI, const R::RString& lName, const R::RString& name) throw(R::RIOException);
+	virtual void EndTag(const R::RString& namespaceURI, const R::RString& lName, const R::RString& name);
 
 	/**
 	* Function called each time a text is processed when reading a XML file.
 	* Actually, the text is added as content to the current tag.
 	* @param text          Text processed.
 	*/
-	virtual void Text(const R::RString& text) throw(R::RIOException);
+	virtual void Text(const R::RString& text);
 
 	/**
 	* Function to find the end of the tag and to skip all the content
 	* @param tag           The name of the tag to close
 	*/
-	virtual void SkipTagContent(const R::RString& tag)throw(R::RIOException);
+	virtual void SkipTagContent(const R::RString& tag);
 
 	/**
 	* Insert A link in the docxml structure
 	* @param attrs         Attributes associated to the tag(link).
 	*/
-	void InsertLink(R::RContainer<R::RXMLAttr,true,true>& attrs) throw(R::RIOException);
+	void InsertLink(R::RContainer<R::RXMLAttr,true,true>& attrs);
 
 	/**
 	* Function who reconstruct the partial url of a link

@@ -55,7 +55,7 @@ GFilterTXT::GFilterTXT(GFactoryFilter* fac)
 
 
 //-----------------------------------------------------------------------------
-bool GFilterTXT::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+bool GFilterTXT::Analyze(GDocXML* doc) 
 {
 	RXMLTag* part;
 	RXMLTag* tag;

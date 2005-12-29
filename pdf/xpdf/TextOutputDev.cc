@@ -398,7 +398,7 @@ void TextBlock::mergeBelow(TextBlock *blk2) {
   if (blk2->maxFontSize > maxFontSize) {
     maxFontSize = blk2->maxFontSize;
   }
-  for (line = lines; line->next; line = line->next) ;
+  for (line = lines; line->next; line = line->next);
   line->next = line->flowNext = blk2->lines;
   blk2->lines = NULL;
 }
@@ -935,7 +935,7 @@ void TextPage::coalesce(GBool physLayout) {
 	  col1 = col2;
 	}
       } else if (line1->xMin > line2->xMin) {
-	for (i = 0; i < line2->len && line1->xMin >= line2->xRight[i]; ++i) ;
+	for (i = 0; i < line2->len && line1->xMin >= line2->xRight[i]; ++i);
 	col2 = line2->col[i];
 	if (col2 > col1) {
 	  col1 = col2;
@@ -986,7 +986,7 @@ void TextPage::coalesce(GBool physLayout) {
       lineList = lineList->next;
       for (line1 = NULL, line2 = lines;
 	   line2 && !line0->yxBefore(line2);
-	   line1 = line2, line2 = line2->next) ;
+	   line1 = line2, line2 = line2->next);
       if (line1) {
 	line1->next = line0;
       } else {
@@ -1000,7 +1000,7 @@ void TextPage::coalesce(GBool physLayout) {
     for (line1 = lines; line1; line1 = line1->next) {
 
       // find the first vertically overlapping line
-      for (; line0 && line0->yMax < line1->yMin; line0 = line0->next) ;
+      for (; line0 && line0->yMax < line1->yMin; line0 = line0->next);
 
       // check each vertically overlapping line -- look for the nearest
       // on each side
@@ -1133,7 +1133,7 @@ void TextPage::coalesce(GBool physLayout) {
     } else {
       for (blk2 = NULL, blk3 = yxBlocks;
 	   blk3 && !blk1->yxBefore(blk3);
-	   blk2 = blk3, blk3 = blk3->next) ;
+	   blk2 = blk3, blk3 = blk3->next);
     }
     blk1->next = blk3;
     if (blk2) {
@@ -1392,7 +1392,7 @@ void TextPage::coalesce(GBool physLayout) {
 	if (blk2->ySpaceB < flow1->ySpaceB) {
 	  flow1->ySpaceB = blk2->ySpaceB;
 	}
-	for (line1 = blk1->lines; line1->next; line1 = line1->next) ;
+	for (line1 = blk1->lines; line1->next; line1 = line1->next);
 	line1->flowNext = blk2->lines;
       }
 
@@ -1461,7 +1461,7 @@ void TextPage::coalesce(GBool physLayout) {
       for (line0 = flow0->lines; line0; line0 = line0->flowNext) {
 	for (line1 = NULL, line2 = lines;
 	     line2 && !line0->yxBefore(line2);
-	     line1 = line2, line2 = line2->pageNext) ;
+	     line1 = line2, line2 = line2->pageNext);
 	if (line1) {
 	  line1->pageNext = line0;
 	} else {

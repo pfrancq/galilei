@@ -340,7 +340,7 @@ void GFilterRTF::FindBlock(RString str,bool text)
 }
 
 //------------------------------------------------------------------------------
-bool GFilterRTF::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+bool GFilterRTF::Analyze(GDocXML* doc) 
 {
 	RXMLTag* part;
 	bool Stop;

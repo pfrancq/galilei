@@ -649,7 +649,7 @@ const RCharCode FromXML[]={
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,const RString& encoding) throw(std::bad_alloc,RIOException)
+GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,const RString& encoding) 
  : RXMLFile(name,xmlstruct,encoding), Filter(filter),Doc(xmlstruct),Tags(200,10), FoundClosingHTML(false),Base(""),ParTag(0)
 {
 	InitValidTags();
@@ -657,7 +657,7 @@ GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,c
 
 
 //------------------------------------------------------------------------------
-GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,const RString& encoding) throw(std::bad_alloc,RIOException)
+GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,const RString& encoding) 
  : RXMLFile(name,xmlstruct,encoding), Filter(filter),Doc(&xmlstruct), Tags(200,10), FoundClosingHTML(false),Base(""),ParTag(0)
 {
 	InitValidTags();
@@ -665,7 +665,7 @@ GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,c
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::SetDocType(const RString& docType) throw(RIOException)
+void GHTMLConverter::SetDocType(const RString& docType) 
 {
 	RString name;
 
@@ -678,7 +678,7 @@ void GHTMLConverter::SetDocType(const RString& docType) throw(RIOException)
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::InitValidTags(void) throw(std::bad_alloc)
+void GHTMLConverter::InitValidTags(void) 
 {
 	//Tags for Meta Datas
 	Tags.InsertPtr(new Tag("head","","docxml:metaData",false));
@@ -705,7 +705,7 @@ void GHTMLConverter::InitValidTags(void) throw(std::bad_alloc)
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName, const RString& name,RContainer<RXMLAttr,true,true>& attrs) throw(RIOException)
+void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName, const RString& name,RContainer<RXMLAttr,true,true>& attrs) 
 {
 	RString htmlName;
 	Tag* tag;
@@ -772,7 +772,7 @@ void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName,
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::EndTag(const RString& namespaceURI, const RString& lName, const RString& name) throw(RIOException)
+void GHTMLConverter::EndTag(const RString& namespaceURI, const RString& lName, const RString& name) 
 {
 	RString htmlName;
 	Tag* tag;
@@ -810,7 +810,7 @@ void GHTMLConverter::EndTag(const RString& namespaceURI, const RString& lName, c
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::Text(const RString& text) throw(RIOException)
+void GHTMLConverter::Text(const RString& text) 
 {
 	// if HTML closing tag found -> Nothing to do
 	if(FoundClosingHTML)
@@ -838,7 +838,7 @@ void GHTMLConverter::Text(const RString& text) throw(RIOException)
 }
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::SkipTagContent(const RString& tag)throw(RIOException)
+void GHTMLConverter::SkipTagContent(const RString& tag)
 {
 	RString tagToFind("</");
 
@@ -859,7 +859,7 @@ void GHTMLConverter::SkipTagContent(const RString& tag)throw(RIOException)
 
 
 //------------------------------------------------------------------------------
-void GHTMLConverter::InsertLink(RContainer<RXMLAttr,true,true>& attrs) throw(RIOException)
+void GHTMLConverter::InsertLink(RContainer<RXMLAttr,true,true>& attrs) 
 {
 	RXMLTag* link;
 	R::RCursor<RXMLAttr> xmlAttrCur;

@@ -188,7 +188,7 @@ public:
 	* about its content.
 	* @param doc            XML Structure that will represent the document.
 	*/
-	virtual bool Analyze(GDocXML* doc) throw(std::bad_alloc,GException);
+	virtual bool Analyze(GDocXML* doc);
 
 protected:
 
@@ -199,14 +199,14 @@ protected:
 	* @param ustr                   The UString to convert
 	* @return RString               The string converted to RString
 	*/
-	R::RString ConvertUtoRString(const wvWare::UString& ustr) throw(std::bad_alloc);
+	R::RString ConvertUtoRString(const wvWare::UString& ustr);
 
 	/*
 	* Replace the code of the character \' ( because wrong code is produced by the wvWare::Parser.
 	* @param str                    The string where the char \' must be replaced.
 	* @return RString               The string with the correct char code.
 	*/
-	R::RString ConvertChar(const R::RString& str) throw(std::bad_alloc);
+	R::RString ConvertChar(const R::RString& str);
 
 	/*
 	* convert wv2.FLD to FIELD.Subtype

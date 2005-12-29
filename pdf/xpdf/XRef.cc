@@ -81,7 +81,7 @@ XRef::XRef(BaseStream *strA, GString *ownerPassword, GString *userPassword) {
       entries[i].offset = 0xffffffff;
       entries[i].used = gFalse;
     }
-    while (readXRef(&pos)) ;
+    while (readXRef(&pos));
 
     // if there was a problem with the xref table,
     // try to reconstruct it
@@ -147,7 +147,7 @@ Guint XRef::readTrailer() {
   }
   if (i < 0)
     return 0;
-  for (p = &buf[i+9]; isspace(*p); ++p) ;
+  for (p = &buf[i+9]; isspace(*p); ++p);
   pos = lastXRefPos = strToUnsigned(p);
 
   // find trailer dict by looking after first xref table
@@ -224,7 +224,7 @@ GBool XRef::readXRef(Guint *pos) {
   str->setPos(start + *pos);
 
   // make sure it's an xref table
-  while ((c = str->getChar()) != EOF && isspace(c)) ;
+  while ((c = str->getChar()) != EOF && isspace(c));
   s[0] = (char)c;
   s[1] = (char)str->getChar();
   s[2] = (char)str->getChar();

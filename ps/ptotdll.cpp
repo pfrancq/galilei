@@ -475,7 +475,7 @@ static int ReadInt(char **instr) {
   int i = 0;
   int sign = 1;
   int c;
-  while ((c = ReadChar(instr))==' ') /* skip */ ;
+  while ((c = ReadChar(instr))==' ') /* skip */;
   if (c=='-') {sign = -1; c = ReadChar(instr); }
   while ('0' <= c && c <= '9') {i = i*10+(c-'0'); c = ReadChar(instr);}
   UnreadChar(instr);
@@ -486,7 +486,7 @@ static long ReadLong(char **instr)  {
   long i = 0;
   int sign = 1;
   int c;
-  while ((c = ReadChar(instr))==' ') /* skip */ ;
+  while ((c = ReadChar(instr))==' ') /* skip */;
   if (c=='-') {sign = -1; c = ReadChar(instr); }
   while ('0' <= c && c <= '9') {i = i*10+(c-'0'); c = ReadChar(instr);}
   UnreadChar(instr);
@@ -533,11 +533,11 @@ static int ParseEncodingMore(T *t, char *instr)  {
   Encoding enc = (*t->encoding)[t->encoding_e];
   int i, tooSparse;
 
-  for (i = t->encoding_i; i<t->encoding_i+16 ; i++)
+  for (i = t->encoding_i; i<t->encoding_i+16; i++)
     (*enc)[i] = (i<t->encoding_n) ? ReadInt(&instr) : NonstandardGlyph;
 
   t->encoding_i += 16;
-  if (t->encoding_i < 256) /* skip */ ;
+  if (t->encoding_i < 256) /* skip */;
   else {
     /* End of directive. */
     t->state = state_normal;
@@ -660,7 +660,7 @@ static int ParseMetricsMore(T *t, char *instr) {
     ReadPair(&mt->chr[i].x, &mt->chr[i].y, &instr);
 
   t->metrics_i += 8;
-  if (t->metrics_i < 256) /* skip */ ;
+  if (t->metrics_i < 256) /* skip */;
   else {
     /* End of directive. */
     t->state = state_normal;
@@ -810,9 +810,9 @@ static int ParseString(T *t, char *instr, char **pre, char **word, char **post,i
       }
       if (tt) glyph = FirstTT1 + (int)in;
       /* There are too many other exceptions to actually trap this:
-        else if (in == '\r') ; // Adobe Illustrator does this...
-        else if (in == '\t') ; // MacDraw Pro does this...
-        else if (in == '\032') ; // MS Word on Mac does this...
+        else if (in == '\r'); // Adobe Illustrator does this...
+        else if (in == '\t'); // MacDraw Pro does this...
+        else if (in == '\032'); // MS Word on Mac does this...
         else return PSTOTEXT_FILTER_BADGLYPHINDEX;
       */
     }

@@ -97,19 +97,19 @@ Type1FontFile::Type1FontFile(char *file, int len) {
 	}
 	strncpy(buf, line, n);
 	buf[n] = '\0';
-	for (p = buf; *p == ' ' || *p == '\t'; ++p) ;
+	for (p = buf; *p == ' ' || *p == '\t'; ++p);
 	if (!strncmp(p, "dup", 3)) {
-	  for (p += 3; *p == ' ' || *p == '\t'; ++p) ;
-	  for (p2 = p; *p2 >= '0' && *p2 <= '9'; ++p2) ;
+	  for (p += 3; *p == ' ' || *p == '\t'; ++p);
+	  for (p2 = p; *p2 >= '0' && *p2 <= '9'; ++p2);
 	  if (*p2) {
 	    c = *p2;
 	    *p2 = '\0';
 	    if ((code = atoi(p)) < 256) {
 	      *p2 = c;
-	      for (p = p2; *p == ' ' || *p == '\t'; ++p) ;
+	      for (p = p2; *p == ' ' || *p == '\t'; ++p);
 	      if (*p == '/') {
 		++p;
-		for (p2 = p; *p2 && *p2 != ' ' && *p2 != '\t'; ++p2) ;
+		for (p2 = p; *p2 && *p2 != ' ' && *p2 != '\t'; ++p2);
 		*p2 = '\0';
 		encoding[code] = copyString(p);
 	      }
@@ -3019,7 +3019,7 @@ char **TrueTypeFontFile::getEncoding() {
 	    if (j != stringIdx) {
 	      for (stringIdx = 0, stringPos = pos + 34 + 2*nGlyphs;
 		   stringIdx < j;
-		   ++stringIdx, stringPos += 1 + getByte(stringPos)) ;
+		   ++stringIdx, stringPos += 1 + getByte(stringPos));
 	    }
 	    n = getByte(stringPos);
 	    if (stringPos >= 0 && stringPos + 1 + n <= len) {
@@ -4104,7 +4104,7 @@ void TrueTypeFontFile::writeTTF(FILE *out) {
   tableDir[3] = 0x00;
   tableDir[4] = (char)((nAllTables >> 8) & 0xff);	// numTables
   tableDir[5] = (char)(nAllTables & 0xff);
-  for (i = -1, t = (Guint)nAllTables; t; ++i, t >>= 1) ;
+  for (i = -1, t = (Guint)nAllTables; t; ++i, t >>= 1);
   t = 1 << (4 + i);
   tableDir[6] = (char)((t >> 8) & 0xff);		// searchRange
   tableDir[7] = (char)(t & 0xff);

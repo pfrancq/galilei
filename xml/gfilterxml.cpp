@@ -311,7 +311,7 @@ GFilterXML::tTag GFilterXML::ConvertRStringtoTagEnum(RString str)
 }
 
 //---------------------------------------------------------------------------
-void GFilterXML::LoadDefinitions(void) throw(GException)
+void GFilterXML::LoadDefinitions(void) 
 {
 	DIR* dp;
 	struct dirent* ep;
@@ -333,8 +333,8 @@ void GFilterXML::LoadDefinitions(void) throw(GException)
 
 	//Load the new definitions
 	//Init containers
-	Definitions=new R::RContainer<Def,true,true>(10,5) ;
-	MimeDefinitions=new R::RContainer<MimeDef,true,true>(10,5) ;
+	Definitions=new R::RContainer<Def,true,true>(10,5);
+	MimeDefinitions=new R::RContainer<MimeDef,true,true>(10,5);
 
 	if(xmlDefPath.IsEmpty()) throw GException("Path to xml definition is Empty");
 	dp=opendir(xmlDefPath);
@@ -384,7 +384,7 @@ void GFilterXML::LoadDefinitions(void) throw(GException)
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) throw(bad_alloc,GException)
+void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) 
 {
 	Def* definition;
 	R::RCursor<RXMLAttr> xmlAttrCur;
@@ -429,7 +429,7 @@ void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) throw(bad_alloc,GExc
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def) throw(GException)
+void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def) 
 {
 	R::RCursor<RXMLAttr> xmlAttrCur;
 	R::RCursor<RXMLTag> tagCur;
@@ -475,7 +475,7 @@ void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def) throw(GExcepti
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) throw(GException)
+void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) 
 {
 	R::RCursor<RXMLAttr> xmlAttrCur;
 	R::RCursor<RXMLTag> tagCur,subTagCur;
@@ -549,7 +549,7 @@ void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) throw(GE
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::FillMimeDefinition(RXMLTag* currentTag,Def* def) throw(GException)
+void GFilterXML::FillMimeDefinition(RXMLTag* currentTag,Def* def) 
 {
 	R::RCursor<RXMLAttr> xmlAttrCur;
 	R::RCursor<RXMLTag> tagCur;
@@ -577,7 +577,7 @@ void GFilterXML::FillMimeDefinition(RXMLTag* currentTag,Def* def) throw(GExcepti
 
 
 //---------------------------------------------------------------------------
-RXMLTag* GFilterXML::InsertTag(tTag t,RXMLTag* parentTag) throw(std::bad_alloc,GException)
+RXMLTag* GFilterXML::InsertTag(tTag t,RXMLTag* parentTag)
 {
 
 	RXMLTag* resTag;
@@ -686,7 +686,7 @@ RXMLTag* GFilterXML::InsertTag(tTag t,RXMLTag* parentTag) throw(std::bad_alloc,G
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::AnalyseTag(RXMLTag* currentTag,RXMLTag* currentTagParent ,RXMLTag* docXMLparentTag) throw(std::bad_alloc,GException)
+void GFilterXML::AnalyseTag(RXMLTag* currentTag,RXMLTag* currentTagParent ,RXMLTag* docXMLparentTag)
 {
 	Tag *t;
 	R::RCursor<RXMLTag> tagCur;
@@ -756,7 +756,7 @@ void GFilterXML::AnalyseTag(RXMLTag* currentTag,RXMLTag* currentTagParent ,RXMLT
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent) throw(bad_alloc,GException)
+void GFilterXML::AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent) 
 {
 	Tag* t;
 	RXMLTag* attrTag;
@@ -812,7 +812,7 @@ void GFilterXML::AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent
 
 
 //---------------------------------------------------------------------------
-bool GFilterXML::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+bool GFilterXML::Analyze(GDocXML* doc) 
 {
 	RString mime;
 	MimeDef* mimeDef;

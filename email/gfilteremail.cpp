@@ -134,7 +134,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 
 
 //-----------------------------------------------------------------------------
-bool GFilterEMail::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+bool GFilterEMail::Analyze(GDocXML* doc) 
 {
 	RXMLTag* part;
 	RXMLTag* tag;

@@ -1268,7 +1268,7 @@ void CCITTFaxStream::reset() {
       eatBits(12);
     }
   } else {
-    for (n = 0; n < 11 && lookBits(n) == 0; ++n) ;
+    for (n = 0; n < 11 && lookBits(n) == 0; ++n);
     if (n == 11 && lookBits(12) == 0x001) {
       eatBits(12);
     }

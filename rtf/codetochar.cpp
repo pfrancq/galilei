@@ -47,7 +47,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::CodeToChar::CodeToChar(const char* code,RChar c) throw(bad_alloc)
+GALILEI::CodeToChar::CodeToChar(const char* code,RChar c) 
 	: Char(c), Code(code)
 {
 }

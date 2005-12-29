@@ -79,7 +79,7 @@ public:
 	* Actually, only local files can be treated.
 	* @param doc            XML Structure that will represent the email.
 	*/
-	virtual bool Analyze(GDocXML* doc) throw(std::bad_alloc,GException);
+	virtual bool Analyze(GDocXML* doc);
 
 	
 	/**

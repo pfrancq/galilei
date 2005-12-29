@@ -67,7 +67,7 @@ GFilterMSDoc::GFilterMSDoc(GFactoryFilter* fac)
 
 
 //------------------------------------------------------------------------------
-RString GFilterMSDoc::ConvertUtoRString(const wvWare::UString& ustr) throw(bad_alloc)
+RString GFilterMSDoc::ConvertUtoRString(const wvWare::UString& ustr) 
 {
 	RString res;
 	res="";
@@ -81,7 +81,7 @@ RString GFilterMSDoc::ConvertUtoRString(const wvWare::UString& ustr) throw(bad_a
 
 
 //------------------------------------------------------------------------------
-RString GFilterMSDoc::ConvertChar(const RString& str) throw(bad_alloc)
+RString GFilterMSDoc::ConvertChar(const RString& str) 
 {
 	RString res;
 	RCharCursor cur(str);
@@ -143,7 +143,7 @@ void GFilterMSDoc::AddField()
 		case 2:    Doc->AddCreator(FieldValue); break; //Add the author of the page.
 		case 3:    AnalyzeKeywords(FieldValue,',',Doc->AddSubject()); break;  // Add keywords
 		case 4:    Doc->AddDate(FieldValue); break;  // Add the Date
-		case 5:    Doc->AddIdentifier(FieldValue,Doc->AddLink()) ; break;
+		case 5:    Doc->AddIdentifier(FieldValue,Doc->AddLink()); break;
 	}
 }
 
@@ -195,7 +195,7 @@ void GFilterMSDoc::WriteParagraph(RString par)
 
 
 //------------------------------------------------------------------------------
-bool GFilterMSDoc::Analyze(GDocXML* doc) throw(bad_alloc,GException)
+bool GFilterMSDoc::Analyze(GDocXML* doc) 
 {
 	//RXMLTag* tag;
 	RString *fileName;
@@ -357,7 +357,7 @@ void GFilterMSDoc::fieldEnd(const wvWare::FLD* /*fld*/,wvWare::SharedPtr<const w
 //------------------------------------------------------------------------------
 void GFilterMSDoc::runOfText(const wvWare::UString& text, wvWare::SharedPtr<const wvWare::Word97::CHP> /*chp*/)
 {
-	RString newTxt = ConvertChar(ConvertUtoRString(text)) ;
+	RString newTxt = ConvertChar(ConvertUtoRString(text));
 
 	//text after fieldtart and before fieldSeparator is useless
 	if (InsideField && !FieldAfterSeparator) return;
