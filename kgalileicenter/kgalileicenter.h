@@ -179,7 +179,7 @@ public:
 	* application.
 	* @see initMenuBar initToolBar
 	*/
-	KGALILEICenterApp(void) throw(GException);
+	KGALILEICenterApp(void);
 
 	/**
 	* Start a job.

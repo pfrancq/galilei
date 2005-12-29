@@ -81,7 +81,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KGALILEICenterApp::KGALILEICenterApp(void) throw(GException)
+KGALILEICenterApp::KGALILEICenterApp(void)
 	: KMainWindow(0,"KGALILEICenterApp"), pluginsPath(10,5), Doc(0), Debug(0)
 {
 	Config=kapp->config();

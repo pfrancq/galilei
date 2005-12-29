@@ -65,7 +65,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KDoc::KDoc(KGALILEICenterApp* owner) throw(std::bad_alloc,GException)
+KDoc::KDoc(KGALILEICenterApp* owner)
 	: QObject(), Session(0), WinDocs(0), WinUsers(0), WinGroups(0), Owner(owner)
 {
 	pViewList = new QList<KView>;
@@ -204,7 +204,7 @@ bool KDoc::canCloseFrame(KView* /*pFrame*/)
 
 
 //-----------------------------------------------------------------------------
-KDoc::~KDoc(void) throw(GException)
+KDoc::~KDoc(void)
 {
 	delete pViewList;
 	delete Session;

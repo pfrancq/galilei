@@ -130,7 +130,7 @@ public:
 	* @param all            All objects must be loaded?
 	* @param filter         Date filter.
 	*/
-	KDoc(KGALILEICenterApp* owner) throw(std::bad_alloc,GException);
+	KDoc(KGALILEICenterApp* owner);
 
 	/**
 	* Set the session corresponding of the document.
@@ -241,7 +241,7 @@ public:
 	/**
 	* Destructor for the fileclass of the application.
 	*/
-	virtual ~KDoc(void) throw(GException);
+	virtual ~KDoc(void);
 };
 
 
