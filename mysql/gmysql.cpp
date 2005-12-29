@@ -1052,7 +1052,7 @@ GDoc* GStorageMySQL::LoadDoc(unsigned int docid)
 
 	// Load the links of the document loaded.
 	RQuery querLinks (Db,"SELECT htmlid,linkid,occurs FROM htmlsbylinks WHERE htmlid="+RString::Number(docid));
-	for(querLinks.Start(); !querLinks.End() ; querLinks.Next())
+	for(querLinks.Start(); !querLinks.End(); querLinks.Next())
 		doc->InsertLink(Session->GetDoc(atoi(querLinks[1])), atoi(querLinks[2]));
 
 	return(doc);
@@ -1094,7 +1094,7 @@ void GStorageMySQL::LoadDocs(void)
 
 			// Load the links of the document loaded.
 			RQuery querLinks (Db,"SELECT htmlid,linkid,occurs FROM htmlsbylinks WHERE htmlid="+RString::Number(docid));
-			for(querLinks.Start(); !querLinks.End() ; querLinks.Next())
+			for(querLinks.Start(); !querLinks.End(); querLinks.Next())
 				doc->InsertLink(Session->GetDoc(atoi(querLinks[1])), atoi(querLinks[2]));
 		}
 	}
@@ -1285,7 +1285,7 @@ void GStorageMySQL::SaveHistoricProfiles(unsigned int historicID)
 {
 	try
 	{
-		R::RCursor<GProfile> curProf=Session->GetProfiles() ;
+		R::RCursor<GProfile> curProf=Session->GetProfiles();
 
 		// Save the Subprofile
 		for(curProf.Start();!curProf.End();curProf.Next())
