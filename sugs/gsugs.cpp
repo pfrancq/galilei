@@ -120,7 +120,7 @@ void GComputeSubProfileSugsCmd::Run(GStorage* storage,const GStorageTag& inst,vo
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSugs::GSugs(GFactoryPostGroup* fac) throw(bad_alloc)
+GSugs::GSugs(GFactoryPostGroup* fac) 
 		: GPostGroup(fac), Docs(0)
 {
 }
@@ -146,7 +146,7 @@ void GSugs::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GSugs::Connect(GSession* session) throw(GException)
+void GSugs::Connect(GSession* session) 
 {
 	GPostGroup::Connect(session);
 	GComputeSubProfileSugsCmd* command=new GComputeSubProfileSugsCmd();
@@ -156,14 +156,14 @@ void GSugs::Connect(GSession* session) throw(GException)
 
 
 //------------------------------------------------------------------------------
-void GSugs::Disconnect(GSession* session) throw(GException)
+void GSugs::Disconnect(GSession* session) 
 {
 	GPostGroup::Disconnect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GSugs::Run(void) throw(GException)
+void GSugs::Run(void) 
 {
 	if(!UseLevels)
 	{
