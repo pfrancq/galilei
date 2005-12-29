@@ -57,7 +57,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac) throw(bad_alloc)
+GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac) 
 	: GGroupCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
@@ -72,21 +72,21 @@ void GGroupCalcGravitation::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Connect(GSession* session) throw(GException)
+void GGroupCalcGravitation::Connect(GSession* session) 
 {
 	GGroupCalc::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Disconnect(GSession* session) throw(GException)
+void GGroupCalcGravitation::Disconnect(GSession* session) 
 {
 	GGroupCalc::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Compute(GGroup* grp) throw(GException)
+void GGroupCalcGravitation::Compute(GGroup* grp) 
 {
 	unsigned int i;
 	GWeightInfo* ins;

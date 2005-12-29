@@ -88,7 +88,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GGroupCalcGravitation(GFactoryGroupCalc* fac) throw(std::bad_alloc);
+	GGroupCalcGravitation(GFactoryGroupCalc* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -99,19 +99,19 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session) throw(GException);
+	virtual void Connect(GSession* session);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session) throw(GException);
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
-	virtual void Compute(GGroup* grp) throw(GException);
+	virtual void Compute(GGroup* grp);
 
 	/**
 	* Get the name of the model used for the description.
