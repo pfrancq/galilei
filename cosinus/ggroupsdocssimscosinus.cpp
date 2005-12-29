@@ -84,7 +84,7 @@ class GSims : public RContainer<GSim,true,true>
 public:
 	unsigned int DocId;      // Identifier of the document
 
-	GSims(unsigned int id,unsigned int max) throw(std::bad_alloc)
+	GSims(unsigned int id,unsigned int max) 
 		: RContainer<GSim,true,true>(max,max/2), DocId(id) {}
 	int Compare(const GSims& s) const {return(DocId-s.DocId);}
 	int Compare(const unsigned int id) const {return(DocId-id);}
@@ -161,11 +161,11 @@ GGroupsDocsSimsCosinus::GDocGrpSim::GDocGrpSim(GGroupsDocsSimsCosinus* manager,G
 	RCursor<GGroup> s(Manager->Session->GetGroups(l));
 	Cur_d= d;
 	Cur_p=s;
-	nbrSubProf = Cur_p.GetNb() ;
+	nbrSubProf = Cur_p.GetNb();
 	for(Cur_d.Start();!Cur_d.End();Cur_d.Next())
 	{
 		Sims->InsertPtr(sim=new GSims(Cur_d()->GetId(),nbrSubProf));
-		for(Cur_p.Start() ;!Cur_p.End();Cur_p.Next())
+		for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
 			AnalyseSim(sim,Cur_d(),Cur_p());
 	}
 }
@@ -250,7 +250,7 @@ void  GGroupsDocsSimsCosinus::GDocGrpSim::Update(void)
 
 	Cur_d = Manager->Session->GetDocs(Lang);
 	Cur_p = Manager->Session->GetGroups(Lang);
-	nbrSubProf = Cur_p.GetNb() ;
+	nbrSubProf = Cur_p.GetNb();
 
 	// The type of similarity hasn't changed -> some values of sim can be UpToDate
 	for(Cur_d.Start();!Cur_d.End();Cur_d.Next())

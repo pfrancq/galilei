@@ -89,7 +89,7 @@
       <useconfiguration>default</useconfiguration>
     </general>
     <run>
-      <mainprogram>$HOME/prj/kgalileicenter/kgalileicenter/kgalileicenter</mainprogram>
+      <mainprogram>/home/pfrancq/prj/kgalileicenter/kgalileicenter/.libs/lt-kgalileicenter</mainprogram>
       <programargs/>
       <terminal>false</terminal>
       <autocompile>true</autocompile>
