@@ -109,7 +109,7 @@ GLangEN::PorterRule::~PorterRule(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangEN::GLangEN(GFactoryLang* fac) throw(bad_alloc)
+GALILEI::GLangEN::GLangEN(GFactoryLang* fac) 
 	: GLang(fac,"English","en"), Rules1a(0), Rules1b(0), Rules1bb(0), Rules1c(0),
 	  Rules2(0), Rules3(0), Rules4(0), Rules5a(0), Rules5b(0)
 {
@@ -346,7 +346,7 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,tru
 
 
 //-----------------------------------------------------------------------------
-RString GALILEI::GLangEN::GetStemming(const RString& _kwd) throw(GException)
+RString GALILEI::GLangEN::GetStemming(const RString& _kwd) 
 {
 	RString res;
 	char kwd[51];

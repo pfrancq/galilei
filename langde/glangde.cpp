@@ -63,14 +63,14 @@ using namespace stemming;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangDE::GLangDE(GFactoryLang* fac) throw(bad_alloc)
+GLangDE::GLangDE(GFactoryLang* fac) 
 	: GLang(fac,"German ","de")
 {
 }
 
 
 //-----------------------------------------------------------------------------
-RString GLangDE::GetStemming(const RString& _kwd) throw(GException)
+RString GLangDE::GetStemming(const RString& _kwd) 
 {
 	string word;
 	 word=_kwd.ToString();

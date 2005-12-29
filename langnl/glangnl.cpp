@@ -109,7 +109,7 @@ GLangNL::DutchPorterRule::~DutchPorterRule(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangNL::GLangNL(GFactoryLang* fac) throw(bad_alloc)
+GALILEI::GLangNL::GLangNL(GFactoryLang* fac) 
 	: GLang(fac,"Dutch","nl"), Rules1a(0), Rules1b(0), Rules1c(0), Rules2a(0),
 	  Rules2aa(0), Rules3a(0), Rules3b(0), Rules4(0), Rules5(0)
 {
@@ -353,7 +353,7 @@ bool GALILEI::GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRul
 
 
 //-----------------------------------------------------------------------------
-RString GALILEI::GLangNL::GetStemming(const RString& _kwd) throw(GException)
+RString GALILEI::GLangNL::GetStemming(const RString& _kwd) 
 {
 	RString res;
 	char kwd[51];

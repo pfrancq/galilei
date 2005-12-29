@@ -195,7 +195,7 @@ GLangAR::ArabicRule::~ArabicRule(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangAR::GLangAR(GFactoryLang* fac) throw(bad_alloc,GException)
+GALILEI::GLangAR::GLangAR(GFactoryLang* fac) 
 	: GLang(fac,"Arabic","ar"), Rules1(0), Rules2(0), Rules3(0), Rules4(0),
 		 Rules5(0), Rules6(0), Rules7(0)
 {
@@ -224,7 +224,7 @@ void GLangAR::CreateParams(GParams* params)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLangAR::LoadRules(void) throw(GException)
+void GALILEI::GLangAR::LoadRules(void) 
 {
 	RString* tab;
 	RString w;
@@ -334,7 +334,7 @@ void GALILEI::GLangAR::ApplyRules(RString& kwd,RContainer<ArabicRule,true,false>
 }
 
 //-----------------------------------------------------------------------------
-RString GALILEI::GLangAR::GetStemming(const RString& _kwd) throw(GException)
+RString GALILEI::GLangAR::GetStemming(const RString& _kwd) 
 {
 	RString res;
 	RString kwd;

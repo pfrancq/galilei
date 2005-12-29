@@ -66,14 +66,14 @@ public:
 	* Constructor of the portuguese language.
 	* @param fac             Factory.
 	*/
-	GLangPT(GFactoryLang* fac) throw(std::bad_alloc);
+	GLangPT(GFactoryLang* fac);
 
 	/**
 	* Function that return stemming of a word.
 	* @param _kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	virtual R::RString GetStemming(const R::RString& _kwd) throw(GException);
+	virtual R::RString GetStemming(const R::RString& _kwd);
 
 
 public:

@@ -104,7 +104,7 @@ GLangFR::FrenchPorterRule::~FrenchPorterRule(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangFR::GLangFR(GFactoryLang* fac) throw(bad_alloc)
+GLangFR::GLangFR(GFactoryLang* fac) 
 	: GLang(fac,"French","fr"), Rules1(0), Rules2(0), Rules3(0)
 {
 
@@ -487,7 +487,7 @@ bool GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,true,f
 
 
 //-----------------------------------------------------------------------------
-RString GLangFR::GetStemming(const RString& _kwd) throw(GException)
+RString GLangFR::GetStemming(const RString& _kwd) 
 {
 	RString res;
 	char kwd[51];

@@ -63,14 +63,14 @@ using namespace stemming;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangDK::GLangDK(GFactoryLang* fac) throw(bad_alloc)
+GLangDK::GLangDK(GFactoryLang* fac) 
 	: GLang(fac,"Danish","dk")
 {
 }
 
 
 //-----------------------------------------------------------------------------
-RString GLangDK::GetStemming(const RString& _kwd) throw(GException)
+RString GLangDK::GetStemming(const RString& _kwd) 
 {
 	char* end;
 	unsigned int len;

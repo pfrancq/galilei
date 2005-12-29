@@ -78,7 +78,7 @@ public:
 	* Constructor of the french language.
 	* @param fac             Factory.
 	*/
-	GLangFR(GFactoryLang* fac) throw(std::bad_alloc);
+	GLangFR(GFactoryLang* fac);
 
 	/**
 	* Function that return stemming of a word. The "French" Porter's algorithm is
@@ -86,7 +86,7 @@ public:
 	* @param _kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	virtual R::RString GetStemming(const R::RString& _kwd) throw(GException);
+	virtual R::RString GetStemming(const R::RString& _kwd);
 
 private:
 
