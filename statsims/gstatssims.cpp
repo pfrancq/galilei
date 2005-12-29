@@ -191,7 +191,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsSims::GStatsSims(GFactoryStatsCalc* fac) throw(bad_alloc)
+GStatsSims::GStatsSims(GFactoryStatsCalc* fac) 
 	: GStatsCalc(fac)
 {
 }
@@ -212,21 +212,21 @@ void GStatsSims::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::Connect(GSession* session) throw(GException)
+void GStatsSims::Connect(GSession* session) 
 {
 	GStatsCalc::Connect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::Disconnect(GSession* session) throw(GException)
+void GStatsSims::Disconnect(GSession* session) 
 {
 	GStatsCalc::Disconnect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException)
+void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) 
 {
 	RXMLTag* tag;
 	RXMLTag* tag2;

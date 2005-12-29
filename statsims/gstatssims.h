@@ -105,7 +105,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GStatsSims(GFactoryStatsCalc* fac) throw(std::bad_alloc);
+	GStatsSims(GFactoryStatsCalc* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -116,19 +116,19 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session) throw(GException);
+	virtual void Connect(GSession* session);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session) throw(GException);
+	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compute the statistics.
 	* @param res             XML tag that will be hold the results.
 	*/
-	virtual void Compute(R::RXMLStruct* xml,R::RXMLTag& res) throw(GException);
+	virtual void Compute(R::RXMLStruct* xml,R::RXMLTag& res);
 
 	/**
 	* Create the parameters.

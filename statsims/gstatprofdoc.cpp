@@ -87,7 +87,7 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 	GLang* lang;
 	R::RCursor<GProfile> Profs1,Profs2;
 	R::RCursor<GDoc> Docs;
-	unsigned int nbProfJugDoc,nbDocs ;
+	unsigned int nbProfJugDoc,nbDocs;
 	unsigned int i,j;
 	double sum, tmp,nbSame,nbDiff;
 
