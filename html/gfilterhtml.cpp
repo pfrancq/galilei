@@ -74,7 +74,7 @@ bool GFilterHTML::Analyze(GDocXML* doc)
 		Src.Open(RIO::Read);
 
 		//Delete Empty Tags
-		Doc->GetContent()->DeleteEmptySubNodes();
+//		Doc->GetContent()->DeleteEmptySubNodes();
 
 	}
 	catch(RIOException& e)
