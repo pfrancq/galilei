@@ -85,7 +85,7 @@ class GSims : public RContainer<GSim,true,true>
 public:
 	unsigned int DocId;      // Identifier of the document
 
-	GSims(unsigned int id,unsigned int max) 
+	GSims(unsigned int id,unsigned int max)
 		: RContainer<GSim,true,true>(max,max/2), DocId(id) {}
 	int Compare(const GSims& s) const {return(DocId-s.DocId);}
 	int Compare(const unsigned int id) const {return(DocId-id);}
@@ -392,6 +392,9 @@ void GProfilesDocsSimsCosinus::Event(GDoc* doc, tEvent event)
 	if(!Memory) return;
 	GDocProfSim* profSim;
 	RCursor<GSims> Sub;
+
+	if(!doc->GetLang())
+		return;
 
 	switch(event)
 	{
