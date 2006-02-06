@@ -870,10 +870,10 @@ GProfile* GSession::GetProfile(unsigned int id,bool load) const
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
-		throw GException("Unknown profile");
+		throw GException("Unknown profile in memory");
 	p=Data->Storage->LoadProfile(id);
 	if(!p)
-		throw GException("Unknown profile");
+		throw GException("Unknown profile in storage");
 	const_cast<GSession*>(this)->InsertProfile(p);
 	return(p);
 }
