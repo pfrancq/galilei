@@ -847,7 +847,7 @@ void GStorageMySQL::LoadUsers(void)
 			for(fdbks.Start();!fdbks.End();fdbks.Next())
 			{
 				lang=Langs->GetPlugIn(fdbks[5],false);
-				if(!lang)
+				if((fdbks[5].GetLen())&&(!lang))
 					continue;
 				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),lang,GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
 			}
