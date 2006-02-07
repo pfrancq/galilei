@@ -111,7 +111,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-GTextAnalyse::WordWeight::WordWeight(unsigned int nb) 
+GTextAnalyse::WordWeight::WordWeight(unsigned int nb)
 	:  Word(MaxWordLen+1), InStop(0)
 {
 	InStop=new bool[nb];
@@ -134,7 +134,7 @@ GTextAnalyse::WordWeight::~WordWeight(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac) 
+GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac)
 	: GDocAnalyse(fac), Weights(0), Infos(5000,2500), Direct(0), NbDirect(5000),
 	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0)
 {
@@ -161,7 +161,7 @@ void GTextAnalyse::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Connect(GSession* session) 
+void GTextAnalyse::Connect(GSession* session)
 {
 	WordWeight** ptr;
 	GWord** pt;
@@ -191,7 +191,7 @@ void GTextAnalyse::Connect(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Disconnect(GSession* session) 
+void GTextAnalyse::Disconnect(GSession* session)
 {
 	WordWeight** ptr;
 	GWord** pt;
@@ -260,7 +260,7 @@ void GTextAnalyse::Clear(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::VerifyDirect(void) 
+void GTextAnalyse::VerifyDirect(void)
 {
 	unsigned int i;
 	WordWeight** ptr;
@@ -279,7 +279,7 @@ void GTextAnalyse::VerifyDirect(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::VerifyOrder(void) 
+void GTextAnalyse::VerifyOrder(void)
 {
 	unsigned int i;
 	GWord** ptr;
@@ -339,7 +339,7 @@ bool GTextAnalyse::ValidWord(const RString kwd)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AddWord(const RString word,double weight) 
+void GTextAnalyse::AddWord(const RString word,double weight)
 {
 	bool Find;
 	unsigned int Index;
@@ -419,16 +419,20 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 				Sl[LangIndex]++;
 		}
 	}
-	if((!w->InStop[LangIndex])&&(Distance))
+	if(Distance)
 	{
-		VerifyOrder();
-		delete(Order[Nwords]);
-		Order[Nwords++]=new GWord(word);
-		//Nwords++;
-		if(OnlyLetters)
-			Order[Nwords-1]->SetId(1);
-		else
-			Order[Nwords-1]->SetId(0);
+		// Bug!!!!!!!!!!!
+		// if(!w->InStop[LangIndex])
+		{
+			VerifyOrder();
+			delete(Order[Nwords]);
+			Order[Nwords++]=new GWord(word);
+			//Nwords++;
+			if(OnlyLetters)
+				Order[Nwords-1]->SetId(1);
+			else
+				Order[Nwords-1]->SetId(0);
+		}
 	}
 	N++;
 	w->Nb++;
@@ -516,7 +520,7 @@ BeginExtract:
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight) 
+void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight)
 {
 	const RChar* ptr;
 
@@ -536,7 +540,7 @@ void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight)
 
 
 ////-----------------------------------------------------------------------------
-//void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd) 
+//void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd)
 //{
 //	const char* ptr;
 //	const char* endPtr;
@@ -585,7 +589,7 @@ void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,false,true>* DocsToAdd) 
+void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,false,true>* DocsToAdd)
 {
 //	const char* ptr;
 //	const char* endPtr;
@@ -671,7 +675,7 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::DetermineLang(void) 
+void GTextAnalyse::DetermineLang(void)
 {
 	double Frac,MinFrac;
 	unsigned int i;
@@ -701,7 +705,7 @@ void GTextAnalyse::DetermineLang(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::ConstructInfos(unsigned int docid) 
+void GTextAnalyse::ConstructInfos(unsigned int docid)
 {
 	WordWeight** wrd;
 	GWeightInfo* Occur;
@@ -815,7 +819,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* tmpDocs) 
+void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* tmpDocs)
 {
 	RXMLTag* content;
 	RXMLTag* metadata;
