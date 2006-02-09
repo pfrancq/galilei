@@ -311,7 +311,7 @@ GFilterXML::tTag GFilterXML::ConvertRStringtoTagEnum(RString str)
 }
 
 //---------------------------------------------------------------------------
-void GFilterXML::LoadDefinitions(void) 
+void GFilterXML::LoadDefinitions(void)
 {
 	DIR* dp;
 	struct dirent* ep;
@@ -384,7 +384,7 @@ void GFilterXML::LoadDefinitions(void)
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag) 
+void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag)
 {
 	Def* definition;
 	R::RCursor<RXMLAttr> xmlAttrCur;
@@ -429,7 +429,7 @@ void GFilterXML::FillFilterDefinitions(RXMLTag* currentTag)
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def) 
+void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def)
 {
 	R::RCursor<RXMLAttr> xmlAttrCur;
 	R::RCursor<RXMLTag> tagCur;
@@ -475,7 +475,7 @@ void GFilterXML::FillTagsDefinition(RXMLTag* currentTag,Def* def)
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag) 
+void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag)
 {
 	R::RCursor<RXMLAttr> xmlAttrCur;
 	R::RCursor<RXMLTag> tagCur,subTagCur;
@@ -549,7 +549,7 @@ void GFilterXML::FillAttributesDefinition(RXMLTag* currentTag,Tag* tag)
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::FillMimeDefinition(RXMLTag* currentTag,Def* def) 
+void GFilterXML::FillMimeDefinition(RXMLTag* currentTag,Def* def)
 {
 	R::RCursor<RXMLAttr> xmlAttrCur;
 	R::RCursor<RXMLTag> tagCur;
@@ -756,7 +756,7 @@ void GFilterXML::AnalyseTag(RXMLTag* currentTag,RXMLTag* currentTagParent ,RXMLT
 
 
 //---------------------------------------------------------------------------
-void GFilterXML::AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent) 
+void GFilterXML::AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent)
 {
 	Tag* t;
 	RXMLTag* attrTag;
@@ -812,7 +812,7 @@ void GFilterXML::AnalyzeAttributes(RXMLTag* currentTag,RXMLTag* currentTagParent
 
 
 //---------------------------------------------------------------------------
-bool GFilterXML::Analyze(GDocXML* doc) 
+bool GFilterXML::Analyze(GDocXML* doc)
 {
 	RString mime;
 	MimeDef* mimeDef;
@@ -875,21 +875,9 @@ bool GFilterXML::Analyze(GDocXML* doc)
 		tag=fileStruct.GetTop();
 		AnalyseTag(tag,tag,0);
 	}
-	catch(RString& str)
-	{
-		throw GException(str);
-	}
 	catch(RIOException& e)
 	{
 		throw GException(e.GetMsg());
-	}
-	catch(bad_alloc)
-	{
-		throw;
-	}
-	catch(GException)
-	{
-		throw;
 	}
 	catch(RException& e)
 	{
@@ -897,9 +885,8 @@ bool GFilterXML::Analyze(GDocXML* doc)
 	}
 	catch(...)
 	{
-		throw GException("Unexcepted exception");
+		throw GException("GFilterXML: Undefined Error");
 	}
-
 	// Return OK
 	return(true);
 }

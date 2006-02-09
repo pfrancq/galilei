@@ -75,7 +75,6 @@ bool GFilterHTML::Analyze(GDocXML* doc)
 
 		//Delete Empty Tags
 //		Doc->GetContent()->DeleteEmptySubNodes();
-
 	}
 	catch(RIOException& e)
 	{
@@ -84,6 +83,10 @@ bool GFilterHTML::Analyze(GDocXML* doc)
 	catch(RException& e)
 	{
 		throw GException(e.GetMsg());
+	}
+	catch(...)
+	{
+		throw GException("GFilterHTML: Undefined Error");
 	}
 	return true;
 }

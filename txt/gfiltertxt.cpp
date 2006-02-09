@@ -55,7 +55,7 @@ GFilterTXT::GFilterTXT(GFactoryFilter* fac)
 
 
 //-----------------------------------------------------------------------------
-bool GFilterTXT::Analyze(GDocXML* doc) 
+bool GFilterTXT::Analyze(GDocXML* doc)
 {
 	RXMLTag* part;
 	RXMLTag* tag;
@@ -118,13 +118,9 @@ bool GFilterTXT::Analyze(GDocXML* doc)
 				Doc->DeleteTag(tag);
 		}
 	}
-	catch(bad_alloc)
+	catch(RIOException& e)
 	{
-		throw;
-	}
-	catch(GException)
-	{
-		throw;
+		throw GException(e.GetMsg());
 	}
 	catch(RException& e)
 	{
@@ -132,7 +128,7 @@ bool GFilterTXT::Analyze(GDocXML* doc)
 	}
 	catch(...)
 	{
-		throw GException("Unexcepted exception");
+		throw GException("GFilterTXT: Undefined Error");
 	}
 
 	// Return OK

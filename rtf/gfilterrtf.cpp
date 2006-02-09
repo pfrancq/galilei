@@ -340,7 +340,7 @@ void GFilterRTF::FindBlock(RString str,bool text)
 }
 
 //------------------------------------------------------------------------------
-bool GFilterRTF::Analyze(GDocXML* doc) 
+bool GFilterRTF::Analyze(GDocXML* doc)
 {
 	RXMLTag* part;
 	bool Stop;
@@ -368,13 +368,9 @@ bool GFilterRTF::Analyze(GDocXML* doc)
 
 		FindBlock(Text);
 	}
-	catch(bad_alloc)
+	catch(RIOException& e)
 	{
-		throw;
-	}
-	catch(GException)
-	{
-		throw;
+		throw GException(e.GetMsg());
 	}
 	catch(RException& e)
 	{
@@ -382,7 +378,7 @@ bool GFilterRTF::Analyze(GDocXML* doc)
 	}
 	catch(...)
 	{
-		throw GException("Unexcepted exception");
+		throw GException("GFilterRTF: Undefined Error");
 	}
 
 	Doc->GetContent()->DeleteEmptySubNodes();
