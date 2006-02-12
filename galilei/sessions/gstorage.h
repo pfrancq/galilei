@@ -205,6 +205,12 @@ public:
 	// @{
 
 	/**
+	* Get a string representing the world stored. This string must be a valid
+	* directory name since it is used everywhere.
+	*/
+	virtual RString GetWorld(void) const=0;
+
+	/**
 	* Initialize the access to the storage.
 	*/
 	virtual void InitAccess(void)=0;
