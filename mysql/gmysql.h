@@ -85,6 +85,11 @@ public:
 	GStorageMySQL(GFactoryStorage* fac);
 
 	/**
+	* Get the name of the world.
+	*/
+	virtual RString GetWorld(void) const;
+
+	/**
 	* Init the access to the MySQL database.
 	*/
 	virtual void InitAccess(void);

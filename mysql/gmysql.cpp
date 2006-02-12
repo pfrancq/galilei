@@ -82,6 +82,13 @@ GStorageMySQL::GStorageMySQL(GFactoryStorage* fac)
 
 
 //-----------------------------------------------------------------------------
+RString GStorageMySQL::GetWorld(void) const
+{
+	return(Database);
+}
+
+
+//-----------------------------------------------------------------------------
 void GStorageMySQL::InitAccess(void)
 {
 	try
@@ -1305,6 +1312,8 @@ void GStorageMySQL::SaveHistoricProfiles(unsigned int historicID)
 //------------------------------------------------------------------------------
 void GStorageMySQL::UpdateProfiles(unsigned int docid,GLang* lang)
 {
+	if(!lang)
+		return;
 	RQuery Up(Db,"UPDATE htmlsbyprofiles SET computed=CURDATE(),langid="+RQuery::SQLValue(lang->GetCode())+" WHERE htmlid="+RString::Number(docid));
 }
 
