@@ -1114,6 +1114,7 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 {
 	try
 	{
+		delete Debug;
 		if(Doc)
 			delete Doc;
 	}
