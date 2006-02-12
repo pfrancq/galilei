@@ -41,6 +41,7 @@
 namespace GALILEI
 {
 	class GGroup;
+	class QListViewItemType;
 }
 using namespace GALILEI;
 
@@ -48,7 +49,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <qwidget.h>
-class QListView;
+#include <qdragobject.h>
+#include <qlistview.h>
 class QLineEdit;
 class QPushButton;
 class QCheckBox;
@@ -57,6 +59,69 @@ class QCheckBox;
 //-----------------------------------------------------------------------------
 // include files for current application
 #include "kview.h"
+
+
+
+//-----------------------------------------------------------------------------
+// Drag object
+class QDragSubProfile : public QDragObject
+{
+public:
+	QListViewItemType* Src;
+
+	QDragSubProfile(QWidget* dragSource,QListViewItem* src,const char* name=0);
+
+	virtual const char * format(int i) const;
+	virtual QByteArray encodedData(const char*) const;
+
+	static bool canDecode(const QMimeSource* e );
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+*/
+class QGroups : public QListView
+{
+	Q_OBJECT
+
+	int dragging;
+
+	QDragSubProfile* Cur;
+
+public:
+
+	/**
+	* Constrcutor.
+	* @param parent         Parent of the widget.
+	* @param name           Name of the widget.
+	*/
+	QGroups(QWidget* parent,const char* name=0);
+
+
+	void contentsDragEnterEvent( QDragEnterEvent *evt );
+	void contentsDropEvent( QDropEvent *evt );
+	void contentsMousePressEvent( QMouseEvent *evt );
+	void contentsMouseMoveEvent( QMouseEvent * );
+
+
+protected slots:
+
+	void slotRightButton(QListViewItem* item,const QPoint& pt,int p);
+
+	void slotNewGroup(void);
+	void slotDelete(void);
+
+	void slotSaveGroups(void);
+
+public:
+
+	/**
+	* Destructor of the widget.
+	*/
+	~QGroups(void);
+};
+
 
 
 //-----------------------------------------------------------------------------
@@ -73,7 +138,7 @@ class KViewGroups : public KView
 	/**
 	*  List view of groups containing the the profile.
 	*/
-	QListView* Groups;
+	QGroups* Groups;
 
 	/**
 	* Edit field for the text to search (if the return key is pressed, the
