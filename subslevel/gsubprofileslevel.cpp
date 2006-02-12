@@ -209,7 +209,7 @@ GDocsLevelCmd::~GDocsLevelCmd(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfilesLevel::GSubProfilesLevel(GFactoryPostGroup* fac) 
+GSubProfilesLevel::GSubProfilesLevel(GFactoryPostGroup* fac)
 		: GPostGroup(fac), Docs(2000,500)
 {
 }
@@ -231,7 +231,7 @@ void GSubProfilesLevel::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::Connect(GSession* session) 
+void GSubProfilesLevel::Connect(GSession* session)
 {
 	// Try to insert the command, eventually, delete it
 	GPostGroup::Connect(session);
@@ -245,18 +245,18 @@ void GSubProfilesLevel::Connect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::Disconnect(GSession* session) 
+void GSubProfilesLevel::Disconnect(GSession* session)
 {
 	GPostGroup::Disconnect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::Run(void) 
+void GSubProfilesLevel::Run(void)
 {
 	if (!NbLevels)
 		throw GException ("[Compute Subprofiles Level]: Error: number of levels is null !");
-	GStorageTag tag(0,"SubProfilesLevel CMD");
+	GStorageTag tag(0,"SubProfilesLevelCMD");
 	tag.InsertAttr("NbLevels",RString::Number(NbLevels));
 	RCursor<GGroup> Groups(Session->GetGroups());
 	for(Groups.Start();!Groups.End();Groups.Next())
@@ -264,7 +264,7 @@ void GSubProfilesLevel::Run(void)
 		void* caller=static_cast<void*>(Groups());
 		Session->GetStorage()->ExecuteCmd(tag,caller);
 	}
-	GStorageTag tag2(0,"DocsLevel CMD");
+	GStorageTag tag2(0,"DocsLevelCMD");
 	Session->GetStorage()->ExecuteCmd(tag2,0);
 }
 
