@@ -120,7 +120,7 @@ void GComputeSubProfileSugsCmd::Run(GStorage* storage,const GStorageTag& inst,vo
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSugs::GSugs(GFactoryPostGroup* fac) 
+GSugs::GSugs(GFactoryPostGroup* fac)
 		: GPostGroup(fac), Docs(0)
 {
 }
@@ -146,7 +146,7 @@ void GSugs::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GSugs::Connect(GSession* session) 
+void GSugs::Connect(GSession* session)
 {
 	GPostGroup::Connect(session);
 	GComputeSubProfileSugsCmd* command=new GComputeSubProfileSugsCmd();
@@ -156,14 +156,14 @@ void GSugs::Connect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GSugs::Disconnect(GSession* session) 
+void GSugs::Disconnect(GSession* session)
 {
 	GPostGroup::Disconnect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GSugs::Run(void) 
+void GSugs::Run(void)
 {
 	if(!UseLevels)
 	{
@@ -203,7 +203,7 @@ void GSugs::Run(void)
 	}
 	else
 	{
-		GStorageTag tag(0,"Compute SubProfileSugs Cmd");
+		GStorageTag tag(0,"ComputeSubProfileSugsCmd");
 		tag.InsertAttr("NbSugs",RString::Number(NbSugs));
 		RCursor<GProfile> Profiles(Session->GetProfiles());
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
