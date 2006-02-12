@@ -678,9 +678,33 @@ void GSession::AnalyseDocs(GSlot* rec)
 			{
 				// Write error message to the log file handled by the GSlot.
 				if(rec)
-					rec->WriteStr(e.GetMsg());
+					rec->WriteStr(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.GetMsg());
 				else
-					throw GException(e.GetMsg());
+					throw GException(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.GetMsg());
+			}
+			catch(RException& e)
+			{
+				// Write error message to the log file handled by the GSlot.
+				if(rec)
+					rec->WriteStr(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.GetMsg());
+				else
+					throw GException(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.GetMsg());
+			}
+			catch(exception& e)
+			{
+				// Write error message to the log file handled by the GSlot.
+				if(rec)
+					rec->WriteStr(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.what());
+				else
+					throw GException(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.what());
+			}
+			catch(...)
+			{
+				// Write error message to the log file handled by the GSlot.
+				if(rec)
+					rec->WriteStr(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): Unknow problem");
+				else
+					throw GException(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): Unknow problem");
 			}
 			delete xml;
 		}
