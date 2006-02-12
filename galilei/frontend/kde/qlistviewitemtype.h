@@ -58,6 +58,7 @@ class GWeightInfosHistory;
 class GDoc;
 class GEngineDoc;
 class GSubject;
+class GLang;
 
 
 //-----------------------------------------------------------------------------
@@ -85,6 +86,7 @@ public:
 		GDoc* Doc;
 		GEngineDoc* EngineDoc;
 		GSubject* Subject;
+		GLang* Lang;
 	} Obj;
 
 
@@ -96,7 +98,7 @@ public:
 	/**
 	* Enumeration type of the item.
 	*/
-	enum tType {tNothing,tGroup,tUser,tProfile,tSubProfile,tGiwwh,tGroupHistory,tDocument,tEngineDoc,tSubject};
+	enum tType {tNothing,tGroup,tUser,tProfile,tSubProfile,tGiwwh,tGroupHistory,tDocument,tEngineDoc,tSubject,tLang};
 
 	/**
 	* type of the item
@@ -189,9 +191,21 @@ public:
 	QListViewItemType(GEngineDoc* engineDoc, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
+	* constructor for a enginedoc, attached to a listviewitem.
+	*/
+	QListViewItemType(GLang* lang, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+
+	/**
+	* constructor for a enginedoc, attached to a listview.
+	*/
+	QListViewItemType(GLang* lang, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+
+	/**
 	* method to color the item.
 	*/
 	void paintCell( QPainter * p, const QColorGroup & cg, int column, int width, int align);
+
+	bool acceptDrop( const QMimeSource *mime ) const;
 
 	/**
 	* destructor

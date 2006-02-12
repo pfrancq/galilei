@@ -207,6 +207,24 @@ GALILEI::QListViewItemType::QListViewItemType(GEngineDoc* engineDoc, QListView* 
 
 
 //-----------------------------------------------------------------------------
+GALILEI::QListViewItemType::QListViewItemType(GLang* lang, QListViewItem* parent,QString str1,QString str2,QString str3)
+	: QListViewItem(parent,str1,str2,str3), Type(tLang)
+{
+	Obj.Lang=lang;
+	Level=0;
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::QListViewItemType::QListViewItemType(GLang* lang, QListView* parent,QString str1,QString str2,QString str3)
+	: QListViewItem(parent,str1,str2,str3), Type(tLang)
+{
+	Obj.Lang=lang;
+	Level=0;
+}
+
+
+//-----------------------------------------------------------------------------
 void GALILEI::QListViewItemType::paintCell( QPainter * p, const QColorGroup & cg, int column, int width, int align )
 {
 	// declaration of new colorr
@@ -233,6 +251,15 @@ void GALILEI::QListViewItemType::paintCell( QPainter * p, const QColorGroup & cg
 	//reset the colors
 	_cg.setColor( QColorGroup::Text, oldText );
 }
+
+//-----------------------------------------------------------------------------
+bool QListViewItemType::acceptDrop( const QMimeSource *mime ) const
+{
+	if(mime->provides("galilei"))
+		return(TRUE);
+    return(FALSE);
+}
+
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::~QListViewItemType(void)
