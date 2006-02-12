@@ -124,7 +124,7 @@ void GALILEI::GChromoIR::ConstructChromo(GSession* grps)
 		// Put the objects in the group if possible
 		for(objs=thObjs1,i=NbObjs1+1;--i;objs++)
 		{
-			if(grp->CanInsert(*objs))
+			if((*objs)&&(grp->CanInsert(*objs)))
 				grp->Insert(*objs);
 		}
 
@@ -520,6 +520,7 @@ void GALILEI::GChromoIR::Optimisation(void)
 	unsigned int i;
 	unsigned int nb;
 	RPromSol** s;
+	RPromSol** tab;
 	GChromoIR* LastDiv;
 	GChromoIR* LastMerge;
 
@@ -566,13 +567,14 @@ void GALILEI::GChromoIR::Optimisation(void)
 
 	if(Instance->Debug)
 	{
-		for(s=thProm->GetSols(),i=nb+2;--i;s++)
+		for(tab=s=thProm->GetSols(),i=nb+2;--i;s++)
 		{
 			if((*s)->GetId())
 				Instance->WriteChromoInfo(thTests[(*s)->GetId()-1]);
 			else
 				Instance->WriteChromoInfo(this);
 		}
+		delete[] tab;
 		Instance->Debug->EndFunc("Optimisation","GChomoIR");
 	}
 }
