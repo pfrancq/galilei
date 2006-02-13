@@ -309,6 +309,12 @@ public:
 	void AnalyseDoc(GDocXML* &xml,GDoc* doc,R::RContainer<GDoc,false,true>* newdocs=0,GSlot* rec=0);
 
 	/**
+	* Run all the enabled post-docs methods.
+	* @param rec             Receiver for the signals.
+	*/
+	void DoPostDocs(GSlot* rec=0);
+
+	/**
 	* Send a Query to the Meta engine selected. The pages are researched, ranked and return
 	* @param &keyWords      The set of keywords to form the query
 	* @param &results       The set of results returned by the meta engine
@@ -444,6 +450,12 @@ public:
 	void CalcProfile(GProfile* profile,GSlot* rec=0);
 
 	/**
+	* Run all enabled post-profiles methods.
+	* @param rec            Receiver for the signals.
+	*/
+	void DoPostProfiles(GSlot* rec=0);
+
+	/**
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identificator of the document.
 	* @param lang            Language of the document.
@@ -548,6 +560,12 @@ public:
 	* @param rec            Receiver of the signals.
 	*/
 	void GroupingProfiles(GSlot* rec);
+
+	/**
+	* Run all the enabled post-grouping methods.
+	* @param rec            Receiver of the signals.
+	*/
+	void DoPostGroups(GSlot* rec=0);
 
 	/**
 	* Copy the ideal groupment in the current one.

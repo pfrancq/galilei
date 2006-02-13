@@ -672,7 +672,18 @@ void GSession::AnalyseDocs(GSlot* rec)
 			try
 			{
 				xml=0;       // DocXML to create
+				tmpDocs.Clear();
 				AnalyseDoc(xml,Docs(),&tmpDocs,rec);
+
+				// Add the new documents.
+				// Continue the analysis if documents were added.
+				RCursor<GDoc> Cur(tmpDocs);
+				Cont=tmpDocs.GetNb();
+				for(Cur.Start();!Cur.End();Cur.Next())
+				{
+					InsertDoc(Cur());
+					//#warning add the document with the Cur()->GetId()
+				}
 			}
 			catch(GException& e)
 			{
@@ -708,31 +719,10 @@ void GSession::AnalyseDocs(GSlot* rec)
 			}
 			delete xml;
 		}
-
-		// Add the new documents.
-		// Continue the analysis if documents were added.
-		RCursor<GDoc> Cur(tmpDocs);
-		Cont=tmpDocs.GetNb();
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			InsertDoc(Cur());
-			//#warning add the document with the Cur()->GetId()
-		}
-		tmpDocs.Clear();
 	}
 	while(Cont);
 
-	// Run all post-doc methods that are enabled
-	R::RCursor<GPostDoc> PostDocs=GPluginManagers::GetManager<GPostDocManager>("PostDoc")->GetPlugIns();
-	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
-	{
-		if(rec)
-			rec->Interact();
-		if(Intern::ExternBreak) return;
-		if(rec)
-			rec->WriteStr("Running Post-document method: "+PostDocs()->GetFactory()->GetName());
-		PostDocs()->Run();
-	}
+	DoPostDocs(rec);
 }
 
 
@@ -773,6 +763,23 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,RContainer<GDoc,false,true>* n
 	{
 		Data->Storage->SaveDoc(doc);
 		doc->SetState(osSaved);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::DoPostDocs(GSlot* rec)
+{
+	// Run all post-doc methods that are enabled
+	R::RCursor<GPostDoc> PostDocs=GPluginManagers::GetManager<GPostDocManager>("PostDoc")->GetPlugIns();
+	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
+	{
+		if(rec)
+			rec->Interact();
+		if(Intern::ExternBreak) return;
+		if(rec)
+			rec->WriteStr("Running Post-document method: "+PostDocs()->GetFactory()->GetName());
+		PostDocs()->Run();
 	}
 }
 
@@ -1075,18 +1082,7 @@ void GSession::CalcProfiles(GSlot* rec)
 		{
 		}
 	}
-
-	// Run all post-profiles methods that are enabled
-	R::RCursor<GPostProfile> PostProfile=GPluginManagers::GetManager<GPostProfileManager>("PostProfile")->GetPlugIns();
-	for(PostProfile.Start();!PostProfile.End();PostProfile.Next())
-	{
-		if(rec)
-			rec->Interact();
-		if(Intern::ExternBreak) return;
-		if(rec)
-			rec->WriteStr("Post-profile method : "+PostProfile()->GetFactory()->GetName());
-		PostProfile()->Run();
-	}
+	DoPostProfiles(rec);
 }
 
 
@@ -1127,6 +1123,23 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 	}
 	if(Data->SaveResults&&(profile->GetId()!=cNoRef))
 		Data->Storage->SaveProfile(profile);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::DoPostProfiles(GSlot* rec)
+{
+	// Run all post-profiles methods that are enabled
+	R::RCursor<GPostProfile> PostProfile=GPluginManagers::GetManager<GPostProfileManager>("PostProfile")->GetPlugIns();
+	for(PostProfile.Start();!PostProfile.End();PostProfile.Next())
+	{
+		if(rec)
+			rec->Interact();
+		if(Intern::ExternBreak) return;
+		if(rec)
+			rec->WriteStr("Post-profile method : "+PostProfile()->GetFactory()->GetName());
+		PostProfile()->Run();
+	}
 }
 
 
@@ -1358,7 +1371,13 @@ void GSession::GroupingProfiles(GSlot* rec)
 
     // Group the subprofiles
 	Grouping->Grouping(rec,Data->SaveResults);
+	DoPostGroups(rec);
+}
 
+
+//------------------------------------------------------------------------------
+void GSession::DoPostGroups(GSlot* rec)
+{
 	// Run all post-group methods that are enabled
 	R::RCursor<GPostGroup> PostGroups=GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->GetPlugIns();
 	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
