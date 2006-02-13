@@ -427,6 +427,16 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotPostGroups(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Do Post-Groups Methods");
+	if(!Dlg.Run(new QPostGroupProfiles()))
+		return;
+	Doc->updateAllViews(1);
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSimulationDlg(void)
 {
 	QSimulationDlg dlg(this);

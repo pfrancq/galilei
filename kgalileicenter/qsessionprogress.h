@@ -227,6 +227,18 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+* Post-Groups.
+*/
+class QPostGroupProfiles : public QSessionThread
+{
+public:
+	QPostGroupProfiles(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Create the ideal groups.
 * @param save           Save modified elements.
 */

@@ -131,6 +131,7 @@ void KGALILEICenterApp::initActions(void)
 	groupsClear=new KAction(i18n("&Force Re-computing Groups"),0,0,this,SLOT(slotGroupsClear()),actionCollection(),"groupsClear");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
+	postGroupsCalc=new KAction(i18n("Execute &Post-Groups method"),0,0,this,SLOT(slotPostGroups()),actionCollection(),"postGroupsCalc");
 	somView=new KAction(i18n("View Self-Organizing Map"),"exec",0,this,SLOT(slotChooseSOM()),actionCollection(),"somView");
 	showGroupsHistory=new KAction(i18n("Show Groups &History"),"exec",0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
 
@@ -380,6 +381,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
 	groupsCalc->setEnabled(true);
+	postGroupsCalc->setEnabled(true);
 	groupingCreate->setEnabled(true);
 	showGroupsHistory->setEnabled(true);
 	showDocs->setEnabled(true);
@@ -416,6 +418,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
 	groupsCalc->setEnabled(false);
+	postGroupsCalc->setEnabled(false);
 	groupingCreate->setEnabled(false);
 	showGroupsHistory->setEnabled(false);
 	showDocs->setEnabled(false);

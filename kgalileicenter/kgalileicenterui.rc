@@ -32,6 +32,7 @@
 		<Separator/>
 		<Action name="showGroups"/>
 		<Action name="groupsCalc"/>
+		<Action name="postGroupsCalc"/>
 		<Separator/>
 		<Action name="somView"/>
 		<Action name="showGroupsHistorys"/>

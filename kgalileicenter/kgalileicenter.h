@@ -379,6 +379,11 @@ private slots:
 	void slotGroupsCalc(void);
 
 	/**
+	* Do a post groups.
+	*/
+	void slotPostGroups(void);
+
+	/**
 	* Compute the groups.
 	*/
 	void slotSimulationDlg(void);
@@ -587,6 +592,7 @@ public:
 
 	KAction* showGroups;
 	KAction* groupsCalc;
+	KAction* postGroupsCalc;
 	KAction* groupsClear;
 	KAction* somView;
 	KAction* simulationDlg;

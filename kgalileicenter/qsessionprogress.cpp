@@ -558,6 +558,14 @@ void QGroupProfiles::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
+void QPostGroupProfiles::DoIt(void)
+{
+	Parent->PutText("Do Post-Groups Methods ...");
+	Session->DoPostGroups(Parent);
+}
+
+
+//-----------------------------------------------------------------------------
 void QCreateIdealGroups::DoIt(void)
 {
 	Parent->PutText("Create Ideal Groups ...");
