@@ -354,6 +354,11 @@ private slots:
 	void slotProfilesCalc(void);
 
 	/**
+	* Slot to post-calculate all the profiles.
+	*/
+	void slotPostProfilesCalc(void);
+
+	/**
 	* slot to calculate the current profile.
 	*/
 	void slotProfileCalc(void);
@@ -422,6 +427,11 @@ private slots:
 	* Analyse all the documents.
 	*/
 	void slotDocsAnalyse(void);
+
+	/**
+	* Post-analyse all the documents.
+	*/
+	void slotPostDocsAnalyse(void);
 
 	/**
 	* Create for each document a corresponding file containing the keywords in
@@ -588,6 +598,7 @@ public:
 	KAction* showUsers;
 	KAction* profileCalc;
 	KAction* profilesCalc;
+	KAction* postProfilesCalc;
 	KAction* usersClear;
 
 	KAction* showGroups;
@@ -607,6 +618,7 @@ public:
 	KAction* docsAnalyse;
 	KAction* docsIndexer;
 	KAction* docsClear;
+	KAction* postDocsAnalyse;
 	KAction* createXML;
 	KAction* saveXML;
 	KAction* analyseXML;

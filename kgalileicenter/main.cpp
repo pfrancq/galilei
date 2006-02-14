@@ -72,10 +72,10 @@ static KCmdLineOptions options[] =
 int main(int argc, char *argv[])
 {
 	setlocale(LC_CTYPE,"");
-	QString year=QString("(c) 1998-")+QString::number(RDate::GetToday().GetYear())+QString(", Université Libre de Bruxelles\nCAD/CAM Department");
+	QString year=QString("(c) 1998-")+QString::number(RDate::GetToday().GetYear())+QString(", Université Libre de Bruxelles\nDepartment of Information and Communication Science");
 
 	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
-		VERSION, description, KAboutData::License_GPL,year, 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+		VERSION, description, KAboutData::License_GPL,year, 0, "http://galilei.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Project Manager"), "pfrancq@ulb.ac.be");
 	aboutData.addCredit("Nicolas Kumps",I18N_NOOP("Past Researcher"), 0);
 	aboutData.addCredit("Marjorie Paternostre",I18N_NOOP("Past Researcher"),0);
@@ -105,7 +105,15 @@ int main(int argc, char *argv[])
 	}
 	catch(GALILEI::GException& e)
 	{
-		cout<<e.GetMsg()<<endl;;
+		cout<<e.GetMsg()<<endl;
+	}
+	catch(R::RException& e)
+	{
+		cout<<e.GetMsg()<<endl;
+	}
+	catch(std::exception& e)
+	{
+		cout<<e.what()<<endl;
 	}
 	catch(...)
 	{

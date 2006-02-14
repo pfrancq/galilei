@@ -125,13 +125,14 @@ void KGALILEICenterApp::initActions(void)
 	usersClear=new KAction(i18n("&Force Re-computing Users"),0,0,this,SLOT(slotUsersClear()),actionCollection(),"usersClear");
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
+	postProfilesCalc=new KAction(i18n("Execute &Post-Profiles Methods"),0,0,this,SLOT(slotPostProfilesCalc()),actionCollection(),"postProfilesCalc");
 	profileCalc=new KAction(i18n("Calc &Profile"),"run",0,this,SLOT(slotProfileCalc()),actionCollection(),"profileCalc");
 
 	// Menu "Groups"
 	groupsClear=new KAction(i18n("&Force Re-computing Groups"),0,0,this,SLOT(slotGroupsClear()),actionCollection(),"groupsClear");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
-	postGroupsCalc=new KAction(i18n("Execute &Post-Groups method"),0,0,this,SLOT(slotPostGroups()),actionCollection(),"postGroupsCalc");
+	postGroupsCalc=new KAction(i18n("Execute &Post-Groups Methods"),0,0,this,SLOT(slotPostGroups()),actionCollection(),"postGroupsCalc");
 	somView=new KAction(i18n("View Self-Organizing Map"),"exec",0,this,SLOT(slotChooseSOM()),actionCollection(),"somView");
 	showGroupsHistory=new KAction(i18n("Show Groups &History"),"exec",0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
 
@@ -140,6 +141,7 @@ void KGALILEICenterApp::initActions(void)
 	showDocs=new KAction(i18n("Show &Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
+	postDocsAnalyse=new KAction(i18n("Execute &Post-Documents Methods"),0,0,this,SLOT(slotPostDocsAnalyse()),actionCollection(),"postDocsAnalyse");
 	docsIndexer=new KAction(i18n("&Export Documents"),"save",0,this,SLOT(slotDocsIndexer()),actionCollection(),"docsIndexer");
 	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
 	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
@@ -371,6 +373,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	showUsers->setEnabled(true);
 	showGroups->setEnabled(true);
 	profilesCalc->setEnabled(true);
+	postProfilesCalc->setEnabled(true);
 	profileCalc->setEnabled(true);
 	simulationDlg->setEnabled(true);
 	sessionCompute->setEnabled(true);
@@ -387,6 +390,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	showDocs->setEnabled(true);
 	docAnalyse->setEnabled(true);
 	docsAnalyse->setEnabled(true);
+	postDocsAnalyse->setEnabled(true);
 	docsIndexer->setEnabled(true);
 	queryMetaEngine->setEnabled(true);
 	runProgram->setEnabled(true);
@@ -405,6 +409,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	showUsers->setEnabled(false);
 	showGroups->setEnabled(false);
 	profilesCalc->setEnabled(false);
+	postProfilesCalc->setEnabled(false);
 	profileCalc->setEnabled(false);
 	simulationDlg->setEnabled(false);
 	sessionCompute->setEnabled(false);
@@ -424,6 +429,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
+	postDocsAnalyse->setEnabled(false);
 	docsIndexer->setEnabled(false);
 	queryMetaEngine->setEnabled(false);
 	runProgram->setEnabled(false);

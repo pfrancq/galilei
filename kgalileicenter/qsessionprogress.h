@@ -190,12 +190,36 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+* Post-analyse all the documents.
+*/
+class QPostAnalyzeDocs : public QSessionThread
+{
+public:
+	QPostAnalyzeDocs(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Compute the profiles.
 */
 class QComputeProfiles : public QSessionThread
 {
 public:
 	QComputeProfiles(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Post-compute the profiles.
+*/
+class QPostComputeProfiles : public QSessionThread
+{
+public:
+	QPostComputeProfiles(void) {}
 	virtual void DoIt(void);
 };
 

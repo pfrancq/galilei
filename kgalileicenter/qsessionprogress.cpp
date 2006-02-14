@@ -534,10 +534,26 @@ void QAnalyzeDocs::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
+void QPostAnalyzeDocs::DoIt(void)
+{
+	Parent->PutText("Do Post-Documents Methods ...");
+	Session->DoPostDocs(Parent);
+}
+
+
+//-----------------------------------------------------------------------------
 void QComputeProfiles::DoIt(void)
 {
 	Parent->PutText("Compute Profiles ...");
 	Session->CalcProfiles(Parent);
+}
+
+
+//-----------------------------------------------------------------------------
+void QPostComputeProfiles::DoIt(void)
+{
+	Parent->PutText("Do Post-Profiles Methods ...");
+	Session->DoPostProfiles(Parent);
 }
 
 

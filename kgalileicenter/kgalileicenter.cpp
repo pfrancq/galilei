@@ -400,6 +400,16 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotPostProfilesCalc(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Profiles Analyze");
+	if(!Dlg.Run(new QPostComputeProfiles()))
+		return;
+	Doc->updateAllViews(1);
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfileCalc(void)
 {
 	KView* m = (KView*)pWorkspace->activeWindow();
@@ -429,7 +439,7 @@ void KGALILEICenterApp::slotGroupsCalc(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotPostGroups(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Do Post-Groups Methods");
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Groups Analyze");
 	if(!Dlg.Run(new QPostGroupProfiles()))
 		return;
 	Doc->updateAllViews(1);
@@ -645,6 +655,16 @@ void KGALILEICenterApp::slotDocsAnalyse(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Analyse Documents");
 	if(!Dlg.Run(new QAnalyzeDocs()))
+		return;
+	Doc->updateAllViews(0);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotPostDocsAnalyse(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Documents Analyse");
+	if(!Dlg.Run(new QPostAnalyzeDocs()))
 		return;
 	Doc->updateAllViews(0);
 }
