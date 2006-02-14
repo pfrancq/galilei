@@ -9,7 +9,7 @@
 
 AC_SUBST(KGALILEICENTER_ADD)
 
-AM_INIT_AUTOMAKE(kgalileicenter,1.86)
+AM_INIT_AUTOMAKE(kgalileicenter,1.96)
 
 
 #--------------- Check R and GALILEI ------------------
