@@ -177,7 +177,7 @@ template<class E1,class E2>
 	double MaxExtra;
 
 	// Create tag
-	RXMLTag* Tag=new RXMLTag(xml,sub->GetName());
+	RXMLTag* Tag=new RXMLTag(sub->GetName());
 	xml->AddTag(parent,Tag);
 
 	// Init Local Data
@@ -279,7 +279,7 @@ template<class E1,class E2>
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		nbElements=0;
-		LangTag=new RXMLTag(xml,Langs()->GetName());
+		LangTag=new RXMLTag(Langs()->GetName());
 		xml->AddTag(tag,LangTag);
 
 		// Initialization

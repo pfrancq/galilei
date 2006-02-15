@@ -191,7 +191,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsSims::GStatsSims(GFactoryStatsCalc* fac) 
+GStatsSims::GStatsSims(GFactoryStatsCalc* fac)
 	: GStatsCalc(fac)
 {
 }
@@ -212,21 +212,21 @@ void GStatsSims::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::Connect(GSession* session) 
+void GStatsSims::Connect(GSession* session)
 {
 	GStatsCalc::Connect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::Disconnect(GSession* session) 
+void GStatsSims::Disconnect(GSession* session)
 {
 	GStatsCalc::Disconnect(session);
 }
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res) 
+void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 {
 	RXMLTag* tag;
 	RXMLTag* tag2;
@@ -234,7 +234,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 	RTextFile* Details=0;
 
 	// Init Main XML Tag
-	tag=new RXMLTag(xml,Factory->GetName());
+	tag=new RXMLTag(Factory->GetName());
 	xml->AddTag(&res,tag);
 
 	// Create Details File if necessary
@@ -258,42 +258,42 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 	// Compute Statistics
 	if(Docs)
 	{
-		tag2=new RXMLTag(xml,"Documents");
+		tag2=new RXMLTag("Documents");
 		xml->AddTag(tag,tag2);
 		GStatSimDoc Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(ProfDoc)
 	{
-		tag2=new RXMLTag(xml,"Documents-Profiles");
+		tag2=new RXMLTag("Documents-Profiles");
 		xml->AddTag(tag,tag2);
 		GStatSimDocProf Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(GroupDoc)
 	{
-		tag2=new RXMLTag(xml,"Documents-Groups");
+		tag2=new RXMLTag("Documents-Groups");
 		xml->AddTag(tag,tag2);
 		GStatSimDocGrp Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(Profiles)
 	{
-		tag2=new RXMLTag(xml,"Profiles");
+		tag2=new RXMLTag("Profiles");
 		xml->AddTag(tag,tag2);
 		GStatSimSubProf Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(SameDocProf)
 	{
-		tag2=new RXMLTag(xml,"Profiles-Common-Documents");
+		tag2=new RXMLTag("Profiles-Common-Documents");
 		xml->AddTag(tag,tag2);
 		GStatProfDoc Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(GroupProf)
 	{
-		tag2=new RXMLTag(xml,"Profiles-Groups");
+		tag2=new RXMLTag("Profiles-Groups");
 		xml->AddTag(tag,tag2);
 		GStatSimProfGrp Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
