@@ -48,13 +48,13 @@ GDocXML::GDocXML(RString url,RString filename)
 {
 	RXMLTag* t;
 
-	AddTag(0,t=new RXMLTag(this,"rdf:RDF"));
+	AddTag(0,t=new RXMLTag("rdf:RDF"));
 	InsertEntity("xmlns:rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 	InsertEntity("xmlns:dc","http://purl.org/dc/elements/1.1/");
 	InsertEntity("xmlns:docxml","http://cfao30.ulb.ac.be/cfao/projetcs/GALILEI/public/document/docxml#");
-	AddTag(t,MetaData=new RXMLTag(this,"docxml:metaData"));
-	AddTag(t,Content=new RXMLTag(this,"docxml:content"));
-	AddTag(t,Links=new RXMLTag(this,"docxml:links"));
+	AddTag(t,MetaData=new RXMLTag("docxml:metaData"));
+	AddTag(t,Content=new RXMLTag("docxml:content"));
+	AddTag(t,Links=new RXMLTag("docxml:links"));
 }
 
 
@@ -98,7 +98,7 @@ RXMLTag* GDocXML::AddLink(void)
 {
 	RXMLTag* t;
 
-	AddTag(Links,t=new RXMLTag(this,"docxml:metaData"));
+	AddTag(Links,t=new RXMLTag("docxml:metaData"));
 	return(t);
 
 }
@@ -108,13 +108,13 @@ RXMLTag* GDocXML::AddLink(void)
 void GDocXML::AddTitle(RString val,RXMLTag* metaData)
 {
 	RXMLTag* t;
-	if (! metaData)
+	if(!metaData)
 	{
-		AddTag(MetaData,t=new RXMLTag(this,"dc:title"));
+		AddTag(MetaData,t=new RXMLTag("dc:title"));
 	}
 	else
 	{
-		AddTag(metaData,t=new RXMLTag(this,"dc:title"));
+		AddTag(metaData,t=new RXMLTag("dc:title"));
 	}
 	t->AddContent(val);
 }
@@ -126,9 +126,9 @@ RXMLTag* GDocXML::AddTitle(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:title"));
+		AddTag(MetaData,t=new RXMLTag("dc:title"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:title"));
+		AddTag(metaData,t=new RXMLTag("dc:title"));
 	return(t);
 }
 
@@ -139,9 +139,9 @@ void GDocXML::AddCreator(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:creator"));
+		AddTag(MetaData,t=new RXMLTag("dc:creator"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:creator"));
+		AddTag(metaData,t=new RXMLTag("dc:creator"));
 	t->AddContent(val);
 }
 
@@ -152,9 +152,9 @@ RXMLTag* GDocXML::AddCreator(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:creator"));
+		AddTag(MetaData,t=new RXMLTag("dc:creator"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:creator"));
+		AddTag(metaData,t=new RXMLTag("dc:creator"));
 	return(t);
 }
 
@@ -165,9 +165,9 @@ void GDocXML::AddSubject(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:subject"));
+		AddTag(MetaData,t=new RXMLTag("dc:subject"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:subject"));
+		AddTag(metaData,t=new RXMLTag("dc:subject"));
 	t->AddContent(val);
 }
 
@@ -178,9 +178,9 @@ RXMLTag* GDocXML::AddSubject(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:subject"));
+		AddTag(MetaData,t=new RXMLTag("dc:subject"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:subject"));
+		AddTag(metaData,t=new RXMLTag("dc:subject"));
 	return(t);
 }
 
@@ -191,9 +191,9 @@ void GDocXML::AddDescription(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:description"));
+		AddTag(MetaData,t=new RXMLTag("dc:description"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:description"));
+		AddTag(metaData,t=new RXMLTag("dc:description"));
 	t->AddContent(val);
 }
 
@@ -204,9 +204,9 @@ RXMLTag* GDocXML::AddDescription(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:description"));
+		AddTag(MetaData,t=new RXMLTag("dc:description"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:description"));
+		AddTag(metaData,t=new RXMLTag("dc:description"));
 	return(t);
 }
 
@@ -217,9 +217,9 @@ void GDocXML::AddPublisher(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:publisher"));
+		AddTag(MetaData,t=new RXMLTag("dc:publisher"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:publisher"));
+		AddTag(metaData,t=new RXMLTag("dc:publisher"));
 	t->AddContent(val);
 }
 
@@ -230,9 +230,9 @@ RXMLTag* GDocXML::AddPublisher(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:publisher"));
+		AddTag(MetaData,t=new RXMLTag("dc:publisher"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:publisher"));
+		AddTag(metaData,t=new RXMLTag("dc:publisher"));
 	return(t);
 }
 
@@ -243,9 +243,9 @@ void GDocXML::AddContributor(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:contributor"));
+		AddTag(MetaData,t=new RXMLTag("dc:contributor"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:contributor"));
+		AddTag(metaData,t=new RXMLTag("dc:contributor"));
 	t->AddContent(val);
 }
 
@@ -256,9 +256,9 @@ RXMLTag* GDocXML::AddContributor(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:contributor"));
+		AddTag(MetaData,t=new RXMLTag("dc:contributor"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:contributor"));
+		AddTag(metaData,t=new RXMLTag("dc:contributor"));
 	return(t);
 }
 
@@ -269,9 +269,9 @@ void GDocXML::AddDate(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:date"));
+		AddTag(MetaData,t=new RXMLTag("dc:date"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:date"));
+		AddTag(metaData,t=new RXMLTag("dc:date"));
 	t->AddContent(val);
 }
 
@@ -282,9 +282,9 @@ RXMLTag* GDocXML::AddDate(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:date"));
+		AddTag(MetaData,t=new RXMLTag("dc:date"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:date"));
+		AddTag(metaData,t=new RXMLTag("dc:date"));
 	return(t);
 }
 
@@ -295,9 +295,9 @@ void GDocXML::AddType(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:type"));
+		AddTag(MetaData,t=new RXMLTag("dc:type"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:type"));
+		AddTag(metaData,t=new RXMLTag("dc:type"));
 	t->AddContent(val);
 }
 
@@ -308,9 +308,9 @@ RXMLTag* GDocXML::AddType(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:type"));
+		AddTag(MetaData,t=new RXMLTag("dc:type"));
 	else
-		AddTag(MetaData,t=new RXMLTag(this,"dc:type"));
+		AddTag(MetaData,t=new RXMLTag("dc:type"));
 	return(t);
 }
 
@@ -321,9 +321,9 @@ void GDocXML::AddFormat(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:format"));
+		AddTag(MetaData,t=new RXMLTag("dc:format"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:format"));
+		AddTag(metaData,t=new RXMLTag("dc:format"));
 	t->AddContent(val);
 }
 
@@ -334,9 +334,9 @@ RXMLTag* GDocXML::AddFormat(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:format"));
+		AddTag(MetaData,t=new RXMLTag("dc:format"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:format"));
+		AddTag(metaData,t=new RXMLTag("dc:format"));
 	return(t);
 }
 
@@ -347,9 +347,9 @@ void GDocXML::AddIdentifier(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:identifier"));
+		AddTag(MetaData,t=new RXMLTag("dc:identifier"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:identifier"));
+		AddTag(metaData,t=new RXMLTag("dc:identifier"));
 	t->AddContent(val);
 }
 
@@ -360,9 +360,9 @@ RXMLTag* GDocXML::AddIdentifier(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:identifier"));
+		AddTag(MetaData,t=new RXMLTag("dc:identifier"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:identifier"));
+		AddTag(metaData,t=new RXMLTag("dc:identifier"));
 	return(t);
 }
 
@@ -373,9 +373,9 @@ void GDocXML::AddSource(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:source"));
+		AddTag(MetaData,t=new RXMLTag("dc:source"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:source"));
+		AddTag(metaData,t=new RXMLTag("dc:source"));
 	t->AddContent(val);
 }
 
@@ -386,9 +386,9 @@ RXMLTag* GDocXML::AddSource(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:source"));
+		AddTag(MetaData,t=new RXMLTag("dc:source"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:source"));
+		AddTag(metaData,t=new RXMLTag("dc:source"));
 	return(t);
 }
 
@@ -399,9 +399,9 @@ void GDocXML::AddLanguage(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:language"));
+		AddTag(MetaData,t=new RXMLTag("dc:language"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:language"));
+		AddTag(metaData,t=new RXMLTag("dc:language"));
 	t->AddContent(val);
 }
 
@@ -412,9 +412,9 @@ RXMLTag* GDocXML::AddLanguage(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:language"));
+		AddTag(MetaData,t=new RXMLTag("dc:language"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:language"));
+		AddTag(metaData,t=new RXMLTag("dc:language"));
 	return(t);
 }
 
@@ -425,9 +425,9 @@ void GDocXML::AddRelation(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:relation"));
+		AddTag(MetaData,t=new RXMLTag("dc:relation"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:relation"));
+		AddTag(metaData,t=new RXMLTag("dc:relation"));
 	t->AddContent(val);
 }
 
@@ -438,9 +438,9 @@ RXMLTag* GDocXML::AddRelation(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:relation"));
+		AddTag(MetaData,t=new RXMLTag("dc:relation"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:relation"));
+		AddTag(metaData,t=new RXMLTag("dc:relation"));
 	return(t);
 }
 
@@ -451,9 +451,9 @@ void GDocXML::AddCoverage(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:coverage"));
+		AddTag(MetaData,t=new RXMLTag("dc:coverage"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:coverage"));
+		AddTag(metaData,t=new RXMLTag("dc:coverage"));
 	t->AddContent(val);
 }
 
@@ -464,9 +464,9 @@ RXMLTag* GDocXML::AddCoverage(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:coverage"));
+		AddTag(MetaData,t=new RXMLTag("dc:coverage"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:coverage"));
+		AddTag(metaData,t=new RXMLTag("dc:coverage"));
 	return(t);
 }
 
@@ -477,9 +477,9 @@ void GDocXML::AddRights(RString val,RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:rights"));
+		AddTag(MetaData,t=new RXMLTag("dc:rights"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:rights"));
+		AddTag(metaData,t=new RXMLTag("dc:rights"));
 	t->AddContent(val);
 }
 
@@ -490,9 +490,9 @@ RXMLTag* GDocXML::AddRights(RXMLTag* metaData)
 	RXMLTag* t;
 
 	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag(this,"dc:rights"));
+		AddTag(MetaData,t=new RXMLTag("dc:rights"));
 	else
-		AddTag(metaData,t=new RXMLTag(this,"dc:rights"));
+		AddTag(metaData,t=new RXMLTag("dc:rights"));
 	return(t);
 }
 

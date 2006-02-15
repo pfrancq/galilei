@@ -45,8 +45,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorageTag::GStorageTag(RXMLStruct* xml,const RString& cmd)
-	: RXMLTag(xml,"StorageCmd")
+GStorageTag::GStorageTag(const RString& cmd)
+	: RXMLTag("StorageCmd")
 {
 	InsertAttr("nameCmd",cmd);
 }
@@ -235,7 +235,7 @@ GFactoryStorage::GFactoryStorage(GStorageManager* mng,const char* n,const char* 
 //-----------------------------------------------------------------------------
 void GFactoryStorage::SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent)
 {
-	R::RXMLTag* tag=new R::RXMLTag(xml,"plugin");
+	R::RXMLTag* tag=new R::RXMLTag("plugin");
 	tag->InsertAttr("name",Name);
 	xml->AddTag(parent,tag);
 	tag->InsertAttr("enable","False");

@@ -155,7 +155,7 @@ GSubjects::GSubjects(GSession* session)
 	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Data(0)
 {
 	Data=new Intern(session);
-	InsertNode(0,new GSubject(this,0,"Subjects",false));
+	InsertNode(0,new GSubject(0,"Subjects",false));
 	GParams::InsertPtr(new GParamDouble("NbOK",10.0));
 	GParams::InsertPtr(new GParamBool("RelOK",true));
 	GParams::InsertPtr(new GParamDouble("NbKO",10.0));
@@ -977,7 +977,7 @@ void GSubjects::Clear(void)
 {
 	RTree<GSubject,true,false>::Clear();
 	Data->Profiles.Clear();
-	InsertNode(0,new GSubject(this,0,"Subjects",false));
+	InsertNode(0,new GSubject(0,"Subjects",false));
 }
 
 

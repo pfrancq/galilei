@@ -104,8 +104,8 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubject::GSubject(GSubjects* subjects,unsigned int id,const char* name,bool u)
-	 : RNode<GSubject,true,false>(subjects), Data(0)
+GSubject::GSubject(unsigned int id,const char* name,bool u)
+	 : RNode<GSubject,true,false>(), Data(0)
 {
 	Data=new Intern(id,name,u);
 }

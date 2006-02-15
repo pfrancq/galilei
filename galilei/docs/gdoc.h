@@ -36,17 +36,15 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rvectorint.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <gweightinfos.h>
 #include <gsubject.h>
-
-
-//------------------------------------------------------------------------------
-// forward class declaration
-namespace R{
-	template<bool bOrder> class RVectorInt;
-}
 
 
 //------------------------------------------------------------------------------

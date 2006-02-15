@@ -74,12 +74,11 @@ public:
 
 	/**
 	* Constructor of a subject.
-	* @param subjects        Subjects.
 	* @param id              Identificator of the subject.
 	* @param name            Name of the subject.
 	* @param u               Used?
 	*/
-	GSubject(GSubjects* subjects,unsigned int id,const char* name,bool u);
+	GSubject(unsigned int id,const char* name,bool u);
 
 	/**
 	* Compare two subjects by comparing their identificator.

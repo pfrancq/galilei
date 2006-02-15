@@ -74,7 +74,7 @@ public:
 	* Construct a XML Tag.
 	* @param cmd             Name of the cmd.
 	*/
-	GStorageTag(RXMLStruct* xml,const RString& cmd);
+	GStorageTag(const RString& cmd);
 };
 
 

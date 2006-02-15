@@ -72,8 +72,8 @@ using namespace GALILEI;
 GConfig::GConfig(const char* f)
 	: RXMLStruct(), FileName(f)
 {
-	AddTag(0,Root=new RXMLTag(this,"rdf:RDF"));
-	AddTag(Root,SessionParams=new RXMLTag(this,"galileiconfig:session"));
+	AddTag(0,Root=new RXMLTag("rdf:RDF"));
+	AddTag(Root,SessionParams=new RXMLTag("galileiconfig:session"));
 
 	//Insert a tag for every manager of plugins
 	RCursor<GGenericPluginManager> cur(GPluginManagers::PluginManagers.GetManagers());
@@ -82,7 +82,7 @@ GConfig::GConfig(const char* f)
 		RString n;
 		n+=RChar::ToLower(cur()->GetName()[static_cast<size_t>(0)]);
 		n+=cur()->GetName().Mid(1);
-		AddTag(Root,new RXMLTag(this,"galileiconfig:"+n));
+		AddTag(Root,new RXMLTag("galileiconfig:"+n));
 	}
 }
 

@@ -162,7 +162,7 @@ void GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 			// Verify that it is not a single '.'
 			if((!ispunct(*block))||(*(block+1)))
 			{
-				Doc->AddTag(attach,sent=new RXMLTag(Doc,"docxml:sentence"));
+				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
 				sent->AddContent(block);
 			}
 			block=ptr;
@@ -256,7 +256,7 @@ void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
 			// Verify that it is not a single '.'
 			if((!block->IsPunct())||((block+1)->IsNull()))
 			{
-				Doc->AddTag(attach,sent=new RXMLTag(Doc,"docxml:sentence"));
+				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
 				sent->AddContent(block);
 			}
 			block=ptr;
@@ -340,7 +340,7 @@ void GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 			// Verify that it is not a single '.'
 			if((!sentence[static_cast<unsigned int>(0)].IsPunct())||(sentence.GetLen()>1))
 			{
-				Doc->AddTag(attach,sent=new RXMLTag(Doc,"docxml:sentence"));
+				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
 				sent->AddContent(sentence);
 			}
 			sentence.Clear();
@@ -373,7 +373,7 @@ void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 		}
 		if(len)
 		{
-			Doc->AddTag(attach,kwd=new RXMLTag(Doc,"docxml:keyword"));
+			Doc->AddTag(attach,kwd=new RXMLTag("docxml:keyword"));
 			if(*ptr)
 				(*(ptr++))=0;          // Skip separator.
 			kwd->InsertAttr("docxml:value",list);
@@ -411,7 +411,7 @@ void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach)
 		}
 		if(len)
 		{
-			Doc->AddTag(attach,kwd=new RXMLTag(Doc,"docxml:keyword"));
+			Doc->AddTag(attach,kwd=new RXMLTag("docxml:keyword"));
 			if(!ptr->IsNull())
 				(*(ptr++))=0;          // Skip separator.
 			kwd->InsertAttr("docxml:value",list);
@@ -445,7 +445,7 @@ void GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* attach)
 			Cur.Next();
 		if(Cur.GetPos()-pos)
 		{
-			Doc->AddTag(attach,kwd=new RXMLTag(Doc,"docxml:keyword"));
+			Doc->AddTag(attach,kwd=new RXMLTag("docxml:keyword"));
 			kwd->InsertAttr("docxml:value",list.Mid(pos,Cur.GetPos()-pos));
 		}
 		else

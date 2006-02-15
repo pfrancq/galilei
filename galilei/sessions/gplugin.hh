@@ -197,7 +197,7 @@ template<class factory,class plugin,class mng>
 template<class factory,class plugin,class mng>
 	void GFactoryPlugin<factory,plugin,mng>::SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent)
 {
-	R::RXMLTag* tag=new R::RXMLTag(xml,"plugin");
+	R::RXMLTag* tag=new R::RXMLTag("plugin");
 	tag->InsertAttr("name",Name);
 	xml->AddTag(parent,tag);
 	if(Plugin)
