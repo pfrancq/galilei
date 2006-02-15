@@ -152,7 +152,7 @@ void KViewStats::ComputeStats(void)
 
 
 	// Create the root node
-	Root=new RXMLTag(&xml,"Statistics");
+	Root=new RXMLTag("Statistics");
 	xml.AddTag(0,Root);
 
 	// Compute the statistics
