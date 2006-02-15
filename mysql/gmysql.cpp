@@ -917,11 +917,11 @@ void GStorageMySQL::LoadSubjects(void)
 		RQuery sub(Db,"SELECT topicid,name,used FROM topics WHERE parent=0");
 		for(sub.Start();!sub.End();sub.Next())
 		{
-			Session->GetSubjects()->InsertNode(Top,subject=new GSubject(Session->GetSubjects(),atoi(sub[0]),sub[1],atoi(sub[2])));
+			Session->GetSubjects()->InsertNode(Top,subject=new GSubject(atoi(sub[0]),sub[1],atoi(sub[2])));
 			sSql="SELECT topicid,name,used FROM topics WHERE parent="+sub[0];
 			RQuery subsub(*Db,sSql);
 			for(subsub.Start();!subsub.End();subsub.Next())
-				Session->GetSubjects()->InsertNode(subject,subsubject=new GSubject(Session->GetSubjects(),atoi(subsub[0]),subsub[1],atoi(subsub[2])));
+				Session->GetSubjects()->InsertNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],atoi(subsub[2])));
 		}
 
 		//  Make Link between documents and subjects
