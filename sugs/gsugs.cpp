@@ -203,7 +203,7 @@ void GSugs::Run(void)
 	}
 	else
 	{
-		GStorageTag tag(0,"ComputeSubProfileSugsCmd");
+		GStorageTag tag("ComputeSubProfileSugsCmd");
 		tag.InsertAttr("NbSugs",RString::Number(NbSugs));
 		RCursor<GProfile> Profiles(Session->GetProfiles());
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
