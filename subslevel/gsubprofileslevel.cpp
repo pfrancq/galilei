@@ -256,7 +256,7 @@ void GSubProfilesLevel::Run(void)
 {
 	if (!NbLevels)
 		throw GException ("[Compute Subprofiles Level]: Error: number of levels is null !");
-	GStorageTag tag(0,"SubProfilesLevelCMD");
+	GStorageTag tag("SubProfilesLevelCMD");
 	tag.InsertAttr("NbLevels",RString::Number(NbLevels));
 	RCursor<GGroup> Groups(Session->GetGroups());
 	for(Groups.Start();!Groups.End();Groups.Next())
@@ -264,7 +264,7 @@ void GSubProfilesLevel::Run(void)
 		void* caller=static_cast<void*>(Groups());
 		Session->GetStorage()->ExecuteCmd(tag,caller);
 	}
-	GStorageTag tag2(0,"DocsLevelCMD");
+	GStorageTag tag2("DocsLevelCMD");
 	Session->GetStorage()->ExecuteCmd(tag2,0);
 }
 
