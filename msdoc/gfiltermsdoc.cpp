@@ -67,7 +67,7 @@ GFilterMSDoc::GFilterMSDoc(GFactoryFilter* fac)
 
 
 //------------------------------------------------------------------------------
-RString GFilterMSDoc::ConvertUtoRString(const wvWare::UString& ustr) 
+RString GFilterMSDoc::ConvertUtoRString(const wvWare::UString& ustr)
 {
 	RString res;
 	res="";
@@ -81,7 +81,7 @@ RString GFilterMSDoc::ConvertUtoRString(const wvWare::UString& ustr)
 
 
 //------------------------------------------------------------------------------
-RString GFilterMSDoc::ConvertChar(const RString& str) 
+RString GFilterMSDoc::ConvertChar(const RString& str)
 {
 	RString res;
 	RCharCursor cur(str);
@@ -186,7 +186,7 @@ void GFilterMSDoc::WriteParagraph(RString par)
 	if ( !par.IsEmpty() )
 	{
 		part=Doc->GetContent();
-		Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
+		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 		AnalyzeBlock(par,tag);
 	}
 
@@ -195,7 +195,7 @@ void GFilterMSDoc::WriteParagraph(RString par)
 
 
 //------------------------------------------------------------------------------
-bool GFilterMSDoc::Analyze(GDocXML* doc) 
+bool GFilterMSDoc::Analyze(GDocXML* doc)
 {
 	//RXMLTag* tag;
 	RString *fileName;

@@ -228,7 +228,7 @@ void GFilterRTF::AnalyseText(R::RString str)
 				t=Tags->GetPtr<const RString>(readTag);
 				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
 				{
-					Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
+					Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 					AnalyzeBlock(par,tag);
 					par="";
 				}
@@ -244,7 +244,7 @@ void GFilterRTF::AnalyseText(R::RString str)
 				t=Tags->GetPtr<const RString>(readTag);
 				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
 				{
-					Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
+					Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 					AnalyzeBlock(par,tag);
 					par="";
 				}
@@ -257,7 +257,7 @@ void GFilterRTF::AnalyseText(R::RString str)
 	//test If some text has not been added yet to structure
 	if(!par.IsEmpty())
 	{
-		Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
+		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 		AnalyzeBlock(par,tag);
 	}
 }

@@ -134,7 +134,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 
 
 //-----------------------------------------------------------------------------
-bool GFilterEMail::Analyze(GDocXML* doc) 
+bool GFilterEMail::Analyze(GDocXML* doc)
 {
 	RXMLTag* part;
 	RXMLTag* tag;
@@ -215,7 +215,7 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 
 		while((!Read)||(!Src.Eof()))
 		{
-			Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
+			Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 
 			// If necessary -> read a new line f
 			if(!Read)

@@ -169,7 +169,7 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 	Pos=Begin;
 	while(!Pos->IsNull())
 	{
-		Doc->AddTag(part,tag=new RXMLTag(Doc,"docxml:p"));
+		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 		SkipSpaces();
 		Begin=Pos;
 		// Paragraph are supposed to be terminated by at least one blank line

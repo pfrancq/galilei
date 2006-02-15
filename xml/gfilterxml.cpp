@@ -646,31 +646,31 @@ RXMLTag* GFilterXML::InsertTag(tTag t,RXMLTag* parentTag)
 			break;
 
 		case tPAR:
-			Doc->AddTag(parentTag,resTag=new RXMLTag(Doc,"docxml:p"));
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:p"));
 			break;
 
 		case tH1:
-			Doc->AddTag(parentTag,resTag=new RXMLTag(Doc,"docxml:h1"));
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h1"));
 			break;
 
 		case tH2:
-			Doc->AddTag(parentTag,resTag=new RXMLTag(Doc,"docxml:h2"));
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h2"));
 			break;
 
 		case tH3:
-			Doc->AddTag(parentTag,resTag=new RXMLTag(Doc,"docxml:h3"));
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h3"));
 			break;
 
 		case tH4:
-			Doc->AddTag(parentTag,resTag=new RXMLTag(Doc,"docxml:h4"));
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h4"));
 			break;
 
 		case tH5:
-			Doc->AddTag(parentTag,resTag=new RXMLTag(Doc,"docxml:h5"));
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h5"));
 			break;
 
 		case tH6:
-			Doc->AddTag(parentTag,resTag=new RXMLTag(Doc,"docxml:h6"));
+			Doc->AddTag(parentTag,resTag=new RXMLTag("docxml:h6"));
 			break;
 
 		case tSKIP:
