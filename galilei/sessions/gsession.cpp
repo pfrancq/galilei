@@ -367,6 +367,48 @@ void GSession::ReInit(void)
 
 
 //------------------------------------------------------------------------------
+RString GSession::AnalyzeString(const RString& str)
+{
+	RString Res;
+
+	for(size_t i=0;i<str.GetLen();i++)
+	{
+		if(str[i]=='%')
+		{
+			// Look if another %
+			RString Rem;
+			for(i++;(i<str.GetLen()&&str[i]!='%');i++)
+				Rem+=str[i];
+
+			// Is there another %?
+			if(i==str.GetLen())
+			{
+				// No -> accident
+				Res+='%'+Rem;
+			}
+			else
+			{
+				if(Rem=="world")
+				{
+					if(Data->Storage)
+						Res+=Data->Storage->GetWorld();
+					else
+						Res+='%'+Rem+'%';
+				}
+				else
+				{
+					Res+='%'+Rem+'%';
+				}
+			}
+		}
+		else
+			Res+=str[i];
+	}
+	return(Res);
+}
+
+
+//------------------------------------------------------------------------------
 bool GSession::MustSaveResults(void) const
 {
 	return(Data->SaveResults);

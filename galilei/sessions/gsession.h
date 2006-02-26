@@ -108,6 +108,13 @@ public:
 	void ReInit(void);
 
 	/**
+	* Analyze a given string to search for variables '%var%' that are then
+	* remplace in the string returned.
+	* @param str             String to analyze.
+	*/
+	R::RString AnalyzeString(const R::RString& str);
+
+	/**
 	* Verify if the results of the computations must be saved.
 	*/
 	bool MustSaveResults(void) const;
