@@ -347,14 +347,6 @@ void KGALILEICenterApp::slotPlugins(void)
 	QMyPlugins dlg(this,"Plug-Ins Dialog");
 	QString str;
 
-	//set the plugins path
-	RString paths("");
-	RCursor<RString> cPath(pluginsPath);
-	for(cPath.Start();!cPath.End();cPath.Next())
-		paths+=(*cPath())+RString(";");
-	dlg.PluginsPath->setMode(KFile::Directory);
-	dlg.PluginsPath->setURL(ToQString(paths));
-
 	//sort POST_X Managers;
 	GPluginManagers::GetManager<GPostDocManager>("PostDoc")->ReOrder();
 	GPluginManagers::GetManager<GPreProfileManager>("PreProfile")->ReOrder();
@@ -386,25 +378,6 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.SearchTab->setCurrentPage(DlgSearchTabIdx);
 	if(dlg.exec())
 	{
-		// read the plugins path
-		if (strcmp(paths, dlg.PluginsPath->url()))
-		{
-			pluginsPath.Clear();
-			RString pluginsPaths=dlg.PluginsPath->url().ascii();
-			int findindex=pluginsPaths.FindStr(";",0);
-			while(findindex!=-1)
-			{
-				if (!pluginsPaths.Mid(0,findindex).IsEmpty())
-					pluginsPath.InsertPtr(new RString(pluginsPaths.Mid(0,findindex)));
-				pluginsPaths=pluginsPaths.Mid(findindex+1);
-				pluginsPaths.FindStr(";",0);
-				findindex=pluginsPaths.FindStr(";",0);
-			}
-			if (!pluginsPaths.IsEmpty())
-			pluginsPath.InsertPtr(new RString(pluginsPaths));
-			QMessageBox::information(this,"Plug-Ins Path has changed","You changed the plugins path, please restart KGALILEICenter.");
-		}
-
 		// Goes through managers
 		Done<QFilterItem>(dlg.Filters);
 		Done<QProfileCalcItem>(dlg.ProfileCalcs,this);

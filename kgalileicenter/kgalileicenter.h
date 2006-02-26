@@ -114,6 +114,8 @@ class KGALILEICenterApp : public KMainWindow, public GSlot
 {
 	Q_OBJECT
 
+public:
+
 	/**
 	* The configuration object of the application.
 	*/
@@ -123,6 +125,13 @@ class KGALILEICenterApp : public KMainWindow, public GSlot
 	* path to plugins.
 	*/
 	R::RContainer<RString, true,false> pluginsPath;
+
+	/**
+	*
+	*/
+	R::RString ConfigFile;
+	R::RString LogFile;
+	R::RString PlugInsConfig;
 
 	/**
 	* the path where the sql file for the database creation are stored

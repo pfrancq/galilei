@@ -32,6 +32,9 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <rqt.h>
+#include <rxmlfile.h>
+#include <rxmltag.h>
 #include <gconfig.h>
 #include <gpluginmanagers.h>
 #include <gpreprofile.h>
@@ -163,8 +166,8 @@ void KGALILEICenterApp::initActions(void)
 	viewStatusBar = KStdAction::showStatusbar(this, SLOT(slotViewStatusBar()), actionCollection());
 	viewToolBar->setStatusText(i18n("Enables/disables the toolbar"));
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
-	plugins=new KAction(i18n("&Plug-Ins"),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
-	changeDebug=new KAction(i18n("Specify &Debugger Output"),"save",0,this,SLOT(slotChangeDebug()),actionCollection(),"changeDebug");
+	plugins=new KAction(i18n("Configure &Plug-Ins..."),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
+	changeDebug=new KAction(i18n("&Configure GALILEI..."),"configure",0,this,SLOT(slotChangeDebug()),actionCollection(),"changeDebug");
 
 	// Menu "Window"
 	windowTile = new KAction(i18n("&Tile"), 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
@@ -224,14 +227,6 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Show Statusbar",statusBar()->isVisible());
 	Config->writeEntry("ToolBarPos", (int) toolBar("mainToolBar")->barPos());
 	Config->writeEntry("Save Results",sessionSave->isChecked());
-	RCursor<RString> cPath(pluginsPath);
-	for(cPath.Start();!cPath.End();cPath.Next())
-		paths+=(*cPath())+RString(";");
-	Config->writeEntry("PluginsPath", paths);
-	if(Debug)
-		Config->writeEntry("Debug File",Debug->GetName());
-	else
-		Config->writeEntry("Debug File","");
 
 	// Save options for database creation
 	Config->writeEntry("CreateDbSQLpath",CreateDbSQLpath);
@@ -246,10 +241,41 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("DlgSearchTabIdx",DlgSearchTabIdx);
 
 	// Save Config
+	Config->writeEntry("Config File",ToQString(ConfigFile));
 	try
 	{
+		// Write PlugIns config
 		GConfig Conf("/etc/galilei/galilei.galileiconfig");
 		Conf.Save();
+
+		// Write config
+		RXMLStruct Config;
+		RXMLTag* Top=new RXMLTag("GALILEI");
+		Config.AddTag(0,Top);
+		RXMLTag* Tag=new RXMLTag("log");
+		Tag->InsertAttr("file",LogFile);
+		Config.AddTag(Top,Tag);
+		if(Debug)
+		{
+			Tag=new RXMLTag("debug");
+			Tag->InsertAttr("file",Debug->GetName());
+			Config.AddTag(Top,Tag);
+		}
+		Tag=new RXMLTag("plugins");
+		Config.AddTag(Top,Tag);
+		RXMLTag* Tag2=new RXMLTag("config");
+		Tag2->InsertAttr("file",PlugInsConfig);
+		Config.AddTag(Tag,Tag2);
+		RCursor<RString> cPath(pluginsPath);
+		for(cPath.Start();!cPath.End();cPath.Next())
+		{
+			Tag2=new RXMLTag("search");
+			Tag2->InsertAttr("dir",*cPath());
+			Config.AddTag(Tag,Tag2);
+
+			RXMLFile File(ConfigFile,&Config);
+			File.Open(RIO::Create);
+		}
 	}
 	catch(...)
 	{
@@ -278,19 +304,6 @@ void KGALILEICenterApp::readOptions(void)
 	// Always Calc Enable/Disable
 	sessionSave->setChecked(Config->readBoolEntry("Save Results",false));
 
-	//plugins path
-	RString pluginsPaths=Config->readPathEntry("PluginsPath","/home").ascii();
-	int findindex=pluginsPaths.FindStr(";",0);
-	while(findindex!=-1)
-	{
-		if (!pluginsPaths.Mid(0,findindex).IsEmpty())
-			pluginsPath.InsertPtr(new RString(pluginsPaths.Mid(0,findindex)));
-		pluginsPaths=pluginsPaths.Mid(findindex+1);
-		findindex=pluginsPaths.FindStr(";",0);
-	}
-	if (!pluginsPaths.IsEmpty())
-		pluginsPath.InsertPtr(new RString(pluginsPaths));
-
 	// Size
 	QSize size=Config->readSizeEntry("Geometry");
 	if(!size.isEmpty())
@@ -298,11 +311,31 @@ void KGALILEICenterApp::readOptions(void)
 		resize(size);
 	}
 
-	QString name=Config->readEntry("Debug File");
+	QString configName=Config->readEntry("Config File","/etc/galilei/galilei.conf");
+	ConfigFile=FromQString(configName);
 	try
 	{
-		if(!name.isEmpty())
-			Debug=new RDebugXML(name.ascii());
+		RXMLStruct Config;
+		RXMLFile File(ConfigFile,&Config);
+		File.Open(RIO::Read);
+
+		// Load dirs
+		RXMLTag* Tag=Config.GetTag("plugins");
+		if(!Tag)
+			throw GException("Problems with the configure file '"+ConfigFile+"'");
+		RCursor<RXMLTag> Plugins(Tag->GetNodes());
+		for(Plugins.Start();!Plugins.End();Plugins.Next())
+		{
+			if((Plugins()->GetName()=="search")&&(Plugins()->IsAttrDefined("dir")))
+				pluginsPath.InsertPtr(new RString(Plugins()->GetAttrValue("dir")));
+			if(Plugins()->GetName()=="config")
+				PlugInsConfig=Plugins()->GetAttrValue("file");
+		}
+		// Files
+		LogFile=Config.GetTag("log")->GetAttrValue("file");
+		RString DebugFile=Config.GetTag("debug")->GetAttrValue("file");
+		if(!DebugFile.IsEmpty())
+			Debug=new RDebugXML(DebugFile);
 	}
 	catch(...)
 	{

@@ -120,6 +120,7 @@ using namespace std;
 #include "qexportmatrixdlg.h"
 #include "qchoosemap.h"
 #include "qsimulationdlg.h"
+#include "configure.h"
 
 
 
@@ -965,24 +966,11 @@ void KGALILEICenterApp::slotGroupsClear()
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotChangeDebug(void)
 {
-	QString debug("");
-	if(Debug)
-		debug=Debug->GetName().Latin1();
-	debug=KFileDialog::getSaveFileName(debug,"*.xml",this,i18n("Debug Output..."));
-	delete Debug;
-	Debug=0;
-	if(!debug.isEmpty())
+	ConfigureDlg Dlg;
+	Dlg.Init(this);
+	if(Dlg.exec())
 	{
-		try
-		{
-			Debug=new RDebugXML(debug.ascii());
-			if(Doc)
-				Doc->GetSession()->SetDebug(Debug);
-		}
-		catch(...)
-		{
-			QMessageBox::critical(this,"KGALILEICenter","Error when creating "+debug);
-		}
+		Dlg.Done(this);
 	}
 }
 

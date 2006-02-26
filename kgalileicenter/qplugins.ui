@@ -24,63 +24,6 @@
         </property>
         <widget class="QGroupBox">
             <property name="name">
-                <cstring>groupBox1</cstring>
-            </property>
-            <property name="frameShape">
-                <enum>GroupBoxPanel</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <property name="title">
-                <string>General Options</string>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Path(s) to plug-ins directory (';'-separated):</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer17</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Fixed</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>16</width>
-                            <height>26</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="KURLRequester">
-                    <property name="name">
-                        <cstring>PluginsPath</cstring>
-                    </property>
-                    <property name="sizePolicy">
-                        <sizepolicy>
-                            <hsizetype>7</hsizetype>
-                            <vsizetype>5</vsizetype>
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                </widget>
-            </hbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
                 <cstring>groupBox8</cstring>
             </property>
             <property name="title">
@@ -192,7 +135,7 @@
                                             <bool>false</bool>
                                         </property>
                                         <property name="text">
-                                            <string>Configure</string>
+                                            <string>Co&amp;nfigure</string>
                                         </property>
                                     </widget>
                                     <widget class="QPushButton">
@@ -203,7 +146,7 @@
                                             <bool>false</bool>
                                         </property>
                                         <property name="text">
-                                            <string>About</string>
+                                            <string>Abo&amp;ut</string>
                                         </property>
                                     </widget>
                                     <spacer>
@@ -2356,8 +2299,6 @@
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>
@@ -2894,9 +2835,4 @@
     <slot>slotConfigStorage()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
-<includehints>
-    <includehint>kurlrequester.h</includehint>
-    <includehint>klineedit.h</includehint>
-    <includehint>kpushbutton.h</includehint>
-</includehints>
 </UI>
