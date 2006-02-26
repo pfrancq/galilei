@@ -122,28 +122,37 @@ int main(int argc, char *argv[])
 	{
 		RContainer<RString,true,false> lib(10,5);
 		RXMLTag* Tag;
+		RXMLTag* PlugIns;
 
 		// Read Config
 		cout<<"Read Config ..."<<endl;
 		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config);
 		ConfigFile.Open(RIO::Read);
 
-		Tag=Config.GetTag("Plugins");
+		Tag=Config.GetTag("plugins");
 		if(!Tag)
 			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
-		Tag->GetAttrValue("Dir").Split(lib,';');
+		RCursor<RXMLTag> Plugins(Tag->GetNodes());
+		for(Plugins.Start();!Plugins.End();Plugins.Next())
+		{
+			if((Plugins()->GetName()=="search")&&(Plugins()->IsAttrDefined("dir")))
+				lib.InsertPtr(new RString(Plugins()->GetAttrValue("dir")));
+			if(Plugins()->GetName()=="config")
+				PlugIns=Plugins();
+		}
 
 		// Create Log files
-		Log=new GSlotLog(Config.GetTag("Log")->GetAttrValue("File"));
+		Tag=Config.GetTag("log");
+		if(Tag&&Tag->IsAttrDefined("file"))
+			Log=new GSlotLog(Tag->GetAttrValue("file"));
 		Log->WriteLog("GALILEI Update started");
 
 		//------------------------------------------------------------------------------
 		// Managers
 		GPluginManagers::PluginManagers.Load(lib,false);
-		Tag=Config.GetTag("Config");
-		if(!Tag)
+		if(!PlugIns)
 			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
-		GConfig Conf(Tag->GetAttrValue("File"));
+		GConfig Conf(PlugIns->GetAttrValue("file"));
 		Conf.Load();
 
 		// Init Session
