@@ -68,9 +68,9 @@ GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,co
 //------------------------------------------------------------------------------
 bool GDoc::MustCompute(void) const
 {
-	if(Updated<Computed)
-		return(false);
-	return(true);
+	if(Updated>Computed)
+		return(true);
+	return(false);
 }
 
 
