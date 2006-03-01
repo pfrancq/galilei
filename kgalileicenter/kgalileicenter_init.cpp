@@ -67,6 +67,7 @@ using namespace R;
 #include <kshortcut.h>
 #include <kstatusbar.h>
 #include <kpopupmenu.h>
+#include <kmessagebox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -94,16 +95,6 @@ KGALILEICenterApp::KGALILEICenterApp(void)
 
 	//read the kgalileicenter options
 	readOptions();
-	try
-	{
-		GPluginManagers::PluginManagers.Load(pluginsPath);
-	}
-	catch(GException e)
-	{
-		std::cout<<e.GetMsg()<<std::endl;
-	}
-	//read the galilei & galilei_plugins options
-	readGALILEIOptions();
 
 	DisableAllActions();
 }
@@ -162,8 +153,8 @@ void KGALILEICenterApp::initActions(void)
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
 	// Menu "Settings"
-	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection());
-	viewStatusBar = KStdAction::showStatusbar(this, SLOT(slotViewStatusBar()), actionCollection());
+	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection(),"settings_show_toolbar");
+	viewStatusBar = KStdAction::showStatusbar(this, SLOT(slotViewStatusBar()), actionCollection(), "settings_statusbar");
 	viewToolBar->setStatusText(i18n("Enables/disables the toolbar"));
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
 	plugins=new KAction(i18n("Configure &Plug-Ins..."),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
@@ -245,7 +236,7 @@ void KGALILEICenterApp::saveOptions(void)
 	try
 	{
 		// Write PlugIns config
-		GConfig Conf("/etc/galilei/galilei.galileiconfig");
+		GConfig Conf(PlugInsConfig);
 		Conf.Save();
 
 		// Write config
@@ -255,12 +246,12 @@ void KGALILEICenterApp::saveOptions(void)
 		RXMLTag* Tag=new RXMLTag("log");
 		Tag->InsertAttr("file",LogFile);
 		Config.AddTag(Top,Tag);
+		Tag=new RXMLTag("debug");
 		if(Debug)
-		{
-			Tag=new RXMLTag("debug");
 			Tag->InsertAttr("file",Debug->GetName());
-			Config.AddTag(Top,Tag);
-		}
+		else
+			Tag->InsertAttr("file",RString::Null);
+		Config.AddTag(Top,Tag);
 		Tag=new RXMLTag("plugins");
 		Config.AddTag(Top,Tag);
 		RXMLTag* Tag2=new RXMLTag("config");
@@ -279,6 +270,7 @@ void KGALILEICenterApp::saveOptions(void)
 	}
 	catch(...)
 	{
+		KMessageBox::error(this,"Problem while saving the configuration file '"+ToQString(ConfigFile)+"'","Configuration Error");
 	}
 }
 
@@ -315,11 +307,10 @@ void KGALILEICenterApp::readOptions(void)
 	ConfigFile=FromQString(configName);
 	try
 	{
+		// Load configuration for plug-ins and plug-ins
 		RXMLStruct Config;
 		RXMLFile File(ConfigFile,&Config);
 		File.Open(RIO::Read);
-
-		// Load dirs
 		RXMLTag* Tag=Config.GetTag("plugins");
 		if(!Tag)
 			throw GException("Problems with the configure file '"+ConfigFile+"'");
@@ -331,14 +322,21 @@ void KGALILEICenterApp::readOptions(void)
 			if(Plugins()->GetName()=="config")
 				PlugInsConfig=Plugins()->GetAttrValue("file");
 		}
-		// Files
-		LogFile=Config.GetTag("log")->GetAttrValue("file");
-		RString DebugFile=Config.GetTag("debug")->GetAttrValue("file");
-		if(!DebugFile.IsEmpty())
+		LogFile=Config.GetTagAttrValue("log","file");
+		RString DebugFile=Config.GetTagAttrValue("debug","file");
+
+		// Load and configure all plug-ins
+		GPluginManagers::PluginManagers.Load(pluginsPath);
+		GConfig Conf(PlugInsConfig);
+		Conf.Load();
+
+		// Create (if necessary) the debug file
+		if(DebugFile!=RString::Null)
 			Debug=new RDebugXML(DebugFile);
 	}
 	catch(...)
 	{
+		KMessageBox::error(this,"Problem while analyzing the configuration file '"+configName+"'","Configuration Error");
 	}
 
 	// Read create database options
@@ -353,21 +351,6 @@ void KGALILEICenterApp::readOptions(void)
 	DlgCommunitiesTabIdx=Config->readNumEntry("DlgCommunitiesTabIdx",0);
 	DlgSearchTabIdx=Config->readNumEntry("DlgSearchTabIdx",0);
 
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::readGALILEIOptions(void)
-{
-	// Read GALILEI Config
-	try
-	{
-		GConfig Conf("/etc/galilei/galilei.galileiconfig");
-		Conf.Load();
-	}
-	catch(...)
-	{
-	}
 }
 
 

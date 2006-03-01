@@ -252,12 +252,6 @@ protected:
 	void readOptions(void);
 
 	/**
-	* Read GALILEI Options again and initialize all variables like the recent
-	* file list.
-	*/
-	void readGALILEIOptions(void);
-
-	/**
 	* Saves the window properties for each open window during session end to
 	* the session config file, including saving the currently opened file by a
 	* temporary filename provided by KApplication.
