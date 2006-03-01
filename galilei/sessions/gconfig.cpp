@@ -139,7 +139,7 @@ void GConfig::Save(void)
 	}
 	catch(...)
 	{
-		throw GException("Problem loading config file.");
+		throw GException("Problem saving config file.");
 	}
 }
 
