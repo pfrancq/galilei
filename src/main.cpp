@@ -142,10 +142,11 @@ int main(int argc, char *argv[])
 		}
 
 		// Create Log files
-		Tag=Config.GetTag("log");
-		if(Tag&&Tag->IsAttrDefined("file"))
-			Log=new GSlotLog(Tag->GetAttrValue("file"));
-		Log->WriteLog("GALILEI Update started");
+		RString LogFile=Config.GetTagAttrValue("log","file");
+		if(LogFile!=RString::Null)
+			Log=new GSlotLog(LogFile);
+		if(Log)
+			Log->WriteLog("GALILEI Update started");
 
 		//------------------------------------------------------------------------------
 		// Managers
@@ -157,11 +158,13 @@ int main(int argc, char *argv[])
 
 		// Init Session
 		GSession Session=GSession();
-		Log->WriteLog("Session created");
+		if(Log)
+			Log->WriteLog("Session created");
 
 		//connect plugins
 		GPluginManagers::PluginManagers.Connect(&Session);
-		Log->WriteLog("Plugins connected to session");
+		if(Log)
+			Log->WriteLog("Plugins connected to session");
 
 		//load data
 		cout<<"Load Data ...";
@@ -172,14 +175,16 @@ int main(int argc, char *argv[])
 			Session.GetStorage()->LoadGroups();
 		if(DoProfiles||DoGroups)
 			Session.GetStorage()->LoadUsers();
-		Log->WriteLog("Data loaded");
+		if(Log)
+			Log->WriteLog("Data loaded");
 		cout<<"OK"<<endl;
 		if(DoDocs)
 		{
 			cout<<"Analyse Documents ...";
 			cout.flush();
 			Session.AnalyseDocs(Log);
-			Log->WriteLog("Documents analysed");
+			if(Log)
+				Log->WriteLog("Documents analysed");
 			cout<<"OK"<<endl;
 		}
 		if(DoProfiles)
@@ -188,7 +193,8 @@ int main(int argc, char *argv[])
 			cout.flush();
 			Session.CalcProfiles(Log);
 			cout<<"OK"<<endl;
-			Log->WriteLog("Profiles computed");
+			if(Log)
+				Log->WriteLog("Profiles computed");
 		}
 		if(DoGroups)
 		{
@@ -196,13 +202,15 @@ int main(int argc, char *argv[])
 			cout.flush();
 			Session.GroupingProfiles(Log);
 			cout<<"OK"<<endl;
-			Log->WriteLog("Groups computed");
+			if(Log)
+				Log->WriteLog("Groups computed");
 		}
-		Log->WriteLog("Session updated");
+		if(Log)
+			Log->WriteLog("Session updated");
 
 		// End Session
-		Log->WriteLog("GALILEI Update stopped");
-		delete Log;
+		if(Log)
+			Log->WriteLog("GALILEI Update stopped");
 	 }
 	catch(GException& e)
 	{
@@ -228,6 +236,7 @@ int main(int argc, char *argv[])
 		if(Log)
 			Log->WriteLog("Error while processing");
 	}
+	delete Log;
 
 	return(EXIT_SUCCESS);
 }
