@@ -251,18 +251,22 @@ public:
 	/**
 	* Get a document corresponding to a given identificator.
 	* @param id              Identificator of the document.
-	* @param load            If set to true, the document is eventually loaded into
-	*                        memory.
+	* @param load            If set to true, the document is eventually loaded
+	*                        into memory.
+	* @param null            If set to true, if the document does not exist,
+	*                        return 0, else an exception is generated.
 	*/
-	GDoc* GetDoc(unsigned int id,bool load=true) const;
+	GDoc* GetDoc(unsigned int id,bool load=true,bool null=false) const;
 
 	/**
 	* Get a document corresponding to a given URL.
-	* @param url        URL of the document.
+	* @param url             URL of the document.
 	* @param load            If set to true, the document is eventually loaded into
 	*                        memory.
+	* @param null            If set to true, if the document does not exist,
+	*                        return 0, else an exception is generated.
 	*/
-	GDoc* GetDoc(const char* url,bool load=true) const;
+	GDoc* GetDoc(const char* url,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
@@ -350,10 +354,12 @@ public:
 	/**
 	* Get a user.
 	* @param id              Identificator.
-	* @param load            If set to true, the document is eventually loaded into
+	* @param load            If set to true, the user is eventually loaded into
 	*                        memory.
+	* @param null            If set to true, if the user does not exist,
+	*                        return 0, else an exception is generated.
 	*/
-	GUser* GetUser(unsigned int id,bool load=true) const;
+	GUser* GetUser(unsigned int id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new user.
@@ -385,10 +391,12 @@ public:
 	/**
 	* Get a profile with a specific identifier.
 	* @param id              Identifier.
-	* @param load            If set to true, the document is eventually loaded into
+	* @param load            If set to true, the profile is eventually loaded into
 	*                        memory.
+	* @param null            If set to true, if the profile does not exist,
+	*                        return 0, else an exception is generated.
 	*/
-	GProfile* GetProfile(const unsigned int id,bool load=true) const;
+	GProfile* GetProfile(const unsigned int id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new profile.
@@ -420,10 +428,12 @@ public:
 	* @param id              Identifier.
 	* @param lang            Language. If null, the subprofile is searched in
 	*                        all languages.
-	* @param load            If set to true, the document is eventually loaded into
+	* @param load            If set to true, the subprofile is eventually loaded into
 	*                        memory.
+	* @param null            If set to true, if the subprofile does not exist,
+	*                        return 0, else an exception is generated.
 	*/
-	GSubProfile* GetSubProfile(const unsigned int id,const GLang* lang,bool load=true) const;
+	GSubProfile* GetSubProfile(const unsigned int id,const GLang* lang,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new subprofile.
@@ -521,20 +531,24 @@ public:
 	/**
 	* Get the group where the given subprofile is attached.
 	* @param sub             Subprofile used.
-	* @param load            If set to true, the document is eventually loaded into
+	* @param load            If set to true, the group is eventually loaded into
 	*                        memory.
+	* @param null            If set to true, if the group does not exist,
+	*                        return 0, else an exception is generated.
 	* @returns Pointer to the group.
 	*/
-	GGroup* GetGroup(const GSubProfile* sub,bool load=true) const;
+	GGroup* GetGroup(const GSubProfile* sub,bool load=true,bool null=false) const;
 
 	/**
 	* Get a group corresponding to a given identificator.
 	* @param id              Identificator of the group.
-	* @param load            If set to true, the document is eventually loaded into
+	* @param load            If set to true, the group is eventually loaded into
 	*                        memory.
+	* @param null            If set to true, if the group does not exist,
+	*                        return 0, else an exception is generated.
 	* @return Pointer to GGroup.
 	*/
-	GGroup* GetGroup(unsigned int id,bool load=true) const;
+	GGroup* GetGroup(unsigned int id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new group.

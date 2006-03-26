@@ -580,7 +580,7 @@ unsigned int GSession::FillDocs(GDoc** docs)
 
 
 //-------------------------------------------------------------------------------
-GDoc* GSession::GetDoc(unsigned int id,bool load) const
+GDoc* GSession::GetDoc(unsigned int id,bool load,bool null) const
 {
 	GDoc* d;
 
@@ -592,22 +592,38 @@ GDoc* GSession::GetDoc(unsigned int id,bool load) const
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
-		throw GException("Unknown document");
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown document "+RString::Number(id));
+	}
 	d=Data->Storage->LoadDoc(id);
 	if(!d)
-		throw GException("Unknown document");
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown document "+RString::Number(id));
+	}
 	const_cast<GSession*>(this)->InsertDoc(d);
 	return(d);
 }
 
 
 //-------------------------------------------------------------------------------
-GDoc* GSession::GetDoc(const char* url,bool load) const
+GDoc* GSession::GetDoc(const char* url,bool,bool null) const
 {
 	GDocRefURL* ref;
 
 	ref=Data->DocsRefUrl.GetPtr(url);
-	if(!ref) return(0);
+	if(!ref)
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown document '"+RString(url)+"'");
+	}
 	return(ref->Doc);
 }
 
@@ -861,7 +877,7 @@ size_t GSession::GetNbUsers(void) const
 
 
 //------------------------------------------------------------------------------
-GUser* GSession::GetUser(unsigned int id,bool load) const
+GUser* GSession::GetUser(unsigned int id,bool load,bool null) const
 {
 	GUser* u;
 
@@ -873,10 +889,20 @@ GUser* GSession::GetUser(unsigned int id,bool load) const
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
-		throw GException("Unknown user");
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown user "+RString::Number(id));
+	}
 	u=Data->Storage->LoadUser(id);
 	if(!u)
-		throw GException("Unknown user");
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown user "+RString(id));
+	}
 	const_cast<GSession*>(this)->InsertUser(u);
 	return(u);
 }
@@ -931,7 +957,7 @@ size_t GSession::GetMaxProfileId(void) const
 
 
 //------------------------------------------------------------------------------
-GProfile* GSession::GetProfile(unsigned int id,bool load) const
+GProfile* GSession::GetProfile(unsigned int id,bool load,bool null) const
 {
 	GProfile* p;
 
@@ -943,10 +969,20 @@ GProfile* GSession::GetProfile(unsigned int id,bool load) const
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
-		throw GException("Unknown profile in memory");
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown profile "+RString::Number(id)+" in memory");
+	}
 	p=Data->Storage->LoadProfile(id);
 	if(!p)
-		throw GException("Unknown profile in storage");
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown profile "+RString::Number(id)+" in storage");
+	}
 	const_cast<GSession*>(this)->InsertProfile(p);
 	return(p);
 }
@@ -1009,7 +1045,7 @@ size_t GSession::GetSubProfilesNb(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-GSubProfile* GSession::GetSubProfile(unsigned int id,const GLang* lang,bool load) const
+GSubProfile* GSession::GetSubProfile(unsigned int id,const GLang* lang,bool load,bool null) const
 {
 	GSubProfile* s;
 
@@ -1036,10 +1072,20 @@ GSubProfile* GSession::GetSubProfile(unsigned int id,const GLang* lang,bool load
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
-		throw GException("Unknown subprofile");
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown subprofile "+RString::Number(id));
+	}
 	s=Data->Storage->LoadSubProfile(id);
 	if(!s)
-		throw GException("Unknown subprofile");
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown subprofile "+RString::Number(id));
+	}
 	const_cast<GSession*>(this)->InsertSubProfile(s);
 	return(s);
 }
@@ -1290,7 +1336,7 @@ unsigned int GSession::GetNbGroups(GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-GGroup* GSession::GetGroup(const GSubProfile* sub,bool load) const
+GGroup* GSession::GetGroup(const GSubProfile* sub,bool load,bool null) const
 {
 	PerLang* groupsLang=Data->Langs.GetInsertPtr<GLang*>(sub->GetLang());
 	if(!groupsLang)
@@ -1301,17 +1347,27 @@ GGroup* GSession::GetGroup(const GSubProfile* sub,bool load) const
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
-		throw GException("Unknown group "+RString::Number(sub->GetGroupId()));
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown group "+RString::Number(sub->GetGroupId()));
+	}
 	grp=Data->Storage->LoadGroup(sub->GetGroupId());
 	if(!grp)
-		throw GException("Unknown group "+RString::Number(sub->GetGroupId()));
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown group "+RString::Number(sub->GetGroupId()));
+	}
 	const_cast<GSession*>(this)->InsertGroup(grp);
 	return(grp);
 }
 
 
 //------------------------------------------------------------------------------
-GGroup*GSession::GetGroup(unsigned int id,bool load) const
+GGroup*GSession::GetGroup(unsigned int id,bool load,bool null) const
 {
 	GGroup* grp=Data->Groups.GetPtr<unsigned int>(id);
 	if(grp)
@@ -1319,10 +1375,20 @@ GGroup*GSession::GetGroup(unsigned int id,bool load) const
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
-		throw GException("Unknown group "+RString::Number(id));
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown group "+RString::Number(id));
+	}
 	grp=Data->Storage->LoadGroup(id);
 	if(!grp)
-		throw GException("Unknown group "+RString::Number(id));
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown group "+RString::Number(id));
+	}
 	const_cast<GSession*>(this)->InsertGroup(grp);
 	return(grp);
 }
