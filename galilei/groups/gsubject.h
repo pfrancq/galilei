@@ -248,15 +248,6 @@ public:
 	void SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocial);
 
 	/**
-	* Create a group for a given language with the subprofiles having a
-	* description. The identificator of the group is the one of the subject.
-	* The group must be destructed by the caller.
-	* @param lang            Pointer to the language.
-	* @return Pointer to the group.
-	*/
-//	GGroup* CreateGroup(GLang* lang) const;
-
-	/**
 	*/
 	void ReInit(void);
 
