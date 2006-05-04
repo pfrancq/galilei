@@ -170,8 +170,8 @@ void KViewGroup::ConstructGeneral(void)
 		case osModified:
 			strcpy(sDate,"Modified");
 			break;
-		case osCreated:
-			strcpy(sDate,"Created");
+		case osNewMem:
+			strcpy(sDate,"New in memory");
 			break;
 		case osUnknow:
 		default:
