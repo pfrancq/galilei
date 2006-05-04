@@ -89,9 +89,9 @@
       <useconfiguration>default</useconfiguration>
     </general>
     <run>
-      <mainprogram>/home/pfrancq/prj/kgalileicenter/kgalileicenter/.libs/lt-kgalileicenter</mainprogram>
+      <mainprogram>/home/pfrancq/prj/kgalileicenter/kgalileicenter/.libs/kgalileicenter</mainprogram>
       <programargs/>
-      <terminal>false</terminal>
+      <terminal>true</terminal>
       <autocompile>true</autocompile>
       <envvars/>
       <directoryradio>custom</directoryradio>
@@ -149,6 +149,11 @@
       <inlineGet>true</inlineGet>
       <inlineSet>true</inlineSet>
     </creategettersetter>
+    <qt>
+      <used>false</used>
+      <version>3</version>
+      <root>/usr/lib/qt3</root>
+    </qt>
   </kdevcppsupport>
   <kdevclassview>
     <folderhierarchy>true</folderhierarchy>
