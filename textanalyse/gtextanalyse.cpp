@@ -868,7 +868,7 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 	// Analyse the content of link tags
 	link = xml->GetLinks ();
 	RAssert(link);
-	if(tmpDocs)
+	if(tmpDocs&&UseExternalLinks)
 		AnalyseLinksTag(link,UseExternalLinks,tmpDocs);
 
 	// Determine the Language if necessary.
