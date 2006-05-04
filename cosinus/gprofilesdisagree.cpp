@@ -342,10 +342,10 @@ void GProfilesSimsCosinus::Event(GLang* lang, tEvent event)
 {
 	switch(event)
 	{
-		case eObjCreated:
+		case eObjNewMem:
 			Values.InsertPtr(new GProfilesSim(this,lang));
 			break;
-		case eObjDeleted:
+		case eObjDeleteMem:
 			Values.DeletePtr(*lang);
 			break;
 		default:
@@ -361,7 +361,7 @@ void GProfilesSimsCosinus::Event(GSubProfile* sub, tEvent event)
 
 	switch(event)
 	{
-		case eObjCreated:
+		case eObjNewMem:
 			profSim=Values.GetPtr<GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");
@@ -382,7 +382,7 @@ void GProfilesSimsCosinus::Event(GSubProfile* sub, tEvent event)
 				profSim->Deleted.Delete(sub->GetProfile()->GetId());
 			profSim->NeedUpdate=true;
 			break;
-		case eObjDeleted:
+		case eObjDeleteMem:
 			profSim = Values.GetPtr<const GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");

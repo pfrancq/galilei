@@ -84,7 +84,7 @@ class GSims : public RContainer<GSim,true,true>
 public:
 	unsigned int DocId;      // Identifier of the document
 
-	GSims(unsigned int id,unsigned int max) 
+	GSims(unsigned int id,unsigned int max)
 		: RContainer<GSim,true,true>(max,max/2), DocId(id) {}
 	int Compare(const GSims& s) const {return(DocId-s.DocId);}
 	int Compare(const unsigned int id) const {return(DocId-id);}
@@ -217,7 +217,7 @@ double GProfilesGroupsSimsCosinus::GProfileGrpSim::GetSim(const GSubProfile* sub
 		if(fabs(s2->Sim)<Manager->NullSimLevel) s2->Sim=0.0;
 		return (s2->Sim);
 	}
-	if (s2->State == osDelete)  return (0.0);   //-------------------------A MODIFIER
+	if (s2->State == osDeleteMem)  return (0.0);   //-------------------------A MODIFIER
 	return(0.0);
 }
 
@@ -259,7 +259,7 @@ void  GProfilesGroupsSimsCosinus::GProfileGrpSim::Update(void)
 		if(!sims)
 			Sims->InsertPtr(sims = new GSims(Cur_d()->GetId(), nbrSubProf ) );
 		stateDoc = Cur_d()->GetState();                              // --------------------------------------------------------
-		if ((stateDoc == osUpdated) || (stateDoc == osCreated))      // The sub1 is modified -> all the sims must be recalculated
+		if ((stateDoc == osUpdated) || (stateDoc == osNewMem))      // The sub1 is modified -> all the sims must be recalculated
 		{
 			for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
 			{
@@ -273,7 +273,7 @@ void  GProfilesGroupsSimsCosinus::GProfileGrpSim::Update(void)
 			for(Cur_p.Start();!Cur_p.End();Cur_p.Next())
 			{
 				stateSP = Cur_p()->GetState();
-				if((stateSP == osUpdated) || (stateSP == osCreated))    //The second profile has been modified -> state de sim(id1,id2) = modified
+				if((stateSP == osUpdated) || (stateSP == osNewMem))    //The second profile has been modified -> state de sim(id1,id2) = modified
 				{
 					sim = sims->GetPtr<unsigned int>(Cur_p()->GetId());
 					if (!sim) sims->InsertPtr(sim = new GSim(Cur_p()->GetId(),0,osModified));
@@ -369,10 +369,10 @@ void GProfilesGroupsSimsCosinus::Event(GLang* lang, tEvent event)
 	if(!Memory) return;
 	switch(event)
 	{
-		case eObjCreated:
+		case eObjNewMem:
 			Sims.InsertPtr(new GProfileGrpSim(this,lang));
 			break;
-		case eObjDeleted:
+		case eObjDeleteMem:
 			Sims.DeletePtr(*lang);
 			break;
 		default:
@@ -390,7 +390,7 @@ void GProfilesGroupsSimsCosinus::Event(GSubProfile* sub, tEvent event)
 
 	switch(event)
 	{
-		case eObjCreated:
+		case eObjNewMem:
 		case eObjModified:
 /*			profSim=Sims.GetPtr<GLang*>(sub->GetLang());
 			if(!profSim)
@@ -398,7 +398,7 @@ void GProfilesGroupsSimsCosinus::Event(GSubProfile* sub, tEvent event)
 			profSim->AddModifiedProfile(sub);*/
 			NeedUpdate=true;
 			break;
-		case eObjDeleted:
+		case eObjDeleteMem:
 			profSim = Sims.GetPtr<const GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");
@@ -432,7 +432,7 @@ void GProfilesGroupsSimsCosinus::Event(GGroup* grp, tEvent event)
 
 	switch(event)
 	{
-		case eObjCreated:
+		case eObjNewMem:
 		case eObjModified:
 /*			profSim=Sims.GetPtr<GLang*>(sub->GetLang());
 			if(!profSim)
@@ -440,7 +440,7 @@ void GProfilesGroupsSimsCosinus::Event(GGroup* grp, tEvent event)
 			profSim->AddModifiedProfile(sub);*/
 			NeedUpdate=true;
 			break;
-		case eObjDeleted:
+		case eObjDeleteMem:
 			profSim = Sims.GetPtr<const GLang*>(grp->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");
