@@ -760,9 +760,36 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 
 
 //------------------------------------------------------------------------------
+void GStorageMySQL::AddFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed)
+{
+	RString sSql;
+	RString Lang;
+
+	if(lang)
+		Lang=RQuery::SQLValue(lang->GetCode());
+	else
+		Lang="NULL";
+	sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2,langid,computed) ";
+	sSql+="VALUES("+RString::Number(d)+",'"+GetAssessmentCode(assess)+"',"+RString::Number(p)+","+RQuery::SQLValue(date)+","+Lang+","+RQuery::SQLValue(computed)+")";
+	RQuery Insert(Db,sSql);
+}
+
+
+//------------------------------------------------------------------------------
 GUser* GStorageMySQL::LoadUser(unsigned int userid)
 {
 	RQuery User(Db, "SELECT userid,user,fullname FROM users WHERE userid="+RString::Number(userid));
+	User.Start();
+	if(!User.GetNb())
+		return(0);
+	return(new GUser(atoi(User[0]),User[1],User[2],10));
+}
+
+
+//------------------------------------------------------------------------------
+GUser* GStorageMySQL::LoadUser(const R::RString name)
+{
+	RQuery User(Db, "SELECT userid,user,fullname FROM users WHERE user="+RQuery::SQLValue(name));
 	User.Start();
 	if(!User.GetNb())
 		return(0);
@@ -1145,16 +1172,33 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 			l="NULL";
 		}
 
-		// Update document
+		// Mime type
 		f=doc->GetMIMEType();
 		if(f.IsEmpty())
 			f="NULL";
 		else
 			f=RQuery::SQLValue(f);
-		sSql="UPDATE htmls SET html="+RQuery::SQLValue(doc->GetURL())+",title="+RQuery::SQLValue(doc->GetName())+",mimetype="+f+
-				",langid="+l+",updated="+RQuery::SQLValue(doc->GetUpdated())+",calculated="+RQuery::SQLValue(doc->GetComputed())+
-				",failed="+RString::Number(doc->GetFailed())+" WHERE htmlid="+id;
-		RQuery updatedoc(Db,sSql);
+
+		// Test if the document already exists.
+		sSql="SELECT COUNT(1) FROM htmls WHERE htmlid="+id;
+		RQuery Test(Db,sSql);
+		Test.Start();
+		if(!atoi(Test[0]))
+		{
+			// Insert the document
+			sSql="INSERT INTO htmls(htmlid,html,title,mimetype,langid,updated,calculated,failed) VALUES("+id+","+
+				RQuery::SQLValue(doc->GetURL())+","+RQuery::SQLValue(doc->GetName())+","+f+","+l+","+
+				RQuery::SQLValue(doc->GetUpdated())+","+RQuery::SQLValue(doc->GetComputed())+","+RString::Number(doc->GetFailed())+")";
+			RQuery Insert(Db,sSql);
+		}
+		else
+		{
+			// Update the document
+			sSql="UPDATE htmls SET html="+RQuery::SQLValue(doc->GetURL())+",title="+RQuery::SQLValue(doc->GetName())+",mimetype="+f+
+					",langid="+l+",updated="+RQuery::SQLValue(doc->GetUpdated())+",calculated="+RQuery::SQLValue(doc->GetComputed())+
+					",failed="+RString::Number(doc->GetFailed())+" WHERE htmlid="+id;
+			RQuery Update(Db,sSql);
+		}
 
 		// Update links to others documents
 		RQuery deletelinks(Db,"DELETE FROM htmlsbylinks WHERE htmlid="+id);

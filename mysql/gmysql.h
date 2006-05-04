@@ -250,6 +250,12 @@ public:
 	virtual GUser* LoadUser(unsigned int userid);
 
 	/**
+	* Method that load a user that is stored.
+	* @param name            Name of the user.
+	*/
+	virtual GUser* LoadUser(const R::RString name);
+
+	/**
 	* Method that load a profile that is stored.
 	* @param profileid       Identificator of the profile.
 	*/
@@ -331,6 +337,18 @@ public:
 	* @param prof       Profile to save.
 	*/
 	virtual void SaveProfile(GProfile* prof);
+
+	/**
+	* Add an assessment for a given profile and document.
+	* @param p               Identificator of the profile.
+	* @param d               Identificator of the document.
+	* @param lang            Language of the document.
+	* @param assess          Feedback.
+	* @param date            Date on the last feedback.
+	* @param update          Date on the last computation of the document.
+	*/
+	virtual void AddFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed);
+
 
 	/**
 	* Assign an identifier to a new group.
