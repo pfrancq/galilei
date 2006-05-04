@@ -241,7 +241,7 @@ public:
 	* @param nb              Number of subprofiles.
 	* @param nbf             Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf=100);
+	GProfile(GUser* usr,unsigned int id,const R::RString name,bool s,unsigned int nb,unsigned int nbf=100);
 
 	/**
 	* Compare two profiles by comparing their identificator.
@@ -325,6 +325,28 @@ public:
 	* @returns unsigned int.
 	*/
 	unsigned int GetNbAssessedDocs(const GLang* lang) const;
+
+	/**
+	* Get the number of common OK document between two profiles.
+	* @param prof            Pointer to a profile.
+	* @return unsigned int.
+	*/
+	unsigned int GetCommonOKDocs(const GProfile* prof) const;
+
+	/**
+	* Get the number of common document between two profiles.
+	* @param prof            Pointer to a profile.
+	* @return unsigned int.
+	*/
+	unsigned int GetCommonDocs(const GProfile* prof) const;
+
+	/**
+	* Get the number of common document with different judgement between two
+	* profiles.
+	* @param prof            Pointer to a profile.
+	* @return unsigned int.
+	*/
+	unsigned int GetCommonDiffDocs(const GProfile* prof) const;
 
 	/**
 	* Get the number of assessed documents.

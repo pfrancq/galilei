@@ -55,7 +55,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(unsigned int max)
-	: RContainer<GWeightInfo,true,true>(max,50), State(osCreated)
+	: RContainer<GWeightInfo,true,true>(max,50), State(osNewMem)
 {
 }
 
@@ -124,7 +124,7 @@ tObjState GWeightInfos::GetState(void) const
 //------------------------------------------------------------------------------
 void GWeightInfos::SetState(tObjState state)
 {
-	if((State==osNeedLoad)&&(state==osDelete))
+	if((State==osNeedLoad)&&(state==osDeleteMem))
 	{
 		// Force to load the description since the references must be decreased
 		// in the destructor.

@@ -221,28 +221,28 @@ public:
 	* Get the number of common OK document between two subprofiles. In
 	* practice, it computes the number of the common documents of the
 	* corresponding profiles which are of the language of the profile.
-	* @param prof            Pointer to a subprofile.
+	* @param sub             Pointer to a subprofile.
 	* @return unsigned int.
 	*/
-	unsigned int GetCommonOKDocs(const GSubProfile* prof) const;
+	unsigned int GetCommonOKDocs(const GSubProfile* sub) const;
 
 	/**
 	* Get the number of common document between two subprofiles. In
 	* practice, it computes the number of the common documents of the
 	* corresponding profiles which are of the language of the profile.
-	* @param prof            Pointer to a subprofile.
+	* @param sub             Pointer to a subprofile.
 	* @return unsigned int.
 	*/
-	unsigned int GetCommonDocs(const GSubProfile* prof) const;
+	unsigned int GetCommonDocs(const GSubProfile* sub) const;
 
 	/**
 	* Get the number of common document with different judgement between two
 	* subprofiles. In practice, it computes the number of the common documents
 	* of the corresponding profiles which are of the language of the profile.
-	* @param prof            Pointer to a subprofile.
+	* @param sub             Pointer to a subprofile.
 	* @return unsigned int.
 	*/
-	unsigned int GetCommonDiffDocs(const GSubProfile* prof) const;
+	unsigned int GetCommonDiffDocs(const GSubProfile* sub) const;
 
 	/**
 	* Get the number of assessed documents.

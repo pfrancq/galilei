@@ -479,6 +479,12 @@ public:
 	virtual GUser* LoadUser(unsigned int userid)=0;
 
 	/**
+	* Method that load a user that is stored.
+	* @param name            Name of the user.
+	*/
+	virtual GUser* LoadUser(const R::RString name)=0;
+
+	/**
 	* Method that load a profile that is stored.
 	* @param profileid       Identificator of the profile.
 	*/
@@ -555,6 +561,17 @@ public:
 	* @param rank            Ranking of the document.
 	*/
 	virtual void AddSugsProfile(const R::RString& name,unsigned int profileid,unsigned int docid,unsigned int rank)=0;
+
+	/**
+	* Add an assessment for a given profile and document.
+	* @param p               Identificator of the profile.
+	* @param d               Identificator of the document.
+	* @param lang            Language of the document.
+	* @param assess          Feedback.
+	* @param date            Date on the last feedback.
+	* @param update          Date on the last computation of the document.
+	*/
+	virtual void AddFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed)=0;
 
 
 	// @} Users/Profiles/Subprofiles

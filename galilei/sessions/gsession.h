@@ -121,7 +121,7 @@ public:
 
 	/**
 	* Set if the results of the computation must be saved or not.
-	* @param save           Save the objects after computation?
+	* @param save            Save the objects after computation?
 	*/
 	void SetSaveResults(bool save=true);
 
@@ -168,14 +168,14 @@ public:
 
 	/**
 	* Run a "program" for this session.
-	* @param rec            Slot that receive information.
-	* @param filename       Name of the file.
+	* @param rec             Slot that receive information.
+	* @param filename        Name of the file.
 	*/
 	void RunPrg(GSlot* rec,const char* filename);
 
 	/**
 	* Set The Current RandomSeed.
-	* @param rand             The current RandomSeed.
+	* @param rand            Current RandomSeed.
 	*/
 	void SetCurrentRandom(int rand);
 
@@ -187,7 +187,7 @@ public:
 
 	/**
 	* Get The Current Random Value.
-	* @param max              The max Random Value.
+	* @param max             Max Random Value.
 	* @return The current Random value * max.
 	*/
 	int GetCurrentRandomValue(unsigned int max);
@@ -231,7 +231,7 @@ public:
 
 	/**
 	* Get the number of documents handled for a given langage.
-	* @param lang          Langage of the documents
+	* @param lang            Langage of the documents
 	* @returns Number of documents of this language.
 	*/
 	unsigned int GetNbDocs(GLang* lang) const;
@@ -270,14 +270,14 @@ public:
 
 	/**
 	* Assign an identifier to a new data of a given dictionary.
-	* @param data           Data.
-	* @param dict           Dictionary.
+	* @param data            Data.
+	* @param dict            Dictionary.
 	*/
 	void AssignId(GData* data,const GDict* dict);
 
 	/**
 	* Assign an identifier to a new document.
-	* @param doc            Document.
+	* @param doc             Document.
 	*/
 	void AssignId(GDoc* doc);
 
@@ -327,8 +327,8 @@ public:
 
 	/**
 	* Send a Query to the Meta engine selected. The pages are researched, ranked and return
-	* @param &keyWords      The set of keywords to form the query
-	* @param &results       The set of results returned by the meta engine
+	* @param &keyWords       The set of keywords to form the query
+	* @param &results        The set of results returned by the meta engine
 	*/
 	void QueryMetaEngine(R::RContainer<R::RString,true,false> &keyWords);
 
@@ -350,6 +350,16 @@ public:
 	* @returns Number of Users.
 	*/
 	size_t GetNbUsers(void) const;
+
+	/**
+	* Get a user.
+	* @param name            Name of the user.
+	* @param load            If set to true, the user is eventually loaded into
+	*                        memory.
+	* @param null            If set to true, if the user does not exist,
+	*                        return 0, else an exception is generated.
+	*/
+	GUser* GetUser(const R::RString name,bool load=true,bool null=false) const;
 
 	/**
 	* Get a user.
@@ -412,7 +422,7 @@ public:
 
 	/**
 	* Get a cursor over the subprofiles of the system for a given language.
-	* @param lang           Language.
+	* @param lang            Language.
 	*/
 	R::RCursor<GSubProfile> GetSubProfiles(const GLang* lang) const;
 
@@ -443,32 +453,32 @@ public:
 
 	/**
 	* Insert a subprofiles in the container.
-	* @param s              Pointer to the subprofile to add.
+	* @param s               Pointer to the subprofile to add.
 	*/
 	void InsertSubProfile(GSubProfile* s);
 
 	/**
 	* Clear the subprofiles of a given language.
-	* @param lang       Language of the groups to delete.
+	* @param lang            Language of the groups to delete.
 	*/
 	void ClearSubprofiles(GLang* lang);
 
 	/**
 	* Compute the profiles.
-	* @param rec            Receiver for the signals.
+	* @param rec             Receiver for the signals.
 	*/
 	void CalcProfiles(GSlot* rec=0);
 
 	/**
 	* Compute a profile.
-	* @param rec            Receiver for the signals.
-	* @param profile        Profile to compute.
+	* @param rec             Receiver for the signals.
+	* @param profile         Profile to compute.
 	*/
 	void CalcProfile(GProfile* profile,GSlot* rec=0);
 
 	/**
 	* Run all enabled post-profiles methods.
-	* @param rec            Receiver for the signals.
+	* @param rec             Receiver for the signals.
 	*/
 	void DoPostProfiles(GSlot* rec=0);
 
@@ -481,14 +491,15 @@ public:
 
 	/**
 	* Insert a new Feedback.
-	* @param p                Identificator of the profile.
-	* @param d                Identificator of the document.
+	* @param p               Identificator of the profile.
+	* @param d               Identificator of the document.
 	* @param lang            Language of the document.
-	* @param assess           Feedback.
-	* @param date             Date on the last feedback.
-	* @param update           Date on the last update of the document.
+	* @param assess          Feedback.
+	* @param date            Date on the last feedback.
+	* @param update          Date on the last computation of the document.
+	* @param newone          New feedback in the system?
 	*/
-	void InsertFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate update);
+	void InsertFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed,bool newone=false);
 
 	/**
 	* Clear all the feedbacks.
@@ -552,7 +563,7 @@ public:
 
 	/**
 	* Assign an identifier to a new group.
-	* @param grp            Group.
+	* @param grp             Group.
 	*/
 	void AssignId(GGroup* grp);
 
@@ -571,20 +582,20 @@ public:
 
 	/**
 	* Clear the groups of a given language.
-	* @param lang       Language of the groups to delete.
+	* @param lang            Language of the groups to delete.
 	*/
 	void ClearGroups(GLang* lang);
 
 	/**
 	* Groups the subprofile into virtual communities. At the end, all the
 	* enabled post-grouping methods are called.
-	* @param rec            Receiver of the signals.
+	* @param rec             Receiver of the signals.
 	*/
 	void GroupingProfiles(GSlot* rec);
 
 	/**
 	* Run all the enabled post-grouping methods.
-	* @param rec            Receiver of the signals.
+	* @param rec             Receiver of the signals.
 	*/
 	void DoPostGroups(GSlot* rec=0);
 

@@ -87,7 +87,7 @@ GGroup::GGroup(unsigned int id,GLang* lang,bool com,const R::RDate& u,const R::R
 	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(60), Id(id),
 	  /*State(osUpToDate),*/Lang(lang), Community(com),  Updated(u), Computed(c)
 {
-	GSession::Event(this,eObjCreated);
+	GSession::Event(this,eObjNewMem);
 }
 
 
@@ -475,7 +475,7 @@ void GGroup::HasUpdate(GSubProfile* sub)
 //------------------------------------------------------------------------------
 GGroup::~GGroup(void)
 {
-	GSession::Event(this,eObjDeleted);
+	GSession::Event(this,eObjDeleteMem);
 	try
 	{
 		if(Community)
@@ -484,7 +484,7 @@ GGroup::~GGroup(void)
 			Sub.Set(*this);
 			for(Sub.Start();!Sub.End();Sub.Next())
 				Sub()->SetGroup(cNoRef);
-			if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
+			if(Lang&&(State==osDeleteMem))  // The object has modified the references count but was not saved
 				DelRefs(otGroup,Lang);
 		}
 	}

@@ -124,7 +124,7 @@ R::RString GALILEI::GetState(tObjState state)
 		case osUnknow:
 			return(RString("unknow"));
 			break;
-		case osCreated:
+		case osNewMem:
 			return(RString("created"));
 			break;
 		case osUpToDate:
@@ -139,7 +139,7 @@ R::RString GALILEI::GetState(tObjState state)
 		case osSaved:
 			return(RString("saved"));
 			break;
-		case osDelete:
+		case osDeleteMem:
 			return(RString("deleted"));
 			break;
 		case osNotNeeded:
@@ -164,13 +164,13 @@ R::RString GALILEI::GetEvent(tEvent event)
 		case eUnknow:
 			return(RString("Unknow"));
 			break;
-		case eObjCreated:
+		case eObjNewMem:
 			return(RString("object created"));
 			break;
 		case eObjModified:
 			return(RString("object modified"));
 			break;
-		case eObjDeleted:
+		case eObjDeleteMem:
 			return(RString("object deleted"));
 			break;
 	}

@@ -66,7 +66,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,unsigned int
 		if(grp)
 			grp->InsertSubProfile(this);
 	}
-	GSession::Event(this,eObjCreated);
+	GSession::Event(this,eObjNewMem);
 }
 
 
@@ -176,14 +176,14 @@ bool GSubProfile::MustCompute(void) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof) const
+unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* sub) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
 	unsigned int nb;
 
 	// Verify that the two profile have the same language
-	if(Lang!=prof->Lang) return(0);
+	if(Lang!=sub->Lang) return(0);
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
@@ -195,7 +195,7 @@ unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof) const
 		if(!(f & djOK)) continue;
 		// Look for the same document in the other profile. If not found or the
 		// document is not "good" -> Nothing
-		cor=prof->GetProfile()->GetFdbk(fdbks()->GetDocId());
+		cor=sub->GetProfile()->GetFdbk(fdbks()->GetDocId());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 		if(!(f & djOK)) continue;
@@ -208,14 +208,14 @@ unsigned int GSubProfile::GetCommonOKDocs(const GSubProfile* prof) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof) const
+unsigned int GSubProfile::GetCommonDocs(const GSubProfile* sub) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
 	unsigned int nb;
 
 	// Verify that the two profile have the same language
-	if(Lang!=prof->Lang) return(0);
+	if(Lang!=sub->Lang) return(0);
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
@@ -225,7 +225,7 @@ unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof) const
 		f=Fdbks()->GetFdbk();
 		// Look for the same document in the other profile. If not found or the
 		// document is not "good" -> Nothing
-		cor=prof->GetProfile()->GetFdbk(Fdbks()->GetDocId());
+		cor=sub->GetProfile()->GetFdbk(Fdbks()->GetDocId());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 
@@ -237,7 +237,7 @@ unsigned int GSubProfile::GetCommonDocs(const GSubProfile* prof) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) const
+unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* sub) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
@@ -245,7 +245,7 @@ unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) const
 	bool bOK,bOK2;
 
 	// Verify that the two profile have the same language
-	if(Lang!=prof->Lang) return(0);
+	if(Lang!=sub->Lang) return(0);
 	nb=0;
 
 	// Go through the document judged by the corresponding profile
@@ -257,7 +257,7 @@ unsigned int GSubProfile::GetCommonDiffDocs(const GSubProfile* prof) const
 
 		// If the document was not judged by the other profile or have not the
 		// same judgment -> Nothing
-		cor=prof->GetProfile()->GetFdbk(Fdbks()->GetDocId());
+		cor=sub->GetProfile()->GetFdbk(Fdbks()->GetDocId());
 		if(!cor) continue;
 		f=cor->GetFdbk();
 		bOK2=(f & djOK);
@@ -323,7 +323,7 @@ void GSubProfile::ClearFdbks(void)
 //------------------------------------------------------------------------------
 GSubProfile::~GSubProfile(void)
 {
-	GSession::Event(this,eObjDeleted);
+	GSession::Event(this,eObjDeleteMem);
 	try
 	{
 		// Remove it from its group if necessary
@@ -335,7 +335,7 @@ GSubProfile::~GSubProfile(void)
 		}
 
 		// Remove its references
-		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
+		if(Lang&&(State==osDeleteMem))  // The object has modified the references count but was not saved
 			DelRefs(otSubProfile,Lang);
 	}
 	catch(...)

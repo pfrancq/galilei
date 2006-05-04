@@ -159,14 +159,14 @@ GFdbk::~GFdbk(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,unsigned int id,const char* name,bool s,unsigned int nb,unsigned int nbf)
+GProfile::GProfile(GUser* usr,unsigned int id,const R::RString name,bool s,unsigned int nb,unsigned int nbf)
   : RContainer<GSubProfile,false,true>(nb,nb/2), User(usr),Id(id), Name(name),
     Fdbks(nbf+nbf/2,nbf/2), Social(s)
 {
 	if(!User)
-	throw GException("Profile "+RString::Number(id)+" has no parent user");
+		throw GException("Profile "+RString::Number(id)+" has no parent user");
 	User->InsertPtr(this);
-	GSession::Event(this,eObjCreated);
+	GSession::Event(this,eObjNewMem);
 }
 
 
@@ -248,6 +248,89 @@ GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
 unsigned int GProfile::GetNbAssessedDocs(const GLang* lang) const
 {
 	return(GetSubProfile(lang)->GetNbAssessedDocs());
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GProfile::GetCommonOKDocs(const GProfile* prof) const
+{
+	tDocAssessment f;
+	GFdbk* cor;
+	unsigned int nb=0;
+
+	// Go through the document judged by the corresponding profile
+	RCursor<GFdbk> fdbks=GetFdbks();
+	for(fdbks.Start();!fdbks.End();fdbks.Next())
+	{
+		// If the document is not "good"  -> Nothing
+		f=fdbks()->GetFdbk();
+		if(!(f & djOK)) continue;
+		// Look for the same document in the other profile. If not found or the
+		// document is not "good" -> Nothing
+		cor=prof->GetFdbk(fdbks()->GetDocId());
+		if(!cor) continue;
+		f=cor->GetFdbk();
+		if(!(f & djOK)) continue;
+
+		// Increase the number of common documents
+		nb++;
+	}
+	return(nb);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GProfile::GetCommonDocs(const GProfile* prof) const
+{
+	tDocAssessment f;
+	GFdbk* cor;
+	unsigned int nb=0;
+
+	// Go through the document judged by the corresponding profile
+	RCursor<GFdbk> Fdbks=GetFdbks();
+	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+	{
+		f=Fdbks()->GetFdbk();
+		// Look for the same document in the other profile. If not found or the
+		// document is not "good" -> Nothing
+		cor=prof->GetFdbk(Fdbks()->GetDocId());
+		if(!cor) continue;
+		f=cor->GetFdbk();
+
+		// Increase the number of common documents
+		nb++;
+	}
+	return(nb);
+}
+
+
+//------------------------------------------------------------------------------
+unsigned int GProfile::GetCommonDiffDocs(const GProfile* prof) const
+{
+	tDocAssessment f;
+	GFdbk* cor;
+	unsigned int nb=0;
+	bool bOK,bOK2;
+
+	// Go through the document judged by the corresponding profile
+	RCursor<GFdbk> Fdbks=GetFdbks();
+	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+	{
+		f=Fdbks()->GetFdbk();
+		bOK=(f & djOK);
+
+		// If the document was not judged by the other profile or have not the
+		// same judgment -> Nothing
+		cor=prof->GetFdbk(Fdbks()->GetDocId());
+		if(!cor) continue;
+		f=cor->GetFdbk();
+		bOK2=(f & djOK);
+		if(bOK==bOK2) continue;
+
+		// Increase the number of common documents with different judgement
+		nb++;
+	}
+	return(nb);
 }
 
 
@@ -345,5 +428,5 @@ void GProfile::DispatchFdbks(void)
 //------------------------------------------------------------------------------
 GProfile::~GProfile(void)
 {
-	GSession::Event(this,eObjDeleted);
+	GSession::Event(this,eObjDeleteMem);
 }

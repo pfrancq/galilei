@@ -132,6 +132,24 @@ public:
 	virtual void Interact(void);
 
 	/**
+	* Forward a warning.
+	* @param msg             Message.
+	*/
+	virtual void Warning(R::RString msg);
+
+	/**
+	* Forward an error.
+	* @param msg             Message.
+	*/
+	virtual void Error(R::RString msg);
+
+	/**
+	* Forward an alert.
+	* @param msg             Message.
+	*/
+	virtual void Alert(R::RString msg);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GSlot(void);

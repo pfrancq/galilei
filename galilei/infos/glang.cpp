@@ -100,7 +100,7 @@ GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code)
 	SkipWords.InsertPtr(new SkipWord("ft"));
 	SkipWords.InsertPtr(new SkipWord("yd"));
 	SkipWords.InsertPtr(new SkipWord("ml"));
-	GSession::Event(this,eObjCreated);
+	GSession::Event(this,eObjNewMem);
 }
 
 
@@ -273,7 +273,7 @@ bool GLang::MustSkipSequence(const RChar* seq)
 //------------------------------------------------------------------------------
 GLang::~GLang(void)
 {
-	GSession::Event(this,eObjDeleted);
+	GSession::Event(this,eObjDeleteMem);
 	if(Dict)
 		delete Dict;
 	if(Stop)

@@ -105,7 +105,6 @@ const char* GFilterManagerCURL::DetermineMIMEType(const char* tmpfile)
 void GFilterManagerCURL::Download(const char* URL,RString& tmpFile)
 {
 	struct DwnFile tmpfile;
-	int err;
 
 	// Fill structure -> find a local temporary file
 	tmpfile.stream=0;
@@ -120,11 +119,11 @@ void GFilterManagerCURL::Download(const char* URL,RString& tmpFile)
 	curl_easy_setopt(Lib, CURLOPT_CONNECTTIMEOUT,30);
 	curl_easy_setopt(Lib, CURLOPT_TIMEOUT,240);
 
-	err=curl_easy_perform(Lib);
+	CURLcode err=curl_easy_perform(Lib);
 	if(tmpfile.stream)
 		fclose(tmpfile.stream);
 	if(err)
-		throw GException(RString("Can't download url : ")+ URL);
+		throw GException(RString("Can't download url : ")+URL+curl_easy_strerror(err));
 }
 
 

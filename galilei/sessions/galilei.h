@@ -232,16 +232,17 @@ R::RString GetObjType(tObjType objtype);
 //------------------------------------------------------------------------------
 /**
 * States of a given GALILEI object.
+* @short Object States
 */
 enum tObjState
 {
 	osUnknow                  /** Unknow state.*/,
-	osCreated                 /** Object was created.*/,
+	osNewMem                  /** Object was created in memory.*/,
 	osUpToDate                /** Object is up to date.*/,
 	osModified                /** Object was modified and computation must be update.*/,
 	osUpdated                 /** Object is updated and needs to be save.*/,
 	osSaved                   /** Object was saved.*/,
-	osDelete                  /** Object must be deleted.*/,
+	osDeleteMem               /** Object must be deleted from memory.*/,
 	osNotNeeded               /** Object is not needed.*/,
 	osOnDemand                /** Object demands to load information. */,
 	osNeedLoad                /** Object must load information.*/
@@ -259,13 +260,16 @@ R::RString GetState(tObjState state);
 //------------------------------------------------------------------------------
 /**
 * GALILEI event.
+* @short Event
 */
 enum tEvent
 {
 	eUnknow                   /** Unknow event.*/,
-	eObjCreated               /** An object was created.*/,
+	eObjCreate                /** An object was created in the database.*/,
+	eObjNewMem                /** An object was created in memory.*/,
 	eObjModified              /** An object was modified.*/,
-	eObjDeleted               /** An Object will be deleted.*/
+	eObjDeleteMem             /** An Object will be deleted from memory.*/,
+	eObjRemove                /** An object was removed from the database.*/
 };
 
 
@@ -280,6 +284,7 @@ R::RString GetEvent(tEvent event);
 //------------------------------------------------------------------------------
 /**
 * Judgments over a document.
+* @short Document Assessment
 */
 enum tDocAssessment
 {
@@ -304,12 +309,14 @@ enum tDocAssessment
 */
 R::RString GetAssessment(tDocAssessment assessment);
 
+
 //------------------------------------------------------------------------------
 /**
 * Get a string representing the code of an assessment.
 * @param assessment          Assessment.
 */
 R::RString GetAssessmentCode(tDocAssessment assessment);
+
 
 //------------------------------------------------------------------------------
 /**
@@ -322,6 +329,7 @@ tDocAssessment GetAssessmentType(const R::RString& assessment);
 //------------------------------------------------------------------------------
 /**
 * Models used to describe informations.
+* @short Information Type
 */
 enum tInfoType
 {

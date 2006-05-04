@@ -106,6 +106,27 @@ void GSlotLog::StartJob(const R::RString job)
 
 
 //------------------------------------------------------------------------------
+void GSlotLog::Warning(R::RString msg)
+{
+	WriteLog("Warning: "+msg);
+}
+
+
+//------------------------------------------------------------------------------
+void GSlotLog::Error(R::RString msg)
+{
+	WriteLog("Error: "+msg);
+}
+
+
+//------------------------------------------------------------------------------
+void GSlotLog::Alert(R::RString msg)
+{
+	WriteLog("Alert: "+msg);
+}
+
+
+//------------------------------------------------------------------------------
 GSlotLog::~GSlotLog(void)
 {
 }

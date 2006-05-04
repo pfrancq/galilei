@@ -48,49 +48,56 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GUser::GUser(unsigned int id,const char* name,const char* fullname,unsigned int nb)
+GUser::GUser(unsigned int id,const R::RString name,const R::RString fullname,unsigned int nb)
  : RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
    FullName(fullname)
 {
- GSession::Event(this,eObjCreated);
+	GSession::Event(this,eObjNewMem);
 }
 
 
 //------------------------------------------------------------------------------
 int GUser::Compare(const GUser &user) const
 {
- return(Id-user.Id);
+	return(Id-user.Id);
 }
 
 
 //------------------------------------------------------------------------------
 int GUser::Compare(const GUser *user) const
 {
- return(Id-user->Id);
+	return(Id-user->Id);
 }
 
 
 //------------------------------------------------------------------------------
 int GUser::Compare(const unsigned int id) const
 {
- return(Id-id);
+	return(Id-id);
+}
+
+
+//------------------------------------------------------------------------------
+int GUser::Compare(const R::RString& name) const
+{
+	return(Name.Compare(name));
 }
 
 
 //------------------------------------------------------------------------------
 void GUser::SetId(unsigned int id)
 {
- if(id==cNoRef)
-  throw GException("Cannot assign cNoRef to a user");
- Id=id;
+	if(id==cNoRef)
+		throw GException("Cannot assign cNoRef to a user");
+	Id=id;
 }
 
 
 //------------------------------------------------------------------------------
 R::RCursor<GProfile> GUser::GetProfiles(void)
 {
- R::RCursor<GProfile> cur(*this);
- return(cur);
+	R::RCursor<GProfile> cur(*this);
+	return(cur);
 }
 
 
@@ -111,5 +118,5 @@ RString GUser::GetFullName(void) const
 //------------------------------------------------------------------------------
 GUser::~GUser(void)
 {
- GSession::Event(this,eObjDeleted);
+ GSession::Event(this,eObjDeleteMem);
 }

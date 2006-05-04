@@ -646,12 +646,10 @@ void GSession::AssignId(GDoc* doc)
 	}
 
 	// The first document has the identificator 1
-	if(!Data->Docs.GetNb())
-	{
+	if(Data->Docs.GetNb())
+		doc->SetId(Data->Docs[Data->Docs.GetMaxPos()]->GetId()+1); // Not [GetNb()-1] because first doc has an identificator of 1
+	else
 		doc->SetId(1);
-		return;
-	}
-	doc->SetId(Data->Docs[Data->Docs.GetNb()-1]->GetId()+1);
 }
 
 
@@ -659,10 +657,14 @@ void GSession::AssignId(GDoc* doc)
 void GSession::InsertDoc(GDoc* d)
 {
 	PerLang* Lang;
+	bool NewOne=false;
 
 	// Test if the document has an id
 	if(d->GetId()==cNoRef)
+	{
 		AssignId(d);
+		NewOne=true;
+	}
 
 	// Insert the document
 	Data->Docs.InsertPtrAt(d,d->GetId());
@@ -673,6 +675,14 @@ void GSession::InsertDoc(GDoc* d)
 
 	//insert the doc in the DocsRefUrl container.
 	Data->DocsRefUrl.InsertPtr(new GDocRefURL(d));
+
+	if(NewOne)
+	{
+		// If new one and all documents are in memory -> store it in the database
+		if(Data->Storage->IsAllInMemory())
+			Data->Storage->SaveDoc(d);
+		Event(d,eObjCreate);
+	}
 }
 
 
@@ -909,6 +919,36 @@ GUser* GSession::GetUser(unsigned int id,bool load,bool null) const
 
 
 //------------------------------------------------------------------------------
+GUser* GSession::GetUser(const RString name,bool load,bool null) const
+{
+	GUser* u;
+
+	u=Data->Users.GetPtr(name,false);
+	if(u)
+		return(u);
+	if(!load)
+		return(0);
+	if(Data->Storage->IsAllInMemory())
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown user "+name);
+	}
+	u=Data->Storage->LoadUser(name);
+	if(!u)
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown user "+name);
+	}
+	const_cast<GSession*>(this)->InsertUser(u);
+	return(u);
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::AssignId(GUser* user)
 {
 	// If all users are not in memory -> use the database
@@ -929,9 +969,23 @@ void GSession::AssignId(GUser* user)
 //------------------------------------------------------------------------------
 void GSession::InsertUser(GUser* user)
 {
+	bool NewOne=false;
+
 	if(user->GetId()==cNoRef)
+	{
 		AssignId(user);
+		NewOne=true;
+	}
 	Data->Users.InsertPtrAt(user,user->GetId(),true);
+	if(NewOne)
+	{
+		// If new one and all users are in memory -> store it in the database
+		if(Data->Storage->IsAllInMemory())
+			Data->Storage->SaveUser(user);
+		if(Data->Slot)
+			Data->Slot->Alert("User "+user->GetName()+" created ("+RString::Number(user->GetId())+")");
+		Event(user,eObjCreate);
+	}
 }
 
 
@@ -1009,9 +1063,23 @@ void GSession::AssignId(GProfile* p)
 //------------------------------------------------------------------------------
 void GSession::InsertProfile(GProfile* p)
 {
+	bool NewOne=false;
+
 	if(p->GetId()==cNoRef)
+	{
 		AssignId(p);
+		NewOne=true;
+	}
 	Data->Profiles.InsertPtrAt(p,p->GetId());
+	if(NewOne)
+	{
+		// If new one and all profiles are in memory -> store it in the database
+		if(Data->Storage->IsAllInMemory())
+			Data->Storage->SaveProfile(p);
+		if(Data->Slot)
+			Data->Slot->Alert("Profile "+p->GetName()+" for user "+p->GetUser()->GetName()+" created ("+RString::Number(p->GetId())+")");
+		Event(p,eObjCreate);
+	}
 }
 
 
@@ -1258,14 +1326,16 @@ void GSession::UpdateProfiles(unsigned int docid,GLang* lang)
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate update)
+void GSession::InsertFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed,bool newone)
 {
 	GProfile* prof=GetProfile(p,false);
 	if(prof)
-		prof->InsertFdbk(d,lang,assess,date,update);
+		prof->InsertFdbk(d,lang,assess,date,computed);
 	GDoc* doc=GetDoc(d,false);
 	if(doc)
 		doc->InsertFdbk(p);
+	if(newone&&((!Data->Storage->IsAllInMemory())||(Data->SaveResults)))
+		Data->Storage->AddFdbk(p,d,lang,assess,date,computed);
 }
 
 

@@ -61,7 +61,7 @@ GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,co
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(0),
 	  Failed(f), LinkSet(5,2), OwnerId(ownerid)
 {
-	GSession::Event(this,eObjCreated);
+	GSession::Event(this,eObjNewMem);
 }
 
 
@@ -413,14 +413,14 @@ R::RCursor<GLink> GDoc::GetLinks(void) const
 //------------------------------------------------------------------------------
 GDoc::~GDoc(void)
 {
-	GSession::Event(this,eObjDeleted);
+	GSession::Event(this,eObjDeleteMem);
 	try
 	{
 		// Delete feedbacks vector
 		delete Fdbks;
 
 		// If document have a language -> remove its references
-		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
+		if(Lang&&(State==osDeleteMem))  // The object has modified the references count but was not saved
 			DelRefs(otDoc,Lang);
 	}
 	catch(...)
