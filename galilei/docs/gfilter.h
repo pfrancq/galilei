@@ -264,9 +264,11 @@ public:
 	* Transform a file into a GDocXML document. Try to find the MIME type of the
 	* document if not specified.
 	* @param doc            Document to analyze
+	* @param slot           Slot where to write problem when trying to create
+	*                       the DocXML file.
 	* Return Pointer to a GDocXML.
 	*/
-	GDocXML* CreateDocXML(GDoc* doc);
+	GDocXML* CreateDocXML(GDoc* doc,GSlot* slot=0);
 
 	/**
 	* Add a pair (MIME type,filter).

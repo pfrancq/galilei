@@ -47,6 +47,7 @@
 #include <gdocxml.h>
 #include <gdoc.h>
 #include <gfilter.h>
+#include <gslot.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -577,7 +578,7 @@ void GFilterManager::Delete(RString&)
 
 
 //------------------------------------------------------------------------------
-GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
+GDocXML* GFilterManager::CreateDocXML(GDoc* doc,GSlot* slot)
 {
 	RString tmpFile(250);
 	char tmp[250];
@@ -609,7 +610,17 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 	{
 
 		// if the download can't be done an error is then send
-		Download(doc->GetURL(),tmpFile);
+		try
+		{
+			Download(doc->GetURL(),tmpFile);
+		}
+		catch(GException& e)
+		{
+			if(!slot) // If not slot -> forward error as GException
+				throw GException(e.GetMsg());
+			slot->WriteStr(e.GetMsg());
+			return(0);
+		}
 		Dwn=true;
 	}
 	else
