@@ -143,7 +143,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDoc(file,file,cNoRef,0,GPluginManagers::GetManager<GFilterManager>("Filter")->GetMIMEType(mime),RDate(""),RDate(""),0,0);
+	Document=new GDoc(file,file,cNoRef,0,GPluginManagers::GetManager<GFilterManager>("Filter")->GetMIMEType(mime),RDate(""),RDate(""));
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
@@ -312,9 +312,8 @@ void KViewDoc::ConstructGeneral(void)
 			strcpy(sDate,"Unknow");
 			break;
 	}
-	new QListViewItem(General,"Status",sDate);
-	if(Document->GetFailed())
-		new QListViewItem(General,"Number of failed",QString::number(Document->GetFailed()));
+	new QListViewItem(General,"State",sDate);
+	new QListViewItem(General,"Status",ToQString(GetDocStatus(Document->GetStatus())));
 }
 
 

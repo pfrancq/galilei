@@ -263,10 +263,9 @@ void KGALILEICenterApp::saveOptions(void)
 			Tag2=new RXMLTag("search");
 			Tag2->InsertAttr("dir",*cPath());
 			Config.AddTag(Tag,Tag2);
-
-			RXMLFile File(ConfigFile,&Config);
-			File.Open(RIO::Create);
 		}
+		RXMLFile File(ConfigFile,&Config);
+		File.Open(RIO::Create);
 	}
 	catch(...)
 	{
