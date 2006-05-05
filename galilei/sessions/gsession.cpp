@@ -84,6 +84,40 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
+// define
+#define HANDLEALLEXCEPTIONS(rec,msg) 	                                       \
+catch(GException& e)                                                           \
+{                                                                              \
+	if(rec)                                                                    \
+		rec->WriteStr(msg+e.GetMsg());                                         \
+	else                                                                       \
+		throw GException(msg+e.GetMsg());                                      \
+}                                                                              \
+catch(RException& e)                                                           \
+{                                                                              \
+	if(rec)                                                                    \
+		rec->WriteStr(msg+e.GetMsg());                                         \
+	else                                                                       \
+		throw GException(msg+e.GetMsg());                                      \
+}                                                                              \
+catch(exception& e)                                                            \
+{                                                                              \
+	if(rec)                                                                    \
+		rec->WriteStr(msg+e.what());                                           \
+	else                                                                       \
+		throw GException(msg+e.what());                                        \
+}                                                                              \
+catch(...)                                                                     \
+{                                                                              \
+	if(rec)                                                                    \
+		rec->WriteStr(msg);                                                    \
+	else                                                                       \
+		throw GException(msg);                                                 \
+}
+
+
+
+//------------------------------------------------------------------------------
 //
 // class GFreeId
 //
@@ -752,40 +786,9 @@ void GSession::AnalyseDocs(GSlot* rec)
 					InsertDoc(Cur());
 					//#warning add the document with the Cur()->GetId()
 				}
+				delete xml;
 			}
-			catch(GException& e)
-			{
-				// Write error message to the log file handled by the GSlot.
-				if(rec)
-					rec->WriteStr(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.GetMsg());
-				else
-					throw GException(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.GetMsg());
-			}
-			catch(RException& e)
-			{
-				// Write error message to the log file handled by the GSlot.
-				if(rec)
-					rec->WriteStr(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.GetMsg());
-				else
-					throw GException(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.GetMsg());
-			}
-			catch(exception& e)
-			{
-				// Write error message to the log file handled by the GSlot.
-				if(rec)
-					rec->WriteStr(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.what());
-				else
-					throw GException(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): "+e.what());
-			}
-			catch(...)
-			{
-				// Write error message to the log file handled by the GSlot.
-				if(rec)
-					rec->WriteStr(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): Unknow problem");
-				else
-					throw GException(Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): Unknow problem");
-			}
-			delete xml;
+			HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): ")
 		}
 	}
 	while(Cont);
@@ -814,19 +817,28 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,RContainer<GDoc,false,true>* n
 	undefLang=false;
 	if(!doc->GetLang())
 		undefLang=true;
-	if(!xml)
-		xml=GPluginManagers::GetManager<GFilterManager>("Filter")->CreateDocXML(doc);
-	if(xml)
+	try
 	{
-		doc->InitFailed();
-		Analyse->Analyze(xml,doc,newdocs);
-		if((undefLang)&&(doc->GetLang()))
+		doc->SetStatus(dsCannotAccess); // Suppose it cannot be access
+		if(!xml)
+			xml=GPluginManagers::GetManager<GFilterManager>("Filter")->CreateDocXML(doc,rec);
+		if(xml)
 		{
-			MoveDoc(doc);
+			// Analyse document -> Is something goes wrong -> It failed
+			// If a log file specified -> write to it and it is OK
+			// If no log file specified -> Propagate error
+			doc->SetStatus(dsCannotAnalyse); // Suppose it cannot be analysed
+			Analyse->Analyze(xml,doc,newdocs);
+			if((undefLang)&&(doc->GetLang()))
+			{
+				MoveDoc(doc);
+			}
+			doc->SetStatus(dsOK); // OK, everything fine
 		}
 	}
-	else
-		doc->IncFailed();
+	HANDLEALLEXCEPTIONS(rec,doc->GetURL()+"("+RString::Number(doc->GetId())+"): ")
+
+	// Save if necessary
 	if(Data->SaveResults&&(doc->GetId()!=cNoRef))
 	{
 		Data->Storage->SaveDoc(doc);
