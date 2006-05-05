@@ -41,9 +41,9 @@ namespace stemming
 
 			trim_western_punctuation(text);
 
-			find_r1(text, "aeiou√°√©√≠√≥√∫√ºAEIOU√Å√â√ç√ì√ö√ú");
-			find_r2(text, "aeiou√°√©√≠√≥√∫√ºAEIOU√Å√â√ç√ì√ö√ú");
-			find_spanish_rv(text, "aeiou√°√©√≠√≥√∫√ºAEIOU√Å√â√ç√ì√ö√ú");
+			find_r1(text, "aeiou·ÈÌÛ˙¸AEIOU¡…Õ”⁄‹");
+			find_r2(text, "aeiou·ÈÌÛ˙¸AEIOU¡…Õ”⁄‹");
+			find_spanish_rv(text, "aeiou·ÈÌÛ˙¸AEIOU¡…Õ”⁄‹");
 
 			step_0(text);
 			step_1(text);
@@ -154,7 +154,7 @@ namespace stemming
 			{
 			if ((text.length() >= suffix_length + 5) &&
 				this->m_rv <= static_cast<int>(text.length()-5-suffix_length) &&
-				text.compare(static_cast<int>(text.length()-5-suffix_length), 5, "i√©ndo", 5) == 0)
+				text.compare(static_cast<int>(text.length()-5-suffix_length), 5, "iÈndo", 5) == 0)
 				{
 				text.erase(text.end()-suffix_length, text.end() );
 				text[text.length()-4] = 'e';
@@ -162,7 +162,7 @@ namespace stemming
 				}
 			else if ((text.length() >= suffix_length + 4) &&
 				this->m_rv <= static_cast<int>(text.length()-4-suffix_length) &&
-				text.compare(static_cast<int>(text.length()-4-suffix_length), 4, "√°ndo", 4) == 0)
+				text.compare(static_cast<int>(text.length()-4-suffix_length), 4, "·ndo", 4) == 0)
 				{
 				text.erase(text.end()-suffix_length, text.end() );
 				text[text.length()-4] = 'a';
@@ -170,7 +170,7 @@ namespace stemming
 				}
 			else if ((text.length() >= suffix_length + 2) &&
 				this->m_rv <= static_cast<int>(text.length()-2-suffix_length) &&
-				text.compare(static_cast<int>(text.length()-2-suffix_length), 2, "√°r", 2) == 0)
+				text.compare(static_cast<int>(text.length()-2-suffix_length), 2, "·r", 2) == 0)
 				{
 				text.erase(text.end()-suffix_length, text.end() );
 				text[text.length()-2] = 'a';
@@ -178,7 +178,7 @@ namespace stemming
 				}
 			else if ((text.length() >= suffix_length + 2) &&
 				this->m_rv <= static_cast<int>(text.length()-2-suffix_length) &&
-				text.compare(static_cast<int>(text.length()-2-suffix_length), 2, "√©r", 2) == 0)
+				text.compare(static_cast<int>(text.length()-2-suffix_length), 2, "Èr", 2) == 0)
 				{
 				text.erase(text.end()-suffix_length, text.end() );
 				text[text.length()-2] = 'e';
@@ -186,7 +186,7 @@ namespace stemming
 				}
 			else if ((text.length() >= suffix_length + 2) &&
 				this->m_rv <= static_cast<int>(text.length()-2-suffix_length) &&
-				text.compare(static_cast<int>(text.length()-2-suffix_length), 2, "√≠r", 2) == 0)
+				text.compare(static_cast<int>(text.length()-2-suffix_length), 2, "Ìr", 2) == 0)
 				{
 				text.erase(text.end()-suffix_length, text.end() );
 				text[text.length()-2] = 'i';
@@ -297,7 +297,7 @@ namespace stemming
 					}
 				step_2a(text);
 				}
-			else if (is_suffix_in_r2(text, "log√≠as", 6) )
+			else if (is_suffix_in_r2(text, "logÌas", 6) )
 				{
 				text.erase(text.end()-3, text.end() );
 				update_r_sections(text);
@@ -374,7 +374,7 @@ namespace stemming
 					}
 				step_2a(text);
 				}
-			else if (delete_if_is_in_r2(text, "aci√≥n", 5) )
+			else if (delete_if_is_in_r2(text, "aciÛn", 5) )
 				{
 				if (original_length > text.length() )
 					{
@@ -423,13 +423,13 @@ namespace stemming
 					}
 				step_2a(text);
 				}
-			else if (is_suffix_in_r2(text, "log√≠a", 5) )
+			else if (is_suffix_in_r2(text, "logÌa", 5) )
 				{
 				text.erase(text.end()-2, text.end() );
 				update_r_sections(text);
 				return;
 				}
-			else if (is_suffix_in_r2(text, "uci√≥n", 5) )
+			else if (is_suffix_in_r2(text, "uciÛn", 5) )
 				{
 				text.erase(text.end()-4, text.end() );
 				update_r_sections(text);
@@ -740,7 +740,7 @@ namespace stemming
 					}
 				step_2b(text);
 				}
-			else if (is_suffix_in_rv(text, "y√≥", 2))
+			else if (is_suffix_in_rv(text, "yÛ", 2))
 				{
 				if (text[text.length()-3] == 'u' || text[text.length()-3] == 'U')
 					{
@@ -759,27 +759,27 @@ namespace stemming
 		//---------------------------------------------
 		void step_2b(std::basic_string<Tchar_type, Tchar_traits>& text)
 			{
-			if (delete_if_is_in_rv(text, "ar√≠amos", 7, false) )
+			if (delete_if_is_in_rv(text, "arÌamos", 7, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√≠amos", 7, false) )
+			else if (delete_if_is_in_rv(text, "erÌamos", 7, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√≠amos", 7, false) )
+			else if (delete_if_is_in_rv(text, "irÌamos", 7, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "i√©ramos", 7, false) )
+			else if (delete_if_is_in_rv(text, "iÈramos", 7, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "i√©semos", 7, false) )
+			else if (delete_if_is_in_rv(text, "iÈsemos", 7, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ar√≠ais", 6, false) )
+			else if (delete_if_is_in_rv(text, "arÌais", 6, false) )
 				{
 				return;
 				}
@@ -787,7 +787,7 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√≠ais", 6, false) )
+			else if (delete_if_is_in_rv(text, "erÌais", 6, false) )
 				{
 				return;
 				}
@@ -795,7 +795,7 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√≠ais", 6, false) )
+			else if (delete_if_is_in_rv(text, "irÌais", 6, false) )
 				{
 				return;
 				}
@@ -819,51 +819,51 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√°bamos", 6, false) )
+			else if (delete_if_is_in_rv(text, "·bamos", 6, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√°ramos", 6, false) )
+			else if (delete_if_is_in_rv(text, "·ramos", 6, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√°semos", 6, false) )
+			else if (delete_if_is_in_rv(text, "·semos", 6, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ar√≠an", 5, false) )
+			else if (delete_if_is_in_rv(text, "arÌan", 5, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ar√≠as", 5, false) )
+			else if (delete_if_is_in_rv(text, "arÌas", 5, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ar√©is", 5, false) )
+			else if (delete_if_is_in_rv(text, "arÈis", 5, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√≠an", 5, false) )
+			else if (delete_if_is_in_rv(text, "erÌan", 5, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√≠as", 5, false) )
+			else if (delete_if_is_in_rv(text, "erÌas", 5, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√©is", 5, false) )
+			else if (delete_if_is_in_rv(text, "erÈis", 5, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√≠an", 5, false) )
+			else if (delete_if_is_in_rv(text, "irÌan", 5, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√≠as", 5, false) )
+			else if (delete_if_is_in_rv(text, "irÌas", 5, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√©is", 5, false) )
+			else if (delete_if_is_in_rv(text, "irÈis", 5, false) )
 				{
 				return;
 				}
@@ -903,7 +903,7 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√≠amos", 5, false) )
+			else if (delete_if_is_in_rv(text, "Ìamos", 5, false) )
 				{
 				return;
 				}
@@ -916,39 +916,39 @@ namespace stemming
 					}
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ar√°n", 4, false) )
+			else if (delete_if_is_in_rv(text, "ar·n", 4, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ar√°s", 4, false) )
+			else if (delete_if_is_in_rv(text, "ar·s", 4, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ar√≠a", 4, false) )
+			else if (delete_if_is_in_rv(text, "arÌa", 4, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√°n", 4, false) )
+			else if (delete_if_is_in_rv(text, "er·n", 4, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√°s", 4, false) )
+			else if (delete_if_is_in_rv(text, "er·s", 4, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√≠a", 4, false) )
+			else if (delete_if_is_in_rv(text, "erÌa", 4, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√°n", 4, false) )
+			else if (delete_if_is_in_rv(text, "ir·n", 4, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√°s", 4, false) )
+			else if (delete_if_is_in_rv(text, "ir·s", 4, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√≠a", 4, false) )
+			else if (delete_if_is_in_rv(text, "irÌa", 4, false) )
 				{
 				return;
 				}
@@ -1008,7 +1008,7 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√≠ais", 4, false) )
+			else if (delete_if_is_in_rv(text, "Ìais", 4, false) )
 				{
 				return;
 				}
@@ -1028,27 +1028,27 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ar√°", 3, false) )
+			else if (delete_if_is_in_rv(text, "ar·", 3, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ar√©", 3, false) )
+			else if (delete_if_is_in_rv(text, "arÈ", 3, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√°", 3, false) )
+			else if (delete_if_is_in_rv(text, "er·", 3, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "er√©", 3, false) )
+			else if (delete_if_is_in_rv(text, "erÈ", 3, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√°", 3, false) )
+			else if (delete_if_is_in_rv(text, "ir·", 3, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "ir√©", 3, false) )
+			else if (delete_if_is_in_rv(text, "irÈ", 3, false) )
 				{
 				return;
 				}
@@ -1072,7 +1072,7 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√≠an", 3, false) )
+			else if (delete_if_is_in_rv(text, "Ìan", 3, false) )
 				{
 				return;
 				}
@@ -1084,15 +1084,15 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√≠as", 3, false) )
+			else if (delete_if_is_in_rv(text, "Ìas", 3, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√°is", 3, false) )
+			else if (delete_if_is_in_rv(text, "·is", 3, false) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√©is", 3, false) )
+			else if (delete_if_is_in_rv(text, "Èis", 3, false) )
 				{
 				if (is_suffix(text, "gu", 2) )
 					{
@@ -1101,7 +1101,7 @@ namespace stemming
 					}
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√≠a", 2, false) )
+			else if (delete_if_is_in_rv(text, "Ìa", 2, false) )
 				{
 				return;
 				}
@@ -1121,7 +1121,7 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "i√≥", 2, false) )
+			else if (delete_if_is_in_rv(text, "iÛ", 2, false) )
 				{
 				return;
 				}
@@ -1141,7 +1141,7 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√≠s", 2, false) )
+			else if (delete_if_is_in_rv(text, "Ìs", 2, false) )
 				{
 				return;
 				}
@@ -1179,20 +1179,20 @@ namespace stemming
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√°", 1) )
+			else if (delete_if_is_in_rv(text, "·", 1) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√≠", 1) )
+			else if (delete_if_is_in_rv(text, "Ì", 1) )
 				{
 				return;
 				}
-			else if (delete_if_is_in_rv(text, "√≥", 1) )
+			else if (delete_if_is_in_rv(text, "Û", 1) )
 				{
 				return;
 				}
 
-			else if (delete_if_is_in_rv(text, "√©", 1) ||
+			else if (delete_if_is_in_rv(text, "È", 1) ||
 					delete_if_is_in_rv(text, "e", 1) )
 				{
 				if (is_suffix_in_rv(text, "u", 1))
