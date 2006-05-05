@@ -56,10 +56,10 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,unsigned int f,unsigned int ownerid)
+GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,tDocStatus status,unsigned int ownerid)
 	:  GWeightInfos(60), URL(url), Name(name), Id(id),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(0),
-	  Failed(f), LinkSet(5,2), OwnerId(ownerid)
+	  Status(status), LinkSet(5,2), OwnerId(ownerid)
 {
 	GSession::Event(this,eObjNewMem);
 }
@@ -179,6 +179,16 @@ void GDoc::SetId(unsigned int id)
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a document");
 	Id=id;
+}
+
+//------------------------------------------------------------------------------
+void GDoc::SetStatus(tDocStatus status)
+{
+	if(status!=Status)
+	{
+		Status=status;
+		Computed.SetToday(); // Suppose that a status change arrived after a computation
+	}
 }
 
 

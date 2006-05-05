@@ -65,52 +65,36 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 	{
 		case otNoClass:
 			return(RString("unknow"));
-			break;
 		case otSession:
 			return(RString("session"));
-			break;
 		case otDoc:
 			return(RString("document"));
-			break;
 		case otDocs:
 			return(RString("documents"));
-			break;
 		case otUsers:
 			return(RString("users"));
-			break;
 		case otUser:
 			return(RString("user"));
-			break;
 		case otProfile:
 			return(RString("profile"));
-			break;
 		case otSubProfile:
 			return(RString("subProfile"));
-			break;
 		case otGroups:
 			return(RString("groups"));
-			break;
 		case otGroup:
 			return(RString("group"));
-			break;
 		case otDocSubProfile:
 			return(RString("document or subprofile"));
-			break;
 		case otDocGroup:
 			return(RString("document or group"));
-			break;
 		case otSubProfileGroup:
 			return(RString("subprofile or group"));
-			break;
 		case otFdbk:
 			return(RString("assessment"));
-			break;
 		case otLang:
 			return(RString("language"));
-			break;
 		case otHistory:
 			return(RString("history"));
-			break;
 	}
 	return(RString("unknow"));
 }
@@ -123,34 +107,24 @@ R::RString GALILEI::GetState(tObjState state)
 	{
 		case osUnknow:
 			return(RString("unknow"));
-			break;
 		case osNewMem:
 			return(RString("created"));
-			break;
 		case osUpToDate:
 			return(RString("up to date"));
-			break;
 		case osModified:
 			return(RString("modified"));
-			break;
 		case osUpdated:
 			return(RString("updated"));
-			break;
 		case osSaved:
 			return(RString("saved"));
-			break;
 		case osDeleteMem:
 			return(RString("deleted"));
-			break;
 		case osNotNeeded:
 			return(RString("not needed"));
-			break;
 		case osOnDemand:
 			return(RString("demands information"));
-			break;
 		case osNeedLoad:
 			return(RString("must load information"));
-			break;
 	}
 	return(RString("unknow"));
 }
@@ -163,16 +137,16 @@ R::RString GALILEI::GetEvent(tEvent event)
 	{
 		case eUnknow:
 			return(RString("Unknow"));
-			break;
 		case eObjNewMem:
-			return(RString("object created"));
-			break;
+			return(RString("object created in memory"));
+		case eObjCreate:
+			return(RString("object created in system"));
 		case eObjModified:
 			return(RString("object modified"));
-			break;
 		case eObjDeleteMem:
-			return(RString("object deleted"));
-			break;
+			return(RString("object deleted from memory"));
+		case eObjRemove:
+			return(RString("object deleted from system"));
 	}
 	return(RString("unknow"));
 }
@@ -265,19 +239,32 @@ R::RString GALILEI::GetInfoType(tInfoType infotype)
 	{
 		case infoNothing:
 			return(RString("unknow"));
-			break;
 		case infoWord:
 			return(RString("word"));
-			break;
 		case infoWordList:
 			return(RString("list of words"));
-			break;
 		case infoWordOccurs:
 			return(RString("list of occurences of a word"));
-			break;
 		case infoDoc:
 			return(RString("document"));
-			break;
+	}
+	return(RString("unknow"));
+}
+
+
+//------------------------------------------------------------------------------
+R::RString GALILEI::GetDocStatus(tDocStatus status)
+{
+	switch(status)
+	{
+		case dsToAnalyse:
+			return(RString("Document must be analysed"));
+		case dsCannotAccess:
+			return(RString("Cannot access the document"));
+		case dsCannotAnalyse:
+			return(RString("Document was downloaded but cannot be analysed"));
+		case dsOK:
+			return(RString("Document is OK"));
 	}
 	return(RString("unknow"));
 }

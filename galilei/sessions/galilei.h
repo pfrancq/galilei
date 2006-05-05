@@ -352,6 +352,27 @@ R::RString GetInfoType(tInfoType infotype);
 
 //------------------------------------------------------------------------------
 /**
+* Status of a document.
+*/
+enum tDocStatus
+{
+	dsOK=0                         /** Document is OK.*/,
+	dsToAnalyse=1                  /** Document must be analysed.*/,
+	dsCannotAccess=2               /** Cannot access the document. */,
+	dsCannotAnalyse=3              /** Document was downloaded but cannot be analysed.*/
+};
+
+
+//------------------------------------------------------------------------------
+/**
+* Get a string representing a status of a document.
+* @param status              Status.
+*/
+R::RString GetDocStatus(tDocStatus status);
+
+
+//------------------------------------------------------------------------------
+/**
 * The GException class provides a basic representation for an exception.
 * @author Pascal Francq
 * @short Basic Exception.

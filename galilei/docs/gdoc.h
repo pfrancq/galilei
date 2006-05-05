@@ -103,9 +103,9 @@ protected:
 	R::RVectorInt<true>* Fdbks;
 
 	/**
-	* Count the number of downloads failed.
+	* Status of the document.
 	*/
-	unsigned int Failed;
+	tDocStatus Status;
 
 	/**
 	* Links "out" of the document.
@@ -128,10 +128,10 @@ public:
 	* @param mime            MIME type of the document.
 	* @param u               Date of the last update.
 	* @param a               Date of the last analysis.
-	* @param f               Number of fails.
+	* @param status          Status of the document.
 	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,unsigned int f,unsigned int ownerid);
+	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,tDocStatus status=dsToAnalyse,unsigned int ownerid=0);
 
 	/**
 	* Compare two documents by comparing their identificator.
@@ -246,25 +246,16 @@ public:
 	unsigned int GetOwnerId(void) const {return(OwnerId);}
 
 	/**
-	* Get the number of failed for the document.
-	* @returns unsigned int.
+	* Get the status of a document.
+	* @returns tDocStatus.
 	*/
-	unsigned int GetFailed(void) const {return(Failed);}
+	tDocStatus GetStatus(void) const {return(Status);}
 
 	/**
-	* Initialise the number of attemps to 0.
+	* Set the status of the document.
+	* @param status          New status
 	*/
-	void InitFailed(void) {Failed=0;}
-
-	/**
-	* Increase the number of failed attemp.
-	*/
-	void IncFailed(void) {Failed++;}
-
-	/**
-	* Decrease the number of failed attemp.
-	*/
-	void DecFailed(void) {Failed--;}
+	void SetStatus(tDocStatus status);
 
 	/**
 	* Get a cursor on the identificator of the profiles which have assesses the
