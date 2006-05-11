@@ -313,6 +313,7 @@ void KViewDoc::ConstructGeneral(void)
 			break;
 	}
 	new QListViewItem(General,"State",sDate);
+
 	new QListViewItem(General,"Status",ToQString(GetDocStatus(Document->GetStatus())));
 }
 
