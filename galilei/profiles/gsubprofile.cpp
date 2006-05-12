@@ -114,7 +114,11 @@ void GSubProfile::InsertFdbk(GFdbk* fdbk)
 {
 	Fdbks.InsertPtr(fdbk);
 	State=osModified;
-	Updated.SetToday();
+
+	// If the document assessed was computed after the last computation
+	// -> profile is considered as updated
+	if(Computed<fdbk->GetComputed())
+		Updated.SetToday();
 }
 
 
