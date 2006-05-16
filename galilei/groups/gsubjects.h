@@ -115,12 +115,6 @@ protected:
 	void ProfileAssess(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH);
 
 	/**
-	* Get the ideal group of the subprofile.
-	* @param sub            SubProfile.
-	*/
-	GSubject* GetIdealGroup(GSubProfile* sub) const;
-
-	/**
 	* Compute the Recall and the Precision.
 	*/
 	void ComputeRecallPrecision(void);
@@ -221,10 +215,28 @@ public:
 	double GetRecall(GGroup* grp) const;
 
 	/**
+	* Get the ideal group of the subprofile.
+	* @param sub            SubProfile.
+	*/
+	GSubject* GetIdealGroup(GSubProfile* sub) const;
+
+	/**
+	* Get the ideal group of the document.
+	* @param doc            Document.
+	*/
+	GSubject* GetIdealGroup(GDoc* doc) const;
+
+	/**
 	* Compute the number of ideal groups for a given topic (and its sub-topics)
 	* in a given language.
 	*/
-	unsigned int GetNbIdealGroups(const GLang* lang) const;
+	size_t GetNbIdealGroups(const GLang* lang) const;
+
+	/**
+	* Compute the number of topics (and its sub-topics) containing a document
+	* in a given language.
+	*/
+	size_t GetNbTopicsDocs(const GLang* lang) const;
 
 	/**
 	* Add a given profile to a subject.

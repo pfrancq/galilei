@@ -376,6 +376,18 @@ GSubject* GSubjects::GetIdealGroup(GSubProfile* sub) const
 
 
 //------------------------------------------------------------------------------
+GSubject* GSubjects::GetIdealGroup(GDoc* doc) const
+{
+	GSubject* subject;
+
+	RCursor<GSubject> Cur(Top->GetNodes());
+	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
+		subject=Cur()->GetIdealGroup(doc);
+	return(subject);
+}
+
+
+//------------------------------------------------------------------------------
 void GSubjects::ComputeRecallPrecision(void)
 {
 	R::RCursor<GroupScore> Grp;
@@ -457,13 +469,25 @@ void GSubjects::ComputeRecallPrecision(void)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GSubjects::GetNbIdealGroups(const GLang* lang) const
+size_t GSubjects::GetNbIdealGroups(const GLang* lang) const
 {
 	unsigned int nb;
 
 	RCursor<GSubject> Cur(Top->GetNodes());
 	for(Cur.Start(),nb=0;!Cur.End();Cur.Next())
 		nb+=Cur()->GetNbIdealGroups(lang);
+	return(nb);
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GSubjects::GetNbTopicsDocs(const GLang* lang) const
+{
+	unsigned int nb;
+
+	RCursor<GSubject> Cur(Top->GetNodes());
+	for(Cur.Start(),nb=0;!Cur.End();Cur.Next())
+		nb+=Cur()->GetNbTopicsDocs(lang);
 	return(nb);
 }
 

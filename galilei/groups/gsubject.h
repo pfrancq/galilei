@@ -111,6 +111,12 @@ public:
 	GSubject* GetIdealGroup(GSubProfile* sub) const;
 
 	/**
+	* Get the ideal group of the document.
+	* @param doc            Document.
+	*/
+	GSubject* GetIdealGroup(GDoc* doc) const;
+
+	/**
 	* Verify if a subprofile is part of the subject.
 	* @param sub             Pointer to the subprofile.
 	*/
@@ -121,6 +127,12 @@ public:
 	* @param prof            Pointer to the profile.
 	*/
 	bool IsIn(GProfile* prof) const;
+
+	/**
+	* Verify if a document is part of the subject.
+	* @param doc             Pointer to the document.
+	*/
+	bool IsIn(GDoc* doc) const;
 
 	/**
 	* Add a group to the subject. This method can only be used when the current
@@ -153,6 +165,12 @@ public:
 	size_t GetNbIdealGroups(const GLang* lang) const;
 
 	/**
+	* Compute the number of topics (and its sub-topics) containing a document
+	* in a given language.
+	*/
+	size_t GetNbTopicsDocs(const GLang* lang) const;
+
+	/**
 	* Get the number of subprofiles associated to the subject.
 	* @param lang            Language of the subprofiles.
 	*/
@@ -175,7 +193,14 @@ public:
 	* current one.
 	* @param grp             Group.
 	*/
-	unsigned int GetNbSubProfiles(const GGroup* grp) const;
+	size_t GetNbSubProfiles(const GGroup* grp) const;
+
+	/**
+	* Compute the number of documents of a given container that are also in the
+	* current one.
+	* @param docs            Container of documents.
+	*/
+	size_t GetNbDocs(const R::RContainer<GDoc,false,false>* docs) const;
 
 	/**
 	* Insert a document to the list of those contained in the subject.
@@ -194,6 +219,12 @@ public:
 	* @returns unsigned int
 	*/
 	unsigned int GetNbDocs(void) const;
+
+	/**
+	* Get the number of subprofiles associated to the subject.
+	* @param lang            Language of the subprofiles.
+	*/
+	size_t GetNbDocs(const GLang* lang) const;
 
 	/**
 	* Insert a profile to the list of those contained in the subject.

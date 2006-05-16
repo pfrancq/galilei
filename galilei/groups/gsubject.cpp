@@ -158,6 +158,24 @@ GSubject* GSubject::GetIdealGroup(GSubProfile* sub) const
 
 
 //------------------------------------------------------------------------------
+GSubject* GSubject::GetIdealGroup(GDoc* doc) const
+{
+	GSubject* subject;
+
+	RCursor<GDoc> Doc(Data->Docs);
+	for(Doc.Start();!Doc.End();Doc.Next())
+	{
+		if(Doc()==doc)
+			return(const_cast<GSubject*>(this));
+	}
+	RCursor<GSubject> Cur(GetNodes());
+	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
+		subject=Cur()->GetIdealGroup(doc);
+	return(subject);
+}
+
+
+//------------------------------------------------------------------------------
 bool GSubject::IsIn(GSubProfile* sub) const
 {
 	RCursor<GProfile> Prof(Data->Profiles);
@@ -174,6 +192,13 @@ bool GSubject::IsIn(GSubProfile* sub) const
 bool GSubject::IsIn(GProfile* prof) const
 {
 	return(Data->Profiles.IsIn(*prof));
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubject::IsIn(GDoc* doc) const
+{
+	return(Data->Docs.IsIn(*doc));
 }
 
 
@@ -221,7 +246,29 @@ size_t GSubject::GetNbIdealGroups(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubject::GetNbSubProfiles(const GLang* lang) const
+size_t GSubject::GetNbTopicsDocs(const GLang* lang) const
+{
+	GSubject* subject;
+	size_t nb;
+
+	RCursor<GDoc> Docs(Data->Docs);
+	for(Docs.Start(),nb=0;!Docs.End();Docs.Next())
+	{
+		if(Docs()->GetLang()==lang)
+		{
+			nb++;
+			break;
+		}
+	}
+	RCursor<GSubject> Cur(GetNodes());
+	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
+		nb+=Cur()->GetNbTopicsDocs(lang);
+	return(nb);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSubject::GetNbSubProfiles(const GLang* lang) const
 {
 	unsigned int nb;
 
@@ -279,6 +326,21 @@ size_t GSubject::GetNbSubProfiles(const GGroup* grp) const
 
 
 //------------------------------------------------------------------------------
+size_t GSubject::GetNbDocs(const RContainer<GDoc,false,false>* docs) const
+{
+	size_t tot;
+	RCursor<GDoc> sub(Data->Docs);
+
+	for(sub.Start(),tot=0;!sub.End();sub.Next())
+	{
+		if(docs->IsIn(*sub()))
+			tot++;
+	}
+	return(tot);
+}
+
+
+//------------------------------------------------------------------------------
 R::RCursor<GDoc> GALILEI::GSubject::GetDocs(void)
 {
 	R::RCursor<GDoc> cur(Data->Docs);
@@ -290,6 +352,21 @@ R::RCursor<GDoc> GALILEI::GSubject::GetDocs(void)
 unsigned int GALILEI::GSubject::GetNbDocs(void) const
 {
 	return(Data->Docs.GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSubject::GetNbDocs(const GLang* lang) const
+{
+	unsigned int nb;
+
+	RCursor<GDoc> Doc(Data->Docs);
+	for(Doc.Start(),nb=0;!Doc.End();Doc.Next())
+	{
+		if(Doc()->GetLang()==lang)
+			nb++;
+	}
+	return(nb);
 }
 
 
