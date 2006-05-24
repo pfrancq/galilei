@@ -96,9 +96,9 @@ void Configure(GFactoryMeasure* params)
 	dlg.MinSim->setEnabled(!params->GetBool("AutomaticMinSim"));
 	if(dlg.exec())
 	{
-		params->Set("NullSimLevel",dlg.NullSimLevel->value());
-		params->Set("MinSim",dlg.MinSim->value());
-		params->Set("AutomaticMinSim",!dlg.StaticMinSim->isChecked());
+		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
+		params->SetDouble("MinSim",dlg.MinSim->value());
+		params->SetBool("AutomaticMinSim",!dlg.StaticMinSim->isChecked());
 		params->Apply();
  	}
 }

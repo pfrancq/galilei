@@ -37,7 +37,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <ggroupsdocssimscosinus.h>
 #include <glang.h>
 #include <gdoc.h>
@@ -299,7 +299,7 @@ GGroupsDocsSimsCosinus::GGroupsDocsSimsCosinus::GGroupsDocsSimsCosinus(GFactoryM
 	GSession::AddHandler(this);
 	if(!Memory) return;
 	Sims.Clear();
-	R::RCursor<GLang> Langs(GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns());
+	R::RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Sims.InsertPtr(new GDocGrpSim(this,Langs()));
 }
@@ -468,16 +468,16 @@ void GGroupsDocsSimsCosinus::Event(GGroup* grp, tEvent event)
 
 
 //------------------------------------------------------------------------------
-void GGroupsDocsSimsCosinus::CreateParams(GParams* params)
+void GGroupsDocsSimsCosinus::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamDouble("NullSimLevel",0.00001));
-	params->InsertPtr(new GParamBool("Memory",false));
-	params->InsertPtr(new GParamBool("ISF",true));
-	params->InsertPtr(new GParamBool("IDF",true));
-	params->InsertPtr(new GParamBool("DebugSim",false));
-	params->InsertPtr(new GParamBool("DebugMinSim",false));
-	params->InsertPtr(new GParamDouble("MinSim",0.05));
-	params->InsertPtr(new GParamBool("AutomaticMinSim",true));
+	params->InsertParam(new RParamValue("NullSimLevel",0.00001));
+	params->InsertParam(new RParamValue("Memory",false));
+	params->InsertParam(new RParamValue("ISF",true));
+	params->InsertParam(new RParamValue("IDF",true));
+	params->InsertParam(new RParamValue("DebugSim",false));
+	params->InsertParam(new RParamValue("DebugMinSim",false));
+	params->InsertParam(new RParamValue("MinSim",0.05));
+	params->InsertParam(new RParamValue("AutomaticMinSim",true));
 }
 
 

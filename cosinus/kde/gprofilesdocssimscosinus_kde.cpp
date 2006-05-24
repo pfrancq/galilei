@@ -102,14 +102,14 @@ void Configure(GFactoryMeasure* params)
 
 	if(dlg.exec())
 	{
-		params->Set("NullSimLevel",dlg.NullSimLevel->value());
-		params->Set("ISF",dlg.ISF->isChecked());
-		params->Set("IDF",dlg.IDF->isChecked());
-		params->Set("Memory",dlg.Memory->isChecked());
-		params->Set("DebugSim",dlg.DebugSim->isChecked());
-		params->Set("DebugMinSim",dlg.DebugMinSim->isChecked());
-		params->Set("MinSim",dlg.MinSim->value());
-		params->Set("AutomaticMinSim",dlg.AutomaticMinSim->isChecked());
+		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
+		params->SetBool("ISF",dlg.ISF->isChecked());
+		params->SetBool("IDF",dlg.IDF->isChecked());
+		params->SetBool("Memory",dlg.Memory->isChecked());
+		params->SetBool("DebugSim",dlg.DebugSim->isChecked());
+		params->SetBool("DebugMinSim",dlg.DebugMinSim->isChecked());
+		params->SetDouble("MinSim",dlg.MinSim->value());
+		params->SetBool("AutomaticMinSim",dlg.AutomaticMinSim->isChecked());
 		params->Apply();
  	}
 }

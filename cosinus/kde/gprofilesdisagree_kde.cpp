@@ -95,9 +95,9 @@ void Configure(GFactoryMeasure* params)
 	dlg.MinDisagreement->setValue(params->GetDouble("MinDisagreement"));
 	if(dlg.exec())
 	{
-		params->Set("MinDiffDocs",dlg.MinDiffDocs->value());
-		params->Set("NullSimLevel",dlg.NullSimLevel->value());
-		params->Set("MinDisagreement",dlg.MinDisagreement->value());
+		params->SetUInt("MinDiffDocs",dlg.MinDiffDocs->value());
+		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
+		params->SetDouble("MinDisagreement",dlg.MinDisagreement->value());
 		params->Apply();
  	}
 }

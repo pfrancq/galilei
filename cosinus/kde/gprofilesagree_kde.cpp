@@ -95,9 +95,9 @@ void Configure(GFactoryMeasure* params)
 	dlg.MinAgreement->setValue(params->GetDouble("MinAgreement"));
 	if(dlg.exec())
 	{
-		params->Set("MinSameDocs",dlg.MinSameDocs->value());
-		params->Set("NullSimLevel",dlg.NullSimLevel->value());
-		params->Set("MinAgreement",dlg.MinAgreement->value());
+		params->SetUInt("MinSameDocs",dlg.MinSameDocs->value());
+		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
+		params->SetDouble("MinAgreement",dlg.MinAgreement->value());
 		params->Apply();
  	}
 }

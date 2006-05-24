@@ -48,7 +48,7 @@
 #include <gprofile.h>
 #include <glang.h>
 #include <gsession.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -318,7 +318,7 @@ GProfilesSimsCosinus::GProfilesSimsCosinus(GFactoryMeasure* fac)
 	: GMeasure(fac), GSignalHandler(), Values(10,5), NullSimLevel(0.000001), MinSim(0.5), AutomaticMinSim(true)
 {
 	GSession::AddHandler(this);
-	R::RCursor<GLang> Langs(GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns());
+	R::RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
 	for(Langs.Start();!Langs.End();Langs.Next())
 		Values.InsertPtr(new GProfilesSim(this,Langs()));
 }
@@ -453,11 +453,11 @@ void GProfilesSimsCosinus::Event(GSubProfile* sub, tEvent event)
 
 
 //------------------------------------------------------------------------------
-void GProfilesSimsCosinus::CreateParams(GParams* params)
+void GProfilesSimsCosinus::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamDouble("NullSimLevel",0.00001));
-	params->InsertPtr(new GParamDouble("MinSim",0.05));
-	params->InsertPtr(new GParamBool("AutomaticMinSim",true));
+	params->InsertParam(new RParamValue("NullSimLevel",0.00001));
+	params->InsertParam(new RParamValue("MinSim",0.05));
+	params->InsertParam(new RParamValue("AutomaticMinSim",true));
 }
 
 
