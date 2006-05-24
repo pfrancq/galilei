@@ -91,12 +91,12 @@ void Configure(GFactoryPostGroup* params)
 
 	if (dlg.exec())
 	{
-		params->Set("NbLevels", dlg.NbLevels->value());
+		params->SetUInt("NbLevels", dlg.NbLevels->value());
 		params->Apply();
 	}
 }
- 
- 
+
+
  //------------------------------------------------------------------------------
  }
  //------------------------------------------------------------------------------

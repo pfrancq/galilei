@@ -52,7 +52,7 @@
 #include <ggroup.h>
 #include <glang.h>
 #include <gstorage.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
@@ -216,9 +216,9 @@ GSubProfilesLevel::GSubProfilesLevel(GFactoryPostGroup* fac)
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::CreateParams(GParams* params)
+void GSubProfilesLevel::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamUInt("NbLevels",5));
+	params->InsertParam(new RParamValue("NbLevels",5));
 }
 
 
@@ -236,10 +236,10 @@ void GSubProfilesLevel::Connect(GSession* session)
 	// Try to insert the command, eventually, delete it
 	GPostGroup::Connect(session);
 	GSubProfilesLevelCmd* command=new GSubProfilesLevelCmd();
-	if(!GPluginManagers::GetManager<GStorageManager>("Storage")->InsertCmd(command))
+	if(!GALILEIApp->GetManager<GStorageManager>("Storage")->InsertCmd(command))
 		delete command;
 	GDocsLevelCmd* command2=new GDocsLevelCmd();
-	if(!GPluginManagers::GetManager<GStorageManager>("Storage")->InsertCmd(command2))
+	if(!GALILEIApp->GetManager<GStorageManager>("Storage")->InsertCmd(command2))
 		delete command2;
 }
 
