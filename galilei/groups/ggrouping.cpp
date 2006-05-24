@@ -39,7 +39,7 @@
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <gsession.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <gstorage.h>
 #include <gslot.h>
 using namespace R;
@@ -74,7 +74,7 @@ void GGrouping::Grouping(GSlot* rec,bool save)
 	R::RCursor<GGroup> Groups;
 
 	// Go trough each language.
-	CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+	CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		Lang=CurLang()->GetPlugin();
@@ -103,7 +103,7 @@ void GGrouping::Grouping(GSlot* rec,bool save)
 	Lang=0;
 
 	// Compute the description of the groups and Save the information.
-	CalcDesc=GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
+	CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
 	if(CalcDesc)
 	{
 		Groups=Session->GetGroups();

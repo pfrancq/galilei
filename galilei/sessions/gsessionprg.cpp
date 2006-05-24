@@ -48,7 +48,7 @@
 #include <gsession.h>
 #include <gstorage.h>
 #include <gslot.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -413,7 +413,7 @@ void GSetLinksMethodI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true
 	if(args->GetNb()!=1)
 		throw RException("The method needs one parameter to specify the name of the link computing method (or \"None\").");
 	o->WriteStr("Link Computing Method: "+(*args)[0]->GetValue(prg));
-	GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod((*args)[0]->GetValue(prg),false);
+	GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod((*args)[0]->GetValue(prg),false);
 }
 
 
@@ -461,12 +461,12 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tru
 		tmp="Compute Profiles with current method";
 	o->WriteStr(tmp);
 	if(args->GetNb()==1)
-		GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod((*args)[0]->GetValue(prg),false);
-	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
-		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false)->ApplyConfig();
-	if(!GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod())
+		GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod((*args)[0]->GetValue(prg),false);
+	if(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
+		GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false)->ApplyConfig();
+	if(!GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod())
 		throw GException (" No Profiling Method chosen.");
-	GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
+	GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o));
 }
 
@@ -483,13 +483,13 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,
 		tmp="Group Profiles with current method";
 	o->WriteStr(tmp);
 	if(args->GetNb()==1)
-		GPluginManagers::GetManager<GGroupingManager>("Grouping")->SetCurrentMethod((*args)[0]->GetValue(prg));
-	if(!GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod())
+		GALILEIApp->GetManager<GGroupingManager>("Grouping")->SetCurrentMethod((*args)[0]->GetValue(prg));
+	if(!GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod())
 		throw RException (" No Grouping Method chosen.");
-	GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()->ApplyConfig();
-	if(!GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod())
+	GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()->ApplyConfig();
+	if(!GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod())
 		throw RException (" No Group Description Method chosen.");
-	GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
+	GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o));
 }
 
@@ -556,7 +556,7 @@ void GSetSubjectsParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true
 {
 	if(args->GetNb()!=2)
 		throw RException("Method needs two parameters.");
-	Owner->Session->GetSubjects()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
+	GALILEIApp->GetGALILEIConfig()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
 }
 
 
@@ -567,7 +567,7 @@ void GSetComputingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,tru
 
 	if(args->GetNb()!=2)
 		throw RException("Method needs two parameters");
-	calc=GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod();
+	calc=GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod();
 	if(!calc)
 		throw RException("No profiling method selected.");
 	calc->GetFactory()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
@@ -581,7 +581,7 @@ void GSetGroupingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true
 
 	if(args->GetNb()!=2)
 		throw RException("Method needs two parameters.");
-	calc=GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod();
+	calc=GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod();
 	if(!calc)
 		throw RException("No grouping computing method selected.");
 	calc->GetFactory()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
@@ -623,9 +623,9 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 		rec->WriteStr("Compute Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
-		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false)->ApplyConfig();
-	GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
+	if(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
+		GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false)->ApplyConfig();
+	GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->CalcProfiles(rec);
 
 	// Group Profiles
@@ -635,8 +635,8 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 		rec->WriteStr("Group Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()->ApplyConfig();
-	GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
+	GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()->ApplyConfig();
+	GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
 	Owner->Session->GroupingProfiles(rec);
 
 	// Compare Ideal
@@ -732,19 +732,19 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 		if(GSession::Break()) return;
 
 		// One profile must be created
-		nbminprof=Owner->Session->GetSubjects()->GetUInt("NbProfMin");
-		nbmaxprof=Owner->Session->GetSubjects()->GetUInt("NbProfMax");
-		Owner->Session->GetSubjects()->Set("NbProfMin",1);
-		Owner->Session->GetSubjects()->Set("NbProfMax",1);
-		Owner->Session->GetSubjects()->Apply();
+		nbminprof=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMin");
+		nbmaxprof=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMax");
+		GALILEIApp->GetGALILEIConfig()->Set("NbProfMin",1);
+		GALILEIApp->GetGALILEIConfig()->Set("NbProfMax",1);
+		GALILEIApp->Apply();
 
 		// Look if new topic or existing one
 		if(Random->Value()<Proba)
 		{
 			// Create One profile of an existing topic
 			NewProf=Owner->Session->GetSubjects()->AddProfiles();
-			Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
-			Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
+			GALILEIApp->GetGALILEIConfig()->Set("NbProfMin",nbminprof);
+			GALILEIApp->GetGALILEIConfig()->Set("NbProfMax",nbmaxprof);
 
 			if(NewProf)
 				What[0]='E';
@@ -761,16 +761,16 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 			{
 				Proba=1.0;  // Cannot create any new topic
 				NewProf=Owner->Session->GetSubjects()->AddProfiles();
-				Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
-				Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
+				GALILEIApp->GetGALILEIConfig()->Set("NbProfMin",nbminprof);
+				GALILEIApp->GetGALILEIConfig()->Set("NbProfMax",nbmaxprof);
 
 				if(NewProf)
 					What[0]='E';
 			}
 		}
-		Owner->Session->GetSubjects()->Set("NbProfMin",nbminprof);
-		Owner->Session->GetSubjects()->Set("NbProfMax",nbmaxprof);
-		Owner->Session->GetSubjects()->Apply();
+		GALILEIApp->GetGALILEIConfig()->Set("NbProfMin",nbminprof);
+		GALILEIApp->GetGALILEIConfig()->Set("NbProfMax",nbmaxprof);
+		GALILEIApp->Apply();
 
 		// If no profile was created -> normal feedback cycle
 		if(!NewProf)
@@ -864,7 +864,7 @@ void GSetStatParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,fal
 
 	if(args->GetNb()!=3)
 		throw RException("Method needs three parameters");
-	mng=GPluginManagers::GetManager<GStatsCalcManager>("StatsCalc");
+	mng=GALILEIApp->GetManager<GStatsCalcManager>("StatsCalc");
 	if(!mng)
 		throw RException("No statistics method selected.");
 	calc=mng->GetPlugIn((*args)[0]->GetValue(prg));
@@ -886,7 +886,7 @@ void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args
 	if(args->GetNb())
 		throw RException("Method needs no parameter");
 
-	GStatsCalcManager* Mng=GPluginManagers::GetManager<GStatsCalcManager>("StatsCalc");
+	GStatsCalcManager* Mng=GALILEIApp->GetManager<GStatsCalcManager>("StatsCalc");
 	if(!Mng)
 		throw RException("No manager for the statistics plug-ins");
 

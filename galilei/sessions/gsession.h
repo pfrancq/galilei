@@ -42,7 +42,6 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <genginedoc.h>
-#include <gparams.h>
 #include <gsignalhandler.h>
 
 

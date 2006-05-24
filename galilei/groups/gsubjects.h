@@ -46,7 +46,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gparams.h>
 
 
 //-----------------------------------------------------------------------------
@@ -64,7 +63,7 @@ namespace GALILEI{
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subjects.
 */
-class GSubjects : public R::RTree<GSubject,true,false>, public GParams
+class GSubjects : public R::RTree<GSubject,true,false>
 {
 protected:
 
@@ -82,6 +81,11 @@ public:
 	* @param session         Session.
 	*/
 	GSubjects(GSession* session);
+
+	/**
+	* Create the configuration.
+	*/
+	static void CreateConfig(void);
 
 	/**
 	* Assign the values of the parameters to the corresponding variables.

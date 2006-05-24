@@ -39,6 +39,8 @@
 // include file for R
 #include <rxmltag.h>
 #include <rxmlstruct.h>
+#include <rconfig.h>
+
 
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
@@ -57,7 +59,6 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include file for GALILEI
 #include <galilei.h>
-#include <gparams.h>
 
 
 //-----------------------------------------------------------------------------
@@ -149,7 +150,7 @@ public:
 * @short Generic Plugin Factory.
 */
 template<class factory,class plugin,class mng>
-	class GFactoryPlugin : public GParams
+	class GFactoryPlugin : public R::RConfig
 {
 public:
 
@@ -171,9 +172,14 @@ protected:
 	plugin* Plugin;
 
 	/**
-	* Name of the library.
+	* File of the library.
 	*/
 	R::RString Lib;
+
+	/**
+	* Name of the plug-in.
+	*/
+	R::RString Name;
 
 	/**
 	* Pointer to a function showing the about box.
@@ -209,7 +215,7 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPlugin(mng* m,const char* n,const char* f);
+	GFactoryPlugin(mng* m,const R::RString& n,const R::RString& f);
 
 	/**
 	* Get the manager of the factory.
@@ -264,6 +270,17 @@ public:
 	* @return int.
 	*/
 	int GetLevel(void) const {return(Level);}
+
+	/**
+	* Set the level of the plug-in.
+	* @param level           Level of the plug-in.
+	*/
+	void SetLevel(int level) {Level=level;}
+
+	/**
+	* Name of the plug-in.
+	*/
+	R::RString GetName(void) const {return(Name);}
 
 	/**
 	* Create a new plug-in and eventually connect it to the session.
@@ -379,20 +396,6 @@ public:
 	const char* GetVersion(void) const {return(this->Version);}
 
 	/**
-	* Read a configuration from a XML Tag.
-	* @param parent          Parent Tag.
-	*/
-	virtual void ReadConfig(R::RXMLTag* parent);
-
-	/**
-	* Save a configuration to a XML Tag.
-	* this tag.
-	* @param xml             XML Structure.
-	* @param parent          Parent tag.
-	*/
-	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent);
-
-	/**
 	* Destructor.
 	*/
 	virtual ~GFactoryPlugin(void);
@@ -404,7 +407,7 @@ public:
 
 //-------------------------------------------------------------------------------
 #define CREATE_FACTORY(manager,factory,genericplugin,plugin,lib,API,name)      \
-	class TheFactory : public factory                                          \
+class TheFactory : public factory                                              \
 {                                                                              \
 	static factory* Inst;                                                      \
 	TheFactory(manager* mng,const char* l) : factory(mng,name,l)               \

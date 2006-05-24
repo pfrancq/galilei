@@ -146,35 +146,87 @@ template<class mng,class factory,class plugin>
 
 //------------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	void GPluginManager<mng,factory,plugin>::ReadConfig(RXMLTag* t)
+	void GPluginManager<mng,factory,plugin>::CreateConfig(R::RConfig* config)
 {
-	if(!t) return;
-	R::RCursor<factory> Cur(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	// For list and ordered plug-ins -> do nothing
+	switch(PluginsType)
 	{
-		Cur()->ReadConfig(t);
+		case ptOrdered:
+			config->InsertParam(new RParamList(Name),"Plugins");
+			break;
+
+		case ptSelect:
+			config->InsertParam(new RParamValue(Name,"None"),"Plugins");
+			break;
+
+		default:
+			break;
 	}
-	if(PluginsType!=ptSelect)
-		return;
-	SetCurrentMethod(t->GetAttrValue("current"),false);
 }
 
 
 //------------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	void GPluginManager<mng,factory,plugin>::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+	void GPluginManager<mng,factory,plugin>::ReadConfig(R::RConfig* config)
 {
-	R::RCursor<factory> Cur(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	// For list and ordered plug-ins -> do nothing
+	switch(PluginsType)
 	{
-		Cur()->SaveConfig(xml,t);
+		case ptOrdered:
+		{
+			R::RParamList* param=config->FindParam<R::RParamList>(Name,"Plugins");
+			size_t pos;
+			R::RCursor<R::RString> Cur(param->GetList());
+			for(Cur.Start(),pos=0;!Cur.End();Cur.Next(),pos++)
+			{
+				factory* fac=R::RContainer<factory,true,true>::GetPtr(*Cur(),false);
+				fac->SetLevel(pos);
+			}
+			break;
+			ReOrder();
+		}
+
+		case ptSelect:
+			SetCurrentMethod(config->Get(Name,"Plugins"),false);
+			break;
+
+		default:
+			break;
 	}
-	if(PluginsType!=ptSelect)
-		return;
-	if(Current)
-		t->InsertAttr("current",Current->GetName());
-	else
-		t->InsertAttr("current","None");
+}
+
+
+//------------------------------------------------------------------------------
+template<class mng,class factory,class plugin>
+	void GPluginManager<mng,factory,plugin>::SaveConfig(R::RConfig* config)
+{
+	// For list and ordered plug-ins -> do nothing
+	switch(PluginsType)
+	{
+		case ptOrdered:
+		{
+			R::RParamList* param=config->FindParam<R::RParamList>(Name,"Plugins");
+			param->Reset();
+			R::RCursor<factory> Cur(*this);
+			for(Cur.Start();!Cur.End();Cur.Next())
+				param->Insert(Cur()->GetName());
+			break;
+		}
+
+		case ptSelect:
+		{
+			RString Default;
+			if(Current)
+				Default=Current->GetName();
+			else
+				Default="None";
+			config->Set(Name,Default,"Plugins");
+			break;
+		}
+
+		default:
+			break;
+	}
 }
 
 
@@ -182,9 +234,18 @@ template<class mng,class factory,class plugin>
 template<class mng,class factory,class plugin>
 	void GPluginManager<mng,factory,plugin>::RegisterFactory(factory* fac)
 {
-	R::RContainer<factory,true,true>::InsertPtr(fac);
+	fac->Load(false);
 	if(PluginsType==ptOrdered)
-		fac->InsertPtr(new GParamInt("Level",R::RContainer<factory,true,true>::GetNb()));
+	{
+		R::RConfig* config=R::App->GetConfig();
+		config->InsertParam(new RParamList(Name),"Plugins");
+		fac->SetLevel(R::RContainer<factory,true,true>::GetNb());
+	}
+	if(fac->GetBool("Enable"))
+		fac->Create();
+
+	fac->Apply();
+	R::RContainer<factory,true,true>::InsertPtr(fac);
 }
 
 
@@ -213,6 +274,10 @@ template<class mng,class factory,class plugin>
 	void GPluginManager<mng,factory,plugin>::EnablePlugIn(plugin* plug)
 {
 	R::RContainer<plugin,false,true>::InsertPtr(plug);
+	R::RConfig* config=plug->GetFactory();
+	R::RParamValue* param=config->FindParam<R::RParamValue>("Enable");
+	if(param)
+		param->SetBool(true);
 }
 
 
@@ -221,6 +286,10 @@ template<class mng,class factory,class plugin>
 	void GPluginManager<mng,factory,plugin>::DisablePlugIn(plugin* plug)
 {
 	R::RContainer<plugin,false,true>::DeletePtr(*plug);
+	R::RConfig* config=plug->GetFactory();
+	R::RParamValue* param=config->FindParam<R::RParamValue>("Enable");
+	if(param)
+		param->SetBool(false);
 }
 
 

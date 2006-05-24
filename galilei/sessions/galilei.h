@@ -60,11 +60,6 @@
 
 
 //------------------------------------------------------------------------------
-// Defines
-#define proxy public
-
-
-//------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
@@ -177,9 +172,6 @@ class GStatsCalc;
 class GFactoryStatsCalc;
 class GStatsCalcManager;
 class GMixedIdealGroups;
-class GParams;
-class GParam;
-class GConfig;
 class GStorage;
 class GStorageManager;
 class GFactoryStorage;
@@ -187,6 +179,7 @@ class GMeasure;
 class GMeasureManager;
 class GFactoryMeasure;
 class GTypeMeasureManager;
+class GGALILEIApp;
 
 
 //------------------------------------------------------------------------------

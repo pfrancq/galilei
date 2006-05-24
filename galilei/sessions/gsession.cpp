@@ -79,7 +79,7 @@ using namespace R;
 #include <gweightinfo.h>
 #include <ggroupshistory.h>
 #include <gpostgroup.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 
 
@@ -293,7 +293,7 @@ bool GSession::Intern::ExternBreak=false;
 GSession::GSession(GSlot* slot,R::RDebug* debug,unsigned int maxdocs,unsigned int maxsubprofiles,unsigned int maxgroups)
 	: Data(0)
 {
-	GFactoryStorage* fac=GPluginManagers::GetManager<GStorageManager>("Storage")->GetCurrentFactory();
+	GFactoryStorage* fac=GALILEIApp->GetManager<GStorageManager>("Storage")->GetCurrentFactory();
 	if(!fac)
 		throw GException("No Storage");
 
@@ -329,8 +329,6 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,unsigned int maxdocs,unsigned in
 //------------------------------------------------------------------------------
 void GSession::Init(void)
 {
-	// Connect to the manager
-	GPluginManagers::PluginManagers.Connect(this);
 }
 
 
@@ -480,6 +478,7 @@ GSubjects* GSession::GetSubjects(bool load) const
 		Data->Subjects=new GSubjects(const_cast<GSession*>(this));
 		if(Data->Storage)
 			const_cast<GSession*>(this)->Data->Storage->LoadSubjects();
+		Data->Subjects->Apply();
 	}
 	return(Data->Subjects);
 }
@@ -803,7 +802,7 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,RContainer<GDoc,false,true>* n
 	bool undefLang;
 
 	// Verify that the textanalyse method is selected
-	GDocAnalyse* Analyse=GPluginManagers::GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
+	GDocAnalyse* Analyse=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
@@ -821,7 +820,7 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,RContainer<GDoc,false,true>* n
 	{
 		doc->SetStatus(dsCannotAccess); // Suppose it cannot be access
 		if(!xml)
-			xml=GPluginManagers::GetManager<GFilterManager>("Filter")->CreateDocXML(doc,rec);
+			xml=GALILEIApp->GetManager<GFilterManager>("Filter")->CreateDocXML(doc,rec);
 		if(xml)
 		{
 			// Analyse document -> Is something goes wrong -> It failed
@@ -851,7 +850,7 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,RContainer<GDoc,false,true>* n
 void GSession::DoPostDocs(GSlot* rec)
 {
 	// Run all post-doc methods that are enabled
-	R::RCursor<GPostDoc> PostDocs=GPluginManagers::GetManager<GPostDocManager>("PostDoc")->GetPlugIns();
+	R::RCursor<GPostDoc> PostDocs=GALILEIApp->GetManager<GPostDocManager>("PostDoc")->GetPlugIns();
 	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
 	{
 		if(rec)
@@ -869,7 +868,7 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 {
 	GMetaEngine* metaEngine;
 	// Verify that a meta engine is selected
-	metaEngine=GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod();
+	metaEngine=GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod();
 	if(!metaEngine)
 		throw GException("No meta engine method chosen.");
 	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
@@ -1229,7 +1228,7 @@ void GSession::CalcProfiles(GSlot* rec)
 	R::RCursor<GProfile> Prof=GetProfiles();
 
 	// Run all pre-profile methods that are enabled
-	R::RCursor<GPreProfile> PreProfile=GPluginManagers::GetManager<GPreProfileManager>("PreProfile")->GetPlugIns();
+	R::RCursor<GPreProfile> PreProfile=GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->GetPlugIns();
 	for(PreProfile.Start();!PreProfile.End();PreProfile.Next())
 	{
 		if(rec)
@@ -1257,8 +1256,8 @@ void GSession::CalcProfiles(GSlot* rec)
 //------------------------------------------------------------------------------
 void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 {
-	GProfileCalc* Profiling=GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod();
-	GLinkCalc* LinkCalc=GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false);
+	GProfileCalc* Profiling=GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod();
+	GLinkCalc* LinkCalc=GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false);
 
 	if(!Profiling)
 		throw GException("No computing method chosen.");
@@ -1298,7 +1297,7 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 void GSession::DoPostProfiles(GSlot* rec)
 {
 	// Run all post-profiles methods that are enabled
-	R::RCursor<GPostProfile> PostProfile=GPluginManagers::GetManager<GPostProfileManager>("PostProfile")->GetPlugIns();
+	R::RCursor<GPostProfile> PostProfile=GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->GetPlugIns();
 	for(PostProfile.Start();!PostProfile.End();PostProfile.Next())
 	{
 		if(rec)
@@ -1553,7 +1552,7 @@ void GSession::ClearGroups(GLang* lang)
 //------------------------------------------------------------------------------
 void GSession::GroupingProfiles(GSlot* rec)
 {
-	GGrouping* Grouping=GPluginManagers::GetManager<GGroupingManager>("Grouping")->GetCurrentMethod();
+	GGrouping* Grouping=GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod();
 
 	// Verify that there is a method to cluster the subprofile
 	if(!Grouping)
@@ -1569,7 +1568,7 @@ void GSession::GroupingProfiles(GSlot* rec)
 void GSession::DoPostGroups(GSlot* rec)
 {
 	// Run all post-group methods that are enabled
-	R::RCursor<GPostGroup> PostGroups=GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->GetPlugIns();
+	R::RCursor<GPostGroup> PostGroups=GALILEIApp->GetManager<GPostGroupManager>("PostGroup")->GetPlugIns();
 	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
 	{
 		if(rec)
@@ -1590,7 +1589,7 @@ void GSession::CopyIdealGroups(void)
 	GGroupCalc* CalcDesc;
 
 	// Get current grouping description method
-	CalcDesc=GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
+	CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
 
 	// Clear current clustering
 	RCursor<PerLang> Groups(Data->Langs);
@@ -1600,7 +1599,7 @@ void GSession::CopyIdealGroups(void)
 	}
 
 	// Get the active languages
-	RCursor<GLang> Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns();
+	RCursor<GLang> Langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
 
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(GetSubjects()->GetNodes());
@@ -1726,9 +1725,6 @@ void GSession::ResetBreak(void)
 //------------------------------------------------------------------------------
 GSession::~GSession(void)
 {
-	// Disconnect to the manager
-	GPluginManagers::PluginManagers.Disconnect(this);
-
 	// Delete the storage
 	Data->Storage->GetFactory()->Delete();
 

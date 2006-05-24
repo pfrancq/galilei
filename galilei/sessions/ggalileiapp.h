@@ -36,6 +36,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rapplication.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <gslotlog.h>
@@ -47,12 +52,17 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
+// forward declaration
+class GGenericPluginManager;
+
+
+//------------------------------------------------------------------------------
 /**
 * The GALILEIApp class represents a generic application running a session.
 * @short GALILEI Application
 * @author Pascal Francq
 */
-class GGALILEIApp
+class GGALILEIApp : public R::RApplication, public R::RContainer<GGenericPluginManager,true,true>
 {
 	/**
 	* A log file.
@@ -65,12 +75,22 @@ class GGALILEIApp
 	R::RDebugXML* Debug;
 
 	/**
+	* The Session.
+	*/
+	GSession* Session;
+
+	/**
+	* Load the dialog boxes
+	*/
+	bool LoadDialogs;
+
+	/**
 	* Path where to search for plug-ins
 	*/
 	R::RContainer<R::RString,true,false> PlugInsPath;
 
 	/**
-	* Name of the file containing the configuration of the plug-ins.
+	* Name of the the configuration of the plug-ins.
 	*/
 	R::RString PlugInsConfigName;
 
@@ -85,44 +105,36 @@ class GGALILEIApp
 	R::RString DebugFileName;
 
 	/**
-	* Configuration file readed?
+	* Main configuration of GALILEI.
 	*/
-	bool HasReadConfig;
-
-	/**
-	* Application initialized?
-	*/
-	bool HasInitApp;
-
-	/**
-	* The Session.
-	*/
-	GSession* Session;
+	R::RConfig GALILEIConfig;
 
 public:
 
 	/**
 	* Construct the application.
+	* @param name            Name of the application.
 	* @param argc            Number of arguments.
 	* @param argv            Arguments.
+	* @param dlg             Dialog boxes must be loaded too?
 	*/
-	GGALILEIApp(int argc, char *argv[]);
+	GGALILEIApp(const R::RString& name,int argc, char *argv[],bool dlg=false);
 
 	/**
-	* Read the configuration file.
+	* Get a pointer over the configuration of GALILEI.
 	*/
-	void ReadConfig(const R::RString config);
+	R::RConfig* GetGALILEIConfig(void) {return(&GALILEIConfig);}
 
 	/**
-	* Write the configuration file.
+	* Create the configuration structure. New parameters can be added by
+	* defining a new method.
 	*/
-	void WriteConfig(const R::RString config);
+	virtual void CreateConfig(void);
 
 	/**
 	* Initialisation of the application.
-	* @param dlg             Dialog boxes must be loaded too?
 	*/
-	void Init(bool dlg);
+	virtual void Init(void);
 
 	/**
 	* Create the session.
@@ -130,10 +142,116 @@ public:
 	GSession* CreateSession(void);
 
 	/**
+	* Delete the session.
+	*/
+	void DeleteSession(void);
+
+	/**
+	* Get the configuration file of GALILEI.
+	*/
+	R::RConfig GetGALILEIConfig(void) const {return(GALILEIConfig);}
+
+	/**
+	* Get the name of the plug-ins configuration path. By default, it
+	* is 'default'.
+	*/
+	R::RString GetPlugInsConfigName(void) const {return(PlugInsConfigName);}
+
+	/**
+	* Set the name of the plug-ins configuration path.
+	* @param name            Name of the path.
+	*/
+	void SetPlugInsConfigName(const R::RString& name) {PlugInsConfigName=name;}
+
+	/**
+	* Get the name of the log file.
+	*/
+	R::RString GetLogFileName(void) const {return(LogFileName);}
+
+	/**
+	* Set the name of the log file.
+	* @param name            Name.
+	*/
+	void SetLogFileName(const R::RString& name) {LogFileName=name;}
+
+	/**
+	* Get the name of the debug file.
+	*/
+	R::RString GetDebugFileName(void) const {return(DebugFileName);}
+
+	/**
+	* Set the name of the debug file.
+	* @param name            Name.
+	*/
+	void SetDebugFileName(const R::RString& name) {DebugFileName=name;}
+
+	/**
+	* Get the list of plug-ins paths.
+	*/
+	R::RCursor<R::RString> GetPlugInsPath(void) const {return(R::RCursor<R::RString>(PlugInsPath));}
+
+	/**
+	* Clear the list of plug-ins paths.
+	*/
+	void ClearPlugInsPath(void) {PlugInsPath.Clear();}
+
+	/**
+	* Add a new plug-ins path in the list.
+	* @param path            Path to add.
+	*/
+	void AddPlugInsPath(const R::RString& path) {PlugInsPath.InsertPtr(new R::RString(path));}
+
+protected:
+
+	/**
+	* Starting from a directory, this function looks for all shared libraries in the
+	* sub-dirs and add them in the containers.
+	* @param dir                 Root directory to scan.
+	* @param plugins             Strings for each main plug-ins.
+	* @param dlgs                Strings for each dialog plug-ins.
+	*/
+	void FindPlugins(const R::RString dir,R::RContainer<R::RString,true,false>& plugins,R::RContainer<R::RString,true,false>& dlgs);
+
+	/**
+	* Load all plug-ins and their dialog boxes.
+	* @param dirs            Directories to search in.
+	* @param dlg             Should the dialog boxes be loaded?
+	*/
+	void Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg=true);
+
+public:
+
+	/**
+	* Get a cursor over all the managers.
+	* @return GPluginManager A cursor on the managers
+	*/
+	R::RCursor<GGenericPluginManager> GetManagers(void);
+
+	/**
+	* Get the manager associated to the "name".
+	* @param name         The name of the manager to be found
+	* @return GPluginManager The plug-ins manager.
+	*/
+	template<class Manager> Manager* GetManager(const R::RString& name)
+	{
+		return(dynamic_cast<Manager*>(GetPtr(name)));
+	}
+
+	/**
+	* Apply the configuration.
+	*/
+	void Apply(void);
+
+	/**
 	* Destructor.
 	*/
 	virtual ~GGALILEIApp(void);
 };
+
+
+//------------------------------------------------------------------------------
+// Extern variables
+extern GGALILEIApp* GALILEIApp;
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -229,17 +229,11 @@ GStorage::~GStorage(void)
 GFactoryStorage::GFactoryStorage(GStorageManager* mng,const char* n,const char* f)
 	: GFactoryPlugin<GFactoryStorage,GStorage,GStorageManager>(mng,n,f)
 {
-}
-
-
-//-----------------------------------------------------------------------------
-void GFactoryStorage::SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent)
-{
-	R::RXMLTag* tag=new R::RXMLTag("plugin");
-	tag->InsertAttr("name",Name);
+/*	R::RXMLTag* tag=new R::RXMLTag("plugin");
 	xml->AddTag(parent,tag);
+	tag->InsertAttr("name",GetName());
 	tag->InsertAttr("enable","False");
-	GParams::SaveConfig(xml,tag);
+	GParams::SaveConfig(xml,tag);*/
 }
 
 

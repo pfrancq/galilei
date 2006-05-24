@@ -42,7 +42,7 @@
 #include <gsubprofile.h>
 #include <gprofile.h>
 #include <gsession.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <gsubject.h>
 #include <gstorage.h>
 #include <gweightinfo.h>
@@ -383,7 +383,7 @@ GSubProfile* GGroup::RelevantSubProfile(void) const
 	double refsum,sum;
 
 	// Similarities
-	GMeasure* ProfilesSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
+	GMeasure* ProfilesSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
 
 	// If no objects -> No relevant one.
 	if(!R::RContainer<GSubProfile,false,true>::GetNb())

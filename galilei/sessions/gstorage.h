@@ -679,15 +679,6 @@ public:
 	GFactoryStorage(GStorageManager* mng,const char* n,const char* f);
 
 	/**
-	* Save a configuration to a XML Tag. Compare to the standard plugin
-	* factory, all storage are 'disabled' by default.
-	* this tag.
-	* @param xml             XML Structure.
-	* @param parent          Parent tag.
-	*/
-	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent);
-
-	/**
 	* Create a plugin. Call the method 'InitAccess' from GStorage.
 	*/
 	virtual void Create(void);

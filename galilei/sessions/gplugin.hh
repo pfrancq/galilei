@@ -66,7 +66,6 @@ template<class factory>
 template<class factory>
 	void GPlugin<factory>::ApplyConfig(void)
 {
-	Factory->Level=Factory->GetInt("Level");
 }
 
 
@@ -102,9 +101,11 @@ template<class factory>
 
 //-----------------------------------------------------------------------------
 template<class factory,class plugin,class mng>
-	GFactoryPlugin<factory,plugin,mng>::GFactoryPlugin(mng* m,const char* n,const char* f)
-		: GParams(n), Mng(m), Plugin(0), Lib(f), AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0), Level(0)
+	GFactoryPlugin<factory,plugin,mng>::GFactoryPlugin(mng* m,const R::RString& n,const R::RString& f)
+		: RConfig("lib/galilei/plugins/"+m->GetName(),f.Mid(0,f.GetLen()-3)), Mng(m), Plugin(0), Lib(f), Name(n),
+	      AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0), Level(0)
 {
+	InsertParam(new R::RParamValue("Enable",false));
 }
 
 
@@ -167,51 +168,11 @@ template<class factory,class plugin,class mng>
 
 //-----------------------------------------------------------------------------
 template<class factory,class plugin,class mng>
-	void GFactoryPlugin<factory,plugin,mng>::ReadConfig(R::RXMLTag* parent)
-{
-	R::RCursor<R::RXMLTag> Cur(parent->GetNodes());
-	R::RXMLTag* tag=0;
-
-	// Find Tag
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		if((Cur()->GetName()=="plugin")&&(Cur()->GetAttrValue("name")==Name))
-		{
-			tag=Cur();
-			break;
-		}
-	}
-	if(!tag) return;
-
-	// Read Info
-	if(tag->GetAttrValue("enable")=="True")
-		Create();
-	GParams::ReadConfig(tag);
-
-	// Apply the information.
-	Apply();
-}
-
-
-//-----------------------------------------------------------------------------
-template<class factory,class plugin,class mng>
-	void GFactoryPlugin<factory,plugin,mng>::SaveConfig(R::RXMLStruct* xml,R::RXMLTag* parent)
-{
-	R::RXMLTag* tag=new R::RXMLTag("plugin");
-	tag->InsertAttr("name",Name);
-	xml->AddTag(parent,tag);
-	if(Plugin)
-		tag->InsertAttr("enable","True");
-	else
-		tag->InsertAttr("enable","False");
-	GParams::SaveConfig(xml,tag);
-}
-
-
-//-----------------------------------------------------------------------------
-template<class factory,class plugin,class mng>
 	GFactoryPlugin<factory,plugin,mng>::~GFactoryPlugin(void)
 {
+	// Save configuration file
+	Save();
+
 	delete Plugin;
 
 	if (Handle)

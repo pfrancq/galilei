@@ -130,7 +130,7 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryMeasure(GMeasureManager* mng,const char* t,const char* n,const char* f);
+	GFactoryMeasure(GMeasureManager* mng,const R::RString& t,const R::RString& n,const R::RString& f);
 
 	/**
 	* Get the type of the measure.
@@ -219,17 +219,22 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
-	* Read config of the manager.
-	* @param t               Tag.
+	* Create the config parameters.
+	* @param parent          Parent Tag.
 	*/
-	virtual void ReadConfig(RXMLTag* t);
+	virtual void CreateConfig(R::RConfig* config);
 
 	/**
-	* Store config of the manager.
-	* @param xml             XML Structure.
-	* @param t               Tag.
+	* Read config of the manager.
+	* @param parent          Parent Tag.
 	*/
-	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
+	virtual void ReadConfig(R::RConfig* config);
+
+	/**
+	* @param xml             XML Structure.
+	* @param parent          Parent tag.
+	*/
+	virtual void SaveConfig(R::RConfig* config);
 
 	/**
 	* Register a factory of a plug-in.

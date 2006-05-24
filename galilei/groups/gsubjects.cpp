@@ -38,7 +38,7 @@
 #include <gsubject.h>
 #include <gdoc.h>
 #include <gsession.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <gstorage.h>
 #include <glang.h>
 #include <gprofile.h>
@@ -152,45 +152,51 @@ public:
 
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(GSession* session)
-	: RTree<GSubject,true,false>(100,50), GParams("Subjects"), Data(0)
+	: RTree<GSubject,true,false>(100,50), Data(0)
 {
 	Data=new Intern(session);
 	InsertNode(0,new GSubject(0,"Subjects",false));
-	GParams::InsertPtr(new GParamDouble("NbOK",10.0));
-	GParams::InsertPtr(new GParamBool("RelOK",true));
-	GParams::InsertPtr(new GParamDouble("NbKO",10.0));
-	GParams::InsertPtr(new GParamBool("RelKO",true));
-	GParams::InsertPtr(new GParamDouble("NbH",50.0));
-	GParams::InsertPtr(new GParamBool("RelH",true));
-	GParams::InsertPtr(new GParamDouble("PercErr",0.0));
-	GParams::InsertPtr(new GParamUInt("NbProfMin",2));
-	GParams::InsertPtr(new GParamUInt("NbProfMax",10));
-	GParams::InsertPtr(new GParamDouble("PercSocial",100.0));
-	GParams::InsertPtr(new GParamDouble("NbSubjects",100.0));
-	GParams::InsertPtr(new GParamBool("RelSubjects",true));
-	GParams::InsertPtr(new GParamUInt("NbMinDocsSubject",50));
-	GParams::InsertPtr(new GParamUInt("NbDocsAssess",30));
 	Apply();
+}
+
+
+//------------------------------------------------------------------------------
+void GSubjects::CreateConfig(void)
+{
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbOK",10.0),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("RelOK",true),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbKO",10.0),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("RelKO",true),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbH",50.0),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("RelH",true),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("PercErr",0.0),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbProfMin",2),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbProfMax",10),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("PercSocial",100.0),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbSubjects",100.0),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("RelSubjects",true),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbMinDocsSubject",50),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbDocsAssess",30),"Subjects");
 }
 
 
 //------------------------------------------------------------------------------
 void GSubjects::Apply(void)
 {
-	Data->NbOK=GetDouble("NbOK");
-	Data->RelOK=GetBool("RelOK");
-	Data->NbKO=GetDouble("NbKO");
-	Data->RelKO=GetBool("RelKO");
-	Data->NbH=GetDouble("NbH");
-	Data->RelH=GetBool("RelH");
-	Data->PercErr=GetDouble("PercErr");
-	Data->NbProfMin=GetUInt("NbProfMin");
-	Data->NbProfMax=GetUInt("NbProfMax");
-	Data->PercSocial=GetDouble("PercSocial");
-	Data->NbSubjects=GetDouble("NbSubjects");
-	Data->RelSubjects=GetBool("RelSubjects");
-	Data->NbMinDocsSubject=GetUInt("NbMinDocsSubject");
-	Data->NbDocsAssess=GetUInt("NbDocsAssess");
+	Data->NbOK=GALILEIApp->GetGALILEIConfig()->GetDouble("NbOK","Subjects");
+	Data->RelOK=GALILEIApp->GetGALILEIConfig()->GetBool("RelOK","Subjects");
+	Data->NbKO=GALILEIApp->GetGALILEIConfig()->GetDouble("NbKO","Subjects");
+	Data->RelKO=GALILEIApp->GetGALILEIConfig()->GetBool("RelKO","Subjects");
+	Data->NbH=GALILEIApp->GetGALILEIConfig()->GetDouble("NbH","Subjects");
+	Data->RelH=GALILEIApp->GetGALILEIConfig()->GetBool("RelH","Subjects");
+	Data->PercErr=GALILEIApp->GetGALILEIConfig()->GetDouble("PercErr","Subjects");
+	Data->NbProfMin=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMin","Subjects");
+	Data->NbProfMax=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMax","Subjects");
+	Data->PercSocial=GALILEIApp->GetGALILEIConfig()->GetDouble("PercSocial","Subjects");
+	Data->NbSubjects=GALILEIApp->GetGALILEIConfig()->GetDouble("NbSubjects","Subjects");
+	Data->RelSubjects=GALILEIApp->GetGALILEIConfig()->GetBool("RelSubjects","Subjects");
+	Data->NbMinDocsSubject=GALILEIApp->GetGALILEIConfig()->GetUInt("NbMinDocsSubject","Subjects");
+	Data->NbDocsAssess=GALILEIApp->GetGALILEIConfig()->GetUInt("NbDocsAssess","Subjects");
 }
 
 
@@ -502,7 +508,6 @@ void GSubjects::ComputeTotal(void)
 	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
 	unsigned int NbSubProfiles;                   // Total Number of subprofiles
 	unsigned int NbTot;
-	R::RCursor<GFactoryLang> Langs;
 	GLang* lang;
 	unsigned int col;
 	double a,b,c,d,num,den,subtotal;
@@ -518,10 +523,10 @@ void GSubjects::ComputeTotal(void)
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
-	Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+	R::RCursor<GLang> Langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		lang=Langs()->GetPlugin();
+		lang=Langs();
 		if(!lang) continue;
 //		GroupsIdeal=Data->IdealGroups->GetGroups(lang);
 		NbRows=GetNbIdealGroups(lang);
@@ -539,7 +544,7 @@ void GSubjects::ComputeTotal(void)
 	// subprofiles in the idealgroup for this language.
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		lang=Langs()->GetPlugin();
+		lang=Langs();
 		if(!lang)
 			continue;
 
@@ -664,7 +669,7 @@ void GSubjects::DocumentSharing(void)
 	Apply();
 
 	// Similarities
-	GMeasure* ProfilesDocsSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+	GMeasure* ProfilesDocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 
 	// Go through the languages
 	Grps=Data->Session->GetGroups();

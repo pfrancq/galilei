@@ -39,6 +39,9 @@
 // include file for R
 #include <rxmltag.h>
 #include <rxmlstruct.h>
+#include <rapplication.h>
+#include <rconfig.h>
+
 
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
@@ -55,9 +58,13 @@ using namespace R;
 
 
 //-----------------------------------------------------------------------------
+// include file for R
+#include <rconfig.h>
+
+
+//-----------------------------------------------------------------------------
 // include file for GALILEI
 #include <galilei.h>
-#include <gparams.h>
 #include <gplugin.h>
 
 
@@ -80,7 +87,8 @@ public:
 	{
 		ptSelect              /** Only one plug-in can be selected.*/,
 		ptOrdered             /** Plug-ins must be treated in a given order.*/,
-		ptList                /** Simple list of plug-ins*/
+		ptList                /** Simple list of plug-ins*/,
+		ptLists               /** Multiple lists of plug-ins*/
 	};
 
 protected:
@@ -143,16 +151,22 @@ public :
 	virtual void Disconnect(GSession* session)=0;
 
 	/*
+	* Create the config parameters.
+	* @param parent          Parent Tag.
+	*/
+	virtual void CreateConfig(R::RConfig* config)=0;
+
+	/*
 	* Read config of the manager.
 	* @param parent          Parent Tag.
 	*/
-	virtual void ReadConfig(R::RXMLTag* t)=0;
+	virtual void ReadConfig(R::RConfig* config)=0;
 
 	/*
 	* @param xml             XML Structure.
 	* @param parent          Parent tag.
 	*/
-	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t)=0;
+	virtual void SaveConfig(R::RConfig* config)=0;
 
 	/*
 	* Get the name of the current Manager.
@@ -244,17 +258,22 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
-	* Read config of the manager.
-	* @param t               Tag.
+	* Create the config parameters.
+	* @param parent          Parent Tag.
 	*/
-	virtual void ReadConfig(RXMLTag* t);
+	virtual void CreateConfig(R::RConfig* config);
 
 	/**
-	* Store config of the manager.
-	* @param xml             XML Structure.
-	* @param t               Tag.
+	* Read config of the manager.
+	* @param parent          Parent Tag.
 	*/
-	virtual void SaveConfig(R::RXMLStruct* xml,R::RXMLTag* t);
+	virtual void ReadConfig(R::RConfig* config);
+
+	/**
+	* @param xml             XML Structure.
+	* @param parent          Parent tag.
+	*/
+	virtual void SaveConfig(R::RConfig* config);
 
 	/**
 	* Register a factory of a plug-in.

@@ -33,7 +33,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gpluginmanagers.h>
 #include <gsession.h>
 #include <gsignalhandler.h>
 #include <gstorage.h>
@@ -48,7 +47,6 @@ using namespace R;
 //
 //------------------------------------------------------------------------------
 R::RContainer<GSignalHandler,false,false> GSession::Handlers(30,20);
-GPluginManagers GPluginManagers::PluginManagers;
 
 
 

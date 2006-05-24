@@ -34,6 +34,7 @@
 // include files for GALILEI
 #include <gmeasure.h>
 #include <gsession.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -66,9 +67,10 @@ GMeasure::~GMeasure(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFactoryMeasure::GFactoryMeasure(GMeasureManager* m,const char* t,const char* n,const char* f)
+GFactoryMeasure::GFactoryMeasure(GMeasureManager* m,const RString& t,const RString& n,const RString& f)
 	: GFactoryPlugin<GFactoryMeasure,GMeasure,GMeasureManager>(m,n,f), Type(t)
 {
+	SetConfigInfos("lib/galilei/plugins/Measures/"+t,f.Mid(0,f.GetLen()-3));
 }
 
 
@@ -129,7 +131,7 @@ double GTypeMeasureManager::GetMinMeasure(unsigned int measure)
 
 //-----------------------------------------------------------------------------
 GMeasureManager::GMeasureManager(void)
-	: GGenericPluginManager("Measures",API_MEASURES_VERSION,ptList), R::RContainer<GTypeMeasureManager,true,true>(20,10)
+	: GGenericPluginManager("Measures",API_MEASURES_VERSION,ptLists), R::RContainer<GTypeMeasureManager,true,true>(20,10)
 {
 }
 
@@ -191,38 +193,39 @@ void GMeasureManager::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GMeasureManager::ReadConfig(RXMLTag* t)
+void GMeasureManager::CreateConfig(R::RConfig* config)
 {
-	if(!t) return;
+	config->InsertParam(new RParamStruct(Name),"Plugins");
+}
+
+
+//------------------------------------------------------------------------------
+void GMeasureManager::ReadConfig(R::RConfig* config)
+{
+	RParamStruct* ptr=config->FindParam<RParamStruct>("Measures","Plugins");
 	RCursor<GTypeMeasureManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString n;
-		n+=RChar::ToLower(Cur()->GetName()[static_cast<size_t>(0)]);
-		for(size_t i=1;i<Cur()->GetName().GetLen();i++)
-			if((!Cur()->GetName()[i].IsSpace())&&(Cur()->GetName()[i]!='/'))
-				n+=Cur()->GetName()[i];
-		RXMLTag* s=t->GetTag(n);
-		if(s)
-			Cur()->ReadConfig(s);
+		RParamValue* param=ptr->Get<RParamValue>(Cur()->GetName());
+		Cur()->SetCurrentMethod(param->Get(),false);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GMeasureManager::SaveConfig(RXMLStruct* xml,RXMLTag* t)
+void GMeasureManager::SaveConfig(R::RConfig* config)
 {
+	RParamStruct* ptr=config->FindParam<RParamStruct>("Measures","Plugins");
 	RCursor<GTypeMeasureManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		RString n;
-		n+=RChar::ToLower(Cur()->GetName()[static_cast<size_t>(0)]);
-		for(size_t i=1;i<Cur()->GetName().GetLen();i++)
-			if((!Cur()->GetName()[i].IsSpace())&&(Cur()->GetName()[i]!='/'))
-				n+=Cur()->GetName()[i];
-		RXMLTag* s=new RXMLTag(n);
-		xml->AddTag(t,s);
-		Cur()->SaveConfig(xml,s);
+		RParamValue* param=ptr->Get<RParamValue>(Cur()->GetName());
+		RString Default;
+		if(Cur()->GetCurrentMethod(false))
+			Default=Cur()->GetCurrentMethod(false)->GetFactory()->GetName();
+		else
+			Default="None";
+		param->Set(Default);
 	}
 }
 
@@ -232,6 +235,13 @@ void GMeasureManager::RegisterFactory(GFactoryMeasure* fac)
 {
 	GTypeMeasureManager* Manager=GetInsertPtr(fac->GetType());
 	Manager->RegisterFactory(fac);
+
+	// Look if a param exist in the config structure
+	RConfig* Config=dynamic_cast<GGALILEIApp*>(App)->GetGALILEIConfig();
+	RParamStruct* param=Config->FindParam<RParamStruct>("Measures","Plugins");
+	RParam* Exist=param->Get<RParam>(fac->GetType());
+	if(!Exist)
+		param->Insert(new RParamValue(fac->GetType(),"None"));
 }
 
 

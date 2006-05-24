@@ -61,8 +61,8 @@ GStatsCalc::GStatsCalc(GFactoryStatsCalc* fac)
 void GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,double val)
 {
 	RXMLTag* tag=new RXMLTag(element);
-	tag->InsertAttr("Value",RString::Number(val));
 	xml->AddTag(parent,tag);
+	tag->InsertAttr("Value",RString::Number(val));
 }
 
 
@@ -70,8 +70,8 @@ void GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,double v
 void GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,RString val)
 {
 	RXMLTag* tag=new RXMLTag(element);
-	tag->InsertAttr("Value",val);
 	xml->AddTag(parent,tag);
+	tag->InsertAttr("Value",val);
 }
 
 
