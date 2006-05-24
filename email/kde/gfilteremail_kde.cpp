@@ -90,7 +90,7 @@ void Configure(GFactoryFilter* params)
 	dlg.BlankLines->setChecked(params->GetBool("BlankLines"));
 	if(dlg.exec())
 	{
-		params->Set("BlankLines",dlg.BlankLines->isChecked());
+		params->SetBool("BlankLines",dlg.BlankLines->isChecked());
 		params->Apply();
 	}
 }

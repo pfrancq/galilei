@@ -528,7 +528,7 @@ RString GALILEI::GFilterRTF::ReplaceCodes(RString str)
 
 
 //------------------------------------------------------------------------------
-void GFilterRTF::CreateParams(GParams*)
+void GFilterRTF::CreateParams(RConfig*)
 {
 }
 

@@ -81,7 +81,7 @@ void Configure(GFactoryFilter* params)
 
 	//dlg.xmlDefPath->setURL(ToQt(params->GetString("xmlDefinitionPath")));
 	dlg.xmlDefPath->setMode(KFile::Directory);
-	dlg.xmlDefPath->setURL(ToQString(params->GetString("xmlDefPath")));
+	dlg.xmlDefPath->setURL(ToQString(params->Get("xmlDefPath")));
 	if(dlg.exec())
 	{
 		params->Set("xmlDefPath",FromQString(dlg.xmlDefPath->url()));

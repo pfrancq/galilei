@@ -350,7 +350,7 @@ bool GFilterPS::Analyze(GDocXML* doc)
 
 
 //------------------------------------------------------------------------------
-void GFilterPS::CreateParams(GParams*)
+void GFilterPS::CreateParams(RConfig*)
 {
 }
 

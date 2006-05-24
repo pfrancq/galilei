@@ -168,7 +168,7 @@ void GFilterXML::ApplyConfig(void)
 {
 	RString oldPath(xmlDefPath);
 
-	xmlDefPath=Factory->GetString("xmlDefPath");
+	xmlDefPath=Factory->Get("xmlDefPath");
 
 	//If path has changed ->Set Inited to false
 	if(oldPath.Compare(xmlDefPath))
@@ -908,9 +908,9 @@ R::RCursor<GFilterXML::MimeDef> GFilterXML::GetMimeDefinitionsCursor(void)
 }
 
 //------------------------------------------------------------------------------
-void GFilterXML::CreateParams(GParams* params)
+void GFilterXML::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamString("xmlDefPath","/etc/galilei/XMLdefinitions/"));
+	params->InsertParam(new RParamValue("xmlDefPath","/etc/galilei/XMLdefinitions/"));
 }
 
 

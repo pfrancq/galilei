@@ -268,7 +268,7 @@ RString GFilterPDF::CreateDate(Dict* infoDict,char* key)
 
 
 //------------------------------------------------------------------------------
-void GFilterPDF::CreateParams(GParams*)
+void GFilterPDF::CreateParams(RConfig*)
 {
 }
 

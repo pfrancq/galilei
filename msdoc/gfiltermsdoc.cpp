@@ -374,7 +374,7 @@ void GFilterMSDoc::runOfText(const wvWare::UString& text, wvWare::SharedPtr<cons
 
 
 //------------------------------------------------------------------------------
-void GFilterMSDoc::CreateParams(GParams*)
+void GFilterMSDoc::CreateParams(RConfig*)
 {
 }
 

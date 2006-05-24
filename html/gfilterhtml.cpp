@@ -93,7 +93,7 @@ bool GFilterHTML::Analyze(GDocXML* doc)
 
 
 //------------------------------------------------------------------------------
-void GFilterHTML::CreateParams(GParams*)
+void GFilterHTML::CreateParams(RConfig*)
 {
 }
 

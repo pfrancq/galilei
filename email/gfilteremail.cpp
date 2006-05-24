@@ -273,9 +273,9 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 
 
 //------------------------------------------------------------------------------
-void GFilterEMail::CreateParams(GParams* params)
+void GFilterEMail::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamBool("BlankLines",false));
+	params->InsertParam(new RParamValue("BlankLines",false));
 }
 
 

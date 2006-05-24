@@ -137,7 +137,7 @@ bool GFilterTXT::Analyze(GDocXML* doc)
 
 
 //------------------------------------------------------------------------------
-void GFilterTXT::CreateParams(GParams*)
+void GFilterTXT::CreateParams(RConfig*)
 {
 }
 
