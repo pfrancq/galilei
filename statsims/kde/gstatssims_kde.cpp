@@ -31,6 +31,12 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rqt.h>
+using namespace R;
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gstatscalc.h>
 using namespace GALILEI;
@@ -96,18 +102,18 @@ void Configure(GFactoryStatsCalc* params)
 	dlg.SameDocProf->setChecked(params->GetBool("SameDocProf"));
 	dlg.GroupProf->setChecked(params->GetBool("GroupProf"));
 	dlg.File->setChecked(params->GetBool("File"));
-	dlg.Name->setURL(params->GetString("Name"));
+	dlg.Name->setURL(ToQString(params->Get("Name")));
 	dlg.Name->setEnabled(params->GetBool("File"));
 	if(dlg.exec())
 	{
-		params->Set("Docs",dlg.Docs->isChecked());
-		params->Set("ProfDoc",dlg.ProfDoc->isChecked());
-		params->Set("GroupDoc",dlg.GroupDoc->isChecked());
-		params->Set("Profiles",dlg.Profiles->isChecked());
-		params->Set("SameDocProf",dlg.SameDocProf->isChecked());
-		params->Set("GroupProf",dlg.GroupProf->isChecked());
-		params->Set("File",dlg.File->isChecked());
-		params->Set("Name",dlg.Name->url());
+		params->SetBool("Docs",dlg.Docs->isChecked());
+		params->SetBool("ProfDoc",dlg.ProfDoc->isChecked());
+		params->SetBool("GroupDoc",dlg.GroupDoc->isChecked());
+		params->SetBool("Profiles",dlg.Profiles->isChecked());
+		params->SetBool("SameDocProf",dlg.SameDocProf->isChecked());
+		params->SetBool("GroupProf",dlg.GroupProf->isChecked());
+		params->SetBool("File",dlg.File->isChecked());
+		params->Set("Name",FromQString(dlg.Name->url()));
  		params->Apply();
  	}
 }

@@ -49,7 +49,7 @@
 #include <gdoc.h>
 #include <gsubprofile.h>
 #include <gmeasure.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -76,7 +76,7 @@ class GStatSimDoc : public GStatSimElements<GDoc,GDoc>
 public:
 	GStatSimDoc(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,f)
 	{
-		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
+		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub,GLang*)
@@ -99,7 +99,7 @@ public:
 
 	GStatSimSubProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GSubProfile>(ses,f)
 	{
-		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
+		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
 	}
 
 	virtual R::RCursor<GSubProfile> GetE1Cursor(GSubject* sub,GLang* lang)
@@ -122,7 +122,7 @@ public:
 
 	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GGroup>(ses,f)
 	{
-		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Groups Similarities");
+		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Groups Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub,GLang*)
@@ -145,7 +145,7 @@ public:
 
 	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GSubProfile>(ses,f)
 	{
-		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub,GLang*)
@@ -168,7 +168,7 @@ public:
 
 	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GGroup>(ses,f)
 	{
-		Measure=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Groups Similarities");
+		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Groups Similarities");
 	}
 
 	virtual R::RCursor<GSubProfile> GetE1Cursor(GSubject* sub,GLang* lang)
@@ -207,7 +207,7 @@ void GStatsSims::ApplyConfig(void)
 	SameDocProf=Factory->GetBool("SameDocProf");
 	GroupProf=Factory->GetBool("GroupProf");
 	File=Factory->GetBool("File");
-	Name=Factory->GetString("Name");
+	Name=Factory->Get("Name");
 }
 
 
@@ -306,16 +306,16 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::CreateParams(GParams* params)
+void GStatsSims::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamBool("Docs",false));
-	params->InsertPtr(new GParamBool("ProfDoc",false));
-	params->InsertPtr(new GParamBool("GroupDoc",false));
-	params->InsertPtr(new GParamBool("Profiles",false));
-	params->InsertPtr(new GParamBool("SameDocProf",false));
-	params->InsertPtr(new GParamBool("GroupProf",false));
-	params->InsertPtr(new GParamBool("File",false));
-	params->InsertPtr(new GParamString("Name",""));
+	params->InsertParam(new RParamValue("Docs",false));
+	params->InsertParam(new RParamValue("ProfDoc",false));
+	params->InsertParam(new RParamValue("GroupDoc",false));
+	params->InsertParam(new RParamValue("Profiles",false));
+	params->InsertParam(new RParamValue("SameDocProf",false));
+	params->InsertParam(new RParamValue("GroupProf",false));
+	params->InsertParam(new RParamValue("File",false));
+	params->InsertParam(new RParamValue("Name",""));
 }
 
 

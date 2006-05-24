@@ -37,7 +37,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 
 
 //------------------------------------------------------------------------------
@@ -274,7 +274,7 @@ template<class E1,class E2>
 
 
 	// Go through the languages
-	R::RCursor<GLang> Langs(GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns());
+	R::RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
 	R::RCursor<GSubject> Subs1(Session->GetSubjects()->GetTop()->GetNodes());
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
