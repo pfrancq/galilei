@@ -123,7 +123,7 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(GParams* params);
+	static void CreateParams(RConfig* params);
 
 	/**
 	* Destructor.

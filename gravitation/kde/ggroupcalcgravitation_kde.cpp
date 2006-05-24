@@ -90,7 +90,7 @@ void Configure(GFactoryGroupCalc* params)
 	dlg.MaxSize->setValue(params->GetUInt("Max Size"));
 	if(dlg.exec())
 	{
-		params->Set("Max Size",dlg.MaxSize->value());
+		params->SetUInt("Max Size",dlg.MaxSize->value());
  		params->Apply();
  	}
 }

@@ -153,9 +153,9 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 
 
 //------------------------------------------------------------------------------
-void GGroupCalcGravitation::CreateParams(GParams* params)
+void GGroupCalcGravitation::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamUInt("Max Size",60));
+	params->InsertParam(new RParamValue("Max Size",60));
 }
 
 
