@@ -98,15 +98,15 @@ void Configure(GFactoryProfileCalc* params)
 	dlg.IncrementalMode->setChecked(params->GetBool("IncrementalMode"));
 	if(dlg.exec())
 	{
-		params->Set("MaxSize",dlg.MaxSize->value());
-		params->Set("NegSize",dlg.NegSize->value());
-		params->Set("Localisf",dlg.Localisf->isChecked());
-		params->Set("idf",dlg.idf->isChecked());
-		params->Set("Positive",dlg.Positive->isChecked());
-		params->Set("RelFactor",dlg.RelFactor->value());
-		params->Set("FuzzyFactor",dlg.FuzzyFactor->value());
-		params->Set("IrrelFactor",dlg.IrrelFactor->value());
-		params->Set("IncrementalMode",dlg.IncrementalMode->isChecked());
+		params->SetUInt("MaxSize",dlg.MaxSize->value());
+		params->SetUInt("NegSize",dlg.NegSize->value());
+		params->SetBool("Localisf",dlg.Localisf->isChecked());
+		params->SetBool("idf",dlg.idf->isChecked());
+		params->SetBool("Positive",dlg.Positive->isChecked());
+		params->SetDouble("RelFactor",dlg.RelFactor->value());
+		params->SetDouble("FuzzyFactor",dlg.FuzzyFactor->value());
+		params->SetDouble("IrrelFactor",dlg.IrrelFactor->value());
+		params->SetBool("IncrementalMode",dlg.IncrementalMode->isChecked());
  		params->Apply();
  	}
 }

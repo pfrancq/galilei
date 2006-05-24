@@ -302,17 +302,17 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 
 
 //------------------------------------------------------------------------------
-void GProfileCalcFeedback::CreateParams(GParams* params)
+void GProfileCalcFeedback::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamUInt("MaxSize",60));
-	params->InsertPtr(new GParamUInt("NegSize",0));
-	params->InsertPtr(new GParamDouble("RelFactor",1.0));
-	params->InsertPtr(new GParamDouble("FuzzyFactor",0.25));
-	params->InsertPtr(new GParamDouble("IrrelFactor",0.75));
-	params->InsertPtr(new GParamBool("Positive",false));
-	params->InsertPtr(new GParamBool("Localisf",false));
-	params->InsertPtr(new GParamBool("idf",true));
-	params->InsertPtr(new GParamBool("IncrementalMode",false));
+	params->InsertParam(new RParamValue("MaxSize",60));
+	params->InsertParam(new RParamValue("NegSize",0));
+	params->InsertParam(new RParamValue("RelFactor",1.0));
+	params->InsertParam(new RParamValue("FuzzyFactor",0.25));
+	params->InsertParam(new RParamValue("IrrelFactor",0.75));
+	params->InsertParam(new RParamValue("Positive",false));
+	params->InsertParam(new RParamValue("Localisf",false));
+	params->InsertParam(new RParamValue("idf",true));
+	params->InsertParam(new RParamValue("IncrementalMode",false));
 }
 
 
