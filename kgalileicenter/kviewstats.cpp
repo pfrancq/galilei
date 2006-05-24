@@ -43,7 +43,7 @@ using namespace R;
 // include file for GALILEI
 #include <gsession.h>
 #include <gstatscalc.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 
 
@@ -141,7 +141,7 @@ void KViewStats::ComputeStats(void)
 	RXMLTag* Root;
 
 	int i;
-	GStatsCalcManager* Mng=GPluginManagers::GetManager<GStatsCalcManager>("StatsCalc");
+	GStatsCalcManager* Mng=GALILEIApp->GetManager<GStatsCalcManager>("StatsCalc");
 
 	if(!Mng)
 	{

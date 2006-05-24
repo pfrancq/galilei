@@ -60,7 +60,7 @@ using namespace R;
 #include <glang.h>
 #include <gdict.h>
 #include <gweightinfo.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -157,10 +157,10 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	try
 	{
 		Doc=new KDoc(this);
-		Sess = new GSession(this,Debug);
+		Sess = CreateSession();
 		Doc->SetSession(Sess);
 		Sess->Init();
-			slotSaveModifier();
+		slotSaveModifier();
 		QSessionProgressDlg dlg(this,Sess,"Loading from Database");
 		if(dlg.Run(new QLoadSession()))
 		{
@@ -203,7 +203,7 @@ void KGALILEICenterApp::slotSessionCompute(void)
 	Doc->updateAllViews(1);
 	Doc->updateAllViews(2);
 
-	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
+	if(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
 	{
 		Doc->updateAllViews(3);
 	}
@@ -371,7 +371,7 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 		}
 
 		QSessionProgressDlg Dlg(this,0,"Fill Database");
-		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,depth,parentName,GPluginManagers::GetManager<GFilterManager>("Filter"))))
+		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,depth,parentName,GALILEIApp->GetManager<GFilterManager>("Filter"))))
 			return;
 	}
 }
@@ -393,7 +393,7 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 	Doc->updateAllViews(1);
 	//test whether a linking method has been used during Profile computation.
 	//if true -->refresh Links
-	if(GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
+	if(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
 	{
 		Doc->updateAllViews(3);
 	}
@@ -453,36 +453,36 @@ void KGALILEICenterApp::slotSimulationDlg(void)
 {
 	QSimulationDlg dlg(this);
 
-	dlg.NbOK->setValue(Doc->GetSession()->GetSubjects()->GetDouble("NbOK"));
-	dlg.RelOK->setChecked(Doc->GetSession()->GetSubjects()->GetBool("RelOK"));
-	dlg.NbKO->setValue(Doc->GetSession()->GetSubjects()->GetDouble("NbKO"));
-	dlg.RelKO->setChecked(Doc->GetSession()->GetSubjects()->GetBool("RelKO"));
-	dlg.NbH->setValue(Doc->GetSession()->GetSubjects()->GetDouble("NbH"));
-	dlg.RelH->setChecked(Doc->GetSession()->GetSubjects()->GetBool("RelH"));
-	dlg.PercErr->setValue(Doc->GetSession()->GetSubjects()->GetDouble("PercErr"));
-	dlg.NbProfMin->setValue(Doc->GetSession()->GetSubjects()->GetUInt("NbProfMin"));
-	dlg.NbProfMax->setValue(Doc->GetSession()->GetSubjects()->GetUInt("NbProfMax"));
-	dlg.PercSocial->setValue(Doc->GetSession()->GetSubjects()->GetDouble("PercSocial"));
-	dlg.NbSubjects->setValue(Doc->GetSession()->GetSubjects()->GetDouble("NbSubjects"));
-	dlg.RelSubjects->setChecked(Doc->GetSession()->GetSubjects()->GetBool("RelSubjects"));
-	dlg.NbMinDocsSubject->setValue(Doc->GetSession()->GetSubjects()->GetUInt("NbMinDocsSubject"));
-	dlg.NbDocsAssess->setValue(Doc->GetSession()->GetSubjects()->GetUInt("NbDocsAssess"));
+	dlg.NbOK->setValue(GALILEIApp->GetConfig()->GetDouble("NbOK"));
+	dlg.RelOK->setChecked(GALILEIApp->GetConfig()->GetBool("RelOK"));
+	dlg.NbKO->setValue(GALILEIApp->GetConfig()->GetDouble("NbKO"));
+	dlg.RelKO->setChecked(GALILEIApp->GetConfig()->GetBool("RelKO"));
+	dlg.NbH->setValue(GALILEIApp->GetConfig()->GetDouble("NbH"));
+	dlg.RelH->setChecked(GALILEIApp->GetConfig()->GetBool("RelH"));
+	dlg.PercErr->setValue(GALILEIApp->GetConfig()->GetDouble("PercErr"));
+	dlg.NbProfMin->setValue(GALILEIApp->GetConfig()->GetUInt("NbProfMin"));
+	dlg.NbProfMax->setValue(GALILEIApp->GetConfig()->GetUInt("NbProfMax"));
+	dlg.PercSocial->setValue(GALILEIApp->GetConfig()->GetDouble("PercSocial"));
+	dlg.NbSubjects->setValue(GALILEIApp->GetConfig()->GetDouble("NbSubjects"));
+	dlg.RelSubjects->setChecked(GALILEIApp->GetConfig()->GetBool("RelSubjects"));
+	dlg.NbMinDocsSubject->setValue(GALILEIApp->GetConfig()->GetUInt("NbMinDocsSubject"));
+	dlg.NbDocsAssess->setValue(GALILEIApp->GetConfig()->GetUInt("NbDocsAssess"));
 	if(dlg.exec())
 	{
-		Doc->GetSession()->GetSubjects()->Set("NbOK",dlg.NbOK->value());
-		Doc->GetSession()->GetSubjects()->Set("RelOK",dlg.RelOK->isChecked());
-		Doc->GetSession()->GetSubjects()->Set("NbKO",dlg.NbKO->value());
-		Doc->GetSession()->GetSubjects()->Set("RelKO",dlg.RelKO->isChecked());
-		Doc->GetSession()->GetSubjects()->Set("NbH",dlg.NbH->value());
-		Doc->GetSession()->GetSubjects()->Set("RelH",dlg.RelH->isChecked());
-		Doc->GetSession()->GetSubjects()->Set("PercErr",dlg.PercErr->value());
-		Doc->GetSession()->GetSubjects()->Set("NbProfMin",dlg.NbProfMin->value());
-		Doc->GetSession()->GetSubjects()->Set("NbProfMax",dlg.NbProfMax->value());
-		Doc->GetSession()->GetSubjects()->Set("PercSocial",dlg.PercSocial->value());
-		Doc->GetSession()->GetSubjects()->Set("NbSubjects",dlg.NbSubjects->value());
-		Doc->GetSession()->GetSubjects()->Set("RelSubjects",dlg.RelSubjects->isChecked());
-		Doc->GetSession()->GetSubjects()->Set("NbMinDocsSubject",dlg.NbMinDocsSubject->value());
-		Doc->GetSession()->GetSubjects()->Set("NbDocsAssess",dlg.NbDocsAssess->value());
+		GALILEIApp->GetConfig()->SetDouble("NbOK",dlg.NbOK->value());
+		GALILEIApp->GetConfig()->SetBool("RelOK",dlg.RelOK->isChecked());
+		GALILEIApp->GetConfig()->SetDouble("NbKO",dlg.NbKO->value());
+		GALILEIApp->GetConfig()->SetBool("RelKO",dlg.RelKO->isChecked());
+		GALILEIApp->GetConfig()->SetDouble("NbH",dlg.NbH->value());
+		GALILEIApp->GetConfig()->SetBool("RelH",dlg.RelH->isChecked());
+		GALILEIApp->GetConfig()->SetDouble("PercErr",dlg.PercErr->value());
+		GALILEIApp->GetConfig()->SetUInt("NbProfMin",dlg.NbProfMin->value());
+		GALILEIApp->GetConfig()->SetUInt("NbProfMax",dlg.NbProfMax->value());
+		GALILEIApp->GetConfig()->SetDouble("PercSocial",dlg.PercSocial->value());
+		GALILEIApp->GetConfig()->SetDouble("NbSubjects",dlg.NbSubjects->value());
+		GALILEIApp->GetConfig()->SetBool("RelSubjects",dlg.RelSubjects->isChecked());
+		GALILEIApp->GetConfig()->SetUInt("NbMinDocsSubject",dlg.NbMinDocsSubject->value());
+		GALILEIApp->GetConfig()->SetUInt("NbDocsAssess",dlg.NbDocsAssess->value());
 	}
 }
 
@@ -539,7 +539,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 	{
 		if((*select)[2]=="groups")
 		{
-			R::RCursor<GFactoryLang> langscur=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+			R::RCursor<GFactoryLang> langscur=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -555,7 +555,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="profiles")
 		{
-			R::RCursor<GFactoryLang> langscur=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+			R::RCursor<GFactoryLang> langscur=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -571,7 +571,7 @@ void KGALILEICenterApp::slotChooseSOM(void)
 		}
 		if((*select)[2]=="documents")
 		{
-			R::RCursor<GFactoryLang> langscur=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+			R::RCursor<GFactoryLang> langscur=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 			for(langscur.Start(); !langscur.End(); langscur.Next())
 			{
 				if (!langscur()->GetPlugin()) continue;
@@ -761,7 +761,7 @@ void KGALILEICenterApp::slotAnalyseXML(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotQueryMetaEngine(void)
 {
-	if(!GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod(false))
+	if(!GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod(false))
 	{
 		QMessageBox::information(this," Error "," No Meta Engine Method selected!!");
 		return;
@@ -812,7 +812,7 @@ void KGALILEICenterApp::slotShowHistory(void)
 	R::RCursor<GFactoryLang> curlang;
 	unsigned int size, min, max;
 
-	curlang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+	curlang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 	size=Doc->GetSession()->GetStorage()->GetHistorySize();
 
 	if (!size)

@@ -48,7 +48,7 @@ using namespace R;
 #include <gsubjects.h>
 #include <gsubject.h>
 #include <qlistviewitemtype.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 
 
@@ -136,7 +136,7 @@ void KViewThGroups::ConstructThGroups(void)
 	thGroups->clear();
 
 	// Get the active languages
-	RCursor<GLang> Langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIns();
+	RCursor<GLang> Langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
 
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(getDocument()->GetSession()->GetSubjects()->GetNodes());
@@ -184,7 +184,7 @@ void KViewThGroups::ConstructGroups(void)
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
 	prGroups->clear();
-	CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+	CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();

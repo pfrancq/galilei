@@ -50,7 +50,7 @@
 #include <qlistviewitemtype.h>
 #include <qgsubprofiles.h>
 #include <rqt.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -240,7 +240,7 @@ void KViewProfile::ConstructGroups(void)
 	RCursor<GSubProfile> Sub;
 
 	Groups->clear();
-	CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+	CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();

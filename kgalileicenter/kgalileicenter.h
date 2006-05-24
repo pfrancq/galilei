@@ -43,7 +43,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <ggalileiapp.h>
 #include <glang.h>
 #include <glinkcalc.h>
 #include <gdocanalyse.h>
@@ -110,7 +110,7 @@ class KView;
 * @author Pascal Francq.
 * @short Main Window.
 */
-class KGALILEICenterApp : public KMainWindow, public GSlot
+class KGALILEICenterApp : public KMainWindow, public GSlot, public GGALILEIApp
 {
 	Q_OBJECT
 
@@ -124,14 +124,14 @@ public:
 	/**
 	* path to plugins.
 	*/
-	R::RContainer<RString, true,false> pluginsPath;
+//	R::RContainer<RString, true,false> pluginsPath;
 
 	/**
 	*
 	*/
-	R::RString ConfigFile;
-	R::RString LogFile;
-	R::RString PlugInsConfig;
+// 	R::RString ConfigFile;
+// 	R::RString LogFile;
+// 	R::RString PlugInsConfig;
 
 	/**
 	* the path where the sql file for the database creation are stored
@@ -188,7 +188,7 @@ public:
 	* application.
 	* @see initMenuBar initToolBar
 	*/
-	KGALILEICenterApp(void);
+	KGALILEICenterApp(int argc, char *argv[]);
 
 	/**
 	* Start a job.

@@ -75,7 +75,7 @@
 #include <ggrouping.h>
 #include <ggroup.h>
 #include <gsubjects.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -514,7 +514,7 @@ void QCreateDocXML::DoIt(void)
 		delete XML;
 		XML=0;
 	}
-	XML=GPluginManagers::GetManager<GFilterManager>("Filter")->CreateDocXML(Doc);
+	XML=GALILEIApp->GetManager<GFilterManager>("Filter")->CreateDocXML(Doc);
 }
 
 

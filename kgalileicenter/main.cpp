@@ -94,11 +94,11 @@ int main(int argc, char *argv[])
 		KApplication app;
 		if(app.isRestored())
 		{
-			RESTORE(KGALILEICenterApp());
+			RESTORE(KGALILEICenterApp(argc,argv));
 		}
 		else
 		{
-			KGALILEICenterApp *testmdi = new KGALILEICenterApp();
+			KGALILEICenterApp *testmdi = new KGALILEICenterApp(argc,argv);
 			testmdi->show();
 		}
 		return app.exec();

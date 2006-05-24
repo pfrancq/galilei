@@ -38,7 +38,7 @@
 #include <gdoc.h>
 #include <glang.h>
 #include <gsession.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -152,15 +152,15 @@ GDoc* KViewDocs::GetCurrentDoc(void)
 void KViewDocs::CreateDocsListView(void)
 {
 	R::RCursor<GDoc> CurDocs=Doc->GetSession()->GetDocs();
-	R::RCursor<GFactoryLang> CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+	R::RCursor<GFactoryLang> CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 	GLang* lang;
-	RContainer<LangItem,true,true> LangItems(GPluginManagers::GetManager<GLangManager>("Lang")->GetNbFactories());
+	RContainer<LangItem,true,true> LangItems(GALILEIApp->GetManager<GLangManager>("Lang")->GetNbFactories());
 	const char* t;
 	const char det[]="Unknown";
 	const char* ptr;
 
 	// Go trough each language and create a Item.
-	CurLang=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+	CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 	for(CurLang.Start(); !CurLang.End(); CurLang.Next())
 	{
 		lang=CurLang()->GetPlugin();

@@ -35,8 +35,7 @@
 #include <rqt.h>
 #include <rxmlfile.h>
 #include <rxmltag.h>
-#include <gconfig.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <gpreprofile.h>
 #include <gpostprofile.h>
 using namespace GALILEI;
@@ -85,9 +84,10 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KGALILEICenterApp::KGALILEICenterApp(void)
-	: KMainWindow(0,"KGALILEICenterApp"), pluginsPath(10,5), Doc(0), Debug(0)
+KGALILEICenterApp::KGALILEICenterApp(int argc, char *argv[])
+	: KMainWindow(0,"KGALILEICenterApp"), GGALILEIApp("KGALILEICenter",argc,argv,true), Doc(0), Debug(0)
 {
+	Init();
 	Config=kapp->config();
 	initStatusBar();
 	initView();
@@ -230,47 +230,6 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("DlgProfilesTabIdx",DlgProfilesTabIdx);
 	Config->writeEntry("DlgCommunitiesTabIdx",DlgCommunitiesTabIdx);
 	Config->writeEntry("DlgSearchTabIdx",DlgSearchTabIdx);
-
-	// Save Config
-	Config->writeEntry("Config File",ToQString(ConfigFile));
-	try
-	{
-		// Write PlugIns config
-		GConfig Conf(PlugInsConfig);
-		Conf.Save();
-
-		// Write config
-		RXMLStruct Config;
-		RXMLTag* Top=new RXMLTag("GALILEI");
-		Config.AddTag(0,Top);
-		RXMLTag* Tag=new RXMLTag("log");
-		Tag->InsertAttr("file",LogFile);
-		Config.AddTag(Top,Tag);
-		Tag=new RXMLTag("debug");
-		if(Debug)
-			Tag->InsertAttr("file",Debug->GetName());
-		else
-			Tag->InsertAttr("file",RString::Null);
-		Config.AddTag(Top,Tag);
-		Tag=new RXMLTag("plugins");
-		Config.AddTag(Top,Tag);
-		RXMLTag* Tag2=new RXMLTag("config");
-		Tag2->InsertAttr("file",PlugInsConfig);
-		Config.AddTag(Tag,Tag2);
-		RCursor<RString> cPath(pluginsPath);
-		for(cPath.Start();!cPath.End();cPath.Next())
-		{
-			Tag2=new RXMLTag("search");
-			Tag2->InsertAttr("dir",*cPath());
-			Config.AddTag(Tag,Tag2);
-		}
-		RXMLFile File(ConfigFile,&Config);
-		File.Open(RIO::Create);
-	}
-	catch(...)
-	{
-		KMessageBox::error(this,"Problem while saving the configuration file '"+ToQString(ConfigFile)+"'","Configuration Error");
-	}
 }
 
 
@@ -300,42 +259,6 @@ void KGALILEICenterApp::readOptions(void)
 	if(!size.isEmpty())
 	{
 		resize(size);
-	}
-
-	QString configName=Config->readEntry("Config File","/etc/galilei/galilei.conf");
-	ConfigFile=FromQString(configName);
-	try
-	{
-		// Load configuration for plug-ins and plug-ins
-		RXMLStruct Config;
-		RXMLFile File(ConfigFile,&Config);
-		File.Open(RIO::Read);
-		RXMLTag* Tag=Config.GetTag("plugins");
-		if(!Tag)
-			throw GException("Problems with the configure file '"+ConfigFile+"'");
-		RCursor<RXMLTag> Plugins(Tag->GetNodes());
-		for(Plugins.Start();!Plugins.End();Plugins.Next())
-		{
-			if((Plugins()->GetName()=="search")&&(Plugins()->IsAttrDefined("dir")))
-				pluginsPath.InsertPtr(new RString(Plugins()->GetAttrValue("dir")));
-			if(Plugins()->GetName()=="config")
-				PlugInsConfig=Plugins()->GetAttrValue("file");
-		}
-		LogFile=Config.GetTagAttrValue("log","file");
-		RString DebugFile=Config.GetTagAttrValue("debug","file");
-
-		// Load and configure all plug-ins
-		GPluginManagers::PluginManagers.Load(pluginsPath);
-		GConfig Conf(PlugInsConfig);
-		Conf.Load();
-
-		// Create (if necessary) the debug file
-		if(DebugFile!=RString::Null)
-			Debug=new RDebugXML(DebugFile);
-	}
-	catch(...)
-	{
-		KMessageBox::error(this,"Problem while analyzing the configuration file '"+configName+"'","Configuration Error");
 	}
 
 	// Read create database options

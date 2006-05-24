@@ -54,7 +54,7 @@
 #include <glang.h>
 #include <gengine.h>
 #include <gmetaengine.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <gstorage.h>
 #include <gmeasure.h>
 using namespace GALILEI;
@@ -109,7 +109,7 @@ QMyPlugins::QMyPlugins(KGALILEICenterApp* app,QString title)
 	{
 		int idx;
 		QString str;
-		GTypeMeasureManager* Manager=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Tabs[Measures->currentPageIndex()]->Type);
+		GTypeMeasureManager* Manager=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Tabs[Measures->currentPageIndex()]->Type);
 		RCursor<GFactoryMeasure> Cur(Manager->GetFactories());
 		QString current=Tabs[Measures->currentPageIndex()]->Current;
 		CurrentMeasure->clear();
@@ -209,18 +209,18 @@ void KGALILEICenterApp::EndJob(void)
 
 //-----------------------------------------------------------------------------
 template<class Factory,class Manager,class Item>
-	QListViewItem* Init(RString manager,QListView* lst,QCheckBox* enable,QComboBox* sel=0)
+	QListViewItem* InitL(RString manager,QListView* lst,QCheckBox* enable,QComboBox* sel=0)
 {
 	QListViewItem* def;
 	QListViewItem* cur;
 	QString str;
 	int idx;
 
-	Manager* Mng=GPluginManagers::GetManager<Manager>(manager);
+	Manager* Mng=GALILEIApp->GetManager<Manager>(manager);
 	R::RCursor<Factory> Cur(Mng->GetFactories());
 	Factory* current=Mng->GetCurrentFactory(false);
 
-	// Goes through the profiles computing method
+	// Goes through the plug-ins
 	def=cur=0;
 	if(sel)
 		sel->insertItem("None",0);
@@ -261,7 +261,7 @@ template<class Item>
 	unsigned int i=0;
 	while(item)
 	{
-		item->Fac->Set("Level",i++);
+		item->Fac->SetLevel(i++);
 		item->Fac->Apply();
 		if(app)
 		{
@@ -288,7 +288,7 @@ void KGALILEICenterApp::InitMeasure(QMyPlugins* dlg)
 	QString str;
 	int tabs,idx;
 
-	GMeasureManager* Manager=GPluginManagers::GetManager<GMeasureManager>("Measures");
+	GMeasureManager* Manager=GALILEIApp->GetManager<GMeasureManager>("Measures");
 	R::RCursor<GTypeMeasureManager> Cur(Manager->GetMeasureCategories());
 	for(Cur.Start(),tabs=0;!Cur.End();Cur.Next(),tabs++)
 	{
@@ -335,7 +335,7 @@ void KGALILEICenterApp::DoneMeasure(QMyPlugins* dlg)
 				item->Fac->Delete(getSession());
 			item=dynamic_cast<QMeasureItem*>(item->itemBelow());
 		}
-		GPluginManagers::GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Cur()->Type)->SetCurrentMethod(Cur()->Current.latin1(),false);
+		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Cur()->Type)->SetCurrentMethod(Cur()->Current.latin1(),false);
 	}
 }
 
@@ -348,27 +348,27 @@ void KGALILEICenterApp::slotPlugins(void)
 	QString str;
 
 	//sort POST_X Managers;
-	GPluginManagers::GetManager<GPostDocManager>("PostDoc")->ReOrder();
-	GPluginManagers::GetManager<GPreProfileManager>("PreProfile")->ReOrder();
-	GPluginManagers::GetManager<GPostProfileManager>("PostProfile")->ReOrder();
-	GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->ReOrder();
+	GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
+	GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
+	GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
+	GALILEIApp->GetManager<GPostGroupManager>("PostGroup")->ReOrder();
 
 	// Goes through managers
-	dlg.changeFilter(Init<GFactoryFilter,GFilterManager,QFilterItem>("Filter",dlg.Filters,dlg.EnableFilter));
-	dlg.changeProfileCalc(Init<GFactoryProfileCalc,GProfileCalcManager,QProfileCalcItem>("ProfileCalc",dlg.ProfileCalcs,dlg.EnableProfileCalc,dlg.CurrentProfileCalc));
-	dlg.changeGrouping(Init<GFactoryGrouping,GGroupingManager,QGroupingItem>("Grouping",dlg.Groupings,dlg.EnableGrouping,dlg.CurrentGrouping));
-	dlg.changeGroupCalc(Init<GFactoryGroupCalc,GGroupCalcManager,QGroupCalcItem>("GroupCalc",dlg.GroupCalcs,dlg.EnableGroupCalc,dlg.CurrentGroupCalc));
-	dlg.changeStatCalc(Init<GFactoryStatsCalc,GStatsCalcManager,QStatsCalcItem>("StatsCalc",dlg.Stats,dlg.EnableStat));
-	dlg.changeLinkCalc(Init<GFactoryLinkCalc,GLinkCalcManager,QLinkCalcItem>("LinkCalc",dlg.LinkCalcs,dlg.EnableLinkCalc,dlg.CurrentLinkCalc));
-	dlg.changePostDoc(Init<GFactoryPostDoc,GPostDocManager,QPostDocItem>("PostDoc",dlg.PostDocs,dlg.EnablePostDoc));
-	dlg.changePreProfile(Init<GFactoryPreProfile,GPreProfileManager,QPreProfileItem>("PreProfile",dlg.PreProfile,dlg.EnablePreProfile));
-	dlg.changePostProfile(Init<GFactoryPostProfile,GPostProfileManager,QPostProfileItem>("PostProfile",dlg.PostProfile,dlg.EnablePostProfile));
-	dlg.changePostGroup(Init<GFactoryPostGroup,GPostGroupManager,QPostGroupItem>("PostGroup",dlg.PostGroups,dlg.EnablePostGroup));
-	dlg.changeLang(Init<GFactoryLang,GLangManager,QLangItem>("Lang",dlg.Langs,dlg.EnableLang));
-	dlg.changeDocAnalyse(Init<GFactoryDocAnalyse,GDocAnalyseManager,QDocAnalyseItem>("DocAnalyse",dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse));
-	dlg.changeEngine(Init<GFactoryEngine,GEngineManager,QEngineItem>("Engine",dlg.Engines,dlg.EnableEngine));
-	dlg.changeMetaEngine(Init<GFactoryMetaEngine,GMetaEngineManager,QMetaEngineItem>("MetaEngine",dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine));
-	dlg.changeStorage(Init<GFactoryStorage,GStorageManager,QStorageItem>("Storage",dlg.Storages,0,dlg.CurrentStorage));
+	dlg.changeFilter(InitL<GFactoryFilter,GFilterManager,QFilterItem>("Filter",dlg.Filters,dlg.EnableFilter));
+	dlg.changeProfileCalc(InitL<GFactoryProfileCalc,GProfileCalcManager,QProfileCalcItem>("ProfileCalc",dlg.ProfileCalcs,dlg.EnableProfileCalc,dlg.CurrentProfileCalc));
+	dlg.changeGrouping(InitL<GFactoryGrouping,GGroupingManager,QGroupingItem>("Grouping",dlg.Groupings,dlg.EnableGrouping,dlg.CurrentGrouping));
+	dlg.changeGroupCalc(InitL<GFactoryGroupCalc,GGroupCalcManager,QGroupCalcItem>("GroupCalc",dlg.GroupCalcs,dlg.EnableGroupCalc,dlg.CurrentGroupCalc));
+	dlg.changeStatCalc(InitL<GFactoryStatsCalc,GStatsCalcManager,QStatsCalcItem>("StatsCalc",dlg.Stats,dlg.EnableStat));
+	dlg.changeLinkCalc(InitL<GFactoryLinkCalc,GLinkCalcManager,QLinkCalcItem>("LinkCalc",dlg.LinkCalcs,dlg.EnableLinkCalc,dlg.CurrentLinkCalc));
+	dlg.changePostDoc(InitL<GFactoryPostDoc,GPostDocManager,QPostDocItem>("PostDoc",dlg.PostDocs,dlg.EnablePostDoc));
+	dlg.changePreProfile(InitL<GFactoryPreProfile,GPreProfileManager,QPreProfileItem>("PreProfile",dlg.PreProfile,dlg.EnablePreProfile));
+	dlg.changePostProfile(InitL<GFactoryPostProfile,GPostProfileManager,QPostProfileItem>("PostProfile",dlg.PostProfile,dlg.EnablePostProfile));
+	dlg.changePostGroup(InitL<GFactoryPostGroup,GPostGroupManager,QPostGroupItem>("PostGroup",dlg.PostGroups,dlg.EnablePostGroup));
+	dlg.changeLang(InitL<GFactoryLang,GLangManager,QLangItem>("Lang",dlg.Langs,dlg.EnableLang));
+	dlg.changeDocAnalyse(InitL<GFactoryDocAnalyse,GDocAnalyseManager,QDocAnalyseItem>("DocAnalyse",dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse));
+	dlg.changeEngine(InitL<GFactoryEngine,GEngineManager,QEngineItem>("Engine",dlg.Engines,dlg.EnableEngine));
+	dlg.changeMetaEngine(InitL<GFactoryMetaEngine,GMetaEngineManager,QMetaEngineItem>("MetaEngine",dlg.MetaEngines,dlg.EnableMetaEngine,dlg.CurrentMetaEngine));
+	dlg.changeStorage(InitL<GFactoryStorage,GStorageManager,QStorageItem>("Storage",dlg.Storages,0,dlg.CurrentStorage));
 	InitMeasure(&dlg);
 
 	dlg.MainTab->setCurrentPage(DlgMainTabIdx);
@@ -395,19 +395,19 @@ void KGALILEICenterApp::slotPlugins(void)
 		Done<QMetaEngineItem>(dlg.MetaEngines,this);
 		DoneMeasure(&dlg);
 
-		GPluginManagers::GetManager<GPostDocManager>("PostDoc")->ReOrder();
-		GPluginManagers::GetManager<GPreProfileManager>("PreProfile")->ReOrder();
-		GPluginManagers::GetManager<GPostProfileManager>("PostProfile")->ReOrder();
-		GPluginManagers::GetManager<GPostGroupManager>("PostGroup")->ReOrder();
+		GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
+		GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
+		GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
+		GALILEIApp->GetManager<GPostGroupManager>("PostGroup")->ReOrder();
 
 		// Set current method
-		GPluginManagers::GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1(),false);
-		GPluginManagers::GetManager<GGroupingManager>("Grouping")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1(),false);
-		GPluginManagers::GetManager<GGroupCalcManager>("GroupCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
-		GPluginManagers::GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1(),false);
-		GPluginManagers::GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1(),false);
-		GPluginManagers::GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1(),false);
-		GPluginManagers::GetManager<GStorageManager>("Storage")->SetCurrentMethod(dlg.CurrentStorage->currentText().latin1(),false);
+		GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1(),false);
+		GALILEIApp->GetManager<GGroupingManager>("Grouping")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1(),false);
+		GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
+		GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1(),false);
+		GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1(),false);
+		GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1(),false);
+		GALILEIApp->GetManager<GStorageManager>("Storage")->SetCurrentMethod(dlg.CurrentStorage->currentText().latin1(),false);
 	}
 	DlgMainTabIdx=dlg.MainTab->currentPageIndex();
 	DlgDocsTabIdx=dlg.DocsTab->currentPageIndex();
