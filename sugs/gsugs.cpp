@@ -57,7 +57,7 @@
 #include <ggroup.h>
 #include <glang.h>
 #include <gstorage.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <gmeasure.h>
 #include <gstorage.h>
 using namespace GALILEI;
@@ -127,11 +127,11 @@ GSugs::GSugs(GFactoryPostGroup* fac)
 
 
 //------------------------------------------------------------------------------
-void GSugs::CreateParams(GParams* params)
+void GSugs::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamUInt("NbSugs",50));
-	params->InsertPtr(new GParamBool("UseLevels",false));
-	params->InsertPtr(new GParamBool("UseGroupsSugs",false));
+	params->InsertParam(new RParamValue("NbSugs",50));
+	params->InsertParam(new RParamValue("UseLevels",false));
+	params->InsertParam(new RParamValue("UseGroupsSugs",false));
 }
 
 
@@ -150,7 +150,7 @@ void GSugs::Connect(GSession* session)
 {
 	GPostGroup::Connect(session);
 	GComputeSubProfileSugsCmd* command=new GComputeSubProfileSugsCmd();
-	if(!GPluginManagers::GetManager<GStorageManager>("Storage")->InsertCmd(command))
+	if(!GALILEIApp->GetManager<GStorageManager>("Storage")->InsertCmd(command))
 		delete command;
 }
 
@@ -180,7 +180,7 @@ void GSugs::Run(void)
 		Session->GetStorage()->CreateSugs(Now);
 
 		// Similarities
-		GMeasure* ProfilesDocsSims=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+		GMeasure* ProfilesDocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 
 		// -1- Store sugestion with description= S+order
 		// Go through the groups

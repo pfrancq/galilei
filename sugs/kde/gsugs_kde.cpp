@@ -93,9 +93,9 @@ void Configure(GFactoryPostGroup* params)
 	dlg.UseGroupsSugs->setChecked(params->GetBool("UseGroupsSugs"));
 	if (dlg.exec())
 	{
-		params->Set("NbSugs", dlg.NbSugs->value());
-		params->Set("UseLevels", dlg.UseLevels->isChecked());
-		params->Set("UseGroupsSugs", dlg.UseGroupsSugs->isChecked());
+		params->SetUInt("NbSugs", dlg.NbSugs->value());
+		params->SetBool("UseLevels", dlg.UseLevels->isChecked());
+		params->SetBool("UseGroupsSugs", dlg.UseGroupsSugs->isChecked());
 		params->Apply();
 	}
 }
