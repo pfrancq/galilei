@@ -32,6 +32,12 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <rqt.h>
+using namespace R;
+
+
+//------------------------------------------------------------------------------
+// include files for GALILEI
 #include <gstorage.h>
 using namespace GALILEI;
 
@@ -91,26 +97,26 @@ void Configure(GFactoryStorage* params)
 {
 	DlgConfig_Qt dlg;
 
-	dlg.txtDb->setText(params->GetString("Database"));
-	dlg.txtLogin->setText(params->GetString("User"));
-	dlg.txtPwd->setText(params->GetString("Password"));
-	dlg.txtHost->setText(params->GetString("Host"));
-	dlg.cbEncoding->setCurrentText(params->GetString("Encoding"));
-	dlg.Filter->setDate(QDate::fromString(params->GetString("Filter"),Qt::ISODate));
+	dlg.txtDb->setText(ToQString(params->Get("Database")));
+	dlg.txtLogin->setText(ToQString(params->Get("User")));
+	dlg.txtPwd->setText(ToQString(params->Get("Password")));
+	dlg.txtHost->setText(ToQString(params->Get("Host")));
+	dlg.cbEncoding->setCurrentText(ToQString(params->Get("Encoding")));
+	dlg.Filter->setDate(QDate::fromString(ToQString(params->Get("Filter")),Qt::ISODate));
 	dlg.Modified->setChecked(!params->GetBool("All"));
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
 	dlg.Filter->setEnabled(params->GetBool("Filtering"));
 	dlg.groupBox1_2->setEnabled(params->GetBool("Filtering"));
 	if(dlg.exec())
 	{
-		params->Set("Database",dlg.txtDb->text());
-		params->Set("Host",dlg.txtHost->text());
-		params->Set("User",dlg.txtLogin->text());
-		params->Set("Password",dlg.txtPwd->text());
-		params->Set("Encoding",dlg.cbEncoding->currentText());
-		params->Set("All",!dlg.Modified->isChecked());
-		params->Set("Filter",dlg.Filter->date().toString(Qt::ISODate));
-		params->Set("Filtering",dlg.Filtering->isChecked());
+		params->Set("Database",FromQString(dlg.txtDb->text()));
+		params->Set("Host",FromQString(dlg.txtHost->text()));
+		params->Set("User",FromQString(dlg.txtLogin->text()));
+		params->Set("Password",FromQString(dlg.txtPwd->text()));
+		params->Set("Encoding",FromQString(dlg.cbEncoding->currentText()));
+		params->SetBool("All",!dlg.Modified->isChecked());
+		params->Set("Filter",FromQString(dlg.Filter->date().toString(Qt::ISODate)));
+		params->SetBool("Filtering",dlg.Filtering->isChecked());
 	}
 }
 

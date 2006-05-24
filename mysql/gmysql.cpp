@@ -62,7 +62,7 @@
 #include <gweightinfoshistory.h>
 #include <gindexer.h>
 #include <gwordoccurs.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -105,13 +105,13 @@ void GStorageMySQL::InitAccess(void)
 //-----------------------------------------------------------------------------
 void GStorageMySQL::ApplyConfig(void)
 {
-	Host=Factory->GetString("Host");
-	User=Factory->GetString("User");
-	Password=Factory->GetString("Password");
-	Database=Factory->GetString("Database");
-	Filter.SetDate(Factory->GetString("Filter"));
+	Host=Factory->Get("Host");
+	User=Factory->Get("User");
+	Password=Factory->Get("Password");
+	Database=Factory->Get("Database");
+	Filter.SetDate(Factory->Get("Filter"));
 	LoadAll=Factory->GetBool("All");
-	Encoding=Factory->GetString("Encoding");
+	Encoding=Factory->Get("Encoding");
 	Filtering=Factory->GetBool("Filtering");
 	GStorage::ApplyConfig();
 }
@@ -800,7 +800,7 @@ GUser* GStorageMySQL::LoadUser(const R::RString name)
 //------------------------------------------------------------------------------
 GProfile* GStorageMySQL::LoadProfile(unsigned int profileid)
 {
-	GLangManager* Langs=GPluginManagers::GetManager<GLangManager>("Lang");
+	GLangManager* Langs=GALILEIApp->GetManager<GLangManager>("Lang");
 
 	// Load Profile
 	RQuery Profile(Db,"SELECT profileid,description,social,userid FROM profiles WHERE profileid="+RString::Number(profileid));
@@ -836,7 +836,7 @@ GSubProfile* GStorageMySQL::LoadSubProfile(unsigned int subprofileid)
 	SubProfile.Start();
 	if(!SubProfile.GetNb())
 		return(0);
-	GLang *lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(SubProfile[1],false);
+	GLang *lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(SubProfile[1],false);
 	if(!lang)
 		return(0);
 	GProfile* prof=Session->GetProfile(atoi(SubProfile[6]));
@@ -857,7 +857,7 @@ void GStorageMySQL::LoadUsers(void)
 	GProfile* prof;
 	GLang* lang;
 	GSubProfile* sub;
-	GLangManager* Langs=GPluginManagers::GetManager<GLangManager>("Lang");
+	GLangManager* Langs=GALILEIApp->GetManager<GLangManager>("Lang");
 
 	try
 	{
@@ -1077,7 +1077,7 @@ GDoc* GStorageMySQL::LoadDoc(unsigned int docid)
 		return(0);
 
 	// Verify that the langague is active
-	GLang* lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(quer[4],false);
+	GLang* lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(quer[4],false);
 	if((!lang)&&(!quer[4].IsEmpty()))
 		return(0);
 
@@ -1117,7 +1117,7 @@ void GStorageMySQL::LoadDocs(void)
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			// Verify that the langague is active
-			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(quer[4],false);
+			lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(quer[4],false);
 			if((!lang)&&(!quer[4].IsEmpty()))
 				continue;
 
@@ -1251,7 +1251,7 @@ void GStorageMySQL::SaveGroups(void)
 	try
 	{
 		RQuery delete1(Db,"DELETE FROM groups");
-		langs=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+		langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 		for(langs.Start();!langs.End();langs.Next())
 		{
 			lang=langs()->GetPlugin();
@@ -1376,7 +1376,7 @@ GGroup* GStorageMySQL::LoadGroup(unsigned int groupid)
 	Group.Start();
 	if(!Group.GetNb())
 		return(0);
-	GLang* lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(Group[1],false);
+	GLang* lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(Group[1],false);
 	if(!lang)
 		return(0);
 	GGroup* group=new GGroup(atoi(Group[0]),lang,true,Group[2],Group[3]);
@@ -1409,7 +1409,7 @@ void GStorageMySQL::LoadGroups(void)
 		RQuery Groups(Db,Sql);
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
-			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(Groups[1],false);
+			lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(Groups[1],false);
 			if(!lang)
 				continue;
 			group=new GGroup(atoi(Groups[0]),lang,true,Groups[2],Groups[3]);
@@ -1484,7 +1484,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 			v=atoi(grquery[0]);
 
 			//get lang
-			lang=GPluginManagers::GetManager<GLangManager>("Lang")->GetPlugIn(grquery[2]);
+			lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(grquery[2]);
 
 			// If group id changed -> new group needed
 			if((v!=groupid))
@@ -1851,16 +1851,16 @@ void GStorageMySQL::ClearDummyEntry(RString name,unsigned int id,RString desc, u
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::CreateParams(GParams* params)
+void GStorageMySQL::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamString("Host","127.0.0.1"));
-	params->InsertPtr(new GParamString("User","root"));
-	params->InsertPtr(new GParamString("Password",""));
-	params->InsertPtr(new GParamString("Database",""));
-	params->InsertPtr(new GParamBool("Filtering",false));
-	params->InsertPtr(new GParamString("Filter",""));
-	params->InsertPtr(new GParamString("Encoding","Latin1"));
-	params->InsertPtr(new GParamBool("All",true));
+	params->InsertParam(new RParamValue("Host","127.0.0.1"));
+	params->InsertParam(new RParamValue("User","root"));
+	params->InsertParam(new RParamValue("Password",""));
+	params->InsertParam(new RParamValue("Database",""));
+	params->InsertParam(new RParamValue("Filtering",false));
+	params->InsertParam(new RParamValue("Filter",""));
+	params->InsertParam(new RParamValue("Encoding","Latin1"));
+	params->InsertParam(new RParamValue("All",true));
 }
 
 
