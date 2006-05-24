@@ -384,7 +384,7 @@ RString GALILEI::GLangEN::GetStemming(const RString& _kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangEN::CreateParams(GParams*)
+void GLangEN::CreateParams(RConfig*)
 {
 }
 

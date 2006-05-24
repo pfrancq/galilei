@@ -82,7 +82,7 @@ RString GLangIT::GetStemming(const RString& _kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangIT::CreateParams(GParams*)
+void GLangIT::CreateParams(RConfig*)
 {
 }
 

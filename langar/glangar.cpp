@@ -195,7 +195,7 @@ GLangAR::ArabicRule::~ArabicRule(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangAR::GLangAR(GFactoryLang* fac) 
+GALILEI::GLangAR::GLangAR(GFactoryLang* fac)
 	: GLang(fac,"Arabic","ar"), Rules1(0), Rules2(0), Rules3(0), Rules4(0),
 		 Rules5(0), Rules6(0), Rules7(0)
 {
@@ -216,15 +216,15 @@ GALILEI::GLangAR::GLangAR(GFactoryLang* fac)
 
 
 //------------------------------------------------------------------------------
-void GLangAR::CreateParams(GParams* params)
+void GLangAR::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamString("RulesFile","/etc/galilei/arabic_rule.csv"));
-	params->InsertPtr(new GParamString("Encoding","utf-8"));
+	params->InsertParam(new RParamValue("RulesFile","/etc/galilei/arabic_rule.csv"));
+	params->InsertParam(new RParamValue("Encoding","utf-8"));
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLangAR::LoadRules(void) 
+void GALILEI::GLangAR::LoadRules(void)
 {
 	RString* tab;
 	RString w;
@@ -236,7 +236,7 @@ void GALILEI::GLangAR::LoadRules(void)
 	try
 	{
 		//Read Rules
-		RTextFile rules_file(Factory->GetString("RulesFile"), Factory->GetString("Encoding"));
+		RTextFile rules_file(Factory->Get("RulesFile"), Factory->Get("Encoding"));
 		rules_file.Open(RIO::Read);
 
 		//treat on read line
@@ -334,7 +334,7 @@ void GALILEI::GLangAR::ApplyRules(RString& kwd,RContainer<ArabicRule,true,false>
 }
 
 //-----------------------------------------------------------------------------
-RString GALILEI::GLangAR::GetStemming(const RString& _kwd) 
+RString GALILEI::GLangAR::GetStemming(const RString& _kwd)
 {
 	RString res;
 	RString kwd;

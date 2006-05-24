@@ -394,7 +394,7 @@ RString GALILEI::GLangNL::GetStemming(const RString& _kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangNL::CreateParams(GParams*)
+void GLangNL::CreateParams(RConfig*)
 {
 }
 

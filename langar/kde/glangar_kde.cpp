@@ -92,8 +92,8 @@ void Configure(GFactoryLang* params)
 {
  	DlgConfig_Qt dlg;
 
-	dlg.Rules->setURL(params->GetString("RulesFile"));
-	dlg.Encoding->setText(params->GetString("Encoding"));
+	dlg.Rules->setURL(ToQString(params->Get("RulesFile")));
+	dlg.Encoding->setText(ToQString(params->Get("Encoding")));
 
 	if(dlg.exec())
 	{

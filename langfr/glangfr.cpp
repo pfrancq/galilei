@@ -517,7 +517,7 @@ RString GLangFR::GetStemming(const RString& _kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangFR::CreateParams(GParams*)
+void GLangFR::CreateParams(RConfig*)
 {
 }
 

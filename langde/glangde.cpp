@@ -80,7 +80,7 @@ RString GLangDE::GetStemming(const RString& _kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangDE::CreateParams(GParams*)
+void GLangDE::CreateParams(RConfig*)
 {
 }
 
