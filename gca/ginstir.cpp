@@ -47,7 +47,7 @@ using namespace R;
 #include <girheuristic.h>
 #include <gsubprofile.h>
 #include <gprofile.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <ggroup.h>
 #include <gsession.h>
 #include <gsubjects.h>
@@ -126,9 +126,9 @@ GThreadDataIR::~GThreadDataIR(void)
 GInstIR::GInstIR(GSession* ses,GLang* l,RObjs<GObjIR>* objs,GIRParams* p,RDebug *debug)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(p->PopSize,objs,FirstFit,"GCA",debug),
 	  GIRProm(p), Params(p), Sols(0), Session(ses), Lang(l), NoSocialSubProfiles(objs->GetNb()),
-	  Ratios(objs->GetNb()), ProfilesSims(GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities"))
-	, ProfilesAgree(GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements"))
-	, ProfilesDisagree(GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements"))
+	  Ratios(objs->GetNb()), ProfilesSims(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities"))
+	, ProfilesAgree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements"))
+	, ProfilesDisagree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements"))
 #if BESTSOLSVERIFICATION
 	  , BestSols(p->MaxGen,p->MaxGen/2)
 #endif

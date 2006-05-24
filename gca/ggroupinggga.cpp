@@ -50,7 +50,7 @@ using namespace R;
 #include <glang.h>
 #include <gsession.h>
 #include <gmeasure.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -81,9 +81,9 @@ void GGroupingGGA::ApplyConfig(void)
 	Params.MaxKMeans=Factory->GetUInt("Max kMeans");
 	Params.Convergence=Factory->GetDouble("Convergence");
 	Params.NbDivChromo=Factory->GetUInt("NbDivChromo");
-	Params.ParamsSim=(*Factory->GetProm("Sim Criterion"));
-	Params.ParamsAgreement=(*Factory->GetProm("Agreement Criterion"));
-	Params.ParamsDisagreement=(*Factory->GetProm("Disagreement Criterion"));
+	Params.ParamsSim.Set(Factory->FindParam<RParamStruct>("Sim Criterion"));
+	Params.ParamsAgreement.Set(Factory->FindParam<RParamStruct>("Agreement Criterion"));
+	Params.ParamsDisagreement.Set(Factory->FindParam<RParamStruct>("Disagreement Criterion"));
 	Params.isf=Factory->GetBool("isf");
 }
 
@@ -185,7 +185,7 @@ void GGroupingGGA::Run(void)
 	try
 	{
 		GGroupDataIR data;
-  		Params.MinSimLevel=GPluginManagers::GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities")->GetMinMeasure(Lang);
+  		Params.MinSimLevel=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities")->GetMinMeasure(Lang);
 		Objs=new RObjs<GObjIR>(SubProfiles.GetNb());
 		RCursor<GSubProfile> Cur2(SubProfiles);
 		for(Cur2.Start(),i=0;!Cur2.End();Cur2.Next(),i++)
@@ -222,23 +222,21 @@ void GGroupingGGA::Run(void)
 
 
 //------------------------------------------------------------------------------
-void GGroupingGGA::CreateParams(GParams* params)
+void GGroupingGGA::CreateParams(RConfig* params)
 {
-	RPromCriterionParams def;
-
-	params->InsertPtr(new GParamUInt("Population Size",16));
-	params->InsertPtr(new GParamUInt("Max Gen",30));
-	params->InsertPtr(new GParamBool("Step",false));
-	params->InsertPtr(new GParamUInt("Step Gen",0));
-	params->InsertPtr(new GParamDouble("Min Agreement",0.6));
-	params->InsertPtr(new GParamDouble("Min Disagreement",0.6));
-	params->InsertPtr(new GParamUInt("Max kMeans",30));
-	params->InsertPtr(new GParamDouble("Convergence",0.05));
-	params->InsertPtr(new GParamUInt("NbDivChromo",2));
-	params->InsertPtr(new GParamProm("Sim Criterion",&def));
-	params->InsertPtr(new GParamProm("Agreement Criterion",&def));
-	params->InsertPtr(new GParamProm("Disagreement Criterion",&def));
-	params->InsertPtr(new GParamBool("isf",true));
+	params->InsertParam(new RParamValue("Population Size",16));
+	params->InsertParam(new RParamValue("Max Gen",30));
+	params->InsertParam(new RParamValue("Step",false));
+	params->InsertParam(new RParamValue("Step Gen",0));
+	params->InsertParam(new RParamValue("Min Agreement",0.6));
+	params->InsertParam(new RParamValue("Min Disagreement",0.6));
+	params->InsertParam(new RParamValue("Max kMeans",30));
+	params->InsertParam(new RParamValue("Convergence",0.05));
+	params->InsertParam(new RParamValue("NbDivChromos",2));
+	params->InsertParam(RPromCriterionParams::CreateParam("Sim Criterion"));
+	params->InsertParam(RPromCriterionParams::CreateParam("Agreement Criterion"));
+	params->InsertParam(RPromCriterionParams::CreateParam("Disagreement Criterion"));
+	params->InsertParam(new RParamValue("isf",true));
 }
 
 
