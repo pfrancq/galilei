@@ -29,6 +29,11 @@
 */
 
 
+//------------------------------------------------------------------------------
+// include files for R
+#include <rqt.h>
+using namespace R;
+
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
@@ -101,7 +106,7 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.Distance->setChecked(params->GetBool("Distance"));
 	dlg.PathtoBinary->setEnabled(params->GetBool("Distance"));
 	dlg.PathtoBinary->setMode(KFile::Directory);
-	dlg.PathtoBinary->setURL(params->GetString("PathtoBinary"));
+	dlg.PathtoBinary->setURL(ToQString(params->Get("PathtoBinary")));
 	dlg.UseExternalLinks->setChecked(params->GetBool("UseExternalLinks"));
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
 	dlg.NbSameOccur->setValue(params->GetUInt("NbSameOccur"));
@@ -111,19 +116,19 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.groupFiltering->setEnabled(params->GetBool("NonLetterWords"));
 	if(dlg.exec())
 	{
-		params->Set("StaticLang",dlg.StaticLang->isChecked());
-		params->Set("MinStopWords",dlg.MinStopWords->value());
-		params->Set("MinWordSize",dlg.MinWordSize->value());
-		params->Set("MinStemSize",dlg.MinStemSize->value());
-		params->Set("MinOccur",dlg.MinOccur->value());
-		params->Set("StoreFullWords",dlg.StoreFullWords->isChecked());
-		params->Set("NonLetterWords",dlg.NonLetterWords->isChecked());
-		params->Set("Distance",dlg.Distance->isChecked());
-		params->Set("UseExternalLinks",dlg.UseExternalLinks->isChecked());
-		params->Set("Filtering",dlg.Filtering->isChecked());
-		params->Set("NbSameOccur",dlg.NbSameOccur->value());
-		params->Set("NormalRatio",dlg.NormalRatio->value());
-		params->Set("PathtoBinary",RString(dlg.PathtoBinary->url().ascii()));
+		params->SetBool("StaticLang",dlg.StaticLang->isChecked());
+		params->SetDouble("MinStopWords",dlg.MinStopWords->value());
+		params->SetUInt("MinWordSize",dlg.MinWordSize->value());
+		params->SetUInt("MinStemSize",dlg.MinStemSize->value());
+		params->SetUInt("MinOccur",dlg.MinOccur->value());
+		params->SetBool("StoreFullWords",dlg.StoreFullWords->isChecked());
+		params->SetBool("NonLetterWords",dlg.NonLetterWords->isChecked());
+		params->SetBool("Distance",dlg.Distance->isChecked());
+		params->SetBool("UseExternalLinks",dlg.UseExternalLinks->isChecked());
+		params->SetBool("Filtering",dlg.Filtering->isChecked());
+		params->SetUInt("NbSameOccur",dlg.NbSameOccur->value());
+		params->SetDouble("NormalRatio",dlg.NormalRatio->value());
+		params->Set("PathtoBinary",FromQString(dlg.PathtoBinary->url()));
 		params->Apply();
 	}
 }

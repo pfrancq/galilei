@@ -52,7 +52,7 @@
 #include <gweightinfo.h>
 #include <gdict.h>
 #include <gsession.h>
-#include <gpluginmanagers.h>
+#include <ggalileiapp.h>
 #include <gstorage.h>
 using namespace R;
 using namespace GALILEI;
@@ -156,7 +156,7 @@ void GTextAnalyse::ApplyConfig(void)
 	Filtering=Factory->GetBool("Filtering");
 	NbSameOccur=Factory->GetUInt("NbSameOccur");
 	NormalRatio=Factory->GetDouble("NormalRatio");
-	PathtoBinary=Factory->GetString("PathtoBinary");
+	PathtoBinary=Factory->Get("PathtoBinary");
 }
 
 
@@ -172,7 +172,7 @@ void GTextAnalyse::Connect(GSession* session)
 	GDocAnalyse::Connect(session);
 
 	// Create local structures
-	CurLangs=GPluginManagers::GetManager<GLangManager>("Lang")->GetFactories();
+	CurLangs=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 	Sl=new unsigned int[CurLangs.GetNb()];
 	Sldiff=new unsigned int[CurLangs.GetNb()];
 	Weights=new RDblHashContainer<WordWeight,27,27,false>(500,250);
@@ -272,7 +272,7 @@ void GTextAnalyse::VerifyDirect(void)
 		delete[] Direct;
 		Direct=ptr;
 		for(i=2500+1,ptr=&Direct[NbDirect];--i;ptr++)
-			(*ptr)=new WordWeight(GPluginManagers::GetManager<GLangManager>("Lang")->GetNbFactories());
+			(*ptr)=new WordWeight(GALILEIApp->GetManager<GLangManager>("Lang")->GetNbFactories());
 		NbDirect+=2500;
 	}
 }
@@ -407,7 +407,7 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 		w=(*Section)[Index];
 		if(FindLang)
 		{
-			for(i=GPluginManagers::GetManager<GLangManager>("Lang")->GetNbFactories()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
+			for(i=GALILEIApp->GetManager<GLangManager>("Lang")->GetNbFactories()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
 			{
 				if(*is)
 					(*tmp2)++;
@@ -897,21 +897,21 @@ bool GTextAnalyse::StoreWordStemInDatabase(unsigned int stemid, RString word, un
 
 
 //------------------------------------------------------------------------------
-void GTextAnalyse::CreateParams(GParams* params)
+void GTextAnalyse::CreateParams(RConfig* params)
 {
-	params->InsertPtr(new GParamBool("StaticLang",false));
-	params->InsertPtr(new GParamDouble("MinStopWords",0.09));
-	params->InsertPtr(new GParamUInt("MinWordSize",3));
-	params->InsertPtr(new GParamUInt("MinStemSize",3));
-	params->InsertPtr(new GParamBool("StoreFullWords",false));
-	params->InsertPtr(new GParamUInt("MinOccur",1));
-	params->InsertPtr(new GParamBool("NonLetterWords",true));
-	params->InsertPtr(new GParamBool("Distance",false));
-	params->InsertPtr(new GParamBool("UseExternalLinks",false));
-	params->InsertPtr(new GParamBool("Filtering",true));
-	params->InsertPtr(new GParamUInt("NbSameOccur",3));
-	params->InsertPtr(new GParamDouble("NormalRatio",0.3));
-	params->InsertPtr(new GParamString("PathtoBinary","/var/galilei/bin/"));
+	params->InsertParam(new RParamValue("StaticLang",false));
+	params->InsertParam(new RParamValue("MinStopWords",0.09));
+	params->InsertParam(new RParamValue("MinWordSize",3));
+	params->InsertParam(new RParamValue("MinStemSize",3));
+	params->InsertParam(new RParamValue("StoreFullWords",false));
+	params->InsertParam(new RParamValue("MinOccur",1));
+	params->InsertParam(new RParamValue("NonLetterWords",true));
+	params->InsertParam(new RParamValue("Distance",false));
+	params->InsertParam(new RParamValue("UseExternalLinks",false));
+	params->InsertParam(new RParamValue("Filtering",true));
+	params->InsertParam(new RParamValue("NbSameOccur",3));
+	params->InsertParam(new RParamValue("NormalRatio",0.3));
+	params->InsertParam(new RParamValue("PathtoBinary","/var/galilei/bin/"));
 }
 
 
