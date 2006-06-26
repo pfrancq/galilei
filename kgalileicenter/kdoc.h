@@ -93,7 +93,7 @@ class KDoc : public QObject//, public GStorageMySQL
 	QList<KView>* pViewList;
 
 	/**
-	* GALILEI Session. The document has to desallocate it.
+	* GALILEI Session.
 	*/
 	GALILEI::GSession* Session;
 

@@ -207,5 +207,4 @@ bool KDoc::canCloseFrame(KView* /*pFrame*/)
 KDoc::~KDoc(void)
 {
 	delete pViewList;
-	delete Session;
 }
