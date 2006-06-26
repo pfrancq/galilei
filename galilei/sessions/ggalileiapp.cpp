@@ -100,7 +100,6 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	: RApplication(name,argc,argv), RContainer<GGenericPluginManager,true,true>(20,10), Log(0), Debug(0), Session(0), LoadDialogs(dlg),
 	  PlugInsPath(10), GALILEIConfig()
 {
-	GALILEIApp=this;
 	InsertPtr(new GStorageManager());
 	InsertPtr(new GLangManager());
 	InsertPtr(new GLinkCalcManager());
@@ -117,6 +116,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GPostProfileManager());
 	InsertPtr(new GStatsCalcManager());
 	InsertPtr(new GMeasureManager());
+	GALILEIApp=this;
 }
 
 
@@ -377,6 +377,9 @@ void GGALILEIApp::Apply(void)
 //------------------------------------------------------------------------------
 GGALILEIApp::~GGALILEIApp(void)
 {
+	// No more App
+	GALILEIApp=0;
+
 	// Delete the session
 	DeleteSession();
 
