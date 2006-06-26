@@ -243,12 +243,12 @@ public:
 	bool SaveResults;                                                 // Must the results be saved after computed?
 	GSlot* Slot;                                                      // Slot for the session
 	R::RDebug* Debug;                                                 // Debug output for the session
-	R::RContainer<PerLang,true,true> Langs;                           // Documents, Subprofiles and Groups divided by language.
 	R::RContainer<GDoc,true,true> Docs;                               // Documents handled by the system.
 	R::RContainer<GDocRefURL,true,true> DocsRefUrl;                   // Documents ordered by URL.
 	R::RContainer<GUser,true,true> Users;                             // Users handled by the system.
 	R::RContainer<GProfile,true,true> Profiles;                       // Profiles handled by the system.
 	R::RContainer<GGroup,true,true> Groups;                           // Groups handled by the system.
+	R::RContainer<PerLang,true,true> Langs;                           // Documents, Subprofiles and Groups divided by language.
 	R::RContainer<GFreeId,true,true> FreeIds;                         // Free identificators for the groups.
 	unsigned int MaxDocs;                                             // Maximum number of documents to handle in memory.
 	unsigned int MaxSubProfiles;                                      // Maximum number of subprofiles to handle in memory.
@@ -256,8 +256,8 @@ public:
 
 	Intern(GStorage* str,unsigned int mdocs,unsigned int maxsub,unsigned int maxgroups,unsigned int d,unsigned int u,unsigned int p,unsigned int g,unsigned int nblangs)
 		: Subjects(0), GroupsHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
-		  Slot(0), Langs(nblangs+1), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
-		  Users(u,u/2), Profiles(p,p/2), Groups(g+(g/2),g/2), FreeIds(50,25),
+		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
+		  Users(u,u/2), Profiles(p,p/2), Groups(g+(g/2),g/2), Langs(nblangs+1), FreeIds(50,25),
 		  MaxDocs(mdocs), MaxSubProfiles(maxsub), MaxGroups(maxgroups)
 	{
 		CurrentRandom=0;
