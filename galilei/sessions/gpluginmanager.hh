@@ -180,7 +180,8 @@ template<class mng,class factory,class plugin>
 			for(Cur.Start(),pos=0;!Cur.End();Cur.Next(),pos++)
 			{
 				factory* fac=R::RContainer<factory,true,true>::GetPtr(*Cur(),false);
-				fac->SetLevel(pos);
+				if(fac)
+					fac->SetLevel(pos);
 			}
 			break;
 			ReOrder();
@@ -206,10 +207,13 @@ template<class mng,class factory,class plugin>
 		case ptOrdered:
 		{
 			R::RParamList* param=config->FindParam<R::RParamList>(Name,"Plugins");
-			param->Reset();
-			R::RCursor<factory> Cur(*this);
-			for(Cur.Start();!Cur.End();Cur.Next())
-				param->Insert(Cur()->GetName());
+			if(param)
+			{
+				param->Reset();
+				R::RCursor<factory> Cur(*this);
+				for(Cur.Start();!Cur.End();Cur.Next())
+					param->Insert(Cur()->GetName());
+			}
 			break;
 		}
 
