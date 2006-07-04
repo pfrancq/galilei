@@ -658,7 +658,8 @@ GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,c
 
 //------------------------------------------------------------------------------
 GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,const RString& encoding)
- : RXMLFile(name,xmlstruct,encoding), Filter(filter),Doc(&xmlstruct), Tags(200,10), FoundClosingHTML(false),Base(""),ParTag(0)
+ : RXMLFile(name,xmlstruct,encoding), Filter(filter),Doc(&xmlstruct), Tags(200,10),
+   FoundClosingHTML(false),Base(""), ParTag(0), DocXMLCreated(false)
 {
 	InitValidTags();
 }
@@ -707,6 +708,13 @@ void GHTMLConverter::InitValidTags(void)
 //------------------------------------------------------------------------------
 void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName, const RString& name,RContainer<RXMLAttr,true,true>& attrs)
 {
+	// Verify that the docxml structure was correctly created
+	if(!DocXMLCreated)
+	{
+		dynamic_cast<GDocXML*>(XMLStruct)->InitDocXML();
+		DocXMLCreated=true;
+	}
+
 	RString htmlName;
 	Tag* tag;
 	// if HTML closing tag found -> Nothing to do

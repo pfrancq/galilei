@@ -64,7 +64,7 @@ class GHTMLConverter : public R::RXMLFile
 	*/
 	GFilter* Filter;
 
-	/*
+	/**
 	* Pointer to the gdocxml structure
 	*/
 	GDocXML* Doc;
@@ -88,6 +88,11 @@ class GHTMLConverter : public R::RXMLFile
 	* Maintain the current Paragraph tag (used when text parent is docxml:content)
 	*/
 	R::RXMLTag* ParTag;
+
+	/**
+	* Is the current DocXML file correctly created?
+	*/
+	bool DocXMLCreated;
 
 public:
 
