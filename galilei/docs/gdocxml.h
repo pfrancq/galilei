@@ -94,6 +94,11 @@ public:
 	GDocXML(R::RString url,R::RString filename);
 
 	/**
+	* Initialize the DocXML structure with the default tags and entities.
+	*/
+	void InitDocXML(void);
+
+	/**
 	* Get the URL.
 	* @returns Pointer to a C string.
 	*/

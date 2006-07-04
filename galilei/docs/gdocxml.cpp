@@ -46,6 +46,13 @@ using namespace R;
 GDocXML::GDocXML(RString url,RString filename)
 	: RXMLStruct(), URL(url), FileName(filename)
 {
+	InitDocXML();
+}
+
+
+//------------------------------------------------------------------------------
+void GDocXML::InitDocXML(void)
+{
 	RXMLTag* t;
 
 	AddTag(0,t=new RXMLTag("rdf:RDF"));
