@@ -75,6 +75,7 @@ public:
 	/**
 	* Constructor.
 	* @param slot            Pointer to the slot.
+	* @param debug           Pointer to a debugger structure.
 	* @param maxdocs         Maximum number of documents to allocate. If zero,
 	*                        everything is allocated.
 	* @param maxsubprofiles  Maximum number of subprofiles to allocate. If
@@ -325,11 +326,10 @@ public:
 	void DoPostDocs(GSlot* rec=0);
 
 	/**
-	* Send a Query to the Meta engine selected. The pages are researched, ranked and return
-	* @param &keyWords       The set of keywords to form the query
-	* @param &results        The set of results returned by the meta engine
+	* Send a Query to the Meta engine selected. The pages are researched and ranked.
+	* @param keyWords        The set of keywords to form the query.
 	*/
-	void QueryMetaEngine(R::RContainer<R::RString,true,false> &keyWords);
+	void QueryMetaEngine(R::RContainer<R::RString,true,false>& keyWords);
 
 	//@} Documents
 
@@ -495,7 +495,7 @@ public:
 	* @param lang            Language of the document.
 	* @param assess          Feedback.
 	* @param date            Date on the last feedback.
-	* @param update          Date on the last computation of the document.
+	* @param computed        Date on the last computation of the document.
 	* @param newone          New feedback in the system?
 	*/
 	void InsertFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed,bool newone=false);

@@ -383,10 +383,9 @@ void GSubject::Insert(GProfile* profile)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GProfile> GALILEI::GSubject::GetProfiles(void)
+R::RCursor<GProfile> GALILEI::GSubject::GetProfiles(void) const
 {
-	R::RCursor<GProfile> cur(Data->Profiles);
-	return(cur);
+	return(R::RCursor<GProfile>(Data->Profiles));
 }
 
 

@@ -65,7 +65,7 @@ class GSubject: public R::RNode<GSubject,true,false>
 {
 	class Intern;
 
-	/*
+	/**
 	* Internal data.
 	*/
 	Intern* Data;
@@ -146,7 +146,6 @@ public:
 	* Get a cursor over the groups of the subject. This method can only be
 	* used when the current clustering becomes the ideal one.
 	* @see GSession::CopyIdealGroups
-	* @param lang           Language.
 	*/
 	R::RCursor<GGroup> GetGroups(void) const;
 
@@ -167,6 +166,7 @@ public:
 	/**
 	* Compute the number of topics (and its sub-topics) containing a document
 	* in a given language.
+	* @param lang            Language of the groups.
 	*/
 	size_t GetNbTopicsDocs(const GLang* lang) const;
 
@@ -236,7 +236,7 @@ public:
 	* Get a cursor over the profiles contained in the subject.
 	* @return GDocCursor.
 	*/
-	R::RCursor<GProfile> GetProfiles(void);
+	R::RCursor<GProfile> GetProfiles(void) const;
 
 	/**
 	* Get the number of profiles associated to this subject.
@@ -279,6 +279,7 @@ public:
 	void SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocial);
 
 	/**
+	* Initialize the subject (reset all profiles assigned).
 	*/
 	void ReInit(void);
 

@@ -129,13 +129,13 @@ public:
 
 	/**
 	* Connect to a storage.
-	* @param session         Pointer to the storage.
+	* @param storage         Pointer to the storage.
 	*/
 	virtual void Connect(GStorage* storage);
 
 	/**
 	* Disconnect to the storage.
-	* @param session         Pointer to the storage.
+	* @param storage         Pointer to the storage.
 	*/
 	virtual void Disconnect(GStorage* storage);
 
@@ -569,7 +569,7 @@ public:
 	* @param lang            Language of the document.
 	* @param assess          Feedback.
 	* @param date            Date on the last feedback.
-	* @param update          Date on the last computation of the document.
+	* @param computed        Date on the last computation of the document.
 	*/
 	virtual void AddFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed)=0;
 

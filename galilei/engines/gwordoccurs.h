@@ -111,7 +111,7 @@ public:
 	/**
 	* Compute the first hash index of the name of a data.
 	* @see R::RHashContainer
-	* @param d               Pointer to a data.
+	* @param word            Data.
 	*/
 	static int HashIndex(const GWordOccurs* word)
 		{return(R::RString::HashIndex(word->Word));}

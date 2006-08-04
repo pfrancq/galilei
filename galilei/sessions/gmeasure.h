@@ -220,19 +220,18 @@ public:
 
 	/**
 	* Create the config parameters.
-	* @param parent          Parent Tag.
+	* @param config          Configuration structure.
 	*/
 	virtual void CreateConfig(R::RConfig* config);
 
 	/**
 	* Read config of the manager.
-	* @param parent          Parent Tag.
+	* @param config          Configuration structure.
 	*/
 	virtual void ReadConfig(R::RConfig* config);
 
 	/**
-	* @param xml             XML Structure.
-	* @param parent          Parent tag.
+	* @param config          Configuration structure.
 	*/
 	virtual void SaveConfig(R::RConfig* config);
 
@@ -244,6 +243,7 @@ public:
 
 	/**
 	* Get a pointer to a given factory.
+	* @param type            Type of the factory.
 	* @param name            Name of the factory.
 	* @param need            If the parameter is true and the plug-in does not
 	*                        exist, generate an exception.
@@ -254,11 +254,13 @@ public:
 
 	/**
 	* Get the number of factories registered.
+	* @param type            Type of the factory.
 	*/
 	size_t GetNbFactories(const R::RString& type) const;
 
 	/**
 	* Get a cursor over the registered factories.
+	* @param type            Type of the factory.
 	*/
 	R::RCursor<GFactoryMeasure> GetFactories(const R::RString& type) const;
 
@@ -269,7 +271,7 @@ public:
 
 	/**
 	* Get a pointer to a given factory.
-	* @param name            Name of the factory.
+	* @param type            Type of the factory.
 	* @param need            If the parameter is true and the plug-in does not
 	*                        exist, generate an exception.
 	* @return Pointer to the factory, or null/exception if the name does not
@@ -291,11 +293,13 @@ public:
 
 	/**
 	* Get the number of enabled plug-ins.
+	* @param type            Type of the factory.
 	*/
 	size_t GetNbPlugIns(const R::RString& type) const;
 
 	/**
 	* Get a pointer to a given plug-in.
+	* @param type            Type of the factory.
 	* @param name            Name of the plug-in.
 	* @param need            If the parameter is true and the plug-in does not
 	*                        exist, generate an exception.
@@ -306,11 +310,13 @@ public:
 
 	/**
 	* Get a cursor over the enabled plug-ins.
+	* @param type            Type of the factory.
 	*/
 	R::RCursor<GMeasure> GetPlugIns(const R::RString& type) const;
 
 	/**
 	* Set the current method if the plug-ins must have a selected one.
+	* @param type            Type of the factory.
 	* @param name            Name of the method.
 	* @param need            If the parameter is true and the plug-in does not
 	*                        exist, generate an exception.
@@ -319,6 +325,7 @@ public:
 
 	/**
 	* Get the current method.
+	* @param type            Type of the factory.
 	* @param need            If the parameter is true and the plug-in does not
 	*                        exist, generate an exception.
 	* @return Pointer to the plugin, or null/exception if no plug-in is
@@ -328,6 +335,7 @@ public:
 
 	/**
 	* Get the current factory.
+	* @param type            Type of the factory.
 	* @param need            If the parameter is true and the plug-in does not
 	*                        exist, generate an exception.
 	* @return Pointer to the factory, or null/exception if no plug-in is

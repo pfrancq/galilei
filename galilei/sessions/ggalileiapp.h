@@ -251,6 +251,9 @@ public:
 
 //------------------------------------------------------------------------------
 // Extern variables
+/**
+* Pointer to the current application running a GALILEI session.
+*/
 extern GGALILEIApp* GALILEIApp;
 
 

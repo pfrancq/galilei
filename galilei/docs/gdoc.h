@@ -287,7 +287,7 @@ public:
 	* @param doc            Pointer to a document.
 	* @return unsigned int.
 	*/
-	unsigned int GetCommonOKProfiles(const GDoc* docc) const;
+	unsigned int GetCommonOKProfiles(const GDoc* doc) const;
 
 	/**
 	* Get the number of common profiles which have assess both documents.

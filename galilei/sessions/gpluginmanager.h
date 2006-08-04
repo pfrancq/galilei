@@ -152,19 +152,18 @@ public :
 
 	/*
 	* Create the config parameters.
-	* @param parent          Parent Tag.
+	* @param config          Configuration structure.
 	*/
 	virtual void CreateConfig(R::RConfig* config)=0;
 
 	/*
 	* Read config of the manager.
-	* @param parent          Parent Tag.
+	* @param config          Configuration structure.
 	*/
 	virtual void ReadConfig(R::RConfig* config)=0;
 
 	/*
-	* @param xml             XML Structure.
-	* @param parent          Parent tag.
+	* @param config          Configuration structure.
 	*/
 	virtual void SaveConfig(R::RConfig* config)=0;
 
@@ -259,19 +258,18 @@ public:
 
 	/**
 	* Create the config parameters.
-	* @param parent          Parent Tag.
+	* @param config          Configuration structure.
 	*/
 	virtual void CreateConfig(R::RConfig* config);
 
 	/**
 	* Read config of the manager.
-	* @param parent          Parent Tag.
+	* @param config          Configuration structure.
 	*/
 	virtual void ReadConfig(R::RConfig* config);
 
 	/**
-	* @param xml             XML Structure.
-	* @param parent          Parent tag.
+	* @param config          Configuration structure.
 	*/
 	virtual void SaveConfig(R::RConfig* config);
 

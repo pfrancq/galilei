@@ -69,7 +69,7 @@ protected:
 
 	class Intern;
 
-	/*
+	/**
 	* Internal data.
 	*/
 	Intern* Data;
@@ -93,6 +93,7 @@ public:
 	void Apply(void);
 
 	/**
+	* Initialize all the subjects (reset the profiles association).
 	*/
 	void ReInit(void);
 
@@ -305,7 +306,7 @@ public:
 	* @param s              Subject.
 	* @return bool
 	*/
-	bool IsFromParentSubject(unsigned int doc,const GSubject* s);
+	bool IsFromParentSubject(unsigned int docid,const GSubject* s);
 
 	/**
 	* Get a Cursor on the subjects of a given document.
