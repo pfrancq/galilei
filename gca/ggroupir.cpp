@@ -217,7 +217,7 @@ void GGroupIR::Evaluate(double& dist,double& agree,double& disagree)
 		size_t i;
 		for(CurObj.Start(),i=0,AgreementSum=DisagreementSum=0.0;i<GetNbObjs()-1;CurObj.Next(),i++)
 		{
-			for(CurObj2.GoTo(GetObjsPos()+i+1);!CurObj2.End();CurObj2.Next())
+			for(CurObj2.GoTo(i+1);!CurObj2.End();CurObj2.Next())
 			{
 				AgreementSum+=Owner->Instance->GetAgreementRatio(CurObj()->GetSubProfile(),CurObj2()->GetSubProfile());
 				DisagreementSum+=Owner->Instance->GetDisagreementRatio(CurObj()->GetSubProfile(),CurObj2()->GetSubProfile());

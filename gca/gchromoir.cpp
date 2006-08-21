@@ -298,7 +298,7 @@ void GALILEI::GChromoIR::DoKMeans(void)
 	for(Grp.Start(),obj=thObjs1;!Grp.End();Grp.Next())
 	{
 		RCursor<GObjIR> ptr=GetObjs(Grp());
-		for(ptr.GoTo(Grp()->GetObjsPos());!ptr.End();ptr.Next(),obj++)
+		for(ptr.Start();!ptr.End();ptr.Next(),obj++)
 		{
 			(*obj)=ptr();
 		}
@@ -348,9 +348,9 @@ void GALILEI::GChromoIR::DivideWorstSubProfiles(void)
 		if(Grp()->GetNbObjs()<3) continue;
 		RCursor<GObjIR> CurObj(GetObjs(*Grp()));
 		RCursor<GObjIR> CurObj2(GetObjs(*Grp()));
-		for(CurObj.GoTo(Grp()->GetObjsPos()),i=0;i<Grp()->GetNbObjs()-1;CurObj.Next(),i++)
+		for(CurObj.Start(),i=0;i<Grp()->GetNbObjs()-1;CurObj.Next(),i++)
 		{
-			for(CurObj2.GoTo(Grp()->GetObjsPos()+i+1);!CurObj2.End();CurObj2.Next())
+			for(CurObj2.GoTo(i+1);!CurObj2.End();CurObj2.Next())
 			{
 				sim=Instance->GetSim(CurObj()->GetSubProfile(),CurObj2()->GetSubProfile());
 				if(sim<minsim)
@@ -377,7 +377,7 @@ void GALILEI::GChromoIR::DivideWorstSubProfiles(void)
 	sub1=worst1->GetSubProfile();
 	sub2=worst2->GetSubProfile();
 	RCursor<GObjIR> CurObj(GetObjs(*grp));
-	for(CurObj.GoTo(grp->GetObjsPos());!CurObj.End();CurObj.Next())
+	for(CurObj.Start();!CurObj.End();CurObj.Next())
 	{
 		if((CurObj()==worst1)||(CurObj()==worst2)) continue;
 		sub=CurObj()->GetSubProfile();
@@ -447,10 +447,10 @@ void GALILEI::GChromoIR::MergeBestSubProfiles(void)
 
 	// Put the objects of bestgrp1 and bestgrp2 in thObjs1
 	RCursor<GObjIR> CurObj(GetObjs(*bestgrp1));
-	for(CurObj.GoTo(bestgrp1->GetObjsPos()),ptr=thObjs1,NbObjs1=0;!CurObj.End();CurObj.Next(),ptr++,NbObjs1++)
+	for(CurObj.Start(),ptr=thObjs1,NbObjs1=0;!CurObj.End();CurObj.Next(),ptr++,NbObjs1++)
 		(*ptr)=CurObj();
 	CurObj=GetObjs(*bestgrp2);
-	for(CurObj.GoTo(bestgrp2->GetObjsPos());!CurObj.End();CurObj.Next(),ptr++,NbObjs1++)
+	for(CurObj.Start();!CurObj.End();CurObj.Next(),ptr++,NbObjs1++)
 		(*ptr)=CurObj();
 
 	// Release the groups
