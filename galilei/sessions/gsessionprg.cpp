@@ -49,6 +49,7 @@
 #include <gstorage.h>
 #include <gslot.h>
 #include <ggalileiapp.h>
+#include <gmeasure.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -322,6 +323,16 @@ class GSetSaveResultsI: public GSM
 {
 public:
 	GSetSaveResultsI(GPrgClassSession* o) : GSM("SetSaveResults","Specify if the results must be stored in the current storage.",o) {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+};
+
+
+//------------------------------------------------------------------------------
+// (c) 2006, Michaël Noiret.
+class GSetMeasuresParamI : public GSM
+{
+public:
+	GSetMeasuresParamI(GPrgClassSession* o) : GSM("SetMeasuresParam","Specify a value (4th argument) for a parameter (3rd argument) for a measure (with name=2nd argument and type=1st argument) .",o) {}
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
@@ -937,6 +948,24 @@ void GSetSaveResultsI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,f
 }
 
 
+//------------------------------------------------------------------------------
+// (c) 2006, Michaël Noiret.
+void GSetMeasuresParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
+{
+	if(args->GetNb()!=4)
+		throw RException("Method needs four parameters.");
+
+	GMeasureManager* manager=GALILEIApp->GetManager<GMeasureManager>("Measures");
+	if(!manager)
+		throw RException("No mesaures manager.");
+	GMeasure* measure=manager->GetCurrentMethod((*args)[0]->GetValue(prg));
+	if(!measure)
+		throw RException("No method selected for this type of measure.");
+	manager->GetFactory((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg))->Set((*args)[2]->GetValue(prg),(*args)[3]->GetValue(prg));
+	measure->ApplyConfig();
+}
+
+
 
 //------------------------------------------------------------------------------
 //
@@ -977,6 +1006,7 @@ GPrgClassSession::GPrgClassSession(GSession* s)
 	Methods.InsertPtr(new GRunStatI(this));
 	Methods.InsertPtr(new GForceReComputeI(this));
 	Methods.InsertPtr(new GSetSaveResultsI(this));
+	Methods.InsertPtr(new GSetMeasuresParamI(this));
 }
 
 
