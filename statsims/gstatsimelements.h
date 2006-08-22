@@ -252,7 +252,7 @@ template<class E1,class E2>
 	{
 		tmp=(SimIntra-SimExtra)/SimIntra;
 		if(File)
-			(*File)<<Cur1()->GetId()<<tmp<<endl;
+			(*File)<<sub->GetId()<<tmp<<endl;
 		calc->AddTag(xml,Tag,"Rie",tmp);
 	}
 
