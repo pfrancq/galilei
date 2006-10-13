@@ -57,7 +57,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac) 
+GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac)
 	: GGroupCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
@@ -72,21 +72,21 @@ void GGroupCalcGravitation::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Connect(GSession* session) 
+void GGroupCalcGravitation::Connect(GSession* session)
 {
 	GGroupCalc::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Disconnect(GSession* session) 
+void GGroupCalcGravitation::Disconnect(GSession* session)
 {
 	GGroupCalc::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Compute(GGroup* grp) 
+void GGroupCalcGravitation::Compute(GGroup* grp)
 {
 	unsigned int i;
 	GWeightInfo* ins;
@@ -114,7 +114,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		RCursor<GWeightInfo> Cur(Sub()->GetInfos());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			ins=Vector.GetInsertPtr<unsigned int>(Cur()->GetId());
+			ins=Vector.GetInsertPtr(*Cur());
 			(*ins)+=Cur()->GetWeight();
 		}
 	}
@@ -135,7 +135,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetType(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
 		}
 	}
 	else
@@ -143,7 +143,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetType(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
 		}
 	}
 
