@@ -59,7 +59,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac) 
+GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac)
 	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
 	  FuzzyFactor(0.25), IrrelFactor(0.75), Positive(false), Localisf(false), idf(true),
 	  Vectors(5000), NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
@@ -86,21 +86,21 @@ void GProfileCalcFeedback::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Connect(GSession* session) 
+void GProfileCalcFeedback::Connect(GSession* session)
 {
 	GProfileCalc::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Disconnect(GSession* session) 
+void GProfileCalcFeedback::Disconnect(GSession* session)
 {
 	GProfileCalc::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeGlobal(void) 
+void GProfileCalcFeedback::ComputeGlobal(void)
 {
 	RCursor<GWeightInfo> Words;
 	RCursor<GFdbk> Docs;
@@ -196,11 +196,11 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 
 			// If local isf is needed, multiply the frequence by it
 			if((Localisf)&&(NbDocs>1))
-				Freq*=log(NbDocs/NbDocsWords.GetPtr<unsigned int>(Words()->GetId())->GetWeight());
+				Freq*=log(NbDocs/NbDocsWords.GetPtr(*Words())->GetWeight());
 
 			// If local idf is needed, multiply the frequence by it
 			if(idf)
-				Freq*=log(TotalRef/static_cast<double>(SubProfile->GetLang()->GetRef(Words()->GetId(),otDoc)));
+				Freq*=log(TotalRef/static_cast<double>(SubProfile->GetLang()->GetRef(Words()->GetId(),Words()->GetType(),otDoc)));
 
 			// Add the frequence to the global vector
 			if(Add)
@@ -213,7 +213,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeSubProfile(void) 
+void GProfileCalcFeedback::ComputeSubProfile(void)
 {
 	GWeightInfo** ptr;
 	unsigned int i,nb,nb2;
@@ -260,7 +260,7 @@ void GProfileCalcFeedback::ComputeSubProfile(void)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Compute(GSubProfile* subprofile) 
+void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 {
 	SubProfile=subprofile;
 	GWeightInfo* ptr;
@@ -285,7 +285,7 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 			Infos.InsertPtrAt(ptr=new GWeightInfo(*Cur()),i);
 			if(ptr&&idf)
 			{
-				(*ptr)/=log(TotalRef/static_cast<double>(subprofile->GetLang()->GetRef(Cur()->GetId(),otDoc)));
+				(*ptr)/=log(TotalRef/static_cast<double>(subprofile->GetLang()->GetRef(Cur()->GetId(),Cur()->GetType(),otDoc)));
 			}
 		}
 	}
