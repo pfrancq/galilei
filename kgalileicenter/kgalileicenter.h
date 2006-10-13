@@ -561,6 +561,11 @@ private slots:
 	*/
 	void slotChangeDebug(void);
 
+	/**
+	* See the dictionnaries.
+	*/
+	void slotSeeDicts(void);
+
 public slots:
 
 	/**
@@ -597,6 +602,21 @@ public:
 	KAction* fillEmptyDb;
 	KAction* sessionQuit;
 
+	KAction* seeDicts;
+	KAction* textFrench;
+	KAction* textEnglish;
+
+	KAction* showDocs;
+	KAction* docAnalyse;
+	KAction* docsAnalyse;
+	KAction* docsIndexer;
+	KAction* docsClear;
+	KAction* postDocsAnalyse;
+	KAction* createXML;
+	KAction* saveXML;
+	KAction* analyseXML;
+	KAction* queryMetaEngine;
+	KAction* fillMIMETypes;
 
 	KAction* showUsers;
 	KAction* profileCalc;
@@ -615,21 +635,6 @@ public:
 	KAction* doAssessments;
 	KAction* groupingCompare;
 	KAction* showGroupsHistory;
-
-	KAction* showDocs;
-	KAction* docAnalyse;
-	KAction* docsAnalyse;
-	KAction* docsIndexer;
-	KAction* docsClear;
-	KAction* postDocsAnalyse;
-	KAction* createXML;
-	KAction* saveXML;
-	KAction* analyseXML;
-	KAction* queryMetaEngine;
-	KAction* fillMIMETypes;
-
-	KAction* textFrench;
-	KAction* textEnglish;
 
 	KAction* plugins;
 	KAction* changeDebug;

@@ -114,6 +114,7 @@ using namespace std;
 #include "kviewprofile.h"
 #include "kviewhistory.h"
 #include "kviewsom.h"
+#include "kviewdicts.h"
 #include "qsessionprogress.h"
 #include "qcreatedatabase.h"
 #include "qfilldatabase.h"
@@ -703,7 +704,7 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 			{
 				for(unsigned int i=lround(Words()->GetWeight())+1;--i;)
 				{
-					file<<Doc->GetSession()->GetStorage()->LoadWord(Words()->GetId(),Docs()->GetLang()->GetCode());
+					file<<Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Docs()->GetLang()->GetCode(),Words()->GetType());
 				}
 				file<<endl;
 			}
@@ -1125,6 +1126,13 @@ void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
 		default:
 			break;
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotSeeDicts(void)
+{
+	createClient(Doc,new KViewDicts(Doc,pWorkspace,"View Dictonnaries",0));
 }
 
 

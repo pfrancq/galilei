@@ -39,7 +39,7 @@
 #include <ggroup.h>
 #include <glang.h>
 #include <gdict.h>
-#include <gdata.h>
+#include <gconcept.h>
 #include <gweightinfo.h>
 #include <gsession.h>
 #include <gstorage.h>
@@ -467,8 +467,8 @@ void KViewGroups::FindNext(void)
 					if(Desc->isChecked())
 					{
 						GSubProfile* sub=item->Obj.SubProfile;
-						GData* find=sub->GetLang()->GetDict()->GetData(sub->GetLang()->GetStemming(str.latin1()));
-						if(find&&(sub->IsIn<unsigned int>(find->GetId())))
+						GConcept* find=sub->GetLang()->GetDict()->GetConcept(sub->GetLang()->GetStemming(str.latin1()));
+						if(find&&(sub->IsIn(*find)))
 						{
 							Cont=false;
 							Groups->setCurrentItem(item);

@@ -19,6 +19,30 @@
 		<separator/>
 		<Action name="sessionQuit"/>
 	</Menu>
+	<Menu name="Knowledge"><text>&amp;Knowledge</text>
+		<Action name="seeDicts"/>
+		<Separator/>
+		<Action name="textFrench"/>
+		<Action name="textEnglish"/>
+	</Menu>
+	<Menu name="Documents"><text>&amp;Documents</text>
+		<Action name="docsClear"/>
+		<Separator/>
+		<Action name="showDocs"/>
+		<separator/>
+		<Action name="docsAnalyse"/>
+		<Action name="postDocsAnalyse"/>
+		<Action name="docsIndexer"/>
+		<separator/>
+		<Action name="docAnalyse"/>
+		<Action name="createXML"/>
+		<Action name="saveXML"/>
+		<Action name="analyseXML"/>
+		<separator/>
+		<Action name="queryMetaEngine"/>
+		<separator/>
+		<Action name="fillMIMETypes"/>
+	</Menu>
 	<Menu name="Users"><text>&amp;Users</text>
 		<Action name="usersClear"/>
 		<Separator/>
@@ -38,24 +62,6 @@
 		<Action name="somView"/>
 		<Action name="showGroupsHistorys"/>
 	</Menu>
-	<Menu name="Documents"><text>&amp;Documents</text>
-		<Action name="docsClear"/>
-		<Separator/>
-		<Action name="showDocs"/>
-		<separator/>
-		<Action name="docsAnalyse"/>
-		<Action name="postDocsAnalyse"/>
-		<Action name="docsIndexer"/>
-		<separator/>
-		<Action name="docAnalyse"/>
-		<Action name="createXML"/>
- 		<Action name="saveXML"/>
-		<Action name="analyseXML"/>
-		<separator/>
-		<Action name="queryMetaEngine"/>
-		<separator/>
-		<Action name="fillMIMETypes"/>
-	</Menu>
 	<Menu name="Debug"><text>D&amp;ebug</text>
 		<Action name="simulationDlg"/>
 		<Separator/>
@@ -64,9 +70,6 @@
 		<Action name="doAssessments"/>
 		<Separator/>
 		<Action name="groupingCompare"/>
-		<Separator/>
-		<Action name="textFrench"/>
-		<Action name="textEnglish"/>
 	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
 		<Action name="settings_show_toolbar" />

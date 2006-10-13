@@ -115,6 +115,22 @@ void KGALILEICenterApp::initActions(void)
 	sessionStats=new KAction(i18n("&Statistics"),"gohome",0,this,SLOT(slotSessionStats()),actionCollection(),"sessionStats");
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
 
+	// Menu "Knowledge"
+	seeDicts=new KAction(i18n("See &Dictionnaries"),0,0,this,SLOT(slotSeeDicts()),actionCollection(),"seeDicts");
+
+	// Menu "Document"
+	docsClear=new KAction(i18n("&Force Re-computing Documents"),0,0,this,SLOT(slotDocsClear()),actionCollection(),"docsClear");
+	showDocs=new KAction(i18n("Show &Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
+	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
+	docsAnalyse=new KAction(i18n("&Analyse Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
+	postDocsAnalyse=new KAction(i18n("Execute &Post-Documents Methods"),0,0,this,SLOT(slotPostDocsAnalyse()),actionCollection(),"postDocsAnalyse");
+	docsIndexer=new KAction(i18n("&Export Documents"),"save",0,this,SLOT(slotDocsIndexer()),actionCollection(),"docsIndexer");
+	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
+	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
+	analyseXML=new KAction(i18n("Analyse &XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
+	queryMetaEngine=new KAction(i18n("&Query Meta Engine"),"find",0,this,SLOT(slotQueryMetaEngine()),actionCollection(),"queryMetaEngine");
+	fillMIMETypes=new KAction(i18n("Construct &MIME types from KDE"),"desktop",0,this,SLOT(slotFillMIMETypes()),actionCollection(),"fillMIMETypes");
+
 	// Menu "Users"
 	usersClear=new KAction(i18n("&Force Re-computing Users"),0,0,this,SLOT(slotUsersClear()),actionCollection(),"usersClear");
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
@@ -129,19 +145,6 @@ void KGALILEICenterApp::initActions(void)
 	postGroupsCalc=new KAction(i18n("Execute &Post-Groups Methods"),0,0,this,SLOT(slotPostGroups()),actionCollection(),"postGroupsCalc");
 	somView=new KAction(i18n("View Self-Organizing Map"),"exec",0,this,SLOT(slotChooseSOM()),actionCollection(),"somView");
 	showGroupsHistory=new KAction(i18n("Show Groups &History"),"exec",0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
-
-	// Menu "Document"
-	docsClear=new KAction(i18n("&Force Re-computing Documents"),0,0,this,SLOT(slotDocsClear()),actionCollection(),"docsClear");
-	showDocs=new KAction(i18n("Show &Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
-	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
-	docsAnalyse=new KAction(i18n("&Analyse Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
-	postDocsAnalyse=new KAction(i18n("Execute &Post-Documents Methods"),0,0,this,SLOT(slotPostDocsAnalyse()),actionCollection(),"postDocsAnalyse");
-	docsIndexer=new KAction(i18n("&Export Documents"),"save",0,this,SLOT(slotDocsIndexer()),actionCollection(),"docsIndexer");
-	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
-	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
-	analyseXML=new KAction(i18n("Analyse &XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
-	queryMetaEngine=new KAction(i18n("&Query Meta Engine"),"find",0,this,SLOT(slotQueryMetaEngine()),actionCollection(),"queryMetaEngine");
-	fillMIMETypes=new KAction(i18n("Construct &MIME types from KDE"),"desktop",0,this,SLOT(slotFillMIMETypes()),actionCollection(),"fillMIMETypes");
 
 	// Menu "Debug"
 	simulationDlg=new KAction(i18n("Simulation &Parameters"),0,this,SLOT(slotSimulationDlg()),actionCollection(),"simulationDlg");
@@ -337,6 +340,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	docsClear->setEnabled(true);
 	usersClear->setEnabled(true);
 	groupsClear->setEnabled(true);
+	seeDicts->setEnabled(true);
 }
 
 
@@ -376,6 +380,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 	docsClear->setEnabled(false);
 	usersClear->setEnabled(false);
 	groupsClear->setEnabled(false);
+	seeDicts->setEnabled(false);
 }
 
 
