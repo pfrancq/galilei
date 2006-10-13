@@ -48,7 +48,8 @@
 #include <gtextanalyse.h>
 #include <gdoc.h>
 #include <gdocxml.h>
-#include <gword.h>
+#include <gconcept.h>
+#include <gconcept.h>
 #include <gweightinfo.h>
 #include <gdict.h>
 #include <gsession.h>
@@ -164,7 +165,7 @@ void GTextAnalyse::ApplyConfig(void)
 void GTextAnalyse::Connect(GSession* session)
 {
 	WordWeight** ptr;
-	GWord** pt;
+	GConcept** pt;
 	unsigned int i;
 
 	// First init
@@ -179,14 +180,13 @@ void GTextAnalyse::Connect(GSession* session)
 	Direct=new WordWeight*[NbDirect];
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)=new WordWeight(CurLangs.GetNb());
-	Order=new GWord*[NbOrder];
+	Order=new GConcept*[NbOrder];
 	for(i=NbOrder+1,pt=Order;--i;pt++)
-		(*pt)=new GWord();
+		(*pt)=new GConcept();
 
 	//init database
 	if(StoreFullWords)
 		Session->GetStorage()->CreateDummy("wordsstems");
-
 }
 
 
@@ -194,7 +194,7 @@ void GTextAnalyse::Connect(GSession* session)
 void GTextAnalyse::Disconnect(GSession* session)
 {
 	WordWeight** ptr;
-	GWord** pt;
+	GConcept** pt;
 	unsigned int i;
 
 	// Local Structure
@@ -237,7 +237,7 @@ void GTextAnalyse::Disconnect(GSession* session)
 void GTextAnalyse::Clear(void)
 {
 	WordWeight** ptr;
-	GWord** pt;
+	GConcept** pt;
 	unsigned int i;
 
 	memset(Sl,0,sizeof(unsigned int)*CurLangs.GetNb());
@@ -282,16 +282,16 @@ void GTextAnalyse::VerifyDirect(void)
 void GTextAnalyse::VerifyOrder(void)
 {
 	unsigned int i;
-	GWord** ptr;
+	GConcept** ptr;
 
 	if(NbOrder==Nwords)
 	{
-		ptr=new GWord*[NbOrder+2500];
-		memcpy(ptr,Order,NbOrder*sizeof(GWord*));
+		ptr=new GConcept*[NbOrder+2500];
+		memcpy(ptr,Order,NbOrder*sizeof(GConcept*));
 		delete[] Order;
 		Order=ptr;
 		for(i=2500+1,ptr=&Order[NbOrder];--i;ptr++)
-			(*ptr)=new GWord();
+			(*ptr)=new GConcept();
 		NbOrder+=2500;
 	}
 }
@@ -426,7 +426,7 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 		{
 			VerifyOrder();
 			delete(Order[Nwords]);
-			Order[Nwords++]=new GWord(word);
+			Order[Nwords++]=new GConcept(Lang,word,1);
 			//Nwords++;
 			if(OnlyLetters)
 				Order[Nwords-1]->SetId(1);
@@ -738,8 +738,9 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 		}
 		if(stem.GetLen()>=MinStemSize)
 		{
-			GWord w(stem);
-			Occur=Infos.GetInsertPtr(dic->InsertData(&w));
+			//GWord w(stem);
+			GConcept w(cNoRef,Lang,stem,/*infoWord*/1,0,0,0);
+			Occur=Infos.GetInsertPtr(*dic->InsertConcept(&w));
 			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
@@ -774,7 +775,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 		name+=RString::Number(Doc->GetId());
 		try
 		{
-			R::RRecFile<GWord,sizeof(unsigned int),false> f(name);
+			R::RRecFile<GConcept,sizeof(unsigned int),false> f(name);
 			f.Open(R::RIO::Create);
 			for(i=0;i<Nwords;i++)
 			{
@@ -783,15 +784,17 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 					stem=Lang->GetStemming(Order[i]->GetName());
 					if(stem.GetLen()>=MinStemSize)
 					{
-						GWord w(stem);
-						f<<dic->InsertData(&w);
+						//GWord w(stem);
+						GConcept w(cNoRef,Lang,stem,/*infoWord*/1,0,0,0);
+						f<<dic->InsertConcept(&w);
 					}
 				}
 				else
 				{
 					stem=(Order[i]->GetName());
-					GWord w(stem);
-					f<<dic->InsertData(&w);
+					//GWord w(stem);
+					GConcept w(cNoRef,Lang,stem,/*infoWord*/1,0,0,0);
+					f<<dic->InsertConcept(&w);
 				}
 			}
 		}

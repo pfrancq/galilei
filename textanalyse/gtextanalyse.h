@@ -89,7 +89,7 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	* Order of the words in the document.
 	*/
-	GWord** Order;
+	GConcept** Order;
 
 	/**
 	* Number of elements allocated in Order.
