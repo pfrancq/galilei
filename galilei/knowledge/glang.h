@@ -6,7 +6,7 @@
 
 	Generic Language - Header.
 
-	Copyright 2001-2005 by the UniversitÃ© Libre de Bruxelles.
+	Copyright 2001-2006 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -63,10 +63,9 @@ namespace GALILEI{
 * language has to be implemented as a plugin. The virtual function GetStemming
 * must be implemented for the different languages.
 *
-* Each language is composed from :
+* Each language is composed from:
 * - A name ("English") and a code ("en") ;
-* - A dictionary of data (words, list of words, ...);
-* - A dictionary of stopwords ("of", "the", "or", "le", ...);
+* - A set of dictionnaries of concepts (stems, stopwords, ...);
 * - A list of words to skip during the analysis.
 * @author Pascal Francq.
 * @short Generic Language.
@@ -77,14 +76,24 @@ protected:
 	class SkipWord;
 
 	/**
-	* Dictionary of data.
+	* Number of references in documents.
 	*/
-	GDict* Dict;
+	unsigned int NbRefDocs;
 
 	/**
-	* Dictionary of stopwords.
+	* Number of references in subprofiles.
 	*/
-	GDict* Stop;
+	unsigned int NbRefSubProfiles;
+
+	/**
+	* Number of references in groups.
+	*/
+	unsigned int NbRefGroups;
+
+	/**
+	* Dictionnaries.
+	*/
+	RContainer<GDict,true,true> Dicts;
 
 	/**
 	* List of word that must be skipped when there are part of a sequence
@@ -101,6 +110,17 @@ public:
 	* @param code           Code of the language.
 	*/
 	GLang(GFactoryLang* fac,const R::RString& lang,const char* code);
+
+	/**
+	* Set the references of a given language. This method is called when
+	* connecting to and disconnecting from a session.
+	* @param refdocs         Number of documents referenced.
+	* @param refsubprofiles  Number of subprofiles referenced.
+	* @param refgroups       Number of groups referenced.
+	*/
+	void SetReferences(unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups);
+
+public:
 
 	/**
 	* Connect to a Session.
@@ -173,7 +193,26 @@ public:
 	GSession* GetSession(void) const {return(Session);}
 
 	/**
-	* Get the dictionary of data attached to the language.
+	* Add a dictionnary.
+	* @param dict            Dictionnary.
+	*/
+	void AddDict(GDict* dict);
+
+	/**
+	* Get a cursor over the dictionnaries of the language.
+	* @return Cursor on GDict.
+	*/
+	R::RCursor<GDict> GetDicts(void) const;
+
+	/**
+	* Get a dictionary attached to the language for a given type of concepts.
+	* @param type            Type of concept.
+	* @return Pointer to GDict.
+	*/
+	GDict* GetDict(unsigned int type) const;
+
+	/**
+	* Get the dictionary of words attached to the language.
 	* @return Pointer to GDict.
 	*/
 	GDict* GetDict(void) const;
@@ -194,27 +233,31 @@ public:
 
 	/**
 	* Increase the number of objects of a given type that make a reference to a
-	* data.
-	* @param id             Identificator of the data.
+	* concept.
+	* @param id             Identificator of the concept.
+	* @param type           Type of the concepts.
 	* @param ObjType        Type of the object.
 	*/
-	void IncRef(unsigned int id,tObjType ObjType);
+	void IncRef(unsigned int id,unsigned int type,tObjType ObjType);
 
 	/**
 	* Decrease the number of objects of a given type that make a reference to a
-	* data.
-	* @param id             Identificator of the data.
+	* concept.
+	* @param id             Identificator of the concept.
+	* @param type           Type of the concepts.
 	* @param ObjType        Type of the object.
 	*/
-	void DecRef(unsigned int id,tObjType ObjType);
+	void DecRef(unsigned int id,unsigned int type,tObjType ObjType);
 
 	/**
-	* Get the number of objects of a given type that make a reference to a data.
-	* @param id             Identificator of the data.
+	* Get the number of objects of a given type that make a reference to a
+	* concept.
+	* @param id             Identificator of the concept.
+	* @param type           Type of the concepts.
 	* @param ObjType        Type of the object.
 	* @return unsigned int.
 	*/
-	unsigned int GetRef(unsigned int id,tObjType ObjType);
+	unsigned int GetRef(unsigned int id,unsigned int type,tObjType ObjType);
 
 	/**
 	* Increase the number of objects of a given type using the dictionary of the
@@ -238,16 +281,20 @@ public:
 	unsigned int GetRef(tObjType ObjType) const;
 
 	/**
-	* Get the number of elements contained in the dictionary of data.
+	* Get the number of elements contained in the dictionary of concepts of a
+	* given type.
+	* @param type           Type of the concepts.
 	* @returns unsigned int.
 	*/
-	unsigned int GetTotal(void) const;
+	unsigned int GetTotal(unsigned int type) const;
 
 	/**
-	* Get the list of the elements currently defined in the dictionary of data.
-	* @returns const pointer to array of GWord*.
+	* Get the list of the elements currently defined in the dictionary of
+	* concepts of a given type.
+	* @param type           Type of the concepts.
+	* @returns const pointer to array of GConcept*.
 	*/
-	const GData** GetDatas(void) const;
+	const GConcept** GetConcepts(unsigned int type) const;
 
 	/**
 	* Look if a given sequence must be skipped.
@@ -256,7 +303,11 @@ public:
 	*/
 	bool MustSkipSequence(const R::RChar* seq);
 
-public:
+	/**
+	* Clear the number of objects of a given type using the dictionary.
+	* @param ObjType        Type of the object.
+	*/
+	void Clear(tObjType ObjType);
 
 	/**
 	* Destructor.

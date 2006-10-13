@@ -83,7 +83,7 @@ int GWordOccurs::Compare(const char* word) const
 //-----------------------------------------------------------------------------
 void GWordOccurs::AddDoc(unsigned int docid)
 {
-	Docs.InsertPtr(new GInfo(docid,infoDoc));
+	Docs.InsertPtr(new GInfo(docid,1)); // 1==stem -> is fixed
 }
 
 

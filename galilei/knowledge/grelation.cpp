@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GWord.cpp
+	GRelation.cpp
 
-	Word (or stem) - Implementation.
+	Relation - Implementation.
 
-	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
+	Copyright 2006 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-// include file for Galilei
-#include <gword.h>
+// include files for GALILEI
+#include <grelation.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -40,47 +40,31 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-// class GWord
+// GRelation
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GWord::GWord(void)
-  : GData(cNoRef,"",infoWord,0,0,0)
+GRelation::GRelation(unsigned int subjectid,GLang* subjectlang,unsigned int type,unsigned int objectid,GLang* objectlang)
+	: SubjectId(subjectid), SubjectLang(subjectlang), Type(type), ObjectId(objectid), ObjectLang(objectlang)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const RString& word)
-  : GData(cNoRef,word,infoWord,0,0,0)
+int GRelation::Compare(const GRelation& relation) const
 {
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(unsigned id,const RString& word,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
-  : GData(id,word,infoWord,refdocs,refsubprofiles,refgroups)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GWord::GWord(const GWord& word)
-  : GData(word)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GData* GWord::CreateCopy(void) const
-{
-	GWord* ptr=new GWord(*this);
-	return(ptr);
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GWord::~GWord(void)
-{
+	int i=SubjectId-relation.SubjectId;
+	if(!i)
+	{
+		i=Type-relation.Type;
+		if(!i)
+		{
+			return(ObjectId-relation.ObjectId);
+		}
+		else
+			return(i);
+	}
+	else
+		return(i);
 }

@@ -64,20 +64,12 @@ protected:
 public:
 
 	/**
-	* Constructor of a weighed information entity. The weight is suppose to be
-	* null.
-	* @param id              Identificator of the information entity.
-	* @param type            Type of the information entity.
-	*/
-	GWeightInfo(unsigned int id,tInfoType type=infoWord);
-
-	/**
 	* Constructor of a weighed information entity.
 	* @param id             Identificator of the information entity.
+	* @param type            Type of the information entity.
 	* @param w              Weight of the information entity.
-	* @param type           Type of the information.
 	*/
-	GWeightInfo(unsigned int id,double w,tInfoType type=infoWord);
+	GWeightInfo(unsigned int id,unsigned int type,double w=0.0);
 
 	/**
 	* Copy constructor of a weighed information entity.
@@ -93,12 +85,29 @@ public:
 	GWeightInfo(const GInfo& w);
 
 	/**
-	* Compare two weighted information entities by comparing their identificator.
+	* Construct an weighted information entity corresponding to a given
+	* concept.
+	* @param concept         Concept.
+	*/
+	GWeightInfo(const GConcept& concept);
+
+	/**
+	* Compare two weighted information entities by comparing their
+	* identificator and type.
 	* @see R::RContainer
 	* @param calc           Weighted information entity.
 	* @return int
 	*/
 	int Compare(const GWeightInfo& calc) const;
+
+	/**
+	* Compare a weighted information entity and a concept by comparing their
+	* identificator and type.
+	* @see R::RContainer
+	* @param concept         Concept.
+	* @return int
+	*/
+	int Compare(const GConcept& concept) const;
 
 	/**
 	* Get the weight of the word.

@@ -4,9 +4,9 @@
 
 	GDict.cpp
 
-	Dictionary - Implementation.
+	Concepts Dictionary - Implementation.
 
-	Copyright 2001-2005 by the UniversitÃ© Libre de Bruxelles.
+	Copyright 2001-2006 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,34 +32,12 @@
 
 //------------------------------------------------------------------------------
 // include file for GALILEI
-#include <gdata.h>
+#include <gconcept.h>
 #include <gdict.h>
-#include <gwordlist.h>
 #include <glang.h>
 #include <gsession.h>
 using namespace GALILEI;
 using namespace R;
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GDict::GDataTypes
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-class GDict::GDataTypes : public R::RContainer<GData,false,false>
-{
-public:
-	tInfoType Type;
-
-	GDataTypes(unsigned int ml,tInfoType type)
-		: RContainer<GData,false,false>(ml+(ml/4),ml/4), Type(type) {}
-	int Compare(const GDataTypes& d) const {return(Type-d.Type);}
-	int Compare(const GDataTypes* d) const {return(Type-d->Type);}
-	int Compare(const tInfoType t) const {return(Type-t);}
-};
 
 
 
@@ -70,71 +48,80 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDict::GDict(const RString& name,const RString& desc,GLang *lang,unsigned m,unsigned ml,bool st,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
-	: RDblHashContainer<GData,27,27,true>(ml+(ml/4),ml/4), Direct(0),
-	  MaxId(m+m/4), UsedId(0),Lang(lang), Name(name), Desc(desc), Loaded(false),
-	  Stop(st), NbRefDocs(refdocs), NbRefSubProfiles(refsubprofiles), NbRefGroups(refgroups), DataTypes(3)
+GDict::GDict(GLang *lang,unsigned int type,unsigned m,unsigned ml)
+	: RDblHashContainer<GConcept,27,27,true>(ml+(ml/4),ml/4), Lang(lang), Type(type),
+	  Direct(0), MaxId(m+m/4), UsedId(0), Loaded(false)
 {
-	Direct=new GData*[MaxId];
-	memset(Direct,0,MaxId*sizeof(GData*));
-	DataTypes.InsertPtr(new GDataTypes(ml,infoWord));
-	DataTypes.InsertPtr(new GDataTypes(ml,infoWordList));
+	Direct=new GConcept*[MaxId];
+	memset(Direct,0,MaxId*sizeof(GConcept*));
 }
 
 
 //------------------------------------------------------------------------------
 void GDict::Clear(void)
 {
-	RDblHashContainer<GData,27,27,true>::Clear();
-	memset(Direct,0,MaxId*sizeof(GData*));
+	RDblHashContainer<GConcept,27,27,true>::Clear();
+	memset(Direct,0,MaxId*sizeof(GConcept*));
 	UsedId=0;
 	Loaded=false;
 }
 
 
 //------------------------------------------------------------------------------
-void GDict::PutDirect(GData* data)
+int GDict::Compare(const GDict& dict) const
 {
-	GData **tmp;
-	unsigned n;
-
-	if(data->GetId()>UsedId) UsedId=data->GetId();
-	if(data->GetId()>=MaxId)
-	{
-		n=data->GetId()+1000;
-		tmp=new GData*[n];
-		memcpy(tmp,Direct,MaxId*sizeof(GData*));
-		delete[] Direct;
-		Direct=tmp;
-		MaxId=n;
-	}
-	Direct[data->GetId()]=data;
+	return(Type-dict.Type);
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GDict::InsertData(const GData* data)
+int GDict::Compare(unsigned int type) const
 {
-	GData* ptr;
+	return(Type-type);
+}
+
+
+//------------------------------------------------------------------------------
+void GDict::PutDirect(GConcept* concept)
+{
+	GConcept **tmp;
+	unsigned n;
+
+	if(concept->GetId()>UsedId) UsedId=concept->GetId();
+	if(concept->GetId()>=MaxId)
+	{
+		n=concept->GetId()+1000;
+		tmp=new GConcept*[n];
+		memcpy(tmp,Direct,MaxId*sizeof(GConcept*));
+		delete[] Direct;
+		Direct=tmp;
+		MaxId=n;
+	}
+	Direct[concept->GetId()]=concept;
+}
+
+
+//------------------------------------------------------------------------------
+GConcept* GDict::InsertConcept(const GConcept* concept)
+{
+	GConcept* ptr;
 	bool InDirect=false;
 
 	// Empty data are not inserted
-
-	if(data->IsEmpty())
+	if(concept->IsEmpty())
 	{
-		RString tmp="Empty data cannot be inserted into a dictionary - id="+RString(data->GetId());
+		RString tmp="Empty concept cannot be inserted into a dictionary - id="+RString(concept->GetId());
 		throw GException(tmp);
 	}
-	if(data->GetType()==infoNothing)
-		throw GException("No typed data cannot be inserted into a dictionary");
+	if(concept->GetType()==infoNothing)
+		throw GException("No typed concept cannot be inserted into a dictionary");
 
 	// Look if the data exists in the dictionary. If not, create and insert it.
-	ptr=GetPtr<const GData*>(data);
+	ptr=GetPtr(*concept);
 	if(!ptr)
 	{
-		ptr=data->CreateCopy();
+		ptr=new GConcept(*concept);
 		InsertPtr(ptr);
-		DataTypes.GetPtr<tInfoType>(ptr->GetType())->InsertPtr(ptr);
 		InDirect=true;
 	}
 
@@ -149,224 +136,73 @@ unsigned int GDict::InsertData(const GData* data)
 	if(InDirect)
 		PutDirect(ptr);
 
-	return(ptr->GetId());
+	return(ptr);
 }
 
 
 //------------------------------------------------------------------------------
-void GDict::DeleteData(GData* data)
+void GDict::DeleteConcept(GConcept* concept)
 {
-	if((!data)||(data->GetId()>MaxId))
-		throw GException("Cannot delete data");
-	Direct[data->GetId()]=0;
-	DataTypes.GetPtr<tInfoType>(data->GetType())->DeletePtr(data);
-	DeletePtr(data);
+	if((!concept)||(concept->GetId()>MaxId))
+		throw GException("Cannot delete concept");
+	Direct[concept->GetId()]=0;
+	DeletePtr(*concept);
 }
 
 
 //------------------------------------------------------------------------------
-GData* GDict::GetData(const unsigned int id) const
+GConcept* GDict::GetConcept(const unsigned int id) const
 {
 	if(id>MaxId)
-		throw GException("Cannot access data");
+		throw GException("Cannot access concept");
 	return(Direct[id]);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GData> GDict::GetDatas(tInfoType type)
-{
-	R::RCursor<GData> cur;
-	GDataTypes* tp;
-
-	tp=DataTypes.GetPtr<tInfoType>(type);
-	if(!tp)
-		throw GException("Unknown information type");
-	cur.Set(*tp);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
-RString GDict::GetName(void) const
-{
-	return(Name);
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GDict::GetNbDatas(tInfoType type) const
-{
-	GDataTypes* tp;
-
-	tp=DataTypes.GetPtr<tInfoType>(type);
-	if(!tp)
-		throw GException("Unknown information type");
-	return(tp->GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 bool GDict::IsIn(const RString& name) const
 {
-	return(RDblHashContainer<GData,27,27,true>::IsIn<const RString>(name));
+	return(RDblHashContainer<GConcept,27,27,true>::IsIn(name));
 }
 
 
 //------------------------------------------------------------------------------
-GData* GDict::GetData(const RString& name) const
+GConcept* GDict::GetConcept(const RString& name) const
 {
-	return(RDblHashContainer<GData,27,27,true>::GetPtr<const RString>(name));
+	return(RDblHashContainer<GConcept,27,27,true>::GetPtr(name));
 }
 
 
 //------------------------------------------------------------------------------
 unsigned int GDict::IncRef(unsigned int id,tObjType ObjType)
 {
-	GData* data;
+	GConcept* concept;
 
-	if((id>MaxId)||(!(data=Direct[id])))
-		throw GException("Cannot access data");
-	return(data->IncRef(ObjType));
+	if((id>MaxId)||(!(concept=Direct[id])))
+		throw GException("Cannot access concept");
+	return(concept->IncRef(ObjType));
 }
 
 
 //------------------------------------------------------------------------------
 unsigned int GDict::DecRef(unsigned int id,tObjType ObjType)
 {
-	GData* data;
+	GConcept* concept;
 
-	if((id>MaxId)||(!(data=Direct[id])))
-		throw GException("Cannot access data");
-	return(data->DecRef(ObjType));
+	if((id>MaxId)||(!(concept=Direct[id])))
+		throw GException("Cannot access concept");
+	return(concept->DecRef(ObjType));
 }
 
 
 //------------------------------------------------------------------------------
 unsigned int GDict::GetRef(unsigned int id,tObjType ObjType)
 {
-	GData* data;
+	GConcept* concept;
 
-	if((id>MaxId)||(!(data=Direct[id])))
-		throw GException("Cannot access data");
-	return(data->GetRef(ObjType));
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GDict::IncRef(tObjType ObjType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			return(++NbRefDocs);
-			break;
-		case otSubProfile:
-			return(++NbRefSubProfiles);
-			break;
-		case otGroup:
-			return(++NbRefGroups);
-			break;
-		default:
-			throw GException ("Unkown type to increase");
-			break;
-	}
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GDict::DecRef(tObjType ObjType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			if(!NbRefDocs)
-				throw GException("Cannot decrease null number of references for documents");
-			return(--NbRefDocs);
-			break;
-		case otSubProfile:
-			if(!NbRefSubProfiles)
-				throw GException("Cannot decrease null number of references for subprofiles");
-			return(--NbRefSubProfiles);
-			break;
-		case otGroup:
-			if(!NbRefGroups)
-				throw GException("Cannot decrease null number of references for groups");
-			return(--NbRefGroups);
-			break;
-		default:
-			throw GException ("Unkown type to decrease");
-			break;
-	}
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GDict::GetRef(tObjType ObjType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			return(NbRefDocs);
-			break;
-		case otSubProfile:
-			return(NbRefSubProfiles);
-			break;
-		case otGroup:
-			return(NbRefGroups);
-			break;
-		default:
-			return(NbRefDocs+NbRefSubProfiles+NbRefGroups);
-			break;
-	}
-	return(0);
-}
-
-
-//------------------------------------------------------------------------------
-void GDict::Clear(tObjType ObjType)
-{
-	RCursor<GDict::Hash> Cur(GetCursor());
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		RCursor<GDict::Hash2> Cur2(*Cur());
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			RCursor<GData> Cur3(*Cur2());
-			for(Cur3.Start();!Cur3.End();Cur3.Next())
-				Cur3()->Clear(ObjType);
-		}
-	}
-
-	switch(ObjType)
-	{
-		case otDoc:
-			NbRefDocs=0;
-			break;
-		case otSubProfile:
-			NbRefSubProfiles=0;
-			break;
-		case otGroup:
-			NbRefGroups=0;
-			break;
-		case otDocSubProfile:
-			NbRefDocs=0;
-			NbRefSubProfiles=0;
-			break;
-		case otDocGroup:
-			NbRefDocs=0;
-			NbRefGroups=0;
-			break;
-		case otSubProfileGroup:
-			NbRefSubProfiles=0;
-			NbRefGroups=0;
-			break;
-		default:
-			NbRefDocs=0;
-			NbRefSubProfiles=0;
-			NbRefGroups=0;
-			break;
-	}
+	if((id>MaxId)||(!(concept=Direct[id])))
+		throw GException("Cannot access concept");
+	return(concept->GetRef(ObjType));
 }
 
 

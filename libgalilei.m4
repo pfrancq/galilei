@@ -1,3 +1,4 @@
+
 #--------------------- GALILEI LIB -----------------------------
 
 #VARIABLES USE :
@@ -89,9 +90,10 @@ AC_DEFUN(GALILEI_ALL_INC_CHK,[
 	GALILEI_INC_CHK(galilei/engines,gengine.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/groups,ggroup.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/historic,ggrouphistory.h,Cannot find GALILEI headers.)
-	GALILEI_INC_CHK(galilei/infos,gdict.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/infos,ginfo.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/profiles, gprofile.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/sessions,gsession.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/knowledge,gconcept.h,Cannot find GALILEI headers.)
 
 	for l in $1 ; do
 		if test "$l" = "kde"; then

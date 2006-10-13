@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GData.cpp
+	GConcpet.cpp
 
-	 (or stem) - Implementation.
+	Concept - Implementation.
 
-	Copyright 2001-2003 by the Universitï¿½Libre de Bruxelles.
+	Copyright 2006 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,8 +31,9 @@
 
 
 //-----------------------------------------------------------------------------
-// include file for Galilei
-#include <gdata.h>
+// include files for GALILEI
+#include <gconcept.h>
+#include <grelation.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -40,90 +41,88 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-// class GData
+// GConcept
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GData::GData(unsigned id,const RString& name,tInfoType type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
-	: Id(id), Name(name), Type(type), NbRefDocs(refdocs), NbRefSubProfiles(refsubprofiles),
-	  NbRefGroups(refgroups)
+GConcept::GConcept(void)
+	: Id(cNoRef), Lang(0), Name(""), Type(0), Relations(0), NbRefDocs(0),
+	  NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GData::GData(const GData& d)
-	: Id(d.Id), Name(d.Name), Type(d.Type), NbRefDocs(d.NbRefDocs),
-	  NbRefSubProfiles(d.NbRefSubProfiles), NbRefGroups(d.NbRefGroups)
+GConcept::GConcept(GLang* lang,const RString& name,unsigned int type)
+	: Id(cNoRef), Lang(lang), Name(name), Type(type), Relations(0), NbRefDocs(0),
+	  NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GData::Compare(const GData& d) const
+GConcept::GConcept(unsigned int id,GLang* lang,const RString& name,unsigned int type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
+	: Id(id), Lang(lang), Name(name), Type(type), Relations(0), NbRefDocs(refdocs),
+	  NbRefSubProfiles(refsubprofiles), NbRefGroups(refgroups)
 {
-	return(Name.Compare(d.Name));
 }
 
 
 //-----------------------------------------------------------------------------
-int GData::Compare(const GData* d) const
+GConcept::GConcept(const GConcept& c)
+	: Id(c.Id), Lang(c.Lang), Name(c.Name), Type(c.Type), Relations(0), NbRefDocs(c.NbRefDocs),
+	  NbRefSubProfiles(c.NbRefSubProfiles), NbRefGroups(c.NbRefGroups)
 {
-	return(Name.Compare(d->Name));
+	if(c.Relations)
+		Relations=new R::RVectorInt<true>(*c.Relations);
 }
 
 
 //-----------------------------------------------------------------------------
-int GData::Compare(const RString& name) const
+int GConcept::Compare(const GConcept& c) const
+{
+	return(Id-c.Id);
+}
+
+
+//-----------------------------------------------------------------------------
+int GConcept::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
 }
 
 
 //-----------------------------------------------------------------------------
-int GData::Compare(const char* name) const
-{
-	return(Name.Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-int GData::Compare(const unsigned int id) const
+int GConcept::Compare(unsigned int id) const
 {
 	return(Id-id);
 }
 
 
 //-----------------------------------------------------------------------------
-GData& GData::operator=(const GData& d)
+GConcept& GConcept::operator=(const GConcept& c)
 {
-	Id=d.Id;
-	Name=d.Name;
-	Type=d.Type;
-	NbRefDocs=d.NbRefDocs;
-	NbRefSubProfiles=d.NbRefSubProfiles;
-	NbRefGroups=d.NbRefGroups;
+	Id=c.Id;
+	Lang=c.Lang;
+	Name=c.Name;
+	Type=c.Type;
+	NbRefDocs=c.NbRefDocs;
+	NbRefSubProfiles=c.NbRefSubProfiles;
+	NbRefGroups=c.NbRefGroups;
 	return(*this);
 }
 
 
 //-----------------------------------------------------------------------------
-void GData::SetId(unsigned int id)
+void GConcept::SetId(unsigned int id)
 {
 	Id=id;
 }
 
 
 //-----------------------------------------------------------------------------
-RString GData::GetName(void) const
-{
-	return(Name);
-}
-
-
-//-----------------------------------------------------------------------------
-unsigned int GData::IncRef(tObjType ObjType)
+unsigned int GConcept::IncRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
@@ -137,41 +136,41 @@ unsigned int GData::IncRef(tObjType ObjType)
 			return(++NbRefGroups);
 			break;
 		default:
-			throw GException ("Unkown type to increase data "+RString::Number(Id));
+			throw GException ("Unkown type to increase concept "+RString::Number(Id));
 			break;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GData::DecRef(tObjType ObjType)
+unsigned int GConcept::DecRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
 		case otDoc:
 			if(!NbRefDocs)
-				throw GException("Cannot decrease null number of references for documents for data "+RString::Number(Id));
+				throw GException("Cannot decrease null number of references for documents for concept "+RString::Number(Id));
 			return(--NbRefDocs);
 			break;
 		case otSubProfile:
 			if(!NbRefSubProfiles)
-				throw GException("Cannot decrease null number of references for subprofiles for data "+RString::Number(Id));
+				throw GException("Cannot decrease null number of references for subprofiles for concept "+RString::Number(Id));
 			return(--NbRefSubProfiles);
 			break;
 		case otGroup:
 			if(!NbRefGroups)
-				throw GException("Cannot decrease null number of references for groups for data "+RString::Number(Id));
+				throw GException("Cannot decrease null number of references for groups for concept "+RString::Number(Id));
 			return(--NbRefGroups);
 			break;
 		default:
-			throw GException ("Unkown type to decrease data "+RString::Number(Id));
+			throw GException ("Unkown type to decrease concept "+RString::Number(Id));
 			break;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GData::GetRef(tObjType ObjType) const
+unsigned int GConcept::GetRef(tObjType ObjType) const
 {
 	switch(ObjType)
 	{
@@ -202,7 +201,7 @@ unsigned int GData::GetRef(tObjType ObjType) const
 
 
 //-----------------------------------------------------------------------------
-void GData::Clear(tObjType ObjType)
+void GConcept::Clear(tObjType ObjType)
 {
 	switch(ObjType)
 	{
@@ -237,10 +236,11 @@ void GData::Clear(tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-void GData::Clear(void)
+void GConcept::Clear(void)
 {
 	Id=cNoRef;
 	Name="";
+	Lang=0;
 	NbRefDocs=0;
 	NbRefSubProfiles=0;
 	NbRefGroups=0;
@@ -249,15 +249,14 @@ void GData::Clear(void)
 
 
 //-----------------------------------------------------------------------------
-bool GData::IsEmpty(void) const
+bool GConcept::IsEmpty(void) const
 {
 	return(Name.IsEmpty());
 }
 
 
 //-----------------------------------------------------------------------------
-GData::~GData(void)
+GConcept::~GConcept(void)
 {
+	delete Relations;
 }
-
-

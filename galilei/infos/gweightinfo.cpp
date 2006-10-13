@@ -37,8 +37,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include<gweightinfo.h>
-#include<glang.h>
+#include <gweightinfo.h>
+#include <glang.h>
+#include <gconcept.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -51,14 +52,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned int id,tInfoType type)
-  : GInfo(id,type), Weight(0.0)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned int id,double w,tInfoType type)
+GWeightInfo::GWeightInfo(unsigned int id,unsigned int type,double w)
   : GInfo(id,type), Weight(w)
 {
 }
@@ -66,7 +60,7 @@ GWeightInfo::GWeightInfo(unsigned int id,double w,tInfoType type)
 
 //------------------------------------------------------------------------------
 GWeightInfo::GWeightInfo(const GWeightInfo& w)
-  : GInfo(w.Id,w.Type), Weight(w.Weight)
+  : GInfo(w), Weight(w.Weight)
 {
 }
 
@@ -78,11 +72,28 @@ GWeightInfo::GWeightInfo(const GInfo& w)
 }
 
 
+//------------------------------------------------------------------------------
+GWeightInfo::GWeightInfo(const GConcept& concept)
+  : GInfo(concept), Weight(0.0)
+{
+}
+
 
 //------------------------------------------------------------------------------
 int GWeightInfo::Compare(const GWeightInfo& calc) const
 {
-  return(Id-calc.Id);
+	if(Type==calc.Type)
+		return(Id-calc.Id);
+	return(Type-calc.Type);
+}
+
+
+//------------------------------------------------------------------------------
+int GWeightInfo::Compare(const GConcept& concept) const
+{
+	if(Type==concept.GetType())
+		return(Id-concept.GetId());
+	return(Type-concept.GetType());
 }
 
 
@@ -146,7 +157,7 @@ GWeightInfo& GWeightInfo::operator/=(double w)
 //------------------------------------------------------------------------------
 double GWeightInfo::GetQueryWeight(tObjType ObjType,GLang* lang,double max) const
 {
-	return((Weight/max)*log(static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef(Id,ObjType))));
+	return((Weight/max)*log(static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef(Id,Type,ObjType))));
 }
 
 

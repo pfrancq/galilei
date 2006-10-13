@@ -200,6 +200,19 @@ public:
 
 	//@} General methods
 
+	//-----------------------------------------------------
+	/** @name Knowledge Methods
+	*/
+	// @{
+
+	/**
+	* Get the name of a type of concept.
+	* @param type            Type.
+	* @return R::RString
+	*/
+	R::RString GetConceptType(unsigned int type) const;
+
+	//@} Knowledge methods
 
 	//-----------------------------------------------------
 	/** @name Documents Methods
@@ -273,7 +286,7 @@ public:
 	* @param data            Data.
 	* @param dict            Dictionary.
 	*/
-	void AssignId(GData* data,const GDict* dict);
+	void AssignId(GConcept* data,const GDict* dict);
 
 	/**
 	* Assign an identifier to a new document.

@@ -65,20 +65,23 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Infos Part
-class GInfo;
-class GInfoList;
-class GWeightInfo;
-class GWeightInfos;
-class GInfosWeightsHistory;
+// forward class declaration - Knowledge Part
+class GConcept;
+class GConceptType;
+class GRelation;
+class GRelationType;
 class GLang;
 class GFactoryLang;
 class GLangManager;
-class GData;
-class GWord;
-class GWordList;
 class GDict;
-class GDicts;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Infos Part
+class GInfo;
+class GWeightInfo;
+class GWeightInfos;
+class GInfosWeightsHistory;
 
 
 //------------------------------------------------------------------------------

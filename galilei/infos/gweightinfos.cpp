@@ -41,7 +41,7 @@
 #include <gweightinfo.h>
 #include <glang.h>
 #include <gdict.h>
-#include <gword.h>
+#include <gconcept.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -168,15 +168,16 @@ void GWeightInfos::DeleteInfo(GWeightInfo* info)
 
 
 //------------------------------------------------------------------------------
-GWeightInfo* GWeightInfos::GetInfo(unsigned int id) const
-{
-	if(State==osNeedLoad)
-	{
-		const_cast<GWeightInfos*>(this)->State=osOnDemand;      // The object is on-demand of loading
-		LoadInfos();           // Load it.
-	}
-	return(GetPtr<unsigned int>(id));
-}
+// GWeightInfo* GWeightInfos::GetInfo(unsigned int id,unsigned int type) const
+// {
+// 	if(State==osNeedLoad)
+// 	{
+// 		const_cast<GWeightInfos*>(this)->State=osOnDemand;      // The object is on-demand of loading
+// 		LoadInfos();           // Load it.
+// 	}
+// 	GInfo info(id,type);
+// 	return(GetPtr<unsigned int>(info));
+// }
 
 
 //------------------------------------------------------------------------------
@@ -320,11 +321,11 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType,GLang*
 	ptr2.Start();
 	while(!ptr.End())
 	{
-		iff=TotalRef/static_cast<double>(lang->GetRef(ptr()->GetId(),ObjType));
+		iff=TotalRef/static_cast<double>(lang->GetRef(ptr()->GetId(),ptr()->GetType(),ObjType));
 		w1=(ptr()->GetWeight()/max1)*log(iff);
 		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
 		{
-			iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType));
+			iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType));
 			w2=(ptr2()->GetWeight()/max2)*log(iff);
 			norm2+=w2*w2;
 			ptr2.Next();
@@ -333,7 +334,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType,GLang*
 		{
 			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
-				iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType));
+				iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType));
 				w2=(ptr2()->GetWeight()/max2)*log(iff);
 				norm2+=w2*w2;
 				norm1+=w1*w1;
@@ -347,7 +348,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType,GLang*
 	}
 	while(!ptr2.End())
 	{
-		iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType));
+		iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType));
 		w2=(ptr2()->GetWeight()/max2)*log(iff);
 		norm2+=w2*w2;
 		ptr2.Next();
@@ -393,13 +394,13 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 	ptr2.Start();
 	while(!ptr.End())
 	{
-		iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr()->GetId(),ObjType1));
-		iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr()->GetId(),ObjType2));
+		iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr()->GetId(),ptr()->GetType(),ObjType1));
+		iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr()->GetId(),ptr()->GetType(),ObjType2));
 		w1=(ptr()->GetWeight()/max1)*log(iff1)*log(iff2);
 		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
 		{
-			iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType1));
-			iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType2));
+			iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType1));
+			iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType2));
 			w2=(ptr2()->GetWeight()/max2)*log(iff1)*log(iff2);
 			norm2+=w2*w2;
 			ptr2.Next();
@@ -408,8 +409,8 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 		{
 			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
-				iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType1));
-				iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType2));
+				iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType1));
+				iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType2));
 				w2=(ptr2()->GetWeight()/max2)*log(iff1)*log(iff2);
 				norm2+=w2*w2;
 				norm1+=w1*w1;
@@ -423,8 +424,8 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 	}
 	while(!ptr2.End())
 	{
-		iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType1));
-		iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr2()->GetId(),ObjType2));
+		iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType1));
+		iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType2));
 		w2=(ptr2()->GetWeight()/max2)*log(iff1)*log(iff2);
 		norm2+=w2*w2;
 		ptr2.Next();
@@ -481,7 +482,7 @@ void GWeightInfos::AddRefs(tObjType ObjType,GLang* lang) const
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		lang->IncRef(ptr()->GetId(),ObjType);
+		lang->IncRef(ptr()->GetId(),ptr()->GetType(),ObjType);
 	}
 }
 
@@ -496,7 +497,7 @@ void GWeightInfos::DelRefs(tObjType ObjType,GLang* lang) const
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		lang->DecRef(ptr()->GetId(),ObjType);
+		lang->DecRef(ptr()->GetId(),ptr()->GetType(),ObjType);
 	}
 }
 
@@ -512,7 +513,7 @@ void GWeightInfos::RecomputeIFF(tObjType ObjType,GLang* lang)
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start(),max=GetMaxAbsWeight();!ptr.End();ptr.Next())
 	{
-		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef(ptr()->GetId(),ObjType));
+		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef(ptr()->GetId(),ptr()->GetType(),ObjType));
 		ptr()->SetWeight((ptr()->GetWeight()/max)*log(iff));
 	}
 }
@@ -527,21 +528,24 @@ void GWeightInfos::RecomputeQuery(tObjType ObjType,GLang* lang)
 	double TotalRef;
 	double idffactor,nbref;
 	double freq;
-	const GData** words;
+	const GConcept** words;
 
 	if(!lang)
 		throw GException("No Language defined");
 	if(!GetNb()) return;
-	for(i=lang->GetDict()->GetDataMaxId()+1,words=lang->GetDatas();--i;words++)
+
+	TotalRef=lang->GetRef(ObjType);
+
+	#pragma warn Handle correctly multiple concepts
+	for(i=lang->GetDict()->GetConceptMaxId()+1,words=lang->GetConcepts(1);--i;words++)
 	{
-		if((!(*words))||(!lang->GetRef((*words)->GetId(),ObjType))) continue;
-		nbref=lang->GetRef((*words)->GetId(),ObjType);
+		if(!(*words)) continue;
+		nbref=(*words)->GetRef(ObjType);
 		if(!nbref) continue;
-		ptr=GetPtr<const unsigned int>((*words)->GetId());
+		ptr=GetPtr(**words);
 		if(!ptr)
-			InsertPtr(ptr=new GWeightInfo((*words)->GetId()));
+			InsertPtr(ptr=new GWeightInfo((*words)->GetId(),(*words)->GetType()));
 		freq=0.5+((0.5*ptr->GetWeight())/max);
-		TotalRef=lang->GetRef(ObjType);
 		idffactor=log(TotalRef/nbref);
 		ptr->SetWeight(freq*idffactor);
 	}

@@ -139,7 +139,7 @@ public:
 	* Get an information based on its identifier.
 	* @param id             Identifier.
 	*/
-	GWeightInfo* GetInfo(unsigned int id) const;
+//	GWeightInfo* GetInfo(unsigned int id,unsigned int type) const;
 
 	/**
 	* Clear the container.

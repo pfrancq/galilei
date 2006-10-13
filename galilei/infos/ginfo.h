@@ -48,9 +48,7 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GInfo class provides a representation for a generic information entity.
-* Each information entity is represented by :
-* - an unique identificator in a space ;
-* - a type representing the kind of information represented.
+* Each information entity is represented by an unique identificator in a space.
 * @author Pascal Francq.
 * @short Information Entity.
 */
@@ -64,9 +62,9 @@ protected:
 	unsigned int Id;
 
 	/**
-	* Type of the information entity.
+	* Type of the information.
 	*/
-	tInfoType Type;
+	unsigned int Type;
 
 public:
 
@@ -75,7 +73,7 @@ public:
 	* @param id              Identificator of the information entity.
 	* @param type            Type of the information entity.
 	*/
-	GInfo(unsigned int id,tInfoType type=infoWord);
+	GInfo(unsigned int id,unsigned int type);
 
 	/**
 	* Copy constructor for an information entity.
@@ -84,12 +82,28 @@ public:
 	GInfo(const GInfo& i);
 
 	/**
-	* Compare two information entities by comparing their identificator.
+	* Construct an information entity corresponding to a given concept.
+	* @param concept         Concept.
+	*/
+	GInfo(const GConcept& concept);
+
+	/**
+	* Compare two information entities by comparing their identificator and
+	* their type.
 	* @see R::RContainer
 	* @param i               Information entity.
 	* @return int
 	*/
 	virtual int Compare(const GInfo& i) const;
+
+	/**
+	* Compare a information entity and a concept by comparing their
+	* identificator and type.
+	* @see R::RContainer
+	* @param concept         Concept.
+	* @return int
+	*/
+	virtual int Compare(const GConcept& concept) const;
 
 	/**
 	* Assignment operator for information entities.
@@ -106,14 +120,6 @@ public:
 	virtual float Similarity(const GInfo& i) const;
 
 	/**
-	* Compute a similarity between two information entities. In the default
-	* implementation, the method compares the identificators.
-	* @param i               Pointer an information entity.
-	* @return a value between 0 and 1.
-	*/
-	virtual float Similarity(const GInfo* i) const;
-
-	/**
 	* Compute a dissimilarity between two information entities. In the default
 	* implementation, the method compares the identificators.
 	* @param i               Information entity.
@@ -122,38 +128,16 @@ public:
 	virtual float DisSimilarity(const GInfo& i) const;
 
 	/**
-	* Compute a dissimilarity between two information entities. In the default
-	* implementation, the method compares the identificators.
-	* @param i               Pointer an information entity.
-	* @return a value between 0 and 1.
-	*/
-	virtual float DisSimilarity(const GInfo* i) const;
-
-	/**
 	* Get the identificator of the information entity.
 	* @return unsigned int.
 	*/
 	unsigned int GetId(void) const {return(Id);}
 
 	/**
-	* Get the type of the information.
-	* @return tInfoType.
+	* Get the type of the information entity.
+	* @return unsigned int.
 	*/
-	tInfoType InfoType(void) const {return(Type);}
-
-	/**
-	* Verifies if two information entities have the same type.
-	* @param i               Information entity.
-	* @return true if the two entities are from the same type, false else.
-	*/
-	virtual bool SameType(const GInfo& i) const {return(InfoType()==i.InfoType());}
-
-	/**
-	* Verifies if two information entities have the same type.
-	* @param i               Pointer an information entity.
-	* @return true if the two entities are from the same type, false else.
-	*/
-	virtual bool SameType(const GInfo* i) const {return(InfoType()==i->InfoType());}
+	unsigned int GetType(void) const {return(Type);}
 
 	/**
 	* Destructor of a generic information entity.

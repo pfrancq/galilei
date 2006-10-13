@@ -377,7 +377,7 @@ public:
 	* @param data            Data.
 	* @param dict            Dictionary.
 	*/
-	virtual void AssignId(GData* data,const GDict* dict)=0;
+	virtual void AssignId(GConcept* data,const GDict* dict)=0;
 
 	/**
 	* Assign an identifier to a new document.
@@ -386,12 +386,18 @@ public:
 	virtual void AssignId(GDoc* doc)=0;
 
 	/**
-	* Loading a dictionary/stoplist.
-	* @param dic             Pointer to the dictionary.
-	* @param lang            Languague.
-	* @param s               Is it a stop list.
+	* Loading information on a langauge.
+	* @param lang           Languague.
 	*/
-	virtual void LoadDic(GDict* &dic,GLang* lang,bool s)=0;
+	virtual void LoadLang(GLang* lang)=0;
+
+	/**
+	* Loading a dictionary/stoplist.
+	* @param lang            Language of the dictonnary.
+	* @param type            Type of concepts.
+	* @return Pointer to the dictionary
+	*/
+	virtual GDict* LoadDic(GLang* lang,unsigned int type)=0;
 
 	/**
 	* Load an indexer.
@@ -401,18 +407,20 @@ public:
 	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs)=0;
 
 	/**
-	* Load a specific word from a dictionary.
-	* @param id              Idenfificator of the word.
+	* Load a specific concept from a dictionary.
+	* @param id              Idenfificator of the concept.
 	* @param code            Code of the languague.
+	* @param type            Type of the concept.
 	*/
-	virtual R::RString LoadWord(unsigned int id,const char* code)=0;
+	virtual R::RString LoadConcept(unsigned int id,const char* code,unsigned int type)=0;
 
 	/**
-	* Load the identificator of a specific word from a dictionary.
-	* @param word            Word.
+	* Load the identificator of a specific concept from a dictionary.
+	* @param word            Name of the concept.
 	* @param code            Code of the languague.
+	* @param type            Type of the concept.
 	*/
-	virtual unsigned int LoadWord(const R::RString word,const char* code)=0;
+	virtual unsigned int LoadConcept(const R::RString word,const char* code,unsigned int type)=0;
 
 	/**
 	* Method that load a document that is stored.
@@ -427,21 +435,21 @@ public:
 	virtual void LoadDocs(void)=0;
 
 	/**
-	* Save a data in the database.
-	* @param data            Data.
-	* @param lang            Languague.
+	* Save a concept in the database.
+	* @param concept         Concept.
 	*/
-	virtual void SaveData(GData* data,GLang* lang)=0;
+	virtual void SaveConcept(GConcept* concept)=0;
 
 	/**
 	* Save the references of a given object type and for a given information
 	* entity.
 	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
 	* @param lang            Language of the object.
+	* @param type            Type of the concepts.
 	* @param id              Identificator of the information entity.
 	* @param refs            Number of references.
 	*/
-	virtual void SaveRefs(tObjType type,GLang* lang,size_t id,size_t refs)=0;
+	virtual void SaveRefs(tObjType type,GLang* lang,unsigned int type,size_t id,size_t refs)=0;
 
 	/**
 	* Save the references of a given object type.

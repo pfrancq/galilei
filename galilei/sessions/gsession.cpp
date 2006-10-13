@@ -48,7 +48,6 @@ using namespace R;
 // include files for GALILEI
 #include <glang.h>
 #include <gdict.h>
-#include <gwordlist.h>
 #include <gsession.h>
 #include <gstorage.h>
 #include <gslot.h>
@@ -348,8 +347,8 @@ void GSession::ForceReCompute(tObjType type)
 		RCursor<PerLang> Cur(Data->Langs);
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			if((Cur()->Lang)&&(Cur()->Lang->GetDict()))
-				Cur()->Lang->GetDict()->Clear(otSubProfile);
+			if(Cur()->Lang)
+				Cur()->Lang->Clear(otSubProfile);
 			Cur()->SubProfiles.Clear();
 		}
 	}
@@ -389,8 +388,8 @@ void GSession::ReInit(void)
 	RCursor<PerLang> Cur(Data->Langs);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if((Cur()->Lang)&&(Cur()->Lang->GetDict()))
-			Cur()->Lang->GetDict()->Clear(otSubProfile);
+		if(Cur()->Lang)
+			Cur()->Lang->Clear(otSubProfile);
 		Cur()->SubProfiles.Clear();
 	}
 	Data->Profiles.Clear();
@@ -553,6 +552,25 @@ R::RRandom* GSession::GetRandom(void) const
 
 //------------------------------------------------------------------------------
 //
+// GSession::Knowledge
+//
+//------------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+R::RString GSession::GetConceptType(unsigned int type) const
+{
+	switch(type)
+	{
+		case 1: return("Stem");
+		case 2: return("Stopword");
+		default: return("Unknow");
+	}
+}
+
+
+
+//------------------------------------------------------------------------------
+//
 // GSession::Documents
 //
 //------------------------------------------------------------------------------
@@ -662,7 +680,7 @@ GDoc* GSession::GetDoc(const char* url,bool,bool null) const
 
 
 //------------------------------------------------------------------------------
-void GSession::AssignId(GData* data,const GDict* dict)
+void GSession::AssignId(GConcept* data,const GDict* dict)
 {
 	Data->Storage->AssignId(data,dict);
 }
@@ -1213,8 +1231,8 @@ void GSession::InsertSubProfile(GSubProfile* s)
 //------------------------------------------------------------------------------
 void GSession::ClearSubprofiles(GLang* lang)
 {
-	if((lang)&&(lang->GetDict()))
-		lang->GetDict()->Clear(otSubProfile);
+	if(lang)
+		lang->Clear(otSubProfile);
 	PerLang* ptr=Data->Langs.GetPtr(lang);
 	if(ptr)
 		ptr->SubProfiles.Clear();
@@ -1537,8 +1555,8 @@ void GSession::ClearGroups(GLang* lang)
 	// Go through the groups and delete all invalid groups.
 	if(!grps) return;
 
-	if(lang&&lang->GetDict())
-		lang->GetDict()->Clear(otGroup);
+	if(lang)
+		lang->Clear(otGroup);
 	for(nb=grps->Groups.GetNb(),i=0;i<nb;i++)
 	{
 		grp=grps->Groups[i];

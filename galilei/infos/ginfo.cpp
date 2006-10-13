@@ -33,6 +33,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <ginfo.h>
+#include <gconcept.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -46,7 +47,7 @@ using namespace R;
 
 
 //------------------------------------------------------------------------------
-GInfo::GInfo(unsigned int id,tInfoType type)
+GInfo::GInfo(unsigned int id,unsigned int type)
 	: Id(id), Type(type)
 {
 }
@@ -60,9 +61,27 @@ GInfo::GInfo(const GInfo& i)
 
 
 //------------------------------------------------------------------------------
+GInfo::GInfo(const GConcept& concept)
+	: Id(concept.Id), Type(concept.Type)
+{
+}
+
+
+//------------------------------------------------------------------------------
 int GInfo::Compare(const GInfo& i) const
 {
-	return(Id-i.Id);
+	if(Type==i.Type)
+		return(Id-i.Id);
+	return(Type-i.Type);
+}
+
+
+//------------------------------------------------------------------------------
+int GInfo::Compare(const GConcept& concept) const
+{
+	if(Type==concept.GetType())
+		return(Id-concept.GetId());
+	return(Type-concept.GetType());
 }
 
 
@@ -78,28 +97,14 @@ GInfo& GInfo::operator=(const GInfo& i)
 //------------------------------------------------------------------------------
 float GInfo::Similarity(const GInfo& i) const
 {
-	return(Id-i.Id==0);
-}
-
-
-//------------------------------------------------------------------------------
-float GInfo::Similarity(const GInfo* i) const
-{
-	return(Id-i->Id==0);
+	return((Type-i.Type==0)&&(Id-i.Id==0));
 }
 
 
 //------------------------------------------------------------------------------
 float GInfo::DisSimilarity(const GInfo& i) const
 {
-	return(Id-i.Id!=0);
-}
-
-
-//------------------------------------------------------------------------------
-float GInfo::DisSimilarity(const GInfo* i) const
-{
-	return(Id-i->Id!=0);
+		return((Type-i.Type!=0)||(Id-i.Id!=0));
 }
 
 
