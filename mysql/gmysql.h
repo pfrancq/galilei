@@ -148,7 +148,7 @@ public:
 	* @param data           Data.
 	* @param dict           Dictionary.
 	*/
-	virtual void AssignId(GData* data,const GDict* dict);
+	virtual void AssignId(GConcept* data,const GDict* dict);
 
 	/**
 	* Assign an identifier to a new document.
@@ -174,10 +174,11 @@ public:
 	* entity.
 	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
 	* @param lang            Language of the object.
+	* @param type            Type of the concepts.
 	* @param id              Identificator of the information entity.
 	* @param refs            Number of references.
 	*/
-	virtual void SaveRefs(tObjType type,GLang* lang,size_t id,size_t refs);
+	virtual void SaveRefs(tObjType type,GLang* lang,unsigned int type,size_t id,size_t refs);
 
 	/**
 	* Save the references of a given object type.
@@ -197,12 +198,17 @@ public:
 	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,GLang* lang,tObjType type,size_t id);
 
 	/**
-	* Loading a dictionary/stoplist.
-	* @param dic            Pointer to the dictionary.
+	* Loading information on a langauge.
 	* @param lang           Languague.
-	* @param s              Is it a stop list.
 	*/
-	virtual void LoadDic(GDict* &dic,GLang* lang,bool s);
+	virtual void LoadLang(GLang* lang);
+
+	/**
+	* Loading a dictionary.
+	* @param lang           Languague.
+	* @param type           Type of the dictionnary.
+	*/
+	virtual GDict* LoadDic(GLang* lang,unsigned int type);
 
 	/**
 	* Load an indexer.
@@ -212,25 +218,26 @@ public:
 	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs);
 
 	/**
-	* Load a specific word from a dictionary.
-	* @param id             Idenfificator of the word.
-	* @param code           Code of the languague.
+	* Load a specific concept from a dictionary.
+	* @param id              Idenfificator of the concept.
+	* @param code            Code of the languague.
+	* @param type            Type of the concept.
 	*/
-	virtual R::RString LoadWord(unsigned int id,const char* code);
+	virtual R::RString LoadConcept(unsigned int id,const char* code,unsigned int type);
 
 	/**
-	* Load the identificator of a specific word from a dictionary.
-	* @param word           Word.
-	* @param code           Code of the languague.
+	* Load the identificator of a specific concept from a dictionary.
+	* @param word            Name of the concept.
+	* @param code            Code of the languague.
+	* @param type            Type of the concept.
 	*/
-	virtual unsigned int LoadWord(const R::RString word,const char* code);
+	virtual unsigned int LoadConcept(const R::RString word,const char* code,unsigned int type);
 
 	/**
-	* Save a data in the database.
-	* @param data            Data.
-	* @param lang            Languague.
+	* Save a concept in the database.
+	* @param concept         Concept..
 	*/
-	virtual void SaveData(GData* data,GLang* lang);
+	virtual void SaveConcept(GConcept* concept);
 
 	/**
 	* Method that load a document that is stored.

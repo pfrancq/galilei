@@ -42,9 +42,6 @@
 #include <gdict.h>
 #include <glang.h>
 #include <ginfo.h>
-#include <ginfolist.h>
-#include <gword.h>
-#include <gwordlist.h>
 #include <gweightinfo.h>
 #include <gweightinfos.h>
 #include <glink.h>
@@ -63,6 +60,7 @@
 #include <gindexer.h>
 #include <gwordoccurs.h>
 #include <ggalileiapp.h>
+#include <gconcept.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -213,14 +211,14 @@ unsigned int GStorageMySQL::GetNbSaved(tObjType type)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AssignId(GData* data,const GDict* dict)
+void GStorageMySQL::AssignId(GConcept* data,const GDict* dict)
 {
 	RString sSql;
 
 	try
 	{
 		// Verify that the word didn't already exist.
-		sSql=RString("SELECT kwdid FROM kwds WHERE kwd="+RQuery::SQLValue(data->GetName())+" and langid='"+dict->GetLang()->GetCode())+"'";
+		sSql=RString("SELECT conceptid FROM concepts WHERE name="+RQuery::SQLValue(data->GetName())+" AND langid='"+dict->GetLang()->GetCode())+"'";
 		RQuery find(Db,sSql);
 		if(find.GetNbRows())
 		{
@@ -230,11 +228,11 @@ void GStorageMySQL::AssignId(GData* data,const GDict* dict)
 		}
 
 		// Insert the new word
-		sSql=RString("INSERT INTO kwds(kwd,kwdid,type,langid) SELECT ")+RQuery::SQLValue(data->GetName())+",MAX(IFNULL(kwdid,0))+1,"+RQuery::SQLValue(RString::Number(data->GetType()))+",'"+dict->GetLang()->GetCode()+"' FROM kwds WHERE langid='"+dict->GetLang()->GetCode()+"'";
+		sSql=RString("INSERT INTO concepts(name,conceptid,typeid,langid) SELECT ")+RQuery::SQLValue(data->GetName())+",MAX(IFNULL(conceptid,0))+1,"+RQuery::SQLValue(RString::Number(data->GetType()))+",'"+dict->GetLang()->GetCode()+"' FROM concepts WHERE langid='"+dict->GetLang()->GetCode()+"'";
 		RQuery insert(Db,sSql);
 
 		// Get the next id
-		sSql=RString("SELECT kwdid FROM kwds WHERE kwdautoid=LAST_INSERT_ID()");
+		sSql=RString("SELECT conceptid FROM concepts WHERE conceptautoid=LAST_INSERT_ID()");
 
 		RQuery getinsert(Db,sSql);
 		getinsert.Start();
@@ -270,111 +268,84 @@ void GStorageMySQL::AssignId(GDoc* doc)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s)
+void GStorageMySQL::LoadLang(GLang* lang)
 {
-	unsigned int MaxCount=100;
-	unsigned int MaxId=0;
 	unsigned int refdocs,refsubprofiles,refgroups;
-	RString sSql;
-	RString tbl;
 
 	try
 	{
 		// If language is not defined -> do nothing
 		if(!lang) return;
 
-		// Construct the table name
-		if(s)
+		// Search the number of total references for the dictionary
+		RQuery nb(Db,"SELECT refdocs,refsubprofiles,refgroups FROM languages WHERE langid='"+RString(lang->GetCode())+"'");
+		nb.Start();
+		if(nb.GetNb())
 		{
-			tbl=RString("stopkwds");
-			if(GSession::Get()&&GSession::Get()->GetSlot())
-				GSession::Get()->GetSlot()->StartJob("Load "+lang->GetName().ToLower()+" stoplist");
+			refdocs=atoi(nb[0]);
+			refsubprofiles=atoi(nb[1]);
+			refgroups=atoi(nb[2]);
 		}
 		else
 		{
-			tbl=RString("kwds");
-			if(GSession::Get()&&GSession::Get()->GetSlot())
-				GSession::Get()->GetSlot()->StartJob("Load "+lang->GetName().ToLower()+" dictionnary");
+			// New language in the database -> create an entry
+			refdocs=refsubprofiles=refgroups=0;
+			RQuery newlang(Db,"INSERT INTO languages(langid,refdocs,refsubprofiles,refgroups) VALUES('"+RString(lang->GetCode())+"',0,0,0)");
 		}
+		lang->SetReferences(refdocs,refsubprofiles,refgroups);
+	}
+	catch(RMySQLError e)
+	{
+		if(GSession::Get()&&GSession::Get()->GetSlot())
+			GSession::Get()->GetSlot()->EndJob();
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+GDict* GStorageMySQL::LoadDic(GLang* lang,unsigned int type)
+{
+	unsigned int MaxCount=100;
+	unsigned int MaxId=0;
+	RString sSql;
+	GDict* dic=0;
+
+	try
+	{
+		// If language is not defined -> do nothing
+		if(!lang) return(0);
+
+		// Construct the table name
+		if(GSession::Get()&&GSession::Get()->GetSlot())
+			GSession::Get()->GetSlot()->StartJob("Load Dictionnary ("+lang->GetName().ToLower()+","+RString::Number(type)+")");
 
 		// Search the values to initialise the dictionary
 		for(char i='a';i<='z';i++)
 		{
-			sSql="SELECT COUNT(*) FROM "+tbl+" WHERE langid='"+lang->GetCode()+"' AND kwd LIKE '"+RString(i)+"'";
+			sSql="SELECT COUNT(*) FROM concepts WHERE langid='"+RString(lang->GetCode())+"' AND typeid='"+RString::Number(type)+"' AND name LIKE '"+RString(i)+"%'";
 			RQuery count(Db,sSql);
 			count.Start();
 			if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
 		}
 		if(MaxCount==0) MaxCount=2000;
-		MaxId=GetMax(tbl,"kwdid");
+		MaxId=GetMax("concepts","conceptid");
 		if(!MaxId)
 			MaxId=2000;
 
-		// Search the number of total references for the dictionary
-		if(s)
-		{
-			refdocs=refsubprofiles=refgroups=0;
-		}
-		else
-		{
-			RQuery nb(Db,"SELECT refdocs,refsubprofiles,refgroups FROM languages WHERE langid='"+RString(lang->GetCode())+"'");
-			nb.Start();
-			if(nb.GetNb())
-			{
-				refdocs=atoi(nb[0]);
-				refsubprofiles=atoi(nb[1]);
-				refgroups=atoi(nb[2]);
-			}
-			else
-			{
-				// New language in the database -> create an entry
-				refdocs=refsubprofiles=refgroups=0;
-				RQuery newlang(Db,"INSERT INTO languages(langid,language,refdocs,refsubprofiles,refgroups) VALUES('"+RString(lang->GetCode())+"','"+lang->GetName()+"',0,0,0)");
-			}
-		}
 
 		// Create and insert the dictionary
-		if(s)
-			dic=new GDict(tbl,"Stop List",lang,MaxId,MaxCount,true,refdocs,refsubprofiles,refgroups);
-		else
-			dic=new GDict(tbl,"Dictionary",lang,MaxId,MaxCount,false,refdocs,refsubprofiles,refgroups);
+		dic=new GDict(lang,type,MaxId,MaxCount);
+		lang->AddDict(dic);
 
 		// Load the dictionary from the database
-		sSql="SELECT kwdid,kwd,type";
-		if(!s)
-			sSql+=",refdocs,refsubprofiles,refgroups";
-		sSql+=" FROM "+tbl+" WHERE langid='"+lang->GetCode()+"'";
-		RQuery dicts (Db, sSql);
+		sSql="SELECT conceptid,name,typeid,refdocs,refsubprofiles,refgroups FROM concepts WHERE langid='"+RString(lang->GetCode())+"' AND typeid='"+RString::Number(type)+"'";
+		RQuery dicts(Db, sSql);
 		RString tmp;
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
-			if(!s)
-			{
-				refdocs=atoi(dicts[3]);
-				refsubprofiles=atoi(dicts[4]);
-				refgroups=atoi(dicts[5]);
-			}
-
-			switch(atoi(dicts[2]))
-			{
-				case infoWord :
-					{
-						GWord w(atoi(dicts[0]),dicts[1],refdocs,refsubprofiles,refgroups);
-						dic->InsertData(&w);
-					}
-					break;
-
-				case infoWordList :
-					{
-						GWordList w(atoi(dicts[0]),dicts[1],refdocs,refsubprofiles,refgroups);
-						sSql="SELECT kwdid FROM kwdsbygroups WHERE langid='"+RString(lang->GetCode())+"' AND grid="+RString::Number(w.GetId());
-						RQuery wl(Db,sSql);
-						for(wl.Start();!wl.End();wl.Next())
-							w.InsertWord(dynamic_cast <GWord*>(lang->GetDict()->GetData(atoi(wl[0]))));
-						dic->InsertData(&w);
-					}
-					break;
-			}
+			GConcept w(atoi(dicts[0]),lang,dicts[1],1,atoi(dicts[3]),atoi(dicts[4]),atoi(dicts[5]));
+			dic->InsertConcept(&w);
 		}
 		if(GSession::Get()&&GSession::Get()->GetSlot())
 			GSession::Get()->GetSlot()->EndJob();
@@ -385,6 +356,7 @@ void GStorageMySQL::LoadDic(GDict* &dic,GLang* lang,bool s)
 			GSession::Get()->GetSlot()->EndJob();
 		throw GException(e.GetMsg());
 	}
+	return(dic);
 }
 
 
@@ -401,7 +373,7 @@ void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 		// Search the values to initialise the indexer
 		for(char i='a';i<='z';i++)
 		{
-			sSql="SELECT COUNT(*) FROM kwds WHERE kwd LIKE '"+RString(i)+"'";
+			sSql="SELECT COUNT(*) FROM concepts WHERE name LIKE '"+RString(i)+"%'";
 			RQuery count(Db,sSql);
 			count.Start();
 			if(strtoul(count[0],0,10)>MaxCount) MaxCount=strtoul(count[0],0,10);
@@ -412,7 +384,7 @@ void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 		indexer=new GIndexer(MaxCount,langs);
 
 		// Load the stems from the database
-		sSql="SELECT kwd FROM kwds WHERE type='"+RString::Number(infoWord)+"'";
+		sSql="SELECT name FROM concepts WHERE typeid='1'";
 		RQuery stems(Db, sSql);
 		for(stems.Start();!stems.End();stems.Next())
 		{
@@ -420,7 +392,7 @@ void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 		}
 
 		// Index the documents
-		RQuery sel(Db,"SELECT htmlid,kwd FROM htmlsbykwds,kwds WHERE kwds.kwdid=htmlsbykwds.kwdid");
+		RQuery sel(Db,"SELECT htmlid,name FROM htmlsbyconcepts,concepts WHERE concepts.conceptid=htmlsbyconcepts.conceptid AND concepts.langid=htmlsbyconcepts.langid AND concepts.typeid=htmlsbyconcepts.typeid");
 		for(sel.Start(),ptr=0;!sel.End();sel.Next())
 		{
 			// If not the same -> new wors
@@ -440,12 +412,12 @@ void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 
 
 //------------------------------------------------------------------------------
-RString GStorageMySQL::LoadWord(unsigned int id,const char* code)
+RString GStorageMySQL::LoadConcept(unsigned int id,const char* code,unsigned int type)
 {
 	try
 	{
 		RString res;
-		RString sSql("SELECT kwd FROM kwds WHERE langid='"+RString(code)+"' AND kwdid="+RString::Number(id));
+		RString sSql("SELECT name FROM concepts WHERE langid='"+RString(code)+"' AND conceptid="+RString::Number(id)+" AND typeid="+RString::Number(type));
 		RQuery w(Db,sSql);
 		if(w.GetNbRows())
 		{
@@ -462,12 +434,12 @@ RString GStorageMySQL::LoadWord(unsigned int id,const char* code)
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::LoadWord(const R::RString word,const char* code)
+unsigned int GStorageMySQL::LoadConcept(const R::RString word,const char* code,unsigned int type)
 {
 	try
 	{
 		unsigned int res=0;
-		RString sSql("SELECT kwdid FROM kwds WHERE langid='"+RString(code)+"' AND kwd="+RQuery::SQLValue(word));
+		RString sSql("SELECT conceptid FROM concepts WHERE langid='"+RString(code)+"' AND kwd="+RQuery::SQLValue(word)+" AND typeid="+RString::Number(type));
 		RQuery w(Db,sSql);
 		if(w.GetNbRows())
 		{
@@ -484,30 +456,17 @@ unsigned int GStorageMySQL::LoadWord(const R::RString word,const char* code)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveData(GData* data,GLang* lang)
+void GStorageMySQL::SaveConcept(GConcept* concept)
 {
 	RString Sql;
 
 	// Delete the old word from the database
-	RQuery Delete(Db,"DELETE FROM kwds WHERE langid='"+RString(lang->GetCode())+"' AND kwdid="+RString::Number(data->GetId()));
+	RQuery Delete(Db,"DELETE FROM concepts WHERE langid='"+RString(concept->GetLang()->GetCode())+"' AND conceptid="+RString::Number(concept->GetId())+" AND typeid="+RString::Number(concept->GetType()));
 
 	// Insert the new word in the database
-	Sql="INSERT INTO kwds(kwdid,kwd,langid,type,refsubprofiles,refgroups,refdocs) ";
-	Sql+="VALUES("+RString::Number(data->GetId())+","+RQuery::SQLValue(data->GetName())+",'"+RString(lang->GetCode())+"',"+RString::Number(data->GetType())+",0,0,0)";
+	Sql="INSERT INTO concepts(conceptid,name,langid,typeid,refsubprofiles,refgroups,refdocs) ";
+	Sql+="VALUES("+RString::Number(concept->GetId())+","+RQuery::SQLValue(concept->GetName())+",'"+RString(concept->GetLang()->GetCode())+"',"+RString::Number(concept->GetType())+",0,0,0)";
 	RQuery Insert(Db,Sql);
-
-	// If wordlist -> save the rest
-	if(data->GetType()==infoWordList)
-	{
-		GWordList* w=dynamic_cast<GWordList*>(data);
-		R::RCursor<GWord> Cur(w->GetWords());
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			Sql="INSERT INTO kwdsbygroups(grid,kwdid,langid) ";
-			Sql+="VALUES ('"+RString::Number(dynamic_cast<GData*>(w)->GetId())+"','"+RString::Number(Cur()->GetId())+"','"+RString(lang->GetCode())+"')";
-			RQuery insertword(Db,Sql);
-		}
-	}
 }
 
 
@@ -562,14 +521,14 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub)
 
 		// Delete old description
 		l=sub->GetLang()->GetCode();
-		sSql="DELETE FROM subprofilesbykwds WHERE langid='"+l+"' AND subprofileid="+RString::Number(sub->GetId());
+		sSql="DELETE FROM subprofilesbyconcepts WHERE langid='"+l+"' AND subprofileid="+RString::Number(sub->GetId());
 		RQuery deletekwds(Db,sSql);
 
 		// Insert new description
 		Cur=sub->GetInfos();
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			sSql="INSERT INTO subprofilesbykwds(subprofileid,kwdid,weight, langid) VALUES("+RString::Number(sub->GetId())+","+RString::Number(Cur()->GetId())+",'"+RString::Number(Cur()->GetWeight())+"','"+l+"')";
+			sSql="INSERT INTO subprofilesbyconcepts(subprofileid,conceptid,weight,langid,typeid) VALUES("+RString::Number(sub->GetId())+","+RString::Number(Cur()->GetId())+",'"+RString::Number(Cur()->GetWeight())+"','"+l+"',"+RString::Number(Cur()->GetType())+")";
 			RQuery insertkwds(Db,sSql);
 		}
 		sub->SetState(osUpToDate);
@@ -981,20 +940,20 @@ void GStorageMySQL::LoadSubjects(void)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveRefs(tObjType type,GLang* lang,size_t id,size_t refs)
+void GStorageMySQL::SaveRefs(tObjType objtype,GLang* lang,unsigned int type,size_t id,size_t refs)
 {
 	RString sSql;
 
-	switch(type)
+	switch(objtype)
 	{
 		case otDoc:
-			sSql="UPDATE kwds SET refdocs="+RString::Number(refs)+" WHERE kwdid="+RString::Number(id)+" AND langid='"+lang->GetCode()+"'";
+			sSql="UPDATE concepts SET refdocs="+RString::Number(refs)+" WHERE conceptid="+RString::Number(id)+" AND langid='"+lang->GetCode()+"' AND typeid='"+RString::Number(type)+"'";
 			break;
 		case otSubProfile:
-			sSql="UPDATE kwds SET refsubprofiles="+RString::Number(refs)+" WHERE kwdid="+RString::Number(id)+" AND langid='"+lang->GetCode()+"'";
+			sSql="UPDATE concepts SET refsubprofiles="+RString::Number(refs)+" WHERE conceptid="+RString::Number(id)+" AND langid='"+lang->GetCode()+"' AND typeid='"+RString::Number(type)+"'";
 			break;
 		case otGroup:
-			sSql="UPDATE kwds SET refgroups="+RString::Number(refs)+" WHERE kwdid="+RString::Number(id)+" AND langid='"+lang->GetCode()+"'";
+			sSql="UPDATE concepts SET refgroups="+RString::Number(refs)+" WHERE conceptid="+RString::Number(id)+" AND langid='"+lang->GetCode()+"' AND typeid='"+RString::Number(type)+"'";
 			break;
 		default:
 			throw GException("This type of objects do not have descriptions");
@@ -1029,40 +988,27 @@ void GStorageMySQL::SaveRefs(tObjType type,GLang* lang,size_t refs)
 //------------------------------------------------------------------------------
 void GStorageMySQL::LoadInfos(RContainer<GWeightInfo,false,true>& infos,GLang* lang,tObjType type,size_t id)
 {
-	size_t i,kwdid;
-	tInfoType InfoType;
+	size_t i;
 	RString sSql;
 
+	sSql="SELECT conceptid,typeid,weight FROM ";
 	switch(type)
 	{
 		case otDoc:
-			sSql="SELECT kwdid,occurs FROM htmlsbykwds WHERE htmlid="+RString::Number(id)+" ORDER BY kwdid";
+			sSql+="htmlsbyconcepts WHERE htmlid="+RString::Number(id)+" AND langid='"+lang->GetCode()+"' ORDER BY typeid,conceptid";
 			break;
 		case otSubProfile:
-			sSql="SELECT kwdid,weight FROM subprofilesbykwds WHERE subprofileid="+RString::Number(id)+" ORDER BY kwdid";
+			sSql+="subprofilesbyconcepts WHERE subprofileid="+RString::Number(id)+" AND langid='"+lang->GetCode()+"' ORDER BY typeid,conceptid";
 			break;
 		case otGroup:
-			sSql="SELECT kwdid,occurs FROM groupsbykwds WHERE groupid="+RString::Number(id)+" ORDER BY kwdid";
+			sSql+="groupsbyconcepts WHERE groupid="+RString::Number(id)+" AND langid='"+lang->GetCode()+"' ORDER BY typeid,conceptid";
 			break;
 		default:
 			throw GException("This type of objects do not have descriptions");
 	};
 	RQuery sel(Db,sSql);
 	for(sel.Start(),i=0;!sel.End();sel.Next(),i++)
-	{
-		kwdid=atoi(sel[0]);
-		if(lang->GetDict())
-		{
-			GData* data=lang->GetDict()->GetData(kwdid);
-			if(data)
-				InfoType=data->GetType();
-			else
-				InfoType=infoNothing;
-		}
-		else
-			InfoType=infoNothing;
-		infos.InsertPtrAt(new GWeightInfo(kwdid,atof(sel[1]),InfoType),i,false);
-	}
+		infos.InsertPtrAt(new GWeightInfo(atoi(sel[0]),atoi(sel[1]),atof(sel[2])),i,false);
 }
 
 
@@ -1157,12 +1103,12 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 		if(doc->GetLang())
 		{
 			l=doc->GetLang()->GetCode();
-			sSql="DELETE FROM htmlsbykwds WHERE langid='"+l+"' AND htmlid="+id;
+			sSql="DELETE FROM htmlsbyconcepts WHERE langid='"+l+"' AND htmlid="+id;
 			RQuery deletekwds(Db,sSql);
 			Words=doc->GetInfos();
 			for(Words.Start();!Words.End();Words.Next())
 			{
-				sSql="INSERT INTO htmlsbykwds(htmlid,kwdid,occurs,langid) VALUES("+id+","+RString::Number(Words()->GetId())+",'"+RString::Number(Words()->GetWeight())+"','"+l+"')";
+				sSql="INSERT INTO htmlsbyconcepts(htmlid,conceptid,weight,langid,typeid) VALUES("+id+","+RString::Number(Words()->GetId())+",'"+RString::Number(Words()->GetWeight())+"','"+l+"','"+RString::Number(Words()->GetType())+"')";
 				RQuery insertkwds(Db,sSql);
 			}
 			l=RQuery::SQLValue(l);
@@ -1256,7 +1202,7 @@ void GStorageMySQL::SaveGroups(void)
 		{
 			lang=langs()->GetPlugin();
 			if(!lang) continue;
-			sSql="DELETE FROM groupsbykwds WHERE langid='"+RString(lang->GetCode())+"'";
+			sSql="DELETE FROM groupsbyconcepts WHERE langid='"+RString(lang->GetCode())+"'";
 			RQuery delete2(Db,sSql);
 		}
 
@@ -1278,7 +1224,7 @@ void GStorageMySQL::SaveGroups(void)
 			WordCur.Set(*GroupsCursor());
 			for(WordCur.Start();!WordCur.End();WordCur.Next())
 			{
-				sSql="INSERT INTO groupsbykwds(groupid,kwdid,occurs,langid) VALUES("+RString::Number(GroupsCursor()->GetId())+","+RString::Number(WordCur()->GetId())+",'"+RString::Number(WordCur()->GetWeight())+"','"+RString(GroupsCursor()->GetLang()->GetCode())+"')";
+				sSql="INSERT INTO groupsbyconcepts(groupid,conceptid,weight,langid,typeid) VALUES("+RString::Number(GroupsCursor()->GetId())+","+RString::Number(WordCur()->GetId())+",'"+RString::Number(WordCur()->GetWeight())+"','"+RString(GroupsCursor()->GetLang()->GetCode())+"','"+RString::Number(WordCur()->GetType())+"')";
 				RQuery InserinfoWord(Db,sSql);
 			}
 		}
@@ -1506,7 +1452,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 			RQuery subprofdesc(*Db,sSql);
 			for(subprofdesc.Start();!subprofdesc.End();subprofdesc.Next())
 			{
-				historicsubprof->InsertPtr(new GWeightInfo(atoi(subprofdesc[0]),double(atof(subprofdesc[1]))));
+				historicsubprof->InsertPtr(new GWeightInfo(atoi(subprofdesc[0]),1,double(atof(subprofdesc[1]))));
 			}
 		}
 		return(grps);
