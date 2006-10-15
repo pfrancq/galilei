@@ -7,5 +7,5 @@ libgca_la_LIBADD=
 AM_CFLAGS =
 AM_CXXFLAGS =
 AM_FFLAGS =
-
+SUBDIRS = . frontend
 

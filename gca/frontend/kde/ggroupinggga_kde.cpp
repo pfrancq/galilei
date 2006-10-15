@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gir.h>
+#include <../../gir.h>
 #include <ggrouping.h>
 using namespace GALILEI;
 using namespace R;
