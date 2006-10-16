@@ -232,7 +232,7 @@ void GGroupingGGA::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("Min Disagreement",0.6));
 	params->InsertParam(new RParamValue("Max kMeans",30));
 	params->InsertParam(new RParamValue("Convergence",0.05));
-	params->InsertParam(new RParamValue("NbDivChromos",2));
+	params->InsertParam(new RParamValue("NbDivChromo",2));
 	params->InsertParam(RPromCriterionParams::CreateParam("Sim Criterion"));
 	params->InsertParam(RPromCriterionParams::CreateParam("Agreement Criterion"));
 	params->InsertParam(RPromCriterionParams::CreateParam("Disagreement Criterion"));
