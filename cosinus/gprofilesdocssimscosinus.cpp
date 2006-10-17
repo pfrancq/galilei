@@ -95,14 +95,14 @@ public:
 
 //------------------------------------------------------------------------------
 //
-//  GProfilesDocsSimsCosinus::GDocProfSim
+//  GDocProfSim
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 // Class representing all the similarities between documents and subprofiles of
 // a given language.
-class GProfilesDocsSimsCosinus::GDocProfSim
+class GALILEI::GDocProfSim
 {
 public:
 	R::RContainer<GSims,true,true>* Sims;  // Similarities.
@@ -132,14 +132,13 @@ public:
 	//change tye type of similarity (local <-> IFF)
 	void Update(bool iff);
 
-
 	// Destructor.
 	~GDocProfSim(void) { delete Sims;}
 };
 
 
 //------------------------------------------------------------------------------
-GProfilesDocsSimsCosinus::GDocProfSim::GDocProfSim(GProfilesDocsSimsCosinus* manager,GLang* l)
+GDocProfSim::GDocProfSim(GProfilesDocsSimsCosinus* manager,GLang* l)
 	: Sims(0), Lang(l), Manager(manager)
 {
 	R::RCursor<GDoc> Cur_d;
@@ -173,7 +172,7 @@ GProfilesDocsSimsCosinus::GDocProfSim::GDocProfSim(GProfilesDocsSimsCosinus* man
 
 
 //------------------------------------------------------------------------------
-void GProfilesDocsSimsCosinus::GDocProfSim::AnalyseSim(GSims* sim,const GDoc* doc ,const GSubProfile* sub)
+void GDocProfSim::AnalyseSim(GSims* sim,const GDoc* doc ,const GSubProfile* sub)
 {
 	double tmp;
 
@@ -186,7 +185,7 @@ void GProfilesDocsSimsCosinus::GDocProfSim::AnalyseSim(GSims* sim,const GDoc* do
 
 
 //------------------------------------------------------------------------------
-double GProfilesDocsSimsCosinus::GDocProfSim::GetSim(const GDoc* doc,const GSubProfile* sub)
+double GDocProfSim::GetSim(const GDoc* doc,const GSubProfile* sub)
 {
 	GSims* s;
 	GSim* s2;
@@ -208,7 +207,7 @@ double GProfilesDocsSimsCosinus::GDocProfSim::GetSim(const GDoc* doc,const GSubP
 
 
 //------------------------------------------------------------------------------
-void  GProfilesDocsSimsCosinus::GDocProfSim::Update(void)
+void  GDocProfSim::Update(void)
 {
 	R::RCursor<GDoc> Cur_d;
 	RCursor<GSubProfile> Cur_p;
@@ -278,21 +277,17 @@ void  GProfilesDocsSimsCosinus::GDocProfSim::Update(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfilesDocsSimsCosinus::GProfilesDocsSimsCosinus::GProfilesDocsSimsCosinus(GFactoryMeasure* fac)
+GProfilesDocsSimsCosinus::GProfilesDocsSimsCosinus(GFactoryMeasure* fac)
 	: GMeasure(fac), GSignalHandler(), Sims(10,5), IDF(true), Memory(false), NeedUpdate(false)
 {
 	GSession::AddHandler(this);
-	if(!Memory) return;
-	Sims.Clear();
-	R::RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
-	for(Langs.Start();!Langs.End();Langs.Next())
-		Sims.InsertPtr(new GDocProfSim(this,Langs()));
 }
 
 
 //-----------------------------------------------------------------------------
 void GProfilesDocsSimsCosinus::ApplyConfig(void)
 {
+	bool OldMemory=Memory;
 	NullSimLevel=Factory->GetDouble("NullSimLevel");
 	ISF=Factory->GetBool("ISF");
 	IDF=Factory->GetBool("IDF");
@@ -301,6 +296,15 @@ void GProfilesDocsSimsCosinus::ApplyConfig(void)
 	DebugMinSim=Factory->GetBool("DebugMinSim");
 	MinSim=Factory->GetDouble("MinSim");
 	AutomaticMinSim=Factory->GetBool("AutomaticMinSim");
+	if((Memory)&&(!OldMemory))
+	{
+		Sims.Clear();
+		R::RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
+		for(Langs.Start();!Langs.End();Langs.Next())
+			Sims.InsertPtr(new GDocProfSim(this,Langs()));
+	}
+	if((!Memory)&&(OldMemory))
+		Sims.Clear();
 }
 
 

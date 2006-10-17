@@ -47,6 +47,9 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 
 
+// Internal class
+class GDocProfSim;
+
 //------------------------------------------------------------------------------
 /**
 * The GProfilesDocsSimsCosinus class provides a representation for the similarities between
@@ -56,9 +59,6 @@ namespace GALILEI{
 */
 class GProfilesDocsSimsCosinus : public GMeasure, public GSignalHandler
 {
-	// Internal class
-	class GDocProfSim;
-
 	/**
 	* Similarities.
 	*/
@@ -157,6 +157,8 @@ public:
 	* Destructor of the similarities between documents and subprofiles.
 	*/
 	virtual ~GProfilesDocsSimsCosinus(void);
+
+	friend class GDocProfSim;
 };
 
 
