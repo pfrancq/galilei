@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>546</width>
-            <height>296</height>
+            <width>621</width>
+            <height>283</height>
         </rect>
     </property>
     <property name="caption">
@@ -151,20 +151,6 @@
                                         </property>
                                     </widget>
                                 </hbox>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>isf</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>isf Factor</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Set if the isf factor should be used when computing the subprofiles similarities</string>
-                                </property>
-                                <property name="whatsThis" stdset="0">
-                                    <string>When &lt;b&gt;isf factor&lt;/b&gt; is checked, when computing the similarity between two subprofiles, the inverse subprofile factor is used.</string>
-                                </property>
                             </widget>
                         </vbox>
                     </widget>
@@ -1102,6 +1088,8 @@
         </widget>
     </vbox>
 </widget>
+<customwidgets>
+</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>
@@ -1127,6 +1115,8 @@
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>

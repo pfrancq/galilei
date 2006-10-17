@@ -101,7 +101,6 @@ void Configure(GFactoryGrouping* params)
 	dlg.MinAgreement->setValue(params->GetDouble("Min Agreement"));
 	dlg.Convergence->setValue(params->GetDouble("Convergence"));
 	dlg.MinDisagreement->setValue(params->GetDouble("Min Disagreement"));
-	dlg.isf->setChecked(params->GetBool("isf"));
 	dlg.SimP->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->GetDouble());
 	dlg.SimQ->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->GetDouble());
 	dlg.SimWeight->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->GetDouble());
@@ -122,7 +121,6 @@ void Configure(GFactoryGrouping* params)
 		params->SetUInt("Step Gen",dlg.StepGen->value());
 		params->SetDouble("Min Agreement",dlg.MinAgreement->value());
 		params->SetDouble("Min Disagreement",dlg.MinDisagreement->value());
-		params->SetBool("isf",dlg.isf->isChecked());
 		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->SetDouble(dlg.SimP->value());
 		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->SetDouble(dlg.SimQ->value());
 		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->SetDouble(dlg.SimWeight->value());

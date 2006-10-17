@@ -174,11 +174,6 @@ public:
 	R::RPromCriterionParams ParamsDisagreement;
 
 	/**
-	* Defined if isf factor must be used.
-	*/
-	bool isf;
-
-	/**
 	* Constructor.
 	*/
 	GIRParams(void);

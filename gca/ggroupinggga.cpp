@@ -84,7 +84,6 @@ void GGroupingGGA::ApplyConfig(void)
 	Params.ParamsSim.Set(Factory->FindParam<RParamStruct>("Sim Criterion"));
 	Params.ParamsAgreement.Set(Factory->FindParam<RParamStruct>("Agreement Criterion"));
 	Params.ParamsDisagreement.Set(Factory->FindParam<RParamStruct>("Disagreement Criterion"));
-	Params.isf=Factory->GetBool("isf");
 }
 
 
@@ -236,7 +235,6 @@ void GGroupingGGA::CreateParams(RConfig* params)
 	params->InsertParam(RPromCriterionParams::CreateParam("Sim Criterion"));
 	params->InsertParam(RPromCriterionParams::CreateParam("Agreement Criterion"));
 	params->InsertParam(RPromCriterionParams::CreateParam("Disagreement Criterion"));
-	params->InsertParam(new RParamValue("isf",true));
 }
 
 
