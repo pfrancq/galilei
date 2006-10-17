@@ -97,11 +97,10 @@ GGALILEIApp* GALILEI::GALILEIApp=0;
 
 //------------------------------------------------------------------------------
 GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
-	: RApplication(name,argc,argv), RContainer<GGenericPluginManager,true,true>(20,10), Log(0), Debug(0), Session(0), LoadDialogs(dlg),
+	: RApplication(name,argc,argv), RContainer<GGenericPluginManager,true,false>(20,10), Log(0), Debug(0), Session(0), LoadDialogs(dlg),
 	  PlugInsPath(10), GALILEIConfig()
 {
 	InsertPtr(new GStorageManager());
-	InsertPtr(new GLangManager());
 	InsertPtr(new GLinkCalcManager());
 	InsertPtr(new GDocAnalyseManager());
 	InsertPtr(new GPostDocManager());
@@ -116,6 +115,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GPostProfileManager());
 	InsertPtr(new GStatsCalcManager());
 	InsertPtr(new GMeasureManager());
+	InsertPtr(new GLangManager());
 	GALILEIApp=this;
 }
 
@@ -298,51 +298,56 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 	for(Path.Start();!Path.End();Path.Next())
 		FindPlugins(*Path(),PlugIns,Dlgs);
 
-	// Analyse the plugins
-	R::RCursor<RString> Cur(PlugIns);
-	for(Cur.Start();!Cur.End();Cur.Next())
+	// Analyse the plugins category by category
+	RCursor<GGenericPluginManager> Mngs(*this);
+	for(Mngs.Start();!Mngs.End();Mngs.Next())
 	{
-		// Get a hangle
-		void *handle=dlopen(Cur()->Latin1(),RTLD_LAZY);
-		if(!handle)
-		{
-			cerr<<dlerror()<<endl;
-			continue;
-		}
 
-		// Find the category and the manager
-		LibTypeFc* LibType=(LibTypeFc*)dlsym(handle,"LibType");
-		error=dlerror();
-		if(error)
+		R::RCursor<RString> Cur(PlugIns);
+		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			cerr<<error<<endl;
-			continue;
-		}
-		const char* Lib=LibType();
-		GGenericPluginManager* Manager=GetPtr(Lib);
-		if(!Manager)
-			continue;
-
-		// Is there a dialog plug-in?
-		RString Dlg;
-		RString Short=Cur()->Mid(Cur()->Find(RTextFile::GetDirSeparator(),-1)+1);
-		if(dlg)
-		{
-			// Go through the dialog plug-ins to see if a a plugin has this name
-			RString search=Short.Mid(0,Short.GetLen()-3)+"_dlg.so";
-			RCursor<RString> Cur2(Dlgs);
-			for(Cur2.Start();!Cur2.End();Cur2.Next())
+			// Get a hangle
+			void *handle=dlopen(Cur()->Latin1(),RTLD_LAZY);
+			if(!handle)
 			{
-				if(Cur2()->FindStr(search,-1)!=-1)
+				cerr<<dlerror()<<endl;
+				continue;
+			}
+
+			// Find the category and the manager
+			LibTypeFc* LibType=(LibTypeFc*)dlsym(handle,"LibType");
+			error=dlerror();
+			if(error)
+			{
+				cerr<<error<<endl;
+				continue;
+			}
+			const char* Lib=LibType();
+			GGenericPluginManager* Manager=GetPtr(Lib);
+			if((!Manager)||(Manager!=Mngs()))
+				continue;
+
+			// Is there a dialog plug-in?
+			RString Dlg;
+			RString Short=Cur()->Mid(Cur()->Find(RTextFile::GetDirSeparator(),-1)+1);
+			if(dlg)
+			{
+				// Go through the dialog plug-ins to see if a a plugin has this name
+				RString search=Short.Mid(0,Short.GetLen()-3)+"_dlg.so";
+				RCursor<RString> Cur2(Dlgs);
+				for(Cur2.Start();!Cur2.End();Cur2.Next())
 				{
-					Dlg=(*Cur2());
-					break;
+					if(Cur2()->FindStr(search,-1)!=-1)
+					{
+						Dlg=(*Cur2());
+						break;
+					}
 				}
 			}
-		}
-		void* handleDlg=dlopen(Dlg.Latin1(),RTLD_LAZY);
+			void* handleDlg=dlopen(Dlg.Latin1(),RTLD_LAZY);
 
-		Manager->Load(Short,handle,handleDlg);
+			Manager->Load(Short,handle,handleDlg);
+		}
 	}
 }
 

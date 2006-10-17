@@ -62,7 +62,7 @@ class GGenericPluginManager;
 * @short GALILEI Application
 * @author Pascal Francq
 */
-class GGALILEIApp : public R::RApplication, public R::RContainer<GGenericPluginManager,true,true>
+class GGALILEIApp : public R::RApplication, public R::RContainer<GGenericPluginManager,true,false>
 {
 	/**
 	* A log file.
