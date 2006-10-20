@@ -112,395 +112,121 @@ RXMLTag* GDocXML::AddLink(void)
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddTitle(RString val,RXMLTag* metaData)
+R::RXMLTag* GDocXML::Add(R::RString tag,R::RString val,R::RXMLTag* metaData)
 {
 	RXMLTag* t;
 	if(!metaData)
-	{
-		AddTag(MetaData,t=new RXMLTag("dc:title"));
-	}
+		AddTag(MetaData,t=new RXMLTag("dc:"+tag));
 	else
-	{
-		AddTag(metaData,t=new RXMLTag("dc:title"));
-	}
-	t->AddContent(val);
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddTitle(RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:title"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:title"));
+		AddTag(metaData,t=new RXMLTag("dc:"+tag));
+	if(!val.IsEmpty())
+		t->AddContent(val);
 	return(t);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddCreator(RString val,RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddTitle(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:creator"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:creator"));
-	t->AddContent(val);
+	return(Add("title",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddCreator(RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddCreator(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:creator"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:creator"));
-	return(t);
+	return(Add("creator",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddSubject(RString val,RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddSubject(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:subject"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:subject"));
-	t->AddContent(val);
+	return(Add("subject",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddSubject(RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddDescription(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:subject"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:subject"));
-	return(t);
+	return(Add("description",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddDescription(RString val,RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddPublisher(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:description"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:description"));
-	t->AddContent(val);
+	return(Add("publisher",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddDescription(RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddContributor(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:description"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:description"));
-	return(t);
+	return(Add("contributor",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddPublisher(RString val,RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddDate(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:publisher"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:publisher"));
-	t->AddContent(val);
+	return(Add("date",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddPublisher(RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddType(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:publisher"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:publisher"));
-	return(t);
+	return(Add("type",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddContributor(RString val,RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddFormat(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:contributor"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:contributor"));
-	t->AddContent(val);
+	return(Add("format",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddContributor(RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddIdentifier(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:contributor"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:contributor"));
-	return(t);
+	return(Add("identifier",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddDate(RString val,RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddSource(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:date"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:date"));
-	t->AddContent(val);
+	return(Add("source",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddDate(RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddLanguage(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:date"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:date"));
-	return(t);
+	return(Add("language",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddType(RString val,RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddRelation(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:type"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:type"));
-	t->AddContent(val);
+	return(Add("relation",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddType(RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddCoverage(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:type"));
-	else
-		AddTag(MetaData,t=new RXMLTag("dc:type"));
-	return(t);
+	return(Add("coverage",val,metaData));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocXML::AddFormat(RString val,RXMLTag* metaData)
+R::RXMLTag* GDocXML::AddRights(RString val,RXMLTag* metaData)
 {
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:format"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:format"));
-	t->AddContent(val);
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddFormat(RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:format"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:format"));
-	return(t);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocXML::AddIdentifier(RString val,RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:identifier"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:identifier"));
-	t->AddContent(val);
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddIdentifier(RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:identifier"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:identifier"));
-	return(t);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocXML::AddSource(RString val,RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:source"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:source"));
-	t->AddContent(val);
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddSource(RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:source"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:source"));
-	return(t);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocXML::AddLanguage(RString val,RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:language"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:language"));
-	t->AddContent(val);
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddLanguage(RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:language"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:language"));
-	return(t);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocXML::AddRelation(RString val,RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:relation"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:relation"));
-	t->AddContent(val);
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddRelation(RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:relation"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:relation"));
-	return(t);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocXML::AddCoverage(RString val,RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:coverage"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:coverage"));
-	t->AddContent(val);
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddCoverage(RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:coverage"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:coverage"));
-	return(t);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocXML::AddRights(RString val,RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:rights"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:rights"));
-	t->AddContent(val);
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GDocXML::AddRights(RXMLTag* metaData)
-{
-	RXMLTag* t;
-
-	if(!metaData)
-		AddTag(MetaData,t=new RXMLTag("dc:rights"));
-	else
-		AddTag(metaData,t=new RXMLTag("dc:rights"));
-	return(t);
+	return(Add("rights",val,metaData));
 }
 
 

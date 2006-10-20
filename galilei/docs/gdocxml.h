@@ -137,21 +137,26 @@ public:
 	*/
 	R::RXMLTag* AddLink(void);
 
+protected:
+
+	/**
+	* Add a tag to a metadata.
+	* @param tag            Name of the tag.
+	* @param val            Title.
+	* @param metaData       Pointer to the metadata (if the pointer is null, the
+	*                       metadata of the document is used).
+	*/
+	R::RXMLTag* Add(R::RString tag,R::RString val,R::RXMLTag* metaData);
+
+public:
+
 	/**
 	* Add a title tag to a metadata.
 	* @param val            Title.
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddTitle(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a title tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddTitle(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddTitle(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a creator tag to a metadata.
@@ -159,15 +164,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddCreator(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a creator tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddCreator(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddCreator(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a subject tag to a metadata.
@@ -175,15 +172,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddSubject(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a subject tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddSubject(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddSubject(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a description tag to a metadata.
@@ -191,15 +180,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddDescription(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a description tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddDescription(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddDescription(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a publisher tag to a metadata.
@@ -207,15 +188,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddPublisher(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a publisher tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddPublisher(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddPublisher(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a contributor tag to a metadata.
@@ -223,15 +196,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddContributor(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a contributor tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddContributor(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddContributor(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a date tag to a metadata.
@@ -239,15 +204,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddDate(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a date tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddDate(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddDate(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a type tag to a metadata.
@@ -255,15 +212,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddType(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a type tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddType(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddType(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a format tag to a metadata.
@@ -271,15 +220,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddFormat(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a format tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddFormat(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddFormat(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add an identifier tag to a metadata.
@@ -287,15 +228,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddIdentifier(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add an identifier tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddIdentifier(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddIdentifier(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a source tag to a metadata.
@@ -303,15 +236,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddSource(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a source tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddSource(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddSource(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a language tag to a metadata.
@@ -319,15 +244,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddLanguage(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a language tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddLanguage(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddLanguage(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a relation tag to a metadata.
@@ -335,15 +252,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddRelation(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a relation tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddRelation(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddRelation(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a coverage tag to a metadata.
@@ -351,15 +260,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddCoverage(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a coverage tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddCoverage(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddCoverage(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Add a rights tag to a metadata.
@@ -367,15 +268,7 @@ public:
 	* @param metaData       Pointer to the metadata (if the pointer is null, the
 	*                       metadata of the document is used).
 	*/
-	void AddRights(R::RString val,R::RXMLTag* metaData=0);
-
-	/**
-	* Add a rights tag to a metadata.
-	* @param metaData       Pointer to the metadata (if the pointer is null, the
-	*                       metadata of the document is used).
-	* @returns Pointer to a R::RXMLTag.
-	*/
-	R::RXMLTag* AddRights(R::RXMLTag* metaData=0);
+	R::RXMLTag* AddRights(R::RString val,R::RXMLTag* metaData=0);
 
 	/**
 	* Destruct the DocXML document.
