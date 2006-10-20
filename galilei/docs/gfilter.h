@@ -118,21 +118,21 @@ public:
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(char* block,R::RXMLTag* attach);
+	R::RXMLTag* AnalyzeBlock(char* block,R::RXMLTag* attach);
 
 	/**
 	* Analyse a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(R::RChar* block,R::RXMLTag* attach);
+	R::RXMLTag* AnalyzeBlock(R::RChar* block,R::RXMLTag* attach);
 
 	/**
 	* Analyse a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeBlock(const R::RString& block,R::RXMLTag* attach);
+	R::RXMLTag* AnalyzeBlock(const R::RString& block,R::RXMLTag* attach);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -140,7 +140,7 @@ public:
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeKeywords(char* list,char sep,R::RXMLTag* attach);
+	R::RXMLTag* AnalyzeKeywords(char* list,char sep,R::RXMLTag* attach);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -148,7 +148,7 @@ public:
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeKeywords(R::RChar* list,R::RChar sep,R::RXMLTag* attach);
+	R::RXMLTag* AnalyzeKeywords(R::RChar* list,R::RChar sep,R::RXMLTag* attach);
 
 	/**
 	* Analyse a list of keywords sepating by a single character.
@@ -156,7 +156,7 @@ public:
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
-	void AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLTag* attach);
+	R::RXMLTag* AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLTag* attach);
 
 	/**
 	* Analyze the document and construct the DocXML document with the

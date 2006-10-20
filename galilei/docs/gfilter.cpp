@@ -79,19 +79,20 @@ void GFilter::AddMIME(RString name)
 	GetFactory()->GetMng()->AddMIME(name,this);
 }
 
+
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
+R::RXMLTag* GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 {
 	char* ptr;
 	char* hold;
-	RXMLTag* sent;
+	RXMLTag* sent=0;
 	int len,i=0;
 	int NbWords;
 	bool EndSentence;
 
 	// Look at block
 	len=strlen(block);
-	if(!len) return;
+	if(!len) return(attach);
 
 	// Search Sentences
 	ptr=block;
@@ -169,22 +170,23 @@ void GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 			block=ptr;
 		}
 	}
+	return(attach);
 }
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
+R::RXMLTag* GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
 {
 	RChar* ptr;
 	RChar* hold;
-	RXMLTag* sent;
+	RXMLTag* sent=0;
 	int len,i=0;
 	int NbWords;
 	bool EndSentence;
 
 	// Look at block
 	len=RChar::StrLen(block);
-	if(!len) return;
+	if(!len) return(attach);
 
 	// Search Sentences
 	ptr=block;
@@ -263,13 +265,14 @@ void GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
 			block=ptr;
 		}
 	}
+	return(attach);
 }
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
+R::RXMLTag* GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 {
-	RXMLTag* sent;
+	RXMLTag* sent=0;
 	int pos;
 	int NbWords;
 	bool EndSentence;
@@ -277,7 +280,7 @@ void GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 	RCharCursor Cur(block);
 
 	// Look at block
-	if(!block.GetLen()) return;
+	if(!block.GetLen()) return(attach);
 
 	// Search Sentences
 	while(!Cur.End())
@@ -347,14 +350,15 @@ void GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 			sentence.Clear();
 		}
 	}
+	return(attach);
 }
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
+R::RXMLTag* GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 {
 	char* ptr;
-	RXMLTag* kwd;
+	RXMLTag* kwd=0;
 	unsigned int len;
 
 	ptr=list;
@@ -385,14 +389,15 @@ void GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 			list=ptr;
 		}
 	}
+	return(attach);
 }
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach)
+R::RXMLTag* GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach)
 {
 	RChar* ptr;
-	RXMLTag* kwd;
+	RXMLTag* kwd=0;
 	unsigned int len;
 
 	ptr=list;
@@ -423,11 +428,12 @@ void GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach)
 			list=ptr;
 		}
 	}
+	return(attach);
 }
 
 
 //------------------------------------------------------------------------------
-void GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* attach)
+R::RXMLTag* GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* attach)
 {
 	RCharCursor Cur;
 	RXMLTag* kwd;
@@ -455,6 +461,7 @@ void GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* attach)
 				Cur.Next();
 		}
 	}
+	return(attach);
 }
 
 
@@ -653,10 +660,10 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc,GSlot* slot)
 	// If MIME type defined -> analyze it.
 	if(!mime.IsEmpty())
 	{
-		xml->AddFormat(mime);
 		f=MIMES.GetPtr<const char*>(mime);
 		if(f)
 			f->Filter->Analyze(xml);
+		xml->AddFormat(mime);
 	}
 
 	// Delete it
