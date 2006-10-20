@@ -106,19 +106,19 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 	RString metaData=line.Mid(pos,len);
 	if((Cmd=="subject")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeBlock(metaData,Doc->AddTitle());
+		AnalyzeBlock(metaData,Doc->AddTitle(RString::Null,0));
 	}
 	else if((Cmd=="summary")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeBlock(metaData,Doc->AddSubject());
+		AnalyzeBlock(metaData,Doc->AddSubject(RString::Null,0));
 	}
 	else if((Cmd=="from")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeBlock(metaData,Doc->AddCreator());
+		AnalyzeBlock(metaData,Doc->AddCreator(RString::Null,0));
 	}
 	else if((Cmd=="organization")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeBlock(metaData,Doc->AddPublisher());
+		AnalyzeBlock(metaData,Doc->AddPublisher(RString::Null,0));
 	}
 	else if((Cmd=="date")&&(!metaData.IsEmpty()))
 	{
@@ -126,7 +126,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 	}
 	else if((Cmd=="keywords")&&(!metaData.IsEmpty()))
 	{
-		AnalyzeKeywords(metaData,',',Doc->AddSubject());
+		AnalyzeKeywords(metaData,',',Doc->AddSubject(RString::Null,0));
 	}
 
 	return(true);

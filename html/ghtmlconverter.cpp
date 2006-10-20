@@ -659,7 +659,7 @@ GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,c
 //------------------------------------------------------------------------------
 GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,const RString& encoding)
  : RXMLFile(name,xmlstruct,encoding), Filter(filter),Doc(&xmlstruct), Tags(200,10),
-   FoundClosingHTML(false),Base(""), ParTag(0), DocXMLCreated(false)
+   FoundClosingHTML(false),Base(""), ParTag(0)
 {
 	InitValidTags();
 }
@@ -709,24 +709,20 @@ void GHTMLConverter::InitValidTags(void)
 void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName, const RString& name,RContainer<RXMLAttr,true,true>& attrs)
 {
 	// Verify that the docxml structure was correctly created
-	if(!DocXMLCreated)
-	{
+	if(!XMLStruct->GetTop())
 		dynamic_cast<GDocXML*>(XMLStruct)->InitDocXML();
-		DocXMLCreated=true;
-	}
 
-	RString htmlName;
-	Tag* tag;
 	// if HTML closing tag found -> Nothing to do
 	if(FoundClosingHTML)
 		return;
 
 	// HTML is not case sensitive
-	htmlName=name.ToLower();
+	RString htmlName(name.ToLower());
+
 	//Test if it is a link
 	if(!htmlName.Compare("a"))
 	{
-		InsertLink(attrs);
+		/*CurTag=*/InsertLink(attrs);
 		return;
 	}
 
@@ -738,17 +734,22 @@ void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName,
 
 	if(!htmlName.Compare("meta"))
 	{
-		InsertMetaData(attrs);
+		/*CurTag=*/InsertMetaData(attrs);
 		return;
 	}
 
+	if(!htmlName.Compare("html"))
+	{
+		CurTag=Doc->GetContent();
+		return;
+	}
 
 	// Valid HTML Tag?
-	tag=Tags.GetPtr<const RString>(htmlName);
+	Tag* tag=Tags.GetPtr<const RString>(htmlName);
 	if(!tag)
 		return;
 
-	//Check for docxml parent
+	// Check for docxml parent
 	if(!tag->XMLParent.IsEmpty())
 	{
 		CurTag=Doc->GetTag(tag->XMLParent);
@@ -782,34 +783,28 @@ void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName,
 //------------------------------------------------------------------------------
 void GHTMLConverter::EndTag(const RString& namespaceURI, const RString& lName, const RString& name)
 {
-	RString htmlName;
-	Tag* tag;
+	if(FoundClosingHTML)
+		return;
+
+	// HTML is not case sensitive
+	RString htmlName(name.ToLower());
 
 	// if HTML closing tag found -> Nothing to do
 	if(htmlName=="html")
+	{
 		FoundClosingHTML=true;
-		//RXMLFile::EndTag(namespaceURI,lName,tag->XMLName);
-
-	if(FoundClosingHTML)
 		return;
+	}
+		//RXMLFile::EndTag(namespaceURI,lName,tag->XMLName);
 
 	// A Current tag must exist
 	if(!CurTag)
 		throw RIOException(this,"No current tag");
 
-	// HTML is not case sensitive
-	htmlName=name.ToLower();
-
 	// Valid HTML Tag?
-	tag=Tags.GetPtr<const RString>(htmlName);
+	Tag* tag=Tags.GetPtr<const RString>(htmlName);
 	if(!tag)
-	{
 		return;
-
-	}
-
-	if(htmlName=="html")
-		FoundClosingHTML=true;
 
 	// Treat the end tag if needed
 	if((tag->XMLParent.IsEmpty())&&(tag->Name.Compare("a"))&&(!CurTag->GetName().Compare(tag->XMLName)))
@@ -827,6 +822,7 @@ void GHTMLConverter::Text(const RString& text)
 	// A Current tag must exist
 	if(!CurTag)
 		throw RIOException(this,"No current tag");
+		//CurTag=Doc->GetContent();
 
 	//Test if parent of text is "docxml:content"
 	if(!CurTag->GetName().Compare("docxml:content"))
@@ -844,6 +840,7 @@ void GHTMLConverter::Text(const RString& text)
 		Filter->AnalyzeBlock(text,CurTag);
 	}
 }
+
 
 //------------------------------------------------------------------------------
 void GHTMLConverter::SkipTagContent(const RString& tag)
@@ -869,16 +866,14 @@ void GHTMLConverter::SkipTagContent(const RString& tag)
 //------------------------------------------------------------------------------
 void GHTMLConverter::InsertLink(RContainer<RXMLAttr,true,true>& attrs)
 {
-	RXMLTag* link;
-	R::RCursor<RXMLAttr> xmlAttrCur;
-
-	link=0;
-	//If no attributes -> not a correct link
+	// If no attributes -> not a correct link
 	if(!attrs.GetNb())
 		return;
 
-	//Parse all attributes and insert their value
-	xmlAttrCur.Set(attrs);
+	RXMLTag* link=0;
+
+	// Parse all attributes and insert their value
+	R::RCursor<RXMLAttr> xmlAttrCur(attrs);
 	for(xmlAttrCur.Start();!xmlAttrCur.End();xmlAttrCur.Next())
 	{
 		if(!xmlAttrCur()->GetName().ToLower().Compare("href"))
@@ -1002,6 +997,7 @@ void GHTMLConverter::InsertMetaData(RContainer<RXMLAttr,true,true>& attrs)
 
 	//Remember CurTag
 	oldCurTag=CurTag;
+
 	//Get metaData tag
 	metaTag=Doc->GetMetaData();
 
@@ -1013,16 +1009,15 @@ void GHTMLConverter::InsertMetaData(RContainer<RXMLAttr,true,true>& attrs)
 		{
 			type=xmlAttrCur()->GetValue().ToLower();
 		}
-		if(!xmlAttrCur()->GetName().Compare("http-equiv"))
+		else if(!xmlAttrCur()->GetName().Compare("http-equiv"))
 		{
 			type=xmlAttrCur()->GetValue().ToLower();
 		}
-		if(!xmlAttrCur()->GetName().Compare("content"))
+		else if(!xmlAttrCur()->GetName().Compare("content"))
 		{
-			content=xmlAttrCur()->GetValue().ToLower();
+			content=xmlAttrCur()->GetValue();
 		}
 	}
-
 
 	if((!type.IsEmpty())&&(!content.IsEmpty()))
 	{
@@ -1031,29 +1026,29 @@ void GHTMLConverter::InsertMetaData(RContainer<RXMLAttr,true,true>& attrs)
 		{
 			Doc->AddCreator(content);
 		}
-		if(!type.Compare("description"))
+		else if(!type.Compare("description"))
 		{
-			Filter->AnalyzeBlock(content,Doc->AddDescription());
+			Filter->AnalyzeBlock(content,Doc->AddDescription(RString::Null,0));
 		}
-		if(!type.Compare("keywords"))
+		else if(!type.Compare("keywords"))
 		{
-			Filter->AnalyzeKeywords(content,',',Doc->AddSubject());
+			Filter->AnalyzeKeywords(content,',',Doc->AddSubject(RString::Null,0));
 		}
-		if(!type.Compare("title"))
+		else if(!type.Compare("title"))
 		{
 			Doc->AddTitle(content);
 		}
-		if(!type.Compare("generator"))
+		else if(!type.Compare("generator"))
 		{
 			Doc->AddContributor(content);
 		}
-		if(!type.Compare("copyright"))
+		else if(!type.Compare("copyright"))
 		{
 			Doc->AddRights(content);
 		}
 		//Test different values for 'HTTP-EQUIV' attribute
 		//if content-type -> Content="text/html charset=..."
-		if(!type.Compare("content-type"))
+		else if(!type.Compare("content-type"))
 		{
 			//Look for charset
 			int id=content.FindStr("charset=")+8;
@@ -1073,7 +1068,7 @@ void GHTMLConverter::InsertMetaData(RContainer<RXMLAttr,true,true>& attrs)
 			}
 		}
 		//if refresh ->Content="10;URL='http://....'""
-		if(!type.Compare("refresh"))
+		else if(!type.Compare("refresh"))
 		{
 			//find URL
 			int id=content.FindStr("url='")+5;

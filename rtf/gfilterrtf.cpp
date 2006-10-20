@@ -152,23 +152,23 @@ void GFilterRTF::AnalyseMeta(RString str, Tag* t)
 	switch(t->Type)
 	{
 		case Tag::tTITLE :
-			AnalyzeBlock(str.Mid(id),Doc->AddTitle());
+			AnalyzeBlock(str.Mid(id),Doc->AddTitle(RString::Null,0));
 			break;
 
 		case Tag::tAUTHOR :
-			AnalyzeBlock(str.Mid(id),Doc->AddCreator());
+			AnalyzeBlock(str.Mid(id),Doc->AddCreator(RString::Null,0));
 			break;
 
 		case Tag::tSUBJECT :
-			AnalyzeBlock(str.Mid(id),Doc->AddSubject());
+			AnalyzeBlock(str.Mid(id),Doc->AddSubject(RString::Null,0));
 			break;
 
 		case Tag::tPUBLI :
-			AnalyzeBlock(str.Mid(id),Doc->AddPublisher());
+			AnalyzeBlock(str.Mid(id),Doc->AddPublisher(RString::Null,0));
 			break;
 
 		case Tag::tDESCRIPT :
-			AnalyzeKeywords(str.Mid(id),' ',Doc->AddSubject());
+			AnalyzeKeywords(str.Mid(id),' ',Doc->AddSubject(RString::Null,0));
 			break;
 
 		case Tag::tDATE :
@@ -189,7 +189,7 @@ void GFilterRTF::AnalyseMeta(RString str, Tag* t)
 			idValD=str.FindStr("\\dy")+3;
 			idValE=str.Find('\\',idValD);
 			date+=str.Mid(idValD,idValE-idValD);
-			AnalyzeBlock(date,Doc->AddDate());
+			AnalyzeBlock(date,Doc->AddDate(RString::Null,0));
 			break;
 
 		default:

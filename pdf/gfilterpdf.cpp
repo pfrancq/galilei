@@ -134,7 +134,7 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 			Doc->AddSubject(str);
 		str=CreateString(info.getDict(),"Keywords");
 		if(!str.IsEmpty())
-			AnalyzeKeywords(str,',',Doc->AddSubject());
+			AnalyzeKeywords(str,',',Doc->AddSubject(RString::Null,0));
 		str=CreateString(info.getDict(),"Author");
 		if(!str.IsEmpty())
 			Doc->AddCreator(str);

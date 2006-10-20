@@ -67,14 +67,15 @@ bool GFilterHTML::Analyze(GDocXML* doc)
 	try
 	{
 		Doc=doc;
-		Doc->AddIdentifier(Doc->GetFile());
 
 		//Convert html file to docxml structure
 		GHTMLConverter Src(this,Doc->GetFile(),Doc);
 		Src.Open(RIO::Read);
 
+		Doc->AddIdentifier(Doc->GetFile());
+
 		//Delete Empty Tags
-//		Doc->GetContent()->DeleteEmptySubNodes();
+		//Doc->GetContent()->DeleteEmptySubNodes();
 	}
 	catch(RIOException& e)
 	{
@@ -88,7 +89,7 @@ bool GFilterHTML::Analyze(GDocXML* doc)
 	{
 		throw GException("GFilterHTML: Undefined Error");
 	}
-	return true;
+	return(true);
 }
 
 

@@ -89,11 +89,6 @@ class GHTMLConverter : public R::RXMLFile
 	*/
 	R::RXMLTag* ParTag;
 
-	/**
-	* Is the current DocXML file correctly created?
-	*/
-	bool DocXMLCreated;
-
 public:
 
 	/**

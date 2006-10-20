@@ -141,7 +141,7 @@ void GFilterMSDoc::AddField()
 		case 0:    Doc->AddIdentifier(FieldValue); break; //Add filename
 		case 1:    Doc->AddTitle(FieldValue); break;  // Add the title of the page.
 		case 2:    Doc->AddCreator(FieldValue); break; //Add the author of the page.
-		case 3:    AnalyzeKeywords(FieldValue,',',Doc->AddSubject()); break;  // Add keywords
+		case 3:    AnalyzeKeywords(FieldValue,',',Doc->AddSubject(RString::Null,0)); break;  // Add keywords
 		case 4:    Doc->AddDate(FieldValue); break;  // Add the Date
 		case 5:    Doc->AddIdentifier(FieldValue,Doc->AddLink()); break;
 	}

@@ -587,51 +587,51 @@ RXMLTag* GFilterXML::InsertTag(tTag t,RXMLTag* parentTag)
 	{
 		//ALL metadata types tags
 		case tTITLE:
-			resTag=Doc->AddTitle();
+			resTag=Doc->AddTitle(RString::Null,0);
 			break;
 
 		case tAUTHOR:
-			resTag=Doc->AddCreator();
+			resTag=Doc->AddCreator(RString::Null,0);
 			break;
 
 		case tSUBJECT:
-			resTag=Doc->AddSubject();
+			resTag=Doc->AddSubject(RString::Null,0);
 			break;
 
 		case tDESCRIPT:
-			resTag=Doc->AddDescription();
+			resTag=Doc->AddDescription(RString::Null,0);
 			break;
 
 		case tPUBLI:
-			resTag=Doc->AddPublisher();
+			resTag=Doc->AddPublisher(RString::Null,0);
 			break;
 
 		case tDATE:
-			resTag=Doc->AddDate();
+			resTag=Doc->AddDate(RString::Null,0);
 			break;
 
 		case tSOURCE:
-			resTag=Doc->AddSource();
+			resTag=Doc->AddSource(RString::Null,0);
 			break;
 
 		case tLANG:
-			resTag=Doc->AddLanguage();
+			resTag=Doc->AddLanguage(RString::Null,0);
 			break;
 
 		case tRIGHTS:
-			resTag=Doc->AddRights();
+			resTag=Doc->AddRights(RString::Null,0);
 			break;
 
 		case tCONTRIB:
-			resTag=Doc->AddRights();
+			resTag=Doc->AddRights(RString::Null,0);
 			break;
 
 		case tRELATION:
-			resTag=Doc->AddRelation();
+			resTag=Doc->AddRelation(RString::Null,0);
 			break;
 
 		case tCOVERAGE:
-			resTag=Doc->AddCoverage();
+			resTag=Doc->AddCoverage(RString::Null,0);
 			break;
 
 		case tMETA:
