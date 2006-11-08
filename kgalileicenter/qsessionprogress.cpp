@@ -50,12 +50,14 @@
 #include <qpushbutton.h>
 #include <qmessagebox.h>
 #include <qlayout.h>
+#include <qlistviewitemtype.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <klocale.h>
 #include <kapplication.h>
+#include <kiconloader.h>
 
 
 //-----------------------------------------------------------------------------
@@ -76,6 +78,9 @@
 #include <ggroup.h>
 #include <gsubjects.h>
 #include <ggalileiapp.h>
+#include <gdict.h>
+#include <gconcept.h>
+#include <gconcepttype.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -83,7 +88,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for current project
 #include "qsessionprogress.h"
-
+#include <kdoc.h>
 
 
 //-----------------------------------------------------------------------------
@@ -663,6 +668,33 @@ void QFillMIMETypes::DoIt(void)
 }
 
 
+//-----------------------------------------------------------------------------
+QLoadDictionnaries::QListViewItemDict::QListViewItemDict(QListViewItem* parent,GDict* dict,GSession* session)
+	: QListViewItem(parent,ToQString(session->GetConceptType(dict->GetType(),false)->GetName())), Dict(dict)
+{
+	setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("xmag.png",KIcon::Small)));
+}
+
+
+
+//-----------------------------------------------------------------------------
+void QLoadDictionnaries::DoIt(void)
+{
+	// Go trough each language and create a Item.
+	R::RCursor<GLang> CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
+	for(CurLang.Start(); !CurLang.End(); CurLang.Next())
+	{
+		QListViewItemType* ptr=new QListViewItemType(Dicts,ToQString(CurLang()->GetName()));
+		ptr->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
+
+		// Go trough each dictionnary and create an item
+		RCursor<GDict> Dicts(CurLang()->GetDicts());
+		for(Dicts.Start();!Dicts.End();Dicts.Next())
+			new QListViewItemDict(ptr,Dicts(),Session);
+	}
+}
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -677,7 +709,7 @@ unsigned int QSessionProgressDlg::NbJobs=0;
 //-----------------------------------------------------------------------------
 QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c,bool cancel)
     : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), btnOk(0), Session(s), Task(0),
-	  Running(false)
+	  Running(false), Cancel(cancel)
 {
 	resize(200, 28 );
 	setCaption(i18n(c));
@@ -689,27 +721,25 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 	txtRem->setText(c+QString(" ..."));
 	Layout->addWidget(txtRem);
 
-	if(cancel)
-	{
-		Line = new QFrame( this, "Line1" );
-		//Line->setGeometry( QRect( 0, 30, 600, 20 ) );
-		Line->setFrameStyle( QFrame::HLine | QFrame::Sunken );
-		Layout->addWidget(Line);
+	Line = new QFrame( this, "Line1" );
+	//Line->setGeometry( QRect( 0, 30, 600, 20 ) );
+	Line->setFrameStyle( QFrame::HLine | QFrame::Sunken );
+	Layout->addWidget(Line);
 
-	    QHBoxLayout* HLayout = new QHBoxLayout( 0, 0, 6, "layout9_2");
-    	QSpacerItem* spacer5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-    	HLayout->addItem( spacer5 );
-		btnOk = new QPushButton( this, "buttonOk_2" );
-		btnOk->setGeometry( QRect( 260, 50, 80, 22 ) );
-		btnOk->setText( i18n( "&OK" ) );
-		btnOk->setAutoDefault( TRUE );
-		btnOk->setDefault( TRUE );
-		HLayout->addWidget(btnOk);
-		spacer5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-    	HLayout->addItem( spacer5 );
-		Layout->addItem(HLayout);
-		connect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
-	}
+	QHBoxLayout* HLayout = new QHBoxLayout( 0, 0, 6, "layout9_2");
+	QSpacerItem* spacer5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	HLayout->addItem( spacer5 );
+	btnOk = new QPushButton( this, "buttonOk_2" );
+	btnOk->setGeometry( QRect( 260, 50, 80, 22 ) );
+	btnOk->setText( i18n( "&OK" ) );
+	btnOk->setAutoDefault( TRUE );
+	btnOk->setDefault( TRUE );
+	btnOk->setEnabled(false);
+	HLayout->addWidget(btnOk);
+	spacer5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
+	HLayout->addItem( spacer5 );
+	Layout->addItem(HLayout);
+	connect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
 	if(!Main)
 		Main=this;
 	NbJobs=0;
@@ -719,8 +749,11 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 //-----------------------------------------------------------------------------
 bool QSessionProgressDlg::Run(QSessionThread* task)
 {
-	if(btnOk)
+	if(Cancel)
+	{
 		btnOk->setText(i18n("&Cancel"));
+		btnOk->setEnabled(true);
+	}
 	KApplication::kApplication()->processEvents();
 	Task=task;
 	Task->Set(Session,this);
@@ -815,11 +848,8 @@ void QSessionProgressDlg::Finish(bool Cancel)
 	}
 	if(!Cancel)
 		txtRem->setText("Finish");
-	if(btnOk)
-	{
-		btnOk->setEnabled(true);
-		btnOk->setText(i18n("&OK"));
-	}
+	btnOk->setEnabled(true);
+	btnOk->setText(i18n("&OK"));
 }
 
 

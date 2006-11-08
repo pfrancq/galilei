@@ -47,6 +47,7 @@ using namespace R;
 // include files for Qt
 #include <qsemimodal.h>
 #include <qthread.h>
+#include <qlistview.h>
 
 
 //-----------------------------------------------------------------------------
@@ -314,6 +315,34 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+* Load the dictionnaries.
+*/
+class QLoadDictionnaries : public QSessionThread
+{
+public:
+
+	//-----------------------------------------------------------------------------
+	class QListViewItemDict : public QListViewItem
+	{
+	public:
+		GDict* Dict;
+
+		QListViewItemDict(QListViewItem* parent,GDict* dict,GSession* session);
+	};
+
+private:
+
+	QListView* Dicts;
+	GSession* Session;
+
+public:
+	QLoadDictionnaries(QListView* dicts,GSession* session) : Dicts(dicts), Session(session) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Analayse next MIME path for MIME types.
 * @param path           Path to a KDE desktop files.
 * @param xml            XML structure holding the actual mime types.
@@ -368,6 +397,11 @@ class QSessionProgressDlg : public QSemiModal, public GSlot
 	* Is something running?
 	*/
 	bool Running;
+
+	/**
+	* Should cancel appears?
+	*/
+	bool Cancel;
 
 public:
 
