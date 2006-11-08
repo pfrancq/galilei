@@ -45,8 +45,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConceptType::GConceptType(unsigned int id,const R::RString& name)
-	: Id(id), Name(name)
+GConceptType::GConceptType(unsigned int id,const R::RString& name,const R::RString& desc)
+	: Id(id), Name(name), Description(desc)
 {
 }
 

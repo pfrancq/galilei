@@ -33,6 +33,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <grelation.h>
+#include <gconcept.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -45,8 +46,15 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GRelation::GRelation(unsigned int subjectid,GLang* subjectlang,unsigned int type,unsigned int objectid,GLang* objectlang)
-	: SubjectId(subjectid), SubjectLang(subjectlang), Type(type), ObjectId(objectid), ObjectLang(objectlang)
+GRelation::GRelation(unsigned int id,const R::RString& name,GConcept* subject,unsigned int type,GConcept* object,double weight)
+	: Id(id), Name(name), Subject(subject), Type(type), Object(object), Weight(weight)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+GRelation::GRelation(const R::RString& name,GConcept* subject,unsigned int type,GConcept* object,double weight)
+	: Id(cNoRef), Name(name), Subject(subject), Type(type), Object(object), Weight(weight)
 {
 }
 
@@ -54,17 +62,19 @@ GRelation::GRelation(unsigned int subjectid,GLang* subjectlang,unsigned int type
 //-----------------------------------------------------------------------------
 int GRelation::Compare(const GRelation& relation) const
 {
-	int i=SubjectId-relation.SubjectId;
-	if(!i)
-	{
-		i=Type-relation.Type;
-		if(!i)
-		{
-			return(ObjectId-relation.ObjectId);
-		}
-		else
-			return(i);
-	}
-	else
-		return(i);
+	return(Id-relation.GetId());
+}
+
+
+//-----------------------------------------------------------------------------
+int GRelation::Compare(unsigned int id) const
+{
+	return(Id-id);
+}
+
+
+//-----------------------------------------------------------------------------
+void GRelation::SetId(unsigned int id)
+{
+	Id=id;
 }

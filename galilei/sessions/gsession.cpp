@@ -48,6 +48,10 @@ using namespace R;
 // include files for GALILEI
 #include <glang.h>
 #include <gdict.h>
+#include <gconcepttype.h>
+#include <gconcept.h>
+#include <grelationtype.h>
+#include <grelation.h>
 #include <gsession.h>
 #include <gstorage.h>
 #include <gslot.h>
@@ -249,6 +253,8 @@ public:
 	R::RContainer<GGroup,true,true> Groups;                           // Groups handled by the system.
 	R::RContainer<PerLang,true,true> Langs;                           // Documents, Subprofiles and Groups divided by language.
 	R::RContainer<GFreeId,true,true> FreeIds;                         // Free identificators for the groups.
+	R::RContainer<GConceptType,true,true> ConceptTypes;               // Types of Concepts
+	R::RContainer<GRelationType,true,true> RelationTypes;             // Types of Concepts
 	unsigned int MaxDocs;                                             // Maximum number of documents to handle in memory.
 	unsigned int MaxSubProfiles;                                      // Maximum number of subprofiles to handle in memory.
 	unsigned int MaxGroups;                                           // Maximum number of groups to handle in memory.
@@ -257,6 +263,7 @@ public:
 		: Subjects(0), GroupsHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
 		  Users(u,u/2), Profiles(p,p/2), Groups(g+(g/2),g/2), Langs(nblangs+1), FreeIds(50,25),
+		  ConceptTypes(10,5), RelationTypes(10,5),
 		  MaxDocs(mdocs), MaxSubProfiles(maxsub), MaxGroups(maxgroups)
 	{
 		CurrentRandom=0;
@@ -310,6 +317,7 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,unsigned int maxdocs,unsigned in
 			fac->GetPlugin()->GetNbSaved(otProfile),
 			fac->GetPlugin()->GetNbSaved(otGroup),
 			fac->GetPlugin()->GetNbSaved(otLang));
+
 	Data->Slot=slot;
 	Data->Debug=debug;
 
@@ -328,6 +336,10 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,unsigned int maxdocs,unsigned in
 //------------------------------------------------------------------------------
 void GSession::Init(void)
 {
+	GFactoryStorage* fac=GALILEIApp->GetManager<GStorageManager>("Storage")->GetCurrentFactory();
+	fac->GetPlugin()->LoadConceptTypes();
+	fac->GetPlugin()->LoadRelationTypes();
+	fac->GetPlugin()->LoadRelations();
 }
 
 
@@ -557,13 +569,161 @@ R::RRandom* GSession::GetRandom(void) const
 //------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-R::RString GSession::GetConceptType(unsigned int type) const
+RCursor<GConceptType> GSession::GetConceptTypes(void) const
 {
-	switch(type)
+	return(RCursor<GConceptType>(Data->ConceptTypes));
+}
+
+
+//-----------------------------------------------------------------------------
+GConceptType* GSession::GetConceptType(unsigned int id,bool null) const
+{
+	GConceptType* type=Data->ConceptTypes.GetPtr(id);
+	if(!type)
 	{
-		case 1: return("Stem");
-		case 2: return("Stopword");
-		default: return("Unknow");
+		if(!null)
+			throw GException("Unknow concept type "+RString::Number(id));
+		return(0);
+	}
+	return(type);
+}
+
+
+//-----------------------------------------------------------------------------
+GConceptType* GSession::GetConceptType(const RString& name,bool null) const
+{
+	GConceptType* type=Data->ConceptTypes.GetPtr(name,false);
+	if(!type)
+	{
+		if(!null)
+			throw GException("Unknow concept type "+name);
+		return(0);
+	}
+	return(type);
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc)
+{
+	Data->ConceptTypes.InsertPtr(new GConceptType(id,name,desc));
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AssignId(GConcept* data,const GDict* dict)
+{
+	Data->Storage->AssignId(data,dict);
+}
+
+
+//-----------------------------------------------------------------------------
+RCursor<GRelationType> GSession::GetRelationTypes(void) const
+{
+	return(RCursor<GRelationType>(Data->RelationTypes));
+}
+
+
+//-----------------------------------------------------------------------------
+GRelationType* GSession::GetRelationType(unsigned int id,bool null) const
+{
+	GRelationType* type=Data->RelationTypes.GetPtr(id);
+	if(!type)
+	{
+		if(!null)
+			throw GException("Unknow relation type "+RString::Number(id));
+		return(0);
+	}
+	return(type);
+}
+
+
+//-----------------------------------------------------------------------------
+GRelationType* GSession::GetRelationType(const RString& name,bool null) const
+{
+	GRelationType* type=Data->RelationTypes.GetPtr(name,false);
+	if(!type)
+	{
+		if(!null)
+			throw GException("Unknow relation type "+name);
+		return(0);
+	}
+	return(type);
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::InsertRelationType(unsigned int id,const R::RString& name,const R::RString& desc)
+{
+	Data->RelationTypes.InsertPtr(new GRelationType(id,name,desc));
+}
+
+
+//-----------------------------------------------------------------------------
+void GSession::InsertRelation(unsigned int id,const R::RString& name,unsigned int subjectid,GLang* subjectlang,unsigned int subjecttypeid,unsigned int type,unsigned int objectid,GLang* objectlang,unsigned int objecttypeid,double weight)
+{
+	GDict* dict;
+
+	if((!objectlang)||(!subjectlang))
+		throw GException("Language not defined");
+
+	// Get the concept related to the subject
+	dict=subjectlang->GetDict(subjecttypeid);
+	if(!dict)
+		throw GException("Object "+RString::Number(subjectid)+" of type "+RString::Number(subjecttypeid)+" does not exist");
+	GConcept* subject=dict->GetConcept(subjectid);
+	if(!subject)
+		throw GException("Object "+RString::Number(subjectid)+" of type "+RString::Number(subjecttypeid)+" does not exist");
+
+	// Get the concept related to the object
+	dict=objectlang->GetDict(objecttypeid);
+	if(!dict)
+		throw GException("Object "+RString::Number(objectid)+" of type "+RString::Number(objecttypeid)+" does not exist");
+	GConcept* object=dict->GetConcept(objectid);
+	if(!object)
+		throw GException("Object "+RString::Number(objectid)+" of type "+RString::Number(objecttypeid)+" does not exist");
+
+	GRelationType* relationttype=Data->RelationTypes.GetPtr(type);
+	if(!relationttype)
+		throw GException("Relation type "+RString::Number(type)+" does not exist");
+	relationttype->InsertRelation(new GRelation(id,name,subject,type,object,weight));
+}
+
+
+//-----------------------------------------------------------------------------
+GRelation* GSession::GetRelation(unsigned int id,unsigned int type,bool null)
+{
+	GRelationType* relationttype=Data->RelationTypes.GetPtr(type);
+	if(!relationttype)
+	{
+		if(!null)
+			throw GException("Relation "+RString(id)+" of type "+RString::Number(type)+" does not exist");
+		return(0);
+	}
+	GRelation* rel=relationttype->GetRelation(id);
+	if((!rel)&&(!null))
+		throw GException("Relation "+RString(id)+" of type "+RString::Number(type)+" does not exist");
+	return(rel);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* subject,unsigned int type,GConcept* object,bool sym)
+{
+	RCursor<GRelationType> Types(Data->RelationTypes);
+	for(Types.Start();!Types.End();Types.Next())
+	{
+		if((type!=cNoRef)&&(type!=Types()->GetId()))
+			continue;
+		RCursor<GRelation> Rel(Types()->GetRelations());
+		for(Rel.Start();!Rel.End();Rel.Next())
+		{
+			if((subject)&&(((*subject)!=(*Rel()->GetSubject()))||(sym&&((*subject)!=(*Rel()->GetObject())))))
+				continue;
+			if((object)&&(((*object)!=(*Rel()->GetObject()))||(sym&&((*object)!=(*Rel()->GetSubject())))))
+				continue;
+			rel.InsertPtr(Rel());
+		}
 	}
 }
 
@@ -676,13 +836,6 @@ GDoc* GSession::GetDoc(const char* url,bool,bool null) const
 			throw GException("Unknown document '"+RString(url)+"'");
 	}
 	return(ref->Doc);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignId(GConcept* data,const GDict* dict)
-{
-	Data->Storage->AssignId(data,dict);
 }
 
 

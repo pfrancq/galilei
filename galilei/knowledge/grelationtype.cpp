@@ -33,6 +33,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <grelationtype.h>
+#include <grelation.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -45,8 +46,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GRelationType::GRelationType(unsigned int id,const R::RString& name)
-	: Id(id), Name(name)
+GRelationType::GRelationType(unsigned int id,const R::RString& name,const R::RString& desc)
+	: Id(id), Name(name), Description(desc), Relations(20)
 {
 }
 
@@ -69,4 +70,30 @@ int GRelationType::Compare(unsigned int id) const
 int GRelationType::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
+}
+
+
+//-----------------------------------------------------------------------------
+GRelation* GRelationType::GetRelation(unsigned int id)
+{
+	return(Relations.GetPtr(id));
+}
+
+//-----------------------------------------------------------------------------
+R::RCursor<GRelation> GRelationType::GetRelations(void) const
+{
+	return(R::RCursor<GRelation>(Relations));
+}
+
+
+//-----------------------------------------------------------------------------
+void GRelationType::InsertRelation(GRelation* relation)
+{
+	Relations.InsertPtr(relation);
+}
+
+
+//-----------------------------------------------------------------------------
+GRelationType::~GRelationType(void)
+{
 }

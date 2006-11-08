@@ -35,6 +35,7 @@
 #include <glang.h>
 #include <gdict.h>
 #include <gconcept.h>
+#include <gconcepttype.h>
 #include <gsession.h>
 #include <gstorage.h>
 using namespace GALILEI;
@@ -180,9 +181,10 @@ void GLang::AddDict(GDict* dict)
 //------------------------------------------------------------------------------
 R::RCursor<GDict> GLang::GetDicts(void) const
 {
-	#pragma warn Cheat
-	GetDict(1);
-	GetDict(2);
+	// Load all dictionnaries associated to a concept type
+	R::RCursor<GConceptType> Types(Session->GetConceptTypes());
+	for(Types.Start();!Types.End();Types.Next())
+		GetDict(Types()->GetId());
 	return(R::RCursor<GDict>(Dicts));
 }
 

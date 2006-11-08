@@ -368,28 +368,30 @@ public:
 
 
 	//-----------------------------------------------------
-	/** @name Documents Methods
+	/** @name Knowledge Methods
 	*/
 	// @{
-
-	/**
-	* Assign an identifier to a new data of a given dictionary.
-	* @param data            Data.
-	* @param dict            Dictionary.
-	*/
-	virtual void AssignId(GConcept* data,const GDict* dict)=0;
-
-	/**
-	* Assign an identifier to a new document.
-	* @param doc             Document.
-	*/
-	virtual void AssignId(GDoc* doc)=0;
 
 	/**
 	* Loading information on a langauge.
 	* @param lang           Languague.
 	*/
 	virtual void LoadLang(GLang* lang)=0;
+
+	/**
+	* Load the concept types from the database.
+	*/
+	virtual void LoadConceptTypes(void)=0;
+
+	/**
+	* Load the relation types from the database.
+	*/
+	virtual void LoadRelationTypes(void)=0;
+
+	/**
+	* Load the relation from the database.
+	*/
+	virtual void LoadRelations(void)=0;
 
 	/**
 	* Loading a dictionary/stoplist.
@@ -400,11 +402,17 @@ public:
 	virtual GDict* LoadDic(GLang* lang,unsigned int type)=0;
 
 	/**
-	* Load an indexer.
-	* @param indexer         Pointer to the indexer.
-	* @param langs           Pointer to the langs.
+	* Assign an identifier to a new data of a given dictionary.
+	* @param data            Data.
+	* @param dict            Dictionary.
 	*/
-	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs)=0;
+	virtual void AssignId(GConcept* data,const GDict* dict)=0;
+
+	/**
+	* Delete a data from the dictionnary.
+	* @param data            Data.
+	*/
+	virtual void DeleteConcept(GConcept* data)=0;
 
 	/**
 	* Load a specific concept from a dictionary.
@@ -421,18 +429,6 @@ public:
 	* @param type            Type of the concept.
 	*/
 	virtual unsigned int LoadConcept(const R::RString word,const char* code,unsigned int type)=0;
-
-	/**
-	* Method that load a document that is stored.
-	* @param docid           Identificator of the document
-	*/
-	virtual GDoc* LoadDoc(unsigned int docid)=0;
-
-	/**
-	* Method that load the documents from where they are stored. This method
-	* must be overloaded.
-	*/
-	virtual void LoadDocs(void)=0;
 
 	/**
 	* Save a concept in the database.
@@ -458,6 +454,39 @@ public:
 	* @param refs            Number of references.
 	*/
 	virtual void SaveRefs(tObjType type,GLang* lang,size_t refs)=0;
+
+	// @} Knowledge Methods
+
+
+	//-----------------------------------------------------
+	/** @name Documents Methods
+	*/
+	// @{
+
+	/**
+	* Assign an identifier to a new document.
+	* @param doc             Document.
+	*/
+	virtual void AssignId(GDoc* doc)=0;
+
+	/**
+	* Load an indexer.
+	* @param indexer         Pointer to the indexer.
+	* @param langs           Pointer to the langs.
+	*/
+	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs)=0;
+
+	/**
+	* Method that load a document that is stored.
+	* @param docid           Identificator of the document
+	*/
+	virtual GDoc* LoadDoc(unsigned int docid)=0;
+
+	/**
+	* Method that load the documents from where they are stored. This method
+	* must be overloaded.
+	*/
+	virtual void LoadDocs(void)=0;
 
 	/**
 	* Save a document where it is stored. This method is called after an

@@ -36,6 +36,7 @@
 #include <gdict.h>
 #include <glang.h>
 #include <gsession.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -146,6 +147,12 @@ void GDict::DeleteConcept(GConcept* concept)
 	if((!concept)||(concept->GetId()>MaxId))
 		throw GException("Cannot delete concept");
 	Direct[concept->GetId()]=0;
+	if(concept->GetId()==UsedId)
+	{
+		GConcept** concepts=&Direct[UsedId];
+		for(concepts--,UsedId--;UsedId&&(!(*concepts));UsedId--);
+	}
+	Lang->GetSession()->GetStorage()->DeleteConcept(concept);
 	DeletePtr(*concept);
 }
 

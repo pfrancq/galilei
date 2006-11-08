@@ -206,11 +206,119 @@ public:
 	// @{
 
 	/**
-	* Get the name of a type of concept.
-	* @param type            Type.
-	* @return R::RString
+	* Get all concept types defined.
+	* @return RCursor over GConceptType.
 	*/
-	R::RString GetConceptType(unsigned int type) const;
+	R::RCursor<GConceptType> GetConceptTypes(void) const;
+
+	/**
+	* Get the a poitner to a type of concept.
+	* @param id              Identifier of the type.
+	* @param null            If set to true, if the type does not exist,
+	*                        return 0, else an exception is generated.
+	* @return Pointer to a GConceptType
+	*/
+	GConceptType* GetConceptType(unsigned int id,bool null) const;
+
+	/**
+	* Get the a poitner to a type of concept.
+	* @param name            Name of the type.
+	* @param null            If set to true, if the type does not exist,
+	*                        return 0, else an exception is generated.
+	* @return Pointer to a GConceptType
+	*/
+	GConceptType* GetConceptType(const R::RString& name,bool null) const;
+
+	/**
+	* Insert a new concept type.
+	* @param id              Identifier of the type.
+	* @param name            Name of the type.
+	* @param desc            Short description.
+	*/
+	void InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc);
+
+	/**
+	* Assign an identifier to a new data of a given dictionary.
+	* @param data            Data.
+	* @param dict            Dictionary.
+	*/
+	void AssignId(GConcept* data,const GDict* dict);
+
+	/**
+	* Get all relation types defined.
+	* @return RCursor over GRelationType.
+	*/
+	R::RCursor<GRelationType> GetRelationTypes(void) const;
+
+	/**
+	* Get the a poitner to a type of relation.
+	* @param id              Identifier of the type.
+	* @param null            If set to true, if the type does not exist,
+	*                        return 0, else an exception is generated.
+	* @return Pointer to a GRelationType
+	*/
+	GRelationType* GetRelationType(unsigned int id,bool null) const;
+
+	/**
+	* Get the a poitner to a type of relation.
+	* @param name            Name of the type.
+	* @param null            If set to true, if the type does not exist,
+	*                        return 0, else an exception is generated.
+	* @return Pointer to a GRelationType
+	*/
+	GRelationType* GetRelationType(const R::RString& name,bool null) const;
+
+	/**
+	* Insert a new relation type.
+	* @param id              Identifier of the type.
+	* @param name            Name of the type.
+	* @param desc            Short description.
+	*/
+	void InsertRelationType(unsigned int id,const R::RString& name,const R::RString& desc);
+
+	/**
+	* Insert a new relation.
+	* @param id              Identifier of the relation.
+	* @param name            Name of the relation.
+	* @param subjectid       Identifier of the subject.
+	* @param subjectlang     Language of the subject.
+	* @param subjecttypeid   Type of the subject.
+	* @param type            Type of the relation.
+	* @param objectid        Identifier of the object.
+	* @param objectlang      Language of the object.
+	* @param objecttypeid    Type of the object.
+	* @param weight          Weight of the relation.
+	*/
+	void InsertRelation(unsigned int id,const R::RString& name,
+	                    unsigned int subjectid,GLang* subjectlang,unsigned int subjecttypeid,
+	                    unsigned int type,
+	                    unsigned int objectid,GLang* objectlang,unsigned int objecttypeid,
+	                    double weight);
+
+	/**
+	* Get a relation.
+	* @param id              Identifier of the relation.
+	* @param type            Type of the relation.
+	* @param null            If set to true, if the type does not exist,
+	*                        return 0, else an exception is generated.
+	* @return Pointer to a relation.
+	*/
+	GRelation* GetRelation(unsigned int id,unsigned int type,bool null);
+
+	/**
+	* Get a set of relations corresponding to a set of criteria and put them
+	* into a container.
+	* @param rel             Container where the relations will be inserted.
+	*                        The container is not cleared by this method.
+	* @param subject         Pointer to the concept that is the subject of
+	*                        a relation. If null, all concepts are used.
+	* @param type            Type of the relation. If cNoRef, all types are
+	*                        used.
+	* @param object          Pointer of the concept that is the object of
+	*                        a relation. If null, all concepts are used.
+	* @param sym             Symetric search?
+	*/
+	void GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* subject,unsigned int type,GConcept* object,bool sym);
 
 	//@} Knowledge methods
 
@@ -280,13 +388,6 @@ public:
 	*                        return 0, else an exception is generated.
 	*/
 	GDoc* GetDoc(const char* url,bool load=true,bool null=false) const;
-
-	/**
-	* Assign an identifier to a new data of a given dictionary.
-	* @param data            Data.
-	* @param dict            Dictionary.
-	*/
-	void AssignId(GConcept* data,const GDict* dict);
 
 	/**
 	* Assign an identifier to a new document.

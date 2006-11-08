@@ -53,9 +53,9 @@ namespace GALILEI{
 /**
 * The GRelation class provides a representation of a relation between two
 * concepts. A relation is always defined by three elements:
-* -# The subject implies in the relation (id and language).
+* -# The subject implies in the relation.
 * -# The type of the relation.
-* -# The object of the relation (id and language).
+* -# The object of the relation.
 * A relation can be seen as a directed graph with a edge representing the type
 * of the relation between a node representing the subject and a node
 * representing the object.
@@ -65,14 +65,19 @@ namespace GALILEI{
 class GRelation
 {
 	/**
-	* Identifier of the subject of the relation.
+	* Identifier of the concept.
 	*/
-	unsigned int SubjectId;
+	unsigned int Id;
 
 	/**
-	* Language of the subject of the relation.
+	* Name of the concept.
 	*/
-	GLang* SubjectLang;
+	R::RString Name;
+
+	/**
+	* Subject of the relation.
+	*/
+	GConcept* Subject;
 
 	/**
 	* Type of the concept.
@@ -80,26 +85,37 @@ class GRelation
 	unsigned int Type;
 
 	/**
-	* Identifier of the object of the relation.
+	* Object of the relation.
 	*/
-	unsigned int ObjectId;
+	GConcept* Object;
 
 	/**
-	* Language of the object of the relation.
+	* Weight associated to the relation.
 	*/
-	GLang* ObjectLang;
+	double Weight;
 
 public:
 
 	/**
 	* Constructor of a relation.
-	* @param subjectid       Identifier of the subject.
-	* @param subjectlang     Language of the subject.
+	* @param id              Identifier.
+	* @param name            Name of the concept.
+	* @param subject         Subject.
 	* @param type            Type of the concept.
-	* @param objectid        Identifier of the object.
-	* @param objectlang      Language of the object.
+	* @param object          Object.
+	* @param weight          Weight of the relation.
 	*/
-	GRelation(unsigned int subjectid,GLang* subjectlang,unsigned int type,unsigned int objectid,GLang* objectlang);
+	GRelation(unsigned int id,const R::RString& name,GConcept* subject,unsigned int type,GConcept* object,double weight);
+
+	/**
+	* Constructor of a relation.
+	* @param name            Name of the concept.
+	* @param subject         Subject.
+	* @param type            Type of the concept.
+	* @param object          Object.
+	* @param weight          Weight of the relation.
+	*/
+	GRelation(const R::RString& name,GConcept* subject,unsigned int type,GConcept* object,double weight);
 
 	/**
 	* Compare two relations to classify them.
@@ -107,6 +123,51 @@ public:
 	* @see R::RContainer.
 	*/
 	int Compare(const GRelation& relation) const;
+
+	/**
+	* Compare the identifier of a relation with a given identifier.
+	* @param id              Identifier used to compare.
+	* @see R::RContainer.
+	*/
+	int Compare(unsigned int id) const;
+
+	/**
+	* Set the Identificator of the word.
+	* @param id              Identificator of the word.
+	*/
+	void SetId(unsigned int id);
+
+	/**
+	* @return Identificator of the word.
+	*/
+	unsigned int GetId(void) const {return(Id);}
+
+	/**
+	* @return A string representing the word.
+	*/
+	R::RString GetName(void) const {return(Name);}
+
+	/**
+	* Get the subject.
+	* @return Pointer to a GConcept.
+	*/
+	GConcept* GetSubject(void) const {return(Subject);}
+
+	/**
+	* Get the type of the relation.
+	*/
+	unsigned int GetType(void) const {return(Type);}
+
+	/**
+	* Get the object.
+	* @return Pointer to a GConcept.
+	*/
+	GConcept* GetObject(void) const {return(Object);}
+
+	/**
+	* Get the weight of the relation.
+	*/
+	double GetWeight(void) const {return(Weight);}
 };
 
 

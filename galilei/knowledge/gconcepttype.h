@@ -67,14 +67,20 @@ class GConceptType
 	*/
 	R::RString Name;
 
+	/**
+	* Short description of the type.
+	*/
+	R::RString Description;
+
 public:
 
 	/**
 	* Construct a concept type.
 	* @param id              Identifier of the type.
 	* @param name            Name of the type.
+	* @param desc            Short description.
 	*/
-	GConceptType(unsigned int id,const R::RString& name);
+	GConceptType(unsigned int id,const R::RString& name,const R::RString& desc);
 
 	/**
 	* Compare two concepts types.
@@ -96,6 +102,21 @@ public:
 	* @see R::RContainer.
 	*/
 	int Compare(const R::RString& name) const;
+
+	/**
+	* Get the identifier.
+	*/
+	unsigned int GetId(void) const {return(Id);}
+
+	/**
+	* Get the name.
+	*/
+	R::RString GetName(void) const {return(Name);}
+
+	/**
+	* Get the description.
+	*/
+	R::RString GetDescription(void) const {return(Description);}
 };
 
 

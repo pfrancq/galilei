@@ -67,14 +67,25 @@ class GRelationType
 	*/
 	R::RString Name;
 
+	/**
+	* Short description of the type.
+	*/
+	R::RString Description;
+
+	/**
+	* Relations of the type.
+	*/
+	R::RContainer<GRelation,true,true> Relations;
+
 public:
 
 	/**
 	* Construct a relation type.
 	* @param id              Identifier of the type.
 	* @param name            Name of the type.
+	* @param desc            Short description.
 	*/
-	GRelationType(unsigned int id,const R::RString& name);
+	GRelationType(unsigned int id,const R::RString& name,const R::RString& desc);
 
 	/**
 	* Compare two relations types.
@@ -96,6 +107,51 @@ public:
 	* @see R::RContainer.
 	*/
 	int Compare(const R::RString& name) const;
+
+	/**
+	* Get the identifier.
+	*/
+	unsigned int GetId(void) const {return(Id);}
+
+	/**
+	* Get the name.
+	*/
+	R::RString GetName(void) const {return(Name);}
+
+	/**
+	* Get the description.
+	*/
+	R::RString GetDescription(void) const {return(Description);}
+
+	/**
+	* Get a relation of a given type.
+	* @param id              Identifier of the relation.
+	* @return Pointer to a GRelation.
+	*/
+	GRelation* GetRelation(unsigned int id);
+
+	/**
+	* Get a cursor over the relations of this type.
+	* @return R::RCursor over GRelation
+	*/
+	R::RCursor<GRelation> GetRelations(void) const;
+
+protected:
+
+	/**
+	* Insert a relation.
+	* @param relation        Relation to insert.
+	*/
+	void InsertRelation(GRelation* relation);
+
+public:
+
+	/**
+	* Destructor.
+	*/
+	virtual ~GRelationType(void);
+
+	friend class GSession;
 };
 
 

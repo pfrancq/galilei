@@ -47,7 +47,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(void)
-	: Id(cNoRef), Lang(0), Name(""), Type(0), Relations(0), NbRefDocs(0),
+	: Id(cNoRef), Lang(0), Name(""), Type(0), NbRefDocs(0),
 	  NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
@@ -55,7 +55,7 @@ GConcept::GConcept(void)
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(GLang* lang,const RString& name,unsigned int type)
-	: Id(cNoRef), Lang(lang), Name(name), Type(type), Relations(0), NbRefDocs(0),
+	: Id(cNoRef), Lang(lang), Name(name), Type(type), NbRefDocs(0),
 	  NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
@@ -63,7 +63,7 @@ GConcept::GConcept(GLang* lang,const RString& name,unsigned int type)
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(unsigned int id,GLang* lang,const RString& name,unsigned int type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
-	: Id(id), Lang(lang), Name(name), Type(type), Relations(0), NbRefDocs(refdocs),
+	: Id(id), Lang(lang), Name(name), Type(type), NbRefDocs(refdocs),
 	  NbRefSubProfiles(refsubprofiles), NbRefGroups(refgroups)
 {
 }
@@ -71,11 +71,9 @@ GConcept::GConcept(unsigned int id,GLang* lang,const RString& name,unsigned int 
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const GConcept& c)
-	: Id(c.Id), Lang(c.Lang), Name(c.Name), Type(c.Type), Relations(0), NbRefDocs(c.NbRefDocs),
+	: Id(c.Id), Lang(c.Lang), Name(c.Name), Type(c.Type), NbRefDocs(c.NbRefDocs),
 	  NbRefSubProfiles(c.NbRefSubProfiles), NbRefGroups(c.NbRefGroups)
 {
-	if(c.Relations)
-		Relations=new R::RVectorInt<true>(*c.Relations);
 }
 
 
@@ -97,6 +95,24 @@ int GConcept::Compare(const R::RString& name) const
 int GConcept::Compare(unsigned int id) const
 {
 	return(Id-id);
+}
+
+
+//-----------------------------------------------------------------------------
+bool GConcept::operator==(const GConcept& c) const
+{
+	if((Lang!=c.Lang)||(Type!=c.Type)||(Id!=c.Id))
+		return(false);
+	return(true);
+}
+
+
+//-----------------------------------------------------------------------------
+bool GConcept::operator!=(const GConcept& c) const
+{
+	if((Lang==c.Lang)&&(Type==c.Type)&&(Id==c.Id))
+		return(false);
+	return(true);
 }
 
 
@@ -258,5 +274,4 @@ bool GConcept::IsEmpty(void) const
 //-----------------------------------------------------------------------------
 GConcept::~GConcept(void)
 {
-	delete Relations;
 }

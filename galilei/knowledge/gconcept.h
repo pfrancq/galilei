@@ -80,11 +80,6 @@ class GConcept
 	unsigned int Type;
 
 	/**
-	* Relations with other concepts.
-	*/
-	R::RVectorInt<true>* Relations;
-
-	/**
 	* Number of references in documents.
 	*/
 	unsigned int NbRefDocs;
@@ -152,6 +147,18 @@ public:
 	* @see R::RContainer
 	*/
 	int Compare(unsigned int id) const;
+
+	/**
+	* Equal operator.
+	* @param c               Concept used.
+	*/
+	bool operator==(const GConcept& c) const;
+
+	/**
+	* Non-equal operator.
+	* @param c               Concept used.
+	*/
+	bool operator!=(const GConcept& c) const;
 
 	/**
 	* Assignment operator for concept.
