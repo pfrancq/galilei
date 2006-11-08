@@ -151,6 +151,12 @@ public:
 	virtual void AssignId(GConcept* data,const GDict* dict);
 
 	/**
+	* Delete a data from the dictionnary.
+	* @param data            Data.
+	*/
+	virtual void DeleteConcept(GConcept* data);
+
+	/**
 	* Assign an identifier to a new document.
 	* @param doc            Document.
 	*/
@@ -232,6 +238,21 @@ public:
 	* @param type            Type of the concept.
 	*/
 	virtual unsigned int LoadConcept(const R::RString word,const char* code,unsigned int type);
+
+	/**
+	* Load the concept types from the database.
+	*/
+	virtual void LoadConceptTypes(void);
+
+	/**
+	* Load the relation types from the database.
+	*/
+	virtual void LoadRelationTypes(void);
+
+	/**
+	* Load the relation from the database.
+	*/
+	virtual void LoadRelations(void);
 
 	/**
 	* Save a concept in the database.

@@ -61,6 +61,9 @@
 #include <gwordoccurs.h>
 #include <ggalileiapp.h>
 #include <gconcept.h>
+#include <gconcepttype.h>
+#include <grelation.h>
+#include <grelationtype.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -218,7 +221,7 @@ void GStorageMySQL::AssignId(GConcept* data,const GDict* dict)
 	try
 	{
 		// Verify that the word didn't already exist.
-		sSql=RString("SELECT conceptid FROM concepts WHERE name="+RQuery::SQLValue(data->GetName())+" AND langid='"+dict->GetLang()->GetCode())+"'";
+		sSql=RString("SELECT conceptid FROM concepts WHERE name="+RQuery::SQLValue(data->GetName())+" AND typeid="+RString::Number(dict->GetType())+" AND langid='"+dict->GetLang()->GetCode())+"'";
 		RQuery find(Db,sSql);
 		if(find.GetNbRows())
 		{
@@ -228,15 +231,28 @@ void GStorageMySQL::AssignId(GConcept* data,const GDict* dict)
 		}
 
 		// Insert the new word
-		sSql=RString("INSERT INTO concepts(name,conceptid,typeid,langid) SELECT ")+RQuery::SQLValue(data->GetName())+",MAX(IFNULL(conceptid,0))+1,"+RQuery::SQLValue(RString::Number(data->GetType()))+",'"+dict->GetLang()->GetCode()+"' FROM concepts WHERE langid='"+dict->GetLang()->GetCode()+"'";
+		sSql=RString("INSERT INTO concepts(name,conceptid,typeid,langid) SELECT ")+RQuery::SQLValue(data->GetName())+",IFNULL(MAX(conceptid),0)+1,"+RQuery::SQLValue(RString::Number(data->GetType()))+",'"+dict->GetLang()->GetCode()+"' FROM concepts WHERE langid='"+dict->GetLang()->GetCode()+"' AND typeid="+RString::Number(dict->GetType());
 		RQuery insert(Db,sSql);
 
 		// Get the next id
 		sSql=RString("SELECT conceptid FROM concepts WHERE conceptautoid=LAST_INSERT_ID()");
-
 		RQuery getinsert(Db,sSql);
 		getinsert.Start();
 		data->SetId(strtoul(getinsert[0],0,10));
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::DeleteConcept(GConcept* data)
+{
+	try
+	{
+		RQuery Del(Db,"DELETE FROM concepts WHERE conceptid='"+RString::Number(data->GetId())+"' AND typeid='"+RString::Number(data->GetType())+"' AND langid='"+data->GetLang()->GetCode()+"'");
 	}
 	catch(RMySQLError e)
 	{
@@ -290,7 +306,7 @@ void GStorageMySQL::LoadLang(GLang* lang)
 		{
 			// New language in the database -> create an entry
 			refdocs=refsubprofiles=refgroups=0;
-			RQuery newlang(Db,"INSERT INTO languages(langid,refdocs,refsubprofiles,refgroups) VALUES('"+RString(lang->GetCode())+"',0,0,0)");
+			RQuery newlang(Db,"INSERT INTO languages(langid,language,refdocs,refsubprofiles,refgroups) VALUES('"+RString(lang->GetCode())+"','"+lang->GetName()+"',0,0,0)");
 		}
 		lang->SetReferences(refdocs,refsubprofiles,refgroups);
 	}
@@ -330,9 +346,14 @@ GDict* GStorageMySQL::LoadDic(GLang* lang,unsigned int type)
 		}
 		if(MaxCount==0) MaxCount=2000;
 		MaxId=GetMax("concepts","conceptid");
-		if(!MaxId)
+		sSql="SELECT MAX(conceptid) FROM concepts WHERE langid='"+RString(lang->GetCode())+"' AND typeid='"+RString::Number(type)+"'";
+		RQuery count(Db,sSql);
+		count.Start();
+		RString c=count[0];
+		if(c.IsEmpty())
 			MaxId=2000;
-
+		else
+			MaxId=atoi(c);
 
 		// Create and insert the dictionary
 		dic=new GDict(lang,type,MaxId,MaxCount);
@@ -341,10 +362,9 @@ GDict* GStorageMySQL::LoadDic(GLang* lang,unsigned int type)
 		// Load the dictionary from the database
 		sSql="SELECT conceptid,name,typeid,refdocs,refsubprofiles,refgroups FROM concepts WHERE langid='"+RString(lang->GetCode())+"' AND typeid='"+RString::Number(type)+"'";
 		RQuery dicts(Db, sSql);
-		RString tmp;
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
-			GConcept w(atoi(dicts[0]),lang,dicts[1],1,atoi(dicts[3]),atoi(dicts[4]),atoi(dicts[5]));
+			GConcept w(atoi(dicts[0]),lang,dicts[1],atoi(dicts[2]),atoi(dicts[3]),atoi(dicts[4]),atoi(dicts[5]));
 			dic->InsertConcept(&w);
 		}
 		if(GSession::Get()&&GSession::Get()->GetSlot())
@@ -447,6 +467,55 @@ unsigned int GStorageMySQL::LoadConcept(const R::RString word,const char* code,u
 			res=atoi(w[0].Latin1());
 		}
 		return(res);
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadConceptTypes(void)
+{
+	try
+	{
+		RQuery Types(Db,"SELECT typeid,name,description FROM concepttypes");
+		for(Types.Start();!Types.End();Types.Next())
+			Session->InsertConceptType(atoi(Types[0]),Types[1],Types[2]);
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadRelationTypes(void)
+{
+	try
+	{
+		RQuery Types(Db,"SELECT typeid,name,description FROM relationtypes");
+		for(Types.Start();!Types.End();Types.Next())
+			Session->InsertRelationType(atoi(Types[0]),Types[1],Types[2]);
+	}
+	catch(RMySQLError e)
+	{
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadRelations(void)
+{
+	GLangManager* Mng=GALILEIApp->GetManager<GLangManager>("Lang");
+	try
+	{
+		RQuery Rel(Db,"SELECT relationid,name,subjecttid,subjectlangid,subjecttypeid,typeid,objectid,objectlangid,objecttypeid,weight FROM relations");
+		for(Rel.Start();!Rel.End();Rel.Next())
+			Session->InsertRelation(atoi(Rel[0]),Rel[1],atoi(Rel[2]),Mng->GetPlugIn(Rel[3]),atoi(Rel[4]),atoi(Rel[5]),atoi(Rel[6]),Mng->GetPlugIn(Rel[7]),atoi(Rel[8]),atof(Rel[9]));
 	}
 	catch(RMySQLError e)
 	{
