@@ -38,12 +38,16 @@
 
 //-----------------------------------------------------------------------------
 // foward declaration for GALILEI
+#include <gslot.h>
 namespace GALILEI
 {
 	class GDoc;
 	class GLang;
+	class GConcept;
+	class GRelation;
 }
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -55,6 +59,7 @@ using namespace GALILEI;
 // foward class declaration
 class QListView;
 class QListViewItem;
+class QLabel;
 
 
 //-----------------------------------------------------------------------------
@@ -68,7 +73,8 @@ class KViewDicts : public KView
 {
 	Q_OBJECT
 
-private:
+	class LocalItem;
+	class LocalItem2;
 
 	/**
 	* Listview (tree view) of dictionnaries.
@@ -76,9 +82,28 @@ private:
 	QListView* Dicts;
 
 	/**
-	* Current dictionnaries
+	* Current dictionnary widget.
 	*/
 	QListView* Dict;
+
+	/**
+	* Relations implied by the current concept.
+	*/
+	QListView* Relations;
+
+	/**
+	* Current dictionnary.
+	*/
+	GDict* CurDict;
+
+	/**
+	* Current Concept.
+	*/
+	QLabel* CurConcept;
+
+	/**
+	*/
+	RContainer<GRelation,false,false> Rels;
 
 public:
 
@@ -101,6 +126,10 @@ public:
 	*/
 	void CreateDictsListView(void);
 
+	/**
+	*/
+	QString BuildConcept(GConcept* concept);
+
 protected slots:
 
 	/**
@@ -108,6 +137,26 @@ protected slots:
 	* @param item            Language.
 	*/
 	void slotDoubleClick(QListViewItem* item);
+
+	/**
+	* Show relations.
+	*/
+	void slotRelations(QListViewItem* item);
+
+	/**
+	* Right button pressed in the dictionnary.
+	*/
+	void slotRightButtonDict(QListViewItem* item,const QPoint& pos,int p);
+
+	/**
+	* Right button pressed in the relations.
+	*/
+	void slotRightButtonRelations(QListViewItem* item,const QPoint& pos,int p);
+
+	void slotDeleteConcept(void);
+	void slotNewConcept(void);
+	void slotDeleteRelation(void);
+	void slotNewRelation(void);
 
 protected:
 
