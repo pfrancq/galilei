@@ -111,7 +111,6 @@ protected slots:
 
 	void slotNewGroup(void);
 	void slotDelete(void);
-
 	void slotSaveGroups(void);
 
 public:
