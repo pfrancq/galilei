@@ -116,6 +116,8 @@ void GDoc::ClearInfos(void)
 //------------------------------------------------------------------------------
 void GDoc::LoadInfos(void) const
 {
+	if(!Lang)
+		return;
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
 	GSession* session=GSession::Get();
 	if(session&&session->GetStorage())
