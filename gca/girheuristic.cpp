@@ -134,6 +134,8 @@ void GIRHeuristic::PostRun(void)
 		{
 			if((Cur1()==Cur2())||(!Cur2()->GetNbObjs()))
 				continue;
+			if(Cur2()->HasSameUser(obj))
+				continue;
 			Cur2()->ComputeRelevant();
 			tmp=Cur2()->ComputeHomogeneity(obj);
 			if(tmp>max)

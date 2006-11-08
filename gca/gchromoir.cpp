@@ -54,6 +54,7 @@ using namespace R;
 #include <gsubprofile.h>
 #include <gprofile.h>
 #include <gsubjects.h>
+#include <guser.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -445,22 +446,21 @@ void GALILEI::GChromoIR::MergeBestSubProfiles(void)
 	}
 	if((!bestgrp1)||(!bestgrp2)) return;
 
-	// Put the objects of bestgrp1 and bestgrp2 in thObjs1
+	// Put the objects of bestgrp1 in bestgrp2 only if there are not already have the same user
 	RCursor<GObjIR> CurObj(GetObjs(*bestgrp1));
 	for(CurObj.Start(),ptr=thObjs1,NbObjs1=0;!CurObj.End();CurObj.Next(),ptr++,NbObjs1++)
 		(*ptr)=CurObj();
-	CurObj=GetObjs(*bestgrp2);
-	for(CurObj.Start();!CurObj.End();CurObj.Next(),ptr++,NbObjs1++)
-		(*ptr)=CurObj();
+	for(ptr=thObjs1,i=NbObjs1+1;--i;ptr++)
+	{
+		if(bestgrp2->HasSameUser(*thObjs1))
+			continue;
+		bestgrp1->Delete(*ptr);
+		bestgrp2->Insert(*ptr);
+	}
 
 	// Release the groups
-	ReleaseGroup(bestgrp1);
-	ReleaseGroup(bestgrp2);
-
-	// Reserve a new group and insert the elements of thObjs1
-	grp1=ReserveGroup();
-	for(ptr=thObjs1,i=NbObjs1+1;--i;ptr++)
-		grp1->Insert(*ptr);
+	if(!bestgrp1->GetNbObjs())
+		ReleaseGroup(bestgrp1);
 }
 
 
@@ -487,6 +487,8 @@ void GALILEI::GChromoIR::TreatSocialSubProfiles(bool rel)
 		for(Cur2.Start(),max=-1.0,grp=0;!Cur2.End();Cur2.Next())
 		{
 			if((Cur1()==Cur2())||(!Cur2()->GetNbObjs()))
+				continue;
+			if(Cur2()->HasSameUser(obj))
 				continue;
 			Cur2()->ComputeRelevant();
 			if(rel)

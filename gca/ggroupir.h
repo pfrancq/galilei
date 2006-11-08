@@ -123,6 +123,12 @@ public:
 	virtual void Clear(void);
 
 	/**
+	* Verify if an object correspond to a user already in this group.
+	* @param obj            Pointer to the object to insert.
+	*/
+	bool HasSameUser(const GObjIR* obj) const;
+
+	/**
 	* Look if an object can be insert in the group.
 	* @param obj            Pointer to the object to insert.
 	*/

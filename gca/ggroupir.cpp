@@ -45,6 +45,7 @@
 #include <ginstir.h>
 #include <gobjir.h>
 #include <gsession.h>
+#include <guser.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -113,6 +114,18 @@ void GGroupIR::Clear(void)
 
 
 //---------------------------------------------------------------------------
+bool GGroupIR::HasSameUser(const GObjIR* obj) const
+{
+	GUser* usr=obj->GetSubProfile()->GetProfile()->GetUser();
+	RCursor<GObjIR> ptr=Owner->GetObjs(*this);
+	for(ptr.Start();!ptr.End();ptr.Next())
+		if(usr==ptr()->GetSubProfile()->GetProfile()->GetUser())
+			return(true);
+	return(false);
+}
+
+
+//---------------------------------------------------------------------------
 bool GGroupIR::CanInsert(const GObjIR* obj)
 {
 	GSubProfile* sub1;
@@ -121,10 +134,15 @@ bool GGroupIR::CanInsert(const GObjIR* obj)
 	if(!NbSubObjects)
 		return(true);
 	sub1=obj->GetSubProfile();
+	GUser* usr1=sub1->GetProfile()->GetUser();
 	RCursor<GObjIR> ptr=Owner->GetObjs(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
 		sub2=ptr()->GetSubProfile();
+		// Do not put two profiles of the same user in the same group
+		if(usr1==sub2->GetProfile()->GetUser())
+			return(false);
+		// Min sim and min disagreement must be respected
 		if((Owner->Instance->GetSim(sub1,sub2)<=Owner->Instance->Params->MinSimLevel) ||
 		  (Owner->Instance->GetDisagreementRatio(sub1,sub2)>=Owner->Instance->Params->MinDisagreement))
 		  	return(false);
