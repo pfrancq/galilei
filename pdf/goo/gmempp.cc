@@ -13,7 +13,6 @@
 
 #ifdef DEBUG_MEM
 
-
 void *operator new(size_t size) {
   return gmalloc((int)size);
 }

@@ -10,14 +10,6 @@
 #define GMEM_H
 
 #include <stdio.h>
-#include <stdlib.h>
-
-/*
-#define gmalloc(size) malloc(size)
-#define gfree(ptr) ::free(ptr)
-#define grealloc(ptr,size) realloc(ptr,size)
-#define gMemReport(f)
-#define copyString(str) strdup(str)*/
 
 #ifdef __cplusplus
 extern "C" {
@@ -36,6 +28,15 @@ extern void *gmalloc(int size);
 extern void *grealloc(void *p, int size);
 
 /*
+ * These are similar to gmalloc and grealloc, but take an object count
+ * and size.  The result is similar to allocating nObjs * objSize
+ * bytes, but there is an additional error check that the total size
+ * doesn't overflow an int.
+ */
+extern void *gmallocn(int nObjs, int objSize);
+extern void *greallocn(void *p, int nObjs, int objSize);
+
+/*
  * Same as free, but checks for and ignores NULL pointers.
  */
 extern void gfree(void *p);
@@ -52,7 +53,7 @@ extern void gMemReport(FILE *f);
 /*
  * Allocate memory and copy a string into it.
  */
-extern char *copyString(const char *s);
+extern char *copyString(char *s);
 
 #ifdef __cplusplus
 }

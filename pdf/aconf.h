@@ -21,7 +21,8 @@
 /*
  * Include support for OPI comments.
  */
-/* #undef OPI_SUPPORT */
+#define OPI_SUPPORT 0
+#define TEXTOUT_WORD_LIST 1
 
 /*
  * Use gzip instead of uncompress.
@@ -54,6 +55,8 @@
 #define HAVE_MKSTEMPS 0
 /* #undef SELECT_TAKES_INT */
 #define GHOSTSCRIPT "gs"
+
+#define MULTITHREADED 0
 
 /*
  * This is defined if using libXpm.

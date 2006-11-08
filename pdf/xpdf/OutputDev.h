@@ -22,6 +22,9 @@ class GString;
 class GfxState;
 class GfxColorSpace;
 class GfxImageColorMap;
+class GfxFunctionShading;
+class GfxAxialShading;
+class GfxRadialShading;
 class Stream;
 class Link;
 class Catalog;
@@ -47,6 +50,16 @@ public:
 
   // Does this device use drawChar() or drawString()?
   virtual GBool useDrawChar() = 0;
+
+  // Does this device use tilingPatternFill()?  If this returns false,
+  // tiling pattern fills will be reduced to a series of other drawing
+  // operations.
+  virtual GBool useTilingPatternFill() { return gFalse; }
+
+  // Does this device use functionShadedFill(), axialShadedFill(), and
+  // radialShadedFill()?  If this returns false, these shaded fills
+  // will be reduced to a series of other drawing operations.
+  virtual GBool useShadedFills() { return gFalse; }
 
   // Does this device use beginType3Char/endType3Char?  Otherwise,
   // text in Type 3 fonts will be drawn with drawChar/drawString.
@@ -75,54 +88,80 @@ public:
   virtual void cvtDevToUser(double dx, double dy, double *ux, double *uy);
   virtual void cvtUserToDev(double ux, double uy, int *dx, int *dy);
 
+  double *getDefCTM() { return defCTM; }
+  double *getDefICTM() { return defICTM; }
+
   //----- link borders
-  virtual void drawLink(Link*, Catalog*) {}
+  virtual void drawLink(Link *link, Catalog *catalog) {}
 
   //----- save/restore graphics state
-  virtual void saveState(GfxState*) {}
-  virtual void restoreState(GfxState*) {}
+  virtual void saveState(GfxState *state) {}
+  virtual void restoreState(GfxState *state) {}
 
   //----- update graphics state
-  virtual void updateAll(GfxState*);
-  virtual void updateCTM(GfxState*, double, double,double, double, double, double) {}
-  virtual void updateLineDash(GfxState*) {}
-  virtual void updateFlatness(GfxState*) {}
-  virtual void updateLineJoin(GfxState*) {}
-  virtual void updateLineCap(GfxState*) {}
-  virtual void updateMiterLimit(GfxState*) {}
-  virtual void updateLineWidth(GfxState*) {}
-  virtual void updateFillColor(GfxState*) {}
-  virtual void updateStrokeColor(GfxState*) {}
-  virtual void updateFillOpacity(GfxState*) {}
-  virtual void updateStrokeOpacity(GfxState*) {}
+  virtual void updateAll(GfxState *state);
+  virtual void updateCTM(GfxState *state, double m11, double m12,
+			 double m21, double m22, double m31, double m32) {}
+  virtual void updateLineDash(GfxState *state) {}
+  virtual void updateFlatness(GfxState *state) {}
+  virtual void updateLineJoin(GfxState *state) {}
+  virtual void updateLineCap(GfxState *state) {}
+  virtual void updateMiterLimit(GfxState *state) {}
+  virtual void updateLineWidth(GfxState *state) {}
+  virtual void updateFillColorSpace(GfxState *state) {}
+  virtual void updateStrokeColorSpace(GfxState *state) {}
+  virtual void updateFillColor(GfxState *state) {}
+  virtual void updateStrokeColor(GfxState *state) {}
+  virtual void updateBlendMode(GfxState *state) {}
+  virtual void updateFillOpacity(GfxState *state) {}
+  virtual void updateStrokeOpacity(GfxState *state) {}
+  virtual void updateFillOverprint(GfxState *state) {}
+  virtual void updateStrokeOverprint(GfxState *state) {}
 
   //----- update text state
-  virtual void updateFont(GfxState*) {}
-  virtual void updateTextMat(GfxState*) {}
-  virtual void updateCharSpace(GfxState*) {}
-  virtual void updateRender(GfxState*) {}
-  virtual void updateRise(GfxState*) {}
-  virtual void updateWordSpace(GfxState*) {}
-  virtual void updateHorizScaling(GfxState*) {}
-  virtual void updateTextPos(GfxState*) {}
-  virtual void updateTextShift(GfxState*, double) {}
+  virtual void updateFont(GfxState *state) {}
+  virtual void updateTextMat(GfxState *state) {}
+  virtual void updateCharSpace(GfxState *state) {}
+  virtual void updateRender(GfxState *state) {}
+  virtual void updateRise(GfxState *state) {}
+  virtual void updateWordSpace(GfxState *state) {}
+  virtual void updateHorizScaling(GfxState *state) {}
+  virtual void updateTextPos(GfxState *state) {}
+  virtual void updateTextShift(GfxState *state, double shift) {}
 
   //----- path painting
-  virtual void stroke(GfxState*) {}
-  virtual void fill(GfxState*) {}
-  virtual void eoFill(GfxState*) {}
+  virtual void stroke(GfxState *state) {}
+  virtual void fill(GfxState *state) {}
+  virtual void eoFill(GfxState *state) {}
+  virtual void tilingPatternFill(GfxState *state, Object *str,
+				 int paintType, Dict *resDict,
+				 double *mat, double *bbox,
+				 int x0, int y0, int x1, int y1,
+				 double xStep, double yStep) {}
+  virtual void functionShadedFill(GfxState *state,
+				  GfxFunctionShading *shading) {}
+  virtual void axialShadedFill(GfxState *state, GfxAxialShading *shading) {}
+  virtual void radialShadedFill(GfxState *state, GfxRadialShading *shading) {}
 
   //----- path clipping
-  virtual void clip(GfxState*) {}
-  virtual void eoClip(GfxState*) {}
+  virtual void clip(GfxState *state) {}
+  virtual void eoClip(GfxState *state) {}
 
   //----- text drawing
-  virtual void beginString(GfxState*,GString*) {}
-  virtual void endString(GfxState*) {}
-  virtual void drawChar(GfxState*, double, double,double, double,double, double,CharCode, Unicode*, int) {}
-  virtual void drawString(GfxState*, GString*) {}
-  virtual GBool beginType3Char(GfxState *state,CharCode code, Unicode *u, int uLen);
-  virtual void endType3Char(GfxState*) {}
+  virtual void beginStringOp(GfxState *state) {}
+  virtual void endStringOp(GfxState *state) {}
+  virtual void beginString(GfxState *state, GString *s) {}
+  virtual void endString(GfxState *state) {}
+  virtual void drawChar(GfxState *state, double x, double y,
+			double dx, double dy,
+			double originX, double originY,
+			CharCode code, int nBytes, Unicode *u, int uLen) {}
+  virtual void drawString(GfxState *state, GString *s) {}
+  virtual GBool beginType3Char(GfxState *state, double x, double y,
+			       double dx, double dy,
+			       CharCode code, Unicode *u, int uLen);
+  virtual void endType3Char(GfxState *state) {}
+  virtual void endTextObject(GfxState *state) {}
 
   //----- image drawing
   virtual void drawImageMask(GfxState *state, Object *ref, Stream *str,
@@ -131,6 +170,17 @@ public:
   virtual void drawImage(GfxState *state, Object *ref, Stream *str,
 			 int width, int height, GfxImageColorMap *colorMap,
 			 int *maskColors, GBool inlineImg);
+  virtual void drawMaskedImage(GfxState *state, Object *ref, Stream *str,
+			       int width, int height,
+			       GfxImageColorMap *colorMap,
+			       Stream *maskStr, int maskWidth, int maskHeight,
+			       GBool maskInvert);
+  virtual void drawSoftMaskedImage(GfxState *state, Object *ref, Stream *str,
+				   int width, int height,
+				   GfxImageColorMap *colorMap,
+				   Stream *maskStr,
+				   int maskWidth, int maskHeight,
+				   GfxImageColorMap *maskColorMap);
 
 #if OPI_SUPPORT
   //----- OPI functions
@@ -139,11 +189,12 @@ public:
 #endif
 
   //----- Type 3 font operators
-  virtual void type3D0(GfxState*, double, double) {}
-  virtual void type3D1(GfxState*, double, double,double, double, double, double) {}
+  virtual void type3D0(GfxState *state, double wx, double wy) {}
+  virtual void type3D1(GfxState *state, double wx, double wy,
+		       double llx, double lly, double urx, double ury) {}
 
   //----- PostScript XObjects
-  virtual void psXObject(Stream*, Stream*) {}
+  virtual void psXObject(Stream *psStream, Stream *level1Stream) {}
 
 private:
 

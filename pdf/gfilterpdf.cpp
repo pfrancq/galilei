@@ -157,10 +157,8 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 	textOut = new TextBufOutputDev(false, false, false);
 	if(textOut->isOk())
 	{
-    	pdf->displayPages(textOut, 1, pdf->getNumPages(), 72, 0, gFalse);
+    	pdf->displayPages(textOut, 1, pdf->getNumPages(), 72, 72, 0, gTrue, globalParams->getPSCrop(), gFalse);
   	}
-
-
 
 	// Look for the content
 	part=Doc->GetContent();

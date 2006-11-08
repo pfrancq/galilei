@@ -10,13 +10,7 @@
 
 #include <aconf.h>
 
-#ifdef WIN32
-   extern "C" {
-#  ifndef _MSC_VER
-#    include <kpathsea/win32lib.h>
-#  endif
-   }
-#else // !WIN32
+#ifndef WIN32
 #  if defined(MACOS)
 #    include <sys/stat.h>
 #  elif !defined(ACORN)
@@ -120,7 +114,7 @@ GString *appendToPath(GString *path, char *fileName) {
   p1 = p0 + path->getLength() - 1;
   if (!strcmp(fileName, "-")) {
     if (*p1 == ']') {
-      for (p2 = p1; p2 > p0 && *p2 != '.' && *p2 != '['; --p2);
+      for (p2 = p1; p2 > p0 && *p2 != '.' && *p2 != '['; --p2) ;
       if (*p2 == '[')
 	++p2;
       path->del(p2 - p0, p1 - p2);
@@ -404,9 +398,9 @@ GString *makePathAbsolute(GString *path) {
     } else {
       p1 = path->getCString() + 1;
 #ifdef __EMX__
-      for (p2 = p1; *p2 && *p2 != '/' && *p2 != '\\'; ++p2);
+      for (p2 = p1; *p2 && *p2 != '/' && *p2 != '\\'; ++p2) ;
 #else
-      for (p2 = p1; *p2 && *p2 != '/'; ++p2);
+      for (p2 = p1; *p2 && *p2 != '/'; ++p2) ;
 #endif
       if ((n = p2 - p1) > PATH_MAX)
 	n = PATH_MAX;
@@ -647,10 +641,14 @@ GDirEntry *GDir::getNextEntry() {
   GDirEntry *e;
 
 #if defined(WIN32)
-  e = new GDirEntry(path->getCString(), ffd.cFileName, doStat);
-  if (hnd  && !FindNextFile(hnd, &ffd)) {
-    FindClose(hnd);
-    hnd = NULL;
+  if (hnd) {
+    e = new GDirEntry(path->getCString(), ffd.cFileName, doStat);
+    if (hnd  && !FindNextFile(hnd, &ffd)) {
+      FindClose(hnd);
+      hnd = NULL;
+    }
+  } else {
+    e = NULL;
   }
 #elif defined(ACORN)
 #elif defined(MACOS)
@@ -694,6 +692,7 @@ void GDir::rewind() {
   tmp = path->copy();
   tmp->append("/*.*");
   hnd = FindFirstFile(tmp->getCString(), &ffd);
+  delete tmp;
 #elif defined(ACORN)
 #elif defined(MACOS)
 #else

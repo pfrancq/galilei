@@ -58,11 +58,11 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "pdf", I18N_NOOP("PDF Filter"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 2003, UniversitÃ© Libre de Bruxelles\nCAD/CAM Department\n"
-		" It is highly based on the Xpdf project.", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+		"1.1", description, KAboutData::License_GPL,
+		"(c) 2003-2006, Université Libre de Bruxelles\nCAD/CAM Department\n"
+		" It is highly based on the Xpdf project 3.01.", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Derek B. Noonburg",I18N_NOOP("Xpdf Project"), "derekn@foolabs.com");
+	aboutData.addAuthor("Glyph & Cog, LLC",I18N_NOOP("Xpdf Project"), "derekn@foolabs.com");
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
 }
