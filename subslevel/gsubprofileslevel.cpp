@@ -114,7 +114,7 @@ void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* c
 	try
 	{
 		// Init
-		RQuery initsubprofiles(storeMySQL,"UPDATE subprofiles SET level=0,score=0 WHERE groupid="+RString::Number(grp->GetId()));
+		RQuery initsubprofiles(storeMySQL,"UPDATE subprofiles SET level='0',score='0' WHERE groupid="+RString::Number(grp->GetId()));
 
 		// Find all documents assessed as relevant by someone of the group
 		sql="SELECT DISTINCT(htmlid) FROM htmlsbyprofiles,subprofiles WHERE htmlsbyprofiles.profileid=subprofiles.profileid AND subprofiles.langid=htmlsbyprofiles.langid AND judgement='O' AND subprofiles.groupid="+RString::Number(grp->GetId());
