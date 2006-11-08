@@ -60,8 +60,6 @@ class GSugs : public GPostGroup
 	*/
 	R::RContainer<GFdbk,false,false>* Docs;
 
-	bool UseGroupsSugs;
-
 	bool UseLevels;
 
 	unsigned int NbSugs;

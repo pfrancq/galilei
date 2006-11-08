@@ -131,7 +131,6 @@ void GSugs::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("NbSugs",50));
 	params->InsertParam(new RParamValue("UseLevels",false));
-	params->InsertParam(new RParamValue("UseGroupsSugs",false));
 }
 
 
@@ -141,7 +140,6 @@ void GSugs::ApplyConfig(void)
 	GPostGroup::ApplyConfig();
 	NbSugs=Factory->GetUInt("NbSugs");
 	UseLevels=Factory->GetBool("UseLevels");
-	UseGroupsSugs=Factory->GetBool("UseGroupsSugs");
 }
 
 
@@ -220,6 +218,7 @@ GSugs::~GSugs(void)
 {
 	delete Docs;
 }
+
 
 
 //------------------------------------------------------------------------------
