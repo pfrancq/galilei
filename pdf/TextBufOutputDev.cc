@@ -3561,6 +3561,7 @@ TextBufOutputDev::TextBufOutputDev(GBool physLayoutA,
   // open file
   RCharBuffer=0;
   outputFunc = &outputToRChar;
+	needClose = gFalse;
 
   // set up text object
   text = new TextPage(rawOrderA);

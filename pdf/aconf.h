@@ -21,8 +21,8 @@
 /*
  * Include support for OPI comments.
  */
-#define OPI_SUPPORT 0
-#define TEXTOUT_WORD_LIST 1
+/* #define OPI_SUPPORT 0
+ #define TEXTOUT_WORD_LIST 1 */
 
 /*
  * Use gzip instead of uncompress.
@@ -37,7 +37,7 @@
 /*
  * Full path for the system-wide xpdfrc file.
  */
-#define SYSTEM_XPDFRC "/usr/local/etc/xpdfrc"
+#define SYSTEM_XPDFRC "//etc//xpdf//xpdfrc"
 
 /*
  * Various include files and functions.
@@ -56,7 +56,7 @@
 /* #undef SELECT_TAKES_INT */
 #define GHOSTSCRIPT "gs"
 
-#define MULTITHREADED 0
+/* #define MULTITHREADED 0 */
 
 /*
  * This is defined if using libXpm.

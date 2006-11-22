@@ -111,9 +111,11 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 
 	// read config file
 	globalParams = new GlobalParams("");
+    globalParams->setTextPageBreaks(gFalse);
+
 
 	// open PDF file
-	pdf = new PDFDoc(fileName);
+	pdf = new PDFDoc(fileName,0,0);
 	if((!pdf->isOk())||(!pdf->okToCopy()))
 	{
 		delete globalParams;
@@ -157,7 +159,7 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 	textOut = new TextBufOutputDev(false, false, false);
 	if(textOut->isOk())
 	{
-    	pdf->displayPages(textOut, 1, pdf->getNumPages(), 72, 72, 0, gTrue, globalParams->getPSCrop(), gFalse);
+    	pdf->displayPages(textOut, 1, pdf->getNumPages(), 72, 72, 0, gFalse, gTrue, gFalse);
   	}
 
 	// Look for the content
