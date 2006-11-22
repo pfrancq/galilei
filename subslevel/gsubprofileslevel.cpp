@@ -140,7 +140,7 @@ void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* c
 			// Compute the score,level and store it in the database
 			Cur()->Score/=static_cast<double>(Cur()->NbDocs);
 			sublevel=(int(100*Cur()->Score)+(levelswidth-1))/levelswidth;
-			sql="UPDATE subprofiles SET level="+RString::Number(sublevel)+",score="+RString::Number(Cur()->Score)+" WHERE subprofileid="+RString::Number(Cur()->SubProfileId);
+			sql="UPDATE subprofiles SET level='"+RString::Number(sublevel)+"',score='"+RString::Number(Cur()->Score)+"' WHERE subprofileid="+RString::Number(Cur()->SubProfileId);
 			RQuery update(storeMySQL, sql);
 		}
 	}
