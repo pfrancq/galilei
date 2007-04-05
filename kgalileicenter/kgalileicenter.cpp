@@ -119,7 +119,6 @@ using namespace std;
 #include "qfilldatabase.h"
 #include "qhistorydlg.h"
 #include "qexportmatrixdlg.h"
-#include "qchoosemap.h"
 #include "qsimulationdlg.h"
 #include "configure.h"
 
