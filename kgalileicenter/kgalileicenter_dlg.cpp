@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Dialog part.
 
-	Copyright 2002 by the Université libre de Bruxelles.
+	Copyright 2002-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -178,33 +178,6 @@ void QMyPlugins::changeCurrent(const QString& string)
 // class KGALILEICenterApp
 //
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::StartJob(const R::RString job)
-{
-	if(!QSessionProgressDlg::Main)
-	{
-		QSessionProgressDlg* Jobs=new QSessionProgressDlg(this,Doc->GetSession(),"Job",false);
-		QSessionProgressDlg::Main->PutText(job+"...");
-		Jobs->Begin();
-	}
-	else
-	{
-		QSessionProgressDlg::NbJobs++;
-		QSessionProgressDlg::Main->PutText(job+"...");
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::EndJob(void)
-{
-	if(!(--QSessionProgressDlg::NbJobs))
-	{
-		delete QSessionProgressDlg::Main;
-	}
-}
 
 
 //-----------------------------------------------------------------------------

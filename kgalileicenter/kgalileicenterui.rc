@@ -8,6 +8,9 @@
 		<Action name="sessionDisconnect"/>
 		<Menu name="ManageDb"><text>&amp;Manage Database</text>
 			<Action name="createDatabase"/>
+			<Action name="importStopLists"/>
+			<separator/>
+			<Action name="importUsersData"/>
 			<Action name="fillEmptyDb"/>
 		</Menu>
 		<separator/>
@@ -76,7 +79,7 @@
 		<Action name="settings_statusbar"/>
 		<Separator />
 		<Action name="plugins"/>
-		<Action name="changeDebug"/>
+		<Action name="configure"/>
 	</Menu>
 	<Action name="window_menu"/>
 	<Menu name="help"><text>&amp;Help</text>

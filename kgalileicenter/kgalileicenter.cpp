@@ -113,7 +113,6 @@ using namespace std;
 #include "kviewstems.h"
 #include "kviewprofile.h"
 #include "kviewhistory.h"
-#include "kviewsom.h"
 #include "kviewdicts.h"
 #include "qsessionprogress.h"
 #include "qcreatedatabase.h"
@@ -253,76 +252,74 @@ void KGALILEICenterApp::slotSessionQuit(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotCreateDatabase(void)
 {
-
-	RString strTmp;
-
-	//Init dlg box
 	QCreateDatabase dlg(this,0,true);
-	dlg.UseStopList->setChecked(CreateDbUseStopList);
-	dlg.UseUsers->setChecked(CreateDbUseUsers);
-	dlg.sqlPath->setURL(ToQString(CreateDbSQLpath));
-	//Only a directory can be choosed
-	dlg.sqlPath->setMode(2);
-	// set the moreGroup unvisible
-	dlg.moreGroup->hide();
-	dlg.adjustSize();
+	if(!dlg.exec())
+		return;
 
-	// after ok button clicked
-	if(dlg.exec())
+	try
 	{
-		//Get new values
-		RString dbName = FromQString(dlg.DbName->text());
-		RString host = FromQString(dlg.hostName->text());
-		RString user = FromQString(dlg.userName->text());
-		RString pass = FromQString(dlg.password->text());
+		QSessionProgressDlg d(this,0,"Create Database");
+		d.Run(new QCreateDB(FromQString(dlg.DbName->text()),FromQString(dlg.hostName->text()),
+			FromQString(dlg.userName->text()),FromQString(dlg.password->text()),StructuresPath));
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+		return;
+	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+		return;
+	}
+}
 
-		CreateDbUseStopList = dlg.UseStopList->isChecked();
-		CreateDbUseUsers= dlg.UseUsers->isChecked();
 
-		// if the database name field is empty -> ERROR
-		if( dbName.IsEmpty())
-		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a name for the database! "));
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotImportStopLists(void)
+{
+	try
+	{
+		//Create de DB
+		QSessionProgressDlg d(this,Doc->GetSession(),"Import Stoplists");
+		d.Run(new QImportStopLists(StructuresPath));
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+		return;
+	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+		return;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotImportUsersData(void)
+{
+	try
+	{
+		//Create de DB
+		QString name=KFileDialog::getOpenFileName("~",QString::null,this,"Users' Data XML file");
+		if(name.isEmpty())
 			return;
-		}
-
-		// if the user or host is not specified -> ERROR
-		if( (host.IsEmpty()) || (user.IsEmpty()))
-		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a user and a host for the database! "));
-			return;
-		}
-
-		//************************* ------------- Find a Database Modele -----------------------*************************
-		strTmp = FromQString(dlg.sqlPath->url());
-		// if no url is specified then return error
-		if (strTmp.IsEmpty())
-		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must select the path to the SQL files! "));
-			return;
-		}
-		CreateDbSQLpath=strTmp;
-
-		//************************* ---------find the OS used----------*************************
-		strTmp = FromQString(dlg.execFile->currentText()); //scriptName
-		if (strTmp.FindStr("Linux") <0)
-		{
-			QMessageBox::critical(this,"KGALILEICenter", *strTmp + QString("version : Not yet implemented !")  );
-			return;
-		}
-
-		try
-		{
-			//Create de DB
-			QSessionProgressDlg d(this,0,"Create Database");
-			if(!d.Run(new QCreateDB(dbName,host,user,pass,CreateDbSQLpath,CreateDbUseStopList,CreateDbUseUsers)))
-				return;
-		}
-		catch(GException& e)
-		{
-			QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-			return;
-		}
+		QSessionProgressDlg d(this,Doc->GetSession(),"Import Users' Data");
+		d.Run(new QImportUsersData(FromQString(name)));
+		Doc->updateAllViews(0);
+		Doc->updateAllViews(1);
+	}
+	catch(GException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+		return;
+	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+		return;
 	}
 }
 
@@ -512,111 +509,6 @@ void KGALILEICenterApp::slotDoAssessments(void)
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Assessments Cycle");
 	Dlg.Run(new QMakeAssessments());
 	Doc->updateAllViews(1);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotChooseSOM(void)
-{
-	QChooseMap* dlg=new QChooseMap(pWorkspace);
-	RQuery* select, *select2;
-	QString tmp;
-	char slang[10];
-
-	connect(dlg->GeneralList, SIGNAL(doubleClicked (QListViewItem*)), this, SLOT(slotViewSOM(QListViewItem*)));
-	connect(dlg->GroupProfilesList, SIGNAL(doubleClicked (QListViewItem*)), this, SLOT(slotViewSOM(QListViewItem*)));
-	connect(dlg->GroupDocumentsList, SIGNAL(doubleClicked (QListViewItem*)), this, SLOT(slotViewSOM(QListViewItem*)));
-	connect(dlg->ProfileDocumentsList, SIGNAL(doubleClicked (QListViewItem*)), this, SLOT(slotViewSOM(QListViewItem*)));
-
-	//select all map from db;
-	select = Doc->GetSession()->GetStorage()->SelectDummyEntry("Som_maps",0,RString::Null,0,0);
-
-	//set widget title
-	tmp=QString::number(select->GetNbRows())+" Maps available - Double click on map to display";
-	dlg->groupBox->setTitle(tmp);
-	dlg->show();
-
-	for (select->Start(); !select->End(); select->Next())
-	{
-		if((*select)[2]=="groups")
-		{
-			R::RCursor<GFactoryLang> langscur=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
-			for(langscur.Start(); !langscur.End(); langscur.Next())
-			{
-				if (!langscur()->GetPlugin()) continue;
-				sprintf(slang, "Lang-%s",langscur()->GetPlugin()->GetCode());
-				select2=Doc->GetSession()->GetStorage()->SelectDummyEntry("Som_maps_details",atoi((*select)[0]),slang,0,3);
-				if (select2->GetNbRows())
-				{
-					tmp="GALILEI ["+QString(langscur()->GetPlugin()->GetCode())+"] Groups";
-					new QListViewItem(dlg->GeneralList, tmp, ToQString((*select)[0]),"Community");
-				}
-			}
-			continue;
-		}
-		if((*select)[2]=="profiles")
-		{
-			R::RCursor<GFactoryLang> langscur=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
-			for(langscur.Start(); !langscur.End(); langscur.Next())
-			{
-				if (!langscur()->GetPlugin()) continue;
-				sprintf(slang, "Lang-%s",langscur()->GetPlugin()->GetCode());
-				select2=Doc->GetSession()->GetStorage()->SelectDummyEntry("Som_maps_details",atoi((*select)[0]),slang,0,3);
-				if (select2->GetNbRows())
-				{
-					tmp="GALILEI ["+QString(langscur()->GetPlugin()->GetCode())+"] Profiles";
-					new QListViewItem(dlg->GeneralList, tmp, ToQString((*select)[0]), "SubProfile");
-				}
-			}
-			continue;
-		}
-		if((*select)[2]=="documents")
-		{
-			R::RCursor<GFactoryLang> langscur=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
-			for(langscur.Start(); !langscur.End(); langscur.Next())
-			{
-				if (!langscur()->GetPlugin()) continue;
-				sprintf(slang, "Lang-%s",langscur()->GetPlugin()->GetCode());
-				select2=Doc->GetSession()->GetStorage()->SelectDummyEntry("Som_maps_details",atoi((*select)[0]),slang,0,3);
-				if (select2->GetNbRows())
-				{
-					tmp="GALILEI ["+QString(langscur()->GetPlugin()->GetCode())+"] Documents";
-					new QListViewItem(dlg->GeneralList, tmp, ToQString((*select)[0]), "Document");
-				}
-			}
-			continue;
-
-		}
-		if((*select)[2]=="groupsprofiles")
-		{
-			tmp="Group ["+ToQString((*select)[1])+"] [Profiles]";
-			new QListViewItem(dlg->GroupProfilesList, tmp, ToQString((*select)[0]), "SubProfile");
-			continue;
-		}
-		if((*select)[2]=="groupsdocuments")
-		{
-			tmp="Group ["+ToQString((*select)[1])+"] [Documents]";
-			new QListViewItem(dlg->GroupDocumentsList, tmp, ToQString((*select)[0]), "Document");
-			continue;
-		}
-		if((*select)[2]=="profilesdocuments")
-		{
-			tmp="SubProfile ["+ToQString((*select)[1])+"] [Documents]";
-			new QListViewItem(dlg->ProfileDocumentsList, tmp, ToQString((*select)[0]), "Documents");
-			continue;
-		}
-	}
-
-	delete select;
-	if (select2)
-		delete select2;
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotViewSOM(QListViewItem* item)
-{
-	createClient(Doc,new KViewSom(Doc, pWorkspace, "Self Organized Map for "+item->text(0),item->text(2),0,atoi(item->text(1))));
 }
 
 
@@ -966,7 +858,7 @@ void KGALILEICenterApp::slotGroupsClear()
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotChangeDebug(void)
+void KGALILEICenterApp::slotConfigure(void)
 {
 	ConfigureDlg Dlg;
 	Dlg.Init(this);

@@ -109,6 +109,8 @@ void KGALILEICenterApp::initActions(void)
 	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
 	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
 	createDatabase=new KAction(i18n("Create &Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
+	importStopLists=new KAction(i18n("Import &Stoplists"),0,0,this,SLOT(slotImportStopLists()),actionCollection(),"importStopLists");
+	importUsersData=new KAction(i18n("Import &Users' Data"),0,0,this,SLOT(slotImportUsersData()),actionCollection(),"importUsersData");
 	fillEmptyDb=new KAction(i18n("&Fill Empty Database"),"exec",0,this,SLOT(slotFillEmptyDb()),actionCollection(),"fillEmptyDb");
 	runProgram=new KAction(i18n("&Run Program"),"rebuild",0,this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
@@ -143,7 +145,6 @@ void KGALILEICenterApp::initActions(void)
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	postGroupsCalc=new KAction(i18n("Execute &Post-Groups Methods"),0,0,this,SLOT(slotPostGroups()),actionCollection(),"postGroupsCalc");
-	somView=new KAction(i18n("View Self-Organizing Map"),"exec",0,this,SLOT(slotChooseSOM()),actionCollection(),"somView");
 	showGroupsHistory=new KAction(i18n("Show Groups &History"),"exec",0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
 
 	// Menu "Debug"
@@ -161,7 +162,7 @@ void KGALILEICenterApp::initActions(void)
 	viewToolBar->setStatusText(i18n("Enables/disables the toolbar"));
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
 	plugins=new KAction(i18n("Configure &Plug-Ins..."),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
-	changeDebug=new KAction(i18n("&Configure GALILEI..."),"configure",0,this,SLOT(slotChangeDebug()),actionCollection(),"changeDebug");
+	configure=new KAction(i18n("&Configure GALILEI..."),"configure",0,this,SLOT(slotConfigure()),actionCollection(),"configure");
 
 	// Menu "Window"
 	windowTile = new KAction(i18n("&Tile"), 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
@@ -223,9 +224,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Save Results",sessionSave->isChecked());
 
 	// Save options for database creation
-	Config->writeEntry("CreateDbSQLpath",CreateDbSQLpath);
-	Config->writeEntry("CreateDbUseStopList",CreateDbUseStopList);
-	Config->writeEntry("CreateDbUseUsers",CreateDbUseUsers);
+	Config->writeEntry("Structures Path",StructuresPath);
 
 	// Save options for the plug-ins dialog box
 	Config->writeEntry("DlgMainTabIdx",DlgMainTabIdx);
@@ -265,9 +264,7 @@ void KGALILEICenterApp::readOptions(void)
 	}
 
 	// Read create database options
-	CreateDbSQLpath=Config->readEntry("CreateDbPath","/usr/share/galilei/sql/").ascii();
-	CreateDbUseStopList=Config->readBoolEntry("CreateDbUseStopList",true);
-	CreateDbUseUsers=Config->readBoolEntry("CreateDbUseUsers",true);
+	StructuresPath=Config->readEntry("StructuresPath","/home/pfrancq/prj/kgalileicenter/kgalileicenter/sql").ascii();
 
 	// Save options for the plug-ins dialog box
 	DlgMainTabIdx=Config->readNumEntry("DlgMainTabIdx",0);
@@ -321,7 +318,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	doFdbks->setEnabled(true);
 	doAssessments->setEnabled(true);
 	groupingCompare->setEnabled(true);
-	somView->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
 	groupsCalc->setEnabled(true);
@@ -341,6 +337,8 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	usersClear->setEnabled(true);
 	groupsClear->setEnabled(true);
 	seeDicts->setEnabled(true);
+	importStopLists->setEnabled(true);
+	importUsersData->setEnabled(true);
 }
 
 
@@ -358,7 +356,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	doFdbks->setEnabled(false);
 	doAssessments->setEnabled(false);
 	groupingCompare->setEnabled(false);
-	somView->setEnabled(false);
 	textFrench->setEnabled(false);
 	textEnglish->setEnabled(false);
 	createXML->setEnabled(false);
@@ -381,6 +378,8 @@ void KGALILEICenterApp::DisableAllActions(void)
 	usersClear->setEnabled(false);
 	groupsClear->setEnabled(false);
 	seeDicts->setEnabled(false);
+	importStopLists->setEnabled(false);
+	importUsersData->setEnabled(false);
 }
 
 

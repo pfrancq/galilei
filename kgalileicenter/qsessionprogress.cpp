@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session  - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -41,6 +41,8 @@
 //-----------------------------------------------------------------------------
 // include files for R
 #include <rqt.h>
+#include <rdir.h>
+#include <rxmlfile.h>
 
 
 //-----------------------------------------------------------------------------
@@ -114,13 +116,9 @@ void QSessionThread::Set(GSession* session,QSessionProgressDlg* parent)
 //-----------------------------------------------------------------------------
 void QSessionThread::run(void)
 {
-	bool cancel=true;
-
-	QSessionProgressDlg::NbJobs++;
 	try
 	{
 		DoIt();
-		cancel=false;
 	}
 	catch(GException& e)
 	{
@@ -138,12 +136,7 @@ void QSessionThread::run(void)
 	{
 		Parent->PutText("Undefined Error");
 	}
-	if(GSession::Break())
-	{
-		Parent->PutText("Operation Cancelled");
-		cancel=true;
-	}
-	Parent->Finish(cancel);
+	Parent->Finish();
 }
 
 
@@ -158,15 +151,15 @@ void QLoadSession::DoIt(void)
 {
 	Parent->PutText("Loading Dicionnaries/Stoplists ...");
 	if(GSession::Break())
-		throw GException("Abord");
+		return;
 	Parent->PutText("Loading Documents ...");
 	Session->GetStorage()->LoadDocs();
 	if(GSession::Break())
-		throw GException("Abord");
+		return;
 	Parent->PutText("Load Groups ...");
 	Session->GetStorage()->LoadGroups();
 	if(GSession::Break())
-		throw GException("Abord");
+		return;
 	Parent->PutText("Load Users/Profiles/Feedbacks/SubProfiles ...");
 	Session->GetStorage()->LoadUsers();
 }
@@ -183,121 +176,203 @@ void QCreateDB::DoIt(void)
 
 	//Qsession progres to view progression
 	Parent->PutText("Database structure created");
+	RDb::CreateDatabase(Host,User,Pass,DbName);
+	RDb Db(Host,User,Pass,DbName,"utf-8");
+ 	if(GSession::Break())
+ 		return;
 
-//	RDb::CreateDatabase(Host,User,Pass,DbName);
-	RDb Db(Host,User,Pass,DbName,"latin1");
-// 	if(GSession::Break())
-// 		return;
-//
-// 	//Dump database model
-// 	Parent->PutText("Dump Database model");
-// 	path=SQLPath+"DbModel.sql";
-// 	RTextFile fileM(path,Read,"Latin1");
-//
-// 	while((!fileM.Eof())&&(!GSession::Break()))
-// 	{
-// 		line=fileM.GetLine();
-// 		if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-// 			continue;
-//
-// 		endFound=false;
-// 		while(!fileM.Eof() && !endFound)
-// 		{
-// 			if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-// 			{
-// 				sql="";
-// 				endFound=true;
-// 				continue;
-// 			}
-// 			sql+=line;
-// 			if(line.Find(';')>=0)
-// 				endFound=true;
-// 			else
-// 				line=fileM.GetLine();
-// 		}
-// 		if(!sql.IsEmpty())
-// 			RQuery Sendquery(Db,sql);
-//
-// 		sql="";
-// 	}
-// 	if(GSession::Break())
-// 		return;
+ 	// Construct tables
+ 	Parent->PutText("Dump Database model");
+ 	path=SQLPath+"/DbModelMySQL.sql";
+ 	RTextFile file(path,"utf-8");
+	file.Open(RIO::Read);
 
-// 	//Dump stoplists files
-// 	if(UseStopList)
-// 	{
-// 		msg="Dump Database Stoplists";
-// 		Parent->PutText(msg);
-// 		msg+=" for language ";
-// 		DIR* dp;
-// 		struct dirent* ep;
-// 		path="";
-//
-// 		dp=opendir(SQLPath);
-// 		if(dp)
-// 		{
-// 			while((ep=readdir(dp))&&(!GSession::Break()))
-// 			{
-// 				if(strncmp(&ep->d_name[0],"DbStopList",10)) continue;
-// 				msg+=ep->d_name[11];
-// 				msg+=ep->d_name[12];
-//
-// 				path=SQLPath+ep->d_name;
-// 				RTextFile fileS(path,Read,"utf-8");
-//
-// 				Parent->PutText(msg);
-// 				while(!fileS.Eof())
-// 				{
-// 					line=fileS.GetLine();
-// 					if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-// 						continue;
-// 					RQuery stopquery(Db,line);
-// 				}
-// 				msg=msg.Mid(0,msg.GetLen()-2);
-// 			}
-// 		}
-// 		if(GSession::Break())
-// 			return;
-// 	}
-
-	if(UseUsers)
+	while((!file.Eof())&&(!GSession::Break()))
 	{
-		//Dump users file
-		path=SQLPath +"DbUsers.sql";
-		Parent->PutText("Dump Database users");
+		line=file.GetLine();
+		if(line.IsEmpty() || line.FindStr("/*!")>=0 || line.FindStr("--")>=0 || line.Find('#')>=0)
+			continue;
 
-		RTextFile fileU(path,"Latin1");
-
-		fileU.Open(RIO::Read);
-		while((!fileU.Eof())&&(!GSession::Break()))
+		endFound=false;
+		while(!file.Eof() && !endFound)
 		{
-			line=fileU.GetLine();
-			if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-				continue;
-
-			endFound=false;
-			while(!fileU.Eof() && !endFound)
+			if(line.IsEmpty() || line.FindStr("--")>=0 || line.FindStr("--")>=0 || line.Find('#')>=0)
 			{
-				if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-				{
-					sql="";
-					endFound=true;
-					continue;
-				}
-				sql+=line;
-				if(line.Find(';')>=0)
-					endFound=true;
-				else
-					line=fileU.GetLine();
+				sql="";
+				endFound=true;
+				continue;
 			}
-			if(!sql.IsEmpty())
-				RQuery Sendquery(Db,sql);
-
-			sql="";
+			sql+=line;
+			if(line.Find(';')>=0)
+				endFound=true;
+			else
+				line=file.GetLine();
 		}
+		if(!sql.IsEmpty())
+			RQuery Sendquery(Db,sql);
+
+		sql="";
 	}
+
 	if(GSession::Break())
 		return;
+
+
+// 	if(UseUsers)
+// 	{
+// 		//Dump users file
+// 		path=SQLPath +"DbUsers.sql";
+// 		Parent->PutText("Dump Database users");
+//
+// 		RTextFile fileU(path,"Latin1");
+//
+// 		fileU.Open(RIO::Read);
+// 		while((!fileU.Eof())&&(!GSession::Break()))
+// 		{
+// 			line=fileU.GetLine();
+// 			if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+// 				continue;
+//
+// 			endFound=false;
+// 			while(!fileU.Eof() && !endFound)
+// 			{
+// 				if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
+// 				{
+// 					sql="";
+// 					endFound=true;
+// 					continue;
+// 				}
+// 				sql+=line;
+// 				if(line.Find(';')>=0)
+// 					endFound=true;
+// 				else
+// 					line=fileU.GetLine();
+// 			}
+// 			if(!sql.IsEmpty())
+// 				RQuery Sendquery(Db,sql);
+//
+// 			sql="";
+// 		}
+// 	}
+	if(GSession::Break())
+		return;
+}
+
+
+//-----------------------------------------------------------------------------
+void QImportStopLists::DoIt(void)
+{
+ 	RDir Dir(SQLPath);
+ 	Dir.Open(RIO::Read);
+ 	RCursor<RFile> Files=Dir.GetEntries();
+ 	for(Files.Start();!Files.End();Files.Next())
+	{
+		int pos=Files()->GetFileName().FindStr("StopList");
+		if(pos==-1) continue;
+		RTextFile Stop(Files()->GetName(),"utf-8");
+		Stop.Open(RIO::Read);
+		GLang* lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(Files()->GetFileName().Mid(9,2));
+		Parent->PutText("Import stoplist for "+lang->GetName());
+		GDict* dic=lang->GetDict();
+		while(!Stop.Eof())
+		{
+			RString stop=Stop.GetLine();
+			GConcept w(cNoRef,lang,stop,2,0,0,0);
+			dic->InsertConcept(&w);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+class ImportFile : public RXMLFile
+{
+	GDoc* doc;
+	GUser* user;
+	GProfile* profile;
+	tDocAssessment docass;
+	int what;
+	GSession* Session;
+
+public:
+
+	ImportFile(const RString& name,const RString& encoding,GSession* session)
+		: RXMLFile(name,0,encoding), doc(0), user(0), profile(0), docass(djUnknow), what(0), Session(session) {}
+
+protected:
+
+	//-------------------------------------------------------------------------
+	void BeginTag(const RString&, const RString&, const RString& name,RContainer<RXMLAttr,true,true>&)
+	{
+		if(name=="url")
+			what=1;
+		else if(name=="user")
+			what=2;
+		else if(name=="cat")
+			what=3;
+		else if(name=="valeur")
+			what=4;
+	}
+
+
+	//-------------------------------------------------------------------------
+	void EndTag(const RString&, const RString&, const RString& name)
+	{
+		if(name!="vote")
+			return;
+		Session->InsertFdbk(profile->GetId(),doc->GetId(),0,docass,RDate::GetToday(),RDate::null,true);
+		doc=0;
+		user=0;
+		profile=0;
+		docass=djUnknow;
+		what=0;
+	}
+
+
+	//-------------------------------------------------------------------------
+	void Text(const RString& text)
+	{
+		RCharCursor Cur(text);
+
+		while((!Cur.End())&&(Cur().IsSpace()))
+			Cur.Next();
+		if(Cur.End())
+			return;
+		switch(what)
+		{
+			case 1:
+				doc=Session->GetDoc(text,true,true);
+				if(!doc)
+					Session->InsertDoc(doc=new GDoc(text,text,cNoRef,0,"text/html",RDate::GetToday(),RDate::null));
+				break;
+			case 2:
+				user=Session->GetUser(text,true,true);
+				if(!user)
+					Session->InsertUser(user=new GUser(cNoRef,text,text));
+				break;
+			case 3:
+				profile=user->GetPtr(text,false);
+				if(!profile)
+					Session->InsertProfile(profile=new GProfile(user,cNoRef,text,true));
+				break;
+			case 4:
+				if(text=="+1")
+					docass=djOK;
+				else if(text=="-1")
+					docass=djOutScope;
+				break;
+		}
+		what=0;
+	}
+};
+
+
+//-----------------------------------------------------------------------------
+void QImportUsersData::DoIt(void)
+{
+	Parent->PutText("Analyze XML File");
+	ImportFile File(XML,"utf-8",Session);
+	File.Open(RIO::Read);
 }
 
 
@@ -634,9 +709,6 @@ void QComputeAll::DoIt(void)
 //-----------------------------------------------------------------------------
 void QFillMIMETypes::receiveNextMIMEPath(const char* path,RXMLStruct& xml)
 {
-//	unsigned int Len;
-//	int pos,next;
-//	bool Desktop;
 	DIR* dp;
 	struct dirent* ep;
 	RString Full;
@@ -702,14 +774,9 @@ void QLoadDictionnaries::DoIt(void)
 //
 //-----------------------------------------------------------------------------
 
-QSessionProgressDlg* QSessionProgressDlg::Main=0;
-unsigned int QSessionProgressDlg::NbJobs=0;
-
-
 //-----------------------------------------------------------------------------
 QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c,bool cancel)
-    : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), btnOk(0), Session(s), Task(0),
-	  Running(false), Cancel(cancel)
+    : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), btnOk(0), Session(s), Running(false), Cancel(cancel), Canceled(false)
 {
 	resize(200, 28 );
 	setCaption(i18n(c));
@@ -721,8 +788,7 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 	txtRem->setText(c+QString(" ..."));
 	Layout->addWidget(txtRem);
 
-	Line = new QFrame( this, "Line1" );
-	//Line->setGeometry( QRect( 0, 30, 600, 20 ) );
+	QFrame* Line = new QFrame( this, "Line1" );
 	Line->setFrameStyle( QFrame::HLine | QFrame::Sunken );
 	Layout->addWidget(Line);
 
@@ -739,10 +805,6 @@ QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char*
 	spacer5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
 	HLayout->addItem( spacer5 );
 	Layout->addItem(HLayout);
-	connect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
-	if(!Main)
-		Main=this;
-	NbJobs=0;
 }
 
 
@@ -755,16 +817,34 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 		btnOk->setEnabled(true);
 	}
 	KApplication::kApplication()->processEvents();
-	Task=task;
-	Task->Set(Session,this);
+	task->Set(Session,this);
 	Running=true;
-	Task->start();
-	exec();
-	if(Task)
+	Changed=false;
+	Canceled=false;
+	GSession::ResetBreak();
+	task->start();
+	connect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
+	show();
+	while(Running)
 	{
-		delete Task;
-		Task=0;
+		if(Changed)
+		{
+			txtRem->setText(NewLabel);
+			Changed=false;
+		}
+		KApplication::kApplication()->processEvents();		
 	}
+	if(!Canceled)
+		txtRem->setText("Finish");
+	else
+		txtRem->setText("Canceled");
+	btnOk->setEnabled(true);
+	btnOk->setText(i18n("&OK"));
+	disconnect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
+	connect(btnOk,SIGNAL(clicked()),this,SLOT(close()));
+	exec();
+	delete task;
+			
 	if(GSession::Break())
 	{
 		GSession::ResetBreak();
@@ -777,85 +857,61 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 {
-	txtRem->setText(QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...");
+	NewLabel=QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...";
+	Changed=true;
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextDoc(const GDoc* doc)
 {
-	txtRem->setText(QString("Analyse Doc '")+ToQString(doc->GetName())+"' ...");
+	NewLabel=QString("Analyse Doc '")+ToQString(doc->GetName())+"' ...";
+	Changed=true;
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextProfile(const GProfile* prof)
 {
-	txtRem->setText(QString("Analyse Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...");
+	NewLabel=QString("Analyse Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...";
+	Changed=true;
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextChromosome(unsigned int id)
 {
-	char tmp[50];
-
-	sprintf(tmp,"Analyse Chromosome n%u ...",id);
-	txtRem->setText(tmp);
+	NewLabel=QString("Analyse Chromosome ")+QString::number(id)+" ...";
+	Changed=true;
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::receiveButton()
 {
-	// If nothing running -> can close
-	if(!Running)
-	{
-		close();
-		return;
-	}
-	// Ah ah, something runs -> ask to break it
 	if(btnOk)
 		btnOk->setEnabled(false);
 	GSession::SetBreak();
+	Canceled=true;
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::PutText(const char* text)
 {
-	txtRem->setText(text);
+	NewLabel=text;
+	Changed=true;
 }
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::Begin(void)
+void QSessionProgressDlg::Finish(void)
 {
-	QSessionProgressDlg::NbJobs++;
-	if(btnOk)
-		btnOk->setEnabled(true);
-	show();
-	KApplication::kApplication()->processEvents();
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::Finish(bool Cancel)
-{
-	if(Task)
-	{
-		Running=false;
-	}
-	if(!Cancel)
-		txtRem->setText("Finish");
-	btnOk->setEnabled(true);
-	btnOk->setText(i18n("&OK"));
+	Running=false;
 }
 
 
 //-----------------------------------------------------------------------------
 QSessionProgressDlg::~QSessionProgressDlg(void)
 {
-	Main=0;
-	NbJobs=0;
 }

@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -103,18 +103,43 @@ class QCreateDB : public QSessionThread
 	RString User;
 	RString Pass;
 	RString SQLPath;
-	bool UseStopList;
-	bool UseUsers;
 
 public:
-	QCreateDB(RString dbName,RString host,RString user,RString pass,RString path,bool useSL, bool useUsr) : DbName(dbName), Host(host), User(user),Pass(pass),SQLPath(path),UseStopList(useSL),UseUsers(useUsr) {}
+	QCreateDB(RString dbName,RString host,RString user,RString pass,RString path)
+		: DbName(dbName), Host(host), User(user),Pass(pass),SQLPath(path) {}
 	virtual void DoIt(void);
 };
 
 
 //-----------------------------------------------------------------------------
 /**
-* Create a new Database.
+* Import stop lists.
+*/
+class QImportStopLists : public QSessionThread
+{
+	RString SQLPath;
+public:
+	QImportStopLists(RString path) : SQLPath(path) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Import Users' Data.
+*/
+class QImportUsersData : public QSessionThread
+{
+	RString XML;
+public:
+	QImportUsersData(RString xml) : XML(xml) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Fill a database Database.
 * @param dbname         The name of the Db.
 * @param host           The host of the database.
 * @param user           The user of the database.
@@ -368,10 +393,7 @@ private:
 class QSessionProgressDlg : public QSemiModal, public GSlot
 {
 	Q_OBJECT
-
-	QFrame* Line;
-	char tmpStr[250];
-
+	 
 	/**
 	* 'OK' button to close the dialog box. Must be disable when beginning
 	* computation and enabled at the end.
@@ -389,11 +411,6 @@ class QSessionProgressDlg : public QSemiModal, public GSlot
 	GSession* Session;
 
 	/**
-	* Thread running the task.
-	*/
-	QSessionThread* Task;
-
-	/**
 	* Is something running?
 	*/
 	bool Running;
@@ -403,10 +420,13 @@ class QSessionProgressDlg : public QSemiModal, public GSlot
 	*/
 	bool Cancel;
 
-public:
+	QString NewLabel;
+	
+	bool Changed;
 
-	static unsigned int NbJobs;
-	static QSessionProgressDlg* Main;
+	bool Canceled;
+	
+public:
 
 	/**
 	* Constructor.
@@ -463,14 +483,9 @@ public:
 	void PutText(const char* text);
 
 	/**
-	* Put the dialog in the beginning state.
-	*/
-	void Begin(void);
-
-	/**
 	* Put the dialog in the final state.
 	*/
-	void Finish(bool Cancel);
+	void Finish(void);
 
 	/**
 	* Destructor.

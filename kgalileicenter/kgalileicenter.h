@@ -6,7 +6,7 @@
 
 	Main Window - Header.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -122,31 +122,9 @@ public:
 	KConfig* Config;
 
 	/**
-	* path to plugins.
+	* Path were all the structures are stored.
 	*/
-//	R::RContainer<RString, true,false> pluginsPath;
-
-	/**
-	*
-	*/
-// 	R::RString ConfigFile;
-// 	R::RString LogFile;
-// 	R::RString PlugInsConfig;
-
-	/**
-	* the path where the sql file for the database creation are stored
-	*/
-	R::RString CreateDbSQLpath;
-
-	/**
-	* specifies if the stoplists table must be filled when a new Db is created
-	*/
-	bool CreateDbUseStopList;
-
-	/**
-	* specifies if the users table must be filled when a new Db is created
-	*/
-	bool CreateDbUseUsers;
+	R::RString StructuresPath;
 
 	/**
 	* Label to hold an image representing the status of the database connection.
@@ -191,15 +169,14 @@ public:
 	KGALILEICenterApp(int argc, char *argv[]);
 
 	/**
-	* Start a job.
-	* @param job             Description of ther job.
+	* Get the path to the structures.
 	*/
-	virtual void StartJob(const R::RString job);
+	RString GetStructuresPath(void) const {return(StructuresPath);}
 
 	/**
-	* End of the last started job.
+	* Set the path to the structures.
 	*/
-	virtual void EndJob(void);
+	void SetStructuresPath(const RString& path) {StructuresPath=path;}
 
 	/**
 	* Returns a pointer to the document connected to the view.
@@ -347,6 +324,16 @@ private slots:
 	void slotCreateDatabase(void);
 
 	/**
+	* Import the stoplists.
+	*/
+	void slotImportStopLists(void);
+
+	/**
+	* Import users' data.
+	*/
+	void slotImportUsersData(void);
+
+	/**
 	* Show the users' window.
 	*/
 	void slotShowUsers(void);
@@ -365,16 +352,6 @@ private slots:
 	* slot to calculate the current profile.
 	*/
 	void slotProfileCalc(void);
-
-	/**
-	* slot to choose the self organizing map
-	*/
-	void slotChooseSOM(void);
-
-	/**
-	* slot to view the self organizing map
-	*/
-	void slotViewSOM(QListViewItem* item);
 
 	/**
 	* Show the groups window.
@@ -557,9 +534,9 @@ private slots:
 	void slotGroupsClear();
 
 	/**
-	* Change the file used for debug.
+	* Configure GALILEI.
 	*/
-	void slotChangeDebug(void);
+	void slotConfigure(void);
 
 	/**
 	* See the dictionnaries.
@@ -598,6 +575,8 @@ public:
 	KAction* sessionCompute;
 	KAction* sessionStats;
 	KAction* createDatabase;
+	KAction* importStopLists;
+	KAction* importUsersData;
 	KAction* sessionDisconnect;
 	KAction* fillEmptyDb;
 	KAction* sessionQuit;
@@ -628,7 +607,6 @@ public:
 	KAction* groupsCalc;
 	KAction* postGroupsCalc;
 	KAction* groupsClear;
-	KAction* somView;
 	KAction* simulationDlg;
 	KAction* groupingCreate;
 	KAction* doFdbks;
@@ -637,7 +615,7 @@ public:
 	KAction* showGroupsHistory;
 
 	KAction* plugins;
-	KAction* changeDebug;
+	KAction* configure;
 
 	KAction* runProgram;
 

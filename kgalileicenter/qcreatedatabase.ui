@@ -1,4 +1,4 @@
-<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<!DOCTYPE UI><UI version="3.3" stdsetdef="1">
 <class>QCreateDatabase</class>
 <widget class="QDialog">
     <property name="name">
@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>372</width>
-            <height>436</height>
+            <height>236</height>
         </rect>
     </property>
     <property name="caption">
@@ -46,11 +46,11 @@
                     <property name="title">
                         <string>Database Parameters :</string>
                     </property>
-                    <grid>
+                    <vbox>
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QLayoutWidget" row="0" column="0">
+                        <widget class="QLayoutWidget">
                             <property name="name">
                                 <cstring>layout47</cstring>
                             </property>
@@ -63,7 +63,7 @@
                                         <cstring>TextLabel1</cstring>
                                     </property>
                                     <property name="text">
-                                        <string>DataBase Name :</string>
+                                        <string>Database Name :</string>
                                     </property>
                                 </widget>
                                 <spacer>
@@ -90,7 +90,7 @@
                                 </widget>
                             </hbox>
                         </widget>
-                        <widget class="QLayoutWidget" row="1" column="0">
+                        <widget class="QLayoutWidget">
                             <property name="name">
                                 <cstring>layout48</cstring>
                             </property>
@@ -133,7 +133,7 @@
                                 </widget>
                             </hbox>
                         </widget>
-                        <widget class="QLayoutWidget" row="2" column="0">
+                        <widget class="QLayoutWidget">
                             <property name="name">
                                 <cstring>layout49</cstring>
                             </property>
@@ -176,7 +176,7 @@
                                 </widget>
                             </hbox>
                         </widget>
-                        <widget class="QLayoutWidget" row="3" column="0">
+                        <widget class="QLayoutWidget">
                             <property name="name">
                                 <cstring>layout50</cstring>
                             </property>
@@ -222,7 +222,7 @@
                                 </widget>
                             </hbox>
                         </widget>
-                    </grid>
+                    </vbox>
                 </widget>
                 <widget class="QLayoutWidget" row="1" column="0">
                     <property name="name">
@@ -232,14 +232,6 @@
                         <property name="name">
                             <cstring>unnamed</cstring>
                         </property>
-                        <widget class="QToolButton">
-                            <property name="name">
-                                <cstring>ToolButton1</cstring>
-                            </property>
-                            <property name="text">
-                                <string>...</string>
-                            </property>
-                        </widget>
                         <spacer>
                             <property name="name">
                                 <cstring>spacer59</cstring>
@@ -262,7 +254,7 @@
                                 <cstring>Cancel</cstring>
                             </property>
                             <property name="text">
-                                <string>&amp;Cancel</string>
+                                <string>Cance&amp;l</string>
                             </property>
                         </widget>
                         <widget class="QPushButton">
@@ -283,130 +275,6 @@
                 </widget>
             </grid>
         </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>moreGroup</cstring>
-            </property>
-            <property name="enabled">
-                <bool>true</bool>
-            </property>
-            <property name="autoMask">
-                <bool>true</bool>
-            </property>
-            <property name="frameShape">
-                <enum>GroupBoxPanel</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <property name="title">
-                <string>Source Files :</string>
-            </property>
-            <grid>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLayoutWidget" row="0" column="0">
-                    <property name="name">
-                        <cstring>layout52</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>TextLabel3_2</cstring>
-                            </property>
-                            <property name="frameShape">
-                                <enum>MShape</enum>
-                            </property>
-                            <property name="frameShadow">
-                                <enum>MShadow</enum>
-                            </property>
-                            <property name="text">
-                                <string>Operating System :</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer60</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>91</width>
-                                    <height>21</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="QComboBox">
-                            <item>
-                                <property name="text">
-                                    <string>Linux</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>Windows</string>
-                                </property>
-                            </item>
-                            <item>
-                                <property name="text">
-                                    <string>MacOS</string>
-                                </property>
-                            </item>
-                            <property name="name">
-                                <cstring>execFile</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="KURLRequester" row="4" column="0">
-                    <property name="name">
-                        <cstring>sqlPath</cstring>
-                    </property>
-                    <property name="url" stdset="0">
-                        <string></string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox" row="1" column="0">
-                    <property name="name">
-                        <cstring>UseStopList</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Fill StopList tables</string>
-                    </property>
-                    <property name="checked">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QCheckBox" row="2" column="0">
-                    <property name="name">
-                        <cstring>UseUsers</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Fill users table</string>
-                    </property>
-                    <property name="checked">
-                        <bool>true</bool>
-                    </property>
-                </widget>
-                <widget class="QLabel" row="3" column="0">
-                    <property name="name">
-                        <cstring>TextLabel4_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Path to SQL files :</string>
-                    </property>
-                </widget>
-            </grid>
-        </widget>
     </vbox>
 </widget>
 <connections>
@@ -415,12 +283,6 @@
         <signal>clicked()</signal>
         <receiver>QCreateDatabase</receiver>
         <slot>accept()</slot>
-    </connection>
-    <connection>
-        <sender>ToolButton1</sender>
-        <signal>clicked()</signal>
-        <receiver>QCreateDatabase</receiver>
-        <slot>AfficheMore()</slot>
     </connection>
     <connection>
         <sender>Cancel</sender>
@@ -436,19 +298,9 @@
     <tabstop>password</tabstop>
     <tabstop>Cancel</tabstop>
     <tabstop>Ok</tabstop>
-    <tabstop>execFile</tabstop>
-    <tabstop>sqlPath</tabstop>
 </tabstops>
-<includes>
-    <include location="local" impldecl="in implementation">qcreatedatabase.ui.h</include>
-</includes>
 <slots>
     <slot>AfficheMore( void )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
-<includehints>
-    <includehint>kurlrequester.h</includehint>
-    <includehint>klineedit.h</includehint>
-    <includehint>kpushbutton.h</includehint>
-</includehints>
 </UI>
