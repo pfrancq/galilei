@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2005 by the UniversitÃ© libre de Bruxelles.
+	Copyright 2001-2005 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
