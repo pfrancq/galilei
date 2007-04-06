@@ -628,6 +628,13 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc,GSlot* slot)
 			slot->WriteStr(e.GetMsg());
 			return(0);
 		}
+		catch(RException& e)
+		{
+			if(!slot) // If not slot -> forward error as GException
+				throw GException(e.GetMsg());
+			slot->WriteStr(e.GetMsg());
+			return(0);
+		}
 		Dwn=true;
 	}
 	else
