@@ -58,12 +58,12 @@ class GUser : public R::RContainer<GProfile,false,true>
 	*/
 	unsigned Id;
 
-	/*
+	/**
 	* Name of the user.
 	*/
 	R::RString Name;
 
-	/*
+	/**
 	* FullName of the user.
 	*/
 	R::RString FullName;
@@ -77,7 +77,7 @@ public:
 	* @param fullname       FullName of the user.
 	* @param nb             Number of profiles.
 	*/
-	GUser(unsigned int id,const R::RString name,const R::RString fullname,unsigned int nb);
+	GUser(unsigned int id,const R::RString name,const R::RString fullname,unsigned int nb=5);
 
 	/**
 	* Compare two users by comparing their identificator.
@@ -123,7 +123,7 @@ public:
 	*/
 	void SetId(unsigned int id);
 
-	/**+
+	/**
 	* Get a cursor over the profiles of user.
 	*/
 	R::RCursor<GProfile> GetProfiles(void);
