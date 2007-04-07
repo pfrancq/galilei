@@ -92,23 +92,23 @@ using namespace GALILEI;
 catch(GException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
-		rec->WriteStr(msg+e.GetMsg());                                         \
+		rec->WriteStr(msg+" "+e.GetMsg());                                     \
 	else                                                                       \
-		throw GException(msg+e.GetMsg());                                      \
+		throw GException(msg+" "+e.GetMsg());                                  \
 }                                                                              \
 catch(RException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
-		rec->WriteStr(msg+e.GetMsg());                                         \
+		rec->WriteStr(msg+" "+e.GetMsg());                                     \
 	else                                                                       \
-		throw GException(msg+e.GetMsg());                                      \
+		throw GException(msg+" "+e.GetMsg());                                  \
 }                                                                              \
 catch(exception& e)                                                            \
 {                                                                              \
 	if(rec)                                                                    \
-		rec->WriteStr(msg+e.what());                                           \
+		rec->WriteStr(msg+" "+e.what());                                       \
 	else                                                                       \
-		throw GException(msg+e.what());                                        \
+		throw GException(msg+" "+e.what());                                    \
 }                                                                              \
 catch(...)                                                                     \
 {                                                                              \
