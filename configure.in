@@ -3,14 +3,13 @@ AC_INIT(configure.in)
 AM_CONFIG_HEADER(config.h)
 AM_INIT_AUTOMAKE(upgalilei, 1.86)
 
+AC_LANG_CPLUSPLUS
+AC_PROG_CXX
+AM_PROG_LIBTOOL
+
 #--------------- Check R and GALILEI ------------------
 R_CHK("rcore rmath roptimization")
 GALILEI_CHK()
 
-
-AC_LANG_CPLUSPLUS
-AC_PROG_CXX
-AM_PROG_LIBTOOL
 CXXFLAGS="$CXXFLAGS $USE_EXCEPTIONS"
-
 AC_OUTPUT(Makefile src/Makefile)
