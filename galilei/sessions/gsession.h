@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2005 by the Université libre de Bruxelles.
+	Copyright 2001-2005 by the Universitï¿½ libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -704,7 +704,7 @@ public:
 	* enabled post-grouping methods are called.
 	* @param rec             Receiver of the signals.
 	*/
-	void GroupingProfiles(GSlot* rec);
+	void GroupingProfiles(GSlot* rec=0);
 
 	/**
 	* Run all the enabled post-grouping methods.

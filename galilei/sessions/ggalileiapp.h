@@ -6,7 +6,7 @@
 
 	Application handling a GALILEI Session - Header.
 
-	Copyright 2006 by the Université libre de Bruxelles.
+	Copyright 2006-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -64,6 +64,8 @@ class GGenericPluginManager;
 */
 class GGALILEIApp : public R::RApplication, public R::RContainer<GGenericPluginManager,true,false>
 {
+protected:
+	
 	/**
 	* A log file.
 	*/
