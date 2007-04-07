@@ -58,31 +58,42 @@ using namespace R;
 #include <gprofilecalc.h>
 #include <gsession.h>
 #include <gstorage.h>
-#include <gpluginmanagers.h>
-#include <gconfig.h>
+#include <ggalileiapp.h>
 #include <gslotlog.h>
 using namespace GALILEI;
 
 
 
 //------------------------------------------------------------------------------
-// Global Variables
-RXMLStruct Config;
-GSlotLog* Log=0;
+//
+// Class UpGALILEI
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class UpGALILEI : public GGALILEIApp
+{
+	bool DoDocs;
+	bool DoProfiles;
+	bool DoGroups;
+	bool Param;
+	
+public:
+	UpGALILEI(int argc, char *argv[]);
+	void Run(void);
+};
 
 
 //------------------------------------------------------------------------------
-int main(int argc, char *argv[])
+UpGALILEI::UpGALILEI(int argc, char *argv[])
+	: GGALILEIApp("UpGALILEI",argc,argv,false), DoDocs(true), DoProfiles(true),
+	  DoGroups(true),Param(false)
+	
 {
-	bool DoDocs(true);
-	bool DoProfiles(true);
-	bool DoGroups(true);
-	bool Param=false;
-
-	// Init Part
+	// Show Part
 	cout<<"GALILEI Update Version "<<VERSION<<endl;
-	cout<<"Copyright 1999-2005 by the Université Libre de Bruxelles"<<endl;
-
+	cout<<"Copyright 1999-2007 by the Université Libre de Bruxelles"<<endl;
+	
 	// Analyze parameters
 	for(int i=0;i<argc;i++)
 	{
@@ -116,101 +127,74 @@ int main(int argc, char *argv[])
 			}
 			DoGroups=true;
 		}
-	}
+	}	
+}
 
+
+//------------------------------------------------------------------------------
+void UpGALILEI::Run(void)
+{
 	try
 	{
-		RContainer<RString,true,false> lib(10,5);
-		RXMLTag* Tag;
-		RXMLTag* PlugIns;
-
-		// Read Config
-		cout<<"Read Config ..."<<endl;
-		RXMLFile ConfigFile("/etc/galilei/galilei.conf",&Config);
-		ConfigFile.Open(RIO::Read);
-
-		Tag=Config.GetTag("plugins");
-		if(!Tag)
-			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
-		RCursor<RXMLTag> Plugins(Tag->GetNodes());
-		for(Plugins.Start();!Plugins.End();Plugins.Next())
-		{
-			if((Plugins()->GetName()=="search")&&(Plugins()->IsAttrDefined("dir")))
-				lib.InsertPtr(new RString(Plugins()->GetAttrValue("dir")));
-			if(Plugins()->GetName()=="config")
-				PlugIns=Plugins();
-		}
-
-		// Create Log files
-		RString LogFile=Config.GetTagAttrValue("log","file");
-		if(LogFile!=RString::Null)
-			Log=new GSlotLog(LogFile);
+		// Init
+		Init();
 		if(Log)
 			Log->WriteLog("GALILEI Update started");
+		CreateSession();
+		Session->Init();
 
-		//------------------------------------------------------------------------------
-		// Managers
-		GPluginManagers::PluginManagers.Load(lib,false);
-		if(!PlugIns)
-			throw GException("Problems with the configure file '/etc/galilei/galilei.conf'");
-		GConfig Conf(PlugIns->GetAttrValue("file"));
-		Conf.Load();
-
-		// Init Session
-		GSession Session=GSession();
-		if(Log)
-			Log->WriteLog("Session created");
-
-		//connect plugins
-		GPluginManagers::PluginManagers.Connect(&Session);
-		if(Log)
-			Log->WriteLog("Plugins connected to session");
-
-		//load data
+		// Load database
 		cout<<"Load Data ...";
 		cout.flush();
 		if(DoDocs||DoProfiles)
-			Session.GetStorage()->LoadDocs();
+			Session->GetStorage()->LoadDocs();
 		if(DoGroups)
-			Session.GetStorage()->LoadGroups();
+			Session->GetStorage()->LoadGroups();
 		if(DoProfiles||DoGroups)
-			Session.GetStorage()->LoadUsers();
+			Session->GetStorage()->LoadUsers();
 		if(Log)
 			Log->WriteLog("Data loaded");
 		cout<<"OK"<<endl;
+		
+		// Analyse Docs
 		if(DoDocs)
 		{
 			cout<<"Analyse Documents ...";
 			cout.flush();
-			Session.AnalyseDocs(Log);
+			Session->AnalyseDocs(Log);
 			if(Log)
 				Log->WriteLog("Documents analysed");
 			cout<<"OK"<<endl;
 		}
+		
+		// Compute profiles
 		if(DoProfiles)
 		{
 			cout<<"Compute Profiles ...";
 			cout.flush();
-			Session.CalcProfiles(Log);
+			Session->CalcProfiles(Log);
 			cout<<"OK"<<endl;
 			if(Log)
 				Log->WriteLog("Profiles computed");
 		}
+		
+		// Group profiles
 		if(DoGroups)
 		{
 			cout<<"Groups Profiles ...";
 			cout.flush();
-			Session.GroupingProfiles(Log);
+			Session->GroupingProfiles(Log);
 			cout<<"OK"<<endl;
 			if(Log)
 				Log->WriteLog("Groups computed");
 		}
-		if(Log)
-			Log->WriteLog("Session updated");
 
 		// End Session
 		if(Log)
+		{
+			Log->WriteLog("Session updated");
 			Log->WriteLog("GALILEI Update stopped");
+		}
 	 }
 	catch(GException& e)
 	{
@@ -236,7 +220,20 @@ int main(int argc, char *argv[])
 		if(Log)
 			Log->WriteLog("Error while processing");
 	}
-	delete Log;
+}
 
+
+
+//------------------------------------------------------------------------------
+//
+// Main
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+int main(int argc, char *argv[])
+{
+	UpGALILEI App(argc,argv);
+	App.Run();
 	return(EXIT_SUCCESS);
 }
