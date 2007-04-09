@@ -615,7 +615,6 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc,GSlot* slot)
 	// if URL and protocol different than 'file' -> Download it
 	if(Url&&strncasecmp(doc->GetURL(),"file",i))
 	{
-
 		// if the download can't be done an error is then send
 		try
 		{

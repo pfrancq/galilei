@@ -85,14 +85,18 @@ int GFilterManagerCURL::WriteTmpFile(void* buffer, size_t size, size_t nmemb, vo
 GFilterManagerCURL::GFilterManagerCURL(void)
 	: GFilterManager()
 {
+	// Create the lib and set the options
 	Lib = curl_easy_init();
+	curl_easy_setopt(Lib, CURLOPT_WRITEFUNCTION,GFilterManagerCURL::WriteTmpFile);
+	curl_easy_setopt(Lib, CURLOPT_CONNECTTIMEOUT,30);
+	curl_easy_setopt(Lib, CURLOPT_TIMEOUT,240);
 }
 
 
 //------------------------------------------------------------------------------
 const char* GFilterManagerCURL::DetermineMIMEType(const char* tmpfile)
 {
-	char* MIME;
+	char MIME[40];
 
 	curl_easy_getinfo(Lib,CURLINFO_CONTENT_TYPE,MIME);
 	if(MIME)
@@ -114,11 +118,7 @@ void GFilterManagerCURL::Download(const char* URL,RString& tmpFile)
 
 	// Download the file
 	curl_easy_setopt(Lib, CURLOPT_URL, URL);
-	curl_easy_setopt(Lib, CURLOPT_WRITEFUNCTION,GFilterManagerCURL::WriteTmpFile);
 	curl_easy_setopt(Lib, CURLOPT_FILE, &tmpfile);
-	curl_easy_setopt(Lib, CURLOPT_CONNECTTIMEOUT,30);
-	curl_easy_setopt(Lib, CURLOPT_TIMEOUT,240);
-
 	CURLcode err=curl_easy_perform(Lib);
 	if(tmpfile.stream)
 		fclose(tmpfile.stream);

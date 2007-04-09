@@ -1,12 +1,11 @@
-/*
-
+/**
 	GALILEI Research Project
 
 	GSession.cpp
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2005 by the Université libre de Bruxelles.
+	Copyright 2001-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		GALILEI Team (pfrancq@ulb.ac.be)
@@ -258,13 +257,14 @@ public:
 	unsigned int MaxDocs;                                             // Maximum number of documents to handle in memory.
 	unsigned int MaxSubProfiles;                                      // Maximum number of subprofiles to handle in memory.
 	unsigned int MaxGroups;                                           // Maximum number of groups to handle in memory.
-
+	GFilterManager* FilterManager;                                    // Pointer to the filter manager
+	
 	Intern(GStorage* str,unsigned int mdocs,unsigned int maxsub,unsigned int maxgroups,unsigned int d,unsigned int u,unsigned int p,unsigned int g,unsigned int nblangs)
 		: Subjects(0), GroupsHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
 		  Users(u,u/2), Profiles(p,p/2), Groups(g+(g/2),g/2), Langs(nblangs+1), FreeIds(50,25),
 		  ConceptTypes(10,5), RelationTypes(10,5),
-		  MaxDocs(mdocs), MaxSubProfiles(maxsub), MaxGroups(maxgroups)
+		  MaxDocs(mdocs), MaxSubProfiles(maxsub), MaxGroups(maxgroups), FilterManager(0)
 	{
 		CurrentRandom=0;
 		Random = new RRandomGood(CurrentRandom);
@@ -320,6 +320,7 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,unsigned int maxdocs,unsigned in
 
 	Data->Slot=slot;
 	Data->Debug=debug;
+	Data->FilterManager=GALILEIApp->GetManager<GFilterManager>("Filter");
 
 	if(!Intern::Session)
 		Intern::Session=this;
@@ -925,7 +926,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 {
 	GDocXML* xml;
 	RContainer<GDoc,false,true> tmpDocs(5,2);
-	bool Cont;               // Continue the analysuis
+	bool Cont;               // Continue the analysis
 
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
@@ -937,6 +938,11 @@ void GSession::AnalyseDocs(GSlot* rec)
 	// Analyse the documents
 	do
 	{
+		// Get the method
+		GDocAnalyse* Analyse=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
+		if(!Analyse)
+			throw GException("No document analysis method chosen.");
+		
 		// Go through the existing documents
 		R::RCursor<GDoc> Docs=GetDocs();
 		for(Docs.Start();!Docs.End();Docs.Next())
@@ -945,7 +951,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 			{
 				xml=0;       // DocXML to create
 				tmpDocs.Clear();
-				AnalyseDoc(xml,Docs(),&tmpDocs,rec);
+				AnalyseDoc(xml,Docs(),Analyse,&tmpDocs,rec);
 
 				// Add the new documents.
 				// Continue the analysis if documents were added.
@@ -968,14 +974,17 @@ void GSession::AnalyseDocs(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,RContainer<GDoc,false,true>* newdocs,GSlot* rec)
+void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,GDocAnalyse* method,RContainer<GDoc,false,true>* newdocs,GSlot* rec)
 {
 	bool undefLang;
 
 	// Verify that the textanalyse method is selected
-	GDocAnalyse* Analyse=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
-	if(!Analyse)
-		throw GException("No document analysis method chosen.");
+	if(!method)
+	{
+		method=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
+		if(!method)
+			throw GException("No document analysis method chosen.");
+	}
 
 	if(!doc->MustCompute()) return;
 	if(rec)
@@ -991,14 +1000,14 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,RContainer<GDoc,false,true>* n
 	{
 		doc->SetStatus(dsCannotAccess); // Suppose it cannot be access
 		if(!xml)
-			xml=GALILEIApp->GetManager<GFilterManager>("Filter")->CreateDocXML(doc,rec);
+			xml=Data->FilterManager->CreateDocXML(doc,rec);
 		if(xml)
 		{
 			// Analyse document -> Is something goes wrong -> It failed
 			// If a log file specified -> write to it and it is OK
 			// If no log file specified -> Propagate error
 			doc->SetStatus(dsCannotAnalyse); // Suppose it cannot be analysed
-			Analyse->Analyze(xml,doc,newdocs);
+			method->Analyze(xml,doc,newdocs);
 			if((undefLang)&&(doc->GetLang()))
 			{
 				MoveDoc(doc);
