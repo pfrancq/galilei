@@ -524,8 +524,8 @@ public:
 
 //------------------------------------------------------------------------------
 GFilterManager::GFilterManager(void)
-	: GPluginManager<GFilterManager,GFactoryFilter,GFilter>("Filter",API_FILTER_VERSION,ptList), MIMES(50,25),
-	  Exts(50,25)
+	: GPluginManager<GFilterManager,GFactoryFilter,GFilter>("Filter",API_FILTER_VERSION,ptList),
+	  RDownload(), MIMES(50,25), Exts(50,25)
 {
 	// Try to open list of MIME types
 	try
@@ -560,32 +560,18 @@ GFilterManager::GFilterManager(void)
 
 
 //------------------------------------------------------------------------------
-void GFilterManager::Download(const char*,RString&)
+bool GFilterManager::IsValidContent(const R::RString& MIME)
 {
+	Doc->SetMIMEType(MIME);
+	Filter=MIMES.GetPtr(MIME);
+	if(!Filter)
+		return(false);
+	return(true);
 }
 
 
 //------------------------------------------------------------------------------
-const char* GFilterManager::DetermineMIMEType(const char* tmpfile)
-{
-	RCursor<GMIMEExt> Cur(Exts);
-
-	// Go through each extension
-	for(Cur.Start();!Cur.End();Cur.Next())
-		if(fnmatch(Cur()->Ext.Latin1(),tmpfile,0)!=FNM_NOMATCH)
-			return(Cur()->Name.Latin1());
-	return(0);
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterManager::Delete(RString&)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GDocXML* GFilterManager::CreateDocXML(GDoc* doc,GSlot* slot)
+GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 {
 	RString tmpFile(250);
 	char tmp[250];
@@ -594,9 +580,16 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc,GSlot* slot)
 	GDocXML* xml=0;
 	bool Dwn;
 	bool Url;
-	GMIMEFilter* f=0;
-	RString mime;
-
+	
+	// Init Part;
+	Doc=doc;
+	Filter=0;         // No filter
+	
+	// If the document as already a MIME type -> a filter must exist
+	RString MIME=doc->GetMIMEType();
+	if((!MIME.IsEmpty())&&(!IsValidContent(MIME)))
+		throw RException("Cannot treat the MIME type "+MIME);
+	
 	// Look for the protocol
 	ptr=doc->GetURL();
 	i=0;
@@ -615,25 +608,7 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc,GSlot* slot)
 	// if URL and protocol different than 'file' -> Download it
 	if(Url&&strncasecmp(doc->GetURL(),"file",i))
 	{
-		// if the download can't be done an error is then send
-		try
-		{
-			Download(doc->GetURL(),tmpFile);
-		}
-		catch(GException& e)
-		{
-			if(!slot) // If not slot -> forward error as GException
-				throw GException(e.GetMsg());
-			slot->WriteStr(e.GetMsg());
-			return(0);
-		}
-		catch(RException& e)
-		{
-			if(!slot) // If not slot -> forward error as GException
-				throw GException(e.GetMsg());
-			slot->WriteStr(e.GetMsg());
-			return(0);
-		}
+		DownloadFile(doc->GetURL(),tmpFile);
 		Dwn=true;
 	}
 	else
@@ -650,31 +625,32 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc,GSlot* slot)
 			tmpFile=doc->GetURL();
 		Dwn=false;
 	}
-
-	// Verify if the MIME type is defined -> if not try to guess
-	mime=doc->GetMIMEType();
-	if(mime.IsEmpty())
+	
+	// Handle MIME type
+	if(MIME.IsEmpty())  // If document has not defined MIME type, get the MIME type downloaded
+		MIME=GetMIMEType();  
+	if(MIME.IsEmpty())  // If MIME still empty, try to gess it from the extension
 	{
-		mime=DetermineMIMEType(tmpFile);
-		if(!mime.IsEmpty())
-			doc->SetMIMEType(mime);
+		// Go through each extension		
+		RCursor<GMIMEExt> Cur(Exts);		
+		for(Cur.Start();!Cur.End();Cur.Next())
+			if(fnmatch(Cur()->Ext,doc->GetURL(),0)!=FNM_NOMATCH)
+				MIME=Cur()->Name;			
+		if(MIME.IsEmpty())
+			throw GException("Cannot find MIME type for "+doc->GetURL());
+		doc->SetMIMEType(MIME);
+		if(!IsValidContent(MIME))  // Verify that the filter exist
+			throw RException("Cannot treat the MIME type "+MIME);
 	}
-
-	// Create a DocXML.
+			
+	// Create a DocXML and analyse it
 	xml=new GDocXML(doc->GetURL(),tmpFile);
-
-	// If MIME type defined -> analyze it.
-	if(!mime.IsEmpty())
-	{
-		f=MIMES.GetPtr<const char*>(mime);
-		if(f)
-			f->Filter->Analyze(xml);
-		xml->AddFormat(mime);
-	}
+	Filter->Filter->Analyze(xml);
+	xml->AddFormat(MIME);
 
 	// Delete it
 	if(Dwn)
-		Delete(tmpFile);
+		DeleteFile(tmpFile);
 
 	// Return XML structure
 	return(xml);
@@ -709,7 +685,7 @@ void GFilterManager::DelMIMES(GFilter* f)
 
 
 //------------------------------------------------------------------------------
-const char* GFilterManager::GetMIMEType(const char* mime) const
+/*const char* GFilterManager::GetMIMEType(const char* mime) const
 {
 	GMIMEFilter* fil;
 
@@ -717,7 +693,7 @@ const char* GFilterManager::GetMIMEType(const char* mime) const
 	fil=MIMES.GetPtr<const char*>(mime);
 	if(!fil) return(0);
 	return(fil->Name);
-}
+}*/
 
 
 //------------------------------------------------------------------------------

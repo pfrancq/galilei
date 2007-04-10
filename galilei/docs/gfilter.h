@@ -36,6 +36,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rdownload.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
@@ -205,7 +210,7 @@ public:
 * @author Pascal Francq
 * @short Generic URL Manager.
 */
-class GFilterManager : public GPluginManager<GFilterManager,GFactoryFilter,GFilter>
+class GFilterManager : public GPluginManager<GFilterManager,GFactoryFilter,GFilter>, public R::RDownload
 {
 protected:
 
@@ -221,7 +226,17 @@ protected:
 	* List of all pairs (extension, MIME type) available.
 	*/
 	R::RContainer<GMIMEExt,true,true> Exts;
+	
+	/**
+	 * Filter that should analyze the file.
+	 */
+	GMIMEFilter* Filter;
 
+	/**
+	 * Document to analyze.
+	 */
+	GDoc* Doc;
+	 		
 public:
 
 	/**
@@ -229,46 +244,22 @@ public:
 	*/
 	GFilterManager(void);
 
-protected:
-
 	/**
-	* Download and store locally a document given by an URL.
-	* @param URL            URL of the document.
-	* @param tmpFile        Temporary file created.
-	*/
-	virtual void Download(const char* URL,R::RString& tmpFile);
-
-public:
-
-	/**
-	* Try to guess the MIME types of a temporary file. By default, this method
-	* looks in the list of association between the file extension and a MIME
-	* type.
-	* @param tmpfile        Temporary file created.
-	* @return Name fo of the MIME type.
-	*/
-	virtual const char* DetermineMIMEType(const char* tmpfile);
-
-protected:
-
-	/**
-	* Delete a temporary copy of a file created by the manager. This method is
-	* only called if a temporary file was really created.
-	* @param tmpFile        Temporary file to delete.
-	*/
-	virtual void Delete(R::RString& tmpFile);
-
-public:
-
+	 * If the protocol is HTTP and the server returns a content type for the
+	 * downloaded file. This function verifies that a filter exist for the
+	 * document to download.
+	 * @param MIME           MIME type send by the server.
+	 * @return true if the file should be downloaded.
+	 */
+	virtual bool IsValidContent(const R::RString& MIME);
+	
 	/**
 	* Transform a file into a GDocXML document. Try to find the MIME type of the
 	* document if not specified.
 	* @param doc            Document to analyze
-	* @param slot           Slot where to write problem when trying to create
-	*                       the DocXML file.
 	* Return Pointer to a GDocXML.
 	*/
-	GDocXML* CreateDocXML(GDoc* doc,GSlot* slot=0);
+	GDocXML* CreateDocXML(GDoc* doc);
 
 	/**
 	* Add a pair (MIME type,filter).
@@ -289,7 +280,7 @@ public:
 	* @return C string containing the name of the filter (or null if no filter
 	*         was found).
 	*/
-	const char* GetMIMEType(const char* mime) const;
+	//const char* GetMIMEType(const char* mime) const;
 
 	/**
 	* Destructor of filter manager.
