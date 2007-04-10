@@ -91,16 +91,16 @@ using namespace GALILEI;
 catch(GException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
-		rec->WriteStr(msg+" "+e.GetMsg());                                     \
+		rec->WriteStr(e.GetMsg());                                             \
 	else                                                                       \
-		throw GException(msg+" "+e.GetMsg());                                  \
+		throw GException(e.GetMsg());                                          \
 }                                                                              \
 catch(RException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
-		rec->WriteStr(msg+" "+e.GetMsg());                                     \
+		rec->WriteStr(e.GetMsg());                                             \
 	else                                                                       \
-		throw GException(msg+" "+e.GetMsg());                                  \
+		throw GException(e.GetMsg());                                          \
 }                                                                              \
 catch(exception& e)                                                            \
 {                                                                              \
@@ -112,9 +112,9 @@ catch(exception& e)                                                            \
 catch(...)                                                                     \
 {                                                                              \
 	if(rec)                                                                    \
-		rec->WriteStr(msg);                                                    \
+		rec->WriteStr(msg+" Undefined error");                                 \
 	else                                                                       \
-		throw GException(msg);                                                 \
+		throw GException(msg+" Undefined error");                              \
 }
 
 
@@ -964,7 +964,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 				}
 				delete xml;
 			}
-			HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"): ")
+			HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"):")
 		}
 	}
 	while(Cont);
@@ -1000,7 +1000,7 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,GDocAnalyse* method,RContainer
 	{
 		doc->SetStatus(dsCannotAccess); // Suppose it cannot be access
 		if(!xml)
-			xml=Data->FilterManager->CreateDocXML(doc,rec);
+			xml=Data->FilterManager->CreateDocXML(doc);
 		if(xml)
 		{
 			// Analyse document -> Is something goes wrong -> It failed
@@ -1015,7 +1015,7 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,GDocAnalyse* method,RContainer
 			doc->SetStatus(dsOK); // OK, everything fine
 		}
 	}
-	HANDLEALLEXCEPTIONS(rec,doc->GetURL()+"("+RString::Number(doc->GetId())+"): ")
+	HANDLEALLEXCEPTIONS(rec,doc->GetURL()+"("+RString::Number(doc->GetId())+"):")
 
 	// Save if necessary
 	if(Data->SaveResults&&(doc->GetId()!=cNoRef))

@@ -60,7 +60,7 @@ GSlotLog::GSlotLog(const char* name)
 //------------------------------------------------------------------------------
 void GSlotLog::NextDoc(const GDoc* doc)
 {
-	sprintf(Buf,"Analyse Doc %u (%s)",doc->GetId(),doc->GetURL().Latin1());
+	sprintf(Buf,"Analyse %s (%u)",doc->GetURL().Latin1(),doc->GetId());
 	WriteLog(Buf);
 }
 
@@ -68,7 +68,7 @@ void GSlotLog::NextDoc(const GDoc* doc)
 //------------------------------------------------------------------------------
 void GSlotLog::NextProfile(const GProfile* prof)
 {
-	sprintf(Buf,"Compute Profile %u (%s)",prof->GetId(),(prof->GetUser()->GetName()+"/"+prof->GetName()).Latin1());
+	sprintf(Buf,"Compute %s (%u)",(prof->GetUser()->GetName()+"/"+prof->GetName()).Latin1(),prof->GetId());
 	WriteLog(Buf);
 }
 

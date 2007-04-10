@@ -68,7 +68,7 @@ using namespace GALILEI;
 #include <glinkcalc.h>
 #include <gdocanalyse.h>
 #include <gpostdoc.h>
-#include <gfiltermanagercurl.h>
+#include <gfilter.h>
 #include <gengine.h>
 #include <gmetaengine.h>
 #include <ggroupcalc.h>
@@ -104,7 +104,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GLinkCalcManager());
 	InsertPtr(new GDocAnalyseManager());
 	InsertPtr(new GPostDocManager());
-	InsertPtr(new GFilterManagerCURL());
+	InsertPtr(new GFilterManager());
 	InsertPtr(new GEngineManager());
 	InsertPtr(new GMetaEngineManager());
 	InsertPtr(new GGroupCalcManager());
