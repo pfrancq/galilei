@@ -57,7 +57,7 @@
 #include <gpostgroup.h>
 #include <gpostprofile.h>
 #include <gstatscalc.h>
-#include <gfiltermanagerkde.h>
+#include <gfilter.h>
 #include <qprogressdialog.h>
 #include <gslot.h>
 using namespace GALILEI;

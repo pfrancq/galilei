@@ -83,6 +83,7 @@
 #include <gdict.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
+#include <gfilter.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -526,26 +527,21 @@ int QFillDB::CreateCategory(RString name,int parentId)
 //-----------------------------------------------------------------------------
 void QFillDB::InsertDocument(RString path,int parentId)
 {
-	//Determine mime type of the file
 	RString sSql("");
-	RString mime("");
-	mime=FilterManager->GFilterManager::DetermineMIMEType(path.Latin1());
-	if(!mime.IsEmpty())
+	
+	sSql="SELECT * FROM htmls WHERE html='"+path+"'";
+	RQuery allReadyExists(Db,sSql);
+	allReadyExists.Start();
+	if(allReadyExists.End())
 	{
-		sSql="SELECT * FROM htmls WHERE html='"+path+"'";
-		RQuery allReadyExists(Db,sSql);
-		allReadyExists.Start();
-		if(allReadyExists.End())
-		{
-			//Insert doc in htmls
-			sSql="INSERT INTO htmls SET html='"+path+"',updated='2004-01-01',mimetype='"+mime+"',title='"+path+"'";
-			RQuery insert(Db,sSql);
-			CurrentDocId++;
+		//Insert doc in htmls
+		sSql="INSERT INTO htmls SET html='"+path+"',updated='2004-01-01',mimetype=NULL,title='"+path+"'";
+		RQuery insert(Db,sSql);
+		CurrentDocId++;
 
-			//Insert docid and topicid in htmlsbytopics
-			sSql="INSERT INTO topicsbyhtmls SET topicid="+RString::Number(parentId)+",htmlid="+RString::Number(CurrentDocId);
-			RQuery insert2(Db,sSql);
-		}
+		// Insert docid and topicid in htmlsbytopics
+		sSql="INSERT INTO topicsbyhtmls SET topicid="+RString::Number(parentId)+",htmlid="+RString::Number(CurrentDocId);
+		RQuery insert2(Db,sSql);
 	}
 }
 
@@ -601,7 +597,7 @@ void QCreateDocXML::DoIt(void)
 //-----------------------------------------------------------------------------
 void QAnalyzeXML::DoIt(void)
 {
-	Session->AnalyseDoc(XML,Doc,0,Parent);
+	Session->AnalyseDoc(XML,Doc,0,0,Parent);
 }
 
 

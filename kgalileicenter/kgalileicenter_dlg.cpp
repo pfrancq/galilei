@@ -40,7 +40,7 @@
 #include <gdoc.h>
 #include <gpostdoc.h>
 #include <glang.h>
-#include <gfiltermanagerkde.h>
+#include <gfilter.h>
 #include <qlistviewitemtype.h>
 #include <gsession.h>
 #include <gstatscalc.h>
