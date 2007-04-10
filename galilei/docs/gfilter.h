@@ -252,7 +252,15 @@ public:
 	 * @return true if the file should be downloaded.
 	 */
 	virtual bool IsValidContent(const R::RString& MIME);
-	
+
+	/**
+	 * Method called when the download of file starts. It tries to guess the
+	 * MIME type based on the entension of the file in the URL (Ex. ".html"
+	 * gives "text/html").
+	 * @return true if the file should really be downloaded.
+	 */
+	virtual bool StartDownload(void);
+		
 	/**
 	* Transform a file into a GDocXML document. Try to find the MIME type of the
 	* document if not specified.
@@ -273,14 +281,6 @@ public:
 	* @param f              Pointer to the filter.
 	*/
 	void DelMIMES(GFilter* f);
-
-	/**
-	* Get the name of a filter associated with a given MIME type.
-	* @param mime           Name of the MIME type.
-	* @return C string containing the name of the filter (or null if no filter
-	*         was found).
-	*/
-	//const char* GetMIMEType(const char* mime) const;
 
 	/**
 	* Destructor of filter manager.

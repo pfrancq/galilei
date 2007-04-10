@@ -571,6 +571,25 @@ bool GFilterManager::IsValidContent(const R::RString& MIME)
 
 
 //------------------------------------------------------------------------------
+bool GFilterManager::StartDownload(void)
+{
+	if(!GetMIMEType().IsEmpty())
+		return(true);
+		
+	RString MIME;
+	
+	// Go through each extension		
+	RCursor<GMIMEExt> Cur(Exts);		
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if(fnmatch(Cur()->Ext,Doc->GetURL(),0)!=FNM_NOMATCH)
+			MIME=Cur()->Name;			
+	if(MIME.IsEmpty())
+		return(false);
+	return(IsValidContent(MIME));
+}
+
+
+//------------------------------------------------------------------------------
 GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 {
 	RString tmpFile(250);
@@ -625,28 +644,11 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 			tmpFile=doc->GetURL();
 		Dwn=false;
 	}
-	
-	// Handle MIME type
-	if(MIME.IsEmpty())  // If document has not defined MIME type, get the MIME type downloaded
-		MIME=GetMIMEType();  
-	if(MIME.IsEmpty())  // If MIME still empty, try to gess it from the extension
-	{
-		// Go through each extension		
-		RCursor<GMIMEExt> Cur(Exts);		
-		for(Cur.Start();!Cur.End();Cur.Next())
-			if(fnmatch(Cur()->Ext,doc->GetURL(),0)!=FNM_NOMATCH)
-				MIME=Cur()->Name;			
-		if(MIME.IsEmpty())
-			throw GException("Cannot find MIME type for "+doc->GetURL());
-		doc->SetMIMEType(MIME);
-		if(!IsValidContent(MIME))  // Verify that the filter exist
-			throw RException("Cannot treat the MIME type "+MIME);
-	}
 			
 	// Create a DocXML and analyse it
 	xml=new GDocXML(doc->GetURL(),tmpFile);
 	Filter->Filter->Analyze(xml);
-	xml->AddFormat(MIME);
+	xml->AddFormat(doc->GetMIMEType());
 
 	// Delete it
 	if(Dwn)
@@ -682,18 +684,6 @@ void GFilterManager::DelMIMES(GFilter* f)
 	for(Cur.Start();!Cur.End();Cur.Next())
 		MIMES.DeletePtr(Cur());
 }
-
-
-//------------------------------------------------------------------------------
-/*const char* GFilterManager::GetMIMEType(const char* mime) const
-{
-	GMIMEFilter* fil;
-
-	if(!mime) return(0);
-	fil=MIMES.GetPtr<const char*>(mime);
-	if(!fil) return(0);
-	return(fil->Name);
-}*/
 
 
 //------------------------------------------------------------------------------
