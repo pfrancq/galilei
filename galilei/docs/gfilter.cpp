@@ -575,7 +575,6 @@ bool GFilterManager::StartDownload(void)
 {
 	if(!GetMIMEType().IsEmpty())
 		return(true);
-		
 	RString MIME;
 	
 	// Go through each extension		
@@ -646,6 +645,13 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 	}
 			
 	// Create a DocXML and analyse it
+	if(!Filter)
+	{
+		if(doc->GetMIMEType().IsEmpty())
+			throw RException("Cannot find MIME type for "+doc->GetURL());
+		throw RException("Cannot treat the MIME type "+doc->GetMIMEType());
+
+	}
 	xml=new GDocXML(doc->GetURL(),tmpFile);
 	Filter->Filter->Analyze(xml);
 	xml->AddFormat(doc->GetMIMEType());
