@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes) -I$(top_srcdir)
+INCLUDES = $(all_includes) -I$(top_srcdir) -I$(top_srcdir)/Stemming_Library
 langslib_LTLIBRARIES =  libes.la
 libes_la_LDFLAGS = -module -avoid-version
 libes_la_SOURCES = glanges.cpp

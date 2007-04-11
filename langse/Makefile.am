@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes) -I$(top_srcdir)
+INCLUDES = $(all_includes) -I$(top_srcdir) -I$(top_srcdir)/Stemming_Library
 langslib_LTLIBRARIES =  libse.la
 libse_la_LDFLAGS = -module -avoid-version
 libse_la_SOURCES = glangse.cpp

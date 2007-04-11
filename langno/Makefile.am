@@ -1,4 +1,4 @@
-INCLUDES = $(all_includes) -I$(top_srcdir)
+INCLUDES = $(all_includes) -I$(top_srcdir) -I$(top_srcdir)/Stemming_Library
 langslib_LTLIBRARIES =  libno.la
 libno_la_LDFLAGS = -module -avoid-version
 libno_la_SOURCES = glangno.cpp
