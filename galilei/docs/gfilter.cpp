@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GFilter.h
+	GFilter.cpp
 
 	Generic Filter for documents - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -489,7 +489,6 @@ public:
 	int Compare(const GMIMEFilter* f) const {return(Name.Compare(f->Name));}
 	int Compare(const GMIMEFilter& f) const {return(Name.Compare(f.Name));}
 	int Compare(const R::RString& t) const {return(Name.Compare(t));}
-	int Compare(const char* t) const {return(Name.Compare(t));}
 };
 
 
@@ -560,6 +559,17 @@ GFilterManager::GFilterManager(void)
 
 
 //------------------------------------------------------------------------------
+RString GFilterManager::FindMIMEType(void)
+{
+	RCursor<GMIMEExt> Cur(Exts);		
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if(fnmatch(Cur()->Ext,Doc->GetURL(),0)!=FNM_NOMATCH)
+			return(Cur()->Name);			
+	return(RString(""));
+}
+
+
+//------------------------------------------------------------------------------
 bool GFilterManager::IsValidContent(const R::RString& MIME)
 {
 	Doc->SetMIMEType(MIME);
@@ -574,14 +584,8 @@ bool GFilterManager::IsValidContent(const R::RString& MIME)
 bool GFilterManager::StartDownload(void)
 {
 	if(!GetMIMEType().IsEmpty())
-		return(true);
-	RString MIME;
-	
-	// Go through each extension		
-	RCursor<GMIMEExt> Cur(Exts);		
-	for(Cur.Start();!Cur.End();Cur.Next())
-		if(fnmatch(Cur()->Ext,Doc->GetURL(),0)!=FNM_NOMATCH)
-			MIME=Cur()->Name;			
+		return(true);	
+	RString MIME=FindMIMEType();
 	if(MIME.IsEmpty())
 		return(false);
 	return(IsValidContent(MIME));
@@ -642,9 +646,17 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 		else
 			tmpFile=doc->GetURL();
 		Dwn=false;
+		
+		// If no MIME type defined, try to guess it
+		if(MIME.IsEmpty())
+		{	
+			MIME=FindMIMEType();
+			if(!MIME.IsEmpty())
+				IsValidContent(MIME);
+		}
 	}
 			
-	// Create a DocXML and analyse it
+	// Verify that a filter was defined.
 	if(!Filter)
 	{
 		if(doc->GetMIMEType().IsEmpty())
@@ -652,6 +664,8 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 		throw RException("Cannot treat the MIME type "+doc->GetMIMEType());
 
 	}
+	
+	// Create a DocXML and analyse it
 	xml=new GDocXML(doc->GetURL(),tmpFile);
 	Filter->Filter->Analyze(xml);
 	xml->AddFormat(doc->GetMIMEType());

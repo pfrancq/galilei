@@ -6,7 +6,7 @@
 
 	Generic Filter for documents - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -244,6 +244,14 @@ public:
 	*/
 	GFilterManager(void);
 
+protected:
+
+	/**
+	 * Find the MIME type of a file based on its extension.
+	 * @return MIME type or an empty string.  
+	 */
+	RString FindMIMEType(void);
+	 
 	/**
 	 * If the protocol is HTTP and the server returns a content type for the
 	 * downloaded file. This function verifies that a filter exist for the
@@ -260,6 +268,8 @@ public:
 	 * @return true if the file should really be downloaded.
 	 */
 	virtual bool StartDownload(void);
+
+public:
 		
 	/**
 	* Transform a file into a GDocXML document. Try to find the MIME type of the
