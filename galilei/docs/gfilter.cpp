@@ -610,7 +610,7 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 	// If the document as already a MIME type -> a filter must exist
 	RString MIME=doc->GetMIMEType();
 	if((!MIME.IsEmpty())&&(!IsValidContent(MIME)))
-		throw RException("Cannot treat the MIME type "+MIME);
+		throw RException("Cannot treat the MIME type '"+MIME+"'");
 	
 	// Look for the protocol
 	ptr=doc->GetURL();
@@ -661,7 +661,7 @@ GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
 	{
 		if(doc->GetMIMEType().IsEmpty())
 			throw RException("Cannot find MIME type for "+doc->GetURL());
-		throw RException("Cannot treat the MIME type "+doc->GetMIMEType());
+		throw RException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
 
 	}
 	
