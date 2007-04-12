@@ -191,7 +191,6 @@ void GGALILEIApp::Init(void)
 		Managers()->ReadConfig(&GALILEIConfig);
 	cout<<"OK"<<endl;
 
-
 	// Init OK
 	HasInitApp=true;
 }
@@ -205,16 +204,17 @@ GSession* GGALILEIApp::CreateSession(void)
 
 	// Init Session
 	Session=new GSession(Log,Debug);
-	if(Log)
-		Log->WriteLog("Session created");
+	WriteLog("Session created");
 
 	// Connect plugins
 	RCursor<GGenericPluginManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Connect(Session);
-	if(Log)
-		Log->WriteLog("Plugins connected to session");
+	WriteLog("Plugins connected to session");
 
+	// Init the session
+	Session->Init();
+	
 	return(Session);
 }
 
@@ -229,6 +229,14 @@ void GGALILEIApp::DeleteSession(void)
 		Cur()->Disconnect(Session);
 	delete Session;
 	Session=0;
+}
+
+
+//------------------------------------------------------------------------------
+void GGALILEIApp::WriteLog(const RString& str)
+{
+	if(Log)
+		Log->WriteLog(str);	
 }
 
 

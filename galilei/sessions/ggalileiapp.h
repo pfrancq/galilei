@@ -203,6 +203,11 @@ public:
 	*/
 	void AddPlugInsPath(const R::RString& path) {PlugInsPath.InsertPtr(new R::RString(path));}
 
+	/**
+	 * Write to the log file something (if a log file is defined).
+	 */
+	void WriteLog(const R::RString& str);
+	
 protected:
 
 	/**
