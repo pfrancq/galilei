@@ -6,7 +6,7 @@
 
 	Main program that updates GALILEI - Implementation.
 
-	Copyright 1999-2003 by the Universit�Libre de Bruxelles.
+	Copyright 1999-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -73,10 +73,9 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 class UpGALILEI : public GGALILEIApp
 {
-	bool DoDocs;
-	bool DoProfiles;
-	bool DoGroups;
-	bool Param;
+	bool DoDocs;        // Only documents should be analyze
+	bool DoProfiles;    // Only profiles should be computed
+	bool DoGroups;      // Only profiles should be clustered.
 	
 public:
 	UpGALILEI(int argc, char *argv[]);
@@ -87,47 +86,22 @@ public:
 //------------------------------------------------------------------------------
 UpGALILEI::UpGALILEI(int argc, char *argv[])
 	: GGALILEIApp("UpGALILEI",argc,argv,false), DoDocs(true), DoProfiles(true),
-	  DoGroups(true),Param(false)
-	
+	  DoGroups(true)	
 {
 	// Show Part
 	cout<<"GALILEI Update Version "<<VERSION<<endl;
 	cout<<"Copyright 1999-2007 by the Université Libre de Bruxelles"<<endl;
 	
 	// Analyze parameters
-	for(int i=0;i<argc;i++)
-	{
-		if(!strcmp(argv[i],"--only-docs"))
-		{
-			if(!Param)
-			{
-				DoProfiles=false;
-				DoGroups=false;
-				Param=true;
-			}
-			DoDocs=true;
-		}
-		if(!strcmp(argv[i],"--only-profiles"))
-		{
-			if(!Param)
-			{
-				DoDocs=false;
-				DoGroups=false;
-				Param=true;
-			}
-			DoProfiles=true;
-		}
-		if(!strcmp(argv[i],"--only-groups"))
-		{
-			if(!Param)
-			{
-				DoDocs=false;
-				DoProfiles=false;
-				Param=true;
-			}
-			DoGroups=true;
-		}
-	}	
+	bool OnlyDocs=Args.IsIn("--only-docs");
+	bool OnlyProfiles=Args.IsIn("--only-profiles");
+	bool OnlyGroups=Args.IsIn("--only-groups");
+	if((!OnlyDocs)&&(OnlyProfiles||OnlyGroups))
+		DoDocs=false;	
+	if((!OnlyProfiles)&&(OnlyDocs||OnlyGroups))
+		DoProfiles=false;
+	if((!OnlyGroups)&&(OnlyDocs||OnlyProfiles))
+		DoGroups=false;	  
 }
 
 
@@ -138,10 +112,8 @@ void UpGALILEI::Run(void)
 	{
 		// Init
 		Init();
-		if(Log)
-			Log->WriteLog("GALILEI Update started");
+		WriteLog("GALILEI Update started");
 		CreateSession();
-		Session->Init();
 
 		// Load database
 		cout<<"Load Data ...";
@@ -152,8 +124,7 @@ void UpGALILEI::Run(void)
 			Session->GetStorage()->LoadGroups();
 		if(DoProfiles||DoGroups)
 			Session->GetStorage()->LoadUsers();
-		if(Log)
-			Log->WriteLog("Data loaded");
+		WriteLog("Data loaded");
 		cout<<"OK"<<endl;
 		
 		// Analyse Docs
@@ -162,8 +133,7 @@ void UpGALILEI::Run(void)
 			cout<<"Analyse Documents ...";
 			cout.flush();
 			Session->AnalyseDocs(Log);
-			if(Log)
-				Log->WriteLog("Documents analysed");
+			WriteLog("Documents analysed");
 			cout<<"OK"<<endl;
 		}
 		
@@ -174,8 +144,7 @@ void UpGALILEI::Run(void)
 			cout.flush();
 			Session->CalcProfiles(Log);
 			cout<<"OK"<<endl;
-			if(Log)
-				Log->WriteLog("Profiles computed");
+			WriteLog("Profiles computed");
 		}
 		
 		// Group profiles
@@ -185,40 +154,32 @@ void UpGALILEI::Run(void)
 			cout.flush();
 			Session->GroupingProfiles(Log);
 			cout<<"OK"<<endl;
-			if(Log)
-				Log->WriteLog("Groups computed");
+			WriteLog("Groups computed");
 		}
 
 		// End Session
-		if(Log)
-		{
-			Log->WriteLog("Session updated");
-			Log->WriteLog("GALILEI Update stopped");
-		}
+		WriteLog("Session updated");
+		WriteLog("GALILEI Update stopped");
 	 }
 	catch(GException& e)
 	{
 		cout<<endl<<"Error: "<<e.GetMsg()<<endl;
-		if(Log)
-			Log->WriteLog(RString("Error: ")+e.GetMsg());
+		WriteLog(RString("Error: ")+e.GetMsg());
 	}
 	catch(RException& e)
 	{
 		cout<<endl<<"Error: "<<e.GetMsg()<<endl;
-		if(Log)
-			Log->WriteLog(RString("Error: ")+e.GetMsg());
+		WriteLog(RString("Error: ")+e.GetMsg());
 	}
 	catch(std::exception& e)
 	{
 		cout<<endl<<"Error: "<<e.what()<<endl;
-		if(Log)
-			Log->WriteLog(RString("Error: ")+e.what());
+		WriteLog(RString("Error: ")+e.what());
 	}
 	catch(...)
 	{
 		cout<<endl<<"Error while processing"<<endl;
-		if(Log)
-			Log->WriteLog("Error while processing");
+		WriteLog("Error while processing");
 	}
 }
 
