@@ -109,7 +109,7 @@ protected:
 	* This function skip spaces.
 	*/
 	inline void SkipSpaces(void)
-	{while((!Pos->IsNull())&&(Pos->IsSpace())) Pos++;}
+	{while(Pos&&(!Pos->IsNull())&&(Pos->IsSpace())) Pos++;}
 
 public:
 

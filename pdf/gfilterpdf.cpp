@@ -167,7 +167,7 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 	Begin=Pos=TextBufOutputDev::RCharBuffer; // Remember the first line which is not a command
 	SkipSpaces();
 	Pos=Begin;
-	while(!Pos->IsNull())
+	while(Pos&&(!Pos->IsNull()))
 	{
 		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 		SkipSpaces();
