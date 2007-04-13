@@ -6,7 +6,7 @@
 
 	A KDE about box for PostScript filter - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -67,7 +67,7 @@ void About(void)
 	aboutData.setLicenseText( I18N_NOOP("GRANT.  Subject to the provisions contained herein, Digital Equipment\n"
 		"Corporation (\"Digital\") hereby grants you a non-exclusive license to\n"
 		"use its accompanying proprietary software product and associated\n"
-		"documentation (\Software\") free of charge pursuant to the terms and\n"
+		"documentation (\"Software\") free of charge pursuant to the terms and\n"
 		"conditions of this Agreement.\n\n"
 		"You are not entitled to support or telephone assistance in connection\n"
 		"with your use of the Software.\n\n"
