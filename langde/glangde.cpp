@@ -6,7 +6,7 @@
 
 	German Language - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -64,7 +64,7 @@ using namespace stemming;
 
 //-----------------------------------------------------------------------------
 GLangDE::GLangDE(GFactoryLang* fac) 
-	: GLang(fac,"German ","de")
+	: GLang(fac,"German","de")
 {
 }
 
