@@ -1254,31 +1254,26 @@ void GStorageMySQL::AssignId(GGroup* grp)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveGroups(void)
+void GStorageMySQL::SaveGroups(GLang* lang)
 {
 	RCursor<GWeightInfo> WordCur;
 	R::RCursor<GGroup> GroupsCursor;
 	RString sSql;
-	R::RCursor<GFactoryLang> langs;
-	GLang* lang;
 	RCursor<GSubProfile> Sub;
 
 	try
 	{
-		RQuery delete1(Db,"DELETE FROM groups");
-		langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
-		for(langs.Start();!langs.End();langs.Next())
-		{
-			lang=langs()->GetPlugin();
-			if(!lang) continue;
-			sSql="DELETE FROM groupsbyconcepts WHERE langid='"+RString(lang->GetCode())+"'";
-			RQuery delete2(Db,sSql);
-		}
+		// SQL string representing current language
+		RString LangStr="'"+RString(lang->GetCode())+"'";
+		
+		// Delete groups and goups info
+		RQuery delete1(Db,"DELETE FROM groups WHERE langid="+LangStr);
+		RQuery delete2(Db,"DELETE FROM groupsbyconcepts WHERE langid="+LangStr);
 
-		GroupsCursor=Session->GetGroups();
+		GroupsCursor=Session->GetGroups(lang);
 		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
 		{
-			sSql="INSERT INTO groups(groupid,langid,updated,calculated) VALUES("+RString::Number(GroupsCursor()->GetId())+",'"+RString(GroupsCursor()->GetLang()->GetCode())+"',"+RQuery::SQLValue(GroupsCursor()->GetUpdated())+","+RQuery::SQLValue(GroupsCursor()->GetComputed())+")";
+			sSql="INSERT INTO groups(groupid,langid,updated,calculated) VALUES("+RString::Number(GroupsCursor()->GetId())+","+LangStr+","+RQuery::SQLValue(GroupsCursor()->GetUpdated())+","+RQuery::SQLValue(GroupsCursor()->GetComputed())+")";
 			RQuery insert1(Db,sSql);
 
 			// Save SubProfiles infos
@@ -1293,7 +1288,7 @@ void GStorageMySQL::SaveGroups(void)
 			WordCur.Set(*GroupsCursor());
 			for(WordCur.Start();!WordCur.End();WordCur.Next())
 			{
-				sSql="INSERT INTO groupsbyconcepts(groupid,conceptid,weight,langid,typeid) VALUES("+RString::Number(GroupsCursor()->GetId())+","+RString::Number(WordCur()->GetId())+",'"+RString::Number(WordCur()->GetWeight())+"','"+RString(GroupsCursor()->GetLang()->GetCode())+"','"+RString::Number(WordCur()->GetType())+"')";
+				sSql="INSERT INTO groupsbyconcepts(groupid,conceptid,weight,langid,typeid) VALUES("+RString::Number(GroupsCursor()->GetId())+","+RString::Number(WordCur()->GetId())+",'"+RString::Number(WordCur()->GetWeight())+"',"+LangStr+",'"+RString::Number(WordCur()->GetType())+"')";
 				RQuery InserinfoWord(Db,sSql);
 			}
 		}

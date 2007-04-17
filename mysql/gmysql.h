@@ -386,8 +386,9 @@ public:
 
 	/**
 	* Save the groups description.
+	* @param lang            Define the language of the groups to save.
 	*/
-	virtual void SaveGroups(void);
+	virtual void SaveGroups(GLang* lang);
 
 	/**
 	* Save the groups in history.
