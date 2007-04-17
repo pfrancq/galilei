@@ -307,7 +307,9 @@ void QGroups::slotSaveGroups(void)
 	if(KMessageBox::warningYesNo(this,"Do you want to overwrite the groups in the database?","Warning")==KMessageBox::No)
 		return;
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
-	session->GetStorage()->SaveGroups();
+	R::RCursor<GLang> CurLang(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());	
+	for(CurLang.Start();!CurLang.End();CurLang.Next())
+		session->GetStorage()->SaveGroups(CurLang());
 }
 
 
