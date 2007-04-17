@@ -551,14 +551,12 @@ public:
 	/**
 	* Get a subprofile with a specific identifier.
 	* @param id              Identifier.
-	* @param lang            Language. If null, the subprofile is searched in
-	*                        all languages.
 	* @param load            If set to true, the subprofile is eventually loaded into
 	*                        memory.
 	* @param null            If set to true, if the subprofile does not exist,
 	*                        return 0, else an exception is generated.
 	*/
-	GSubProfile* GetSubProfile(const unsigned int id,const GLang* lang,bool load=true,bool null=false) const;
+	GSubProfile* GetSubProfile(const unsigned int id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new subprofile.
@@ -576,7 +574,7 @@ public:
 	* Clear the subprofiles of a given language.
 	* @param lang            Language of the groups to delete.
 	*/
-	void ClearSubprofiles(GLang* lang);
+	//void ClearSubprofiles(GLang* lang);
 
 	/**
 	* Compute the profiles.

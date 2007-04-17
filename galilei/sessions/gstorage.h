@@ -670,8 +670,9 @@ public:
 
 	/**
 	* Save the groups of the session.
+	* @param lang            Define the language of the groups to save.
 	*/
-	virtual void SaveGroups(void)=0;
+	virtual void SaveGroups(GLang* lang)=0;
 
 	/**
 	* Save the groups in history.

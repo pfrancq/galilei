@@ -154,10 +154,10 @@ class PerLang
 public:
 	GLang* Lang;
 	RContainer<GDoc,false,true> Docs;
-	RContainer<GSubProfile,true,true> SubProfiles;
+	RContainer<GSubProfile,false,true> SubProfiles;
 	RContainer<GGroup,false,true> Groups;
 
-	PerLang(GLang* lang) : Lang(lang), Docs(10000), SubProfiles(500), Groups(100)
+	PerLang(GLang* lang) : Lang(lang), Docs(10000), SubProfiles(1000), Groups(500)
 	{}
 
 	int Compare(const PerLang& lang) const;
@@ -249,6 +249,7 @@ public:
 	R::RContainer<GDocRefURL,true,true> DocsRefUrl;                   // Documents ordered by URL.
 	R::RContainer<GUser,true,true> Users;                             // Users handled by the system.
 	R::RContainer<GProfile,true,true> Profiles;                       // Profiles handled by the system.
+	R::RContainer<GSubProfile,true,true> SubProfiles;                 // SubProfiles handled by the system.
 	R::RContainer<GGroup,true,true> Groups;                           // Groups handled by the system.
 	R::RContainer<PerLang,true,true> Langs;                           // Documents, Subprofiles and Groups divided by language.
 	R::RContainer<GFreeId,true,true> FreeIds;                         // Free identificators for the groups.
@@ -262,7 +263,7 @@ public:
 	Intern(GStorage* str,unsigned int mdocs,unsigned int maxsub,unsigned int maxgroups,unsigned int d,unsigned int u,unsigned int p,unsigned int g,unsigned int nblangs)
 		: Subjects(0), GroupsHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
-		  Users(u,u/2), Profiles(p,p/2), Groups(g+(g/2),g/2), Langs(nblangs+1), FreeIds(50,25),
+		  Users(u,u/2), Profiles(p,p/2), SubProfiles(p*5,(p*5)/2), Groups(g+(g/2),g/2), Langs(nblangs+1), FreeIds(50,25),
 		  ConceptTypes(10,5), RelationTypes(10,5),
 		  MaxDocs(mdocs), MaxSubProfiles(maxsub), MaxGroups(maxgroups), FilterManager(0)
 	{
@@ -364,6 +365,7 @@ void GSession::ForceReCompute(tObjType type)
 				Cur()->Lang->Clear(otSubProfile);
 			Cur()->SubProfiles.Clear();
 		}
+		Data->SubProfiles.Clear();
 	}
 	else if(type==otGroups)
 	{
@@ -405,6 +407,7 @@ void GSession::ReInit(void)
 			Cur()->Lang->Clear(otSubProfile);
 		Cur()->SubProfiles.Clear();
 	}
+	Data->SubProfiles.Clear();
 	Data->Profiles.Clear();
 	Data->Users.Clear();
 }
@@ -1304,30 +1307,16 @@ size_t GSession::GetSubProfilesNb(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-GSubProfile* GSession::GetSubProfile(unsigned int id,const GLang* lang,bool load,bool null) const
+GSubProfile* GSession::GetSubProfile(unsigned int id,bool load,bool null) const
 {
 	GSubProfile* s;
 
-	if(lang)
-	{
-		PerLang* subs=Data->Langs.GetPtr(lang);
-		if(subs)
-		{
-			s=subs->SubProfiles.GetPtr(id);
-			if(s)
-				return(s);
-		}
-	}
-	else
-	{
-		RCursor<PerLang> Cur(Data->Langs);
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			s=Cur()->SubProfiles.GetPtr(id);
-			if(s)
-				return(s);
-		}
-	}
+	if(id>Data->SubProfiles.GetMaxPos())
+		return(0);
+	s=Data->SubProfiles[id];
+	if(s)
+		return(s);
+		
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
@@ -1361,16 +1350,10 @@ void GSession::AssignId(GSubProfile* sub)
 	}
 
 	// The first subprofile has the identificator 1
-	unsigned int id,i;
-	RCursor<PerLang> Cur(Data->Langs);
-	for(Cur.Start(),id=0;!Cur.End();Cur.Next())
-	{
-		if(!Cur()->SubProfiles.GetNb()) continue;
-		i=Cur()->SubProfiles[Cur()->SubProfiles.GetMaxPos()]->GetId()+1;
-		if(id<i)
-			id=i;
-	}
-	sub->SetId(id);
+	if(Data->SubProfiles.GetNb())
+		sub->SetId(Data->SubProfiles[Data->SubProfiles.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first subprofile has an identificator of 1
+	else
+		sub->SetId(1);
 }
 
 
@@ -1379,9 +1362,14 @@ void GSession::InsertSubProfile(GSubProfile* s)
 {
 	GLang* l;
 	PerLang* list;
+	bool NewOne=false;
 
 	if(s->GetId()==cNoRef)
+	{
 		AssignId(s);
+		NewOne=true;
+	}
+	Data->SubProfiles.InsertPtrAt(s,s->GetId());
 	l=s->GetLang();
 	list=Data->Langs.GetPtr<const GLang*>(l);
 	if(!list)
@@ -1391,14 +1379,15 @@ void GSession::InsertSubProfile(GSubProfile* s)
 
 
 //------------------------------------------------------------------------------
-void GSession::ClearSubprofiles(GLang* lang)
+/*void GSession::ClearSubprofiles(GLang* lang)
 {
+	cout<<"Problem"<<endl;
 	if(lang)
 		lang->Clear(otSubProfile);
 	PerLang* ptr=Data->Langs.GetPtr(lang);
 	if(ptr)
 		ptr->SubProfiles.Clear();
-}
+}*/
 
 
 //------------------------------------------------------------------------------
@@ -1811,15 +1800,15 @@ void GSession::CopyIdealGroups(void)
 			// Compute Description
 			if(CalcDesc)
 				CalcDesc->Compute(grp);
+			
+			if(Data->SaveResults)
+			{
+				Data->Storage->SaveGroups(Langs());
+				RCursor<GGroup> Groups(GetGroups(Langs()));
+				for(Groups.Start();!Groups.End();Groups.Next())
+					Groups()->SetState(osSaved);
+			}		
 		}
-	}
-
-	if(Data->SaveResults)
-	{
-		Data->Storage->SaveGroups();
-		RCursor<GGroup> Groups(GetGroups());
-		for(Groups.Start();!Groups.End();Groups.Next())
-			Groups()->SetState(osSaved);
 	}
 }
 

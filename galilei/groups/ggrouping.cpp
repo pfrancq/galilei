@@ -69,9 +69,11 @@ GGrouping::GGrouping(GFactoryGrouping* fac)
 void GGrouping::Grouping(GSlot* rec,bool save)
 {
 	R::RCursor<GFactoryLang> CurLang;
-	GGroupCalc* CalcDesc;
 	RCursor<GSubProfile> cur;
 	R::RCursor<GGroup> Groups;
+
+	// How to compute the groups
+	GGroupCalc* CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
 
 	// Go trough each language.
 	CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
@@ -97,28 +99,28 @@ void GGrouping::Grouping(GSlot* rec,bool save)
 				SubProfiles.InsertPtr(cur());
 			#endif
 		}
+		
 		// Make the grouping
 		Run();
+		
+		// Compute the description of the groups and Save the information.
+		if(CalcDesc)
+		{
+			Groups=Session->GetGroups(Lang);
+			for(Groups.Start();!Groups.End();Groups.Next())
+				CalcDesc->Compute(Groups());
+		}
+
+		// Save if necessary
+		if(save)
+		{
+			Session->GetStorage()->SaveGroups(Lang);
+			Groups=Session->GetGroups(Lang);
+			for(Groups.Start();!Groups.End();Groups.Next())
+				Groups()->SetState(osSaved);
+		}	
 	}
 	Lang=0;
-
-	// Compute the description of the groups and Save the information.
-	CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
-	if(CalcDesc)
-	{
-		Groups=Session->GetGroups();
-		for(Groups.Start();!Groups.End();Groups.Next())
-			CalcDesc->Compute(Groups());
-	}
-
-	// Save if necessary
-	if(save)
-	{
-		Session->GetStorage()->SaveGroups();
-		Groups=Session->GetGroups();
-		for(Groups.Start();!Groups.End();Groups.Next())
-			Groups()->SetState(osSaved);
-	}
 }
 
 
