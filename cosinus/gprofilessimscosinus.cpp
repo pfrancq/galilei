@@ -94,7 +94,7 @@ public:
 
 //------------------------------------------------------------------------------
 GProfilesSimsCosinus::GProfilesSim::GProfilesSim(GProfilesSimsCosinus* manager,GLang* lang)
-	:  Values(0), Lang(lang), Deviation(0.0), Manager(manager), NbLines(0), NeedUpdate(false), Created(300), Modified(300), Deleted(300), MeanSim(0.0)
+	:  Values(0), Lang(lang), Deviation(0.0), Manager(manager), NbLines(0), NeedUpdate(false), Created(5000), Modified(5000), Deleted(5000), MeanSim(0.0)
 {
 }
 
@@ -341,8 +341,8 @@ double GProfilesSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,unsign
 		return(1.0);
 
 	// Get the subprofiles and verify that they defined in the same language
-	GSubProfile* sub1=Session->GetSubProfile(id1,0);
-	GSubProfile* sub2=Session->GetSubProfile(id2,0);
+	GSubProfile* sub1=Session->GetSubProfile(id1);
+	GSubProfile* sub2=Session->GetSubProfile(id2);
 	if(sub1->GetLang()!=sub2->GetLang())
 		throw GException("Cannot compare two subprofiles of a different language");
 

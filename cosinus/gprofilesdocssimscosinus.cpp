@@ -347,7 +347,7 @@ double GProfilesDocsSimsCosinus::ComputeSim(const GDoc* doc,const GSubProfile* s
 double GProfilesDocsSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,unsigned int)
 {
 	GDoc* doc=Session->GetDoc(id1,0);
-	GSubProfile* sub=Session->GetSubProfile(id2,0);
+	GSubProfile* sub=Session->GetSubProfile(id2);
 
 	if(doc->GetLang()!=sub->GetLang())
 		throw GException("Cannot compare a document and subprofile of a different language");

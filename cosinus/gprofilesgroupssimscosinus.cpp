@@ -332,7 +332,7 @@ void GProfilesGroupsSimsCosinus::Update(void)
 //------------------------------------------------------------------------------
 double GProfilesGroupsSimsCosinus::GetMeasure(unsigned int id1,unsigned int id2,unsigned int)
 {
-	GSubProfile* sub=Session->GetSubProfile(id1,0);
+	GSubProfile* sub=Session->GetSubProfile(id1);
 	GGroup* grp=Session->GetGroup(id2,0);
 
 	if(sub->GetLang()!=grp->GetLang())
