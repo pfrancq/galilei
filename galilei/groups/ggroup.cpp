@@ -6,7 +6,7 @@
 
 	Group - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -338,7 +338,9 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 				// Verify if already inserted in Docs.
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
-				Docs.InsertPtr(new GFdbkRef(Fdbks(),measure->GetMeasure(Fdbks()->GetDocId(),s->GetId())));
+				double* res;
+				measure->Measure(Fdbks()->GetDocId(),s->GetId(),res);
+				Docs.InsertPtr(new GFdbkRef(Fdbks(),*res));
 			}
 			continue;
 		}
@@ -360,7 +362,9 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDocId()))) continue;
 
 			// Insert it.
-			Docs.InsertPtr(new GFdbkRef(Fdbks(),measure->GetMeasure(Fdbks()->GetDocId(),s->GetId())));
+			double* res;
+			measure->Measure(Fdbks()->GetDocId(),s->GetId(),res);
+			Docs.InsertPtr(new GFdbkRef(Fdbks(),*res));
 		}
 	}
 
@@ -420,7 +424,9 @@ double GGroup::ComputeSumSim(GMeasure* measure,const GSubProfile* s) const
 	for(sub.Start(),sum=0.0;!sub.End();sub.Next())
 	{
 		if(sub()==s) continue;
-		sum+=measure->GetMeasure(s->GetId(),sub()->GetId());
+		double res;
+		measure->Measure(0,s->GetLang(),s->GetId(),sub()->GetId(),&res);
+		sum+=(res);
 	}
 	return(sum);
 }

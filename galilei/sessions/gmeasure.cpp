@@ -6,7 +6,7 @@
 
 	Generic Measure - Implementation.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2005-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -54,6 +54,12 @@ GMeasure::GMeasure(GFactoryMeasure* fac)
 
 
 //------------------------------------------------------------------------------
+void GMeasure::Info(unsigned int,...)
+{
+}
+
+
+//------------------------------------------------------------------------------
 GMeasure::~GMeasure(void)
 {
 }
@@ -92,33 +98,6 @@ R::RString GFactoryMeasure::GetType(void) const
 GTypeMeasureManager::GTypeMeasureManager(const RString& type)
 	: GPluginManager<GTypeMeasureManager,GFactoryMeasure,GMeasure>(type,API_MEASURES_VERSION,ptSelect)
 {
-}
-
-
-//------------------------------------------------------------------------------
-double GTypeMeasureManager::GetMeasure(unsigned int id1,unsigned id2,unsigned int measure)
-{
-	if(!Current)
-		throw GException("No measure selected for type '"+Name+"'.");
-	return(Current->GetPlugin()->GetMeasure(id1,id2,measure));
-}
-
-
-//------------------------------------------------------------------------------
-double GTypeMeasureManager::GetMinMeasure(const GLang* lang,unsigned int measure)
-{
-	if(!Current)
-		throw GException("No measure selected for type '"+Name+"'.");
-	return(Current->GetPlugin()->GetMinMeasure(lang,measure));
-}
-
-
-//------------------------------------------------------------------------------
-double GTypeMeasureManager::GetMinMeasure(unsigned int measure)
-{
-	if(!Current)
-		throw GException("No measure selected for type '"+Name+"'.");
-	return(Current->GetPlugin()->GetMinMeasure(measure));
 }
 
 

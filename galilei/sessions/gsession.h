@@ -197,7 +197,20 @@ public:
 	* @returns Pointer to RMath::RRandom;
 	*/
 	R::RRandom* GetRandom(void) const;
+	
+	/**
+	 * Get a cursor over all language specific data. 
+	 * @return R::RCursor<GLangData>
+	 */
+	R::RCursor<GLangData> GetLanguageSpecifics(void);
 
+	/**
+	 * Get a pointer to a structure holding language specific data. If the 
+	 * structure does not exist, it is created.
+	 * @param lang           Language fo which the structure is searched.
+	 */
+	GLangData* GetLanguageSpecific(GLang* lang);
+	
 	//@} General methods
 
 	//-----------------------------------------------------
@@ -336,13 +349,13 @@ public:
 	* Get the number of documents handled.
 	* @returns Number of documents.
 	*/
-	unsigned int GetNbDocs(void) const;
+	size_t GetNbDocs(void) const;
 
 	/**
 	* Get the maximum position of documents handled.
 	* @returns Number of documents.
 	*/
-	unsigned int GetMaxPosDoc(void) const;
+	size_t GetMaxPosDoc(void) const;
 
 	/**
 	* Get a cursor on the documents of a given langage.
@@ -355,7 +368,7 @@ public:
 	* @param lang            Langage of the documents
 	* @returns Number of documents of this language.
 	*/
-	unsigned int GetNbDocs(GLang* lang) const;
+	size_t GetNbDocs(GLang* lang) const;
 
 	/**
 	* Fill a given array with all the documents of a given language. The array
@@ -367,7 +380,7 @@ public:
 	* @returns Size of the data (including the null pointers) copied in the
 	* array.
 	*/
-	unsigned int FillDocs(GDoc** docs);
+	size_t FillDocs(GDoc** docs);
 
 	/**
 	* Get a document corresponding to a given identificator.
@@ -403,8 +416,7 @@ public:
 
 	/**
 	* Move a document from the container holding all the documents with an
-	* unknow language to the container corresponding to the language. This
-	* method supposes that the documents was previously in the unkown container.
+	* unknown language to the container corresponding to the language.
 	* @param d               Pointer to the document.
 	*/
 	void MoveDoc(GDoc* d);
@@ -549,14 +561,22 @@ public:
 	size_t GetSubProfilesNb(const GLang* lang) const;
 
 	/**
+	* Get the highest identificator assign to a subprofile for a given
+	* language.
+	* @param lang            Language.
+	*/
+	size_t GetMaxSubProfileId(const GLang* lang) const;
+
+	/**
 	* Get a subprofile with a specific identifier.
 	* @param id              Identifier.
+	* @param lang            Language.
 	* @param load            If set to true, the subprofile is eventually loaded into
 	*                        memory.
 	* @param null            If set to true, if the subprofile does not exist,
 	*                        return 0, else an exception is generated.
 	*/
-	GSubProfile* GetSubProfile(const unsigned int id,bool load=true,bool null=false) const;
+	GSubProfile* GetSubProfile(GLang* lang,const unsigned int id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new subprofile.
@@ -566,15 +586,9 @@ public:
 
 	/**
 	* Insert a subprofiles in the container.
-	* @param s               Pointer to the subprofile to add.
+	* @param sub             Subprofile to add.
 	*/
-	void InsertSubProfile(GSubProfile* s);
-
-	/**
-	* Clear the subprofiles of a given language.
-	* @param lang            Language of the groups to delete.
-	*/
-	//void ClearSubprofiles(GLang* lang);
+	void InsertSubProfile(GSubProfile* sub);
 
 	/**
 	* Compute the profiles.
@@ -628,18 +642,6 @@ public:
 	// @{
 
 	/**
-	* Get a cursor on all the groups.
-	* @return GGroupCursor.
-	*/
-	R::RCursor<GGroup> GetGroups(void) const;
-
-	/**
-	* Get the number of groups handled.
-	* @returns Number of groups.
-	*/
-	unsigned int GetNbGroups(void) const;
-
-	/**
 	* Get a cursor on the groups of a given langage.
 	* @param lang            Language of the groups.
 	* @return GGroupCursor.
@@ -653,18 +655,8 @@ public:
 	unsigned int GetNbGroups(GLang* lang) const;
 
 	/**
-	* Get the group where the given subprofile is attached.
-	* @param sub             Subprofile used.
-	* @param load            If set to true, the group is eventually loaded into
-	*                        memory.
-	* @param null            If set to true, if the group does not exist,
-	*                        return 0, else an exception is generated.
-	* @returns Pointer to the group.
-	*/
-	GGroup* GetGroup(const GSubProfile* sub,bool load=true,bool null=false) const;
-
-	/**
 	* Get a group corresponding to a given identificator.
+	* @param lang            Language.
 	* @param id              Identificator of the group.
 	* @param load            If set to true, the group is eventually loaded into
 	*                        memory.
@@ -672,7 +664,7 @@ public:
 	*                        return 0, else an exception is generated.
 	* @return Pointer to GGroup.
 	*/
-	GGroup* GetGroup(unsigned int id,bool load=true,bool null=false) const;
+	GGroup* GetGroup(GLang* lang,unsigned int id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new group.

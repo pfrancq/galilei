@@ -134,10 +134,10 @@ protected:
 public:
 
 	/**
-	* Create randomly the judgment for all the users.
-	* @param Save           Save the results.
+	* Create randomly the judgment for all the users. The results are saved if 
+	* the corresponding parameter is set in the session.
 	*/
-	void CreateIdeal(bool Save);
+	void CreateIdeal(void);
 
 	/**
 	* Simulate that documents are shared inside the different communities and

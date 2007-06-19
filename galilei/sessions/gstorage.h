@@ -282,7 +282,7 @@ public:
 	* @param                 cmd Command to insert.
 	*/
 	void InsertCmd(GStorageCmd* cmd);
-
+	
 	/**
 	* Create a dummy table to store different kid of
 	* data.
@@ -626,9 +626,10 @@ public:
 
 	/**
 	* Method that load a group that is stored.
+	* @param lang            Language of the group.
 	* @param groupid         Identificator of the group.
 	*/
-	virtual GGroup* LoadGroup(unsigned int groupid)=0;
+	virtual GGroup* LoadGroup(GLang* lang,unsigned int groupid)=0;
 
 	/**
 	* Load an historic groups.

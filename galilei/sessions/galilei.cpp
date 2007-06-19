@@ -67,18 +67,12 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("session"));
 		case otDoc:
 			return(RString("document"));
-		case otDocs:
-			return(RString("documents"));
-		case otUsers:
-			return(RString("users"));
 		case otUser:
 			return(RString("user"));
 		case otProfile:
 			return(RString("profile"));
 		case otSubProfile:
 			return(RString("subProfile"));
-		case otGroups:
-			return(RString("groups"));
 		case otGroup:
 			return(RString("group"));
 		case otDocSubProfile:

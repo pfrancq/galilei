@@ -149,11 +149,6 @@ public:
 	void DeleteSession(void);
 
 	/**
-	* Get the configuration file of GALILEI.
-	*/
-	R::RConfig GetGALILEIConfig(void) const {return(GALILEIConfig);}
-
-	/**
 	* Get the name of the plug-ins configuration path. By default, it
 	* is 'default'.
 	*/

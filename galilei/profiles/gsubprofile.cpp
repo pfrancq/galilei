@@ -62,7 +62,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,unsigned int
 	Profile->InsertPtr(this);
 	if((GroupId!=cNoRef)&&(GSession::Get()))
 	{
-		GGroup* grp=GSession::Get()->GetGroup(GroupId,false);
+		GGroup* grp=GSession::Get()->GetGroup(Lang,GroupId,false,false);
 		if(grp)
 			grp->InsertSubProfile(this);
 	}
@@ -94,6 +94,8 @@ int GSubProfile::Compare(const unsigned int id) const
 //------------------------------------------------------------------------------
 int GSubProfile::Compare(const GLang* lang) const
 {
+	if(!lang)
+		return(1);
 	return(Lang->Compare(lang));
 }
 
@@ -136,7 +138,7 @@ void GSubProfile::SetGroup(unsigned int groupid)
 {
 	GroupId=groupid;
 	if(GroupId!=cNoRef)
-		Attached.SetToday();
+		Attached.SetToday();	
 }
 
 
@@ -333,7 +335,7 @@ GSubProfile::~GSubProfile(void)
 		// Remove it from its group if necessary
 		if((GroupId!=cNoRef)&&(GSession::Get()))
 		{
-			GGroup* grp=GSession::Get()->GetGroup(GroupId);
+			GGroup* grp=GSession::Get()->GetGroup(Lang,GroupId);
 			if(grp)
 				grp->DeleteSubProfile(this);
 		}

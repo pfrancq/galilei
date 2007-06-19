@@ -356,6 +356,15 @@ public:
 	* selected or if the list does not need to select one.
 	*/
 	virtual factory* GetCurrentFactory(bool need=true) const;
+	
+	/**
+	* Get the current plug-in.
+	* @param need            If the parameter is true and the plug-in does not
+	*                        exist, generate an exception.
+	* @return Pointer to the plug-in, or null/exception if no plug-in is
+	* selected or if the list does not need to select one.
+	*/
+	virtual plugin* GetCurrentPlugIn(bool need=true) const;
 };
 
 

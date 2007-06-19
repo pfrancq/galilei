@@ -183,6 +183,7 @@ class GMeasureManager;
 class GFactoryMeasure;
 class GTypeMeasureManager;
 class GGALILEIApp;
+class GLangData;
 
 
 //------------------------------------------------------------------------------
@@ -201,12 +202,9 @@ enum tObjType
 	otNoClass=0                  /** No specific class. */,
 	otSession=1                  /** GALILEI Session. */,
 	otDoc=2                      /** Document. */,
-	otDocs=3                     /** Documents. */,
-	otUsers=4                    /** Users.*/,
 	otUser=5                     /** User.*/,
 	otProfile=6                  /** Profile.*/,
 	otSubProfile=7               /** SubProfile.*/,
-	otGroups=8                   /** Groups.*/,
 	otGroup=9                    /** Group.*/,
 	otDocSubProfile=10           /** Document or SubProfile.*/,
 	otDocGroup=11                /** Document or Group.*/,

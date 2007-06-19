@@ -328,7 +328,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-// (c) 2006, Michaël Noiret.
+// (c) 2006, Michaï¿½l Noiret.
 class GSetMeasuresParamI : public GSM
 {
 public:
@@ -512,7 +512,7 @@ void GCreateIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 		throw RException("Method needs no parameters.");
 	o->WriteStr("Create Ideal Groups");
 	Owner->Session->GetSubjects()->Apply();
-	Owner->Session->GetSubjects()->CreateIdeal(Owner->Session->MustSaveResults());
+	Owner->Session->GetSubjects()->CreateIdeal();
 }
 
 
@@ -926,12 +926,12 @@ void GForceReComputeI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,f
 	if(args->GetNb()!=1)
 		throw RException("Method needs one parameter");
 	RString objects=(*args)[0]->GetValue(prg);
-	if(objects=="Users")
-		type=otUsers;
-	if(objects=="Docs")
-		type=otDocs;
-	if(objects=="Groups")
-		type=otGroups;
+	if(objects=="User")
+		type=otUser;
+	if(objects=="Doc")
+		type=otDoc;
+	if(objects=="Group")
+		type=otGroup;
 	Owner->Session->ForceReCompute(type);
 }
 
@@ -949,7 +949,7 @@ void GSetSaveResultsI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,f
 
 
 //------------------------------------------------------------------------------
-// (c) 2006, Michaël Noiret.
+// (c) 2006, Michaï¿½l Noiret.
 void GSetMeasuresParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
 {
 	if(args->GetNb()!=4)

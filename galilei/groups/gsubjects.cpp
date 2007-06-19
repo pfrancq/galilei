@@ -6,7 +6,7 @@
 
 	Subjects - Implementation.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -44,6 +44,7 @@
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <gmeasure.h>
+#include <glangdata.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -128,11 +129,10 @@ public:
 	R::RContainer<GroupScore,true,true> GroupsScore;                     // Score of a given group.
 	R::RContainer<GSubject,false,false> Profiles;                        // Subjects for the profiles.
 	R::RContainer<R::RContainer<GSubject,false,false>,true,false> Docs;  // Subjects for the documents.
-	bool SaveSimulation;                                                 // Must the simulation be saved?
 
 	Intern(GSession* session) :  Session(session),
 	  tmpDocs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25),
-	  GroupsScore(100,50), Profiles(1000), Docs(5000), SaveSimulation(false)
+	  GroupsScore(100,50), Profiles(1000), Docs(5000)
 	{
 	}
 
@@ -588,7 +588,7 @@ void GSubjects::ComputeTotal(void)
 					continue;
 				VectorRows[row]++;
 				NbTot++;
-				GroupComputed=Data->Session->GetGroup(Sub()->GetGroupId());
+				GroupComputed=Data->Session->GetGroup(lang,Sub()->GetGroupId());
 				if(!GroupComputed)
 					continue;
 				position=GroupsId.GetPtr(GroupComputed->GetId())->position;
@@ -629,12 +629,10 @@ void GSubjects::ComputeTotal(void)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::CreateIdeal(bool save)
+void GSubjects::CreateIdeal(void)
 {
 	// Apply Config
 	Apply();
-
-	Data->SaveSimulation=save;
 
 	// Re-init the session
 	Data->Session->ReInit();
@@ -643,11 +641,13 @@ void GSubjects::CreateIdeal(bool save)
 		Data->tmpDocs=new GDoc*[Data->Session->GetMaxPosDoc()+1];
 	ChooseSubjects();
 	CreateSet();
-	if(Data->SaveSimulation)
+	if(Data->Session->MustSaveResults())
 	{
 		Data->Session->GetStorage()->Clear(otUser);
 		Data->Session->GetStorage()->Clear(otProfile);
+		Data->Session->GetStorage()->Clear(otFdbk);
 		Data->Session->GetStorage()->Clear(otSubProfile);
+		Data->Session->GetStorage()->Clear(otGroup);
 		RCursor<GUser> Users(Data->Session->GetUsers());
 		for(Users.Start();!Users.End();Users.Next())
 			Data->Session->GetStorage()->SaveUser(Users());
@@ -672,7 +672,10 @@ void GSubjects::DocumentSharing(void)
 	GMeasure* ProfilesDocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 
 	// Go through the languages
-	Grps=Data->Session->GetGroups();
+	RCursor<GLangData> Langs=Data->Session->GetLanguageSpecifics();
+	for(Langs.Start();!Langs.End();Langs.Next())
+	{
+	Grps=Langs()->GetGroups();
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Go through the subprofile contained in the group.
@@ -708,8 +711,9 @@ void GSubjects::DocumentSharing(void)
 			SubProfile()->SetState(osModified);
 		}
 	}
-
-	if(Data->SaveSimulation)
+	}
+	
+	if(Data->Session->MustSaveResults())
 	{
 		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
@@ -774,7 +778,7 @@ void GSubjects::AddAssessments(void)
 			}
 		}
 	}
-	if(Data->SaveSimulation)
+	if(Data->Session->MustSaveResults())
 	{
 		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
@@ -846,7 +850,7 @@ bool GSubjects::AddTopic(void)
 	for(Prof.Start();!Prof.End();Prof.Next())
 		ProfileAssess(Prof(),newSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
-	if(Data->SaveSimulation)
+	if(Data->Session->MustSaveResults())
 	{
 		RCursor<GUser> Users(Data->Session->GetUsers());
 		for(Users.Start();!Users.End();Users.Next())
@@ -925,7 +929,7 @@ unsigned int GSubjects::AddProfiles(void)
 		ProfileAssess(Prof(),usedSubject,maxDocsOK,maxDocsKO,maxDocsH);
 
 	// optional saving
-	if(Data->SaveSimulation)
+	if(Data->Session->MustSaveResults())
 	{
 		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
@@ -1016,10 +1020,14 @@ void GSubjects::Compare(void)
 	R::RCursor<GGroup> Cur;
 
 	Data->GroupsScore.Clear();
-	Cur=Data->Session->GetGroups();
+	RCursor<GLangData> Langs=Data->Session->GetLanguageSpecifics();
+	for(Langs.Start();!Langs.End();Langs.Next())
+	{
+	Cur=Langs()->GetGroups();
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Data->GroupsScore.InsertPtr(new GroupScore(Cur()));
+	}
 	}
 	ComputeRecallPrecision();
 	ComputeTotal();

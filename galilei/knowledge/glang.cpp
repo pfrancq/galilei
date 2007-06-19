@@ -6,7 +6,7 @@
 
 	Generic Language - Implementation.
 
-	Copyright 2001-2006 by the Université Libre de Bruxelles.
+	Copyright 2001-2006 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -335,7 +335,7 @@ void GLang::Clear(tObjType ObjType)
 	R::RCursor<GDict> Dicts(GetDicts());
 	for(Dicts.Start();!Dicts.End();Dicts.Next())
 	{
-		RCursor<GDict::Hash> Cur(Dicts()->GetCursor());
+		RCursor<GDict::Hash> Cur(Dicts()->GetCursor()); 
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			RCursor<GDict::Hash2> Cur2(*Cur());
@@ -343,7 +343,11 @@ void GLang::Clear(tObjType ObjType)
 			{
 				RCursor<GConcept> Cur3(*Cur2());
 				for(Cur3.Start();!Cur3.End();Cur3.Next())
+				{
 					Cur3()->Clear(ObjType);
+					if(Session&&Session->MustSaveResults()&&Session->GetStorage())
+						Session->GetStorage()->SaveRefs(ObjType,this,Cur3()->GetType(),Cur3()->GetId(),0);
+				}					
 			}
 		}
 	}
@@ -377,6 +381,8 @@ void GLang::Clear(tObjType ObjType)
 			NbRefGroups=0;
 			break;
 	}
+	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
+		Session->GetStorage()->SaveRefs(ObjType,this,0);
 }
 
 

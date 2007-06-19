@@ -6,7 +6,7 @@
 
 	Generic Measure - Implementation.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2005-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -33,6 +33,11 @@
 //------------------------------------------------------------------------------
 #ifndef GMeasureH
 #define GMeasureH
+
+
+//------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <stdarg.h>
 
 
 //------------------------------------------------------------------------------
@@ -70,35 +75,78 @@ public:
 	GMeasure(GFactoryMeasure* fac);
 
 	/**
-	* Get a measure. Two identificators can be passed when it concern a measure
-	* between two objects (ex: Similarities between profiles). A given plug-in
-	* can handle multiple measures, a parameter passed specifies the measure
-	* asked.
-	* @param id1             First identificator.
-	* @param id2             Second identificator.
+	* Get a measure. Each plug-in can handle several types of measure (first
+	* parameter of the method). The other parameters (including eventually the
+	* result of the measure) depend of the particular plug-in. This means that
+	* the caller must exactly know which parameters are requested by a
+	* particular plug-in. This method is intended to be called in an intensive
+	* way (in contrary of Info)
 	* @param measure         Type of the measure.
+	* 
+	* Suppose that the method takes two int arguments and should return a
+	* double that represents the product (measure=1) or the sum (measure=2). This
+	* method should be written:
+	* @code
+	* void Measure(int measure,...)
+	* {
+	* 	va_list ap;
+	* 	va_start(ap,measure);
+	* 	int i=va_arg(ap,int);
+	* 	int j=va_arg(ap,int);
+	* 	double* d=va_arg(ap,double*);
+	* 	switch(measure)
+	* 	{
+	* 		case 1 : (*d)=i*j; break;
+	* 		case 2 : (*d)=i+j; break;
+	* 	} 
+	* 	va_end(ap);
+	* }
+	* @endcode
+	* The method should be call:
+	* @code
+	* GMeasure* ptr;
+	* double d;
+	* ...
+	* ptr->Measure(1,3,4,&d);
+	* cout<<d<<endl;
+	* @endcode
 	*/
-	virtual double GetMeasure(unsigned int id1=0,unsigned int id2=0,unsigned int measure=0)=0;
+	virtual void Measure(unsigned int measure,...)=0;
 
 	/**
-	* Get the minimum of a given measure to be considered as having a sense.
-	* This method supposes that each language has a specific value. A given
-	* plug-in can handle multiple measures, a parameter passed specifies the
-	* measure asked.
-	* @param lang            Language.
-	* @param measure         Type of the measure.
-	*/
-	virtual double GetMinMeasure(const GLang* lang,unsigned int measure=0)=0;
-
-	/**
-	* Get the minimum of a given measure to be considered as having a sense.
-	* This method supposes that all languages have the same value. A given
-	* plug-in can handle multiple measures, a parameter passed specifies the
-	* measure asked.
-	* @param measure         Type of the measure.
-	*/
-	virtual double GetMinMeasure(unsigned int measure=0)=0;
-
+	* Exchange a particular information with the plugin. The other parameters
+	* (including eventually the result of the measure) depend of the particular
+	* plug-in. This means that the caller must exactly know which parameters
+	* are requested by a particular plug-in. This method is not intended to be
+	* called in an intensive way (in contrary of Measure).
+	* @param info           Information to get.
+	* 
+	* Suppose the function should simply return a double. This method should
+	* be written:
+	* @code
+	* void Info(int info,...)
+	* {
+	* 	va_list ap;
+	* 	double* d=va_arg(ap,double*);
+	* 	switch(info)
+	* 	{
+	* 		case 1 : (*d)=2; break;
+	* 		case 2 : (*d)=3; break;
+	* 	} 
+	* 	va_end(ap);
+	* }
+	* @endcode
+	* The method should be call:
+	* @code
+	* GMeasure* ptr;
+	* double d;
+	* ...
+	* ptr->Info(1,&d);
+	* cout<<d<<endl;
+	* @endcode
+	 */
+	virtual void Info(unsigned int info,...);
+	 
 	/**
 	* Destructor.
 	*/
@@ -150,36 +198,6 @@ class GTypeMeasureManager : public GPluginManager<GTypeMeasureManager,GFactoryMe
 {
 public:
 	GTypeMeasureManager(const RString& type);
-
-	/**
-	* Get a measure. Two identificators can be passed when it concern a measure
-	* between two objects (ex: Similarities between profiles). A given plug-in
-	* can handle multiple measures, a parameter passed specifies the measure
-	* asked.
-	* @param id1             First identificator.
-	* @param id2             Second identificator.
-	* @param measure         Type of the measure.
-	*/
-	virtual double GetMeasure(unsigned int id1=0,unsigned int id2=0,unsigned int measure=0);
-
-	/**
-	* Get the minimum of a given measure to be considered as having a sense.
-	* This method supposes that each language has a specific value. A given
-	* plug-in can handle multiple measures, a parameter passed specifies the
-	* measure asked.
-	* @param lang            Language.
-	* @param measure         Type of the measure.
-	*/
-	virtual double GetMinMeasure(const GLang* lang,unsigned int measure=0);
-
-	/**
-	* Get the minimum of a given measure to be considered as having a sense.
-	* This method supposes that all languages have the same value. A given
-	* plug-in can handle multiple measures, a parameter passed specifies the
-	* measure asked.
-	* @param measure         Type of the measure.
-	*/
-	virtual double GetMinMeasure(unsigned int measure=0);
 };
 
 
