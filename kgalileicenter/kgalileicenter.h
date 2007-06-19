@@ -524,9 +524,9 @@ private slots:
 	void slotDocsClear();
 
 	/**
-	* Clear the users.
+	* Clear the subprofiles.
 	*/
-	void slotUsersClear();
+	void slotSubProfilesClear();
 
 	/**
 	* Clear the groups.

@@ -134,7 +134,7 @@ void KGALILEICenterApp::initActions(void)
 	fillMIMETypes=new KAction(i18n("Construct &MIME types from KDE"),"desktop",0,this,SLOT(slotFillMIMETypes()),actionCollection(),"fillMIMETypes");
 
 	// Menu "Users"
-	usersClear=new KAction(i18n("&Force Re-computing Users"),0,0,this,SLOT(slotUsersClear()),actionCollection(),"usersClear");
+	usersClear=new KAction(i18n("&Force Re-computing Subprofiles"),0,0,this,SLOT(slotSubProfilesClear()),actionCollection(),"subprofilesClear");
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
 	postProfilesCalc=new KAction(i18n("Execute &Post-Profiles Methods"),0,0,this,SLOT(slotPostProfilesCalc()),actionCollection(),"postProfilesCalc");
@@ -313,7 +313,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	profilesCalc->setEnabled(true);
 	postProfilesCalc->setEnabled(true);
 	profileCalc->setEnabled(true);
-	simulationDlg->setEnabled(true);
 	sessionCompute->setEnabled(true);
 	doFdbks->setEnabled(true);
 	doAssessments->setEnabled(true);
@@ -351,7 +350,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	profilesCalc->setEnabled(false);
 	postProfilesCalc->setEnabled(false);
 	profileCalc->setEnabled(false);
-	simulationDlg->setEnabled(false);
 	sessionCompute->setEnabled(false);
 	doFdbks->setEnabled(false);
 	doAssessments->setEnabled(false);

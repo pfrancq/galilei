@@ -54,7 +54,7 @@ using namespace R;
 #include <qmessagebox.h>
 #include <qlayout.h>
 #include <qgroupbox.h>
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <qlabel.h>
 #include <qpushbutton.h>
 #include <qlineedit.h>
@@ -114,7 +114,7 @@ KViewMetaEngine::KViewMetaEngine(KDoc* doc,QWidget* parent,const char* name,int 
 	NbRes = new KIntSpinBox( groupBoxSearch, "NbRes" );
 	NbRes->setMaxValue(1000);
 	//Set Value: default = the value from meta engine option
-	unsigned int tmp=GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()->GetNbResUsed();
+	int tmp=GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()->GetNbResUsed();
 	if(tmp==-1)
 		NbRes->setValue(100);
 	else
@@ -192,7 +192,7 @@ void KViewMetaEngine::CreateMetaEngineResultsListView(void)
 	engCur=GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()->GetEngineDocs();
 	QListViewItemType* urlitem=0, *afteritem=0;
 	QListViewItemType* desc;
-	unsigned int i=1;
+	int i=1;
 	int nbRes=NbRes->value();
 
 	for(engCur.Start();!engCur.End();engCur.Next() )

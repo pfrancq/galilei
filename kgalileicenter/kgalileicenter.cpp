@@ -178,13 +178,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	catch(GException& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-/*			if(Doc)
-			{
-				delete Doc;*/
-			Doc=0;
-//			}
-/*			if(d)
-				d->close();*/
+		Doc=0;
 		return;
 	}
 	slotStatusMsg(i18n("Connected"));
@@ -449,36 +443,36 @@ void KGALILEICenterApp::slotSimulationDlg(void)
 {
 	QSimulationDlg dlg(this);
 
-	dlg.NbOK->setValue(GALILEIApp->GetConfig()->GetDouble("NbOK"));
-	dlg.RelOK->setChecked(GALILEIApp->GetConfig()->GetBool("RelOK"));
-	dlg.NbKO->setValue(GALILEIApp->GetConfig()->GetDouble("NbKO"));
-	dlg.RelKO->setChecked(GALILEIApp->GetConfig()->GetBool("RelKO"));
-	dlg.NbH->setValue(GALILEIApp->GetConfig()->GetDouble("NbH"));
-	dlg.RelH->setChecked(GALILEIApp->GetConfig()->GetBool("RelH"));
-	dlg.PercErr->setValue(GALILEIApp->GetConfig()->GetDouble("PercErr"));
-	dlg.NbProfMin->setValue(GALILEIApp->GetConfig()->GetUInt("NbProfMin"));
-	dlg.NbProfMax->setValue(GALILEIApp->GetConfig()->GetUInt("NbProfMax"));
-	dlg.PercSocial->setValue(GALILEIApp->GetConfig()->GetDouble("PercSocial"));
-	dlg.NbSubjects->setValue(GALILEIApp->GetConfig()->GetDouble("NbSubjects"));
-	dlg.RelSubjects->setChecked(GALILEIApp->GetConfig()->GetBool("RelSubjects"));
-	dlg.NbMinDocsSubject->setValue(GALILEIApp->GetConfig()->GetUInt("NbMinDocsSubject"));
-	dlg.NbDocsAssess->setValue(GALILEIApp->GetConfig()->GetUInt("NbDocsAssess"));
+	dlg.NbOK->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbOK","Subjects"));
+	dlg.RelOK->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelOK","Subjects"));
+	dlg.NbKO->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbKO","Subjects"));
+	dlg.RelKO->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelKO","Subjects"));
+	dlg.NbH->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbH","Subjects"));
+	dlg.RelH->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelH","Subjects"));
+	dlg.PercErr->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("PercErr","Subjects"));
+	dlg.NbProfMin->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMin","Subjects"));
+	dlg.NbProfMax->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMax","Subjects"));
+	dlg.PercSocial->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("PercSocial","Subjects"));
+	dlg.NbSubjects->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbSubjects","Subjects"));
+	dlg.RelSubjects->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelSubjects","Subjects"));
+	dlg.NbMinDocsSubject->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbMinDocsSubject","Subjects"));
+	dlg.NbDocsAssess->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbDocsAssess","Subjects"));
 	if(dlg.exec())
 	{
-		GALILEIApp->GetConfig()->SetDouble("NbOK",dlg.NbOK->value());
-		GALILEIApp->GetConfig()->SetBool("RelOK",dlg.RelOK->isChecked());
-		GALILEIApp->GetConfig()->SetDouble("NbKO",dlg.NbKO->value());
-		GALILEIApp->GetConfig()->SetBool("RelKO",dlg.RelKO->isChecked());
-		GALILEIApp->GetConfig()->SetDouble("NbH",dlg.NbH->value());
-		GALILEIApp->GetConfig()->SetBool("RelH",dlg.RelH->isChecked());
-		GALILEIApp->GetConfig()->SetDouble("PercErr",dlg.PercErr->value());
-		GALILEIApp->GetConfig()->SetUInt("NbProfMin",dlg.NbProfMin->value());
-		GALILEIApp->GetConfig()->SetUInt("NbProfMax",dlg.NbProfMax->value());
-		GALILEIApp->GetConfig()->SetDouble("PercSocial",dlg.PercSocial->value());
-		GALILEIApp->GetConfig()->SetDouble("NbSubjects",dlg.NbSubjects->value());
-		GALILEIApp->GetConfig()->SetBool("RelSubjects",dlg.RelSubjects->isChecked());
-		GALILEIApp->GetConfig()->SetUInt("NbMinDocsSubject",dlg.NbMinDocsSubject->value());
-		GALILEIApp->GetConfig()->SetUInt("NbDocsAssess",dlg.NbDocsAssess->value());
+		GALILEIApp->GetGALILEIConfig()->SetDouble("NbOK",dlg.NbOK->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetBool("RelOK",dlg.RelOK->isChecked(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetDouble("NbKO",dlg.NbKO->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetBool("RelKO",dlg.RelKO->isChecked(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetDouble("NbH",dlg.NbH->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetBool("RelH",dlg.RelH->isChecked(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetDouble("PercErr",dlg.PercErr->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMin",dlg.NbProfMin->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMax",dlg.NbProfMax->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetDouble("PercSocial",dlg.PercSocial->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetDouble("NbSubjects",dlg.NbSubjects->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetBool("RelSubjects",dlg.RelSubjects->isChecked(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetUInt("NbMinDocsSubject",dlg.NbMinDocsSubject->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetUInt("NbDocsAssess",dlg.NbDocsAssess->value(),"Subjects");
 	}
 }
 
@@ -835,15 +829,15 @@ void KGALILEICenterApp::slotSaveModifier(void)
 void KGALILEICenterApp::slotDocsClear()
 {
 	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->ForceReCompute(otDocs);
+		Doc->GetSession()->ForceReCompute(otDoc);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotUsersClear()
+void KGALILEICenterApp::slotSubProfilesClear()
 {
 	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->ForceReCompute(otUsers);
+		Doc->GetSession()->ForceReCompute(otSubProfile);
 }
 
 
@@ -851,7 +845,7 @@ void KGALILEICenterApp::slotUsersClear()
 void KGALILEICenterApp::slotGroupsClear()
 {
 	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->ForceReCompute(otGroups);
+		Doc->GetSession()->ForceReCompute(otGroup);
 }
 
 

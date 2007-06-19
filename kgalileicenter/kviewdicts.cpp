@@ -6,7 +6,7 @@
 
 	Window to show all the dictionnaries - Implementation.
 
-	Copyright 2006 by the Université Libre de Bruxelles.
+	Copyright 2006 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -264,7 +264,7 @@ void KViewDicts::slotRightButtonRelations(QListViewItem*,const QPoint& pos,int)
 //-----------------------------------------------------------------------------
 void KViewDicts::slotDeleteRelation(void)
 {
-	LocalItem2* ptr=dynamic_cast<LocalItem2*>(Relations->currentItem());
+//	LocalItem2* ptr=dynamic_cast<LocalItem2*>(Relations->currentItem());
 	if(KMessageBox::warningYesNo(this,"Do you want to delete the current relation?","Warning")==KMessageBox::No)
 		return;
 }

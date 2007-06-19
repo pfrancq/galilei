@@ -662,7 +662,7 @@ void QCreateIdealGroups::DoIt(void)
 {
 	Parent->PutText("Create Ideal Groups ...");
 	Session->GetSubjects()->Apply();
-	Session->GetSubjects()->CreateIdeal(false);
+	Session->GetSubjects()->CreateIdeal();
 }
 
 

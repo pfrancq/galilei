@@ -68,7 +68,7 @@ using namespace R;
 KDoc::KDoc(KGALILEICenterApp* owner)
 	: QObject(), Session(0), WinDocs(0), WinUsers(0), WinGroups(0), Owner(owner)
 {
-	pViewList = new QList<KView>;
+	pViewList = new QPtrList<KView>;
 	pViewList->setAutoDelete(true);
 }
 

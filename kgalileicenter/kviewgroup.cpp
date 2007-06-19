@@ -55,7 +55,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // includes files for Qt/KDE
 #include <qpixmap.h>
-#include <qpopmenu.h>
+#include <qpopupmenu.h>
 #include <kiconloader.h>
 #include <kglobal.h>
 #include <kmessagebox.h>

@@ -50,7 +50,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <qobject.h>
-#include <qlist.h>
+#include <qptrlist.h>
 
 
 //-----------------------------------------------------------------------------
@@ -90,7 +90,7 @@ class KDoc : public QObject//, public GStorageMySQL
 	/**
 	* The list of the views currently connected to the document.
 	*/
-	QList<KView>* pViewList;
+	QPtrList<KView>* pViewList;
 
 	/**
 	* GALILEI Session.

@@ -47,7 +47,7 @@
 		<Action name="fillMIMETypes"/>
 	</Menu>
 	<Menu name="Users"><text>&amp;Users</text>
-		<Action name="usersClear"/>
+		<Action name="subprofilesClear"/>
 		<Separator/>
 		<Action name="showUsers"/>
 		<Separator/>

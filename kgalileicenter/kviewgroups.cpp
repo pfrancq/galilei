@@ -182,7 +182,7 @@ void QGroups::contentsDropEvent( QDropEvent *evt )
 	SrcGroup->takeItem(Cur->Src);
 	group->insertItem(Cur->Src);
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
-	session->GetGroup(Cur->Src->Obj.SubProfile->GetGroupId())->DeleteSubProfile(Cur->Src->Obj.SubProfile);
+	session->GetGroup(Cur->Src->Obj.SubProfile->GetLang(),Cur->Src->Obj.SubProfile->GetGroupId())->DeleteSubProfile(Cur->Src->Obj.SubProfile);
 	group->Obj.Group->InsertSubProfile(Cur->Src->Obj.SubProfile);
 	group->setText(0,"Group ("+QString::number(group->Obj.Group->GetNbSubProfiles())+")");
 	if(SrcGroup->Obj.Group->GetNbSubProfiles())
@@ -278,7 +278,7 @@ void QGroups::slotDelete(void)
 		if(KMessageBox::warningYesNo(this,"Do you want to remove this subprofile from the group?","Warning")==KMessageBox::No)
 			return;
 		QListViewItemType* SrcGroup=dynamic_cast<QListViewItemType*>(Src->parent());
-		session->GetGroup(Src->Obj.SubProfile->GetGroupId())->DeleteSubProfile(Src->Obj.SubProfile);
+		session->GetGroup(Cur->Src->Obj.SubProfile->GetLang(),Src->Obj.SubProfile->GetGroupId())->DeleteSubProfile(Src->Obj.SubProfile);
 		delete Src;
 		if(SrcGroup->Obj.Group->GetNbSubProfiles())
 			SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbSubProfiles())+")");
