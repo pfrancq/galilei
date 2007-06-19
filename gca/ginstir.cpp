@@ -126,7 +126,7 @@ GThreadDataIR::~GThreadDataIR(void)
 GInstIR::GInstIR(GSession* ses,GLang* l,RObjs<GObjIR>* objs,GIRParams* p,RDebug *debug)
 	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(p->PopSize,objs,FirstFit,"GCA",debug),
 	  GIRProm(p), Params(p), Sols(0), Session(ses), Lang(l), NoSocialSubProfiles(objs->GetNb()),
-	  Ratios(objs->GetNb()), ProfilesSims(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities"))
+	  Ratios(objs->GetNb()), SubProfilesSims(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities"))
 	, ProfilesAgree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements"))
 	, ProfilesDisagree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements"))
 #if BESTSOLSVERIFICATION
@@ -330,21 +330,27 @@ void GInstIR::PostEvaluate(void)
 //-----------------------------------------------------------------------------
 double GInstIR::GetDisagreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
 {
-	return(ProfilesDisagree->GetMeasure(sub1->GetId(),sub2->GetId()));
+	double d;
+	ProfilesDisagree->Measure(0,sub1->GetProfile()->GetId(),sub2->GetProfile()->GetId(),&d);
+	return(d);
 }
 
 
 //-----------------------------------------------------------------------------
 double GInstIR::GetAgreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
 {
-	return(ProfilesAgree->GetMeasure(sub1->GetId(),sub2->GetId()));
+	double d;
+	ProfilesAgree->Measure(0,sub1->GetProfile()->GetId(),sub2->GetProfile()->GetId(),&d);
+	return(d);
 }
 
 
 //-----------------------------------------------------------------------------
 double GInstIR::GetSim(const GSubProfile* sub1,const GSubProfile* sub2) const
 {
-	return(ProfilesSims->GetMeasure(sub1->GetId(),sub2->GetId()));
+	double d;
+	SubProfilesSims->Measure(0,Lang,sub1->GetId(),sub2->GetId(),&d);
+	return(d);
 }
 
 

@@ -160,7 +160,7 @@ class GInstIR : public R::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGro
 	R::RContainer<GChromoIR,true,false> BestSols;
 #endif
 
-	GMeasure* ProfilesSims;
+	GMeasure* SubProfilesSims;
 
 	GMeasure* ProfilesAgree;
 

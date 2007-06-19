@@ -46,6 +46,7 @@ using namespace R;
 #include <gobjir.h>
 #include <ggroup.h>
 #include <guser.h>
+#include <gprofile.h>
 #include <gsubprofile.h>
 #include <glang.h>
 #include <gsession.h>
@@ -153,7 +154,7 @@ bool GGroupingGGA::IsValid(GGroup* /*grp*/)
 //-----------------------------------------------------------------------------
 void GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo)
 {
-	GGroup* g;
+	
 	unsigned int* tab;
 	unsigned int* ptr;
 
@@ -161,7 +162,7 @@ void GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo)
 	RCursor<GGroupIR> gr(chromo->Used);
 	for(gr.Start();!gr.End();gr.Next())
 	{
-		g=new GGroup(cNoRef,Lang,true,RDate(""),RDate(""));
+		GGroup* g=new GGroup(cNoRef,Lang,true,RDate(""),RDate(""));
 		Session->AssignId(g);
 		ptr=tab=gr()->GetObjectsId();
 		while((*ptr)!=NoObject)
@@ -175,38 +176,52 @@ void GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo)
 //-----------------------------------------------------------------------------
 void GGroupingGGA::Run(void)
 {
-	unsigned int i;
-	GObjIR* obj;
-
+	// If no subprofiles -> nothing to group
 	if(!SubProfiles.GetNb()) return;
 
 	// set the level of the MinSim
 	try
 	{
 		GGroupDataIR data;
-  		Params.MinSimLevel=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities")->GetMinMeasure(Lang);
+		double d;
+		unsigned int i;
+		GObjIR* obj;
+
+		// Get the minimum of similarity		
+		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities")->Info(0,Lang,&d);
+  		Params.MinSimLevel=d;
+		cout<<"Min (0.139054?)="<<d<<endl;
+		
+		// Create the GA objects 
 		Objs=new RObjs<GObjIR>(SubProfiles.GetNb());
 		RCursor<GSubProfile> Cur2(SubProfiles);
 		for(Cur2.Start(),i=0;!Cur2.End();Cur2.Next(),i++)
 			Objs->InsertPtr(obj=new GObjIR(i,Cur2()));
+			
+		// Launch the GA
 		Instance=new GInstIR(Session,Lang,Objs,&Params,Session->GetDebug());
 		Instance->Init(&data);
 		Instance->Run();
+		
+		// Cleanup and save the result
 		ConstructGroupsFromChromo(Instance->BestChromosome);
 		delete Objs;
 		Objs=0;
 		delete Instance;
 	}
-	catch(eGA& e)
+	catch(RGAException& e)
 	{
+		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
 	}
 	catch(GException& e)
 	{
+		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
 	}
 	catch(RException& e)
 	{
+		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
 	}
 	catch(bad_alloc)

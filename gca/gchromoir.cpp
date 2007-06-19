@@ -140,8 +140,8 @@ void GALILEI::GChromoIR::ConstructChromo(GSession* grps)
 void GALILEI::GChromoIR::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-	if(Instance->Session->GetNbGroups(Instance->Lang))
-		ConstructChromo(Instance->Session);
+/*	if(Instance->Session->GetNbGroups(Instance->Lang))
+		ConstructChromo(Instance->Session);*/
 
 	// Call classic heuristic for non-assigned objects
 	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::RandomConstruct();
@@ -472,6 +472,9 @@ void GALILEI::GChromoIR::TreatSocialSubProfiles(bool rel)
 	GGroupIR* grp=0;
 	double tmp,max;
 
+//	cout<<"Do not treat social"<<endl;
+	return;
+	
 	// Look for the groups to delete
 	ToDel->Clear();
 	for(Cur1.Start();!Cur1.End();Cur1.Next())
