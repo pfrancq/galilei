@@ -94,7 +94,6 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 	RXMLTag* tag;
 	PDFDoc *pdf;
 	GString *fileName;
-	GString *textFileName;
 	TextBufOutputDev *textOut;
 	Object info;
 	bool Paragraph;
