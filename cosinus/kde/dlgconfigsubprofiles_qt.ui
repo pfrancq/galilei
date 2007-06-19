@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>334</width>
-            <height>144</height>
+            <width>344</width>
+            <height>153</height>
         </rect>
     </property>
     <property name="caption">
@@ -22,98 +22,93 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox">
+        <widget class="QLayoutWidget">
             <property name="name">
-                <cstring>groupBox17</cstring>
+                <cstring>layout43</cstring>
             </property>
-            <property name="title">
-                <string>Similarities Computing</string>
-            </property>
-            <vbox>
+            <hbox>
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QLayoutWidget">
+                <widget class="QLabel">
                     <property name="name">
-                        <cstring>layout43</cstring>
+                        <cstring>textLabel1_2_2</cstring>
                     </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel1_2_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Null Similarity Level :</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer8</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>140</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KDoubleNumInput">
-                            <property name="name">
-                                <cstring>NullSimLevel</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
+                    <property name="text">
+                        <string>Null Similarity Level :</string>
+                    </property>
                 </widget>
-                <widget class="QLayoutWidget">
+                <spacer>
                     <property name="name">
-                        <cstring>layout8</cstring>
+                        <cstring>spacer8</cstring>
                     </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QCheckBox">
-                            <property name="name">
-                                <cstring>StaticMinSim</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Static minimum of similarity</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer8_2</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KDoubleNumInput">
-                            <property name="name">
-                                <cstring>MinSim</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>140</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="KDoubleNumInput">
+                    <property name="name">
+                        <cstring>NullSimLevel</cstring>
+                    </property>
                 </widget>
-            </vbox>
+            </hbox>
+        </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout8</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QCheckBox">
+                    <property name="name">
+                        <cstring>StaticMinSim</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Static Minimum Similarity</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer8_2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="KDoubleNumInput">
+                    <property name="name">
+                        <cstring>MinSim</cstring>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>Memory</cstring>
+            </property>
+            <property name="text">
+                <string>Stored in Memory</string>
+            </property>
         </widget>
         <widget class="QLayoutWidget">
             <property name="name">
@@ -181,8 +176,6 @@
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>
@@ -198,7 +191,7 @@
     </connection>
 </connections>
 <includes>
-    <include location="local" impldecl="in implementation">dlgconfigprofiles_qt.ui.h</include>
+    <include location="local" impldecl="in implementation">dlgconfigsubprofiles_qt.ui.h</include>
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>

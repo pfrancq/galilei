@@ -2,14 +2,15 @@
 
 	GALILEI Research Project
 
-	GGroupsDocsSimsCosinus.h
+	GSubProfiles.h
 
-	Similarities between documents and groups - Implementation.
+	List of SubProfiles for a given Language - Implementation.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,8 +32,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GGroupsDocsSimsCosinusH
-#define GGroupsDocsSimsCosinusH
+#ifndef GSubProfilesSimsH
+#define GSubProfilesSimsH
 
 
 //------------------------------------------------------------------------------
@@ -48,38 +49,19 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GGroupsDocsSimsCosinus class provides a representation for the similarities between
-* groups and profiles.
+* The GSubProfilesSims class provides a representation for a set of Similarity between Profiles of
+* a given language.
 * @author Pascal Francq and Valery Vandaele
-* @short Groups-Documents Similarities.
+* @short SubProfiles.
 */
-class GGroupsDocsSimsCosinus : public GMeasure, public GSignalHandler
+class GSubProfilesSims : public GMeasure, public GSignalHandler
 {
-	// Internal class
-	class GDocGrpSim;
-
+	class GProfilesSim;
+	
 	/**
 	* Similarities.
 	*/
- 	R::RContainer<GDocGrpSim,true,true> Sims;
-
-	bool IDF;
-
-	/**
-	* Inverse Frequency Factor must be used to compute the similarities.
-	*/
-	bool ISF;
-
-	bool Debug;
-
-	bool DebugMinSim;
-
-
-	/**
-	* Must the sims be stock in a container
-	* or be recomputed each time
-	*/
-	bool Memory;
+	R::RContainer<GProfilesSim,true,true> Values;
 
 	/**
 	* level under which a similarity is cinsidered as null;
@@ -90,38 +72,25 @@ class GGroupsDocsSimsCosinus : public GMeasure, public GSignalHandler
 
 	bool AutomaticMinSim;
 
-	bool NeedUpdate;
-
+	bool Memory;
+	
 public:
 
 	/**
-	* Constructor of the similarities between documents and subprofiles.
+	* Constructor of the similarities between subprofiles.
 	* @param session         Session.
 	* @param iff             Use Inverse Frequency Factor.
 	* @param memory      use container to stock sims?
 	*/
-	GGroupsDocsSimsCosinus(GFactoryMeasure* fac);
+	GSubProfilesSims(GFactoryMeasure* fac);
 
 	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
 
-	/**
-	*  update the similairties
-	*/
-	void Update(void);
-
-	/**
-	* returns the minimum level for a similarity not to be null.
-	*/
-	double GetNullSimLevel(void) {return NullSimLevel;}
-
-	virtual double GetMeasure(unsigned int id1,unsigned int id2,unsigned int measure);
-
-	virtual double GetMinMeasure(const GLang* lang,unsigned int measure);
-
-	virtual double GetMinMeasure(unsigned int) {return(0.0);}
+	virtual void Measure(unsigned int measure,...);
+	virtual void Info(unsigned int info,...);
 
 	/**
 	* A specific subprofile has changed.
@@ -131,18 +100,11 @@ public:
 	virtual void Event(GLang* lang, tEvent event);
 
 	/**
-	* A specific document has changed.
-	* @param doc             Subprofile.
+	* A specific subprofile has changed.
+	* @param sub             Subprofile.
 	* @param event           Event.
 	*/
-	virtual void Event(GDoc* doc, tEvent event);
-
-	/**
-	* A specific group has changed.
-	* @param grp             Group.
-	* @param event           Event.
-	*/
-	virtual void Event(GGroup* grp, tEvent event);
+	virtual void Event(GSubProfile* sub, tEvent event);
 
 	/**
 	* Create the parameters.
@@ -151,9 +113,11 @@ public:
 	static void CreateParams(RConfig* params);
 
 	/**
-	* Destructor of the similarities between documents and subprofiles.
+	* Destructor.
 	*/
-	virtual ~GGroupsDocsSimsCosinus(void);
+	virtual ~GSubProfilesSims(void);
+	
+	friend class GProfilesSim;
 };
 
 

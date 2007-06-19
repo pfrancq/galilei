@@ -2,15 +2,14 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.h
+	GGroupsDocsSims.cpp
 
-	List of SubProfiles for a given Language - Implementation.
+	Similarities between documents and groups - Implementation.
 
-	Copyright 2003-2005 by the Université Libre de Bruxelles.
+	Copyright 2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,36 +31,32 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GProfilesDisagreementH
-#define GProfilesDisagreementH
+// include standard api files
+#include <math.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofilesgeneric.h>
+#include <ggroupsdocssims.h>
 
 
 //------------------------------------------------------------------------------
-/**
- */
-class GProfilesDisagreement : public GProfilesGeneric
+//
+// class GGroupsDocsSims
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+double GGroupsDocsSims::Compute(GLang* lang,size_t id1,size_t id2)
 {
-public:
+	GGroup* grp=Session->GetGroup(lang,id1,true,false);
+	GDoc* doc=Session->GetDoc(id2,true,false);
 	
-	/**
-	* Constructor of the similarities between subprofiles.
-	*/
-	GProfilesDisagreement(GFactoryMeasure* fac) :
-		GProfilesGeneric(fac) {}
-	
-	virtual double Compute(GProfile* sub1,GProfile* sub2);
-	
-	/**
-	* Destructor.
-	*/
-	virtual ~GProfilesDisagreement(void) {}
-};
+	if(doc->GetLang()!=grp->GetLang())
+		throw GException("Cannot compare a document and group of a different language");
+	return(doc->SimilarityIFF2(*grp,otDoc,otGroup,lang));	
+}
 
 
 //------------------------------------------------------------------------------
-#endif
+CREATE_MEASURE_FACTORY("Groups/Documents Similarities","Cosinus Method",GGroupsDocsSims)

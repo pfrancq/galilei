@@ -30,7 +30,7 @@
 
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
 using namespace GALILEI;
@@ -58,13 +58,13 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for Current
-#include <dlgconfiggroupsdocs_qt.h>
+#include <dlgconfigsubprofiles_qt.h>
 
 
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("The cosinus method is used to computed the similarities between the groups and documents.");
+	I18N_NOOP("The cosinus method is used to computed the similarities between the subprofiles.");
 
 
 //------------------------------------------------------------------------------
@@ -87,29 +87,20 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryMeasure* params)
 {
- 	DlgConfigGroupsDocs_Qt dlg;
+ 	DlgConfigProfiles_Qt dlg;
 
 	dlg.NullSimLevel->setPrecision(10);
 	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
-	dlg.ISF->setChecked(params->GetBool("ISF"));
-	dlg.IDF->setChecked(params->GetBool("IDF"));
-	dlg.Memory->setChecked(params->GetBool("Memory"));
-	dlg.DebugSim->setChecked(params->GetBool("DebugSim"));
-	dlg.DebugMinSim->setChecked(params->GetBool("DebugMinSim"));
 	dlg.MinSim->setValue(params->GetDouble("MinSim"));
-	dlg.MinSim->setEnabled(params->GetBool("DebugMinSim"));
-	dlg.AutomaticMinSim->setChecked(params->GetBool("AutomaticMinSim"));
-
+	dlg.StaticMinSim->setChecked(!params->GetBool("AutomaticMinSim"));
+	dlg.MinSim->setEnabled(!params->GetBool("AutomaticMinSim"));
+	dlg.Memory->setChecked(params->GetBool("Memory"));
 	if(dlg.exec())
 	{
 		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
-		params->SetBool("ISF",dlg.ISF->isChecked());
-		params->SetBool("IDF",dlg.IDF->isChecked());
-		params->SetBool("Memory",dlg.Memory->isChecked());
-		params->SetBool("DebugSim",dlg.DebugSim->isChecked());
-		params->SetBool("DebugMinSim",dlg.DebugMinSim->isChecked());
 		params->SetDouble("MinSim",dlg.MinSim->value());
-		params->SetBool("AutomaticMinSim",dlg.AutomaticMinSim->isChecked());
+		params->SetBool("Memory",dlg.Memory->isChecked());
+		params->SetBool("AutomaticMinSim",!dlg.StaticMinSim->isChecked());
 		params->Apply();
  	}
 }

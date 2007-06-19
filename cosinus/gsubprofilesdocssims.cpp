@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.h
+	GProfilesDocsSimsCosinus.cpp
 
-	List of SubProfiles for a given Language - Implementation.
+	Similarities between documents and subprofiles - Implementation.
 
-	Copyright 2003-2005 by the Université Libre de Bruxelles.
+	Copyright 2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,36 +32,26 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GProfilesDisagreementH
-#define GProfilesDisagreementH
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofilesgeneric.h>
+#include <gsubprofilesdocssims.h>
 
 
 //------------------------------------------------------------------------------
-/**
- */
-class GProfilesDisagreement : public GProfilesGeneric
+//
+// class GSubProfilesDocsSims
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+double GSubProfilesDocsSims::Compute(GLang* lang,size_t id1,size_t id2)
 {
-public:
-	
-	/**
-	* Constructor of the similarities between subprofiles.
-	*/
-	GProfilesDisagreement(GFactoryMeasure* fac) :
-		GProfilesGeneric(fac) {}
-	
-	virtual double Compute(GProfile* sub1,GProfile* sub2);
-	
-	/**
-	* Destructor.
-	*/
-	virtual ~GProfilesDisagreement(void) {}
-};
+	GSubProfile* sub=Session->GetSubProfile(lang,id1,true,false);
+	GDoc* doc=Session->GetDoc(id2,true,false);
 
+	if(doc->GetLang()!=sub->GetLang())
+		throw GException("Cannot compare a document and group of a different language");
+	return(sub->SimilarityIFF2(*doc,otSubProfile,otDoc,lang));	
+}
 
 //------------------------------------------------------------------------------
-#endif
+CREATE_MEASURE_FACTORY("Profiles/Documents Similarities","Cosinus Method",GSubProfilesDocsSims)

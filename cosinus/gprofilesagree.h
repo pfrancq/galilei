@@ -32,96 +32,35 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GProfilesSimsCosinusH
-#define GProfilesSimsCosinusH
+#ifndef GProfilesAgreementH
+#define GProfilesAgreementH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmeasure.h>
-#include <gsignalhandler.h>
-
-
-//------------------------------------------------------------------------------
-namespace GALILEI{
-//------------------------------------------------------------------------------
+#include <gprofilesgeneric.h>
 
 
 //------------------------------------------------------------------------------
 /**
-* The GProfilesSimsCosinus class provides a representation for a set of Similarity between Profiles of
-* a given language.
-* @author Pascal Francq and Valery Vandaele
-* @short SubProfiles.
-*/
-class GProfilesSimsCosinus : public GMeasure, public GSignalHandler
+ */
+class GProfilesAgreement : public GProfilesGeneric
 {
-	// Internal class
-	class GProfilesSim;
-
-	/**
-	* Similarities.
-	*/
-	R::RContainer<GProfilesSim,true,true> Values;
-
-	/**
-	* level under which a similarity is cinsidered as null;
-	*/
-	double NullSimLevel;
-
-	double MinAgreement;
-
-	unsigned int MinSameDocs;
-
 public:
-
+	
 	/**
 	* Constructor of the similarities between subprofiles.
-	* @param session         Session.
-	* @param iff             Use Inverse Frequency Factor.
-	* @param memory      use container to stock sims?
 	*/
-	GProfilesSimsCosinus(GFactoryMeasure* fac);
-
-	/**
-	* Configurations were applied from the factory.
-	*/
-	virtual void ApplyConfig(void);
-
-	virtual double GetMeasure(unsigned int id1,unsigned int id2,unsigned int measure);
-
-	virtual double GetMinMeasure(const GLang* lang,unsigned int measure);
-
-	virtual double GetMinMeasure(unsigned int);
-
-	/**
-	* A specific subprofile has changed.
-	* @param sub             Subprofile.
-	* @param event           Event.
-	*/
-	virtual void Event(GLang* lang, tEvent event);
-
-	/**
-	* A specific subprofile has changed.
-	* @param sub             Subprofile.
-	* @param event           Event.
-	*/
-	virtual void Event(GSubProfile* sub, tEvent event);
-
-	/**
-	* Create the parameters.
-	* @param params          Parameters to configure.
-	*/
-	static void CreateParams(RConfig* params);
-
+	GProfilesAgreement(GFactoryMeasure* fac) :
+		GProfilesGeneric(fac) {}
+	
+	virtual double Compute(GProfile* sub1,GProfile* sub2);
+	
 	/**
 	* Destructor.
 	*/
-	virtual ~GProfilesSimsCosinus(void);
+	virtual ~GProfilesAgreement(void) {}
 };
-
-
-}  //-------- End of namespace GALILEI -----------------------------------------
 
 
 //------------------------------------------------------------------------------

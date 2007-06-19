@@ -58,7 +58,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for Current
-#include <dlgconfigprofilesdocs_qt.h>
+#include <dlgconfigsubprofilesdocs_qt.h>
 
 
 //-----------------------------------------------------------------------------
@@ -91,25 +91,13 @@ void Configure(GFactoryMeasure* params)
 
 	dlg.NullSimLevel->setPrecision(10);
 	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
-	dlg.ISF->setChecked(params->GetBool("ISF"));
-	dlg.IDF->setChecked(params->GetBool("IDF"));
 	dlg.Memory->setChecked(params->GetBool("Memory"));
-	dlg.DebugSim->setChecked(params->GetBool("DebugSim"));
-	dlg.DebugMinSim->setChecked(params->GetBool("DebugMinSim"));
 	dlg.MinSim->setValue(params->GetDouble("MinSim"));
-	dlg.MinSim->setEnabled(params->GetBool("DebugMinSim"));
-	dlg.AutomaticMinSim->setChecked(params->GetBool("AutomaticMinSim"));
-
 	if(dlg.exec())
 	{
 		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
-		params->SetBool("ISF",dlg.ISF->isChecked());
-		params->SetBool("IDF",dlg.IDF->isChecked());
 		params->SetBool("Memory",dlg.Memory->isChecked());
-		params->SetBool("DebugSim",dlg.DebugSim->isChecked());
-		params->SetBool("DebugMinSim",dlg.DebugMinSim->isChecked());
 		params->SetDouble("MinSim",dlg.MinSim->value());
-		params->SetBool("AutomaticMinSim",dlg.AutomaticMinSim->isChecked());
 		params->Apply();
  	}
 }

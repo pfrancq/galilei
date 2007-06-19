@@ -89,14 +89,16 @@ void Configure(GFactoryMeasure* params)
 {
  	DlgConfigProfiles_Qt dlg;
 
-	dlg.MinSameDocs->setValue(params->GetUInt("MinSameDocs"));
+	dlg.MinSameDocs->setValue(params->GetUInt("MinDocs"));
 	dlg.NullSimLevel->setPrecision(10);
 	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
 	dlg.MinAgreement->setValue(params->GetDouble("MinAgreement"));
+	dlg.Memory->setChecked(params->GetBool("Memory"));
 	if(dlg.exec())
 	{
-		params->SetUInt("MinSameDocs",dlg.MinSameDocs->value());
+		params->SetUInt("MinDocs",dlg.MinSameDocs->value());
 		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
+		params->SetBool("Memory",dlg.Memory->isChecked());
 		params->SetDouble("MinAgreement",dlg.MinAgreement->value());
 		params->Apply();
  	}

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.h
+	GProfilesGeneric.h
 
 	List of SubProfiles for a given Language - Implementation.
 
-	Copyright 2003-2005 by the Université Libre de Bruxelles.
+	Copyright 2007-2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,19 +32,17 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GProfilesSimsCosinusH
-#define GProfilesSimsCosinusH
+#ifndef GProfilesGenericH
+#define GProfilesGenericH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
 #include <gsignalhandler.h>
+using namespace GALILEI;
+using namespace R;
 
-
-//------------------------------------------------------------------------------
-namespace GALILEI{
-//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
@@ -52,61 +50,57 @@ namespace GALILEI{
 * The GProfilesSimsCosinus class provides a representation for a set of Similarity between Profiles of
 * a given language.
 * @author Pascal Francq and Valery Vandaele
-* @short SubProfiles.
+* @short Profiles Agreement.
 */
-class GProfilesSimsCosinus : public GMeasure, public GSignalHandler
+class GProfilesGeneric : public GMeasure, public GSignalHandler
 {
-	// Internal class
-	class GProfilesSim;
-
-	/**
-	* Similarities.
-	*/
-	R::RContainer<GProfilesSim,true,true> Values;
+protected:
 
 	/**
 	* level under which a similarity is cinsidered as null;
 	*/
 	double NullSimLevel;
 
-	double MinSim;
+	double MinAgreement;
 
-	bool AutomaticMinSim;
+	unsigned int MinDocs;
+
+	bool Memory;
+
+	double** Values;
+	size_t NbLines;
+	bool NeedUpdate;
+	RVectorInt<true> Created;
+	RVectorInt<true> Modified;
+	RVectorInt<true> Deleted;
 
 public:
 
 	/**
 	* Constructor of the similarities between subprofiles.
-	* @param session         Session.
-	* @param iff             Use Inverse Frequency Factor.
-	* @param memory      use container to stock sims?
 	*/
-	GProfilesSimsCosinus(GFactoryMeasure* fac);
+	GProfilesGeneric(GFactoryMeasure* fac);
 
 	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
 
-	virtual double GetMeasure(unsigned int id1,unsigned int id2,unsigned int measure);
+	virtual double Compute(GProfile* sub1,GProfile* sub2)=0;
 
-	virtual double GetMinMeasure(const GLang* lang,unsigned int measure);
-
-	virtual double GetMinMeasure(unsigned int);
+	void Update(void);
 
 	/**
-	* A specific subprofile has changed.
+	 * Measure(0,lang,id1,id2,result*);
+	 */
+	virtual void Measure(unsigned int measure,...);
+
+	/**
+	* A specific profile has changed.
 	* @param sub             Subprofile.
 	* @param event           Event.
 	*/
-	virtual void Event(GLang* lang, tEvent event);
-
-	/**
-	* A specific subprofile has changed.
-	* @param sub             Subprofile.
-	* @param event           Event.
-	*/
-	virtual void Event(GSubProfile* sub, tEvent event);
+	virtual void Event(GProfile* sub, tEvent event);
 
 	/**
 	* Create the parameters.
@@ -117,11 +111,8 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GProfilesSimsCosinus(void);
+	virtual ~GProfilesGeneric(void);
 };
-
-
-}  //-------- End of namespace GALILEI -----------------------------------------
 
 
 //------------------------------------------------------------------------------

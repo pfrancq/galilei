@@ -1,19 +1,19 @@
 <!DOCTYPE UI><UI version="3.3" stdsetdef="1">
-<class>DlgConfigProfiles_Qt</class>
+<class>DlgConfigProfilesGroups_Qt</class>
 <widget class="QDialog">
     <property name="name">
-        <cstring>DlgConfigProfiles_Qt</cstring>
+        <cstring>DlgConfigProfilesGroups_Qt</cstring>
     </property>
     <property name="geometry">
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>401</width>
-            <height>195</height>
+            <width>321</width>
+            <height>153</height>
         </rect>
     </property>
     <property name="caption">
-        <string>Configure Profiles Disagreements with Count Method</string>
+        <string>Configure Groups/Profiles Similarities with Cosinus Method</string>
     </property>
     <property name="sizeGripEnabled">
         <bool>true</bool>
@@ -22,98 +22,6 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>layout3</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel1_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Minimum Number of Common Documents</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>40</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="QSpinBox">
-                    <property name="name">
-                        <cstring>MinDiffDocs</cstring>
-                    </property>
-                </widget>
-            </hbox>
-        </widget>
-        <widget class="QLayoutWidget">
-            <property name="name">
-                <cstring>layout45_2</cstring>
-            </property>
-            <hbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QLabel">
-                    <property name="name">
-                        <cstring>textLabel8_2</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Minimum Disagreement Ratio</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Set a threshold for the minimum disagreement ratio between two profiles to avoid them to be grouped together.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>If the &lt;b&gt;disagreement ratio&lt;/b&gt; between two subprofiles is greater or equal to the &lt;b&gt;Minimum Disagreement Threshold&lt;/b&gt;, the two profiles can never be grouped together.</string>
-                    </property>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer101_2</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Horizontal</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>40</width>
-                            <height>20</height>
-                        </size>
-                    </property>
-                </spacer>
-                <widget class="KDoubleNumInput">
-                    <property name="name">
-                        <cstring>MinDisagreement</cstring>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Set a threshold for the minimum disagreement ratio between two profiles to avoid them to be grouped together.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>If the &lt;b&gt;disagreement ratio&lt;/b&gt; between two subprofiles is greater or equal to the &lt;b&gt;Minimum Disagreement Threshold&lt;/b&gt;, the two profiles can never be grouped together.</string>
-                    </property>
-                </widget>
-            </hbox>
-        </widget>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>layout43</cstring>
@@ -154,26 +62,52 @@
                 </widget>
             </hbox>
         </widget>
+        <widget class="QLayoutWidget">
+            <property name="name">
+                <cstring>layout34</cstring>
+            </property>
+            <hbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QLabel">
+                    <property name="name">
+                        <cstring>textLabel1_2</cstring>
+                    </property>
+                    <property name="text">
+                        <string>Static Minimum Similarity</string>
+                    </property>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer40_2</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Horizontal</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>40</width>
+                            <height>20</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="KDoubleNumInput">
+                    <property name="name">
+                        <cstring>MinSim</cstring>
+                    </property>
+                </widget>
+            </hbox>
+        </widget>
         <widget class="QCheckBox">
             <property name="name">
                 <cstring>Memory</cstring>
             </property>
             <property name="text">
                 <string>Stored in Memory</string>
-            </property>
-        </widget>
-        <widget class="Line">
-            <property name="name">
-                <cstring>line1</cstring>
-            </property>
-            <property name="frameShape">
-                <enum>HLine</enum>
-            </property>
-            <property name="frameShadow">
-                <enum>Sunken</enum>
-            </property>
-            <property name="orientation">
-                <enum>Horizontal</enum>
             </property>
         </widget>
         <widget class="QLayoutWidget">
@@ -246,19 +180,16 @@
     <connection>
         <sender>buttonOk</sender>
         <signal>clicked()</signal>
-        <receiver>DlgConfigProfiles_Qt</receiver>
+        <receiver>DlgConfigProfilesGroups_Qt</receiver>
         <slot>accept()</slot>
     </connection>
     <connection>
         <sender>buttonCancel</sender>
         <signal>clicked()</signal>
-        <receiver>DlgConfigProfiles_Qt</receiver>
+        <receiver>DlgConfigProfilesGroups_Qt</receiver>
         <slot>reject()</slot>
     </connection>
 </connections>
-<includes>
-    <include location="local" impldecl="in implementation">dlgconfigdisagree_qt.ui.h</include>
-</includes>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>knuminput.h</includehint>

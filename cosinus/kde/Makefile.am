@@ -1,10 +1,12 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)
-lib_LTLIBRARIES =  libprofilessimscosinus_dlg.la libprofilesdocssimscosinus_dlg.la libgroupsdocssimscosinus_dlg.la libprofilesgroupssimscosinus_dlg.la libprofilesagree_dlg.la libprofilesdisagree_dlg.la
+lib_LTLIBRARIES =  libsubprofilessimscosinus_dlg.la libsubprofilesdocssimscosinus_dlg.la \
+		libgroupsdocssimscosinus_dlg.la libsubprofilesgroupssimscosinus_dlg.la \
+		libprofilesagree_dlg.la libprofilesdisagree_dlg.la
 
 
-libprofilessimscosinus_dlg_la_LDFLAGS = -module -avoid-version
-libprofilessimscosinus_dlg_la_SOURCES = dlgconfigprofiles_qt.ui gprofilessimscosinus_kde.cpp
-libprofilessimscosinus_dlg_la_LIBADD=
+libsubprofilessimscosinus_dlg_la_LDFLAGS = -module -avoid-version
+libsubprofilessimscosinus_dlg_la_SOURCES = dlgconfigsubprofiles_qt.ui gsubprofilessims_kde.cpp
+libsubprofilessimscosinus_dlg_la_LIBADD=
 
 libprofilesagree_dlg_la_LDFLAGS = -module -avoid-version
 libprofilesagree_dlg_la_SOURCES = dlgconfigagree_qt.ui gprofilesagree_kde.cpp
@@ -14,18 +16,17 @@ libprofilesdisagree_dlg_la_LDFLAGS = -module -avoid-version
 libprofilesdisagree_dlg_la_SOURCES = dlgconfigdisagree_qt.ui gprofilesdisagree_kde.cpp
 libprofilesdisagree_dlg_la_LIBADD=
 
-libprofilesdocssimscosinus_dlg_la_LDFLAGS = -module -avoid-version
-libprofilesdocssimscosinus_dlg_la_SOURCES = dlgconfigprofilesdocs_qt.ui gprofilesdocssimscosinus_kde.cpp
-libprofilesdocssimscosinus_dlg_la_LIBADD=
+libsubprofilesdocssimscosinus_dlg_la_LDFLAGS = -module -avoid-version
+libsubprofilesdocssimscosinus_dlg_la_SOURCES = dlgconfigsubprofilesdocs_qt.ui gsubprofilesdocssims_kde.cpp
+libsubprofilesdocssimscosinus_dlg_la_LIBADD=
 
 libgroupsdocssimscosinus_dlg_la_LDFLAGS = -module -avoid-version
-libgroupsdocssimscosinus_dlg_la_SOURCES = dlgconfiggroupsdocs_qt.ui ggroupsdocssimscosinus_kde.cpp
+libgroupsdocssimscosinus_dlg_la_SOURCES = dlgconfiggroupsdocs_qt.ui ggroupsdocssims_kde.cpp
 libgroupsdocssimscosinus_dlg_la_LIBADD=
 
-libprofilesgroupssimscosinus_dlg_la_LDFLAGS = -module -avoid-version
-libprofilesgroupssimscosinus_dlg_la_SOURCES = dlgconfigprofilesgroups_qt.ui gprofilesgroupssimscosinus_kde.cpp
-libprofilesgroupssimscosinus_dlg_la_LIBADD=
-
+libsubprofilesgroupssimscosinus_dlg_la_LDFLAGS = -module -avoid-version
+libsubprofilesgroupssimscosinus_dlg_la_SOURCES = dlgconfigsubprofilesgroups_qt.ui gsubprofilesgroupssims_kde.cpp
+libsubprofilesgroupssimscosinus_dlg_la_LIBADD=
 
 SUBDIRS =
 

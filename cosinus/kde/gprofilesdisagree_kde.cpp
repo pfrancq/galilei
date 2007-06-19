@@ -89,14 +89,16 @@ void Configure(GFactoryMeasure* params)
 {
  	DlgConfigProfiles_Qt dlg;
 
-	dlg.MinDiffDocs->setValue(params->GetUInt("MinDiffDocs"));
+	dlg.MinDiffDocs->setValue(params->GetUInt("MinDocs"));
 	dlg.NullSimLevel->setPrecision(10);
 	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
 	dlg.MinDisagreement->setValue(params->GetDouble("MinDisagreement"));
+	dlg.Memory->setChecked(params->GetBool("Memory"));
 	if(dlg.exec())
 	{
-		params->SetUInt("MinDiffDocs",dlg.MinDiffDocs->value());
+		params->SetUInt("MinDocs",dlg.MinDiffDocs->value());
 		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
+		params->SetBool("Memory",dlg.Memory->isChecked());
 		params->SetDouble("MinDisagreement",dlg.MinDisagreement->value());
 		params->Apply();
  	}

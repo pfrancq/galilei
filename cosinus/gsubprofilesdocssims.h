@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.h
+	GProfilesDocsSimsCosinus.h
 
-	List of SubProfiles for a given Language - Implementation.
+	Similarities between documents and subprofiles - Implementation.
 
-	Copyright 2003-2005 by the Université Libre de Bruxelles.
+	Copyright 2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,34 +32,43 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GProfilesDisagreementH
-#define GProfilesDisagreementH
+#ifndef GSubProfilesDocsSimsH
+#define GSubProfilesDocsSimsH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofilesgeneric.h>
+#include <ggenericsims.h>
 
 
 //------------------------------------------------------------------------------
 /**
- */
-class GProfilesDisagreement : public GProfilesGeneric
+* The GGroupsDocsSims class provides a representation for the similarities between
+* groups and profiles.
+* @author Pascal Francq and Valery Vandaele
+* @short Groups-Documents Similarities.
+*/
+class GSubProfilesDocsSims : public GGenericSims
 {
 public:
-	
+
 	/**
-	* Constructor of the similarities between subprofiles.
+	* Constructor of the similarities between documents and subprofiles.
+	* @param session         Session.
+	* @param iff             Use Inverse Frequency Factor.
+	* @param memory      use container to stock sims?
 	*/
-	GProfilesDisagreement(GFactoryMeasure* fac) :
-		GProfilesGeneric(fac) {}
-	
-	virtual double Compute(GProfile* sub1,GProfile* sub2);
-	
+	GSubProfilesDocsSims(GFactoryMeasure* fac)
+		: GGenericSims(fac,true,false,true) {}
+
+	virtual double Compute(GLang* lang,size_t id1,size_t id2);
+
+	virtual size_t GetMaxId1(GLang* lang) { return(Session->GetSubProfilesNb(lang));}
+
 	/**
-	* Destructor.
+	* Destructor of the similarities between documents and subprofiles.
 	*/
-	virtual ~GProfilesDisagreement(void) {}
+	virtual ~GSubProfilesDocsSims(void) {}
 };
 
 

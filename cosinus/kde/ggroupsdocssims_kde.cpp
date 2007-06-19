@@ -30,7 +30,7 @@
 
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
 using namespace GALILEI;
@@ -58,13 +58,13 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for Current
-#include <dlgconfigprofiles_qt.h>
+#include <dlgconfiggroupsdocs_qt.h>
 
 
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("The cosinus method is used to computed the similarities between the subprofiles.");
+	I18N_NOOP("The cosinus method is used to computed the similarities between the groups and documents.");
 
 
 //------------------------------------------------------------------------------
@@ -87,18 +87,18 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryMeasure* params)
 {
- 	DlgConfigProfiles_Qt dlg;
+ 	DlgConfigGroupsDocs_Qt dlg;
 
 	dlg.NullSimLevel->setPrecision(10);
 	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
+	dlg.Memory->setChecked(params->GetBool("Memory"));
 	dlg.MinSim->setValue(params->GetDouble("MinSim"));
-	dlg.StaticMinSim->setChecked(!params->GetBool("AutomaticMinSim"));
-	dlg.MinSim->setEnabled(!params->GetBool("AutomaticMinSim"));
+
 	if(dlg.exec())
 	{
 		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
+		params->SetBool("Memory",dlg.Memory->isChecked());
 		params->SetDouble("MinSim",dlg.MinSim->value());
-		params->SetBool("AutomaticMinSim",!dlg.StaticMinSim->isChecked());
 		params->Apply();
  	}
 }

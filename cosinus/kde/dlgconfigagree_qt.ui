@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>333</width>
-            <height>154</height>
+            <width>401</width>
+            <height>195</height>
         </rect>
     </property>
     <property name="caption">
@@ -163,6 +163,14 @@
                 </widget>
             </hbox>
         </widget>
+        <widget class="QCheckBox">
+            <property name="name">
+                <cstring>Memory</cstring>
+            </property>
+            <property name="text">
+                <string>Stored in Memory</string>
+            </property>
+        </widget>
         <widget class="Line">
             <property name="name">
                 <cstring>line1</cstring>
@@ -243,8 +251,6 @@
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>

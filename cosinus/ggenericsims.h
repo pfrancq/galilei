@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GProfilesGroupsSimsCosinus.h
+	GGroupsDocsSimsCosinus.h
 
 	Similarities between documents and groups - Implementation.
 
@@ -31,49 +31,40 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GProfilesGroupsSimsCosinusH
-#define GProfilesGroupsSimsCosinusH
+#ifndef GGenericSimsH
+#define GGenericSimsH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
 #include <gsignalhandler.h>
-
-
-//------------------------------------------------------------------------------
-namespace GALILEI{
-//------------------------------------------------------------------------------
+#include <ggalileiapp.h>
+#include <glang.h>
+#include <gsession.h>
+#include<gdoc.h>
+#include<ggroup.h>
+#include<gsubprofile.h>
+using namespace GALILEI;
+using namespace R;
 
 
 //------------------------------------------------------------------------------
 /**
-* The GProfilesGroupsSimsCosinus class provides a representation for the similarities between
+* The GenericSims class provides a representation for the similarities between
 * groups and profiles.
 * @author Pascal Francq and Valery Vandaele
 * @short Groups-Documents Similarities.
 */
-class GProfilesGroupsSimsCosinus : public GMeasure, public GSignalHandler
+class GGenericSims : public GMeasure, public GSignalHandler
 {
 	// Internal class
-	class GProfileGrpSim;
+	class GElementSims;
 
 	/**
 	* Similarities.
 	*/
- 	R::RContainer<GProfileGrpSim,true,true> Sims;
-
-	bool IDF;
-
-	/**
-	* Inverse Frequency Factor must be used to compute the similarities.
-	*/
-	bool ISF;
-
-	bool Debug;
-
-	bool DebugMinSim;
-
+ 	R::RContainer<GElementSims,true,true> Sims;
 
 	/**
 	* Must the sims be stock in a container
@@ -86,42 +77,34 @@ class GProfilesGroupsSimsCosinus : public GMeasure, public GSignalHandler
 	*/
 	double NullSimLevel;
 
-	double MinSim;
-
-	bool AutomaticMinSim;
-
-	bool NeedUpdate;
-
+	bool Doc;
+	
+	bool Group;
+	
+	bool SubProfile;
+	
 public:
 
 	/**
 	* Constructor of the similarities between documents and subprofiles.
-	* @param session         Session.
-	* @param iff             Use Inverse Frequency Factor.
-	* @param memory      use container to stock sims?
 	*/
-	GProfilesGroupsSimsCosinus(GFactoryMeasure* fac);
+	GGenericSims(GFactoryMeasure* fac,bool d,bool g,bool s);
 
 	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
 
-	/**
-	*  update the similairties
-	*/
-	void Update(void);
-
+	virtual double Compute(GLang* lang,size_t id1,size_t id2)=0;
+	
 	/**
 	* returns the minimum level for a similarity not to be null.
 	*/
 	double GetNullSimLevel(void) {return NullSimLevel;}
 
-	virtual double GetMeasure(unsigned int id1,unsigned int id2,unsigned int measure);
+	virtual void Measure(unsigned int measure,...);
 
-	virtual double GetMinMeasure(const GLang* lang,unsigned int measure);
-
-	virtual double GetMinMeasure(unsigned int) {return(0.0);}
+	virtual size_t GetMaxId1(GLang* lang)=0;
 
 	/**
 	* A specific subprofile has changed.
@@ -132,10 +115,10 @@ public:
 
 	/**
 	* A specific document has changed.
-	* @param sub             Subprofile.
+	* @param doc             Subprofile.
 	* @param event           Event.
 	*/
-	virtual void Event(GSubProfile* sub, tEvent event);
+	virtual void Event(GDoc* doc, tEvent event);
 
 	/**
 	* A specific group has changed.
@@ -145,6 +128,13 @@ public:
 	virtual void Event(GGroup* grp, tEvent event);
 
 	/**
+	* A specific group has changed.
+	* @param grp             Group.
+	* @param event           Event.
+	*/
+	virtual void Event(GSubProfile* sub, tEvent event);
+	
+	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
@@ -153,11 +143,8 @@ public:
 	/**
 	* Destructor of the similarities between documents and subprofiles.
 	*/
-	virtual ~GProfilesGroupsSimsCosinus(void);
+	virtual ~GGenericSims(void);
 };
-
-
-}  //-------- End of namespace GALILEI -----------------------------------------
 
 
 //------------------------------------------------------------------------------

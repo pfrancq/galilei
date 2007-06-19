@@ -2,15 +2,14 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.h
+	GProfilesGroupsSimsCosinus.cpp
 
-	List of SubProfiles for a given Language - Implementation.
+	Similarities between documents and groups - Implementation.
 
-	Copyright 2003-2005 by the Université Libre de Bruxelles.
+	Copyright 2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,36 +31,28 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GProfilesDisagreementH
-#define GProfilesDisagreementH
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofilesgeneric.h>
+#include <gsubprofilesgroupssims.h>
 
 
 //------------------------------------------------------------------------------
-/**
- */
-class GProfilesDisagreement : public GProfilesGeneric
+//
+// class GSubProfilesGroupsSims
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+double GSubProfilesGroupsSims::Compute(GLang* lang,size_t id1,size_t id2)
 {
-public:
-	
-	/**
-	* Constructor of the similarities between subprofiles.
-	*/
-	GProfilesDisagreement(GFactoryMeasure* fac) :
-		GProfilesGeneric(fac) {}
-	
-	virtual double Compute(GProfile* sub1,GProfile* sub2);
-	
-	/**
-	* Destructor.
-	*/
-	virtual ~GProfilesDisagreement(void) {}
-};
+	GSubProfile* sub=Session->GetSubProfile(lang,id1,true,false);
+	GGroup* grp=Session->GetGroup(lang,id2,true,false);
+
+	if(grp->GetLang()!=sub->GetLang())
+		throw GException("Cannot compare a document and group of a different language");
+	return(sub->SimilarityIFF2(*grp,otSubProfile,otGroup,lang));	
+}
 
 
 //------------------------------------------------------------------------------
-#endif
+CREATE_MEASURE_FACTORY("Profiles/Groups Similarities","Cosinus Method",GSubProfilesGroupsSims)
+
