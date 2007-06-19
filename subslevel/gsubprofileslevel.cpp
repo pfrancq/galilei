@@ -258,11 +258,16 @@ void GSubProfilesLevel::Run(void)
 		throw GException ("[Compute Subprofiles Level]: Error: number of levels is null !");
 	GStorageTag tag("SubProfilesLevelCMD");
 	tag.InsertAttr("NbLevels",RString::Number(NbLevels));
-	RCursor<GGroup> Groups(Session->GetGroups());
-	for(Groups.Start();!Groups.End();Groups.Next())
+	
+	RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
+	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		void* caller=static_cast<void*>(Groups());
-		Session->GetStorage()->ExecuteCmd(tag,caller);
+		RCursor<GGroup> Groups(Session->GetGroups(Langs()));
+		for(Groups.Start();!Groups.End();Groups.Next())
+		{
+			void* caller=static_cast<void*>(Groups());
+			Session->GetStorage()->ExecuteCmd(tag,caller);
+		}
 	}
 	GStorageTag tag2("DocsLevelCMD");
 	Session->GetStorage()->ExecuteCmd(tag2,0);
