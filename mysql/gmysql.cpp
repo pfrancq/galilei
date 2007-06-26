@@ -1024,7 +1024,7 @@ GDoc* GStorageMySQL::LoadDoc(unsigned int docid)
 	{
 		GDoc* doc;
 	
-		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed,owner "
+		RQuery quer (Db,"SELECT htmlid,html,title,mimetype,langid,updated,calculated,owner "
 		                "FROM htmls WHERE htmlid="+Num(docid));
 		quer.Start();
 		if(!quer.GetNb())
@@ -1035,7 +1035,7 @@ GDoc* GStorageMySQL::LoadDoc(unsigned int docid)
 		if((!lang)&&(!quer[4].IsEmpty()))
 			return(0);
 	
-		doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),static_cast<tDocStatus>(atoi(quer[7])),atoi(quer[8]));
+		doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]));
 		doc->SetState(osNeedLoad);
 	
 		// Load the links of the document loaded.
@@ -1062,7 +1062,7 @@ void GStorageMySQL::LoadDocs(void)
 
 	try
 	{
-		RString Sql("SELECT htmlid,html,title,mimetype,langid,updated,calculated,failed,owner FROM htmls");
+		RString Sql("SELECT htmlid,html,title,mimetype,langid,updated,calculated,owner FROM htmls");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";
 		if(Filtering)
@@ -1082,7 +1082,7 @@ void GStorageMySQL::LoadDocs(void)
 				continue;
 
 			docid=atoi(quer[0]);
-			doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),static_cast<tDocStatus>(atoi(quer[7])),atoi(quer[8]));
+			doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],GetMySQLToDate(quer[5]),GetMySQLToDate(quer[6]),atoi(quer[7]));
 			Session->InsertDoc(doc);
 			doc->SetState(osNeedLoad);
 
@@ -1149,10 +1149,10 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 		if(!atoi(Test[0]))
 		{
 			// Insert the document
-			sSql="INSERT INTO htmls(htmlid,html,title,mimetype,langid,updated,calculated,failed) "
+			sSql="INSERT INTO htmls(htmlid,html,title,mimetype,langid,updated,calculated) "
 			     "VALUES("+Num(doc->GetId())+","+RQuery::SQLValue(doc->GetURL())+","+
 			     RQuery::SQLValue(doc->GetName())+","+f+","+l+","+RQuery::SQLValue(doc->GetUpdated())+
-			     ","+RQuery::SQLValue(doc->GetComputed())+","+Num(doc->GetStatus())+")";
+			     ","+RQuery::SQLValue(doc->GetComputed())+")";
 			RQuery Insert(Db,sSql);
 		}
 		else
@@ -1161,7 +1161,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 			sSql="UPDATE htmls SET html="+RQuery::SQLValue(doc->GetURL())+",title="+
 			     RQuery::SQLValue(doc->GetName())+",mimetype="+f+",langid="+l+
 			     ",updated="+RQuery::SQLValue(doc->GetUpdated())+",calculated="+RQuery::SQLValue(doc->GetComputed())+
-				 ",failed="+Num(doc->GetStatus())+" WHERE htmlid="+Num(doc->GetId());
+				 " WHERE htmlid="+Num(doc->GetId());
 			RQuery Update(Db,sSql);
 		}
 
