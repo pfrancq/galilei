@@ -68,7 +68,6 @@ GGrouping::GGrouping(GFactoryGrouping* fac)
 //-----------------------------------------------------------------------------
 void GGrouping::Grouping(GSlot* rec,bool save)
 {
-	R::RCursor<GFactoryLang> CurLang;
 	RCursor<GSubProfile> cur;
 	R::RCursor<GGroup> Groups;
 
@@ -76,11 +75,10 @@ void GGrouping::Grouping(GSlot* rec,bool save)
 	GGroupCalc* CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
 
 	// Go trough each language.
-	CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
+	R::RCursor<GLang> CurLang(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
 	for(CurLang.Start();!CurLang.End();CurLang.Next())
 	{
-		Lang=CurLang()->GetPlugin();
-		if(!Lang) continue;
+		Lang=CurLang();
 
 		SubProfiles.Clear();
 		if(rec)

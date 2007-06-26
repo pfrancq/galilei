@@ -108,8 +108,11 @@ public:
 	void ReInit(void);
 
 	/**
-	* Analyze a given string to search for variables '%var%' that are then
-	* remplace in the string returned.
+	* Analyze a given string to search for variables of the type '%%var%%'. These
+	* variables are then replaced with the corresponding value. Actually, the
+	* known variables are:
+	* - %%world% : Name of the session.
+	* 
 	* @param str             String to analyze.
 	*/
 	R::RString AnalyzeString(const R::RString& str);

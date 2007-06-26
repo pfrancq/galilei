@@ -232,6 +232,7 @@ enum tObjState
 {
 	osUnknow                  /** Unknow state.*/,
 	osNewMem                  /** Object was created in memory.*/,
+	osLoaded                  /** Object was loaded in memory.*/,
 	osUpToDate                /** Object is up to date.*/,
 	osModified                /** Object was modified and computation must be update.*/,
 	osUpdated                 /** Object is updated and needs to be save.*/,

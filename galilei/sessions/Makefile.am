@@ -13,5 +13,5 @@ sessionsincludedir = $(includedir)/galilei
 sessionsinclude_HEADERS = gsession.h gsessionprg.h galilei.h gstorage.h \
 	gslot.h gslotlog.h gplugin.h gstatscalc.h \
 	gplugin.hh gpluginmanager.h gpluginmanager.hh gsignalhandler.h \
-	gmeasure.h ggalileiapp.h glangdata.h
+	gmeasure.h ggalileiapp.h glangdata.h gmeasurefile.h gmeasurefile.hh
 

@@ -86,7 +86,7 @@ public:
 	/**
 	* Compare two destinators by comparing their identificator.
 	* @see R::RContainer
-	* @param subs            Suggestion.
+	* @param sugs            Suggestion.
 	* @return int
 	*/
 	int Compare(const GSugs& sugs) const;
@@ -94,7 +94,7 @@ public:
 	/**
 	* Compare two destinators by comparing their identificator.
 	* @see R::RContainer
-	* @param subs            Suggestion.
+	* @param sugs            Suggestion.
 	* @return int
 	*/
 	int Compare(const GSugs* sugs) const;
