@@ -251,10 +251,10 @@ void GGenericSims::Event(GLang* lang, tEvent event)
 	if(!Memory) return;
 	switch(event)
 	{
-		case eObjNewMem:
+		case eObjNew:
 			Sims.InsertPtr(new GElementSims(this,lang));
 			break;
-		case eObjDeleteMem:
+		case eObjDelete:
 			Sims.DeletePtr(*lang);
 			break;
 		default:

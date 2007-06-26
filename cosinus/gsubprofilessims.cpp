@@ -454,10 +454,10 @@ void GSubProfilesSims::Event(GLang* lang, tEvent event)
 {
 	switch(event)
 	{
-		case eObjNewMem:
+		case eObjNew:
 			Values.InsertPtr(new GProfilesSim(this,lang));
 			break;
-		case eObjDeleteMem:
+		case eObjDelete:
 			Values.DeletePtr(*lang);
 			break;
 		default:
@@ -473,7 +473,7 @@ void GSubProfilesSims::Event(GSubProfile* sub, tEvent event)
 
 	switch(event)
 	{
-		case eObjNewMem:
+		case eObjNew:
 			profSim=Values.GetPtr<GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");
@@ -494,7 +494,7 @@ void GSubProfilesSims::Event(GSubProfile* sub, tEvent event)
 				profSim->Deleted.Delete(sub->GetId());
 			profSim->NeedUpdate=true;
 			break;
-		case eObjDeleteMem:
+		case eObjDelete:
 			profSim = Values.GetPtr<const GLang*>(sub->GetLang());
 			if(!profSim)
 				throw GException("Language not defined");

@@ -257,7 +257,7 @@ void GProfilesGeneric::Event(GProfile* prof, tEvent event)
 {
 	switch(event)
 	{
-		case eObjNewMem:
+		case eObjNew:
 			Created.Insert(prof->GetId());
 			if(Deleted.IsIn(prof->GetId()))
 				Deleted.Delete(prof->GetId());
@@ -272,7 +272,7 @@ void GProfilesGeneric::Event(GProfile* prof, tEvent event)
 				Deleted.Delete(prof->GetId());
 			NeedUpdate=true;
 			break;
-		case eObjDeleteMem:
+		case eObjDelete:
 			if(Created.IsIn(prof->GetId()))
 				Created.Delete(prof->GetId());
 			if(Modified.IsIn(prof->GetId()))
