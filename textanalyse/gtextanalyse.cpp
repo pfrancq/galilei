@@ -650,11 +650,9 @@ void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<G
 				{
 					if(externalLinks)
 					{
-						tmpDoc=new GDoc(url,url,cNoRef,0,"text/html",RDate(""),RDate(""),dsToAnalyse,cNoRef);
+						tmpDoc=new GDoc(url,url,cNoRef,0,"text/html",RDate::GetToday(),RDate::null,cNoRef);
 						Session->AssignId(tmpDoc);
 						DocsToAdd->InsertPtr(tmpDoc);
-
-						tmpDoc->SetState(osNotNeeded);
 					}
 				}
 				else
