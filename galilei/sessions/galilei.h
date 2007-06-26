@@ -95,8 +95,6 @@ class GDocAnalyseManager;
 class GPostDoc;
 class GPostDocManager;
 class GFactoryPostDoc;
-class GDocSim;
-class GDocsSim;
 class GDocXML;
 class GFactoryDocAnalyse;
 class GBalancedLinks;
