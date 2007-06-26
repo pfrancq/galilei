@@ -126,7 +126,7 @@ void GSubProfilesSims::GProfilesSim::UpdateDeviation(size_t oldnbcomp,double old
 //------------------------------------------------------------------------------
 double GSubProfilesSims::GProfilesSim::Compute(GSubProfile* sub1,GSubProfile* sub2)
 {
-	return(sub1->SimilarityIFF2(*sub2,otDoc,otSubProfile,Lang));
+	return(sub1->SimilarityIFF(*sub2,otSubProfile,Lang));
 }
 
 

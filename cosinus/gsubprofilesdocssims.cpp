@@ -54,4 +54,4 @@ double GSubProfilesDocsSims::Compute(GLang* lang,size_t id1,size_t id2)
 }
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles/Documents Similarities","Cosinus Method",GSubProfilesDocsSims)
+CREATE_MEASURE_FACTORY("SubProfiles/Documents Similarities","Cosinus Method",GSubProfilesDocsSims)

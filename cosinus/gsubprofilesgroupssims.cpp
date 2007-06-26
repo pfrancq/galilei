@@ -54,5 +54,5 @@ double GSubProfilesGroupsSims::Compute(GLang* lang,size_t id1,size_t id2)
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles/Groups Similarities","Cosinus Method",GSubProfilesGroupsSims)
+CREATE_MEASURE_FACTORY("SubProfiles/Groups Similarities","Cosinus Method",GSubProfilesGroupsSims)
 
