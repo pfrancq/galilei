@@ -278,7 +278,6 @@ void KViewDoc::ConstructGeneral(void)
 {
 	GLang* l;
 	RDate d;
-	char sDate[20];
 
 	new QListViewItem(General,"ID",QString::number(Document->GetId()));
 	new QListViewItem(General,"URL",ToQString(Document->GetURL()));
@@ -293,28 +292,7 @@ void KViewDoc::ConstructGeneral(void)
 	new QListViewItem(General,"Last Updated",ToQString(d));
 	d=Document->GetComputed();
 	new QListViewItem(General,"Last Analysed",ToQString(d));
-	switch(Document->GetState())
-	{
-		case osUpToDate:
-			strcpy(sDate,"Up to date");
-			break;
-		case osUpdated:
-			strcpy(sDate,"Updated");
-			break;
-		case osModified:
-			strcpy(sDate,"Modified");
-			break;
-		case osNewMem:
-			strcpy(sDate,"New in memory");
-			break;
-		case osUnknow:
-		default:
-			strcpy(sDate,"Unknow");
-			break;
-	}
-	new QListViewItem(General,"State",sDate);
-
-	new QListViewItem(General,"Status",ToQString(GetDocStatus(Document->GetStatus())));
+	new QListViewItem(General,"State",ToQString(GetState(Document->GetState())));
 }
 
 

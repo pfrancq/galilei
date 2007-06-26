@@ -150,7 +150,6 @@ void KViewGroup::ConstructProfiles(void)
 void KViewGroup::ConstructGeneral(void)
 {
 	GLang* l;
-	char sDate[20];
 
 	General->clear();
 	new QListViewItem(General,"ID",ToQString(RString::Number(Group->GetId())));
@@ -159,26 +158,7 @@ void KViewGroup::ConstructGeneral(void)
 		new QListViewItem(General,"Language",ToQString(l->GetName()));
 	else
 		new QListViewItem(General,"Language","Unknow");
-	switch(Group->GetState())
-	{
-		case osUpToDate:
-			strcpy(sDate,"Up to date");
-			break;
-		case osUpdated:
-			strcpy(sDate,"Updated");
-			break;
-		case osModified:
-			strcpy(sDate,"Modified");
-			break;
-		case osNewMem:
-			strcpy(sDate,"New in memory");
-			break;
-		case osUnknow:
-		default:
-			strcpy(sDate,"Unknow");
-			break;
-	}
-	new QListViewItem(General,"Status",sDate);
+	new QListViewItem(General,"Status",ToQString(GetState(Group->GetState())));
 }
 
 
