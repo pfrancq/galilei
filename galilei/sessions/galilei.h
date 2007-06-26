@@ -6,7 +6,7 @@
 
 	GALILEI Header - Header.
 
-	Copyright 2001-2004 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -231,16 +231,17 @@ R::RString GetObjType(tObjType objtype);
 enum tObjState
 {
 	osUnknow                  /** Unknow state.*/,
-	osNewMem                  /** Object was created in memory.*/,
-	osLoaded                  /** Object was loaded in memory.*/,
+	osCreated                 /** Object created in the system.*/,
+	osNew                     /** Object was allocated in memory.*/,
+	osNeedLoad                /** Object must load information.*/,
+	osOnDemand                /** Object demands to load information. */,
+	osLoaded                  /** Object loaded information.*/,
 	osUpToDate                /** Object is up to date.*/,
 	osModified                /** Object was modified and computation must be update.*/,
 	osUpdated                 /** Object is updated and needs to be save.*/,
 	osSaved                   /** Object was saved.*/,
-	osDeleteMem               /** Object must be deleted from memory.*/,
-	osNotNeeded               /** Object is not needed.*/,
-	osOnDemand                /** Object demands to load information. */,
-	osNeedLoad                /** Object must load information.*/
+	osDelete                  /** Object is deleted from memory.*/,
+	osDestroyed               /** Object is destroyed from the system.*/
 };
 
 
@@ -260,11 +261,11 @@ R::RString GetState(tObjState state);
 enum tEvent
 {
 	eUnknow                   /** Unknow event.*/,
-	eObjCreate                /** An object was created in the database.*/,
-	eObjNewMem                /** An object was created in memory.*/,
+	eObjCreated               /** An object was created in the system.*/,
+	eObjNew                   /** An object was created in memory.*/,
 	eObjModified              /** An object was modified.*/,
-	eObjDeleteMem             /** An Object will be deleted from memory.*/,
-	eObjRemove                /** An object was removed from the database.*/
+	eObjDelete                /** An Object will be deleted from memory.*/,
+	eObjDestroyed             /** An object was destroyed from the system.*/
 };
 
 
@@ -279,21 +280,22 @@ R::RString GetEvent(tEvent event);
 //------------------------------------------------------------------------------
 /**
 * Judgments over a document.
+* 
+* The 4 first bits are used to express the assessment of the Doc (OK,KO,N), the
+* 5th and 6th bits are used to express the status of the Doc (Hub, Autority ).
+*  The masks are used to separate the assessment and the status of a doc.
 * @short Document Assessment
 */
 enum tDocAssessment
 {
-	// the 4 first bits are used to express the assessment of the Doc (OK,KO,N)
-	// the 5th and 6th bits are used to express the status of the Doc (Hub, Autority )
-	// the masks are used to separate the assessment and the status of a doc.
-	djUnknow=0                  /** Unknow judgement.*/,
-	djOK=1                      /** Document is relevant.*/,
-	djKO=2                      /** Document is fuzzy relevant.*/,
-	djOutScope=8                /** Document is irrelevant.*/,
-	djHub=16                    /** Document is a Hub.*/,
-	djAutority=32               /** Document is an Autority.*/,
-	djMaskJudg=15               /** Mask for the assessment of the doc.*/,
-	djMaskHubAuto=48            /** Mask for the Hub or Autority.*/
+	djUnknow                  /** Unknow judgement.*/=0,
+	djOK                      /** Document is relevant.*/=1,
+	djKO                      /** Document is fuzzy relevant.*/=2,
+	djOutScope                /** Document is irrelevant.*/=8,
+	djHub                    /** Document is a Hub.*/=16,
+	djAutority               /** Document is an Autority.*/=32,
+	djMaskJudg               /** Mask for the assessment of the doc.*/=15,
+	djMaskHubAuto            /** Mask for the Hub or Autority.*/=48
 };
 
 
@@ -319,51 +321,6 @@ R::RString GetAssessmentCode(tDocAssessment assessment);
 * @param assessment          Assessment.
 */
 tDocAssessment GetAssessmentType(const R::RString& assessment);
-
-
-//------------------------------------------------------------------------------
-/**
-* Models used to describe informations.
-* @short Information Type
-*/
-enum tInfoType
-{
-	infoNothing                    /** No type defined.*/,
-	infoWord                       /** A word (or stem). */,
-	infoWordList                   /** List of words.*/,
-	infoWordOccurs                 /** List of occurences of a word in the
-	                                   documents.*/,
-	infoDoc                        /** Document.*/
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* Get a string representing a type of information.
-* @param infotype            Type of information.
-*/
-R::RString GetInfoType(tInfoType infotype);
-
-
-//------------------------------------------------------------------------------
-/**
-* Status of a document.
-*/
-enum tDocStatus
-{
-	dsOK=0                         /** Document is OK.*/,
-	dsToAnalyse=1                  /** Document must be analysed.*/,
-	dsCannotAccess=2               /** Cannot access the document. */,
-	dsCannotAnalyse=3              /** Document was downloaded but cannot be analysed.*/
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* Get a string representing a status of a document.
-* @param status              Status.
-*/
-R::RString GetDocStatus(tDocStatus status);
 
 
 //------------------------------------------------------------------------------

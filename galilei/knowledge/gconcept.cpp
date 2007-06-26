@@ -6,7 +6,7 @@
 
 	Concept - Implementation.
 
-	Copyright 2006 by the Universit� Libre de Bruxelles.
+	Copyright 2006-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -260,7 +260,7 @@ void GConcept::Clear(void)
 	NbRefDocs=0;
 	NbRefSubProfiles=0;
 	NbRefGroups=0;
-	Type=infoNothing;
+	Type=0;
 }
 
 

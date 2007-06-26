@@ -6,7 +6,7 @@
 
 	Concept - Header.
 
-	Copyright 2006 by the Université Libre de Bruxelles.
+	Copyright 2006-2007 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).

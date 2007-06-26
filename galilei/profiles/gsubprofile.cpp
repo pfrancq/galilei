@@ -66,7 +66,7 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,unsigned int
 		if(grp)
 			grp->InsertSubProfile(this);
 	}
-	GSession::Event(this,eObjNewMem);
+	GSession::Event(this,eObjNew);
 }
 
 
@@ -314,7 +314,8 @@ void GSubProfile::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* info
 		AddRefs(otSubProfile,Lang);
 
 	// Emit an event that it was modified
-	GSession::Event(this,eObjModified);
+	if(computed)
+		GSession::Event(this,eObjModified);
 }
 
 
@@ -329,7 +330,7 @@ void GSubProfile::ClearFdbks(void)
 //------------------------------------------------------------------------------
 GSubProfile::~GSubProfile(void)
 {
-	GSession::Event(this,eObjDeleteMem);
+	GSession::Event(this,eObjDelete);
 	try
 	{
 		// Remove it from its group if necessary
@@ -341,7 +342,7 @@ GSubProfile::~GSubProfile(void)
 		}
 
 		// Remove its references
-		if(Lang&&(State==osDeleteMem))  // The object has modified the references count but was not saved
+		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
 			DelRefs(otSubProfile,Lang);
 	}
 	catch(...)

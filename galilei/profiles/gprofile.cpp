@@ -166,7 +166,7 @@ GProfile::GProfile(GUser* usr,unsigned int id,const R::RString name,bool s,unsig
 	if(!User)
 		throw GException("Profile "+RString::Number(id)+" has no parent user");
 	User->InsertPtr(this);
-	GSession::Event(this,eObjNewMem);
+	GSession::Event(this,eObjNew);
 }
 
 
@@ -428,5 +428,5 @@ void GProfile::DispatchFdbks(void)
 //------------------------------------------------------------------------------
 GProfile::~GProfile(void)
 {
-	GSession::Event(this,eObjDeleteMem);
+	GSession::Event(this,eObjDelete);
 }

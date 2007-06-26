@@ -6,7 +6,7 @@
 
 	GALILEI Header  - Implementation.
 
-	Copyright 2005 by the Université libre de Bruxelles.
+	Copyright 2005-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -99,8 +99,10 @@ R::RString GALILEI::GetState(tObjState state)
 	{
 		case osUnknow:
 			return(RString("unknow"));
-		case osNewMem:
-			return(RString("created"));
+		case osCreated:
+			return(RString("created"));			
+		case osNew:
+			return(RString("allocated"));
 		case osUpToDate:
 			return(RString("up to date"));
 		case osModified:
@@ -109,12 +111,14 @@ R::RString GALILEI::GetState(tObjState state)
 			return(RString("updated"));
 		case osSaved:
 			return(RString("saved"));
-		case osDeleteMem:
+		case osDelete:
 			return(RString("deleted"));
-		case osNotNeeded:
-			return(RString("not needed"));
+		case osDestroyed:
+			return(RString("destroyed"));
 		case osOnDemand:
 			return(RString("demands information"));
+		case osLoaded:
+			return(RString("information loaded"));			
 		case osNeedLoad:
 			return(RString("must load information"));
 	}
@@ -129,15 +133,15 @@ R::RString GALILEI::GetEvent(tEvent event)
 	{
 		case eUnknow:
 			return(RString("Unknow"));
-		case eObjNewMem:
+		case eObjNew:
 			return(RString("object created in memory"));
-		case eObjCreate:
+		case eObjCreated:
 			return(RString("object created in system"));
 		case eObjModified:
 			return(RString("object modified"));
-		case eObjDeleteMem:
+		case eObjDelete:
 			return(RString("object deleted from memory"));
-		case eObjRemove:
+		case eObjDestroyed:
 			return(RString("object deleted from system"));
 	}
 	return(RString("unknow"));
@@ -221,42 +225,4 @@ tDocAssessment GALILEI::GetAssessmentType(const R::RString& assessment)
 			break;
 	}
 	return(jug);
-}
-
-
-//------------------------------------------------------------------------------
-R::RString GALILEI::GetInfoType(tInfoType infotype)
-{
-	switch(infotype)
-	{
-		case infoNothing:
-			return(RString("unknow"));
-		case infoWord:
-			return(RString("word"));
-		case infoWordList:
-			return(RString("list of words"));
-		case infoWordOccurs:
-			return(RString("list of occurences of a word"));
-		case infoDoc:
-			return(RString("document"));
-	}
-	return(RString("unknow"));
-}
-
-
-//------------------------------------------------------------------------------
-R::RString GALILEI::GetDocStatus(tDocStatus status)
-{
-	switch(status)
-	{
-		case dsToAnalyse:
-			return(RString("Document must be analysed"));
-		case dsCannotAccess:
-			return(RString("Cannot access the document"));
-		case dsCannotAnalyse:
-			return(RString("Document was downloaded but cannot be analysed"));
-		case dsOK:
-			return(RString("Document is OK"));
-	}
-	return(RString("unknow"));
 }

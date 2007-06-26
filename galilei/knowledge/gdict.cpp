@@ -6,7 +6,7 @@
 
 	Concepts Dictionary - Implementation.
 
-	Copyright 2001-2006 by the Université Libre de Bruxelles.
+	Copyright 2001-2006 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -114,8 +114,8 @@ GConcept* GDict::InsertConcept(const GConcept* concept)
 		RString tmp="Empty concept cannot be inserted into a dictionary - id="+RString(concept->GetId());
 		throw GException(tmp);
 	}
-	if(concept->GetType()==infoNothing)
-		throw GException("No typed concept cannot be inserted into a dictionary");
+	if(!concept->GetType())
+		throw GException("Concept with no type cannot be inserted into a dictionary");
 
 	// Look if the data exists in the dictionary. If not, create and insert it.
 	ptr=GetPtr(*concept);

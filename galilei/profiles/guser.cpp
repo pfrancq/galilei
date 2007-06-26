@@ -52,7 +52,7 @@ GUser::GUser(unsigned int id,const R::RString name,const R::RString fullname,uns
  : RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
    FullName(fullname)
 {
-	GSession::Event(this,eObjNewMem);
+	GSession::Event(this,eObjNew);
 }
 
 
@@ -118,5 +118,5 @@ RString GUser::GetFullName(void) const
 //------------------------------------------------------------------------------
 GUser::~GUser(void)
 {
- GSession::Event(this,eObjDeleteMem);
+ GSession::Event(this,eObjDelete);
 }

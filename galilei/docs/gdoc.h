@@ -105,7 +105,7 @@ protected:
 	/**
 	* Status of the document.
 	*/
-	tDocStatus Status;
+//	tDocStatus Status;
 
 	/**
 	* Links "out" of the document.
@@ -128,10 +128,9 @@ public:
 	* @param mime            MIME type of the document.
 	* @param u               Date of the last update.
 	* @param a               Date of the last analysis.
-	* @param status          Status of the document.
 	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,tDocStatus status=dsToAnalyse,unsigned int ownerid=0);
+	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid=0);
 
 	/**
 	* Compare two documents by comparing their identificator.
@@ -244,18 +243,6 @@ public:
 	* @return unsigned int.
 	*/
 	unsigned int GetOwnerId(void) const {return(OwnerId);}
-
-	/**
-	* Get the status of a document.
-	* @returns tDocStatus.
-	*/
-	tDocStatus GetStatus(void) const {return(Status);}
-
-	/**
-	* Set the status of the document.
-	* @param status          New status
-	*/
-	void SetStatus(tDocStatus status);
 
 	/**
 	* Get a cursor on the identificator of the profiles which have assesses the

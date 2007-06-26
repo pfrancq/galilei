@@ -800,7 +800,7 @@ void GSession::InsertDoc(GDoc* d)
 		// If new one and all documents are in memory -> store it in the database
 		if(Data->Storage->IsAllInMemory())
 			Data->Storage->SaveDoc(d);
-		Event(d,eObjCreate);
+		Event(d,eObjCreated);
 	}
 }
 
@@ -909,7 +909,6 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,GDocAnalyse* method,RContainer
 		undefLang=true;
 	try
 	{
-		doc->SetStatus(dsCannotAccess); // Suppose it cannot be access
 		if(!xml)
 			xml=Data->FilterManager->CreateDocXML(doc);
 		if(xml)
@@ -917,13 +916,11 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,GDocAnalyse* method,RContainer
 			// Analyse document -> Is something goes wrong -> It failed
 			// If a log file specified -> write to it and it is OK
 			// If no log file specified -> Propagate error
-			doc->SetStatus(dsCannotAnalyse); // Suppose it cannot be analysed
 			method->Analyze(xml,doc,newdocs);
 			if((undefLang)&&(doc->GetLang()))
 			{
 				MoveDoc(doc);
 			}
-			doc->SetStatus(dsOK); // OK, everything fine
 		}
 	}
 	HANDLEALLEXCEPTIONS(rec,doc->GetURL()+"("+RString::Number(doc->GetId())+"):")
@@ -1086,7 +1083,7 @@ void GSession::InsertUser(GUser* user)
 			Data->Storage->SaveUser(user);
 		if(Data->Slot)
 			Data->Slot->Alert("User "+user->GetName()+" created ("+RString::Number(user->GetId())+")");
-		Event(user,eObjCreate);
+		Event(user,eObjCreated);
 	}
 }
 
@@ -1180,7 +1177,7 @@ void GSession::InsertProfile(GProfile* p)
 			Data->Storage->SaveProfile(p);
 		if(Data->Slot)
 			Data->Slot->Alert("Profile "+p->GetName()+" for user "+p->GetUser()->GetName()+" created ("+RString::Number(p->GetId())+")");
-		Event(p,eObjCreate);
+		Event(p,eObjCreated);
 	}
 }
 
