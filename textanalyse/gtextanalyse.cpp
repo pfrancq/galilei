@@ -775,7 +775,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 		name+=RString::Number(Doc->GetId());
 		try
 		{
-			R::RRecFile<GConcept,sizeof(unsigned int),false> f(name);
+			R::RRecFile<GConcept,false> f(name,sizeof(unsigned int));
 			f.Open(R::RIO::Create);
 			for(i=0;i<Nwords;i++)
 			{
