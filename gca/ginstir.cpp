@@ -6,7 +6,7 @@
 
 	Instance for an IR Problem - Implementation
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -378,6 +378,13 @@ void GInstIR::PostRun(void)
 	(*BestChromosome)=(*BestSols.Tab[GetBestSol()->GetId()]);
 	emitBestSig();
 #endif
+}
+
+
+//-----------------------------------------------------------------------------
+void GInstIR::HandlerNotFound(const RNotification& /*notification*/)
+{
+//	std::cout<<" GCA '"<<notification.GetName()<<"' not treated (Gen="<<Gen<<")."<<std::endl;
 }
 
 
