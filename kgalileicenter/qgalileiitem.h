@@ -66,8 +66,9 @@ class QFilterItem : public QListViewItem
 public:
 	GFactoryFilter* Fac;
 	bool Enable;
+	bool WasEnable;
 	QFilterItem(QListView* lst,GFactoryFilter* fac,const char* desc, QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -78,8 +79,9 @@ class QProfileCalcItem : public QListViewItem
 public:
 	GFactoryProfileCalc* Fac;
 	bool Enable;
+	bool WasEnable;
 	QProfileCalcItem(QListView* lst,GFactoryProfileCalc* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -90,8 +92,9 @@ class QGroupingItem : public QListViewItem
 public:
 	GFactoryGrouping* Fac;
 	bool Enable;
+	bool WasEnable;
 	QGroupingItem(QListView* lst,GFactoryGrouping* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -102,8 +105,9 @@ class QGroupCalcItem : public QListViewItem
 public:
 	GFactoryGroupCalc* Fac;
 	bool Enable;
+	bool WasEnable;
 	QGroupCalcItem(QListView* lst,GFactoryGroupCalc* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -114,8 +118,9 @@ class QStatsCalcItem : public QListViewItem
 public:
 	GFactoryStatsCalc* Fac;
 	bool Enable;
+	bool WasEnable;
 	QStatsCalcItem(QListView* lst,GFactoryStatsCalc* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -126,8 +131,9 @@ class QLinkCalcItem : public QListViewItem
 public:
 	GFactoryLinkCalc* Fac;
 	bool Enable;
+	bool WasEnable;
 	QLinkCalcItem(QListView* lst,GFactoryLinkCalc* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -138,8 +144,9 @@ class QPostDocItem : public QListViewItem
 public:
 	GFactoryPostDoc* Fac;
 	bool Enable;
+	bool WasEnable;
 	QPostDocItem(QListView* lst,GFactoryPostDoc* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -150,8 +157,9 @@ class QPreProfileItem : public QListViewItem
 public:
 	GFactoryPreProfile* Fac;
 	bool Enable;
+	bool WasEnable;
 	QPreProfileItem(QListView* lst,GFactoryPreProfile* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -162,8 +170,9 @@ class QPostProfileItem : public QListViewItem
 public:
 	GFactoryPostProfile* Fac;
 	bool Enable;
+	bool WasEnable;
 	QPostProfileItem(QListView* lst,GFactoryPostProfile* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -173,8 +182,9 @@ class QLangItem : public QListViewItem
 public:
 	GFactoryLang* Fac;
 	bool Enable;
+	bool WasEnable;
 	QLangItem(QListView* lst,GFactoryLang* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -185,8 +195,9 @@ class QDocAnalyseItem : public QListViewItem
 public:
 	GFactoryDocAnalyse* Fac;
 	bool Enable;
+	bool WasEnable;
 	QDocAnalyseItem(QListView* lst,GFactoryDocAnalyse* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -197,8 +208,9 @@ class QPostGroupItem : public QListViewItem
 public:
 	GFactoryPostGroup* Fac;
 	bool Enable;
+	bool WasEnable;
 	QPostGroupItem(QListView* lst,GFactoryPostGroup* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -208,8 +220,9 @@ class QEngineItem : public QListViewItem
 public:
 	GFactoryEngine* Fac;
 	bool Enable;
+	bool WasEnable;
 	QEngineItem(QListView* lst,GFactoryEngine* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -219,8 +232,9 @@ class QMetaEngineItem : public QListViewItem
 public:
 	GFactoryMetaEngine* Fac;
 	bool Enable;
+	bool WasEnable;
 	QMetaEngineItem(QListView* lst,GFactoryMetaEngine* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
@@ -243,8 +257,9 @@ class QMeasureItem : public QListViewItem
 public:
 	GFactoryMeasure* Fac;
 	bool Enable;
+	bool WasEnable;
 	QMeasureItem(QListView* lst,GFactoryMeasure* fac,const char* desc,QListViewItem* after=0)
-		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin())
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };

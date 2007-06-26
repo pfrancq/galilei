@@ -239,16 +239,28 @@ template<class Item>
 		if(app)
 		{
 			if(item->Enable)
-				item->Fac->Create(app->getSession());
+			{
+				if(!item->WasEnable)
+					item->Fac->Create(app->getSession());
+			}
 			else
-				item->Fac->Delete(app->getSession());
+			{
+				if(item->WasEnable)
+					item->Fac->Delete(app->getSession());
+			}
 		}
 		else
 		{
 			if(item->Enable)
-				item->Fac->Create();
+			{
+				if(!item->WasEnable)
+					item->Fac->Create();
+			}
 			else
-				item->Fac->Delete();
+			{
+				if(item->WasEnable)
+					item->Fac->Delete();
+			}
 		}
 		item=dynamic_cast<Item*>(item->itemBelow());
 	}
@@ -303,9 +315,15 @@ void KGALILEICenterApp::DoneMeasure(QMyPlugins* dlg)
 		while(item)
 		{
 			if(item->Enable)
-				item->Fac->Create(getSession());
+			{
+				if(!item->WasEnable)
+					item->Fac->Create(getSession());
+			}
 			else
-				item->Fac->Delete(getSession());
+			{
+				if(item->WasEnable)
+					item->Fac->Delete(getSession());
+			}
 			item=dynamic_cast<QMeasureItem*>(item->itemBelow());
 		}
 		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Cur()->Type)->SetCurrentMethod(Cur()->Current.latin1(),false);
@@ -351,36 +369,55 @@ void KGALILEICenterApp::slotPlugins(void)
 	dlg.SearchTab->setCurrentPage(DlgSearchTabIdx);
 	if(dlg.exec())
 	{
-		// Goes through managers
-		Done<QFilterItem>(dlg.Filters);
-		Done<QProfileCalcItem>(dlg.ProfileCalcs,this);
-		Done<QGroupingItem>(dlg.Groupings,this);
-		Done<QGroupCalcItem>(dlg.GroupCalcs,this);
-		Done<QStatsCalcItem>(dlg.Stats);
-		Done<QLinkCalcItem>(dlg.LinkCalcs,this);
-		Done<QPostDocItem>(dlg.PostDocs,this);
-		Done<QPreProfileItem>(dlg.PreProfile,this);
-		Done<QPostProfileItem>(dlg.PostProfile,this);
-		Done<QLangItem>(dlg.Langs,this);
-		Done<QDocAnalyseItem>(dlg.DocAnalyses,this);
-		Done<QPostGroupItem>(dlg.PostGroups,this);
-		Done<QEngineItem>(dlg.Engines);
-		Done<QMetaEngineItem>(dlg.MetaEngines,this);
-		DoneMeasure(&dlg);
-
-		GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
-		GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
-		GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
-		GALILEIApp->GetManager<GPostGroupManager>("PostGroup")->ReOrder();
-
-		// Set current method
-		GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1(),false);
-		GALILEIApp->GetManager<GGroupingManager>("Grouping")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1(),false);
-		GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
-		GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1(),false);
-		GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1(),false);
-		GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1(),false);
-		GALILEIApp->GetManager<GStorageManager>("Storage")->SetCurrentMethod(dlg.CurrentStorage->currentText().latin1(),false);
+		try
+		{
+			// Goes through managers
+			Done<QFilterItem>(dlg.Filters);
+			Done<QProfileCalcItem>(dlg.ProfileCalcs,this);
+			Done<QGroupingItem>(dlg.Groupings,this);
+			Done<QGroupCalcItem>(dlg.GroupCalcs,this);
+			Done<QStatsCalcItem>(dlg.Stats);
+			Done<QLinkCalcItem>(dlg.LinkCalcs,this);
+			Done<QPostDocItem>(dlg.PostDocs,this);
+			Done<QPreProfileItem>(dlg.PreProfile,this);
+			Done<QPostProfileItem>(dlg.PostProfile,this);
+			Done<QLangItem>(dlg.Langs,this);
+			Done<QDocAnalyseItem>(dlg.DocAnalyses,this);
+			Done<QPostGroupItem>(dlg.PostGroups,this);
+			Done<QEngineItem>(dlg.Engines);
+			Done<QMetaEngineItem>(dlg.MetaEngines,this);
+			DoneMeasure(&dlg);
+	
+			GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
+			GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
+			GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
+			GALILEIApp->GetManager<GPostGroupManager>("PostGroup")->ReOrder();
+	
+			// Set current method
+			GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1(),false);
+			GALILEIApp->GetManager<GGroupingManager>("Grouping")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1(),false);
+			GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
+			GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1(),false);
+			GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1(),false);
+			GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1(),false);
+			GALILEIApp->GetManager<GStorageManager>("Storage")->SetCurrentMethod(dlg.CurrentStorage->currentText().latin1(),false);		
+		}
+		catch(GException& e)
+		{
+			QMessageBox::critical(this,"Error",e.GetMsg());
+		}
+		catch(RException& e)
+		{
+			QMessageBox::critical(this,"Error",e.GetMsg());
+		}
+		catch(std::bad_alloc)
+		{
+			QMessageBox::critical(this,"Error","Memory Error");
+		}
+		catch(...)
+		{
+			QMessageBox::critical(this,"Error","Undefined Error");
+		}
 	}
 	DlgMainTabIdx=dlg.MainTab->currentPageIndex();
 	DlgDocsTabIdx=dlg.DocsTab->currentPageIndex();

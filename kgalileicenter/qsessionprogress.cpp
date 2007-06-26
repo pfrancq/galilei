@@ -123,19 +123,19 @@ void QSessionThread::run(void)
 	}
 	catch(GException& e)
 	{
-		Parent->PutText(e.GetMsg());
+		Parent->PutError(e.GetMsg());
 	}
 	catch(RException& e)
 	{
-		Parent->PutText(e.GetMsg());
+		Parent->PutError(e.GetMsg());
 	}
 	catch(std::bad_alloc)
 	{
-		Parent->PutText("Memory Error");
+		Parent->PutError("Memory Error");
 	}
 	catch(...)
 	{
-		Parent->PutText("Undefined Error");
+		Parent->PutError("Undefined Error");
 	}
 	Parent->Finish();
 }
@@ -817,6 +817,7 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 	Running=true;
 	Changed=false;
 	Canceled=false;
+	Error=false;
 	GSession::ResetBreak();
 	task->start();
 	connect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
@@ -831,7 +832,16 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 		KApplication::kApplication()->processEvents();		
 	}
 	if(!Canceled)
-		txtRem->setText("Finish");
+	{
+		if(!Error)
+			txtRem->setText("Finish");
+		else
+			if(Changed)
+			{
+				txtRem->setText(NewLabel);
+				Changed=false;
+			}		
+	}
 	else
 		txtRem->setText("Canceled");
 	btnOk->setEnabled(true);
@@ -897,6 +907,15 @@ void QSessionProgressDlg::PutText(const char* text)
 {
 	NewLabel=text;
 	Changed=true;
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::PutError(const char* text)
+{
+	NewLabel=text;
+	Changed=true;
+	Error=true;
 }
 
 

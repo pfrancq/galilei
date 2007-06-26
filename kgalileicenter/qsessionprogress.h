@@ -426,6 +426,8 @@ class QSessionProgressDlg : public QSemiModal, public GSlot
 
 	bool Canceled;
 	
+	bool Error;
+	
 public:
 
 	/**
@@ -482,6 +484,12 @@ public:
 	*/
 	void PutText(const char* text);
 
+	/**
+	* Put an error.
+	* @param text            Text to show.
+	*/
+	void PutError(const char* text);
+	
 	/**
 	* Put the dialog in the final state.
 	*/
