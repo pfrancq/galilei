@@ -68,8 +68,8 @@ using namespace GALILEI;
 class QWorkspace;
 class QListViewItem;
 class QLabel;
-
 class QSessionProgressDlg;
+
 
 //-----------------------------------------------------------------------------
 // include files for KDE
@@ -87,7 +87,6 @@ class KConfig;
 class QMyPlugins;
 class KDoc;
 class KView;
-#include "qplugins.h"
 
 
 //-----------------------------------------------------------------------------
@@ -627,48 +626,6 @@ public:
 	KAction* helpProgram;
 
 	friend class QSessionProgressDlg;
-};
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class QMyPlugins
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-class QMyPlugins : public QPlugins
-{
-	Q_OBJECT
-public:
-
-	struct Tab
-	{
-		RString Type;
-		QListView* List;
-		QString Current;
-
-		Tab(const RString& t,QListView* w) : Type(t), List(w) {}
-		int Compare(const Tab& tab) const {return(Type.Compare(tab.Type));}
-		int Compare(const Tab* tab) const {return(Type.Compare(tab->Type));}
-		int Compare(const RString type) const {return(Type.Compare(type));}
-	};
-
-	RContainer<Tab,true,true> Tabs;
-
-	QMyPlugins(KGALILEICenterApp* app,QString title);
-
-public slots:
-
-	void changeMeasure(QListViewItem * item );
-
-	void slotAboutMeasure();
-
-	void slotChangeCat(QWidget*);
-	void slotConfigMeasure();
-	void changeCurrent(const QString& string);
-	void slotMeasureEnable( bool state );
 };
 
 

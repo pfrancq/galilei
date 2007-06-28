@@ -70,6 +70,8 @@ using namespace std;
 #include <qfiledialog.h>
 #include <qmessagebox.h>
 #include <qworkspace.h>
+#include <qtabwidget.h>
+#include <qwidgetstack.h>
 
 
 //-----------------------------------------------------------------------------
@@ -83,94 +85,109 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // application specific includes
 #include "kgalileicenter.h"
-#include "kdoc.h"
-#include "kview.h"
-#include "kviewusers.h"
-#include "kviewdoc.h"
-#include "kviewprofile.h"
-#include "qsessionprogress.h"
 #include "qgalileiitem.h"
+#include "qmyplugins.h"
 
 
 
+//-----------------------------------------------------------------------------
+//
+// class QMyPlugins
+//
+//-----------------------------------------------------------------------------
 
+//-----------------------------------------------------------------------------
 QMyPlugins::QMyPlugins(KGALILEICenterApp* app,QString title)
-		: QPlugins(app,title), Tabs(30,15)
+	: QPlugins(app,title), Tabs(30,15), CurrentIndex(0)
+{	
+	MeasuresCat->setResizePolicy( QScrollView::Manual );
+	MeasuresCat->setResizeMode(QListView::AllColumns);
+	connect(EnableMeasure,SIGNAL(toggled(bool)),this,SLOT(slotMeasureEnable(bool)));
+	connect(ConfigMeasure,SIGNAL(clicked()),this,SLOT(slotConfigMeasure()));
+	connect(AboutMeasure,SIGNAL(clicked()),this,SLOT(slotAboutMeasure()));
+	connect(MeasuresCat,SIGNAL(currentChanged(QListViewItem*)),this,SLOT(slotChangeCat(QListViewItem*)));
+	connect(CurrentMeasure,SIGNAL(activated(const QString&)),this,SLOT(changeCurrent(const QString&)));
+}
+
+
+//-----------------------------------------------------------------------------
+void QMyPlugins::slotChangeCat(QListViewItem* view)
+{
+	CurrentIndex=view->itemPos()/view->height();
+	int idx;
+	QString str;
+	GTypeMeasureManager* Manager=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Tabs[CurrentIndex]->Type);
+	RCursor<GFactoryMeasure> Cur(Manager->GetFactories());
+	QString current=Tabs[CurrentIndex]->Current;
+	CurrentMeasure->clear();
+	CurrentMeasure->insertItem("None",0);
+	for(Cur.Start(),idx=1;!Cur.End();Cur.Next(),idx++)
 	{
-		    connect(EnableMeasure,SIGNAL(toggled(bool)),this,SLOT(slotMeasureEnable(bool)));
-		    connect(ConfigMeasure,SIGNAL(clicked()),this,SLOT(slotConfigMeasure()));
-    		connect(AboutMeasure,SIGNAL(clicked()),this,SLOT(slotAboutMeasure()));
-			connect(Measures,SIGNAL(currentChanged(QWidget*)),this,SLOT(slotChangeCat(QWidget*)));
-			connect(CurrentMeasure,SIGNAL(activated(const QString&)),this,SLOT(changeCurrent(const QString&)));
+		str=ToQString(Cur()->GetName());
+		str+=" [";
+		str+=ToQString(Cur()->GetLib());
+		str+="]";
+		CurrentMeasure->insertItem(ToQString(Cur()->GetName()),idx);
+		if(Cur()->GetName()==FromQString(current))
+			CurrentMeasure->setCurrentItem(idx);
 	}
+	CurrentMeasure->setEnabled(idx>1);
+	EnableMeasure->setEnabled(idx>1);
+	ConfigMeasure->setEnabled(idx>1);
+	AboutMeasure->setEnabled(idx>1);
+	Measures->raiseWidget(Tabs[CurrentIndex]->List);
+	changeMeasure(Tabs[CurrentIndex]->List->currentItem());
+}
+	
+	
+//-----------------------------------------------------------------------------
+void QMyPlugins::changeMeasure( QListViewItem * item )
+{
+	if(!item) return;
+	QMeasureItem* f=dynamic_cast<QMeasureItem*>(item);
+	if(!f) return;
+	EnableMeasure->setChecked(f->Enable);
+	ConfigMeasure->setEnabled(f->Fac->HasConfigure());
+	AboutMeasure->setEnabled(f->Fac->HasAbout());
+}
 
 
-	void QMyPlugins::slotChangeCat(QWidget*)
-	{
-		int idx;
-		QString str;
-		GTypeMeasureManager* Manager=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Tabs[Measures->currentPageIndex()]->Type);
-		RCursor<GFactoryMeasure> Cur(Manager->GetFactories());
-		QString current=Tabs[Measures->currentPageIndex()]->Current;
-		CurrentMeasure->clear();
-		CurrentMeasure->insertItem("None",0);
-		for(Cur.Start(),idx=1;!Cur.End();Cur.Next(),idx++)
-		{
-			str=ToQString(Cur()->GetName());
-			str+=" [";
-			str+=ToQString(Cur()->GetLib());
-			str+="]";
-			CurrentMeasure->insertItem(ToQString(Cur()->GetName()),idx);
-			if(Cur()->GetName()==FromQString(current))
-				CurrentMeasure->setCurrentItem(idx);
-		}
-		CurrentMeasure->setEnabled(idx>1);
-		EnableMeasure->setEnabled(idx>1);
-		ConfigMeasure->setEnabled(idx>1);
-		AboutMeasure->setEnabled(idx>1);
-		changeMeasure(Tabs[Measures->currentPageIndex()]->List->currentItem());
-	}
-
-	void QMyPlugins::changeMeasure( QListViewItem * item )
-	{
-		if(!item) return;
-		QMeasureItem* f=dynamic_cast<QMeasureItem*>(item);
-		if(!f) return;
-		EnableMeasure->setChecked(f->Enable);
-		ConfigMeasure->setEnabled(f->Fac->HasConfigure());
-		AboutMeasure->setEnabled(f->Fac->HasAbout());
-	}
+//-----------------------------------------------------------------------------
+void QMyPlugins::slotAboutMeasure()
+{
+	if(!Tabs[CurrentIndex]->List->currentItem()) return;
+	QMeasureItem* f=dynamic_cast<QMeasureItem*>(Tabs[CurrentIndex]->List->currentItem());
+	if(!f) return;
+	f->Fac->About();
+}
 
 
-	void QMyPlugins::slotAboutMeasure()
-	{
-		if(!Tabs[Measures->currentPageIndex()]->List->currentItem()) return;
-		QMeasureItem* f=dynamic_cast<QMeasureItem*>(Tabs[Measures->currentPageIndex()]->List->currentItem());
-		if(!f) return;
-		f->Fac->About();
-	}
+//-----------------------------------------------------------------------------
+void QMyPlugins::slotConfigMeasure()
+{
+	if(!Tabs[CurrentIndex]->List->currentItem()) return;
+	QMeasureItem* f=dynamic_cast<QMeasureItem*>(Tabs[CurrentIndex]->List->currentItem());
+	if(!f) return;
+	f->Fac->Configure();
+}
+	
+	
+//-----------------------------------------------------------------------------
+void QMyPlugins::slotMeasureEnable( bool state )
+{
+	if(!Tabs[CurrentIndex]->List->currentItem()) return;
+	QMeasureItem* f=dynamic_cast<QMeasureItem*>(Tabs[CurrentIndex]->List->currentItem());
+	if(!f) return;
+	f->Enable=state;
+}
 
 
-	void QMyPlugins::slotConfigMeasure()
-	{
-		if(!Tabs[Measures->currentPageIndex()]->List->currentItem()) return;
-		QMeasureItem* f=dynamic_cast<QMeasureItem*>(Tabs[Measures->currentPageIndex()]->List->currentItem());
-		if(!f) return;
-		f->Fac->Configure();
-	}
-
-	void QMyPlugins::slotMeasureEnable( bool state )
-	{
-		if(!Tabs[Measures->currentPageIndex()]->List->currentItem()) return;
-		QMeasureItem* f=dynamic_cast<QMeasureItem*>(Tabs[Measures->currentPageIndex()]->List->currentItem());
-		if(!f) return;
-		f->Enable=state;
-	}
-
+//-----------------------------------------------------------------------------
 void QMyPlugins::changeCurrent(const QString& string)
 {
-	Tabs[Measures->currentPageIndex()]->Current=string;
+	Tabs[CurrentIndex]->Current=string;
 }
+
 
 
 //-----------------------------------------------------------------------------
@@ -272,13 +289,19 @@ void KGALILEICenterApp::InitMeasure(QMyPlugins* dlg)
 {
 	QString str;
 	int tabs,idx;
-
+	QListViewItem* item=0;
+	QListViewItem* ptr=0;
+	
+	dlg->MeasuresCat->setSortColumn(-1);
 	GMeasureManager* Manager=GALILEIApp->GetManager<GMeasureManager>("Measures");
 	R::RCursor<GTypeMeasureManager> Cur(Manager->GetMeasureCategories());
 	for(Cur.Start(),tabs=0;!Cur.End();Cur.Next(),tabs++)
 	{
-		QMyPlugins::Tab* tab=new QMyPlugins::Tab(Cur()->GetName(),new QListView(dlg->Measures));
-		dlg->Measures->insertTab(tab->List,ToQString(Cur()->GetName()),tabs);
+		dlg->MeasuresCat->insertItem(ptr=new QListViewItem(dlg->MeasuresCat,ptr,ToQString(Cur()->GetName())));
+		if(!item)
+			item=ptr;
+		QMyPlugins::Tab* tab=new QMyPlugins::Tab(Cur()->GetName(),new QListView(dlg->MainTab));
+		dlg->Measures->addWidget(tab->List);
 		dlg->Tabs.InsertPtrAt(tab,tabs);
 		if(Cur()->GetCurrentFactory(false))
 			tab->Current=ToQString(Cur()->GetCurrentFactory(false)->GetName());
@@ -289,7 +312,6 @@ void KGALILEICenterApp::InitMeasure(QMyPlugins* dlg)
 		tab->List->setResizeMode( QListView::AllColumns );
     	connect(tab->List,SIGNAL(selectionChanged(QListViewItem*)),dlg,SLOT(changeMeasure(QListViewItem*)));
 
-		//TabPageLayout->addWidget( Storages );
 		RCursor<GFactoryMeasure> Cur2(Cur()->GetFactories());
 		QMeasureItem* ptr=0;
 		for(Cur2.Start(),idx=0;!Cur2.End();Cur2.Next(),idx++)
@@ -302,6 +324,8 @@ void KGALILEICenterApp::InitMeasure(QMyPlugins* dlg)
 		}
 		tab->List->setEnabled(idx>0);
 	}
+	dlg->slotChangeCat(item);
+	dlg->MeasuresCat->setSelected(item,true);
 }
 
 

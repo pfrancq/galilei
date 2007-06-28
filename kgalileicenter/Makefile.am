@@ -24,7 +24,7 @@ EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kg
 	qsessionprogress.cpp qsessionprogress.h kviewstems.cpp kviewstems.h kviewmetaengine.h\
 	kgalileicenter_dlg.cpp kgalileicenter_init.cpp \
 	kviewprg.cpp kviewprg.h kviewdicts.h \
-	qmixidealconfig.ui\
+	qmixidealconfig.ui qmyplugins.h \
 	qcreatedatabase.ui qcreatedatabase.ui.h qfilldatabase.ui\
 	hi16-app-kgalileicenter.png hi32-app-kgalileicenter.png kviewhistory.cpp kviewhistory.h \
 	qhistorydlg.ui kviewstats.h
