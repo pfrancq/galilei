@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSubProfiles.cpp
+	GProfilesAgreement.cpp
 
-	List of SubProfiles for a given Language - Implementation.
+	Agreement between profiles - Implementation.
 
-	Copyright 2003-2005 by the Université Libre de Bruxelles.
+	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,40 +32,81 @@
 
 
 //------------------------------------------------------------------------------
-// include standard api files
-#include <math.h>
-
-
-//------------------------------------------------------------------------------
-// include files for R
-#include <rvectorint.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gprofilesagree.h>
+#include <gmeasure2elements.h>
 #include <gprofile.h>
+#include <gsession.h>
+#include <ggalileiapp.h>
+using namespace GALILEI;
+using namespace R;
 
 
 
 //------------------------------------------------------------------------------
 //
-// class GProfilesAgreement
+//  GProfilesAgreement
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-double GProfilesAgreement::Compute(GProfile* prof1,GProfile* prof2)
+class GProfilesAgreement : public GMeasure2Elements
 {
-	double agree=0.0;
-	unsigned int nbsame;
-	double nbcommon;
+	size_t MinDocs;
+public:
+	GProfilesAgreement(GFactoryMeasure* fac);
+	virtual void ApplyConfig(void);
+	double Compute(GLang* lang,void* obj1,void* obj2);
+	void* GetElement(GLang* lang,size_t id);
+	size_t GetMaxElementsId(GLang* lang);
+	static void CreateParams(RConfig* params);	
+};
 
-	nbsame=prof1->GetCommonOKDocs(prof2);
-	nbcommon=double(prof1->GetCommonDocs(prof2));
-	if(nbcommon>=MinDocs)
-		agree=nbsame/nbcommon;
-	return(agree);
+
+//------------------------------------------------------------------------------
+GProfilesAgreement::GProfilesAgreement(GFactoryMeasure* fac)
+	: GMeasure2Elements(fac,false,false,1.0,otProfile)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GProfilesAgreement::ApplyConfig(void)
+{
+	GMeasure2Elements::ApplyConfig();
+	MinDocs=Factory->GetUInt("MinDocs");
+}
+
+
+//------------------------------------------------------------------------------
+double GProfilesAgreement::Compute(GLang*,void* obj1,void* obj2)
+{
+	double nbcommon=double(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
+	if(nbcommon<MinDocs)
+		return(0.0);
+	size_t nbsame=static_cast<GProfile*>(obj1)->GetCommonOKDocs(static_cast<GProfile*>(obj2));
+	return(nbsame/nbcommon);
+}
+
+
+//------------------------------------------------------------------------------
+void* GProfilesAgreement::GetElement(GLang*,size_t id)
+{
+	return(Session->GetProfile(id,false));
+} 
+
+
+//------------------------------------------------------------------------------
+size_t GProfilesAgreement::GetMaxElementsId(GLang*)
+{
+	return(Session->GetMaxProfileId());
+}
+
+
+//------------------------------------------------------------------------------
+void GProfilesAgreement::CreateParams(RConfig* params)
+{
+	GMeasure2Elements::CreateParams(params);
+	params->InsertParam(new RParamValue("MinDocs",7));
 }
 
 

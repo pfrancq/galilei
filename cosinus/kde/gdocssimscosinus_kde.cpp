@@ -2,15 +2,14 @@
 
 	GALILEI Research Project
 
-	GSubProfilesSims.cpp
+	GDocsSimsCosinus_KDE.cpp
 
-	Similarities between subprofiles - Implementation.
+	A KDE about box for the documents similarity measure - Implementation.
 
 	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,61 +30,49 @@
 
 
 
+//-----------------------------------------------------------------------------
+// include files for KDE
+#include <kaboutdata.h>
+#include <klocale.h>
+#include <kaboutapplication.h>
+
+
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmeasure2elements.h>
-#include <gsubprofile.h>
-#include <gsession.h>
-#include <ggalileiapp.h>
+#include <qgmeasure2elementsdlg.h>
 using namespace GALILEI;
-using namespace R;
 
+
+//-----------------------------------------------------------------------------
+// Description of the application
+static const char *description =
+	I18N_NOOP("The cosinus method is used to computed the similarities between the documents.");
 
 
 //------------------------------------------------------------------------------
-//
-//  GSubProfilesSims
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GSubProfilesSims : public GMeasure2Elements
+void About(void)
 {
-public:
-	GSubProfilesSims(GFactoryMeasure* fac);
-	double Compute(GLang* lang,void* obj1,void* obj2);
-	void* GetElement(GLang* lang,size_t id);
-	size_t GetMaxElementsId(GLang* lang);	
-};
-
-
-//------------------------------------------------------------------------------
-GSubProfilesSims::GSubProfilesSims(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,true,true,1.0,otSubProfile)
-{
+	KAboutData aboutData( "cosinus", I18N_NOOP("Cosinus Method"),
+		"1.0", description, KAboutData::License_GPL,
+		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Contributor"), "pfrancq@ulb.ac.be");
+	KAboutApplication dlg(&aboutData);
+	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-double GSubProfilesSims::Compute(GLang* lang,void* obj1,void* obj2)
+void Configure(GFactoryMeasure* params)
 {
-	return(static_cast<GSubProfile*>(obj1)->SimilarityIFF(*static_cast<GSubProfile*>(obj2),otSubProfile,lang));
+	QGMeasure2ElementsDlg dlg("Similarities between documents");
+	dlg.Configure(params);
 }
 
 
 //------------------------------------------------------------------------------
-void* GSubProfilesSims::GetElement(GLang* lang,size_t id)
-{
-	return(Session->GetSubProfile(lang,id,false));
-} 
-
-
+}     // end of extren
 //------------------------------------------------------------------------------
-size_t GSubProfilesSims::GetMaxElementsId(GLang* lang)
-{
-	return(Session->GetMaxSubProfileId(lang));
-}
-
-
-//------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("SubProfiles Similarities","Cosinus Method",GSubProfilesSims)

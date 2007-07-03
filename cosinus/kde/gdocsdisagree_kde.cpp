@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GProfilesAgree_KDE.cpp
+	QDocsDisagree_KDE.cpp
 
-	A KDE about box for the profiles agreement measure - Implementation.
+	A KDE about box for the documents disagreement measure - Implementation.
 
 	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
@@ -57,7 +57,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("The count method is used to computed the agreements between the profiles.");
+	I18N_NOOP("The count method is used to computed the disagreements between the documents.");
+
 
 
 //-----------------------------------------------------------------------------
@@ -69,11 +70,11 @@ static const char *description =
 //-----------------------------------------------------------------------------
 class MyDlg : public QGMeasure2ElementsDlg
 {
-	QSpinBox* MinDocs;
+	QSpinBox* MinProfiles;
 	
 public:
 
-	MyDlg(void) : QGMeasure2ElementsDlg("Agreement ratios between profiles") {}
+	MyDlg(void) : QGMeasure2ElementsDlg("Disagreement ratios between documents") {}
 	virtual void Panel(void);
 	virtual void Init(GFactoryMeasure* params);
 	virtual void Done(GFactoryMeasure* params);
@@ -85,11 +86,11 @@ void MyDlg::Panel(void)
 {
     QHBoxLayout* layout = new QHBoxLayout(0,0,6);
     QLabel* text = new QLabel(MeasureSpecific);
-    text->setText("Minimum common documents");
+    text->setText("Minimum common profiles");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-   	MinDocs = new QSpinBox(MeasureSpecific,"MinDocs");
-    layout->addWidget(MinDocs);
+   	MinProfiles = new QSpinBox(MeasureSpecific,"MinProfiles");
+    layout->addWidget(MinProfiles);
 	MeasureSpecificLayout->addLayout(layout);
 }
 
@@ -98,32 +99,32 @@ void MyDlg::Panel(void)
 void MyDlg::Init(GFactoryMeasure* params)
 {
 	QGMeasure2ElementsDlg::Init(params);
-	MinDocs->setValue(params->GetUInt("MinDocs"));
+	MinProfiles->setValue(params->GetUInt("MinProfiles"));
 }
 
 
 //-----------------------------------------------------------------------------
 void MyDlg::Done(GFactoryMeasure* params)
 {
-	params->SetUInt("MinDocs",MinDocs->value());
+	params->SetUInt("MinProfiles",MinProfiles->value());
 	QGMeasure2ElementsDlg::Done(params);
 }
+
 
 
 //------------------------------------------------------------------------------
 //
 extern "C" {
-//
+//	
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "cosinus", I18N_NOOP("Count Method"),
+	KAboutData aboutData( "count", I18N_NOOP("Count Method"),
 		"1.0", description, KAboutData::License_GPL,
 		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Contributor"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("David Wartel",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
 }

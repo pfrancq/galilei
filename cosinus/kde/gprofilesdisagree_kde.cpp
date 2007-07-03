@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupCalcGravitation_KDE.cpp
+	QProfilesDisagree_KDE.cpp
 
-	A KDE about box for the statistical method. - Implementation.
+	A KDE about box for the profiles disagreement measure  - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -30,22 +30,12 @@
 
 
 
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gmeasure.h>
-using namespace GALILEI;
-
-
 //-----------------------------------------------------------------------------
-// include files for QT
-#include <qvariant.h>
-#include <qcheckbox.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
+// include files for Qt
+#include <qlabel.h>
+#include <qgroupbox.h>
 #include <qlayout.h>
-#include <qdialog.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
+#include <qspinbox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -56,19 +46,76 @@ using namespace GALILEI;
 #include <knuminput.h>
 
 
-//-----------------------------------------------------------------------------
-// include files for Current
-#include <dlgconfigdisagree_qt.h>
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <qgmeasure2elementsdlg.h>
+#include <gmeasure.h>
+using namespace GALILEI;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("The count method is used to computed the disagreements between the subprofiles.");
+	I18N_NOOP("The count method is used to computed the disagreements between the profiles.");
+
+
+
+//-----------------------------------------------------------------------------
+//
+// Specific Dialog class
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class MyDlg : public QGMeasure2ElementsDlg
+{
+	QSpinBox* MinDocs;
+	
+public:
+
+	MyDlg(void) : QGMeasure2ElementsDlg("Disagreement ratios between profiles") {}
+	virtual void Panel(void);
+	virtual void Init(GFactoryMeasure* params);
+	virtual void Done(GFactoryMeasure* params);
+};
+
+
+//-----------------------------------------------------------------------------
+void MyDlg::Panel(void)
+{
+    QHBoxLayout* layout = new QHBoxLayout(0,0,6);
+    QLabel* text = new QLabel(MeasureSpecific);
+    text->setText("Minimum common documents");
+    layout->addWidget(text);
+    layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
+   	MinDocs = new QSpinBox(MeasureSpecific,"MinDocs");
+    layout->addWidget(MinDocs);
+	MeasureSpecificLayout->addLayout(layout);
+}
+
+
+//-----------------------------------------------------------------------------
+void MyDlg::Init(GFactoryMeasure* params)
+{
+	QGMeasure2ElementsDlg::Init(params);
+	MinDocs->setValue(params->GetUInt("MinDocs"));
+}
+
+
+//-----------------------------------------------------------------------------
+void MyDlg::Done(GFactoryMeasure* params)
+{
+	params->SetUInt("MinDocs",MinDocs->value());
+	QGMeasure2ElementsDlg::Done(params);
+}
+
 
 
 //------------------------------------------------------------------------------
+//
 extern "C" {
+//	
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
@@ -87,21 +134,8 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryMeasure* params)
 {
- 	DlgConfigProfiles_Qt dlg;
-
-	dlg.MinDiffDocs->setValue(params->GetUInt("MinDocs"));
-	dlg.NullSimLevel->setPrecision(10);
-	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
-	dlg.MinDisagreement->setValue(params->GetDouble("MinDisagreement"));
-	dlg.Memory->setChecked(params->GetBool("Memory"));
-	if(dlg.exec())
-	{
-		params->SetUInt("MinDocs",dlg.MinDiffDocs->value());
-		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
-		params->SetBool("Memory",dlg.Memory->isChecked());
-		params->SetDouble("MinDisagreement",dlg.MinDisagreement->value());
-		params->Apply();
- 	}
+	MyDlg dlg;
+	dlg.Configure(params);
 }
 
 

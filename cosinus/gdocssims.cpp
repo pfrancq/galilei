@@ -2,15 +2,15 @@
 
 	GALILEI Research Project
 
-	GProfilesAgreement.cpp
+	GDocsSims.cpp
 
-	Agreement between profiles - Implementation.
+	Similarities between subprofiles - Implementation.
 
 	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		
+
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -33,7 +33,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure2elements.h>
-#include <gprofile.h>
+#include <gdoc.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
 using namespace GALILEI;
@@ -43,71 +43,48 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GProfilesDisagreement
+//  GDocsSims
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GProfilesDisagreement : public GMeasure2Elements
+class GDocsSims : public GMeasure2Elements
 {
-	size_t MinDocs;
 public:
-	GProfilesDisagreement(GFactoryMeasure* fac);
-	virtual void ApplyConfig(void);
+	GDocsSims(GFactoryMeasure* fac);
 	double Compute(GLang* lang,void* obj1,void* obj2);
 	void* GetElement(GLang* lang,size_t id);
-	size_t GetMaxElementsId(GLang* lang);
-	static void CreateParams(RConfig* params);	
+	size_t GetMaxElementsId(GLang* lang);	
 };
 
 
 //------------------------------------------------------------------------------
-GProfilesDisagreement::GProfilesDisagreement(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,false,false,0.0,otProfile)
+GDocsSims::GDocsSims(GFactoryMeasure* fac)
+	: GMeasure2Elements(fac,true,true,1.0,otDoc)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GProfilesDisagreement::ApplyConfig(void)
+double GDocsSims::Compute(GLang* lang,void* obj1,void* obj2)
 {
-	GMeasure2Elements::ApplyConfig();
-	MinDocs=Factory->GetUInt("MinDocs");
+	return(static_cast<GDoc*>(obj1)->SimilarityIFF(*static_cast<GDoc*>(obj2),otDoc,lang));
 }
 
 
 //------------------------------------------------------------------------------
-double GProfilesDisagreement::Compute(GLang*,void* obj1,void* obj2)
+void* GDocsSims::GetElement(GLang*,size_t id)
 {
-	double nbcommon=double(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
-	if(nbcommon<MinDocs)
-		return(0.0);
-	size_t nbdiff=static_cast<GProfile*>(obj1)->GetCommonDiffDocs(static_cast<GProfile*>(obj2));
-	return(nbdiff/nbcommon);
-}
-
-
-//------------------------------------------------------------------------------
-void* GProfilesDisagreement::GetElement(GLang*,size_t id)
-{
-	return(Session->GetProfile(id,false));
+	return(Session->GetDoc(id,false));
 } 
 
 
 //------------------------------------------------------------------------------
-size_t GProfilesDisagreement::GetMaxElementsId(GLang*)
+size_t GDocsSims::GetMaxElementsId(GLang*)
 {
-	return(Session->GetMaxProfileId());
+	return(Session->GetMaxDocId());
 }
 
 
 //------------------------------------------------------------------------------
-void GProfilesDisagreement::CreateParams(RConfig* params)
-{
-	GMeasure2Elements::CreateParams(params);
-	params->InsertParam(new RParamValue("MinDocs",7));
-}
-
-
-//------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles Disagreements","Count Method",GProfilesDisagreement)
+CREATE_MEASURE_FACTORY("Documents Similarities","Cosinus Method",GDocsSims)

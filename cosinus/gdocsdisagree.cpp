@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GProfilesAgreement.cpp
+	GDocsAgreement.cpp
 
 	Agreement between profiles - Implementation.
 
@@ -33,7 +33,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure2elements.h>
-#include <gprofile.h>
+#include <gdoc.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
 using namespace GALILEI;
@@ -43,16 +43,16 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GProfilesDisagreement
+//  GDocsDisagreement
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GProfilesDisagreement : public GMeasure2Elements
+class GDocsDisagreement : public GMeasure2Elements
 {
-	size_t MinDocs;
+	size_t MinProfiles;
 public:
-	GProfilesDisagreement(GFactoryMeasure* fac);
+	GDocsDisagreement(GFactoryMeasure* fac);
 	virtual void ApplyConfig(void);
 	double Compute(GLang* lang,void* obj1,void* obj2);
 	void* GetElement(GLang* lang,size_t id);
@@ -62,52 +62,52 @@ public:
 
 
 //------------------------------------------------------------------------------
-GProfilesDisagreement::GProfilesDisagreement(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,false,false,0.0,otProfile)
+GDocsDisagreement::GDocsDisagreement(GFactoryMeasure* fac)
+	: GMeasure2Elements(fac,false,false,0.0,otDoc)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GProfilesDisagreement::ApplyConfig(void)
+void GDocsDisagreement::ApplyConfig(void)
 {
 	GMeasure2Elements::ApplyConfig();
-	MinDocs=Factory->GetUInt("MinDocs");
+	MinProfiles=Factory->GetUInt("MinProfiles");
 }
 
 
 //------------------------------------------------------------------------------
-double GProfilesDisagreement::Compute(GLang*,void* obj1,void* obj2)
+double GDocsDisagreement::Compute(GLang*,void* obj1,void* obj2)
 {
-	double nbcommon=double(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
-	if(nbcommon<MinDocs)
+	double nbcommon=double(static_cast<GDoc*>(obj1)->GetCommonProfiles(static_cast<GDoc*>(obj2)));
+	if(nbcommon<MinProfiles)
 		return(0.0);
-	size_t nbdiff=static_cast<GProfile*>(obj1)->GetCommonDiffDocs(static_cast<GProfile*>(obj2));
+	size_t nbdiff=static_cast<GDoc*>(obj1)->GetCommonDiffProfiles(static_cast<GDoc*>(obj2));
 	return(nbdiff/nbcommon);
 }
 
 
 //------------------------------------------------------------------------------
-void* GProfilesDisagreement::GetElement(GLang*,size_t id)
+void* GDocsDisagreement::GetElement(GLang*,size_t id)
 {
-	return(Session->GetProfile(id,false));
+	return(Session->GetDoc(id,false));
 } 
 
 
 //------------------------------------------------------------------------------
-size_t GProfilesDisagreement::GetMaxElementsId(GLang*)
+size_t GDocsDisagreement::GetMaxElementsId(GLang*)
 {
-	return(Session->GetMaxProfileId());
+	return(Session->GetMaxDocId());
 }
 
 
 //------------------------------------------------------------------------------
-void GProfilesDisagreement::CreateParams(RConfig* params)
+void GDocsDisagreement::CreateParams(RConfig* params)
 {
 	GMeasure2Elements::CreateParams(params);
-	params->InsertParam(new RParamValue("MinDocs",7));
+	params->InsertParam(new RParamValue("MinProfiles",7));
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles Disagreements","Count Method",GProfilesDisagreement)
+CREATE_MEASURE_FACTORY("Documents Disagreements","Count Method",GDocsDisagreement)
