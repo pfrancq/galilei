@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GGroupingGGA_KDE.cpp
+	GGCAGrouping_KDE.cpp
 
-	A KDE about box for the statistical method. - Implementation.
+	Config and about dialogs - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-20007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
