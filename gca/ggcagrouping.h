@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GGroupingGGA.h
+	GCAGrouping.h
 
-	Heuristic using a GGA - Header.
+	GCA Plug-in - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -38,38 +38,37 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggrouping.h>
-#include <gir.h>
-
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggca.h>
+
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupingGGA provides a representation for a method to group some
+* The GGCAGrouping provides a representation for a method to group some
 * subprofiles using a grouping genetic algorithm.
 * @author Pascal Francq
 * @short GGA Method.
 */
-class GGroupingGGA : public GGrouping
+class GGCAGrouping : public GGrouping
 {
 protected:
 
 	/**
 	* GA Objects.
 	*/
-	R::RObjs<GObjIR>* Objs;
+	R::RObjs<GGCAObj>* Objs;
 
 	/**
 	* Instance of the GA.
 	*/
-	GInstIR* Instance;
+	GGCAInst* Instance;
 
 	/**
 	* Parameters of the GA used.
 	*/
-	GIRParams Params;
+	GGCAParams Params;
 
 public:
 
@@ -77,7 +76,7 @@ public:
 	* Constructor.
 	* @param f              Factory.
 	*/
-	GGroupingGGA(GFactoryGrouping* fac);
+	GGCAGrouping(GFactoryGrouping* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -104,7 +103,7 @@ public:
 	/**
 	* Construct the groups of the session based on a chromosome.
 	*/
-	void ConstructGroupsFromChromo(GChromoIR* chromo);
+	void ConstructGroupsFromChromo(GGCAChromo* chromo);
 
 protected:
 
@@ -148,11 +147,8 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GGroupingGGA(void);
+	virtual ~GGCAGrouping(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

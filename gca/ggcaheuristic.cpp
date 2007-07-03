@@ -1,14 +1,15 @@
 /*
 
-	GALILEI Project Library
+	Genetic Community Algorithm
 
-	GIRHeuristic.cpp
+	GGCAHeuristic.h
 
-	Heuristic for an IR Problem - Implemenation
+	Heuristic - Implemenation
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 
 	This library is free software; you can redistribute it and/or
@@ -34,55 +35,56 @@
 // include files for GALILEI
 #include <gsubprofile.h>
 #include <gprofile.h>
-#include <girheuristic.h>
-#include <gchromoir.h>
-#include <ggroupir.h>
-#include <gobjir.h>
-#include <ginstir.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
+
+
+//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggcaheuristic.h>
+#include <ggcachromo.h>
+#include <ggcagroup.h>
+#include <ggcaobj.h>
+#include <ggcainst.h>
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GIRHeuristic
+// class GGCAHeuristic
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GIRHeuristic::GIRHeuristic(RRandom* r,RCursor<GObjIR>* objs,R::RContainer<GIRMaxRatios,true,false>& ratios,RDebug* debug)
-	: RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>("IR Heuristic",r,objs,debug),
+GGCAHeuristic::GGCAHeuristic(RRandom* r,RCursor<GGCAObj>* objs,R::RContainer<GGCAMaxRatios,true,false>& ratios,RDebug* debug)
+	: RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>("IR Heuristic",r,objs,debug),
 	  ToDel(Objs->GetNb()<11?10:Objs->GetNb()/4), Ratios(ratios)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GIRHeuristic::Init(GChromoIR* groups)
+void GGCAHeuristic::Init(GGCAChromo* groups)
 {
-	RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Init(groups);
+	RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>::Init(groups);
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupIR* GIRHeuristic::FindGroup(void)
+GGCAGroup* GGCAHeuristic::FindGroup(void)
 {
-	GGroupIR* grp;
+	GGCAGroup* grp;
 	double maxsim;
 	double sim;
 
 	// Look first if one of the object with a ratio are already grouped
 	// -> If yes, return the group
-	RCursor<GIRMaxRatio> Best(*Ratios[CurObj->GetId()]);
+	RCursor<GGCAMaxRatio> Best(*Ratios[CurObj->GetId()]);
 	for(Best.Start(),grp=0;(!Best.End())&&(!grp);Best.Next())
 		grp=Groups->GetGroup(Best()->ObjId);
 	if(grp)
 		return(grp);
 
 	// Go through each groups
-	R::RCursor<GGroupIR> Cur(Groups->Used);
+	R::RCursor<GGCAGroup> Cur(Groups->Used);
 	for(Cur.Start(),maxsim=-1.0;!Cur.End();Cur.Next())
 	{
 		// If all the hard constraints are not respected -> skip the group.
@@ -111,11 +113,11 @@ GGroupIR* GIRHeuristic::FindGroup(void)
 
 
 //-----------------------------------------------------------------------------
-void GIRHeuristic::PostRun(void)
+void GGCAHeuristic::PostRun(void)
 {
-	GObjIR* obj;
-	R::RCursor<GGroupIR> Cur1(Groups->Used),Cur2(Groups->Used);
-	GGroupIR* grp=0;
+	GGCAObj* obj;
+	R::RCursor<GGCAGroup> Cur1(Groups->Used),Cur2(Groups->Used);
+	GGCAGroup* grp=0;
 	double tmp,max;
 
 	// Look for the groups to delete
@@ -160,6 +162,6 @@ void GIRHeuristic::PostRun(void)
 
 
 //-----------------------------------------------------------------------------
-GIRHeuristic::~GIRHeuristic(void)
+GGCAHeuristic::~GGCAHeuristic(void)
 {
 }

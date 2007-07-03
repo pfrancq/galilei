@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GGroupIR.h
+	GGCAGroup.h
 
-	Group of an IR GA - Header.
+	Group - Header.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGroupIRH
-#define GGroupIRH
+#ifndef GGCAGroupH
+#define GGCAGroupH
 
 
 
@@ -42,32 +42,27 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <gir.h>
-#include <gobjir.h>
-#include <gchromoir.h>
-#include <ginstir.h>
-
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggca.h>
+#include <ggcaobj.h>
+#include <ggcachromo.h>
+#include <ggcainst.h>
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupDataIR provides a representation of the information needed to
+* The GGCAGroupData provides a representation of the information needed to
 * construct a group in the IR Problem.
 * @author Pascal Francq
 * @short Data for IR Group.
 */
-class GGroupDataIR
+class GGCAGroupData
 {
 public:
 	/**
 	* Constructor of the group data.
 	*/
-	GGroupDataIR(void) {}
+	GGCAGroupData(void) {}
 };
 
 
@@ -77,7 +72,7 @@ public:
 * @author Pascal Francq
 * @short IR Group.
 */
-class GGroupIR : public R::RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>
+class GGCAGroup : public R::RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>
 {
 protected:
 
@@ -93,7 +88,7 @@ protected:
 	/**
 	* Relevant object of the group.
 	*/
-	GObjIR* Relevant;
+	GGCAObj* Relevant;
 
 	/**
 	*/
@@ -107,7 +102,7 @@ public:
 	* Construct the group.
 	* @param grp            Group used as source.
 	*/
-	GGroupIR(GGroupIR* grp);
+	GGCAGroup(GGCAGroup* grp);
 
 	/**
 	* Construct the group.
@@ -115,7 +110,7 @@ public:
 	* @param id             Identificator of the group.
 	* @param data           Data needed for the group.
 	*/
-	GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupDataIR* data);
+	GGCAGroup(GGCAChromo* owner,const unsigned int id,const GGCAGroupData* data);
 
 	/**
 	* Clear the information container in a group.
@@ -126,25 +121,25 @@ public:
 	* Verify if an object correspond to a user already in this group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	bool HasSameUser(const GObjIR* obj) const;
+	bool HasSameUser(const GGCAObj* obj) const;
 
 	/**
 	* Look if an object can be insert in the group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	virtual bool CanInsert(const GObjIR* obj);
+	virtual bool CanInsert(const GGCAObj* obj);
 
 	/**
 	* Method call after an object was inserted in the group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	virtual void PostInsert(const GObjIR* obj);
+	virtual void PostInsert(const GGCAObj* obj);
 
 	/**
 	* Method call after an object was deleted from the group.
 	* @param obj            Pointer to the object to delete.
 	*/
-	virtual void PostDelete(const GObjIR* obj);
+	virtual void PostDelete(const GGCAObj* obj);
 
 private:
 
@@ -153,7 +148,7 @@ private:
 	* @param obj            Profile used as reference.
 	* @returns result.
 	*/
-	double ComputeSumDist(GObjIR* obj);
+	double ComputeSumDist(GGCAObj* obj);
 
 public:
 
@@ -166,15 +161,15 @@ public:
 	/**
 	* Get the relevant profile of the group, i.a. the profile which is the must
 	* similar to all the others profiles.
-	* @return Pointer to GObjIR
+	* @return Pointer to GGCAObj
 	*/
-	inline GObjIR* GetRelevant(void) {return(Relevant);}
+	inline GGCAObj* GetRelevant(void) {return(Relevant);}
 
 	void Evaluate(double& dist,double& agree,double& disagree);
 
 	/**
 	*/
-	void SetRelevant(GObjIR* obj);
+	void SetRelevant(GGCAObj* obj);
 
 	/**
 	* Get the average similarity of the group.
@@ -188,20 +183,20 @@ public:
 	* @param obj            Profile used as reference.
 	* @returns result.
 	*/
-	inline double ComputeRelSim(const GObjIR* obj) {return(Owner->Instance->GetSim(Relevant->GetSubProfile(),obj->GetSubProfile()));}
+	inline double ComputeRelSim(const GGCAObj* obj) {return(Owner->Instance->GetSim(Relevant->GetSubProfile(),obj->GetSubProfile()));}
 
 	/**
 	* Compute a homogeneity for a given profile to the group. Actually, it uses
 	* the similarity with the relevant profile of the group.
 	* @param obj            Profile used as reference.
 	*/
-	inline double ComputeHomogeneity(const GObjIR* obj) {return(ComputeRelSim(obj));}
+	inline double ComputeHomogeneity(const GGCAObj* obj) {return(ComputeRelSim(obj));}
 
 	/**
 	* Assignment operator.
 	* @param grp            The group used as source.
 	*/
-	GGroupIR& operator=(const GGroupIR& grp);
+	GGCAGroup& operator=(const GGCAGroup& grp);
 
 	/**
 	* Get the maximal value of the ratio of same feedbacks of a subprofile and
@@ -209,20 +204,17 @@ public:
 	* @param obj            Object to test.
 	* @return double
 	*/
-	double GetMaxRatioSame(GObjIR* obj);
+	double GetMaxRatioSame(GGCAObj* obj);
 
 	/**
 	* Destruct the group.
 	*/
-	virtual ~GGroupIR(void);
+	virtual ~GGCAGroup(void);
 
 	// friend classes
-//	friend class GChromoIR;
- 	friend class GInstIR;
+//	friend class GGCAChromo;
+ 	friend class GGCAInst;
 };
-
-
-}  //------- End of namespace GALILEI -----------------------------------------
 
 
 //-----------------------------------------------------------------------------

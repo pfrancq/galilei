@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GChromoIR.cpp
+	GGCAChromo.cpp
 
-	Chromosome for an IR Problem - Implementation
+	Chromosome - Implementation
 
-	Copyright 2002-2005 by the Université Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -40,35 +40,36 @@
 #include <rpromkernel.h>
 #include <rpromsol.h>
 #include <rpromcriterion.h>
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gchromoir.h>
-#include <ginstir.h>
-#include <ggroupir.h>
-#include <ggroup.h>
-#include <gobjir.h>
 #include <gsession.h>
 #include <gsubprofile.h>
 #include <gprofile.h>
 #include <gsubjects.h>
 #include <guser.h>
-using namespace GALILEI;
-using namespace std;
+
+
+//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggcachromo.h>
+#include <ggcainst.h>
+#include <ggcagroup.h>
+#include <ggroup.h>
+#include <ggcaobj.h>
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GChromoIR
+// class GGCAChromo
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id)
-	: RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(inst,id),
+GGCAChromo::GGCAChromo(GGCAInst* inst,unsigned int id)
+	: RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>(inst,id),
 	  ToDel(0), CritSimJ(0.0), CritAgreement(0.0), CritDisagreement(1.0), Protos(Used.GetMaxNb()),
 	  thProm(0), thSols(0)
 {
@@ -77,10 +78,10 @@ GALILEI::GChromoIR::GChromoIR(GInstIR* inst,unsigned int id)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Init(GThreadDataIR* thData)
+void GGCAChromo::Init(GGCAThreadData* thData)
 {
 	// Parent Initialisation
-	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(thData);
+	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::Init(thData);
 
 	// Current
 	thObjs1=thData->tmpObjs1;
@@ -93,19 +94,19 @@ void GALILEI::GChromoIR::Init(GThreadDataIR* thData)
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GChromoIR::Compare(const GChromoIR* c) const
+int GGCAChromo::Compare(const GGCAChromo* c) const
 {
 	return(Id-c->Id);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::ConstructChromo(GSession* grps)
+void GGCAChromo::ConstructChromo(GSession* grps)
 {
 	R::RCursor<GGroup> Grp;
 	RCursor<GSubProfile> SubProfile;
-	GGroupIR* grp;
-	GObjIR** objs;
+	GGCAGroup* grp;
+	GGCAObj** objs;
 	unsigned int i;
 
 	Grp=grps->GetGroups(Instance->Lang);
@@ -120,7 +121,7 @@ void GALILEI::GChromoIR::ConstructChromo(GSession* grps)
 			(*objs)=Instance->GetObj(SubProfile());
 
 		// Mix randomly thObjs1
-		Instance->RandOrder<GObjIR*>(thObjs1,NbObjs1);
+		Instance->RandOrder<GGCAObj*>(thObjs1,NbObjs1);
 
 		// Put the objects in the group if possible
 		for(objs=thObjs1,i=NbObjs1+1;--i;objs++)
@@ -137,19 +138,19 @@ void GALILEI::GChromoIR::ConstructChromo(GSession* grps)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::RandomConstruct(void)
+void GGCAChromo::RandomConstruct(void)
 {
 	// Look if already a solution in the session
 /*	if(Instance->Session->GetNbGroups(Instance->Lang))
 		ConstructChromo(Instance->Session);*/
 
 	// Call classic heuristic for non-assigned objects
-	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::RandomConstruct();
+	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::RandomConstruct();
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Evaluate(void)
+void GGCAChromo::Evaluate(void)
 {
 	unsigned int i;
 	double min;
@@ -158,8 +159,8 @@ void GALILEI::GChromoIR::Evaluate(void)
 	CritAgreement=CritDisagreement=CritSimJ=0.0;
 	if(!Used.GetNb())
 		return;
-	R::RCursor<GGroupIR> Cur(Used);
-	R::RCursor<GGroupIR> Cur2(Used);
+	R::RCursor<GGCAGroup> Cur(Used);
+	R::RCursor<GGCAGroup> Cur2(Used);
 	for(Cur.Start(),i=0,min=2.0;!Cur.End();Cur.Next(),i++)
 	{
 		if(!i)
@@ -186,17 +187,17 @@ void GALILEI::GChromoIR::Evaluate(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::ReAllocate(void)
+void GGCAChromo::ReAllocate(void)
 {
 	unsigned int nb;
 	double sim,maxsim;
-	GGroupIR* grp;
-	GObjIR** Cur;
+	GGCAGroup* grp;
+	GGCAObj** Cur;
 
 
 	// Put the prototypes in Protos
 	Protos.Clear();
-	R::RCursor<GGroupIR> Grp(Used);
+	R::RCursor<GGCAGroup> Grp(Used);
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
 		Grp()->ComputeRelevant();
@@ -207,7 +208,7 @@ void GALILEI::GChromoIR::ReAllocate(void)
 	Clear();
 
 	// Insert the Prototypes in a group
-	RCursor<GObjIR> CurP(Protos);
+	RCursor<GGCAObj> CurP(Protos);
 	for(CurP.Start();!CurP.End();CurP.Next())
 	{
 		grp=ReserveGroup();
@@ -216,7 +217,7 @@ void GALILEI::GChromoIR::ReAllocate(void)
 	}
 
 	// Mix randomly thObjs1
-//	Instance->RandOrder<GObjIR*>(thObjs1,Objs->GetNb());
+//	Instance->RandOrder<GGCAObj*>(thObjs1,Objs->GetNb());
 
 	// Go through the ranbomly ordered subprofiles and put them in the group of the
 	// most similar prototype.
@@ -226,14 +227,14 @@ void GALILEI::GChromoIR::ReAllocate(void)
 		if(GetGroup(*Cur)) continue;
 
 		// Look first if one of the object with a ratio are already grouped
-		RCursor<GIRMaxRatio> Best(*Instance->Ratios[(*Cur)->GetId()]);
+		RCursor<GGCAMaxRatio> Best(*Instance->Ratios[(*Cur)->GetId()]);
 		for(Best.Start(),grp=0;(!Best.End())&&(!grp);Best.Next())
 			grp=GetGroup(Best()->ObjId);
 
 		// If no group find, -> Go through each groups
 		if(!grp)
 		{
-			R::RCursor<GGroupIR> Grp(Used);
+			R::RCursor<GGCAGroup> Grp(Used);
 			for(Grp.Start(),maxsim=-1.0;!Grp.End();Grp.Next())
 			{
 				// If all the hard constraints are not respected -> skip the group.
@@ -265,11 +266,11 @@ void GALILEI::GChromoIR::ReAllocate(void)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GALILEI::GChromoIR::CalcNewProtosNb(void)
+unsigned int GGCAChromo::CalcNewProtosNb(void)
 {
 	unsigned int count;
-	R::RCursor<GGroupIR> Grp;
-	GObjIR* OldProto;
+	R::RCursor<GGCAGroup> Grp;
+	GGCAObj* OldProto;
 
 	// Computed the prototypes for each groups and count the number in Protos
 	Grp.Set(Used);
@@ -285,20 +286,20 @@ unsigned int GALILEI::GChromoIR::CalcNewProtosNb(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::DoKMeans(void)
+void GGCAChromo::DoKMeans(void)
 {
 	unsigned int itermax;
 	double error,minerror;
-	GObjIR** obj;
+	GGCAObj** obj;
 
 	if(Instance->Debug)
 		Instance->Debug->BeginFunc("DoKMeans","GChomoIR");
 
 	// Copy the subprofiles into thObjs1
-	R::RCursor<GGroupIR> Grp(Used);
+	R::RCursor<GGCAGroup> Grp(Used);
 	for(Grp.Start(),obj=thObjs1;!Grp.End();Grp.Next())
 	{
-		RCursor<GObjIR> ptr=GetObjs(Grp());
+		RCursor<GGCAObj> ptr=GetObjs(Grp());
 		for(ptr.Start();!ptr.End();ptr.Next(),obj++)
 		{
 			(*obj)=ptr();
@@ -306,7 +307,7 @@ void GALILEI::GChromoIR::DoKMeans(void)
 	}
 
 	// Mix randomly thObjs1
-	Instance->RandOrder<GObjIR*>(thObjs1,Objs->GetNb());
+	Instance->RandOrder<GGCAObj*>(thObjs1,Objs->GetNb());
 
 	// Max Iterations
 	minerror=Instance->Params->Convergence/100.0;
@@ -327,28 +328,28 @@ void GALILEI::GChromoIR::DoKMeans(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::DivideWorstSubProfiles(void)
+void GGCAChromo::DivideWorstSubProfiles(void)
 {
-	R::RCursor<GGroupIR> Grp;
+	R::RCursor<GGCAGroup> Grp;
 	unsigned int i;
-	GObjIR** ptr;
-	GObjIR** ptr2;
-	GObjIR** ptr3;
+	GGCAObj** ptr;
+	GGCAObj** ptr2;
+	GGCAObj** ptr3;
 	double sim,minsim;
 	GSubProfile* sub;
 	GSubProfile* sub1;
 	GSubProfile* sub2;
-	GGroupIR* grp;
-	GObjIR* worst1=0;
-	GObjIR* worst2=0;
+	GGCAGroup* grp;
+	GGCAObj* worst1=0;
+	GGCAObj* worst2=0;
 
 	// Find the group containing the two most dissimilar subprofiles
 	Grp.Set(Used);
 	for(Grp.Start(),minsim=1.0,grp=0;!Grp.End();Grp.Next())
 	{
 		if(Grp()->GetNbObjs()<3) continue;
-		RCursor<GObjIR> CurObj(GetObjs(*Grp()));
-		RCursor<GObjIR> CurObj2(GetObjs(*Grp()));
+		RCursor<GGCAObj> CurObj(GetObjs(*Grp()));
+		RCursor<GGCAObj> CurObj2(GetObjs(*Grp()));
 		for(CurObj.Start(),i=0;i<Grp()->GetNbObjs()-1;CurObj.Next(),i++)
 		{
 			for(CurObj2.GoTo(i+1);!CurObj2.End();CurObj2.Next())
@@ -377,7 +378,7 @@ void GALILEI::GChromoIR::DivideWorstSubProfiles(void)
 	// the subprofiles most similar to worst2
 	sub1=worst1->GetSubProfile();
 	sub2=worst2->GetSubProfile();
-	RCursor<GObjIR> CurObj(GetObjs(*grp));
+	RCursor<GGCAObj> CurObj(GetObjs(*grp));
 	for(CurObj.Start();!CurObj.End();CurObj.Next())
 	{
 		if((CurObj()==worst1)||(CurObj()==worst2)) continue;
@@ -412,17 +413,17 @@ void GALILEI::GChromoIR::DivideWorstSubProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::MergeBestSubProfiles(void)
+void GGCAChromo::MergeBestSubProfiles(void)
 {
-	R::RCursor<GObjIR> Cur,Cur2;
+	R::RCursor<GGCAObj> Cur,Cur2;
 	unsigned int i,j;
-	GGroupIR* grp1;
-	GGroupIR* grp2;
-	GGroupIR* bestgrp1;
-	GGroupIR* bestgrp2;
+	GGCAGroup* grp1;
+	GGCAGroup* grp2;
+	GGCAGroup* bestgrp1;
+	GGCAGroup* bestgrp2;
 	double sim,maxsim;
 	GSubProfile* sub;
-	GObjIR** ptr;
+	GGCAObj** ptr;
 
 	// Find the two groups containing the most similar objects.
 	Cur=(*Objs);
@@ -447,7 +448,7 @@ void GALILEI::GChromoIR::MergeBestSubProfiles(void)
 	if((!bestgrp1)||(!bestgrp2)) return;
 
 	// Put the objects of bestgrp1 in bestgrp2 only if there are not already have the same user
-	RCursor<GObjIR> CurObj(GetObjs(*bestgrp1));
+	RCursor<GGCAObj> CurObj(GetObjs(*bestgrp1));
 	for(CurObj.Start(),ptr=thObjs1,NbObjs1=0;!CurObj.End();CurObj.Next(),ptr++,NbObjs1++)
 		(*ptr)=CurObj();
 	for(ptr=thObjs1,i=NbObjs1+1;--i;ptr++)
@@ -465,11 +466,11 @@ void GALILEI::GChromoIR::MergeBestSubProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::TreatSocialSubProfiles(bool rel)
+void GGCAChromo::TreatSocialSubProfiles(bool rel)
 {
-	GObjIR* obj;
-	R::RCursor<GGroupIR> Cur1(Used),Cur2(Used);
-	GGroupIR* grp=0;
+	GGCAObj* obj;
+	R::RCursor<GGCAGroup> Cur1(Used),Cur2(Used);
+	GGCAGroup* grp=0;
 	double tmp,max;
 
 //	cout<<"Do not treat social"<<endl;
@@ -520,14 +521,14 @@ void GALILEI::GChromoIR::TreatSocialSubProfiles(bool rel)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Optimisation(void)
+void GGCAChromo::Optimisation(void)
 {
 	unsigned int i;
 	unsigned int nb;
 	RPromSol** s;
 	RPromSol** tab;
-	GChromoIR* LastDiv;
-	GChromoIR* LastMerge;
+	GGCAChromo* LastDiv;
+	GGCAChromo* LastMerge;
 
 	// Do not optimize
 	if(!Instance->Params->NbDivChromo)
@@ -586,24 +587,24 @@ void GALILEI::GChromoIR::Optimisation(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GChromoIR::Modify(void)
+void GGCAChromo::Modify(void)
 {
-	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Mutation();
+	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::Mutation();
 }
 
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GChromoIR::SameGroup(unsigned int obj1,unsigned int obj2) const
+bool GGCAChromo::SameGroup(unsigned int obj1,unsigned int obj2) const
 {
 	return(ObjectsAss[obj1]==ObjectsAss[obj2]);
 }
 
 
 //-----------------------------------------------------------------------------
-GChromoIR& GALILEI::GChromoIR::operator=(const GChromoIR& chromo)
+GGCAChromo& GGCAChromo::operator=(const GGCAChromo& chromo)
 {
-	RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::operator=(chromo);
+	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::operator=(chromo);
 	CritSimJ=chromo.CritSimJ;
 	CritAgreement=chromo.CritAgreement;
 	CritDisagreement=chromo.CritDisagreement;
@@ -615,6 +616,6 @@ GChromoIR& GALILEI::GChromoIR::operator=(const GChromoIR& chromo)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GChromoIR::~GChromoIR(void)
+GGCAChromo::~GGCAChromo(void)
 {
 }

@@ -1,12 +1,15 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	RObjIR.h
+	GGCAObj.h
 
-	IR Object to place in a specific group - Header.
+	Objects to group - Header.
 
-	(c) 2002 by P. Francq.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -27,27 +30,24 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GObjIRH
-#define GObjIRH
+#ifndef GGCAObjH
+#define GGCAObjH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+using namespace GALILEI;
 
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 /**
-* The GObjIR class provides a representation of subprofile to to place in a
+* The GGCAObj class provides a representation of subprofile to to place in a
 * group.
 * @author Pascal Francq
 * @short IR Object.
 */
-class GObjIR
+class GGCAObj
 {
 protected:
 
@@ -73,13 +73,13 @@ public:
 	* @param id             Identificator.
 	* @param s              Corresponding subprofile.
 	*/
-	GObjIR(const unsigned int id,GSubProfile* s);
+	GGCAObj(const unsigned int id,GSubProfile* s);
 
 	/**
 	* Copy Construct.
 	* @param obj            Source used.
 	*/
-	GObjIR(const GObjIR* obj);
+	GGCAObj(const GGCAObj* obj);
 
 	/**
 	* Comparaison function
@@ -89,12 +89,12 @@ public:
 	/**
 	* Comparaison function
 	*/
-	int Compare(const GObjIR& obj) const;
+	int Compare(const GGCAObj& obj) const;
 
 	/**
 	* Comparaison function
 	*/
-	int Compare(const GObjIR* obj) const;
+	int Compare(const GGCAObj* obj) const;
 
 	/**
 	* Return the identificator of the object.
@@ -109,14 +109,11 @@ public:
 	/**
 	* Destruct the object.
 	*/
-	virtual ~GObjIR(void);
+	virtual ~GGCAObj(void);
 
 	// friend classes
-	friend class GGroupIR;
+	friend class GGCAGroup;
 };
-
-
-}  //------- End of namespace GALILEI -----------------------------------------
 
 
 //-----------------------------------------------------------------------------

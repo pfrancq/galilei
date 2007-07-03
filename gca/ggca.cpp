@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GIRProm.cpp
+	GGCA.cpp
 
-	PROMETHEE Kernel for Grouping - Implementation.
+	Main - Implementation.
 
-	Copyright 2001-2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,47 +31,53 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rpromsol.h>
-#include <rpromcriterion.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <girprom.h>
-#include <gir.h>
-#include <gchromoir.h>
-using namespace GALILEI;
-using namespace std;
+// includes files for GCA
+#include <ggca.h>
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GPlugin
+// GGCAParams
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GIRProm::GIRProm(GIRParams* p)
-	: RPromKernel("GALILEI",20,10), Params(p),CritSimJ(0), CritAgreement(0),
-	  CritDisagreement(0)
+GGCAParams::GGCAParams(void)
 {
-	// Init Criterion and Solutions of the PROMETHEE part
-	CritSimJ=NewCriterion(Maximize,"J (Sim)",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
-	CritAgreement=NewCriterion(Maximize,"Agreement",Params->ParamsAgreement.P,Params->ParamsAgreement.Q,Params->ParamsAgreement.Weight);
-	CritDisagreement=NewCriterion(Minimize,"Disagreement",Params->ParamsDisagreement.P,Params->ParamsDisagreement.Q,Params->ParamsDisagreement.Weight);
 }
 
 
+
 //-----------------------------------------------------------------------------
-void GALILEI::GIRProm::Assign(RPromSol* s,GChromoIR* c)
+//
+// GGCAMaxRatio
+//
+//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+int GGCAMaxRatio::sortOrder(const void* a,const void* b)
 {
-	RPromKernel::Assign(s,CritSimJ,c->CritSimJ);
-	RPromKernel::Assign(s,CritAgreement,c->CritAgreement);
-	RPromKernel::Assign(s,CritDisagreement,c->CritDisagreement);
+	double af=(*((GGCAMaxRatio**)(a)))->Ratio;
+	double bf=(*((GGCAMaxRatio**)(b)))->Ratio;
+
+	if(af==bf) return(0);
+	if(af>bf)
+		return(-1);
+	else
+		return(1);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// GGCAMaxRatios
+//
+//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GGCAMaxRatios::GGCAMaxRatios(unsigned int objid,unsigned int max)
+	: RContainer<GGCAMaxRatio,true,false>(max>4?max/4:4), ObjId(objid)
+{
 }

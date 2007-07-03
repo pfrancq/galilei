@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GIR.h
+	GGCA.h
 
-	GA for the Information Retrieval Problem - Header.
+	Main - Header.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -30,8 +30,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GIRH
-#define GIRH
+#ifndef GGCAH
+#define GGCAH
 
 
 //-----------------------------------------------------------------------------
@@ -39,28 +39,27 @@
 #include <rpromcriterion.h>
 #include <rfitness.h>
 #include <rgga.h>
+#include <rparam.h>
+using namespace R;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <rparam.h>
+using namespace GALILEI;
 
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 // Forward class declaration
-class GGroupIR;
-class GGroupDataIR;
-class GThreadDataIR;
-class GChromoIR;
-class GInstIR;
-class GObjIR;
-class GIRHeuristic;
-class GIRParams;
+class GGCAGroup;
+class GGCAGroupData;
+class GGCAThreadData;
+class GGCAChromo;
+class GGCAInst;
+class GGCAObj;
+class GGCAHeuristic;
+class GGCAParams;
 
 
 //-----------------------------------------------------------------------------
@@ -70,19 +69,19 @@ class GIRParams;
 * @author Pascal Francq
 * @short IR Fitness.
 */
-class GFitnessIR : public R::RFitness<double,true>
+class GGCAFitness : public R::RFitness<double,true>
 {
 public:
 
 	/**
 	* Constructor of the fitness function used for the Bin Packing.
 	*/
-	GFitnessIR(void) : R::RFitness<double,true>() {}
+	GGCAFitness(void) : R::RFitness<double,true>() {}
 
 	/**
 	* Assignment operator with a fitness f.
 	*/
-	GFitnessIR& operator=(const GFitnessIR &f)
+	GGCAFitness& operator=(const GGCAFitness &f)
 	{
 		R::RFitness<double,true>::operator=(f);
 		return(*this);
@@ -91,7 +90,7 @@ public:
 	/**
 	* Assignment operator with a double value.
 	*/
-	GFitnessIR& operator=(const double val)
+	GGCAFitness& operator=(const double val)
 	{
 		R::RFitness<double,true>::operator=(val);
 		return(*this);
@@ -101,10 +100,10 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The GIRParam represents all the parameter used in the GIR module.
-* @short GIR Parameters.
+* The GGCAParam represents all the parameter used in the GGCA module.
+* @short GGCA Parameters.
 */
-class GIRParams
+class GGCAParams
 {
 public:
 
@@ -176,18 +175,19 @@ public:
 	/**
 	* Constructor.
 	*/
-	GIRParams(void);
+	GGCAParams(void);
 };
 
 
-class GIRMaxRatio
+class GGCAMaxRatio
 {
 public:
 	unsigned int ObjId;
 	double Ratio;
 
-	GIRMaxRatio(unsigned int objid,double ratio) : ObjId(objid), Ratio(ratio) {}
-	int Compare(const GIRMaxRatio& ratio) const {return(static_cast<int>(Ratio-ratio.Ratio));}
+	GGCAMaxRatio(unsigned int objid,double ratio) : ObjId(objid), Ratio(ratio) {}
+	
+	int Compare(const GGCAMaxRatio& ratio) const {return(static_cast<int>(Ratio-ratio.Ratio));}
 
 	/**
 	* Static function used to order the object by ratio.
@@ -198,18 +198,15 @@ public:
 };
 
 
-class GIRMaxRatios : public R::RContainer<GIRMaxRatio,true,false>
+class GGCAMaxRatios : public R::RContainer<GGCAMaxRatio,true,false>
 {
 public:
 
 	unsigned int ObjId;
 
-	GIRMaxRatios(unsigned int objid,unsigned int max);
-	int Compare(const GIRMaxRatios& obj) const {return(ObjId-obj.ObjId);}
+	GGCAMaxRatios(unsigned int objid,unsigned int max);
+	int Compare(const GGCAMaxRatios& obj) const {return(ObjId-obj.ObjId);}
 };
-
-
-}  //------- End of namespace GALILEI -----------------------------------------
 
 
 //-----------------------------------------------------------------------------

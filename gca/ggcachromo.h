@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GChromoIR.h
+	GGCAChromo.h
 
-	Chromosome for an IR Problem - Header
+	Chromosome - Header
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GChromoIRH
-#define GChromoIRH
+#ifndef GGCAChromoH
+#define GGCAChromoH
 
 
 //-----------------------------------------------------------------------------
@@ -42,27 +42,23 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <gir.h>
-#include <girprom.h>
+// include files for GCA
+#include <ggca.h>
+#include <ggcaprom.h>
 
-
-//-----------------------------------------------------------------------------
-namespace GALILEI {
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 /**
-* The GChromoIR class provides a representation for a chromosome for the IR
+* The GGCAChromo class provides a representation for a chromosome for the IR
 * Problem.
 * @author Pascal Francq
 * @short IR Chromosome.
 */
-class GChromoIR : public R::RChromoG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
+class GGCAChromo : public R::RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>
 {
 private:
 
-	R::RContainer<GGroupIR,false,false>* ToDel;
+	R::RContainer<GGCAGroup,false,false>* ToDel;
 
 	/**
 	* Value of the Similarity criterion "J".
@@ -97,7 +93,7 @@ private:
 	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
-	GObjIR** thObjs1;
+	GGCAObj** thObjs1;
 
 	/**
 	* Number of objects in thObjs1.
@@ -107,7 +103,7 @@ private:
 	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
-	GObjIR** thObjs2;
+	GGCAObj** thObjs2;
 
 	/**
 	* Number of objects in thObjs2.
@@ -117,17 +113,17 @@ private:
 	/**
 	* Prototypes used for the KMeans.
 	*/
-	R::RContainer<GObjIR,false,false> Protos;
+	R::RContainer<GGCAObj,false,false> Protos;
 
 	/**
 	* Test Chromosome (Thread dependent data).
 	*/
-	GChromoIR** thTests;
+	GGCAChromo** thTests;
 
 	/**
 	* PROMETHE  Kernel used by the chromosome.
 	*/
-	GIRProm* thProm;
+	GGCAProm* thProm;
 
 	/**
 	* Array of solutions to create in PROMETHEE Kernel.
@@ -141,18 +137,18 @@ public:
 	* @param inst           The instance of the problem.
 	* @param id             The identificator of the chromosome.
 	*/
-	GChromoIR(GInstIR* inst,unsigned int id);
+	GGCAChromo(GGCAInst* inst,unsigned int id);
 
 	/**
 	* Initialisation of the chromosome.
 	* @param thData         Pointer to the "thread-dependent" data.
 	*/
-	virtual void Init(GThreadDataIR* thData);
+	virtual void Init(GGCAThreadData* thData);
 
 	/**
 	* Method needed by R::RContainer.
 	*/
-	int Compare(const GChromoIR* c) const;
+	int Compare(const GGCAChromo* c) const;
 
 	/**
 	* Construct the chromosome to be the same as grps.
@@ -226,7 +222,7 @@ public:
 	* The assigment operator.
 	* @param chromo         The chromosome used as source.
 	*/
-	GChromoIR& operator=(const GChromoIR& chromo);
+	GGCAChromo& operator=(const GGCAChromo& chromo);
 
 	/**
 	* Get the value of the 'J' measure.
@@ -264,17 +260,14 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GChromoIR(void);
+	virtual ~GGCAChromo(void);
 
 	// friend classes
-	friend class GGroupIR;
-	friend class GInstIR;
-	friend class GIRProm;
-	friend class GIRHeuristic;
+	friend class GGCAGroup;
+	friend class GGCAInst;
+	friend class GGCAProm;
+	friend class GGCAHeuristic;
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

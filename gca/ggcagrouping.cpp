@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupingGGA.cpp
+	GCAGrouping.h
 
-	Heuristic using a GGA - Implementation
+	GCA Plug-in - Implementation
 
-	Copyright 2002-2005 by the Université Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -33,17 +33,11 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rcursor.h>
-using namespace R;
+#include <rdebug.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <rdebug.h>
-#include <ggroupinggga.h>
-#include <gchromoir.h>
-#include <ginstir.h>
-#include <ggroupir.h>
-#include <gobjir.h>
 #include <ggroup.h>
 #include <guser.h>
 #include <gprofile.h>
@@ -52,26 +46,32 @@ using namespace R;
 #include <gsession.h>
 #include <gmeasure.h>
 #include <ggalileiapp.h>
-using namespace GALILEI;
-using namespace std;
+
+//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggcagrouping.h>
+#include <ggcachromo.h>
+#include <ggcainst.h>
+#include <ggcagroup.h>
+#include <ggcaobj.h>
 
 
 
 //-----------------------------------------------------------------------------
 //
-//  GGroupingGGA
+//  GGCAGrouping
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGroupingGGA::GGroupingGGA(GFactoryGrouping* fac)
+GGCAGrouping::GGCAGrouping(GFactoryGrouping* fac)
 	: GGrouping(fac), Objs(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::ApplyConfig(void)
+void GGCAGrouping::ApplyConfig(void)
 {
 	Params.PopSize=Factory->GetUInt("Population Size");
 	Params.MaxGen=Factory->GetUInt("Max Gen");
@@ -89,41 +89,41 @@ void GGroupingGGA::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::Connect(GSession* session)
+void GGCAGrouping::Connect(GSession* session)
 {
 	GGrouping::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::Disconnect(GSession* session)
+void GGCAGrouping::Disconnect(GSession* session)
 {
 	GGrouping::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::Init(void)
+void GGCAGrouping::Init(void)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-bool GGroupingGGA::IsCoherent(const GGroup* /*grp*/) const
-{
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
-bool GGroupingGGA::IsCoherent(const GGroup* /*grp*/,const GSubProfile* /*sub*/) const
+bool GGCAGrouping::IsCoherent(const GGroup* /*grp*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-bool GGroupingGGA::IsValid(GGroup* /*grp*/)
+bool GGCAGrouping::IsCoherent(const GGroup* /*grp*/,const GSubProfile* /*sub*/) const
+{
+	return(true);
+}
+
+
+//-----------------------------------------------------------------------------
+bool GGCAGrouping::IsValid(GGroup* /*grp*/)
 {
 //	GSubProfileCursor Cur1,Cur2;
 //	unsigned int i,j;
@@ -152,14 +152,14 @@ bool GGroupingGGA::IsValid(GGroup* /*grp*/)
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo)
+void GGCAGrouping::ConstructGroupsFromChromo(GGCAChromo* chromo)
 {
 	
 	unsigned int* tab;
 	unsigned int* ptr;
 
 	Session->ClearGroups(Lang);
-	RCursor<GGroupIR> gr(chromo->Used);
+	RCursor<GGCAGroup> gr(chromo->Used);
 	for(gr.Start();!gr.End();gr.Next())
 	{
 		GGroup* g=new GGroup(cNoRef,Lang,true,RDate(""),RDate(""));
@@ -174,7 +174,7 @@ void GGroupingGGA::ConstructGroupsFromChromo(GChromoIR* chromo)
 
 
 //-----------------------------------------------------------------------------
-void GGroupingGGA::Run(void)
+void GGCAGrouping::Run(void)
 {
 	// If no subprofiles -> nothing to group
 	if(!SubProfiles.GetNb()) return;
@@ -182,23 +182,23 @@ void GGroupingGGA::Run(void)
 	// set the level of the MinSim
 	try
 	{
-		GGroupDataIR data;
+		GGCAGroupData data;
 		double d;
 		unsigned int i;
-		GObjIR* obj;
+		GGCAObj* obj;
 
 		// Get the minimum of similarity		
 		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities")->Info(0,Lang,&d);
   		Params.MinSimLevel=d;
 		
 		// Create the GA objects 
-		Objs=new RObjs<GObjIR>(SubProfiles.GetNb());
+		Objs=new RObjs<GGCAObj>(SubProfiles.GetNb());
 		RCursor<GSubProfile> Cur2(SubProfiles);
 		for(Cur2.Start(),i=0;!Cur2.End();Cur2.Next(),i++)
-			Objs->InsertPtr(obj=new GObjIR(i,Cur2()));
+			Objs->InsertPtr(obj=new GGCAObj(i,Cur2()));
 			
 		// Launch the GA
-		Instance=new GInstIR(Session,Lang,Objs,&Params,Session->GetDebug());
+		Instance=new GGCAInst(Session,Lang,Objs,&Params,Session->GetDebug());
 		Instance->Init(&data);
 		Instance->Run();
 		
@@ -235,7 +235,7 @@ void GGroupingGGA::Run(void)
 
 
 //------------------------------------------------------------------------------
-void GGroupingGGA::CreateParams(RConfig* params)
+void GGCAGrouping::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("Population Size",16));
 	params->InsertParam(new RParamValue("Max Gen",30));
@@ -253,11 +253,11 @@ void GGroupingGGA::CreateParams(RConfig* params)
 
 
 //-----------------------------------------------------------------------------
-GGroupingGGA::~GGroupingGGA(void)
+GGCAGrouping::~GGCAGrouping(void)
 {
 	delete Objs;
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_GROUPING_FACTORY("Genetic Community Algorithm",GGroupingGGA)
+CREATE_GROUPING_FACTORY("Genetic Community Algorithm",GGCAGrouping)

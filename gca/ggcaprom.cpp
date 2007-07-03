@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GIR.cpp
+	GGCAProm.h
 
-	GA for the Information Retrieval Problem - Implementation.
+	PROMETHEE Kernel - Implementation.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,56 +31,41 @@
 
 
 //-----------------------------------------------------------------------------
-// includes files for GALILEI
-#include <gir.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
+// include files for R Project
+#include <rpromsol.h>
+#include <rpromcriterion.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggcaprom.h>
+#include <ggca.h>
+#include <ggcachromo.h>
 
 
 
 //-----------------------------------------------------------------------------
 //
-// GIRParams
+// class GGAProm
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GIRParams::GIRParams(void)
+GGCAProm::GGCAProm(GGCAParams* p)
+	: RPromKernel("GALILEI",20,10), Params(p),CritSimJ(0), CritAgreement(0),
+	  CritDisagreement(0)
 {
+	// Init Criterion and Solutions of the PROMETHEE part
+	CritSimJ=NewCriterion(Maximize,"J (Sim)",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
+	CritAgreement=NewCriterion(Maximize,"Agreement",Params->ParamsAgreement.P,Params->ParamsAgreement.Q,Params->ParamsAgreement.Weight);
+	CritDisagreement=NewCriterion(Minimize,"Disagreement",Params->ParamsDisagreement.P,Params->ParamsDisagreement.Q,Params->ParamsDisagreement.Weight);
 }
 
 
-
 //-----------------------------------------------------------------------------
-//
-// GIRMaxRatio
-//
-//-----------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-int GIRMaxRatio::sortOrder(const void* a,const void* b)
+void GGCAProm::Assign(RPromSol* s,GGCAChromo* c)
 {
-	double af=(*((GIRMaxRatio**)(a)))->Ratio;
-	double bf=(*((GIRMaxRatio**)(b)))->Ratio;
-
-	if(af==bf) return(0);
-	if(af>bf)
-		return(-1);
-	else
-		return(1);
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// GIRMaxRatios
-//
-//-----------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GIRMaxRatios::GIRMaxRatios(unsigned int objid,unsigned int max)
-	: RContainer<GIRMaxRatio,true,false>(max>4?max/4:4), ObjId(objid)
-{
+	RPromKernel::Assign(s,CritSimJ,c->CritSimJ);
+	RPromKernel::Assign(s,CritAgreement,c->CritAgreement);
+	RPromKernel::Assign(s,CritDisagreement,c->CritDisagreement);
 }

@@ -1,12 +1,15 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	RObjIR.cpp
+	GGCAObj.h
 
-	IR Object to place in a specific group - Implementation.
+	Objects to group - Implementation.
 
-	(c) 2002 by P. Francq.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This program is free software; you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -28,58 +31,60 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gobjir.h>
 #include <gdoc.h>
 #include <gprofile.h>
 #include <gsubprofile.h>
 #include <gsession.h>
-using namespace GALILEI;
-using namespace R;
+
+
+//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggcaobj.h>
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GObjIR
+// class GGCAObj
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GObjIR::GObjIR(const unsigned int id,GSubProfile* s)
+GGCAObj::GGCAObj(const unsigned int id,GSubProfile* s)
 	: Id(id), SubProfile(s), SumPjk(0.0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GObjIR::GObjIR(const GObjIR* obj)
+GGCAObj::GGCAObj(const GGCAObj* obj)
 	: Id(obj->Id), SubProfile(obj->SubProfile)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GObjIR::Compare(const unsigned int& id) const
+int GGCAObj::Compare(const unsigned int& id) const
 {
 	return(Id-id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GObjIR::Compare(const GObjIR& obj) const
+int GGCAObj::Compare(const GGCAObj& obj) const
 {
   return(Id-obj.Id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GObjIR::Compare(const GObjIR* obj) const
+int GGCAObj::Compare(const GGCAObj* obj) const
 {
   return(Id-obj->Id);
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GObjIR::~GObjIR(void)
+GGCAObj::~GGCAObj(void)
 {
 }

@@ -1,10 +1,10 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GInstIR.h
+	GGCAInst.h
 
-	Instance for an IR Problem - Header
+	Instance - Header
 
 	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GInstIRH
-#define GInstIRH
+#ifndef GGCAInstH
+#define GGCAInstH
 
 
 //-----------------------------------------------------------------------------
@@ -46,47 +46,42 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <gir.h>
-#include <girprom.h>
-#include <rinstg.h>
+// include files for GCA
+#include <ggca.h>
+#include <ggcaprom.h>
 
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 /**
-* The GThreadDataIR class provides a representation for "thread-dependent" data
+* The GGCAThreadData class provides a representation for "thread-dependent" data
 * for the IR GA.
 * @author Pascal Francq
 * @short IR "thread-dependent" Data.
 */
-class GThreadDataIR : public R::RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>
+class GGCAThreadData : public R::RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>
 {
 public:
-	R::RContainer<GGroupIR,false,false> ToDel;
+	R::RContainer<GGCAGroup,false,false> ToDel;
 
 	/**
 	* Temporary array of Objects.
 	*/
-	GObjIR** tmpObjs1;
+	GGCAObj** tmpObjs1;
 
 	/**
 	* Temporary array of Objects.
 	*/
-	GObjIR** tmpObjs2;
+	GGCAObj** tmpObjs2;
 
 	/**
 	* Test Chromosomes.
 	*/
-	GChromoIR** Tests;
+	GGCAChromo** Tests;
 
 	/**
 	* PROMETHE  Kernel used by the chromosome.
 	*/
-	GIRProm Prom;
+	GGCAProm Prom;
 
 	/**
 	* Array of solutions to create in PROMETHEE Kernel.
@@ -101,7 +96,7 @@ public:
 	* Construct the data.
 	* @param owner          The instance of the problem.
 	*/
-	GThreadDataIR(GInstIR* owner);
+	GGCAThreadData(GGCAInst* owner);
 
 	/**
 	* Initialise thje data.
@@ -111,7 +106,7 @@ public:
 	/**
 	* Destruct the data.
 	*/
-	virtual ~GThreadDataIR(void);
+	virtual ~GGCAThreadData(void);
 };
 
 
@@ -121,12 +116,12 @@ public:
 * @author Pascal Francq
 * @short IR Instance.
 */
-class GInstIR : public R::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>, public GIRProm
+class GGCAInst : public R::RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>, public GGCAProm
 {
 	/**
 	* Parameter of the GA.
 	*/
-	GIRParams* Params;
+	GGCAParams* Params;
 
 	/**
 	* Solutions corresponding to the chromosome.
@@ -146,18 +141,18 @@ class GInstIR : public R::RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGro
 	/**
 	* Social Profiles.
 	*/
-	R::RContainer<GObjIR,false,true> NoSocialSubProfiles;
+	R::RContainer<GGCAObj,false,true> NoSocialSubProfiles;
 
 	/**
 	* Max Ratios for each objects.
 	*/
-	R::RContainer<GIRMaxRatios,true,false> Ratios;
+	R::RContainer<GGCAMaxRatios,true,false> Ratios;
 
 #if BESTSOLSVERIFICATION
 	/**
 	* Container holding the best chromosomes.
 	*/
-	R::RContainer<GChromoIR,true,false> BestSols;
+	R::RContainer<GGCAChromo,true,false> BestSols;
 #endif
 
 	GMeasure* SubProfilesSims;
@@ -176,25 +171,25 @@ public:
 	* @param p              Parameters.
 	* @param debug          Debugger.
 	*/
-	GInstIR(GSession* ses,GLang* l,R::RObjs<GObjIR>* objs,GIRParams* p,R::RDebug *debug);
+	GGCAInst(GSession* ses,GLang* l,R::RObjs<GGCAObj>* objs,GGCAParams* p,R::RDebug *debug);
 
 	/**
 	* Initialisation of the instance.
 	* @param gdata          The Data to use for the construction of the groups.
 	*/
-	virtual void Init(GGroupDataIR* gdata);
+	virtual void Init(GGCAGroupData* gdata);
 
 	/**
 	* Create a specific heuristic for the IR problem.
 	*/
-	virtual R::RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* CreateHeuristic(void);
+	virtual R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>* CreateHeuristic(void);
 
 	/**
 	* Get the GA object corresponding to a subprofile.
 	* @param sub            SubProfile to search for.
-	* @ereturns GObjIR*
+	* @ereturns GGCAObj*
 	*/
-	GObjIR* GetObj(const GSubProfile* sub) const;
+	GGCAObj* GetObj(const GSubProfile* sub) const;
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
@@ -207,7 +202,7 @@ public:
 	* Write the information of a given chromosome.
 	* @param c              Chromosome.
 	*/
-	void WriteChromoInfo(GChromoIR* c);
+	void WriteChromoInfo(GGCAChromo* c);
 
 	/**
 	* Apply PROMETHEE to classify the chromosomes.
@@ -248,7 +243,7 @@ public:
 	* @param obj2               Object n2.
 	* @return double
 	*/
-	double GetSim(const GObjIR* obj1,const GObjIR* obj2) const;
+	double GetSim(const GGCAObj* obj1,const GGCAObj* obj2) const;
 
 	/**
 	* This function can be used to do a traitement after the GA stops.
@@ -263,17 +258,14 @@ public:
 	/**
 	* Destruct the instance.
 	*/
-	virtual ~GInstIR(void);
+	virtual ~GGCAInst(void);
 
 	// friend classes
-	friend class GChromoIR;
-	friend class GGroupIR;
-	friend class GThreadDataIR;
-	friend class GIRHeuristic;
+	friend class GGCAChromo;
+	friend class GGCAGroup;
+	friend class GGCAThreadData;
+	friend class GGCAHeuristic;
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

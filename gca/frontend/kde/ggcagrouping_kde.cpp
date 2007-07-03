@@ -32,10 +32,12 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <../../gir.h>
 #include <ggrouping.h>
-using namespace GALILEI;
-using namespace R;
+
+
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <../../ggca.h>
 
 
 //-----------------------------------------------------------------------------
@@ -66,7 +68,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("This is the Genetic Virtual Community Algorithm for GALILEI.");
+	I18N_NOOP("This is the Genetic Community Algorithm for GALILEI.");
 
 
 //------------------------------------------------------------------------------

@@ -1,12 +1,12 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GIRProm.h
+	GGCAHeuristic.h
 
-	PROMETHEE Kernel for Grouping - Header.
+	Heuristic - Header
 
-	Copyright 2001-2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,74 +31,63 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GIRPromH
-#define GIRPromH
+#ifndef GGCAHeuristicH
+#define GGCAHeuristicH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rpromkernel.h>
+#include <rgroupingheuristic.h>
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <galilei.h>
-#include <gir.h>
-
-
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggca.h>
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GPlugin class provides a representation for a basic "plugin" system for
-* the GALILEI sessions.
+* The GGCAHeuristic class provides a specific heuristic for the IR problem.
 * @author Pascal Francq
-* @short Generic Plugin.
+* @short IR Heuristic.
 */
-class GIRProm : public R::RPromKernel
+class GGCAHeuristic : public R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>
 {
-	/**
-	* Parameters.
-	*/
-	GIRParams* Params;
+	R::RContainer<GGCAGroup,false,false> ToDel;
 
-	/**
-	* Criteria representing the Similarity criterion "J".
-	*/
-	R::RPromCriterion* CritSimJ;
-
-	/**
-	* Criteria depending of the agreement ratios.
-	*/
-	R::RPromCriterion* CritAgreement;
-
-	/**
-	* Criteria depending of the disagreement ratios.
-	*/
-	R::RPromCriterion* CritDisagreement;
+	R::RContainer<GGCAMaxRatios,true,false>& Ratios;
 
 public:
 
 	/**
-	* Constructor.
-	* @param p              Parameters.
+	* Construct the IR heuristic.
+	* @param r              The random genrator to use.
+	* @param objs           Pointer to the objects.
+	* @param debug          Debugger.
 	*/
-	GIRProm(GIRParams* p);
+	 GGCAHeuristic(R::RRandom* r,R::RCursor<GGCAObj>* objs,R::RContainer<GGCAMaxRatios,true,false>& ratios,R::RDebug* debug=0);
 
 	/**
-	* Assign chromosome as a solution.
-	* @param s              Solution.
-	* @param c              Chromosome.
+	* Initialize the heuristic.
+	* @param groups         Pointer to the groups.
 	*/
-	void Assign(R::RPromSol* s,GChromoIR* c);
+	virtual void Init(GGCAChromo* groups);
+
+	/**
+	* Find a group for the next object.
+	*/
+	virtual GGCAGroup* FindGroup(void);
+
+	/**
+	* Verify that no social profiles is alone.
+	*/
+	virtual void PostRun(void);
+
+	/**
+	* Destruct the grouping heuristic.
+	*/
+	virtual ~GGCAHeuristic(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

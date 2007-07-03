@@ -1,10 +1,10 @@
 /*
 
-	GALILEI Research Project
+	Genetic Community Algorithm
 
-	GInstIR.cpp
+	GGCAInst.h
 
-	Instance for an IR Problem - Implementation
+	Instance - Implementation
 
 	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
@@ -35,16 +35,10 @@
 #include <rpromsol.h>
 #include <rpromcriterion.h>
 #include <rgroupingheuristic.h>
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ginstir.h>
-#include <gchromoir.h>
-#include <ggroupir.h>
-#include <gobjir.h>
-#include <girheuristic.h>
 #include <gsubprofile.h>
 #include <gprofile.h>
 #include <ggalileiapp.h>
@@ -52,27 +46,34 @@ using namespace R;
 #include <gsession.h>
 #include <gsubjects.h>
 #include <gmeasure.h>
-using namespace GALILEI;
-using namespace std;
+
+
+//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggcainst.h>
+#include <ggcachromo.h>
+#include <ggcagroup.h>
+#include <ggcaobj.h>
+#include <ggcaheuristic.h>
 
 
 
 //-----------------------------------------------------------------------------
 //
-// GThreadDataIR
+// GGCAThreadData
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GThreadDataIR::GThreadDataIR(GInstIR* owner)
-	: RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(owner),
+GGCAThreadData::GGCAThreadData(GGCAInst* owner)
+	: RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>(owner),
 	  ToDel(owner->Objs->GetNb()<4?4:owner->Objs->GetNb()/4), tmpObjs1(0),tmpObjs2(0), Tests(0),
 	  Prom(Owner->Params), Sols(0), NbSols((Owner->Params->NbDivChromo*2)+2)
 {
 	RPromSol** s;
 	unsigned int i;
 
-	Tests=new GChromoIR*[NbSols];
+	Tests=new GGCAChromo*[NbSols];
 	Sols=new RPromSol*[NbSols];
 	for(i=NbSols+1,s=Sols;--i;s++)
 		(*s)=Prom.NewSol();
@@ -80,27 +81,27 @@ GThreadDataIR::GThreadDataIR(GInstIR* owner)
 
 
 //-----------------------------------------------------------------------------
-void GThreadDataIR::Init(void)
+void GGCAThreadData::Init(void)
 {
-	GGroupDataIR data;
+	GGCAGroupData data;
 	unsigned int i;
 
-	RThreadDataG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init();
-	tmpObjs1=new GObjIR*[Owner->Objs->GetNb()];
-	tmpObjs2=new GObjIR*[Owner->Objs->GetNb()];
+	RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::Init();
+	tmpObjs1=new GGCAObj*[Owner->Objs->GetNb()];
+	tmpObjs2=new GGCAObj*[Owner->Objs->GetNb()];
 	for(i=0;i<NbSols;i++)
 	{
-		Tests[i]=new GChromoIR(Owner,Owner->PopSize+1+i);
+		Tests[i]=new GGCAChromo(Owner,Owner->PopSize+1+i);
 		Tests[i]->Init(this);
-		(static_cast<RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(Tests[i]))->Init(&data);
+		(static_cast<RGroups<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>*>(Tests[i]))->Init(&data);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-GThreadDataIR::~GThreadDataIR(void)
+GGCAThreadData::~GGCAThreadData(void)
 {
-	GChromoIR** C;
+	GGCAChromo** C;
 	unsigned int i;
 
 	if(Tests)
@@ -118,14 +119,14 @@ GThreadDataIR::~GThreadDataIR(void)
 
 //-----------------------------------------------------------------------------
 //
-// GInstIR
+// GGCAInst
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GInstIR::GInstIR(GSession* ses,GLang* l,RObjs<GObjIR>* objs,GIRParams* p,RDebug *debug)
-	: RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>(p->PopSize,objs,FirstFit,"GCA",debug),
-	  GIRProm(p), Params(p), Sols(0), Session(ses), Lang(l), NoSocialSubProfiles(objs->GetNb()),
+GGCAInst::GGCAInst(GSession* ses,GLang* l,RObjs<GGCAObj>* objs,GGCAParams* p,RDebug *debug)
+	: RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>(p->PopSize,objs,FirstFit,"GCA",debug),
+	  GGCAProm(p), Params(p), Sols(0), Session(ses), Lang(l), NoSocialSubProfiles(objs->GetNb()),
 	  Ratios(objs->GetNb()), SubProfilesSims(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities"))
 	, ProfilesAgree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements"))
 	, ProfilesDisagree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements"))
@@ -155,19 +156,19 @@ GInstIR::GInstIR(GSession* ses,GLang* l,RObjs<GObjIR>* objs,GIRParams* p,RDebug 
 
 
 //-----------------------------------------------------------------------------
-void GInstIR::Init(GGroupDataIR* gdata)
+void GGCAInst::Init(GGCAGroupData* gdata)
 {
 	// Init the GGA
-	RInstG<GInstIR,GChromoIR,GFitnessIR,GThreadDataIR,GGroupIR,GObjIR,GGroupDataIR>::Init(gdata);
+	RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::Init(gdata);
 
 	// Init the Ratios
-	GIRMaxRatios* ptr;
+	GGCAMaxRatios* ptr;
 	double ratio;
-	R::RCursor<GObjIR> Cur1(*Objs);
-	R::RCursor<GObjIR> Cur2(*Objs);
+	R::RCursor<GGCAObj> Cur1(*Objs);
+	R::RCursor<GGCAObj> Cur2(*Objs);
 	for(Cur1.Start();!Cur1.End();Cur1.Next())
 	{
-		Ratios.InsertPtrAt(ptr=new GIRMaxRatios(Cur1()->GetId(),Objs->GetNb()),Cur1()->GetId());
+		Ratios.InsertPtrAt(ptr=new GGCAMaxRatios(Cur1()->GetId(),Objs->GetNb()),Cur1()->GetId());
 
 		// Add all the object with a greater agreement ratio than the minimum
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
@@ -175,26 +176,26 @@ void GInstIR::Init(GGroupDataIR* gdata)
 			if(Cur1()==Cur2()) continue;
 			ratio=GetAgreementRatio(Cur1()->GetSubProfile(),Cur2()->GetSubProfile());
 			if(ratio>=Params->MinAgreement)
-				ptr->InsertPtr(new GIRMaxRatio(Cur2()->GetId(),ratio));
+				ptr->InsertPtr(new GGCAMaxRatio(Cur2()->GetId(),ratio));
 		}
 
 		// ReOrder to have the best ratio first
-		ptr->ReOrder(GIRMaxRatio::sortOrder);
+		ptr->ReOrder(GGCAMaxRatio::sortOrder);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-RGroupingHeuristic<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>* GInstIR::CreateHeuristic(void)
+RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>* GGCAInst::CreateHeuristic(void)
 {
-	return(new GIRHeuristic(Random,Objs,Ratios,Debug));
+	return(new GGCAHeuristic(Random,Objs,Ratios,Debug));
 }
 
 
 //-----------------------------------------------------------------------------
-GObjIR* GInstIR::GetObj(const GSubProfile* sub) const
+GGCAObj* GGCAInst::GetObj(const GSubProfile* sub) const
 {
-	R::RCursor<GObjIR> Cur;
+	R::RCursor<GGCAObj> Cur;
 
 	Cur=(*Objs);
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -205,14 +206,14 @@ GObjIR* GInstIR::GetObj(const GSubProfile* sub) const
 
 
 //-----------------------------------------------------------------------------
-bool GInstIR::StopCondition(void)
+bool GGCAInst::StopCondition(void)
 {
 	return(Gen==Params->MaxGen);
 }
 
 
 //-----------------------------------------------------------------------------
-void GInstIR::WriteChromoInfo(GChromoIR* c)
+void GGCAInst::WriteChromoInfo(GGCAChromo* c)
 {
 	char Tmp[300];
 	char Tmp2[300];
@@ -226,21 +227,21 @@ void GInstIR::WriteChromoInfo(GChromoIR* c)
 
 
 //-----------------------------------------------------------------------------
-void GInstIR::PostEvaluate(void)
+void GGCAInst::PostEvaluate(void)
 {
 	unsigned int i;
-	GChromoIR** C;
-	GChromoIR* s;
+	GGCAChromo** C;
+	GGCAChromo* s;
 	#if BESTSOLSVERIFICATION
-		GChromoIR* b;
-		GGroupDataIR GrpData;
+		GGCAChromo* b;
+		GGCAGroupData GrpData;
 	#endif
 	RPromSol** Res;
 	RPromSol** ptr;
 	double r;
 
 	if(Debug)
-		Debug->BeginFunc("PostEvaluate","GInstIR");
+		Debug->BeginFunc("PostEvaluate","GGCAInst");
 	ptr=Sols;
 	Assign(*ptr,BestChromosome);
 	for(i=PopSize+1,C=Chromosomes,ptr++;--i;C++,ptr++)
@@ -258,9 +259,9 @@ void GInstIR::PostEvaluate(void)
 		s=Chromosomes[(*ptr)->GetId()-1];
 		(*s->Fitness)=Gen+1.1;
 		#if BESTSOLSVERIFICATION
-			BestSols.InsertPtr(b=new GChromoIR(this,BestSols.NbPtr));
+			BestSols.InsertPtr(b=new GGCAChromo(this,BestSols.NbPtr));
 			b->Init(thDatas[0]);
-			(static_cast<RGroups<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>*>(b))->Init(&GrpData);
+			(static_cast<RGroups<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>*>(b))->Init(&GrpData);
 			(*b)=(*s);
 		#endif
 	}
@@ -323,12 +324,12 @@ void GInstIR::PostEvaluate(void)
 	delete[] Res;
 
 	if(Debug)
-		Debug->EndFunc("PostEvaluate","GInstIR");
+		Debug->EndFunc("PostEvaluate","GGCAInst");
 }
 
 
 //-----------------------------------------------------------------------------
-double GInstIR::GetDisagreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
+double GGCAInst::GetDisagreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
 {
 	double d;
 	ProfilesDisagree->Measure(0,sub1->GetProfile()->GetId(),sub2->GetProfile()->GetId(),&d);
@@ -337,7 +338,7 @@ double GInstIR::GetDisagreementRatio(const GSubProfile* sub1,const GSubProfile* 
 
 
 //-----------------------------------------------------------------------------
-double GInstIR::GetAgreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
+double GGCAInst::GetAgreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
 {
 	double d;
 	ProfilesAgree->Measure(0,sub1->GetProfile()->GetId(),sub2->GetProfile()->GetId(),&d);
@@ -346,7 +347,7 @@ double GInstIR::GetAgreementRatio(const GSubProfile* sub1,const GSubProfile* sub
 
 
 //-----------------------------------------------------------------------------
-double GInstIR::GetSim(const GSubProfile* sub1,const GSubProfile* sub2) const
+double GGCAInst::GetSim(const GSubProfile* sub1,const GSubProfile* sub2) const
 {
 	double d;
 	SubProfilesSims->Measure(0,Lang,sub1->GetId(),sub2->GetId(),&d);
@@ -355,20 +356,20 @@ double GInstIR::GetSim(const GSubProfile* sub1,const GSubProfile* sub2) const
 
 
 //-----------------------------------------------------------------------------
-double GInstIR::GetSim(const GObjIR* obj1,const GObjIR* obj2) const
+double GGCAInst::GetSim(const GGCAObj* obj1,const GGCAObj* obj2) const
 {
 	return(GetSim(obj1->GetSubProfile(),obj2->GetSubProfile()));
 }
 
 
 //-----------------------------------------------------------------------------
-void GInstIR::PostRun(void)
+void GGCAInst::PostRun(void)
 {
 #if BESTSOLSVERIFICATION
 	RPromSol* s;
 
 	// Init Criterion and Solutions of the PROMETHEE part
-	GIRProm::ClearSols();
+	GGCAProm::ClearSols();
 	for(BestSols.Start();!BestSols.End();BestSols.Next())
 	{
 		s=NewSol();
@@ -382,14 +383,14 @@ void GInstIR::PostRun(void)
 
 
 //-----------------------------------------------------------------------------
-void GInstIR::HandlerNotFound(const RNotification& /*notification*/)
+void GGCAInst::HandlerNotFound(const RNotification& /*notification*/)
 {
 //	std::cout<<" GCA '"<<notification.GetName()<<"' not treated (Gen="<<Gen<<")."<<std::endl;
 }
 
 
 //-----------------------------------------------------------------------------
-GInstIR::~GInstIR(void)
+GGCAInst::~GGCAInst(void)
 {
 	if(Sols)
 		delete[] Sols;

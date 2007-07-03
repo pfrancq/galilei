@@ -1,12 +1,12 @@
 /*
 
-	R Project Library
+	Genetic Community Algorithm
 
-	RNodeGA.hh
+	GGCAGroup.hh
 
-	GA Node - Header.
+	Group - Header.
 
-	Copyright 2001-2005 by the Université Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -40,14 +40,16 @@
 #include <gsubprofile.h>
 #include <gprofile.h>
 #include <gdoc.h>
-#include <ggroupir.h>
-#include <gchromoir.h>
-#include <ginstir.h>
-#include <gobjir.h>
 #include <gsession.h>
 #include <guser.h>
-using namespace GALILEI;
-using namespace R;
+
+
+//-----------------------------------------------------------------------------
+// include files for GCA
+#include <ggcagroup.h>
+#include <ggcachromo.h>
+#include <ggcainst.h>
+#include <ggcaobj.h>
 
 
 
@@ -61,7 +63,7 @@ using namespace R;
 class SubProfileLocal
 {
 public:
-	GObjIR* Prof;
+	GGCAObj* Prof;
 	double AvgSim;
 };
 
@@ -83,30 +85,30 @@ int sort_function(const void* a,const void* b)
 
 //-----------------------------------------------------------------------------
 //
-// class GGroupIR
+// class GGCAGroup
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGroupIR::GGroupIR(GGroupIR* grp)
-	: RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(grp), BestSumDist(0.0),
+GGCAGroup::GGCAGroup(GGCAGroup* grp)
+	: RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>(grp), BestSumDist(0.0),
 	  Relevant(0), Dirty(true), ToEval(true)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupIR::GGroupIR(GChromoIR* owner,const unsigned int id,const GGroupDataIR* data)
-	: RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>(owner,id,data), BestSumDist(0.0),
+GGCAGroup::GGCAGroup(GGCAChromo* owner,const unsigned int id,const GGCAGroupData* data)
+	: RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>(owner,id,data), BestSumDist(0.0),
 	  Relevant(0), Dirty(true), ToEval(true)
 {
 }
 
 
 //---------------------------------------------------------------------------
-void GGroupIR::Clear(void)
+void GGCAGroup::Clear(void)
 {
-	RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::Clear();
+	RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>::Clear();
 	BestSumDist=0.0;
 	Relevant=0;
 	ToEval=Dirty=true;
@@ -114,10 +116,10 @@ void GGroupIR::Clear(void)
 
 
 //---------------------------------------------------------------------------
-bool GGroupIR::HasSameUser(const GObjIR* obj) const
+bool GGCAGroup::HasSameUser(const GGCAObj* obj) const
 {
 	GUser* usr=obj->GetSubProfile()->GetProfile()->GetUser();
-	RCursor<GObjIR> ptr=Owner->GetObjs(*this);
+	RCursor<GGCAObj> ptr=Owner->GetObjs(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 		if(usr==ptr()->GetSubProfile()->GetProfile()->GetUser())
 			return(true);
@@ -126,7 +128,7 @@ bool GGroupIR::HasSameUser(const GObjIR* obj) const
 
 
 //---------------------------------------------------------------------------
-bool GGroupIR::CanInsert(const GObjIR* obj)
+bool GGCAGroup::CanInsert(const GGCAObj* obj)
 {
 	GSubProfile* sub1;
 	GSubProfile* sub2;
@@ -135,7 +137,7 @@ bool GGroupIR::CanInsert(const GObjIR* obj)
 		return(true);
 	sub1=obj->GetSubProfile();
 	GUser* usr1=sub1->GetProfile()->GetUser();
-	RCursor<GObjIR> ptr=Owner->GetObjs(*this);
+	RCursor<GGCAObj> ptr=Owner->GetObjs(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
 		sub2=ptr()->GetSubProfile();
@@ -152,21 +154,21 @@ bool GGroupIR::CanInsert(const GObjIR* obj)
 
 
 //---------------------------------------------------------------------------
-void GGroupIR::PostInsert(const GObjIR* /*obj*/)
+void GGCAGroup::PostInsert(const GGCAObj* /*obj*/)
 {
 	ToEval=Dirty=true;
 }
 
 
 //---------------------------------------------------------------------------
-void GGroupIR::PostDelete(const GObjIR* /*obj*/)
+void GGCAGroup::PostDelete(const GGCAObj* /*obj*/)
 {
 	ToEval=Dirty=true;
 }
 
 
 //---------------------------------------------------------------------------
-double GGroupIR::ComputeSumDist(GObjIR* obj)
+double GGCAGroup::ComputeSumDist(GGCAObj* obj)
 {
 	double Sum;
 	GSubProfile* sub;
@@ -175,7 +177,7 @@ double GGroupIR::ComputeSumDist(GObjIR* obj)
 	if(!NbSubObjects)
 		return(0.0);
 	sub=obj->GetSubProfile();
-	RCursor<GObjIR> ptr(Owner->GetObjs(*this));
+	RCursor<GGCAObj> ptr(Owner->GetObjs(*this));
 	for(ptr.Start(),Sum=0.0;!ptr.End();ptr.Next())
 	{
 		if(ptr()==obj) continue;
@@ -187,7 +189,7 @@ double GGroupIR::ComputeSumDist(GObjIR* obj)
 
 
 //---------------------------------------------------------------------------
-void GGroupIR::ComputeRelevant(void)
+void GGCAGroup::ComputeRelevant(void)
 {
 	double SumDist;
 
@@ -204,7 +206,7 @@ void GGroupIR::ComputeRelevant(void)
 	}
 
 	// Suppose the first element is the most relevant.
-	RCursor<GObjIR> ptr(Owner->GetObjs(*this));
+	RCursor<GGCAObj> ptr(Owner->GetObjs(*this));
 	ptr.Start();
 	Relevant=(ptr());
 	BestSumDist=ComputeSumDist(ptr());
@@ -224,14 +226,14 @@ void GGroupIR::ComputeRelevant(void)
 
 
 //---------------------------------------------------------------------------
-void GGroupIR::Evaluate(double& dist,double& agree,double& disagree)
+void GGCAGroup::Evaluate(double& dist,double& agree,double& disagree)
 {
 	ComputeRelevant();
 	if(ToEval)
 	{
 		ToEval=false;
-		RCursor<GObjIR> CurObj(Owner->GetObjs(*this));
-		RCursor<GObjIR> CurObj2(Owner->GetObjs(*this));
+		RCursor<GGCAObj> CurObj(Owner->GetObjs(*this));
+		RCursor<GGCAObj> CurObj2(Owner->GetObjs(*this));
 		size_t i;
 		for(CurObj.Start(),i=0,AgreementSum=DisagreementSum=0.0;i<GetNbObjs()-1;CurObj.Next(),i++)
 		{
@@ -249,7 +251,7 @@ void GGroupIR::Evaluate(double& dist,double& agree,double& disagree)
 
 
 //---------------------------------------------------------------------------
-void GGroupIR::SetRelevant(GObjIR* obj)
+void GGCAGroup::SetRelevant(GGCAObj* obj)
 {
 	Relevant=obj;
 	ToEval=Dirty=true;
@@ -257,9 +259,9 @@ void GGroupIR::SetRelevant(GObjIR* obj)
 
 
 //---------------------------------------------------------------------------
-GGroupIR& GGroupIR::operator=(const GGroupIR& grp)
+GGCAGroup& GGCAGroup::operator=(const GGCAGroup& grp)
 {
-	RGroup<GGroupIR,GObjIR,GGroupDataIR,GChromoIR>::operator=(grp);
+	RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>::operator=(grp);
 	BestSumDist=grp.BestSumDist;
 	Relevant=grp.Relevant;
 	Dirty=grp.Dirty;
@@ -271,13 +273,13 @@ GGroupIR& GGroupIR::operator=(const GGroupIR& grp)
 
 
 //---------------------------------------------------------------------------
-double GGroupIR::GetMaxRatioSame(GObjIR* obj)
+double GGCAGroup::GetMaxRatioSame(GGCAObj* obj)
 {
 	double max,tmp;
 	GSubProfile* sub=obj->GetSubProfile();
 
 	// Look if in the other objects, there is a better one
-	RCursor<GObjIR> ptr=Owner->GetObjs(*this);
+	RCursor<GGCAObj> ptr=Owner->GetObjs(*this);
 	for(ptr.Start(),max=0.0;!ptr.End();ptr.Next())
 	{
 		tmp=Owner->Instance->GetAgreementRatio(sub,ptr()->GetSubProfile());
@@ -289,6 +291,6 @@ double GGroupIR::GetMaxRatioSame(GObjIR* obj)
 
 
 //---------------------------------------------------------------------------
-GGroupIR::~GGroupIR(void)
+GGCAGroup::~GGCAGroup(void)
 {
 }
