@@ -6,7 +6,7 @@
 
 	Config and about dialogs - Implementation.
 
-	Copyright 2003-20007 by the Université Libre de Bruxelles.
+	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
