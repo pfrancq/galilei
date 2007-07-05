@@ -136,6 +136,11 @@ public:
 	R::RString GetPlugInName(void) const;
 
 	/**
+	 * Get the session associated with the plug-in.
+	 */
+	GSession* GetSession(void) const {return(Session);}
+
+	/**
 	* Destructor of the plugin.
 	*/
 	virtual ~GPlugin(void);

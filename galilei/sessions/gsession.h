@@ -355,6 +355,12 @@ public:
 	size_t GetNbDocs(void) const;
 
 	/**
+	 * Get the highest identifier for a document.
+	 * @returns Highest identifier.
+	 */
+	size_t GetMaxDocId(void) const;
+
+	/**
 	* Get the maximum position of documents handled.
 	* @returns Number of documents.
 	*/

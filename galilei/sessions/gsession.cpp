@@ -672,6 +672,15 @@ size_t GSession::GetNbDocs(void) const
 }
 
 
+//------------------------------------------------------------------------------
+size_t GSession::GetMaxDocId(void) const
+{
+	if(!Data->Docs.GetNb())
+		return(0);
+	return(Data->Docs[Data->Docs.GetMaxPos()]->GetId());
+}
+
+
 //-----------------------------------------------------------------------------
 size_t GSession::GetMaxPosDoc(void) const
 {
@@ -1105,6 +1114,8 @@ size_t GSession::GetProfilesNb(void) const
 //------------------------------------------------------------------------------
 size_t GSession::GetMaxProfileId(void) const
 {
+	if(!Data->Profiles.GetNb())
+		return(0);
 	return(Data->Profiles[Data->Profiles.GetMaxPos()]->GetId());
 }
 
