@@ -50,6 +50,7 @@ void ConfigureDlg::Done(void* param)
 	// General
 	App->SetPlugInsConfigName(FromQString(PlugInsConfig->url()));
 	App->SetLogFileName(FromQString(LogFile->url()));
+	App->SetDebugFileName(FromQString(DebugFile->url()));	
 	QString debug=DebugFile->url();
 	delete App->Debug;
 	App->Debug=0;
