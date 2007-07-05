@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>441</width>
-            <height>377</height>
+            <height>269</height>
         </rect>
     </property>
     <property name="caption">
@@ -273,8 +273,6 @@
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-</customwidgets>
 <connections>
     <connection>
         <sender>buttonCancel</sender>
