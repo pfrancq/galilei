@@ -94,6 +94,7 @@ AC_DEFUN(GALILEI_ALL_INC_CHK,[
 	GALILEI_INC_CHK(galilei/profiles, gprofile.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/sessions,gsession.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/knowledge,gconcept.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/tools,gmeasure2elements.h,Cannot find GALILEI headers.)
 
 	for l in $1 ; do
 		if test "$l" = "kde"; then

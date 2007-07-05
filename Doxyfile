@@ -170,7 +170,7 @@ SKIP_FUNCTION_MACROS   = YES
 #---------------------------------------------------------------------------
 # Configuration::additions related to external references
 #---------------------------------------------------------------------------
-TAGFILES               = /home/public/api/r/r.tags
+TAGFILES               = /home/public/api/r/r.tags /home/public/api/rmath/rmath.tags /home/public/api/roptimization/roptimization.tags
 GENERATE_TAGFILE       = /home/public/api/galilei/galilei.tags
 ALLEXTERNALS           = NO
 EXTERNAL_GROUPS        = YES

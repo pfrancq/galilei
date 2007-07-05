@@ -11,7 +11,7 @@ AM_INIT_AUTOMAKE(galilei, 1.86)
 AC_C_BIGENDIAN
 
 
-AC_SUBST(INCLUDES_GALILEI, '-I$(top_builddir)/galilei/docs -I$(top_builddir)/galilei/infos -I$(top_builddir)/galilei/knowledge -I$(top_builddir)/galilei/groups -I$(top_builddir)/galilei/historic -I$(top_builddir)/galilei/infos -I$(top_builddir)/galilei/profiles -I$(top_builddir)/galilei/sessions -I$(top_builddir)/galilei/sims -I$(top_builddir)/galilei/engines')
+AC_SUBST(INCLUDES_GALILEI, '-I$(top_builddir)/galilei/docs -I$(top_builddir)/galilei/infos -I$(top_builddir)/galilei/knowledge -I$(top_builddir)/galilei/groups -I$(top_builddir)/galilei/historic -I$(top_builddir)/galilei/infos -I$(top_builddir)/galilei/profiles -I$(top_builddir)/galilei/sessions -I$(top_builddir)/galilei/sims -I$(top_builddir)/galilei/engines -I$(top_builddir)/galilei/tools')
 
 FRONTEND=""
 FRONTEND_LIB=""
