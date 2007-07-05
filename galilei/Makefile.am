@@ -2,7 +2,7 @@
 
 AUTOMAKE_OPTIONS        = foreign
 
-SUBDIRS                 = infos knowledge docs profiles groups engines historic sessions . frontend
+SUBDIRS                 = infos knowledge docs profiles groups engines historic sessions tools . frontend
 
 CPPFLAGS                = -I$(top_srcdir)/knowledge -I$(top_srcdir)/infos -I$(top_srcdir)/docs -I$(top_srcdir)/profiles -I$(top_srcdir)/groups -I$(top_srcdir)/engines -I$(top_srcdir)/historic -I$(top_srcdir)/sessions
 
@@ -13,4 +13,4 @@ libgalilei_la_SOURCES     =
 libgalilei_la_LDFLAGS     = -no-undefined -version-info 2:0:0
 libgalilei_la_LIBADD      = infos/libgalilei_infos.la knowledge/libgalilei_knowledge.la docs/libgalilei_docs.la profiles/libgalilei_profiles.la \
 	groups/libgalilei_groups.la engines/libgalilei_engines.la historic/libgalilei_historic.la \
-	sessions/libgalilei_sessions.la
+	sessions/libgalilei_sessions.la tools/libgalilei_tools.la
