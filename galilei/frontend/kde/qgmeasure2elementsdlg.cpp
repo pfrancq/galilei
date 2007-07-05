@@ -39,6 +39,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for QT
 #include <qcheckbox.h>
+#include <qgroupbox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -60,7 +61,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-QGMeasure2ElementsDlg::QGMeasure2ElementsDlg(const QString& str)
+QGMeasure2ElementsDlg::QGMeasure2ElementsDlg(const char* str)
 	: DlgMeasure2Elements()
 {
 	setCaption(str);
@@ -70,7 +71,9 @@ QGMeasure2ElementsDlg::QGMeasure2ElementsDlg(const QString& str)
 //-----------------------------------------------------------------------------
 void QGMeasure2ElementsDlg::Configure(GFactoryMeasure* params)
 {
+	Panel();
 	Init(params);
+	resize(sizeHint());
 	if(exec())
 	{
 		Done(params);
@@ -98,4 +101,11 @@ void QGMeasure2ElementsDlg::Done(GFactoryMeasure* params)
 	params->SetDouble("MinMeasure",MinSim->value());
 	params->SetBool("Memory",Memory->isChecked());
 	params->SetBool("AutomaticMinMeasure",!StaticMinSim->isChecked());
+}
+
+
+//-----------------------------------------------------------------------------
+void QGMeasure2ElementsDlg::Panel(void)
+{
+	MeasureSpecific->hide();
 }

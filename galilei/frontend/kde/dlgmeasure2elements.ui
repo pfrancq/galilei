@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>520</width>
-            <height>255</height>
+            <width>516</width>
+            <height>296</height>
         </rect>
     </property>
     <property name="caption">
@@ -147,6 +147,19 @@
                         <string>Stored in Memory</string>
                     </property>
                 </widget>
+            </vbox>
+        </widget>
+        <widget class="QGroupBox">
+            <property name="name">
+                <cstring>MeasureSpecific</cstring>
+            </property>
+            <property name="title">
+                <string>Measure Specific</string>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
             </vbox>
         </widget>
         <widget class="QLayoutWidget">
