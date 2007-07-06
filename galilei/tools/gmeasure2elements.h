@@ -157,6 +157,16 @@ public:
 	virtual size_t GetMaxElementsId(GLang* lang)=0;
 	
 	/**
+	 * This template method handles the modification of the status of a given
+	 * element. his method is used by all the Event methods.
+	 * @param C              Class of the element.
+	 * @param element        Pointer to the element.
+	 * @param event          Event (type of modification).
+	 * @param lang           Language concerned by the modification.
+	 */
+	template<class C> void UpdateElement(C* element,tEvent event,GLang* lang);
+	
+	/**
 	* A specific language has changed.
 	* @param lang            Language.
 	* @param event           Event.

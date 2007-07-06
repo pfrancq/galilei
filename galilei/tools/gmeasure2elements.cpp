@@ -343,6 +343,7 @@ public:
 	// Constructor and Compare methods.
 	LangMeasure(GLang* lang,size_t nb);
 	int Compare(const GLang& l) const {return(Lang->Compare(l));}
+	int Compare(const GLang* l) const {return(Lang->Compare(l));}
 	int Compare(const LangMeasure& l) const {return(Lang->Compare(*l.Lang));}
 
 	// Destructor.
@@ -639,10 +640,12 @@ void GMeasure2Elements::Event(GLang* lang, tEvent event)
 	switch(event)
 	{
 		case eObjNew:
-			Data->Langs->InsertPtr(new LangMeasure(lang,GetMaxElementsId(lang)));
+			if(Data->Langs)
+				Data->Langs->InsertPtr(new LangMeasure(lang,GetMaxElementsId(lang)));
 			break;
 		case eObjDelete:
-			Data->Langs->DeletePtr(*lang);
+			if(Data->Langs)
+				Data->Langs->DeletePtr(*lang);
 			break;
 		default:
 			break;
@@ -651,19 +654,20 @@ void GMeasure2Elements::Event(GLang* lang, tEvent event)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Event(GDoc* doc, tEvent event)
+template<class C>
+	void GMeasure2Elements::UpdateElement(C* element,tEvent event,GLang* lang)
 {
-	if((!Data->Memory)||(Data->ObjsType!=otDoc))
-		return;
-		
 	Matrix* Values;
-	size_t id=doc->GetId();
+	size_t id=element->GetId();
+	
 	switch(event)
 	{
 		case eObjNew:
 			if(Data->PerLang)
 			{
-				LangMeasure* l=Data->Langs->GetPtr(*doc->GetLang());
+				if(!Data->Langs)
+					break;				
+				LangMeasure* l=Data->Langs->GetPtr(lang);
 				if(!l)
 					throw GException("Language not defined");
 				Values=l->Values;
@@ -680,7 +684,9 @@ void GMeasure2Elements::Event(GDoc* doc, tEvent event)
 		case eObjModified:
 			if(Data->PerLang)
 			{
-				LangMeasure* l=Data->Langs->GetPtr(*doc->GetLang());
+				if(!Data->Langs)
+					break;				
+				LangMeasure* l=Data->Langs->GetPtr(lang);
 				if(!l)
 					throw GException("Language not defined");
 				Values=l->Values;
@@ -696,7 +702,9 @@ void GMeasure2Elements::Event(GDoc* doc, tEvent event)
 		case eObjDelete:
 			if(Data->PerLang)
 			{
-				LangMeasure* l=Data->Langs->GetPtr(*doc->GetLang());
+				if(!Data->Langs)
+					break;
+				LangMeasure* l=Data->Langs->GetPtr(lang);
 				if(!l)
 					throw GException("Language not defined");
 				Values=l->Values;
@@ -715,7 +723,16 @@ void GMeasure2Elements::Event(GDoc* doc, tEvent event)
 			break;
 		default:
 			break;
-	}
+	}	
+}
+
+
+//------------------------------------------------------------------------------
+void GMeasure2Elements::Event(GDoc* doc, tEvent event)
+{
+	if((!Data->Memory)||(Data->ObjsType!=otDoc))
+		return;
+	UpdateElement(doc,event,doc->GetLang());
 }
 
 
@@ -724,52 +741,7 @@ void GMeasure2Elements::Event(GProfile* prof, tEvent event)
 {
 	if((!Data->Memory)||(Data->ObjsType!=otProfile))
 		return;
-		
-	Matrix* Values;
-	size_t id=prof->GetId();
-	switch(event)
-	{
-		case eObjNew:
-			if(Data->PerLang)
-				throw GException("Language not defined");
-			else
-				Values=Data->Values;
-			Values->Created.Insert(id);
-			if(Values->Deleted.IsIn(id))
-				Values->Deleted.Delete(id);
-			if(Values->Modified.IsIn(id))
-				Values->Modified.Delete(id);
-			Values->NeedUpdate=true;
-			break;
-		case eObjModified:
-			if(Data->PerLang)
-				throw GException("Language not defined");
-			else
-				Values=Data->Values;
-			if(!Values->Created.IsIn(id))
-				Values->Modified.Insert(id);
-			if(Values->Deleted.IsIn(id))
-				Values->Deleted.Delete(id);
-			Values->NeedUpdate=true;
-			break;
-		case eObjDelete:
-			if(Data->PerLang)
-				throw GException("Language not defined");
-			else
-				Values=Data->Values;
-			if(Values)
-			{
-				if(Values->Created.IsIn(id))
-					Values->Created.Delete(id);
-				if(Values->Modified.IsIn(id))
-					Values->Modified.Delete(id);
-				Values->Deleted.Insert(id);
-				Values->NeedUpdate=true;
-			}
-			break;
-		default:
-			break;
-	}
+	UpdateElement(prof,event,0);	
 }
 
 
@@ -778,67 +750,7 @@ void GMeasure2Elements::Event(GSubProfile* sub, tEvent event)
 {
 	if((!Data->Memory)||(Data->ObjsType!=otSubProfile))
 		return;
-		
-	Matrix* Values;
-	size_t id=sub->GetId();
-	switch(event)
-	{
-		case eObjNew:
-			if(Data->PerLang)
-			{
-				LangMeasure* l=Data->Langs->GetPtr(*sub->GetLang());
-				if(!l)
-					throw GException("Language not defined");
-				Values=l->Values;
-			}
-			else
-				Values=Data->Values;
-			Values->Created.Insert(id);
-			if(Values->Deleted.IsIn(id))
-				Values->Deleted.Delete(id);
-			if(Values->Modified.IsIn(id))
-				Values->Modified.Delete(id);
-			Values->NeedUpdate=true;
-			break;
-		case eObjModified:
-			if(Data->PerLang)
-			{
-				LangMeasure* l=Data->Langs->GetPtr(*sub->GetLang());
-				if(!l)
-					throw GException("Language not defined");
-				Values=l->Values;
-			}
-			else
-				Values=Data->Values;
-			if(!Values->Created.IsIn(id))
-				Values->Modified.Insert(id);
-			if(Values->Deleted.IsIn(id))
-				Values->Deleted.Delete(id);
-			Values->NeedUpdate=true;
-			break;
-		case eObjDelete:
-			if(Data->PerLang)
-			{
-				LangMeasure* l=Data->Langs->GetPtr(*sub->GetLang());
-				if(!l)
-					throw GException("Language not defined");
-				Values=l->Values;
-			}
-			else
-				Values=Data->Values;
-			if(Values)
-			{
-				if(Values->Created.IsIn(id))
-					Values->Created.Delete(id);
-				if(Values->Modified.IsIn(id))
-					Values->Modified.Delete(id);
-				Values->Deleted.Insert(id);
-				Values->NeedUpdate=true;
-			}
-			break;
-		default:
-			break;
-	}
+	UpdateElement(sub,event,sub->GetLang());
 }
 
 
@@ -847,67 +759,7 @@ void GMeasure2Elements::Event(GGroup* grp, tEvent event)
 {
 	if((!Data->Memory)||(Data->ObjsType!=otGroup))
 		return;
-		
-	Matrix* Values;
-	size_t id=grp->GetId();
-	switch(event)
-	{
-		case eObjNew:
-			if(Data->PerLang)
-			{
-				LangMeasure* l=Data->Langs->GetPtr(*grp->GetLang());
-				if(!l)
-					throw GException("Language not defined");
-				Values=l->Values;
-			}
-			else
-				Values=Data->Values;
-			Values->Created.Insert(id);
-			if(Values->Deleted.IsIn(id))
-				Values->Deleted.Delete(id);
-			if(Values->Modified.IsIn(id))
-				Values->Modified.Delete(id);
-			Values->NeedUpdate=true;
-			break;
-		case eObjModified:
-			if(Data->PerLang)
-			{
-				LangMeasure* l=Data->Langs->GetPtr(*grp->GetLang());
-				if(!l)
-					throw GException("Language not defined");
-				Values=l->Values;
-			}
-			else
-				Values=Data->Values;
-			if(!Values->Created.IsIn(id))
-				Values->Modified.Insert(id);
-			if(Values->Deleted.IsIn(id))
-				Values->Deleted.Delete(id);
-			Values->NeedUpdate=true;
-			break;
-		case eObjDelete:
-			if(Data->PerLang)
-			{
-				LangMeasure* l=Data->Langs->GetPtr(*grp->GetLang());
-				if(!l)
-					throw GException("Language not defined");
-				Values=l->Values;
-			}
-			else
-				Values=Data->Values;
-			if(Values)
-			{
-				if(Values->Created.IsIn(id))
-					Values->Created.Delete(id);
-				if(Values->Modified.IsIn(id))
-					Values->Modified.Delete(id);
-				Values->Deleted.Insert(id);
-				Values->NeedUpdate=true;
-			}
-			break;
-		default:
-			break;
-	}
+	UpdateElement(grp,event,grp->GetLang());
 }
 
 
