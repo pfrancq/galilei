@@ -141,8 +141,8 @@ void GGCAChromo::ConstructChromo(GSession* grps)
 void GGCAChromo::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-/*	if(Instance->Session->GetNbGroups(Instance->Lang))
-		ConstructChromo(Instance->Session);*/
+	if(Instance->Session->GetNbGroups(Instance->Lang))
+		ConstructChromo(Instance->Session);
 
 	// Call classic heuristic for non-assigned objects
 	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::RandomConstruct();
