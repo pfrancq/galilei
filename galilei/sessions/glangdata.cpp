@@ -57,7 +57,7 @@ struct GLangData::Intern
 {
 	RContainer<GDoc,false,true> Docs;
 	RContainer<GSubProfile,false,true> SubProfiles;
-	RContainer<GGroup,false,true> Groups;
+	RContainer<GGroup,true,true> Groups;
 
 	Intern(void) : Docs(10000), SubProfiles(10000), Groups(500)
 	{}
