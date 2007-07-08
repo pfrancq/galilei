@@ -749,7 +749,7 @@ void GStorageMySQL::AssignId(GConcept* data,const GDict* dict)
 		// Verify that the word didn't already exist.
 		RString sSql="SELECT conceptid FROM concepts WHERE langid="+langid+" AND typeid="+type+" AND name="+name;
 		RQuery find(Db,sSql);
-		if(find.GetNbRows())
+		if(find.GetNb())
 		{
 			find.Start();
 			data->SetId(strtoul(find[0],0,10));
@@ -800,7 +800,7 @@ RString GStorageMySQL::LoadConcept(unsigned int id,const char* code,unsigned int
 		RString sSql("SELECT name FROM concepts WHERE langid='"+RString(code)+"' AND "
 		             "typeid="+Num(type)+" AND conceptid="+Num(id));
 		RQuery w(Db,sSql);
-		if(w.GetNbRows())
+		if(w.GetNb())
 		{
 			w.Start();
 			res=w[0];
@@ -824,7 +824,7 @@ unsigned int GStorageMySQL::LoadConcept(const R::RString word,const char* code,u
 		RString sSql("SELECT conceptid FROM concepts WHERE langid='"+RString(code)+"' AND "
 		             "typeid="+Num(type)+" AND kwd="+RQuery::SQLValue(word));
 		RQuery w(Db,sSql);
-		if(w.GetNbRows())
+		if(w.GetNb())
 		{
 			w.Start();
 			res=atoi(w[0].Latin1());
