@@ -86,7 +86,7 @@ public:
 	unsigned int Id;                                        // Identificator of the subject.
 	R::RString Name;                                        // Name of the subject.
 	bool Used;                                              // Determine if the subject is used.
-	R::RContainer<GDoc,false,true> Docs;                    // Profiles attached to this subject.
+	R::RContainer<GDoc,false,true> Docs;                    // Documents attached to this subject.
 	R::RContainer<GProfile,false,true> Profiles;            // Profiles attached to this subject.
 	R::RContainer<GSubProfiles,true,true> SubProfiles;      // SubProfiles attached to this subject.
 	R::RContainer<GGroup,false,true> Groups;                // Groups attached to this subject.
