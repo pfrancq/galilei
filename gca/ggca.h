@@ -53,7 +53,6 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // Forward class declaration
 class GGCAGroup;
-class GGCAGroupData;
 class GGCAThreadData;
 class GGCAChromo;
 class GGCAInst;

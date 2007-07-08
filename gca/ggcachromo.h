@@ -54,7 +54,7 @@
 * @author Pascal Francq
 * @short IR Chromosome.
 */
-class GGCAChromo : public R::RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>
+class GGCAChromo : public R::RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>
 {
 private:
 

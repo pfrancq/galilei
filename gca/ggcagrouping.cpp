@@ -182,7 +182,6 @@ void GGCAGrouping::Run(void)
 	// set the level of the MinSim
 	try
 	{
-		GGCAGroupData data;
 		double d;
 		unsigned int i;
 		GGCAObj* obj;
@@ -199,7 +198,7 @@ void GGCAGrouping::Run(void)
 			
 		// Launch the GA
 		Instance=new GGCAInst(Session,Lang,Objs,&Params,Session->GetDebug());
-		Instance->Init(&data);
+		Instance->Init();
 		Instance->Run();
 		
 		// Cleanup and save the result

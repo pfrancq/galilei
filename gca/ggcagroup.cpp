@@ -91,15 +91,15 @@ int sort_function(const void* a,const void* b)
 
 //-----------------------------------------------------------------------------
 GGCAGroup::GGCAGroup(GGCAGroup* grp)
-	: RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>(grp), BestSumDist(0.0),
+	: RGroup<GGCAGroup,GGCAObj,GGCAChromo>(grp), BestSumDist(0.0),
 	  Relevant(0), Dirty(true), ToEval(true)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAGroup::GGCAGroup(GGCAChromo* owner,const unsigned int id,const GGCAGroupData* data)
-	: RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>(owner,id,data), BestSumDist(0.0),
+GGCAGroup::GGCAGroup(GGCAChromo* owner,const unsigned int id)
+	: RGroup<GGCAGroup,GGCAObj,GGCAChromo>(owner,id), BestSumDist(0.0),
 	  Relevant(0), Dirty(true), ToEval(true)
 {
 }
@@ -108,7 +108,7 @@ GGCAGroup::GGCAGroup(GGCAChromo* owner,const unsigned int id,const GGCAGroupData
 //---------------------------------------------------------------------------
 void GGCAGroup::Clear(void)
 {
-	RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>::Clear();
+	RGroup<GGCAGroup,GGCAObj,GGCAChromo>::Clear();
 	BestSumDist=0.0;
 	Relevant=0;
 	ToEval=Dirty=true;
@@ -261,7 +261,7 @@ void GGCAGroup::SetRelevant(GGCAObj* obj)
 //---------------------------------------------------------------------------
 GGCAGroup& GGCAGroup::operator=(const GGCAGroup& grp)
 {
-	RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>::operator=(grp);
+	RGroup<GGCAGroup,GGCAObj,GGCAChromo>::operator=(grp);
 	BestSumDist=grp.BestSumDist;
 	Relevant=grp.Relevant;
 	Dirty=grp.Dirty;

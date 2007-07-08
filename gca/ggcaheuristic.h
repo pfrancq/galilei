@@ -51,7 +51,7 @@
 * @author Pascal Francq
 * @short IR Heuristic.
 */
-class GGCAHeuristic : public R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>
+class GGCAHeuristic : public R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>
 {
 	R::RContainer<GGCAGroup,false,false> ToDel;
 

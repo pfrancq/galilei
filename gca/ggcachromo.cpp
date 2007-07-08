@@ -69,7 +69,7 @@
 
 //-----------------------------------------------------------------------------
 GGCAChromo::GGCAChromo(GGCAInst* inst,unsigned int id)
-	: RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>(inst,id),
+	: RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>(inst,id),
 	  ToDel(0), CritSimJ(0.0), CritAgreement(0.0), CritDisagreement(1.0), Protos(Used.GetMaxNb()),
 	  thProm(0), thSols(0)
 {
@@ -81,7 +81,7 @@ GGCAChromo::GGCAChromo(GGCAInst* inst,unsigned int id)
 void GGCAChromo::Init(GGCAThreadData* thData)
 {
 	// Parent Initialisation
-	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::Init(thData);
+	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::Init(thData);
 
 	// Current
 	thObjs1=thData->tmpObjs1;
@@ -145,7 +145,7 @@ void GGCAChromo::RandomConstruct(void)
 		ConstructChromo(Instance->Session);
 
 	// Call classic heuristic for non-assigned objects
-	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::RandomConstruct();
+	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::RandomConstruct();
 }
 
 
@@ -589,7 +589,7 @@ void GGCAChromo::Optimisation(void)
 //-----------------------------------------------------------------------------
 void GGCAChromo::Modify(void)
 {
-	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::Mutation();
+	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::Mutation();
 }
 
 
@@ -604,7 +604,7 @@ bool GGCAChromo::SameGroup(unsigned int obj1,unsigned int obj2) const
 //-----------------------------------------------------------------------------
 GGCAChromo& GGCAChromo::operator=(const GGCAChromo& chromo)
 {
-	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>::operator=(chromo);
+	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::operator=(chromo);
 	CritSimJ=chromo.CritSimJ;
 	CritAgreement=chromo.CritAgreement;
 	CritDisagreement=chromo.CritDisagreement;

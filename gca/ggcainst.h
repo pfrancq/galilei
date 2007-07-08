@@ -58,7 +58,7 @@
 * @author Pascal Francq
 * @short IR "thread-dependent" Data.
 */
-class GGCAThreadData : public R::RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>
+class GGCAThreadData : public R::RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>
 {
 public:
 	R::RContainer<GGCAGroup,false,false> ToDel;
@@ -116,7 +116,7 @@ public:
 * @author Pascal Francq
 * @short IR Instance.
 */
-class GGCAInst : public R::RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj,GGCAGroupData>, public GGCAProm
+class GGCAInst : public R::RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>, public GGCAProm
 {
 	/**
 	* Parameter of the GA.
@@ -177,12 +177,12 @@ public:
 	* Initialisation of the instance.
 	* @param gdata          The Data to use for the construction of the groups.
 	*/
-	virtual void Init(GGCAGroupData* gdata);
+	virtual void Init(void);
 
 	/**
 	* Create a specific heuristic for the IR problem.
 	*/
-	virtual R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>* CreateHeuristic(void);
+	virtual R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>* CreateHeuristic(void);
 
 	/**
 	* Get the GA object corresponding to a subprofile.

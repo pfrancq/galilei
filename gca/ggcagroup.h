@@ -51,28 +51,11 @@
 
 //-----------------------------------------------------------------------------
 /**
-* The GGCAGroupData provides a representation of the information needed to
-* construct a group in the IR Problem.
-* @author Pascal Francq
-* @short Data for IR Group.
-*/
-class GGCAGroupData
-{
-public:
-	/**
-	* Constructor of the group data.
-	*/
-	GGCAGroupData(void) {}
-};
-
-
-//-----------------------------------------------------------------------------
-/**
 * The RGroupBP provides a representation for a group for the IR Problem.
 * @author Pascal Francq
 * @short IR Group.
 */
-class GGCAGroup : public R::RGroup<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>
+class GGCAGroup : public R::RGroup<GGCAGroup,GGCAObj,GGCAChromo>
 {
 protected:
 
@@ -110,7 +93,7 @@ public:
 	* @param id             Identificator of the group.
 	* @param data           Data needed for the group.
 	*/
-	GGCAGroup(GGCAChromo* owner,const unsigned int id,const GGCAGroupData* data);
+	GGCAGroup(GGCAChromo* owner,const unsigned int id);
 
 	/**
 	* Clear the information container in a group.
