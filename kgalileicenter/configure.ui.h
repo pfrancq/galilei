@@ -39,7 +39,7 @@ void ConfigureDlg::Init(void* param)
 	// Directories
 	R::RCursor<RString> Cur(App->GetPlugInsPath());
 	for(Cur.Start();!Cur.End();Cur.Next())
-	Dirs->insertItem(ToQString(*Cur()));
+		Dirs->insertItem(ToQString(*Cur()));
 }
 
 

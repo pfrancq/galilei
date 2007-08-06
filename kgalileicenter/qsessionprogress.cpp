@@ -150,9 +150,6 @@ QLoadSession::QLoadSession(void)
 //-----------------------------------------------------------------------------
 void QLoadSession::DoIt(void)
 {
-	Parent->PutText("Loading Dicionnaries/Stoplists ...");
-	if(GSession::Break())
-		return;
 	Parent->PutText("Loading Documents ...");
 	Session->GetStorage()->LoadDocs();
 	if(GSession::Break())
@@ -270,7 +267,7 @@ void QImportStopLists::DoIt(void)
 	{
 		int pos=Files()->GetFileName().FindStr("StopList");
 		if(pos==-1) continue;
-		RTextFile Stop(Files()->GetName(),"utf-8");
+		RTextFile Stop(Files()->GetURI(),"utf-8");
 		Stop.Open(RIO::Read);
 		GLang* lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(Files()->GetFileName().Mid(9,2));
 		Parent->PutText("Import stoplist for "+lang->GetName());
@@ -590,14 +587,22 @@ void QCreateDocXML::DoIt(void)
 		delete XML;
 		XML=0;
 	}
-	XML=GALILEIApp->GetManager<GFilterManager>("Filter")->CreateDocXML(Doc);
+	
+	RIO::RSmartTempFile docxml;
+	RURI uri=GALILEIApp->GetManager<GFilterManager>("Filter")->WhatAnalyze(Doc,docxml);
+	if(!uri.IsEmpty())
+	{
+		XML=new RXMLStruct();
+		RXMLFile In(uri,XML);
+		In.Open(RIO::Read);
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 void QAnalyzeXML::DoIt(void)
 {
-	Session->AnalyseDoc(XML,Doc,0,0,Parent);
+	Session->AnalyseDoc(Doc,0,Parent);
 }
 
 

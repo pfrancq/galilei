@@ -324,8 +324,11 @@ void KGALILEICenterApp::InitMeasure(QMyPlugins* dlg)
 		}
 		tab->List->setEnabled(idx>0);
 	}
-	dlg->slotChangeCat(item);
-	dlg->MeasuresCat->setSelected(item,true);
+	if(item)
+	{
+		dlg->slotChangeCat(item);
+		dlg->MeasuresCat->setSelected(item,true);
+	}
 }
 
 

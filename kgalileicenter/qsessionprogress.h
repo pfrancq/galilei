@@ -178,10 +178,10 @@ private:
 */
 class QCreateDocXML : public QSessionThread
 {
-	GDocXML* &XML;
+	RXMLStruct* &XML;
 	GDoc* Doc;
 public:
-	QCreateDocXML(GDocXML* &xml,GDoc* doc) : XML(xml), Doc(doc) {}
+	QCreateDocXML(RXMLStruct* &xml,GDoc* doc) : XML(xml), Doc(doc) {}
 	virtual void DoIt(void);
 };
 
@@ -194,10 +194,9 @@ public:
 */
 class QAnalyzeXML : public QSessionThread
 {
-	GDocXML* &XML;
 	GDoc* Doc;
 public:
-	QAnalyzeXML(GDocXML* &xml,GDoc* doc) : XML(xml), Doc(doc) {}
+	QAnalyzeXML(GDoc* doc) : Doc(doc) {}
 	virtual void DoIt(void);
 };
 

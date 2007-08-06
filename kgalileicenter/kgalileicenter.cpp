@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Slots Part.
 
-	Copyright 2001-2002 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -529,9 +529,16 @@ void KGALILEICenterApp::slotDocAnalyse(void)
 	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.*"), this, i18n("Open File..."));
 	if(!url.isEmpty())
 	{
-		createClient(Doc,m=new KViewDoc(url.path(),KMimeType::findByURL(url)->name(),Doc,pWorkspace,"View Document",0));
-		m->CreateDocXML();
-		slotWindowActivated(m);
+//		try
+		{
+			createClient(Doc,m=new KViewDoc(url.path(),KMimeType::findByURL(url)->name(),Doc,pWorkspace,"View Document",0));
+			m->AnalyseDocXML();
+			slotWindowActivated(m);
+		}
+//		catch(GException& e)
+//		{
+//			QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+//		}
 	}
 	slotStatusMsg(i18n("Ready."));
 }

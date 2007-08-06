@@ -347,9 +347,7 @@ void KViewDoc::AnalyseDocXML(void)
 
 	b=Struct;
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Analyse Document");
-	if(!Dlg.Run(new QAnalyzeXML(Struct,Document))) return;
-	if((!b)&&Struct)
-		XML->SetDocXML(Struct);
+	if(!Dlg.Run(new QAnalyzeXML(Document))) return;
 	General->clear();
 	ConstructGeneral();
 	Results->clear();

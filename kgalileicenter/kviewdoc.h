@@ -6,7 +6,7 @@
 
 	Window for manipulating a specific document - Header.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2002 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -37,6 +37,11 @@
 
 //-----------------------------------------------------------------------------
 // forward class declaration for GALILEI
+namespace R
+{
+	class RXMLStruct;
+}
+using namespace R;
 namespace GALILEI
 {
 	class GDoc;
@@ -110,7 +115,7 @@ class KViewDoc : public KView
 	/**
 	* XML structure representing the content of the document.
 	*/
-	GDocXML* Struct;
+	RXMLStruct* Struct;
 
 	/**
 	* Delete the Document when deleting the window?
