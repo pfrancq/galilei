@@ -139,6 +139,7 @@ public:
 	*/
 	GGCAChromo(GGCAInst* inst,unsigned int id);
 
+
 	/**
 	* Initialisation of the chromosome.
 	* @param thData         Pointer to the "thread-dependent" data.

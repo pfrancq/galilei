@@ -65,7 +65,7 @@
 
 //-----------------------------------------------------------------------------
 GGCAGrouping::GGCAGrouping(GFactoryGrouping* fac)
-	: GGrouping(fac), Objs(0)
+	: GGrouping(fac), Objs(20)
 {
 }
 
@@ -166,7 +166,7 @@ void GGCAGrouping::ConstructGroupsFromChromo(GGCAChromo* chromo)
 		Session->AssignId(g);
 		ptr=tab=gr()->GetObjectsId();
 		while((*ptr)!=NoObject)
-			g->InsertSubProfile(((*Objs)[*(ptr++)])->GetSubProfile());
+			g->InsertSubProfile((Objs[*(ptr++)])->GetSubProfile());
 		delete[] tab;
 		Session->InsertGroup(g);
 	}
@@ -191,20 +191,18 @@ void GGCAGrouping::Run(void)
   		Params.MinSimLevel=d;
 		
 		// Create the GA objects 
-		Objs=new RObjs<GGCAObj>(SubProfiles.GetNb());
+  		Objs.Clear(SubProfiles.GetNb());
 		RCursor<GSubProfile> Cur2(SubProfiles);
 		for(Cur2.Start(),i=0;!Cur2.End();Cur2.Next(),i++)
-			Objs->InsertPtr(obj=new GGCAObj(i,Cur2()));
+			Objs.InsertPtr(obj=new GGCAObj(i,Cur2()));
 			
 		// Launch the GA
-		Instance=new GGCAInst(Session,Lang,Objs,&Params,Session->GetDebug());
+		Instance=new GGCAInst(Session,Lang,RCursor<GGCAObj>(Objs),&Params,Session->GetDebug());
 		Instance->Init();
 		Instance->Run();
 		
 		// Cleanup and save the result
 		ConstructGroupsFromChromo(Instance->BestChromosome);
-		delete Objs;
-		Objs=0;
 		delete Instance;
 	}
 	catch(RGAException& e)
@@ -254,7 +252,6 @@ void GGCAGrouping::CreateParams(RConfig* params)
 //-----------------------------------------------------------------------------
 GGCAGrouping::~GGCAGrouping(void)
 {
-	delete Objs;
 }
 
 

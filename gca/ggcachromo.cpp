@@ -179,7 +179,7 @@ void GGCAChromo::Evaluate(void)
 		}
 	}
 
-	tmp=static_cast<double>(Instance->Objs->GetNb())*static_cast<double>(Instance->Objs->GetNb()-1)/2;
+	tmp=static_cast<double>(Instance->Objs.GetNb())*static_cast<double>(Instance->Objs.GetNb()-1)/2;
 	CritAgreement/=tmp;
 	CritDisagreement/=tmp;
 	CritSimJ=min/(CritSimJ*Used.GetNb());
@@ -221,7 +221,7 @@ void GGCAChromo::ReAllocate(void)
 
 	// Go through the ranbomly ordered subprofiles and put them in the group of the
 	// most similar prototype.
-	for(Cur=thObjs1,nb=Objs->GetNb()+1;--nb;Cur++)
+	for(Cur=thObjs1,nb=Objs.GetNb()+1;--nb;Cur++)
 	{
 		// If the subprofile is a prototype -> already in a group
 		if(GetGroup(*Cur)) continue;
@@ -307,7 +307,7 @@ void GGCAChromo::DoKMeans(void)
 	}
 
 	// Mix randomly thObjs1
-	Instance->RandOrder<GGCAObj*>(thObjs1,Objs->GetNb());
+	Instance->RandOrder<GGCAObj*>(thObjs1,Objs.GetNb());
 
 	// Max Iterations
 	minerror=Instance->Params->Convergence/100.0;
@@ -415,7 +415,6 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 //-----------------------------------------------------------------------------
 void GGCAChromo::MergeBestSubProfiles(void)
 {
-	R::RCursor<GGCAObj> Cur,Cur2;
 	unsigned int i,j;
 	GGCAGroup* grp1;
 	GGCAGroup* grp2;
@@ -426,8 +425,8 @@ void GGCAChromo::MergeBestSubProfiles(void)
 	GGCAObj** ptr;
 
 	// Find the two groups containing the most similar objects.
-	Cur=(*Objs);
-	Cur2=(*Objs);
+	R::RCursor<GGCAObj> Cur(Objs);
+	R::RCursor<GGCAObj> Cur2(Objs);
 	for(Cur.Start(),i=Cur.GetNb(),j=0,maxsim=-1.0,bestgrp1=bestgrp2=0;--i;Cur.Next(),j++)
 	{
 		grp1=GetGroup(Cur());

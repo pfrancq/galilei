@@ -54,9 +54,9 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAHeuristic::GGCAHeuristic(RRandom* r,RCursor<GGCAObj>* objs,R::RContainer<GGCAMaxRatios,true,false>& ratios,RDebug* debug)
+GGCAHeuristic::GGCAHeuristic(RRandom* r,RCursor<GGCAObj> objs,R::RContainer<GGCAMaxRatios,true,false>& ratios,RDebug* debug)
 	: RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>("IR Heuristic",r,objs,debug),
-	  ToDel(Objs->GetNb()<11?10:Objs->GetNb()/4), Ratios(ratios)
+	  ToDel(Objs.GetNb()<11?10:Objs.GetNb()/4), Ratios(ratios)
 {
 }
 

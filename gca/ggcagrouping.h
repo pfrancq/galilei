@@ -38,6 +38,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggrouping.h>
+using namespace R;
+
 
 //-----------------------------------------------------------------------------
 // include files for GCA
@@ -58,7 +60,7 @@ protected:
 	/**
 	* GA Objects.
 	*/
-	R::RObjs<GGCAObj>* Objs;
+	RContainer<GGCAObj,true,false> Objs;
 
 	/**
 	* Instance of the GA.

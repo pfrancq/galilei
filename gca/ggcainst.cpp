@@ -67,7 +67,7 @@
 //-----------------------------------------------------------------------------
 GGCAThreadData::GGCAThreadData(GGCAInst* owner)
 	: RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>(owner),
-	  ToDel(owner->Objs->GetNb()<4?4:owner->Objs->GetNb()/4), tmpObjs1(0),tmpObjs2(0), Tests(0),
+	  ToDel(owner->Objs.GetNb()<4?4:owner->Objs.GetNb()/4), tmpObjs1(0),tmpObjs2(0), Tests(0),
 	  Prom(Owner->Params), Sols(0), NbSols((Owner->Params->NbDivChromo*2)+2)
 {
 	RPromSol** s;
@@ -86,8 +86,8 @@ void GGCAThreadData::Init(void)
 	unsigned int i;
 
 	RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::Init();
-	tmpObjs1=new GGCAObj*[Owner->Objs->GetNb()];
-	tmpObjs2=new GGCAObj*[Owner->Objs->GetNb()];
+	tmpObjs1=new GGCAObj*[Owner->Objs.GetNb()];
+	tmpObjs2=new GGCAObj*[Owner->Objs.GetNb()];
 	for(i=0;i<NbSols;i++)
 	{
 		Tests[i]=new GGCAChromo(Owner,Owner->PopSize+1+i);
@@ -123,10 +123,10 @@ GGCAThreadData::~GGCAThreadData(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAInst::GGCAInst(GSession* ses,GLang* l,RObjs<GGCAObj>* objs,GGCAParams* p,RDebug *debug)
+GGCAInst::GGCAInst(GSession* ses,GLang* l,RCursor<GGCAObj> objs,GGCAParams* p,RDebug *debug)
 	: RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>(p->PopSize,objs,FirstFit,"GCA",debug),
-	  GGCAProm(p), Params(p), Sols(0), Session(ses), Lang(l), NoSocialSubProfiles(objs->GetNb()),
-	  Ratios(objs->GetNb()), SubProfilesSims(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities"))
+	  GGCAProm(p), Params(p), Sols(0), Session(ses), Lang(l), NoSocialSubProfiles(objs.GetNb()),
+	  Ratios(objs.GetNb()), SubProfilesSims(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities"))
 	, ProfilesAgree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements"))
 	, ProfilesDisagree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements"))
 #if BESTSOLSVERIFICATION
@@ -163,11 +163,11 @@ void GGCAInst::Init(void)
 	// Init the Ratios
 	GGCAMaxRatios* ptr;
 	double ratio;
-	R::RCursor<GGCAObj> Cur1(*Objs);
-	R::RCursor<GGCAObj> Cur2(*Objs);
+	RCursor<GGCAObj> Cur1(Objs);
+	RCursor<GGCAObj> Cur2(Objs);
 	for(Cur1.Start();!Cur1.End();Cur1.Next())
 	{
-		Ratios.InsertPtrAt(ptr=new GGCAMaxRatios(Cur1()->GetId(),Objs->GetNb()),Cur1()->GetId());
+		Ratios.InsertPtrAt(ptr=new GGCAMaxRatios(Cur1()->GetId(),Objs.GetNb()),Cur1()->GetId());
 
 		// Add all the object with a greater agreement ratio than the minimum
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
@@ -194,9 +194,7 @@ RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>* GGCAInst::CreateHeuristic(void
 //-----------------------------------------------------------------------------
 GGCAObj* GGCAInst::GetObj(const GSubProfile* sub) const
 {
-	R::RCursor<GGCAObj> Cur;
-
-	Cur=(*Objs);
+	R::RCursor<GGCAObj> Cur(Objs);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(Cur()->GetSubProfile()==sub)
 			return(Cur());
@@ -243,7 +241,7 @@ void GGCAInst::PostEvaluate(void)
 		Debug->BeginFunc("PostEvaluate","GGCAInst");
 	ptr=Sols;
 	Assign(*ptr,BestChromosome);
-	for(i=PopSize+1,C=Chromosomes,ptr++;--i;C++,ptr++)
+	for(i=PopSize+1,C=Chromosomes;--i;C++)
 	{
 		Assign(*ptr,*C);
 	}

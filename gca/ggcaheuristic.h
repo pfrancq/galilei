@@ -65,7 +65,7 @@ public:
 	* @param objs           Pointer to the objects.
 	* @param debug          Debugger.
 	*/
-	 GGCAHeuristic(R::RRandom* r,R::RCursor<GGCAObj>* objs,R::RContainer<GGCAMaxRatios,true,false>& ratios,R::RDebug* debug=0);
+	 GGCAHeuristic(R::RRandom* r,R::RCursor<GGCAObj> objs,R::RContainer<GGCAMaxRatios,true,false>& ratios,R::RDebug* debug=0);
 
 	/**
 	* Initialize the heuristic.

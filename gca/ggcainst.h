@@ -171,7 +171,7 @@ public:
 	* @param p              Parameters.
 	* @param debug          Debugger.
 	*/
-	GGCAInst(GSession* ses,GLang* l,R::RObjs<GGCAObj>* objs,GGCAParams* p,R::RDebug *debug);
+	GGCAInst(GSession* ses,GLang* l,RCursor<GGCAObj> objs,GGCAParams* p,R::RDebug *debug);
 
 	/**
 	* Initialisation of the instance.
