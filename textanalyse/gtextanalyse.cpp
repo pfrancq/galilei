@@ -40,12 +40,14 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rrecfile.h>
+#include <rxmlfile.h>
 #include <rdate.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gtextanalyse.h>
+#include <xmlparser.h>
 #include <gdoc.h>
 #include <gdocxml.h>
 #include <gconcept.h>
@@ -152,12 +154,9 @@ void GTextAnalyse::ApplyConfig(void)
 	StoreFullWords=Factory->GetBool("StoreFullWords");
 	MinOccur=Factory->GetUInt("MinOccur");
 	NonLetterWords=Factory->GetBool("NonLetterWords");
-	Distance=Factory->GetBool("Distance");
-	UseExternalLinks=Factory->GetBool("UseExternalLinks");
 	Filtering=Factory->GetBool("Filtering");
 	NbSameOccur=Factory->GetUInt("NbSameOccur");
 	NormalRatio=Factory->GetDouble("NormalRatio");
-	PathtoBinary=Factory->Get("PathtoBinary");
 }
 
 
@@ -419,21 +418,6 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 				Sl[LangIndex]++;
 		}
 	}
-	if(Distance)
-	{
-		// Bug!!!!!!!!!!!
-		// if(!w->InStop[LangIndex])
-		{
-			VerifyOrder();
-			delete(Order[Nwords]);
-			Order[Nwords++]=new GConcept(Lang,word,1);
-			//Nwords++;
-			if(OnlyLetters)
-				Order[Nwords-1]->SetId(1);
-			else
-				Order[Nwords-1]->SetId(0);
-		}
-	}
 	N++;
 	w->Nb++;
 	w->Weight+=weight;
@@ -520,159 +504,6 @@ BeginExtract:
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AnalyseTag(RXMLTag* tag,double weight)
-{
-	const RChar* ptr;
-
-	if(tag->GetName()=="docxml:sentence")
-	{
-		ptr=tag->GetContent()();
-		while(!ptr->IsNull())
-			ExtractWord(ptr,weight);
-	}
-	else
-	{
-		RCursor<RXMLTag> Cur(tag->GetNodes());
-		for(Cur.Start();!Cur.End();Cur.Next())
-			AnalyseTag(Cur(),weight);
-	}
-}
-
-
-////-----------------------------------------------------------------------------
-//void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,unsigned int,false,true>* DocsToAdd)
-//{
-//	const char* ptr;
-//	const char* endPtr;
-//	GDoc* tmpDoc=0;
-//
-//	endPtr=ptr=0;
-//
-//	if (tag->GetName()=="dc:identifier")
-//	{
-//		ptr=tag->GetContent();
-//
-//		// keep only html links (-> whith html extension)
-//		endPtr=ptr;
-//		while (*endPtr)
-//		{
-//			endPtr++;
-//		}
-//		while ((*endPtr)!='.')
-//		{
-//			endPtr--;
-//		}
-//		if ((!strncasecmp(endPtr,".html",5)) || (!strncasecmp(endPtr,".htm",4)))
-//		{
-//			tmpDoc = Session->GetDoc(ptr);   //where ptr is the url.
-//			if (! tmpDoc)
-//			{
-//				if (externalLinks)
-//				{
-//					DocsToAdd->InsertPtr(tmpDoc=Session->NewDoc(ptr,ptr,"text/html"));
-//					tmpDoc->SetState(osNotNeeded);
-//				}
-//			}
-//			else
-//			{
-//				Doc->InsertLink(tmpDoc);
-//			}
-//		}
-//	}
-//	else
-//	{
-//		for (tag->Start();!tag->End();tag->Next())
-//			AnalyseLinksTag((*tag)(),externalLinks,DocsToAdd);
-//	}
-//#pragma warn "ici il faut rajouter les proprietes des liens.";
-//}
-
-
-//-----------------------------------------------------------------------------
-void GTextAnalyse::AnalyseLinksTag(RXMLTag* tag,bool externalLinks ,RContainer<GDoc,false,true>* DocsToAdd)
-{
-//	const char* ptr;
-//	const char* endPtr;
-	RString url;
-	const RChar* ptr;
-	GDoc* tmpDoc=0;
-	bool bUrl;
-
-//	endPtr=ptr=0;
-	bUrl=false;
-
-	if (tag->GetName()== "docxml:metaData")
-	{
-		bUrl=false;
-
-//		type=0;
-//		format=0;
-		RCursor<RXMLTag> Cur(tag->GetNodes());
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			if (Cur()->GetName()=="dc:identifier")
-			{
-				bUrl=true;
-				url=Cur()->GetContent();
-			}
-			if(Cur()->GetName()=="dc:format")
-			{
-				//format=(*tag)()->GetContent();
-			}
-			if(Cur()->GetName()=="dc:type")
-			{
-//				type=(*tag)()->GetContent();
-//				if (!strcmp(type,"REFRESH"))
-//				{
-//					if (!Options->UseRedirection)
-//					{
-						bUrl=false;
-//					}
-//				}
-			}
-		}
-		if (bUrl)
-		{
-			ptr=url();
-			// keep only html links (-> whith html extension)
-			while(!ptr->IsNull())
-			{
-				ptr++;
-			}
-			while(ptr->Latin1()!='.')
-			{
-				ptr--;
-			}
-			if((!RChar::StrCmp(ptr,".html"))||(!RChar::StrCmp(ptr,".htm")))
-			{
-				tmpDoc = Session->GetDoc(url);   //where ptr is the url.
-				if(!tmpDoc)
-				{
-					if(externalLinks)
-					{
-						tmpDoc=new GDoc(url,url,cNoRef,0,"text/html",RDate::GetToday(),RDate::null,cNoRef);
-						Session->AssignId(tmpDoc);
-						DocsToAdd->InsertPtr(tmpDoc);
-					}
-				}
-				else
-				{
-					Doc->InsertLink(tmpDoc);
-				}
-			}
-		}
-	}
-	else
-	{
-		RCursor<RXMLTag> Cur(tag->GetNodes());
-		for(Cur.Start();!Cur.End();Cur.Next())
-			AnalyseLinksTag(Cur(),externalLinks,DocsToAdd);
-	}
-	#warning Add properties of links
-}
-
-
-//-----------------------------------------------------------------------------
 void GTextAnalyse::DetermineLang(void)
 {
 	double Frac,MinFrac;
@@ -749,58 +580,6 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 		}
 	}
 
-	// Save the order of appearance of the valid words of the document in a binary file.
-	if(Distance)
-	{
-		DIR* dp;
-		RString name;
-		name=PathtoBinary;
-		dp=opendir(name);
-		if(!dp)
-			throw GException("the specified path doesn't exist.");
-		closedir(dp);
-		name+=Session->GetStorage()->GetFactory()->GetName();
-		dp=opendir(name);
-		if(!dp)
-			mkdir(name,448);
-		closedir(dp);
-		name+="/DocumentStuct";
-		dp=opendir(name);
-		if(!dp)
-			mkdir(name,448);
-		closedir(dp);
-		name+="/Doc";
-		name+=RString::Number(Doc->GetId());
-		try
-		{
-			R::RRecFile<GConcept,false> f(name,sizeof(unsigned int));
-			f.Open(R::RIO::Create);
-			for(i=0;i<Nwords;i++)
-			{
-				if(Order[i]->GetId()==1)
-				{
-					stem=Lang->GetStemming(Order[i]->GetName());
-					if(stem.GetLen()>=MinStemSize)
-					{
-						//GWord w(stem);
-						GConcept w(cNoRef,Lang,stem,/*infoWord*/1,0,0,0);
-						f<<dic->InsertConcept(&w);
-					}
-				}
-				else
-				{
-					stem=(Order[i]->GetName());
-					//GWord w(stem);
-					GConcept w(cNoRef,Lang,stem,/*infoWord*/1,0,0,0);
-					f<<dic->InsertConcept(&w);
-				}
-			}
-		}
-		catch (...)
-		{
-			throw GException("Cannot create binary files");
-		}
-	}
 
 	// Verify that each occurences is not under the minimal.
 	if(MinOccur<2) return;
@@ -820,57 +599,30 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* tmpDocs)
+void GTextAnalyse::Analyze(GDoc *doc, const R::RURI& uri)
 {
-	RXMLTag* content;
-	RXMLTag* metadata;
-	RXMLTag* link;
-	RXMLTag* Title;
 	RString Name;
 	RCursor<RXMLTag> Tags;
-
-	// Init Part and verification
+	
+	// Init part
 	Doc=doc;
-	if(!xml)
-		throw GException("No XML Structure for document '"+Doc->GetURL()+"'");
-
+	Clear();
+	
+	// Load the xml from the file 
+	XMLParser In(this,uri);
+	In.Open(RIO::Read);
+	In.Close();
+		
 	Lang=Doc->GetLang();
 	FindLang=((!Lang)||(!StaticLang));
-	content=xml->GetContent();
-	RAssert(content);
-	metadata=xml->GetMetaData();
-	RAssert(metadata);
-	Clear();
-
+	
+	
 	// Analyse the doc structure.
 	if(!FindLang)
 	{
 		// if Language defined -> Compute LangIndex
 		for(CurLangs.Start(),LangIndex=0;CurLangs()->GetPlugin()!=Lang;CurLangs.Next(),LangIndex++);
 	}
-	AnalyseTag(metadata,2.0);
-	AnalyseTag(content,1.0);
-
-	// Look if a title meta is defined
-	Title=metadata->GetNode("dc:title");
-	if(Title)
-	{
-		Name="";
-		Tags=Title->GetNodes();
-		for(Tags.Start();!Tags.End();Tags.Next())
-		{
-			if(Tags()->GetName()!="docxml:sentence") continue;
-			Name+=Tags()->GetContent();
-		}
-		if(!Name.IsEmpty())
-			Doc->SetName(Name);
-	}
-
-	// Analyse the content of link tags
-	link = xml->GetLinks ();
-	RAssert(link);
-	if(tmpDocs&&UseExternalLinks)
-		AnalyseLinksTag(link,UseExternalLinks,tmpDocs);
 
 	// Determine the Language if necessary.
 	if(FindLang)
@@ -888,7 +640,7 @@ void GTextAnalyse::Analyze(GDocXML* xml,GDoc* doc,RContainer<GDoc,false,true>* t
 //------------------------------------------------------------------------------
 bool GTextAnalyse::StoreWordStemInDatabase(unsigned int stemid, RString word, unsigned int docid)
 {
-	//check if the words/stem couple does not already exist
+	// Check if the words/stem couple does not already exist
 	RQuery* q=Session->GetStorage()->SelectDummyEntry("wordsstems",stemid,word,0,3);
 	if(q->GetNb())
 		return(false);
@@ -907,12 +659,9 @@ void GTextAnalyse::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("StoreFullWords",false));
 	params->InsertParam(new RParamValue("MinOccur",1));
 	params->InsertParam(new RParamValue("NonLetterWords",true));
-	params->InsertParam(new RParamValue("Distance",false));
-	params->InsertParam(new RParamValue("UseExternalLinks",false));
 	params->InsertParam(new RParamValue("Filtering",true));
 	params->InsertParam(new RParamValue("NbSameOccur",3));
 	params->InsertParam(new RParamValue("NormalRatio",0.3));
-	params->InsertParam(new RParamValue("PathtoBinary","/var/galilei/bin/"));
 }
 
 
@@ -932,4 +681,3 @@ GTextAnalyse::~GTextAnalyse(void)
 
 //------------------------------------------------------------------------------
 CREATE_DOCANALYSE_FACTORY("Text Analyse",GTextAnalyse)
-

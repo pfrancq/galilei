@@ -6,7 +6,7 @@
 
 	Analyse a document - Header.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -45,11 +45,8 @@
 #include <galilei.h>
 #include <gdocanalyse.h>
 #include <glang.h>
+using namespace GALILEI;
 
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 /**
@@ -61,6 +58,11 @@ class GTextAnalyse : public GDocAnalyse
 {
 	class WordWeight;
 
+	/**
+	* Current document to analyse.
+	*/
+	GDoc* Doc;
+	
 	/**
 	* Cursor on the different languages defined in the system.
 	*/
@@ -203,16 +205,6 @@ class GTextAnalyse : public GDocAnalyse
 	bool NonLetterWords;
 
 	/**
-	* Determine if the distance between words in a document is use.
-	*/
-	bool Distance;
-
-	/**
-	* Determine if External links must be treated.
-	*/
-	bool UseExternalLinks;
-
-	/**
 	* Filter the word extracted?
 	*/
 	bool Filtering;
@@ -227,8 +219,6 @@ class GTextAnalyse : public GDocAnalyse
 	* considered as a valid.
 	*/
 	double NormalRatio;
-
-	R::RString PathtoBinary;
 
 public:
 
@@ -294,20 +284,6 @@ protected:
 	bool ExtractWord(const R::RChar* &ptr,double weight);
 
 	/**
-	* Analyse a tag.
-	* @param tag            Tag to analyse.
-	* @param weight         Weights of the words added during this analyze.
-	*/
-	void AnalyseTag(R::RXMLTag* tag,double weight);
-
-	/**
-	* Analyse a link tag.
-	* @param tag            Tag to analyse.
-	* @param tmpDocs        A pointer to a container of docs to maintain the documents to be added.
-	*/
-	void AnalyseLinksTag(R::RXMLTag* tag,bool externalLinks ,R::RContainer<GDoc,false,true>* DocsToAdd);
-
-	/**
 	* This methods determine the language of the current structure studied,
 	* i.e. the language with the maximal number of words of the stop-list
 	* contained in the document and with a minimal value for the ratio of
@@ -342,7 +318,7 @@ public:
 	* @param doc            Corresponding document.
 	* @param tmpDocs        Container that will hold the added docs.
 	*/
-	virtual void Analyze(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0);
+	virtual void Analyze (GDoc *doc, const R::RURI& uri);
 
 	/**
 	* Create the parameters.
@@ -354,10 +330,9 @@ public:
 	* Destructor.
 	*/
 	virtual ~GTextAnalyse(void);
+	
+	friend class XMLParser;
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

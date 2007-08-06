@@ -103,11 +103,6 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.MinOccur->setValue(params->GetUInt("MinOccur"));
 	dlg.StoreFullWords->setChecked(params->GetBool("StoreFullWords"));
 	dlg.NonLetterWords->setChecked(params->GetBool("NonLetterWords"));
-	dlg.Distance->setChecked(params->GetBool("Distance"));
-	dlg.PathtoBinary->setEnabled(params->GetBool("Distance"));
-	dlg.PathtoBinary->setMode(KFile::Directory);
-	dlg.PathtoBinary->setURL(ToQString(params->Get("PathtoBinary")));
-	dlg.UseExternalLinks->setChecked(params->GetBool("UseExternalLinks"));
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
 	dlg.NbSameOccur->setValue(params->GetUInt("NbSameOccur"));
 	dlg.NormalRatio->setValue(params->GetDouble("NormalRatio"));
@@ -123,12 +118,9 @@ void Configure(GFactoryDocAnalyse* params)
 		params->SetUInt("MinOccur",dlg.MinOccur->value());
 		params->SetBool("StoreFullWords",dlg.StoreFullWords->isChecked());
 		params->SetBool("NonLetterWords",dlg.NonLetterWords->isChecked());
-		params->SetBool("Distance",dlg.Distance->isChecked());
-		params->SetBool("UseExternalLinks",dlg.UseExternalLinks->isChecked());
 		params->SetBool("Filtering",dlg.Filtering->isChecked());
 		params->SetUInt("NbSameOccur",dlg.NbSameOccur->value());
 		params->SetDouble("NormalRatio",dlg.NormalRatio->value());
-		params->Set("PathtoBinary",FromQString(dlg.PathtoBinary->url()));
 		params->Apply();
 	}
 }
