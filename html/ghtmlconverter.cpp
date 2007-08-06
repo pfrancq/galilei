@@ -884,7 +884,7 @@ void GHTMLConverter::InsertLink(RContainer<RXMLAttr,true,true>& attrs)
 			//Add Base to url and skip anchor
 			ConstructURL(urlG,url);
 			//If both url are the same -> point to this page ->skip ((Name =name of the read file)
-			if((urlG.IsEmpty())||(!urlG.Compare(Name)))
+			if((urlG.IsEmpty())||(!urlG.Compare(URI)))
 				return;
 
 			//Create a node for the current link if not exist

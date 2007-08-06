@@ -6,7 +6,7 @@
 
 	A HTML filter - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -62,34 +62,20 @@ GFilterHTML::GFilterHTML(GFactoryFilter* fac)
 
 
 //------------------------------------------------------------------------------
-bool GFilterHTML::Analyze(GDocXML* doc)
+void GFilterHTML::Analyze(const RURI&,const RString& file,const RString& docxml)
 {
-	try
-	{
-		Doc=doc;
+	Doc=new GDocXML(docxml,file);
 
-		//Convert html file to docxml structure
-		GHTMLConverter Src(this,Doc->GetFile(),Doc);
-		Src.Open(RIO::Read);
+	//Convert html file to docxml structure
+	GHTMLConverter Src(this,file,Doc);
+	Src.Open(RIO::Read);
 
-		Doc->AddIdentifier(Doc->GetFile());
+	Doc->AddIdentifier(file);
 
-		//Delete Empty Tags
-		//Doc->GetContent()->DeleteEmptySubNodes();
-	}
-	catch(RIOException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(...)
-	{
-		throw GException("GFilterHTML: Undefined Error");
-	}
-	return(true);
+	// Save the structure and delete everything
+	RXMLFile Out(docxml,Doc);
+	Out.Open(RIO::Create);
+	delete Doc;
 }
 
 

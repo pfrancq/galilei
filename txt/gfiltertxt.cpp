@@ -6,7 +6,7 @@
 
 	Filter for TXT Files - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be).
@@ -31,6 +31,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfiltertxt.h>
+#include <rxmlfile.h>
+
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
@@ -55,7 +57,7 @@ GFilterTXT::GFilterTXT(GFactoryFilter* fac)
 
 
 //-----------------------------------------------------------------------------
-bool GFilterTXT::Analyze(GDocXML* doc)
+void GFilterTXT::Analyze(const RURI&,const RString& file,const RString& docxml)
 {
 	RXMLTag* part;
 	RXMLTag* tag;
@@ -66,73 +68,60 @@ bool GFilterTXT::Analyze(GDocXML* doc)
 	RString Line;
 	const RChar* ptr;
 
-	try
+	// Init Part
+	Doc=new GDocXML(docxml,file);
+	RTextFile Src(Doc->GetFile());
+	Src.Open(R::RIO::Read);
+
+	// Create the metaData tag and the first information
+	part=Doc->GetContent();
+	Doc->AddIdentifier(Doc->GetURL());
+
+	Read=true;
+
+	while(!Src.Eof())
 	{
-		// Init Part
-		Doc=doc;
-		RTextFile Src(Doc->GetFile());
-		Src.Open(R::RIO::Read);
+		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 
-		// Create the metaData tag and the first information
-		part=Doc->GetContent();
-		Doc->AddIdentifier(Doc->GetURL());
-
-		Read=true;
-
-		while(!Src.Eof())
+		if(Read)
 		{
-			Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
-
-			if(Read)
-			{
-				if(!Src.Eof())
-					Line=NextLine;
-			}
-
-			// Paragraph are supposed to be terminated by at least one blank line
-			Paragraph=true;
-			while((!Src.Eof())&&Paragraph)
-			{
-				// Read a Line
-				NextLine=Src.GetLine(false);
-
-				// Look if it is a blank line
-				ptr=NextLine();
-				while((!ptr->IsNull())&&(ptr->IsSpace()))
-					ptr++;
-
-				// If blank line -> it is the end of a paragraph
-				if(ptr->IsNull())
-				{
-					Paragraph=false;
-				}
-				else
-				{
-					if(!Line.IsEmpty())
-						Line+=' ';
-					Line+=NextLine;
-				}
-			}
-			AnalyzeBlock(Line,tag);
-			if(tag->IsEmpty())
-				Doc->DeleteTag(tag);
+			if(!Src.Eof())
+				Line=NextLine;
 		}
-	}
-	catch(RIOException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(...)
-	{
-		throw GException("GFilterTXT: Undefined Error");
-	}
 
-	// Return OK
-	return(true);
+		// Paragraph are supposed to be terminated by at least one blank line
+		Paragraph=true;
+		while((!Src.Eof())&&Paragraph)
+		{
+			// Read a Line
+			NextLine=Src.GetLine(false);
+
+			// Look if it is a blank line
+			ptr=NextLine();
+			while((!ptr->IsNull())&&(ptr->IsSpace()))
+				ptr++;
+
+			// If blank line -> it is the end of a paragraph
+			if(ptr->IsNull())
+			{
+				Paragraph=false;
+			}
+			else
+			{
+				if(!Line.IsEmpty())
+					Line+=' ';
+				Line+=NextLine;
+			}
+		}
+		AnalyzeBlock(Line,tag);
+		if(tag->IsEmpty())
+			Doc->DeleteTag(tag);
+		
+		// Save the structure and delete everything
+		RXMLFile Out(docxml,Doc);
+		Out.Open(RIO::Create);
+		delete Doc;
+	}
 }
 
 

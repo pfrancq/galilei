@@ -6,7 +6,7 @@
 
 	A MSDoc filter - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
+	Copyright 2001-2007 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
@@ -184,11 +184,13 @@ public:
 	GFilterMSDoc(GFactoryFilter* fac);
 
 	/**
-	* Analyze the document and fill the XML structure with the information
-	* about its content.
-	* @param doc            XML Structure that will represent the document.
+	* Analyze a document with a given URI that was downloaded in a local
+	* temporary file and for which a DocXML must be created.
+	* @param uri             URI of the file to analyze.
+	* @param file            Local file to analyze.
+	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual bool Analyze(GDocXML* doc);
+	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml);
 
 protected:
 

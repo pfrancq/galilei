@@ -6,7 +6,7 @@
 
 	A RTF filter - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Kumps Nicolas (nkumps@ulb.ac.be)
@@ -33,6 +33,7 @@
 // include files for GALILEI
 #include <gfilterrtf.h>
 #include <gdocxml.h>
+#include <rxmlfile.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -339,8 +340,9 @@ void GFilterRTF::FindBlock(RString str,bool text)
 	}
 }
 
+
 //------------------------------------------------------------------------------
-bool GFilterRTF::Analyze(GDocXML* doc)
+void GFilterRTF::Analyze(const RURI&,const RString& file,const RString& docxml)
 {
 	RXMLTag* part;
 	bool Stop;
@@ -349,40 +351,27 @@ bool GFilterRTF::Analyze(GDocXML* doc)
 	RString Line;
 	RString Text;
 
-	try
-	{
-		// Init Part
-		Doc=doc;
-		RTextFile Src(Doc->GetFile());
-		Src.Open(R::RIO::Read);
-		Stop=Src.Eof();
+	// Init Part
+	Doc=new GDocXML(docxml,file);
+	RTextFile Src(Doc->GetFile());
+	Src.Open(R::RIO::Read);
+	Stop=Src.Eof();
 
-		// Create the metaData tag and the first information
-		part=Doc->GetMetaData();
-		Doc->AddIdentifier(Doc->GetURL());
+	// Create the metaData tag and the first information
+	part=Doc->GetMetaData();
+	Doc->AddIdentifier(Doc->GetURL());
 
-		//Treat Content
-		part=Doc->GetContent();
-		Read=false;
-		Text = Src.GetUntilEnd();
+	//Treat Content
+	part=Doc->GetContent();
+	Read=false;
+	Text = Src.GetUntilEnd();
 
-		FindBlock(Text);
-	}
-	catch(RIOException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(...)
-	{
-		throw GException("GFilterRTF: Undefined Error");
-	}
-
-	Doc->GetContent()->DeleteEmptySubNodes();
-	return(true);
+	FindBlock(Text);
+	
+	// Save the structure and delete everything
+	RXMLFile Out(docxml,Doc);
+	Out.Open(RIO::Create);
+	delete Doc;		
 }
 
 

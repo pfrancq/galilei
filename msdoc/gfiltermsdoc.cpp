@@ -6,7 +6,7 @@
 
 	A MSDoc filter - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
@@ -45,6 +45,7 @@
 // include files for GALILEI
 #include <gfiltermsdoc.h>
 #include <gdocxml.h>
+#include <rxmlfile.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -195,13 +196,13 @@ void GFilterMSDoc::WriteParagraph(RString par)
 
 
 //------------------------------------------------------------------------------
-bool GFilterMSDoc::Analyze(GDocXML* doc)
+void GFilterMSDoc::Analyze(const RURI&,const RString& file,const RString& docxml)
 {
 	//RXMLTag* tag;
 	RString *fileName;
 
 	// Init Part*/
-	Doc=doc;
+	Doc=new GDocXML(docxml,file);
 	bodyFound=false;
 	endNoteNumber=0;
 	footNoteNumber=0;
@@ -216,10 +217,10 @@ bool GFilterMSDoc::Analyze(GDocXML* doc)
 
 
 	// get fileName
-	fileName = new RString(Doc->GetFile());
+	fileName = new RString(file);
 
 	// Init Parser
-	Parser = wvWare::ParserFactory::createParser(Doc->GetFile());
+	Parser = wvWare::ParserFactory::createParser(file);
 	TableHandler = new  wvWare::TableHandler();
 
 	if(Parser)  // I in case of major ERROR -> Unsupported format
@@ -231,23 +232,12 @@ bool GFilterMSDoc::Analyze(GDocXML* doc)
 		ReadMetaData();
 	}
 
-	else return false;
-
 	if (Parser == 0L)
-	{
 		throw(GException("The file in use has uncompatible format"));
-		return false;
-	}
 	if (!Parser->parse())
-	{
 		throw(GException("An error occurs during file parsing"));
-		return false;
-	}
-
 	if (!bodyFound)
-	{
 		throw(GException("The document body was not found : wrong format"));
-	}
 
 	// process SubDocQueue
 	while(! SubDocQueue.empty())
@@ -260,7 +250,11 @@ bool GFilterMSDoc::Analyze(GDocXML* doc)
 
 	// process tables ??
 
-	return true;
+
+	// Save the structure and delete everything
+	RXMLFile Out(docxml,Doc);
+	Out.Open(RIO::Create);
+	delete Doc;
 }
 
 

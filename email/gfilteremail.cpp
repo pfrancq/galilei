@@ -6,7 +6,7 @@
 
 	Filter for Mails - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -28,6 +28,11 @@
 
 */
 
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rxmlfile.h>
 
 
 //-----------------------------------------------------------------------------
@@ -134,7 +139,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 
 
 //-----------------------------------------------------------------------------
-bool GFilterEMail::Analyze(GDocXML* doc)
+void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml)
 {
 	RXMLTag* part;
 	RXMLTag* tag;
@@ -149,55 +154,53 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 	RString Line;
 	const RChar* ptr;
 
-	try
+	// Init Part
+	Doc=new GDocXML(docxml,file);
+	RTextFile Src(file);
+	Src.Open(R::RIO::Read);
+	Stop=Src.Eof();
+
+	// Create the metaData tag and the first information
+	part=Doc->GetMetaData();
+	Doc->AddIdentifier(Doc->GetURL());
+
+	// Email have at the beginning information on each line.
+	Header=true;        // There headers to read.
+	Read=true;
+	while((!Src.Eof())&&Header)
 	{
-		// Init Part
-		Doc=doc;
-		RTextFile Src(Doc->GetFile());
-		Src.Open(R::RIO::Read);
-		Stop=Src.Eof();
+		// Read a line
+		if(Read)
+			Line=Src.GetLine(false);
 
-		// Create the metaData tag and the first information
-		part=Doc->GetMetaData();
-		Doc->AddIdentifier(Doc->GetURL());
-
-		// Email have at the beginning information on each line.
-		Header=true;        // There headers to read.
-		Read=true;
-		while((!Src.Eof())&&Header)
+		// Add the next lines beginning with a space
+		if(!Src.Eof())
 		{
-			// Read a line
-			if(Read)
-				Line=Src.GetLine(false);
-
-			// Add the next lines beginning with a space
-			if(!Src.Eof())
+			NextLine=Src.GetLine(false);
+			while((NextLine()->IsSpace())&&(!Src.Eof()))
 			{
+				Line+=NextLine;
 				NextLine=Src.GetLine(false);
-				while((NextLine()->IsSpace())&&(!Src.Eof()))
-				{
-					Line+=NextLine;
-					NextLine=Src.GetLine(false);
-				}
 			}
-
-			// Analyse the line for a command.
-			Header=ExtractCmd(Line);
-
-			// If Multiple blank lines are allowed and last line is a command, skip them
-			if(Header&&BlankLines)
-			{
-				while((NextLine.IsEmpty())&&(!Src.Eof()))
-					NextLine=Src.GetLine(false);
-			}
-
-			// Next line becomes the current one
-			Line=NextLine;
-			Read=false;
-			Stop=NextStop;
 		}
 
-		// Look if the email is signed.
+		// Analyse the line for a command.
+		Header=ExtractCmd(Line);
+
+		// If Multiple blank lines are allowed and last line is a command, skip them
+		if(Header&&BlankLines)
+		{
+			while((NextLine.IsEmpty())&&(!Src.Eof()))
+				NextLine=Src.GetLine(false);
+		}
+
+		// Next line becomes the current one
+		Line=NextLine;
+		Read=false;
+		Stop=NextStop;
+	}
+
+	// Look if the email is signed.
 /*		findstr=strstr(Begin,("-----BEGIN PGP SIGNED MESSAGE-----"));
 		if(findstr)
 		{
@@ -210,65 +213,49 @@ bool GFilterEMail::Analyze(GDocXML* doc)
 		else
 			Begin[strlen(Begin)-1]='\n';*/
 
-		// Look for the content
-		part=Doc->GetContent();
+	// Look for the content
+	part=Doc->GetContent();
 
-		while((!Read)||(!Src.Eof()))
+	while((!Read)||(!Src.Eof()))
+	{
+		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+
+		// If necessary -> read a new line f
+		if(!Read)
+			Read=true;
+		else
 		{
-			Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
-
-			// If necessary -> read a new line f
-			if(!Read)
-				Read=true;
-			else
-			{
-				if(!Src.Eof())
-					Line=NextLine;
-			}
-
-			// Paragraph are supposed to be terminated by at least one blank line
-			Paragraph=true;
-			while((!Src.Eof())&&Paragraph)
-			{
-				// Read a Line
-				NextLine=Src.GetLine(false);
-
-				// Look if it is a blank line
-				ptr=NextLine();
-				while((!ptr->IsNull())&&(ptr->IsSpace()))
-					ptr++;
-
-				// If blank line -> it is the end of a paragraph
-				if(ptr->IsNull())
-				{
-					Paragraph=false;
-				}
-				else
-					Line+=NextLine;
-			}
-			AnalyzeBlock(Line,tag);
+			if(!Src.Eof())
+				Line=NextLine;
 		}
 
-	}
-	catch(bad_alloc)
-	{
-		throw;
-	}
-	catch(GException)
-	{
-		throw;
-	}
-	catch(RException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(...)
-	{
-		throw GException("Unexcepted exception");
-	}
+		// Paragraph are supposed to be terminated by at least one blank line
+		Paragraph=true;
+		while((!Src.Eof())&&Paragraph)
+		{
+			// Read a Line
+			NextLine=Src.GetLine(false);
 
-	// Return OK
-	return(true);
+			// Look if it is a blank line
+			ptr=NextLine();
+			while((!ptr->IsNull())&&(ptr->IsSpace()))
+				ptr++;
+
+			// If blank line -> it is the end of a paragraph
+			if(ptr->IsNull())
+			{
+				Paragraph=false;
+			}
+			else
+				Line+=NextLine;
+		}
+		AnalyzeBlock(Line,tag);
+	}
+	
+	// Save the structure and delete everything
+	RXMLFile Out(docxml,Doc);
+	Out.Open(RIO::Create);
+	delete Doc;
 }
 
 

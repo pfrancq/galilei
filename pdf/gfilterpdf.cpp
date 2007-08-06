@@ -6,7 +6,7 @@
 
 	A PDF filter - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -65,6 +65,7 @@
 // include files for GALILEI
 #include <gfilterpdf.h>
 #include <gdocxml.h>
+#include <rxmlfile.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -88,7 +89,7 @@ GFilterPDF::GFilterPDF(GFactoryFilter* fac)
 
 
 //------------------------------------------------------------------------------
-bool GFilterPDF::Analyze(GDocXML* doc)
+void GFilterPDF::Analyze(const RURI&,const RString& file,const RString& docxml)
 {
 	RXMLTag* part;
 	RXMLTag* tag;
@@ -99,7 +100,7 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 	bool Paragraph;
 
 	// Init Part
-	Doc=doc;
+	Doc=new GDocXML(docxml,file);
 
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
@@ -119,7 +120,8 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 	{
 		delete globalParams;
 		delete pdf;
-		return(false);
+		delete Doc;
+		throw GException("Not valid PDF file");
 	}
 
 	// Write Meta Data
@@ -198,7 +200,11 @@ bool GFilterPDF::Analyze(GDocXML* doc)
 	delete textOut;
 	delete pdf;
 	delete globalParams;
-	return(true);
+	
+	// Save the structure and delete everything
+	RXMLFile Out(docxml,Doc);
+	Out.Open(RIO::Create);
+	delete Doc;
 }
 
 

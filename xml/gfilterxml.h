@@ -6,7 +6,7 @@
 
 	A XML filter - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery (vavdaele@ulb.ac.be)

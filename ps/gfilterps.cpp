@@ -45,6 +45,7 @@
 // include files for GALILEI
 #include <gfilterps.h>
 #include <gdocxml.h>
+#include <rxmlfile.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -177,7 +178,7 @@ void GFilterPS::StrToBuffer(const char* str)
 
 
 //------------------------------------------------------------------------------
-bool GFilterPS::Analyze(GDocXML* doc)
+void GFilterPS::Analyze(const RURI&,const RString& file,const RString& docxml)
 {
 	RXMLTag* part;
 	RXMLTag* tag;
@@ -189,7 +190,7 @@ bool GFilterPS::Analyze(GDocXML* doc)
 	#endif
 
 	// Init Part
-	Doc=doc;
+	Doc=new GDocXML(docxml,file);
 
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
@@ -244,7 +245,8 @@ bool GFilterPS::Analyze(GDocXML* doc)
 		if (gs==0)
 		{
 			perror(cmd);
-			return(false);
+			delete Doc;
+				throw GException("Not valid PS file");
 		}
 	#endif
 
@@ -252,7 +254,8 @@ bool GFilterPS::Analyze(GDocXML* doc)
 	if (status)
 	{
 		cerr<<cmd<<": internal error "<<status<<endl;
-		return(false);
+		delete Doc;
+			throw GException("Not valid PS file");
 	}
 	if (cork)
 	{
@@ -260,7 +263,8 @@ bool GFilterPS::Analyze(GDocXML* doc)
 		if (status)
 		{
 			cerr<<cmd<<": internal error "<<status<<endl;
-			return(false);
+			delete Doc;
+				throw GException("Not valid PS file");
 		}
 	}
 
@@ -282,7 +286,8 @@ bool GFilterPS::Analyze(GDocXML* doc)
 		{
 			cerr<<cmd<<": internal error "<<status<<endl;
 			delete[] CharBuffer;
-			return(false);
+			delete Doc;
+				throw GException("Not valid PS file");
 		}
 		if(word)
 		{
@@ -303,7 +308,8 @@ bool GFilterPS::Analyze(GDocXML* doc)
 	{
 		cerr<<cmd<<": internal error "<<status<<endl;
 		delete[] CharBuffer;
-		return(false);
+		delete Doc;
+			throw GException("Not valid PS file");
 	}
 
 	// Look for the content
@@ -345,7 +351,11 @@ bool GFilterPS::Analyze(GDocXML* doc)
 		free(instance);
 	}
 	delete[] CharBuffer;
-	return(true);
+	
+	// Save the structure and delete everything
+	RXMLFile Out(docxml,Doc);
+	Out.Open(RIO::Create);
+	delete Doc;
 }
 
 

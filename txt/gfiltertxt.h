@@ -6,7 +6,7 @@
 
 	Filter for TXT Files - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be).
@@ -74,14 +74,14 @@ public:
 public:
 
 	/**
-	* Analyze a txt and fill the XML structure with the information content.
-	*
-	* Actually, only local files can be treated.
-	* @param doc            XML Structure that will represent the email.
+	* Analyze a document with a given URI that was downloaded in a local
+	* temporary file and for which a DocXML must be created.
+	* @param uri             URI of the file to analyze.
+	* @param file            Local file to analyze.
+	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual bool Analyze(GDocXML* doc);
+	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml);
 
-	
 	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
