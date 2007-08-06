@@ -39,15 +39,15 @@ template<class C>
 	GMeasureFile<C>::GMeasureFile(size_t recsize,GStoredMeasure::tType type)
 		: RRecFile<C,false>(RString::Null,recsize), Type(type)
 {
-	
+
 }
 
 
 //------------------------------------------------------------------------------
 template<class C>
-	void GMeasureFile<C>::Open(const RString& name)
-{	
-	RRecFile<C,false>::SetName(name);
+	void GMeasureFile<C>::Open(const RURI& uri)
+{
+	RRecFile<C,false>::SetURI(uri);
 	RRecFile<C,false>::Open(RIO::ReadWrite);
 }
 
@@ -64,7 +64,7 @@ template<class C>
 			AddIdentificator(id1);
 		RRecFile<C,false>::GoToRec(recnb);
 	}
-	
+
 	// Read the record at the current position
 	// Read the value : If dirty, re-compute it and save
 	long long pos=RRecFile<C,false>::GetPos();
@@ -73,7 +73,7 @@ template<class C>
 	// Verify if there is something to update
 	if((val.Status!=GStoredMeasure::NeverComputed)&&(val.Status!=GStoredMeasure::ReComputed))
 		return;
-	
+
 	MustUpdate(id1,id2,val);
 
 	// Store new record
@@ -111,7 +111,7 @@ template<class C>
 {
 	C Update;
 	size_t nb;
-	
+
 	// Find the right line and dirty all the line.
 	if(id>1)
 	{
@@ -129,7 +129,7 @@ template<class C>
 			}
 		}
 	}
-	
+
 	// For the next lines -> dirty only the column
 	nb=id+1;
 	size_t nbrecs=RRecFile<C,false>::GetRecNb();
@@ -177,7 +177,7 @@ template<class C>
 			}
 		}
 	}
-	
+
 	// For the next lines -> dirty only the column
 	nb=id+1;
 	size_t nbrecs=RRecFile<C,false>::GetRecNb();

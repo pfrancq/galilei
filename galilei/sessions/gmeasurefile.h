@@ -37,6 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for R library
 #include <rrecfile.h>
+#include <ruri.h>
 
 
 //-----------------------------------------------------------------------------
@@ -78,7 +79,7 @@ public:
 		TwoElementsSymetric   /** Symetric measure between two elements (Sim(id1,id2)=Sim(id2,id1)). */,
 		TwoElementsNoSymetric /** Non-symetric measure between two elements (Sim(id1,id2)!=Sim(id2,id1)). */
 	};
-	
+
 protected:
 
 	/**
@@ -92,13 +93,13 @@ public:
 	 * Constructor of a measure.
 	 */
 	GStoredMeasure(void) : Status(NeverComputed) {}
-	
+
 	/**
 	 * Compare two measures.
 	 * @param m              Measure.
 	 */
 	int Compare(const GStoredMeasure& m) const {return(this-(&m));}
-	
+
 	template<class C> friend  class GMeasureFile;
 };
 
@@ -107,7 +108,7 @@ public:
 /**
  * @param C                  Class representing the measure (must inherit from
  *                           GStoredMeasure).
- * 
+ *
  * @short Binary file to store measure.
  */
 template<class C>
@@ -117,14 +118,14 @@ protected:
 
 	/**
 	 * At least one record of the file must computed before it is read.
-	 */	
+	 */
 	bool Updated;
-	
+
 	/**
 	 * Type fo the measure stored.
 	 */
 	GStoredMeasure::tType Type;
-	 
+
 public:
 
 	/**
@@ -132,13 +133,13 @@ public:
 	 * @param recsize        Size of a record.
 	 */
 	GMeasureFile(size_t recsize,GStoredMeasure::tType type);
-	
+
 	/**
-	 * Open a specific file with a given name.
-	 * @param name           Name of the file.
+	 * Open a specific file with a given uri.
+	 * @param uri            URI of the file.
 	 */
-	void Open(const RString& name);
-	
+	void Open(const RURI& uri);
+
 	/**
 	 * Read a value of a measure between two elements identified by the
 	 * identificators id1 and id2.
@@ -146,10 +147,10 @@ public:
 	 * @param id2            Identifier of the second element.
 	 * @param val            Measure to read.
 	 * @param move           Move the file to the right position (true) or read
-	 *                       from the current position.           
+	 *                       from the current position.
 	 */
 	void ReadValue(size_t id1,size_t id2,C& val,bool move);
-	
+
 	/**
 	 * A given measure between two elements must be updated.
 	 * @param id1            Identifier of the first element.
@@ -157,7 +158,7 @@ public:
 	 * @param val            Measure to update.
 	 */
 	virtual void MustUpdate(size_t id1,size_t id2,C& val)=0;
-	
+
 	/**
 	 * Delete a given measure. This method is called for each measure that is
 	 * modified when an element is deleted. It may be used to update statistics
@@ -165,24 +166,24 @@ public:
 	 * @param val            Measure to deleted.
 	 */
 	virtual void Delete(C& val)=0;
-	
+
 	/**
 	 * Add a new element to file. The file is enhanced if necessary.
 	 * @param id             Identfier of the element.
 	 */
 	void AddIdentificator(size_t id);
-	
+
 	/**
 	 * An element has changed and all the measure related to it are not updated
 	 * anymore.
-	 * @param id             Identfier of the element. 
+	 * @param id             Identfier of the element.
 	 */
 	void DirtyIdentificator(size_t id);
-	
+
 	/**
 	 * An element is deleted and all the measure related to it are modified.
-	 * @param id             Identfier of the element. 
-	 */	
+	 * @param id             Identfier of the element.
+	 */
 	void DeleteIdentificator(size_t id);
 };
 

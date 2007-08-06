@@ -528,154 +528,113 @@ GFilterManager::GFilterManager(void)
 {
 	// Try to open list of MIME types
 	try
-	{
-		RString MIME;
+	{		
 		RXMLStruct xml;
 		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
-		R::RCursor<RXMLTag> Cur,Cur2;
-
 		File.Open(R::RIO::Read);
 		// Go trough all MIME types
 		RXMLTag* Types=xml.GetTag("mimeTypes");
 		if(!Types)
 			throw GException("MIME type file \"/etc/galilei/galilei.mimes\" is invalid");
-		Cur=Types->GetNodes();
+		R::RCursor<RXMLTag> Cur(Types->GetNodes());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			MIME=Cur()->GetAttrValue("code");
-
+			RString MIME(Cur()->GetAttrValue("code"));
 			// Go through all file extension
-			Cur2=Cur()->GetNodes();
+			R::RCursor<RXMLTag> Cur2(Cur()->GetNodes());
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
-			{
 				Exts.InsertPtr(new GMIMEExt(MIME,Cur2()->GetAttrValue("ext")));
-			}
 		}
 	}
 	catch(...)
 	{
+		cerr<<"Cannot load '/etc/galilei/galilei.mimes'"<<endl;
 	}
 }
 
 
 //------------------------------------------------------------------------------
-RString GFilterManager::FindMIMEType(void)
+void GFilterManager::FindMIMEType(void)
 {
+	// If MIME type already exist -> return
+	RString MIME=Doc->GetMIMEType();
+	if(!MIME.IsEmpty())
+		return;
+
+	// Goes through all defined MIME types 
 	RCursor<GMIMEExt> Cur(Exts);		
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(fnmatch(Cur()->Ext,Doc->GetURL(),0)!=FNM_NOMATCH)
-			return(Cur()->Name);			
-	return(RString(""));
+		{
+			Doc->SetMIMEType(Cur()->Name);
+			return;
+		}
 }
 
 
 //------------------------------------------------------------------------------
 bool GFilterManager::IsValidContent(const R::RString& MIME)
 {
-	Doc->SetMIMEType(MIME);
-	Filter=MIMES.GetPtr(MIME);
-	if(!Filter)
+	if(Doc->GetMIMEType().IsEmpty())
+		Doc->SetMIMEType(MIME);
+	GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
+	if(!ptr)
 		return(false);
+	Filter=ptr->Filter;
 	return(true);
 }
 
 
 //------------------------------------------------------------------------------
-bool GFilterManager::StartDownload(void)
+RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml)
 {
-	if(!GetMIMEType().IsEmpty())
-		return(true);	
-	RString MIME=FindMIMEType();
-	if(MIME.IsEmpty())
-		return(false);
-	return(IsValidContent(MIME));
-}
-
-
-//------------------------------------------------------------------------------
-GDocXML* GFilterManager::CreateDocXML(GDoc* doc)
-{
-	RString tmpFile(250);
-	char tmp[250];
-	const char* ptr;
-	int i;
-	GDocXML* xml=0;
-	bool Dwn;
-	bool Url;
+	RIO::RSmartTempFile DwnFile;      // Temporary file containing the downloaded file  (if necessary).	
+	RString NonXMLFile;               // Non XML-File file.
 	
 	// Init Part;
 	Doc=doc;
-	Filter=0;         // No filter
+	Filter=0;
 	
-	// If the document as already a MIME type -> a filter must exist
-	RString MIME=doc->GetMIMEType();
-	if((!MIME.IsEmpty())&&(!IsValidContent(MIME)))
-		throw RException("Cannot treat the MIME type '"+MIME+"'");
+	// Guess the MIME type if necessary
+	FindMIMEType();
 	
-	// Look for the protocol
-	ptr=doc->GetURL();
-	i=0;
-	while((*ptr)&&(isalnum(*ptr)))
-	{
-		i++;
-		ptr++;
-	}
+	// If it is known to be a XML file -> file can directly analyzed.
+	if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
+		return(Doc->GetURL());
 
-	// If ':' find -> it is an URL
-	if(i)
-		Url=((*ptr)==':');
-	else
-		Url=false;
-
-	// if URL and protocol different than 'file' -> Download it
-	if(Url&&strncasecmp(doc->GetURL(),"file",i))
+	// The file is perhaps not a XML file -> Try to transform it into DocXML
+	
+	// If it is not a local	file -> Download it
+	if(Doc->GetURL().GetScheme()!="file")
 	{
-		DownloadFile(doc->GetURL(),tmpFile);
-		Dwn=true;
-	}
-	else
-	{
-		// If URL skip 'file:'
-		if(Url)
-		{
-			strcpy(tmp,doc->GetURL());
-			// Move the all string (include the ending 0) from 5 characters.
-			memcpy(tmp,&tmp[5],strlen(tmp)-4);
-			tmpFile=tmp;
-		}
-		else
-			tmpFile=doc->GetURL();
-		Dwn=false;
+		NonXMLFile=DwnFile.GetName();
+		DownloadFile(Doc->GetURL(),NonXMLFile);
 		
-		// If no MIME type defined, try to guess it
-		if(MIME.IsEmpty())
-		{	
-			MIME=FindMIMEType();
-			if(!MIME.IsEmpty())
-				IsValidContent(MIME);
-		}
+		// Perhaps the server holding the file has provide a MIME type which can be XML
+		if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
+			return(Doc->GetURL());		
 	}
-			
-	// Verify that a filter was defined.
-	if(!Filter)
+	else
 	{
-		if(doc->GetMIMEType().IsEmpty())
-			throw RException("Cannot find MIME type for "+doc->GetURL());
-		throw RException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
-
+		NonXMLFile=Doc->GetURL().GetPath();
+		GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
+		if(ptr)
+			Filter=ptr->Filter;
 	}
+
+	// If no MIME type -> Exception
+	if(doc->GetMIMEType().IsEmpty())
+		throw GException("Cannot find MIME type for "+doc->GetURL());
+					
+	// If no filter -> Exception
+	if(!Filter)
+		throw GException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
 	
-	// Create a DocXML and analyse it
-	xml=new GDocXML(doc->GetURL(),tmpFile);
-	Filter->Filter->Analyze(xml);
-	xml->AddFormat(doc->GetMIMEType());
-
-	// Delete it
-	if(Dwn)
-		DeleteFile(tmpFile);
-
-	// Return XML structure
-	return(xml);
+	// Analyse the file
+	Filter->Analyze(Doc->GetURL(),NonXMLFile,docxml.GetName());
+			
+	// Return file to realy analyze
+	return(docxml.GetName());
 }
 
 

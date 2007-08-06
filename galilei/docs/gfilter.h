@@ -164,12 +164,14 @@ public:
 	R::RXMLTag* AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLTag* attach);
 
 	/**
-	* Analyze the document and construct the DocXML document with the
-	* information about its content. This method must be reimplemented in the
-	* child classes.
-	* @param doc            XML Document that will represent the document.
+	* Analyze a document with a given URI that was downloaded in a local
+	* temporary file and for which a DocXML must be created. This method must
+	* be reimplemented by all filters.
+	* @param uri             URI of the file to analyze.
+	* @param file            Local file to analyze.
+	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual bool Analyze(GDocXML* doc)=0;
+	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml)=0;
 
 	/**
 	* Destructor of the filter.
@@ -230,13 +232,13 @@ protected:
 	/**
 	 * Filter that should analyze the file.
 	 */
-	GMIMEFilter* Filter;
+	GFilter* Filter;
 
 	/**
 	 * Document to analyze.
 	 */
 	GDoc* Doc;
-	 		
+	
 public:
 
 	/**
@@ -247,10 +249,10 @@ public:
 protected:
 
 	/**
-	 * Find the MIME type of a file based on its extension.
-	 * @return MIME type or an empty string.  
+	 * Find the MIME type of a file based on its extension (Ex. ".html" gives
+	 * "text/html"). 
 	 */
-	RString FindMIMEType(void);
+	void FindMIMEType(void);
 	 
 	/**
 	 * If the protocol is HTTP and the server returns a content type for the
@@ -261,23 +263,22 @@ protected:
 	 */
 	virtual bool IsValidContent(const R::RString& MIME);
 
-	/**
-	 * Method called when the download of file starts. It tries to guess the
-	 * MIME type based on the entension of the file in the URL (Ex. ".html"
-	 * gives "text/html").
-	 * @return true if the file should really be downloaded.
-	 */
-	virtual bool StartDownload(void);
-
 public:
 		
 	/**
-	* Transform a file into a GDocXML document. Try to find the MIME type of the
-	* document if not specified.
-	* @param doc            Document to analyze
-	* Return Pointer to a GDocXML.
+	* Return the URI of the file to analyze. If the file is not a XML file, the
+	* method tries to determine the MIME type and to find a corresponding
+	* filter.
+	* @param doc             Document to analyze.
+	* @param docxml          Temporary file containing the DocXML if necessary.
+	* @return The result depends:
+	* #- The original URI is given back if it is a XML file.
+	* #- A local temporary file containing a XML version of the file if a
+	*    filter was used (the temporary file must be deleted by the caller).
+	* @exception A GException is generated if the document could not be
+	* analysed (no MIME type, no filter, ...).
 	*/
-	GDocXML* CreateDocXML(GDoc* doc);
+	R::RURI WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml);
 
 	/**
 	* Add a pair (MIME type,filter).

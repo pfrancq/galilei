@@ -6,7 +6,7 @@
 
 	DocXML representing the document content - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -53,12 +53,14 @@ GDocXML::GDocXML(RString url,RString filename)
 //------------------------------------------------------------------------------
 void GDocXML::InitDocXML(void)
 {
+	if(Top)
+		return;
+	
 	RXMLTag* t;
-
 	AddTag(0,t=new RXMLTag("rdf:RDF"));
 	InsertEntity("xmlns:rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 	InsertEntity("xmlns:dc","http://purl.org/dc/elements/1.1/");
-	InsertEntity("xmlns:docxml","http://cfao30.ulb.ac.be/cfao/projetcs/GALILEI/public/document/docxml#");
+	InsertEntity("xmlns:docxml","http://cfao30.ulb.ac.be/cfao/projetcs/GALILEI/public/document/docxml");
 	AddTag(t,MetaData=new RXMLTag("docxml:metaData"));
 	AddTag(t,Content=new RXMLTag("docxml:content"));
 	AddTag(t,Links=new RXMLTag("docxml:links"));

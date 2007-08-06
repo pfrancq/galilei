@@ -59,13 +59,6 @@ namespace GALILEI{
 */
 class GDocAnalyse : public GPlugin<GFactoryDocAnalyse>
 {
-protected:
-
-	/**
-	* Current document to analyse.
-	*/
-	GDoc* Doc;
-
 public:
 
 	/**
@@ -76,16 +69,11 @@ public:
 
 	/**
 	* Analyse a XML representation of a document for a session and store the
-	* results in this document. The method must set the Doc variable.
-	*
-	* During the analysis of the document, if links point to document that does
-	* not exist in the system, these documents are added in a container.
-	* @param xml            DocXML document used.
-	* @param doc            Reference to the document to analyze.
-	* @param tmpDocs        Container that will hold the references of the added
-	*                       docs.
+	* results in this document.
+	* @param doc             Reference to the document to analyze.
+	* @param uri             URI to analyze.
 	*/
-	virtual void Analyze(GDocXML* xml,GDoc* doc,R::RContainer<GDoc,false,true>* tmpDocs=0)=0;
+	virtual void Analyze(GDoc* doc,const R::RURI& uri)=0;
 
 	/**
 	* Destructor of the document analysis method.

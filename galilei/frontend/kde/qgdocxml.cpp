@@ -84,7 +84,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::QGDocXML::QGDocXML(QWidget* parent,GDocXML* docxml)
+GALILEI::QGDocXML::QGDocXML(QWidget* parent,R::RXMLStruct* docxml)
 	: QSplitter(QSplitter::Horizontal,parent), DocXML(docxml)
 {
 	// Left Part - Structure
@@ -130,7 +130,7 @@ void GALILEI::QGDocXML::ConstructTag(RXMLTag* t,QListViewItem* parent)
 		}
 		if(!Cur()->GetContent().IsEmpty())
 		{
-			ptr2=new QListViewItemXMLTag(ptr,0,ToQString(Cur()->GetContent()));
+			ptr2=new QListViewItemXMLTag(ptr,0,ToQString(Cur()->GetContent().Trim()));
 			ptr2->setPixmap(0,QPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("xml_text.png",KIcon::Small))));
 		}
 		ConstructTag(Cur(),ptr);
@@ -163,12 +163,16 @@ void GALILEI::QGDocXML::slotSelectionTag(QListViewItem* item)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::QGDocXML::SetDocXML(GDocXML* docxml)
+void GALILEI::QGDocXML::SetDocXML(R::RXMLStruct* docxml)
 {
 	Struct->clear();
 	DocXML=docxml;
 	if(DocXML)
-		ConstructTag(DocXML->GetTag("rdf:RDF"),new QListViewItemXMLTag(Struct,DocXML->GetTag("rdf:RDF"),"rdf:RDF"));
+	{
+		RXMLTag* ptr=DocXML->GetTop();
+		if(ptr)
+			ConstructTag(ptr,new QListViewItemXMLTag(Struct,ptr,ToQString(ptr->GetName())));
+	}
 }
 
 

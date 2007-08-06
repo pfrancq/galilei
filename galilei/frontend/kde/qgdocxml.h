@@ -75,7 +75,7 @@ class QGDocXML : public QSplitter
 	/**
 	* XML structure.
 	*/
-	GDocXML* DocXML;
+	R::RXMLStruct* DocXML;
 
 	/**
 	* Tree Used to show the structure.
@@ -104,7 +104,7 @@ public:
 	* @param parent         Parent of the widget.
 	* @param docxml         The structure to handle.
 	*/
-	QGDocXML(QWidget* parent,GDocXML* docxml=0);
+	QGDocXML(QWidget* parent,R::RXMLStruct* docxml=0);
 
 protected:
 
@@ -129,7 +129,7 @@ public:
 	* Assign a new DocXML to the widget and redraw it.
 	* @param docxml         The structure to handle.
 	*/
-	void SetDocXML(GDocXML* docxml);
+	void SetDocXML(R::RXMLStruct* docxml);
 
 	/**
 	* Destructor.

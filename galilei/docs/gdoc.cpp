@@ -6,7 +6,7 @@
 
 	Document - Implementation.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -56,7 +56,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RString& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid)
+GDoc::GDoc(const RURI& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid)
 	:  GWeightInfos(60), URL(url), Name(name), Id(id),
 	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(0),
 	  LinkSet(5,2), OwnerId(ownerid)
@@ -123,20 +123,6 @@ void GDoc::LoadInfos(void) const
 	if(session&&session->GetStorage())
 		session->GetStorage()->LoadInfos(Infos,Lang,otDoc,Id);
 	const_cast<GDoc*>(this)->Update(Lang,&Infos,false);
-}
-
-
-//------------------------------------------------------------------------------
-RString GDoc::GetURL(void) const
-{
-	return(URL);
-}
-
-
-//------------------------------------------------------------------------------
-RString GDoc::GetName(void) const
-{
-	return(Name);
 }
 
 

@@ -444,17 +444,12 @@ public:
 
 	/**
 	* Analyse a document.
-	* @param xml             DocXML representation of the document. If the
-	*                        pointer is null, the XML structure is created and
-	*                        it must be released by the caller.
 	* @param doc             Pointer to the document to analyse.
 	* @param method          Pointer to the method used to analyze. If null,
 	*                        the default method is used.
-	* @param newdocs         Pointer to a container of new documents added
-	*                        after the analysis of the links.
 	* @param rec             Receiver for the signals.
 	*/
-	void AnalyseDoc(GDocXML* &xml,GDoc* doc,GDocAnalyse* method=0,R::RContainer<GDoc,false,true>* newdocs=0,GSlot* rec=0);
+	void AnalyseDoc(GDoc* doc,GDocAnalyse* method=0,GSlot* rec=0);
 
 	/**
 	* Run all the enabled post-docs methods.

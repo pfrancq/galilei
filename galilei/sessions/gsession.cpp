@@ -1,4 +1,5 @@
-/**
+/*
+ 
 	GALILEI Research Project
 
 	GSession.cpp
@@ -134,7 +135,7 @@ public:
 
 	GDocRefURL(GDoc* d) : Doc(d) {}
 	int Compare(const GDocRefURL& doc) const {return(Doc->GetURL().Compare(doc.Doc->GetURL()));}
-	int Compare(const char* url) const  {return(Doc->GetURL().Compare(url));}
+	int Compare(const char* url) const {return(Doc->GetURL().Compare(url));}
 	~GDocRefURL(void) {}
 };
 
@@ -844,10 +845,6 @@ void GSession::ClearDocs(void)
 //------------------------------------------------------------------------------
 void GSession::AnalyseDocs(GSlot* rec)
 {
-	GDocXML* xml;
-	RContainer<GDoc,false,true> tmpDocs(5,2);
-	bool Cont;               // Continue the analysis
-
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
 	{
@@ -855,46 +852,31 @@ void GSession::AnalyseDocs(GSlot* rec)
 		rec->WriteStr("Analyse documents");
 	}
 
-	// Analyse the documents
-	do
+	// Get the method
+	GDocAnalyse* Analyse=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
+	if(!Analyse)
+		throw GException("No document analysis method chosen.");
+	
+	// Analyse the documents - Go through the existing documents
+	R::RCursor<GDoc> Docs=GetDocs();
+	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		// Get the method
-		GDocAnalyse* Analyse=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
-		if(!Analyse)
-			throw GException("No document analysis method chosen.");
-		
-		// Go through the existing documents
-		R::RCursor<GDoc> Docs=GetDocs();
-		for(Docs.Start();!Docs.End();Docs.Next())
+		try
 		{
-			try
-			{
-				xml=0;       // DocXML to create
-				tmpDocs.Clear();
-				AnalyseDoc(xml,Docs(),Analyse,&tmpDocs,rec);
-
-				// Add the new documents.
-				// Continue the analysis if documents were added.
-				RCursor<GDoc> Cur(tmpDocs);
-				Cont=tmpDocs.GetNb();
-				for(Cur.Start();!Cur.End();Cur.Next())
-				{
-					InsertDoc(Cur());
-					//#warning add the document with the Cur()->GetId()
-				}
-				delete xml;
-			}
-			HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"):")
+			AnalyseDoc(Docs(),Analyse,rec);
 		}
+		// If a log file specified -> write to it and it is OK
+		// If no log file specified -> Propagate error		
+		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"):")
 	}
-	while(Cont);
 
+	// Launch post doc methods
 	DoPostDocs(rec);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,GDocAnalyse* method,RContainer<GDoc,false,true>* newdocs,GSlot* rec)
+void GSession::AnalyseDoc(GDoc* doc,GDocAnalyse* method,GSlot* rec)
 {
 	bool undefLang;
 
@@ -916,23 +898,16 @@ void GSession::AnalyseDoc(GDocXML* &xml,GDoc* doc,GDocAnalyse* method,RContainer
 	undefLang=false;
 	if(!doc->GetLang())
 		undefLang=true;
-	try
+	
+	RIO::RSmartTempFile docxml;
+	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml);
+	if(!uri.IsEmpty())
 	{
-		if(!xml)
-			xml=Data->FilterManager->CreateDocXML(doc);
-		if(xml)
-		{
-			// Analyse document -> Is something goes wrong -> It failed
-			// If a log file specified -> write to it and it is OK
-			// If no log file specified -> Propagate error
-			method->Analyze(xml,doc,newdocs);
-			if((undefLang)&&(doc->GetLang()))
-			{
-				MoveDoc(doc);
-			}
-		}
+		// Analyse document -> Is something goes wrong -> It failed
+		method->Analyze(doc,uri);
+		if((undefLang)&&(doc->GetLang()))
+			MoveDoc(doc);	
 	}
-	HANDLEALLEXCEPTIONS(rec,doc->GetURL()+"("+RString::Number(doc->GetId())+"):")
 
 	// Save if necessary
 	if(Data->SaveResults&&(doc->GetId()!=cNoRef))

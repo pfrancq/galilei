@@ -6,7 +6,7 @@
 
 	Document - Header.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for R
 #include <rvectorint.h>
+#include <ruri.h>
 
 
 //------------------------------------------------------------------------------
@@ -65,7 +66,7 @@ protected:
 	/**
 	* URL of the document.
 	*/
-	R::RString URL;
+	R::RURI URL;
 
 	/**
 	* Name of the document.
@@ -130,7 +131,7 @@ public:
 	* @param a               Date of the last analysis.
 	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RString& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid=0);
+	GDoc(const R::RURI& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid=0);
 
 	/**
 	* Compare two documents by comparing their identificator.
@@ -176,15 +177,15 @@ public:
 
 	/**
 	* Get the URL.
-	* @returns RString.
+	* @returns RURI.
 	*/
-	R::RString GetURL(void) const;
+	R::RURI GetURL(void) const {return(URL);}
 
 	/**
 	* Get the name of the document.
 	* @returns RString.
 	*/
-	R::RString GetName(void) const;
+	R::RString GetName(void) const {return(Name);}
 
 	/**
 	* Set the name of the document.
