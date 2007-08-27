@@ -90,7 +90,7 @@ void GGCAThreadData::Init(void)
 	tmpObjs2=new GGCAObj*[Owner->Objs.GetNb()];
 	for(i=0;i<NbSols;i++)
 	{
-		Tests[i]=new GGCAChromo(Owner,Owner->PopSize+1+i);
+		Tests[i]=new GGCAChromo(Owner,Owner->GetPopSize()+1+i);
 		Tests[i]->Init(this);
 		(static_cast<RGroups<GGCAGroup,GGCAObj,GGCAChromo>*>(Tests[i]))->Init();
 	}
@@ -137,16 +137,15 @@ GGCAInst::GGCAInst(GSession* ses,GLang* l,RCursor<GGCAObj> objs,GGCAParams* p,RD
 	unsigned int i;
 
 	// Change Freq
-	MaxBestPopAge=5;
-	MaxBestAge=8;
-	AgeNextMutation=MaxBestPopAge;
-	AgeNextBestMutation=MaxBestAge;
+/*	MaxBestPopAge=5;
+	MaxBestAge=8;*/
+	SetMutationParams(5,8,1);
 
 	// Init Solutions of the PROMETHEE part
-	Sols=new RPromSol*[PopSize+1];
+	Sols=new RPromSol*[GetPopSize()+1];
 	if(Sols)
 	{
-		for(i=PopSize+2,ptr=Sols;--i;ptr++)
+		for(i=GetPopSize()+2,ptr=Sols;--i;ptr++)
 		{
 			(*ptr)=NewSol();
 		}
@@ -205,7 +204,7 @@ GGCAObj* GGCAInst::GetObj(const GSubProfile* sub) const
 //-----------------------------------------------------------------------------
 bool GGCAInst::StopCondition(void)
 {
-	return(Gen==Params->MaxGen);
+	return(GetGen()==Params->MaxGen);
 }
 
 
@@ -241,7 +240,7 @@ void GGCAInst::PostEvaluate(void)
 		Debug->BeginFunc("PostEvaluate","GGCAInst");
 	ptr=Sols;
 	Assign(*ptr,BestChromosome);
-	for(i=PopSize+1,C=Chromosomes;--i;C++)
+	for(i=GetPopSize()+1,C=Chromosomes;--i;C++)
 	{
 		Assign(*ptr,*C);
 	}
@@ -254,7 +253,7 @@ void GGCAInst::PostEvaluate(void)
 	if((*ptr)->GetId())
 	{
 		s=Chromosomes[(*ptr)->GetId()-1];
-		(*s->Fitness)=Gen+1.1;
+		(*s->Fitness)=GetGen()+1.1;
 		#if BESTSOLSVERIFICATION
 			BestSols.InsertPtr(b=new GGCAChromo(this,BestSols.NbPtr));
 			b->Init(thDatas[0]);
@@ -300,9 +299,9 @@ void GGCAInst::PostEvaluate(void)
 		WriteChromoInfo(s);
 
 	// Look for the rest
-	for(i=PopSize,ptr++;--i;ptr++)
+	for(i=GetPopSize(),ptr++;--i;ptr++)
 	{
-		r=((double)i)/((double)(PopSize));
+		r=((double)i)/((double)(GetPopSize()));
 		if((*ptr)->GetId())
 		{
 			s=Chromosomes[(*ptr)->GetId()-1];

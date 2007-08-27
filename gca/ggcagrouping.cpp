@@ -188,10 +188,11 @@ void GGCAGrouping::Run(void)
 
 		// Get the minimum of similarity		
 		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities")->Info(0,Lang,&d);
+		cout<<"MinSim="<<d<<endl;
   		Params.MinSimLevel=d;
 		
 		// Create the GA objects 
-  		Objs.Clear(SubProfiles.GetNb());
+  		Objs.Clear(SubProfiles.GetNb());  		
 		RCursor<GSubProfile> Cur2(SubProfiles);
 		for(Cur2.Start(),i=0;!Cur2.End();Cur2.Next(),i++)
 			Objs.InsertPtr(obj=new GGCAObj(i,Cur2()));
