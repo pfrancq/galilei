@@ -51,9 +51,8 @@
 #include <gdoc.h>
 #include <gdocxml.h>
 #include <gconcept.h>
-#include <gconcept.h>
+#include <gconcepttype.h>
 #include <gweightinfo.h>
-#include <gdict.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
 #include <gstorage.h>
@@ -94,20 +93,8 @@ public:
 		{return(Word.Compare(word->Word));}
 	int Compare(const RString& word) const
 		{return(Word.Compare(word));}
-
-	static char HashIndex(const WordWeight* w)
-		{return(RString::HashIndex(w->Word));}
-	static char HashIndex(const WordWeight& w)
-		{return(RString::HashIndex(w.Word));}
-	static char HashIndex(const RString& word)
-		{return(RString::HashIndex(word));}
-
-	static char HashIndex2(const WordWeight* w)
-		{return(RString::HashIndex2(w->Word));}
-	static char HashIndex2(const WordWeight& w)
-		{return(RString::HashIndex2(w.Word));}
-	static char HashIndex2(const RString& word)
-		{return(RString::HashIndex2(word));}
+	size_t HashIndex(size_t idx) const
+	{return(Word.HashIndex(idx));}
 
 	~WordWeight(void);
 };
@@ -157,6 +144,15 @@ void GTextAnalyse::ApplyConfig(void)
 	Filtering=Factory->GetBool("Filtering");
 	NbSameOccur=Factory->GetUInt("NbSameOccur");
 	NormalRatio=Factory->GetDouble("NormalRatio");
+	ExtractStruct=Factory->GetBool("ExtractStruct");
+	StructIsContent=Factory->GetBool("StructIsContent");
+	ExtractIndex=Factory->GetBool("ExtractIndex");
+	MaxStems=Factory->GetUInt("MaxStems");
+	MaxDepth=Factory->GetUInt("MaxDepth");	
+	ChildTags=Factory->GetBool("ChildTags");
+	WeightStruct=Factory->GetDouble("WeightStruct");	
+	AttrValues=Factory->GetBool("AttrValues");
+	WeightValues=Factory->GetDouble("WeightValues");	
 }
 
 
@@ -175,7 +171,7 @@ void GTextAnalyse::Connect(GSession* session)
 	CurLangs=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 	Sl=new unsigned int[CurLangs.GetNb()];
 	Sldiff=new unsigned int[CurLangs.GetNb()];
-	Weights=new RDblHashContainer<WordWeight,27,27,false>(500,250);
+	Weights=new RDblHashContainer<WordWeight,false>(27,27,500,250);
 	Direct=new WordWeight*[NbDirect];
 	for(i=NbDirect+1,ptr=Direct;--i;ptr++)
 		(*ptr)=new WordWeight(CurLangs.GetNb());
@@ -355,7 +351,7 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 
 	// Find the section of double hash table concerned by the current word.
 	//Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
-	Section=(*(*Weights)[WordWeight::HashIndex(word)])[WordWeight::HashIndex2(word)];
+	Section=(*(*Weights)[word.HashIndex(1)])[word.HashIndex(2)];
 
 	// Find the index where the word is or must be.
 	Index=Section->GetIndex<const RString>(word,Find);
@@ -540,7 +536,7 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 	GWeightInfo* Occur;
 	unsigned int i;
 	RString stem(MaxWordLen);
-	GDict* dic;
+	GConceptType* dic;
 
 	// Insert all the occurences of the valid words
 	dic=Lang->GetDict();
@@ -568,8 +564,8 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 		if(stem.GetLen()>=MinStemSize)
 		{
 			//GWord w(stem);
-			GConcept w(cNoRef,Lang,stem,/*infoWord*/1,0,0,0);
-			Occur=Infos.GetInsertPtr(*dic->InsertConcept(&w));
+			GConcept w(cNoRef,stem,Lang->GetDict(),0,0,0);
+			Occur=Infos.GetInsertPtr(dic->InsertConcept(&w));
 			if(!Occur->GetWeight())
 				Vdiff++;
 			V+=(*wrd)->Nb;
@@ -662,6 +658,15 @@ void GTextAnalyse::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("Filtering",true));
 	params->InsertParam(new RParamValue("NbSameOccur",3));
 	params->InsertParam(new RParamValue("NormalRatio",0.3));
+	params->InsertParam(new RParamValue("ExtractStruct",false));
+	params->InsertParam(new RParamValue("StructIsContent",false));
+	params->InsertParam(new RParamValue("ExtractIndex",false));
+	params->InsertParam(new RParamValue("MaxStems",15));
+	params->InsertParam(new RParamValue("MaxDepth",2));	
+	params->InsertParam(new RParamValue("ChildTags",false));
+	params->InsertParam(new RParamValue("WeightStruct",2.0));
+	params->InsertParam(new RParamValue("AttrValues",false));
+	params->InsertParam(new RParamValue("WeightValues",2.0));
 }
 
 

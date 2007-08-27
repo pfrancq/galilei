@@ -12,3 +12,12 @@
 
 #include <knuminput.h>
 #include <kurlrequester.h>
+
+
+void DlgConfig_Qt::toggleStruct( bool toggle )
+{
+	StructIsContent->setEnabled(toggle);
+	WeightStruct->setEnabled(toggle && StructIsContent->isChecked());
+	AttrValues->setEnabled(toggle);
+	WeightValues->setEnabled(toggle && AttrValues->isChecked());	
+}

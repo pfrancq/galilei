@@ -71,7 +71,7 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	* All the word appearing in the current document.
 	*/
-	R::RDblHashContainer<WordWeight,27,27,false>* Weights;
+	R::RDblHashContainer<WordWeight,false>* Weights;
 
 	/**
 	* Information computed.
@@ -189,11 +189,6 @@ class GTextAnalyse : public GDocAnalyse
 	unsigned int MinStemSize;
 
 	/**
-	* store the full  words/stem words couples
-	*/
-	bool StoreFullWords;
-
-	/**
 	* Minimum number of occurences needed to insert a valid word in the list of
 	* information for a document.
 	*/
@@ -220,6 +215,47 @@ class GTextAnalyse : public GDocAnalyse
 	*/
 	double NormalRatio;
 
+	/**
+	 * Store pairs (full word,stem) in the database?
+	 */
+	bool StoreFullWords;
+	
+	/**
+	 * Extract structure elements?
+	 */
+	bool ExtractStruct;
+	
+	/**
+	 * Should the structure be considered as normal content (stems)?
+	 */
+	bool StructIsContent;
+	
+	/**
+	 * Extract pairs (declarative tags,content)?
+	 */
+	bool ExtractIndex;
+	
+	/**
+	 * Maximum number of stems allowed for a declartive tag's content.
+	 */
+	unsigned int MaxStems;
+	
+	/**
+	 * Maximum depth of a declative tag
+	 */
+	unsigned int MaxDepth;
+	
+	/**
+	 * May declarative tags have child tags?
+	 */
+	bool ChildTags;
+	
+	double WeightStruct;
+	
+	bool AttrValues;
+	
+	double WeightValues;
+	
 public:
 
 	/**

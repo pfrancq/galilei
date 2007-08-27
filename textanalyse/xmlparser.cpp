@@ -71,17 +71,39 @@ void XMLParser::BeginTag(const RString& namespaceURI,const RString& lName,const 
 		IsTitle=true;
 	}
 	
-//	cout<<"AddTag: "<<index<<endl;
-	RCursor<RXMLAttr> Cur(attrs);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-//		cout<<"   AddAttr: "<<Cur()->GetFullName()<<endl;
-		RString val=Cur()->GetValue();
-		if(!val.IsEmpty())
+	if(Filter->ExtractStruct)
+	{		
+		if((Filter->StructIsContent)||(Filter->AttrValues))
 		{
-			const RChar* ptr=val();
-			while(!ptr->IsNull())
-				Filter->ExtractWord(ptr,2.0);
+			// Parse through the attribute to index tokens and/or values as stems
+			const RChar* ptr;
+			RString Add(lName);
+			RString Val;
+			RCursor<RXMLAttr> Cur(attrs);
+			for(Cur.Start();!Cur.End();Cur.Next())
+			{
+				if(Filter->StructIsContent)
+					Add+=Cur()->GetName();
+				if(Filter->AttrValues)
+					Val+=Cur()->GetValue();
+			}
+			if(Filter->StructIsContent)
+			{
+				// Tokens must be indexed as stems
+				ptr=Add();
+				while(!ptr->IsNull())
+					Filter->ExtractWord(ptr,Filter->WeightStruct);
+			}
+			if(Filter->AttrValues)
+			{
+				// Values must be indexed as stems
+				ptr=Val();
+				Filter->ExtractWord(ptr,Filter->WeightValues);
+			}
+		}
+		if(!Filter->StructIsContent)
+		{
+			// Index tag and attributes in the token spaces
 		}
 	}
 }

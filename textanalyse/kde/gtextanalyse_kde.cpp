@@ -6,7 +6,7 @@
 
 	A KDE dialog box for Text analyser - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -96,6 +96,7 @@ void Configure(GFactoryDocAnalyse* params)
 {
 	DlgConfig_Qt dlg;
 
+	// Stems
 	dlg.StaticLang->setChecked(params->GetBool("StaticLang"));
 	dlg.MinStopWords->setValue(params->GetDouble("MinStopWords"));
 	dlg.MinWordSize->setValue(params->GetUInt("MinWordSize"));
@@ -109,8 +110,27 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.NbSameOccur->setEnabled(params->GetBool("NbSameOccur"));
 	dlg.NormalRatio->setEnabled(params->GetBool("Filtering"));
 	dlg.groupFiltering->setEnabled(params->GetBool("NonLetterWords"));
+	
+	// Structure - Tags and attributes
+	dlg.ExtractStruct->setChecked(params->GetBool("ExtractStruct"));
+	dlg.StructIsContent->setChecked(params->GetBool("StructIsContent"));
+	dlg.WeightStruct->setValue(params->GetDouble("WeightStruct"));
+	dlg.AttrValues->setChecked(params->GetBool("AttrValues"));
+	dlg.WeightValues->setValue(params->GetDouble("WeightValues"));
+	dlg.toggleStruct(params->GetBool("ExtractStruct"));
+		
+	// Structure - Declarative tags
+	dlg.ExtractIndex->setChecked(params->GetBool("ExtractIndex"));
+	dlg.MaxStems->setValue(params->GetUInt("MaxStems"));	
+	dlg.MaxDepth->setValue(params->GetUInt("MaxDepth"));
+	dlg.ChildTags->setChecked(params->GetBool("ChildTags"));
+	dlg.MaxStems->setEnabled(params->GetBool("ExtractIndex"));
+	dlg.MaxDepth->setEnabled(params->GetBool("ExtractIndex"));	
+	dlg.ChildTags->setEnabled(params->GetBool("ExtractIndex"));
+	
 	if(dlg.exec())
 	{
+		// Stems
 		params->SetBool("StaticLang",dlg.StaticLang->isChecked());
 		params->SetDouble("MinStopWords",dlg.MinStopWords->value());
 		params->SetUInt("MinWordSize",dlg.MinWordSize->value());
@@ -121,6 +141,21 @@ void Configure(GFactoryDocAnalyse* params)
 		params->SetBool("Filtering",dlg.Filtering->isChecked());
 		params->SetUInt("NbSameOccur",dlg.NbSameOccur->value());
 		params->SetDouble("NormalRatio",dlg.NormalRatio->value());
+		
+		// Structure - Tags and attributes
+		params->SetBool("ExtractStruct",dlg.ExtractStruct->isChecked());
+		params->SetBool("StructIsContent",dlg.StructIsContent->isChecked());
+		params->SetDouble("WeightStruct",dlg.WeightStruct->value());		
+		params->SetBool("AttrValues",dlg.AttrValues->isChecked());		
+		params->SetDouble("WeightValues",dlg.WeightValues->value());
+		
+		// Structure - Tags and attributes
+		params->SetBool("ExtractIndex",dlg.ExtractIndex->isChecked());
+		params->SetUInt("MaxStems",dlg.MaxStems->value());
+		params->SetUInt("MaxDepth",dlg.MaxDepth->value());
+		params->SetBool("ChildTags",dlg.ChildTags->isChecked());
+		
+		
 		params->Apply();
 	}
 }

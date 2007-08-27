@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>475</width>
-            <height>481</height>
+            <width>576</width>
+            <height>535</height>
         </rect>
     </property>
     <property name="caption">
@@ -28,400 +28,686 @@
         <property name="name">
             <cstring>unnamed</cstring>
         </property>
-        <widget class="QGroupBox">
+        <widget class="QTabWidget">
             <property name="name">
-                <cstring>groupBox1</cstring>
+                <cstring>tabWidget2</cstring>
             </property>
-            <property name="title">
-                <string>Determine Language</string>
-            </property>
-            <vbox>
+            <widget class="QWidget">
                 <property name="name">
-                    <cstring>unnamed</cstring>
+                    <cstring>tab</cstring>
                 </property>
-                <widget class="QCheckBox">
+                <attribute name="title">
+                    <string>Content</string>
+                </attribute>
+                <vbox>
                     <property name="name">
-                        <cstring>StaticLang</cstring>
+                        <cstring>unnamed</cstring>
                     </property>
-                    <property name="text">
-                        <string>Static Languages [StaticLang]</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Set if the languages are static.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>When the languages are static and when the content of a document is changed, the system supposes that the language of this document has not changed.&lt;br&gt;
-When the languages are not static, the language of a document is always determinewhen the document is analysed.</string>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout2</cstring>
-                    </property>
-                    <hbox>
+                    <widget class="QGroupBox">
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>groupBox1</cstring>
                         </property>
-                        <widget class="QLabel">
+                        <property name="title">
+                            <string>Determine Language</string>
+                        </property>
+                        <vbox>
                             <property name="name">
-                                <cstring>textLabel1</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="text">
-                                <string>Minimum stopword ratio [MinStopWords]</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer2</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KDoubleNumInput">
-                            <property name="name">
-                                <cstring>MinStopWords</cstring>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Set the minimum stopword ratio.</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>To determine the language of a document, the following method is used:
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>StaticLang</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Static Languages [StaticLang]</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Set if the languages are static.</string>
+                                </property>
+                                <property name="whatsThis" stdset="0">
+                                    <string>When the languages are static and when the content of a document is changed, the system supposes that the language of this document has not changed.&lt;br&gt;
+When the languages are not static, the language of a document is always determinewhen the document is analysed.</string>
+                                </property>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout2</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Minimum stopword ratio [MinStopWords]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KDoubleNumInput">
+                                        <property name="name">
+                                            <cstring>MinStopWords</cstring>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Set the minimum stopword ratio.</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>To determine the language of a document, the following method is used:
 &lt;ol&gt;
 &lt;li&gt; For each language defined in the system, the ratio of the number of different stopwords over the overall number of different words contained in the document is computed.&lt;/li&gt;
 &lt;li&gt; All the languages having this ratio lower than the &lt;b&gt;minimum stopword ratio&lt;/b&gt; are elminated.&lt;/li&gt;
 &lt;li&gt; The language with the highest number of occurences of stopwords is assigned to the document.&lt;li&gt;
 &lt;/ol&gt;</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>groupBox2</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Words used for the description</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
                             </property>
-                        </widget>
-                    </hbox>
-                </widget>
-            </vbox>
-        </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupBox2</cstring>
-            </property>
-            <property name="title">
-                <string>Words used for the description</string>
-            </property>
-            <vbox>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>NonLetterWords</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Non letter words are used [NonLetterWords]</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Should non letter words be used.</string>
+                                </property>
+                                <property name="whatsThis" stdset="0">
+                                    <string>When analysing a document, it is possible to use for the description only words containing letters.</string>
+                                </property>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout3</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Minimum size of a word [MinWordSize]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer3</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>MinWordSize</cstring>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Specify the minimum size of words.</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>When a word is contained in the document and its size is lower than this threshold, the word is not used.</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout4</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel3</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Minimum size of a stem [MinStemSize]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer4</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>MinStemSize</cstring>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Set the minimum size of stems.</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>On all the words in a document containing only letters, a stemming algorithm is applied. When the resulting stem has a size lower than this threshold, the stem is not used.</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout5</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel4</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Minimum occur [MinOccur]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer5</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>MinOccur</cstring>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Set the minimum number of occurences of a word/stem.</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>When a word is contained in the document and its number of occurences is lower than this threshold, the word is not used.</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>StoreFullWords</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Store the words/stems couples</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Should non letter words be used.</string>
+                                </property>
+                                <property name="whatsThis" stdset="0">
+                                    <string>When analysing a document, it is possible to use for the description only words containing letters.</string>
+                                </property>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>groupFiltering</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Filtering</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>Filtering</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Use Word Filtering?</string>
+                                </property>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout6</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Maximal occurences</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Maximum number of following occurences of same letter .</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Maximum number of following occurences of same letter.</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer6</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>NbSameOccur</cstring>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>of a same word in a row to consider a word non-valid</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>of a same word in a row to consider a word non-valid</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout7</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel2_2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Normal Ratio</string>
+                                        </property>
+                                        <property name="toolTip" stdset="0">
+                                            <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
+                                        </property>
+                                        <property name="whatsThis" stdset="0">
+                                            <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer7</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KDoubleNumInput">
+                                        <property name="name">
+                                            <cstring>NormalRatio</cstring>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <spacer>
+                        <property name="name">
+                            <cstring>spacer11</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>20</width>
+                                <height>16</height>
+                            </size>
+                        </property>
+                    </spacer>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
                 <property name="name">
-                    <cstring>unnamed</cstring>
+                    <cstring>TabPage</cstring>
                 </property>
-                <widget class="QCheckBox">
+                <attribute name="title">
+                    <string>Structure</string>
+                </attribute>
+                <vbox>
                     <property name="name">
-                        <cstring>NonLetterWords</cstring>
+                        <cstring>unnamed</cstring>
                     </property>
-                    <property name="text">
-                        <string>Non letter words are used [NonLetterWords]</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Should non letter words be used.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>When analysing a document, it is possible to use for the description only words containing letters.</string>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout3</cstring>
-                    </property>
-                    <hbox>
+                    <widget class="QGroupBox">
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>groupBox7</cstring>
                         </property>
-                        <widget class="QLabel">
+                        <property name="title">
+                            <string>General</string>
+                        </property>
+                        <vbox>
                             <property name="name">
-                                <cstring>textLabel2</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="text">
-                                <string>Minimum size of a word [MinWordSize]</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer3</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KIntNumInput">
-                            <property name="name">
-                                <cstring>MinWordSize</cstring>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Specify the minimum size of words.</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>When a word is contained in the document and its size is lower than this threshold, the word is not used.</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout4</cstring>
-                    </property>
-                    <hbox>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>ExtractStruct</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Extract tags and attributes [ExtractStruct]</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>StructIsContent</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Structure considered as content? [StructIsContent]</string>
+                                </property>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout21</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel3_2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Weight of structural tokens [WeightStruct]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer28</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KDoubleNumInput">
+                                        <property name="name">
+                                            <cstring>WeightStruct</cstring>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>AttrValues</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Attributes values are content? [AttrValues]</string>
+                                </property>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout22</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel4_2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Weight of attributes values [WeightValues]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer29</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KDoubleNumInput">
+                                        <property name="name">
+                                            <cstring>WeightValues</cstring>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QGroupBox">
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>groupBox8</cstring>
                         </property>
-                        <widget class="QLabel">
+                        <property name="title">
+                            <string>Indexes</string>
+                        </property>
+                        <vbox>
                             <property name="name">
-                                <cstring>textLabel3</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <property name="text">
-                                <string>Minimum size of a stem [MinStemSize]</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer4</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KIntNumInput">
-                            <property name="name">
-                                <cstring>MinStemSize</cstring>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Set the minimum size of stems.</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>On all the words in a document containing only letters, a stemming algorithm is applied. When the resulting stem has a size lower than this threshold, the stem is not used.</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout5</cstring>
-                    </property>
-                    <hbox>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>ExtractIndex</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Extract declarative tags? [ExtractIndex]</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>ChildTags</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Declarative tags may have child tags? [ChildTags]</string>
+                                </property>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout10</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_3</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Maximum stems in a declarative tag [MaxStems]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer12</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>MaxStems</cstring>
+                                        </property>
+                                        <property name="minValue">
+                                            <number>0</number>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>50</number>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout9</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel2_3</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Maximum depth of a declarative tag [MaxDepth]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer13</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>MaxDepth</cstring>
+                                        </property>
+                                        <property name="minValue">
+                                            <number>0</number>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>30</number>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <spacer>
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>spacer14</cstring>
                         </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel4</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Minimum occur [MinOccur]</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer5</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KIntNumInput">
-                            <property name="name">
-                                <cstring>MinOccur</cstring>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Set the minimum number of occurences of a word/stem.</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>When a word is contained in the document and its number of occurences is lower than this threshold, the word is not used.</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>StoreFullWords</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Store the words/stems couples</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Should non letter words be used.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>When analysing a document, it is possible to use for the description only words containing letters.</string>
-                    </property>
-                </widget>
-            </vbox>
+                        <property name="orientation">
+                            <enum>Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>20</width>
+                                <height>240</height>
+                            </size>
+                        </property>
+                    </spacer>
+                </vbox>
+            </widget>
         </widget>
-        <widget class="QGroupBox">
-            <property name="name">
-                <cstring>groupFiltering</cstring>
-            </property>
-            <property name="title">
-                <string>Filtering</string>
-            </property>
-            <vbox>
-                <property name="name">
-                    <cstring>unnamed</cstring>
-                </property>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>Filtering</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Use Word Filtering?</string>
-                    </property>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout6</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel1_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Maximal occurences</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Maximum number of following occurences of same letter .</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>Maximum number of following occurences of same letter.</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer6</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KIntNumInput">
-                            <property name="name">
-                                <cstring>NbSameOccur</cstring>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>of a same word in a row to consider a word non-valid</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>of a same word in a row to consider a word non-valid</string>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-                <widget class="QLayoutWidget">
-                    <property name="name">
-                        <cstring>layout7</cstring>
-                    </property>
-                    <hbox>
-                        <property name="name">
-                            <cstring>unnamed</cstring>
-                        </property>
-                        <widget class="QLabel">
-                            <property name="name">
-                                <cstring>textLabel2_2</cstring>
-                            </property>
-                            <property name="text">
-                                <string>Normal Ratio</string>
-                            </property>
-                            <property name="toolTip" stdset="0">
-                                <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
-                            </property>
-                            <property name="whatsThis" stdset="0">
-                                <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
-                            </property>
-                        </widget>
-                        <spacer>
-                            <property name="name">
-                                <cstring>spacer7</cstring>
-                            </property>
-                            <property name="orientation">
-                                <enum>Horizontal</enum>
-                            </property>
-                            <property name="sizeType">
-                                <enum>Expanding</enum>
-                            </property>
-                            <property name="sizeHint">
-                                <size>
-                                    <width>40</width>
-                                    <height>20</height>
-                                </size>
-                            </property>
-                        </spacer>
-                        <widget class="KDoubleNumInput">
-                            <property name="name">
-                                <cstring>NormalRatio</cstring>
-                            </property>
-                        </widget>
-                    </hbox>
-                </widget>
-            </vbox>
-        </widget>
-        <spacer>
-            <property name="name">
-                <cstring>spacer16</cstring>
-            </property>
-            <property name="orientation">
-                <enum>Vertical</enum>
-            </property>
-            <property name="sizeType">
-                <enum>Expanding</enum>
-            </property>
-            <property name="sizeHint">
-                <size>
-                    <width>31</width>
-                    <height>20</height>
-                </size>
-            </property>
-        </spacer>
         <widget class="QLayoutWidget">
             <property name="name">
                 <cstring>Layout1</cstring>
@@ -519,12 +805,71 @@ When the languages are not static, the language of a document is always determin
         <receiver>groupFiltering</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
+    <connection>
+        <sender>ExtractIndex</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ChildTags</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>ExtractIndex</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>ChildTags</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>ExtractIndex</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>MaxDepth</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>ExtractIndex</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>MaxStems</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>ExtractStruct</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>StructIsContent</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>StructIsContent</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>WeightStruct</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>AttrValues</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>WeightValues</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
+    <connection>
+        <sender>ExtractStruct</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>DlgConfig_Qt</receiver>
+        <slot>toggleStruct(bool)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">dlgconfig_qt.ui.h</include>
 </includes>
+<slots>
+    <slot>toggleStruct( bool toggle )</slot>
+</slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
