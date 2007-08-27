@@ -67,9 +67,11 @@ GSubProfilesSims::GSubProfilesSims(GFactoryMeasure* fac)
 
 
 //------------------------------------------------------------------------------
-double GSubProfilesSims::Compute(GLang* lang,void* obj1,void* obj2)
+double GSubProfilesSims::Compute(GLang*,void* obj1,void* obj2)
 {
-	return(static_cast<GSubProfile*>(obj1)->SimilarityIFF(*static_cast<GSubProfile*>(obj2),otSubProfile,lang));
+	double val=static_cast<GSubProfile*>(obj1)->SimilarityIFF(*static_cast<GSubProfile*>(obj2),otSubProfile);
+	cout<<"Compute Sim("<<static_cast<GSubProfile*>(obj1)->GetId()<<","<<static_cast<GSubProfile*>(obj2)->GetId()<<")="<<val<<endl;
+	return(val);
 }
 
 

@@ -66,9 +66,9 @@ GDocsSims::GDocsSims(GFactoryMeasure* fac)
 
 
 //------------------------------------------------------------------------------
-double GDocsSims::Compute(GLang* lang,void* obj1,void* obj2)
+double GDocsSims::Compute(GLang*,void* obj1,void* obj2)
 {
-	return(static_cast<GDoc*>(obj1)->SimilarityIFF(*static_cast<GDoc*>(obj2),otDoc,lang));
+	return(static_cast<GDoc*>(obj1)->SimilarityIFF(*static_cast<GDoc*>(obj2),otDoc));
 }
 
 

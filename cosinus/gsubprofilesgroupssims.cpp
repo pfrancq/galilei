@@ -49,7 +49,7 @@ double GSubProfilesGroupsSims::Compute(GLang* lang,size_t id1,size_t id2)
 
 	if(grp->GetLang()!=sub->GetLang())
 		throw GException("Cannot compare a document and group of a different language");
-	return(sub->SimilarityIFF2(*grp,otSubProfile,otGroup,lang));	
+	return(sub->SimilarityIFF2(*grp,otSubProfile,otGroup));	
 }
 
 
