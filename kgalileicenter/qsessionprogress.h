@@ -349,9 +349,9 @@ public:
 	class QListViewItemDict : public QListViewItem
 	{
 	public:
-		GDict* Dict;
+		GConceptType* Dict;
 
-		QListViewItemDict(QListViewItem* parent,GDict* dict,GSession* session);
+		QListViewItemDict(QListView* parent,GConceptType* dict);
 	};
 
 private:

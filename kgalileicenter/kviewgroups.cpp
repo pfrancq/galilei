@@ -6,7 +6,7 @@
 
 	Window to manipulate the groups - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -38,8 +38,8 @@
 #include <gsubprofile.h>
 #include <ggroup.h>
 #include <glang.h>
-#include <gdict.h>
 #include <gconcept.h>
+#include <gconcepttype.h>
 #include <gweightinfo.h>
 #include <gsession.h>
 #include <gstorage.h>
@@ -470,7 +470,7 @@ void KViewGroups::FindNext(void)
 					{
 						GSubProfile* sub=item->Obj.SubProfile;
 						GConcept* find=sub->GetLang()->GetDict()->GetConcept(sub->GetLang()->GetStemming(str.latin1()));
-						if(find&&(sub->IsIn(*find)))
+						if(find&&(sub->IsIn(find)))
 						{
 							Cont=false;
 							Groups->setCurrentItem(item);

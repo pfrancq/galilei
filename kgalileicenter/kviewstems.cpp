@@ -183,9 +183,9 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 	connect(Index2,SIGNAL(activated(int)),this,SLOT(slotIndex2(int)));
 
 	// Loads and Computes
-	Roots=new RDblHashContainer<GrWord,27,27,true>(200,100);
-	Stems=new RDblHashContainer<GrWord,27,27,true>(200,100);
-	Words=new RDblHashContainer<Word,27,27,true>(300,150);
+	Roots=new RDblHashContainer<GrWord,true>(27,27,200,100);
+	Stems=new RDblHashContainer<GrWord,true>(27,27,200,100);
+	Words=new RDblHashContainer<Word,true>(27,27,300,150);
 	LoadFile(filename);
 }
 

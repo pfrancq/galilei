@@ -58,7 +58,6 @@ using namespace R;
 #include <gsubject.h>
 #include <gsubjects.h>
 #include <glang.h>
-#include <gdict.h>
 #include <gweightinfo.h>
 #include <ggalileiapp.h>
 using namespace GALILEI;
@@ -595,7 +594,7 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 			{
 				for(unsigned int i=lround(Words()->GetWeight())+1;--i;)
 				{
-					file<<Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Docs()->GetLang()->GetCode(),Words()->GetType());
+					file<<Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType());
 				}
 				file<<endl;
 			}

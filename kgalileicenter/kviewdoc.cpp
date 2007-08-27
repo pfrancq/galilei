@@ -268,7 +268,7 @@ void KViewDoc::ConstructResults(void)
 	RCursor<GWeightInfo> Words(Document->GetInfos());
 	for (Words.Start();!Words.End();Words.Next())
 	{
-		new LocalItem(Results,ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Document->GetLang()->GetCode(),Words()->GetType())), Words()->GetWeight());
+		new LocalItem(Results,ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType())), Words()->GetWeight());
 	}
 }
 

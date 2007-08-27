@@ -339,7 +339,7 @@ void KViewHistory::DisplaySimilarities(void)
 		for(cInfos2.GoTo(i+1);!cInfos2.End();cInfos2.Next())
 		{
 			if(Global)
-				similarity=cInfos1()->SimilarityIFF(*cInfos2(), otSubProfile,cInfos1()->GetParent()->GetLang());
+				similarity=cInfos1()->SimilarityIFF(*cInfos2(), otSubProfile);
 			else
 				similarity=cInfos1()->Similarity(*cInfos2());
 			sprintf(num1,"%u",cInfos1()->GetId());

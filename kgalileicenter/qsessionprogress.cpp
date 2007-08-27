@@ -80,7 +80,6 @@
 #include <ggroup.h>
 #include <gsubjects.h>
 #include <ggalileiapp.h>
-#include <gdict.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
 #include <gfilter.h>
@@ -271,11 +270,11 @@ void QImportStopLists::DoIt(void)
 		Stop.Open(RIO::Read);
 		GLang* lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(Files()->GetFileName().Mid(9,2));
 		Parent->PutText("Import stoplist for "+lang->GetName());
-		GDict* dic=lang->GetDict();
+		GConceptType* dic=lang->GetStop();
 		while(!Stop.Eof())
 		{
 			RString stop=Stop.GetLine();
-			GConcept w(cNoRef,lang,stop,2,0,0,0);
+			GConcept w(cNoRef,stop,dic,0,0,0);
 			dic->InsertConcept(&w);
 		}
 	}
@@ -742,8 +741,8 @@ void QFillMIMETypes::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
-QLoadDictionnaries::QListViewItemDict::QListViewItemDict(QListViewItem* parent,GDict* dict,GSession* session)
-	: QListViewItem(parent,ToQString(session->GetConceptType(dict->GetType(),false)->GetName())), Dict(dict)
+QLoadDictionnaries::QListViewItemDict::QListViewItemDict(QListView* parent,GConceptType* dict)
+	: QListViewItem(parent,ToQString(dict->GetName())), Dict(dict)
 {
 	setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("xmag.png",KIcon::Small)));
 }
@@ -754,16 +753,11 @@ QLoadDictionnaries::QListViewItemDict::QListViewItemDict(QListViewItem* parent,G
 void QLoadDictionnaries::DoIt(void)
 {
 	// Go trough each language and create a Item.
-	R::RCursor<GLang> CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
-	for(CurLang.Start(); !CurLang.End(); CurLang.Next())
+	RCursor<GConceptType> Types(Session->GetConceptTypes());	
+	for(Types.Start();!Types.End();Types.Next())
 	{
-		QListViewItemType* ptr=new QListViewItemType(Dicts,ToQString(CurLang()->GetName()));
+		QListViewItem* ptr=new QListViewItemDict(Dicts,Types());
 		ptr->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-
-		// Go trough each dictionnary and create an item
-		RCursor<GDict> Dicts(CurLang()->GetDicts());
-		for(Dicts.Start();!Dicts.End();Dicts.Next())
-			new QListViewItemDict(ptr,Dicts(),Session);
 	}
 }
 

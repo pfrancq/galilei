@@ -239,7 +239,7 @@ void KViewGroup::ConstructDescription(void)
 	RCursor<GWeightInfo> Words(Group->GetInfos());
 	for (Words.Start();!Words.End();Words.Next())
 	{
-		new LocalItem(Vector,ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Group->GetLang()->GetCode(),Words()->GetType())), Words()->GetWeight());
+		new LocalItem(Vector,ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType())), Words()->GetWeight());
 	}
 }
 
@@ -321,7 +321,7 @@ void KViewGroup::slotMenu(int)
 			doc->GetTab(tab);
 			qsort(static_cast<void*>(tab),size,sizeof(GWeightInfo*),GWeightInfos::sortOrder);
 			for(j=21,size++,tmp=tab;(--j)&&(--size);tmp++)
-				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->GetStorage()->LoadConcept((*tmp)->GetId(),doc->GetLang()->GetCode(),(*tmp)->GetType())<<"\"/>\n";
+				Res<<"\t\t\t<Include Attribute=\""<<Doc->GetSession()->GetStorage()->LoadConcept((*tmp)->GetId(),(*tmp)->GetType())<<"\"/>\n";
 		}
 		Res<<"\t\t</Object>\n";
 	}

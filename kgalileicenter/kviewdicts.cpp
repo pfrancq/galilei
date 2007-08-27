@@ -6,7 +6,7 @@
 
 	Window to show all the dictionnaries - Implementation.
 
-	Copyright 2006 by the Universit� Libre de Bruxelles.
+	Copyright 2006-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -36,7 +36,6 @@
 #include <qlistviewitemtype.h>
 #include <rqt.h>
 #include <gdoc.h>
-#include <gdict.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
 #include <grelationtype.h>
@@ -188,7 +187,7 @@ void KViewDicts::slotDoubleClick(QListViewItem* item)
 //-----------------------------------------------------------------------------
 QString KViewDicts::BuildConcept(GConcept* concept)
 {
-	return("\""+ToQString(concept->GetName())+"\" ("+QString::number(concept->GetId())+","+concept->GetLang()->GetCode()+","+QString::number(concept->GetType())+")");
+	return("\""+ToQString(concept->GetName())+"\" ("+QString::number(concept->GetId())+","+QString::number(concept->GetType()->GetId())+")");
 }
 
 
@@ -241,7 +240,7 @@ void KViewDicts::slotNewConcept(void)
 	QString text = QInputDialog::getText("New concept", "Enter the name of the concept:",QLineEdit::Normal,QString::null,&ok,this);
 	if(ok&&!text.isEmpty())
 	{
-		GConcept concept(CurDict->GetLang(),FromQString(text),CurDict->GetType());
+		GConcept concept(FromQString(text),CurDict);
 		GConcept* ptr=CurDict->InsertConcept(&concept);
 		new LocalItem(Dict,ptr->GetId(),text);
 	}
