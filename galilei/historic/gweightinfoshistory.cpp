@@ -48,7 +48,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GWeightInfosHistory::GWeightInfosHistory(GSubProfile* sub, unsigned int max)
-	: GWeightInfos(max)
+	: GWeightInfos(sub->GetLang(),max)
 {
 	SubProfile=sub;
 	WellGrouped=NewSubProfile=false;

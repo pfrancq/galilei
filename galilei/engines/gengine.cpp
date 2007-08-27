@@ -6,7 +6,7 @@
 
 	Generic extractor of results from a search engine - Implementation.
 
-	Copyright 2004 by the Universit�Libre de Bruxelles.
+	Copyright 2004-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)

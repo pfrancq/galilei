@@ -6,7 +6,7 @@
 
 	Word Occurences - Header.
 
-	Copyright 2004 by the Universit�Libre de Bruxelles.
+	Copyright 2004-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -36,6 +36,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R Project
+#include <rvectorint.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -60,9 +65,9 @@ class GWordOccurs
 	R::RString Word;
 
 	/**
-	* Documents containing the documents.
+	* Identifiers of documents containing the word.
 	*/
-	R::RContainer<GInfo,true,true> Docs;
+	R::RVectorInt<true> Docs;
 
 public:
 
@@ -113,64 +118,8 @@ public:
 	* @see R::RHashContainer
 	* @param word            Data.
 	*/
-	static int HashIndex(const GWordOccurs* word)
-		{return(R::RString::HashIndex(word->Word));}
-
-	/**
-	* Compute the first hash index of the name of a data.
-	* @see R::RHashContainer
-	* @param word            Data.
-	*/
-	static int HashIndex(const GWordOccurs& word)
-		{return(R::RString::HashIndex(word.Word));}
-
-	/**
-	* Compute the first hash index of a string.
-	* @see R::RHashContainer
-	* @param word            String.
-	*/
-	static int HashIndex(const R::RString& word)
-		{return(R::RString::HashIndex(word));}
-
-	/**
-	* Compute the first hash index of an array of characters.
-	* @see R::RHashContainer
-	* @param word           Pointer to the array.
-	*/
-	static int HashIndex(const R::RChar* word)
-		{return(R::RString::HashIndex(word));}
-
-	/**
-	* Compute the second hash index of the name of a data.
-	* @see R::RHashContainer
-	* @param word            Data.
-	*/
-	static int HashIndex2(const GWordOccurs& word)
-		{return(R::RString::HashIndex2(word.Word));}
-
-	/**
-	* Compute the second hash index of the name of a data.
-	* @see R::RHashContainer
-	* @param word            Pointer to a data.
-	*/
-	static int HashIndex2(const GWordOccurs* word)
-		{return(R::RString::HashIndex2(word->Word));}
-
-	/**
-	* Compute the second hash index of an array of characters.
-	* @see R::RHashContainer
-	* @param word           Pointer to to the array.
-	*/
-	static int HashIndex2(const R::RChar* word)
-		{return(R::RString::HashIndex2(word));}
-
-	/**
-	* Compute the second hash index of a string.
-	* @see R::RHashContainer
-	* @param word           String.
-	*/
-	static int HashIndex2(const R::RString& word)
-		{return(R::RString::HashIndex2(word));}
+	size_t HashIndex(size_t idx) const
+		{return(Word.HashIndex(idx));}
 
 	/**
 	* Add a document to the list of those containing the word.
@@ -184,9 +133,9 @@ public:
 	*   word appears.
 	* - If the container is not empty, the method removes all the documents
 	*   which are not containing the word.
-	* @param docs            Container of documents.
+	* @param docs            Identifiers of documents.
 	*/
-	void FilterDocs(R::RContainer<GInfo,true,false>& docs) const;
+	void FilterDocs(R::RVectorInt<true>& docs) const;
 
 	/**
 	* Destructor.

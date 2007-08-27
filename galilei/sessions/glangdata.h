@@ -87,12 +87,23 @@ public:
 	 * @param lang           Language.
 	 */
 	int Compare(const GLang* lang) const;
+	
+	/**
+	 * Compare method.
+	 * @param code           Code of the language.
+	 */
+	int Compare(const char* code) const;
 
 	/**
 	 * Clear language-dependent data.
 	 * @param type           Type of the data the clear.
 	 */
 	void Clear(tObjType type);
+	
+	/**
+	 * Get a pointer to the language corresponding to this group of data.
+	 */
+	GLang* GetLang(void) const {return(Lang);}
 	
 	/**
 	 * Get a cursor ovet the documents of a particular language.

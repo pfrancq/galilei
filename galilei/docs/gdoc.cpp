@@ -57,8 +57,8 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RURI& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid)
-	:  GWeightInfos(60), URL(url), Name(name), Id(id),
-	  Lang(lang), MIMEType(mime), Updated(u), Computed(a), Fdbks(0),
+	:  GWeightInfos(lang,60), URL(url), Name(name), Id(id),
+	 MIMEType(mime), Updated(u), Computed(a), Fdbks(0),
 	  LinkSet(5,2), OwnerId(ownerid)
 {
 	GSession::Event(this,eObjNew);
@@ -121,7 +121,7 @@ void GDoc::LoadInfos(void) const
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
 	GSession* session=GSession::Get();
 	if(session&&session->GetStorage())
-		session->GetStorage()->LoadInfos(Infos,Lang,otDoc,Id);
+		session->GetStorage()->LoadInfos(Infos,otDoc,Id);
 	const_cast<GDoc*>(this)->Update(Lang,&Infos,false);
 }
 
@@ -182,7 +182,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 {
 	// If document had a language -> remove its references
 	if(computed&&Lang)
-		DelRefs(otDoc,Lang);
+		DelRefs(otDoc);
 
 	// Assign language and information
 	GWeightInfos::Clear();
@@ -198,14 +198,14 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 	}
 	else
 		State=osUpToDate;
-	GWeightInfos::operator=(*infos);
+	CopyInfos(infos);
 
 	// Clear infos
 	infos->Clear();
 
 	// If document has a language -> update its references
 	if(computed&&Lang)
-		AddRefs(otDoc,Lang);
+		AddRefs(otDoc);
 
 	// Emit an event that it was modified
 	if(computed)
@@ -410,7 +410,7 @@ GDoc::~GDoc(void)
 
 		// If document have a language -> remove its references
 		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
-			DelRefs(otDoc,Lang);
+			DelRefs(otDoc);
 	}
 	catch(...)
 	{

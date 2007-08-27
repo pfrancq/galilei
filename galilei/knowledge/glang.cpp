@@ -6,7 +6,7 @@
 
 	Generic Language - Implementation.
 
-	Copyright 2001-2006 by the Universit� Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -33,7 +33,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <glang.h>
-#include <gdict.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
 #include <gsession.h>
@@ -70,7 +69,7 @@ public:
 
 //------------------------------------------------------------------------------
 GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code)
-	: RLang(lang,code), GPlugin<GFactoryLang>(fac), Dicts(10),
+	: RLang(lang,code), GPlugin<GFactoryLang>(fac), Stop(0), Dict(0),
 	  SkipWords(50,20)
 {
 	SkipWords.InsertPtr(new SkipWord("min"));
@@ -107,19 +106,9 @@ GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code)
 
 
 //------------------------------------------------------------------------------
-void GLang::SetReferences(unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
-{
-	NbRefDocs=refdocs;
-	NbRefSubProfiles=refsubprofiles;
-	NbRefGroups=refgroups;
-}
-
-
-//------------------------------------------------------------------------------
 void GLang::Connect(GSession* session)
 {
 	Session=session;
-	Session->GetStorage()->LoadLang(this);
 }
 
 
@@ -127,8 +116,6 @@ void GLang::Connect(GSession* session)
 void GLang::Disconnect(GSession* /*session*/)
 {
 	Session=0;
-	Dicts.Clear();
-	SetReferences(0,0,0);
 }
 
 
@@ -172,49 +159,19 @@ void GLang::SkipSequence(const RString& word)
 
 
 //------------------------------------------------------------------------------
-void GLang::AddDict(GDict* dict)
+GConceptType* GLang::GetDict(void) const
 {
-	Dicts.InsertPtr(dict);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GDict> GLang::GetDicts(void) const
-{
-	// Load all dictionnaries associated to a concept type
-	R::RCursor<GConceptType> Types(Session->GetConceptTypes());
-	for(Types.Start();!Types.End();Types.Next())
-		GetDict(Types()->GetId());
-	return(R::RCursor<GDict>(Dicts));
-}
-
-
-//------------------------------------------------------------------------------
-GDict* GLang::GetDict(unsigned int type) const
-{
-	GDict* Dict=Dicts.GetPtr(type);
-	if((!Dict)&&(Session)&&(Session->GetStorage()))
-		Dict=Session->GetStorage()->LoadDic(const_cast<GLang*>(this),type);
+	if(!Dict)
+		const_cast<GLang*>(this)->Dict=Session->GetConceptType(GetCode()+RString(" Stems"),false);
 	return(Dict);
 }
 
 
 //------------------------------------------------------------------------------
-GDict* GLang::GetDict(void) const
+GConceptType* GLang::GetStop(void) const
 {
-	GDict* Dict=Dicts.GetPtr(1);
-	if((!Dict)&&(Session)&&(Session->GetStorage()))
-		Dict=Session->GetStorage()->LoadDic(const_cast<GLang*>(this),1);
-	return(Dict);
-}
-
-
-//------------------------------------------------------------------------------
-GDict* GLang::GetStop(void) const
-{
-	GDict* Stop=Dicts.GetPtr(2);
-	if((!Stop)&&(Session)&&(Session->GetStorage()))
-		Stop=Session->GetStorage()->LoadDic(const_cast<GLang*>(this),2);
+	if(!Stop)
+		const_cast<GLang*>(this)->Stop=Session->GetConceptType(GetCode()+RString(" Stopwords"),false);
 	return(Stop);
 }
 
@@ -223,180 +180,6 @@ GDict* GLang::GetStop(void) const
 bool GLang::InStop(const RString& name) const
 {
 	return(GetStop()->IsIn(name));
-}
-
-
-//------------------------------------------------------------------------------
-void GLang::IncRef(unsigned int id,unsigned int type,tObjType ObjType)
-{
-	unsigned int nb=GetDict(type)->IncRef(id,ObjType);
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(ObjType,this,type,id,nb);
-}
-
-
-//------------------------------------------------------------------------------
-void GLang::DecRef(unsigned int id,unsigned int type,tObjType ObjType)
-{
-	unsigned int nb=GetDict(type)->DecRef(id,ObjType);
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(ObjType,this,type,id,nb);
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GLang::GetRef(unsigned int id,unsigned int type,tObjType ObjType)
-{
-	return(GetDict(type)->GetRef(id,ObjType));
-}
-
-
-//------------------------------------------------------------------------------
-void GLang::IncRef(tObjType ObjType)
-{
-	unsigned int nb;
-
-	switch(ObjType)
-	{
-		case otDoc:
-			nb=++NbRefDocs;
-			break;
-		case otSubProfile:
-			nb=++NbRefSubProfiles;
-			break;
-		case otGroup:
-			nb=++NbRefGroups;
-			break;
-		default:
-			throw GException ("Unkown type to increase");
-			break;
-	}
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(ObjType,this,nb);
-}
-
-
-//------------------------------------------------------------------------------
-void GLang::DecRef(tObjType ObjType)
-{
-	unsigned int nb;
-
-	switch(ObjType)
-	{
-		case otDoc:
-			if(!NbRefDocs)
-				throw GException("Cannot decrease null number of references for documents");
-			nb=--NbRefDocs;
-			break;
-		case otSubProfile:
-			if(!NbRefSubProfiles)
-				throw GException("Cannot decrease null number of references for subprofiles");
-			nb=--NbRefSubProfiles;
-			break;
-		case otGroup:
-			if(!NbRefGroups)
-				throw GException("Cannot decrease null number of references for groups");
-			nb=--NbRefGroups;
-			break;
-		default:
-			throw GException ("Unkown type to decrease");
-			break;
-	}
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(ObjType,this,nb);
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GLang::GetRef(tObjType ObjType) const
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			return(NbRefDocs);
-			break;
-		case otSubProfile:
-			return(NbRefSubProfiles);
-			break;
-		case otGroup:
-			return(NbRefGroups);
-			break;
-		default:
-			return(NbRefDocs+NbRefSubProfiles+NbRefGroups);
-			break;
-	}
-	return(0);
-}
-
-
-//------------------------------------------------------------------------------
-void GLang::Clear(tObjType ObjType)
-{
-	R::RCursor<GDict> Dicts(GetDicts());
-	for(Dicts.Start();!Dicts.End();Dicts.Next())
-	{
-		RCursor<GDict::Hash> Cur(Dicts()->GetCursor()); 
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			RCursor<GDict::Hash2> Cur2(*Cur());
-			for(Cur2.Start();!Cur2.End();Cur2.Next())
-			{
-				RCursor<GConcept> Cur3(*Cur2());
-				for(Cur3.Start();!Cur3.End();Cur3.Next())
-				{
-					Cur3()->Clear(ObjType);
-					if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-						Session->GetStorage()->SaveRefs(ObjType,this,Cur3()->GetType(),Cur3()->GetId(),0);
-				}					
-			}
-		}
-	}
-
-	switch(ObjType)
-	{
-		case otDoc:
-			NbRefDocs=0;
-			break;
-		case otSubProfile:
-			NbRefSubProfiles=0;
-			break;
-		case otGroup:
-			NbRefGroups=0;
-			break;
-		case otDocSubProfile:
-			NbRefDocs=0;
-			NbRefSubProfiles=0;
-			break;
-		case otDocGroup:
-			NbRefDocs=0;
-			NbRefGroups=0;
-			break;
-		case otSubProfileGroup:
-			NbRefSubProfiles=0;
-			NbRefGroups=0;
-			break;
-		default:
-			NbRefDocs=0;
-			NbRefSubProfiles=0;
-			NbRefGroups=0;
-			break;
-	}
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(ObjType,this,0);
-}
-
-
-//------------------------------------------------------------------------------
-unsigned int GLang::GetTotal(unsigned int type) const
-{
-	return(GetDict(type)->GetNbConcepts());
-}
-
-
-//------------------------------------------------------------------------------
-const GConcept** GLang::GetConcepts(unsigned int type) const
-{
-	return(const_cast<const GConcept**>(GetDict(type)->GetConcepts()));
 }
 
 

@@ -326,15 +326,6 @@ public:
 	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter)=0;
 
 	/**
-	* Load the description of a given object.
-	* @param infos           Container that will hold the description.
-	* @param lang            Language of the object.
-	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
-	* @param id              Identificator of the object.
-	*/
-	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,GLang* lang,tObjType type,size_t id)=0;
-
-	/**
 	* Load the Subjects.
 	*/
 	virtual void LoadSubjects(void)=0;
@@ -373,12 +364,6 @@ public:
 	// @{
 
 	/**
-	* Loading information on a langauge.
-	* @param lang           Languague.
-	*/
-	virtual void LoadLang(GLang* lang)=0;
-
-	/**
 	* Load the concept types from the database.
 	*/
 	virtual void LoadConceptTypes(void)=0;
@@ -394,41 +379,44 @@ public:
 	virtual void LoadRelations(void)=0;
 
 	/**
-	* Loading a dictionary/stoplist.
-	* @param lang            Language of the dictonnary.
+	* Loading the all concepts of given concept type.
 	* @param type            Type of concepts.
-	* @return Pointer to the dictionary
 	*/
-	virtual GDict* LoadDic(GLang* lang,unsigned int type)=0;
+	virtual void LoadConcepts(GConceptType* type)=0;
 
 	/**
-	* Assign an identifier to a new data of a given dictionary.
-	* @param data            Data.
-	* @param dict            Dictionary.
+	* Assign an identifier to a new concept of a given type.
+	* @param concept         Concept.
 	*/
-	virtual void AssignId(GConcept* data,const GDict* dict)=0;
+	virtual void AssignId(GConcept* concept)=0;
 
 	/**
-	* Delete a data from the dictionnary.
-	* @param data            Data.
+	* Delete a concept.
+	* @param concept         Concept.
 	*/
-	virtual void DeleteConcept(GConcept* data)=0;
+	virtual void DeleteConcept(GConcept* concept)=0;
 
 	/**
-	* Load a specific concept from a dictionary.
+	* Load the description of a given object.
+	* @param infos           Container that will hold the description.
+	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param id              Identificator of the object.
+	*/
+	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,tObjType type,size_t id)=0;
+	
+	/**
+	* Load the name of specific concept.
 	* @param id              Idenfificator of the concept.
-	* @param code            Code of the languague.
 	* @param type            Type of the concept.
 	*/
-	virtual R::RString LoadConcept(unsigned int id,const char* code,unsigned int type)=0;
+	virtual R::RString LoadConcept(unsigned int id,GConceptType* type)=0;
 
 	/**
-	* Load the identificator of a specific concept from a dictionary.
-	* @param word            Name of the concept.
-	* @param code            Code of the languague.
+	* Load the identificator of a specific concept.
+	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	*/
-	virtual unsigned int LoadConcept(const R::RString word,const char* code,unsigned int type)=0;
+	virtual size_t LoadConcept(const R::RString name,GConceptType* type)=0;
 
 	/**
 	* Save a concept in the database.
@@ -437,23 +425,20 @@ public:
 	virtual void SaveConcept(GConcept* concept)=0;
 
 	/**
-	* Save the references of a given object type and for a given information
-	* entity.
-	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
-	* @param lang            Language of the object.
-	* @param type            Type of the concepts.
-	* @param id              Identificator of the information entity.
+	* Save the references of a given object type for a given concept.
+	* @param concept         Concept.
+	* @param what            Type of the object (otDoc,otSubProfile,otGroup).	
 	* @param refs            Number of references.
 	*/
-	virtual void SaveRefs(tObjType type,GLang* lang,unsigned int type,size_t id,size_t refs)=0;
+	virtual void SaveRefs(const GConcept* concept,tObjType what,size_t refs)=0;
 
 	/**
-	* Save the references of a given object type.
-	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
-	* @param lang            Language of the object.
+	* Save the references of a given object type for a given concept type.
+	* @param type            Type of the concept.
+	* @param what            Type of the object (otDoc,otSubProfile,otGroup).
 	* @param refs            Number of references.
 	*/
-	virtual void SaveRefs(tObjType type,GLang* lang,size_t refs)=0;
+	virtual void SaveRefs(GConceptType* type,tObjType what,size_t refs)=0;
 
 	// @} Knowledge Methods
 

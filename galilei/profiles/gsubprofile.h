@@ -6,7 +6,7 @@
 
 	Subprofile - Header.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -65,12 +65,6 @@ protected:
 	* Owner profile of the subprofile.
 	*/
 	GProfile* Profile;
-
-	/**
-	* Language of the subprofile.
-	*/
-	GLang* Lang;
-
 	/**
 	* Identificator of the corresponding group.
 	*/
@@ -164,12 +158,6 @@ public:
 	* @param id             Identificator.
 	*/
 	void SetId(unsigned int id);
-
-	/**
-	* Get the language of the subprofile.
-	* @return Pointer to the GLang.
-	*/
-	GLang* GetLang(void) const {return(Lang);}
 
 	/**
 	* Get the profile of the subprofile.

@@ -250,15 +250,17 @@ public:
 	* @param id              Identifier of the type.
 	* @param name            Name of the type.
 	* @param desc            Short description.
+	* @param refdocs         Number of documents referenced.
+	* @param refsubprofiles  Number of subprofiles referenced.
+	* @param refgroups       Number of groups referenced.
 	*/
-	void InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc);
+	void InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups);
 
 	/**
-	* Assign an identifier to a new data of a given dictionary.
-	* @param data            Data.
-	* @param dict            Dictionary.
+	* Assign an identifier to a new concept.
+	* @param concept         Concept.
 	*/
-	void AssignId(GConcept* data,const GDict* dict);
+	void AssignId(GConcept* concept);
 
 	/**
 	* Get all relation types defined.
@@ -297,18 +299,16 @@ public:
 	* @param id              Identifier of the relation.
 	* @param name            Name of the relation.
 	* @param subjectid       Identifier of the subject.
-	* @param subjectlang     Language of the subject.
 	* @param subjecttypeid   Type of the subject.
 	* @param type            Type of the relation.
 	* @param objectid        Identifier of the object.
-	* @param objectlang      Language of the object.
 	* @param objecttypeid    Type of the object.
 	* @param weight          Weight of the relation.
 	*/
 	void InsertRelation(unsigned int id,const R::RString& name,
-	                    unsigned int subjectid,GLang* subjectlang,unsigned int subjecttypeid,
+	                    unsigned int subjectid,unsigned int subjecttypeid,
 	                    unsigned int type,
-	                    unsigned int objectid,GLang* objectlang,unsigned int objecttypeid,
+	                    unsigned int objectid,unsigned int objecttypeid,
 	                    double weight);
 
 	/**

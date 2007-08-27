@@ -47,7 +47,6 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <glang.h>
-#include <gdict.h>
 #include <gconcepttype.h>
 #include <gconcept.h>
 #include <grelationtype.h>
@@ -166,7 +165,7 @@ public:
 	R::RContainer<GProfile,true,true> Profiles;                       // Profiles handled by the system.
 	R::RContainer<GLangData,true,true> Langs;                         // Documents, Subprofiles and Groups divided by language.
 	R::RContainer<GConceptType,true,true> ConceptTypes;               // Types of Concepts
-	R::RContainer<GRelationType,true,true> RelationTypes;             // Types of Concepts
+	R::RContainer<GRelationType,true,true> RelationTypes;             // Types of Relations
 	unsigned int MaxDocs;                                             // Maximum number of documents to handle in memory.
 	unsigned int MaxSubProfiles;                                      // Maximum number of subprofiles to handle in memory.
 	unsigned int MaxGroups;                                           // Maximum number of groups to handle in memory.
@@ -271,6 +270,9 @@ void GSession::ForceReCompute(tObjType type)
 		case otSubProfile:
 		{
 			// Delete the subprofiles -> Also groups
+			RCursor<GConceptType> Types(Data->ConceptTypes);
+			for(Types.Start();!Types.End();Types.Next())
+				Types()->Clear(otSubProfile);
 			RCursor<GLangData> Cur(Data->Langs);
 			for(Cur.Start();!Cur.End();Cur.Next())
 				Cur()->Clear(otSubProfile);	
@@ -280,6 +282,9 @@ void GSession::ForceReCompute(tObjType type)
 		case otGroup:
 		{
 			// Delete the groups
+			RCursor<GConceptType> Types(Data->ConceptTypes);
+			for(Types.Start();!Types.End();Types.Next())
+				Types()->Clear(otGroup);			
 			RCursor<GLangData> Cur(Data->Langs);
 			for(Cur.Start();!Cur.End();Cur.Next())
 				Cur()->Clear(otGroup);
@@ -308,6 +313,12 @@ void GSession::ReInit(void)
 	{
 		Cur()->Clear(otGroup);
 		Cur()->Clear(otSubProfile);
+	}
+	RCursor<GConceptType> Types(Data->ConceptTypes);
+	for(Types.Start();!Types.End();Types.Next())
+	{
+		Types()->Clear(otGroup);
+		Types()->Clear(otSubProfile);
 	}
 
 	// Clear Profiles and users
@@ -502,13 +513,21 @@ RCursor<GConceptType> GSession::GetConceptTypes(void) const
 //-----------------------------------------------------------------------------
 GConceptType* GSession::GetConceptType(unsigned int id,bool null) const
 {
-	GConceptType* type=Data->ConceptTypes.GetPtr(id);
-	if(!type)
+	GConceptType* type(0);
+	try
 	{
-		if(!null)
-			throw GException("Unknow concept type "+RString::Number(id));
-		return(0);
+		type=Data->ConceptTypes[id];
+		if(type&&(!type->IsLoaded())&&(Data->Storage))
+		{
+			Data->Storage->LoadConcepts(type);
+			type->Loaded=true;
+		}
 	}
+	catch(...)
+	{
+	}	
+	if((!type)&&(!null))
+		throw GException("Unknow concept type "+RString::Number(id));	
 	return(type);
 }
 
@@ -516,28 +535,47 @@ GConceptType* GSession::GetConceptType(unsigned int id,bool null) const
 //-----------------------------------------------------------------------------
 GConceptType* GSession::GetConceptType(const RString& name,bool null) const
 {
-	GConceptType* type=Data->ConceptTypes.GetPtr(name,false);
-	if(!type)
+	GConceptType* type(0);
+	try
 	{
-		if(!null)
-			throw GException("Unknow concept type "+name);
-		return(0);
+		type=Data->ConceptTypes.GetPtr(name,false);
+		if(type&&(!type->IsLoaded())&&(Data->Storage))
+		{
+			Data->Storage->LoadConcepts(type);
+			type->Loaded=true;
+		}
 	}
+	catch(...)
+	{
+	}	
+	if((!type)&&(!null))
+		throw GException("Unknow concept type '"+name+"'");	
 	return(type);
 }
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc)
+void GSession::InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups)
 {
-	Data->ConceptTypes.InsertPtr(new GConceptType(id,name,desc));
+	RString code(name.Mid(0,2));
+	GLang* Lang;
+	GLangData* ptr=Data->Langs.GetPtr(code);
+	if(ptr)
+		Lang=ptr->GetLang();
+	else
+		Lang=0;
+	size_t s=26;
+	size_t s2=5000;
+	GConceptType* type=new GConceptType(id,this,name,desc,Lang,s,s2);
+	type->SetReferences(refdocs,refsubprofiles,refgroups);
+	Data->ConceptTypes.InsertPtrAt(type,id);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::AssignId(GConcept* data,const GDict* dict)
+void GSession::AssignId(GConcept* concept)
 {
-	Data->Storage->AssignId(data,dict);
+	Data->Storage->AssignId(concept);
 }
 
 
@@ -584,26 +622,21 @@ void GSession::InsertRelationType(unsigned int id,const R::RString& name,const R
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertRelation(unsigned int id,const R::RString& name,unsigned int subjectid,GLang* subjectlang,unsigned int subjecttypeid,unsigned int type,unsigned int objectid,GLang* objectlang,unsigned int objecttypeid,double weight)
+void GSession::InsertRelation(unsigned int id,const R::RString& name,unsigned int subjectid,unsigned int subjecttypeid,unsigned int type,unsigned int objectid,unsigned int objecttypeid,double weight)
 {
-	GDict* dict;
-
-	if((!objectlang)||(!subjectlang))
-		throw GException("Language not defined");
-
 	// Get the concept related to the subject
-	dict=subjectlang->GetDict(subjecttypeid);
-	if(!dict)
+	GConceptType* ctype=GetConceptType(subjecttypeid,false);
+	if(!ctype)
 		throw GException("Object "+RString::Number(subjectid)+" of type "+RString::Number(subjecttypeid)+" does not exist");
-	GConcept* subject=dict->GetConcept(subjectid);
+	GConcept* subject=ctype->GetConcept(subjectid);
 	if(!subject)
 		throw GException("Object "+RString::Number(subjectid)+" of type "+RString::Number(subjecttypeid)+" does not exist");
 
 	// Get the concept related to the object
-	dict=objectlang->GetDict(objecttypeid);
-	if(!dict)
+	ctype=GetConceptType(objecttypeid,false);
+	if(!ctype)
 		throw GException("Object "+RString::Number(objectid)+" of type "+RString::Number(objecttypeid)+" does not exist");
-	GConcept* object=dict->GetConcept(objectid);
+	GConcept* object=ctype->GetConcept(objectid);
 	if(!object)
 		throw GException("Object "+RString::Number(objectid)+" of type "+RString::Number(objecttypeid)+" does not exist");
 

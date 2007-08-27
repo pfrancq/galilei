@@ -6,7 +6,7 @@
 
 	Dictionary - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rdblhashcontainer.h>
+#include <rvectorint.h>
 
 
 //------------------------------------------------------------------------------
@@ -57,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Dictionary.
 */
-class GIndexer : protected R::RDblHashContainer<GWordOccurs,27,27,true>
+class GIndexer : protected R::RDblHashContainer<GWordOccurs,true>
 {
 	/**
 	* Pointer to the managers holding all the languages handled by the system.
@@ -108,10 +109,9 @@ public:
 	/**
 	* Run a query given as string.
 	* @param query           String containing the query.
-	* @param docs            Identificators of the documents responding to the
-	*                        query.
+	* @param docs            Identifiers of documents.
 	*/
-	void RunQuery(R::RString query,R::RContainer<GInfo,true,false>& docs) const;
+	void RunQuery(R::RString query,R::RVectorInt<true>& docs) const;
 
 	/**
 	* Destructor of the dictionary.

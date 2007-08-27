@@ -106,6 +106,14 @@ int GLangData::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
+int GLangData::Compare(const char* code) const
+{
+	if(!code) return(1);
+	return(Lang->Compare(code));
+}
+
+
+//------------------------------------------------------------------------------
 void GLangData::Clear(tObjType type)
 {
 	switch(type)
@@ -125,8 +133,6 @@ void GLangData::Clear(tObjType type)
 		default:
 			throw GException("Cannot clear "+GetObjType(type)+" from GLangData");
 	}
-	if(Lang)
-		Lang->Clear(type);
 }
 
 

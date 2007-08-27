@@ -79,11 +79,6 @@ protected:
 	unsigned int Id;
 
 	/**
-	* Pointer to the language of the document.
-	*/
-	GLang* Lang;
-
-	/**
 	* MIME Type of the document.
 	*/
 	R::RString MIMEType;
@@ -131,7 +126,7 @@ public:
 	* @param a               Date of the last analysis.
 	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,unsigned int id, GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid=0);
+	GDoc(const R::RURI& url,const R::RString& name,unsigned int id,GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid=0);
 
 	/**
 	* Compare two documents by comparing their identificator.
@@ -221,11 +216,6 @@ public:
 	* Verify if the document must be (re-)computed.
 	*/
 	bool MustCompute(void) const;
-
-	/**
-	* @return Pointer to the Language.
-	*/
-	GLang* GetLang(void) const {return(Lang);}
 
 	/**
 	* Get the identificator of the document.

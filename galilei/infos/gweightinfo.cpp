@@ -6,7 +6,7 @@
 
 	Weighted information entity - Implementation.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -39,7 +39,7 @@
 // include files for GALILEI
 #include <gweightinfo.h>
 #include <glang.h>
-#include <gconcept.h>
+#include <gconcepttype.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -52,29 +52,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(unsigned int id,unsigned int type,double w)
-  : GInfo(id,type), Weight(w)
+GWeightInfo::GWeightInfo(GConcept* concept,double w)
+  : Concept(concept), Weight(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GWeightInfo::GWeightInfo(const GWeightInfo& w)
-  : GInfo(w), Weight(w.Weight)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GInfo& w)
-  : GInfo(w), Weight(0.0)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GConcept& concept)
-  : GInfo(concept), Weight(0.0)
+  : Concept(w.Concept), Weight(w.Weight)
 {
 }
 
@@ -82,18 +68,18 @@ GWeightInfo::GWeightInfo(const GConcept& concept)
 //------------------------------------------------------------------------------
 int GWeightInfo::Compare(const GWeightInfo& calc) const
 {
-	if(Type==calc.Type)
-		return(Id-calc.Id);
-	return(Type-calc.Type);
+	if(Concept->Type==calc.Concept->Type)
+		return(Concept->Id-calc.Concept->Id);
+	return(Concept->Type->Id-calc.Concept->Type->Id);
 }
 
 
 //------------------------------------------------------------------------------
-int GWeightInfo::Compare(const GConcept& concept) const
+int GWeightInfo::Compare(const GConcept* concept) const
 {
-	if(Type==concept.GetType())
-		return(Id-concept.GetId());
-	return(Type-concept.GetType());
+	if(Concept->Type==concept->Type)
+		return(Concept->Id-concept->Id);
+	return(Concept->Type->Id-concept->Type->Id);
 }
 
 
@@ -107,17 +93,8 @@ void GWeightInfo::SetWeight(double w)
 //------------------------------------------------------------------------------
 GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i)
 {
-	GInfo::operator=(i);
+	Concept=i.Concept;
 	Weight=i.Weight;
-	return(*this);
-}
-
-
-//------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator=(const GInfo& i)
-{
-	GInfo::operator=(i);
-	Weight=0.0;
 	return(*this);
 }
 
@@ -155,9 +132,48 @@ GWeightInfo& GWeightInfo::operator/=(double w)
 
 
 //------------------------------------------------------------------------------
+bool GWeightInfo::operator==(const GWeightInfo &other) const
+{	
+	if(Concept->Type==other.Concept->Type)
+		return(Concept->Id==other.Concept->Id);
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+bool GWeightInfo::operator!=(const GWeightInfo &other) const
+{
+	if(Concept->Type==other.Concept->Type)
+		return(Concept->Id!=other.Concept->Id);
+	return(true);
+
+}
+
+
+//------------------------------------------------------------------------------
+bool GWeightInfo::operator<(const GWeightInfo &other) const
+{
+	if(Concept->Type==other.Concept->Type)
+		return(Concept->Id<other.Concept->Id);
+	return(Concept->Type->Id<other.Concept->Type->Id);
+
+}
+
+
+//------------------------------------------------------------------------------
+bool GWeightInfo::operator>(const GWeightInfo &other) const
+{
+	if(Concept->Type==other.Concept->Type)
+		return(Concept->Id>other.Concept->Id);
+	return(Concept->Type->Id>other.Concept->Type->Id);
+
+}
+
+
+//------------------------------------------------------------------------------
 double GWeightInfo::GetQueryWeight(tObjType ObjType,GLang* lang,double max) const
 {
-	return((Weight/max)*log(static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef(Id,Type,ObjType))));
+	return((Weight/max)*log(static_cast<double>(Concept->Type->GetRef(ObjType))/static_cast<double>(Concept->Type->GetRef(Concept->Id,ObjType))));
 }
 
 

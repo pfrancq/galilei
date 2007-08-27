@@ -6,7 +6,7 @@
 
 	Dictionary - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -35,7 +35,7 @@
 #include <gindexer.h>
 #include <gwordoccurs.h>
 #include <glang.h>
-#include <ginfo.h>
+#include <gconcept.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -49,7 +49,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GIndexer::GIndexer(unsigned ml,GLangManager* langs)
-	: RDblHashContainer<GWordOccurs,27,27,true>(ml+(ml/4),ml/4), Langs(langs)
+	: RDblHashContainer<GWordOccurs,true>(27,27,ml+(ml/4),ml/4), Langs(langs)
 {
 }
 
@@ -57,7 +57,7 @@ GIndexer::GIndexer(unsigned ml,GLangManager* langs)
 //------------------------------------------------------------------------------
 void GIndexer::Clear(void)
 {
-	RDblHashContainer<GWordOccurs,27,27,true>::Clear();
+	RDblHashContainer<GWordOccurs,true>::Clear();
 }
 
 
@@ -81,21 +81,21 @@ void GIndexer::DeleteData(R::RString word)
 	// Look if the word exists. If yes, delete it.
 	ptr=GetPtr<const RString>(word);
 	if(ptr)
-		DeletePtr(ptr);
+		DeletePtr(*ptr);
 }
 
 
 //------------------------------------------------------------------------------
 bool GIndexer::IsIndexed(const RString& word) const
 {
-	return(RDblHashContainer<GWordOccurs,27,27,true>::IsIn<const RString>(word));
+	return(RDblHashContainer<GWordOccurs,true>::IsIn<const RString>(word));
 }
 
 
 //------------------------------------------------------------------------------
 GWordOccurs* GIndexer::GetWord(const RString& word) const
 {
-	return(RDblHashContainer<GWordOccurs,27,27,true>::GetPtr<const RString>(word));
+	return(RDblHashContainer<GWordOccurs,true>::GetPtr<const RString>(word));
 }
 
 
@@ -111,7 +111,7 @@ public:
 };
 
 //------------------------------------------------------------------------------
-void GIndexer::RunQuery(R::RString query,R::RContainer<GInfo,true,false>& docs) const
+void GIndexer::RunQuery(R::RString query,RVectorInt<true>& docs) const
 {
 
 	const RChar* ptr;

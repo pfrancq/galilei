@@ -84,8 +84,8 @@ public:
 
 //------------------------------------------------------------------------------
 GGroup::GGroup(unsigned int id,GLang* lang,bool com,const R::RDate& u,const R::RDate& c)
-	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(60), Id(id),
-	  /*State(osUpToDate),*/Lang(lang), Community(com),  Updated(u), Computed(c)
+	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(lang,60), Id(id),
+	  Community(com),  Updated(u), Computed(c)
 {
 	GSession::Event(this,eObjNew);
 }
@@ -134,7 +134,7 @@ void GGroup::LoadInfos(void) const
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
 	GSession* session=GSession::Get();
 	if(session&&session->GetStorage())
-		session->GetStorage()->LoadInfos(Infos,Lang,otGroup,Id);
+		session->GetStorage()->LoadInfos(Infos,otGroup,Id);
 	const_cast<GGroup*>(this)->Update(Lang,&Infos,false);
 }
 
@@ -444,7 +444,7 @@ void GGroup::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,boo
 {
 	// Remove its references
 	if(computed&&Lang&&Community)
-		DelRefs(otGroup,Lang);
+		DelRefs(otGroup);
 
 	// Assign information
 	GWeightInfos::Clear();
@@ -456,14 +456,14 @@ void GGroup::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,boo
 	}
 	else
 		State=osUpToDate;
-	GWeightInfos::operator=(*infos);
+	CopyInfos(infos);
 
 	// Clear infos
 	infos->Clear();
 
 	// Update its references
 	if(computed&&Lang&&Community)
-		AddRefs(otGroup,Lang);
+		AddRefs(otGroup);
 
 	// Emit an event that it was modified
 	if(computed)
@@ -492,7 +492,7 @@ GGroup::~GGroup(void)
 			for(Sub.Start();!Sub.End();Sub.Next())
 				Sub()->SetGroup(cNoRef);
 			if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
-				DelRefs(otGroup,Lang);
+				DelRefs(otGroup);
 		}
 	}
 	catch(...)

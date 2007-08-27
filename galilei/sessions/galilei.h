@@ -73,12 +73,10 @@ class GRelationType;
 class GLang;
 class GFactoryLang;
 class GLangManager;
-class GDict;
 
 
 //------------------------------------------------------------------------------
 // forward class declaration - Infos Part
-class GInfo;
 class GWeightInfo;
 class GWeightInfos;
 class GInfosWeightsHistory;

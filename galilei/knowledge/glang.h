@@ -6,7 +6,7 @@
 
 	Generic Language - Header.
 
-	Copyright 2001-2006 by the Université Libre de Bruxelles.
+	Copyright 2001-2007 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -76,25 +76,15 @@ protected:
 	class SkipWord;
 
 	/**
-	* Number of references in documents.
+	* Dictionnaries of stopwords.
 	*/
-	unsigned int NbRefDocs;
-
+	GConceptType* Stop;
+	
 	/**
-	* Number of references in subprofiles.
+	* Dictionnaries of stems.
 	*/
-	unsigned int NbRefSubProfiles;
-
-	/**
-	* Number of references in groups.
-	*/
-	unsigned int NbRefGroups;
-
-	/**
-	* Dictionnaries.
-	*/
-	RContainer<GDict,true,true> Dicts;
-
+	GConceptType* Dict;
+	
 	/**
 	* List of word that must be skipped when there are part of a sequence
 	* beginning with a number.
@@ -110,17 +100,6 @@ public:
 	* @param code           Code of the language.
 	*/
 	GLang(GFactoryLang* fac,const R::RString& lang,const char* code);
-
-	/**
-	* Set the references of a given language. This method is called when
-	* connecting to and disconnecting from a session.
-	* @param refdocs         Number of documents referenced.
-	* @param refsubprofiles  Number of subprofiles referenced.
-	* @param refgroups       Number of groups referenced.
-	*/
-	void SetReferences(unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups);
-
-public:
 
 	/**
 	* Connect to a Session.
@@ -191,37 +170,18 @@ public:
 	* @return Pointer to GSession.
 	*/
 	GSession* GetSession(void) const {return(Session);}
-
-	/**
-	* Add a dictionnary.
-	* @param dict            Dictionnary.
-	*/
-	void AddDict(GDict* dict);
-
-	/**
-	* Get a cursor over the dictionnaries of the language.
-	* @return Cursor on GDict.
-	*/
-	R::RCursor<GDict> GetDicts(void) const;
-
-	/**
-	* Get a dictionary attached to the language for a given type of concepts.
-	* @param type            Type of concept.
-	* @return Pointer to GDict.
-	*/
-	GDict* GetDict(unsigned int type) const;
-
+	
 	/**
 	* Get the dictionary of words attached to the language.
 	* @return Pointer to GDict.
 	*/
-	GDict* GetDict(void) const;
+	GConceptType* GetDict(void) const;
 
 	/**
 	* Get the dictionary of stopwords attached to the language.
 	* @return Pointer to GDict.
 	*/
-	GDict* GetStop(void) const;
+	GConceptType* GetStop(void) const;
 
 	/**
 	* Look if a name corresponds to a data stored in the dictionary of
@@ -232,82 +192,11 @@ public:
 	bool InStop(const R::RString& name) const;
 
 	/**
-	* Increase the number of objects of a given type that make a reference to a
-	* concept.
-	* @param id             Identificator of the concept.
-	* @param type           Type of the concepts.
-	* @param ObjType        Type of the object.
-	*/
-	void IncRef(unsigned int id,unsigned int type,tObjType ObjType);
-
-	/**
-	* Decrease the number of objects of a given type that make a reference to a
-	* concept.
-	* @param id             Identificator of the concept.
-	* @param type           Type of the concepts.
-	* @param ObjType        Type of the object.
-	*/
-	void DecRef(unsigned int id,unsigned int type,tObjType ObjType);
-
-	/**
-	* Get the number of objects of a given type that make a reference to a
-	* concept.
-	* @param id             Identificator of the concept.
-	* @param type           Type of the concepts.
-	* @param ObjType        Type of the object.
-	* @return unsigned int.
-	*/
-	unsigned int GetRef(unsigned int id,unsigned int type,tObjType ObjType);
-
-	/**
-	* Increase the number of objects of a given type using the dictionary of the
-	* language.
-	* @param ObjType        Type of the object.
-	*/
-	void IncRef(tObjType ObjType);
-
-	/**
-	* Decrease the number of objects of a given type using the dictionary of the
-	* language.
-	* @param ObjType        Type of the object.
-	*/
-	void DecRef(tObjType ObjType);
-
-	/**
-	* Get the number of objects of a given type using the dictionary of the
-	* language.
-	* @param ObjType        Type of the object.
-	*/
-	unsigned int GetRef(tObjType ObjType) const;
-
-	/**
-	* Get the number of elements contained in the dictionary of concepts of a
-	* given type.
-	* @param type           Type of the concepts.
-	* @returns unsigned int.
-	*/
-	unsigned int GetTotal(unsigned int type) const;
-
-	/**
-	* Get the list of the elements currently defined in the dictionary of
-	* concepts of a given type.
-	* @param type           Type of the concepts.
-	* @returns const pointer to array of GConcept*.
-	*/
-	const GConcept** GetConcepts(unsigned int type) const;
-
-	/**
 	* Look if a given sequence must be skipped.
 	* @param seq             Sequence.
 	* @return true if the sequence must be skipped.
 	*/
 	bool MustSkipSequence(const R::RChar* seq);
-
-	/**
-	* Clear the number of objects of a given type using the dictionary.
-	* @param ObjType        Type of the object.
-	*/
-	void Clear(tObjType ObjType);
 
 	/**
 	* Destructor.

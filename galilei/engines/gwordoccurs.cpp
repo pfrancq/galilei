@@ -6,7 +6,7 @@
 
 	Word Occurences - Implementation.
 
-	Copyright 2004 by the Universit�Libre de Bruxelles.
+	Copyright 2004-2007 by the Université ibre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,7 +32,7 @@
 
 //-----------------------------------------------------------------------------
 // include file for Galilei
-#include <ginfo.h>
+#include <gconcept.h>
 #include <gwordoccurs.h>
 using namespace GALILEI;
 using namespace R;
@@ -47,7 +47,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GWordOccurs::GWordOccurs(R::RString word)
-  : Word(word), Docs(50,50)
+  : Word(word), Docs(50)
 {
 }
 
@@ -83,41 +83,27 @@ int GWordOccurs::Compare(const char* word) const
 //-----------------------------------------------------------------------------
 void GWordOccurs::AddDoc(unsigned int docid)
 {
-	Docs.InsertPtr(new GInfo(docid,1)); // 1==stem -> is fixed
+	Docs.Insert(docid);
 }
 
 
 //-----------------------------------------------------------------------------
-void GWordOccurs::FilterDocs(R::RContainer<GInfo,true,false>& docs) const
+void GWordOccurs::FilterDocs(R::RVectorInt<true>& docs) const
 {
-	RContainer<GInfo,false,false> Rem(20,10);
-
-	if(docs.GetNb())
+	RVectorInt<true>& Cur=const_cast<RVectorInt<true>&>(Docs);
+	
+	if(docs.GetNbInt())
 	{
-		// Remove all documents that are not in Docs
-		RCursor<GInfo> Cur(docs);
-/*		for(Cur.Start();!Cur.End();)
-		{
-			if(Docs.IsIn(Cur()))
-				Cur.Next();
-			else
-				docs.DeletePtr(Cur());
-		}*/
+		// Remove all documents that are not in Docs	
 		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			if(Docs.IsIn(*Cur()))
-				Rem.InsertPtr(Cur());
-		}
-		Cur.Set(Rem);
-		for(Cur.Start();!Cur.End();Cur.Next())
-			docs.DeletePtr(*Cur());
+			if(docs.IsIn(Docs()))
+				docs.Delete(Docs());
 	}
 	else
 	{
 		// Insert all the documents of Docs in docs.
-		RCursor<GInfo> Cur(Docs);
 		for(Cur.Start();!Cur.End();Cur.Next())
-			docs.InsertPtr(new GInfo(*Cur()));
+			docs.Insert(Docs());
 	}
 }
 

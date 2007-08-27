@@ -62,12 +62,7 @@ class GConcept
 	/**
 	* Identifier of the concept.
 	*/
-	unsigned int Id;
-
-	/**
-	* Language of the concept.
-	*/
-	GLang* Lang;
+	size_t Id;
 
 	/**
 	* Name of the concept.
@@ -77,22 +72,22 @@ class GConcept
 	/**
 	* Type of the concept.
 	*/
-	unsigned int Type;
+	GConceptType* Type;
 
 	/**
 	* Number of references in documents.
 	*/
-	unsigned int NbRefDocs;
+	size_t NbRefDocs;
 
 	/**
 	* Number of references in subprofiles.
 	*/
-	unsigned int NbRefSubProfiles;
+	size_t NbRefSubProfiles;
 
 	/**
 	* Number of references in groups.
 	*/
-	unsigned int NbRefGroups;
+	size_t NbRefGroups;
 
 public:
 
@@ -103,29 +98,27 @@ public:
 
 	/**
 	* Constructor of a generic concept.
-	* @param lang            Language of the concept.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	*/
-	GConcept(GLang* lang,const R::RString& name,unsigned int type);
+	GConcept(const R::RString& name,GConceptType* type);
 
 	/**
 	* Constructor of a generic concept.
 	* @param id              Identifier.
-	* @param lang            Language of the concept.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	* @param refdocs         Number of documents referenced.
 	* @param refsubprofiles  Number of subprofiles referenced.
 	* @param refgroups       Number of groups referenced.
 	*/
-	GConcept(unsigned int id,GLang* lang,const R::RString& name,unsigned int type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups);
+	GConcept(unsigned int id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refsubprofiles,size_t refgroups);
 
 	/**
 	* Copy constructor.
 	* @param c               Original concept.
 	*/
-	GConcept(const GConcept& c);
+//	GConcept(const GConcept& c);
 
 	/**
 	* Compare two concepts.
@@ -146,7 +139,7 @@ public:
 	* @param id              Identifier used.
 	* @see R::RContainer
 	*/
-	int Compare(unsigned int id) const;
+	int Compare(size_t id) const;
 
 	/**
 	* Equal operator.
@@ -171,85 +164,24 @@ public:
 	* @see R::RHashContainer
 	* @param c               Concept.
 	*/
-	static int HashIndex(const GConcept& c)
-		{return(R::RString::HashIndex(c.Name));}
-
-	/**
-	* Compute the first hash index of the name of a concept.
-	* @see R::RHashContainer
-	* @param d               Concept.
-	*/
-	static int HashIndex(const GConcept* c)
-		{return(R::RString::HashIndex(c->Name));}
-
-	/**
-	* Compute the first hash index of a string.
-	* @see R::RHashContainer
-	* @param name           String.
-	*/
-	static int HashIndex(const R::RString& name)
-		{return(R::RString::HashIndex(name));}
-
-	/**
-	* Compute the first hash index of an array of characters.
-	* @see R::RHashContainer
-	* @param name           Pointer to the array.
-	*/
-	static int HashIndex(const R::RChar* name)
-		{return(R::RString::HashIndex(name));}
-
-	/**
-	* Compute the second hash index of the name of a concept.
-	* @see R::RHashContainer
-	* @param d               Concept.
-	*/
-	static int HashIndex2(const GConcept& c)
-		{return(R::RString::HashIndex2(c.Name));}
-
-	/**
-	* Compute the second hash index of the name of a concept.
-	* @see R::RHashContainer
-	* @param d               Concept.
-	*/
-	static int HashIndex2(const GConcept* c)
-		{return(R::RString::HashIndex2(c->Name));}
-
-	/**
-	* Compute the second hash index of an array of characters.
-	* @see R::RHashContainer
-	* @param name           Pointer to to the array.
-	*/
-	static int HashIndex2(const R::RChar* name)
-		{return(R::RString::HashIndex2(name));}
-
-	/**
-	* Compute the second hash index of a string.
-	* @see R::RHashContainer
-	* @param name           String.
-	*/
-	static int HashIndex2(const R::RString& name)
-		{return(R::RString::HashIndex2(name));}
+	virtual size_t HashIndex(size_t idx) const
+		{return(Name.HashIndex(idx));}
 
 	/**
 	* Get the type of the concept.
 	*/
-	unsigned int GetType(void) const {return(Type);}
-
-	/**
-	* Get the language of the concept.
-	*/
-	GLang* GetLang(void) const {return(Lang);}
+	GConceptType* GetType(void) const {return(Type);}
 
 	/**
 	* Set the Identificator of the word.
 	* @param id              Identificator of the word.
 	*/
-	void SetId(unsigned int id);
+	void SetId(size_t id);
 
 	/**
 	* @return Identificator of the word.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* @return A string representing the word.
@@ -260,20 +192,20 @@ public:
 	* Increase the number of references on this data for a given object type.
 	* @param ObjType        Type of the reference.
 	*/
-	unsigned int IncRef(tObjType ObjType);
+	size_t IncRef(tObjType ObjType);
 
 	/**
 	* Decrease the number of references on this data for a given object type.
 	* @param ObjType        Type of the reference.
 	*/
-	unsigned int DecRef(tObjType ObjType);
+	size_t DecRef(tObjType ObjType);
 
 	/**
 	* Get the number of references on this data for a given object type.
 	* @param ObjType        Type of the reference.
 	* @returns unsigned int.
 	*/
-	unsigned int GetRef(tObjType ObjType) const;
+	size_t GetRef(tObjType ObjType) const;
 
 	/**
 	* Clear the information of the data link to a specific object.
@@ -289,7 +221,6 @@ public:
 	/**
 	* Test if the data is considered as empty. By default, every data defined by
 	* a non-empty name, is also considered as not empty.
-	* @return bool
 	*/
 	virtual bool IsEmpty(void) const;
 
@@ -297,8 +228,8 @@ public:
 	* Desctuctor of a concept.
 	*/
 	virtual ~GConcept(void);
-
-	friend class GInfo;
+	
+	friend class GWeightInfo;
 };
 
 

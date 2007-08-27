@@ -6,7 +6,7 @@
 
 	List of weighted information entities - Header.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -58,17 +58,22 @@ class GWeightInfos : public R::RContainer<GWeightInfo,true,true>
 protected:
 
 	/**
+	* Language of the description.
+	*/
+	GLang* Lang;
+	
+	/**
 	* State of the object.
 	*/
 	tObjState State;
-
+	
 public:
 
 	/**
 	* Constructor of a list of weighted information entities.
 	* @param max            Maximal number of word created at initialisation.
 	*/
-	GWeightInfos(unsigned int max);
+	GWeightInfos(GLang* lang,unsigned int max);
 
 	/**
 	* Copy constructor of a list of weighted information entities.
@@ -86,8 +91,8 @@ public:
 	* Assignement operator for lists of weighted information entities.
 	* @param w              Source list of weighted information entities.
 	*/
-	GWeightInfos& operator=(const R::RContainer<GWeightInfo,false,true>& w);
-
+	void CopyInfos(const R::RContainer<GWeightInfo,false,true>* infos);
+			
 	/**
 	* Deep copy of a list of weighted information entities.
 	* @param src            Source list of weighted information entities.
@@ -102,10 +107,15 @@ public:
 	static int sortOrder(const void* a,const void* b);
 
 	/**
+	* @return Pointer to the Language.
+	*/
+	inline GLang* GetLang(void) const {return(Lang);}
+	
+	/**
 	* Return the state of the document.
 	* @returns tObjState value.
 	*/
-	tObjState GetState(void) const;
+	inline tObjState GetState(void) const {return(State);}
 
 	/**
 	* Set the state of the document.
@@ -136,12 +146,6 @@ public:
 	void DeleteInfo(GWeightInfo* info);
 
 	/**
-	* Get an information based on its identifier.
-	* @param id             Identifier.
-	*/
-//	GWeightInfo* GetInfo(unsigned int id,unsigned int type) const;
-
-	/**
 	* Clear the container.
 	*/
 	void Clear(void);
@@ -165,18 +169,20 @@ public:
 	bool IsDefined(void) const {return(GetNb());}
 
 	/**
-	* Compute the maximal weight of the information entities in the list. The
-	* list may not be empty.
+	* Compute the maximal weight of the information entities in the list for a 
+	* given concept type. The list may not be empty.
+	* @param type            Type of the concepts.
 	* @return double.
 	*/
-	double GetMaxWeight(void) const;
+	double GetMaxWeight(GConceptType* type) const;
 
 	/**
-	* Compute the maximal absolute weight of the information entities in the list.
-	* The list may not be empty.
+	* Compute the maximal absolute weight of the information entities in the
+	* list for a given concept type. The list may not be empty.
+	* @param type            Type of the concepts.
 	* @return double.
 	*/
-	double GetMaxAbsWeight(void) const;
+	double GetMaxAbsWeight(GConceptType* type) const;
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
@@ -194,9 +200,8 @@ public:
 	* (language). If one of the list is empty, the similarity is null.
 	* @param w              Pointer to a list of weighted information entities.
 	* @param ObjType        Type of the object.
-	* @param lang           Information entity space (Language).
 	*/
-	double SimilarityIFF(const GWeightInfos& w,tObjType ObjType,GLang* lang) const;
+	double SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const;
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
@@ -207,9 +212,8 @@ public:
 	* @param w              Reference to a list of weighted information entities.
 	* @param ObjType1       First type of the object.
 	* @param ObjType2       Second type of the object.
-	* @param lang           Information entity space (Language).
 	*/
-	double SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObjType ObjType2,GLang* lang) const;
+	double SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObjType ObjType2) const;
 
 	/**
 	* Compute a boolean similarity between two lists of weighted information
@@ -229,29 +233,25 @@ protected:
 	* information entity space (language). This information is used for the
 	* inverse frequency factors.
 	* @param ObjType        Type of the reference.
-	* @param lang           Information entity space (Language).
 	*/
-	void AddRefs(tObjType ObjType,GLang* lang) const;
+	void AddRefs(tObjType ObjType) const;
 
 	/**
 	* Delete the references for the information entities of the object type in a
 	* information entity space (language). This information is used for the
 	* inverse frequency factors.
 	* @param ObjType        Type of the reference.
-	* @param lang           Information entity space (Language).
 	*/
-	void DelRefs(tObjType ObjType,GLang* lang) const;
+	void DelRefs(tObjType ObjType) const;
 
 public:
 
 	/**
 	* Modify the list by applying for each information entity the Inverse
-	* Frequence Factor (IFF) of the object type (idf, isf or ivf) for a given
-	* information entity space (language).
+	* Frequence Factor (IFF) of the object type (idf, isf or ivf).
 	* @param ObjType        Type of the reference.
-	* @param lang           Information entity space (Language).
 	*/
-	void RecomputeIFF(tObjType ObjType,GLang* lang);
+	void RecomputeIFF(tObjType ObjType);
 
 	/**
 	* Method used to recompute the weights of the information entities using the

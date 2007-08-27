@@ -6,7 +6,7 @@
 
 	Weighted information entity - Header.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -37,7 +37,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ginfo.h>
+#include <gconcept.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,12 +52,17 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Weighted Information Entity.
 */
-class GWeightInfo : public GInfo
+class GWeightInfo
 {
 protected:
 
 	/**
-	* Weight associated wih the information entity.
+	 * Concept.
+	 */
+	GConcept* Concept;
+	
+	/**
+	* Weight associated wih the concept.
 	*/
 	double Weight;
 
@@ -65,31 +70,16 @@ public:
 
 	/**
 	* Constructor of a weighed information entity.
-	* @param id             Identificator of the information entity.
-	* @param type            Type of the information entity.
-	* @param w              Weight of the information entity.
+	* @param concept         Identificator of the information entity.
+	* @param w               Weight of the information entity.
 	*/
-	GWeightInfo(unsigned int id,unsigned int type,double w=0.0);
+	GWeightInfo(GConcept* concept,double w=0.0);
 
 	/**
 	* Copy constructor of a weighed information entity.
 	* @param w              Pointer to a weighted information entity.
 	*/
 	GWeightInfo(const GWeightInfo& w);
-
-	/**
-	* Copy constructor of a weighed information entity. The weight is suppose to be
-	* null.
-	* @param w              Pointer to an information entity.
-	*/
-	GWeightInfo(const GInfo& w);
-
-	/**
-	* Construct an weighted information entity corresponding to a given
-	* concept.
-	* @param concept         Concept.
-	*/
-	GWeightInfo(const GConcept& concept);
 
 	/**
 	* Compare two weighted information entities by comparing their
@@ -107,8 +97,47 @@ public:
 	* @param concept         Concept.
 	* @return int
 	*/
-	int Compare(const GConcept& concept) const;
+	int Compare(const GConcept* concept) const;
+	
+	/**
+	 * == operator for GWeightInfo.
+	 * @param other          Element to compare with.
+	 */
+	bool operator==(const GWeightInfo &other) const;
+	
+	/**
+	 * != operator for GWeightInfo.
+	 * @param other          Element to compare with.
+	 */
+	bool operator!=(const GWeightInfo &other) const;
+	
+	/**
+	 * < operator for GWeightInfo.
+	 * @param other          Element to compare with.
+	 */
+	bool operator<(const GWeightInfo &other) const;
+	
+	/**
+	 * > operator for GWeightInfo.
+	 * @param other          Element to compare with.
+	 */
+	bool operator>(const GWeightInfo &other) const;
+	
+	/**
+	* Get the identificator of the concept.
+	*/
+	inline unsigned int GetId(void) const {return(Concept->GetId());}
 
+	/**
+	* Get the concept.
+	*/
+	inline GConcept* GetConcept(void) const {return(Concept);}
+	
+	/**
+	* Get the type of the concept.
+	*/
+	inline GConceptType* GetType(void) const {return(Concept->GetType());}
+	
 	/**
 	* Get the weight of the word.
 	* @return Weight as double.
@@ -126,13 +155,6 @@ public:
 	* @param i               Weighted information entity.
 	*/
 	GWeightInfo& operator=(const GWeightInfo& i);
-
-	/**
-	* Assignment operator for weighted information entities. The weight is suppose to be
-	* null.
-	* @param i               Information entity.
-	*/
-	GWeightInfo& operator=(const GInfo& i);
 
 	/**
 	* Add a weight to the current one.

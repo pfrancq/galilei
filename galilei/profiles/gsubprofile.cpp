@@ -53,7 +53,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,unsigned int grpid,R::RDate a,R::RDate u,R::RDate c)
-	: GWeightInfos(60), Id(id), Profile(prof), Lang(lang), GroupId(grpid), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
+	: GWeightInfos(lang,60), Id(id), Profile(prof), GroupId(grpid), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
 {
 	if(!Profile)
 		throw GException("Subprofile "+RString::Number(id)+" has no parent profile");
@@ -106,7 +106,7 @@ void GSubProfile::LoadInfos(void) const
 	RContainer<GWeightInfo,false,true> Infos(1000,500);
 	GSession* session=GSession::Get();
 	if(session&&session->GetStorage())
-		session->GetStorage()->LoadInfos(Infos,Lang,otSubProfile,Id);
+		session->GetStorage()->LoadInfos(Infos,otSubProfile,Id);
 	const_cast<GSubProfile*>(this)->Update(Lang,&Infos,false);
 }
 
@@ -288,7 +288,7 @@ void GSubProfile::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* info
 {
 	// Remove its references
 	if(computed&&Lang)
-		DelRefs(otSubProfile,Lang);
+		DelRefs(otSubProfile);
 
 	// Assign information
 	GWeightInfos::Clear();
@@ -304,14 +304,14 @@ void GSubProfile::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* info
 	}
 	else
 		State=osUpToDate;
-	GWeightInfos::operator=(*infos);
+	CopyInfos(infos);
 
 	// Clear infos
 	infos->Clear();
 
 	// Update its references
 	if(computed&&Lang)
-		AddRefs(otSubProfile,Lang);
+		AddRefs(otSubProfile);
 
 	// Emit an event that it was modified
 	if(computed)
@@ -343,7 +343,7 @@ GSubProfile::~GSubProfile(void)
 
 		// Remove its references
 		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
-			DelRefs(otSubProfile,Lang);
+			DelRefs(otSubProfile);
 	}
 	catch(...)
 	{

@@ -6,7 +6,7 @@
 
 	List of weighted information entities - Implementation.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -40,7 +40,7 @@
 #include <gweightinfos.h>
 #include <gweightinfo.h>
 #include <glang.h>
-#include <gdict.h>
+#include <gconcepttype.h>
 #include <gconcept.h>
 using namespace GALILEI;
 using namespace R;
@@ -54,15 +54,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfos::GWeightInfos(unsigned int max)
-	: RContainer<GWeightInfo,true,true>(max,50), State(osNew)
+GWeightInfos::GWeightInfos(GLang* lang,unsigned int max)
+	: RContainer<GWeightInfo,true,true>(max,50), Lang(lang), State(osNew)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(const GWeightInfos& w)
-	: RContainer<GWeightInfo,true,true>(w), State(w.State)
+	: RContainer<GWeightInfo,true,true>(w), Lang(w.Lang), State(w.State)
 {
 }
 
@@ -71,17 +71,17 @@ GWeightInfos::GWeightInfos(const GWeightInfos& w)
 GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& w)
 {
 	RContainer<GWeightInfo,true,true>::operator=(w);
+	Lang=w.Lang;
 	State=w.State;
 	return(*this);
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfos& GWeightInfos::operator=(const RContainer<GWeightInfo,false,true>& w)
+void GWeightInfos::CopyInfos(const R::RContainer<GWeightInfo,false,true>* infos)
 {
-	RContainer<GWeightInfo,true,true>::operator=(w);
+	RContainer<GWeightInfo,true,true>::operator=(*infos);
 	State=osUpToDate;
-	return(*this);
 }
 
 
@@ -89,6 +89,7 @@ GWeightInfos& GWeightInfos::operator=(const RContainer<GWeightInfo,false,true>& 
 void GWeightInfos::Copy(const GWeightInfos& src)
 {
 	RContainer<GWeightInfo,true,true>::Copy(src);
+	Lang=src.Lang;
 	State=src.State;
 }
 
@@ -111,13 +112,6 @@ int GWeightInfos::sortOrder(const void* a,const void* b)
 void GWeightInfos::Clear(void)
 {
 	RContainer<GWeightInfo,true,true>::Clear();
-}
-
-
-//------------------------------------------------------------------------------
-tObjState GWeightInfos::GetState(void) const
-{
-	return(State);
 }
 
 
@@ -168,19 +162,6 @@ void GWeightInfos::DeleteInfo(GWeightInfo* info)
 
 
 //------------------------------------------------------------------------------
-// GWeightInfo* GWeightInfos::GetInfo(unsigned int id,unsigned int type) const
-// {
-// 	if(State==osNeedLoad)
-// 	{
-// 		const_cast<GWeightInfos*>(this)->State=osOnDemand;      // The object is on-demand of loading
-// 		LoadInfos();           // Load it.
-// 	}
-// 	GInfo info(id,type);
-// 	return(GetPtr<unsigned int>(info));
-// }
-
-
-//------------------------------------------------------------------------------
 size_t GWeightInfos::GetNb(void) const
 {
  	if(State==osNeedLoad)
@@ -193,7 +174,7 @@ size_t GWeightInfos::GetNb(void) const
 
 
 //------------------------------------------------------------------------------
-double GWeightInfos::GetMaxWeight(void) const
+double GWeightInfos::GetMaxWeight(GConceptType* type) const
 {
 	double max;
 
@@ -203,11 +184,15 @@ double GWeightInfos::GetMaxWeight(void) const
 
 	// Suppose first weight is the highest
 	RCursor<GWeightInfo> ptr(*this);
-	ptr.Start();
-	max=ptr()->GetWeight();
+	ptr.Start();	
+	while(ptr()->GetType()!=type)
+		ptr.Next();
+	
+	if(!ptr.End())
+		max=ptr()->GetWeight();
 
-	// Look if there is a greather one.
-	for(ptr.Next();!ptr.End();ptr.Next())
+	// Look if there is a greater one.
+	for(ptr.Next();(!ptr.End())&&(ptr()->GetType()==type);ptr.Next())
 	{
 		if(ptr()->GetWeight()>max)
 			max=ptr()->GetWeight();
@@ -217,7 +202,7 @@ double GWeightInfos::GetMaxWeight(void) const
 
 
 //------------------------------------------------------------------------------
-double GWeightInfos::GetMaxAbsWeight(void) const
+double GWeightInfos::GetMaxAbsWeight(GConceptType* type) const
 {
 	double max;
 
@@ -228,10 +213,14 @@ double GWeightInfos::GetMaxAbsWeight(void) const
 	// Suppose first weight is the highest
 	RCursor<GWeightInfo> ptr(*this);
 	ptr.Start();
-	max=fabs(ptr()->GetWeight());
+	while(ptr()->GetType()!=type)
+		ptr.Next();
+	
+	if(!ptr.End())
+		max=fabs(ptr()->GetWeight());
 
-	// Look if there is a greather one.
-	for(ptr.Next();!ptr.End();ptr.Next())
+	// Look if there is a greater one.
+	for(ptr.Next();(!ptr.End())&&(ptr()->GetType()==type);ptr.Next())
 	{
 		if(fabs(ptr()->GetWeight())>max)
 			max=fabs(ptr()->GetWeight());
@@ -243,14 +232,15 @@ double GWeightInfos::GetMaxAbsWeight(void) const
 //------------------------------------------------------------------------------
 double GWeightInfos::Similarity(const GWeightInfos& w) const
 {
-	double Sim=0.0;
-	double norm1=0.0;
-	double norm2=0.0;
-
 	// if one list is empty -> the similarity is null
 	if((!GetNb())||(!w.GetNb()))
 		return(0.0);
-
+	
+	double Sim;
+	double norm1;
+	double norm2;
+	double GlobalSim(1.0);	
+	GConceptType* type(0);
 	RCursor<GWeightInfo> ptr(*this);
 	RCursor<GWeightInfo> ptr2(w);
 
@@ -258,13 +248,47 @@ double GWeightInfos::Similarity(const GWeightInfos& w) const
 	ptr2.Start();
 	while(!ptr.End())
 	{
+		// Look if the type of the concept have changed since that the last concept treated
+		if(ptr()->GetConcept()->GetType()!=type)
+		{
+			// If a type exist -> modify global sim
+			if(type)
+				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+			
+			// Yes -> A new total number of references.
+			type=ptr()->GetConcept()->GetType();
+			norm1=norm2=Sim=0.0;
+		}
+		
 		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
 		{
+			// Look if the type of the concept have changed since that the last concept treated
+			if(ptr2()->GetConcept()->GetType()!=type)
+			{
+				// If a type exist -> modify global sim
+				if(type)
+					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				
+				// Yes -> A new total number of references.
+				type=ptr2()->GetConcept()->GetType();
+				norm1=norm2=Sim=0.0;
+			}			
 			norm2+=ptr2()->GetWeight()*ptr2()->GetWeight();
 			ptr2.Next();
 		}
 		if((!ptr2.End())&&(ptr2()->GetId()==ptr()->GetId()))
 		{
+			// Look if the type of the concept have changed since that the last concept treated
+			if(ptr2()->GetConcept()->GetType()!=type)
+			{
+				// If a type exist -> modify global sim
+				if(type)
+					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				
+				// Yes -> A new total number of references.
+				type=ptr2()->GetConcept()->GetType();
+				norm1=norm2=Sim=0.0;
+			}						
 			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
 				norm2+=ptr2()->GetWeight()*ptr2()->GetWeight();
@@ -279,62 +303,106 @@ double GWeightInfos::Similarity(const GWeightInfos& w) const
 	}
 	while(!ptr2.End())
 	{
+		// Look if the type of the concept have changed since that the last concept treated
+		if(ptr2()->GetConcept()->GetType()!=type)
+		{
+			// If a type exist -> modify global sim
+			if(type)
+				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+			
+			// Yes -> A new total number of references.
+			type=ptr2()->GetConcept()->GetType();
+			norm1=norm2=Sim=0.0;
+		}					
 		norm2+=ptr2()->GetWeight()*ptr2()->GetWeight();
 		ptr2.Next();
 	}
-	if(norm1==0.0 || norm2==0.0)
-		return (0.0);
-	Sim/=(sqrt(norm1)*sqrt(norm2));
-	return(Sim);
+	// If a type exist -> modify global sim
+	if(type)
+		GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+	return(GlobalSim);
 }
 
 
 //------------------------------------------------------------------------------
-double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType,GLang* lang) const
+double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 {
-	double Sim=0.0;
-	double norm1=0.0;
-	double norm2=0.0;
-	double max1;
-	double max2;
-	double w1,w2,iff;
-	double TotalRef;
-
-	if(!lang)
-		throw GException("No Language defined");
-
 	// if one SubProfile is not defined -> the similarity must be null
 	if((!GetNb())||(!w.GetNb()))
 		return(0.0);
 
-	// Compute Similarity
-	max1=GetMaxAbsWeight();
-	max2=w.GetMaxAbsWeight();
-	if(max1==0.0 || max2==0.0)
-		return (0.0);
-
+	double max1;
+	double max2;	
+	double GlobalSim(1.0);	
+	double Sim;
+	double norm1;
+	double norm2;
+	double w1,w2,iff;
+	double TotalRef;
+	GConceptType* type(0);
+		
 	RCursor<GWeightInfo> ptr(*this);
 	RCursor<GWeightInfo> ptr2(w);
 
-	TotalRef=lang->GetRef(ObjType);
 	ptr.Start();
 	ptr2.Start();
 	while(!ptr.End())
 	{
-		iff=TotalRef/static_cast<double>(lang->GetRef(ptr()->GetId(),ptr()->GetType(),ObjType));
-		w1=(ptr()->GetWeight()/max1)*log(iff);
-		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
+		// Look if the type of the concept have changed since that the last concept treated
+		if(ptr()->GetConcept()->GetType()!=type)
 		{
-			iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType));
+			// If a type exist -> modify global sim
+			if(type)
+				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+			
+			// Yes -> A new total number of references.
+			type=ptr()->GetConcept()->GetType();
+			TotalRef=type->GetRef(ObjType);
+			norm1=norm2=Sim=0.0;
+			max1=GetMaxAbsWeight(type);
+			max2=w.GetMaxAbsWeight(type);
+		}
+
+		iff=TotalRef/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType));
+		w1=(ptr()->GetWeight()/max1)*log(iff);
+		while((!ptr2.End())&&((*ptr2())<(*ptr())))
+		{
+			if(ptr2()->GetConcept()->GetType()!=type)
+			{
+				// If a type exist -> modify global sim
+				if(type)
+					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				
+				// Yes -> A new total number of references.
+				type=ptr2()->GetConcept()->GetType();
+				TotalRef=type->GetRef(ObjType);
+				norm1=norm2=Sim=0.0;
+				max1=GetMaxAbsWeight(type);
+				max2=w.GetMaxAbsWeight(type);				
+			}			
+			iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType));
 			w2=(ptr2()->GetWeight()/max2)*log(iff);
 			norm2+=w2*w2;
 			ptr2.Next();
 		}
-		if((!ptr2.End())&&(ptr2()->GetId()==ptr()->GetId()))
+		if((!ptr2.End())&&((*ptr2())==(*ptr())))
 		{
+			if(ptr2()->GetConcept()->GetType()!=type)
+			{
+				// If a type exist -> modify global sim
+				if(type)
+					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				
+				// Yes -> A new total number of references.
+				type=ptr2()->GetConcept()->GetType();
+				TotalRef=type->GetRef(ObjType);
+				norm1=norm2=Sim=0.0;
+				max1=GetMaxAbsWeight(type);
+				max2=w.GetMaxAbsWeight(type);				
+			}			
 			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
-				iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType));
+				iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType));
 				w2=(ptr2()->GetWeight()/max2)*log(iff);
 				norm2+=w2*w2;
 				norm1+=w1*w1;
@@ -348,69 +416,122 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType,GLang*
 	}
 	while(!ptr2.End())
 	{
-		iff=TotalRef/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType));
+		if(ptr2()->GetConcept()->GetType()!=type)
+		{
+			// If a type exist -> modify global sim
+			if(type)
+				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+			
+			// Yes -> A new total number of references.
+			type=ptr2()->GetConcept()->GetType();
+			TotalRef=type->GetRef(ObjType);
+			norm1=norm2=Sim=0.0;
+			max1=GetMaxAbsWeight(type);
+			max2=w.GetMaxAbsWeight(type);			
+		}			
+		iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType));
 		w2=(ptr2()->GetWeight()/max2)*log(iff);
 		norm2+=w2*w2;
 		ptr2.Next();
 	}
-	if(norm1==0.0 || norm2==0.0)
-		return (0.0);
-	Sim/=(sqrt(norm1)*sqrt(norm2));
-	return(Sim);
+
+	// If a type exist -> modify global sim
+	if(type)
+		GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+	return(GlobalSim);
 }
 
 
 //------------------------------------------------------------------------------
-double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObjType ObjType2,GLang* lang) const
+double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObjType ObjType2) const
 {
-	double Sim=0.0;
-	double norm1=0.0;
-	double norm2=0.0;
+	// if one SubProfile is not defined -> the similarity must be null
+	if((!GetNb())||(!w.GetNb()))
+		return(0.0);
+
+	double GlobalSim(1.0);
+	double Sim;
+	double norm1;
+	double norm2;
 	double max1;
 	double max2;
 	double w1,w2,iff1,iff2;
 	double TotalRef1;
 	double TotalRef2;
-
-	if(!lang)
-		throw GException("No Language defined");
-
-	// if one SubProfile is not defined -> the similarity must be null
-	if((!GetNb())||(!w.GetNb()))
-		return(0.0);
+	GConceptType* type;
 
 	// Compute Similarity
-	max1=GetMaxAbsWeight();
-	max2=w.GetMaxAbsWeight();
-	if(max1==0.0 || max2==0.0)
-		return (0.0);
-
 	RCursor<GWeightInfo> ptr(*this);
 	RCursor<GWeightInfo> ptr2(w);
 
-	TotalRef1=lang->GetRef(ObjType1);
-	TotalRef2=lang->GetRef(ObjType2);
 	ptr.Start();
 	ptr2.Start();
 	while(!ptr.End())
 	{
-		iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr()->GetId(),ptr()->GetType(),ObjType1));
-		iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr()->GetId(),ptr()->GetType(),ObjType2));
+		// Look if the type of the concept have changed since that the last concept treated
+		if(ptr()->GetConcept()->GetType()!=type)
+		{
+			// If a type exist -> modify global sim
+			if(type)
+				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+			
+			// Yes -> A new total number of references.
+			type=ptr()->GetConcept()->GetType();
+			TotalRef1=type->GetRef(ObjType1);
+			TotalRef2=type->GetRef(ObjType2);
+			norm1=norm2=Sim=0.0;
+			max1=GetMaxAbsWeight(type);
+			max2=w.GetMaxAbsWeight(type);
+		}
+				
+		iff1=TotalRef1/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType1));
+		iff2=TotalRef2/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType2));
+		
 		w1=(ptr()->GetWeight()/max1)*log(iff1)*log(iff2);
 		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
 		{
-			iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType1));
-			iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType2));
+			// Look if the type of the concept have changed since that the last concept treated
+			if(ptr2()->GetConcept()->GetType()!=type)
+			{
+				// If a type exist -> modify global sim
+				if(type)
+					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				
+				// Yes -> A new total number of references.
+				type=ptr2()->GetConcept()->GetType();
+				TotalRef1=type->GetRef(ObjType1);
+				TotalRef2=type->GetRef(ObjType2);
+				norm1=norm2=Sim=0.0;
+				max1=GetMaxAbsWeight(type);
+				max2=w.GetMaxAbsWeight(type);
+			}
+			iff1=TotalRef1/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType1));
+			iff2=TotalRef2/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType2));
 			w2=(ptr2()->GetWeight()/max2)*log(iff1)*log(iff2);
 			norm2+=w2*w2;
 			ptr2.Next();
 		}
 		if((!ptr2.End())&&(ptr2()->GetId()==ptr()->GetId()))
 		{
+			// Look if the type of the concept have changed since that the last concept treated
+			if(ptr2()->GetConcept()->GetType()!=type)
+			{
+				// If a type exist -> modify global sim
+				if(type)
+					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				
+				// Yes -> A new total number of references.
+				type=ptr2()->GetConcept()->GetType();
+				TotalRef1=type->GetRef(ObjType1);
+				TotalRef2=type->GetRef(ObjType2);
+				norm1=norm2=Sim=0.0;
+				max1=GetMaxAbsWeight(type);
+				max2=w.GetMaxAbsWeight(type);
+			}								
 			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
-				iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType1));
-				iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType2));
+				iff1=TotalRef1/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType1));
+				iff2=TotalRef2/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType2));
 				w2=(ptr2()->GetWeight()/max2)*log(iff1)*log(iff2);
 				norm2+=w2*w2;
 				norm1+=w1*w1;
@@ -424,16 +545,31 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 	}
 	while(!ptr2.End())
 	{
-		iff1=TotalRef1/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType1));
-		iff2=TotalRef2/static_cast<double>(lang->GetRef(ptr2()->GetId(),ptr2()->GetType(),ObjType2));
+		// Look if the type of the concept have changed since that the last concept treated
+		if(ptr2()->GetConcept()->GetType()!=type)
+		{
+			// If a type exist -> modify global sim
+			if(type)
+				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+			
+			// Yes -> A new total number of references.
+			type=ptr2()->GetConcept()->GetType();
+			TotalRef1=type->GetRef(ObjType1);
+			TotalRef2=type->GetRef(ObjType2);
+			norm1=norm2=Sim=0.0;
+			max1=GetMaxAbsWeight(type);
+			max2=w.GetMaxAbsWeight(type);
+		}							
+		iff1=TotalRef1/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType1));
+		iff2=TotalRef2/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType2));
 		w2=(ptr2()->GetWeight()/max2)*log(iff1)*log(iff2);
 		norm2+=w2*w2;
 		ptr2.Next();
 	}
-	if(norm1==0.0 || norm2==0.0)
-		return (0.0);
-	Sim/=(sqrt(norm1)*sqrt(norm2));
-	return(Sim);
+	// If a type exist -> modify global sim
+	if(type)
+		GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+	return(GlobalSim);
 }
 
 
@@ -473,56 +609,76 @@ bool GWeightInfos::SimilarityBool(const GWeightInfos& w,unsigned int nb) const
 
 
 //------------------------------------------------------------------------------
-void GWeightInfos::AddRefs(tObjType ObjType,GLang* lang) const
+void GWeightInfos::AddRefs(tObjType ObjType) const
 {
-	if(!lang)
-		throw GException("No Language defined");
 	if(!GetNb()) return;
-	lang->IncRef(ObjType);
+	GConceptType* type(0);
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		lang->IncRef(ptr()->GetId(),ptr()->GetType(),ObjType);
+		// Look if the type of the concept have changed since that the last concept treated
+		if(ptr()->GetConcept()->GetType()!=type)
+		{
+			// Yes -> A new object uses this concept type.
+			type=ptr()->GetConcept()->GetType();
+			type->IncRef(ObjType);
+		}
+
+		// AddRef for the concept
+		type->IncRef(ptr()->GetConcept()->GetId(),ObjType);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GWeightInfos::DelRefs(tObjType ObjType,GLang* lang) const
+void GWeightInfos::DelRefs(tObjType ObjType) const
 {
-	if(!lang)
-		throw GException("No Language defined");
 	if(!GetNb()) return;
-	lang->DecRef(ObjType);
+	GConceptType* type(0);
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		lang->DecRef(ptr()->GetId(),ptr()->GetType(),ObjType);
+		// Look if the type of the concept have changed since that the last concept treated
+		if(ptr()->GetConcept()->GetType()!=type)
+		{
+			// Yes -> A new object does not use this concept type anymore.
+			type=ptr()->GetConcept()->GetType();
+			type->DecRef(ObjType);
+		}
+
+		// AddRef for the concept
+		type->DecRef(ptr()->GetConcept()->GetId(),ObjType);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GWeightInfos::RecomputeIFF(tObjType ObjType,GLang* lang)
+void GWeightInfos::RecomputeIFF(tObjType ObjType)
 {
-	double max,iff;
-
-	if(!lang)
-		throw GException("No Language defined");
 	if(!GetNb()) return;
+	double max,iff,ref;
+	GConceptType* type(0);
+	
 	RCursor<GWeightInfo> ptr(*this);
-	for(ptr.Start(),max=GetMaxAbsWeight();!ptr.End();ptr.Next())
+	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		iff=static_cast<double>(lang->GetRef(ObjType))/static_cast<double>(lang->GetRef(ptr()->GetId(),ptr()->GetType(),ObjType));
+		if(type!=ptr()->GetConcept()->GetType())
+		{
+			type=ptr()->GetConcept()->GetType();
+			max=GetMaxAbsWeight(type);
+			ref=static_cast<double>(type->GetRef(ObjType));
+		}
+		iff=ref/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType));
 		ptr()->SetWeight((ptr()->GetWeight()/max)*log(iff));
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GWeightInfos::RecomputeQuery(tObjType ObjType,GLang* lang)
+void GWeightInfos::RecomputeQuery(tObjType,GLang*)
 {
-	GWeightInfo* ptr;
+	throw GException("GWeightInfos::RecomputeQuery not implemented");
+/*	GWeightInfo* ptr;
 	unsigned int i;
 	double max=GetMaxAbsWeight();
 	double TotalRef;
@@ -548,7 +704,7 @@ void GWeightInfos::RecomputeQuery(tObjType ObjType,GLang* lang)
 		freq=0.5+((0.5*ptr->GetWeight())/max);
 		idffactor=log(TotalRef/nbref);
 		ptr->SetWeight(freq*idffactor);
-	}
+	}*/
 }
 
 

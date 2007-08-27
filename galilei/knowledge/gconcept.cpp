@@ -47,35 +47,35 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(void)
-	: Id(cNoRef), Lang(0), Name(""), Type(0), NbRefDocs(0),
+	: Id(cNoRef), Name(RString::Null), Type(0), NbRefDocs(0),
 	  NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(GLang* lang,const RString& name,unsigned int type)
-	: Id(cNoRef), Lang(lang), Name(name), Type(type), NbRefDocs(0),
+GConcept::GConcept(const RString& name,GConceptType* type)
+	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0),
 	  NbRefSubProfiles(0), NbRefGroups(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(unsigned int id,GLang* lang,const RString& name,unsigned int type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
-	: Id(id), Lang(lang), Name(name), Type(type), NbRefDocs(refdocs),
+GConcept::GConcept(unsigned int id,const RString& name,GConceptType* type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
+	: Id(id), Name(name), Type(type), NbRefDocs(refdocs),
 	  NbRefSubProfiles(refsubprofiles), NbRefGroups(refgroups)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(const GConcept& c)
-	: Id(c.Id), Lang(c.Lang), Name(c.Name), Type(c.Type), NbRefDocs(c.NbRefDocs),
+/*GConcept::GConcept(const GConcept& c)
+	: Id(c.Id), Name(c.Name), Type(c.Type), NbRefDocs(c.NbRefDocs),
 	  NbRefSubProfiles(c.NbRefSubProfiles), NbRefGroups(c.NbRefGroups)
 {
 }
-
+*/
 
 //-----------------------------------------------------------------------------
 int GConcept::Compare(const GConcept& c) const
@@ -92,7 +92,7 @@ int GConcept::Compare(const R::RString& name) const
 
 
 //-----------------------------------------------------------------------------
-int GConcept::Compare(unsigned int id) const
+int GConcept::Compare(size_t id) const
 {
 	return(Id-id);
 }
@@ -101,7 +101,7 @@ int GConcept::Compare(unsigned int id) const
 //-----------------------------------------------------------------------------
 bool GConcept::operator==(const GConcept& c) const
 {
-	if((Lang!=c.Lang)||(Type!=c.Type)||(Id!=c.Id))
+	if((Type!=c.Type)||(Id!=c.Id))
 		return(false);
 	return(true);
 }
@@ -110,7 +110,7 @@ bool GConcept::operator==(const GConcept& c) const
 //-----------------------------------------------------------------------------
 bool GConcept::operator!=(const GConcept& c) const
 {
-	if((Lang==c.Lang)&&(Type==c.Type)&&(Id==c.Id))
+	if((Type==c.Type)&&(Id==c.Id))
 		return(false);
 	return(true);
 }
@@ -120,7 +120,6 @@ bool GConcept::operator!=(const GConcept& c) const
 GConcept& GConcept::operator=(const GConcept& c)
 {
 	Id=c.Id;
-	Lang=c.Lang;
 	Name=c.Name;
 	Type=c.Type;
 	NbRefDocs=c.NbRefDocs;
@@ -131,14 +130,14 @@ GConcept& GConcept::operator=(const GConcept& c)
 
 
 //-----------------------------------------------------------------------------
-void GConcept::SetId(unsigned int id)
+void GConcept::SetId(size_t id)
 {
 	Id=id;
 }
 
 
 //-----------------------------------------------------------------------------
-unsigned int GConcept::IncRef(tObjType ObjType)
+size_t GConcept::IncRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
@@ -159,7 +158,7 @@ unsigned int GConcept::IncRef(tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GConcept::DecRef(tObjType ObjType)
+size_t GConcept::DecRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{
@@ -186,7 +185,7 @@ unsigned int GConcept::DecRef(tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GConcept::GetRef(tObjType ObjType) const
+size_t GConcept::GetRef(tObjType ObjType) const
 {
 	switch(ObjType)
 	{
@@ -255,8 +254,7 @@ void GConcept::Clear(tObjType ObjType)
 void GConcept::Clear(void)
 {
 	Id=cNoRef;
-	Name="";
-	Lang=0;
+	Name=RString::Null;
 	NbRefDocs=0;
 	NbRefSubProfiles=0;
 	NbRefGroups=0;

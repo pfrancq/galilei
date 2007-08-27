@@ -6,7 +6,7 @@
 
 	Group - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -60,11 +60,6 @@ protected:
 	* Identificator of the group.
 	*/
 	unsigned int Id;
-
-	/**
-	* Language of the group.
-	*/
-	GLang* Lang;
 
 	/**
 	* Is the group a virtual community.
@@ -160,12 +155,6 @@ public:
 	* Load information from the current storage.
 	*/
 	virtual void LoadInfos(void) const;
-
-	/**
-	* Get the language of the set of groups.
-	* @return Pointer to the language.
-	*/
-	GLang* GetLang(void) const {return(Lang);}
 
 	/**
 	* Look if a given subprofile is contained in the group.
