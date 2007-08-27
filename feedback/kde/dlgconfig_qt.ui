@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>380</width>
-            <height>376</height>
+            <width>401</width>
+            <height>348</height>
         </rect>
     </property>
     <property name="caption">
@@ -136,34 +136,6 @@
                             </property>
                         </widget>
                     </hbox>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>Localisf</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Local isf factor used</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Specify if a local isf factor must be used.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>When this parameter is checked, a local inverse subprofile factor is computed using only the assessed documents. This factor is then used when computing the weight of the information entities used for the description.</string>
-                    </property>
-                </widget>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>idf</cstring>
-                    </property>
-                    <property name="text">
-                        <string>idf factor used</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Specify if the idf factor must be used.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>When this parameter is checked, the inverse document factor is used when computing the weight of the information entities used for the description.</string>
-                    </property>
                 </widget>
                 <widget class="QCheckBox">
                     <property name="name">
@@ -430,8 +402,6 @@
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>
@@ -451,6 +421,8 @@
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>

@@ -89,8 +89,6 @@ void Configure(GFactoryProfileCalc* params)
 
 	dlg.MaxSize->setValue(params->GetUInt("MaxSize"));
 	dlg.NegSize->setValue(params->GetUInt("NegSize"));
-	dlg.Localisf->setChecked(params->GetBool("Localisf"));
-	dlg.idf->setChecked(params->GetBool("idf"));
 	dlg.Positive->setChecked(params->GetBool("Positive"));
 	dlg.RelFactor->setValue(params->GetDouble("RelFactor"));
 	dlg.FuzzyFactor->setValue(params->GetDouble("FuzzyFactor"));
@@ -100,8 +98,6 @@ void Configure(GFactoryProfileCalc* params)
 	{
 		params->SetUInt("MaxSize",dlg.MaxSize->value());
 		params->SetUInt("NegSize",dlg.NegSize->value());
-		params->SetBool("Localisf",dlg.Localisf->isChecked());
-		params->SetBool("idf",dlg.idf->isChecked());
 		params->SetBool("Positive",dlg.Positive->isChecked());
 		params->SetDouble("RelFactor",dlg.RelFactor->value());
 		params->SetDouble("FuzzyFactor",dlg.FuzzyFactor->value());

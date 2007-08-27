@@ -6,7 +6,7 @@
 
 	Vector Computing Method  - Implementation.
 
-	Copyright 2001-2004 by the Université lLibre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -43,6 +43,8 @@
 #include <gdoc.h>
 #include <gsubprofile.h>
 #include <gprofile.h>
+#include <gconcept.h>
+#include <gconcepttype.h>
 #include <gweightinfo.h>
 #include <glang.h>
 #include <gsession.h>
@@ -61,8 +63,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac)
 	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
-	  FuzzyFactor(0.25), IrrelFactor(0.75), Positive(false), Localisf(false), idf(true),
-	  Vectors(5000), NbDocsWords(5000), NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
+	  FuzzyFactor(0.25), IrrelFactor(0.75), Positive(false),
+	  Vectors(0,5000), NbDocsWords(0,5000), NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
 }
@@ -79,8 +81,6 @@ void GProfileCalcFeedback::ApplyConfig(void)
 	FuzzyFactor=Factory->GetDouble("FuzzyFactor");
 	IrrelFactor=Factory->GetDouble("IrrelFactor");
 	Positive=Factory->GetBool("Positive");
-	Localisf=Factory->GetBool("Localisf");
-	idf=Factory->GetBool("idf");
 	IncrementalMode=Factory->GetBool("IncrementalMode");
 }
 
@@ -109,53 +109,19 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 	double MaxFreq;
 	double Factor;
 	double Freq;
-	unsigned int TotalRef;
-
+	double TotalRef;
+	GConceptType* type(0);
+	
 	// Clear all containers before computing
 	Vectors.Clear();
 	NbDocsWords.Clear();
 	NbDocs=0;
 
-	// Get the total number of document analyzed
-	TotalRef=SubProfile->GetLang()->GetRef(otDoc);
-
-	// If the local isf factor must be computed, go through all documents, to
-	// compute the number of documents "OK", "KO" and "N" for each language and
-	// the number of documents for each index term.
-	if(Localisf)
-	{
-		Docs=SubProfile->GetFdbks();
-		for(Docs.Start();!Docs.End();Docs.Next())
-		{
-			// If the assessment of the document is not relevant
-			// -> don't treat for the profiles computing
-			if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
-
-			// If incremental mode and document has no change -> continue
-			if(IncrementalMode&&(!Docs()->MustUse(SubProfile))) continue;
-
-			// Get the document : if it exists and is defined -> add it
-			GDoc* doc=Session->GetDoc(Docs()->GetDocId());
-			if((!doc)||(!doc->IsDefined())) continue;
-
-			// Add total number of document judged for the current language
-			NbDocs++;
-
-			// Update number of documents where appear each index term.
-			Words=doc->GetInfos();
-			for(Words.Start();!Words.End();Words.Next())
-			{
-				w=NbDocsWords.GetInsertPtr(GInfo(*Words()));
-				(*w)+=1.0;
-			}
-		}
-	}
-
 	// Go through all documents, add the frequences of the words of "OK"
 	// documents and substract the frequences of the words of "KO" documents.
 	Docs=SubProfile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
-	{
+	{		
 		// If the assessment of the document is not relevant
 		// -> don't treat for the profiles computing
 		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
@@ -166,7 +132,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 		// Get the document : if it exists and is defined -> add it
 		GDoc* doc=Session->GetDoc(Docs()->GetDocId());
 		if((!doc)||(!doc->IsDefined())) continue;
-
+		
 		// Find list in function of the feedback
 		switch(Docs()->GetFdbk() & djMaskJudg )
 		{
@@ -188,19 +154,23 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 
 		// Add total number of words and the occurences of each word of the current document.
 		Words=doc->GetInfos();
-		MaxFreq=doc->GetMaxWeight();
+		type=0; // No current type
 		for(Words.Start();!Words.End();Words.Next())
 		{
-			w=Vectors.GetInsertPtr(GInfo(*Words()));
+			// Look if the type of the concept have changed since that the last concept treated
+			if(Words()->GetConcept()->GetType()!=type)
+			{
+				// Yes -> Get the total number of document analyzed.
+				type=Words()->GetConcept()->GetType();
+				TotalRef=type->GetRef(otDoc);
+				MaxFreq=doc->GetMaxWeight(type);
+			}
+
+			w=Vectors.GetInsertPtr(*Words());
+			
+			// Compute the frequence
 			Freq=Words()->GetWeight()/MaxFreq;
-
-			// If local isf is needed, multiply the frequence by it
-			if((Localisf)&&(NbDocs>1))
-				Freq*=log(NbDocs/NbDocsWords.GetPtr(*Words())->GetWeight());
-
-			// If local idf is needed, multiply the frequence by it
-			if(idf)
-				Freq*=log(TotalRef/static_cast<double>(SubProfile->GetLang()->GetRef(Words()->GetId(),Words()->GetType(),otDoc)));
+			Freq*=log(TotalRef/static_cast<double>(type->GetRef(Words()->GetId(),otDoc)));
 
 			// Add the frequence to the global vector
 			if(Add)
@@ -256,7 +226,7 @@ void GProfileCalcFeedback::ComputeSubProfile(void)
 	// Copy the irrelevant entities
 	for(i=nb2+1,ptr=&Order[Vectors.GetNb()-1];--i;ptr--)
 		Infos.InsertPtr(new GWeightInfo(**ptr));
-}
+	}
 
 
 //-----------------------------------------------------------------------------
@@ -264,7 +234,8 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 {
 	SubProfile=subprofile;
 	GWeightInfo* ptr;
-
+	GConceptType* type(0);
+	
 	// Clear Infos
 	// Rem: Since Infos is not responsible for allocation/desallocation
 	//      -> parse it to prevent memory leaks
@@ -277,15 +248,21 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 	if(IncrementalMode&&subprofile->IsDefined())
 	{
 		unsigned int i,TotalRef;
-
 		Cur=subprofile->GetInfos();
-		TotalRef=subprofile->GetLang()->GetRef(otDoc);
 		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 		{
-			Infos.InsertPtrAt(ptr=new GWeightInfo(*Cur()),i);
-			if(ptr&&idf)
+			// Look if the type of the concept have changed since that the last concept treated
+			if(Cur()->GetConcept()->GetType()!=type)
 			{
-				(*ptr)/=log(TotalRef/static_cast<double>(subprofile->GetLang()->GetRef(Cur()->GetId(),Cur()->GetType(),otDoc)));
+				// Yes -> Get the total number of document analyzed.
+				type=Cur()->GetConcept()->GetType();
+				TotalRef=type->GetRef(otDoc);
+			}
+			
+			Infos.InsertPtrAt(ptr=new GWeightInfo(*Cur()),i);
+			if(ptr)
+			{
+				(*ptr)/=log(TotalRef/static_cast<double>(type->GetRef(Cur()->GetId(),otDoc)));
 			}
 		}
 	}
@@ -310,8 +287,6 @@ void GProfileCalcFeedback::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("FuzzyFactor",0.25));
 	params->InsertParam(new RParamValue("IrrelFactor",0.75));
 	params->InsertParam(new RParamValue("Positive",false));
-	params->InsertParam(new RParamValue("Localisf",false));
-	params->InsertParam(new RParamValue("idf",true));
 	params->InsertParam(new RParamValue("IncrementalMode",false));
 }
 

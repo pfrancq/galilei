@@ -6,7 +6,7 @@
 
 	Vector Computing Method - Header.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2007 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -73,10 +73,6 @@ namespace GALILEI{
 class GProfileCalcFeedback : public GProfileCalc
 {
 protected:
-	enum
-	{
-	};
-
 	/**
 	* Information computed.
 	*/
@@ -111,16 +107,6 @@ protected:
 	* Positive feedback.
 	*/
 	bool Positive;
-
-	/**
-	* Must a local inverse subprofile factor be computed.
-	*/
-	bool Localisf;
-
-	/**
-	* Must the inverse document factor be computed.
-	*/
-	bool idf;
 
 	/**
 	* Global vector computed.
