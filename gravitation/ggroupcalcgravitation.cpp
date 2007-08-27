@@ -41,7 +41,6 @@
 #include <ggroup.h>
 #include <gsession.h>
 #include <gsubprofile.h>
-#include <ginfo.h>
 #include <gweightinfo.h>
 #include <gweightinfos.h>
 using namespace GALILEI;
@@ -58,7 +57,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac)
-	: GGroupCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
+	: GGroupCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(0,5000), MaxOrderSize(5000)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
 }
@@ -135,7 +134,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetType(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
 		}
 	}
 	else
@@ -143,7 +142,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetId(),(*w)->GetType(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
 		}
 	}
 
