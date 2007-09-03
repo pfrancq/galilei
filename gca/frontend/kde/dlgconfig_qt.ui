@@ -482,6 +482,9 @@
                                 <property name="name">
                                     <cstring>Convergence</cstring>
                                 </property>
+                                <property name="precision">
+                                    <number>5</number>
+                                </property>
                                 <property name="toolTip" stdset="0">
                                     <string>Set the ratio of convergence to stop the iterations of the k-Means.</string>
                                 </property>
@@ -1088,8 +1091,6 @@
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>

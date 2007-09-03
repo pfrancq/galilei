@@ -56,9 +56,9 @@ GGCAProm::GGCAProm(GGCAParams* p)
 	  CritDisagreement(0)
 {
 	// Init Criterion and Solutions of the PROMETHEE part
-	CritSimJ=NewCriterion(Maximize,"J (Sim)",Params->ParamsSim.P,Params->ParamsSim.Q,Params->ParamsSim.Weight);
-	CritAgreement=NewCriterion(Maximize,"Agreement",Params->ParamsAgreement.P,Params->ParamsAgreement.Q,Params->ParamsAgreement.Weight);
-	CritDisagreement=NewCriterion(Minimize,"Disagreement",Params->ParamsDisagreement.P,Params->ParamsDisagreement.Q,Params->ParamsDisagreement.Weight);
+	CritSimJ=NewCriterion(RPromCriterion::Maximize,"J (Sim)",Params->ParamsSim);
+	CritAgreement=NewCriterion(RPromCriterion::Maximize,"Agreement",Params->ParamsAgreement);
+	CritDisagreement=NewCriterion(RPromCriterion::Minimize,"Disagreement",Params->ParamsDisagreement);
 }
 
 

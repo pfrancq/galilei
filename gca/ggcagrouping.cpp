@@ -65,7 +65,7 @@
 
 //-----------------------------------------------------------------------------
 GGCAGrouping::GGCAGrouping(GFactoryGrouping* fac)
-	: GGrouping(fac), Objs(20)
+	: GGrouping(fac), RObject("Profiles Grouping"), Objs(20)
 {
 }
 
@@ -174,6 +174,13 @@ void GGCAGrouping::ConstructGroupsFromChromo(GGCAChromo* chromo)
 
 
 //-----------------------------------------------------------------------------
+void GGCAGrouping::BestChromo(const RNotification& notification)
+{
+    cout<<"Best Chromo at Gen : "<<GetData<unsigned int>(notification)<<endl;
+}
+
+
+//-----------------------------------------------------------------------------
 void GGCAGrouping::Run(void)
 {
 	// If no subprofiles -> nothing to group
@@ -188,7 +195,6 @@ void GGCAGrouping::Run(void)
 
 		// Get the minimum of similarity		
 		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities")->Info(0,Lang,&d);
-		cout<<"MinSim="<<d<<endl;
   		Params.MinSimLevel=d;
 		
 		// Create the GA objects 

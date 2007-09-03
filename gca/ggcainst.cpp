@@ -137,8 +137,6 @@ GGCAInst::GGCAInst(GSession* ses,GLang* l,RCursor<GGCAObj> objs,GGCAParams* p,RD
 	unsigned int i;
 
 	// Change Freq
-/*	MaxBestPopAge=5;
-	MaxBestAge=8;*/
 	SetMutationParams(5,8,1);
 
 	// Init Solutions of the PROMETHEE part
@@ -215,8 +213,8 @@ void GGCAInst::WriteChromoInfo(GGCAChromo* c)
 	char Tmp2[300];
 
 	if(!Debug) return;
-	sprintf(Tmp,"Id %2u (Fi=%f,Fi+=%f,Fi-=%f): ",c->Id,c->Fi,c->FiPlus,c->FiMinus);
-	sprintf(Tmp2,"J=%1.3f - Agr.=%1.3f - Disagr.=%1.3f",c->CritSimJ,c->CritAgreement,c->CritDisagreement);
+	sprintf(Tmp,"Id %2u (Fi=%1.5f,Fi+=%1.5f,Fi-=%1.5f): ",c->Id,c->Fi,c->FiPlus,c->FiMinus);
+	sprintf(Tmp2,"J=%1.5f - Agr.=%1.5f - Disagr.=%1.5f",c->CritSimJ,c->CritAgreement,c->CritDisagreement);
 	strcat(Tmp,Tmp2);
 	Debug->PrintInfo(Tmp);
 }
@@ -240,10 +238,8 @@ void GGCAInst::PostEvaluate(void)
 		Debug->BeginFunc("PostEvaluate","GGCAInst");
 	ptr=Sols;
 	Assign(*ptr,BestChromosome);
-	for(i=GetPopSize()+1,C=Chromosomes;--i;C++)
-	{
+	for(i=GetPopSize()+1,C=Chromosomes,ptr++;--i;C++,ptr++)
 		Assign(*ptr,*C);
-	}
 	ComputePrometheeII();
 	Res=GetSols();
 	ptr=Res;

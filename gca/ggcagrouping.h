@@ -34,16 +34,15 @@
 #ifndef GGCAGroupingH
 #define GGCAGroupingH
 
+//-----------------------------------------------------------------------------
+// include files for R project
+#include <robject.h>
+#include <ggca.h>
+
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggrouping.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for GCA
-#include <ggca.h>
 
 
 //-----------------------------------------------------------------------------
@@ -53,7 +52,7 @@ using namespace R;
 * @author Pascal Francq
 * @short GGA Method.
 */
-class GGCAGrouping : public GGrouping
+class GGCAGrouping : public GGrouping, public RObject
 {
 protected:
 
@@ -80,6 +79,8 @@ public:
 	*/
 	GGCAGrouping(GFactoryGrouping* fac);
 
+	virtual RCString GetClassName(void) const {return("GGCAGrouping");}
+	
 	/**
 	* Configurations were applied from the factory.
 	*/
@@ -133,6 +134,11 @@ protected:
 	*/
 	virtual bool IsValid(GGroup* grp);
 
+	/**
+	 * Catch a best chromosome notification.
+	 */
+	void BestChromo(const RNotification& notification);
+	   
 	/**
 	* Make the grouping for a specific Language.
 	*/
