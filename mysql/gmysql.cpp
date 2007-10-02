@@ -117,6 +117,44 @@ RString GStorageMySQL::GetMySQLToDate(RString date)
 }
 
 
+//------------------------------------------------------------------------------
+RString GStorageMySQL::Num(double d)
+{
+	RString res("'"+RString::Number(d)+"'");
+	int i=res.Find(',');
+	if(i!=-1)
+		res=res.Mid(0,i)+"."+res.Mid(i+1);
+	return(res);
+}
+
+
+//------------------------------------------------------------------------------
+double GStorageMySQL::atof(const R::RString& str)
+{
+	double d2;
+	RString res(str);
+	double d1=std::atof(str);
+	int i=res.Find(',');
+	if(i!=-1)
+	{
+		res=res.Mid(0,i)+"."+res.Mid(i+1);
+		d2=std::atof(res);
+	}
+	else
+	{
+		int i=res.Find('.');
+		if(i!=-1)
+		{
+			res=res.Mid(0,i)+","+res.Mid(i+1);
+			d2=std::atof(res);
+		}		
+	}
+	if(d1==0.0)
+		return(d2);
+	return(d1);
+}
+
+
 
 //------------------------------------------------------------------------------
 //
@@ -182,9 +220,6 @@ unsigned int GStorageMySQL::GetNbSaved(tObjType type)
 
 			case otFdbk:
 				return(GetCount("htmlsbyprofiles"));
-
-			case otLang:
-				return(GetCount("languages"));
 
 			default:
 				return(0);
@@ -406,6 +441,63 @@ void GStorageMySQL::LoadSubjects(void)
 		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveSubjects(void)
+{
+	try
+	{
+		// Verify the subjects exists
+		if(!Session->GetSubjects()) return;
+		RString sSql;
+		
+		if(Session->GetSlot())
+			Session->GetSlot()->StartJob("Save subjects");
+		
+		// Clear all subjects information
+		RQuery Del1(Db,"DELETE FROM topicsbyhtmls");
+		RQuery Del2(Db,"DELETE FROM topics");
+		RQuery Del3(Db,"UPDATE profiles SET topicid=0");
+		
+		RCursor<GSubject> Cur(Session->GetSubjects()->GetNodes());
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			size_t parent(0);
+			GSubject* ptr=Cur()->GetParent();			
+			if(ptr)
+				parent=ptr->GetId();
+			if(!ptr) continue;
+			RString used;
+			if(Cur()->IsUsed())
+				used=",'1')";
+			else
+				used=",'0')";
+			
+			// Insert the topic
+			sSql="INSERT INTO topics(topicid,name,parent,used) VALUES("+
+				Num(Cur()->GetId())+",'"+Cur()->GetName()+"',"+Num(parent)+used;
+			RQuery Ins1(Db,sSql);
+			
+			// Assign the documents to the topic
+			RCursor<GDoc> Docs(Cur()->GetDocs());
+			for(Docs.Start();!Docs.End();Docs.Next())
+				RQuery(Db,"INSERT INTO topicsbyhtmls(topicid,htmlid) VALUES("+Num(Cur()->GetId())+","+Num(Docs()->GetId())+")");
+			
+			// AsSubPsign the profiles to the topic
+			RCursor<GProfile> Profiles(Cur()->GetProfiles());
+			for(Profiles.Start();!Profiles.End();Profiles.Next())
+				RQuery(Db,"UPDATE profiles SET topicid="+Num(Cur()->GetId())+" WHERE profileid="+Num(Profiles()->GetId()));			
+		}		
+	}
+	catch(RMySQLError e)
+	{
+		if(Session->GetSlot())
+			Session->GetSlot()->EndJob();
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}	
 }
 
 
@@ -861,23 +953,32 @@ void GStorageMySQL::SaveRefs(GConceptType* type,tObjType what,size_t refs)
 {
 	try
 	{
-		RString sSql;
-	
 		switch(what)
 		{
 			case otDoc:
-				sSql="UPDATE concepttypes SET refdocs="+Num(refs)+" WHERE typeid="+Num(type->GetId());
+			{
+				RQuery(Db,"UPDATE concepttypes SET refdocs="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
+				if(refs==0)
+					RQuery(Db,"UPDATE concepts SET refdocs=0 WHERE typeid="+Num(type->GetId()));
 				break;
+			}
 			case otSubProfile:
-				sSql="UPDATE concepttypes SET refsubprofiles="+Num(refs)+" WHERE typeid="+Num(type->GetId());
+			{
+				RQuery(Db,"UPDATE concepttypes SET refsubprofiles="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
+				if(refs==0)
+					RQuery(Db,"UPDATE concepts SET refgroups=0 WHERE typeid="+Num(type->GetId()));				
 				break;
+			}
 			case otGroup:
-				sSql="UPDATE concepttypes SET refgroups="+Num(refs)+" WHERE typeid="+Num(type->GetId());
+			{
+				RQuery(Db,"UPDATE concepttypes SET refgroups="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
+				if(refs==0)
+					RQuery(Db,"UPDATE concepts SET refgroups=0 WHERE typeid="+Num(type->GetId()));				
 				break;
+			}
 			default:
 				throw GException("This type of objects do not have descriptions");
 		};
-		RQuery(Db,sSql);
 	}
 	catch(RMySQLError e)
 	{
@@ -952,7 +1053,6 @@ void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 		// Index the documents
 		RQuery sel(Db,"SELECT htmlid,name FROM htmlsbyconcepts,concepts "
 		              "WHERE concepts.conceptid=htmlsbyconcepts.conceptid AND "
-		              "concepts.langid=htmlsbyconcepts.langid AND "
 		              "concepts.typeid=htmlsbyconcepts.typeid");
 		for(sel.Start(),ptr=0;!sel.End();sel.Next())
 		{
@@ -1074,13 +1174,13 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 		if(doc->GetLang())
 		{
 			sSql="DELETE FROM htmlsbyconcepts "
-			     "WHERE langid="+Lang(doc->GetLang())+" AND htmlid="+Num(doc->GetId());
+			     "WHERE htmlid="+Num(doc->GetId());
 			RQuery deletekwds(Db,sSql);
 			Words=doc->GetInfos();
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				sSql="INSERT INTO htmlsbyconcepts(htmlid,conceptid,weight,typeid) "
-				     "VALUES("+Num(doc->GetId())+","+Num(Words()->GetId())+",'"+RString::Number(Words()->GetWeight())+"',"+
+				     "VALUES("+Num(doc->GetId())+","+Num(Words()->GetId())+","+Num(Words()->GetWeight())+","+
 				     Num(Words()->GetType()->GetId())+")";
 				RQuery insertkwds(Db,sSql);
 			}
@@ -1222,7 +1322,7 @@ GUser* GStorageMySQL::LoadUser(unsigned int userid)
 {
 	try
 	{
-		RQuery User(Db, "SELECT userid,user,fullname FROM users WHERE userid="+Num(userid));
+		RQuery User(Db,"SELECT userid,user,fullname FROM users WHERE userid="+Num(userid));
 		User.Start();
 		if(!User.GetNb())
 			return(0);
@@ -1241,7 +1341,7 @@ GUser* GStorageMySQL::LoadUser(const R::RString name)
 {
 	try
 	{
-		RQuery User(Db, "SELECT userid,user,fullname FROM users WHERE user="+RQuery::SQLValue(name));
+		RQuery User(Db,"SELECT userid,user,fullname FROM users WHERE user="+RQuery::SQLValue(name));
 		User.Start();
 		if(!User.GetNb())
 			return(0);
@@ -1564,8 +1664,8 @@ void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int histor
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			RString sSql("INSERT INTO historicsubprofiles(historicID,subprofileid,kwdid,weight, date, langid) VALUES("+
-					     Num(historicID)+","+Num(sub->GetId())+","+Num(Cur()->GetId())+",'"+
-					     RString::Number(Cur()->GetWeight())+"',CURDATE(),"+Lang(sub->GetLang())+")");
+					     Num(historicID)+","+Num(sub->GetId())+","+Num(Cur()->GetId())+","+
+					     Num(Cur()->GetWeight())+",CURDATE(),"+Lang(sub->GetLang())+")");
 			RQuery insertkwds(Db,sSql);
 		}
 	}
@@ -1658,7 +1758,7 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub)
 		// Delete old description
 		l=sub->GetLang()->GetCode();
 		sSql="DELETE FROM subprofilesbyconcepts "
-		     "WHERE langid="+Lang(sub->GetLang())+" AND subprofileid="+Num(sub->GetId());
+		     "WHERE subprofileid="+Num(sub->GetId());
 		RQuery deletekwds(Db,sSql);
 
 		// Insert new description
@@ -1666,8 +1766,8 @@ void GStorageMySQL::SaveSubProfile(GSubProfile* sub)
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			sSql="INSERT INTO subprofilesbyconcepts(subprofileid,conceptid,weight,typeid) "
-			     "VALUES("+Num(sub->GetId())+","+Num(Cur()->GetId())+",'"+RString::Number(Cur()->GetWeight())+
-			     "',"+Num(Cur()->GetType()->GetId())+")";
+			     "VALUES("+Num(sub->GetId())+","+Num(Cur()->GetId())+","+Num(Cur()->GetWeight())+
+			     ","+Num(Cur()->GetType()->GetId())+")";
 			RQuery insertkwds(Db,sSql);
 		}
 		sub->SetState(osUpToDate);
@@ -2001,8 +2101,9 @@ void GStorageMySQL::SaveGroups(GLang* lang)
 	try
 	{
 		// Delete groups and goups info
-		RQuery delete1(Db,"DELETE FROM groups WHERE langid="+Lang(lang));
-		RQuery delete2(Db,"DELETE FROM groupsbyconcepts WHERE langid="+Lang(lang));
+		RQuery delete1(Db,"DELETE FROM groupsbyconcepts WHERE groupid=(SELECT groupid FROM groups WHERE langid="+Lang(lang)+")");
+		RQuery delete2(Db,"DELETE FROM groups WHERE langid="+Lang(lang));
+		
 
 		GroupsCursor=Session->GetGroups(lang);
 		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
@@ -2028,8 +2129,8 @@ void GStorageMySQL::SaveGroups(GLang* lang)
 			for(WordCur.Start();!WordCur.End();WordCur.Next())
 			{
 				sSql="INSERT INTO groupsbyconcepts(groupid,conceptid,weight,typeid) "
-				     "VALUES("+Num(GroupsCursor()->GetId())+","+Num(WordCur()->GetId())+",'"+
-				     RString::Number(WordCur()->GetWeight())+"',"+Num(WordCur()->GetType()->GetId())+")";
+				     "VALUES("+Num(GroupsCursor()->GetId())+","+Num(WordCur()->GetId())+","+
+				     Num(WordCur()->GetWeight())+","+Num(WordCur()->GetType()->GetId())+")";
 				RQuery InserinfoWord(Db,sSql);
 			}
 		}

@@ -114,6 +114,17 @@ protected:
 	 * @param i              The number.
 	 */
 	inline R::RString Num(unsigned int i) {return("'"+RString::Number(i)+"'");}
+
+	/**
+	 * Return a SQL string for a given double.
+	 * @param d              The number.
+	 */
+	R::RString Num(double d);
+
+	/**
+	 * Return a double from a string.
+	 */
+	double atof(const R::RString& str);
 	
 	/**
 	 * Return a SQL string for a given language.
@@ -203,7 +214,13 @@ public:
 	* Load the Subjects.
 	*/
 	virtual void LoadSubjects(void);
-
+	
+	/**
+	 * Save the subjects, including the information on the documents and the
+	 * profiles assigned to them.
+	 */
+	virtual void SaveSubjects(void);
+	
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
 	* can be a SQL file.
