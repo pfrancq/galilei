@@ -102,28 +102,42 @@ protected:
 	* Factor of the vectors corresponding to the irrelevant part.
 	*/
 	double IrrelFactor;
-
-	/**
-	* Positive feedback.
-	*/
-	bool Positive;
-
+	
 	/**
 	* Global vector computed.
 	*/
 	GWeightInfos Vectors;
+	
+	/**
+	* Global vector computed.
+	*/
+	GWeightInfos VectorsIrrel;
 
 	/**
-	* Number of documents assessed by a profile used for the computing where
-	* each index term appears.
+	* Global vector computed.
 	*/
-	GWeightInfos NbDocsWords;
+	GWeightInfos VectorsFuzzy;
 
 	/**
 	* Number of documents assessed by a profile used for the computing.
 	*/
 	unsigned int NbDocs;
 
+	/**
+	* Number of documents assessed as relevant by a profile used for the computing.
+	*/
+	unsigned int NbDocsRel;
+	
+	/**
+	* Number of documents assessed as fuzzy relevant by a profile used for the computing.
+	*/
+	unsigned int NbDocsFuzzy;
+	
+	/**
+	* Number of documents assessed as irrelevant by a profile used for the computing.
+	*/
+	unsigned int NbDocsIrrel;
+	
 	/**
 	* Ordered vector for current computed profile.
 	*/
@@ -186,6 +200,13 @@ public:
 	*/
 	virtual void Compute(GSubProfile* subprofile);
 
+	/**
+	 * Write the content of the 'Order' vector in a file called 'subprofileX'
+	 * where X is the identifier of the subprofile in a directory.
+	 * @param dir            Directory where to write.
+	 */
+	void WriteFile(const RString& dir);
+	
 	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.

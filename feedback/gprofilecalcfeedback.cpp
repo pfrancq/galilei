@@ -34,7 +34,13 @@
 // include files for ANSI C/C++
 #include <stdlib.h>
 #include <math.h>
+using namespace std;
 
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rdir.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -48,9 +54,7 @@
 #include <gweightinfo.h>
 #include <glang.h>
 #include <gsession.h>
-using namespace R;
 using namespace GALILEI;
-using namespace std;
 
 
 
@@ -63,8 +67,9 @@ using namespace std;
 //-----------------------------------------------------------------------------
 GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac)
 	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
-	  FuzzyFactor(0.25), IrrelFactor(0.75), Positive(false),
-	  Vectors(0,5000), NbDocsWords(0,5000), NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
+	  FuzzyFactor(0.25), IrrelFactor(0.75),
+	  Vectors(0,5000), VectorsIrrel(0,5000), VectorsFuzzy(0,5000),
+	  NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
 }
@@ -80,7 +85,6 @@ void GProfileCalcFeedback::ApplyConfig(void)
 	RelFactor=Factory->GetDouble("RelFactor");
 	FuzzyFactor=Factory->GetDouble("FuzzyFactor");
 	IrrelFactor=Factory->GetDouble("IrrelFactor");
-	Positive=Factory->GetBool("Positive");
 	IncrementalMode=Factory->GetBool("IncrementalMode");
 }
 
@@ -104,18 +108,16 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 {
 	RCursor<GWeightInfo> Words;
 	RCursor<GFdbk> Docs;
-	GWeightInfo* w;
-	bool Add;
 	double MaxFreq;
-	double Factor;
-	double Freq;
 	double TotalRef;
 	GConceptType* type(0);
+	GWeightInfos* Cur;
 	
 	// Clear all containers before computing
 	Vectors.Clear();
-	NbDocsWords.Clear();
-	NbDocs=0;
+	VectorsIrrel.Clear();
+	VectorsFuzzy.Clear();	
+	NbDocsRel=NbDocsFuzzy=NbDocsIrrel=NbDocs=0;
 
 	// Go through all documents, add the frequences of the words of "OK"
 	// documents and substract the frequences of the words of "KO" documents.
@@ -137,18 +139,18 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 		switch(Docs()->GetFdbk() & djMaskJudg )
 		{
 			case djOK:
-				Add=true;
-				Factor=RelFactor;
+				NbDocsRel++;
+				Cur=&Vectors;
 				break;
 
 			case djKO:
-				Add=Positive;
-				Factor=FuzzyFactor;
+				NbDocsFuzzy++;
+				Cur=&VectorsFuzzy;				
 				break;
 
 			default:
-				Add=false;
-				Factor=IrrelFactor;
+				NbDocsIrrel++;
+				Cur=&VectorsIrrel;
 				break;
 		}
 
@@ -166,19 +168,34 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 				MaxFreq=doc->GetMaxWeight(type);
 			}
 
-			w=Vectors.GetInsertPtr(*Words());
-			
-			// Compute the frequence
-			Freq=Words()->GetWeight()/MaxFreq;
-			Freq*=log(TotalRef/static_cast<double>(type->GetRef(Words()->GetId(),otDoc)));
-
-			// Add the frequence to the global vector
-			if(Add)
-				(*w)+=Factor*Freq;
-			else
-				(*w)-=Factor*Freq;
+			// Compute and add the frequence
+			(*Cur->GetInfo(Words()))+=Words()->GetWeight()/MaxFreq;
 		}
 	}
+	
+	// Compute the vectors
+	Words=Vectors.GetInfos();	
+	for(Words.Start();!Words.End();Words.Next())  // Divide the
+		(*Words())*=RelFactor/NbDocsRel;	
+	Words=VectorsFuzzy.GetInfos();
+	for(Words.Start();!Words.End();Words.Next())
+		(*Vectors.GetInfo(Words()))+=Words()->GetWeight()*FuzzyFactor/NbDocsFuzzy;
+	Words=VectorsIrrel.GetInfos();
+	for(Words.Start();!Words.End();Words.Next())
+		(*Vectors.GetInfo(Words()))+=Words()->GetWeight()*IrrelFactor/NbDocsIrrel;
+	
+	// Multiply by the idf factor and remove null weighted information (in VectorsIrrel).
+	Words=Vectors.GetInfos();
+	VectorsIrrel.Clear();
+	for(Words.Start();!Words.End();Words.Next())
+	{
+		(*Words())*=log10(TotalRef/static_cast<double>(type->GetRef(Words()->GetId(),otDoc)));
+		if(fabs(Words()->GetWeight())<0.00001)
+			VectorsIrrel.GetInfo(Words());
+	}
+	Words=VectorsIrrel.GetInfos();
+	for(Words.Start();!Words.End();Words.Next())
+		Vectors.DeletePtr(Words()->GetConcept());
 }
 
 
@@ -226,7 +243,7 @@ void GProfileCalcFeedback::ComputeSubProfile(void)
 	// Copy the irrelevant entities
 	for(i=nb2+1,ptr=&Order[Vectors.GetNb()-1];--i;ptr--)
 		Infos.InsertPtr(new GWeightInfo(**ptr));
-	}
+}
 
 
 //-----------------------------------------------------------------------------
@@ -262,7 +279,7 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 			Infos.InsertPtrAt(ptr=new GWeightInfo(*Cur()),i);
 			if(ptr)
 			{
-				(*ptr)/=log(TotalRef/static_cast<double>(type->GetRef(Cur()->GetId(),otDoc)));
+				(*ptr)/=log10(TotalRef/static_cast<double>(type->GetRef(Cur()->GetId(),otDoc)));
 			}
 		}
 	}
@@ -273,8 +290,24 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 	// Compute the vector for each subprofile
 	ComputeSubProfile();
 
+	WriteFile("/home/pfrancq/tmp");
+	
 	// Set the Variable of the subprofile
 	subprofile->Update(subprofile->GetLang(),&Infos,true);
+}
+
+
+//------------------------------------------------------------------------------
+void GProfileCalcFeedback::WriteFile(const RString& dir)
+{
+	RString name("subprofile"+RString::Number(SubProfile->GetId()));
+	RDir::CreateDirIfNecessary(dir);
+	RTextFile Out(dir+RFile::GetDirSeparator()+name);
+	Out.Open(RIO::Create);
+	GWeightInfo** ptr;
+	unsigned int i;
+	for(i=Vectors.GetNb()+1,ptr=Order;--i;ptr++)
+		Out<<(*ptr)->GetId()<<(*ptr)->GetType()<<(*ptr)->GetWeight()<<endl;
 }
 
 
@@ -286,7 +319,6 @@ void GProfileCalcFeedback::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("RelFactor",1.0));
 	params->InsertParam(new RParamValue("FuzzyFactor",0.25));
 	params->InsertParam(new RParamValue("IrrelFactor",0.75));
-	params->InsertParam(new RParamValue("Positive",false));
 	params->InsertParam(new RParamValue("IncrementalMode",false));
 }
 

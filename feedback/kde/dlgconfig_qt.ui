@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>401</width>
-            <height>348</height>
+            <height>319</height>
         </rect>
     </property>
     <property name="caption">
@@ -164,20 +164,6 @@
                 <property name="name">
                     <cstring>unnamed</cstring>
                 </property>
-                <widget class="QCheckBox">
-                    <property name="name">
-                        <cstring>Positive</cstring>
-                    </property>
-                    <property name="text">
-                        <string>Positive Feedback Method</string>
-                    </property>
-                    <property name="toolTip" stdset="0">
-                        <string>Specify if the positive variant of the methof must be used.</string>
-                    </property>
-                    <property name="whatsThis" stdset="0">
-                        <string>When this parameter is checked, the positive feedback method is used rather than the pessimist feedback method. With the positive feedback method, the fuzzy relevant documents are "added" wshen computing the subprofile.</string>
-                    </property>
-                </widget>
                 <widget class="QLayoutWidget">
                     <property name="name">
                         <cstring>layout5</cstring>
@@ -220,6 +206,12 @@
                         <widget class="KDoubleNumInput">
                             <property name="name">
                                 <cstring>RelFactor</cstring>
+                            </property>
+                            <property name="minValue">
+                                <number>-1</number>
+                            </property>
+                            <property name="maxValue">
+                                <number>1</number>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Specify the relevant factor used.</string>
@@ -273,6 +265,12 @@
                             <property name="name">
                                 <cstring>FuzzyFactor</cstring>
                             </property>
+                            <property name="minValue">
+                                <number>-1</number>
+                            </property>
+                            <property name="maxValue">
+                                <number>1</number>
+                            </property>
                             <property name="toolTip" stdset="0">
                                 <string>Specify the fuzzy relevant factor used.</string>
                             </property>
@@ -324,6 +322,12 @@
                         <widget class="KDoubleNumInput">
                             <property name="name">
                                 <cstring>IrrelFactor</cstring>
+                            </property>
+                            <property name="minValue">
+                                <number>-1</number>
+                            </property>
+                            <property name="maxValue">
+                                <number>1</number>
                             </property>
                             <property name="toolTip" stdset="0">
                                 <string>Specify the irrelevant factor used.</string>
