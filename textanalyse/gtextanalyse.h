@@ -66,7 +66,7 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	* Cursor on the different languages defined in the system.
 	*/
-	R::RCursor<GFactoryLang> CurLangs;
+	R::RCursor<GLang> CurLangs;
 
 	/**
 	* All the word appearing in the current document.

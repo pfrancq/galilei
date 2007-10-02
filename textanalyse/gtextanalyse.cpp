@@ -168,7 +168,7 @@ void GTextAnalyse::Connect(GSession* session)
 	GDocAnalyse::Connect(session);
 
 	// Create local structures
-	CurLangs=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
+	CurLangs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
 	Sl=new unsigned int[CurLangs.GetNb()];
 	Sldiff=new unsigned int[CurLangs.GetNb()];
 	Weights=new RDblHashContainer<WordWeight,false>(27,27,500,250);
@@ -344,7 +344,6 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 	bool *is;
 	unsigned int* tmp1;
 	unsigned int* tmp2;
-	GLang* lang;
 
 	// If word not valid, skip it
 	if((Filtering)&&(!ValidWord(word))) return;
@@ -374,9 +373,7 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 		{
 			for(CurLangs.Start(),is=w->InStop,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),is++,tmp1++,tmp2++)
 			{
-				lang=CurLangs()->GetPlugin();
-				if(!lang) continue;
-				(*is)=lang->InStop(word);
+				(*is)=CurLangs()->InStop(word);
 				if(*is)
 				{
 					// In the stoplist -> Inc different words of the stop lists.
@@ -402,7 +399,7 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 		w=(*Section)[Index];
 		if(FindLang)
 		{
-			for(i=GALILEIApp->GetManager<GLangManager>("Lang")->GetNbFactories()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
+			for(i=GALILEIApp->GetManager<GLangManager>("Lang")->GetNbPlugIns()+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
 			{
 				if(*is)
 					(*tmp2)++;
@@ -516,11 +513,10 @@ void GTextAnalyse::DetermineLang(void)
 
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
-		if(!CurLangs()->GetPlugin()) continue;
 		Frac=((double)(*tmp1))/((double)Ndiff);
 		if(((*tmp2)>S)&&(Frac>=MinFrac))
 		{
-			Lang=CurLangs()->GetPlugin();
+			Lang=CurLangs();
 			S=(*tmp2);
 			Sdiff=(*tmp1);
 			LangIndex=i;
@@ -572,7 +568,6 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 			(*Occur)+=(*wrd)->Weight;
 			if(StoreFullWords)
 				StoreWordStemInDatabase(Occur->GetId(), (*wrd)->Word, docid);
-
 		}
 	}
 
@@ -580,17 +575,17 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 	// Verify that each occurences is not under the minimal.
 	if(MinOccur<2) return;
 
-#warning Delete pointer from container with a cursor.
+	// Delete pointer from container with a cursor.
 	RCursor<GWeightInfo> Cur(Infos);
-	for(Cur.Start();!Cur.End();)
+	RContainer<GWeightInfo,false,false> Del(30);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		if(Cur()->GetWeight()<MinOccur)
-		{
-			Infos.DeletePtr(*Cur());
-		}
-		else
-			Cur.Next();
+			Del.InsertPtr(Cur());
 	}
+	Cur=Del;
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Infos.DeletePtr(*Cur());
 }
 
 
@@ -617,7 +612,7 @@ void GTextAnalyse::Analyze(GDoc *doc, const R::RURI& uri)
 	if(!FindLang)
 	{
 		// if Language defined -> Compute LangIndex
-		for(CurLangs.Start(),LangIndex=0;CurLangs()->GetPlugin()!=Lang;CurLangs.Next(),LangIndex++);
+		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
 	}
 
 	// Determine the Language if necessary.
