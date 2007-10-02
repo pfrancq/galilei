@@ -90,7 +90,7 @@ AC_DEFUN(GALILEI_ALL_INC_CHK,[
 	GALILEI_INC_CHK(galilei/engines,gengine.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/groups,ggroup.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/historic,ggrouphistory.h,Cannot find GALILEI headers.)
-	GALILEI_INC_CHK(galilei/infos,ginfo.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/infos,gweightinfo.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/profiles, gprofile.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/sessions,gsession.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/knowledge,gconcept.h,Cannot find GALILEI headers.)
