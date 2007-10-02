@@ -43,10 +43,97 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdocxml.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
 
+
+//-----------------------------------------------------------------------------
+//
+// Command classes
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class CmdSubject : public EMailCmd 
+{
+public:
+	CmdSubject(GFilterEMail* filter) : EMailCmd(filter,"subject") {}
+	virtual void DoIt(GDocXML* doc,const RString& meta)
+	{
+		if(meta.IsEmpty())
+			return;		
+		Filter->AnalyzeBlock(meta,doc->AddTitle(RString::Null,0));
+	}
+};
+
+
+//-----------------------------------------------------------------------------
+class CmdSummary : public EMailCmd 
+{
+public:
+	CmdSummary(GFilterEMail* filter) : EMailCmd(filter,"summary") {}
+	virtual void DoIt(GDocXML* doc,const RString& meta)
+	{
+		if(meta.IsEmpty())
+			return;		
+		Filter->AnalyzeBlock(meta,doc->AddSubject(RString::Null,0));
+	}
+};
+
+
+//-----------------------------------------------------------------------------
+class CmdFrom : public EMailCmd 
+{
+public:
+	CmdFrom(GFilterEMail* filter) : EMailCmd(filter,"from") {}
+	virtual void DoIt(GDocXML* doc,const RString& meta)
+	{
+		if(meta.IsEmpty())
+			return;		
+		Filter->AnalyzeBlock(meta,doc->AddCreator(RString::Null,0));
+	}
+};
+
+
+//-----------------------------------------------------------------------------
+class CmdOrganization : public EMailCmd 
+{
+public:
+	CmdOrganization(GFilterEMail* filter) : EMailCmd(filter,"organization") {}
+	virtual void DoIt(GDocXML* doc,const RString& meta)
+	{
+		if(meta.IsEmpty())
+			return;		
+		Filter->AnalyzeBlock(meta,doc->AddPublisher(RString::Null,0));
+	}
+};
+
+
+//-----------------------------------------------------------------------------
+class CmdDate : public EMailCmd 
+{
+public:
+	CmdDate(GFilterEMail* filter) : EMailCmd(filter,"date") {}
+	virtual void DoIt(GDocXML* doc,const RString& meta)
+	{
+		if(meta.IsEmpty())
+			return;		
+		doc->AddDate(meta);
+	}
+};
+
+
+//-----------------------------------------------------------------------------
+class CmdKeywords : public EMailCmd 
+{
+public:
+	CmdKeywords(GFilterEMail* filter) : EMailCmd(filter,"subject") {}
+	virtual void DoIt(GDocXML* doc,const RString& meta)
+	{
+		if(meta.IsEmpty())
+			return;
+		Filter->AnalyzeKeywords(meta,',',doc->AddSubject(RString::Null,0));
+	}
+};
+	
 
 
 //-----------------------------------------------------------------------------
@@ -57,9 +144,15 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GFilterEMail::GFilterEMail(GFactoryFilter* fac)
-	: GFilter(fac), BlankLines(false)
+	: GFilter(fac), BlankLines(false), Cmds(20)
 {
 	AddMIME("text/email");
+	Cmds.InsertPtr(new CmdSubject(this));
+	Cmds.InsertPtr(new CmdSummary(this));
+	Cmds.InsertPtr(new CmdFrom(this));
+	Cmds.InsertPtr(new CmdOrganization(this));
+	Cmds.InsertPtr(new CmdDate(this));
+	Cmds.InsertPtr(new CmdKeywords(this));	
 }
 
 
@@ -76,10 +169,9 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 	RString Cmd(line.GetLen());
 	const RChar* ptr=line();
 	unsigned int len=0;
-	unsigned int pos;
 
-	// Look an the first word
-	while((!ptr->IsNull())&&((ptr->IsAlNum())||((*ptr)==RChar('-'))))
+	// Look an the first word until ':' or spaces
+	while((!ptr->IsNull())&&((*ptr)!=' ')&&((*ptr)!='\t')&&((*ptr)!=':'))
 	{
 		ptr++;
 		len++;
@@ -90,50 +182,24 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 		ptr++;
 
 	// If the next character is not a ':', this is not a cmd.
-	if((!(!ptr->IsNull()))||((*(ptr))!=RChar(':')))
+	if((ptr->IsNull())||((*ptr)!=':'))
 		return(false);
 
 	// Mark end of command and put it in lowercase and Skip ':'
 	Cmd=line.Mid(0,len).ToLower();
-
+	ptr++;
+	
 	// After skipped the spaces, and separate the command pointed by line and
 	// the information pointed by ptr.
-	pos=len;
-	len=0;
-	ptr++;
 	while((!ptr->IsNull())&&(((*ptr)==' ')||((*ptr)==RChar('\t'))))
-	{
 		ptr++;
-		len++;
-	}
 
 	// Analyse the different metaData possible.
-	RString metaData=line.Mid(pos,len);
-	if((Cmd=="subject")&&(!metaData.IsEmpty()))
-	{
-		AnalyzeBlock(metaData,Doc->AddTitle(RString::Null,0));
-	}
-	else if((Cmd=="summary")&&(!metaData.IsEmpty()))
-	{
-		AnalyzeBlock(metaData,Doc->AddSubject(RString::Null,0));
-	}
-	else if((Cmd=="from")&&(!metaData.IsEmpty()))
-	{
-		AnalyzeBlock(metaData,Doc->AddCreator(RString::Null,0));
-	}
-	else if((Cmd=="organization")&&(!metaData.IsEmpty()))
-	{
-		AnalyzeBlock(metaData,Doc->AddPublisher(RString::Null,0));
-	}
-	else if((Cmd=="date")&&(!metaData.IsEmpty()))
-	{
-		Doc->AddDate(metaData);
-	}
-	else if((Cmd=="keywords")&&(!metaData.IsEmpty()))
-	{
-		AnalyzeKeywords(metaData,',',Doc->AddSubject(RString::Null,0));
-	}
-
+	RString metaData(ptr);	
+	EMailCmd* cmd=Cmds.GetPtr(Cmd);
+	if(cmd)
+		cmd->DoIt(Doc,metaData);
+		
 	return(true);
 }
 
@@ -145,11 +211,7 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 	RXMLTag* tag;
 	bool Header;
 	bool Paragraph;
-	bool Stop;
-	bool NextStop;
-//	char tmp;
 	bool Read;
-//	char* findstr;
 	RString NextLine;
 	RString Line;
 	const RChar* ptr;
@@ -158,7 +220,6 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 	Doc=new GDocXML(docxml,file);
 	RTextFile Src(file);
 	Src.Open(R::RIO::Read);
-	Stop=Src.Eof();
 
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
@@ -166,18 +227,18 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 
 	// Email have at the beginning information on each line.
 	Header=true;        // There headers to read.
-	Read=true;
+	Read=true;	
 	while((!Src.Eof())&&Header)
 	{
 		// Read a line
 		if(Read)
 			Line=Src.GetLine(false);
 
-		// Add the next lines beginning with a space
+		// Add the next lines beginning with a space if the line is not empty
 		if(!Src.Eof())
 		{
 			NextLine=Src.GetLine(false);
-			while((NextLine()->IsSpace())&&(!Src.Eof()))
+			while((!NextLine.IsEmpty())&&(NextLine()->IsSpace())&&(!Src.Eof()))
 			{
 				Line+=NextLine;
 				NextLine=Src.GetLine(false);
@@ -186,18 +247,18 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 
 		// Analyse the line for a command.
 		Header=ExtractCmd(Line);
-
-		// If Multiple blank lines are allowed and last line is a command, skip them
-		if(Header&&BlankLines)
+		if(Header)
 		{
-			while((NextLine.IsEmpty())&&(!Src.Eof()))
-				NextLine=Src.GetLine(false);
+			if(BlankLines)
+			{
+				while((NextLine.IsEmpty())&&(!Src.Eof()))
+					NextLine=Src.GetLine(false);
+			}
+			
+			// Next line becomes the current one
+			Line=NextLine;			
 		}
-
-		// Next line becomes the current one
-		Line=NextLine;
 		Read=false;
-		Stop=NextStop;
 	}
 
 	// Look if the email is signed.
@@ -227,15 +288,14 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 		{
 			if(!Src.Eof())
 				Line=NextLine;
+			if(!Src.Eof())
+				NextLine=Src.GetLine(false);
 		}
 
 		// Paragraph are supposed to be terminated by at least one blank line
 		Paragraph=true;
 		while((!Src.Eof())&&Paragraph)
 		{
-			// Read a Line
-			NextLine=Src.GetLine(false);
-
 			// Look if it is a blank line
 			ptr=NextLine();
 			while((!ptr->IsNull())&&(ptr->IsSpace()))
@@ -243,11 +303,12 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 
 			// If blank line -> it is the end of a paragraph
 			if(ptr->IsNull())
-			{
 				Paragraph=false;
-			}
 			else
 				Line+=NextLine;
+			
+			// Read a Line
+			NextLine=Src.GetLine(false);			
 		}
 		AnalyzeBlock(Line,tag);
 	}

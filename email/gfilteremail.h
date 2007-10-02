@@ -38,18 +38,40 @@
 //-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <gfilter.h>
-
+using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
+// forward declaration
+class GFilterEMail;
+
+
 //-----------------------------------------------------------------------------
+/**
+ * The EMailCmd class provides a representation for a given class of command.
+ */
+class EMailCmd
+{
+protected:	
+	RString Cmd;
+	GFilterEMail* Filter;
+public:
+	
+	EMailCmd(GFilterEMail* filter,const RString& cmd) : Cmd(cmd),Filter(filter) {}
+	int Compare(const EMailCmd& cmd) const {return(Cmd.Compare(cmd.Cmd));}
+	int Compare(const EMailCmd* cmd) const {return(Cmd.Compare(cmd->Cmd));}
+	int Compare(const RString cmd) const {return(Cmd.Compare(cmd));}
+	virtual void DoIt(GDocXML* doc,const RString& meta)=0;
+	virtual ~EMailCmd(void) {}
+};
 
 
 //-----------------------------------------------------------------------------
@@ -67,6 +89,11 @@ class GFilterEMail : public GFilter
 	*/
 	bool BlankLines;
 
+	/**
+	 * All avalaible commands.
+	 */
+	RContainer<EMailCmd,true,true> Cmds;
+	
 public:
 
 	/**
@@ -113,9 +140,6 @@ public:
 	*/
 	virtual ~GFilterEMail(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------
