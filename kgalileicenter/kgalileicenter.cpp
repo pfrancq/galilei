@@ -120,6 +120,7 @@ using namespace std;
 #include "qexportmatrixdlg.h"
 #include "qsimulationdlg.h"
 #include "configure.h"
+#include "kviewdebug.h"
 
 
 
@@ -185,6 +186,13 @@ void KGALILEICenterApp::slotSessionConnect(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotSessionDebugInfo(void)
+{
+	createClient(Doc,new KViewDebug(Doc,pWorkspace,"View Debug Information",0));
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionCompute(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Complete Session");
@@ -244,36 +252,16 @@ void KGALILEICenterApp::slotSessionQuit(void)
 void KGALILEICenterApp::slotCreateDatabase(void)
 {
 	QCreateDatabase dlg(this,0,true);
+	dlg.BasicURL->setText(ToQString(StructuresPath));
 	if(!dlg.exec())
 		return;
-
+	StructuresPath=FromQString(dlg.BasicURL->text());
+	
 	try
 	{
 		QSessionProgressDlg d(this,0,"Create Database");
 		d.Run(new QCreateDB(FromQString(dlg.DbName->text()),FromQString(dlg.hostName->text()),
-			FromQString(dlg.userName->text()),FromQString(dlg.password->text()),StructuresPath));
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-		return;
-	}
-	catch(RException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
-		return;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotImportStopLists(void)
-{
-	try
-	{
-		//Create de DB
-		QSessionProgressDlg d(this,Doc->GetSession(),"Import Stoplists");
-		d.Run(new QImportStopLists(StructuresPath));
+			FromQString(dlg.userName->text()),FromQString(dlg.password->text()),FromQString(dlg.BasicURL->text())));
 	}
 	catch(GException& e)
 	{
@@ -316,36 +304,16 @@ void KGALILEICenterApp::slotImportUsersData(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotFillEmptyDb(void)
+void KGALILEICenterApp::slotImportDocs(void)
 {
 	QFillEmptyDatabase dlg(this,0,true);
 	dlg.KUDirectory->setMode(KFile::Directory);
-	dlg.LEHost->setText("127.0.0.1");
-	dlg.LEUser->setText("root");
 
 	if(dlg.exec())
 	{
 		RString catDirectory  = FromQString(dlg.KUDirectory->url());
-		RString dbname = FromQString(dlg.LEName->text());
-		RString host = FromQString(dlg.LEHost->text());
-		RString user = FromQString(dlg.LEUser->text());
-		RString password = FromQString(dlg.LEPassword->text());
 		int depth = dlg.Depth->value();
 		RString parentName = FromQString(dlg.ParentName->text());
-
-		// if the database name field is empty -> ERROR
-		if( dbname.IsEmpty())
-		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a name for the database to fill! "));
-			return;
-		}
-
-		// if the user or host is not specified -> ERROR
-		if( (host.IsEmpty()) || (user.IsEmpty()))
-		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a user and a host for the database! "));
-			return;
-		}
 
 		// if the database name field is empty -> ERROR
 		if( catDirectory.IsEmpty())
@@ -359,9 +327,8 @@ void KGALILEICenterApp::slotFillEmptyDb(void)
 			return;
 		}
 
-		QSessionProgressDlg Dlg(this,0,"Fill Database");
-		if(!Dlg.Run(new QFillDB(dbname,host,user,password,catDirectory,depth,parentName,GALILEIApp->GetManager<GFilterManager>("Filter"))))
-			return;
+		QSessionProgressDlg Dlg(this,Doc->GetSession(),"Fill Database");
+		Dlg.Run(new QImportDocs(catDirectory,depth,parentName,FromQString(dlg.DefaultMIMEType->text())));
 	}
 }
 
@@ -732,21 +699,6 @@ void KGALILEICenterApp::slotShowHistory(void)
 	}
 }
 
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotViewToolBar(void)
-{
-	slotStatusMsg(i18n("Toggle the toolbar..."));
-	if(!viewToolBar->isChecked())
-	{
-		toolBar("mainToolBar")->hide();
-	}
-	else
-	{
-		toolBar("mainToolBar")->show();
-	}
-	slotStatusMsg(i18n("Ready."));
-}
-
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotViewStatusBar(void)
@@ -881,7 +833,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 		QMessageBox::critical(this,"KGALILEICenter","File could not be found");
 		return;
 	}
-	KIO::NetAccess::download(url,tmpfile);
+	KIO::NetAccess::download(url,tmpfile,this);
 	strcpy(tmp,tmpfile);
 	try
 	{

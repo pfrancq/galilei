@@ -293,6 +293,11 @@ private slots:
 	void slotSessionConnect(void);
 
 	/**
+	 * Show debug information.
+	 */
+	void slotSessionDebugInfo(void);
+	
+	/**
 	* Compute an entire session.
 	*/
 	void slotSessionCompute(void);
@@ -303,9 +308,9 @@ private slots:
 	void slotSessionDisconnect(void);
 
 	/**
-	* slot to fill database from repesitory.
+	* Import documents in the current database.
 	*/
-	void slotFillEmptyDb(void);
+	void slotImportDocs(void);
 
 	/**
 	* Statistics window.
@@ -321,11 +326,6 @@ private slots:
 	* Create a new database with all required tables and fiels + all the value of 'stopkwds' tables.
 	*/
 	void slotCreateDatabase(void);
-
-	/**
-	* Import the stoplists.
-	*/
-	void slotImportStopLists(void);
 
 	/**
 	* Import users' data.
@@ -459,11 +459,6 @@ private slots:
 	void slotShowHistory(void);
 
 	/**
-	* Toggles the toolbar.
-	*/
-	void slotViewToolBar(void);
-
-	/**
 	* Toggles the statusbar.
 	*/
 	void slotViewStatusBar(void);
@@ -571,13 +566,13 @@ public:
 	// KAction pointers to enable/disable actions
 	KToggleAction* sessionSave;
 	KAction* sessionConnect;
+	KAction* sessionDebugInfo;
 	KAction* sessionCompute;
 	KAction* sessionStats;
 	KAction* createDatabase;
-	KAction* importStopLists;
 	KAction* importUsersData;
 	KAction* sessionDisconnect;
-	KAction* fillEmptyDb;
+	KAction* importDocs;
 	KAction* sessionQuit;
 
 	KAction* seeDicts;
@@ -617,10 +612,9 @@ public:
 	KAction* configure;
 
 	KAction* runProgram;
-
+	
 	KAction* windowTile;
 	KAction* windowCascade;
-	KToggleAction* viewToolBar;
 	KToggleAction* viewStatusBar;
 	KActionMenu* windowMenu;
 	KAction* helpProgram;

@@ -52,22 +52,17 @@ void QFillEmptyDatabase::InsertSubItem(R::RDb& db,int parentId,QListViewItem* it
 
 void QFillEmptyDatabase::ChooseParentName()
 {
-	R::RString sSQL("");
+/*	R::RString sSQL("");
 	QListViewItem* t;
-	//Verify that Db infos are available
-	if( (LEName->text().isEmpty())||(LEHost->text().isEmpty())||(LEUser->text().isEmpty()))
-	{
-	QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a name for the database to fill! "));
-	return;
-	}
+
 	try
 	{
-		//Connect to Db
-		R::RDb Db (R::FromQString(LEHost->text()),R::FromQString(LEUser->text()),R::FromQString(LEPassword->text()),R::FromQString(LEName->text()),"latin1");
-
 		//Init dlg
 		QChooseParent dlg(this,0,true);
 		dlg.TopicsView->setColumnWidth(0,300);
+		
+		GSubjects * 	GetSubjects 
+		
 		sSQL="SELECT * FROM topics where parent=0";
 		R::RQuery mainTopics(Db,sSQL);
 
@@ -109,6 +104,7 @@ void QFillEmptyDatabase::ChooseParentName()
 	catch(...)
 	{
 		QMessageBox::critical(this,"KGALILEICenter",QString("Undefined Error"));
-	}
+	}*/
+	std::cout<<"Choose Parent not implemented"<<std::endl;
 }
 

@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Init part.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -108,10 +108,10 @@ void KGALILEICenterApp::initActions(void)
 	connect(sessionSave,SIGNAL(toggled(bool)),this,SLOT(slotSaveModifier()));
 	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
 	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
-	createDatabase=new KAction(i18n("Create &Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
-	importStopLists=new KAction(i18n("Import &Stoplists"),0,0,this,SLOT(slotImportStopLists()),actionCollection(),"importStopLists");
+	sessionDebugInfo=new KAction(i18n("Debug &Information"),"help",0,this,SLOT(slotSessionDebugInfo()),actionCollection(),"sessionDebugInfo");
+	createDatabase=new KAction(i18n("Create &MySQL Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
 	importUsersData=new KAction(i18n("Import &Users' Data"),0,0,this,SLOT(slotImportUsersData()),actionCollection(),"importUsersData");
-	fillEmptyDb=new KAction(i18n("&Fill Empty Database"),"exec",0,this,SLOT(slotFillEmptyDb()),actionCollection(),"fillEmptyDb");
+	importDocs=new KAction(i18n("Import Documents"),"exec",0,this,SLOT(slotImportDocs()),actionCollection(),"importDocs");
 	runProgram=new KAction(i18n("&Run Program"),"rebuild",0,this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
 	sessionStats=new KAction(i18n("&Statistics"),"gohome",0,this,SLOT(slotSessionStats()),actionCollection(),"sessionStats");
@@ -157,9 +157,8 @@ void KGALILEICenterApp::initActions(void)
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
 	// Menu "Settings"
-	viewToolBar = KStdAction::showToolbar(this, SLOT(slotViewToolBar()), actionCollection(),"settings_show_toolbar");
+	setStandardToolBarMenuEnabled(true);
 	viewStatusBar = KStdAction::showStatusbar(this, SLOT(slotViewStatusBar()), actionCollection(), "settings_statusbar");
-	viewToolBar->setStatusText(i18n("Enables/disables the toolbar"));
 	viewStatusBar->setStatusText(i18n("Enables/disables the statusbar"));
 	plugins=new KAction(i18n("Configure &Plug-Ins..."),"wizard",0,this,SLOT(slotPlugins()),actionCollection(),"plugins");
 	configure=new KAction(i18n("&Configure GALILEI..."),"configure",0,this,SLOT(slotConfigure()),actionCollection(),"configure");
@@ -242,8 +241,10 @@ void KGALILEICenterApp::readOptions(void)
 
 	// bar status settings
 	bool bViewToolbar = Config->readBoolEntry("Show Toolbar", true);
-	viewToolBar->setChecked(bViewToolbar);
-	slotViewToolBar();
+	if(bViewToolbar)
+		toolBar()->show();
+	else
+		toolBar()->hide();
 	bool bViewStatusbar = Config->readBoolEntry("Show Statusbar", true);
 	viewStatusBar->setChecked(bViewStatusbar);
 	slotViewStatusBar();
@@ -336,8 +337,9 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	usersClear->setEnabled(true);
 	groupsClear->setEnabled(true);
 	seeDicts->setEnabled(true);
-	importStopLists->setEnabled(true);
 	importUsersData->setEnabled(true);
+	importDocs->setEnabled(true);
+	sessionDebugInfo->setEnabled(true);
 }
 
 
@@ -376,8 +378,9 @@ void KGALILEICenterApp::DisableAllActions(void)
 	usersClear->setEnabled(false);
 	groupsClear->setEnabled(false);
 	seeDicts->setEnabled(false);
-	importStopLists->setEnabled(false);
 	importUsersData->setEnabled(false);
+	importDocs->setEnabled(false);
+	sessionDebugInfo->setEnabled(false);
 }
 
 

@@ -98,29 +98,17 @@ public:
 */
 class QCreateDB : public QSessionThread
 {
-	RString DbName;
+	RString Name;
 	RString Host;
 	RString User;
 	RString Pass;
-	RString SQLPath;
+	RString SchemaURL;
 
 public:
-	QCreateDB(RString dbName,RString host,RString user,RString pass,RString path)
-		: DbName(dbName), Host(host), User(user),Pass(pass),SQLPath(path) {}
+	QCreateDB(RString name,RString host,RString user,RString pass,RString path)
+		: Name(name), Host(host), User(user),Pass(pass),SchemaURL(path+"/galilei/db/mysql/") {}
 	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Import stop lists.
-*/
-class QImportStopLists : public QSessionThread
-{
-	RString SQLPath;
-public:
-	QImportStopLists(RString path) : SQLPath(path) {}
-	virtual void DoIt(void);
+	void RunSQL(const RURI& path,RDb& Db);
 };
 
 
@@ -147,26 +135,25 @@ public:
 * @param UseStopList    Specifies if the StopList must be dumped.
 * @param UseUsers       Specifies if the Users list must be dumped.
 */
-class QFillDB : public QSessionThread
+class QImportDocs : public QSessionThread
 {
-	RString DbName;
-	RString Host;
-	RString User;
-	RString Pass;
-	RString CatDirectory;
+	RString Dir;
 	int Depth;
-	RString ParentName;
+	int CurDepth;
+	RString Parent;
+	RString DefaultMIME; 
 	GFilterManager* FilterManager;
-
-	RDb* Db;
 	int CurrentDocId;
+	GSubjects* Subjects;
+	
 public:
-	QFillDB(RString dbName,RString host,RString user,RString pass,RString catDir,int depth, RString parentName, GFilterManager* mng) : DbName(dbName), Host(host), User(user),Pass(pass),CatDirectory(catDir),Depth(depth),ParentName(parentName), FilterManager(mng),Db(0),CurrentDocId(0) {}
+	QImportDocs(const RString& dir,int depth,const RString& parent,const RString& mime)
+		: Dir(dir),Depth(depth), Parent(parent),DefaultMIME(mime),
+		  FilterManager(0),CurrentDocId(0)
+	{}
 	virtual void DoIt(void);
 private:
-	int CreateCategory(RString name,int parentId);
-	void ParseDocDir(RString path,int parentId, int level);
-	void InsertDocument(RString path,int parentId);
+	void ParseDir(const RURI& uri,const RString& parent);
 };
 
 

@@ -6,19 +6,15 @@
 		<Separator/>
 		<Action name="sessionConnect"/>
 		<Action name="sessionDisconnect"/>
-		<Menu name="ManageDb"><text>&amp;Manage Database</text>
-			<Action name="createDatabase"/>
-			<Action name="importStopLists"/>
-			<separator/>
-			<Action name="importUsersData"/>
-			<Action name="fillEmptyDb"/>
-		</Menu>
+		<Action name="sessionDebugInfo"/>
 		<separator/>
 		<Action name="sessionCompute"/>
 		<Action name="runProgram"/>
-		<separator/>
- 		<Action name="sessionTest"/>
 		<Action name="sessionStats"/>
+		<separator/>
+		<Action name="createDatabase"/>
+		<Action name="importDocs"/>
+		<Action name="importUsersData"/>
 		<separator/>
 		<Action name="sessionQuit"/>
 	</Menu>

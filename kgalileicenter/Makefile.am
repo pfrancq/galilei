@@ -8,7 +8,7 @@ kgalileicenter_SOURCES = qchooseparent.ui qhistorydlg.ui qfilldatabase.ui \
 	kviewprg.cpp kgalileicenter_init.cpp kgalileicenter_dlg.cpp kviewstems.cpp \
 	qsessionprogress.cpp kviewusers.cpp kviewthgroups.cpp kviewprofile.cpp kviewgroups.cpp \
 	kviewgroup.cpp kviewdocs.cpp kviewdoc.cpp kviewstats.cpp kview.cpp kdoc.cpp \
-	kviewmetaengine.cpp kgalileicenter.cpp main.cpp configure.ui kviewdicts.cpp
+	kviewmetaengine.cpp kgalileicenter.cpp main.cpp configure.ui kviewdicts.cpp kviewdebug.cpp
 
 kgalileicenter_LDFLAGS=$(all_libraries) -export-dynamic $(KDE_RPATH)
 kgalileicenter_LDADD = $(LIB_R) $(LIB_GALILEI) $(LIBKDE_GALILEI) \
@@ -27,13 +27,11 @@ EXTRA_DIST = main.cpp kgalileicenter.cpp kgalileicenter.h kgalileicenterui.rc kg
 	qmixidealconfig.ui qmyplugins.h \
 	qcreatedatabase.ui qcreatedatabase.ui.h qfilldatabase.ui\
 	hi16-app-kgalileicenter.png hi32-app-kgalileicenter.png kviewhistory.cpp kviewhistory.h \
-	qhistorydlg.ui kviewstats.h
+	qhistorydlg.ui kviewstats.h kviewdebug.h
 
 KDE_ICON = kgalileicenter konquerorHub konquerorAutho
 
 install-data-local:
-	$(mkinstalldirs) /usr/share/galilei/sql/
-	$(INSTALL_DATA) $(srcdir)/sql/*.sql /usr/share/galilei/sql/
 
 # set the include path for X, qt and KDE
 INCLUDES = $(all_includes)

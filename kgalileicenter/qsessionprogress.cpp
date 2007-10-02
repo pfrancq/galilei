@@ -165,22 +165,40 @@ void QLoadSession::DoIt(void)
 //-----------------------------------------------------------------------------
 void QCreateDB::DoIt(void)
 {
-	RString line("");
-	RString sql("");
-	RString msg("");
-	RString path("");
-	bool endFound=false;
-
-	//Qsession progres to view progression
+	// Create the database
 	Parent->PutText("Database structure created");
-	RDb::CreateDatabase(Host,User,Pass,DbName);
-	RDb Db(Host,User,Pass,DbName,"utf-8");
- 	if(GSession::Break())
- 		return;
+	RDb::CreateDatabase(Host,User,Pass,Name);
+	RDb Db(Host,User,Pass,Name,"utf-8");
+	if(GSession::Break())
+		return;
 
  	// Construct tables
  	Parent->PutText("Dump Database model");
- 	path=SQLPath+"/DbModelMySQL.sql";
+ 	RunSQL(SchemaURL+"DbModel.sql",Db);
+	if(GSession::Break())
+		return;
+
+ 	// Import stoplists
+ 	RCursor<GLang> Langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
+ 	for(Langs.Start();!Langs.End();Langs.Next())
+ 	{
+ 		Parent->PutText("Import stoplist for "+Langs()->GetName());
+ 		RString Stop=SchemaURL+"DbStopList_"+Langs()->GetCode()+".sql";
+ 		if(RFile::Exists(Stop))
+ 			RunSQL(Stop,Db);
+ 		if(GSession::Break())
+ 			return; 		
+ 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateDB::RunSQL(const RURI& path,RDb& Db)
+{
+	RString sql("");
+	RString line("");
+	bool endFound=false;
+	
  	RTextFile file(path,"utf-8");
 	file.Open(RIO::Read);
 
@@ -209,75 +227,7 @@ void QCreateDB::DoIt(void)
 			RQuery Sendquery(Db,sql);
 
 		sql="";
-	}
-
-	if(GSession::Break())
-		return;
-
-
-// 	if(UseUsers)
-// 	{
-// 		//Dump users file
-// 		path=SQLPath +"DbUsers.sql";
-// 		Parent->PutText("Dump Database users");
-//
-// 		RTextFile fileU(path,"Latin1");
-//
-// 		fileU.Open(RIO::Read);
-// 		while((!fileU.Eof())&&(!GSession::Break()))
-// 		{
-// 			line=fileU.GetLine();
-// 			if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-// 				continue;
-//
-// 			endFound=false;
-// 			while(!fileU.Eof() && !endFound)
-// 			{
-// 				if(line.IsEmpty() || line.FindStr("--")>=0 || line.Find('#')>=0)
-// 				{
-// 					sql="";
-// 					endFound=true;
-// 					continue;
-// 				}
-// 				sql+=line;
-// 				if(line.Find(';')>=0)
-// 					endFound=true;
-// 				else
-// 					line=fileU.GetLine();
-// 			}
-// 			if(!sql.IsEmpty())
-// 				RQuery Sendquery(Db,sql);
-//
-// 			sql="";
-// 		}
-// 	}
-	if(GSession::Break())
-		return;
-}
-
-
-//-----------------------------------------------------------------------------
-void QImportStopLists::DoIt(void)
-{
- 	RDir Dir(SQLPath);
- 	Dir.Open(RIO::Read);
- 	RCursor<RFile> Files=Dir.GetEntries();
- 	for(Files.Start();!Files.End();Files.Next())
-	{
-		int pos=Files()->GetFileName().FindStr("StopList");
-		if(pos==-1) continue;
-		RTextFile Stop(Files()->GetURI(),"utf-8");
-		Stop.Open(RIO::Read);
-		GLang* lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(Files()->GetFileName().Mid(9,2));
-		Parent->PutText("Import stoplist for "+lang->GetName());
-		GConceptType* dic=lang->GetStop();
-		while(!Stop.Eof())
-		{
-			RString stop=Stop.GetLine();
-			GConcept w(cNoRef,stop,dic,0,0,0);
-			dic->InsertConcept(&w);
-		}
-	}
+	}	
 }
 
 
@@ -374,206 +324,59 @@ void QImportUsersData::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
-void QFillDB::DoIt(void)
-{
-	Parent->PutText("Try to connect database");
-
-	//Init
-	DIR* dp;
-	struct dirent* ep;
-	RContainer<RString,true,false> usersId(10,5);
-	RString path("");
-	RString sSql("");
-	RString tmp("");
-	bool found=false;
-	int catId;
-	int parentId=0;
-	int nbTopicsAtBegin=0;
-	unsigned int profileid;
-
-	//Connect to DB
-	Db = new RDb(Host,User,Pass,DbName,"latin1");
-
-	Parent->PutText("Find documents and fill categories");
-
-	//Find ID of last inserted document
-	sSql="SELECT count(*) FROM htmls";
-	RQuery nbDoc(Db,sSql);
-	nbDoc.Start();
-	if((!nbDoc.End())&&(nbDoc[0]))
-		CurrentDocId=atoi(nbDoc[0]);
-
-	sSql="SELECT count(*) FROM topics";
-	RQuery nbTopic(Db,sSql);
-	nbTopic.Start();
-	if((!nbTopic.End())&&(nbTopic[0]))
-		nbTopicsAtBegin=atoi(nbTopic[0]);
-
-	if(!ParentName.IsEmpty())
-	{
-		tmp=ParentName;
-		while(tmp.Find('/')>-1)
-		{
-			int id=tmp.Find('/');
-			parentId= CreateCategory(tmp.Mid(0,id),parentId);
-			tmp=tmp.Mid(id+1);
-		}
-		if(!tmp.IsEmpty())
-		{
-			parentId= CreateCategory(tmp,parentId);
-		}
-	}
-
-
-	//Parse directory containing files
-	dp=opendir(CatDirectory);
-	if(dp)
-	{
-		//Parse all sub directories and insert docs in categories
-		while((ep=readdir(dp))&&(!GSession::Break()))
-		{
-			if((ep->d_type==DT_DIR)&&(ep->d_name[0] != '.'))
-			{
-				found=true;
-				catId= CreateCategory(ep->d_name,parentId);
-				path= CatDirectory+ep->d_name;
-				ParseDocDir(path,catId,1);
-			}
-			else if((!ParentName.IsEmpty())&&(ep->d_type==DT_REG))
-			{
-				path=CatDirectory+ ep->d_name;
-				InsertDocument(path,parentId);
-			}
-		}
-		if(GSession::Break())
-			return;
-		//If no categories are found -> stop
-		if(!found)
-		{
-			throw new GException("Fill Database : no category detected");
-		}
-	}
-
-	//Create profiles
-	Parent->PutText("create Profiles");
-	profileid=0;
-
-	//Get Nb users
-	sSql="SELECT userid FROM users";
-	RQuery userId(Db,sSql);
-	for(userId.Start();!userId.End();userId.Next())
-	{
-		usersId.InsertPtr(new RString(userId[0]));
-	}
-
-	sSql="SELECT * FROM topics WHERE  topicid>"+RString::Number(nbTopicsAtBegin);
-//	sSql="SELECT * FROM topics WHERE parent !=0 and topicid>"+RString::Number(nbTopicsAtBegin);
-	RQuery topics(Db,sSql);
-	for(topics.Start();!topics.End();topics.Next())
-	{
-//		sSql="SELECT name FROM topics WHERE topicid="+topics[2];
-//		RQuery topics2(Db,sSql);
-
-//		topics2.Start();
-		if((!topics.End())&&topics[0])
-		{
-			RCursor<RString> userCur(usersId);
-			for(userCur.Start();!userCur.End();userCur.Next())
-			{
-				sSql="INSERT INTO profiles SET description='"+topics[1]+"',updated='2004-01-01',userid="+(*userCur())+",topicid="+topics[0];
-//				sSql="INSERT INTO profiles SET description='"+topics2[0]+"/"+topics[1]+"',updated='2004-01-01',userid="+userCur()+",topicid="+topics[0];
-				RQuery prof(Db,sSql);
-				sSql="INSERT INTO subprofiles SET langid='en', attached='2001-01-01', profileid="+RString::Number(++profileid);
-				RQuery subprof(Db,sSql);
-			}
-		}
-	}
+void QImportDocs::DoIt(void)
+{	
+	FilterManager=GALILEIApp->GetManager<GFilterManager>("Filter");
+	Subjects=Session->GetSubjects(true);
+	CurDepth=0;
+	ParseDir(Dir,Parent);	
+	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
+		Session->GetStorage()->SaveSubjects();	
 }
-
-
-//-----------------------------------------------------------------------------
-int QFillDB::CreateCategory(RString name,int parentId)
-{
-	RString sSql("");
-	int catId;
-	sSql="SELECT topicid FROM topics WHERE name='" +name +"' AND parent=" + RString::Number(parentId);
-	RQuery cat(Db,sSql);
-	cat.Start();
-	if((!cat.End())&&(cat[0]))
-		catId=atoi(cat[0]);
-	else
-	{
-		sSql="INSERT INTO topics SET name='"+name+"',langid='en',parent="+RString::Number(parentId);
-		RQuery insert(Db,sSql);
-
-		sSql="SELECT topicid FROM topics WHERE name='" +name +"' AND parent=" + RString::Number(parentId);
-		RQuery get(Db,sSql);
-		get.Start();
-		if(get[0])
-			catId=atoi(get[0]);
-		else
-			throw new GException("Cannot insert new category in database");
-	}
-	sSql= "Parse documents for category : "+name;
-	Parent->PutText(sSql);
-	return catId;
-}
-
-
-//-----------------------------------------------------------------------------
-void QFillDB::InsertDocument(RString path,int parentId)
-{
-	RString sSql("");
 	
-	sSql="SELECT * FROM htmls WHERE html='"+path+"'";
-	RQuery allReadyExists(Db,sSql);
-	allReadyExists.Start();
-	if(allReadyExists.End())
-	{
-		//Insert doc in htmls
-		sSql="INSERT INTO htmls SET html='"+path+"',updated='2004-01-01',mimetype=NULL,title='"+path+"'";
-		RQuery insert(Db,sSql);
-		CurrentDocId++;
-
-		// Insert docid and topicid in htmlsbytopics
-		sSql="INSERT INTO topicsbyhtmls SET topicid="+RString::Number(parentId)+",htmlid="+RString::Number(CurrentDocId);
-		RQuery insert2(Db,sSql);
-	}
-}
-
 
 //-----------------------------------------------------------------------------
-void QFillDB::ParseDocDir(RString path,int parentId, int level)
+void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 {
-	DIR* dp;
-	struct dirent* ep;
-	int catId=0;
-	RString newPath("");
-	RString sSql("");
-	dp=opendir(path);
-	if(dp)
+	// Go through the directory
+	CurDepth++;
+	RDir Dir(uri);
+	Dir.Open(RIO::Read);
+	RCursor<RFile> Files(Dir.GetEntries());
+	for(Files.Start();!Files.End();Files.Next())	
 	{
-		while((ep=readdir(dp))&&(!GSession::Break()))
+		// If directory -> go deep
+		if(dynamic_cast<RDir*>(Files()))
 		{
-			if((ep->d_type==DT_DIR)&&(ep->d_name[0] != '.'))
+						
+			RString cat(parent);
+			GSubject* Topic;
+			
+			// Find parent topic
+			if(parent.IsEmpty())
+				Topic=Subjects->GetTop();
+			else
+				Topic=Subjects->GetNode(parent);
+			
+			if(CurDepth<=Depth)
 			{
-				if(level<Depth)
-					catId= CreateCategory(ep->d_name,parentId);
-				else
-					catId=parentId;
-				newPath=path+"/"+ep->d_name;
-				ParseDocDir(newPath,catId,level+1);
-			}
-			else if(ep->d_type==DT_REG)
-			{
-				// Choose right mime type
-				newPath=path+"/"+ep->d_name;
-				InsertDocument(newPath,parentId);
-			}
+				if(!cat.IsEmpty())
+					cat+="/";
+				cat+=Files()->GetFileName();
+				Subjects->InsertNode(Topic,new GSubject(Subjects->GetNbNodes(),cat,false));
+			}	
+			ParseDir(Files()->GetURI(),cat);
+		}
+		else
+		{						
+			// Must be a normal document
+			GSubject* Topic=Subjects->GetNode(parent);			
+			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,RDate::GetToday(),RDate::null);
+			Session->InsertDoc(doc);
+			Topic->Insert(doc);
 		}
 	}
-	if(GSession::Break())
-		return;
+	CurDepth--;
 }
 
 

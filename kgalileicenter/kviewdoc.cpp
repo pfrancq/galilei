@@ -6,7 +6,7 @@
 
 	Window for manipulating a specific document - Implementation.
 
-	Copyright 2001-2002 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -260,7 +260,7 @@ void KViewDoc::ConstructResults(void)
 					return(1);
 				return(-1);
 			}
-			return(key( col, ascending ).compare( i->key( col, ascending)));
+			return(key( col, ascending ).lower().compare( i->key( col, ascending).lower()));
     	}
 	};
 	Results->clear();
