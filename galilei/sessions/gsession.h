@@ -84,7 +84,7 @@ public:
 	*                        everything is allocated.
 	*/
 	GSession(GSlot* slot=0,R::RDebug* debug=0,unsigned int maxdocs=0,unsigned int maxsubprofiles=0,unsigned int maxgroups=0);
-
+	
 	//-----------------------------------------------------
 	/** @name General Methods
 	*/
@@ -169,6 +169,38 @@ public:
 	*/
 	R::RDebug* GetDebug(void) const;
 
+private:
+	
+	/**
+	 * Add a object given debugging information.
+	 * @param debug          Object.
+	 */
+	void AddDebugObject(const GDebugObject* debug);
+
+	/**
+	 * Remove a object given debugging information.
+	 * @param debug          Object.
+	 */
+	void RemoveDebugObject(const GDebugObject* debug);
+	
+public:
+	
+	/**
+	 * Build some debugging information concerning an object with a given name.
+	 * @param name           Name of the object.	 
+	 * @param info           Description of the information needed.
+	 */
+	virtual R::RString GetDebugInfo(const R::RString& name,const R::RString& info);
+	
+	/**
+	 * Put debugging information concerning an object with a given name in a
+	 * text file.
+	 * @param file           RTextFile where to write.
+	 * @param name           Name of the object. 
+	 * @param info           Description of the information needed.
+	 */
+	void PutDebugInfo(R::RTextFile& file,const R::RString& name,const R::RString& info);
+	
 	/**
 	* Run a "program" for this session.
 	* @param rec             Slot that receive information.
@@ -787,6 +819,8 @@ public:
 	* Destructor.
 	*/
 	virtual ~GSession(void);
+	
+	friend class GDebugObject;
 };
 
 

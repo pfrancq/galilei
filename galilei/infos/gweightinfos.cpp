@@ -31,7 +31,7 @@
 
 
 //------------------------------------------------------------------------------
-// include standard api files
+// include files for ANSI C/C++
 #include <math.h>
 
 
@@ -45,6 +45,9 @@
 using namespace GALILEI;
 using namespace R;
 
+
+//------------------------------------------------------------------------------
+const double Factor=0.5;
 
 
 //------------------------------------------------------------------------------
@@ -105,6 +108,13 @@ int GWeightInfos::sortOrder(const void* a,const void* b)
 		return(-1);
 	else
 		return(1);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfo* GWeightInfos::GetInfo(const GWeightInfo* info)
+{
+	return(GetInsertPtr(info->GetConcept()));
 }
 
 
@@ -253,7 +263,7 @@ double GWeightInfos::Similarity(const GWeightInfos& w) const
 		{
 			// If a type exist -> modify global sim
 			if(type)
-				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 			
 			// Yes -> A new total number of references.
 			type=ptr()->GetConcept()->GetType();
@@ -267,7 +277,7 @@ double GWeightInfos::Similarity(const GWeightInfos& w) const
 			{
 				// If a type exist -> modify global sim
 				if(type)
-					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 				
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
@@ -283,7 +293,7 @@ double GWeightInfos::Similarity(const GWeightInfos& w) const
 			{
 				// If a type exist -> modify global sim
 				if(type)
-					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 				
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
@@ -308,7 +318,7 @@ double GWeightInfos::Similarity(const GWeightInfos& w) const
 		{
 			// If a type exist -> modify global sim
 			if(type)
-				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 			
 			// Yes -> A new total number of references.
 			type=ptr2()->GetConcept()->GetType();
@@ -319,7 +329,7 @@ double GWeightInfos::Similarity(const GWeightInfos& w) const
 	}
 	// If a type exist -> modify global sim
 	if(type)
-		GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+		GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 	return(GlobalSim);
 }
 
@@ -353,7 +363,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 		{
 			// If a type exist -> modify global sim
 			if(type)
-				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 			
 			// Yes -> A new total number of references.
 			type=ptr()->GetConcept()->GetType();
@@ -364,14 +374,14 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 		}
 
 		iff=TotalRef/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType));
-		w1=(ptr()->GetWeight()/max1)*log(iff);
+		w1=(ptr()->GetWeight()/max1)*log10(iff);
 		while((!ptr2.End())&&((*ptr2())<(*ptr())))
 		{
 			if(ptr2()->GetConcept()->GetType()!=type)
 			{
 				// If a type exist -> modify global sim
 				if(type)
-					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 				
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
@@ -381,7 +391,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 				max2=w.GetMaxAbsWeight(type);				
 			}			
 			iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType));
-			w2=(ptr2()->GetWeight()/max2)*log(iff);
+			w2=(ptr2()->GetWeight()/max2)*log10(iff);
 			norm2+=w2*w2;
 			ptr2.Next();
 		}
@@ -391,7 +401,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 			{
 				// If a type exist -> modify global sim
 				if(type)
-					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 				
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
@@ -403,7 +413,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
 				iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType));
-				w2=(ptr2()->GetWeight()/max2)*log(iff);
+				w2=(ptr2()->GetWeight()/max2)*log10(iff);
 				norm2+=w2*w2;
 				norm1+=w1*w1;
 				Sim+=w1*w2;
@@ -420,7 +430,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 		{
 			// If a type exist -> modify global sim
 			if(type)
-				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 			
 			// Yes -> A new total number of references.
 			type=ptr2()->GetConcept()->GetType();
@@ -430,14 +440,14 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 			max2=w.GetMaxAbsWeight(type);			
 		}			
 		iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType));
-		w2=(ptr2()->GetWeight()/max2)*log(iff);
+		w2=(ptr2()->GetWeight()/max2)*log10(iff);
 		norm2+=w2*w2;
 		ptr2.Next();
 	}
 
 	// If a type exist -> modify global sim
 	if(type)
-		GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+		GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 	return(GlobalSim);
 }
 
@@ -473,7 +483,7 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 		{
 			// If a type exist -> modify global sim
 			if(type)
-				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 			
 			// Yes -> A new total number of references.
 			type=ptr()->GetConcept()->GetType();
@@ -487,7 +497,7 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 		iff1=TotalRef1/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType1));
 		iff2=TotalRef2/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType2));
 		
-		w1=(ptr()->GetWeight()/max1)*log(iff1)*log(iff2);
+		w1=(ptr()->GetWeight()/max1)*log10(iff1)*log10(iff2);
 		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
 		{
 			// Look if the type of the concept have changed since that the last concept treated
@@ -495,7 +505,7 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 			{
 				// If a type exist -> modify global sim
 				if(type)
-					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 				
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
@@ -507,7 +517,7 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 			}
 			iff1=TotalRef1/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType1));
 			iff2=TotalRef2/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType2));
-			w2=(ptr2()->GetWeight()/max2)*log(iff1)*log(iff2);
+			w2=(ptr2()->GetWeight()/max2)*log10(iff1)*log10(iff2);
 			norm2+=w2*w2;
 			ptr2.Next();
 		}
@@ -518,7 +528,7 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 			{
 				// If a type exist -> modify global sim
 				if(type)
-					GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 				
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
@@ -532,7 +542,7 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 			{
 				iff1=TotalRef1/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType1));
 				iff2=TotalRef2/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType2));
-				w2=(ptr2()->GetWeight()/max2)*log(iff1)*log(iff2);
+				w2=(ptr2()->GetWeight()/max2)*log10(iff1)*log10(iff2);
 				norm2+=w2*w2;
 				norm1+=w1*w1;
 				Sim+=w1*w2;
@@ -550,7 +560,7 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 		{
 			// If a type exist -> modify global sim
 			if(type)
-				GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 			
 			// Yes -> A new total number of references.
 			type=ptr2()->GetConcept()->GetType();
@@ -562,13 +572,13 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 		}							
 		iff1=TotalRef1/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType1));
 		iff2=TotalRef2/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType2));
-		w2=(ptr2()->GetWeight()/max2)*log(iff1)*log(iff2);
+		w2=(ptr2()->GetWeight()/max2)*log10(iff1)*log10(iff2);
 		norm2+=w2*w2;
 		ptr2.Next();
 	}
 	// If a type exist -> modify global sim
 	if(type)
-		GlobalSim*=(Sim+0.5)/((sqrt(norm1)*sqrt(norm2))+0.5);
+		GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
 	return(GlobalSim);
 }
 
@@ -701,7 +711,7 @@ void GWeightInfos::RecomputeQuery(tObjType,GLang*)
 		ptr=GetPtr(**words);
 		if(!ptr)
 			InsertPtr(ptr=new GWeightInfo((*words)->GetId(),(*words)->GetType()));
-		freq=0.5+((0.5*ptr->GetWeight())/max);
+		freq=Factor+((Factor*ptr->GetWeight())/max);
 		idffactor=log(TotalRef/nbref);
 		ptr->SetWeight(freq*idffactor);
 	}*/

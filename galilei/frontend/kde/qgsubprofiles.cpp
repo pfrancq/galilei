@@ -6,7 +6,7 @@
 
 	Widget to show a subprofile desciption in vector model - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 
@@ -28,11 +28,6 @@
 
 */
 
-
-
-//-----------------------------------------------------------------------------
-// include files for Qt
-#include <qlayout.h>
 
 
 //-----------------------------------------------------------------------------
@@ -73,13 +68,14 @@ public:
 
 	SubProfile(QWidget* parent,GSession* session,GSubProfile* desc);
 	void Construct(void);
-	int Compare(const SubProfile*) const {return(-1);}
-	int Compare(const SubProfile&) const {return(-1);}
+	int Compare(const SubProfile* s) const {return(Desc->GetId()-s->Desc->GetId());}
+	int Compare(const SubProfile& s) const {return(Desc->GetId()-s.Desc->GetId());}
+	int Compare(unsigned int id) const {return(Desc->GetId()-id);}
 };
 
 
 //-----------------------------------------------------------------------------
-GALILEI::QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session,GSubProfile* desc)
+QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session,GSubProfile* desc)
 	: QWidget(parent), Session(session), Desc(desc)
 {
 	char sDate[20];
@@ -107,13 +103,12 @@ GALILEI::QGSubProfiles::SubProfile::SubProfile(QWidget* parent,GSession* session
 	Vector = new QListView(this, "Vector" );
 	Vector->addColumn("Information Entity");
 	Vector->addColumn(QString("Weight"));
-	Construct();
 	QtLayout->addWidget(Vector);
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::QGSubProfiles::SubProfile::Construct(void)
+void QGSubProfiles::SubProfile::Construct(void)
 {
 	class LocalItem : QListViewItem
 	{
@@ -131,7 +126,7 @@ void GALILEI::QGSubProfiles::SubProfile::Construct(void)
 					return(1);
 				return(-1);
 			}
-			return(key( col, ascending ).compare( i->key( col, ascending)));
+			return(key( col, ascending ).lower().compare( i->key( col, ascending).lower()));
     	}
 	};
 
@@ -153,50 +148,27 @@ void GALILEI::QGSubProfiles::SubProfile::Construct(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProfile* profile)
+QGSubProfiles::QGSubProfiles(QTabWidget* parent,GSession* session,GProfile* profile)
 	: QWidget(parent,"QGSubProfiles"), Session(session), Profile(profile), Desc(profile->GetNb(),5)
 {
 	QSize act=size(),tmp, cbsize;
-	RCursor<GSubProfile> s;
-	SubProfile* w;
 
 	// Construct the combo box
-	QVBoxLayout* QtLayout = new QVBoxLayout(this,0,0, "QtLayout");
+	QtLayout = new QVBoxLayout(this,0,0, "QtLayout");
 	Lang=new QComboBox(this);
 	tmp=Lang->size();
 	cbsize=Lang->size();
 	Lang->setEditable(false);
 	QtLayout->addWidget(Lang);
 	connect(Lang,SIGNAL(activated(int)),this,SLOT(slotLangChanged(int)));
-
-	// For each subprofile create a widget
-	s=Profile->GetSubProfiles();
-	for(s.Start();!s.End();s.Next())
-	{
-		// If language is not handled -> do not treat it
-		if(!s()->GetLang())
-			continue;
-		w=new SubProfile(this,Session,s());
-
-		if(!w) break;
-		Desc.InsertPtr(w);
-		Lang->insertItem(ToQString(s()->GetLang()->GetName()),Desc.GetNb()-1);
-		QtLayout->addWidget(w);
-		if(Desc.GetNb()==1)
-		{
-			Current=w;
-			Lang->setCurrentItem(Desc.GetNb()-1);
-			w->show();
-		}
-		else
-			w->hide();
-	}
+	slotProfileChanged();
 	parent->insertTab(this,"Descriptions");
+	slotProfileChanged();
 }
 
 
 //---------------------------------------------------------------------------
-void GALILEI::QGSubProfiles::slotLangChanged(int index)
+void QGSubProfiles::slotLangChanged(int index)
 {
 	Current->hide();
 	Current=Desc[index];
@@ -205,17 +177,46 @@ void GALILEI::QGSubProfiles::slotLangChanged(int index)
 
 
 //---------------------------------------------------------------------------
-void GALILEI::QGSubProfiles::slotProfileChanged(void)
+void QGSubProfiles::slotProfileChanged(void)
 {
+	// For each subprofile create a widget if necessary	
+	RCursor<GSubProfile> s(Profile->GetSubProfiles());
+	for(s.Start();!s.End();s.Next())
+	{
+		// If language is not handled -> do not treat it
+		if(!s()->GetLang())
+			continue;
+		
+		// Verify if a widget must be created
+		SubProfile* w=Desc.GetPtr(s()->GetId());
+		if(!w)
+		{		
+			w=new SubProfile(this,Session,s());
+			if(!w) break;
+			Desc.InsertPtr(w);
+			Lang->insertItem(ToQString(s()->GetLang()->GetName()),Desc.GetNb()-1);
+			QtLayout->addWidget(w);
+			if(Desc.GetNb()==1)
+			{
+				Current=w;
+				Lang->setCurrentItem(Desc.GetNb()-1);
+				w->show();
+			}
+			else
+				w->hide();
+		}
+		w->Construct();
+	}
+	
+	// Update Subprofiles
 	RCursor<SubProfile> Cur(Desc);
-
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Construct();
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::QGSubProfiles::~QGSubProfiles(void)
+QGSubProfiles::~QGSubProfiles(void)
 {
 }
 

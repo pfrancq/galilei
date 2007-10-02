@@ -171,9 +171,9 @@ bool GWeightInfo::operator>(const GWeightInfo &other) const
 
 
 //------------------------------------------------------------------------------
-double GWeightInfo::GetQueryWeight(tObjType ObjType,GLang* lang,double max) const
+double GWeightInfo::GetQueryWeight(tObjType ObjType,double max) const
 {
-	return((Weight/max)*log(static_cast<double>(Concept->Type->GetRef(ObjType))/static_cast<double>(Concept->Type->GetRef(Concept->Id,ObjType))));
+	return((Weight/max)*log10(static_cast<double>(Concept->Type->GetRef(ObjType))/static_cast<double>(Concept->Type->GetRef(Concept->Id,ObjType))));
 }
 
 

@@ -146,6 +146,13 @@ public:
 	void DeleteInfo(GWeightInfo* info);
 
 	/**
+	 * Get a pointer to a weighted information based on a given one. If it is
+	 * not found, it is created with a null weight.
+	 * @param info           Weighted information. 
+	 */
+	GWeightInfo* GetInfo(const GWeightInfo* info);
+	
+	/**
 	* Clear the container.
 	*/
 	void Clear(void);

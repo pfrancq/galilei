@@ -83,6 +83,7 @@ using namespace R;
 #include <gpostgroup.h>
 #include <ggalileiapp.h>
 #include <glangdata.h>
+#include <gdebugobject.h>
 using namespace GALILEI;
 
 
@@ -166,6 +167,7 @@ public:
 	R::RContainer<GLangData,true,true> Langs;                         // Documents, Subprofiles and Groups divided by language.
 	R::RContainer<GConceptType,true,true> ConceptTypes;               // Types of Concepts
 	R::RContainer<GRelationType,true,true> RelationTypes;             // Types of Relations
+	R::RContainer<GDebugObject,false,true> DebugObjs;                 // Objects given debugging information.
 	unsigned int MaxDocs;                                             // Maximum number of documents to handle in memory.
 	unsigned int MaxSubProfiles;                                      // Maximum number of subprofiles to handle in memory.
 	unsigned int MaxGroups;                                           // Maximum number of groups to handle in memory.
@@ -175,7 +177,7 @@ public:
 		: Subjects(0), GroupsHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
 		  Users(u,u/2), Profiles(p,p/2), Langs(nblangs+1),
-		  ConceptTypes(10,5), RelationTypes(10,5),
+		  ConceptTypes(10,5), RelationTypes(10,5), DebugObjs(100,100),
 		  MaxDocs(mdocs), MaxSubProfiles(maxsub), MaxGroups(maxgroups), FilterManager(0)
 	{
 		CurrentRandom=0;
@@ -442,6 +444,40 @@ R::RDebug* GSession::GetDebug(void) const
 
 
 //------------------------------------------------------------------------------
+void GSession::AddDebugObject(const GDebugObject* debug)
+{
+	Data->DebugObjs.InsertPtr(debug);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::RemoveDebugObject(const GDebugObject* debug)
+{
+	Data->DebugObjs.DeletePtr(debug);
+}
+
+
+//------------------------------------------------------------------------------
+RString GSession::GetDebugInfo(const RString& name,const RString& info)
+{
+	GDebugObject* obj=Data->DebugObjs.GetPtr(name);
+	if(!obj)
+		throw GException("No debugging object called '"+info+"'");
+	return(obj->GetDebugInfo(info));
+}
+
+	
+//------------------------------------------------------------------------------
+void GSession::PutDebugInfo(RTextFile& file,const RString& name,const RString& info)
+{
+	GDebugObject* obj=Data->DebugObjs.GetPtr(name);
+	if(!obj)
+		throw GException("No debugging object called '"+info+"'");
+	obj->PutDebugInfo(file,info);	
+}
+
+	
+//------------------------------------------------------------------------------
 void GSession::RunPrg(GSlot* rec,const char* filename)
 {
 	GSessionPrg Prg(filename,this,rec);
@@ -517,11 +553,8 @@ GConceptType* GSession::GetConceptType(unsigned int id,bool null) const
 	try
 	{
 		type=Data->ConceptTypes[id];
-		if(type&&(!type->IsLoaded())&&(Data->Storage))
-		{
-			Data->Storage->LoadConcepts(type);
-			type->Loaded=true;
-		}
+		if(type)
+			type->Load();
 	}
 	catch(...)
 	{
@@ -539,11 +572,8 @@ GConceptType* GSession::GetConceptType(const RString& name,bool null) const
 	try
 	{
 		type=Data->ConceptTypes.GetPtr(name,false);
-		if(type&&(!type->IsLoaded())&&(Data->Storage))
-		{
-			Data->Storage->LoadConcepts(type);
-			type->Loaded=true;
-		}
+		if(type)
+			type->Load();
 	}
 	catch(...)
 	{

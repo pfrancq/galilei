@@ -53,7 +53,7 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
  * This class provides a basic class for a measure that should be stored in a
- * binary to avoid recomputation.
+ * binary file to avoid recomputation.
  * @short Stored Measure
  */
 class GStoredMeasure

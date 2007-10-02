@@ -30,6 +30,12 @@
 
 
 
+//------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <math.h>
+using namespace std;
+
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gconcepttype.h>
@@ -49,7 +55,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GConceptType::GConceptType(unsigned int id,GSession* session,const RString& name,const RString& desc,GLang* lang,size_t s,size_t s2)
-	: RDblHashContainer<GConcept,true>(27,27,s2+(s2/4),s2/4), Id(id), Session(session), Name(name),
+	: GDebugObject(name), RDblHashContainer<GConcept,true>(27,27,s2+(s2/4),s2/4), Id(id), Session(session),
 	  Description(desc), Lang(lang), Direct(0), MaxId(s+s/4), UsedId(0),
 	  Loaded(false)
 {
@@ -88,10 +94,61 @@ int GConceptType::Compare(size_t id) const
 }
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 int GConceptType::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
+}
+
+
+//------------------------------------------------------------------------------
+void GConceptType::Load(void) const
+{
+	if((!Loaded)&&Session&&Session->GetStorage())
+	{
+		Session->GetStorage()->LoadConcepts(const_cast<GConceptType*>(this));
+		const_cast<GConceptType*>(this)->Loaded=true;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+RString GConceptType::GetDebugInfo(const RString& info)
+{
+	// Look what to do
+	bool Idf=(info.FindStr("idf")!=-1);
+	bool Isf=(info.FindStr("isf")!=-1);
+	bool Igf=(info.FindStr("igf")!=-1);
+	if((!Idf)&&(!Isf)&&(!Igf))
+		return(RString::Null);
+	
+	Load(); // Load the concepts if necessary
+	
+	RString str;
+	GConcept** ptr;
+	size_t i;
+	for(i=MaxId+1,ptr=Direct;--i;ptr++)
+	{
+		if(!(*ptr))
+			continue;
+		
+		// Suppose we reserved 32 characters for names
+		RString name=(*ptr)->GetName();
+		str+=name;
+		if(name.GetLen()<32)
+		{
+			for(size_t j=32-name.GetLen()+1;--j;)
+				str+=' ';
+		}
+		if(Idf)	
+			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otDoc));		
+		if(Isf)	
+			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otSubProfile));
+		if(Igf)	
+			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otGroup));		
+		str+="\n";
+	}
+	return(str);
 }
 
 
@@ -118,6 +175,7 @@ void GConceptType::PutDirect(GConcept* concept)
 		n=concept->GetId()+1000;
 		tmp=new GConcept*[n];
 		memcpy(tmp,Direct,MaxId*sizeof(GConcept*));
+		memset(&tmp[MaxId],0,(n-MaxId)*sizeof(GConcept*));
 		delete[] Direct;
 		Direct=tmp;
 		MaxId=n;
@@ -201,6 +259,16 @@ bool GConceptType::IsIn(const RString& name) const
 GConcept* GConceptType::GetConcept(const RString& name) const
 {
 	return(RDblHashContainer<GConcept,true>::GetPtr(name));
+}
+
+
+//------------------------------------------------------------------------------
+double GConceptType::GetIF(size_t id,tObjType ObjType)
+{
+	double nb=Direct[id]->GetRef(ObjType);
+	if(nb>0.0)
+		return(log10(GetRef(ObjType)/nb));
+	return(0.0);
 }
 
 
@@ -322,22 +390,18 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 //------------------------------------------------------------------------------
 void GConceptType::Clear(tObjType ObjType)
 {
-	RCursor<R::RDblHashContainer<GConcept,true>::Hash> Cur(GetCursor()); 
-	for(Cur.Start();!Cur.End();Cur.Next())
+	GConcept** ptr;
+	size_t i;
+	
+	// Look once if the results must be saved
+	Load(); // Load the concepts if necessary
+	
+	for(i=MaxId+1,ptr=Direct;--i;ptr++)
 	{
-		RCursor<R::RDblHashContainer<GConcept,true>::Hash2> Cur2(*Cur());
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			RCursor<GConcept> Cur3(*Cur2());
-			for(Cur3.Start();!Cur3.End();Cur3.Next())
-			{
-				Cur3()->Clear(ObjType);
-				if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-					Session->GetStorage()->SaveRefs(Cur3(),ObjType,0);
-			}					
-		}
+		if(!(*ptr)) continue;
+		(*ptr)->Clear(ObjType);
 	}
-
+	
 	switch(ObjType)
 	{
 		case otDoc:
@@ -367,6 +431,8 @@ void GConceptType::Clear(tObjType ObjType)
 			NbRefGroups=0;
 			break;
 	}
+	
+	// If necessary, put the references to 0. The storage should also reset all the references for the concepts
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(this,ObjType,0);
 }

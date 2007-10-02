@@ -43,6 +43,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gdebugobject.h>
 
 
 //-----------------------------------------------------------------------------
@@ -61,7 +62,7 @@ namespace GALILEI{
 * @param author Pascal Francq
 * @param short Concept Type.
 */
-class GConceptType : protected R::RDblHashContainer<GConcept,true>
+class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcept,true>
 {
 	/**
 	* Identifier of the concept type.
@@ -72,11 +73,6 @@ class GConceptType : protected R::RDblHashContainer<GConcept,true>
 	 * Session.
 	 */
 	GSession* Session;
-	
-	/**
-	* Name of the concept type.
-	*/
-	R::RString Name;
 
 	/**
 	* Short description of the type.
@@ -167,23 +163,18 @@ public:
 	* @see R::RContainer.
 	*/
 	int Compare(size_t id) const;
-
+	
 	/**
-	* Compare a concept with a name.
+	* Compare an object with a name.
 	* @param name            Name used.
 	* @see R::RContainer.
 	*/
 	int Compare(const R::RString& name) const;
-
+	
 	/**
 	* Get the identifier.
 	*/
 	size_t GetId(void) const {return(Id);}
-
-	/**
-	* Get the name.
-	*/
-	R::RString GetName(void) const {return(Name);}
 
 	/**
 	* Get the description.
@@ -205,6 +196,18 @@ public:
 	 * Is the dictionnary of concepts loaded.
 	 */
 	bool IsLoaded(void) const {return(Loaded);}
+	
+	/**
+	 * Load the concepts if necessary.
+	 */
+	void Load(void) const;
+	
+	/**
+	 * Build some debugging information as a string. A string is given as
+	 * parameter to allow the building of several outputs.
+	 * @param info           Description of the information needed.
+	 */
+	virtual R::RString GetDebugInfo(const R::RString& info);
 	
 	/**
 	* Clear the dictionary.
@@ -274,6 +277,13 @@ public:
 	size_t GetNbConcepts(void) const {return(GetNb());}
 
 	/**
+	 * Get the 'Inverse Frequency' factor of a given concept type.
+	* @param id             Identificator of the concept.
+	* @param ObjType        Type of the object.
+	*/
+	double GetIF(size_t id,tObjType ObjType);
+ 
+	/**
 	* Increase the number of objects of a given type that make a reference to a
 	* concept.
 	* @param id             Identificator of the concept.
@@ -328,11 +338,10 @@ public:
 	/**
 	 * Destructor.
 	 */
-	~GConceptType(void);
+	virtual ~GConceptType(void);
 	
 	friend class GConcept;
 	friend class GWeightInfo;
-	friend class GSession;
 };
 
 

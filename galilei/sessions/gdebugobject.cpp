@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSlot.cpp
+	GDebugObject.h
 
-	Generic Slot for GALILEI Session - Implementation.
+	Object that can provide debugging information - Implementation.
 
-	Copyright 2002-2005 by the Université Libre de Bruxelles.
+	Copyright 2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,116 +32,71 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <gdebugobject.h>
+#include <gsession.h>
 #include <gslot.h>
-using namespace GALILEI;
 using namespace R;
+using namespace GALILEI;
+using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-//  class GSlot
+// class GDebugObject
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSlot::GSlot(void)
-	: RPrgOutput()
+GDebugObject::GDebugObject(const RString& name)
+	: Name(name)
 {
+	GSession* session=GSession::Get();
+	if(session)
+		session->AddDebugObject(this);
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextDoc(const GDoc*)
+int GDebugObject::Compare(const GDebugObject& obj) const
 {
+	return(Name.Compare(obj.Name));
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextProfile(const GProfile*)
+int GDebugObject::Compare(const GDebugObject* obj) const
 {
+	return(Name.Compare(obj->Name));
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextProfileExport(const GProfile*)
+int GDebugObject::Compare(const R::RString& name) const
 {
+	return(Name.Compare(name));
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextDocumentExport(const GDoc*)
+RString GDebugObject::GetDebugInfo(const RString&)
 {
+	return(RString::Null);
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextGroupExport(const GGroup*)
+void GDebugObject::PutDebugInfo(RTextFile& file,const RString& info)
 {
+	file<<"["<<Name<<"]"<<endl;
+	file<<GetDebugInfo(info)<<endl<<endl;
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextGroupLang(const GLang*)
+GDebugObject::~GDebugObject(void)
 {
-}
-
-
-//------------------------------------------------------------------------------
-void GSlot::WriteStr(const RString&)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSlot::NextChromosome(unsigned int)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSlot::NextMethod(unsigned int)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSlot::StartJob(const R::RString)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSlot::EndJob(void)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSlot::Interact(void)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSlot::Warning(R::RString)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSlot::Error(R::RString)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSlot::Alert(R::RString)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GSlot::~GSlot(void)
-{
+	GSession* session=GSession::Get();
+	if(session)
+		session->RemoveDebugObject(this);	
 }

@@ -103,6 +103,13 @@ public:
 	virtual void NextGroupLang(const GLang* lang);
 
 	/**
+	* Method called when executing a sequence of instruction to output some
+	* information.
+	* @param str            String to output.
+	*/
+	virtual void WriteStr(const R::RString& str);
+	
+	/**
 	* The traitment for a specific chromosome will begin.
 	* @param id              Identificator of the chromosome.
 	*/

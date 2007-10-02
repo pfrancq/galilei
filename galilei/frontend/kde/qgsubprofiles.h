@@ -45,6 +45,7 @@
 #include <qtabwidget.h>
 #include <qlistview.h>
 #include <qcombobox.h>
+#include <qlayout.h>
 
 
 //-----------------------------------------------------------------------------
@@ -96,6 +97,11 @@ class QGSubProfiles : public QWidget
 	*/
 	QComboBox* Lang;
 
+	/**
+	 * Layout box.
+	 */
+	QVBoxLayout* QtLayout;
+	
 public:
 
 	/**

@@ -163,6 +163,7 @@ class GGroupsHistoryManager;
 // forward class declaration - Sessions Part
 class GTest;
 class GTests;
+class GDebugObject;
 class GSession;
 class GSessionPrg;
 class GSlot;

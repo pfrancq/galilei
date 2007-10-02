@@ -185,11 +185,10 @@ public:
 	* inverse frequency factor of the object type (idf,isf or ivf). The inverse
 	* frenquency of an informatio entity is linked to a specific language.
 	* @param ObjType        Type of the object.
-	* @param lang           Language (information entity space).
 	* @param max            Maximal value of the vector containing the word.
 	* @return double.
 	*/
-	double GetQueryWeight(tObjType ObjType,GLang* lang,double max) const;
+	double GetQueryWeight(tObjType ObjType,double max) const;
 
 	/**
 	* Destructor of a weighted information entity.

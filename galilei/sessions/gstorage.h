@@ -331,6 +331,12 @@ public:
 	virtual void LoadSubjects(void)=0;
 
 	/**
+	 * Save the subjects, including the information on the documents and the
+	 * profiles assigned to them.
+	 */
+	virtual void SaveSubjects(void)=0;
+	
+	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
 	* can be a SQL file.
 	* @param filename        Name of the file.
@@ -379,7 +385,7 @@ public:
 	virtual void LoadRelations(void)=0;
 
 	/**
-	* Loading the all concepts of given concept type.
+	* Loading all concepts of given concept type.
 	* @param type            Type of concepts.
 	*/
 	virtual void LoadConcepts(GConceptType* type)=0;
@@ -433,7 +439,9 @@ public:
 	virtual void SaveRefs(const GConcept* concept,tObjType what,size_t refs)=0;
 
 	/**
-	* Save the references of a given object type for a given concept type.
+	* Save the references of a given object type for a given concept type. If
+	* the number of references is null, the method must reset all the
+	* references for the corresponding concepts.
 	* @param type            Type of the concept.
 	* @param what            Type of the object (otDoc,otSubProfile,otGroup).
 	* @param refs            Number of references.
