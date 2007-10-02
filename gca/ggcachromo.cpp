@@ -159,6 +159,8 @@ void GGCAChromo::Evaluate(void)
 	CritAgreement=CritDisagreement=CritSimJ=0.0;
 	if(!Used.GetNb())
 		return;
+	if(Used.GetNb()==1)
+		cout<<"Problem"<<endl;
 	R::RCursor<GGCAGroup> Cur(Used);
 	R::RCursor<GGCAGroup> Cur2(Used);
 	for(Cur.Start(),i=0,min=2.0;!Cur.End();Cur.Next(),i++)
