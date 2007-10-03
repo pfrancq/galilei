@@ -184,8 +184,14 @@ void QCreateDB::DoIt(void)
  	{
  		Parent->PutText("Import stoplist for "+Langs()->GetName());
  		RString Stop=SchemaURL+"DbStopList_"+Langs()->GetCode()+".sql";
- 		if(RFile::Exists(Stop))
- 			RunSQL(Stop,Db);
+ 		try
+ 		{
+ 		//if(RFile::Exists(Stop))
+ 				RunSQL(Stop,Db);
+ 		}
+ 		catch(...)
+ 		{
+ 		}
  		if(GSession::Break())
  			return; 		
  	}

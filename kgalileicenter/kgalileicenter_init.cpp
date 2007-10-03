@@ -223,7 +223,7 @@ void KGALILEICenterApp::saveOptions(void)
 	Config->writeEntry("Save Results",sessionSave->isChecked());
 
 	// Save options for database creation
-	Config->writeEntry("Structures Path",StructuresPath);
+	Config->writeEntry("StructuresPath",StructuresPath);
 
 	// Save options for the plug-ins dialog box
 	Config->writeEntry("DlgMainTabIdx",DlgMainTabIdx);
@@ -265,7 +265,7 @@ void KGALILEICenterApp::readOptions(void)
 	}
 
 	// Read create database options
-	StructuresPath=Config->readEntry("StructuresPath","/home/pfrancq/prj/kgalileicenter/kgalileicenter/sql").ascii();
+	StructuresPath=Config->readEntry("StructuresPath","http://stic.ulb.ac.be").ascii();
 
 	// Save options for the plug-ins dialog box
 	DlgMainTabIdx=Config->readNumEntry("DlgMainTabIdx",0);
