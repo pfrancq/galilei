@@ -236,9 +236,9 @@ class GTextAnalyse : public GDocAnalyse
 	bool ExtractIndex;
 	
 	/**
-	 * Maximum number of stems allowed for a declartive tag's content.
+	 * Maximum number of terms allowed for a declartive tag's content.
 	 */
-	unsigned int MaxStems;
+	unsigned int MaxTerms;
 	
 	/**
 	 * Maximum depth of a declative tag
@@ -246,15 +246,44 @@ class GTextAnalyse : public GDocAnalyse
 	unsigned int MaxDepth;
 	
 	/**
+	 * Maximal percentage of occurrences of a tag to be considered as index.
+	 */
+	double MaxPercOccurs;
+	
+	/**
+	 * Maximal number of occurrences of a tag to be considered as index.
+	 */
+	double MaxOccurs;
+	
+	/**
 	 * May declarative tags have child tags?
 	 */
 	bool ChildTags;
 	
+	/**
+	 * Weight of each tag and parameter name when they are considered as stems.
+	 */
 	double WeightStruct;
 	
+	/**
+	 * Must the attributes values be considered as stems?
+	 */
 	bool AttrValues;
 	
+	/**
+	 * Weight of each parameter value when they are considered as stems.
+	 */  
 	double WeightValues;
+	
+	/**
+	 * Structure space.
+	 */
+	GConceptType* StructSpace;
+	
+	/**
+	 * Index space.
+	 */
+	GConceptType* IndexSpace;
 	
 public:
 

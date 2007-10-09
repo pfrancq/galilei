@@ -126,7 +126,7 @@ GTextAnalyse::WordWeight::~WordWeight(void)
 //-----------------------------------------------------------------------------
 GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac)
 	: GDocAnalyse(fac), Weights(0), Infos(5000,2500), Direct(0), NbDirect(5000),
-	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0)
+	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0), StructSpace(0), IndexSpace(0)
 {
 }
 
@@ -147,8 +147,10 @@ void GTextAnalyse::ApplyConfig(void)
 	ExtractStruct=Factory->GetBool("ExtractStruct");
 	StructIsContent=Factory->GetBool("StructIsContent");
 	ExtractIndex=Factory->GetBool("ExtractIndex");
-	MaxStems=Factory->GetUInt("MaxStems");
-	MaxDepth=Factory->GetUInt("MaxDepth");	
+	MaxTerms=Factory->GetUInt("MaxTerms");
+	MaxOccurs=Factory->GetUInt("MaxOccurs");
+	MaxDepth=Factory->GetUInt("MaxDepth");
+	MaxPercOccurs=Factory->GetDouble("MaxPercOccurs")/100;
 	ChildTags=Factory->GetBool("ChildTags");
 	WeightStruct=Factory->GetDouble("WeightStruct");	
 	AttrValues=Factory->GetBool("AttrValues");
@@ -179,9 +181,13 @@ void GTextAnalyse::Connect(GSession* session)
 	for(i=NbOrder+1,pt=Order;--i;pt++)
 		(*pt)=new GConcept();
 
-	//init database
+	// Init database
 	if(StoreFullWords)
 		Session->GetStorage()->CreateDummy("wordsstems");
+	
+	// Get the pointers to the concept types
+	StructSpace=Session->GetInsertConceptType("XMLStruct","XML Structure");
+	IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
 }
 
 
@@ -192,6 +198,10 @@ void GTextAnalyse::Disconnect(GSession* session)
 	GConcept** pt;
 	unsigned int i;
 
+	// Spaces are null
+	StructSpace=0;
+	IndexSpace=0;
+	
 	// Local Structure
 	if(Weights)
 	{
@@ -597,6 +607,8 @@ void GTextAnalyse::Analyze(GDoc *doc, const R::RURI& uri)
 	
 	// Init part
 	Doc=doc;
+	Lang=Doc->GetLang();
+	FindLang=((!Lang)||(!StaticLang));	
 	Clear();
 	
 	// Load the xml from the file 
@@ -604,9 +616,6 @@ void GTextAnalyse::Analyze(GDoc *doc, const R::RURI& uri)
 	In.Open(RIO::Read);
 	In.Close();
 		
-	Lang=Doc->GetLang();
-	FindLang=((!Lang)||(!StaticLang));
-	
 	
 	// Analyse the doc structure.
 	if(!FindLang)
@@ -656,8 +665,10 @@ void GTextAnalyse::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("ExtractStruct",false));
 	params->InsertParam(new RParamValue("StructIsContent",false));
 	params->InsertParam(new RParamValue("ExtractIndex",false));
-	params->InsertParam(new RParamValue("MaxStems",15));
-	params->InsertParam(new RParamValue("MaxDepth",2));	
+	params->InsertParam(new RParamValue("MaxTerms",10));
+	params->InsertParam(new RParamValue("MaxDepth",2));
+	params->InsertParam(new RParamValue("MaxOccurs",5));
+	params->InsertParam(new RParamValue("MaxPercOccurs",5.0));
 	params->InsertParam(new RParamValue("ChildTags",false));
 	params->InsertParam(new RParamValue("WeightStruct",2.0));
 	params->InsertParam(new RParamValue("AttrValues",false));

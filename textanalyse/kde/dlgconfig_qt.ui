@@ -8,7 +8,7 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>576</width>
+            <width>575</width>
             <height>535</height>
         </rect>
     </property>
@@ -607,7 +607,7 @@ When the languages are not static, the language of a document is always determin
                                             <cstring>textLabel1_3</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Maximum stems in a declarative tag [MaxStems]</string>
+                                            <string>Maximum terms in a declarative tag [MaxTerms]</string>
                                         </property>
                                     </widget>
                                     <spacer>
@@ -629,7 +629,7 @@ When the languages are not static, the language of a document is always determin
                                     </spacer>
                                     <widget class="KIntNumInput">
                                         <property name="name">
-                                            <cstring>MaxStems</cstring>
+                                            <cstring>MaxTerms</cstring>
                                         </property>
                                         <property name="minValue">
                                             <number>0</number>
@@ -686,6 +686,89 @@ When the languages are not static, the language of a document is always determin
                                     </widget>
                                 </hbox>
                             </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout12</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_4</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Maximal percentage of occurrences [MaxPercOccurs]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer14_2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KDoubleNumInput">
+                                        <property name="name">
+                                            <cstring>MaxPercOccurs</cstring>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>100</number>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout13</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_5</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Maximal number of occurences [MaxOccurs]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer15</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>MaxOccurs</cstring>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
                         </vbox>
                     </widget>
                     <spacer>
@@ -701,7 +784,7 @@ When the languages are not static, the language of a document is always determin
                         <property name="sizeHint">
                             <size>
                                 <width>20</width>
-                                <height>240</height>
+                                <height>20</height>
                             </size>
                         </property>
                     </spacer>
@@ -826,7 +909,7 @@ When the languages are not static, the language of a document is always determin
     <connection>
         <sender>ExtractIndex</sender>
         <signal>toggled(bool)</signal>
-        <receiver>MaxStems</receiver>
+        <receiver>MaxTerms</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
     <connection>
@@ -862,6 +945,10 @@ When the languages are not static, the language of a document is always determin
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
