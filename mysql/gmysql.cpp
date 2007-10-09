@@ -645,12 +645,53 @@ void GStorageMySQL::LoadConceptTypes(void)
 	try
 	{
 		RQuery Types(Db,"SELECT typeid,name,description,refdocs,refsubprofiles,refgroups FROM concepttypes");
-		for(Types.Start();!Types.End();Types.Next())		
+		for(Types.Start();!Types.End();Types.Next())
 			Session->InsertConceptType(atoi(Types[0]),Types[1],Types[2],atoi(Types[3]),atoi(Types[4]),atoi(Types[5]));
 	}
 	catch(RMySQLError e)
 	{
 		cerr<<e.GetMsg()<<endl;		
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::AssignId(GConceptType* type)
+{
+	try
+	{
+		// Init some strings
+		RString name=RQuery::SQLValue(type->GetName());
+		RString desc;
+		if(type->GetDescription().IsEmpty())
+			desc=name;
+		else
+			desc=RQuery::SQLValue(type->GetDescription());
+		
+		// Verify that the concepttype didn't already exist.
+		RString sSql="SELECT typeid FROM concepttypes WHERE name="+name;
+		RQuery find(Db,sSql);
+		if(find.GetNb())
+		{
+			find.Start();
+			type->SetId(strtoul(find[0],0,10));
+			return;
+		}
+
+		// Insert the new concept type
+		sSql="INSERT INTO concepttypes(name,description) VALUES("+name+","+desc+")";
+		RQuery insert(Db,sSql);
+
+		// Get the next id
+		sSql=RString("SELECT typeid FROM concepttypes WHERE typeid=LAST_INSERT_ID()");
+		RQuery getinsert(Db,sSql);
+		getinsert.Start();
+		type->SetId(strtoul(getinsert[0],0,10));
+	}
+	catch(RMySQLError e)
+	{
+		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
 	}
 }
@@ -797,7 +838,7 @@ void GStorageMySQL::AssignId(GConcept* concept)
 		RString name=RQuery::SQLValue(concept->GetName());
 		RString type=Num(concept->GetType()->GetId());
 		
-		// Verify that the word didn't already exist.
+		// Verify that the concept didn't already exist.
 		RString sSql="SELECT conceptid FROM concepts WHERE typeid="+type+" AND name="+name;
 		RQuery find(Db,sSql);
 		if(find.GetNb())
@@ -807,7 +848,7 @@ void GStorageMySQL::AssignId(GConcept* concept)
 			return;
 		}
 
-		// Insert the new word
+		// Insert the new concept
 		sSql="INSERT INTO concepts(name,conceptid,typeid) SELECT "+name+",IFNULL(MAX(conceptid),0)+1,"+type+
 			 " FROM concepts WHERE typeid="+type;
 		RQuery insert(Db,sSql);

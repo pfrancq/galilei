@@ -260,6 +260,12 @@ public:
 	virtual void LoadConceptTypes(void);
 
 	/**
+	* Assign an identifier to a new concept type.
+	* @param type            Concept type.
+	*/
+	virtual void AssignId(GConceptType* type);
+
+	/**
 	* Load the relation types from the database.
 	*/
 	virtual void LoadRelationTypes(void);
