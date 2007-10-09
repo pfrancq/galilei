@@ -58,6 +58,7 @@ using namespace R;
 #include <gsession.h>
 #include <gstorage.h>
 #include <ggalileiapp.h>
+#include <gconcepttype.h>
 using namespace GALILEI;
 
 
@@ -131,7 +132,8 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	// Initialisation of the AnalyseResults Widget
 	Results = new QListView(Infos);
 	Infos->insertTab(Results,"Description");
-	Results->addColumn("Information Entity");
+	Results->addColumn("Concept");
+	Results->addColumn("Concept Type");
 	Results->addColumn("Weight");
 	ConstructResults();
 }
@@ -167,8 +169,9 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	// Initialisation of the AnalyseResults Widget
 	Results = new QListView(Infos);
 	Infos->insertTab(Results,"Analyse Results");
-	Results->addColumn("Word");
-	Results->addColumn("Occurence");
+	Results->addColumn("Concept");
+	Results->addColumn("Concept Type");
+	Results->addColumn("Weight");
 	ConstructResults();
 }
 
@@ -249,7 +252,7 @@ void KViewDoc::ConstructResults(void)
 	public:
 		double Val;
 
-		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, QString::number(d)), Val(d) {}
+		LocalItem(QListView* v,QString name,QString type,double d) : QListViewItem(v,name,type,QString::number(d)), Val(d) {}
 		virtual int compare( QListViewItem *i, int col, bool ascending ) const
     	{
 			if(col==1)
@@ -268,7 +271,9 @@ void KViewDoc::ConstructResults(void)
 	RCursor<GWeightInfo> Words(Document->GetInfos());
 	for (Words.Start();!Words.End();Words.Next())
 	{
-		new LocalItem(Results,ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType())), Words()->GetWeight());
+		QString name=ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType()));
+		QString type=ToQString(Words()->GetType()->GetDescription());
+		new LocalItem(Results,name,type,Words()->GetWeight());
 	}
 }
 
