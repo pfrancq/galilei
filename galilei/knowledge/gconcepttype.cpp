@@ -59,6 +59,8 @@ GConceptType::GConceptType(unsigned int id,GSession* session,const RString& name
 	  Description(desc), Lang(lang), Direct(0), MaxId(s+s/4), UsedId(0),
 	  Loaded(false)
 {
+	if((Id==cNoRef)&&(GSession::Get()))
+		GSession::Get()->AssignId(this);		
 	Direct=new GConcept*[MaxId];
 	memset(Direct,0,MaxId*sizeof(GConcept*));
 }
@@ -98,6 +100,13 @@ int GConceptType::Compare(size_t id) const
 int GConceptType::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
+}
+
+
+//-----------------------------------------------------------------------------
+void GConceptType::SetId(size_t id)
+{
+	Id=id;
 }
 
 
@@ -196,8 +205,8 @@ GConcept* GConceptType::InsertConcept(const GConcept* concept)
 		RString tmp="Empty concept cannot be inserted into a dictionary - id="+RString(concept->GetId());
 		throw GException(tmp);
 	}
-	if(!concept->GetType())
-		throw GException("Concept with no type cannot be inserted into a dictionary");
+	if(concept->GetType()!=this)
+		throw GException("Concept has not the correct type");
 
 	// Look if the data exists in the dictionary. If not, create and insert it.
 	ptr=GetPtr(*concept);

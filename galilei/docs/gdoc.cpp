@@ -181,13 +181,13 @@ R::RVectorInt<true>* GDoc::GetFdbks(void) const
 void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
 	// If document had a language -> remove its references
-	if(computed&&Lang)
+	if(computed&&Lang&&(Id!=cNoRef))
 		DelRefs(otDoc);
 
 	// Assign language and information
 	GWeightInfos::Clear();
 	Lang=lang;
-	if(computed)
+	if(computed&&(Id!=cNoRef))
 	{
 		State=osUpdated;
 		Computed.SetToday();
@@ -204,11 +204,11 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 	infos->Clear();
 
 	// If document has a language -> update its references
-	if(computed&&Lang)
+	if(computed&&Lang&&(Id!=cNoRef))
 		AddRefs(otDoc);
 
 	// Emit an event that it was modified
-	if(computed)
+	if(computed&&(Id!=cNoRef))
 		GSession::Event(this,eObjModified);
 }
 

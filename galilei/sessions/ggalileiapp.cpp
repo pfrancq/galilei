@@ -203,17 +203,21 @@ GSession* GGALILEIApp::CreateSession(void)
 		throw GException("Application not initialized");
 
 	// Init Session
-	Session=new GSession(Log,Debug);
+	Session=new GSession(Log,Debug);	
+	GStorageManager* Mng=GetManager<GStorageManager>("Storage");
+	GStorage* fac=Mng->GetCurrentPlugIn();
+	fac->Connect(Session);
+	fac->LoadConceptTypes();
+	fac->LoadRelationTypes();
+//	fac->GetPlugin()->LoadRelations();
 	WriteLog("Session created");
-
+	
 	// Connect plugins
 	RCursor<GGenericPluginManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Connect(Session);
+		if(Cur()!=Mng)
+			Cur()->Connect(Session);
 	WriteLog("Plugins connected to session");
-
-	// Init the session
-	Session->Init();
 	
 	return(Session);
 }

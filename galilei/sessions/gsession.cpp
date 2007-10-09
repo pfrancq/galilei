@@ -248,16 +248,6 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,unsigned int maxdocs,unsigned in
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GSession::Init(void)
-{
-	GFactoryStorage* fac=GALILEIApp->GetManager<GStorageManager>("Storage")->GetCurrentFactory();
-	fac->GetPlugin()->LoadConceptTypes();
-	fac->GetPlugin()->LoadRelationTypes();
-	fac->GetPlugin()->LoadRelations();
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::ForceReCompute(tObjType type)
 {
 	switch(type)
@@ -585,6 +575,25 @@ GConceptType* GSession::GetConceptType(const RString& name,bool null) const
 
 
 //-----------------------------------------------------------------------------
+GConceptType* GSession::GetInsertConceptType(const RString& name,const RString& desc)
+{
+	GConceptType* type(0);
+	try
+	{
+		type=Data->ConceptTypes.GetPtr(name,false);
+		if(type)
+			type->Load();
+	}
+	catch(...)
+	{
+	}	
+	if(!type)
+		Data->ConceptTypes.InsertPtr(type=new GConceptType(cNoRef,this,name,desc,0));
+	return(type);
+}
+
+
+//-----------------------------------------------------------------------------
 void GSession::InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups)
 {
 	RString code(name.Mid(0,2));
@@ -599,6 +608,13 @@ void GSession::InsertConceptType(unsigned int id,const R::RString& name,const R:
 	GConceptType* type=new GConceptType(id,this,name,desc,Lang,s,s2);
 	type->SetReferences(refdocs,refsubprofiles,refgroups);
 	Data->ConceptTypes.InsertPtrAt(type,id);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AssignId(GConceptType* type)
+{
+	Data->Storage->AssignId(type);
 }
 
 

@@ -91,11 +91,6 @@ public:
 	// @{
 
 	/**
-	* Init the session.
-	*/
-	void Init(void);
-
-	/**
 	* Force some objects to be re-computed even if they are updated.
 	* @param type            Type of the objects. Only 'otDocs', 'otUsers' and
 	*                        'otGroups' are allowed.
@@ -260,7 +255,7 @@ public:
 	R::RCursor<GConceptType> GetConceptTypes(void) const;
 
 	/**
-	* Get the a poitner to a type of concept.
+	* Get the a pointer to a type of concept.
 	* @param id              Identifier of the type.
 	* @param null            If set to true, if the type does not exist,
 	*                        return 0, else an exception is generated.
@@ -269,13 +264,22 @@ public:
 	GConceptType* GetConceptType(unsigned int id,bool null) const;
 
 	/**
-	* Get the a poitner to a type of concept.
+	* Get the a pointer to a type of concept.
 	* @param name            Name of the type.
 	* @param null            If set to true, if the type does not exist,
 	*                        return 0, else an exception is generated.
 	* @return Pointer to a GConceptType
 	*/
 	GConceptType* GetConceptType(const R::RString& name,bool null) const;
+	
+	/**
+	* Get the a pointer to a type of concept. If the concept type doesn't
+	* exist, it is created.
+	* @param name            Name of the type.
+	* @param desc            Short description
+	* @return Pointer to a GConceptType
+	*/
+	GConceptType* GetInsertConceptType(const R::RString& name,const R::RString& desc);
 
 	/**
 	* Insert a new concept type.
@@ -288,6 +292,12 @@ public:
 	*/
 	void InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups);
 
+	/**
+	* Assign an identifier to a new concept type.
+	* @param type            Concept type.
+	*/
+	void AssignId(GConceptType* type);
+	
 	/**
 	* Assign an identifier to a new concept.
 	* @param concept         Concept.

@@ -373,7 +373,13 @@ public:
 	* Load the concept types from the database.
 	*/
 	virtual void LoadConceptTypes(void)=0;
-
+	
+	/**
+	* Assign an identifier to a new concept type.
+	* @param type            Concept type.
+	*/
+	virtual void AssignId(GConceptType* type)=0;
+	
 	/**
 	* Load the relation types from the database.
 	*/

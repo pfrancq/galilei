@@ -70,14 +70,6 @@ GConcept::GConcept(unsigned int id,const RString& name,GConceptType* type,unsign
 
 
 //-----------------------------------------------------------------------------
-/*GConcept::GConcept(const GConcept& c)
-	: Id(c.Id), Name(c.Name), Type(c.Type), NbRefDocs(c.NbRefDocs),
-	  NbRefSubProfiles(c.NbRefSubProfiles), NbRefGroups(c.NbRefGroups)
-{
-}
-*/
-
-//-----------------------------------------------------------------------------
 int GConcept::Compare(const GConcept& c) const
 {
 	return(Id-c.Id);

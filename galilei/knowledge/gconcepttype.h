@@ -172,6 +172,12 @@ public:
 	int Compare(const R::RString& name) const;
 	
 	/**
+	* Set the Identificator of the concept type.
+	* @param id              Identificator.
+	*/
+	void SetId(size_t id);
+	
+	/**
 	* Get the identifier.
 	*/
 	size_t GetId(void) const {return(Id);}

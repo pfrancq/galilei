@@ -115,12 +115,6 @@ public:
 	GConcept(unsigned int id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refsubprofiles,size_t refgroups);
 
 	/**
-	* Copy constructor.
-	* @param c               Original concept.
-	*/
-//	GConcept(const GConcept& c);
-
-	/**
 	* Compare two concepts.
 	* @param c               Concept used.
 	* @see R::RContainer
@@ -173,8 +167,8 @@ public:
 	GConceptType* GetType(void) const {return(Type);}
 
 	/**
-	* Set the Identificator of the word.
-	* @param id              Identificator of the word.
+	* Set the Identificator of the concept.
+	* @param id              Identificator.
 	*/
 	void SetId(size_t id);
 
