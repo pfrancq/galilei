@@ -42,9 +42,10 @@
 #include <ggalileiapp.h>
 #include <glang.h>
 #include <gsession.h>
-#include<gdoc.h>
-#include<ggroup.h>
-#include<gsubprofile.h>
+#include <gdoc.h>
+#include <ggroup.h>
+#include <gsubprofile.h>
+#include <gmeasure2elements.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -144,6 +145,58 @@ public:
 	* Destructor of the similarities between documents and subprofiles.
 	*/
 	virtual ~GGenericSims(void);
+};
+
+
+//------------------------------------------------------------------------------
+class GDiffSims : public GMeasure2Elements
+{
+protected:
+	
+	unsigned int SimType;
+	
+	double Factor;
+	
+	GWeightInfos* vec1;
+	GWeightInfos* vec2;
+	GConceptType* Lang;
+	
+public:
+	GDiffSims(GFactoryMeasure* fact,bool min,tObjType objs);
+	
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
+	
+	/**
+	* Compute a similarity between two lists of weighted information entities.
+	* The method uses the cosinus of the corresponding vectors. A vector of a
+	* list is build using this list and a Inverse Frequence Factor (IFF) of the
+	* object type (idf, isf or ivf) for a given information entity space
+	* (language). If one of the list is empty, the similarity is null.
+	* @param l1             First list of weighted information entities.
+	* @param l2             Second list of weighted information entities.
+	* @param ObjType        Type of the object.
+	*/
+	double SimilarityIFFMV(void) const;
+
+	/**
+	* Compute a similarity between two lists of weighted information entities.
+	* The method uses the cosinus of the corresponding vectors. A vector of a
+	* list is build using this list and a Inverse Frequence Factor (IFF) of the
+	* object type (idf, isf or ivf) for a given information entity space
+	* (language). If one of the list is empty, the similarity is null.
+	* @param l1             First list of weighted information entities.
+	* @param l2             Second list of weighted information entities.
+	* @param ObjType        Type of the object.
+	*/
+	double SimilarityIFFL(void) const;
+	
+	/**
+	 */
+	double Compute(GLang* lang,void* obj1,void* obj2);
+	static void CreateParams(RConfig* params);
 };
 
 

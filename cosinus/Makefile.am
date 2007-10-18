@@ -10,7 +10,7 @@ lib_LTLIBRARIES =  libsubprofilessimscosinus.la \
 		libdocssimscosinus.la
 
 libsubprofilessimscosinus_la_LDFLAGS = -module -avoid-version
-libsubprofilessimscosinus_la_SOURCES = gsubprofilessims.cpp
+libsubprofilessimscosinus_la_SOURCES = ggenericsims.cpp gsubprofilessims.cpp
 libsubprofilessimscosinus_la_LIBADD=
 
 libprofilesagree_la_LDFLAGS = -module -avoid-version
@@ -22,7 +22,7 @@ libprofilesdisagree_la_SOURCES = gprofilesdisagree.cpp
 libprofilesdisagree_la_LIBADD=
 
 libdocssimscosinus_la_LDFLAGS = -module -avoid-version
-libdocssimscosinus_la_SOURCES = gdocssims.cpp
+libdocssimscosinus_la_SOURCES = ggenericsims.cpp gdocssims.cpp
 libdocssimscosinus_la_LIBADD=
 
 libdocsagree_la_LDFLAGS = -module -avoid-version

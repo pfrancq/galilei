@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmeasure2elements.h>
+#include <ggenericsims.h>
 #include <gdoc.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
@@ -48,11 +48,10 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GDocsSims : public GMeasure2Elements
+class GDocsSims : public GDiffSims
 {
 public:
 	GDocsSims(GFactoryMeasure* fac);
-	double Compute(GLang* lang,void* obj1,void* obj2);
 	void* GetElement(GLang* lang,size_t id);
 	size_t GetMaxElementsId(GLang* lang);	
 };
@@ -60,15 +59,8 @@ public:
 
 //------------------------------------------------------------------------------
 GDocsSims::GDocsSims(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,true,true,1.0,otDoc)
+	: GDiffSims(fac,true,otDoc)
 {
-}
-
-
-//------------------------------------------------------------------------------
-double GDocsSims::Compute(GLang*,void* obj1,void* obj2)
-{
-	return(static_cast<GDoc*>(obj1)->SimilarityIFF(*static_cast<GDoc*>(obj2),otDoc));
 }
 
 

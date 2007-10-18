@@ -33,7 +33,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmeasure2elements.h>
+#include <ggenericsims.h>
 #include <gsubprofile.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
@@ -49,11 +49,10 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GSubProfilesSims : public GMeasure2Elements
+class GSubProfilesSims : public GDiffSims
 {
 public:
 	GSubProfilesSims(GFactoryMeasure* fac);
-	double Compute(GLang* lang,void* obj1,void* obj2);
 	void* GetElement(GLang* lang,size_t id);
 	size_t GetMaxElementsId(GLang* lang);	
 };
@@ -61,18 +60,8 @@ public:
 
 //------------------------------------------------------------------------------
 GSubProfilesSims::GSubProfilesSims(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,true,true,1.0,otSubProfile)
+	: GDiffSims(fac,true,otSubProfile)
 {
-}
-
-
-//------------------------------------------------------------------------------
-double GSubProfilesSims::Compute(GLang*,void* obj1,void* obj2)
-{
-	double val=static_cast<GSubProfile*>(obj1)->SimilarityIFF(*static_cast<GSubProfile*>(obj2),otSubProfile);
-	cout<<"Compute Sim("<<static_cast<GSubProfile*>(obj1)->GetId()<<","<<static_cast<GSubProfile*>(obj2)->GetId()<<")="<<val<<endl;
-	return(val);
-//	return(static_cast<GSubProfile*>(obj1)->SimilarityIFF(*static_cast<GSubProfile*>(obj2),otSubProfile));
 }
 
 

@@ -31,6 +31,15 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for Qt
+#include <qlabel.h>
+#include <qgroupbox.h>
+#include <qlayout.h>
+#include <qcombobox.h>
+#include <knuminput.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
 #include <klocale.h>
@@ -38,8 +47,15 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rqt.h>
+using namespace R;
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <qgmeasure2elementsdlg.h>
+#include <gmeasure.h>
 using namespace GALILEI;
 
 
@@ -47,6 +63,71 @@ using namespace GALILEI;
 // Description of the application
 static const char *description =
 	I18N_NOOP("The cosinus method is used to computed the similarities between the subprofiles.");
+
+
+//-----------------------------------------------------------------------------
+//
+// Specific Dialog class
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+class MyDlg : public QGMeasure2ElementsDlg
+{
+    QComboBox* SimType;
+	KDoubleNumInput* Factor;
+
+public:
+
+	MyDlg(void) : QGMeasure2ElementsDlg("Similarities between subprofiles") {}
+	virtual void Panel(void);
+	virtual void Init(GFactoryMeasure* params);
+	virtual void Done(GFactoryMeasure* params);
+};
+
+
+//-----------------------------------------------------------------------------
+void MyDlg::Panel(void)
+{
+    QHBoxLayout* layout = new QHBoxLayout(0,0,6);
+    QLabel* text = new QLabel(MeasureSpecific);
+    text->setText("Similarity Type");
+    layout->addWidget(text);
+    layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
+	SimType = new QComboBox(MeasureSpecific,"SimType");
+	SimType->insertItem("Multi-vector");
+	SimType->insertItem("Language");
+    layout->addWidget(SimType);
+	MeasureSpecificLayout->addLayout(layout);
+
+	layout = new QHBoxLayout(0,0,6);
+   	text = new QLabel(MeasureSpecific);
+    text->setText("Factor");
+    layout->addWidget(text);
+    layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
+	Factor = new KDoubleNumInput(MeasureSpecific,"Factor");
+    layout->addWidget(Factor);
+	MeasureSpecificLayout->addLayout(layout);
+}
+
+
+//-----------------------------------------------------------------------------
+void MyDlg::Init(GFactoryMeasure* params)
+{
+	QGMeasure2ElementsDlg::Init(params);
+	SimType->setCurrentText(ToQString(params->Get("SimType")));
+	Factor->setValue(params->GetDouble("Factor"));
+}
+
+
+//-----------------------------------------------------------------------------
+void MyDlg::Done(GFactoryMeasure* params)
+{
+	params->Set("SimType",FromQString(SimType->currentText()));
+	params->SetDouble("Factor",Factor->value());
+	QGMeasure2ElementsDlg::Done(params);
+}
+
 
 
 //------------------------------------------------------------------------------
@@ -68,7 +149,7 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryMeasure* params)
 {
-	QGMeasure2ElementsDlg dlg("Similarities between subprofiles");
+	MyDlg dlg;
 	dlg.Configure(params);
 }
 
