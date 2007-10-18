@@ -48,8 +48,8 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GMeasure2Elements class provides a representation for a set of Similarity
-* between Profiles of a given language.
+* The GMeasure2Elements class provides a representation for a measure between two
+* elements (eventually of a given language).
 * @author Pascal Francq.
 * @short Measures Between Two Elements.
 */
@@ -59,13 +59,53 @@ public:
 
 	class Intern;
 	
-private:
-
 	/**
 	 * Internal data.
 	 */
 	Intern* Data;
+
+protected:
 	
+	/**
+	* Level under which a measure is considered as null;
+	*/
+	double NullLevel;
+
+	/**
+	* Static minimum of measure.
+	*/ 
+	double MinMeasure;
+
+	/**
+	 * Compute automatically minimum of measure.
+	 */
+	bool AutomaticMinMeasure;
+
+	/**
+	 * Has a minimum for the measure a sense.
+	 */
+	bool MinMeasureSense;
+	
+	/**
+	 * Similarities in memory.
+	 */ 
+	bool Memory;
+
+	/**
+	 * Measures are dependent of the language.
+	 */
+	bool PerLang;
+	
+	/**
+	 * What is the value of measure when a document is compared with itself. 
+	 */
+	double Equals;
+	
+	/**
+	 * Type of the elements.
+	 */
+	tObjType ObjsType;
+
 public:
 
 	/**
@@ -97,6 +137,11 @@ public:
 	*/
 	virtual void Disconnect(GSession* session);
 
+	/**
+	 * Method to make all measures being dirty.
+	 */
+	virtual void Dirty(void);
+	
 	/**
 	* Get a measure between two elements. There are maximum four parameters.
 	* @param measure         Type of the measure (0).

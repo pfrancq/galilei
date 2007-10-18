@@ -79,6 +79,7 @@ public:
 	double MeanSim;
 	
 	Matrix(size_t nb);
+	void Clear(size_t max);
 	void Update(size_t max,bool Automatic,GMeasure2Elements* main,GLang* lang,double Null);
 	void UpdateDeviation(size_t oldnbcomp,double oldsim,double newsim,int what);
 	double ComputeMin(size_t max,GMeasure2Elements* main,GLang* lang,double Null);
@@ -91,6 +92,23 @@ Matrix::Matrix(size_t nb)
 	: Values(0), NbLines(0), NeedUpdate(false), Created(nb), Modified(nb),
 	  Deleted(nb),Deviation(0.0), MeanSim(0.0)
 {
+}
+
+
+//------------------------------------------------------------------------------
+void Matrix::Clear(size_t max)
+{
+	delete Values;
+	Values=0;
+	NbLines=0;
+	NeedUpdate=true;
+	Created.Clear();
+	Modified.Clear();
+	Deleted.Clear();
+	for(size_t i=0;i<max+1;i++)
+		Created.Insert(i);
+	Deviation=0.0;
+	MeanSim=0.0;
 }
 
 
@@ -343,7 +361,12 @@ public:
 	// Constructor and Compare methods.
 	LangMeasure(GLang* lang,size_t nb);
 	int Compare(const GLang& l) const {return(Lang->Compare(l));}
-	int Compare(const GLang* l) const {return(Lang->Compare(l));}
+	int Compare(const GLang* l) const
+	{
+		if(!l)
+			return(1);
+		return(Lang->Compare(l));
+	}
 	int Compare(const LangMeasure& l) const {return(Lang->Compare(*l.Lang));}
 
 	// Destructor.
@@ -391,52 +414,7 @@ public:
 	 */
 	Matrix* Values;
 	
-	/**
-	* Level under which a measure is considered as null;
-	*/
-	double NullLevel;
-
-	/**
-	* Static minimum of measure.
-	*/ 
-	double MinMeasure;
-
-	/**
-	 * Compute automatically minimum of measure.
-	 */
-	bool AutomaticMinMeasure;
-
-	/**
-	 * Has a minimum for the measure a sense.
-	 */
-	bool MinMeasureSense;
-	
-	/**
-	 * Similarities in memory.
-	 */ 
-	bool Memory;
-
-	/**
-	 * Measures in files.
-	 */
-	bool Files;
-	
-	/**
-	 * Measures are dependent of the language.
-	 */
-	bool PerLang;
-	
-	/**
-	 * 
-	 */
-	double Equals;
-	
-	tObjType ObjsType;
-	
-	Intern(double equals,bool min,bool perlang,tObjType objs) : Langs(0), Values(0),
-	  NullLevel(0.000001), MinMeasure(0.5), AutomaticMinMeasure(true), 
-	  MinMeasureSense(min), Memory(true), Files(false), PerLang(perlang),
-	  Equals(equals), ObjsType(objs) {}
+	Intern(void) : Langs(0), Values(0) {}
 	  
 	~Intern(void)
 	{
@@ -455,9 +433,11 @@ public:
 
 //------------------------------------------------------------------------------
 GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,bool min,bool perlang,double equals,tObjType objs)
-	: GMeasure(fac), GSignalHandler(), Data(0)
+	: GMeasure(fac), GSignalHandler(), Data(0),NullLevel(0.000001), MinMeasure(0.5), AutomaticMinMeasure(true), 
+	  MinMeasureSense(min), Memory(true), PerLang(perlang),
+	  Equals(equals), ObjsType(objs)
 {
-	Data=new Intern(equals,min,perlang,objs);
+	Data=new Intern();
 	GSession::AddHandler(this);
 }
 
@@ -465,10 +445,10 @@ GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,bool min,bool perlang,
 //-----------------------------------------------------------------------------
 void GMeasure2Elements::ApplyConfig(void)
 {
-	Data->NullLevel=Factory->GetDouble("NullLevel");
-	Data->MinMeasure=Factory->GetDouble("MinMeasure");
-	Data->AutomaticMinMeasure=Factory->GetBool("AutomaticMinMeasure");
-	Data->Memory=Factory->GetBool("Memory");
+	NullLevel=Factory->GetDouble("NullLevel");
+	MinMeasure=Factory->GetDouble("MinMeasure");
+	AutomaticMinMeasure=Factory->GetBool("AutomaticMinMeasure");
+	Memory=Factory->GetBool("Memory");
 }
 
 
@@ -476,7 +456,7 @@ void GMeasure2Elements::ApplyConfig(void)
 void GMeasure2Elements::Connect(GSession* session)
 {
 	GMeasure::Connect(session);
-	if(Data->PerLang)
+	if(PerLang)
 	{
 		Data->Langs=new R::RContainer<LangMeasure,true,true>(10,5);
 		R::RCursor<GLang> Cur(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
@@ -496,7 +476,7 @@ void GMeasure2Elements::Connect(GSession* session)
 //------------------------------------------------------------------------------
 void GMeasure2Elements::Disconnect(GSession* session)
 {
-	if(Data->PerLang)
+	if(PerLang)
 	{
 		delete Data->Langs;
 		Data->Langs=0;
@@ -511,12 +491,50 @@ void GMeasure2Elements::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
+void GMeasure2Elements::Dirty(void)
+{
+	if(PerLang)
+	{
+		if(!Data->Langs)
+			return;
+/*		delete Data->Langs;
+		Data->Langs=0;*/
+		RCursor<LangMeasure> Cur(*Data->Langs);
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			Cur()->Values->Clear(GetMaxElementsId(Cur()->Lang));
+			/*Cur()->Values->Created.Clear();
+			Cur()->Values->Deleted.Clear();
+			Cur()->Values->Modified.Clear();
+			Cur()->Values->NeedUpdate=true;
+			for(size_t i=0;i<GetMaxElementsId(Cur()->Lang);i++)
+				Cur()->Values->Modified.Insert(i);*/				
+		}
+	}
+	else
+	{
+		if(!Data->Values)
+			return;		
+		Data->Values->Clear(GetMaxElementsId(0));
+/*		delete Data->Values;
+		Data->Values=0;*/
+		/*Data->Values->Created.Clear();
+		Data->Values->Deleted.Clear();
+		Data->Values->Modified.Clear();
+		Data->Values->NeedUpdate=true;
+		for(size_t i=0;i<GetMaxElementsId(0);i++)
+			Data->Values->Modified.Insert(i);*/	
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GMeasure2Elements::Measure(unsigned int measure,...)
 {
 	va_list ap;
 	va_start(ap,measure);
 	GLang* lang;
-	if(Data->PerLang)
+	if(PerLang)
 		lang=va_arg(ap,GLang*);
 	else
 		lang=0;		
@@ -528,12 +546,12 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 	// If same profile -> return default
 	if(id1==id2)
 	{
-		(*res)=Data->Equals;
+		(*res)=Equals;
 		va_end(ap);
 		return;
 	}
 
-	if(!Data->Memory)
+	if(!Memory)
 	{
 		void* obj1=GetElement(lang,id1);
 		if(obj1)
@@ -552,10 +570,10 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 
 
 	//  Choose the correct matrix to pointed
-	if(Data->PerLang)
+	if(PerLang)
 	{
 		// Get the language
-		LangMeasure* l=Data->Langs->GetPtr(*lang);
+		LangMeasure* l=Data->Langs->GetPtr(lang);
 		if(!l)
 			throw GException("Language not defined");
 		Values=l->Values;
@@ -566,7 +584,7 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 	
 	// If Update needed, do it.
 	if(Values->NeedUpdate)
-		Values->Update(GetMaxElementsId(lang),Data->AutomaticMinMeasure,this,lang,Data->NullLevel);
+		Values->Update(GetMaxElementsId(lang),AutomaticMinMeasure,this,lang,NullLevel);
 
 	// Check order of identifier and get the value
 	if(id1<id2)
@@ -583,13 +601,13 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 //------------------------------------------------------------------------------
 void GMeasure2Elements::Info(unsigned int info,...)
 {
-	if(!Data->MinMeasureSense)
+	if(!MinMeasureSense)
 		return;
 	
 	va_list ap;
 	GLang* lang;
 	va_start(ap,info);
-	if(Data->PerLang)
+	if(PerLang)
 		lang=va_arg(ap,GLang*);
 	else
 		lang=0;
@@ -597,25 +615,25 @@ void GMeasure2Elements::Info(unsigned int info,...)
 	Matrix* Values;
 	double deviationrate=1.5;
 
-	if(!Data->AutomaticMinMeasure)
+	if(!AutomaticMinMeasure)
 	{
-		(*res)=Data->MinMeasure;
+		(*res)=MinMeasure;
 		va_end(ap);
 		return;
 	}
 
-	if(!Data->Memory)
+	if(!Memory)
 	{
-		(*res)=Values->ComputeMin(GetMaxElementsId(lang),this,lang,Data->NullLevel);
+		(*res)=Values->ComputeMin(GetMaxElementsId(lang),this,lang,NullLevel);
 		va_end(ap);
 		return;
 	}
 
 	//  Choose the correct matrix to pointed
-	if(Data->PerLang)
+	if(PerLang)
 	{
 		// Get the language
-		LangMeasure* l=Data->Langs->GetPtr(*lang);
+		LangMeasure* l=Data->Langs->GetPtr(lang);
 		if(!l)
 			throw GException("Language not defined");
 		Values=l->Values;		
@@ -625,7 +643,7 @@ void GMeasure2Elements::Info(unsigned int info,...)
 
 		
 	if(Values->NeedUpdate)
-		Values->Update(GetMaxElementsId(lang),Data->AutomaticMinMeasure,this,lang,Data->NullLevel);
+		Values->Update(GetMaxElementsId(lang),AutomaticMinMeasure,this,lang,NullLevel);
 	(*res)=Values->MeanSim+deviationrate*sqrt(Values->Deviation);
 	va_end(ap);
 }
@@ -634,7 +652,7 @@ void GMeasure2Elements::Info(unsigned int info,...)
 //------------------------------------------------------------------------------
 void GMeasure2Elements::Event(GLang* lang, tEvent event)
 {
-	if((!Data->PerLang)||(!Data->Memory)||(!Session))
+	if((!PerLang)||(!Memory)||(!Session))
 		return;
 
 	switch(event)
@@ -663,9 +681,9 @@ template<class C>
 	switch(event)
 	{
 		case eObjNew:
-			if(Data->PerLang)
+			if(PerLang)
 			{
-				if(!Data->Langs)
+				if((!Data->Langs)||(!lang))
 					break;				
 				LangMeasure* l=Data->Langs->GetPtr(lang);
 				if(!l)
@@ -682,9 +700,9 @@ template<class C>
 			Values->NeedUpdate=true;
 			break;
 		case eObjModified:
-			if(Data->PerLang)
+			if(PerLang)
 			{
-				if(!Data->Langs)
+				if((!Data->Langs)||(!lang))
 					break;				
 				LangMeasure* l=Data->Langs->GetPtr(lang);
 				if(!l)
@@ -700,9 +718,9 @@ template<class C>
 			Values->NeedUpdate=true;
 			break;
 		case eObjDelete:
-			if(Data->PerLang)
+			if(PerLang)
 			{
-				if(!Data->Langs)
+				if((!Data->Langs)||(!lang))
 					break;
 				LangMeasure* l=Data->Langs->GetPtr(lang);
 				if(!l)
@@ -730,7 +748,7 @@ template<class C>
 //------------------------------------------------------------------------------
 void GMeasure2Elements::Event(GDoc* doc, tEvent event)
 {
-	if((!Data->Memory)||(Data->ObjsType!=otDoc))
+	if((!Memory)||(ObjsType!=otDoc))
 		return;
 	UpdateElement(doc,event,doc->GetLang());
 }
@@ -739,7 +757,7 @@ void GMeasure2Elements::Event(GDoc* doc, tEvent event)
 //------------------------------------------------------------------------------
 void GMeasure2Elements::Event(GProfile* prof, tEvent event)
 {
-	if((!Data->Memory)||(Data->ObjsType!=otProfile))
+	if((!Memory)||(ObjsType!=otProfile))
 		return;
 	UpdateElement(prof,event,0);	
 }
@@ -748,7 +766,7 @@ void GMeasure2Elements::Event(GProfile* prof, tEvent event)
 //------------------------------------------------------------------------------
 void GMeasure2Elements::Event(GSubProfile* sub, tEvent event)
 {
-	if((!Data->Memory)||(Data->ObjsType!=otSubProfile))
+	if((!Memory)||(ObjsType!=otSubProfile))
 		return;
 	UpdateElement(sub,event,sub->GetLang());
 }
@@ -757,7 +775,7 @@ void GMeasure2Elements::Event(GSubProfile* sub, tEvent event)
 //------------------------------------------------------------------------------
 void GMeasure2Elements::Event(GGroup* grp, tEvent event)
 {
-	if((!Data->Memory)||(Data->ObjsType!=otGroup))
+	if((!Memory)||(ObjsType!=otGroup))
 		return;
 	UpdateElement(grp,event,grp->GetLang());
 }

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GConcpet.cpp
+	GConcept.cpp
 
 	Concept - Implementation.
 

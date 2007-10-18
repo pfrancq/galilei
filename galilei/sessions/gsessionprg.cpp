@@ -305,6 +305,7 @@ class GRunStatI: public GSM
 {
 public:
 	GRunStatI(GPrgClassSession* o) : GSM("RunStat","Run all enabled statistics.",o) {}
+	void Print(R::RPrgOutput* o,RXMLTag* tag,int depth);
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
@@ -887,7 +888,24 @@ void GSetStatParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,fal
 
 
 //------------------------------------------------------------------------------
-void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
+void GRunStatI::Print(R::RPrgOutput* o,RXMLTag* tag,int depth)
+{
+	RString p;
+	for(int i=0;i<depth;i++)
+		p+="  ";
+	p+=tag->GetName();
+	RString v=tag->GetAttrValue("Value");
+	if(!v.IsEmpty())
+		p+="="+v;
+	o->WriteStr(p);
+	RCursor<RXMLTag> Cur(tag->GetNodes());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Print(o,Cur(),depth+1);
+}
+
+
+//------------------------------------------------------------------------------
+void GRunStatI::Run(R::RPrg*,RPrgOutput* out,R::RContainer<RPrgVar,true,false>* args)
 {
 	GStatsCalc* Calc;
 	RXMLStruct xml;
@@ -915,6 +933,8 @@ void GRunStatI::Run(R::RPrg*,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args
 			Calc->Compute(&xml,*Root);
 		}
 	}
+	if(out)
+		Print(out,Root,0);
 }
 
 
