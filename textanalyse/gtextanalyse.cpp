@@ -70,38 +70,12 @@ const unsigned int MaxWordLen=50;
 
 //-----------------------------------------------------------------------------
 //
-// class Word
+// class WordWeight
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GTextAnalyse::WordWeight
-{
-public:
-	RString Word;
-	bool* InStop;
-	unsigned int Nb;
-	double Weight;
-	bool OnlyLetters;
-
-	WordWeight(unsigned int nb);
-	inline void Clear(void) {Word=""; Nb=0; Weight=0.0;}
-
-	int Compare(const WordWeight& word) const
-		{return(Word.Compare(word.Word));}
-	int Compare(const WordWeight* word) const
-		{return(Word.Compare(word->Word));}
-	int Compare(const RString& word) const
-		{return(Word.Compare(word));}
-	size_t HashIndex(size_t idx) const
-	{return(Word.HashIndex(idx));}
-
-	~WordWeight(void);
-};
-
-
-//-----------------------------------------------------------------------------
-GTextAnalyse::WordWeight::WordWeight(unsigned int nb)
+WordWeight::WordWeight(unsigned int nb)
 	:  Word(MaxWordLen+1), InStop(0)
 {
 	InStop=new bool[nb];
@@ -110,11 +84,18 @@ GTextAnalyse::WordWeight::WordWeight(unsigned int nb)
 
 
 //-----------------------------------------------------------------------------
-GTextAnalyse::WordWeight::~WordWeight(void)
+WordWeight::~WordWeight(void)
 {
 	if(InStop) delete[] InStop;
 }
 
+
+
+//-----------------------------------------------------------------------------
+//
+// class IndexTag
+//
+//-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
@@ -125,7 +106,7 @@ GTextAnalyse::WordWeight::~WordWeight(void)
 
 //-----------------------------------------------------------------------------
 GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac)
-	: GDocAnalyse(fac), Weights(0), Infos(5000,2500), Direct(0), NbDirect(5000),
+	: GDocAnalyse(fac), Weights(0), Infos(5000,2500), IndexTags(100), Direct(0), NbDirect(5000),
 	  Order(0), NbOrder(5000), Sl(0), Sldiff(0), Lang(0), StructSpace(0), IndexSpace(0)
 {
 }
@@ -188,6 +169,7 @@ void GTextAnalyse::Connect(GSession* session)
 	// Get the pointers to the concept types
 	StructSpace=Session->GetInsertConceptType("XMLStruct","XML Structure");
 	IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
+	
 }
 
 
@@ -245,6 +227,11 @@ void GTextAnalyse::Clear(void)
 	GConcept** pt;
 	unsigned int i;
 
+	// Language information
+	Lang=Doc->GetLang();
+	FindLang=((!Lang)||(!StaticLang));	
+	
+	// Clear all structures needed to handle a document
 	memset(Sl,0,sizeof(unsigned int)*CurLangs.GetNb());
 	memset(Sldiff,0,sizeof(unsigned int)*CurLangs.GetNb());
 	N=Ndiff=Nwords=V=Vdiff=S=Sdiff=0;
@@ -261,6 +248,10 @@ void GTextAnalyse::Clear(void)
 	for(Cur.Start();!Cur.End();Cur.Next())
 		delete Cur();
 	Infos.Clear();
+	
+	// Clear Indexes
+	IndexTags.Clear();
+	NbTags=0;
 }
 
 
@@ -344,7 +335,7 @@ bool GTextAnalyse::ValidWord(const RString kwd)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AddWord(const RString word,double weight)
+void GTextAnalyse::AddWord(const RString word,double weight,IndexTag* idx)
 {
 	bool Find;
 	unsigned int Index;
@@ -359,7 +350,6 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 	if((Filtering)&&(!ValidWord(word))) return;
 
 	// Find the section of double hash table concerned by the current word.
-	//Section=Weights->Hash[WordWeight::HashIndex(word)][WordWeight::HashIndex2(word)];
 	Section=(*(*Weights)[word.HashIndex(1)])[word.HashIndex(2)];
 
 	// Find the index where the word is or must be.
@@ -421,14 +411,22 @@ void GTextAnalyse::AddWord(const RString word,double weight)
 				Sl[LangIndex]++;
 		}
 	}
-	N++;
-	w->Nb++;
-	w->Weight+=weight;
+	
+	// Treat the correctly wordweight
+	if(idx)
+		idx->InsertPtr(w);
+	else
+	{
+		N++;
+		w->Nb++;
+		w->Weight+=weight;	
+		w->NormalStem=true;
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-bool GTextAnalyse::ExtractWord(const RChar* &ptr/*,RString& word*/,double weight)
+void GTextAnalyse::ExtractWord(const RChar* &ptr,double weight,IndexTag* idx)
 {
 	unsigned len;
 	const RChar* begin;
@@ -477,10 +475,11 @@ BeginExtract:
 		}
 	}
 
-	// If len null, return (nothing else to extract)
-	if(!len) return(false);
+	// If len null -> Nothing else to extract
+	if(!len)
+		return;
 
-	// if not only letters and non-letter words not enabled -> extract next word.
+	// If not only letters and non-letter words not enabled -> extract next word.
 	if((!OnlyLetters)&&(!NonLetterWords))
 		goto BeginExtract;
 
@@ -501,8 +500,7 @@ BeginExtract:
 		}
 	}
 	word.Copy(begin,len);
-	AddWord(word.ToLower(),weight);
-	return(true);
+	AddWord(word.ToLower(),weight,idx);
 }
 
 
@@ -536,49 +534,54 @@ void GTextAnalyse::DetermineLang(void)
 
 
 //-----------------------------------------------------------------------------
+GConcept* GTextAnalyse::GetStemConcept(WordWeight* word)
+{
+	RString stem(MaxWordLen);
+	
+	// If Stop list -> do not treat it.
+	if(word->InStop[LangIndex])
+		return(0);
+
+	// if len<MinWordSize -> do not treat it.
+	if(word->Word.GetLen()<MinWordSize)
+		return(0);
+
+	// If only letters -> apply stemming algorithm.
+	if(word->OnlyLetters)
+		stem=Lang->GetStemming(word->Word);
+	else
+		stem=word->Word;
+	if(stem.GetLen()<MinStemSize)
+		return(0);
+	GConcept w(cNoRef,stem,Lang->GetDict(),0,0,0);
+	return(Lang->GetDict()->InsertConcept(&w));	
+}
+
+
+//-----------------------------------------------------------------------------
 void GTextAnalyse::ConstructInfos(unsigned int docid)
 {
 	WordWeight** wrd;
 	GWeightInfo* Occur;
 	unsigned int i;
 	RString stem(MaxWordLen);
-	GConceptType* dic;
 
 	// Insert all the occurences of the valid words
-	dic=Lang->GetDict();
-
 	for(i=Ndiff+1,wrd=Direct;--i;wrd++)
 	{
-		// If Stop list -> do not treat it.
-		if((*wrd)->InStop[LangIndex]) continue;
+		if(!(*wrd)->NormalStem)
+			continue;
+		GConcept* concept=GetStemConcept(*wrd);
+		if(!concept)
+			continue;
 
-		// if len<MinWordSize -> do not treat it.
-		if((*wrd)->Word.GetLen()<MinWordSize) continue;
-
-		// If only letters -> apply stemming algorithm.
-		if((*wrd)->OnlyLetters)
-		{
-			stem=Lang->GetStemming((*wrd)->Word);
-		}
-		else
-		{
-			// Not necessary because when not begin with a letter, word not extract
-			// if(!Lang->ValidWord((*wrd)->Word))
-			//	continue;
-			stem=(*wrd)->Word;
-		}
-		if(stem.GetLen()>=MinStemSize)
-		{
-			//GWord w(stem);
-			GConcept w(cNoRef,stem,Lang->GetDict(),0,0,0);
-			Occur=Infos.GetInsertPtr(dic->InsertConcept(&w));
-			if(!Occur->GetWeight())
-				Vdiff++;
-			V+=(*wrd)->Nb;
-			(*Occur)+=(*wrd)->Weight;
-			if(StoreFullWords)
-				StoreWordStemInDatabase(Occur->GetId(), (*wrd)->Word, docid);
-		}
+		Occur=Infos.GetInsertPtr(concept);
+		if(!Occur->GetWeight())
+			Vdiff++;
+		V+=(*wrd)->Nb;
+		(*Occur)+=(*wrd)->Weight;
+		if(StoreFullWords)
+			StoreWordStemInDatabase(Occur->GetId(), (*wrd)->Word, docid);
 	}
 
 
@@ -607,8 +610,6 @@ void GTextAnalyse::Analyze(GDoc *doc, const R::RURI& uri)
 	
 	// Init part
 	Doc=doc;
-	Lang=Doc->GetLang();
-	FindLang=((!Lang)||(!StaticLang));	
 	Clear();
 	
 	// Load the xml from the file 
@@ -624,16 +625,53 @@ void GTextAnalyse::Analyze(GDoc *doc, const R::RURI& uri)
 		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
 	}
 
-	// Determine the Language if necessary.
+	// Determine the Language if necessary. If the language cannot be found -> document is not indexed.
 	if(FindLang)
 		DetermineLang();
-
-	// Construct Information if languages determined.
-	if(Lang)
-		ConstructInfos(doc->GetId());
-
+	if(!Lang)
+		return;
+		
+	// Construct Information from the stop words extracted and the XML
+	ConstructInfos(doc->GetId());
+	IndexXMLPart();
+	
 	// Set the Variable of the document
 	Doc->Update(Lang,&Infos,true);
+}
+
+
+//-----------------------------------------------------------------------------
+void GTextAnalyse::IndexXMLPart(void)
+{
+	// Look which index must be used
+	RCursor<IndexTag> Cur(IndexTags);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		// If too much tags -> skip it
+		if((Cur()->Occurs>MaxOccurs)&&((static_cast<double>(Cur()->Occurs)/static_cast<double>(NbTags))>MaxPercOccurs))
+			continue;
+		RString Text(Cur()->Name+"#");
+		bool First(false);
+		RCursor<WordWeight> Idx(*Cur());
+		for(Idx.Start();!Idx.End();Idx.Next())
+		{	
+			// Find the concept in stem stpace
+			GConcept* concept=GetStemConcept(Idx());
+			if(!concept)
+				continue;
+			
+			if(First)
+				Text+=":";
+			else
+				First=true;
+			Text+=RString::Number(concept->GetId());
+		}
+		if(!First)
+			continue;
+		GConcept w(cNoRef,Text,IndexSpace,0,0,0);
+		GWeightInfo* info=Infos.GetInsertPtr(IndexSpace->InsertConcept(&w));
+		(*info)+=1.0;					
+	}
 }
 
 

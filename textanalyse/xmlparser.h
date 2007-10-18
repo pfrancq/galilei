@@ -47,20 +47,6 @@ using namespace R;
 
 
 //-----------------------------------------------------------------------------
-class IndexTag : public RContainer<RString,true,true>
-{
-public:
-	RString Name;
-	size_t Occurs;
-	
-	IndexTag(const RString& name) : RContainer<RString,true,true>(60), Name(name), Occurs(0) {}
-	int Compare(const IndexTag& tag) const {return(Name.Compare(tag.Name));}
-	int Compare(const RString& tag) const {return(Name.Compare(tag));}
-};
-
-
-
-//-----------------------------------------------------------------------------
 /**
  */
 class XMLParser : public RXMLFile
@@ -84,17 +70,7 @@ class XMLParser : public RXMLFile
 	 * Remember current content.
 	 */
 	RString Content;
-	
-	/**
-	 * Index.
-	 */
-	RContainer<IndexTag,true,true> IndexTags;
-	
-	/**
-	 * Number of tags.
-	 */
-	size_t NbTags;
-	
+		
 public:
 	
 	/**
@@ -108,7 +84,7 @@ public:
 	virtual void BeginTag(const RString& namespaceURI,const RString& lName,const RString& name,RContainer<RXMLAttr,true,true>& attrs);
 	virtual void EndTag(const RString& namespaceURI,const RString& lName,const RString& name);
 	virtual void Text(const RString& text);
-	virtual void Close(void);
+	virtual RChar CodeToChar(RString& code);
 	
 	/**
 	 * Look if a structure element must be added.

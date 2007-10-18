@@ -52,8 +52,7 @@
 
 //-----------------------------------------------------------------------------
 XMLParser::XMLParser(GTextAnalyse* filter,const RURI& uri)
-	: RXMLFile(uri,0,"UTF-8"), Filter(filter), IsTitle(false), Contents(20),
-	  IndexTags(40), NbTags(0)
+	: RXMLFile(uri,0,"UTF-8"), Filter(filter), IsTitle(false), Contents(20)
 {
 }
 
@@ -64,7 +63,7 @@ void XMLParser::BeginTag(const RString& namespaceURI,const RString& lName,const 
 	RString index;
 	
 	// Add tags
-	NbTags++;
+	Filter->NbTags++;
 	
 	// Push current content
 	Contents.Push(new RString(Content));
@@ -86,8 +85,8 @@ void XMLParser::BeginTag(const RString& namespaceURI,const RString& lName,const 
 	if(!Filter->ExtractStruct)
 		return;
 
-	RString StructStems;  // String containing structure elements supposed to considered as stems 
-	RString ValuesStems;  // String containing parameters values supposed to considered as stems
+	RString StructStems;  // String containing structure elements supposed to be considered as stems 
+	RString ValuesStems;  // String containing parameters values supposed to be considered as stems
 	
 	// If tags are content -> add short name of the tag
 	if(Filter->StructIsContent)
@@ -113,14 +112,14 @@ void XMLParser::BeginTag(const RString& namespaceURI,const RString& lName,const 
 	if(!StructStems.IsEmpty())
 	{
 		const RChar* ptr=StructStems();
-		Filter->ExtractWord(ptr,Filter->WeightStruct);
+		Filter->ExtractWord(ptr,Filter->WeightStruct,0);
 	}
 	
 	// If ValuesStems is not empty -> Add them
 	if(!ValuesStems.IsEmpty())
 	{
 		const RChar* ptr=ValuesStems();
-		Filter->ExtractWord(ptr,Filter->WeightValues);
+		Filter->ExtractWord(ptr,Filter->WeightValues,0);
 	}
 }
 
@@ -165,8 +164,18 @@ void XMLParser::Text(const RString& text)
 			w=1.0;
 		const RChar* ptr=text();
 		while(!ptr->IsNull())
-			Filter->ExtractWord(ptr,w);
+			Filter->ExtractWord(ptr,w,0);
 	}
+}
+
+
+//------------------------------------------------------------------------------
+RChar XMLParser::CodeToChar(RString& str)
+{
+	RChar res=RXMLFile::CodeToChar(str);
+	if(res!=0)
+		return(res);
+	return(' ');
 }
 
 
@@ -185,33 +194,12 @@ void XMLParser::AddStructElement(const RString& element,size_t)
 
 
 //-----------------------------------------------------------------------------
-void XMLParser::Close(void)
-{
-	RXMLFile::Close();
-	
-	// Look which index must be used
-	RCursor<IndexTag> Cur(IndexTags);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		// If too much tags -> skip it
-		if((Cur()->Occurs>Filter->MaxOccurs)&&((static_cast<double>(Cur()->Occurs)/static_cast<double>(NbTags))>Filter->MaxPercOccurs))
-			continue;
-		RCursor<RString> Idx(*Cur());
-		for(Idx.Start();!Idx.End();Idx.Next())
-		{
-			GConcept w(cNoRef,Cur()->Name+"|"+(*Idx()),Filter->IndexSpace,0,0,0);
-			GWeightInfo* info=Filter->Infos.GetInsertPtr(Filter->IndexSpace->InsertConcept(&w));
-			(*info)+=1.0;			
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void XMLParser::AddIndex(const RString& element,const RString& content,size_t depth)
 {
+	bool Idx=false;
+	
 	// Find corresponding tag
-	IndexTag* ptr=IndexTags.GetInsertPtr(element);
+	IndexTag* ptr=Filter->IndexTags.GetInsertPtr(element);
 	ptr->Occurs++;
 	
 	// If maximum depth, cannot be used
@@ -219,7 +207,7 @@ void XMLParser::AddIndex(const RString& element,const RString& content,size_t de
 		return;
 		
 	// Count number of terms -> if too much, cannot be used
-	unsigned int NbTerms=0;
+	unsigned int NbTerms(0);
 	const RChar* car=content();
 	RString Index;
 	while(!car->IsNull())
@@ -227,19 +215,25 @@ void XMLParser::AddIndex(const RString& element,const RString& content,size_t de
 		// Skip spaces
 		while((!car->IsNull())&&(car->IsSpace()))
 				car++;
-		
+	
 		// Is this a term?
 		if(!car->IsNull())
 		{
+			if(Idx)
+				Index+=' ';
+			
 			// Yes -> skip it and increase
 			NbTerms++;
 			while((!car->IsNull())&&(!car->IsSpace()))
 					Index+=(*(car++));
+			Idx=true;			
 		}
 	}	
 	if(NbTerms>Filter->MaxTerms)
 		return;
 	
 	// OK Index terms
-	ptr->InsertPtr(new RString(Index));
+	car=Index();
+	while(!car->IsNull())
+		Filter->ExtractWord(car,1.0,ptr);	
 }

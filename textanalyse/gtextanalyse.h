@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rdblhashcontainer.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -49,6 +50,40 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+class WordWeight
+{
+public:
+	RString Word;
+	bool* InStop;
+	unsigned int Nb;
+	double Weight;
+	bool OnlyLetters;
+	bool NormalStem;        // Must the word be considered as a normal stem
+	
+	WordWeight(unsigned int nb);
+	inline void Clear(void) {Word=""; Nb=0; Weight=0.0; NormalStem=false;}
+	int Compare(const WordWeight& word) const {return(Word.Compare(word.Word));}
+	int Compare(const WordWeight* word) const {return(Word.Compare(word->Word));}
+	int Compare(const RString& word) const {return(Word.Compare(word));}
+	size_t HashIndex(size_t idx) const {return(Word.HashIndex(idx));}
+	~WordWeight(void);
+};
+
+
+//-----------------------------------------------------------------------------
+class IndexTag : public RContainer<WordWeight,false,false>
+{
+public:
+	RString Name;
+	size_t Occurs;
+	
+	IndexTag(const RString& name) : RContainer<WordWeight,false,false>(60), Name(name), Occurs(0) {}
+	int Compare(const IndexTag& tag) const {return(Name.Compare(tag.Name));}
+	int Compare(const RString& tag) const {return(Name.Compare(tag));}
+};
+
+
+//-----------------------------------------------------------------------------
 /**
 * The GTextAnalyse class provides a method to analyse a document.
 * @author Pascal Francq
@@ -56,8 +91,6 @@ using namespace GALILEI;
 */
 class GTextAnalyse : public GDocAnalyse
 {
-	class WordWeight;
-
 	/**
 	* Current document to analyse.
 	*/
@@ -69,7 +102,7 @@ class GTextAnalyse : public GDocAnalyse
 	R::RCursor<GLang> CurLangs;
 
 	/**
-	* All the word appearing in the current document.
+	* All the words appearing in the current document.
 	*/
 	R::RDblHashContainer<WordWeight,false>* Weights;
 
@@ -77,6 +110,11 @@ class GTextAnalyse : public GDocAnalyse
 	* Information computed.
 	*/
 	R::RContainer<GWeightInfo,false,true> Infos;
+
+	/**
+	 * Index.
+	 */
+	RContainer<IndexTag,true,true> IndexTags;
 
 	/**
 	* Direct access to the words.
@@ -276,6 +314,11 @@ class GTextAnalyse : public GDocAnalyse
 	double WeightValues;
 	
 	/**
+	 * Number of tags.
+	 */
+	size_t NbTags;
+	
+	/**
 	 * Structure space.
 	 */
 	GConceptType* StructSpace;
@@ -337,16 +380,19 @@ protected:
 	* Add a word to the document.
 	* @param word           Word to add.
 	* @param weight         Weights of the words added during this analyze.
+	* @param normal         Must the word be considered as a normal stem.
 	*/
-	void AddWord(const R::RString word,double weight);
+	void AddWord(const R::RString word,double weight,IndexTag* idx);
 
 	/**
-	* This function construct a word.
+	* This method extract the new word from a given string if it responds to
+	* the constraints established.
 	* @param ptr            Pointer that will be moved to the next word.
 	* @param weight         Weights of the words added during this analyze.
+	* @param normal         Must the word be considered as a normal stem.
 	* @returns true if a word was extract.
 	*/
-	bool ExtractWord(const R::RChar* &ptr,double weight);
+	void ExtractWord(const R::RChar* &ptr,double weight,IndexTag* idx);
 
 	/**
 	* This methods determine the language of the current structure studied,
@@ -356,6 +402,8 @@ protected:
 	*/
 	void DetermineLang(void);
 
+	GConcept* GetStemConcept(WordWeight* word);
+	
 	/**
 	* Construct the information about the current document and store it in
 	* Words.
@@ -385,6 +433,11 @@ public:
 	*/
 	virtual void Analyze (GDoc *doc, const R::RURI& uri);
 
+	/**
+	 * Index the XML part.
+	 */
+	void IndexXMLPart(void);
+	
 	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
