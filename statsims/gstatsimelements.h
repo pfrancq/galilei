@@ -207,7 +207,7 @@ template<class E1,class E2>
 				if(Cur2()->GetLang()!=lang) continue;
 				if(!Cur2()->IsDefined()) continue;
 
-				tmp=Measure->GetMeasure(Cur1()->GetId(),Cur2()->GetId());
+				Measure->Measure(0,lang,Cur1()->GetId(),Cur2()->GetId(),&tmp);
 				if(Same)
 				{
 					nbIntra++;
@@ -305,7 +305,9 @@ template<class E1,class E2>
 			calc->AddTag(xml,LangTag,"Mean Extra",MeanExtra);
 			calc->AddTag(xml,LangTag,"Rie",Rie);
 			calc->AddTag(xml,LangTag,"Overlap",Overlap);
-			calc->AddTag(xml,LangTag,"Min Measure",Measure->GetMinMeasure(Langs()));
+			double tmp;
+			Measure->Info(0,Langs(),&tmp);
+			calc->AddTag(xml,LangTag,"Min Measure",tmp);
 		}
 
 		if(LangTag->IsEmpty())
