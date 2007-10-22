@@ -51,6 +51,7 @@
 #include <gdoc.h>
 #include <gdocxml.h>
 #include <gconcept.h>
+#include <gxmlindex.h>
 #include <gconcepttype.h>
 #include <gweightinfo.h>
 #include <gsession.h>
@@ -168,8 +169,7 @@ void GTextAnalyse::Connect(GSession* session)
 	
 	// Get the pointers to the concept types
 	StructSpace=Session->GetInsertConceptType("XMLStruct","XML Structure");
-	IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
-	
+	IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");	
 }
 
 
@@ -650,8 +650,22 @@ void GTextAnalyse::IndexXMLPart(void)
 		// If too much tags -> skip it
 		if((Cur()->Occurs>MaxOccurs)&&((static_cast<double>(Cur()->Occurs)/static_cast<double>(NbTags))>MaxPercOccurs))
 			continue;
-		RString Text(Cur()->Name+"#");
-		bool First(false);
+
+		// Find the concept corresponding to the tag
+		GConcept t(cNoRef,Cur()->Name,StructSpace,0,0,0);
+		GConcept* Tag=StructSpace->InsertConcept(&t);
+		
+		// Verify if the structural element is already an information entity
+		// If not -> add it
+		GWeightInfo* info=Infos.GetPtr(Tag);
+		if(!info)
+		{			
+			info=Infos.GetInsertPtr(Tag);
+			(*info)+=1.0;
+		}
+		
+		// Add the concepts related to the stems
+		RContainer<GConcept,false,true> Stems(10);
 		RCursor<WordWeight> Idx(*Cur());
 		for(Idx.Start();!Idx.End();Idx.Next())
 		{	
@@ -660,16 +674,16 @@ void GTextAnalyse::IndexXMLPart(void)
 			if(!concept)
 				continue;
 			
-			if(First)
-				Text+=":";
-			else
-				First=true;
-			Text+=RString::Number(concept->GetId());
+			Stems.InsertPtr(concept);
 		}
-		if(!First)
+		
+		// If no stems -> Not a valid index
+		if(!Stems.GetNb())
 			continue;
-		GConcept w(cNoRef,Text,IndexSpace,0,0,0);
-		GWeightInfo* info=Infos.GetInsertPtr(IndexSpace->InsertConcept(&w));
+		
+		// Add this index
+		GXMLIndex w(IndexSpace,Tag,Lang,Stems);
+		info=Infos.GetInsertPtr(IndexSpace->InsertConcept(&w));
 		(*info)+=1.0;					
 	}
 }

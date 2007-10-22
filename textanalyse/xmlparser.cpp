@@ -88,21 +88,24 @@ void XMLParser::BeginTag(const RString& namespaceURI,const RString& lName,const 
 	RString StructStems;  // String containing structure elements supposed to be considered as stems 
 	RString ValuesStems;  // String containing parameters values supposed to be considered as stems
 	
+	// Always index the structure
+	AddStructElement(index+":"+lName,GetCurrentDepth());
+	
 	// If tags are content -> add short name of the tag
 	if(Filter->StructIsContent)
-		StructStems+=lName+" ";
-	else
-		AddStructElement(index+":"+lName,GetCurrentDepth());
+		StructStems+=lName+" ";	
 	
 	RCursor<RXMLAttr> Cur(attrs);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
+		// Always index the structure
+		AddStructElement(Cur()->GetFullName(),GetCurrentDepth());
+		
 		// If attributes names are content -> add short parameter name 
 		if(Filter->StructIsContent)
 			StructStems+=Cur()->GetName()+" ";
-		else
-			AddStructElement(Cur()->GetFullName(),GetCurrentDepth());
-		
+
+					
 		// If attributes values are content -> add short parameter name
 		if(Filter->AttrValues)
 			ValuesStems+=Cur()->GetValue()+" ";
