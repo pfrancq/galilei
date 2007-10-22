@@ -59,6 +59,8 @@ namespace GALILEI{
 */
 class GConcept
 {
+protected:
+	
 	/**
 	* Identifier of the concept.
 	*/
@@ -96,6 +98,12 @@ public:
 	*/
 	GConcept(void);
 
+	/**
+	 * Copy constructor.
+	 * @param concept        Original concept.
+	 */
+	GConcept(const GConcept* concept);
+	
 	/**
 	* Constructor of a generic concept.
 	* @param name            Name of the concept.
@@ -148,11 +156,11 @@ public:
 	bool operator!=(const GConcept& c) const;
 
 	/**
-	* Assignment operator for concept.
-	* @param c               Concept.
-	*/
-	GConcept& operator=(const GConcept& d);
-
+	 * Do a deep copy of the current concept.
+	 * @return Pointer to a new element created.
+	 */
+	virtual GConcept* DeepCopy(void) const;
+	
 	/**
 	* Compute the first hash index of the name of a concept.
 	* @see R::RHashContainer

@@ -212,7 +212,7 @@ GConcept* GConceptType::InsertConcept(const GConcept* concept)
 	ptr=GetPtr(*concept);
 	if(!ptr)
 	{
-		ptr=new GConcept(*concept);
+		ptr=concept->DeepCopy();
 		InsertPtr(ptr);
 		InDirect=true;
 	}

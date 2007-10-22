@@ -54,6 +54,14 @@ GConcept::GConcept(void)
 
 
 //-----------------------------------------------------------------------------
+GConcept::GConcept(const GConcept* concept)
+	: Id(concept->Id), Name(concept->Name), Type(concept->Type), NbRefDocs(concept->NbRefDocs),
+	  NbRefSubProfiles(concept->NbRefSubProfiles), NbRefGroups(concept->NbRefGroups)
+{
+}
+
+
+//-----------------------------------------------------------------------------
 GConcept::GConcept(const RString& name,GConceptType* type)
 	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0),
 	  NbRefSubProfiles(0), NbRefGroups(0)
@@ -109,15 +117,9 @@ bool GConcept::operator!=(const GConcept& c) const
 
 
 //-----------------------------------------------------------------------------
-GConcept& GConcept::operator=(const GConcept& c)
+GConcept* GConcept::DeepCopy(void) const
 {
-	Id=c.Id;
-	Name=c.Name;
-	Type=c.Type;
-	NbRefDocs=c.NbRefDocs;
-	NbRefSubProfiles=c.NbRefSubProfiles;
-	NbRefGroups=c.NbRefGroups;
-	return(*this);
+	return(new GConcept(this));
 }
 
 
