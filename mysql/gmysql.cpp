@@ -59,6 +59,7 @@
 #include <gwordoccurs.h>
 #include <ggalileiapp.h>
 #include <gconcept.h>
+#include <gxmlindex.h>
 #include <gconcepttype.h>
 #include <grelation.h>
 #include <grelationtype.h>
@@ -785,6 +786,7 @@ void GStorageMySQL::LoadConcepts(GConceptType* type)
 
 	try
 	{
+		bool Index=(type->GetName()=="XMLIndex");
 		// Construct the table name
 		if(GSession::Get()&&GSession::Get()->GetSlot())
 			GSession::Get()->GetSlot()->StartJob("Load Dictionnary ("+type->GetDescription()+")");
@@ -813,8 +815,16 @@ void GStorageMySQL::LoadConcepts(GConceptType* type)
 		RQuery dicts(Db, sSql);
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
-			GConcept w(atoi(dicts[0]),dicts[1],type,atoi(dicts[2]),atoi(dicts[3]),atoi(dicts[4]));
-			type->InsertConcept(&w);
+			if(Index)
+			{
+				GXMLIndex w(atoi(dicts[0]),dicts[1],type,atoi(dicts[2]),atoi(dicts[3]),atoi(dicts[4]));
+				type->InsertConcept(&w);				
+			}
+			else
+			{
+				GConcept w(atoi(dicts[0]),dicts[1],type,atoi(dicts[2]),atoi(dicts[3]),atoi(dicts[4]));
+				type->InsertConcept(&w);
+			}
 		}
 		if(GSession::Get()&&GSession::Get()->GetSlot())
 			GSession::Get()->GetSlot()->EndJob();
