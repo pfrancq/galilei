@@ -6,7 +6,7 @@
 
 	Groups Evaluation - Implementation.
 
-	Copyright 2002-2004 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).

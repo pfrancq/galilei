@@ -6,7 +6,7 @@
 
 	Template for computing Similarities between elmeents.
 
-	Copyright 2002-2004 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -50,20 +50,6 @@
 template<class E1,class E2>
 	class GStatSimElements
 {
-public:
-
-	// Local Statistics
-	class LocalStat
-	{
-	public:
-		GSubject* Sub;
-		bool Overlap;
-
-		LocalStat(GSubject* s) : Sub(s), Overlap(false) {}
-		int Compare(const LocalStat& l) const {return(Sub->Compare(*l.Sub));}
-		int Compare(const GSubject& s) const {return(Sub->Compare(s));}
-	};
-
 protected:
 
 	/**
@@ -87,12 +73,7 @@ protected:
 	double Rie;
 
 	/**
-	* Global Overlap Factor (Without IF).
-	*/
-	double GOverlap;
-
-	/**
-	* Overlap Factor (Without IF).
+	* Overlap Factor.
 	*/
 	double Overlap;
 
@@ -102,16 +83,18 @@ protected:
 	R::RTextFile* File;
 
 	/**
-	* Container of statistics on the subjects.
-	*/
-	R::RContainer<LocalStat,true,true> Sub;
-
-	/**
 	*/
 	GMeasure* Measure;
 
-	unsigned int nbElements;
+	/**
+	 * Number of elements compared.
+	 */
+	size_t NbElements;
 
+	/**
+	 */
+	bool WriteTitle;
+	
 public:
 
 	/**
@@ -152,14 +135,8 @@ public:
 //------------------------------------------------------------------------------
 template<class E1,class E2>
 	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,RTextFile* f)
-	: Session(ses), File(f), Sub(100,50)
+	: Session(ses), File(f)
 {
-	if(File)
-	{
-		(*File)<<"Id";
-		(*File)<<"Rie";
-		(*File)<<endl;
-	}
 }
 
 
@@ -170,12 +147,15 @@ template<class E1,class E2>
 	double SimIntra;
 	double SimExtra;
 	double tmp;
+	double LRie;
 	unsigned int nbIntra;
 	unsigned int nbExtra;
 	bool Same;
 	double MinIntra;
 	double MaxExtra;
-
+	double LOverlap(0.0);
+	size_t LNbElements(0);
+	
 	// Create tag
 	RXMLTag* Tag=new RXMLTag(sub->GetName());
 	xml->AddTag(parent,Tag);
@@ -226,8 +206,11 @@ template<class E1,class E2>
 
 	// Compute Overlap for current subject
 	if(MaxExtra>MinIntra)
+	{
 		Overlap++;
-
+		LOverlap++;
+	}
+	
 	// Compute Rie for current element
 	if(nbIntra)
 	{
@@ -246,14 +229,42 @@ template<class E1,class E2>
 	}
 
 	if(nbIntra||nbExtra)
-		nbElements++;
+	{
+		NbElements++;
+		LNbElements++;
+	}
 
 	if(SimIntra!=0.0)
 	{
-		tmp=(SimIntra-SimExtra)/SimIntra;
+		LRie=(SimIntra-SimExtra)/SimIntra;
+		LOverlap/=LNbElements;
 		if(File)
-			(*File)<<sub->GetId()<<tmp<<endl;
-		calc->AddTag(xml,Tag,"Rie",tmp);
+		{
+			if(WriteTitle)
+			{
+				(*File)<<"  ---------"<<lang->GetName()<<"-----"<<endl;
+				RString n1("Name"); n1.SetLen(25," ");
+				RString n2("Min Intra"); n2.SetLen(12," ");
+				RString n3("Mean Intra"); n3.SetLen(12," ");
+				RString n4("Max Extra"); n4.SetLen(12," ");
+				RString n5("Mean Extra"); n5.SetLen(12," ");
+				RString n6("Rie"); n6.SetLen(12," ");
+				RString n7("Overlap"); n7.SetLen(12," ");
+				(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
+				WriteTitle=false;
+			}		
+			
+			RString n1(sub->GetName()); n1.SetLen(25," ");
+			RString n2(RString::Number(MinIntra)); n2.SetLen(12," ");
+			RString n3(RString::Number(SimIntra)); n3.SetLen(12," ");
+			RString n4(RString::Number(MaxExtra)); n4.SetLen(12," ");
+			RString n5(RString::Number(SimExtra)); n5.SetLen(12," ");
+			RString n6(RString::Number(LRie)); n6.SetLen(12," ");
+			RString n7(RString::Number(LOverlap)); n7.SetLen(12," ");
+			(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
+		}
+		calc->AddTag(xml,Tag,"Rie",LRie);
+		calc->AddTag(xml,Tag,"Overlap",LOverlap);
 	}
 
 	// Go trough Subtopic
@@ -277,29 +288,29 @@ template<class E1,class E2>
 	R::RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
 	R::RCursor<GSubject> Subs1(Session->GetSubjects()->GetTop()->GetNodes());
 	for(Langs.Start();!Langs.End();Langs.Next())
-	{
-		nbElements=0;
+	{		
+		WriteTitle=true;
+		NbElements=0;
 		LangTag=new RXMLTag(Langs()->GetName());
 		xml->AddTag(tag,LangTag);
 
 		// Initialization
 		Overlap=MeanExtra=MeanIntra=0.0;
-		Sub.Clear();
 
 		// Go trough the subjects
 		for(Subs1.Start();!Subs1.End();Subs1.Next())
 			ComputeSubject(calc,Subs1(),Langs(),xml,LangTag);
 
 		// Compute elements statistics
-		if(nbElements)
+		if(NbElements)
 		{
-			MeanIntra/=nbElements;
-			MeanExtra/=nbElements;
+			MeanIntra/=NbElements;
+			MeanExtra/=NbElements;
 			if(MeanIntra==0.0)
 				Rie=0.0;
 			else
 				Rie=(MeanIntra-MeanExtra)/MeanIntra;
-			Overlap/=nbElements;
+			Overlap/=NbElements;
 
 			calc->AddTag(xml,LangTag,"Mean Intra",MeanIntra);
 			calc->AddTag(xml,LangTag,"Mean Extra",MeanExtra);
@@ -308,6 +319,17 @@ template<class E1,class E2>
 			double tmp;
 			Measure->Info(0,Langs(),&tmp);
 			calc->AddTag(xml,LangTag,"Min Measure",tmp);
+			if(File)
+			{
+				RString n1("Global"); n1.SetLen(25," ");
+				RString n2("------"); n2.SetLen(12," ");
+				RString n3(RString::Number(MeanIntra)); n3.SetLen(12," ");
+				RString n4("------"); n4.SetLen(12," ");
+				RString n5(RString::Number(MeanExtra)); n5.SetLen(12," ");
+				RString n6(RString::Number(tmp)); n6.SetLen(12," ");
+				RString n7(RString::Number(Overlap)); n7.SetLen(12," ");
+				(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl<<endl;
+			}
 		}
 
 		if(LangTag->IsEmpty())
