@@ -336,7 +336,7 @@ GSimType::GSimType(GDiffSims* owner,GConceptType* type)
 
 
 //------------------------------------------------------------------------------
-void GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,double& num,double& den)
+double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 {
 	double max1;
 	double max2;	
@@ -344,6 +344,7 @@ void GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,dou
 	double norm2;
 	double w1,w2,iff;
 	double TotalRef;
+	double num;
 	
 	// Compute total number of references and the maximum for each type
 	TotalRef=Type->GetRef(Owner->ObjsType);
@@ -387,7 +388,9 @@ void GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,dou
 	}
 
 	// Return similarity
-	den=sqrt(norm1)*sqrt(norm2);
+	if((norm1>0.0)&&(norm2>0.0))
+		return(num/(sqrt(norm1)*sqrt(norm2)));
+	return(0.0);
 }
 
 
@@ -399,18 +402,18 @@ void GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,dou
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,double& num,double& den)
+double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 {
 	double max1;
 	double max2;	
-	double norm1;
-	double norm2;
 	double w1,w2,iff;
 	double TotalRef;
+	double num;
+	double den;
 	
 	// Compute total number of references and the maximum for each type
 	TotalRef=Type->GetRef(Owner->ObjsType);
-	norm1=norm2=num=den=0.0;
+	num=den=0.0;
 	max1=Owner->vec1->GetMaxAbsWeight(Type);
 	max2=Owner->vec2->GetMaxAbsWeight(Type);
 	
@@ -436,7 +439,9 @@ void GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& 
 	}
 
 	// Return similarity
-	den=sqrt(norm1)*sqrt(norm2);
+	if(den>0.0)
+		return(num/den);
+	return(0.0);
 }
 
 
@@ -503,7 +508,7 @@ double GDiffSims::SimilarityIFFMV(void)
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
 
-	double Sim(1.0),n,d;	
+	double Sim(1.0);	
 	bool CommonSpace(false);
 	RCursor<GWeightInfo> ptr(*vec1);
 	RCursor<GWeightInfo> ptr2(*vec2);
@@ -512,9 +517,8 @@ double GDiffSims::SimilarityIFFMV(void)
 	{
 		if((ptr()->GetConcept()->GetType()==Cur()->Type)&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
 		{
-			// OK Compute it
-			Cur()->Compute(ptr,ptr2,n,d);
-			Sim*=(n+Factor)/(d+Factor);
+			// OK Compute it		
+			Sim*=(1+Factor+Cur()->Compute(ptr,ptr2))/(2+Factor);
 			CommonSpace=true;
 		}
 		else
@@ -545,17 +549,13 @@ double GDiffSims::SimilarityIFFL(void)
 	ptr.Start();
 	ptr2.Start();
 	
-	// Skip everything until the language
+	// Skip everything until the right language
 	while((!ptr.End())&&(ptr()->GetConcept()->GetType()!=Lang))
 		ptr.Next();
 	while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()!=Lang))
 		ptr2.Next();
 	
-	double n,d;
-	Types.GetPtr(Lang)->Compute(ptr,ptr2,n,d);
-	if(d>0.0)
-		return(n/d);
-	return(0.0);
+	return(Types.GetPtr(Lang)->Compute(ptr,ptr2));
 }
 
 

@@ -167,7 +167,7 @@ protected:
 	
 public:
 	GSimType(GDiffSims* owner,GConceptType* type);
-	virtual void Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,double& num,double& den);
+	virtual double Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2);
 	int Compare(const GSimType& t) const {return(Type->Compare(t.Type));}
 	int Compare(const GSimType* t) const {return(Type->Compare(t->Type));}
 	int Compare(const GConceptType* t) const {return(Type->Compare(t));}
@@ -183,7 +183,7 @@ class GSimTypeXMLIndex : public GSimType
 public:
 	GSimTypeXMLIndex(GDiffSims* owner,GConceptType* type) :
 		GSimType(owner,type) {}
-	virtual void Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,double& num,double& den);
+	virtual double Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2);
 };
 
 
