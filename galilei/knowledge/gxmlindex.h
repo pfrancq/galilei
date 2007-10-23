@@ -140,6 +140,16 @@ public:
 	virtual void Clear(void);
 
 	/**
+	 * Get the tag implied in this index.
+	 */
+	GConcept* GetXMLTag(void) const {return(XMLTag);}
+	
+	/**
+	 * Get the number of common stems.
+	 */
+	size_t GetNbCommonStems(const GXMLIndex* index) const;
+	
+	/**
 	* Desctuctor of a concept.
 	*/
 	virtual ~GXMLIndex(void);

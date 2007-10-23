@@ -136,6 +136,27 @@ void GXMLIndex::Clear(void)
 
 
 //-----------------------------------------------------------------------------
+size_t GXMLIndex::GetNbCommonStems(const GXMLIndex* index) const
+{
+	size_t nb(0);
+	RCursor<GConcept> Stem1(Stems);
+	RCursor<GConcept> Stem2(index->Stems);
+	for(Stem1.Start(),Stem2.Start();!Stem1.End(); Stem1.Next())
+	{
+		while((!Stem2.End())&&(Stem2()->GetId()<Stem1()->GetId()))
+			Stem2.Next();
+		if((!Stem2.End())&&(Stem2()->GetId()==Stem1()->GetId()))
+		{
+			nb++;
+			Stem2.Next();
+		}
+	}	
+	return(nb);
+}
+
+
+
+//-----------------------------------------------------------------------------
 GXMLIndex::~GXMLIndex(void)
 {
 }
