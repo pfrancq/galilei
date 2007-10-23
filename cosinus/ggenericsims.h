@@ -36,6 +36,12 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R Project
+#include <rtextfile.h>
+using namespace R;
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
 #include <gsignalhandler.h>
@@ -46,8 +52,8 @@
 #include <ggroup.h>
 #include <gsubprofile.h>
 #include <gmeasure2elements.h>
+#include <gconcepttype.h>
 using namespace GALILEI;
-using namespace R;
 
 
 //------------------------------------------------------------------------------
@@ -149,6 +155,39 @@ public:
 
 
 //------------------------------------------------------------------------------
+class GDiffSims;
+	
+//------------------------------------------------------------------------------
+class GSimType
+{
+protected:
+	
+	GDiffSims* Owner;
+	GConceptType* Type;
+	
+public:
+	GSimType(GDiffSims* owner,GConceptType* type);
+	virtual void Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,double& num,double& den);
+	int Compare(const GSimType& t) const {return(Type->Compare(t.Type));}
+	int Compare(const GSimType* t) const {return(Type->Compare(t->Type));}
+	int Compare(const GConceptType* t) const {return(Type->Compare(t));}
+	virtual ~GSimType(void) {}
+	
+	friend class GDiffSims;
+};
+
+
+//------------------------------------------------------------------------------
+class GSimTypeXMLIndex : public GSimType
+{
+public:
+	GSimTypeXMLIndex(GDiffSims* owner,GConceptType* type) :
+		GSimType(owner,type) {}
+	virtual void Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,double& num,double& den);
+};
+
+
+//------------------------------------------------------------------------------
 class GDiffSims : public GMeasure2Elements
 {
 protected:
@@ -160,6 +199,7 @@ protected:
 	GWeightInfos* vec1;
 	GWeightInfos* vec2;
 	GConceptType* Lang;
+	RContainer<GSimType,true,true> Types;
 	
 public:
 	GDiffSims(GFactoryMeasure* fact,bool min,tObjType objs);
@@ -168,6 +208,9 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
+
+	virtual void Connect(GSession* session);
+	virtual void Disconnect(GSession* session);
 	
 	/**
 	* Compute a similarity between two lists of weighted information entities.
@@ -179,7 +222,7 @@ public:
 	* @param l2             Second list of weighted information entities.
 	* @param ObjType        Type of the object.
 	*/
-	double SimilarityIFFMV(void) const;
+	double SimilarityIFFMV(void);
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
@@ -191,12 +234,15 @@ public:
 	* @param l2             Second list of weighted information entities.
 	* @param ObjType        Type of the object.
 	*/
-	double SimilarityIFFL(void) const;
+	double SimilarityIFFL(void);
 	
 	/**
 	 */
 	double Compute(GLang* lang,void* obj1,void* obj2);
 	static void CreateParams(RConfig* params);
+	
+	friend class GSimType;
+	friend class GSimTypeXMLIndex;
 };
 
 

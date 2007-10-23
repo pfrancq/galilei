@@ -41,8 +41,8 @@
 #include <gweightinfos.h>
 #include <gweightinfo.h>
 #include <glang.h>
-#include <gconcepttype.h>
 #include <gconcept.h>
+#include <gxmlindex.h>
 
 
 
@@ -104,7 +104,7 @@ class GGenericSims::GElementSims
 public:
 	R::RContainer<GSims,true,true>* Sims;             // Similarities.
 	GLang* Lang;                                      // Language.
-	GGenericSims* Manager;                             // Owner.
+	GGenericSims* Manager;                            // Owner.
 	bool NeedUpdate;
 	
 	// Constructor and Compare functions.
@@ -187,8 +187,7 @@ void GGenericSims::GElementSims::Update(void)
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 			Cur2()->State=osModified;
 	}
-	
-	
+		
 	NeedUpdate=false;
 }
 
@@ -322,6 +321,126 @@ GGenericSims::~GGenericSims(void)
 }
 
 
+
+//------------------------------------------------------------------------------
+//
+// class GSimType
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GSimType::GSimType(GDiffSims* owner,GConceptType* type)
+	: Owner(owner), Type(type)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,double& num,double& den)
+{
+	double max1;
+	double max2;	
+	double norm1;
+	double norm2;
+	double w1,w2,iff;
+	double TotalRef;
+	
+	// Compute total number of references and the maximum for each type
+	TotalRef=Type->GetRef(Owner->ObjsType);
+	norm1=norm2=num=0.0;
+	max1=Owner->vec1->GetMaxAbsWeight(Type);
+	max2=Owner->vec2->GetMaxAbsWeight(Type);
+	
+	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
+	{
+		iff=TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType));
+		w1=(Obj1()->GetWeight()/max1)*log10(iff);
+		while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())<(*Obj1())))
+		{
+			iff=TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType));
+			w2=(Obj2()->GetWeight()/max2)*log10(iff);
+			norm2+=w2*w2;
+			Obj2.Next();
+		}
+		if((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())==(*Obj1())))
+		{
+			if((Obj1()->GetWeight()>0)||(Obj2()->GetWeight()>0))
+			{
+				iff=TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType));
+				w2=(Obj2()->GetWeight()/max2)*log10(iff);
+				norm2+=w2*w2;
+				norm1+=w1*w1;
+				num+=w1*w2;
+			}
+			Obj2.Next();
+		}
+		else
+			norm1+=w1*w1;
+		Obj1.Next();
+	}
+	while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type))
+	{
+		iff=TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType));
+		w2=(Obj2()->GetWeight()/max2)*log10(iff);
+		norm2+=w2*w2;
+		Obj2.Next();
+	}
+
+	// Return similarity
+	den=sqrt(norm1)*sqrt(norm2);
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GSimTypeXMLIndex
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2,double& num,double& den)
+{
+	double max1;
+	double max2;	
+	double norm1;
+	double norm2;
+	double w1,w2,iff;
+	double TotalRef;
+	
+	// Compute total number of references and the maximum for each type
+	TotalRef=Type->GetRef(Owner->ObjsType);
+	norm1=norm2=num=den=0.0;
+	max1=Owner->vec1->GetMaxAbsWeight(Type);
+	max2=Owner->vec2->GetMaxAbsWeight(Type);
+	
+	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
+	{
+		iff=TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType));
+		w1=(Obj1()->GetWeight()/max1)*log10(iff);	
+		GXMLIndex* c1=dynamic_cast<GXMLIndex*>(Obj1());
+		RCursor<GWeightInfo> Cur(Obj2);
+		for(Cur.Start();(!Cur.End())&&(Cur()->GetConcept()->GetType()==Type);Cur.Next())
+		{
+			GXMLIndex* c2=dynamic_cast<GXMLIndex*>(Cur());
+			
+			// Compare only if both index are based on the same XML tag
+			if(c1->GetXMLTag()!=c2->GetXMLTag())
+				continue;
+			den++;
+			iff=TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType));
+			w2=(Obj2()->GetWeight()/max2)*log10(iff);
+			num+=c1->GetNbCommonStems(c2)*w1*w2;
+		}
+		Obj1.Next();
+	}
+
+	// Return similarity
+	den=sqrt(norm1)*sqrt(norm2);
+}
+
+
+
 //------------------------------------------------------------------------------
 //
 // class GDiffSims
@@ -330,7 +449,7 @@ GGenericSims::~GGenericSims(void)
 
 //------------------------------------------------------------------------------
 GDiffSims::GDiffSims(GFactoryMeasure* fac,bool min,tObjType objs)
-	: GMeasure2Elements(fac,min,true,1.0,objs)
+	: GMeasure2Elements(fac,min,true,1.0,objs), Types(30)
 {
 }
 
@@ -354,138 +473,71 @@ void GDiffSims::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-double GDiffSims::SimilarityIFFMV(void) const
+void GDiffSims::Connect(GSession* session)
 {
-	// if one SubProfile is not defined -> the similarity must be null
-	if((!vec1->GetNb())||(!vec2->GetNb()))
-		return(0.0);
-
-	double max1;
-	double max2;	
-	double GlobalSim(1.0);	
-	double Sim;
-	double norm1;
-	double norm2;
-	double w1,w2,iff;
-	double TotalRef;
-	GConceptType* type(0);
-		
-	RCursor<GWeightInfo> ptr(*vec1);
-	RCursor<GWeightInfo> ptr2(*vec2);
-
-	ptr.Start();
-	ptr2.Start();
-	while(!ptr.End())
+	GMeasure2Elements::Connect(session);
+	GConceptType* IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
+	RCursor<GConceptType> Cur(Session->GetConceptTypes());
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		// Look if the type of the concept have changed since that the last concept treated
-		if(ptr()->GetConcept()->GetType()!=type)
-		{
-			// If a type exist -> modify global sim
-			if(type)
-				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-			
-			// Yes -> A new total number of references.
-			type=ptr()->GetConcept()->GetType();
-			TotalRef=type->GetRef(ObjsType);
-			norm1=norm2=Sim=0.0;
-			max1=vec1->GetMaxAbsWeight(type);
-			max2=vec2->GetMaxAbsWeight(type);
-		}
-
-		iff=TotalRef/static_cast<double>(type->GetRef(ptr()->GetId(),ObjsType));
-		w1=(ptr()->GetWeight()/max1)*log10(iff);
-		while((!ptr2.End())&&((*ptr2())<(*ptr())))
-		{
-			if(ptr2()->GetConcept()->GetType()!=type)
-			{
-				// If a type exist -> modify global sim
-				if(type)
-					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-				
-				// Yes -> A new total number of references.
-				type=ptr2()->GetConcept()->GetType();
-				TotalRef=type->GetRef(ObjsType);
-				norm1=norm2=Sim=0.0;
-				max1=vec1->GetMaxAbsWeight(type);
-				max2=vec2->GetMaxAbsWeight(type);				
-			}			
-			iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjsType));
-			w2=(ptr2()->GetWeight()/max2)*log10(iff);
-			norm2+=w2*w2;
-			ptr2.Next();
-		}
-		if((!ptr2.End())&&((*ptr2())==(*ptr())))
-		{
-			if(ptr2()->GetConcept()->GetType()!=type)
-			{
-				// If a type exist -> modify global sim
-				if(type)
-					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-				
-				// Yes -> A new total number of references.
-				type=ptr2()->GetConcept()->GetType();
-				TotalRef=type->GetRef(ObjsType);
-				norm1=norm2=Sim=0.0;
-				max1=vec1->GetMaxAbsWeight(type);
-				max2=vec2->GetMaxAbsWeight(type);				
-			}			
-			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
-			{
-				iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjsType));
-				w2=(ptr2()->GetWeight()/max2)*log10(iff);
-				norm2+=w2*w2;
-				norm1+=w1*w1;
-				Sim+=w1*w2;
-			}
-			ptr2.Next();
-		}
+		if(Cur()==IndexSpace)
+			Types.InsertPtr(new GSimTypeXMLIndex(this,Cur()));
 		else
-			norm1+=w1*w1;
-		ptr.Next();
+			Types.InsertPtr(new GSimType(this,Cur()));
 	}
-	while(!ptr2.End())
-	{
-		if(ptr2()->GetConcept()->GetType()!=type)
-		{
-			// If a type exist -> modify global sim
-			if(type)
-				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-			
-			// Yes -> A new total number of references.
-			type=ptr2()->GetConcept()->GetType();
-			TotalRef=type->GetRef(ObjsType);
-			norm1=norm2=Sim=0.0;
-			max1=vec1->GetMaxAbsWeight(type);
-			max2=vec2->GetMaxAbsWeight(type);			
-		}			
-		iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjsType));
-		w2=(ptr2()->GetWeight()/max2)*log10(iff);
-		norm2+=w2*w2;
-		ptr2.Next();
-	}
-
-	// If a type exist -> modify global sim
-	if(type)
-		GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-	return(GlobalSim);
 }
 
 
 //------------------------------------------------------------------------------
-double GDiffSims::SimilarityIFFL(void) const
+void GDiffSims::Disconnect(GSession* session)
+{
+	Types.Clear();
+	GMeasure2Elements::Disconnect(session);
+}
+
+
+//------------------------------------------------------------------------------
+double GDiffSims::SimilarityIFFMV(void)
 {
 	// if one SubProfile is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
 
-	double max1;
-	double max2;	
-	double GlobalSim(1.0);	
-	double Sim;
-	double norm1;
-	double norm2;
-	double w1,w2,iff;
-	double TotalRef;
+	double Sim(1.0),n,d;	
+	bool CommonSpace(false);
+	RCursor<GWeightInfo> ptr(*vec1);
+	RCursor<GWeightInfo> ptr2(*vec2);
+	RCursor<GSimType> Cur(Types);
+	for(ptr.Start(),ptr2.Start(),Cur.Start();(!Cur.End())&&(!ptr.End())&&(!ptr2.End());Cur.Next())
+	{
+		if((ptr()->GetConcept()->GetType()==Cur()->Type)&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
+		{
+			// OK Compute it
+			Cur()->Compute(ptr,ptr2,n,d);
+			Sim*=(n+Factor)/(d+Factor);
+			CommonSpace=true;
+		}
+		else
+		{
+			// Skip at least of of them
+			while((!ptr.End())&&(ptr()->GetConcept()->GetType()==Cur()->Type))
+				ptr.Next();
+			while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
+				ptr2.Next();			
+		}
+	}
+	if(CommonSpace)
+		return(Sim);
+	return(0.0);
+}
+
+
+//------------------------------------------------------------------------------
+double GDiffSims::SimilarityIFFL(void)
+{	
+	// if one SubProfile is not defined -> the similarity must be null
+	if((!vec1->GetNb())||(!vec2->GetNb()))
+		return(0.0);
 	
 	RCursor<GWeightInfo> ptr(*vec1);
 	RCursor<GWeightInfo> ptr2(*vec2);
@@ -493,56 +545,17 @@ double GDiffSims::SimilarityIFFL(void) const
 	ptr.Start();
 	ptr2.Start();
 	
-	// Skip everything the first non language
-	while(ptr()->GetConcept()->GetType()!=Lang)
+	// Skip everything until the language
+	while((!ptr.End())&&(ptr()->GetConcept()->GetType()!=Lang))
 		ptr.Next();
-	while(ptr2()->GetConcept()->GetType()!=Lang)
+	while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()!=Lang))
 		ptr2.Next();
-
-	// For lang
-	TotalRef=Lang->GetRef(ObjsType);
-	norm1=norm2=Sim=0.0;
-	max1=vec1->GetMaxAbsWeight(Lang);
-	max2=vec2->GetMaxAbsWeight(Lang);
 	
-	while((!ptr.End())&&(ptr()->GetConcept()->GetType()==Lang))
-	{
-		iff=TotalRef/static_cast<double>(Lang->GetRef(ptr()->GetId(),ObjsType));
-		w1=(ptr()->GetWeight()/max1)*log10(iff);
-		while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()==Lang)&&((*ptr2())<(*ptr())))
-		{
-			iff=TotalRef/static_cast<double>(Lang->GetRef(ptr2()->GetId(),ObjsType));
-			w2=(ptr2()->GetWeight()/max2)*log10(iff);
-			norm2+=w2*w2;
-			ptr2.Next();
-		}
-		if((!ptr2.End())&&(ptr2()->GetConcept()->GetType()==Lang)&&((*ptr2())==(*ptr())))
-		{
-			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
-			{
-				iff=TotalRef/static_cast<double>(Lang->GetRef(ptr2()->GetId(),ObjsType));
-				w2=(ptr2()->GetWeight()/max2)*log10(iff);
-				norm2+=w2*w2;
-				norm1+=w1*w1;
-				Sim+=w1*w2;
-			}
-			ptr2.Next();
-		}
-		else
-			norm1+=w1*w1;
-		ptr.Next();
-	}
-	while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()==Lang))
-	{
-		iff=TotalRef/static_cast<double>(Lang->GetRef(ptr2()->GetId(),ObjsType));
-		w2=(ptr2()->GetWeight()/max2)*log10(iff);
-		norm2+=w2*w2;
-		ptr2.Next();
-	}
-
-	// If a type exist -> modify global sim
-	GlobalSim*=Sim/(sqrt(norm1)*sqrt(norm2));
-	return(GlobalSim);	
+	double n,d;
+	Types.GetPtr(Lang)->Compute(ptr,ptr2,n,d);
+	if(d>0.0)
+		return(n/d);
+	return(0.0);
 }
 
 
@@ -552,11 +565,12 @@ double GDiffSims::Compute(GLang* lang,void* obj1,void* obj2)
 	vec1=static_cast<GWeightInfos*>(obj1);
 	vec2=static_cast<GWeightInfos*>(obj2);
 	Lang=lang->GetDict();
+	double ret(0.0);
 	if(SimType==1)
-		return(SimilarityIFFMV());
+		ret=SimilarityIFFMV();
 	if(SimType==2)
-		return(SimilarityIFFL());
-	return(0.0);
+		ret=SimilarityIFFL();
+	return(ret);
 }
 
 
