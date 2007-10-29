@@ -666,6 +666,7 @@ void GTextAnalyse::IndexXMLPart(void)
 		
 		// Add the concepts related to the stems
 		RContainer<GConcept,false,true> Stems(10);
+		RContainer<GConcept,false,true> Universal(10);
 		RCursor<WordWeight> Idx(*Cur());
 		for(Idx.Start();!Idx.End();Idx.Next())
 		{	
@@ -682,7 +683,7 @@ void GTextAnalyse::IndexXMLPart(void)
 			continue;
 		
 		// Add this index
-		GXMLIndex w(IndexSpace,Tag,Lang,Stems);
+		GXMLIndex w(IndexSpace,Tag,Lang,Universal,Stems);
 		info=Infos.GetInsertPtr(IndexSpace->InsertConcept(&w));
 		(*info)+=1.0;					
 	}
