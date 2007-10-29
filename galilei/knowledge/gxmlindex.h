@@ -71,12 +71,17 @@ class GXMLIndex : public GConcept
 	 * Dictionnary of the stems.
 	 */ 
 	GConceptType* Lang;
-	
+
 	/**
-	 * Stems representing the second part of the index.
+	 * Universal terms representing the second part of the index.
+	 */
+	R::RContainer<GConcept,false,true> Universal;
+
+	/**
+	 * Stems representing the third part of the index.
 	 */
 	R::RContainer<GConcept,false,true> Stems;
-	
+
 public:
 
 	/**
@@ -103,9 +108,10 @@ public:
 	 * @param type            Type of the concept.
 	 * @param tag            Pointer to the tag.
 	 * @param lang           Language of the stems.
-	 * @param stems          Container of stems.
+	 * @param stems          Universal stems.
+	 * @param stems          Language-based stems.
 	 */
-	GXMLIndex(GConceptType* type,GConcept* tag,GLang* lang,R::RContainer<GConcept,false,true>& stems);
+	GXMLIndex(GConceptType* type,GConcept* tag,GLang* lang,R::RContainer<GConcept,false,true>& uni,R::RContainer<GConcept,false,true>& stems);
 	
 	/**
 	* Constructor of a XML Index. The full definition of the concept is deduced
@@ -145,9 +151,28 @@ public:
 	GConcept* GetXMLTag(void) const {return(XMLTag);}
 	
 	/**
-	 * Get the number of common stems.
+	 * Get the language associated with this stem.
 	 */
-	size_t GetNbCommonStems(const GXMLIndex* index) const;
+	GConceptType* GetLangSpace(void) const {return(Lang);}
+	
+	/**
+	 * Get the universal terms.
+	 */
+	R::RCursor<GConcept> GetUniversalTerms(void) const;
+	
+	/**
+	 * Get the language-based stems.
+	 */
+	R::RCursor<GConcept> GetStems(void) const;
+	
+	/**
+	 * This method computes the similarity between two XML index. In practice,
+	 * both index must have the same tag. Than a raw comparison is done between
+	 * the two lists of stems.
+	 * @param index          Second XML index.
+	 * @returns Number between 0 (nothing in common) and 1 (same XML index).
+	 */
+	double GetSimilarity(const GXMLIndex* index) const;
 	
 	/**
 	* Desctuctor of a concept.

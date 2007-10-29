@@ -1159,7 +1159,7 @@ R::RCursor<GProfile> GSession::GetProfiles(void) const
 
 
 //------------------------------------------------------------------------------
-size_t GSession::GetProfilesNb(void) const
+size_t GSession::GetNbProfiles(void) const
 {
 	return(Data->Profiles.GetNb());
 }
@@ -1258,7 +1258,7 @@ RCursor<GSubProfile> GSession::GetSubProfiles(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-size_t GSession::GetSubProfilesNb(const GLang* lang) const
+size_t GSession::GetNbSubProfiles(const GLang* lang) const
 {
 	if(lang)
 	{

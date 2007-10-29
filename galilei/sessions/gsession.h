@@ -564,7 +564,7 @@ public:
 	/**
 	* Get the number of profiles defined in the system.
 	*/
-	size_t GetProfilesNb(void) const;
+	size_t GetNbProfiles(void) const;
 
 	/**
 	* Get the highest identificator assign to a profile.
@@ -604,7 +604,7 @@ public:
 	* @param lang            Language. If null, the total number of subprofiles
 	*                        is computed.
 	*/
-	size_t GetSubProfilesNb(const GLang* lang) const;
+	size_t GetNbSubProfiles(const GLang* lang) const;
 
 	/**
 	* Get the highest identificator assign to a subprofile for a given

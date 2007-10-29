@@ -202,6 +202,18 @@ public:
 	virtual size_t GetMaxElementsId(GLang* lang)=0;
 	
 	/**
+	 * Return the total number of elements in a given language.
+	 * @param lang            Language of the elements.
+	 * @code
+	 * size_t MyMeasure::GetNbElements(GLang* lang)
+	 * {
+	 *    return(Session->GetNbSubProfile(lang));
+	 * }
+	 * @endcode
+	 */        
+	virtual size_t GetNbElements(GLang* lang)=0;
+	
+	/**
 	 * This template method handles the modification of the status of a given
 	 * element. his method is used by all the Event methods.
 	 * @param C              Class of the element.
