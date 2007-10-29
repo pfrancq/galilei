@@ -57,6 +57,7 @@ public:
 	double Compute(GLang* lang,void* obj1,void* obj2);
 	void* GetElement(GLang* lang,size_t id);
 	size_t GetMaxElementsId(GLang* lang);
+	size_t GetNbElements(GLang* lang);
 	static void CreateParams(RConfig* params);	
 };
 
@@ -98,6 +99,13 @@ void* GDocsAgreement::GetElement(GLang*,size_t id)
 size_t GDocsAgreement::GetMaxElementsId(GLang*)
 {
 	return(Session->GetMaxDocId());
+}
+
+
+//------------------------------------------------------------------------------
+size_t GDocsAgreement::GetNbElements(GLang*)
+{
+	return(Session->GetNbDocs());
 }
 
 

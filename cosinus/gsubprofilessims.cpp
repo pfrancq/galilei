@@ -55,6 +55,7 @@ public:
 	GSubProfilesSims(GFactoryMeasure* fac);
 	void* GetElement(GLang* lang,size_t id);
 	size_t GetMaxElementsId(GLang* lang);	
+	size_t GetNbElements(GLang* lang);
 };
 
 
@@ -76,6 +77,13 @@ void* GSubProfilesSims::GetElement(GLang* lang,size_t id)
 size_t GSubProfilesSims::GetMaxElementsId(GLang* lang)
 {
 	return(Session->GetMaxSubProfileId(lang));
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSubProfilesSims::GetNbElements(GLang* lang)
+{
+	return(Session->GetNbSubProfiles(lang));
 }
 
 

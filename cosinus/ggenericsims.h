@@ -218,11 +218,9 @@ public:
 	* list is build using this list and a Inverse Frequence Factor (IFF) of the
 	* object type (idf, isf or ivf) for a given information entity space
 	* (language). If one of the list is empty, the similarity is null.
-	* @param l1             First list of weighted information entities.
-	* @param l2             Second list of weighted information entities.
-	* @param ObjType        Type of the object.
+	* @param lang            Language.
 	*/
-	double SimilarityIFFMV(void);
+	double SimilarityIFFMV(GLang* lang);
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
@@ -230,9 +228,6 @@ public:
 	* list is build using this list and a Inverse Frequence Factor (IFF) of the
 	* object type (idf, isf or ivf) for a given information entity space
 	* (language). If one of the list is empty, the similarity is null.
-	* @param l1             First list of weighted information entities.
-	* @param l2             Second list of weighted information entities.
-	* @param ObjType        Type of the object.
 	*/
 	double SimilarityIFFL(void);
 	

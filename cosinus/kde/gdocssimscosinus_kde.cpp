@@ -105,6 +105,7 @@ void MyDlg::Panel(void)
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
 	Factor = new KDoubleNumInput(MeasureSpecific,"Factor");
+	Factor->setPrecision(5);
     layout->addWidget(Factor);
 	MeasureSpecificLayout->addLayout(layout);
 }

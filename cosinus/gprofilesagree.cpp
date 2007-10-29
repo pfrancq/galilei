@@ -58,6 +58,7 @@ public:
 	double Compute(GLang* lang,void* obj1,void* obj2);
 	void* GetElement(GLang* lang,size_t id);
 	size_t GetMaxElementsId(GLang* lang);
+	size_t GetNbElements(GLang* lang);
 	static void CreateParams(RConfig* params);	
 };
 
@@ -99,6 +100,13 @@ void* GProfilesAgreement::GetElement(GLang*,size_t id)
 size_t GProfilesAgreement::GetMaxElementsId(GLang*)
 {
 	return(Session->GetMaxProfileId());
+}
+
+
+//------------------------------------------------------------------------------
+size_t  GProfilesAgreement::GetNbElements(GLang* lang)
+{
+	return(Session->GetNbSubProfiles(lang));
 }
 
 

@@ -430,10 +430,12 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 			// Compare only if both index are based on the same XML tag
 			if(c1->GetXMLTag()!=c2->GetXMLTag())
 				continue;
-			den++;
 			iff=TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType));
 			w2=(Obj2()->GetWeight()/max2)*log10(iff);
-			num+=c1->GetNbCommonStems(c2)*w1*w2;
+			den+=fabs(w1*w2);
+			if((w1<0.0)&&(w2<0.0))
+				continue;
+			num+=c1->GetSimilarity(c2)*w1*w2;
 		}
 		Obj1.Next();
 	}
@@ -502,13 +504,15 @@ void GDiffSims::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-double GDiffSims::SimilarityIFFMV(void)
+double GDiffSims::SimilarityIFFMV(GLang* lang)
 {
 	// if one SubProfile is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
 
 	double Sim(1.0);	
+	double NbComps(GetNbElements(lang));
+	NbComps*=NbComps-1;
 	bool CommonSpace(false);
 	RCursor<GWeightInfo> ptr(*vec1);
 	RCursor<GWeightInfo> ptr2(*vec2);
@@ -518,7 +522,7 @@ double GDiffSims::SimilarityIFFMV(void)
 		if((ptr()->GetConcept()->GetType()==Cur()->Type)&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
 		{
 			// OK Compute it		
-			Sim*=(1+Factor+Cur()->Compute(ptr,ptr2))/(2+Factor);
+			Sim*=(1+Factor+Cur()->Compute(ptr,ptr2))/(2+(Factor*NbComps));
 			CommonSpace=true;
 		}
 		else
@@ -567,7 +571,7 @@ double GDiffSims::Compute(GLang* lang,void* obj1,void* obj2)
 	Lang=lang->GetDict();
 	double ret(0.0);
 	if(SimType==1)
-		ret=SimilarityIFFMV();
+		ret=SimilarityIFFMV(lang);
 	if(SimType==2)
 		ret=SimilarityIFFL();
 	return(ret);

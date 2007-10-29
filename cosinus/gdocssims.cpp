@@ -53,7 +53,8 @@ class GDocsSims : public GDiffSims
 public:
 	GDocsSims(GFactoryMeasure* fac);
 	void* GetElement(GLang* lang,size_t id);
-	size_t GetMaxElementsId(GLang* lang);	
+	size_t GetMaxElementsId(GLang* lang);
+	size_t GetNbElements(GLang* lang);
 };
 
 
@@ -73,6 +74,13 @@ void* GDocsSims::GetElement(GLang*,size_t id)
 
 //------------------------------------------------------------------------------
 size_t GDocsSims::GetMaxElementsId(GLang*)
+{
+	return(Session->GetMaxDocId());
+}
+
+
+//------------------------------------------------------------------------------
+size_t GDocsSims::GetNbElements(GLang*)
 {
 	return(Session->GetMaxDocId());
 }

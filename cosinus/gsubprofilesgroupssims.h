@@ -62,7 +62,7 @@ public:
 
 	virtual double Compute(GLang* lang,size_t id1,size_t id2);
 
-	virtual size_t GetMaxId1(GLang* lang) { return(Session->GetSubProfilesNb(lang));}
+	virtual size_t GetMaxId1(GLang* lang) { return(Session->GetNbSubProfiles(lang));}
 
 	/**
 	* Destructor of the similarities between documents and subprofiles.
