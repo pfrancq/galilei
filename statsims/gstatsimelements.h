@@ -255,12 +255,12 @@ template<class E1,class E2>
 			}		
 			
 			RString n1(sub->GetName()); n1.SetLen(25," ");
-			RString n2(RString::Number(MinIntra)); n2.SetLen(12," ");
-			RString n3(RString::Number(SimIntra)); n3.SetLen(12," ");
-			RString n4(RString::Number(MaxExtra)); n4.SetLen(12," ");
-			RString n5(RString::Number(SimExtra)); n5.SetLen(12," ");
-			RString n6(RString::Number(LRie)); n6.SetLen(12," ");
-			RString n7(RString::Number(LOverlap)); n7.SetLen(12," ");
+			RString n2(RString::Number(MinIntra,"%.5E")); n2.SetLen(12," ");
+			RString n3(RString::Number(SimIntra,"%.5E")); n3.SetLen(12," ");
+			RString n4(RString::Number(MaxExtra,"%.5E")); n4.SetLen(12," ");
+			RString n5(RString::Number(SimExtra,"%.5E")); n5.SetLen(12," ");
+			RString n6(RString::Number(LRie,"%.5E")); n6.SetLen(12," ");
+			RString n7(RString::Number(LOverlap,"%.5E")); n7.SetLen(12," ");
 			(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
 		}
 		calc->AddTag(xml,Tag,"Rie",LRie);
@@ -323,11 +323,11 @@ template<class E1,class E2>
 			{
 				RString n1("Global"); n1.SetLen(25," ");
 				RString n2("------"); n2.SetLen(12," ");
-				RString n3(RString::Number(MeanIntra)); n3.SetLen(12," ");
+				RString n3(RString::Number(MeanIntra,"%.5E")); n3.SetLen(12," ");
 				RString n4("------"); n4.SetLen(12," ");
-				RString n5(RString::Number(MeanExtra)); n5.SetLen(12," ");
+				RString n5(RString::Number(MeanExtra,"%.5E")); n5.SetLen(12," ");
 				RString n6(RString::Number(tmp)); n6.SetLen(12," ");
-				RString n7(RString::Number(Overlap)); n7.SetLen(12," ");
+				RString n7(RString::Number(Overlap,"%.5E")); n7.SetLen(12," ");
 				(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl<<endl;
 			}
 		}
