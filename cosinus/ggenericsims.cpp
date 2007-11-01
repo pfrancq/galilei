@@ -6,7 +6,7 @@
 
 	Similarities between documents and groups - Implementation.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2005-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -106,7 +106,7 @@ public:
 	GLang* Lang;                                      // Language.
 	GGenericSims* Manager;                            // Owner.
 	bool NeedUpdate;
-	
+
 	// Constructor and Compare functions.
 	GElementSims(GGenericSims* manager,GLang* l);
 	int Compare(const GLang* l) const {return(Lang->Compare(l));}
@@ -187,7 +187,7 @@ void GGenericSims::GElementSims::Update(void)
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 			Cur2()->State=osModified;
 	}
-		
+
 	NeedUpdate=false;
 }
 
@@ -243,7 +243,7 @@ void GGenericSims::Measure(unsigned int measure,...)
 		throw GException("Language not defined");
 	if(Sim->NeedUpdate)
 		Sim->Update();
-		
+
 	(*res)=Sim->GetSim(id1,id2);
 	va_end(ap);
 }
@@ -275,8 +275,8 @@ void GGenericSims::Event(GDoc* doc, tEvent)
 		return;
 	GElementSims* Sim=Sims.GetPtr<const GLang*>(doc->GetLang());
 	if(!Sim)
-		throw GException("Language not defined");		
-	Sim->NeedUpdate=true;	
+		throw GException("Language not defined");
+	Sim->NeedUpdate=true;
 }
 
 
@@ -288,8 +288,8 @@ void GGenericSims::Event(GGroup* grp, tEvent)
 		return;
 	GElementSims* Sim=Sims.GetPtr<const GLang*>(grp->GetLang());
 	if(!Sim)
-		throw GException("Language not defined");		
-	Sim->NeedUpdate=true;	
+		throw GException("Language not defined");
+	Sim->NeedUpdate=true;
 }
 
 
@@ -301,8 +301,8 @@ void GGenericSims::Event(GSubProfile* sub, tEvent)
 		return;
 	GElementSims* Sim=Sims.GetPtr<const GLang*>(sub->GetLang());
 	if(!Sim)
-		throw GException("Language not defined");		
-	Sim->NeedUpdate=true;	
+		throw GException("Language not defined");
+	Sim->NeedUpdate=true;
 }
 
 
@@ -339,19 +339,19 @@ GSimType::GSimType(GDiffSims* owner,GConceptType* type)
 double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 {
 	double max1;
-	double max2;	
+	double max2;
 	double norm1;
 	double norm2;
 	double w1,w2,iff;
 	double TotalRef;
 	double num;
-	
+
 	// Compute total number of references and the maximum for each type
 	TotalRef=Type->GetRef(Owner->ObjsType);
 	norm1=norm2=num=0.0;
 	max1=Owner->vec1->GetMaxAbsWeight(Type);
 	max2=Owner->vec2->GetMaxAbsWeight(Type);
-	
+
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
 		iff=TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType));
@@ -405,28 +405,28 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 {
 	double max1;
-	double max2;	
+	double max2;
 	double w1,w2,iff;
 	double TotalRef;
 	double num;
 	double den;
-	
+
 	// Compute total number of references and the maximum for each type
 	TotalRef=Type->GetRef(Owner->ObjsType);
 	num=den=0.0;
 	max1=Owner->vec1->GetMaxAbsWeight(Type);
 	max2=Owner->vec2->GetMaxAbsWeight(Type);
-	
+
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
 		iff=TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType));
-		w1=(Obj1()->GetWeight()/max1)*log10(iff);	
+		w1=(Obj1()->GetWeight()/max1)*log10(iff);
 		GXMLIndex* c1=dynamic_cast<GXMLIndex*>(Obj1());
 		RCursor<GWeightInfo> Cur(Obj2);
 		for(Cur.Start();(!Cur.End())&&(Cur()->GetConcept()->GetType()==Type);Cur.Next())
 		{
 			GXMLIndex* c2=dynamic_cast<GXMLIndex*>(Cur());
-			
+
 			// Compare only if both index are based on the same XML tag
 			if(c1->GetXMLTag()!=c2->GetXMLTag())
 				continue;
@@ -468,7 +468,7 @@ void GDiffSims::ApplyConfig(void)
 	SimType=0;
 	RString type=Factory->Get("SimType");
 	Factor=Factory->GetDouble("Factor");
-	unsigned int sim; 
+	unsigned int sim;
 	if(type=="Multi-vector")
 		sim=1;
 	if(type=="Language")
@@ -510,19 +510,19 @@ double GDiffSims::SimilarityIFFMV(GLang* lang)
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
 
-	double Sim(0.0);	
+	double Sim(0.0);
 	double NbComps(GetNbElements(lang));
-	NbComps*=NbComps-1;
+	NbComps=2+(Factor*NbComps*(NbComps-1));
 	double CommonSpace(0.0); // Suppose that the two vectors have no common spaces
 	RCursor<GWeightInfo> ptr(*vec1);
 	RCursor<GWeightInfo> ptr2(*vec2);
 	RCursor<GSimType> Cur(Types);
-	for(ptr.Start(),ptr2.Start(),Cur.Start();(!Cur.End())&&(!ptr.End())&&(!ptr2.End());)
+	for(ptr.Start(),ptr2.Start(),Cur.Start();(!Cur.End())&&(!ptr.End())&&(!ptr2.End());Cur.Next())
 	{
 		if((ptr()->GetConcept()->GetType()==Cur()->Type)&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
 		{
-			// OK Compute it		
-			Sim+=log10(1+Factor+Cur()->Compute(ptr,ptr2));
+			// OK Compute it
+			Sim+=log10(1+Cur()->Compute(ptr,ptr2));
 			CommonSpace+=1.0;
 		}
 		else
@@ -532,34 +532,34 @@ double GDiffSims::SimilarityIFFMV(GLang* lang)
 			while((!ptr.End())&&(ptr()->GetConcept()->GetType()==Cur()->Type))
 				ptr.Next();
 			while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
-				ptr2.Next();			
+				ptr2.Next();
 		}
 	}
 	if(CommonSpace>0.0)
-		return(pow(Sim-CommonSpace*log10(2+(Factor*NbComps)),10));
+		return(pow(10,Sim-CommonSpace*log10(NbComps)));
 	return(0.0);
 }
 
 
 //------------------------------------------------------------------------------
 double GDiffSims::SimilarityIFFL(void)
-{	
+{
 	// if one SubProfile is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
-	
+
 	RCursor<GWeightInfo> ptr(*vec1);
 	RCursor<GWeightInfo> ptr2(*vec2);
 
 	ptr.Start();
 	ptr2.Start();
-	
+
 	// Skip everything until the right language
 	while((!ptr.End())&&(ptr()->GetConcept()->GetType()!=Lang))
 		ptr.Next();
 	while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()!=Lang))
 		ptr2.Next();
-	
+
 	return(Types.GetPtr(Lang)->Compute(ptr,ptr2));
 }
 
