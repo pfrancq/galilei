@@ -506,36 +506,37 @@ void GDiffSims::Disconnect(GSession* session)
 //------------------------------------------------------------------------------
 double GDiffSims::SimilarityIFFMV(GLang* lang)
 {
-	// if one SubProfile is not defined -> the similarity must be null
+	// if one vector is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
 
-	double Sim(1.0);	
+	double Sim(0.0);	
 	double NbComps(GetNbElements(lang));
 	NbComps*=NbComps-1;
-	bool CommonSpace(false);
+	double CommonSpace(0.0); // Suppose that the two vectors have no common spaces
 	RCursor<GWeightInfo> ptr(*vec1);
 	RCursor<GWeightInfo> ptr2(*vec2);
 	RCursor<GSimType> Cur(Types);
-	for(ptr.Start(),ptr2.Start(),Cur.Start();(!Cur.End())&&(!ptr.End())&&(!ptr2.End());Cur.Next())
+	for(ptr.Start(),ptr2.Start(),Cur.Start();(!Cur.End())&&(!ptr.End())&&(!ptr2.End());)
 	{
 		if((ptr()->GetConcept()->GetType()==Cur()->Type)&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
 		{
 			// OK Compute it		
-			Sim*=(1+Factor+Cur()->Compute(ptr,ptr2))/(2+(Factor*NbComps));
-			CommonSpace=true;
+			Sim+=log10(1+Factor+Cur()->Compute(ptr,ptr2));
+			CommonSpace+=1.0;
 		}
 		else
 		{
-			// Skip at least of of them
+			// At least one of the vector has no concepts of type Cur()->Type
+			// Skip it
 			while((!ptr.End())&&(ptr()->GetConcept()->GetType()==Cur()->Type))
 				ptr.Next();
 			while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
 				ptr2.Next();			
 		}
 	}
-	if(CommonSpace)
-		return(Sim);
+	if(CommonSpace>0.0)
+		return(pow(Sim-CommonSpace*log10(2+(Factor*NbComps)),10));
 	return(0.0);
 }
 
