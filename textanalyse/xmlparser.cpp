@@ -185,12 +185,7 @@ RChar XMLParser::CodeToChar(RString& str)
 //-----------------------------------------------------------------------------
 void XMLParser::AddStructElement(const RString& element,size_t)
 {
-	RString tag;
-	if(element.Mid(0,4)=="file")
-		tag=element.Mid(5);
-	else
-		tag=element;
-	GConcept w(cNoRef,tag,Filter->StructSpace,0,0,0);
+	GConcept w(cNoRef,element,Filter->StructSpace,0,0,0);
 	GWeightInfo* info=Filter->Infos.GetInsertPtr(Filter->StructSpace->InsertConcept(&w));
 	(*info)+=1.0;
 }
