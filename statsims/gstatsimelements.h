@@ -244,23 +244,23 @@ template<class E1,class E2>
 			{
 				(*File)<<"  ---------"<<lang->GetName()<<"-----"<<endl;
 				RString n1("Name"); n1.SetLen(25," ");
-				RString n2("Min Intra"); n2.SetLen(12," ");
-				RString n3("Mean Intra"); n3.SetLen(12," ");
-				RString n4("Max Extra"); n4.SetLen(12," ");
-				RString n5("Mean Extra"); n5.SetLen(12," ");
-				RString n6("Rie"); n6.SetLen(12," ");
-				RString n7("Overlap"); n7.SetLen(12," ");
+				RString n2("Min Intra"); n2.SetLen(15," ");
+				RString n3("Mean Intra"); n3.SetLen(15," ");
+				RString n4("Max Extra"); n4.SetLen(15," ");
+				RString n5("Mean Extra"); n5.SetLen(15," ");
+				RString n6("Rie"); n6.SetLen(15," ");
+				RString n7("Overlap"); n7.SetLen(15," ");
 				(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
 				WriteTitle=false;
 			}		
 			
 			RString n1(sub->GetName()); n1.SetLen(25," ");
-			RString n2(RString::Number(MinIntra,"%.5E")); n2.SetLen(12," ");
-			RString n3(RString::Number(SimIntra,"%.5E")); n3.SetLen(12," ");
-			RString n4(RString::Number(MaxExtra,"%.5E")); n4.SetLen(12," ");
-			RString n5(RString::Number(SimExtra,"%.5E")); n5.SetLen(12," ");
-			RString n6(RString::Number(LRie,"%.5E")); n6.SetLen(12," ");
-			RString n7(RString::Number(LOverlap,"%.5E")); n7.SetLen(12," ");
+			RString n2(RString::Number(MinIntra,"%.5E")); n2.SetLen(15," ");
+			RString n3(RString::Number(SimIntra,"%.5E")); n3.SetLen(15," ");
+			RString n4(RString::Number(MaxExtra,"%.5E")); n4.SetLen(15," ");
+			RString n5(RString::Number(SimExtra,"%.5E")); n5.SetLen(15," ");
+			RString n6(RString::Number(LRie,"%.5E")); n6.SetLen(15," ");
+			RString n7(RString::Number(LOverlap,"%.5E")); n7.SetLen(15," ");
 			(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
 		}
 		calc->AddTag(xml,Tag,"Rie",LRie);
@@ -322,12 +322,12 @@ template<class E1,class E2>
 			if(File)
 			{
 				RString n1("Global"); n1.SetLen(25," ");
-				RString n2("------"); n2.SetLen(12," ");
-				RString n3(RString::Number(MeanIntra,"%.5E")); n3.SetLen(12," ");
-				RString n4("------"); n4.SetLen(12," ");
-				RString n5(RString::Number(MeanExtra,"%.5E")); n5.SetLen(12," ");
-				RString n6(RString::Number(tmp)); n6.SetLen(12," ");
-				RString n7(RString::Number(Overlap,"%.5E")); n7.SetLen(12," ");
+				RString n2("------"); n2.SetLen(15," ");
+				RString n3(RString::Number(MeanIntra,"%.5E")); n3.SetLen(15," ");
+				RString n4("------"); n4.SetLen(15," ");
+				RString n5(RString::Number(MeanExtra,"%.5E")); n5.SetLen(15," ");
+				RString n6(RString::Number(Rie)); n6.SetLen(15," ");
+				RString n7(RString::Number(Overlap,"%.5E")); n7.SetLen(15," ");
 				(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl<<endl;
 			}
 		}
