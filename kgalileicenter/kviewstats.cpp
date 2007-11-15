@@ -77,7 +77,7 @@ KViewStats::KViewStats(KDoc* doc, QWidget* parent,const char* name,int wflags)
 {
 	// Init part
 	setCaption("Compute Statistics");
-	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("window_new",KIcon::Small)));
+	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("mathematica.png",KIcon::Small)));
 
 	// Results
 	Res = new QListView(this,"Results");
@@ -106,7 +106,6 @@ void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
 	QListViewItem* prec=0;
 	RString Val;
 
-	parent->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("xml_element.png",KIcon::Small)));
  	for(Cur.Start();!Cur.End();Cur.Next())
  	{
 		Val=Cur()->GetAttrValue("Value");
@@ -125,10 +124,7 @@ void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
 				prec=ptr=new QListViewItem(parent,prec,ToQString(Cur()->GetName()),ToQString(Val));
  		}
  		if(!Cur()->GetContent().IsEmpty())
- 		{
  			ptr2=new QListViewItem(ptr,ToQString(Cur()->GetContent()));
-			ptr2->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("xml_etext.png",KIcon::Small)));
- 		}
  		ConstructTag(Cur(),ptr);
  	}
 }

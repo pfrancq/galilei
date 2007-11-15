@@ -126,9 +126,9 @@ void KGALILEICenterApp::initActions(void)
 	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
 	docsAnalyse=new KAction(i18n("&Analyse Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
 	postDocsAnalyse=new KAction(i18n("Execute &Post-Documents Methods"),0,0,this,SLOT(slotPostDocsAnalyse()),actionCollection(),"postDocsAnalyse");
-	docsIndexer=new KAction(i18n("&Export Documents"),"save",0,this,SLOT(slotDocsIndexer()),actionCollection(),"docsIndexer");
-	createXML=new KAction(i18n("&Create XML Structure"),"readme",0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
-	saveXML=new KAction(i18n("&Save XML Structure"),"readme",0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
+	docsIndexer=new KAction(i18n("&Export Documents"),0,0,this,SLOT(slotDocsIndexer()),actionCollection(),"docsIndexer");
+	createXML=new KAction(i18n("&Create XML Structure"),0,0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
+	saveXML=new KAction(i18n("&Save XML Structure"),0,0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
 	analyseXML=new KAction(i18n("Analyse &XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
 	queryMetaEngine=new KAction(i18n("&Query Meta Engine"),"find",0,this,SLOT(slotQueryMetaEngine()),actionCollection(),"queryMetaEngine");
 	fillMIMETypes=new KAction(i18n("Construct &MIME types from KDE"),"desktop",0,this,SLOT(slotFillMIMETypes()),actionCollection(),"fillMIMETypes");
@@ -138,23 +138,23 @@ void KGALILEICenterApp::initActions(void)
 	showUsers=new KAction(i18n("&Show Users"),"kdmconfig",0,this,SLOT(slotShowUsers()),actionCollection(),"showUsers");
 	profilesCalc=new KAction(i18n("&Calc Profiles"),"run",0,this,SLOT(slotProfilesCalc()),actionCollection(),"profilesCalc");
 	postProfilesCalc=new KAction(i18n("Execute &Post-Profiles Methods"),0,0,this,SLOT(slotPostProfilesCalc()),actionCollection(),"postProfilesCalc");
-	profileCalc=new KAction(i18n("Calc &Profile"),"run",0,this,SLOT(slotProfileCalc()),actionCollection(),"profileCalc");
+	profileCalc=new KAction(i18n("Calc &Profile"),0,0,this,SLOT(slotProfileCalc()),actionCollection(),"profileCalc");
 
 	// Menu "Groups"
 	groupsClear=new KAction(i18n("&Force Re-computing Groups"),0,0,this,SLOT(slotGroupsClear()),actionCollection(),"groupsClear");
 	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
 	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
 	postGroupsCalc=new KAction(i18n("Execute &Post-Groups Methods"),0,0,this,SLOT(slotPostGroups()),actionCollection(),"postGroupsCalc");
-	showGroupsHistory=new KAction(i18n("Show Groups &History"),"exec",0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
+	showGroupsHistory=new KAction(i18n("Show Groups &History"),0,0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
 
 	// Menu "Debug"
-	simulationDlg=new KAction(i18n("Simulation &Parameters"),0,this,SLOT(slotSimulationDlg()),actionCollection(),"simulationDlg");
+	simulationDlg=new KAction(i18n("Simulation &Parameters"),0,0,this,SLOT(slotSimulationDlg()),actionCollection(),"simulationDlg");
 	groupingCreate=new KAction(i18n("&Create Ideal Groups"),0,0,this,SLOT(slotGroupsCreate()),actionCollection(),"groupingCreate");
 	doFdbks=new KAction(i18n("&Feedback Cycle"),0,0,this,SLOT(slotDoFdbks()),actionCollection(),"doFdbks");
 	doAssessments=new KAction(i18n("&Assessments Cycle"),0,0,this,SLOT(slotDoAssessments()),actionCollection(),"doAssessments");
 	groupingCompare=new KAction(i18n("Ideal clustering"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
-	textFrench=new KAction(i18n("Analyze &French Stems"),0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
-	textEnglish=new KAction(i18n("Analyze &English Stems"),0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
+	textFrench=new KAction(i18n("Analyze &French Stems"),0,0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
+	textEnglish=new KAction(i18n("Analyze &English Stems"),0,0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
 	// Menu "Settings"
 	setStandardToolBarMenuEnabled(true);
@@ -164,13 +164,13 @@ void KGALILEICenterApp::initActions(void)
 	configure=new KAction(i18n("&Configure GALILEI..."),"configure",0,this,SLOT(slotConfigure()),actionCollection(),"configure");
 
 	// Menu "Window"
-	windowTile = new KAction(i18n("&Tile"), 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
-	windowCascade = new KAction(i18n("&Cascade"), 0, this, SLOT(slotWindowCascade()), actionCollection(),"window_cascade");
+	windowTile = new KAction(i18n("&Tile"), 0, 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
+	windowCascade = new KAction(i18n("&Cascade"), 0, 0, this, SLOT(slotWindowCascade()), actionCollection(),"window_cascade");
 	windowMenu = new KActionMenu(i18n("&Window"), actionCollection(), "window_menu");
 	connect(windowMenu->popupMenu(),SIGNAL(aboutToShow()),this,SLOT(windowMenuAboutToShow()));
 
 	// Help Menu
-	helpProgram = new KAction(i18n("List of all classes"), 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
+	helpProgram = new KAction(i18n("List of all classes"), 0, 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
 /*	helpProgram=new KAction("List of all classes",0,0,this,SLOT(slotHelpProgram()),this);
 	menuBar()->insertItem ("&Help",helpProgram);*/
 
