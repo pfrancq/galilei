@@ -95,14 +95,25 @@ protected:
 	 */
 	bool WriteTitle;
 	
+	/**
+	 * Are the objects compared from the same type?
+	 */
+	bool SameObjects;
+	
+	/**
+	 * Compute the minimum of similarity.
+	 */
+	bool MinSim;
+	
 public:
 
 	/**
 	* Constructor.
 	* @param ses            The  galilei session.
+	* @param same           Same objects?
 	* @param f              File.
 	*/
-	GStatSimElements(GSession* ses,R::RTextFile* f);
+	GStatSimElements(GSession* ses,bool same,R::RTextFile* f);
 
 	virtual R::RCursor<E1> GetE1Cursor(GSubject* sub,GLang* lang)=0;
 
@@ -134,8 +145,8 @@ public:
 #include <gstatscalc.h>
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,RTextFile* f)
-	: Session(ses), File(f)
+	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,bool same,RTextFile* f)
+	: Session(ses), File(f), SameObjects(same), MinSim(false)
 {
 }
 
@@ -184,10 +195,13 @@ template<class E1,class E2>
 			R::RCursor<E2> Cur2(GetE2Cursor(Subs2(),lang));
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 			{
+				// If not same language, not defined or same object -> skip it
 				if(Cur2()->GetLang()!=lang) continue;
 				if(!Cur2()->IsDefined()) continue;
-
+				if(Same&&(Cur1()->GetId()==Cur2()->GetId())) continue;
+				
 				Measure->Measure(0,lang,Cur1()->GetId(),Cur2()->GetId(),&tmp);
+				//cout<<"Sim("<<Cur1()->GetId()<<","<<Cur2()->GetId()<<")="<<tmp<<endl;
 				if(Same)
 				{
 					nbIntra++;
@@ -316,9 +330,13 @@ template<class E1,class E2>
 			calc->AddTag(xml,LangTag,"Mean Extra",MeanExtra);
 			calc->AddTag(xml,LangTag,"Rie",Rie);
 			calc->AddTag(xml,LangTag,"Overlap",Overlap);
-			double tmp;
-			Measure->Info(0,Langs(),&tmp);
-			calc->AddTag(xml,LangTag,"Min Measure",tmp);
+			
+			if(MinSim)
+			{
+				double tmp;
+				Measure->Info(0,Langs(),&tmp);
+				calc->AddTag(xml,LangTag,"Min Measure",tmp);
+			}
 			if(File)
 			{
 				RString n1("Global"); n1.SetLen(25," ");

@@ -74,7 +74,7 @@ using namespace std;
 class GStatSimDoc : public GStatSimElements<GDoc,GDoc>
 {
 public:
-	GStatSimDoc(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,f)
+	GStatSimDoc(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,true,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
 	}
@@ -97,7 +97,7 @@ class GStatSimSubProf : public GStatSimElements<GSubProfile,GSubProfile>
 {
 public:
 
-	GStatSimSubProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GSubProfile>(ses,f)
+	GStatSimSubProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GSubProfile>(ses,true,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
 	}
@@ -120,7 +120,7 @@ class GStatSimDocGrp : public GStatSimElements<GDoc,GGroup>
 {
 public:
 
-	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GGroup>(ses,f)
+	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GGroup>(ses,false,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Groups Similarities");
 	}
@@ -143,7 +143,7 @@ class GStatSimDocProf : public GStatSimElements<GDoc,GSubProfile>
 {
 public:
 
-	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GSubProfile>(ses,f)
+	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GSubProfile>(ses,false,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 	}
@@ -166,7 +166,7 @@ class GStatSimProfGrp : public GStatSimElements<GSubProfile,GGroup>
 {
 public:
 
-	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GGroup>(ses,f)
+	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GGroup>(ses,false,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Groups Similarities");
 	}
