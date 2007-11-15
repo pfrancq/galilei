@@ -632,8 +632,6 @@ void GWeightInfos::AddRefs(tObjType ObjType) const
 			// Yes -> A new object uses this concept type.
 			type=ptr()->GetConcept()->GetType();
 			type->IncRef(ObjType);
-			if(type->GetId()==25)
-				cout<<"Debug"<<endl;
 		}
 
 		// AddRef for the concept
