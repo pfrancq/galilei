@@ -342,7 +342,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 	double max2;
 	double norm1;
 	double norm2;
-	double w1,w2,iff;
+	double w1,w2,iff1,iff2;
 	double TotalRef;
 	double num;
 
@@ -354,35 +354,31 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
-		iff=TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType));
-		w1=(Obj1()->GetWeight()/max1)*log10(iff);
+		iff1=log10(TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType)));
+		w1=(Obj1()->GetWeight()/max1)*iff1;
 		while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())<(*Obj1())))
 		{
-			iff=TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType));
-			w2=(Obj2()->GetWeight()/max2)*log10(iff);
+			iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType)));
+			w2=(Obj2()->GetWeight()/max2)*iff2;
 			norm2+=w2*w2;
 			Obj2.Next();
 		}
 		if((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())==(*Obj1())))
 		{
+			// Obj2()==Obj1() -> iff2=iff1
+			w2=(Obj2()->GetWeight()/max2)*iff1;
+			norm2+=w2*w2;
 			if((Obj1()->GetWeight()>0)||(Obj2()->GetWeight()>0))
-			{
-				iff=TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType));
-				w2=(Obj2()->GetWeight()/max2)*log10(iff);
-				norm2+=w2*w2;
-				norm1+=w1*w1;
 				num+=w1*w2;
-			}
 			Obj2.Next();
 		}
-		else
-			norm1+=w1*w1;
+		norm1+=w1*w1;
 		Obj1.Next();
 	}
 	while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type))
 	{
-		iff=TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType));
-		w2=(Obj2()->GetWeight()/max2)*log10(iff);
+		iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType)));
+		w2=(Obj2()->GetWeight()/max2)*iff2;
 		norm2+=w2*w2;
 		Obj2.Next();
 	}
@@ -406,7 +402,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 {
 	double max1;
 	double max2;
-	double w1,w2,iff;
+	double w1,w2,iff1,iff2;
 	double TotalRef;
 	double num;
 	double den;
@@ -419,19 +415,20 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
-		iff=TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType));
-		w1=(Obj1()->GetWeight()/max1)*log10(iff);
-		GXMLIndex* c1=dynamic_cast<GXMLIndex*>(Obj1());
+		iff1=log10(TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType)));
+		w1=(Obj1()->GetWeight()/max1)*iff1;
+		GXMLIndex* c1=dynamic_cast<GXMLIndex*>(Obj1()->GetConcept());
 		RCursor<GWeightInfo> Cur(Obj2);
-		for(Cur.Start();(!Cur.End())&&(Cur()->GetConcept()->GetType()==Type);Cur.Next())
+		for(;(!Cur.End())&&(Cur()->GetConcept()->GetType()==Type);Cur.Next())
 		{
-			GXMLIndex* c2=dynamic_cast<GXMLIndex*>(Cur());
+			GXMLIndex* c2=dynamic_cast<GXMLIndex*>(Cur()->GetConcept());
 
 			// Compare only if both index are based on the same XML tag
 			if(c1->GetXMLTag()!=c2->GetXMLTag())
 				continue;
-			iff=TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType));
-			w2=(Obj2()->GetWeight()/max2)*log10(iff);
+
+			iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Cur()->GetId(),Owner->ObjsType)));
+			w2=(Cur()->GetWeight()/max2)*iff2;
 			den+=fabs(w1*w2);
 			if((w1<0.0)&&(w2<0.0))
 				continue;
@@ -439,6 +436,8 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 		}
 		Obj1.Next();
 	}
+	while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type))
+		Obj2.Next();
 
 	// Return similarity
 	if(den>0.0)
@@ -512,7 +511,7 @@ double GDiffSims::SimilarityIFFMV(GLang* lang)
 
 	double Sim(0.0);
 	double NbComps(GetNbElements(lang));
-	NbComps=2+(Factor*NbComps*(NbComps-1));
+	NbComps=Factor*NbComps*(NbComps-1);
 	double CommonSpace(0.0); // Suppose that the two vectors have no common spaces
 	RCursor<GWeightInfo> ptr(*vec1);
 	RCursor<GWeightInfo> ptr2(*vec2);
@@ -522,7 +521,11 @@ double GDiffSims::SimilarityIFFMV(GLang* lang)
 		if((ptr()->GetConcept()->GetType()==Cur()->Type)&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
 		{
 			// OK Compute it
-			Sim+=log10(1+Cur()->Compute(ptr,ptr2));
+			double d=Cur()->Compute(ptr,ptr2);
+			if(d<NullLevel)
+				d=0.0;
+//			cout<<"Sim="<<d<<" -> P="<<(Factor+d)/NbComps<<endl;
+			Sim+=log10(Factor+d);
 			CommonSpace+=1.0;
 		}
 		else
@@ -560,7 +563,10 @@ double GDiffSims::SimilarityIFFL(void)
 	while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()!=Lang))
 		ptr2.Next();
 
-	return(Types.GetPtr(Lang)->Compute(ptr,ptr2));
+	double d=Types.GetPtr(Lang)->Compute(ptr,ptr2);
+	if(fabs(d)<NullLevel)
+		d=0.0;	
+	return(d);
 }
 
 
