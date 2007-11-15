@@ -135,7 +135,8 @@ void GGroup::LoadInfos(void) const
 	GSession* session=GSession::Get();
 	if(session&&session->GetStorage())
 		session->GetStorage()->LoadInfos(Infos,otGroup,Id);
-	const_cast<GGroup*>(this)->Update(Lang,&Infos,false);
+	if(Infos.GetNb())
+		const_cast<GGroup*>(this)->Update(Lang,&Infos,false);
 }
 
 

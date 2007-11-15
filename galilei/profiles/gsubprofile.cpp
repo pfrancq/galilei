@@ -107,7 +107,8 @@ void GSubProfile::LoadInfos(void) const
 	GSession* session=GSession::Get();
 	if(session&&session->GetStorage())
 		session->GetStorage()->LoadInfos(Infos,otSubProfile,Id);
-	const_cast<GSubProfile*>(this)->Update(Lang,&Infos,false);
+	if(Infos.GetNb())
+		const_cast<GSubProfile*>(this)->Update(Lang,&Infos,false);
 }
 
 

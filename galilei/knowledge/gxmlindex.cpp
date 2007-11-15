@@ -180,7 +180,7 @@ double GXMLIndex::GetSimilarity(const GXMLIndex* index) const
 	size_t MinStems(min(Stems.GetNb(),index->Stems.GetNb()));
 	
 	// If not same tags or nothing to compare -> return 0
-	if((XMLTag!=index->XMLTag)||(!MinUniversal)||(!MinStems))
+	if((XMLTag!=index->XMLTag)||((!MinUniversal)&&(!MinStems)))
 		return(0.0);
 	
 	size_t nb(0);
@@ -212,7 +212,7 @@ double GXMLIndex::GetSimilarity(const GXMLIndex* index) const
 			Stem2.Next();
 		}
 	}	
-	return(static_cast<double>(nb)/static_cast<double>(MinUniversal*MinStems));
+	return(static_cast<double>(nb)/static_cast<double>(MinUniversal+MinStems));
 }
 
 

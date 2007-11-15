@@ -326,13 +326,16 @@ void GConceptType::IncRef(tObjType ObjType)
 	switch(ObjType)
 	{
 		case otDoc:
-			nb=++NbRefDocs;
+			NbRefDocs++;
+			nb=NbRefDocs;
 			break;
 		case otSubProfile:
-			nb=++NbRefSubProfiles;
+			NbRefSubProfiles++;
+			nb=NbRefSubProfiles;
 			break;
 		case otGroup:
-			nb=++NbRefGroups;
+			NbRefGroups++;
+			nb=NbRefGroups;
 			break;
 		default:
 			throw GException ("Unkown type to increase");
@@ -353,17 +356,20 @@ void GConceptType::DecRef(tObjType ObjType)
 		case otDoc:
 			if(!NbRefDocs)
 				throw GException("Cannot decrease null number of references for documents");
-			nb=--NbRefDocs;
+			NbRefDocs--;
+			nb=NbRefDocs;
 			break;
 		case otSubProfile:
 			if(!NbRefSubProfiles)
 				throw GException("Cannot decrease null number of references for subprofiles");
-			nb=--NbRefSubProfiles;
+			NbRefSubProfiles--;
+			nb=NbRefSubProfiles;
 			break;
 		case otGroup:
 			if(!NbRefGroups)
 				throw GException("Cannot decrease null number of references for groups");
-			nb=--NbRefGroups;
+			NbRefGroups--;
+			nb=NbRefGroups;
 			break;
 		default:
 			throw GException ("Unkown type to decrease");

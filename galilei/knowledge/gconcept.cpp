@@ -80,7 +80,7 @@ GConcept::GConcept(unsigned int id,const RString& name,GConceptType* type,unsign
 //-----------------------------------------------------------------------------
 int GConcept::Compare(const GConcept& c) const
 {
-	return(Id-c.Id);
+	return(Name.Compare(c.Name));
 }
 
 
@@ -136,13 +136,16 @@ size_t GConcept::IncRef(tObjType ObjType)
 	switch(ObjType)
 	{
 		case otDoc:
-			return(++NbRefDocs);
+			NbRefDocs++;
+			return(NbRefDocs);
 			break;
 		case otSubProfile:
-			return(++NbRefSubProfiles);
+			NbRefSubProfiles++;
+			return(NbRefSubProfiles);
 			break;
 		case otGroup:
-			return(++NbRefGroups);
+			NbRefGroups++;
+			return(NbRefGroups);
 			break;
 		default:
 			throw GException ("Unkown type to increase concept "+RString::Number(Id));
@@ -159,17 +162,20 @@ size_t GConcept::DecRef(tObjType ObjType)
 		case otDoc:
 			if(!NbRefDocs)
 				throw GException("Cannot decrease null number of references for documents for concept "+RString::Number(Id));
-			return(--NbRefDocs);
+			NbRefDocs--;
+			return(NbRefDocs);
 			break;
 		case otSubProfile:
 			if(!NbRefSubProfiles)
 				throw GException("Cannot decrease null number of references for subprofiles for concept "+RString::Number(Id));
-			return(--NbRefSubProfiles);
+			NbRefSubProfiles--;
+			return(NbRefSubProfiles);
 			break;
 		case otGroup:
 			if(!NbRefGroups)
 				throw GException("Cannot decrease null number of references for groups for concept "+RString::Number(Id));
-			return(--NbRefGroups);
+			NbRefGroups--;
+			return(NbRefGroups);
 			break;
 		default:
 			throw GException ("Unkown type to decrease concept "+RString::Number(Id));

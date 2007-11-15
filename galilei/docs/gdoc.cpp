@@ -122,7 +122,8 @@ void GDoc::LoadInfos(void) const
 	GSession* session=GSession::Get();
 	if(session&&session->GetStorage())
 		session->GetStorage()->LoadInfos(Infos,otDoc,Id);
-	const_cast<GDoc*>(this)->Update(Lang,&Infos,false);
+	if(Infos.GetNb())
+		const_cast<GDoc*>(this)->Update(Lang,&Infos,false);
 }
 
 
