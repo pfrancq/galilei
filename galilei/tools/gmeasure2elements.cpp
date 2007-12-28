@@ -72,9 +72,9 @@ public:
 	double** Values;
 	size_t NbLines;
 	bool NeedUpdate;
-	RVectorInt<true> Created;
-	RVectorInt<true> Modified;
-	RVectorInt<true> Deleted;
+	RVectorInt<unsigned int,true> Created;
+	RVectorInt<unsigned int,true> Modified;
+	RVectorInt<unsigned int,true> Deleted;
 	double Deviation;
 	double MeanSim;
 	

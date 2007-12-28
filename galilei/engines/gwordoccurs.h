@@ -67,7 +67,7 @@ class GWordOccurs
 	/**
 	* Identifiers of documents containing the word.
 	*/
-	R::RVectorInt<true> Docs;
+	R::RVectorInt<unsigned int,true> Docs;
 
 public:
 
@@ -135,7 +135,7 @@ public:
 	*   which are not containing the word.
 	* @param docs            Identifiers of documents.
 	*/
-	void FilterDocs(R::RVectorInt<true>& docs) const;
+	void FilterDocs(R::RVectorInt<unsigned int,true>& docs) const;
 
 	/**
 	* Destructor.

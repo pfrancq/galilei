@@ -88,11 +88,11 @@ void GWordOccurs::AddDoc(unsigned int docid)
 
 
 //-----------------------------------------------------------------------------
-void GWordOccurs::FilterDocs(R::RVectorInt<true>& docs) const
+void GWordOccurs::FilterDocs(R::RVectorInt<unsigned int,true>& docs) const
 {
-	RVectorInt<true>& Cur=const_cast<RVectorInt<true>&>(Docs);
+	RVectorInt<unsigned int,true>& Cur=const_cast<RVectorInt<unsigned int,true>&>(Docs);
 	
-	if(docs.GetNbInt())
+	if(docs.GetNb())
 	{
 		// Remove all documents that are not in Docs	
 		for(Cur.Start();!Cur.End();Cur.Next())

@@ -111,7 +111,7 @@ public:
 	* @param query           String containing the query.
 	* @param docs            Identifiers of documents.
 	*/
-	void RunQuery(R::RString query,R::RVectorInt<true>& docs) const;
+	void RunQuery(R::RString query,R::RVectorInt<unsigned int,true>& docs) const;
 
 	/**
 	* Destructor of the dictionary.

@@ -111,7 +111,7 @@ public:
 };
 
 //------------------------------------------------------------------------------
-void GIndexer::RunQuery(R::RString query,RVectorInt<true>& docs) const
+void GIndexer::RunQuery(R::RString query,RVectorInt<unsigned int,true>& docs) const
 {
 
 	const RChar* ptr;

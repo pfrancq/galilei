@@ -96,7 +96,7 @@ protected:
 	/**
 	* Identificator of the profiles which have assessed the document.
 	*/
-	R::RVectorInt<true>* Fdbks;
+	R::RVectorInt<unsigned int,true>* Fdbks;
 
 	/**
 	* Status of the document.
@@ -240,7 +240,7 @@ public:
 	* documents.
 	* @return R::RVectorInt*.
 	*/
-	R::RVectorInt<true>* GetFdbks(void) const;
+	R::RVectorInt<unsigned int,true>* GetFdbks(void) const;
 
 	/**
 	* Add a profile to the list of those which have assess the document.

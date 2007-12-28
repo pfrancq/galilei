@@ -80,7 +80,7 @@ using namespace GALILEI;
 #include <gstatscalc.h>
 #include <gstorage.h>
 #include <gmeasure.h>
-
+#include <gtool.h>
 
 
 //------------------------------------------------------------------------------
@@ -116,6 +116,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GStatsCalcManager());
 	InsertPtr(new GMeasureManager());
 	InsertPtr(new GLangManager());
+	InsertPtr(new GToolManager());
 	GALILEIApp=this;
 }
 

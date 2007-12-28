@@ -71,7 +71,7 @@ class GSugs
 	/**
 	* Identificators of the documents suggested.
 	*/
-	R::RVectorInt<false> Docs;
+	R::RVectorInt<unsigned int,false> Docs;
 
 public:
 

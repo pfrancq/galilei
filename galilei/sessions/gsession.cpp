@@ -1446,7 +1446,7 @@ void GSession::UpdateProfiles(unsigned int docid,GLang* lang)
 	GDoc* doc=GetDoc(docid);
 	if(doc)
 	{
-		RVectorInt<true>* fdbks=doc->GetFdbks();
+		RVectorInt<unsigned int,true>* fdbks=doc->GetFdbks();
 		if(fdbks)
 		{
 			for(fdbks->Start();!fdbks->End();fdbks->Next())

@@ -172,7 +172,7 @@ void GDoc::SetId(unsigned int id)
 
 
 //------------------------------------------------------------------------------
-R::RVectorInt<true>* GDoc::GetFdbks(void) const
+R::RVectorInt<unsigned int,true>* GDoc::GetFdbks(void) const
 {
 	return(Fdbks);
 }
@@ -218,7 +218,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 void GDoc::InsertFdbk(unsigned int id)
 {
 	if(!Fdbks)
-		Fdbks=new R::RVectorInt<true>(500);
+		Fdbks=new R::RVectorInt<unsigned int,true>(500);
 	Fdbks->Insert(id);
 }
 
@@ -372,7 +372,7 @@ unsigned int GDoc::GetCommonDiffProfiles(const GDoc* doc) const
 unsigned int GDoc::GetNbFdbks(void) const
 {
 	if(Fdbks)
-		return(Fdbks->GetNbInt());
+		return(Fdbks->GetNb());
 	return(0);
 }
 
