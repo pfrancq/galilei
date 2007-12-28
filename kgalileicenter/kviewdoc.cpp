@@ -204,7 +204,7 @@ void KViewDoc::ConstructFdbks(void)
 
 	// Add Judgements for profile.
 
-	RVectorInt<true>* Profiles=Document->GetFdbks();
+	RVectorInt<unsigned int,true>* Profiles=Document->GetFdbks();
 	if(!Profiles)
 		return;
 	for(Profiles->Start();!Profiles->End();Profiles->Next())
