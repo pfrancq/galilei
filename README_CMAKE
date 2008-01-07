@@ -1,0 +1,120 @@
+QUICK BUILD
+-----------
+1) How-to build (command-line):
+- create a build directory (by exemple /path/to/galilei/build)
+- cd /path/to/galilei/build
+- cmake .. [OPTIONS]
+- make or make VERBOSE=1
+- sudo make install
+- sudo make uninstall (if you want to remove it ...)
+
+After first installation, it's recommended to run `sudo ldconfig` to update the library lookup cache
+
+2) How-to build (Ecplise):
+before the first build:
+- create a build directory (by exemple /path/to/galilei/build, and for Eclipse correct work, this place is very great)
+- cd /path/to/galilei/build
+- cmake .. [OPTIONS]
+- update Eclipse C++ project options:
+	--> C/C++ Build (click on title)
+		-> builder settings tab
+		-> disable 'use the default build command' (untick checkbox)
+		-> fill the 'build command' text field with 'make -C ${project_loc}/build VERBOSE=1'
+	--> C/C++ Build (click on title)
+		---> Settings
+			-> enable the good parser on the 'binary parsers' tab (ELF related for Linux)
+- configure a target for all in Ecplise
+
+anytime after
+- build the project ...
+- make install
+- make uninstall (if you want again ...)
+
+(see http://www.cmake.org/Wiki/CMake:Eclipse for more informations)
+
+OLD WAY TO NEW WAY
+------------------
+Actually, GALILEI is mainly configured using ./configure script.  CMake make this deprecated (invocation of autoconf, automake, aclocal also)
+So, to replace:
+./configure --enable-kde --prefix=/usr --enable-debug=full
+use this command in the build directory:
+cmake .. -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_INSTALL_PREFIX=/install/path
+As you see, kde is enabled by default ...
+
+ABOUT OPTIONS (when running cmake)
+-----------------------------------
+In CMake, options are in the form -D<option_name>=<option_value>, where <option_name> (case sensitive) and <option_value> are mandatory.
+When you set a value, it's stored in cache, until you provide a new value.
+
+So if you first configure with
+cmake .. -DCMAKE_BUILD_TYPE=Debug
+the first time, the project will be build with debug informations.  Future cmake invocation without paramater (like cmake ..)
+still prepare configuration for debug.  You need to set one time the new value for the configuration to update this setting
+cmake .. -DCMAKE_BUILD_TYPE=Release
+And again, until you didn't say it, cmake will keep this setting.
+
+This is false if you remove the content of your build directory (you must past again your options)...
+
+AVAILABLE OPTIONS (when running cmake)
+--------------------------------------
+The available options are (also cmake options are still available), and don't forget to use -D<option_name>=<option_value>:
+
+CMAKE_INSTALL_PREFIX=/path/to/install/top/dir -> where to install files
+CMAKE_BUILD_TYPE=<Debug|Release> -> where original default is Release
+
+iconv-library=/path/to/libiconv.so -> where to find iconv library if not in standard library path
+iconv-include=/path/to/libiconv_includes -> where to find iconv includes if not in standard include path
+
+disable-mysql=<true|false> -> Disable mysql support (by default, mysql support is enabled [false])
+mysql-library=/path/to/libmysqlclient.so -> where to find mysql client library if not in standard library path
+mysql-include=/path/to/libmysqlclient_includes -> where to find mysql client includes if not in standard include path
+
+curl-library=/path/to/libcurl.so -> where to find curl library if not in standard library path
+curl-include=/path/to/libcurl_includes -> where to find curl includes if not in standard include path
+
+disable-kde=<true|false> -> Disable kde 3 support (by default, kde support is enabled [false])
+rcmake-verbose=<true|false> -> Enable verbose output during cmake run (by default, verbose output is disabled [true], useful for debug of cmake scripts)
+
+disable-rmath=<true|false> -> Disable rmath library construction (by default, rmath library is enabled [false])
+disable-roptimization=<true|false> -> Disable roptimization library construction (by default, roptimization library is enabled [false])
+
+ABOUT INSTALLATION
+------------------
+When make install is performed, some files are installed:
+- galileimacro.cmake is installed in ${install_prefix}/share/galilei
+- libgalilei.m4 is actually also installed (in ${install_prefix}/share/aclocal).  This file is keept for compatibility with auto-tools based galilei dependent project.
+- include files are installed in ${install_prefix}/include/galilei without subdirectory (all includes in the galilei dir)
+- library files and libtool archives are installed in ${install_prefix}/lib
+
+Also when installing, a relinking is done for libraries.  And after first installation, is recommend to run ldconfig to update library cache.
+
+ADDING SOURCE FILES
+-------------------
+Since source files are dispatched in subdirs (docs, profiles by example), a .cmake file exist in these directories.  Just update the _TARGET_SOURCE ending variable to add new file to compile and _INST_INCLUDES to add include file to install).  If you want to add file in project dir.
+
+These project contain a CMakeList.txt file, that define each target ( and include the cmake file in subdirs to find how to construct these projects.
+
+The top dir CMakeList.txt (GALILEI dir) define logic to handle options and project to compile.
+
+REMARK ABOUT libtool .la archives
+---------------------------------
+Some magic was done since libtool didn't recognize the produced file since is not the generator.  These file are only usefull for libtool
+based products.  It's really recommanded to use cmake and link your library and executable against .so shared library.
+
+TODO
+----
+- Provide a better way to include galileimacro.cmake to GALILEI dependent project
+- Find a smarter way to call moc on file that need to be mocified before compilation
+
+OTHER
+-----
+For CMake Editor Ecplise plugin see CMake website (usefull integration http://cmakeed.sourceforge.net/updates/)
+For other information, see CMake wiki http://www.cmake.org/Wiki/CMake
+
+AUTHOR
+------
+Xavier Sacré - xsacre@ulb.ac.be
+
+HISTORY
+---------
+28 December 2007 - 21h45 : The initial CMake support in GALILEI was completed.

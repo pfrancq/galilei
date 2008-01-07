@@ -19,7 +19,7 @@ AC_DEFUN(GALILEI_INC_CHK,[
 	GALILEI_INC_DIR=""
 	for i in $GALILEI_INC_PATH ; do
 		if test -f $i/$1/$2 ; then
-			GALILEI_INC_DIR="-I$i/$1"
+			GALILEI_INC_DIR="-I$i/$1   -I$i/build/galilei"
 			add="$i/$1"
 			break
 		fi
