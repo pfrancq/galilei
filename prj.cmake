@@ -5,8 +5,7 @@
 # - ...
 
 #normaly all def in CMakeLists.txt
-
-PROJECT(galilei CXX) #define a C++ project (here galilei)
+PROJECT(galilei CXX)
 
 R_LOAD_DEPENDENCY("R" "R_LIB" "r")
 

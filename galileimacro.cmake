@@ -11,6 +11,7 @@ MACRO(DO_GALILEI_R_LIB_INCLUDE _libPath)
         INCLUDE_DIRECTORIES("${_libPath}/galilei/profiles")
         INCLUDE_DIRECTORIES("${_libPath}/galilei/sessions")
         INCLUDE_DIRECTORIES("${_libPath}/galilei/tools")
+	INCLUDE_DIRECTORIES("${_libPath}/build")
         
         LINK_DIRECTORIES(${_libPath}/build/galilei)
 ENDMACRO(DO_GALILEI_R_LIB_INCLUDE)
