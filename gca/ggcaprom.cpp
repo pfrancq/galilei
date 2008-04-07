@@ -6,7 +6,7 @@
 
 	PROMETHEE Kernel - Implementation.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -56,9 +56,9 @@ GGCAProm::GGCAProm(GGCAParams* p)
 	  CritDisagreement(0)
 {
 	// Init Criterion and Solutions of the PROMETHEE part
-	CritSimJ=NewCriterion(RPromCriterion::Maximize,"J (Sim)",Params->ParamsSim);
-	CritAgreement=NewCriterion(RPromCriterion::Maximize,"Agreement",Params->ParamsAgreement);
-	CritDisagreement=NewCriterion(RPromCriterion::Minimize,"Disagreement",Params->ParamsDisagreement);
+	AddCriterion(CritSimJ=new RPromLinearCriterion(RPromCriterion::Maximize,Params->ParamsSim,"J (Sim)"));
+	AddCriterion(CritAgreement=new RPromLinearCriterion(RPromCriterion::Maximize,Params->ParamsAgreement,"Agreement"));
+	AddCriterion(CritDisagreement=new RPromLinearCriterion(RPromCriterion::Minimize,Params->ParamsDisagreement,"Disagreement"));
 }
 
 

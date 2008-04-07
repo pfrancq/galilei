@@ -91,7 +91,6 @@ void About(void)
 void Configure(GFactoryGrouping* params)
 {
 	DlgConfig_Qt dlg;
-	RPromCriterionParams ret;
 
 	dlg.PopSize->setValue(params->GetUInt("Population Size"));
 	dlg.MaxGen->setValue(params->GetUInt("Max Gen"));

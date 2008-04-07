@@ -159,17 +159,17 @@ public:
 	/**
 	* Parameter for the criterion "Similariry".
 	*/
-	R::RPromCriterionParams ParamsSim;
+	R::RParam* ParamsSim;
 
 	/**
 	* Parameter for the criterion "Agreement".
 	*/
-	R::RPromCriterionParams ParamsAgreement;
+	R::RParam* ParamsAgreement;
 
 	/**
 	* Parameter for the criterion "Disagreement".
 	*/
-	R::RPromCriterionParams ParamsDisagreement;
+	R::RParam* ParamsDisagreement;
 
 	/**
 	* Constructor.

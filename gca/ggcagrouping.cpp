@@ -6,7 +6,7 @@
 
 	GCA Plug-in - Implementation
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -82,9 +82,9 @@ void GGCAGrouping::ApplyConfig(void)
 	Params.MaxKMeans=Factory->GetUInt("Max kMeans");
 	Params.Convergence=Factory->GetDouble("Convergence");
 	Params.NbDivChromo=Factory->GetUInt("NbDivChromo");
-	Params.ParamsSim.Set(Factory->FindParam<RParamStruct>("Sim Criterion"));
-	Params.ParamsAgreement.Set(Factory->FindParam<RParamStruct>("Agreement Criterion"));
-	Params.ParamsDisagreement.Set(Factory->FindParam<RParamStruct>("Disagreement Criterion"));
+	Params.ParamsSim=Factory->FindParam<RParamStruct>("Sim Criterion");
+	Params.ParamsAgreement=Factory->FindParam<RParamStruct>("Agreement Criterion");
+	Params.ParamsDisagreement=Factory->FindParam<RParamStruct>("Disagreement Criterion");
 }
 
 
@@ -251,9 +251,9 @@ void GGCAGrouping::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("Max kMeans",30));
 	params->InsertParam(new RParamValue("Convergence",0.05));
 	params->InsertParam(new RParamValue("NbDivChromo",2));
-	params->InsertParam(RPromCriterionParams::CreateParam("Sim Criterion"));
-	params->InsertParam(RPromCriterionParams::CreateParam("Agreement Criterion"));
-	params->InsertParam(RPromCriterionParams::CreateParam("Disagreement Criterion"));
+	params->InsertParam(RPromLinearCriterion::CreateParam("Sim Criterion"));
+	params->InsertParam(RPromLinearCriterion::CreateParam("Agreement Criterion"));
+	params->InsertParam(RPromLinearCriterion::CreateParam("Disagreement Criterion"));
 }
 
 
