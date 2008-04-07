@@ -6,7 +6,7 @@
 
 	Vector Computing Method  - Implementation.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -168,6 +168,9 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 				MaxFreq=doc->GetMaxWeight(type);
 			}
 
+			if(Words()->GetId()>32868&&Words()->GetType()->GetId()==26)
+				cout<<"Problem when aggreging documents"<<endl;
+			
 			// Compute and add the frequence
 			(*Cur->GetInfo(Words()))+=Words()->GetWeight()/MaxFreq;
 		}
@@ -187,8 +190,12 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 	// Multiply by the idf factor and remove null weighted information (in VectorsIrrel).
 	Words=Vectors.GetInfos();
 	VectorsIrrel.Clear();
+	type=0; // No current type
 	for(Words.Start();!Words.End();Words.Next())
 	{
+		// Look if the type of the concept have changed since that the last concept treated
+		if(Words()->GetConcept()->GetType()!=type)
+			type=Words()->GetConcept()->GetType();
 		(*Words())*=log10(TotalRef/static_cast<double>(type->GetRef(Words()->GetId(),otDoc)));
 		if(fabs(Words()->GetWeight())<0.00001)
 			VectorsIrrel.GetInfo(Words());
