@@ -6,7 +6,7 @@
 
 	Subprofile - Implementation.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -55,10 +55,15 @@ using namespace R;
 GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,unsigned int grpid,R::RDate a,R::RDate u,R::RDate c)
 	: GWeightInfos(lang,60), Id(id), Profile(prof), GroupId(grpid), Attached(a), Updated(u), Computed(c), Fdbks(20,10)
 {
+	bool Event=true;
+	
 	if(!Profile)
 		throw GException("Subprofile "+RString::Number(id)+" has no parent profile");
 	if((Id==cNoRef)&&(GSession::Get()))
+	{
 		GSession::Get()->AssignId(this);
+		Event=false;
+	}
 	Profile->InsertPtr(this);
 	if((GroupId!=cNoRef)&&(GSession::Get()))
 	{
@@ -66,7 +71,8 @@ GSubProfile::GSubProfile(GProfile *prof,unsigned int id,GLang *lang,unsigned int
 		if(grp)
 			grp->InsertSubProfile(this);
 	}
-	GSession::Event(this,eObjNew);
+	if(Event&&(Id!=cNoRef))
+		GSession::Event(this,eObjNew);
 }
 
 
@@ -131,6 +137,7 @@ void GSubProfile::SetId(unsigned int id)
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a subprofile");
 	Id=id;
+	GSession::Event(this,eObjNew);
 }
 
 

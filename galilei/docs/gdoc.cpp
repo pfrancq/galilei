@@ -6,7 +6,7 @@
 
 	Document - Implementation.
 
-	Copyright 2001-2007 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -61,7 +61,8 @@ GDoc::GDoc(const RURI& url,const RString& name,unsigned int id,GLang* lang,const
 	 MIMEType(mime), Updated(u), Computed(a), Fdbks(0),
 	  LinkSet(5,2), OwnerId(ownerid)
 {
-	GSession::Event(this,eObjNew);
+	if(Id!=cNoRef)
+		GSession::Event(this,eObjNew);
 }
 
 
@@ -167,6 +168,7 @@ void GDoc::SetId(unsigned int id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a document");
+	GSession::Event(this,eObjNew);
 	Id=id;
 }
 

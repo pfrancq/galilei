@@ -166,7 +166,8 @@ GProfile::GProfile(GUser* usr,unsigned int id,const R::RString name,bool s,unsig
 	if(!User)
 		throw GException("Profile "+RString::Number(id)+" has no parent user");
 	User->InsertPtr(this);
-	GSession::Event(this,eObjNew);
+	if(Id!=cNoRef)
+		GSession::Event(this,eObjNew);
 }
 
 
@@ -197,6 +198,7 @@ void GProfile::SetId(unsigned int id)
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a profile");
 	Id=id;
+	GSession::Event(this,eObjNew);	
 }
 
 

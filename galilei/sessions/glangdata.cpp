@@ -6,7 +6,7 @@
 
 	Language Specific Data - Implementation.
 
-	Copyright 2007 by the Université libre de Bruxelles.
+	Copyright 2007-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -56,7 +56,7 @@ using namespace GALILEI;
 struct GLangData::Intern
 {
 	RContainer<GDoc,false,true> Docs;
-	RContainer<GSubProfile,false,true> SubProfiles;
+	RContainer<GSubProfile,true,true> SubProfiles;
 	RContainer<GGroup,true,true> Groups;
 
 	Intern(void) : Docs(10000), SubProfiles(10000), Groups(500)

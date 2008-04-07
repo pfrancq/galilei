@@ -6,7 +6,7 @@
 
 	Subjects - Implementation.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -315,7 +315,7 @@ void GSubjects::ProfileAssess(GProfile* prof,GSubject* sub,unsigned int maxDocsO
 
 	// Mix the documents
 	Data->Session->GetRandom()->RandOrder<GDoc*>(Data->tmpDocs,Data->NbDocs);
-
+	
 	// Go trought the documents to create the judgements
 	for(i=Data->NbDocs+1,ptr=Data->tmpDocs,nbDocsOK=maxDocsOK,nbDocsKO=maxDocsKO,nbDocsH=maxDocsH;(--i)&&((nbDocsOK)||(nbDocsKO)||(nbDocsH));ptr++)
 	{
@@ -660,57 +660,56 @@ void GSubjects::CreateIdeal(void)
 
 //------------------------------------------------------------------------------
 void GSubjects::DocumentSharing(void)
-{
-	R::RCursor<GGroup> Grps;
-	RCursor<GSubProfile> SubProfile;
+{	
 	unsigned int i;
 
 	// Apply Config
 	Apply();
 
 	// Similarities
-	GMeasure* ProfilesDocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+	GMeasure* ProfilesDocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles/Documents Similarities");
 
 	// Go through the languages
 	RCursor<GLangData> Langs=Data->Session->GetLanguageSpecifics();
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-	Grps=Langs()->GetGroups();
-	for(Grps.Start();!Grps.End();Grps.Next())
-	{
-		// Go through the subprofile contained in the group.
-		SubProfile=Grps()->GetSubProfiles();
-		for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
+		R::RCursor<GGroup> Grps(Langs()->GetGroups());
+		for(Grps.Start();!Grps.End();Grps.Next())
 		{
-			Grps()->NotJudgedDocsRelList(ProfilesDocsSims,&Data->NewDocs,SubProfile(),Data->Session);
-			RCursor<GFdbk> Cur(Data->NewDocs);
-			for(Cur.Start(),i=Data->NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
+			// Go through the subprofile contained in the group.
+			RCursor<GSubProfile> SubProfile(Grps()->GetSubProfiles());
+			for(SubProfile.Start();!SubProfile.End();SubProfile.Next())
 			{
-				GDoc* doc=Data->Session->GetDoc(Cur()->GetDocId());
-				if(!doc)
-					continue;
-				// Look if 'OK'
-				if(IsFromSubject(Cur()->GetDocId(),GetSubject(SubProfile())))
+				Grps()->NotJudgedDocsRelList(ProfilesDocsSims,&Data->NewDocs,SubProfile(),Data->Session);
+				RCursor<GFdbk> Cur(Data->NewDocs);
+				for(Cur.Start(),i=Data->NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
 				{
-					Data->Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),Cur()->GetLang(),GFdbk::ErrorJudgment(djOK,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
-				}
-				else
-				{
-					// Look If 'KO'
-					if(IsFromParentSubject(Cur()->GetDocId(),GetSubject(SubProfile())))
+					GDoc* doc=Data->Session->GetDoc(Cur()->GetDocId());
+					if(!doc)
+						continue;
+				
+					// Look if 'OK'
+					if(IsFromSubject(Cur()->GetDocId(),GetSubject(SubProfile())))
 					{
-						Data->Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),Cur()->GetLang(),GFdbk::ErrorJudgment(djKO,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						Data->Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),Cur()->GetLang(),GFdbk::ErrorJudgment(djOK,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 					}
 					else
 					{
-						// Must be H
-						Data->Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),Cur()->GetLang(),GFdbk::ErrorJudgment(djOutScope,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						// Look If 'KO'
+						if(IsFromParentSubject(Cur()->GetDocId(),GetSubject(SubProfile())))
+						{
+							Data->Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),Cur()->GetLang(),GFdbk::ErrorJudgment(djKO,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						}
+						else
+						{
+							// Must be H
+							Data->Session->InsertFdbk(SubProfile()->GetProfile()->GetId(),Cur()->GetDocId(),Cur()->GetLang(),GFdbk::ErrorJudgment(djOutScope,Data->PercErr,Data->Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						}
 					}
 				}
+				SubProfile()->SetState(osModified);
 			}
-			SubProfile()->SetState(osModified);
 		}
-	}
 	}
 	
 	if(Data->Session->MustSaveResults())
@@ -1173,8 +1172,13 @@ bool GSubjects::IsFromParentSubject(GDoc* doc,const GSubject* s)
 //------------------------------------------------------------------------------
 bool GSubjects::IsFromParentSubject(unsigned int docid,const GSubject* s)
 {
+	// Verify that a parent exist and that it is not the root node
 	if(!s->Parent)
 		return(false);
+	if(!s->Parent->Parent)
+		return(false);
+	
+	
 	if(Data->Docs.GetMaxPos()<docid)
 		return(false);
 	R::RContainer<GSubject,false,false>* line=Data->Docs[docid];

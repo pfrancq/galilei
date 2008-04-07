@@ -252,7 +252,7 @@ void GConceptType::DeleteConcept(GConcept* concept)
 GConcept* GConceptType::GetConcept(size_t id) const
 {
 	if(id>MaxId)
-		throw GException("Cannot access concept");
+		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
 	return(Direct[id]);
 }
 
@@ -286,8 +286,10 @@ void GConceptType::IncRef(size_t id,tObjType ObjType)
 {
 	GConcept* concept;
 
-	if((id>MaxId)||(!(concept=Direct[id])))
-		throw GException("Cannot access concept");
+	if(id>MaxId)
+		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));	
+	if(!(concept=Direct[id]))
+		throw GException(Description+" "+RString::Number(id)+" does not exist");
 	size_t nb=concept->IncRef(ObjType);
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(concept,ObjType,nb);
@@ -299,8 +301,10 @@ void GConceptType::DecRef(size_t id,tObjType ObjType)
 {
 	GConcept* concept;
 
-	if((id>MaxId)||(!(concept=Direct[id])))
-		throw GException("Cannot access concept");
+	if(id>MaxId)
+		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));	
+	if(!(concept=Direct[id]))
+		throw GException(Description+" "+RString::Number(id)+" does not exist");
 	size_t nb=concept->DecRef(ObjType);
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(concept,ObjType,nb);
@@ -312,8 +316,10 @@ size_t GConceptType::GetRef(size_t id,tObjType ObjType)
 {
 	GConcept* concept;
 
-	if((id>MaxId)||(!(concept=Direct[id])))
-		throw GException("Cannot access concept");
+	if(id>MaxId)
+		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));	
+	if(!(concept=Direct[id]))
+		throw GException(Description+" "+RString::Number(id)+" does not exist");
 	return(concept->GetRef(ObjType));
 }
 

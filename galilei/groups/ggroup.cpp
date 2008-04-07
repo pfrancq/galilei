@@ -6,7 +6,7 @@
 
 	Group - Implementation.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -87,7 +87,8 @@ GGroup::GGroup(unsigned int id,GLang* lang,bool com,const R::RDate& u,const R::R
 	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(lang,60), Id(id),
 	  Community(com),  Updated(u), Computed(c)
 {
-	GSession::Event(this,eObjNew);
+	if(Id!=cNoRef)
+		GSession::Event(this,eObjNew);
 }
 
 
@@ -159,6 +160,7 @@ void GGroup::SetId(unsigned int id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a group");
+	GSession::Event(this,eObjNew);
 	Id=id;
 }
 
@@ -339,9 +341,9 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 				// Verify if already inserted in Docs.
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
-				double* res;
-				measure->Measure(Fdbks()->GetDocId(),s->GetId(),res);
-				Docs.InsertPtr(new GFdbkRef(Fdbks(),*res));
+				double res;
+				measure->Measure(0,s->GetLang(),s->GetId(),Fdbks()->GetDocId(),res);
+				Docs.InsertPtr(new GFdbkRef(Fdbks(),res));
 			}
 			continue;
 		}
@@ -363,9 +365,9 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDocId()))) continue;
 
 			// Insert it.
-			double* res;
-			measure->Measure(Fdbks()->GetDocId(),s->GetId(),res);
-			Docs.InsertPtr(new GFdbkRef(Fdbks(),*res));
+			double res;
+			measure->Measure(0,s->GetLang(),s->GetId(),Fdbks()->GetDocId(),&res);
+			Docs.InsertPtr(new GFdbkRef(Fdbks(),res));
 		}
 	}
 
@@ -388,7 +390,7 @@ GSubProfile* GGroup::RelevantSubProfile(void) const
 	double refsum,sum;
 
 	// Similarities
-	GMeasure* ProfilesSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
+	GMeasure* ProfilesSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities");
 
 	// If no objects -> No relevant one.
 	if(!R::RContainer<GSubProfile,false,true>::GetNb())

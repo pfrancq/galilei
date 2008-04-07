@@ -6,7 +6,7 @@
 
 	Measures between two elements - Implementation.
 
-	Copyright 2007 by the Université Libre de Bruxelles.
+	Copyright 2007-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -118,9 +118,7 @@ void Matrix::Update(size_t max,bool Automatic,GMeasure2Elements* main,GLang* lan
 	if(!max)
 		return;
 		
-	// Add the lines (if necessary)
-	size_t NbComp=(NbLines*(NbLines-1))/2;
-		
+	// Add the lines (if necessary)	
 	if(NbLines<max)
 	{
 		double** tmp=new double*[max];
@@ -134,13 +132,16 @@ void Matrix::Update(size_t max,bool Automatic,GMeasure2Elements* main,GLang* lan
 		NbLines=max;
 	}
 	
+	// Number of comparisons
+	size_t NbComp=(NbLines*(NbLines-1))/2;
+	
 	// Go thourgh all lines/cols (line=profileid+2);
 	size_t i;
 	double** cur=Values;
 	for(i=0;i<NbLines;i++,cur++)
 	{
 		// Verify if this line must be deleted?
-		if((Deleted.IsIn(i+2))&&(*cur))
+		if((*cur)&&(Deleted.IsIn(i+2)))
 		{
 			// Go trough the cols
 			size_t j;
@@ -180,7 +181,7 @@ void Matrix::Update(size_t max,bool Automatic,GMeasure2Elements* main,GLang* lan
 			double* vals;
 			for(j=0,vals=(*cur);j<i+1;j++,vals++)
 			{
-				if(Deleted.IsIn(j+1))
+				if(vals&&Deleted.IsIn(j+1))
 				{
 					if(Automatic)
 						UpdateDeviation(NbComp,(*vals),0.0,-1);
@@ -219,7 +220,7 @@ void Matrix::Update(size_t max,bool Automatic,GMeasure2Elements* main,GLang* lan
 		double* vals;
 		for(j=0,vals=(*cur);j<i+1;j++,vals++)
 		{
-			if(Deleted.IsIn(j+1))
+			if(vals&&Deleted.IsIn(j+1))
 			{
 				if(Automatic)
 					UpdateDeviation(NbComp,(*vals),0.0,-1);
@@ -759,6 +760,7 @@ void GMeasure2Elements::Event(GProfile* prof, tEvent event)
 {
 	if((!Memory)||(ObjsType!=otProfile))
 		return;
+//	cout<<"Profile "<<prof->GetId()<<" : "<<GetEvent(event)<<endl;
 	UpdateElement(prof,event,0);	
 }
 
@@ -768,6 +770,7 @@ void GMeasure2Elements::Event(GSubProfile* sub, tEvent event)
 {
 	if((!Memory)||(ObjsType!=otSubProfile))
 		return;
+//	cout<<"SubProfile "<<sub->GetId()<<" : "<<GetEvent(event)<<endl;
 	UpdateElement(sub,event,sub->GetLang());
 }
 

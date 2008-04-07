@@ -6,7 +6,7 @@
 
 	List of weighted information entities - Implementation.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -186,8 +186,6 @@ size_t GWeightInfos::GetNb(void) const
 //------------------------------------------------------------------------------
 double GWeightInfos::GetMaxWeight(GConceptType* type) const
 {
-	double max;
-
 	// If no profile, maximal weight is null.
 	if(!GetNb())
 		throw GException("GWeightInfos is empty for GetMaxHeight");
@@ -195,11 +193,12 @@ double GWeightInfos::GetMaxWeight(GConceptType* type) const
 	// Suppose first weight is the highest
 	RCursor<GWeightInfo> ptr(*this);
 	ptr.Start();	
-	while(ptr()->GetType()!=type)
+	while((!ptr.End())&&(ptr()->GetType()!=type))
 		ptr.Next();
 	
-	if(!ptr.End())
-		max=ptr()->GetWeight();
+	if(ptr.End())
+		return(0.0);
+	double max(ptr()->GetWeight());
 
 	// Look if there is a greater one.
 	for(ptr.Next();(!ptr.End())&&(ptr()->GetType()==type);ptr.Next())
@@ -214,8 +213,6 @@ double GWeightInfos::GetMaxWeight(GConceptType* type) const
 //------------------------------------------------------------------------------
 double GWeightInfos::GetMaxAbsWeight(GConceptType* type) const
 {
-	double max;
-
 	// If no profile, maximal weight is null.
 	if(!GetNb())
 		throw GException("GWeightInfos is empty for GetMaxHeight");
@@ -223,12 +220,13 @@ double GWeightInfos::GetMaxAbsWeight(GConceptType* type) const
 	// Suppose first weight is the highest
 	RCursor<GWeightInfo> ptr(*this);
 	ptr.Start();
-	while(ptr()->GetType()!=type)
+	while((!ptr.End())&&(ptr()->GetType()!=type))
 		ptr.Next();
-	
-	if(!ptr.End())
-		max=fabs(ptr()->GetWeight());
 
+	if(ptr.End())
+		return(0.0);
+	double max(fabs(ptr()->GetWeight()));
+	
 	// Look if there is a greater one.
 	for(ptr.Next();(!ptr.End())&&(ptr()->GetType()==type);ptr.Next())
 	{
@@ -468,7 +466,7 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 	double w1,w2,iff1,iff2;
 	double TotalRef1;
 	double TotalRef2;
-	GConceptType* type;
+	GConceptType* type(0);
 
 	// Compute Similarity
 	RCursor<GWeightInfo> ptr(*this);

@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2007 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		GALILEI Team (pfrancq@ulb.ac.be)
