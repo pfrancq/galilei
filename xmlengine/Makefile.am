@@ -1,0 +1,9 @@
+INCLUDES = $(all_includes) -I$(top_srcdir)
+lib_LTLIBRARIES =  libenginexml.la
+libenginexml_la_LDFLAGS = -module -avoid-version
+libenginexml_la_SOURCES = xnode.cpp genginexml.cpp xanalyser.cpp xanalysexmlfile.cpp xnodesql.cpp xtag.cpp xwordsql.cpp xxmlfile.cpp xquery.cpp xquerynode.cpp xqueryres.cpp xnodeset.cpp xresult.cpp xgeneral.cpp xstuff.cpp xsqlcmd.cpp gxmlranking.cpp gxmlprom.cpp gxmlir.cpp
+libenginexml_la_LIBADD=
+AM_CFLAGS =
+AM_CXXFLAGS =
+AM_FFLAGS =
+SUBDIRS = $(FRONTEND)
