@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Implementation.
 
-	Copyright 2001-2007 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -46,7 +46,6 @@
 #include <gsugs.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <gmysql.h>
 #include <gslot.h>
 #include <ggroup.h>
@@ -602,9 +601,6 @@ void GStorageMySQL::Clear(tObjType objtype)
 				break;
 			case otProfile:
 				What="profiles";
-				break;
-			case otSubProfile:
-				What="subprofiles";
 				Desc=true;
 				break;
 			case otGroup:
@@ -621,9 +617,9 @@ void GStorageMySQL::Clear(tObjType objtype)
 		RQuery Delete(Db,"DELETE FROM "+What);
 		if(Desc)
 			RQuery DeleteInfos(Db,"DELETE FROM "+What+"byconcepts");
-		// If groups -> All subprofiles are detached
+		// If groups -> All profiles are detached
 		if(Group)
-			RQuery Update(Db,"UPDATE subprofiles SET groupid=0,attached=NULL");
+			RQuery Update(Db,"UPDATE profiles SET groupid=0,attached=NULL");
 	}
 	catch(RMySQLError e)
 	{
@@ -645,7 +641,7 @@ void GStorageMySQL::LoadConceptTypes(void)
 {
 	try
 	{
-		RQuery Types(Db,"SELECT typeid,name,description,refdocs,refsubprofiles,refgroups FROM concepttypes");
+		RQuery Types(Db,"SELECT typeid,name,description,refdocs,refprofiles,refgroups FROM concepttypes");
 		for(Types.Start();!Types.End();Types.Next())
 			Session->InsertConceptType(atoi(Types[0]),Types[1],Types[2],atoi(Types[3]),atoi(Types[4]),atoi(Types[5]));
 	}
@@ -745,8 +741,8 @@ void GStorageMySQL::LoadInfos(RContainer<GWeightInfo,false,true>& infos,tObjType
 			case otDoc:
 				table="html";
 				break;
-			case otSubProfile:
-				table="subprofile";
+			case otProfile:
+				table="profile";
 				break;
 			case otGroup:
 				table="group";
@@ -811,7 +807,7 @@ void GStorageMySQL::LoadConcepts(GConceptType* type)
 
 		// Create and insert the dictionary
 		// Load the dictionary from the database
-		sSql="SELECT conceptid,name,refdocs,refsubprofiles,refgroups FROM concepts WHERE typeid="+Num(type->GetId());
+		sSql="SELECT conceptid,name,refdocs,refprofiles,refgroups FROM concepts WHERE typeid="+Num(type->GetId());
 		RQuery dicts(Db, sSql);
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
@@ -952,7 +948,7 @@ void GStorageMySQL::SaveConcept(GConcept* concept)
 		                 "typeid="+Num(concept->GetType()->GetId()));
 	
 		// Insert the new word in the database
-		Sql="INSERT INTO concepts(conceptid,name,typeid,refsubprofiles,refgroups,refdocs) ";
+		Sql="INSERT INTO concepts(conceptid,name,typeid,refprofiles,refgroups,refdocs) ";
 		Sql+="VALUES("+Num(concept->GetId())+","+RQuery::SQLValue(concept->GetName())+","+
 		     Num(concept->GetType()->GetId())+",0,0,0)";
 		RQuery Insert(Db,Sql);
@@ -978,8 +974,8 @@ void GStorageMySQL::SaveRefs(const GConcept* concept,tObjType what,size_t refs)
 				sSql="UPDATE concepts SET refdocs="+Num(refs)+
 				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
 				break;
-			case otSubProfile:
-				sSql="UPDATE concepts SET refsubprofiles="+Num(refs)+
+			case otProfile:
+				sSql="UPDATE concepts SET refprofiles="+Num(refs)+
 				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
 				break;
 			case otGroup:
@@ -1013,9 +1009,9 @@ void GStorageMySQL::SaveRefs(GConceptType* type,tObjType what,size_t refs)
 					RQuery(Db,"UPDATE concepts SET refdocs=0 WHERE typeid="+Num(type->GetId()));
 				break;
 			}
-			case otSubProfile:
+			case otProfile:
 			{
-				RQuery(Db,"UPDATE concepttypes SET refsubprofiles="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
+				RQuery(Db,"UPDATE concepttypes SET refprofiles="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
 				if(refs==0)
 					RQuery(Db,"UPDATE concepts SET refgroups=0 WHERE typeid="+Num(type->GetId()));				
 				break;
@@ -1292,7 +1288,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 
 //------------------------------------------------------------------------------
 //
-// Users/Profiles/Subprofiles Methods
+// Users/Profiles Methods
 //
 //------------------------------------------------------------------------------
 
@@ -1300,9 +1296,6 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 void GStorageMySQL::LoadUsers(void)
 {
 	GProfile* prof;
-	GLang* lang;
-	GSubProfile* sub;
-	GLangManager* Langs=GALILEIApp->GetManager<GLangManager>("Lang");
 
 	try
 	{
@@ -1314,50 +1307,32 @@ void GStorageMySQL::LoadUsers(void)
 				Session->InsertUser(new GUser(atoi(Users[0]),Users[1],Users[2],10));
 
 			// Load profiles
-			RQuery Profiles(Db,"SELECT profileid,description,social,userid FROM profiles");
+			RString Sql("SELECT profileid,description,social,userid,attached,groupid,updated,calculated FROM profiles");
+			if(!LoadAll)
+				Sql+=" WHERE calculated<updated";
+			if(Filtering)
+			{
+				if(LoadAll)
+					Sql+=" WHERE ";
+				else
+					Sql+=" OR ";
+				Sql+="((updated>="+RQuery::SQLValue(Filter)+") OR (calculated>="+RQuery::SQLValue(Filter)+") OR (attached>="+RQuery::SQLValue(Filter)+"))";
+			}
+			RQuery Profiles(Db,Sql);
 			for(Profiles.Start();!Profiles.End();Profiles.Next())
 			{
 				GUser* user=Session->GetUser(atoi(Profiles[3]));
-				Session->InsertProfile(new GProfile(user,atoi(Profiles[0]),Profiles[1],(atoi(Profiles[2])==1),5));
+				unsigned int groupid=atoi(Profiles[5]);
+				if(!groupid)
+					groupid=cNoRef;		
+				Session->InsertProfile(prof=new GProfile(user,atoi(Profiles[0]),Profiles[1],groupid,GetMySQLToDate(Profiles[4]),GetMySQLToDate(Profiles[6]),GetMySQLToDate(Profiles[7]),(atoi(Profiles[2])==1),5));
+				prof->SetState(osNeedLoad);
 			}
 
 			// Load feedbacks
-			RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,computed,langid FROM htmlsbyprofiles");
+			RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,computed FROM htmlsbyprofiles");
 			for(fdbks.Start();!fdbks.End();fdbks.Next())
-			{
-				lang=Langs->GetPlugIn(fdbks[5],false);
-				if((fdbks[5].GetLen())&&(!lang))
-					continue;
-				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),lang,GetAssessmentType(fdbks[1]),GetMySQLToDate(fdbks[3]),GetMySQLToDate(fdbks[4]));
-			}
-		}
-
-		// Load subprofiles
-		RString Sql("SELECT subprofileid,langid,attached,groupid,updated,calculated,profileid FROM subprofiles");
-		if(!LoadAll)
-			Sql+=" WHERE calculated<updated";
-		if(Filtering)
-		{
-			if(LoadAll)
-				Sql+=" WHERE ";
-			else
-				Sql+=" OR ";
-			Sql+="((updated>="+RQuery::SQLValue(Filter)+") OR (calculated>="+RQuery::SQLValue(Filter)+") OR (attached>="+RQuery::SQLValue(Filter)+"))";
-		}
-		RQuery SubProfiles(Db,Sql);
-		for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
-		{
-			lang=Langs->GetPlugIn(SubProfiles[1],false);
-			if(!lang)
-				continue;
-			prof=Session->GetProfile(atoi(SubProfiles[6]));
-			if(!prof)
-				throw GException("Subprofile "+SubProfiles[0]+" has no parent profile");
-			unsigned int groupid=atoi(SubProfiles[3]);
-			if(!groupid)
-				groupid=cNoRef;
-			Session->InsertSubProfile(sub=new GSubProfile(prof,atoi(SubProfiles[0]),lang,groupid,GetMySQLToDate(SubProfiles[2]),GetMySQLToDate(SubProfiles[4]),GetMySQLToDate(SubProfiles[5])));
-			sub->SetState(osNeedLoad);
+				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetAssessmentType(fdbks[1]),GetMySQLToDate(fdbks[3]),GetMySQLToDate(fdbks[4]));
 		}
 	}
 	catch(RMySQLError& e)
@@ -1414,62 +1389,35 @@ GProfile* GStorageMySQL::LoadProfile(unsigned int profileid)
 		GLangManager* Langs=GALILEIApp->GetManager<GLangManager>("Lang");
 	
 		// Load Profile
-		RQuery Profile(Db,"SELECT profileid,description,social,userid "
+		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,groupid,updated,calculated "
 		                  "FROM profiles WHERE profileid="+Num(profileid));
 		Profile.Start();
 		if(!Profile.GetNb())
 			return(0);
-		GUser* user=Session->GetUser(atoi(Profile[3]));
+		GUser* user=Session->GetUser(atoi(Profile[3]));		
 		if(!user)
 			throw GException("Profile "+Profile[0]+" has no parent user");
-	
+		unsigned int groupid=atoi(Profile[5]);
+		if(!groupid)
+			groupid=cNoRef;		
+
 		// Create the profile
-		GProfile* prof=new GProfile(user,atoi(Profile[0]),Profile[1],(atoi(Profile[2])==1),5);
-	
+		GProfile* prof=new GProfile(user,atoi(Profile[0]),Profile[1],groupid,GetMySQLToDate(Profile[4]),GetMySQLToDate(Profile[6]),GetMySQLToDate(Profile[7]),(atoi(Profile[2])==1),5);
+		prof->SetState(osNeedLoad);
+		
 		// Load Feedbacks
-		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,computed,langid "
+		RQuery fdbks(Db,"SELECT htmlid,judgement,profileid,when2,computed "
 		                "FROM htmlsbyprofiles WHERE profileid="+Num(profileid));
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
-			Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),Langs->GetPlugIn(fdbks[5]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
+			Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
 			// Since the profile is not in the session -> we must manually insert the profile.
 			GLang* lang=Langs->GetPlugIn(fdbks[5],false);
 			if(!lang)
 				continue;
-			prof->InsertFdbk(atoi(fdbks[0]),lang,GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
+			prof->InsertFdbk(atoi(fdbks[0]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
 		}
 		return(prof);
-	}
-	catch(RMySQLError& e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-GSubProfile* GStorageMySQL::LoadSubProfile(unsigned int subprofileid)
-{
-	try
-	{
-		RQuery SubProfile(Db,"SELECT subprofileid,langid,attached,groupid,updated,calculated,profileid "
-		                     "FROM subprofiles WHERE subprofileid="+Num(subprofileid));
-		SubProfile.Start();
-		if(!SubProfile.GetNb())
-			return(0);
-		GLang *lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(SubProfile[1],false);
-		if(!lang)
-			return(0);
-		GProfile* prof=Session->GetProfile(atoi(SubProfile[6]));
-		if(!prof)
-			throw GException("Subprofile "+SubProfile[0]+" has no parent profile");
-		unsigned int groupid=atoi(SubProfile[3]);
-		if(!groupid)
-			groupid=cNoRef;
-		GSubProfile* sub=new GSubProfile(prof,atoi(SubProfile[0]),lang,groupid,SubProfile[2],GetMySQLToDate(SubProfile[4]),GetMySQLToDate(SubProfile[5]));
-		sub->SetState(osNeedLoad);
-		return(sub);
 	}
 	catch(RMySQLError& e)
 	{
@@ -1520,13 +1468,11 @@ void GStorageMySQL::GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,t
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::UpdateProfiles(unsigned int docid,GLang* lang)
+void GStorageMySQL::UpdateProfiles(unsigned int docid)
 {
 	try
 	{
-		if(!lang)
-			return;
-		RQuery Up(Db,"UPDATE htmlsbyprofiles SET computed=CURDATE(),langid="+Lang(lang)+" WHERE htmlid="+Num(docid));
+		RQuery Up(Db,"UPDATE htmlsbyprofiles SET computed=CURDATE() WHERE htmlid="+Num(docid));
 	}
 	catch(RMySQLError e)
 	{
@@ -1625,7 +1571,6 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 {
 	unsigned int profid;
 	unsigned int social;
-	RCursor<GSubProfile> CurSub=prof->GetSubProfiles();
 	RString sSql;
 
 	try
@@ -1694,134 +1639,62 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		// Update other information from the documents
 		RQuery Update(Db,"UPDATE htmls,htmlsbyprofiles SET htmlsbyprofiles.langid=htmls.langid,htmlsbyprofiles.computed=htmls.calculated "
 		                 "WHERE htmlsbyprofiles.htmlid=htmls.htmlid AND profileid="+Num(prof->GetId()));
-	}
-	catch(RMySQLError e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::SaveSubProfileInHistory(GSubProfile* sub,unsigned int historicID)
-{
-	RCursor<GWeightInfo> Cur;
-
-	try
-	{
-		// Save subprofiles
-		Cur=sub->GetInfos();
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			RString sSql("INSERT INTO historicsubprofiles(historicID,subprofileid,kwdid,weight, date, langid) VALUES("+
-					     Num(historicID)+","+Num(sub->GetId())+","+Num(Cur()->GetId())+","+
-					     Num(Cur()->GetWeight())+",CURDATE(),"+Lang(sub->GetLang())+")");
-			RQuery insertkwds(Db,sSql);
-		}
-	}
-	catch(RMySQLError e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::SaveHistoricProfiles(unsigned int historicID)
-{
-	try
-	{
-		R::RCursor<GProfile> curProf=Session->GetProfiles();
-
-		// Save the Subprofile
-		for(curProf.Start();!curProf.End();curProf.Next())
-		{
-			RCursor<GSubProfile> curSub=curProf()->GetSubProfiles();
-			for(curSub.Start();!curSub.End();curSub.Next())
-				SaveSubProfileInHistory(curSub(), historicID);
-		}
-	}
-	catch(RMySQLError e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::AssignId(GSubProfile* sub)
-{
-	try
-	{
-		// Reserved an identificator
-		RString sSql="INSERT INTO subprofiles(profileid,langid,subprofileid) "
-		             "SELECT "+Num(sub->GetProfile()->GetId())+","+Lang(sub->GetLang())+",IFNULL(MAX(subprofile),0)+1 "
-		             "FROM subprofiles WHERE langid="+Lang(sub->GetLang());
-		RQuery Insert(Db,sSql);
-
-		// Get the id and assign it to the subprofile
-		sSql=RString("SELECT subprofileid FROM subprofiles WHERE subprofileautoid=LAST_INSERT_ID()");
-		RQuery Get(Db,sSql);
-		Get.Start();
-		sub->SetId(atoi(Get[0]));
-	}
-	catch(RMySQLError e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::SaveSubProfile(GSubProfile* sub)
-{
-	RString sSql;
-	RCursor<GWeightInfo> Cur;
-	RString l;
-
-	try
-	{
-		// Test if the subprofile already exists.
-		sSql="SELECT COUNT(1) FROM subprofiles "
-		     "WHERE langid="+Lang(sub->GetLang())+" AND subprofileid="+Num(sub->GetId());
-		RQuery existsubprof(Db,sSql);
-		existsubprof.Start();
-		if(!atoi(existsubprof[0]))
-		{
-			// Insert the subprofile;
-			sSql="INSERT INTO subprofiles SET profileid="+Num(sub->GetProfile()->GetId())+
-			     ",langid="+Lang(sub->GetLang())+",attached=NULL,updated="+RQuery::SQLValue(sub->GetUpdated())+
-			     ",calculated="+RQuery::SQLValue(sub->GetComputed())+",subprofileid="+Num(sub->GetId());
-		}
-		else
-		{
-			// Update the subprofile;
-			sSql="UPDATE subprofiles "
-			     "SET updated="+RQuery::SQLValue(sub->GetUpdated())+",calculated="+RQuery::SQLValue(sub->GetComputed())+" "
-			     "WHERE subprofileid="+Num(sub->GetId())+" AND langid="+Lang(sub->GetLang());
-		}
-		RQuery updatesubprof(Db,sSql);
-
+		
 		// Delete old description
-		l=sub->GetLang()->GetCode();
-		sSql="DELETE FROM subprofilesbyconcepts "
-		     "WHERE subprofileid="+Num(sub->GetId());
+		sSql="DELETE FROM profilesbyconcepts "
+		     "WHERE profileid="+Num(prof->GetId());
 		RQuery deletekwds(Db,sSql);
 
 		// Insert new description
-		Cur=sub->GetInfos();
+		RCursor<GWeightInfo> Cur(prof->GetInfos());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			sSql="INSERT INTO subprofilesbyconcepts(subprofileid,conceptid,weight,typeid) "
-			     "VALUES("+Num(sub->GetId())+","+Num(Cur()->GetId())+","+Num(Cur()->GetWeight())+
+			sSql="INSERT INTO profilesbyconcepts(profileid,conceptid,weight,typeid) "
+			     "VALUES("+Num(prof->GetId())+","+Num(Cur()->GetId())+","+Num(Cur()->GetWeight())+
 			     ","+Num(Cur()->GetType()->GetId())+")";
 			RQuery insertkwds(Db,sSql);
 		}
-		sub->SetState(osUpToDate);
+		prof->SetState(osUpToDate);		
+	}
+	catch(RMySQLError e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveProfileInHistory(GProfile* sub,unsigned int historicID)
+{
+	RCursor<GWeightInfo> Cur;
+
+	try
+	{
+		// Save profiles
+		Cur=sub->GetInfos();
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			RString sSql("INSERT INTO historicprofiles(historicID,profileid,kwdid,weight, date) VALUES("+
+					     Num(historicID)+","+Num(sub->GetId())+","+Num(Cur()->GetId())+","+
+					     Num(Cur()->GetWeight())+",CURDATE()");
+			RQuery insertkwds(Db,sSql);
+		}
+	}
+	catch(RMySQLError e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveHistoricProfiles(unsigned int /*historicID*/)
+{
+	try
+	{
+		RToImplement();
 	}
 	catch(RMySQLError e)
 	{
@@ -1851,20 +1724,14 @@ void GStorageMySQL::AddSugsProfile(const R::RString& name,unsigned int profileid
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed)
+void GStorageMySQL::AddFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date,R::RDate computed)
 {
 	try
 	{
 		RString sSql;
-		RString l;
-	
-		if(lang)
-			l=Lang(lang);
-		else
-			l="NULL";
-		sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2,langid,computed) "
+		sSql="INSERT INTO htmlsbyprofiles(htmlid,judgement,profileid,when2,computed) "
 		     "VALUES("+Num(d)+",'"+GetAssessmentCode(assess)+"',"+Num(p)+","+RQuery::SQLValue(date)+
-		     ","+l+","+RQuery::SQLValue(computed)+")";
+		     ","+RQuery::SQLValue(computed)+")";
 		RQuery Insert(Db,sSql);
 	}
 	catch(RMySQLError e)
@@ -1887,12 +1754,10 @@ void GStorageMySQL::LoadGroups(void)
 {
 	GGroup* group;
 	R::RCursor<GGroup> GroupsCursor;
-	GLang* lang;
-	GLangManager* Langs=GALILEIApp->GetManager<GLangManager>("Lang");
 	
 	try
 	{
-		RString Sql("SELECT groupid,langid,updated,calculated FROM groups");
+		RString Sql("SELECT groupid,updated,calculated FROM groups");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";
 		if(Filtering)
@@ -1906,10 +1771,7 @@ void GStorageMySQL::LoadGroups(void)
 		RQuery Groups(Db,Sql);
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
-			lang=Langs->GetPlugIn(Groups[1],false);
-			if(!lang)
-				continue;
-			group=new GGroup(atoi(Groups[0]),lang,true,Groups[2],Groups[3]);
+			group=new GGroup(atoi(Groups[0]),true,Groups[1],Groups[2]);
 			group->SetState(osNeedLoad);
 			Session->InsertGroup(group);
 		}
@@ -1923,18 +1785,17 @@ void GStorageMySQL::LoadGroups(void)
 
 
 //------------------------------------------------------------------------------
-GGroup* GStorageMySQL::LoadGroup(GLang* lang,unsigned int groupid)
+GGroup* GStorageMySQL::LoadGroup(unsigned int groupid)
 {
 	try
 	{
-		if(!lang)
-			return(0);
-		RQuery Group(Db,"SELECT groupid,langid,updated,calculated FROM groups WHERE groupid="+RString::Number(groupid)+" AND langid='"+lang->GetCode()+"'");
+		RQuery Group(Db,"SELECT groupid,updated,calculated FROM groups WHERE groupid="+RString::Number(groupid));
 		Group.Start();
 		if(!Group.GetNb())
 			return(0);
-		GGroup* group=new GGroup(atoi(Group[0]),lang,true,Group[2],Group[3]);
+		GGroup* group=new GGroup(atoi(Group[0]),true,Group[1],Group[2]);
 		group->SetState(osNeedLoad);
+		
 		return(group);
 	}
 	catch(RMySQLError e)
@@ -1955,8 +1816,6 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 	unsigned int subprofid;
 	unsigned int groupid;
 	unsigned int v;
-	GLang* lang;
-	GLangManager* Langs=GALILEIApp->GetManager<GLangManager>("Lang");
 	
 	try
 	{
@@ -1969,7 +1828,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 		grps=new GGroupsHistory(historicID, date[0]);
 
 		// Read the groupment.
-		sSql="SELECT groupid,subprofileid,lang,date FROM historicgroups "
+		sSql="SELECT groupid,profileid,date FROM historicgroups "
 		     "WHERE historicID="+Num(historicID)+" ORDER by historicID,groupid";
 		RQuery grquery(Db,sSql);
 		for(grquery.Start(),grp=0;!grquery.End();grquery.Next())
@@ -1977,29 +1836,26 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 			// Read Group
 			v=atoi(grquery[0]);
 
-			//get lang
-			lang=Langs->GetPlugIn(grquery[2]);
-
 			// If group id changed -> new group needed
 			if((v!=groupid))
 			{
 				groupid=v;
-				grp=new GGroupHistory(groupid,lang, grps);
+				grp=new GGroupHistory(groupid,grps);
 				//insert group in the container of groups.
 				grps->InsertPtr(grp);
 			}
 
-			// Create the historic subprofile and add it to the group
+			// Create the historic profile and add it to the group
 			subprofid=atoi(grquery[1]);
-			historicsubprof=new GWeightInfosHistory(Session->GetSubProfile(0,subprofid),100);
+			historicsubprof=new GWeightInfosHistory(Session->GetProfile(0,subprofid),100);
 			grp->AddSubProfile(historicsubprof);
 			historicsubprof->SetParent(grp);
 
 			// Fill the vector of the subprofile
 			
 			
-			sSql="SELECT conceptid,typeid,weight FROM historicsubprofiles "
-			     "WHERE subprofileid="+Num(subprofid)+" AND historicID="+Num(historicID)+" ORDER BY typeid,conceptid";
+			sSql="SELECT conceptid,typeid,weight FROM historicprofiles "
+			     "WHERE profileid="+Num(subprofid)+" AND historicID="+Num(historicID)+" ORDER BY typeid,conceptid";
 			GConceptType* type;
 			size_t tid=0,i;
 			RQuery sel(Db,sSql);
@@ -2104,9 +1960,9 @@ void GStorageMySQL::UpdateGroups(unsigned int subid)
 {
 	try
 	{
-		RQuery Up(Db,"UPDATE groups,subprofiles SET groups.updated=CURDATE() "
-	    	         "WHERE groups.groupid=subprofiles.groupid AND "
-	        	     "subprofiles.subprofileid="+Num(subid));
+		RQuery Up(Db,"UPDATE groups,profiles SET groups.updated=CURDATE() "
+	    	         "WHERE groups.groupid=profiles.groupid AND "
+	        	     "profiles.profileid="+Num(subid));
 	}
 	catch(RMySQLError e)
 	{
@@ -2122,9 +1978,9 @@ void GStorageMySQL::AssignId(GGroup* grp)
 	try
 	{
 		// Reserved an identificator
-		RString sSql="INSERT INTO groups(langid,groupid) "
-		             "SELECT "+Lang(grp->GetLang())+",IFNULL(MAX(groupid),0)+1 "
-		             "FROM groups WHERE langid="+Lang(grp->GetLang());
+		RString sSql="INSERT INTO groups(groupid) "
+		             "SELECT IFNULL(MAX(groupid),0)+1 "
+		             "FROM groups";
 		RQuery Insert(Db,sSql);
 
 		// Get the id and assign it to the group
@@ -2142,36 +1998,36 @@ void GStorageMySQL::AssignId(GGroup* grp)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveGroups(GLang* lang)
+void GStorageMySQL::SaveGroups(void)
 {
 	RCursor<GWeightInfo> WordCur;
 	R::RCursor<GGroup> GroupsCursor;
 	RString sSql;
-	RCursor<GSubProfile> Sub;
+	RCursor<GProfile> Sub;
 
 	try
 	{
 		// Delete groups and goups info
-		RQuery delete1(Db,"DELETE FROM groupsbyconcepts WHERE groupid=(SELECT groupid FROM groups WHERE langid="+Lang(lang)+")");
-		RQuery delete2(Db,"DELETE FROM groups WHERE langid="+Lang(lang));
+		RQuery delete1(Db,"DELETE FROM groupsbyconcepts;");
+		RQuery delete2(Db,"DELETE FROM groups");
 		
 
-		GroupsCursor=Session->GetGroups(lang);
+		GroupsCursor=Session->GetGroups();
 		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
 		{
-			sSql="INSERT INTO groups(groupid,langid,updated,calculated) "
-			     "VALUES("+Num(GroupsCursor()->GetId())+","+Lang(lang)+","+
+			sSql="INSERT INTO groups(groupid,updated,calculated) "
+			     "VALUES("+Num(GroupsCursor()->GetId())+","+
 			     RQuery::SQLValue(GroupsCursor()->GetUpdated())+","+
 			     RQuery::SQLValue(GroupsCursor()->GetComputed())+")";
 			RQuery insert1(Db,sSql);
 
-			// Save SubProfiles infos
-			Sub=GroupsCursor()->GetSubProfiles();
+			// Save Profiles infos
+			Sub=GroupsCursor()->GetProfiles();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
-				sSql="UPDATE subprofiles SET groupid="+Num(GroupsCursor()->GetId())+","
+				sSql="UPDATE profiles SET groupid="+Num(GroupsCursor()->GetId())+","
 				     "attached="+RQuery::SQLValue(Sub()->GetAttached())+" "
-				     "WHERE subprofileid="+Num(Sub()->GetId());
+				     "WHERE profileid="+Num(Sub()->GetId());
 				RQuery update(Db,sSql);
 			}
 
@@ -2198,7 +2054,7 @@ void GStorageMySQL::SaveGroups(GLang* lang)
 void GStorageMySQL::SaveGroupsHistory(void)
 {
 	R::RCursor<GGroup> GroupsCursor;
-	RCursor<GSubProfile> Sub;
+	RCursor<GProfile> Sub;
 	unsigned int historicID;
 	RString sSql;
 
@@ -2213,20 +2069,16 @@ void GStorageMySQL::SaveGroupsHistory(void)
 		historicID++;
 
 		// Save the groups in history
-		RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
-		for(Langs.Start();!Langs.End();Langs.Next())
+		GroupsCursor=Session->GetGroups();
+		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
 		{
-			GroupsCursor=Session->GetGroups(Langs());
-			for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
+			Sub=GroupsCursor()->GetProfiles();
+			for(Sub.Start();!Sub.End();Sub.Next())
 			{
-				Sub=GroupsCursor()->GetSubProfiles();
-				for(Sub.Start();!Sub.End();Sub.Next())
-				{
-					sSql="INSERT INTO historicgroups "
-					     "SET date=CURDATE(), historicID="+Num(historicID)+",groupid="+Num(GroupsCursor()->GetId())+
-						 ",subprofileid="+Num(Sub()->GetId())+",lang="+Lang(GroupsCursor()->GetLang());
-					RQuery history(Db,sSql);
-				}
+				sSql="INSERT INTO historicgroups "
+				     "SET date=CURDATE(), historicID="+Num(historicID)+",groupid="+Num(GroupsCursor()->GetId())+
+					 ",profileid="+Num(Sub()->GetId());
+				RQuery history(Db,sSql);
 			}
 		}
 

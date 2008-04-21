@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Header.
 
-	Copyright 2001-2007 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -382,7 +382,7 @@ public:
 
 
 	//-----------------------------------------------------
-	/** @name Users/Profiles/Subprofiles Methods
+	/** @name Users/Profiles Methods
 	*/
 	// @{
 
@@ -410,12 +410,6 @@ public:
 	virtual GProfile* LoadProfile(unsigned int profileid);
 
 	/**
-	* Method that load a subprofile that is stored.
-	* @param subprofileid    Identificator of the subprofile.
-	*/
-	virtual GSubProfile* LoadSubProfile(unsigned int subprofileid);
-
-	/**
 	* Load the list of suggestions for the profiles for a given test.
 	* @param name            Name of the test.
 	* @param res             Container that will hold the suggestions.
@@ -425,9 +419,8 @@ public:
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identificator of the document.
-	* @param lang            Language of the document.
 	*/
-	virtual void UpdateProfiles(unsigned int docid,GLang* lang);
+	virtual void UpdateProfiles(unsigned int docid);
 
 	/**
 	* Assign an identifier to a new user.
@@ -454,30 +447,17 @@ public:
 	virtual void SaveProfile(GProfile* prof);
 	
 	/**
-	* Save Subprofiles in histoty
+	* Save profiles in histoty
 	* @param sub            Subprofile to save.
 	* @param historicID     Identificator of the historic.
 	*/
-	virtual void SaveSubProfileInHistory(GSubProfile* sub, unsigned int historicID);
+	virtual void SaveProfileInHistory(GProfile* sub, unsigned int historicID);
 
 	/**
 	* Save profiles in history
 	* @param historicID      Identificator of the historic.
 	*/
 	virtual void SaveHistoricProfiles(unsigned int historicID);
-
-	/**
-	* Assign an identifier to a new subprofile.
-	* @param sub             Subprofile.
-	*/
-	virtual void AssignId(GSubProfile* sub);
-
-	/**
-	* Save information about the groupement (Group and attachment date) of
-	* a subprofile. For a complete save, call Save(const GProfile*).
-	* @param sub             Subprofile to save.
-	*/
-	virtual void SaveSubProfile(GSubProfile* sub);
 
 	/**
 	* Add a suggestion for a given profile and a given test.
@@ -492,15 +472,14 @@ public:
 	* Add an assessment for a given profile and document.
 	* @param p               Identificator of the profile.
 	* @param d               Identificator of the document.
-	* @param lang            Language of the document.
 	* @param assess          Feedback.
 	* @param date            Date on the last feedback.
 	* @param computed        Date on the last computation of the document.
 	*/
-	virtual void AddFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed);
+	virtual void AddFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date,R::RDate computed);
 
 
-	// @} Users/Profiles/Subprofiles
+	// @} Users/Profiles
 
 
 	//-----------------------------------------------------
@@ -517,7 +496,7 @@ public:
 	* Method that load a group that is stored.
 	* @param groupid         Identificator of the group.
 	*/
-	virtual GGroup* LoadGroup(GLang* lang,unsigned int groupid);
+	virtual GGroup* LoadGroup(unsigned int groupid);
 
 	/**
 	* Load an historic groups.
@@ -559,9 +538,8 @@ public:
 
 	/**
 	* Save the groups of the session.
-	* @param lang            Define the language of the groups to save.
 	*/
-	virtual void SaveGroups(GLang* lang);
+	virtual void SaveGroups(void);
 
 	/**
 	* Save the groups in history.
