@@ -115,9 +115,9 @@ public:
 	*/
 	GStatSimElements(GSession* ses,bool same,R::RTextFile* f);
 
-	virtual R::RCursor<E1> GetE1Cursor(GSubject* sub,GLang* lang)=0;
+	virtual R::RCursor<E1> GetE1Cursor(GSubject* sub)=0;
 
-	virtual R::RCursor<E2> GetE2Cursor(GSubject* sub,GLang* lang)=0;
+	virtual R::RCursor<E2> GetE2Cursor(GSubject* sub)=0;
 
 	/**
 	* Compute the similarities statistics.
@@ -126,7 +126,7 @@ public:
 
 	/**
 	*/
-	void ComputeSubject(GStatsCalc* calc,GSubject* sub,GLang* lang,RXMLStruct* xml,RXMLTag* parent);
+	void ComputeSubject(GStatsCalc* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent);
 
 	/**
 	* Destructor for the main view.
@@ -153,7 +153,7 @@ template<class E1,class E2>
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::ComputeSubject(GStatsCalc* calc,GSubject* sub,GLang* lang,RXMLStruct* xml,RXMLTag* parent)
+	void GStatSimElements<E1,E2>::ComputeSubject(GStatsCalc* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent)
 {
 	double SimIntra;
 	double SimExtra;
@@ -178,10 +178,9 @@ template<class E1,class E2>
 	MaxExtra=-1.1;
 
 	// Go through each element of this subject
-	R::RCursor<E1> Cur1(GetE1Cursor(sub,lang));
+	R::RCursor<E1> Cur1(GetE1Cursor(sub));
 	for(Cur1.Start();!Cur1.End();Cur1.Next())
 	{
-		if(Cur1()->GetLang()!=lang) continue;
 		if(!Cur1()->IsDefined()) continue;
 
 		// Go trough the other subjects
@@ -192,15 +191,14 @@ template<class E1,class E2>
 			Same=(sub==Subs2());
 
 			// Go through to other elements
-			R::RCursor<E2> Cur2(GetE2Cursor(Subs2(),lang));
+			R::RCursor<E2> Cur2(GetE2Cursor(Subs2()));
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 			{
 				// If not same language, not defined or same object -> skip it
-				if(Cur2()->GetLang()!=lang) continue;
 				if(!Cur2()->IsDefined()) continue;
 				if(Same&&(Cur1()->GetId()==Cur2()->GetId())) continue;
 				
-				Measure->Measure(0,lang,Cur1()->GetId(),Cur2()->GetId(),&tmp);
+				Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
 				//cout<<"Sim("<<Cur1()->GetId()<<","<<Cur2()->GetId()<<")="<<tmp<<endl;
 				if(Same)
 				{
@@ -256,7 +254,7 @@ template<class E1,class E2>
 		{
 			if(WriteTitle)
 			{
-				(*File)<<"  ---------"<<lang->GetName()<<"-----"<<endl;
+				(*File)<<"  --------------"<<endl;
 				RString n1("Name"); n1.SetLen(25," ");
 				RString n2("Min Intra"); n2.SetLen(15," ");
 				RString n3("Mean Intra"); n3.SetLen(15," ");
@@ -284,7 +282,7 @@ template<class E1,class E2>
 	// Go trough Subtopic
 	R::RCursor<GSubject> Cur(sub->GetNodes());
 	for(Cur.Start();!Cur.End();Cur.Next())
-		ComputeSubject(calc,Cur(),lang,xml,Tag);
+		ComputeSubject(calc,Cur(),xml,Tag);
 
 	if(Tag->IsEmpty())
 		xml->DeleteTag(Tag);
@@ -295,62 +293,50 @@ template<class E1,class E2>
 template<class E1,class E2>
 	void GStatSimElements<E1,E2>::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 {
-	RXMLTag* LangTag;
-
-
 	// Go through the languages
-	R::RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
 	R::RCursor<GSubject> Subs1(Session->GetSubjects()->GetTop()->GetNodes());
-	for(Langs.Start();!Langs.End();Langs.Next())
-	{		
-		WriteTitle=true;
-		NbElements=0;
-		LangTag=new RXMLTag(Langs()->GetName());
-		xml->AddTag(tag,LangTag);
+	WriteTitle=true;
+	NbElements=0;
 
-		// Initialization
-		Overlap=MeanExtra=MeanIntra=0.0;
+	// Initialization
+	Overlap=MeanExtra=MeanIntra=0.0;
 
-		// Go trough the subjects
-		for(Subs1.Start();!Subs1.End();Subs1.Next())
-			ComputeSubject(calc,Subs1(),Langs(),xml,LangTag);
+	// Go trough the subjects
+	for(Subs1.Start();!Subs1.End();Subs1.Next())
+		ComputeSubject(calc,Subs1(),xml,tag);
 
-		// Compute elements statistics
-		if(NbElements)
+	// Compute elements statistics
+	if(NbElements)
+	{
+		MeanIntra/=NbElements;
+		MeanExtra/=NbElements;
+		if(MeanIntra==0.0)
+			Rie=0.0;
+		else
+			Rie=(MeanIntra-MeanExtra)/MeanIntra;
+		Overlap/=NbElements;
+
+		calc->AddTag(xml,tag,"Mean Intra",MeanIntra);
+		calc->AddTag(xml,tag,"Mean Extra",MeanExtra);
+		calc->AddTag(xml,tag,"Rie",Rie);
+		calc->AddTag(xml,tag,"Overlap",Overlap);
+		
+		if(MinSim)
 		{
-			MeanIntra/=NbElements;
-			MeanExtra/=NbElements;
-			if(MeanIntra==0.0)
-				Rie=0.0;
-			else
-				Rie=(MeanIntra-MeanExtra)/MeanIntra;
-			Overlap/=NbElements;
-
-			calc->AddTag(xml,LangTag,"Mean Intra",MeanIntra);
-			calc->AddTag(xml,LangTag,"Mean Extra",MeanExtra);
-			calc->AddTag(xml,LangTag,"Rie",Rie);
-			calc->AddTag(xml,LangTag,"Overlap",Overlap);
-			
-			if(MinSim)
-			{
-				double tmp;
-				Measure->Info(0,Langs(),&tmp);
-				calc->AddTag(xml,LangTag,"Min Measure",tmp);
-			}
-			if(File)
-			{
-				RString n1("Global"); n1.SetLen(25," ");
-				RString n2("------"); n2.SetLen(15," ");
-				RString n3(RString::Number(MeanIntra,"%.5E")); n3.SetLen(15," ");
-				RString n4("------"); n4.SetLen(15," ");
-				RString n5(RString::Number(MeanExtra,"%.5E")); n5.SetLen(15," ");
-				RString n6(RString::Number(Rie)); n6.SetLen(15," ");
-				RString n7(RString::Number(Overlap,"%.5E")); n7.SetLen(15," ");
-				(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl<<endl;
-			}
+			double tmp;
+			Measure->Info(0,&tmp);
+			calc->AddTag(xml,tag,"Min Measure",tmp);
 		}
-
-		if(LangTag->IsEmpty())
-			xml->DeleteTag(LangTag);
+		if(File)
+		{
+			RString n1("Global"); n1.SetLen(25," ");
+			RString n2("------"); n2.SetLen(15," ");
+			RString n3(RString::Number(MeanIntra,"%.5E")); n3.SetLen(15," ");
+			RString n4("------"); n4.SetLen(15," ");
+			RString n5(RString::Number(MeanExtra,"%.5E")); n5.SetLen(15," ");
+			RString n6(RString::Number(Rie)); n6.SetLen(15," ");
+			RString n7(RString::Number(Overlap,"%.5E")); n7.SetLen(15," ");
+			(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl<<endl;
+		}
 	}
 }

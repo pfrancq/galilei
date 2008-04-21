@@ -6,7 +6,7 @@
 
 	Groups Evaluation - Implementation.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -47,7 +47,7 @@
 #include <gsubject.h>
 #include <gsubjects.h>
 #include <gdoc.h>
-#include <gsubprofile.h>
+#include <gprofile.h>
 #include <gmeasure.h>
 #include <ggalileiapp.h>
 using namespace GALILEI;
@@ -71,20 +71,20 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // Statistics between documents
-class GStatSimDoc : public GStatSimElements<GDoc,GDoc>
+class GStatSimDocs : public GStatSimElements<GDoc,GDoc>
 {
 public:
-	GStatSimDoc(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,true,f)
+	GStatSimDocs(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,true,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
 	}
 
-	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub,GLang*)
+	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
 		return(R::RCursor<GDoc>(sub->GetDocs()));
 	}
 
-	virtual R::RCursor<GDoc> GetE2Cursor(GSubject* sub,GLang*)
+	virtual R::RCursor<GDoc> GetE2Cursor(GSubject* sub)
 	{
 		return(R::RCursor<GDoc>(sub->GetDocs()));
 	}
@@ -92,24 +92,24 @@ public:
 
 
 //------------------------------------------------------------------------------
-// Statistics between subprofiles
-class GStatSimSubProf : public GStatSimElements<GSubProfile,GSubProfile>
+// Statistics between profiles
+class GStatSimProfiles : public GStatSimElements<GProfile,GProfile>
 {
 public:
 
-	GStatSimSubProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GSubProfile>(ses,true,f)
+	GStatSimProfiles(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GProfile>(ses,true,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
 	}
 
-	virtual R::RCursor<GSubProfile> GetE1Cursor(GSubject* sub,GLang* lang)
+	virtual R::RCursor<GProfile> GetE1Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GSubProfile>(sub->GetSubProfiles(lang)));
+		return(R::RCursor<GProfile>(sub->GetProfiles()));
 	}
 
-	virtual R::RCursor<GSubProfile> GetE2Cursor(GSubject* sub,GLang* lang)
+	virtual R::RCursor<GProfile> GetE2Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GSubProfile>(sub->GetSubProfiles(lang)));
+		return(R::RCursor<GProfile>(sub->GetProfiles()));
 	}
 };
 
@@ -125,12 +125,12 @@ public:
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Groups Similarities");
 	}
 
-	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub,GLang*)
+	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
 		return(sub->GetDocs());
 	}
 
-	virtual R::RCursor<GGroup> GetE2Cursor(GSubject* sub,GLang*)
+	virtual R::RCursor<GGroup> GetE2Cursor(GSubject* sub)
 	{
 		return(sub->GetGroups());
 	}
@@ -139,44 +139,44 @@ public:
 
 //------------------------------------------------------------------------------
 // Statistics between documents/profiles
-class GStatSimDocProf : public GStatSimElements<GDoc,GSubProfile>
+class GStatSimDocProf : public GStatSimElements<GDoc,GProfile>
 {
 public:
 
-	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GSubProfile>(ses,false,f)
+	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GProfile>(ses,false,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 	}
 
-	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub,GLang*)
+	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
 		return(R::RCursor<GDoc>(sub->GetDocs()));
 	}
 
-	virtual R::RCursor<GSubProfile> GetE2Cursor(GSubject* sub,GLang* lang)
+	virtual R::RCursor<GProfile> GetE2Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GSubProfile>(sub->GetSubProfiles(lang)));
+		return(R::RCursor<GProfile>(sub->GetProfiles()));
 	}
 };
 
 
 //------------------------------------------------------------------------------
 // Statistics between groups and profiles
-class GStatSimProfGrp : public GStatSimElements<GSubProfile,GGroup>
+class GStatSimProfGrp : public GStatSimElements<GProfile,GGroup>
 {
 public:
 
-	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GSubProfile,GGroup>(ses,false,f)
+	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GGroup>(ses,false,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Groups Similarities");
 	}
 
-	virtual R::RCursor<GSubProfile> GetE1Cursor(GSubject* sub,GLang* lang)
+	virtual R::RCursor<GProfile> GetE1Cursor(GSubject* sub)
 	{
-		return(sub->GetSubProfiles(lang));
+		return(sub->GetProfiles());
 	}
 
-	virtual R::RCursor<GGroup> GetE2Cursor(GSubject* sub,GLang*)
+	virtual R::RCursor<GGroup> GetE2Cursor(GSubject* sub)
 	{
 		return(sub->GetGroups());
 	}
@@ -260,7 +260,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 	{
 		tag2=new RXMLTag("Documents");
 		xml->AddTag(tag,tag2);
-		GStatSimDoc Stat(Session,Details);
+		GStatSimDocs Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(ProfDoc)
@@ -281,7 +281,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 	{
 		tag2=new RXMLTag("Profiles");
 		xml->AddTag(tag,tag2);
-		GStatSimSubProf Stat(Session,Details);
+		GStatSimProfiles Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
 	if(SameDocProf)
