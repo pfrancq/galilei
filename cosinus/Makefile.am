@@ -1,17 +1,17 @@
 INCLUDES = $(all_includes) -I$(top_srcdir)
-lib_LTLIBRARIES =  libsubprofilessimscosinus.la \
+lib_LTLIBRARIES =  libprofilessimscosinus.la \
 		libprofilesagree.la \
 		libprofilesdisagree.la \
-		libsubprofilesdocssimscosinus.la \
+		libprofilesdocssimscosinus.la \
 		libgroupsdocssimscosinus.la \
-		libsubprofilesgroupssimscosinus.la     \
+		libprofilesgroupssimscosinus.la     \
 		libdocsagree.la \
 		libdocsdisagree.la \
 		libdocssimscosinus.la
 
-libsubprofilessimscosinus_la_LDFLAGS = -module -avoid-version
-libsubprofilessimscosinus_la_SOURCES = ggenericsims.cpp gsubprofilessims.cpp
-libsubprofilessimscosinus_la_LIBADD=
+libprofilessimscosinus_la_LDFLAGS = -module -avoid-version
+libprofilessimscosinus_la_SOURCES = ggenericsims.cpp gsubprofilessims.cpp
+libprofilessimscosinus_la_LIBADD=
 
 libprofilesagree_la_LDFLAGS = -module -avoid-version
 libprofilesagree_la_SOURCES = gprofilesagree.cpp
@@ -33,17 +33,17 @@ libdocsdisagree_la_LDFLAGS = -module -avoid-version
 libdocsdisagree_la_SOURCES = gdocsdisagree.cpp
 libdosdisagree_la_LIBADD=
 
-libsubprofilesdocssimscosinus_la_LDFLAGS = -module -avoid-version
-libsubprofilesdocssimscosinus_la_SOURCES =  ggenericsims.cpp gsubprofilesdocssims.cpp
-libsubprofilesdocssimscosinus_la_LIBADD=
+libprofilesdocssimscosinus_la_LDFLAGS = -module -avoid-version
+libprofilesdocssimscosinus_la_SOURCES =  ggenericsims.cpp gsubprofilesdocssims.cpp
+libprofilesdocssimscosinus_la_LIBADD=
 
 libgroupsdocssimscosinus_la_LDFLAGS = -module -avoid-version
 libgroupsdocssimscosinus_la_SOURCES = ggenericsims.cpp ggroupsdocssims.cpp
 libgroupsdocssimscosinus_la_LIBADD=
 
-libsubprofilesgroupssimscosinus_la_LDFLAGS = -module -avoid-version
-libsubprofilesgroupssimscosinus_la_SOURCES = ggenericsims.cpp gsubprofilesgroupssims.cpp
-libsubprofilesgroupssimscosinus_la_LIBADD=
+libprofilesgroupssimscosinus_la_LDFLAGS = -module -avoid-version
+libprofilesgroupssimscosinus_la_SOURCES = ggenericsims.cpp gsubprofilesgroupssims.cpp
+libprofilesgroupssimscosinus_la_LIBADD=
 
 SUBDIRS = $(FRONTEND)
 

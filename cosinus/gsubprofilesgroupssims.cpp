@@ -37,22 +37,19 @@
 
 //------------------------------------------------------------------------------
 //
-// class GSubProfilesGroupsSims
+// class GProfilesGroupsSims
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-double GSubProfilesGroupsSims::Compute(GLang* lang,size_t id1,size_t id2)
+double GProfilesGroupsSims::Compute(size_t id1,size_t id2)
 {
-	GSubProfile* sub=Session->GetSubProfile(lang,id1,true,false);
-	GGroup* grp=Session->GetGroup(lang,id2,true,false);
-
-	if(grp->GetLang()!=sub->GetLang())
-		throw GException("Cannot compare a document and group of a different language");
-	return(sub->SimilarityIFF2(*grp,otSubProfile,otGroup));	
+	GProfile* sub=Session->GetProfile(id1,true,false);
+	GGroup* grp=Session->GetGroup(id2,true,false);
+	return(sub->SimilarityIFF2(*grp,otProfile,otGroup));	
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("SubProfiles/Groups Similarities","Cosinus Method",GSubProfilesGroupsSims)
+CREATE_MEASURE_FACTORY("Profiles/Groups Similarities","Cosinus Method",GProfilesGroupsSims)
 

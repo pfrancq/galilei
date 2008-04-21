@@ -34,7 +34,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggenericsims.h>
-#include <gsubprofile.h>
+#include <gprofile.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
 using namespace GALILEI;
@@ -44,48 +44,48 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GSubProfilesSims
+//  GProfilesSims
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GSubProfilesSims : public GDiffSims
+class GProfilesSims : public GDiffSims
 {
 public:
-	GSubProfilesSims(GFactoryMeasure* fac);
-	void* GetElement(GLang* lang,size_t id);
-	size_t GetMaxElementsId(GLang* lang);	
-	size_t GetNbElements(GLang* lang);
+	GProfilesSims(GFactoryMeasure* fac);
+	void* GetElement(size_t id);
+	size_t GetMaxElementsId(void);	
+	size_t GetNbElements(void);
 };
 
 
 //------------------------------------------------------------------------------
-GSubProfilesSims::GSubProfilesSims(GFactoryMeasure* fac)
-	: GDiffSims(fac,true,otSubProfile)
+GProfilesSims::GProfilesSims(GFactoryMeasure* fac)
+	: GDiffSims(fac,true,otProfile)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void* GSubProfilesSims::GetElement(GLang* lang,size_t id)
+void* GProfilesSims::GetElement(size_t id)
 {
-	return(Session->GetSubProfile(lang,id,false));
+	return(Session->GetProfile(id,false));
 } 
 
 
 //------------------------------------------------------------------------------
-size_t GSubProfilesSims::GetMaxElementsId(GLang* lang)
+size_t GProfilesSims::GetMaxElementsId(void)
 {
-	return(Session->GetMaxSubProfileId(lang));
+	return(Session->GetMaxProfileId());
 }
 
 
 //------------------------------------------------------------------------------
-size_t GSubProfilesSims::GetNbElements(GLang* lang)
+size_t GProfilesSims::GetNbElements(void)
 {
-	return(Session->GetNbSubProfiles(lang));
+	return(Session->GetNbProfiles());
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("SubProfiles Similarities","Cosinus Method",GSubProfilesSims)
+CREATE_MEASURE_FACTORY("Profiles Similarities","Cosinus Method",GProfilesSims)

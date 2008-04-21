@@ -6,7 +6,7 @@
 
 	Similarities between documents and groups - Implementation.
 
-	Copyright 2005-2007 by the Université Libre de Bruxelles.
+	Copyright 2005-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -103,15 +103,11 @@ class GGenericSims::GElementSims
 {
 public:
 	R::RContainer<GSims,true,true>* Sims;             // Similarities.
-	GLang* Lang;                                      // Language.
 	GGenericSims* Manager;                            // Owner.
 	bool NeedUpdate;
 
 	// Constructor and Compare functions.
-	GElementSims(GGenericSims* manager,GLang* l);
-	int Compare(const GLang* l) const {return(Lang->Compare(l));}
-	int Compare(const GLang& l) const {return(Lang->Compare(l));}
-	int Compare(const GElementSims& sim) const {return(Lang->Compare(*sim.Lang));}
+	GElementSims(GGenericSims* manager);
 
 	// Analyse the similarity of the two subprofiles and insert when necessary.
 	void AnalyseSim(GSims* sim,const GDoc* doc,const GGroup* grp);
@@ -133,8 +129,8 @@ public:
 
 
 //------------------------------------------------------------------------------
-GGenericSims::GElementSims::GElementSims(GGenericSims* manager,GLang* l)
-	: Sims(0), Lang(l), Manager(manager), NeedUpdate(true)
+GGenericSims::GElementSims::GElementSims(GGenericSims* manager)
+	: Sims(0), Manager(manager), NeedUpdate(true)
 {
 	// if memory is false, we don't stock a container of similarities.
 	// sims will be re-calculated eacht time.
@@ -159,7 +155,7 @@ double GGenericSims::GElementSims::GetSim(size_t id1,size_t id2)
 	if(s2->State == osModified)
 	{
 		s2->State = osUpToDate;
-		s2->Sim=Manager->Compute(Lang,id1,id2);
+		s2->Sim=Manager->Compute(id1,id2);
 		if(fabs(s2->Sim)<Manager->NullSimLevel) s2->Sim=0.0;
 		return (s2->Sim);
 	}
@@ -178,7 +174,7 @@ void GGenericSims::GElementSims::Update(void)
 
 	//initialize the container of GSims (calculate size)
 	if(!Sims)
-		Sims=new RContainer<GSims,true,true>(Manager->GetMaxId1(Lang),500);
+		Sims=new RContainer<GSims,true,true>(Manager->GetMaxId1(),500);
 
 	RCursor<GSims> Cur1(*Sims);
 	for(Cur1.Start();!Cur1.End();Cur1.Next())
@@ -201,14 +197,11 @@ void GGenericSims::GElementSims::Update(void)
 
 //------------------------------------------------------------------------------
 GGenericSims::GGenericSims(GFactoryMeasure* fac,bool d,bool g,bool s)
-	: GMeasure(fac), GSignalHandler(), Sims(10,5), Memory(false), Doc(d), Group(g), SubProfile(s)
+	: GMeasure(fac), GSignalHandler(), Sims(0), Memory(false), Doc(d), Group(g), SubProfile(s)
 {
 	GSession::AddHandler(this);
 	if(!Memory) return;
-	Sims.Clear();
-	R::RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
-	for(Langs.Start();!Langs.End();Langs.Next())
-		Sims.InsertPtr(new GElementSims(this,Langs()));
+	Sims=new GElementSims(this);
 }
 
 
@@ -225,84 +218,50 @@ void GGenericSims::Measure(unsigned int measure,...)
 {
 	va_list ap;
 	va_start(ap,measure);
-	GLang* lang=va_arg(ap,GLang*);
 	unsigned int id1=va_arg(ap,unsigned int);
 	unsigned int id2=va_arg(ap,unsigned int);
 	double* res=va_arg(ap,double*);
 
 	if(!Memory)
 	{
-		(*res)=Compute(lang,id1,id2);
+		(*res)=Compute(id1,id2);
 		va_end(ap);
 		return;
 	}
 
 	// Get the language
-	GElementSims* Sim=Sims.GetPtr<GLang*>(lang);
-	if(!Sim)
-		throw GException("Language not defined");
-	if(Sim->NeedUpdate)
-		Sim->Update();
+	if(Sims->NeedUpdate)
+		Sims->Update();
 
-	(*res)=Sim->GetSim(id1,id2);
+	(*res)=Sims->GetSim(id1,id2);
 	va_end(ap);
-}
-
-
-//------------------------------------------------------------------------------
-void GGenericSims::Event(GLang* lang, tEvent event)
-{
-	if(!Memory) return;
-	switch(event)
-	{
-		case eObjNew:
-			Sims.InsertPtr(new GElementSims(this,lang));
-			break;
-		case eObjDelete:
-			Sims.DeletePtr(*lang);
-			break;
-		default:
-			break;
-	}
 }
 
 
 //------------------------------------------------------------------------------
 void GGenericSims::Event(GDoc* doc, tEvent)
 {
-	if((!Memory)||(!Doc)) return;
-	if(!doc->GetLang())
-		return;
-	GElementSims* Sim=Sims.GetPtr<const GLang*>(doc->GetLang());
-	if(!Sim)
-		throw GException("Language not defined");
-	Sim->NeedUpdate=true;
+	if((!Memory)||(!doc)) return;
+	if(Sims)
+		Sims->NeedUpdate=true;
 }
 
 
 //------------------------------------------------------------------------------
 void GGenericSims::Event(GGroup* grp, tEvent)
 {
-	if((!Memory)||(!Group)) return;
-	if(!grp->GetLang())
-		return;
-	GElementSims* Sim=Sims.GetPtr<const GLang*>(grp->GetLang());
-	if(!Sim)
-		throw GException("Language not defined");
-	Sim->NeedUpdate=true;
+	if((!Memory)||(!grp)) return;
+	if(Sims)
+		Sims->NeedUpdate=true;
 }
 
 
 //------------------------------------------------------------------------------
-void GGenericSims::Event(GSubProfile* sub, tEvent)
+void GGenericSims::Event(GProfile* sub, tEvent)
 {
-	if((!Memory)||(!SubProfile)) return;
-	if(!sub->GetLang())
-		return;
-	GElementSims* Sim=Sims.GetPtr<const GLang*>(sub->GetLang());
-	if(!Sim)
-		throw GException("Language not defined");
-	Sim->NeedUpdate=true;
+	if((!Memory)||(!sub)) return;
+	if(Sims)
+		Sims->NeedUpdate=true;
 }
 
 
@@ -317,6 +276,7 @@ void GGenericSims::CreateParams(RConfig* params)
 //------------------------------------------------------------------------------
 GGenericSims::~GGenericSims(void)
 {
+	delete Sims;
 	GSession::DeleteHandler(this);
 }
 
@@ -455,7 +415,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 
 //------------------------------------------------------------------------------
 GDiffSims::GDiffSims(GFactoryMeasure* fac,bool min,tObjType objs)
-	: GMeasure2Elements(fac,min,true,1.0,objs), Types(30)
+	: GMeasure2Elements(fac,min,1.0,objs), Types(30)
 {
 }
 
@@ -503,14 +463,14 @@ void GDiffSims::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-double GDiffSims::SimilarityIFFMV(GLang* lang)
+double GDiffSims::SimilarityIFFMV(void)
 {
 	// if one vector is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
 
 	double Sim(0.0);
-	double NbComps(GetNbElements(lang));
+	double NbComps(GetNbElements());
 	NbComps=Factor*NbComps*(NbComps-1);
 	double CommonSpace(0.0); // Suppose that the two vectors have no common spaces
 	RCursor<GWeightInfo> ptr(*vec1);
@@ -524,7 +484,6 @@ double GDiffSims::SimilarityIFFMV(GLang* lang)
 			double d=Cur()->Compute(ptr,ptr2);
 			if(d<NullLevel)
 				d=0.0;
-//			cout<<"Sim="<<d<<" -> P="<<(Factor+d)/NbComps<<endl;
 			Sim+=log10(Factor+d);
 			CommonSpace+=1.0;
 		}
@@ -547,7 +506,10 @@ double GDiffSims::SimilarityIFFMV(GLang* lang)
 //------------------------------------------------------------------------------
 double GDiffSims::SimilarityIFFL(void)
 {
-	// if one SubProfile is not defined -> the similarity must be null
+	cout<<"Problem"<<endl;
+	return(0.0);
+	
+/*	// if one SubProfile is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
 
@@ -566,22 +528,24 @@ double GDiffSims::SimilarityIFFL(void)
 	double d=Types.GetPtr(Lang)->Compute(ptr,ptr2);
 	if(fabs(d)<NullLevel)
 		d=0.0;	
-	return(d);
+	return(d);*/
 }
 
 
 //------------------------------------------------------------------------------
-double GDiffSims::Compute(GLang* lang,void* obj1,void* obj2)
+double GDiffSims::Compute(void* obj1,void* obj2)
 {
 	vec1=static_cast<GWeightInfos*>(obj1);
 	vec2=static_cast<GWeightInfos*>(obj2);
-	Lang=lang->GetDict();
-	double ret(0.0);
-	if(SimType==1)
-		ret=SimilarityIFFMV(lang);
-	if(SimType==2)
-		ret=SimilarityIFFL();
-	return(ret);
+	switch(SimType)
+	{
+		case 1:
+			return(SimilarityIFFMV());
+			break;
+		case 2:
+			return(SimilarityIFFL());
+	}
+	return(0.0);
 }
 
 

@@ -48,7 +48,7 @@
 * @author Pascal Francq and Valery Vandaele
 * @short Groups-Documents Similarities.
 */
-class GSubProfilesDocsSims : public GGenericSims
+class GProfilesDocsSims : public GGenericSims
 {
 public:
 
@@ -58,17 +58,17 @@ public:
 	* @param iff             Use Inverse Frequency Factor.
 	* @param memory      use container to stock sims?
 	*/
-	GSubProfilesDocsSims(GFactoryMeasure* fac)
+	GProfilesDocsSims(GFactoryMeasure* fac)
 		: GGenericSims(fac,true,false,true) {}
 
-	virtual double Compute(GLang* lang,size_t id1,size_t id2);
+	virtual double Compute(size_t id1,size_t id2);
 
-	virtual size_t GetMaxId1(GLang* lang) { return(Session->GetNbSubProfiles(lang));}
+	virtual size_t GetMaxId1(void) { return(Session->GetNbProfiles());}
 
 	/**
 	* Destructor of the similarities between documents and subprofiles.
 	*/
-	virtual ~GSubProfilesDocsSims(void) {}
+	virtual ~GProfilesDocsSims(void) {}
 };
 
 

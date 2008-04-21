@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupsDocsSimsCosinus.h
+	GenericSims.h
 
-	Similarities between documents and groups - Implementation.
+	GenericSims - Implementation.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2005-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -44,13 +44,13 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
+#include <gprofile.h>
 #include <gsignalhandler.h>
 #include <ggalileiapp.h>
 #include <glang.h>
 #include <gsession.h>
 #include <gdoc.h>
 #include <ggroup.h>
-#include <gsubprofile.h>
 #include <gmeasure2elements.h>
 #include <gconcepttype.h>
 using namespace GALILEI;
@@ -71,7 +71,7 @@ class GGenericSims : public GMeasure, public GSignalHandler
 	/**
 	* Similarities.
 	*/
- 	R::RContainer<GElementSims,true,true> Sims;
+ 	GElementSims* Sims;
 
 	/**
 	* Must the sims be stock in a container
@@ -102,7 +102,7 @@ public:
 	*/
 	virtual void ApplyConfig(void);
 
-	virtual double Compute(GLang* lang,size_t id1,size_t id2)=0;
+	virtual double Compute(size_t id1,size_t id2)=0;
 	
 	/**
 	* returns the minimum level for a similarity not to be null.
@@ -111,14 +111,7 @@ public:
 
 	virtual void Measure(unsigned int measure,...);
 
-	virtual size_t GetMaxId1(GLang* lang)=0;
-
-	/**
-	* A specific subprofile has changed.
-	* @param sub             Subprofile.
-	* @param event           Event.
-	*/
-	virtual void Event(GLang* lang, tEvent event);
+	virtual size_t GetMaxId1(void)=0;
 
 	/**
 	* A specific document has changed.
@@ -139,7 +132,7 @@ public:
 	* @param grp             Group.
 	* @param event           Event.
 	*/
-	virtual void Event(GSubProfile* sub, tEvent event);
+	virtual void Event(GProfile* sub, tEvent event);
 	
 	/**
 	* Create the parameters.
@@ -192,16 +185,41 @@ class GDiffSims : public GMeasure2Elements
 {
 protected:
 	
+	/**
+	 * Type of similarity:
+	 * #- 1 : Multi-vector.
+	 * #- 2 : Language only.
+	 */
 	unsigned int SimType;
 	
+	/**
+	 * Factor used for the computation of the global similarity.
+	 */
 	double Factor;
 	
+	/**
+	 * Vector corresponding to the first object.
+	 */
 	GWeightInfos* vec1;
+	
+	/**
+	 * Vector corresponding to the second object.
+	 */
 	GWeightInfos* vec2;
-	GConceptType* Lang;
+	
+	/**
+	 * Similarity to compute for the different spaces.
+	 */
 	RContainer<GSimType,true,true> Types;
 	
 public:
+	
+	/**
+	 * Initialize the similarity.
+	 * @param fact           Factory.
+	 * @param min            Minimum similarity must be computed.
+	 * @param objs           Type of objects.
+	 */
 	GDiffSims(GFactoryMeasure* fact,bool min,tObjType objs);
 	
 	/**
@@ -209,7 +227,16 @@ public:
 	*/
 	virtual void ApplyConfig(void);
 
+	/**
+	 * Connect to the session.
+	 * * @param session        Session.
+	 */
 	virtual void Connect(GSession* session);
+	
+	/**
+	 * Disconnect from the session
+	 * @param session        Session.
+	 */
 	virtual void Disconnect(GSession* session);
 	
 	/**
@@ -218,9 +245,8 @@ public:
 	* list is build using this list and a Inverse Frequence Factor (IFF) of the
 	* object type (idf, isf or ivf) for a given information entity space
 	* (language). If one of the list is empty, the similarity is null.
-	* @param lang            Language.
 	*/
-	double SimilarityIFFMV(GLang* lang);
+	double SimilarityIFFMV(void);
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
@@ -232,8 +258,14 @@ public:
 	double SimilarityIFFL(void);
 	
 	/**
+	 * Compute the similarity between two objects that must inherits from the 
+	 * class GWeightInfos.
 	 */
-	double Compute(GLang* lang,void* obj1,void* obj2);
+	double Compute(void* obj1,void* obj2);
+	
+	/**
+	 * Create the parameters.
+	 */
 	static void CreateParams(RConfig* params);
 	
 	friend class GSimType;

@@ -55,17 +55,17 @@ class GProfilesAgreement : public GMeasure2Elements
 public:
 	GProfilesAgreement(GFactoryMeasure* fac);
 	virtual void ApplyConfig(void);
-	double Compute(GLang* lang,void* obj1,void* obj2);
-	void* GetElement(GLang* lang,size_t id);
-	size_t GetMaxElementsId(GLang* lang);
-	size_t GetNbElements(GLang* lang);
+	double Compute(void* obj1,void* obj2);
+	void* GetElement(size_t id);
+	size_t GetMaxElementsId(void);
+	size_t GetNbElements(void);
 	static void CreateParams(RConfig* params);	
 };
 
 
 //------------------------------------------------------------------------------
 GProfilesAgreement::GProfilesAgreement(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,false,false,1.0,otProfile)
+	: GMeasure2Elements(fac,false,1.0,otProfile)
 {
 }
 
@@ -79,7 +79,7 @@ void GProfilesAgreement::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-double GProfilesAgreement::Compute(GLang*,void* obj1,void* obj2)
+double GProfilesAgreement::Compute(void* obj1,void* obj2)
 {
 	double nbcommon=double(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
 	if(nbcommon<MinDocs)
@@ -90,23 +90,23 @@ double GProfilesAgreement::Compute(GLang*,void* obj1,void* obj2)
 
 
 //------------------------------------------------------------------------------
-void* GProfilesAgreement::GetElement(GLang*,size_t id)
+void* GProfilesAgreement::GetElement(size_t id)
 {
 	return(Session->GetProfile(id,false));
 } 
 
 
 //------------------------------------------------------------------------------
-size_t GProfilesAgreement::GetMaxElementsId(GLang*)
+size_t GProfilesAgreement::GetMaxElementsId(void)
 {
 	return(Session->GetMaxProfileId());
 }
 
 
 //------------------------------------------------------------------------------
-size_t  GProfilesAgreement::GetNbElements(GLang* lang)
+size_t  GProfilesAgreement::GetNbElements(void)
 {
-	return(Session->GetNbSubProfiles(lang));
+	return(Session->GetNbProfiles());
 }
 
 

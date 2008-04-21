@@ -60,9 +60,9 @@ public:
 	GGroupsDocsSims(GFactoryMeasure* fac)
 		: GGenericSims(fac,true,true,false) {}
 
-	virtual double Compute(GLang* lang,size_t id1,size_t id2);
+	virtual double Compute(size_t id1,size_t id2);
 
-	virtual size_t GetMaxId1(GLang* lang) { return(Session->GetNbGroups(lang));}
+	virtual size_t GetMaxId1(void) { return(Session->GetNbGroups());}
 
 	/**
 	* Destructor of the similarities between documents and subprofiles.

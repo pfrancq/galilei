@@ -54,17 +54,17 @@ class GProfilesDisagreement : public GMeasure2Elements
 public:
 	GProfilesDisagreement(GFactoryMeasure* fac);
 	virtual void ApplyConfig(void);
-	double Compute(GLang* lang,void* obj1,void* obj2);
-	void* GetElement(GLang* lang,size_t id);
-	size_t GetMaxElementsId(GLang* lang);
-	size_t GetNbElements(GLang* lang);
+	double Compute(void* obj1,void* obj2);
+	void* GetElement(size_t id);
+	size_t GetMaxElementsId(void);
+	size_t GetNbElements(void);
 	static void CreateParams(RConfig* params);	
 };
 
 
 //------------------------------------------------------------------------------
 GProfilesDisagreement::GProfilesDisagreement(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,false,false,0.0,otProfile)
+	: GMeasure2Elements(fac,false,0.0,otProfile)
 {
 }
 
@@ -78,7 +78,7 @@ void GProfilesDisagreement::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-double GProfilesDisagreement::Compute(GLang*,void* obj1,void* obj2)
+double GProfilesDisagreement::Compute(void* obj1,void* obj2)
 {
 	double nbcommon=double(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
 	if(nbcommon<MinDocs)
@@ -89,23 +89,23 @@ double GProfilesDisagreement::Compute(GLang*,void* obj1,void* obj2)
 
 
 //------------------------------------------------------------------------------
-void* GProfilesDisagreement::GetElement(GLang*,size_t id)
+void* GProfilesDisagreement::GetElement(size_t id)
 {
 	return(Session->GetProfile(id,false));
 } 
 
 
 //------------------------------------------------------------------------------
-size_t GProfilesDisagreement::GetMaxElementsId(GLang*)
+size_t GProfilesDisagreement::GetMaxElementsId(void)
 {
 	return(Session->GetMaxProfileId());
 }
 
 
 //------------------------------------------------------------------------------
-size_t GProfilesDisagreement::GetNbElements(GLang* lang)
+size_t GProfilesDisagreement::GetNbElements(void)
 {
-	return(Session->GetNbSubProfiles(lang));
+	return(Session->GetNbProfiles());
 }
 
 
