@@ -45,7 +45,6 @@
 #include <ggroup.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <qlistviewitemtype.h>
 #include <rqt.h>
 #include <gweightinfo.h>
@@ -132,15 +131,15 @@ KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,in
 void KViewGroup::ConstructProfiles(void)
 {
 	RDate d;
-	RCursor<GSubProfile> Sub;
+	RCursor<GProfile> Sub;
 
 	Profiles->clear();
-	Sub=Group->GetSubProfiles();
+	Sub=Group->GetProfiles();
 	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
-				GSubProfile* sub=Sub();
+		GProfile* sub=Sub();
 		d=sub->GetAttached();
-		QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),Profiles,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),ToQString(d));
+		QListViewItemType* subitem=new QListViewItemType(sub,Profiles,ToQString(sub->GetName()),ToQString(sub->GetUser()->GetFullName()),ToQString(d));
 		subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find",KIcon::Small)));
 	}
 }
@@ -149,15 +148,8 @@ void KViewGroup::ConstructProfiles(void)
 //-----------------------------------------------------------------------------
 void KViewGroup::ConstructGeneral(void)
 {
-	GLang* l;
-
 	General->clear();
 	new QListViewItem(General,"ID",ToQString(RString::Number(Group->GetId())));
-	l=Group->GetLang();
-	if(l)
-		new QListViewItem(General,"Language",ToQString(l->GetName()));
-	else
-		new QListViewItem(General,"Language","Unknow");
 	new QListViewItem(General,"Status",ToQString(GetState(Group->GetState())));
 }
 
@@ -167,19 +159,19 @@ void KViewGroup::ConstructDocs(void)
 {
 	RDate d;
 	RCursor<GFdbk> docs;
-	RCursor<GSubProfile> Sub;
+	RCursor<GProfile> Sub;
 	GDoc* doc;
 
 	// Clear the Widget
 	Docs->clear();
 	OkDocs.Clear();
 
-	// Goes trough the subprofiles of the group
+	// Goes trough the profiles of the group
 	// And put in OkDocs all the relevant documents
-	Sub=Group->GetSubProfiles();
+	Sub=Group->GetProfiles();
 	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
-		GSubProfile* sub=Sub();
+		GProfile* sub=Sub();
 		docs=sub->GetFdbks();
 		for(docs.Start();!docs.End();docs.Next())
 		{

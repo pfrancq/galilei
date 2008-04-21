@@ -48,7 +48,6 @@ class QTabWidget;
 class QListView;
 namespace GALILEI
 {
-	class QGSubProfiles;
 	class GProfile;
 	class QGProfile;
 	class GInOutputBase;
@@ -107,19 +106,9 @@ class KViewProfile : public KView
 	QListView* Groups;
 
 	/**
-	* Widget to handle the Point of view of the profile.
+	* Results of the analyse.
 	*/
-	QListView* Pov;
-
-	/**
-	* Widget to handle the sub menu Point of view of the profile.
-	*/
-	QListView* PovSub;
-
-	/**
-	* Widget to handle profile information.
-	*/
-	GALILEI::QGSubProfiles* Desc;
+	QListView* Results;
 
 public:
 
@@ -148,6 +137,11 @@ public:
 	* Construct the feedbacks' widget.
 	*/
 	void ConstructFdbks(void);
+
+	/**
+	* Construct the results' widget.
+	*/
+	void ConstructResults(void);
 
 	/**
 	* Constructs the links' widget.

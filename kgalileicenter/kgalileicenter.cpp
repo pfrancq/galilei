@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Slots Part.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -52,8 +52,7 @@ using namespace R;
 // include files for GALILEI
 #include <gdocxml.h>
 #include <gstorage.h>
-#include <gsubprofile.h>
-#include <gsubprofile.h>
+#include <gprofile.h>
 #include <ggroup.h>
 #include <gsubject.h>
 #include <gsubjects.h>
@@ -792,10 +791,10 @@ void KGALILEICenterApp::slotDocsClear()
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSubProfilesClear()
+void KGALILEICenterApp::slotProfilesClear()
 {
 	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->ForceReCompute(otSubProfile);
+		Doc->GetSession()->ForceReCompute(otProfile);
 }
 
 
@@ -958,10 +957,6 @@ void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
 
 		case QListViewItemType::tGroup:
 			createClient(Doc,new KViewGroup(obj->Obj.Group,Doc,pWorkspace,"View Group",0));
-			break;
-
-		case QListViewItemType::tSubProfile:
-			createClient(Doc,new KViewProfile(obj->Obj.SubProfile->GetProfile(),Doc,pWorkspace,"View Profile",0));
 			break;
 
 		case QListViewItemType::tNothing:

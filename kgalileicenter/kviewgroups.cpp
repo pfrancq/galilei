@@ -6,7 +6,7 @@
 
 	Window to manipulate the groups - Implementation.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -35,7 +35,6 @@
 // include files for GALILEI
 #include <guser.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <ggroup.h>
 #include <glang.h>
 #include <gconcept.h>
@@ -78,19 +77,19 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-// QDragSubProfile
+// QDragProfile
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-QDragSubProfile::QDragSubProfile(QWidget* dragSource,QListViewItem* src,const char* name)
+QDragProfile::QDragProfile(QWidget* dragSource,QListViewItem* src,const char* name)
 	: QDragObject(dragSource,name), Src(dynamic_cast<QListViewItemType*>(src))
 {
 }
 
 
 //-----------------------------------------------------------------------------
-const char* QDragSubProfile::format(int i) const
+const char* QDragProfile::format(int i) const
 {
 	if(i>1)
 		return(0);
@@ -99,7 +98,7 @@ const char* QDragSubProfile::format(int i) const
 
 
 //-----------------------------------------------------------------------------
-QByteArray QDragSubProfile::encodedData(const char*) const
+QByteArray QDragProfile::encodedData(const char*) const
 {
 	QByteArray Val(0);
 	return(Val);
@@ -107,7 +106,7 @@ QByteArray QDragSubProfile::encodedData(const char*) const
 
 
 //-----------------------------------------------------------------------------
-bool QDragSubProfile::canDecode(const QMimeSource* e )
+bool QDragProfile::canDecode(const QMimeSource* e )
 {
 	return(strcmp(e->format(0),"galilei")==0);
 }
@@ -137,7 +136,7 @@ QGroups::QGroups(QWidget* parent,const char* name)
 //-----------------------------------------------------------------------------
 void QGroups::contentsDragEnterEvent(QDragEnterEvent *evt )
 {
-	if(QDragSubProfile::canDecode(evt))
+	if(QDragProfile::canDecode(evt))
 		evt->accept();
 }
 
@@ -148,16 +147,16 @@ void QGroups::contentsDropEvent( QDropEvent *evt )
 	QListView* Wid=dynamic_cast<QListView*>(evt->source());
 	QListViewItemType* dest=dynamic_cast<QListViewItemType*>(itemAt(evt->pos()));
 
-	// Verify that dest, src and widget are OK, and the object to drag is a subprofile
-	if((!Wid)||(!dest)||(!Cur)||(!Cur->Src->Obj.SubProfile))
+	// Verify that dest, src and widget are OK, and the object to drag is a profile
+	if((!Wid)||(!dest)||(!Cur)||(!Cur->Src->Obj.Profile))
 	{
 		clearSelection();
 		Cur=0;
 		return;
 	}
 
-	// Verify that the destination is either a group or another subprofile
-	if((dest->Type!=QListViewItemType::tSubProfile)&&(dest->Type!=QListViewItemType::tGroup))
+	// Verify that the destination is either a group or another profile
+	if((dest->Type!=QListViewItemType::tProfile)&&(dest->Type!=QListViewItemType::tGroup))
 	{
 		clearSelection();
 		Cur=0;
@@ -166,27 +165,21 @@ void QGroups::contentsDropEvent( QDropEvent *evt )
 
 	// Verify that the languages are compatible
 	QListViewItemType* group;
-	if(dest->Type==QListViewItemType::tSubProfile)
+	if(dest->Type==QListViewItemType::tProfile)
 		group=dynamic_cast<QListViewItemType*>(dest->parent());
 	else
 		group=dynamic_cast<QListViewItemType*>(dest);
-	if(group->Obj.Group->GetLang()!=Cur->Src->Obj.SubProfile->GetLang())
-	{
-		clearSelection();
-		Cur=0;
-		return;
-	}
 
 	// Move it (in real and visualy)
 	QListViewItemType* SrcGroup=dynamic_cast<QListViewItemType*>(Cur->Src->parent());
 	SrcGroup->takeItem(Cur->Src);
 	group->insertItem(Cur->Src);
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
-	session->GetGroup(Cur->Src->Obj.SubProfile->GetLang(),Cur->Src->Obj.SubProfile->GetGroupId())->DeleteSubProfile(Cur->Src->Obj.SubProfile);
-	group->Obj.Group->InsertSubProfile(Cur->Src->Obj.SubProfile);
-	group->setText(0,"Group ("+QString::number(group->Obj.Group->GetNbSubProfiles())+")");
-	if(SrcGroup->Obj.Group->GetNbSubProfiles())
-		SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbSubProfiles())+")");
+	session->GetGroup(Cur->Src->Obj.Profile->GetGroupId())->DeleteProfile(Cur->Src->Obj.Profile);
+	group->Obj.Group->InsertProfile(Cur->Src->Obj.Profile);
+	group->setText(0,"Group ("+QString::number(group->Obj.Group->GetNbProfiles())+")");
+	if(SrcGroup->Obj.Group->GetNbProfiles())
+		SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbProfiles())+")");
 	else
 	{
 		session->DeleteGroup(SrcGroup->Obj.Group);
@@ -204,7 +197,7 @@ void QGroups::contentsMousePressEvent(QMouseEvent* evt)
 {
 	QListView::contentsMousePressEvent(evt);
 	QListViewItemType* src=dynamic_cast<QListViewItemType*>(itemAt(evt->pos()));
-	if(src&&(src->Type==QListViewItemType::tSubProfile)&&(evt->button()==LeftButton))
+	if(src&&(src->Type==QListViewItemType::tProfile)&&(evt->button()==LeftButton))
 		dragging=true;
 }
 
@@ -214,7 +207,7 @@ void QGroups::contentsMouseMoveEvent(QMouseEvent* evt)
 {
 	if(dragging)
 	{
-		Cur = new QDragSubProfile(this,itemAt(evt->pos()));
+		Cur = new QDragProfile(this,itemAt(evt->pos()));
 		Cur->dragCopy();
 		dragging = false;
 	}
@@ -229,8 +222,8 @@ void QGroups::slotRightButton(QListViewItem* item,const QPoint& pos,int)
 	QPopupMenu Menu(this,"Local");
 	if(src->Type==QListViewItemType::tGroup)
 		Menu.insertItem("Delete Group",this,SLOT(slotDelete(void)));
-	if(src->Type==QListViewItemType::tSubProfile)
-		Menu.insertItem("Remove SubProfile",this,SLOT(slotDelete(void)));
+	if(src->Type==QListViewItemType::tProfile)
+		Menu.insertItem("Remove Profile",this,SLOT(slotDelete(void)));
 	if(src->Type==QListViewItemType::tLang)
 		Menu.insertItem("&Create New Group",this,SLOT(slotNewGroup(void)));
 	Menu.insertSeparator();
@@ -244,13 +237,14 @@ void QGroups::slotNewGroup(void)
 {
 	QListViewItemType* src=dynamic_cast<QListViewItemType*>(currentItem());
 
+	RToDo("Create New group");
 	// Verify that the current tag is language
 	if((!src)||(src->Type!=QListViewItemType::tLang)||(!src->Obj.Lang))
 		return;
 
 	// Create a new group in session
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
-	GGroup* Group=new GGroup(cNoRef,src->Obj.Lang,true,RDate::GetToday(),RDate::null);
+	GGroup* Group=new GGroup(cNoRef,true,RDate::GetToday(),RDate::null);
 	session->AssignId(Group);
 	session->InsertGroup(Group);
 
@@ -265,23 +259,23 @@ void QGroups::slotDelete(void)
 {
 	QListViewItemType* Src=dynamic_cast<QListViewItemType*>(currentItem());
 
-	// Verify that the destination is either a group or another subprofile
-	if((!Src)||((Src->Type!=QListViewItemType::tSubProfile)&&(Src->Type!=QListViewItemType::tGroup)))
+	// Verify that the destination is either a group or another profile
+	if((!Src)||((Src->Type!=QListViewItemType::tProfile)&&(Src->Type!=QListViewItemType::tGroup)))
 		return;
 
 	// Get the session
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
 
 	// If subprofile -> remove it from its group. If the group is empty, delete it.
-	if(Src->Type==QListViewItemType::tSubProfile)
+	if(Src->Type==QListViewItemType::tProfile)
 	{
-		if(KMessageBox::warningYesNo(this,"Do you want to remove this subprofile from the group?","Warning")==KMessageBox::No)
+		if(KMessageBox::warningYesNo(this,"Do you want to remove this profile from the group?","Warning")==KMessageBox::No)
 			return;
 		QListViewItemType* SrcGroup=dynamic_cast<QListViewItemType*>(Src->parent());
-		session->GetGroup(Cur->Src->Obj.SubProfile->GetLang(),Src->Obj.SubProfile->GetGroupId())->DeleteSubProfile(Src->Obj.SubProfile);
+		session->GetGroup(Src->Obj.Profile->GetGroupId())->DeleteProfile(Src->Obj.Profile);
 		delete Src;
-		if(SrcGroup->Obj.Group->GetNbSubProfiles())
-			SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbSubProfiles())+")");
+		if(SrcGroup->Obj.Group->GetNbProfiles())
+			SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbProfiles())+")");
 		else
 		{
 			session->DeleteGroup(SrcGroup->Obj.Group);
@@ -294,7 +288,7 @@ void QGroups::slotDelete(void)
 	{
 		if(KMessageBox::warningYesNo(this,"Do you want to delete this group?","Warning")==KMessageBox::No)
 			return;
-		Src->Obj.Group->DeleteSubProfiles();
+		Src->Obj.Group->DeleteProfiles();
 		session->DeleteGroup(Src->Obj.Group);
 		delete Src;
 	}
@@ -307,9 +301,7 @@ void QGroups::slotSaveGroups(void)
 	if(KMessageBox::warningYesNo(this,"Do you want to overwrite the groups in the database?","Warning")==KMessageBox::No)
 		return;
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
-	R::RCursor<GLang> CurLang(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());	
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
-		session->GetStorage()->SaveGroups(CurLang());
+	session->GetStorage()->SaveGroups();
 }
 
 
@@ -388,37 +380,19 @@ GGroup* KViewGroups::GetCurrentGroup(void)
 //-----------------------------------------------------------------------------
 void KViewGroups::ConstructGroups(void)
 {
-	R::RCursor<GFactoryLang> CurLang;
-	GLang* lang;
-	RDate d;
-	RCursor<GSubProfile> Sub;
-
 	Groups->clear();
-	CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
+	R::RCursor<GGroup> Grp=Doc->GetSession()->GetGroups();
+	for(Grp.Start();!Grp.End();Grp.Next())
 	{
-		lang=CurLang()->GetPlugin();
-		if(!lang) continue;
-		if(!Doc->GetSession()->GetNbGroups(lang))
-			continue;
-		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroups(lang);
-		QListViewItemType* grsitem = new QListViewItemType(lang,Groups,ToQString(lang->GetName())+" ("+QString::number(grs.GetNb())+")");
-		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-		for(grs.Start(); !grs.End(); grs.Next())
+		QListViewItemType* gritem= new QListViewItemType(Grp(),Groups,"Group ("+QString::number(Grp()->GetNbProfiles())+")");
+		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
+		RCursor<GProfile> Prof(Grp()->GetProfiles());
+		for(Prof.Start();!Prof.End();Prof.Next())
 		{
-			GGroup* gr=grs();
-			Sub=grs()->GetSubProfiles();
-			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group ("+QString::number(Sub.GetNb())+")");
-			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-			for(Sub.Start(); !Sub.End(); Sub.Next())
-			{
-				GSubProfile* sub=Sub();
-				d=sub->GetAttached();
-				QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),ToQString(d));
-				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
-			}
+			QListViewItemType* subitem=new QListViewItemType(Prof(),gritem,ToQString(Prof()->GetAttached()));
+			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}
-	}
+	}	
 	Groups->setCurrentItem(Groups->firstChild());
 }
 
@@ -457,7 +431,7 @@ void KViewGroups::FindNext(void)
 		while(it->current()&&Cont)
 		{
 			QListViewItemType* item = dynamic_cast<QListViewItemType*>(it->current());
-			if((item)&&(item->Type==QListViewItemType::tSubProfile))
+			if((item)&&(item->Type==QListViewItemType::tProfile))
 			{
 				if((item->text(0).contains(str,false))||(item->text(1).contains(str,false)))
 				{
@@ -468,8 +442,10 @@ void KViewGroups::FindNext(void)
 				else
 					if(Desc->isChecked())
 					{
-						GSubProfile* sub=item->Obj.SubProfile;
-						GConcept* find=sub->GetLang()->GetDict()->GetConcept(sub->GetLang()->GetStemming(str.latin1()));
+						GProfile* sub=item->Obj.Profile;
+//						GConcept* find=sub->GetLang()->GetDict()->GetConcept(sub->GetLang()->GetStemming(str.latin1()));
+						GConcept* find=0;
+						RToDo("Find right concept");
 						if(find&&(sub->IsIn(find)))
 						{
 							Cont=false;

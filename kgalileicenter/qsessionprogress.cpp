@@ -157,7 +157,7 @@ void QLoadSession::DoIt(void)
 	Session->GetStorage()->LoadGroups();
 	if(GSession::Break())
 		return;
-	Parent->PutText("Load Users/Profiles/Feedbacks/SubProfiles ...");
+	Parent->PutText("Load Users/Profiles/Feedbacks ...");
 	Session->GetStorage()->LoadUsers();
 }
 
@@ -273,7 +273,7 @@ protected:
 	{
 		if(name!="vote")
 			return;
-		Session->InsertFdbk(profile->GetId(),doc->GetId(),0,docass,RDate::GetToday(),RDate::null,true);
+		Session->InsertFdbk(profile->GetId(),doc->GetId(),docass,RDate::GetToday(),RDate::null,true);
 		doc=0;
 		user=0;
 		profile=0;
@@ -306,7 +306,7 @@ protected:
 			case 3:
 				profile=user->GetPtr(text,false);
 				if(!profile)
-					Session->InsertProfile(profile=new GProfile(user,cNoRef,text,true));
+					Session->InsertProfile(profile=new GProfile(user,cNoRef,text,0,RDate::GetToday(),RDate::GetToday(),RDate::GetToday(),true));
 				break;
 			case 4:
 				if(text=="+1")

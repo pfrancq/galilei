@@ -6,7 +6,7 @@
 
 	Window to manipulate the groups - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -64,12 +64,12 @@ class QCheckBox;
 
 //-----------------------------------------------------------------------------
 // Drag object
-class QDragSubProfile : public QDragObject
+class QDragProfile : public QDragObject
 {
 public:
 	QListViewItemType* Src;
 
-	QDragSubProfile(QWidget* dragSource,QListViewItem* src,const char* name=0);
+	QDragProfile(QWidget* dragSource,QListViewItem* src,const char* name=0);
 
 	virtual const char * format(int i) const;
 	virtual QByteArray encodedData(const char*) const;
@@ -87,7 +87,7 @@ class QGroups : public QListView
 
 	int dragging;
 
-	QDragSubProfile* Cur;
+	QDragProfile* Cur;
 
 public:
 

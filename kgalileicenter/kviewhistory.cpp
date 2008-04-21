@@ -6,7 +6,7 @@
 
 	Window to display history of groups - Implementation.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -46,7 +46,6 @@
 #include <glang.h>
 #include <ggroup.h>
 #include <gsubject.h>
-#include <gsubprofile.h>
 #include <gprofile.h>
 #include <gsession.h>
 #include <gweightinfos.h>
@@ -82,12 +81,12 @@ using namespace GALILEI;
 KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid,
 	 const char* mindate, const char* maxdate, bool bdate)
 	: KView(doc,parent,name,wflags),
-	  Global(global), MinGen(minid), MaxGen(maxid),MinDate(mindate), MaxDate(maxdate), CurId(0),  SubProfiles(0), Groups(0),  bDate(bdate)
+	  Global(global), MinGen(minid), MaxGen(maxid),MinDate(mindate), MaxDate(maxdate), CurId(0),  Profiles(0), Groups(0),  bDate(bdate)
 {
 	static char tmp[100];
 
 	//init the container of selected subprofiles.
-	SelectedSubProfiles=new R::RContainer<GWeightInfosHistory,false,true>(5,2);
+	SelectedProfiles=new R::RContainer<GWeightInfosHistory,false,true>(5,2);
 
 	//init ToolBar components.
 	ToolBar=  new QMenuBar( this, "file operations" );
@@ -214,7 +213,7 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 			grps=Groups->GetPtr(CurId);
 			Solution->setGroups(grps);
 			Solution->setChanged();
-			SelectedSubProfiles->Clear();
+			SelectedProfiles->Clear();
 			SimsView->clear();
 			sprintf(tmp,"Solution (%u) [%s]",CurId, grps->GetDate().ToString().Latin1());
 			TabWidget->changeTab(Solution,tmp);
@@ -301,11 +300,11 @@ void KViewHistory::slotSelectedSetChanged(QListViewItem* item)
 	{
 		case (QListViewItemType::tGiwwh) :
 			// check if item is selected or deselected
-			tmp=SelectedSubProfiles->GetPtr(itemtype->Obj.Giwwh);
+			tmp=SelectedProfiles->GetPtr(itemtype->Obj.Giwwh);
 			if(tmp)
-				SelectedSubProfiles->DeletePtr(itemtype->Obj.Giwwh);
+				SelectedProfiles->DeletePtr(itemtype->Obj.Giwwh);
 			else
-				SelectedSubProfiles->InsertPtr(itemtype->Obj.Giwwh);
+				SelectedProfiles->InsertPtr(itemtype->Obj.Giwwh);
 			// update the SimsView listview.
 			DisplaySimilarities();
 			break;
@@ -332,14 +331,14 @@ void KViewHistory::DisplaySimilarities(void)
 	SimsView->clear();
 
 	//display selected profiles.
-	RCursor<GWeightInfosHistory> cInfos1(*SelectedSubProfiles);
-	RCursor<GWeightInfosHistory> cInfos2(*SelectedSubProfiles);
-	for(i=SelectedSubProfiles->GetNb(),cInfos1.Start();i--;cInfos1.Next())
+	RCursor<GWeightInfosHistory> cInfos1(*SelectedProfiles);
+	RCursor<GWeightInfosHistory> cInfos2(*SelectedProfiles);
+	for(i=SelectedProfiles->GetNb(),cInfos1.Start();i--;cInfos1.Next())
 	{
 		for(cInfos2.GoTo(i+1);!cInfos2.End();cInfos2.Next())
 		{
 			if(Global)
-				similarity=cInfos1()->SimilarityIFF(*cInfos2(), otSubProfile);
+				similarity=cInfos1()->SimilarityIFF(*cInfos2(), otProfile);
 			else
 				similarity=cInfos1()->Similarity(*cInfos2());
 			sprintf(num1,"%u",cInfos1()->GetId());
@@ -399,13 +398,13 @@ KViewHistory::~KViewHistory(void)
 {
 	if(Groups)
 		Groups->Clear();
-	if(SubProfiles)
-		delete SubProfiles;
+	if(Profiles)
+		delete Profiles;
 	if(TabWidget)
 		delete (TabWidget);
 	if(SimsView)
 		delete (SimsView);
-	if(SelectedSubProfiles)
-		delete SelectedSubProfiles;
+	if(SelectedProfiles)
+		delete SelectedProfiles;
 }
 

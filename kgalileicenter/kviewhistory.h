@@ -7,7 +7,7 @@
 
 	Window to display history of groups - Header.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -135,7 +135,7 @@ class KViewHistory : public KView
 	/**
 	* The container of subprofiles
 	*/
-	R::RContainer<GSubProfile,false,true>* SubProfiles;
+	R::RContainer<GProfile,false,true>* Profiles;
 
 	/**
 	* The container of groups
@@ -145,7 +145,7 @@ class KViewHistory : public KView
 	/**
 	* selected items from Solutions.
 	*/
-	R::RContainer<GWeightInfosHistory,false,true>* SelectedSubProfiles;
+	R::RContainer<GWeightInfosHistory,false,true>* SelectedProfiles;
 
 	/**
 	* historic is loaded by date if true, else by Id.
@@ -233,7 +233,7 @@ private slots:
 	/**
 	* function to show similarities
 	*/
-	 void slotClearSimilarities(void) {SimsView->clear(); SelectedSubProfiles->Clear();};
+	 void slotClearSimilarities(void) {SimsView->clear(); SelectedProfiles->Clear();};
 
 	/**
 	*  funtion to show relationship.

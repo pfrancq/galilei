@@ -43,14 +43,15 @@
 #include <qgprofile.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <gdoc.h>
 #include <ggroup.h>
 #include <gsession.h>
 #include <qlistviewitemtype.h>
-#include <qgsubprofiles.h>
 #include <rqt.h>
 #include <ggalileiapp.h>
+#include <gstorage.h>
+#include <gweightinfo.h>
+#include <gconcepttype.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -98,9 +99,6 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	User->addColumn("Value");
 	ConstructUser();
 
-	// Initialisation of the Descriptions Widget
-	Desc=new QGSubProfiles(Infos,Doc->GetSession(),Profile);
-
 	// Initialisation of the Groups Widget
 	Groups=new QListView(Infos);
 	Infos->insertTab(Groups,"Groups");
@@ -131,11 +129,13 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	ConstructLinks();
 
-	Pov = new QListView(Infos);
-	Infos->insertTab(Pov,"Point Of View");
-	Pov->addColumn(QString("Point of view list of documents"));
-	//Pov->addColumn(QString("attached words"));
-	Pov->setRootIsDecorated(true);
+	// Initialisation of the AnalyseResults Widget
+	Results = new QListView(Infos);
+	Infos->insertTab(Results,"Description");
+	Results->addColumn("Concept");
+	Results->addColumn("Concept Type");
+	Results->addColumn("Weight");
+	ConstructResults();
 }
 
 
@@ -145,7 +145,6 @@ void KViewProfile::ConstructFdbks(void)
 	QListViewItem *p;
 	RDate d;
 	RCursor<GFdbk> Docs;
-	RCursor<GSubProfile> SubCur;
 	GDoc* doc;
 
 	if(!Fdbks) return;
@@ -188,13 +187,45 @@ void KViewProfile::ConstructFdbks(void)
 
 
 //-----------------------------------------------------------------------------
+void KViewProfile::ConstructResults(void)
+{
+	class LocalItem : QListViewItem
+	{
+	public:
+		double Val;
+
+		LocalItem(QListView* v,QString name,QString type,double d) : QListViewItem(v,name,type,QString::number(d)), Val(d) {}
+		virtual int compare( QListViewItem *i, int col, bool ascending ) const
+    	{
+			if(col==1)
+			{
+				double d=Val-static_cast<LocalItem*>(i)->Val;
+				if(d==0.0) return(key(0, ascending ).compare( i->key(0, ascending)));
+				if(d>0)
+					return(1);
+				return(-1);
+			}
+			return(key( col, ascending ).lower().compare( i->key( col, ascending).lower()));
+    	}
+	};
+	Results->clear();
+	RCursor<GWeightInfo> Words(Profile->GetInfos());
+	for (Words.Start();!Words.End();Words.Next())
+	{
+		QString name=ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType()));
+		QString type=ToQString(Words()->GetType()->GetDescription());
+		new LocalItem(Results,name,type,Words()->GetWeight());
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void KViewProfile::ConstructLinks(void)
 {
 	QListViewItem *p;
 	RDate d;
 	RString iconName="";
 	RCursor<GFdbk> Docs;
-	RCursor<GSubProfile> SubCur;
 	GDoc* doc;
 
 	if(!FdbksLinks) return;
@@ -233,37 +264,14 @@ void KViewProfile::ConstructLinks(void)
 //-----------------------------------------------------------------------------
 void KViewProfile::ConstructGroups(void)
 {
-	GSubProfile* sub;
-	R::RCursor<GFactoryLang> CurLang;
-	GLang* lang;
-	RDate d;
-	RCursor<GSubProfile> Sub;
-
 	Groups->clear();
-	CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
+	GGroup* gr=GSession::Get()->GetGroup(Profile->GetGroupId(),true,true);
+	if(!gr) return;
+	RCursor<GProfile> Prof(gr->GetProfiles());
+	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		lang=CurLang()->GetPlugin();
-		if(!lang) continue;
-		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroups(lang);
-		QListViewItemType* grsitem = new QListViewItemType(Groups,ToQString(lang->GetName()));
-		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-		sub=Profile->GetSubProfile(lang);
-		if(!sub) continue;
-		for (grs.Start(); !grs.End(); grs.Next())
-		{
-			GGroup* gr=grs();
-			if(!gr->IsIn(sub)) continue;
-			Sub=grs()->GetSubProfiles();
-			for(Sub.Start(); !Sub.End(); Sub.Next())
-			{
-				GSubProfile* sub=Sub();
-
-				d=sub->GetAttached();
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()),ToQString(d));
-				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
-			}
-		}
+		QListViewItemType* subitem=new QListViewItemType(Prof(),Groups,ToQString(Profile->GetAttached()));
+		subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 	}
 }
 
@@ -286,7 +294,8 @@ void KViewProfile::update(unsigned int cmd)
 	if(cmd==1)
 	{
 		General->slotProfileChanged();
-		Desc->slotProfileChanged();
+		Results->clear();
+		ConstructResults();
 	}
 	if(cmd==2)
 	{
@@ -313,7 +322,8 @@ void KViewProfile::ComputeProfile(void)
 	if(!Dlg.Run(new QComputeProfile(Profile)))
 		return;
 	General->slotProfileChanged();
-	Desc->slotProfileChanged();
+	Results->clear();
+	ConstructResults();
 }
 
 

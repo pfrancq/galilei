@@ -43,7 +43,6 @@ using namespace R;
 #include <glang.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <ggroup.h>
 #include <gsubjects.h>
 #include <gsubject.h>
@@ -130,13 +129,10 @@ GGroup* KViewThGroups::GetCurrentGroup(void)
 //-----------------------------------------------------------------------------
 void KViewThGroups::ConstructThGroups(void)
 {
-	RCursor<GSubProfile> Sub;
+	RCursor<GProfile> Sub;
 	QListViewItemType* gritem=0;
 
 	thGroups->clear();
-
-	// Get the active languages
-	RCursor<GLang> Langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
 
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(getDocument()->GetSession()->GetSubjects()->GetNodes());
@@ -148,25 +144,21 @@ void KViewThGroups::ConstructThGroups(void)
 		gritem= new QListViewItemType(Grps(),thGroups,ToQString(Grps()->GetName()));
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 
-		// Go trough each lang
-		for(Langs.Start();!Langs.End();Langs.Next())
-		{
-			// If the subject has no subprofiles -> next one.
-			if(!Grps()->GetNbSubProfiles(Langs()))
-				continue;
+		// If the subject has no subprofiles -> next one.
+		if(!Grps()->GetNbProfiles())
+			continue;
 
-			QListViewItemType* grsitem = new QListViewItemType(gritem,ToQString(Langs()->GetName()));
-			grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-			Sub=Grps()->GetSubProfiles(Langs());
-			for(Sub.Start(); !Sub.End(); Sub.Next())
-			{
-				GSubProfile* sub=Sub();
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),grsitem,ToQString(sub->GetProfile()->GetName()),ToQString(sub->GetProfile()->GetUser()->GetFullName()));
-				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
-			}
-			if(!grsitem->childCount())
-				gritem->takeItem(grsitem);
+		QListViewItemType* grsitem = new QListViewItemType(gritem,"Groups");
+		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
+		Sub=Grps()->GetProfiles();
+		for(Sub.Start(); !Sub.End(); Sub.Next())
+		{
+			GProfile* sub=Sub();
+			QListViewItemType* subitem=new QListViewItemType(sub,grsitem,ToQString(sub->GetName()),ToQString(sub->GetUser()->GetFullName()));
+			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}
+		if(!grsitem->childCount())
+			gritem->takeItem(grsitem);
 	}
 }
 
@@ -175,37 +167,31 @@ void KViewThGroups::ConstructThGroups(void)
 void KViewThGroups::ConstructGroups(void)
 {
 	R::RCursor<GFactoryLang> CurLang;
-	GLang* lang;
 	char tmp1[70];
 	char tmp2[30];
-	RCursor<GSubProfile> Sub;
+	RCursor<GProfile> Sub;
 
 	Doc->GetSession()->GetSubjects()->Compare();
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
 	prGroups->clear();
-	CurLang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
+	
+	R::RCursor<GGroup> grs=Doc->GetSession()->GetGroups();
+	QListViewItemType* grsitem = new QListViewItemType(prGroups,"Groups");
+	grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
+	for (grs.Start(); !grs.End(); grs.Next())
 	{
-		lang=CurLang()->GetPlugin();
-		if(!lang) continue;
-		R::RCursor<GGroup> grs=Doc->GetSession()->GetGroups(lang);
-		QListViewItemType* grsitem = new QListViewItemType(prGroups,ToQString(lang->GetName()));
-		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-		for (grs.Start(); !grs.End(); grs.Next())
+		GGroup* gr=grs();
+		sprintf(tmp1,"Precision: %1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(gr));
+		sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
+		QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group",tmp1,tmp2);
+		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
+		Sub=grs()->GetProfiles();
+		for(Sub.Start(); !Sub.End(); Sub.Next())
 		{
-			GGroup* gr=grs();
-			sprintf(tmp1,"Precision: %1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(gr));
-			sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
-			QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group",tmp1,tmp2);
-			gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-			Sub=grs()->GetSubProfiles();
-			for(Sub.Start(); !Sub.End(); Sub.Next())
-			{
-				GSubProfile* sub=Sub();
-				QListViewItemType* subitem=new QListViewItemType(sub->GetProfile(),gritem,ToQString(sub->GetProfile()->GetName())+" ("+ToQString(sub->GetProfile()->GetUser()->GetFullName())+")");
-				subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
-			}
+			GProfile* sub=Sub();
+			QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetName())+" ("+ToQString(sub->GetUser()->GetFullName())+")");
+			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}
 	}
 }
