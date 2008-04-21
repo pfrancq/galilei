@@ -52,7 +52,6 @@
 //include files for GALILEI
 #include <gsession.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <gdoc.h>
 #include <ggroup.h>
 #include <glang.h>
@@ -169,7 +168,7 @@ void GSugs::Run(void)
 			Docs=new R::RContainer<GFdbk,false,false>(2000,500);
 
 		R::RCursor<GGroup> Grps;
-		RCursor<GSubProfile> Sub;
+		RCursor<GProfile> Sub;
 		RCursor<GFdbk> Doc;
 		unsigned int i;
 
@@ -182,24 +181,20 @@ void GSugs::Run(void)
 
 		// -1- Store sugestion with description= S+order
 		// Go through the groups
-		RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
-		for(Langs.Start();!Langs.End();Langs.Next())
-		{	
-			Grps=Session->GetGroups(Langs());
-			for(Grps.Start();!Grps.End();Grps.Next())
+		Grps=Session->GetGroups();
+		for(Grps.Start();!Grps.End();Grps.Next())
+		{
+			// Go through the subprofiles
+			Sub=Grps()->GetProfiles();
+			for(Sub.Start();!Sub.End();Sub.Next())
 			{
-				// Go through the subprofiles
-				Sub=Grps()->GetSubProfiles();
-				for(Sub.Start();!Sub.End();Sub.Next())
-				{
-					// Get all relevant documents ordered
-					Grps()->NotJudgedDocsRelList(ProfilesDocsSims,Docs,Sub(),Session);
+				// Get all relevant documents ordered
+				Grps()->NotJudgedDocsRelList(ProfilesDocsSims,Docs,Sub(),Session);
 
-					// Store them in the database
-					Doc.Set(*Docs);
-					for(Doc.Start(),i=0;!Doc.End();Doc.Next(),i++)
-						Session->GetStorage()->AddSugsProfile(Now,Sub()->GetProfile()->GetId(),Doc()->GetDocId(),i);
-				}
+				// Store them in the database
+				Doc.Set(*Docs);
+				for(Doc.Start(),i=0;!Doc.End();Doc.Next(),i++)
+					Session->GetStorage()->AddSugsProfile(Now,Sub()->GetId(),Doc()->GetDocId(),i);
 			}
 		}
 	}
