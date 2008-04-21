@@ -6,7 +6,7 @@
 
 	Vector Computing Method - Header.
 
-	Copyright 2001-2007 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -73,6 +73,12 @@ namespace GALILEI{
 class GProfileCalcFeedback : public GProfileCalc
 {
 protected:
+	
+	/**
+	 * Current profile computed.
+	 */
+	GProfile* Profile;
+	
 	/**
 	* Information computed.
 	*/
@@ -182,15 +188,13 @@ private:
 
 	/**
 	* Compute the global vectors.
-	* @param profile        Profile to compute.
 	*/
 	void ComputeGlobal(void);
 
 	/**
-	* Computes the subprofile of a profile.
-	* @param s              SubProfile to compute.
+	* Computes the profile.
 	*/
-	void ComputeSubProfile(void);
+	void ComputeProfile(void);
 
 public:
 
@@ -198,7 +202,7 @@ public:
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
-	virtual void Compute(GSubProfile* subprofile);
+	virtual void Compute(GProfile* profile);
 
 	/**
 	 * Write the content of the 'Order' vector in a file called 'subprofileX'

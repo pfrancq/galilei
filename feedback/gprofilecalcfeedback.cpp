@@ -4,7 +4,7 @@
 
 	GProfileCalcFeedback.h
 
-	Vector Computing Method  - Implementation.
+	Vector Computing Method - Implementation.
 
 	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
@@ -47,7 +47,6 @@ using namespace R;
 //include files for GALILEI
 #include <gprofilecalcfeedback.h>
 #include <gdoc.h>
-#include <gsubprofile.h>
 #include <gprofile.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
@@ -68,7 +67,7 @@ using namespace GALILEI;
 GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac)
 	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
 	  FuzzyFactor(0.25), IrrelFactor(0.75),
-	  Vectors(0,5000), VectorsIrrel(0,5000), VectorsFuzzy(0,5000),
+	  Vectors(5000), VectorsIrrel(5000), VectorsFuzzy(5000),
 	  NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
@@ -121,7 +120,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 
 	// Go through all documents, add the frequences of the words of "OK"
 	// documents and substract the frequences of the words of "KO" documents.
-	Docs=SubProfile->GetFdbks();
+	Docs=Profile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{		
 		// If the assessment of the document is not relevant
@@ -129,7 +128,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
 
 		// If incremental mode and document has no change -> continue
-		if(IncrementalMode&&(!Docs()->MustUse(SubProfile))) continue;
+		if(IncrementalMode&&(!Docs()->MustUse(Profile))) continue;
 
 		// Get the document : if it exists and is defined -> add it
 		GDoc* doc=Session->GetDoc(Docs()->GetDocId());
@@ -207,7 +206,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::ComputeSubProfile(void)
+void GProfileCalcFeedback::ComputeProfile(void)
 {
 	GWeightInfo** ptr;
 	unsigned int i,nb,nb2;
@@ -254,9 +253,9 @@ void GProfileCalcFeedback::ComputeSubProfile(void)
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
+void GProfileCalcFeedback::Compute(GProfile* profile)
 {
-	SubProfile=subprofile;
+	Profile=profile;
 	GWeightInfo* ptr;
 	GConceptType* type(0);
 	
@@ -269,10 +268,10 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 	Infos.Clear();
 
 	// If incremental mode -> copy information of the profile in 'Vectors'.
-	if(IncrementalMode&&subprofile->IsDefined())
+	if(IncrementalMode&&profile->IsDefined())
 	{
 		unsigned int i,TotalRef;
-		Cur=subprofile->GetInfos();
+		Cur=profile->GetInfos();
 		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 		{
 			// Look if the type of the concept have changed since that the last concept treated
@@ -295,19 +294,19 @@ void GProfileCalcFeedback::Compute(GSubProfile* subprofile)
 	ComputeGlobal();
 
 	// Compute the vector for each subprofile
-	ComputeSubProfile();
+	ComputeProfile();
 
-	WriteFile("/home/pfrancq/tmp");
+//	WriteFile("/home/pfrancq/tmp");
 	
 	// Set the Variable of the subprofile
-	subprofile->Update(subprofile->GetLang(),&Infos,true);
+	profile->Update(Infos,true);
 }
 
 
 //------------------------------------------------------------------------------
 void GProfileCalcFeedback::WriteFile(const RString& dir)
 {
-	RString name("subprofile"+RString::Number(SubProfile->GetId()));
+	RString name("profile"+RString::Number(Profile->GetId()));
 	RDir::CreateDirIfNecessary(dir);
 	RTextFile Out(dir+RFile::GetDirSeparator()+name);
 	Out.Open(RIO::Create);
