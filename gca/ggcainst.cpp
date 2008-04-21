@@ -39,7 +39,6 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gsubprofile.h>
 #include <gprofile.h>
 #include <ggalileiapp.h>
 #include <ggroup.h>
@@ -123,10 +122,10 @@ GGCAThreadData::~GGCAThreadData(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAInst::GGCAInst(GSession* ses,GLang* l,RCursor<GGCAObj> objs,GGCAParams* p,RDebug *debug)
+GGCAInst::GGCAInst(GSession* ses,RCursor<GGCAObj> objs,GGCAParams* p,RDebug *debug)
 	: RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>(p->PopSize,objs,FirstFit,"GCA",debug),
-	  GGCAProm(p), Params(p), Sols(0), Session(ses), Lang(l), NoSocialSubProfiles(objs.GetNb()),
-	  Ratios(objs.GetNb()), SubProfilesSims(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities"))
+	  GGCAProm(p), Params(p), Sols(0), Session(ses), NoSocialProfiles(objs.GetNb()),
+	  Ratios(objs.GetNb()), ProfilesSims(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities"))
 	, ProfilesAgree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements"))
 	, ProfilesDisagree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements"))
 #if BESTSOLSVERIFICATION
@@ -170,7 +169,7 @@ void GGCAInst::Init(void)
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
 			if(Cur1()==Cur2()) continue;
-			ratio=GetAgreementRatio(Cur1()->GetSubProfile(),Cur2()->GetSubProfile());
+			ratio=GetAgreementRatio(Cur1()->GetProfile(),Cur2()->GetProfile());
 			if(ratio>=Params->MinAgreement)
 				ptr->InsertPtr(new GGCAMaxRatio(Cur2()->GetId(),ratio));
 		}
@@ -189,11 +188,11 @@ RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>* GGCAInst::CreateHeuristic(void
 
 
 //-----------------------------------------------------------------------------
-GGCAObj* GGCAInst::GetObj(const GSubProfile* sub) const
+GGCAObj* GGCAInst::GetObj(const GProfile* prof) const
 {
 	R::RCursor<GGCAObj> Cur(Objs);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		if(Cur()->GetSubProfile()==sub)
+		if(Cur()->GetProfile()==prof)
 			return(Cur());
 	return(0);
 }
@@ -321,28 +320,28 @@ void GGCAInst::PostEvaluate(void)
 
 
 //-----------------------------------------------------------------------------
-double GGCAInst::GetDisagreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
+double GGCAInst::GetDisagreementRatio(const GProfile* prof1,const GProfile* prof2) const
 {
 	double d;
-	ProfilesDisagree->Measure(0,sub1->GetProfile()->GetId(),sub2->GetProfile()->GetId(),&d);
+	ProfilesDisagree->Measure(0,prof1->GetId(),prof2->GetId(),&d);
 	return(d);
 }
 
 
 //-----------------------------------------------------------------------------
-double GGCAInst::GetAgreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const
+double GGCAInst::GetAgreementRatio(const GProfile* prof1,const GProfile* prof2) const
 {
 	double d;
-	ProfilesAgree->Measure(0,sub1->GetProfile()->GetId(),sub2->GetProfile()->GetId(),&d);
+	ProfilesAgree->Measure(0,prof1->GetId(),prof2->GetId(),&d);
 	return(d);
 }
 
 
 //-----------------------------------------------------------------------------
-double GGCAInst::GetSim(const GSubProfile* sub1,const GSubProfile* sub2) const
+double GGCAInst::GetSim(const GProfile* prof1,const GProfile* prof2) const
 {
 	double d;
-	SubProfilesSims->Measure(0,Lang,sub1->GetId(),sub2->GetId(),&d);
+	ProfilesSims->Measure(0,prof1->GetId(),prof2->GetId(),&d);
 	return(d);
 }
 
@@ -350,7 +349,7 @@ double GGCAInst::GetSim(const GSubProfile* sub1,const GSubProfile* sub2) const
 //-----------------------------------------------------------------------------
 double GGCAInst::GetSim(const GGCAObj* obj1,const GGCAObj* obj2) const
 {
-	return(GetSim(obj1->GetSubProfile(),obj2->GetSubProfile()));
+	return(GetSim(obj1->GetProfile(),obj2->GetProfile()));
 }
 
 

@@ -6,7 +6,7 @@
 
 	GCA Plug-in - Header.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -123,10 +123,10 @@ protected:
 	* Actually, this means verify that all the subprofiles of the group are
 	* similar to the one tested.
 	* @param grp            Group to verify.
-	* @param sub            SubProfile eventually to add.
+	* @param sub            Profile eventually to add.
 	* @returns True if it is coherent.
 	*/
-	bool IsCoherent(const GGroup* grp,const GSubProfile* sub) const;
+	bool IsCoherent(const GGroup* grp,const GProfile* sub) const;
 
 	/**
 	* Test if a group is valid. If a group isn't not valid, the group is

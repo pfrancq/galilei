@@ -41,7 +41,6 @@
 #include <ggroup.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <glang.h>
 #include <gsession.h>
 #include <gmeasure.h>
@@ -116,7 +115,7 @@ bool GGCAGrouping::IsCoherent(const GGroup* /*grp*/) const
 
 
 //-----------------------------------------------------------------------------
-bool GGCAGrouping::IsCoherent(const GGroup* /*grp*/,const GSubProfile* /*sub*/) const
+bool GGCAGrouping::IsCoherent(const GGroup* /*grp*/,const GProfile* /*sub*/) const
 {
 	return(true);
 }
@@ -158,15 +157,15 @@ void GGCAGrouping::ConstructGroupsFromChromo(GGCAChromo* chromo)
 	unsigned int* tab;
 	unsigned int* ptr;
 
-	Session->ClearGroups(Lang);
+	Session->ClearGroups();
 	RCursor<GGCAGroup> gr(chromo->Used);
 	for(gr.Start();!gr.End();gr.Next())
 	{
-		GGroup* g=new GGroup(cNoRef,Lang,true,RDate(""),RDate(""));
+		GGroup* g=new GGroup(cNoRef,true,RDate(""),RDate(""));
 		Session->AssignId(g);
 		ptr=tab=gr()->GetObjectsId();
 		while((*ptr)!=NoObject)
-			g->InsertSubProfile((Objs[*(ptr++)])->GetSubProfile());
+			g->InsertProfile((Objs[*(ptr++)])->GetProfile());
 		delete[] tab;
 		Session->InsertGroup(g);
 	}
@@ -184,7 +183,7 @@ void GGCAGrouping::BestChromo(const RNotification& notification)
 void GGCAGrouping::Run(void)
 {
 	// If no subprofiles -> nothing to group
-	if(!SubProfiles.GetNb()) return;
+	if(!Profiles.GetNb()) return;
 
 	// set the level of the MinSim
 	try
@@ -194,18 +193,18 @@ void GGCAGrouping::Run(void)
 		GGCAObj* obj;
 
 		// Get the minimum of similarity		
-		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities")->Info(0,Lang,&d);
+		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities")->Info(0,&d);
   		Params.MinSimLevel=d;
 		cout<<"MinSim="<<d<<endl;
 		
 		// Create the GA objects 
-  		Objs.Clear(SubProfiles.GetNb());  		
-		RCursor<GSubProfile> Cur2(SubProfiles);
+  		Objs.Clear(Profiles.GetNb());  		
+		RCursor<GProfile> Cur2(Profiles);
 		for(Cur2.Start(),i=0;!Cur2.End();Cur2.Next(),i++)
 			Objs.InsertPtr(obj=new GGCAObj(i,Cur2()));
 			
 		// Launch the GA
-		Instance=new GGCAInst(Session,Lang,RCursor<GGCAObj>(Objs),&Params,Session->GetDebug());
+		Instance=new GGCAInst(Session,RCursor<GGCAObj>(Objs),&Params,Session->GetDebug());
 		Instance->Init();
 		Instance->Run();
 		

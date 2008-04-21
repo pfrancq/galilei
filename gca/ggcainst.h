@@ -61,6 +61,7 @@
 class GGCAThreadData : public R::RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>
 {
 public:
+	
 	R::RContainer<GGCAGroup,false,false> ToDel;
 
 	/**
@@ -134,14 +135,9 @@ class GGCAInst : public R::RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData
 	GSession* Session;
 
 	/**
-	* Language actually grouped.
-	*/
-	GLang* Lang;
-
-	/**
 	* Social Profiles.
 	*/
-	R::RContainer<GGCAObj,false,true> NoSocialSubProfiles;
+	R::RContainer<GGCAObj,false,true> NoSocialProfiles;
 
 	/**
 	* Max Ratios for each objects.
@@ -155,7 +151,7 @@ class GGCAInst : public R::RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData
 	R::RContainer<GGCAChromo,true,false> BestSols;
 #endif
 
-	GMeasure* SubProfilesSims;
+	GMeasure* ProfilesSims;
 
 	GMeasure* ProfilesAgree;
 
@@ -166,12 +162,11 @@ public:
 	/**
 	* Construct the instance.
 	* @param ses            Session.
-	* @param l              Language.
 	* @param objs           The objects to group.
 	* @param p              Parameters.
 	* @param debug          Debugger.
 	*/
-	GGCAInst(GSession* ses,GLang* l,RCursor<GGCAObj> objs,GGCAParams* p,R::RDebug *debug);
+	GGCAInst(GSession* ses,RCursor<GGCAObj> objs,GGCAParams* p,R::RDebug *debug);
 
 	/**
 	* Initialisation of the instance.
@@ -185,11 +180,11 @@ public:
 	virtual R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>* CreateHeuristic(void);
 
 	/**
-	* Get the GA object corresponding to a subprofile.
-	* @param sub            SubProfile to search for.
+	* Get the GA object corresponding to a profile.
+	* @param prof            Profile to search for.
 	* @ereturns GGCAObj*
 	*/
-	GGCAObj* GetObj(const GSubProfile* sub) const;
+	GGCAObj* GetObj(const GProfile* prof) const;
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
@@ -210,32 +205,26 @@ public:
 	virtual void PostEvaluate(void);
 
 	/**
-	* return the Language actually grouped.
-	* @return lang.
+	* Get the disagreement ratio between two profiles.
+	* @param prof1           First Profile.
+	* @param prof2           Second Profile.
 	*/
-	GLang* GetLang(void) const {return(Lang);}
+	double GetDisagreementRatio(const GProfile* prof1,const GProfile* prof2) const;
 
 	/**
-	* Get the disagreement ratio between two subprofiles.
-	* @param sub1           First SubProfile.
-	* @param sub2           Second SubProfile.
+	* Get the disagreement ratio between two profiles.
+	* @param prof1           First Profile.
+	* @param prof2           Second Profile.
 	*/
-	double GetDisagreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const;
+	double GetAgreementRatio(const GProfile* prof1,const GProfile* prof2) const;
 
 	/**
-	* Get the disagreement ratio between two subprofiles.
-	* @param sub1           First SubProfile.
-	* @param sub2           Second SubProfile.
-	*/
-	double GetAgreementRatio(const GSubProfile* sub1,const GSubProfile* sub2) const;
-
-	/**
-	* Compute the similarity between two subprofiles.
-	* @param sub1               Subprofile n1.
-	* @param sub2               Subprofile n2.
+	* Compute the similarity between two profiles.
+	* @param prof1           Profile n1.
+	* @param prof2           Profile n2.
 	* @return double
 	*/
-	double GetSim(const GSubProfile* sub1,const GSubProfile* sub2) const;
+	double GetSim(const GProfile* prof1,const GProfile* prof2) const;
 
 	/**
 	* Compute the similarity between two objects.

@@ -45,7 +45,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsession.h>
-#include <gsubprofile.h>
 #include <gprofile.h>
 #include <gsubjects.h>
 #include <guser.h>
@@ -104,21 +103,21 @@ int GGCAChromo::Compare(const GGCAChromo* c) const
 void GGCAChromo::ConstructChromo(GSession* grps)
 {
 	R::RCursor<GGroup> Grp;
-	RCursor<GSubProfile> SubProfile;
+	RCursor<GProfile> Profile;
 	GGCAGroup* grp;
 	GGCAObj** objs;
 	unsigned int i;
 
-	Grp=grps->GetGroups(Instance->Lang);
+	Grp=grps->GetGroups();
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
 		// Reserve a GA group
 		grp=ReserveGroup();
 
 		// Go through the current profiles and store them in thObjs1
-		SubProfile=Grp()->GetSubProfiles();
-		for(SubProfile.Start(),objs=thObjs1,NbObjs1=0;!SubProfile.End();SubProfile.Next(),objs++,NbObjs1++)
-			(*objs)=Instance->GetObj(SubProfile());
+		Profile=Grp()->GetProfiles();
+		for(Profile.Start(),objs=thObjs1,NbObjs1=0;!Profile.End();Profile.Next(),objs++,NbObjs1++)
+			(*objs)=Instance->GetObj(Profile());
 
 		// Mix randomly thObjs1
 		Instance->RandOrder<GGCAObj*>(thObjs1,NbObjs1);
@@ -141,7 +140,7 @@ void GGCAChromo::ConstructChromo(GSession* grps)
 void GGCAChromo::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-	if(Instance->Session->GetNbGroups(Instance->Lang))
+	if(Instance->Session->GetNbGroups())
 		ConstructChromo(Instance->Session);
 
 	// Call classic heuristic for non-assigned objects
@@ -173,7 +172,7 @@ void GGCAChromo::Evaluate(void)
 			{
 				if(!i)
 					Cur2()->Evaluate(CritSimJ,CritAgreement,CritDisagreement);
-				tmp=1-Instance->GetSim(Cur()->GetRelevant()->GetSubProfile(),Cur2()->GetRelevant()->GetSubProfile());
+				tmp=1-Instance->GetSim(Cur()->GetRelevant()->GetProfile(),Cur2()->GetRelevant()->GetProfile());
 				tmp=tmp*tmp;
 				if(tmp<min)
 					min=tmp;
@@ -338,9 +337,9 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 	GGCAObj** ptr2;
 	GGCAObj** ptr3;
 	double sim,minsim;
-	GSubProfile* sub;
-	GSubProfile* sub1;
-	GSubProfile* sub2;
+	GProfile* prof;
+	GProfile* prof1;
+	GProfile* prof2;
 	GGCAGroup* grp;
 	GGCAObj* worst1=0;
 	GGCAObj* worst2=0;
@@ -356,7 +355,7 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 		{
 			for(CurObj2.GoTo(i+1);!CurObj2.End();CurObj2.Next())
 			{
-				sim=Instance->GetSim(CurObj()->GetSubProfile(),CurObj2()->GetSubProfile());
+				sim=Instance->GetSim(CurObj()->GetProfile(),CurObj2()->GetProfile());
 				if(sim<minsim)
 				{
 					minsim=sim;
@@ -378,15 +377,15 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 
 	// Copy in thObjs1 the subprofiles most similar to worst1 and in thObjs2
 	// the subprofiles most similar to worst2
-	sub1=worst1->GetSubProfile();
-	sub2=worst2->GetSubProfile();
+	prof1=worst1->GetProfile();
+	prof2=worst2->GetProfile();
 	RCursor<GGCAObj> CurObj(GetObjs(*grp));
 	for(CurObj.Start();!CurObj.End();CurObj.Next())
 	{
 		if((CurObj()==worst1)||(CurObj()==worst2)) continue;
-		sub=CurObj()->GetSubProfile();
-		sim=Instance->GetSim(sub1,sub);
-		minsim=Instance->GetSim(sub2,sub);
+		prof=CurObj()->GetProfile();
+		sim=Instance->GetSim(prof1,prof);
+		minsim=Instance->GetSim(prof2,prof);
 		if(sim>minsim)
 		{
 			NbObjs1++;
@@ -423,7 +422,7 @@ void GGCAChromo::MergeBestSubProfiles(void)
 	GGCAGroup* bestgrp1;
 	GGCAGroup* bestgrp2;
 	double sim,maxsim;
-	GSubProfile* sub;
+	GProfile* prof;
 	GGCAObj** ptr;
 
 	// Find the two groups containing the most similar objects.
@@ -432,12 +431,12 @@ void GGCAChromo::MergeBestSubProfiles(void)
 	for(Cur.Start(),i=Cur.GetNb(),j=0,maxsim=-1.0,bestgrp1=bestgrp2=0;--i;Cur.Next(),j++)
 	{
 		grp1=GetGroup(Cur());
-		sub=Cur()->GetSubProfile();
+		prof=Cur()->GetProfile();
 		for(Cur2.GoTo(j+1);!Cur2.End();Cur2.Next())
 		{
 			grp2=GetGroup(Cur2());
 			if(grp1==grp2) continue;
-			sim=Instance->GetSim(sub,Cur2()->GetSubProfile());
+			sim=Instance->GetSim(prof,Cur2()->GetProfile());
 			if(sim>maxsim)
 			{
 				maxsim=sim;
@@ -485,7 +484,7 @@ void GGCAChromo::TreatSocialSubProfiles(bool rel)
 		if(Cur1()->GetNbObjs()!=1)
 			continue;
 		obj=Cur1()->GetObjPos(0);
-		if(!obj->GetSubProfile()->GetProfile()->IsSocial())
+		if(!obj->GetProfile()->IsSocial())
 			continue;
 
 		// Find a new group
@@ -497,7 +496,7 @@ void GGCAChromo::TreatSocialSubProfiles(bool rel)
 				continue;
 			Cur2()->ComputeRelevant();
 			if(rel)
-				tmp=Instance->GetSim(obj->GetSubProfile(),Cur2()->GetRelevant()->GetSubProfile());
+				tmp=Instance->GetSim(obj->GetProfile(),Cur2()->GetRelevant()->GetProfile());
 			else
 				tmp=Cur2()->ComputeHomogeneity(obj);
 			if(tmp>max)

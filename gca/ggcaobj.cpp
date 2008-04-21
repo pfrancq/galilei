@@ -33,7 +33,6 @@
 // include files for GALILEI
 #include <gdoc.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <gsession.h>
 
 
@@ -50,15 +49,15 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAObj::GGCAObj(const unsigned int id,GSubProfile* s)
-	: Id(id), SubProfile(s), SumPjk(0.0)
+GGCAObj::GGCAObj(const unsigned int id,GProfile* p)
+	: Id(id), Profile(p), SumPjk(0.0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GGCAObj::GGCAObj(const GGCAObj* obj)
-	: Id(obj->Id), SubProfile(obj->SubProfile)
+	: Id(obj->Id), Profile(obj->Profile)
 {
 }
 

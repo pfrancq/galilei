@@ -59,7 +59,7 @@ protected:
 	/**
 	* Pointer to a subprofile.
 	*/
-	GSubProfile* SubProfile;
+	GProfile* Profile;
 
 	/**
 	* Sum of all the "probabilities" of the documents.
@@ -71,9 +71,9 @@ public:
 	/**
 	* Construct the object.
 	* @param id             Identificator.
-	* @param s              Corresponding subprofile.
+	* @param p              Corresponding profile.
 	*/
-	GGCAObj(const unsigned int id,GSubProfile* s);
+	GGCAObj(const unsigned int id,GProfile* p);
 
 	/**
 	* Copy Construct.
@@ -104,7 +104,7 @@ public:
 	/**
 	* Return the subprofile of the object.
 	*/
-	GSubProfile* GetSubProfile(void) const {return(SubProfile);}
+	GProfile* GetProfile(void) const {return(Profile);}
 
 	/**
 	* Destruct the object.

@@ -33,7 +33,6 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gsubprofile.h>
 #include <gprofile.h>
 
 
@@ -128,7 +127,7 @@ void GGCAHeuristic::PostRun(void)
 		if(Cur1()->GetNbObjs()!=1)
 			continue;
 		obj=Cur1()->GetObjPos(0);
-		if(!obj->GetSubProfile()->GetProfile()->IsSocial())
+		if(!obj->GetProfile()->IsSocial())
 			continue;
 
 		// Find a new group
