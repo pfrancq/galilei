@@ -6,7 +6,7 @@
 
 	Group Description is Gravitational Point Computing Method - Header.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -112,12 +112,6 @@ public:
 	* @param grp            Group to compute.
 	*/
 	virtual void Compute(GGroup* grp);
-
-	/**
-	* Get the name of the model used for the description.
-	* @return C String.
-	*/
-	virtual const char* GetModelName(void) const {return("Vector");}
 
 	/**
 	* Create the parameters.

@@ -6,7 +6,7 @@
 
 	Group Description is Gravitational Point Computing Method - Implementation.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -40,7 +40,7 @@
 #include <ggroupcalcgravitation.h>
 #include <ggroup.h>
 #include <gsession.h>
-#include <gsubprofile.h>
+#include <gprofile.h>
 #include <gweightinfo.h>
 #include <gweightinfos.h>
 using namespace GALILEI;
@@ -57,7 +57,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac)
-	: GGroupCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(0,5000), MaxOrderSize(5000)
+	: GGroupCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
 }
@@ -90,7 +90,6 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 	unsigned int i;
 	GWeightInfo* ins;
 	GWeightInfo** w;
-	RCursor<GSubProfile> Sub;
 
 	// Clear the Vector.
 	Vector.Clear();
@@ -103,14 +102,14 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 	Infos.Clear();
 
 	// If no subprofiles -> No relevant one.
-	if(!grp->GetNbSubProfiles()) return;
+	if(!grp->GetNbProfiles()) return;
 
 	// Go through the subprofiles and sum the weigths.
-	Sub=grp->GetSubProfiles();
-	for(Sub.Start();!Sub.End();Sub.Next())
+	RCursor<GProfile> Prof(grp->GetProfiles());
+	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		// Go trough the words of the current subprofile
-		RCursor<GWeightInfo> Cur(Sub()->GetInfos());
+		RCursor<GWeightInfo> Cur(Prof()->GetInfos());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			ins=Vector.GetInsertPtr(*Cur());
@@ -134,7 +133,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbProfiles()));
 		}
 	}
 	else
@@ -142,12 +141,12 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbSubProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbProfiles()));
 		}
 	}
 
 	// Update the group.
-	grp->Update(grp->GetLang(),&Infos,true);
+	grp->Update(&Infos,true);
 }
 
 
