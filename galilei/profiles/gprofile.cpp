@@ -6,7 +6,7 @@
 
  Profile - Implementation.
 
- Copyright 2001-2004 by the Université libre de Bruxelles.
+ Copyright 2001-2008 by the Université libre de Bruxelles.
 
  Authors:
   Pascal Francq (pfrancq@ulb.ac.be).
@@ -35,8 +35,9 @@
 #include <gprofile.h>
 #include <gsession.h>
 #include <guser.h>
-#include <gsubprofile.h>
 #include <gdoc.h>
+#include <gweightinfo.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -49,8 +50,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFdbk::GFdbk(unsigned int docid,GLang* lang,tDocAssessment fdbk,const RDate& when,const R::RDate& computed)
-  : DocId(docid), Fdbk(fdbk), When(when), Computed(computed), Lang(lang)
+GFdbk::GFdbk(unsigned int docid,tDocAssessment fdbk,const RDate& when,const R::RDate& computed)
+  : DocId(docid), Fdbk(fdbk), When(when), Computed(computed)
 {
 }
 
@@ -99,17 +100,16 @@ RDate GFdbk::GetComputed(void) const
 
 
 //------------------------------------------------------------------------------
-bool GFdbk::MustUse(const GSubProfile* subprofile) const
+bool GFdbk::MustUse(const GProfile* profile) const
 {
-	return((When>subprofile->GetComputed())||(Computed>subprofile->GetComputed()));
+	return((When>profile->GetComputed())||(Computed>profile->GetComputed()));
 }
 
 
 //------------------------------------------------------------------------------
-void GFdbk::HasUpdate(GLang* lang)
+void GFdbk::HasUpdate(void)
 {
 	Computed.SetToday();
-	Lang=lang;
 }
 
 
@@ -159,13 +159,22 @@ GFdbk::~GFdbk(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,unsigned int id,const R::RString name,bool s,unsigned int nb,unsigned int nbf)
-  : RContainer<GSubProfile,false,true>(nb,nb/2), User(usr),Id(id), Name(name),
-    Fdbks(nbf+nbf/2,nbf/2), Social(s)
+GProfile::GProfile(GUser* usr,unsigned int id,const R::RString name,unsigned int grpid,R::RDate a,R::RDate u,R::RDate c,bool s,unsigned int nbf)
+  : GWeightInfos(60), User(usr),Id(id), Name(name),
+    Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c), GroupId(grpid), Attached(a) 
 {
 	if(!User)
 		throw GException("Profile "+RString::Number(id)+" has no parent user");
 	User->InsertPtr(this);
+
+	// Verify if the group is existing in memory
+	if((GroupId!=cNoRef)&&(GSession::Get()))
+	{
+		GGroup* grp=GSession::Get()->GetGroup(GroupId,false,false);
+		if(grp)
+			grp->InsertProfile(this);
+	}
+	
 	if(Id!=cNoRef)
 		GSession::Event(this,eObjNew);
 }
@@ -193,6 +202,18 @@ int GProfile::Compare(const unsigned int id) const
 
 
 //------------------------------------------------------------------------------
+void GProfile::LoadInfos(void) const
+{
+	RContainer<GWeightInfo,false,true> Infos(1000,500);
+	GSession* session=GSession::Get();
+	if(session&&session->GetStorage())
+		session->GetStorage()->LoadInfos(Infos,otProfile,Id);
+	if(Infos.GetNb())
+		const_cast<GProfile*>(this)->Update(Infos,false);
+}
+
+		
+//------------------------------------------------------------------------------
 void GProfile::SetId(unsigned int id)
 {
 	if(id==cNoRef)
@@ -217,48 +238,38 @@ void GProfile::SetSocial(bool social)
 
 
 //------------------------------------------------------------------------------
-GSubProfile* GProfile::GetSubProfile(const GLang* lang) const
+bool GProfile::MustCompute(void) const
 {
-	// If no lang -> return null
-	if(!lang) return(0);
-	return(GetPtr<const GLang*>(lang,false));
+	if(!Fdbks.GetNb())
+		return(false);
+	if(Updated<Computed)
+		return(false);
+	return(true);
 }
 
 
 //------------------------------------------------------------------------------
-GSubProfile* GProfile::GetInsertSubProfile(GLang* lang,GSession* s)
+void GProfile::SetGroup(unsigned int groupid)
 {
-	GSubProfile* sub;
-
-	// If no lang
-	if(!lang) return(0);
-
-	sub=GetPtr<const GLang*>(lang,false);
-
-	// If subprofile does not exist -> create it
-	if(!sub)
-	{
-		sub=new GSubProfile(this,cNoRef,lang,cNoRef,RDate::null,RDate::GetToday(),RDate::null);
-		s->InsertSubProfile(sub);
-	}
-
-	return(sub);
+	GroupId=groupid;
+	if(GroupId!=cNoRef)
+		Attached.SetToday();
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GProfile::GetNbAssessedDocs(const GLang* lang) const
+RDate GProfile::GetAttached(void) const
 {
-	return(GetSubProfile(lang)->GetNbAssessedDocs());
+	return(Attached);
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GProfile::GetCommonOKDocs(const GProfile* prof) const
+size_t GProfile::GetCommonOKDocs(const GProfile* prof) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
-	unsigned int nb=0;
+	size_t nb=0;
 
 	// Go through the document judged by the corresponding profile
 	RCursor<GFdbk> fdbks=GetFdbks();
@@ -282,11 +293,11 @@ unsigned int GProfile::GetCommonOKDocs(const GProfile* prof) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GProfile::GetCommonDocs(const GProfile* prof) const
+size_t GProfile::GetCommonDocs(const GProfile* prof) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
-	unsigned int nb=0;
+	size_t nb=0;
 
 	// Go through the document judged by the corresponding profile
 	RCursor<GFdbk> Fdbks=GetFdbks();
@@ -307,11 +318,11 @@ unsigned int GProfile::GetCommonDocs(const GProfile* prof) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GProfile::GetCommonDiffDocs(const GProfile* prof) const
+size_t GProfile::GetCommonDiffDocs(const GProfile* prof) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
-	unsigned int nb=0;
+	size_t nb=0;
 	bool bOK,bOK2;
 
 	// Go through the document judged by the corresponding profile
@@ -337,7 +348,7 @@ unsigned int GProfile::GetCommonDiffDocs(const GProfile* prof) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GProfile::GetNbAssessedDocs(void) const
+size_t GProfile::GetNbAssessedDocs(void) const
 {
 	return(Fdbks.GetNb());
 }
@@ -351,16 +362,9 @@ RCursor<GFdbk> GProfile::GetFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GProfile::GetSubProfiles(void) const
+void GProfile::InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
 {
-	return(RCursor<GSubProfile>(*this));
-}
-
-
-//------------------------------------------------------------------------------
-void GProfile::InsertFdbk(unsigned int docid,GLang* lang,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
-{
-	Fdbks.InsertPtr(new GFdbk(docid,lang,assess,date,update));
+	Fdbks.InsertPtr(new GFdbk(docid,assess,date,update));
 }
 
 
@@ -368,6 +372,41 @@ void GProfile::InsertFdbk(unsigned int docid,GLang* lang,tDocAssessment assess,c
 void GProfile::DeleteFdbk(unsigned int docid)
 {
 	Fdbks.DeletePtr(Fdbks.GetPtr<unsigned int>(docid));
+}
+
+
+//------------------------------------------------------------------------------
+void GProfile::Update(R::RContainer<GWeightInfo,false,true>& infos,bool computed)
+{
+	// Remove its references
+	if(computed)
+		DelRefs(otProfile);
+
+	// Assign information
+	GWeightInfos::Clear();
+	if(computed)
+	{
+		State=osUpdated;
+		Computed.SetToday();
+
+		// Update the group were it belongs
+		if(GSession::Get())
+			GSession::Get()->UpdateGroup(this);
+	}
+	else
+		State=osUpToDate;
+	CopyInfos(&infos);
+
+	// Clear infos
+	infos.Clear();
+
+	// Update its references
+	if(computed)
+		AddRefs(otProfile);
+
+	// Emit an event that it was modified
+	if(computed)
+		GSession::Event(this,eObjModified);
 }
 
 
@@ -386,44 +425,11 @@ GFdbk* GProfile::GetFdbk(unsigned int docid) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::HasUpdate(unsigned int docid,GLang* lang)
+void GProfile::HasUpdate(unsigned int docid)
 {
 	GFdbk* fdbk=Fdbks.GetPtr(docid);
 	if(fdbk)
-		fdbk->HasUpdate(lang);
-}
-
-
-//------------------------------------------------------------------------------
-void GProfile::DispatchFdbks(void)
-{
-	GSubProfile* sub;
-
-	// Go through each subprofiles and clear the feedbacks
-	RCursor<GSubProfile> SubProfiles(*this);
-	for(SubProfiles.Start();!SubProfiles.End();SubProfiles.Next())
-		SubProfiles()->ClearFdbks();
-
-	GSession* session=GSession::Get();
-	if(!session)
-		return;
-
-	// Go through each assessed document
-	// If a language is defined -> put it in the corresponding subprofile.
-	RCursor<GFdbk> Docs(Fdbks);
-	for(Docs.Start();!Docs.End();Docs.Next())
-	{
-		if(!Docs()->GetLang()) continue;
-
-		// Get the subprofile (if subprofile does not exist -> create it)
-		sub=GetPtr<const GLang*>(Docs()->GetLang(),false);
-		if(!sub)
-		{
-			sub=new GSubProfile(this,cNoRef,Docs()->GetLang(),cNoRef,RDate::null,RDate::GetToday(),RDate::null);
-			GSession::Get()->InsertSubProfile(sub);
-		}
-		sub->InsertFdbk(Docs());
-	}
+		fdbk->HasUpdate();
 }
 
 

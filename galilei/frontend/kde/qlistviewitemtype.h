@@ -4,9 +4,9 @@
 
 	QListViewItemType.h
 
-	List view itelm representing a GALILEI type - Header.
+	QListview item to representing a GALILEI object - Header.
 
-	Copyright 2001-2002 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -53,7 +53,6 @@ class GGroup;
 class GGroupHistory;
 class GUser;
 class GProfile;
-class GSubProfile;
 class GWeightInfosHistory;
 class GDoc;
 class GEngineDoc;
@@ -80,7 +79,6 @@ public:
 		GGroup* Group;
 		GUser* User;
 		GProfile* Profile;
-		GSubProfile* SubProfile;
 		GWeightInfosHistory* Giwwh;
 		GGroupHistory* GroupHistory;
 		GDoc* Doc;
@@ -98,7 +96,7 @@ public:
 	/**
 	* Enumeration type of the item.
 	*/
-	enum tType {tNothing,tGroup,tUser,tProfile,tSubProfile,tGiwwh,tGroupHistory,tDocument,tEngineDoc,tSubject,tLang};
+	enum tType {tNothing,tGroup,tUser,tProfile,tGiwwh,tGroupHistory,tDocument,tEngineDoc,tSubject,tLang};
 
 	/**
 	* type of the item
@@ -126,6 +124,11 @@ public:
 	QListViewItemType(GUser* user, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
+	* constructor for a group, attached to a listview.
+	*/
+	QListViewItemType(GGroup* group, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+	
+	/**
 	* constructor for a group, attached to a listviewitem.
 	*/
 	QListViewItemType(GGroup* group, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
@@ -138,17 +141,12 @@ public:
 	/**
 	* constructor for a profile, attached to a listviewitem.
 	*/
-	QListViewItemType(GProfile* profile, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
+	QListViewItemType(GProfile* profile, QListViewItem* parent,QString str1=QString::null,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
 	* constructor for a profile, attached to a listview.
 	*/
-	QListViewItemType(GProfile* profile, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
-
-	/**
-	* constructor for asubprofile, attached to a listviewitem.
-	*/
-	QListViewItemType(GSubProfile* sub, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+	QListViewItemType(GProfile* profile, QListView* parent,QString str1=QString::null,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
 	* constructor for a vector of words, attached to a listview.

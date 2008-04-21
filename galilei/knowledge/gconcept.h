@@ -6,7 +6,7 @@
 
 	Concept - Header.
 
-	Copyright 2006-2007 by the Université Libre de Bruxelles.
+	Copyright 2006-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -82,9 +82,9 @@ protected:
 	size_t NbRefDocs;
 
 	/**
-	* Number of references in subprofiles.
+	* Number of references in profiles.
 	*/
-	size_t NbRefSubProfiles;
+	size_t NbRefProfiles;
 
 	/**
 	* Number of references in groups.
@@ -117,10 +117,10 @@ public:
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	* @param refdocs         Number of documents referenced.
-	* @param refsubprofiles  Number of subprofiles referenced.
+	* @param refprofiles     Number of subprofiles referenced.
 	* @param refgroups       Number of groups referenced.
 	*/
-	GConcept(unsigned int id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refsubprofiles,size_t refgroups);
+	GConcept(unsigned int id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refgroups);
 
 	/**
 	* Compare two concepts.

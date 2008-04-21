@@ -6,9 +6,10 @@
 
 	History of Groups for a given language - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		David Wartel (dwartel@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or

@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2007 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -228,19 +228,6 @@ public:
 	*/
 	R::RRandom* GetRandom(void) const;
 	
-	/**
-	 * Get a cursor over all language specific data. 
-	 * @return R::RCursor<GLangData>
-	 */
-	R::RCursor<GLangData> GetLanguageSpecifics(void);
-
-	/**
-	 * Get a pointer to a structure holding language specific data. If the 
-	 * structure does not exist, it is created.
-	 * @param lang           Language fo which the structure is searched.
-	 */
-	GLangData* GetLanguageSpecific(GLang* lang);
-	
 	//@} General methods
 
 	//-----------------------------------------------------
@@ -409,19 +396,6 @@ public:
 	size_t GetMaxPosDoc(void) const;
 
 	/**
-	* Get a cursor on the documents of a given langage.
-	* @param lang            Language of the documents.
-	*/
-	R::RCursor<GDoc> GetDocs(GLang* lang) const;
-
-	/**
-	* Get the number of documents handled for a given langage.
-	* @param lang            Langage of the documents
-	* @returns Number of documents of this language.
-	*/
-	size_t GetNbDocs(GLang* lang) const;
-
-	/**
 	* Fill a given array with all the documents of a given language. The array
 	* must be created and must be large enough to hold all the documents. It
 	* can contained null pointers.
@@ -466,13 +440,6 @@ public:
 	void InsertDoc(GDoc* d);
 
 	/**
-	* Move a document from the container holding all the documents with an
-	* unknown language to the container corresponding to the language.
-	* @param d               Pointer to the document.
-	*/
-	void MoveDoc(GDoc* d);
-
-	/**
 	* Clear all the documents.
 	*/
 	void ClearDocs(void);
@@ -509,7 +476,7 @@ public:
 
 
 	//-----------------------------------------------------
-	/** @name Users/Profiles/Subprofiles Methods
+	/** @name Users/Profiles Methods
 	*/
 	// @{
 
@@ -594,49 +561,6 @@ public:
 	void InsertProfile(GProfile* p);
 
 	/**
-	* Get a cursor over the subprofiles of the system for a given language.
-	* @param lang            Language.
-	*/
-	R::RCursor<GSubProfile> GetSubProfiles(const GLang* lang) const;
-
-	/**
-	* Get the number of subprofiles defined in the system for a given language.
-	* @param lang            Language. If null, the total number of subprofiles
-	*                        is computed.
-	*/
-	size_t GetNbSubProfiles(const GLang* lang) const;
-
-	/**
-	* Get the highest identificator assign to a subprofile for a given
-	* language.
-	* @param lang            Language.
-	*/
-	size_t GetMaxSubProfileId(const GLang* lang) const;
-
-	/**
-	* Get a subprofile with a specific identifier.
-	* @param id              Identifier.
-	* @param lang            Language.
-	* @param load            If set to true, the subprofile is eventually loaded into
-	*                        memory.
-	* @param null            If set to true, if the subprofile does not exist,
-	*                        return 0, else an exception is generated.
-	*/
-	GSubProfile* GetSubProfile(GLang* lang,const unsigned int id,bool load=true,bool null=false) const;
-
-	/**
-	* Assign an identifier to a new subprofile.
-	* @param sub             Subprofile.
-	*/
-	void AssignId(GSubProfile* sub);
-
-	/**
-	* Insert a subprofiles in the container.
-	* @param sub             Subprofile to add.
-	*/
-	void InsertSubProfile(GSubProfile* sub);
-
-	/**
 	* Compute the profiles.
 	* @param rec             Receiver for the signals.
 	*/
@@ -658,28 +582,26 @@ public:
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identificator of the document.
-	* @param lang            Language of the document.
 	*/
-	void UpdateProfiles(unsigned int docid,GLang* lang);
+	void UpdateProfiles(unsigned int docids);
 
 	/**
 	* Insert a new Feedback.
-	* @param p               Identificator of the profile.
-	* @param d               Identificator of the document.
-	* @param lang            Language of the document.
+	* @param profid          Identificator of the profile.
+	* @param docid           Identificator of the document.
 	* @param assess          Feedback.
 	* @param date            Date on the last feedback.
 	* @param computed        Date on the last computation of the document.
 	* @param newone          New feedback in the system?
 	*/
-	void InsertFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed,bool newone=false);
+	void InsertFdbk(size_t profid,size_t docid,tDocAssessment assess,R::RDate date,R::RDate computed,bool newone=false);
 
 	/**
 	* Clear all the feedbacks.
 	*/
 	void ClearFdbks(void);
 
-	// @} Users/Profiles/Subprofiles
+	// @} Users/Profiles
 
 
 	//-----------------------------------------------------
@@ -688,21 +610,17 @@ public:
 	// @{
 
 	/**
-	* Get a cursor on the groups of a given langage.
-	* @param lang            Language of the groups.
-	* @return GGroupCursor.
+	* Get a cursor on the groups.
 	*/
-	R::RCursor<GGroup> GetGroups(GLang* lang);
+	R::RCursor<GGroup> GetGroups(void);
 
 	/**
-	* Get the number of groups of a given langauge handled.
-	* @returns Number of groups.
+	* Get the number of groups.
 	*/
-	unsigned int GetNbGroups(GLang* lang) const;
+	size_t GetNbGroups(void) const;
 
 	/**
 	* Get a group corresponding to a given identificator.
-	* @param lang            Language.
 	* @param id              Identificator of the group.
 	* @param load            If set to true, the group is eventually loaded into
 	*                        memory.
@@ -710,7 +628,7 @@ public:
 	*                        return 0, else an exception is generated.
 	* @return Pointer to GGroup.
 	*/
-	GGroup* GetGroup(GLang* lang,unsigned int id,bool load=true,bool null=false) const;
+	GGroup* GetGroup(unsigned int id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new group.
@@ -732,10 +650,9 @@ public:
 	void DeleteGroup(GGroup* grp);
 
 	/**
-	* Clear the groups of a given language.
-	* @param lang            Language of the groups to delete.
+	* Clear the groups.
 	*/
-	void ClearGroups(GLang* lang);
+	void ClearGroups(void);
 
 	/**
 	* Groups the subprofile into virtual communities. At the end, all the
@@ -766,10 +683,16 @@ public:
 	void LoadHistoricGroupsByDate(R::RString mindate, R::RString maxdate);
 
 	/**
-	* A subprofile was updated and the corresponding groups must be updated.
-	* @param subid           Identificator of the subprofile.
+	* A profile was updated and the corresponding groups must be updated.
+	* @param prof            Profile.
 	*/
-	void UpdateGroups(unsigned int subid);
+	void UpdateGroup(GProfile* prof);
+
+	/**
+	* A profile was updated and the corresponding groups must be updated.
+	* @param profid          Identificator of the profile.
+	*/
+	void UpdateGroup(size_t profid);
 
 	// @} Groups
 

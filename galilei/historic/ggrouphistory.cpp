@@ -4,11 +4,12 @@
 
 	GGroupHistory.cpp
 
-	History of a given group  - Implementation.
+	History of a given group - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		David Wartel (dwartel@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
@@ -46,8 +47,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupHistory::GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps)
-	: RContainer<GWeightInfosHistory,false,true>(20,10), Id(id), Lang(lang),
+GGroupHistory::GGroupHistory(const unsigned int id,GGroupsHistory* grps)
+	: RContainer<GWeightInfosHistory,false,true>(20,10), Id(id),
 	  Modified(false), Parent(grps), Childrens(2,2)
 {
 }

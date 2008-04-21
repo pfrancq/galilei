@@ -6,7 +6,7 @@
 
 	Generic Profile Computing Method - Implementation.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -45,7 +45,7 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GProfileCalc::GProfileCalc(GFactoryProfileCalc* fac)
-	: GPlugin<GFactoryProfileCalc>(fac), SubProfile(0)
+	: GPlugin<GFactoryProfileCalc>(fac)
 {
 }
 

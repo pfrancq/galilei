@@ -6,7 +6,7 @@
 
 	Widget to show a profile - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).

@@ -4,12 +4,12 @@
 
 	QListViewItemType.cpp
 
-	Widget to show a subprofile desciption in vector model - Implementation.
+	QListview item to representing a GALILEI object - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
-
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,10 +32,15 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <rqt.h>
+using namespace R;
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
 #include <ggroup.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <gweightinfoshistory.h>
 #include <gdoc.h>
 using namespace GALILEI;
@@ -91,6 +96,15 @@ GALILEI::QListViewItemType::QListViewItemType(GUser* user, QListView* parent,QSt
 
 
 //-----------------------------------------------------------------------------
+GALILEI::QListViewItemType::QListViewItemType(GGroup* group, QListView* parent,QString str1,QString str2,QString str3)
+	: QListViewItem(parent,str1,str2,str3), Type(tGroup)
+{
+	Obj.Group=group;
+	Level=0;
+}
+
+
+//-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GGroup* group, QListViewItem* parent,QString str1,QString str2,QString str3)
 	: QListViewItem(parent,str1,str2,str3), Type(tGroup)
 {
@@ -110,7 +124,7 @@ GALILEI::QListViewItemType::QListViewItemType(GSubject* subject, QListView* pare
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GProfile* profile, QListViewItem* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3,str4), Type(tProfile)
+	: QListViewItem(parent,ToQString(profile->GetName()),ToQString(profile->GetUser()->GetFullName()),str1,str2,str3,str4), Type(tProfile)
 {
 	Obj.Profile=profile;
 	Level=0;
@@ -119,20 +133,12 @@ GALILEI::QListViewItemType::QListViewItemType(GProfile* profile, QListViewItem* 
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GProfile* profile, QListView* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3,str4), Type(tProfile)
+	: QListViewItem(parent,ToQString(profile->GetName()),ToQString(profile->GetUser()->GetFullName()),str1,str2,str3,str4), Type(tProfile)
 {
 	Obj.Profile=profile;
 	Level=0;
 }
 
-
-//-----------------------------------------------------------------------------
-GALILEI::QListViewItemType::QListViewItemType(GSubProfile* sub, QListViewItem* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tSubProfile)
-{
-	Obj.SubProfile=sub;
-	Level=0;
-}
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GWeightInfosHistory* giwwh, QListView* parent,QString str1,QString str2,QString str3,QString str4)

@@ -6,7 +6,7 @@
 
 	GALILEI Header  - Implementation.
 
-	Copyright 2005-2007 by the Université libre de Bruxelles.
+	Copyright 2005-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -71,16 +71,14 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("user"));
 		case otProfile:
 			return(RString("profile"));
-		case otSubProfile:
-			return(RString("subProfile"));
 		case otGroup:
 			return(RString("group"));
-		case otDocSubProfile:
-			return(RString("document or subprofile"));
+		case otDocProfile:
+			return(RString("document or profile"));
 		case otDocGroup:
 			return(RString("document or group"));
-		case otSubProfileGroup:
-			return(RString("subprofile or group"));
+		case otProfileGroup:
+			return(RString("profile or group"));
 		case otFdbk:
 			return(RString("assessment"));
 		case otLang:

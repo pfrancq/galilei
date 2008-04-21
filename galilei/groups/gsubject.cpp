@@ -38,37 +38,12 @@
 #include <gsubjects.h>
 #include <gsession.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <guser.h>
 #include <glang.h>
 #include <gdoc.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GSubProfiles
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Set of subprofiles of a given language.
-class GSubProfiles : public R::RContainer<GSubProfile,false,true>
-{
-public:
-
-	GLang* Lang;                 // Language
-
-	// Constructor and Compare methods.
-	GSubProfiles(GLang* lang,unsigned int s)
-		: RContainer<GSubProfile,false,true>(s,s/2), Lang(lang) {}
-	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
-	int Compare(const GSubProfiles& s) const {return(Lang->Compare(s.Lang));}
-	int Compare(const GSubProfiles* s) const {return(Lang->Compare(s->Lang));}
-};
 
 
 
@@ -88,11 +63,10 @@ public:
 	bool Used;                                              // Determine if the subject is used.
 	R::RContainer<GDoc,false,true> Docs;                    // Documents attached to this subject.
 	R::RContainer<GProfile,false,true> Profiles;            // Profiles attached to this subject.
-	R::RContainer<GSubProfiles,true,true> SubProfiles;      // SubProfiles attached to this subject.
 	R::RContainer<GGroup,false,true> Groups;                // Groups attached to this subject.
 
 	Intern(unsigned int id,const char* name,bool u) :
-	 Id(id), Name(name), Used(u), Docs(1000,500), Profiles(10,5), SubProfiles(10,5), Groups(10,5)
+	 Id(id), Name(name), Used(u), Docs(1000,500), Profiles(10,5), Groups(10,5)
 	{}
 };
 
@@ -140,19 +114,15 @@ void GSubject::Insert(GDoc* doc)
 
 
 //------------------------------------------------------------------------------
-GSubject* GSubject::GetIdealGroup(GSubProfile* sub) const
-{
-	GSubject* subject;
-
-	RCursor<GProfile> Prof(Data->Profiles);
-	for(Prof.Start();!Prof.End();Prof.Next())
-	{
-		if(Prof()->IsIn(sub))
-			return(const_cast<GSubject*>(this));
-	}
+GSubject* GSubject::GetIdealGroup(GProfile* prof) const
+{	
+	if(Data->Profiles.IsIn(*prof))
+		return(const_cast<GSubject*>(this));
+	
+	GSubject* subject(0);
 	RCursor<GSubject> Cur(GetNodes());
-	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
-		subject=Cur()->GetIdealGroup(sub);
+	for(Cur.Start();(!Cur.End())&&(!subject);Cur.Next())
+		subject=Cur()->GetIdealGroup(prof);
 	return(subject);
 }
 
@@ -160,31 +130,14 @@ GSubject* GSubject::GetIdealGroup(GSubProfile* sub) const
 //------------------------------------------------------------------------------
 GSubject* GSubject::GetIdealGroup(GDoc* doc) const
 {
-	GSubject* subject;
-
-	RCursor<GDoc> Doc(Data->Docs);
-	for(Doc.Start();!Doc.End();Doc.Next())
-	{
-		if(Doc()==doc)
-			return(const_cast<GSubject*>(this));
-	}
+	if(Data->Docs.IsIn(*doc))
+		return(const_cast<GSubject*>(this));
+	
+	GSubject* subject(0);
 	RCursor<GSubject> Cur(GetNodes());
-	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
+	for(Cur.Start();(!Cur.End())&&(!subject);Cur.Next())
 		subject=Cur()->GetIdealGroup(doc);
 	return(subject);
-}
-
-
-//------------------------------------------------------------------------------
-bool GSubject::IsIn(GSubProfile* sub) const
-{
-	RCursor<GProfile> Prof(Data->Profiles);
-	for(Prof.Start();!Prof.End();Prof.Next())
-	{
-		if(Prof()->IsIn(sub))
-			return(true);
-	}
-	return(false);
 }
 
 
@@ -224,103 +177,41 @@ void GSubject::ClearGroups(void)
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbIdealGroups(const GLang* lang) const
+size_t GSubject::GetNbIdealGroups(void) const
 {
-	GSubject* subject;
-	size_t nb;
-
-	RCursor<GProfile> Prof(Data->Profiles);
-	for(Prof.Start(),nb=0;!Prof.End();Prof.Next())
-	{
-		if(Prof()->IsIn(lang,false))
-		{
-			nb++;
-			break;
-		}
-	}
+	size_t nb(0);
+	
+	if(Data->Profiles.GetNb())
+		nb++;
 	RCursor<GSubject> Cur(GetNodes());
-	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
-		nb+=Cur()->GetNbIdealGroups(lang);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		nb+=Cur()->GetNbIdealGroups();
 	return(nb);
 }
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbTopicsDocs(const GLang* lang) const
+size_t GSubject::GetNbTopicsDocs(void) const
 {
-	GSubject* subject;
-	size_t nb;
-
-	RCursor<GDoc> Docs(Data->Docs);
-	for(Docs.Start(),nb=0;!Docs.End();Docs.Next())
-	{
-		if(Docs()->GetLang()==lang)
-		{
-			nb++;
-			break;
-		}
-	}
+	size_t nb(0);
+		
+	if(Data->Docs.GetNb())
+		nb++;
 	RCursor<GSubject> Cur(GetNodes());
-	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
-		nb+=Cur()->GetNbTopicsDocs(lang);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		nb+=Cur()->GetNbTopicsDocs();
 	return(nb);
 }
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbSubProfiles(const GLang* lang) const
+size_t GSubject::GetNbProfiles(const GGroup* grp) const
 {
-	unsigned int nb;
-
+	size_t tot(0);
 	RCursor<GProfile> Prof(Data->Profiles);
-	for(Prof.Start(),nb=0;!Prof.End();Prof.Next())
-	{
-		if(Prof()->IsIn(lang,false))
-			nb++;
-	}
-	return(nb);
-}
-
-
-//------------------------------------------------------------------------------
-void GSubject::InsertSubProfile(GSubProfile* s)
-{
-	GLang* l;
-	GSubProfiles* list;
-
-	l=s->GetLang();
-	list=Data->SubProfiles.GetPtr<const GLang*>(l);
-	if(!list)
-		Data->SubProfiles.InsertPtr(list=new GSubProfiles(l,Data->Profiles.GetMaxNb()));
-//	list->InsertPtrAt(s,s->GetId());
-	if(!list->IsIn(s))
-		list->InsertPtr(s);
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GSubProfile> GSubject::GetSubProfiles(const GLang* lang) const
-{
-	GSubProfiles* ptr=Data->SubProfiles.GetPtr(lang);
-	if(ptr)
-		return(RCursor<GSubProfile>(*ptr));
-	return(RCursor<GSubProfile>());
-}
-
-
-//------------------------------------------------------------------------------
-size_t GSubject::GetNbSubProfiles(const GGroup* grp) const
-{
-	size_t tot;
-	RCursor<GProfile> sub(Data->Profiles);
-	GLang* lang=grp->GetLang();
-
-	for(sub.Start(),tot=0;!sub.End();sub.Next())
-	{
-		GSubProfile* subprofile=sub()->GetSubProfile(lang);
-		if((subprofile)&&(grp->IsIn(subprofile)))
+	for(Prof.Start();!Prof.End();Prof.Next())
+		if(grp->IsIn(Prof()))
 			tot++;
-	}
 	return(tot);
 }
 
@@ -356,29 +247,9 @@ unsigned int GALILEI::GSubject::GetNbDocs(void) const
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbDocs(const GLang* lang) const
-{
-	unsigned int nb;
-
-	RCursor<GDoc> Doc(Data->Docs);
-	for(Doc.Start(),nb=0;!Doc.End();Doc.Next())
-	{
-		if(Doc()->GetLang()==lang)
-			nb++;
-	}
-	return(nb);
-}
-
-
-//------------------------------------------------------------------------------
 void GSubject::Insert(GProfile* profile)
 {
 	Data->Profiles.InsertPtr(profile);
-
-	// Go trought the subprofiles
-	RCursor<GSubProfile> Sub(profile->GetSubProfiles());
-	for(Sub.Start();!Sub.End();Sub.Next())
-		InsertSubProfile(Sub());
 }
 
 
@@ -467,7 +338,7 @@ void GSubject::SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocia
 	{
 		if(Cur()->GetPtr(Data->Name,false))
 			continue;
-		prof=new GProfile(Cur(),cNoRef,Data->Name,nbsocial,5);
+		prof=new GProfile(Cur(),cNoRef,Data->Name,cNoRef,RDate::GetToday(),RDate::GetToday(),RDate::GetToday(),nbsocial,5);
 		session->AssignId(prof);
 		session->InsertProfile(prof);
 		if(nbsocial)
@@ -482,7 +353,6 @@ void GSubject::SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocia
 void GSubject::ReInit(void)
 {
 	Data->Profiles.Clear();
-	Data->SubProfiles.Clear();
 	Data->Groups.Clear();
 	Data->Used=false;
 }

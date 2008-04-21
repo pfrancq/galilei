@@ -5,9 +5,9 @@ AM_CXXFLAGS =
 AM_FFLAGS =
 SUBDIRS =
 libgalilei_profiles_la_LIBADD = $(LIB_R)
-libgalilei_profiles_la_SOURCES = gprofilecalc.cpp gsubprofile.cpp gprofile.cpp \
+libgalilei_profiles_la_SOURCES = gprofilecalc.cpp gprofile.cpp \
 	gpostprofile.cpp guser.cpp gpreprofile.cpp
 profilesincludedir = $(includedir)/galilei
-profilesinclude_HEADERS = gprofilecalc.h gprofile.h gsubprofile.h guser.h \
+profilesinclude_HEADERS = gprofilecalc.h gprofile.h guser.h \
 	gpostprofile.h gpreprofile.h
 

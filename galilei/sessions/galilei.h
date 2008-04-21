@@ -6,7 +6,7 @@
 
 	GALILEI Header - Header.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -122,7 +122,6 @@ class GIndexer;
 // forward class declaration - Profiles Part
 class GUser;
 class GProfile;
-class GSubProfile;
 class GFdbk;
 class GProfileCalc;
 class GFactoryProfileCalc;
@@ -183,7 +182,6 @@ class GMeasureManager;
 class GFactoryMeasure;
 class GTypeMeasureManager;
 class GGALILEIApp;
-class GLangData;
 
 
 //------------------------------------------------------------------------------
@@ -204,11 +202,10 @@ enum tObjType
 	otDoc=2                      /** Document. */,
 	otUser=5                     /** User.*/,
 	otProfile=6                  /** Profile.*/,
-	otSubProfile=7               /** SubProfile.*/,
 	otGroup=9                    /** Group.*/,
-	otDocSubProfile=10           /** Document or SubProfile.*/,
+	otDocProfile=10              /** Document or Profile.*/,
 	otDocGroup=11                /** Document or Group.*/,
-	otSubProfileGroup=12         /** SubProfile or Group.*/,
+	otProfileGroup=12            /** Profile or Group.*/,
 	otFdbk=13                    /** Assessment of a document by a profile.*/,
 	otLang=14                    /** Language. */,
 	otHistory=15                 /** History */

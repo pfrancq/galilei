@@ -6,7 +6,7 @@
 
 	Widget to show a profile - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).

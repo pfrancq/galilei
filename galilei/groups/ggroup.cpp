@@ -39,7 +39,6 @@
 // include files for GALILEI
 #include <ggroup.h>
 #include <gdoc.h>
-#include <gsubprofile.h>
 #include <gprofile.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
@@ -83,8 +82,8 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroup::GGroup(unsigned int id,GLang* lang,bool com,const R::RDate& u,const R::RDate& c)
-	: RContainer<GSubProfile,false,true>(20,10), GWeightInfos(lang,60), Id(id),
+GGroup::GGroup(unsigned int id,bool com,const R::RDate& u,const R::RDate& c)
+	: RContainer<GProfile,false,true>(20,10), GWeightInfos(60), Id(id), 
 	  Community(com),  Updated(u), Computed(c)
 {
 	if(Id!=cNoRef)
@@ -137,7 +136,7 @@ void GGroup::LoadInfos(void) const
 	if(session&&session->GetStorage())
 		session->GetStorage()->LoadInfos(Infos,otGroup,Id);
 	if(Infos.GetNb())
-		const_cast<GGroup*>(this)->Update(Lang,&Infos,false);
+		const_cast<GGroup*>(this)->Update(&Infos,false);
 }
 
 
@@ -166,74 +165,71 @@ void GGroup::SetId(unsigned int id)
 
 
 //------------------------------------------------------------------------------
-bool GGroup::IsIn(const GSubProfile* sp) const
+bool GGroup::IsIn(const GProfile* prof) const
 {
-	return(R::RContainer<GSubProfile,false,true>::IsIn(sp));
+	return(RContainer<GProfile,false,true>::IsIn(*prof));
 }
 
 
 //------------------------------------------------------------------------------
-void GGroup::DeleteSubProfile(GSubProfile* sp)
+void GGroup::DeleteProfile(GProfile* prof)
 {
 	if(Community)
-		sp->SetGroup(0);
-	R::RContainer<GSubProfile,false,true>::DeletePtr(sp);
+		prof->SetGroup(0);
+	R::RContainer<GProfile,false,true>::DeletePtr(*prof);
 //	State=osUpdated;
 }
 
 
 //------------------------------------------------------------------------------
-void GGroup::InsertSubProfile(GSubProfile* sp)
+void GGroup::InsertProfile(GProfile* prof)
 {
-	R::RContainer<GSubProfile,false,true>::InsertPtr(sp);
+	R::RContainer<GProfile,false,true>::InsertPtr(prof);
 //	State=osUpdated;
 	if(Community)
-		sp->SetGroup(Id);
+		prof->SetGroup(Id);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroup::InsertPtr(GSubProfile* sp)
+void GGroup::InsertPtr(GProfile* prof)
 {
-	InsertSubProfile(sp);
+	InsertProfile(prof);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroup::DeleteSubProfiles(void)
+void GGroup::DeleteProfiles(void)
 {
-	RCursor<GSubProfile> Sub;
-
 //	State=osUpdated;
 	if(Community)
 	{
-		Sub.Set(*this);
-		for(Sub.Start();!Sub.End();Sub.Next())
-			Sub()->SetGroup(0);
+		RCursor<GProfile> Prof(*this);
+		for(Prof.Start();!Prof.End();Prof.Next())
+			Prof()->SetGroup(0);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GGroup::GetSubProfiles(void) const
+RCursor<GProfile> GGroup::GetProfiles(void) const
 {
-	return(RCursor<GSubProfile>(*this));
+	return(RCursor<GProfile>(*this));
 }
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GGroup::GetCursor(void) const
+RCursor<GProfile> GGroup::GetCursor(void) const
 {
-	return(GetSubProfiles());
+	return(RCursor<GProfile>(*this));
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GGroup::GetNbSubProfiles(const GSubject* subject) const
+unsigned int GGroup::GetNbProfiles(const GSubject* subject) const
 {
 	unsigned int tot;
-	RCursor<GSubProfile> sub(*this);
-
+	RCursor<GProfile> sub(*this);
 	for(sub.Start(),tot=0;!sub.End();sub.Next())
 		if(subject->IsIn(sub()))
 			tot++;
@@ -242,16 +238,15 @@ unsigned int GGroup::GetNbSubProfiles(const GSubject* subject) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GGroup::GetNbSubProfiles(void) const
+unsigned int GGroup::GetNbProfiles(void) const
 {
-	return(R::RContainer<GSubProfile,false,true>::GetNb());
+	return(R::RContainer<GProfile,false,true>::GetNb());
 }
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* s) const
-{
-	RCursor<GSubProfile> sub(*this);
+void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GProfile* prof) const
+{	
 	RCursor<GFdbk> Fdbks;
 	GFdbk* ptr;
 	tDocAssessment j;
@@ -259,20 +254,17 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* 
 	// Clear container.
 	docs->Clear();
 
-	for(sub.Start();!sub.End();sub.Next())
+	RCursor<GProfile> Prof(*this);
+	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		if(sub()==s) continue;
+		if(Prof()==prof) continue;
 
 		// Go through the assessments of the profile grouped together through this subprofile
-		Fdbks=sub()->GetProfile()->GetFdbks();
+		Fdbks=Prof()->GetFdbks();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
-			// Verify that it is the right language
-			if(Fdbks()->GetLang()!=s->GetLang())
-				continue;
-
 			// Verify that it was not assessed by the corresponding profile
-			if(s->GetProfile()->GetFdbk(Fdbks()->GetDocId())) continue;
+			if(prof->GetFdbk(Fdbks()->GetDocId())) continue;
 
 			// Verify if already inserted:
 			// If not -> insert it in docs.
@@ -307,9 +299,8 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GSubProfile* 
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession*) const
+void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false>* docs, GProfile* prof,GSession*) const
 {
-	RCursor<GSubProfile> sub(*this);
 	RCursor<GFdbk> Fdbks;
 	tDocAssessment j;
 	RContainer<GFdbkRef,true,false> Docs(50,25);
@@ -321,19 +312,16 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 	docs->Clear();
 
 	// Go through the subprofiles
-	for(sub.Start();!sub.End();sub.Next())
+	RCursor<GProfile> Prof(*this);
+	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		//If current treated subprofile is the subprofile "s" ->Then only add links docs
-		if(sub()==s)
+		//If current treated profile is the profile "prof" ->Then only add links docs
+		if(Prof()==prof)
 		{
-			// Go through the assessments of the profile grouped together through this subprofile
-			Fdbks=sub()->GetProfile()->GetFdbks();
+			// Go through the assessments of the profile grouped together through this profile
+			Fdbks=Prof()->GetFdbks();
 			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 			{
-				// Verify that it is the right language
-				if(Fdbks()->GetLang()!=s->GetLang())
-					continue;
-
 				// Verify if the document is a relevant hub or authority.
 				j=Fdbks()->GetFdbk();
 				if(!( (j & (djOK & djHub)) || (j & (djOK & djAutority)))) continue;
@@ -342,31 +330,27 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
 				double res;
-				measure->Measure(0,s->GetLang(),s->GetId(),Fdbks()->GetDocId(),res);
+				measure->Measure(0,prof->GetId(),Fdbks()->GetDocId(),res);
 				Docs.InsertPtr(new GFdbkRef(Fdbks(),res));
 			}
 			continue;
 		}
 
 		// Go through the assessments of the profile grouped together through this subprofile
-		Fdbks=sub()->GetProfile()->GetFdbks();
+		Fdbks=prof->GetFdbks();
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
-			// Verify that it is the right language
-			if(Fdbks()->GetLang()!=s->GetLang())
-				continue;
-
 			// Verify if the document is relevant.
 			j=Fdbks()->GetFdbk();
 			if(!(j & djOK)) continue;
 
 			// Verify if already inserted in Docs or if it was not assessed by the
 			// corresponding profile.
-			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(s->GetProfile()->GetFdbk(Fdbks()->GetDocId()))) continue;
+			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(prof->GetFdbk(Fdbks()->GetDocId()))) continue;
 
 			// Insert it.
 			double res;
-			measure->Measure(0,s->GetLang(),s->GetId(),Fdbks()->GetDocId(),&res);
+			measure->Measure(0,prof->GetId(),Fdbks()->GetDocId(),&res);
 			Docs.InsertPtr(new GFdbkRef(Fdbks(),res));
 		}
 	}
@@ -383,30 +367,30 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 
 
 //------------------------------------------------------------------------------
-GSubProfile* GGroup::RelevantSubProfile(void) const
+GProfile* GGroup::RelevantProfile(void) const
 {
-	GSubProfile* rel;
-	RCursor<GSubProfile> sub(*this);
+	GProfile* rel;
+	RCursor<GProfile> Prof(*this);
 	double refsum,sum;
 
 	// Similarities
-	GMeasure* ProfilesSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("SubProfiles Similarities");
+	GMeasure* ProfilesSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
 
 	// If no objects -> No relevant one.
-	if(!R::RContainer<GSubProfile,false,true>::GetNb())
+	if(!R::RContainer<GProfile,false,true>::GetNb())
 		return(0);
 
 	// Suppose the first element is the most relevant.
-	rel=const_cast<GSubProfile*>(R::RContainer<GSubProfile,false,true>::operator[](0));
+	rel=const_cast<GProfile*>(R::RContainer<GProfile,false,true>::operator[](0));
 	refsum=ComputeSumSim(ProfilesSims,rel);
 
 	// Look if in the other objects, there is a better one
-	for(sub.Start();!sub.End();sub.Next())
+	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		sum=ComputeSumSim(ProfilesSims,sub());
+		sum=ComputeSumSim(ProfilesSims,Prof());
 		if (sum>=refsum)
 		{
-			rel=sub();
+			rel=Prof();
 			refsum=sum;
 		}
 	}
@@ -417,18 +401,18 @@ GSubProfile* GGroup::RelevantSubProfile(void) const
 
 
 //------------------------------------------------------------------------------
-double GGroup::ComputeSumSim(GMeasure* measure,const GSubProfile* s) const
+double GGroup::ComputeSumSim(GMeasure* measure,const GProfile* prof) const
 {
 	double sum;
 
 	if(!measure)
 		throw GException("No profiles similarities");
-	RCursor<GSubProfile> sub(*this);
-	for(sub.Start(),sum=0.0;!sub.End();sub.Next())
+	RCursor<GProfile> Prof(*this);
+	for(Prof.Start(),sum=0.0;!Prof.End();Prof.Next())
 	{
-		if(sub()==s) continue;
+		if(Prof()==prof) continue;
 		double res;
-		measure->Measure(0,s->GetLang(),s->GetId(),sub()->GetId(),&res);
+		measure->Measure(0,prof->GetId(),Prof()->GetId(),&res);
 		sum+=(res);
 	}
 	return(sum);
@@ -443,15 +427,14 @@ void GGroup::Clear(void)
 
 
 //------------------------------------------------------------------------------
-void GGroup::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
+void GGroup::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
 	// Remove its references
-	if(computed&&Lang&&Community)
+	if(computed&&Community)
 		DelRefs(otGroup);
 
 	// Assign information
 	GWeightInfos::Clear();
-	Lang=lang;
 	if(computed)
 	{
 		State=osUpdated;
@@ -465,7 +448,7 @@ void GGroup::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,boo
 	infos->Clear();
 
 	// Update its references
-	if(computed&&Lang&&Community)
+	if(computed&&Community)
 		AddRefs(otGroup);
 
 	// Emit an event that it was modified
@@ -475,9 +458,9 @@ void GGroup::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,boo
 
 
 //------------------------------------------------------------------------------
-void GGroup::HasUpdate(GSubProfile* sub)
+void GGroup::HasUpdate(GProfile* prof)
 {
-	if(R::RContainer<GSubProfile,false,true>::GetPtr(sub))
+	if(R::RContainer<GProfile,false,true>::GetPtr(*prof))
 		Updated.SetToday();
 }
 
@@ -490,11 +473,10 @@ GGroup::~GGroup(void)
 	{
 		if(Community)
 		{
-			RCursor<GSubProfile> Sub;
-			Sub.Set(*this);
-			for(Sub.Start();!Sub.End();Sub.Next())
-				Sub()->SetGroup(cNoRef);
-			if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
+			RCursor<GProfile> Prof(*this);
+			for(Prof.Start();!Prof.End();Prof.Next())
+				Prof()->SetGroup(cNoRef);
+			if(State==osDelete)  // The object has modified the references count but was not saved
 				DelRefs(otGroup);
 		}
 	}

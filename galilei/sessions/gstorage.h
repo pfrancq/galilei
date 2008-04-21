@@ -499,7 +499,7 @@ public:
 
 
 	//-----------------------------------------------------
-	/** @name Users/Profiles/Subprofiles Methods
+	/** @name Users/Profiles Methods
 	*/
 	// @{
 
@@ -527,12 +527,6 @@ public:
 	virtual GProfile* LoadProfile(unsigned int profileid)=0;
 
 	/**
-	* Method that load a subprofile that is stored.
-	* @param subprofileid    Identificator of the subprofile.
-	*/
-	virtual GSubProfile* LoadSubProfile(unsigned int subprofileid)=0;
-
-	/**
 	* Load the list of suggestions for the profiles for a given test.
 	* @param name            Name of the test.
 	* @param res             Container that will hold the suggestions.
@@ -542,9 +536,8 @@ public:
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identificator of the document.
-	* @param lang            Language of the document.
 	*/
-	virtual void UpdateProfiles(unsigned int docid,GLang* lang)=0;
+	virtual void UpdateProfiles(unsigned int docid)=0;
 
 	/**
 	* Assign an identifier to a new user.
@@ -577,19 +570,6 @@ public:
 	virtual void SaveHistoricProfiles(unsigned int historicID)=0;
 
 	/**
-	* Assign an identifier to a new subprofile.
-	* @param sub             Subprofile.
-	*/
-	virtual void AssignId(GSubProfile* sub)=0;
-
-	/**
-	* Save information about the groupement (Group and attachment date) of
-	* a subprofile. For a complete save, call Save(const GProfile*).
-	* @param sub             Subprofile to save.
-	*/
-	virtual void SaveSubProfile(GSubProfile* sub)=0;
-
-	/**
 	* Add a suggestion for a given profile and a given test.
 	* @param name            Name of the test.
 	* @param profileid       Identificator of the profile.
@@ -600,17 +580,16 @@ public:
 
 	/**
 	* Add an assessment for a given profile and document.
-	* @param p               Identificator of the profile.
-	* @param d               Identificator of the document.
-	* @param lang            Language of the document.
+	* @param profid          Identificator of the profile.
+	* @param docid           Identificator of the document.
 	* @param assess          Feedback.
 	* @param date            Date on the last feedback.
 	* @param computed        Date on the last computation of the document.
 	*/
-	virtual void AddFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed)=0;
+	virtual void AddFdbk(size_t profid,size_t docid,tDocAssessment assess,R::RDate date,R::RDate computed)=0;
 
 
-	// @} Users/Profiles/Subprofiles
+	// @} Users/Profiles
 
 
 	//-----------------------------------------------------
@@ -625,10 +604,9 @@ public:
 
 	/**
 	* Method that load a group that is stored.
-	* @param lang            Language of the group.
 	* @param groupid         Identificator of the group.
 	*/
-	virtual GGroup* LoadGroup(GLang* lang,unsigned int groupid)=0;
+	virtual GGroup* LoadGroup(unsigned int groupid)=0;
 
 	/**
 	* Load an historic groups.
@@ -657,10 +635,10 @@ public:
 	virtual unsigned int GetHistorySize(void)=0;
 
 	/**
-	* A subprofile was updated and the corresponding groups must be updated.
-	* @param subid           Identificator of the subprofile.
+	* A profile was updated and the corresponding groups must be updated.
+	* @param profid          Identificator of the profile.
 	*/
-	virtual void UpdateGroups(unsigned int subid)=0;
+	virtual void UpdateGroups(unsigned int profid)=0;
 
 	/**
 	* Assign an identifier to a new group.
@@ -670,9 +648,8 @@ public:
 
 	/**
 	* Save the groups of the session.
-	* @param lang            Define the language of the groups to save.
 	*/
-	virtual void SaveGroups(GLang* lang)=0;
+	virtual void SaveGroups(void)=0;
 
 	/**
 	* Save the groups in history.

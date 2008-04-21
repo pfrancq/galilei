@@ -6,7 +6,7 @@
 
 	Concept - Implementation.
 
-	Copyright 2006-2007 by the Université Libre de Bruxelles.
+	Copyright 2006-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -48,7 +48,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 GConcept::GConcept(void)
 	: Id(cNoRef), Name(RString::Null), Type(0), NbRefDocs(0),
-	  NbRefSubProfiles(0), NbRefGroups(0)
+	  NbRefProfiles(0), NbRefGroups(0)
 {
 }
 
@@ -56,7 +56,7 @@ GConcept::GConcept(void)
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const GConcept* concept)
 	: Id(concept->Id), Name(concept->Name), Type(concept->Type), NbRefDocs(concept->NbRefDocs),
-	  NbRefSubProfiles(concept->NbRefSubProfiles), NbRefGroups(concept->NbRefGroups)
+	  NbRefProfiles(concept->NbRefProfiles), NbRefGroups(concept->NbRefGroups)
 {
 }
 
@@ -64,15 +64,15 @@ GConcept::GConcept(const GConcept* concept)
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const RString& name,GConceptType* type)
 	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0),
-	  NbRefSubProfiles(0), NbRefGroups(0)
+	  NbRefProfiles(0), NbRefGroups(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(unsigned int id,const RString& name,GConceptType* type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
+GConcept::GConcept(unsigned int id,const RString& name,GConceptType* type,unsigned int refdocs,unsigned int refprofiles,unsigned int refgroups)
 	: Id(id), Name(name), Type(type), NbRefDocs(refdocs),
-	  NbRefSubProfiles(refsubprofiles), NbRefGroups(refgroups)
+	  NbRefProfiles(refprofiles), NbRefGroups(refgroups)
 {
 }
 
@@ -139,16 +139,16 @@ size_t GConcept::IncRef(tObjType ObjType)
 			NbRefDocs++;
 			return(NbRefDocs);
 			break;
-		case otSubProfile:
-			NbRefSubProfiles++;
-			return(NbRefSubProfiles);
+		case otProfile:
+			NbRefProfiles++;
+			return(NbRefProfiles);
 			break;
 		case otGroup:
 			NbRefGroups++;
 			return(NbRefGroups);
 			break;
 		default:
-			throw GException ("Unkown type to increase concept "+RString::Number(Id));
+			throw GException("Unkown type to increase concept "+RString::Number(Id));
 			break;
 	}
 }
@@ -165,11 +165,11 @@ size_t GConcept::DecRef(tObjType ObjType)
 			NbRefDocs--;
 			return(NbRefDocs);
 			break;
-		case otSubProfile:
-			if(!NbRefSubProfiles)
-				throw GException("Cannot decrease null number of references for subprofiles for concept "+RString::Number(Id));
-			NbRefSubProfiles--;
-			return(NbRefSubProfiles);
+		case otProfile:
+			if(!NbRefProfiles)
+				throw GException("Cannot decrease null number of references for profiles for concept "+RString::Number(Id));
+			NbRefProfiles--;
+			return(NbRefProfiles);
 			break;
 		case otGroup:
 			if(!NbRefGroups)
@@ -178,7 +178,7 @@ size_t GConcept::DecRef(tObjType ObjType)
 			return(NbRefGroups);
 			break;
 		default:
-			throw GException ("Unkown type to decrease concept "+RString::Number(Id));
+			throw GException("Unkown type to decrease concept "+RString::Number(Id));
 			break;
 	}
 }
@@ -192,23 +192,23 @@ size_t GConcept::GetRef(tObjType ObjType) const
 		case otDoc:
 			return(NbRefDocs);
 			break;
-		case otSubProfile:
-			return(NbRefSubProfiles);
+		case otProfile:
+			return(NbRefProfiles);
 			break;
 		case otGroup:
 			return(NbRefGroups);
 			break;
-		case otDocSubProfile:
-			return(NbRefDocs+NbRefSubProfiles);
+		case otDocProfile:
+			return(NbRefDocs+NbRefProfiles);
 			break;
 		case otDocGroup:
 			return(NbRefDocs+NbRefGroups);
 			break;
-		case otSubProfileGroup:
-			return(NbRefSubProfiles+NbRefGroups);
+		case otProfileGroup:
+			return(NbRefProfiles+NbRefGroups);
 			break;
 		default:
-			return(NbRefDocs+NbRefSubProfiles+NbRefGroups);
+			return(NbRefDocs+NbRefProfiles+NbRefGroups);
 			break;
 	}
 	return(0);
@@ -223,27 +223,27 @@ void GConcept::Clear(tObjType ObjType)
 		case otDoc:
 			NbRefDocs=0;
 			break;
-		case otSubProfile:
-			NbRefSubProfiles=0;
+		case otProfile:
+			NbRefProfiles=0;
 			break;
 		case otGroup:
 			NbRefGroups=0;
 			break;
-		case otDocSubProfile:
+		case otDocProfile:
 			NbRefDocs=0;
-			NbRefSubProfiles=0;
+			NbRefProfiles=0;
 			break;
 		case otDocGroup:
 			NbRefDocs=0;
 			NbRefGroups=0;
 			break;
-		case otSubProfileGroup:
-			NbRefSubProfiles=0;
+		case otProfileGroup:
+			NbRefProfiles=0;
 			NbRefGroups=0;
 			break;
 		default:
 			NbRefDocs=0;
-			NbRefSubProfiles=0;
+			NbRefProfiles=0;
 			NbRefGroups=0;
 			break;
 	}
@@ -256,7 +256,7 @@ void GConcept::Clear(void)
 	Id=cNoRef;
 	Name=RString::Null;
 	NbRefDocs=0;
-	NbRefSubProfiles=0;
+	NbRefProfiles=0;
 	NbRefGroups=0;
 	Type=0;
 }

@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gweightinfos.h>
 
 
 //------------------------------------------------------------------------------
@@ -73,22 +74,16 @@ class GFdbk
 	*/
 	R::RDate Computed;
 
-	/**
-	* Language of the document assessed.
-	*/
-	GLang* Lang;
-
 public:
 
 	/**
 	* Constructor.
 	* @param docid           Identificator of the document.
-	* @param lang            Language of the document.
 	* @param fdbk            Assessment.
 	* @param when            Date.
 	* @param computed        Last computation.
 	*/
-	GFdbk(unsigned int docid,GLang* lang,tDocAssessment fdbk,const R::RDate& when,const R::RDate& computed);
+	GFdbk(unsigned int docid,tDocAssessment fdbk,const R::RDate& when,const R::RDate& computed);
 
 	/**
 	* Compare two assessements to order them using the document identificator.
@@ -147,22 +142,15 @@ public:
 	R::RDate GetComputed(void) const;
 
 	/**
-	* Get the language of the subprofile.
-	* @return Pointer to the GLang.
+	* Must the assessment be used to compute a profile.
+	* @param profile         profile.
 	*/
-	GLang* GetLang(void) const {return(Lang);}
-
-	/**
-	* Must the assessment be used to compute a subprofile.
-	* @param subprofile      Subprofile.
-	*/
-	bool MustUse(const GSubProfile* subprofile) const;
+	bool MustUse(const GProfile* profile) const;
 
 	/**
 	* The document assessed was updated.
-	* @param lang            Language of the document.
 	*/
-	void HasUpdate(GLang* lang);
+	void HasUpdate(void);
 
 	/**
 	* Create an erronous assessment with a given percentage. The percentage
@@ -195,12 +183,11 @@ public:
 
 //------------------------------------------------------------------------------
 /**
-* The GProfile class provides a representation of a profile. In fact, it is a
-* container of subprofiles, each subprofile corresponding to a language.
+* The GProfile class provides a representation of a profile.
 * @author Pascal Francq
 * @short Profile.
 */
-class GProfile : public R::RContainer<GSubProfile,false,true>
+class GProfile :  public GWeightInfos
 {
 protected:
 
@@ -230,6 +217,26 @@ protected:
 	*/
 	bool Social;
 
+	/**
+	* Date of the update of the profile (new assessments).
+	*/
+	R::RDate Updated;
+
+	/**
+	* Date of last subprofile computing.
+	*/
+	R::RDate Computed;
+
+	/**
+	* Identificator of the corresponding group.
+	*/
+	unsigned int GroupId;
+
+	/**
+	* Date of the attachment of the profile into the group.
+	*/
+	R::RDate Attached;
+
 public:
 
     /**
@@ -237,11 +244,14 @@ public:
 	* @param usr             User of the profile.
 	* @param id              Identificator of the profile.
 	* @param name            Name of the profile.
+	* @param grpid           Group identificator.
+	* @param a               Date where it was attached.
+	* @param u               Date of the last updated.
+	* @param c               Date of the last computation. 
 	* @param s               Social?
-	* @param nb              Number of subprofiles.
 	* @param nbf             Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,unsigned int id,const R::RString name,bool s,unsigned int nb=5,unsigned int nbf=100);
+	GProfile(GUser* usr,unsigned int id,const R::RString name,unsigned int grpid,R::RDate a,R::RDate u,R::RDate c,bool s=true,unsigned int nbf=100);
 
 	/**
 	* Compare two profiles by comparing their identificator.
@@ -267,6 +277,11 @@ public:
 	*/
 	int Compare(const unsigned int id) const;
 
+	/**
+	* Load information from the current storage.
+	*/
+	virtual void LoadInfos(void) const;
+	
 	/**
 	* Get the identificator of the profile.
 	* @return Identificator.
@@ -302,57 +317,64 @@ public:
 	* @param social          Social value.
 	*/
 	void SetSocial(bool social);
+	
+	/**
+	* Get the date of the last update of the subprofile.
+	* @returns R::RDate.
+	*/
+	R::RDate GetUpdated(void) const {return(Updated);}
 
 	/**
-	* Get the subprofile corresponding to a given language.
-	* @param lang            Pointer to the language.
-	* @return Pointer to the subprofile.
+	* Get the date of the last analysis of the subprofile.
+	* @returns R::RDate.
 	*/
-	GSubProfile* GetSubProfile(const GLang* lang) const;
+	R::RDate GetComputed(void) const {return(Computed);}
+	
+	/**
+	* Verify if the subprofile must be (re-)computed.
+	*/
+	bool MustCompute(void) const;
+	
+	/**
+	* Get the group holding the subprofile.
+	*/
+	unsigned int GetGroupId(void) const {return(GroupId);}
 
 	/**
-	* Get the subprofile corresponding to a given language. If not found, insert
-	* it.
-	* @param lang            Pointer to the language.
-	* @param s               Session.
-	* @return Pointer to the subprofile.
+	* Set the group holding the subprofile.
+	* @param groupid         Identificator of the group.
 	*/
-	GSubProfile* GetInsertSubProfile(GLang* lang,GSession* s);
+	void SetGroup(unsigned int groupid);
 
 	/**
-	* Get the number of assessed documents of a given language.
-	* @param lang            Pointer to the language.
-	* @returns unsigned int.
+	* Get the date of the last attachment.
+	* @returns R::RDate.
 	*/
-	unsigned int GetNbAssessedDocs(const GLang* lang) const;
-
+	R::RDate GetAttached(void) const;
+	
 	/**
 	* Get the number of common OK document between two profiles.
 	* @param prof            Pointer to a profile.
-	* @return unsigned int.
 	*/
-	unsigned int GetCommonOKDocs(const GProfile* prof) const;
+	size_t GetCommonOKDocs(const GProfile* prof) const;
 
 	/**
 	* Get the number of common document between two profiles.
 	* @param prof            Pointer to a profile.
-	* @return unsigned int.
 	*/
-	unsigned int GetCommonDocs(const GProfile* prof) const;
+	size_t GetCommonDocs(const GProfile* prof) const;
 
 	/**
 	* Get the number of common document with different judgement between two
 	* profiles.
 	* @param prof            Pointer to a profile.
-	* @return unsigned int.
 	*/
-	unsigned int GetCommonDiffDocs(const GProfile* prof) const;
+	size_t GetCommonDiffDocs(const GProfile* prof) const;
 
 	/**
 	* Get the number of assessed documents.
-	* @returns unsigned int.
 	*/
-	unsigned int GetNbAssessedDocs(void) const;
+	size_t GetNbAssessedDocs(void) const;
 
 	/**
 	* Get a Cursor on the feedback for the profile.
@@ -360,20 +382,13 @@ public:
 	R::RCursor<GFdbk> GetFdbks(void) const;
 
 	/**
-	* Get a Cursor on the subprofiles.
-	* @return RCursor<GSubProfile>.
-	*/
-	R::RCursor<GSubProfile> GetSubProfiles(void) const;
-
-	/**
 	* Insert an assessment to the list of the profile.
 	* @param docid           Identificator of the document.
-	* @param lang            Language of the document.
 	* @param assess          Assessment.
 	* @param date            Date.
 	* @param update          Last update of the document.
 	*/
-	void InsertFdbk(unsigned int docid,GLang* lang,tDocAssessment assess,const R::RDate& date,const R::RDate& update);
+	void InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update);
 
 	/**
 	* Delete an assessment from the list of the profile.
@@ -381,6 +396,15 @@ public:
 	*/
 	void DeleteFdbk(unsigned int docid);
 
+	/**
+	* Update the subprofile by assigning it a set of information and a language.
+	* @param infos            Pointer to the information.
+	* @param computed         The update is called after a computation (and not
+	*                         after a loading from a database).
+	* \warning The container infos is cleared by this method.
+	*/
+	void Update(R::RContainer<GWeightInfo,false,true>& infos,bool computed);
+	
 	/**
 	* Clear the assessment of the profile.
 	*/
@@ -395,15 +419,8 @@ public:
 	/**
 	* This method is call by a document when it was modified.
 	* @param docid           Identificator of the document.
-	* @param lang            Language of the document.
 	*/
-	void HasUpdate(unsigned int docid,GLang* lang);
-
-	/**
-	* Construct for each subprofile the list of assessed documents from the
-	* corresponding language.
-	*/
-	void DispatchFdbks(void);
+	void HasUpdate(unsigned int docid);
 
 public:
 

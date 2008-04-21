@@ -6,7 +6,7 @@
 
 	Generic Grouping Method - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -64,14 +64,9 @@ class GGrouping : public GPlugin<GFactoryGrouping>
 protected:
 
 	/**
-	* Current language treated.
+	* Profiles that must be grouped.
 	*/
-	GLang* Lang;
-
-	/**
-	* SubProfiles that must be grouped.
-	*/
-	R::RContainer<GSubProfile,false,true> SubProfiles;
+	R::RContainer<GProfile,false,true> Profiles;
 
 public:
 

@@ -6,9 +6,10 @@
 
 	List of weighted information entities for history - Header.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		David Wartel (dwartel@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
@@ -59,7 +60,7 @@ protected:
 	/**
 	* Subprofile.
 	*/
-	GSubProfile* SubProfile;
+	GProfile* Profile;
 
 	/**
 	* Group containing the subprofile.
@@ -80,10 +81,10 @@ public :
 
 	/**
 	* Constructor.
-	* @param sub             Subprofile.
+	* @param prof             Profile.
 	* @param max             Maximal number of word created at initialisation.
 	*/
-	GWeightInfosHistory(GSubProfile* sub, unsigned int max);
+	GWeightInfosHistory(GProfile* prof, unsigned int max);
 
 	/**
 	* Compare two lists by comparing the identificator of their subprofile.
@@ -111,10 +112,9 @@ public :
 	int Compare(unsigned int id) const;
 
 	/**
-	* Get the subprofile.
-	* @return Pointer to a GSubProfile.
+	* Get the profile.
 	*/
-	GSubProfile* GetSubProfile(void) const {return(SubProfile);}
+	GProfile* GetProfile(void) const {return(Profile);}
 
 	/**
 	* Get the identificator of the subprofile.
@@ -153,10 +153,10 @@ public :
 	bool IsNewSubProfile(void) const {return(NewSubProfile);}
 
 	/**
-	* Set if the subprofile is a new one or not.
+	* Set if the profile is a new one or not.
 	* @param b               New one?
 	*/
-	void SetNewSubProfile(bool b);
+	void SetNewProfile(bool b);
 
 	/**
 	*  Destructor.

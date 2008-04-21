@@ -6,10 +6,11 @@
 
 	History of a given group - Header.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors:
-		David Wartel (dwartel@ulb.ac.be)..
+		Pascal Francq (pfrancq@ulb.ac.be)
+		David Wartel (dwartel@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -61,11 +62,6 @@ protected:
 	unsigned int Id;
 
 	/**
-	* Language of the group.
-	*/
-	GLang* Lang;
-
-	/**
 	* Was the group modified since previous step.
 	*/
 	bool Modified;
@@ -90,22 +86,15 @@ public:
 	/**
 	* Construct a group with a specific identificator.
 	* @param id             Identificator.
-	* @param lang           Language.
 	* @param grps           Parent.
 	*/
-	GGroupHistory(const unsigned int id,GLang* lang, GGroupsHistory* grps);
+	GGroupHistory(const unsigned int id, GGroupsHistory* grps);
 
 	/**
 	* Get the identificator of the group.
 	* @return unsigned int.
 	*/
 	unsigned int GetId(void) const {return(Id);}
-
-	/**
-	* Get the lang of the group.
-	* @return Pointer to GLang.
-	*/
-	GLang* GetLang(void) const {return(Lang);}
 
 	/**
 	* Add a history of a subprofile into the group.

@@ -6,10 +6,11 @@
 
 	Widget to show the groups history - Header.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel <dwartel@ulb.ac.be>
+		Pascal Francq <pfrancq@ulb.ac.be>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public

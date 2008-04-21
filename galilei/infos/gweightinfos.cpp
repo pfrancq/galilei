@@ -57,15 +57,15 @@ const double Factor=0.5;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfos::GWeightInfos(GLang* lang,unsigned int max)
-	: RContainer<GWeightInfo,true,true>(max,50), Lang(lang), State(osNew)
+GWeightInfos::GWeightInfos(unsigned int max)
+	: RContainer<GWeightInfo,true,true>(max,50), State(osNew)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(const GWeightInfos& w)
-	: RContainer<GWeightInfo,true,true>(w), Lang(w.Lang), State(w.State)
+	: RContainer<GWeightInfo,true,true>(w), State(w.State)
 {
 }
 
@@ -74,7 +74,6 @@ GWeightInfos::GWeightInfos(const GWeightInfos& w)
 GWeightInfos& GWeightInfos::operator=(const GWeightInfos::GWeightInfos& w)
 {
 	RContainer<GWeightInfo,true,true>::operator=(w);
-	Lang=w.Lang;
 	State=w.State;
 	return(*this);
 }
@@ -92,7 +91,6 @@ void GWeightInfos::CopyInfos(const R::RContainer<GWeightInfo,false,true>* infos)
 void GWeightInfos::Copy(const GWeightInfos& src)
 {
 	RContainer<GWeightInfo,true,true>::Copy(src);
-	Lang=src.Lang;
 	State=src.State;
 }
 
@@ -613,6 +611,23 @@ bool GWeightInfos::SimilarityBool(const GWeightInfos& w,unsigned int nb) const
 		ptr.Next();
 	}
 	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+void GWeightInfos::Extract(GWeightInfos& dest,const GLang* lang,bool universal)
+{
+	// Empty destination
+	dest.Clear();
+
+	RCursor<GWeightInfo> Entities(*this);
+	for(Entities.Start();!Entities.End();Entities.Next())
+	{
+		GLang* curLang=Entities()->GetType()->GetLang();
+		
+		if((curLang==lang)||(universal&&(!curLang)))
+			dest.InsertPtr(new GWeightInfo(*Entities()));
+	}
 }
 
 

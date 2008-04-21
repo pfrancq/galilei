@@ -6,7 +6,7 @@
 
 	Generic Grouping Method - Implementation
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -37,7 +37,6 @@
 #include <ggroupcalc.h>
 #include <ggroup.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
 #include <gstorage.h>
@@ -48,7 +47,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // defines
-//#define GROUP_SUBPROFILES_NOT_DEFINED
+//#define GROUP_PROFILES_NOT_DEFINED
 
 
 
@@ -60,65 +59,50 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GGrouping::GGrouping(GFactoryGrouping* fac)
-	: GPlugin<GFactoryGrouping>(fac), Lang(0), SubProfiles(100,50)
+	: GPlugin<GFactoryGrouping>(fac), Profiles(100,50)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GGrouping::Grouping(GSlot* rec,bool save)
+void GGrouping::Grouping(GSlot*,bool save)
 {
-	RCursor<GSubProfile> cur;
 	R::RCursor<GGroup> Groups;
 
 	// How to compute the groups
 	GGroupCalc* CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
 
-	// Go trough each language.
-	R::RCursor<GLang> CurLang(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
-	for(CurLang.Start();!CurLang.End();CurLang.Next())
+	RCursor<GProfile> cur(Session->GetProfiles());
+	for(cur.Start();!cur.End();cur.Next())
 	{
-		Lang=CurLang();
-
-		SubProfiles.Clear();
-		if(rec)
-			rec->NextGroupLang(Lang);
-
-		// Go through the profiles corresponding to the language and that are
-		// to inserted.
-		cur=Session->GetSubProfiles(Lang);
-		for(cur.Start();!cur.End();cur.Next())
-		{
-			#ifdef GROUP_SUBPROFILES_NOT_DEFINED
-			if(cur()->IsDefined()||cur()->GetProfile()->GetNbJudgedDocs(Lang))
-				SubProfiles.InsertPtr(cur());
-			#else
-			if(cur()->IsDefined())
-				SubProfiles.InsertPtr(cur());
-			#endif
-		}
-		
-		// Make the grouping
-		Run();
-		
-		// Compute the description of the groups and Save the information.
-		if(CalcDesc)
-		{
-			Groups=Session->GetGroups(Lang);
-			for(Groups.Start();!Groups.End();Groups.Next())
-				CalcDesc->Compute(Groups());
-		}
-
-		// Save if necessary
-		if(save)
-		{
-			Session->GetStorage()->SaveGroups(Lang);
-			Groups=Session->GetGroups(Lang);
-			for(Groups.Start();!Groups.End();Groups.Next())
-				Groups()->SetState(osSaved);
-		}	
+		#ifdef GROUP_PROFILES_NOT_DEFINED
+		if(cur()->IsDefined()||cur()->GetNbJudgedDocs())
+			Profiles.InsertPtr(cur());
+		#else
+		if(cur()->IsDefined())
+			Profiles.InsertPtr(cur());
+		#endif
 	}
-	Lang=0;
+		
+	// Make the grouping
+	Run();
+		
+	// Compute the description of the groups and Save the information.
+	if(CalcDesc)
+	{
+		Groups=Session->GetGroups();
+		for(Groups.Start();!Groups.End();Groups.Next())
+			CalcDesc->Compute(Groups());
+	}
+
+	// Save if necessary
+	if(save)
+	{
+		Session->GetStorage()->SaveGroups();
+		Groups=Session->GetGroups();
+		for(Groups.Start();!Groups.End();Groups.Next())
+			Groups()->SetState(osSaved);
+	}	
 }
 
 

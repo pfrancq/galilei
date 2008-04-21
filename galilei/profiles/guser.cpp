@@ -34,7 +34,6 @@
 // include files for GALILEI
 #include <guser.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <gsession.h>
 using namespace GALILEI;
 using namespace R;

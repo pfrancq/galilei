@@ -6,7 +6,7 @@
 
 	Measures between two elements - Header.
 
-	Copyright 2007 by the Université Libre de Bruxelles.
+	Copyright 2007-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -49,7 +49,7 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GMeasure2Elements class provides a representation for a measure between two
-* elements (eventually of a given language).
+* elements.
 * @author Pascal Francq.
 * @short Measures Between Two Elements.
 */
@@ -92,12 +92,7 @@ protected:
 	bool Memory;
 
 	/**
-	 * Measures are dependent of the language.
-	 */
-	bool PerLang;
-	
-	/**
-	 * What is the value of measure when a document is compared with itself. 
+	 * What is the value of measure when an object is compared with itself. 
 	 */
 	double Equals;
 	
@@ -113,12 +108,11 @@ public:
 	* @param fac             Factory of the plug-in.
 	* @param min             Must a minimum measure between similar elements be
 	*                        computed.
-	* @param perlang         Measure are language-dependent (similarities).
 	* @param equals          Value of the measure when a given element is
 	*                        compared with itself. 
 	* @param objs            Type of the elements.
 	*/
-	GMeasure2Elements(GFactoryMeasure* fac,bool min,bool perlang,double equals,tObjType objs);
+	GMeasure2Elements(GFactoryMeasure* fac,bool min,double equals,tObjType objs);
 
 	/**
 	* Configurations were applied from the factory.
@@ -143,10 +137,8 @@ public:
 	virtual void Dirty(void);
 	
 	/**
-	* Get a measure between two elements. There are maximum four parameters.
+	* Get a measure between two elements. There are three parameters.
 	* @param measure         Type of the measure (0).
-	* @param lang            Language of the elements (must be skipped if the
-	*                        measure is language-independent).        
 	* @param id1             Identifier of the first element.
 	* @param id2             Identifier of the second element.
 	*/	
@@ -156,79 +148,66 @@ public:
 	* Access to the minmum of the measure of two similar elements. There are
 	* maximum two parameters.
 	* @param measure         Type of the measure (0).
-	* @param lang            Language of the elements (must be skipped if the
-	*                        measure is language-independent).
 	 */	
 	virtual void Info(unsigned int info,...);
 
 	/**
-	 * Compute the measure for two elements eventually in a given language.
-	 * @param lang            Language of the elements.        
+	 * Compute the measure for two elements.
+       
 	 * @param obj1            Pointer to the first element.
 	 * @param obj2            Pointer to the second element.
 	 * @code
-	 * double MyMeasure::Compute(GLang* lang,void* obj1,void* obj2)
+	 * double MyMeasure::Compute(void* obj1,void* obj2)
 	 * {
-	 *    return(static_cast<GSubProfile*>(obj1)->SimilarityIFF(*static_cast<GSubProfile*>(obj2),otSubProfile,lang));
+	 *    return(static_cast<GProfile*>(obj1)->SimilarityIFF(*static_cast<GProfile*>(obj2),otSubProfile));
 	 * }
 	 * @endcode
 	 */
-	virtual double Compute(GLang* lang,void* obj1,void* obj2)=0;
+	virtual double Compute(void* obj1,void* obj2)=0;
 	
 	/**
 	* Get a pointer to a given element of null if the identifier does not
-	* correspond to an element.
-	* @param lang            Language of the element.        
+	* correspond to an element.       
 	* @param id              Identifier of the element.
 	* @code
-	* void* MyMeasure::GetElement(GLang* lang,size_t id)
+	* void* MyMeasure::GetElement(size_t id)
 	* {
-	*    return(Session->GetSubProfile(lang,id,false));
+	*    return(Session->GetProfile(id,false));
 	* } 
 	* @endcode
 	*/
-	virtual void* GetElement(GLang* lang,size_t id)=0;
+	virtual void* GetElement(size_t id)=0;
 	
 	/**
-	 * Return the maximum identifier of the elements in a given language.
-	 * @param lang            Language of the elements.
+	 * Return the maximum identifier of the elements.
 	 * @code
-	 * size_t MyMeasure::GetMaxElementsId(GLang* lang)
+	 * size_t MyMeasure::GetMaxElementsId(void)
 	 * {
-	 *    return(Session->GetMaxSubProfileId(lang));
+	 *    return(Session->GetMaxProfileId());
 	 * }
 	 * @endcode
 	 */        
-	virtual size_t GetMaxElementsId(GLang* lang)=0;
+	virtual size_t GetMaxElementsId(void)=0;
 	
 	/**
-	 * Return the total number of elements in a given language.
-	 * @param lang            Language of the elements.
+	 * Return the total number of elements.
 	 * @code
-	 * size_t MyMeasure::GetNbElements(GLang* lang)
+	 * size_t MyMeasure::GetNbElements(void)
 	 * {
-	 *    return(Session->GetNbSubProfile(lang));
+	 *    return(Session->GetNbProfile());
 	 * }
 	 * @endcode
 	 */        
-	virtual size_t GetNbElements(GLang* lang)=0;
+	virtual size_t GetNbElements(void)=0;
 	
 	/**
 	 * This template method handles the modification of the status of a given
-	 * element. his method is used by all the Event methods.
+	 * element. This method is used by all the Event methods.
 	 * @param C              Class of the element.
 	 * @param element        Pointer to the element.
 	 * @param event          Event (type of modification).
-	 * @param lang           Language concerned by the modification.
 	 */
-	template<class C> void UpdateElement(C* element,tEvent event,GLang* lang);
-	
-	/**
-	* A specific language has changed.
-	* @param lang            Language.
-	* @param event           Event.
-	*/
-	virtual void Event(GLang* lang, tEvent event);
+	template<class C> void UpdateElement(C* element,tEvent event);
 
 	/**
 	* A specific document has changed.
@@ -245,14 +224,7 @@ public:
 	virtual void Event(GProfile* prof, tEvent event);
 	
 	/**
-	* A specific subprofile has changed.
-	* @param sub             Subprofile.
-	* @param event           Event.
-	*/
-	virtual void Event(GSubProfile* sub, tEvent event);
-
-	/**
-	* A specific grou has changed.
+	* A specific group has changed.
 	* @param grp             Group.
 	* @param event           Event.
 	*/

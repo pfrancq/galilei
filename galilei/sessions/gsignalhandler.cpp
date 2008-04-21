@@ -6,7 +6,7 @@
 
 	Generic Signal Handler for GALILEI Session - Implementation.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2005-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -77,12 +77,6 @@ void GSignalHandler::Event(GUser*, tEvent)
 
 //------------------------------------------------------------------------------
 void GSignalHandler::Event(GProfile*, tEvent)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSignalHandler::Event(GSubProfile*, tEvent)
 {
 }
 

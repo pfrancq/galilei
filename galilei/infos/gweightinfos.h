@@ -6,7 +6,7 @@
 
 	List of weighted information entities - Header.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -48,20 +48,15 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GWeightInfos provides a representation for a list of information entities.
-* It implements the vector representing a document/subprofile/group in the
-* Vector Model.
+* It implements multiple vectors (one vector per concepts space) representing a
+* document/profile/subprofile/group in the extended vector Model.
 * @author Pascal Francq
-* @short Weighted Information Entity List.
+* @short Weighted Information Entities.
 */
 class GWeightInfos : public R::RContainer<GWeightInfo,true,true>
 {
 protected:
 
-	/**
-	* Language of the description.
-	*/
-	GLang* Lang;
-	
 	/**
 	* State of the object.
 	*/
@@ -73,7 +68,7 @@ public:
 	* Constructor of a list of weighted information entities.
 	* @param max            Maximal number of word created at initialisation.
 	*/
-	GWeightInfos(GLang* lang,unsigned int max);
+	GWeightInfos(unsigned int max);
 
 	/**
 	* Copy constructor of a list of weighted information entities.
@@ -106,11 +101,6 @@ public:
 	*/
 	static int sortOrder(const void* a,const void* b);
 
-	/**
-	* @return Pointer to the Language.
-	*/
-	inline GLang* GetLang(void) const {return(Lang);}
-	
 	/**
 	* Return the state of the document.
 	* @returns tObjState value.
@@ -226,13 +216,22 @@ public:
 	* Compute a boolean similarity between two lists of weighted information
 	* entities. The method verifies that at least a given number, nb, of
 	* entities are common to the two lists.
-	* @param w              Pointer to a list of weighted information entities.
+	* @param w              List of weighted information entities.
 	* @param nb             Minimal number of entities to be common (0 means
 	*                       that the lists should be identifical).
 	* @return true if there is at least nb number of common entities.
 	*/
 	bool SimilarityBool(const GWeightInfos& w,unsigned int nb=0) const;
 
+	/**
+	 * Extract all information entities related to a given language an put them
+	 * into a given list that will be emptied.
+	 * @param dest           Destination list of weighted information entities.
+	 * @param lang           Language selected.
+	 * @param universal      Should universal concepts be copied.
+	 */
+	void Extract(GWeightInfos& dest,const GLang* lang,bool universal=true);
+	
 protected:
 
 	/**

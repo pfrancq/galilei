@@ -6,7 +6,7 @@
 
 	Group - Header.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -48,11 +48,11 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* This class represent a virtual community, i.e. a group of sub-profiles.
+* This class represent a virtual community, i.e. a group of profiles.
 * @author Pascal Francq
 * @short Group.
 */
-class GGroup : protected R::RContainer<GSubProfile,false,true>, public GWeightInfos
+class GGroup : protected R::RContainer<GProfile,false,true>, public GWeightInfos
 {
 protected:
 
@@ -72,7 +72,7 @@ protected:
 	R::RDate Updated;
 
 	/**
-	* Date of last subprofile computing.
+	* Date of last profile computing.
 	*/
 	R::RDate Computed;
 
@@ -81,12 +81,11 @@ public:
 	/**
 	* Construct a group with a specific identificator.
 	* @param id              Identificator.
-	* @param lang            Language.
 	* @param com             Community.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GGroup(unsigned int id,GLang* lang,bool com,const R::RDate& u,const R::RDate& c);
+	GGroup(unsigned int id,bool com,const R::RDate& u,const R::RDate& c);
 
 private:
 
@@ -120,7 +119,7 @@ public:
 	* @return int
 	*/
 	int Compare(const unsigned int id) const;
-
+		
 	/**
 	* Get the date of the last update of the subprofile.
 	* @returns R::RDate.
@@ -157,108 +156,107 @@ public:
 	virtual void LoadInfos(void) const;
 
 	/**
-	* Look if a given subprofile is contained in the group.
-	* @param sp              SubProfile to Search.
-	* @return true if the subprofile is contained, false else.
+	 * Look if a given profile is in the group.
+	 * @param prof           Profile.µ
+	 */
+	bool IsIn(const GProfile* prof) const;
+	
+	/**
+	* Delete a profile from the group. If the group is a community, the
+	* method modifies the assignation of the profile (the 'Group' pointer).
+	* of the profile is set to null).
+	* @param prof            Profile to delete.
 	*/
-	bool IsIn(const GSubProfile* sp) const;
+	void DeleteProfile(GProfile* prof);
 
 	/**
-	* Delete a subprofile from the group. If the group is a community, the
-	* method modifies the assignation of the subprofile (the 'Group' pointer).
-	* of the subprofile is set to null).
-	* @param sp              SubProfile to delete.
+	* Insert a profile in the group. If the group is a community, the
+	* method modifies the assignation of the profile (the 'Group' pointer).
+	* of the profile is set to null).
+	* @param prof            Profile to insert.
 	*/
-	void DeleteSubProfile(GSubProfile* sp);
+	void InsertProfile(GProfile* sp);
 
 	/**
-	* Insert a subprofile in the group. If the group is a community, the
-	* method modifies the assignation of the subprofile (the 'Group' pointer).
-	* of the subprofile is set to null).
-	* @param sp              SubProfile to insert.
-	*/
-	void InsertSubProfile(GSubProfile* sp);
-
-	/**
-	* Insert a subprofile in the group. This signature is needed by a generic
+	* Insert a profile in the group. This signature is needed by a generic
 	* k-Means.
-	* @param sp              SubProfile to insert.
+	* @param prof            Profile to insert.
 	* @see R::RGroupingKMeans.
 	*/
-	void InsertPtr(GSubProfile* sp);
+	void InsertPtr(GProfile* prof);
 
 	 /**
-	* Delete all subprofiles.
+	* Delete all profiles.
 	*/
-	void DeleteSubProfiles(void);
+	void DeleteProfiles(void);
 
 	/**
-	* Get a cursor over the subprofiles.
+	* Get a cursor over the profiles.
 	*/
-	R::RCursor<GSubProfile> GetSubProfiles(void) const;
+	R::RCursor<GProfile> GetProfiles(void) const;
 
 	/**
-	* Get a cursor over the subprofiles. This signature is needed by a generic
+	* Get a cursor over the profiles. This signature is needed by a generic
 	* k-Means.
 	* @see R::RGroupingKMeans.
 	*/
-	R::RCursor<GSubProfile> GetCursor(void) const;
+	R::RCursor<GProfile> GetCursor(void) const;
 
 	/**
-	* Compute the number of subprofiles of a given group that are also in the
+	* Compute the number of profiles of a given group that are also in the
 	* current one.
 	* @param subject         Pointer to the subject.
 	*/
-	unsigned int GetNbSubProfiles(const GSubject* subject) const;
+	unsigned int GetNbProfiles(const GSubject* subject) const;
 
 	/**
-	* Get the number of subprofiles in the group.
+	* Get the number of profiles in the group.
 	*/
-	unsigned int GetNbSubProfiles(void) const;
+	unsigned int GetNbProfiles(void) const;
 
 	/**
-	* Construct the list of all feedbacks of the subprofiles of a group not
-	* already assessed by a given subprofile. If a document is assessed multiple
+	* Construct the list of all feedbacks of the profiles of a group not
+	* already assessed by a given profile. If a document is assessed multiple
 	* times differently, most important OK>N>KO>H.
 	* @param docs            Documents not assessed.
-	* @param s               Subprofile.
+	* @param prof            Profile.
 	*/
-	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>* docs, GSubProfile* s) const;
+	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>* docs, GProfile* prof) const;
 
 	/**
-	* Construct the list of all relevant documents of the subprofiles of a
-	* group not already assessed by a given subprofile and ordered in descending
-	* order of their similarity with the chosen subprofile.
+	* Construct the list of all relevant documents of the profiles of a
+	* group not already assessed by a given profile and ordered in descending
+	* order of their similarity with the chosen profile.
 	* @param measure         The measure used to compute the similarities.
 	* @param docs            Documents not assessed.
-	* @param s               Subprofile.
+	* @param prof            Profile.
 	* @param session         Session.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(GMeasure* measure,R::RContainer<GFdbk,false,false>* docs, GSubProfile* s,GSession* session) const;
+	void NotJudgedDocsRelList(GMeasure* measure,R::RContainer<GFdbk,false,false>* docs, GProfile* prof,GSession* session) const;
 
 	/**
-	* Compute the relevant subprofile, i.e. the subprofiles whith the highest
-	* average similarity with all the other subprofiles.
-	* @returns Pointer to GSubProfile representing the relevant one.
+	* Compute the relevant profile, i.e. the profile whith the highest
+	* average similarity with all the other profiles.
+	* @returns Pointer to GProfile representing the relevant one.
 	*/
-	GSubProfile* RelevantSubProfile(void) const;
+	GProfile* RelevantProfile(void) const;
 
 	/**
-	* Compute the relevant subprofile
+	* Compute the relevant profile.
 	* @see R::RGroupingKMeans<cGroup, cObj, cGroupData, cGroups>.
-	* @returns Pointer to GSubProfile representing the relevant one.
+	* @returns Pointer to GProfile representing the relevant one.
 	*/
-	GSubProfile* RelevantObj(void) const {return(RelevantSubProfile());}
+	GProfile* RelevantObj(void) const {return(RelevantProfile());}
 
 	/**
-	* Compute the sum of the similarities of a given subprofile to all the
+	* Compute the sum of the similarities of a given profile to all the
 	* others.
 	* @param measure         The measure used to compute the similarities.
-	* @param s               Subprofile used as reference.
+	* @param prof            Profile used as reference.
 	* @returns result.
 	*/
-	double ComputeSumSim(GMeasure* measure,const GSubProfile* s) const;
+	double ComputeSumSim(GMeasure* measure,const GProfile* prof) const;
 
 	/**
 	* Clear the vector representing the group.
@@ -266,20 +264,19 @@ public:
 	void Clear(void);
 
 	/**
-	* Update the group by assigning it a set of information and a language.
-	* @param lang            Pointer to the language.
+	* Update the group by assigning it a set of information.
 	* @param infos           Pointer to the information.
 	* @param computed        The update is called after a computation (and not
 	*                        after a loading from a database).
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed);
+	void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed);
 
 	/**
-	* This method is call by a subprofile when it was modified.
-	* @param sub             Subprofile modified.
+	* This method is call by a profile when it was modified.
+	* @param prof            Profile modified.
 	*/
-	void HasUpdate(GSubProfile* sub);
+	void HasUpdate(GProfile* prof);
 
 	/**
 	* Destructor of a group.

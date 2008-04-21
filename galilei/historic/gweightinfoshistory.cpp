@@ -6,9 +6,10 @@
 
 	List of weighted information entities for history  - Implementation.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		David Wartel (dwartel@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
@@ -33,8 +34,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gweightinfoshistory.h>
+#include <gprofile.h>
 #include <gweightinfo.h>
-#include <gsubprofile.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -47,39 +48,37 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfosHistory::GWeightInfosHistory(GSubProfile* sub, unsigned int max)
-	: GWeightInfos(sub->GetLang(),max)
-{
-	SubProfile=sub;
-	WellGrouped=NewSubProfile=false;
+GWeightInfosHistory::GWeightInfosHistory(GProfile* prof, unsigned int max)
+	: GWeightInfos(max), Profile(prof), WellGrouped(false), NewSubProfile(false) 
+{	
 }
 
 
 //------------------------------------------------------------------------------
 int GWeightInfosHistory::Compare(const GWeightInfosHistory& giwwh) const
 {
-	return(SubProfile->GetId()-giwwh.SubProfile->GetId());
+	return(Profile->GetId()-giwwh.Profile->GetId());
 }
 
 
 //------------------------------------------------------------------------------
 int GWeightInfosHistory::Compare(const GWeightInfosHistory* giwwh) const
 {
-	 return(SubProfile->GetId()-giwwh->SubProfile->GetId());
+	 return(Profile->GetId()-giwwh->Profile->GetId());
 }
 
 
 //------------------------------------------------------------------------------
 int GWeightInfosHistory::Compare(unsigned int id) const
 {
-	return(SubProfile->GetId()-id);
+	return(Profile->GetId()-id);
 }
 
 
 //------------------------------------------------------------------------------
 unsigned int GWeightInfosHistory::GetId(void) const
 {
-	return(SubProfile->GetId());
+	return(Profile->GetId());
 }
 
 
@@ -98,7 +97,7 @@ void GWeightInfosHistory::SetWellGrouped(bool b)
 
 
 //------------------------------------------------------------------------------
-void GWeightInfosHistory::SetNewSubProfile(bool b)
+void GWeightInfosHistory::SetNewProfile(bool b)
 {
 	NewSubProfile=b;
 }

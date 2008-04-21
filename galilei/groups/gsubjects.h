@@ -6,7 +6,7 @@
 
 	Subjects - Header.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -220,10 +220,10 @@ public:
 	double GetRecall(GGroup* grp) const;
 
 	/**
-	* Get the ideal group of the subprofile.
-	* @param sub            SubProfile.
+	* Get the ideal group of the profile.
+	* @param prof            Profile.
 	*/
-	GSubject* GetIdealGroup(GSubProfile* sub) const;
+	GSubject* GetIdealGroup(GProfile* prof) const;
 
 	/**
 	* Get the ideal group of the document.
@@ -232,16 +232,14 @@ public:
 	GSubject* GetIdealGroup(GDoc* doc) const;
 
 	/**
-	* Compute the number of ideal groups for a given topic (and its sub-topics)
-	* in a given language.
+	* Compute the number of ideal groups for a given topic (and its sub-topics).
 	*/
-	size_t GetNbIdealGroups(const GLang* lang) const;
+	size_t GetNbIdealGroups(void) const;
 
 	/**
-	* Compute the number of topics (and its sub-topics) containing a document
-	* in a given language.
+	* Compute the number of topics (and its sub-topics) containing a document.
 	*/
-	size_t GetNbTopicsDocs(const GLang* lang) const;
+	size_t GetNbTopicsDocs(void) const;
 
 	/**
 	* Add a given profile to a subject.
@@ -249,20 +247,6 @@ public:
 	* @param subjectid      Identificator of the subject.
 	*/
 	void InsertProfileSubject(GProfile* profile,unsigned int subjectid);
-
-	/**
-	* Add a given profile to a subject.
-	* @param subprofile     Pointer to the profile.
-	* @param subjectid      Identificator of the subject.
-	*/
-	void InsertSubProfileSubject(GSubProfile* subprofile,unsigned int subjectid);
-
-	/**
-	* Get the subject of a given subprofile.
-	* @param sub            Pointer to the subprofile.
-	*/
-	GSubject* GetSubject(GSubProfile* sub);
-
 	/**
 	* Get the subject of a given profile.
 	* @param prof            Pointer to the profile.

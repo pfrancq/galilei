@@ -57,7 +57,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RURI& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid)
-	:  GWeightInfos(lang,60), URL(url), Name(name), Id(id),
+	:  GWeightInfos(60), URL(url), Name(name), Id(id), Lang(lang),
 	 MIMEType(mime), Updated(u), Computed(a), Fdbks(0),
 	  LinkSet(5,2), OwnerId(ownerid)
 {
@@ -197,7 +197,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 
 		// Update the profiles that have assessed it.
 		if(GSession::Get())
-			GSession::Get()->UpdateProfiles(Id,Lang);
+			GSession::Get()->UpdateProfiles(Id);
 	}
 	else
 		State=osUpToDate;

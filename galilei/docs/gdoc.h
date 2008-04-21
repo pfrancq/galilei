@@ -6,7 +6,7 @@
 
 	Document - Header.
 
-	Copyright 2001-2007 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -79,6 +79,11 @@ protected:
 	unsigned int Id;
 
 	/**
+	* Language of the description.
+	*/
+	GLang* Lang;
+		
+	/**
 	* MIME Type of the document.
 	*/
 	R::RString MIMEType;
@@ -97,11 +102,6 @@ protected:
 	* Identificator of the profiles which have assessed the document.
 	*/
 	R::RVectorInt<unsigned int,true>* Fdbks;
-
-	/**
-	* Status of the document.
-	*/
-//	tDocStatus Status;
 
 	/**
 	* Links "out" of the document.
@@ -181,7 +181,12 @@ public:
 	* @returns RString.
 	*/
 	R::RString GetName(void) const {return(Name);}
-
+	
+	/**
+	* @return Pointer to the Language.
+	*/
+	inline GLang* GetLang(void) const {return(Lang);}
+	
 	/**
 	* Set the name of the document.
 	* @param name            Name.

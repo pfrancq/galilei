@@ -67,8 +67,6 @@ using namespace R;
 #include <genginedoc.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
-#include <gsubprofile.h>
 #include <gprofilecalc.h>
 #include <gpreprofile.h>
 #include <gpostprofile.h>
@@ -82,7 +80,6 @@ using namespace R;
 #include <ggroupshistory.h>
 #include <gpostgroup.h>
 #include <ggalileiapp.h>
-#include <glangdata.h>
 #include <gdebugobject.h>
 using namespace GALILEI;
 
@@ -159,26 +156,26 @@ public:
 	static bool ExternBreak;                                          // Should the session stop as soon as possible?
 	bool SaveResults;                                                 // Must the results be saved after computed?
 	GSlot* Slot;                                                      // Slot for the session
-	R::RDebug* Debug;                                                 // Debug output for the session
-	R::RContainer<GDoc,true,true> Docs;                               // Documents handled by the system.
-	R::RContainer<GDocRefURL,true,true> DocsRefUrl;                   // Documents ordered by URL.
-	R::RContainer<GUser,true,true> Users;                             // Users handled by the system.
-	R::RContainer<GProfile,true,true> Profiles;                       // Profiles handled by the system.
-	R::RContainer<GLangData,true,true> Langs;                         // Documents, Subprofiles and Groups divided by language.
-	R::RContainer<GConceptType,true,true> ConceptTypes;               // Types of Concepts
-	R::RContainer<GRelationType,true,true> RelationTypes;             // Types of Relations
-	R::RContainer<GDebugObject,false,true> DebugObjs;                 // Objects given debugging information.
+	RDebug* Debug;                                                    // Debug output for the session
+	RContainer<GDoc,true,true> Docs;                                  // Documents handled by the system.
+	RContainer<GDocRefURL,true,true> DocsRefUrl;                      // Documents ordered by URL.
+	RContainer<GUser,true,true> Users;                                // Users handled by the system.
+	RContainer<GProfile,true,true> Profiles;                          // Profiles handled by the system.
+	RContainer<GGroup,true,true> Groups;	                          // Groups handled by the system.
+	RContainer<GConceptType,true,true> ConceptTypes;                  // Types of Concepts
+	RContainer<GRelationType,true,true> RelationTypes;                // Types of Relations
+	RContainer<GDebugObject,false,true> DebugObjs;                    // Objects given debugging information.
 	unsigned int MaxDocs;                                             // Maximum number of documents to handle in memory.
-	unsigned int MaxSubProfiles;                                      // Maximum number of subprofiles to handle in memory.
+	unsigned int MaxProfiles;                                         // Maximum number of subprofiles to handle in memory.
 	unsigned int MaxGroups;                                           // Maximum number of groups to handle in memory.
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager
 	
 	Intern(GStorage* str,unsigned int mdocs,unsigned int maxsub,unsigned int maxgroups,unsigned int d,unsigned int u,unsigned int p,unsigned int nblangs)
 		: Subjects(0), GroupsHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
-		  Users(u,u/2), Profiles(p,p/2), Langs(nblangs+1),
+		  Users(u,u/2), Profiles(p,p/2), Groups(100),
 		  ConceptTypes(10,5), RelationTypes(10,5), DebugObjs(100,100),
-		  MaxDocs(mdocs), MaxSubProfiles(maxsub), MaxGroups(maxgroups), FilterManager(0)
+		  MaxDocs(mdocs), MaxProfiles(maxsub), MaxGroups(maxgroups), FilterManager(0)
 	{
 		CurrentRandom=0;
 		Random = new RRandomGood(CurrentRandom);
@@ -259,17 +256,15 @@ void GSession::ForceReCompute(tObjType type)
 			for(Docs.Start();!Docs.End();Docs.Next())
 				Docs()->ClearInfos();
 		}
-		case otSubProfile:
+		case otProfile:
 		{
 			// Delete the subprofiles -> Also groups
 			RCursor<GConceptType> Types(Data->ConceptTypes);
 			for(Types.Start();!Types.End();Types.Next())
-				Types()->Clear(otSubProfile);
-			RCursor<GLangData> Cur(Data->Langs);
-			for(Cur.Start();!Cur.End();Cur.Next())
-				Cur()->Clear(otSubProfile);	
+				Types()->Clear(otProfile);
+			Data->Profiles.Clear();
 			if(Data->SaveResults)
-				Data->Storage->Clear(otSubProfile);
+				Data->Storage->Clear(otProfile);
 		}
 		case otGroup:
 		{
@@ -277,9 +272,7 @@ void GSession::ForceReCompute(tObjType type)
 			RCursor<GConceptType> Types(Data->ConceptTypes);
 			for(Types.Start();!Types.End();Types.Next())
 				Types()->Clear(otGroup);			
-			RCursor<GLangData> Cur(Data->Langs);
-			for(Cur.Start();!Cur.End();Cur.Next())
-				Cur()->Clear(otGroup);
+			Data->Groups.Clear();
 			if(Data->SaveResults)
 				Data->Storage->Clear(otGroup);
 			break;		
@@ -299,21 +292,15 @@ void GSession::ReInit(void)
 	// Clear Fdbks
 	ClearFdbks();
 
-	// Clear groups and subprofiles
-	RCursor<GLangData> Cur(Data->Langs);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		Cur()->Clear(otGroup);
-		Cur()->Clear(otSubProfile);
-	}
 	RCursor<GConceptType> Types(Data->ConceptTypes);
 	for(Types.Start();!Types.End();Types.Next())
 	{
 		Types()->Clear(otGroup);
-		Types()->Clear(otSubProfile);
+		Types()->Clear(otProfile);
 	}
 
-	// Clear Profiles and users
+	// Clear groups, profiles and users
+	Data->Groups.Clear();
 	Data->Profiles.Clear();
 	Data->Users.Clear();
 }
@@ -505,23 +492,6 @@ R::RRandom* GSession::GetRandom(void) const
 }
 
 
-//------------------------------------------------------------------------------
-R::RCursor<GLangData> GSession::GetLanguageSpecifics(void)
-{
-	return(R::RCursor<GLangData>(Data->Langs));
-}
-
-
-//------------------------------------------------------------------------------
-GLangData* GSession::GetLanguageSpecific(GLang* lang)
-{
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(!ptr)
-		Data->Langs.InsertPtr(ptr=new GLangData(lang));
-	return(ptr);
-}
-
-
 
 //------------------------------------------------------------------------------
 //
@@ -597,12 +567,9 @@ GConceptType* GSession::GetInsertConceptType(const RString& name,const RString& 
 void GSession::InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups)
 {
 	RString code(name.Mid(0,2));
-	GLang* Lang;
-	GLangData* ptr=Data->Langs.GetPtr(code);
-	if(ptr)
-		Lang=ptr->GetLang();
-	else
-		Lang=0;
+	GLang* Lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(code,false);
+	if(!Lang)
+		GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn("00");
 	size_t s=26;
 	size_t s2=5000;
 	GConceptType* type=new GConceptType(id,this,name,desc,Lang,s,s2);
@@ -769,26 +736,6 @@ size_t GSession::GetMaxPosDoc(void) const
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GDoc> GSession::GetDocs(GLang* lang) const
-{
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(ptr)
-		return(R::RCursor<GDoc>(ptr->GetDocs()));
-	return(R::RCursor<GDoc>());
-}
-
-
-//-------------------------------------------------------------------------------
-size_t GSession::GetNbDocs(GLang* lang) const
-{
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(ptr)
-		return(ptr->GetNbDocs());
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
 size_t GSession::FillDocs(GDoc** docs)
 {
 	return(Data->Docs.GetTab(docs));
@@ -876,10 +823,6 @@ void GSession::InsertDoc(GDoc* d)
 
 	// Insert the document
 	Data->Docs.InsertPtrAt(d,d->GetId());
-	GLangData* Lang = Data->Langs.GetPtr(d->GetLang());
-	if(!Lang)
-		Data->Langs.InsertPtr(Lang=new GLangData(d->GetLang())); 
-	Lang->InsertDoc(d);
 
 	//insert the doc in the DocsRefUrl container.
 	Data->DocsRefUrl.InsertPtr(new GDocRefURL(d));
@@ -895,27 +838,8 @@ void GSession::InsertDoc(GDoc* d)
 
 
 //-----------------------------------------------------------------------------
-void GSession::MoveDoc(GDoc* d)
-{
-	// Remove doc from container of docs with no language
-	GLangData* ptr=Data->Langs.GetPtr<GLang*>(0);
-	if(ptr)
-		ptr->DeleteDoc(d);
-
-	// Move doc to container of appropriated language.
-	ptr=Data->Langs.GetPtr<GLang*>(d->GetLang());
-	if(!ptr)
-		Data->Langs.InsertPtr(ptr=new GLangData(d->GetLang()));
-	ptr->InsertDoc(d);
-}
-
-
-//-----------------------------------------------------------------------------
 void GSession::ClearDocs(void)
 {
-	RCursor<GLangData> Cur(Data->Langs);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Clear(otDoc);
 	Data->DocsRefUrl.Clear();
 	Data->Docs.Clear();
 }
@@ -957,8 +881,6 @@ void GSession::AnalyseDocs(GSlot* rec)
 //------------------------------------------------------------------------------
 void GSession::AnalyseDoc(GDoc* doc,GDocAnalyse* method,GSlot* rec)
 {
-	bool undefLang;
-
 	// Verify that the textanalyse method is selected
 	if(!method)
 	{
@@ -974,19 +896,12 @@ void GSession::AnalyseDoc(GDoc* doc,GDocAnalyse* method,GSlot* rec)
 		rec->NextDoc(doc);
 	}
 	if(Intern::ExternBreak) return;
-	undefLang=false;
-	if(!doc->GetLang())
-		undefLang=true;
 	
 	RIO::RSmartTempFile docxml;
 	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml);
 	if(!uri.IsEmpty())
-	{
 		// Analyse document -> Is something goes wrong -> It failed
 		method->Analyze(doc,uri);
-		if((undefLang)&&(doc->GetLang()))
-			MoveDoc(doc);	
-	}
 
 	// Save if necessary
 	if(Data->SaveResults&&(doc->GetId()!=cNoRef))
@@ -1248,110 +1163,8 @@ void GSession::InsertProfile(GProfile* p)
 
 
 //------------------------------------------------------------------------------
-RCursor<GSubProfile> GSession::GetSubProfiles(const GLang* lang) const
-{
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(ptr)
-		return(RCursor<GSubProfile>(ptr->GetSubProfiles()));
-	return(RCursor<GSubProfile>());
-}
-
-
-//------------------------------------------------------------------------------
-size_t GSession::GetNbSubProfiles(const GLang* lang) const
-{
-	if(lang)
-	{
-		GLangData* ptr=Data->Langs.GetPtr(lang);
-		if(ptr)
-			return(ptr->GetNbSubProfiles());
-		return(0);
-	}
-
-	size_t nb=0;
-	RCursor<GLangData> Sub(Data->Langs);
-	for(Sub.Start();!Sub.End();Sub.Next())
-		nb+=Sub()->GetNbSubProfiles();
-	return(nb);
-}
-
-
-//------------------------------------------------------------------------------
-size_t GSession::GetMaxSubProfileId(const GLang* lang) const
-{
-	if(!lang)
-		return(0);
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(ptr)
-		return(ptr->GetMaxSubProfileId());
-	return(0);	
-}
-
-
-//------------------------------------------------------------------------------
-GSubProfile* GSession::GetSubProfile(GLang* lang,unsigned int id,bool load,bool null) const
-{
-	GSubProfile* s=0;
-
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(ptr)
-		s=ptr->GetSubProfile(id);
-	if(s)
-		return(s);
-		
-	if(!load)
-		return(0);
-	if(Data->Storage->IsAllInMemory())
-	{
-		if(null)
-			return(0);
-		else
-			throw GException("Unknown subprofile "+RString::Number(id));
-	}
-	s=Data->Storage->LoadSubProfile(id);
-	if(!s)
-	{
-		if(null)
-			return(0);
-		else
-			throw GException("Unknown subprofile "+RString::Number(id));
-	}
-	const_cast<GSession*>(this)->InsertSubProfile(s);
-	return(s);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignId(GSubProfile* sub)
-{
-	// If all subprofiles are not in memory -> use the database
-	if(!Data->Storage->IsAllInMemory())
-	{
-		Data->Storage->AssignId(sub);
-		return;
-	}
-
-	GLangData* ptr=Data->Langs.GetPtr(sub->GetLang());
-	if(!ptr)
-		Data->Langs.InsertPtr(ptr=new GLangData(sub->GetLang()));
-	ptr->AssignId(sub);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::InsertSubProfile(GSubProfile* sub)
-{
-	GLangData* ptr=Data->Langs.GetPtr(sub->GetLang());
-	if(!ptr)
-		Data->Langs.InsertPtr(ptr=new GLangData(sub->GetLang()));
-	ptr->InsertSubProfile(sub);
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::CalcProfiles(GSlot* rec)
 {
-	RCursor<GSubProfile> Subs;
 	R::RCursor<GProfile> Prof=GetProfiles();
 
 	// Run all pre-profile methods that are enabled
@@ -1398,25 +1211,13 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 	if(LinkCalc)
 		LinkCalc->Compute(profile);
 
-	// Dispacth the feedbacks through the subprofiles
-	profile->DispatchFdbks();
+	if(rec)
+		rec->Interact();
 
-	// Go trough the subprofiles
-	RCursor<GSubProfile> Subs(profile->GetSubProfiles());
-	for(Subs.Start();!Subs.End();Subs.Next())
-	{
-		if(rec)
-			rec->Interact();
-
-		if(Intern::ExternBreak) return;
-		if(!Subs()->MustCompute()) continue;
-		Profiling->Compute(Subs());
-		if(Data->SaveResults&&(Subs()->GetId()!=cNoRef))
-		{
-			Data->Storage->SaveSubProfile(Subs());
-			Subs()->SetState(osSaved);
-		}
-	}
+	if(Intern::ExternBreak) return;
+	if(!profile->MustCompute()) return;
+	Profiling->Compute(profile);
+	if(Intern::ExternBreak) return;
 	if(Data->SaveResults&&(profile->GetId()!=cNoRef))
 		Data->Storage->SaveProfile(profile);
 }
@@ -1440,7 +1241,7 @@ void GSession::DoPostProfiles(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::UpdateProfiles(unsigned int docid,GLang* lang)
+void GSession::UpdateProfiles(unsigned int docid)
 {
 	// If there are some profile -> propagate in memory
 	GDoc* doc=GetDoc(docid);
@@ -1454,28 +1255,28 @@ void GSession::UpdateProfiles(unsigned int docid,GLang* lang)
 				GProfile* prof=GetProfile((*fdbks)());
 				if(!prof)
 					continue;
-				prof->HasUpdate(docid,lang);
+				prof->HasUpdate(docid);
 			}
 		}
 	}
 
 	// Use database
 	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
-		Data->Storage->UpdateProfiles(docid,lang);
+		Data->Storage->UpdateProfiles(docid);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(unsigned int p,unsigned int d,GLang* lang,tDocAssessment assess,R::RDate date,R::RDate computed,bool newone)
+void GSession::InsertFdbk(size_t profid,size_t docid,tDocAssessment assess,R::RDate date,R::RDate computed,bool newone)
 {
-	GProfile* prof=GetProfile(p,false);
+	GProfile* prof=GetProfile(profid,false);
 	if(prof)
-		prof->InsertFdbk(d,lang,assess,date,computed);
-	GDoc* doc=GetDoc(d,false);
+		prof->InsertFdbk(docid,assess,date,computed);
+	GDoc* doc=GetDoc(docid,false);
 	if(doc)
-		doc->InsertFdbk(p);
+		doc->InsertFdbk(profid);
 	if(newone&&((!Data->Storage->IsAllInMemory())||(Data->SaveResults)))
-		Data->Storage->AddFdbk(p,d,lang,assess,date,computed);
+		Data->Storage->AddFdbk(profid,docid,assess,date,computed);
 }
 
 
@@ -1503,35 +1304,30 @@ void GSession::ClearFdbks(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-RCursor<GGroup> GSession::GetGroups(GLang* lang)
+RCursor<GGroup> GSession::GetGroups(void)
 {
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(ptr)
-		return(RCursor<GGroup>(ptr->GetGroups()));
-	return(RCursor<GGroup>());
+	return(RCursor<GGroup>(Data->Groups));
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GSession::GetNbGroups(GLang* lang) const
+size_t GSession::GetNbGroups(void) const
 {
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(ptr)
-		return(ptr->GetNbGroups());
-	return(0);
-
+	return(Data->Groups.GetNb());
 }
 
 
 
 //------------------------------------------------------------------------------
-GGroup* GSession::GetGroup(GLang* lang,unsigned int id,bool load,bool null) const
+GGroup* GSession::GetGroup(unsigned int id,bool load,bool null) const
 {
-	GGroup* grp=0;
-	
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(ptr)
-		grp=ptr->GetGroup(id);
+	if(id==cNoRef)
+	{
+		if(null)
+			return(0);
+		throw GException("Unknown group "+RString::Number(id));
+	}
+	GGroup* grp=Data->Groups.GetPtr(id);
 	if(grp)
 		return(grp);
 		
@@ -1544,7 +1340,7 @@ GGroup* GSession::GetGroup(GLang* lang,unsigned int id,bool load,bool null) cons
 		else
 			throw GException("Unknown group "+RString::Number(id));
 	}
-	grp=Data->Storage->LoadGroup(lang,id);
+	grp=Data->Storage->LoadGroup(id);
 	if(!grp)
 	{
 		if(null)
@@ -1567,37 +1363,32 @@ void GSession::AssignId(GGroup* grp)
 		return;
 	}
 
-	GLangData* ptr=Data->Langs.GetPtr(grp->GetLang());
-	if(ptr)
-		ptr->AssignId(grp);
+	// The first group has the identificator 1
+	if(Data->Groups.GetNb())
+		grp->SetId(Data->Groups[Data->Groups.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first group has an identificator of 1
+	else
+		grp->SetId(1);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::InsertGroup(GGroup* grp)
 {
-	GLangData* ptr=Data->Langs.GetPtr(grp->GetLang());
-	if(ptr)
-		ptr->InsertGroup(grp);
+	Data->Groups.InsertPtr(grp);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::DeleteGroup(GGroup* grp)
 {
-	GLangData* ptr=Data->Langs.GetPtr(grp->GetLang());
-	if(ptr)
-		ptr->DeleteGroup(grp);
-
+	Data->Groups.DeletePtr(grp);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::ClearGroups(GLang* lang)
+void GSession::ClearGroups(void)
 {
-	GLangData* ptr=Data->Langs.GetPtr(lang);
-	if(ptr)
-		ptr->Clear(otGroup);
+	Data->Groups.Clear();
 }
 
 
@@ -1636,7 +1427,6 @@ void GSession::DoPostGroups(GSlot* rec)
 //------------------------------------------------------------------------------
 void GSession::CopyIdealGroups(void)
 {
-	RCursor<GSubProfile> Sub;
 	GGroup* grp;
 	GGroupCalc* CalcDesc;
 
@@ -1644,13 +1434,8 @@ void GSession::CopyIdealGroups(void)
 	CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
 
 	// Clear current clustering
-	RCursor<GLangData> Groups(Data->Langs);
-	for(Groups.Start();!Groups.End();Groups.Next())
-		Groups()->Clear(otGroup);
+	ClearGroups();
 		
-	// Get the active languages
-	RCursor<GLang> Langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
-
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(GetSubjects()->GetNodes());
 	for(Grps.Start();!Grps.End();Grps.Next())
@@ -1658,38 +1443,32 @@ void GSession::CopyIdealGroups(void)
 		// Clear the groups associated to the subject
 		Grps()->ClearGroups();
 
-		// Go trough each lang
-		for(Langs.Start();!Langs.End();Langs.Next())
-		{
-			// If the subject has no subprofiles -> next one.
-			if(!Grps()->GetNbSubProfiles(Langs()))
-				continue;
+		// If the subject has no subprofiles -> next one.
+		if(!Grps()->GetNbProfiles())
+			continue;
 
-			// Create a new group in groups and associated with the current groups
-			grp=new GGroup(cNoRef,Langs(),true,RDate(""),RDate(""));
-			AssignId(grp);
-			InsertGroup(grp);
-			Grps()->InsertGroup(grp);
+		// Create a new group in groups and associated with the current groups
+		grp=new GGroup(cNoRef,true,RDate(""),RDate(""));
+		AssignId(grp);
+		InsertGroup(grp);
+		Grps()->InsertGroup(grp);
 
-			// Go through each subprofile
-			Sub=Grps()->GetSubProfiles(Langs());
-			for(Sub.Start();!Sub.End();Sub.Next())
-			{
-				grp->InsertSubProfile(Sub());
-			}
+		// Go through each subprofile
+		RCursor<GProfile> Prof=Grps()->GetProfiles();
+		for(Prof.Start();!Prof.End();Prof.Next())
+			grp->InsertProfile(Prof());
 
-			// Compute Description
-			if(CalcDesc)
-				CalcDesc->Compute(grp);
-			
-			if(Data->SaveResults)
-			{
-				Data->Storage->SaveGroups(Langs());
-				RCursor<GGroup> Groups(GetGroups(Langs()));
-				for(Groups.Start();!Groups.End();Groups.Next())
-					Groups()->SetState(osSaved);
-			}		
-		}
+		// Compute Description
+		if(CalcDesc)
+			CalcDesc->Compute(grp);
+	}
+	
+	if(Data->SaveResults)
+	{
+		Data->Storage->SaveGroups();
+		RCursor<GGroup> Groups(Data->Groups);
+		for(Groups.Start();!Groups.End();Groups.Next())
+			Groups()->SetState(osSaved);
 	}
 }
 
@@ -1713,20 +1492,26 @@ void GSession::LoadHistoricGroupsByDate(RString mindate,RString maxdate)
 
 
 //------------------------------------------------------------------------------
-void GSession::UpdateGroups(unsigned int subid)
+void GSession::UpdateGroup(GProfile* prof)
 {
-	// If there is a group -> propagate in memory
-	GSubProfile* sub=GetSubProfile(0,subid,false);
-	if(sub)
+	if(prof&&(prof->GetGroupId()!=cNoRef))
 	{
-		GGroup* grp=GetGroup(sub->GetLang(),sub->GetGroupId(),false);
+		GGroup* grp=GetGroup(prof->GetGroupId(),false);
 		if(grp)
-			grp->HasUpdate(sub);
+			grp->HasUpdate(prof);
 	}
 
 	// Use database
 	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
-		Data->Storage->UpdateGroups(subid);
+		Data->Storage->UpdateGroups(prof->GetId());		
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::UpdateGroup(size_t profid)
+{	
+	GProfile* prof=GetProfile(profid,false,false);
+	UpdateGroup(prof);
 }
 
 

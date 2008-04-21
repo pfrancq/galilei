@@ -6,9 +6,10 @@
 
 	History of Groups for a given language - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be)
 		David Wartel (dwartel@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
@@ -40,7 +41,6 @@ using namespace R;
 // include files for GALILEI
 #include <ggroupshistory.h>
 #include <gweightinfoshistory.h>
-#include <gsubprofile.h>
 #include <gsubject.h>
 #include <gsession.h>
 #include <gsubjects.h>
@@ -357,7 +357,7 @@ void GGroupsHistory::SetGroupsSubject(void)
 		RCursor<GWeightInfosHistory> Cur2(*Cur());
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			subjects->InsertPtr(Manager->GetSession()->GetSubjects()->GetSubject(Cur2()->GetSubProfile()));
+			subjects->InsertPtr(Manager->GetSession()->GetSubjects()->GetSubject(Cur2()->GetProfile()));
 		}
 
 		// find the most dominant one
@@ -369,7 +369,7 @@ void GGroupsHistory::SetGroupsSubject(void)
 			Cur2.Set(*grp);
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 			{
-				if(Manager->GetSession()->GetSubjects()->GetSubject(Cur2()->GetSubProfile())->GetId()==Cur3()->GetId())
+				if(Manager->GetSession()->GetSubjects()->GetSubject(Cur2()->GetProfile())->GetId()==Cur3()->GetId())
 					occur++;
 			}
 			knownsubject+=occur;
@@ -394,7 +394,7 @@ void GGroupsHistory::CheckWellGroupedSubProfs(void)
 	{
 		RCursor<GWeightInfosHistory> Cur2(*Cur());
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
-			if(Manager->GetSession()->GetSubjects()->GetSubject(Cur2()->GetSubProfile())->GetId()==Cur()->GetSubject()->GetId())
+			if(Manager->GetSession()->GetSubjects()->GetSubject(Cur2()->GetProfile())->GetId()==Cur()->GetSubject()->GetId())
 				Cur2()->SetWellGrouped(true);
 			else
 				Cur2()->SetWellGrouped(false);
@@ -428,7 +428,7 @@ void GGroupsHistory::CheckNewProfiles(void)
 		RCursor<GWeightInfosHistory> Cur2(*Cur());
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 			if(!lastsubs->GetPtr(Cur2()))
-				Cur2()->SetNewSubProfile(true);
+				Cur2()->SetNewProfile(true);
 	}
 
 	delete lastsubs;

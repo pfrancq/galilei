@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	Gsubjects.h
+	GSubjects.h
 
 	Subject - Header.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be)
@@ -54,8 +54,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* This Class implement a representation for a subject, i.e. an ideal group. A
-* subject is supposed to be associated with one language.
+* This Class implement a representation for a subject, i.e. an ideal group.
 *
 * This class is used for validation purposes.
 * @author Pascal Francq, Julien Lamoral and David Wartel.
@@ -105,22 +104,16 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	* Get the ideal group of the subprofile.
-	* @param sub            SubProfile.
+	* Get the ideal group of the profile.
+	* @param prof            Profile.
 	*/
-	GSubject* GetIdealGroup(GSubProfile* sub) const;
+	GSubject* GetIdealGroup(GProfile* prof) const;
 
 	/**
 	* Get the ideal group of the document.
 	* @param doc            Document.
 	*/
 	GSubject* GetIdealGroup(GDoc* doc) const;
-
-	/**
-	* Verify if a subprofile is part of the subject.
-	* @param sub             Pointer to the subprofile.
-	*/
-	bool IsIn(GSubProfile* sub) const;
 
 	/**
 	* Verify if a profile is part of the subject.
@@ -159,41 +152,20 @@ public:
 	/**
 	* Get the number of groups associated to a the subject (and its
 	* sub-subjects).
-	* @param lang            Language of the groups.
 	*/
-	size_t GetNbIdealGroups(const GLang* lang) const;
+	size_t GetNbIdealGroups(void) const;
 
 	/**
-	* Compute the number of topics (and its sub-topics) containing a document
-	* in a given language.
-	* @param lang            Language of the groups.
+	* Compute the number of topics (and its sub-topics) containing a document.
 	*/
-	size_t GetNbTopicsDocs(const GLang* lang) const;
+	size_t GetNbTopicsDocs(void) const;
 
 	/**
-	* Get the number of subprofiles associated to the subject.
-	* @param lang            Language of the subprofiles.
-	*/
-	size_t GetNbSubProfiles(const GLang* lang) const;
-
-	/**
-	* Add a subprofiles to the subject.
-	* @param s              Pointer to the subprofile to add.
-	*/
-	void InsertSubProfile(GSubProfile* s);
-
-	/**
-	* Get a cursor over the subprofiles of the system for a given language.
-	* @param lang           Language.
-	*/
-	R::RCursor<GSubProfile> GetSubProfiles(const GLang* lang) const;
-
-	/**
-	* Compute the number of subprofiles of a given group that are also in the
+	* Compute the number of profiles of a given group that are also in the
 	* current one.
 	* @param grp             Group.
 	*/
-	size_t GetNbSubProfiles(const GGroup* grp) const;
+	size_t GetNbProfiles(const GGroup* grp) const;
 
 	/**
 	* Compute the number of documents of a given container that are also in the
@@ -218,13 +190,7 @@ public:
 	* Get the number of documents associated to this subject.
 	* @returns unsigned int
 	*/
-	unsigned int GetNbDocs(void) const;
-
-	/**
-	* Get the number of subprofiles associated to the subject.
-	* @param lang            Language of the subprofiles.
-	*/
-	size_t GetNbDocs(const GLang* lang) const;
+	size_t GetNbDocs(void) const;
 
 	/**
 	* Insert a profile to the list of those contained in the subject.

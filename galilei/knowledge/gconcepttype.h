@@ -6,7 +6,7 @@
 
 	Concept Type - Header.
 
-	Copyright 2006-2007 by the Université Libre de Bruxelles.
+	Copyright 2006-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -111,9 +111,9 @@ class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcep
 	size_t NbRefDocs;
 
 	/**
-	* Number of references in subprofiles.
+	* Number of references in profiles.
 	*/
-	size_t NbRefSubProfiles;
+	size_t NbRefProfiles;
 
 	/**
 	* Number of references in groups.
@@ -138,10 +138,10 @@ public:
 	* Set the references of a given language. This method is called when
 	* connecting to and disconnecting from a session.
 	* @param refdocs         Number of documents referenced.
-	* @param refsubprofiles  Number of subprofiles referenced.
+	* @param refprofiles     Number of subprofiles referenced.
 	* @param refgroups       Number of groups referenced.
 	*/
-	void SetReferences(size_t refdocs,size_t refsubprofiles,size_t refgroups);
+	void SetReferences(size_t refdocs,size_t refprofiles,size_t refgroups);
 	
 	/**
 	* Compare two concepts types.

@@ -6,7 +6,7 @@
 
 	Generic Profile Computing Method - Header.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -59,19 +59,12 @@ class GSubProfileRef;
 //------------------------------------------------------------------------------
 /**
 * The GProfileCalc class provides a representation for a method to compute a
-* specific profile, i.e. its sub-profiles.
+* specific profile.
 * @author Pascal Francq
 * @short Generic Profile Computing Method.
 */
 class GProfileCalc : public GPlugin<GFactoryProfileCalc>
 {
-protected:
-
-	/**
-	* Current subprofile to compute.
-	*/
-	GSubProfile* SubProfile;
-
 public:
 
 	/**
@@ -81,10 +74,10 @@ public:
 	GProfileCalc(GFactoryProfileCalc* fac);
 
 	/**
-	* Compute a subprofile.
-	* @param subprofile      Reference to the subprofile to compute.
+	* Compute a profile.
+	* @param profile         Reference to the profile to compute.
 	*/
-	virtual void Compute(GSubProfile* subprofile)=0;
+	virtual void Compute(GProfile* profile)=0;
 
 	/**
 	* Destructor of the computing method.

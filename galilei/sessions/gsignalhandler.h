@@ -6,7 +6,7 @@
 
 	Generic Signal Handler for a GALILEI Session - Header.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2005-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -93,13 +93,6 @@ public:
 	* @param event           Event.
 	*/
 	virtual void Event(GProfile* prof, tEvent event);
-
-	/**
-	* A specific subprofile has changed.
-	* @param sub             Subprofile.
-	* @param event           Event.
-	*/
-	virtual void Event(GSubProfile* sub, tEvent event);
 
 	/**
 	* A specific group has changed.

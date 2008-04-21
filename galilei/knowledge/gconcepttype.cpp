@@ -6,7 +6,7 @@
 
 	Concept Type - Implementation.
 
-	Copyright 2006-2007 by the Université Libre de Bruxelles.
+	Copyright 2006-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -67,10 +67,10 @@ GConceptType::GConceptType(unsigned int id,GSession* session,const RString& name
 
 	
 //------------------------------------------------------------------------------
-void GConceptType::SetReferences(size_t refdocs,size_t refsubprofiles,size_t refgroups)
+void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refgroups)
 {
 	NbRefDocs=refdocs;
-	NbRefSubProfiles=refsubprofiles;
+	NbRefProfiles=refprofiles;
 	NbRefGroups=refgroups;
 }
 
@@ -126,9 +126,9 @@ RString GConceptType::GetDebugInfo(const RString& info)
 {
 	// Look what to do
 	bool Idf=(info.FindStr("idf")!=-1);
-	bool Isf=(info.FindStr("isf")!=-1);
+	bool Ipf=(info.FindStr("ipf")!=-1);
 	bool Igf=(info.FindStr("igf")!=-1);
-	if((!Idf)&&(!Isf)&&(!Igf))
+	if((!Idf)&&(!Ipf)&&(!Igf))
 		return(RString::Null);
 	
 	Load(); // Load the concepts if necessary
@@ -151,8 +151,8 @@ RString GConceptType::GetDebugInfo(const RString& info)
 		}
 		if(Idf)	
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otDoc));		
-		if(Isf)	
-			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otSubProfile));
+		if(Ipf)	
+			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otProfile));
 		if(Igf)	
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otGroup));		
 		str+="\n";
@@ -335,9 +335,9 @@ void GConceptType::IncRef(tObjType ObjType)
 			NbRefDocs++;
 			nb=NbRefDocs;
 			break;
-		case otSubProfile:
-			NbRefSubProfiles++;
-			nb=NbRefSubProfiles;
+		case otProfile:
+			NbRefProfiles++;
+			nb=NbRefProfiles;
 			break;
 		case otGroup:
 			NbRefGroups++;
@@ -365,11 +365,11 @@ void GConceptType::DecRef(tObjType ObjType)
 			NbRefDocs--;
 			nb=NbRefDocs;
 			break;
-		case otSubProfile:
-			if(!NbRefSubProfiles)
-				throw GException("Cannot decrease null number of references for subprofiles");
-			NbRefSubProfiles--;
-			nb=NbRefSubProfiles;
+		case otProfile:
+			if(!NbRefProfiles)
+				throw GException("Cannot decrease null number of references for profiles");
+			NbRefProfiles--;
+			nb=NbRefProfiles;
 			break;
 		case otGroup:
 			if(!NbRefGroups)
@@ -378,7 +378,7 @@ void GConceptType::DecRef(tObjType ObjType)
 			nb=NbRefGroups;
 			break;
 		default:
-			throw GException ("Unkown type to decrease");
+			throw GException("Unkown type to decrease");
 			break;
 	}
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
@@ -394,14 +394,14 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 		case otDoc:
 			return(NbRefDocs);
 			break;
-		case otSubProfile:
-			return(NbRefSubProfiles);
+		case otProfile:
+			return(NbRefProfiles);
 			break;
 		case otGroup:
 			return(NbRefGroups);
 			break;
 		default:
-			return(NbRefDocs+NbRefSubProfiles+NbRefGroups);
+			return(NbRefDocs+NbRefProfiles+NbRefGroups);
 			break;
 	}
 	return(0);
@@ -428,27 +428,27 @@ void GConceptType::Clear(tObjType ObjType)
 		case otDoc:
 			NbRefDocs=0;
 			break;
-		case otSubProfile:
-			NbRefSubProfiles=0;
+		case otProfile:
+			NbRefProfiles=0;
 			break;
 		case otGroup:
 			NbRefGroups=0;
 			break;
-		case otDocSubProfile:
+		case otDocProfile:
 			NbRefDocs=0;
-			NbRefSubProfiles=0;
+			NbRefProfiles=0;
 			break;
 		case otDocGroup:
 			NbRefDocs=0;
 			NbRefGroups=0;
 			break;
-		case otSubProfileGroup:
-			NbRefSubProfiles=0;
+		case otProfileGroup:
+			NbRefProfiles=0;
 			NbRefGroups=0;
 			break;
 		default:
 			NbRefDocs=0;
-			NbRefSubProfiles=0;
+			NbRefProfiles=0;
 			NbRefGroups=0;
 			break;
 	}

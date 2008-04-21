@@ -4,12 +4,13 @@
 
 	QGGroupsHistory.cpp
 
-	Widget to show a groupement of the GA - Implementation.
+	Widget to show the groups history - Implementation.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
-
+		David Wartel <dwartel@ulb.ac.be>
+		Pascal Francq <pfrancq@ulb.ac.be>
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -43,7 +44,6 @@ using namespace R;
 #include <ggrouphistory.h>
 #include <ggroupshistory.h>
 #include <gsubject.h>
-#include <gsubprofile.h>
 #include <guser.h>
 #include <gweightinfoshistory.h>
 #include <qlistviewitemtype.h>
@@ -109,7 +109,7 @@ void GALILEI::QGGroupsHistory::setGroups(GGroupsHistory* grps)
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
 			sprintf(tmp,"%i",Cur2()->GetId());
-			p=Cur2()->GetSubProfile()->GetProfile();
+			p=Cur2()->GetProfile();
 			sprintf(tmp2,"%i",p->GetId());
 			QListViewItemType* subitem=new QListViewItemType(Cur2(),gritem,tmp,tmp2,ToQString(p->GetName()),ToQString(p->GetUser()->GetFullName()));
 			if(Cur2()->IsWellGrouped()==true)
