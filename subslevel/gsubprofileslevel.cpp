@@ -47,7 +47,6 @@
 //include files for GALILEI
 #include <gsession.h>
 #include <gprofile.h>
-#include <gsubprofile.h>
 #include <gdoc.h>
 #include <ggroup.h>
 #include <glang.h>
@@ -107,27 +106,27 @@ void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* c
 
 	grp=static_cast<GGroup*>(caller); //subprofile was given by caller
 	storeMySQL=static_cast<RDb*>(storage->GetInfos());
-	RContainer<Scoring,true,true> Scores(grp->GetNbSubProfiles());
+	RContainer<Scoring,true,true> Scores(grp->GetNbProfiles());
 
 	levelswidth=100/atoi(inst.GetAttrValue("NbLevels").Latin1());
 
 	try
 	{
 		// Init
-		RQuery initsubprofiles(storeMySQL,"UPDATE subprofiles SET level='0',score='0' WHERE groupid="+RString::Number(grp->GetId()));
+		RQuery initsubprofiles(storeMySQL,"UPDATE profiles SET level='0',score='0' WHERE groupid="+RString::Number(grp->GetId()));
 
 		// Find all documents assessed as relevant by someone of the group
-		sql="SELECT DISTINCT(htmlid) FROM htmlsbyprofiles,subprofiles WHERE htmlsbyprofiles.profileid=subprofiles.profileid AND subprofiles.langid=htmlsbyprofiles.langid AND judgement='O' AND subprofiles.groupid="+RString::Number(grp->GetId());
+		sql="SELECT DISTINCT(htmlid) FROM htmlsbyprofiles,profiles WHERE htmlsbyprofiles.profileid=profiles.profileid AND judgement='O' AND profiles.groupid="+RString::Number(grp->GetId());
 		RQuery docs(storeMySQL, sql);
 		for(docs.Start();!docs.End();docs.Next())
 		{
-			// Class all subprofiles assessing the current document by date
-			sql="SELECT subprofiles.subprofileid FROM subprofiles,htmlsbyprofiles WHERE subprofiles.langid=htmlsbyprofiles.langid AND subprofiles.profileid=htmlsbyprofiles.profileid AND subprofiles.groupid="+RString::Number(grp->GetId())+" AND judgement='O' AND htmlid="+docs[0]+" ORDER BY when2";
+			// Class all profiles assessing the current document by date
+			sql="SELECT profiles.profileid FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND profiles.groupid="+RString::Number(grp->GetId())+" AND judgement='O' AND htmlid="+docs[0]+" ORDER BY when2";
 			RQuery subprofiles(storeMySQL,sql);
 			subprofiles.Start();
 			size_t nb=subprofiles.GetNb()-1;
 			if(!nb) continue;
-			subscore=static_cast<double>(nb)/static_cast<double>(grp->GetNbSubProfiles()-1);
+			subscore=static_cast<double>(nb)/static_cast<double>(grp->GetNbProfiles()-1);
 			Scoring* ptr=Scores.GetInsertPtr(atoi(subprofiles[0]));
 			ptr->Score+=subscore;
 			ptr->NbDocs++;
@@ -140,7 +139,7 @@ void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* c
 			// Compute the score,level and store it in the database
 			Cur()->Score/=static_cast<double>(Cur()->NbDocs);
 			sublevel=(int(100*Cur()->Score)+(levelswidth-1))/levelswidth;
-			sql="UPDATE subprofiles SET level='"+RString::Number(sublevel)+"',score='"+RString::Number(Cur()->Score)+"' WHERE subprofileid="+RString::Number(Cur()->SubProfileId);
+			sql="UPDATE profiles SET level='"+RString::Number(sublevel)+"',score='"+RString::Number(Cur()->Score)+"' WHERE profileid="+RString::Number(Cur()->SubProfileId);
 			RQuery update(storeMySQL, sql);
 		}
 	}
@@ -259,15 +258,11 @@ void GSubProfilesLevel::Run(void)
 	GStorageTag tag("SubProfilesLevelCMD");
 	tag.InsertAttr("NbLevels",RString::Number(NbLevels));
 	
-	RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
-	for(Langs.Start();!Langs.End();Langs.Next())
+	RCursor<GGroup> Groups(Session->GetGroups());
+	for(Groups.Start();!Groups.End();Groups.Next())
 	{
-		RCursor<GGroup> Groups(Session->GetGroups(Langs()));
-		for(Groups.Start();!Groups.End();Groups.Next())
-		{
-			void* caller=static_cast<void*>(Groups());
-			Session->GetStorage()->ExecuteCmd(tag,caller);
-		}
+		void* caller=static_cast<void*>(Groups());
+		Session->GetStorage()->ExecuteCmd(tag,caller);
 	}
 	GStorageTag tag2("DocsLevelCMD");
 	Session->GetStorage()->ExecuteCmd(tag2,0);
