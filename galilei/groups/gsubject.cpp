@@ -116,7 +116,7 @@ void GSubject::Insert(GDoc* doc)
 //------------------------------------------------------------------------------
 GSubject* GSubject::GetIdealGroup(GProfile* prof) const
 {	
-	if(Data->Profiles.IsIn(*prof))
+	if(Data->Profiles.IsIn(prof->GetId()))
 		return(const_cast<GSubject*>(this));
 	
 	GSubject* subject(0);

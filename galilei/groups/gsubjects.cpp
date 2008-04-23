@@ -407,11 +407,9 @@ void GSubjects::ComputeRecallPrecision(void)
 			Prof=Grp()->Group->GetProfiles();
 			Prof.Start();
 			thGrp=GetIdealGroup(Prof());
-//			if((!thGrp)||(thGrp->GetLang()!=Grp()->Group->GetLang()))
-//				return;
 			if(!thGrp)
 				continue;
-			nbsub=thGrp->GetNbProfiles(Grp()->Group);
+			nbsub=thGrp->GetNbProfiles();
 			if(!nbsub)
 				continue;
 			Grp()->Precision=1.0;
@@ -426,8 +424,6 @@ void GSubjects::ComputeRecallPrecision(void)
 			for(Prof.Start();!Prof.End();Prof.Next())
 			{
 				thGrp=GetIdealGroup(Prof());
-//				if((!thGrp)||(!thGrp->GetLang()!=Grp()->Group->GetLang()))
-//					continue;
 				if(!thGrp)
 					continue;
 				nbsub=thGrp->GetNbProfiles(Grp()->Group);
@@ -439,7 +435,7 @@ void GSubjects::ComputeRecallPrecision(void)
 				}
 				else
 				{
-					InthGrp=thGrp->GetNbProfiles(Grp()->Group)-1;
+					InthGrp=thGrp->GetNbProfiles()-1;
 					if(InthGrp)
 						Grp()->Precision+=((double)(InthGrp))/((double)(NbGrp-1));
 					InGrp=Grp()->Group->GetNbProfiles(thGrp)-1;
@@ -488,7 +484,6 @@ size_t GSubjects::GetNbTopicsDocs(void) const
 //-----------------------------------------------------------------------------
 void GSubjects::ComputeTotal(void)
 {
-//	RCursor<GGroup> GroupsIdeal;                 // Pointer to the ideal groups for a given language
 	RCursor<GGroup> GroupsComputed;               // Pointer to the computed groups for a given language
 	GGroup* GroupComputed;                        // Pointer to a computed group
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
