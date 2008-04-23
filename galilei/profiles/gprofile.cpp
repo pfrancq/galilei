@@ -437,4 +437,21 @@ void GProfile::HasUpdate(unsigned int docid)
 GProfile::~GProfile(void)
 {
 	GSession::Event(this,eObjDelete);
+	try
+	{
+		// Remove it from its group if necessary
+		if((GroupId!=cNoRef)&&(GSession::Get()))
+		{
+			GGroup* grp=GSession::Get()->GetGroup(GroupId);
+			if(grp)
+				grp->DeleteProfile(this);
+		}
+
+		// Remove its references
+		if(State==osDelete)  // The object has modified the references count but was not saved
+			DelRefs(otProfile);
+	}
+	catch(...)
+	{
+	}	
 }
