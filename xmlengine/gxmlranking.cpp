@@ -213,15 +213,15 @@ void GXmlRanking::Compute(R::RString Name)
 					elementName=line; 
 					find_at_least_one_ele = 1;
 				}
-			if (i==2 )
+			if (i==2 )		//tfidf
 				criteria_values[0]= atof ( line.Latin1());
-			if (i==3 )
+			if (i==3 )//tfief
 				criteria_values[1]= atof ( line.Latin1());
-			if (i==4 )
-				//criteria_values[2]= atof ( line.Latin1());		
-			if (i==5 )
-				criteria_values[2]= atof ( line.Latin1());	
-			if (i==6 ){
+			if (i==4 ){//type
+			}	
+			if (i==5 ) //dis
+				criteria_values[2]= atof ( line.Latin1());
+			if (i==6 ){ //specif
 				criteria_values[3]= atof ( line.Latin1());
 				sol=ThProm->NewSol(elementName.Latin1());
 				ThProm->Assign(sol,criteria_values);
