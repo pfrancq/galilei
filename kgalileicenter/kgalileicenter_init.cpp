@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Init part.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -224,6 +224,7 @@ void KGALILEICenterApp::saveOptions(void)
 
 	// Save options for database creation
 	Config->writeEntry("StructuresPath",StructuresPath);
+	Config->writeEntry("PrgPath",PrgPath);
 
 	// Save options for the plug-ins dialog box
 	Config->writeEntry("DlgMainTabIdx",DlgMainTabIdx);
@@ -266,6 +267,7 @@ void KGALILEICenterApp::readOptions(void)
 
 	// Read create database options
 	StructuresPath=Config->readEntry("StructuresPath","http://stic.ulb.ac.be").ascii();
+	PrgPath=Config->readEntry("PrgPath","").ascii();
 
 	// Save options for the plug-ins dialog box
 	DlgMainTabIdx=Config->readNumEntry("DlgMainTabIdx",0);

@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>441</width>
-            <height>269</height>
+            <width>530</width>
+            <height>294</height>
         </rect>
     </property>
     <property name="caption">
@@ -108,6 +108,29 @@
                             <widget class="KURLRequester">
                                 <property name="name">
                                     <cstring>DebugFile</cstring>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
+                    <widget class="QLayoutWidget">
+                        <property name="name">
+                            <cstring>layout6_2</cstring>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>textLabel4_2</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Directory of programs:</string>
+                                </property>
+                            </widget>
+                            <widget class="KURLRequester">
+                                <property name="name">
+                                    <cstring>PrgPath</cstring>
                                 </property>
                             </widget>
                         </hbox>
@@ -310,6 +333,9 @@
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
     <includehint>kurlrequester.h</includehint>
     <includehint>klineedit.h</includehint>
     <includehint>kpushbutton.h</includehint>

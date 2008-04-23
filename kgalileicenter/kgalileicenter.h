@@ -158,6 +158,11 @@ public:
 	int DlgCommunitiesTabIdx;
 	int DlgSearchTabIdx;
 
+	/**
+	 * Path for programs.
+	 */
+	RString PrgPath;
+	
 public:
 
 	/**
@@ -176,6 +181,16 @@ public:
 	* Set the path to the structures.
 	*/
 	void SetStructuresPath(const RString& path) {StructuresPath=path;}
+	
+	/**
+	* Get the path to the programs.
+	*/
+	RString GetPrgPath(void) const {return(PrgPath);}
+
+	/**
+	* Set the path to the programs.
+	*/
+	void SetPrgPath(const RString& path) {PrgPath=path;}
 
 	/**
 	* Returns a pointer to the document connected to the view.

@@ -826,7 +826,7 @@ void KGALILEICenterApp::slotRunProgram(void)
 	KViewPrg* o;
 
 	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(QString(getpwuid(getuid())->pw_dir)+QString("/galilei/prg"),i18n("*.kprg|KGALILEICenter Programs"), this, i18n("Open File..."));
+	KURL url=KFileDialog::getOpenURL(ToQString(PrgPath),i18n("*.kprg|KGALILEICenter Programs"), this, i18n("Open File..."));
 	if(url.isEmpty())
 	{
 		QMessageBox::critical(this,"KGALILEICenter","File could not be found");

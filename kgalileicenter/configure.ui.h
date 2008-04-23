@@ -35,7 +35,9 @@ void ConfigureDlg::Init(void* param)
 	LogFile->setURL(ToQString(App->GetLogFileName()));
 	DebugFile->setShowLocalProtocol(false);
 	DebugFile->setURL(ToQString(App->GetDebugFileName()));
-
+	PrgPath->setShowLocalProtocol(false);
+	PrgPath->setURL(ToQString(App->GetPrgPath()));
+	
 	// Directories
 	R::RCursor<RString> Cur(App->GetPlugInsPath());
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -51,6 +53,7 @@ void ConfigureDlg::Done(void* param)
 	App->SetPlugInsConfigName(FromQString(PlugInsConfig->url()));
 	App->SetLogFileName(FromQString(LogFile->url()));
 	App->SetDebugFileName(FromQString(DebugFile->url()));	
+	App->SetPrgPath(FromQString(PrgPath->url()));	
 	QString debug=DebugFile->url();
 	delete App->Debug;
 	App->Debug=0;
