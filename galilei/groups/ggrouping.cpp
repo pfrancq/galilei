@@ -67,11 +67,9 @@ GGrouping::GGrouping(GFactoryGrouping* fac)
 //-----------------------------------------------------------------------------
 void GGrouping::Grouping(GSlot*,bool save)
 {
-	R::RCursor<GGroup> Groups;
-
 	// How to compute the groups
 	GGroupCalc* CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
-
+	Profiles.Clear();
 	RCursor<GProfile> cur(Session->GetProfiles());
 	for(cur.Start();!cur.End();cur.Next())
 	{
@@ -90,7 +88,7 @@ void GGrouping::Grouping(GSlot*,bool save)
 	// Compute the description of the groups and Save the information.
 	if(CalcDesc)
 	{
-		Groups=Session->GetGroups();
+		R::RCursor<GGroup> Groups(Session->GetGroups());
 		for(Groups.Start();!Groups.End();Groups.Next())
 			CalcDesc->Compute(Groups());
 	}
@@ -99,7 +97,7 @@ void GGrouping::Grouping(GSlot*,bool save)
 	if(save)
 	{
 		Session->GetStorage()->SaveGroups();
-		Groups=Session->GetGroups();
+		R::RCursor<GGroup> Groups(Session->GetGroups());
 		for(Groups.Start();!Groups.End();Groups.Next())
 			Groups()->SetState(osSaved);
 	}	

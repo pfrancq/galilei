@@ -66,7 +66,7 @@ protected:
 	/**
 	* Profiles that must be grouped.
 	*/
-	R::RContainer<GProfile,false,true> Profiles;
+	R::RContainer<GProfile,false,false> Profiles;
 
 public:
 
