@@ -383,70 +383,58 @@ GSubject* GSubjects::GetIdealGroup(GDoc* doc) const
 //------------------------------------------------------------------------------
 void GSubjects::ComputeRecallPrecision(void)
 {
-	R::RCursor<GroupScore> Grp;
-	RCursor<GProfile> Prof;
-	//GGroup* thGrp;
-	GSubject* thGrp;
-	unsigned int NbGrp;
-	unsigned int InGrp;
-	unsigned int InthGrp;
-	unsigned int NbProf;
-	unsigned int nbsub;
+	GSubject* ThGrp;        // Subject of the corresponding ideal group.
+	size_t InGrp;           // Number of profiles in the computed group.
+	size_t ElseInGrp;       // Number of profiles in the computed group that are also in the ideal one.
+	size_t InThGrp;         // Number of profiles in the corresponding ideal group.
+	size_t ElseInThGrp;     // Number of profiles in the corresponding ideal group that are also in the computed one.
+	size_t NbProf;          // Number of profiles grouped.
 
 	Data->Precision=Data->Recall=0.0;
 	NbProf=0;
-	Grp.Set(Data->GroupsScore);
+	R::RCursor<GroupScore> Grp(Data->GroupsScore);
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
-		NbGrp=Grp()->Group->GetNbProfiles();
-		NbProf+=NbGrp;
+		InGrp=Grp()->Group->GetNbProfiles();
+		NbProf+=InGrp;
 		Grp()->Precision=Grp()->Recall=0.0;
-		if(!NbGrp) continue;
-		if(NbGrp==1)
-		{
-			Prof=Grp()->Group->GetProfiles();
+		RAssert(InGrp);
+		RCursor<GProfile> Prof(Grp()->Group->GetProfiles());
+		if(InGrp==1)
+		{			
 			Prof.Start();
-			thGrp=GetIdealGroup(Prof());
-			if(!thGrp)
-				continue;
-			nbsub=thGrp->GetNbProfiles();
-			if(!nbsub)
-				continue;
+			ThGrp=GetIdealGroup(Prof());
+			RAssert(ThGrp);
+			InThGrp=ThGrp->GetNbProfiles();
+			RAssert(InThGrp);
 			Grp()->Precision=1.0;
-			if(nbsub==1)
+			if(InThGrp==1)
 				Grp()->Recall=1.0;
 			Data->Precision+=Grp()->Precision;
 			Data->Recall+=Grp()->Recall;
 		}
 		else
 		{
-			Prof=Grp()->Group->GetProfiles();
 			for(Prof.Start();!Prof.End();Prof.Next())
 			{
-				thGrp=GetIdealGroup(Prof());
-				if(!thGrp)
-					continue;
-				nbsub=thGrp->GetNbProfiles(Grp()->Group);
-				if(!nbsub)
-					continue;
-				if(nbsub==1)
-				{
+				ThGrp=GetIdealGroup(Prof());
+				RAssert(ThGrp);
+				InThGrp=ThGrp->GetNbProfiles();
+				RAssert(InThGrp);			
+				if(InThGrp==1)
 					Grp()->Recall+=1.0;
-				}
 				else
 				{
-					InthGrp=thGrp->GetNbProfiles()-1;
-					if(InthGrp)
-						Grp()->Precision+=((double)(InthGrp))/((double)(NbGrp-1));
-					InGrp=Grp()->Group->GetNbProfiles(thGrp)-1;
-					if(InGrp)
-						Grp()->Recall+=((double)(InGrp))/((double)(nbsub-1));
+					ElseInThGrp=ThGrp->GetNbProfiles(Grp()->Group)-1;
+					Grp()->Precision+=((double)(ElseInThGrp))/((double)(InGrp-1));
+					ElseInGrp=Grp()->Group->GetNbProfiles(ThGrp)-1;
+					Grp()->Recall+=((double)(ElseInGrp))/((double)(InThGrp-1));
 				}
 			}
 			Data->Precision+=Grp()->Precision;
 			Data->Recall+=Grp()->Recall;
-			Grp()->Precision/=NbGrp;
-			Grp()->Recall/=NbGrp;
+			Grp()->Precision/=(double)InGrp;
+			Grp()->Recall/=(double)InGrp;
 		}
 	}
 	if(NbProf)
@@ -484,7 +472,6 @@ size_t GSubjects::GetNbTopicsDocs(void) const
 //-----------------------------------------------------------------------------
 void GSubjects::ComputeTotal(void)
 {
-	RCursor<GGroup> GroupsComputed;               // Pointer to the computed groups for a given language
 	GGroup* GroupComputed;                        // Pointer to a computed group
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
 	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
@@ -496,7 +483,6 @@ void GSubjects::ComputeTotal(void)
 	double* VectorCols;                           // Sum of the columns of the matrix
 	double* VectorColsTemp;                       // temp sum of the columns of the matrix
 	double* ptr;
-	RCursor<GProfile> Prof;
 
 	// Init part
 	Data->Total=0.0;
@@ -519,7 +505,7 @@ void GSubjects::ComputeTotal(void)
 	//GroupsIdeal=Data->IdealGroups->GetGroups(lang);
 	//NbRows=GroupsIdeal.GetNb();
 	NbRows=GetNbIdealGroups();
-	GroupsComputed=Data->Session->GetGroups();
+	RCursor<GGroup> GroupsComputed(Data->Session->GetGroups());
 	NbCols=GroupsComputed.GetNb();
 	if((!NbRows)||(!NbCols))
 		return;
@@ -547,7 +533,7 @@ void GSubjects::ComputeTotal(void)
 		if(!GroupsIdeal()->GetNbProfiles())
 			continue;
 		memset(VectorColsTemp,0,NbCols*sizeof(double));
-		Prof=GroupsIdeal()->GetProfiles();
+		RCursor<GProfile> Prof(GroupsIdeal()->GetProfiles());
 		for(Prof.Start();!Prof.End();Prof.Next())
 		{
 			if(Prof()->GetGroupId()==cNoRef)
@@ -641,10 +627,10 @@ void GSubjects::DocumentSharing(void)
 		RCursor<GProfile> Profile(Grps()->GetProfiles());
 		for(Profile.Start();!Profile.End();Profile.Next())
 		{
-			Grps()->NotJudgedDocsRelList(ProfilesDocsSims,&Data->NewDocs,Profile(),Data->Session);
+			Grps()->NotJudgedDocsRelList(ProfilesDocsSims,Data->NewDocs,Profile(),Data->Session);
 			RCursor<GFdbk> Cur(Data->NewDocs);
 			for(Cur.Start(),i=Data->NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
-			{
+			{				
 				GDoc* doc=Data->Session->GetDoc(Cur()->GetDocId());
 				if(!doc)
 					continue;
