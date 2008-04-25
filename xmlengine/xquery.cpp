@@ -325,7 +325,7 @@ void XQuery::compute_query(XQueryNode *node)									// Resolves the query tree
 	default : break;															// Avoids warning
 	}
 }
-/*NORMAL//______________________________________________________________________________
+//NORMAL//______________________________________________________________________________
 //------------------------------------------------------------------------------
 void XQuery::rank_results()									
 {
@@ -334,20 +334,20 @@ void XQuery::rank_results()
 
 
 	cqres.Set(*query_tree.GetTop()->GetQRes());
-	gxml_rank = new GXmlRanking(storage, *Params);
+	gxml_rank = new GXmlRanking(storage, Params);
 	gxml_rank->Compute(cqres, query_keywords);	
-}*/
+}
 
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
-void XQuery::rank_results(R::RString Name)									
-{
-	RCursor<XNodeSet> cqres;
-	GXmlRanking *gxml_rank;
-
-	gxml_rank = new GXmlRanking(storage, Params);
-	gxml_rank->Compute(Name);	
-}
+//void XQuery::rank_results(R::RString Name)									
+//{
+//	RCursor<XNodeSet> cqres;
+//	GXmlRanking *gxml_rank;
+//
+//	gxml_rank = new GXmlRanking(storage, Params);
+//	gxml_rank->Compute(Name);	
+//}
 
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
@@ -605,9 +605,9 @@ try
 	    //cout << "faiza la requ�te dans xquery::query "<<endl ;
  		//cout << print().Latin1() << endl;
 		compute_query(query_tree.GetTop());
-		//faiza
-		//NORMAL rank_results();
-		rank_results(Name);
+		//NORMAL
+		 rank_results();
+		//rank_results(Name);
 		if (resultsFile)
 			(*resultsFile)<< ShowSol().Latin1() << "\n";
 		else
