@@ -81,7 +81,9 @@ public :
 	~XQuery();
 	RString print() const;
 	RString ShowSol() ;
-	void rank_results(R::RString Name);
+	//NORMAL
+	void rank_results();
+	//void rank_results(R::RString Name);
 	//void temporaire();
 };
 
