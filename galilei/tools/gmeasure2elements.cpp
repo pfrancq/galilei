@@ -65,6 +65,7 @@ class LangMeasure;
 //
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
 class GMeasure2Elements::Intern
 {
 public:
@@ -406,12 +407,12 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 	unsigned int id1=va_arg(ap,unsigned int);
 	unsigned int id2=va_arg(ap,unsigned int);
 	double* res=va_arg(ap,double*);
+	va_end(ap);
 	
 	// If same profile -> return default
 	if(id1==id2)
 	{
 		(*res)=Equals;
-		va_end(ap);
 		return;
 	}
 
@@ -428,7 +429,6 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 		}
 		else
 			(*res)=0.0;
-		va_end(ap);
 		return;
 	}
 
@@ -444,7 +444,6 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 		id2=tmp;
 	}
 	(*res)=Data->Values[id1-2][id2-1];
-	va_end(ap);
 }
 
 
@@ -457,27 +456,24 @@ void GMeasure2Elements::Info(unsigned int info,...)
 	va_list ap;
 	va_start(ap,info);
 	double* res=va_arg(ap,double*);
+	va_end(ap);	
 	double deviationrate=1.5;
 
 	if(!AutomaticMinMeasure)
 	{
 		(*res)=MinMeasure;
-		va_end(ap);
 		return;
 	}
 
 	if(!Memory)
 	{
 		(*res)=Data->ComputeMin(GetMaxElementsId(),this,NullLevel);
-		va_end(ap);
 		return;
 	}
-
 	
 	if(Data->NeedUpdate)
 		Data->Update(GetMaxElementsId(),AutomaticMinMeasure,this,NullLevel);
 	(*res)=Data->MeanSim+deviationrate*sqrt(Data->Deviation);
-	va_end(ap);
 }
 
 
@@ -534,7 +530,7 @@ void GMeasure2Elements::Event(GProfile* prof, tEvent event)
 {
 	if((!Memory)||(ObjsType!=otProfile))
 		return;
-//	cout<<"Profile "<<prof->GetId()<<" : "<<GetEvent(event)<<endl;
+//	cout<<"Profile "<<prof->GetId()<<" : "<<GetEvent(event)<<" ("<<GetPlugInName()<<")"<<endl;
 	UpdateElement(prof,event);	
 }
 
