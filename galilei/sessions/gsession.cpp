@@ -1165,8 +1165,6 @@ void GSession::InsertProfile(GProfile* p)
 //------------------------------------------------------------------------------
 void GSession::CalcProfiles(GSlot* rec)
 {
-	R::RCursor<GProfile> Prof=GetProfiles();
-
 	// Run all pre-profile methods that are enabled
 	R::RCursor<GPreProfile> PreProfile=GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->GetPlugIns();
 	for(PreProfile.Start();!PreProfile.End();PreProfile.Next())
@@ -1179,6 +1177,7 @@ void GSession::CalcProfiles(GSlot* rec)
 		PreProfile()->Run();
 	}
 
+	R::RCursor<GProfile> Prof=GetProfiles();
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		if(Intern::ExternBreak) return;
