@@ -189,7 +189,7 @@ void GSugs::Run(void)
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				// Get all relevant documents ordered
-				Grps()->NotJudgedDocsRelList(ProfilesDocsSims,Docs,Sub(),Session);
+				Grps()->NotJudgedDocsRelList(ProfilesDocsSims,*Docs,Sub(),Session);
 
 				// Store them in the database
 				Doc.Set(*Docs);
