@@ -364,14 +364,30 @@ RCursor<GFdbk> GProfile::GetFdbks(void) const
 //------------------------------------------------------------------------------
 void GProfile::InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
 {
-	Fdbks.InsertPtr(new GFdbk(docid,assess,date,update));
+	GFdbk* fdbk;
+	
+	Fdbks.InsertPtr(fdbk=new GFdbk(docid,assess,date,update));
+	State=osModified;
+	
+	// If the document assessed was computed after the last computation
+	// -> profile is considered as updated
+//	if(Computed<fdbk->GetComputed())
+		Updated.SetToday();
 }
 
 
 //------------------------------------------------------------------------------
 void GProfile::DeleteFdbk(unsigned int docid)
 {
-	Fdbks.DeletePtr(Fdbks.GetPtr<unsigned int>(docid));
+	GFdbk* fdbk;
+	
+	Fdbks.DeletePtr(fdbk=Fdbks.GetPtr<unsigned int>(docid));
+	State=osModified;
+	
+	// If the document assessed was computed after the last computation
+	// -> profile is considered as updated
+//	if(Computed<fdbk->GetComputed())
+		Updated.SetToday();	
 }
 
 
