@@ -221,7 +221,7 @@ public:
 	* @param docs            Documents not assessed.
 	* @param prof            Profile.
 	*/
-	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>* docs, GProfile* prof) const;
+	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>& docs, GProfile* prof) const;
 
 	/**
 	* Construct the list of all relevant documents of the profiles of a
@@ -233,7 +233,7 @@ public:
 	* @param session         Session.
 	* \warning This method uses an internal container which is not optimal.
 	*/
-	void NotJudgedDocsRelList(GMeasure* measure,R::RContainer<GFdbk,false,false>* docs, GProfile* prof,GSession* session) const;
+	void NotJudgedDocsRelList(GMeasure* measure,R::RContainer<GFdbk,false,false>& docs, GProfile* prof,GSession* session) const;
 
 	/**
 	* Compute the relevant profile, i.e. the profile whith the highest

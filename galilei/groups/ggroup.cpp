@@ -65,7 +65,6 @@ public:
 	double Sim;
 
 	GFdbkRef(GFdbk* d,double s) : Doc(d), Sim(s) {}
-	int Compare(const GFdbkRef*) const {return(-1);}
 	int Compare(const GFdbkRef&) const {return(-1);}
 	int Compare(const GFdbk* d) const
 	{
@@ -245,14 +244,10 @@ unsigned int GGroup::GetNbProfiles(void) const
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GProfile* prof) const
+void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>& docs, GProfile* prof) const
 {	
-	RCursor<GFdbk> Fdbks;
-	GFdbk* ptr;
-	tDocAssessment j;
-
 	// Clear container.
-	docs->Clear();
+	docs.Clear();
 
 	RCursor<GProfile> Prof(*this);
 	for(Prof.Start();!Prof.End();Prof.Next())
@@ -260,7 +255,7 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GProfile* pro
 		if(Prof()==prof) continue;
 
 		// Go through the assessments of the profile grouped together through this subprofile
-		Fdbks=Prof()->GetFdbks();
+		RCursor<GFdbk> Fdbks(Prof()->GetFdbks());
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify that it was not assessed by the corresponding profile
@@ -269,48 +264,45 @@ void GGroup::NotJudgedDocsList(RContainer<GFdbk,false,true>* docs, GProfile* pro
 			// Verify if already inserted:
 			// If not -> insert it in docs.
 			// If yes -> Verify judgement
-			ptr=docs->GetPtr<const GFdbk*>(Fdbks());
+			GFdbk* ptr=docs.GetPtr<const GFdbk*>(Fdbks());
 			if(ptr)
 			{
-				j=ptr->GetFdbk();
+				tDocAssessment j=ptr->GetFdbk();
 				switch( j & djMaskJudg)
 				{
 					case djKO:
 						if(Fdbks()->GetFdbk() & djOK)
 						{
-							docs->DeletePtr(ptr);
-							docs->InsertPtr(Fdbks());
+							docs.DeletePtr(ptr);
+							docs.InsertPtr(Fdbks());
 						}
 						break;
 					case djOutScope:
 						if((Fdbks()->GetFdbk() & djOK)&&(Fdbks()->GetFdbk() & djKO))
 						{
-							docs->DeletePtr(ptr);
-							docs->InsertPtr(Fdbks());
+							docs.DeletePtr(ptr);
+							docs.InsertPtr(Fdbks());
 						}
 						break;
 				}
 			}
 			else
-				docs->InsertPtr(Fdbks());
+				docs.InsertPtr(Fdbks());
 		}
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false>* docs, GProfile* prof,GSession*) const
+void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false>& docs, GProfile* prof,GSession*) const
 {
-	RCursor<GFdbk> Fdbks;
-	tDocAssessment j;
-	RContainer<GFdbkRef,true,false> Docs(50,25);
-
 	if(!measure)
 		throw GException("No profiles/documents similarities");
 
 	// Clear container.
-	docs->Clear();
-
+	docs.Clear();
+	RContainer<GFdbkRef,true,false> Docs(50,25);
+	
 	// Go through the subprofiles
 	RCursor<GProfile> Prof(*this);
 	for(Prof.Start();!Prof.End();Prof.Next())
@@ -319,29 +311,29 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 		if(Prof()==prof)
 		{
 			// Go through the assessments of the profile grouped together through this profile
-			Fdbks=Prof()->GetFdbks();
+			RCursor<GFdbk> Fdbks(Prof()->GetFdbks());
 			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 			{
 				// Verify if the document is a relevant hub or authority.
-				j=Fdbks()->GetFdbk();
+				tDocAssessment j=Fdbks()->GetFdbk();
 				if(!( (j & (djOK & djHub)) || (j & (djOK & djAutority)))) continue;
 
 				// Verify if already inserted in Docs.
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
 				double res;
-				measure->Measure(0,prof->GetId(),Fdbks()->GetDocId(),res);
+				measure->Measure(0,prof->GetId(),Fdbks()->GetDocId(),&res);
 				Docs.InsertPtr(new GFdbkRef(Fdbks(),res));
 			}
 			continue;
 		}
 
-		// Go through the assessments of the profile grouped together through this subprofile
-		Fdbks=prof->GetFdbks();
+		// Go through the assessments of the profile grouped together through this profile
+		RCursor<GFdbk> Fdbks(Prof()->GetFdbks());
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify if the document is relevant.
-			j=Fdbks()->GetFdbk();
+			tDocAssessment j=Fdbks()->GetFdbk();
 			if(!(j & djOK)) continue;
 
 			// Verify if already inserted in Docs or if it was not assessed by the
@@ -356,13 +348,13 @@ void GGroup::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false
 	}
 
 	// Sort the container by similarity
-	if(Docs.GetNb())
-		Docs.ReOrder(sortOrder);
+	if(docs.GetNb())
+		docs.ReOrder(sortOrder);
 
 	// Copy the result in docs
 	RCursor<GFdbkRef> Cur(Docs);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		docs->InsertPtr(Cur()->Doc);
+		docs.InsertPtr(Cur()->Doc);
 }
 
 
