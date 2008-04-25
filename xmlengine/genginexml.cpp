@@ -179,66 +179,66 @@ RString GEngineXML::ConstructQuery(RContainer<RString, false, false> &keyWords)
 
 // ______________________________________________________________________________
 //------------------------------------------------------------------------------
-void GEngineXML::Process(R::RContainer<R::RString, false, false>&) throw(GException)
-{
-	XQuery xquery(Session->GetStorage(), Params);
-	xquery.rank_results(Name);
-
-}
+//void GEngineXML::Process(R::RContainer<R::RString, false, false>&) throw(GException)
+//{
+//	XQuery xquery(Session->GetStorage(), Params);
+//	xquery.rank_results(Name);
+//
+//}
 //_NORMAL_____________________________________________________________________________
 //------------------------------------------------------------------------------
-// void GEngineXML::Process(R::RContainer<R::RString,false,false> &keyWords) throw(GException)
-// {
-// 	RCursor<XResult> cres;
-// 	unsigned int res = 0, currRank = 0;
-// 	RString url, title, description;
-// 	XQuery xquery(Session->GetStorage(), Params);
-// 	RContainer<RString, true, false> query_list(20);
-// 
-// 	try
-// 	{
-// 		if (ask_reset)
-// 		{
-// 			GStorageTag cmdtag("ClearXMLTables");
-// 			Session->GetStorage()->ExecuteCmd(cmdtag, 0);
-// 			Factory->SetBool("Reset", false);										// Disable the Resest of DB
-// 			UpdateDb();
-// 		}
-// 		else if (ask_update)
-// 			UpdateDb();
-// 		ask_update = false;
-// 		ask_reset = false;
-// /*        RString temp;
-//         temp = ConstructQuery(keyWords);
-//         cout << temp.Latin1() << endl;
-// 		temp.Split(query_list, RChar(' '));*/
-//  		ConstructQuery(keyWords).Split(query_list, RChar(' '));					// Same line as the 4 above, query_list
-// 		time_t temps_actD;
-// 		time_t temps_actF;
-// 
-// 		time(&temps_actD);
-// 		cres = xquery.Query(query_list, Name);										//   is a container of words and symbols
-// 		time(&temps_actF);
-// 		if (difftime(temps_actF,temps_actD)) 
-// 		cout << "temps prispour cette requ�te  " << difftime(temps_actF,temps_actD) << endl;
-// 		for (cres.Start(); !cres.End() && currRank < NbResults; cres.Next())
-// 		{
-// 			url = cres()->GetUrl();
-// 			title = "";
-// 			description = cres()->GetSnippet();
-// 			GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()->AddResult(url, title, description, currRank, Factory->GetName());
-// 			currRank++;
-// 		}
-// 	}
-// 	catch(std::bad_alloc e)
-// 	{
-// 		throw GException(e.what());
-// 	}
-// 	catch (RException e)
-// 	{
-// 		throw GException(e.GetMsg());
-// 	}
-// }
+ void GEngineXML::Process(R::RContainer<R::RString,false,false> &keyWords) throw(GException)
+ {
+ 	RCursor<XResult> cres;
+ 	unsigned int res = 0, currRank = 0;
+ 	RString url, title, description;
+ 	XQuery xquery(Session->GetStorage(), Params);
+ 	RContainer<RString, true, false> query_list(20);
+ 
+ 	try
+ 	{
+ 		if (ask_reset)
+ 		{
+ 			GStorageTag cmdtag("ClearXMLTables");
+ 			Session->GetStorage()->ExecuteCmd(cmdtag, 0);
+ 			Factory->SetBool("Reset", false);										// Disable the Resest of DB
+ 			UpdateDb();
+ 		}
+ 		else if (ask_update)
+ 			UpdateDb();
+ 		ask_update = false;
+ 		ask_reset = false;
+ /*        RString temp;
+         temp = ConstructQuery(keyWords);
+         cout << temp.Latin1() << endl;
+ 		temp.Split(query_list, RChar(' '));*/
+  		ConstructQuery(keyWords).Split(query_list, RChar(' '));					// Same line as the 4 above, query_list
+ 		time_t temps_actD;
+ 		time_t temps_actF;
+ 
+ 		time(&temps_actD);
+ 		cres = xquery.Query(query_list, Name);										//   is a container of words and symbols
+ 		time(&temps_actF);
+ 		if (difftime(temps_actF,temps_actD)) 
+ 		cout << "temps prispour cette requ�te  " << difftime(temps_actF,temps_actD) << endl;
+ 		for (cres.Start(); !cres.End() && currRank < NbResults; cres.Next())
+ 		{
+ 			url = cres()->GetUrl();
+ 			title = "";
+ 			description = cres()->GetSnippet();
+ 			GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()->AddResult(url, title, description, currRank, Factory->GetName());
+ 			currRank++;
+ 		}
+ 	}
+ 	catch(std::bad_alloc e)
+ 	{
+ 		throw GException(e.what());
+ 	}
+ 	catch (RException e)
+ 	{
+ 		throw GException(e.GetMsg());
+ 	}
+ }
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
 void GEngineXML::CreateParams(RConfig* params)
