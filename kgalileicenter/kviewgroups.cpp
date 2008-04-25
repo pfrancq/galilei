@@ -177,7 +177,8 @@ void QGroups::contentsDropEvent( QDropEvent *evt )
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
 	session->GetGroup(Cur->Src->Obj.Profile->GetGroupId())->DeleteProfile(Cur->Src->Obj.Profile);
 	group->Obj.Group->InsertProfile(Cur->Src->Obj.Profile);
-	group->setText(0,"Group ("+QString::number(group->Obj.Group->GetNbProfiles())+")");
+	group->setText(0,"Group ("+QString::number(group->Obj.Group->GetId())+")");
+	group->setText(1,QString::number(group->Obj.Group->GetNbProfiles()));
 	if(SrcGroup->Obj.Group->GetNbProfiles())
 		SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbProfiles())+")");
 	else
@@ -249,7 +250,7 @@ void QGroups::slotNewGroup(void)
 	session->InsertGroup(Group);
 
 	// Create a new group in the qListView
-	QListViewItemType* gritem= new QListViewItemType(Group,src,"Group (0)");
+	QListViewItemType* gritem= new QListViewItemType(Group,src,"Group "+QString::number(Group->GetId()),"0");
 	gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 }
 
@@ -275,7 +276,10 @@ void QGroups::slotDelete(void)
 		session->GetGroup(Src->Obj.Profile->GetGroupId())->DeleteProfile(Src->Obj.Profile);
 		delete Src;
 		if(SrcGroup->Obj.Group->GetNbProfiles())
-			SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbProfiles())+")");
+		{
+			SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetId())+")");
+			SrcGroup->setText(1,QString::number(SrcGroup->Obj.Group->GetNbProfiles()));
+		}
 		else
 		{
 			session->DeleteGroup(SrcGroup->Obj.Group);
@@ -384,7 +388,7 @@ void KViewGroups::ConstructGroups(void)
 	R::RCursor<GGroup> Grp=Doc->GetSession()->GetGroups();
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
-		QListViewItemType* gritem= new QListViewItemType(Grp(),Groups,"Group ("+QString::number(Grp()->GetNbProfiles())+")");
+		QListViewItemType* gritem= new QListViewItemType(Grp(),Groups,"Group ("+QString::number(Grp()->GetId())+")",QString::number(Grp()->GetNbProfiles()));
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 		RCursor<GProfile> Prof(Grp()->GetProfiles());
 		for(Prof.Start();!Prof.End();Prof.Next())

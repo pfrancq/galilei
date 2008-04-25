@@ -6,7 +6,7 @@
 
 	Window to manipulate theoritical groups - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -141,24 +141,21 @@ void KViewThGroups::ConstructThGroups(void)
 		if(!Grps()->GetNbProfiles())
 			continue;
 
-		gritem= new QListViewItemType(Grps(),thGroups,ToQString(Grps()->GetName()));
+		gritem= new QListViewItemType(Grps(),thGroups,ToQString(Grps()->GetName())+" - "+QString::number(Grps()->GetNbProfiles()));
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 
 		// If the subject has no subprofiles -> next one.
 		if(!Grps()->GetNbProfiles())
 			continue;
-
-		QListViewItemType* grsitem = new QListViewItemType(gritem,"Groups");
-		grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 		Sub=Grps()->GetProfiles();
 		for(Sub.Start(); !Sub.End(); Sub.Next())
 		{
 			GProfile* sub=Sub();
-			QListViewItemType* subitem=new QListViewItemType(sub,grsitem,ToQString(sub->GetName()),ToQString(sub->GetUser()->GetFullName()));
+			QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetName()),ToQString(sub->GetUser()->GetFullName()));
 			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}
-		if(!grsitem->childCount())
-			gritem->takeItem(grsitem);
+		if(!gritem->childCount())
+			thGroups->takeItem(gritem);
 	}
 }
 
@@ -166,7 +163,6 @@ void KViewThGroups::ConstructThGroups(void)
 //-----------------------------------------------------------------------------
 void KViewThGroups::ConstructGroups(void)
 {
-	R::RCursor<GFactoryLang> CurLang;
 	char tmp1[70];
 	char tmp2[30];
 	RCursor<GProfile> Sub;
@@ -177,14 +173,12 @@ void KViewThGroups::ConstructGroups(void)
 	prGroups->clear();
 	
 	R::RCursor<GGroup> grs=Doc->GetSession()->GetGroups();
-	QListViewItemType* grsitem = new QListViewItemType(prGroups,"Groups");
-	grsitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
 	for (grs.Start(); !grs.End(); grs.Next())
 	{
 		GGroup* gr=grs();
 		sprintf(tmp1,"Precision: %1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(gr));
 		sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
-		QListViewItemType* gritem= new QListViewItemType(gr,grsitem,"Group",tmp1,tmp2);
+		QListViewItemType* gritem= new QListViewItemType(gr,prGroups,"Group ("+QString::number(gr->GetId())+") - "+QString::number(gr->GetNbProfiles()),tmp1,tmp2);
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 		Sub=grs()->GetProfiles();
 		for(Sub.Start(); !Sub.End(); Sub.Next())
