@@ -48,11 +48,11 @@
 #include <gprofile.h>
 #include <gmysql.h>
 #include <gslot.h>
-#include <ggroup.h>
+#include <gcommunity.h>
 #include <gsubjects.h>
 #include <gsubject.h>
 #include <gsession.h>
-#include <ggroupshistory.h>
+#include <gcommunitieshistory.h>
 #include <gweightinfoshistory.h>
 #include <gindexer.h>
 #include <gwordoccurs.h>
@@ -215,7 +215,7 @@ unsigned int GStorageMySQL::GetNbSaved(tObjType type)
 			case otProfile:
 				return(GetCount("profiles"));
 
-			case otGroup:
+			case otCommunity:
 				return(GetCount("groups"));
 
 			case otFdbk:
@@ -603,7 +603,7 @@ void GStorageMySQL::Clear(tObjType objtype)
 				What="profiles";
 				Desc=true;
 				break;
-			case otGroup:
+			case otCommunity:
 				Group=true;
 				What="groups";
 				Desc=true;
@@ -744,7 +744,7 @@ void GStorageMySQL::LoadInfos(RContainer<GWeightInfo,false,true>& infos,tObjType
 			case otProfile:
 				table="profile";
 				break;
-			case otGroup:
+			case otCommunity:
 				table="group";
 				break;
 			default:
@@ -978,7 +978,7 @@ void GStorageMySQL::SaveRefs(const GConcept* concept,tObjType what,size_t refs)
 				sSql="UPDATE concepts SET refprofiles="+Num(refs)+
 				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
 				break;
-			case otGroup:
+			case otCommunity:
 				sSql="UPDATE concepts SET refgroups="+Num(refs)+
 				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
 				break;
@@ -1016,7 +1016,7 @@ void GStorageMySQL::SaveRefs(GConceptType* type,tObjType what,size_t refs)
 					RQuery(Db,"UPDATE concepts SET refgroups=0 WHERE typeid="+Num(type->GetId()));				
 				break;
 			}
-			case otGroup:
+			case otCommunity:
 			{
 				RQuery(Db,"UPDATE concepttypes SET refgroups="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
 				if(refs==0)
@@ -1750,10 +1750,10 @@ void GStorageMySQL::AddFdbk(unsigned int p,unsigned int d,tDocAssessment assess,
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadGroups(void)
+void GStorageMySQL::LoadCommunities(void)
 {
-	GGroup* group;
-	R::RCursor<GGroup> GroupsCursor;
+	GCommunity* group;
+	R::RCursor<GCommunity> GroupsCursor;
 	
 	try
 	{
@@ -1771,9 +1771,9 @@ void GStorageMySQL::LoadGroups(void)
 		RQuery Groups(Db,Sql);
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
-			group=new GGroup(atoi(Groups[0]),true,Groups[1],Groups[2]);
+			group=new GCommunity(atoi(Groups[0]),Groups[1],Groups[2]);
 			group->SetState(osNeedLoad);
-			Session->InsertGroup(group);
+			Session->InsertCommunity(group);
 		}
 	}
 	catch(RMySQLError e)
@@ -1785,7 +1785,7 @@ void GStorageMySQL::LoadGroups(void)
 
 
 //------------------------------------------------------------------------------
-GGroup* GStorageMySQL::LoadGroup(unsigned int groupid)
+GCommunity* GStorageMySQL::LoadCommunity(unsigned int groupid)
 {
 	try
 	{
@@ -1793,7 +1793,7 @@ GGroup* GStorageMySQL::LoadGroup(unsigned int groupid)
 		Group.Start();
 		if(!Group.GetNb())
 			return(0);
-		GGroup* group=new GGroup(atoi(Group[0]),true,Group[1],Group[2]);
+		GCommunity* group=new GCommunity(atoi(Group[0]),Group[1],Group[2]);
 		group->SetState(osNeedLoad);
 		
 		return(group);
@@ -1807,11 +1807,11 @@ GGroup* GStorageMySQL::LoadGroup(unsigned int groupid)
 
 
 //------------------------------------------------------------------------------
-GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
+GCommunitiesHistory* GStorageMySQL::LoadHistoricCommunities(unsigned int historicID)
 {
 	RString sSql;
-	GGroupHistory* grp;
-	GGroupsHistory* grps;
+	GCommunityHistory* grp;
+	GCommunitiesHistory* grps;
 	GWeightInfosHistory* historicsubprof;
 	unsigned int subprofid;
 	unsigned int groupid;
@@ -1825,7 +1825,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 		sSql="SELECT date FROM historicgroups WHERE historicID="+Num(historicID);
 		RQuery date(Db,sSql);
 		date.Start();
-		grps=new GGroupsHistory(historicID, date[0]);
+		grps=new GCommunitiesHistory(historicID, date[0]);
 
 		// Read the groupment.
 		sSql="SELECT groupid,profileid,date FROM historicgroups "
@@ -1840,7 +1840,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 			if((v!=groupid))
 			{
 				groupid=v;
-				grp=new GGroupHistory(groupid,grps);
+				grp=new GCommunityHistory(groupid,grps);
 				//insert group in the container of groups.
 				grps->InsertPtr(grp);
 			}
@@ -1848,7 +1848,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 			// Create the historic profile and add it to the group
 			subprofid=atoi(grquery[1]);
 			historicsubprof=new GWeightInfosHistory(Session->GetProfile(0,subprofid),100);
-			grp->AddSubProfile(historicsubprof);
+			grp->AddProfile(historicsubprof);
 			historicsubprof->SetParent(grp);
 
 			// Fill the vector of the subprofile
@@ -1880,7 +1880,7 @@ GGroupsHistory* GStorageMySQL::LoadAnHistoricGroups(unsigned int historicID)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadHistoricGroupsByDate(R::RString mindate, R::RString maxdate)
+void GStorageMySQL::LoadHistoricCommunitiesByDate(R::RString mindate, R::RString maxdate)
 {
 	try
 	{
@@ -1888,7 +1888,7 @@ void GStorageMySQL::LoadHistoricGroupsByDate(R::RString mindate, R::RString maxd
 		             "WHERE date>'"+mindate+"' AND date<'"+maxdate+"' ORDER BY date,historicID";
 		RQuery ids(Db,sSql);
 		for (ids.Start(); !ids.End(); ids.Next())
-			Session->GetGroupsHistoryManager()->InsertGroupsHistory(LoadAnHistoricGroups(atoi(ids[0])));
+			Session->GetCommunitiesHistoryManager()->InsertCommunitiesHistory(LoadHistoricCommunities(atoi(ids[0])));
 	}
 	catch(RMySQLError e)
 	{
@@ -1899,7 +1899,7 @@ void GStorageMySQL::LoadHistoricGroupsByDate(R::RString mindate, R::RString maxd
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::GetSugsGroups(const R::RString& name,R::RContainer<GSugs,true,false>& res)
+void GStorageMySQL::GetSugsCommunities(const R::RString& name,R::RContainer<GSugs,true,false>& res)
 {
 	RString sSql;
 	unsigned int groupid,idx;
@@ -1922,7 +1922,7 @@ void GStorageMySQL::GetSugsGroups(const R::RString& name,R::RContainer<GSugs,tru
 				if(groupid!=cNoRef)
 					res.InsertPtr(sugs);
 				groupid=idx;
-				sugs=new GSugs(otGroup,groupid,50);
+				sugs=new GSugs(otCommunity,groupid,50);
 			}
 			sugs->AddSugs(atoi(load[1]));
 		}
@@ -1956,7 +1956,7 @@ unsigned int GStorageMySQL::GetHistorySize(void)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::UpdateGroups(unsigned int subid)
+void GStorageMySQL::UpdateCommunities(unsigned int subid)
 {
 	try
 	{
@@ -1973,7 +1973,7 @@ void GStorageMySQL::UpdateGroups(unsigned int subid)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AssignId(GGroup* grp)
+void GStorageMySQL::AssignId(GCommunity* grp)
 {
 	try
 	{
@@ -1998,10 +1998,10 @@ void GStorageMySQL::AssignId(GGroup* grp)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveGroups(void)
+void GStorageMySQL::SaveCommunities(void)
 {
 	RCursor<GWeightInfo> WordCur;
-	R::RCursor<GGroup> GroupsCursor;
+	R::RCursor<GCommunity> GroupsCursor;
 	RString sSql;
 	RCursor<GProfile> Sub;
 
@@ -2012,7 +2012,7 @@ void GStorageMySQL::SaveGroups(void)
 		RQuery delete2(Db,"DELETE FROM groups");
 		
 
-		GroupsCursor=Session->GetGroups();
+		GroupsCursor=Session->GetCommunities();
 		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
 		{
 			sSql="INSERT INTO groups(groupid,updated,calculated) "
@@ -2022,7 +2022,7 @@ void GStorageMySQL::SaveGroups(void)
 			RQuery insert1(Db,sSql);
 
 			// Save Profiles infos
-			Sub=GroupsCursor()->GetProfiles();
+			Sub=GroupsCursor()->GetObjs();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				sSql="UPDATE profiles SET groupid="+Num(GroupsCursor()->GetId())+","
@@ -2051,9 +2051,9 @@ void GStorageMySQL::SaveGroups(void)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveGroupsHistory(void)
+void GStorageMySQL::SaveCommunitiesHistory(void)
 {
-	R::RCursor<GGroup> GroupsCursor;
+	R::RCursor<GCommunity> GroupsCursor;
 	RCursor<GProfile> Sub;
 	unsigned int historicID;
 	RString sSql;
@@ -2069,10 +2069,10 @@ void GStorageMySQL::SaveGroupsHistory(void)
 		historicID++;
 
 		// Save the groups in history
-		GroupsCursor=Session->GetGroups();
+		GroupsCursor=Session->GetCommunities();
 		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
 		{
-			Sub=GroupsCursor()->GetProfiles();
+			Sub=GroupsCursor()->GetObjs();
 			for(Sub.Start();!Sub.End();Sub.Next())
 			{
 				sSql="INSERT INTO historicgroups "
@@ -2094,7 +2094,7 @@ void GStorageMySQL::SaveGroupsHistory(void)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddSugsGroup(const R::RString& name,unsigned int groupid,unsigned int docid,unsigned int rank)
+void GStorageMySQL::AddSugsCommunity(const R::RString& name,unsigned int groupid,unsigned int docid,unsigned int rank)
 {
 	RString sSql;
 

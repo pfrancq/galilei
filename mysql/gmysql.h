@@ -490,34 +490,34 @@ public:
 	/**
 	* Load the groups.
 	*/
-	virtual void LoadGroups(void);
+	virtual void LoadCommunities(void);
 
 	/**
 	* Method that load a group that is stored.
 	* @param groupid         Identificator of the group.
 	*/
-	virtual GGroup* LoadGroup(unsigned int groupid);
+	virtual GCommunity* LoadCommunity(unsigned int groupid);
 
 	/**
 	* Load an historic groups.
 	* @param historicID      Identificator of the historic.
 	* @return Pointer to a historic group.
 	*/
-	virtual GGroupsHistory* LoadAnHistoricGroups(unsigned int historicID);
+	virtual GCommunitiesHistory* LoadHistoricCommunities(unsigned int historicID);
 
 	/**
 	* Load the historic groups.
 	* @param mindate         Date of the first historic to load.
 	* @param maxdate         Date of the last historic to load.
 	*/
-	virtual void LoadHistoricGroupsByDate(R::RString mindate, R::RString maxdate);
+	virtual void LoadHistoricCommunitiesByDate(R::RString mindate, R::RString maxdate);
 
 	/**
 	* Load the list of suggestions for the groups for a given test.
 	* @param name            Name of the test.
 	* @param res             Container that will hold the suggestions.
 	*/
-	virtual void GetSugsGroups(const R::RString& name,R::RContainer<GSugs,true,false>& res);
+	virtual void GetSugsCommunities(const R::RString& name,R::RContainer<GSugs,true,false>& res);
 
 	/**
 	* Returns the number of historic groups stored in the database.
@@ -528,23 +528,23 @@ public:
 	* A subprofile was updated and the corresponding groups must be updated.
 	* @param subid           Identificator of the subprofile.
 	*/
-	virtual void UpdateGroups(unsigned int subid);
+	virtual void UpdateCommunities(unsigned int subid);
 
 	/**
 	* Assign an identifier to a new group.
 	* @param grp            Group.
 	*/
-	virtual void AssignId(GGroup* grp);
+	virtual void AssignId(GCommunity* grp);
 
 	/**
 	* Save the groups of the session.
 	*/
-	virtual void SaveGroups(void);
+	virtual void SaveCommunities(void);
 
 	/**
 	* Save the groups in history.
 	*/
-	virtual void SaveGroupsHistory(void);
+	virtual void SaveCommunitiesHistory(void);
 
 	/**
 	* Add a suggestion for a given community and a given test.
@@ -553,7 +553,7 @@ public:
 	* @param docid           Identificator of the document to suggest.
 	* @param rank            Ranking of the document.
 	*/
-	virtual void AddSugsGroup(const R::RString& name,unsigned int groupid,unsigned int docid,unsigned int rank);
+	virtual void AddSugsCommunity(const R::RString& name,unsigned int groupid,unsigned int docid,unsigned int rank);
 
 	// @} Groups
 
