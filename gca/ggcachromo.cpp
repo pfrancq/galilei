@@ -48,6 +48,7 @@
 #include <gprofile.h>
 #include <gsubjects.h>
 #include <guser.h>
+#include <gcommunity.h>
 
 
 //-----------------------------------------------------------------------------
@@ -55,7 +56,6 @@
 #include <ggcachromo.h>
 #include <ggcainst.h>
 #include <ggcagroup.h>
-#include <ggroup.h>
 #include <ggcaobj.h>
 
 
@@ -102,20 +102,20 @@ int GGCAChromo::Compare(const GGCAChromo* c) const
 //-----------------------------------------------------------------------------
 void GGCAChromo::ConstructChromo(GSession* grps)
 {
-	R::RCursor<GGroup> Grp;
+	R::RCursor<GCommunity> Grp;
 	RCursor<GProfile> Profile;
 	GGCAGroup* grp;
 	GGCAObj** objs;
 	unsigned int i;
 
-	Grp=grps->GetGroups();
+	Grp=grps->GetCommunities();
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
 		// Reserve a GA group
 		grp=ReserveGroup();
 
 		// Go through the current profiles and store them in thObjs1
-		Profile=Grp()->GetProfiles();
+		Profile=Grp()->GetObjs();
 		for(Profile.Start(),objs=thObjs1,NbObjs1=0;!Profile.End();Profile.Next(),objs++,NbObjs1++)
 			(*objs)=Instance->GetObj(Profile());
 
@@ -140,7 +140,7 @@ void GGCAChromo::ConstructChromo(GSession* grps)
 void GGCAChromo::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-	if(Instance->Session->GetNbGroups())
+	if(Instance->Session->GetNbCommunities())
 		ConstructChromo(Instance->Session);
 
 	// Call classic heuristic for non-assigned objects

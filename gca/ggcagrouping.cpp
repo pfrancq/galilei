@@ -38,13 +38,14 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroup.h>
+#include <gcommunity.h>
 #include <guser.h>
 #include <gprofile.h>
 #include <glang.h>
 #include <gsession.h>
 #include <gmeasure.h>
 #include <ggalileiapp.h>
+
 
 //-----------------------------------------------------------------------------
 // include files for GCA
@@ -63,8 +64,8 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAGrouping::GGCAGrouping(GFactoryGrouping* fac)
-	: GGrouping(fac), RObject("Profiles Grouping"), Objs(20)
+GGCAGrouping::GGCAGrouping(GFactoryGroupProfiles* fac)
+	: GGroupProfiles(fac), RObject("Profiles Grouping"), Objs(20)
 {
 }
 
@@ -90,14 +91,14 @@ void GGCAGrouping::ApplyConfig(void)
 //-----------------------------------------------------------------------------
 void GGCAGrouping::Connect(GSession* session)
 {
-	GGrouping::Connect(session);
+	GGroupProfiles::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
 void GGCAGrouping::Disconnect(GSession* session)
 {
-	GGrouping::Disconnect(session);
+	GGroupProfiles::Disconnect(session);
 }
 
 
@@ -108,21 +109,21 @@ void GGCAGrouping::Init(void)
 
 
 //-----------------------------------------------------------------------------
-bool GGCAGrouping::IsCoherent(const GGroup* /*grp*/) const
+bool GGCAGrouping::IsCoherent(const GCommunity* /*grp*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-bool GGCAGrouping::IsCoherent(const GGroup* /*grp*/,const GProfile* /*sub*/) const
+bool GGCAGrouping::IsCoherent(const GCommunity* /*grp*/,const GProfile* /*sub*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-bool GGCAGrouping::IsValid(GGroup* /*grp*/)
+bool GGCAGrouping::IsValid(GCommunity* /*grp*/)
 {
 //	GSubProfileCursor Cur1,Cur2;
 //	unsigned int i,j;
@@ -157,17 +158,17 @@ void GGCAGrouping::ConstructGroupsFromChromo(GGCAChromo* chromo)
 	unsigned int* tab;
 	unsigned int* ptr;
 
-	Session->ClearGroups();
+	Session->ClearCommunities();
 	RCursor<GGCAGroup> gr(chromo->Used);
 	for(gr.Start();!gr.End();gr.Next())
 	{
-		GGroup* g=new GGroup(cNoRef,true,RDate(""),RDate(""));
+		GCommunity* g=new GCommunity(cNoRef,RDate(""),RDate(""));
 		Session->AssignId(g);
 		ptr=tab=gr()->GetObjectsId();
 		while((*ptr)!=NoObject)
-			g->InsertProfile((Objs[*(ptr++)])->GetProfile());
+			g->InsertObj((Objs[*(ptr++)])->GetProfile());
 		delete[] tab;
-		Session->InsertGroup(g);
+		Session->InsertCommunity(g);
 	}
 }
 
@@ -263,4 +264,4 @@ GGCAGrouping::~GGCAGrouping(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_GROUPING_FACTORY("Genetic Community Algorithm",GGCAGrouping)
+CREATE_GROUPPROFILES_FACTORY("Genetic Community Algorithm",GGCAGrouping)

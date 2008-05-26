@@ -42,7 +42,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggrouping.h>
+#include <ggroupprofiles.h>
 
 
 //-----------------------------------------------------------------------------
@@ -52,7 +52,7 @@
 * @author Pascal Francq
 * @short GGA Method.
 */
-class GGCAGrouping : public GGrouping, public RObject
+class GGCAGrouping : public GGroupProfiles, public RObject
 {
 protected:
 
@@ -77,7 +77,7 @@ public:
 	* Constructor.
 	* @param f              Factory.
 	*/
-	GGCAGrouping(GFactoryGrouping* fac);
+	GGCAGrouping(GFactoryGroupProfiles* fac);
 
 	virtual RCString GetClassName(void) const {return("GGCAGrouping");}
 	
@@ -116,7 +116,7 @@ protected:
 	* @param grp            Group to verify.
 	* @returns True if it is coherent.
 	*/
-	bool IsCoherent(const GGroup* grp) const;
+	bool IsCoherent(const GCommunity* grp) const;
 
 	/**
 	* Test if a group is still coherent if a subprofile is added to it.
@@ -126,13 +126,13 @@ protected:
 	* @param sub            Profile eventually to add.
 	* @returns True if it is coherent.
 	*/
-	bool IsCoherent(const GGroup* grp,const GProfile* sub) const;
+	bool IsCoherent(const GCommunity* grp,const GProfile* sub) const;
 
 	/**
 	* Test if a group is valid. If a group isn't not valid, the group is
 	* deleted and all profiles are to be inserted again.
 	*/
-	virtual bool IsValid(GGroup* grp);
+	virtual bool IsValid(GCommunity* grp);
 
 	/**
 	 * Catch a best chromosome notification.

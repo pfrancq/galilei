@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggrouping.h>
+#include <ggroupprofiles.h>
 
 
 //------------------------------------------------------------------------------
@@ -88,7 +88,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryGrouping* params)
+void Configure(GFactoryGroupProfiles* params)
 {
 	DlgConfig_Qt dlg;
 
