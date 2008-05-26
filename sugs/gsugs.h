@@ -38,12 +38,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpostgroup.h>
-
-
-//------------------------------------------------------------------------------
-namespace GALILEI{
-//------------------------------------------------------------------------------
+#include <gpostcommunity.h>
+using namespace R;
 
 
 //------------------------------------------------------------------------------
@@ -53,12 +49,12 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Suggestions.
 */
-class GSugs : public GPostGroup
+class GSugs : public GALILEI::GPostCommunity
 {
 	/**
 	* Array of documents.
 	*/
-	R::RContainer<GFdbk,false,false>* Docs;
+	R::RContainer<GALILEI::GFdbk,false,false>* Docs;
 
 	bool UseLevels;
 
@@ -70,7 +66,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GSugs(GFactoryPostGroup* fac);
+	GSugs(GALILEI::GFactoryPostCommunity* fac);
 
 	/**
 	* Create the parameters.
@@ -87,13 +83,13 @@ public:
 	* Connect to a Session.
 	* @param session         The session.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Connect(GALILEI::GSession* session);
 
 	/**
 	* Disconnect from a Session.
 	* @param session         The session.
 	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Disconnect(GALILEI::GSession* session);
 
     /**
 	* Make the grouping for a specific Language.
@@ -105,9 +101,6 @@ public:
 	*/
 	virtual ~GSugs(void);
 };
-
-
-}  //-------- End of namespace GALILEI----------------------------------------
 
 
 //-----------------------------------------------------------------------------

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupingSupKMeans_KDE.cpp
+	GCommunityingSupKMeans_KDE.cpp
 
 	A KDE about box for the statistical method. - Implementation.
 
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpostgroup.h>
+#include <gpostcommunity.h>
 using namespace GALILEI;
 
 
@@ -84,7 +84,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryPostGroup* params)
+void Configure(GFactoryPostCommunity* params)
 {
 	DlgConfig_Qt dlg;
 
