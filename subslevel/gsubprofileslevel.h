@@ -39,7 +39,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpostgroup.h>
+#include <gpostcommunity.h>
 #include <gstorage.h>
 
 
@@ -106,7 +106,7 @@ class GDocsLevelCmd : public GStorageCmd
 * @author David wartel
 * @short SubProfiles level computation.
 */
-class GSubProfilesLevel  : public GPostGroup
+class GSubProfilesLevel  : public GPostCommunity
 {
 	/**
 	* Array of documents.
@@ -124,7 +124,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GSubProfilesLevel(GFactoryPostGroup* fac);
+	GSubProfilesLevel(GFactoryPostCommunity* fac);
 
 	/**
 	* Create the parameters.

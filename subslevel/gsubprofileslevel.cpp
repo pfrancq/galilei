@@ -48,7 +48,7 @@
 #include <gsession.h>
 #include <gprofile.h>
 #include <gdoc.h>
-#include <ggroup.h>
+#include <gcommunity.h>
 #include <glang.h>
 #include <gstorage.h>
 #include <ggalileiapp.h>
@@ -98,15 +98,15 @@ GSubProfilesLevelCmd::GSubProfilesLevelCmd(void) : GStorageCmd("SubProfilesLevel
 void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* caller)
 {
 	RString sql;
-	GGroup* grp;
+	GCommunity* grp;
 	RDb* storeMySQL;
 	unsigned int sublevel; //level of the subprofile
 	unsigned int  levelswidth; // width (between 0 and 100) of a level
 	double subscore; // score of the subprofile
 
-	grp=static_cast<GGroup*>(caller); //subprofile was given by caller
+	grp=static_cast<GCommunity*>(caller); //subprofile was given by caller
 	storeMySQL=static_cast<RDb*>(storage->GetInfos());
-	RContainer<Scoring,true,true> Scores(grp->GetNbProfiles());
+	RContainer<Scoring,true,true> Scores(grp->GetNbObjs());
 
 	levelswidth=100/atoi(inst.GetAttrValue("NbLevels").Latin1());
 
@@ -126,7 +126,7 @@ void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* c
 			subprofiles.Start();
 			size_t nb=subprofiles.GetNb()-1;
 			if(!nb) continue;
-			subscore=static_cast<double>(nb)/static_cast<double>(grp->GetNbProfiles()-1);
+			subscore=static_cast<double>(nb)/static_cast<double>(grp->GetNbObjs()-1);
 			Scoring* ptr=Scores.GetInsertPtr(atoi(subprofiles[0]));
 			ptr->Score+=subscore;
 			ptr->NbDocs++;
@@ -208,8 +208,8 @@ GDocsLevelCmd::~GDocsLevelCmd(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfilesLevel::GSubProfilesLevel(GFactoryPostGroup* fac)
-		: GPostGroup(fac), Docs(2000,500)
+GSubProfilesLevel::GSubProfilesLevel(GFactoryPostCommunity* fac)
+		: GPostCommunity(fac), Docs(2000,500)
 {
 }
 
@@ -224,7 +224,7 @@ void GSubProfilesLevel::CreateParams(RConfig* params)
 //------------------------------------------------------------------------------
 void GSubProfilesLevel::ApplyConfig(void)
 {
-	GPostGroup::ApplyConfig();
+	GPostCommunity::ApplyConfig();
 	NbLevels=Factory->GetUInt("NbLevels");
 }
 
@@ -233,7 +233,7 @@ void GSubProfilesLevel::ApplyConfig(void)
 void GSubProfilesLevel::Connect(GSession* session)
 {
 	// Try to insert the command, eventually, delete it
-	GPostGroup::Connect(session);
+	GPostCommunity::Connect(session);
 	GSubProfilesLevelCmd* command=new GSubProfilesLevelCmd();
 	if(!GALILEIApp->GetManager<GStorageManager>("Storage")->InsertCmd(command))
 		delete command;
@@ -246,7 +246,7 @@ void GSubProfilesLevel::Connect(GSession* session)
 //------------------------------------------------------------------------------
 void GSubProfilesLevel::Disconnect(GSession* session)
 {
-	GPostGroup::Disconnect(session);
+	GPostCommunity::Disconnect(session);
 }
 
 
@@ -258,7 +258,7 @@ void GSubProfilesLevel::Run(void)
 	GStorageTag tag("SubProfilesLevelCMD");
 	tag.InsertAttr("NbLevels",RString::Number(NbLevels));
 	
-	RCursor<GGroup> Groups(Session->GetGroups());
+	RCursor<GCommunity> Groups(Session->GetCommunities());
 	for(Groups.Start();!Groups.End();Groups.Next())
 	{
 		void* caller=static_cast<void*>(Groups());
@@ -276,4 +276,4 @@ GSubProfilesLevel::~GSubProfilesLevel(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_POSTGROUP_FACTORY("Subprofiles Level Computation",GSubProfilesLevel)
+CREATE_POSTCOMMUNITY_FACTORY("Subprofiles Level Computation",GSubProfilesLevel)

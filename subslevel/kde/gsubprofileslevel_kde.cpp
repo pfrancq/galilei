@@ -6,7 +6,7 @@
 
 	A KDE about box for the statistical method. - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@e-parkos.com).
@@ -31,7 +31,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpostgroup.h>
+#include <gpostcommunity.h>
 using namespace GALILEI;
 
 
@@ -83,7 +83,7 @@ void About(void)
 
 
  //------------------------------------------------------------------------------
-void Configure(GFactoryPostGroup* params)
+void Configure(GFactoryPostCommunity* params)
 {
  	DlgConfig_Qt dlg;
 
