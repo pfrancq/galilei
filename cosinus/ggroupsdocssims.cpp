@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupsDocsSims.cpp
+	GCommunitysDocsSims.cpp
 
 	Similarities between documents and groups - Implementation.
 
@@ -42,18 +42,18 @@
 
 //------------------------------------------------------------------------------
 //
-// class GGroupsDocsSims
+// class GCommunitysDocsSims
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-double GGroupsDocsSims::Compute(size_t id1,size_t id2)
+double GCommunitysDocsSims::Compute(size_t id1,size_t id2)
 {
-	GGroup* grp=Session->GetGroup(id1,true,false);
+	GCommunity* grp=Session->GetCommunity(id1,true,false);
 	GDoc* doc=Session->GetDoc(id2,true,false);
-	return(doc->SimilarityIFF2(*grp,otDoc,otGroup));	
+	return(doc->SimilarityIFF2(*grp,otDoc,otCommunity));	
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Groups/Documents Similarities","Cosinus Method",GGroupsDocsSims)
+CREATE_MEASURE_FACTORY("Groups/Documents Similarities","Cosinus Method",GCommunitysDocsSims)

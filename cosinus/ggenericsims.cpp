@@ -110,7 +110,7 @@ public:
 	GElementSims(GGenericSims* manager);
 
 	// Analyse the similarity of the two subprofiles and insert when necessary.
-	void AnalyseSim(GSims* sim,const GDoc* doc,const GGroup* grp);
+	void AnalyseSim(GSims* sim,const GDoc* doc,const GCommunity* grp);
 
 	// Get the similarities between two profiles, i.e. the subprofiles of a same
 	// language.
@@ -248,7 +248,7 @@ void GGenericSims::Event(GDoc* doc, tEvent)
 
 
 //------------------------------------------------------------------------------
-void GGenericSims::Event(GGroup* grp, tEvent)
+void GGenericSims::Event(GCommunity* grp, tEvent)
 {
 	if((!Memory)||(!grp)) return;
 	if(Sims)

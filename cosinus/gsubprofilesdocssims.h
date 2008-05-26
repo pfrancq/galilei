@@ -43,7 +43,7 @@
 
 //------------------------------------------------------------------------------
 /**
-* The GGroupsDocsSims class provides a representation for the similarities between
+* The GCommunitysDocsSims class provides a representation for the similarities between
 * groups and profiles.
 * @author Pascal Francq and Valery Vandaele
 * @short Groups-Documents Similarities.

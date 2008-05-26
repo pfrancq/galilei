@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupsDocsSims.h
+	GCommunitysDocsSims.h
 
 	Similarities between documents and groups - Implementation.
 
@@ -31,8 +31,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GGroupsDocsSimsH
-#define GGroupsDocsSimsH
+#ifndef GCommunitysDocsSimsH
+#define GCommunitysDocsSimsH
 
 
 //------------------------------------------------------------------------------
@@ -42,12 +42,12 @@
 
 //------------------------------------------------------------------------------
 /**
-* The GGroupsDocsSims class provides a representation for the similarities between
+* The GCommunitysDocsSims class provides a representation for the similarities between
 * groups and profiles.
 * @author Pascal Francq and Valery Vandaele
 * @short Groups-Documents Similarities.
 */
-class GGroupsDocsSims : public GGenericSims
+class GCommunitysDocsSims : public GGenericSims
 {
 public:
 
@@ -57,17 +57,17 @@ public:
 	* @param iff             Use Inverse Frequency Factor.
 	* @param memory      use container to stock sims?
 	*/
-	GGroupsDocsSims(GFactoryMeasure* fac)
+	GCommunitysDocsSims(GFactoryMeasure* fac)
 		: GGenericSims(fac,true,true,false) {}
 
 	virtual double Compute(size_t id1,size_t id2);
 
-	virtual size_t GetMaxId1(void) { return(Session->GetNbGroups());}
+	virtual size_t GetMaxId1(void) { return(Session->GetNbCommunities());}
 
 	/**
 	* Destructor of the similarities between documents and subprofiles.
 	*/
-	virtual ~GGroupsDocsSims(void) {}
+	virtual ~GCommunitysDocsSims(void) {}
 };
 
 

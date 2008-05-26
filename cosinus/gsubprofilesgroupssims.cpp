@@ -45,8 +45,8 @@
 double GProfilesGroupsSims::Compute(size_t id1,size_t id2)
 {
 	GProfile* sub=Session->GetProfile(id1,true,false);
-	GGroup* grp=Session->GetGroup(id2,true,false);
-	return(sub->SimilarityIFF2(*grp,otProfile,otGroup));	
+	GCommunity* grp=Session->GetCommunity(id2,true,false);
+	return(sub->SimilarityIFF2(*grp,otProfile,otCommunity));	
 }
 
 

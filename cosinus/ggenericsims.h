@@ -125,7 +125,7 @@ public:
 	* @param grp             Group.
 	* @param event           Event.
 	*/
-	virtual void Event(GGroup* grp, tEvent event);
+	virtual void Event(GCommunity* grp, tEvent event);
 
 	/**
 	* A specific group has changed.

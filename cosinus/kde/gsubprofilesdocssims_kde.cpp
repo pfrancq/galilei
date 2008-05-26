@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupCalcGravitation_KDE.cpp
+	GCommunityCalcGravitation_KDE.cpp
 
 	A KDE about box for the statistical method. - Implementation.
 
