@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupCalcGravitation.cpp
+	GCommunityCalcGravitation.cpp
 
 	Group Description is Gravitational Point Computing Method - Implementation.
 
@@ -38,7 +38,7 @@
 //-----------------------------------------------------------------------------
 //include files for GALILEI
 #include <ggroupcalcgravitation.h>
-#include <ggroup.h>
+#include <gcommunity.h>
 #include <gsession.h>
 #include <gprofile.h>
 #include <gweightinfo.h>
@@ -51,41 +51,41 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-//  class GGroupCalcGravitation
+//  class GCommunityCalcGravitation
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGroupCalcGravitation::GGroupCalcGravitation(GFactoryGroupCalc* fac)
-	: GGroupCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
+GCommunityCalcGravitation::GCommunityCalcGravitation(GFactoryCommunityCalc* fac)
+	: GCommunityCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new GWeightInfo*[MaxOrderSize];
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::ApplyConfig(void)
+void GCommunityCalcGravitation::ApplyConfig(void)
 {
 	MaxNonZero=Factory->GetUInt("Max Size");
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Connect(GSession* session)
+void GCommunityCalcGravitation::Connect(GSession* session)
 {
-	GGroupCalc::Connect(session);
+	GCommunityCalc::Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Disconnect(GSession* session)
+void GCommunityCalcGravitation::Disconnect(GSession* session)
 {
-	GGroupCalc::Disconnect(session);
+	GCommunityCalc::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGroupCalcGravitation::Compute(GGroup* grp)
+void GCommunityCalcGravitation::Compute(GCommunity* grp)
 {
 	unsigned int i;
 	GWeightInfo* ins;
@@ -102,10 +102,10 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 	Infos.Clear();
 
 	// If no subprofiles -> No relevant one.
-	if(!grp->GetNbProfiles()) return;
+	if(!grp->GetNbObjs()) return;
 
 	// Go through the subprofiles and sum the weigths.
-	RCursor<GProfile> Prof(grp->GetProfiles());
+	RCursor<GProfile> Prof(grp->GetObjs());
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		// Go trough the words of the current subprofile
@@ -133,7 +133,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbObjs()));
 		}
 	}
 	else
@@ -141,7 +141,7 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbProfiles()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbObjs()));
 		}
 	}
 
@@ -151,14 +151,14 @@ void GGroupCalcGravitation::Compute(GGroup* grp)
 
 
 //------------------------------------------------------------------------------
-void GGroupCalcGravitation::CreateParams(RConfig* params)
+void GCommunityCalcGravitation::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("Max Size",60));
 }
 
 
 //-----------------------------------------------------------------------------
-GGroupCalcGravitation::~GGroupCalcGravitation(void)
+GCommunityCalcGravitation::~GCommunityCalcGravitation(void)
 {
 	// Clear Infos
 	// Rem: Since Infos is not responsible for allocation/desallocation
@@ -173,4 +173,4 @@ GGroupCalcGravitation::~GGroupCalcGravitation(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_GROUPCALC_FACTORY("Gravitation Method",GGroupCalcGravitation)
+CREATE_COMMUNITYCALC_FACTORY("Gravitation Method",GCommunityCalcGravitation)

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupCalcGravitation_KDE.cpp
+	GCommunityCalcGravitation_KDE.cpp
 
 	A KDE about box for the statistical method. - Implementation.
 
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroupcalc.h>
+#include <gcommunitycalc.h>
 using namespace GALILEI;
 
 
@@ -83,7 +83,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryGroupCalc* params)
+void Configure(GFactoryCommunityCalc* params)
 {
  	DlgConfig_Qt dlg;
 

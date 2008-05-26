@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupCalcGravitation.h
+	GCommunityCalcGravitation.h
 
 	Group Description is Gravitational Point Computing Method - Header.
 
@@ -31,14 +31,14 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGroupCalcGravitationH
-#define GGroupCalcGravitationH
+#ifndef GCommunityCalcGravitationH
+#define GCommunityCalcGravitationH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <ggroupcalc.h>
+#include <gcommunitycalc.h>
 #include <gweightinfos.h>
 
 
@@ -49,13 +49,13 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupCalcGravitation class provides a method to compute the description
+* The GCommunityCalcGravitation class provides a method to compute the description
 * of a specific group as the gravitational point of the corresponding
 * subprofiles.
 * @author Pascal Francq
 * @short Gravitational Point Group Description Computing Method.
 */
-class GGroupCalcGravitation : public GGroupCalc
+class GCommunityCalcGravitation : public GCommunityCalc
 {
 	/**
 	* Information computed.
@@ -88,7 +88,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GGroupCalcGravitation(GFactoryGroupCalc* fac);
+	GCommunityCalcGravitation(GFactoryCommunityCalc* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -111,7 +111,7 @@ public:
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
-	virtual void Compute(GGroup* grp);
+	virtual void Compute(GCommunity* grp);
 
 	/**
 	* Create the parameters.
@@ -122,7 +122,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GGroupCalcGravitation(void);
+	virtual ~GCommunityCalcGravitation(void);
 };
 
 
