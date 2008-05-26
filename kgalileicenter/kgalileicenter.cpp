@@ -802,7 +802,7 @@ void KGALILEICenterApp::slotProfilesClear()
 void KGALILEICenterApp::slotGroupsClear()
 {
 	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->ForceReCompute(otGroup);
+		Doc->GetSession()->ForceReCompute(otCommunity);
 }
 
 

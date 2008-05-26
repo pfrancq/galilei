@@ -35,7 +35,7 @@
 // include files for GALILEI
 #include <guser.h>
 #include <gprofile.h>
-#include <ggroup.h>
+#include <gcommunity.h>
 #include <glang.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
@@ -175,15 +175,15 @@ void QGroups::contentsDropEvent( QDropEvent *evt )
 	SrcGroup->takeItem(Cur->Src);
 	group->insertItem(Cur->Src);
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
-	session->GetGroup(Cur->Src->Obj.Profile->GetGroupId())->DeleteProfile(Cur->Src->Obj.Profile);
-	group->Obj.Group->InsertProfile(Cur->Src->Obj.Profile);
+	session->GetCommunity(Cur->Src->Obj.Profile->GetGroupId())->DeleteObj(Cur->Src->Obj.Profile);
+	group->Obj.Group->InsertObj(Cur->Src->Obj.Profile);
 	group->setText(0,"Group ("+QString::number(group->Obj.Group->GetId())+")");
-	group->setText(1,QString::number(group->Obj.Group->GetNbProfiles()));
-	if(SrcGroup->Obj.Group->GetNbProfiles())
-		SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbProfiles())+")");
+	group->setText(1,QString::number(group->Obj.Group->GetNbObjs()));
+	if(SrcGroup->Obj.Group->GetNbObjs())
+		SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbObjs())+")");
 	else
 	{
-		session->DeleteGroup(SrcGroup->Obj.Group);
+		session->DeleteCommunity(SrcGroup->Obj.Group);
 		delete SrcGroup;
 	}
 
@@ -245,9 +245,9 @@ void QGroups::slotNewGroup(void)
 
 	// Create a new group in session
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
-	GGroup* Group=new GGroup(cNoRef,true,RDate::GetToday(),RDate::null);
+	GCommunity* Group=new GCommunity(cNoRef,RDate::GetToday(),RDate::null);
 	session->AssignId(Group);
-	session->InsertGroup(Group);
+	session->InsertCommunity(Group);
 
 	// Create a new group in the qListView
 	QListViewItemType* gritem= new QListViewItemType(Group,src,"Group "+QString::number(Group->GetId()),"0");
@@ -273,16 +273,16 @@ void QGroups::slotDelete(void)
 		if(KMessageBox::warningYesNo(this,"Do you want to remove this profile from the group?","Warning")==KMessageBox::No)
 			return;
 		QListViewItemType* SrcGroup=dynamic_cast<QListViewItemType*>(Src->parent());
-		session->GetGroup(Src->Obj.Profile->GetGroupId())->DeleteProfile(Src->Obj.Profile);
+		session->GetCommunity(Src->Obj.Profile->GetGroupId())->DeleteObj(Src->Obj.Profile);
 		delete Src;
-		if(SrcGroup->Obj.Group->GetNbProfiles())
+		if(SrcGroup->Obj.Group->GetNbObjs())
 		{
 			SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetId())+")");
-			SrcGroup->setText(1,QString::number(SrcGroup->Obj.Group->GetNbProfiles()));
+			SrcGroup->setText(1,QString::number(SrcGroup->Obj.Group->GetNbObjs()));
 		}
 		else
 		{
-			session->DeleteGroup(SrcGroup->Obj.Group);
+			session->DeleteCommunity(SrcGroup->Obj.Group);
 			delete SrcGroup;
 		}
 	}
@@ -292,8 +292,8 @@ void QGroups::slotDelete(void)
 	{
 		if(KMessageBox::warningYesNo(this,"Do you want to delete this group?","Warning")==KMessageBox::No)
 			return;
-		Src->Obj.Group->DeleteProfiles();
-		session->DeleteGroup(Src->Obj.Group);
+		Src->Obj.Group->DeleteObjs();
+		session->DeleteCommunity(Src->Obj.Group);
 		delete Src;
 	}
 }
@@ -305,7 +305,7 @@ void QGroups::slotSaveGroups(void)
 	if(KMessageBox::warningYesNo(this,"Do you want to overwrite the groups in the database?","Warning")==KMessageBox::No)
 		return;
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
-	session->GetStorage()->SaveGroups();
+	session->GetStorage()->SaveCommunities();
 }
 
 
@@ -368,7 +368,7 @@ KViewGroups::KViewGroups(KDoc* doc,QWidget* parent,const char* name,int wflags)
 
 
 //-----------------------------------------------------------------------------
-GGroup* KViewGroups::GetCurrentGroup(void)
+GCommunity* KViewGroups::GetCurrentGroup(void)
 {
 	QListViewItemType* t;
 
@@ -385,12 +385,12 @@ GGroup* KViewGroups::GetCurrentGroup(void)
 void KViewGroups::ConstructGroups(void)
 {
 	Groups->clear();
-	R::RCursor<GGroup> Grp=Doc->GetSession()->GetGroups();
+	R::RCursor<GCommunity> Grp=Doc->GetSession()->GetCommunities();
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
-		QListViewItemType* gritem= new QListViewItemType(Grp(),Groups,"Group ("+QString::number(Grp()->GetId())+")",QString::number(Grp()->GetNbProfiles()));
+		QListViewItemType* gritem= new QListViewItemType(Grp(),Groups,"Group ("+QString::number(Grp()->GetId())+")",QString::number(Grp()->GetNbObjs()));
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-		RCursor<GProfile> Prof(Grp()->GetProfiles());
+		RCursor<GProfile> Prof(Grp()->GetObjs());
 		for(Prof.Start();!Prof.End();Prof.Next())
 		{
 			QListViewItemType* subitem=new QListViewItemType(Prof(),gritem,ToQString(Prof()->GetAttached()));

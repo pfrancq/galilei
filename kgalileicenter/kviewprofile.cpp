@@ -265,9 +265,9 @@ void KViewProfile::ConstructLinks(void)
 void KViewProfile::ConstructGroups(void)
 {
 	Groups->clear();
-	GGroup* gr=GSession::Get()->GetGroup(Profile->GetGroupId(),true,true);
+	GCommunity* gr=GSession::Get()->GetCommunity(Profile->GetGroupId(),true,true);
 	if(!gr) return;
-	RCursor<GProfile> Prof(gr->GetProfiles());
+	RCursor<GProfile> Prof(gr->GetObjs());
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		QListViewItemType* subitem=new QListViewItemType(Prof(),Groups,ToQString(Profile->GetAttached()));

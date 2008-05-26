@@ -77,7 +77,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewGroup::KViewGroup(GGroup* grp,KDoc* doc,QWidget* parent,const char* name,int wflags)
+KViewGroup::KViewGroup(GCommunity* grp,KDoc* doc,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), Group(grp), OkDocs(100,50)
 {
 	char title[50];
@@ -134,7 +134,7 @@ void KViewGroup::ConstructProfiles(void)
 	RCursor<GProfile> Sub;
 
 	Profiles->clear();
-	Sub=Group->GetProfiles();
+	Sub=Group->GetObjs();
 	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
 		GProfile* sub=Sub();
@@ -168,7 +168,7 @@ void KViewGroup::ConstructDocs(void)
 
 	// Goes trough the profiles of the group
 	// And put in OkDocs all the relevant documents
-	Sub=Group->GetProfiles();
+	Sub=Group->GetObjs();
 	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
 		GProfile* sub=Sub();

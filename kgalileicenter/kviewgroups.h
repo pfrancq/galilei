@@ -40,7 +40,7 @@
 // forward declaration for GALILEI
 namespace GALILEI
 {
-	class GGroup;
+	class GCommunity;
 	class QListViewItemType;
 }
 using namespace GALILEI;
@@ -172,9 +172,9 @@ public:
 
 	/**
 	* Get the current group selected in this window.
-	* @returns Pointer to GGroup or 0 if no group is currently selected.
+	* @returns Pointer to GCommunity or 0 if no group is currently selected.
 	*/
-	GGroup* GetCurrentGroup(void);
+	GCommunity* GetCurrentGroup(void);
 
 	/**
 	* Construct the groups widget.

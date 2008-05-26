@@ -51,10 +51,10 @@
 #include <gengine.h>
 #include <gmetaengine.h>
 #include <gprofilecalc.h>
-#include <ggrouping.h>
-#include <ggroupcalc.h>
+#include <ggroupprofiles.h>
+#include <gcommunitycalc.h>
 #include <gsession.h>
-#include <gpostgroup.h>
+#include <gpostcommunity.h>
 #include <gpostprofile.h>
 #include <gstatscalc.h>
 #include <gfilter.h>

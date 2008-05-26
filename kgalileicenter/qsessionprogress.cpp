@@ -76,7 +76,7 @@
 #include <gsession.h>
 #include <gprofile.h>
 #include <gprofilecalc.h>
-#include <ggrouping.h>
+#include <ggroupprofiles.h>
 #include <ggroup.h>
 #include <gsubjects.h>
 #include <ggalileiapp.h>
@@ -154,7 +154,7 @@ void QLoadSession::DoIt(void)
 	if(GSession::Break())
 		return;
 	Parent->PutText("Load Groups ...");
-	Session->GetStorage()->LoadGroups();
+	Session->GetStorage()->LoadCommunities();
 	if(GSession::Break())
 		return;
 	Parent->PutText("Load Users/Profiles/Feedbacks ...");
@@ -458,7 +458,7 @@ void QComputeProfile::DoIt(void)
 void QGroupProfiles::DoIt(void)
 {
 	Parent->PutText("Groups Profiles ...");
-	Session->GroupingProfiles(Parent);
+	Session->GroupProfiles(Parent);
 }
 
 
@@ -466,7 +466,7 @@ void QGroupProfiles::DoIt(void)
 void QPostGroupProfiles::DoIt(void)
 {
 	Parent->PutText("Do Post-Groups Methods ...");
-	Session->DoPostGroups(Parent);
+	Session->DoPostCommunity(Parent);
 }
 
 
@@ -511,7 +511,7 @@ void QComputeAll::DoIt(void)
 	if(GSession::Break())
 		return;
 	Parent->PutText("Groups Profiles ...");
-	Session->GroupingProfiles(Parent);
+	Session->GroupProfiles(Parent);
 }
 
 

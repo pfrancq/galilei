@@ -143,10 +143,10 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 
 	// Load the chromosomes from the db
 	if (bDate)
-		Doc->GetSession()->LoadHistoricGroupsByDate(MinDate,MaxDate);
+		Doc->GetSession()->LoadHistoricCommunitiesByDate(MinDate,MaxDate);
 	else
-		Doc->GetSession()->LoadHistoricGroupsById(MinGen,MaxGen);
-	Groups=Doc->GetSession()->GetGroupsHistoryManager();
+		Doc->GetSession()->LoadHistoricCommunitiesById(MinGen,MaxGen);
+	Groups=Doc->GetSession()->GetCommunitiesHistoryManager();
 
 	//if no chromosomes, return.
 	if((!Groups)||(!Groups->GetNb()))
@@ -156,7 +156,7 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	if (bDate)
 	{
 		MinGen=MaxGen=0;
-		RCursor<GGroupsHistory> cGroup(*Groups);
+		RCursor<GCommunitiesHistory> cGroup(*Groups);
 		cGroup.Start();
 		MinGen=MaxGen=cGroup()->GetId();
 		for(cGroup.Next();!cGroup.End();cGroup.Next())
@@ -172,14 +172,14 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	CurId=MinGen;
 
 	// Solutions Part
-	Solution = new QGGroupsHistory(TabWidget,(*Groups)[0]);
+	Solution = new QGCommunitiesHistory(TabWidget,(*Groups)[0]);
 	sprintf(tmp,"Solution (%u) %s",CurId,((*Groups)[0])->GetDate().ToString().Latin1());
 	TabWidget->insertTab(Solution,tmp);
 	Solution->setGroups((*Groups)[0]);
 	Solution->setChanged();
 
 	//tmp display
-	Groups->CreateGroupsRelationship(MaxGen);
+	Groups->CreateCommunitiesRelationship(MaxGen);
 
 	//connections.
 	connect(Solution,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
@@ -198,7 +198,7 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 {
 	static char tmp[100];
 
-	GGroupsHistory* grps;
+	GCommunitiesHistory* grps;
 
 	if(TabWidget->currentPage()!=Solution)
 	{
@@ -246,18 +246,18 @@ void KViewHistory::resizeEvent(QResizeEvent*)
 //-----------------------------------------------------------------------------
 void KViewHistory::slotCheckModifiedGroups(void)
 {
-	Doc->GetSession()->GetGroupsHistoryManager()->CheckModifiedGroups(MinGen);
+	Doc->GetSession()->GetCommunitiesHistoryManager()->CheckModifiedCommunities(MinGen);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewHistory::slotCheckWellGroupedSubProfs(void)
 {
-	RCursor<GGroupsHistory> cGroup(*Groups);
+	RCursor<GCommunitiesHistory> cGroup(*Groups);
 	for(cGroup.Start();!cGroup.End();cGroup.Next())
 	{
-		cGroup()->SetGroupsSubject();
-		cGroup()->CheckWellGroupedSubProfs();
+		cGroup()->SetCommunitiesSubject();
+		cGroup()->CheckWellGroupedProfs();
 	}
 }
 
@@ -265,7 +265,7 @@ void KViewHistory::slotCheckWellGroupedSubProfs(void)
 //-----------------------------------------------------------------------------
 void KViewHistory::slotCheckNewProfiles(void)
 {
-	RCursor<GGroupsHistory> cGroup(*Groups);
+	RCursor<GCommunitiesHistory> cGroup(*Groups);
 	for(cGroup.Start();!cGroup.End();cGroup.Next())
 		cGroup()->CheckNewProfiles();
 }
@@ -353,10 +353,10 @@ void KViewHistory::DisplaySimilarities(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewHistory::DisplayRelationShip(GGroupHistory* grp)
+void KViewHistory::DisplayRelationShip(GCommunityHistory* grp)
 {
 	char tmp[100];
-	R::RCursor<GGroupHistory> cur;
+	R::RCursor<GCommunityHistory> cur;
 	QListViewItemType* grpitem;
 	char num1[50];
 
@@ -375,10 +375,10 @@ void KViewHistory::DisplayRelationShip(GGroupHistory* grp)
 
 
 //-----------------------------------------------------------------------------
-void KViewHistory::DisplayChildrenRelationShip(GGroupHistory* grp, QListViewItemType* attach )
+void KViewHistory::DisplayChildrenRelationShip(GCommunityHistory* grp, QListViewItemType* attach )
 {
 	char tmp[100];
-	R::RCursor<GGroupHistory> cur;
+	R::RCursor<GCommunityHistory> cur;
 	QListViewItemType* grpitem;
 	char num1[50];
 

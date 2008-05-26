@@ -45,13 +45,13 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gweightinfoshistory.h>
-#include <ggroupshistory.h>
+#include <gcommunitieshistory.h>
 using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
 // include files for QtWidgets
-#include <qggroupshistory.h>
+#include <qgcommunitieshistory.h>
 #include <qlistviewitemtype.h>
 
 
@@ -110,7 +110,7 @@ class KViewHistory : public KView
 	/**
 	* The solutions.
 	*/
-	QGGroupsHistory* Solution;
+	QGCommunitiesHistory* Solution;
 
 	/**
 	* Listview to display the similarities.
@@ -140,7 +140,7 @@ class KViewHistory : public KView
 	/**
 	* The container of groups
 	*/
-	GGroupsHistoryManager* Groups;
+	GCommunitiesHistoryManager* Groups;
 
 	/**
 	* selected items from Solutions.
@@ -250,12 +250,12 @@ public:
 	/**
 	* Update the SimsView listview..
 	*/
-	void DisplayRelationShip(GGroupHistory* grpitem);
+	void DisplayRelationShip(GCommunityHistory* grpitem);
 
 	/**
 	* Update the SimsView listview..
 	*/
-	void DisplayChildrenRelationShip(GGroupHistory* grpitem,QListViewItemType* attach);
+	void DisplayChildrenRelationShip(GCommunityHistory* grpitem,QListViewItemType* attach);
 
 	/**
 	* Destructor for the view.

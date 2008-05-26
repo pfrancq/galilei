@@ -113,7 +113,7 @@ KViewThGroups::KViewThGroups(KDoc* doc,GSubjects* subjects,QWidget* parent,const
 
 
 //-----------------------------------------------------------------------------
-GGroup* KViewThGroups::GetCurrentGroup(void)
+GCommunity* KViewThGroups::GetCurrentGroup(void)
 {
 	QListViewItemType* t;
 
@@ -172,15 +172,15 @@ void KViewThGroups::ConstructGroups(void)
 	setCaption(tmp1);
 	prGroups->clear();
 	
-	R::RCursor<GGroup> grs=Doc->GetSession()->GetGroups();
+	R::RCursor<GCommunity> grs=Doc->GetSession()->GetCommunities();
 	for (grs.Start(); !grs.End(); grs.Next())
 	{
-		GGroup* gr=grs();
+		GCommunity* gr=grs();
 		sprintf(tmp1,"Precision: %1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(gr));
 		sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
-		QListViewItemType* gritem= new QListViewItemType(gr,prGroups,"Group ("+QString::number(gr->GetId())+") - "+QString::number(gr->GetNbProfiles()),tmp1,tmp2);
+		QListViewItemType* gritem= new QListViewItemType(gr,prGroups,"Group ("+QString::number(gr->GetId())+") - "+QString::number(gr->GetNbObjs()),tmp1,tmp2);
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
-		Sub=grs()->GetProfiles();
+		Sub=grs()->GetObjs();
 		for(Sub.Start(); !Sub.End(); Sub.Next())
 		{
 			GProfile* sub=Sub();

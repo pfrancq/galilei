@@ -6,7 +6,7 @@
 
 	Specific Item - Header.
 
-	Copyright 1999-2003 by the Universit�Libre de Bruxelles.
+	Copyright 1999-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -43,9 +43,9 @@
 #include <gpostdoc.h>
 #include <gengine.h>
 #include <gmetaengine.h>
-#include <ggroupcalc.h>
-#include <ggrouping.h>
-#include <gpostgroup.h>
+#include <gcommunitycalc.h>
+#include <ggroupprofiles.h>
+#include <gpostcommunity.h>
 #include <glang.h>
 #include <gpostprofile.h>
 #include <gpreprofile.h>
@@ -87,26 +87,26 @@ public:
 };
 
 
-class QGroupingItem : public QListViewItem
+class QGroupProfilesItem : public QListViewItem
 {
 public:
-	GFactoryGrouping* Fac;
+	GFactoryGroupProfiles* Fac;
 	bool Enable;
 	bool WasEnable;
-	QGroupingItem(QListView* lst,GFactoryGrouping* fac,const char* desc,QListViewItem* after=0)
+	QGroupProfilesItem(QListView* lst,GFactoryGroupProfiles* fac,const char* desc,QListViewItem* after=0)
 		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
 };
 
 
-class QGroupCalcItem : public QListViewItem
+class QCommunityCalcItem : public QListViewItem
 {
 public:
-	GFactoryGroupCalc* Fac;
+	GFactoryCommunityCalc* Fac;
 	bool Enable;
 	bool WasEnable;
-	QGroupCalcItem(QListView* lst,GFactoryGroupCalc* fac,const char* desc,QListViewItem* after=0)
+	QCommunityCalcItem(QListView* lst,GFactoryCommunityCalc* fac,const char* desc,QListViewItem* after=0)
 		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
@@ -203,13 +203,13 @@ public:
 };
 
 
-class QPostGroupItem : public QListViewItem
+class QPostCommunityItem : public QListViewItem
 {
 public:
-	GFactoryPostGroup* Fac;
+	GFactoryPostCommunity* Fac;
 	bool Enable;
 	bool WasEnable;
-	QPostGroupItem(QListView* lst,GFactoryPostGroup* fac,const char* desc,QListViewItem* after=0)
+	QPostCommunityItem(QListView* lst,GFactoryPostCommunity* fac,const char* desc,QListViewItem* after=0)
 		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}

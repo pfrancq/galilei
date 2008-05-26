@@ -48,8 +48,8 @@
 #include <gprofile.h>
 #include <gpreprofile.h>
 #include <gpostprofile.h>
-#include <ggrouping.h>
-#include <gpostgroup.h>
+#include <ggroupprofiles.h>
+#include <gpostcommunity.h>
 #include <gprofilecalc.h>
 #include <glang.h>
 #include <gengine.h>
@@ -369,19 +369,19 @@ void KGALILEICenterApp::slotPlugins(void)
 	GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
 	GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
 	GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
-	GALILEIApp->GetManager<GPostGroupManager>("PostGroup")->ReOrder();
+	GALILEIApp->GetManager<GPostCommunityManager>("CommunityGroup")->ReOrder();
 
 	// Goes through managers
 	dlg.changeFilter(InitL<GFactoryFilter,GFilterManager,QFilterItem>("Filter",dlg.Filters,dlg.EnableFilter));
 	dlg.changeProfileCalc(InitL<GFactoryProfileCalc,GProfileCalcManager,QProfileCalcItem>("ProfileCalc",dlg.ProfileCalcs,dlg.EnableProfileCalc,dlg.CurrentProfileCalc));
-	dlg.changeGrouping(InitL<GFactoryGrouping,GGroupingManager,QGroupingItem>("Grouping",dlg.Groupings,dlg.EnableGrouping,dlg.CurrentGrouping));
-	dlg.changeGroupCalc(InitL<GFactoryGroupCalc,GGroupCalcManager,QGroupCalcItem>("GroupCalc",dlg.GroupCalcs,dlg.EnableGroupCalc,dlg.CurrentGroupCalc));
+	dlg.changeGrouping(InitL<GFactoryGroupProfiles,GGroupProfilesManager,QGroupProfilesItem>("GroupProfiles",dlg.Groupings,dlg.EnableGrouping,dlg.CurrentGrouping));
+	dlg.changeGroupCalc(InitL<GFactoryCommunityCalc,GCommunityCalcManager,QCommunityCalcItem>("CommunityCalc",dlg.GroupCalcs,dlg.EnableGroupCalc,dlg.CurrentGroupCalc));
 	dlg.changeStatCalc(InitL<GFactoryStatsCalc,GStatsCalcManager,QStatsCalcItem>("StatsCalc",dlg.Stats,dlg.EnableStat));
 	dlg.changeLinkCalc(InitL<GFactoryLinkCalc,GLinkCalcManager,QLinkCalcItem>("LinkCalc",dlg.LinkCalcs,dlg.EnableLinkCalc,dlg.CurrentLinkCalc));
 	dlg.changePostDoc(InitL<GFactoryPostDoc,GPostDocManager,QPostDocItem>("PostDoc",dlg.PostDocs,dlg.EnablePostDoc));
 	dlg.changePreProfile(InitL<GFactoryPreProfile,GPreProfileManager,QPreProfileItem>("PreProfile",dlg.PreProfile,dlg.EnablePreProfile));
 	dlg.changePostProfile(InitL<GFactoryPostProfile,GPostProfileManager,QPostProfileItem>("PostProfile",dlg.PostProfile,dlg.EnablePostProfile));
-	dlg.changePostGroup(InitL<GFactoryPostGroup,GPostGroupManager,QPostGroupItem>("PostGroup",dlg.PostGroups,dlg.EnablePostGroup));
+	dlg.changePostGroup(InitL<GFactoryPostCommunity,GPostCommunityManager,QPostCommunityItem>("PostCommunity",dlg.PostGroups,dlg.EnablePostGroup));
 	dlg.changeLang(InitL<GFactoryLang,GLangManager,QLangItem>("Lang",dlg.Langs,dlg.EnableLang));
 	dlg.changeDocAnalyse(InitL<GFactoryDocAnalyse,GDocAnalyseManager,QDocAnalyseItem>("DocAnalyse",dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse));
 	dlg.changeEngine(InitL<GFactoryEngine,GEngineManager,QEngineItem>("Engine",dlg.Engines,dlg.EnableEngine));
@@ -401,8 +401,8 @@ void KGALILEICenterApp::slotPlugins(void)
 			// Goes through managers
 			Done<QFilterItem>(dlg.Filters);
 			Done<QProfileCalcItem>(dlg.ProfileCalcs,this);
-			Done<QGroupingItem>(dlg.Groupings,this);
-			Done<QGroupCalcItem>(dlg.GroupCalcs,this);
+			Done<QGroupProfilesItem>(dlg.Groupings,this);
+			Done<QCommunityCalcItem>(dlg.GroupCalcs,this);
 			Done<QStatsCalcItem>(dlg.Stats);
 			Done<QLinkCalcItem>(dlg.LinkCalcs,this);
 			Done<QPostDocItem>(dlg.PostDocs,this);
@@ -410,7 +410,7 @@ void KGALILEICenterApp::slotPlugins(void)
 			Done<QPostProfileItem>(dlg.PostProfile,this);
 			Done<QLangItem>(dlg.Langs,this);
 			Done<QDocAnalyseItem>(dlg.DocAnalyses,this);
-			Done<QPostGroupItem>(dlg.PostGroups,this);
+			Done<QPostCommunityItem>(dlg.PostGroups,this);
 			Done<QEngineItem>(dlg.Engines);
 			Done<QMetaEngineItem>(dlg.MetaEngines,this);
 			DoneMeasure(&dlg);
@@ -418,12 +418,12 @@ void KGALILEICenterApp::slotPlugins(void)
 			GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
 			GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
 			GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
-			GALILEIApp->GetManager<GPostGroupManager>("PostGroup")->ReOrder();
+			GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
 	
 			// Set current method
 			GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1(),false);
-			GALILEIApp->GetManager<GGroupingManager>("Grouping")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1(),false);
-			GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
+			GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1(),false);
+			GALILEIApp->GetManager<GCommunityCalcManager>("GroupCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
 			GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1(),false);
 			GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1(),false);
 			GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1(),false);

@@ -115,7 +115,7 @@ public:
 	virtual void NextProfile(const GProfile* prof);
 
 	/**
-	* Method called by GGrouping each time a new language is analysed.
+	* Method called by GCommunitying each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
 	virtual void NextGroupLang(const GLang* lang);

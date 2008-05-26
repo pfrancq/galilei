@@ -45,7 +45,7 @@
 #include <gdoc.h>
 namespace GALILEI
 {
-	class GGroup;
+	class GCommunity;
 }
 
 
@@ -73,7 +73,7 @@ class KViewGroup : public KView
 	/**
 	* Group represented by the view.
 	*/
-	GALILEI::GGroup* Group;
+	GALILEI::GCommunity* Group;
 
 	/**
 	* Widget to handle the different information of the group.
@@ -115,7 +115,7 @@ public:
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGroup(GALILEI::GGroup* grp,KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewGroup(GALILEI::GCommunity* grp,KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Return the type of the window.
@@ -124,9 +124,9 @@ public:
 
 	/**
 	* Get the group of this window.
-	* @return Pointer to a GALILEI::GGroup.
+	* @return Pointer to a GALILEI::GCommunity.
 	*/
-	GALILEI::GGroup* GetGroup(void) {return(Group);}
+	GALILEI::GCommunity* GetGroup(void) {return(Group);}
 
 	/**
 	* Construct the groups widget.
