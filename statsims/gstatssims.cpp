@@ -116,11 +116,11 @@ public:
 
 //------------------------------------------------------------------------------
 // Statistics between groups and documents
-class GStatSimDocGrp : public GStatSimElements<GDoc,GGroup>
+class GStatSimDocGrp : public GStatSimElements<GDoc,GCommunity>
 {
 public:
 
-	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GGroup>(ses,false,f)
+	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GCommunity>(ses,false,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Groups Similarities");
 	}
@@ -130,7 +130,7 @@ public:
 		return(sub->GetDocs());
 	}
 
-	virtual R::RCursor<GGroup> GetE2Cursor(GSubject* sub)
+	virtual R::RCursor<GCommunity> GetE2Cursor(GSubject* sub)
 	{
 		return(sub->GetGroups());
 	}
@@ -162,11 +162,11 @@ public:
 
 //------------------------------------------------------------------------------
 // Statistics between groups and profiles
-class GStatSimProfGrp : public GStatSimElements<GProfile,GGroup>
+class GStatSimProfGrp : public GStatSimElements<GProfile,GCommunity>
 {
 public:
 
-	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GGroup>(ses,false,f)
+	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GCommunity>(ses,false,f)
 	{
 		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Groups Similarities");
 	}
@@ -176,7 +176,7 @@ public:
 		return(sub->GetProfiles());
 	}
 
-	virtual R::RCursor<GGroup> GetE2Cursor(GSubject* sub)
+	virtual R::RCursor<GCommunity> GetE2Cursor(GSubject* sub)
 	{
 		return(sub->GetGroups());
 	}
