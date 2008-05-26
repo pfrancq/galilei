@@ -143,7 +143,7 @@ size_t GConcept::IncRef(tObjType ObjType)
 			NbRefProfiles++;
 			return(NbRefProfiles);
 			break;
-		case otGroup:
+		case otCommunity:
 			NbRefGroups++;
 			return(NbRefGroups);
 			break;
@@ -171,7 +171,7 @@ size_t GConcept::DecRef(tObjType ObjType)
 			NbRefProfiles--;
 			return(NbRefProfiles);
 			break;
-		case otGroup:
+		case otCommunity:
 			if(!NbRefGroups)
 				throw GException("Cannot decrease null number of references for groups for concept "+RString::Number(Id));
 			NbRefGroups--;
@@ -195,7 +195,7 @@ size_t GConcept::GetRef(tObjType ObjType) const
 		case otProfile:
 			return(NbRefProfiles);
 			break;
-		case otGroup:
+		case otCommunity:
 			return(NbRefGroups);
 			break;
 		case otDocProfile:
@@ -226,7 +226,7 @@ void GConcept::Clear(tObjType ObjType)
 		case otProfile:
 			NbRefProfiles=0;
 			break;
-		case otGroup:
+		case otCommunity:
 			NbRefGroups=0;
 			break;
 		case otDocProfile:

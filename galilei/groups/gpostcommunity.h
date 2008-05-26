@@ -2,14 +2,15 @@
 
 	GALILEI Research Project
 
-	GPostGroup.h
+	GPostCommunity.h
 
-	Generic Post-Group Computing Method - Header.
+	Generic Post-Community Computing Method - Header.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors:
-		Vandaele Va�ery(vavdaele@ulb.ac.be).
+		Francq Pascal (pfrancq@ulb.ac.be)
+		Vandaele Valéry(vavdaele@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,8 +32,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GPostGroupH
-#define GPostGroupH
+#ifndef GPostCommunityH
+#define GPostCommunityH
 
 
 //------------------------------------------------------------------------------
@@ -48,17 +49,17 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_POSTGROUP_VERSION "2.0"
+#define API_POSTCOMMUNITY_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
 /**
-* The GPostGroup class provides a representation for a generic method to compute
-* the post-groupment.
-* @author Vandaele Valery
-* @short Generic Post-Group Computing Method.
+* The GPostCommunity class provides a representation for a generic method to
+* compute the post-groupment of profiles.
+* @author Pascal Francq
+* @short Generic Post-Community Computing Method.
 */
-class GPostGroup : public GPlugin<GFactoryPostGroup>
+class GPostCommunity : public GPlugin<GFactoryPostCommunity>
 {
 public:
 
@@ -66,27 +67,28 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GPostGroup(GFactoryPostGroup* fac);
+	GPostCommunity(GFactoryPostCommunity* fac);
 
 	/**
-	* Run the post-group method.
+	* Run the post-community method.
 	*/
 	virtual void Run(void)=0;
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GPostGroup(void);
+	virtual ~GPostCommunity(void);
 };
 
 
 //------------------------------------------------------------------------------
 /*
-* The GFactoryPostGroup represent a factory for a given post grouping method.
+* The GFactoryPostCommunity represent a factory for a given post-community
+* method.
 * @author Pascal Francq
-* @short Generic Post Grouping Factory.
+* @short Generic Post Community Factory.
 */
-class GFactoryPostGroup : public GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>
+class GFactoryPostCommunity : public GFactoryPlugin<GFactoryPostCommunity,GPostCommunity,GPostCommunityManager>
 {
 public:
 
@@ -96,37 +98,37 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryPostGroup(GPostGroupManager* mng,const char* n,const char* f)
-	 : GFactoryPlugin<GFactoryPostGroup,GPostGroup,GPostGroupManager>(mng,n,f) {}
+	GFactoryPostCommunity(GPostCommunityManager* mng,const char* n,const char* f)
+	 : GFactoryPlugin<GFactoryPostCommunity,GPostCommunity,GPostCommunityManager>(mng,n,f) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* The GPostGroupManager class provides a representation for a manager
-* responsible to manage all the postgroup computing methods.
-* @author Vandaele Valery
-* @short Post-Group Computing Methods Manager.
+* The GPostCommunityManager class provides a representation for a manager
+* responsible to manage all the post-community computing methods.
+* @author Pascal Francq
+* @short Post-Community Computing Methods Manager.
 */
-class GPostGroupManager : public GPluginManager<GPostGroupManager,GFactoryPostGroup,GPostGroup>
+class GPostCommunityManager : public GPluginManager<GPostCommunityManager,GFactoryPostCommunity,GPostCommunity>
 {
 public:
 
 	/**
-	* Construct the post-group computing methods manager.
+	* Construct the post-community computing methods manager.
 	*/
-	GPostGroupManager(void);
+	GPostCommunityManager(void);
 
 	/**
-	* Destruct the post-group computing methods manager.
+	* Destruct the post-community computing methods manager.
 	*/
-	virtual ~GPostGroupManager(void);
+	virtual ~GPostCommunityManager(void);
 };
 
 
 //------------------------------------------------------------------------------
-#define CREATE_POSTGROUP_FACTORY(name,plugin)\
-	CREATE_FACTORY(GPostGroupManager,GFactoryPostGroup,GPostGroup,plugin,"PostGroup",API_POSTGROUP_VERSION,name)
+#define CREATE_POSTCOMMUNITY_FACTORY(name,plugin)\
+	CREATE_FACTORY(GALILEI::GPostCommunityManager,GALILEI::GFactoryPostCommunity,GALILEI::GPostCommunity,plugin,"PostCommunity",API_POSTCOMMUNITY_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -94,10 +94,10 @@ public:
 	* The traitment for a specific group will begin.
 	* @param grp             Group.
 	*/
-	virtual void NextGroupExport(const GGroup* grp);
+	virtual void NextGroupExport(const GCommunity* grp);
 
 	/**
-	* Method called by GGrouping each time a new language is analysed.
+	* Method called by GCommunitying each time a new language is analysed.
 	* @param lang            Pointer to the current lang.
 	*/
 	virtual void NextGroupLang(const GLang* lang);

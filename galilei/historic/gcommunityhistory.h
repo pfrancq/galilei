@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupHistory.h
+	GCommunityHistory.h
 
 	History of a given group - Header.
 
@@ -32,8 +32,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GGroupHistoryH
-#define GGroupHistoryH
+#ifndef GCommunityHistoryH
+#define GCommunityHistoryH
 
 
 //------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author David Wartel
 * @short History of a Group.
 */
-class GGroupHistory : public R::RContainer<GWeightInfosHistory,false,true>
+class GCommunityHistory : public R::RContainer<GWeightInfosHistory,false,true>
 {
 protected:
 
@@ -74,12 +74,12 @@ protected:
 	/**
 	* History of groupment holding this group.
 	*/
-	GGroupsHistory* Parent;
+	GCommunitiesHistory* Parent;
 
 	/**
 	* List of groups of the next step to be formed started from this group.
 	*/
-	R::RContainer<GGroupHistory,false,true> Childrens;
+	R::RContainer<GCommunityHistory,false,true> Childrens;
 
 public:
 
@@ -88,7 +88,7 @@ public:
 	* @param id             Identificator.
 	* @param grps           Parent.
 	*/
-	GGroupHistory(const unsigned int id, GGroupsHistory* grps);
+	GCommunityHistory(const unsigned int id, GCommunitiesHistory* grps);
 
 	/**
 	* Get the identificator of the group.
@@ -97,10 +97,10 @@ public:
 	unsigned int GetId(void) const {return(Id);}
 
 	/**
-	* Add a history of a subprofile into the group.
+	* Add a history of a profile into the group.
 	* @param giwwh           Pointer to a history of a subprofile.
 	*/
-	void AddSubProfile(GWeightInfosHistory* giwwh);
+	void AddProfile(GWeightInfosHistory* giwwh);
 
 	/**
 	* Set if the groups is considered as modified.
@@ -129,7 +129,7 @@ public:
 	* Insert a group derived from the current one.
 	* @param grp             POinter to a child group.
 	*/
-	void InsertChildren(GGroupHistory* grp);
+	void InsertChildren(GCommunityHistory* grp);
 
 	/**
 	* Compare two historied of groups by comparing their identificator.
@@ -137,7 +137,7 @@ public:
 	* @param grouph          History of group.
 	* @return int
 	*/
-	int Compare(const GGroupHistory& grouph) const;
+	int Compare(const GCommunityHistory& grouph) const;
 
 	/**
 	* Compare two groups by comparing their identificator.
@@ -145,7 +145,7 @@ public:
 	* @param grouph          Pointer to a history of group.
 	* @return int
 	*/
-	int Compare(const GGroupHistory* grouph) const;
+	int Compare(const GCommunityHistory* grouph) const;
 
 	/**
 	* Compare the idenfiticator of a history of group with another one.
@@ -158,18 +158,18 @@ public:
 	/**
 	* Get a cursor on all children groups.
 	*/
-	R::RCursor<GGroupHistory> GetChildrens(void);
+	R::RCursor<GCommunityHistory> GetChildrens(void);
 
 	/**
 	* Get the groupment containing the group.
-	* @return Pointer to GGroupsHistory.
+	* @return Pointer to GCommunitysHistory.
 	*/
-	GGroupsHistory* GetParent(void) const {return(Parent);}
+	GCommunitiesHistory* GetParent(void) const {return(Parent);}
 
 	/**
 	* Destructor of history of group.
 	*/
-	~GGroupHistory(void);
+	~GCommunityHistory(void);
 };
 
 

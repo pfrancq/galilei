@@ -2,14 +2,15 @@
 
 	GALILEI Research Project
 
-	GGroupCalc.cpp
+	GCommunityHistory.cpp
 
-	Generic Group Description Computing Method - Implementation.
+	History of a given group - Implementation.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Pascal Francq (pfrancq@ulb.ac.be)
+		David Wartel (dwartel@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,7 +33,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroupcalc.h>
+#include <gcommunityhistory.h>
+#include <gweightinfoshistory.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -40,38 +42,77 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GGroupCalc
+//  GCommunityHistory
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupCalc::GGroupCalc(GFactoryGroupCalc* fac)
-	: GPlugin<GFactoryGroupCalc>(fac)
+GCommunityHistory::GCommunityHistory(const unsigned int id,GCommunitiesHistory* grps)
+	: RContainer<GWeightInfosHistory,false,true>(20,10), Id(id),
+	  Modified(false), Parent(grps), Childrens(2,2)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GGroupCalc::~GGroupCalc(void)
+void GCommunityHistory::AddProfile(GWeightInfosHistory* giwwh)
 {
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GGroupCalcManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GGroupCalcManager::GGroupCalcManager(void)
-	: GPluginManager<GGroupCalcManager,GFactoryGroupCalc,GGroupCalc>("GroupCalc",API_GROUPCALC_VERSION,ptSelect)
-{
+	InsertPtr(giwwh);
+	giwwh->SetParent(this);
 }
 
 
 //------------------------------------------------------------------------------
-GGroupCalcManager::~GGroupCalcManager(void)
+void GCommunityHistory::SetModified(bool b)
+{
+	Modified=b;
+}
+
+
+//------------------------------------------------------------------------------
+void GCommunityHistory::SetSubject(GSubject* sub)
+{
+	Subject=sub;
+}
+
+
+//------------------------------------------------------------------------------
+void GCommunityHistory::InsertChildren(GCommunityHistory* grp)
+{
+	Childrens.InsertPtr(grp);
+}
+
+
+//------------------------------------------------------------------------------
+int GCommunityHistory::Compare(const GCommunityHistory& grouph) const
+{
+	return(Id-grouph.Id);
+}
+
+
+//------------------------------------------------------------------------------
+int GCommunityHistory::Compare(const GCommunityHistory* grouph) const
+{
+	return(Id-grouph->Id);
+}
+
+
+//------------------------------------------------------------------------------
+int GCommunityHistory::Compare(const unsigned int id) const
+{
+	return(Id-id);
+}
+
+
+//------------------------------------------------------------------------------
+R::RCursor<GCommunityHistory> GCommunityHistory::GetChildrens(void)
+{
+	R::RCursor<GCommunityHistory> cur(Childrens);
+	return(cur);
+}
+
+
+//------------------------------------------------------------------------------
+GCommunityHistory::~GCommunityHistory(void)
 {
 }

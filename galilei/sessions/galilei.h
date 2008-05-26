@@ -87,6 +87,7 @@ class GInfosWeightsHistory;
 class GFilter;
 class GFactoryFilter;
 class GFilterManager;
+class GTopic;
 class GDoc;
 class GDocAnalyse;
 class GDocAnalyseManager;
@@ -136,26 +137,26 @@ class GPostProfileManager;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Groups Part
-class GGroup;
-class GGrouping;
-class GFactoryGrouping;
-class GGroupingManager;
-class GGroupCalc;
-class GFactoryGroupCalc;
-class GGroupCalcManager;
+class GCommunity;
+class GGroupProfiles;
+class GFactoryGroupProfiles;
+class GGroupProfilesManager;
+class GCommunityCalc;
+class GFactoryCommunityCalc;
+class GCommunityCalcManager;
 class GSubject;
 class GSubjects;
-class GPostGroup;
-class GPostGroupManager;
-class GFactoryPostGroup;
+class GPostCommunity;
+class GPostCommunityManager;
+class GFactoryPostCommunity;
 
 
 //------------------------------------------------------------------------------
 // forward class declaration - Historic Part
 class GWeightInfosHistory;
-class GGroupHistory;
-class GGroupsHistory;
-class GGroupsHistoryManager;
+class GCommunityHistory;
+class GCommunitiesHistory;
+class GCommunitiesHistoryManager;
 
 
 //------------------------------------------------------------------------------
@@ -202,13 +203,14 @@ enum tObjType
 	otDoc=2                      /** Document. */,
 	otUser=5                     /** User.*/,
 	otProfile=6                  /** Profile.*/,
-	otGroup=9                    /** Group.*/,
+	otCommunity=9                /** Community.*/,
 	otDocProfile=10              /** Document or Profile.*/,
 	otDocGroup=11                /** Document or Group.*/,
 	otProfileGroup=12            /** Profile or Group.*/,
 	otFdbk=13                    /** Assessment of a document by a profile.*/,
 	otLang=14                    /** Language. */,
-	otHistory=15                 /** History */
+	otHistory=15                 /** History. */,
+	otTopic=16                   /** Topic. */ 
 };
 
 

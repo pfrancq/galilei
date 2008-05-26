@@ -2,15 +2,16 @@
 
 	GALILEI Research Project
 
-	GGroupHistory.cpp
+	GPostCommunity.cpp
 
-	History of a given group - Implementation.
+	Generic Post-Community Computing Method - Implementation.
 
 	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be)
-		David Wartel (dwartel@ulb.ac.be).
+		Francq Pascal (pfrancq@ulb.ac.be)
+		Vandaele Valéry(vavdaele@ulb.ac.be).
+
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -33,8 +34,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggrouphistory.h>
-#include <gweightinfoshistory.h>
+#include <gpostcommunity.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -42,77 +42,38 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GGroupHistory
+//  GPostCommunity
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupHistory::GGroupHistory(const unsigned int id,GGroupsHistory* grps)
-	: RContainer<GWeightInfosHistory,false,true>(20,10), Id(id),
-	  Modified(false), Parent(grps), Childrens(2,2)
+GPostCommunity::GPostCommunity(GFactoryPostCommunity* fac)
+	: GPlugin<GFactoryPostCommunity>(fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GGroupHistory::AddSubProfile(GWeightInfosHistory* giwwh)
+GPostCommunity::~GPostCommunity(void)
 {
-	InsertPtr(giwwh);
-	giwwh->SetParent(this);
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GPostCommunityManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GPostCommunityManager::GPostCommunityManager(void)
+	: GPluginManager<GPostCommunityManager,GFactoryPostCommunity,GPostCommunity>("PostCommunity",API_POSTCOMMUNITY_VERSION,ptOrdered)
+{
 }
 
 
 //------------------------------------------------------------------------------
-void GGroupHistory::SetModified(bool b)
-{
-	Modified=b;
-}
-
-
-//------------------------------------------------------------------------------
-void GGroupHistory::SetSubject(GSubject* sub)
-{
-	Subject=sub;
-}
-
-
-//------------------------------------------------------------------------------
-void GGroupHistory::InsertChildren(GGroupHistory* grp)
-{
-	Childrens.InsertPtr(grp);
-}
-
-
-//------------------------------------------------------------------------------
-int GGroupHistory::Compare(const GGroupHistory& grouph) const
-{
-	return(Id-grouph.Id);
-}
-
-
-//------------------------------------------------------------------------------
-int GGroupHistory::Compare(const GGroupHistory* grouph) const
-{
-	return(Id-grouph->Id);
-}
-
-
-//------------------------------------------------------------------------------
-int GGroupHistory::Compare(const unsigned int id) const
-{
-	return(Id-id);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GGroupHistory> GGroupHistory::GetChildrens(void)
-{
-	R::RCursor<GGroupHistory> cur(Childrens);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
-GGroupHistory::~GGroupHistory(void)
+GPostCommunityManager::~GPostCommunityManager(void)
 {
 }

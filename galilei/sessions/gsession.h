@@ -125,9 +125,9 @@ public:
 
 	/**
 	* Get the historic groups manager.
-	* @return Pointer to GGroupsHistoryMng.
+	* @return Pointer to GCommunitysHistoryMng.
 	*/
-	GGroupsHistoryManager* GetGroupsHistoryManager(void) const;
+	GCommunitiesHistoryManager* GetCommunitiesHistoryManager(void) const;
 
 	/**
 	* Get the storage manager.
@@ -610,89 +610,88 @@ public:
 	// @{
 
 	/**
-	* Get a cursor on the groups.
+	* Get a cursor on the communities.
 	*/
-	R::RCursor<GGroup> GetGroups(void);
+	R::RCursor<GCommunity> GetCommunities(void);
 
 	/**
-	* Get the number of groups.
+	* Get the number of communities.
 	*/
-	size_t GetNbGroups(void) const;
+	size_t GetNbCommunities(void) const;
 
 	/**
 	* Get a group corresponding to a given identificator.
-	* @param id              Identificator of the group.
-	* @param load            If set to true, the group is eventually loaded into
-	*                        memory.
+	* @param id              Identificator of the community.
+	* @param load            If set to true, the community is eventually loaded
+	*                        into memory.
 	* @param null            If set to true, if the group does not exist,
 	*                        return 0, else an exception is generated.
-	* @return Pointer to GGroup.
+	* @return Pointer to GCommunity.
 	*/
-	GGroup* GetGroup(unsigned int id,bool load=true,bool null=false) const;
+	GCommunity* GetCommunity(unsigned int id,bool load=true,bool null=false) const;
 
 	/**
-	* Assign an identifier to a new group.
-	* @param grp             Group.
+	* Assign an identifier to a new community.
+	* @param com             Community.
 	*/
-	void AssignId(GGroup* grp);
+	void AssignId(GCommunity* com);
 
 	/**
-	* Insert a group. The group is also stored in the container correspondong to
-	* its language.
-	* @param grp             Pointer to the group.
+	* Insert a community.
+	* @param com             Community.
 	*/
-	void InsertGroup(GGroup* grp);
+	void InsertCommunity(GCommunity* com);
 
 	/**
-	* Delete a group.
-	* @param grp             Pointer to the group.
+	* Delete a community.
+	* @param com             Community.
 	*/
-	void DeleteGroup(GGroup* grp);
+	void DeleteCommunity(GCommunity* com);
 
 	/**
 	* Clear the groups.
 	*/
-	void ClearGroups(void);
+	void ClearCommunities(void);
 
 	/**
 	* Groups the subprofile into virtual communities. At the end, all the
 	* enabled post-grouping methods are called.
 	* @param rec             Receiver of the signals.
 	*/
-	void GroupingProfiles(GSlot* rec=0);
+	void GroupProfiles(GSlot* rec=0);
 
 	/**
-	* Run all the enabled post-grouping methods.
+	* Run all the enabled post-community computinng methods.
 	* @param rec             Receiver of the signals.
 	*/
-	void DoPostGroups(GSlot* rec=0);
+	void DoPostCommunity(GSlot* rec=0);
 
 	/**
-	* Copy the ideal groupment in the current one.
+	* Copy the ideal communities as the current one.
 	*/
-	void CopyIdealGroups(void);
+	void CopyIdealCommunities(void);
 
 	/**
-	* load the historic groups.
+	* Load the historic Communities.
 	*/
-	void LoadHistoricGroupsById(unsigned int mingen, unsigned int maxgen);
+	void LoadHistoricCommunitiesById(unsigned int mingen, unsigned int maxgen);
 
 	/**
-	* load the historic groups.
+	* Load the historic Communities.
 	*/
-	void LoadHistoricGroupsByDate(R::RString mindate, R::RString maxdate);
+	void LoadHistoricCommunitiesByDate(R::RString mindate, R::RString maxdate);
 
 	/**
-	* A profile was updated and the corresponding groups must be updated.
+	* A profile was updated and the corresponding community must be updated.
 	* @param prof            Profile.
 	*/
-	void UpdateGroup(GProfile* prof);
+	void UpdateCommunity(GProfile* prof);
 
 	/**
-	* A profile was updated and the corresponding groups must be updated.
+	* A profile was updated and the corresponding community must be updated.
 	* @param profid          Identificator of the profile.
 	*/
-	void UpdateGroup(size_t profid);
+	void UpdateCommunity(size_t profid);
 
 	// @} Groups
 

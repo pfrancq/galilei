@@ -170,9 +170,9 @@ GProfile::GProfile(GUser* usr,unsigned int id,const R::RString name,unsigned int
 	// Verify if the group is existing in memory
 	if((GroupId!=cNoRef)&&(GSession::Get()))
 	{
-		GGroup* grp=GSession::Get()->GetGroup(GroupId,false,false);
+		GCommunity* grp=GSession::Get()->GetCommunity(GroupId,false,false);
 		if(grp)
-			grp->InsertProfile(this);
+			grp->InsertObj(this);
 	}
 	
 	if(Id!=cNoRef)
@@ -407,7 +407,7 @@ void GProfile::Update(R::RContainer<GWeightInfo,false,true>& infos,bool computed
 
 		// Update the group were it belongs
 		if(GSession::Get())
-			GSession::Get()->UpdateGroup(this);
+			GSession::Get()->UpdateCommunity(this);
 	}
 	else
 		State=osUpToDate;
@@ -458,9 +458,9 @@ GProfile::~GProfile(void)
 		// Remove it from its group if necessary
 		if((GroupId!=cNoRef)&&(GSession::Get()))
 		{
-			GGroup* grp=GSession::Get()->GetGroup(GroupId);
+			GCommunity* grp=GSession::Get()->GetCommunity(GroupId);
 			if(grp)
-				grp->DeleteProfile(this);
+				grp->DeleteObj(this);
 		}
 
 		// Remove its references

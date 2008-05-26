@@ -76,7 +76,7 @@ void GSlot::NextDocumentExport(const GDoc*)
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextGroupExport(const GGroup*)
+void GSlot::NextGroupExport(const GCommunity*)
 {
 }
 

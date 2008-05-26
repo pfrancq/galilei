@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupsHistory.cpp
+	GCommunitysHistory.cpp
 
 	History of Groups for a given language - Implementation.
 
@@ -39,7 +39,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroupshistory.h>
+#include <gcommunitieshistory.h>
 #include <gweightinfoshistory.h>
 #include <gsubject.h>
 #include <gsession.h>
@@ -50,53 +50,53 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 //
-//  GGroupsHistoryManager
+//  GCommunitiesHistoryManager
 //
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-GGroupsHistoryManager::GGroupsHistoryManager(GSession* session,unsigned int max)
-	: RContainer<GGroupsHistory,true,true>(max,max/2), Session(session)
+GCommunitiesHistoryManager::GCommunitiesHistoryManager(GSession* session,unsigned int max)
+	: RContainer<GCommunitiesHistory,true,true>(max,max/2), Session(session)
 {
 }
 
 
 //-------------------------------------------------------------------------------
-R::RCursor<GGroupsHistory> GGroupsHistoryManager::GetGroupsHistory(void)
+R::RCursor<GCommunitiesHistory> GCommunitiesHistoryManager::GetCommunitiesHistory(void)
 {
-	R::RCursor<GGroupsHistory> cur(*this);
+	R::RCursor<GCommunitiesHistory> cur(*this);
 	return(cur);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistoryManager::CheckModifiedGroups(unsigned int minGen)
+void GCommunitiesHistoryManager::CheckModifiedCommunities(unsigned int minGen)
 {
-	R::RCursor<GGroupsHistory> Cur(*this);
+	R::RCursor<GCommunitiesHistory> Cur(*this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->CheckModifiedGroups(minGen);
+		Cur()->CheckModifiedCommunities(minGen);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistoryManager::CheckWellGroupedSubProfs(void)
+void GCommunitiesHistoryManager::CheckWellGroupedProfs(void)
 {
-	R::RCursor<GGroupsHistory> Cur(*this);
+	R::RCursor<GCommunitiesHistory> Cur(*this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->SetGroupsSubject();
-		Cur()->CheckWellGroupedSubProfs();
+		Cur()->SetCommunitiesSubject();
+		Cur()->CheckWellGroupedProfs();
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistoryManager::CheckNewProfiles(void)
+void GCommunitiesHistoryManager::CheckNewProfiles(void)
 {
-	R::RCursor<GGroupsHistory> Cur(*this);
+	R::RCursor<GCommunitiesHistory> Cur(*this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->CheckNewProfiles();
@@ -104,14 +104,14 @@ void GGroupsHistoryManager::CheckNewProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxgen)
+void GALILEI::GCommunitiesHistoryManager::CreateCommunitiesRelationship(unsigned int maxgen)
 {
 	unsigned int  i, maxoccurs, nbchildren;
-	GGroupsHistory *nextgrps;
+	GCommunitiesHistory *nextgrps;
 	GWeightInfosHistory* subprof;
 	bool treated;
 	unsigned int** tab;
-	R::RCursor<GGroupsHistory> Cur(*this);
+	R::RCursor<GCommunitiesHistory> Cur(*this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
@@ -122,7 +122,7 @@ void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxge
 		if(!nextgrps)
 			return;
 
-		RCursor<GGroupHistory> Cur2(*Cur());
+		RCursor<GCommunityHistory> Cur2(*Cur());
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
 			nbchildren=0;
@@ -138,7 +138,7 @@ void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxge
 			RCursor<GWeightInfosHistory> Cur3(*Cur2());
 			for(Cur3.Start();!Cur3.End();Cur3.Next())
 			{
-				subprof=nextgrps->GetSubProfile(Cur3()->GetId());
+				subprof=nextgrps->GetProfile(Cur3()->GetId());
 				treated=false;
 				i=0;
 				while(!treated&&i<nbchildren)
@@ -179,7 +179,7 @@ void GALILEI::GGroupsHistoryManager::CreateGroupsRelationship(unsigned int maxge
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistoryManager::InsertGroupsHistory(GGroupsHistory* gh)
+void GCommunitiesHistoryManager::InsertCommunitiesHistory(GCommunitiesHistory* gh)
 {
 	this->InsertPtr(gh);
 	gh->SetManager(this);
@@ -187,13 +187,13 @@ void GGroupsHistoryManager::InsertGroupsHistory(GGroupsHistory* gh)
 
 
 //------------------------------------------------------------------------------
-GSession* GGroupsHistoryManager::GetSession(void) const
+GSession* GCommunitiesHistoryManager::GetSession(void) const
 {
 	return(Session);
 }
 
 //------------------------------------------------------------------------------
-GGroupsHistoryManager::~GGroupsHistoryManager(void)
+GCommunitiesHistoryManager::~GCommunitiesHistoryManager(void)
 {
 }
 
@@ -201,14 +201,14 @@ GGroupsHistoryManager::~GGroupsHistoryManager(void)
 
 //------------------------------------------------------------------------------
 //
-//  GGroupsHistory
+//  GCommunitiesHistory
 //
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-GGroupsHistory::GGroupsHistory(unsigned int id, RString date)
-	: RContainer<GGroupHistory,true,true>(20,10)
+GCommunitiesHistory::GCommunitiesHistory(unsigned int id, RString date)
+	: RContainer<GCommunityHistory,true,true>(20,10)
 {
 	Id=id;
 	Date=RDate(date.Latin1());
@@ -216,16 +216,16 @@ GGroupsHistory::GGroupsHistory(unsigned int id, RString date)
 
 
 //------------------------------------------------------------------------------
-R::RDate GGroupsHistory::GetDate(void) const
+R::RDate GCommunitiesHistory::GetDate(void) const
 {
 	return(Date);
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfosHistory* GGroupsHistory::GetSubProfile(unsigned int id)
+GWeightInfosHistory* GCommunitiesHistory::GetProfile(unsigned int id)
 {
-	RCursor<GGroupHistory> Cur(*this);
+	RCursor<GCommunityHistory> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		RCursor<GWeightInfosHistory> Cur2(*Cur());
@@ -238,39 +238,39 @@ GWeightInfosHistory* GGroupsHistory::GetSubProfile(unsigned int id)
 
 
 //------------------------------------------------------------------------------
-int GGroupsHistory::Compare(const GGroupsHistory& groups) const
+int GCommunitiesHistory::Compare(const GCommunitiesHistory& groups) const
 {
 	return(Id-groups.Id);
 }
 
 
 //------------------------------------------------------------------------------
-int GGroupsHistory::Compare(const GGroupsHistory* groups) const
+int GCommunitiesHistory::Compare(const GCommunitiesHistory* groups) const
 {
 	return(Id-groups->Id);
 }
 
 
 //------------------------------------------------------------------------------
-int GGroupsHistory::Compare(unsigned int id) const
+int GCommunitiesHistory::Compare(unsigned int id) const
 {
 	return(Id-id);
 }
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistory::SetManager(GGroupsHistoryManager* m)
+void GCommunitiesHistory::SetManager(GCommunitiesHistoryManager* m)
 {
 	Manager=m;
 }
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistory::CheckModifiedGroups(unsigned int minGen)
+void GCommunitiesHistory::CheckModifiedCommunities(unsigned int minGen)
 {
 	RContainer<GWeightInfosHistory,false,true>* lastsubs;
-	GGroupsHistory* lastgroups;
-	GGroupHistory* lastgroup;
+	GCommunitiesHistory* lastgroups;
+	GCommunityHistory* lastgroup;
 	GWeightInfosHistory* sub, *lastsub;
 	unsigned int  lastcurid;
 
@@ -281,7 +281,7 @@ void GGroupsHistory::CheckModifiedGroups(unsigned int minGen)
 	lastsubs=new R::RContainer<GWeightInfosHistory,false,true>(10,5);
 	lastgroups=Manager->GetPtr(this->GetId()-1);
 	if (!lastgroups) return;
-	RCursor<GGroupHistory> Cur(*lastgroups);
+	RCursor<GCommunityHistory> Cur(*lastgroups);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		RCursor<GWeightInfosHistory> Cur2(*Cur());
@@ -290,7 +290,7 @@ void GGroupsHistory::CheckModifiedGroups(unsigned int minGen)
 	}
 
 	// Check the actual groups
-	RCursor<GGroupHistory> Cur2(*this);
+	RCursor<GCommunityHistory> Cur2(*this);
 	for(Cur2.Start();!Cur2.End();Cur2.Next())
 	{
 		RCursor<GWeightInfosHistory> Cur3(*Cur2());
@@ -337,16 +337,16 @@ void GGroupsHistory::CheckModifiedGroups(unsigned int minGen)
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistory::SetGroupsSubject(void)
+void GCommunitiesHistory::SetCommunitiesSubject(void)
 {
-	GGroupHistory* grp;
+	GCommunityHistory* grp;
 	GSubject* mainsubject;
 	unsigned int occur, maxoccur,knownsubject;
 	R::RContainer<GSubject,false,true>* subjects;
 
 
 	//find the dominant subject
-	RCursor<GGroupHistory> Cur(*this);
+	RCursor<GCommunityHistory> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		grp=Cur();
@@ -387,9 +387,9 @@ void GGroupsHistory::SetGroupsSubject(void)
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistory::CheckWellGroupedSubProfs(void)
+void GCommunitiesHistory::CheckWellGroupedProfs(void)
 {
-	RCursor<GGroupHistory> Cur(*this);
+	RCursor<GCommunityHistory> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		RCursor<GWeightInfosHistory> Cur2(*Cur());
@@ -403,16 +403,16 @@ void GGroupsHistory::CheckWellGroupedSubProfs(void)
 
 
 //------------------------------------------------------------------------------
-void GGroupsHistory::CheckNewProfiles(void)
+void GCommunitiesHistory::CheckNewProfiles(void)
 {
 	R::RContainer<GWeightInfosHistory,false,true>* lastsubs;
-	GGroupsHistory* lastgroups;
+	GCommunitiesHistory* lastgroups;
 
 	//get the last groups and put its profiles in a container
 	lastsubs=new R::RContainer<GWeightInfosHistory,false,true>(10,5);
 	lastgroups=Manager->GetPtr(this->GetId()-1);
 	if (!lastgroups) return;
-	RCursor<GGroupHistory> Groups(*lastgroups);
+	RCursor<GCommunityHistory> Groups(*lastgroups);
 	for(Groups.Start();!Groups.End();Groups.Next())
 	{
 		RCursor<GWeightInfosHistory> Cur2(*Groups());
@@ -422,7 +422,7 @@ void GGroupsHistory::CheckNewProfiles(void)
 
 	//check wether each subprofile was in the last groups
 	//if not, the profiles is considered as new.
-	RCursor<GGroupHistory> Cur(*this);
+	RCursor<GCommunityHistory> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		RCursor<GWeightInfosHistory> Cur2(*Cur());
@@ -436,7 +436,7 @@ void GGroupsHistory::CheckNewProfiles(void)
 
 
 //------------------------------------------------------------------------------
-GGroupsHistory::~GGroupsHistory(void)
+GCommunitiesHistory::~GCommunitiesHistory(void)
 {
 }
 

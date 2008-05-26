@@ -4,9 +4,9 @@
 
 	GGroup.h
 
-	Group - Header.
+	Generic Group - Header.
 
-	Copyright 2001-2008 by the Université Libre de Bruxelles.
+	Copyright 2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,11 +34,15 @@
 #ifndef GGroupH
 #define GGroupH
 
-
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <gweightinfos.h>
+#include <gweightinfo.h>
+#include <gsession.h>
+#include <ggalileiapp.h>
+#include <gmeasure.h>
+#include <gstorage.h>
 
 
 //------------------------------------------------------------------------------
@@ -48,11 +52,13 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* This class represent a virtual community, i.e. a group of profiles.
+* This class represent a generic group of objects represented by GWeightInfos.
+* @param cObj                Object contained.       
 * @author Pascal Francq
-* @short Group.
+* @short Generic Group.
 */
-class GGroup : protected R::RContainer<GProfile,false,true>, public GWeightInfos
+template<class cObj,class cGroup,tObjType type>
+	class GGroup : protected R::RContainer<cObj,false,true>, public GWeightInfos
 {
 protected:
 
@@ -62,17 +68,12 @@ protected:
 	unsigned int Id;
 
 	/**
-	* Is the group a virtual community.
-	*/
-	bool Community;
-
-	/**
-	* Date of the update (profiles have changed).
+	* Date of the update (objiles have changed).
 	*/
 	R::RDate Updated;
 
 	/**
-	* Date of last profile computing.
+	* Date of last objile computing.
 	*/
 	R::RDate Computed;
 
@@ -81,20 +82,10 @@ public:
 	/**
 	* Construct a group with a specific identificator.
 	* @param id              Identificator.
-	* @param com             Community.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GGroup(unsigned int id,bool com,const R::RDate& u,const R::RDate& c);
-
-private:
-
-	/**
-	* Static function used to ordered by similarity.
-	*/
-	static int sortOrder(const void *a,const void *b);
-
-public:
+	GGroup(unsigned int id,const R::RDate& u,const R::RDate& c);
 
 	/**
 	* Compare two groups by comparing their identificator.
@@ -121,22 +112,16 @@ public:
 	int Compare(const unsigned int id) const;
 		
 	/**
-	* Get the date of the last update of the subprofile.
+	* Get the date of the last update of the subobjile.
 	* @returns R::RDate.
 	*/
 	R::RDate GetUpdated(void) const;
 
 	/**
-	* Get the date of the last analysis of the subprofile.
+	* Get the date of the last analysis of the subobjile.
 	* @returns R::RDate.
 	*/
 	R::RDate GetComputed(void) const;
-
-	/**
-	* Look if the group is a community.
-	* @return bool.
-	*/
-	bool IsCommunity(void) const {return(Community);}
 
 	/**
 	* Get the identificator of the group.
@@ -156,107 +141,84 @@ public:
 	virtual void LoadInfos(void) const;
 
 	/**
-	 * Look if a given profile is in the group.
-	 * @param prof           Profile.µ
+	 * Get the similarity measure that must be used when computing the
+	 * similarity between the objects grouped. Un example for profiles:
+	 * @code
+	 * virtual GMeasure* GetMinMeasure(void)
+	 * {
+	 * 	   return(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities"));
+	 * }
+	 * @endcode
 	 */
-	bool IsIn(const GProfile* prof) const;
+	virtual GMeasure* GetSimMeasure(void) const=0;
 	
 	/**
-	* Delete a profile from the group. If the group is a community, the
-	* method modifies the assignation of the profile (the 'Group' pointer).
-	* of the profile is set to null).
-	* @param prof            Profile to delete.
+	 * Look if a given objile is in the group.
+	 * @param obj           Profile.µ
+	 */
+	bool IsIn(const cObj* obj) const;
+	
+	/**
+	* Delete a objile from the group. If the group is a Group, the
+	* method modifies the assignation of the objile (the 'Group' pointer).
+	* of the objile is set to null).
+	* @param obj            Profile to delete.
 	*/
-	void DeleteProfile(GProfile* prof);
+	void DeleteObj(cObj* obj);
 
 	/**
-	* Insert a profile in the group. If the group is a community, the
-	* method modifies the assignation of the profile (the 'Group' pointer).
-	* of the profile is set to null).
-	* @param prof            Profile to insert.
+	* Insert a objile in the group. If the group is a Group, the
+	* method modifies the assignation of the objile (the 'Group' pointer).
+	* of the objile is set to null).
+	* @param obj            Profile to insert.
 	*/
-	void InsertProfile(GProfile* sp);
+	void InsertObj(cObj* sp);
 
 	/**
-	* Insert a profile in the group. This signature is needed by a generic
+	* Insert a objile in the group. This signature is needed by a generic
 	* k-Means.
-	* @param prof            Profile to insert.
+	* @param obj            Profile to insert.
 	* @see R::RGroupingKMeans.
 	*/
-	void InsertPtr(GProfile* prof);
+	void InsertPtr(cObj* obj);
 
 	 /**
-	* Delete all profiles.
+	* Delete all objiles.
 	*/
-	void DeleteProfiles(void);
+	void DeleteObjs(void);
 
 	/**
-	* Get a cursor over the profiles.
+	* Get a cursor over the objects.
 	*/
-	R::RCursor<GProfile> GetProfiles(void) const;
+	R::RCursor<cObj> GetObjs(void) const;
 
 	/**
-	* Get a cursor over the profiles. This signature is needed by a generic
+	* Get a cursor over the objiles. This signature is needed by a generic
 	* k-Means.
 	* @see R::RGroupingKMeans.
 	*/
-	R::RCursor<GProfile> GetCursor(void) const;
+	R::RCursor<cObj> GetCursor(void) const;
 
 	/**
-	* Compute the number of profiles of a given group that are also in the
-	* current one.
-	* @param subject         Pointer to the subject.
+	* Get the number of objiles in the group.
 	*/
-	unsigned int GetNbProfiles(const GSubject* subject) const;
+	unsigned int GetNbObjs(void) const;
 
 	/**
-	* Get the number of profiles in the group.
+	* Compute the relevant objile, i.e. the objile whith the highest
+	* average similarity with all the other objiles.
+	* @returns Pointer to cObj representing the relevant one.
 	*/
-	unsigned int GetNbProfiles(void) const;
+	cObj* RelevantObj(void) const;
 
 	/**
-	* Construct the list of all feedbacks of the profiles of a group not
-	* already assessed by a given profile. If a document is assessed multiple
-	* times differently, most important OK>N>KO>H.
-	* @param docs            Documents not assessed.
-	* @param prof            Profile.
-	*/
-	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>& docs, GProfile* prof) const;
-
-	/**
-	* Construct the list of all relevant documents of the profiles of a
-	* group not already assessed by a given profile and ordered in descending
-	* order of their similarity with the chosen profile.
-	* @param measure         The measure used to compute the similarities.
-	* @param docs            Documents not assessed.
-	* @param prof            Profile.
-	* @param session         Session.
-	* \warning This method uses an internal container which is not optimal.
-	*/
-	void NotJudgedDocsRelList(GMeasure* measure,R::RContainer<GFdbk,false,false>& docs, GProfile* prof,GSession* session) const;
-
-	/**
-	* Compute the relevant profile, i.e. the profile whith the highest
-	* average similarity with all the other profiles.
-	* @returns Pointer to GProfile representing the relevant one.
-	*/
-	GProfile* RelevantProfile(void) const;
-
-	/**
-	* Compute the relevant profile.
-	* @see R::RGroupingKMeans<cGroup, cObj, cGroupData, cGroups>.
-	* @returns Pointer to GProfile representing the relevant one.
-	*/
-	GProfile* RelevantObj(void) const {return(RelevantProfile());}
-
-	/**
-	* Compute the sum of the similarities of a given profile to all the
+	* Compute the sum of the similarities of a given objile to all the
 	* others.
 	* @param measure         The measure used to compute the similarities.
-	* @param prof            Profile used as reference.
+	* @param obj            Profile used as reference.
 	* @returns result.
 	*/
-	double ComputeSumSim(GMeasure* measure,const GProfile* prof) const;
+	double ComputeSumSim(GMeasure* measure,const cObj* obj) const;
 
 	/**
 	* Clear the vector representing the group.
@@ -273,16 +235,21 @@ public:
 	void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed);
 
 	/**
-	* This method is call by a profile when it was modified.
-	* @param prof            Profile modified.
+	* This method is call by a objile when it was modified.
+	* @param obj            Profile modified.
 	*/
-	void HasUpdate(GProfile* prof);
+	void HasUpdate(cObj* obj);
 
 	/**
 	* Destructor of a group.
 	*/
 	virtual ~GGroup(void);
 };
+
+
+//-----------------------------------------------------------------------------
+// Template implementation
+#include <ggroup.hh>
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

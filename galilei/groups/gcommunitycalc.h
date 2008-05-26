@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GGroupCalc.h
+	GCommunityCalc.h
 
 	Generic Group Computing Method - Header.
 
-	Copyright 2002-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,8 +31,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GGroupCalcH
-#define GGroupCalcH
+#ifndef GCommunityCalcH
+#define GCommunityCalcH
 
 
 //------------------------------------------------------------------------------
@@ -48,22 +48,22 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_GROUPCALC_VERSION "2.0"
+#define API_COMMUNITYCALC_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
 // forward declaration
-class GGroupRef;
+class GCommunityRef;
 
 
 //------------------------------------------------------------------------------
 /**
-* The GGroupCalc class provides a representation for a generic method to compute
+* The GCommunityCalc class provides a representation for a generic method to compute
 * the description of a specific group.
 * @author Pascal Francq
 * @short Generic Group Computing Method.
 */
-class GGroupCalc : public GPlugin<GFactoryGroupCalc>
+class GCommunityCalc : public GPlugin<GFactoryCommunityCalc>
 {
 public:
 
@@ -71,28 +71,28 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plugin.
 	*/
-	GGroupCalc(GFactoryGroupCalc* fac);
+	GCommunityCalc(GFactoryCommunityCalc* fac);
 
 	/**
 	* Compute a group.
 	* @param grp            Reference to the group to compute.
 	*/
-	virtual void Compute(GGroup* grp)=0;
+	virtual void Compute(GCommunity* grp)=0;
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GGroupCalc(void);
+	virtual ~GCommunityCalc(void);
 };
 
 
 //------------------------------------------------------------------------------
 /*
-* The GFactoryGroupCalc represent a factory for a given group computing method.
+* The GFactoryCommunityCalc represent a factory for a given group computing method.
 * @author Pascal Francq
 * @short Generic Grouping Computing Factory.
 */
-class GFactoryGroupCalc : public GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>
+class GFactoryCommunityCalc : public GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>
 {
 public:
 
@@ -102,37 +102,37 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryGroupCalc(GGroupCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryGroupCalc,GGroupCalc,GGroupCalcManager>(mng,n,f) {}
+	GFactoryCommunityCalc(GCommunityCalcManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>(mng,n,f) {}
 };
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GGroupCalcManager class provides a representation for a manager
+* The GCommunityCalcManager class provides a representation for a manager
 * responsible to manage all the group computing methods.
 * @author Pascal Francq
 * @short Group Comuting Methods Manager.
 */
-class GGroupCalcManager : public GPluginManager<GGroupCalcManager,GFactoryGroupCalc,GGroupCalc>
+class GCommunityCalcManager : public GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>
 {
 public:
 
 	/**
 	* Construct the group computing method manager.
 	*/
-	GGroupCalcManager(void);
+	GCommunityCalcManager(void);
 
 	/**
 	* Destructor of the group computing methods manager.
 	*/
-	virtual ~GGroupCalcManager(void);
+	virtual ~GCommunityCalcManager(void);
 };
 
 
 //------------------------------------------------------------------------------
-#define CREATE_GROUPCALC_FACTORY(name,plugin)\
-	CREATE_FACTORY(GGroupCalcManager,GFactoryGroupCalc,GGroupCalc,plugin,"GroupCalc",API_GROUPCALC_VERSION,name)
+#define CREATE_COMMUNITYCALC_FACTORY(name,plugin)\
+	CREATE_FACTORY(GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc,plugin,"CommunityCalc",API_COMMUNITYCALC_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -63,7 +63,7 @@ public:
 	bool Used;                                              // Determine if the subject is used.
 	R::RContainer<GDoc,false,true> Docs;                    // Documents attached to this subject.
 	R::RContainer<GProfile,false,true> Profiles;            // Profiles attached to this subject.
-	R::RContainer<GGroup,false,true> Groups;                // Groups attached to this subject.
+	R::RContainer<GCommunity,false,true> Groups;                // Groups attached to this subject.
 
 	Intern(unsigned int id,const char* name,bool u) :
 	 Id(id), Name(name), Used(u), Docs(1000,500), Profiles(10,5), Groups(10,5)
@@ -156,16 +156,16 @@ bool GSubject::IsIn(GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::InsertGroup(GGroup* grp)
+void GSubject::InsertGroup(GCommunity* grp)
 {
 	Data->Groups.InsertPtr(grp);
 }
 
 
 //------------------------------------------------------------------------------
-RCursor<GGroup> GSubject::GetGroups(void) const
+RCursor<GCommunity> GSubject::GetGroups(void) const
 {
-	return(RCursor<GGroup>(Data->Groups));
+	return(RCursor<GCommunity>(Data->Groups));
 }
 
 
@@ -205,7 +205,7 @@ size_t GSubject::GetNbTopicsDocs(void) const
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbProfiles(const GGroup* grp) const
+size_t GSubject::GetNbProfiles(const GCommunity* grp) const
 {
 	size_t tot(0);
 	RCursor<GProfile> Prof(Data->Profiles);

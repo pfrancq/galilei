@@ -82,7 +82,12 @@ void GSignalHandler::Event(GProfile*, tEvent)
 
 
 //------------------------------------------------------------------------------
-void GSignalHandler::Event(GGroup*, tEvent)
+void GSignalHandler::Event(GCommunity*, tEvent)
+{
+}
+
+//------------------------------------------------------------------------------
+void GSignalHandler::Event(GTopic*, tEvent)
 {
 }
 

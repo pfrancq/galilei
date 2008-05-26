@@ -70,15 +70,15 @@ using namespace R;
 #include <gprofilecalc.h>
 #include <gpreprofile.h>
 #include <gpostprofile.h>
-#include <ggroup.h>
-#include <ggrouping.h>
-#include <ggroupcalc.h>
+#include <gcommunity.h>
+#include <ggroupprofiles.h>
+#include <gcommunitycalc.h>
 #include <gsubjects.h>
 #include <gfilter.h>
 #include <gpostdoc.h>
 #include <gweightinfo.h>
-#include <ggroupshistory.h>
-#include <gpostgroup.h>
+#include <gcommunitieshistory.h>
+#include <gpostcommunity.h>
 #include <ggalileiapp.h>
 #include <gdebugobject.h>
 using namespace GALILEI;
@@ -148,7 +148,7 @@ class GSession::Intern
 {
 public:
 	GSubjects* Subjects;                                              // Subjects.
-	GGroupsHistoryManager* GroupsHistoryMng;                          // Historic group manager
+	GCommunitiesHistoryManager* CommunitiesHistoryMng;                // Historic group manager
 	int CurrentRandom;                                                // Current seek for this session.
 	R::RRandom* Random;                                               // Random number generator
 	GStorage* Storage;                                                // Storage manager
@@ -161,7 +161,7 @@ public:
 	RContainer<GDocRefURL,true,true> DocsRefUrl;                      // Documents ordered by URL.
 	RContainer<GUser,true,true> Users;                                // Users handled by the system.
 	RContainer<GProfile,true,true> Profiles;                          // Profiles handled by the system.
-	RContainer<GGroup,true,true> Groups;	                          // Groups handled by the system.
+	RContainer<GCommunity,true,true> Groups;	                          // Groups handled by the system.
 	RContainer<GConceptType,true,true> ConceptTypes;                  // Types of Concepts
 	RContainer<GRelationType,true,true> RelationTypes;                // Types of Relations
 	RContainer<GDebugObject,false,true> DebugObjs;                    // Objects given debugging information.
@@ -171,7 +171,7 @@ public:
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager
 	
 	Intern(GStorage* str,unsigned int mdocs,unsigned int maxsub,unsigned int maxgroups,unsigned int d,unsigned int u,unsigned int p,unsigned int nblangs)
-		: Subjects(0), GroupsHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
+		: Subjects(0), CommunitiesHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
 		  Users(u,u/2), Profiles(p,p/2), Groups(100),
 		  ConceptTypes(10,5), RelationTypes(10,5), DebugObjs(100,100),
@@ -185,7 +185,7 @@ public:
 	{
 		delete Random;
 		delete Subjects;
-		delete GroupsHistoryMng;
+		delete CommunitiesHistoryMng;
 		Session=0;
 		ExternBreak=false;
 	}
@@ -266,15 +266,15 @@ void GSession::ForceReCompute(tObjType type)
 			if(Data->SaveResults)
 				Data->Storage->Clear(otProfile);
 		}
-		case otGroup:
+		case otCommunity:
 		{
 			// Delete the groups
 			RCursor<GConceptType> Types(Data->ConceptTypes);
 			for(Types.Start();!Types.End();Types.Next())
-				Types()->Clear(otGroup);			
+				Types()->Clear(otCommunity);			
 			Data->Groups.Clear();
 			if(Data->SaveResults)
-				Data->Storage->Clear(otGroup);
+				Data->Storage->Clear(otCommunity);
 			break;		
 		}
 		default:
@@ -295,7 +295,7 @@ void GSession::ReInit(void)
 	RCursor<GConceptType> Types(Data->ConceptTypes);
 	for(Types.Start();!Types.End();Types.Next())
 	{
-		Types()->Clear(otGroup);
+		Types()->Clear(otCommunity);
 		Types()->Clear(otProfile);
 	}
 
@@ -363,11 +363,11 @@ void GSession::SetSaveResults(bool save)
 
 
 //------------------------------------------------------------------------------
-GGroupsHistoryManager* GSession::GetGroupsHistoryManager(void) const
+GCommunitiesHistoryManager* GSession::GetCommunitiesHistoryManager(void) const
 {
-	if(!Data->GroupsHistoryMng)
-		const_cast<GSession*>(this)->Data->GroupsHistoryMng=new GGroupsHistoryManager(const_cast<GSession*>(this),20);
-	return(Data->GroupsHistoryMng);
+	if(!Data->CommunitiesHistoryMng)
+		const_cast<GSession*>(this)->Data->CommunitiesHistoryMng=new GCommunitiesHistoryManager(const_cast<GSession*>(this),20);
+	return(Data->CommunitiesHistoryMng);
 }
 
 
@@ -1303,14 +1303,14 @@ void GSession::ClearFdbks(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-RCursor<GGroup> GSession::GetGroups(void)
+RCursor<GCommunity> GSession::GetCommunities(void)
 {
-	return(RCursor<GGroup>(Data->Groups));
+	return(RCursor<GCommunity>(Data->Groups));
 }
 
 
 //------------------------------------------------------------------------------
-size_t GSession::GetNbGroups(void) const
+size_t GSession::GetNbCommunities(void) const
 {
 	return(Data->Groups.GetNb());
 }
@@ -1318,7 +1318,7 @@ size_t GSession::GetNbGroups(void) const
 
 
 //------------------------------------------------------------------------------
-GGroup* GSession::GetGroup(unsigned int id,bool load,bool null) const
+GCommunity* GSession::GetCommunity(unsigned int id,bool load,bool null) const
 {
 	if(id==cNoRef)
 	{
@@ -1326,7 +1326,7 @@ GGroup* GSession::GetGroup(unsigned int id,bool load,bool null) const
 			return(0);
 		throw GException("Unknown group "+RString::Number(id));
 	}
-	GGroup* grp=Data->Groups.GetPtr(id);
+	GCommunity* grp=Data->Groups.GetPtr(id);
 	if(grp)
 		return(grp);
 		
@@ -1339,7 +1339,7 @@ GGroup* GSession::GetGroup(unsigned int id,bool load,bool null) const
 		else
 			throw GException("Unknown group "+RString::Number(id));
 	}
-	grp=Data->Storage->LoadGroup(id);
+	grp=Data->Storage->LoadCommunity(id);
 	if(!grp)
 	{
 		if(null)
@@ -1347,93 +1347,93 @@ GGroup* GSession::GetGroup(unsigned int id,bool load,bool null) const
 		else
 			throw GException("Unknown group "+RString::Number(id));
 	}
-	const_cast<GSession*>(this)->InsertGroup(grp);
+	const_cast<GSession*>(this)->InsertCommunity(grp);
 	return(grp);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::AssignId(GGroup* grp)
+void GSession::AssignId(GCommunity* com)
 {
 	// If all groups are not in memory -> use the database
 	if(!Data->Storage->IsAllInMemory())
 	{
-		Data->Storage->AssignId(grp);
+		Data->Storage->AssignId(com);
 		return;
 	}
 
 	// The first group has the identificator 1
 	if(Data->Groups.GetNb())
-		grp->SetId(Data->Groups[Data->Groups.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first group has an identificator of 1
+		com->SetId(Data->Groups[Data->Groups.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first group has an identificator of 1
 	else
-		grp->SetId(1);
+		com->SetId(1);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertGroup(GGroup* grp)
+void GSession::InsertCommunity(GCommunity* com)
 {
-	Data->Groups.InsertPtr(grp);
+	Data->Groups.InsertPtr(com);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::DeleteGroup(GGroup* grp)
+void GSession::DeleteCommunity(GCommunity* com)
 {
-	Data->Groups.DeletePtr(grp);
+	Data->Groups.DeletePtr(com);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::ClearGroups(void)
+void GSession::ClearCommunities(void)
 {
 	Data->Groups.Clear();
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::GroupingProfiles(GSlot* rec)
+void GSession::GroupProfiles(GSlot* rec)
 {
-	GGrouping* Grouping=GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod();
+	GGroupProfiles* Grouping=GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod();
 
-	// Verify that there is a method to cluster the subprofile
+	// Verify that there is a method to cluster the profile
 	if(!Grouping)
-		throw GException("No grouping method chosen.");
+		throw GException("No profiles grouping method chosen.");
 
-    // Group the subprofiles
+    // Group the profiles
 	Grouping->Grouping(rec,Data->SaveResults);
-	DoPostGroups(rec);
+	DoPostCommunity(rec);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::DoPostGroups(GSlot* rec)
+void GSession::DoPostCommunity(GSlot* rec)
 {
-	// Run all post-group methods that are enabled
-	R::RCursor<GPostGroup> PostGroups=GALILEIApp->GetManager<GPostGroupManager>("PostGroup")->GetPlugIns();
-	for(PostGroups.Start();!PostGroups.End();PostGroups.Next())
+	// Run all post-community methods that are enabled
+	R::RCursor<GPostCommunity> PostCommunity=GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->GetPlugIns();
+	for(PostCommunity.Start();!PostCommunity.End();PostCommunity.Next())
 	{
 		if(rec)
 			rec->Interact();
 		if(Intern::ExternBreak) return;
 		if(rec)
-			rec->WriteStr("Post-group method : "+PostGroups()->GetFactory()->GetName());
-		PostGroups()->Run();
+			rec->WriteStr("Post-community method : "+PostCommunity()->GetFactory()->GetName());
+		PostCommunity()->Run();
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::CopyIdealGroups(void)
+void GSession::CopyIdealCommunities(void)
 {
-	GGroup* grp;
-	GGroupCalc* CalcDesc;
+	GCommunity* grp;
+	GCommunityCalc* CalcDesc;
 
 	// Get current grouping description method
-	CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
+	CalcDesc=GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod();
 
 	// Clear current clustering
-	ClearGroups();
+	ClearCommunities();
 		
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(GetSubjects()->GetNodes());
@@ -1447,15 +1447,15 @@ void GSession::CopyIdealGroups(void)
 			continue;
 
 		// Create a new group in groups and associated with the current groups
-		grp=new GGroup(cNoRef,true,RDate(""),RDate(""));
+		grp=new GCommunity(cNoRef,RDate(""),RDate(""));
 		AssignId(grp);
-		InsertGroup(grp);
+		InsertCommunity(grp);
 		Grps()->InsertGroup(grp);
 
 		// Go through each subprofile
 		RCursor<GProfile> Prof=Grps()->GetProfiles();
 		for(Prof.Start();!Prof.End();Prof.Next())
-			grp->InsertProfile(Prof());
+			grp->InsertObj(Prof());
 
 		// Compute Description
 		if(CalcDesc)
@@ -1464,8 +1464,8 @@ void GSession::CopyIdealGroups(void)
 	
 	if(Data->SaveResults)
 	{
-		Data->Storage->SaveGroups();
-		RCursor<GGroup> Groups(Data->Groups);
+		Data->Storage->SaveCommunities();
+		RCursor<GCommunity> Groups(Data->Groups);
 		for(Groups.Start();!Groups.End();Groups.Next())
 			Groups()->SetState(osSaved);
 	}
@@ -1473,44 +1473,44 @@ void GSession::CopyIdealGroups(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::LoadHistoricGroupsById(unsigned int mingen, unsigned int maxgen)
+void GSession::LoadHistoricCommunitiesById(unsigned int mingen, unsigned int maxgen)
 {
 	unsigned int i;
 
 	// fill the container
 	for (i=mingen; i<maxgen+1; i++)
-		Data->GroupsHistoryMng->InsertGroupsHistory(Data->Storage->LoadAnHistoricGroups(i));
+		Data->CommunitiesHistoryMng->InsertCommunitiesHistory(Data->Storage->LoadHistoricCommunities(i));
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::LoadHistoricGroupsByDate(RString mindate,RString maxdate)
+void GSession::LoadHistoricCommunitiesByDate(RString mindate,RString maxdate)
 {
-	Data->Storage->LoadHistoricGroupsByDate(mindate,maxdate);
+	Data->Storage->LoadHistoricCommunitiesByDate(mindate,maxdate);
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::UpdateGroup(GProfile* prof)
+void GSession::UpdateCommunity(GProfile* prof)
 {
 	if(prof&&(prof->GetGroupId()!=cNoRef))
 	{
-		GGroup* grp=GetGroup(prof->GetGroupId(),false);
+		GCommunity* grp=GetCommunity(prof->GetGroupId(),false);
 		if(grp)
 			grp->HasUpdate(prof);
 	}
 
 	// Use database
 	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
-		Data->Storage->UpdateGroups(prof->GetId());		
+		Data->Storage->UpdateCommunities(prof->GetId());		
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::UpdateGroup(size_t profid)
+void GSession::UpdateCommunity(size_t profid)
 {	
 	GProfile* prof=GetProfile(profid,false,false);
-	UpdateGroup(prof);
+	UpdateCommunity(prof);
 }
 
 

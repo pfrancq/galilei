@@ -48,7 +48,7 @@ using namespace GALILEI;
 GSugs::GSugs(tObjType type,unsigned int id,unsigned int max)
 	: Type(type), Id(id), Docs(max)
 {
-	if((Type!=otProfile)&&(Type!=otGroup))
+	if((Type!=otProfile)&&(Type!=otCommunity))
 		throw GException("Suggestions only for profiles or groups");
 }
 

@@ -71,9 +71,9 @@ using namespace GALILEI;
 #include <gfilter.h>
 #include <gengine.h>
 #include <gmetaengine.h>
-#include <ggroupcalc.h>
-#include <ggrouping.h>
-#include <gpostgroup.h>
+#include <gcommunitycalc.h>
+#include <ggroupprofiles.h>
+#include <gpostcommunity.h>
 #include <gprofilecalc.h>
 #include <gpostprofile.h>
 #include <gpreprofile.h>
@@ -107,9 +107,9 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GFilterManager());
 	InsertPtr(new GEngineManager());
 	InsertPtr(new GMetaEngineManager());
-	InsertPtr(new GGroupCalcManager());
-	InsertPtr(new GGroupingManager());
-	InsertPtr(new GPostGroupManager());
+	InsertPtr(new GCommunityCalcManager());
+	InsertPtr(new GGroupProfilesManager());
+	InsertPtr(new GPostCommunityManager());
 	InsertPtr(new GProfileCalcManager());
 	InsertPtr(new GPreProfileManager());
 	InsertPtr(new GPostProfileManager());

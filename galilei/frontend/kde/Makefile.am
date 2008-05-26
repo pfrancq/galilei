@@ -10,11 +10,11 @@ libgalileikde_la_METASOURCES = AUTO
 
 galileikdeincludedir = $(includedir)/galilei
 galileikdeinclude_HEADERS = qgprofile.h  qgdocxml.h qgmeasure2elementsdlg.h \
-		qlistviewitemtype.h qggroupshistory.h
+		qlistviewitemtype.h qgcommunitieshistory.h
 libgalileikde_la_LIBADD = ../../libgalilei.la $(LIB_KIO) $(LIBKDE_R)
 libgalileikde_la_LDFLAGS     = -no-undefined -version-info 2:0:0
 libgalileikde_la_SOURCES =  qgprofile.cpp qgdocxml.cpp  qgmeasure2elementsdlg.cpp dlgmeasure2elements.ui \
-				qlistviewitemtype.cpp qggroupshistory.cpp
+				qlistviewitemtype.cpp qgcommunitieshistory.cpp
 
 
 minipicsdir = $(kde_icondir)/hicolor/16x16/actions/

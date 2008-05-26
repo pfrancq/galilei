@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	QGGroupsHistory.h
+	QGCommunitiesHistory.h
 
 	Widget to show the groups history - Header.
 
@@ -32,8 +32,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef QGGroupsHistoryH
-#define QGGroupsHistoryH
+#ifndef QGCommunitiesHistoryH
+#define QGCommunitiesHistoryH
 
 
 
@@ -55,11 +55,11 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The QGGroupsHistory class provides a widget to show a given groupement of the GA.
+* The QGCommunitiesHistory class provides a widget to show a given groupement of the GA.
 * @author Pascal Francq
 * @short GA Groups Widget.
 */
-class QGGroupsHistory  :  public QListView
+class QGCommunitiesHistory  :  public QListView
 {
 
 	Q_OBJECT
@@ -82,7 +82,7 @@ public:
 	* @param grps           Groups to display.
 	* @param name           Name of the widget.
 	*/
-	QGGroupsHistory(QWidget* parent,GGroupsHistory* grps, const char* name=0);
+	QGCommunitiesHistory(QWidget* parent,GCommunitiesHistory* grps, const char* name=0);
 
 	/**
 	* The widget has changed and has to be repainted.
@@ -93,7 +93,7 @@ public:
 	* Set the groups.
 	* @param grps           Groups to display.
 	*/
-	void setGroups(GGroupsHistory* grps);
+	void setGroups(GCommunitiesHistory* grps);
 
 protected:
 
@@ -108,7 +108,7 @@ public:
 	/**
 	* Destructor of the widget.
 	*/
-	virtual ~QGGroupsHistory(void);
+	virtual ~QGCommunitiesHistory(void);
 };
 
 

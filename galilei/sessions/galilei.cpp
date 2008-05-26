@@ -71,8 +71,8 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("user"));
 		case otProfile:
 			return(RString("profile"));
-		case otGroup:
-			return(RString("group"));
+		case otCommunity:
+			return(RString("community"));
 		case otDocProfile:
 			return(RString("document or profile"));
 		case otDocGroup:
@@ -85,6 +85,8 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("language"));
 		case otHistory:
 			return(RString("history"));
+		case otTopic:
+			return(RString("topic"));			
 	}
 	return(RString("unknow"));
 }

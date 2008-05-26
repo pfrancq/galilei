@@ -211,13 +211,13 @@ public:
 	* Get the precision of a group.
 	* @param grp            Group.
 	*/
-	double GetPrecision(GGroup* grp) const;
+	double GetPrecision(GCommunity* grp) const;
 
 	/**
 	* Get the total recall of a group.
 	* @param grp            Group.
 	*/
-	double GetRecall(GGroup* grp) const;
+	double GetRecall(GCommunity* grp) const;
 
 	/**
 	* Get the ideal group of the profile.

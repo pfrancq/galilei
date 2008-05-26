@@ -154,7 +154,7 @@ RString GConceptType::GetDebugInfo(const RString& info)
 		if(Ipf)	
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otProfile));
 		if(Igf)	
-			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otGroup));		
+			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otCommunity));		
 		str+="\n";
 	}
 	return(str);
@@ -339,7 +339,7 @@ void GConceptType::IncRef(tObjType ObjType)
 			NbRefProfiles++;
 			nb=NbRefProfiles;
 			break;
-		case otGroup:
+		case otCommunity:
 			NbRefGroups++;
 			nb=NbRefGroups;
 			break;
@@ -371,7 +371,7 @@ void GConceptType::DecRef(tObjType ObjType)
 			NbRefProfiles--;
 			nb=NbRefProfiles;
 			break;
-		case otGroup:
+		case otCommunity:
 			if(!NbRefGroups)
 				throw GException("Cannot decrease null number of references for groups");
 			NbRefGroups--;
@@ -397,7 +397,7 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 		case otProfile:
 			return(NbRefProfiles);
 			break;
-		case otGroup:
+		case otCommunity:
 			return(NbRefGroups);
 			break;
 		default:
@@ -431,7 +431,7 @@ void GConceptType::Clear(tObjType ObjType)
 		case otProfile:
 			NbRefProfiles=0;
 			break;
-		case otGroup:
+		case otCommunity:
 			NbRefGroups=0;
 			break;
 		case otDocProfile:

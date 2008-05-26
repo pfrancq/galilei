@@ -95,12 +95,19 @@ public:
 	virtual void Event(GProfile* prof, tEvent event);
 
 	/**
-	* A specific group has changed.
-	* @param group           Group.
+	* A specific community has changed.
+	* @param community       Community.
 	* @param event           Event.
 	*/
-	virtual void Event(GGroup* group, tEvent event);
-
+	virtual void Event(GCommunity* community, tEvent event);
+	
+	/**
+	* A specific topic has changed.
+	* @param topic           Topic.
+	* @param event           Event.
+	*/
+	virtual void Event(GTopic* topic, tEvent event);
+	
 	/**
 	* Destructor.
 	*/

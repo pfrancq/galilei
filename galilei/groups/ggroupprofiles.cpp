@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GGrouping.cpp
+	GGroupProfiles.cpp
 
-	Generic Grouping Method - Implementation
+	Generic Profiles Grouping Method - Implementation
 
 	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
@@ -32,10 +32,10 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggrouping.h>
+#include <ggroupprofiles.h>
 #include <glang.h>
-#include <ggroupcalc.h>
-#include <ggroup.h>
+#include <gcommunitycalc.h>
+#include <gcommunity.h>
 #include <gprofile.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
@@ -53,22 +53,22 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 //
-//  GGrouping
+//  GGroupProfiles
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGrouping::GGrouping(GFactoryGrouping* fac)
-	: GPlugin<GFactoryGrouping>(fac), Profiles(100,50)
+GGroupProfiles::GGroupProfiles(GFactoryGroupProfiles* fac)
+	: GPlugin<GFactoryGroupProfiles>(fac), Profiles(100,50)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GGrouping::Grouping(GSlot*,bool save)
+void GGroupProfiles::Grouping(GSlot*,bool save)
 {
 	// How to compute the groups
-	GGroupCalc* CalcDesc=GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod();
+	GCommunityCalc* CalcDesc=GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod();
 	Profiles.Clear();
 	RCursor<GProfile> cur(Session->GetProfiles());
 	for(cur.Start();!cur.End();cur.Next())
@@ -88,7 +88,7 @@ void GGrouping::Grouping(GSlot*,bool save)
 	// Compute the description of the groups and Save the information.
 	if(CalcDesc)
 	{
-		R::RCursor<GGroup> Groups(Session->GetGroups());
+		R::RCursor<GCommunity> Groups(Session->GetCommunities());
 		for(Groups.Start();!Groups.End();Groups.Next())
 			CalcDesc->Compute(Groups());
 	}
@@ -96,8 +96,8 @@ void GGrouping::Grouping(GSlot*,bool save)
 	// Save if necessary
 	if(save)
 	{
-		Session->GetStorage()->SaveGroups();
-		R::RCursor<GGroup> Groups(Session->GetGroups());
+		Session->GetStorage()->SaveCommunities();
+		R::RCursor<GCommunity> Groups(Session->GetCommunities());
 		for(Groups.Start();!Groups.End();Groups.Next())
 			Groups()->SetState(osSaved);
 	}	
@@ -105,7 +105,7 @@ void GGrouping::Grouping(GSlot*,bool save)
 
 
 //------------------------------------------------------------------------------
-GGrouping::~GGrouping(void)
+GGroupProfiles::~GGroupProfiles(void)
 {
 }
 
@@ -113,18 +113,18 @@ GGrouping::~GGrouping(void)
 
 //------------------------------------------------------------------------------
 //
-// class GGroupingManager
+// class GGroupProfilesManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupingManager::GGroupingManager(void)
-	: GPluginManager<GGroupingManager,GFactoryGrouping,GGrouping>("Grouping",API_GROUPING_VERSION,ptSelect)
+GGroupProfilesManager::GGroupProfilesManager(void)
+	: GPluginManager<GGroupProfilesManager,GFactoryGroupProfiles,GGroupProfiles>("GroupProfiles",API_GROUPPROFILES_VERSION,ptSelect)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GGroupingManager::~GGroupingManager(void)
+GGroupProfilesManager::~GGroupProfilesManager(void)
 {
 }

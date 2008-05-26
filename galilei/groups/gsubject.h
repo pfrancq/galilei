@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroup.h>
+#include <gcommunity.h>
 
 
 //------------------------------------------------------------------------------
@@ -133,14 +133,14 @@ public:
 	* @see GSession::CopyIdealGroups
 	* @param grp             Pointer to the group.
 	*/
-	void InsertGroup(GGroup* grp);
+	void InsertGroup(GCommunity* grp);
 
 	/**
 	* Get a cursor over the groups of the subject. This method can only be
 	* used when the current clustering becomes the ideal one.
 	* @see GSession::CopyIdealGroups
 	*/
-	R::RCursor<GGroup> GetGroups(void) const;
+	R::RCursor<GCommunity> GetGroups(void) const;
 
 	/**
 	* Clear the groups. This method can only be used when the current
@@ -165,7 +165,7 @@ public:
 	* current one.
 	* @param grp             Group.
 	*/
-	size_t GetNbProfiles(const GGroup* grp) const;
+	size_t GetNbProfiles(const GCommunity* grp) const;
 
 	/**
 	* Compute the number of documents of a given container that are also in the

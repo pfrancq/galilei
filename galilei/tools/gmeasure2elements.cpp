@@ -536,9 +536,9 @@ void GMeasure2Elements::Event(GProfile* prof, tEvent event)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Event(GGroup* grp, tEvent event)
+void GMeasure2Elements::Event(GCommunity* grp, tEvent event)
 {
-	if((!Memory)||(ObjsType!=otGroup))
+	if((!Memory)||(ObjsType!=otCommunity))
 		return;
 	UpdateElement(grp,event);
 }

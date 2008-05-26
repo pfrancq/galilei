@@ -113,6 +113,16 @@ protected:
 	*/
 	unsigned int OwnerId;
 
+	/**
+	* Identificator of the corresponding group.
+	*/
+	unsigned int GroupId;
+
+	/**
+	* Date of the attachment of the document into the group.
+	*/
+	R::RDate Attached;
+
 public:
 
 	/**
@@ -126,7 +136,7 @@ public:
 	* @param a               Date of the last analysis.
 	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,unsigned int id,GLang* lang,const R::RString&  mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid=0);
+	GDoc(const R::RURI& url,const R::RString& name,unsigned int id,GLang* lang,const R::RString& mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid=0);
 
 	/**
 	* Compare two documents by comparing their identificator.
@@ -239,6 +249,17 @@ public:
 	* @return unsigned int.
 	*/
 	unsigned int GetOwnerId(void) const {return(OwnerId);}
+
+	/**
+	* Get the group holding the document.
+	*/
+	unsigned int GetGroupId(void) const {return(GroupId);}
+
+	/**
+	* Set the group holding the document.
+	* @param groupid         Identificator of the group.
+	*/
+	void SetGroup(unsigned int groupid);
 
 	/**
 	* Get a cursor on the identificator of the profiles which have assesses the

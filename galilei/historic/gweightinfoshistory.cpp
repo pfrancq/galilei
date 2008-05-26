@@ -83,7 +83,7 @@ unsigned int GWeightInfosHistory::GetId(void) const
 
 
 //------------------------------------------------------------------------------
-void GWeightInfosHistory::SetParent(GGroupHistory* p)
+void GWeightInfosHistory::SetParent(GCommunityHistory* p)
 {
 	Parent=p;
 }

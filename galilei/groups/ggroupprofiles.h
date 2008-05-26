@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GGrouping.h
+	GGroupProfiles.h
 
-	Generic Grouping Method - Header.
+	Generic Profiles Grouping Method - Header.
 
 	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
@@ -31,8 +31,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GGroupingH
-#define GGroupingH
+#ifndef GGroupProfilesH
+#define GGroupProfilesH
 
 
 //------------------------------------------------------------------------------
@@ -49,17 +49,17 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_GROUPING_VERSION "2"
+#define API_GROUPPROFILES_VERSION "2"
 
 
 //------------------------------------------------------------------------------
 /**
-* The GGrouping provides a representation for a generic method to group some
-* subprofiles.
+* The GGroupProfiles provides a representation for a generic method to group some
+* profiles.
 * @author Pascal Francq
-* @short Generic Grouping Method.
+* @short Generic Profiles Grouping Method.
 */
-class GGrouping : public GPlugin<GFactoryGrouping>
+class GGroupProfiles : public GPlugin<GFactoryGroupProfiles>
 {
 protected:
 
@@ -71,43 +71,42 @@ protected:
 public:
 
 	/**
-	* Constructor of the grouping method.
+	* Constructor of the profiles grouping method.
 	* @param fac             Factory of the plugin.
 	*/
-	GGrouping(GFactoryGrouping* fac);
+	GGroupProfiles(GFactoryGroupProfiles* fac);
 
 protected:
 
 	/**
-	* Make the grouping for a specific Language. SubProfiles contains all the
-	* subprofiles for a given language. This variables must be set before
-	* calling this function. This is done by the Grouping method.
+	* Make the grouping for the defined profiles.
 	*/
 	virtual void Run(void)=0;
 
 public:
 
 	/**
-	* Make the groups.
+	* Group the Profiles.
 	* @param rec            Receiver of the signals.
 	* @param save           Save modified elements.
 	*/
 	void Grouping(GSlot* rec,bool save);
 
 	/**
-	* Destructor of tghe grouping method.
+	* Destructor of the profiles grouping method.
 	*/
-	virtual ~GGrouping(void);
+	virtual ~GGroupProfiles(void);
 };
 
 
 //------------------------------------------------------------------------------
 /*
-* The GFactoryGrouping represent a factory for a given grouping method.
+* The GFactoryGroupProfiles represent a factory for a given profiles grouping
+* method.
 * @author Pascal Francq
-* @short Generic Grouping Factory.
+* @short Generic Profiles Grouping Factory.
 */
-class GFactoryGrouping : public GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>
+class GFactoryGroupProfiles : public GFactoryPlugin<GFactoryGroupProfiles,GGroupProfiles,GGroupProfilesManager>
 {
 public:
 
@@ -117,37 +116,37 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryGrouping(GGroupingManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryGrouping,GGrouping,GGroupingManager>(mng,n,f) {}
+	GFactoryGroupProfiles(GGroupProfilesManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryGroupProfiles,GGroupProfiles,GGroupProfilesManager>(mng,n,f) {}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* The GGroupingManager class provides a representation for a manager
-* responsible to manage all the grouping methods.
+* The GGroupProfilesManager class provides a representation for a manager
+* responsible to manage all the profiles grouping methods.
 * @author Pascal Francq
-* @short Grouping Methods Manager.
+* @short Profiles Grouping Methods Manager.
 */
-class GGroupingManager : public GPluginManager<GGroupingManager,GFactoryGrouping,GGrouping>
+class GGroupProfilesManager : public GPluginManager<GGroupProfilesManager,GFactoryGroupProfiles,GGroupProfiles>
 {
 public:
 
 	/**
-	* Construct the grouping methods manager.
+	* Construct the profiles grouping methods manager.
 	*/
-	GGroupingManager(void);
+	GGroupProfilesManager(void);
 
 	/**
-	* Destructor of a grouping methods manager.
+	* Destructor of a profiles grouping methods manager.
 	*/
-	virtual ~GGroupingManager(void);
+	virtual ~GGroupProfilesManager(void);
 };
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_GROUPING_FACTORY(name,plugin)\
-	CREATE_FACTORY(GGroupingManager,GFactoryGrouping,GGrouping,plugin,"Grouping",API_GROUPING_VERSION,name)
+#define CREATE_GROUPPROFILES_FACTORY(name,plugin)\
+	CREATE_FACTORY(GGroupProfilesManager,GFactoryGroupProfiles,GGroupProfiles,plugin,"GroupProfiles",API_GROUPPROFILES_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

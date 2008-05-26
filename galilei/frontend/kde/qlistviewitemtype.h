@@ -49,8 +49,8 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 // foward class declaration
-class GGroup;
-class GGroupHistory;
+class GCommunity;
+class GCommunityHistory;
 class GUser;
 class GProfile;
 class GWeightInfosHistory;
@@ -76,11 +76,11 @@ public:
 	*/
 	union
 	{
-		GGroup* Group;
+		GCommunity* Group;
 		GUser* User;
 		GProfile* Profile;
 		GWeightInfosHistory* Giwwh;
-		GGroupHistory* GroupHistory;
+		GCommunityHistory* GroupHistory;
 		GDoc* Doc;
 		GEngineDoc* EngineDoc;
 		GSubject* Subject;
@@ -126,12 +126,12 @@ public:
 	/**
 	* constructor for a group, attached to a listview.
 	*/
-	QListViewItemType(GGroup* group, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+	QListViewItemType(GCommunity* group, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 	
 	/**
 	* constructor for a group, attached to a listviewitem.
 	*/
-	QListViewItemType(GGroup* group, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+	QListViewItemType(GCommunity* group, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
 	* constructor for a subject, attached to a listviewitem.
@@ -161,12 +161,12 @@ public:
 	/**
 	* constructor for a historic group, attached to a listview.
 	*/
-	QListViewItemType(GGroupHistory* grouphistory, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
+	QListViewItemType(GCommunityHistory* grouphistory, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
 	* constructor for a historic group, attached to a listviewitem.
 	*/
-	QListViewItemType(GGroupHistory* grouphistory, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
+	QListViewItemType(GCommunityHistory* grouphistory, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
 	* constructor for a doc, attached to a listviewitem.

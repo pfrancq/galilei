@@ -129,6 +129,15 @@ void GDoc::LoadInfos(void) const
 
 
 //------------------------------------------------------------------------------
+void GDoc::SetGroup(unsigned int groupid)
+{
+	GroupId=groupid;
+	if(GroupId!=cNoRef)
+		Attached.SetToday();
+}
+
+
+//------------------------------------------------------------------------------
 void GDoc::SetName(const R::RString& name)
 {
 	Name=name;

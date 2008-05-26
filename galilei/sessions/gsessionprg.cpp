@@ -39,8 +39,8 @@
 // include files for GALILEI
 #include <gsessionprg.h>
 #include <glang.h>
-#include <ggrouping.h>
-#include <ggroupcalc.h>
+#include <ggroupprofiles.h>
+#include <gcommunitycalc.h>
 #include <gsubjects.h>
 #include <gprofilecalc.h>
 #include <glinkcalc.h>
@@ -155,10 +155,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-class GGroupProfilesI : public GSM
+class GCommunityProfilesI : public GSM
 {
 public:
-	GGroupProfilesI(GPrgClassSession* o) : GSM("GroupProfiles","Group the (sub)profiles.",o) {}
+	GCommunityProfilesI(GPrgClassSession* o) : GSM("GroupProfiles","Group the (sub)profiles.",o) {}
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
@@ -484,7 +484,7 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tru
 
 
 //------------------------------------------------------------------------------
-void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GCommunityProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
 {
 	RString tmp;
 	if(args->GetNb()>1)
@@ -495,14 +495,14 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,
 		tmp="Group Profiles with current method";
 	o->WriteStr(tmp);
 	if(args->GetNb()==1)
-		GALILEIApp->GetManager<GGroupingManager>("Grouping")->SetCurrentMethod((*args)[0]->GetValue(prg));
-	if(!GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod())
+		GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->SetCurrentMethod((*args)[0]->GetValue(prg));
+	if(!GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod())
 		throw RException (" No Grouping Method chosen.");
-	GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()->ApplyConfig();
-	if(!GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod())
+	GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod()->ApplyConfig();
+	if(!GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod())
 		throw RException (" No Group Description Method chosen.");
-	GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GroupingProfiles(dynamic_cast<GSlot*>(o));
+	GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod()->ApplyConfig();
+	Owner->Session->GroupProfiles(dynamic_cast<GSlot*>(o));
 }
 
 
@@ -589,11 +589,11 @@ void GSetComputingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,tru
 //------------------------------------------------------------------------------
 void GSetGroupingParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
 {
-	GGrouping* calc;
+	GGroupProfiles* calc;
 
 	if(args->GetNb()!=2)
 		throw RException("Method needs two parameters.");
-	calc=GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod();
+	calc=GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod();
 	if(!calc)
 		throw RException("No grouping computing method selected.");
 	calc->GetFactory()->Set((*args)[0]->GetValue(prg),(*args)[1]->GetValue(prg));
@@ -647,9 +647,9 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 		rec->WriteStr("Group Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	GALILEIApp->GetManager<GGroupingManager>("Grouping")->GetCurrentMethod()->ApplyConfig();
-	GALILEIApp->GetManager<GGroupCalcManager>("GroupCalc")->GetCurrentMethod()->ApplyConfig();
-	Owner->Session->GroupingProfiles(rec);
+	GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod()->ApplyConfig();
+	GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod()->ApplyConfig();
+	Owner->Session->GroupProfiles(rec);
 
 	// Compare Ideal
 	if(rec)
@@ -951,7 +951,7 @@ void GForceReComputeI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,f
 	if(objects=="Doc")
 		type=otDoc;
 	if(objects=="Group")
-		type=otGroup;
+		type=otCommunity;
 	Owner->Session->ForceReCompute(type);
 }
 
@@ -1006,7 +1006,7 @@ GPrgClassSession::GPrgClassSession(GSession* s)
 	Methods.InsertPtr(new GLogI(this));
 	Methods.InsertPtr(new GSqlI(this));
 	Methods.InsertPtr(new GComputeProfilesI(this));
-	Methods.InsertPtr(new GGroupProfilesI(this));
+	Methods.InsertPtr(new GCommunityProfilesI(this));
 	Methods.InsertPtr(new GCreateIdealI(this));
 	Methods.InsertPtr(new GFdbksCycleI(this));
 	Methods.InsertPtr(new GCompareIdealI(this));

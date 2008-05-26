@@ -96,7 +96,7 @@ GALILEI::QListViewItemType::QListViewItemType(GUser* user, QListView* parent,QSt
 
 
 //-----------------------------------------------------------------------------
-GALILEI::QListViewItemType::QListViewItemType(GGroup* group, QListView* parent,QString str1,QString str2,QString str3)
+GALILEI::QListViewItemType::QListViewItemType(GCommunity* group, QListView* parent,QString str1,QString str2,QString str3)
 	: QListViewItem(parent,str1,str2,str3), Type(tGroup)
 {
 	Obj.Group=group;
@@ -105,7 +105,7 @@ GALILEI::QListViewItemType::QListViewItemType(GGroup* group, QListView* parent,Q
 
 
 //-----------------------------------------------------------------------------
-GALILEI::QListViewItemType::QListViewItemType(GGroup* group, QListViewItem* parent,QString str1,QString str2,QString str3)
+GALILEI::QListViewItemType::QListViewItemType(GCommunity* group, QListViewItem* parent,QString str1,QString str2,QString str3)
 	: QListViewItem(parent,str1,str2,str3), Type(tGroup)
 {
 	Obj.Group=group;
@@ -159,7 +159,7 @@ GALILEI::QListViewItemType::QListViewItemType(GWeightInfosHistory* giwwh, QListV
 
 
 //-----------------------------------------------------------------------------
-GALILEI::QListViewItemType::QListViewItemType(GGroupHistory* grouphistory, QListView* parent,QString str1,QString str2,QString str3,QString str4)
+GALILEI::QListViewItemType::QListViewItemType(GCommunityHistory* grouphistory, QListView* parent,QString str1,QString str2,QString str3,QString str4)
 	: QListViewItem(parent,str1,str2,str3,str4), Type(tGroupHistory)
 {
 	Obj.GroupHistory=grouphistory;
@@ -168,7 +168,7 @@ GALILEI::QListViewItemType::QListViewItemType(GGroupHistory* grouphistory, QList
 
 
 //-----------------------------------------------------------------------------
-GALILEI::QListViewItemType::QListViewItemType(GGroupHistory* grouphistory, QListViewItem* parent,QString str1,QString str2,QString str3,QString str4)
+GALILEI::QListViewItemType::QListViewItemType(GCommunityHistory* grouphistory, QListViewItem* parent,QString str1,QString str2,QString str3,QString str4)
 	: QListViewItem(parent,str1,str2,str3, str4), Type(tGroupHistory)
 {
 	Obj.GroupHistory=grouphistory;

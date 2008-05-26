@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GPostGroup.cpp
+	GCommunityCalc.cpp
 
-	Generic Post-Group Computing Method - Implementation.
+	Generic Group Description Computing Method - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
-		Vandaele Valery(vavdaele@ulb.ac.be).
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpostgroup.h>
+#include <gcommunitycalc.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -40,19 +40,19 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GPostGroup
+//  GCommunityCalc
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostGroup::GPostGroup(GFactoryPostGroup* fac)
-	: GPlugin<GFactoryPostGroup>(fac)
+GCommunityCalc::GCommunityCalc(GFactoryCommunityCalc* fac)
+	: GPlugin<GFactoryCommunityCalc>(fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GPostGroup::~GPostGroup(void)
+GCommunityCalc::~GCommunityCalc(void)
 {
 }
 
@@ -60,18 +60,18 @@ GPostGroup::~GPostGroup(void)
 
 //------------------------------------------------------------------------------
 //
-// class GPostGroupManager
+// class GCommunityCalcManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostGroupManager::GPostGroupManager(void)
-	: GPluginManager<GPostGroupManager,GFactoryPostGroup,GPostGroup>("PostGroup",API_POSTGROUP_VERSION,ptOrdered)
+GCommunityCalcManager::GCommunityCalcManager(void)
+	: GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>("CommunityCalc",API_COMMUNITYCALC_VERSION,ptSelect)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GPostGroupManager::~GPostGroupManager(void)
+GCommunityCalcManager::~GCommunityCalcManager(void)
 {
 }

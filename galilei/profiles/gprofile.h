@@ -336,12 +336,12 @@ public:
 	bool MustCompute(void) const;
 	
 	/**
-	* Get the group holding the subprofile.
+	* Get the group holding the profile.
 	*/
 	unsigned int GetGroupId(void) const {return(GroupId);}
 
 	/**
-	* Set the group holding the subprofile.
+	* Set the group holding the profile.
 	* @param groupid         Identificator of the group.
 	*/
 	void SetGroup(unsigned int groupid);

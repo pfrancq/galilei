@@ -50,21 +50,21 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 //
-//  GGroupId
+//  GCommunityId
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GGroupId
+class GCommunityId
 {
 public:
 	int GrpId;       // Group Identificator.
 	int position;    // Position of the group.
 
 	// Constructor and Compare methods.
-	GGroupId(int RealId,int Position) : GrpId(RealId), position(Position) {}
+	GCommunityId(int RealId,int Position) : GrpId(RealId), position(Position) {}
 	int Compare(const int ID) const {return(GrpId-ID);}
-	int Compare(const GGroupId& grp) const {return(GrpId-grp.GrpId);}
+	int Compare(const GCommunityId& grp) const {return(GrpId-grp.GrpId);}
 };
 
 
@@ -79,14 +79,14 @@ public:
 class GroupScore
 {
 public:
-	GGroup* Group;                 // Pointer to the group.
+	GCommunity* Group;                 // Pointer to the group.
 	double Precision;              // Precision inside the group.
 	double Recall;                 // Recall inside the group.
 
 	// Constructor and Compare methods.
-	GroupScore(GGroup* grp) : Group(grp), Precision(0.0), Recall(0.0) {}
+	GroupScore(GCommunity* grp) : Group(grp), Precision(0.0), Recall(0.0) {}
 	int Compare(const GroupScore& grp) const {return(Group->Compare(*grp.Group));}
-	int Compare(const GGroup* grp) const {return(Group->Compare(grp));}
+	int Compare(const GCommunity* grp) const {return(Group->Compare(grp));}
 };
 
 
@@ -395,11 +395,11 @@ void GSubjects::ComputeRecallPrecision(void)
 	R::RCursor<GroupScore> Grp(Data->GroupsScore);
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
-		InGrp=Grp()->Group->GetNbProfiles();
+		InGrp=Grp()->Group->GetNbObjs();
 		NbProf+=InGrp;
 		Grp()->Precision=Grp()->Recall=0.0;
 		RAssert(InGrp);
-		RCursor<GProfile> Prof(Grp()->Group->GetProfiles());
+		RCursor<GProfile> Prof(Grp()->Group->GetObjs());
 		if(InGrp==1)
 		{			
 			Prof.Start();
@@ -472,7 +472,7 @@ size_t GSubjects::GetNbTopicsDocs(void) const
 //-----------------------------------------------------------------------------
 void GSubjects::ComputeTotal(void)
 {
-	GGroup* GroupComputed;                        // Pointer to a computed group
+	GCommunity* GroupComputed;                        // Pointer to a computed group
 	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
 	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
 	unsigned int NbProfiles;                      // Total Number of profiles
@@ -491,7 +491,7 @@ void GSubjects::ComputeTotal(void)
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
 	NbRows=GetNbIdealGroups();
-	NbCols=Data->Session->GetGroups().GetNb();
+	NbCols=Data->Session->GetNbCommunities();
 	if(NbRows>MaxRows) MaxRows=NbRows;
 	if(NbCols>MaxCols) MaxCols=NbCols;
 	if((!MaxRows)||(!MaxCols))
@@ -505,15 +505,15 @@ void GSubjects::ComputeTotal(void)
 	//GroupsIdeal=Data->IdealGroups->GetGroups(lang);
 	//NbRows=GroupsIdeal.GetNb();
 	NbRows=GetNbIdealGroups();
-	RCursor<GGroup> GroupsComputed(Data->Session->GetGroups());
+	RCursor<GCommunity> GroupsComputed(Data->Session->GetCommunities());
 	NbCols=GroupsComputed.GetNb();
 	if((!NbRows)||(!NbCols))
 		return;
 
 	// Construction of the container for relation between id and column in the matrix.
-	RContainer<GGroupId,true,true> GroupsId(NbCols,NbCols/2);
+	RContainer<GCommunityId,true,true> GroupsId(NbCols,NbCols/2);
 	for(GroupsComputed.Start(),col=0;!GroupsComputed.End();GroupsComputed.Next())
-		GroupsId.InsertPtr(new GGroupId((GroupsComputed())->GetId(),col++));
+		GroupsId.InsertPtr(new GCommunityId((GroupsComputed())->GetId(),col++));
 
 	// Initialisation of the variable used for computing the subtotal
 	a=b=c=d=0.0;
@@ -540,7 +540,7 @@ void GSubjects::ComputeTotal(void)
 				continue;
 			VectorRows[row]++;
 			NbTot++;
-			GroupComputed=Data->Session->GetGroup(Prof()->GetGroupId());
+			GroupComputed=Data->Session->GetCommunity(Prof()->GetGroupId());
 			if(!GroupComputed)
 				continue;
 			position=GroupsId.GetPtr(GroupComputed->GetId())->position;
@@ -597,7 +597,7 @@ void GSubjects::CreateIdeal(void)
 		Data->Session->GetStorage()->Clear(otUser);
 		Data->Session->GetStorage()->Clear(otProfile);
 		Data->Session->GetStorage()->Clear(otFdbk);
-		Data->Session->GetStorage()->Clear(otGroup);
+		Data->Session->GetStorage()->Clear(otCommunity);
 		RCursor<GUser> Users(Data->Session->GetUsers());
 		for(Users.Start();!Users.End();Users.Next())
 			Data->Session->GetStorage()->SaveUser(Users());
@@ -620,11 +620,11 @@ void GSubjects::DocumentSharing(void)
 	GMeasure* ProfilesDocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
 
 	// Go through the groups
-	R::RCursor<GGroup> Grps(Data->Session->GetGroups());
+	R::RCursor<GCommunity> Grps(Data->Session->GetCommunities());
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Go through the profiles contained in the group.
-		RCursor<GProfile> Profile(Grps()->GetProfiles());
+		RCursor<GProfile> Profile(Grps()->GetObjs());
 		for(Profile.Start();!Profile.End();Profile.Next())
 		{
 			Grps()->NotJudgedDocsRelList(ProfilesDocsSims,Data->NewDocs,Profile(),Data->Session);
@@ -816,7 +816,7 @@ unsigned int GSubjects::AddProfiles(void)
 	unsigned int i;
 	unsigned int nbprof, nbsocial;
 	GSubject* usedSubject;
-	R::RCursor<GGroup> CurGrps;
+	R::RCursor<GCommunity> CurGrps;
 	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
 	RCursor<GProfile> Prof;
 
@@ -957,7 +957,7 @@ void GSubjects::Clear(void)
 void GSubjects::Compare(void)
 {
 	Data->GroupsScore.Clear();
-	RCursor<GGroup> Cur(Data->Session->GetGroups());
+	RCursor<GCommunity> Cur(Data->Session->GetCommunities());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Data->GroupsScore.InsertPtr(new GroupScore(Cur()));
 	ComputeRecallPrecision();
@@ -987,9 +987,9 @@ double GSubjects::GetTotal(void) const
 
 
 //------------------------------------------------------------------------------
-double GSubjects::GetPrecision(GGroup* grp) const
+double GSubjects::GetPrecision(GCommunity* grp) const
 {
-	GroupScore* g=Data->GroupsScore.GetPtr<const GGroup*>(grp);
+	GroupScore* g=Data->GroupsScore.GetPtr<const GCommunity*>(grp);
 
 	if(!g) return(0.0);
 	return(g->Precision);
@@ -997,9 +997,9 @@ double GSubjects::GetPrecision(GGroup* grp) const
 
 
 //------------------------------------------------------------------------------
-double GSubjects::GetRecall(GGroup* grp) const
+double GSubjects::GetRecall(GCommunity* grp) const
 {
-	GroupScore* g=Data->GroupsScore.GetPtr<const GGroup*>(grp);
+	GroupScore* g=Data->GroupsScore.GetPtr<const GCommunity*>(grp);
 
 	if(!g) return(0.0);
 	return(g->Recall);

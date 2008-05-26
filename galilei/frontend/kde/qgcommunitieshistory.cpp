@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	QGGroupsHistory.cpp
+	QGCommunitysHistory.cpp
 
 	Widget to show the groups history - Implementation.
 
@@ -41,13 +41,13 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gprofile.h>
-#include <ggrouphistory.h>
-#include <ggroupshistory.h>
+#include <gcommunityhistory.h>
+#include <gcommunitieshistory.h>
 #include <gsubject.h>
 #include <guser.h>
 #include <gweightinfoshistory.h>
 #include <qlistviewitemtype.h>
-#include <qggroupshistory.h>
+#include <qgcommunitieshistory.h>
 using namespace GALILEI;
 
 
@@ -65,13 +65,13 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-// class QGGroupsHistory
+// class QGCommunitiesHistory
 //
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
-GALILEI::QGGroupsHistory::QGGroupsHistory(QWidget* parent,GGroupsHistory* grps,const char* name)
+GALILEI::QGCommunitiesHistory::QGCommunitiesHistory(QWidget* parent,GCommunitiesHistory* grps,const char* name)
 	: QListView(parent,name) ,pixmap(0),Changed(false)
 {
 	//init listview component.
@@ -87,14 +87,14 @@ GALILEI::QGGroupsHistory::QGGroupsHistory(QWidget* parent,GGroupsHistory* grps,c
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::QGGroupsHistory::setGroups(GGroupsHistory* grps)
+void GALILEI::QGCommunitiesHistory::setGroups(GCommunitiesHistory* grps)
 {
 	char tmp[100];
 	char tmp2[40];
 	GProfile* p;
 
 	clear();
-	RCursor<GGroupHistory> Cur(*grps);
+	RCursor<GCommunityHistory> Cur(*grps);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		sprintf(tmp,"Group %u  (%u)",Cur()->GetId(),Cur()->GetNb());
@@ -123,13 +123,13 @@ void GALILEI::QGGroupsHistory::setGroups(GGroupsHistory* grps)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::QGGroupsHistory::mousePressEvent(QMouseEvent* e)
+void GALILEI::QGCommunitiesHistory::mousePressEvent(QMouseEvent* e)
 {
 	QListView::mousePressEvent(e);
 }
 
 
 //-----------------------------------------------------------------------------
-GALILEI::QGGroupsHistory::~QGGroupsHistory(void)
+GALILEI::QGCommunitiesHistory::~QGCommunitiesHistory(void)
 {
 }

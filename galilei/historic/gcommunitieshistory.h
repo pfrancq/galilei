@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupsHistory.h
+	GCommunitysHistory.h
 
 	History of Groups for a given language - Header.
 
@@ -32,14 +32,14 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GGroupsHistoryH
-#define GGroupsHistoryH
+#ifndef GCommunitiesHistoryH
+#define GCommunitiesHistoryH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <ggrouphistory.h>
+#include <gcommunityhistory.h>
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
@@ -48,11 +48,11 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GGroupsHistoryManager class manages the history of subprofiles groupments.
+* The GCommunitiesHistoryManager class manages the history of subprofiles groupments.
 * @author David Wartel
 * @short Histories of Subprofiles Groupment.
 */
-class GGroupsHistoryManager : public R::RContainer<GGroupsHistory,true,true>
+class GCommunitiesHistoryManager : public R::RContainer<GCommunitiesHistory,true,true>
 {
 	/**
 	* Pointer to the session.
@@ -66,25 +66,25 @@ public :
 	* @param session         Session.
 	* @param max             Number of steps to handle.
 	*/
-	GGroupsHistoryManager(GSession* session,unsigned int max);
+	GCommunitiesHistoryManager(GSession* session,unsigned int max);
 
 	/**
 	* Get a cursor on the history of all groupments.
 	*/
-	R::RCursor<GGroupsHistory> GetGroupsHistory(void);
+	R::RCursor<GCommunitiesHistory> GetCommunitiesHistory(void);
 
 	/**
 	* Check which groups are modified.
 	*/
-	void CheckModifiedGroups(unsigned int minGen);
+	void CheckModifiedCommunities(unsigned int minGen);
 
 	/**
-	* Check which subprofiles are correctly grouped.
+	* Check which profiles are correctly grouped.
 	*/
-	void CheckWellGroupedSubProfs(void);
+	void CheckWellGroupedProfs(void);
 
 	/**
-	* Check which subprofiles are new.
+	* Check which profiles are new.
 	*/
 	void CheckNewProfiles(void);
 
@@ -92,13 +92,13 @@ public :
 	* Creates relationship between historic groups.
 	* #param maxgen          Identificators of the last history to use.
 	*/
-	void CreateGroupsRelationship(unsigned int maxgen);
+	void CreateCommunitiesRelationship(unsigned int maxgen);
 
 	/**
 	* Insert a history of a groupment.
 	* @param gh              History of a groupment.
 	*/
-	void InsertGroupsHistory(GGroupsHistory* gh);
+	void InsertCommunitiesHistory(GCommunitiesHistory* gh);
 
 	/**
 	* Get the associated session.
@@ -108,18 +108,18 @@ public :
 	/**
 	*   Destructor.
 	*/
-	~GGroupsHistoryManager(void);
+	~GCommunitiesHistoryManager(void);
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* The GGroupsHistory class provides a representation for a history of a given
+* The GCommunitysHistory class provides a representation for a history of a given
 * subprofiles groupment.
 * @author David Wartel
 * @short History of a Subprofiles Groupment.
 */
-class GGroupsHistory : public R::RContainer<GGroupHistory,true,true>
+class GCommunitiesHistory : public R::RContainer<GCommunityHistory,true,true>
 {
 	/**
 	* Identificator of the history.
@@ -134,7 +134,7 @@ class GGroupsHistory : public R::RContainer<GGroupHistory,true,true>
 	/**
 	* Manager that handles all histories of groupment.
 	*/
-	GGroupsHistoryManager* Manager;
+	GCommunitiesHistoryManager* Manager;
 
 public :
 
@@ -143,7 +143,7 @@ public :
 	* @param id              Identificator of the historic.
 	* @param date            Date of the history.
 	*/
-	GGroupsHistory(unsigned int id, R::RString date);
+	GCommunitiesHistory(unsigned int id, R::RString date);
 
 	/**
 	* Get the identificator of the groupment.
@@ -162,7 +162,7 @@ public :
 	* @param id              Identificator.
 	* @return Pointer to a GWeightInfosHistory.
 	*/
-	GWeightInfosHistory* GetSubProfile(unsigned int id);
+	GWeightInfosHistory* GetProfile(unsigned int id);
 
 	/**
 	* Compare two histories of groupment by comparing their identificator.
@@ -170,7 +170,7 @@ public :
 	* @param groups          History of groupment.
 	* @return int
 	*/
-	int Compare(const GGroupsHistory& groups) const;
+	int Compare(const GCommunitiesHistory& groups) const;
 
 	/**
 	* Compare two histories of groupment by comparing their identificator.
@@ -178,7 +178,7 @@ public :
 	* @param groups          Pointer to a history of groupment.
 	* @return int
 	*/
-	int Compare(const GGroupsHistory* groups) const;
+	int Compare(const GCommunitiesHistory* groups) const;
 
 	/**
 	* Compare the identificator of a history of groupment with another one.
@@ -192,22 +192,22 @@ public :
 	* Set the manager of the history.
 	* @param m               Pointer to the manager.
 	*/
-	void SetManager(GGroupsHistoryManager* m);
+	void SetManager(GCommunitiesHistoryManager* m);
 
 	/**
 	* Check which groups are modified.
 	*/
-	void CheckModifiedGroups(unsigned int minGen);
+	void CheckModifiedCommunities(unsigned int minGen);
 
 	/**
 	* Set the main topic associated to each history of groupment.
 	*/
-	void SetGroupsSubject(void);
+	void SetCommunitiesSubject(void);
 
 	/**
-	* Check which subprofiles are correctly grouped.
+	* Check which profiles are correctly grouped.
 	*/
-	void CheckWellGroupedSubProfs(void);
+	void CheckWellGroupedProfs(void);
 
 	/**
 	* Check which subprofiles are new.
@@ -217,7 +217,7 @@ public :
 	/**
 	*   Destructor
 	*/
-	~GGroupsHistory(void);
+	~GCommunitiesHistory(void);
 };
 
 

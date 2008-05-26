@@ -65,7 +65,7 @@ protected:
 	/**
 	* Group containing the subprofile.
 	*/
-	GGroupHistory* Parent;
+	GCommunityHistory* Parent;
 
 	/**
 	* Is the subprofile well grouped?
@@ -124,15 +124,15 @@ public :
 
 	/**
 	* Get the parent of the subprofile.
-	* @return Pointer to a GGroupHistory.
+	* @return Pointer to a GCommunityHistory.
 	*/
-	GGroupHistory* GetParent(void) const {return(Parent);}
+	GCommunityHistory* GetParent(void) const {return(Parent);}
 
 	/**
 	* Set the parent of a list.
 	* @param p               Pointer to the parent.
 	*/
-	void SetParent(GGroupHistory* p);
+	void SetParent(GCommunityHistory* p);
 
 	/**
 	* Look if the subprofile is well-grouped.
