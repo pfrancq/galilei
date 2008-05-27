@@ -369,7 +369,7 @@ void KGALILEICenterApp::slotPlugins(void)
 	GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
 	GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
 	GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
-	GALILEIApp->GetManager<GPostCommunityManager>("CommunityGroup")->ReOrder();
+	GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
 
 	// Goes through managers
 	dlg.changeFilter(InitL<GFactoryFilter,GFilterManager,QFilterItem>("Filter",dlg.Filters,dlg.EnableFilter));
@@ -423,7 +423,7 @@ void KGALILEICenterApp::slotPlugins(void)
 			// Set current method
 			GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1(),false);
 			GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1(),false);
-			GALILEIApp->GetManager<GCommunityCalcManager>("GroupCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
+			GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
 			GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1(),false);
 			GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1(),false);
 			GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1(),false);

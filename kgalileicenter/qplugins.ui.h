@@ -97,7 +97,7 @@ void QPlugins::slotProfileCalcEnable( bool state )
 void QPlugins::changeGrouping( QListViewItem * item)
 {
 	if(!item) return;
-	QGroupingItem* f=dynamic_cast<QGroupingItem*>(item);
+	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(item);
 	if(!f) return;
 	EnableGrouping->setChecked(f->Enable);
 	ConfigGrouping->setEnabled(f->Fac->HasConfigure());
@@ -119,7 +119,7 @@ void QPlugins::changeLinkCalc( QListViewItem * item)
 void QPlugins::changeGroupCalc( QListViewItem * item )
 {
 	if(!item) return;
-	QGroupCalcItem* f=dynamic_cast<QGroupCalcItem*>(item);
+	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(item);
 	if(!f) return;
 	EnableGroupCalc->setChecked(f->Enable);
 	ConfigGroupCalc->setEnabled(f->Fac->HasConfigure());
@@ -140,7 +140,7 @@ void QPlugins::changeMetaEngine( QListViewItem * item)
 void QPlugins::slotAboutGrouping()
 {
 	if(!Groupings->currentItem()) return;
-	QGroupingItem* f=dynamic_cast<QGroupingItem*>(Groupings->currentItem());
+	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(Groupings->currentItem());
 	if(!f) return;
 	f->Fac->About();
 }
@@ -158,7 +158,7 @@ void QPlugins::slotAboutLinkCalc()
 void QPlugins::slotAboutGroupCalc()
 {
 	if(!GroupCalcs->currentItem()) return;
-	QGroupCalcItem* f=dynamic_cast<QGroupCalcItem*>(GroupCalcs->currentItem());
+	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(GroupCalcs->currentItem());
 	if(!f) return;
 	f->Fac->About();
 }
@@ -175,7 +175,7 @@ void QPlugins::slotAboutMetaEngine()
 void QPlugins::slotConfigGrouping()
 {
 	if(!Groupings->currentItem()) return;
-	QGroupingItem* f=dynamic_cast<QGroupingItem*>(Groupings->currentItem());
+	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(Groupings->currentItem());
 	if(!f) return;
 	f->Fac->Configure();
 }
@@ -193,7 +193,7 @@ void QPlugins::slotConfigLinkCalc()
 void QPlugins::slotConfigGroupCalc()
 {
 	if(!GroupCalcs->currentItem()) return;
-	QGroupCalcItem* f=dynamic_cast<QGroupCalcItem*>(GroupCalcs->currentItem());
+	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(GroupCalcs->currentItem());
 	if(!f) return;
 	f->Fac->Configure();
 }
@@ -210,7 +210,7 @@ void QPlugins::slotConfigMetaEngine()
 void QPlugins::slotGroupingEnable( bool state )
 {
 	if(!Groupings->currentItem()) return;
-	QGroupingItem* f=dynamic_cast<QGroupingItem*>(Groupings->currentItem());
+	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(Groupings->currentItem());
 	if(!f) return;
 	f->Enable=state;
 }
@@ -219,7 +219,7 @@ void QPlugins::slotGroupingEnable( bool state )
 void QPlugins::slotGroupCalcEnable( bool state )
 {
 	if(!GroupCalcs->currentItem()) return;
-	QGroupCalcItem* f=dynamic_cast<QGroupCalcItem*>(GroupCalcs->currentItem());
+	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(GroupCalcs->currentItem());
 	if(!f) return;
 	f->Enable=state;
 }
@@ -471,7 +471,7 @@ void QPlugins::slotDocAnalyseEnable( bool state )
 void QPlugins::slotPostGroupEnable( bool state )
 {
 	if(!PostGroups->currentItem()) return;
-	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(PostGroups->currentItem());
+	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(PostGroups->currentItem());
 	if(!f) return;
 	f->Enable=state;
 }
@@ -480,7 +480,7 @@ void QPlugins::slotPostGroupEnable( bool state )
 void QPlugins::slotConfigPostGroup()
 {
 	if(!PostGroups->currentItem()) return;
-	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(PostGroups->currentItem());
+	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(PostGroups->currentItem());
 	if(!f) return;
 	f->Fac->Configure();
 }
@@ -489,7 +489,7 @@ void QPlugins::slotConfigPostGroup()
 void QPlugins::slotAboutPostGroup()
 {
 	if(!PostGroups->currentItem()) return;
-	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(PostGroups->currentItem());
+	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(PostGroups->currentItem());
 	if(!f) return;
 	f->Fac->About();
 }
@@ -498,7 +498,7 @@ void QPlugins::slotAboutPostGroup()
 void QPlugins::changePostGroup(QListViewItem * item)
 {
     if(!item) return;
-	QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(item);
+	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(item);
 	if(!f) return;
 	EnablePostGroup->setChecked(f->Enable);
 	ConfigPostGroup->setEnabled(f->Fac->HasConfigure());
@@ -619,7 +619,7 @@ void QPlugins::updateLevels(void)
 	QListViewItemIterator it(PostGroups);
  for (level=0; it.current();++it, level++)
  {
-  QPostGroupItem* f=dynamic_cast<QPostGroupItem*>(it.current());
+  QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(it.current());
   f->Fac->Set("Level",level);
  }
 
