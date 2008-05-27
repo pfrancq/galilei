@@ -128,9 +128,9 @@ void QSessionThread::run(void)
 	{
 		Parent->PutError(e.GetMsg());
 	}
-	catch(std::bad_alloc)
+	catch(std::exception& e)
 	{
-		Parent->PutError("Memory Error");
+		Parent->PutError(e.what());
 	}
 	catch(...)
 	{
