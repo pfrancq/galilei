@@ -181,7 +181,7 @@ void GDocsLevelCmd::Run(GStorage* storage,const GStorageTag&,void*)
 		// Compute score for documents
 		RDb* storeMySQL=static_cast<RDb*>(storage->GetInfos());;
 		RQuery intidocs(storeMySQL,"DELETE FROM htmlsbygroups");
-		RQuery insertdocs(storeMySQL,"INSERT INTO htmlsbygroups(groupid,htmlid,score) SELECT groupid,htmlid,SUM(score) FROM subprofiles,htmlsbyprofiles WHERE subprofiles.profileid=htmlsbyprofiles.profileid AND subprofiles.langid=htmlsbyprofiles.langid AND judgement='O' GROUP BY groupid,htmlid");
+		RQuery insertdocs(storeMySQL,"INSERT INTO htmlsbygroups(groupid,htmlid,score) SELECT groupid,htmlid,SUM(score) FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND judgement='O' GROUP BY groupid,htmlid");
 	}
 	catch(RException& e)
 	{
