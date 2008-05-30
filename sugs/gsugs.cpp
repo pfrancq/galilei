@@ -93,7 +93,7 @@ void GComputeSubProfileSugsCmd::Run(GALILEI::GStorage* storage,const GALILEI::GS
 		RQuery initsugs(storeMySQL,Sql);
 		Sql="INSERT INTO sugsbyprofiles(profileid,test,htmlid,rank) ";
 		Sql+="SELECT "+RString::Number(prof->GetId())+",'From other members',htmlid,htmlsbygroups.score FROM htmlsbygroups,subprofiles,profiles ";
-		Sql+="WHERE htmlsbygroups.groupid=subprofiles.groupid and subprofiles.groupid AND subprofiles.profileid=profiles.profileid AND profiles.profileid="+RString::Number(prof->GetId())+" AND htmlid NOT IN ";
+		Sql+="WHERE htmlsbygroups.groupid=profiles.groupid AND profiles.profileid="+RString::Number(prof->GetId())+" AND htmlid NOT IN ";
 		Sql+="(SELECT htmlid FROM htmlsbyprofiles WHERE profileid="+RString::Number(prof->GetId())+") ";
 		Sql+="ORDER BY htmlsbygroups.score LIMIT "+inst.GetAttrValue("NbSugs");
 		RQuery insertsugs(storeMySQL,Sql);
