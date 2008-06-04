@@ -175,7 +175,7 @@ void GSugs::Run(void)
 		Session->GetStorage()->CreateSugs(Now);
 
 		// Similarities
-		GALILEI::GMeasure* ProfilesDocsSims=GALILEI::GALILEIApp->GetManager<GALILEI::GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+		GALILEI::GMeasure* ProfilesDocsSims=GALILEI::GALILEIApp->GetManager<GALILEI::GMeasureManager>("Measures")->GetCurrentMethod("Documents/Profiles Similarities");
 
 		// -1- Store sugestion with description= S+order
 		// Go through the groups
