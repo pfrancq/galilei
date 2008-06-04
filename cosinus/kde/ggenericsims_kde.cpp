@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSubProfilesSimsCosinus_KDE.cpp
+	GenericSims_KDE.cpp
 
-	A KDE about box for the subprofiles similarity measure - Implementation.
+	Similarities between documents and groups - Implementation.
 
-	Copyright 2003-2007 by the Université Libre de Bruxelles.
+	Copyright 2005-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -35,59 +35,34 @@
 #include <qlabel.h>
 #include <qgroupbox.h>
 #include <qlayout.h>
-#include <qcombobox.h>
-#include <knuminput.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-
 
 //------------------------------------------------------------------------------
-// include files for R
+// includes files for R
 #include <rqt.h>
 using namespace R;
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <qgmeasure2elementsdlg.h>
+#include "ggenericsims_kde.h"
 #include <gmeasure.h>
-using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("The cosinus method is used to computed the similarities between the subprofiles.");
 
 
 //-----------------------------------------------------------------------------
 //
-// Specific Dialog class
+// class GGenericSimsDlg
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class MyDlg : public QGMeasure2ElementsDlg
+GGenericSimsDlg::GGenericSimsDlg(const QString& title)
+	: QGMeasure2ElementsDlg(title)
 {
-    QComboBox* SimType;
-	KDoubleNumInput* Factor;
-
-public:
-
-	MyDlg(void) : QGMeasure2ElementsDlg("Similarities between subprofiles") {}
-	virtual void Panel(void);
-	virtual void Init(GFactoryMeasure* params);
-	virtual void Done(GFactoryMeasure* params);
-};
+}
 
 
 //-----------------------------------------------------------------------------
-void MyDlg::Panel(void)
+void GGenericSimsDlg::Panel(void)
 {
     QHBoxLayout* layout = new QHBoxLayout(0,0,6);
     QLabel* text = new QLabel(MeasureSpecific);
@@ -113,7 +88,7 @@ void MyDlg::Panel(void)
 
 
 //-----------------------------------------------------------------------------
-void MyDlg::Init(GFactoryMeasure* params)
+void GGenericSimsDlg::Init(GFactoryMeasure* params)
 {
 	QGMeasure2ElementsDlg::Init(params);
 	SimType->setCurrentText(ToQString(params->Get("SimType")));
@@ -122,39 +97,9 @@ void MyDlg::Init(GFactoryMeasure* params)
 
 
 //-----------------------------------------------------------------------------
-void MyDlg::Done(GFactoryMeasure* params)
+void GGenericSimsDlg::Done(GFactoryMeasure* params)
 {
 	params->Set("SimType",FromQString(SimType->currentText()));
 	params->SetDouble("Factor",Factor->value());
 	QGMeasure2ElementsDlg::Done(params);
 }
-
-
-
-//------------------------------------------------------------------------------
-extern "C" {
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-void About(void)
-{
-	KAboutData aboutData( "cosinus", I18N_NOOP("Cosinus Method"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Contributor"), "pfrancq@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
-	dlg.exec();
-}
-
-
-//------------------------------------------------------------------------------
-void Configure(GFactoryMeasure* params)
-{
-	MyDlg dlg;
-	dlg.Configure(params);
-}
-
-
-//------------------------------------------------------------------------------
-}     // end of extren
-//------------------------------------------------------------------------------

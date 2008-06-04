@@ -2,15 +2,14 @@
 
 	GALILEI Research Project
 
-	GSubProfilesSims.cpp
+	GDocsProfilesSimsCosinus.cpp
 
-	Similarities between subprofiles - Implementation.
+	Similarities between documents and profiles - Implementation.
 
-	Copyright 2003-2007 by the Université Libre de Bruxelles.
+	Copyright 2005-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,62 +29,26 @@
 */
 
 
-
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggenericsims.h>
-#include <gprofile.h>
-#include <gsession.h>
-#include <ggalileiapp.h>
 using namespace GALILEI;
-using namespace R;
 
 
 
 //------------------------------------------------------------------------------
 //
-//  GProfilesSims
+//  GDocsProfilesSims
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GProfilesSims : public GDiffSims
+class GDocsProfilesSims : public GGenericSims
 {
 public:
-	GProfilesSims(GFactoryMeasure* fac);
-	void* GetElement(size_t id);
-	size_t GetMaxElementsId(void);	
-	size_t GetNbElements(void);
+	GDocsProfilesSims(GFactoryMeasure* fac) : GGenericSims(fac,false,otDocProfile) {}
 };
 
 
 //------------------------------------------------------------------------------
-GProfilesSims::GProfilesSims(GFactoryMeasure* fac)
-	: GDiffSims(fac,true,otProfile)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void* GProfilesSims::GetElement(size_t id)
-{
-	return(Session->GetProfile(id,false));
-} 
-
-
-//------------------------------------------------------------------------------
-size_t GProfilesSims::GetMaxElementsId(void)
-{
-	return(Session->GetMaxProfileId());
-}
-
-
-//------------------------------------------------------------------------------
-size_t GProfilesSims::GetNbElements(void)
-{
-	return(Session->GetNbProfiles());
-}
-
-
-//------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles Similarities","Cosinus Method",GProfilesSims)
+CREATE_MEASURE_FACTORY("Documents/Profiles Similarities","Multi-vector",GDocsProfilesSims)

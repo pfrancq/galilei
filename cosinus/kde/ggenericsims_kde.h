@@ -2,15 +2,14 @@
 
 	GALILEI Research Project
 
-	GProfilesDocsSimsCosinus.h
+	GenericSims_KDE.h
 
-	Similarities between documents and subprofiles - Implementation.
+	GenericSims - Implementation.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2005-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,43 +31,49 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GSubProfilesDocsSimsH
-#define GSubProfilesDocsSimsH
+#ifndef GGenericSims_KDEH
+#define GGenericSims_KDEH
+
+
+//------------------------------------------------------------------------------
+// include files for Qt
+#include <qcombobox.h>
+
+
+//------------------------------------------------------------------------------
+// include files for KDE
+#include <knuminput.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggenericsims.h>
+#include <qgmeasure2elementsdlg.h>
+using namespace GALILEI;
 
 
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
 /**
-* The GCommunitysDocsSims class provides a representation for the similarities between
-* groups and profiles.
-* @author Pascal Francq and Valery Vandaele
-* @short Groups-Documents Similarities.
-*/
-class GProfilesDocsSims : public GGenericSims
+ * Dialog class to configure a plug-in implementing a Multi-space similarity
+ * measure. It must called:
+ * @code
+ * void Configure(GFactoryMeasure* params)
+ * {
+ *    GGenericSimsDlg dlg;
+ *    dlg.Configure(params);
+ * }
+ * @endcode
+ */
+class GGenericSimsDlg : public QGMeasure2ElementsDlg
 {
+    QComboBox* SimType;
+	KDoubleNumInput* Factor;
+
 public:
 
-	/**
-	* Constructor of the similarities between documents and subprofiles.
-	* @param session         Session.
-	* @param iff             Use Inverse Frequency Factor.
-	* @param memory      use container to stock sims?
-	*/
-	GProfilesDocsSims(GFactoryMeasure* fac)
-		: GGenericSims(fac,true,false,true) {}
-
-	virtual double Compute(size_t id1,size_t id2);
-
-	virtual size_t GetMaxId1(void) { return(Session->GetNbProfiles());}
-
-	/**
-	* Destructor of the similarities between documents and subprofiles.
-	*/
-	virtual ~GProfilesDocsSims(void) {}
+	GGenericSimsDlg(const QString& title);
+	virtual void Panel(void);
+	virtual void Init(GFactoryMeasure* params);
+	virtual void Done(GFactoryMeasure* params);
 };
 
 

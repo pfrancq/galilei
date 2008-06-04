@@ -6,7 +6,7 @@
 
 	A KDE about box for the statistical method. - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -30,41 +30,22 @@
 
 
 
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gmeasure.h>
-using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
-// include files for QT
-#include <qvariant.h>
-#include <qcheckbox.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qdialog.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
-
-
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
 #include <klocale.h>
 #include <kaboutapplication.h>
-#include <knuminput.h>
 
 
-//-----------------------------------------------------------------------------
-// include files for Current
-#include <dlgconfigsubprofilesdocs_qt.h>
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <ggenericsims_kde.h>
 
 
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("The cosinus method is used to computed the similarities between the subprofiles and documents.");
+	I18N_NOOP("The cosinus method is used to computed the similarities between the groups and profiles.");
 
 
 //------------------------------------------------------------------------------
@@ -87,19 +68,8 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryMeasure* params)
 {
- 	DlgConfigProfilesDocs_Qt dlg;
-
-	dlg.NullSimLevel->setPrecision(10);
-	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
-	dlg.Memory->setChecked(params->GetBool("Memory"));
-	dlg.MinSim->setValue(params->GetDouble("MinSim"));
-	if(dlg.exec())
-	{
-		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
-		params->SetBool("Memory",dlg.Memory->isChecked());
-		params->SetDouble("MinSim",dlg.MinSim->value());
-		params->Apply();
- 	}
+	GGenericSimsDlg dlg("Similarities between profiles and communities");
+	dlg.Configure(params);
 }
 
 

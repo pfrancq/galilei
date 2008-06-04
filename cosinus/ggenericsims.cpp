@@ -34,251 +34,19 @@
 // include files for ANSI C/C++
 #include <math.h>
 
-
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include "ggenericsims.h"
 #include <gweightinfos.h>
 #include <gweightinfo.h>
 #include <glang.h>
 #include <gconcept.h>
 #include <gxmlindex.h>
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GSim
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Class representing a similarity with a subprofile.
-class GSim
-{
-public:
-	unsigned int Id;         // Identifier
-	double Sim;              // Similarity
-	tObjState State;         // State of the similarity.
-
-	GSim(unsigned int id)
-		: Id(id), Sim(0.0),State(osModified) {}
-	int Compare(const GSim& s) const {return(Id-s.Id);}
-	int Compare(const unsigned int id) const {return(Id-id);}
-};
-
+#include <gsession.h>
 
 
 //------------------------------------------------------------------------------
-//
-// class GSims
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Class representing all the similarities for a given document.
-class GSims : public RContainer<GSim,true,true>
-{
-public:
-	unsigned int Id;      // Identifier of the document
-
-	GSims(unsigned int id)
-		: RContainer<GSim,true,true>(5000,5000), Id(id) {}
-	int Compare(const GSims& s) const {return(Id-s.Id);}
-	int Compare(const unsigned int id) const {return(Id-id);}
-};
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GenericSims::GSims
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-// Class representing all the similarities between documents and subprofiles of
-// a given language.
-class GGenericSims::GElementSims
-{
-public:
-	R::RContainer<GSims,true,true>* Sims;             // Similarities.
-	GGenericSims* Manager;                            // Owner.
-	bool NeedUpdate;
-
-	// Constructor and Compare functions.
-	GElementSims(GGenericSims* manager);
-
-	// Analyse the similarity of the two subprofiles and insert when necessary.
-	void AnalyseSim(GSims* sim,const GDoc* doc,const GCommunity* grp);
-
-	// Get the similarities between two profiles, i.e. the subprofiles of a same
-	// language.
-	double GetSim(size_t id1,size_t id2);
-
-	// Update the state of the sims between documents and subprofiles. If a
-	// document or a If the subprofile has changed the corresponding sim will be
-	// set to state="osModified".
-	// If the similarity for a given subprofile doesn't exist, the element is
-	// created but not computed ( -> state to osModified ).
-	void Update(void);
-
-	// Destructor.
-	~GElementSims(void) { delete Sims;}
-};
-
-
-//------------------------------------------------------------------------------
-GGenericSims::GElementSims::GElementSims(GGenericSims* manager)
-	: Sims(0), Manager(manager), NeedUpdate(true)
-{
-	// if memory is false, we don't stock a container of similarities.
-	// sims will be re-calculated eacht time.
-	if((!Manager->Memory)||(!Manager->Session))
-		return;
-}
-
-
-//------------------------------------------------------------------------------
-double GGenericSims::GElementSims::GetSim(size_t id1,size_t id2)
-{
-	GSims* s;
-	GSim* s2;
-
-	s=Sims->GetPtr<unsigned int>(id1);
-	if(!s)
-		Sims->InsertPtr(s=new GSims(id1));
-	s2=s->GetPtr<unsigned int>(id2);
-	if(!s2)
-		s->InsertPtr(s2=new GSim(id2));
-	if((s2->State==osUpdated)||(s2->State==osUpToDate)) return(s2->Sim);
-	if(s2->State == osModified)
-	{
-		s2->State = osUpToDate;
-		s2->Sim=Manager->Compute(id1,id2);
-		if(fabs(s2->Sim)<Manager->NullSimLevel) s2->Sim=0.0;
-		return (s2->Sim);
-	}
-	cerr<<"Problem in GGenericSims"<<endl;
-	return(0.0);
-}
-
-
-//------------------------------------------------------------------------------
-void GGenericSims::GElementSims::Update(void)
-{
-	// If memory is false, no update is needed
-	// since sims are claulctaed each time
-	if((!Manager->Memory)||(!Manager->Session)||(!NeedUpdate))
-		return;
-
-	//initialize the container of GSims (calculate size)
-	if(!Sims)
-		Sims=new RContainer<GSims,true,true>(Manager->GetMaxId1(),500);
-
-	RCursor<GSims> Cur1(*Sims);
-	for(Cur1.Start();!Cur1.End();Cur1.Next())
-	{
-		RCursor<GSim> Cur2(*Cur1());
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-			Cur2()->State=osModified;
-	}
-
-	NeedUpdate=false;
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GenericSims
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GGenericSims::GGenericSims(GFactoryMeasure* fac,bool d,bool g,bool s)
-	: GMeasure(fac), GSignalHandler(), Sims(0), Memory(false), Doc(d), Group(g), SubProfile(s)
-{
-	GSession::AddHandler(this);
-	if(!Memory) return;
-	Sims=new GElementSims(this);
-}
-
-
-//-----------------------------------------------------------------------------
-void GGenericSims::ApplyConfig(void)
-{
-	NullSimLevel=Factory->GetDouble("NullSimLevel");
-	Memory=Factory->GetBool("Memory");
-}
-
-
-//------------------------------------------------------------------------------
-void GGenericSims::Measure(unsigned int measure,...)
-{
-	va_list ap;
-	va_start(ap,measure);
-	unsigned int id1=va_arg(ap,unsigned int);
-	unsigned int id2=va_arg(ap,unsigned int);
-	double* res=va_arg(ap,double*);
-
-	if(!Memory)
-	{
-		(*res)=Compute(id1,id2);
-		va_end(ap);
-		return;
-	}
-
-	// Get the language
-	if(Sims->NeedUpdate)
-		Sims->Update();
-
-	(*res)=Sims->GetSim(id1,id2);
-	va_end(ap);
-}
-
-
-//------------------------------------------------------------------------------
-void GGenericSims::Event(GDoc* doc, tEvent)
-{
-	if((!Memory)||(!doc)) return;
-	if(Sims)
-		Sims->NeedUpdate=true;
-}
-
-
-//------------------------------------------------------------------------------
-void GGenericSims::Event(GCommunity* grp, tEvent)
-{
-	if((!Memory)||(!grp)) return;
-	if(Sims)
-		Sims->NeedUpdate=true;
-}
-
-
-//------------------------------------------------------------------------------
-void GGenericSims::Event(GProfile* sub, tEvent)
-{
-	if((!Memory)||(!sub)) return;
-	if(Sims)
-		Sims->NeedUpdate=true;
-}
-
-
-//------------------------------------------------------------------------------
-void GGenericSims::CreateParams(RConfig* params)
-{
-	params->InsertParam(new RParamValue("NullSimLevel",0.00001));
-	params->InsertParam(new RParamValue("Memory",false));
-}
-
-
-//------------------------------------------------------------------------------
-GGenericSims::~GGenericSims(void)
-{
-	delete Sims;
-	GSession::DeleteHandler(this);
-}
+// include files
+#include "ggenericsims.h"
 
 
 
@@ -289,7 +57,7 @@ GGenericSims::~GGenericSims(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSimType::GSimType(GDiffSims* owner,GConceptType* type)
+GSimType::GSimType(GGenericSims* owner,GConceptType* type)
 	: Owner(owner), Type(type)
 {
 }
@@ -305,20 +73,21 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 	double w1,w2,iff1,iff2;
 	double TotalRef;
 	double num;
-
+//	size_t nb(0);
+	
 	// Compute total number of references and the maximum for each type
-	TotalRef=Type->GetRef(Owner->ObjsType);
+	TotalRef=Type->GetRef(Owner->Space);
 	norm1=norm2=num=0.0;
 	max1=Owner->vec1->GetMaxAbsWeight(Type);
 	max2=Owner->vec2->GetMaxAbsWeight(Type);
 
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
-		iff1=log10(TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType)));
+		iff1=log10(TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->Space)));
 		w1=(Obj1()->GetWeight()/max1)*iff1;
 		while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())<(*Obj1())))
 		{
-			iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType)));
+			iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->Space)));
 			w2=(Obj2()->GetWeight()/max2)*iff2;
 			norm2+=w2*w2;
 			Obj2.Next();
@@ -331,18 +100,20 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 			if((Obj1()->GetWeight()>0)||(Obj2()->GetWeight()>0))
 				num+=w1*w2;
 			Obj2.Next();
+//			nb++;
 		}
 		norm1+=w1*w1;
 		Obj1.Next();
 	}
 	while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type))
 	{
-		iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->ObjsType)));
+		iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->Space)));
 		w2=(Obj2()->GetWeight()/max2)*iff2;
 		norm2+=w2*w2;
 		Obj2.Next();
 	}
 
+//	std::cout<<nb<<std::endl;
 	// Return similarity
 	if((norm1>0.0)&&(norm2>0.0))
 		return(num/(sqrt(norm1)*sqrt(norm2)));
@@ -368,14 +139,14 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 	double den;
 
 	// Compute total number of references and the maximum for each type
-	TotalRef=Type->GetRef(Owner->ObjsType);
+	TotalRef=Type->GetRef(Owner->Space);
 	num=den=0.0;
 	max1=Owner->vec1->GetMaxAbsWeight(Type);
 	max2=Owner->vec2->GetMaxAbsWeight(Type);
 
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
-		iff1=log10(TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->ObjsType)));
+		iff1=log10(TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->Space)));
 		w1=(Obj1()->GetWeight()/max1)*iff1;
 		GXMLIndex* c1=dynamic_cast<GXMLIndex*>(Obj1()->GetConcept());
 		RCursor<GWeightInfo> Cur(Obj2);
@@ -387,7 +158,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 			if(c1->GetXMLTag()!=c2->GetXMLTag())
 				continue;
 
-			iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Cur()->GetId(),Owner->ObjsType)));
+			iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Cur()->GetId(),Owner->Space)));
 			w2=(Cur()->GetWeight()/max2)*iff2;
 			den+=fabs(w1*w2);
 			if((w1<0.0)&&(w2<0.0))
@@ -409,19 +180,45 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 
 //------------------------------------------------------------------------------
 //
-// class GDiffSims
+//  GGenericSims
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDiffSims::GDiffSims(GFactoryMeasure* fac,bool min,tObjType objs)
-	: GMeasure2Elements(fac,min,1.0,objs), Types(30)
+GGenericSims::GGenericSims(GFactoryMeasure* fac,bool sym,tObjType type)
+	: GMeasure2Elements(fac,sym,otNoClass), Types(30), Space(type)
 {
+	switch(Space)
+	{
+		case otDoc:
+			SetElementsType(true,otDoc,otDoc);
+			break;
+		case otProfile :
+			SetElementsType(true,otProfile,otProfile);
+			break;
+		case otCommunity :
+			SetElementsType(true,otCommunity,otCommunity);
+			break;
+		case otDocProfile  :
+			SetElementsType(false,otDoc,otProfile);
+			break;
+		case otDocCommunity :
+			SetElementsType(false,otDoc,otCommunity);
+			break;
+		case otProfileCommunity :
+			SetElementsType(false,otProfile,otCommunity);
+			break;
+		case otTopic :
+			SetElementsType(true,otTopic,otTopic);
+			break;
+		default:
+			throw GException("No similarity measure for "+GetObjType(Space));
+	}
 }
 
 
 //------------------------------------------------------------------------------
-void GDiffSims::ApplyConfig(void)
+void GGenericSims::ApplyConfig(void)
 {
 	GMeasure2Elements::ApplyConfig();
 	SimType=0;
@@ -439,7 +236,7 @@ void GDiffSims::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GDiffSims::Connect(GSession* session)
+void GGenericSims::Connect(GSession* session)
 {
 	GMeasure2Elements::Connect(session);
 	GConceptType* IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
@@ -455,7 +252,7 @@ void GDiffSims::Connect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GDiffSims::Disconnect(GSession* session)
+void GGenericSims::Disconnect(GSession* session)
 {
 	Types.Clear();
 	GMeasure2Elements::Disconnect(session);
@@ -463,14 +260,14 @@ void GDiffSims::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-double GDiffSims::SimilarityIFFMV(void)
+double GGenericSims::SimilarityIFFMV(void)
 {
 	// if one vector is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
 
 	double Sim(0.0);
-	double NbComps(GetNbElements());
+	double NbComps(GetNbDiffElements());
 	NbComps=Factor*NbComps*(NbComps-1);
 	double CommonSpace(0.0); // Suppose that the two vectors have no common spaces
 	RCursor<GWeightInfo> ptr(*vec1);
@@ -482,9 +279,16 @@ double GDiffSims::SimilarityIFFMV(void)
 		{
 			// OK Compute it
 			double d=Cur()->Compute(ptr,ptr2);
-			if(d<NullLevel)
-				d=0.0;
-			Sim+=log10(Factor+d);
+			if(d<GetNullValue())
+				d=Factor;
+			if(fabs(d-1.0)<GetNullValue())			
+				d=1.0;
+			if(fabs(1.0+d)<GetNullValue())
+				d=-1.0;			
+//			cout<<"  "<<d<<endl;
+			RAssert(fabs(d)<=1.0)
+			Sim+=log10(d);
+//			Sim*=(d/NbComps);
 			CommonSpace+=1.0;
 		}
 		else
@@ -499,12 +303,14 @@ double GDiffSims::SimilarityIFFMV(void)
 	}
 	if(CommonSpace>0.0)
 		return(pow(10,Sim-CommonSpace*log10(NbComps)));
+/*	if(CommonSpace>0.0)
+		return(Sim);*/
 	return(0.0);
 }
 
 
 //------------------------------------------------------------------------------
-double GDiffSims::SimilarityIFFL(void)
+double GGenericSims::SimilarityIFFL(void)
 {
 	cout<<"Problem"<<endl;
 	return(0.0);
@@ -533,15 +339,24 @@ double GDiffSims::SimilarityIFFL(void)
 
 
 //------------------------------------------------------------------------------
-double GDiffSims::Compute(void* obj1,void* obj2)
+double GGenericSims::Compute(void* obj1,void* obj2)
 {
+	if(obj1==obj2)
+		return(1.0);
 	vec1=static_cast<GWeightInfos*>(obj1);
 	vec2=static_cast<GWeightInfos*>(obj2);
 	switch(SimType)
 	{
 		case 1:
+		{
+/*			if(static_cast<GProfile*>(obj1)->GetId()==7&&static_cast<GProfile*>(obj2)->GetId()==6)
+				std::cout<<"Debug"<<std::endl;*/
+/*			double res(SimilarityIFFMV());
+			cout<<"Sim("<<static_cast<GProfile*>(obj1)->GetId()<<","<<static_cast<GProfile*>(obj2)->GetId()<<")="<<res<<endl;
+			return(res);*/
 			return(SimilarityIFFMV());
 			break;
+		}
 		case 2:
 			return(SimilarityIFFL());
 	}
@@ -550,7 +365,7 @@ double GDiffSims::Compute(void* obj1,void* obj2)
 
 
 //------------------------------------------------------------------------------
-void GDiffSims::CreateParams(RConfig* params)
+void GGenericSims::CreateParams(RConfig* params)
 {
 	GMeasure2Elements::CreateParams(params);
 	params->InsertParam(new RParamValue("SimType","Multi-vector"));

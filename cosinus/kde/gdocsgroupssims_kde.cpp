@@ -2,15 +2,15 @@
 
 	GALILEI Research Project
 
-	GProfilesAgreement.cpp
+	GCommunityCalcGravitation_KDE.cpp
 
-	Agreement between profiles - Implementation.
+	A KDE about box for the statistical method. - Implementation.
 
 	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		
+
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -30,68 +30,49 @@
 
 
 
+//-----------------------------------------------------------------------------
+// include files for KDE
+#include <kaboutdata.h>
+#include <klocale.h>
+#include <kaboutapplication.h>
+
+
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmeasure2elements.h>
-#include <gprofile.h>
-#include <gsession.h>
-#include <ggalileiapp.h>
-using namespace GALILEI;
-using namespace R;
+#include <ggenericsims_kde.h>
 
+
+//-----------------------------------------------------------------------------
+// Description of the application
+static const char *description =
+	I18N_NOOP("The cosinus method is used to computed the similarities between the groups and documents.");
 
 
 //------------------------------------------------------------------------------
-//
-//  GProfilesDisagreement
-//
+extern "C" {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GProfilesDisagreement : public GMeasure2Elements
+void About(void)
 {
-	size_t MinDocs;
-public:
-	GProfilesDisagreement(GFactoryMeasure* fac);
-	virtual void ApplyConfig(void);
-	double Compute(void* obj1,void* obj2);
-	static void CreateParams(RConfig* params);	
-};
-
-
-//------------------------------------------------------------------------------
-GProfilesDisagreement::GProfilesDisagreement(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,true,otProfile)
-{
+	KAboutData aboutData( "cosinus", I18N_NOOP("Cosinus Method"),
+		"1.0", description, KAboutData::License_GPL,
+		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Contributor"), "pfrancq@ulb.ac.be");
+	aboutData.addAuthor("David Wartel",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
+	KAboutApplication dlg(&aboutData);
+	dlg.exec();
 }
 
 
 //------------------------------------------------------------------------------
-void GProfilesDisagreement::ApplyConfig(void)
+void Configure(GFactoryMeasure* params)
 {
-	GMeasure2Elements::ApplyConfig();
-	MinDocs=Factory->GetUInt("MinDocs");
+	GGenericSimsDlg dlg("Similarities between documents and communities");
+	dlg.Configure(params);
 }
 
 
 //------------------------------------------------------------------------------
-double GProfilesDisagreement::Compute(void* obj1,void* obj2)
-{
-	double nbcommon=double(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
-	if(nbcommon<MinDocs)
-		return(0.0);
-	size_t nbdiff=static_cast<GProfile*>(obj1)->GetCommonDiffDocs(static_cast<GProfile*>(obj2));
-	return(nbdiff/nbcommon);
-}
-
-
+}     // end of extren
 //------------------------------------------------------------------------------
-void GProfilesDisagreement::CreateParams(RConfig* params)
-{
-	GMeasure2Elements::CreateParams(params);
-	params->InsertParam(new RParamValue("MinDocs",7));
-}
-
-
-//------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles Disagreements","Count Method",GProfilesDisagreement)

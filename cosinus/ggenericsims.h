@@ -43,130 +43,40 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmeasure.h>
-#include <gprofile.h>
-#include <gsignalhandler.h>
-#include <ggalileiapp.h>
+#include <gmeasure2elements.h>
+#include <gconcepttype.h>
+//#include <gsignalhandler.h>
+/*#include <ggalileiapp.h>
 #include <glang.h>
-#include <gsession.h>
+
 #include <gdoc.h>
 #include <ggroup.h>
 #include <gmeasure2elements.h>
-#include <gconcepttype.h>
+#include <gconcepttype.h>*/
 using namespace GALILEI;
 
 
-//------------------------------------------------------------------------------
-/**
-* The GenericSims class provides a representation for the similarities between
-* groups and profiles.
-* @author Pascal Francq and Valery Vandaele
-* @short Groups-Documents Similarities.
-*/
-class GGenericSims : public GMeasure, public GSignalHandler
-{
-	// Internal class
-	class GElementSims;
-
-	/**
-	* Similarities.
-	*/
- 	GElementSims* Sims;
-
-	/**
-	* Must the sims be stock in a container
-	* or be recomputed each time
-	*/
-	bool Memory;
-
-	/**
-	* level under which a similarity is cinsidered as null;
-	*/
-	double NullSimLevel;
-
-	bool Doc;
-	
-	bool Group;
-	
-	bool SubProfile;
-	
-public:
-
-	/**
-	* Constructor of the similarities between documents and subprofiles.
-	*/
-	GGenericSims(GFactoryMeasure* fac,bool d,bool g,bool s);
-
-	/**
-	* Configurations were applied from the factory.
-	*/
-	virtual void ApplyConfig(void);
-
-	virtual double Compute(size_t id1,size_t id2)=0;
-	
-	/**
-	* returns the minimum level for a similarity not to be null.
-	*/
-	double GetNullSimLevel(void) {return NullSimLevel;}
-
-	virtual void Measure(unsigned int measure,...);
-
-	virtual size_t GetMaxId1(void)=0;
-
-	/**
-	* A specific document has changed.
-	* @param doc             Subprofile.
-	* @param event           Event.
-	*/
-	virtual void Event(GDoc* doc, tEvent event);
-
-	/**
-	* A specific group has changed.
-	* @param grp             Group.
-	* @param event           Event.
-	*/
-	virtual void Event(GCommunity* grp, tEvent event);
-
-	/**
-	* A specific group has changed.
-	* @param grp             Group.
-	* @param event           Event.
-	*/
-	virtual void Event(GProfile* sub, tEvent event);
-	
-	/**
-	* Create the parameters.
-	* @param params          Parameters to configure.
-	*/
-	static void CreateParams(RConfig* params);
-
-	/**
-	* Destructor of the similarities between documents and subprofiles.
-	*/
-	virtual ~GGenericSims(void);
-};
-
 
 //------------------------------------------------------------------------------
-class GDiffSims;
+class GGenericSims;
 	
 //------------------------------------------------------------------------------
 class GSimType
 {
 protected:
 	
-	GDiffSims* Owner;
+	GGenericSims* Owner;
 	GConceptType* Type;
 	
 public:
-	GSimType(GDiffSims* owner,GConceptType* type);
+	GSimType(GGenericSims* owner,GConceptType* type);
 	virtual double Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2);
 	int Compare(const GSimType& t) const {return(Type->Compare(t.Type));}
 	int Compare(const GSimType* t) const {return(Type->Compare(t->Type));}
 	int Compare(const GConceptType* t) const {return(Type->Compare(t));}
 	virtual ~GSimType(void) {}
 	
-	friend class GDiffSims;
+	friend class GGenericSims;
 };
 
 
@@ -174,14 +84,14 @@ public:
 class GSimTypeXMLIndex : public GSimType
 {
 public:
-	GSimTypeXMLIndex(GDiffSims* owner,GConceptType* type) :
+	GSimTypeXMLIndex(GGenericSims* owner,GConceptType* type) :
 		GSimType(owner,type) {}
 	virtual double Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2);
 };
 
 
 //------------------------------------------------------------------------------
-class GDiffSims : public GMeasure2Elements
+class GGenericSims : public GMeasure2Elements
 {
 protected:
 	
@@ -212,15 +122,21 @@ protected:
 	 */
 	RContainer<GSimType,true,true> Types;
 	
+	/**
+	 * Space of the objects.
+	 */
+	tObjType Space;
+	
 public:
 	
 	/**
-	 * Initialize the similarity.
-	 * @param fact           Factory.
-	 * @param min            Minimum similarity must be computed.
-	 * @param objs           Type of objects.
-	 */
-	GDiffSims(GFactoryMeasure* fact,bool min,tObjType objs);
+	* Constructor of the similarities between two elements of the same type. The 
+	* measures may be symetric or not.
+	* @param fac             Factory of the plug-in.
+	* @param sym             Symetric measure?
+	* @param type           Type of the elements in the lines.
+	*/
+	GGenericSims(GFactoryMeasure* fac,bool sym,tObjType type);
 	
 	/**
 	* Configurations were applied from the factory.

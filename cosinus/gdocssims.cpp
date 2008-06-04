@@ -33,11 +33,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggenericsims.h>
-#include <gdoc.h>
-#include <gsession.h>
-#include <ggalileiapp.h>
 using namespace GALILEI;
-using namespace R;
 
 
 
@@ -48,43 +44,12 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GDocsSims : public GDiffSims
+class GDocsSims : public GGenericSims
 {
 public:
-	GDocsSims(GFactoryMeasure* fac);
-	void* GetElement(size_t id);
-	size_t GetMaxElementsId(void);
-	size_t GetNbElements(void);
+	GDocsSims(GFactoryMeasure* fac) : GGenericSims(fac,true,otDoc)	{}
 };
 
 
 //------------------------------------------------------------------------------
-GDocsSims::GDocsSims(GFactoryMeasure* fac)
-	: GDiffSims(fac,true,otDoc)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void* GDocsSims::GetElement(size_t id)
-{
-	return(Session->GetDoc(id,false));
-} 
-
-
-//------------------------------------------------------------------------------
-size_t GDocsSims::GetMaxElementsId(void)
-{
-	return(Session->GetMaxDocId());
-}
-
-
-//------------------------------------------------------------------------------
-size_t GDocsSims::GetNbElements(void)
-{
-	return(Session->GetMaxDocId());
-}
-
-
-//------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Documents Similarities","Cosinus Method",GDocsSims)
+CREATE_MEASURE_FACTORY("Documents Similarities","Multi-space",GDocsSims)

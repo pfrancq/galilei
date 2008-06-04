@@ -2,14 +2,15 @@
 
 	GALILEI Research Project
 
-	GProfilesGroupsSimsCosinus.cpp
+	GSubProfilesSims.cpp
 
-	Similarities between documents and groups - Implementation.
+	Similarities between subprofiles - Implementation.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
+		Vandaele Valery (vavdaele@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,24 +33,24 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gsubprofilesgroupssims.h>
+#include <ggenericsims.h>
+using namespace GALILEI;
+
 
 
 //------------------------------------------------------------------------------
 //
-// class GProfilesGroupsSims
+//  GProfilesSims
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-double GProfilesGroupsSims::Compute(size_t id1,size_t id2)
+class GProfilesSims : public GGenericSims
 {
-	GProfile* sub=Session->GetProfile(id1,true,false);
-	GCommunity* grp=Session->GetCommunity(id2,true,false);
-	return(sub->SimilarityIFF2(*grp,otProfile,otCommunity));	
-}
+public:
+	GProfilesSims(GFactoryMeasure* fac) : GGenericSims(fac,true,otProfile) {} 
+};
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles/Groups Similarities","Cosinus Method",GProfilesGroupsSims)
-
+CREATE_MEASURE_FACTORY("Profiles Similarities","Multi-space",GProfilesSims)

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GCommunityCalcGravitation_KDE.cpp
+	GProfilesSims_KDE.cpp
 
-	A KDE about box for the statistical method. - Implementation.
+	A KDE about box for the subprofiles similarity measure - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -30,22 +30,7 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <gmeasure.h>
-using namespace GALILEI;
 
-
-//-----------------------------------------------------------------------------
-// include files for QT
-#include <qvariant.h>
-#include <qcheckbox.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qdialog.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
 
 
 //-----------------------------------------------------------------------------
@@ -53,18 +38,17 @@ using namespace GALILEI;
 #include <kaboutdata.h>
 #include <klocale.h>
 #include <kaboutapplication.h>
-#include <knuminput.h>
 
 
-//-----------------------------------------------------------------------------
-// include files for Current
-#include <dlgconfigsubprofilesgroups_qt.h>
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <ggenericsims_kde.h>
 
 
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("The cosinus method is used to computed the similarities between the groups and profiles.");
+	I18N_NOOP("The cosinus method is used to computed the similarities between the profiles.");
 
 
 //------------------------------------------------------------------------------
@@ -78,7 +62,6 @@ void About(void)
 		"1.0", description, KAboutData::License_GPL,
 		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Contributor"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("David Wartel",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
 }
@@ -87,19 +70,8 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryMeasure* params)
 {
- 	DlgConfigProfilesGroups_Qt dlg;
-
-	dlg.NullSimLevel->setPrecision(10);
-	dlg.NullSimLevel->setValue(params->GetDouble("NullSimLevel"));
-	dlg.Memory->setChecked(params->GetBool("Memory"));
-	dlg.MinSim->setValue(params->GetDouble("MinSim"));
-	if(dlg.exec())
-	{
-		params->SetDouble("NullSimLevel",dlg.NullSimLevel->value());
-		params->SetBool("Memory",dlg.Memory->isChecked());
-		params->SetDouble("MinSim",dlg.MinSim->value());
-		params->Apply();
- 	}
+	GGenericSimsDlg dlg("Similarities between profiles");
+	dlg.Configure(params);
 }
 
 

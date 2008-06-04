@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GProfilesGroupsSimsCosinus.h
+	GCommunitysDocsSims.cpp
 
 	Similarities between documents and groups - Implementation.
 
@@ -29,47 +29,26 @@
 */
 
 
-
-//------------------------------------------------------------------------------
-#ifndef GSubProfilesGroupsSimsH
-#define GSubProfilesDocsSimsH
-
-
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggenericsims.h>
+using namespace GALILEI;
+
 
 
 //------------------------------------------------------------------------------
-/**
-* The GCommunitysDocsSims class provides a representation for the similarities between
-* groups and profiles.
-* @author Pascal Francq and Valery Vandaele
-* @short Groups-Documents Similarities.
-*/
-class GProfilesGroupsSims : public GGenericSims
+//
+//  GDocsProfilesSims
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GDocsCommunitiesSims : public GGenericSims
 {
 public:
-
-	/**
-	* Constructor of the similarities between documents and subprofiles.
-	* @param session         Session.
-	* @param iff             Use Inverse Frequency Factor.
-	* @param memory      use container to stock sims?
-	*/
-	GProfilesGroupsSims(GFactoryMeasure* fac)
-		: GGenericSims(fac,false,true,true) {}
-
-	virtual double Compute(size_t id1,size_t id2);
-
-	virtual size_t GetMaxId1(void) { return(Session->GetNbProfiles());}
-
-	/**
-	* Destructor of the similarities between documents and subprofiles.
-	*/
-	virtual ~GProfilesGroupsSims(void) {}
+	GDocsCommunitiesSims(GFactoryMeasure* fac) : GGenericSims(fac,false,otDocCommunity) {}
 };
 
 
 //------------------------------------------------------------------------------
-#endif
+CREATE_MEASURE_FACTORY("Documents/Communities Similarities","Multi-vector",GDocsCommunitiesSims)
