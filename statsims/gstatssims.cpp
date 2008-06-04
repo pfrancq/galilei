@@ -145,7 +145,7 @@ public:
 
 	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GProfile>(ses,false,f)
 	{
-		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Profiles Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
