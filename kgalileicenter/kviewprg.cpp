@@ -6,7 +6,7 @@
 
 	Window to run a program - Implementation.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -113,14 +113,14 @@ void KViewPrg::MyThread::run(void)
 	{
 		QMessageBox::critical(Rec,"KGALILEICenter - R Exception",e.GetMsg());
 	}
-	catch(std::bad_alloc)
+	catch(std::exception& e)
 	{
-		QMessageBox::critical(Rec,"KGALILEICenter","Memory Error");
+		QMessageBox::critical(Rec,"KGALILEICenter - std::exception",e.what());
 	}
 	catch(...)
 	{
-		QMessageBox::critical(Rec,"KGALILEICenter","Undefined Error");
-	}
+		QMessageBox::critical(Rec,"KGALILEICenter - Undefined Error","Problem");		
+	}		
 	Rec->endPrg();
 }
 

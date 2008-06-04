@@ -152,6 +152,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	GSession* Sess;
 
 	slotStatusMsg(i18n("Connecting..."));
+	Doc=0;
 	try
 	{
 		Doc=new KDoc(this);
@@ -173,14 +174,24 @@ void KGALILEICenterApp::slotSessionConnect(void)
 				Doc=0;
 			}
 		}
+		slotStatusMsg(i18n("Connected"));
 	}
 	catch(GException& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-		Doc=0;
-		return;
 	}
-	slotStatusMsg(i18n("Connected"));
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+	}
+	catch(std::exception& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+	}	
 }
 
 
@@ -225,8 +236,20 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
 	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+	}
+	catch(std::exception& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+	}	
 }
 
 
@@ -265,13 +288,19 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 	catch(GException& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-		return;
 	}
 	catch(RException& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
-		return;
 	}
+	catch(std::exception& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+	}	
 }
 
 
@@ -292,13 +321,19 @@ void KGALILEICenterApp::slotImportUsersData(void)
 	catch(GException& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-		return;
 	}
 	catch(RException& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
-		return;
 	}
+	catch(std::exception& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+	}	
 }
 
 
@@ -839,14 +874,22 @@ void KGALILEICenterApp::slotRunProgram(void)
 		createClient(Doc,o=new KViewPrg(Doc,pWorkspace,tmp,0));
 		o->run();
 	}
-	catch(std::bad_alloc)
+	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+	}
+	catch(std::exception& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
 	}
 	catch(...)
 	{
-		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
-	}
+		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");		
+	}	
 	KIO::NetAccess::removeTempFile( tmpfile );
 }
 
@@ -862,14 +905,26 @@ void KGALILEICenterApp::slotHelpProgram(void)
 		createClient(Doc,o=new KViewPrg(Doc,pWorkspace,"",0));
 		o->run();
 	}
-	catch(std::bad_alloc)
+	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter","Memory Error");
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+		return;
+	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+		return;
+	}
+	catch(std::exception& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
+		return;		
 	}
 	catch(...)
 	{
-		QMessageBox::critical(this,"KGALILEICenter","Undefined Error");
-	}
+		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+		return;		
+	}	
 }
 
 
@@ -984,6 +1039,18 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
+		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
 	}
+	catch(RException& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+	}
+	catch(std::exception& e)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
+	}
+	catch(...)
+	{
+		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");		
+	}	
 }
