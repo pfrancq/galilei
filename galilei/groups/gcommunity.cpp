@@ -162,7 +162,7 @@ void GCommunity::NotJudgedDocsList(RContainer<GFdbk,false,true>& docs, GProfile*
 void GCommunity::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false>& docs, GProfile* prof,GSession*) const
 {
 	if(!measure)
-		throw GException("No profiles/documents similarities");
+		throw GException("No documents/profiles similarities");
 
 	// Clear container.
 	docs.Clear();
@@ -187,7 +187,7 @@ void GCommunity::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,f
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
 				// Insert it.
 				double res;
-				measure->Measure(0,prof->GetId(),Fdbks()->GetDocId(),&res);
+				measure->Measure(0,Fdbks()->GetDocId(),prof->GetId(),&res);
 				Docs.InsertPtr(new GFdbkRef(Fdbks(),res));
 			}
 			continue;

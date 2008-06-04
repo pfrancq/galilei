@@ -31,6 +31,12 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rqt.h>
+using namespace R;
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
 using namespace GALILEI;
@@ -45,12 +51,12 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <knuminput.h>
+#include <kurlrequester.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI Project
 #include <qgmeasure2elementsdlg.h>
-using namespace GALILEI;
 
 
 
@@ -65,6 +71,7 @@ QGMeasure2ElementsDlg::QGMeasure2ElementsDlg(const char* str)
 	: DlgMeasure2Elements()
 {
 	setCaption(str);
+	Dir->setMode(KFile::Directory);
 }
 
 
@@ -91,6 +98,9 @@ void QGMeasure2ElementsDlg::Init(GFactoryMeasure* params)
 	StaticMinSim->setChecked(!params->GetBool("AutomaticMinMeasure"));
 	MinSim->setEnabled(!params->GetBool("AutomaticMinMeasure"));
 	Memory->setChecked(params->GetBool("Memory"));
+	File->setChecked(params->GetBool("File"));
+	Dir->setURL(ToQString(params->Get("Dir")));
+	Dir->setEnabled(File->isChecked());
 }
 
 
@@ -98,9 +108,11 @@ void QGMeasure2ElementsDlg::Init(GFactoryMeasure* params)
 void QGMeasure2ElementsDlg::Done(GFactoryMeasure* params)
 {
 	params->SetDouble("NullLevel",NullSimLevel->value());
-	params->SetDouble("MinMeasure",MinSim->value());
-	params->SetBool("Memory",Memory->isChecked());
+	params->SetDouble("MinMeasure",MinSim->value());	
 	params->SetBool("AutomaticMinMeasure",!StaticMinSim->isChecked());
+	params->SetBool("Memory",Memory->isChecked());
+	params->SetBool("File",File->isChecked());
+	params->Set("Dir",FromQString(Dir->url()));	
 }
 
 

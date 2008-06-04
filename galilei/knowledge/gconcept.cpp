@@ -201,10 +201,10 @@ size_t GConcept::GetRef(tObjType ObjType) const
 		case otDocProfile:
 			return(NbRefDocs+NbRefProfiles);
 			break;
-		case otDocGroup:
+		case otDocCommunity:
 			return(NbRefDocs+NbRefGroups);
 			break;
-		case otProfileGroup:
+		case otProfileCommunity:
 			return(NbRefProfiles+NbRefGroups);
 			break;
 		default:
@@ -233,11 +233,11 @@ void GConcept::Clear(tObjType ObjType)
 			NbRefDocs=0;
 			NbRefProfiles=0;
 			break;
-		case otDocGroup:
+		case otDocCommunity:
 			NbRefDocs=0;
 			NbRefGroups=0;
 			break;
-		case otProfileGroup:
+		case otProfileCommunity:
 			NbRefProfiles=0;
 			NbRefGroups=0;
 			break;

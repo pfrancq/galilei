@@ -495,6 +495,77 @@ R::RRandom* GSession::GetRandom(void) const
 
 //------------------------------------------------------------------------------
 //
+// GSession::Generic
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+size_t GSession::GetNbElements(tObjType type) const
+{
+	switch(type)
+	{
+		case otDoc:
+			return(Data->Docs.GetNb());
+		case otProfile:
+			return(Data->Profiles.GetNb());
+		case otCommunity:
+			return(Data->Groups.GetNb());
+/*		case otTopic:
+			return(Data->Topics.GetNb());*/
+		default:
+			throw GException("GSession::GetNbElements : Type "+GetObjType(type)+" is not handled");
+	}
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSession::GetMaxElementId(tObjType type) const
+{
+	switch(type)
+	{
+		case otDoc:
+			if(!Data->Docs.GetNb())
+				return(0);
+			return(Data->Docs[Data->Docs.GetMaxPos()]->GetId());
+		case otProfile:
+			if(!Data->Profiles.GetNb())
+				return(0);
+			return(Data->Profiles[Data->Profiles.GetMaxPos()]->GetId());
+		case otCommunity:
+			if(!Data->Groups.GetNb())
+				return(0);
+			return(Data->Groups[Data->Groups.GetMaxPos()]->GetId());
+/*		case otTopic:
+			if(!Data->Topics.GetNb())
+				return(0);
+			return(Data->Topics[Data->Topics.GetMaxPos()]->GetId());*/
+		default:
+			throw GException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
+	}
+}
+
+//------------------------------------------------------------------------------
+void* GSession::GetElement(tObjType type,size_t id) const
+{
+	switch(type)
+	{
+		case otDoc:
+			return(GetDoc(id,false));
+		case otProfile:
+			return(GetProfile(id,false));
+		case otCommunity:
+			return(GetCommunity(id,false));
+/*		case otTopic:
+			return(GetTopic(id,false));*/
+		default:
+			throw GException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
+	}
+}
+
+
+
+//------------------------------------------------------------------------------
+//
 // GSession::Knowledge
 //
 //------------------------------------------------------------------------------

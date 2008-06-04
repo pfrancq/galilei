@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>516</width>
-            <height>296</height>
+            <width>416</width>
+            <height>322</height>
         </rect>
     </property>
     <property name="caption">
@@ -147,6 +147,46 @@
                         <string>Stored in Memory</string>
                     </property>
                 </widget>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>layout4</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>File</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Stored in File</string>
+                            </property>
+                        </widget>
+                        <spacer>
+                            <property name="name">
+                                <cstring>spacer4</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>40</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="KURLRequester">
+                            <property name="name">
+                                <cstring>Dir</cstring>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
             </vbox>
         </widget>
         <widget class="QGroupBox">
@@ -241,6 +281,12 @@
         <receiver>DlgMeasure2Elements</receiver>
         <slot>reject()</slot>
     </connection>
+    <connection>
+        <sender>File</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>Dir</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
 </connections>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
@@ -248,5 +294,8 @@
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
+    <includehint>kurlrequester.h</includehint>
+    <includehint>klineedit.h</includehint>
+    <includehint>kpushbutton.h</includehint>
 </includehints>
 </UI>

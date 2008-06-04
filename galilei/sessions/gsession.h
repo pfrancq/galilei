@@ -231,6 +231,36 @@ public:
 	//@} General methods
 
 	//-----------------------------------------------------
+	/** @name Generic Methods
+	*/
+	// @{
+
+	/**
+	* Get the number of elements of a given type.
+	* @param type            Type of the elements.
+	* @returns Number of elements.
+	*/
+	size_t GetNbElements(tObjType type) const;
+	
+	/**
+	 * Get the highest identifier for the elements of a given type.
+	 * @param type            Type of the elements.
+	 * @returns Highest identifier.
+	 */	
+	size_t GetMaxElementId(tObjType type) const;
+
+	/**
+	* Get an untyped pointer to a given element of a given type, or null if the
+	* identifier does not correspond to an element.       
+	 * Get an untyped pointer to an element of a given type.
+	 * @param type            Type of the element.
+	 * @returns Highest identifier.
+	 */	
+	void* GetElement(tObjType type,size_t id) const;
+	
+	//@} General methods
+	
+	//-----------------------------------------------------
 	/** @name Knowledge Methods
 	*/
 	// @{

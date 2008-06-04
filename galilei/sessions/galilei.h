@@ -198,19 +198,19 @@ const unsigned cNoRef=0xFFFFFFFF;
 */
 enum tObjType
 {
-	otNoClass=0                  /** No specific class. */,
-	otSession=1                  /** GALILEI Session. */,
-	otDoc=2                      /** Document. */,
-	otUser=5                     /** User.*/,
-	otProfile=6                  /** Profile.*/,
-	otCommunity=9                /** Community.*/,
-	otDocProfile=10              /** Document or Profile.*/,
-	otDocGroup=11                /** Document or Group.*/,
-	otProfileGroup=12            /** Profile or Group.*/,
-	otFdbk=13                    /** Assessment of a document by a profile.*/,
-	otLang=14                    /** Language. */,
-	otHistory=15                 /** History. */,
-	otTopic=16                   /** Topic. */ 
+	otNoClass=0              /** No specific class. */,
+	otSession=1              /** GALILEI Session. */,
+	otDoc=2                  /** Document. */,
+	otUser=5                 /** User.*/,
+	otProfile=6              /** Profile.*/,
+	otCommunity=9            /** Community.*/,
+	otDocProfile=10          /** Document or Profile.*/,
+	otDocCommunity=11        /** Document or Group.*/,
+	otProfileCommunity=12    /** Profile or Group.*/,
+	otFdbk=13                /** Assessment of a document by a profile.*/,
+	otLang=14                /** Language. */,
+	otHistory=15             /** History. */,
+	otTopic=16               /** Topic. */ 
 };
 
 
@@ -229,18 +229,18 @@ R::RString GetObjType(tObjType objtype);
 */
 enum tObjState
 {
-	osUnknow                  /** Unknow state.*/,
-	osCreated                 /** Object created in the system.*/,
-	osNew                     /** Object was allocated in memory.*/,
-	osNeedLoad                /** Object must load information.*/,
-	osOnDemand                /** Object demands to load information. */,
-	osLoaded                  /** Object loaded information.*/,
-	osUpToDate                /** Object is up to date.*/,
-	osModified                /** Object was modified and computation must be update.*/,
-	osUpdated                 /** Object is updated and needs to be save.*/,
-	osSaved                   /** Object was saved.*/,
-	osDelete                  /** Object is deleted from memory.*/,
-	osDestroyed               /** Object is destroyed from the system.*/
+	osUnknow                 /** Unknow state.*/,
+	osCreated                /** Object created in the system.*/,
+	osNew                    /** Object was allocated in memory.*/,
+	osNeedLoad               /** Object must load information.*/,
+	osOnDemand               /** Object demands to load information. */,
+	osLoaded                 /** Object loaded information.*/,
+	osUpToDate               /** Object is up to date.*/,
+	osModified               /** Object was modified and computation must be update.*/,
+	osUpdated                /** Object is updated and needs to be save.*/,
+	osSaved                  /** Object was saved.*/,
+	osDelete                 /** Object is deleted from memory.*/,
+	osDestroyed              /** Object is destroyed from the system.*/
 };
 
 
@@ -259,12 +259,12 @@ R::RString GetState(tObjState state);
 */
 enum tEvent
 {
-	eUnknow                   /** Unknow event.*/,
-	eObjCreated               /** An object was created in the system.*/,
-	eObjNew                   /** An object was created in memory.*/,
-	eObjModified              /** An object was modified.*/,
-	eObjDelete                /** An Object will be deleted from memory.*/,
-	eObjDestroyed             /** An object was destroyed from the system.*/
+	eUnknow                  /** Unknow event.*/,
+	eObjCreated              /** An object was created in the system.*/,
+	eObjNew                  /** An object was created in memory.*/,
+	eObjModified             /** An object was modified.*/,
+	eObjDelete               /** An Object will be deleted from memory.*/,
+	eObjDestroyed            /** An object was destroyed from the system.*/
 };
 
 
@@ -278,7 +278,7 @@ R::RString GetEvent(tEvent event);
 
 //------------------------------------------------------------------------------
 /**
-* Judgments over a document.
+* Assessment over a document.
 * 
 * The 4 first bits are used to express the assessment of the Doc (OK,KO,N), the
 * 5th and 6th bits are used to express the status of the Doc (Hub, Autority ).
@@ -287,10 +287,10 @@ R::RString GetEvent(tEvent event);
 */
 enum tDocAssessment
 {
-	djUnknow                  /** Unknow judgement.*/=0,
-	djOK                      /** Document is relevant.*/=1,
-	djKO                      /** Document is fuzzy relevant.*/=2,
-	djOutScope                /** Document is irrelevant.*/=8,
+	djUnknow                 /** Unknow judgement.*/=0,
+	djOK                     /** Document is relevant.*/=1,
+	djKO                     /** Document is fuzzy relevant.*/=2,
+	djOutScope               /** Document is irrelevant.*/=8,
 	djHub                    /** Document is a Hub.*/=16,
 	djAutority               /** Document is an Autority.*/=32,
 	djMaskJudg               /** Mask for the assessment of the doc.*/=15,
@@ -320,6 +320,34 @@ R::RString GetAssessmentCode(tDocAssessment assessment);
 * @param assessment          Assessment.
 */
 tDocAssessment GetAssessmentType(const R::RString& assessment);
+
+
+//------------------------------------------------------------------------------
+/**
+ * Type of a given measure related to objects in GALILEI. It is supposed that
+ * only measure between two objects are computed.
+ * @short Type of measures.
+ */
+enum tTypeMeasure
+{
+	tmUnknow                 /** Unknow measure.*/,
+	tmDoc                    /** Measure(document,document).*/,
+	tmProfile                /** Measure(profile,profile).*/,
+	tmDocProfile             /** Measure(document,profile).*/,
+	tmCommunity              /** Measure(community,community).*/,
+	tmDocCommunity           /** Measure(document,community).*/,
+	tmProfileCommunity       /** Measure(profile,community).*/,
+	tmTopic                  /** Measure(topic,topic).*/,
+	tmDocTopic               /** Measure(document,topic).*/
+};
+
+
+//------------------------------------------------------------------------------
+/**
+ * Get a string representing the type of measure.
+ * @param type               Type of the measure.
+ */
+R::RString GetMeasureType(tTypeMeasure type);
 
 
 //------------------------------------------------------------------------------

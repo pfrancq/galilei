@@ -617,7 +617,7 @@ void GSubjects::DocumentSharing(void)
 	Apply();
 
 	// Similarities
-	GMeasure* ProfilesDocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Documents Similarities");
+	GMeasure* ProfilesDocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Profiles Similarities");
 
 	// Go through the groups
 	R::RCursor<GCommunity> Grps(Data->Session->GetCommunities());

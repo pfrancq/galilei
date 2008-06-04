@@ -75,10 +75,10 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("community"));
 		case otDocProfile:
 			return(RString("document or profile"));
-		case otDocGroup:
-			return(RString("document or group"));
-		case otProfileGroup:
-			return(RString("profile or group"));
+		case otDocCommunity:
+			return(RString("document or community"));
+		case otProfileCommunity:
+			return(RString("profile or community"));
 		case otFdbk:
 			return(RString("assessment"));
 		case otLang:
@@ -225,4 +225,31 @@ tDocAssessment GALILEI::GetAssessmentType(const R::RString& assessment)
 			break;
 	}
 	return(jug);
+}
+
+
+//-----------------------------------------------------------------------------
+RString GALILEI::GetMeasureType(tTypeMeasure type)
+{
+	switch(type)
+	{
+		case tmUnknow :
+			return(RString("Unknow measure."));
+		case tmDoc :
+			return(RString("Measure(document,document)"));
+		case tmProfile :
+			return(RString("Measure(profile,profile)"));
+		case tmDocProfile :
+			return(RString("Measure(document,profile)"));
+		case tmCommunity :
+			return(RString("Measure(community,community)"));
+		case tmDocCommunity :
+			return(RString("Measure(document,community)"));
+		case tmProfileCommunity :
+			return(RString("Measure(profile,community)"));
+		case tmTopic :
+			return(RString("Measure(topic,topic)"));
+		case tmDocTopic :
+			return(RString("Measure(document,topic)"));
+	}
 }

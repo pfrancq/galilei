@@ -55,22 +55,29 @@ namespace GALILEI{
 */
 class GMeasure2Elements : public GMeasure, public GSignalHandler
 {
-public:	
-
-	class Intern;
+	class Measures;
 	
 	/**
-	 * Internal data.
+	 * Values.
 	 */
-	Intern* Data;
+	RContainer<Measures,true,false> Values;
 
-protected:
+	/**
+	 *  Is the measure symetric, i.e. measure(i,j)=measure(j,i) ?
+	 */
+	bool Symetric;	
 	
 	/**
 	* Level under which a measure is considered as null;
 	*/
 	double NullLevel;
 
+	/**
+	 * Value representing a dirty one. For example, for a measure in [-1,+1],
+	 * it may be -2 (default). 
+	 */
+	double DirtyValue;
+	
 	/**
 	* Static minimum of measure.
 	*/ 
@@ -87,33 +94,82 @@ protected:
 	bool MinMeasureSense;
 	
 	/**
-	 * Similarities in memory.
+	 * Measures in memory.
 	 */ 
-	bool Memory;
-
-	/**
-	 * What is the value of measure when an object is compared with itself. 
-	 */
-	double Equals;
+	bool InMemory;
 	
 	/**
-	 * Type of the elements.
+	 * Measures in a file.
+	 */ 
+	bool InFile;
+
+	/**
+	 * Name of measures.
 	 */
-	tObjType ObjsType;
+	RString Name;
+	
+	/**
+	 * Directory containing the binary files.
+	 */
+	RString Dir;
+
+	/**
+	 * Type of the elements representing the lines.
+	 */
+	tObjType Lines;
+
+	/**
+	 * Type of the elements representing the columns.
+	 */
+	tObjType Cols;
+	
+	/**
+	 * Mean of the measures.
+	 */
+	double Mean;
+	
+	/**
+	 * Deviation of the measures.
+	 */
+	double Deviation;
+
+	/**
+	 * Number of values computed.
+	 */
+	size_t NbValues;
 
 public:
 
 	/**
-	* Constructor of the measurees between two elements.
+	* Constructor of the measures between two elements of the same type. The 
+	* measures may be symetric or not.
 	* @param fac             Factory of the plug-in.
-	* @param min             Must a minimum measure between similar elements be
-	*                        computed.
-	* @param equals          Value of the measure when a given element is
-	*                        compared with itself. 
-	* @param objs            Type of the elements.
+	* @param sym             Symetric measure?
+	* @param type            Type of the elements in the lines.
 	*/
-	GMeasure2Elements(GFactoryMeasure* fac,bool min,double equals,tObjType objs);
+	GMeasure2Elements(GFactoryMeasure* fac,bool sym,tObjType type);
+	
+	/**
+	 * Constructor of the measures between two elements of different types.
+	 * @param fac             Factory of the plug-in.
+	 * @param lines           Type of the elements in the lines.
+	 * @param cols            Type of the elements in the cols.
+	 */
+	GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjType cols);
 
+	/**
+	 * Set the type of the elements.
+	 * @param sym             Symetric measure?
+	 * @param lines           Type of the elements in the lines.
+	 * @param cols            Type of the elements in the cols.
+	 */
+	void SetElementsType(bool sym,tObjType lines,tObjType cols);
+			
+	/**
+	 * Get the value corresponding to a value that must be considered as null. 
+	 */
+	inline double GetNullValue(void) const {return(NullLevel);}
+	
 	/**
 	* Configurations were applied from the factory.
 	*/
@@ -166,39 +222,50 @@ public:
 	virtual double Compute(void* obj1,void* obj2)=0;
 	
 	/**
-	* Get a pointer to a given element of null if the identifier does not
-	* correspond to an element.       
-	* @param id              Identifier of the element.
-	* @code
-	* void* MyMeasure::GetElement(size_t id)
-	* {
-	*    return(Session->GetProfile(id,false));
-	* } 
-	* @endcode
-	*/
-	virtual void* GetElement(size_t id)=0;
-	
-	/**
-	 * Return the maximum identifier of the elements.
-	 * @code
-	 * size_t MyMeasure::GetMaxElementsId(void)
-	 * {
-	 *    return(Session->GetMaxProfileId());
-	 * }
-	 * @endcode
-	 */        
-	virtual size_t GetMaxElementsId(void)=0;
-	
-	/**
-	 * Return the total number of elements.
+	 * Return the total number of different elements. If the measure is related
+	 * to one type only of elements (for example profiles), the implementation
+	 * of the method looks like:
 	 * @code
 	 * size_t MyMeasure::GetNbElements(void)
 	 * {
-	 *    return(Session->GetNbProfile());
+	 *    return(Session->GetNbProfiles());
+	 * }
+	 * 
+	 * If the measure is related to two types of elements (for example profiles
+	 * and documents), the implementation of the method looks like:
+	 * @code
+	 * size_t MyMeasure::GetNbElements(void)
+	 * {
+	 *    return(Session->GetNbDocs()+Session->GetNbProfiles());
 	 * }
 	 * @endcode
 	 */        
-	virtual size_t GetNbElements(void)=0;
+	size_t GetNbDiffElements(void);
+	
+private:
+	
+	/**
+	 * An element was added and all the measure related to it must be created.
+	 * @param id             Identifier of the element.
+	 * @param line           Element is a line?
+	 */
+	void AddIdentificator(size_t id,bool line);
+
+	/**
+	 * An element has changed and all the measure related to it are not updated
+	 * anymore.
+	 * @param id             Identifier of the element.
+	 * @param line           Element is a line?
+	 */
+	void DirtyIdentificator(size_t id,bool line);
+
+	/**
+	 * An element is deleted and all the measure related to it are modified.
+	 * @param id             Identifier of the element.
+	 * @param line           Element is a line?
+	 */
+	void DeleteIdentificator(size_t id,bool line);
+	
 	
 	/**
 	 * This template method handles the modification of the status of a given
@@ -206,9 +273,12 @@ public:
 	 * @param C              Class of the element.
 	 * @param element        Pointer to the element.
 	 * @param event          Event (type of modification).
+	 * @param line           Element is a line?
 	 */
-	template<class C> void UpdateElement(C* element,tEvent event);
+	template<class C> void UpdateElement(C* element,tEvent event,bool line);
 
+public:
+	
 	/**
 	* A specific document has changed.
 	* @param doc             Document.
@@ -225,10 +295,27 @@ public:
 	
 	/**
 	* A specific group has changed.
-	* @param grp             Group.
+	* @param community       Community.
 	* @param event           Event.
 	*/
-	virtual void Event(GCommunity* grp, tEvent event);
+	virtual void Event(GCommunity* community, tEvent event);
+
+	/**
+	 * All the measures must be updated.
+	 */
+	void Update(void);
+
+	/**
+	 * Add a new value.
+	 * @param val            Value to add. 
+	 */
+	void AddValue(double val);
+	
+	/**
+	 * Delete a new value.
+	 * @param val            Value to delete. 
+	 */
+	void DeleteValue(double& val);
 	
 	/**
 	* Create the parameters.
