@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GDocsAgree_KDE.cpp
+	QDocsDisagree_KDE.cpp
 
-	A KDE about box for the documents agreement measure - Implementation.
+	A KDE about box for the documents disagreement measure - Implementation.
 
 	Copyright 2003-2007 by the Université Libre de Bruxelles.
 
@@ -57,7 +57,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("The count method is used to computed the agreements between the documents.");
+	I18N_NOOP("The count method is used to computed the disagreements between the documents.");
+
 
 
 //-----------------------------------------------------------------------------
@@ -73,7 +74,7 @@ class MyDlg : public QGMeasure2ElementsDlg
 	
 public:
 
-	MyDlg(void) : QGMeasure2ElementsDlg("Agreement ratios between documents") {}
+	MyDlg(void) : QGMeasure2ElementsDlg("Disagreement ratios between documents") {}
 	virtual void Panel(void);
 	virtual void Init(GFactoryMeasure* params);
 	virtual void Done(GFactoryMeasure* params);
@@ -84,13 +85,13 @@ public:
 void MyDlg::Panel(void)
 {
     QHBoxLayout* layout = new QHBoxLayout(0,0,6);
-    QLabel* text = new QLabel(MeasureSpecific);
+    QLabel* text = new QLabel(GetMeasureSpecific());
     text->setText("Minimum common profiles");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-   	MinProfiles = new QSpinBox(MeasureSpecific,"MinProfiles");
+   	MinProfiles = new QSpinBox(GetMeasureSpecific(),"MinProfiles");
     layout->addWidget(MinProfiles);
-	MeasureSpecificLayout->addLayout(layout);
+	GetMeasureSpecificLayout()->addLayout(layout);
 }
 
 
@@ -110,16 +111,17 @@ void MyDlg::Done(GFactoryMeasure* params)
 }
 
 
+
 //------------------------------------------------------------------------------
 //
 extern "C" {
-//
+//	
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "cosinus", I18N_NOOP("Count Method"),
+	KAboutData aboutData( "count", I18N_NOOP("Count Method"),
 		"1.0", description, KAboutData::License_GPL,
 		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Contributor"), "pfrancq@ulb.ac.be");

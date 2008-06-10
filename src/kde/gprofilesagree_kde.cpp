@@ -84,13 +84,13 @@ public:
 void MyDlg::Panel(void)
 {
     QHBoxLayout* layout = new QHBoxLayout(0,0,6);
-    QLabel* text = new QLabel(MeasureSpecific);
+    QLabel* text = new QLabel(GetMeasureSpecific());
     text->setText("Minimum common documents");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-   	MinDocs = new QSpinBox(MeasureSpecific,"MinDocs");
+   	MinDocs = new QSpinBox(GetMeasureSpecific(),"MinDocs");
     layout->addWidget(MinDocs);
-	MeasureSpecificLayout->addLayout(layout);
+	GetMeasureSpecificLayout()->addLayout(layout);
 }
 
 

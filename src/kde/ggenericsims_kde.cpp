@@ -65,25 +65,25 @@ GGenericSimsDlg::GGenericSimsDlg(const QString& title)
 void GGenericSimsDlg::Panel(void)
 {
     QHBoxLayout* layout = new QHBoxLayout(0,0,6);
-    QLabel* text = new QLabel(MeasureSpecific);
+    QLabel* text = new QLabel(GetMeasureSpecific());
     text->setText("Similarity Type");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-	SimType = new QComboBox(MeasureSpecific,"SimType");
+	SimType = new QComboBox(GetMeasureSpecific(),"SimType");
 	SimType->insertItem("Multi-vector");
 	SimType->insertItem("Language");
     layout->addWidget(SimType);
-	MeasureSpecificLayout->addLayout(layout);
+	GetMeasureSpecificLayout()->addLayout(layout);
 
 	layout = new QHBoxLayout(0,0,6);
-   	text = new QLabel(MeasureSpecific);
+   	text = new QLabel(GetMeasureSpecific());
     text->setText("Factor");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-	Factor = new KDoubleNumInput(MeasureSpecific,"Factor");
+	Factor = new KDoubleNumInput(GetMeasureSpecific(),"Factor");
 	Factor->setPrecision(5);
     layout->addWidget(Factor);
-	MeasureSpecificLayout->addLayout(layout);
+	GetMeasureSpecificLayout()->addLayout(layout);
 }
 
 
