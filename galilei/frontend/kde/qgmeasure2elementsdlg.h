@@ -38,7 +38,11 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <dlgmeasure2elements.h>
+
+
+//------------------------------------------------------------------------------
+// forward declaration
+class DlgMeasure2Elements;         //  Create by Qt uic
 
 
 //-----------------------------------------------------------------------------
@@ -60,8 +64,13 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Configuration For Measures Between Two Elements
  */
-class QGMeasure2ElementsDlg : public DlgMeasure2Elements
+class QGMeasure2ElementsDlg 
 {
+	/**
+	 * Qt-generated Dialog class
+	 */
+	DlgMeasure2Elements* Dlg;
+	
 public:	
 	/**
 	 * Construct the dialog box.
@@ -130,6 +139,21 @@ public:
 	 * @param params         Pointer to the factory.
 	 */	
 	virtual void Done(GFactoryMeasure* params);
+	
+	/**
+	 * Get a pointer to the layout that can be modified.
+	 */
+	QVBoxLayout* GetMeasureSpecificLayout(void);
+	
+	/**
+	 * Get a pointer to the groupbox that can be modified.
+	 */
+    QGroupBox* GetMeasureSpecific(void);
+    
+	/**
+	 * Destructor.
+	 */
+	virtual ~QGMeasure2ElementsDlg(void);
 };
 
 

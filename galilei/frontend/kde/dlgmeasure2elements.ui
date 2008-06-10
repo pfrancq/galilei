@@ -288,6 +288,12 @@
         <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
+<includes>
+    <include location="local" impldecl="in implementation">dlgmeasure2elements.ui.h</include>
+</includes>
+<functions>
+    <function specifier="non virtual" returnType="QVBoxLayout *">GetMeasureSpecificLayout()</function>
+</functions>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
     <includehint>knuminput.h</includehint>

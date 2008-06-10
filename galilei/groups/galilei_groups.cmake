@@ -1,13 +1,17 @@
-SET(galilei_groups_INST_INCLUDES ggroupcalc.h 
-                                gpostgroup.h 
-                                gsubject.h 
+SET(galilei_groups_INST_INCLUDES gcommunitycalc.h
+                                gpostcommunity.h
+                                gsubject.h
                                 ggroup.h
-                                ggrouping.h
+                                ggroup.hh
+                                gcommunity.h
+                                gtopic.h
+                                ggroupprofiles.h
                                 gsubjects.h)
-                              
+
 SET(galilei_groups_TARGET_SOURCES gsubjects.cpp
-                                ggroup.cpp
-                                ggroupcalc.cpp
-                                ggrouping.cpp
+                                gcommunitycalc.cpp
+                                gcommunity.cpp
+                                gtopic.cpp
+                                ggroupprofiles.cpp
                                 gsubject.cpp
-                                gpostgroup.cpp)
+                                gpostcommunity.cpp)
