@@ -45,7 +45,6 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gweightinfos.h>
-#include <gsubject.h>
 
 
 //------------------------------------------------------------------------------
@@ -76,13 +75,18 @@ protected:
 	/**
 	* Identifier of the document.
 	*/
-	unsigned int Id;
+	size_t Id;
+
+	/**
+	 * Structure of the document.
+	 */
+	GDocStruct* Struct;
 
 	/**
 	* Language of the description.
 	*/
 	GLang* Lang;
-		
+
 	/**
 	* MIME Type of the document.
 	*/
@@ -99,9 +103,9 @@ protected:
 	R::RDate Computed;
 
 	/**
-	* Identificator of the profiles which have assessed the document.
+	* Identifiers of the profiles which have assessed the document.
 	*/
-	R::RVectorInt<unsigned int,true>* Fdbks;
+	R::RVectorInt<size_t,true>* Fdbks;
 
 	/**
 	* Links "out" of the document.
@@ -111,12 +115,12 @@ protected:
 	/**
 	* Id of the owner
 	*/
-	unsigned int OwnerId;
+	size_t OwnerId;
 
 	/**
-	* Identificator of the corresponding group.
+	* Identifiers of the corresponding group.
 	*/
-	unsigned int GroupId;
+	size_t GroupId;
 
 	/**
 	* Date of the attachment of the document into the group.
@@ -136,7 +140,7 @@ public:
 	* @param a               Date of the last analysis.
 	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,unsigned int id,GLang* lang,const R::RString& mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid=0);
+	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,const R::RDate& u,const R::RDate& a,size_t ownerid=0);
 
 	/**
 	* Compare two documents by comparing their identificator.
@@ -160,7 +164,7 @@ public:
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(const unsigned id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Compare the language of a document with a given language.
@@ -174,6 +178,22 @@ public:
 	* Clear the information associated with the document.
 	*/
 	void ClearInfos(void);
+
+	/**
+	 * Clear the structure associated with the document.
+	 */
+	void ClearStruct(void);
+
+	/**
+	 * Get the structure of the document.
+	 */
+	GDocStruct* GetStruct(void) const;
+
+	/**
+	 * Delete the structure of a document from the memory since it is memory
+	 * consuming.
+	 */
+	void DeleteStruct(void);
 
 	/**
 	* Load information from the current storage.
@@ -191,12 +211,12 @@ public:
 	* @returns RString.
 	*/
 	R::RString GetName(void) const {return(Name);}
-	
+
 	/**
 	* @return Pointer to the Language.
 	*/
 	inline GLang* GetLang(void) const {return(Lang);}
-	
+
 	/**
 	* Set the name of the document.
 	* @param name            Name.
@@ -233,33 +253,33 @@ public:
 	bool MustCompute(void) const;
 
 	/**
-	* Get the identificator of the document.
+	* Get the identifier of the document.
 	* @return unsigned int.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* Set the identifier of the document.
 	* @param id              Identifier.
 	*/
-	void SetId(unsigned int id);
+	void SetId(size_t id);
 
 	/**
-	* Get the owner identificator of the document.
+	* Get the owner identifier of the document.
 	* @return unsigned int.
 	*/
-	unsigned int GetOwnerId(void) const {return(OwnerId);}
+	size_t GetOwnerId(void) const {return(OwnerId);}
 
 	/**
 	* Get the group holding the document.
 	*/
-	unsigned int GetGroupId(void) const {return(GroupId);}
+	size_t GetGroupId(void) const {return(GroupId);}
 
 	/**
 	* Set the group holding the document.
-	* @param groupid         Identificator of the group.
+	* @param groupid         Identifier of the group.
 	*/
-	void SetGroup(unsigned int groupid);
+	void SetGroup(size_t groupid);
 
 	/**
 	* Get a cursor on the identificator of the profiles which have assesses the
@@ -270,15 +290,15 @@ public:
 
 	/**
 	* Add a profile to the list of those which have assess the document.
-	* @param id              Identificator of the profile.
+	* @param id              Identifier of the profile.
 	*/
-	void InsertFdbk(unsigned int id);
+	void InsertFdbk(size_t id);
 
 	/**
 	* Delete a profile from the list of those which have assess the document.
-	* @param id              Identificator of the profile.
+	* @param id              Identifier of the profile.
 	*/
-	void DeleteFdbk(unsigned int id);
+	void DeleteFdbk(size_t id);
 
 	/**
 	* Clear all the assessments on the document.
@@ -289,45 +309,41 @@ public:
 	* Get the number of common profiles which have assess both documents as
 	* relevant.
 	* @param doc            Pointer to a document.
-	* @return unsigned int.
 	*/
-	unsigned int GetCommonOKProfiles(const GDoc* doc) const;
+	size_t GetCommonOKProfiles(const GDoc* doc) const;
 
 	/**
 	* Get the number of common profiles which have assess both documents.
 	* @param doc            Pointer to a document.
-	* @return unsigned int.
 	*/
-	unsigned int GetCommonProfiles(const GDoc* doc) const;
+	size_t GetCommonProfiles(const GDoc* doc) const;
 
 	/**
 	* Get the number of common profiles which have assess both documents
 	* differently.
 	* @param doc            Pointer to a document.
-	* @return unsigned int.
 	*/
-	unsigned int GetCommonDiffProfiles(const GDoc* doc) const;
+	size_t GetCommonDiffProfiles(const GDoc* doc) const;
 
 	/**
 	* Get the number of times the documents was assessed.
 	*/
-	unsigned int GetNbFdbks(void) const;
+	size_t GetNbFdbks(void) const;
 
 	/**
 	* Get the number of outgoing links
-	* @return unsigned int.
 	*/
-	unsigned int GetNbLinks(void) const;
+	size_t GetNbLinks(void) const;
 
 	/**
-	* Add a new link to the document and set the number of occurences of this
+	* Add a new link to the document and set the number of occurrences of this
 	* link.
 	* @param doc             The Document representing the link to be inserted.
-	* @param nboccurs        The number of occurences of the link inside the
-	*                        document. If the number of occurences is set to 0,
-	*                        an occurence number of 1 is used.
+	* @param nboccurs        The number of occurrences of the link inside the
+	*                        document. If the number of occurrences is set to 0,
+	*                        an occurrence number of 1 is used.
 	*/
-	void InsertLink(const GDoc* doc, unsigned int nboccurs=0);
+	void InsertLink(const GDoc* doc,size_t nboccurs=0);
 
 	/**
 	* Get a cursor on the Links of the document.
