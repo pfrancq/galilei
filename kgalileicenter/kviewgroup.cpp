@@ -48,6 +48,7 @@
 #include <qlistviewitemtype.h>
 #include <rqt.h>
 #include <gweightinfo.h>
+#include <gcommunity.h>
 using namespace GALILEI;
 using namespace R;
 

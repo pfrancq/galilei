@@ -72,7 +72,7 @@ static KCmdLineOptions options[] =
 int main(int argc, char *argv[])
 {
 	setlocale(LC_CTYPE,"");
-	QString year=QString("(c) 1998-")+QString::number(RDate::GetToday().GetYear())+QString(", Université Libre de Bruxelles\nDepartment of Information and Communication Science");
+	QString year=QString("(c) 1998-")+QString::number(R::RDate::GetToday().GetYear())+QString(", Université Libre de Bruxelles\nDepartment of Information and Communication Science");
 
 	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
 		VERSION, description, KAboutData::License_GPL,year, 0, "http://galilei.ulb.ac.be", "pfrancq@ulb.ac.be");

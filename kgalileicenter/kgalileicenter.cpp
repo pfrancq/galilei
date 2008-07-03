@@ -150,12 +150,14 @@ void KGALILEICenterApp::slotSessionConnect(void)
 {
 	QString method;
 	GSession* Sess;
-
+	bool DestroyDoc(false);
+	
 	slotStatusMsg(i18n("Connecting..."));
 	Doc=0;
 	try
 	{
 		Doc=new KDoc(this);
+		DestroyDoc=true;
 		Sess = CreateSession();
 		Doc->SetSession(Sess);
 		slotSaveModifier();
@@ -166,15 +168,8 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			UpdateMenusEntries();
 			dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
 		}
-		else
-		{
-			if(Doc)
-			{
-				delete Doc;
-				Doc=0;
-			}
-		}
-		slotStatusMsg(i18n("Connected"));
+		DestroyDoc=false;
+		slotStatusMsg(i18n("Connected"));		
 	}
 	catch(GException& e)
 	{
@@ -191,6 +186,11 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	catch(...)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+	}
+	if(DestroyDoc)
+	{
+		delete Doc;
+		Doc=0;
 	}	
 }
 

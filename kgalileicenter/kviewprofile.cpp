@@ -52,6 +52,7 @@
 #include <gstorage.h>
 #include <gweightinfo.h>
 #include <gconcepttype.h>
+#include <gcommunity.h>
 using namespace GALILEI;
 using namespace R;
 

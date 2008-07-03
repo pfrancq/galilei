@@ -60,7 +60,6 @@
 #include <gfilter.h>
 #include <qprogressdialog.h>
 #include <gslot.h>
-using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -109,7 +108,7 @@ class KView;
 * @author Pascal Francq.
 * @short Main Window.
 */
-class KGALILEICenterApp : public KMainWindow, public GSlot, public GGALILEIApp
+class KGALILEICenterApp : public KMainWindow, public GALILEI::GSlot, public GALILEI::GGALILEIApp
 {
 	Q_OBJECT
 
@@ -149,7 +148,7 @@ public:
 	/**
 	* Debugger.
 	*/
-	RDebugXML* Debug;
+	R::RDebugXML* Debug;
 
 	// Current tabs selected in the plug-ins dialog box
 	int DlgMainTabIdx;
@@ -161,8 +160,8 @@ public:
 	/**
 	 * Path for programs.
 	 */
-	RString PrgPath;
-	
+	R::RString PrgPath;
+
 public:
 
 	/**
@@ -175,22 +174,22 @@ public:
 	/**
 	* Get the path to the structures.
 	*/
-	RString GetStructuresPath(void) const {return(StructuresPath);}
+	R::RString GetStructuresPath(void) const {return(StructuresPath);}
 
 	/**
 	* Set the path to the structures.
 	*/
-	void SetStructuresPath(const RString& path) {StructuresPath=path;}
-	
+	void SetStructuresPath(const R::RString& path) {StructuresPath=path;}
+
 	/**
 	* Get the path to the programs.
 	*/
-	RString GetPrgPath(void) const {return(PrgPath);}
+	R::RString GetPrgPath(void) const {return(PrgPath);}
 
 	/**
 	* Set the path to the programs.
 	*/
-	void SetPrgPath(const RString& path) {PrgPath=path;}
+	void SetPrgPath(const R::RString& path) {PrgPath=path;}
 
 	/**
 	* Returns a pointer to the document connected to the view.
@@ -200,7 +199,7 @@ public:
 	/**
 	* Returns a pointer to the current session.
 	*/
-	GSession* getSession(void) const;
+	GALILEI::GSession* getSession(void) const;
 
 protected:
 
@@ -311,7 +310,7 @@ private slots:
 	 * Show debug information.
 	 */
 	void slotSessionDebugInfo(void);
-	
+
 	/**
 	* Compute an entire session.
 	*/
@@ -627,7 +626,7 @@ public:
 	KAction* configure;
 
 	KAction* runProgram;
-	
+
 	KAction* windowTile;
 	KAction* windowCascade;
 	KToggleAction* viewStatusBar;

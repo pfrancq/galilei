@@ -210,7 +210,7 @@ void KViewStems::LoadFile(const char* filename)
 
 	// Read the File
 	f.Open(RIO::Read);
-	while(!f.Eof())
+	while(!f.End())
 	{
 		// Read a line
 		line=f.GetLine();

@@ -79,6 +79,7 @@
 #include <ggroupprofiles.h>
 #include <ggroup.h>
 #include <gsubjects.h>
+#include <gsubject.h>
 #include <ggalileiapp.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
@@ -193,7 +194,7 @@ void QCreateDB::DoIt(void)
  		{
  		}
  		if(GSession::Break())
- 			return; 		
+ 			return;
  	}
 }
 
@@ -204,18 +205,18 @@ void QCreateDB::RunSQL(const RURI& path,RDb& Db)
 	RString sql("");
 	RString line("");
 	bool endFound=false;
-	
+
  	RTextFile file(path,"utf-8");
 	file.Open(RIO::Read);
 
-	while((!file.Eof())&&(!GSession::Break()))
+	while((!file.End())&&(!GSession::Break()))
 	{
 		line=file.GetLine();
 		if(line.IsEmpty() || line.FindStr("/*!")>=0 || line.FindStr("--")>=0 || line.Find('#')>=0)
 			continue;
 
 		endFound=false;
-		while(!file.Eof() && !endFound)
+		while(!file.End() && !endFound)
 		{
 			if(line.IsEmpty() || line.FindStr("--")>=0 || line.FindStr("--")>=0 || line.Find('#')>=0)
 			{
@@ -233,7 +234,7 @@ void QCreateDB::RunSQL(const RURI& path,RDb& Db)
 			RQuery Sendquery(Db,sql);
 
 		sql="";
-	}	
+	}
 }
 
 
@@ -331,15 +332,15 @@ void QImportUsersData::DoIt(void)
 
 //-----------------------------------------------------------------------------
 void QImportDocs::DoIt(void)
-{	
+{
 	FilterManager=GALILEIApp->GetManager<GFilterManager>("Filter");
 	Subjects=Session->GetSubjects(true);
 	CurDepth=0;
-	ParseDir(Dir,Parent);	
+	ParseDir(Dir,Parent);
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveSubjects();	
+		Session->GetStorage()->SaveSubjects();
 }
-	
+
 
 //-----------------------------------------------------------------------------
 void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
@@ -349,34 +350,34 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 	RDir Dir(uri);
 	Dir.Open(RIO::Read);
 	RCursor<RFile> Files(Dir.GetEntries());
-	for(Files.Start();!Files.End();Files.Next())	
+	for(Files.Start();!Files.End();Files.Next())
 	{
 		// If directory -> go deep
 		if(dynamic_cast<RDir*>(Files()))
 		{
-						
+
 			RString cat(parent);
 			GSubject* Topic;
-			
+
 			// Find parent topic
 			if(parent.IsEmpty())
 				Topic=Subjects->GetTop();
 			else
 				Topic=Subjects->GetNode(parent);
-			
+
 			if(CurDepth<=Depth)
 			{
 				if(!cat.IsEmpty())
 					cat+="/";
 				cat+=Files()->GetFileName();
 				Subjects->InsertNode(Topic,new GSubject(Subjects->GetNbNodes(),cat,false));
-			}	
+			}
 			ParseDir(Files()->GetURI(),cat);
 		}
 		else
-		{						
+		{
 			// Must be a normal document
-			GSubject* Topic=Subjects->GetNode(parent);			
+			GSubject* Topic=Subjects->GetNode(parent);
 			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,RDate::GetToday(),RDate::null);
 			Session->InsertDoc(doc);
 			Topic->Insert(doc);
@@ -395,7 +396,7 @@ void QCreateDocXML::DoIt(void)
 		delete XML;
 		XML=0;
 	}
-	
+
 	RIO::RSmartTempFile docxml;
 	RURI uri=GALILEIApp->GetManager<GFilterManager>("Filter")->WhatAnalyze(Doc,docxml);
 	if(!uri.IsEmpty())
@@ -562,7 +563,7 @@ QLoadDictionnaries::QListViewItemDict::QListViewItemDict(QListView* parent,GConc
 void QLoadDictionnaries::DoIt(void)
 {
 	// Go trough each language and create a Item.
-	RCursor<GConceptType> Types(Session->GetConceptTypes());	
+	RCursor<GConceptType> Types(Session->GetConceptTypes());
 	for(Types.Start();!Types.End();Types.Next())
 	{
 		QListViewItem* ptr=new QListViewItemDict(Dicts,Types());
@@ -637,7 +638,7 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 			txtRem->setText(NewLabel);
 			Changed=false;
 		}
-		KApplication::kApplication()->processEvents();		
+		KApplication::kApplication()->processEvents();
 	}
 	if(!Canceled)
 	{
@@ -648,7 +649,7 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 			{
 				txtRem->setText(NewLabel);
 				Changed=false;
-			}		
+			}
 	}
 	else
 		txtRem->setText("Canceled");
@@ -658,7 +659,7 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 	connect(btnOk,SIGNAL(clicked()),this,SLOT(close()));
 	exec();
 	delete task;
-			
+
 	if(GSession::Break())
 	{
 		GSession::ResetBreak();
