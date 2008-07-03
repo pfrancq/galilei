@@ -1,11 +1,25 @@
-AC_INIT(configure.in)
+AC_INIT(upgalilei,1.86,[pfrancq@ulb.ac.be],[upgalilei])
 
-AM_CONFIG_HEADER(config.h)
+#AC_INIT(configure.in)
 AM_INIT_AUTOMAKE(upgalilei, 1.86)
 
-AC_LANG_CPLUSPLUS
+AM_CONFIG_HEADER(config.h)
+
+### Check for programs
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+AC_CHECK_PROGS(M4, gm4 gnum4 m4, m4)
+
+### Check for a C++ compiler
+#AC_LANG_CPLUSPLUS
 AC_PROG_CXX
+AC_LANG(C++)
+
+#AC_DISABLE_SHARED
+#AC_LIBTOOL_WIN32_DLL
+
 AM_PROG_LIBTOOL
+AC_SUBST(LIBTOOL_DEPS)
 
 #--------------- Check R and GALILEI ------------------
 R_CHK("rcore rmath roptimization")

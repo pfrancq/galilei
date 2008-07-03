@@ -76,7 +76,7 @@ class UpGALILEI : public GGALILEIApp
 	bool DoDocs;        // Only documents should be analyze
 	bool DoProfiles;    // Only profiles should be computed
 	bool DoGroups;      // Only profiles should be clustered.
-	
+
 public:
 	UpGALILEI(int argc, char *argv[]);
 	void Run(void);
@@ -86,22 +86,22 @@ public:
 //------------------------------------------------------------------------------
 UpGALILEI::UpGALILEI(int argc, char *argv[])
 	: GGALILEIApp("UpGALILEI",argc,argv,false), DoDocs(true), DoProfiles(true),
-	  DoGroups(true)	
+	  DoGroups(true)
 {
 	// Show Part
 	cout<<"GALILEI Update Version "<<VERSION<<endl;
 	cout<<"Copyright 1999-2007 by the Université Libre de Bruxelles"<<endl;
-	
+
 	// Analyze parameters
 	bool OnlyDocs=Args.IsIn("--only-docs");
 	bool OnlyProfiles=Args.IsIn("--only-profiles");
 	bool OnlyGroups=Args.IsIn("--only-groups");
 	if((!OnlyDocs)&&(OnlyProfiles||OnlyGroups))
-		DoDocs=false;	
+		DoDocs=false;
 	if((!OnlyProfiles)&&(OnlyDocs||OnlyGroups))
 		DoProfiles=false;
 	if((!OnlyGroups)&&(OnlyDocs||OnlyProfiles))
-		DoGroups=false;	  
+		DoGroups=false;
 }
 
 
@@ -121,12 +121,12 @@ void UpGALILEI::Run(void)
 		if(DoDocs||DoProfiles)
 			Session->GetStorage()->LoadDocs();
 		if(DoGroups)
-			Session->GetStorage()->LoadGroups();
+			Session->GetStorage()->LoadCommunities();
 		if(DoProfiles||DoGroups)
 			Session->GetStorage()->LoadUsers();
 		WriteLog("Data loaded");
 		cout<<"OK"<<endl;
-		
+
 		// Analyse Docs
 		if(DoDocs)
 		{
@@ -136,7 +136,7 @@ void UpGALILEI::Run(void)
 			WriteLog("Documents analysed");
 			cout<<"OK"<<endl;
 		}
-		
+
 		// Compute profiles
 		if(DoProfiles)
 		{
@@ -146,13 +146,13 @@ void UpGALILEI::Run(void)
 			cout<<"OK"<<endl;
 			WriteLog("Profiles computed");
 		}
-		
+
 		// Group profiles
 		if(DoGroups)
 		{
 			cout<<"Groups Profiles ...";
 			cout.flush();
-			Session->GroupingProfiles(Log);
+			Session->GroupProfiles(Log);
 			cout<<"OK"<<endl;
 			WriteLog("Groups computed");
 		}
