@@ -94,7 +94,7 @@ protected:
 	* Add a specific MIME-Type for the filter.
 	* @param mime           Name of the MIME-Type.
 	*/
-	void AddMIME(RString mime);
+	void AddMIME(R::RString mime);
 
 	/**
 	* Test if a given character represent the end of a sentence.
@@ -171,7 +171,7 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml)=0;
+	virtual void Analyze(const R::RURI& uri,const R::RString& file,const R::RString& docxml)=0;
 
 	/**
 	* Destructor of the filter.
@@ -196,7 +196,7 @@ public:
 	* @param n               Name of the Factory/Plugin.
 	* @param f               Lib of the Factory/Plugin.
 	*/
-	GFactoryFilter(GFilterManager* mng,RString n,RString f)
+	GFactoryFilter(GFilterManager* mng,R::RString n,R::RString f)
 		: GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f) {}
 };
 
@@ -228,7 +228,7 @@ protected:
 	* List of all pairs (extension, MIME type) available.
 	*/
 	R::RContainer<GMIMEExt,true,true> Exts;
-	
+
 	/**
 	 * Filter that should analyze the file.
 	 */
@@ -238,7 +238,7 @@ protected:
 	 * Document to analyze.
 	 */
 	GDoc* Doc;
-	
+
 public:
 
 	/**
@@ -250,10 +250,10 @@ protected:
 
 	/**
 	 * Find the MIME type of a file based on its extension (Ex. ".html" gives
-	 * "text/html"). 
+	 * "text/html").
 	 */
 	void FindMIMEType(void);
-	 
+
 	/**
 	 * If the protocol is HTTP and the server returns a content type for the
 	 * downloaded file. This function verifies that a filter exist for the
@@ -264,7 +264,7 @@ protected:
 	virtual bool IsValidContent(const R::RString& MIME);
 
 public:
-		
+
 	/**
 	* Return the URI of the file to analyze. If the file is not a XML file, the
 	* method tries to determine the MIME type and to find a corresponding
@@ -278,7 +278,7 @@ public:
 	* @exception A GException is generated if the document could not be
 	* analysed (no MIME type, no filter, ...).
 	*/
-	R::RURI WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml);
+	R::RURI WhatAnalyze(GDoc* doc,R::RIO::RSmartTempFile& docxml);
 
 	/**
 	* Add a pair (MIME type,filter).

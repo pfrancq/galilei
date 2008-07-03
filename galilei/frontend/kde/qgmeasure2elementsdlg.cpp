@@ -139,7 +139,7 @@ QVBoxLayout* QGMeasure2ElementsDlg::GetMeasureSpecificLayout(void)
 //-----------------------------------------------------------------------------
 QGroupBox* QGMeasure2ElementsDlg::GetMeasureSpecific(void)
 {
-	return(MeasureSpecific);
+	return(Dlg->MeasureSpecific);
 }
 
 

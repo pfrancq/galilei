@@ -103,6 +103,10 @@ class GLinkCalc;
 class GLinkCalcManager;
 class GLinks;
 class GSugs;
+class GOccurInfo;
+class GOccursInfo;
+class GDocStruct;
+class GDocStructNode;
 
 
 //------------------------------------------------------------------------------
@@ -210,7 +214,7 @@ enum tObjType
 	otFdbk=13                /** Assessment of a document by a profile.*/,
 	otLang=14                /** Language. */,
 	otHistory=15             /** History. */,
-	otTopic=16               /** Topic. */ 
+	otTopic=16               /** Topic. */
 };
 
 
@@ -279,7 +283,7 @@ R::RString GetEvent(tEvent event);
 //------------------------------------------------------------------------------
 /**
 * Assessment over a document.
-* 
+*
 * The 4 first bits are used to express the assessment of the Doc (OK,KO,N), the
 * 5th and 6th bits are used to express the status of the Doc (Hub, Autority ).
 *  The masks are used to separate the assessment and the status of a doc.

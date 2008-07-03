@@ -1,5 +1,5 @@
 /*
- 
+
 	GALILEI Research Project
 
 	GSession.cpp
@@ -74,6 +74,7 @@ using namespace R;
 #include <ggroupprofiles.h>
 #include <gcommunitycalc.h>
 #include <gsubjects.h>
+#include <gsubject.h>
 #include <gfilter.h>
 #include <gpostdoc.h>
 #include <gweightinfo.h>
@@ -82,6 +83,8 @@ using namespace R;
 #include <ggalileiapp.h>
 #include <gdebugobject.h>
 using namespace GALILEI;
+using namespace std;
+
 
 
 //------------------------------------------------------------------------------
@@ -169,7 +172,7 @@ public:
 	unsigned int MaxProfiles;                                         // Maximum number of subprofiles to handle in memory.
 	unsigned int MaxGroups;                                           // Maximum number of groups to handle in memory.
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager
-	
+
 	Intern(GStorage* str,unsigned int mdocs,unsigned int maxsub,unsigned int maxgroups,unsigned int d,unsigned int u,unsigned int p,unsigned int nblangs)
 		: Subjects(0), CommunitiesHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
@@ -271,11 +274,11 @@ void GSession::ForceReCompute(tObjType type)
 			// Delete the groups
 			RCursor<GConceptType> Types(Data->ConceptTypes);
 			for(Types.Start();!Types.End();Types.Next())
-				Types()->Clear(otCommunity);			
+				Types()->Clear(otCommunity);
 			Data->Groups.Clear();
 			if(Data->SaveResults)
 				Data->Storage->Clear(otCommunity);
-			break;		
+			break;
 		}
 		default:
 			throw GException("Only 'otDoc', 'otUser' and 'otGroup' are allowed.");
@@ -288,7 +291,7 @@ void GSession::ReInit(void)
 {
 	if(Data->Subjects)
 		Data->Subjects->ReInit();
-		
+
 	// Clear Fdbks
 	ClearFdbks();
 
@@ -443,17 +446,17 @@ RString GSession::GetDebugInfo(const RString& name,const RString& info)
 	return(obj->GetDebugInfo(info));
 }
 
-	
+
 //------------------------------------------------------------------------------
 void GSession::PutDebugInfo(RTextFile& file,const RString& name,const RString& info)
 {
 	GDebugObject* obj=Data->DebugObjs.GetPtr(name);
 	if(!obj)
 		throw GException("No debugging object called '"+info+"'");
-	obj->PutDebugInfo(file,info);	
+	obj->PutDebugInfo(file,info);
 }
 
-	
+
 //------------------------------------------------------------------------------
 void GSession::RunPrg(GSlot* rec,const char* filename)
 {
@@ -589,9 +592,9 @@ GConceptType* GSession::GetConceptType(unsigned int id,bool null) const
 	}
 	catch(...)
 	{
-	}	
+	}
 	if((!type)&&(!null))
-		throw GException("Unknow concept type "+RString::Number(id));	
+		throw GException("Unknow concept type "+RString::Number(id));
 	return(type);
 }
 
@@ -608,9 +611,9 @@ GConceptType* GSession::GetConceptType(const RString& name,bool null) const
 	}
 	catch(...)
 	{
-	}	
+	}
 	if((!type)&&(!null))
-		throw GException("Unknow concept type '"+name+"'");	
+		throw GException("Unknow concept type '"+name+"'");
 	return(type);
 }
 
@@ -627,7 +630,7 @@ GConceptType* GSession::GetInsertConceptType(const RString& name,const RString& 
 	}
 	catch(...)
 	{
-	}	
+	}
 	if(!type)
 		Data->ConceptTypes.InsertPtr(type=new GConceptType(cNoRef,this,name,desc,0));
 	return(type);
@@ -930,7 +933,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 	GDocAnalyse* Analyse=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
-	
+
 	// Analyse the documents - Go through the existing documents
 	R::RCursor<GDoc> Docs=GetDocs();
 	for(Docs.Start();!Docs.End();Docs.Next())
@@ -940,7 +943,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 			AnalyseDoc(Docs(),Analyse,rec);
 		}
 		// If a log file specified -> write to it and it is OK
-		// If no log file specified -> Propagate error		
+		// If no log file specified -> Propagate error
 		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"):")
 	}
 
@@ -967,7 +970,7 @@ void GSession::AnalyseDoc(GDoc* doc,GDocAnalyse* method,GSlot* rec)
 		rec->NextDoc(doc);
 	}
 	if(Intern::ExternBreak) return;
-	
+
 	RIO::RSmartTempFile docxml;
 	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml);
 	if(!uri.IsEmpty())
@@ -1400,7 +1403,7 @@ GCommunity* GSession::GetCommunity(unsigned int id,bool load,bool null) const
 	GCommunity* grp=Data->Groups.GetPtr(id);
 	if(grp)
 		return(grp);
-		
+
 	if(!load)
 		return(0);
 	if(Data->Storage->IsAllInMemory())
@@ -1505,7 +1508,7 @@ void GSession::CopyIdealCommunities(void)
 
 	// Clear current clustering
 	ClearCommunities();
-		
+
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(GetSubjects()->GetNodes());
 	for(Grps.Start();!Grps.End();Grps.Next())
@@ -1532,7 +1535,7 @@ void GSession::CopyIdealCommunities(void)
 		if(CalcDesc)
 			CalcDesc->Compute(grp);
 	}
-	
+
 	if(Data->SaveResults)
 	{
 		Data->Storage->SaveCommunities();
@@ -1573,13 +1576,13 @@ void GSession::UpdateCommunity(GProfile* prof)
 
 	// Use database
 	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
-		Data->Storage->UpdateCommunities(prof->GetId());		
+		Data->Storage->UpdateCommunities(prof->GetId());
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::UpdateCommunity(size_t profid)
-{	
+{
 	GProfile* prof=GetProfile(profid,false,false);
 	UpdateCommunity(prof);
 }

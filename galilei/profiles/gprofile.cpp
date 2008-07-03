@@ -38,6 +38,7 @@
 #include <gdoc.h>
 #include <gweightinfo.h>
 #include <gstorage.h>
+#include <gcommunity.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -161,7 +162,7 @@ GFdbk::~GFdbk(void)
 //------------------------------------------------------------------------------
 GProfile::GProfile(GUser* usr,unsigned int id,const R::RString name,unsigned int grpid,R::RDate a,R::RDate u,R::RDate c,bool s,unsigned int nbf)
   : GWeightInfos(60), User(usr),Id(id), Name(name),
-    Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c), GroupId(grpid), Attached(a) 
+    Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c), GroupId(grpid), Attached(a)
 {
 	if(!User)
 		throw GException("Profile "+RString::Number(id)+" has no parent user");
@@ -174,7 +175,7 @@ GProfile::GProfile(GUser* usr,unsigned int id,const R::RString name,unsigned int
 		if(grp)
 			grp->InsertObj(this);
 	}
-	
+
 	if(Id!=cNoRef)
 		GSession::Event(this,eObjNew);
 }
@@ -212,14 +213,14 @@ void GProfile::LoadInfos(void) const
 		const_cast<GProfile*>(this)->Update(Infos,false);
 }
 
-		
+
 //------------------------------------------------------------------------------
 void GProfile::SetId(unsigned int id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a profile");
 	Id=id;
-	GSession::Event(this,eObjNew);	
+	GSession::Event(this,eObjNew);
 }
 
 
@@ -365,10 +366,10 @@ RCursor<GFdbk> GProfile::GetFdbks(void) const
 void GProfile::InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
 {
 	GFdbk* fdbk;
-	
+
 	Fdbks.InsertPtr(fdbk=new GFdbk(docid,assess,date,update));
 	State=osModified;
-	
+
 	// If the document assessed was computed after the last computation
 	// -> profile is considered as updated
 //	if(Computed<fdbk->GetComputed())
@@ -380,14 +381,14 @@ void GProfile::InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDat
 void GProfile::DeleteFdbk(unsigned int docid)
 {
 	GFdbk* fdbk;
-	
+
 	Fdbks.DeletePtr(fdbk=Fdbks.GetPtr<unsigned int>(docid));
 	State=osModified;
-	
+
 	// If the document assessed was computed after the last computation
 	// -> profile is considered as updated
 //	if(Computed<fdbk->GetComputed())
-		Updated.SetToday();	
+		Updated.SetToday();
 }
 
 
@@ -469,5 +470,5 @@ GProfile::~GProfile(void)
 	}
 	catch(...)
 	{
-	}	
+	}
 }

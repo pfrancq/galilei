@@ -84,7 +84,7 @@ template<class mng,class factory,class plugin>
 	error=dlerror();
 	if(error)
 	{
-		cerr<<error<<endl;
+		std::cerr<<error<<std::endl;
 		return;
 	}
 	factory *myfactory= initFac(dynamic_cast<mng*>(this),dll);
@@ -152,11 +152,11 @@ template<class mng,class factory,class plugin>
 	switch(PluginsType)
 	{
 		case ptOrdered:
-			config->InsertParam(new RParamList(Name),"Plugins");
+			config->InsertParam(new R::RParamList(Name),"Plugins");
 			break;
 
 		case ptSelect:
-			config->InsertParam(new RParamValue(Name,"None"),"Plugins");
+			config->InsertParam(new R::RParamValue(Name,"None"),"Plugins");
 			break;
 
 		default:
@@ -219,7 +219,7 @@ template<class mng,class factory,class plugin>
 
 		case ptSelect:
 		{
-			RString Default;
+			R::RString Default;
 			if(Current)
 				Default=Current->GetName();
 			else
@@ -242,7 +242,7 @@ template<class mng,class factory,class plugin>
 	if(PluginsType==ptOrdered)
 	{
 		R::RConfig* config=R::App->GetConfig();
-		config->InsertParam(new RParamList(Name),"Plugins");
+		config->InsertParam(new R::RParamList(Name),"Plugins");
 		fac->SetLevel(R::RContainer<factory,true,true>::GetNb());
 	}
 	if(fac->GetBool("Enable"))
@@ -260,7 +260,7 @@ template<class mng,class factory,class plugin>
 	factory* fac;
 	fac=R::RContainer<factory,true,true>::GetPtr(name,PluginsType!=ptOrdered);
 	if((!fac)&need)
-		throw GException(RString("No plug-in '")+name+"' availaible for "+Name+".");
+		throw GException(R::RString("No plug-in '")+name+"' availaible for "+Name+".");
 	return(fac);
 }
 
@@ -305,7 +305,7 @@ template<class mng,class factory,class plugin>
 	if(fac)
 		return(fac->GetPlugin());
 	if(need)
-		throw GException(RString("No plug-in '")+name+"' availaible for "+Name+".");
+		throw GException(R::RString("No plug-in '")+name+"' availaible for "+Name+".");
 	return(0);
 }
 
@@ -326,7 +326,7 @@ template<class mng,class factory,class plugin>
 		return;
 	Current=GetFactory(name,need);
 	if((!Current)&&need)
-		throw GException(RString("No plug-in '")+name+"' availaible for "+Name+".");
+		throw GException(R::RString("No plug-in '")+name+"' availaible for "+Name+".");
 }
 
 

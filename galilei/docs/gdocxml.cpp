@@ -6,7 +6,7 @@
 
 	DocXML representing the document content - Implementation.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -42,6 +42,8 @@ using namespace R;
 //
 // class GDocXML
 //
+//------------------------------------------------------------------------------
+
 //------------------------------------------------------------------------------
 GDocXML::GDocXML(RString url,RString filename)
 	: RXMLStruct(), URL(url), FileName(filename)

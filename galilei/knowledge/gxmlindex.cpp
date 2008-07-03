@@ -75,12 +75,12 @@ GXMLIndex::GXMLIndex(GConceptType* type,GConcept* tag,GLang* lang,RContainer<GCo
 	: GConcept(), XMLTag(tag), Universal(uni), Stems(stems)
 {
 	Type=type;
-	
+
 	// Build the Name
 	Name=RString::Number(tag->GetId())+'#';
 	RCursor<GConcept> Cur(Universal);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Name+=':'+RString::Number(Cur()->GetId());	
+		Name+=':'+RString::Number(Cur()->GetId());
 	Name+=lang->GetCode();
 	Cur.Set(Stems);
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -101,25 +101,25 @@ GXMLIndex::GXMLIndex(unsigned int id,const RString& name,GConceptType* type,unsi
 void GXMLIndex::BuildDef(void)
 {
 	GSession* Session=GSession::Get();
-	
+
 	// Find the tag id of the XML tag
 	GConceptType* Space=Session->GetConceptType("XMLStruct","XML Structure");
 	int Pos=Name.Find('#');
 	XMLTag=Space->GetConcept(atoi(Name.Mid(0,Pos)));
-		
+
 	// Find the universal part -> numbers until string of 2
 	int Old=Pos+1;
 	bool Uni;
 	RString Tag;
-	
+
 	// Find the Universal terms
-	Space=Session->GetInsertConceptType("UniversalTerms","Universal Terms");	
+	Space=Session->GetInsertConceptType("UniversalTerms","Universal Terms");
 	for(Pos=Name.Find(':',Old),Uni=true;(Pos!=-1)&&(Uni);Pos=Name.Find(':',Old))
-	{				
+	{
 		Tag=Name.Mid(static_cast<size_t>(Old),Pos-Old);
 		Old=Pos+1;
 		if(Tag.GetLen()==2)
-		{			
+		{
 			// Can be a language
 			if(Tag[static_cast<size_t>(0)].IsAlpha()||(Tag=="00"))
 				break;
@@ -127,19 +127,19 @@ void GXMLIndex::BuildDef(void)
 		size_t id=atoi(Tag);
 		Stems.InsertPtr(Space->GetConcept(id));
 	}
-		
+
 	// Find the language of the stem
 	Space=Session->GetInsertConceptType(Tag+"Stems","");
-	
+
 	// Add now each concept to list
 	for(Pos=Name.Find(':',Old);Pos!=-1;Pos=Name.Find(':',Old))
-	{		
+	{
 		size_t id=atoi(Name.Mid(static_cast<size_t>(Old),Pos-Old));
 		Stems.InsertPtr(Space->GetConcept(id));
 		Old=Pos+1;
-	}	
+	}
 	size_t id=atoi(Name.Mid(static_cast<size_t>(Old)));
-	Stems.InsertPtr(Space->GetConcept(id));	
+	Stems.InsertPtr(Space->GetConcept(id));
 }
 
 
@@ -176,15 +176,15 @@ R::RCursor<GConcept> GXMLIndex::GetStems(void) const
 //-----------------------------------------------------------------------------
 double GXMLIndex::GetSimilarity(const GXMLIndex* index) const
 {
-	size_t MinUniversal(min(Universal.GetNb(),index->Universal.GetNb()));
-	size_t MinStems(min(Stems.GetNb(),index->Stems.GetNb()));
-	
+	size_t MinUniversal(std::min(Universal.GetNb(),index->Universal.GetNb()));
+	size_t MinStems(std::min(Stems.GetNb(),index->Stems.GetNb()));
+
 	// If not same tags or nothing to compare -> return 0
 	if((XMLTag!=index->XMLTag)||((!MinUniversal)&&(!MinStems)))
 		return(0.0);
-	
+
 	size_t nb(0);
-	
+
 	// Universal stems
 	RCursor<GConcept> Stem1(Universal);
 	RCursor<GConcept> Stem2(index->Universal);
@@ -197,9 +197,9 @@ double GXMLIndex::GetSimilarity(const GXMLIndex* index) const
 			nb++;
 			Stem2.Next();
 		}
-	}	
-	
-	// Language bases stems	
+	}
+
+	// Language bases stems
 	Stem1.Set(Stems);
 	Stem2.Set(index->Stems);
 	for(Stem1.Start(),Stem2.Start();!Stem1.End(); Stem1.Next())
@@ -211,7 +211,7 @@ double GXMLIndex::GetSimilarity(const GXMLIndex* index) const
 			nb++;
 			Stem2.Next();
 		}
-	}	
+	}
 	return(static_cast<double>(nb)/static_cast<double>(MinUniversal+MinStems));
 }
 

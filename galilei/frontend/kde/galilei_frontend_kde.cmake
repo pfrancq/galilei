@@ -1,6 +1,4 @@
-SET(galilei_frontend_kde_MOC_INCLUDES qggroupshistory.h
-					qgprofile.h
-					qgsubprofiles.h
+SET(galilei_frontend_kde_MOC_INCLUDES   qgprofile.h
 					qgdocxml.h)
 
 SET(galilei_frontend_kde_UI_INCLUDES dlgmeasure2elements.ui)
@@ -8,16 +6,12 @@ SET(galilei_frontend_kde_UI_INCLUDES dlgmeasure2elements.ui)
 SET(galilei_frontend_kde_INST_INCLUDES ${galilei_frontend_kde_MOC_INCLUDES}
                                         qgprofile.h
                                         qgdocxml.h
-                                        qgsubprofiles.h
                                         qgmeasure2elementsdlg.h
-                                        qlistviewitemtype.h
-                                        qggroupshistory.h)
+                                        qlistviewitemtype.h)
 
 SET(galilei_frontend_kde_TARGET_SOURCES qgprofile.cpp
                                         qgdocxml.cpp
-                                        qgsubprofiles.cpp
                                         qlistviewitemtype.cpp
-                                        qggroupshistory.cpp
                                         qgmeasure2elementsdlg.cpp)
 
 ###This is not very simple way to produce moc file
@@ -33,3 +27,20 @@ FOREACH(file ${galilei_frontend_kde_UI_INCLUDES})
 ENDFOREACH(file ${galilei_frontend_kde_UI_INCLUDES})
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+INSTALL(FILES frontend/kde/nokonqueror.png
+		frontend/kde/xml_cdata_b.png
+		frontend/kde/xml_comment_b.png
+		frontend/kde/xml_contents_b.png  
+		frontend/kde/xml_element_b.png  
+		frontend/kde/xml_procinstr_b.png  
+		frontend/kde/xml_text_b.png
+		frontend/kde/xml_attribute.png  
+		frontend/kde/xml_cdata.png    
+		frontend/kde/xml_comment.png    
+		frontend/kde/xml_contents.png 
+		frontend/kde/xml_element.png 
+		frontend/kde/xml_procinstr.png 
+		frontend/kde/xml_text.png
+
+		DESTINATION share/icons/hicolor/16x16/actions/)

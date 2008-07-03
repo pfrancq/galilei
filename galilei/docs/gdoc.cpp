@@ -44,6 +44,7 @@
 #include <gsession.h>
 #include <gstorage.h>
 #include <gprofile.h>
+#include <gdocstruct.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -56,10 +57,10 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RURI& url,const RString& name,unsigned int id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,unsigned int ownerid)
-	:  GWeightInfos(60), URL(url), Name(name), Id(id), Lang(lang),
-	 MIMEType(mime), Updated(u), Computed(a), Fdbks(0),
-	  LinkSet(5,2), OwnerId(ownerid)
+GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,size_t ownerid)
+	: GWeightInfos(60), URL(url), Name(name), Id(id), Struct(0),
+	  Lang(lang),MIMEType(mime), Updated(u), Computed(a),
+	  Fdbks(0), LinkSet(5,2), OwnerId(ownerid)
 {
 	if(Id!=cNoRef)
 		GSession::Event(this,eObjNew);
@@ -90,7 +91,7 @@ int GDoc::Compare(const GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-int GDoc::Compare(const unsigned id) const
+int GDoc::Compare(const size_t id) const
 {
 	return(Id-id);
 }
@@ -115,6 +116,39 @@ void GDoc::ClearInfos(void)
 
 
 //------------------------------------------------------------------------------
+void GDoc::ClearStruct(void)
+{
+	if(Struct)
+		Struct->Clear();
+}
+
+
+//------------------------------------------------------------------------------
+GDocStruct* GDoc::GetStruct(void) const
+{
+	if(!Struct)
+	{
+		// Create the structure and load it from the database
+		GSession* session=GSession::Get();
+		if(session&&session->GetStorage())
+			const_cast<GDoc*>(this)->Struct=session->GetStorage()->LoadStruct(this);
+	}
+	return(Struct);
+}
+
+
+//------------------------------------------------------------------------------
+void GDoc::DeleteStruct(void)
+{
+	if(Struct)
+	{
+		delete Struct;
+		Struct=0;
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GDoc::LoadInfos(void) const
 {
 	if(!Lang)
@@ -129,7 +163,7 @@ void GDoc::LoadInfos(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::SetGroup(unsigned int groupid)
+void GDoc::SetGroup(size_t groupid)
 {
 	GroupId=groupid;
 	if(GroupId!=cNoRef)
@@ -173,7 +207,7 @@ void GDoc::SetMIMEType(const RString& mime)
 
 
 //------------------------------------------------------------------------------
-void GDoc::SetId(unsigned int id)
+void GDoc::SetId(size_t id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a document");
@@ -183,50 +217,14 @@ void GDoc::SetId(unsigned int id)
 
 
 //------------------------------------------------------------------------------
-R::RVectorInt<unsigned int,true>* GDoc::GetFdbks(void) const
+R::RVectorInt<size_t,true>* GDoc::GetFdbks(void) const
 {
 	return(Fdbks);
 }
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
-{
-	// If document had a language -> remove its references
-	if(computed&&Lang&&(Id!=cNoRef))
-		DelRefs(otDoc);
-
-	// Assign language and information
-	GWeightInfos::Clear();
-	Lang=lang;
-	if(computed&&(Id!=cNoRef))
-	{
-		State=osUpdated;
-		Computed.SetToday();
-
-		// Update the profiles that have assessed it.
-		if(GSession::Get())
-			GSession::Get()->UpdateProfiles(Id);
-	}
-	else
-		State=osUpToDate;
-	CopyInfos(infos);
-
-	// Clear infos
-	infos->Clear();
-
-	// If document has a language -> update its references
-	if(computed&&Lang&&(Id!=cNoRef))
-		AddRefs(otDoc);
-
-	// Emit an event that it was modified
-	if(computed&&(Id!=cNoRef))
-		GSession::Event(this,eObjModified);
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::InsertFdbk(unsigned int id)
+void GDoc::InsertFdbk(size_t id)
 {
 	if(!Fdbks)
 		Fdbks=new R::RVectorInt<unsigned int,true>(500);
@@ -235,7 +233,7 @@ void GDoc::InsertFdbk(unsigned int id)
 
 
 //------------------------------------------------------------------------------
-void GDoc::DeleteFdbk(unsigned int id)
+void GDoc::DeleteFdbk(size_t id)
 {
 	if(Fdbks)
 		Fdbks->Delete(id);
@@ -251,11 +249,11 @@ void GDoc::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-unsigned int GDoc::GetCommonOKProfiles(const GDoc* doc) const
+size_t GDoc::GetCommonOKProfiles(const GDoc* doc) const
 {
 	tDocAssessment f;
 	GFdbk* cor;
-	unsigned int nb;
+	size_t nb;
 
 	GSession* Session=GSession::Get();
 	if(!Session)
@@ -298,10 +296,10 @@ unsigned int GDoc::GetCommonOKProfiles(const GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GDoc::GetCommonProfiles(const GDoc* doc) const
+size_t GDoc::GetCommonProfiles(const GDoc* doc) const
 {
 	GFdbk* cor;
-	unsigned int nb;
+	size_t nb;
 
 	GSession* Session=GSession::Get();
 	if(!Session)
@@ -335,10 +333,10 @@ unsigned int GDoc::GetCommonProfiles(const GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GDoc::GetCommonDiffProfiles(const GDoc* doc) const
+size_t GDoc::GetCommonDiffProfiles(const GDoc* doc) const
 {
 	GFdbk* cor;
-	unsigned int nb;
+	size_t nb;
 	bool IsOK1;
 	bool IsOK2;
 
@@ -380,7 +378,7 @@ unsigned int GDoc::GetCommonDiffProfiles(const GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GDoc::GetNbFdbks(void) const
+size_t GDoc::GetNbFdbks(void) const
 {
 	if(Fdbks)
 		return(Fdbks->GetNb());
@@ -389,14 +387,14 @@ unsigned int GDoc::GetNbFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GDoc::GetNbLinks(void) const
+size_t GDoc::GetNbLinks(void) const
 {
 	return(LinkSet.GetNb());
 }
 
 
 //------------------------------------------------------------------------------
-void GDoc::InsertLink(const GDoc* doc,unsigned int nboccurs)
+void GDoc::InsertLink(const GDoc* doc,size_t nboccurs)
 {
 	GLink* link=LinkSet.GetInsertPtr(doc);
 	if(nboccurs)
@@ -412,9 +410,47 @@ R::RCursor<GLink> GDoc::GetLinks(void) const
 
 
 //------------------------------------------------------------------------------
+void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
+{
+	// If document had a language -> remove its references
+	if(computed&&Lang&&(Id!=cNoRef))
+		DelRefs(otDoc);
+
+	// Assign language and information
+	GWeightInfos::Clear();
+	Lang=lang;
+	if(computed&&(Id!=cNoRef))
+	{
+		State=osUpdated;
+		Computed.SetToday();
+
+		// Update the profiles that have assessed it.
+		if(GSession::Get())
+			GSession::Get()->UpdateProfiles(Id);
+	}
+	else
+		State=osUpToDate;
+	CopyInfos(infos);
+
+	// Clear infos
+	infos->Clear();
+
+	// If document has a language -> update its references
+	if(computed&&Lang&&(Id!=cNoRef))
+		AddRefs(otDoc);
+
+	// Emit an event that it was modified
+	if(computed&&(Id!=cNoRef))
+		GSession::Event(this,eObjModified);
+}
+
+
+//------------------------------------------------------------------------------
 GDoc::~GDoc(void)
 {
 	GSession::Event(this,eObjDelete);
+	if(Struct)
+		delete Struct;
 	try
 	{
 		// Delete feedbacks vector

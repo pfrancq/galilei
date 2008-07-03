@@ -50,6 +50,7 @@
 #include <gslot.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
@@ -528,7 +529,7 @@ GFilterManager::GFilterManager(void)
 {
 	// Try to open list of MIME types
 	try
-	{		
+	{
 		RXMLStruct xml;
 		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
 		File.Open(R::RIO::Read);
@@ -561,8 +562,8 @@ void GFilterManager::FindMIMEType(void)
 	if(!MIME.IsEmpty())
 		return;
 
-	// Goes through all defined MIME types 
-	RCursor<GMIMEExt> Cur(Exts);		
+	// Goes through all defined MIME types
+	RCursor<GMIMEExt> Cur(Exts);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(fnmatch(Cur()->Ext,Doc->GetURL(),0)!=FNM_NOMATCH)
 		{
@@ -588,31 +589,31 @@ bool GFilterManager::IsValidContent(const R::RString& MIME)
 //------------------------------------------------------------------------------
 RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml)
 {
-	RIO::RSmartTempFile DwnFile;      // Temporary file containing the downloaded file  (if necessary).	
+	RIO::RSmartTempFile DwnFile;      // Temporary file containing the downloaded file  (if necessary).
 	RString NonXMLFile;               // Non XML-File file.
-	
+
 	// Init Part;
 	Doc=doc;
 	Filter=0;
-	
+
 	// Guess the MIME type if necessary
 	FindMIMEType();
-	
+
 	// If it is known to be a XML file -> file can directly analyzed.
 	if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
 		return(Doc->GetURL());
 
 	// The file is perhaps not a XML file -> Try to transform it into DocXML
-	
+
 	// If it is not a local	file -> Download it
 	if(Doc->GetURL().GetScheme()!="file")
 	{
 		NonXMLFile=DwnFile.GetName();
 		DownloadFile(Doc->GetURL(),NonXMLFile);
-		
+
 		// Perhaps the server holding the file has provide a MIME type which can be XML
 		if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
-			return(Doc->GetURL());		
+			return(Doc->GetURL());
 	}
 	else
 	{
@@ -625,14 +626,14 @@ RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml)
 	// If no MIME type -> Exception
 	if(doc->GetMIMEType().IsEmpty())
 		throw GException("Cannot find MIME type for "+doc->GetURL());
-					
+
 	// If no filter -> Exception
 	if(!Filter)
 		throw GException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
-	
+
 	// Analyse the file
 	Filter->Analyze(Doc->GetURL(),NonXMLFile,docxml.GetName());
-			
+
 	// Return file to realy analyze
 	return(docxml.GetName());
 }

@@ -49,6 +49,7 @@
 #include <gdoc.h>
 #include <ggroup.h>
 #include <ggalileiapp.h>
+#include <gcommunity.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -69,9 +70,9 @@ class GMeasure2Elements::Measures
 {
 public:
 	double* Values;      // Values
-	
-	Measures(size_t max) : Values(0) {Values=new double[max];}	
-	int Compare(const Measures&) const {return(-1);}	
+
+	Measures(size_t max) : Values(0) {Values=new double[max];}
+	int Compare(const Measures&) const {return(-1);}
 	~Measures(void) {delete[] Values;}
 };
 
@@ -86,7 +87,7 @@ public:
 //------------------------------------------------------------------------------
 GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,bool sym,tObjType type)
 	: GMeasure(fac), GSignalHandler(), Values(30), Symetric(sym),
-	  NullLevel(0.000001), DirtyValue(-2.0), MinMeasure(0.5), AutomaticMinMeasure(true), 
+	  NullLevel(0.000001), DirtyValue(-2.0), MinMeasure(0.5), AutomaticMinMeasure(true),
 	  MinMeasureSense(true), InMemory(true), InFile(false), Lines(type), Cols(type),
 	  Mean(0.0), Deviation(0.0), NbValues(0)
 {
@@ -97,7 +98,7 @@ GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,bool sym,tObjType type
 //------------------------------------------------------------------------------
 GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjType cols)
 	: GMeasure(fac), GSignalHandler(), Values(30), Symetric(false),
-	  NullLevel(0.000001), DirtyValue(-2.0), MinMeasure(0.5), AutomaticMinMeasure(true), 
+	  NullLevel(0.000001), DirtyValue(-2.0), MinMeasure(0.5), AutomaticMinMeasure(true),
 	  MinMeasureSense(true), InMemory(true), InFile(false), Lines(lines), Cols(cols),
 	  Mean(0.0), Deviation(0.0), NbValues(0)
 {
@@ -167,7 +168,7 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 	size_t idx1,idx2;
 	double* res=va_arg(ap,double*);
 	va_end(ap);
-	
+
 	if(InMemory) // Search in memory
 	{
 		// Check order of identifier and get the value (If Symetric)
@@ -179,8 +180,8 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 		}
 		idx1=id1-1; // First line is empty (id1==1 -> Line=0)
 		idx2=id2-1; // First column is id2=1 -> Col=0
-		(*res)=Values[idx1]->Values[idx2];		
-		
+		(*res)=Values[idx1]->Values[idx2];
+
 		// Recomputing it necessary
 		if((*res)==DirtyValue)
 		{
@@ -198,7 +199,7 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 		//cout<<"Return sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
 	}
 	else if(InFile) // Search in binary file
-	{		
+	{
 		RToImplement()
 	}
 	else  // Recompute it
@@ -213,7 +214,7 @@ void GMeasure2Elements::Measure(unsigned int measure,...)
 				(*res)=0.0;
 		}
 		else
-			(*res)=0.0;		
+			(*res)=0.0;
 	}
 }
 
@@ -223,11 +224,11 @@ void GMeasure2Elements::Info(unsigned int info,...)
 {
 	if(!MinMeasureSense)
 		return;
-	
+
 	va_list ap;
 	va_start(ap,info);
 	double* res=va_arg(ap,double*);
-	va_end(ap);	
+	va_end(ap);
 	double deviationrate=1.5;
 
 	if(!AutomaticMinMeasure)
@@ -239,7 +240,7 @@ void GMeasure2Elements::Info(unsigned int info,...)
 	if(InMemory)
 	{
 		Update();
-		(*res)=Mean+deviationrate*sqrt(Deviation);		
+		(*res)=Mean+deviationrate*sqrt(Deviation);
 	}
 	else if(InFile)
 	{
@@ -252,22 +253,22 @@ void GMeasure2Elements::Info(unsigned int info,...)
 			(*res)=0.0;
 			return;
 		}
-		
+
 		double NbComp=0.0;
 		double sim;
-			
+
 		// Go thourgh all elements
 		for(size_t i=0;i<max-1;i++)
 		{
 			void* obj1=Session->GetElement(Lines,i+2);
 			if(!obj1)
-				continue;			
-			
+				continue;
+
 			for(size_t j=0;j<i+1;j++)
 			{
 				void* obj2=Session->GetElement(Cols,j+1);
 				if(!obj2)
-					continue;			
+					continue;
 				NbComp+=1.0;
 				sim=Compute(obj1,obj2);
 				if(sim<NullLevel)
@@ -290,7 +291,7 @@ void GMeasure2Elements::Info(unsigned int info,...)
 size_t GMeasure2Elements::GetNbDiffElements(void)
 {
 	if(Lines==Cols)
-		return(Session->GetNbElements(Lines));	
+		return(Session->GetNbElements(Lines));
 	return(Session->GetNbElements(Lines)+Session->GetNbElements(Cols));
 }
 
@@ -306,17 +307,17 @@ void GMeasure2Elements::AddIdentificator(size_t id,bool line)
 			char tmp[80];
 			sprintf(tmp,"GMeasure2Elements::AddIdentificator : index %zu exists",id);
 			throw std::range_error(tmp);
-		}		
-			
+		}
+
 		// Create the line
 		size_t max;
 		if(Symetric)
 			max=id;
-		else			
+		else
 			max=Session->GetMaxElementId(Cols);
 		Measures* ptr=new Measures(max);
 		Values.InsertPtrAt(ptr,id-1);
-	
+
 		// Dirty the cols
 		double* col;
 		size_t j;
@@ -329,16 +330,16 @@ void GMeasure2Elements::AddIdentificator(size_t id,bool line)
 		{
 			// Is there something to update?
 			if(Values.GetMaxPos()<id)
-				return;						
+				return;
 			RCursor<Measures> Lines(Values);
 			for(Lines.GoTo(id);!Lines.End();Lines.Next())
 				Lines()->Values[id-1]=DirtyValue;
 		}
 		else
-		{		
+		{
 			RCursor<Measures> Lines(Values);
 			for(Lines.Start();!Lines.End();Lines.Next())
-				Lines()->Values[id-1]=DirtyValue;					
+				Lines()->Values[id-1]=DirtyValue;
 		}
 	}
 }
@@ -346,11 +347,11 @@ void GMeasure2Elements::AddIdentificator(size_t id,bool line)
 
 //------------------------------------------------------------------------------
 void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
-{	
+{
 	// Something to dirty
 	if(!Values.GetNb())
 		return;
-	
+
 	if(line)
 	{
 		Measures* ptr=(Values)[id-1];
@@ -360,12 +361,12 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
 			sprintf(tmp,"GMeasure2Elements::DirtyIdentificator : index %zu doesn't exist",id);
 			throw std::range_error(tmp);
 		}
-				
+
 		// Dirty the cols
 		size_t max;
 		if(Symetric)
 			max=id;
-		else			
+		else
 			max=Session->GetMaxElementId(Cols);
 		double* col;
 		size_t j;
@@ -379,7 +380,7 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
 		{
 			// Is there something to update?
 			if(Values.GetMaxPos()<id)
-				return;				
+				return;
 			RCursor<Measures> Lines(Values);
 			for(Lines.GoTo(id);!Lines.End();Lines.Next())
 				DeleteValue(Lines()->Values[id-1]);
@@ -400,7 +401,7 @@ void GMeasure2Elements::DeleteIdentificator(size_t id,bool line)
 	// Something to delete
 	if(!Values.GetNb())
 		return;
-	
+
 	if(line)
 	{
 		Measures* ptr=(Values)[id-1];
@@ -410,18 +411,18 @@ void GMeasure2Elements::DeleteIdentificator(size_t id,bool line)
 			sprintf(tmp,"GMeasure2Elements::DeleteIdentificator : index %zu doesn't exist",id);
 			throw std::range_error(tmp);
 		}
-		
+
 		// Dirty the cols
 		size_t max;
 		if(Symetric)
 			max=id;
-		else			
+		else
 			max=Session->GetMaxElementId(Cols);
 		double* col;
 		size_t j;
 		for(j=max+1,col=ptr->Values;--j;col++)
 			DeleteValue(*col);
-		
+
 		// Delete the line
 		Values.DeletePtrAt(id-1,false);
 	}
@@ -432,7 +433,7 @@ void GMeasure2Elements::DeleteIdentificator(size_t id,bool line)
 		{
 			// Is there something to update?
 			if(Values.GetMaxPos()<id)
-				return;						
+				return;
 			RCursor<Measures> Lines(Values);
 			for(Lines.GoTo(id);!Lines.End();Lines.Next())
 				DeleteValue(Lines()->Values[id-1]);
@@ -441,7 +442,7 @@ void GMeasure2Elements::DeleteIdentificator(size_t id,bool line)
 		{
 			RCursor<Measures> Lines(Values);
 			for(Lines.Start();!Lines.End();Lines.Next())
-				DeleteValue(Lines()->Values[id-1]);					
+				DeleteValue(Lines()->Values[id-1]);
 		}
 	}
 }
@@ -464,7 +465,7 @@ template<class C>
 			break;
 		default:
 			break;
-	}	
+	}
 }
 
 
@@ -476,7 +477,7 @@ void GMeasure2Elements::Event(GDoc* doc, tEvent event)
 		if(Lines==otDoc)
 			UpdateElement(doc,event,true);
 		if(Cols==otDoc)
-			UpdateElement(doc,event,false);		
+			UpdateElement(doc,event,false);
 	}
 }
 
@@ -491,7 +492,7 @@ void GMeasure2Elements::Event(GProfile* prof, tEvent event)
 		if(Cols==otProfile)
 			UpdateElement(prof,event,false);
 		//	cout<<"Profile "<<prof->GetId()<<" : "<<GetEvent(event)<<" ("<<GetPlugInName()<<")"<<endl;
-	}	
+	}
 }
 
 
@@ -503,7 +504,7 @@ void GMeasure2Elements::Event(GCommunity* community, tEvent event)
 		if(Lines==otCommunity)
 			UpdateElement(community,event,true);
 		if(Cols==otCommunity)
-			UpdateElement(community,event,false);		
+			UpdateElement(community,event,false);
 	}
 }
 
@@ -540,12 +541,12 @@ void GMeasure2Elements::Update(void)
 			for(j=1,vals=Rows()->Values;j<max;j++,vals++)
 			{
 				if((*vals)!=DirtyValue)
-					continue;			
+					continue;
 				void* obj2=Session->GetElement(Cols,j);
 				(*vals)=Compute(obj1,obj2);
 				AddValue(*vals);
 			}
-		}		
+		}
 	}
 }
 
@@ -558,10 +559,10 @@ void GMeasure2Elements::AddValue(double val)
 	double oldmean(Mean);
 	Mean=(NbValues*Mean+val)/(NbValues+1);
 	Deviation=(((Deviation+(oldmean*oldmean))*NbValues)+(val*val))/(NbValues+1)-(Mean*Mean);
-	NbValues++;	
+	NbValues++;
 }
 
-	
+
 //------------------------------------------------------------------------------
 void GMeasure2Elements::DeleteValue(double& val)
 {

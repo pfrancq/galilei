@@ -74,7 +74,7 @@ public:
 	* Construct a XML Tag.
 	* @param cmd             Name of the cmd.
 	*/
-	GStorageTag(const RString& cmd);
+	GStorageTag(const R::RString& cmd);
 };
 
 
@@ -208,7 +208,7 @@ public:
 	* Get a string representing the world stored. This string must be a valid
 	* directory name since it is used everywhere.
 	*/
-	virtual RString GetWorld(void) const=0;
+	virtual R::RString GetWorld(void) const=0;
 
 	/**
 	* Initialize the access to the storage.
@@ -282,7 +282,7 @@ public:
 	* @param                 cmd Command to insert.
 	*/
 	void InsertCmd(GStorageCmd* cmd);
-	
+
 	/**
 	* Create a dummy table to store different kid of
 	* data.
@@ -335,7 +335,7 @@ public:
 	 * profiles assigned to them.
 	 */
 	virtual void SaveSubjects(void)=0;
-	
+
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
 	* can be a SQL file.
@@ -373,13 +373,13 @@ public:
 	* Load the concept types from the database.
 	*/
 	virtual void LoadConceptTypes(void)=0;
-	
+
 	/**
 	* Assign an identifier to a new concept type.
 	* @param type            Concept type.
 	*/
 	virtual void AssignId(GConceptType* type)=0;
-	
+
 	/**
 	* Load the relation types from the database.
 	*/
@@ -415,7 +415,7 @@ public:
 	* @param id              Identificator of the object.
 	*/
 	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,tObjType type,size_t id)=0;
-	
+
 	/**
 	* Load the name of specific concept.
 	* @param id              Idenfificator of the concept.
@@ -439,7 +439,7 @@ public:
 	/**
 	* Save the references of a given object type for a given concept.
 	* @param concept         Concept.
-	* @param what            Type of the object (otDoc,otSubProfile,otGroup).	
+	* @param what            Type of the object (otDoc,otSubProfile,otGroup).
 	* @param refs            Number of references.
 	*/
 	virtual void SaveRefs(const GConcept* concept,tObjType what,size_t refs)=0;
@@ -477,9 +477,22 @@ public:
 
 	/**
 	* Method that load a document that is stored.
-	* @param docid           Identificator of the document
+	* @param docid           Identifier of the document
 	*/
 	virtual GDoc* LoadDoc(unsigned int docid)=0;
+
+	/**
+	 * Method that load the structure of a document.
+	 * @param doc            Pointer to the document.
+	 */
+	virtual GDocStruct* LoadStruct(const GDoc* doc)=0;
+
+	/**
+	 * Method that save the structure of a document.
+	 * @param docstruct      Structure of the document.
+	 * @param docid          Identifier of the document.
+	 */
+	virtual void SaveStruct(GDocStruct* docstruct,size_t docid)=0;
 
 	/**
 	* Method that load the documents from where they are stored. This method

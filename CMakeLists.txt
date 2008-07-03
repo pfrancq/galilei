@@ -1,3 +1,5 @@
+cmake_minimum_required(VERSION 2.6)
+
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
@@ -29,3 +31,6 @@ ENDIF(UNIX)
 
 INCLUDE(rfinder.cmake)
 INCLUDE(prj.cmake)
+
+##keep it for compatibility with auto tools...
+INSTALL(FILES libgalilei.m4 DESTINATION share/aclocal)

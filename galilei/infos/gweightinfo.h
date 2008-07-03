@@ -6,7 +6,7 @@
 
 	Weighted information entity - Header.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gconcept.h>
+#include <gconcepttype.h>
 
 
 //------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ protected:
 	 * Concept.
 	 */
 	GConcept* Concept;
-	
+
 	/**
 	* Weight associated wih the concept.
 	*/
@@ -70,7 +71,7 @@ public:
 
 	/**
 	* Constructor of a weighed information entity.
-	* @param concept         Identificator of the information entity.
+	* @param concept         Identifier of the information entity.
 	* @param w               Weight of the information entity.
 	*/
 	GWeightInfo(GConcept* concept,double w=0.0);
@@ -83,7 +84,7 @@ public:
 
 	/**
 	* Compare two weighted information entities by comparing their
-	* identificator and type.
+	* identifier and type.
 	* @see R::RContainer
 	* @param calc           Weighted information entity.
 	* @return int
@@ -92,39 +93,48 @@ public:
 
 	/**
 	* Compare a weighted information entity and a concept by comparing their
-	* identificator and type.
+	* identifier and type.
+	* @see R::RContainer
+	* @param concept         Concept.
+	* @return int
+	*/
+	int Compare(const GConcept& concept) const;
+
+	/**
+	* Compare a weighted information entity and a concept by comparing their
+	* identifier and type.
 	* @see R::RContainer
 	* @param concept         Concept.
 	* @return int
 	*/
 	int Compare(const GConcept* concept) const;
-	
+
 	/**
 	 * == operator for GWeightInfo.
 	 * @param other          Element to compare with.
 	 */
 	bool operator==(const GWeightInfo &other) const;
-	
+
 	/**
 	 * != operator for GWeightInfo.
 	 * @param other          Element to compare with.
 	 */
 	bool operator!=(const GWeightInfo &other) const;
-	
+
 	/**
 	 * < operator for GWeightInfo.
 	 * @param other          Element to compare with.
 	 */
 	bool operator<(const GWeightInfo &other) const;
-	
+
 	/**
 	 * > operator for GWeightInfo.
 	 * @param other          Element to compare with.
 	 */
 	bool operator>(const GWeightInfo &other) const;
-	
+
 	/**
-	* Get the identificator of the concept.
+	* Get the identifier of the concept.
 	*/
 	inline unsigned int GetId(void) const {return(Concept->GetId());}
 
@@ -132,12 +142,17 @@ public:
 	* Get the concept.
 	*/
 	inline GConcept* GetConcept(void) const {return(Concept);}
-	
+
 	/**
 	* Get the type of the concept.
 	*/
 	inline GConceptType* GetType(void) const {return(Concept->GetType());}
-	
+
+	/**
+	* Get the identifier of the type of the concept.
+	*/
+	inline size_t GetTypeId(void) const {return(Concept->GetType()->GetId());}
+
 	/**
 	* Get the weight of the word.
 	* @return Weight as double.

@@ -49,7 +49,7 @@ namespace GALILEI{
 /**
 * The GWeightInfos provides a representation for a list of information entities.
 * It implements multiple vectors (one vector per concepts space) representing a
-* document/profile/subprofile/group in the extended vector Model.
+* document/profile/community in the extended vector Model.
 * @author Pascal Francq
 * @short Weighted Information Entities.
 */
@@ -61,12 +61,12 @@ protected:
 	* State of the object.
 	*/
 	tObjState State;
-	
+
 public:
 
 	/**
 	* Constructor of a list of weighted information entities.
-	* @param max            Maximal number of word created at initialisation.
+	* @param max            Maximal number of word created at initialization.
 	*/
 	GWeightInfos(unsigned int max);
 
@@ -77,17 +77,17 @@ public:
 	GWeightInfos(const GWeightInfos& w);
 
 	/**
-	* Assignement operator for lists of weighted information entities.
+	* Assignment operator for lists of weighted information entities.
 	* @param w              Source list of weighted information entities.
 	*/
 	GWeightInfos& operator=(const GWeightInfos& w);
 
 	/**
-	* Assignement operator for lists of weighted information entities.
+	* Assignment operator for lists of weighted information entities.
 	* @param w              Source list of weighted information entities.
 	*/
 	void CopyInfos(const R::RContainer<GWeightInfo,false,true>* infos);
-			
+
 	/**
 	* Deep copy of a list of weighted information entities.
 	* @param src            Source list of weighted information entities.
@@ -138,10 +138,10 @@ public:
 	/**
 	 * Get a pointer to a weighted information based on a given one. If it is
 	 * not found, it is created with a null weight.
-	 * @param info           Weighted information. 
+	 * @param info           Weighted information.
 	 */
 	GWeightInfo* GetInfo(const GWeightInfo* info);
-	
+
 	/**
 	* Clear the container.
 	*/
@@ -166,7 +166,7 @@ public:
 	bool IsDefined(void) const {return(GetNb());}
 
 	/**
-	* Compute the maximal weight of the information entities in the list for a 
+	* Compute the maximal weight of the information entities in the list for a
 	* given concept type. The list may not be empty.
 	* @param type            Type of the concepts.
 	* @return double.
@@ -218,7 +218,7 @@ public:
 	* entities are common to the two lists.
 	* @param w              List of weighted information entities.
 	* @param nb             Minimal number of entities to be common (0 means
-	*                       that the lists should be identifical).
+	*                       that the lists should be identical).
 	* @return true if there is at least nb number of common entities.
 	*/
 	bool SimilarityBool(const GWeightInfos& w,unsigned int nb=0) const;
@@ -231,7 +231,7 @@ public:
 	 * @param universal      Should universal concepts be copied.
 	 */
 	void Extract(GWeightInfos& dest,const GLang* lang,bool universal=true);
-	
+
 protected:
 
 	/**

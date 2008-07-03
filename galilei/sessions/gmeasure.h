@@ -82,7 +82,7 @@ public:
 	* particular plug-in. This method is intended to be called in an intensive
 	* way (in contrary of Info)
 	* @param measure         Type of the measure.
-	* 
+	*
 	* Suppose that the method takes two int arguments and should return a
 	* double that represents the product (measure=1) or the sum (measure=2). This
 	* method should be written:
@@ -98,7 +98,7 @@ public:
 	* 	{
 	* 		case 1 : (*d)=i*j; break;
 	* 		case 2 : (*d)=i+j; break;
-	* 	} 
+	* 	}
 	* 	va_end(ap);
 	* }
 	* @endcode
@@ -120,7 +120,7 @@ public:
 	* are requested by a particular plug-in. This method is not intended to be
 	* called in an intensive way (in contrary of Measure).
 	* @param info           Information to get.
-	* 
+	*
 	* Suppose the function should simply return a double. This method should
 	* be written:
 	* @code
@@ -132,7 +132,7 @@ public:
 	* 	{
 	* 		case 1 : (*d)=2; break;
 	* 		case 2 : (*d)=3; break;
-	* 	} 
+	* 	}
 	* 	va_end(ap);
 	* }
 	* @endcode
@@ -146,7 +146,7 @@ public:
 	* @endcode
 	 */
 	virtual void Info(unsigned int info,...);
-	 
+
 	/**
 	* Destructor.
 	*/
@@ -197,7 +197,7 @@ public:
 class GTypeMeasureManager : public GPluginManager<GTypeMeasureManager,GFactoryMeasure,GMeasure>
 {
 public:
-	GTypeMeasureManager(const RString& type);
+	GTypeMeasureManager(const R::RString& type);
 };
 
 

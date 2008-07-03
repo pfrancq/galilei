@@ -56,17 +56,17 @@ namespace GALILEI{
 class GMeasure2Elements : public GMeasure, public GSignalHandler
 {
 	class Measures;
-	
+
 	/**
 	 * Values.
 	 */
-	RContainer<Measures,true,false> Values;
+	R::RContainer<Measures,true,false> Values;
 
 	/**
 	 *  Is the measure symetric, i.e. measure(i,j)=measure(j,i) ?
 	 */
-	bool Symetric;	
-	
+	bool Symetric;
+
 	/**
 	* Level under which a measure is considered as null;
 	*/
@@ -74,13 +74,13 @@ class GMeasure2Elements : public GMeasure, public GSignalHandler
 
 	/**
 	 * Value representing a dirty one. For example, for a measure in [-1,+1],
-	 * it may be -2 (default). 
+	 * it may be -2 (default).
 	 */
 	double DirtyValue;
-	
+
 	/**
 	* Static minimum of measure.
-	*/ 
+	*/
 	double MinMeasure;
 
 	/**
@@ -92,26 +92,26 @@ class GMeasure2Elements : public GMeasure, public GSignalHandler
 	 * Has a minimum for the measure a sense.
 	 */
 	bool MinMeasureSense;
-	
+
 	/**
 	 * Measures in memory.
-	 */ 
+	 */
 	bool InMemory;
-	
+
 	/**
 	 * Measures in a file.
-	 */ 
+	 */
 	bool InFile;
 
 	/**
 	 * Name of measures.
 	 */
-	RString Name;
-	
+	R::RString Name;
+
 	/**
 	 * Directory containing the binary files.
 	 */
-	RString Dir;
+	R::RString Dir;
 
 	/**
 	 * Type of the elements representing the lines.
@@ -122,12 +122,12 @@ class GMeasure2Elements : public GMeasure, public GSignalHandler
 	 * Type of the elements representing the columns.
 	 */
 	tObjType Cols;
-	
+
 	/**
 	 * Mean of the measures.
 	 */
 	double Mean;
-	
+
 	/**
 	 * Deviation of the measures.
 	 */
@@ -141,14 +141,14 @@ class GMeasure2Elements : public GMeasure, public GSignalHandler
 public:
 
 	/**
-	* Constructor of the measures between two elements of the same type. The 
+	* Constructor of the measures between two elements of the same type. The
 	* measures may be symetric or not.
 	* @param fac             Factory of the plug-in.
 	* @param sym             Symetric measure?
 	* @param type            Type of the elements in the lines.
 	*/
 	GMeasure2Elements(GFactoryMeasure* fac,bool sym,tObjType type);
-	
+
 	/**
 	 * Constructor of the measures between two elements of different types.
 	 * @param fac             Factory of the plug-in.
@@ -164,12 +164,12 @@ public:
 	 * @param cols            Type of the elements in the cols.
 	 */
 	void SetElementsType(bool sym,tObjType lines,tObjType cols);
-			
+
 	/**
-	 * Get the value corresponding to a value that must be considered as null. 
+	 * Get the value corresponding to a value that must be considered as null.
 	 */
 	inline double GetNullValue(void) const {return(NullLevel);}
-	
+
 	/**
 	* Configurations were applied from the factory.
 	*/
@@ -191,25 +191,25 @@ public:
 	 * Method to make all measures being dirty.
 	 */
 	virtual void Dirty(void);
-	
+
 	/**
 	* Get a measure between two elements. There are three parameters.
 	* @param measure         Type of the measure (0).
 	* @param id1             Identifier of the first element.
 	* @param id2             Identifier of the second element.
-	*/	
+	*/
 	virtual void Measure(unsigned int measure,...);
-	
+
 	/**
 	* Access to the minmum of the measure of two similar elements. There are
 	* maximum two parameters.
 	* @param measure         Type of the measure (0).
-	 */	
+	 */
 	virtual void Info(unsigned int info,...);
 
 	/**
 	 * Compute the measure for two elements.
-       
+
 	 * @param obj1            Pointer to the first element.
 	 * @param obj2            Pointer to the second element.
 	 * @code
@@ -220,7 +220,7 @@ public:
 	 * @endcode
 	 */
 	virtual double Compute(void* obj1,void* obj2)=0;
-	
+
 	/**
 	 * Return the total number of different elements. If the measure is related
 	 * to one type only of elements (for example profiles), the implementation
@@ -230,7 +230,7 @@ public:
 	 * {
 	 *    return(Session->GetNbProfiles());
 	 * }
-	 * 
+	 *
 	 * If the measure is related to two types of elements (for example profiles
 	 * and documents), the implementation of the method looks like:
 	 * @code
@@ -239,11 +239,11 @@ public:
 	 *    return(Session->GetNbDocs()+Session->GetNbProfiles());
 	 * }
 	 * @endcode
-	 */        
+	 */
 	size_t GetNbDiffElements(void);
-	
+
 private:
-	
+
 	/**
 	 * An element was added and all the measure related to it must be created.
 	 * @param id             Identifier of the element.
@@ -265,8 +265,8 @@ private:
 	 * @param line           Element is a line?
 	 */
 	void DeleteIdentificator(size_t id,bool line);
-	
-	
+
+
 	/**
 	 * This template method handles the modification of the status of a given
 	 * element. This method is used by all the Event methods.
@@ -278,21 +278,21 @@ private:
 	template<class C> void UpdateElement(C* element,tEvent event,bool line);
 
 public:
-	
+
 	/**
 	* A specific document has changed.
 	* @param doc             Document.
 	* @param event           Event.
 	*/
 	virtual void Event(GDoc* doc, tEvent event);
-	
+
 	/**
 	* A specific profile has changed.
 	* @param prof            Profile.
 	* @param event           Event.
 	*/
 	virtual void Event(GProfile* prof, tEvent event);
-	
+
 	/**
 	* A specific group has changed.
 	* @param community       Community.
@@ -307,21 +307,21 @@ public:
 
 	/**
 	 * Add a new value.
-	 * @param val            Value to add. 
+	 * @param val            Value to add.
 	 */
 	void AddValue(double val);
-	
+
 	/**
 	 * Delete a new value.
-	 * @param val            Value to delete. 
+	 * @param val            Value to delete.
 	 */
 	void DeleteValue(double& val);
-	
+
 	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor.

@@ -122,7 +122,7 @@ template<class factory,class plugin,class mng>
 
 //-----------------------------------------------------------------------------
 template<class factory,class plugin,class mng>
-	int GFactoryPlugin<factory,plugin,mng>::Compare(const RString& name) const
+	int GFactoryPlugin<factory,plugin,mng>::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
 }

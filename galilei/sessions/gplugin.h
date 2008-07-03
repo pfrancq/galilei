@@ -47,8 +47,6 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
-using namespace std;
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -262,7 +260,7 @@ public:
 	* Comparison method needed by R::RContainer.
 	* @param name            Name to compare.
 	*/
-	int Compare(const RString& name) const;
+	int Compare(const R::RString& name) const;
 
 	/**
 	* Comparison method needed by R::RContainer.
@@ -393,7 +391,7 @@ public:
 	/**
 	* Get the library of the plugin.
 	*/
-	RString GetLib(void) const {return(Lib);}
+	R::RString GetLib(void) const {return(Lib);}
 
 	/**
 	* Return the version of the plugin.

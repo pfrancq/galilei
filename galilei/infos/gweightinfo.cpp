@@ -6,7 +6,7 @@
 
 	Weighted information entity - Implementation.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -39,7 +39,6 @@
 // include files for GALILEI
 #include <gweightinfo.h>
 #include <glang.h>
-#include <gconcepttype.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -71,6 +70,15 @@ int GWeightInfo::Compare(const GWeightInfo& calc) const
 	if(Concept->Type==calc.Concept->Type)
 		return(Concept->Id-calc.Concept->Id);
 	return(Concept->Type->Id-calc.Concept->Type->Id);
+}
+
+
+//------------------------------------------------------------------------------
+int GWeightInfo::Compare(const GConcept& concept) const
+{
+	if(Concept->Type==concept.Type)
+		return(Concept->Id-concept.Id);
+	return(Concept->Type->Id-concept.Type->Id);
 }
 
 
@@ -133,7 +141,7 @@ GWeightInfo& GWeightInfo::operator/=(double w)
 
 //------------------------------------------------------------------------------
 bool GWeightInfo::operator==(const GWeightInfo &other) const
-{	
+{
 	if(Concept->Type==other.Concept->Type)
 		return(Concept->Id==other.Concept->Id);
 	return(false);

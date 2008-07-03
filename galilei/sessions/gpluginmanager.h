@@ -48,8 +48,6 @@
 #include <ctype.h>
 #include <stdexcept>
 #include <dirent.h>
-using namespace std;
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -356,7 +354,7 @@ public:
 	* selected or if the list does not need to select one.
 	*/
 	virtual factory* GetCurrentFactory(bool need=true) const;
-	
+
 	/**
 	* Get the current plug-in.
 	* @param need            If the parameter is true and the plug-in does not
