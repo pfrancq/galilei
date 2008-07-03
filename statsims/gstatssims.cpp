@@ -253,7 +253,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 
 	// Verify if the ideal group should be created
 	if(GroupDoc||GroupProf)
-		Session->CopyIdealGroups();
+		Session->CopyIdealCommunities();
 
 	// Compute Statistics
 	if(Docs)
