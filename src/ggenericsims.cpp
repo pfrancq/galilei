@@ -47,6 +47,7 @@
 //------------------------------------------------------------------------------
 // include files
 #include "ggenericsims.h"
+using namespace std;
 
 
 
@@ -74,7 +75,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 	double TotalRef;
 	double num;
 //	size_t nb(0);
-	
+
 	// Compute total number of references and the maximum for each type
 	TotalRef=Type->GetRef(Owner->Space);
 	norm1=norm2=num=0.0;
@@ -281,10 +282,10 @@ double GGenericSims::SimilarityIFFMV(void)
 			double d=Cur()->Compute(ptr,ptr2);
 			if(d<GetNullValue())
 				d=Factor;
-			if(fabs(d-1.0)<GetNullValue())			
+			if(fabs(d-1.0)<GetNullValue())
 				d=1.0;
 			if(fabs(1.0+d)<GetNullValue())
-				d=-1.0;			
+				d=-1.0;
 //			cout<<"  "<<d<<endl;
 			RAssert(fabs(d)<=1.0)
 			Sim+=log10(d);
@@ -314,7 +315,7 @@ double GGenericSims::SimilarityIFFL(void)
 {
 	cout<<"Problem"<<endl;
 	return(0.0);
-	
+
 /*	// if one SubProfile is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
@@ -333,7 +334,7 @@ double GGenericSims::SimilarityIFFL(void)
 
 	double d=Types.GetPtr(Lang)->Compute(ptr,ptr2);
 	if(fabs(d)<NullLevel)
-		d=0.0;	
+		d=0.0;
 	return(d);*/
 }
 
