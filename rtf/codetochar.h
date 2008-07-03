@@ -6,7 +6,7 @@
 
 	Correspondance between Code and characters in HTML - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -40,12 +40,6 @@
 // include files for R Library
 #include <rstring.h>
 #include <rchar.h>
-
-
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
@@ -114,9 +108,6 @@ public:
 	*/
 	~CodeToChar(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

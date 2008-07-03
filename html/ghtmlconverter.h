@@ -6,7 +6,7 @@
 
 	HTML file Converter to DocXML- Header.
 
-	Copyright 2004 by the Universit�Libre de Bruxelles.
+	Copyright 2004 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery
@@ -39,13 +39,13 @@
 // include files for R Project
 #include <rxmlfile.h>
 
+
+
 //------------------------------------------------------------------------------
 // include files for GALILEI Project
 #include <gdocxml.h>
 #include <gfilter.h>
-//------------------------------------------------------------------------------
-namespace GALILEI{
-//------------------------------------------------------------------------------
+
 
 
 //------------------------------------------------------------------------------
@@ -62,12 +62,12 @@ class GHTMLConverter : public R::RXMLFile
 	/**
 	* Pointer to the calling filter
 	*/
-	GFilter* Filter;
+	GALILEI::GFilter* Filter;
 
 	/**
 	* Pointer to the gdocxml structure
 	*/
-	GDocXML* Doc;
+	GALILEI::GDocXML* Doc;
 
 	/**
 	* HTML Tags.
@@ -97,7 +97,7 @@ public:
 	* @param xmlstruct      The XML tree associated with the file.
 	* @param encoding       The encoding scheme of the file.
 	*/
-	GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,const R::RString& encoding="Latin1");
+	GHTMLConverter(GALILEI::GFilter* filter,R::RString name,GALILEI::GDocXML* xmlstruct,const R::RString& encoding="Latin1");
 
 	/**
 	* Construct a HTML file to read.
@@ -105,7 +105,7 @@ public:
 	* @param xmlstruct      The XML tree associated with the file.
 	* @param encoding       The encoding scheme of the file.
 	*/
-	GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,const R::RString& encoding="Latin1");
+	GHTMLConverter(GALILEI::GFilter* filter,R::RString name,GALILEI::GDocXML& xmlstruct,const R::RString& encoding="Latin1");
 
 	/**
 	* Set the doctype of the XML document. The doctype is transform in lowercase
@@ -227,9 +227,6 @@ public:
 
 	friend class GFilter;
 };
-
-
-}  //-------- End of namespace GALILEI -----------------------------------------------
 
 
 //------------------------------------------------------------------------------

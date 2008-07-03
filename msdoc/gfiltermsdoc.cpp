@@ -28,6 +28,8 @@
 
 */
 
+
+
 //------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <iostream>
@@ -36,10 +38,12 @@
 #include <stddef.h>
 #include <string.h>
 
+
 //------------------------------------------------------------------------------
 // include files for wvWare Project
 #include <wv2/ustring.h>
 #include <wv2/word97_generated.h>
+
 
 //------------------------------------------------------------------------------
 // include files for GALILEI

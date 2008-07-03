@@ -47,7 +47,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GALILEI::GFilterRTF::GFilterRTF(GFactoryFilter* fac)
+GFilterRTF::GFilterRTF(GFactoryFilter* fac)
 	: GFilter(fac), Tags(0),
 	 Chars(50,5)
 {
@@ -355,7 +355,7 @@ void GFilterRTF::Analyze(const RURI&,const RString& file,const RString& docxml)
 	Doc=new GDocXML(docxml,file);
 	RTextFile Src(Doc->GetFile());
 	Src.Open(R::RIO::Read);
-	Stop=Src.Eof();
+	Stop=Src.End();
 
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
@@ -367,16 +367,16 @@ void GFilterRTF::Analyze(const RURI&,const RString& file,const RString& docxml)
 	Text = Src.GetUntilEnd();
 
 	FindBlock(Text);
-	
+
 	// Save the structure and delete everything
 	RXMLFile Out(docxml,Doc);
 	Out.Open(RIO::Create);
-	delete Doc;		
+	delete Doc;
 }
 
 
 //------------------------------------------------------------------------------
-void GALILEI::GFilterRTF::InitCharContainer(void)
+void GFilterRTF::InitCharContainer(void)
 {
 	#warning Automatic code extraction must be possible
 	Chars.InsertPtr(new CodeToChar("\\u224\\\'00\\\'E0",0x00E0));
@@ -457,7 +457,7 @@ void GALILEI::GFilterRTF::InitCharContainer(void)
 
 
 //------------------------------------------------------------------------------
-RString GALILEI::GFilterRTF::ReplaceCodes(RString str)
+RString GFilterRTF::ReplaceCodes(RString str)
 {
 	RCharCursor cur(str);
 	R::RCursor<CodeToChar> codeCur;
@@ -523,7 +523,7 @@ void GFilterRTF::CreateParams(RConfig*)
 
 
 //------------------------------------------------------------------------------
-GALILEI::GFilterRTF::~GFilterRTF()
+GFilterRTF::~GFilterRTF()
 {
 	if(Tags) delete Tags;
 }

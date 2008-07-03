@@ -6,7 +6,7 @@
 
 	A RTF filter - Header.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Vandaele Valery(vavdaele@ulb.ac.be)
@@ -44,18 +44,13 @@
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
 /**
 * The GFilterRTF class provides a representation of a RTF document to filter in a
 * RTF structure.
 * @author Nicolas Kumps,Vandaele Valery
 * @short RTF's Filter.
 */
-class GFilterRTF: public GFilter
+class GFilterRTF: public GALILEI::GFilter
 {
 	class Tag
 	{
@@ -68,7 +63,7 @@ class GFilterRTF: public GFilter
 			: Name(n), Type(t) {}
 		int Compare(const Tag* t) const {return(Name.Compare(t->Name));}
 		int Compare(const Tag& t) const {return(Name.Compare(t.Name));}
-		int Compare(const RString s) const {return(Name.Compare(s));}
+		int Compare(const R::RString s) const {return(Name.Compare(s));}
 	};
 
 	/**
@@ -93,7 +88,7 @@ public:
 	* @param fac            Factory.
 	* @param name           Name of the filter.
 	*/
-	GFilterRTF(GFactoryFilter* fac);
+	GFilterRTF(GALILEI::GFactoryFilter* fac);
 
 	/**
 	* Analyze a document with a given URI that was downloaded in a local
@@ -102,7 +97,7 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml);
+	virtual void Analyze(const R::RURI& uri,const R::RString& file,const R::RString& docxml);
 
 protected:
 
@@ -122,7 +117,7 @@ protected:
 	* Find the first tag in the string
 	* @return       The tag found
 	*/
-	Tag* FindTag(RString str);
+	Tag* FindTag(R::RString str);
 
 	/**
 	* Analyse the content of the string and save it in the right docxmlTag
@@ -142,7 +137,7 @@ protected:
 	* @param str            the ingoing string
 	* @return RString       the string with code replaced.
 	*/
-	RString ReplaceCodes(RString str);
+	R::RString ReplaceCodes(R::RString str);
 
 public:
 
@@ -150,16 +145,13 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	*The destructor
 	*/
 	virtual ~GFilterRTF(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

@@ -228,17 +228,17 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 	// Email have at the beginning information on each line.
 	Header=true;        // There headers to read.
 	Read=true;	
-	while((!Src.Eof())&&Header)
+	while((!Src.End())&&Header)
 	{
 		// Read a line
 		if(Read)
 			Line=Src.GetLine(false);
 
 		// Add the next lines beginning with a space if the line is not empty
-		if(!Src.Eof())
+		if(!Src.End())
 		{
 			NextLine=Src.GetLine(false);
-			while((!NextLine.IsEmpty())&&(NextLine()->IsSpace())&&(!Src.Eof()))
+			while((!NextLine.IsEmpty())&&(NextLine()->IsSpace())&&(!Src.End()))
 			{
 				Line+=NextLine;
 				NextLine=Src.GetLine(false);
@@ -251,7 +251,7 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 		{
 			if(BlankLines)
 			{
-				while((NextLine.IsEmpty())&&(!Src.Eof()))
+				while((NextLine.IsEmpty())&&(!Src.End()))
 					NextLine=Src.GetLine(false);
 			}
 			
@@ -277,7 +277,7 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 	// Look for the content
 	part=Doc->GetContent();
 
-	while((!Read)||(!Src.Eof()))
+	while((!Read)||(!Src.End()))
 	{
 		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 
@@ -286,15 +286,15 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 			Read=true;
 		else
 		{
-			if(!Src.Eof())
+			if(!Src.End())
 				Line=NextLine;
-			if(!Src.Eof())
+			if(!Src.End())
 				NextLine=Src.GetLine(false);
 		}
 
 		// Paragraph are supposed to be terminated by at least one blank line
 		Paragraph=true;
-		while((!Src.Eof())&&Paragraph)
+		while((!Src.End())&&Paragraph)
 		{
 			// Look if it is a blank line
 			ptr=NextLine();

@@ -46,12 +46,6 @@
 #include <gfilter.h>
 
 
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-
 //-----------------------------------------------------------------------------
 /**
 * The GFilterTXT class provides a representation of a document to filter in a
@@ -59,7 +53,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short TXT Filter.
 */
-class GFilterTXT : public GFilter
+class GFilterTXT : public GALILEI::GFilter
 {
 
 public:
@@ -69,7 +63,7 @@ public:
 	* @param fac            Factory.
 	* @param name           Name of the filter.
 	*/
-	GFilterTXT(GFactoryFilter* fac);
+	GFilterTXT(GALILEI::GFactoryFilter* fac);
 
 public:
 
@@ -80,13 +74,13 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml);
+	virtual void Analyze(const R::RURI& uri,const R::RString& file,const R::RString& docxml);
 
 	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor of the TXT filter.
@@ -95,10 +89,5 @@ public:
 };
 
 
-}  //-------- End of namespace GALILEI ----------------------------------------
-
-
 //-----------------------------------------------------------------------------
 #endif
-
-

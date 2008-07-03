@@ -6,7 +6,7 @@
 
 	Correspondance between Code and characters in HTML - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,7 +34,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <codetochar.h>
-using namespace GALILEI;
 using namespace R;
 using namespace std;
 
@@ -47,28 +46,28 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::CodeToChar::CodeToChar(const char* code,RChar c) 
+CodeToChar::CodeToChar(const char* code,RChar c)
 	: Char(c), Code(code)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::CodeToChar::Compare(const RString& code) const
+int CodeToChar::Compare(const RString& code) const
 {
 	return(Code.Compare(code));
 }
 
 
 //---------------------------------------------------------------------------
-int GALILEI::CodeToChar::Compare(const CodeToChar& code) const
+int CodeToChar::Compare(const CodeToChar& code) const
 {
 	return(Code.Compare(code.Code));
 }
 
 
 //---------------------------------------------------------------------------
-int GALILEI::CodeToChar::Compare(const CodeToChar* code) const
+int CodeToChar::Compare(const CodeToChar* code) const
 {
 	return(Code.Compare(code->Code));
 
@@ -76,6 +75,6 @@ int GALILEI::CodeToChar::Compare(const CodeToChar* code) const
 
 
 //-----------------------------------------------------------------------------
-GALILEI::CodeToChar::~CodeToChar(void)
+CodeToChar::~CodeToChar(void)
 {
 }

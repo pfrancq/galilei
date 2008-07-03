@@ -79,19 +79,19 @@ void GFilterTXT::Analyze(const RURI&,const RString& file,const RString& docxml)
 
 	Read=true;
 
-	while(!Src.Eof())
+	while(!Src.End())
 	{
 		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
 
 		if(Read)
 		{
-			if(!Src.Eof())
+			if(!Src.End())
 				Line=NextLine;
 		}
 
 		// Paragraph are supposed to be terminated by at least one blank line
 		Paragraph=true;
-		while((!Src.Eof())&&Paragraph)
+		while((!Src.End())&&Paragraph)
 		{
 			// Read a Line
 			NextLine=Src.GetLine(false);

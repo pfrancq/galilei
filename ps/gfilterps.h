@@ -44,18 +44,13 @@ class UnicodeMap;
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
 /**
 * The GFilterPS class provides a representation of a document to filter in a
 * XML structure.
 * @author Pascal Francq
 * @short HTML's Filter.
 */
-class GFilterPS: public GFilter
+class GFilterPS: public GALILEI::GFilter
 {
 	/**
 	* Pointer to the current position in the buffer.
@@ -68,7 +63,7 @@ class GFilterPS: public GFilter
 	R::RChar* Begin;
 
 	/**
-	* Buffer containing the texte of the postscript file.
+	* Buffer containing the text of the postscript file.
 	*/
 	R::RChar* CharBuffer;
 
@@ -78,7 +73,7 @@ class GFilterPS: public GFilter
 	unsigned int CharLen;
 
 	/**
-	* Actuel size allocated in the buffer.
+	* Actual size allocated in the buffer.
 	*/
 	unsigned int CharMax;
 
@@ -88,7 +83,7 @@ public:
 	* Construct the HTML filter for a specific HTML document.
 	* @param fac            Factory.
 	*/
-	GFilterPS(GFactoryFilter* fac);
+	GFilterPS(GALILEI::GFactoryFilter* fac);
 
 	/**
 	* Analyze a document with a given URI that was downloaded in a local
@@ -97,7 +92,7 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml);
+	virtual void Analyze(const R::RURI& uri,const R::RString& file,const R::RString& docxml);
 
 
 protected:
@@ -119,16 +114,13 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GFilterPS(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

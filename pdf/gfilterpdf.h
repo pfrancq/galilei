@@ -49,18 +49,13 @@ class UnicodeMap;
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
 /**
 * The GFilterPDF class provides a representation of a document to filter in a
 * XML structure.
 * @author Pascal Francq
 * @short HTML's Filter.
 */
-class GFilterPDF: public GFilter
+class GFilterPDF: public GALILEI::GFilter
 {
 	/**
 	* Pointer to the current position in the buffer.
@@ -78,7 +73,7 @@ public:
 	* Construct the HTML filter for a specific HTML document.
 	* @param fac            Factory.
 	*/
-	GFilterPDF(GFactoryFilter* fac);
+	GFilterPDF(GALILEI::GFactoryFilter* fac);
 
 	/**
 	* Analyze a document with a given URI that was downloaded in a local
@@ -87,7 +82,7 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml);
+	virtual void Analyze(const R::RURI& uri,const R::RString& file,const R::RString& docxml);
 
 protected:
 
@@ -121,16 +116,13 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GFilterPDF(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

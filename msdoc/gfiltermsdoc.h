@@ -46,6 +46,7 @@
 #include <galilei.h>
 #include <gfilter.h>
 
+
 //-----------------------------------------------------------------------------
 // include files for wvWare Project
 #include <wv2/parser.h>
@@ -55,6 +56,7 @@
 #include <wv2/associatedstrings.h>
 #include <wv2/paragraphproperties.h>
 #include <wv2/fields.h>
+
 
 //-----------------------------------------------------------------------------
 // forward declaration
@@ -68,18 +70,13 @@ namespace wvWare {
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
 /**
 * The GFilterMSDoc class provides a representation of a document to filter in a
 * XML structure.
 * @author Vandaele Valery
 * @short MSDoc's Filter.
 */
-class GFilterMSDoc : public GFilter , public wvWare::SubDocumentHandler, public wvWare::TextHandler
+class GFilterMSDoc : public GALILEI::GFilter ,public wvWare::SubDocumentHandler, public wvWare::TextHandler
 {
 	/**
 	* Pointer to the current position in the buffer.
@@ -181,7 +178,7 @@ public:
 	* Construct the MSDoc filter for a specific MSDoc document.
 	* @param fac            Factory.
 	*/
-	GFilterMSDoc(GFactoryFilter* fac);
+	GFilterMSDoc(GALILEI::GFactoryFilter* fac);
 
 	/**
 	* Analyze a document with a given URI that was downloaded in a local
@@ -190,7 +187,7 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml);
+	virtual void Analyze(const R::RURI& uri,const R::RString& file,const R::RString& docxml);
 
 protected:
 
@@ -372,16 +369,13 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GFilterMSDoc(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

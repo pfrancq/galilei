@@ -38,6 +38,7 @@ using namespace std;
 using namespace GALILEI;
 
 
+
 //------------------------------------------------------------------------------
 //
 // class GHTMLConverter::Tag
@@ -764,7 +765,7 @@ void GHTMLConverter::BeginTag(const RString& namespaceURI, const RString& lName,
 		//drop attributes
 		attrs.Clear();
 		// Treat the beginning tag
-		RXMLFile::BeginTag(namespaceURI,lName,tag->XMLName,attrs);
+		RXMLFile::BeginTag(namespaceURI,lName,tag->XMLName);
 	}
 
 	//Skip "SCRIPT" tag content
