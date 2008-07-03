@@ -53,7 +53,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GALILEI::GLangEN::PorterRule
+class GLangEN::PorterRule
 {
 public:
 	enum tCondition{CondNothing,CondContainsVowel,CondAddAnE,CondRemoveAnE};
@@ -109,7 +109,7 @@ GLangEN::PorterRule::~PorterRule(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangEN::GLangEN(GFactoryLang* fac) 
+GLangEN::GLangEN(GFactoryLang* fac)
 	: GLang(fac,"English","en"), Rules1a(0), Rules1b(0), Rules1bb(0), Rules1c(0),
 	  Rules2(0), Rules3(0), Rules4(0), Rules5a(0), Rules5b(0)
 {
@@ -224,7 +224,7 @@ GALILEI::GLangEN::GLangEN(GFactoryLang* fac)
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GLangEN::GetWordSize(char* kwd)
+int GLangEN::GetWordSize(char* kwd)
 {
 	int Result=0;             // WordSize of the word.
 	int State=0;              // Current state of the machine.
@@ -253,7 +253,7 @@ int GALILEI::GLangEN::GetWordSize(char* kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangEN::ContainsVowel(const char* kwd)
+bool GLangEN::ContainsVowel(const char* kwd)
 {
 	if(!(*kwd))
 		return(false);
@@ -263,7 +263,7 @@ bool GALILEI::GLangEN::ContainsVowel(const char* kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangEN::EndsWithCVC(char* kwd,char* &end)
+bool GLangEN::EndsWithCVC(char* kwd,char* &end)
 {
 	int length;
 
@@ -277,7 +277,7 @@ bool GALILEI::GLangEN::EndsWithCVC(char* kwd,char* &end)
 }
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,true,false>* rules)
+bool GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,true,false>* rules)
 {
 	PorterRule* ptr;
 	char* ending;
@@ -346,7 +346,7 @@ bool GALILEI::GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,tru
 
 
 //-----------------------------------------------------------------------------
-RString GALILEI::GLangEN::GetStemming(const RString& _kwd) 
+RString GLangEN::GetStemming(const RString& _kwd)
 {
 	RString res;
 	char kwd[51];
@@ -390,7 +390,7 @@ void GLangEN::CreateParams(RConfig*)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangEN::~GLangEN(void)
+GLangEN::~GLangEN(void)
 {
 	if(Rules1a) delete Rules1a;
 	if(Rules1b) delete Rules1b;

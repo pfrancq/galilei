@@ -42,17 +42,12 @@
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
 /**
 * The GLangNL class provides a representation for the english language.
 * @author Pascal Francq
 * @short English Language.
 */
-class GLangNL : public GLang
+class GLangNL : public GALILEI::GLang
 {
 	class DutchPorterRule;
 
@@ -107,7 +102,7 @@ public:
 	* Constructor of the english language.
 	* @param fac             Factory.
 	*/
-	GLangNL(GFactoryLang* fac);
+	GLangNL(GALILEI::GFactoryLang* fac);
 
 	/**
 	* Function that return stemming of a word. The Porter's algorithm is
@@ -186,16 +181,13 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GLangNL(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

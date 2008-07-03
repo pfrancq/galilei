@@ -6,7 +6,7 @@
 
 	Universal Language - Implementation.
 
-	Copyright 2006 by the Universit鿽Libre de Bruxelles.
+	Copyright 2006 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).

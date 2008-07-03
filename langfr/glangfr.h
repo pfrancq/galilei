@@ -43,17 +43,12 @@
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
 /**
 * The GLangFR class provides a representation for the french language.
 * @author Pascal Francq
 * @short French language.
 */
-class GLangFR : public GLang
+class GLangFR : public GALILEI::GLang
 {
 	class FrenchPorterRule;
 
@@ -78,7 +73,7 @@ public:
 	* Constructor of the french language.
 	* @param fac             Factory.
 	*/
-	GLangFR(GFactoryLang* fac);
+	GLangFR(GALILEI::GFactoryLang* fac);
 
 	/**
 	* Function that return stemming of a word. The "French" Porter's algorithm is
@@ -130,16 +125,13 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GLangFR(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

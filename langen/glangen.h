@@ -6,7 +6,7 @@
 
 	English Language - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -42,17 +42,12 @@
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
 /**
 * The GLangEN class provides a representation for the english language.
 * @author Pascal Francq
 * @short English Language.
 */
-class GLangEN : public GLang
+class GLangEN : public GALILEI::GLang
 {
 	class PorterRule;
 
@@ -107,7 +102,7 @@ public:
 	* Constructor of the english language.
 	* @param fac             Factory.
 	*/
-	GLangEN(GFactoryLang* fac);
+	GLangEN(GALILEI::GFactoryLang* fac);
 
 	/**
 	* Function that return stemming of a word. The Porter's algorithm is
@@ -167,16 +162,13 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GLangEN(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

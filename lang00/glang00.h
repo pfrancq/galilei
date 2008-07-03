@@ -6,7 +6,7 @@
 
 	Universal Language - Header.
 
-	Copyright 2006 by the Université Libre de Bruxelles.
+	Copyright 2006 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -42,17 +42,12 @@
 
 
 //-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
 /**
 * The GLang00 class provides a representation for a "universal" language.
 * @author Pascal Francq
 * @short Universal language.
 */
-class GLang00 : public GLang
+class GLang00 : public GALILEI::GLang
 {
 public:
 
@@ -60,7 +55,7 @@ public:
 	* Constructor of the universal language.
 	* @param fac             Factory.
 	*/
-	GLang00(GFactoryLang* fac);
+	GLang00(GALILEI::GFactoryLang* fac);
 
 	/**
 	* Function that return stemming of a word, in this case the word is
@@ -74,16 +69,13 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor.
 	*/
 	virtual ~GLang00(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

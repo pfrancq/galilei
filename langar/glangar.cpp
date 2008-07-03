@@ -240,7 +240,7 @@ void GALILEI::GLangAR::LoadRules(void)
 		rules_file.Open(RIO::Read);
 
 		//treat on read line
-		while (!rules_file.Eof())
+		while (!rules_file.End())
 		{
 			w=rules_file.GetWord();
 

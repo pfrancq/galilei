@@ -53,7 +53,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class GALILEI::GLangNL::DutchPorterRule
+class GLangNL::DutchPorterRule
 {
 public:
 	enum tCondition{CondNothing,CondEndsWithCons,CondNotc,CondNote,CondUndouble};
@@ -109,7 +109,7 @@ GLangNL::DutchPorterRule::~DutchPorterRule(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangNL::GLangNL(GFactoryLang* fac) 
+GLangNL::GLangNL(GFactoryLang* fac)
 	: GLang(fac,"Dutch","nl"), Rules1a(0), Rules1b(0), Rules1c(0), Rules2a(0),
 	  Rules2aa(0), Rules3a(0), Rules3b(0), Rules4(0), Rules5(0)
 {
@@ -191,7 +191,7 @@ GALILEI::GLangNL::GLangNL(GFactoryLang* fac)
 
 
 //-----------------------------------------------------------------------------
-int GALILEI::GLangNL::GetWordSize(char* kwd)
+int GLangNL::GetWordSize(char* kwd)
 {
 	int Result=0;             // WordSize of the word.
 	int State=0;              // Current state of the machine.
@@ -220,7 +220,7 @@ int GALILEI::GLangNL::GetWordSize(char* kwd)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangNL::EndsWithCons(const char* newend)
+bool GLangNL::EndsWithCons(const char* newend)
 {
 	if(!(*newend))
 		return(false);
@@ -230,7 +230,7 @@ bool GALILEI::GLangNL::EndsWithCons(const char* newend)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangNL::EndsWithc(const char* newend)
+bool GLangNL::EndsWithc(const char* newend)
 {
 	if(!(*newend))
 		return(false);
@@ -240,7 +240,7 @@ bool GALILEI::GLangNL::EndsWithc(const char* newend)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangNL::EndsWithe(const char* newend)
+bool GLangNL::EndsWithe(const char* newend)
 {
 	if(!(*newend))
 		return(false);
@@ -250,7 +250,7 @@ bool GALILEI::GLangNL::EndsWithe(const char* newend)
 
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangNL::EndsWithCVD(char* tmp,char* newend)
+bool GLangNL::EndsWithCVD(char* tmp,char* newend)
 {
 	int length;
 	char* end;
@@ -265,7 +265,7 @@ bool GALILEI::GLangNL::EndsWithCVD(char* tmp,char* newend)
 }
 
 //-----------------------------------------------------------------------------
-bool GALILEI::GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRule,true,false>* rules)
+bool GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRule,true,false>* rules)
 {
 	DutchPorterRule* ptr;
 	char* ending;
@@ -353,7 +353,7 @@ bool GALILEI::GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRul
 
 
 //-----------------------------------------------------------------------------
-RString GALILEI::GLangNL::GetStemming(const RString& _kwd) 
+RString GLangNL::GetStemming(const RString& _kwd)
 {
 	RString res;
 	char kwd[51];
@@ -400,7 +400,7 @@ void GLangNL::CreateParams(RConfig*)
 
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangNL::~GLangNL(void)
+GLangNL::~GLangNL(void)
 {
 	if(Rules1a) delete Rules1a;
 	if(Rules1b) delete Rules1b;
