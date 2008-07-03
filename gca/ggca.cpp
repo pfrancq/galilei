@@ -34,7 +34,7 @@
 // includes files for GCA
 #include <ggca.h>
 
-
+using namespace R;
 
 //-----------------------------------------------------------------------------
 //

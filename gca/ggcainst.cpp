@@ -54,6 +54,8 @@
 #include <ggcagroup.h>
 #include <ggcaobj.h>
 #include <ggcaheuristic.h>
+using namespace R;
+using namespace std;
 
 
 
@@ -122,18 +124,33 @@ GGCAThreadData::~GGCAThreadData(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAInst::GGCAInst(GSession* ses,RCursor<GGCAObj> objs,GGCAParams* p,RDebug *debug)
+GGCAInst::GGCAInst(GSession* ses,RCursor<GGCAObj> objs,GGCAParams* p,RDebug *debug,tObjType type)
 	: RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>(p->PopSize,objs,FirstFit,"GCA",debug),
-	  GGCAProm(p), Params(p), Sols(0), Session(ses), NoSocialProfiles(objs.GetNb()),
-	  Ratios(objs.GetNb()), ProfilesSims(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities"))
-	, ProfilesAgree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements"))
-	, ProfilesDisagree(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements"))
+	GGCAProm(p), Params(p), Sols(0), Session(ses), NoSocialProfiles(objs.GetNb()),
+	Ratios(objs.GetNb()), Sims(0),Agree(0), Disagree(0), Type(type)
 #if BESTSOLSVERIFICATION
 	  , BestSols(p->MaxGen,p->MaxGen/2)
 #endif
 {
 	RPromSol** ptr;
 	unsigned int i;
+
+	// Init measures
+	switch(Type)
+	{
+		case otDoc :
+			Sims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
+			Agree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Agreements");
+			Disagree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Disagreements");
+			break;
+		case otProfile :
+			Sims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
+			Agree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements");
+			Disagree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements");
+			break;
+		default:
+			throw GException("GGCAInst::GGCAInst : Type "+GetObjType(Type)+" not supported");
+	}
 
 	// Change Freq
 	SetMutationParams(5,8,1);
@@ -169,7 +186,7 @@ void GGCAInst::Init(void)
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
 			if(Cur1()==Cur2()) continue;
-			ratio=GetAgreementRatio(Cur1()->GetProfile(),Cur2()->GetProfile());
+			ratio=GetAgreementRatio(Cur1()->GetElementId(),Cur2()->GetElementId());
 			if(ratio>=Params->MinAgreement)
 				ptr->InsertPtr(new GGCAMaxRatio(Cur2()->GetId(),ratio));
 		}
@@ -188,11 +205,11 @@ RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>* GGCAInst::CreateHeuristic(void
 
 
 //-----------------------------------------------------------------------------
-GGCAObj* GGCAInst::GetObj(const GProfile* prof) const
+GGCAObj* GGCAInst::GetObj(size_t id) const
 {
 	R::RCursor<GGCAObj> Cur(Objs);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		if(Cur()->GetProfile()==prof)
+		if(Cur()->GetElementId()==id)
 			return(Cur());
 	return(0);
 }
@@ -320,37 +337,31 @@ void GGCAInst::PostEvaluate(void)
 
 
 //-----------------------------------------------------------------------------
-double GGCAInst::GetDisagreementRatio(const GProfile* prof1,const GProfile* prof2) const
+double GGCAInst::GetDisagreementRatio(size_t element1,size_t element2) const
 {
 	double d;
-	ProfilesDisagree->Measure(0,prof1->GetId(),prof2->GetId(),&d);
+	Disagree->Measure(0,element1,element2,&d);
 	return(d);
 }
 
 
 //-----------------------------------------------------------------------------
-double GGCAInst::GetAgreementRatio(const GProfile* prof1,const GProfile* prof2) const
+double GGCAInst::GetAgreementRatio(size_t element1,size_t element2) const
 {
 	double d;
-	ProfilesAgree->Measure(0,prof1->GetId(),prof2->GetId(),&d);
+	Agree->Measure(0,element1,element2,&d);
 	return(d);
 }
 
 
 //-----------------------------------------------------------------------------
-double GGCAInst::GetSim(const GProfile* prof1,const GProfile* prof2) const
+double GGCAInst::GetSim(size_t element1,size_t element2) const
 {
 	double d;
-	ProfilesSims->Measure(0,prof1->GetId(),prof2->GetId(),&d);
+	Sims->Measure(0,element1,element2,&d);
 	return(d);
 }
 
-
-//-----------------------------------------------------------------------------
-double GGCAInst::GetSim(const GGCAObj* obj1,const GGCAObj* obj2) const
-{
-	return(GetSim(obj1->GetProfile(),obj2->GetProfile()));
-}
 
 
 //-----------------------------------------------------------------------------

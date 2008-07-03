@@ -54,6 +54,8 @@
 #include <ggcainst.h>
 #include <ggcagroup.h>
 #include <ggcaobj.h>
+using namespace R;
+using namespace std;
 
 
 
@@ -154,7 +156,7 @@ bool GGCAGrouping::IsValid(GCommunity* /*grp*/)
 //-----------------------------------------------------------------------------
 void GGCAGrouping::ConstructGroupsFromChromo(GGCAChromo* chromo)
 {
-	
+
 	unsigned int* tab;
 	unsigned int* ptr;
 
@@ -166,7 +168,7 @@ void GGCAGrouping::ConstructGroupsFromChromo(GGCAChromo* chromo)
 		Session->AssignId(g);
 		ptr=tab=gr()->GetObjectsId();
 		while((*ptr)!=NoObject)
-			g->InsertObj((Objs[*(ptr++)])->GetProfile());
+			g->InsertObj(static_cast<GProfile*>(Objs[*(ptr++)]->GetElement()));
 		delete[] tab;
 		Session->InsertCommunity(g);
 	}
@@ -193,22 +195,22 @@ void GGCAGrouping::Run(void)
 		unsigned int i;
 		GGCAObj* obj;
 
-		// Get the minimum of similarity		
+		// Get the minimum of similarity
 		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities")->Info(0,&d);
   		Params.MinSimLevel=d;
 		cout<<"MinSim="<<d<<endl;
-		
-		// Create the GA objects 
-  		Objs.Clear(Profiles.GetNb());  		
+
+		// Create the GA objects
+  		Objs.Clear(Profiles.GetNb());
 		RCursor<GProfile> Cur2(Profiles);
 		for(Cur2.Start(),i=0;!Cur2.End();Cur2.Next(),i++)
 			Objs.InsertPtr(obj=new GGCAObj(i,Cur2()));
-			
+
 		// Launch the GA
-		Instance=new GGCAInst(Session,RCursor<GGCAObj>(Objs),&Params,Session->GetDebug());
+		Instance=new GGCAInst(Session,RCursor<GGCAObj>(Objs),&Params,Session->GetDebug(),otProfile);
 		Instance->Init();
 		Instance->Run();
-		
+
 		// Cleanup and save the result
 		ConstructGroupsFromChromo(Instance->BestChromosome);
 		delete Instance;

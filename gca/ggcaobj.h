@@ -57,16 +57,38 @@ protected:
 	unsigned int Id;
 
 	/**
-	* Pointer to a subprofile.
+	* Pointer to the element.
 	*/
-	GProfile* Profile;
+	void* Element;
 
+	/**
+	 * Identifier of the element.
+	 */
+	size_t ElementId;
+	
+	/**
+	 * Can the element be grouped in a group alone?
+	 */
+	bool Social;
+	
+	/**
+	 * Identifier of a common parent between elements that could prevent to group them together.
+	 */
+	size_t ParentId;
+	
 	/**
 	* Sum of all the "probabilities" of the documents.
 	*/
 	double SumPjk;
 
 public:
+	
+	/**
+	* Construct the object.
+	* @param id             Identificator.
+	* @param d              Corresponding document.
+	*/
+	GGCAObj(const unsigned int id,GDoc* d);
 
 	/**
 	* Construct the object.
@@ -74,7 +96,7 @@ public:
 	* @param p              Corresponding profile.
 	*/
 	GGCAObj(const unsigned int id,GProfile* p);
-
+		
 	/**
 	* Copy Construct.
 	* @param obj            Source used.
@@ -102,10 +124,25 @@ public:
 	unsigned int GetId(void) const {return(Id);}
 
 	/**
-	* Return the subprofile of the object.
+	* Return a pointer to the element.
 	*/
-	GProfile* GetProfile(void) const {return(Profile);}
+	inline void* GetElement(void) const {return(Element);}
 
+	/**
+	 * Return the identifier of the element.
+	 */
+	inline size_t GetElementId(void) const {return(ElementId);}
+	
+	/**
+	 * See if the element is social or not.
+	 */
+	inline bool IsSocial(void) const {return(Social);}
+	
+	/**
+	 * Get the identifier of the parent or 0 if there is no parent.
+	 */
+	inline size_t GetParentId(void) const {return(ParentId);}
+	
 	/**
 	* Destruct the object.
 	*/

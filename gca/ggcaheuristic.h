@@ -54,7 +54,6 @@
 class GGCAHeuristic : public R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>
 {
 	R::RContainer<GGCAGroup,false,false> ToDel;
-
 	R::RContainer<GGCAMaxRatios,true,false>& Ratios;
 
 public:

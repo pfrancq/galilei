@@ -43,6 +43,7 @@
 #include <ggcagroup.h>
 #include <ggcaobj.h>
 #include <ggcainst.h>
+using namespace R;
 
 
 
@@ -127,7 +128,7 @@ void GGCAHeuristic::PostRun(void)
 		if(Cur1()->GetNbObjs()!=1)
 			continue;
 		obj=Cur1()->GetObjPos(0);
-		if(!obj->GetProfile()->IsSocial())
+		if(!obj->IsSocial())
 			continue;
 
 		// Find a new group

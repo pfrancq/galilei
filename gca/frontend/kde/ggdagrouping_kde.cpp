@@ -1,12 +1,12 @@
 /*
 
-	Genetic Community Algorithm
+	Genetic Document Algorithm
 
-	GGCAGrouping_KDE.cpp
+	GGDAGrouping_KDE.cpp
 
 	Config and about dialogs - Implementation.
 
-	Copyright 2003-2007 by the Université Libre de Bruxelles.
+	Copyright 2006-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,12 +31,17 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <ggroupprofiles.h>
+// include files for R Project
+#include <rqt.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <gpostdoc.h>
+
+
+//------------------------------------------------------------------------------
+// include files for GDA
 #include <../../ggca.h>
 
 
@@ -68,7 +73,7 @@
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("This is the Genetic Community Algorithm for GALILEI.");
+	I18N_NOOP("This is the Genetic Document Algorithm for GALILEI.");
 
 
 //------------------------------------------------------------------------------
@@ -78,9 +83,9 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "GVCA", I18N_NOOP("Genetic Community Algorithm"),
+	KAboutData aboutData( "GDA", I18N_NOOP("Genetic Document Algorithm"),
 		"1.0", description, KAboutData::License_GPL,
-		"(c) 1998-2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
 	KAboutApplication dlg(&aboutData);
 	dlg.exec();
@@ -88,19 +93,21 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryGroupProfiles* params)
+void Configure(GFactoryPostDoc* params)
 {
 	GAConfigDlg dlg;
 	if(dlg.Configure(params))
-		params->Apply();
-/*	
+			params->Apply();
+	
+/*	dlg.ClusteringMethod->setCurrentText(ToQString(params->Get("Clustering Method")));
+	dlg.NbClusters->setValue(params->GetUInt("NbClusters"));
 	dlg.PopSize->setValue(params->GetUInt("Population Size"));
 	dlg.MaxGen->setValue(params->GetUInt("Max Gen"));
 	dlg.Step->setChecked(params->GetBool("Step"));
 	dlg.StepGen->setValue(params->GetUInt("Step Gen"));
 	dlg.StepGen->setEnabled(params->GetBool("Step"));
 	dlg.MaxKMeans->setValue(params->GetUInt("Max kMeans"));
-	dlg.NbDivChromo->setValue(params->GetUInt("NbDivChromo"));
+	dlg.NbDivChromo->setValue(params->GetUInt("NbDivChromos"));
 	dlg.MinAgreement->setValue(params->GetDouble("Min Agreement"));
 	dlg.Convergence->setValue(params->GetDouble("Convergence"));
 	dlg.MinDisagreement->setValue(params->GetDouble("Min Disagreement"));
@@ -115,11 +122,13 @@ void Configure(GFactoryGroupProfiles* params)
 	dlg.DisagreementWeight->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->GetDouble());
 	if(dlg.exec())
 	{
+		params->Set("Clustering Method",FromQString(dlg.ClusteringMethod->currentText()));
+		params->SetUInt("NbClusters",dlg.NbClusters->value());
 		params->SetUInt("Population Size",dlg.PopSize->value());
 		params->SetUInt("Max Gen",dlg.MaxGen->value());
 		params->SetUInt("Max kMeans",dlg.MaxKMeans->value());
 		params->SetDouble("Convergence",dlg.Convergence->value());
-		params->SetUInt("NbDivChromo",dlg.NbDivChromo->value());
+		params->SetUInt("NbDivChromos",dlg.NbDivChromo->value());
 		params->SetBool("Step",dlg.Step->isChecked());
 		params->SetUInt("Step Gen",dlg.StepGen->value());
 		params->SetDouble("Min Agreement",dlg.MinAgreement->value());

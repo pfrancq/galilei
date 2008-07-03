@@ -61,7 +61,7 @@
 class GGCAThreadData : public R::RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>
 {
 public:
-	
+
 	R::RContainer<GGCAGroup,false,false> ToDel;
 
 	/**
@@ -151,11 +151,26 @@ class GGCAInst : public R::RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData
 	R::RContainer<GGCAChromo,true,false> BestSols;
 #endif
 
-	GMeasure* ProfilesSims;
+	/*
+	 * Similarity measure to used.
+	 */
+	GMeasure* Sims;
 
-	GMeasure* ProfilesAgree;
 
-	GMeasure* ProfilesDisagree;
+	/*
+	 * Agreement measure to used.
+	 */
+	GMeasure* Agree;
+
+	/*
+	 * Disagrement measure to used.
+	 */
+	GMeasure* Disagree;
+
+	/**
+	 * Type of the elements to group.
+	 */
+	tObjType Type;
 
 public:
 
@@ -165,8 +180,9 @@ public:
 	* @param objs           The objects to group.
 	* @param p              Parameters.
 	* @param debug          Debugger.
+	* @param type           NType of the element to group.
 	*/
-	GGCAInst(GSession* ses,RCursor<GGCAObj> objs,GGCAParams* p,R::RDebug *debug);
+	GGCAInst(GSession* ses,R::RCursor<GGCAObj> objs,GGCAParams* p,R::RDebug* debug,tObjType type);
 
 	/**
 	* Initialisation of the instance.
@@ -180,11 +196,11 @@ public:
 	virtual R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>* CreateHeuristic(void);
 
 	/**
-	* Get the GA object corresponding to a profile.
-	* @param prof            Profile to search for.
+	* Get the GA object corresponding to an element.
+	* @param id              Identifier of the element.
 	* @ereturns GGCAObj*
 	*/
-	GGCAObj* GetObj(const GProfile* prof) const;
+	GGCAObj* GetObj(size_t id) const;
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
@@ -205,34 +221,25 @@ public:
 	virtual void PostEvaluate(void);
 
 	/**
-	* Get the disagreement ratio between two profiles.
-	* @param prof1           First Profile.
-	* @param prof2           Second Profile.
+	* Get the disagreement ratio between two elements.
+	* @param element1        First element.
+	* @param element2        Second element.
 	*/
-	double GetDisagreementRatio(const GProfile* prof1,const GProfile* prof2) const;
+	double GetDisagreementRatio(size_t element1,size_t element2) const;
 
 	/**
-	* Get the disagreement ratio between two profiles.
-	* @param prof1           First Profile.
-	* @param prof2           Second Profile.
+	* Get the disagreement ratio between two elements.
+	* @param element1        First element.
+	* @param element2        Second element.
 	*/
-	double GetAgreementRatio(const GProfile* prof1,const GProfile* prof2) const;
+	double GetAgreementRatio(size_t element1,size_t element2) const;
 
 	/**
-	* Compute the similarity between two profiles.
-	* @param prof1           Profile n1.
-	* @param prof2           Profile n2.
-	* @return double
+	* Compute the similarity between two elements.
+	* @param element1        First element.
+	* @param element2        Second element.
 	*/
-	double GetSim(const GProfile* prof1,const GProfile* prof2) const;
-
-	/**
-	* Compute the similarity between two objects.
-	* @param obj1               Object n1.
-	* @param obj2               Object n2.
-	* @return double
-	*/
-	double GetSim(const GGCAObj* obj1,const GGCAObj* obj2) const;
+	double GetSim(size_t element1,size_t element2) const;
 
 	/**
 	* This function can be used to do a traitement after the GA stops.
@@ -241,9 +248,9 @@ public:
 
 	/**
 	 *  Called when no handler was found for a given notification.
-	 */ 
+	 */
 	virtual void HandlerNotFound(const R::RNotification& notification);
-	
+
 	/**
 	* Destruct the instance.
 	*/

@@ -57,6 +57,8 @@
 #include <ggcainst.h>
 #include <ggcagroup.h>
 #include <ggcaobj.h>
+using namespace R;
+using namespace std;
 
 
 
@@ -117,7 +119,7 @@ void GGCAChromo::ConstructChromo(GSession* grps)
 		// Go through the current profiles and store them in thObjs1
 		Profile=Grp()->GetObjs();
 		for(Profile.Start(),objs=thObjs1,NbObjs1=0;!Profile.End();Profile.Next(),objs++,NbObjs1++)
-			(*objs)=Instance->GetObj(Profile());
+			(*objs)=Instance->GetObj(Profile()->GetId());
 
 		// Mix randomly thObjs1
 		Instance->RandOrder<GGCAObj*>(thObjs1,NbObjs1);
@@ -140,7 +142,7 @@ void GGCAChromo::ConstructChromo(GSession* grps)
 void GGCAChromo::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-	if(Instance->Session->GetNbCommunities())
+	if((Instance->Type==otProfile)&&(Instance->Session->GetNbCommunities()))
 		ConstructChromo(Instance->Session);
 
 	// Call classic heuristic for non-assigned objects
@@ -172,7 +174,7 @@ void GGCAChromo::Evaluate(void)
 			{
 				if(!i)
 					Cur2()->Evaluate(CritSimJ,CritAgreement,CritDisagreement);
-				tmp=1-Instance->GetSim(Cur()->GetRelevant()->GetProfile(),Cur2()->GetRelevant()->GetProfile());
+				tmp=1-Instance->GetSim(Cur()->GetRelevant()->GetElementId(),Cur2()->GetRelevant()->GetElementId());
 				tmp=tmp*tmp;
 				if(tmp<min)
 					min=tmp;
@@ -337,9 +339,9 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 	GGCAObj** ptr2;
 	GGCAObj** ptr3;
 	double sim,minsim;
-	GProfile* prof;
-	GProfile* prof1;
-	GProfile* prof2;
+	size_t prof;
+	size_t prof1;
+	size_t prof2;
 	GGCAGroup* grp;
 	GGCAObj* worst1=0;
 	GGCAObj* worst2=0;
@@ -355,7 +357,7 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 		{
 			for(CurObj2.GoTo(i+1);!CurObj2.End();CurObj2.Next())
 			{
-				sim=Instance->GetSim(CurObj()->GetProfile(),CurObj2()->GetProfile());
+				sim=Instance->GetSim(CurObj()->GetElementId(),CurObj2()->GetElementId());
 				if(sim<minsim)
 				{
 					minsim=sim;
@@ -377,13 +379,13 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 
 	// Copy in thObjs1 the subprofiles most similar to worst1 and in thObjs2
 	// the subprofiles most similar to worst2
-	prof1=worst1->GetProfile();
-	prof2=worst2->GetProfile();
+	prof1=worst1->GetElementId();
+	prof2=worst2->GetElementId();
 	RCursor<GGCAObj> CurObj(GetObjs(*grp));
 	for(CurObj.Start();!CurObj.End();CurObj.Next())
 	{
 		if((CurObj()==worst1)||(CurObj()==worst2)) continue;
-		prof=CurObj()->GetProfile();
+		prof=CurObj()->GetElementId();
 		sim=Instance->GetSim(prof1,prof);
 		minsim=Instance->GetSim(prof2,prof);
 		if(sim>minsim)
@@ -422,7 +424,7 @@ void GGCAChromo::MergeBestSubProfiles(void)
 	GGCAGroup* bestgrp1;
 	GGCAGroup* bestgrp2;
 	double sim,maxsim;
-	GProfile* prof;
+	size_t prof;
 	GGCAObj** ptr;
 
 	// Find the two groups containing the most similar objects.
@@ -431,12 +433,12 @@ void GGCAChromo::MergeBestSubProfiles(void)
 	for(Cur.Start(),i=Cur.GetNb(),j=0,maxsim=-1.0,bestgrp1=bestgrp2=0;--i;Cur.Next(),j++)
 	{
 		grp1=GetGroup(Cur());
-		prof=Cur()->GetProfile();
+		prof=Cur()->GetElementId();
 		for(Cur2.GoTo(j+1);!Cur2.End();Cur2.Next())
 		{
 			grp2=GetGroup(Cur2());
 			if(grp1==grp2) continue;
-			sim=Instance->GetSim(prof,Cur2()->GetProfile());
+			sim=Instance->GetSim(prof,Cur2()->GetElementId());
 			if(sim>maxsim)
 			{
 				maxsim=sim;
@@ -475,7 +477,7 @@ void GGCAChromo::TreatSocialSubProfiles(bool rel)
 
 //	cout<<"Do not treat social"<<endl;
 	return;
-	
+
 	// Look for the groups to delete
 	ToDel->Clear();
 	for(Cur1.Start();!Cur1.End();Cur1.Next())
@@ -484,7 +486,7 @@ void GGCAChromo::TreatSocialSubProfiles(bool rel)
 		if(Cur1()->GetNbObjs()!=1)
 			continue;
 		obj=Cur1()->GetObjPos(0);
-		if(!obj->GetProfile()->IsSocial())
+		if(!obj->IsSocial())
 			continue;
 
 		// Find a new group
@@ -496,7 +498,7 @@ void GGCAChromo::TreatSocialSubProfiles(bool rel)
 				continue;
 			Cur2()->ComputeRelevant();
 			if(rel)
-				tmp=Instance->GetSim(obj->GetProfile(),Cur2()->GetRelevant()->GetProfile());
+				tmp=Instance->GetSim(obj->GetElementId(),Cur2()->GetRelevant()->GetElementId());
 			else
 				tmp=Cur2()->ComputeHomogeneity(obj);
 			if(tmp>max)

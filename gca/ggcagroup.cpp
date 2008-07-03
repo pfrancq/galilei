@@ -49,6 +49,8 @@
 #include <ggcachromo.h>
 #include <ggcainst.h>
 #include <ggcaobj.h>
+using namespace R;
+using namespace std;
 
 
 
@@ -117,10 +119,12 @@ void GGCAGroup::Clear(void)
 //---------------------------------------------------------------------------
 bool GGCAGroup::HasSameUser(const GGCAObj* obj) const
 {
-	GUser* usr=obj->GetProfile()->GetUser();
+	size_t usr=obj->GetParentId();
+	if(!usr)
+		return(false);
 	RCursor<GGCAObj> ptr=Owner->GetObjs(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
-		if(usr==ptr()->GetProfile()->GetUser())
+		if(usr==ptr()->GetParentId())
 			return(true);
 	return(false);
 }
@@ -129,19 +133,19 @@ bool GGCAGroup::HasSameUser(const GGCAObj* obj) const
 //---------------------------------------------------------------------------
 bool GGCAGroup::CanInsert(const GGCAObj* obj)
 {
-	GProfile* prof1;
-	GProfile* prof2;
+	size_t prof1;
+	size_t prof2;
 
 	if(!NbSubObjects)
 		return(true);
-	prof1=obj->GetProfile();
-	GUser* usr1=prof1->GetUser();
+	prof1=obj->GetElementId();
+	size_t usr1=obj->GetParentId();
 	RCursor<GGCAObj> ptr=Owner->GetObjs(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		prof2=ptr()->GetProfile();
+		prof2=ptr()->GetElementId();
 		// Do not put two profiles of the same user in the same group
-		if(usr1==prof2->GetUser())
+		if(usr1&&(usr1==ptr()->GetParentId()))
 			return(false);
 		// Min sim and min disagreement must be respected
 		if((Owner->Instance->GetSim(prof1,prof2)<=Owner->Instance->Params->MinSimLevel) ||
@@ -170,17 +174,17 @@ void GGCAGroup::PostDelete(const GGCAObj* /*obj*/)
 double GGCAGroup::ComputeSumDist(GGCAObj* obj)
 {
 	double Sum;
-	GProfile* prof;
+	size_t prof;
 	double tmp;
 
 	if(!NbSubObjects)
 		return(0.0);
-	prof=obj->GetProfile();
+	prof=obj->GetElementId();
 	RCursor<GGCAObj> ptr(Owner->GetObjs(*this));
 	for(ptr.Start(),Sum=0.0;!ptr.End();ptr.Next())
 	{
 		if(ptr()==obj) continue;
-		tmp=1-Owner->Instance->GetSim(prof,ptr()->GetProfile());
+		tmp=1-Owner->Instance->GetSim(prof,ptr()->GetElementId());
 		Sum+=tmp*tmp;
 	}
 	return(Sum);
@@ -238,8 +242,8 @@ void GGCAGroup::Evaluate(double& dist,double& agree,double& disagree)
 		{
 			for(CurObj2.GoTo(i+1);!CurObj2.End();CurObj2.Next())
 			{
-				AgreementSum+=Owner->Instance->GetAgreementRatio(CurObj()->GetProfile(),CurObj2()->GetProfile());
-				DisagreementSum+=Owner->Instance->GetDisagreementRatio(CurObj()->GetProfile(),CurObj2()->GetProfile());
+				AgreementSum+=Owner->Instance->GetAgreementRatio(CurObj()->GetElementId(),CurObj2()->GetElementId());
+				DisagreementSum+=Owner->Instance->GetDisagreementRatio(CurObj()->GetElementId(),CurObj2()->GetElementId());
 			}
 		}
 	}
@@ -275,13 +279,13 @@ GGCAGroup& GGCAGroup::operator=(const GGCAGroup& grp)
 double GGCAGroup::GetMaxRatioSame(GGCAObj* obj)
 {
 	double max,tmp;
-	GProfile* prof=obj->GetProfile();
+	size_t prof=obj->GetElementId();
 
 	// Look if in the other objects, there is a better one
 	RCursor<GGCAObj> ptr=Owner->GetObjs(*this);
 	for(ptr.Start(),max=0.0;!ptr.End();ptr.Next())
 	{
-		tmp=Owner->Instance->GetAgreementRatio(prof,ptr()->GetProfile());
+		tmp=Owner->Instance->GetAgreementRatio(prof,ptr()->GetElementId());
 		if(tmp>max)
 			max=tmp;
 	}

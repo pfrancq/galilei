@@ -166,7 +166,7 @@ public:
 	* @param obj            Profile used as reference.
 	* @returns result.
 	*/
-	inline double ComputeRelSim(const GGCAObj* obj) {return(Owner->Instance->GetSim(Relevant->GetProfile(),obj->GetProfile()));}
+	inline double ComputeRelSim(const GGCAObj* obj) {return(Owner->Instance->GetSim(Relevant->GetElementId(),obj->GetElementId()));}
 
 	/**
 	* Compute a homogeneity for a given profile to the group. Actually, it uses

@@ -40,8 +40,6 @@
 #include <rfitness.h>
 #include <rgga.h>
 #include <rparam.h>
-using namespace R;
-using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -185,7 +183,7 @@ public:
 	double Ratio;
 
 	GGCAMaxRatio(unsigned int objid,double ratio) : ObjId(objid), Ratio(ratio) {}
-	
+
 	int Compare(const GGCAMaxRatio& ratio) const {return(static_cast<int>(Ratio-ratio.Ratio));}
 
 	/**

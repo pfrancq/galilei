@@ -41,6 +41,8 @@
 #include <ggcaprom.h>
 #include <ggca.h>
 #include <ggcachromo.h>
+using namespace R;
+using namespace std;
 
 
 

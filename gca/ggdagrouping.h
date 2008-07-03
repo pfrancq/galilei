@@ -1,12 +1,12 @@
 /*
 
-	Genetic Community Algorithm
+	Genetic Documents Algorithm
 
-	GCAGrouping.h
+	GGDAGrouping.h
 
-	GCA Plug-in - Header.
+	GDA Plug-in - Header.
 
-	Copyright 2002-2008 by the Université Libre de Bruxelles.
+	Copyright 2006-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,28 +31,27 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGCAGroupingH
-#define GGCAGroupingH
-
-//-----------------------------------------------------------------------------
-// include files for R project
-#include <robject.h>
-#include <ggca.h>
+#ifndef GGDAGroupingH
+#define GGDAGroupingH
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggroupprofiles.h>
+#include <gpostdoc.h>
+
+//-----------------------------------------------------------------------------
+// include files for GDA
+#include <ggca.h>
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GGCAGrouping provides a representation for a method to group some
+* The GGDAGrouping provides a representation for a method to group some
 * subprofiles using a grouping genetic algorithm.
 * @author Pascal Francq
 * @short GGA Method.
 */
-class GGCAGrouping : public GGroupProfiles, public R::RObject
+class GGDAGrouping : public GPostDoc
 {
 protected:
 
@@ -62,14 +61,19 @@ protected:
 	R::RContainer<GGCAObj,true,false> Objs;
 
 	/**
-	* Instance of the GA.
-	*/
-	GGCAInst* Instance;
-
-	/**
 	* Parameters of the GA used.
 	*/
 	GGCAParams Params;
+
+	/**
+	 * Current clustering method
+	 */
+	char ClusteringMethod;
+
+	/**
+	 * Number of clusters handled by the k-Means.
+	 */
+	size_t NbClusters;
 
 public:
 
@@ -77,9 +81,7 @@ public:
 	* Constructor.
 	* @param f              Factory.
 	*/
-	GGCAGrouping(GFactoryGroupProfiles* fac);
-
-	virtual R::RCString GetClassName(void) const {return("GGCAGrouping");}
+	GGDAGrouping(GFactoryPostDoc* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -104,9 +106,9 @@ public:
 	virtual void Init(void);
 
 	/**
-	* Construct the groups of the session based on a chromosome.
+	* Construct the results of the session based on a chromosome.
 	*/
-	void ConstructGroupsFromChromo(GGCAChromo* chromo);
+	void ConstructResults(R::RCursor<GGCAGroup> Sol);
 
 protected:
 
@@ -123,7 +125,7 @@ protected:
 	* Actually, this means verify that all the subprofiles of the group are
 	* similar to the one tested.
 	* @param grp            Group to verify.
-	* @param sub            Profile eventually to add.
+	* @param sub            SubProfile eventually to add.
 	* @returns True if it is coherent.
 	*/
 	bool IsCoherent(const GCommunity* grp,const GProfile* sub) const;
@@ -135,9 +137,14 @@ protected:
 	virtual bool IsValid(GCommunity* grp);
 
 	/**
-	 * Catch a best chromosome notification.
+	 * Do the GDA.
 	 */
-	void BestChromo(const R::RNotification& notification);
+	void DoGDA(void);
+
+	/**
+	 * Do the GDA.
+	 */
+	void DokMeans(void);
 
 	/**
 	* Make the grouping for a specific Language.
@@ -155,7 +162,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GGCAGrouping(void);
+	virtual ~GGDAGrouping(void);
 };
 
 
