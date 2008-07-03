@@ -113,7 +113,7 @@ protected:
 	 * Return a SQL string for a given unsigned int.
 	 * @param i              The number.
 	 */
-	inline R::RString Num(unsigned int i) {return("'"+RString::Number(i)+"'");}
+	inline R::RString Num(unsigned int i) {return("'"+R::RString::Number(i)+"'");}
 
 	/**
 	 * Return a SQL string for a given double.
@@ -125,12 +125,12 @@ protected:
 	 * Return a double from a string.
 	 */
 	double atof(const R::RString& str);
-	
+
 	/**
 	 * Return a SQL string for a given language.
 	 */
-	inline R::RString Lang(GLang* lang) {return("'"+RString(lang->GetCode())+"'");}
-	 	
+	inline R::RString Lang(GLang* lang) {return("'"+R::RString(lang->GetCode())+"'");}
+
 public:
 
 	//-----------------------------------------------------
@@ -142,7 +142,7 @@ public:
 	* Get a string representing the world stored. This string must be a valid
 	* directory name since it is used everywhere.
 	*/
-	virtual RString GetWorld(void) const;
+	virtual R::RString GetWorld(void) const;
 
 	/**
 	* Initialize the access to the storage.
@@ -214,13 +214,13 @@ public:
 	* Load the Subjects.
 	*/
 	virtual void LoadSubjects(void);
-	
+
 	/**
 	 * Save the subjects, including the information on the documents and the
 	 * profiles assigned to them.
 	 */
 	virtual void SaveSubjects(void);
-	
+
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
 	* can be a SQL file.
@@ -282,7 +282,7 @@ public:
 	* @param id              Identificator of the object.
 	*/
 	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,tObjType type,size_t id);
-	
+
 	/**
 	* Loading the all concepts of given concept type.
 	* @param type            Type of concepts.
@@ -324,7 +324,7 @@ public:
 	/**
 	* Save the references of a given object type for a given concept.
 	* @param concept         Concept.
-	* @param what            Type of the object (otDoc,otSubProfile,otGroup).	
+	* @param what            Type of the object (otDoc,otSubProfile,otGroup).
 	* @param refs            Number of references.
 	*/
 	virtual void SaveRefs(const GConcept* concept,tObjType what,size_t refs);
@@ -363,6 +363,26 @@ public:
 	* @param docid           Identificator of the document
 	*/
 	virtual GDoc* LoadDoc(unsigned int docid);
+
+	/**
+	 *
+	 */
+	void LoadNode(const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent,size_t nodes,size_t nbnodes,size_t contents,size_t nbcontents);
+
+	/**
+	 * Method that load the structure of a document.
+	 * @param docid          Identifier of the document.
+	 */
+	virtual GDocStruct* LoadStruct(const GDoc* doc);
+
+	size_t SaveNode(GDocStructNode* node);
+
+	/**
+	 * Method that save the structure of a document.
+	 * @param docstruct      Structure of the document.
+	 * @param docid          Identifier of the document.
+	 */
+	virtual void SaveStruct(GDocStruct* docstruct,size_t docid);
 
 	/**
 	* Method that load the documents from where they are stored. This method
@@ -445,7 +465,7 @@ public:
 	* @param prof            Profile to save.
 	*/
 	virtual void SaveProfile(GProfile* prof);
-	
+
 	/**
 	* Save profiles in histoty
 	* @param sub            Subprofile to save.
@@ -561,7 +581,7 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(R::RConfig* params);
 
 	/**
 	* Destructor.
