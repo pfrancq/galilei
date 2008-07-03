@@ -4,9 +4,9 @@
 
 	GTextAnalyse.h
 
-	Analyse a document - Header.
+	Analyze a document - Header.
 
-	Copyright 2001-2007 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -46,38 +46,113 @@ using namespace R;
 #include <galilei.h>
 #include <gdocanalyse.h>
 #include <glang.h>
+#include <gdocstruct.h>
 using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-class WordWeight
+class cWordOccur
 {
 public:
-	RString Word;
-	bool* InStop;
-	unsigned int Nb;
-	double Weight;
-	bool OnlyLetters;
-	bool NormalStem;        // Must the word be considered as a normal stem
-	
-	WordWeight(unsigned int nb);
-	inline void Clear(void) {Word=""; Nb=0; Weight=0.0; NormalStem=false;}
-	int Compare(const WordWeight& word) const {return(Word.Compare(word.Word));}
-	int Compare(const WordWeight* word) const {return(Word.Compare(word->Word));}
-	int Compare(const RString& word) const {return(Word.Compare(word));}
-	size_t HashIndex(size_t idx) const {return(Word.HashIndex(idx));}
-	~WordWeight(void);
+
+	GDocStructNode* Parent;
+	size_t Pos;
+
+	cWordOccur(GDocStructNode* parent,size_t pos) : Parent(parent), Pos(pos) {}
+	int Compare(const cWordOccur&) const {return(-1);}
 };
 
 
 //-----------------------------------------------------------------------------
-class IndexTag : public RContainer<WordWeight,false,false>
+/**
+ * The cWord class represent a word (sequence of characters found in the
+ * document.
+ */
+class cWord
 {
 public:
+
+	/**
+	 * Word.
+	 */
+	RString Word;
+
+	/**
+	 * Verify if the word is a stopword in different languages.
+	 */
+	bool* InStop;
+
+	/**
+	 * Number of occurrences of the word.
+	 */
+	size_t Nb;
+
+	/**
+	 * Weight of the word (maybe different from the number of occurrences).
+	 */
+	double Weight;
+
+	/**
+	 * Has the word only letters.
+	 */
+	bool OnlyLetters;
+
+	/**
+	 * Must the word be considered as a normal stem.
+	 */
+	bool NormalStem;
+
+	/**
+	 * Occurrences of the word in the XML document.
+	 */
+	R::RContainer<cWordOccur,true,false> Occurs;
+
+	/**
+	 * Create a word.
+	 * @param nblangs        Number of languages.
+	 * @return
+	 */
+	cWord(size_t nblangs);
+
+	inline void Clear(void) {Word=RString::Null; Nb=0; Weight=0.0; NormalStem=false; Occurs.Clear();}
+	int Compare(const cWord& word) const {return(Word.Compare(word.Word));}
+	int Compare(const RString& word) const {return(Word.Compare(word));}
+	size_t HashIndex(size_t idx) const {return(Word.HashIndex(idx));}
+	~cWord(void);
+};
+
+
+//-----------------------------------------------------------------------------
+class cContent : public RContainer<cWord,false,false>
+{
+public:
+
+	cContent(void) : RContainer<cWord,false,false>(10) {}
+
+	int Compare(const cContent&) const {return(-1);}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The IndexTag class represent a tag that, associated with its content, can be
+ * used as indexed.
+ */
+class IndexTag : public RContainer<cContent,true,false>
+{
+public:
+
+	/**
+	 * The tag indexed.
+	 */
 	RString Name;
+
+	/**
+	 * Number of times the tag occurs.
+	 */
 	size_t Occurs;
-	
-	IndexTag(const RString& name) : RContainer<WordWeight,false,false>(60), Name(name), Occurs(0) {}
+
+	IndexTag(const RString& name) : RContainer<cContent,true,false>(60), Name(name), Occurs(0) {}
 	int Compare(const IndexTag& tag) const {return(Name.Compare(tag.Name));}
 	int Compare(const RString& tag) const {return(Name.Compare(tag));}
 };
@@ -85,26 +160,37 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The GTextAnalyse class provides a method to analyse a document.
+* The GTextAnalyse class provides a method to analyze a document.
 * @author Pascal Francq
-* @short Vector Model Documents Analyse.
+* @short Vector Model Documents Analyze.
 */
 class GTextAnalyse : public GDocAnalyse
 {
 	/**
-	* Current document to analyse.
+	* Current document to analyze.
 	*/
 	GDoc* Doc;
-	
+
+	/**
+	 * Structure computed.
+	 */
+	GDocStruct* Struct;
+
 	/**
 	* Cursor on the different languages defined in the system.
 	*/
 	R::RCursor<GLang> CurLangs;
 
 	/**
-	* All the words appearing in the current document.
+	 * Words appearing in the current document.
+	 */
+	R::RContainer<cWord,true,false> Words;
+
+	/**
+	* Words appearing in the current document but accessible through an hash
+	* table.
 	*/
-	R::RDblHashContainer<WordWeight,false>* Weights;
+	R::RDblHashContainer<cWord,false> Hash;
 
 	/**
 	* Information computed.
@@ -117,73 +203,53 @@ class GTextAnalyse : public GDocAnalyse
 	RContainer<IndexTag,true,true> IndexTags;
 
 	/**
-	* Direct access to the words.
-	*/
-	WordWeight** Direct;
-
-	/**
-	* Number of elements allocated in Direct;
-	*/
-	unsigned int NbDirect;
-
-	/**
-	* Order of the words in the document.
-	*/
-	GConcept** Order;
-
-	/**
-	* Number of elements allocated in Order.
-	*/
-	unsigned int NbOrder;
-
-	/**
 	* Number of words in the document.
 	*/
-	unsigned int N;
+	size_t N;
 
 	/**
 	* Number of different words in the document.
 	*/
-	unsigned int Ndiff;
+	size_t Ndiff;
 
 	/**
 	* Number of words not in the stoplist.
 	*/
-	unsigned int Nwords;
+	size_t Nwords;
 
 	/**
 	* Total number of valid words.
 	*/
-	unsigned int V;
+	size_t V;
 
 	/**
 	* Number of different valid words.
 	*/
-	unsigned int Vdiff;
+	size_t Vdiff;
 
 	/**
 	* Number of words of the stoplist for the different languages that are in
 	* the document.
 	*/
-	unsigned int* Sl;
+	size_t* Sl;
 
 	/**
 	* Number of different words of the stoplist for the different languages
 	* that are in the document.
 	*/
-	unsigned int* Sldiff;
+	size_t* Sldiff;
 
 	/**
 	* Number of words of the stoplist of the selected language that are in the
 	* document.
 	*/
-	unsigned int Sdiff;
+	size_t Sdiff;
 
 	/**
 	* Number of different words of the stoplist of the selected language that
 	* are in the document.
 	*/
-	unsigned int S;
+	size_t S;
 
 	/**
 	* Language actually considered.
@@ -194,11 +260,6 @@ class GTextAnalyse : public GDocAnalyse
 	* Determine if the language must be find for the current document.
 	*/
 	bool FindLang;
-
-	/**
-	* Determine if the current word has only letters.
-	*/
-	bool OnlyLetters;
 
 	/**
 	* Index of the language when defined.
@@ -227,7 +288,7 @@ class GTextAnalyse : public GDocAnalyse
 	unsigned int MinStemSize;
 
 	/**
-	* Minimum number of occurences needed to insert a valid word in the list of
+	* Minimum number of occurrences needed to insert a valid word in the list of
 	* information for a document.
 	*/
 	unsigned int MinOccur;
@@ -243,7 +304,7 @@ class GTextAnalyse : public GDocAnalyse
 	bool Filtering;
 
 	/**
-	* Maximal occurences of a same word in a row to consider a word non-valid.
+	* Maximal occurrences of a same word in a row to consider a word non-valid.
 	*/
 	unsigned int NbSameOccur;
 
@@ -257,77 +318,77 @@ class GTextAnalyse : public GDocAnalyse
 	 * Store pairs (full word,stem) in the database?
 	 */
 	bool StoreFullWords;
-	
+
 	/**
 	 * Extract structure elements?
 	 */
 	bool ExtractStruct;
-	
+
 	/**
 	 * Should the structure be considered as normal content (stems)?
 	 */
 	bool StructIsContent;
-	
+
 	/**
 	 * Extract pairs (declarative tags,content)?
 	 */
 	bool ExtractIndex;
-	
+
 	/**
-	 * Maximum number of terms allowed for a declartive tag's content.
+	 * Maximum number of terms allowed for a declarative tag's content.
 	 */
 	unsigned int MaxTerms;
-	
+
 	/**
-	 * Maximum depth of a declative tag
+	 * Maximum depth of a declarative tag
 	 */
 	unsigned int MaxDepth;
-	
+
 	/**
 	 * Maximal percentage of occurrences of a tag to be considered as index.
 	 */
 	double MaxPercOccurs;
-	
+
 	/**
 	 * Maximal number of occurrences of a tag to be considered as index.
 	 */
 	double MaxOccurs;
-	
+
 	/**
 	 * May declarative tags have child tags?
 	 */
 	bool ChildTags;
-	
+
 	/**
 	 * Weight of each tag and parameter name when they are considered as stems.
 	 */
 	double WeightStruct;
-	
+
 	/**
 	 * Must the attributes values be considered as stems?
 	 */
 	bool AttrValues;
-	
+
 	/**
 	 * Weight of each parameter value when they are considered as stems.
-	 */  
+	 */
 	double WeightValues;
-	
+
 	/**
 	 * Number of tags.
 	 */
 	size_t NbTags;
-	
+
 	/**
 	 * Structure space.
 	 */
 	GConceptType* StructSpace;
-	
+
 	/**
 	 * Index space.
 	 */
 	GConceptType* IndexSpace;
-	
+
 public:
 
 	/**
@@ -356,43 +417,28 @@ public:
 protected:
 
 	/**
-	* Do some cleaning operations before a analyse.
+	* Do some cleaning operations before a analyze.
 	*/
 	void Clear(void);
-
-	/**
-	* Verify the size of direct and reallocate when necessary.
-	*/
-	void VerifyDirect(void);
-
-	/**
-	* See if a given word is a valid one, don't content text and numbers that
-	* are to skip.
-	*/
-	bool ValidWord(const R::RString kwd);
-
-	/**
-	* Verify the size of direct and reallocate when necessary.
-	*/
-	void VerifyOrder(void);
 
 	/**
 	* Add a word to the document.
 	* @param word           Word to add.
 	* @param weight         Weights of the words added during this analyze.
 	* @param normal         Must the word be considered as a normal stem.
+	* @
 	*/
-	void AddWord(const R::RString word,double weight,IndexTag* idx);
+	void AddWord(const R::RString& word,double weight,cContent* content,GDocStructNode* parent,size_t pos,bool letters);
 
 	/**
 	* This method extract the new word from a given string if it responds to
 	* the constraints established.
-	* @param ptr            Pointer that will be moved to the next word.
+	* @param str            String.
 	* @param weight         Weights of the words added during this analyze.
 	* @param normal         Must the word be considered as a normal stem.
 	* @returns true if a word was extract.
 	*/
-	void ExtractWord(const R::RChar* &ptr,double weight,IndexTag* idx);
+	void ExtractWord(const R::RString& str,double weight,cContent* content,GDocStructNode* parent,size_t pos);
 
 	/**
 	* This methods determine the language of the current structure studied,
@@ -402,8 +448,8 @@ protected:
 	*/
 	void DetermineLang(void);
 
-	GConcept* GetStemConcept(WordWeight* word);
-	
+	GConcept* GetStemConcept(cWord* word);
+
 	/**
 	* Construct the information about the current document and store it in
 	* Words.
@@ -422,7 +468,7 @@ protected:
 public:
 
 	/**
-	* Analyse a XML representation of a document for a session and store the
+	* Analyze a XML representation of a document for a session and store the
 	* results in this document.
 	*
 	* During the analysis of the document, if links point to document that does
@@ -437,7 +483,7 @@ public:
 	 * Index the XML part.
 	 */
 	void IndexXMLPart(void);
-	
+
 	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
@@ -448,7 +494,7 @@ public:
 	* Destructor.
 	*/
 	virtual ~GTextAnalyse(void);
-	
+
 	friend class XMLParser;
 };
 

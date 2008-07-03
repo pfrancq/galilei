@@ -6,7 +6,7 @@
 
 	A XML Parser to extract information entities - Implementation.
 
-	Copyright 2007 by the Université libre de Bruxelles.
+	Copyright 2007-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -41,6 +41,7 @@
 //-----------------------------------------------------------------------------
 // include files for this plug-in
 #include <xmlparser.h>
+using namespace std;
 
 
 
@@ -52,84 +53,93 @@
 
 //-----------------------------------------------------------------------------
 XMLParser::XMLParser(GTextAnalyse* filter,const RURI& uri)
-	: RXMLFile(uri,0,"UTF-8"), Filter(filter), IsTitle(false), Contents(20)
+	: RXMLFile(uri,0,"UTF-8"), Filter(filter), IsTitle(false), Contents(20),
+	  CurTag(0), CurAttr(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void XMLParser::BeginTag(const RString& namespaceURI,const RString& lName,const RString&,RContainer<RXMLAttr,true,true>& attrs)
+void XMLParser::BeginTag(const RString& namespaceURI,const RString& lName,const RString&)
 {
 	RString index;
-	
+
 	// Add tags
 	Filter->NbTags++;
-	
+
 	// Push current content
 	Contents.Push(new RString(Content));
 	Content.Clear();
-	
-	if(namespaceURI.IsEmpty())
-		index=Filter->Doc->GetURL();
-	else
-		index=namespaceURI;
-	
-	// Look if the current tag is title meta data
-	if(index+":"+lName=="http://purl.org/dc/elements/1.1/:title")
+
+	if(IsProccesBody())
 	{
-		IsTitle=true;
-		return;
+		if(namespaceURI.IsEmpty())
+			index=Filter->Doc->GetURL()+":"+lName;
+		else
+			index=namespaceURI+":"+lName;
 	}
-	
-	// If the structure must not be extracted -> return from the method	
+	else
+		index=lName;
+
+	// Look if the current tag is title meta data
+	if(index=="http://purl.org/dc/elements/1.1/:title")
+		IsTitle=true;
+
+	// If the structure must not be extracted -> return from the method
 	if(!Filter->ExtractStruct)
 		return;
 
-	RString StructStems;  // String containing structure elements supposed to be considered as stems 
-	RString ValuesStems;  // String containing parameters values supposed to be considered as stems
-	
 	// Always index the structure
-	AddStructElement(index+":"+lName,GetCurrentDepth());
-	
-	// If tags are content -> add short name of the tag
-	if(Filter->StructIsContent)
-		StructStems+=lName+" ";	
-	
-	RCursor<RXMLAttr> Cur(attrs);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		// Always index the structure
-		AddStructElement(Cur()->GetFullName(),GetCurrentDepth());
-		
-		// If attributes names are content -> add short parameter name 
-		if(Filter->StructIsContent)
-			StructStems+=Cur()->GetName()+" ";
+	AddStructElement(index,true);
 
-					
-		// If attributes values are content -> add short parameter name
-		if(Filter->AttrValues)
-			ValuesStems+=Cur()->GetValue()+" ";
-	}
-	
-	// If StructStems is not empty -> Add them
-	if(!StructStems.IsEmpty())
+	// If tags are content -> add short name of the tag
+	if(Filter->StructIsContent&&(!lName.ContainOnlySpaces()))
+		Filter->ExtractWord(lName,Filter->WeightStruct,0,0,0);
+}
+
+
+//------------------------------------------------------------------------------
+void XMLParser::AddAttribute(const RString& namespaceURI,const RString& lName, const RString&)
+{
+	if(!Filter->ExtractStruct)
+		return;
+
+	RString index;
+	if(IsProccesBody())
 	{
-		const RChar* ptr=StructStems();
-		Filter->ExtractWord(ptr,Filter->WeightStruct,0);
+		if(namespaceURI.IsEmpty())
+			index=Filter->Doc->GetURL()+":"+lName;
+		else
+			index=namespaceURI+":"+lName;
 	}
-	
-	// If ValuesStems is not empty -> Add them
-	if(!ValuesStems.IsEmpty())
-	{
-		const RChar* ptr=ValuesStems();
-		Filter->ExtractWord(ptr,Filter->WeightValues,0);
-	}
+	else
+		index=lName;
+
+	// Always index the structure
+	AddStructElement(index,false);
+
+	// If attributes names are content -> add short parameter name
+	if(Filter->StructIsContent&&(!lName.ContainOnlySpaces()))
+		Filter->ExtractWord(lName,Filter->WeightStruct,0,0,0);
+}
+
+
+//------------------------------------------------------------------------------
+void XMLParser::Value(const RString& value)
+{
+	if(!Filter->AttrValues)
+		return;
+	if(!value.ContainOnlySpaces())
+		Filter->ExtractWord(value,Filter->WeightValues,0,CurAttr,GetLastTokenPos());
 }
 
 
 //-----------------------------------------------------------------------------
 void XMLParser::EndTag(const RString& namespaceURI, const RString& lName, const RString&)
 {
+	// Right tag
+	CurTag=CurTag->GetParent();
+
 	if(Content.IsEmpty())
 		return;
 	if(IsTitle)
@@ -140,13 +150,18 @@ void XMLParser::EndTag(const RString& namespaceURI, const RString& lName, const 
 	if(Filter->ExtractIndex)
 	{
 		RString index;
-		if(namespaceURI.IsEmpty())
-			index=Filter->Doc->GetURL();
+		if(IsProccesBody())
+		{
+			if(namespaceURI.IsEmpty())
+				index=Filter->Doc->GetURL()+":"+lName;
+			else
+				index=namespaceURI+":"+lName;
+		}
 		else
-			index=namespaceURI;		
-		AddIndex(index+":"+lName,Content,GetCurrentDepth());
+			index=lName;
+		AddTagIndex(index,Content);
 	}
-	
+
 	// Pop current content
 	Content=(*Contents());
 	Contents.Pop();
@@ -156,7 +171,7 @@ void XMLParser::EndTag(const RString& namespaceURI, const RString& lName, const 
 //-----------------------------------------------------------------------------
 void XMLParser::Text(const RString& text)
 {
-	if(!text.IsEmpty())
+	if(!text.ContainOnlySpaces())
 	{
 		double w;
 		if(IsTitle||Filter->ExtractIndex)
@@ -165,9 +180,7 @@ void XMLParser::Text(const RString& text)
 			w=2.0;
 		else
 			w=1.0;
-		const RChar* ptr=text();
-		while(!ptr->IsNull())
-			Filter->ExtractWord(ptr,w,0);
+		Filter->ExtractWord(text,w,0,CurTag,GetLastTokenPos());
 	}
 }
 
@@ -183,27 +196,45 @@ RChar XMLParser::CodeToChar(RString& str)
 
 
 //-----------------------------------------------------------------------------
-void XMLParser::AddStructElement(const RString& element,size_t)
+void XMLParser::AddStructElement(const RString& element,bool tag)
 {
 	GConcept w(cNoRef,element,Filter->StructSpace,0,0,0);
 	GWeightInfo* info=Filter->Infos.GetInsertPtr(Filter->StructSpace->InsertConcept(&w));
 	(*info)+=1.0;
+
+	// Create a node in the structure
+	if(tag)
+	{
+		GDocStructNode* ptr=new GDocStructNode(info,GetLastTokenPos(),GDocStructNode::Tag);
+		Filter->Struct->InsertNode(CurTag,ptr);
+		CurTag=ptr;
+	}
+	else
+	{
+		GDocStructNode* ptr=new GDocStructNode(info,GetLastTokenPos(),GDocStructNode::Attribute);
+		Filter->Struct->InsertNode(CurTag,ptr);
+		CurAttr=ptr;
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-void XMLParser::AddIndex(const RString& element,const RString& content,size_t depth)
+void XMLParser::AddTagIndex(const RString& element,const RString& content)
 {
 	bool Idx=false;
-	
+
 	// Find corresponding tag
 	IndexTag* ptr=Filter->IndexTags.GetInsertPtr(element);
 	ptr->Occurs++;
-	
+
 	// If maximum depth, cannot be used
-	if(depth>Filter->MaxDepth)
+	if(GetCurrentDepth()>Filter->MaxDepth)
 		return;
-		
+
+	// Create new content
+	cContent* Content;
+	ptr->InsertPtr(Content=new cContent());
+
 	// Count number of terms -> if too much, cannot be used
 	unsigned int NbTerms(0);
 	const RChar* car=content();
@@ -213,25 +244,24 @@ void XMLParser::AddIndex(const RString& element,const RString& content,size_t de
 		// Skip spaces
 		while((!car->IsNull())&&(car->IsSpace()))
 				car++;
-	
+
 		// Is this a term?
 		if(!car->IsNull())
 		{
 			if(Idx)
 				Index+=' ';
-			
+
 			// Yes -> skip it and increase
 			NbTerms++;
 			while((!car->IsNull())&&(!car->IsSpace()))
 					Index+=(*(car++));
-			Idx=true;			
+			Idx=true;
 		}
-	}	
+	}
 	if(NbTerms>Filter->MaxTerms)
 		return;
-	
+
 	// OK Index terms
-	car=Index();
 	while(!car->IsNull())
-		Filter->ExtractWord(car,1.0,ptr);	
+		Filter->ExtractWord(Index,1.0,Content,0,0);
 }

@@ -6,7 +6,7 @@
 
 	A XML Parser to extract information entities - Header.
 
-	Copyright 2007 by the Université libre de Bruxelles.
+	Copyright 2007-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -55,46 +55,70 @@ class XMLParser : public RXMLFile
 	 * Pointer to filter.
 	 */
 	GTextAnalyse* Filter;
-	
+
 	/**
 	 * Is the current tag a title?
 	 */
 	bool IsTitle;
-	
+
 	/**
 	 * Contents.
 	 */
 	RStack<RString,true,true,true> Contents;
-	
+
 	/**
 	 * Remember current content.
 	 */
 	RString Content;
-		
+
+	/**
+	 * Current tag.
+	 */
+	GDocStructNode* CurTag;
+
+	/**
+	 * Current attribute.
+	 */
+	GDocStructNode* CurAttr;
+
 public:
-	
+
 	/**
 	 * Constructor of the parser.
 	 * @param filter         Filter calling the parser.
 	 * @param uri            URi of the file to parse.
 	 */
 	XMLParser(GTextAnalyse* filter,const RURI& uri);
-	
+
 	// Overload default function
-	virtual void BeginTag(const RString& namespaceURI,const RString& lName,const RString& name,RContainer<RXMLAttr,true,true>& attrs);
+	virtual void BeginTag(const RString& namespaceURI,const RString& lName,const RString& name);
+	virtual void AddAttribute(const RString& namespaceURI, const RString& lName, const RString& name);
+	virtual void Value(const RString& value);
 	virtual void EndTag(const RString& namespaceURI,const RString& lName,const RString& name);
 	virtual void Text(const RString& text);
-	virtual RChar CodeToChar(RString& code);
-	
-	/**
-	 * Look if a structure element must be added.
-	 */
-	void AddStructElement(const RString& element,size_t depth);
 
 	/**
-	 * Look if an index element must be added.
+	 * Transform a code into a character. It call first the valid codes for
+	 * XML, if the code is not valid it is replaced by a space.
+	 * @param code           String representing the code.
+	 * @return Character.
 	 */
-	void AddIndex(const RString& element,const RString& content,size_t depth);	
+	virtual RChar CodeToChar(RString& code);
+
+	/**
+	 * Add a structure element (tag or attribute) if needed.
+	 * @param element        Name of the element to add.
+	 * @param tag            Is it a tag (true) or an attribute (false).
+	 */
+	void AddStructElement(const RString& element,bool tag);
+
+	/**
+	 * Add a tag index if needed.
+	 * @param element        Name of the index tag to test.
+	 * @param content        Content of the tag, i.e. the whole text contained
+	 *                       through the opening and closing tags.
+	 */
+	void AddTagIndex(const RString& element,const RString& content);
 };
 
 
