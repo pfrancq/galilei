@@ -204,7 +204,7 @@ GSession* GGALILEIApp::CreateSession(void)
 		throw GException("Application not initialized");
 
 	// Init Session
-	Session=new GSession(Log,Debug);	
+	Session=new GSession(Log,Debug);
 	GStorageManager* Mng=GetManager<GStorageManager>("Storage");
 	GStorage* fac=Mng->GetCurrentPlugIn();
 	fac->Connect(Session);
@@ -212,14 +212,14 @@ GSession* GGALILEIApp::CreateSession(void)
 	fac->LoadRelationTypes();
 //	fac->GetPlugin()->LoadRelations();
 	WriteLog("Session created");
-	
+
 	// Connect plugins
 	RCursor<GGenericPluginManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(Cur()!=Mng)
 			Cur()->Connect(Session);
 	WriteLog("Plugins connected to session");
-	
+
 	return(Session);
 }
 
@@ -241,7 +241,7 @@ void GGALILEIApp::DeleteSession(void)
 void GGALILEIApp::WriteLog(const RString& str)
 {
 	if(Log)
-		Log->WriteLog(str);	
+		Log->WriteLog(str);
 }
 
 
@@ -286,6 +286,11 @@ void GGALILEIApp::FindPlugins(const RString dir,RContainer<RString,true,false>& 
 
 		// Is it a dialog plug-in?
 		if(Name.FindStr("_dlg.so",-1)!=-1)
+		{
+			dlgs.InsertPtr(new RString(Path+Name));
+			continue;
+		}
+		if(Name.FindStr("kde.so",-1)!=-1)
 		{
 			dlgs.InsertPtr(new RString(Path+Name));
 			continue;
@@ -354,6 +359,19 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 					{
 						Dlg=(*Cur2());
 						break;
+					}
+				}
+				if(Dlg.IsEmpty())
+				{
+					RString search=Short.Mid(0,Short.GetLen()-3)+"kde.so";
+					RCursor<RString> Cur2(Dlgs);
+					for(Cur2.Start();!Cur2.End();Cur2.Next())
+					{
+						if(Cur2()->FindStr(search,-1)!=-1)
+						{
+							Dlg=(*Cur2());
+							break;
+						}
 					}
 				}
 			}
