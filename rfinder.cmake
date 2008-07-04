@@ -8,10 +8,12 @@ MACRO(R_LOAD_DEPENDENCY _depName _depEnvName _dep_paramName)
 
     IF(${_dep_paramName}-libs) #get the command line option value if any and overwrite the env pat
         SET(CLIBPATH ${${_dep_paramName}-libs})
+	SET(NOTINSTALLED "1")
     ENDIF(${_dep_paramName}-libs)
 
     IF(CLIBPATH)
         SET(CMACROPATH "${CLIBPATH}/${_dep_paramName}macro.cmake")
+	SET(NOTINSTALLED "1")
     ELSE(CLIBPATH)
         SET(STDPATH "/usr;/usr/local;/opt")
         FIND_PATH(CMACROPATH share/r/${_dep_paramName}macro.cmake ${STDPATH})
@@ -26,8 +28,15 @@ MACRO(R_LOAD_DEPENDENCY _depName _depEnvName _dep_paramName)
     MESSAGE(STATUS "Will use ${_depName} in ${CLIBPATH} and macro file in ${CMACROPATH}")
 
     INCLUDE(${CMACROPATH}) #this macro file must add the name of file to search
+    SET(REXECFILE "${CLIBPATH}/rexec_file.cmake.in")
 
-    CHECK_IF_THIS_SPECIFIC_R_LIB_IS_INSTALLED(${_depName} ${_dep_paramName} ${CLIBPATH})
+    IF(${NOTINSTALLED} STREQUAL "1")
+       MESSAGE(STATUS "R NOT INSTALLED")
+       SET(${_depName}INSTALLED "0")
+    ELSE(${NOTINSTALLED} STREQUAL "1")
+	CHECK_IF_THIS_SPECIFIC_R_LIB_IS_INSTALLED(${_depName} ${_dep_paramName} ${CLIBPATH})
+    ENDIF(${NOTINSTALLED} STREQUAL "1")
+
     ADD_R_INCLUDES(${_depName} ${_dep_paramName} ${CLIBPATH}) #these call the macro for CMACROPATH named DO_${_depName}_R_LIB_INCLUDE
 
 ENDMACRO(R_LOAD_DEPENDENCY _depEnvName _dep_paramName)
