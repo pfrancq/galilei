@@ -567,16 +567,18 @@ void GTextAnalyse::Analyze(GDoc *doc, const R::RURI& uri)
 	ConstructInfos(doc->GetId());
 	IndexXMLPart();
 
-	GSession* session=GSession::Get();
-	if(session&&session->GetStorage())
-	{
-		//session->GetStorage()->SaveStruct(Struct,Doc->GetId());
-		//Struct=session->GetStorage()->LoadStruct(Doc->GetId());
-	}
-	Struct->Print();
-
 	// Set the Variable of the document
 	Doc->Update(Lang,&Infos,true);
+	GSession* session=GSession::Get();
+
+	// Save the structure
+	if(session&&session->GetStorage())
+	{
+		session->GetStorage()->SaveStruct(Struct,Doc->GetId());
+//		delete Struct;
+//		Struct=session->GetStorage()->LoadStruct(Doc);*/
+	}
+//	Struct->Print();
 }
 
 

@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(textanalyse_AVAILABLE_FRONTENDS kde)
+    SET(textanalyse_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(textanalyse_frontend textanalyse kde textanalyse_INCLUDES)
+ENDIF(KDE3_FOUND)
