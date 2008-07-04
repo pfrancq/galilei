@@ -30,16 +30,16 @@ void ConfigureDlg::Init(void* param)
 
 	// General
 	PlugInsConfig->setShowLocalProtocol(false);
-	PlugInsConfig->setURL(ToQString(App->GetPlugInsConfigName()));
+	PlugInsConfig->setURL(R::ToQString(App->GetPlugInsConfigName()));
 	LogFile->setShowLocalProtocol(false);
-	LogFile->setURL(ToQString(App->GetLogFileName()));
+	LogFile->setURL(R::ToQString(App->GetLogFileName()));
 	DebugFile->setShowLocalProtocol(false);
-	DebugFile->setURL(ToQString(App->GetDebugFileName()));
+	DebugFile->setURL(R::ToQString(App->GetDebugFileName()));
 	PrgPath->setShowLocalProtocol(false);
-	PrgPath->setURL(ToQString(App->GetPrgPath()));
-	
+	PrgPath->setURL(R::ToQString(App->GetPrgPath()));
+
 	// Directories
-	R::RCursor<RString> Cur(App->GetPlugInsPath());
+	R::RCursor<R::RString> Cur(App->GetPlugInsPath());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Dirs->insertItem(ToQString(*Cur()));
 }
@@ -50,10 +50,10 @@ void ConfigureDlg::Done(void* param)
 	KGALILEICenterApp* App=static_cast<KGALILEICenterApp*>(param);
 
 	// General
-	App->SetPlugInsConfigName(FromQString(PlugInsConfig->url()));
-	App->SetLogFileName(FromQString(LogFile->url()));
-	App->SetDebugFileName(FromQString(DebugFile->url()));	
-	App->SetPrgPath(FromQString(PrgPath->url()));	
+	App->SetPlugInsConfigName(R::FromQString(PlugInsConfig->url()));
+	App->SetLogFileName(R::FromQString(LogFile->url()));
+	App->SetDebugFileName(R::FromQString(DebugFile->url()));
+	App->SetPrgPath(R::FromQString(PrgPath->url()));
 	QString debug=DebugFile->url();
 	delete App->Debug;
 	App->Debug=0;
@@ -61,7 +61,7 @@ void ConfigureDlg::Done(void* param)
 	{
 	try
 	{
-		App->Debug=new RDebugXML(FromQString(debug));
+		App->Debug=new R::RDebugXML(R::FromQString(debug));
 		if(App->Doc)
 			App->Doc->GetSession()->SetDebug(App->Debug);
 	}
@@ -73,7 +73,7 @@ void ConfigureDlg::Done(void* param)
 	// Directories
 	App->ClearPlugInsPath();
 	for(int i=0;i<Dirs->count();i++)
-		App->AddPlugInsPath(FromQString(Dirs->text(i)));
+		App->AddPlugInsPath(R::FromQString(Dirs->text(i)));
 }
 
 

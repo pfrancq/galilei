@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
 	QString year=QString("(c) 1998-")+QString::number(R::RDate::GetToday().GetYear())+QString(", Université Libre de Bruxelles\nDepartment of Information and Communication Science");
 
 	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
-		VERSION, description, KAboutData::License_GPL,year, 0, "http://galilei.ulb.ac.be", "pfrancq@ulb.ac.be");
+		"1.89", description, KAboutData::License_GPL,year, 0, "http://galilei.ulb.ac.be", "pfrancq@ulb.ac.be");
 	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Project Manager"), "pfrancq@ulb.ac.be");
 	aboutData.addCredit("Nicolas Kumps",I18N_NOOP("Past Researcher"), 0);
 	aboutData.addCredit("Marjorie Paternostre",I18N_NOOP("Past Researcher"),0);
