@@ -398,7 +398,8 @@ void QCreateDocXML::DoIt(void)
 	}
 
 	RIO::RSmartTempFile docxml;
-	RURI uri=GALILEIApp->GetManager<GFilterManager>("Filter")->WhatAnalyze(Doc,docxml);
+	bool Native;
+	RURI uri=GALILEIApp->GetManager<GFilterManager>("Filter")->WhatAnalyze(Doc,docxml,Native);
 	if(!uri.IsEmpty())
 	{
 		XML=new RXMLStruct();

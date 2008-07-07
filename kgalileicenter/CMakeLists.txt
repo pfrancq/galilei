@@ -75,8 +75,4 @@ ENDFOREACH(file ${kgalileicenter_frontend_kde_UI_INCLUDES})
 KDE3_ADD_EXECUTABLE(kgalileicenter ${kgalileicenter_frontend_kde_UIFILE}
                                                                    ${kgalileicenter_frontend_kde_MOCFILE}
                                                                    ${KGALILEICENTER_SOURCES} )
-TARGET_LINK_LIBRARIES(kgalileicenter galilei /home/pfrancq/prj/galilei/build/galilei/libgalileikde.so.2.0.0
-                                                                                  roptimization
-                                                                                  rcore /home/pfrancq/prj/r/build/rcore/librcorekde.so.2.0.0
-                                                                                  rmath
-                                                                                  ${KDE_LIBS})
+TARGET_LINK_LIBRARIES(kgalileicenter galilei galileikde roptimization rcore rcorekde rmath ${KDE_LIBS})
