@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>575</width>
-            <height>535</height>
+            <width>519</width>
+            <height>542</height>
         </rect>
     </property>
     <property name="caption">
@@ -467,6 +467,14 @@ When the languages are not static, the language of a document is always determin
                                 </property>
                                 <property name="text">
                                     <string>Extract tags and attributes [ExtractStruct]</string>
+                                </property>
+                            </widget>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>FullIndex</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Full index (structure and positions) [FullIndex]</string>
                                 </property>
                             </widget>
                             <widget class="QCheckBox">

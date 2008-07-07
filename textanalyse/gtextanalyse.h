@@ -325,6 +325,11 @@ class GTextAnalyse : public GDocAnalyse
 	bool ExtractStruct;
 
 	/**
+	 * Full indexing of the documents (structure and positions).
+	 */
+	bool FullIndex;
+
+	/**
 	 * Should the structure be considered as normal content (stems)?
 	 */
 	bool StructIsContent;
@@ -475,9 +480,9 @@ public:
 	* not exist in the system, these documents are added in a container.
 	* @param xml            XML Representation used.
 	* @param doc            Corresponding document.
-	* @param tmpDocs        Container that will hold the added docs.
+	* @param native          Specify if the document is a native XML file.
 	*/
-	virtual void Analyze (GDoc *doc, const R::RURI& uri);
+	virtual void Analyze (GDoc *doc,const R::RURI& uri,bool native);
 
 	/**
 	 * Index the XML part.

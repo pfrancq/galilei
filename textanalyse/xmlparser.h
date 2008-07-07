@@ -37,7 +37,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rxmlfile.h>
+#include <rxmlparser.h>
 using namespace R;
 
 
@@ -49,7 +49,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 /**
  */
-class XMLParser : public RXMLFile
+class XMLParser : public RXMLParser
 {
 	/**
 	 * Pointer to filter.

@@ -2,7 +2,7 @@ SET(textanalyse_frontend_kde_MOC_INCLUDES )
 
 SET(textanalyse_frontend_kde_UI_INCLUDES dlgconfig_qt.ui)
 
-SET(textanalyse_frontend_kde_INST_INCLUDES ${galilei_frontend_kde_MOC_INCLUDES}
+SET(textanalyse_frontend_kde_INST_INCLUDES ${textanalyse_frontend_kde_MOC_INCLUDES}
                                           dlgconfig_qt.ui.h)
 
 SET(textanalyse_frontend_kde_TARGET_SOURCES gtextanalyse_kde.cpp)

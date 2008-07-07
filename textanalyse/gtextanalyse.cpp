@@ -137,6 +137,7 @@ void GTextAnalyse::ApplyConfig(void)
 	WeightStruct=Factory->GetDouble("WeightStruct");
 	AttrValues=Factory->GetBool("AttrValues");
 	WeightValues=Factory->GetDouble("WeightValues");
+	FullIndex=Factory->GetBool("FullIndex");
 }
 
 
@@ -149,8 +150,8 @@ void GTextAnalyse::Connect(GSession* session)
 
 	// Create local structures
 	CurLangs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
-	Sl=new unsigned int[CurLangs.GetNb()];
-	Sldiff=new unsigned int[CurLangs.GetNb()];
+	Sl=new size_t[CurLangs.GetNb()];
+	Sldiff=new size_t[CurLangs.GetNb()];
 	for(size_t i=Words.GetMaxNb()+1;--i;)
 		Words.InsertPtr(new cWord(CurLangs.GetNb()));
 
@@ -185,11 +186,7 @@ void GTextAnalyse::Disconnect(GSession* session)
 		Sl=0;
 	}
 
-	if(Struct)
-	{
-		delete Struct;
-		Struct=0;
-	}
+	Struct=0;
 
 	if(Session)
 		GDocAnalyse::Disconnect(session);
@@ -204,8 +201,8 @@ void GTextAnalyse::Clear(void)
 	FindLang=((!Lang)||(!StaticLang));
 
 	// Clear all structures needed to handle a document
-	memset(Sl,0,sizeof(unsigned int)*CurLangs.GetNb());
-	memset(Sldiff,0,sizeof(unsigned int)*CurLangs.GetNb());
+	memset(Sl,0,sizeof(size_t)*CurLangs.GetNb());
+	memset(Sldiff,0,sizeof(size_t)*CurLangs.GetNb());
 	N=Ndiff=Nwords=V=Vdiff=S=Sdiff=0;
 	RCursor<cWord> Word(Words);
 	for(Word.Start();!Word.End();Word.Next())
@@ -219,9 +216,6 @@ void GTextAnalyse::Clear(void)
 	for(Cur.Start();!Cur.End();Cur.Next())
 		delete Cur();
 	Infos.Clear();
-	if(Struct)
-		delete Struct;
-	Struct=new GDocStruct(200);
 
 	// Clear Indexes
 	IndexTags.Clear();
@@ -319,7 +313,7 @@ void GTextAnalyse::AddWord(const RString& word,double weight,cContent* content,G
 //-----------------------------------------------------------------------------
 void GTextAnalyse::ExtractWord(const R::RString& str,double weight,cContent* content,GDocStructNode* parent,size_t pos)
 {
-//	cout<<"Extract: *"<<str<<"*"<<endl;
+//	cout<<"Extract ("<<pos<<"): *"<<str<<"*"<<endl;
 	for(const RChar* ptr=str();!ptr->IsNull();)
 	{
 		// If only letters word -> skip non letters
@@ -505,9 +499,12 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 		(*Occur)+=Word()->Weight;
 
 		// Add the occurrences in the XML structure
-		RCursor<cWordOccur> Occurs(Word()->Occurs);
-		for(Occurs.Start();!Occurs.End();Occurs.Next())
-			Struct->InsertContent(Occurs()->Parent,Occur,Occurs()->Pos);
+		if(Struct)
+		{
+			RCursor<cWordOccur> Occurs(Word()->Occurs);
+			for(Occurs.Start();!Occurs.End();Occurs.Next())
+				Struct->InsertContent(Occurs()->Parent,Occur,Occurs()->Pos);
+		}
 
 		// Store full word if necessary
 		if(StoreFullWords)
@@ -534,32 +531,34 @@ void GTextAnalyse::ConstructInfos(unsigned int docid)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyze(GDoc *doc, const R::RURI& uri)
+void GTextAnalyse::Analyze(GDoc *doc,const R::RURI& uri,bool native)
 {
 	RString Name;
 	RCursor<RXMLTag> Tags;
 
 	// Init part
 	Doc=doc;
+	if(FullIndex&&native)
+	{
+		Struct=Doc->GetStruct();
+		Struct->Clear();
+	}
+	else
+		Struct=0;
 	Clear();
+
+	// If the language must not be found -> Compute LangIndex
+	if(!FindLang)
+		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
 
 	// Load the xml from the file
 	XMLParser In(this,uri);
 	In.Open(RIO::Read);
 	In.Close();
 
-
-	// Analyse the doc structure.
+	// // Determine the Language if necessary. If the language cannot be found -> document is not indexed.
 	if(FindLang)
-	{
-		// Determine the Language if necessary. If the language cannot be found -> document is not indexed.
 		DetermineLang();
-	}
-	else
-	{
-		// if Language defined -> Compute LangIndex
-		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
-	}
 	if(!Lang)
 		return;
 
@@ -567,18 +566,11 @@ void GTextAnalyse::Analyze(GDoc *doc, const R::RURI& uri)
 	ConstructInfos(doc->GetId());
 	IndexXMLPart();
 
+/*	if(Struct)
+		Struct->Print();*/
+
 	// Set the Variable of the document
 	Doc->Update(Lang,&Infos,true);
-	GSession* session=GSession::Get();
-
-	// Save the structure
-	if(session&&session->GetStorage())
-	{
-		session->GetStorage()->SaveStruct(Struct,Doc->GetId());
-//		delete Struct;
-//		Struct=session->GetStorage()->LoadStruct(Doc);*/
-	}
-//	Struct->Print();
 }
 
 
@@ -672,6 +664,7 @@ void GTextAnalyse::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("WeightStruct",2.0));
 	params->InsertParam(new RParamValue("AttrValues",false));
 	params->InsertParam(new RParamValue("WeightValues",2.0));
+	params->InsertParam(new RParamValue("FullIndex",false));
 }
 
 

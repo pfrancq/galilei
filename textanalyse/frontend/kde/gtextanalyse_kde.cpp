@@ -107,12 +107,13 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
 	dlg.NbSameOccur->setValue(params->GetUInt("NbSameOccur"));
 	dlg.NormalRatio->setValue(params->GetDouble("NormalRatio"));
-	dlg.NbSameOccur->setEnabled(params->GetBool("NbSameOccur"));
+	dlg.NbSameOccur->setEnabled(params->GetBool("Filtering"));
 	dlg.NormalRatio->setEnabled(params->GetBool("Filtering"));
 	dlg.groupFiltering->setEnabled(params->GetBool("NonLetterWords"));
 
 	// Structure - Tags and attributes
 	dlg.ExtractStruct->setChecked(params->GetBool("ExtractStruct"));
+	dlg.FullIndex->setChecked(params->GetBool("FullIndex"));
 	dlg.StructIsContent->setChecked(params->GetBool("StructIsContent"));
 	dlg.WeightStruct->setValue(params->GetDouble("WeightStruct"));
 	dlg.AttrValues->setChecked(params->GetBool("AttrValues"));
@@ -148,6 +149,7 @@ void Configure(GFactoryDocAnalyse* params)
 
 		// Structure - Tags and attributes
 		params->SetBool("ExtractStruct",dlg.ExtractStruct->isChecked());
+		params->SetBool("FullIndex",dlg.FullIndex->isChecked());
 		params->SetBool("StructIsContent",dlg.StructIsContent->isChecked());
 		params->SetDouble("WeightStruct",dlg.WeightStruct->value());
 		params->SetBool("AttrValues",dlg.AttrValues->isChecked());

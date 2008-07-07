@@ -53,7 +53,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 XMLParser::XMLParser(GTextAnalyse* filter,const RURI& uri)
-	: RXMLFile(uri,0,"UTF-8"), Filter(filter), IsTitle(false), Contents(20),
+	: RXMLParser(uri,"UTF-8"), Filter(filter), IsTitle(false), Contents(20),
 	  CurTag(0), CurAttr(0)
 {
 }
@@ -71,7 +71,7 @@ void XMLParser::BeginTag(const RString& namespaceURI,const RString& lName,const 
 	Contents.Push(new RString(Content));
 	Content.Clear();
 
-	if(IsProccesBody())
+	if(GetSection()==RXMLParser::Body)
 	{
 		if(namespaceURI.IsEmpty())
 			index=Filter->Doc->GetURL()+":"+lName;
@@ -105,7 +105,7 @@ void XMLParser::AddAttribute(const RString& namespaceURI,const RString& lName, c
 		return;
 
 	RString index;
-	if(IsProccesBody())
+	if(GetSection()==RXMLParser::Body)
 	{
 		if(namespaceURI.IsEmpty())
 			index=Filter->Doc->GetURL()+":"+lName;
@@ -150,7 +150,7 @@ void XMLParser::EndTag(const RString& namespaceURI, const RString& lName, const 
 	if(Filter->ExtractIndex)
 	{
 		RString index;
-		if(IsProccesBody())
+		if(GetSection()==RXMLParser::Body)
 		{
 			if(namespaceURI.IsEmpty())
 				index=Filter->Doc->GetURL()+":"+lName;
@@ -188,7 +188,7 @@ void XMLParser::Text(const RString& text)
 //------------------------------------------------------------------------------
 RChar XMLParser::CodeToChar(RString& str)
 {
-	RChar res=RXMLFile::CodeToChar(str);
+	RChar res=RXMLParser::CodeToChar(str);
 	if(res!=0)
 		return(res);
 	return(' ');
@@ -203,6 +203,8 @@ void XMLParser::AddStructElement(const RString& element,bool tag)
 	(*info)+=1.0;
 
 	// Create a node in the structure
+	if(!Filter->Struct)
+		return;
 	if(tag)
 	{
 		GDocStructNode* ptr=new GDocStructNode(info,GetLastTokenPos(),GDocStructNode::Tag);
