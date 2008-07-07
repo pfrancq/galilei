@@ -567,7 +567,10 @@ void GTextAnalyse::Analyze(GDoc *doc,const R::RURI& uri,bool native)
 	IndexXMLPart();
 
 /*	if(Struct)
-		Struct->Print();*/
+	{
+		Struct->Print();
+		cout<<"-----"<<endl;
+	}*/
 
 	// Set the Variable of the document
 	Doc->Update(Lang,&Infos,true);
