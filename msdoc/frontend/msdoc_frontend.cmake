@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(msdoc_AVAILABLE_FRONTENDS kde)
+    SET(msdoc_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(msdoc_frontend msdoc kde msdoc_INCLUDES)
+ENDIF(KDE3_FOUND)

@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(email_AVAILABLE_FRONTENDS kde)
+    SET(email_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(email_frontend email kde email_INCLUDES)
+ENDIF(KDE3_FOUND)

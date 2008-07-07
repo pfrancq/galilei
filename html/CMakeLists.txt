@@ -1,0 +1,17 @@
+PROJECT(html)
+INCLUDE_DIRECTORIES(.)
+
+SET(SRC html.cpp ghtmlconverter.cpp)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+
+IF(WIN32)
+    ADD_LIBRARY(html STATIC ${SRC})
+    SET_TARGET_PROPERTIES(html PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
+    TARGET_LINK_LIBRARIES(html galilei roptimization rmath rcore)
+ELSE(WIN32)
+    ADD_LIBRARY(html SHARED ${SRC})
+    ADD_SOURCE_FILE(html frontend html_INCLUDES)
+    ADD_FRONTEND(html 2 2 2.0.0 lib "r/galilei" html_INCLUDES)
+    TARGET_LINK_LIBRARIES(html galilei roptimization rcore rmath)
+ENDIF(WIN32)
