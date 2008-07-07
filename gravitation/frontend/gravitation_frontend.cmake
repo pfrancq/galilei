@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(gravitation_AVAILABLE_FRONTENDS kde)
+    SET(gravitation_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(gravitation_frontend gravitation kde gravitation_INCLUDES)
+ENDIF(KDE3_FOUND)
