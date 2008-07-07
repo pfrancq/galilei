@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(subslevel_AVAILABLE_FRONTENDS kde)
+    SET(subslevel_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(subslevel_frontend subslevel kde subslevel_INCLUDES)
+ENDIF(KDE3_FOUND)
