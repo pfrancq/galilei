@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(statsims_AVAILABLE_FRONTENDS kde)
+    SET(statsims_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(statsims_frontend statsims kde statsims_INCLUDES)
+ENDIF(KDE3_FOUND)
