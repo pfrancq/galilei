@@ -371,8 +371,9 @@ public:
 	 * @param doc            Document.
 	 * @param docstruct      Structure to load.
 	 * @param parent         Parent node.
+	 * @param nbnodes        Number of nodes to load.
 	 */
-	void LoadNode(R::RQuery& nodes,R::RQuery& content,const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent);
+	void LoadNode(R::RQuery& nodes,R::RQuery& content,const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent,size_t nbnodes);
 
 	/**
 	 * Method that load the structure of a document.

@@ -37,6 +37,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rvectorint.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <glang.h>
 #include <gweightinfo.h>
@@ -1158,34 +1163,47 @@ GDoc* GStorageMySQL::LoadDoc(unsigned int docid)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadNode(RQuery& nodes,RQuery& content,const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent/*,size_t tnodes,size_t nbnodes,size_t contents,size_t nbcontents*/)
+void GStorageMySQL::LoadNode(RQuery& nodes,RQuery& content,const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent,size_t nbnodes)
 {
 	try
 	{
-		size_t NbSubNodes(atoi(nodes[3]));
-		size_t NbContent(atoi(nodes[5]));
-//		cout<<"Treat node "<<nodes[8]<<" - Nodes: "<<nodes[2]<<"("<<NbSubNodes<<") - Content: "<<nodes[5]<<"("<<NbContent<<")"<<endl;
+		// Vectors to manage the sub-nodes information
+		RVectorInt<size_t,false> NbNodes(nbnodes);
+		RVectorInt<size_t,false> NbContent(nbnodes);
+		RContainer<GDocStructNode,false,false> Nodes(nbnodes);
+		size_t i;
+		GDocStructNode* ptr;
 
-		// Create the node in the structure
-		GConceptType* type(Session->GetConceptType(atoi(nodes[1]),false));
-		GConcept* concept=type->GetConcept(atoi(nodes[0]));
-		GDocStructNode* ptr=new GDocStructNode(doc->GetPtr(concept),atoi(nodes[6]),static_cast<GDocStructNode::NodeType>(atoi(nodes[7])));
-		docstruct->InsertNode(parent,ptr);
-
-		// Go to the next node
-		nodes.Next();
-
-		// Load its content
-		for(size_t i=NbContent+1;--i;content.Next())
+		// Load Nodes and create them
+		for(i=nbnodes+1;--i;nodes.Next())
 		{
-			GConceptType* type(Session->GetConceptType(atoi(content[1]),false));
-			GConcept* concept=type->GetConcept(atoi(content[0]));
-			docstruct->InsertContent(ptr,doc->GetPtr(concept),atoi(content[2]));
+			cout<<"Treat node "<<nodes[8]<<" - Nodes: "<<nodes[2]<<"("<<nodes[3]<<") - Content: "<<nodes[4]<<"("<<nodes[5]<<")"<<endl;
+			NbNodes.Insert(atoi(nodes[3]));
+			NbContent.Insert(atoi(nodes[5]));
+
+			// Create the node in the structure
+			GConceptType* type(Session->GetConceptType(atoi(nodes[1]),false));
+			GConcept* concept=type->GetConcept(atoi(nodes[0]));
+			Nodes.InsertPtr(ptr=new GDocStructNode(doc->GetPtr(concept),atoi(nodes[6]),static_cast<GDocStructNode::NodeType>(atoi(nodes[7]))));
+			docstruct->InsertNode(parent,ptr);
 		}
 
-		// Load SubNodes
-		for(size_t i=NbSubNodes+1;--i;)
-			LoadNode(nodes,content,doc,docstruct,ptr);
+		// Read their content and subnodes.
+		RCursor<GDocStructNode> Cur(Nodes);
+		for(i=nbnodes+1,NbNodes.Start(),NbContent.Start(),Cur.Start();--i;NbNodes.Next(),NbContent.Next(),Cur.Next())
+		{
+			// Read the content of the node
+			for(size_t j=NbContent()+1;--j;content.Next())
+			{
+				GConceptType* type(Session->GetConceptType(atoi(content[1]),false));
+				GConcept* concept=type->GetConcept(atoi(content[0]));
+				docstruct->InsertContent(Cur(),doc->GetPtr(concept),atoi(content[2]));
+			}
+
+			// Read the sub-nodes
+			if(NbNodes())
+				LoadNode(nodes,content,doc,docstruct,Cur(),NbNodes());
+		}
 	}
 	catch(RMySQLError e)
 	{
@@ -1222,8 +1240,7 @@ GDocStruct* GStorageMySQL::LoadStruct(const GDoc* doc)
 		Content.Start();
 		size_t NbSubNodes(atoi(Find[2]));
 
-		for(size_t i=NbSubNodes+1;--i;)
-			LoadNode(Nodes,Content,doc,docstruct,docstruct->GetTop()/*,FirstNode,NbSubNodes,0,0*/);
+		LoadNode(Nodes,Content,doc,docstruct,docstruct->GetTop(),NbSubNodes);
 		return(docstruct);
 	}
 	catch(RMySQLError e)
