@@ -129,16 +129,19 @@ GDocStruct* GDoc::GetStruct(void) const
 	if(!Struct)
 	{
 		// Create the structure and load it from the database
+		GetInfos();
 		GSession* session=GSession::Get();
 		if(session&&session->GetStorage())
 			const_cast<GDoc*>(this)->Struct=session->GetStorage()->LoadStruct(this);
+		if(!Struct)
+			const_cast<GDoc*>(this)->Struct=new GDocStruct(200);
 	}
 	return(Struct);
 }
 
 
 //------------------------------------------------------------------------------
-void GDoc::DeleteStruct(void)
+void GDoc::ReleaseStruct(void)
 {
 	if(Struct)
 	{

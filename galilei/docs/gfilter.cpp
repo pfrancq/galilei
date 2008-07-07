@@ -587,7 +587,7 @@ bool GFilterManager::IsValidContent(const R::RString& MIME)
 
 
 //------------------------------------------------------------------------------
-RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml)
+RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml,bool& native)
 {
 	RIO::RSmartTempFile DwnFile;      // Temporary file containing the downloaded file  (if necessary).
 	RString NonXMLFile;               // Non XML-File file.
@@ -595,6 +595,7 @@ RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml)
 	// Init Part;
 	Doc=doc;
 	Filter=0;
+	native=true;       // Suppose real XML file
 
 	// Guess the MIME type if necessary
 	FindMIMEType();
@@ -623,6 +624,9 @@ RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml)
 			Filter=ptr->Filter;
 	}
 
+	// No XML file
+	native=false;
+
 	// If no MIME type -> Exception
 	if(doc->GetMIMEType().IsEmpty())
 		throw GException("Cannot find MIME type for "+doc->GetURL());
@@ -631,7 +635,7 @@ RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml)
 	if(!Filter)
 		throw GException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
 
-	// Analyse the file
+	// Analyze the file
 	Filter->Analyze(Doc->GetURL(),NonXMLFile,docxml.GetName());
 
 	// Return file to realy analyze

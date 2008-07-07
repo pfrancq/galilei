@@ -52,6 +52,7 @@
 #include <gcommunity.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 //------------------------------------------------------------------------------
@@ -349,7 +350,7 @@ void GMeasure2Elements::AddIdentificator(size_t id,bool line)
 void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
 {
 	// Something to dirty
-	if(!Values.GetNb())
+	if((!id)||(id>Values.GetNb()))
 		return;
 
 	if(line)
@@ -399,7 +400,7 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
 void GMeasure2Elements::DeleteIdentificator(size_t id,bool line)
 {
 	// Something to delete
-	if(!Values.GetNb())
+	if((!id)||(id>Values.GetNb()))
 		return;
 
 	if(line)

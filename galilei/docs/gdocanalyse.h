@@ -72,8 +72,9 @@ public:
 	* results in this document.
 	* @param doc             Reference to the document to analyze.
 	* @param uri             URI to analyze.
+	* @param native          Specify if the document is a native XML file.
 	*/
-	virtual void Analyze(GDoc* doc,const R::RURI& uri)=0;
+	virtual void Analyze(GDoc* doc,const R::RURI& uri,bool native)=0;
 
 	/**
 	* Destructor of the document analysis method.

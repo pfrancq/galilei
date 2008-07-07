@@ -54,7 +54,10 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GDoc class provides a representation of a analyzed document.
+* The GDoc class provides a representation of a analyzed document. In fact, a
+* document is represented as a multi-space vector and its XML structure is also
+* indexed. Since the structure is memory consuming, it is not loaded by default
+* and it is recommended it to release it when not used anymore.
 * @author Pascal Francq
 * @short Document.
 */
@@ -190,10 +193,9 @@ public:
 	GDocStruct* GetStruct(void) const;
 
 	/**
-	 * Delete the structure of a document from the memory since it is memory
-	 * consuming.
+	 * Release the structure of a document from the memory.
 	 */
-	void DeleteStruct(void);
+	void ReleaseStruct(void);
 
 	/**
 	* Load information from the current storage.

@@ -271,14 +271,16 @@ public:
 	* filter.
 	* @param doc             Document to analyze.
 	* @param docxml          Temporary file containing the DocXML if necessary.
+	* @param native          Variable modified by the method to specify of the
+	*                        original file is a XML one.
 	* @return The result depends:
 	* #- The original URI is given back if it is a XML file.
 	* #- A local temporary file containing a XML version of the file if a
 	*    filter was used (the temporary file must be deleted by the caller).
 	* @exception A GException is generated if the document could not be
-	* analysed (no MIME type, no filter, ...).
+	* analyzed (no MIME type, no filter, ...).
 	*/
-	R::RURI WhatAnalyze(GDoc* doc,R::RIO::RSmartTempFile& docxml);
+	R::RURI WhatAnalyze(GDoc* doc,R::RIO::RSmartTempFile& docxml,bool& native);
 
 	/**
 	* Add a pair (MIME type,filter).

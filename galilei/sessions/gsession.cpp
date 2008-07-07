@@ -173,7 +173,7 @@ public:
 	unsigned int MaxGroups;                                           // Maximum number of groups to handle in memory.
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager
 
-	Intern(GStorage* str,unsigned int mdocs,unsigned int maxsub,unsigned int maxgroups,unsigned int d,unsigned int u,unsigned int p,unsigned int nblangs)
+	Intern(GStorage* str,size_t mdocs,size_t maxsub,size_t maxgroups,size_t d,size_t u,size_t p)
 		: Subjects(0), CommunitiesHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
 		  Users(u,u/2), Profiles(p,p/2), Groups(100),
@@ -228,8 +228,7 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,unsigned int maxdocs,unsigned in
 	Data=new Intern(fac->GetPlugin(),maxdocs,maxsubprofiles,maxgroups,
 			fac->GetPlugin()->GetNbSaved(otDoc),
 			fac->GetPlugin()->GetNbSaved(otUser),
-			fac->GetPlugin()->GetNbSaved(otProfile),
-			fac->GetPlugin()->GetNbSaved(otLang));
+			fac->GetPlugin()->GetNbSaved(otProfile));
 
 	Data->Slot=slot;
 	Data->Debug=debug;
@@ -972,17 +971,21 @@ void GSession::AnalyseDoc(GDoc* doc,GDocAnalyse* method,GSlot* rec)
 	if(Intern::ExternBreak) return;
 
 	RIO::RSmartTempFile docxml;
-	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml);
+	bool Native;
+	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml,Native);
 	if(!uri.IsEmpty())
-		// Analyse document -> Is something goes wrong -> It failed
-		method->Analyze(doc,uri);
+		method->Analyze(doc,uri,Native);       // Analyze document -> Is something goes wrong -> It failed
 
 	// Save if necessary
 	if(Data->SaveResults&&(doc->GetId()!=cNoRef))
 	{
 		Data->Storage->SaveDoc(doc);
 		doc->SetState(osSaved);
+		Data->Storage->SaveStruct(doc->GetStruct(),doc->GetId());
 	}
+
+	// Release the structure
+	doc->ReleaseStruct();
 }
 
 
