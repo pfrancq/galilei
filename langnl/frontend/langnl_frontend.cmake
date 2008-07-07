@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(langnl_AVAILABLE_FRONTENDS kde)
+    SET(langnl_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(langnl_frontend langnl kde langnl_INCLUDES)
+ENDIF(KDE3_FOUND)
