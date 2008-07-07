@@ -36,7 +36,6 @@
 #include <ctype.h>
 
 
-
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <glang.h>
@@ -1159,27 +1158,39 @@ GDoc* GStorageMySQL::LoadDoc(unsigned int docid)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::LoadNode(const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent,size_t nodes,size_t nbnodes,size_t contents,size_t nbcontents)
+void GStorageMySQL::LoadNode(RQuery& nodes,RQuery& content,const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent/*,size_t tnodes,size_t nbnodes,size_t contents,size_t nbcontents*/)
 {
-	// Load SubNodes
-	RQuery Nodes(Db,"SELECT conceptid,typeid,childs,nbchilds,contents,nbcontents,pos,what FROM nodes"
-			" WHERE nodeid>="+Num(nodes)+" AND nodeid<"+Num(nodes+nbnodes));
-	for(Nodes.Start();!Nodes.End();Nodes.Next())
+	try
 	{
-		GConceptType* type(Session->GetConceptType(atoi(Nodes[1]),false));
-		GConcept* concept=type->GetConcept(atoi(Nodes[0]));
-		GDocStructNode* ptr=new GDocStructNode(doc->GetPtr(concept),atoi(Nodes[6]),static_cast<GDocStructNode::NodeType>(atoi(Nodes[7])));
-		docstruct->InsertNode(parent,ptr);
-		LoadNode(doc,docstruct,ptr,atoi(Nodes[2]),atoi(Nodes[3]),atoi(Nodes[4]),atoi(Nodes[5]));
-	}
+		size_t NbSubNodes(atoi(nodes[3]));
+		size_t NbContent(atoi(nodes[5]));
+//		cout<<"Treat node "<<nodes[8]<<" - Nodes: "<<nodes[2]<<"("<<NbSubNodes<<") - Content: "<<nodes[5]<<"("<<NbContent<<")"<<endl;
 
-	// Load its content
-	RQuery Content(Db,"SELECT conceptid,typeid,pos FROM content WHERE contentid>="+Num(contents)+" AND contentid<"+Num(contents+nbcontents));
-	for(Content.Start();!Content.End();Content.Next())
+		// Create the node in the structure
+		GConceptType* type(Session->GetConceptType(atoi(nodes[1]),false));
+		GConcept* concept=type->GetConcept(atoi(nodes[0]));
+		GDocStructNode* ptr=new GDocStructNode(doc->GetPtr(concept),atoi(nodes[6]),static_cast<GDocStructNode::NodeType>(atoi(nodes[7])));
+		docstruct->InsertNode(parent,ptr);
+
+		// Go to the next node
+		nodes.Next();
+
+		// Load its content
+		for(size_t i=NbContent+1;--i;content.Next())
+		{
+			GConceptType* type(Session->GetConceptType(atoi(content[1]),false));
+			GConcept* concept=type->GetConcept(atoi(content[0]));
+			docstruct->InsertContent(ptr,doc->GetPtr(concept),atoi(content[2]));
+		}
+
+		// Load SubNodes
+		for(size_t i=NbSubNodes+1;--i;)
+			LoadNode(nodes,content,doc,docstruct,ptr);
+	}
+	catch(RMySQLError e)
 	{
-		GConceptType* type(Session->GetConceptType(atoi(Content[1]),false));
-		GConcept* concept=type->GetConcept(atoi(Content[0]));
-		docstruct->InsertContent(parent,doc->GetPtr(concept),atoi(Content[2]));
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
 	}
 }
 
@@ -1190,10 +1201,29 @@ GDocStruct* GStorageMySQL::LoadStruct(const GDoc* doc)
 {
 	try
 	{
-		RQuery Find(Db,"SELECT totalnodes,nodes,nbnodes FROM htmls WHERE docid="+Num(doc->GetId()));
+		if(doc->GetId()==cNoRef)
+			return(0);
+		RQuery Find(Db,"SELECT totalnodes,nodes,nbnodes,content,nbcontent FROM htmls WHERE htmlid="+Num(doc->GetId()));
 		Find.Start();
+		if(!Find.GetNb())
+			return(0);
 		GDocStruct* docstruct=new GDocStruct(strtoul(Find[0],0,10));
-		LoadNode(doc,docstruct,docstruct->GetTop(),atoi(Find[1]),atoi(Find[2]),0,0);
+
+		// Create the queries for all nodes and contents
+		size_t FirstNode(atoi(Find[1]));
+		size_t OutNode(FirstNode+atoi(Find[0]));
+		RQuery Nodes(Db,"SELECT conceptid,typeid,childs,nbchilds,contents,nbcontents,pos,what,nodeid FROM nodes "
+				 "WHERE nodeid>="+Find[1]+" AND nodeid<"+Num(OutNode)+" ORDER BY nodeid");
+		Nodes.Start();
+		size_t FirstContent(atoi(Find[3]));
+		size_t OutContent(FirstContent+atoi(Find[4]));
+		RQuery Content(Db,"SELECT conceptid,typeid,pos FROM content "
+				"WHERE contentid>="+Find[3]+" AND contentid<"+Num(OutContent)+" ORDER BY contentid");
+		Content.Start();
+		size_t NbSubNodes(atoi(Find[2]));
+
+		for(size_t i=NbSubNodes+1;--i;)
+			LoadNode(Nodes,Content,doc,docstruct,docstruct->GetTop()/*,FirstNode,NbSubNodes,0,0*/);
 		return(docstruct);
 	}
 	catch(RMySQLError e)
@@ -1205,7 +1235,7 @@ GDocStruct* GStorageMySQL::LoadStruct(const GDoc* doc)
 
 
 //------------------------------------------------------------------------------
-size_t GStorageMySQL::SaveNode(GDocStructNode* node)
+size_t GStorageMySQL::SaveNode(GDocStructNode* node,size_t& topcontent,size_t& nbcontent)
 {
 	size_t first(0);
 	size_t id;
@@ -1215,9 +1245,10 @@ size_t GStorageMySQL::SaveNode(GDocStructNode* node)
 	for(Nodes.Start();!Nodes.End();Nodes.Next())
 	{
 		// Insert the node in the table
-		RQuery InsNode(Db,"INSERT INTO nodes(conceptid,typeid,pos,what) VALUES("+
-				Num(node->GetInfo()->GetId())+","+Num(node->GetInfo()->GetTypeId())+","+
-				Num(node->GetPos())+","+Num(static_cast<size_t>(node->GetType()))+")");
+		RString Sql("INSERT INTO nodes(conceptid,typeid,pos,what) VALUES("+
+				Num(Nodes()->GetInfo()->GetId())+","+Num(Nodes()->GetInfo()->GetTypeId())+","+
+				Num(Nodes()->GetPos())+","+Num(static_cast<size_t>(Nodes()->GetType()))+")");
+		RQuery InsNode(Db,Sql);
 
 		// Look if the id of the node must be get
 		if(!first)
@@ -1231,28 +1262,33 @@ size_t GStorageMySQL::SaveNode(GDocStructNode* node)
 	// Insert now all information related to each node
 	for(Nodes.Start(),id=first;!Nodes.End();Nodes.Next(),id++)
 	{
-		// Save its child nodes
-		size_t childs=SaveNode(node);
-
-		// Save its content
+		// Save their content
 		size_t contents(0);
-		RCursor<GOccurInfo> Content(node->GetContent());
+		RCursor<GOccurInfo> Content(Nodes()->GetContent());
+		nbcontent+=Content.GetNb();
 		for(Content.Start();!Content.End();Content.Next())
 		{
-			RQuery InsCont(Db,"INSERT INTO content(conceptid,typeid,pos) VALUES("+
-							Num(Content()->GetInfo()->GetId())+","+Num(Content()->GetInfo()->GetTypeId())+","+
-							Num(Content()->GetPos())+")");
+			RString Sql("INSERT INTO content(conceptid,typeid,pos) VALUES("+
+									Num(Content()->GetInfo()->GetId())+","+Num(Content()->GetInfo()->GetTypeId())+","+
+									Num(Content()->GetPos())+")");
+			RQuery InsCont(Db,Sql);
 
 			if(!contents)
 			{
-				RQuery GetId(Db,"SELECT contentid FROM contents WHERE contentid=LAST_INSERT_ID()");
+				RQuery GetId(Db,"SELECT contentid FROM content WHERE contentid=LAST_INSERT_ID()");
 				GetId.Start();
 				contents=strtoul(GetId[0],0,10);
 			}
+
+			if(!topcontent)
+				topcontent=contents;
 		}
 
+		// Save their child nodes
+		size_t childs=SaveNode(Nodes(),topcontent,nbcontent);
+
 		// Update node
-		RQuery Update(Db,"UPDATE nodes SET childs="+Num(childs)+",nbchilds="+Num(node->GetNbNodes())+
+		RQuery Update(Db,"UPDATE nodes SET childs="+Num(childs)+",nbchilds="+Num(Nodes()->GetNbNodes())+
 					",contents="+Num(contents)+",nbcontents="+Num(Content.GetNb())+" WHERE nodeid="+Num(id));
 	}
 
@@ -1265,9 +1301,31 @@ void GStorageMySQL::SaveStruct(GDocStruct* docstruct,size_t docid)
 {
 	try
 	{
-		size_t first=SaveNode(docstruct->GetTop());
-		size_t nb=docstruct->GetTop()->GetNbNodes();
-		RString Sql("UPDATE htmls SET nodes="+Num(first)+",nbnodes="+Num(nb)+"totalnodes="+Num(docstruct->GetNbNodes())+" WHERE htmlid="+Num(docid));
+		// Remove the old structure
+		RQuery Info(Db,"SELECT nodes,totalnodes,content,nbcontent FROM htmls WHERE htmlid="+Num(docid));
+		Info.Start();
+		if(Info.GetNb())
+		{
+			size_t LastId=atoi(Info[0])+atoi(Info[1]);
+			RQuery DelNodes(Db,"DELETE FROM nodes WHERE nodeid>="+Info[0]+" AND nodeid<"+Num(LastId));
+			LastId=atoi(Info[2])+atoi(Info[3]);
+			RQuery DelContent(Db,"DELETE FROM content WHERE contentid>="+Info[2]+" AND contentid<"+Num(LastId));
+		}
+
+		if((!docstruct)||(!docstruct->GetTop()->GetNbNodes()))
+			return;
+
+		// Save the structure
+		size_t topcontent(0);
+		size_t nbcontent(0);
+		size_t topnode(SaveNode(docstruct->GetTop(),topcontent,nbcontent));
+		RString Sql("UPDATE htmls SET "
+				"nodes="+Num(topnode)+
+				",nbnodes="+Num(docstruct->GetTop()->GetNbNodes())+
+				",totalnodes="+Num(docstruct->GetNbNodes()-1)+
+				",content="+Num(topcontent)+
+				",nbcontent="+Num(nbcontent)+
+				" WHERE htmlid="+Num(docid));
 		RQuery UpdateDoc(Db,Sql);
 	}
 	catch(RMySQLError e)

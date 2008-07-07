@@ -365,17 +365,29 @@ public:
 	virtual GDoc* LoadDoc(unsigned int docid);
 
 	/**
-	 *
+	 * Load a specific node.
+	 * @param nodes          Query on all nodes of the corresponding document.
+	 * @param content        Query on all content of the corresponding document.
+	 * @param doc            Document.
+	 * @param docstruct      Structure to load.
+	 * @param parent         Parent node.
 	 */
-	void LoadNode(const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent,size_t nodes,size_t nbnodes,size_t contents,size_t nbcontents);
+	void LoadNode(R::RQuery& nodes,R::RQuery& content,const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent);
 
 	/**
 	 * Method that load the structure of a document.
-	 * @param docid          Identifier of the document.
+	 * @param doc            Document.
 	 */
 	virtual GDocStruct* LoadStruct(const GDoc* doc);
 
-	size_t SaveNode(GDocStructNode* node);
+	/**
+	 * Save a specific node.
+	 * @param node           Node to save.
+	 * @param topcontent     Id of the first content.
+	 * @param nbcontent      Total number of content.
+	 * @return Identifier of the first subnode.
+	 */
+	size_t SaveNode(GDocStructNode* node,size_t& topcontent,size_t& nbcontent);
 
 	/**
 	 * Method that save the structure of a document.

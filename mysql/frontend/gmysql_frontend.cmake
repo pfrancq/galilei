@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(gmysql_AVAILABLE_FRONTENDS kde)
+    SET(gmysql_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(gmysql_frontend gmysql kde gmysql_INCLUDES)
+ENDIF(KDE3_FOUND)
