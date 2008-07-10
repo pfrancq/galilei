@@ -66,7 +66,6 @@ using namespace std;
 GFilterMSDoc::GFilterMSDoc(GFactoryFilter* fac)
 	: GFilter(fac)
 {
-
  	AddMIME("application/msword");
 }
 
@@ -237,7 +236,7 @@ void GFilterMSDoc::Analyze(const RURI&,const RString& file,const RString& docxml
 	}
 
 	if (Parser == 0L)
-		throw(GException("The file in use has uncompatible format"));
+		throw(GException("The file in use has incompatible format"));
 	if (!Parser->parse())
 		throw(GException("An error occurs during file parsing"));
 	if (!bodyFound)
