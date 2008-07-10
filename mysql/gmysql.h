@@ -42,7 +42,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rmysql.h>
+#include <rdb.h>
 
 
 //------------------------------------------------------------------------------
@@ -66,7 +66,7 @@ namespace GALILEI{
 class GStorageMySQL : public GStorage
 {
 	/**
-	* MySQL Database.
+	* Database.
 	*/
 	std::auto_ptr<R::RDb> Db;
 
@@ -373,7 +373,7 @@ public:
 	 * @param parent         Parent node.
 	 * @param nbnodes        Number of nodes to load.
 	 */
-	void LoadNode(R::RQuery& nodes,R::RQuery& content,const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent,size_t nbnodes);
+	void LoadNode(std::auto_ptr<R::RQuery>& nodes,std::auto_ptr<R::RQuery>& content,const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent,size_t nbnodes);
 
 	/**
 	 * Method that load the structure of a document.
