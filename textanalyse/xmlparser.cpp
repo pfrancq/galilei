@@ -138,7 +138,8 @@ void XMLParser::Value(const RString& value)
 void XMLParser::EndTag(const RString& namespaceURI, const RString& lName, const RString&)
 {
 	// Right tag
-	CurTag=CurTag->GetParent();
+	if(CurTag)
+		CurTag=CurTag->GetParent();
 
 	if(Content.IsEmpty())
 		return;
