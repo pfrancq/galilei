@@ -1786,11 +1786,12 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		if(!atoi((*Test)[0]))
 		{
 			// Insert the profile (if subjects -> save topicid)
-			sSql="INSERT INTO profiles(profileid,description,social,userid";
+			sSql="INSERT INTO profiles(profileid,description,social,userid,updated,calculated,attached";
 			if(Session->GetSubjects(false))
 				sSql+=",topicid";
 			sSql+=") VALUES("+Num(profid)+","+RQuery::SQLValue(prof->GetName())+","+
-			      Num(social)+","+Num(prof->GetUser()->GetId());
+			      Num(social)+","+Num(prof->GetUser()->GetId())+","+
+			      RQuery::SQLValue(prof->GetUpdated())+","+RQuery::SQLValue(prof->GetComputed())+","+RQuery::SQLValue(prof->GetAttached());
 			if(Session->GetSubjects(false))
 			{
 				GSubject* sub=Session->GetSubjects(false)->GetSubject(prof);
@@ -1806,7 +1807,8 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		{
 			// Update the profile (if subjects -> save topicid)
 			sSql="UPDATE profiles SET description="+RQuery::SQLValue(prof->GetName())+",social="+Num(social)+
-			     ",userid="+Num(prof->GetUser()->GetId());
+			     ",userid="+Num(prof->GetUser()->GetId())+",updated="+RQuery::SQLValue(prof->GetUpdated())+
+			     ",calculated="+RQuery::SQLValue(prof->GetComputed())+",attached="+RQuery::SQLValue(prof->GetAttached());
 			if(Session->GetSubjects(false))
 			{
 				GSubject* sub=Session->GetSubjects(false)->GetSubject(prof);
