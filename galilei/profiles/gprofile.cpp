@@ -41,6 +41,7 @@
 #include <gcommunity.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
@@ -372,15 +373,14 @@ RCursor<GFdbk> GProfile::GetFdbks(void) const
 //------------------------------------------------------------------------------
 void GProfile::InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
 {
-	GFdbk* fdbk;
-
-	Fdbks.InsertPtr(fdbk=new GFdbk(docid,assess,date,update));
-	State=osModified;
-
+	Fdbks.InsertPtr(new GFdbk(docid,assess,date,update));
 	// If the document assessed was computed after the last computation
 	// -> profile is considered as updated
-//	if(Computed<fdbk->GetComputed())
+	if((Computed<date)||(Computed<update))
+	{
 		Updated.SetToday();
+		State=osModified;
+	}
 }
 
 

@@ -164,7 +164,7 @@ public:
 	RContainer<GDocRefURL,true,true> DocsRefUrl;                      // Documents ordered by URL.
 	RContainer<GUser,true,true> Users;                                // Users handled by the system.
 	RContainer<GProfile,true,true> Profiles;                          // Profiles handled by the system.
-	RContainer<GCommunity,true,true> Groups;	                          // Groups handled by the system.
+	RContainer<GCommunity,true,true> Groups;	                      // Groups handled by the system.
 	RContainer<GConceptType,true,true> ConceptTypes;                  // Types of Concepts
 	RContainer<GRelationType,true,true> RelationTypes;                // Types of Relations
 	RContainer<GDebugObject,false,true> DebugObjs;                    // Objects given debugging information.
