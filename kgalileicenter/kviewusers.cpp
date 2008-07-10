@@ -6,7 +6,7 @@
 
 	Window for manipulating the users - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -41,13 +41,18 @@
 #include <gsession.h>
 #include <guser.h>
 #include <gprofile.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <qpixmap.h>
+#include <qpushbutton.h>
+#include <qlayout.h>
+#include <qinputdialog.h>
 
 
 //-----------------------------------------------------------------------------
@@ -74,9 +79,45 @@ KViewUsers::KViewUsers(KDoc* doc,QWidget* parent,const char* name,int wflags)
 {
 	setCaption("List of users");
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kdmconfig.png",KIcon::Small)));
+
+	// Main Layout
+	QVBoxLayout* MainLayout = new QVBoxLayout(this,0,0,"MainLayout");
+
+	// Search Bar
+	QHBoxLayout* SearchLayout = new QHBoxLayout(0,0,0,"SearchLayout");
+	SearchLayout->setAlignment(Qt::AlignTop);
+	NewUser=new QPushButton(this);
+	NewUser->setAutoDefault(TRUE);
+	NewUser->setText("New User");
+	connect(NewUser,SIGNAL(clicked()),this,SLOT(slotAddUser()));
+	SearchLayout->addWidget(NewUser);
+	SearchLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Fixed, QSizePolicy::Minimum ));
+	ModifyUser=new QPushButton(this);
+	ModifyUser->setAutoDefault(TRUE);
+	ModifyUser->setText("Modify User");
+	connect(ModifyUser,SIGNAL(clicked()),this,SLOT(slotModifyUser()));
+	SearchLayout->addWidget(ModifyUser);
+	SearchLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum ));
+	NewProfile=new QPushButton(this);
+	NewProfile->setAutoDefault(TRUE);
+	NewProfile->setText("New Profile");
+	connect(NewProfile,SIGNAL(clicked()),this,SLOT(slotAddProfile()));
+	SearchLayout->addWidget(NewProfile);
+	SearchLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Fixed, QSizePolicy::Minimum ));
+	ModifyProfile=new QPushButton(this);
+	ModifyProfile->setAutoDefault(TRUE);
+	ModifyProfile->setText("Modify Profile");
+	connect(ModifyProfile,SIGNAL(clicked()),this,SLOT(slotModifyProfile()));
+	SearchLayout->addWidget(ModifyProfile);
+//	SearchLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum ));
+    MainLayout->addLayout(SearchLayout);
+
+	// Users
 	Users = new QListView(this);
+	Users->resize(size());
 	Users->addColumn(QString("User"));
 	Users->setRootIsDecorated(true);
+	MainLayout->addWidget(Users);
 	connect(Users,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	CreateUsersListView();
 }
@@ -127,11 +168,76 @@ void KViewUsers::update(unsigned int cmd)
 
 
 //-----------------------------------------------------------------------------
-void KViewUsers::resizeEvent(QResizeEvent *)
+void KViewUsers::slotAddUser(void)
 {
-	//resize of the listview
-	Users->setGeometry(0,0,this->width(),this->height());
-	Users->setColumnWidth(0,this->width()-2);
+	bool Ok;
+	QString Name=QInputDialog::getText("New User", "Enter the name:",QLineEdit::Normal,QString::null,&Ok,this);
+	if(Ok&&!Name.isEmpty())
+	{
+		GSession* session=getDocument()->GetSession();
+		session->InsertUser(new GUser(cNoRef,FromQString(Name),FromQString(Name)));
+		update(1);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewUsers::slotModifyUser(void)
+{
+	QListViewItemType* t((QListViewItemType*)Users->selectedItem());
+	if((!t)||(t->Type!=QListViewItemType::tUser))
+		return;
+	GUser* usr=t->Obj.User;
+	bool Ok;
+	QString Name=QInputDialog::getText("Modify User", "Enter the new name:",QLineEdit::Normal,ToQString(usr->GetName()),&Ok,this);
+	if(Ok&&!Name.isEmpty())
+	{
+		GSession* session=getDocument()->GetSession();
+		GStorage* save=session->GetStorage();
+		usr->SetName(FromQString(Name));
+		save->SaveUser(usr);
+		t->setText(0,Name);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewUsers::slotAddProfile(void)
+{
+	QListViewItemType* t((QListViewItemType*)Users->selectedItem());
+	if((!t)||(t->Type!=QListViewItemType::tUser))
+		return;
+	GUser* usr=t->Obj.User;
+	bool Ok;
+	QString Name=QInputDialog::getText("Add Profile to "+ToQString(usr->GetName()), "Enter the profile name:",QLineEdit::Normal,QString::null,&Ok,this);
+	if(Ok&&!Name.isEmpty())
+	{
+		GSession* session=getDocument()->GetSession();
+		GStorage* save=session->GetStorage();
+		session->InsertProfile(new GProfile(usr,cNoRef,FromQString(Name),cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,true,20));
+		save->SaveUser(usr);
+		update(1);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewUsers::slotModifyProfile(void)
+{
+	QListViewItemType* t((QListViewItemType*)Users->selectedItem());
+	if((!t)||(t->Type!=QListViewItemType::tProfile))
+		return;
+	GProfile* prof=t->Obj.Profile;
+	bool Ok;
+	QString Name=QInputDialog::getText("Modify Profile", "Enter the new name:",QLineEdit::Normal,ToQString(prof->GetName()),&Ok,this);
+	if(Ok&&!Name.isEmpty())
+	{
+		GSession* session=getDocument()->GetSession();
+		GStorage* save=session->GetStorage();
+		prof->SetName(FromQString(Name));
+		save->SaveProfile(prof);
+		t->setText(0,Name);
+	}
 }
 
 

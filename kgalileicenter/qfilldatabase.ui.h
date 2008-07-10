@@ -12,10 +12,11 @@
 #include "qlistview.h"
 #include "kurlrequester.h"
 #include "knuminput.h"
+using namespace std;
 
 // include for R project
 #include <rstring.h>
-#include <rmysql.h>
+#include <rdb.h>
 #include <rqt.h>
 
 void QFillEmptyDatabase::ChangeParent( int s )
@@ -34,18 +35,18 @@ void QFillEmptyDatabase::ChangeParent( int s )
  //   if(s==Qbutton:NoChange)
 }
 
-void QFillEmptyDatabase::InsertSubItem(R::RDb& db,int parentId,QListViewItem* item)
+void QFillEmptyDatabase::InsertSubItem(R::RDb* db,int parentId,QListViewItem* item)
 {
 	QListViewItem* t;
 	R::RString sSQL("");
 
 	sSQL="SELECT * FROM topics where parent="+R::RString::Number(parentId);
-	R::RQuery insert(db,sSQL);
+	auto_ptr<R::RQuery> insert(db->Query(sSQL));
 
-	for(insert.Start();!insert.End();insert.Next())
+	for(insert->Start();!insert->End();insert->Next())
 	{
-		item->insertItem(t=new QListViewItem(item,ToQString(insert[1])));
-		InsertSubItem(db,atoi(insert[0].Latin1()),t);
+		item->insertItem(t=new QListViewItem(item,ToQString((*insert)[1])));
+		InsertSubItem(db,atoi((*insert)[0]),t);
 	}
 
 }
@@ -60,9 +61,9 @@ void QFillEmptyDatabase::ChooseParentName()
 		//Init dlg
 		QChooseParent dlg(this,0,true);
 		dlg.TopicsView->setColumnWidth(0,300);
-		
-		GSubjects * 	GetSubjects 
-		
+
+		GSubjects * 	GetSubjects
+
 		sSQL="SELECT * FROM topics where parent=0";
 		R::RQuery mainTopics(Db,sSQL);
 

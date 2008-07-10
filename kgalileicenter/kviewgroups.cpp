@@ -245,7 +245,7 @@ void QGroups::slotNewGroup(void)
 
 	// Create a new group in session
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
-	GCommunity* Group=new GCommunity(cNoRef,RDate::GetToday(),RDate::null);
+	GCommunity* Group=new GCommunity(cNoRef,RDate::GetToday(),RDate::Null);
 	session->AssignId(Group);
 	session->InsertCommunity(Group);
 
@@ -396,7 +396,7 @@ void KViewGroups::ConstructGroups(void)
 			QListViewItemType* subitem=new QListViewItemType(Prof(),gritem,ToQString(Prof()->GetAttached()));
 			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}
-	}	
+	}
 	Groups->setCurrentItem(Groups->firstChild());
 }
 

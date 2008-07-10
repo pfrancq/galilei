@@ -43,7 +43,6 @@
 #include <rxmlfile.h>
 #include <rstring.h>
 #include <rcontainer.h>
-#include <rmysql.h>
 #include <rqt.h>
 using namespace R;
 
@@ -151,7 +150,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	QString method;
 	GSession* Sess;
 	bool DestroyDoc(false);
-	
+
 	slotStatusMsg(i18n("Connecting..."));
 	Doc=0;
 	try
@@ -169,7 +168,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 			dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
 		}
 		DestroyDoc=false;
-		slotStatusMsg(i18n("Connected"));		
+		slotStatusMsg(i18n("Connected"));
 	}
 	catch(GException& e)
 	{
@@ -191,7 +190,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 	{
 		delete Doc;
 		Doc=0;
-	}	
+	}
 }
 
 
@@ -249,7 +248,7 @@ void KGALILEICenterApp::slotSessionDisconnect(void)
 	catch(...)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
-	}	
+	}
 }
 
 
@@ -278,7 +277,7 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 	if(!dlg.exec())
 		return;
 	StructuresPath=FromQString(dlg.BasicURL->text());
-	
+
 	try
 	{
 		QSessionProgressDlg d(this,0,"Create Database");
@@ -300,7 +299,7 @@ void KGALILEICenterApp::slotCreateDatabase(void)
 	catch(...)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
-	}	
+	}
 }
 
 
@@ -333,7 +332,7 @@ void KGALILEICenterApp::slotImportUsersData(void)
 	catch(...)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
-	}	
+	}
 }
 
 
@@ -888,8 +887,8 @@ void KGALILEICenterApp::slotRunProgram(void)
 	}
 	catch(...)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");		
-	}	
+		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+	}
 	KIO::NetAccess::removeTempFile( tmpfile );
 }
 
@@ -918,13 +917,13 @@ void KGALILEICenterApp::slotHelpProgram(void)
 	catch(std::exception& e)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
-		return;		
+		return;
 	}
 	catch(...)
 	{
 		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
-		return;		
-	}	
+		return;
+	}
 }
 
 
@@ -1051,6 +1050,6 @@ KGALILEICenterApp::~KGALILEICenterApp(void)
 	}
 	catch(...)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");		
-	}	
+		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+	}
 }

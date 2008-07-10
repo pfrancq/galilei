@@ -86,6 +86,7 @@
 #include <gfilter.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -168,8 +169,8 @@ void QCreateDB::DoIt(void)
 {
 	// Create the database
 	Parent->PutText("Database structure created");
-	RDb::CreateDatabase(Host,User,Pass,Name);
-	RDb Db(Host,User,Pass,Name,"utf-8");
+	RDb::CreateMySQLDatabase(Host,User,Pass,Name);
+	auto_ptr<RDb> Db(RDb::Get(RDb::MySQL,Name,Host,User,Pass,"utf-8"));
 	if(GSession::Break())
 		return;
 
@@ -200,7 +201,7 @@ void QCreateDB::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
-void QCreateDB::RunSQL(const RURI& path,RDb& Db)
+void QCreateDB::RunSQL(const RURI& path,std::auto_ptr<RDb>& Db)
 {
 	RString sql("");
 	RString line("");
@@ -231,7 +232,9 @@ void QCreateDB::RunSQL(const RURI& path,RDb& Db)
 				line=file.GetLine();
 		}
 		if(!sql.IsEmpty())
-			RQuery Sendquery(Db,sql);
+		{
+			auto_ptr<RQuery> Sendquery(Db->Query(sql));
+		}
 
 		sql="";
 	}
@@ -274,7 +277,7 @@ protected:
 	{
 		if(name!="vote")
 			return;
-		Session->InsertFdbk(profile->GetId(),doc->GetId(),docass,RDate::GetToday(),RDate::null,true);
+		Session->InsertFdbk(profile->GetId(),doc->GetId(),docass,RDate::GetToday(),RDate::Null,true);
 		doc=0;
 		user=0;
 		profile=0;
@@ -297,7 +300,7 @@ protected:
 			case 1:
 				doc=Session->GetDoc(text,true,true);
 				if(!doc)
-					Session->InsertDoc(doc=new GDoc(text,text,cNoRef,0,"text/html",RDate::GetToday(),RDate::null));
+					Session->InsertDoc(doc=new GDoc(text,text,cNoRef,0,"text/html",RDate::GetToday(),RDate::Null));
 				break;
 			case 2:
 				user=Session->GetUser(text,true,true);
@@ -378,9 +381,10 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 		{
 			// Must be a normal document
 			GSubject* Topic=Subjects->GetNode(parent);
-			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,RDate::GetToday(),RDate::null);
+			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,RDate::GetToday(),RDate::Null);
 			Session->InsertDoc(doc);
-			Topic->Insert(doc);
+			if(Topic)
+				Topic->Insert(doc);
 		}
 	}
 	CurDepth--;

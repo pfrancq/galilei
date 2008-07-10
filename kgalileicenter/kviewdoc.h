@@ -6,7 +6,7 @@
 
 	Window for manipulating a specific document - Header.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -47,6 +47,9 @@ namespace GALILEI
 	class GDoc;
 	class GDocXML;
 	class QGDocXML;
+	class GUser;
+	class GProfile;
+	class GSession;
 }
 using namespace GALILEI;
 
@@ -55,11 +58,13 @@ using namespace GALILEI;
 // include files for Qt
 #include <qlistview.h>
 #include <qtabwidget.h>
+class QPushButton;
 
 
 //---------------------------------------------------------------------------
 // include files for current application
 #include "kview.h"
+#include "addfdbkdlg.h"
 
 
 //---------------------------------------------------------------------------
@@ -93,7 +98,12 @@ class KViewDoc : public KView
 	QListView* FdbksLinks;
 
 	/**
-	* Results of the analyse.
+	 * Add a new feedback for a given document.
+	 */
+	QPushButton* NewFdbk;
+
+	/**
+	* Results of the analyze.
 	*/
 	QListView* Results;
 
@@ -103,7 +113,7 @@ class KViewDoc : public KView
 	QListView* General;
 
 	/**
-	* Listview item containing the MIME type of the file.
+	* MIME type of the file.
 	*/
 	QListViewItem* InfoMIME;
 
@@ -156,7 +166,7 @@ public:
 	virtual GViewType getType(void) {return(gDoc);}
 
 	/**
-	* Construct the feedbacks' widget.
+	* Construct the feedbacks widget.
 	*/
 	void ConstructFdbks(void);
 
@@ -176,12 +186,12 @@ public:
 	*/
 	virtual void update(unsigned int cmd);
 
-protected:
+protected slots:
 
 	/**
-	* Called when the main window is resize by the user.
+	* Add a new feedback.
 	*/
-	virtual void resizeEvent(QResizeEvent *);
+	void slotNewFdbk(void);
 
 public:
 
@@ -217,6 +227,24 @@ public:
 	* Destructor.
 	*/
 	~KViewDoc(void);
+};
+
+
+//-----------------------------------------------------------------------------
+class MyAddFdbkDlg : public AddFdbkDlg
+{
+	Q_OBJECT
+public:
+	GALILEI::GSession* Session;
+	GALILEI::GUser* User;
+	GALILEI::GProfile* Prof;
+
+	MyAddFdbkDlg(QWidget* parent,GALILEI::GSession* session);
+	void FillProfiles(void);
+
+public slots:
+	void slotChangeUser(const QString& string);
+	void slotChangeProfile(const QString& string);
 };
 
 

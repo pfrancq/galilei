@@ -29,7 +29,8 @@ SET(kgalileicenter_frontend_kde_UI_INCLUDES qchooseparent.ui
                                                                       qexportmatrixdlg.ui
                                                                       qplugins.ui
                                                                       qsimulationdlg.ui
-                                                                       configure.ui
+                                                                      configure.ui
+                                                                      addfdbkdlg.ui
 )
 
 SET (KGALILEICENTER_SOURCES   kviewhistory.cpp
@@ -76,3 +77,5 @@ KDE3_ADD_EXECUTABLE(kgalileicenter ${kgalileicenter_frontend_kde_UIFILE}
                                                                    ${kgalileicenter_frontend_kde_MOCFILE}
                                                                    ${KGALILEICENTER_SOURCES} )
 TARGET_LINK_LIBRARIES(kgalileicenter galilei galileikde roptimization rcore rcorekde rmath ${KDE_LIBS})
+
+#KDE3_ADD_KCFG_FILES(kgalileicenter kgalileicenterui.rc)

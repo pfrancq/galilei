@@ -6,7 +6,7 @@
 
 	Window for manipulating a specific document - Implementation.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -65,6 +65,9 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // includes files for Qt
 #include <qpixmap.h>
+#include <qlayout.h>
+#include <qpushbutton.h>
+#include <qgroupbox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -77,6 +80,66 @@ using namespace GALILEI;
 #include "kviewdoc.h"
 #include "qsessionprogress.h"
 #include "kdoc.h"
+
+
+//-----------------------------------------------------------------------------
+//
+// class MyAddFdbkDlg
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+MyAddFdbkDlg::MyAddFdbkDlg(QWidget* parent,GSession* session)
+	: AddFdbkDlg(parent), Session(session), User(0)
+{
+	connect(cbUsers,SIGNAL(activated(const QString&)),this,SLOT(slotChangeUser(const QString&)));
+	RCursor<GUser> Users(Session->GetUsers());
+	for(Users.Start();!Users.End();Users.Next())
+	{
+		if(!Users()->GetNbProfiles())
+			continue;
+		if(!User)
+			User=Users();
+		cbUsers->insertItem(ToQString(Users()->GetFullName()));
+	}
+	if(User)
+	{
+		cbUsers->setCurrentItem(0);
+		FillProfiles();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void MyAddFdbkDlg::FillProfiles(void)
+{
+	cbProfiles->clear();
+	Prof=0;
+	RCursor<GProfile> Profiles(User->GetProfiles());
+	for(Profiles.Start();!Profiles.End();Profiles.Next())
+	{
+		if(!Prof)
+			Prof=Profiles();
+		cbProfiles->insertItem(ToQString(Profiles()->GetName()));
+	}
+	if(Prof)
+		cbProfiles->setCurrentItem(0);
+}
+
+
+//-----------------------------------------------------------------------------
+void MyAddFdbkDlg::slotChangeUser(const QString& string)
+{
+	User=Session->GetUser(FromQString(string));
+	FillProfiles();
+}
+
+
+//-----------------------------------------------------------------------------
+void MyAddFdbkDlg::slotChangeProfile(const QString& string)
+{
+	Prof=User->GetProfile(FromQString(string));
+}
 
 
 
@@ -95,9 +158,10 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
 	setCaption("Description of \" "+QString(ToQString(Document->GetName()))+"\"");
 
-	// initialisation of the tab widget
+	// Main Layout
+	QVBoxLayout* MainLayout = new QVBoxLayout(this,0,0,"MainLayout");
 	Infos=new QTabWidget(this);
-	Infos->resize(size());
+	MainLayout->addWidget(Infos);
 
 	// Initialisation of the General Information Widget
 	General = new QListView(Infos);
@@ -107,14 +171,24 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	ConstructGeneral();
 
 	// Initialisation of the Feedbacks Widget
-	Fdbks = new QListView(Infos);
-	Infos->insertTab(Fdbks,"Profiles");
+	QGroupBox* boxFdbks=new QGroupBox(Infos);
+	Infos->insertTab(boxFdbks,"Profiles");
+	QVBoxLayout* FdbkLayout = new QVBoxLayout(boxFdbks,0,0,"FdbkLayout");
+	QHBoxLayout* SearchLayout = new QHBoxLayout(0,0,0,"SearchLayout");
+	SearchLayout->setAlignment(Qt::AlignTop);
+	NewFdbk=new QPushButton(boxFdbks);
+	NewFdbk->setAutoDefault(TRUE);
+	NewFdbk->setText("New Fdbk");
+	connect(NewFdbk,SIGNAL(clicked()),this,SLOT(slotNewFdbk()));
+	SearchLayout->addWidget(NewFdbk);
+	FdbkLayout->addLayout(SearchLayout);
+	Fdbks = new QListView(boxFdbks);
+	FdbkLayout->addWidget(Fdbks);
 	Fdbks->addColumn(QString("Profile"));
 	Fdbks->addColumn(QString("User"));
 	Fdbks->addColumn(QString("Date"));
 	Fdbks->setRootIsDecorated(true);
 	connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-
 	FdbksLinks = new QListView(Infos);
 	Infos->insertTab(FdbksLinks,"Links");
 	FdbksLinks->addColumn(QString("Profile"));
@@ -122,7 +196,6 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	FdbksLinks->addColumn(QString("Date"));
 	FdbksLinks->setRootIsDecorated(true);
 	connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-
 	ConstructFdbks();
 
 	// Initialisation of the XML Widget
@@ -145,28 +218,28 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDoc(file,file,cNoRef,0,mime,RDate(),RDate::null);
+	Document=new GDoc(file,file,cNoRef,0,mime,RDate(),RDate::Null);
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
 	setCaption("Description of \" "+QString(ToQString(Document->GetName()))+"\"");
 
-	// initialisation of the tab widget
+	// initialization of the tab widget
 	Infos=new QTabWidget(this);
 	Infos->resize(size());
 
-	// Initialisation of the General Information Widget
+	// Initialization of the General Information Widget
 	General = new QListView(Infos);
 	Infos->insertTab(General,"General Information");
 	General->addColumn("Variable");
 	General->addColumn("Value");
 	ConstructGeneral();
 
-	// Initialisation of the XML Widget
+	// Initialization of the XML Widget
 	XML = new QGDocXML(Infos);
 	Infos->insertTab(XML,"XML Structure");
 
-	// Initialisation of the AnalyseResults Widget
+	// Initialization of the AnalyseResults Widget
 	Results = new QListView(Infos);
 	Infos->insertTab(Results,"Analyse Results");
 	Results->addColumn("Concept");
@@ -185,7 +258,8 @@ void KViewDoc::ConstructFdbks(void)
 
 	if(!Fdbks) return;
 	if(!FdbksLinks) return;
-
+	Fdbks->clear();
+	FdbksLinks->clear();
 
 	// Init different judgements
 	QListViewItemType* ok= new QListViewItemType(Fdbks,"Relevant Documents");
@@ -313,13 +387,6 @@ void KViewDoc::update(unsigned int cmd)
 
 
 //-----------------------------------------------------------------------------
-void KViewDoc::resizeEvent(QResizeEvent *)
-{
-	Infos->resize(size());
-}
-
-
-//-----------------------------------------------------------------------------
 void KViewDoc::CreateDocXML(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Doc XML");
@@ -357,6 +424,25 @@ void KViewDoc::AnalyseDocXML(void)
 	ConstructGeneral();
 	Results->clear();
 	ConstructResults();
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewDoc::slotNewFdbk(void)
+{
+	MyAddFdbkDlg dlg(this,getDocument()->GetSession());
+	if(dlg.exec())
+	{
+		tDocAssessment assess;
+		if(dlg.cbFdbk->currentText()=="Relevant")
+			assess=djOK;
+		else if (dlg.cbFdbk->currentText()=="Fuzzy Relevant")
+			assess=djKO;
+		else if(dlg.cbFdbk->currentText()=="Irrelevant")
+			assess=djOutScope;
+		Doc->GetSession()->InsertFdbk(dlg.Prof->GetId(),Document->GetId(),assess,RDate::GetToday(),Document->GetComputed(),true);
+		ConstructFdbks();
+	}
 }
 
 

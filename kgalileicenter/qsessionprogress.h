@@ -38,9 +38,10 @@
 //-----------------------------------------------------------------------------
 // forward class declaration for GALIEI
 #include <gslot.h>
-#include <rmysql.h>
+#include <rdb.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -108,7 +109,7 @@ public:
 	QCreateDB(RString name,RString host,RString user,RString pass,RString path)
 		: Name(name), Host(host), User(user),Pass(pass),SchemaURL(path+"/galilei/db/mysql/") {}
 	virtual void DoIt(void);
-	void RunSQL(const RURI& path,RDb& Db);
+	void RunSQL(const RURI& path,std::auto_ptr<RDb>& Db);
 };
 
 
@@ -141,11 +142,11 @@ class QImportDocs : public QSessionThread
 	int Depth;
 	int CurDepth;
 	RString Parent;
-	RString DefaultMIME; 
+	RString DefaultMIME;
 	GFilterManager* FilterManager;
 	int CurrentDocId;
 	GSubjects* Subjects;
-	
+
 public:
 	QImportDocs(const RString& dir,int depth,const RString& parent,const RString& mime)
 		: Dir(dir),Depth(depth), Parent(parent),DefaultMIME(mime),
@@ -379,7 +380,7 @@ private:
 class QSessionProgressDlg : public QSemiModal, public GSlot
 {
 	Q_OBJECT
-	 
+
 	/**
 	* 'OK' button to close the dialog box. Must be disable when beginning
 	* computation and enabled at the end.
@@ -407,13 +408,13 @@ class QSessionProgressDlg : public QSemiModal, public GSlot
 	bool Cancel;
 
 	QString NewLabel;
-	
+
 	bool Changed;
 
 	bool Canceled;
-	
+
 	bool Error;
-	
+
 public:
 
 	/**
@@ -475,7 +476,7 @@ public:
 	* @param text            Text to show.
 	*/
 	void PutError(const char* text);
-	
+
 	/**
 	* Put the dialog in the final state.
 	*/

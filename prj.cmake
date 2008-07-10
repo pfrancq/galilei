@@ -23,9 +23,3 @@ ENDIF(KDE3_FOUND)
 
 SET(SUB_PROJECT kgalileicenter)
 ADD_SUBDIRECTORY(kgalileicenter)
-
-###file to install
-##keep this macro for galilei based project in a standard place
-#INSTALL(FILES galileimacro.cmake DESTINATION share/r)
-##keep it for compatibility with auto tools...
-#INSTALL(FILES libgalilei.m4 DESTINATION share/aclocal)

@@ -6,7 +6,7 @@
 
 	Window for manipulating the users - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -44,6 +44,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for Qt
 #include <qwidget.h>
+class QPushButton;
 
 
 //-----------------------------------------------------------------------------
@@ -65,6 +66,26 @@ class KViewUsers : public KView
 	* Listview  of users.
 	*/
 	QListView* Users;
+
+	/**
+	* Button to press to create a new user.
+	*/
+	QPushButton* NewUser;
+
+	/**
+	* Button to press to modify a user.
+	*/
+	QPushButton* ModifyUser;
+
+	/**
+	* Button to press to create a new profile.
+	*/
+	QPushButton* NewProfile;
+
+	/**
+	* Button to press to modify a profile.
+	*/
+	QPushButton* ModifyProfile;
 
 public:
 
@@ -90,11 +111,6 @@ public:
 protected:
 
 	/**
-	* Called when the main window is resize by the user.
-	*/
-	void resizeEvent(QResizeEvent *);
-
-	/**
 	* Create the list view with all the users.
 	*/
 	void CreateUsersListView(void);
@@ -104,6 +120,28 @@ protected:
 	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
 	*/
 	virtual void update(unsigned int cmd);
+
+protected slots:
+
+	/**
+	* Slot that adds a new user.
+	*/
+	void slotAddUser(void);
+
+	/**
+	* Slot that modifies a user.
+	*/
+	void slotModifyUser(void);
+
+	/**
+	 * Slot that add a profile.
+	 */
+	void slotAddProfile(void);
+
+	/**
+	 * Slot that modify a modify.
+	 */
+	void slotModifyProfile(void);
 
 public:
 
