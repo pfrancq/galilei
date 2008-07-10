@@ -40,7 +40,7 @@
 
 //------------------------------------------------------------------------------
 //include files for R
-#include <rmysql.h>
+#include <rdb.h>
 
 
 //------------------------------------------------------------------------------
@@ -113,21 +113,21 @@ void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* c
 	try
 	{
 		// Init
-		RQuery initsubprofiles(storeMySQL,"UPDATE profiles SET level='0',score='0' WHERE groupid="+RString::Number(grp->GetId()));
+		auto_ptr<RQuery> initsubprofiles(storeMySQL->Query("UPDATE profiles SET level='0',score='0' WHERE groupid="+RString::Number(grp->GetId())));
 
 		// Find all documents assessed as relevant by someone of the group
 		sql="SELECT DISTINCT(htmlid) FROM htmlsbyprofiles,profiles WHERE htmlsbyprofiles.profileid=profiles.profileid AND judgement='O' AND profiles.groupid="+RString::Number(grp->GetId());
-		RQuery docs(storeMySQL, sql);
-		for(docs.Start();!docs.End();docs.Next())
+		auto_ptr<RQuery> docs(storeMySQL->Query(sql));
+		for(docs->Start();!docs->End();docs->Next())
 		{
 			// Class all profiles assessing the current document by date
-			sql="SELECT profiles.profileid FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND profiles.groupid="+RString::Number(grp->GetId())+" AND judgement='O' AND htmlid="+docs[0]+" ORDER BY when2";
-			RQuery subprofiles(storeMySQL,sql);
-			subprofiles.Start();
-			size_t nb=subprofiles.GetNb()-1;
+			sql="SELECT profiles.profileid FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND profiles.groupid="+RString::Number(grp->GetId())+" AND judgement='O' AND htmlid="+(*docs)[0]+" ORDER BY when2";
+			auto_ptr<RQuery> subprofiles(storeMySQL->Query(sql));
+			subprofiles->Start();
+			size_t nb=subprofiles->GetNbRows()-1;
 			if(!nb) continue;
 			subscore=static_cast<double>(nb)/static_cast<double>(grp->GetNbObjs()-1);
-			Scoring* ptr=Scores.GetInsertPtr(atoi(subprofiles[0]));
+			Scoring* ptr=Scores.GetInsertPtr(atoi((*subprofiles)[0]));
 			ptr->Score+=subscore;
 			ptr->NbDocs++;
 		}
@@ -140,7 +140,7 @@ void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* c
 			Cur()->Score/=static_cast<double>(Cur()->NbDocs);
 			sublevel=(int(100*Cur()->Score)+(levelswidth-1))/levelswidth;
 			sql="UPDATE profiles SET level='"+RString::Number(sublevel)+"',score='"+RString::Number(Cur()->Score)+"' WHERE profileid="+RString::Number(Cur()->SubProfileId);
-			RQuery update(storeMySQL, sql);
+			auto_ptr<RQuery> update(storeMySQL->Query(sql));
 		}
 	}
 	catch(RException& e)
@@ -180,8 +180,8 @@ void GDocsLevelCmd::Run(GStorage* storage,const GStorageTag&,void*)
 	{
 		// Compute score for documents
 		RDb* storeMySQL=static_cast<RDb*>(storage->GetInfos());;
-		RQuery intidocs(storeMySQL,"DELETE FROM htmlsbygroups");
-		RQuery insertdocs(storeMySQL,"INSERT INTO htmlsbygroups(groupid,htmlid,score) SELECT groupid,htmlid,SUM(score) FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND judgement='O' GROUP BY groupid,htmlid");
+		auto_ptr<RQuery> intidocs(storeMySQL->Query("DELETE FROM htmlsbygroups"));
+		auto_ptr<RQuery> insertdocs(storeMySQL->Query("INSERT INTO htmlsbygroups(groupid,htmlid,score) SELECT groupid,htmlid,SUM(score) FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND judgement='O' GROUP BY groupid,htmlid"));
 	}
 	catch(RException& e)
 	{
