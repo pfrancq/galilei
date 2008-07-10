@@ -41,7 +41,7 @@
 //------------------------------------------------------------------------------
 // include files for R
 #include <rstring.h>
-#include <rmysql.h>
+#include <rdb.h>
 #include <rxmltag.h>
 
 

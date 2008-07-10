@@ -247,7 +247,7 @@ public:
 	* @param grpid           Group identificator.
 	* @param a               Date where it was attached.
 	* @param u               Date of the last updated.
-	* @param c               Date of the last computation. 
+	* @param c               Date of the last computation.
 	* @param s               Social?
 	* @param nbf             Number of Feedbacks.
 	*/
@@ -281,7 +281,7 @@ public:
 	* Load information from the current storage.
 	*/
 	virtual void LoadInfos(void) const;
-	
+
 	/**
 	* Get the identificator of the profile.
 	* @return Identificator.
@@ -301,6 +301,13 @@ public:
 	R::RString GetName(void) const;
 
 	/**
+	 * Set the name of the profile.
+	 * @param name           Name of the profile.
+	 * @return
+	 */
+	void SetName(const R::RString& name);
+
+	/**
 	* Get the user of the profile.
 	* @return Pointer to the user.
 	*/
@@ -317,7 +324,7 @@ public:
 	* @param social          Social value.
 	*/
 	void SetSocial(bool social);
-	
+
 	/**
 	* Get the date of the last update of the subprofile.
 	* @returns R::RDate.
@@ -329,12 +336,12 @@ public:
 	* @returns R::RDate.
 	*/
 	R::RDate GetComputed(void) const {return(Computed);}
-	
+
 	/**
 	* Verify if the subprofile must be (re-)computed.
 	*/
 	bool MustCompute(void) const;
-	
+
 	/**
 	* Get the group holding the profile.
 	*/
@@ -351,7 +358,7 @@ public:
 	* @returns R::RDate.
 	*/
 	R::RDate GetAttached(void) const;
-	
+
 	/**
 	* Get the number of common OK document between two profiles.
 	* @param prof            Pointer to a profile.
@@ -404,7 +411,7 @@ public:
 	* \warning The container infos is cleared by this method.
 	*/
 	void Update(R::RContainer<GWeightInfo,false,true>& infos,bool computed);
-	
+
 	/**
 	* Clear the assessment of the profile.
 	*/

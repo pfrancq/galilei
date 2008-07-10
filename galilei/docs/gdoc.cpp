@@ -111,7 +111,7 @@ void GDoc::ClearInfos(void)
 	GWeightInfos::Clear();
 
 	// Make sure that it will be re-computed
-	Computed=RDate::null;
+	Computed=RDate::Null;
 }
 
 
@@ -214,8 +214,8 @@ void GDoc::SetId(size_t id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a document");
-	GSession::Event(this,eObjNew);
 	Id=id;
+	GSession::Event(this,eObjNew);
 }
 
 

@@ -37,27 +37,27 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	GGroup<cObj,cGroup,type>::GGroup(unsigned int id,const R::RDate& u,const R::RDate& c)
-	: R::RContainer<cObj,false,true>(20,10), GWeightInfos(60), Id(id), 
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	GALILEI::GGroup<cObj,cGroup,type>::GGroup(unsigned int id,const R::RDate& u,const R::RDate& c)
+	: R::RContainer<cObj,false,true>(20,10), GALILEI::GWeightInfos(60), Id(id),
 	  Updated(u), Computed(c)
 {
 	if(Id!=cNoRef)
-		GSession::Event(static_cast<const cGroup*>(this),eObjNew);
+		GALILEI::GSession::Event(static_cast<const cGroup*>(this),eObjNew);
 }
 
-	
+
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	int GGroup<cObj,cGroup,type>::Compare(const GGroup& grp) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const GGroup& grp) const
 {
 	return(Id-grp.Id);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	int GGroup<cObj,cGroup,type>::Compare(const GGroup* grp) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const GGroup* grp) const
 {
 	if(!grp)
 		return(1);
@@ -66,16 +66,16 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	int GGroup<cObj,cGroup,type>::Compare(const unsigned int id) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const unsigned int id) const
 {
 	return(Id-id);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	void GGroup<cObj,cGroup,type>::LoadInfos(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::LoadInfos(void) const
 {
 	R::RContainer<GWeightInfo,false,true> Infos(1000,500);
 	GSession* session=GSession::Get();
@@ -87,43 +87,43 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	R::RDate GGroup<cObj,cGroup,type>::GetUpdated(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	R::RDate GALILEI::GGroup<cObj,cGroup,type>::GetUpdated(void) const
 {
 	return(Updated);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	R::RDate GGroup<cObj,cGroup,type>::GetComputed(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	R::RDate GALILEI::GGroup<cObj,cGroup,type>::GetComputed(void) const
 {
 	return(Computed);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	void GGroup<cObj,cGroup,type>::SetId(unsigned int id)
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::SetId(unsigned int id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a group");
-	GSession::Event(static_cast<const cGroup*>(this),eObjNew);
 	Id=id;
+	GSession::Event(static_cast<const cGroup*>(this),eObjNew);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	bool GGroup<cObj,cGroup,type>::IsIn(const cObj* obj) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	bool GALILEI::GGroup<cObj,cGroup,type>::IsIn(const cObj* obj) const
 {
 	return(R::RContainer<cObj,false,true>::IsIn(*obj));
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	void GGroup<cObj,cGroup,type>::DeleteObj(cObj* obj)
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::DeleteObj(cObj* obj)
 {
 	obj->SetGroup(0);
 	R::RContainer<cObj,false,true>::DeletePtr(*obj);
@@ -132,8 +132,8 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	void GGroup<cObj,cGroup,type>::InsertObj(cObj* obj)
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::InsertObj(cObj* obj)
 {
 	R::RContainer<cObj,false,true>::InsertPtr(obj);
 //	State=osUpdated;
@@ -142,16 +142,16 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	void GGroup<cObj,cGroup,type>::InsertPtr(cObj* obj)
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::InsertPtr(cObj* obj)
 {
 	InsertProfile(obj);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	void GGroup<cObj,cGroup,type>::DeleteObjs(void)
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::DeleteObjs(void)
 {
 //	State=osUpdated;
 	R::RCursor<cObj> Prof(*this);
@@ -161,24 +161,24 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	R::RCursor<cObj> GGroup<cObj,cGroup,type>::GetObjs(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	R::RCursor<cObj> GALILEI::GGroup<cObj,cGroup,type>::GetObjs(void) const
 {
 	return(R::RCursor<cObj>(*this));
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	R::RCursor<cObj> GGroup<cObj,cGroup,type>::GetCursor(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	R::RCursor<cObj> GALILEI::GGroup<cObj,cGroup,type>::GetCursor(void) const
 {
 	return(R::RCursor<cObj>(*this));
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	unsigned int GGroup<cObj,cGroup,type>::GetNbObjs(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	unsigned int GALILEI::GGroup<cObj,cGroup,type>::GetNbObjs(void) const
 {
 	return(R::RContainer<cObj,false,true>::GetNb());
 }
@@ -187,8 +187,8 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	cObj* GGroup<cObj,cGroup,type>::RelevantObj(void) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	cObj* GALILEI::GGroup<cObj,cGroup,type>::RelevantObj(void) const
 {
 	cObj* rel;
 	R::RCursor<cObj> Prof(*this);
@@ -222,8 +222,8 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	double GGroup<cObj,cGroup,type>::ComputeSumSim(GMeasure* measure,const cObj* obj) const
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	double GALILEI::GGroup<cObj,cGroup,type>::ComputeSumSim(GMeasure* measure,const cObj* obj) const
 {
 	double sum;
 
@@ -242,16 +242,16 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	void GGroup<cObj,cGroup,type>::Clear(void)
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::Clear(void)
 {
 	GWeightInfos::Clear();
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	void GGroup<cObj,cGroup,type>::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
 {
 	// Remove its references
 	if(computed)
@@ -282,8 +282,8 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	void GGroup<cObj,cGroup,type>::HasUpdate(cObj* obj)
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	void GALILEI::GGroup<cObj,cGroup,type>::HasUpdate(cObj* obj)
 {
 	if(R::RContainer<cObj,false,true>::GetPtr(*obj))
 		Updated.SetToday();
@@ -291,8 +291,8 @@ template<class cObj,class cGroup,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,tObjType type>
-	GGroup<cObj,cGroup,type>::~GGroup(void)
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	GALILEI::GGroup<cObj,cGroup,type>::~GGroup(void)
 {
 	GSession::Event(static_cast<const cGroup*>(this),eObjDelete);
 	try

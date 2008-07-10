@@ -107,11 +107,11 @@ R::RXMLTag* GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 		}
 		block=ptr;
 
-		// Seach sentence
+		// Search sentence
 		NbWords=0;
 		EndSentence=false;
 
-		// If Only 1 word or no space between a punctation and the next
+		// If Only 1 word or no space between a punctuation and the next
 		// word, no sentence created.
 		while((*ptr)&&(!EndSentence))
 		{
@@ -146,7 +146,7 @@ R::RXMLTag* GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 			// Verify if it is a correct end of sentence
 			if((*ptr)&&((NbWords<1)||(!isspace(*(ptr+1)))))
 			{
-				// Skip the punctation
+				// Skip the punctuation
 				ptr++;
 				len--;
 			}
@@ -201,11 +201,11 @@ R::RXMLTag* GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
 		}
 		block=ptr;
 
-		// Seach sentence
+		// Search sentence
 		NbWords=0;
 		EndSentence=false;
 
-		// If Only 1 word or no space between a punctation and the next
+		// If Only 1 word or no space between a punctuation and the next
 		// word, no sentence created.
 		while((!ptr->IsNull())&&(!EndSentence))
 		{
@@ -241,7 +241,7 @@ R::RXMLTag* GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
 			// Verify if it is a correct end of sentence
 			if((!ptr->IsNull())&&((NbWords<1)||(!(ptr+1)->IsSpace())))
 			{
-				// Skip the punctation
+				// Skip the punctuation
 				ptr++;
 				len--;
 			}
@@ -290,12 +290,12 @@ R::RXMLTag* GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 		while((!Cur.End())&&(Cur().IsSpace()))
 			Cur.Next();
 
-		// Seach sentence
+		// Search sentence
 		NbWords=0;
 		EndSentence=false;
 		pos=Cur.GetPos();
 
-		// If Only 1 word or no space between a punctation and the next
+		// If Only 1 word or no space between a punctuation and the next
 		// word, no sentence created.
 		while((!Cur.End())&&(!EndSentence))
 		{
@@ -322,7 +322,7 @@ R::RXMLTag* GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 
 			// Verify if it is a correct end of sentence
 			if((!Cur.End())&&(Cur.GetPos()+1<Cur.GetNb())&&(!Cur[Cur.GetPos()+1].IsNull())&&/*((NbWords<1)||*/ (!Cur[Cur.GetPos()+1].IsSpace()))
-				Cur.Next(); // Skip the punctation
+				Cur.Next(); // Skip the punctuation
 			else
 			{
 				EndSentence=true;      // End of sentence.

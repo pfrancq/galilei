@@ -53,7 +53,7 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * This class represent a generic group of objects represented by GWeightInfos.
-* @param cObj                Object contained.       
+* @param cObj                Object contained.
 * @author Pascal Francq
 * @short Generic Group.
 */
@@ -110,7 +110,7 @@ public:
 	* @return int
 	*/
 	int Compare(const unsigned int id) const;
-		
+
 	/**
 	* Get the date of the last update of the subobjile.
 	* @returns R::RDate.
@@ -151,13 +151,13 @@ public:
 	 * @endcode
 	 */
 	virtual GMeasure* GetSimMeasure(void) const=0;
-	
+
 	/**
 	 * Look if a given objile is in the group.
 	 * @param obj           Profile.µ
 	 */
 	bool IsIn(const cObj* obj) const;
-	
+
 	/**
 	* Delete a objile from the group. If the group is a Group, the
 	* method modifies the assignation of the objile (the 'Group' pointer).

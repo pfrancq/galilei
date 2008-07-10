@@ -110,7 +110,7 @@ unsigned int GCommunity::GetNbProfiles(const GSubject* subject) const
 
 //------------------------------------------------------------------------------
 void GCommunity::NotJudgedDocsList(RContainer<GFdbk,false,true>& docs, GProfile* prof) const
-{	
+{
 	// Clear container.
 	docs.Clear();
 
@@ -167,7 +167,7 @@ void GCommunity::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,f
 	// Clear container.
 	docs.Clear();
 	RContainer<GFdbkRef,true,false> Docs(50,25);
-	
+
 	// Go through the subprofiles
 	RCursor<GProfile> Prof(*this);
 	for(Prof.Start();!Prof.End();Prof.Next())

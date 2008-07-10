@@ -6,7 +6,7 @@
 
 	User - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -124,9 +124,21 @@ public:
 	void SetId(unsigned int id);
 
 	/**
+	 * Get a profile with a given name.
+	 * @param name           Nameo fo the profile.
+	 * @return Pointer to the profile or null if not found.
+	 */
+	GProfile* GetProfile(const R::RString& name) const;
+
+	/**
 	* Get a cursor over the profiles of user.
 	*/
 	R::RCursor<GProfile> GetProfiles(void);
+
+	/**
+	 * Get the number of profiles.
+	 */
+	size_t GetNbProfiles(void) const;
 
 	/**
 	* Get the name of the user.
@@ -139,6 +151,15 @@ public:
 	* @return Pointer to a C String.
 	*/
 	R::RString GetFullName(void) const;
+
+	/**
+	 * Set the name of the user.
+	 * @param name           Name of the user.
+	 * @param fullname       Full name of the user. If null string, the name is
+	 *                       used.
+	 * @return
+	 */
+	void SetName(const R::RString& name,const R::RString& fullname=R::RString::Null);
 
 	/**
 	* Destructor of a user.

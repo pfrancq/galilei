@@ -232,6 +232,13 @@ RString GProfile::GetName(void) const
 
 
 //------------------------------------------------------------------------------
+void GProfile::SetName(const RString& name)
+{
+	Name=name;
+}
+
+
+//------------------------------------------------------------------------------
 void GProfile::SetSocial(bool social)
 {
 	Social=social;

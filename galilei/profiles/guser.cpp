@@ -6,7 +6,7 @@
 
  User - Implementation.
 
- Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+ Copyright 2001-2008 by the Université Libre de Bruxelles.
 
  Authors:
   Pascal Francq (pfrancq@ulb.ac.be).
@@ -51,7 +51,8 @@ GUser::GUser(unsigned int id,const R::RString name,const R::RString fullname,uns
  : RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
    FullName(fullname)
 {
-	GSession::Event(this,eObjNew);
+	if(Id!=cNoRef)
+		GSession::Event(this,eObjNew);
 }
 
 
@@ -93,24 +94,48 @@ void GUser::SetId(unsigned int id)
 
 
 //------------------------------------------------------------------------------
+GProfile* GUser::GetProfile(const RString& name) const
+{
+	return(GetPtr(name,false));
+}
+
+
+//------------------------------------------------------------------------------
 R::RCursor<GProfile> GUser::GetProfiles(void)
 {
-	R::RCursor<GProfile> cur(*this);
-	return(cur);
+	return(R::RCursor<GProfile>(*this));
+}
+
+
+//------------------------------------------------------------------------------
+size_t GUser::GetNbProfiles(void) const
+{
+	return(this->GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 RString GUser::GetName(void) const
 {
- return(Name);
+	return(Name);
 }
 
 
 //------------------------------------------------------------------------------
 RString GUser::GetFullName(void) const
 {
- return(FullName);
+	return(FullName);
+}
+
+
+//------------------------------------------------------------------------------
+void GUser::SetName(const RString& name,const RString& fullname)
+{
+	Name=name;
+	if(fullname.IsEmpty())
+		FullName=name;
+	else
+		FullName=fullname;
 }
 
 
