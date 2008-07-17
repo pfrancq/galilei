@@ -65,7 +65,7 @@ class GCommunityCalcGravitation : public GCommunityCalc
 	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
-	unsigned int MaxNonZero;
+	size_t MaxNonZero;
 
 	/**
 	* Ordered vector for current computed profile.
@@ -80,7 +80,7 @@ class GCommunityCalcGravitation : public GCommunityCalc
 	/**
 	* Maximal size allocate for a profile.
 	*/
-	unsigned int MaxOrderSize;
+	size_t MaxOrderSize;
 
 public:
 

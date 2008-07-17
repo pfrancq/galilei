@@ -87,7 +87,7 @@ void GCommunityCalcGravitation::Disconnect(GSession* session)
 //-----------------------------------------------------------------------------
 void GCommunityCalcGravitation::Compute(GCommunity* grp)
 {
-	unsigned int i;
+	size_t i;
 	GWeightInfo* ins;
 	GWeightInfo** w;
 
@@ -121,7 +121,7 @@ void GCommunityCalcGravitation::Compute(GCommunity* grp)
 	if(Vector.GetNb()+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((Vector.GetNb()+1)*1.1);
+		MaxOrderSize=static_cast<size_t>((Vector.GetNb()+1)*1.1);
 		Order=new GWeightInfo*[MaxOrderSize];
 	}
 	Vector.GetTab(Order);
