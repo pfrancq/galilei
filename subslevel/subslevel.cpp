@@ -100,8 +100,8 @@ void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* c
 	RString sql;
 	GCommunity* grp;
 	RDb* storeMySQL;
-	unsigned int sublevel; //level of the subprofile
-	unsigned int  levelswidth; // width (between 0 and 100) of a level
+	size_t sublevel; //level of the subprofile
+	size_t  levelswidth; // width (between 0 and 100) of a level
 	double subscore; // score of the subprofile
 
 	grp=static_cast<GCommunity*>(caller); //subprofile was given by caller

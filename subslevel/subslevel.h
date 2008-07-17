@@ -116,7 +116,7 @@ class GSubProfilesLevel  : public GPostCommunity
 	/*
 	* number of levels for subprofiles
 	*/
-	unsigned int NbLevels;
+	size_t NbLevels;
 
 public:
 
