@@ -264,7 +264,7 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	* Index of the language when defined.
 	*/
-	unsigned int LangIndex;
+	size_t LangIndex;
 
 	/**
 	* Define if the language are static.
@@ -280,18 +280,18 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	* Minimum number of characters to have a valid word.
 	*/
-	unsigned int MinWordSize;
+	size_t MinWordSize;
 
 	/**
 	* Minimum number of characters to have a valid stem.
 	*/
-	unsigned int MinStemSize;
+	size_t MinStemSize;
 
 	/**
 	* Minimum number of occurrences needed to insert a valid word in the list of
 	* information for a document.
 	*/
-	unsigned int MinOccur;
+	size_t MinOccur;
 
 	/**
 	* Determine if the extracted words may contain other things than letters.
@@ -306,7 +306,7 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	* Maximal occurrences of a same word in a row to consider a word non-valid.
 	*/
-	unsigned int NbSameOccur;
+	size_t NbSameOccur;
 
 	/**
 	* Value of the ratio of normal letters on the total number of letters to be
@@ -342,12 +342,12 @@ class GTextAnalyse : public GDocAnalyse
 	/**
 	 * Maximum number of terms allowed for a declarative tag's content.
 	 */
-	unsigned int MaxTerms;
+	size_t MaxTerms;
 
 	/**
 	 * Maximum depth of a declarative tag
 	 */
-	unsigned int MaxDepth;
+	size_t MaxDepth;
 
 	/**
 	 * Maximal percentage of occurrences of a tag to be considered as index.
@@ -460,7 +460,7 @@ protected:
 	* Words.
 	* @param documentid            Corresponding document id.
 	*/
-	void ConstructInfos(unsigned int documentid);
+	void ConstructInfos(size_t documentid);
 
 	/**
 	* Insert into database a couple word/stem
@@ -468,7 +468,7 @@ protected:
 	* @param word            Original word.
 	* @param docid            Corresponding document id.
 	*/
-	bool StoreWordStemInDatabase(unsigned int stemid, RString word, unsigned int docid);
+	bool StoreWordStemInDatabase(size_t stemid, RString word,size_t docid);
 
 public:
 

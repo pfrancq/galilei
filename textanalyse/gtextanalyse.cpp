@@ -65,7 +65,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 // Constants
-const unsigned int MaxWordLen=50;
+const size_t MaxWordLen=50;
 
 
 
@@ -227,13 +227,13 @@ void GTextAnalyse::Clear(void)
 void GTextAnalyse::AddWord(const RString& word,double weight,cContent* content,GDocStructNode* parent,size_t pos,bool letters)
 {
 	bool Find;
-	unsigned int Index;
+	size_t Index;
 	cWord* w;
 	RContainer<cWord,false,true>* Section;
-	unsigned int i;
+	size_t i;
 	bool *is;
-	unsigned int* tmp1;
-	unsigned int* tmp2;
+	size_t* tmp1;
+	size_t* tmp2;
 
 	// Find the section of double hash table concerned by the current word.
 	Section=(*(Hash)[word.HashIndex(1)])[word.HashIndex(2)];
@@ -425,9 +425,9 @@ void GTextAnalyse::ExtractWord(const R::RString& str,double weight,cContent* con
 void GTextAnalyse::DetermineLang(void)
 {
 	double Frac,MinFrac;
-	unsigned int i;
-	unsigned int* tmp1;
-	unsigned int* tmp2;
+	size_t i;
+	size_t* tmp1;
+	size_t* tmp2;
 
 	LangIndex=cNoRef;
 	MinFrac=MinStopWords;
@@ -476,10 +476,10 @@ GConcept* GTextAnalyse::GetStemConcept(cWord* word)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::ConstructInfos(unsigned int docid)
+void GTextAnalyse::ConstructInfos(size_t docid)
 {
 	GWeightInfo* Occur;
-	unsigned int i;
+	size_t i;
 	RString stem(MaxWordLen);
 
 	// Insert all the occurrences of the valid words
@@ -632,7 +632,7 @@ void GTextAnalyse::IndexXMLPart(void)
 
 
 //------------------------------------------------------------------------------
-bool GTextAnalyse::StoreWordStemInDatabase(unsigned int stemid, RString word, unsigned int docid)
+bool GTextAnalyse::StoreWordStemInDatabase(size_t stemid, RString word,size_t docid)
 {
 	// Check if the words/stem couple does not already exist
 	RQuery* q=Session->GetStorage()->SelectDummyEntry("wordsstems",stemid,word,0,3);

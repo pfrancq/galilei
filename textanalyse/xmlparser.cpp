@@ -239,7 +239,7 @@ void XMLParser::AddTagIndex(const RString& element,const RString& content)
 	ptr->InsertPtr(Content=new cContent());
 
 	// Count number of terms -> if too much, cannot be used
-	unsigned int NbTerms(0);
+	size_t NbTerms(0);
 	const RChar* car=content();
 	RString Index;
 	while(!car->IsNull())
