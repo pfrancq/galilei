@@ -58,7 +58,7 @@ class GSugs : public GALILEI::GPostCommunity
 
 	bool UseLevels;
 
-	unsigned int NbSugs;
+	size_t NbSugs;
 
 public:
 

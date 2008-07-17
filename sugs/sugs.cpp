@@ -169,7 +169,7 @@ void GSugs::Run(void)
 		R::RCursor<GALILEI::GCommunity> Grps;
 		RCursor<GALILEI::GProfile> Sub;
 		RCursor<GALILEI::GFdbk> Doc;
-		unsigned int i;
+		size_t i;
 
 		// Clear the table
 		RDate Now(RDate::GetToday());
