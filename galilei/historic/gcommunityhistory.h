@@ -59,7 +59,7 @@ protected:
 	/**
 	* Identificator.
 	*/
-	unsigned int Id;
+	size_t Id;
 
 	/**
 	* Was the group modified since previous step.
@@ -88,13 +88,13 @@ public:
 	* @param id             Identificator.
 	* @param grps           Parent.
 	*/
-	GCommunityHistory(const unsigned int id, GCommunitiesHistory* grps);
+	GCommunityHistory(const size_t id, GCommunitiesHistory* grps);
 
 	/**
 	* Get the identificator of the group.
-	* @return unsigned int.
+	* @return size_t.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* Add a history of a profile into the group.
@@ -153,7 +153,7 @@ public:
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(const unsigned int id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Get a cursor on all children groups.

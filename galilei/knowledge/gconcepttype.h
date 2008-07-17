@@ -253,7 +253,7 @@ public:
 
 	/**
 	* Get the highest identificator of the concept stored by the dictionary.
-	* @return unsigned int
+	* @return size_t
 	*/
 	size_t GetConceptMaxId(void) const {return(UsedId);}
 
@@ -310,7 +310,7 @@ public:
 	* concept.
 	* @param id             Identificator of the concept.
 	* @param ObjType        Type of the object.
-	* @return unsigned int.
+	* @return size_t.
 	*/
 	size_t GetRef(size_t id,tObjType ObjType);
 

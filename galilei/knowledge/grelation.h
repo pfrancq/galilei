@@ -6,7 +6,7 @@
 
 	Relation - Header.
 
-	Copyright 2006 by the Université Libre de Bruxelles.
+	Copyright 2006 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -67,7 +67,7 @@ class GRelation
 	/**
 	* Identifier of the concept.
 	*/
-	unsigned int Id;
+	size_t Id;
 
 	/**
 	* Name of the concept.
@@ -82,7 +82,7 @@ class GRelation
 	/**
 	* Type of the concept.
 	*/
-	unsigned int Type;
+	size_t Type;
 
 	/**
 	* Object of the relation.
@@ -105,7 +105,7 @@ public:
 	* @param object          Object.
 	* @param weight          Weight of the relation.
 	*/
-	GRelation(unsigned int id,const R::RString& name,GConcept* subject,unsigned int type,GConcept* object,double weight);
+	GRelation(size_t id,const R::RString& name,GConcept* subject,size_t type,GConcept* object,double weight);
 
 	/**
 	* Constructor of a relation.
@@ -115,7 +115,7 @@ public:
 	* @param object          Object.
 	* @param weight          Weight of the relation.
 	*/
-	GRelation(const R::RString& name,GConcept* subject,unsigned int type,GConcept* object,double weight);
+	GRelation(const R::RString& name,GConcept* subject,size_t type,GConcept* object,double weight);
 
 	/**
 	* Compare two relations to classify them.
@@ -129,18 +129,18 @@ public:
 	* @param id              Identifier used to compare.
 	* @see R::RContainer.
 	*/
-	int Compare(unsigned int id) const;
+	int Compare(size_t id) const;
 
 	/**
 	* Set the Identificator of the word.
 	* @param id              Identificator of the word.
 	*/
-	void SetId(unsigned int id);
+	void SetId(size_t id);
 
 	/**
 	* @return Identificator of the word.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* @return A string representing the word.
@@ -156,7 +156,7 @@ public:
 	/**
 	* Get the type of the relation.
 	*/
-	unsigned int GetType(void) const {return(Type);}
+	size_t GetType(void) const {return(Type);}
 
 	/**
 	* Get the object.

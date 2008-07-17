@@ -54,18 +54,18 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConceptType::GConceptType(unsigned int id,GSession* session,const RString& name,const RString& desc,GLang* lang,size_t s,size_t s2)
+GConceptType::GConceptType(size_t id,GSession* session,const RString& name,const RString& desc,GLang* lang,size_t s,size_t s2)
 	: GDebugObject(name), RDblHashContainer<GConcept,true>(27,27,s2+(s2/4),s2/4), Id(id), Session(session),
 	  Description(desc), Lang(lang), Direct(0), MaxId(s+s/4), UsedId(0),
 	  Loaded(false)
 {
 	if((Id==cNoRef)&&(GSession::Get()))
-		GSession::Get()->AssignId(this);		
+		GSession::Get()->AssignId(this);
 	Direct=new GConcept*[MaxId];
 	memset(Direct,0,MaxId*sizeof(GConcept*));
 }
 
-	
+
 //------------------------------------------------------------------------------
 void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refgroups)
 {
@@ -130,9 +130,9 @@ RString GConceptType::GetDebugInfo(const RString& info)
 	bool Igf=(info.FindStr("igf")!=-1);
 	if((!Idf)&&(!Ipf)&&(!Igf))
 		return(RString::Null);
-	
+
 	Load(); // Load the concepts if necessary
-	
+
 	RString str;
 	GConcept** ptr;
 	size_t i;
@@ -140,7 +140,7 @@ RString GConceptType::GetDebugInfo(const RString& info)
 	{
 		if(!(*ptr))
 			continue;
-		
+
 		// Suppose we reserved 32 characters for names
 		RString name=(*ptr)->GetName();
 		str+=name;
@@ -149,12 +149,12 @@ RString GConceptType::GetDebugInfo(const RString& info)
 			for(size_t j=32-name.GetLen()+1;--j;)
 				str+=' ';
 		}
-		if(Idf)	
-			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otDoc));		
-		if(Ipf)	
+		if(Idf)
+			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otDoc));
+		if(Ipf)
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otProfile));
-		if(Igf)	
-			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otCommunity));		
+		if(Igf)
+			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otCommunity));
 		str+="\n";
 	}
 	return(str);
@@ -287,7 +287,7 @@ void GConceptType::IncRef(size_t id,tObjType ObjType)
 	GConcept* concept;
 
 	if(id>MaxId)
-		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));	
+		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
 	if(!(concept=Direct[id]))
 		throw GException(Description+" "+RString::Number(id)+" does not exist");
 	size_t nb=concept->IncRef(ObjType);
@@ -302,7 +302,7 @@ void GConceptType::DecRef(size_t id,tObjType ObjType)
 	GConcept* concept;
 
 	if(id>MaxId)
-		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));	
+		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
 	if(!(concept=Direct[id]))
 		throw GException(Description+" "+RString::Number(id)+" does not exist");
 	size_t nb=concept->DecRef(ObjType);
@@ -317,7 +317,7 @@ size_t GConceptType::GetRef(size_t id,tObjType ObjType)
 	GConcept* concept;
 
 	if(id>MaxId)
-		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));	
+		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
 	if(!(concept=Direct[id]))
 		throw GException(Description+" "+RString::Number(id)+" does not exist");
 	return(concept->GetRef(ObjType));
@@ -327,7 +327,7 @@ size_t GConceptType::GetRef(size_t id,tObjType ObjType)
 //------------------------------------------------------------------------------
 void GConceptType::IncRef(tObjType ObjType)
 {
-	unsigned int nb;
+	size_t nb;
 
 	switch(ObjType)
 	{
@@ -355,7 +355,7 @@ void GConceptType::IncRef(tObjType ObjType)
 //------------------------------------------------------------------------------
 void GConceptType::DecRef(tObjType ObjType)
 {
-	unsigned int nb;
+	size_t nb;
 
 	switch(ObjType)
 	{
@@ -408,7 +408,7 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 			break;
 		case otProfileCommunity:
 			return(NbRefProfiles+NbRefGroups);
-			break;			
+			break;
 		default:
 			return(NbRefDocs+NbRefProfiles+NbRefGroups);
 			break;
@@ -422,16 +422,16 @@ void GConceptType::Clear(tObjType ObjType)
 {
 	GConcept** ptr;
 	size_t i;
-	
+
 	// Look once if the results must be saved
 	Load(); // Load the concepts if necessary
-	
+
 	for(i=MaxId+1,ptr=Direct;--i;ptr++)
 	{
 		if(!(*ptr)) continue;
 		(*ptr)->Clear(ObjType);
 	}
-	
+
 	switch(ObjType)
 	{
 		case otDoc:
@@ -461,7 +461,7 @@ void GConceptType::Clear(tObjType ObjType)
 			NbRefGroups=0;
 			break;
 	}
-	
+
 	// If necessary, put the references to 0. The storage should also reset all the references for the concepts
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(this,ObjType,0);

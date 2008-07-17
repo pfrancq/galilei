@@ -87,12 +87,12 @@ private:
 	/**
 	* The global ranking for the curent document
 	*/
-	unsigned int GlobalRank;
+	size_t GlobalRank;
 
 	/**
 	* The global ranking for the curent document
 	*/
-	unsigned int GlobalRank2;
+	size_t GlobalRank2;
 
 	/**
 	* Container of all rankings associated to this URL
@@ -129,24 +129,24 @@ public:
 	/**
 	* Get the global ranking associated to this document
 	*/
-	unsigned int GetGlobalRanking(void) const {return(GlobalRank);}
+	size_t GetGlobalRanking(void) const {return(GlobalRank);}
 
 	/**
 	* Set the value of the global ranking
 	* @param r               New value of the global ranking
 	*/
-	void SetGlobalRanking(unsigned int r) {GlobalRank=r;}
+	void SetGlobalRanking(size_t r) {GlobalRank=r;}
 
 	/**
 	* Get the global ranking associated to this document
 	*/
-	unsigned int GetGlobalRanking2(void) const {return(GlobalRank2);}
+	size_t GetGlobalRanking2(void) const {return(GlobalRank2);}
 
 	/**
 	* Set the value of the global ranking
 	* @param r               New value of the global ranking
 	*/
-	void SetGlobalRanking2(unsigned int r) {GlobalRank2=r;}
+	void SetGlobalRanking2(size_t r) {GlobalRank2=r;}
 
 	/**
 	* Add new ranking for the current document

@@ -67,7 +67,7 @@ class GWordOccurs
 	/**
 	* Identifiers of documents containing the word.
 	*/
-	R::RVectorInt<unsigned int,true> Docs;
+	R::RVectorInt<size_t,true> Docs;
 
 public:
 
@@ -125,7 +125,7 @@ public:
 	* Add a document to the list of those containing the word.
 	* @param docid           Identificator of the document.
 	*/
-	void AddDoc(unsigned int docid);
+	void AddDoc(size_t docid);
 
 	/**
 	* Look which documents are in the word:
@@ -135,7 +135,7 @@ public:
 	*   which are not containing the word.
 	* @param docs            Identifiers of documents.
 	*/
-	void FilterDocs(R::RVectorInt<unsigned int,true>& docs) const;
+	void FilterDocs(R::RVectorInt<size_t,true>& docs) const;
 
 	/**
 	* Destructor.

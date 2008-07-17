@@ -111,12 +111,12 @@ public:
 };
 
 //------------------------------------------------------------------------------
-void GIndexer::RunQuery(R::RString query,RVectorInt<unsigned int,true>& docs) const
+void GIndexer::RunQuery(R::RString query,RVectorInt<size_t,true>& docs) const
 {
 
 	const RChar* ptr;
-	unsigned int pos;
-	unsigned int len;
+	size_t pos;
+	size_t len;
 	RString stem,Word;
 	RContainer<Stem,true,true> Stems(30,15);
 	GWordOccurs* word;

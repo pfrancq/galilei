@@ -168,9 +168,9 @@ public:
 	RContainer<GConceptType,true,true> ConceptTypes;                  // Types of Concepts
 	RContainer<GRelationType,true,true> RelationTypes;                // Types of Relations
 	RContainer<GDebugObject,false,true> DebugObjs;                    // Objects given debugging information.
-	unsigned int MaxDocs;                                             // Maximum number of documents to handle in memory.
-	unsigned int MaxProfiles;                                         // Maximum number of subprofiles to handle in memory.
-	unsigned int MaxGroups;                                           // Maximum number of groups to handle in memory.
+	size_t MaxDocs;                                             // Maximum number of documents to handle in memory.
+	size_t MaxProfiles;                                         // Maximum number of subprofiles to handle in memory.
+	size_t MaxGroups;                                           // Maximum number of groups to handle in memory.
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager
 
 	Intern(GStorage* str,size_t mdocs,size_t maxsub,size_t maxgroups,size_t d,size_t u,size_t p)
@@ -210,7 +210,7 @@ bool GSession::Intern::ExternBreak=false;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSession::GSession(GSlot* slot,R::RDebug* debug,unsigned int maxdocs,unsigned int maxsubprofiles,unsigned int maxgroups)
+GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxsubprofiles,size_t maxgroups)
 	: Data(0)
 {
 	GFactoryStorage* fac=GALILEIApp->GetManager<GStorageManager>("Storage")->GetCurrentFactory();
@@ -481,7 +481,7 @@ int GSession::GetCurrentRandom(void) const
 
 
 //------------------------------------------------------------------------------
-int GSession::GetCurrentRandomValue(unsigned int max)
+int GSession::GetCurrentRandomValue(size_t max)
 {
 	return(int(Data->Random->Value(max)));
 }
@@ -580,7 +580,7 @@ RCursor<GConceptType> GSession::GetConceptTypes(void) const
 
 
 //-----------------------------------------------------------------------------
-GConceptType* GSession::GetConceptType(unsigned int id,bool null) const
+GConceptType* GSession::GetConceptType(size_t id,bool null) const
 {
 	GConceptType* type(0);
 	try
@@ -637,7 +637,7 @@ GConceptType* GSession::GetInsertConceptType(const RString& name,const RString& 
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups)
+void GSession::InsertConceptType(size_t id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups)
 {
 	RString code(name.Mid(0,2));
 	GLang* Lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(code,false);
@@ -673,7 +673,7 @@ RCursor<GRelationType> GSession::GetRelationTypes(void) const
 
 
 //-----------------------------------------------------------------------------
-GRelationType* GSession::GetRelationType(unsigned int id,bool null) const
+GRelationType* GSession::GetRelationType(size_t id,bool null) const
 {
 	GRelationType* type=Data->RelationTypes.GetPtr(id);
 	if(!type)
@@ -701,14 +701,14 @@ GRelationType* GSession::GetRelationType(const RString& name,bool null) const
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertRelationType(unsigned int id,const R::RString& name,const R::RString& desc)
+void GSession::InsertRelationType(size_t id,const R::RString& name,const R::RString& desc)
 {
 	Data->RelationTypes.InsertPtr(new GRelationType(id,name,desc));
 }
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertRelation(unsigned int id,const R::RString& name,unsigned int subjectid,unsigned int subjecttypeid,unsigned int type,unsigned int objectid,unsigned int objecttypeid,double weight)
+void GSession::InsertRelation(size_t id,const R::RString& name,size_t subjectid,size_t subjecttypeid,size_t type,size_t objectid,size_t objecttypeid,double weight)
 {
 	// Get the concept related to the subject
 	GConceptType* ctype=GetConceptType(subjecttypeid,false);
@@ -734,7 +734,7 @@ void GSession::InsertRelation(unsigned int id,const R::RString& name,unsigned in
 
 
 //-----------------------------------------------------------------------------
-GRelation* GSession::GetRelation(unsigned int id,unsigned int type,bool null)
+GRelation* GSession::GetRelation(size_t id,size_t type,bool null)
 {
 	GRelationType* relationttype=Data->RelationTypes.GetPtr(type);
 	if(!relationttype)
@@ -751,7 +751,7 @@ GRelation* GSession::GetRelation(unsigned int id,unsigned int type,bool null)
 
 
 //------------------------------------------------------------------------------
-void GSession::GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* subject,unsigned int type,GConcept* object,bool sym)
+void GSession::GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* subject,size_t type,GConcept* object,bool sym)
 {
 	RCursor<GRelationType> Types(Data->RelationTypes);
 	for(Types.Start();!Types.End();Types.Next())
@@ -816,7 +816,7 @@ size_t GSession::FillDocs(GDoc** docs)
 
 
 //-------------------------------------------------------------------------------
-GDoc* GSession::GetDoc(unsigned int id,bool load,bool null) const
+GDoc* GSession::GetDoc(size_t id,bool load,bool null) const
 {
 	GDoc* d;
 
@@ -1041,7 +1041,7 @@ size_t GSession::GetNbUsers(void) const
 
 
 //------------------------------------------------------------------------------
-GUser* GSession::GetUser(unsigned int id,bool load,bool null) const
+GUser* GSession::GetUser(size_t id,bool load,bool null) const
 {
 	GUser* u;
 
@@ -1167,7 +1167,7 @@ size_t GSession::GetMaxProfileId(void) const
 
 
 //------------------------------------------------------------------------------
-GProfile* GSession::GetProfile(unsigned int id,bool load,bool null) const
+GProfile* GSession::GetProfile(size_t id,bool load,bool null) const
 {
 	GProfile* p;
 
@@ -1317,13 +1317,13 @@ void GSession::DoPostProfiles(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::UpdateProfiles(unsigned int docid)
+void GSession::UpdateProfiles(size_t docid)
 {
 	// If there are some profile -> propagate in memory
 	GDoc* doc=GetDoc(docid);
 	if(doc)
 	{
-		RVectorInt<unsigned int,true>* fdbks=doc->GetFdbks();
+		RVectorInt<size_t,true>* fdbks=doc->GetFdbks();
 		if(fdbks)
 		{
 			for(fdbks->Start();!fdbks->End();fdbks->Next())
@@ -1395,7 +1395,7 @@ size_t GSession::GetNbCommunities(void) const
 
 
 //------------------------------------------------------------------------------
-GCommunity* GSession::GetCommunity(unsigned int id,bool load,bool null) const
+GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 {
 	if(id==cNoRef)
 	{
@@ -1550,9 +1550,9 @@ void GSession::CopyIdealCommunities(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::LoadHistoricCommunitiesById(unsigned int mingen, unsigned int maxgen)
+void GSession::LoadHistoricCommunitiesById(size_t mingen, size_t maxgen)
 {
-	unsigned int i;
+	size_t i;
 
 	// fill the container
 	for (i=mingen; i<maxgen+1; i++)

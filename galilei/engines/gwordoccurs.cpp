@@ -81,16 +81,16 @@ int GWordOccurs::Compare(const char* word) const
 
 
 //-----------------------------------------------------------------------------
-void GWordOccurs::AddDoc(unsigned int docid)
+void GWordOccurs::AddDoc(size_t docid)
 {
 	Docs.Insert(docid);
 }
 
 
 //-----------------------------------------------------------------------------
-void GWordOccurs::FilterDocs(R::RVectorInt<unsigned int,true>& docs) const
+void GWordOccurs::FilterDocs(R::RVectorInt<size_t,true>& docs) const
 {
-	RVectorInt<unsigned int,true>& Cur=const_cast<RVectorInt<unsigned int,true>&>(Docs);
+	RVectorInt<size_t,true>& Cur=const_cast<RVectorInt<size_t,true>&>(Docs);
 	
 	if(docs.GetNb())
 	{

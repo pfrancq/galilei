@@ -66,7 +66,7 @@ public :
 	* @param session         Session.
 	* @param max             Number of steps to handle.
 	*/
-	GCommunitiesHistoryManager(GSession* session,unsigned int max);
+	GCommunitiesHistoryManager(GSession* session,size_t max);
 
 	/**
 	* Get a cursor on the history of all groupments.
@@ -76,7 +76,7 @@ public :
 	/**
 	* Check which groups are modified.
 	*/
-	void CheckModifiedCommunities(unsigned int minGen);
+	void CheckModifiedCommunities(size_t minGen);
 
 	/**
 	* Check which profiles are correctly grouped.
@@ -92,7 +92,7 @@ public :
 	* Creates relationship between historic groups.
 	* #param maxgen          Identificators of the last history to use.
 	*/
-	void CreateCommunitiesRelationship(unsigned int maxgen);
+	void CreateCommunitiesRelationship(size_t maxgen);
 
 	/**
 	* Insert a history of a groupment.
@@ -124,7 +124,7 @@ class GCommunitiesHistory : public R::RContainer<GCommunityHistory,true,true>
 	/**
 	* Identificator of the history.
 	*/
-	unsigned int Id;
+	size_t Id;
 
 	/**
 	* Date.
@@ -143,13 +143,13 @@ public :
 	* @param id              Identificator of the historic.
 	* @param date            Date of the history.
 	*/
-	GCommunitiesHistory(unsigned int id, R::RString date);
+	GCommunitiesHistory(size_t id, R::RString date);
 
 	/**
 	* Get the identificator of the groupment.
-	* @return unsigned int.
+	* @return size_t.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* Get the date where this groupment was computed.
@@ -162,7 +162,7 @@ public :
 	* @param id              Identificator.
 	* @return Pointer to a GWeightInfosHistory.
 	*/
-	GWeightInfosHistory* GetProfile(unsigned int id);
+	GWeightInfosHistory* GetProfile(size_t id);
 
 	/**
 	* Compare two histories of groupment by comparing their identificator.
@@ -186,7 +186,7 @@ public :
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(unsigned int id) const;
+	int Compare(size_t id) const;
 
 	/**
 	* Set the manager of the history.
@@ -197,7 +197,7 @@ public :
 	/**
 	* Check which groups are modified.
 	*/
-	void CheckModifiedCommunities(unsigned int minGen);
+	void CheckModifiedCommunities(size_t minGen);
 
 	/**
 	* Set the main topic associated to each history of groupment.

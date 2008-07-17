@@ -6,7 +6,7 @@
 
 	Relation - Implementation.
 
-	Copyright 2006 by the Université Libre de Bruxelles.
+	Copyright 2006 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -46,14 +46,14 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GRelation::GRelation(unsigned int id,const R::RString& name,GConcept* subject,unsigned int type,GConcept* object,double weight)
+GRelation::GRelation(size_t id,const R::RString& name,GConcept* subject,size_t type,GConcept* object,double weight)
 	: Id(id), Name(name), Subject(subject), Type(type), Object(object), Weight(weight)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GRelation::GRelation(const R::RString& name,GConcept* subject,unsigned int type,GConcept* object,double weight)
+GRelation::GRelation(const R::RString& name,GConcept* subject,size_t type,GConcept* object,double weight)
 	: Id(cNoRef), Name(name), Subject(subject), Type(type), Object(object), Weight(weight)
 {
 }
@@ -67,14 +67,14 @@ int GRelation::Compare(const GRelation& relation) const
 
 
 //-----------------------------------------------------------------------------
-int GRelation::Compare(unsigned int id) const
+int GRelation::Compare(size_t id) const
 {
 	return(Id-id);
 }
 
 
 //-----------------------------------------------------------------------------
-void GRelation::SetId(unsigned int id)
+void GRelation::SetId(size_t id)
 {
 	Id=id;
 }

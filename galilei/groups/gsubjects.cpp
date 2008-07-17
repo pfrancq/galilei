@@ -112,15 +112,15 @@ public:
 	double PercErr;                                                      // Percentage of documents assessed whith an error.
 	double NbSubjects;                                                   // Percentage of subjects to use.
 	bool RelSubjects;                                                    // Number of subjects are relative or absolut.
-	unsigned int NbMinDocsSubject;                                       // Minimal number of documents in a subject to use it.
-	unsigned int NbProfMax;                                              // Maximal number of profiles to create in a subject.
-	unsigned int NbProfMin;                                              // Minimal number of profiles to create in a subject.
+	size_t NbMinDocsSubject;                                       // Minimal number of documents in a subject to use it.
+	size_t NbProfMax;                                              // Maximal number of profiles to create in a subject.
+	size_t NbProfMin;                                              // Minimal number of profiles to create in a subject.
 	double PercSocial;                                                   // Percentage of profiles that are social.
 	GDoc** tmpDocs;                                                      // Temporary Array of documents.
-	unsigned int NbDocs;                                                 // Number of documents actually managed.
+	size_t NbDocs;                                                 // Number of documents actually managed.
 	R::RContainer<GFdbk,false,false> NewDocs;                            // New documents to assess.
 	R::RContainer<GProfile,false,true> LastAdded;                        // Lastest added profiles.
-	unsigned int NbDocsAssess;                                           // Number of documents to be assessed during a feeddback process.
+	size_t NbDocsAssess;                                           // Number of documents to be assessed during a feeddback process.
 	double Precision;                                                    // Precision of the clustering.
 	double Recall;                                                       // Recall of the clustering.
 	double Total;                                                        // Total comparaison between for the clustering.
@@ -212,11 +212,11 @@ void GSubjects::ReInit(void)
 void GSubjects::ChooseSubjects(void)
 {
 	R::RCursor<GSubject> Subs;
-	unsigned int compt;
-	unsigned int nbprof,nbsocial;
+	size_t compt;
+	size_t nbprof,nbsocial;
 	GSubject** tab(0);
 	GSubject** ptr;
-	unsigned int i;
+	size_t i;
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
@@ -225,9 +225,9 @@ void GSubjects::ChooseSubjects(void)
 
 	// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
 	if(Data->RelSubjects)
-		compt=static_cast<unsigned int>((GetNbNodes()*Data->NbSubjects)/100)+1;
+		compt=static_cast<size_t>((GetNbNodes()*Data->NbSubjects)/100)+1;
 	else
-		compt=static_cast<unsigned int>(Data->NbSubjects);
+		compt=static_cast<size_t>(Data->NbSubjects);
 	for(ptr=tab,i=GetNbNodes()+1;(--i)&&compt;ptr++)
 	{
 		// Verify that there is enough documents
@@ -235,7 +235,7 @@ void GSubjects::ChooseSubjects(void)
 
 		// Number of (social) profiles that will assess documents
 		nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
-		nbsocial=static_cast<unsigned int>(nbprof*Data->PercSocial/100);
+		nbsocial=static_cast<size_t>(nbprof*Data->PercSocial/100);
 
 		// Set the topic to used and create profiles
 		(*ptr)->SetUsed(Data->Session,nbprof,nbsocial);
@@ -251,8 +251,8 @@ void GSubjects::ChooseSubjects(void)
 void GSubjects::CreateSet(void)
 {
 	RCursor<GProfile> Prof;
-	unsigned int nbprof,nbsocial;
-	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
+	size_t nbprof,nbsocial;
+	size_t maxDocsOK,maxDocsKO,maxDocsH;
 	RCursor<GFactoryLang> CurLang;
 
 	// Init Part
@@ -278,21 +278,21 @@ void GSubjects::CreateSet(void)
 		nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
 
 		// Number of profiles that are social
-		nbsocial=static_cast<unsigned int>(nbprof*Data->PercSocial/100);
+		nbsocial=static_cast<size_t>(nbprof*Data->PercSocial/100);
 
 		// Number of documents to judged by each profile
 		if(Data->RelOK)
-			maxDocsOK=static_cast<unsigned int>(Subs()->GetNbDocs()*Data->NbOK/100);
+			maxDocsOK=static_cast<size_t>(Subs()->GetNbDocs()*Data->NbOK/100);
 		else
-			maxDocsOK=static_cast<unsigned int>(Data->NbOK);
+			maxDocsOK=static_cast<size_t>(Data->NbOK);
 		if(Data->RelKO)
-			maxDocsKO=static_cast<unsigned int>(Subs()->GetNbDocs()*Data->NbKO/100);
+			maxDocsKO=static_cast<size_t>(Subs()->GetNbDocs()*Data->NbKO/100);
 		else
-			maxDocsKO=static_cast<unsigned int>(Data->NbKO);
+			maxDocsKO=static_cast<size_t>(Data->NbKO);
 		if(Data->RelH)
-			maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->NbH/100);
+			maxDocsH=static_cast<size_t>(maxDocsOK*Data->NbH/100);
 		else
-			maxDocsH=static_cast<unsigned int>(Data->NbH);
+			maxDocsH=static_cast<size_t>(Data->NbH);
 
 		// Assess documents
 		Prof=Subs()->GetProfiles();
@@ -303,15 +303,15 @@ void GSubjects::CreateSet(void)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::ProfileAssess(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH)
+void GSubjects::ProfileAssess(GProfile* prof,GSubject* sub,size_t maxDocsOK,size_t maxDocsKO,size_t maxDocsH)
 {
-	unsigned int nbDocsOK,nbDocsKO,nbDocsH;
-	unsigned int i;
+	size_t nbDocsOK,nbDocsKO,nbDocsH;
+	size_t i;
 	GDoc** ptr;
 
 	// Mix the documents
 	Data->Session->GetRandom()->RandOrder<GDoc*>(Data->tmpDocs,Data->NbDocs);
-	
+
 	// Go trought the documents to create the judgements
 	for(i=Data->NbDocs+1,ptr=Data->tmpDocs,nbDocsOK=maxDocsOK,nbDocsKO=maxDocsKO,nbDocsH=maxDocsH;(--i)&&((nbDocsOK)||(nbDocsKO)||(nbDocsH));ptr++)
 	{
@@ -401,7 +401,7 @@ void GSubjects::ComputeRecallPrecision(void)
 		RAssert(InGrp);
 		RCursor<GProfile> Prof(Grp()->Group->GetObjs());
 		if(InGrp==1)
-		{			
+		{
 			Prof.Start();
 			ThGrp=GetIdealGroup(Prof());
 			RAssert(ThGrp);
@@ -420,7 +420,7 @@ void GSubjects::ComputeRecallPrecision(void)
 				ThGrp=GetIdealGroup(Prof());
 				RAssert(ThGrp);
 				InThGrp=ThGrp->GetNbProfiles();
-				RAssert(InThGrp);			
+				RAssert(InThGrp);
 				if(InThGrp==1)
 					Grp()->Recall+=1.0;
 				else
@@ -448,7 +448,7 @@ void GSubjects::ComputeRecallPrecision(void)
 //-----------------------------------------------------------------------------
 size_t GSubjects::GetNbIdealGroups(void) const
 {
-	unsigned int nb;
+	size_t nb;
 
 	RCursor<GSubject> Cur(Top->GetNodes());
 	for(Cur.Start(),nb=0;!Cur.End();Cur.Next())
@@ -460,7 +460,7 @@ size_t GSubjects::GetNbIdealGroups(void) const
 //-----------------------------------------------------------------------------
 size_t GSubjects::GetNbTopicsDocs(void) const
 {
-	unsigned int nb;
+	size_t nb;
 
 	RCursor<GSubject> Cur(Top->GetNodes());
 	for(Cur.Start(),nb=0;!Cur.End();Cur.Next())
@@ -473,11 +473,11 @@ size_t GSubjects::GetNbTopicsDocs(void) const
 void GSubjects::ComputeTotal(void)
 {
 	GCommunity* GroupComputed;                        // Pointer to a computed group
-	unsigned int NbRows,NbCols;                   // Rows and Cols for the current language for matrix
-	unsigned int MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
-	unsigned int NbProfiles;                      // Total Number of profiles
-	unsigned int NbTot;
-	unsigned int col;
+	size_t NbRows,NbCols;                   // Rows and Cols for the current language for matrix
+	size_t MaxRows,MaxCols;                 // Maximal Rows and Cols for matrix allocation
+	size_t NbProfiles;                      // Total Number of profiles
+	size_t NbTot;
+	size_t col;
 	double a,b,c,d,num,den,subtotal;
 	double* VectorRows;                           // Sum of the rows of the matrix
 	double* VectorCols;                           // Sum of the columns of the matrix
@@ -610,8 +610,8 @@ void GSubjects::CreateIdeal(void)
 
 //------------------------------------------------------------------------------
 void GSubjects::DocumentSharing(void)
-{	
-	unsigned int i;
+{
+	size_t i;
 
 	// Apply Config
 	Apply();
@@ -630,11 +630,11 @@ void GSubjects::DocumentSharing(void)
 			Grps()->NotJudgedDocsRelList(ProfilesDocsSims,Data->NewDocs,Profile(),Data->Session);
 			RCursor<GFdbk> Cur(Data->NewDocs);
 			for(Cur.Start(),i=Data->NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
-			{				
+			{
 				GDoc* doc=Data->Session->GetDoc(Cur()->GetDocId());
 				if(!doc)
 					continue;
-			
+
 				// Look if 'OK'
 				if(IsFromSubject(Cur()->GetDocId(),GetSubject(Profile())))
 				{
@@ -657,7 +657,7 @@ void GSubjects::DocumentSharing(void)
 			Profile()->SetState(osModified);
 		}
 	}
-	
+
 	if(Data->Session->MustSaveResults())
 	{
 		RCursor<GProfile> Profiles(Data->Session->GetProfiles());
@@ -671,7 +671,7 @@ void GSubjects::DocumentSharing(void)
 void GSubjects::AddAssessments(void)
 {
 	RCursor<GProfile> Prof;
-	unsigned int i;
+	size_t i;
 	GDoc** ptr;
 
 	// Apply Config
@@ -737,11 +737,11 @@ bool GSubjects::AddTopic(void)
 {
 	GSubject** tab;
 	GSubject** ptr;
-	unsigned int i;
+	size_t i;
 	GSubject* newSubject;
 	RCursor<GProfile> Prof;
-	unsigned int nbprof,nbsocial;
-	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
+	size_t nbprof,nbsocial;
+	size_t maxDocsOK,maxDocsKO,maxDocsH;
 
 	// Apply Config
 	Apply();
@@ -771,23 +771,23 @@ bool GSubjects::AddTopic(void)
 
 	// Number of (social) subprofiles that will judge documents
 	nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
-	nbsocial=static_cast<unsigned int>(nbprof*Data->PercSocial/100);
+	nbsocial=static_cast<size_t>(nbprof*Data->PercSocial/100);
 
 	newSubject->SetUsed(Data->Session,nbprof,nbsocial);
 
 	// Number of documents to judged by each profile
 	if(Data->RelOK)
-		maxDocsOK=static_cast<unsigned int>(newSubject->GetNbDocs()*Data->NbOK/100);
+		maxDocsOK=static_cast<size_t>(newSubject->GetNbDocs()*Data->NbOK/100);
 	else
-		maxDocsOK=static_cast<unsigned int>(Data->NbOK);
+		maxDocsOK=static_cast<size_t>(Data->NbOK);
 	if(Data->RelKO)
-		maxDocsKO=static_cast<unsigned int>(newSubject->GetNbDocs()*Data->NbKO/100);
+		maxDocsKO=static_cast<size_t>(newSubject->GetNbDocs()*Data->NbKO/100);
 	else
-		maxDocsKO=static_cast<unsigned int>(Data->NbKO);
+		maxDocsKO=static_cast<size_t>(Data->NbKO);
 	if(Data->RelH)
-		maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->NbH/100);
+		maxDocsH=static_cast<size_t>(maxDocsOK*Data->NbH/100);
 	else
-		maxDocsH=static_cast<unsigned int>(Data->NbH);
+		maxDocsH=static_cast<size_t>(Data->NbH);
 
 
 	// Assess documents
@@ -809,15 +809,15 @@ bool GSubjects::AddTopic(void)
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubjects::AddProfiles(void)
+size_t GSubjects::AddProfiles(void)
 {
 	GSubject** tab;
 	GSubject** ptr;
-	unsigned int i;
-	unsigned int nbprof, nbsocial;
+	size_t i;
+	size_t nbprof, nbsocial;
 	GSubject* usedSubject;
 	R::RCursor<GCommunity> CurGrps;
-	unsigned int maxDocsOK,maxDocsKO,maxDocsH;
+	size_t maxDocsOK,maxDocsKO,maxDocsH;
 	RCursor<GProfile> Prof;
 
 	// Apply Config
@@ -825,7 +825,7 @@ unsigned int GSubjects::AddProfiles(void)
 
 	//Randomly choose the number of (social) profiles.
 	nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
-	nbsocial=static_cast<unsigned int>(nbprof*Data->PercSocial/100);
+	nbsocial=static_cast<size_t>(nbprof*Data->PercSocial/100);
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
@@ -852,17 +852,17 @@ unsigned int GSubjects::AddProfiles(void)
 
 	// Number of documents to judged by each profile
 	if(Data->RelOK)
-		maxDocsOK=static_cast<unsigned int>(usedSubject->GetNbDocs()*Data->NbOK/100);
+		maxDocsOK=static_cast<size_t>(usedSubject->GetNbDocs()*Data->NbOK/100);
 	else
-		maxDocsOK=static_cast<unsigned int>(Data->NbOK);
+		maxDocsOK=static_cast<size_t>(Data->NbOK);
 	if(Data->RelKO)
-		maxDocsKO=static_cast<unsigned int>(usedSubject->GetNbDocs()*Data->NbKO/100);
+		maxDocsKO=static_cast<size_t>(usedSubject->GetNbDocs()*Data->NbKO/100);
 	else
-		maxDocsKO=static_cast<unsigned int>(Data->NbKO);
+		maxDocsKO=static_cast<size_t>(Data->NbKO);
 	if(Data->RelH)
-		maxDocsH=static_cast<unsigned int>(maxDocsOK*Data->NbH/100);
+		maxDocsH=static_cast<size_t>(maxDocsOK*Data->NbH/100);
 	else
-		maxDocsH=static_cast<unsigned int>(Data->NbH);
+		maxDocsH=static_cast<size_t>(Data->NbH);
 
 
 	usedSubject->SetUsed(Data->Session,nbprof,nbsocial);
@@ -890,7 +890,7 @@ double GSubjects::ComputePercAss(void)
 {
 	RCursor<GProfile> Cur1;
 	RCursor<GProfile> Cur2;
-	unsigned int nb;
+	size_t nb;
 	double PercAss;
 
 	Cur1.Set(Data->LastAdded);
@@ -938,9 +938,9 @@ void GSubjects::ClearLastAdded(void)
 
 
 //------------------------------------------------------------------------------
-GSubject* GSubjects::GetSubject(unsigned int id)
+GSubject* GSubjects::GetSubject(size_t id)
 {
-	return(RTree<GSubject,true,false>::GetNode<unsigned int>(id,false));
+	return(RTree<GSubject,true,false>::GetNode(id,false));
 }
 
 
@@ -1007,9 +1007,9 @@ double GSubjects::GetRecall(GCommunity* grp) const
 
 
 //------------------------------------------------------------------------------
-void GSubjects::InsertProfileSubject(GProfile* profile,unsigned int subjectid)
+void GSubjects::InsertProfileSubject(GProfile* profile,size_t subjectid)
 {
-	GSubject* subject=RTree<GSubject,true,false>::GetNode<unsigned int>(subjectid,false);
+	GSubject* subject=RTree<GSubject,true,false>::GetNode(subjectid,false);
 
 	if(!subject)
 		return;
@@ -1031,9 +1031,9 @@ GSubject* GSubjects::GetSubject(GProfile* prof)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::InsertDocSubject(GDoc* doc,unsigned int subjectid)
+void GSubjects::InsertDocSubject(GDoc* doc,size_t subjectid)
 {
-	GSubject* subject=RTree<GSubject,true,false>::GetNode<unsigned int>(subjectid,false);
+	GSubject* subject=RTree<GSubject,true,false>::GetNode<size_t>(subjectid,false);
 	if(!subject)
 		return;
 	R::RContainer<GSubject,false,false>* line;
@@ -1064,7 +1064,7 @@ bool GSubjects::IsFromSubject(GDoc* doc,const GSubject* s)
 
 
 //------------------------------------------------------------------------------
-bool GSubjects::IsFromSubject(unsigned int docid,const GSubject* s)
+bool GSubjects::IsFromSubject(size_t docid,const GSubject* s)
 {
 	if(Data->Docs.GetMaxPos()<docid)
 		return(false);
@@ -1083,15 +1083,15 @@ bool GSubjects::IsFromParentSubject(GDoc* doc,const GSubject* s)
 
 
 //------------------------------------------------------------------------------
-bool GSubjects::IsFromParentSubject(unsigned int docid,const GSubject* s)
+bool GSubjects::IsFromParentSubject(size_t docid,const GSubject* s)
 {
 	// Verify that a parent exist and that it is not the root node
 	if(!s->Parent)
 		return(false);
 	if(!s->Parent->Parent)
 		return(false);
-	
-	
+
+
 	if(Data->Docs.GetMaxPos()<docid)
 		return(false);
 	R::RContainer<GSubject,false,false>* line=Data->Docs[docid];
@@ -1118,7 +1118,7 @@ R::RCursor<GSubject> GSubjects::GetSubjects(GDoc* doc)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GSubject> GSubjects::GetSubjects(unsigned int docid)
+R::RCursor<GSubject> GSubjects::GetSubjects(size_t docid)
 {
 	R::RCursor<GSubject> cur;
 	R::RContainer<GSubject,false,false>* line=Data->Docs[docid];
@@ -1129,14 +1129,14 @@ R::RCursor<GSubject> GSubjects::GetSubjects(unsigned int docid)
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubjects::GetNbSubjects(GDoc* doc)
+size_t GSubjects::GetNbSubjects(GDoc* doc)
 {
 	return(GetNbSubjects(doc->GetId()));
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubjects::GetNbSubjects(unsigned int docid)
+size_t GSubjects::GetNbSubjects(size_t docid)
 {
 	R::RContainer<GSubject,false,false>* line=Data->Docs[docid];
 	if(!line)

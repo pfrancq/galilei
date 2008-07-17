@@ -75,7 +75,7 @@ int GLinks::Compare(const GLinks& lnk) const
 
 
 //------------------------------------------------------------------------------
-int GLinks::Compare(const unsigned int id) const
+int GLinks::Compare(const size_t id) const
 {
 	return(Doc->GetId()-id);
 }

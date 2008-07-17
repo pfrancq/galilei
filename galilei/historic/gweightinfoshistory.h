@@ -84,7 +84,7 @@ public :
 	* @param prof             Profile.
 	* @param max             Maximal number of word created at initialisation.
 	*/
-	GWeightInfosHistory(GProfile* prof, unsigned int max);
+	GWeightInfosHistory(GProfile* prof, size_t max);
 
 	/**
 	* Compare two lists by comparing the identificator of their subprofile.
@@ -109,7 +109,7 @@ public :
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(unsigned int id) const;
+	int Compare(size_t id) const;
 
 	/**
 	* Get the profile.
@@ -118,9 +118,9 @@ public :
 
 	/**
 	* Get the identificator of the subprofile.
-	* @return unsigned int.
+	* @return size_t.
 	*/
-	unsigned int GetId(void) const;
+	size_t GetId(void) const;
 
 	/**
 	* Get the parent of the subprofile.

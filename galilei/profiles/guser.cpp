@@ -47,7 +47,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GUser::GUser(unsigned int id,const R::RString name,const R::RString fullname,unsigned int nb)
+GUser::GUser(size_t id,const R::RString name,const R::RString fullname,size_t nb)
  : RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
    FullName(fullname)
 {
@@ -71,7 +71,7 @@ int GUser::Compare(const GUser *user) const
 
 
 //------------------------------------------------------------------------------
-int GUser::Compare(const unsigned int id) const
+int GUser::Compare(const size_t id) const
 {
 	return(Id-id);
 }
@@ -85,7 +85,7 @@ int GUser::Compare(const R::RString& name) const
 
 
 //------------------------------------------------------------------------------
-void GUser::SetId(unsigned int id)
+void GUser::SetId(size_t id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a user");

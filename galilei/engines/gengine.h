@@ -36,7 +36,7 @@
 
 
 //------------------------------------------------------------------------------
-// incldue files for CUL library
+// include files for CUL library
 #include <curl/curl.h>
 
 

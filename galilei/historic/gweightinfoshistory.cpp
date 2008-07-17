@@ -48,7 +48,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfosHistory::GWeightInfosHistory(GProfile* prof, unsigned int max)
+GWeightInfosHistory::GWeightInfosHistory(GProfile* prof, size_t max)
 	: GWeightInfos(max), Profile(prof), WellGrouped(false), NewSubProfile(false) 
 {	
 }
@@ -69,14 +69,14 @@ int GWeightInfosHistory::Compare(const GWeightInfosHistory* giwwh) const
 
 
 //------------------------------------------------------------------------------
-int GWeightInfosHistory::Compare(unsigned int id) const
+int GWeightInfosHistory::Compare(size_t id) const
 {
 	return(Profile->GetId()-id);
 }
 
 
 //------------------------------------------------------------------------------
-unsigned int GWeightInfosHistory::GetId(void) const
+size_t GWeightInfosHistory::GetId(void) const
 {
 	return(Profile->GetId());
 }

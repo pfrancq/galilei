@@ -130,7 +130,7 @@ template<class factory,class plugin,class mng>
 
 //-----------------------------------------------------------------------------
 template<class factory,class plugin,class mng>
-	int GFactoryPlugin<factory,plugin,mng>::Compare(const unsigned int level) const
+	int GFactoryPlugin<factory,plugin,mng>::Compare(const size_t level) const
 {
 	return(Level-level);
 }

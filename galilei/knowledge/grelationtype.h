@@ -6,7 +6,7 @@
 
 	Relation Type - Header.
 
-	Copyright 2006 by the Université Libre de Bruxelles.
+	Copyright 2006 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -60,7 +60,7 @@ class GRelationType
 	/**
 	* Identifier of the relation type.
 	*/
-	unsigned int Id;
+	size_t Id;
 
 	/**
 	* Name of the relation type.
@@ -85,7 +85,7 @@ public:
 	* @param name            Name of the type.
 	* @param desc            Short description.
 	*/
-	GRelationType(unsigned int id,const R::RString& name,const R::RString& desc);
+	GRelationType(size_t id,const R::RString& name,const R::RString& desc);
 
 	/**
 	* Compare two relations types.
@@ -99,7 +99,7 @@ public:
 	* @param id              Identifier used.
 	* @see R::RContainer.
 	*/
-	int Compare(unsigned int id) const;
+	int Compare(size_t id) const;
 
 	/**
 	* Compare a relation with a name.
@@ -111,7 +111,7 @@ public:
 	/**
 	* Get the identifier.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* Get the name.
@@ -128,7 +128,7 @@ public:
 	* @param id              Identifier of the relation.
 	* @return Pointer to a GRelation.
 	*/
-	GRelation* GetRelation(unsigned int id);
+	GRelation* GetRelation(size_t id);
 
 	/**
 	* Get a cursor over the relations of this type.

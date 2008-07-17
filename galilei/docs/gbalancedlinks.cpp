@@ -80,7 +80,7 @@ int GBalancedLinks::Compare(const GBalancedLinks& lnk) const
 
 
 //------------------------------------------------------------------------------
-int GBalancedLinks::Compare(const unsigned int id) const
+int GBalancedLinks::Compare(const size_t id) const
 {
 	return(Doc->GetId()-id);
 }

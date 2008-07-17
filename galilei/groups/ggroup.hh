@@ -38,7 +38,7 @@
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	GALILEI::GGroup<cObj,cGroup,type>::GGroup(unsigned int id,const R::RDate& u,const R::RDate& c)
+	GALILEI::GGroup<cObj,cGroup,type>::GGroup(size_t id,const R::RDate& u,const R::RDate& c)
 	: R::RContainer<cObj,false,true>(20,10), GALILEI::GWeightInfos(60), Id(id),
 	  Updated(u), Computed(c)
 {
@@ -67,7 +67,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const unsigned int id) const
+	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const size_t id) const
 {
 	return(Id-id);
 }
@@ -104,7 +104,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::SetId(unsigned int id)
+	void GALILEI::GGroup<cObj,cGroup,type>::SetId(size_t id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a group");
@@ -178,7 +178,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	unsigned int GALILEI::GGroup<cObj,cGroup,type>::GetNbObjs(void) const
+	size_t GALILEI::GGroup<cObj,cGroup,type>::GetNbObjs(void) const
 {
 	return(R::RContainer<cObj,false,true>::GetNb());
 }

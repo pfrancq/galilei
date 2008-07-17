@@ -343,7 +343,7 @@ R::RXMLTag* GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 		if(!sentence.IsEmpty())
 		{
 			// Verify that it is not a single '.'
-			if((!sentence[static_cast<unsigned int>(0)].IsPunct())||(sentence.GetLen()>1))
+			if((!sentence[static_cast<size_t>(0)].IsPunct())||(sentence.GetLen()>1))
 			{
 				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
 				sent->AddContent(sentence);
@@ -360,7 +360,7 @@ R::RXMLTag* GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
 {
 	char* ptr;
 	RXMLTag* kwd=0;
-	unsigned int len;
+	size_t len;
 
 	ptr=list;
 	while(*ptr)
@@ -399,7 +399,7 @@ R::RXMLTag* GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach)
 {
 	RChar* ptr;
 	RXMLTag* kwd=0;
-	unsigned int len;
+	size_t len;
 
 	ptr=list;
 	while(!ptr->IsNull())
@@ -438,7 +438,7 @@ R::RXMLTag* GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* atta
 {
 	RCharCursor Cur;
 	RXMLTag* kwd;
-	unsigned int pos;
+	size_t pos;
 
 	Cur.Set(list);
 	while(!Cur.End())

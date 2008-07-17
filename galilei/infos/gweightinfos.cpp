@@ -57,7 +57,7 @@ const double Factor=0.5;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfos::GWeightInfos(unsigned int max)
+GWeightInfos::GWeightInfos(size_t max)
 	: RContainer<GWeightInfo,true,true>(max,50), State(osNew)
 {
 }
@@ -580,9 +580,9 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 
 
 //------------------------------------------------------------------------------
-bool GWeightInfos::SimilarityBool(const GWeightInfos& w,unsigned int nb) const
+bool GWeightInfos::SimilarityBool(const GWeightInfos& w,size_t nb) const
 {
-	unsigned int same=0;
+	size_t same=0;
 
 	// if one list is empty -> the boolean similarity is false
 	if((!GetNb())||(!w.GetNb()))
@@ -702,7 +702,7 @@ void GWeightInfos::RecomputeQuery(tObjType,GLang*)
 {
 	throw GException("GWeightInfos::RecomputeQuery not implemented");
 /*	GWeightInfo* ptr;
-	unsigned int i;
+	size_t i;
 	double max=GetMaxAbsWeight();
 	double TotalRef;
 	double idffactor,nbref;

@@ -111,7 +111,7 @@ public:
 	* cout<<d<<endl;
 	* @endcode
 	*/
-	virtual void Measure(unsigned int measure,...)=0;
+	virtual void Measure(size_t measure,...)=0;
 
 	/**
 	* Exchange a particular information with the plugin. The other parameters
@@ -145,7 +145,7 @@ public:
 	* cout<<d<<endl;
 	* @endcode
 	 */
-	virtual void Info(unsigned int info,...);
+	virtual void Info(size_t info,...);
 
 	/**
 	* Destructor.

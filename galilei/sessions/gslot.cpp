@@ -94,13 +94,13 @@ void GSlot::WriteStr(const RString&)
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextChromosome(unsigned int)
+void GSlot::NextChromosome(size_t)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::NextMethod(unsigned int)
+void GSlot::NextMethod(size_t)
 {
 }
 

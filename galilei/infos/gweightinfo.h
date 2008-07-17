@@ -136,7 +136,7 @@ public:
 	/**
 	* Get the identifier of the concept.
 	*/
-	inline unsigned int GetId(void) const {return(Concept->GetId());}
+	inline size_t GetId(void) const {return(Concept->GetId());}
 
 	/**
 	* Get the concept.

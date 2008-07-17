@@ -55,7 +55,7 @@ GMeasure::GMeasure(GFactoryMeasure* fac)
 
 
 //------------------------------------------------------------------------------
-void GMeasure::Info(unsigned int,...)
+void GMeasure::Info(size_t,...)
 {
 }
 

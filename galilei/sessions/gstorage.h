@@ -237,7 +237,7 @@ public:
 	* @param type            Type of the objects.
 	* @return Number of objects.
 	*/
-	virtual unsigned int GetNbSaved(tObjType type)=0;
+	virtual size_t GetNbSaved(tObjType type)=0;
 
 	/**
 	* Get a pointer to a structure that should represent the storage. It can be
@@ -303,7 +303,7 @@ public:
 	* @param desc            Description of the dymmy entry.
 	* @param parentid        Identificator of the parent.
 	*/
-	virtual void AddDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid)=0;
+	virtual void AddDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid)=0;
 
 	/**
 	* Select a dummy entry from a dummy table;
@@ -313,7 +313,7 @@ public:
 	* @param parentid        Identificator of the parent.
 	* @param filter          Filter to set the fields on which the select is done.
 	*/
-	virtual R::RQuery* SelectDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter)=0;
+	virtual R::RQuery* SelectDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter)=0;
 
 	/**
 	* Clear a dummy entry from a dummy table;
@@ -323,7 +323,7 @@ public:
 	* @param parentid        Identificator of the parent.
 	* @param filter          Filter to set the fields on which the select is done.
 	*/
-	virtual void ClearDummyEntry(R::RString name,unsigned int id,R::RString desc,unsigned int parentid,unsigned int filter)=0;
+	virtual void ClearDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter)=0;
 
 	/**
 	* Load the Subjects.
@@ -421,7 +421,7 @@ public:
 	* @param id              Idenfificator of the concept.
 	* @param type            Type of the concept.
 	*/
-	virtual R::RString LoadConcept(unsigned int id,GConceptType* type)=0;
+	virtual R::RString LoadConcept(size_t id,GConceptType* type)=0;
 
 	/**
 	* Load the identificator of a specific concept.
@@ -479,7 +479,7 @@ public:
 	* Method that load a document that is stored.
 	* @param docid           Identifier of the document
 	*/
-	virtual GDoc* LoadDoc(unsigned int docid)=0;
+	virtual GDoc* LoadDoc(size_t docid)=0;
 
 	/**
 	 * Method that load the structure of a document.
@@ -525,7 +525,7 @@ public:
 	* Method that load a user that is stored.
 	* @param userid          Identificator of the user.
 	*/
-	virtual GUser* LoadUser(unsigned int userid)=0;
+	virtual GUser* LoadUser(size_t userid)=0;
 
 	/**
 	* Method that load a user that is stored.
@@ -537,7 +537,7 @@ public:
 	* Method that load a profile that is stored.
 	* @param profileid       Identificator of the profile.
 	*/
-	virtual GProfile* LoadProfile(unsigned int profileid)=0;
+	virtual GProfile* LoadProfile(size_t profileid)=0;
 
 	/**
 	* Load the list of suggestions for the profiles for a given test.
@@ -550,7 +550,7 @@ public:
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identificator of the document.
 	*/
-	virtual void UpdateProfiles(unsigned int docid)=0;
+	virtual void UpdateProfiles(size_t docid)=0;
 
 	/**
 	* Assign an identifier to a new user.
@@ -580,7 +580,7 @@ public:
 	* Save profiles in history
 	* @param historicID      Identificator of the historic.
 	*/
-	virtual void SaveHistoricProfiles(unsigned int historicID)=0;
+	virtual void SaveHistoricProfiles(size_t historicID)=0;
 
 	/**
 	* Add a suggestion for a given profile and a given test.
@@ -589,7 +589,7 @@ public:
 	* @param docid           Identificator of the document to suggest.
 	* @param rank            Ranking of the document.
 	*/
-	virtual void AddSugsProfile(const R::RString& name,unsigned int profileid,unsigned int docid,unsigned int rank)=0;
+	virtual void AddSugsProfile(const R::RString& name,size_t profileid,size_t docid,size_t rank)=0;
 
 	/**
 	* Add an assessment for a given profile and document.
@@ -619,14 +619,14 @@ public:
 	* Method that load a group that is stored.
 	* @param groupid         Identificator of the group.
 	*/
-	virtual GCommunity* LoadCommunity(unsigned int groupid)=0;
+	virtual GCommunity* LoadCommunity(size_t groupid)=0;
 
 	/**
 	* Load an historic groups.
 	* @param historicID      Identificator of the historic.
 	* @return Pointer to a historic group.
 	*/
-	virtual GCommunitiesHistory* LoadHistoricCommunities(unsigned int historicID)=0;
+	virtual GCommunitiesHistory* LoadHistoricCommunities(size_t historicID)=0;
 
 	/**
 	* Load the historic groups.
@@ -645,13 +645,13 @@ public:
 	/**
 	* Returns the number of historic communities stored in the database.
 	*/
-	virtual unsigned int GetHistorySize(void)=0;
+	virtual size_t GetHistorySize(void)=0;
 
 	/**
 	* A profile was updated and the corresponding communities must be updated.
 	* @param profid          Identificator of the profile.
 	*/
-	virtual void UpdateCommunities(unsigned int profid)=0;
+	virtual void UpdateCommunities(size_t profid)=0;
 
 	/**
 	* Assign an identifier to a new community.
@@ -676,7 +676,7 @@ public:
 	* @param docid           Identificator of the document to suggest.
 	* @param rank            Ranking of the document.
 	*/
-	virtual void AddSugsCommunity(const R::RString& name,unsigned int groupid,unsigned int docid,unsigned int rank)=0;
+	virtual void AddSugsCommunity(const R::RString& name,size_t groupid,size_t docid,size_t rank)=0;
 
 	// @} Groups
 

@@ -65,7 +65,7 @@ protected:
 	/**
 	* Identificator of the group.
 	*/
-	unsigned int Id;
+	size_t Id;
 
 	/**
 	* Date of the update (objiles have changed).
@@ -85,7 +85,7 @@ public:
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GGroup(unsigned int id,const R::RDate& u,const R::RDate& c);
+	GGroup(size_t id,const R::RDate& u,const R::RDate& c);
 
 	/**
 	* Compare two groups by comparing their identificator.
@@ -109,7 +109,7 @@ public:
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(const unsigned int id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Get the date of the last update of the subobjile.
@@ -127,13 +127,13 @@ public:
 	* Get the identificator of the group.
 	* @return Identificator.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* Set the identifier.
 	* @param id              Identifier.
 	*/
-	void SetId(unsigned int id);
+	void SetId(size_t id);
 
 	/**
 	* Load information from the current storage.
@@ -202,7 +202,7 @@ public:
 	/**
 	* Get the number of objiles in the group.
 	*/
-	unsigned int GetNbObjs(void) const;
+	size_t GetNbObjs(void) const;
 
 	/**
 	* Compute the relevant objile, i.e. the objile whith the highest

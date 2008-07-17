@@ -230,7 +230,7 @@ R::RVectorInt<size_t,true>* GDoc::GetFdbks(void) const
 void GDoc::InsertFdbk(size_t id)
 {
 	if(!Fdbks)
-		Fdbks=new R::RVectorInt<unsigned int,true>(500);
+		Fdbks=new R::RVectorInt<size_t,true>(500);
 	Fdbks->Insert(id);
 }
 

@@ -57,7 +57,7 @@ class GFdbk
 	/**
 	* Identificator of the document assessed.
 	*/
-	unsigned int DocId;
+	size_t DocId;
 
 	/**
 	* Assessment of the profile.
@@ -83,7 +83,7 @@ public:
 	* @param when            Date.
 	* @param computed        Last computation.
 	*/
-	GFdbk(unsigned int docid,tDocAssessment fdbk,const R::RDate& when,const R::RDate& computed);
+	GFdbk(size_t docid,tDocAssessment fdbk,const R::RDate& when,const R::RDate& computed);
 
 	/**
 	* Compare two assessements to order them using the document identificator.
@@ -108,7 +108,7 @@ public:
 	* @param id              Identificator of the document.
 	* @return int
 	*/
-	int Compare(unsigned int id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* New assessment.
@@ -125,9 +125,9 @@ public:
 
 	/**
 	* Get the identificator of the document assessed.
-	* @returns unsigned int.
+	* @returns size_t.
 	*/
-	unsigned int GetDocId(void) const {return(DocId);}
+	size_t GetDocId(void) const {return(DocId);}
 
 	/**
 	* Get the date of the assessment on the document.
@@ -230,7 +230,7 @@ protected:
 	/**
 	* Identificator of the corresponding group.
 	*/
-	unsigned int GroupId;
+	size_t GroupId;
 
 	/**
 	* Date of the attachment of the profile into the group.
@@ -251,7 +251,7 @@ public:
 	* @param s               Social?
 	* @param nbf             Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,unsigned int id,const R::RString name,unsigned int grpid,R::RDate a,R::RDate u,R::RDate c,bool s=true,unsigned int nbf=100);
+	GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s=true,size_t nbf=100);
 
 	/**
 	* Compare two profiles by comparing their identificator.
@@ -275,7 +275,7 @@ public:
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(const unsigned int id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Load information from the current storage.
@@ -286,13 +286,13 @@ public:
 	* Get the identificator of the profile.
 	* @return Identificator.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* Set the identifier.
 	* @param id              Identifier.
 	*/
-	void SetId(unsigned int id);
+	void SetId(size_t id);
 
 	/**
 	* Get the name of the profile.
@@ -345,13 +345,13 @@ public:
 	/**
 	* Get the group holding the profile.
 	*/
-	unsigned int GetGroupId(void) const {return(GroupId);}
+	size_t GetGroupId(void) const {return(GroupId);}
 
 	/**
 	* Set the group holding the profile.
 	* @param groupid         Identificator of the group.
 	*/
-	void SetGroup(unsigned int groupid);
+	void SetGroup(size_t groupid);
 
 	/**
 	* Get the date of the last attachment.
@@ -395,13 +395,13 @@ public:
 	* @param date            Date.
 	* @param update          Last update of the document.
 	*/
-	void InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update);
+	void InsertFdbk(size_t docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update);
 
 	/**
 	* Delete an assessment from the list of the profile.
 	* @param docid           Identificator of the document.
 	*/
-	void DeleteFdbk(unsigned int docid);
+	void DeleteFdbk(size_t docid);
 
 	/**
 	* Update the subprofile by assigning it a set of information and a language.
@@ -421,13 +421,13 @@ public:
 	* Get the feedback of the profile on a specific document.
 	* @param docid           Identificator of the document.
 	*/
-	GFdbk* GetFdbk(unsigned int docid) const;
+	GFdbk* GetFdbk(size_t docid) const;
 
 	/**
 	* This method is call by a document when it was modified.
 	* @param docid           Identificator of the document.
 	*/
-	void HasUpdate(unsigned int docid);
+	void HasUpdate(size_t docid);
 
 public:
 

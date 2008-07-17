@@ -117,7 +117,7 @@ protected:
 	* @param maxDocsKO      Maximal fuzzy relevant Documents to assess.
 	* @param maxDocsH       Maximal irrelevant Documents to assess.
 	*/
-	void ProfileAssess(GProfile* prof,GSubject* sub,unsigned int maxDocsOK,unsigned int maxDocsKO,unsigned int maxDocsH);
+	void ProfileAssess(GProfile* prof,GSubject* sub,size_t maxDocsOK,size_t maxDocsKO,size_t maxDocsH);
 
 	/**
 	* Compute the Recall and the Precision.
@@ -134,7 +134,7 @@ protected:
 public:
 
 	/**
-	* Create randomly the judgment for all the users. The results are saved if 
+	* Create randomly the judgment for all the users. The results are saved if
 	* the corresponding parameter is set in the session.
 	*/
 	void CreateIdeal(void);
@@ -161,7 +161,7 @@ public:
 	* Add judgements for some new not used profiles.
 	* @return Number of profiles created.
 	*/
-	unsigned int AddProfiles(void);
+	size_t AddProfiles(void);
 
 	/**
 	* Computed the percentage of correct assignments for the subprofiles last
@@ -180,7 +180,7 @@ public:
 	* @param id              Identifier of the subject.
 	* @return Pointer to GSubject.
 	*/
-	GSubject* GetSubject(unsigned int id);
+	GSubject* GetSubject(size_t id);
 
 	/**
 	* Clear the subjects.
@@ -246,7 +246,7 @@ public:
 	* @param profile        Pointer to the profile.
 	* @param subjectid      Identificator of the subject.
 	*/
-	void InsertProfileSubject(GProfile* profile,unsigned int subjectid);
+	void InsertProfileSubject(GProfile* profile,size_t subjectid);
 	/**
 	* Get the subject of a given profile.
 	* @param prof            Pointer to the profile.
@@ -258,7 +258,7 @@ public:
 	* @param doc            Pointer to the document.
 	* @param subjectid      Identificator of the subject.
 	*/
-	void InsertDocSubject(GDoc* doc,unsigned int subjectid);
+	void InsertDocSubject(GDoc* doc,size_t subjectid);
 
 	/**
 	* Look if a document is from a given subject.
@@ -274,7 +274,7 @@ public:
 	* @param s              Pointer to the subject.
 	* @return bool
 	*/
-	bool IsFromSubject(unsigned int docid,const GSubject* s);
+	bool IsFromSubject(size_t docid,const GSubject* s);
 
 	/**
 	* Look if a document is in the parent subject.
@@ -290,7 +290,7 @@ public:
 	* @param s              Subject.
 	* @return bool
 	*/
-	bool IsFromParentSubject(unsigned int docid,const GSubject* s);
+	bool IsFromParentSubject(size_t docid,const GSubject* s);
 
 	/**
 	* Get a Cursor on the subjects of a given document.
@@ -302,19 +302,19 @@ public:
 	* Get a Cursor on the subjects of a given document.
 	* @param docid          Identificator of the document.
 	*/
-	R::RCursor<GSubject> GetSubjects(unsigned int docid);
+	R::RCursor<GSubject> GetSubjects(size_t docid);
 
 	/**
 	* Get the number of subjects associated with a given document.
 	* @param doc            Pointer to the document.
 	*/
-	unsigned int GetNbSubjects(GDoc* doc);
+	size_t GetNbSubjects(GDoc* doc);
 
 	/**
 	* Get the number of subjects associated with a given document.
 	* @param docid          Identificator of the document.
 	*/
-	unsigned int GetNbSubjects(unsigned int docid);
+	size_t GetNbSubjects(size_t docid);
 
 	/**
 	* Destructor of a subject.

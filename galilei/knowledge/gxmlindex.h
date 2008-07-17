@@ -66,10 +66,10 @@ class GXMLIndex : public GConcept
 	 * XML tag representing the first part of the index.
 	 */
 	GConcept* XMLTag;
-	
+
 	/**
 	 * Dictionnary of the stems.
-	 */ 
+	 */
 	GConceptType* Lang;
 
 	/**
@@ -94,7 +94,7 @@ public:
 	 * @param index          Original index.
 	 */
 	GXMLIndex(const GXMLIndex* index);
-	
+
 	/**
 	* Constructor of a XML Index. The full definition of the concept is deduced
 	* from its name.
@@ -112,7 +112,7 @@ public:
 	 * @param stems          Language-based stems.
 	 */
 	GXMLIndex(GConceptType* type,GConcept* tag,GLang* lang,R::RContainer<GConcept,false,true>& uni,R::RContainer<GConcept,false,true>& stems);
-	
+
 	/**
 	* Constructor of a XML Index. The full definition of the concept is deduced
 	* from its name.
@@ -123,23 +123,23 @@ public:
 	* @param refsubprofiles  Number of subprofiles referenced.
 	* @param refgroups       Number of groups referenced.
 	*/
-	GXMLIndex(unsigned int id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refsubprofiles,size_t refgroups);
+	GXMLIndex(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refsubprofiles,size_t refgroups);
 
 protected:
-	
+
 	/**
 	 * Build the full definition of the XML index based on its name.
 	 */
 	void BuildDef(void);
-	
+
 public:
-	
+
 	/**
 	 * Do a deep copy of the current concept.
 	 * @return Pointer to a new element created.
 	 */
 	virtual GConcept* DeepCopy(void) const;
-	
+
 	/**
 	* Clear all the information of the data.
 	*/
@@ -149,22 +149,22 @@ public:
 	 * Get the tag implied in this index.
 	 */
 	GConcept* GetXMLTag(void) const {return(XMLTag);}
-	
+
 	/**
 	 * Get the language associated with this stem.
 	 */
 	GConceptType* GetLangSpace(void) const {return(Lang);}
-	
+
 	/**
 	 * Get the universal terms.
 	 */
 	R::RCursor<GConcept> GetUniversalTerms(void) const;
-	
+
 	/**
 	 * Get the language-based stems.
 	 */
 	R::RCursor<GConcept> GetStems(void) const;
-	
+
 	/**
 	 * This method computes the similarity between two XML index. In practice,
 	 * both index must have the same tag. Than a raw comparison is done between
@@ -173,7 +173,7 @@ public:
 	 * @returns Number between 0 (nothing in common) and 1 (same XML index).
 	 */
 	double GetSimilarity(const GXMLIndex* index) const;
-	
+
 	/**
 	* Desctuctor of a concept.
 	*/

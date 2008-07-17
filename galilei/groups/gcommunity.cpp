@@ -75,7 +75,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunity::GCommunity(unsigned int id,const R::RDate& u,const R::RDate& c)
+GCommunity::GCommunity(size_t id,const R::RDate& u,const R::RDate& c)
 	: GGroup<GProfile,GCommunity,otCommunity>(id,u,c)
 {
 }
@@ -96,9 +96,9 @@ int GCommunity::sortOrder(const void *a,const void *b)
 
 
 //------------------------------------------------------------------------------
-unsigned int GCommunity::GetNbProfiles(const GSubject* subject) const
+size_t GCommunity::GetNbProfiles(const GSubject* subject) const
 {
-	unsigned int tot;
+	size_t tot;
 	RCursor<GProfile> sub(*this);
 	for(sub.Start(),tot=0;!sub.End();sub.Next())
 		if(subject->IsIn(sub()))

@@ -52,7 +52,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFdbk::GFdbk(unsigned int docid,tDocAssessment fdbk,const RDate& when,const R::RDate& computed)
+GFdbk::GFdbk(size_t docid,tDocAssessment fdbk,const RDate& when,const R::RDate& computed)
   : DocId(docid), Fdbk(fdbk), When(when), Computed(computed)
 {
 }
@@ -73,7 +73,7 @@ int GFdbk::Compare(const GFdbk* profdoc) const
 
 
 //------------------------------------------------------------------------------
-int GFdbk::Compare(const unsigned id) const
+int GFdbk::Compare(const size_t id) const
 {
 	return(DocId-id);
 }
@@ -161,7 +161,7 @@ GFdbk::~GFdbk(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,unsigned int id,const R::RString name,unsigned int grpid,R::RDate a,R::RDate u,R::RDate c,bool s,unsigned int nbf)
+GProfile::GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,size_t nbf)
   : GWeightInfos(60), User(usr),Id(id), Name(name),
     Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c), GroupId(grpid), Attached(a)
 {
@@ -197,7 +197,7 @@ int GProfile::Compare(const RString& name) const
 
 
 //------------------------------------------------------------------------------
-int GProfile::Compare(const unsigned int id) const
+int GProfile::Compare(const size_t id) const
 {
  	return(Id-id);
 }
@@ -216,7 +216,7 @@ void GProfile::LoadInfos(void) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::SetId(unsigned int id)
+void GProfile::SetId(size_t id)
 {
 	if(id==cNoRef)
 		throw GException("Cannot assign cNoRef to a profile");
@@ -258,7 +258,7 @@ bool GProfile::MustCompute(void) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::SetGroup(unsigned int groupid)
+void GProfile::SetGroup(size_t groupid)
 {
 	GroupId=groupid;
 	if(GroupId!=cNoRef)
@@ -371,7 +371,7 @@ RCursor<GFdbk> GProfile::GetFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
+void GProfile::InsertFdbk(size_t docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
 {
 	Fdbks.InsertPtr(new GFdbk(docid,assess,date,update));
 	// If the document assessed was computed after the last computation
@@ -385,11 +385,11 @@ void GProfile::InsertFdbk(unsigned int docid,tDocAssessment assess,const R::RDat
 
 
 //------------------------------------------------------------------------------
-void GProfile::DeleteFdbk(unsigned int docid)
+void GProfile::DeleteFdbk(size_t docid)
 {
 	GFdbk* fdbk;
 
-	Fdbks.DeletePtr(fdbk=Fdbks.GetPtr<unsigned int>(docid));
+	Fdbks.DeletePtr(fdbk=Fdbks.GetPtr<size_t>(docid));
 	State=osModified;
 
 	// If the document assessed was computed after the last computation
@@ -442,14 +442,14 @@ void GProfile::ClearFdbks(void)
 
 
 //------------------------------------------------------------------------------
-GFdbk* GProfile::GetFdbk(unsigned int docid) const
+GFdbk* GProfile::GetFdbk(size_t docid) const
 {
-	return(Fdbks.GetPtr<unsigned int>(docid));
+	return(Fdbks.GetPtr<size_t>(docid));
 }
 
 
 //------------------------------------------------------------------------------
-void GProfile::HasUpdate(unsigned int docid)
+void GProfile::HasUpdate(size_t docid)
 {
 	GFdbk* fdbk=Fdbks.GetPtr(docid);
 	if(fdbk)

@@ -102,7 +102,7 @@ public:
 	/**
 	* return the number of results that must be used
 	*/
-	virtual unsigned int GetNbResUsed(void)=0;
+	virtual size_t GetNbResUsed(void)=0;
 
 public:
 

@@ -120,7 +120,7 @@ public:
 	* @param refprofiles     Number of subprofiles referenced.
 	* @param refgroups       Number of groups referenced.
 	*/
-	GConcept(unsigned int id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refgroups);
+	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refgroups);
 
 	/**
 	* Compare two concepts.
@@ -205,7 +205,7 @@ public:
 	/**
 	* Get the number of references on this data for a given object type.
 	* @param ObjType        Type of the reference.
-	* @returns unsigned int.
+	* @returns size_t.
 	*/
 	size_t GetRef(tObjType ObjType) const;
 

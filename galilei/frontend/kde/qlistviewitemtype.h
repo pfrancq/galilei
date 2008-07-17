@@ -91,7 +91,7 @@ public:
 	/**
 	* three level availables: 0:black,  1: blue, 2:red.
 	*/
-	unsigned int Level;
+	size_t Level;
 
 	/**
 	* Enumeration type of the item.

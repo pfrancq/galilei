@@ -77,7 +77,7 @@ public:
 	* @param name            Name of the subject.
 	* @param u               Used?
 	*/
-	GSubject(unsigned int id,const char* name,bool u);
+	GSubject(size_t id,const char* name,bool u);
 
 	/**
 	* Compare two subjects by comparing their identificator.
@@ -93,7 +93,7 @@ public:
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(const unsigned int id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Compare the name of a subject with a given string.
@@ -188,7 +188,7 @@ public:
 
 	/**
 	* Get the number of documents associated to this subject.
-	* @returns unsigned int
+	* @returns size_t
 	*/
 	size_t GetNbDocs(void) const;
 
@@ -206,9 +206,9 @@ public:
 
 	/**
 	* Get the number of profiles associated to this subject.
-	* @returns unsigned int
+	* @returns size_t
 	*/
-	unsigned int GetNbProfiles(void) const;
+	size_t GetNbProfiles(void) const;
 
 	/**
 	* Return the name of the Subject.
@@ -226,7 +226,7 @@ public:
 	* Get the identificator of the Subject.
 	* @returns The id of the subject.
 	*/
-	unsigned int GetId(void) const;
+	size_t GetId(void) const;
 
 	/**
 	* Verify if the subject is used.
@@ -242,7 +242,7 @@ public:
 	* @param nbprofiles      Number of profiles to create for this subject.
 	* @param nbsocial        Number of social profiles still to create.
 	*/
-	void SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocial);
+	void SetUsed(GSession* session,size_t nbprofiles,size_t& nbsocial);
 
 	/**
 	* Initialize the subject (reset all profiles assigned).

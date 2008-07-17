@@ -83,7 +83,7 @@ public:
 	* @param maxgroups       Maximum number of groups to allocate. If zero,
 	*                        everything is allocated.
 	*/
-	GSession(GSlot* slot=0,R::RDebug* debug=0,unsigned int maxdocs=0,unsigned int maxsubprofiles=0,unsigned int maxgroups=0);
+	GSession(GSlot* slot=0,R::RDebug* debug=0,size_t maxdocs=0,size_t maxsubprofiles=0,size_t maxgroups=0);
 	
 	//-----------------------------------------------------
 	/** @name General Methods
@@ -220,7 +220,7 @@ public:
 	* @param max             Max Random Value.
 	* @return The current Random value * max.
 	*/
-	int GetCurrentRandomValue(unsigned int max);
+	int GetCurrentRandomValue(size_t max);
 
 	/**
 	* Get the random number generator.
@@ -278,7 +278,7 @@ public:
 	*                        return 0, else an exception is generated.
 	* @return Pointer to a GConceptType
 	*/
-	GConceptType* GetConceptType(unsigned int id,bool null) const;
+	GConceptType* GetConceptType(size_t id,bool null) const;
 
 	/**
 	* Get the a pointer to a type of concept.
@@ -307,7 +307,7 @@ public:
 	* @param refsubprofiles  Number of subprofiles referenced.
 	* @param refgroups       Number of groups referenced.
 	*/
-	void InsertConceptType(unsigned int id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups);
+	void InsertConceptType(size_t id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups);
 
 	/**
 	* Assign an identifier to a new concept type.
@@ -334,7 +334,7 @@ public:
 	*                        return 0, else an exception is generated.
 	* @return Pointer to a GRelationType
 	*/
-	GRelationType* GetRelationType(unsigned int id,bool null) const;
+	GRelationType* GetRelationType(size_t id,bool null) const;
 
 	/**
 	* Get the a poitner to a type of relation.
@@ -351,7 +351,7 @@ public:
 	* @param name            Name of the type.
 	* @param desc            Short description.
 	*/
-	void InsertRelationType(unsigned int id,const R::RString& name,const R::RString& desc);
+	void InsertRelationType(size_t id,const R::RString& name,const R::RString& desc);
 
 	/**
 	* Insert a new relation.
@@ -364,10 +364,10 @@ public:
 	* @param objecttypeid    Type of the object.
 	* @param weight          Weight of the relation.
 	*/
-	void InsertRelation(unsigned int id,const R::RString& name,
-	                    unsigned int subjectid,unsigned int subjecttypeid,
-	                    unsigned int type,
-	                    unsigned int objectid,unsigned int objecttypeid,
+	void InsertRelation(size_t id,const R::RString& name,
+	                    size_t subjectid,size_t subjecttypeid,
+	                    size_t type,
+	                    size_t objectid,size_t objecttypeid,
 	                    double weight);
 
 	/**
@@ -378,7 +378,7 @@ public:
 	*                        return 0, else an exception is generated.
 	* @return Pointer to a relation.
 	*/
-	GRelation* GetRelation(unsigned int id,unsigned int type,bool null);
+	GRelation* GetRelation(size_t id,size_t type,bool null);
 
 	/**
 	* Get a set of relations corresponding to a set of criteria and put them
@@ -393,7 +393,7 @@ public:
 	*                        a relation. If null, all concepts are used.
 	* @param sym             Symetric search?
 	*/
-	void GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* subject,unsigned int type,GConcept* object,bool sym);
+	void GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* subject,size_t type,GConcept* object,bool sym);
 
 	//@} Knowledge methods
 
@@ -445,7 +445,7 @@ public:
 	* @param null            If set to true, if the document does not exist,
 	*                        return 0, else an exception is generated.
 	*/
-	GDoc* GetDoc(unsigned int id,bool load=true,bool null=false) const;
+	GDoc* GetDoc(size_t id,bool load=true,bool null=false) const;
 
 	/**
 	* Get a document corresponding to a given URL.
@@ -539,7 +539,7 @@ public:
 	* @param null            If set to true, if the user does not exist,
 	*                        return 0, else an exception is generated.
 	*/
-	GUser* GetUser(unsigned int id,bool load=true,bool null=false) const;
+	GUser* GetUser(size_t id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new user.
@@ -576,7 +576,7 @@ public:
 	* @param null            If set to true, if the profile does not exist,
 	*                        return 0, else an exception is generated.
 	*/
-	GProfile* GetProfile(const unsigned int id,bool load=true,bool null=false) const;
+	GProfile* GetProfile(const size_t id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new profile.
@@ -613,7 +613,7 @@ public:
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identificator of the document.
 	*/
-	void UpdateProfiles(unsigned int docids);
+	void UpdateProfiles(size_t docids);
 
 	/**
 	* Insert a new Feedback.
@@ -658,7 +658,7 @@ public:
 	*                        return 0, else an exception is generated.
 	* @return Pointer to GCommunity.
 	*/
-	GCommunity* GetCommunity(unsigned int id,bool load=true,bool null=false) const;
+	GCommunity* GetCommunity(size_t id,bool load=true,bool null=false) const;
 
 	/**
 	* Assign an identifier to a new community.
@@ -704,7 +704,7 @@ public:
 	/**
 	* Load the historic Communities.
 	*/
-	void LoadHistoricCommunitiesById(unsigned int mingen, unsigned int maxgen);
+	void LoadHistoricCommunitiesById(size_t mingen, size_t maxgen);
 
 	/**
 	* Load the historic Communities.

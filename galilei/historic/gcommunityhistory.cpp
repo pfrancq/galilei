@@ -47,7 +47,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunityHistory::GCommunityHistory(const unsigned int id,GCommunitiesHistory* grps)
+GCommunityHistory::GCommunityHistory(const size_t id,GCommunitiesHistory* grps)
 	: RContainer<GWeightInfosHistory,false,true>(20,10), Id(id),
 	  Modified(false), Parent(grps), Childrens(2,2)
 {
@@ -98,7 +98,7 @@ int GCommunityHistory::Compare(const GCommunityHistory* grouph) const
 
 
 //------------------------------------------------------------------------------
-int GCommunityHistory::Compare(const unsigned int id) const
+int GCommunityHistory::Compare(const size_t id) const
 {
 	return(Id-id);
 }

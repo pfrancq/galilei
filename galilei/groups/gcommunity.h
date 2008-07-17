@@ -63,7 +63,7 @@ public:
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GCommunity(unsigned int id,const R::RDate& u,const R::RDate& c);
+	GCommunity(size_t id,const R::RDate& u,const R::RDate& c);
 
 	/**
 	 * Get the similarity measure that must be used when computing the
@@ -86,7 +86,7 @@ public:
 	* current one.
 	* @param subject         Pointer to the subject.
 	*/
-	unsigned int GetNbProfiles(const GSubject* subject) const;
+	size_t GetNbProfiles(const GSubject* subject) const;
 
 	/**
 	* Construct the list of all feedbacks of the profiles of a group not

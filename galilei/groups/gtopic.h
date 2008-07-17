@@ -62,7 +62,7 @@ public:
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GTopic(unsigned int id,const R::RDate& u,const R::RDate& c);
+	GTopic(size_t id,const R::RDate& u,const R::RDate& c);
 
 	/**
 	 * Get the similarity measure that must be used when computing the

@@ -256,7 +256,6 @@ public:
 
 	/**
 	* Get the identifier of the document.
-	* @return unsigned int.
 	*/
 	size_t GetId(void) const {return(Id);}
 
@@ -268,7 +267,6 @@ public:
 
 	/**
 	* Get the owner identifier of the document.
-	* @return unsigned int.
 	*/
 	size_t GetOwnerId(void) const {return(OwnerId);}
 
@@ -288,7 +286,7 @@ public:
 	* documents.
 	* @return R::RVectorInt*.
 	*/
-	R::RVectorInt<unsigned int,true>* GetFdbks(void) const;
+	R::RVectorInt<size_t,true>* GetFdbks(void) const;
 
 	/**
 	* Add a profile to the list of those which have assess the document.

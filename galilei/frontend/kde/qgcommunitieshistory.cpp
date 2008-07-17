@@ -97,7 +97,7 @@ void GALILEI::QGCommunitiesHistory::setGroups(GCommunitiesHistory* grps)
 	RCursor<GCommunityHistory> Cur(*grps);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		sprintf(tmp,"Group %u  (%u)",Cur()->GetId(),Cur()->GetNb());
+		sprintf(tmp,"Group %z  (%z)",Cur()->GetId(),Cur()->GetNb());
 		QListViewItemType* gritem= new QListViewItemType(Cur(),this,tmp) ;//, gr->GetSubject()->GetName());
 		// manage the color of the item
 		if(Cur()->IsModified()==true)
@@ -108,9 +108,9 @@ void GALILEI::QGCommunitiesHistory::setGroups(GCommunitiesHistory* grps)
 		RCursor<GWeightInfosHistory> Cur2(*Cur());
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			sprintf(tmp,"%i",Cur2()->GetId());
+			sprintf(tmp,"%z",Cur2()->GetId());
 			p=Cur2()->GetProfile();
-			sprintf(tmp2,"%i",p->GetId());
+			sprintf(tmp2,"%z",p->GetId());
 			QListViewItemType* subitem=new QListViewItemType(Cur2(),gritem,tmp,tmp2,ToQString(p->GetName()),ToQString(p->GetUser()->GetFullName()));
 			if(Cur2()->IsWellGrouped()==true)
 				subitem->Level=0;

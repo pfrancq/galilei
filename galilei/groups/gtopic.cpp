@@ -51,7 +51,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GTopic::GTopic(unsigned int id,const R::RDate& u,const R::RDate& c)
+GTopic::GTopic(size_t id,const R::RDate& u,const R::RDate& c)
 	: GGroup<GDoc,GTopic,otTopic>(id,u,c)
 {
 }

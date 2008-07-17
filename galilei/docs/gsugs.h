@@ -53,38 +53,39 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * This class provides a representation for a list of suggestion for a given
+* addressee.
 * @author Pascal Francq
 * @short Suggestions
 */
 class GSugs
 {
 	/**
-	* Type of the destinator of the suggestions (otProfile or otGroup).
+	* Type of the addressee of the suggestions (otProfile or otGroup).
 	*/
 	tObjType Type;
 
 	/**
-	* Identicator of the destinator of the suggestions.
+	* Identifier of the addressee of the suggestions.
 	*/
-	unsigned int Id;
+	size_t Id;
 
 	/**
-	* Identificators of the documents suggested.
+	* Identifiers of the documents suggested.
 	*/
-	R::RVectorInt<unsigned int,false> Docs;
+	R::RVectorInt<size_t,false> Docs;
 
 public:
 
 	/**
 	* Constructor of the suggestion.
-	* @param type           Type of the destinator.
-	* @param id             Identificator of the destinator.
+	* @param type           Type of the addressee.
+	* @param id             Identifier of the addressee.
 	* @param max            Maximum number of suggestions.
 	*/
-	GSugs(tObjType type,unsigned int id,unsigned int max);
+	GSugs(tObjType type,size_t id,size_t max);
 
 	/**
-	* Compare two destinators by comparing their identificator.
+	* Compare two addressees by comparing their identifier.
 	* @see R::RContainer
 	* @param sugs            Suggestion.
 	* @return int
@@ -92,7 +93,7 @@ public:
 	int Compare(const GSugs& sugs) const;
 
 	/**
-	* Compare two destinators by comparing their identificator.
+	* Compare two addressees by comparing their identifier.
 	* @see R::RContainer
 	* @param sugs            Suggestion.
 	* @return int
@@ -100,18 +101,18 @@ public:
 	int Compare(const GSugs* sugs) const;
 
 	/**
-	* Compare the identificator of a destinator with a given identificator.
+	* Compare the identifier of a addressee with a given identifier.
 	* @see R::RContainer
-	* @param id              Identificator.
+	* @param id              Identifier.
 	* @return int
 	*/
-	int Compare(const unsigned id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Add a suggestion to the list.
-	* @param id              Identificator of the document.
+	* @param id              Identifier of the document.
 	*/
-	void AddSugs(unsigned int id);
+	void AddSugs(size_t id);
 
 	/**
 	* Add a suggestion to the list.

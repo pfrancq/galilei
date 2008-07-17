@@ -101,13 +101,13 @@ public:
 	* The traitment for a specific chromosome will begin.
 	* @param id             Identificator of the chromosome.
 	*/
-	virtual void NextChromosome(unsigned int id);
+	virtual void NextChromosome(size_t id);
 
 	/**
 	* The traitment for a specific method will begin.
 	* @param num            Number of the current step.
 	*/
-	virtual void NextMethod(unsigned int num);
+	virtual void NextMethod(size_t num);
 
 	/**
 	* Start a job.

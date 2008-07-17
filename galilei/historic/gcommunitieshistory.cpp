@@ -56,7 +56,7 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-GCommunitiesHistoryManager::GCommunitiesHistoryManager(GSession* session,unsigned int max)
+GCommunitiesHistoryManager::GCommunitiesHistoryManager(GSession* session,size_t max)
 	: RContainer<GCommunitiesHistory,true,true>(max,max/2), Session(session)
 {
 }
@@ -71,7 +71,7 @@ R::RCursor<GCommunitiesHistory> GCommunitiesHistoryManager::GetCommunitiesHistor
 
 
 //------------------------------------------------------------------------------
-void GCommunitiesHistoryManager::CheckModifiedCommunities(unsigned int minGen)
+void GCommunitiesHistoryManager::CheckModifiedCommunities(size_t minGen)
 {
 	R::RCursor<GCommunitiesHistory> Cur(*this);
 
@@ -104,13 +104,13 @@ void GCommunitiesHistoryManager::CheckNewProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GCommunitiesHistoryManager::CreateCommunitiesRelationship(unsigned int maxgen)
+void GALILEI::GCommunitiesHistoryManager::CreateCommunitiesRelationship(size_t maxgen)
 {
-	unsigned int  i, maxoccurs, nbchildren;
+	size_t  i, maxoccurs, nbchildren;
 	GCommunitiesHistory *nextgrps;
 	GWeightInfosHistory* subprof;
 	bool treated;
-	unsigned int** tab;
+	size_t** tab;
 	R::RCursor<GCommunitiesHistory> Cur(*this);
 
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -128,9 +128,9 @@ void GALILEI::GCommunitiesHistoryManager::CreateCommunitiesRelationship(unsigned
 			nbchildren=0;
 
 			// Initialize the table od groupid / nboccurs
-			tab= new unsigned int*[Cur2()->GetNb()];
+			tab= new size_t*[Cur2()->GetNb()];
 			for (i=0; i<Cur2()->GetNb(); i++)
-				tab[i]=new unsigned int [2];
+				tab[i]=new size_t [2];
 			for (i=0; i<Cur2()->GetNb(); i++)
 				tab[i][0]=tab[i][1]=0;
 
@@ -207,7 +207,7 @@ GCommunitiesHistoryManager::~GCommunitiesHistoryManager(void)
 
 
 //------------------------------------------------------------------------------
-GCommunitiesHistory::GCommunitiesHistory(unsigned int id, RString date)
+GCommunitiesHistory::GCommunitiesHistory(size_t id, RString date)
 	: RContainer<GCommunityHistory,true,true>(20,10)
 {
 	Id=id;
@@ -223,7 +223,7 @@ R::RDate GCommunitiesHistory::GetDate(void) const
 
 
 //------------------------------------------------------------------------------
-GWeightInfosHistory* GCommunitiesHistory::GetProfile(unsigned int id)
+GWeightInfosHistory* GCommunitiesHistory::GetProfile(size_t id)
 {
 	RCursor<GCommunityHistory> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -252,7 +252,7 @@ int GCommunitiesHistory::Compare(const GCommunitiesHistory* groups) const
 
 
 //------------------------------------------------------------------------------
-int GCommunitiesHistory::Compare(unsigned int id) const
+int GCommunitiesHistory::Compare(size_t id) const
 {
 	return(Id-id);
 }
@@ -266,13 +266,13 @@ void GCommunitiesHistory::SetManager(GCommunitiesHistoryManager* m)
 
 
 //------------------------------------------------------------------------------
-void GCommunitiesHistory::CheckModifiedCommunities(unsigned int minGen)
+void GCommunitiesHistory::CheckModifiedCommunities(size_t minGen)
 {
 	RContainer<GWeightInfosHistory,false,true>* lastsubs;
 	GCommunitiesHistory* lastgroups;
 	GCommunityHistory* lastgroup;
 	GWeightInfosHistory* sub, *lastsub;
-	unsigned int  lastcurid;
+	size_t  lastcurid;
 
 	// if the grps is the frst historic one, return
 	if (this->GetId()==minGen) return;
@@ -341,7 +341,7 @@ void GCommunitiesHistory::SetCommunitiesSubject(void)
 {
 	GCommunityHistory* grp;
 	GSubject* mainsubject;
-	unsigned int occur, maxoccur,knownsubject;
+	size_t occur, maxoccur,knownsubject;
 	R::RContainer<GSubject,false,true>* subjects;
 
 

@@ -6,7 +6,7 @@
 
 	List of Links with an associated weight - Header.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors
 		 Vandaele Valery (vavdaele@ulb.ac.be)
@@ -78,9 +78,8 @@ public :
 
 	/**
 	* Get the identificator of the document.
-	* @return unsigned int.
 	*/
-	unsigned int GetId(void) const {return(Doc->GetId());}
+	size_t GetId(void) const {return(Doc->GetId());}
 
 	/**
 	* Get the weight of the links.
@@ -116,7 +115,7 @@ public :
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(const unsigned int id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Destructor of a weighted list of links.

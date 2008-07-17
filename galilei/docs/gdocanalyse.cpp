@@ -46,7 +46,7 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 // Constance
-const unsigned int MaxWordLen=50;
+const size_t MaxWordLen=50;
 
 
 

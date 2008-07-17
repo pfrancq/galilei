@@ -266,7 +266,7 @@ public:
 	* Comparison method needed by R::RContainer.
 	* @param level           Level to compare.
 	*/
-	int Compare(const unsigned int level) const;
+	int Compare(const size_t level) const;
 
 	/**
 	* Get the level of the plug-in.

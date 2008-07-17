@@ -58,14 +58,14 @@ class GSubject::Intern
 {
 public:
 
-	unsigned int Id;                                        // Identificator of the subject.
+	size_t Id;                                        // Identificator of the subject.
 	R::RString Name;                                        // Name of the subject.
 	bool Used;                                              // Determine if the subject is used.
 	R::RContainer<GDoc,false,true> Docs;                    // Documents attached to this subject.
 	R::RContainer<GProfile,false,true> Profiles;            // Profiles attached to this subject.
 	R::RContainer<GCommunity,false,true> Groups;                // Groups attached to this subject.
 
-	Intern(unsigned int id,const char* name,bool u) :
+	Intern(size_t id,const char* name,bool u) :
 	 Id(id), Name(name), Used(u), Docs(1000,500), Profiles(10,5), Groups(10,5)
 	{}
 };
@@ -78,7 +78,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubject::GSubject(unsigned int id,const char* name,bool u)
+GSubject::GSubject(size_t id,const char* name,bool u)
 	 : RNode<GSubject,true,false>(), Data(0)
 {
 	Data=new Intern(id,name,u);
@@ -93,7 +93,7 @@ int GSubject::Compare(const GSubject& sub) const
 
 
 //------------------------------------------------------------------------------
-int GSubject::Compare(const unsigned int id) const
+int GSubject::Compare(const size_t id) const
 {
 	return(Data->Id-id);
 }
@@ -115,10 +115,10 @@ void GSubject::Insert(GDoc* doc)
 
 //------------------------------------------------------------------------------
 GSubject* GSubject::GetIdealGroup(GProfile* prof) const
-{	
+{
 	if(Data->Profiles.IsIn(prof->GetId()))
 		return(const_cast<GSubject*>(this));
-	
+
 	GSubject* subject(0);
 	RCursor<GSubject> Cur(GetNodes());
 	for(Cur.Start();(!Cur.End())&&(!subject);Cur.Next())
@@ -132,7 +132,7 @@ GSubject* GSubject::GetIdealGroup(GDoc* doc) const
 {
 	if(Data->Docs.IsIn(*doc))
 		return(const_cast<GSubject*>(this));
-	
+
 	GSubject* subject(0);
 	RCursor<GSubject> Cur(GetNodes());
 	for(Cur.Start();(!Cur.End())&&(!subject);Cur.Next())
@@ -180,7 +180,7 @@ void GSubject::ClearGroups(void)
 size_t GSubject::GetNbIdealGroups(void) const
 {
 	size_t nb(0);
-	
+
 	if(Data->Profiles.GetNb())
 		nb++;
 	RCursor<GSubject> Cur(GetNodes());
@@ -194,7 +194,7 @@ size_t GSubject::GetNbIdealGroups(void) const
 size_t GSubject::GetNbTopicsDocs(void) const
 {
 	size_t nb(0);
-		
+
 	if(Data->Docs.GetNb())
 		nb++;
 	RCursor<GSubject> Cur(GetNodes());
@@ -240,7 +240,7 @@ R::RCursor<GDoc> GALILEI::GSubject::GetDocs(void)
 
 
 //------------------------------------------------------------------------------
-unsigned int GALILEI::GSubject::GetNbDocs(void) const
+size_t GALILEI::GSubject::GetNbDocs(void) const
 {
 	return(Data->Docs.GetNb());
 }
@@ -261,7 +261,7 @@ R::RCursor<GProfile> GALILEI::GSubject::GetProfiles(void) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GALILEI::GSubject::GetNbProfiles(void) const
+size_t GALILEI::GSubject::GetNbProfiles(void) const
 {
 	return(Data->Profiles.GetNb());
 }
@@ -290,7 +290,7 @@ RString GSubject::GetFullName(void) const
 
 
 //------------------------------------------------------------------------------
-unsigned int GSubject::GetId(void) const
+size_t GSubject::GetId(void) const
 {
 	return(Data->Id);
 }
@@ -304,7 +304,7 @@ bool GSubject::IsUsed(void) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::SetUsed(GSession* session,size_t nbprofiles,unsigned int& nbsocial)
+void GSubject::SetUsed(GSession* session,size_t nbprofiles,size_t& nbsocial)
 {
 	GProfile* prof;
 	static const RString UserNames[]={"Pascal Francq","Alain Delchambre","Hugues Bersini","Francois Heinderyckx",

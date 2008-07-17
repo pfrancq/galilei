@@ -5,7 +5,7 @@
 
 	Link - Header.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors
 		 Vandaele valery(vavdaele@ulb.ac.be)
@@ -61,9 +61,9 @@ private:
 	const GDoc* DocTO;
 
 	/**
-	* Number of occurence of the link.
+	* Number of occurrence of the link.
 	*/
-	unsigned int Occurs;
+	size_t Occurs;
 
 public :
 
@@ -97,7 +97,7 @@ public :
 	* @param id             Identificator.
 	* @return int
 	*/
-	int Compare(const unsigned int id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Compare an identificator of the document of a link with another document.
@@ -126,13 +126,12 @@ public :
 	* Set the number of occurence of the link.
 	* @param nbO            The Number of occurences.
 	*/
-	void SetOccurs(unsigned int nbO) {Occurs = nbO;}
+	void SetOccurs(size_t nbO) {Occurs = nbO;}
 
 	/**
 	* Get the number of occurences of the link.
-	* @return unsigned int.
 	*/
-	unsigned int GetOccurs(void) const {return(Occurs);}
+	size_t GetOccurs(void) const {return(Occurs);}
 
 	/**
 	* Get the url of the document corresponding to the link.
@@ -148,9 +147,8 @@ public :
 
 	/**
 	* Get the identificator of the document pointed by the link.
-	* @return unsigned int.
 	*/
-	unsigned int GetId(void) const {return DocTO->GetId();}
+	size_t GetId(void) const {return DocTO->GetId();}
 
 	/**
 	* Destructor of a link.

@@ -42,30 +42,122 @@
 
 
 //------------------------------------------------------------------------------
+// forward declaration
+namespace R
+{
+	template<class C,bool bOrder> class RRecFile;
+}
+
+
+//------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
 /**
-* The GMeasure2Elements class provides a representation for a measure between two
-* elements.
+* The GMeasure2Elements class provides a representation for a measure between
+* two elements. Each measure has different properties:
+* - Symmetric (for example between two same type of elements) or not.
+* - The values can be stored in memory. This can be memory consuming for huge
+*    number of elements.
+* - The values can be stored in files. In this case, for each measure 'mes', 4
+*   files are created : mes.main (containing main information), mes.idx (each
+*   record corresponds to one "line" element), mes.block (each record
+*   corresponds to a block of values) and mes.val (each record corresponds to
+*   a value). All files are created in a sub-directory called after the name of
+*   the world.
+* The class supposes that the identifiers of the elements are continuous and
+* that the first identifier is one.
 * @author Pascal Francq.
 * @short Measures Between Two Elements.
 */
 class GMeasure2Elements : public GMeasure, public GSignalHandler
 {
-	class Measures;
+	class Measures;    // A list of measure for a given element.
+	class MeasureRec;  // Record storing a specific measure.
+	class IdxRec;      // Record storing the first block of each element.
+	class BlockRec;    // Record storing a reference to a block of values.
 
 	/**
 	 * Values.
 	 */
-	R::RContainer<Measures,true,false> Values;
+	R::RContainer<Measures,true,false>* MemValues;
 
 	/**
-	 *  Is the measure symetric, i.e. measure(i,j)=measure(j,i) ?
+	 * Records of measures.
 	 */
-	bool Symetric;
+	R::RRecFile<MeasureRec,false>* RecValues;
+
+	/**
+	 * Records of index.
+	 */
+	R::RRecFile<IdxRec,false>* Idx;
+
+	/**
+	 * Record of blocks.
+	 */
+	R::RRecFile<BlockRec,false>* Blocks;
+
+	/**
+	 * Number of lines in memory.
+	 */
+	size_t MemNbLines;
+
+	/**
+	 * Number of columns in memory.
+	 */
+	size_t MemNbCols;
+
+	/**
+	 * Number of lines in files.
+	 */
+	size_t FileNbLines;
+
+	/**
+	 * Number of columns in files
+	 */
+	size_t FileNbCols;
+
+	/**
+	 * Maximal identifier of new lines to created.
+	 */
+	size_t MaxIdLine;
+
+	/**
+	 * Maximal identifier of new columns to created
+	 */
+	size_t MaxIdCol;
+
+	/**
+	 * Number of values computed.
+	 */
+	size_t NbValues;
+
+	/**
+	 * Structures in memory must be extended.
+	 */
+	bool MemMustExtend;
+
+	/**
+	 * Structures in files must be extended.
+	 */
+	bool FileMustExtend;
+
+	/**
+	 * Mean of the measures.
+	 */
+	double Mean;
+
+	/**
+	 * Deviation of the measures.
+	 */
+	double Deviation;
+
+	/**
+	 *  Is the measure symmetric, i.e. measure(i,j)=measure(j,i) ?
+	 */
+	bool Symmetric;
 
 	/**
 	* Level under which a measure is considered as null;
@@ -123,28 +215,13 @@ class GMeasure2Elements : public GMeasure, public GSignalHandler
 	 */
 	tObjType Cols;
 
-	/**
-	 * Mean of the measures.
-	 */
-	double Mean;
-
-	/**
-	 * Deviation of the measures.
-	 */
-	double Deviation;
-
-	/**
-	 * Number of values computed.
-	 */
-	size_t NbValues;
-
 public:
 
 	/**
 	* Constructor of the measures between two elements of the same type. The
-	* measures may be symetric or not.
+	* measures may be symmetric or not.
 	* @param fac             Factory of the plug-in.
-	* @param sym             Symetric measure?
+	* @param sym             Symmetric measure?
 	* @param type            Type of the elements in the lines.
 	*/
 	GMeasure2Elements(GFactoryMeasure* fac,bool sym,tObjType type);
@@ -153,15 +230,15 @@ public:
 	 * Constructor of the measures between two elements of different types.
 	 * @param fac             Factory of the plug-in.
 	 * @param lines           Type of the elements in the lines.
-	 * @param cols            Type of the elements in the cols.
+	 * @param cols            Type of the elements in the columns.
 	 */
 	GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjType cols);
 
 	/**
 	 * Set the type of the elements.
-	 * @param sym             Symetric measure?
+	 * @param sym             Symmetric measure?
 	 * @param lines           Type of the elements in the lines.
-	 * @param cols            Type of the elements in the cols.
+	 * @param cols            Type of the elements in the columns.
 	 */
 	void SetElementsType(bool sym,tObjType lines,tObjType cols);
 
@@ -188,24 +265,19 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
-	 * Method to make all measures being dirty.
-	 */
-	virtual void Dirty(void);
-
-	/**
 	* Get a measure between two elements. There are three parameters.
 	* @param measure         Type of the measure (0).
 	* @param id1             Identifier of the first element.
 	* @param id2             Identifier of the second element.
 	*/
-	virtual void Measure(unsigned int measure,...);
+	virtual void Measure(size_t measure,...);
 
 	/**
 	* Access to the minmum of the measure of two similar elements. There are
 	* maximum two parameters.
 	* @param measure         Type of the measure (0).
 	 */
-	virtual void Info(unsigned int info,...);
+	virtual void Info(size_t info,...);
 
 	/**
 	 * Compute the measure for two elements.
@@ -245,6 +317,47 @@ public:
 private:
 
 	/**
+	 * Check if the identifiers must be changed.
+	 * @param id1
+	 * @param id2
+	 */
+	inline void Check(size_t& id1,size_t id2) const
+	{
+		if((Symmetric)&&(id1<id2))
+		{
+			size_t tmp(id1);
+			id1=id2;
+			id2=tmp;
+		}
+	}
+
+	/**
+	 * Read a value of a measure between two elements identified by the
+	 * identifiers id1 and id2.
+	 * @param id1            Identifier of the first element.
+	 * @param id2            Identifier of the second element.
+	 */
+	inline double ReadValue(size_t id1,size_t id2);
+
+	/**
+	 * Write a given value in the file.
+	 * @param id1            Identifier of the first element.
+	 * @param id2            Identifier of the second element.
+	 * @param val            Value to write.
+	 */
+	void WriteValue(size_t id1,size_t id2,double val);
+
+	/**
+	 * Extend the internal structure.
+	 */
+	void ExtendMem(void);
+
+	/**
+	 * Extend the files structure.
+	 */
+	void ExtendFile(void);
+
+	/**
 	 * An element was added and all the measure related to it must be created.
 	 * @param id             Identifier of the element.
 	 * @param line           Element is a line?
@@ -266,7 +379,6 @@ private:
 	 */
 	void DeleteIdentificator(size_t id,bool line);
 
-
 	/**
 	 * This template method handles the modification of the status of a given
 	 * element. This method is used by all the Event methods.
@@ -276,6 +388,28 @@ private:
 	 * @param line           Element is a line?
 	 */
 	template<class C> void UpdateElement(C* element,tEvent event,bool line);
+
+	/**
+	 * All the measures must be updated in memory.
+	 */
+	void UpdateMem(void);
+
+	/**
+	 * All the measures must be updated in files.
+	 */
+	void UpdateFile(void);
+
+	/**
+	 * Add a new value.
+	 * @param val            Value to add.
+	 */
+	void AddValue(double val);
+
+	/**
+	 * Delete a new value.
+	 * @param val            Value to delete.
+	 */
+	void DeleteValue(double& val);
 
 public:
 
@@ -299,23 +433,6 @@ public:
 	* @param event           Event.
 	*/
 	virtual void Event(GCommunity* community, tEvent event);
-
-	/**
-	 * All the measures must be updated.
-	 */
-	void Update(void);
-
-	/**
-	 * Add a new value.
-	 * @param val            Value to add.
-	 */
-	void AddValue(double val);
-
-	/**
-	 * Delete a new value.
-	 * @param val            Value to delete.
-	 */
-	void DeleteValue(double& val);
 
 	/**
 	* Create the parameters.

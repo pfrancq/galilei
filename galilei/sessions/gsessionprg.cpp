@@ -678,15 +678,15 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 //------------------------------------------------------------------------------
 void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
 {
-	unsigned int MaxStep;
-	unsigned int MinFBStep;
-	unsigned int MaxFBStep;
-	unsigned int NbStep;
+	size_t MaxStep;
+	size_t MinFBStep;
+	size_t MaxFBStep;
+	size_t NbStep;
 	double Proba;
 	RRandom* Random;
-	unsigned int nb;
-	unsigned int NewProf;
-	unsigned int nbminprof,nbmaxprof;
+	size_t nb;
+	size_t NewProf;
+	size_t nbminprof,nbmaxprof;
 	GSlot* rec=dynamic_cast<GSlot*>(o);
 
 	if(args->GetNb()!=4)

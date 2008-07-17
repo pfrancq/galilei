@@ -6,7 +6,7 @@
 
 	Relation Type - Implementation.
 
-	Copyright 2006 by the Université Libre de Bruxelles.
+	Copyright 2006 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -46,7 +46,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GRelationType::GRelationType(unsigned int id,const R::RString& name,const R::RString& desc)
+GRelationType::GRelationType(size_t id,const R::RString& name,const R::RString& desc)
 	: Id(id), Name(name), Description(desc), Relations(20)
 {
 }
@@ -60,7 +60,7 @@ int GRelationType::Compare(const GRelationType& type) const
 
 
 //-----------------------------------------------------------------------------
-int GRelationType::Compare(unsigned int id) const
+int GRelationType::Compare(size_t id) const
 {
 	return(Id-id);
 }
@@ -74,7 +74,7 @@ int GRelationType::Compare(const R::RString& name) const
 
 
 //-----------------------------------------------------------------------------
-GRelation* GRelationType::GetRelation(unsigned int id)
+GRelation* GRelationType::GetRelation(size_t id)
 {
 	return(Relations.GetPtr(id));
 }

@@ -76,9 +76,8 @@ public:
 
 	/**
 	* Get the Identificator of the document.
-	* @return unsigned int.
 	*/
-	unsigned int GetId(void) const {return(Doc->GetId());}
+	size_t GetId(void) const {return(Doc->GetId());}
 
 	/**
 	* Get a cursor on the list of links.
@@ -107,7 +106,7 @@ public:
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(const unsigned int id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Destructor of a list of links.

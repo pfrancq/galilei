@@ -45,7 +45,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GSugs::GSugs(tObjType type,unsigned int id,unsigned int max)
+GSugs::GSugs(tObjType type,size_t id,size_t max)
 	: Type(type), Id(id), Docs(max)
 {
 	if((Type!=otProfile)&&(Type!=otCommunity))
@@ -68,14 +68,14 @@ int GSugs::Compare(const GSugs* sugs) const
 
 
 //-----------------------------------------------------------------------------
-int GSugs::Compare(const unsigned id) const
+int GSugs::Compare(const size_t id) const
 {
 	return(Id-id);
 }
 
 
 //-----------------------------------------------------------------------------
-void GSugs::AddSugs(unsigned int id)
+void GSugs::AddSugs(size_t id)
 {
 	Docs.Insert(id);
 }

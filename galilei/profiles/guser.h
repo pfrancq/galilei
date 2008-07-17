@@ -77,7 +77,7 @@ public:
 	* @param fullname       FullName of the user.
 	* @param nb             Number of profiles.
 	*/
-	GUser(unsigned int id,const R::RString name,const R::RString fullname,unsigned int nb=5);
+	GUser(size_t id,const R::RString name,const R::RString fullname,size_t nb=5);
 
 	/**
 	* Compare two users by comparing their identificator.
@@ -101,7 +101,7 @@ public:
 	* @param id              Identificator.
 	* @return int
 	*/
-	int Compare(const unsigned int id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Compare the name of a user with another one.
@@ -113,15 +113,15 @@ public:
 
 	/**
 	* Get the identificator of the user.
-	* @return unsigned int.
+	* @return size_t.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
-	void SetId(unsigned int id);
+	void SetId(size_t id);
 
 	/**
 	 * Get a profile with a given name.

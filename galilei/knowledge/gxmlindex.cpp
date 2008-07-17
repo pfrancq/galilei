@@ -90,7 +90,7 @@ GXMLIndex::GXMLIndex(GConceptType* type,GConcept* tag,GLang* lang,RContainer<GCo
 
 
 //-----------------------------------------------------------------------------
-GXMLIndex::GXMLIndex(unsigned int id,const RString& name,GConceptType* type,unsigned int refdocs,unsigned int refsubprofiles,unsigned int refgroups)
+GXMLIndex::GXMLIndex(size_t id,const RString& name,GConceptType* type,size_t refdocs,size_t refsubprofiles,size_t refgroups)
 	: GConcept(id,name,type,refdocs,refsubprofiles,refgroups), XMLTag(0), Universal(10), Stems(10)
 {
 	BuildDef();

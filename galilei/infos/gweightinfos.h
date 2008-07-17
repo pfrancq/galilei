@@ -68,7 +68,7 @@ public:
 	* Constructor of a list of weighted information entities.
 	* @param max            Maximal number of word created at initialization.
 	*/
-	GWeightInfos(unsigned int max);
+	GWeightInfos(size_t max);
 
 	/**
 	* Copy constructor of a list of weighted information entities.
@@ -221,7 +221,7 @@ public:
 	*                       that the lists should be identical).
 	* @return true if there is at least nb number of common entities.
 	*/
-	bool SimilarityBool(const GWeightInfos& w,unsigned int nb=0) const;
+	bool SimilarityBool(const GWeightInfos& w,size_t nb=0) const;
 
 	/**
 	 * Extract all information entities related to a given language an put them

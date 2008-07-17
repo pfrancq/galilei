@@ -5,7 +5,7 @@
 
 	Link - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
+	Copyright 2003-2008 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors
 		 Vandaele valery(vavdaele@ulb.ac.be)
@@ -64,7 +64,7 @@ int GLink::Compare(const GLink& link) const
 
 
 //------------------------------------------------------------------------------
-int GLink::Compare( const unsigned int id) const
+int GLink::Compare( const size_t id) const
 {
 	return (DocTO->GetId()- id);
 }

@@ -70,7 +70,7 @@ GConcept::GConcept(const RString& name,GConceptType* type)
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(unsigned int id,const RString& name,GConceptType* type,unsigned int refdocs,unsigned int refprofiles,unsigned int refgroups)
+GConcept::GConcept(size_t id,const RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refgroups)
 	: Id(id), Name(name), Type(type), NbRefDocs(refdocs),
 	  NbRefProfiles(refprofiles), NbRefGroups(refgroups)
 {
