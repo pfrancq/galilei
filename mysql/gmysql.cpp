@@ -87,7 +87,7 @@ GStorageMySQL::GStorageMySQL(GFactoryStorage* fac)
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::GetCount(RString tbl)
+size_t GStorageMySQL::GetCount(RString tbl)
 {
 	RString c;
 	RString sSql("SELECT COUNT(*) FROM "+tbl);
@@ -101,7 +101,7 @@ unsigned int GStorageMySQL::GetCount(RString tbl)
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::GetMax(RString tbl,RString fld)
+size_t GStorageMySQL::GetMax(RString tbl,RString fld)
 {
 	RString sSql("SELECT MAX("+fld+") FROM "+tbl);
 	RString c;
@@ -206,7 +206,7 @@ void GStorageMySQL::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::GetNbSaved(tObjType type)
+size_t GStorageMySQL::GetNbSaved(tObjType type)
 {
 	try
 	{
@@ -282,7 +282,7 @@ void GStorageMySQL::ClearDummy(RString name)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddDummyEntry(RString name,unsigned int id,RString desc,unsigned int parentid)
+void GStorageMySQL::AddDummyEntry(RString name,size_t id,RString desc,size_t parentid)
 {
 	RString sSql;
 
@@ -300,7 +300,7 @@ void GStorageMySQL::AddDummyEntry(RString name,unsigned int id,RString desc,unsi
 
 
 //------------------------------------------------------------------------------
-RQuery* GStorageMySQL::SelectDummyEntry(RString name,unsigned int id,RString desc,unsigned int parentid,unsigned int filter)
+RQuery* GStorageMySQL::SelectDummyEntry(RString name,size_t id,RString desc,size_t parentid,size_t filter)
 {
 	RString sSql;
 	RQuery* select;
@@ -347,7 +347,7 @@ RQuery* GStorageMySQL::SelectDummyEntry(RString name,unsigned int id,RString des
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::ClearDummyEntry(RString name,unsigned int id,RString desc, unsigned int parentid,unsigned int filter)
+void GStorageMySQL::ClearDummyEntry(RString name,size_t id,RString desc,size_t parentid,size_t filter)
 {
 	RString sSql;
 
@@ -782,8 +782,8 @@ void GStorageMySQL::LoadInfos(RContainer<GWeightInfo,false,true>& infos,tObjType
 //------------------------------------------------------------------------------
 void GStorageMySQL::LoadConcepts(GConceptType* type)
 {
-	unsigned int MaxCount=100;
-	unsigned int MaxId=0;
+	size_t MaxCount=100;
+	size_t MaxId=0;
 	RString sSql;
 
 	try
@@ -896,7 +896,7 @@ void GStorageMySQL::DeleteConcept(GConcept* concept)
 
 
 //------------------------------------------------------------------------------
-RString GStorageMySQL::LoadConcept(unsigned int id,GConceptType* type)
+RString GStorageMySQL::LoadConcept(size_t id,GConceptType* type)
 {
 	try
 	{
@@ -923,7 +923,7 @@ size_t GStorageMySQL::LoadConcept(const RString name,GConceptType* type)
 {
 	try
 	{
-		unsigned int res=0;
+		size_t res=0;
 		RString sSql("SELECT conceptid FROM concepts WHERE typeid="+Num(type->GetId())+" AND kwd="+RQuery::SQLValue(name));
 		auto_ptr<RQuery> w(Db->Query(sSql));
 		if(w->GetNbRows())
@@ -1075,7 +1075,7 @@ void GStorageMySQL::AssignId(GDoc* doc)
 //------------------------------------------------------------------------------
 void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 {
-	unsigned int MaxCount=100;
+	size_t MaxCount=100;
 	RString sSql;
 	RString tbl;
 	GWordOccurs* ptr;
@@ -1127,7 +1127,7 @@ void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 
 
 //------------------------------------------------------------------------------
-GDoc* GStorageMySQL::LoadDoc(unsigned int docid)
+GDoc* GStorageMySQL::LoadDoc(size_t docid)
 {
 	try
 	{
@@ -1358,7 +1358,7 @@ void GStorageMySQL::LoadDocs(void)
 {
 	GDoc* doc;
 	GLang* lang;
-	unsigned int docid;
+	size_t docid;
 
 	try
 	{
@@ -1519,7 +1519,7 @@ void GStorageMySQL::LoadUsers(void)
 			for(Profiles->Start();!Profiles->End();Profiles->Next())
 			{
 				GUser* user=Session->GetUser(atoi((*Profiles)[3]));
-				unsigned int groupid=atoi((*Profiles)[5]);
+				size_t groupid=atoi((*Profiles)[5]);
 				if(!groupid)
 					groupid=cNoRef;
 				Session->InsertProfile(prof=new GProfile(user,atoi((*Profiles)[0]),(*Profiles)[1],groupid,GetMySQLToDate((*Profiles)[4]),GetMySQLToDate((*Profiles)[6]),GetMySQLToDate((*Profiles)[7]),(atoi((*Profiles)[2])==1),5));
@@ -1541,7 +1541,7 @@ void GStorageMySQL::LoadUsers(void)
 
 
 //------------------------------------------------------------------------------
-GUser* GStorageMySQL::LoadUser(unsigned int userid)
+GUser* GStorageMySQL::LoadUser(size_t userid)
 {
 	try
 	{
@@ -1579,7 +1579,7 @@ GUser* GStorageMySQL::LoadUser(const R::RString name)
 
 
 //------------------------------------------------------------------------------
-GProfile* GStorageMySQL::LoadProfile(unsigned int profileid)
+GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 {
 	try
 	{
@@ -1594,7 +1594,7 @@ GProfile* GStorageMySQL::LoadProfile(unsigned int profileid)
 		GUser* user=Session->GetUser(atoi((*Profile)[3]));
 		if(!user)
 			throw GException("Profile "+(*Profile)[0]+" has no parent user");
-		unsigned int groupid=atoi((*Profile)[5]);
+		size_t groupid=atoi((*Profile)[5]);
 		if(!groupid)
 			groupid=cNoRef;
 
@@ -1628,7 +1628,7 @@ GProfile* GStorageMySQL::LoadProfile(unsigned int profileid)
 void GStorageMySQL::GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,true,false>& res)
 {
 	RString sSql;
-	unsigned int profileid,idx;
+	size_t profileid,idx;
 	GSugs* sugs;
 
 	try
@@ -1665,7 +1665,7 @@ void GStorageMySQL::GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,t
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::UpdateProfiles(unsigned int docid)
+void GStorageMySQL::UpdateProfiles(size_t docid)
 {
 	try
 	{
@@ -1729,7 +1729,7 @@ void GStorageMySQL::AssignId(GProfile* p)
 //------------------------------------------------------------------------------
 void GStorageMySQL::SaveUser(GUser* user)
 {
-	unsigned int userid;
+	size_t userid;
 	RString sSql;
 
 	try
@@ -1766,8 +1766,8 @@ void GStorageMySQL::SaveUser(GUser* user)
 //------------------------------------------------------------------------------
 void GStorageMySQL::SaveProfile(GProfile* prof)
 {
-	unsigned int profid;
-	unsigned int social;
+	size_t profid;
+	size_t social;
 	RString sSql;
 
 	try
@@ -1864,7 +1864,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveProfileInHistory(GProfile* sub,unsigned int historicID)
+void GStorageMySQL::SaveProfileInHistory(GProfile* sub,size_t historicID)
 {
 	RCursor<GWeightInfo> Cur;
 
@@ -1889,7 +1889,7 @@ void GStorageMySQL::SaveProfileInHistory(GProfile* sub,unsigned int historicID)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveHistoricProfiles(unsigned int /*historicID*/)
+void GStorageMySQL::SaveHistoricProfiles(size_t /*historicID*/)
 {
 	try
 	{
@@ -1904,7 +1904,7 @@ void GStorageMySQL::SaveHistoricProfiles(unsigned int /*historicID*/)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddSugsProfile(const R::RString& name,unsigned int profileid,unsigned int docid,unsigned int rank)
+void GStorageMySQL::AddSugsProfile(const R::RString& name,size_t profileid,size_t docid,size_t rank)
 {
 	RString sSql;
 
@@ -1923,7 +1923,7 @@ void GStorageMySQL::AddSugsProfile(const R::RString& name,unsigned int profileid
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddFdbk(unsigned int p,unsigned int d,tDocAssessment assess,R::RDate date,R::RDate computed)
+void GStorageMySQL::AddFdbk(size_t p,size_t d,tDocAssessment assess,R::RDate date,R::RDate computed)
 {
 	try
 	{
@@ -1984,7 +1984,7 @@ void GStorageMySQL::LoadCommunities(void)
 
 
 //------------------------------------------------------------------------------
-GCommunity* GStorageMySQL::LoadCommunity(unsigned int groupid)
+GCommunity* GStorageMySQL::LoadCommunity(size_t groupid)
 {
 	try
 	{
@@ -2006,15 +2006,15 @@ GCommunity* GStorageMySQL::LoadCommunity(unsigned int groupid)
 
 
 //------------------------------------------------------------------------------
-GCommunitiesHistory* GStorageMySQL::LoadHistoricCommunities(unsigned int historicID)
+GCommunitiesHistory* GStorageMySQL::LoadHistoricCommunities(size_t historicID)
 {
 	RString sSql;
 	GCommunityHistory* grp;
 	GCommunitiesHistory* grps;
 	GWeightInfosHistory* historicsubprof;
-	unsigned int subprofid;
-	unsigned int groupid;
-	unsigned int v;
+	size_t subprofid;
+	size_t groupid;
+	size_t v;
 
 	try
 	{
@@ -2101,7 +2101,7 @@ void GStorageMySQL::LoadHistoricCommunitiesByDate(R::RString mindate, R::RString
 void GStorageMySQL::GetSugsCommunities(const R::RString& name,R::RContainer<GSugs,true,false>& res)
 {
 	RString sSql;
-	unsigned int groupid,idx;
+	size_t groupid,idx;
 	GSugs* sugs;
 
 	try
@@ -2138,7 +2138,7 @@ void GStorageMySQL::GetSugsCommunities(const R::RString& name,R::RContainer<GSug
 
 
 //------------------------------------------------------------------------------
-unsigned int GStorageMySQL::GetHistorySize(void)
+size_t GStorageMySQL::GetHistorySize(void)
 {
 	try
 	{
@@ -2155,7 +2155,7 @@ unsigned int GStorageMySQL::GetHistorySize(void)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::UpdateCommunities(unsigned int subid)
+void GStorageMySQL::UpdateCommunities(size_t subid)
 {
 	try
 	{
@@ -2254,7 +2254,7 @@ void GStorageMySQL::SaveCommunitiesHistory(void)
 {
 	R::RCursor<GCommunity> GroupsCursor;
 	RCursor<GProfile> Sub;
-	unsigned int historicID;
+	size_t historicID;
 	RString sSql;
 
 	try
@@ -2293,7 +2293,7 @@ void GStorageMySQL::SaveCommunitiesHistory(void)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddSugsCommunity(const R::RString& name,unsigned int groupid,unsigned int docid,unsigned int rank)
+void GStorageMySQL::AddSugsCommunity(const R::RString& name,size_t groupid,size_t docid,size_t rank)
 {
 	RString sSql;
 
