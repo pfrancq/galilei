@@ -72,10 +72,8 @@ GLangIT::GLangIT(GFactoryLang* fac)
 //-----------------------------------------------------------------------------
 RString GLangIT::GetStemming(const RString& _kwd)
 {
-	char* end;
-	unsigned int len;
 	string word;
-	 word=_kwd.ToString();
+	word=_kwd.ToString();
 	(*this)(word);
 	return RString(word);
 }

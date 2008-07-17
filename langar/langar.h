@@ -6,7 +6,7 @@
 
 	Arabic Language - Header.
 
-	Copyright 2004 by the Universit�Libre de Bruxelles.
+	Copyright 2004-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -101,7 +101,6 @@ class GLangAR : public GLang
 	* rules file.
 	*/
 	R::RString RulesFile;
-
 
 public:
 

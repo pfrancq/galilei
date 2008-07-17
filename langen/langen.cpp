@@ -351,7 +351,7 @@ RString GLangEN::GetStemming(const RString& _kwd)
 	RString res;
 	char kwd[51];
 	char* end;
-	unsigned int len;
+	size_t len;
 
 	// Transform _kwd in lowercase and store it in kwd.
 	res=_kwd.ToLower();

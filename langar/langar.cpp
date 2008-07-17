@@ -63,21 +63,21 @@ using namespace std;
 class GALILEI::GLangAR::ArabicRule
 {
 public:
-	unsigned int Id;
-	unsigned int Level;
+	size_t Id;
+	size_t Level;
 	RString OldSuffix;
 	RString NewSuffix;
-	 int BeforePos;
+	int BeforePos;
 	int AfterPos;
-	unsigned int NbMinLetters;
+	size_t NbMinLetters;
 	int EqualityPos;
 	RString Equality;
 	int ForbiddenPos;
 	RString ForbiddenLetter;
 	bool CycleRule; // true if the rule has to be applied until it can not any more, false if the rule has to ben applied one once
 	bool NextLevel; // must go to next level if rule is applied
-	ArabicRule(unsigned int id, unsigned int level, RString os, RString ns, int before_pos, int after_pos,
-		unsigned int nb_min_letters, int equality_pos, RString equality, int forbidden_pos, RString forbidden_letter, bool cycle_rule, bool next_level);
+	ArabicRule(size_t id,size_t level,RString os,RString ns,int before_pos,int after_pos,
+			size_t nb_min_letters,int equality_pos, RString equality,int forbidden_pos, RString forbidden_letter,bool cycle_rule,bool next_level);
 	int Compare(const ArabicRule&) const {return(-1);} // force rules to be sorted as entered;
 	bool Apply(RString& kwd); //function to apply the rule -> returns true if a stemmer is applied
 	int CheckConditions(RString kwd); // return (-1) if condtions are not verified, else return the position of the old suffix in the word kwd
@@ -86,8 +86,8 @@ public:
 
 
 //-----------------------------------------------------------------------------
-GLangAR::ArabicRule::ArabicRule(unsigned int id, unsigned int level, RString os, RString ns,  int before_pos, int after_pos,
-		unsigned int nb_min_letters, int equality_pos, RString equality, int forbidden_pos, RString forbidden_letter, bool cycle_rule, bool next_level)
+GLangAR::ArabicRule::ArabicRule(size_t id,size_t level, RString os, RString ns,  int before_pos, int after_pos,
+		size_t nb_min_letters, int equality_pos, RString equality, int forbidden_pos, RString forbidden_letter, bool cycle_rule, bool next_level)
 	: Id(id), Level(level), OldSuffix(os), NewSuffix(ns), BeforePos(before_pos), AfterPos(after_pos), NbMinLetters(nb_min_letters),
 		EqualityPos(equality_pos), Equality(equality), ForbiddenPos(forbidden_pos), ForbiddenLetter(forbidden_letter), CycleRule(cycle_rule), NextLevel(next_level)
 {
@@ -229,7 +229,7 @@ void GALILEI::GLangAR::LoadRules(void)
 	RString* tab;
 	RString w;
 	RChar separator(char(0x23)); // semi-colon ';' separator
-	unsigned int tmp, i, nbargs=13;
+	size_t tmp, i, nbargs=13;
 	int sep;
 	ArabicRule* rule;
 
