@@ -73,12 +73,12 @@ namespace GALILEI{
 class GProfileCalcFeedback : public GProfileCalc
 {
 protected:
-	
+
 	/**
 	 * Current profile computed.
 	 */
 	GProfile* Profile;
-	
+
 	/**
 	* Information computed.
 	*/
@@ -87,12 +87,12 @@ protected:
 	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
-	unsigned int MaxNonZero;
+	size_t MaxNonZero;
 
 	/**
 	* Number of the non-zero weights for irrelevant entities in the vector.
 	*/
-	unsigned int NegNonZero;
+	size_t NegNonZero;
 
 	/**
 	* Factor of the vectors corresponding to the relevant part.
@@ -108,12 +108,12 @@ protected:
 	* Factor of the vectors corresponding to the irrelevant part.
 	*/
 	double IrrelFactor;
-	
+
 	/**
 	* Global vector computed.
 	*/
 	GWeightInfos Vectors;
-	
+
 	/**
 	* Global vector computed.
 	*/
@@ -127,23 +127,23 @@ protected:
 	/**
 	* Number of documents assessed by a profile used for the computing.
 	*/
-	unsigned int NbDocs;
+	size_t NbDocs;
 
 	/**
 	* Number of documents assessed as relevant by a profile used for the computing.
 	*/
-	unsigned int NbDocsRel;
-	
+	size_t NbDocsRel;
+
 	/**
 	* Number of documents assessed as fuzzy relevant by a profile used for the computing.
 	*/
-	unsigned int NbDocsFuzzy;
-	
+	size_t NbDocsFuzzy;
+
 	/**
 	* Number of documents assessed as irrelevant by a profile used for the computing.
 	*/
-	unsigned int NbDocsIrrel;
-	
+	size_t NbDocsIrrel;
+
 	/**
 	* Ordered vector for current computed profile.
 	*/
@@ -152,7 +152,7 @@ protected:
 	/**
 	* Maximal size allocate for a profile.
 	*/
-	unsigned int MaxOrderSize;
+	size_t MaxOrderSize;
 
 	/**
 	* Incremental mode for the computing.
@@ -210,7 +210,7 @@ public:
 	 * @param dir            Directory where to write.
 	 */
 	void WriteFile(const RString& dir);
-	
+
 	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.

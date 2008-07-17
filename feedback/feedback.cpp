@@ -209,7 +209,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 void GProfileCalcFeedback::ComputeProfile(void)
 {
 	GWeightInfo** ptr;
-	unsigned int i,nb,nb2;
+	size_t i,nb,nb2;
 
 	// Choose the elements to stay.
 	if(Vectors.IsEmpty())
@@ -219,7 +219,7 @@ void GProfileCalcFeedback::ComputeProfile(void)
 	if(Vectors.GetNb()+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<unsigned int>((Vectors.GetNb()+1)*1.1);
+		MaxOrderSize=static_cast<size_t>((Vectors.GetNb()+1)*1.1);
 		Order=new GWeightInfo*[MaxOrderSize];
 	}
 	Vectors.GetTab(Order);
@@ -270,7 +270,7 @@ void GProfileCalcFeedback::Compute(GProfile* profile)
 	// If incremental mode -> copy information of the profile in 'Vectors'.
 	if(IncrementalMode&&profile->IsDefined())
 	{
-		unsigned int i,TotalRef;
+		size_t i,TotalRef;
 		Cur=profile->GetInfos();
 		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 		{
@@ -311,7 +311,7 @@ void GProfileCalcFeedback::WriteFile(const RString& dir)
 	RTextFile Out(dir+RFile::GetDirSeparator()+name);
 	Out.Open(RIO::Create);
 	GWeightInfo** ptr;
-	unsigned int i;
+	size_t i;
 	for(i=Vectors.GetNb()+1,ptr=Order;--i;ptr++)
 		Out<<(*ptr)->GetId()<<(*ptr)->GetType()<<(*ptr)->GetWeight()<<endl;
 }
