@@ -81,9 +81,9 @@ using namespace R;
 class KViewDicts::LocalItem : public QListViewItem
 {
 public:
-	unsigned int Id;
+	size_t Id;
 
-	LocalItem(QListView* v,unsigned int id,QString str) : QListViewItem(v,QString::number(id),str), Id(id) {}
+	LocalItem(QListView* v,size_t id,QString str) : QListViewItem(v,QString::number(id),str), Id(id) {}
 	virtual int compare( QListViewItem *i, int col, bool ascending ) const
 	{
 		if(col==0)
@@ -177,7 +177,7 @@ void KViewDicts::slotDoubleClick(QListViewItem* item)
 	Dict->clear();
 	CurDict=ptr->Dict;
 
-	unsigned int i;
+	size_t i;
 	const GConcept** concepts;
 	for(i=ptr->Dict->GetConceptMaxId()+2,concepts=ptr->Dict->GetConcepts();--i;concepts++)
 		if(*concepts)

@@ -263,7 +263,7 @@ void KViewGroup::slotMenu(int)
 	int dlg;
 	KURL url;
 	GDoc* doc;
-	unsigned int i,size,maxsize,newsize,j;
+	size_t i,size,maxsize,newsize,j;
 	GWeightInfo** tab;
 	GWeightInfo** tmp;
 
@@ -301,7 +301,7 @@ void KViewGroup::slotMenu(int)
 			if(!size) continue;
 			if(size>maxsize)
 			{
-				newsize=size+static_cast<unsigned int>(0.5*size);
+				newsize=size+static_cast<size_t>(0.5*size);
 				tmp=new GWeightInfo*[newsize];
 				if(tab)
 				{

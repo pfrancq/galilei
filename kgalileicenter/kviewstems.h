@@ -148,7 +148,7 @@ class KViewStems : public KView
 	* @param grp1           First Group.
 	* @param grp2           Second Group.
 	*/
-	unsigned int GetNbWords(GrWord* grp1,GrWord* grp2);
+	size_t GetNbWords(GrWord* grp1,GrWord* grp2);
 
 	/**
 	* Compute the Recall and the Precision.

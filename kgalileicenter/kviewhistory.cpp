@@ -78,7 +78,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid,
+KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* name,int wflags,size_t minid,size_t maxid,
 	 const char* mindate, const char* maxdate, bool bdate)
 	: KView(doc,parent,name,wflags),
 	  Global(global), MinGen(minid), MaxGen(maxid),MinDate(mindate), MaxDate(maxdate), CurId(0),  Profiles(0), Groups(0),  bDate(bdate)
@@ -322,7 +322,7 @@ void KViewHistory::slotSelectedSetChanged(QListViewItem* item)
 //-----------------------------------------------------------------------------
 void KViewHistory::DisplaySimilarities(void)
 {
-	unsigned int i;
+	size_t i;
 	double similarity;
 	QListViewItem* sim;
 	char num1[50], num2[50], num3[50], id[10];

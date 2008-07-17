@@ -85,12 +85,12 @@ class KViewHistory : public KView
 	/**
 	* the first historic groups
 	*/
-	 unsigned int MinGen;
+	size_t MinGen;
 
 	/**
 	* the last historic groups
 	*/
-	 unsigned int MaxGen;
+	size_t MaxGen;
 
 	/**
 	* the first historic groups
@@ -128,9 +128,9 @@ class KViewHistory : public KView
 	QMenuBar* ToolBar;
 
 	/**
-	* Identificator of the current showed solution.
+	* Identifier of the current showed solution.
 	*/
-	unsigned int CurId;
+	size_t CurId;
 
 	/**
 	* The container of subprofiles
@@ -171,7 +171,7 @@ public:
 	* @param checkNewProfiles check for new profiles.
 	* @param ckeckWellGroupedProfiles ckec for well-grouped profiles.
 	*/
-	KViewHistory(KDoc* doc, bool global,QWidget* parent,const char* name,int wflags, unsigned int minid, unsigned int maxid,const char* mindate, const char* maxdate, bool bdate);
+	KViewHistory(KDoc* doc, bool global,QWidget* parent,const char* name,int wflags,size_t minid,size_t maxid,const char* mindate, const char* maxdate, bool bdate);
 
 	/**
 	* Return the type of the window.

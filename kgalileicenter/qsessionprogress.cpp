@@ -699,7 +699,7 @@ void QSessionProgressDlg::NextProfile(const GProfile* prof)
 
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextChromosome(unsigned int id)
+void QSessionProgressDlg::NextChromosome(size_t id)
 {
 	NewLabel=QString("Analyse Chromosome ")+QString::number(id)+" ...";
 	Changed=true;

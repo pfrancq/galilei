@@ -298,13 +298,13 @@
     <tabstop>PushButton2</tabstop>
 </tabstops>
 <includes>
-    <include location="global" impldecl="in declaration">rmysql.h</include>
+    <include location="global" impldecl="in declaration">rdb.h</include>
     <include location="global" impldecl="in declaration">qlistview.h</include>
     <include location="local" impldecl="in implementation">qfilldatabase.ui.h</include>
 </includes>
 <slots>
     <slot>ChangeParent( int s )</slot>
-    <slot>InsertSubItem( R::RDb &amp; db, int parentId, QListViewItem * item )</slot>
+    <slot>InsertSubItem( R::RDb * db, int parentId, QListViewItem * item )</slot>
     <slot>ChooseParentName()</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>

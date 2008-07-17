@@ -575,7 +575,7 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 		RString pre(dir.latin1());
 		pre+="/doc";
 		RCursor<GDoc> Docs=Doc->GetSession()->GetDocs();
-		unsigned int nb;
+		size_t nb;
 		for(Docs.Start(),nb=0;!Docs.End();Docs.Next(),nb++)
 		{
 			if(dlg.wasCancelled())
@@ -592,7 +592,7 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 			RCursor<GWeightInfo> Words(Docs()->GetInfos());
 			for(Words.Start();!Words.End();Words.Next())
 			{
-				for(unsigned int i=lround(Words()->GetWeight())+1;--i;)
+				for(size_t i=lround(Words()->GetWeight())+1;--i;)
 				{
 					file<<Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType());
 				}
@@ -701,7 +701,7 @@ void KGALILEICenterApp::slotTextEnglish(void)
 void KGALILEICenterApp::slotShowHistory(void)
 {
 	R::RCursor<GFactoryLang> curlang;
-	unsigned int size, min, max;
+	size_t size, min, max;
 
 	curlang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
 	size=Doc->GetSession()->GetStorage()->GetHistorySize();

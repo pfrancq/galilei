@@ -116,9 +116,9 @@ class KViewStems::GrWordId
 {
 public:
 	GrWord* Grp;
-	unsigned int Pos;
+	size_t Pos;
 
-	GrWordId(GrWord* grp,unsigned int pos) : Grp(grp), Pos(pos) {}
+	GrWordId(GrWord* grp,size_t pos) : Grp(grp), Pos(pos) {}
 	int Compare(const GrWord* grp) const {return(Grp->Compare(*grp));}
 	int Compare(const GrWordId& grp) const {return(Grp->Compare(*grp.Grp));}
 };
@@ -202,8 +202,8 @@ void KViewStems::LoadFile(const char* filename)
 	RTextFile f(filename);
 	RString line;
 	const RChar* ptr;
-	unsigned int pos;
-	unsigned int len;
+	size_t pos;
+	size_t len;
 	RString word;
 	Word* wptr;
 	GrWord* gptr;
@@ -329,9 +329,9 @@ void KViewStems::resizeEvent(QResizeEvent *)
 
 
 //-----------------------------------------------------------------------------
-unsigned int KViewStems::GetNbWords(GrWord* grp1,GrWord* grp2)
+size_t KViewStems::GetNbWords(GrWord* grp1,GrWord* grp2)
 {
-	unsigned int tot=0;
+	size_t tot=0;
 
 	RCursor<Word> cWord(grp1->Words);
 	for(cWord.Start();!cWord.End();cWord.Next())
@@ -346,14 +346,14 @@ void KViewStems::ComputeRecallPrecision(void)
 {
 // 	GrWord* root;
 // 	GrWord* stem;
-// 	unsigned int NbStem;
-// 	unsigned int InStem;
-// 	unsigned int InRoot;
+// 	size_t NbStem;
+// 	size_t InStem;
+// 	size_t InRoot;
 // 	double NbWords;
 // 	char tmp[100];
 // 	RContainer<GrWord,true,true>*** ptr;
 // 	RContainer<GrWord,true,true>** ptr2;
-// 	unsigned int i,j;
+// 	size_t i,j;
 //
 // 	Precision=Recall=0.0;
 // 	NbWords=0.0;
@@ -422,17 +422,17 @@ void KViewStems::ComputeRecallPrecision(void)
 void KViewStems::ComputeTotal(void)
 {
 // 	GrWord* root;
-// 	unsigned int NbRows,NbCols;                   // Rows and Cols for matrix
-// 	unsigned int NbWords;                         // Number of Words.
+// 	size_t NbRows,NbCols;                   // Rows and Cols for matrix
+// 	size_t NbWords;                         // Number of Words.
 // 	double* VectorRows;                           // Sum of the rows of the matrix
 // 	double* VectorCols;                           // Sum of the columns of the matrix
 // 	double* VectorColsTemp;                       // temp sum of the columns of the matrix
 // 	double* vec;
-// 	unsigned int row,col;
+// 	size_t row,col;
 // 	double a,b,c,d,num,den;
 // 	RContainer<GrWord,true,true>*** ptr;
 // 	RContainer<GrWord,true,true>** ptr2;
-// 	unsigned int i,j;
+// 	size_t i,j;
 // 	char tmp[100];
 //
 // 	// Init part
