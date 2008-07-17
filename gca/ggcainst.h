@@ -91,7 +91,7 @@ public:
 
 	/**
 	*/
-	unsigned int NbSols;
+	size_t NbSols;
 
 	/**
 	* Construct the data.

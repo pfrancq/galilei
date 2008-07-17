@@ -93,7 +93,7 @@ public:
 	* @param id             Identificator of the group.
 	* @param data           Data needed for the group.
 	*/
-	GGCAGroup(GGCAChromo* owner,const unsigned int id);
+	GGCAGroup(GGCAChromo* owner,const size_t id);
 
 	/**
 	* Clear the information container in a group.

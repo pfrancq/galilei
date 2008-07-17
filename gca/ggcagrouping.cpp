@@ -128,7 +128,7 @@ bool GGCAGrouping::IsCoherent(const GCommunity* /*grp*/,const GProfile* /*sub*/)
 bool GGCAGrouping::IsValid(GCommunity* /*grp*/)
 {
 //	GSubProfileCursor Cur1,Cur2;
-//	unsigned int i,j;
+//	size_t i,j;
 //
 //	Cur1=grp->GetSubProfileCursor();
 //	Cur2=grp->GetSubProfileCursor();
@@ -157,8 +157,8 @@ bool GGCAGrouping::IsValid(GCommunity* /*grp*/)
 void GGCAGrouping::ConstructGroupsFromChromo(GGCAChromo* chromo)
 {
 
-	unsigned int* tab;
-	unsigned int* ptr;
+	size_t* tab;
+	size_t* ptr;
 
 	Session->ClearCommunities();
 	RCursor<GGCAGroup> gr(chromo->Used);
@@ -178,7 +178,7 @@ void GGCAGrouping::ConstructGroupsFromChromo(GGCAChromo* chromo)
 //-----------------------------------------------------------------------------
 void GGCAGrouping::BestChromo(const RNotification& notification)
 {
-    cout<<"Best Chromo at Gen : "<<GetData<unsigned int>(notification)<<endl;
+    cout<<"Best Chromo at Gen : "<<GetData<size_t>(notification)<<endl;
 }
 
 
@@ -192,13 +192,14 @@ void GGCAGrouping::Run(void)
 	try
 	{
 		double d;
-		unsigned int i;
+		size_t i;
 		GGCAObj* obj;
 
 		// Get the minimum of similarity
 		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities")->Info(0,&d);
   		Params.MinSimLevel=d;
 		cout<<"MinSim="<<d<<endl;
+		return;
 
 		// Create the GA objects
   		Objs.Clear(Profiles.GetNb());

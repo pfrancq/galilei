@@ -136,7 +136,7 @@ bool GGDAGrouping::IsCoherent(const GCommunity* /*grp*/,const GProfile* /*sub*/)
 bool GGDAGrouping::IsValid(GCommunity* /*grp*/)
 {
 //	GSubProfileCursor Cur1,Cur2;
-//	unsigned int i,j;
+//	size_t i,j;
 //
 //	Cur1=grp->GetSubProfileCursor();
 //	Cur2=grp->GetSubProfileCursor();
@@ -164,8 +164,8 @@ bool GGDAGrouping::IsValid(GCommunity* /*grp*/)
 //-----------------------------------------------------------------------------
 void GGDAGrouping::ConstructResults(RCursor<GGCAGroup> Sol)
 {
-	unsigned int* tab;
-	unsigned int* ptr;
+	size_t* tab;
+	size_t* ptr;
 
 	RTextFile Out("/var/log/galilei/res.txt");
 	Out.Open(RIO::Create);
@@ -215,7 +215,7 @@ class kMeansGroups;
 class kMeansGroup : public RGroup<kMeansGroup,GGCAObj,kMeansGroups>
 {
 public:
-	kMeansGroup(kMeansGroups* owner,unsigned int id);
+	kMeansGroup(kMeansGroups* owner,size_t id);
 	friend class KMeansDoc;
 };
 
@@ -224,13 +224,13 @@ public:
 class kMeansGroups : public RGroups<kMeansGroup,GGCAObj,kMeansGroups>
 {
 public:
-	kMeansGroups(RCursor<GGCAObj> objs,const unsigned int max)
+	kMeansGroups(RCursor<GGCAObj> objs,size_t max)
 		: RGroups<kMeansGroup,GGCAObj,kMeansGroups>(objs,max)
 		{}
 	friend class KMeansDoc;
 };
 
-kMeansGroup::kMeansGroup(kMeansGroups* owner,unsigned int id)
+kMeansGroup::kMeansGroup(kMeansGroups* owner,size_t id)
 	: RGroup<kMeansGroup,GGCAObj,kMeansGroups>(owner,id)
 {
 }
@@ -279,8 +279,8 @@ void GGDAGrouping::DokMeans(void)
 	cout<<kMeans.GetNbIterations()<<" iterations runned"<<endl;
 
 	cout<<"Save solutions"<<endl;
-	unsigned int* tab;
-	unsigned int* ptr;
+	size_t* tab;
+	size_t* ptr;
 
 	RTextFile Out("/var/log/galilei/res.txt");
 	Out.Open(RIO::Create);

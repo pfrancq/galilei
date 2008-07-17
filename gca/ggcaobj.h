@@ -54,7 +54,7 @@ protected:
 	/**
 	* The identificator of the object.
 	*/
-	unsigned int Id;
+	size_t Id;
 
 	/**
 	* Pointer to the element.
@@ -65,38 +65,38 @@ protected:
 	 * Identifier of the element.
 	 */
 	size_t ElementId;
-	
+
 	/**
 	 * Can the element be grouped in a group alone?
 	 */
 	bool Social;
-	
+
 	/**
 	 * Identifier of a common parent between elements that could prevent to group them together.
 	 */
 	size_t ParentId;
-	
+
 	/**
 	* Sum of all the "probabilities" of the documents.
 	*/
 	double SumPjk;
 
 public:
-	
+
 	/**
 	* Construct the object.
 	* @param id             Identificator.
 	* @param d              Corresponding document.
 	*/
-	GGCAObj(const unsigned int id,GDoc* d);
+	GGCAObj(size_t id,GDoc* d);
 
 	/**
 	* Construct the object.
 	* @param id             Identificator.
 	* @param p              Corresponding profile.
 	*/
-	GGCAObj(const unsigned int id,GProfile* p);
-		
+	GGCAObj(size_t id,GProfile* p);
+
 	/**
 	* Copy Construct.
 	* @param obj            Source used.
@@ -106,7 +106,7 @@ public:
 	/**
 	* Comparaison function
 	*/
-	int Compare(const unsigned int &id) const;
+	int Compare(const size_t id) const;
 
 	/**
 	* Comparaison function
@@ -121,7 +121,7 @@ public:
 	/**
 	* Return the identificator of the object.
 	*/
-	unsigned int GetId(void) const {return(Id);}
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* Return a pointer to the element.
@@ -132,17 +132,17 @@ public:
 	 * Return the identifier of the element.
 	 */
 	inline size_t GetElementId(void) const {return(ElementId);}
-	
+
 	/**
 	 * See if the element is social or not.
 	 */
 	inline bool IsSocial(void) const {return(Social);}
-	
+
 	/**
 	 * Get the identifier of the parent or 0 if there is no parent.
 	 */
 	inline size_t GetParentId(void) const {return(ParentId);}
-	
+
 	/**
 	* Destruct the object.
 	*/

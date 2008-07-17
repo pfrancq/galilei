@@ -50,14 +50,14 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAObj::GGCAObj(const unsigned int id,GDoc* d)
+GGCAObj::GGCAObj(size_t id,GDoc* d)
 	: Id(id), Element(d), ElementId(d->GetId()), Social(false), ParentId(0), SumPjk(0.0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAObj::GGCAObj(const unsigned int id,GProfile* p)
+GGCAObj::GGCAObj(size_t id,GProfile* p)
 	: Id(id), Element(p), ElementId(p->GetId()), Social(p->IsSocial()), ParentId(p->GetUser()->GetId()),SumPjk(0.0)
 {
 }
@@ -71,7 +71,7 @@ GGCAObj::GGCAObj(const GGCAObj* obj)
 
 
 //-----------------------------------------------------------------------------
-int GGCAObj::Compare(const unsigned int& id) const
+int GGCAObj::Compare(const size_t id) const
 {
 	return(Id-id);
 }

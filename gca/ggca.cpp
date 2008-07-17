@@ -77,7 +77,7 @@ int GGCAMaxRatio::sortOrder(const void* a,const void* b)
 //-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGCAMaxRatios::GGCAMaxRatios(unsigned int objid,unsigned int max)
+GGCAMaxRatios::GGCAMaxRatios(size_t objid,size_t max)
 	: RContainer<GGCAMaxRatio,true,false>(max>4?max/4:4), ObjId(objid)
 {
 }

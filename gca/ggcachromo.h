@@ -98,7 +98,7 @@ private:
 	/**
 	* Number of objects in thObjs1.
 	*/
-	unsigned int NbObjs1;
+	size_t NbObjs1;
 
 	/**
 	* Temporary array of Objects (Thread dependent data).
@@ -108,7 +108,7 @@ private:
 	/**
 	* Number of objects in thObjs2.
 	*/
-	unsigned int NbObjs2;
+	size_t NbObjs2;
 
 	/**
 	* Prototypes used for the KMeans.
@@ -137,7 +137,7 @@ public:
 	* @param inst           The instance of the problem.
 	* @param id             The identificator of the chromosome.
 	*/
-	GGCAChromo(GGCAInst* inst,unsigned int id);
+	GGCAChromo(GGCAInst* inst,size_t id);
 
 
 	/**
@@ -173,9 +173,9 @@ public:
 	void ReAllocate(void);
 
 	/**
-	* Calc the number of new prototypes until the last K-Means iteration.
+	* Compute the number of new prototypes until the last K-Means iteration.
 	*/
-	unsigned int CalcNewProtosNb(void);
+	size_t CalcNewProtosNb(void);
 
 	/**
 	* Perform a K-Means on the chromosome.
@@ -217,7 +217,7 @@ public:
 	* @param obj2           Identificator of the second subprofile.
 	* @return true if they are in the same group, else false.
 	*/
-	bool SameGroup(unsigned int obj1,unsigned int obj2) const;
+	bool SameGroup(size_t obj1,size_t obj2) const;
 
 	/**
 	* The assigment operator.

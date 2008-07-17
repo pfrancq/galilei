@@ -99,7 +99,7 @@ GGCAGroup::GGCAGroup(GGCAGroup* grp)
 
 
 //-----------------------------------------------------------------------------
-GGCAGroup::GGCAGroup(GGCAChromo* owner,const unsigned int id)
+GGCAGroup::GGCAGroup(GGCAChromo* owner,const size_t id)
 	: RGroup<GGCAGroup,GGCAObj,GGCAChromo>(owner,id), BestSumDist(0.0),
 	  Relevant(0), Dirty(true), ToEval(true)
 {

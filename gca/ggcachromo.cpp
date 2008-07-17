@@ -69,7 +69,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAChromo::GGCAChromo(GGCAInst* inst,unsigned int id)
+GGCAChromo::GGCAChromo(GGCAInst* inst,size_t id)
 	: RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>(inst,id),
 	  ToDel(0), CritSimJ(0.0), CritAgreement(0.0), CritDisagreement(1.0), Protos(Used.GetMaxNb()),
 	  thProm(0), thSols(0)
@@ -108,7 +108,7 @@ void GGCAChromo::ConstructChromo(GSession* grps)
 	RCursor<GProfile> Profile;
 	GGCAGroup* grp;
 	GGCAObj** objs;
-	unsigned int i;
+	size_t i;
 
 	Grp=grps->GetCommunities();
 	for(Grp.Start();!Grp.End();Grp.Next())
@@ -153,7 +153,7 @@ void GGCAChromo::RandomConstruct(void)
 //-----------------------------------------------------------------------------
 void GGCAChromo::Evaluate(void)
 {
-	unsigned int i;
+	size_t i;
 	double min;
 	double tmp;
 
@@ -192,7 +192,7 @@ void GGCAChromo::Evaluate(void)
 //-----------------------------------------------------------------------------
 void GGCAChromo::ReAllocate(void)
 {
-	unsigned int nb;
+	size_t nb;
 	double sim,maxsim;
 	GGCAGroup* grp;
 	GGCAObj** Cur;
@@ -269,9 +269,9 @@ void GGCAChromo::ReAllocate(void)
 
 
 //-----------------------------------------------------------------------------
-unsigned int GGCAChromo::CalcNewProtosNb(void)
+size_t GGCAChromo::CalcNewProtosNb(void)
 {
-	unsigned int count;
+	size_t count;
 	R::RCursor<GGCAGroup> Grp;
 	GGCAObj* OldProto;
 
@@ -291,7 +291,7 @@ unsigned int GGCAChromo::CalcNewProtosNb(void)
 //-----------------------------------------------------------------------------
 void GGCAChromo::DoKMeans(void)
 {
-	unsigned int itermax;
+	size_t itermax;
 	double error,minerror;
 	GGCAObj** obj;
 
@@ -334,7 +334,7 @@ void GGCAChromo::DoKMeans(void)
 void GGCAChromo::DivideWorstSubProfiles(void)
 {
 	R::RCursor<GGCAGroup> Grp;
-	unsigned int i;
+	size_t i;
 	GGCAObj** ptr;
 	GGCAObj** ptr2;
 	GGCAObj** ptr3;
@@ -418,7 +418,7 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 //-----------------------------------------------------------------------------
 void GGCAChromo::MergeBestSubProfiles(void)
 {
-	unsigned int i,j;
+	size_t i,j;
 	GGCAGroup* grp1;
 	GGCAGroup* grp2;
 	GGCAGroup* bestgrp1;
@@ -525,8 +525,8 @@ void GGCAChromo::TreatSocialSubProfiles(bool rel)
 //-----------------------------------------------------------------------------
 void GGCAChromo::Optimisation(void)
 {
-	unsigned int i;
-	unsigned int nb;
+	size_t i;
+	size_t nb;
 	RPromSol** s;
 	RPromSol** tab;
 	GGCAChromo* LastDiv;
@@ -597,7 +597,7 @@ void GGCAChromo::Modify(void)
 
 
 //-----------------------------------------------------------------------------
-bool GGCAChromo::SameGroup(unsigned int obj1,unsigned int obj2) const
+bool GGCAChromo::SameGroup(size_t obj1,size_t obj2) const
 {
 	return(ObjectsAss[obj1]==ObjectsAss[obj2]);
 }

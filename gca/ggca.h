@@ -107,12 +107,12 @@ public:
 	/**
 	* Size of the population of the GA.
 	*/
-	unsigned int PopSize;
+	size_t PopSize;
 
 	/**
 	* Maximal number of generation to run.
 	*/
-	unsigned int MaxGen;
+	size_t MaxGen;
 
 	/**
 	* Is the GA in step mode?
@@ -122,7 +122,7 @@ public:
 	/**
 	* Number of generation for each step.
 	*/
-	unsigned int StepGen;
+	size_t StepGen;
 
 	/**
 	* Minimum similarity level between the profiles of a group.
@@ -142,7 +142,7 @@ public:
 	/**
 	* Maximal Number of k-Means.
 	*/
-	unsigned int MaxKMeans;
+	size_t MaxKMeans;
 
 	/**
 	* Convergence ratio between two k-Means iterations.
@@ -152,7 +152,7 @@ public:
 	/**
 	* Number of derived chromosomes must be constructed for the optimization.
 	*/
-	unsigned int NbDivChromo;
+	size_t NbDivChromo;
 
 	/**
 	* Parameter for the criterion "Similariry".
@@ -179,10 +179,10 @@ public:
 class GGCAMaxRatio
 {
 public:
-	unsigned int ObjId;
+	size_t ObjId;
 	double Ratio;
 
-	GGCAMaxRatio(unsigned int objid,double ratio) : ObjId(objid), Ratio(ratio) {}
+	GGCAMaxRatio(size_t objid,double ratio) : ObjId(objid), Ratio(ratio) {}
 
 	int Compare(const GGCAMaxRatio& ratio) const {return(static_cast<int>(Ratio-ratio.Ratio));}
 
@@ -199,9 +199,9 @@ class GGCAMaxRatios : public R::RContainer<GGCAMaxRatio,true,false>
 {
 public:
 
-	unsigned int ObjId;
+	size_t ObjId;
 
-	GGCAMaxRatios(unsigned int objid,unsigned int max);
+	GGCAMaxRatios(size_t objid,size_t max);
 	int Compare(const GGCAMaxRatios& obj) const {return(ObjId-obj.ObjId);}
 };
 

@@ -72,7 +72,7 @@ GGCAThreadData::GGCAThreadData(GGCAInst* owner)
 	  Prom(Owner->Params), Sols(0), NbSols((Owner->Params->NbDivChromo*2)+2)
 {
 	RPromSol** s;
-	unsigned int i;
+	size_t i;
 
 	Tests=new GGCAChromo*[NbSols];
 	Sols=new RPromSol*[NbSols];
@@ -84,7 +84,7 @@ GGCAThreadData::GGCAThreadData(GGCAInst* owner)
 //-----------------------------------------------------------------------------
 void GGCAThreadData::Init(void)
 {
-	unsigned int i;
+	size_t i;
 
 	RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::Init();
 	tmpObjs1=new GGCAObj*[Owner->Objs.GetNb()];
@@ -102,7 +102,7 @@ void GGCAThreadData::Init(void)
 GGCAThreadData::~GGCAThreadData(void)
 {
 	GGCAChromo** C;
-	unsigned int i;
+	size_t i;
 
 	if(Tests)
 	{
@@ -133,7 +133,7 @@ GGCAInst::GGCAInst(GSession* ses,RCursor<GGCAObj> objs,GGCAParams* p,RDebug *deb
 #endif
 {
 	RPromSol** ptr;
-	unsigned int i;
+	size_t i;
 
 	// Init measures
 	switch(Type)
@@ -239,7 +239,7 @@ void GGCAInst::WriteChromoInfo(GGCAChromo* c)
 //-----------------------------------------------------------------------------
 void GGCAInst::PostEvaluate(void)
 {
-	unsigned int i;
+	size_t i;
 	GGCAChromo** C;
 	GGCAChromo* s;
 	#if BESTSOLSVERIFICATION
