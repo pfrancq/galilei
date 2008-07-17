@@ -168,7 +168,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 {
 	RString Cmd(line.GetLen());
 	const RChar* ptr=line();
-	unsigned int len=0;
+	size_t len=0;
 
 	// Look an the first word until ':' or spaces
 	while((!ptr->IsNull())&&((*ptr)!=' ')&&((*ptr)!='\t')&&((*ptr)!=':'))

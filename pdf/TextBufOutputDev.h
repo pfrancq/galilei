@@ -480,8 +480,8 @@ private:
 class TextBufOutputDev: public OutputDev {
 public:
 	static R::RChar* RCharBuffer;
-	static unsigned int RCharLen;
-	static unsigned int RCharMax;
+	static size_t RCharLen;
+	static size_t RCharMax;
 
 
   // Open a text output file.  If <fileName> is NULL, no file is

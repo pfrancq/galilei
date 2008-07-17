@@ -70,12 +70,12 @@ class GFilterPS: public GALILEI::GFilter
 	/**
 	* Number of character actually filled.
 	*/
-	unsigned int CharLen;
+	size_t CharLen;
 
 	/**
 	* Actual size allocated in the buffer.
 	*/
-	unsigned int CharMax;
+	size_t CharMax;
 
 public:
 

@@ -42,8 +42,8 @@ using namespace R;
 // declare global variables;
 unsigned int RCharInc=200000;
 RChar* TextBufOutputDev::RCharBuffer;
-unsigned int TextBufOutputDev::RCharLen;
-unsigned int TextBufOutputDev::RCharMax;
+size_t TextBufOutputDev::RCharLen;
+size_t TextBufOutputDev::RCharMax;
 
 
 
