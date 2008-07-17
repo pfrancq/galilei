@@ -94,17 +94,17 @@ protected:
 	/**
 	 */
 	bool WriteTitle;
-	
+
 	/**
 	 * Are the objects compared from the same type?
 	 */
 	bool SameObjects;
-	
+
 	/**
 	 * Compute the minimum of similarity.
 	 */
 	bool MinSim;
-	
+
 public:
 
 	/**
@@ -159,14 +159,14 @@ template<class E1,class E2>
 	double SimExtra;
 	double tmp;
 	double LRie;
-	unsigned int nbIntra;
-	unsigned int nbExtra;
+	size_t nbIntra;
+	size_t nbExtra;
 	bool Same;
 	double MinIntra;
 	double MaxExtra;
 	double LOverlap(0.0);
 	size_t LNbElements(0);
-	
+
 	// Create tag
 	RXMLTag* Tag=new RXMLTag(sub->GetName());
 	xml->AddTag(parent,Tag);
@@ -197,7 +197,7 @@ template<class E1,class E2>
 				// If not same language, not defined or same object -> skip it
 				if(!Cur2()->IsDefined()) continue;
 				if(Same&&(Cur1()->GetId()==Cur2()->GetId())) continue;
-				
+
 				Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
 				//cout<<"Sim("<<Cur1()->GetId()<<","<<Cur2()->GetId()<<")="<<tmp<<endl;
 				if(Same)
@@ -222,7 +222,7 @@ template<class E1,class E2>
 		Overlap++;
 		LOverlap++;
 	}
-	
+
 	// Compute Rie for current element
 	if(nbIntra)
 	{
@@ -264,8 +264,8 @@ template<class E1,class E2>
 				RString n7("Overlap"); n7.SetLen(15," ");
 				(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
 				WriteTitle=false;
-			}		
-			
+			}
+
 			RString n1(sub->GetName()); n1.SetLen(25," ");
 			RString n2(RString::Number(MinIntra,"%.5E")); n2.SetLen(15," ");
 			RString n3(RString::Number(SimIntra,"%.5E")); n3.SetLen(15," ");
@@ -320,7 +320,7 @@ template<class E1,class E2>
 		calc->AddTag(xml,tag,"Mean Extra",MeanExtra);
 		calc->AddTag(xml,tag,"Rie",Rie);
 		calc->AddTag(xml,tag,"Overlap",Overlap);
-		
+
 		if(MinSim)
 		{
 			double tmp;

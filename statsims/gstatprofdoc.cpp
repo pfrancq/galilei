@@ -84,8 +84,8 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 {
 	R::RCursor<GProfile> Profs1,Profs2;
 	R::RCursor<GDoc> Docs;
-	unsigned int nbProfJugDoc,nbDocs;
-	unsigned int i,j;
+	size_t nbProfJugDoc,nbDocs;
+	size_t i,j;
 	double sum, tmp,nbSame,nbDiff;
 
 	//Initialization
@@ -136,7 +136,7 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 			{
 				nbSame /=tmp;
 				MeanSame += nbSame;
-				
+
 				nbDiff /= tmp;
 				MeanDiff += nbDiff;
 				sum++;
