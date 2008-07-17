@@ -40,6 +40,7 @@
 #include <gweightinfo.h>
 #include <glang.h>
 #include <gconcept.h>
+#include <gprofile.h>
 #include <gxmlindex.h>
 #include <gsession.h>
 
@@ -221,6 +222,8 @@ GGenericSims::GGenericSims(GFactoryMeasure* fac,bool sym,tObjType type)
 //------------------------------------------------------------------------------
 void GGenericSims::ApplyConfig(void)
 {
+	if(Session)
+		return;
 	GMeasure2Elements::ApplyConfig();
 	SimType=0;
 	RString type=Factory->Get("SimType");
@@ -230,8 +233,6 @@ void GGenericSims::ApplyConfig(void)
 		sim=1;
 	if(type=="Language")
 		sim=2;
-	if(SimType!=sim)
-		Dirty();
 	SimType=sim;
 }
 
@@ -352,10 +353,10 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 		{
 /*			if(static_cast<GProfile*>(obj1)->GetId()==7&&static_cast<GProfile*>(obj2)->GetId()==6)
 				std::cout<<"Debug"<<std::endl;*/
-/*			double res(SimilarityIFFMV());
-			cout<<"Sim("<<static_cast<GProfile*>(obj1)->GetId()<<","<<static_cast<GProfile*>(obj2)->GetId()<<")="<<res<<endl;
-			return(res);*/
-			return(SimilarityIFFMV());
+			double res(SimilarityIFFMV());
+			cout<<"Compute sim("<<static_cast<GProfile*>(obj1)->GetId()<<","<<static_cast<GProfile*>(obj2)->GetId()<<")="<<res<<endl;
+			return(res);
+//			return(SimilarityIFFMV());
 			break;
 		}
 		case 2:
