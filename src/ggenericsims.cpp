@@ -351,12 +351,10 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 	{
 		case 1:
 		{
-/*			if(static_cast<GProfile*>(obj1)->GetId()==7&&static_cast<GProfile*>(obj2)->GetId()==6)
-				std::cout<<"Debug"<<std::endl;*/
-			double res(SimilarityIFFMV());
+/*			double res(SimilarityIFFMV());
 			cout<<"Compute sim("<<static_cast<GProfile*>(obj1)->GetId()<<","<<static_cast<GProfile*>(obj2)->GetId()<<")="<<res<<endl;
-			return(res);
-//			return(SimilarityIFFMV());
+			return(res);*/
+			return(SimilarityIFFMV());
 			break;
 		}
 		case 2:
