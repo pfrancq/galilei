@@ -345,12 +345,12 @@ void GMeasure2Elements::Measure(size_t measure,...)
 			if(InFile)
 				WriteValue(id1,id2,*res);
 		}
-		cout<<"Mem: sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
+		//cout<<"Mem: sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
 	}
 	else if(InFile) // Search in binary file
 	{
 		(*res)=ReadValue(id1,id2);
-		cout<<"File: sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
+		//cout<<"File: sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
 	}
 	else  // Recompute it
 	{
@@ -398,7 +398,8 @@ void GMeasure2Elements::Info(size_t info,...)
 	}
 	else if(InFile)
 	{
-		UpdateFile();
+		if(BlankRecs)
+			UpdateFile();
 		(*res)=Mean+deviationrate*sqrt(Deviation);
 	}
 	else
@@ -640,6 +641,7 @@ void GMeasure2Elements::ExtendFile(void)
 	FileNbLines=MaxIdLine;
 	FileNbCols=MaxIdCol;
 	FileMustExtend=false;
+	BlankRecs=true;
 }
 
 
@@ -681,56 +683,18 @@ void GMeasure2Elements::AddIdentificator(size_t id,bool line)
 		if(InFile&&(MaxIdCol>FileNbCols))
 			FileMustExtend=true;
 	}
-/*	if(line)
-	{
-		// Verify that it does not exits
-		if((MemValues->GetNb()>id-1)&&((*MemValues)[id-1]))
-		{
-			char tmp[80];
-			sprintf(tmp,"GMeasure2Elements::AddIdentificator : index %zu exists",id);
-			throw std::range_error(tmp);
-		}
-
-		// Create the line
-		size_t max;
-		if(Symetric)
-			max=id;
-		else
-			max=Session->GetMaxElementId(Cols);
-		Measures* ptr=new Measures(max,DirtyValue);
-		MemValues->InsertPtrAt(ptr,id-1);
-	}
-	else
-	{
-		RToDo("Verify if Lines[]->Must not be updated");
-		if(Symetric)
-		{
-			// Is there something to update?
-			if(MemValues->GetMaxPos()<id)
-				return;
-			RCursor<Measures> Lines(*MemValues);
-			for(Lines.GoTo(id);!Lines.End();Lines.Next())
-				Lines()->Values[id-1]=DirtyValue;
-		}
-		else
-		{
-			RCursor<Measures> Lines(*MemValues);
-			for(Lines.Start();!Lines.End();Lines.Next())
-				Lines()->Values[id-1]=DirtyValue;
-		}
-	}*/
 }
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
+void GMeasure2Elements::DirtyIdentificator(size_t id,bool line,bool file)
 {
 	if(line)
 	{
 		if(Symmetric&&id==1)
 			return;
 
-		if(InFile&&(id<=MemNbLines))
+		if(file&&InFile&&(id<=MemNbLines))
 		{
 			// Dirty the measures
 			Measures* ptr=(*MemValues)[id-1];
@@ -752,7 +716,7 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
 			for(j=max+1,col=ptr->Values;--j;col++)
 				DeleteValue(*col);
 		}
-		if(InFile&&(id<=FileNbLines))
+		if(file&&InFile&&(id<=FileNbLines))
 		{
 			IdxRec Element;
 			BlockRec Block;
@@ -802,7 +766,7 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
 			for(Lines.GoTo(start);!Lines.End();Lines.Next())
 				DeleteValue(Lines()->Values[id-1]);
 		}
-		if(InFile&&(id<FileNbCols))
+		if(file&&InFile&&(id<FileNbCols))
 		{
 			IdxRec Element;
 			BlockRec Block;
@@ -839,57 +803,6 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
 			}
 		}
 	}
-
-
-
-
-
-
-
-/*	// Something to dirty
-	if((!id)||(id>MemValues->GetNb()))
-		return;
-
-	if(line)
-	{
-		Measures* ptr=(*MemValues)[id-1];
-		if(!ptr)
-		{
-			char tmp[80];
-			sprintf(tmp,"GMeasure2Elements::DirtyIdentificator : index %zu doesn't exist",id);
-			throw std::range_error(tmp);
-		}
-
-		// Dirty the cols
-		size_t max;
-		if(Symmetric)
-			max=id;
-		else
-			max=Session->GetMaxElementId(Cols);
-		double* col;
-		size_t j;
-		for(j=max+1,col=ptr->Values;--j;col++)
-			DeleteValue(*col);
-	}
-	else
-	{
-		// Goes for the rest of lines
-		if(Symmetric)
-		{
-			// Is there something to update?
-			if(MemValues->GetMaxPos()<id)
-				return;
-			RCursor<Measures> Lines(*MemValues);
-			for(Lines.GoTo(id);!Lines.End();Lines.Next())
-				DeleteValue(Lines()->Values[id-1]);
-		}
-		else
-		{
-			RCursor<Measures> Lines(*MemValues);
-			for(Lines.Start();!Lines.End();Lines.Next())
-				DeleteValue(Lines()->Values[id-1]);
-		}
-	}*/
 }
 
 
@@ -897,60 +810,17 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line)
 void GMeasure2Elements::DeleteIdentificator(size_t id,bool line)
 {
 	// Remove all values
-	DirtyIdentificator(id,line);
+	DirtyIdentificator(id,line,false);
+}
 
+
+//------------------------------------------------------------------------------
+void GMeasure2Elements::DestroyIdentificator(size_t,bool)
+{
 	if(InFile)
 	{
 		RToDo("Move blocks to used");
 	}
-
-/*	// Something to delete
-	if((!id)||(id>MemValues->GetNb()))
-		return;
-
-	if(line)
-	{
-		Measures* ptr=(*MemValues)[id-1];
-		if(!ptr)
-		{
-			char tmp[80];
-			sprintf(tmp,"GMeasure2Elements::DeleteIdentificator : index %zu doesn't exist",id);
-			throw std::range_error(tmp);
-		}
-
-		// Dirty the cols
-		size_t max;
-		if(Symmetric)
-			max=id;
-		else
-			max=Session->GetMaxElementId(Cols);
-		double* col;
-		size_t j;
-		for(j=max+1,col=ptr->Values;--j;col++)
-			DeleteValue(*col);
-
-		// Delete the line
-		MemValues->DeletePtrAt(id-1,false);
-	}
-	else
-	{
-		// Goes for the rest of lines
-		if(Symmetric)
-		{
-			// Is there something to update?
-			if(MemValues->GetMaxPos()<id)
-				return;
-			RCursor<Measures> Lines(*MemValues);
-			for(Lines.GoTo(id);!Lines.End();Lines.Next())
-				DeleteValue(Lines()->Values[id-1]);
-		}
-		else
-		{
-			RCursor<Measures> Lines(*MemValues);
-			for(Lines.Start();!Lines.End();Lines.Next())
-				DeleteValue(Lines()->Values[id-1]);
-		}
-	}*/
 }
 
 
@@ -964,10 +834,13 @@ template<class C>
 			AddIdentificator(element->GetId(),line);
 			break;
 		case eObjModified:
-			DirtyIdentificator(element->GetId(),line);
+			DirtyIdentificator(element->GetId(),line,true);
 			break;
 		case eObjDelete:
 			DeleteIdentificator(element->GetId(),line);
+			break;
+		case eObjDestroyed:
+			DestroyIdentificator(element->GetId(),line);
 			break;
 		default:
 			break;

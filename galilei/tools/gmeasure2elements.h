@@ -145,6 +145,11 @@ class GMeasure2Elements : public GMeasure, public GSignalHandler
 	bool FileMustExtend;
 
 	/**
+	 * Blank records were added.
+	 */
+	bool BlankRecs;
+
+	/**
 	 * Mean of the measures.
 	 */
 	double Mean;
@@ -369,8 +374,9 @@ private:
 	 * anymore.
 	 * @param id             Identifier of the element.
 	 * @param line           Element is a line?
+	 * @param file           File must be affected too?
 	 */
-	void DirtyIdentificator(size_t id,bool line);
+	void DirtyIdentificator(size_t id,bool line,bool file);
 
 	/**
 	 * An element is deleted and all the measure related to it are modified.
@@ -378,6 +384,13 @@ private:
 	 * @param line           Element is a line?
 	 */
 	void DeleteIdentificator(size_t id,bool line);
+
+	/**
+	 * An element is destroyed and all the measure related to it are modified.
+	 * @param id             Identifier of the element.
+	 * @param line           Element is a line?
+	 */
+	void DestroyIdentificator(size_t id,bool line);
 
 	/**
 	 * This template method handles the modification of the status of a given
