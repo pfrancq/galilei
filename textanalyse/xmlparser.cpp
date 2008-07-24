@@ -199,7 +199,7 @@ RChar XMLParser::CodeToChar(RString& str)
 //-----------------------------------------------------------------------------
 void XMLParser::AddStructElement(const RString& element,bool tag)
 {
-	GConcept w(cNoRef,element,Filter->StructSpace,0,0,0);
+	GConcept w(cNoRef,element,Filter->StructSpace,0,0,0,0);
 	GWeightInfo* info=Filter->Infos.GetInsertPtr(Filter->StructSpace->InsertConcept(&w));
 	(*info)+=1.0;
 

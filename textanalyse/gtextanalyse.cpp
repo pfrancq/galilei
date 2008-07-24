@@ -470,7 +470,7 @@ GConcept* GTextAnalyse::GetStemConcept(cWord* word)
 		stem=word->Word;
 	if(stem.GetLen()<MinStemSize)
 		return(0);
-	GConcept w(cNoRef,stem,Lang->GetDict(),0,0,0);
+	GConcept w(cNoRef,stem,Lang->GetDict(),0,0,0,0);
 	return(Lang->GetDict()->InsertConcept(&w));
 }
 
@@ -589,7 +589,7 @@ void GTextAnalyse::IndexXMLPart(void)
 			continue;
 
 		// Find the concept corresponding to the tag
-		GConcept t(cNoRef,Cur()->Name,StructSpace,0,0,0);
+		GConcept t(cNoRef,Cur()->Name,StructSpace,0,0,0,0);
 		GConcept* Tag=StructSpace->InsertConcept(&t);
 
 		// Verify if the structural element is already an information entity
