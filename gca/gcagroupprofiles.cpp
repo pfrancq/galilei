@@ -1,0 +1,108 @@
+/*
+
+	GALILEI Research Project
+
+	GCAGroupProfiles.h
+
+	GCA Plug-in for Profiles - Implementation
+
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
+
+	This library is free software; you can redistribute it and/or
+	modify it under the terms of the GNU Library General Public
+	License as published by the Free Software Foundation; either
+	version 2.0 of the License, or (at your option) any later version.
+
+	This library is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+	Library General Public License for more details.
+
+	You should have received a copy of the GNU Library General Public
+	License along with this library, as a file COPYING.LIB; if not, write
+	to the Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+	Boston, MA  02111-1307  USA
+
+*/
+
+
+
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <ggroupprofiles.h>
+
+
+//-----------------------------------------------------------------------------
+// include files for GCA
+#include <gcaplugin.h>
+using namespace GALILEI;
+
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GCAGroupProfiles provides a representation for a method to group some
+* profiles using the GCA.
+* @author Pascal Francq
+* @short GGA for Profiles.
+*/
+class GCAGroupProfiles : public GCA<GProfile,GCommunity,GFactoryGroupProfiles>, public GGroupProfiles
+{
+public:
+
+	/**
+	* Constructor.
+	* @param f              Factory.
+	*/
+	GCAGroupProfiles(GFactoryGroupProfiles* fac)
+		: GCA<GProfile,GCommunity,GFactoryGroupProfiles>("Profiles Grouping",otProfile), GGroupProfiles(fac) {}
+
+	/**
+	 * Class name.
+	 */
+	virtual R::RCString GetClassName(void) const {return("GCAGroupProfiles");}
+
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
+
+protected:
+
+	/**
+	 * Get a pointer to the objects to cluster.
+	 */
+	virtual R::RCursor<GProfile> GetObjs(void) const {return(Session->GetProfiles());}
+
+	/**
+	* Make the grouping for a specific Language.
+	*/
+	virtual void Run(void)
+	{GCA<GProfile,GCommunity,GFactoryGroupProfiles>::Run(Session);}
+
+public:
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
+	*/
+	static void CreateParams(R::RConfig* params)
+	{GCA<GProfile,GCommunity,GFactoryGroupProfiles>::CreateParams(params);}
+};
+
+
+//-----------------------------------------------------------------------------
+void GCAGroupProfiles::ApplyConfig(void)
+{
+	GCA<GProfile,GCommunity,GFactoryGroupProfiles>::ApplyConfig(Factory);
+	Params.ParamsSim=Factory->FindParam<RParamStruct>("Sim Criterion");
+	Params.ParamsAgreement=Factory->FindParam<RParamStruct>("Agreement Criterion");
+	Params.ParamsDisagreement=Factory->FindParam<RParamStruct>("Disagreement Criterion");
+}
+
+
+//------------------------------------------------------------------------------
+CREATE_GROUPPROFILES_FACTORY("GCA for Profiles",GCAGroupProfiles)

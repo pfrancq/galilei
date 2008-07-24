@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAChromo.h
+	GCAChromo.h
 
 	Chromosome - Header
 
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGCAChromoH
-#define GGCAChromoH
+#ifndef GCAChromoH
+#define GCAChromoH
 
 
 //-----------------------------------------------------------------------------
@@ -43,22 +43,22 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggca.h>
-#include <ggcaprom.h>
+#include <gca.h>
+#include <gcaprom.h>
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GGCAChromo class provides a representation for a chromosome for the IR
+* The GCAChromo class provides a representation for a chromosome for the IR
 * Problem.
 * @author Pascal Francq
 * @short IR Chromosome.
 */
-class GGCAChromo : public R::RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>
+class GCAChromo : public R::RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>
 {
 private:
 
-	R::RContainer<GGCAGroup,false,false>* ToDel;
+	R::RContainer<GCAGroup,false,false>* ToDel;
 
 	/**
 	* Value of the Similarity criterion "J".
@@ -93,7 +93,7 @@ private:
 	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
-	GGCAObj** thObjs1;
+	GCAObj** thObjs1;
 
 	/**
 	* Number of objects in thObjs1.
@@ -103,7 +103,7 @@ private:
 	/**
 	* Temporary array of Objects (Thread dependent data).
 	*/
-	GGCAObj** thObjs2;
+	GCAObj** thObjs2;
 
 	/**
 	* Number of objects in thObjs2.
@@ -113,17 +113,17 @@ private:
 	/**
 	* Prototypes used for the KMeans.
 	*/
-	R::RContainer<GGCAObj,false,false> Protos;
+	R::RContainer<GCAObj,false,false> Protos;
 
 	/**
 	* Test Chromosome (Thread dependent data).
 	*/
-	GGCAChromo** thTests;
+	GCAChromo** thTests;
 
 	/**
 	* PROMETHE  Kernel used by the chromosome.
 	*/
-	GGCAProm* thProm;
+	GCAProm* thProm;
 
 	/**
 	* Array of solutions to create in PROMETHEE Kernel.
@@ -137,19 +137,19 @@ public:
 	* @param inst           The instance of the problem.
 	* @param id             The identificator of the chromosome.
 	*/
-	GGCAChromo(GGCAInst* inst,size_t id);
+	GCAChromo(GCAInst* inst,size_t id);
 
 
 	/**
 	* Initialisation of the chromosome.
 	* @param thData         Pointer to the "thread-dependent" data.
 	*/
-	virtual void Init(GGCAThreadData* thData);
+	virtual void Init(GCAThreadData* thData);
 
 	/**
 	* Method needed by R::RContainer.
 	*/
-	int Compare(const GGCAChromo* c) const;
+	int Compare(const GCAChromo* c) const;
 
 	/**
 	* Construct the chromosome to be the same as grps.
@@ -223,7 +223,7 @@ public:
 	* The assigment operator.
 	* @param chromo         The chromosome used as source.
 	*/
-	GGCAChromo& operator=(const GGCAChromo& chromo);
+	GCAChromo& operator=(const GCAChromo& chromo);
 
 	/**
 	* Get the value of the 'J' measure.
@@ -261,13 +261,13 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GGCAChromo(void);
+	virtual ~GCAChromo(void);
 
 	// friend classes
-	friend class GGCAGroup;
-	friend class GGCAInst;
-	friend class GGCAProm;
-	friend class GGCAHeuristic;
+	friend class GCAGroup;
+	friend class GCAInst;
+	friend class GCAProm;
+	friend class GCAHeuristic;
 };
 
 

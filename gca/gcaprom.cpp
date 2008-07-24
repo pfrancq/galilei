@@ -2,11 +2,11 @@
 
 	Genetic Community Algorithm
 
-	GGCA.cpp
+	GCAProm.h
 
-	Main - Implementation.
+	PROMETHEE Kernel - Implementation.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,53 +31,43 @@
 
 
 //-----------------------------------------------------------------------------
-// includes files for GCA
-#include <ggca.h>
+// include files for R Project
+#include <rpromsol.h>
+#include <rpromcriterion.h>
 
+
+//-----------------------------------------------------------------------------
+// include files for GCA
+#include <gcaprom.h>
+#include <gca.h>
+#include <gcachromo.h>
 using namespace R;
+using namespace std;
+
+
 
 //-----------------------------------------------------------------------------
 //
-// GGCAParams
+// class GGAProm
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAParams::GGCAParams(void)
+GCAProm::GCAProm(GCAParams* p)
+	: RPromKernel("GALILEI",20,10), Params(p),CritSimJ(0), CritAgreement(0),
+	  CritDisagreement(0)
 {
+	// Init Criterion and Solutions of the PROMETHEE part
+	AddCriterion(CritSimJ=new RPromLinearCriterion(RPromCriterion::Maximize,Params->ParamsSim,"J (Sim)"));
+	AddCriterion(CritAgreement=new RPromLinearCriterion(RPromCriterion::Maximize,Params->ParamsAgreement,"Agreement"));
+	AddCriterion(CritDisagreement=new RPromLinearCriterion(RPromCriterion::Minimize,Params->ParamsDisagreement,"Disagreement"));
 }
 
 
-
 //-----------------------------------------------------------------------------
-//
-// GGCAMaxRatio
-//
-//-----------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-int GGCAMaxRatio::sortOrder(const void* a,const void* b)
+void GCAProm::Assign(RPromSol* s,GCAChromo* c)
 {
-	double af=(*((GGCAMaxRatio**)(a)))->Ratio;
-	double bf=(*((GGCAMaxRatio**)(b)))->Ratio;
-
-	if(af==bf) return(0);
-	if(af>bf)
-		return(-1);
-	else
-		return(1);
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// GGCAMaxRatios
-//
-//-----------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GGCAMaxRatios::GGCAMaxRatios(size_t objid,size_t max)
-	: RContainer<GGCAMaxRatio,true,false>(max>4?max/4:4), ObjId(objid)
-{
+	RPromKernel::Assign(s,CritSimJ,c->CritSimJ);
+	RPromKernel::Assign(s,CritAgreement,c->CritAgreement);
+	RPromKernel::Assign(s,CritDisagreement,c->CritDisagreement);
 }

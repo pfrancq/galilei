@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAGroup.h
+	GCAGroup.h
 
 	Group - Header.
 
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGCAGroupH
-#define GGCAGroupH
+#ifndef GCAGroupH
+#define GCAGroupH
 
 
 
@@ -43,10 +43,10 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggca.h>
-#include <ggcaobj.h>
-#include <ggcachromo.h>
-#include <ggcainst.h>
+#include <gca.h>
+#include <gcaobj.h>
+#include <gcachromo.h>
+#include <gcainst.h>
 
 
 //-----------------------------------------------------------------------------
@@ -55,7 +55,7 @@
 * @author Pascal Francq
 * @short IR Group.
 */
-class GGCAGroup : public R::RGroup<GGCAGroup,GGCAObj,GGCAChromo>
+class GCAGroup : public R::RGroup<GCAGroup,GCAObj,GCAChromo>
 {
 protected:
 
@@ -71,7 +71,7 @@ protected:
 	/**
 	* Relevant object of the group.
 	*/
-	GGCAObj* Relevant;
+	GCAObj* Relevant;
 
 	/**
 	*/
@@ -85,7 +85,7 @@ public:
 	* Construct the group.
 	* @param grp            Group used as source.
 	*/
-	GGCAGroup(GGCAGroup* grp);
+	GCAGroup(GCAGroup* grp);
 
 	/**
 	* Construct the group.
@@ -93,7 +93,7 @@ public:
 	* @param id             Identificator of the group.
 	* @param data           Data needed for the group.
 	*/
-	GGCAGroup(GGCAChromo* owner,const size_t id);
+	GCAGroup(GCAChromo* owner,const size_t id);
 
 	/**
 	* Clear the information container in a group.
@@ -104,25 +104,25 @@ public:
 	* Verify if an object correspond to a user already in this group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	bool HasSameUser(const GGCAObj* obj) const;
+	bool HasSameUser(const GCAObj* obj) const;
 
 	/**
 	* Look if an object can be insert in the group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	virtual bool CanInsert(const GGCAObj* obj);
+	virtual bool CanInsert(const GCAObj* obj);
 
 	/**
 	* Method call after an object was inserted in the group.
 	* @param obj            Pointer to the object to insert.
 	*/
-	virtual void PostInsert(const GGCAObj* obj);
+	virtual void PostInsert(const GCAObj* obj);
 
 	/**
 	* Method call after an object was deleted from the group.
 	* @param obj            Pointer to the object to delete.
 	*/
-	virtual void PostDelete(const GGCAObj* obj);
+	virtual void PostDelete(const GCAObj* obj);
 
 private:
 
@@ -131,7 +131,7 @@ private:
 	* @param obj            Profile used as reference.
 	* @returns result.
 	*/
-	double ComputeSumDist(GGCAObj* obj);
+	double ComputeSumDist(GCAObj* obj);
 
 public:
 
@@ -144,15 +144,15 @@ public:
 	/**
 	* Get the relevant profile of the group, i.a. the profile which is the must
 	* similar to all the others profiles.
-	* @return Pointer to GGCAObj
+	* @return Pointer to GCAObj
 	*/
-	inline GGCAObj* GetRelevant(void) {return(Relevant);}
+	inline GCAObj* GetRelevant(void) {return(Relevant);}
 
 	void Evaluate(double& dist,double& agree,double& disagree);
 
 	/**
 	*/
-	void SetRelevant(GGCAObj* obj);
+	void SetRelevant(GCAObj* obj);
 
 	/**
 	* Get the average similarity of the group.
@@ -166,20 +166,20 @@ public:
 	* @param obj            Profile used as reference.
 	* @returns result.
 	*/
-	inline double ComputeRelSim(const GGCAObj* obj) {return(Owner->Instance->GetSim(Relevant->GetElementId(),obj->GetElementId()));}
+	inline double ComputeRelSim(const GCAObj* obj) {return(Owner->Instance->GetSim(Relevant->GetElementId(),obj->GetElementId()));}
 
 	/**
 	* Compute a homogeneity for a given profile to the group. Actually, it uses
 	* the similarity with the relevant profile of the group.
 	* @param obj            Profile used as reference.
 	*/
-	inline double ComputeHomogeneity(const GGCAObj* obj) {return(ComputeRelSim(obj));}
+	inline double ComputeHomogeneity(const GCAObj* obj) {return(ComputeRelSim(obj));}
 
 	/**
 	* Assignment operator.
 	* @param grp            The group used as source.
 	*/
-	GGCAGroup& operator=(const GGCAGroup& grp);
+	GCAGroup& operator=(const GCAGroup& grp);
 
 	/**
 	* Get the maximal value of the ratio of same feedbacks of a subprofile and
@@ -187,16 +187,16 @@ public:
 	* @param obj            Object to test.
 	* @return double
 	*/
-	double GetMaxRatioSame(GGCAObj* obj);
+	double GetMaxRatioSame(GCAObj* obj);
 
 	/**
 	* Destruct the group.
 	*/
-	virtual ~GGCAGroup(void);
+	virtual ~GCAGroup(void);
 
 	// friend classes
-//	friend class GGCAChromo;
- 	friend class GGCAInst;
+//	friend class GCAChromo;
+ 	friend class GCAInst;
 };
 
 

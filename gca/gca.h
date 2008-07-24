@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCA.h
+	GCA.h
 
 	Main - Header.
 
@@ -30,8 +30,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGCAH
-#define GGCAH
+#ifndef GCAH
+#define GCAH
 
 
 //-----------------------------------------------------------------------------
@@ -50,35 +50,35 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // Forward class declaration
-class GGCAGroup;
-class GGCAThreadData;
-class GGCAChromo;
-class GGCAInst;
-class GGCAObj;
-class GGCAHeuristic;
-class GGCAParams;
+class GCAGroup;
+class GCAThreadData;
+class GCAChromo;
+class GCAInst;
+class GCAObj;
+class GCAHeuristic;
+class GCAParams;
 
 
 //-----------------------------------------------------------------------------
 /**
-* The RFitnessIR provides a representation for a fitness function for the
+* The GCAFitness provides a representation for a fitness function for the
 * information retrieval problem.
 * @author Pascal Francq
 * @short IR Fitness.
 */
-class GGCAFitness : public R::RFitness<double,true>
+class GCAFitness : public R::RFitness<double,true>
 {
 public:
 
 	/**
 	* Constructor of the fitness function used for the Bin Packing.
 	*/
-	GGCAFitness(void) : R::RFitness<double,true>() {}
+	GCAFitness(void) : R::RFitness<double,true>() {}
 
 	/**
 	* Assignment operator with a fitness f.
 	*/
-	GGCAFitness& operator=(const GGCAFitness &f)
+	GCAFitness& operator=(const GCAFitness &f)
 	{
 		R::RFitness<double,true>::operator=(f);
 		return(*this);
@@ -87,7 +87,7 @@ public:
 	/**
 	* Assignment operator with a double value.
 	*/
-	GGCAFitness& operator=(const double val)
+	GCAFitness& operator=(const double val)
 	{
 		R::RFitness<double,true>::operator=(val);
 		return(*this);
@@ -97,10 +97,10 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The GGCAParam represents all the parameter used in the GGCA module.
-* @short GGCA Parameters.
+* The GCAParam represents all the parameter used in the GCA module.
+* @short GCA Parameters.
 */
-class GGCAParams
+class GCAParams
 {
 public:
 
@@ -172,19 +172,19 @@ public:
 	/**
 	* Constructor.
 	*/
-	GGCAParams(void);
+	GCAParams(void);
 };
 
 
-class GGCAMaxRatio
+class GCAMaxRatio
 {
 public:
 	size_t ObjId;
 	double Ratio;
 
-	GGCAMaxRatio(size_t objid,double ratio) : ObjId(objid), Ratio(ratio) {}
+	GCAMaxRatio(size_t objid,double ratio) : ObjId(objid), Ratio(ratio) {}
 
-	int Compare(const GGCAMaxRatio& ratio) const {return(static_cast<int>(Ratio-ratio.Ratio));}
+	int Compare(const GCAMaxRatio& ratio) const {return(static_cast<int>(Ratio-ratio.Ratio));}
 
 	/**
 	* Static function used to order the object by ratio.
@@ -195,14 +195,14 @@ public:
 };
 
 
-class GGCAMaxRatios : public R::RContainer<GGCAMaxRatio,true,false>
+class GCAMaxRatios : public R::RContainer<GCAMaxRatio,true,false>
 {
 public:
 
 	size_t ObjId;
 
-	GGCAMaxRatios(size_t objid,size_t max);
-	int Compare(const GGCAMaxRatios& obj) const {return(ObjId-obj.ObjId);}
+	GCAMaxRatios(size_t objid,size_t max);
+	int Compare(const GCAMaxRatios& obj) const {return(ObjId-obj.ObjId);}
 };
 
 

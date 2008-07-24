@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAGrouping_KDE.cpp
+	GCAGrouping_KDE.cpp
 
 	Config and about dialogs - Implementation.
 
@@ -37,7 +37,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <../../ggca.h>
+#include <../../gca.h>
 
 
 //-----------------------------------------------------------------------------
@@ -93,7 +93,7 @@ void Configure(GFactoryGroupProfiles* params)
 	GAConfigDlg dlg;
 	if(dlg.Configure(params))
 		params->Apply();
-/*	
+/*
 	dlg.PopSize->setValue(params->GetUInt("Population Size"));
 	dlg.MaxGen->setValue(params->GetUInt("Max Gen"));
 	dlg.Step->setChecked(params->GetBool("Step"));

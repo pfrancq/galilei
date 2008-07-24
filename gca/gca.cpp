@@ -2,11 +2,11 @@
 
 	Genetic Community Algorithm
 
-	GGCAProm.h
+	GCA.cpp
 
-	PROMETHEE Kernel - Implementation.
+	Main - Implementation.
 
-	Copyright 2001-2008 by the Université Libre de Bruxelles.
+	Copyright 2002-2007 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,43 +31,54 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rpromsol.h>
-#include <rpromcriterion.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for GCA
-#include <ggcaprom.h>
-#include <ggca.h>
-#include <ggcachromo.h>
+// includes files for GCA
+#include <gca.h>
 using namespace R;
-using namespace std;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GGAProm
+// GCAParams
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAProm::GGCAProm(GGCAParams* p)
-	: RPromKernel("GALILEI",20,10), Params(p),CritSimJ(0), CritAgreement(0),
-	  CritDisagreement(0)
+GCAParams::GCAParams(void)
 {
-	// Init Criterion and Solutions of the PROMETHEE part
-	AddCriterion(CritSimJ=new RPromLinearCriterion(RPromCriterion::Maximize,Params->ParamsSim,"J (Sim)"));
-	AddCriterion(CritAgreement=new RPromLinearCriterion(RPromCriterion::Maximize,Params->ParamsAgreement,"Agreement"));
-	AddCriterion(CritDisagreement=new RPromLinearCriterion(RPromCriterion::Minimize,Params->ParamsDisagreement,"Disagreement"));
 }
 
 
+
 //-----------------------------------------------------------------------------
-void GGCAProm::Assign(RPromSol* s,GGCAChromo* c)
+//
+// GCAMaxRatio
+//
+//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+int GCAMaxRatio::sortOrder(const void* a,const void* b)
 {
-	RPromKernel::Assign(s,CritSimJ,c->CritSimJ);
-	RPromKernel::Assign(s,CritAgreement,c->CritAgreement);
-	RPromKernel::Assign(s,CritDisagreement,c->CritDisagreement);
+	double af=(*((GCAMaxRatio**)(a)))->Ratio;
+	double bf=(*((GCAMaxRatio**)(b)))->Ratio;
+
+	if(af==bf) return(0);
+	if(af>bf)
+		return(-1);
+	else
+		return(1);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// GCAMaxRatios
+//
+//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GCAMaxRatios::GCAMaxRatios(size_t objid,size_t max)
+	: RContainer<GCAMaxRatio,true,false>(max>4?max/4:4), ObjId(objid)
+{
 }

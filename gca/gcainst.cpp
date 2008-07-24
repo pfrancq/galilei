@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAInst.h
+	GCAInst.h
 
 	Instance - Implementation
 
@@ -49,11 +49,11 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggcainst.h>
-#include <ggcachromo.h>
-#include <ggcagroup.h>
-#include <ggcaobj.h>
-#include <ggcaheuristic.h>
+#include <gcainst.h>
+#include <gcachromo.h>
+#include <gcagroup.h>
+#include <gcaobj.h>
+#include <gcaheuristic.h>
 using namespace R;
 using namespace std;
 
@@ -61,20 +61,20 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-// GGCAThreadData
+// GCAThreadData
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAThreadData::GGCAThreadData(GGCAInst* owner)
-	: RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>(owner),
+GCAThreadData::GCAThreadData(GCAInst* owner)
+	: RThreadDataG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>(owner),
 	  ToDel(owner->Objs.GetNb()<4?4:owner->Objs.GetNb()/4), tmpObjs1(0),tmpObjs2(0), Tests(0),
 	  Prom(Owner->Params), Sols(0), NbSols((Owner->Params->NbDivChromo*2)+2)
 {
 	RPromSol** s;
 	size_t i;
 
-	Tests=new GGCAChromo*[NbSols];
+	Tests=new GCAChromo*[NbSols];
 	Sols=new RPromSol*[NbSols];
 	for(i=NbSols+1,s=Sols;--i;s++)
 		(*s)=Prom.NewSol();
@@ -82,26 +82,26 @@ GGCAThreadData::GGCAThreadData(GGCAInst* owner)
 
 
 //-----------------------------------------------------------------------------
-void GGCAThreadData::Init(void)
+void GCAThreadData::Init(void)
 {
 	size_t i;
 
-	RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::Init();
-	tmpObjs1=new GGCAObj*[Owner->Objs.GetNb()];
-	tmpObjs2=new GGCAObj*[Owner->Objs.GetNb()];
+	RThreadDataG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::Init();
+	tmpObjs1=new GCAObj*[Owner->Objs.GetNb()];
+	tmpObjs2=new GCAObj*[Owner->Objs.GetNb()];
 	for(i=0;i<NbSols;i++)
 	{
-		Tests[i]=new GGCAChromo(Owner,Owner->GetPopSize()+1+i);
+		Tests[i]=new GCAChromo(Owner,Owner->GetPopSize()+1+i);
 		Tests[i]->Init(this);
-		(static_cast<RGroups<GGCAGroup,GGCAObj,GGCAChromo>*>(Tests[i]))->Init();
+		(static_cast<RGroups<GCAGroup,GCAObj,GCAChromo>*>(Tests[i]))->Init();
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAThreadData::~GGCAThreadData(void)
+GCAThreadData::~GCAThreadData(void)
 {
-	GGCAChromo** C;
+	GCAChromo** C;
 	size_t i;
 
 	if(Tests)
@@ -119,14 +119,14 @@ GGCAThreadData::~GGCAThreadData(void)
 
 //-----------------------------------------------------------------------------
 //
-// GGCAInst
+// GCAInst
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAInst::GGCAInst(GSession* ses,RCursor<GGCAObj> objs,GGCAParams* p,RDebug *debug,tObjType type)
-	: RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>(p->PopSize,objs,FirstFit,"GCA",debug),
-	GGCAProm(p), Params(p), Sols(0), Session(ses), NoSocialProfiles(objs.GetNb()),
+GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,GCAParams* p,RDebug *debug,tObjType type)
+	: RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>(p->PopSize,objs,"FirstFit","GCA",debug),
+	GCAProm(p), Params(p), Sols(0), Session(ses), NoSocialProfiles(objs.GetNb()),
 	Ratios(objs.GetNb()), Sims(0),Agree(0), Disagree(0), Type(type)
 #if BESTSOLSVERIFICATION
 	  , BestSols(p->MaxGen,p->MaxGen/2)
@@ -149,7 +149,7 @@ GGCAInst::GGCAInst(GSession* ses,RCursor<GGCAObj> objs,GGCAParams* p,RDebug *deb
 			Disagree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements");
 			break;
 		default:
-			throw GException("GGCAInst::GGCAInst : Type "+GetObjType(Type)+" not supported");
+			throw GException("GCAInst::GCAInst : Type "+GetObjType(Type)+" not supported");
 	}
 
 	// Change Freq
@@ -168,19 +168,19 @@ GGCAInst::GGCAInst(GSession* ses,RCursor<GGCAObj> objs,GGCAParams* p,RDebug *deb
 
 
 //-----------------------------------------------------------------------------
-void GGCAInst::Init(void)
+void GCAInst::Init(void)
 {
 	// Init the GGA
-	RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::Init();
+	RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::Init();
 
 	// Init the Ratios
-	GGCAMaxRatios* ptr;
+	GCAMaxRatios* ptr;
 	double ratio;
-	RCursor<GGCAObj> Cur1(Objs);
-	RCursor<GGCAObj> Cur2(Objs);
+	RCursor<GCAObj> Cur1(Objs);
+	RCursor<GCAObj> Cur2(Objs);
 	for(Cur1.Start();!Cur1.End();Cur1.Next())
 	{
-		Ratios.InsertPtrAt(ptr=new GGCAMaxRatios(Cur1()->GetId(),Objs.GetNb()),Cur1()->GetId());
+		Ratios.InsertPtrAt(ptr=new GCAMaxRatios(Cur1()->GetId(),Objs.GetNb()),Cur1()->GetId());
 
 		// Add all the object with a greater agreement ratio than the minimum
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
@@ -188,26 +188,26 @@ void GGCAInst::Init(void)
 			if(Cur1()==Cur2()) continue;
 			ratio=GetAgreementRatio(Cur1()->GetElementId(),Cur2()->GetElementId());
 			if(ratio>=Params->MinAgreement)
-				ptr->InsertPtr(new GGCAMaxRatio(Cur2()->GetId(),ratio));
+				ptr->InsertPtr(new GCAMaxRatio(Cur2()->GetId(),ratio));
 		}
 
 		// ReOrder to have the best ratio first
-		ptr->ReOrder(GGCAMaxRatio::sortOrder);
+		ptr->ReOrder(GCAMaxRatio::sortOrder);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>* GGCAInst::CreateHeuristic(void)
+RGroupingHeuristic<GCAGroup,GCAObj,GCAChromo>* GCAInst::CreateHeuristic(void)
 {
-	return(new GGCAHeuristic(Random,Objs,Ratios,Debug));
+	return(new GCAHeuristic(Random,Objs,Ratios,Debug));
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAObj* GGCAInst::GetObj(size_t id) const
+GCAObj* GCAInst::GetObj(size_t id) const
 {
-	R::RCursor<GGCAObj> Cur(Objs);
+	R::RCursor<GCAObj> Cur(Objs);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(Cur()->GetElementId()==id)
 			return(Cur());
@@ -216,42 +216,37 @@ GGCAObj* GGCAInst::GetObj(size_t id) const
 
 
 //-----------------------------------------------------------------------------
-bool GGCAInst::StopCondition(void)
+bool GCAInst::StopCondition(void)
 {
 	return(GetGen()==Params->MaxGen);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGCAInst::WriteChromoInfo(GGCAChromo* c)
+void GCAInst::WriteChromoInfo(GCAChromo* c)
 {
-	char Tmp[300];
-	char Tmp2[300];
-
 	if(!Debug) return;
-	sprintf(Tmp,"Id %2u (Fi=%1.5f,Fi+=%1.5f,Fi-=%1.5f): ",c->Id,c->Fi,c->FiPlus,c->FiMinus);
-	sprintf(Tmp2,"J=%1.5f - Agr.=%1.5f - Disagr.=%1.5f",c->CritSimJ,c->CritAgreement,c->CritDisagreement);
-	strcat(Tmp,Tmp2);
-	Debug->PrintInfo(Tmp);
+	Debug->PrintInfo("Id "+RString::Number(c->Id)+" (Fi="+RString::Number(c->Fi,"1.5f")+",Fi+="+RString::Number(c->FiPlus,"1.5f")+",Fi-="+RString::Number(c->FiMinus,"1.5f")+
+			" - J="+RString::Number(c->CritSimJ,"1.5f")+" - Agr.="+RString::Number(c->CritAgreement,"1.5f")+" - Disagr.="+RString::Number(c->CritDisagreement,"1.5f"));
 }
 
 
 //-----------------------------------------------------------------------------
-void GGCAInst::PostEvaluate(void)
+void GCAInst::PostEvaluate(void)
 {
 	size_t i;
-	GGCAChromo** C;
-	GGCAChromo* s;
+	GCAChromo** C;
+	GCAChromo* s;
 	#if BESTSOLSVERIFICATION
-		GGCAChromo* b;
-		GGCAGroupData GrpData;
+		GCAChromo* b;
+		GCAGroupData GrpData;
 	#endif
 	RPromSol** Res;
 	RPromSol** ptr;
 	double r;
 
 	if(Debug)
-		Debug->BeginFunc("PostEvaluate","GGCAInst");
+		Debug->BeginFunc("PostEvaluate","GCAInst");
 	ptr=Sols;
 	Assign(*ptr,BestChromosome);
 	for(i=GetPopSize()+1,C=Chromosomes,ptr++;--i;C++,ptr++)
@@ -267,9 +262,9 @@ void GGCAInst::PostEvaluate(void)
 		s=Chromosomes[(*ptr)->GetId()-1];
 		(*s->Fitness)=GetGen()+1.1;
 		#if BESTSOLSVERIFICATION
-			BestSols.InsertPtr(b=new GGCAChromo(this,BestSols.NbPtr));
+			BestSols.InsertPtr(b=new GCAChromo(this,BestSols.NbPtr));
 			b->Init(thDatas[0]);
-			(static_cast<RGroups<GGCAGroup,GGCAObj,GGCAGroupData,GGCAChromo>*>(b))->Init(&GrpData);
+			(static_cast<RGroups<GCAGroup,GCAObj,GCAGroupData,GCAChromo>*>(b))->Init(&GrpData);
 			(*b)=(*s);
 		#endif
 	}
@@ -332,12 +327,12 @@ void GGCAInst::PostEvaluate(void)
 	delete[] Res;
 
 	if(Debug)
-		Debug->EndFunc("PostEvaluate","GGCAInst");
+		Debug->EndFunc("PostEvaluate","GCAInst");
 }
 
 
 //-----------------------------------------------------------------------------
-double GGCAInst::GetDisagreementRatio(size_t element1,size_t element2) const
+double GCAInst::GetDisagreementRatio(size_t element1,size_t element2) const
 {
 	double d;
 	Disagree->Measure(0,element1,element2,&d);
@@ -346,7 +341,7 @@ double GGCAInst::GetDisagreementRatio(size_t element1,size_t element2) const
 
 
 //-----------------------------------------------------------------------------
-double GGCAInst::GetAgreementRatio(size_t element1,size_t element2) const
+double GCAInst::GetAgreementRatio(size_t element1,size_t element2) const
 {
 	double d;
 	Agree->Measure(0,element1,element2,&d);
@@ -355,7 +350,7 @@ double GGCAInst::GetAgreementRatio(size_t element1,size_t element2) const
 
 
 //-----------------------------------------------------------------------------
-double GGCAInst::GetSim(size_t element1,size_t element2) const
+double GCAInst::GetSim(size_t element1,size_t element2) const
 {
 	double d;
 	Sims->Measure(0,element1,element2,&d);
@@ -365,13 +360,13 @@ double GGCAInst::GetSim(size_t element1,size_t element2) const
 
 
 //-----------------------------------------------------------------------------
-void GGCAInst::PostRun(void)
+void GCAInst::PostRun(void)
 {
 #if BESTSOLSVERIFICATION
 	RPromSol* s;
 
 	// Init Criterion and Solutions of the PROMETHEE part
-	GGCAProm::ClearSols();
+	GCAProm::ClearSols();
 	for(BestSols.Start();!BestSols.End();BestSols.Next())
 	{
 		s=NewSol();
@@ -385,14 +380,14 @@ void GGCAInst::PostRun(void)
 
 
 //-----------------------------------------------------------------------------
-void GGCAInst::HandlerNotFound(const RNotification& /*notification*/)
+void GCAInst::HandlerNotFound(const RNotification& /*notification*/)
 {
 //	std::cout<<" GCA '"<<notification.GetName()<<"' not treated (Gen="<<Gen<<")."<<std::endl;
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAInst::~GGCAInst(void)
+GCAInst::~GCAInst(void)
 {
 	if(Sols)
 		delete[] Sols;

@@ -2,11 +2,11 @@
 
 	Genetic Documents Algorithm
 
-	GGDAGrouping.cpp
+	GCA.hh
 
-	GDA Plug-in - Implementation
+	Genetic Clustering Algorithm - Template Implementation
 
-	Copyright 2006-2008 by the Université Libre de Bruxelles.
+	Copyright 2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -50,11 +50,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <ggdagrouping.h>
-#include <ggcachromo.h>
-#include <ggcainst.h>
-#include <ggcagroup.h>
-#include <ggcaobj.h>
+#include <gcainst.h>
+#include <gcagroup.h>
 using namespace R;
 using namespace std;
 
@@ -62,78 +59,60 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-//  GGDAGrouping
+//  GCA
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGDAGrouping::GGDAGrouping(GFactoryPostDoc* fac)
-	: GPostDoc(fac), Objs(20)
+template<class cObj,class cGroup,class cFactory>
+	GCA<cObj,cGroup,cFactory>::GCA(const RString& name,tObjType type)
+		: RObject(name), Objs(20), Type(type)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GGDAGrouping::ApplyConfig(void)
+template<class cObj,class cGroup,class cFactory>
+	void GCA<cObj,cGroup,cFactory>::ApplyConfig(cFactory* factory)
 {
-	Params.PopSize=Factory->GetUInt("Population Size");
-	Params.MaxGen=Factory->GetUInt("Max Gen");
-	Params.Step=Factory->GetBool("Step");
-	Params.StepGen=Factory->GetUInt("Step Gen");
-	Params.MinAgreement=Factory->GetDouble("Min Agreement");
-	Params.MinDisagreement=Factory->GetDouble("Min Disagreement");
-	Params.MaxKMeans=Factory->GetUInt("Max kMeans");
-	Params.Convergence=Factory->GetDouble("Convergence");
-	Params.NbDivChromo=Factory->GetUInt("NbDivChromo");
-	Params.ParamsSim=Factory->FindParam<RParamStruct>("Sim Criterion");
-	Params.ParamsAgreement=Factory->FindParam<RParamStruct>("Agreement Criterion");
-	Params.ParamsDisagreement=Factory->FindParam<RParamStruct>("Disagreement Criterion");
-	RString what(Factory->Get("Clustering Method"));
+	Params.PopSize=factory->GetUInt("Population Size");
+	Params.MaxGen=factory->GetUInt("Max Gen");
+	Params.Step=factory->GetBool("Step");
+	Params.StepGen=factory->GetUInt("Step Gen");
+	Params.MinAgreement=factory->GetDouble("Min Agreement");
+	Params.MinDisagreement=factory->GetDouble("Min Disagreement");
+	Params.MaxKMeans=factory->GetUInt("Max kMeans");
+	Params.Convergence=factory->GetDouble("Convergence");
+	Params.NbDivChromo=factory->GetUInt("NbDivChromo");
+	RString what(factory->Get("Clustering Method"));
 	ClusteringMethod=0;
 	if(what=="GA")
 		ClusteringMethod=1;
 	if(what=="k-Means")
 		ClusteringMethod=2;
-	NbClusters=Factory->GetUInt("NbClusters");
+	NbClusters=factory->GetUInt("NbClusters");
 }
 
 
 //-----------------------------------------------------------------------------
-void GGDAGrouping::Connect(GSession* session)
-{
-	GPostDoc::Connect(session);
-}
-
-
-//-----------------------------------------------------------------------------
-void GGDAGrouping::Disconnect(GSession* session)
-{
-	GPostDoc::Disconnect(session);
-}
-
-
-//-----------------------------------------------------------------------------
-void GGDAGrouping::Init(void)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-bool GGDAGrouping::IsCoherent(const GCommunity* /*grp*/) const
+template<class cObj,class cGroup,class cFactory>
+	bool GCA<cObj,cGroup,cFactory>::IsCoherent(const cGroup* /*grp*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-bool GGDAGrouping::IsCoherent(const GCommunity* /*grp*/,const GProfile* /*sub*/) const
+template<class cObj,class cGroup,class cFactory>
+	bool GCA<cObj,cGroup,cFactory>::IsCoherent(const cGroup* /*grp*/,const cObj* /*sub*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-bool GGDAGrouping::IsValid(GCommunity* /*grp*/)
+template<class cObj,class cGroup,class cFactory>
+	bool GCA<cObj,cGroup,cFactory>::IsValid(cGroup* /*grp*/)
 {
 //	GSubProfileCursor Cur1,Cur2;
 //	size_t i,j;
@@ -156,37 +135,34 @@ bool GGDAGrouping::IsValid(GCommunity* /*grp*/)
 //			}
 //		}
 //	}
-//	return(true);
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGDAGrouping::ConstructResults(RCursor<GGCAGroup> Sol)
+template<class cObj,class cGroup,class cFactory>
+	void GCA<cObj,cGroup,cFactory>::ConstructResults(GSession* session,R::RCursor<GCAGroup> Sol)
 {
 	size_t* tab;
 	size_t* ptr;
 
-	RTextFile Out("/var/log/galilei/res.txt");
-	Out.Open(RIO::Create);
+	session->ClearGroups(Type);
 	for(Sol.Start();!Sol.End();Sol.Next())
 	{
-		Out<<"New group - "<<Sol()->GetNbObjs()<<endl;
+		cGroup* g=static_cast<cGroup*>(session->NewGroup(Type));
+		session->AssignId(g);
 		ptr=tab=Sol()->GetObjectsId();
 		while((*ptr)!=NoObject)
-		{
-			GDoc* doc=static_cast<GDoc*>((Objs[*(ptr++)])->GetElement());
-			//Out<<"\t"<<doc->GetId()<<doc->GetName()<<endl;
-			Out<<"\t"<<doc->GetId()<<doc->GetURL()<<endl;
-		}
+			g->InsertObj(static_cast<cObj*>(Objs[*(ptr++)]->GetElement()));
 		delete[] tab;
+		session->InsertGroup(g,Type);
 	}
-	Out.Close();
 }
 
 
 //-----------------------------------------------------------------------------
-void GGDAGrouping::DoGDA()
+template<class cObj,class cGroup,class cFactory>
+	void GCA<cObj,cGroup,cFactory>::DoGCA(GSession* session)
 {
 	double d;
 
@@ -194,73 +170,37 @@ void GGDAGrouping::DoGDA()
 
 	// Run the GA
 	cout<<"Get Mininmum"<<endl;
-	GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities")->Info(0,&d);
+
+	switch(Type)
+	{
+		case otDoc :
+			GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities")->Info(0,&d);
+			break;
+		case otProfile :
+			GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities")->Info(0,&d);
+			break;
+		default:
+			break;
+
+	}
 	Params.MinSimLevel=d;
 	cout<<"Min Sim="<<d<<endl;
 	cout<<"New GDA"<<endl;
-	GGCAInst Instance(Session,Objs,&Params,Session->GetDebug(),otDoc);
+	GCAInst Instance(session,Objs,&Params,session->GetDebug(),Type);
 	cout<<"Init GDA"<<endl;
 	Instance.Init();
 	cout<<"Run GDA"<<endl;
 	Instance.Run();
 	cout<<"Build solutions"<<endl;
-	ConstructResults(Instance.BestChromosome->Used);
-}
-
-
-
-//-----------------------------------------------------------------------------
-class kMeansDoc;
-class kMeansGroups;
-class kMeansGroup : public RGroup<kMeansGroup,GGCAObj,kMeansGroups>
-{
-public:
-	kMeansGroup(kMeansGroups* owner,size_t id);
-	friend class KMeansDoc;
-};
-
-
-//-----------------------------------------------------------------------------
-class kMeansGroups : public RGroups<kMeansGroup,GGCAObj,kMeansGroups>
-{
-public:
-	kMeansGroups(RCursor<GGCAObj> objs,size_t max)
-		: RGroups<kMeansGroup,GGCAObj,kMeansGroups>(objs,max)
-		{}
-	friend class KMeansDoc;
-};
-
-kMeansGroup::kMeansGroup(kMeansGroups* owner,size_t id)
-	: RGroup<kMeansGroup,GGCAObj,kMeansGroups>(owner,id)
-{
+	ConstructResults(session,Instance.BestChromosome->Used);
 }
 
 
 //-----------------------------------------------------------------------------
-class kMeansDoc : public RGroupingKMeans<kMeansGroup,GGCAObj,kMeansGroups>
+template<class cObj,class cGroup,class cFactory>
+	void GCA<cObj,cGroup,cFactory>::DokMeans(GSession*)
 {
-	GMeasure* Measure;
-
-public:
-	kMeansDoc(const RString& n,RRandom* r,RCursor<GGCAObj> objs,RDebug* debug=0)
-		: RGroupingKMeans<kMeansGroup,GGCAObj,kMeansGroups>(n,r,objs,debug)
-	{
-		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
-	}
-
-	virtual double Similarity(GGCAObj* obj1,GGCAObj* obj2)
-	{
-		double d;
-		Measure->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
-		return(d);
-	}
-};
-
-
-//-----------------------------------------------------------------------------
-void GGDAGrouping::DokMeans(void)
-{
-	cout<<"Do kMeans"<<endl;
+/*	cout<<"Do kMeans"<<endl;
 
 	cout<<"Get Mininmum"<<endl;
 	double d;
@@ -296,37 +236,38 @@ void GGDAGrouping::DokMeans(void)
 		}
 		delete[] tab;
 	}
-	Out.Close();
+	Out.Close();*/
 }
 
 
 //-----------------------------------------------------------------------------
-void GGDAGrouping::Run(void)
+template<class cObj,class cGroup,class cFactory>
+	void GCA<cObj,cGroup,cFactory>::Run(GSession* session)
 {
 	// set the level of the MinSim
 	try
 	{
 		// If no document in an active language -> skip it
-		size_t nbdocs=Session->GetNbDocs();
-		if(!nbdocs)
+		size_t nb=session->GetNbElements(Type);
+		if(!nb)
 			return;
 
 		// Create objects
 		cout<<"Create objects";
-		Objs.Clear(nbdocs);
-		RCursor<GDoc> Docs(Session->GetDocs());
+		Objs.Clear(nb);
+		RCursor<cObj> Cur(GetObjs());
 		size_t i(0);
-		for(Docs.Start();!Docs.End();Docs.Next(),i++)
-			Objs.InsertPtr(new GGCAObj(i,Docs()));
+		for(Cur.Start();!Cur.End();Cur.Next(),i++)
+			Objs.InsertPtr(new GCAObj(i,Cur()));
 		cout<<endl;
 
 		switch(ClusteringMethod)
 		{
 			case 1:
-				DoGDA();
+				DoGCA(session);
 				break;
 			case 2:
-				DokMeans();
+				DokMeans(session);
 				break;
 		}
 	}
@@ -348,13 +289,14 @@ void GGDAGrouping::Run(void)
 	}
 	catch(...)
 	{
-		throw GException("Unknow Problem");
+		throw GException("Unknown Problem");
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GGDAGrouping::CreateParams(RConfig* params)
+template<class cObj,class cGroup,class cFactory>
+	void GCA<cObj,cGroup,cFactory>::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("Population Size",16));
 	params->InsertParam(new RParamValue("Max Gen",30));
@@ -366,7 +308,7 @@ void GGDAGrouping::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("Convergence",0.05));
 	params->InsertParam(new RParamValue("NbDivChromos",2));
 	params->InsertParam(new RParamValue("NbClusters",20));
-	params->InsertParam(new RParamValue("Clustering Method","GDA"));
+	params->InsertParam(new RParamValue("Clustering Method","GA"));
 	params->InsertParam(RPromLinearCriterion::CreateParam("Sim Criterion"));
 	params->InsertParam(RPromLinearCriterion::CreateParam("Agreement Criterion"));
 	params->InsertParam(RPromLinearCriterion::CreateParam("Disagreement Criterion"));
@@ -374,10 +316,7 @@ void GGDAGrouping::CreateParams(RConfig* params)
 
 
 //-----------------------------------------------------------------------------
-GGDAGrouping::~GGDAGrouping(void)
+template<class cObj,class cGroup,class cFactory>
+	GCA<cObj,cGroup,cFactory>::~GCA(void)
 {
 }
-
-
-//------------------------------------------------------------------------------
-CREATE_POSTDOC_FACTORY("Genetic Documents Algorithm",GGDAGrouping)

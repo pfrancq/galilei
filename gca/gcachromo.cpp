@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAChromo.cpp
+	GCAChromo.cpp
 
 	Chromosome - Implementation
 
@@ -53,10 +53,10 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggcachromo.h>
-#include <ggcainst.h>
-#include <ggcagroup.h>
-#include <ggcaobj.h>
+#include <gcachromo.h>
+#include <gcainst.h>
+#include <gcagroup.h>
+#include <gcaobj.h>
 using namespace R;
 using namespace std;
 
@@ -64,13 +64,13 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-// class GGCAChromo
+// class GCAChromo
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAChromo::GGCAChromo(GGCAInst* inst,size_t id)
-	: RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>(inst,id),
+GCAChromo::GCAChromo(GCAInst* inst,size_t id)
+	: RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>(inst,id),
 	  ToDel(0), CritSimJ(0.0), CritAgreement(0.0), CritDisagreement(1.0), Protos(Used.GetMaxNb()),
 	  thProm(0), thSols(0)
 {
@@ -79,10 +79,10 @@ GGCAChromo::GGCAChromo(GGCAInst* inst,size_t id)
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::Init(GGCAThreadData* thData)
+void GCAChromo::Init(GCAThreadData* thData)
 {
 	// Parent Initialisation
-	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::Init(thData);
+	RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::Init(thData);
 
 	// Current
 	thObjs1=thData->tmpObjs1;
@@ -95,19 +95,19 @@ void GGCAChromo::Init(GGCAThreadData* thData)
 
 
 //-----------------------------------------------------------------------------
-int GGCAChromo::Compare(const GGCAChromo* c) const
+int GCAChromo::Compare(const GCAChromo* c) const
 {
 	return(Id-c->Id);
 }
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::ConstructChromo(GSession* grps)
+void GCAChromo::ConstructChromo(GSession* grps)
 {
 	R::RCursor<GCommunity> Grp;
 	RCursor<GProfile> Profile;
-	GGCAGroup* grp;
-	GGCAObj** objs;
+	GCAGroup* grp;
+	GCAObj** objs;
 	size_t i;
 
 	Grp=grps->GetCommunities();
@@ -122,7 +122,7 @@ void GGCAChromo::ConstructChromo(GSession* grps)
 			(*objs)=Instance->GetObj(Profile()->GetId());
 
 		// Mix randomly thObjs1
-		Instance->RandOrder<GGCAObj*>(thObjs1,NbObjs1);
+		Instance->RandOrder<GCAObj*>(thObjs1,NbObjs1);
 
 		// Put the objects in the group if possible
 		for(objs=thObjs1,i=NbObjs1+1;--i;objs++)
@@ -139,19 +139,19 @@ void GGCAChromo::ConstructChromo(GSession* grps)
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::RandomConstruct(void)
+void GCAChromo::RandomConstruct(void)
 {
 	// Look if already a solution in the session
 	if((Instance->Type==otProfile)&&(Instance->Session->GetNbCommunities()))
 		ConstructChromo(Instance->Session);
 
 	// Call classic heuristic for non-assigned objects
-	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::RandomConstruct();
+	RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::RandomConstruct();
 }
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::Evaluate(void)
+void GCAChromo::Evaluate(void)
 {
 	size_t i;
 	double min;
@@ -162,8 +162,8 @@ void GGCAChromo::Evaluate(void)
 		return;
 	if(Used.GetNb()==1)
 		cout<<"Problem"<<endl;
-	R::RCursor<GGCAGroup> Cur(Used);
-	R::RCursor<GGCAGroup> Cur2(Used);
+	R::RCursor<GCAGroup> Cur(Used);
+	R::RCursor<GCAGroup> Cur2(Used);
 	for(Cur.Start(),i=0,min=2.0;!Cur.End();Cur.Next(),i++)
 	{
 		if(!i)
@@ -190,17 +190,16 @@ void GGCAChromo::Evaluate(void)
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::ReAllocate(void)
+void GCAChromo::ReAllocate(void)
 {
 	size_t nb;
 	double sim,maxsim;
-	GGCAGroup* grp;
-	GGCAObj** Cur;
-
+	GCAGroup* grp;
+	GCAObj** Cur;
 
 	// Put the prototypes in Protos
 	Protos.Clear();
-	R::RCursor<GGCAGroup> Grp(Used);
+	R::RCursor<GCAGroup> Grp(Used);
 	for(Grp.Start();!Grp.End();Grp.Next())
 	{
 		Grp()->ComputeRelevant();
@@ -211,7 +210,7 @@ void GGCAChromo::ReAllocate(void)
 	Clear();
 
 	// Insert the Prototypes in a group
-	RCursor<GGCAObj> CurP(Protos);
+	RCursor<GCAObj> CurP(Protos);
 	for(CurP.Start();!CurP.End();CurP.Next())
 	{
 		grp=ReserveGroup();
@@ -220,24 +219,24 @@ void GGCAChromo::ReAllocate(void)
 	}
 
 	// Mix randomly thObjs1
-//	Instance->RandOrder<GGCAObj*>(thObjs1,Objs->GetNb());
+//	Instance->RandOrder<GCAObj*>(thObjs1,Objs->GetNb());
 
-	// Go through the ranbomly ordered subprofiles and put them in the group of the
+	// Go through the randomly ordered objects and put them in the group of the
 	// most similar prototype.
 	for(Cur=thObjs1,nb=Objs.GetNb()+1;--nb;Cur++)
 	{
-		// If the subprofile is a prototype -> already in a group
+		// If the object is a prototype -> already in a group
 		if(GetGroup(*Cur)) continue;
 
 		// Look first if one of the object with a ratio are already grouped
-		RCursor<GGCAMaxRatio> Best(*Instance->Ratios[(*Cur)->GetId()]);
+		RCursor<GCAMaxRatio> Best(*Instance->Ratios[(*Cur)->GetId()]);
 		for(Best.Start(),grp=0;(!Best.End())&&(!grp);Best.Next())
 			grp=GetGroup(Best()->ObjId);
 
 		// If no group find, -> Go through each groups
 		if(!grp)
 		{
-			R::RCursor<GGCAGroup> Grp(Used);
+			R::RCursor<GCAGroup> Grp(Used);
 			for(Grp.Start(),maxsim=-1.0;!Grp.End();Grp.Next())
 			{
 				// If all the hard constraints are not respected -> skip the group.
@@ -254,7 +253,7 @@ void GGCAChromo::ReAllocate(void)
 			}
 		}
 
-		// If no group find -> Create a new group and make the current subprofile the
+		// If no group find -> Create a new group and make the current object the
 		// prototype of it.
 		if(!grp)
 		{
@@ -262,18 +261,18 @@ void GGCAChromo::ReAllocate(void)
 			grp->SetRelevant(*Cur);
 		}
 
-		// Insert the subprofile in the current group.
+		// Insert the object in the current group.
 		grp->Insert(*Cur);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-size_t GGCAChromo::CalcNewProtosNb(void)
+size_t GCAChromo::CalcNewProtosNb(void)
 {
 	size_t count;
-	R::RCursor<GGCAGroup> Grp;
-	GGCAObj* OldProto;
+	R::RCursor<GCAGroup> Grp;
+	GCAObj* OldProto;
 
 	// Computed the prototypes for each groups and count the number in Protos
 	Grp.Set(Used);
@@ -289,20 +288,20 @@ size_t GGCAChromo::CalcNewProtosNb(void)
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::DoKMeans(void)
+void GCAChromo::DoKMeans(void)
 {
 	size_t itermax;
 	double error,minerror;
-	GGCAObj** obj;
+	GCAObj** obj;
 
 	if(Instance->Debug)
 		Instance->Debug->BeginFunc("DoKMeans","GChomoIR");
 
-	// Copy the subprofiles into thObjs1
-	R::RCursor<GGCAGroup> Grp(Used);
+	// Copy the objects into thObjs1
+	R::RCursor<GCAGroup> Grp(Used);
 	for(Grp.Start(),obj=thObjs1;!Grp.End();Grp.Next())
 	{
-		RCursor<GGCAObj> ptr=GetObjs(Grp());
+		RCursor<GCAObj> ptr=GetObjs(Grp());
 		for(ptr.Start();!ptr.End();ptr.Next(),obj++)
 		{
 			(*obj)=ptr();
@@ -310,7 +309,7 @@ void GGCAChromo::DoKMeans(void)
 	}
 
 	// Mix randomly thObjs1
-	Instance->RandOrder<GGCAObj*>(thObjs1,Objs.GetNb());
+	Instance->RandOrder<GCAObj*>(thObjs1,Objs.GetNb());
 
 	// Max Iterations
 	minerror=Instance->Params->Convergence/100.0;
@@ -322,37 +321,35 @@ void GGCAChromo::DoKMeans(void)
 
 	if(Instance->Debug)
 	{
-		char tmp[60];
-		sprintf(tmp,"Number of k-Means runs: %u",itermax);
-		Instance->Debug->PrintInfo(tmp);
+		Instance->Debug->PrintInfo("Number of k-Means runs: "+RString::Number(itermax));
 		Instance->Debug->EndFunc("DoKMeans","GChomoIR");
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::DivideWorstSubProfiles(void)
+void GCAChromo::DivideWorstSubProfiles(void)
 {
-	R::RCursor<GGCAGroup> Grp;
+	R::RCursor<GCAGroup> Grp;
 	size_t i;
-	GGCAObj** ptr;
-	GGCAObj** ptr2;
-	GGCAObj** ptr3;
+	GCAObj** ptr;
+	GCAObj** ptr2;
+	GCAObj** ptr3;
 	double sim,minsim;
 	size_t prof;
 	size_t prof1;
 	size_t prof2;
-	GGCAGroup* grp;
-	GGCAObj* worst1=0;
-	GGCAObj* worst2=0;
+	GCAGroup* grp;
+	GCAObj* worst1=0;
+	GCAObj* worst2=0;
 
-	// Find the group containing the two most dissimilar subprofiles
+	// Find the group containing the two most dissimilar objects
 	Grp.Set(Used);
 	for(Grp.Start(),minsim=1.0,grp=0;!Grp.End();Grp.Next())
 	{
 		if(Grp()->GetNbObjs()<3) continue;
-		RCursor<GGCAObj> CurObj(GetObjs(*Grp()));
-		RCursor<GGCAObj> CurObj2(GetObjs(*Grp()));
+		RCursor<GCAObj> CurObj(GetObjs(*Grp()));
+		RCursor<GCAObj> CurObj2(GetObjs(*Grp()));
 		for(CurObj.Start(),i=0;i<Grp()->GetNbObjs()-1;CurObj.Next(),i++)
 		{
 			for(CurObj2.GoTo(i+1);!CurObj2.End();CurObj2.Next())
@@ -377,11 +374,11 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 	(*(ptr2++))=worst1;
 	(*(ptr3++))=worst2;
 
-	// Copy in thObjs1 the subprofiles most similar to worst1 and in thObjs2
-	// the subprofiles most similar to worst2
+	// Copy in thObjs1 the objects most similar to worst1 and in thObjs2
+	// the objects most similar to worst2
 	prof1=worst1->GetElementId();
 	prof2=worst2->GetElementId();
-	RCursor<GGCAObj> CurObj(GetObjs(*grp));
+	RCursor<GCAObj> CurObj(GetObjs(*grp));
 	for(CurObj.Start();!CurObj.End();CurObj.Next())
 	{
 		if((CurObj()==worst1)||(CurObj()==worst2)) continue;
@@ -403,12 +400,12 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 	// Release grp
 	ReleaseGroup(grp);
 
-	// Reserve a new group and insert the elements of thObjs1
+	// Reserve a new group and insert the objects of thObjs1
 	grp=ReserveGroup();
 	for(ptr=thObjs1,i=NbObjs1+1;--i;ptr++)
 		grp->Insert(*ptr);
 
-	// Reserve a new group and insert the elements of thObjs2
+	// Reserve a new group and insert the objects of thObjs2
 	grp=ReserveGroup();
 	for(ptr=thObjs2,i=NbObjs2+1;--i;ptr++)
 		grp->Insert(*ptr);
@@ -416,20 +413,20 @@ void GGCAChromo::DivideWorstSubProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::MergeBestSubProfiles(void)
+void GCAChromo::MergeBestSubProfiles(void)
 {
 	size_t i,j;
-	GGCAGroup* grp1;
-	GGCAGroup* grp2;
-	GGCAGroup* bestgrp1;
-	GGCAGroup* bestgrp2;
+	GCAGroup* grp1;
+	GCAGroup* grp2;
+	GCAGroup* bestgrp1;
+	GCAGroup* bestgrp2;
 	double sim,maxsim;
 	size_t prof;
-	GGCAObj** ptr;
+	GCAObj** ptr;
 
 	// Find the two groups containing the most similar objects.
-	R::RCursor<GGCAObj> Cur(Objs);
-	R::RCursor<GGCAObj> Cur2(Objs);
+	R::RCursor<GCAObj> Cur(Objs);
+	R::RCursor<GCAObj> Cur2(Objs);
 	for(Cur.Start(),i=Cur.GetNb(),j=0,maxsim=-1.0,bestgrp1=bestgrp2=0;--i;Cur.Next(),j++)
 	{
 		grp1=GetGroup(Cur());
@@ -450,7 +447,7 @@ void GGCAChromo::MergeBestSubProfiles(void)
 	if((!bestgrp1)||(!bestgrp2)) return;
 
 	// Put the objects of bestgrp1 in bestgrp2 only if there are not already have the same user
-	RCursor<GGCAObj> CurObj(GetObjs(*bestgrp1));
+	RCursor<GCAObj> CurObj(GetObjs(*bestgrp1));
 	for(CurObj.Start(),ptr=thObjs1,NbObjs1=0;!CurObj.End();CurObj.Next(),ptr++,NbObjs1++)
 		(*ptr)=CurObj();
 	for(ptr=thObjs1,i=NbObjs1+1;--i;ptr++)
@@ -468,11 +465,11 @@ void GGCAChromo::MergeBestSubProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::TreatSocialSubProfiles(bool rel)
+void GCAChromo::TreatSocialSubProfiles(bool rel)
 {
-	GGCAObj* obj;
-	R::RCursor<GGCAGroup> Cur1(Used),Cur2(Used);
-	GGCAGroup* grp=0;
+	GCAObj* obj;
+	R::RCursor<GCAGroup> Cur1(Used),Cur2(Used);
+	GCAGroup* grp=0;
 	double tmp,max;
 
 //	cout<<"Do not treat social"<<endl;
@@ -523,14 +520,14 @@ void GGCAChromo::TreatSocialSubProfiles(bool rel)
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::Optimisation(void)
+void GCAChromo::Optimisation(void)
 {
 	size_t i;
 	size_t nb;
 	RPromSol** s;
 	RPromSol** tab;
-	GGCAChromo* LastDiv;
-	GGCAChromo* LastMerge;
+	GCAChromo* LastDiv;
+	GCAChromo* LastMerge;
 
 	// Do not optimize
 	if(!Instance->Params->NbDivChromo)
@@ -589,24 +586,24 @@ void GGCAChromo::Optimisation(void)
 
 
 //-----------------------------------------------------------------------------
-void GGCAChromo::Modify(void)
+void GCAChromo::Modify(void)
 {
-	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::Mutation();
+	RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::Mutation();
 }
 
 
 
 //-----------------------------------------------------------------------------
-bool GGCAChromo::SameGroup(size_t obj1,size_t obj2) const
+bool GCAChromo::SameGroup(size_t obj1,size_t obj2) const
 {
 	return(ObjectsAss[obj1]==ObjectsAss[obj2]);
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAChromo& GGCAChromo::operator=(const GGCAChromo& chromo)
+GCAChromo& GCAChromo::operator=(const GCAChromo& chromo)
 {
-	RChromoG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>::operator=(chromo);
+	RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::operator=(chromo);
 	CritSimJ=chromo.CritSimJ;
 	CritAgreement=chromo.CritAgreement;
 	CritDisagreement=chromo.CritDisagreement;
@@ -618,6 +615,6 @@ GGCAChromo& GGCAChromo::operator=(const GGCAChromo& chromo)
 
 
 //-----------------------------------------------------------------------------
-GGCAChromo::~GGCAChromo(void)
+GCAChromo::~GCAChromo(void)
 {
 }

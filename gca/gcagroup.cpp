@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAGroup.hh
+	GCAGroup.hh
 
 	Group - Header.
 
@@ -45,10 +45,10 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggcagroup.h>
-#include <ggcachromo.h>
-#include <ggcainst.h>
-#include <ggcaobj.h>
+#include <gcagroup.h>
+#include <gcachromo.h>
+#include <gcainst.h>
+#include <gcaobj.h>
 using namespace R;
 using namespace std;
 
@@ -64,7 +64,7 @@ using namespace std;
 class SubProfileLocal
 {
 public:
-	GGCAObj* Prof;
+	GCAObj* Prof;
 	double AvgSim;
 };
 
@@ -86,30 +86,30 @@ int sort_function(const void* a,const void* b)
 
 //-----------------------------------------------------------------------------
 //
-// class GGCAGroup
+// class GCAGroup
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAGroup::GGCAGroup(GGCAGroup* grp)
-	: RGroup<GGCAGroup,GGCAObj,GGCAChromo>(grp), BestSumDist(0.0),
+GCAGroup::GCAGroup(GCAGroup* grp)
+	: RGroup<GCAGroup,GCAObj,GCAChromo>(grp), BestSumDist(0.0),
 	  Relevant(0), Dirty(true), ToEval(true)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAGroup::GGCAGroup(GGCAChromo* owner,const size_t id)
-	: RGroup<GGCAGroup,GGCAObj,GGCAChromo>(owner,id), BestSumDist(0.0),
+GCAGroup::GCAGroup(GCAChromo* owner,const size_t id)
+	: RGroup<GCAGroup,GCAObj,GCAChromo>(owner,id), BestSumDist(0.0),
 	  Relevant(0), Dirty(true), ToEval(true)
 {
 }
 
 
 //---------------------------------------------------------------------------
-void GGCAGroup::Clear(void)
+void GCAGroup::Clear(void)
 {
-	RGroup<GGCAGroup,GGCAObj,GGCAChromo>::Clear();
+	RGroup<GCAGroup,GCAObj,GCAChromo>::Clear();
 	BestSumDist=0.0;
 	Relevant=0;
 	ToEval=Dirty=true;
@@ -117,12 +117,12 @@ void GGCAGroup::Clear(void)
 
 
 //---------------------------------------------------------------------------
-bool GGCAGroup::HasSameUser(const GGCAObj* obj) const
+bool GCAGroup::HasSameUser(const GCAObj* obj) const
 {
 	size_t usr=obj->GetParentId();
 	if(!usr)
 		return(false);
-	RCursor<GGCAObj> ptr=Owner->GetObjs(*this);
+	RCursor<GCAObj> ptr=Owner->GetObjs(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 		if(usr==ptr()->GetParentId())
 			return(true);
@@ -131,7 +131,7 @@ bool GGCAGroup::HasSameUser(const GGCAObj* obj) const
 
 
 //---------------------------------------------------------------------------
-bool GGCAGroup::CanInsert(const GGCAObj* obj)
+bool GCAGroup::CanInsert(const GCAObj* obj)
 {
 	size_t prof1;
 	size_t prof2;
@@ -140,7 +140,7 @@ bool GGCAGroup::CanInsert(const GGCAObj* obj)
 		return(true);
 	prof1=obj->GetElementId();
 	size_t usr1=obj->GetParentId();
-	RCursor<GGCAObj> ptr=Owner->GetObjs(*this);
+	RCursor<GCAObj> ptr=Owner->GetObjs(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
 		prof2=ptr()->GetElementId();
@@ -157,21 +157,21 @@ bool GGCAGroup::CanInsert(const GGCAObj* obj)
 
 
 //---------------------------------------------------------------------------
-void GGCAGroup::PostInsert(const GGCAObj* /*obj*/)
+void GCAGroup::PostInsert(const GCAObj* /*obj*/)
 {
 	ToEval=Dirty=true;
 }
 
 
 //---------------------------------------------------------------------------
-void GGCAGroup::PostDelete(const GGCAObj* /*obj*/)
+void GCAGroup::PostDelete(const GCAObj* /*obj*/)
 {
 	ToEval=Dirty=true;
 }
 
 
 //---------------------------------------------------------------------------
-double GGCAGroup::ComputeSumDist(GGCAObj* obj)
+double GCAGroup::ComputeSumDist(GCAObj* obj)
 {
 	double Sum;
 	size_t prof;
@@ -180,7 +180,7 @@ double GGCAGroup::ComputeSumDist(GGCAObj* obj)
 	if(!NbSubObjects)
 		return(0.0);
 	prof=obj->GetElementId();
-	RCursor<GGCAObj> ptr(Owner->GetObjs(*this));
+	RCursor<GCAObj> ptr(Owner->GetObjs(*this));
 	for(ptr.Start(),Sum=0.0;!ptr.End();ptr.Next())
 	{
 		if(ptr()==obj) continue;
@@ -192,7 +192,7 @@ double GGCAGroup::ComputeSumDist(GGCAObj* obj)
 
 
 //---------------------------------------------------------------------------
-void GGCAGroup::ComputeRelevant(void)
+void GCAGroup::ComputeRelevant(void)
 {
 	double SumDist;
 
@@ -209,7 +209,7 @@ void GGCAGroup::ComputeRelevant(void)
 	}
 
 	// Suppose the first element is the most relevant.
-	RCursor<GGCAObj> ptr(Owner->GetObjs(*this));
+	RCursor<GCAObj> ptr(Owner->GetObjs(*this));
 	ptr.Start();
 	Relevant=(ptr());
 	BestSumDist=ComputeSumDist(ptr());
@@ -229,14 +229,14 @@ void GGCAGroup::ComputeRelevant(void)
 
 
 //---------------------------------------------------------------------------
-void GGCAGroup::Evaluate(double& dist,double& agree,double& disagree)
+void GCAGroup::Evaluate(double& dist,double& agree,double& disagree)
 {
 	ComputeRelevant();
 	if(ToEval)
 	{
 		ToEval=false;
-		RCursor<GGCAObj> CurObj(Owner->GetObjs(*this));
-		RCursor<GGCAObj> CurObj2(Owner->GetObjs(*this));
+		RCursor<GCAObj> CurObj(Owner->GetObjs(*this));
+		RCursor<GCAObj> CurObj2(Owner->GetObjs(*this));
 		size_t i;
 		for(CurObj.Start(),i=0,AgreementSum=DisagreementSum=0.0;i<GetNbObjs()-1;CurObj.Next(),i++)
 		{
@@ -254,7 +254,7 @@ void GGCAGroup::Evaluate(double& dist,double& agree,double& disagree)
 
 
 //---------------------------------------------------------------------------
-void GGCAGroup::SetRelevant(GGCAObj* obj)
+void GCAGroup::SetRelevant(GCAObj* obj)
 {
 	Relevant=obj;
 	ToEval=Dirty=true;
@@ -262,9 +262,9 @@ void GGCAGroup::SetRelevant(GGCAObj* obj)
 
 
 //---------------------------------------------------------------------------
-GGCAGroup& GGCAGroup::operator=(const GGCAGroup& grp)
+GCAGroup& GCAGroup::operator=(const GCAGroup& grp)
 {
-	RGroup<GGCAGroup,GGCAObj,GGCAChromo>::operator=(grp);
+	RGroup<GCAGroup,GCAObj,GCAChromo>::operator=(grp);
 	BestSumDist=grp.BestSumDist;
 	Relevant=grp.Relevant;
 	Dirty=grp.Dirty;
@@ -276,13 +276,13 @@ GGCAGroup& GGCAGroup::operator=(const GGCAGroup& grp)
 
 
 //---------------------------------------------------------------------------
-double GGCAGroup::GetMaxRatioSame(GGCAObj* obj)
+double GCAGroup::GetMaxRatioSame(GCAObj* obj)
 {
 	double max,tmp;
 	size_t prof=obj->GetElementId();
 
 	// Look if in the other objects, there is a better one
-	RCursor<GGCAObj> ptr=Owner->GetObjs(*this);
+	RCursor<GCAObj> ptr=Owner->GetObjs(*this);
 	for(ptr.Start(),max=0.0;!ptr.End();ptr.Next())
 	{
 		tmp=Owner->Instance->GetAgreementRatio(prof,ptr()->GetElementId());
@@ -294,6 +294,6 @@ double GGCAGroup::GetMaxRatioSame(GGCAObj* obj)
 
 
 //---------------------------------------------------------------------------
-GGCAGroup::~GGCAGroup(void)
+GCAGroup::~GCAGroup(void)
 {
 }

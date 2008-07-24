@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAHeuristic.h
+	GCAHeuristic.h
 
 	Heuristic - Header
 
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGCAHeuristicH
-#define GGCAHeuristicH
+#ifndef GCAHeuristicH
+#define GCAHeuristicH
 
 
 //-----------------------------------------------------------------------------
@@ -42,19 +42,19 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggca.h>
+#include <gca.h>
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GGCAHeuristic class provides a specific heuristic for the IR problem.
+* The GCAHeuristic class provides a specific heuristic for the IR problem.
 * @author Pascal Francq
 * @short IR Heuristic.
 */
-class GGCAHeuristic : public R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>
+class GCAHeuristic : public R::RGroupingHeuristic<GCAGroup,GCAObj,GCAChromo>
 {
-	R::RContainer<GGCAGroup,false,false> ToDel;
-	R::RContainer<GGCAMaxRatios,true,false>& Ratios;
+	R::RContainer<GCAGroup,false,false> ToDel;
+	R::RContainer<GCAMaxRatios,true,false>& Ratios;
 
 public:
 
@@ -64,18 +64,18 @@ public:
 	* @param objs           Pointer to the objects.
 	* @param debug          Debugger.
 	*/
-	 GGCAHeuristic(R::RRandom* r,R::RCursor<GGCAObj> objs,R::RContainer<GGCAMaxRatios,true,false>& ratios,R::RDebug* debug=0);
+	 GCAHeuristic(R::RRandom* r,R::RCursor<GCAObj> objs,R::RContainer<GCAMaxRatios,true,false>& ratios,R::RDebug* debug=0);
 
 	/**
 	* Initialize the heuristic.
 	* @param groups         Pointer to the groups.
 	*/
-	virtual void Init(GGCAChromo* groups);
+	virtual void Init(GCAChromo* groups);
 
 	/**
 	* Find a group for the next object.
 	*/
-	virtual GGCAGroup* FindGroup(void);
+	virtual GCAGroup* FindGroup(void);
 
 	/**
 	* Verify that no social profiles is alone.
@@ -85,7 +85,7 @@ public:
 	/**
 	* Destruct the grouping heuristic.
 	*/
-	virtual ~GGCAHeuristic(void);
+	virtual ~GCAHeuristic(void);
 };
 
 

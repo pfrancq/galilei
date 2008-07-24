@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAInst.h
+	GCAInst.h
 
 	Instance - Header
 
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGCAInstH
-#define GGCAInstH
+#ifndef GCAInstH
+#define GCAInstH
 
 
 //-----------------------------------------------------------------------------
@@ -47,42 +47,42 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggca.h>
-#include <ggcaprom.h>
+#include <gca.h>
+#include <gcaprom.h>
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GGCAThreadData class provides a representation for "thread-dependent" data
+* The GCAThreadData class provides a representation for "thread-dependent" data
 * for the IR GA.
 * @author Pascal Francq
 * @short IR "thread-dependent" Data.
 */
-class GGCAThreadData : public R::RThreadDataG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>
+class GCAThreadData : public R::RThreadDataG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>
 {
 public:
 
-	R::RContainer<GGCAGroup,false,false> ToDel;
+	R::RContainer<GCAGroup,false,false> ToDel;
 
 	/**
 	* Temporary array of Objects.
 	*/
-	GGCAObj** tmpObjs1;
+	GCAObj** tmpObjs1;
 
 	/**
 	* Temporary array of Objects.
 	*/
-	GGCAObj** tmpObjs2;
+	GCAObj** tmpObjs2;
 
 	/**
 	* Test Chromosomes.
 	*/
-	GGCAChromo** Tests;
+	GCAChromo** Tests;
 
 	/**
 	* PROMETHE  Kernel used by the chromosome.
 	*/
-	GGCAProm Prom;
+	GCAProm Prom;
 
 	/**
 	* Array of solutions to create in PROMETHEE Kernel.
@@ -97,17 +97,17 @@ public:
 	* Construct the data.
 	* @param owner          The instance of the problem.
 	*/
-	GGCAThreadData(GGCAInst* owner);
+	GCAThreadData(GCAInst* owner);
 
 	/**
-	* Initialise thje data.
+	* Initialize the data.
 	*/
 	virtual void Init(void);
 
 	/**
 	* Destruct the data.
 	*/
-	virtual ~GGCAThreadData(void);
+	virtual ~GCAThreadData(void);
 };
 
 
@@ -117,12 +117,12 @@ public:
 * @author Pascal Francq
 * @short IR Instance.
 */
-class GGCAInst : public R::RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData,GGCAGroup,GGCAObj>, public GGCAProm
+class GCAInst : public R::RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>, public GCAProm
 {
 	/**
 	* Parameter of the GA.
 	*/
-	GGCAParams* Params;
+	GCAParams* Params;
 
 	/**
 	* Solutions corresponding to the chromosome.
@@ -137,18 +137,18 @@ class GGCAInst : public R::RInstG<GGCAInst,GGCAChromo,GGCAFitness,GGCAThreadData
 	/**
 	* Social Profiles.
 	*/
-	R::RContainer<GGCAObj,false,true> NoSocialProfiles;
+	R::RContainer<GCAObj,false,true> NoSocialProfiles;
 
 	/**
 	* Max Ratios for each objects.
 	*/
-	R::RContainer<GGCAMaxRatios,true,false> Ratios;
+	R::RContainer<GCAMaxRatios,true,false> Ratios;
 
 #if BESTSOLSVERIFICATION
 	/**
 	* Container holding the best chromosomes.
 	*/
-	R::RContainer<GGCAChromo,true,false> BestSols;
+	R::RContainer<GCAChromo,true,false> BestSols;
 #endif
 
 	/*
@@ -182,7 +182,7 @@ public:
 	* @param debug          Debugger.
 	* @param type           NType of the element to group.
 	*/
-	GGCAInst(GSession* ses,R::RCursor<GGCAObj> objs,GGCAParams* p,R::RDebug* debug,tObjType type);
+	GCAInst(GSession* ses,R::RCursor<GCAObj> objs,GCAParams* p,R::RDebug* debug,tObjType type);
 
 	/**
 	* Initialisation of the instance.
@@ -193,14 +193,14 @@ public:
 	/**
 	* Create a specific heuristic for the IR problem.
 	*/
-	virtual R::RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>* CreateHeuristic(void);
+	virtual R::RGroupingHeuristic<GCAGroup,GCAObj,GCAChromo>* CreateHeuristic(void);
 
 	/**
 	* Get the GA object corresponding to an element.
 	* @param id              Identifier of the element.
-	* @ereturns GGCAObj*
+	* @ereturns GCAObj*
 	*/
-	GGCAObj* GetObj(size_t id) const;
+	GCAObj* GetObj(size_t id) const;
 
 	/**
 	* This function determines if the GA must be stopped. Actually, it is the case
@@ -213,7 +213,7 @@ public:
 	* Write the information of a given chromosome.
 	* @param c              Chromosome.
 	*/
-	void WriteChromoInfo(GGCAChromo* c);
+	void WriteChromoInfo(GCAChromo* c);
 
 	/**
 	* Apply PROMETHEE to classify the chromosomes.
@@ -254,13 +254,13 @@ public:
 	/**
 	* Destruct the instance.
 	*/
-	virtual ~GGCAInst(void);
+	virtual ~GCAInst(void);
 
 	// friend classes
-	friend class GGCAChromo;
-	friend class GGCAGroup;
-	friend class GGCAThreadData;
-	friend class GGCAHeuristic;
+	friend class GCAChromo;
+	friend class GCAGroup;
+	friend class GCAThreadData;
+	friend class GCAHeuristic;
 };
 
 

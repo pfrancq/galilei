@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAObj.h
+	GCAObj.h
 
 	Objects to group - Header.
 
@@ -30,8 +30,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGCAObjH
-#define GGCAObjH
+#ifndef GCAObjH
+#define GCAObjH
 
 
 //-----------------------------------------------------------------------------
@@ -42,12 +42,12 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 /**
-* The GGCAObj class provides a representation of subprofile to to place in a
+* The GCAObj class provides a representation of subprofile to to place in a
 * group.
 * @author Pascal Francq
 * @short IR Object.
 */
-class GGCAObj
+class GCAObj
 {
 protected:
 
@@ -88,20 +88,20 @@ public:
 	* @param id             Identificator.
 	* @param d              Corresponding document.
 	*/
-	GGCAObj(size_t id,GDoc* d);
+	GCAObj(size_t id,GDoc* d);
 
 	/**
 	* Construct the object.
 	* @param id             Identificator.
 	* @param p              Corresponding profile.
 	*/
-	GGCAObj(size_t id,GProfile* p);
+	GCAObj(size_t id,GProfile* p);
 
 	/**
 	* Copy Construct.
 	* @param obj            Source used.
 	*/
-	GGCAObj(const GGCAObj* obj);
+	GCAObj(const GCAObj* obj);
 
 	/**
 	* Comparaison function
@@ -111,12 +111,12 @@ public:
 	/**
 	* Comparaison function
 	*/
-	int Compare(const GGCAObj& obj) const;
+	int Compare(const GCAObj& obj) const;
 
 	/**
 	* Comparaison function
 	*/
-	int Compare(const GGCAObj* obj) const;
+	int Compare(const GCAObj* obj) const;
 
 	/**
 	* Return the identificator of the object.
@@ -146,10 +146,10 @@ public:
 	/**
 	* Destruct the object.
 	*/
-	virtual ~GGCAObj(void);
+	virtual ~GCAObj(void);
 
 	// friend classes
-	friend class GGCAGroup;
+	friend class GCAGroup;
 };
 
 

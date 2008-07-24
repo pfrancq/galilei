@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAObj.h
+	GCAObj.h
 
 	Objects to group - Implementation.
 
@@ -39,59 +39,59 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggcaobj.h>
+#include <gcaobj.h>
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GGCAObj
+// class GCAObj
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAObj::GGCAObj(size_t id,GDoc* d)
+GCAObj::GCAObj(size_t id,GDoc* d)
 	: Id(id), Element(d), ElementId(d->GetId()), Social(false), ParentId(0), SumPjk(0.0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAObj::GGCAObj(size_t id,GProfile* p)
+GCAObj::GCAObj(size_t id,GProfile* p)
 	: Id(id), Element(p), ElementId(p->GetId()), Social(p->IsSocial()), ParentId(p->GetUser()->GetId()),SumPjk(0.0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAObj::GGCAObj(const GGCAObj* obj)
+GCAObj::GCAObj(const GCAObj* obj)
 	: Id(obj->Id), Element(obj->Element), ElementId(obj->ElementId), Social(obj->Social), ParentId(obj->ParentId), SumPjk(obj->SumPjk)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GGCAObj::Compare(const size_t id) const
+int GCAObj::Compare(const size_t id) const
 {
 	return(Id-id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GGCAObj::Compare(const GGCAObj& obj) const
+int GCAObj::Compare(const GCAObj& obj) const
 {
   return(Id-obj.Id);
 }
 
 
 //-----------------------------------------------------------------------------
-int GGCAObj::Compare(const GGCAObj* obj) const
+int GCAObj::Compare(const GCAObj* obj) const
 {
   return(Id-obj->Id);
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAObj::~GGCAObj(void)
+GCAObj::~GCAObj(void)
 {
 }

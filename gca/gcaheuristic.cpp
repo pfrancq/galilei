@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAHeuristic.h
+	GCAHeuristic.h
 
 	Heuristic - Implemenation
 
@@ -38,53 +38,53 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggcaheuristic.h>
-#include <ggcachromo.h>
-#include <ggcagroup.h>
-#include <ggcaobj.h>
-#include <ggcainst.h>
+#include <gcaheuristic.h>
+#include <gcachromo.h>
+#include <gcagroup.h>
+#include <gcaobj.h>
+#include <gcainst.h>
 using namespace R;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GGCAHeuristic
+// class GCAHeuristic
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GGCAHeuristic::GGCAHeuristic(RRandom* r,RCursor<GGCAObj> objs,R::RContainer<GGCAMaxRatios,true,false>& ratios,RDebug* debug)
-	: RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>("IR Heuristic",r,objs,debug),
+GCAHeuristic::GCAHeuristic(RRandom* r,RCursor<GCAObj> objs,R::RContainer<GCAMaxRatios,true,false>& ratios,RDebug* debug)
+	: RGroupingHeuristic<GCAGroup,GCAObj,GCAChromo>("IR Heuristic",r,objs,debug),
 	  ToDel(Objs.GetNb()<11?10:Objs.GetNb()/4), Ratios(ratios)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-void GGCAHeuristic::Init(GGCAChromo* groups)
+void GCAHeuristic::Init(GCAChromo* groups)
 {
-	RGroupingHeuristic<GGCAGroup,GGCAObj,GGCAChromo>::Init(groups);
+	RGroupingHeuristic<GCAGroup,GCAObj,GCAChromo>::Init(groups);
 }
 
 
 //-----------------------------------------------------------------------------
-GGCAGroup* GGCAHeuristic::FindGroup(void)
+GCAGroup* GCAHeuristic::FindGroup(void)
 {
-	GGCAGroup* grp;
+	GCAGroup* grp;
 	double maxsim;
 	double sim;
 
 	// Look first if one of the object with a ratio are already grouped
 	// -> If yes, return the group
-	RCursor<GGCAMaxRatio> Best(*Ratios[CurObj->GetId()]);
+	RCursor<GCAMaxRatio> Best(*Ratios[CurObj->GetId()]);
 	for(Best.Start(),grp=0;(!Best.End())&&(!grp);Best.Next())
 		grp=Groups->GetGroup(Best()->ObjId);
 	if(grp)
 		return(grp);
 
 	// Go through each groups
-	R::RCursor<GGCAGroup> Cur(Groups->Used);
+	R::RCursor<GCAGroup> Cur(Groups->Used);
 	for(Cur.Start(),maxsim=-1.0;!Cur.End();Cur.Next())
 	{
 		// If all the hard constraints are not respected -> skip the group.
@@ -113,11 +113,11 @@ GGCAGroup* GGCAHeuristic::FindGroup(void)
 
 
 //-----------------------------------------------------------------------------
-void GGCAHeuristic::PostRun(void)
+void GCAHeuristic::PostRun(void)
 {
-	GGCAObj* obj;
-	R::RCursor<GGCAGroup> Cur1(Groups->Used),Cur2(Groups->Used);
-	GGCAGroup* grp=0;
+	GCAObj* obj;
+	R::RCursor<GCAGroup> Cur1(Groups->Used),Cur2(Groups->Used);
+	GCAGroup* grp=0;
 	double tmp,max;
 
 	// Look for the groups to delete
@@ -162,6 +162,6 @@ void GGCAHeuristic::PostRun(void)
 
 
 //-----------------------------------------------------------------------------
-GGCAHeuristic::~GGCAHeuristic(void)
+GCAHeuristic::~GCAHeuristic(void)
 {
 }

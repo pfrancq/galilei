@@ -2,7 +2,7 @@
 
 	Genetic Community Algorithm
 
-	GGCAProm.h
+	GCAProm.h
 
 	PROMETHEE Kernel - Header.
 
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GGCAPromH
-#define GGCAPromH
+#ifndef GCAPromH
+#define GCAPromH
 
 
 //-----------------------------------------------------------------------------
@@ -47,7 +47,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GCA
-#include <ggca.h>
+#include <gca.h>
 
 
 //-----------------------------------------------------------------------------
@@ -57,12 +57,12 @@
 * @author Pascal Francq
 * @short Generic Plugin.
 */
-class GGCAProm : public R::RPromKernel
+class GCAProm : public R::RPromKernel
 {
 	/**
 	* Parameters.
 	*/
-	GGCAParams* Params;
+	GCAParams* Params;
 
 	/**
 	* Criteria representing the Similarity criterion "J".
@@ -85,14 +85,14 @@ public:
 	* Constructor.
 	* @param p              Parameters.
 	*/
-	GGCAProm(GGCAParams* p);
+	GCAProm(GCAParams* p);
 
 	/**
 	* Assign chromosome as a solution.
 	* @param s              Solution.
 	* @param c              Chromosome.
 	*/
-	void Assign(R::RPromSol* s,GGCAChromo* c);
+	void Assign(R::RPromSol* s,GCAChromo* c);
 };
 
 

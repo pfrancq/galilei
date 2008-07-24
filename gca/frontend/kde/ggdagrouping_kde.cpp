@@ -42,7 +42,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GDA
-#include <../../ggca.h>
+#include <../../gca.h>
 
 
 //-----------------------------------------------------------------------------
@@ -98,7 +98,7 @@ void Configure(GFactoryPostDoc* params)
 	GAConfigDlg dlg;
 	if(dlg.Configure(params))
 			params->Apply();
-	
+
 /*	dlg.ClusteringMethod->setCurrentText(ToQString(params->Get("Clustering Method")));
 	dlg.NbClusters->setValue(params->GetUInt("NbClusters"));
 	dlg.PopSize->setValue(params->GetUInt("Population Size"));
