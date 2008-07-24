@@ -188,7 +188,7 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 
 
 //-----------------------------------------------------------------------------
-void KViewHistory::update(unsigned int /*cmd*/)
+void KViewHistory::update(tObjType)
 {
 }
 
@@ -298,7 +298,7 @@ void KViewHistory::slotSelectedSetChanged(QListViewItem* item)
 
 	switch(itemtype->Type)
 	{
-		case (QListViewItemType::tGiwwh) :
+		case otHistoricalProfile:
 			// check if item is selected or deselected
 			tmp=SelectedProfiles->GetPtr(itemtype->Obj.Giwwh);
 			if(tmp)
@@ -309,7 +309,7 @@ void KViewHistory::slotSelectedSetChanged(QListViewItem* item)
 			DisplaySimilarities();
 			break;
 
-		case (QListViewItemType::tGroupHistory) :
+		case otHistoricalCommunity:
 			DisplayRelationShip(itemtype->Obj.GroupHistory);
 			break;
 

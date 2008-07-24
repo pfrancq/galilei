@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	KViewThGroups.h
+	KViewCommunity.h
 
-	Window to manipulate theoritical groups - Header.
+	Window to manipulate a specific group - Header.
 
 	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
@@ -31,27 +31,28 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewThGroupsH
-#define KViewThGroupsH
+#ifndef KViewCommunityH
+#define KViewCommunityH
 
 
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rcontainer.h>
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
-using namespace GALILEI;
+#include <gdoc.h>
+namespace GALILEI
+{
+	class GCommunity;
+}
 
 
 //-----------------------------------------------------------------------------
 // include files for Qt
-#include <qwidget.h>
-class QListView;
-class QTabWidget;
+#include <qlistview.h>
+#include <qtabwidget.h>
 
 
 //-----------------------------------------------------------------------------
@@ -59,77 +60,106 @@ class QTabWidget;
 #include "kview.h"
 
 
-
 //-----------------------------------------------------------------------------
 /**
-* The KViewThGroups class represents a window to manipulate the groups of the
-* system.
-*
-* @author Pascal Francq and David Wartel.
-* @short Theoritical Groups' Window.
+* The KViewCommunity class represents a window to manipulate a specific groups.
+* @author Pascal Francq.
+* @short Group' Window.
 */
-class KViewThGroups : public KView
+class KViewCommunity : public KView
 {
 	Q_OBJECT
 
 	/**
-	* Ideal Groups.
+	* Group represented by the view.
 	*/
-	GSubjects* Subjects;
+	GALILEI::GCommunity* Group;
 
 	/**
-	* Widget to handle the different information of the document.
+	* Widget to handle the different information of the group.
 	*/
 	QTabWidget* Infos;
 
 	/**
-	* Theoritical Groups.
+	*  Widget of profiles containing in the group.
 	*/
-	QListView* thGroups;
+	QListView* Profiles;
 
 	/**
-	* Pratical Groups.
+	* Window to show general informations.
 	*/
-	QListView* prGroups;
+	QListView* General;
+
+	/**
+	* Vector representing the group.
+	*/
+	QListView* Vector;
+
+	/**
+	*  Widget of documents assessed as relevant by memebers of the group.
+	*/
+	QListView* Docs;
+
+	/**
+	* List of documents assessed as relevant.
+	*/
+	R::RContainer<GALILEI::GDoc,false,true> OkDocs;
 
 public:
 
 	/**
 	* Constructor for the view
+	* @param grp            Corresponding group.
 	* @param doc            Document instance that the view represents.
-	* @param idealgroup     The ideal groupement.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewThGroups(KDoc* doc,GSubjects* subjects,QWidget* parent,const char* name,int wflags);
+	KViewCommunity(GALILEI::GCommunity* grp,KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
-	* Return the type of the window.
+	* Get the group of this window.
+	* @return Pointer to a GALILEI::GCommunity.
 	*/
-	virtual GViewType getType(void) {return(gThGroups);}
+	GALILEI::GCommunity* GetGroup(void) {return(Group);}
 
 	/**
-	* Get the current group selected in this window.
-	* @returns Pointer to GCommunity or 0 if no group is currently selected.
+	* Construct the groups widget.
 	*/
-	GCommunity* GetCurrentGroup(void);
+	void ConstructDescription(void);
 
 	/**
-	* Construct the groups' widget.
+	* Construct the profiles widget.
 	*/
-	void ConstructThGroups(void);
+	void ConstructProfiles(void);
 
 	/**
-	* Construct the groups' widget.
+	* Construct the general information widget.
 	*/
-	void ConstructGroups(void);
+	void ConstructGeneral(void);
+
+	/**
+	* Construct the documents' widget.
+	*/
+	void ConstructDocs(void);
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            Type.
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
+
+protected slots:
+
+	/**
+	* Local menu of documents was asked.
+	*/
+	void askDocsMenu(QListViewItem*,const QPoint&,int);
+
+	/**
+	* slot for the menu.
+	*/
+	void slotMenu(int id);
 
 protected:
 
@@ -137,13 +167,6 @@ protected:
 	* Called when the main window is resize by the user.
 	*/
 	void resizeEvent(QResizeEvent *);
-
-public:
-
-	/**
-	* Destructor for the main view.
-	*/
-	~KViewThGroups(void);
 };
 
 

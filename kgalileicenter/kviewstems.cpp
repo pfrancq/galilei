@@ -191,7 +191,7 @@ KViewStems::KViewStems(const char* code,const char* filename,KDoc* doc, QWidget*
 
 
 //-----------------------------------------------------------------------------
-void KViewStems::update(unsigned int /*cmd*/)
+void KViewStems::update(tObjType)
 {
 }
 

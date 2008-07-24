@@ -142,7 +142,7 @@ GDoc* KViewDocs::GetCurrentDoc(void)
 	t=(QListViewItemType*)Docs->selectedItem();
 	if(!t)
 		return(0);
-	if(t->Type!=QListViewItemType::tDocument)
+	if(t->Type!=otDoc)
 		return(0);
 	return(t->Obj.Doc);
 }
@@ -185,9 +185,9 @@ void KViewDocs::CreateDocsListView(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewDocs::update(unsigned int cmd)
+void KViewDocs::update(tObjType type)
 {
-	if(cmd!=0) return;
+	if(type!=otTopic) return;
 	Docs->clear();
 	CreateDocsListView();
 }

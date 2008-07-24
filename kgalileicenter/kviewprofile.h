@@ -123,11 +123,6 @@ public:
 	KViewProfile(GALILEI::GProfile* profile,KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
-	* Return the type of the window.
-	*/
-	virtual GViewType getType(void) {return(gProfile);}
-
-	/**
 	* Get the profile of this window.
 	* @return Pointer to a GALILEI::GProfile.
 	*/
@@ -162,7 +157,7 @@ public:
 	* Gets called to redraw the document contents if it has been modified.
 	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups,3=Links)
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
 
 protected:
 

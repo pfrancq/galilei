@@ -131,7 +131,7 @@ GUser* KViewUsers::GetCurrentUser(void)
 	t=(QListViewItemType*)Users->selectedItem();
 	if(!t)
 		return(0);
-	if(t->Type!=QListViewItemType::tUser)
+	if(t->Type!=otUser)
 		return(0);
 	return(t->Obj.User);
 }
@@ -159,9 +159,9 @@ void KViewUsers::CreateUsersListView(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewUsers::update(unsigned int cmd)
+void KViewUsers::update(tObjType type)
 {
-	if(cmd!=1) return;
+	if((type!=otProfile)&&(type!=otUser)) return;
 	Users->clear();
 	CreateUsersListView();
 }
@@ -176,7 +176,7 @@ void KViewUsers::slotAddUser(void)
 	{
 		GSession* session=getDocument()->GetSession();
 		session->InsertUser(new GUser(cNoRef,FromQString(Name),FromQString(Name)));
-		update(1);
+		update(otUser);
 	}
 }
 
@@ -185,7 +185,7 @@ void KViewUsers::slotAddUser(void)
 void KViewUsers::slotModifyUser(void)
 {
 	QListViewItemType* t((QListViewItemType*)Users->selectedItem());
-	if((!t)||(t->Type!=QListViewItemType::tUser))
+	if((!t)||(t->Type!=otUser))
 		return;
 	GUser* usr=t->Obj.User;
 	bool Ok;
@@ -205,7 +205,7 @@ void KViewUsers::slotModifyUser(void)
 void KViewUsers::slotAddProfile(void)
 {
 	QListViewItemType* t((QListViewItemType*)Users->selectedItem());
-	if((!t)||(t->Type!=QListViewItemType::tUser))
+	if((!t)||(t->Type!=otUser))
 		return;
 	GUser* usr=t->Obj.User;
 	bool Ok;
@@ -216,7 +216,7 @@ void KViewUsers::slotAddProfile(void)
 		GStorage* save=session->GetStorage();
 		session->InsertProfile(new GProfile(usr,cNoRef,FromQString(Name),cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,true,20));
 		save->SaveUser(usr);
-		update(1);
+		update(otUser);
 	}
 }
 
@@ -225,7 +225,7 @@ void KViewUsers::slotAddProfile(void)
 void KViewUsers::slotModifyProfile(void)
 {
 	QListViewItemType* t((QListViewItemType*)Users->selectedItem());
-	if((!t)||(t->Type!=QListViewItemType::tProfile))
+	if((!t)||(t->Type!=otProfile))
 		return;
 	GProfile* prof=t->Obj.Profile;
 	bool Ok;

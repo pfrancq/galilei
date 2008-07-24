@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session  - Implementation.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -300,7 +300,7 @@ protected:
 			case 1:
 				doc=Session->GetDoc(text,true,true);
 				if(!doc)
-					Session->InsertDoc(doc=new GDoc(text,text,cNoRef,0,"text/html",RDate::GetToday(),RDate::Null));
+					Session->InsertDoc(doc=new GDoc(text,text,cNoRef,0,"text/html",cNoRef,RDate::GetToday(),RDate::Null,RDate::Null));
 				break;
 			case 2:
 				user=Session->GetUser(text,true,true);
@@ -381,7 +381,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 		{
 			// Must be a normal document
 			GSubject* Topic=Subjects->GetNode(parent);
-			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,RDate::GetToday(),RDate::Null);
+			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,cNoRef,RDate::GetToday(),RDate::Null,RDate::Null);
 			Session->InsertDoc(doc);
 			if(Topic)
 				Topic->Insert(doc);
@@ -471,13 +471,29 @@ void QGroupProfiles::DoIt(void)
 //-----------------------------------------------------------------------------
 void QPostGroupProfiles::DoIt(void)
 {
-	Parent->PutText("Do Post-Groups Methods ...");
+	Parent->PutText("Do Post-Community Methods ...");
 	Session->DoPostCommunity(Parent);
 }
 
 
 //-----------------------------------------------------------------------------
-void QCreateIdealGroups::DoIt(void)
+void QGroupDocs::DoIt(void)
+{
+	Parent->PutText("Groups Documents ...");
+	Session->GroupDocs(Parent);
+}
+
+
+//-----------------------------------------------------------------------------
+void QPostGroupDocs::DoIt(void)
+{
+	Parent->PutText("Do Post-Topic Methods ...");
+	Session->DoPostTopic(Parent);
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealCommunities::DoIt(void)
 {
 	Parent->PutText("Create Ideal Groups ...");
 	Session->GetSubjects()->Apply();
@@ -556,7 +572,7 @@ void QFillMIMETypes::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
-QLoadDictionnaries::QListViewItemDict::QListViewItemDict(QListView* parent,GConceptType* dict)
+QLoadDictionaries::QListViewItemDict::QListViewItemDict(QListView* parent,GConceptType* dict)
 	: QListViewItem(parent,ToQString(dict->GetName())), Dict(dict)
 {
 	setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("xmag.png",KIcon::Small)));
@@ -565,7 +581,7 @@ QLoadDictionnaries::QListViewItemDict::QListViewItemDict(QListView* parent,GConc
 
 
 //-----------------------------------------------------------------------------
-void QLoadDictionnaries::DoIt(void)
+void QLoadDictionaries::DoIt(void)
 {
 	// Go trough each language and create a Item.
 	RCursor<GConceptType> Types(Session->GetConceptTypes());

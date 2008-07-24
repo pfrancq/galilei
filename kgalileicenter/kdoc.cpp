@@ -6,7 +6,7 @@
 
 	Document representing a GALILEI session - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -53,7 +53,8 @@ using namespace R;
 #include "kview.h"
 #include "kviewdocs.h"
 #include "kviewusers.h"
-#include "kviewgroups.h"
+#include "kviewcommunities.h"
+#include "kviewtopics.h"
 #include "kgalileicenter.h"
 
 
@@ -66,7 +67,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KDoc::KDoc(KGALILEICenterApp* owner)
-	: QObject(), Session(0), WinDocs(0), WinUsers(0), WinGroups(0), Owner(owner)
+	: QObject(), Session(0), WinDocs(0), WinUsers(0), WinCommunities(0), WinTopics(0), Owner(owner)
 {
 	pViewList = new QPtrList<KView>;
 	pViewList->setAutoDelete(true);
@@ -77,23 +78,26 @@ KDoc::KDoc(KGALILEICenterApp* owner)
 void KDoc::addView(KView* view)
 {
 	pViewList->append(view);
-	switch(view->getType())
+	if(dynamic_cast<KViewUsers*>(view))
 	{
-		case gUsers:
-			WinUsers=(KViewUsers*)view;
-			Owner->showUsers->setEnabled(false);
-			break;
-		case gDocs:
-			WinDocs=(KViewDocs*)view;
-			Owner->showDocs->setEnabled(false);
-			break;
-		case gGroups:
-			WinGroups=(KViewGroups*)view;
-			Owner->showGroups->setEnabled(false);
-			break;
-		default:
-			break;
-	};
+		WinUsers=(KViewUsers*)view;
+		Owner->showUsers->setEnabled(false);
+	}
+	else if(dynamic_cast<KViewDocs*>(view))
+	{
+		WinDocs=(KViewDocs*)view;
+		Owner->showDocs->setEnabled(false);
+	}
+	else if(dynamic_cast<KViewCommunities*>(view))
+	{
+		WinCommunities=(KViewCommunities*)view;
+		Owner->showCommunities->setEnabled(false);
+	}
+	else if(dynamic_cast<KViewTopics*>(view))
+	{
+		WinTopics=(KViewTopics*)view;
+		Owner->showTopics->setEnabled(false);
+	}
 	changedViewList();
 }
 
@@ -101,23 +105,26 @@ void KDoc::addView(KView* view)
 //-----------------------------------------------------------------------------
 void KDoc::removeView(KView* view)
 {
-	switch(view->getType())
+	if(dynamic_cast<KViewUsers*>(view))
 	{
-		case gUsers:
-			WinUsers=0;
-			Owner->showUsers->setEnabled(true);
-			break;
-		case gDocs:
+		WinUsers=0;
+		Owner->showUsers->setEnabled(true);
+	}
+	else if(dynamic_cast<KViewDocs*>(view))
+	{
 			WinDocs=0;
 			Owner->showDocs->setEnabled(true);
-			break;
-		case gGroups:
-			WinGroups=0;
-			Owner->showGroups->setEnabled(true);
-			break;
-		default:
-			break;
-	};
+	}
+	else if(dynamic_cast<KViewCommunities*>(view))
+	{
+		WinCommunities=0;
+		Owner->showCommunities->setEnabled(true);
+	}
+	else if(dynamic_cast<KViewTopics*>(view))
+	{
+		WinTopics=0;
+		Owner->showTopics->setEnabled(true);
+	}
 	pViewList->remove(view);
 	if(!pViewList->isEmpty())
 			changedViewList();
@@ -141,13 +148,13 @@ bool KDoc::isLastView(void)
 
 
 //-----------------------------------------------------------------------------
-void KDoc::updateAllViews(unsigned int cmd)
+void KDoc::updateAllViews(tObjType type)
 {
 	KView *w;
 
 	for(w=pViewList->first();w!=0;w=pViewList->next())
 	{
-		w->update(cmd);
+		w->update(type);
 	}
 }
 

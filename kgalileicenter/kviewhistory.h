@@ -174,15 +174,10 @@ public:
 	KViewHistory(KDoc* doc, bool global,QWidget* parent,const char* name,int wflags,size_t minid,size_t maxid,const char* mindate, const char* maxdate, bool bdate);
 
 	/**
-	* Return the type of the window.
-	*/
-	virtual GViewType getType(void) {return(gGA);}
-
-	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            Type.
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
 
 protected:
 

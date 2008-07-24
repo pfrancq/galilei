@@ -103,9 +103,11 @@ using namespace std;
 #include "kviewmetaengine.h"
 #include "kviewusers.h"
 #include "kviewstats.h"
-#include "kviewthgroups.h"
-#include "kviewgroups.h"
-#include "kviewgroup.h"
+#include "kviewthcommunities.h"
+#include "kviewcommunities.h"
+#include "kviewcommunity.h"
+#include "kviewtopics.h"
+#include "kviewtopic.h"
 #include "kviewprg.h"
 #include "kviewstems.h"
 #include "kviewprofile.h"
@@ -207,13 +209,13 @@ void KGALILEICenterApp::slotSessionCompute(void)
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Complete Session");
 	if(!Dlg.Run(new QComputeAll()))
 		return;
-	Doc->updateAllViews(0);
-	Doc->updateAllViews(1);
-	Doc->updateAllViews(2);
+	Doc->updateAllViews(otDoc);
+	Doc->updateAllViews(otProfile);
+	Doc->updateAllViews(otCommunity);
 
 	if(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
 	{
-		Doc->updateAllViews(3);
+		Doc->updateAllViews(otNoClass);
 	}
 }
 
@@ -314,8 +316,8 @@ void KGALILEICenterApp::slotImportUsersData(void)
 			return;
 		QSessionProgressDlg d(this,Doc->GetSession(),"Import Users' Data");
 		d.Run(new QImportUsersData(FromQString(name)));
-		Doc->updateAllViews(0);
-		Doc->updateAllViews(1);
+		Doc->updateAllViews(otDoc);
+		Doc->updateAllViews(otProfile);
 	}
 	catch(GException& e)
 	{
@@ -379,12 +381,12 @@ void KGALILEICenterApp::slotProfilesCalc(void)
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Profiles");
 	if(!Dlg.Run(new QComputeProfiles()))
 		return;
-	Doc->updateAllViews(1);
+	Doc->updateAllViews(otProfile);
 	//test whether a linking method has been used during Profile computation.
 	//if true -->refresh Links
 	if(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
 	{
-		Doc->updateAllViews(3);
+		Doc->updateAllViews(otNoClass);
 	}
 
 }
@@ -396,44 +398,71 @@ void KGALILEICenterApp::slotPostProfilesCalc(void)
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Profiles Analyze");
 	if(!Dlg.Run(new QPostComputeProfiles()))
 		return;
-	Doc->updateAllViews(1);
+	Doc->updateAllViews(otProfile);
 }
 
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotProfileCalc(void)
 {
-	KView* m = (KView*)pWorkspace->activeWindow();
-	if(m->getType()!=gProfile) return;
+	KViewProfile* m = dynamic_cast<KViewProfile*>(pWorkspace->activeWindow());
+	if(!m) return;
 	((KViewProfile*)m)->ComputeProfile();
 	slotWindowActivated(m);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotShowGroups(void)
+void KGALILEICenterApp::slotShowCommunities(void)
 {
-	createClient(Doc,new KViewGroups(Doc,pWorkspace,"View Groups",0));
+	createClient(Doc,new KViewCommunities(Doc,pWorkspace,"View Communities",0));
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGroupsCalc(void)
+void KGALILEICenterApp::slotCommunitiesCalc(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Make Groups");
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Communities");
 	if(!Dlg.Run(new QGroupProfiles()))
 		return;
-	Doc->updateAllViews(2);
+	Doc->updateAllViews(otCommunity);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotPostGroups(void)
+void KGALILEICenterApp::slotPostCommunities(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Groups Analyze");
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Communities Analyze");
 	if(!Dlg.Run(new QPostGroupProfiles()))
 		return;
-	Doc->updateAllViews(1);
+	Doc->updateAllViews(otCommunity);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotShowTopics(void)
+{
+	createClient(Doc,new KViewTopics(Doc,pWorkspace,"View Topics",0));
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotTopicsCalc(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Topics");
+	if(!Dlg.Run(new QGroupDocs()))
+		return;
+	Doc->updateAllViews(otTopic);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotPostTopics(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Topics Analyze");
+	if(!Dlg.Run(new QPostGroupDocs()))
+		return;
+	Doc->updateAllViews(otTopic);
 }
 
 
@@ -477,11 +506,11 @@ void KGALILEICenterApp::slotSimulationDlg(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGroupsCreate(void)
+void KGALILEICenterApp::slotCommunitiesCreate(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Groups");
-	Dlg.Run(new QCreateIdealGroups());
-	Doc->updateAllViews(2);
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Communities");
+	Dlg.Run(new QCreateIdealCommunities());
+	Doc->updateAllViews(otCommunity);
 }
 
 
@@ -490,7 +519,7 @@ void KGALILEICenterApp::slotDoFdbks(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Feedback Cycle");
 	Dlg.Run(new QMakeFdbks());
-	Doc->updateAllViews(1);
+	Doc->updateAllViews(otProfile);
 }
 
 
@@ -499,7 +528,7 @@ void KGALILEICenterApp::slotDoAssessments(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Assessments Cycle");
 	Dlg.Run(new QMakeAssessments());
-	Doc->updateAllViews(1);
+	Doc->updateAllViews(otProfile);
 }
 
 
@@ -507,14 +536,14 @@ void KGALILEICenterApp::slotDoAssessments(void)
 void KGALILEICenterApp::slotGroupingCompare(void)
 {
 	if(Doc->GetSession()->GetSubjects())
-		createClient(Doc,new KViewThGroups(Doc,Doc->GetSession()->GetSubjects(),pWorkspace,"View Theoritical Groups",0));
+		createClient(Doc,new KViewThCommunities(Doc,Doc->GetSession()->GetSubjects(),pWorkspace,"View Theoretical Communities",0));
 }
 
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowDocs(void)
 {
-	createClient(Doc,new KViewDocs(Doc,pWorkspace,"View Docs",0));
+	createClient(Doc,new KViewDocs(Doc,pWorkspace,"View Documents",0));
 }
 
 
@@ -549,7 +578,7 @@ void KGALILEICenterApp::slotDocsAnalyse(void)
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Analyse Documents");
 	if(!Dlg.Run(new QAnalyzeDocs()))
 		return;
-	Doc->updateAllViews(0);
+	Doc->updateAllViews(otDoc);
 }
 
 
@@ -559,7 +588,7 @@ void KGALILEICenterApp::slotPostDocsAnalyse(void)
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Documents Analyse");
 	if(!Dlg.Run(new QPostAnalyzeDocs()))
 		return;
-	Doc->updateAllViews(0);
+	Doc->updateAllViews(otDoc);
 }
 
 
@@ -607,9 +636,9 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotCreateXML(void)
 {
-	KView* m = (KView*)pWorkspace->activeWindow();
-	if(m->getType()!=gDoc) return;
-	((KViewDoc*)m)->CreateDocXML();
+	KViewDoc* m = dynamic_cast<KViewDoc*>(pWorkspace->activeWindow());
+	if(!m) return;
+	m->CreateDocXML();
 	slotWindowActivated(m);
 }
 
@@ -620,8 +649,8 @@ void KGALILEICenterApp::slotSaveXML(void)
 	int dlg;
 	KURL url;
 
-	KView* m = (KView*)pWorkspace->activeWindow();
-	if(m->getType()!=gDoc) return;
+	KViewDoc* m = dynamic_cast<KViewDoc*>(pWorkspace->activeWindow());
+	if(!m) return;
 	dlg=KMessageBox::No;
 	while(dlg!=KMessageBox::Yes)
 	{
@@ -636,16 +665,16 @@ void KGALILEICenterApp::slotSaveXML(void)
 		else
 			dlg=KMessageBox::Yes;
 	}
-	((KViewDoc*)m)->SaveDocXML(url.path());
+	m->SaveDocXML(url.path());
 }
 
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotAnalyseXML(void)
 {
-	KView* m = (KView*)pWorkspace->activeWindow();
-	if(m->getType()!=gDoc) return;
-	((KViewDoc*)m)->AnalyseDocXML();
+	KViewDoc* m = dynamic_cast<KViewDoc*>(pWorkspace->activeWindow());
+	if(!m) return;
+	m->AnalyseDocXML();
 }
 
 
@@ -674,10 +703,10 @@ void KGALILEICenterApp::slotTextFrench(void)
 {
 	slotStatusMsg(i18n("Opening file..."));
 	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionnary files"), this, i18n("Open File..."));
+	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionary files"), this, i18n("Open File..."));
 	if(!url.isEmpty())
 	{
-		createClient(Doc,new KViewStems("fr",url.path(),Doc,pWorkspace,"View Theoritical Groups",0));
+		createClient(Doc,new KViewStems("fr",url.path(),Doc,pWorkspace,"View Theoretical Communities",0));
 	}
 	slotStatusMsg(i18n("Ready."));
 }
@@ -688,10 +717,10 @@ void KGALILEICenterApp::slotTextEnglish(void)
 {
 	slotStatusMsg(i18n("Opening file..."));
 	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionnary files"), this, i18n("Open File..."));
+	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionary files"), this, i18n("Open File..."));
 	if(!url.isEmpty())
 	{
-		createClient(Doc,new KViewStems("en",url.path(),Doc,pWorkspace,"View Theoritical Groups",0));
+		createClient(Doc,new KViewStems("en",url.path(),Doc,pWorkspace,"View Theoretical Communities",0));
 	}
 	slotStatusMsg(i18n("Ready."));
 }
@@ -833,10 +862,18 @@ void KGALILEICenterApp::slotProfilesClear()
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGroupsClear()
+void KGALILEICenterApp::slotCommunitiesClear()
 {
 	if(Doc&&Doc->GetSession())
 		Doc->GetSession()->ForceReCompute(otCommunity);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotTopicsClear()
+{
+	if(Doc&&Doc->GetSession())
+		Doc->GetSession()->ForceReCompute(otTopic);
 }
 
 
@@ -930,66 +967,47 @@ void KGALILEICenterApp::slotHelpProgram(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotWindowActivated(QWidget*)
 {
-	KView* m = dynamic_cast<KView*>(pWorkspace->activeWindow());
-	GViewType type;
+	if(dynamic_cast<KView*>(pWorkspace->activeWindow()))
+		setCaption(pWorkspace->activeWindow()->caption());
+	else
+		setCaption("KGALILEICenter");
 
-	if(m)
+	// Update menu
+	if(dynamic_cast<KViewUsers*>(pWorkspace->activeWindow()))
 	{
-		// Update caption
-		setCaption(m->caption());
-		type=m->getType();
+		createXML->setEnabled(false);
+		saveXML->setEnabled(false);
+		analyseXML->setEnabled(false);
+	}
+	else if(dynamic_cast<KViewDocs*>(pWorkspace->activeWindow()))
+	{
+		createXML->setEnabled(false);
+		saveXML->setEnabled(false);
+		analyseXML->setEnabled(false);
+	}
+	else if(dynamic_cast<KViewDoc*>(pWorkspace->activeWindow()))
+	{
+		createXML->setEnabled(!(((KViewDoc*)pWorkspace->activeWindow())->IsDocXML()));
+		saveXML->setEnabled(((KViewDoc*)pWorkspace->activeWindow())->IsDocXML());
+		analyseXML->setEnabled(((KViewDoc*)pWorkspace->activeWindow())->IsDocXML());
+	}
+	else if(dynamic_cast<KViewProfile*>(pWorkspace->activeWindow()))
+	{
+		createXML->setEnabled(false);
+		saveXML->setEnabled(false);
+		analyseXML->setEnabled(false);
+	}
+	else if(dynamic_cast<KViewCommunities*>(pWorkspace->activeWindow()))
+	{
+		saveXML->setEnabled(false);
+		createXML->setEnabled(false);
+		analyseXML->setEnabled(false);
 	}
 	else
 	{
-		setCaption("");
-		type=gNothing;
-	}
-
-	// Update menu
-	switch(type)
-	{
-		case gUsers:
-			createXML->setEnabled(false);
-			saveXML->setEnabled(false);
-			analyseXML->setEnabled(false);
-			break;
-
-		case gDocs:
-			createXML->setEnabled(false);
-			saveXML->setEnabled(false);
-			analyseXML->setEnabled(false);
-			break;
-
-		case gDoc:
-			createXML->setEnabled(!(((KViewDoc*)m)->IsDocXML()));
-			saveXML->setEnabled(((KViewDoc*)m)->IsDocXML());
-			analyseXML->setEnabled(((KViewDoc*)m)->IsDocXML());
-			break;
-
-		case gProfile:
-			createXML->setEnabled(false);
-			saveXML->setEnabled(false);
-			analyseXML->setEnabled(false);
-			break;
-
-		case gGroups:
-			saveXML->setEnabled(false);
-			createXML->setEnabled(false);
-			analyseXML->setEnabled(false);
-			break;
-
-		case gGA:
-			createXML->setEnabled(false);
-			saveXML->setEnabled(false);
-			analyseXML->setEnabled(false);
-			break;
-
-		case gNothing:
-		default:
-			createXML->setEnabled(false);
-			saveXML->setEnabled(false);
-			analyseXML->setEnabled(false);
-			break;
+		createXML->setEnabled(false);
+		saveXML->setEnabled(false);
+		analyseXML->setEnabled(false);
 	}
 }
 
@@ -1001,19 +1019,23 @@ void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
 
 	switch(obj->Type)
 	{
-		case QListViewItemType::tProfile:
+		case otProfile:
 			createClient(Doc,new KViewProfile(obj->Obj.Profile,Doc,pWorkspace,"View Profile",0));
 			break;
 
-		case QListViewItemType::tDocument:
+		case otDoc:
 			createClient(Doc,new KViewDoc(obj->Obj.Doc,Doc,pWorkspace,"View Document",0));
 			break;
 
-		case QListViewItemType::tGroup:
-			createClient(Doc,new KViewGroup(obj->Obj.Group,Doc,pWorkspace,"View Group",0));
+		case otCommunity:
+			createClient(Doc,new KViewCommunity(obj->Obj.Community,Doc,pWorkspace,"View Community",0));
 			break;
 
-		case QListViewItemType::tNothing:
+		case otTopic:
+			createClient(Doc,new KViewTopic(obj->Obj.Topic,Doc,pWorkspace,"View Topic",0));
+			break;
+
+		case otNoClass:
 		default:
 			break;
 	}
@@ -1023,7 +1045,7 @@ void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSeeDicts(void)
 {
-	createClient(Doc,new KViewDicts(Doc,pWorkspace,"View Dictonnaries",0));
+	createClient(Doc,new KViewDicts(Doc,pWorkspace,"View Dictionaries",0));
 }
 
 

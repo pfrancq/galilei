@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	KViewThGroups.cpp
+	KViewThCommunities.cpp
 
 	Window to manipulate theoritical groups - Implementation.
 
@@ -65,7 +65,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for current application
-#include "kviewthgroups.h"
+#include "kviewthcommunities.h"
 #include "qsessionprogress.h"
 #include "kdoc.h"
 
@@ -73,66 +73,66 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 //
-// class KViewThGroups
+// class KViewThCommunities
 //
 //-----------------------------------------------------------------------------
 
 
 //-----------------------------------------------------------------------------
-KViewThGroups::KViewThGroups(KDoc* doc,GSubjects* subjects,QWidget* parent,const char* name,int wflags)
+KViewThCommunities::KViewThCommunities(KDoc* doc,GSubjects* subjects,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags), Subjects(subjects)
 {
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kmultiple.png",KIcon::Small)));
 
-	// initialisation of the tab widget
+	// initialization of the tab widget
 	Infos=new QTabWidget(this);
 	Infos->resize(size());
 
-	// Theoritic groupement
-	thGroups = new QListView(this);
-	Infos->insertTab(thGroups,"Ideal Groupement");
-	thGroups->resize(size());
-	thGroups->addColumn(QString("Profiles"));
-	thGroups->addColumn(QString("Users"));
-	thGroups->setRootIsDecorated(true);
-	connect(thGroups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	ConstructThGroups();
+	// Theoretical communities
+	thCommunities = new QListView(this);
+	Infos->insertTab(thCommunities,"Ideal Communities");
+	thCommunities->resize(size());
+	thCommunities->addColumn(QString("Profiles"));
+	thCommunities->addColumn(QString("Users"));
+	thCommunities->setRootIsDecorated(true);
+	connect(thCommunities,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	ConstructThCommunities();
 
-	// Theoritic groupement
-	prGroups = new QListView(this);
-	Infos->insertTab(prGroups,"Computed Groupement");
-	prGroups->resize(size());
-	prGroups->addColumn(QString("Profiles"));
-	prGroups->addColumn(QString("Precision"));
-	prGroups->addColumn(QString("Recall"));
-	prGroups->setRootIsDecorated(true);
-	connect(prGroups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	ConstructGroups();
+	// Computed communities
+	prCommunities = new QListView(this);
+	Infos->insertTab(prCommunities,"Computed Communities");
+	prCommunities->resize(size());
+	prCommunities->addColumn(QString("Profiles"));
+	prCommunities->addColumn(QString("Precision"));
+	prCommunities->addColumn(QString("Recall"));
+	prCommunities->setRootIsDecorated(true);
+	connect(prCommunities,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	ConstructCommunities();
 
 }
 
 
 //-----------------------------------------------------------------------------
-GCommunity* KViewThGroups::GetCurrentGroup(void)
+GCommunity* KViewThCommunities::GetCurrentGroup(void)
 {
 	QListViewItemType* t;
 
-	t=(QListViewItemType*)thGroups->selectedItem();
+	t=(QListViewItemType*)thCommunities->selectedItem();
 	if(!t)
 		return(0);
-	if(t->Type!=QListViewItemType::tGroup)
+	if(t->Type!=otCommunity)
 		return(0);
-	return(t->Obj.Group);
+	return(t->Obj.Community);
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewThGroups::ConstructThGroups(void)
+void KViewThCommunities::ConstructThCommunities(void)
 {
 	RCursor<GProfile> Sub;
 	QListViewItemType* gritem=0;
 
-	thGroups->clear();
+	thCommunities->clear();
 
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(getDocument()->GetSession()->GetSubjects()->GetNodes());
@@ -141,7 +141,7 @@ void KViewThGroups::ConstructThGroups(void)
 		if(!Grps()->GetNbProfiles())
 			continue;
 
-		gritem= new QListViewItemType(Grps(),thGroups,ToQString(Grps()->GetName())+" - "+QString::number(Grps()->GetNbProfiles()));
+		gritem= new QListViewItemType(Grps(),thCommunities,ToQString(Grps()->GetName())+" - "+QString::number(Grps()->GetNbProfiles()));
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 
 		// If the subject has no subprofiles -> next one.
@@ -155,13 +155,13 @@ void KViewThGroups::ConstructThGroups(void)
 			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}
 		if(!gritem->childCount())
-			thGroups->takeItem(gritem);
+			thCommunities->takeItem(gritem);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewThGroups::ConstructGroups(void)
+void KViewThCommunities::ConstructCommunities(void)
 {
 	char tmp1[70];
 	char tmp2[30];
@@ -170,15 +170,15 @@ void KViewThGroups::ConstructGroups(void)
 	Doc->GetSession()->GetSubjects()->Compare();
 	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
 	setCaption(tmp1);
-	prGroups->clear();
-	
+	prCommunities->clear();
+
 	R::RCursor<GCommunity> grs=Doc->GetSession()->GetCommunities();
 	for (grs.Start(); !grs.End(); grs.Next())
 	{
 		GCommunity* gr=grs();
 		sprintf(tmp1,"Precision: %1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(gr));
 		sprintf(tmp2,"Recall: %1.3f",Doc->GetSession()->GetSubjects()->GetRecall(gr));
-		QListViewItemType* gritem= new QListViewItemType(gr,prGroups,"Group ("+QString::number(gr->GetId())+") - "+QString::number(gr->GetNbObjs()),tmp1,tmp2);
+		QListViewItemType* gritem= new QListViewItemType(gr,prCommunities,"Group ("+QString::number(gr->GetId())+") - "+QString::number(gr->GetNbObjs()),tmp1,tmp2);
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 		Sub=grs()->GetObjs();
 		for(Sub.Start(); !Sub.End(); Sub.Next())
@@ -192,21 +192,21 @@ void KViewThGroups::ConstructGroups(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewThGroups::update(unsigned int cmd)
+void KViewThCommunities::update(tObjType type)
 {
-	if(cmd!=2) return;
-	ConstructGroups();
+	if(type!=otCommunity) return;
+	ConstructCommunities();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewThGroups::resizeEvent(QResizeEvent *)
+void KViewThCommunities::resizeEvent(QResizeEvent *)
 {
 	Infos->resize(size());
 }
 
 
 //-----------------------------------------------------------------------------
-KViewThGroups::~KViewThGroups(void)
+KViewThCommunities::~KViewThCommunities(void)
 {
 }

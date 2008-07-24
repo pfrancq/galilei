@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	KViewGroup.h
+	KViewTopic.h
 
-	Window to manipulate a specific group - Header.
+	Window to manipulate a specific topic - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewGroupH
-#define KViewGroupH
+#ifndef KViewTopicH
+#define KViewTopicH
 
 
 //-----------------------------------------------------------------------------
@@ -45,7 +45,7 @@
 #include <gdoc.h>
 namespace GALILEI
 {
-	class GCommunity;
+	class GTopic;
 }
 
 
@@ -62,28 +62,28 @@ namespace GALILEI
 
 //-----------------------------------------------------------------------------
 /**
-* The KViewGroup class represents a window to manipulate a specific groups.
+* The KViewTopic class represents a window to manipulate a specific topic.
 * @author Pascal Francq.
-* @short Group' Window.
+* @short Topic Window.
 */
-class KViewGroup : public KView
+class KViewTopic : public KView
 {
 	Q_OBJECT
 
 	/**
-	* Group represented by the view.
+	* Topic represented by the view.
 	*/
-	GALILEI::GCommunity* Group;
+	GALILEI::GTopic* Topic;
 
 	/**
-	* Widget to handle the different information of the group.
+	* Widget to handle the different information of the topic.
 	*/
 	QTabWidget* Infos;
 
 	/**
-	*  Widget of profiles containing in the group.
+	*  Widget of documents containing in the topic.
 	*/
-	QListView* Profiles;
+	QListView* Docs;
 
 	/**
 	* Window to show general informations.
@@ -95,38 +95,23 @@ class KViewGroup : public KView
 	*/
 	QListView* Vector;
 
-	/**
-	*  Widget of documents assessed as relevant by memebers of the group.
-	*/
-	QListView* Docs;
-
-	/**
-	* List of documents assessed as relevant.
-	*/
-	R::RContainer<GALILEI::GDoc,false,true> OkDocs;
-
 public:
 
 	/**
 	* Constructor for the view
-	* @param grp            Corresponding group.
+	* @param top            Corresponding topic.
 	* @param doc            Document instance that the view represents.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGroup(GALILEI::GCommunity* grp,KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewTopic(GALILEI::GTopic* top,KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
-	* Return the type of the window.
+	* Get the topic of this window.
+	* @return Pointer to a GALILEI::Topic.
 	*/
-	virtual GViewType getType(void) {return(gGroup);}
-
-	/**
-	* Get the group of this window.
-	* @return Pointer to a GALILEI::GCommunity.
-	*/
-	GALILEI::GCommunity* GetGroup(void) {return(Group);}
+	GALILEI::GTopic* GetTopic(void) {return(Topic);}
 
 	/**
 	* Construct the groups widget.
@@ -134,9 +119,9 @@ public:
 	void ConstructDescription(void);
 
 	/**
-	* Construct the profiles widget.
+	* Construct the documents widget.
 	*/
-	void ConstructProfiles(void);
+	void ConstructDocs(void);
 
 	/**
 	* Construct the general information widget.
@@ -144,22 +129,12 @@ public:
 	void ConstructGeneral(void);
 
 	/**
-	* Construct the documents' widget.
-	*/
-	void ConstructDocs(void);
-
-	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            Type.
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
 
 protected slots:
-
-	/**
-	* Local menu of documents was asked.
-	*/
-	void askDocsMenu(QListViewItem*,const QPoint&,int);
 
 	/**
 	* slot for the menu.

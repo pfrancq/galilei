@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session - Header.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -176,7 +176,7 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Analyse a XML structure.
+* Analyze a XML structure.
 * @param xml            The structure that will hold the result.
 * @param doc            The corresponding document.
 */
@@ -191,7 +191,7 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Analyse all the documents.
+* Analyze all the documents.
 */
 class QAnalyzeDocs : public QSessionThread
 {
@@ -203,7 +203,7 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Post-analyse all the documents.
+* Post-analyze all documents.
 */
 class QPostAnalyzeDocs : public QSessionThread
 {
@@ -276,13 +276,37 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Create the ideal groups.
-* @param save           Save modified elements.
+* Groups the documents.
 */
-class QCreateIdealGroups : public QSessionThread
+class QGroupDocs : public QSessionThread
 {
 public:
-	QCreateIdealGroups(void) {}
+	QGroupDocs(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Post-Topics.
+*/
+class QPostGroupDocs : public QSessionThread
+{
+public:
+	QPostGroupDocs(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create the ideal communities.
+* @param save           Save modified elements.
+*/
+class QCreateIdealCommunities : public QSessionThread
+{
+public:
+	QCreateIdealCommunities(void) {}
 	virtual void DoIt(void);
 };
 
@@ -327,9 +351,9 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Load the dictionnaries.
+* Load the dictionaries.
 */
-class QLoadDictionnaries : public QSessionThread
+class QLoadDictionaries : public QSessionThread
 {
 public:
 
@@ -348,14 +372,14 @@ private:
 	GSession* Session;
 
 public:
-	QLoadDictionnaries(QListView* dicts,GSession* session) : Dicts(dicts), Session(session) {}
+	QLoadDictionaries(QListView* dicts,GSession* session) : Dicts(dicts), Session(session) {}
 	virtual void DoIt(void);
 };
 
 
 //-----------------------------------------------------------------------------
 /**
-* Analayse next MIME path for MIME types.
+* Analazse next MIME path for MIME types.
 * @param path           Path to a KDE desktop files.
 * @param xml            XML structure holding the actual mime types.
 */
@@ -433,7 +457,7 @@ public:
 	bool Run(QSessionThread* task);
 
 	/**
-	* Method called by GCommunitying each time a new language is analysed.
+	* Method called each time a new language is analysed.
 	* @param lang           Pointer to the current lang.
 	*/
 	virtual void NextGroupLang(const GLang* lang);
@@ -483,7 +507,7 @@ public:
 	void Finish(void);
 
 	/**
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~QSessionProgressDlg(void);
 };

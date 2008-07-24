@@ -51,6 +51,7 @@ using namespace R;
 #include <qprinter.h>
 #include <qworkspace.h>
 #include <qlabel.h>
+#include <qaction.h>
 
 
 //-----------------------------------------------------------------------------
@@ -123,15 +124,21 @@ void KGALILEICenterApp::initActions(void)
 	// Menu "Document"
 	docsClear=new KAction(i18n("&Force Re-computing Documents"),0,0,this,SLOT(slotDocsClear()),actionCollection(),"docsClear");
 	showDocs=new KAction(i18n("Show &Documents"),"kmultiple",0,this,SLOT(slotShowDocs()),actionCollection(),"showDocs");
-	docAnalyse=new KAction(i18n("&Load and Analyse a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
-	docsAnalyse=new KAction(i18n("&Analyse Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
+	docAnalyse=new KAction(i18n("&Load and Analyze a Document"),0,this,SLOT(slotDocAnalyse()),actionCollection(),"docAnalyse");
+	docsAnalyse=new KAction(i18n("&Analyze Documents"),"kfind",0,this,SLOT(slotDocsAnalyse()),actionCollection(),"docsAnalyse");
 	postDocsAnalyse=new KAction(i18n("Execute &Post-Documents Methods"),0,0,this,SLOT(slotPostDocsAnalyse()),actionCollection(),"postDocsAnalyse");
 	docsIndexer=new KAction(i18n("&Export Documents"),0,0,this,SLOT(slotDocsIndexer()),actionCollection(),"docsIndexer");
 	createXML=new KAction(i18n("&Create XML Structure"),0,0,this,SLOT(slotCreateXML()),actionCollection(),"createXML");
 	saveXML=new KAction(i18n("&Save XML Structure"),0,0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
-	analyseXML=new KAction(i18n("Analyse &XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
+	analyseXML=new KAction(i18n("Analyze &XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
 	queryMetaEngine=new KAction(i18n("&Query Meta Engine"),"find",0,this,SLOT(slotQueryMetaEngine()),actionCollection(),"queryMetaEngine");
 	fillMIMETypes=new KAction(i18n("Construct &MIME types from KDE"),"desktop",0,this,SLOT(slotFillMIMETypes()),actionCollection(),"fillMIMETypes");
+
+	// Menu "Topics"
+	topicsClear=new KAction(i18n("Force Re-computing Topics"),0,0,this,SLOT(slotTopicsClear()),actionCollection(),"topicsClear");
+	showTopics=new KAction(i18n("Show &Topics"),0,0,this,SLOT(slotShowTopics()),actionCollection(),"showTopics");
+	topicsCalc=new KAction(i18n("Group Documents"),0,0,this,SLOT(slotTopicsCalc()),actionCollection(),"topicsCalc");
+	postTopicsCalc=new KAction(i18n("Execute Post-Topic Methods"),0,0,this,SLOT(slotTopicsCalc()),actionCollection(),"postTopicsCalc");
 
 	// Menu "Users"
 	usersClear=new KAction(i18n("&Force Re-computing profiles"),0,0,this,SLOT(slotProfilesClear()),actionCollection(),"profilesClear");
@@ -140,16 +147,16 @@ void KGALILEICenterApp::initActions(void)
 	postProfilesCalc=new KAction(i18n("Execute &Post-Profiles Methods"),0,0,this,SLOT(slotPostProfilesCalc()),actionCollection(),"postProfilesCalc");
 	profileCalc=new KAction(i18n("Calc &Profile"),0,0,this,SLOT(slotProfileCalc()),actionCollection(),"profileCalc");
 
-	// Menu "Groups"
-	groupsClear=new KAction(i18n("&Force Re-computing Groups"),0,0,this,SLOT(slotGroupsClear()),actionCollection(),"groupsClear");
-	showGroups=new KAction(i18n("&Show Groups"),"window_list",0,this,SLOT(slotShowGroups()),actionCollection(),"showGroups");
-	groupsCalc=new KAction(i18n("Compute &Groups"),"exec",0,this,SLOT(slotGroupsCalc()),actionCollection(),"groupsCalc");
-	postGroupsCalc=new KAction(i18n("Execute &Post-Groups Methods"),0,0,this,SLOT(slotPostGroups()),actionCollection(),"postGroupsCalc");
-	showGroupsHistory=new KAction(i18n("Show Groups &History"),0,0,this,SLOT(slotShowHistory	()),actionCollection(),"showGroupsHistorys");
+	// Menu "Communities"
+	communitiesClear=new KAction(i18n("&Force Re-computing Communities"),0,0,this,SLOT(slotCommunitiesClear()),actionCollection(),"communitiesClear");
+	showCommunities=new KAction(i18n("&Show Communities"),"window_list",0,this,SLOT(slotShowCommunities()),actionCollection(),"showCommunities");
+	communitiesCalc=new KAction(i18n("Compute &Communities"),"exec",0,this,SLOT(slotCommunitiesCalc()),actionCollection(),"communitiesCalc");
+	postCommunitiesCalc=new KAction(i18n("Execute &Post-Communities Methods"),0,0,this,SLOT(slotPostCommunities()),actionCollection(),"postCommunitiesCalc");
+	showCommunitiesHistory=new KAction(i18n("Show Communities &History"),0,0,this,SLOT(slotShowHistory	()),actionCollection(),"showCommunitiesHistorys");
 
 	// Menu "Debug"
 	simulationDlg=new KAction(i18n("Simulation &Parameters"),0,0,this,SLOT(slotSimulationDlg()),actionCollection(),"simulationDlg");
-	groupingCreate=new KAction(i18n("&Create Ideal Groups"),0,0,this,SLOT(slotGroupsCreate()),actionCollection(),"groupingCreate");
+	groupingCreate=new KAction(i18n("&Create Ideal Communities"),0,0,this,SLOT(slotCommunitiesCreate()),actionCollection(),"groupingCreate");
 	doFdbks=new KAction(i18n("&Feedback Cycle"),0,0,this,SLOT(slotDoFdbks()),actionCollection(),"doFdbks");
 	doAssessments=new KAction(i18n("&Assessments Cycle"),0,0,this,SLOT(slotDoAssessments()),actionCollection(),"doAssessments");
 	groupingCompare=new KAction(i18n("Ideal clustering"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
@@ -312,7 +319,7 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 {
 	sessionDisconnect->setEnabled(true);
 	showUsers->setEnabled(true);
-	showGroups->setEnabled(true);
+	showCommunities->setEnabled(true);
 	profilesCalc->setEnabled(true);
 	postProfilesCalc->setEnabled(true);
 	profileCalc->setEnabled(true);
@@ -322,10 +329,10 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	groupingCompare->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
-	groupsCalc->setEnabled(true);
-	postGroupsCalc->setEnabled(true);
+	communitiesCalc->setEnabled(true);
+	postCommunitiesCalc->setEnabled(true);
 	groupingCreate->setEnabled(true);
-	showGroupsHistory->setEnabled(true);
+	showCommunitiesHistory->setEnabled(true);
 	showDocs->setEnabled(true);
 	docAnalyse->setEnabled(true);
 	docsAnalyse->setEnabled(true);
@@ -337,11 +344,15 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	sessionSave->setEnabled(true);
 	docsClear->setEnabled(true);
 	usersClear->setEnabled(true);
-	groupsClear->setEnabled(true);
+	communitiesClear->setEnabled(true);
 	seeDicts->setEnabled(true);
 	importUsersData->setEnabled(true);
 	importDocs->setEnabled(true);
 	sessionDebugInfo->setEnabled(true);
+	topicsClear->setEnabled(true);
+	showTopics->setEnabled(true);
+	topicsCalc->setEnabled(true);
+	postTopicsCalc->setEnabled(true);
 }
 
 
@@ -350,7 +361,7 @@ void KGALILEICenterApp::DisableAllActions(void)
 {
 	sessionDisconnect->setEnabled(false);
 	showUsers->setEnabled(false);
-	showGroups->setEnabled(false);
+	showCommunities->setEnabled(false);
 	profilesCalc->setEnabled(false);
 	postProfilesCalc->setEnabled(false);
 	profileCalc->setEnabled(false);
@@ -363,10 +374,10 @@ void KGALILEICenterApp::DisableAllActions(void)
 	createXML->setEnabled(false);
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
-	groupsCalc->setEnabled(false);
-	postGroupsCalc->setEnabled(false);
+	communitiesCalc->setEnabled(false);
+	postCommunitiesCalc->setEnabled(false);
 	groupingCreate->setEnabled(false);
-	showGroupsHistory->setEnabled(false);
+	showCommunitiesHistory->setEnabled(false);
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
@@ -378,11 +389,15 @@ void KGALILEICenterApp::DisableAllActions(void)
 	sessionSave->setEnabled(false);
 	docsClear->setEnabled(false);
 	usersClear->setEnabled(false);
-	groupsClear->setEnabled(false);
+	communitiesClear->setEnabled(false);
 	seeDicts->setEnabled(false);
 	importUsersData->setEnabled(false);
 	importDocs->setEnabled(false);
 	sessionDebugInfo->setEnabled(false);
+	topicsClear->setEnabled(false);
+	showTopics->setEnabled(false);
+	topicsCalc->setEnabled(false);
+	postTopicsCalc->setEnabled(false);
 }
 
 

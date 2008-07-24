@@ -117,11 +117,6 @@ public:
 	KViewDicts(KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
-	* Return the type of the window.
-	*/
-	virtual GViewType getType(void) {return(gDocs);}
-
-	/**
 	* Creates the listview of dictionnaries
 	*/
 	void CreateDictsListView(void);
@@ -162,9 +157,9 @@ protected:
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            Type.
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
 
 public:
 

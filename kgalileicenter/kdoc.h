@@ -6,7 +6,7 @@
 
 	Document representing a GALILEI session - Header.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -57,8 +57,9 @@ using namespace GALILEI;
 // forward declaration
 class KView;
 class KViewDocs;
-class KViewGroups;
+class KViewCommunities;
 class KViewUsers;
+class KViewTopics;
 class KGALILEICenterApp;
 
 
@@ -110,7 +111,12 @@ class KDoc : public QObject//, public GStorageMySQL
 	/**
 	* Window of the groups.
 	*/
-	KViewGroups* WinGroups;
+	KViewCommunities* WinCommunities;
+
+	/**
+	* Window of the topics.
+	*/
+	KViewTopics* WinTopics;
 
 	/**
 	* Owner of the document.
@@ -160,7 +166,13 @@ public:
 	* Get the window showing the groups.
 	* @param Pointer to KViewGroups or 0 if the window is not open.
 	*/
-	KViewGroups* GetWinGroups(void) const {return(WinGroups);}
+	KViewCommunities* GetWinGroups(void) const {return(WinCommunities);}
+
+	/**
+	* Get the window showing the topics.
+	* @param Pointer to KViewTopics or 0 if the window is not open.
+	*/
+	KViewTopics* GetWinTopics(void) const {return(WinTopics);}
 
 	/**
 	* Adds a view to the document which represents the document contents.
@@ -232,14 +244,14 @@ public slots:
 	* Calls repaint() on all views connected to the document object and is
 	* called by the view by which the document has been changed. As this view
 	* normally repaints itself, it is excluded from the paintEvent.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups,3=Links)
+	* @param type            Type.
 	*/
-	void updateAllViews(unsigned int cmd);
+	void updateAllViews(tObjType type);
 
 public:
 
 	/**
-	* Destructor for the fileclass of the application.
+	* Destruct the fileclass of the application.
 	*/
 	virtual ~KDoc(void);
 };

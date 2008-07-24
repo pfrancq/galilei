@@ -119,8 +119,8 @@ void KViewPrg::MyThread::run(void)
 	}
 	catch(...)
 	{
-		QMessageBox::critical(Rec,"KGALILEICenter - Undefined Error","Problem");		
-	}		
+		QMessageBox::critical(Rec,"KGALILEICenter - Undefined Error","Problem");
+	}
 	Rec->endPrg();
 }
 
@@ -147,7 +147,7 @@ KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,RString name,int wflags)
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::update(unsigned int /*cmd*/)
+void KViewPrg::update(tObjType)
 {
 }
 

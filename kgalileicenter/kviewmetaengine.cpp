@@ -179,7 +179,7 @@ GEngineDoc* KViewMetaEngine::GetCurrentEngineDoc(void)
 	t=(QListViewItemType*)Results->selectedItem();
 	if(!t)
 		return(0);
-	if(t->Type!=QListViewItemType::tEngineDoc)
+	if(t->Type!=otEngineDoc)
 		return(0);
 	return(t->Obj.EngineDoc);
 }
@@ -265,7 +265,7 @@ void KViewMetaEngine::QueryEngine()
 }
 
 //-----------------------------------------------------------------------------
-void KViewMetaEngine::update(unsigned int)
+void KViewMetaEngine::update(tObjType)
 {
 }
 

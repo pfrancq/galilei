@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	KViewPrg.h
+	KViewThCommunities.h
 
-	Window to run a program - Header.
+	Window to manipulate theoritical groups - Header.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,21 +31,27 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewPrgH
-#define KViewPrgH
+#ifndef KViewThCommunitiesH
+#define KViewThCommunitiesH
+
+
+//-----------------------------------------------------------------------------
+// include files for R Project
+#include <rcontainer.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gslot.h>
 using namespace GALILEI;
-using namespace R;
 
 
 //-----------------------------------------------------------------------------
-// forward declaration
-#include <qtextedit.h>
+// include files for Qt
+#include <qwidget.h>
+class QListView;
+class QTabWidget;
 
 
 //-----------------------------------------------------------------------------
@@ -53,89 +59,72 @@ using namespace R;
 #include "kview.h"
 
 
+
 //-----------------------------------------------------------------------------
 /**
-* The KViewPrg class provides the view widget for running an application.
-* @author Pascal Francq.
-* @short Window for Programs.
+* The KViewThCommunities class represents a window to manipulate the groups of the
+* system.
+*
+* @author Pascal Francq and David Wartel.
+* @short Theoretical Communities Window.
 */
-class KViewPrg : public KView, public GSlot
+class KViewThCommunities : public KView
 {
-	class MyThread;
-
 	Q_OBJECT
 
 	/**
-	* Widget to see the output.
+	* Ideal Communities.
 	*/
-	QTextEdit* Output;
+	GSubjects* Subjects;
 
 	/**
-	* Name of the program.
+	* Widget to handle the different information of the document.
 	*/
-	RString Name;
+	QTabWidget* Infos;
 
 	/**
-	* Thread running the program.
+	* Theoretical Communities.
 	*/
-	MyThread* Prg;
+	QListView* thCommunities;
+
+	/**
+	* Practical Communities.
+	*/
+	QListView* prCommunities;
 
 public:
 
 	/**
-	* Constructor for the view.
+	* Constructor for the view
 	* @param doc            Document instance that the view represents.
+	* @param idealgroup     The ideal groupement.
 	* @param parent         Parent of the window.
-	* @param name           Name of the program.
+	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewPrg(KDoc* doc,QWidget* parent,RString name,int wflags);
+	KViewThCommunities(KDoc* doc,GSubjects* subjects,QWidget* parent,const char* name,int wflags);
+
+	/**
+	* Get the current group selected in this window.
+	* @returns Pointer to GCommunity or 0 if no group is currently selected.
+	*/
+	GCommunity* GetCurrentGroup(void);
+
+	/**
+	* Construct the groups' widget.
+	*/
+	void ConstructThCommunities(void);
+
+	/**
+	* Construct the groups' widget.
+	*/
+	void ConstructCommunities(void);
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
 	* @param type            Type.
 	*/
 	virtual void update(tObjType type);
-
-	/**
-	* The traitment for a specific document will begin.
-	* @param doc            Document.
-	*/
-	virtual void NextDoc(const GDoc* doc);
-
-	/**
-	* The traitment for a specific document will begin.
-	* @param prof           Profile.
-	*/
-	virtual void NextProfile(const GProfile* prof);
-
-	/**
-	* Method called by GCommunitying each time a new language is analysed.
-	* @param lang           Pointer to the current lang.
-	*/
-	virtual void NextGroupLang(const GLang* lang);
-
-	/**
-	* Method called when executing a sequence of instruction to output some
-	* information.
-	* @param str            String to output.
-	*/
-	virtual void WriteStr(const RString& str);
-
-	/**
-	* Verify if Qt has nothing to do.
-	*/
-	virtual void Interact(void);
-
-	/**
-	* Run the program.
-	*/
-	virtual void run(void);
-
-	/**
-	* See if a thread is running.
-	*/
-	bool isRunning(void) {return(Prg);}
 
 protected:
 
@@ -147,19 +136,9 @@ protected:
 public:
 
 	/**
-	* The program is finished.
+	* Destructor for the main view.
 	*/
-	void endPrg(void);
-
-	/**
-	* Look if the window can be closed.
-	*/
-	bool canClose(void);
-
-	/**
-	* Destructor for the view.
-	*/
-	~KViewPrg(void);
+	~KViewThCommunities(void);
 };
 
 

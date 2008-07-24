@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	KViewGroups.h
+	KViewCommunities.h
 
 	Window to manipulate the groups - Header.
 
@@ -32,8 +32,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewGroupsH
-#define KViewGroupsH
+#ifndef KViewCommunitiesH
+#define KViewCommunitiesH
 
 
 //-----------------------------------------------------------------------------
@@ -125,12 +125,12 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The KViewGroups class represents a window to manipulate the groups of the
+* The KViewCommunities class represents a window to manipulate the groups of the
 * system.
 * @author Pascal Francq and David Wartel.
 * @short Groups' Window.
 */
-class KViewGroups : public KView
+class KViewCommunities : public KView
 {
 	Q_OBJECT
 
@@ -163,12 +163,7 @@ public:
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewGroups(KDoc* doc,QWidget* parent,const char* name,int wflags);
-
-	/**
-	* Return the type of the window.
-	*/
-	virtual GViewType getType(void) {return(gGroups);}
+	KViewCommunities(KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
 	* Get the current group selected in this window.
@@ -183,9 +178,9 @@ public:
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            Type.
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
 
 protected slots:
 
@@ -199,7 +194,7 @@ public:
 	/**
 	* Destructor for the main view.
 	*/
-	~KViewGroups(void);
+	~KViewCommunities(void);
 };
 
 

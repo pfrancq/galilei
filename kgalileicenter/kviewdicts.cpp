@@ -163,15 +163,15 @@ KViewDicts::KViewDicts(KDoc* doc,QWidget* parent,const char* name,int wflags)
 //-----------------------------------------------------------------------------
 void KViewDicts::CreateDictsListView(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Load Dictionnaries",true);
-	Dlg.Run(new QLoadDictionnaries(Dicts,Doc->GetSession()));
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Load Dictionaries",true);
+	Dlg.Run(new QLoadDictionaries(Dicts,Doc->GetSession()));
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewDicts::slotDoubleClick(QListViewItem* item)
 {
-	QLoadDictionnaries::QListViewItemDict* ptr=dynamic_cast<QLoadDictionnaries::QListViewItemDict*>(item);
+	QLoadDictionaries::QListViewItemDict* ptr=dynamic_cast<QLoadDictionaries::QListViewItemDict*>(item);
 	if(!ptr)
 		return;
 	Dict->clear();
@@ -276,9 +276,9 @@ void KViewDicts::slotNewRelation(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewDicts::update(unsigned int cmd)
+void KViewDicts::update(tObjType type)
 {
-	if(cmd!=0) return;
+	if(type!=otLang) return;
 	Dict->clear();
 	Relations->clear();
 	CurDict=0;

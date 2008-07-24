@@ -6,7 +6,7 @@
 
 	Window to show all the documents - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -85,11 +85,6 @@ public:
 	KViewDocs(KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
-	* Return the type of the window.
-	*/
-	virtual GViewType getType(void) {return(gDocs);}
-
-	/**
 	* Get the current document selected in this window.
 	* @returns Pointer to GDoc or 0 if no document is currently selected.
 	*/
@@ -102,9 +97,9 @@ public:
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            Type.
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
 
 protected:
 

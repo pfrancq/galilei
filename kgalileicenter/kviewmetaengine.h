@@ -6,7 +6,7 @@
 
 	Window to manipulate a specific group - Header.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele(vavdaele@ulb.ac.be).
@@ -81,17 +81,17 @@ class KViewMetaEngine : public KView
 	* The number of results to display.
 	*/
 	KIntSpinBox* NbRes;
-	
+
 	/**
 	* LineEdit to enter the query
 	*/
 	QLineEdit* TxtQuery;
-	
+
 	/**
 	* The button to initiate the search
 	*/
 	QPushButton* Search;
-	
+
 	/**
 	* Label to display the number of results
 	*/
@@ -109,11 +109,6 @@ public:
 	* @param wflags         Flags.
 	*/
 	KViewMetaEngine(KDoc* doc,QWidget* parent,const char* name,int wflags);
-			
-	/**
-	* Return the type of the window.
-	*/
-	virtual GViewType getType(void) {return(gMetaEngine);}
 
 	/**
 	* Get the current Engine doc selected in this window.
@@ -126,7 +121,7 @@ protected slots:
 	* Preocess the query and display results
 	*/
 	void QueryEngine(void);
-	
+
 protected:
 
 	/**
@@ -138,12 +133,12 @@ protected:
 	* Create the list view with all the users.
 	*/
 	void CreateMetaEngineResultsListView(void);
-	
+
 	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            Type.
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
 
 };
 

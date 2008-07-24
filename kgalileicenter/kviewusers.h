@@ -98,11 +98,6 @@ public:
 	KViewUsers(KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
-	* Return the type of the window.
-	*/
-	virtual GViewType getType(void) {return(gUsers);}
-
-	/**
 	* Get the current user selected in this window.
 	* @returns Pointer to GUser or 0 if no user is currently selected.
 	*/
@@ -117,9 +112,9 @@ protected:
 
 	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            Type.
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
 
 protected slots:
 

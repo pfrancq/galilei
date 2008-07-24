@@ -111,7 +111,7 @@ KViewDebug::KViewDebug(KDoc* doc,QWidget* parent,const char* name,int wflags)
 
 
 //-----------------------------------------------------------------------------
-void KViewDebug::update(unsigned int)
+void KViewDebug::update(tObjType)
 {
 }
 

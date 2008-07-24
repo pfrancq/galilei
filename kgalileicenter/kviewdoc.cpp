@@ -218,7 +218,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDoc(file,file,cNoRef,0,mime,RDate(),RDate::Null);
+	Document=new GDoc(file,file,cNoRef,0,mime,cNoRef,RDate(),RDate::Null,RDate::Null);
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
@@ -376,9 +376,9 @@ void KViewDoc::ConstructGeneral(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewDoc::update(unsigned int cmd)
+void KViewDoc::update(tObjType type)
 {
-	if(cmd!=0) return;
+	if(type!=otDoc) return;
 	General->clear();
 	ConstructGeneral();
 	Results->clear();

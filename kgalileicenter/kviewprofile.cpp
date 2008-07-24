@@ -290,21 +290,23 @@ void KViewProfile::ConstructUser(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewProfile::update(unsigned int cmd)
+void KViewProfile::update(tObjType type)
 {
-	if(cmd==1)
+	switch(type)
 	{
-		General->slotProfileChanged();
-		Results->clear();
-		ConstructResults();
-	}
-	if(cmd==2)
-	{
-		ConstructGroups();
-	}
-	if(cmd==3)
-	{
-		ConstructLinks();
+		case otProfile:
+			General->slotProfileChanged();
+			Results->clear();
+			ConstructResults();
+			break;
+		case otCommunity:
+			ConstructGroups();
+			break;
+		case otFdbk:
+			ConstructLinks();
+			break;
+		default:
+			break;
 	}
 }
 

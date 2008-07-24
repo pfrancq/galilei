@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	KViewGroups.cpp
+	KViewCommunities.cpp
 
 	Window to manipulate the groups - Implementation.
 
@@ -68,7 +68,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for current application
-#include "kviewgroups.h"
+#include "kviewcommunities.h"
 #include "qsessionprogress.h"
 #include "kdoc.h"
 
@@ -156,7 +156,7 @@ void QGroups::contentsDropEvent( QDropEvent *evt )
 	}
 
 	// Verify that the destination is either a group or another profile
-	if((dest->Type!=QListViewItemType::tProfile)&&(dest->Type!=QListViewItemType::tGroup))
+	if((dest->Type!=otProfile)&&(dest->Type!=otCommunity))
 	{
 		clearSelection();
 		Cur=0;
@@ -165,7 +165,7 @@ void QGroups::contentsDropEvent( QDropEvent *evt )
 
 	// Verify that the languages are compatible
 	QListViewItemType* group;
-	if(dest->Type==QListViewItemType::tProfile)
+	if(dest->Type==otProfile)
 		group=dynamic_cast<QListViewItemType*>(dest->parent());
 	else
 		group=dynamic_cast<QListViewItemType*>(dest);
@@ -176,14 +176,14 @@ void QGroups::contentsDropEvent( QDropEvent *evt )
 	group->insertItem(Cur->Src);
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
 	session->GetCommunity(Cur->Src->Obj.Profile->GetGroupId())->DeleteObj(Cur->Src->Obj.Profile);
-	group->Obj.Group->InsertObj(Cur->Src->Obj.Profile);
-	group->setText(0,"Group ("+QString::number(group->Obj.Group->GetId())+")");
-	group->setText(1,QString::number(group->Obj.Group->GetNbObjs()));
-	if(SrcGroup->Obj.Group->GetNbObjs())
-		SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetNbObjs())+")");
+	group->Obj.Community->InsertObj(Cur->Src->Obj.Profile);
+	group->setText(0,"Group ("+QString::number(group->Obj.Community->GetId())+")");
+	group->setText(1,QString::number(group->Obj.Community->GetNbObjs()));
+	if(SrcGroup->Obj.Community->GetNbObjs())
+		SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Community->GetNbObjs())+")");
 	else
 	{
-		session->DeleteCommunity(SrcGroup->Obj.Group);
+		session->DeleteCommunity(SrcGroup->Obj.Community);
 		delete SrcGroup;
 	}
 
@@ -198,7 +198,7 @@ void QGroups::contentsMousePressEvent(QMouseEvent* evt)
 {
 	QListView::contentsMousePressEvent(evt);
 	QListViewItemType* src=dynamic_cast<QListViewItemType*>(itemAt(evt->pos()));
-	if(src&&(src->Type==QListViewItemType::tProfile)&&(evt->button()==LeftButton))
+	if(src&&(src->Type==otProfile)&&(evt->button()==LeftButton))
 		dragging=true;
 }
 
@@ -221,11 +221,11 @@ void QGroups::slotRightButton(QListViewItem* item,const QPoint& pos,int)
 	QListViewItemType* src=dynamic_cast<QListViewItemType*>(item);
 	if(!src) return;
 	QPopupMenu Menu(this,"Local");
-	if(src->Type==QListViewItemType::tGroup)
+	if(src->Type==otCommunity)
 		Menu.insertItem("Delete Group",this,SLOT(slotDelete(void)));
-	if(src->Type==QListViewItemType::tProfile)
+	if(src->Type==otProfile)
 		Menu.insertItem("Remove Profile",this,SLOT(slotDelete(void)));
-	if(src->Type==QListViewItemType::tLang)
+	if(src->Type==otLang)
 		Menu.insertItem("&Create New Group",this,SLOT(slotNewGroup(void)));
 	Menu.insertSeparator();
 	Menu.insertItem("Save Groups",this,SLOT(slotSaveGroups(void)));
@@ -240,7 +240,7 @@ void QGroups::slotNewGroup(void)
 
 	RToDo("Create New group");
 	// Verify that the current tag is language
-	if((!src)||(src->Type!=QListViewItemType::tLang)||(!src->Obj.Lang))
+	if((!src)||(src->Type!=otLang)||(!src->Obj.Lang))
 		return;
 
 	// Create a new group in session
@@ -261,39 +261,39 @@ void QGroups::slotDelete(void)
 	QListViewItemType* Src=dynamic_cast<QListViewItemType*>(currentItem());
 
 	// Verify that the destination is either a group or another profile
-	if((!Src)||((Src->Type!=QListViewItemType::tProfile)&&(Src->Type!=QListViewItemType::tGroup)))
+	if((!Src)||((Src->Type!=otProfile)&&(Src->Type!=otCommunity)))
 		return;
 
 	// Get the session
 	GSession* session=dynamic_cast<KView*>(parent())->getDocument()->GetSession();
 
-	// If subprofile -> remove it from its group. If the group is empty, delete it.
-	if(Src->Type==QListViewItemType::tProfile)
+	// If profile -> remove it from its group. If the group is empty, delete it.
+	if(Src->Type==otProfile)
 	{
 		if(KMessageBox::warningYesNo(this,"Do you want to remove this profile from the group?","Warning")==KMessageBox::No)
 			return;
 		QListViewItemType* SrcGroup=dynamic_cast<QListViewItemType*>(Src->parent());
 		session->GetCommunity(Src->Obj.Profile->GetGroupId())->DeleteObj(Src->Obj.Profile);
 		delete Src;
-		if(SrcGroup->Obj.Group->GetNbObjs())
+		if(SrcGroup->Obj.Community->GetNbObjs())
 		{
-			SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Group->GetId())+")");
-			SrcGroup->setText(1,QString::number(SrcGroup->Obj.Group->GetNbObjs()));
+			SrcGroup->setText(0,"Group ("+QString::number(SrcGroup->Obj.Community->GetId())+")");
+			SrcGroup->setText(1,QString::number(SrcGroup->Obj.Community->GetNbObjs()));
 		}
 		else
 		{
-			session->DeleteCommunity(SrcGroup->Obj.Group);
+			session->DeleteCommunity(SrcGroup->Obj.Community);
 			delete SrcGroup;
 		}
 	}
 
 	// If this is a group -> delete it.
-	if(Src->Type==QListViewItemType::tGroup)
+	if(Src->Type==otCommunity)
 	{
 		if(KMessageBox::warningYesNo(this,"Do you want to delete this group?","Warning")==KMessageBox::No)
 			return;
-		Src->Obj.Group->DeleteObjs();
-		session->DeleteCommunity(Src->Obj.Group);
+		Src->Obj.Community->DeleteObjs();
+		session->DeleteCommunity(Src->Obj.Community);
 		delete Src;
 	}
 }
@@ -318,12 +318,12 @@ QGroups::~QGroups(void)
 
 //-----------------------------------------------------------------------------
 //
-// class KViewGroups
+// class KViewCommunities
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewGroups::KViewGroups(KDoc* doc,QWidget* parent,const char* name,int wflags)
+KViewCommunities::KViewCommunities(KDoc* doc,QWidget* parent,const char* name,int wflags)
 	: KView(doc,parent,name,wflags)
 {
 	setCaption("List of Groups");
@@ -368,21 +368,21 @@ KViewGroups::KViewGroups(KDoc* doc,QWidget* parent,const char* name,int wflags)
 
 
 //-----------------------------------------------------------------------------
-GCommunity* KViewGroups::GetCurrentGroup(void)
+GCommunity* KViewCommunities::GetCurrentGroup(void)
 {
 	QListViewItemType* t;
 
 	t=(QListViewItemType*)Groups->selectedItem();
 	if(!t)
 		return(0);
-	if(t->Type!=QListViewItemType::tGroup)
+	if(t->Type!=otCommunity)
 		return(0);
-	return(t->Obj.Group);
+	return(t->Obj.Community);
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewGroups::ConstructGroups(void)
+void KViewCommunities::ConstructGroups(void)
 {
 	Groups->clear();
 	R::RCursor<GCommunity> Grp=Doc->GetSession()->GetCommunities();
@@ -402,15 +402,15 @@ void KViewGroups::ConstructGroups(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewGroups::update(unsigned int cmd)
+void KViewCommunities::update(tObjType type)
 {
-	if(cmd!=2) return;
+	if(type!=otCommunity) return;
 	ConstructGroups();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewGroups::FindNext(void)
+void KViewCommunities::FindNext(void)
 {
 	QListViewItemIterator* it;
 	bool Cont=true;
@@ -435,7 +435,7 @@ void KViewGroups::FindNext(void)
 		while(it->current()&&Cont)
 		{
 			QListViewItemType* item = dynamic_cast<QListViewItemType*>(it->current());
-			if((item)&&(item->Type==QListViewItemType::tProfile))
+			if((item)&&(item->Type==otProfile))
 			{
 				if((item->text(0).contains(str,false))||(item->text(1).contains(str,false)))
 				{
@@ -477,6 +477,6 @@ void KViewGroups::FindNext(void)
 
 
 //-----------------------------------------------------------------------------
-KViewGroups::~KViewGroups(void)
+KViewCommunities::~KViewCommunities(void)
 {
 }

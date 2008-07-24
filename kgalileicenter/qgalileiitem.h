@@ -44,8 +44,11 @@
 #include <gengine.h>
 #include <gmetaengine.h>
 #include <gcommunitycalc.h>
+#include <gtopiccalc.h>
 #include <ggroupprofiles.h>
+#include <ggroupdocs.h>
 #include <gpostcommunity.h>
+#include <gposttopic.h>
 #include <glang.h>
 #include <gpostprofile.h>
 #include <gpreprofile.h>
@@ -100,6 +103,19 @@ public:
 };
 
 
+class QGroupDocsItem : public QListViewItem
+{
+public:
+	GFactoryGroupDocs* Fac;
+	bool Enable;
+	bool WasEnable;
+	QGroupDocsItem(QListView* lst,GFactoryGroupDocs* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
+	{
+	}
+};
+
+
 class QCommunityCalcItem : public QListViewItem
 {
 public:
@@ -107,6 +123,19 @@ public:
 	bool Enable;
 	bool WasEnable;
 	QCommunityCalcItem(QListView* lst,GFactoryCommunityCalc* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
+	{
+	}
+};
+
+
+class QTopicCalcItem : public QListViewItem
+{
+public:
+	GFactoryTopicCalc* Fac;
+	bool Enable;
+	bool WasEnable;
+	QTopicCalcItem(QListView* lst,GFactoryTopicCalc* fac,const char* desc,QListViewItem* after=0)
 		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
 	{
 	}
@@ -214,6 +243,20 @@ public:
 	{
 	}
 };
+
+
+class QPostTopicItem : public QListViewItem
+{
+public:
+	GFactoryPostTopic* Fac;
+	bool Enable;
+	bool WasEnable;
+	QPostTopicItem(QListView* lst,GFactoryPostTopic* fac,const char* desc,QListViewItem* after=0)
+		: QListViewItem(lst, after,desc), Fac(fac), Enable(Fac->GetPlugin()), WasEnable(Fac->GetPlugin())
+	{
+	}
+};
+
 
 class QEngineItem : public QListViewItem
 {

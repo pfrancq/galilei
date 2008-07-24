@@ -6,7 +6,7 @@
 
 	Basic Window for the application - Header.
 
-	Copyright 2001-2002 by the Université Libre de Bruxelles.
+	Copyright 2001-2008 by the UniversitÃ© Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -42,6 +42,12 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <galilei.h>
+using namespace GALILEI;
+
+
+//-----------------------------------------------------------------------------
 // include files for Qt
 #include <qwidget.h>
 
@@ -49,14 +55,6 @@
 //-----------------------------------------------------------------------------
 // include files for current application
 class KDoc;
-
-
-//-----------------------------------------------------------------------------
-// Enum declaration
-/**
-* Defines all the possible type of view for a document.
-*/
-enum GViewType{gNothing,gUsers,gDocs,gDoc,gProfile,gGroups,gGroup,gThGroups, gGroupsEvaluation,gDocsStat,gStems,gGA,gPrg,gR,gInsts,gChromos,gMetaEngine};
 
 
 //-----------------------------------------------------------------------------
@@ -105,15 +103,10 @@ public:
 	KDoc* getDocument(void) const;
 
 	/**
-	* Return the type of the window.
-	*/
-	virtual GViewType getType(void)=0;
-
-	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            What was modified.
 	*/
-	virtual void update(unsigned int cmd)=0;
+	virtual void update(tObjType type)=0;
 
 	/**
 	* contains the implementation for printing functionality and gets called by

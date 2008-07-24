@@ -42,6 +42,13 @@
 		<separator/>
 		<Action name="fillMIMETypes"/>
 	</Menu>
+	<Menu name="Topics"><text>&amp;Topics</text>
+		<Action name="topicsClear"/>
+		<separator/>
+		<Action name="showTopics"/>
+		<Action name="topicsCalc"/>
+		<Action name="postTopicsCalc"/>
+	</Menu>
 	<Menu name="Users"><text>&amp;Users</text>
 		<Action name="subprofilesClear"/>
 		<Separator/>
@@ -51,15 +58,15 @@
 		<Action name="profilesCalc"/>
 		<Action name="postProfilesCalc"/>
 	</Menu>
-	<Menu name="Groups"><text>&amp;Groups</text>
-		<Action name="groupsClear"/>
+	<Menu name="Communities"><text>&amp;Communities</text>
+		<Action name="communitiesClear"/>
 		<Separator/>
-		<Action name="showGroups"/>
-		<Action name="groupsCalc"/>
-		<Action name="postGroupsCalc"/>
+		<Action name="showCommunities"/>
+		<Action name="communitiesCalc"/>
+		<Action name="postCommunitiesCalc"/>
 		<Separator/>
 		<Action name="somView"/>
-		<Action name="showGroupsHistorys"/>
+		<Action name="showCommunitiesHistorys"/>
 	</Menu>
 	<Menu name="Debug"><text>D&amp;ebug</text>
 		<Action name="simulationDlg"/>

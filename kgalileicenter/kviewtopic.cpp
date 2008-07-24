@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	KViewGroup.cpp
+	KViewTopic.cpp
 
-	Window to manipulate a specific group - Implementation.
+	Window to manipulate a specific topic - Implementation.
 
 	Copyright 2001-2007 by the Université Libre de Bruxelles.
 
@@ -44,11 +44,10 @@
 #include <gdoc.h>
 #include <ggroup.h>
 #include <guser.h>
-#include <gprofile.h>
 #include <qlistviewitemtype.h>
 #include <rqt.h>
 #include <gweightinfo.h>
-#include <gcommunity.h>
+#include <gtopic.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -66,146 +65,83 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for current application
 #include "kdoc.h"
-#include "kviewgroup.h"
+#include "kviewtopic.h"
 #include "qsessionprogress.h"
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class KViewGroup
+// class KViewTopic
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewGroup::KViewGroup(GCommunity* grp,KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Group(grp), OkDocs(100,50)
+KViewTopic::KViewTopic(GTopic* grp,KDoc* doc,QWidget* parent,const char* name,int wflags)
+	: KView(doc,parent,name,wflags), Topic(grp)
 {
-	char title[50];
-
-	sprintf(title,"Group (Id=%u)",grp->GetId());
-	setCaption("Group");
+	setCaption("Topic "+QString::number(grp->GetId()));
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("window_new",KIcon::Small)));
 
-	// initialisation of the tab widget
+	// initialization of the tab widget
 	Infos=new QTabWidget(this);
 	Infos->resize(size());
 
-	// Initialisation of the General Information Widget
+	// Initialization of the General Information Widget
 	General = new QListView(Infos);
 	Infos->insertTab(General,"General Information");
 	General->addColumn("Variable");
 	General->addColumn("Value");
 	ConstructGeneral();
 
-	// Initialisation of the Profiles Widget
-	Profiles = new QListView(Infos);
-	Infos->insertTab(Profiles,"Profiles");
-	Profiles->addColumn(QString("Profiles"));
-	Profiles->addColumn(QString("Users"));
-	Profiles->addColumn(QString("Attached"));
-	Profiles->setRootIsDecorated(true);
-	connect(Profiles,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	ConstructProfiles();
+	// Initialization of the Docs Widget
+	Docs = new QListView(Infos);
+	Infos->insertTab(Docs,"Docs");
+	Docs->addColumn(QString("Title"));
+	Docs->addColumn(QString("URL"));
+	Docs->addColumn(QString("Attached"));
+	Docs->setRootIsDecorated(true);
+	connect(Docs,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
+	ConstructDocs();
 
-	// Initialisation of Description
+	// Initialization of Description
 	Vector = new QListView(Infos,"Vector");
 	Infos->insertTab(Vector,"Description");
 	Vector->addColumn("Information Entity");
 	Vector->addColumn(QString("Weight"));
 	ConstructDescription();
-
-	// Initialisation of the Documentss Widget
-	Docs = new QListView(this,"QListView of KViewDocs");
-	Infos->insertTab(Docs,"Documents");
-	Docs->addColumn(QString("Title"));
-	Docs->addColumn(QString("URL"));
-	Docs->addColumn(QString("MIME Type"));
-	Docs->setRootIsDecorated(true);
-	connect(Docs,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	connect(Docs,SIGNAL(contextMenuRequested(QListViewItem*,const QPoint&,int)),this,SLOT(askDocsMenu(QListViewItem*,const QPoint&,int)));
-	ConstructDocs();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewGroup::ConstructProfiles(void)
+void KViewTopic::ConstructDocs(void)
 {
 	RDate d;
-	RCursor<GProfile> Sub;
+	RCursor<GDoc> Sub;
 
-	Profiles->clear();
-	Sub=Group->GetObjs();
+	Docs->clear();
+	Sub=Topic->GetObjs();
 	for(Sub.Start(); !Sub.End(); Sub.Next())
 	{
-		GProfile* sub=Sub();
+		GDoc* sub=Sub();
 		d=sub->GetAttached();
-		QListViewItemType* subitem=new QListViewItemType(sub,Profiles,ToQString(sub->GetName()),ToQString(sub->GetUser()->GetFullName()),ToQString(d));
+		QListViewItemType* subitem=new QListViewItemType(sub,Docs,ToQString(sub->GetName()),ToQString(sub->GetURL()),ToQString(d));
 		subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find",KIcon::Small)));
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewGroup::ConstructGeneral(void)
+void KViewTopic::ConstructGeneral(void)
 {
 	General->clear();
-	new QListViewItem(General,"ID",ToQString(RString::Number(Group->GetId())));
-	new QListViewItem(General,"Status",ToQString(GetState(Group->GetState())));
+	new QListViewItem(General,"ID",ToQString(RString::Number(Topic->GetId())));
+	new QListViewItem(General,"Status",ToQString(GetState(Topic->GetState())));
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewGroup::ConstructDocs(void)
-{
-	RDate d;
-	RCursor<GFdbk> docs;
-	RCursor<GProfile> Sub;
-	GDoc* doc;
-
-	// Clear the Widget
-	Docs->clear();
-	OkDocs.Clear();
-
-	// Goes trough the profiles of the group
-	// And put in OkDocs all the relevant documents
-	Sub=Group->GetObjs();
-	for(Sub.Start(); !Sub.End(); Sub.Next())
-	{
-		GProfile* sub=Sub();
-		docs=sub->GetFdbks();
-		for(docs.Start();!docs.End();docs.Next())
-		{
-			// If not a relevant document -> goes next
-			if(docs()->GetFdbk()!=djOK)
-				continue;
-
-			GDoc* doc=getDocument()->GetSession()->GetDoc(docs()->GetDocId());
-			if(!doc)
-				continue;
-
-			// If doc already in OkDocs -> goes next
-			if(OkDocs.IsIn(doc))
-				continue;
-
-			OkDocs.InsertPtr(doc);
-		}
-	}
-
-	// Insert documents.
-	RCursor<GDoc> docs2(OkDocs);
-	for(docs2.Start();!docs2.End();docs2.Next())
-	{
-		doc=GSession::Get()->GetDoc(docs2()->GetId());
-		d=doc->GetUpdated();
-		QListViewItemType* prof = new QListViewItemType(doc,Docs,ToQString(doc->GetName()),ToQString(doc->GetURL()),ToQString(d));
-		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror",KIcon::Small)));
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewGroup::ConstructDescription(void)
+void KViewTopic::ConstructDescription(void)
 {
 	class LocalItem : QListViewItem
 	{
@@ -229,7 +165,7 @@ void KViewGroup::ConstructDescription(void)
 
 	// Read 'Ok'
 	Vector->clear();
-	RCursor<GWeightInfo> Words(Group->GetInfos());
+	RCursor<GWeightInfo> Words(Topic->GetInfos());
 	for (Words.Start();!Words.End();Words.Next())
 	{
 		new LocalItem(Vector,ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType())), Words()->GetWeight());
@@ -238,27 +174,17 @@ void KViewGroup::ConstructDescription(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewGroup::update(unsigned int cmd)
+void KViewTopic::update(tObjType type)
 {
-	if(cmd!=2) return;
-	ConstructProfiles();
+	if(type!=otTopic) return;
+	ConstructDocs();
 	ConstructGeneral();
 	ConstructDescription();
-	ConstructDocs();
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewGroup::askDocsMenu(QListViewItem*,const QPoint& pt,int)
-{
-	QPopupMenu* InfoBox=new QPopupMenu(parentWidget());
-	InfoBox->insertItem("Save List as XML for HGA",this,SLOT(slotMenu(int)));
-	InfoBox->popup(pt);
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewGroup::slotMenu(int)
+void KViewTopic::slotMenu(int)
 {
 	int dlg;
 	KURL url;
@@ -289,7 +215,7 @@ void KViewGroup::slotMenu(int)
 	Res<<"<?xml version=\"1.0\" ?>\n<!DOCTYPE Hierarchical-Data>\n<Hierarchical-Data>\n\t<Objects>\n";
 
 	// Write Docs
-	RCursor<GDoc> theDocs(OkDocs);
+	RCursor<GDoc> theDocs(Topic->GetObjs());
 	for(theDocs.Start(),i=0,maxsize=0,tab=0;!theDocs.End();theDocs.Next(),i++)
 	{
 		doc=GSession::Get()->GetDoc(theDocs()->GetId());
@@ -327,7 +253,7 @@ void KViewGroup::slotMenu(int)
 
 
 //-----------------------------------------------------------------------------
-void KViewGroup::resizeEvent(QResizeEvent *)
+void KViewTopic::resizeEvent(QResizeEvent *)
 {
 	Infos->resize(size());
 }

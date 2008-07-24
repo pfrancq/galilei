@@ -369,17 +369,32 @@ private slots:
 	/**
 	* Show the groups window.
 	*/
-	void slotShowGroups(void);
+	void slotShowCommunities(void);
 
 	/**
 	* Compute the groups.
 	*/
-	void slotGroupsCalc(void);
+	void slotCommunitiesCalc(void);
 
 	/**
 	* Do a post groups.
 	*/
-	void slotPostGroups(void);
+	void slotPostCommunities(void);
+
+	/**
+	* Show the topics window.
+	*/
+	void slotShowTopics(void);
+
+	/**
+	* Compute the topics.
+	*/
+	void slotTopicsCalc(void);
+
+	/**
+	* Do a post topics.
+	*/
+	void slotPostTopics(void);
 
 	/**
 	* Compute the groups.
@@ -389,7 +404,7 @@ private slots:
 	/**
 	* Create ideal groups.
 	*/
-	void slotGroupsCreate(void);
+	void slotCommunitiesCreate(void);
 
 	/**
 	* Make a feedback cycle.
@@ -529,17 +544,22 @@ private slots:
 	/**
 	* Clear the docs.
 	*/
-	void slotDocsClear();
+	void slotDocsClear(void);
 
 	/**
 	* Clear the subprofiles.
 	*/
-	void slotProfilesClear();
+	void slotProfilesClear(void);
 
 	/**
 	* Clear the groups.
 	*/
-	void slotGroupsClear();
+	void slotCommunitiesClear(void);
+
+	/**
+	* Clear the topics.
+	*/
+	void slotTopicsClear(void);
 
 	/**
 	* Configure GALILEI.
@@ -547,7 +567,7 @@ private slots:
 	void slotConfigure(void);
 
 	/**
-	* See the dictionnaries.
+	* See the dictionaries.
 	*/
 	void slotSeeDicts(void);
 
@@ -604,6 +624,10 @@ public:
 	KAction* analyseXML;
 	KAction* queryMetaEngine;
 	KAction* fillMIMETypes;
+	KAction* topicsClear;
+	KAction* showTopics;
+	KAction* topicsCalc;
+	KAction* postTopicsCalc;
 
 	KAction* showUsers;
 	KAction* profileCalc;
@@ -611,16 +635,16 @@ public:
 	KAction* postProfilesCalc;
 	KAction* usersClear;
 
-	KAction* showGroups;
-	KAction* groupsCalc;
-	KAction* postGroupsCalc;
-	KAction* groupsClear;
+	KAction* showCommunities;
+	KAction* communitiesCalc;
+	KAction* postCommunitiesCalc;
+	KAction* communitiesClear;
 	KAction* simulationDlg;
 	KAction* groupingCreate;
 	KAction* doFdbks;
 	KAction* doAssessments;
 	KAction* groupingCompare;
-	KAction* showGroupsHistory;
+	KAction* showCommunitiesHistory;
 
 	KAction* plugins;
 	KAction* configure;

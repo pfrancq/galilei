@@ -15,7 +15,7 @@ void QPlugins::init()
 {
     PostDocs->setSorting(-1);
     PostProfile->setSorting(-1);
-    PostGroups->setSorting(-1);
+    PostCommunity->setSorting(-1);
 }
 
 void QPlugins::changeFilter(QListViewItem* item)
@@ -94,14 +94,25 @@ void QPlugins::slotProfileCalcEnable( bool state )
 }
 
 
-void QPlugins::changeGrouping( QListViewItem * item)
+void QPlugins::changeGroupProfiles( QListViewItem * item)
 {
 	if(!item) return;
 	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(item);
 	if(!f) return;
-	EnableGrouping->setChecked(f->Enable);
-	ConfigGrouping->setEnabled(f->Fac->HasConfigure());
-	AboutGrouping->setEnabled(f->Fac->HasAbout());
+	EnableGroupProfiles->setChecked(f->Enable);
+	ConfigGroupProfiles->setEnabled(f->Fac->HasConfigure());
+	AboutGroupProfiles->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::changeGroupDocs( QListViewItem * item)
+{
+	if(!item) return;
+	QGroupDocsItem* f=dynamic_cast<QGroupDocsItem*>(item);
+	if(!f) return;
+	EnableGroupDocs->setChecked(f->Enable);
+	ConfigGroupDocs->setEnabled(f->Fac->HasConfigure());
+	AboutGroupDocs->setEnabled(f->Fac->HasAbout());
 }
 
 
@@ -116,15 +127,27 @@ void QPlugins::changeLinkCalc( QListViewItem * item)
 }
 
 
-void QPlugins::changeGroupCalc( QListViewItem * item )
+void QPlugins::changeCommunityCalc( QListViewItem * item )
 {
 	if(!item) return;
 	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(item);
 	if(!f) return;
-	EnableGroupCalc->setChecked(f->Enable);
-	ConfigGroupCalc->setEnabled(f->Fac->HasConfigure());
-	AboutGroupCalc->setEnabled(f->Fac->HasAbout());
+	EnableCommunityCalc->setChecked(f->Enable);
+	ConfigCommunityCalc->setEnabled(f->Fac->HasConfigure());
+	AboutCommunityCalc->setEnabled(f->Fac->HasAbout());
 }
+
+
+void QPlugins::changeTopicCalc( QListViewItem * item )
+{
+	if(!item) return;
+	QTopicCalcItem* f=dynamic_cast<QTopicCalcItem*>(item);
+	if(!f) return;
+	EnableTopicCalc->setChecked(f->Enable);
+	ConfigTopicCalc->setEnabled(f->Fac->HasConfigure());
+	AboutTopicCalc->setEnabled(f->Fac->HasAbout());
+}
+
 
 void QPlugins::changeMetaEngine( QListViewItem * item)
 {
@@ -137,10 +160,18 @@ void QPlugins::changeMetaEngine( QListViewItem * item)
 }
 
 
-void QPlugins::slotAboutGrouping()
+void QPlugins::slotAboutGroupProfiles()
 {
-	if(!Groupings->currentItem()) return;
-	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(Groupings->currentItem());
+	if(!GroupProfiles->currentItem()) return;
+	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(GroupProfiles->currentItem());
+	if(!f) return;
+	f->Fac->About();
+}
+
+void QPlugins::slotAboutGroupDocs()
+{
+	if(!GroupDocs->currentItem()) return;
+	QGroupDocsItem* f=dynamic_cast<QGroupDocsItem*>(GroupDocs->currentItem());
 	if(!f) return;
 	f->Fac->About();
 }
@@ -155,13 +186,23 @@ void QPlugins::slotAboutLinkCalc()
 }
 
 
-void QPlugins::slotAboutGroupCalc()
+void QPlugins::slotAboutCommunityCalc()
 {
-	if(!GroupCalcs->currentItem()) return;
-	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(GroupCalcs->currentItem());
+	if(!CommunityCalc->currentItem()) return;
+	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(CommunityCalc->currentItem());
 	if(!f) return;
 	f->Fac->About();
 }
+
+
+void QPlugins::slotAboutTopicCalc()
+{
+	if(!TopicCalc->currentItem()) return;
+	QTopicCalcItem* f=dynamic_cast<QTopicCalcItem*>(TopicCalc->currentItem());
+	if(!f) return;
+	f->Fac->About();
+}
+
 
 void QPlugins::slotAboutMetaEngine()
 {
@@ -172,10 +213,19 @@ void QPlugins::slotAboutMetaEngine()
 }
 
 
-void QPlugins::slotConfigGrouping()
+void QPlugins::slotConfigGroupProfiles()
 {
-	if(!Groupings->currentItem()) return;
-	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(Groupings->currentItem());
+	if(!GroupProfiles->currentItem()) return;
+	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(GroupProfiles->currentItem());
+	if(!f) return;
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotConfigGroupDocs()
+{
+	if(!GroupDocs->currentItem()) return;
+	QGroupDocsItem* f=dynamic_cast<QGroupDocsItem*>(GroupDocs->currentItem());
 	if(!f) return;
 	f->Fac->Configure();
 }
@@ -190,13 +240,23 @@ void QPlugins::slotConfigLinkCalc()
 }
 
 
-void QPlugins::slotConfigGroupCalc()
+void QPlugins::slotConfigCommunityCalc()
 {
-	if(!GroupCalcs->currentItem()) return;
-	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(GroupCalcs->currentItem());
+	if(!CommunityCalc->currentItem()) return;
+	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(CommunityCalc->currentItem());
 	if(!f) return;
 	f->Fac->Configure();
 }
+
+
+void QPlugins::slotConfigTopicCalc()
+{
+	if(!TopicCalc->currentItem()) return;
+	QTopicCalcItem* f=dynamic_cast<QTopicCalcItem*>(TopicCalc->currentItem());
+	if(!f) return;
+	f->Fac->Configure();
+}
+
 
 void QPlugins::slotConfigMetaEngine()
 {
@@ -207,19 +267,37 @@ void QPlugins::slotConfigMetaEngine()
 }
 
 
-void QPlugins::slotGroupingEnable( bool state )
+void QPlugins::slotGroupProfilesEnable( bool state )
 {
-	if(!Groupings->currentItem()) return;
-	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(Groupings->currentItem());
+	if(!GroupProfiles->currentItem()) return;
+	QGroupProfilesItem* f=dynamic_cast<QGroupProfilesItem*>(GroupProfiles->currentItem());
 	if(!f) return;
 	f->Enable=state;
 }
 
 
-void QPlugins::slotGroupCalcEnable( bool state )
+void QPlugins::slotCommunityCalcEnable( bool state )
 {
-	if(!GroupCalcs->currentItem()) return;
-	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(GroupCalcs->currentItem());
+	if(!CommunityCalc->currentItem()) return;
+	QCommunityCalcItem* f=dynamic_cast<QCommunityCalcItem*>(CommunityCalc->currentItem());
+	if(!f) return;
+	f->Enable=state;
+}
+
+
+void QPlugins::slotGroupDocsEnable( bool state )
+{
+	if(!GroupDocs->currentItem()) return;
+	QGroupDocsItem* f=dynamic_cast<QGroupDocsItem*>(GroupDocs->currentItem());
+	if(!f) return;
+	f->Enable=state;
+}
+
+
+void QPlugins::slotTopicCalcEnable( bool state )
+{
+	if(!TopicCalc->currentItem()) return;
+	QTopicCalcItem* f=dynamic_cast<QTopicCalcItem*>(TopicCalc->currentItem());
 	if(!f) return;
 	f->Enable=state;
 }
@@ -468,41 +546,79 @@ void QPlugins::slotDocAnalyseEnable( bool state )
 }
 
 
-void QPlugins::slotPostGroupEnable( bool state )
+void QPlugins::slotPostCommunityEnable( bool state )
 {
-	if(!PostGroups->currentItem()) return;
-	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(PostGroups->currentItem());
+	if(!PostCommunity->currentItem()) return;
+	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(PostCommunity->currentItem());
 	if(!f) return;
 	f->Enable=state;
 }
 
 
-void QPlugins::slotConfigPostGroup()
+void QPlugins::slotConfigPostCommunity()
 {
-	if(!PostGroups->currentItem()) return;
-	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(PostGroups->currentItem());
+	if(!PostCommunity->currentItem()) return;
+	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(PostCommunity->currentItem());
 	if(!f) return;
 	f->Fac->Configure();
 }
 
 
-void QPlugins::slotAboutPostGroup()
+void QPlugins::slotAboutPostCommunity()
 {
-	if(!PostGroups->currentItem()) return;
-	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(PostGroups->currentItem());
+	if(!PostCommunity->currentItem()) return;
+	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(PostCommunity->currentItem());
 	if(!f) return;
 	f->Fac->About();
 }
 
 
-void QPlugins::changePostGroup(QListViewItem * item)
+void QPlugins::changePostCommunity(QListViewItem * item)
 {
     if(!item) return;
 	QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(item);
 	if(!f) return;
-	EnablePostGroup->setChecked(f->Enable);
-	ConfigPostGroup->setEnabled(f->Fac->HasConfigure());
-	AboutPostGroup->setEnabled(f->Fac->HasAbout());
+	EnablePostCommunity->setChecked(f->Enable);
+	ConfigPostCommunity->setEnabled(f->Fac->HasConfigure());
+	AboutPostCommunity->setEnabled(f->Fac->HasAbout());
+}
+
+
+void QPlugins::slotPostTopicEnable( bool state )
+{
+	if(!PostTopic->currentItem()) return;
+	QPostTopicItem* f=dynamic_cast<QPostTopicItem*>(PostTopic->currentItem());
+	if(!f) return;
+	f->Enable=state;
+}
+
+
+void QPlugins::slotConfigPostTopic()
+{
+	if(!PostTopic->currentItem()) return;
+	QPostTopicItem* f=dynamic_cast<QPostTopicItem*>(PostTopic->currentItem());
+	if(!f) return;
+	f->Fac->Configure();
+}
+
+
+void QPlugins::slotAboutPostTopic()
+{
+	if(!PostTopic->currentItem()) return;
+	QPostTopicItem* f=dynamic_cast<QPostTopicItem*>(PostTopic->currentItem());
+	if(!f) return;
+	f->Fac->About();
+}
+
+
+void QPlugins::changePostTopic(QListViewItem * item)
+{
+	if(!item) return;
+	QPostTopicItem* f=dynamic_cast<QPostTopicItem*>(item);
+	if(!f) return;
+	EnablePostTopic->setChecked(f->Enable);
+	ConfigPostTopic->setEnabled(f->Fac->HasConfigure());
+	AboutPostTopic->setEnabled(f->Fac->HasAbout());
 }
 
 
@@ -586,18 +702,18 @@ void QPlugins::postProfileMoveUp( void )
 }
 
 
-void QPlugins::postGroupsMoveDown( void )
+void QPlugins::postCommunityMoveDown( void )
 {
-	QListViewItem* f=PostGroups->currentItem();
+	QListViewItem* f=PostCommunity->currentItem();
 	if(!f) return;
 	if(f->itemBelow())
 		f->moveItem(f->itemBelow());
 }
 
 
-void QPlugins::postGroupsMoveUp( void )
+void QPlugins::postCommunityMoveUp( void )
 {
-	QListViewItem* f=PostGroups->currentItem();
+	QListViewItem* f=PostCommunity->currentItem();
 	if(!f) return;
 	if(f->itemAbove() && f->itemAbove()->itemAbove())
 	{
@@ -605,18 +721,43 @@ void QPlugins::postGroupsMoveUp( void )
 	}
 	else
 	{
-		PostGroups->takeItem(f);
-		PostGroups->insertItem(f);
-		PostGroups->setSelected(f,true);
+		PostCommunity->takeItem(f);
+		PostCommunity->insertItem(f);
+		PostCommunity->setSelected(f,true);
 	}
 }
 
+
+void QPlugins::postTopicMoveDown( void )
+{
+	QListViewItem* f=PostTopic->currentItem();
+	if(!f) return;
+	if(f->itemBelow())
+		f->moveItem(f->itemBelow());
+}
+
+
+void QPlugins::postTopicMoveUp( void )
+{
+	QListViewItem* f=PostTopic->currentItem();
+	if(!f) return;
+	if(f->itemAbove() && f->itemAbove()->itemAbove())
+	{
+		f->moveItem(f->itemAbove()->itemAbove());
+	}
+	else
+	{
+		PostTopic->takeItem(f);
+		PostTopic->insertItem(f);
+		PostTopic->setSelected(f,true);
+	}
+}
 
 void QPlugins::updateLevels(void)
 {
 	unsigned int level;
 
-	QListViewItemIterator it(PostGroups);
+	QListViewItemIterator it(PostCommunity);
  for (level=0; it.current();++it, level++)
  {
   QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(it.current());

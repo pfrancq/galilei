@@ -38,25 +38,11 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdoc.h>
-#include <gpostdoc.h>
-#include <glang.h>
-#include <gfilter.h>
 #include <qlistviewitemtype.h>
 #include <gsession.h>
-#include <gstatscalc.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <gpreprofile.h>
-#include <gpostprofile.h>
-#include <ggroupprofiles.h>
-#include <gpostcommunity.h>
-#include <gprofilecalc.h>
-#include <glang.h>
-#include <gengine.h>
-#include <gmetaengine.h>
 #include <ggalileiapp.h>
-#include <gstorage.h>
-#include <gmeasure.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -99,7 +85,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 QMyPlugins::QMyPlugins(KGALILEICenterApp* app,QString title)
 	: QPlugins(app,title), Tabs(30,15), CurrentIndex(0)
-{	
+{
 	MeasuresCat->setResizePolicy( QScrollView::Manual );
 	MeasuresCat->setResizeMode(QListView::AllColumns);
 	connect(EnableMeasure,SIGNAL(toggled(bool)),this,SLOT(slotMeasureEnable(bool)));
@@ -138,8 +124,8 @@ void QMyPlugins::slotChangeCat(QListViewItem* view)
 	Measures->raiseWidget(Tabs[CurrentIndex]->List);
 	changeMeasure(Tabs[CurrentIndex]->List->currentItem());
 }
-	
-	
+
+
 //-----------------------------------------------------------------------------
 void QMyPlugins::changeMeasure( QListViewItem * item )
 {
@@ -170,8 +156,8 @@ void QMyPlugins::slotConfigMeasure()
 	if(!f) return;
 	f->Fac->Configure();
 }
-	
-	
+
+
 //-----------------------------------------------------------------------------
 void QMyPlugins::slotMeasureEnable( bool state )
 {
@@ -291,7 +277,7 @@ void KGALILEICenterApp::InitMeasure(QMyPlugins* dlg)
 	int tabs,idx;
 	QListViewItem* item=0;
 	QListViewItem* ptr=0;
-	
+
 	dlg->MeasuresCat->setSortColumn(-1);
 	GMeasureManager* Manager=GALILEIApp->GetManager<GMeasureManager>("Measures");
 	R::RCursor<GTypeMeasureManager> Cur(Manager->GetMeasureCategories());
@@ -370,18 +356,22 @@ void KGALILEICenterApp::slotPlugins(void)
 	GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
 	GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
 	GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
+	GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->ReOrder();
 
 	// Goes through managers
 	dlg.changeFilter(InitL<GFactoryFilter,GFilterManager,QFilterItem>("Filter",dlg.Filters,dlg.EnableFilter));
 	dlg.changeProfileCalc(InitL<GFactoryProfileCalc,GProfileCalcManager,QProfileCalcItem>("ProfileCalc",dlg.ProfileCalcs,dlg.EnableProfileCalc,dlg.CurrentProfileCalc));
-	dlg.changeGrouping(InitL<GFactoryGroupProfiles,GGroupProfilesManager,QGroupProfilesItem>("GroupProfiles",dlg.Groupings,dlg.EnableGrouping,dlg.CurrentGrouping));
-	dlg.changeGroupCalc(InitL<GFactoryCommunityCalc,GCommunityCalcManager,QCommunityCalcItem>("CommunityCalc",dlg.GroupCalcs,dlg.EnableGroupCalc,dlg.CurrentGroupCalc));
+	dlg.changeGroupProfiles(InitL<GFactoryGroupProfiles,GGroupProfilesManager,QGroupProfilesItem>("GroupProfiles",dlg.GroupProfiles,dlg.EnableGroupProfiles,dlg.CurrentGroupProfiles));
+	dlg.changeGroupDocs(InitL<GFactoryGroupDocs,GGroupDocsManager,QGroupDocsItem>("GroupDocs",dlg.GroupDocs,dlg.EnableGroupDocs,dlg.CurrentGroupDocs));
+	dlg.changeCommunityCalc(InitL<GFactoryCommunityCalc,GCommunityCalcManager,QCommunityCalcItem>("CommunityCalc",dlg.CommunityCalc,dlg.EnableCommunityCalc,dlg.CurrentCommunityCalc));
+	dlg.changeTopicCalc(InitL<GFactoryTopicCalc,GTopicCalcManager,QTopicCalcItem>("TopicCalc",dlg.TopicCalc,dlg.EnableTopicCalc,dlg.CurrentTopicCalc));
 	dlg.changeStatCalc(InitL<GFactoryStatsCalc,GStatsCalcManager,QStatsCalcItem>("StatsCalc",dlg.Stats,dlg.EnableStat));
 	dlg.changeLinkCalc(InitL<GFactoryLinkCalc,GLinkCalcManager,QLinkCalcItem>("LinkCalc",dlg.LinkCalcs,dlg.EnableLinkCalc,dlg.CurrentLinkCalc));
 	dlg.changePostDoc(InitL<GFactoryPostDoc,GPostDocManager,QPostDocItem>("PostDoc",dlg.PostDocs,dlg.EnablePostDoc));
 	dlg.changePreProfile(InitL<GFactoryPreProfile,GPreProfileManager,QPreProfileItem>("PreProfile",dlg.PreProfile,dlg.EnablePreProfile));
 	dlg.changePostProfile(InitL<GFactoryPostProfile,GPostProfileManager,QPostProfileItem>("PostProfile",dlg.PostProfile,dlg.EnablePostProfile));
-	dlg.changePostGroup(InitL<GFactoryPostCommunity,GPostCommunityManager,QPostCommunityItem>("PostCommunity",dlg.PostGroups,dlg.EnablePostGroup));
+	dlg.changePostCommunity(InitL<GFactoryPostCommunity,GPostCommunityManager,QPostCommunityItem>("PostCommunity",dlg.PostCommunity,dlg.EnablePostCommunity));
+	dlg.changePostTopic(InitL<GFactoryPostTopic,GPostTopicManager,QPostTopicItem>("PostTopic",dlg.PostTopic,dlg.EnablePostTopic));
 	dlg.changeLang(InitL<GFactoryLang,GLangManager,QLangItem>("Lang",dlg.Langs,dlg.EnableLang));
 	dlg.changeDocAnalyse(InitL<GFactoryDocAnalyse,GDocAnalyseManager,QDocAnalyseItem>("DocAnalyse",dlg.DocAnalyses,dlg.EnableDocAnalyse,dlg.CurrentDocAnalyse));
 	dlg.changeEngine(InitL<GFactoryEngine,GEngineManager,QEngineItem>("Engine",dlg.Engines,dlg.EnableEngine));
@@ -401,8 +391,10 @@ void KGALILEICenterApp::slotPlugins(void)
 			// Goes through managers
 			Done<QFilterItem>(dlg.Filters);
 			Done<QProfileCalcItem>(dlg.ProfileCalcs,this);
-			Done<QGroupProfilesItem>(dlg.Groupings,this);
-			Done<QCommunityCalcItem>(dlg.GroupCalcs,this);
+			Done<QGroupProfilesItem>(dlg.GroupProfiles,this);
+			Done<QGroupDocsItem>(dlg.GroupDocs,this);
+			Done<QCommunityCalcItem>(dlg.CommunityCalc,this);
+			Done<QTopicCalcItem>(dlg.TopicCalc,this);
 			Done<QStatsCalcItem>(dlg.Stats);
 			Done<QLinkCalcItem>(dlg.LinkCalcs,this);
 			Done<QPostDocItem>(dlg.PostDocs,this);
@@ -410,24 +402,28 @@ void KGALILEICenterApp::slotPlugins(void)
 			Done<QPostProfileItem>(dlg.PostProfile,this);
 			Done<QLangItem>(dlg.Langs,this);
 			Done<QDocAnalyseItem>(dlg.DocAnalyses,this);
-			Done<QPostCommunityItem>(dlg.PostGroups,this);
+			Done<QPostCommunityItem>(dlg.PostCommunity,this);
+			Done<QPostTopicItem>(dlg.PostTopic,this);
 			Done<QEngineItem>(dlg.Engines);
 			Done<QMetaEngineItem>(dlg.MetaEngines,this);
 			DoneMeasure(&dlg);
-	
+
 			GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
 			GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
 			GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
 			GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
-	
+			GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->ReOrder();
+
 			// Set current method
 			GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(dlg.CurrentProfileCalc->currentText().latin1(),false);
-			GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->SetCurrentMethod(dlg.CurrentGrouping->currentText().latin1(),false);
-			GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->SetCurrentMethod(dlg.CurrentGroupCalc->currentText().latin1(),false);
+			GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->SetCurrentMethod(dlg.CurrentGroupProfiles->currentText().latin1(),false);
+			GALILEIApp->GetManager<GGroupDocsManager>("GroupDocs")->SetCurrentMethod(dlg.CurrentGroupDocs->currentText().latin1(),false);
+			GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->SetCurrentMethod(dlg.CurrentCommunityCalc->currentText().latin1(),false);
+			GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->SetCurrentMethod(dlg.CurrentTopicCalc->currentText().latin1(),false);
 			GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(dlg.CurrentLinkCalc->currentText().latin1(),false);
 			GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(dlg.CurrentDocAnalyse->currentText().latin1(),false);
 			GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(dlg.CurrentMetaEngine->currentText().latin1(),false);
-			GALILEIApp->GetManager<GStorageManager>("Storage")->SetCurrentMethod(dlg.CurrentStorage->currentText().latin1(),false);		
+			GALILEIApp->GetManager<GStorageManager>("Storage")->SetCurrentMethod(dlg.CurrentStorage->currentText().latin1(),false);
 		}
 		catch(GException& e)
 		{

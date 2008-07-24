@@ -93,7 +93,7 @@ KViewStats::KViewStats(KDoc* doc, QWidget* parent,const char* name,int wflags)
 
 
 //-----------------------------------------------------------------------------
-void KViewStats::update(unsigned int /*cmd*/)
+void KViewStats::update(tObjType)
 {
 }
 

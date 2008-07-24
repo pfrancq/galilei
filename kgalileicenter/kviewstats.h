@@ -6,7 +6,7 @@
 
 	Window for the running some instruction to the session - Header.
 
-	Copyright 2002 by the Université Libre de Bruxelles.
+	Copyright 2002 by the Universitï¿½ Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -82,15 +82,10 @@ public:
 	KViewStats(KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 	/**
-	* Return the type of the window.
-	*/
-	virtual GViewType getType(void) {return(gInsts);}
-
-	/**
 	* Gets called to redraw the document contents if it has been modified.
-	* @param cmd            Specify why? (0=Docs,1=Users,2=Groups)
+	* @param type            Type.
 	*/
-	virtual void update(unsigned int cmd);
+	virtual void update(tObjType type);
 
 protected:
 
