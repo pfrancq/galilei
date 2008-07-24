@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GCommunityCalc.h
+	GTopicCalc.h
 
-	Generic Community Computing Method - Header.
+	Generic Topic Computing Method - Header.
 
-	Copyright 2002-2008 by the Université Libre de Bruxelles.
+	Copyright 2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,8 +31,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GCommunityCalcH
-#define GCommunityCalcH
+#ifndef GTopicCalcH
+#define GTopicCalcH
 
 
 //------------------------------------------------------------------------------
@@ -48,17 +48,17 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_COMMUNITYCALC_VERSION "2.0"
+#define API_TOPICCALC_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
 /**
-* The GCommunityCalc class provides a representation for a generic method to
-* compute the description of a specific community.
+* The GTopicCalc class provides a representation for a generic method to compute
+* the description of a specific topic.
 * @author Pascal Francq
-* @short Generic Community Computing Method.
+* @short Generic Topic Computing Method.
 */
-class GCommunityCalc : public GPlugin<GFactoryCommunityCalc>
+class GTopicCalc : public GPlugin<GFactoryTopicCalc>
 {
 public:
 
@@ -66,29 +66,28 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GCommunityCalc(GFactoryCommunityCalc* fac);
+	GTopicCalc(GFactoryTopicCalc* fac);
 
 	/**
-	* Compute a community.
-	* @param com            Community to compute.
+	* Compute a topic.
+	* @param grp            Topic to compute.
 	*/
-	virtual void Compute(GCommunity* com)=0;
+	virtual void Compute(GTopic* top)=0;
 
 	/**
 	* Destruct.
 	*/
-	virtual ~GCommunityCalc(void);
+	virtual ~GTopicCalc(void);
 };
 
 
 //------------------------------------------------------------------------------
 /*
-* The GFactoryCommunityCalc represent a factory for a given community computing
-* method.
+* The GFactoryTopicCalc represent a factory for a given topic computing method.
 * @author Pascal Francq
-* @short Generic Community Computing Factory.
+* @short Generic Topic Computing Factory.
 */
-class GFactoryCommunityCalc : public GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>
+class GFactoryTopicCalc : public GFactoryPlugin<GFactoryTopicCalc,GTopicCalc,GTopicCalcManager>
 {
 public:
 
@@ -98,37 +97,37 @@ public:
 	* @param n               Name of the Factory/Plug-in.
 	* @param f               Library of the Factory/Plug-in.
 	*/
-	GFactoryCommunityCalc(GCommunityCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>(mng,n,f) {}
+	GFactoryTopicCalc(GTopicCalcManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryTopicCalc,GTopicCalc,GTopicCalcManager>(mng,n,f) {}
 };
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GCommunityCalcManager class provides a representation for a manager
-* responsible to manage all the community computing methods.
+* The GTopicCalcManager class provides a representation for a manager
+* responsible to manage all the topic computing methods.
 * @author Pascal Francq
-* @short Community Computing Methods Manager.
+* @short Topic Computing Methods Manager.
 */
-class GCommunityCalcManager : public GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>
+class GTopicCalcManager : public GPluginManager<GTopicCalcManager,GFactoryTopicCalc,GTopicCalc>
 {
 public:
 
 	/**
-	* Construct the community computing method manager.
+	* Construct the topic computing method manager.
 	*/
-	GCommunityCalcManager(void);
+	GTopicCalcManager(void);
 
 	/**
-	* Destruct the community computing methods manager.
+	* Destruct the topic computing methods manager.
 	*/
-	virtual ~GCommunityCalcManager(void);
+	virtual ~GTopicCalcManager(void);
 };
 
 
 //------------------------------------------------------------------------------
-#define CREATE_COMMUNITYCALC_FACTORY(name,plugin)\
-	CREATE_FACTORY(GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc,plugin,"CommunityCalc",API_COMMUNITYCALC_VERSION,name)
+#define CREATE_TOPICCALC_FACTORY(name,plugin)\
+	CREATE_FACTORY(GTopicCalcManager,GFactoryTopicCalc,GTopicCalc,plugin,"TopicCalc",API_TOPICCALC_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

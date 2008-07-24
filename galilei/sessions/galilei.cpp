@@ -62,7 +62,7 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 	switch(objtype)
 	{
 		case otNoClass:
-			return(RString("unknow"));
+			return(RString("unknown"));
 		case otSession:
 			return(RString("session"));
 		case otDoc:
@@ -71,14 +71,12 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("user"));
 		case otProfile:
 			return(RString("profile"));
+		case otHistoricalProfile:
+			return(RString("historical profile"));
 		case otCommunity:
 			return(RString("community"));
-		case otDocProfile:
-			return(RString("document or profile"));
-		case otDocCommunity:
-			return(RString("document or community"));
-		case otProfileCommunity:
-			return(RString("profile or community"));
+		case otHistoricalCommunity:
+			return(RString("historical community"));
 		case otFdbk:
 			return(RString("assessment"));
 		case otLang:
@@ -86,9 +84,15 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 		case otHistory:
 			return(RString("history"));
 		case otTopic:
-			return(RString("topic"));			
+			return(RString("topic"));
+		case otSubject:
+			return(RString("subject"));
+		case otEngine:
+			return(RString("search engine"));
+		case otEngineDoc:
+			return(RString("document proposed by a search engine"));
 	}
-	return(RString("unknow"));
+	return(RString("unknown"));
 }
 
 
@@ -98,9 +102,9 @@ R::RString GALILEI::GetState(tObjState state)
 	switch(state)
 	{
 		case osUnknow:
-			return(RString("unknow"));
+			return(RString("unknown"));
 		case osCreated:
-			return(RString("created"));			
+			return(RString("created"));
 		case osNew:
 			return(RString("allocated"));
 		case osUpToDate:
@@ -118,11 +122,11 @@ R::RString GALILEI::GetState(tObjState state)
 		case osOnDemand:
 			return(RString("demands information"));
 		case osLoaded:
-			return(RString("information loaded"));			
+			return(RString("information loaded"));
 		case osNeedLoad:
 			return(RString("must load information"));
 	}
-	return(RString("unknow"));
+	return(RString("unknown"));
 }
 
 
@@ -132,7 +136,7 @@ R::RString GALILEI::GetEvent(tEvent event)
 	switch(event)
 	{
 		case eUnknow:
-			return(RString("Unknow"));
+			return(RString("Unknown"));
 		case eObjNew:
 			return(RString("object created in memory"));
 		case eObjCreated:
@@ -144,7 +148,7 @@ R::RString GALILEI::GetEvent(tEvent event)
 		case eObjDestroyed:
 			return(RString("object deleted from system"));
 	}
-	return(RString("unknow"));
+	return(RString("unknown"));
 }
 
 
@@ -154,7 +158,7 @@ R::RString GALILEI::GetAssessment(tDocAssessment assessment)
 	RString str;
 
 	if(assessment&djUnknow)
-		str="unknow";
+		str="unknown";
 	if(assessment&djOK)
 	str="relevant";
 	if(assessment&djKO)
@@ -164,7 +168,7 @@ R::RString GALILEI::GetAssessment(tDocAssessment assessment)
 	if(assessment&djHub)
 		str+="/hub";
 	if(assessment&djAutority)
-		str+="/autority";
+		str+="/authority";
 	return(str);
 }
 
@@ -234,7 +238,7 @@ RString GALILEI::GetMeasureType(tTypeMeasure type)
 	switch(type)
 	{
 		case tmUnknow :
-			return(RString("Unknow measure."));
+			return(RString("Unknown measure."));
 		case tmDoc :
 			return(RString("Measure(document,document)"));
 		case tmProfile :
@@ -252,4 +256,5 @@ RString GALILEI::GetMeasureType(tTypeMeasure type)
 		case tmDocTopic :
 			return(RString("Measure(document,topic)"));
 	}
+	return(RString::Null);
 }

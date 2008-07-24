@@ -84,7 +84,7 @@ public:
 	*                        everything is allocated.
 	*/
 	GSession(GSlot* slot=0,R::RDebug* debug=0,size_t maxdocs=0,size_t maxsubprofiles=0,size_t maxgroups=0);
-	
+
 	//-----------------------------------------------------
 	/** @name General Methods
 	*/
@@ -107,7 +107,7 @@ public:
 	* variables are then replaced with the corresponding value. Actually, the
 	* known variables are:
 	* - %%world% : Name of the session.
-	* 
+	*
 	* @param str             String to analyze.
 	*/
 	R::RString AnalyzeString(const R::RString& str);
@@ -165,7 +165,7 @@ public:
 	R::RDebug* GetDebug(void) const;
 
 private:
-	
+
 	/**
 	 * Add a object given debugging information.
 	 * @param debug          Object.
@@ -177,25 +177,25 @@ private:
 	 * @param debug          Object.
 	 */
 	void RemoveDebugObject(const GDebugObject* debug);
-	
+
 public:
-	
+
 	/**
 	 * Build some debugging information concerning an object with a given name.
-	 * @param name           Name of the object.	 
+	 * @param name           Name of the object.
 	 * @param info           Description of the information needed.
 	 */
 	virtual R::RString GetDebugInfo(const R::RString& name,const R::RString& info);
-	
+
 	/**
 	 * Put debugging information concerning an object with a given name in a
 	 * text file.
 	 * @param file           RTextFile where to write.
-	 * @param name           Name of the object. 
+	 * @param name           Name of the object.
 	 * @param info           Description of the information needed.
 	 */
 	void PutDebugInfo(R::RTextFile& file,const R::RString& name,const R::RString& info);
-	
+
 	/**
 	* Run a "program" for this session.
 	* @param rec             Slot that receive information.
@@ -227,7 +227,7 @@ public:
 	* @returns Pointer to RMath::RRandom;
 	*/
 	R::RRandom* GetRandom(void) const;
-	
+
 	//@} General methods
 
 	//-----------------------------------------------------
@@ -241,25 +241,44 @@ public:
 	* @returns Number of elements.
 	*/
 	size_t GetNbElements(tObjType type) const;
-	
+
 	/**
 	 * Get the highest identifier for the elements of a given type.
 	 * @param type            Type of the elements.
 	 * @returns Highest identifier.
-	 */	
+	 */
 	size_t GetMaxElementId(tObjType type) const;
 
 	/**
 	* Get an untyped pointer to a given element of a given type, or null if the
-	* identifier does not correspond to an element.       
+	* identifier does not correspond to an element.
 	 * Get an untyped pointer to an element of a given type.
 	 * @param type            Type of the element.
 	 * @returns Highest identifier.
-	 */	
+	 */
 	void* GetElement(tObjType type,size_t id) const;
-	
+
+	/**
+	 * Clear the groups containing a given type of elements.
+	 * @param type            Type of the element.
+	 */
+	void ClearGroups(tObjType type);
+
+	/**
+	 * Create a new "blank" group for a given type of elements.
+	 * @param type            Type of the element.
+	 */
+	void* NewGroup(tObjType type);
+
+	/**
+	 * Insert a group of elements of a given type in the system.
+	 * @param ptr            Pointer to the group.
+	 * @param type           Type of the element.
+	 */
+	void InsertGroup(void* ptr,tObjType type);
+
 	//@} General methods
-	
+
 	//-----------------------------------------------------
 	/** @name Knowledge Methods
 	*/
@@ -288,7 +307,7 @@ public:
 	* @return Pointer to a GConceptType
 	*/
 	GConceptType* GetConceptType(const R::RString& name,bool null) const;
-	
+
 	/**
 	* Get the a pointer to a type of concept. If the concept type doesn't
 	* exist, it is created.
@@ -304,17 +323,18 @@ public:
 	* @param name            Name of the type.
 	* @param desc            Short description.
 	* @param refdocs         Number of documents referenced.
-	* @param refsubprofiles  Number of subprofiles referenced.
+	* @param refprofiles     Number of profiles referenced.
 	* @param refgroups       Number of groups referenced.
+	* @param reftopics       Number of topics referenced.
 	*/
-	void InsertConceptType(size_t id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups);
+	void InsertConceptType(size_t id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics);
 
 	/**
 	* Assign an identifier to a new concept type.
 	* @param type            Concept type.
 	*/
 	void AssignId(GConceptType* type);
-	
+
 	/**
 	* Assign an identifier to a new concept.
 	* @param concept         Concept.
@@ -635,7 +655,7 @@ public:
 
 
 	//-----------------------------------------------------
-	/** @name Groups Methods
+	/** @name Communities Methods
 	*/
 	// @{
 
@@ -650,11 +670,11 @@ public:
 	size_t GetNbCommunities(void) const;
 
 	/**
-	* Get a group corresponding to a given identificator.
-	* @param id              Identificator of the community.
+	* Get a community corresponding to a given identifier.
+	* @param id              Identifier of the community.
 	* @param load            If set to true, the community is eventually loaded
 	*                        into memory.
-	* @param null            If set to true, if the group does not exist,
+	* @param null            If set to true, if the community does not exist,
 	*                        return 0, else an exception is generated.
 	* @return Pointer to GCommunity.
 	*/
@@ -679,19 +699,19 @@ public:
 	void DeleteCommunity(GCommunity* com);
 
 	/**
-	* Clear the groups.
+	* Clear the communities.
 	*/
 	void ClearCommunities(void);
 
 	/**
-	* Groups the subprofile into virtual communities. At the end, all the
-	* enabled post-grouping methods are called.
+	* Groups the profiles into communities. At the end, all the enabled
+	* post-community computing methods are called.
 	* @param rec             Receiver of the signals.
 	*/
 	void GroupProfiles(GSlot* rec=0);
 
 	/**
-	* Run all the enabled post-community computinng methods.
+	* Run all the enabled post-community computing methods.
 	* @param rec             Receiver of the signals.
 	*/
 	void DoPostCommunity(GSlot* rec=0);
@@ -719,11 +739,88 @@ public:
 
 	/**
 	* A profile was updated and the corresponding community must be updated.
-	* @param profid          Identificator of the profile.
+	* @param profid          Identifier of the profile.
 	*/
 	void UpdateCommunity(size_t profid);
 
-	// @} Groups
+	// @} Communities
+
+
+	//-----------------------------------------------------
+	/** @name Topics Methods
+	*/
+	// @{
+
+	/**
+	* Get a cursor on the topics.
+	*/
+	R::RCursor<GTopic> GetTopics(void);
+
+	/**
+	* Get the number of topics.
+	*/
+	size_t GetNbTopics(void) const;
+
+	/**
+	* Get a topic corresponding to a given identifier.
+	* @param id              Identifier of the topic.
+	* @param load            If set to true, the topic is eventually loaded
+	*                        into memory.
+	* @param null            If set to true, if the topic does not exist,
+	*                        return 0, else an exception is generated.
+	* @return Pointer to GTopic.
+	*/
+	GTopic* GetTopic(size_t id,bool load=true,bool null=false) const;
+
+	/**
+	* Assign an identifier to a new topic.
+	* @param top             Topic.
+	*/
+	void AssignId(GTopic* top);
+
+	/**
+	* Insert a topic.
+	* @param top             Topic.
+	*/
+	void InsertTopic(GTopic* topic);
+
+	/**
+	* Delete a topic.
+	* @param top             Topic.
+	*/
+	void DeleteTopic(GTopic* top);
+
+	/**
+	* Clear the topics.
+	*/
+	void ClearTopics(void);
+
+	/**
+	* Groups the documents into topics. At the end, all the enabled post-topic
+	* computing methods are called.
+	* @param rec             Receiver of the signals.
+	*/
+	void GroupDocs(GSlot* rec=0);
+
+	/**
+	* Run all the enabled post-topic computing methods.
+	* @param rec             Receiver of the signals.
+	*/
+	void DoPostTopic(GSlot* rec=0);
+
+	/**
+	* A document was updated and the corresponding topic must be updated.
+	* @param doc             Document.
+	*/
+	void UpdateTopic(GDoc* doc);
+
+	/**
+	* A document was updated and the corresponding topic must be updated.
+	* @param docid           Identifier of the document.
+	*/
+	void UpdateTopic(size_t docid);
+
+	// @} Topics
 
 
 	//-----------------------------------------------------
@@ -781,7 +878,7 @@ public:
 	* Destructor.
 	*/
 	virtual ~GSession(void);
-	
+
 	friend class GDebugObject;
 };
 

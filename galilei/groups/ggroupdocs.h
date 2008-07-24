@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GCommunityCalc.h
+	GGroupDocs.h
 
-	Generic Community Computing Method - Header.
+	Generic Documents Grouping Method - Header.
 
-	Copyright 2002-2008 by the Université Libre de Bruxelles.
+	Copyright 2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,12 +31,13 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GCommunityCalcH
-#define GCommunityCalcH
+#ifndef GGroupDocsH
+#define GGroupDocsH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <gplugin.h>
 #include <gpluginmanager.h>
 
@@ -48,47 +49,64 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_COMMUNITYCALC_VERSION "2.0"
+#define API_GROUPDOCS_VERSION "2"
 
 
 //------------------------------------------------------------------------------
 /**
-* The GCommunityCalc class provides a representation for a generic method to
-* compute the description of a specific community.
+* The GGroupDocs provides a representation for a generic method to group some
+* documents.
 * @author Pascal Francq
-* @short Generic Community Computing Method.
+* @short Generic Documents Grouping Method.
 */
-class GCommunityCalc : public GPlugin<GFactoryCommunityCalc>
+class GGroupDocs : public GPlugin<GFactoryGroupDocs>
 {
+protected:
+
+	/**
+	* Documents that must be grouped.
+	*/
+	R::RContainer<GDoc,false,false> Docs;
+
 public:
 
 	/**
-	* Constructor.
+	* Constructor of the documents grouping method.
 	* @param fac             Factory of the plug-in.
 	*/
-	GCommunityCalc(GFactoryCommunityCalc* fac);
+	GGroupDocs(GFactoryGroupDocs* fac);
+
+protected:
 
 	/**
-	* Compute a community.
-	* @param com            Community to compute.
+	* Make the grouping for the defined documents.
 	*/
-	virtual void Compute(GCommunity* com)=0;
+	virtual void Run(void)=0;
+
+public:
 
 	/**
-	* Destruct.
+	* Group the Documents.
+	* @param rec            Receiver of the signals.
+	* @param save           Save modified elements.
 	*/
-	virtual ~GCommunityCalc(void);
+	void Grouping(GSlot* rec,bool save);
+
+	/**
+	* Destruct the documents grouping method.
+	*/
+	virtual ~GGroupDocs(void);
 };
 
 
 //------------------------------------------------------------------------------
 /*
-* The GFactoryCommunityCalc represent a factory for a given community computing
+* The GFactoryGroupDocs represent a factory for a given documents grouping
 * method.
 * @author Pascal Francq
-* @short Generic Community Computing Factory.
+* @short Generic Documents Grouping Factory.
 */
-class GFactoryCommunityCalc : public GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>
+class GFactoryGroupDocs : public GFactoryPlugin<GFactoryGroupDocs,GGroupDocs,GGroupDocsManager>
 {
 public:
 
@@ -98,37 +116,37 @@ public:
 	* @param n               Name of the Factory/Plug-in.
 	* @param f               Library of the Factory/Plug-in.
 	*/
-	GFactoryCommunityCalc(GCommunityCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>(mng,n,f) {}
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GCommunityCalcManager class provides a representation for a manager
-* responsible to manage all the community computing methods.
-* @author Pascal Francq
-* @short Community Computing Methods Manager.
-*/
-class GCommunityCalcManager : public GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>
-{
-public:
-
-	/**
-	* Construct the community computing method manager.
-	*/
-	GCommunityCalcManager(void);
-
-	/**
-	* Destruct the community computing methods manager.
-	*/
-	virtual ~GCommunityCalcManager(void);
+	GFactoryGroupDocs(GGroupDocsManager* mng,const char* n,const char* f)
+		 : GFactoryPlugin<GFactoryGroupDocs,GGroupDocs,GGroupDocsManager>(mng,n,f) {}
 };
 
 
 //------------------------------------------------------------------------------
-#define CREATE_COMMUNITYCALC_FACTORY(name,plugin)\
-	CREATE_FACTORY(GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc,plugin,"CommunityCalc",API_COMMUNITYCALC_VERSION,name)
+/**
+* The GGroupDocsManager class provides a representation for a manager
+* responsible to manage all the documents grouping methods.
+* @author Pascal Francq
+* @short Documents Grouping Methods Manager.
+*/
+class GGroupDocsManager : public GPluginManager<GGroupDocsManager,GFactoryGroupDocs,GGroupDocs>
+{
+public:
+
+	/**
+	* Construct the documents grouping methods manager.
+	*/
+	GGroupDocsManager(void);
+
+	/**
+	* Destruct the documents grouping methods manager.
+	*/
+	virtual ~GGroupDocsManager(void);
+};
+
+
+//-------------------------------------------------------------------------------
+#define CREATE_GROUPDOCS_FACTORY(name,plugin)\
+	CREATE_FACTORY(GGroupDocsManager,GFactoryGroupDocs,GGroupDocs,plugin,"GroupDocs",API_GROUPDOCS_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

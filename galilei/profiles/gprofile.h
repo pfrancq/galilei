@@ -197,7 +197,7 @@ protected:
 	GUser* User;
 
 	/**
-	* Identificator of the profile.
+	* Identifier of the profile.
 	*/
 	unsigned Id;
 
@@ -223,17 +223,17 @@ protected:
 	R::RDate Updated;
 
 	/**
-	* Date of last subprofile computing.
+	* Date of last profile computing.
 	*/
 	R::RDate Computed;
 
 	/**
-	* Identificator of the corresponding group.
+	* Identifier of the corresponding community.
 	*/
 	size_t GroupId;
 
 	/**
-	* Date of the attachment of the profile into the group.
+	* Date of the attachment of the profile into the community.
 	*/
 	R::RDate Attached;
 
@@ -242,9 +242,9 @@ public:
     /**
 	* Constructor of a profile.
 	* @param usr             User of the profile.
-	* @param id              Identificator of the profile.
+	* @param id              Identifier of the profile.
 	* @param name            Name of the profile.
-	* @param grpid           Group identificator.
+	* @param grpid           Community identifier.
 	* @param a               Date where it was attached.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
@@ -254,7 +254,7 @@ public:
 	GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s=true,size_t nbf=100);
 
 	/**
-	* Compare two profiles by comparing their identificator.
+	* Compare two profiles by comparing their identifier.
 	* @see R::RContainer
 	* @param profile         Profile.
 	* @return int
@@ -270,9 +270,9 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	* Compare an identificator of a profile with another one.
+	* Compare an identifier of a profile with another one.
 	* @see R::RContainer
-	* @param id              Identificator.
+	* @param id              Identifier.
 	* @return int
 	*/
 	int Compare(const size_t id) const;
@@ -283,8 +283,8 @@ public:
 	virtual void LoadInfos(void) const;
 
 	/**
-	* Get the identificator of the profile.
-	* @return Identificator.
+	* Get the identifier of the profile.
+	* @return Identifier.
 	*/
 	size_t GetId(void) const {return(Id);}
 
@@ -326,30 +326,30 @@ public:
 	void SetSocial(bool social);
 
 	/**
-	* Get the date of the last update of the subprofile.
+	* Get the date of the last update of the profile.
 	* @returns R::RDate.
 	*/
 	R::RDate GetUpdated(void) const {return(Updated);}
 
 	/**
-	* Get the date of the last analysis of the subprofile.
+	* Get the date of the last analysis of the profile.
 	* @returns R::RDate.
 	*/
 	R::RDate GetComputed(void) const {return(Computed);}
 
 	/**
-	* Verify if the subprofile must be (re-)computed.
+	* Verify if the profile must be (re-)computed.
 	*/
 	bool MustCompute(void) const;
 
 	/**
-	* Get the group holding the profile.
+	* Get the community holding the profile.
 	*/
 	size_t GetGroupId(void) const {return(GroupId);}
 
 	/**
-	* Set the group holding the profile.
-	* @param groupid         Identificator of the group.
+	* Set the community holding the profile.
+	* @param groupid         Identifier of the group.
 	*/
 	void SetGroup(size_t groupid);
 

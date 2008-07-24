@@ -4,7 +4,7 @@
 
 	GCommunity.cpp
 
-	Group - Implementation.
+	Community - Implementation.
 
 	Copyright 2001-2008 by the Université Libre de Bruxelles.
 

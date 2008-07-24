@@ -71,8 +71,11 @@ using namespace R;
 #include <gpreprofile.h>
 #include <gpostprofile.h>
 #include <gcommunity.h>
+#include <gtopic.h>
 #include <ggroupprofiles.h>
+#include <ggroupdocs.h>
 #include <gcommunitycalc.h>
+#include <gtopiccalc.h>
 #include <gsubjects.h>
 #include <gsubject.h>
 #include <gfilter.h>
@@ -80,6 +83,7 @@ using namespace R;
 #include <gweightinfo.h>
 #include <gcommunitieshistory.h>
 #include <gpostcommunity.h>
+#include <gposttopic.h>
 #include <ggalileiapp.h>
 #include <gdebugobject.h>
 using namespace GALILEI;
@@ -165,6 +169,7 @@ public:
 	RContainer<GUser,true,true> Users;                                // Users handled by the system.
 	RContainer<GProfile,true,true> Profiles;                          // Profiles handled by the system.
 	RContainer<GCommunity,true,true> Groups;	                      // Groups handled by the system.
+	RContainer<GTopic,true,true> Topics;	                          // Topics handled by the system.
 	RContainer<GConceptType,true,true> ConceptTypes;                  // Types of Concepts
 	RContainer<GRelationType,true,true> RelationTypes;                // Types of Relations
 	RContainer<GDebugObject,false,true> DebugObjs;                    // Objects given debugging information.
@@ -174,9 +179,9 @@ public:
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager
 
 	Intern(GStorage* str,size_t mdocs,size_t maxsub,size_t maxgroups,size_t d,size_t u,size_t p)
-		: Subjects(0), CommunitiesHistoryMng(0), Random(0), Storage(str),  SaveResults(true),
+		: Subjects(0), CommunitiesHistoryMng(0), Random(0), Storage(str), SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
-		  Users(u,u/2), Profiles(p,p/2), Groups(100),
+		  Users(u,u/2), Profiles(p,p/2), Groups(100), Topics(100),
 		  ConceptTypes(10,5), RelationTypes(10,5), DebugObjs(100,100),
 		  MaxDocs(mdocs), MaxProfiles(maxsub), MaxGroups(maxgroups), FilterManager(0)
 	{
@@ -249,18 +254,33 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxsubprof
 //------------------------------------------------------------------------------
 void GSession::ForceReCompute(tObjType type)
 {
+	bool Break(true);
+
 	switch(type)
 	{
 		case otDoc:
 		{
-			// Clear the information of the documents -> Also subprofiles and groups
+			// Clear the information of the documents -> Also profiles and groups and topics
 			RCursor<GDoc> Docs(Data->Docs);
 			for(Docs.Start();!Docs.End();Docs.Next())
 				Docs()->ClearInfos();
+			Break=false;
+		}
+		case otTopic:
+		{
+			// Delete the topics
+			RCursor<GConceptType> Types(Data->ConceptTypes);
+			for(Types.Start();!Types.End();Types.Next())
+				Types()->Clear(otTopic);
+			Data->Topics.Clear();
+			if(Data->SaveResults)
+				Data->Storage->Clear(otTopic);
+			if(Break)
+				break;
 		}
 		case otProfile:
 		{
-			// Delete the subprofiles -> Also groups
+			// Delete the profiles -> Also groups
 			RCursor<GConceptType> Types(Data->ConceptTypes);
 			for(Types.Start();!Types.End();Types.Next())
 				Types()->Clear(otProfile);
@@ -512,8 +532,8 @@ size_t GSession::GetNbElements(tObjType type) const
 			return(Data->Profiles.GetNb());
 		case otCommunity:
 			return(Data->Groups.GetNb());
-/*		case otTopic:
-			return(Data->Topics.GetNb());*/
+		case otTopic:
+			return(Data->Topics.GetNb());
 		default:
 			throw GException("GSession::GetNbElements : Type "+GetObjType(type)+" is not handled");
 	}
@@ -537,10 +557,10 @@ size_t GSession::GetMaxElementId(tObjType type) const
 			if(!Data->Groups.GetNb())
 				return(0);
 			return(Data->Groups[Data->Groups.GetMaxPos()]->GetId());
-/*		case otTopic:
+		case otTopic:
 			if(!Data->Topics.GetNb())
 				return(0);
-			return(Data->Topics[Data->Topics.GetMaxPos()]->GetId());*/
+			return(Data->Topics[Data->Topics.GetMaxPos()]->GetId());
 		default:
 			throw GException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
 	}
@@ -557,10 +577,61 @@ void* GSession::GetElement(tObjType type,size_t id) const
 			return(GetProfile(id,false));
 		case otCommunity:
 			return(GetCommunity(id,false));
-/*		case otTopic:
-			return(GetTopic(id,false));*/
+		case otTopic:
+			return(GetTopic(id,false));
 		default:
 			throw GException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ClearGroups(tObjType type)
+{
+	switch(type)
+	{
+		case otDoc:
+			ClearTopics();
+			break;
+		case otProfile:
+			ClearCommunities();
+			break;
+		default:
+			throw GException("GSession::ClearGroups : Type "+GetObjType(type)+" is not handled");
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void* GSession::NewGroup(tObjType type)
+{
+	switch(type)
+	{
+		case otDoc:
+			return(new GTopic(cNoRef,RDate(""),RDate("")));
+			break;
+		case otProfile:
+			return(new GCommunity(cNoRef,RDate(""),RDate("")));
+			break;
+		default:
+			throw GException("GSession::NewGroup : Type "+GetObjType(type)+" is not handled");
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::InsertGroup(void* ptr,tObjType type)
+{
+	switch(type)
+	{
+		case otDoc:
+			InsertTopic(static_cast<GTopic*>(ptr));
+			break;
+		case otProfile:
+			InsertCommunity(static_cast<GCommunity*>(ptr));
+			break;
+		default:
+			throw GException("GSession::InsertGroup : Type "+GetObjType(type)+" is not handled");
 	}
 }
 
@@ -637,7 +708,7 @@ GConceptType* GSession::GetInsertConceptType(const RString& name,const RString& 
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertConceptType(size_t id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refsubprofiles,size_t refgroups)
+void GSession::InsertConceptType(size_t id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics)
 {
 	RString code(name.Mid(0,2));
 	GLang* Lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(code,false);
@@ -646,7 +717,7 @@ void GSession::InsertConceptType(size_t id,const R::RString& name,const R::RStri
 	size_t s=26;
 	size_t s2=5000;
 	GConceptType* type=new GConceptType(id,this,name,desc,Lang,s,s2);
-	type->SetReferences(refdocs,refsubprofiles,refgroups);
+	type->SetReferences(refdocs,refprofiles,refgroups,reftopics);
 	Data->ConceptTypes.InsertPtrAt(type,id);
 }
 
@@ -1208,7 +1279,7 @@ void GSession::AssignId(GProfile* p)
 		return;
 	}
 
-	// The first profile has the identificator 1
+	// The first profile has the identifier 1
 	if(Data->Profiles.GetNb())
 		p->SetId(Data->Profiles[Data->Profiles.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first profile has an identificator of 1
 	else
@@ -1283,7 +1354,7 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 	if(rec)
 		rec->NextProfile(profile);
 
-	// If necessay, calc Links on the profile description
+	// If necessary, calc Links on the profile description
 	if(LinkCalc)
 		LinkCalc->Compute(profile);
 
@@ -1401,7 +1472,7 @@ GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 	{
 		if(null)
 			return(0);
-		throw GException("Unknown group "+RString::Number(id));
+		throw GException("Unknown community "+RString::Number(id));
 	}
 	GCommunity* grp=Data->Groups.GetPtr(id);
 	if(grp)
@@ -1414,7 +1485,7 @@ GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown group "+RString::Number(id));
+			throw GException("Unknown community "+RString::Number(id));
 	}
 	grp=Data->Storage->LoadCommunity(id);
 	if(!grp)
@@ -1422,7 +1493,7 @@ GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown group "+RString::Number(id));
+			throw GException("Unknown community "+RString::Number(id));
 	}
 	const_cast<GSession*>(this)->InsertCommunity(grp);
 	return(grp);
@@ -1441,7 +1512,7 @@ void GSession::AssignId(GCommunity* com)
 
 	// The first group has the identificator 1
 	if(Data->Groups.GetNb())
-		com->SetId(Data->Groups[Data->Groups.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first group has an identificator of 1
+		com->SetId(Data->Groups[Data->Groups.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first community has an identifier of 1
 	else
 		com->SetId(1);
 }
@@ -1594,6 +1665,158 @@ void GSession::UpdateCommunity(size_t profid)
 
 //------------------------------------------------------------------------------
 //
+// GSession::Topics
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+RCursor<GTopic> GSession::GetTopics(void)
+{
+	return(RCursor<GTopic>(Data->Topics));
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSession::GetNbTopics(void) const
+{
+	return(Data->Topics.GetNb());
+}
+
+
+
+//------------------------------------------------------------------------------
+GTopic* GSession::GetTopic(size_t id,bool load,bool null) const
+{
+	if(id==cNoRef)
+	{
+		if(null)
+			return(0);
+		throw GException("Unknown topic "+RString::Number(id));
+	}
+	GTopic* top=Data->Topics.GetPtr(id);
+	if(top)
+		return(top);
+
+	if(!load)
+		return(0);
+	if(Data->Storage->IsAllInMemory())
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown topic "+RString::Number(id));
+	}
+	top=Data->Storage->LoadTopic(id);
+	if(!top)
+	{
+		if(null)
+			return(0);
+		else
+			throw GException("Unknown topic "+RString::Number(id));
+	}
+	const_cast<GSession*>(this)->InsertTopic(top);
+	return(top);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AssignId(GTopic* top)
+{
+	// If all groups are not in memory -> use the database
+	if(!Data->Storage->IsAllInMemory())
+	{
+		Data->Storage->AssignId(top);
+		return;
+	}
+
+	// The first group has the identifier 1
+	if(Data->Topics.GetNb())
+		top->SetId(Data->Topics[Data->Topics.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first topic has an identifier of 1
+	else
+		top->SetId(1);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::InsertTopic(GTopic* top)
+{
+	Data->Topics.InsertPtr(top);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::DeleteTopic(GTopic* top)
+{
+	Data->Topics.DeletePtr(top);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ClearTopics(void)
+{
+	Data->Topics.Clear();
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::GroupDocs(GSlot* rec)
+{
+	GGroupDocs* Grouping=GALILEIApp->GetManager<GGroupDocsManager>("GroupDocs")->GetCurrentMethod();
+
+	// Verify that there is a method to cluster the profile
+	if(!Grouping)
+		throw GException("No documents grouping method chosen.");
+
+    // Group the profiles
+	Grouping->Grouping(rec,Data->SaveResults);
+	DoPostTopic(rec);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::DoPostTopic(GSlot* rec)
+{
+	// Run all post-topic methods that are enabled
+	R::RCursor<GPostTopic> Post=GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->GetPlugIns();
+	for(Post.Start();!Post.End();Post.Next())
+	{
+		if(rec)
+			rec->Interact();
+		if(Intern::ExternBreak) return;
+		if(rec)
+			rec->WriteStr("Post-topic method : "+Post()->GetFactory()->GetName());
+		Post()->Run();
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::UpdateTopic(GDoc* doc)
+{
+	if(doc&&(doc->GetGroupId()!=cNoRef))
+	{
+		GTopic* top=GetTopic(doc->GetGroupId(),false);
+		if(top)
+			top->HasUpdate(doc);
+	}
+
+	// Use database
+	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
+		Data->Storage->UpdateTopics(doc->GetId());
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::UpdateTopic(size_t docid)
+{
+	GDoc* doc=GetDoc(docid,false,false);
+	UpdateTopic(doc);
+}
+
+
+
+//------------------------------------------------------------------------------
+//
 // GSession::Static
 //
 //------------------------------------------------------------------------------
@@ -1629,7 +1852,7 @@ void GSession::ResetBreak(void)
 
 //------------------------------------------------------------------------------
 //
-// GSession::Destructors
+// GSession::Destruct
 //
 //------------------------------------------------------------------------------
 

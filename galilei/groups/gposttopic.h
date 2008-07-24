@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GCommunityCalc.h
+	GPostTopic.h
 
-	Generic Community Computing Method - Header.
+	Generic Post-Topic Computing Method - Header.
 
-	Copyright 2002-2008 by the Université Libre de Bruxelles.
+	Copyright 2008 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Francq Pascal (pfrancq@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,8 +31,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GCommunityCalcH
-#define GCommunityCalcH
+#ifndef GPostTopicH
+#define GPostTopicH
 
 
 //------------------------------------------------------------------------------
@@ -48,17 +48,17 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_COMMUNITYCALC_VERSION "2.0"
+#define API_POSTTOPIC_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
 /**
-* The GCommunityCalc class provides a representation for a generic method to
-* compute the description of a specific community.
+* The GPostTopic class provides a representation for a generic method to
+* compute after the clustering of documents.
 * @author Pascal Francq
-* @short Generic Community Computing Method.
+* @short Generic Post-Topic Computing Method.
 */
-class GCommunityCalc : public GPlugin<GFactoryCommunityCalc>
+class GPostTopic : public GPlugin<GFactoryPostTopic>
 {
 public:
 
@@ -66,29 +66,27 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GCommunityCalc(GFactoryCommunityCalc* fac);
+	GPostTopic(GFactoryPostTopic* fac);
 
 	/**
-	* Compute a community.
-	* @param com            Community to compute.
+	* Run the post-topic method.
 	*/
-	virtual void Compute(GCommunity* com)=0;
+	virtual void Run(void)=0;
 
 	/**
 	* Destruct.
 	*/
-	virtual ~GCommunityCalc(void);
+	virtual ~GPostTopic(void);
 };
 
 
 //------------------------------------------------------------------------------
 /*
-* The GFactoryCommunityCalc represent a factory for a given community computing
-* method.
+* The GFactoryPostTopic represent a factory for a given post-topic method.
 * @author Pascal Francq
-* @short Generic Community Computing Factory.
+* @short Generic Post-Topic Computing Method Factory.
 */
-class GFactoryCommunityCalc : public GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>
+class GFactoryPostTopic : public GFactoryPlugin<GFactoryPostTopic,GPostTopic,GPostTopicManager>
 {
 public:
 
@@ -98,37 +96,37 @@ public:
 	* @param n               Name of the Factory/Plug-in.
 	* @param f               Library of the Factory/Plug-in.
 	*/
-	GFactoryCommunityCalc(GCommunityCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>(mng,n,f) {}
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GCommunityCalcManager class provides a representation for a manager
-* responsible to manage all the community computing methods.
-* @author Pascal Francq
-* @short Community Computing Methods Manager.
-*/
-class GCommunityCalcManager : public GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>
-{
-public:
-
-	/**
-	* Construct the community computing method manager.
-	*/
-	GCommunityCalcManager(void);
-
-	/**
-	* Destruct the community computing methods manager.
-	*/
-	virtual ~GCommunityCalcManager(void);
+	GFactoryPostTopic(GPostTopicManager* mng,const char* n,const char* f)
+	 : GFactoryPlugin<GFactoryPostTopic,GPostTopic,GPostTopicManager>(mng,n,f) {}
 };
 
 
 //------------------------------------------------------------------------------
-#define CREATE_COMMUNITYCALC_FACTORY(name,plugin)\
-	CREATE_FACTORY(GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc,plugin,"CommunityCalc",API_COMMUNITYCALC_VERSION,name)
+/**
+* The GPostTopicManager class provides a representation for a manager
+* responsible to manage all the post-topic computing methods.
+* @author Pascal Francq
+* @short Post-Topic Computing Methods Manager.
+*/
+class GPostTopicManager : public GPluginManager<GPostTopicManager,GFactoryPostTopic,GPostTopic>
+{
+public:
+
+	/**
+	* Construct the post-topic computing methods manager.
+	*/
+	GPostTopicManager(void);
+
+	/**
+	* Destruct the post-topic computing methods manager.
+	*/
+	virtual ~GPostTopicManager(void);
+};
+
+
+//------------------------------------------------------------------------------
+#define CREATE_POSTTOPIC_FACTORY(name,plugin)\
+	CREATE_FACTORY(GALILEI::GPostTopicManager,GALILEI::GFactoryPostTopic,GALILEI::GPostTopic,plugin,"PostTopic",API_POSTTOPIC_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -145,9 +145,14 @@ class GMeasure2Elements : public GMeasure, public GSignalHandler
 	bool FileMustExtend;
 
 	/**
-	 * Blank records were added.
+	 * The status of the memory is dirty.
 	 */
-	bool BlankRecs;
+	bool MemDirty;
+
+	/**
+	 * The status of the file is dirty.
+	 */
+	bool FileDirty;
 
 	/**
 	 * Mean of the measures.
@@ -223,21 +228,13 @@ class GMeasure2Elements : public GMeasure, public GSignalHandler
 public:
 
 	/**
-	* Constructor of the measures between two elements of the same type. The
-	* measures may be symmetric or not.
-	* @param fac             Factory of the plug-in.
-	* @param sym             Symmetric measure?
-	* @param type            Type of the elements in the lines.
-	*/
-	GMeasure2Elements(GFactoryMeasure* fac,bool sym,tObjType type);
-
-	/**
 	 * Constructor of the measures between two elements of different types.
 	 * @param fac             Factory of the plug-in.
 	 * @param lines           Type of the elements in the lines.
 	 * @param cols            Type of the elements in the columns.
+	 * @param sym             Symmetric measure?
 	 */
-	GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjType cols);
+	GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym);
 
 	/**
 	 * Set the type of the elements.
@@ -246,6 +243,16 @@ public:
 	 * @param cols            Type of the elements in the columns.
 	 */
 	void SetElementsType(bool sym,tObjType lines,tObjType cols);
+
+	/**
+	 * Get the type of the objects of the lines.
+	 */
+	inline tObjType GetLinesType(void) const {return(Lines);}
+
+	/**
+	 * Get the type of the objects of the columns.
+	 */
+	inline tObjType GetColsType(void) const {return(Cols);}
 
 	/**
 	 * Get the value corresponding to a value that must be considered as null.
@@ -326,7 +333,7 @@ private:
 	 * @param id1
 	 * @param id2
 	 */
-	inline void Check(size_t& id1,size_t id2) const
+	inline void Check(size_t& id1,size_t& id2) const
 	{
 		if((Symmetric)&&(id1<id2))
 		{
@@ -411,6 +418,11 @@ private:
 	 * All the measures must be updated in files.
 	 */
 	void UpdateFile(void);
+
+	/**
+	 * Load a file into memory.
+	 */
+	void LoadFile(void);
 
 	/**
 	 * Add a new value.

@@ -74,6 +74,9 @@ using namespace GALILEI;
 #include <gcommunitycalc.h>
 #include <ggroupprofiles.h>
 #include <gpostcommunity.h>
+#include <gtopiccalc.h>
+#include <ggroupdocs.h>
+#include <gposttopic.h>
 #include <gprofilecalc.h>
 #include <gpostprofile.h>
 #include <gpreprofile.h>
@@ -117,6 +120,9 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GMeasureManager());
 	InsertPtr(new GLangManager());
 	InsertPtr(new GToolManager());
+	InsertPtr(new GTopicCalcManager());
+	InsertPtr(new GGroupDocsManager());
+	InsertPtr(new GPostTopicManager());
 	GALILEIApp=this;
 }
 

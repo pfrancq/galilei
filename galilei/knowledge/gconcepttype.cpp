@@ -57,7 +57,7 @@ using namespace R;
 GConceptType::GConceptType(size_t id,GSession* session,const RString& name,const RString& desc,GLang* lang,size_t s,size_t s2)
 	: GDebugObject(name), RDblHashContainer<GConcept,true>(27,27,s2+(s2/4),s2/4), Id(id), Session(session),
 	  Description(desc), Lang(lang), Direct(0), MaxId(s+s/4), UsedId(0),
-	  Loaded(false)
+	  Loaded(false), NbRefDocs(0), NbRefProfiles(0), NbRefGroups(0), NbRefTopics(0)
 {
 	if((Id==cNoRef)&&(GSession::Get()))
 		GSession::Get()->AssignId(this);
@@ -67,11 +67,12 @@ GConceptType::GConceptType(size_t id,GSession* session,const RString& name,const
 
 
 //------------------------------------------------------------------------------
-void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refgroups)
+void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics)
 {
 	NbRefDocs=refdocs;
 	NbRefProfiles=refprofiles;
 	NbRefGroups=refgroups;
+	NbRefTopics=reftopics;
 }
 
 
@@ -128,6 +129,7 @@ RString GConceptType::GetDebugInfo(const RString& info)
 	bool Idf=(info.FindStr("idf")!=-1);
 	bool Ipf=(info.FindStr("ipf")!=-1);
 	bool Igf=(info.FindStr("igf")!=-1);
+	bool Itf=(info.FindStr("itf")!=-1);
 	if((!Idf)&&(!Ipf)&&(!Igf))
 		return(RString::Null);
 
@@ -155,6 +157,8 @@ RString GConceptType::GetDebugInfo(const RString& info)
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otProfile));
 		if(Igf)
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otCommunity));
+		if(Itf)
+			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otTopic));
 		str+="\n";
 	}
 	return(str);
@@ -168,7 +172,7 @@ void GConceptType::Clear(void)
 	memset(Direct,0,MaxId*sizeof(GConcept*));
 	UsedId=0;
 	Loaded=false;
-	SetReferences(0,0,0);
+	SetReferences(0,0,0,0);
 }
 
 
@@ -217,14 +221,14 @@ GConcept* GConceptType::InsertConcept(const GConcept* concept)
 		InDirect=true;
 	}
 
-	// Look if data has an identificator. If not, assign one.
+	// Look if data has an identifier. If not, assign one.
 	if(ptr->GetId()==cNoRef)
 	{
 		Session->AssignId(ptr);
 		InDirect=true;
 	}
 
-	// Finally, if an identificator has been assigned and/or a new one -> Direct
+	// Finally, if an identifier has been assigned and/or a new one -> Direct
 	if(InDirect)
 		PutDirect(ptr);
 
@@ -343,8 +347,13 @@ void GConceptType::IncRef(tObjType ObjType)
 			NbRefGroups++;
 			nb=NbRefGroups;
 			break;
+		case otTopic:
+			NbRefTopics++;
+			nb=NbRefTopics;
+			nb++;
+			break;
 		default:
-			throw GException ("Unkown type to increase");
+			throw GException ("Unknown type to increase");
 			break;
 	}
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
@@ -377,8 +386,14 @@ void GConceptType::DecRef(tObjType ObjType)
 			NbRefGroups--;
 			nb=NbRefGroups;
 			break;
+		case otTopic:
+			if(!NbRefTopics)
+				throw GException("Cannot decrease null number of references for topics");
+			NbRefTopics--;
+			nb=NbRefTopics;
+			break;
 		default:
-			throw GException("Unkown type to decrease");
+			throw GException("Unknown type to decrease");
 			break;
 	}
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
@@ -400,14 +415,8 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 		case otCommunity:
 			return(NbRefGroups);
 			break;
-		case otDocProfile:
-			return(NbRefDocs+NbRefProfiles);
-			break;
-		case otDocCommunity:
-			return(NbRefDocs+NbRefGroups);
-			break;
-		case otProfileCommunity:
-			return(NbRefProfiles+NbRefGroups);
+		case otTopic:
+			return(NbRefTopics);
 			break;
 		default:
 			return(NbRefDocs+NbRefProfiles+NbRefGroups);
@@ -443,22 +452,14 @@ void GConceptType::Clear(tObjType ObjType)
 		case otCommunity:
 			NbRefGroups=0;
 			break;
-		case otDocProfile:
-			NbRefDocs=0;
-			NbRefProfiles=0;
-			break;
-		case otDocCommunity:
-			NbRefDocs=0;
-			NbRefGroups=0;
-			break;
-		case otProfileCommunity:
-			NbRefProfiles=0;
-			NbRefGroups=0;
+		case otTopic:
+			NbRefTopics=0;
 			break;
 		default:
 			NbRefDocs=0;
 			NbRefProfiles=0;
 			NbRefGroups=0;
+			NbRefTopics=0;
 			break;
 	}
 

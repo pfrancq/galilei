@@ -154,9 +154,9 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	void GALILEI::GGroup<cObj,cGroup,type>::DeleteObjs(void)
 {
 //	State=osUpdated;
-	R::RCursor<cObj> Prof(*this);
-	for(Prof.Start();!Prof.End();Prof.Next())
-		Prof()->SetGroup(0);
+	R::RCursor<cObj> Objs(*this);
+	for(Objs.Start();!Objs.End();Objs.Next())
+		Objs()->SetGroup(0);
 }
 
 

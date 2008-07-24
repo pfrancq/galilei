@@ -56,7 +56,7 @@ namespace GALILEI{
 * The GDict provides a representation for a given type of concepts. Each
 * type can be universal (independent of a given language such as names) or
 * language-dependent (such as words or stems).
-* 
+*
 * It also manage a dictionary of concepts, each concept having its own
 * identificator and name.
 * @param author Pascal Francq
@@ -119,7 +119,12 @@ class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcep
 	* Number of references in groups.
 	*/
 	size_t NbRefGroups;
-	
+
+	/**
+	 * Number of references in topics.
+	 */
+	size_t NbRefTopics;
+
 public:
 
 	/**
@@ -128,7 +133,7 @@ public:
 	* @param session         Session.
 	* @param name            Name of the type.
 	* @param desc            Short description.
-	* @param lang            Language eventuelly associated to the concept type.
+	* @param lang            Language eventually associated to the concept type.
 	* @param s               Initial number of concepts.
 	* @param s2              Size of the second hash table.
 	*/
@@ -138,45 +143,46 @@ public:
 	* Set the references of a given language. This method is called when
 	* connecting to and disconnecting from a session.
 	* @param refdocs         Number of documents referenced.
-	* @param refprofiles     Number of subprofiles referenced.
+	* @param refprofiles     Number of profiles referenced.
 	* @param refgroups       Number of groups referenced.
+	* @param reftopics       Number of topics referenced.
 	*/
-	void SetReferences(size_t refdocs,size_t refprofiles,size_t refgroups);
-	
+	void SetReferences(size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics);
+
 	/**
 	* Compare two concepts types.
 	* @param type            Concept type used.
 	* @see R::RContainer.
 	*/
 	int Compare(const GConceptType& type) const;
-	
+
 	/**
 	* Compare two concepts types.
 	* @param type            Concept type used.
 	* @see R::RContainer.
 	*/
 	int Compare(const GConceptType* type) const;
-	
+
 	/**
 	* Compare a concept with an identifier.
 	* @param id              Identifier used.
 	* @see R::RContainer.
 	*/
 	int Compare(size_t id) const;
-	
+
 	/**
 	* Compare an object with a name.
 	* @param name            Name used.
 	* @see R::RContainer.
 	*/
 	int Compare(const R::RString& name) const;
-	
+
 	/**
-	* Set the Identificator of the concept type.
-	* @param id              Identificator.
+	* Set the Identifier of the concept type.
+	* @param id              Identifier.
 	*/
 	void SetId(size_t id);
-	
+
 	/**
 	* Get the identifier.
 	*/
@@ -186,40 +192,40 @@ public:
 	* Get the description.
 	*/
 	R::RString GetDescription(void) const {return(Description);}
-	
+
 	/**
 	 * Is the concept type universal.
 	 */
 	bool IsUniversal(void) const {return(Lang==0);}
-	
+
 	/**
 	 * Get the language associated with this concept type. If the concept type
 	 * is universal, returns 0.
 	 */
 	GLang* GetLang(void) const {return(Lang);}
-	
+
 	/**
-	 * Is the dictionnary of concepts loaded.
+	 * Is the dictionary of concepts loaded.
 	 */
 	bool IsLoaded(void) const {return(Loaded);}
-	
+
 	/**
 	 * Load the concepts if necessary.
 	 */
 	void Load(void) const;
-	
+
 	/**
 	 * Build some debugging information as a string. A string is given as
 	 * parameter to allow the building of several outputs.
 	 * @param info           Description of the information needed.
 	 */
 	virtual R::RString GetDebugInfo(const R::RString& info);
-	
+
 	/**
 	* Clear the dictionary.
 	*/
 	void Clear(void);
-	
+
 private:
 
 	/**
@@ -245,14 +251,14 @@ public:
 	void DeleteConcept(GConcept* concept);
 
 	/**
-	* Get the concept with a specific identificator.
-	* @param id             Identificator.
+	* Get the concept with a specific identifier.
+	* @param id             Identifier.
 	* @return Pointer to a GConcept.
 	*/
 	GConcept* GetConcept(size_t id) const;
 
 	/**
-	* Get the highest identificator of the concept stored by the dictionary.
+	* Get the highest identifier of the concept stored by the dictionary.
 	* @return size_t
 	*/
 	size_t GetConceptMaxId(void) const {return(UsedId);}
@@ -272,7 +278,7 @@ public:
 
 	/**
 	* Get a given concept from the dictionary.
-	* @param name            Name fo the concept to look for.
+	* @param name            Name of the concept to look for.
 	* @return Pointer to the concept.
 	*/
 	GConcept* GetConcept(const R::RString& name) const;
@@ -284,15 +290,15 @@ public:
 
 	/**
 	 * Get the 'Inverse Frequency' factor of a given concept type.
-	* @param id             Identificator of the concept.
+	* @param id             Identifier of the concept.
 	* @param ObjType        Type of the object.
 	*/
 	double GetIF(size_t id,tObjType ObjType);
- 
+
 	/**
 	* Increase the number of objects of a given type that make a reference to a
 	* concept.
-	* @param id             Identificator of the concept.
+	* @param id             Identifier of the concept.
 	* @param ObjType        Type of the object.
 	*/
 	void IncRef(size_t id,tObjType ObjType);
@@ -300,7 +306,7 @@ public:
 	/**
 	* Decrease the number of objects of a given type that make a reference to a
 	* concept.
-	* @param id             Identificator of the concept.
+	* @param id             Identifier of the concept.
 	* @param ObjType        Type of the object.
 	*/
 	void DecRef(size_t id,tObjType ObjType);
@@ -308,7 +314,7 @@ public:
 	/**
 	* Get the number of objects of a given type that make a reference to a
 	* concept.
-	* @param id             Identificator of the concept.
+	* @param id             Identifier of the concept.
 	* @param ObjType        Type of the object.
 	* @return size_t.
 	*/
@@ -342,10 +348,10 @@ public:
 	void Clear(tObjType ObjType);
 
 	/**
-	 * Destructor.
+	 * Destruct.
 	 */
 	virtual ~GConceptType(void);
-	
+
 	friend class GConcept;
 	friend class GWeightInfo;
 };

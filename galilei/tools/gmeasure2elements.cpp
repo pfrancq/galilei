@@ -175,24 +175,14 @@ void GMeasure2Elements::Measures::Extend(size_t olds,size_t news,double dirty)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,bool sym,tObjType type)
+GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym)
 	: GMeasure(fac), GSignalHandler(), MemValues(0), RecValues(0), Idx(0), Blocks(0),
 	  MemNbLines(0), MemNbCols(0), FileNbLines(0), FileNbCols(0), MaxIdLine(0), MaxIdCol(0), NbValues(0), Mean(0.0), Deviation(0.0),
 	  Symmetric(sym),NullLevel(0.000001), DirtyValue(-2.0), MinMeasure(0.5), AutomaticMinMeasure(true),
-	  MinMeasureSense(true), InMemory(true), InFile(false), Lines(type), Cols(type)
-{
-	GSession::AddHandler(this);
-	Name=fac->GetName();
-}
-
-
-//------------------------------------------------------------------------------
-GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjType cols)
-	: GMeasure(fac), GSignalHandler(), MemValues(0), RecValues(0), Idx(0), Blocks(0),
-	  MemNbLines(0), MemNbCols(0), FileNbLines(0), FileNbCols(0), MaxIdLine(0), MaxIdCol(0), NbValues(0), Mean(0.0), Deviation(0.0),
-	  Symmetric(false),NullLevel(0.000001), DirtyValue(-2.0), MinMeasure(0.5), AutomaticMinMeasure(true),
 	  MinMeasureSense(true), InMemory(true), InFile(false), Lines(lines), Cols(cols)
 {
+	if(Symmetric&&(Lines!=Cols))
+		throw GException("Symmetric measures are only allowed if the elements are of the same type");
 	GSession::AddHandler(this);
 	Name=fac->GetName();
 }
@@ -202,7 +192,7 @@ GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjTyp
 void GMeasure2Elements::SetElementsType(bool sym,tObjType lines,tObjType cols)
 {
 	if(sym&&(lines!=cols))
-		throw GException("Symetric measures are only allowed if the elements are of the same type");
+		throw GException("Symmetric measures are only allowed if the elements are of the same type");
 	Symmetric=sym;
 	Lines=lines;
 	Cols=cols;
@@ -262,8 +252,13 @@ void GMeasure2Elements::Connect(GSession* session)
 		}
 		Blocks=new RRecFile<BlockRec,false>(place+"block",sizeof(BlockRec));
 		Blocks->Open(RIO::ReadWrite);
+
+		// If also in memory -> load the whole file
+		if(InMemory)
+			LoadFile();
 	}
 	FileMustExtend=MemMustExtend=false;   // Suppose nothing must be added
+	FileDirty=MemDirty=false;             // Suppose memory is add
 }
 
 
@@ -393,12 +388,13 @@ void GMeasure2Elements::Info(size_t info,...)
 	{
 		if(MemMustExtend)
 			ExtendMem();
-		UpdateMem();
+		if(MemDirty)
+			UpdateMem();
 		(*res)=Mean+deviationrate*sqrt(Deviation);
 	}
 	else if(InFile)
 	{
-		if(BlankRecs)
+		if(FileDirty)
 			UpdateFile();
 		(*res)=Mean+deviationrate*sqrt(Deviation);
 	}
@@ -447,16 +443,11 @@ void GMeasure2Elements::Info(size_t info,...)
 //------------------------------------------------------------------------------
 inline double GMeasure2Elements::ReadValue(size_t id1,size_t id2)
 {
-	MeasureRec M;
-
 	Check(id1,id2);
 
 	// Go to the index file to find the first block
 	IdxRec Element;
-	if(Symmetric)
-		Idx->GoToRec(id1-1);
-	else
-		Idx->GoToRec(id1);
+	Idx->GoToRec(id1);
 	Idx->ReadRec(Element);
 
 	// Go to the first block
@@ -559,6 +550,7 @@ void GMeasure2Elements::ExtendMem(void)
 	MemNbLines=MaxIdLine;
 	MemNbCols=MaxIdCol;
 	MemMustExtend=false;
+	MemDirty=true;
 }
 
 
@@ -567,6 +559,14 @@ void GMeasure2Elements::ExtendFile(void)
 {
 	MeasureRec NullMeasure(DirtyValue);
 	IdxRec Index;
+
+	// If the no line -> Insert a false line
+	if(!FileNbLines)
+	{
+		Idx->WriteRec(Index);  // Pos=0 -> Free blocks (for later)
+		if(Symmetric)
+			Idx->WriteRec(Index);  // Pos=1 -> Not used if symmetric measure
+	}
 
 	// Verify first if the existing lines must be extended
 	if((!Symmetric)&&(MaxIdCol>FileNbCols))
@@ -631,17 +631,14 @@ void GMeasure2Elements::ExtendFile(void)
 			Blocks->WriteRec(NewBlock);
 
 			// Add the line in the index file
-			if(Symmetric)
-				Idx->GoToRec(id-1);
-			else
-				Idx->GoToRec(id);
+			Idx->GoToRec(id);
 			Idx->WriteRec(Index);
 		}
 	}
 	FileNbLines=MaxIdLine;
 	FileNbCols=MaxIdCol;
 	FileMustExtend=false;
-	BlankRecs=true;
+	FileDirty=true;
 }
 
 
@@ -699,11 +696,7 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line,bool file)
 			// Dirty the measures
 			Measures* ptr=(*MemValues)[id-1];
 			if(!ptr)
-			{
-				char tmp[80];
-				sprintf(tmp,"GMeasure2Elements::DirtyIdentificator : index %z doesn't exist",id);
-				throw std::range_error(tmp);
-			}
+				throw std::range_error("GMeasure2Elements::DirtyIdentificator : index "+RString::Number(id)+" doesn't exist");
 
 			// Dirty the line
 			size_t max;
@@ -877,23 +870,24 @@ void GMeasure2Elements::UpdateMem(void)
 				WriteValue(i,j,*vals);
 		}
 	}
+	MemDirty=false;
 }
 
 
 //------------------------------------------------------------------------------
 void GMeasure2Elements::UpdateFile(void)
 {
-	// Parse all values and recompute each dirty values
 	size_t i;
 	IdxRec Element;
 	BlockRec Block;
 	MeasureRec Value;
 
+	// Parse all values and recompute each dirty values
 	if(Symmetric)
 		i=2;
 	else
 		i=1;
-	for(Idx->GoToRec(1);!Idx->End();i++)
+	for(Idx->GoToRec(i);!Idx->End();i++)
 	{
 		// Get a pointer to the object 1 : If no pointer -> goes to next record
 		void* obj1=Session->GetElement(Lines,i);
@@ -931,6 +925,69 @@ void GMeasure2Elements::UpdateFile(void)
 				AddValue(Value.Value);
 				RecValues->Prev();
 				RecValues->WriteRec(Value);
+			}
+		}
+	}
+	FileDirty=false;
+}
+
+
+//------------------------------------------------------------------------------
+void GMeasure2Elements::LoadFile(void)
+{
+	size_t i;
+	IdxRec Element;
+	BlockRec Block;
+	MeasureRec Value;
+
+	// Extend the memory
+	MaxIdLine=FileNbLines;
+	MaxIdCol=FileNbCols;
+	ExtendMem();
+
+	// Load all values
+	if(Symmetric)
+		i=2;
+	else
+		i=1;
+	for(Idx->GoToRec(1);!Idx->End();i++)
+	{
+		// Get a pointer to the object 1 : If no pointer -> goes to next record
+		void* obj1=Session->GetElement(Lines,i);
+		if(!obj1)
+		{
+			Idx->Next();
+			continue;
+		}
+
+		// Get the index
+		Idx->ReadRec(Element);
+
+		// Goes to the first block
+		Block.Next=Element.Pos;
+		while(Block.Next!=RIOFile::MaxSize)
+		{
+			Blocks->GoToRec(Block.Next);
+			Blocks->ReadRec(Block);
+
+			// Read all values
+			RecValues->GoToRec(Block.Pos);
+			for(size_t j=Block.FirstId;j<=Block.LastId;j++)
+			{
+				RecValues->ReadRec(Value);
+
+				// If value not OK -> not into memory
+				if(Value.Value==DirtyValue)
+					continue;
+
+				// Store into memory
+				size_t id1=i;
+				size_t id2=j;
+				Check(id1,id2);
+
+				id1--; // First line is empty (id1==1 -> Line=0)
+				id2--; // First column is id2=1 -> Col=0
+				(*MemValues)[id1]->Values[id2]=Value.Value;
 			}
 		}
 

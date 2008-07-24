@@ -541,11 +541,10 @@ void GCompareIdealI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 	if(Owner->TrackNewProfiles)
 	{
 		Owner->PercAss=Owner->Session->GetSubjects()->ComputePercAss();
-		sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f  -  New: %f",Owner->Recall,Owner->Precision,Owner->Total,Owner->PercAss);
+		o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->Total)+"  -  New: "+RString::Number(Owner->PercAss));
 	}
 	else
-		sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Owner->Recall,Owner->Precision,Owner->Total);
-	o->WriteStr(tmp);
+		o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->Total));
 	if(Owner->OFile)
 	{
 		(*Owner->OFile)<<Owner->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total;
@@ -618,8 +617,7 @@ void GAddProfilesI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 		throw RException("Method needs no parameters.");
 	o->WriteStr("Adding Profiles");
 	Owner->Session->GetSubjects()->Apply();
-	sprintf(tmp, "%u new profiles created",Owner->Session->GetSubjects()->AddProfiles());
-	o->WriteStr(tmp);
+	o->WriteStr(RString::Number(Owner->Session->GetSubjects()->AddProfiles())+" new profiles created");
 }
 
 
@@ -662,11 +660,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 	Owner->Recall=Owner->Session->GetSubjects()->GetRecall();
 	Owner->Total=Owner->Session->GetSubjects()->GetTotal();
 	if(rec)
-	{
-		rec->Interact();
-		sprintf(tmp,"Recall: %f  -  Precision: %f  -  Total: %f",Owner->Recall,Owner->Precision,Owner->Total);
-		rec->WriteStr(tmp);
-	}
+		o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->Total));
 	if(GSession::Break()) return;
 	if(Owner->OFile)
 		(*Owner->OFile)<<Owner->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total<<What<<endl;
@@ -863,8 +857,7 @@ void GComputeTimeI::Run(R::RPrg*,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 	if(args->GetNb())
 		throw RException("Method needs no parameter.");
 	cpu_time=difftime(end,Owner->ClockRef);
-	sprintf(tmp,"Ellapsed Time %f",cpu_time);
-	o->WriteStr(tmp);
+	o->WriteStr("Ellapsed Time "+RString::Number(cpu_time));
 }
 
 

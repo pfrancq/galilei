@@ -60,24 +60,21 @@ GSlotLog::GSlotLog(const char* name)
 //------------------------------------------------------------------------------
 void GSlotLog::NextDoc(const GDoc* doc)
 {
-	sprintf(Buf,"Analyse %s (%z)",doc->GetURL().Latin1(),doc->GetId());
-	WriteLog(Buf);
+	WriteLog("Analyze "+doc->GetURL()+" ("+RString::Number(doc->GetId())+")");
 }
 
 
 //------------------------------------------------------------------------------
 void GSlotLog::NextProfile(const GProfile* prof)
 {
-	sprintf(Buf,"Compute %s (%z)",(prof->GetUser()->GetName()+"/"+prof->GetName()).Latin1(),prof->GetId());
-	WriteLog(Buf);
+	WriteLog("Compute "+(prof->GetUser()->GetName()+"/"+prof->GetName())+"("+RString::Number(prof->GetId())+")");
 }
 
 
 //------------------------------------------------------------------------------
 void GSlotLog::NextGroupLang(const GLang* lang)
 {
-	sprintf(Buf,"Group %s Profiles",lang->GetName().Latin1());
-	WriteLog(Buf);
+	WriteLog("Group "+lang->GetName()+" Profiles");
 }
 
 

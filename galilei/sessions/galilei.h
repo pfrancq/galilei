@@ -142,17 +142,27 @@ class GPostProfileManager;
 //------------------------------------------------------------------------------
 // forward class declaration - Groups Part
 class GCommunity;
+class GTopic;
 class GGroupProfiles;
+class GGroupDocs;
 class GFactoryGroupProfiles;
+class GFactoryGroupDocs;
 class GGroupProfilesManager;
+class GGroupDocsManager;
 class GCommunityCalc;
+class GTopicCalc;
 class GFactoryCommunityCalc;
+class GFactoryTopicCalc;
 class GCommunityCalcManager;
+class GTopicCalcManager;
 class GSubject;
 class GSubjects;
 class GPostCommunity;
+class GPostTopic;
 class GPostCommunityManager;
+class GPostTopicManager;
 class GFactoryPostCommunity;
+class GFactoryPostTopic;
 
 
 //------------------------------------------------------------------------------
@@ -202,19 +212,21 @@ const unsigned cNoRef=0xFFFFFFFF;
 */
 enum tObjType
 {
-	otNoClass=0              /** No specific class. */,
-	otSession=1              /** GALILEI Session. */,
-	otDoc=2                  /** Document. */,
-	otUser=5                 /** User.*/,
-	otProfile=6              /** Profile.*/,
-	otCommunity=9            /** Community.*/,
-	otDocProfile=10          /** Document or Profile.*/,
-	otDocCommunity=11        /** Document or Group.*/,
-	otProfileCommunity=12    /** Profile or Group.*/,
-	otFdbk=13                /** Assessment of a document by a profile.*/,
-	otLang=14                /** Language. */,
-	otHistory=15             /** History. */,
-	otTopic=16               /** Topic. */
+	otNoClass                /** No specific class. */,
+	otSession                /** GALILEI Session. */,
+	otDoc                    /** Document. */,
+	otUser                   /** User.*/,
+	otProfile                /** Profile.*/,
+	otHistoricalProfile      /** Historical profile.*/,
+	otCommunity              /** Community.*/,
+	otHistoricalCommunity    /** Historical community.*/,
+	otFdbk                   /** Assessment of a document by a profile.*/,
+	otLang                   /** Language. */,
+	otHistory                /** History. */,
+	otTopic                  /** Topic. */,
+	otSubject                /** Subject (Theoretical topic of documents). */,
+	otEngine                 /** Search engine.*/,
+	otEngineDoc              /** Document proposed by a search engine.*/
 };
 
 

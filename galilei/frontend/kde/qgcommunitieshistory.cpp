@@ -89,16 +89,14 @@ GALILEI::QGCommunitiesHistory::QGCommunitiesHistory(QWidget* parent,GCommunities
 //-----------------------------------------------------------------------------
 void GALILEI::QGCommunitiesHistory::setGroups(GCommunitiesHistory* grps)
 {
-	char tmp[100];
-	char tmp2[40];
 	GProfile* p;
 
 	clear();
 	RCursor<GCommunityHistory> Cur(*grps);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		sprintf(tmp,"Group %z  (%z)",Cur()->GetId(),Cur()->GetNb());
-		QListViewItemType* gritem= new QListViewItemType(Cur(),this,tmp) ;//, gr->GetSubject()->GetName());
+		RString tmp("Group "+RString::Number(Cur()->GetId())+" ("+RString::Number(Cur()->GetNb())+")");
+		QListViewItemType* gritem= new QListViewItemType(Cur(),this,ToQString(tmp)) ;//, gr->GetSubject()->GetName());
 		// manage the color of the item
 		if(Cur()->IsModified()==true)
 			gritem->Level=1;
@@ -108,10 +106,7 @@ void GALILEI::QGCommunitiesHistory::setGroups(GCommunitiesHistory* grps)
 		RCursor<GWeightInfosHistory> Cur2(*Cur());
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			sprintf(tmp,"%z",Cur2()->GetId());
-			p=Cur2()->GetProfile();
-			sprintf(tmp2,"%z",p->GetId());
-			QListViewItemType* subitem=new QListViewItemType(Cur2(),gritem,tmp,tmp2,ToQString(p->GetName()),ToQString(p->GetUser()->GetFullName()));
+			QListViewItemType* subitem=new QListViewItemType(Cur2(),gritem,ToQString(RString::Number(Cur2()->GetId())),ToQString(RString::Number(p->GetId())),ToQString(p->GetName()),ToQString(p->GetUser()->GetFullName()));
 			if(Cur2()->IsWellGrouped()==true)
 				subitem->Level=0;
 			else

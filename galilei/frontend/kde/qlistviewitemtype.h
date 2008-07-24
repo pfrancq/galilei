@@ -37,6 +37,11 @@
 
 
 //---------------------------------------------------------------------------
+// include files for GALILEI
+#include <galilei.h>
+
+
+//---------------------------------------------------------------------------
 //include files for Qt
 #include <qlistview.h>
 
@@ -45,19 +50,6 @@
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-// foward class declaration
-class GCommunity;
-class GCommunityHistory;
-class GUser;
-class GProfile;
-class GWeightInfosHistory;
-class GDoc;
-class GEngineDoc;
-class GSubject;
-class GLang;
 
 
 //-----------------------------------------------------------------------------
@@ -72,11 +64,12 @@ class QListViewItemType : public QListViewItem
 public:
 
 	/**
-	* Pointer to the element representend by the QListViewItemType.
+	* Pointer to the element represented by the QListViewItemType.
 	*/
 	union
 	{
-		GCommunity* Group;
+		GCommunity* Community;
+		GTopic* Topic;
 		GUser* User;
 		GProfile* Profile;
 		GWeightInfosHistory* Giwwh;
@@ -89,124 +82,133 @@ public:
 
 
 	/**
-	* three level availables: 0:black,  1: blue, 2:red.
+	* three level available: 0:black,  1: blue, 2:red.
 	*/
 	size_t Level;
 
 	/**
-	* Enumeration type of the item.
-	*/
-	enum tType {tNothing,tGroup,tUser,tProfile,tGiwwh,tGroupHistory,tDocument,tEngineDoc,tSubject,tLang};
-
-	/**
 	* type of the item
 	*/
-	tType Type;
+	tObjType Type;
 
 	/**
-	* default constructor, attached to a listview.
+	* Default constructor, attached to a listview.
 	*/
 	QListViewItemType(QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* default constructor, attached to a listviewitem.
+	* Default constructor, attached to a listviewitem.
 	*/
 	QListViewItemType(QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	*  constructor for a user, attached to a listviewitem.
+	* Constructor for a user, attached to a listviewitem.
 	*/
 	QListViewItemType(GUser* user, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* constructor for a user, attached to a listview.
+	* Constructor for a user, attached to a listview.
 	*/
 	QListViewItemType(GUser* user, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* constructor for a group, attached to a listview.
+	* Constructor for a group, attached to a listview.
 	*/
 	QListViewItemType(GCommunity* group, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
-	
+
 	/**
-	* constructor for a group, attached to a listviewitem.
+	* Constructor for a group, attached to a listviewitem.
 	*/
 	QListViewItemType(GCommunity* group, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* constructor for a subject, attached to a listviewitem.
+	* Constructor for a topic, attached to a listview.
+	*/
+	QListViewItemType(GTopic* topic, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+
+	/**
+	* Constructor for a topic, attached to a listviewitem.
+	*/
+	QListViewItemType(GTopic* topic, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
+
+	/**
+	* Cconstructor for a subject, attached to a listviewitem.
 	*/
 	QListViewItemType(GSubject* subject, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* constructor for a profile, attached to a listviewitem.
+	* Constructor for a profile, attached to a listviewitem.
 	*/
 	QListViewItemType(GProfile* profile, QListViewItem* parent,QString str1=QString::null,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
-	* constructor for a profile, attached to a listview.
+	* Constructor for a profile, attached to a listview.
 	*/
 	QListViewItemType(GProfile* profile, QListView* parent,QString str1=QString::null,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
-	* constructor for a vector of words, attached to a listview.
+	* Constructor for a vector of words, attached to a listview.
 	*/
 	QListViewItemType(GWeightInfosHistory* giwwh, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
-	* constructor for a vector of words, attached to a listviewitem.
+	* Constructor for a vector of words, attached to a listviewitem.
 	*/
 	QListViewItemType(GWeightInfosHistory* giwwh, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
-	* constructor for a historic group, attached to a listview.
+	* Constructor for a historic group, attached to a listview.
 	*/
 	QListViewItemType(GCommunityHistory* grouphistory, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
-	* constructor for a historic group, attached to a listviewitem.
+	* Constructor for a historic group, attached to a listviewitem.
 	*/
 	QListViewItemType(GCommunityHistory* grouphistory, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
-	* constructor for a doc, attached to a listviewitem.
+	* Constructor for a doc, attached to a listviewitem.
 	*/
 	QListViewItemType(GDoc* doc, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* constructor for a doc, attached to a listview.
+	* Constructor for a doc, attached to a listview.
 	*/
 	QListViewItemType(GDoc* doc, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* constructor for a enginedoc, attached to a listviewitem.
+	* Constructor for a enginedoc, attached to a listviewitem.
 	*/
 	QListViewItemType(GEngineDoc* engineDoc, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* constructor for a enginedoc, attached to a listview.
+	* Constructor for a enginedoc, attached to a listview.
 	*/
 	QListViewItemType(GEngineDoc* engineDoc, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* constructor for a enginedoc, attached to a listviewitem.
+	* Constructor for a enginedoc, attached to a listviewitem.
 	*/
 	QListViewItemType(GLang* lang, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* constructor for a enginedoc, attached to a listview.
+	* Constructor for a enginedoc, attached to a listview.
 	*/
 	QListViewItemType(GLang* lang, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null);
 
 	/**
-	* method to color the item.
+	* Method to color the item.
 	*/
 	void paintCell( QPainter * p, const QColorGroup & cg, int column, int width, int align);
 
+	/**
+	 * Method called to see if a drop can be accepted.
+	 * @param mime           MIME type.
+	 */
 	bool acceptDrop( const QMimeSource *mime ) const;
 
 	/**
-	* destructor
+	* Destruct.
 	*/
 	~QListViewItemType(void);
 };

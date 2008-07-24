@@ -61,7 +61,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(QListView* parent,QString str1,QString str2,QString str3)
-		: QListViewItem(parent,str1,str2,str3) , Type(tNothing)
+		: QListViewItem(parent,str1,str2,str3) , Type(otNoClass)
 {
 	Obj.User=0;
 	Level=0;
@@ -70,7 +70,7 @@ GALILEI::QListViewItemType::QListViewItemType(QListView* parent,QString str1,QSt
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(QListViewItem* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3) , Type(tNothing)
+	: QListViewItem(parent,str1,str2,str3) , Type(otNoClass)
 {
 	Obj.User=0;
 	Level=0;
@@ -79,7 +79,7 @@ GALILEI::QListViewItemType::QListViewItemType(QListViewItem* parent,QString str1
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GUser* user, QListViewItem* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3) , Type(tUser)
+	: QListViewItem(parent,str1,str2,str3) , Type(otUser)
 {
 	Obj.User=user;
 	Level=0;
@@ -88,7 +88,7 @@ GALILEI::QListViewItemType::QListViewItemType(GUser* user, QListViewItem* parent
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GUser* user, QListView* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3) , Type(tUser)
+	: QListViewItem(parent,str1,str2,str3) , Type(otUser)
 {
 	Obj.User=user;
 	Level=0;
@@ -97,25 +97,43 @@ GALILEI::QListViewItemType::QListViewItemType(GUser* user, QListView* parent,QSt
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GCommunity* group, QListView* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tGroup)
+	: QListViewItem(parent,str1,str2,str3), Type(otCommunity)
 {
-	Obj.Group=group;
+	Obj.Community=group;
 	Level=0;
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GCommunity* group, QListViewItem* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tGroup)
+	: QListViewItem(parent,str1,str2,str3), Type(otCommunity)
 {
-	Obj.Group=group;
+	Obj.Community=group;
+	Level=0;
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::QListViewItemType::QListViewItemType(GTopic* topic, QListView* parent,QString str1,QString str2,QString str3)
+	: QListViewItem(parent,str1,str2,str3), Type(otTopic)
+{
+	Obj.Topic=topic;
+	Level=0;
+}
+
+
+//-----------------------------------------------------------------------------
+GALILEI::QListViewItemType::QListViewItemType(GTopic* topic, QListViewItem* parent,QString str1,QString str2,QString str3)
+	: QListViewItem(parent,str1,str2,str3), Type(otTopic)
+{
+	Obj.Topic=topic;
 	Level=0;
 }
 
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GSubject* subject, QListView* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tGroup)
+	: QListViewItem(parent,str1,str2,str3), Type(otSubject)
 {
 	Obj.Subject=subject;
 	Level=0;
@@ -124,7 +142,7 @@ GALILEI::QListViewItemType::QListViewItemType(GSubject* subject, QListView* pare
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GProfile* profile, QListViewItem* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,ToQString(profile->GetName()),ToQString(profile->GetUser()->GetFullName()),str1,str2,str3,str4), Type(tProfile)
+	: QListViewItem(parent,ToQString(profile->GetName()),ToQString(profile->GetUser()->GetFullName()),str1,str2,str3,str4), Type(otProfile)
 {
 	Obj.Profile=profile;
 	Level=0;
@@ -133,7 +151,7 @@ GALILEI::QListViewItemType::QListViewItemType(GProfile* profile, QListViewItem* 
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GProfile* profile, QListView* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,ToQString(profile->GetName()),ToQString(profile->GetUser()->GetFullName()),str1,str2,str3,str4), Type(tProfile)
+	: QListViewItem(parent,ToQString(profile->GetName()),ToQString(profile->GetUser()->GetFullName()),str1,str2,str3,str4), Type(otProfile)
 {
 	Obj.Profile=profile;
 	Level=0;
@@ -142,7 +160,7 @@ GALILEI::QListViewItemType::QListViewItemType(GProfile* profile, QListView* pare
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GWeightInfosHistory* giwwh, QListView* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3,str4), Type(tGiwwh)
+	: QListViewItem(parent,str1,str2,str3,str4), Type(otHistoricalProfile)
 {
 	Obj.Giwwh=giwwh;
 	Level=0;
@@ -151,7 +169,7 @@ GALILEI::QListViewItemType::QListViewItemType(GWeightInfosHistory* giwwh, QListV
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GWeightInfosHistory* giwwh, QListViewItem* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3,str4), Type(tGiwwh)
+	: QListViewItem(parent,str1,str2,str3,str4), Type(otHistoricalProfile)
 {
 	Obj.Giwwh=giwwh;
 	Level=0;
@@ -160,7 +178,7 @@ GALILEI::QListViewItemType::QListViewItemType(GWeightInfosHistory* giwwh, QListV
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GCommunityHistory* grouphistory, QListView* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3,str4), Type(tGroupHistory)
+	: QListViewItem(parent,str1,str2,str3,str4), Type(otHistoricalCommunity)
 {
 	Obj.GroupHistory=grouphistory;
 	Level=0;
@@ -169,7 +187,7 @@ GALILEI::QListViewItemType::QListViewItemType(GCommunityHistory* grouphistory, Q
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GCommunityHistory* grouphistory, QListViewItem* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3, str4), Type(tGroupHistory)
+	: QListViewItem(parent,str1,str2,str3, str4), Type(otHistoricalCommunity)
 {
 	Obj.GroupHistory=grouphistory;
 	Level=0;
@@ -178,7 +196,7 @@ GALILEI::QListViewItemType::QListViewItemType(GCommunityHistory* grouphistory, Q
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GDoc* doc, QListViewItem* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tDocument)
+	: QListViewItem(parent,str1,str2,str3), Type(otDoc)
 {
 	Obj.Doc=doc;
 	Level=0;
@@ -187,7 +205,7 @@ GALILEI::QListViewItemType::QListViewItemType(GDoc* doc, QListViewItem* parent,Q
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GDoc* doc, QListView* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tDocument)
+	: QListViewItem(parent,str1,str2,str3), Type(otDoc)
 {
 	Obj.Doc=doc;
 	Level=0;
@@ -196,7 +214,7 @@ GALILEI::QListViewItemType::QListViewItemType(GDoc* doc, QListView* parent,QStri
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GEngineDoc* engineDoc, QListViewItem* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tEngineDoc)
+	: QListViewItem(parent,str1,str2,str3), Type(otEngineDoc)
 {
 	Obj.EngineDoc=engineDoc;
 	Level=0;
@@ -205,7 +223,7 @@ GALILEI::QListViewItemType::QListViewItemType(GEngineDoc* engineDoc, QListViewIt
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GEngineDoc* engineDoc, QListView* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tEngineDoc)
+	: QListViewItem(parent,str1,str2,str3), Type(otEngineDoc)
 {
 	Obj.EngineDoc=engineDoc;
 	Level=0;
@@ -214,7 +232,7 @@ GALILEI::QListViewItemType::QListViewItemType(GEngineDoc* engineDoc, QListView* 
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GLang* lang, QListViewItem* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tLang)
+	: QListViewItem(parent,str1,str2,str3), Type(otLang)
 {
 	Obj.Lang=lang;
 	Level=0;
@@ -223,7 +241,7 @@ GALILEI::QListViewItemType::QListViewItemType(GLang* lang, QListViewItem* parent
 
 //-----------------------------------------------------------------------------
 GALILEI::QListViewItemType::QListViewItemType(GLang* lang, QListView* parent,QString str1,QString str2,QString str3)
-	: QListViewItem(parent,str1,str2,str3), Type(tLang)
+	: QListViewItem(parent,str1,str2,str3), Type(otLang)
 {
 	Obj.Lang=lang;
 	Level=0;

@@ -60,7 +60,7 @@ namespace GALILEI{
 class GConcept
 {
 protected:
-	
+
 	/**
 	* Identifier of the concept.
 	*/
@@ -91,6 +91,11 @@ protected:
 	*/
 	size_t NbRefGroups;
 
+	/**
+	 * Number of references in topics.
+	 */
+	size_t NbRefTopics;
+
 public:
 
 	/**
@@ -103,7 +108,7 @@ public:
 	 * @param concept        Original concept.
 	 */
 	GConcept(const GConcept* concept);
-	
+
 	/**
 	* Constructor of a generic concept.
 	* @param name            Name of the concept.
@@ -117,10 +122,11 @@ public:
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	* @param refdocs         Number of documents referenced.
-	* @param refprofiles     Number of subprofiles referenced.
+	* @param refprofiles     Number of profiles referenced.
 	* @param refgroups       Number of groups referenced.
+	* @param reftopics       Number of topics referenced.
 	*/
-	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refgroups);
+	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics);
 
 	/**
 	* Compare two concepts.
@@ -160,7 +166,7 @@ public:
 	 * @return Pointer to a new element created.
 	 */
 	virtual GConcept* DeepCopy(void) const;
-	
+
 	/**
 	* Compute the first hash index of the name of a concept.
 	* @see R::RHashContainer
@@ -175,62 +181,65 @@ public:
 	GConceptType* GetType(void) const {return(Type);}
 
 	/**
-	* Set the Identificator of the concept.
-	* @param id              Identificator.
+	* Set the Identifier of the concept.
+	* @param id              Identifier.
 	*/
 	void SetId(size_t id);
 
 	/**
-	* @return Identificator of the word.
+	* @return Identifier of the concept.
 	*/
 	size_t GetId(void) const {return(Id);}
 
 	/**
-	* @return A string representing the word.
+	* @return A string representing the concept.
 	*/
 	R::RString GetName(void) const {return(Name);}
 
 	/**
-	* Increase the number of references on this data for a given object type.
+	* Increase the number of references on this concept for a given object
+	* type.
 	* @param ObjType        Type of the reference.
 	*/
 	size_t IncRef(tObjType ObjType);
 
 	/**
-	* Decrease the number of references on this data for a given object type.
+	* Decrease the number of references on this concept for a given object
+	* type.
 	* @param ObjType        Type of the reference.
 	*/
 	size_t DecRef(tObjType ObjType);
 
 	/**
-	* Get the number of references on this data for a given object type.
+	* Get the number of references on this concpet for a given object type.
 	* @param ObjType        Type of the reference.
 	* @returns size_t.
 	*/
 	size_t GetRef(tObjType ObjType) const;
 
 	/**
-	* Clear the information of the data link to a specific object.
+	* Clear the information of the references of the concept linked to a
+	* specific object.
 	* @param ObjType        Type of the object.
 	*/
 	virtual void Clear(tObjType ObjType);
 
 	/**
-	* Clear all the information of the data.
+	* Clear all the information of the concept.
 	*/
 	virtual void Clear(void);
 
 	/**
-	* Test if the data is considered as empty. By default, every data defined by
-	* a non-empty name, is also considered as not empty.
+	* Test if the concept is considered as empty. By default, every concept
+	* defined by a non-empty name, is also considered as not empty.
 	*/
 	virtual bool IsEmpty(void) const;
 
 	/**
-	* Desctuctor of a concept.
+	* Desctuct the concept.
 	*/
 	virtual ~GConcept(void);
-	
+
 	friend class GWeightInfo;
 };
 

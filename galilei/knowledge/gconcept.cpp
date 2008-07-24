@@ -48,7 +48,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 GConcept::GConcept(void)
 	: Id(cNoRef), Name(RString::Null), Type(0), NbRefDocs(0),
-	  NbRefProfiles(0), NbRefGroups(0)
+	  NbRefProfiles(0), NbRefGroups(0), NbRefTopics(0)
 {
 }
 
@@ -56,7 +56,7 @@ GConcept::GConcept(void)
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const GConcept* concept)
 	: Id(concept->Id), Name(concept->Name), Type(concept->Type), NbRefDocs(concept->NbRefDocs),
-	  NbRefProfiles(concept->NbRefProfiles), NbRefGroups(concept->NbRefGroups)
+	  NbRefProfiles(concept->NbRefProfiles), NbRefGroups(concept->NbRefGroups), NbRefTopics(concept->NbRefTopics)
 {
 }
 
@@ -64,15 +64,15 @@ GConcept::GConcept(const GConcept* concept)
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const RString& name,GConceptType* type)
 	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0),
-	  NbRefProfiles(0), NbRefGroups(0)
+	  NbRefProfiles(0), NbRefGroups(0), NbRefTopics(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(size_t id,const RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refgroups)
+GConcept::GConcept(size_t id,const RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics)
 	: Id(id), Name(name), Type(type), NbRefDocs(refdocs),
-	  NbRefProfiles(refprofiles), NbRefGroups(refgroups)
+	  NbRefProfiles(refprofiles), NbRefGroups(refgroups), NbRefTopics(reftopics)
 {
 }
 
@@ -147,8 +147,12 @@ size_t GConcept::IncRef(tObjType ObjType)
 			NbRefGroups++;
 			return(NbRefGroups);
 			break;
+		case otTopic:
+			NbRefTopics++;
+			return(NbRefTopics);
+			break;
 		default:
-			throw GException("Unkown type to increase concept "+RString::Number(Id));
+			throw GException("Unknown type to increase concept "+RString::Number(Id));
 			break;
 	}
 }
@@ -177,8 +181,14 @@ size_t GConcept::DecRef(tObjType ObjType)
 			NbRefGroups--;
 			return(NbRefGroups);
 			break;
+		case otTopic:
+			if(!NbRefTopics)
+				throw GException("Cannot decrease null number of references for topics for concept "+RString::Number(Id));
+			NbRefTopics--;
+			return(NbRefTopics);
+			break;
 		default:
-			throw GException("Unkown type to decrease concept "+RString::Number(Id));
+			throw GException("Unknown type to decrease concept "+RString::Number(Id));
 			break;
 	}
 }
@@ -198,14 +208,8 @@ size_t GConcept::GetRef(tObjType ObjType) const
 		case otCommunity:
 			return(NbRefGroups);
 			break;
-		case otDocProfile:
-			return(NbRefDocs+NbRefProfiles);
-			break;
-		case otDocCommunity:
-			return(NbRefDocs+NbRefGroups);
-			break;
-		case otProfileCommunity:
-			return(NbRefProfiles+NbRefGroups);
+		case otTopic:
+			return(NbRefTopics);
 			break;
 		default:
 			return(NbRefDocs+NbRefProfiles+NbRefGroups);
@@ -229,17 +233,8 @@ void GConcept::Clear(tObjType ObjType)
 		case otCommunity:
 			NbRefGroups=0;
 			break;
-		case otDocProfile:
-			NbRefDocs=0;
-			NbRefProfiles=0;
-			break;
-		case otDocCommunity:
-			NbRefDocs=0;
-			NbRefGroups=0;
-			break;
-		case otProfileCommunity:
-			NbRefProfiles=0;
-			NbRefGroups=0;
+		case otTopic:
+			NbRefTopics=0;
 			break;
 		default:
 			NbRefDocs=0;
@@ -258,6 +253,7 @@ void GConcept::Clear(void)
 	NbRefDocs=0;
 	NbRefProfiles=0;
 	NbRefGroups=0;
+	NbRefTopics=0;
 	Type=0;
 }
 

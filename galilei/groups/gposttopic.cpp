@@ -2,14 +2,16 @@
 
 	GALILEI Research Project
 
-	GCommunityCalc.cpp
+	GPostTopic.cpp
 
-	Generic Community Description Computing Method - Implementation.
+	Generic Post-Topic Computing Method - Implementation.
 
-	Copyright 2002-2008 by the Université Libre de Bruxelles.
+	Copyright 2003-2008 by the Université Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Francq Pascal (pfrancq@ulb.ac.be)
+		Vandaele Valéry(vavdaele@ulb.ac.be).
+
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,7 +34,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gcommunitycalc.h>
+#include <gposttopic.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -40,19 +42,19 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GCommunityCalc
+//  GPostTopic
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunityCalc::GCommunityCalc(GFactoryCommunityCalc* fac)
-	: GPlugin<GFactoryCommunityCalc>(fac)
+GPostTopic::GPostTopic(GFactoryPostTopic* fac)
+	: GPlugin<GFactoryPostTopic>(fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GCommunityCalc::~GCommunityCalc(void)
+GPostTopic::~GPostTopic(void)
 {
 }
 
@@ -60,18 +62,18 @@ GCommunityCalc::~GCommunityCalc(void)
 
 //------------------------------------------------------------------------------
 //
-// class GCommunityCalcManager
+// class GPostTopicManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunityCalcManager::GCommunityCalcManager(void)
-	: GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>("CommunityCalc",API_COMMUNITYCALC_VERSION,ptSelect)
+GPostTopicManager::GPostTopicManager(void)
+	: GPluginManager<GPostTopicManager,GFactoryPostTopic,GPostTopic>("PostTopic",API_POSTTOPIC_VERSION,ptOrdered)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GCommunityCalcManager::~GCommunityCalcManager(void)
+GPostTopicManager::~GPostTopicManager(void)
 {
 }

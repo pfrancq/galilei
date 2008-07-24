@@ -4,7 +4,7 @@
 
 	GCommunity.h
 
-	Group - Header.
+	Community - Header.
 
 	Copyright 2001-2008 by the Université Libre de Bruxelles.
 

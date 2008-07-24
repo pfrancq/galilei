@@ -57,10 +57,10 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,const R::RDate& u,const R::RDate& a,size_t ownerid)
+GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t ownerid)
 	: GWeightInfos(60), URL(url), Name(name), Id(id), Struct(0),
-	  Lang(lang),MIMEType(mime), Updated(u), Computed(a),
-	  Fdbks(0), LinkSet(5,2), OwnerId(ownerid)
+	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
+	  Fdbks(0), LinkSet(5,2), OwnerId(ownerid), GroupId(grpid), Attached(a)
 {
 	if(Id!=cNoRef)
 		GSession::Event(this,eObjNew);
@@ -171,6 +171,13 @@ void GDoc::SetGroup(size_t groupid)
 	GroupId=groupid;
 	if(GroupId!=cNoRef)
 		Attached.SetToday();
+}
+
+
+//------------------------------------------------------------------------------
+RDate GDoc::GetAttached(void) const
+{
+	return(Attached);
 }
 
 

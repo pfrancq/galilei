@@ -121,12 +121,12 @@ protected:
 	size_t OwnerId;
 
 	/**
-	* Identifiers of the corresponding group.
+	* Identifiers of the corresponding topic.
 	*/
 	size_t GroupId;
 
 	/**
-	* Date of the attachment of the document into the group.
+	* Date of the attachment of the document into the topic.
 	*/
 	R::RDate Attached;
 
@@ -139,14 +139,16 @@ public:
 	* @param id              Identifier of the document.
 	* @param lang            Language of the document.
 	* @param mime            MIME type of the document.
-	* @param u               Date of the last update.
-	* @param a               Date of the last analysis.
+	* @param grpid           Topic identifier.
+	* @param c               Date of the last computation.
+	* @param u               Date of the last updated.
+	* @param a               Date of the last attached.
 	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,const R::RDate& u,const R::RDate& a,size_t ownerid=0);
+	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t ownerid=0);
 
 	/**
-	* Compare two documents by comparing their identificator.
+	* Compare two documents by comparing their identifier.
 	* @see R::RContainer
 	* @param doc             Document.
 	* @return int
@@ -154,7 +156,7 @@ public:
 	int Compare(const GDoc& doc) const;
 
 	/**
-	* Compare two documents by comparing their identificator.
+	* Compare two documents by comparing their identifier.
 	* @see R::RContainer
 	* @param doc             Pointer to the document.
 	* @return int
@@ -162,9 +164,9 @@ public:
 	int Compare(const GDoc* doc) const;
 
 	/**
-	* Compare the identificator of a documents with a given identificator.
+	* Compare the identifier of a documents with a given identifier.
 	* @see R::RContainer
-	* @param id              Identificator.
+	* @param id              Identifier.
 	* @return int
 	*/
 	int Compare(const size_t id) const;
@@ -271,18 +273,24 @@ public:
 	size_t GetOwnerId(void) const {return(OwnerId);}
 
 	/**
-	* Get the group holding the document.
+	* Get the date of the last attachment.
+	* @returns R::RDate.
+	*/
+	R::RDate GetAttached(void) const;
+
+	/**
+	* Get the topic holding the document.
 	*/
 	size_t GetGroupId(void) const {return(GroupId);}
 
 	/**
-	* Set the group holding the document.
-	* @param groupid         Identifier of the group.
+	* Set the topic holding the document.
+	* @param groupid         Identifier of the topic.
 	*/
 	void SetGroup(size_t groupid);
 
 	/**
-	* Get a cursor on the identificator of the profiles which have assesses the
+	* Get a cursor on the identifier of the profiles which have assesses the
 	* documents.
 	* @return R::RVectorInt*.
 	*/

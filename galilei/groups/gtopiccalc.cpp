@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GCommunityCalc.cpp
+	GTopicCalc.cpp
 
-	Generic Community Description Computing Method - Implementation.
+	Generic Topic Description Computing Method - Implementation.
 
-	Copyright 2002-2008 by the Université Libre de Bruxelles.
+	Copyright 2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gcommunitycalc.h>
+#include <gtopiccalc.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -40,19 +40,19 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GCommunityCalc
+//  GTopicCalc
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunityCalc::GCommunityCalc(GFactoryCommunityCalc* fac)
-	: GPlugin<GFactoryCommunityCalc>(fac)
+GTopicCalc::GTopicCalc(GFactoryTopicCalc* fac)
+	: GPlugin<GFactoryTopicCalc>(fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GCommunityCalc::~GCommunityCalc(void)
+GTopicCalc::~GTopicCalc(void)
 {
 }
 
@@ -60,18 +60,18 @@ GCommunityCalc::~GCommunityCalc(void)
 
 //------------------------------------------------------------------------------
 //
-// class GCommunityCalcManager
+// class GTopicCalcManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunityCalcManager::GCommunityCalcManager(void)
-	: GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>("CommunityCalc",API_COMMUNITYCALC_VERSION,ptSelect)
+GTopicCalcManager::GTopicCalcManager(void)
+	: GPluginManager<GTopicCalcManager,GFactoryTopicCalc,GTopicCalc>("TopicCalc",API_TOPICCALC_VERSION,ptSelect)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GCommunityCalcManager::~GCommunityCalcManager(void)
+GTopicCalcManager::~GTopicCalcManager(void)
 {
 }

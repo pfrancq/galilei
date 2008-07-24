@@ -606,7 +606,7 @@ public:
 
 
 	//-----------------------------------------------------
-	/** @name Groups Methods
+	/** @name Communities Methods
 	*/
 	// @{
 
@@ -617,13 +617,13 @@ public:
 
 	/**
 	* Method that load a group that is stored.
-	* @param groupid         Identificator of the group.
+	* @param groupid         Identifier of the group.
 	*/
 	virtual GCommunity* LoadCommunity(size_t groupid)=0;
 
 	/**
 	* Load an historic groups.
-	* @param historicID      Identificator of the historic.
+	* @param historicID      Identifier of the historic.
 	* @return Pointer to a historic group.
 	*/
 	virtual GCommunitiesHistory* LoadHistoricCommunities(size_t historicID)=0;
@@ -649,7 +649,7 @@ public:
 
 	/**
 	* A profile was updated and the corresponding communities must be updated.
-	* @param profid          Identificator of the profile.
+	* @param profid          Identifier of the profile.
 	*/
 	virtual void UpdateCommunities(size_t profid)=0;
 
@@ -665,20 +665,56 @@ public:
 	virtual void SaveCommunities(void)=0;
 
 	/**
-	* Save the communitieps in history.
+	* Save the communities in history.
 	*/
 	virtual void SaveCommunitiesHistory(void)=0;
 
 	/**
 	* Add a suggestion for a given community and a given test.
 	* @param name            Name of the test.
-	* @param groupid         Identificator of the community.
-	* @param docid           Identificator of the document to suggest.
+	* @param groupid         Identifier of the community.
+	* @param docid           Identifier of the document to suggest.
 	* @param rank            Ranking of the document.
 	*/
 	virtual void AddSugsCommunity(const R::RString& name,size_t groupid,size_t docid,size_t rank)=0;
 
-	// @} Groups
+	// @} Communities
+
+
+	//-----------------------------------------------------
+	/** @name Topics Methods
+	*/
+	// @{
+
+	/**
+	* Load the topics.
+	*/
+	virtual void LoadTopics(void)=0;
+
+	/**
+	* Method that load a topic that is stored.
+	* @param topicid         Identifier of the topic.
+	*/
+	virtual GTopic* LoadTopic(size_t topicid)=0;
+
+	/**
+	* A document was updated and the corresponding topics must be updated.
+	* @param docid           Identifier of the document.
+	*/
+	virtual void UpdateTopics(size_t docid)=0;
+
+	/**
+	* Assign an identifier to a new topic.
+	* @param top            Topic.
+	*/
+	virtual void AssignId(GTopic* top)=0;
+
+	/**
+	* Save the topics of the session.
+	*/
+	virtual void SaveTopics(void)=0;
+
+	// @} Topics
 
 	/**
 	* Destructor.
