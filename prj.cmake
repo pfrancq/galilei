@@ -21,5 +21,8 @@ ELSE(KDE3_FOUND)
 	MESSAGE(FATAL_ERROR "KDE3 can't be found as requested")
 ENDIF(KDE3_FOUND)
 
-SET(SUB_PROJECT gravitation)
-ADD_SUBDIRECTORY(gravitation)
+SET(SUB_PROJECT gravitation_community)
+ADD_SUBDIRECTORY(community)
+
+SET(SUB_PROJECT gravitation_topic)
+ADD_SUBDIRECTORY(topic)
