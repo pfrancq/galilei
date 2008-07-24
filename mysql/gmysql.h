@@ -522,7 +522,7 @@ public:
 
 
 	//-----------------------------------------------------
-	/** @name Groups Methods
+	/** @name Communities Methods
 	*/
 	// @{
 
@@ -564,8 +564,8 @@ public:
 	virtual size_t GetHistorySize(void);
 
 	/**
-	* A subprofile was updated and the corresponding groups must be updated.
-	* @param subid           Identifier of the subprofile.
+	* A profile was updated and the corresponding groups must be updated.
+	* @param subid           Identifier of the profile.
 	*/
 	virtual void UpdateCommunities(size_t subid);
 
@@ -594,7 +594,44 @@ public:
 	*/
 	virtual void AddSugsCommunity(const R::RString& name,size_t groupid,size_t docid,size_t rank);
 
-	// @} Groups
+	// @} Communities
+
+
+	//-----------------------------------------------------
+	/** @name Topics Methods
+	*/
+	// @{
+
+	/**
+	* Load the topics.
+	*/
+	virtual void LoadTopics(void);
+
+	/**
+	* Method that load a topic that is stored.
+	* @param topicid         Identifier of the topic.
+	*/
+	virtual GTopic* LoadTopic(size_t groupid);
+
+	/**
+	* A document was updated and the corresponding topics must be updated.
+	* @param docid           Identifier of the document.
+	*/
+	virtual void UpdateTopics(size_t docid);
+
+	/**
+	* Assign an identifier to a new topic.
+	* @param topic            Topic.
+	*/
+	virtual void AssignId(GTopic* grp);
+
+	/**
+	* Save the topics of the session.
+	*/
+	virtual void SaveTopics(void);
+
+	// @} Topics
+
 
 	/**
 	* Create the parameters.

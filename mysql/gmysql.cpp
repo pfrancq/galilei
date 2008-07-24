@@ -53,6 +53,7 @@
 #include <gmysql.h>
 #include <gslot.h>
 #include <gcommunity.h>
+#include <gtopic.h>
 #include <gsubjects.h>
 #include <gsubject.h>
 #include <gsession.h>
@@ -410,18 +411,18 @@ void GStorageMySQL::LoadSubjects(void)
 
 		// Load the subjects
 		GSubject* Top=Session->GetSubjects()->GetTop();
-		auto_ptr<RQuery> sub(Db->Query("SELECT topicid,name,used FROM topics WHERE parent=0"));
+		auto_ptr<RQuery> sub(Db->Query("SELECT subjectid,name,used FROM subjects WHERE parent=0"));
 		for(sub->Start();!sub->End();sub->Next())
 		{
 			Session->GetSubjects()->InsertNode(Top,subject=new GSubject(atoi((*sub)[0]),(*sub)[1],atoi((*sub)[2])));
-			sSql="SELECT topicid,name,used FROM topics WHERE parent="+(*sub)[0];
+			sSql="SELECT subjectid,name,used FROM subjects WHERE parent="+(*sub)[0];
 			auto_ptr<RQuery> subsub(Db->Query(sSql));
 			for(subsub->Start();!subsub->End();subsub->Next())
 				Session->GetSubjects()->InsertNode(subject,subsubject=new GSubject(atoi((*subsub)[0]),(*subsub)[1],atoi((*subsub)[2])));
 		}
 
 		//  Make Link between documents and subjects
-		auto_ptr<RQuery> docs(Db->Query("SELECT htmlid,topicid FROM topicsbyhtmls"));
+		auto_ptr<RQuery> docs(Db->Query("SELECT htmlid,subjectid FROM subjectsbyhtmls"));
 		for(docs->Start();!docs->End();docs->Next())
 		{
 			GDoc* d=Session->GetDoc(atoi((*docs)[0]));
@@ -430,7 +431,7 @@ void GStorageMySQL::LoadSubjects(void)
 		}
 
 		// Make links between profiles and subjects
-		auto_ptr<RQuery> profiles(Db->Query("SELECT profileid,topicid FROM profiles"));
+		auto_ptr<RQuery> profiles(Db->Query("SELECT profileid,subjectid FROM profiles"));
 		for(profiles->Start();!profiles->End();profiles->Next())
 		{
 			GProfile* prof=Session->GetProfile(atoi((*profiles)[0]));
@@ -463,9 +464,9 @@ void GStorageMySQL::SaveSubjects(void)
 			Session->GetSlot()->StartJob("Save subjects");
 
 		// Clear all subjects information
-		auto_ptr<RQuery> Del1(Db->Query("DELETE FROM topicsbyhtmls"));
-		auto_ptr<RQuery> Del2(Db->Query("DELETE FROM topics"));
-		auto_ptr<RQuery> Del3(Db->Query("UPDATE profiles SET topicid=0"));
+		auto_ptr<RQuery> Del1(Db->Query("DELETE FROM subjectsbyhtmls"));
+		auto_ptr<RQuery> Del2(Db->Query("DELETE FROM subjects"));
+		auto_ptr<RQuery> Del3(Db->Query("UPDATE profiles SET subjectid=0"));
 
 		RCursor<GSubject> Cur(Session->GetSubjects()->GetNodes());
 		for(Cur.Start();!Cur.End();Cur.Next())
@@ -482,19 +483,19 @@ void GStorageMySQL::SaveSubjects(void)
 				used=",'0')";
 
 			// Insert the topic
-			sSql="INSERT INTO topics(topicid,name,parent,used) VALUES("+
+			sSql="INSERT INTO subjects(subjectid,name,parent,used) VALUES("+
 				Num(Cur()->GetId())+",'"+Cur()->GetName()+"',"+Num(parent)+used;
 			auto_ptr<RQuery> Ins1(Db->Query(sSql));
 
 			// Assign the documents to the topic
 			RCursor<GDoc> Docs(Cur()->GetDocs());
 			for(Docs.Start();!Docs.End();Docs.Next())
-				auto_ptr<RQuery>(Db->Query("INSERT INTO topicsbyhtmls(topicid,htmlid) VALUES("+Num(Cur()->GetId())+","+Num(Docs()->GetId())+")"));
+				auto_ptr<RQuery>(Db->Query("INSERT INTO subjectsbyhtmls(subjectid,htmlid) VALUES("+Num(Cur()->GetId())+","+Num(Docs()->GetId())+")"));
 
 			// AsSubPsign the profiles to the topic
 			RCursor<GProfile> Profiles(Cur()->GetProfiles());
 			for(Profiles.Start();!Profiles.End();Profiles.Next())
-				auto_ptr<RQuery>(Db->Query("UPDATE profiles SET topicid="+Num(Cur()->GetId())+" WHERE profileid="+Num(Profiles()->GetId())));
+				auto_ptr<RQuery>(Db->Query("UPDATE profiles SET subjectid="+Num(Cur()->GetId())+" WHERE profileid="+Num(Profiles()->GetId())));
 		}
 	}
 	catch(RDbException e)
@@ -599,6 +600,7 @@ void GStorageMySQL::Clear(tObjType objtype)
 		RString What;
 		bool Desc(false);
 		bool Group(false);
+		bool Topic(false);
 
 		switch(objtype)
 		{
@@ -614,6 +616,11 @@ void GStorageMySQL::Clear(tObjType objtype)
 				What="groups";
 				Desc=true;
 				break;
+			case otTopic:
+				Topic=true;
+				What="topics";
+				Desc=true;
+				break;
 			case otFdbk:
 				What="htmlsbyprofiles";
 				break;
@@ -626,6 +633,9 @@ void GStorageMySQL::Clear(tObjType objtype)
 		// If groups -> All profiles are detached
 		if(Group)
 			auto_ptr<RQuery> Update(Db->Query("UPDATE profiles SET groupid=0,attached=NULL"));
+		// If topics -> All documents are detached
+		if(Group)
+			auto_ptr<RQuery> Update(Db->Query("UPDATE htmls SET topicid=0,attached=NULL"));
 	}
 	catch(RDbException e)
 	{
@@ -647,9 +657,9 @@ void GStorageMySQL::LoadConceptTypes(void)
 {
 	try
 	{
-		auto_ptr<RQuery> Types(Db->Query("SELECT typeid,name,description,refdocs,refprofiles,refgroups FROM concepttypes"));
+		auto_ptr<RQuery> Types(Db->Query("SELECT typeid,name,description,refdocs,refprofiles,refgroups,reftopics FROM concepttypes"));
 		for(Types->Start();!Types->End();Types->Next())
-			Session->InsertConceptType(atoi((*Types)[0]),(*Types)[1],(*Types)[2],atoi((*Types)[3]),atoi((*Types)[4]),atoi((*Types)[5]));
+			Session->InsertConceptType(atoi((*Types)[0]),(*Types)[1],(*Types)[2],atoi((*Types)[3]),atoi((*Types)[4]),atoi((*Types)[5]),atoi((*Types)[6]));
 	}
 	catch(RDbException e)
 	{
@@ -753,6 +763,9 @@ void GStorageMySQL::LoadInfos(RContainer<GWeightInfo,false,true>& infos,tObjType
 			case otCommunity:
 				table="group";
 				break;
+			case otTopic:
+				table="topic";
+				break;
 			default:
 				throw GException("This type of objects do not have descriptions");
 		};
@@ -813,18 +826,18 @@ void GStorageMySQL::LoadConcepts(GConceptType* type)
 
 		// Create and insert the dictionary
 		// Load the dictionary from the database
-		sSql="SELECT conceptid,name,refdocs,refprofiles,refgroups FROM concepts WHERE typeid="+Num(type->GetId());
+		sSql="SELECT conceptid,name,refdocs,refprofiles,refgroups,reftopics FROM concepts WHERE typeid="+Num(type->GetId());
 		auto_ptr<RQuery> dicts(Db->Query(sSql));
 		for(dicts->Start();!dicts->End();dicts->Next())
 		{
 			if(Index)
 			{
-				GXMLIndex w(atoi((*dicts)[0]),(*dicts)[1],type,atoi((*dicts)[2]),atoi((*dicts)[3]),atoi((*dicts)[4]));
+				GXMLIndex w(atoi((*dicts)[0]),(*dicts)[1],type,atoi((*dicts)[2]),atoi((*dicts)[3]),atoi((*dicts)[4]),atoi((*dicts)[5]));
 				type->InsertConcept(&w);
 			}
 			else
 			{
-				GConcept w(atoi((*dicts)[0]),(*dicts)[1],type,atoi((*dicts)[2]),atoi((*dicts)[3]),atoi((*dicts)[4]));
+				GConcept w(atoi((*dicts)[0]),(*dicts)[1],type,atoi((*dicts)[2]),atoi((*dicts)[3]),atoi((*dicts)[4]),atoi((*dicts)[5]));
 				type->InsertConcept(&w);
 			}
 		}
@@ -954,9 +967,9 @@ void GStorageMySQL::SaveConcept(GConcept* concept)
 		                 "typeid="+Num(concept->GetType()->GetId())));
 
 		// Insert the new word in the database
-		Sql="INSERT INTO concepts(conceptid,name,typeid,refprofiles,refgroups,refdocs) ";
+		Sql="INSERT INTO concepts(conceptid,name,typeid,refprofiles,refgroups,refdocs,reftopics) ";
 		Sql+="VALUES("+Num(concept->GetId())+","+RQuery::SQLValue(concept->GetName())+","+
-		     Num(concept->GetType()->GetId())+",0,0,0)";
+		     Num(concept->GetType()->GetId())+",0,0,0,0)";
 		auto_ptr<RQuery> Insert(Db->Query(Sql));
 	}
 	catch(RDbException e)
@@ -986,6 +999,10 @@ void GStorageMySQL::SaveRefs(const GConcept* concept,tObjType what,size_t refs)
 				break;
 			case otCommunity:
 				sSql="UPDATE concepts SET refgroups="+Num(refs)+
+				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
+				break;
+			case otTopic:
+				sSql="UPDATE concepts SET reftopics="+Num(refs)+
 				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
 				break;
 			default:
@@ -1029,6 +1046,13 @@ void GStorageMySQL::SaveRefs(GConceptType* type,tObjType what,size_t refs)
 					auto_ptr<RQuery>(Db->Query("UPDATE concepts SET refgroups=0 WHERE typeid="+Num(type->GetId())));
 				break;
 			}
+			case otTopic:
+			{
+				auto_ptr<RQuery>(Db->Query("UPDATE concepttypes SET reftopics="+Num(refs)+" WHERE typeid="+Num(type->GetId())));
+				if(refs==0)
+					auto_ptr<RQuery>(Db->Query("UPDATE concepts SET reftopics=0 WHERE typeid="+Num(type->GetId())));
+				break;
+			}
 			default:
 				throw GException("This type of objects do not have descriptions");
 		};
@@ -1053,7 +1077,7 @@ void GStorageMySQL::AssignId(GDoc* doc)
 {
 	try
 	{
-		// Reserved an identificator
+		// Reserved an identifier
 		RString sSql="INSERT INTO htmls(html,title,langid) "
 		             "VALUES("+RQuery::SQLValue(doc->GetURL())+","+RQuery::SQLValue(doc->GetName())+","+Lang(doc->GetLang())+")";
 		auto_ptr<RQuery> Insert(Db->Query(sSql));
@@ -1082,7 +1106,7 @@ void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 
 	try
 	{
-		// Search the values to initialise the indexer
+		// Search the values to initialize the indexer
 		for(char i='a';i<='z';i++)
 		{
 			sSql="SELECT COUNT(*) FROM concepts WHERE name LIKE '"+RString(i)+"%'";
@@ -1133,7 +1157,7 @@ GDoc* GStorageMySQL::LoadDoc(size_t docid)
 	{
 		GDoc* doc;
 
-		auto_ptr<RQuery> quer (Db->Query("SELECT htmlid,html,title,mimetype,langid,updated,calculated,owner "
+		auto_ptr<RQuery> quer (Db->Query("SELECT htmlid,html,title,mimetype,langid,updated,calculated,owner,topicid,attached "
 		                "FROM htmls WHERE htmlid="+Num(docid)));
 		quer->Start();
 		if(!quer->GetNbRows())
@@ -1144,7 +1168,7 @@ GDoc* GStorageMySQL::LoadDoc(size_t docid)
 		if((!lang)&&(!(*quer)[4].IsEmpty()))
 			return(0);
 
-		doc=new GDoc((*quer)[1],(*quer)[2],docid,lang,(*quer)[3],GetMySQLToDate((*quer)[5]),GetMySQLToDate((*quer)[6]),atoi((*quer)[7]));
+		doc=new GDoc((*quer)[1],(*quer)[2],docid,lang,(*quer)[3],atoi((*quer)[8]),GetMySQLToDate((*quer)[6]),GetMySQLToDate((*quer)[5]),GetMySQLToDate((*quer)[9]),atoi((*quer)[7]));
 		doc->SetState(osNeedLoad);
 
 		// Load the links of the document loaded.
@@ -1362,7 +1386,7 @@ void GStorageMySQL::LoadDocs(void)
 
 	try
 	{
-		RString Sql("SELECT htmlid,html,title,mimetype,langid,updated,calculated,owner FROM htmls");
+		RString Sql("SELECT htmlid,html,title,mimetype,langid,updated,calculated,owner,topicid,attached FROM htmls");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";
 		if(Filtering)
@@ -1382,7 +1406,7 @@ void GStorageMySQL::LoadDocs(void)
 				continue;
 
 			docid=atoi((*quer)[0]);
-			doc=new GDoc((*quer)[1],(*quer)[2],docid,lang,(*quer)[3],GetMySQLToDate((*quer)[5]),GetMySQLToDate((*quer)[6]),atoi((*quer)[7]));
+			doc=new GDoc((*quer)[1],(*quer)[2],docid,lang,(*quer)[3],atoi((*quer)[8]),GetMySQLToDate((*quer)[6]),GetMySQLToDate((*quer)[5]),GetMySQLToDate((*quer)[9]),atoi((*quer)[7]));
 			Session->InsertDoc(doc);
 			doc->SetState(osNeedLoad);
 
@@ -1449,10 +1473,10 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 		if(!atoi((*Test)[0]))
 		{
 			// Insert the document
-			sSql="INSERT INTO htmls(htmlid,html,title,mimetype,langid,updated,calculated) "
+			sSql="INSERT INTO htmls(htmlid,html,title,mimetype,langid,updated,calculated,topicid,attached) "
 			     "VALUES("+Num(doc->GetId())+","+RQuery::SQLValue(doc->GetURL())+","+
 			     RQuery::SQLValue(doc->GetName())+","+f+","+l+","+RQuery::SQLValue(doc->GetUpdated())+
-			     ","+RQuery::SQLValue(doc->GetComputed())+")";
+			     ","+RQuery::SQLValue(doc->GetComputed())+","+Num(doc->GetGroupId())+","+RQuery::SQLValue(doc->GetAttached())+")";
 			auto_ptr<RQuery> Insert(Db->Query(sSql));
 		}
 		else
@@ -1461,6 +1485,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 			sSql="UPDATE htmls SET html="+RQuery::SQLValue(doc->GetURL())+",title="+
 			     RQuery::SQLValue(doc->GetName())+",mimetype="+f+",langid="+l+
 			     ",updated="+RQuery::SQLValue(doc->GetUpdated())+",calculated="+RQuery::SQLValue(doc->GetComputed())+
+			     ",topicid="+Num(doc->GetGroupId())+",attached="+RQuery::SQLValue(doc->GetAttached())+
 				 " WHERE htmlid="+Num(doc->GetId());
 			auto_ptr<RQuery> Update(Db->Query(sSql));
 		}
@@ -1944,7 +1969,7 @@ void GStorageMySQL::AddFdbk(size_t p,size_t d,tDocAssessment assess,R::RDate dat
 
 //------------------------------------------------------------------------------
 //
-// Groups Methods
+// Communities Methods
 //
 //------------------------------------------------------------------------------
 
@@ -2302,6 +2327,165 @@ void GStorageMySQL::AddSugsCommunity(const R::RString& name,size_t groupid,size_
 		sSql="INSERT INTO sugsbygroups(groupid,htmlid,rank,test) "
 		     "VALUES("+Num(groupid)+","+Num(docid)+","+Num(rank)+","+RQuery::SQLValue(name)+")";
 		auto_ptr<RQuery> create(Db->Query(sSql));
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// Topics Methods
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadTopics(void)
+{
+	GTopic* group;
+	R::RCursor<GTopic> GroupsCursor;
+
+	try
+	{
+		RString Sql("SELECT topicid,updated,calculated FROM topics");
+		if(!LoadAll)
+			Sql+=" WHERE calculated<updated";
+		if(Filtering)
+		{
+			if(LoadAll)
+				Sql+=" WHERE ";
+			else
+				Sql+=" OR ";
+			Sql+="((updated>="+RQuery::SQLValue(Filter)+") OR (calculated>="+RQuery::SQLValue(Filter)+"))";
+		}
+		auto_ptr<RQuery> Groups(Db->Query(Sql));
+		for(Groups->Start();!Groups->End();Groups->Next())
+		{
+			group=new GTopic(atoi((*Groups)[0]),(*Groups)[1],(*Groups)[2]);
+			group->SetState(osNeedLoad);
+			Session->InsertTopic(group);
+		}
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+GTopic* GStorageMySQL::LoadTopic(size_t topicid)
+{
+	try
+	{
+		auto_ptr<RQuery> Group(Db->Query("SELECT topicid,updated,calculated FROM topics WHERE topicid="+RString::Number(topicid)));
+		Group->Start();
+		if(!Group->GetNbRows())
+			return(0);
+		GTopic* group=new GTopic(atoi((*Group)[0]),(*Group)[1],(*Group)[2]);
+		group->SetState(osNeedLoad);
+
+		return(group);
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::UpdateTopics(size_t subid)
+{
+	try
+	{
+		auto_ptr<RQuery> Up(Db->Query("UPDATE topics,htmls SET topics.updated=CURDATE() "
+	    	         "WHERE topics.topicid=htmls.topicid AND "
+	        	     "htmls.htmlid="+Num(subid)));
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::AssignId(GTopic* grp)
+{
+	try
+	{
+		// Reserved an identificator
+		RString sSql="INSERT INTO topics(topicid) "
+		             "SELECT IFNULL(MAX(topicid),0)+1 "
+		             "FROM topics";
+		auto_ptr<RQuery> Insert(Db->Query(sSql));
+
+		// Get the id and assign it to the group
+		sSql=RString("SELECT topicid FROM topics WHERE topicautoid=LAST_INSERT_ID()");
+		auto_ptr<RQuery> Get(Db->Query(sSql));
+		Get->Start();
+		grp->SetId(atoi((*Get)[0]));
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveTopics(void)
+{
+	RCursor<GWeightInfo> WordCur;
+	R::RCursor<GTopic> GroupsCursor;
+	RString sSql;
+	RCursor<GDoc> Sub;
+
+	try
+	{
+		// Delete topics and topics info
+		auto_ptr<RQuery> delete1(Db->Query("DELETE FROM topicsbyconcepts;"));
+		auto_ptr<RQuery> delete2(Db->Query("DELETE FROM topics"));
+
+
+		GroupsCursor=Session->GetTopics();
+		for(GroupsCursor.Start();!GroupsCursor.End();GroupsCursor.Next())
+		{
+			sSql="INSERT INTO topics(topicid,updated,calculated) "
+			     "VALUES("+Num(GroupsCursor()->GetId())+","+
+			     RQuery::SQLValue(GroupsCursor()->GetUpdated())+","+
+			     RQuery::SQLValue(GroupsCursor()->GetComputed())+")";
+			auto_ptr<RQuery> insert1(Db->Query(sSql));
+
+			// Save documents infos
+			Sub=GroupsCursor()->GetObjs();
+			for(Sub.Start();!Sub.End();Sub.Next())
+			{
+				sSql="UPDATE htmls SET topicid="+Num(GroupsCursor()->GetId())+","
+				     "attached="+RQuery::SQLValue(Sub()->GetAttached())+" "
+				     "WHERE htmlid="+Num(Sub()->GetId());
+				auto_ptr<RQuery> update(Db->Query(sSql));
+			}
+
+			// Save the description part
+			WordCur.Set(*GroupsCursor());
+			for(WordCur.Start();!WordCur.End();WordCur.Next())
+			{
+				sSql="INSERT INTO topicsbyconcepts(topicid,conceptid,weight,typeid) "
+				     "VALUES("+Num(GroupsCursor()->GetId())+","+Num(WordCur()->GetId())+","+
+				     Num(WordCur()->GetWeight())+","+Num(WordCur()->GetType()->GetId())+")";
+				auto_ptr<RQuery> InserinfoWord(Db->Query(sSql));
+			}
+		}
 	}
 	catch(RDbException e)
 	{
