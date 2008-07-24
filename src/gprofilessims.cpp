@@ -48,7 +48,7 @@ using namespace GALILEI;
 class GProfilesSims : public GGenericSims
 {
 public:
-	GProfilesSims(GFactoryMeasure* fac) : GGenericSims(fac,true,otProfile) {} 
+	GProfilesSims(GFactoryMeasure* fac) : GGenericSims(fac,otProfile,otProfile) {}
 };
 
 

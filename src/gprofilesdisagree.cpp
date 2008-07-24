@@ -10,7 +10,7 @@
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
-		
+
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -55,13 +55,13 @@ public:
 	GProfilesDisagreement(GFactoryMeasure* fac);
 	virtual void ApplyConfig(void);
 	double Compute(void* obj1,void* obj2);
-	static void CreateParams(RConfig* params);	
+	static void CreateParams(RConfig* params);
 };
 
 
 //------------------------------------------------------------------------------
 GProfilesDisagreement::GProfilesDisagreement(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,true,otProfile)
+	: GMeasure2Elements(fac,otProfile,otProfile,true)
 {
 }
 

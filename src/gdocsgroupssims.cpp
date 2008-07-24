@@ -46,7 +46,7 @@ using namespace GALILEI;
 class GDocsCommunitiesSims : public GGenericSims
 {
 public:
-	GDocsCommunitiesSims(GFactoryMeasure* fac) : GGenericSims(fac,false,otDocCommunity) {}
+	GDocsCommunitiesSims(GFactoryMeasure* fac) : GGenericSims(fac,otDoc,otCommunity) {}
 };
 
 

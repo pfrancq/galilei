@@ -55,13 +55,13 @@ public:
 	GDocsAgreement(GFactoryMeasure* fac);
 	virtual void ApplyConfig(void);
 	double Compute(void* obj1,void* obj2);
-	static void CreateParams(RConfig* params);	
+	static void CreateParams(RConfig* params);
 };
 
 
 //------------------------------------------------------------------------------
 GDocsAgreement::GDocsAgreement(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,true,otDoc)
+	: GMeasure2Elements(fac,otDoc,otDoc,true)
 {
 }
 

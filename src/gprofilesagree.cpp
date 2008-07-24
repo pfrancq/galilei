@@ -56,13 +56,13 @@ public:
 	GProfilesAgreement(GFactoryMeasure* fac);
 	virtual void ApplyConfig(void);
 	double Compute(void* obj1,void* obj2);
-	static void CreateParams(RConfig* params);	
+	static void CreateParams(RConfig* params);
 };
 
 
 //------------------------------------------------------------------------------
 GProfilesAgreement::GProfilesAgreement(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,true,otProfile)
+	: GMeasure2Elements(fac,otProfile,otProfile,true)
 {
 }
 

@@ -78,18 +78,18 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 //	size_t nb(0);
 
 	// Compute total number of references and the maximum for each type
-	TotalRef=Type->GetRef(Owner->Space);
+	TotalRef=Owner->GetRef(Type);
 	norm1=norm2=num=0.0;
 	max1=Owner->vec1->GetMaxAbsWeight(Type);
 	max2=Owner->vec2->GetMaxAbsWeight(Type);
 
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
-		iff1=log10(TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->Space)));
+		iff1=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj1()->GetId(),Type)));
 		w1=(Obj1()->GetWeight()/max1)*iff1;
 		while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())<(*Obj1())))
 		{
-			iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->Space)));
+			iff2=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj2()->GetId(),Type)));
 			w2=(Obj2()->GetWeight()/max2)*iff2;
 			norm2+=w2*w2;
 			Obj2.Next();
@@ -109,7 +109,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 	}
 	while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type))
 	{
-		iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Obj2()->GetId(),Owner->Space)));
+		iff2=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj2()->GetId(),Type)));
 		w2=(Obj2()->GetWeight()/max2)*iff2;
 		norm2+=w2*w2;
 		Obj2.Next();
@@ -141,14 +141,14 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 	double den;
 
 	// Compute total number of references and the maximum for each type
-	TotalRef=Type->GetRef(Owner->Space);
+	TotalRef=Owner->GetRef(Type);
 	num=den=0.0;
 	max1=Owner->vec1->GetMaxAbsWeight(Type);
 	max2=Owner->vec2->GetMaxAbsWeight(Type);
 
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
-		iff1=log10(TotalRef/static_cast<double>(Type->GetRef(Obj1()->GetId(),Owner->Space)));
+		iff1=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj1()->GetId(),Type)));
 		w1=(Obj1()->GetWeight()/max1)*iff1;
 		GXMLIndex* c1=dynamic_cast<GXMLIndex*>(Obj1()->GetConcept());
 		RCursor<GWeightInfo> Cur(Obj2);
@@ -160,7 +160,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 			if(c1->GetXMLTag()!=c2->GetXMLTag())
 				continue;
 
-			iff2=log10(TotalRef/static_cast<double>(Type->GetRef(Cur()->GetId(),Owner->Space)));
+			iff2=log10(TotalRef/static_cast<double>(Owner->GetRef(Cur()->GetId(),Type)));
 			w2=(Cur()->GetWeight()/max2)*iff2;
 			den+=fabs(w1*w2);
 			if((w1<0.0)&&(w2<0.0))
@@ -187,35 +187,9 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGenericSims::GGenericSims(GFactoryMeasure* fac,bool sym,tObjType type)
-	: GMeasure2Elements(fac,sym,otNoClass), Types(30), Space(type)
+GGenericSims::GGenericSims(GFactoryMeasure* fac,tObjType lines,tObjType cols)
+	: GMeasure2Elements(fac,lines,cols,lines==cols), Types(30)
 {
-	switch(Space)
-	{
-		case otDoc:
-			SetElementsType(true,otDoc,otDoc);
-			break;
-		case otProfile :
-			SetElementsType(true,otProfile,otProfile);
-			break;
-		case otCommunity :
-			SetElementsType(true,otCommunity,otCommunity);
-			break;
-		case otDocProfile  :
-			SetElementsType(false,otDoc,otProfile);
-			break;
-		case otDocCommunity :
-			SetElementsType(false,otDoc,otCommunity);
-			break;
-		case otProfileCommunity :
-			SetElementsType(false,otProfile,otCommunity);
-			break;
-		case otTopic :
-			SetElementsType(true,otTopic,otTopic);
-			break;
-		default:
-			throw GException("No similarity measure for "+GetObjType(Space));
-	}
 }
 
 
@@ -361,6 +335,25 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 			return(SimilarityIFFL());
 	}
 	return(0.0);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GGenericSims::GetRef(GConceptType* type)
+{
+	size_t nb(type->GetRef(GetLinesType()));
+	if(GetLinesType()!=GetColsType())
+		nb+=type->GetRef(GetColsType());
+	return(nb);
+}
+
+//------------------------------------------------------------------------------
+size_t GGenericSims::GetRef(size_t id,GConceptType* type)
+{
+	size_t nb(type->GetRef(id,GetLinesType()));
+	if(GetLinesType()!=GetColsType())
+		nb+=type->GetRef(id,GetColsType());
+	return(nb);
 }
 
 
