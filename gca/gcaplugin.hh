@@ -1,10 +1,10 @@
 /*
 
-	Genetic Documents Algorithm
+	GCA Project
 
-	GCA.hh
+	GCAPlugIn.hh
 
-	Genetic Clustering Algorithm - Template Implementation
+	Generic Plug-in for GCA - Template Implementation
 
 	Copyright 2008 by the Université Libre de Bruxelles.
 
@@ -34,7 +34,6 @@
 // include files for R Project
 #include <rcursor.h>
 #include <rdebug.h>
-#include <rgroupingkmeans.h>
 
 
 //-----------------------------------------------------------------------------
@@ -59,13 +58,65 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-//  GCA
+// class kMeansGroup
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+kMeansGroup::kMeansGroup(kMeansGroups* owner,size_t id)
+	: R::RGroup<kMeansGroup,GCAObj,kMeansGroups>(owner,id)
+{
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class kMeansGroups
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+kMeansGroups::kMeansGroups(R::RCursor<GCAObj> objs,size_t max)
+	: R::RGroups<kMeansGroup,GCAObj,kMeansGroups>(objs,max)
+{
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class kMeansObj
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+kMeansObj::kMeansObj(const R::RString& n,R::RRandom* r,R::RCursor<GCAObj> objs,const R::RString& mes,R::RDebug* debug)
+	: R::RGroupingKMeans<kMeansGroup,GCAObj,kMeansGroups>(n,r,objs,debug)
+{
+	Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities");
+}
+
+
+//-----------------------------------------------------------------------------
+double kMeansObj::Similarity(GCAObj* obj1,GCAObj* obj2)
+{
+	double d;
+	Measure->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
+	return(d);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+//  class GCAPlugIn
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	GCA<cObj,cGroup,cFactory>::GCA(const RString& name,tObjType type)
+	GCAPlugIn<cObj,cGroup,cFactory>::GCAPlugIn(const RString& name,tObjType type)
 		: RObject(name), Objs(20), Type(type)
 {
 }
@@ -73,7 +124,7 @@ template<class cObj,class cGroup,class cFactory>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	void GCA<cObj,cGroup,cFactory>::ApplyConfig(cFactory* factory)
+	void GCAPlugIn<cObj,cGroup,cFactory>::ApplyConfig(cFactory* factory)
 {
 	Params.PopSize=factory->GetUInt("Population Size");
 	Params.MaxGen=factory->GetUInt("Max Gen");
@@ -84,6 +135,9 @@ template<class cObj,class cGroup,class cFactory>
 	Params.MaxKMeans=factory->GetUInt("Max kMeans");
 	Params.Convergence=factory->GetDouble("Convergence");
 	Params.NbDivChromo=factory->GetUInt("NbDivChromo");
+	Params.ParamsSim=factory->R::RConfig::FindParam<R::RParamStruct>("Sim Criterion");
+	Params.ParamsAgreement=factory->R::RConfig::FindParam<R::RParamStruct>("Agreement Criterion");
+	Params.ParamsDisagreement=factory->R::RConfig::FindParam<R::RParamStruct>("Disagreement Criterion");
 	RString what(factory->Get("Clustering Method"));
 	ClusteringMethod=0;
 	if(what=="GA")
@@ -96,7 +150,7 @@ template<class cObj,class cGroup,class cFactory>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	bool GCA<cObj,cGroup,cFactory>::IsCoherent(const cGroup* /*grp*/) const
+	bool GCAPlugIn<cObj,cGroup,cFactory>::IsCoherent(const cGroup* /*grp*/) const
 {
 	return(true);
 }
@@ -104,7 +158,7 @@ template<class cObj,class cGroup,class cFactory>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	bool GCA<cObj,cGroup,cFactory>::IsCoherent(const cGroup* /*grp*/,const cObj* /*sub*/) const
+	bool GCAPlugIn<cObj,cGroup,cFactory>::IsCoherent(const cGroup* /*grp*/,const cObj* /*sub*/) const
 {
 	return(true);
 }
@@ -112,7 +166,7 @@ template<class cObj,class cGroup,class cFactory>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	bool GCA<cObj,cGroup,cFactory>::IsValid(cGroup* /*grp*/)
+	bool GCAPlugIn<cObj,cGroup,cFactory>::IsValid(cGroup* /*grp*/)
 {
 //	GSubProfileCursor Cur1,Cur2;
 //	size_t i,j;
@@ -141,7 +195,7 @@ template<class cObj,class cGroup,class cFactory>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	void GCA<cObj,cGroup,cFactory>::ConstructResults(GSession* session,R::RCursor<GCAGroup> Sol)
+	template<class cAlgoGroup> void GCAPlugIn<cObj,cGroup,cFactory>::ConstructResults(GSession* session,R::RCursor<cAlgoGroup> Sol)
 {
 	size_t* tab;
 	size_t* ptr;
@@ -162,87 +216,51 @@ template<class cObj,class cGroup,class cFactory>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	void GCA<cObj,cGroup,cFactory>::DoGCA(GSession* session)
+	void GCAPlugIn<cObj,cGroup,cFactory>::DoGCA(GSession* session,const R::RString& mes)
 {
 	double d;
 
-	cout<<"Do GA"<<endl;
+	cout<<"Do GCA for "<<GetObjType(Type)<<"s"<<endl;
 
-	// Run the GA
-	cout<<"Get Mininmum"<<endl;
-
-	switch(Type)
-	{
-		case otDoc :
-			GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities")->Info(0,&d);
-			break;
-		case otProfile :
-			GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities")->Info(0,&d);
-			break;
-		default:
-			break;
-
-	}
+	// Init the GCA
+	cout<<"Get minimum similarity"<<endl;
+	GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities")->Info(0,&d);
 	Params.MinSimLevel=d;
-	cout<<"Min Sim="<<d<<endl;
-	cout<<"New GDA"<<endl;
-	GCAInst Instance(session,Objs,&Params,session->GetDebug(),Type);
-	cout<<"Init GDA"<<endl;
+	cout<<"   Minimum Similarity="<<d<<endl;
+	cout<<"New GCA"<<endl;
+	GCAInst Instance(session,Objs,&Params,session->GetDebug(),Type,mes);
+	cout<<"Init GCA"<<endl;
 	Instance.Init();
-	cout<<"Run GDA"<<endl;
+
+	// Run
+	cout<<"Run GCA"<<endl;
 	Instance.Run();
 	cout<<"Build solutions"<<endl;
-	ConstructResults(session,Instance.BestChromosome->Used);
+	ConstructResults<GCAGroup>(session,Instance.BestChromosome->Used);
 }
 
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	void GCA<cObj,cGroup,cFactory>::DokMeans(GSession*)
+	void GCAPlugIn<cObj,cGroup,cFactory>::DokMeans(GSession* session,const R::RString& mes)
 {
-/*	cout<<"Do kMeans"<<endl;
-
-	cout<<"Get Mininmum"<<endl;
-	double d;
-	GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities")->Info(0,&d);
-	Params.MinSimLevel=d;
-	cout<<"Min Sim="<<d<<endl;
-
+	cout<<"Do kMeans for "<<GetObjType(Type)<<"s"<<endl;
 	RRandomGood Rand(1);
 	Rand.Reset(1);
 
-	kMeansDoc kMeans("k-MeansDocs",&Rand,Objs);
+	kMeansObj kMeans("k-MeansObj",&Rand,Objs,mes);
 	kMeansGroups Sol(Objs,NbClusters);
 	Sol.Init();
-	cout<<"Run kMeans"<<endl;
+	cout<<"Run kMeans ("<<NbClusters<<" clusters)"<<endl;
 	kMeans.Run(&Sol,Params.MaxKMeans,NbClusters);
-	cout<<kMeans.GetNbIterations()<<" iterations runned"<<endl;
-
-	cout<<"Save solutions"<<endl;
-	size_t* tab;
-	size_t* ptr;
-
-	RTextFile Out("/var/log/galilei/res.txt");
-	Out.Open(RIO::Create);
-	RCursor<kMeansGroup> Cur(Sol);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		Out<<"New group - "<<Cur()->GetNbObjs()<<endl;
-		ptr=tab=Cur()->GetObjectsId();
-		while((*ptr)!=NoObject)
-		{
-			GDoc* doc=static_cast<GDoc*>((Objs[*(ptr++)])->GetElement());
-			Out<<"\t"<<doc->GetId()<<doc->GetName()<<endl;
-		}
-		delete[] tab;
-	}
-	Out.Close();*/
+	cout<<"kMeans iterates "<<kMeans.GetNbIterations()<<" times"<<endl;
+	ConstructResults<kMeansGroup>(session,Sol);
 }
 
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	void GCA<cObj,cGroup,cFactory>::Run(GSession* session)
+	void GCAPlugIn<cObj,cGroup,cFactory>::Run(GSession* session,const R::RString& mes)
 {
 	// set the level of the MinSim
 	try
@@ -264,10 +282,10 @@ template<class cObj,class cGroup,class cFactory>
 		switch(ClusteringMethod)
 		{
 			case 1:
-				DoGCA(session);
+				DoGCA(session,mes);
 				break;
 			case 2:
-				DokMeans(session);
+				DokMeans(session,mes);
 				break;
 		}
 	}
@@ -296,7 +314,7 @@ template<class cObj,class cGroup,class cFactory>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	void GCA<cObj,cGroup,cFactory>::CreateParams(RConfig* params)
+	void GCAPlugIn<cObj,cGroup,cFactory>::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("Population Size",16));
 	params->InsertParam(new RParamValue("Max Gen",30));
@@ -317,6 +335,6 @@ template<class cObj,class cGroup,class cFactory>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	GCA<cObj,cGroup,cFactory>::~GCA(void)
+	GCAPlugIn<cObj,cGroup,cFactory>::~GCAPlugIn(void)
 {
 }

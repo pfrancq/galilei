@@ -124,7 +124,7 @@ GCAThreadData::~GCAThreadData(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,GCAParams* p,RDebug *debug,tObjType type)
+GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,GCAParams* p,RDebug *debug,tObjType type,const R::RString& mes)
 	: RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>(p->PopSize,objs,"FirstFit","GCA",debug),
 	GCAProm(p), Params(p), Sols(0), Session(ses), NoSocialProfiles(objs.GetNb()),
 	Ratios(objs.GetNb()), Sims(0),Agree(0), Disagree(0), Type(type)
@@ -136,21 +136,12 @@ GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,GCAParams* p,RDebug *debug,t
 	size_t i;
 
 	// Init measures
-	switch(Type)
-	{
-		case otDoc :
-			Sims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
-			Agree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Agreements");
-			Disagree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Disagreements");
-			break;
-		case otProfile :
-			Sims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
-			Agree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Agreements");
-			Disagree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Disagreements");
-			break;
-		default:
-			throw GException("GCAInst::GCAInst : Type "+GetObjType(Type)+" not supported");
-	}
+	Sims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities");
+	Agree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Agreements");
+	Disagree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Disagreements");
+
+	if((!Sims)||(!Agree)||(!Disagree))
+		throw GException("GCAInst::GCAInst : Type "+GetObjType(Type)+" not supported");
 
 	// Change Freq
 	SetMutationParams(5,8,1);

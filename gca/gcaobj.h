@@ -52,7 +52,7 @@ class GCAObj
 protected:
 
 	/**
-	* The identificator of the object.
+	* The identifier of the object.
 	*/
 	size_t Id;
 
@@ -85,14 +85,14 @@ public:
 
 	/**
 	* Construct the object.
-	* @param id             Identificator.
+	* @param id             Identifier.
 	* @param d              Corresponding document.
 	*/
 	GCAObj(size_t id,GDoc* d);
 
 	/**
 	* Construct the object.
-	* @param id             Identificator.
+	* @param id             Identifier.
 	* @param p              Corresponding profile.
 	*/
 	GCAObj(size_t id,GProfile* p);
@@ -104,22 +104,22 @@ public:
 	GCAObj(const GCAObj* obj);
 
 	/**
-	* Comparaison function
+	* Comparison function
 	*/
 	int Compare(const size_t id) const;
 
 	/**
-	* Comparaison function
+	* Comparison function
 	*/
 	int Compare(const GCAObj& obj) const;
 
 	/**
-	* Comparaison function
+	* Comparison function
 	*/
 	int Compare(const GCAObj* obj) const;
 
 	/**
-	* Return the identificator of the object.
+	* Return the identifier of the object.
 	*/
 	size_t GetId(void) const {return(Id);}
 
@@ -146,7 +146,7 @@ public:
 	/**
 	* Destruct the object.
 	*/
-	virtual ~GCAObj(void);
+	~GCAObj(void);
 
 	// friend classes
 	friend class GCAGroup;

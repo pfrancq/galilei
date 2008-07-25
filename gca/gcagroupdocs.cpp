@@ -47,7 +47,7 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short GGA for Documents.
 */
-class GCAGroupDocs : public GCA<GDoc,GTopic,GFactoryGroupDocs>, public GGroupDocs
+class GCAGroupDocs : public GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>, public GGroupDocs
 {
 public:
 
@@ -56,7 +56,7 @@ public:
 	* @param f              Factory.
 	*/
 	GCAGroupDocs(GFactoryGroupDocs* fac)
-		: GCA<GDoc,GTopic,GFactoryGroupDocs>("Documents Grouping",otDoc), GGroupDocs(fac) {}
+		: GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>("Documents Grouping",otDoc), GGroupDocs(fac) {}
 
 	/**
 	 * Class name.
@@ -66,7 +66,8 @@ public:
 	/**
 	* Configurations were applied from the factory.
 	*/
-	virtual void ApplyConfig(void);
+	virtual void ApplyConfig(void)
+	{GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>::ApplyConfig(Factory);}
 
 protected:
 
@@ -79,7 +80,7 @@ protected:
 	* Make the grouping for a specific Language.
 	*/
 	virtual void Run(void)
-	{GCA<GDoc,GTopic,GFactoryGroupDocs>::Run(Session);}
+	{GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>::Run(Session,"Documents");}
 
 public:
 
@@ -88,18 +89,8 @@ public:
 	* @param params          Parameters to configure.
 	*/
 	static void CreateParams(R::RConfig* params)
-	{GCA<GDoc,GTopic,GFactoryGroupDocs>::CreateParams(params);}
+	{GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>::CreateParams(params);}
 };
-
-
-//-----------------------------------------------------------------------------
-void GCAGroupDocs::ApplyConfig(void)
-{
-	GCA<GDoc,GTopic,GFactoryGroupDocs>::ApplyConfig(Factory);
-	Params.ParamsSim=Factory->FindParam<RParamStruct>("Sim Criterion");
-	Params.ParamsAgreement=Factory->FindParam<RParamStruct>("Agreement Criterion");
-	Params.ParamsDisagreement=Factory->FindParam<RParamStruct>("Disagreement Criterion");
-}
 
 
 //------------------------------------------------------------------------------

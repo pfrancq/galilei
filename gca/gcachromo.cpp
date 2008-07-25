@@ -46,9 +46,11 @@
 // include files for GALILEI
 #include <gsession.h>
 #include <gprofile.h>
+#include <gdoc.h>
 #include <gsubjects.h>
 #include <guser.h>
 #include <gcommunity.h>
+#include <gtopic.h>
 
 
 //-----------------------------------------------------------------------------
@@ -81,7 +83,7 @@ GCAChromo::GCAChromo(GCAInst* inst,size_t id)
 //-----------------------------------------------------------------------------
 void GCAChromo::Init(GCAThreadData* thData)
 {
-	// Parent Initialisation
+	// Parent Initialization
 	RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::Init(thData);
 
 	// Current
@@ -102,24 +104,21 @@ int GCAChromo::Compare(const GCAChromo* c) const
 
 
 //-----------------------------------------------------------------------------
-void GCAChromo::ConstructChromo(GSession* grps)
+template<class cObj,class cGroup>
+	void GCAChromo::ConstructChromo(R::RCursor<cGroup> groups)
 {
-	R::RCursor<GCommunity> Grp;
-	RCursor<GProfile> Profile;
-	GCAGroup* grp;
 	GCAObj** objs;
 	size_t i;
 
-	Grp=grps->GetCommunities();
-	for(Grp.Start();!Grp.End();Grp.Next())
+	for(groups.Start();!groups.End();groups.Next())
 	{
 		// Reserve a GA group
-		grp=ReserveGroup();
+		GCAGroup* grp(ReserveGroup());
 
-		// Go through the current profiles and store them in thObjs1
-		Profile=Grp()->GetObjs();
-		for(Profile.Start(),objs=thObjs1,NbObjs1=0;!Profile.End();Profile.Next(),objs++,NbObjs1++)
-			(*objs)=Instance->GetObj(Profile()->GetId());
+		// Go through the current objects and store them in thObjs1
+		RCursor<cObj> Cur(groups()->GetObjs());
+		for(Cur.Start(),objs=thObjs1,NbObjs1=0;!Cur.End();Cur.Next(),objs++,NbObjs1++)
+			(*objs)=Instance->GetObj(Cur()->GetId());
 
 		// Mix randomly thObjs1
 		Instance->RandOrder<GCAObj*>(thObjs1,NbObjs1);
@@ -142,8 +141,19 @@ void GCAChromo::ConstructChromo(GSession* grps)
 void GCAChromo::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-	if((Instance->Type==otProfile)&&(Instance->Session->GetNbCommunities()))
-		ConstructChromo(Instance->Session);
+	switch(Instance->Type)
+	{
+		case otProfile:
+			if(Instance->Session->GetNbCommunities())
+				ConstructChromo<GProfile,GCommunity>(Instance->Session->GetCommunities());
+			break;
+		case otDoc:
+			if(Instance->Session->GetNbTopics())
+				ConstructChromo<GDoc,GTopic>(Instance->Session->GetTopics());
+			break;
+		default:
+			cout<<"Existing clustering not take into account"<<endl;
+	}
 
 	// Call classic heuristic for non-assigned objects
 	RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::RandomConstruct();

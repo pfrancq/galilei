@@ -1,10 +1,10 @@
 /*
 
-	? Project
+	GCA Project
 
-	gcaplugin.h
+	GCAPlugIn.h
 
-	Main - Header.
+	Generic Plug-in for GCA - Header.
 
 	Copyright 2008 by the Université libre de Bruxelles.
 
@@ -34,12 +34,18 @@
 #ifndef GCAPluginH
 #define GCAPluginH
 
+
 //------------------------------------------------------------------------------
+// include files for R project
 #include <robject.h>
+#include <rgroupingkmeans.h>
 
 
+//------------------------------------------------------------------------------
+// include files for GALILEI project
 #include <gcommunity.h>
 #include <gtopic.h>
+
 
 //------------------------------------------------------------------------------
 // include files
@@ -49,8 +55,62 @@
 
 
 //-----------------------------------------------------------------------------
+// forward declaration
+class kMeansGroups;
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The kMeansGroup provides a representation for a group holding GCAObj that
+ * will be group with kMeans.
+ * @author Pascal Francq
+ * @short kMeans Group
+ */
+class kMeansGroup : public R::RGroup<kMeansGroup,GCAObj,kMeansGroups>
+{
+public:
+
+	/**
+	 * Constructor.
+	 * @param owner          Owner of the group.
+	 * @param id             Identifier of the group.
+	 */
+	kMeansGroup(kMeansGroups* owner,size_t id);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ *
+ */
+class kMeansGroups : public R::RGroups<kMeansGroup,GCAObj,kMeansGroups>
+{
+public:
+	kMeansGroups(R::RCursor<GCAObj> objs,size_t max);
+};
+
+
+//-----------------------------------------------------------------------------
+class kMeansObj : public R::RGroupingKMeans<kMeansGroup,GCAObj,kMeansGroups>
+{
+	GMeasure* Measure;
+public:
+	kMeansObj(const R::RString& n,R::RRandom* r,R::RCursor<GCAObj> objs,const R::RString& mes,R::RDebug* debug=0);
+
+	double Similarity(GCAObj* obj1,GCAObj* obj2);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The GCAPlugIn class provides a representation for a generic plug-in
+ * implementing a GCA for a specific kind of objects (profiles, documents,
+ * etc.).
+ * @author Pascal Francq
+ * @short Generic GCA PlugIn
+ */
 template<class cObj,class cGroup,class cFactory>
-	class GCA : public R::RObject
+	class GCAPlugIn : public R::RObject
 {
 protected:
 
@@ -84,12 +144,12 @@ public:
 	/**
 	* Constructor.
 	*/
-	GCA(const R::RString& name,tObjType type);
+	GCAPlugIn(const R::RString& name,tObjType type);
 
 	/**
 	 * Class name.
 	 */
-	virtual R::RCString GetClassName(void) const {return("GCA");}
+	virtual R::RCString GetClassName(void) const {return("GCAPlugIn");}
 
 	/**
 	* Configurations were applied from the factory.
@@ -101,7 +161,7 @@ protected:
 	/**
 	* Construct the results of the session based on a chromosome.
 	*/
-	void ConstructResults(GSession* session,R::RCursor<GCAGroup> Sol);
+	template<class cAlgoGroup> void ConstructResults(GSession* session,R::RCursor<cAlgoGroup> Sol);
 
 	/**
 	 * Get a pointer to the objects to cluster.
@@ -135,17 +195,17 @@ protected:
 	/**
 	 * Do the GCA.
 	 */
-	void DoGCA(GSession* session);
+	void DoGCA(GSession* session,const R::RString& mes);
 
 	/**
 	 * Do the k-Means.
 	 */
-	void DokMeans(GSession* session);
+	void DokMeans(GSession* session,const R::RString& mes);
 
 	/**
 	* Make the grouping.
 	*/
-	virtual void Run(GSession* session);
+	virtual void Run(GSession* session,const R::RString& mes);
 
 	/**
 	 * Catch a best chromosome notification.
@@ -161,58 +221,11 @@ public:
 	static void CreateParams(R::RConfig* params);
 
 	/**
-	* Destructor.
+	* Destruct the GCA.
 	*/
-	virtual ~GCA(void);
+	virtual ~GCAPlugIn(void);
 };
 
-//-----------------------------------------------------------------------------
-/*class kMeansDoc;
-class kMeansGroups;
-class kMeansGroup : public RGroup<kMeansGroup,GCAObj,kMeansGroups>
-{
-public:
-	kMeansGroup(kMeansGroups* owner,size_t id);
-	friend class KMeansDoc;
-};
-
-
-//-----------------------------------------------------------------------------
-class kMeansGroups : public RGroups<kMeansGroup,GCAObj,kMeansGroups>
-{
-public:
-	kMeansGroups(RCursor<GCAObj> objs,size_t max)
-		: RGroups<kMeansGroup,GCAObj,kMeansGroups>(objs,max)
-		{}
-	friend class KMeansDoc;
-};
-
-kMeansGroup::kMeansGroup(kMeansGroups* owner,size_t id)
-	: RGroup<kMeansGroup,GCAObj,kMeansGroups>(owner,id)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-class kMeansDoc : public RGroupingKMeans<kMeansGroup,GCAObj,kMeansGroups>
-{
-	GMeasure* Measure;
-
-public:
-	kMeansDoc(const RString& n,RRandom* r,RCursor<GCAObj> objs,RDebug* debug=0)
-		: RGroupingKMeans<kMeansGroup,GCAObj,kMeansGroups>(n,r,objs,debug)
-	{
-		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
-	}
-
-	virtual double Similarity(GCAObj* obj1,GCAObj* obj2)
-	{
-		double d;
-		Measure->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
-		return(d);
-	}
-};
-*/
 
 //-----------------------------------------------------------------------------
 #include <gcaplugin.hh>

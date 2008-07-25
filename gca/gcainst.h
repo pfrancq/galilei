@@ -156,14 +156,13 @@ class GCAInst : public R::RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAG
 	 */
 	GMeasure* Sims;
 
-
 	/*
 	 * Agreement measure to used.
 	 */
 	GMeasure* Agree;
 
 	/*
-	 * Disagrement measure to used.
+	 * Disagreement measure to used.
 	 */
 	GMeasure* Disagree;
 
@@ -180,9 +179,10 @@ public:
 	* @param objs           The objects to group.
 	* @param p              Parameters.
 	* @param debug          Debugger.
-	* @param type           NType of the element to group.
+	* @param type           Type of the element to group.
+	* @param mes            Name of the measures to used (ex: "Documents", "Profiles", etc.)
 	*/
-	GCAInst(GSession* ses,R::RCursor<GCAObj> objs,GCAParams* p,R::RDebug* debug,tObjType type);
+	GCAInst(GSession* ses,R::RCursor<GCAObj> objs,GCAParams* p,R::RDebug* debug,tObjType type,const R::RString& mes);
 
 	/**
 	* Initialisation of the instance.
@@ -242,7 +242,7 @@ public:
 	double GetSim(size_t element1,size_t element2) const;
 
 	/**
-	* This function can be used to do a traitement after the GA stops.
+	* This function can be used to do a treatment after the GA stops.
 	*/
 	virtual void PostRun(void);
 

@@ -49,7 +49,7 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short GGA for Profiles.
 */
-class GCAGroupProfiles : public GCA<GProfile,GCommunity,GFactoryGroupProfiles>, public GGroupProfiles
+class GCAGroupProfiles : public GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>, public GGroupProfiles
 {
 public:
 
@@ -58,7 +58,7 @@ public:
 	* @param f              Factory.
 	*/
 	GCAGroupProfiles(GFactoryGroupProfiles* fac)
-		: GCA<GProfile,GCommunity,GFactoryGroupProfiles>("Profiles Grouping",otProfile), GGroupProfiles(fac) {}
+		: GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>("Profiles Grouping",otProfile), GGroupProfiles(fac) {}
 
 	/**
 	 * Class name.
@@ -68,7 +68,8 @@ public:
 	/**
 	* Configurations were applied from the factory.
 	*/
-	virtual void ApplyConfig(void);
+	virtual void ApplyConfig(void)
+	{GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>::ApplyConfig(Factory);}
 
 protected:
 
@@ -81,7 +82,7 @@ protected:
 	* Make the grouping for a specific Language.
 	*/
 	virtual void Run(void)
-	{GCA<GProfile,GCommunity,GFactoryGroupProfiles>::Run(Session);}
+	{GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>::Run(Session,"Profiles");}
 
 public:
 
@@ -90,18 +91,8 @@ public:
 	* @param params          Parameters to configure.
 	*/
 	static void CreateParams(R::RConfig* params)
-	{GCA<GProfile,GCommunity,GFactoryGroupProfiles>::CreateParams(params);}
+	{GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>::CreateParams(params);}
 };
-
-
-//-----------------------------------------------------------------------------
-void GCAGroupProfiles::ApplyConfig(void)
-{
-	GCA<GProfile,GCommunity,GFactoryGroupProfiles>::ApplyConfig(Factory);
-	Params.ParamsSim=Factory->FindParam<RParamStruct>("Sim Criterion");
-	Params.ParamsAgreement=Factory->FindParam<RParamStruct>("Agreement Criterion");
-	Params.ParamsDisagreement=Factory->FindParam<RParamStruct>("Disagreement Criterion");
-}
 
 
 //------------------------------------------------------------------------------

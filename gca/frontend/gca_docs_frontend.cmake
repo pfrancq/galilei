@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(gca_docs_AVAILABLE_FRONTENDS kde)
+    SET(gca_docs_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(gca_docs_frontend gca_docs kde gca_docs_INCLUDES)
+ENDIF(KDE3_FOUND)

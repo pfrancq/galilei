@@ -152,9 +152,10 @@ public:
 	int Compare(const GCAChromo* c) const;
 
 	/**
-	* Construct the chromosome to be the same as grps.
+	* Construct the chromosome based on existing groups.
+	* @param groups          Cursor over the groups.
 	*/
-	void ConstructChromo(GSession* grps);
+	template<class cObj,class cGroup> void ConstructChromo(R::RCursor<cGroup> groups);
 
 	/**
 	* Construct a valid solution.
