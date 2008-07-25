@@ -150,7 +150,7 @@ void KGALILEICenterApp::initActions(void)
 	// Menu "Communities"
 	communitiesClear=new KAction(i18n("&Force Re-computing Communities"),0,0,this,SLOT(slotCommunitiesClear()),actionCollection(),"communitiesClear");
 	showCommunities=new KAction(i18n("&Show Communities"),"window_list",0,this,SLOT(slotShowCommunities()),actionCollection(),"showCommunities");
-	communitiesCalc=new KAction(i18n("Compute &Communities"),"exec",0,this,SLOT(slotCommunitiesCalc()),actionCollection(),"communitiesCalc");
+	communitiesCalc=new KAction(i18n("&Group Profiles"),"exec",0,this,SLOT(slotCommunitiesCalc()),actionCollection(),"communitiesCalc");
 	postCommunitiesCalc=new KAction(i18n("Execute &Post-Communities Methods"),0,0,this,SLOT(slotPostCommunities()),actionCollection(),"postCommunitiesCalc");
 	showCommunitiesHistory=new KAction(i18n("Show Communities &History"),0,0,this,SLOT(slotShowHistory	()),actionCollection(),"showCommunitiesHistorys");
 
