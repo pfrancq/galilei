@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(profilesdisagree_AVAILABLE_FRONTENDS kde)
+    SET(profilesdisagree_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(profilesdisagree_frontend profilesdisagree kde profilesdisagree_INCLUDES)
+ENDIF(KDE3_FOUND)

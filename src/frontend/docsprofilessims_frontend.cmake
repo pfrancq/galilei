@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(docsprofilessims_AVAILABLE_FRONTENDS kde)
+    SET(docsprofilessims_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(docsprofilessims_frontend docsprofilessims kde docsprofilessims_INCLUDES)
+ENDIF(KDE3_FOUND)

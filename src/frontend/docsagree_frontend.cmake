@@ -1,0 +1,5 @@
+IF(KDE3_FOUND)
+    SET(docsagree_AVAILABLE_FRONTENDS kde)
+    SET(docsagree_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(docsagree_frontend docsagree kde docsagree_INCLUDES)
+ENDIF(KDE3_FOUND)
