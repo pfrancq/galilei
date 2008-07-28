@@ -636,7 +636,7 @@ bool GTextAnalyse::StoreWordStemInDatabase(size_t stemid, RString word,size_t do
 {
 	// Check if the words/stem couple does not already exist
 	RQuery* q=Session->GetStorage()->SelectDummyEntry("wordsstems",stemid,word,0,3);
-	if(q->GetNbRows())
+	if(!q->End())
 		return(false);
 	Session->GetStorage()->AddDummyEntry("wordsstems", stemid, word, docid );
 	return(true);
