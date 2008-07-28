@@ -121,10 +121,12 @@ void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* c
 		for(docs->Start();!docs->End();docs->Next())
 		{
 			// Class all profiles assessing the current document by date
-			sql="SELECT profiles.profileid FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND profiles.groupid="+RString::Number(grp->GetId())+" AND judgement='O' AND htmlid="+(*docs)[0]+" ORDER BY when2";
+			sql="SELECT profiles.profileid, COUNT(*) FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND profiles.groupid="+RString::Number(grp->GetId())+" AND judgement='O' AND htmlid="+(*docs)[0]+" ORDER BY when2";
 			auto_ptr<RQuery> subprofiles(storeMySQL->Query(sql));
 			subprofiles->Start();
-			size_t nb=subprofiles->GetNbRows()-1;
+			if(subprofiles->End())
+				continue;
+			size_t nb=atoi((*subprofiles)[1])-1;
 			if(!nb) continue;
 			subscore=static_cast<double>(nb)/static_cast<double>(grp->GetNbObjs()-1);
 			Scoring* ptr=Scores.GetInsertPtr(atoi((*subprofiles)[0]));
