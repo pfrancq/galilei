@@ -206,7 +206,7 @@ template<class cObj,class cGroup,class cFactory>
 		cGroup* g=static_cast<cGroup*>(session->NewGroup(Type));
 		session->AssignId(g);
 		ptr=tab=Sol()->GetObjectsId();
-		while((*ptr)!=NoObject)
+		while((*ptr)!=cNoRef)
 			g->InsertObj(static_cast<cObj*>(Objs[*(ptr++)]->GetElement()));
 		delete[] tab;
 		session->InsertGroup(g,Type);
