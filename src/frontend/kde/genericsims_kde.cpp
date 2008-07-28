@@ -35,6 +35,9 @@
 #include <qlabel.h>
 #include <qgroupbox.h>
 #include <qlayout.h>
+#include <qtooltip.h>
+#include <qwhatsthis.h>
+
 
 //------------------------------------------------------------------------------
 // includes files for R
@@ -70,9 +73,19 @@ void GGenericSimsDlg::Panel(void)
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
 	SimType = new QComboBox(GetMeasureSpecific(),"SimType");
-	SimType->insertItem("Multi-vector");
+	SimType->insertItem("Multi-space");
 	SimType->insertItem("Language");
     layout->addWidget(SimType);
+    QToolTip::add(SimType,"Similarity measure can be the classical cosine between the vectors (Language) or an adapted one to manage multiple spaces (Multi-space)." );
+    const char* simText="<p>Choose the <b>similarity measure</b> that will be used. <br/>"
+                        "The <em>Multi-space</em> measure computes a similarity based on the different spaces where the "
+    	                "elements are indexed (Content space, index space and structure space). Each space may have its own measure"
+    	                ", such as the cosine between the vectors in this space. "
+    	                "They are then combined with the multiplication operator (logical AND).<br/>"
+    	                "The <em>Language</em> measure is the classical cosine between the two vectors. It is supposed that "
+    	                "they are both indexed in one common language. If the vectors are indexed in several language spaces, the result is "
+    	                "undefined.</p>";
+    QWhatsThis::add(SimType,simText);
 	GetMeasureSpecificLayout()->addLayout(layout);
 
 	layout = new QHBoxLayout(0,0,6);

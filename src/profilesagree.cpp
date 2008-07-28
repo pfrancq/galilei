@@ -33,7 +33,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmeasure2elements.h>
+#include <gmatrixmeasure.h>
 #include <gprofile.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
@@ -49,7 +49,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GProfilesAgreement : public GMeasure2Elements
+class GProfilesAgreement : public GMatrixMeasure
 {
 	size_t MinDocs;
 public:
@@ -62,7 +62,7 @@ public:
 
 //------------------------------------------------------------------------------
 GProfilesAgreement::GProfilesAgreement(GFactoryMeasure* fac)
-	: GMeasure2Elements(fac,otProfile,otProfile,true)
+	: GMatrixMeasure(fac,otProfile,otProfile,true)
 {
 }
 
@@ -70,7 +70,7 @@ GProfilesAgreement::GProfilesAgreement(GFactoryMeasure* fac)
 //------------------------------------------------------------------------------
 void GProfilesAgreement::ApplyConfig(void)
 {
-	GMeasure2Elements::ApplyConfig();
+	GMatrixMeasure::ApplyConfig();
 	MinDocs=Factory->GetUInt("MinDocs");
 }
 
@@ -89,7 +89,7 @@ double GProfilesAgreement::Compute(void* obj1,void* obj2)
 //------------------------------------------------------------------------------
 void GProfilesAgreement::CreateParams(RConfig* params)
 {
-	GMeasure2Elements::CreateParams(params);
+	GMatrixMeasure::CreateParams(params);
 	params->InsertParam(new RParamValue("MinDocs",7));
 }
 

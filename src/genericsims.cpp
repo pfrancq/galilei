@@ -34,6 +34,7 @@
 // include files for ANSI C/C++
 #include <math.h>
 
+
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gweightinfos.h>
@@ -188,7 +189,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 
 //------------------------------------------------------------------------------
 GGenericSims::GGenericSims(GFactoryMeasure* fac,tObjType lines,tObjType cols)
-	: GMeasure2Elements(fac,lines,cols,lines==cols), Types(30)
+	: GMatrixMeasure(fac,lines,cols,lines==cols), Types(30)
 {
 }
 
@@ -198,23 +199,29 @@ void GGenericSims::ApplyConfig(void)
 {
 	if(Session)
 		return;
-	GMeasure2Elements::ApplyConfig();
+	GMatrixMeasure::ApplyConfig();
 	SimType=0;
 	RString type=Factory->Get("SimType");
 	Factor=Factory->GetDouble("Factor");
-	unsigned int sim;
-	if(type=="Multi-vector")
+	unsigned int sim(0);
+	if(type=="Multi-space")
 		sim=1;
 	if(type=="Language")
 		sim=2;
-	SimType=sim;
+	if(!sim)
+	{
+		cerr<<"No valid similarity measure"<<endl;
+		SimType=1;
+	}
+	else
+		SimType=sim;
 }
 
 
 //------------------------------------------------------------------------------
 void GGenericSims::Connect(GSession* session)
 {
-	GMeasure2Elements::Connect(session);
+	GMatrixMeasure::Connect(session);
 	GConceptType* IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
 	RCursor<GConceptType> Cur(Session->GetConceptTypes());
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -224,6 +231,8 @@ void GGenericSims::Connect(GSession* session)
 		else
 			Types.InsertPtr(new GSimType(this,Cur()));
 	}
+	CurLang=0;
+	CurType=0;
 }
 
 
@@ -231,7 +240,7 @@ void GGenericSims::Connect(GSession* session)
 void GGenericSims::Disconnect(GSession* session)
 {
 	Types.Clear();
-	GMeasure2Elements::Disconnect(session);
+	GMatrixMeasure::Disconnect(session);
 }
 
 
@@ -288,29 +297,44 @@ double GGenericSims::SimilarityIFFMV(void)
 //------------------------------------------------------------------------------
 double GGenericSims::SimilarityIFFL(void)
 {
-	cout<<"Problem"<<endl;
-	return(0.0);
-
-/*	// if one SubProfile is not defined -> the similarity must be null
+	// If one vector is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(0.0);
 
+	//-------------------------------------------------------
+	// Suppose the two vectors have only a language in common.
+
+	// Parse vec1 until a language is found
 	RCursor<GWeightInfo> ptr(*vec1);
-	RCursor<GWeightInfo> ptr2(*vec2);
-
 	ptr.Start();
-	ptr2.Start();
-
-	// Skip everything until the right language
-	while((!ptr.End())&&(ptr()->GetConcept()->GetType()!=Lang))
+	while((!ptr.End())&&(ptr()->GetConcept()->GetType()->GetLang()))
 		ptr.Next();
-	while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()!=Lang))
-		ptr2.Next();
+	if(ptr.End())
+		return(0.0); // No language found -> Similarity is null
+	GConceptType* Lang=(ptr()->GetConcept()->GetType());
 
-	double d=Types.GetPtr(Lang)->Compute(ptr,ptr2);
-	if(fabs(d)<NullLevel)
-		d=0.0;
-	return(d);*/
+	// Parse vec2 until first language is found
+	RCursor<GWeightInfo> ptr2(*vec2);
+	ptr2.Start();
+	while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()->GetLang()))
+		ptr2.Next();
+	if(ptr.End())
+		return(0.0); // No language found -> Similarity is null
+
+	// If both language are not the same -> Similarity is null
+	if(Lang!=ptr2()->GetConcept()->GetType())
+		return(0.0);
+
+	// Compute it now.
+	if(CurLang!=Lang)
+	{
+		CurLang=Lang;
+		CurType=Types.GetPtr(CurLang);
+	}
+	double d=CurType->Compute(ptr,ptr2);
+	if(fabs(d)<GetNullValue())
+		return(0.0);
+	return(d);
 }
 
 
@@ -360,7 +384,7 @@ size_t GGenericSims::GetRef(size_t id,GConceptType* type)
 //------------------------------------------------------------------------------
 void GGenericSims::CreateParams(RConfig* params)
 {
-	GMeasure2Elements::CreateParams(params);
-	params->InsertParam(new RParamValue("SimType","Multi-vector"));
-	params->InsertParam(new RParamValue("Factor",0.5));
+	GMatrixMeasure::CreateParams(params);
+	params->InsertParam(new RParamValue("SimType","Multi-space"));
+	params->InsertParam(new RParamValue("Factor",0.01));
 }

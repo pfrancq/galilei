@@ -43,18 +43,9 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmeasure2elements.h>
+#include <gmatrixmeasure.h>
 #include <gconcepttype.h>
-//#include <gsignalhandler.h>
-/*#include <ggalileiapp.h>
-#include <glang.h>
-
-#include <gdoc.h>
-#include <ggroup.h>
-#include <gmeasure2elements.h>
-#include <gconcepttype.h>*/
 using namespace GALILEI;
-
 
 
 //------------------------------------------------------------------------------
@@ -91,7 +82,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-class GGenericSims : public GMeasure2Elements
+class GGenericSims : public GMatrixMeasure
 {
 protected:
 
@@ -121,6 +112,16 @@ protected:
 	 * Similarity to compute for the different spaces.
 	 */
 	RContainer<GSimType,true,true> Types;
+
+	/**
+	 * Current language used for the cosine measure.
+	 */
+	GConceptType* CurLang;
+
+	/**
+	 * Current type used for the cosine measure.
+	 */
+	GSimType* CurType;
 
 public:
 
