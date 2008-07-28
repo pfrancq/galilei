@@ -685,7 +685,7 @@ void GStorageMySQL::AssignId(GConceptType* type)
 		// Verify that the concepttype didn't already exist.
 		RString sSql="SELECT typeid FROM concepttypes WHERE name="+name;
 		auto_ptr<RQuery> find(Db->Query(sSql));
-		if(find->GetNbRows())
+		if(!find->End())
 		{
 			find->Start();
 			type->SetId(strtoul((*find)[0],0,10));
@@ -866,7 +866,7 @@ void GStorageMySQL::AssignId(GConcept* concept)
 		// Verify that the concept didn't already exist.
 		RString sSql="SELECT conceptid FROM concepts WHERE typeid="+type+" AND name="+name;
 		auto_ptr<RQuery> find(Db->Query(sSql));
-		if(find->GetNbRows())
+		if(!find->End())
 		{
 			find->Start();
 			concept->SetId(strtoul((*find)[0],0,10));
@@ -916,7 +916,7 @@ RString GStorageMySQL::LoadConcept(size_t id,GConceptType* type)
 		RString res;
 		RString sSql("SELECT name FROM concepts WHERE typeid="+Num(type->GetId())+" AND conceptid="+Num(id));
 		auto_ptr<RQuery> w(Db->Query(sSql));
-		if(w->GetNbRows())
+		if(!w->End())
 		{
 			w->Start();
 			res=(*w)[0];
@@ -939,7 +939,7 @@ size_t GStorageMySQL::LoadConcept(const RString name,GConceptType* type)
 		size_t res=0;
 		RString sSql("SELECT conceptid FROM concepts WHERE typeid="+Num(type->GetId())+" AND kwd="+RQuery::SQLValue(name));
 		auto_ptr<RQuery> w(Db->Query(sSql));
-		if(w->GetNbRows())
+		if(!w->End())
 		{
 			w->Start();
 			res=atoi((*w)[0]);
@@ -1160,7 +1160,7 @@ GDoc* GStorageMySQL::LoadDoc(size_t docid)
 		auto_ptr<RQuery> quer (Db->Query("SELECT htmlid,html,title,mimetype,langid,updated,calculated,owner,topicid,attached "
 		                "FROM htmls WHERE htmlid="+Num(docid)));
 		quer->Start();
-		if(!quer->GetNbRows())
+		if(quer->End())
 			return(0);
 
 		// Verify that the langague is active
@@ -1247,7 +1247,7 @@ GDocStruct* GStorageMySQL::LoadStruct(const GDoc* doc)
 			return(0);
 		auto_ptr<RQuery> Find(Db->Query("SELECT totalnodes,nodes,nbnodes,content,nbcontent FROM htmls WHERE htmlid="+Num(doc->GetId())));
 		Find->Start();
-		if(!Find->GetNbRows())
+		if(Find->End())
 			return(0);
 		GDocStruct* docstruct=new GDocStruct(strtoul((*Find)[0],0,10));
 
@@ -1345,7 +1345,7 @@ void GStorageMySQL::SaveStruct(GDocStruct* docstruct,size_t docid)
 		// Remove the old structure
 		auto_ptr<RQuery> Info(Db->Query("SELECT nodes,totalnodes,content,nbcontent FROM htmls WHERE htmlid="+Num(docid)));
 		Info->Start();
-		if(Info->GetNbRows())
+		if(!Info->End())
 		{
 			size_t LastId=atoi((*Info)[0])+atoi((*Info)[1]);
 			auto_ptr<RQuery> DelNodes(Db->Query("DELETE FROM nodes WHERE nodeid>="+(*Info)[0]+" AND nodeid<"+Num(LastId)));
@@ -1572,7 +1572,7 @@ GUser* GStorageMySQL::LoadUser(size_t userid)
 	{
 		auto_ptr<RQuery> User(Db->Query("SELECT userid,user,fullname FROM users WHERE userid="+Num(userid)));
 		User->Start();
-		if(!User->GetNbRows())
+		if(User->End())
 			return(0);
 		return(new GUser(atoi((*User)[0]),(*User)[1],(*User)[2],10));
 	}
@@ -1591,7 +1591,7 @@ GUser* GStorageMySQL::LoadUser(const R::RString name)
 	{
 		auto_ptr<RQuery> User(Db->Query("SELECT userid,user,fullname FROM users WHERE user="+RQuery::SQLValue(name)));
 		User->Start();
-		if(!User->GetNbRows())
+		if(User->End())
 			return(0);
 		return(new GUser(atoi((*User)[0]),(*User)[1],(*User)[2],10));
 	}
@@ -1614,7 +1614,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		auto_ptr<RQuery> Profile(Db->Query("SELECT profileid,description,social,userid,attached,groupid,updated,calculated "
 		                  "FROM profiles WHERE profileid="+Num(profileid)));
 		Profile->Start();
-		if(!Profile->GetNbRows())
+		if(Profile->End())
 			return(0);
 		GUser* user=Session->GetUser(atoi((*Profile)[3]));
 		if(!user)
@@ -2015,7 +2015,7 @@ GCommunity* GStorageMySQL::LoadCommunity(size_t groupid)
 	{
 		auto_ptr<RQuery> Group(Db->Query("SELECT groupid,updated,calculated FROM groups WHERE groupid="+RString::Number(groupid)));
 		Group->Start();
-		if(!Group->GetNbRows())
+		if(Group->End())
 			return(0);
 		GCommunity* group=new GCommunity(atoi((*Group)[0]),(*Group)[1],(*Group)[2]);
 		group->SetState(osNeedLoad);
@@ -2385,7 +2385,7 @@ GTopic* GStorageMySQL::LoadTopic(size_t topicid)
 	{
 		auto_ptr<RQuery> Group(Db->Query("SELECT topicid,updated,calculated FROM topics WHERE topicid="+RString::Number(topicid)));
 		Group->Start();
-		if(!Group->GetNbRows())
+		if(Group->End())
 			return(0);
 		GTopic* group=new GTopic(atoi((*Group)[0]),(*Group)[1],(*Group)[2]);
 		group->SetState(osNeedLoad);
