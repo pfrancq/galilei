@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GMeasure2Elements.cpp
+	GMatrixMeasure.cpp
 
-	Measures between two elements - Implementation.
+	Measure represented by a matrix of values - Implementation.
 
 	Copyright 2007-2008 by the Université Libre de Bruxelles.
 
@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gmeasure2elements.h>
+#include <gmatrixmeasure.h>
 #include <glang.h>
 #include <gsession.h>
 #include <gprofile.h>
@@ -60,11 +60,11 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //
-// class GMeasure2Elements::MeasureRec
+// class GMatrixMeasure::MeasureRec
 //
 //------------------------------------------------------------------------------
 
-class GMeasure2Elements::MeasureRec
+class GMatrixMeasure::MeasureRec
 {
 public:
 	double Value;
@@ -79,11 +79,11 @@ public:
 
 //------------------------------------------------------------------------------
 //
-// class GMeasure2Elements::IdxRec
+// class GMatrixMeasure::IdxRec
 //
 //------------------------------------------------------------------------------
 
-class GMeasure2Elements::IdxRec
+class GMatrixMeasure::IdxRec
 {
 public:
 	off_t Pos;
@@ -97,12 +97,12 @@ public:
 
 //------------------------------------------------------------------------------
 //
-// class GMeasure2Elements::BlockRec
+// class GMatrixMeasure::BlockRec
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GMeasure2Elements::BlockRec
+class GMatrixMeasure::BlockRec
 {
 public:
 	off_t Pos;
@@ -120,12 +120,12 @@ public:
 
 //------------------------------------------------------------------------------
 //
-// class GMeasure2Elements::Measures
+// class GMatrixMeasure::Measures
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GMeasure2Elements::Measures
+class GMatrixMeasure::Measures
 {
 public:
 	double* Values;      // Values
@@ -138,7 +138,7 @@ public:
 
 
 //------------------------------------------------------------
-GMeasure2Elements::Measures::Measures(size_t max,double dirty) : Values(0)
+GMatrixMeasure::Measures::Measures(size_t max,double dirty) : Values(0)
 {
 	Values=new double[max];
 	// Dirty the new columns
@@ -149,7 +149,7 @@ GMeasure2Elements::Measures::Measures(size_t max,double dirty) : Values(0)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Measures::Extend(size_t olds,size_t news,double dirty)
+void GMatrixMeasure::Measures::Extend(size_t olds,size_t news,double dirty)
 {
 	double* tmp=new double[news];
 	if(olds)
@@ -170,12 +170,12 @@ void GMeasure2Elements::Measures::Extend(size_t olds,size_t news,double dirty)
 
 //------------------------------------------------------------------------------
 //
-//  GMeasure2Elements
+//  GMatrixMeasure
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym)
+GMatrixMeasure::GMatrixMeasure(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym)
 	: GMeasure(fac), GSignalHandler(), MemValues(0), RecValues(0), Idx(0), Blocks(0),
 	  MemNbLines(0), MemNbCols(0), FileNbLines(0), FileNbCols(0), MaxIdLine(0), MaxIdCol(0), NbValues(0), Mean(0.0), Deviation(0.0),
 	  Symmetric(sym),NullLevel(0.000001), DirtyValue(-2.0), MinMeasure(0.5), AutomaticMinMeasure(true),
@@ -189,7 +189,7 @@ GMeasure2Elements::GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjTyp
 
 
 //-----------------------------------------------------------------------------
-void GMeasure2Elements::SetElementsType(bool sym,tObjType lines,tObjType cols)
+void GMatrixMeasure::SetElementsType(bool sym,tObjType lines,tObjType cols)
 {
 	if(sym&&(lines!=cols))
 		throw GException("Symmetric measures are only allowed if the elements are of the same type");
@@ -200,7 +200,7 @@ void GMeasure2Elements::SetElementsType(bool sym,tObjType lines,tObjType cols)
 
 
 //-----------------------------------------------------------------------------
-void GMeasure2Elements::ApplyConfig(void)
+void GMatrixMeasure::ApplyConfig(void)
 {
 	// Nothing can be changed when a session is running
 	if(Session)
@@ -215,7 +215,7 @@ void GMeasure2Elements::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Connect(GSession* session)
+void GMatrixMeasure::Connect(GSession* session)
 {
 	GMeasure::Connect(session);
 	if(InFile)
@@ -263,7 +263,7 @@ void GMeasure2Elements::Connect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Disconnect(GSession* session)
+void GMatrixMeasure::Disconnect(GSession* session)
 {
 	if(InFile)
 	{
@@ -300,7 +300,7 @@ void GMeasure2Elements::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Measure(size_t measure,...)
+void GMatrixMeasure::Measure(size_t measure,...)
 {
 	va_list ap;
 	va_start(ap,measure);
@@ -365,7 +365,7 @@ void GMeasure2Elements::Measure(size_t measure,...)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Info(size_t info,...)
+void GMatrixMeasure::Info(size_t info,...)
 {
 	if(!MinMeasureSense)
 		return;
@@ -441,7 +441,7 @@ void GMeasure2Elements::Info(size_t info,...)
 
 
 //------------------------------------------------------------------------------
-inline double GMeasure2Elements::ReadValue(size_t id1,size_t id2)
+inline double GMatrixMeasure::ReadValue(size_t id1,size_t id2)
 {
 	Check(id1,id2);
 
@@ -492,7 +492,7 @@ inline double GMeasure2Elements::ReadValue(size_t id1,size_t id2)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::WriteValue(size_t id1,size_t id2,double val)
+void GMatrixMeasure::WriteValue(size_t id1,size_t id2,double val)
 {
 	Check(id1,id2);
 
@@ -519,7 +519,7 @@ void GMeasure2Elements::WriteValue(size_t id1,size_t id2,double val)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::ExtendMem(void)
+void GMatrixMeasure::ExtendMem(void)
 {
 	// Verify if the MemValues must be created
 	if(!MemValues)
@@ -555,7 +555,7 @@ void GMeasure2Elements::ExtendMem(void)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::ExtendFile(void)
+void GMatrixMeasure::ExtendFile(void)
 {
 	MeasureRec NullMeasure(DirtyValue);
 	IdxRec Index;
@@ -643,7 +643,7 @@ void GMeasure2Elements::ExtendFile(void)
 
 
 //------------------------------------------------------------------------------
-size_t GMeasure2Elements::GetNbDiffElements(void)
+size_t GMatrixMeasure::GetNbDiffElements(void)
 {
 	if(Lines==Cols)
 		return(Session->GetNbElements(Lines));
@@ -652,7 +652,7 @@ size_t GMeasure2Elements::GetNbDiffElements(void)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::AddIdentificator(size_t id,bool line)
+void GMatrixMeasure::AddIdentificator(size_t id,bool line)
 {
 	if(line)
 	{
@@ -684,7 +684,7 @@ void GMeasure2Elements::AddIdentificator(size_t id,bool line)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::DirtyIdentificator(size_t id,bool line,bool file)
+void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 {
 	if(line)
 	{
@@ -696,7 +696,7 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line,bool file)
 			// Dirty the measures
 			Measures* ptr=(*MemValues)[id-1];
 			if(!ptr)
-				throw std::range_error("GMeasure2Elements::DirtyIdentificator : index "+RString::Number(id)+" doesn't exist");
+				throw std::range_error("GMatrixMeasure::DirtyIdentificator : index "+RString::Number(id)+" doesn't exist");
 
 			// Dirty the line
 			size_t max;
@@ -800,7 +800,7 @@ void GMeasure2Elements::DirtyIdentificator(size_t id,bool line,bool file)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::DeleteIdentificator(size_t id,bool line)
+void GMatrixMeasure::DeleteIdentificator(size_t id,bool line)
 {
 	// Remove all values
 	DirtyIdentificator(id,line,false);
@@ -808,7 +808,7 @@ void GMeasure2Elements::DeleteIdentificator(size_t id,bool line)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::DestroyIdentificator(size_t,bool)
+void GMatrixMeasure::DestroyIdentificator(size_t,bool)
 {
 	if(InFile)
 	{
@@ -819,7 +819,7 @@ void GMeasure2Elements::DestroyIdentificator(size_t,bool)
 
 //------------------------------------------------------------------------------
 template<class C>
-	void GMeasure2Elements::UpdateElement(C* element,tEvent event,bool line)
+	void GMatrixMeasure::UpdateElement(C* element,tEvent event,bool line)
 {
 	switch(event)
 	{
@@ -842,7 +842,7 @@ template<class C>
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::UpdateMem(void)
+void GMatrixMeasure::UpdateMem(void)
 {
 	// Parse all values and recompute each dirty values
 	size_t max,i,j;
@@ -875,7 +875,7 @@ void GMeasure2Elements::UpdateMem(void)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::UpdateFile(void)
+void GMatrixMeasure::UpdateFile(void)
 {
 	size_t i;
 	IdxRec Element;
@@ -933,7 +933,7 @@ void GMeasure2Elements::UpdateFile(void)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::LoadFile(void)
+void GMatrixMeasure::LoadFile(void)
 {
 	size_t i;
 	IdxRec Element;
@@ -996,7 +996,7 @@ void GMeasure2Elements::LoadFile(void)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::AddValue(double val)
+void GMatrixMeasure::AddValue(double val)
 {
 	if(val==DirtyValue)
 		return;
@@ -1008,7 +1008,7 @@ void GMeasure2Elements::AddValue(double val)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::DeleteValue(double& val)
+void GMatrixMeasure::DeleteValue(double& val)
 {
 	if(val==DirtyValue)
 		return;
@@ -1029,7 +1029,7 @@ void GMeasure2Elements::DeleteValue(double& val)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Event(GDoc* doc, tEvent event)
+void GMatrixMeasure::Event(GDoc* doc, tEvent event)
 {
 	if(InMemory||InFile)
 	{
@@ -1042,7 +1042,7 @@ void GMeasure2Elements::Event(GDoc* doc, tEvent event)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Event(GProfile* prof, tEvent event)
+void GMatrixMeasure::Event(GProfile* prof, tEvent event)
 {
 	if(InMemory||InFile)
 	{
@@ -1056,7 +1056,7 @@ void GMeasure2Elements::Event(GProfile* prof, tEvent event)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::Event(GCommunity* community, tEvent event)
+void GMatrixMeasure::Event(GCommunity* community, tEvent event)
 {
 	if(InMemory||InFile)
 	{
@@ -1069,7 +1069,7 @@ void GMeasure2Elements::Event(GCommunity* community, tEvent event)
 
 
 //------------------------------------------------------------------------------
-void GMeasure2Elements::CreateParams(RConfig* params)
+void GMatrixMeasure::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("NullLevel",0.00001));
 	params->InsertParam(new RParamValue("MinMeasure",0.05));
@@ -1081,7 +1081,7 @@ void GMeasure2Elements::CreateParams(RConfig* params)
 
 
 //------------------------------------------------------------------------------
-GMeasure2Elements::~GMeasure2Elements(void)
+GMatrixMeasure::~GMatrixMeasure(void)
 {
 	GSession::DeleteHandler(this);
 }

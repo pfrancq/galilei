@@ -42,7 +42,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	: R::RContainer<cObj,false,true>(20,10), GALILEI::GWeightInfos(60), Id(id),
 	  Updated(u), Computed(c)
 {
-	if(Id!=cNoRef)
+	if(Id!=R::cNoRef)
 		GALILEI::GSession::Event(static_cast<const cGroup*>(this),eObjNew);
 }
 
@@ -106,7 +106,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	void GALILEI::GGroup<cObj,cGroup,type>::SetId(size_t id)
 {
-	if(id==cNoRef)
+	if(id==R::cNoRef)
 		throw GException("Cannot assign cNoRef to a group");
 	Id=id;
 	GSession::Event(static_cast<const cGroup*>(this),eObjNew);
@@ -299,7 +299,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	{
 		R::RCursor<cObj> Prof(*this);
 		for(Prof.Start();!Prof.End();Prof.Next())
-			Prof()->SetGroup(cNoRef);
+			Prof()->SetGroup(R::cNoRef);
 		if(State==osDelete)  // The object has modified the references count but was not saved
 			DelRefs(type);
 	}

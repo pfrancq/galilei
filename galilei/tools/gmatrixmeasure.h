@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GMeasure2Elements.h
+	GMatrixMeasure.h
 
-	Measures between two elements - Header.
+	Measure represented by a matrix of values - Header.
 
 	Copyright 2007-2008 by the Université Libre de Bruxelles.
 
@@ -31,8 +31,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GMeasure2ElementsH
-#define GMeasure2ElementsH
+#ifndef GMatrixMeasureH
+#define GMatrixMeasureH
 
 
 //------------------------------------------------------------------------------
@@ -56,11 +56,13 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GMeasure2Elements class provides a representation for a measure between
-* two elements. Each measure has different properties:
+* The GMatrixMeasure class provides a representation for a measure represented
+* by a matrix a value, such as between two elements.
+*
+* Each measure has different properties:
 * - Symmetric (for example between two same type of elements) or not.
 * - The values can be stored in memory. This can be memory consuming for huge
-*    number of elements.
+*   number of elements.
 * - The values can be stored in files. In this case, for each measure 'mes', 4
 *   files are created : mes.main (containing main information), mes.idx (each
 *   record corresponds to one "line" element), mes.block (each record
@@ -70,9 +72,9 @@ namespace GALILEI{
 * The class supposes that the identifiers of the elements are continuous and
 * that the first identifier is one.
 * @author Pascal Francq.
-* @short Measures Between Two Elements.
+* @short Matrix Measure.
 */
-class GMeasure2Elements : public GMeasure, public GSignalHandler
+class GMatrixMeasure : public GMeasure, public GSignalHandler
 {
 	class Measures;    // A list of measure for a given element.
 	class MeasureRec;  // Record storing a specific measure.
@@ -234,7 +236,7 @@ public:
 	 * @param cols            Type of the elements in the columns.
 	 * @param sym             Symmetric measure?
 	 */
-	GMeasure2Elements(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym);
+	GMatrixMeasure(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym);
 
 	/**
 	 * Set the type of the elements.
@@ -468,7 +470,7 @@ public:
 	/**
 	* Destructor.
 	*/
-	virtual ~GMeasure2Elements(void);
+	virtual ~GMatrixMeasure(void);
 };
 
 

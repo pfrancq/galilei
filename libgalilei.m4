@@ -19,7 +19,7 @@ AC_DEFUN(GALILEI_INC_CHK,[
 	GALILEI_INC_DIR=""
 	for i in $GALILEI_INC_PATH ; do
 		if test -f $i/$1/$2 ; then
-			GALILEI_INC_DIR="-I$i/$1   -I$i/build/galilei"
+			GALILEI_INC_DIR="-I$i/$1 -I$i/galilei"
 			add="$i/$1"
 			break
 		fi
@@ -94,7 +94,7 @@ AC_DEFUN(GALILEI_ALL_INC_CHK,[
 	GALILEI_INC_CHK(galilei/profiles, gprofile.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/sessions,gsession.h,Cannot find GALILEI headers.)
 	GALILEI_INC_CHK(galilei/knowledge,gconcept.h,Cannot find GALILEI headers.)
-	GALILEI_INC_CHK(galilei/tools,gmeasure2elements.h,Cannot find GALILEI headers.)
+	GALILEI_INC_CHK(galilei/tools,gtool.h,Cannot find GALILEI headers.)
 
 	for l in $1 ; do
 		if test "$l" = "kde"; then

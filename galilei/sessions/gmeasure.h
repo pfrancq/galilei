@@ -198,6 +198,13 @@ class GTypeMeasureManager : public GPluginManager<GTypeMeasureManager,GFactoryMe
 {
 public:
 	GTypeMeasureManager(const R::RString& type);
+
+	/**
+	 * Get a pointer to the configuration structure for a specific plug-in.
+	 * @param name           Name of the plug-in.
+	 * @return Pointer to R::RConfig.
+	 */
+	virtual R::RConfig* GetConfig(const R::RString& name) const {return(GetFactory(name));}
 };
 
 
@@ -237,13 +244,13 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
-	* Create the config parameters.
+	* Create the configuration parameters.
 	* @param config          Configuration structure.
 	*/
 	virtual void CreateConfig(R::RConfig* config);
 
 	/**
-	* Read config of the manager.
+	* Read configuration parameters of the manager.
 	* @param config          Configuration structure.
 	*/
 	virtual void ReadConfig(R::RConfig* config);
@@ -333,6 +340,21 @@ public:
 	R::RCursor<GMeasure> GetPlugIns(const R::RString& type) const;
 
 	/**
+	 * Get a pointer to the configuration structure for a specific plug-in.
+	 * @param name           Name of the plug-in.
+	 * @param type           Type of the factory
+	 * @return Pointer to R::RConfig.
+	 */
+	virtual R::RConfig* GetConfig(const R::RString& name,const R::RString& type) const {return(GetFactory(type,name,false));}
+
+	/**
+	 * Apply the configuration for a plug-in corresponding to a given
+	 * R::RConfig.
+	 * @param config         Pointer to the configuration.
+	 */
+	virtual void ApplyConfig(R::RConfig* config);
+
+	/**
 	* Set the current method if the plug-ins must have a selected one.
 	* @param type            Type of the factory.
 	* @param name            Name of the method.
@@ -340,6 +362,14 @@ public:
 	*                        exist, generate an exception.
 	*/
 	virtual void SetCurrentMethod(const R::RString& type,const R::RString& name,bool need=true);
+
+	/**
+	* Set the current method if the plug-ins must have a selected one.
+	* @param name            Name of the method.
+	* @param need            If the parameter is true and the plug-in does not
+	*                        exist, generate an exception.
+	*/
+	virtual void SetCurrentMethod(const R::RString&,bool) {throw GException("No type specified");}
 
 	/**
 	* Get the current method.

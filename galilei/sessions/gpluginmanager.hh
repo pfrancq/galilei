@@ -312,6 +312,17 @@ template<class mng,class factory,class plugin>
 
 //-----------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
+	void GPluginManager<mng,factory,plugin>::ApplyConfig(R::RConfig* config)
+{
+	factory* Factory=dynamic_cast<factory*>(config);
+	if(!Factory)
+		throw GException("No valid configuration structure");
+	Factory->Apply();
+}
+
+
+//-----------------------------------------------------------------------------
+template<class mng,class factory,class plugin>
 	R::RCursor<plugin> GPluginManager<mng,factory,plugin>::GetPlugIns(void) const
 {
 	return(R::RCursor<plugin>(*this));

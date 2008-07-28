@@ -318,6 +318,16 @@ size_t GMeasureManager::GetNbPlugIns(const R::RString& type) const
 
 
 //-----------------------------------------------------------------------------
+void GMeasureManager::ApplyConfig(R::RConfig* config)
+{
+	GFactoryMeasure* Factory=dynamic_cast<GFactoryMeasure*>(config);
+	if(!Factory)
+		throw GException("No valid configuration structure");
+	Factory->Apply();
+}
+
+
+//-----------------------------------------------------------------------------
 R::RCursor<GMeasure> GMeasureManager::GetPlugIns(const R::RString& type) const
 {
 	GTypeMeasureManager* Manager=GetPtr(type);

@@ -76,14 +76,14 @@ class GLangManager;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Infos Part
+// forward class declaration - Information Part
 class GWeightInfo;
 class GWeightInfos;
 class GInfosWeightsHistory;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Docs Part
+// forward class declaration - Documents Part
 class GFilter;
 class GFactoryFilter;
 class GFilterManager;
@@ -140,24 +140,28 @@ class GPostProfileManager;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Groups Part
+// forward class declaration - Communities Part
 class GCommunity;
-class GTopic;
 class GGroupProfiles;
-class GGroupDocs;
 class GFactoryGroupProfiles;
 class GFactoryGroupDocs;
 class GGroupProfilesManager;
 class GGroupDocsManager;
 class GCommunityCalc;
-class GTopicCalc;
-class GFactoryCommunityCalc;
-class GFactoryTopicCalc;
 class GCommunityCalcManager;
 class GTopicCalcManager;
 class GSubject;
 class GSubjects;
 class GPostCommunity;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Topics Part
+class GTopic;
+class GGroupDocs;
+class GTopicCalc;
+class GFactoryCommunityCalc;
+class GFactoryTopicCalc;
 class GPostTopic;
 class GPostCommunityManager;
 class GPostTopicManager;
@@ -174,9 +178,7 @@ class GCommunitiesHistoryManager;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Sessions Part
-class GTest;
-class GTests;
+// forward class declaration - Session Part
 class GDebugObject;
 class GSession;
 class GSessionPrg;
@@ -185,25 +187,21 @@ class GSignalHandler;
 class GStatsCalc;
 class GFactoryStatsCalc;
 class GStatsCalcManager;
-class GTool;
-class GFactoryTool;
-class GToolManager;
-class GMixedIdealGroups;
 class GStorage;
 class GStorageManager;
 class GFactoryStorage;
 class GMeasure;
 class GMeasureManager;
 class GFactoryMeasure;
-class GTypeMeasureManager;
 class GGALILEIApp;
 
 
 //------------------------------------------------------------------------------
-/**
-* The cNoRef constant represented an undefined identificator reference.
-*/
-const unsigned cNoRef=0xFFFFFFFF;
+// forward class declaration - Tools Part
+class GTool;
+class GFactoryTool;
+class GToolManager;
+class GMatrixMeasure;
 
 
 //------------------------------------------------------------------------------

@@ -180,8 +180,31 @@ public :
 	*/
 	tPluginsType GetPluginsType(void) const {return(PluginsType);}
 
+	/**
+	 * Get a pointer to the configuration structure for a specific plug-in.
+	 * @param name           Name of the plug-in.
+	 * @param type           Type of the factory
+	 * @return Pointer to R::RConfig.
+	 */
+	virtual R::RConfig* GetConfig(const R::RString& name,const R::RString& type=R::RString::Null) const=0;
+
+	/**
+	 * Apply the configuration for a plug-in corresponding to a given
+	 * R::RConfig.
+	 * @param config         Pointer to the configuration.
+	 */
+	virtual void ApplyConfig(R::RConfig* config)=0;
+
+	/**
+	* Set the current method if the plug-ins must have a selected one.
+	* @param name            Name of the method.
+	* @param need            If the parameter is true and the plug-in does not
+	*                        exist, generate an exception.
+	*/
+	virtual void SetCurrentMethod(const R::RString& name,bool need=true)=0;
+
 	/*
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~GGenericPluginManager(void);
 };
@@ -237,8 +260,8 @@ public:
 	/**
 	* Load a plug-in and its dialog boxes.
 	* @param dll             Name of the dynamic link library.
-	* @param handle          Handle to the library contaioning the plug-in.
-	* @param handleDlg       Handle to the library contaioning the dialogs.
+	* @param handle          Handle to the library of the plug-in.
+	* @param handleDlg       Handle to the library of the dialogs.
 	*/
 	virtual void Load(const R::RString& dll,void* handle,void* handleDlg);
 
@@ -255,13 +278,13 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
-	* Create the config parameters.
+	* Create the configuration parameters.
 	* @param config          Configuration structure.
 	*/
 	virtual void CreateConfig(R::RConfig* config);
 
 	/**
-	* Read config of the manager.
+	* Read the configuration parameters of the manager.
 	* @param config          Configuration structure.
 	*/
 	virtual void ReadConfig(R::RConfig* config);
@@ -323,6 +346,21 @@ public:
 	* exist.
 	*/
 	plugin* GetPlugIn(const R::RString& name,bool need=true) const;
+
+	/**
+	 * Get a pointer to the configuration structure for a specific plug-in.
+	 * @param name           Name of the plug-in.
+	 * @param type           Type of the factory
+	 * @return Pointer to R::RConfig.
+	 */
+	virtual R::RConfig* GetConfig(const R::RString& name,const R::RString&) const {return(GetFactory(name,false));}
+
+	/**
+	 * Apply the configuration for a plug-in corresponding to a given
+	 * R::RConfig.
+	 * @param config         Pointer to the configuration.
+	 */
+	virtual void ApplyConfig(R::RConfig* config);
 
 	/**
 	* Get a cursor over the enabled plug-ins.

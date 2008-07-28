@@ -9,8 +9,6 @@ SET(galilei_sessions_INST_INCLUDES gsession.h
                                     gsignalhandler.h
                                     gmeasure.h
                                     ggalileiapp.h
-                                    gmeasurefile.h
-                                    gmeasurefile.hh
                                     gdebugobject.h
                                     gpluginmanager.h
                                 	gpluginmanager.hh
