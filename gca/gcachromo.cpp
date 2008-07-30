@@ -141,21 +141,24 @@ template<class cObj,class cGroup>
 void GCAChromo::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-	switch(Instance->Type)
+	if(Instance->Incremental)
 	{
-		case otProfile:
-			if(Instance->Session->GetNbCommunities())
-				ConstructChromo<GProfile,GCommunity>(Instance->Session->GetCommunities());
-			break;
-		case otDoc:
-			if(Instance->Session->GetNbTopics())
-				ConstructChromo<GDoc,GTopic>(Instance->Session->GetTopics());
-			break;
-		default:
-			cout<<"Existing clustering not take into account"<<endl;
+		switch(Instance->Type)
+		{
+			case otProfile:
+				if(Instance->Session->GetNbCommunities())
+					ConstructChromo<GProfile,GCommunity>(Instance->Session->GetCommunities());
+				break;
+			case otDoc:
+				if(Instance->Session->GetNbTopics())
+					ConstructChromo<GDoc,GTopic>(Instance->Session->GetTopics());
+				break;
+			default:
+				cout<<"Existing clustering not take into account"<<endl;
+		}
 	}
 
-	// Call classic heuristic for non-assigned objects
+	// Call classical heuristic for non-assigned objects
 	RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::RandomConstruct();
 }
 

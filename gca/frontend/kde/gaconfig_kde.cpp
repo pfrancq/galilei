@@ -82,6 +82,11 @@ bool GAConfigDlg::Configure(RConfig* params )
 	MinAgreement->setValue(params->GetDouble("Min Agreement"));
 	Convergence->setValue(params->GetDouble("Convergence"));
 	MinDisagreement->setValue(params->GetDouble("Min Disagreement"));
+	Incremental->setChecked(params->GetBool("Incremental"));
+	LocalOptimisation->setChecked(params->GetBool("LocalOptimisation"));
+	InternalRandom->setChecked(params->GetBool("InternalRandom"));
+	Seed->setDisabled(params->GetBool("InternalRandom"));
+	Seed->setValue(params->GetInt("Seed"));
 	SimP->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->GetDouble());
 	SimQ->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->GetDouble());
 	SimWeight->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->GetDouble());
@@ -91,7 +96,7 @@ bool GAConfigDlg::Configure(RConfig* params )
 	DisagreementP->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("P")->GetDouble());
 	DisagreementQ->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Q")->GetDouble());
 	DisagreementWeight->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->GetDouble());
-	
+
 	// Execute and if 'OK' -> Apply changes
 	if(exec())
 	{
@@ -106,6 +111,10 @@ bool GAConfigDlg::Configure(RConfig* params )
 		params->SetUInt("Step Gen",StepGen->value());
 		params->SetDouble("Min Agreement",MinAgreement->value());
 		params->SetDouble("Min Disagreement",MinDisagreement->value());
+		params->SetBool("Incremental",Incremental->isChecked());
+		params->SetBool("LocalOptimisation",LocalOptimisation->isChecked());
+		params->SetBool("InternalRandom",InternalRandom->isChecked());
+		params->SetUInt("Seed",Seed->value());
 		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->SetDouble(SimP->value());
 		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->SetDouble(SimQ->value());
 		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->SetDouble(SimWeight->value());
@@ -117,6 +126,6 @@ bool GAConfigDlg::Configure(RConfig* params )
 		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->SetDouble(DisagreementWeight->value());
 		return(true);
  	}
-	
+
 	return(false);
 }

@@ -56,7 +56,7 @@ public:
 	* @param f              Factory.
 	*/
 	GCAGroupDocs(GFactoryGroupDocs* fac)
-		: GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>("Documents Grouping",otDoc), GGroupDocs(fac) {}
+		: GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>("Documents Grouping",otDoc,otTopic), GGroupDocs(fac) {}
 
 	/**
 	 * Class name.

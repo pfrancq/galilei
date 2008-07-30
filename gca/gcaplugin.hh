@@ -116,8 +116,8 @@ double kMeansObj::Similarity(GCAObj* obj1,GCAObj* obj2)
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	GCAPlugIn<cObj,cGroup,cFactory>::GCAPlugIn(const RString& name,tObjType type)
-		: RObject(name), Objs(20), Type(type)
+	GCAPlugIn<cObj,cGroup,cFactory>::GCAPlugIn(const RString& name,tObjType objtype,tObjType grouptype)
+		: RObject(name), Objs(20), ObjType(objtype),GroupType(grouptype)
 {
 }
 
@@ -126,18 +126,22 @@ template<class cObj,class cGroup,class cFactory>
 template<class cObj,class cGroup,class cFactory>
 	void GCAPlugIn<cObj,cGroup,cFactory>::ApplyConfig(cFactory* factory)
 {
-	Params.PopSize=factory->GetUInt("Population Size");
-	Params.MaxGen=factory->GetUInt("Max Gen");
-	Params.Step=factory->GetBool("Step");
-	Params.StepGen=factory->GetUInt("Step Gen");
-	Params.MinAgreement=factory->GetDouble("Min Agreement");
-	Params.MinDisagreement=factory->GetDouble("Min Disagreement");
-	Params.MaxKMeans=factory->GetUInt("Max kMeans");
-	Params.Convergence=factory->GetDouble("Convergence");
-	Params.NbDivChromo=factory->GetUInt("NbDivChromo");
-	Params.ParamsSim=factory->R::RConfig::FindParam<R::RParamStruct>("Sim Criterion");
-	Params.ParamsAgreement=factory->R::RConfig::FindParam<R::RParamStruct>("Agreement Criterion");
-	Params.ParamsDisagreement=factory->R::RConfig::FindParam<R::RParamStruct>("Disagreement Criterion");
+	PopSize=factory->GetUInt("Population Size");
+	MaxGen=factory->GetUInt("Max Gen");
+	Step=factory->GetBool("Step");
+	StepGen=factory->GetUInt("Step Gen");
+	MinAgreement=factory->GetDouble("Min Agreement");
+	MinDisagreement=factory->GetDouble("Min Disagreement");
+	MaxKMeans=factory->GetUInt("Max kMeans");
+	Convergence=factory->GetDouble("Convergence");
+	NbDivChromo=factory->GetUInt("NbDivChromo");
+	LocalOptimisation=factory->GetBool("LocalOptimisation");
+	Incremental=factory->GetBool("Incremental");
+	InternalRandom=factory->GetBool("InternalRandom");
+	Seed=factory->GetInt("Seed");
+	ParamsSim=factory->R::RConfig::FindParam<R::RParamStruct>("Sim Criterion");
+	ParamsAgreement=factory->R::RConfig::FindParam<R::RParamStruct>("Agreement Criterion");
+	ParamsDisagreement=factory->R::RConfig::FindParam<R::RParamStruct>("Disagreement Criterion");
 	RString what(factory->Get("Clustering Method"));
 	ClusteringMethod=0;
 	if(what=="GA")
@@ -200,16 +204,16 @@ template<class cObj,class cGroup,class cFactory>
 	size_t* tab;
 	size_t* ptr;
 
-	session->ClearGroups(Type);
+	session->ClearGroups(GroupType);
 	for(Sol.Start();!Sol.End();Sol.Next())
 	{
-		cGroup* g=static_cast<cGroup*>(session->NewGroup(Type));
+		cGroup* g=static_cast<cGroup*>(session->NewGroup(GroupType));
 		session->AssignId(g);
 		ptr=tab=Sol()->GetObjectsId();
 		while((*ptr)!=cNoRef)
 			g->InsertObj(static_cast<cObj*>(Objs[*(ptr++)]->GetElement()));
 		delete[] tab;
-		session->InsertGroup(g,Type);
+		session->InsertGroup(g,GroupType);
 	}
 }
 
@@ -220,20 +224,31 @@ template<class cObj,class cGroup,class cFactory>
 {
 	double d;
 
-	cout<<"Do GCA for "<<GetObjType(Type)<<"s"<<endl;
+	cout<<"Do GCA for "<<GetObjType(ObjType)<<"s"<<endl;
 
 	// Init the GCA
 	cout<<"Get minimum similarity"<<endl;
 	GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities")->Info(0,&d);
-	Params.MinSimLevel=d;
+	MinSimLevel=d;
 	cout<<"   Minimum Similarity="<<d<<endl;
 	cout<<"New GCA"<<endl;
-	GCAInst Instance(session,Objs,&Params,session->GetDebug(),Type,mes);
+	GCAInst Instance(session,Objs,this,session->GetDebug(),ObjType,mes,Incremental);
 	cout<<"Init GCA"<<endl;
 	Instance.Init();
+	Instance.SetLocalOptimisation(LocalOptimisation);
+	if(!InternalRandom)
+		Instance.SetSeed(Seed);
 
 	// Run
-	cout<<"Run GCA"<<endl;
+	cout<<"Run GCA (";
+	if(LocalOptimisation)
+		cout<<"local optimization";
+	else
+		cout<<"no local optimization";
+	if(Incremental)
+		cout<<",incremental mode)"<<endl;
+	else
+		cout<<",from scratch)"<<endl;
 	Instance.Run();
 	cout<<"Build solutions"<<endl;
 	ConstructResults<GCAGroup>(session,Instance.BestChromosome->Used);
@@ -244,15 +259,18 @@ template<class cObj,class cGroup,class cFactory>
 template<class cObj,class cGroup,class cFactory>
 	void GCAPlugIn<cObj,cGroup,cFactory>::DokMeans(GSession* session,const R::RString& mes)
 {
-	cout<<"Do kMeans for "<<GetObjType(Type)<<"s"<<endl;
+	cout<<"Do kMeans for "<<GetObjType(ObjType)<<"s"<<endl;
 	RRandomGood Rand(1);
-	Rand.Reset(1);
+	if(InternalRandom)
+		Rand.Reset(12345);
+	else
+		Rand.Reset(Seed);
 
 	kMeansObj kMeans("k-MeansObj",&Rand,Objs,mes);
 	kMeansGroups Sol(Objs,NbClusters);
 	Sol.Init();
 	cout<<"Run kMeans ("<<NbClusters<<" clusters)"<<endl;
-	kMeans.Run(&Sol,Params.MaxKMeans,NbClusters);
+	kMeans.Run(&Sol,MaxKMeans,NbClusters);
 	cout<<"kMeans iterates "<<kMeans.GetNbIterations()<<" times"<<endl;
 	ConstructResults<kMeansGroup>(session,Sol);
 }
@@ -265,8 +283,8 @@ template<class cObj,class cGroup,class cFactory>
 	// set the level of the MinSim
 	try
 	{
-		// If no document in an active language -> skip it
-		size_t nb=session->GetNbElements(Type);
+		// If no element to group -> skip it
+		size_t nb=session->GetNbElements(ObjType);
 		if(!nb)
 			return;
 
@@ -327,6 +345,10 @@ template<class cObj,class cGroup,class cFactory>
 	params->InsertParam(new RParamValue("NbDivChromos",2));
 	params->InsertParam(new RParamValue("NbClusters",20));
 	params->InsertParam(new RParamValue("Clustering Method","GA"));
+	params->InsertParam(new RParamValue("LocalOptimisation",true));
+	params->InsertParam(new RParamValue("Incremental",true));
+	params->InsertParam(new RParamValue("InternalRandom",true));
+	params->InsertParam(new RParamValue("Seed",static_cast<int>(12345)));
 	params->InsertParam(RPromLinearCriterion::CreateParam("Sim Criterion"));
 	params->InsertParam(RPromLinearCriterion::CreateParam("Agreement Criterion"));
 	params->InsertParam(RPromLinearCriterion::CreateParam("Disagreement Criterion"));

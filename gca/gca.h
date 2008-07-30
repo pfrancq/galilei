@@ -155,7 +155,7 @@ public:
 	size_t NbDivChromo;
 
 	/**
-	* Parameter for the criterion "Similariry".
+	* Parameter for the criterion "Similarity".
 	*/
 	R::RParam* ParamsSim;
 
@@ -168,6 +168,16 @@ public:
 	* Parameter for the criterion "Disagreement".
 	*/
 	R::RParam* ParamsDisagreement;
+
+	/**
+	 * Perform local optimization.
+	 */
+	bool LocalOptimisation;
+
+	/**
+	 * Perform an incremental clustering.
+	 */
+	bool Incremental;
 
 	/**
 	* Constructor.

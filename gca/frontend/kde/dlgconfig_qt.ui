@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>576</width>
-            <height>570</height>
+            <width>536</width>
+            <height>572</height>
         </rect>
     </property>
     <property name="caption">
@@ -33,102 +33,172 @@
                 <attribute name="title">
                     <string>General</string>
                 </attribute>
-                <widget class="QGroupBox">
+                <vbox>
                     <property name="name">
-                        <cstring>groupBox3_2</cstring>
+                        <cstring>unnamed</cstring>
                     </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>11</x>
-                            <y>11</y>
-                            <width>530</width>
-                            <height>66</height>
-                        </rect>
-                    </property>
-                    <property name="title">
-                        <string>Clustering Method</string>
-                    </property>
-                    <vbox>
+                    <widget class="QGroupBox">
                         <property name="name">
-                            <cstring>unnamed</cstring>
+                            <cstring>groupBox3_2</cstring>
                         </property>
-                        <widget class="QLayoutWidget">
+                        <property name="title">
+                            <string>Clustering Method</string>
+                        </property>
+                        <vbox>
                             <property name="name">
-                                <cstring>layout12</cstring>
+                                <cstring>unnamed</cstring>
                             </property>
-                            <hbox>
+                            <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>unnamed</cstring>
+                                    <cstring>layout14</cstring>
                                 </property>
-                                <widget class="QLabel">
+                                <hbox>
                                     <property name="name">
-                                        <cstring>textLabel1_3</cstring>
+                                        <cstring>unnamed</cstring>
                                     </property>
-                                    <property name="text">
-                                        <string>Method</string>
-                                    </property>
-                                </widget>
-                                <spacer>
-                                    <property name="name">
-                                        <cstring>spacer23_2</cstring>
-                                    </property>
-                                    <property name="orientation">
-                                        <enum>Horizontal</enum>
-                                    </property>
-                                    <property name="sizeType">
-                                        <enum>Expanding</enum>
-                                    </property>
-                                    <property name="sizeHint">
-                                        <size>
-                                            <width>40</width>
-                                            <height>20</height>
-                                        </size>
-                                    </property>
-                                </spacer>
-                                <widget class="QComboBox">
-                                    <item>
-                                        <property name="text">
-                                            <string>GA</string>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_3</cstring>
                                         </property>
-                                    </item>
-                                    <item>
                                         <property name="text">
-                                            <string>k-Means</string>
+                                            <string>Method</string>
                                         </property>
-                                    </item>
+                                    </widget>
+                                    <widget class="QComboBox">
+                                        <item>
+                                            <property name="text">
+                                                <string>GA</string>
+                                            </property>
+                                        </item>
+                                        <item>
+                                            <property name="text">
+                                                <string>k-Means</string>
+                                            </property>
+                                        </item>
+                                        <property name="name">
+                                            <cstring>ClusteringMethod</cstring>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer23_2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>361</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>groupBox9_2</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Random Number generator</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>InternalRandom</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Use Internal Random Number Generator</string>
+                                </property>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout15</cstring>
+                                </property>
+                                <hbox>
                                     <property name="name">
-                                        <cstring>ClusteringMethod</cstring>
+                                        <cstring>unnamed</cstring>
                                     </property>
-                                </widget>
-                            </hbox>
-                        </widget>
-                    </vbox>
-                </widget>
-                <spacer>
-                    <property name="name">
-                        <cstring>spacer41</cstring>
-                    </property>
-                    <property name="orientation">
-                        <enum>Vertical</enum>
-                    </property>
-                    <property name="sizeType">
-                        <enum>Expanding</enum>
-                    </property>
-                    <property name="sizeHint">
-                        <size>
-                            <width>20</width>
-                            <height>385</height>
-                        </size>
-                    </property>
-                    <property name="geometry">
-                        <rect>
-                            <x>266</x>
-                            <y>83</y>
-                            <width>20</width>
-                            <height>385</height>
-                        </rect>
-                    </property>
-                </spacer>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_4</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Seed value of the generator</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer24_3</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntSpinBox">
+                                        <property name="name">
+                                            <cstring>Seed</cstring>
+                                        </property>
+                                        <property name="maxValue">
+                                            <number>35000</number>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer25</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>40</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <spacer>
+                        <property name="name">
+                            <cstring>spacer41</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>20</width>
+                                <height>280</height>
+                            </size>
+                        </property>
+                    </spacer>
+                </vbox>
             </widget>
             <widget class="QWidget">
                 <property name="name">
@@ -256,76 +326,23 @@
                                     </widget>
                                 </hbox>
                             </widget>
-                        </vbox>
-                    </widget>
-                    <widget class="QGroupBox">
-                        <property name="name">
-                            <cstring>groupBox3</cstring>
-                        </property>
-                        <property name="title">
-                            <string>Debug</string>
-                        </property>
-                        <hbox>
-                            <property name="name">
-                                <cstring>unnamed</cstring>
-                            </property>
                             <widget class="QCheckBox">
                                 <property name="name">
-                                    <cstring>Step</cstring>
+                                    <cstring>LocalOptimisation</cstring>
                                 </property>
                                 <property name="text">
-                                    <string>Step Mode</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Set id the step mode is activ.</string>
-                                </property>
-                                <property name="whatsThis" stdset="0">
-                                    <string>When &lt;b&gt;step mode&lt;/b&gt; is checked and the GVCA is launched manually, it stops after a given number of steps.</string>
+                                    <string>Perform a local optimization when possible.</string>
                                 </property>
                             </widget>
-                            <spacer>
+                            <widget class="QCheckBox">
                                 <property name="name">
-                                    <cstring>spacer97</cstring>
-                                </property>
-                                <property name="orientation">
-                                    <enum>Horizontal</enum>
-                                </property>
-                                <property name="sizeType">
-                                    <enum>Expanding</enum>
-                                </property>
-                                <property name="sizeHint">
-                                    <size>
-                                        <width>40</width>
-                                        <height>20</height>
-                                    </size>
-                                </property>
-                            </spacer>
-                            <widget class="QLabel">
-                                <property name="name">
-                                    <cstring>textLabel7</cstring>
+                                    <cstring>Incremental</cstring>
                                 </property>
                                 <property name="text">
-                                    <string>Number of Steps</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Set the number of steps in the step mode.</string>
-                                </property>
-                                <property name="whatsThis" stdset="0">
-                                    <string>The GVCA manually launched stops each time a given number of iterations was run.</string>
+                                    <string>Perform an incremental clustering</string>
                                 </property>
                             </widget>
-                            <widget class="KIntNumInput">
-                                <property name="name">
-                                    <cstring>StepGen</cstring>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Set the number of steps in the step mode.</string>
-                                </property>
-                                <property name="whatsThis" stdset="0">
-                                    <string>The GVCA manually launched stops each time a given number of iterations was run.</string>
-                                </property>
-                            </widget>
-                        </hbox>
+                        </vbox>
                     </widget>
                     <widget class="QGroupBox">
                         <property name="name">
@@ -951,6 +968,75 @@
                             </widget>
                         </vbox>
                     </widget>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>groupBox3</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Debug</string>
+                        </property>
+                        <hbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>Step</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Step Mode</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Set id the step mode is activ.</string>
+                                </property>
+                                <property name="whatsThis" stdset="0">
+                                    <string>When &lt;b&gt;step mode&lt;/b&gt; is checked and the GVCA is launched manually, it stops after a given number of steps.</string>
+                                </property>
+                            </widget>
+                            <spacer>
+                                <property name="name">
+                                    <cstring>spacer97</cstring>
+                                </property>
+                                <property name="orientation">
+                                    <enum>Horizontal</enum>
+                                </property>
+                                <property name="sizeType">
+                                    <enum>Expanding</enum>
+                                </property>
+                                <property name="sizeHint">
+                                    <size>
+                                        <width>40</width>
+                                        <height>20</height>
+                                    </size>
+                                </property>
+                            </spacer>
+                            <widget class="QLabel">
+                                <property name="name">
+                                    <cstring>textLabel7</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Number of Steps</string>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Set the number of steps in the step mode.</string>
+                                </property>
+                                <property name="whatsThis" stdset="0">
+                                    <string>The GVCA manually launched stops each time a given number of iterations was run.</string>
+                                </property>
+                            </widget>
+                            <widget class="KIntNumInput">
+                                <property name="name">
+                                    <cstring>StepGen</cstring>
+                                </property>
+                                <property name="toolTip" stdset="0">
+                                    <string>Set the number of steps in the step mode.</string>
+                                </property>
+                                <property name="whatsThis" stdset="0">
+                                    <string>The GVCA manually launched stops each time a given number of iterations was run.</string>
+                                </property>
+                            </widget>
+                        </hbox>
+                    </widget>
                     <spacer>
                         <property name="name">
                             <cstring>spacer26</cstring>
@@ -964,7 +1050,7 @@
                         <property name="sizeHint">
                             <size>
                                 <width>20</width>
-                                <height>70</height>
+                                <height>20</height>
                             </size>
                         </property>
                     </spacer>
@@ -1250,12 +1336,19 @@
         <receiver>DlgConfig_Qt</receiver>
         <slot>reject()</slot>
     </connection>
+    <connection>
+        <sender>InternalRandom</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>Seed</receiver>
+        <slot>setDisabled(bool)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">dlgconfig_qt.ui.h</include>
 </includes>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>

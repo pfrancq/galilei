@@ -110,7 +110,7 @@ public:
  * @short Generic GCA PlugIn
  */
 template<class cObj,class cGroup,class cFactory>
-	class GCAPlugIn : public R::RObject
+	class GCAPlugIn : public R::RObject, public GCAParams
 {
 protected:
 
@@ -118,11 +118,6 @@ protected:
 	* GA Objects.
 	*/
 	R::RContainer<GCAObj,true,false> Objs;
-
-	/**
-	* Parameters of the GA used.
-	*/
-	GCAParams Params;
 
 	/**
 	 * Current clustering method
@@ -137,14 +132,29 @@ protected:
 	/**
 	 * Type of objects.
 	 */
-	tObjType Type;
+	tObjType ObjType;
+
+	/**
+	 * Type of groups.
+	 */
+	tObjType GroupType;
+
+	/**
+	 * Use the internal number generator.
+	 */
+	bool InternalRandom;
+
+	/**
+	 * Seed value to use.
+	 */
+	int Seed;
 
 public:
 
 	/**
 	* Constructor.
 	*/
-	GCAPlugIn(const R::RString& name,tObjType type);
+	GCAPlugIn(const R::RString& name,tObjType objtype,tObjType grouptype);
 
 	/**
 	 * Class name.

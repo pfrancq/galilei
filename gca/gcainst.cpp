@@ -124,10 +124,10 @@ GCAThreadData::~GCAThreadData(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,GCAParams* p,RDebug *debug,tObjType type,const R::RString& mes)
+GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,GCAParams* p,RDebug *debug,tObjType type,const R::RString& mes,bool inc)
 	: RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>(p->PopSize,objs,"FirstFit","GCA",debug),
 	GCAProm(p), Params(p), Sols(0), Session(ses), NoSocialProfiles(objs.GetNb()),
-	Ratios(objs.GetNb()), Sims(0),Agree(0), Disagree(0), Type(type)
+	Ratios(objs.GetNb()), Sims(0),Agree(0), Disagree(0), Type(type), Incremental(inc)
 #if BESTSOLSVERIFICATION
 	  , BestSols(p->MaxGen,p->MaxGen/2)
 #endif

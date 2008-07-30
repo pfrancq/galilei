@@ -144,13 +144,6 @@ class GCAInst : public R::RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAG
 	*/
 	R::RContainer<GCAMaxRatios,true,false> Ratios;
 
-#if BESTSOLSVERIFICATION
-	/**
-	* Container holding the best chromosomes.
-	*/
-	R::RContainer<GCAChromo,true,false> BestSols;
-#endif
-
 	/*
 	 * Similarity measure to used.
 	 */
@@ -171,6 +164,18 @@ class GCAInst : public R::RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAG
 	 */
 	tObjType Type;
 
+	/**
+	 * Incremental mode.
+	 */
+	bool Incremental;
+
+#if BESTSOLSVERIFICATION
+	/**
+	* Container holding the best chromosomes.
+	*/
+	R::RContainer<GCAChromo,true,false> BestSols;
+#endif
+
 public:
 
 	/**
@@ -180,9 +185,12 @@ public:
 	* @param p              Parameters.
 	* @param debug          Debugger.
 	* @param type           Type of the element to group.
-	* @param mes            Name of the measures to used (ex: "Documents", "Profiles", etc.)
+	* @param mes            Name of the measures to used (ex: "Documents",
+	*                       "Profiles", etc.).
+	* @param inc            Incremental mode (The GCA constructs the
+	*                       chromosomes from existing solutions).
 	*/
-	GCAInst(GSession* ses,R::RCursor<GCAObj> objs,GCAParams* p,R::RDebug* debug,tObjType type,const R::RString& mes);
+	GCAInst(GSession* ses,R::RCursor<GCAObj> objs,GCAParams* p,R::RDebug* debug,tObjType type,const R::RString& mes,bool inc);
 
 	/**
 	* Initialisation of the instance.
