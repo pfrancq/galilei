@@ -194,7 +194,7 @@ void KViewPrg::run(void)
 	KApplication::kApplication()->processEvents();
 	if(Name.IsEmpty())
 	{
-		GSessionPrg Prg("",0,0);
+		GSessionPrg Prg("",0);
 		RCursor<RPrgClass> Classes(Prg.GetClasses());
 		for(Classes.Start();!Classes.End();Classes.Next())
 		{

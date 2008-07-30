@@ -83,12 +83,10 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 	: KView(doc,parent,name,wflags),
 	  Global(global), MinGen(minid), MaxGen(maxid),MinDate(mindate), MaxDate(maxdate), CurId(0),  Profiles(0), Groups(0),  bDate(bdate)
 {
-	static char tmp[100];
-
-	//init the container of selected subprofiles.
+	// Initialization the container of selected profiles.
 	SelectedProfiles=new R::RContainer<GWeightInfosHistory,false,true>(5,2);
 
-	//init ToolBar components.
+	// Initialization ToolBar components.
 	ToolBar=  new QMenuBar( this, "file operations" );
 	ToolBar->setGeometry(QRect(0, 0,(this->width()),30));
 	QPopupMenu* groupmenu;
@@ -173,12 +171,11 @@ KViewHistory::KViewHistory(KDoc* doc,bool global,QWidget* parent,const char* nam
 
 	// Solutions Part
 	Solution = new QGCommunitiesHistory(TabWidget,(*Groups)[0]);
-	sprintf(tmp,"Solution (%u) %s",CurId,((*Groups)[0])->GetDate().ToString().Latin1());
-	TabWidget->insertTab(Solution,tmp);
+	TabWidget->insertTab(Solution,ToQString("Solution ("+RString::Number(CurId)+") "+((*Groups)[0])->GetDate().ToString()));
 	Solution->setGroups((*Groups)[0]);
 	Solution->setChanged();
 
-	//tmp display
+	// tmp display
 	Groups->CreateCommunitiesRelationship(MaxGen);
 
 	//connections.
@@ -196,8 +193,6 @@ void KViewHistory::update(tObjType)
 //---------------------------------------------------------------------------
 void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 {
-	static char tmp[100];
-
 	GCommunitiesHistory* grps;
 
 	if(TabWidget->currentPage()!=Solution)
@@ -215,8 +210,7 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 			Solution->setChanged();
 			SelectedProfiles->Clear();
 			SimsView->clear();
-			sprintf(tmp,"Solution (%u) [%s]",CurId, grps->GetDate().ToString().Latin1());
-			TabWidget->changeTab(Solution,tmp);
+			TabWidget->changeTab(Solution,ToQString("Solution ("+RString::Number(CurId)+") "+grps->GetDate().ToString()));
 			break;
 		case Key_PageDown:
 			if(CurId>MinGen) CurId--;
@@ -224,8 +218,9 @@ void KViewHistory::keyReleaseEvent(QKeyEvent* e)
 			grps=Groups->GetPtr(CurId);
 			Solution->setGroups(grps);
 			Solution->setChanged();
-			sprintf(tmp,"Solution (%u) [%s]",CurId,grps->GetDate().ToString().Latin1());
-			TabWidget->changeTab(Solution,tmp);
+			SelectedProfiles->Clear();
+			SimsView->clear();
+			TabWidget->changeTab(Solution,ToQString("Solution ("+RString::Number(CurId)+") "+grps->GetDate().ToString()));
 			break;
 		default:
 			e->ignore();
@@ -325,7 +320,6 @@ void KViewHistory::DisplaySimilarities(void)
 	size_t i;
 	double similarity;
 	QListViewItem* sim;
-	char num1[50], num2[50], num3[50], id[10];
 
 	//clear the list view
 	SimsView->clear();
@@ -341,11 +335,11 @@ void KViewHistory::DisplaySimilarities(void)
 				similarity=cInfos1()->SimilarityIFF(*cInfos2(), otProfile);
 			else
 				similarity=cInfos1()->Similarity(*cInfos2());
-			sprintf(num1,"%u",cInfos1()->GetId());
-			sprintf(num2,"%u",cInfos2()->GetId());
-			sprintf(num3,"%f",similarity);
-			sprintf(id, "%u",cInfos1()->GetParent()->GetParent()->GetId());
-			sim=new QListViewItem(SimsView, num1, num2, num3,id, ToQString(cInfos1()->GetParent()->GetParent()->GetDate()));
+			sim=new QListViewItem(SimsView,RString::Number(cInfos1()->GetId()).Latin1(),
+					                       RString::Number(cInfos2()->GetId()).Latin1(),
+					                       RString::Number(similarity).Latin1(),
+					                       RString::Number(cInfos1()->GetParent()->GetParent()->GetId()).Latin1(),
+					                       ToQString(cInfos1()->GetParent()->GetParent()->GetDate()));
 		}
 	}
 
@@ -355,15 +349,11 @@ void KViewHistory::DisplaySimilarities(void)
 //-----------------------------------------------------------------------------
 void KViewHistory::DisplayRelationShip(GCommunityHistory* grp)
 {
-	char tmp[100];
 	R::RCursor<GCommunityHistory> cur;
 	QListViewItemType* grpitem;
-	char num1[50];
 
 	//display this group
-	sprintf(tmp,"Group %u" ,grp->GetId());
-	sprintf(num1,"%u",grp->GetParent()->GetId());
-	grpitem=new QListViewItemType(grp, RelationShip, tmp, 0, num1,ToQString(grp->GetParent()->GetDate()));
+	grpitem=new QListViewItemType(grp, RelationShip,ToQString("Group "+RString::Number(grp->GetId())),0,QString::number(grp->GetParent()->GetId()),ToQString(grp->GetParent()->GetDate()));
 	grpitem->setOpen(true);
 	grpitem->setSelected(true);
 
@@ -377,15 +367,11 @@ void KViewHistory::DisplayRelationShip(GCommunityHistory* grp)
 //-----------------------------------------------------------------------------
 void KViewHistory::DisplayChildrenRelationShip(GCommunityHistory* grp, QListViewItemType* attach )
 {
-	char tmp[100];
 	R::RCursor<GCommunityHistory> cur;
 	QListViewItemType* grpitem;
-	char num1[50];
 
 	//recursive method to display all children
-	sprintf(tmp,"Group %u" ,grp->GetId());
-	sprintf(num1,"%u",grp->GetParent()->GetId());
-	grpitem=new QListViewItemType(grp, attach, tmp, "children", num1, ToQString(grp->GetParent()->GetDate()));
+	grpitem=new QListViewItemType(grp,attach,ToQString("Group "+RString::Number(grp->GetId())),"children",QString::number(grp->GetParent()->GetId()),ToQString(grp->GetParent()->GetDate()));
 	cur= grp->GetChildrens();
 	for (cur.Start(); !cur.End(); cur.Next())
 		DisplayChildrenRelationShip(cur(), grpitem);

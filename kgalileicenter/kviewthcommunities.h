@@ -4,7 +4,7 @@
 
 	KViewThCommunities.h
 
-	Window to manipulate theoritical groups - Header.
+	Window to manipulate theoretical communities - Header.
 
 	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
@@ -97,7 +97,7 @@ public:
 	/**
 	* Constructor for the view
 	* @param doc            Document instance that the view represents.
-	* @param idealgroup     The ideal groupement.
+	* @param idealgroup     The ideal clustering.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.

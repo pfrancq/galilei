@@ -300,6 +300,19 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+* Create the ideal subjects.
+* @param save           Save modified elements.
+*/
+class QCreateIdealSubjects : public QSessionThread
+{
+public:
+	QCreateIdealSubjects(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Create the ideal communities.
 * @param save           Save modified elements.
 */
@@ -307,6 +320,19 @@ class QCreateIdealCommunities : public QSessionThread
 {
 public:
 	QCreateIdealCommunities(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create the ideal topics.
+* @param save           Save modified elements.
+*/
+class QCreateIdealTopics : public QSessionThread
+{
+public:
+	QCreateIdealTopics(void) {}
 	virtual void DoIt(void);
 };
 

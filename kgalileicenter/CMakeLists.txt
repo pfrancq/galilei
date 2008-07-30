@@ -19,6 +19,7 @@ SET(kgalileicenter_frontend_kde_MOC_INCLUDES kdoc.h
                                                                                                kviewstats.h
                                                                                                kviewstems.h
                                                                                                kviewthcommunities.h
+                                                                                               kviewthtopics.h
                                                                                                kviewusers.h
                                                                                                qmyplugins.h
                                                                                                qsessionprogress.h
@@ -43,6 +44,7 @@ SET (KGALILEICENTER_SOURCES   kviewhistory.cpp
                                                                       qsessionprogress.cpp
                                                                       kviewusers.cpp
                                                                       kviewthcommunities.cpp
+                                                                      kviewthtopics.cpp
                                                                       kviewprofile.cpp
                                                                       kviewcommunities.cpp
                                                                       kviewcommunity.cpp

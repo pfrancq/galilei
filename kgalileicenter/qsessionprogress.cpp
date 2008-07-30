@@ -493,11 +493,27 @@ void QPostGroupDocs::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
-void QCreateIdealCommunities::DoIt(void)
+void QCreateIdealSubjects::DoIt(void)
 {
-	Parent->PutText("Create Ideal Groups ...");
+	Parent->PutText("Create Ideal Communities ...");
 	Session->GetSubjects()->Apply();
 	Session->GetSubjects()->CreateIdeal();
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealCommunities::DoIt(void)
+{
+	Parent->PutText("Create Ideal Communities ...");
+	Session->BuildGroupsFromIdeal(otCommunity);
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealTopics::DoIt(void)
+{
+	Parent->PutText("Create Ideal Topics ...");
+	Session->BuildGroupsFromIdeal(otTopic);
 }
 
 

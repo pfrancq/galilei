@@ -131,7 +131,7 @@ public:
 
 	/**
 	* pWorkspace is the MDI frame widget that handles MDI child widgets.
-	* Inititalized in initView()
+	* Initialized in initView()
 	*/
 	QWorkspace* pWorkspace;
 
@@ -165,7 +165,7 @@ public:
 public:
 
 	/**
-	* Construtor of KGALILEICenterApp, calls all init functions to create the
+	* Construct of KGALILEICenterApp, calls all init functions to create the
 	* application.
 	* @see initMenuBar initToolBar
 	*/
@@ -209,7 +209,7 @@ protected:
 	void initActions(void);
 
 	/**
-	* Sets up the statusbar for the main window by initialzing a statuslabel.
+	* Sets up the statusbar for the main window by initializing a statuslabel.
 	*/
 	void initStatusBar(void);
 
@@ -402,9 +402,19 @@ private slots:
 	void slotSimulationDlg(void);
 
 	/**
-	* Create ideal groups.
+	* Create ideal subjects.
+	*/
+	void slotSubjectsCreate(void);
+
+	/**
+	* Create ideal communities.
 	*/
 	void slotCommunitiesCreate(void);
+
+	/**
+	* Create ideal topics.
+	*/
+	void slotTopicsCreate(void);
 
 	/**
 	* Make a feedback cycle.
@@ -417,9 +427,14 @@ private slots:
 	void slotDoAssessments(void);
 
 	/**
-	* Compare the current grouping with the grouping in memory.
+	* Compare the current communities with the ideal ones.
 	*/
-	void slotGroupingCompare(void);
+	void slotCommunitiesCompare(void);
+
+	/**
+	* Compare the current topics with the ideal ones.
+	*/
+	void slotTopicsCompare(void);
 
 	/**
 	* Show the documents window.
@@ -427,17 +442,17 @@ private slots:
 	void slotShowDocs(void);
 
 	/**
-	* Analyse a document.
+	* Analyze a document.
 	*/
 	void slotDocAnalyse(void);
 
 	/**
-	* Analyse all the documents.
+	* Analyze all the documents.
 	*/
 	void slotDocsAnalyse(void);
 
 	/**
-	* Post-analyse all the documents.
+	* Post-analyze all the documents.
 	*/
 	void slotPostDocsAnalyse(void);
 
@@ -458,7 +473,7 @@ private slots:
 	void slotSaveXML(void);
 
 	/**
-	* Analyse the XML structure of the current document.
+	* Analyze the XML structure of the current document.
 	*/
 	void slotAnalyseXML(void);
 
@@ -493,7 +508,7 @@ private slots:
 	void slotViewStatusBar(void);
 
 	/**
-	* Configure all the plugins of the system.
+	* Configure all the plug-ins of the system.
 	*/
 	void slotPlugins(void);
 
@@ -542,12 +557,12 @@ private slots:
 	void slotSaveModifier(void);
 
 	/**
-	* Clear the docs.
+	* Clear the documents.
 	*/
 	void slotDocsClear(void);
 
 	/**
-	* Clear the subprofiles.
+	* Clear the profiles.
 	*/
 	void slotProfilesClear(void);
 
@@ -640,10 +655,13 @@ public:
 	KAction* postCommunitiesCalc;
 	KAction* communitiesClear;
 	KAction* simulationDlg;
-	KAction* groupingCreate;
+	KAction* communitiesCreate;
+	KAction* topicsCreate;
+	KAction* subjectsCreate;
 	KAction* doFdbks;
 	KAction* doAssessments;
-	KAction* groupingCompare;
+	KAction* communitiesCompare;
+	KAction* topicsCompare;
 	KAction* showCommunitiesHistory;
 
 	KAction* plugins;

@@ -70,12 +70,16 @@
 	</Menu>
 	<Menu name="Debug"><text>D&amp;ebug</text>
 		<Action name="simulationDlg"/>
+		<Action name="subjectsCreate"/>
+		<Separator/>		
+		<Action name="communitiesCreate"/>
+		<Action name="topicsCreate"/>
 		<Separator/>
-		<Action name="groupingCreate"/>
 		<Action name="doFdbks"/>
 		<Action name="doAssessments"/>
 		<Separator/>
-		<Action name="groupingCompare"/>
+		<Action name="communitiesCompare"/>
+		<Action name="topicsCompare"/>
 	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
 		<Action name="settings_show_toolbar" />

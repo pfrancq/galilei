@@ -156,10 +156,13 @@ void KGALILEICenterApp::initActions(void)
 
 	// Menu "Debug"
 	simulationDlg=new KAction(i18n("Simulation &Parameters"),0,0,this,SLOT(slotSimulationDlg()),actionCollection(),"simulationDlg");
-	groupingCreate=new KAction(i18n("&Create Ideal Communities"),0,0,this,SLOT(slotCommunitiesCreate()),actionCollection(),"groupingCreate");
+	subjectsCreate=new KAction(i18n("Initialize the simulation"),0,0,this,SLOT(slotSubjectsCreate()),actionCollection(),"subjectsCreate");
+	communitiesCreate=new KAction(i18n("Create Ideal &Communities"),0,0,this,SLOT(slotCommunitiesCreate()),actionCollection(),"communitiesCreate");
+	topicsCreate=new KAction(i18n("Create Ideal &Topics"),0,0,this,SLOT(slotTopicsCreate()),actionCollection(),"topicsCreate");
 	doFdbks=new KAction(i18n("&Feedback Cycle"),0,0,this,SLOT(slotDoFdbks()),actionCollection(),"doFdbks");
 	doAssessments=new KAction(i18n("&Assessments Cycle"),0,0,this,SLOT(slotDoAssessments()),actionCollection(),"doAssessments");
-	groupingCompare=new KAction(i18n("Ideal clustering"),"fileopen",0,this,SLOT(slotGroupingCompare()),actionCollection(),"groupingCompare");
+	communitiesCompare=new KAction(i18n("Compare Ideal Communities"),"fileopen",0,this,SLOT(slotCommunitiesCompare()),actionCollection(),"communitiesCompare");
+	topicsCompare=new KAction(i18n("Compare Ideal Topics"),"fileopen",0,this,SLOT(slotTopicsCompare()),actionCollection(),"topicsCompare");
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
 
@@ -326,12 +329,15 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	sessionCompute->setEnabled(true);
 	doFdbks->setEnabled(true);
 	doAssessments->setEnabled(true);
-	groupingCompare->setEnabled(true);
+	communitiesCompare->setEnabled(true);
+	topicsCompare->setEnabled(true);
 	textFrench->setEnabled(true);
 	textEnglish->setEnabled(true);
 	communitiesCalc->setEnabled(true);
 	postCommunitiesCalc->setEnabled(true);
-	groupingCreate->setEnabled(true);
+	subjectsCreate->setEnabled(true);
+	communitiesCreate->setEnabled(true);
+	topicsCreate->setEnabled(true);
 	showCommunitiesHistory->setEnabled(true);
 	showDocs->setEnabled(true);
 	docAnalyse->setEnabled(true);
@@ -368,7 +374,8 @@ void KGALILEICenterApp::DisableAllActions(void)
 	sessionCompute->setEnabled(false);
 	doFdbks->setEnabled(false);
 	doAssessments->setEnabled(false);
-	groupingCompare->setEnabled(false);
+	communitiesCompare->setEnabled(false);
+	topicsCompare->setEnabled(false);
 	textFrench->setEnabled(false);
 	textEnglish->setEnabled(false);
 	createXML->setEnabled(false);
@@ -376,7 +383,9 @@ void KGALILEICenterApp::DisableAllActions(void)
 	analyseXML->setEnabled(false);
 	communitiesCalc->setEnabled(false);
 	postCommunitiesCalc->setEnabled(false);
-	groupingCreate->setEnabled(false);
+	subjectsCreate->setEnabled(false);
+	communitiesCompare->setEnabled(false);
+	topicsCompare->setEnabled(false);
 	showCommunitiesHistory->setEnabled(false);
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);

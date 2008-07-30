@@ -4,7 +4,7 @@
 
 	KViewThCommunities.cpp
 
-	Window to manipulate theoritical groups - Implementation.
+	Window to manipulate theoretical communities - Implementation.
 
 	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
@@ -43,9 +43,9 @@ using namespace R;
 #include <glang.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <ggroup.h>
 #include <gsubjects.h>
 #include <gsubject.h>
+#include <gcommunity.h>
 #include <qlistviewitemtype.h>
 #include <ggalileiapp.h>
 using namespace GALILEI;
@@ -138,16 +138,16 @@ void KViewThCommunities::ConstructThCommunities(void)
 	R::RCursor<GSubject> Grps(getDocument()->GetSession()->GetSubjects()->GetNodes());
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
-		if(!Grps()->GetNbProfiles())
+		if(!Grps()->GetNbObjs(otProfile))
 			continue;
 
-		gritem= new QListViewItemType(Grps(),thCommunities,ToQString(Grps()->GetName())+" - "+QString::number(Grps()->GetNbProfiles()));
+		gritem= new QListViewItemType(Grps(),thCommunities,ToQString(Grps()->GetName())+" - "+QString::number(Grps()->GetNbObjs(otProfile)));
 		gritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("window_new.png",KIcon::Small)));
 
-		// If the subject has no subprofiles -> next one.
-		if(!Grps()->GetNbProfiles())
+		// If the subject has no profiles -> next one.
+		if(!Grps()->GetNbObjs(otProfile))
 			continue;
-		Sub=Grps()->GetProfiles();
+		Sub=Grps()->GetObjs(static_cast<GProfile*>(0));
 		for(Sub.Start(); !Sub.End(); Sub.Next())
 		{
 			GProfile* sub=Sub();
@@ -167,8 +167,8 @@ void KViewThCommunities::ConstructCommunities(void)
 	char tmp2[30];
 	RCursor<GProfile> Sub;
 
-	Doc->GetSession()->GetSubjects()->Compare();
-	sprintf(tmp1,"Groupement Comparaison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(),Doc->GetSession()->GetSubjects()->GetRecall(),Doc->GetSession()->GetSubjects()->GetTotal());
+	Doc->GetSession()->GetSubjects()->Compare(otCommunity);
+	sprintf(tmp1,"Clustring Comparison: Precision=%1.3f - Recall=%1.3f - Total=%1.3f",Doc->GetSession()->GetSubjects()->GetPrecision(otCommunity),Doc->GetSession()->GetSubjects()->GetRecall(otCommunity),Doc->GetSession()->GetSubjects()->GetTotal(otCommunity));
 	setCaption(tmp1);
 	prCommunities->clear();
 

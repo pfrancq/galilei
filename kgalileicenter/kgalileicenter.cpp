@@ -108,6 +108,7 @@ using namespace std;
 #include "kviewcommunity.h"
 #include "kviewtopics.h"
 #include "kviewtopic.h"
+#include "kviewthtopics.h"
 #include "kviewprg.h"
 #include "kviewstems.h"
 #include "kviewprofile.h"
@@ -506,11 +507,31 @@ void KGALILEICenterApp::slotSimulationDlg(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotSubjectsCreate(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Subjects");
+	Dlg.Run(new QCreateIdealSubjects());
+	Doc->updateAllViews(otCommunity);
+	Doc->updateAllViews(otUser);
+	Doc->updateAllViews(otDoc);
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotCommunitiesCreate(void)
 {
 	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Communities");
 	Dlg.Run(new QCreateIdealCommunities());
 	Doc->updateAllViews(otCommunity);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotTopicsCreate(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Topics");
+	Dlg.Run(new QCreateIdealTopics());
+	Doc->updateAllViews(otTopic);
 }
 
 
@@ -533,10 +554,18 @@ void KGALILEICenterApp::slotDoAssessments(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotGroupingCompare(void)
+void KGALILEICenterApp::slotCommunitiesCompare(void)
 {
 	if(Doc->GetSession()->GetSubjects())
 		createClient(Doc,new KViewThCommunities(Doc,Doc->GetSession()->GetSubjects(),pWorkspace,"View Theoretical Communities",0));
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotTopicsCompare(void)
+{
+	if(Doc->GetSession()->GetSubjects())
+		createClient(Doc,new KViewThTopics(Doc,Doc->GetSession()->GetSubjects(),pWorkspace,"View Theoretical Topics",0));
 }
 
 
