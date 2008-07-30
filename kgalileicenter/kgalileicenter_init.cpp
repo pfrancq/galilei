@@ -323,6 +323,8 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	sessionDisconnect->setEnabled(true);
 	showUsers->setEnabled(true);
 	showCommunities->setEnabled(true);
+	communitiesCreate->setEnabled(true);
+	topicsCreate->setEnabled(true);
 	profilesCalc->setEnabled(true);
 	postProfilesCalc->setEnabled(true);
 	profileCalc->setEnabled(true);
@@ -368,6 +370,8 @@ void KGALILEICenterApp::DisableAllActions(void)
 	sessionDisconnect->setEnabled(false);
 	showUsers->setEnabled(false);
 	showCommunities->setEnabled(false);
+	communitiesCreate->setEnabled(false);
+	topicsCreate->setEnabled(false);
 	profilesCalc->setEnabled(false);
 	postProfilesCalc->setEnabled(false);
 	profileCalc->setEnabled(false);
