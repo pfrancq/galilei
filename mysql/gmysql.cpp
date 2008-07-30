@@ -488,12 +488,12 @@ void GStorageMySQL::SaveSubjects(void)
 			auto_ptr<RQuery> Ins1(Db->Query(sSql));
 
 			// Assign the documents to the topic
-			RCursor<GDoc> Docs(Cur()->GetDocs());
+			RCursor<GDoc> Docs(Cur()->GetObjs(static_cast<GDoc*>(0)));
 			for(Docs.Start();!Docs.End();Docs.Next())
 				auto_ptr<RQuery>(Db->Query("INSERT INTO subjectsbyhtmls(subjectid,htmlid) VALUES("+Num(Cur()->GetId())+","+Num(Docs()->GetId())+")"));
 
 			// AsSubPsign the profiles to the topic
-			RCursor<GProfile> Profiles(Cur()->GetProfiles());
+			RCursor<GProfile> Profiles(Cur()->GetObjs(static_cast<GProfile*>(0)));
 			for(Profiles.Start();!Profiles.End();Profiles.Next())
 				auto_ptr<RQuery>(Db->Query("UPDATE profiles SET subjectid="+Num(Cur()->GetId())+" WHERE profileid="+Num(Profiles()->GetId())));
 		}
