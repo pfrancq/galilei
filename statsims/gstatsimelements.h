@@ -4,9 +4,9 @@
 
 	GSatSimElements.cpp
 
-	Template for computing Similarities between elmeents.
+	Template for computing Similarities between elements.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -37,6 +37,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <gcommunity.h>
 #include <ggalileiapp.h>
 
 
@@ -129,7 +130,7 @@ public:
 	void ComputeSubject(GStatsCalc* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent);
 
 	/**
-	* Destructor for the main view.
+	* Destruct.
 	*/
 	virtual ~GStatSimElements(void) {}
 };
