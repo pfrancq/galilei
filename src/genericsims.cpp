@@ -42,6 +42,7 @@
 #include <glang.h>
 #include <gconcept.h>
 #include <gprofile.h>
+#include <gdoc.h>
 #include <gxmlindex.h>
 #include <gsession.h>
 
@@ -356,7 +357,10 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 			break;
 		}
 		case 2:
-			return(SimilarityIFFL());
+			double res(SimilarityIFFL());
+			cout<<"Compute sim("<<static_cast<GDoc*>(obj1)->GetId()<<","<<static_cast<GDoc*>(obj2)->GetId()<<")="<<res<<endl;
+			return(res);
+			//return(SimilarityIFFL());
 	}
 	return(0.0);
 }
