@@ -40,6 +40,7 @@
 #include <rprgfunc.h>
 #include <rprgclass.h>
 #include <rprg.h>
+#include <rprgvar.h>
 
 
 //------------------------------------------------------------------------------
@@ -54,7 +55,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GPrgClassSession provides a the global 'Session' object which can be used
+* The GPrgClassSession provides the class 'GSession' which can be used
 * to manipulate the current GALILEI session from a script. The class defines
 * several methods:
 * -	'SetRand(Value)': Set the random generator to 'Value'.
@@ -63,7 +64,7 @@ namespace GALILEI{
 *   'FileName'.
 * - 'SetStatsOutput(FileName)': The detailed results should be stored in
 *   'FileName'.
-* - 'Test(Label)': Set the current test label to 'Label'.
+* - 'SetTest(Label)': Set the current test label to 'Label'.
 * - 'ExecSql(SQL)': Execute the 'SQL' command.
 * - 'ComputeProfiles()': Compute the profiles.
 * - 'GroupProfiles()': Group the profiles.
@@ -71,8 +72,8 @@ namespace GALILEI{
 * - 'CreateIdeal()': Create a new ideal clustering and new profiles.
 * - 'FdbksCycle()': Simulate that documents are shared inside the communities
 *   and that the best are assessed.
-* - 'CompareIdeal()': Compare the computed profiles clustering with the ideal
-*   one.
+* - 'CompareIdeal(Type)': Compare the computed 'Type' groups ("Community",
+*   "Topic") with the ideal one.
 * - 'AddIdeal()': Add a new subject to the ideal clustering and create new
 *   profiles associated to it.
 * - 'AddProfiles()': Add new profiles to a randomly chosen subject.
@@ -89,82 +90,39 @@ namespace GALILEI{
 * - 'ResetTime()': Reset the internal time counter.
 * - 'ComputeTime()': Compute the interval from the last called to ResetTime().
 * - 'RunStat(): Run all enabled statistics.
-* - 'ForceReCompute(Type)': All objects of a given type ("User','Doc',
-*   'Community' or 'Topic') should be recomputed.
+* - 'ForceReCompute(Type)': All objects of a given type ("User","Doc",
+*   "Community" or "Topic") should be recomputed.
 * - 'SetSaveResults(Yes)': Specify if the results must be stored in the current
 *   storage ('Yes'="1") or not ('Yes'="0").
+*
+* Here is an example of a program using the class 'GSession':
+* @code
+* @endcode
+* Only one instance of this class may be created in a given scope.
 * @author Pascal Francq
 * @short GALILEI Session Script Class.
 */
 class GSessionClass : public R::RPrgClass
 {
+	/**
+	 * Instance created.
+	 */
+	bool Instance;
+
 public:
 
 	/**
-	* Session.
-	*/
-	GSession* Session;
-
-	/**
-	* Name of the current test.
-	*/
-	R::RString TestName;
-
-	/**
-	* Output file.
-	*/
-	R::RTextFile* OFile;
-
-	/**
-	* Graph Output file.
-	*/
-	R::RTextFile* GOFile;
-
-	/**
-	* Statistics Output file.
-	*/
-	R::RTextFile* SOFile;
-
-	/**
-	* Documents Statistics Output file.
-	*/
-	R::RTextFile* DSOFile;
-
-	/**
-	* Precision of the current clustering.
-	*/
-	double Precision;
-
-	/**
-	* Recall of the current clustering.
-	*/
-	double Recall;
-
-	/**
-	* Total comparison between for the current clustering.
-	*/
-	double Total;
-
-	/**
-	* Percentage of correct assignments for the profiles last added.
-	*/
-	double PercAss;
-
-	/**
-	* When TrackNewProfile is true, the system
-	*/
-	bool TrackNewProfiles;
-
-	/**
-	* Clock Reference used to measure laps of execution time.
-	*/
-	time_t ClockRef;
-
-	/**
 	* Create a class.
-	* @param s              Session.
 	*/
-	GSessionClass(GSession* s);
+	GSessionClass(void);
+
+	/**
+	 * Create a session instance.
+	 * @param prg            Program asking the creation.
+	 * @param name           Name of the variable to create.
+	 * @param params         Parameters of the constructor.
+	 */
+	virtual R::RPrgVar* NewVar(R::RPrg* prg,const R::RString& name,R::RContainer<R::RPrgVar,true,false>& params);
 
 	/**
 	* Destruct the class.
@@ -175,7 +133,7 @@ public:
 
 //------------------------------------------------------------------------------
 /**
-* The GGALILEIApp provides a the global 'GAILEIApp' object which can be used to
+* The GGALILEIApp provides the class 'GGALILEIApp' which can be used to
 * manipulate the GALILEI application from a script. Several methods are defined
 * to manage configuration parameters of the plug-ins:
 * - 'SetSimulationParam(Name,Value)': Assign a value 'Value' to the
@@ -204,6 +162,9 @@ public:
 * GALILEIApp.SetCurrentMeasure("Profiles Agreements","Count Method");
 * @endcode
 *
+* The class creates an instance called 'GALILEIApp' and no other instance may
+* be created.
+*
 * @author Pascal Francq
 * @short GALILEIApp Script Class.
 */
@@ -212,8 +173,18 @@ class GGALILEIAppClass : public R::RPrgClass
 public:
 	/**
 	* Create a class.
+	* @param prg             Program.
 	*/
-	GGALILEIAppClass(void);
+	GGALILEIAppClass(R::RPrg* prg);
+
+	/**
+	 * Create a GALILEIApp instance.
+	 * @param prg            Program asking the creation.
+	 * @param name           Name of the variable to create.
+	 * @param params         Parameters of the constructor.
+	 * @return
+	 */
+	virtual R::RPrgVar* NewVar(R::RPrg* prg,const R::RString& name,R::RContainer<R::RPrgVar,true,false>& params);
 
 	/**
 	* Destruct the class.
@@ -224,7 +195,9 @@ public:
 
 //------------------------------------------------------------------------------
 /**
-* The GSessionPrg provides a class for executing a GALILEI Program.
+* The GSessionPrg provides a class for executing a GALILEI Program. In practice,
+* it provides two classes 'GSession' and 'GGALILEIApp', and defines a global
+* variable GALILEIApp of the type 'GGALILEIApp'.
 * @author Pascal Francq
 * @short GALILEI Program.
 */
@@ -235,10 +208,9 @@ public:
 	/**
 	* Constructor.
 	* @param f              Name of the file.
-	* @param s              Session.
 	* @param o              Generic output class.
 	*/
-	GSessionPrg(R::RString f,GSession* s,R::RPrgOutput* o);
+	GSessionPrg(R::RString f,R::RPrgOutput* o);
 
 	/**
 	* Destruct.

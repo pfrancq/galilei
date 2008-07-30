@@ -32,6 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
+#include <rprgvarinst.h>
 #include <rprgvar.h>
 
 
@@ -40,7 +41,9 @@
 #include <gsessionprg.h>
 #include <glang.h>
 #include <ggroupprofiles.h>
+#include <ggroupdocs.h>
 #include <gcommunitycalc.h>
+#include <gtopiccalc.h>
 #include <gsubjects.h>
 #include <gprofilecalc.h>
 #include <glinkcalc.h>
@@ -55,6 +58,114 @@ using namespace R;
 using namespace std;
 
 
+//------------------------------------------------------------------------------
+//
+// Instance
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GInstGALILEIApp : public RPrgVarInst
+{
+public:
+	GGALILEIApp* App;
+
+	GInstGALILEIApp(const RString& name,RPrgClass* c,GGALILEIApp* app) : RPrgVarInst(name,c), App(app) {}
+};
+
+
+//------------------------------------------------------------------------------
+class GInstSession : public RPrgVarInst
+{
+public:
+
+	/**
+	* Session.
+	*/
+	GSession* Session;
+
+	/**
+	* Name of the current test.
+	*/
+	R::RString TestName;
+
+	/**
+	* Output file.
+	*/
+	R::RTextFile* OFile;
+
+	/**
+	* Graph Output file.
+	*/
+	R::RTextFile* GOFile;
+
+	/**
+	* Statistics Output file.
+	*/
+	R::RTextFile* SOFile;
+
+	/**
+	* Documents Statistics Output file.
+	*/
+	R::RTextFile* DSOFile;
+
+	/**
+	* Precision of the current clustering.
+	*/
+	double Precision;
+
+	/**
+	* Recall of the current clustering.
+	*/
+	double Recall;
+
+	/**
+	* Total comparison between for the current clustering.
+	*/
+	double Total;
+
+	/**
+	* Percentage of correct assignments for the profiles last added.
+	*/
+	double PercAss;
+
+	/**
+	* When TrackNewProfile is true, the system
+	*/
+	bool TrackNewProfiles;
+
+	/**
+	* Clock Reference used to measure laps of execution time.
+	*/
+	time_t ClockRef;
+
+
+	GInstSession(const RString& name,RPrgClass* c,GSession* session);
+	virtual ~GInstSession(void);
+};
+
+
+//------------------------------------------------------------------------------
+GInstSession::GInstSession(const RString& name,RPrgClass* c,GSession* session)
+ : RPrgVarInst(name,c), Session(session), OFile(0),GOFile(0), SOFile(0),DSOFile(0),  TrackNewProfiles(false)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GInstSession::~GInstSession(void)
+{
+	if(OFile)
+		delete OFile;
+	if(GOFile)
+		delete GOFile;
+	if(SOFile)
+		delete SOFile;
+	if(DSOFile)
+		delete DSOFile;
+}
+
+
 
 //------------------------------------------------------------------------------
 //
@@ -63,58 +174,47 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GSM : public R::RPrgFunc
+class GSetRandI : public RPrgFunc
 {
 public:
-	char tmp[3000];
-	GSessionClass* Owner;
-	GSM(const RString& name,const RString& desc,GSessionClass* o)
-		: RPrgFunc(name,desc), Owner(o) {}
+	GSetRandI(void) : RPrgFunc("SetRand","Set the random generator to a given value.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GSetRandI : public GSM
+class GOutputI : public RPrgFunc
 {
 public:
-	GSetRandI(GSessionClass* o) : GSM("SetRand","Set the random generator to a given value.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GOutputI(void) : RPrgFunc("SetOutput","Specify where the global results should be stored.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GOutputI : public GSM
+class GGOutputI : public RPrgFunc
 {
 public:
-	GOutputI(GSessionClass* o) : GSM("SetOutput","Specify where the global results should be stored.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GGOutputI(void) : RPrgFunc("SetGraphOutput","Specify where the results for graphics should be stored.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GGOutputI : public GSM
+class GSOutputI : public RPrgFunc
 {
 public:
-	GGOutputI(GSessionClass* o) : GSM("SetGraphOutput","Specify where the results for graphics should be stored.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GSOutputI(void) : RPrgFunc("SetStatsOutput","Specify where the detailed results should be stored.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GSOutputI : public GSM
+class GSetTestI : public RPrgFunc
 {
 public:
-	GSOutputI(GSessionClass* o) : GSM("SetStatsOutput","Specify where the detailed results should be stored.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
-};
-
-
-//------------------------------------------------------------------------------
-class GTestI : public GSM
-{
-public:
-	GTestI(GSessionClass* o) : GSM("Test","Set the current test label to a given string.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GSetTestI(void) : RPrgFunc("SetTest","Set the current test label to a given string.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
@@ -123,70 +223,70 @@ class GSetLogI : public RPrgFunc
 {
 public:
 	GSetLogI(void) : RPrgFunc("SetLog","Specify a log file.") {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GExecSqlI : public GSM
+class GExecSqlI : public RPrgFunc
 {
 public:
-	GExecSqlI(GSessionClass* o) : GSM("ExecSql","Execute a given SQL string.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GExecSqlI(void) : RPrgFunc("ExecSql","Execute a given SQL string.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GComputeProfilesI : public GSM
+class GComputeProfilesI : public RPrgFunc
 {
 public:
-	GComputeProfilesI(GSessionClass* o) : GSM("ComputeProfiles","Compute the profiles.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GComputeProfilesI(void) : RPrgFunc("ComputeProfiles","Compute the profiles.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GGroupProfilesI : public GSM
+class GGroupProfilesI : public RPrgFunc
 {
 public:
-	GGroupProfilesI(GSessionClass* o) : GSM("GroupProfiles","Group the profiles.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GGroupProfilesI(void) : RPrgFunc("GroupProfiles","Group the profiles.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GGroupDocsI : public GSM
+class GGroupDocsI : public RPrgFunc
 {
 public:
-	GGroupDocsI(GSessionClass* o) : GSM("GroupDocs","Group the documents.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GGroupDocsI(void) : RPrgFunc("GroupDocs","Group the documents.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GCreateIdealI : public GSM
+class GCreateIdealI : public RPrgFunc
 {
 public:
-	GCreateIdealI(GSessionClass* o) : GSM("CreateIdeal","Create a new ideal clustering and new profiles.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GCreateIdealI(void) : RPrgFunc("CreateIdeal","Create a new ideal clustering and new profiles.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GFdbksCycleI : public GSM
+class GFdbksCycleI : public RPrgFunc
 {
 public:
-	GFdbksCycleI(GSessionClass* o) : GSM("FdbksCycle","Simulate that documents are shared inside the different communities and that the best are assessed.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GFdbksCycleI(void) : RPrgFunc("FdbksCycle","Simulate that documents are shared inside the different communities and that the best are assessed.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GCompareIdealI : public GSM
+class GCompareIdealI : public RPrgFunc
 {
 public:
-	GCompareIdealI(GSessionClass* o) : GSM("CompareIdeal","Compare the computed clustering with the ideal one.",o) {}
-	virtual void Run(R::RPrg*,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GCompareIdealI(void) : RPrgFunc("CompareIdeal","Compare the computed clustering with the ideal one.") {}
+	virtual void Run(R::RPrg*,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
@@ -195,118 +295,118 @@ class GSetSimulationParamI : public RPrgFunc
 {
 public:
 	GSetSimulationParamI(void) : RPrgFunc("SetSimulationParam","Specify a value (2d argument) for a simulation parameter (1st argument).") {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GAddIdealI : public GSM
+class GAddIdealI : public RPrgFunc
 {
 public:
-	GAddIdealI(GSessionClass* o) : GSM("AddIdeal","Add a new topic to the ideal clustering and create new profiles associated to it.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GAddIdealI(void) : RPrgFunc("AddIdeal","Add a new topic to the ideal clustering and create new profiles associated to it.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GAddProfilesI : public GSM
+class GAddProfilesI : public RPrgFunc
 {
 public:
-	GAddProfilesI(GSessionClass* o) : GSM("AddProfiles","Add new profiles to a randomly chosen topic.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GAddProfilesI(void) : RPrgFunc("AddProfiles","Add new profiles to a randomly chosen topic.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GRealLifeI : public GSM
+class GRealLifeI : public RPrgFunc
 {
 	char What[2];
-	void CommonTasks(R::RPrgOutput* o);
+	void CommonTasks(R::RPrgOutput* o,GInstSession* Owner);
 public:
-	GRealLifeI(GSessionClass* o) : GSM("RealLife","Perform the simulation of a complete system running a given number of step times.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GRealLifeI(void) : RPrgFunc("RealLife","Perform the simulation of a complete system running a given number of step times.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GAddAssessmentsI : public GSM
+class GAddAssessmentsI : public RPrgFunc
 {
 public:
-	GAddAssessmentsI(GSessionClass* o) : GSM("AddAssessments","Simulate that the profiles assess a given number of randomly chosen documents.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GAddAssessmentsI(void) : RPrgFunc("AddAssessments","Simulate that the profiles assess a given number of randomly chosen documents.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GTrackNewProfilesI : public GSM
+class GTrackNewProfilesI : public RPrgFunc
 {
 public:
-	GTrackNewProfilesI(GSessionClass* o) : GSM("TrackNewProfiles","Specify if the new profiles must be tracked.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GTrackNewProfilesI(void) : RPrgFunc("TrackNewProfiles","Specify if the new profiles must be tracked.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GClearNewProfilesI : public GSM
+class GClearNewProfilesI : public RPrgFunc
 {
 public:
-	GClearNewProfilesI(GSessionClass* o) : GSM("ClearNewProfiles","Clear the list of profiles considered as new.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GClearNewProfilesI(void) : RPrgFunc("ClearNewProfiles","Clear the list of profiles considered as new.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GResetTimeI : public GSM
+class GResetTimeI : public RPrgFunc
 {
 public:
-	GResetTimeI(GSessionClass* o) : GSM("ResetTime","Reset the time counter.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GResetTimeI(void) : RPrgFunc("ResetTime","Reset the time counter.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GComputeTimeI : public GSM
+class GComputeTimeI : public RPrgFunc
 {
 public:
-	GComputeTimeI(GSessionClass* o) : GSM("ComputeTime","Compute the interval from the last called to ResetTime.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GComputeTimeI(void) : RPrgFunc("ComputeTime","Compute the interval from the last called to ResetTime.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GSetStatParamI: public GSM
+class GSetStatParamI: public RPrgFunc
 {
 public:
-	GSetStatParamI(GSessionClass* o) : GSM("SetStatParam","Specify a value (2d argument) for a statistics parameter (1st argument).",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GSetStatParamI(void) : RPrgFunc("SetStatParam","Specify a value (2d argument) for a statistics parameter (1st argument).") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GRunStatI: public GSM
+class GRunStatI: public RPrgFunc
 {
 public:
-	GRunStatI(GSessionClass* o) : GSM("RunStat","Run all enabled statistics.",o) {}
+	GRunStatI(void) : RPrgFunc("RunStat","Run all enabled statistics.") {}
 	void Print(R::RPrgOutput* o,RXMLTag* tag,int depth);
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GForceReComputeI: public GSM
+class GForceReComputeI: public RPrgFunc
 {
 public:
-	GForceReComputeI(GSessionClass* o) : GSM("ForceReCompute","Specify if all objects should be recomputed or if an incremental method should be used.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GForceReComputeI(void) : RPrgFunc("ForceReCompute","Specify if all objects should be recomputed or if an incremental method should be used.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
 //------------------------------------------------------------------------------
-class GSetSaveResultsI: public GSM
+class GSetSaveResultsI: public RPrgFunc
 {
 public:
-	GSetSaveResultsI(GSessionClass* o) : GSM("SetSaveResults","Specify if the results must be stored in the current storage.",o) {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	GSetSaveResultsI(void) : RPrgFunc("SetSaveResults","Specify if the results must be stored in the current storage.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
@@ -315,7 +415,7 @@ class GSetPlugInParamI : public RPrgFunc
 {
 public:
 	GSetPlugInParamI(void) : RPrgFunc("SetPlugInParam","Specify a value (4th argument) for a parameter (3rd argument) for a plug-in (with name=2nd argument and type=1st argument).") {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
@@ -324,7 +424,7 @@ class GSetCurrentPlugInI : public RPrgFunc
 {
 public:
 	GSetCurrentPlugInI(void) : RPrgFunc("SetCurrentPlugIn","Specify the current plug-in (2th argument) for a given type(1st argument).") {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
@@ -333,7 +433,7 @@ class GSetMeasureParamI : public RPrgFunc
 {
 public:
 	GSetMeasureParamI(void) : RPrgFunc("SetMeasureParam","Specify a value (4th argument) for a parameter (3rd argument) for a measure (with name=2nd argument and type=1st argument).") {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
@@ -342,7 +442,7 @@ class GSetCurrentMeasureI : public RPrgFunc
 {
 public:
 	GSetCurrentMeasureI(void) : RPrgFunc("SetCurrentMeasure","Specify the current measure (2th argument) for a given type(1st argument).") {}
-	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,R::RContainer<R::RPrgVar,true,false>* args);
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>* args);
 };
 
 
@@ -354,8 +454,12 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GSetRandI::Run(RPrg* prg,RPrgOutput* o,RContainer<RPrgVar,true,false>* args)
+void GSetRandI::Run(RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	int Rand;
 
 	if(args->GetNb()!=1)
@@ -371,8 +475,12 @@ void GSetRandI::Run(RPrg* prg,RPrgOutput* o,RContainer<RPrgVar,true,false>* args
 
 
 //------------------------------------------------------------------------------
-void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb()!=1)
 		throw RPrgException(prg,"A filename must be specified.");
 	o->WriteStr("Create Output file: "+(*args)[0]->GetValue(prg));
@@ -394,8 +502,12 @@ void GOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>*
 
 
 //------------------------------------------------------------------------------
-void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb()!=1)
 		throw RPrgException(prg,"A filename must be specified.");
 	o->WriteStr("Create Graph Output file: "+(*args)[0]->GetValue(prg));
@@ -411,8 +523,12 @@ void GGOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 
 
 //------------------------------------------------------------------------------
-void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb()!=1)
 		throw RPrgException(prg,"A filename must be specified.");
 	o->WriteStr("Create Statistics Output file: "+(*args)[0]->GetValue(prg));
@@ -428,11 +544,14 @@ void GSOutputI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 
 
 //------------------------------------------------------------------------------
-void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GSetTestI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb()!=1)
 		throw RPrgException(prg,"The method needs the name of the test.");
-	if(args->GetNb())
 	o->WriteStr("Current Test Name: "+(*args)[0]->GetValue(prg));
 	Owner->TestName=(*args)[0]->GetValue(prg);
 }
@@ -440,8 +559,12 @@ void GTestI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* a
 
 
 //------------------------------------------------------------------------------
-void GSetLogI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GSetLogI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb()!=1)
 		throw RPrgException(prg,"The method needs the name of the log file.");
 	o->WriteStr("Create Log file: "+(*args)[0]->GetValue(prg));
@@ -450,8 +573,12 @@ void GSetLogI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>*
 
 
 //------------------------------------------------------------------------------
-void GExecSqlI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GExecSqlI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb()!=1)
 		throw RPrgException(prg,"The method needs the name of the SQL file.");
 	o->WriteStr("Execute Sql file: "+(*args)[0]->GetValue(prg));
@@ -460,8 +587,12 @@ void GExecSqlI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>
 
 
 //------------------------------------------------------------------------------
-void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>*)
+void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>*)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	o->WriteStr("Compute Profiles");
 	if(!GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod())
 		throw RPrgException(prg,"No Profiling Method chosen.");
@@ -470,8 +601,12 @@ void GComputeProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tru
 
 
 //------------------------------------------------------------------------------
-void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb())
 		throw RPrgException(prg,"The method needs no parameter.");
 	o->WriteStr("Group Profiles");
@@ -484,22 +619,30 @@ void GGroupProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,
 
 
 //------------------------------------------------------------------------------
-void GGroupDocsI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GGroupDocsI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb())
 		throw RPrgException(prg,"The method needs no parameter.");
 	o->WriteStr("Group Documents");
-	if(!GALILEIApp->GetManager<GGroupProfilesManager>("GroupDoces")->GetCurrentMethod())
+	if(!GALILEIApp->GetManager<GGroupDocsManager>("GroupDocs")->GetCurrentMethod())
 		throw RPrgException(prg,"No Documents Grouping Method chosen.");
-	if(!GALILEIApp->GetManager<GCommunityCalcManager>("TopicCalc")->GetCurrentMethod())
+	if(!GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod())
 		throw RPrgException(prg,"No Topic Description Method chosen.");
-	Owner->Session->GroupProfiles(dynamic_cast<GSlot*>(o));
+	Owner->Session->GroupDocs(dynamic_cast<GSlot*>(o));
 }
 
 
 //------------------------------------------------------------------------------
-void GCreateIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GCreateIdealI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Create Ideal Groups");
@@ -509,8 +652,12 @@ void GCreateIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,fa
 
 
 //------------------------------------------------------------------------------
-void GFdbksCycleI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GFdbksCycleI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Create Feedbacks Cycle");
@@ -520,15 +667,27 @@ void GFdbksCycleI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,fal
 
 
 //------------------------------------------------------------------------------
-void GCompareIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GCompareIdealI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
-	if(args->GetNb())
-		throw RPrgException(prg,"Method needs no parameters.");
-	o->WriteStr("Compare with Ideal Groups");
-	Owner->Session->GetSubjects()->Compare();
-	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision();
-	Owner->Recall=Owner->Session->GetSubjects()->GetRecall();
-	Owner->Total=Owner->Session->GetSubjects()->GetTotal();
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
+	if(args->GetNb()!=1)
+		throw RPrgException(prg,"Method needs one parameter.");
+	RString objects=(*args)[0]->GetValue(prg);
+	tObjType type(otNoClass);
+	if(objects=="Community")
+		type=otCommunity;
+	if(objects=="Topic")
+		type=otTopic;
+	if(type==otNoClass)
+		throw RPrgException(prg,"Compare with unsupported type");
+	o->WriteStr("Compare with Ideal "+objects+" Groups");
+	Owner->Session->GetSubjects()->Compare(type);
+	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision(type);
+	Owner->Recall=Owner->Session->GetSubjects()->GetRecall(type);
+	Owner->Total=Owner->Session->GetSubjects()->GetTotal(type);
 	if(Owner->TrackNewProfiles)
 	{
 		Owner->PercAss=Owner->Session->GetSubjects()->ComputePercAss();
@@ -554,7 +713,7 @@ void GCompareIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,f
 
 
 //------------------------------------------------------------------------------
-void GSetSimulationParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
+void GSetSimulationParamI::Run(R::RPrg* prg,RPrgOutput*,RPrgVarInst*,R::RContainer<RPrgVar,true,false>* args)
 {
 	if(args->GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
@@ -563,8 +722,12 @@ void GSetSimulationParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,tr
 
 
 //------------------------------------------------------------------------------
-void GAddIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GAddIdealI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Create New Ideal Group");
@@ -574,8 +737,12 @@ void GAddIdealI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 
 
 //------------------------------------------------------------------------------
-void GAddProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GAddProfilesI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Adding Profiles");
@@ -585,7 +752,7 @@ void GAddProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,fa
 
 
 //------------------------------------------------------------------------------
-void GRealLifeI::CommonTasks(RPrgOutput* o)
+void GRealLifeI::CommonTasks(RPrgOutput* o,GInstSession* Owner)
 {
 	GSlot* rec=dynamic_cast<GSlot*>(o);
 
@@ -618,10 +785,10 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 		rec->Interact();
 		rec->WriteStr("Compare with Ideal Groups");
 	}
-	Owner->Session->GetSubjects()->Compare();
-	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision();
-	Owner->Recall=Owner->Session->GetSubjects()->GetRecall();
-	Owner->Total=Owner->Session->GetSubjects()->GetTotal();
+	Owner->Session->GetSubjects()->Compare(otCommunity);
+	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision(otCommunity);
+	Owner->Recall=Owner->Session->GetSubjects()->GetRecall(otCommunity);
+	Owner->Total=Owner->Session->GetSubjects()->GetTotal(otCommunity);
 	if(rec)
 		o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->Total));
 	if(GSession::Break()) return;
@@ -633,8 +800,12 @@ void GRealLifeI::CommonTasks(RPrgOutput* o)
 
 
 //------------------------------------------------------------------------------
-void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	size_t MaxStep;
 	size_t MinFBStep;
 	size_t MaxFBStep;
@@ -679,7 +850,7 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 			What[0]='F';
 			Owner->Session->GetSubjects()->Apply();
 			Owner->Session->GetSubjects()->DocumentSharing();
-			CommonTasks(o);
+			CommonTasks(o,Owner);
 
 			// Verify Nb Steps
 			if(NbStep>MaxStep) break;
@@ -750,7 +921,7 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 		}
 
 		// Compute, Group and Compare
-		CommonTasks(o);
+		CommonTasks(o,Owner);
 
 		// Verify Nb Steps
 		if(NbStep>MaxStep) break;
@@ -759,8 +930,12 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false
 
 
 //------------------------------------------------------------------------------
-void GAddAssessmentsI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GAddAssessmentsI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Adding Assessments");
@@ -770,8 +945,12 @@ void GAddAssessmentsI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true
 
 
 //------------------------------------------------------------------------------
-void GTrackNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GTrackNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb()!=1)
 		throw RPrgException(prg,"The method needs one parameter (\"0\" or \"1\") to specify if the profiles must be tracked.");
 	if(args->GetNb())
@@ -791,8 +970,12 @@ void GTrackNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tr
 
 
 //------------------------------------------------------------------------------
-void GClearNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GClearNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb())
 		throw RPrgException(prg,"Method needs no parameter.");
 	o->WriteStr("Clear New Profiles");
@@ -801,8 +984,12 @@ void GClearNewProfilesI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tr
 
 
 //------------------------------------------------------------------------------
-void GResetTimeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GResetTimeI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb())
 		throw RPrgException(prg,"Method needs no parameter.");
 	o->WriteStr("Reset Time");
@@ -811,8 +998,12 @@ void GResetTimeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,fals
 
 
 //------------------------------------------------------------------------------
-void GComputeTimeI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GComputeTimeI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	time_t end;
 	double cpu_time;
 
@@ -842,8 +1033,12 @@ void GRunStatI::Print(R::RPrgOutput* o,RXMLTag* tag,int depth)
 
 
 //------------------------------------------------------------------------------
-void GRunStatI::Run(R::RPrg* prg,RPrgOutput* out,R::RContainer<RPrgVar,true,false>* args)
+void GRunStatI::Run(R::RPrg* prg,RPrgOutput* out,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	GStatsCalc* Calc;
 	RXMLStruct xml;
 	RXMLTag* Root;
@@ -876,8 +1071,12 @@ void GRunStatI::Run(R::RPrg* prg,RPrgOutput* out,R::RContainer<RPrgVar,true,fals
 
 
 //------------------------------------------------------------------------------
-void GForceReComputeI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
+void GForceReComputeI::Run(R::RPrg* prg,RPrgOutput*,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	tObjType type=otNoClass;
 
 	if(args->GetNb()!=1)
@@ -896,8 +1095,12 @@ void GForceReComputeI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,f
 
 
 //------------------------------------------------------------------------------
-void GSetSaveResultsI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
+void GSetSaveResultsI::Run(R::RPrg* prg,RPrgOutput*,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>* args)
 {
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
 	if(args->GetNb()!=1)
 		throw RPrgException(prg,"Method needs one parameter");
 	if(((*args)[0]->GetValue(prg))=="0")
@@ -908,7 +1111,7 @@ void GSetSaveResultsI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,f
 
 
 //------------------------------------------------------------------------------
-void GSetPlugInParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
+void GSetPlugInParamI::Run(R::RPrg* prg,RPrgOutput*,RPrgVarInst*,R::RContainer<RPrgVar,true,false>* args)
 {
 	if(args->GetNb()!=4)
 		throw RPrgException(prg,"Method needs four parameters.");
@@ -924,7 +1127,7 @@ void GSetPlugInParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,f
 
 
 //------------------------------------------------------------------------------
-void GSetCurrentPlugInI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GSetCurrentPlugInI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst*,R::RContainer<RPrgVar,true,false>* args)
 {
 	if(args->GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
@@ -937,7 +1140,7 @@ void GSetCurrentPlugInI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,tr
 
 
 //------------------------------------------------------------------------------
-void GSetMeasureParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,false>* args)
+void GSetMeasureParamI::Run(R::RPrg* prg,RPrgOutput*,RPrgVarInst*,R::RContainer<RPrgVar,true,false>* args)
 {
 	if(args->GetNb()!=4)
 		throw RPrgException(prg,"Method needs four parameters.");
@@ -954,7 +1157,7 @@ void GSetMeasureParamI::Run(R::RPrg* prg,RPrgOutput*,R::RContainer<RPrgVar,true,
 
 
 //------------------------------------------------------------------------------
-void GSetCurrentMeasureI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,true,false>* args)
+void GSetCurrentMeasureI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst*,R::RContainer<RPrgVar,true,false>* args)
 {
 	if(args->GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
@@ -975,57 +1178,53 @@ void GSetCurrentMeasureI::Run(R::RPrg* prg,RPrgOutput* o,R::RContainer<RPrgVar,t
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSessionClass::GSessionClass(GSession* s)
-	: RPrgClass("Session"), Session(s), OFile(0),
-	  GOFile(0), SOFile(0),DSOFile(0),  TrackNewProfiles(false)
+GSessionClass::GSessionClass(void)
+	: RPrgClass("GSession"), Instance(false)
 {
-	Methods.InsertPtr(new GOutputI(this));
-	Methods.InsertPtr(new GGOutputI(this));
-	Methods.InsertPtr(new GSOutputI(this));
-		Methods.InsertPtr(new GTestI(this));
-	Methods.InsertPtr(new GExecSqlI(this));
-	Methods.InsertPtr(new GComputeProfilesI(this));
-	Methods.InsertPtr(new GGroupProfilesI(this));
-	Methods.InsertPtr(new GGroupDocsI(this));
-	Methods.InsertPtr(new GCreateIdealI(this));
-	Methods.InsertPtr(new GFdbksCycleI(this));
-	Methods.InsertPtr(new GCompareIdealI(this));
-	Methods.InsertPtr(new GAddIdealI(this));
-	Methods.InsertPtr(new GAddProfilesI(this));
-	Methods.InsertPtr(new GRealLifeI(this));
-	Methods.InsertPtr(new GAddAssessmentsI(this));
-	Methods.InsertPtr(new GTrackNewProfilesI(this));
-	Methods.InsertPtr(new GClearNewProfilesI(this));
-	Methods.InsertPtr(new GResetTimeI(this));
-	Methods.InsertPtr(new GComputeTimeI(this));
-	Methods.InsertPtr(new GSetRandI(this));
-	Methods.InsertPtr(new GRunStatI(this));
-	Methods.InsertPtr(new GForceReComputeI(this));
-	Methods.InsertPtr(new GSetSaveResultsI(this));
+	Methods.InsertPtr(new GOutputI());
+	Methods.InsertPtr(new GGOutputI());
+	Methods.InsertPtr(new GSOutputI());
+	Methods.InsertPtr(new GSetTestI());
+	Methods.InsertPtr(new GExecSqlI());
+	Methods.InsertPtr(new GComputeProfilesI());
+	Methods.InsertPtr(new GGroupProfilesI());
+	Methods.InsertPtr(new GGroupDocsI());
+	Methods.InsertPtr(new GCreateIdealI());
+	Methods.InsertPtr(new GFdbksCycleI());
+	Methods.InsertPtr(new GCompareIdealI());
+	Methods.InsertPtr(new GAddIdealI());
+	Methods.InsertPtr(new GAddProfilesI());
+	Methods.InsertPtr(new GRealLifeI());
+	Methods.InsertPtr(new GAddAssessmentsI());
+	Methods.InsertPtr(new GTrackNewProfilesI());
+	Methods.InsertPtr(new GClearNewProfilesI());
+	Methods.InsertPtr(new GResetTimeI());
+	Methods.InsertPtr(new GComputeTimeI());
+	Methods.InsertPtr(new GSetRandI());
+	Methods.InsertPtr(new GRunStatI());
+	Methods.InsertPtr(new GForceReComputeI());
+	Methods.InsertPtr(new GSetSaveResultsI());
+}
+
+
+//------------------------------------------------------------------------------
+RPrgVar* GSessionClass::NewVar(RPrg* prg,const RString& name,RContainer<RPrgVar,true,false>& params)
+{
+	if(Instance)
+		throw RPrgException(prg,"Only one instance of 'GSession' may exist");
+	if(params.GetNb())
+		throw RPrgException(prg,"Constructor of 'GSession' has no parameter");
+	RPrgVar* Session=new GInstSession(name,this,GALILEIApp->GetSession());
+	Instance=true;
+	return(Session);
 }
 
 
 //------------------------------------------------------------------------------
 GSessionClass::~GSessionClass(void)
 {
-	if(OFile)
-		delete OFile;
-	if(GOFile)
-	{
-		delete GOFile;
-		GOFile=0;
-	}
-	if(SOFile)
-	{
-		delete SOFile;
-		SOFile=0;
-	}
-	if(DSOFile)
-	{
-		delete DSOFile;
-		DSOFile=0;
-	}
 }
+
 
 
 //------------------------------------------------------------------------------
@@ -1035,8 +1234,8 @@ GSessionClass::~GSessionClass(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGALILEIAppClass::GGALILEIAppClass(void)
-	: RPrgClass("GALILEIApp")
+GGALILEIAppClass::GGALILEIAppClass(RPrg* prg)
+	: RPrgClass("GGALILEIApp")
 {
 	Methods.InsertPtr(new GSetSimulationParamI());
 	Methods.InsertPtr(new GSetPlugInParamI());
@@ -1044,6 +1243,14 @@ GGALILEIAppClass::GGALILEIAppClass(void)
 	Methods.InsertPtr(new GSetMeasureParamI());
 	Methods.InsertPtr(new GSetCurrentMeasureI());
 	Methods.InsertPtr(new GSetLogI());
+	prg->AddVar(new GInstGALILEIApp("GALILEIApp",this,GALILEIApp));
+}
+
+
+//------------------------------------------------------------------------------
+RPrgVar* GGALILEIAppClass::NewVar(RPrg* prg,const RString&,RContainer<RPrgVar,true,false>&)
+{
+	throw RPrgException(prg,"Multiple instance of GGALILEIApp are not allowed");
 }
 
 
@@ -1061,11 +1268,11 @@ GGALILEIAppClass::~GGALILEIAppClass(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSessionPrg::GSessionPrg(RString f,GSession* s,RPrgOutput* o)
+GSessionPrg::GSessionPrg(RString f,RPrgOutput* o)
 	: RPrg(f,o)
 {
-	Classes.InsertPtr(new GSessionClass(s));
-	Classes.InsertPtr(new GGALILEIAppClass());
+	Classes.InsertPtr(new GSessionClass());
+	Classes.InsertPtr(new GGALILEIAppClass(this));
 }
 
 

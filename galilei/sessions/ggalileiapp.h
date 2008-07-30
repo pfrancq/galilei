@@ -65,7 +65,7 @@ class GGenericPluginManager;
 class GGALILEIApp : public R::RApplication, public R::RContainer<GGenericPluginManager,true,false>
 {
 protected:
-	
+
 	/**
 	* A log file.
 	*/
@@ -134,7 +134,7 @@ public:
 	virtual void CreateConfig(void);
 
 	/**
-	* Initialisation of the application.
+	* Initialization of the application.
 	*/
 	virtual void Init(void);
 
@@ -142,6 +142,11 @@ public:
 	* Create the session.
 	*/
 	GSession* CreateSession(void);
+
+	/**
+	 * Get the session.
+	 */
+	GSession* GetSession(void) const {return(Session);}
 
 	/**
 	* Delete the session.
@@ -202,12 +207,12 @@ public:
 	 * Write to the log file something (if a log file is defined).
 	 */
 	void WriteLog(const R::RString& str);
-	
+
 protected:
 
 	/**
 	* Starting from a directory, this function looks for all shared libraries in the
-	* sub-dirs and add them in the containers.
+	* sub-directories and add them in the containers.
 	* @param dir                 Root directory to scan.
 	* @param plugins             Strings for each main plug-ins.
 	* @param dlgs                Strings for each dialog plug-ins.
@@ -245,7 +250,7 @@ public:
 	void Apply(void);
 
 	/**
-	* Destructor.
+	* Destruct the application.
 	*/
 	virtual ~GGALILEIApp(void);
 };

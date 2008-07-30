@@ -82,13 +82,6 @@ private:
 public:
 
 	/**
-	* Compute the number of profiles of a given group that are also in the
-	* current one.
-	* @param subject         Pointer to the subject.
-	*/
-	size_t GetNbProfiles(const GSubject* subject) const;
-
-	/**
 	* Construct the list of all feedbacks of the profiles of a group not
 	* already assessed by a given profile. If a document is assessed multiple
 	* times differently, most important OK>N>KO>H.

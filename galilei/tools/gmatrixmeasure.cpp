@@ -691,9 +691,10 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 		if(Symmetric&&id==1)
 			return;
 
-		if(file&&InFile&&(id<=MemNbLines))
+		if(InMemory&&(id<=MemNbLines))
 		{
-			// Dirty the measures
+
+			// Find the "line"
 			Measures* ptr=(*MemValues)[id-1];
 			if(!ptr)
 				throw std::range_error("GMatrixMeasure::DirtyIdentificator : index "+RString::Number(id)+" doesn't exist");
@@ -703,11 +704,12 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 			if(Symmetric)
 				max=id;
 			else
-				max=MemNbCols;
+				max=MemNbCols+1;
 			double* col;
 			size_t j;
-			for(j=max+1,col=ptr->Values;--j;col++)
+			for(j=max,col=ptr->Values;--j;col++)
 				DeleteValue(*col);
+			MemDirty=true;
 		}
 		if(file&&InFile&&(id<=FileNbLines))
 		{
@@ -743,12 +745,13 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 					RecValues->WriteRec(Value);
 				}
 			}
+			FileDirty=true;
 		}
 	}
 	else
 	{
 		// Goes for the rest of lines
-		if(InMemory&&(id<=MemNbCols))
+		if(InMemory&&((Symmetric&&(id<MemNbCols))||(!Symmetric&&(id<=MemNbCols))))
 		{
 			size_t start;
 			if(Symmetric)
@@ -758,6 +761,7 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 			RCursor<Measures> Lines(*MemValues);
 			for(Lines.GoTo(start);!Lines.End();Lines.Next())
 				DeleteValue(Lines()->Values[id-1]);
+			MemDirty=true;
 		}
 		if(file&&InFile&&(id<FileNbCols))
 		{
@@ -794,6 +798,7 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 				RecValues->Prev();
 				RecValues->WriteRec(Value);
 			}
+			FileDirty=true;
 		}
 	}
 }

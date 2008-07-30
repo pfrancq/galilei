@@ -31,7 +31,7 @@
 
 
 //------------------------------------------------------------------------------
-// include filess for GALILEI
+// include files for GALILEI
 #include <gprofile.h>
 #include <gsession.h>
 #include <guser.h>

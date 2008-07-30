@@ -271,7 +271,7 @@ void GGALILEIApp::FindPlugins(const RString dir,RContainer<RString,true,false>& 
 		// Open file
 		lstat(Path+Name, &statbuf);
 
-		// Look if it is a directoy
+		// Look if it is a directory
 		if(S_ISDIR(statbuf.st_mode))
 		{
 			// If not '.' and '..' -> goes though it
@@ -317,12 +317,12 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 	R::RContainer<R::RString,true,false> Dlgs(50,25);
 	char* error;
 
-	// Find the plugins
+	// Find the plug-ins
 	R::RCursor<RString> Path(dirs);
 	for(Path.Start();!Path.End();Path.Next())
 		FindPlugins(*Path(),PlugIns,Dlgs);
 
-	// Analyse the plugins category by category
+	// Analyze the plug-ins category by category
 	RCursor<GGenericPluginManager> Mngs(*this);
 	for(Mngs.Start();!Mngs.End();Mngs.Next())
 	{
@@ -330,8 +330,8 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 		R::RCursor<RString> Cur(PlugIns);
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			// Get a hangle
-			void *handle=dlopen(Cur()->Latin1(),RTLD_LAZY);
+			// Get a handle
+			void *handle=dlopen(Cur()->Latin1(),RTLD_NOW);
 			if(!handle)
 			{
 				cerr<<dlerror()<<endl;
@@ -339,7 +339,8 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 			}
 
 			// Find the category and the manager
-			LibTypeFc* LibType=(LibTypeFc*)dlsym(handle,"LibType");
+			LibTypeFc* LibType=reinterpret_cast<LibTypeFc*>(reinterpret_cast<size_t>(dlsym(handle,"LibType")));
+
 			error=dlerror();
 			if(error)
 			{
@@ -381,7 +382,7 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 					}
 				}
 			}
-			void* handleDlg=dlopen(Dlg.Latin1(),RTLD_LAZY);
+			void* handleDlg=dlopen(Dlg.Latin1(),RTLD_NOW);
 
 			Manager->Load(Short,handle,handleDlg);
 		}

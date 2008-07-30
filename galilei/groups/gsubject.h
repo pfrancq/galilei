@@ -44,7 +44,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gcommunity.h>
+#include <galilei.h>
 
 
 //------------------------------------------------------------------------------
@@ -62,25 +62,30 @@ namespace GALILEI{
 */
 class GSubject: public R::RNode<GSubject,true,false>
 {
+/*	// Identifier of the subject.
+	size_t Id;
+	R::RString Name;                                        // Name of the subject.
+	bool Used;                                              // Determine if the subject is used.
+	R::RContainer<GDoc,false,true> Docs;                    // Documents attached to this subject.
+	R::RContainer<GProfile,false,true> Profiles;            // Profiles attached to this subject.
+	R::RContainer<GCommunity,false,true> Groups;            // Groups attached to this subject.*/
+
 	class Intern;
 
-	/**
-	* Internal data.
-	*/
 	Intern* Data;
 
 public:
 
 	/**
 	* Constructor of a subject.
-	* @param id              Identificator of the subject.
+	* @param id              Identifier of the subject.
 	* @param name            Name of the subject.
 	* @param u               Used?
 	*/
 	GSubject(size_t id,const char* name,bool u);
 
 	/**
-	* Compare two subjects by comparing their identificator.
+	* Compare two subjects by comparing their identifier.
 	* @see R::RContainer
 	* @param sub             Subject.
 	* @return int
@@ -88,9 +93,9 @@ public:
 	int Compare(const GSubject& sub) const;
 
 	/**
-	* Compare the identificator of a subject with another one.
+	* Compare the identifier of a subject with another one.
 	* @see R::RContainer
-	* @param id              Identificator.
+	* @param id              Identifier.
 	* @return int
 	*/
 	int Compare(const size_t id) const;
@@ -128,32 +133,43 @@ public:
 	bool IsIn(GDoc* doc) const;
 
 	/**
-	* Add a group to the subject. This method can only be used when the current
-	* clustering becomes the ideal one.
-	* @see GSession::CopyIdealGroups
-	* @param grp             Pointer to the group.
-	*/
-	void InsertGroup(GCommunity* grp);
+	 *
+	 * @param com
+	 */
+	void ClearIdealGroup(tObjType type);
 
 	/**
-	* Get a cursor over the groups of the subject. This method can only be
-	* used when the current clustering becomes the ideal one.
-	* @see GSession::CopyIdealGroups
+	* Assign an ideal community to the subject. This method can only be used
+	* when the current clustering becomes the ideal
+	* one.
+	* @param com             Community.
 	*/
-	R::RCursor<GCommunity> GetGroups(void) const;
+	void AssignIdealGroup(GCommunity* com);
 
 	/**
-	* Clear the groups. This method can only be used when the current
-	* clustering becomes the ideal one.
-	* @see GSession::CopyIdealGroups
+	* Assign an ideal topic to the subject. This method can only be used
+	* when the current clustering becomes the ideal
+	* one.
+	* @param top             Community.
 	*/
-	void ClearGroups(void);
+	void AssignIdealGroup(GTopic* top);
 
 	/**
-	* Get the number of groups associated to a the subject (and its
-	* sub-subjects).
+	 * Get the ideal community associated with the subject.
+	 */
+	GCommunity* GetIdealCommunity(void) const;
+
+	/**
+	 * Get the ideal topic associated with the subject.
+	 */
+	GTopic* GetIdealTopic(void) const;
+
+	/**
+	* Get the number of groups of a given type (otProfile or otDoc) associated
+	* to a the subject (and its sub-subjects).
+	* @param type            Type.
 	*/
-	size_t GetNbIdealGroups(void) const;
+	size_t GetNbIdealGroups(tObjType type) const;
 
 	/**
 	* Compute the number of topics (and its sub-topics) containing a document.
@@ -161,11 +177,18 @@ public:
 	size_t GetNbTopicsDocs(void) const;
 
 	/**
-	* Compute the number of profiles of a given group that are also in the
+	* Compute the number of profiles of a given community that are also in the
 	* current one.
-	* @param grp             Group.
+	* @param com             Community.
 	*/
-	size_t GetNbProfiles(const GCommunity* grp) const;
+	size_t GetNbObjs(const GCommunity* com) const;
+
+	/**
+	* Compute the number of documents of a given topic that are also in the
+	* current one.
+	* @param top             Topic.
+	*/
+	size_t GetNbObjs(const GTopic* top) const;
 
 	/**
 	* Compute the number of documents of a given container that are also in the
@@ -181,18 +204,6 @@ public:
 	void Insert(GDoc* doc);
 
 	/**
-	* Get a cursor over the documents contained in the subject.
-	* @return GDocCursor.
-	*/
-	R::RCursor<GDoc> GetDocs(void);
-
-	/**
-	* Get the number of documents associated to this subject.
-	* @returns size_t
-	*/
-	size_t GetNbDocs(void) const;
-
-	/**
 	* Insert a profile to the list of those contained in the subject.
 	* @param profile          Pointer to the profile.
 	*/
@@ -200,15 +211,36 @@ public:
 
 	/**
 	* Get a cursor over the profiles contained in the subject.
-	* @return GDocCursor.
+	*
+	* The pointer passed as parameter is needed by the C++ compiler to identify
+	* the method, but is not used. In practice, it can be called:
+	* @code
+	* GSubject* sub;
+	* ...
+	* R::RCursor<GProfile> Profiles(sub->GetObjs(static_cast<GProfile*>(0));
+	* @endcode
 	*/
-	R::RCursor<GProfile> GetProfiles(void) const;
+	R::RCursor<GProfile> GetObjs(GProfile*) const;
 
 	/**
-	* Get the number of profiles associated to this subject.
+	* Get a cursor over the documents contained in the subject.
+	*
+	* The pointer passed as parameter is needed by the C++ compiler to identify
+	* the method, but is not used. In practice, it can be called:
+	* @code
+	* GSubject* sub;
+	* ...
+	* R::RCursor<GDoc> Docs(sub->GetObjs(static_cast<GDoc*>(0));
+	* @endcode
+	*/
+	R::RCursor<GDoc> GetObjs(GDoc*) const;
+
+	/**
+	* Get the number of objects of a given type associated to this subject.
+	* @param type            Type.
 	* @returns size_t
 	*/
-	size_t GetNbProfiles(void) const;
+	size_t GetNbObjs(tObjType type) const;
 
 	/**
 	* Return the name of the Subject.
@@ -223,7 +255,7 @@ public:
 	R::RString GetFullName(void) const;
 
 	/**
-	* Get the identificator of the Subject.
+	* Get the identifier of the Subject.
 	* @returns The id of the subject.
 	*/
 	size_t GetId(void) const;
@@ -250,7 +282,7 @@ public:
 	void ReInit(void);
 
 	/**
-	* Destructor of a subject.
+	* Destruct the subject.
 	*/
 	virtual ~GSubject(void);
 

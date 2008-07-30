@@ -6,7 +6,7 @@
 
 	Generic Plug-In - Inline Implementation.
 
-	Copyright 2003-2005 by the Université libre de Bruxelles.
+	Copyright 2003-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -151,7 +151,7 @@ template<class factory,class plugin,class mng>
 {
 	if(ConfigDlg)
 	{
-		Configure_t config= (Configure_t) ConfigDlg ;
+		Configure_t config=reinterpret_cast<Configure_t>(reinterpret_cast<size_t>(ConfigDlg));
 		config(dynamic_cast<factory*>(this));
 	}
 }

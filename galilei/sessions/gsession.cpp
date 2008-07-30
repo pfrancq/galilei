@@ -479,7 +479,7 @@ void GSession::PutDebugInfo(RTextFile& file,const RString& name,const RString& i
 //------------------------------------------------------------------------------
 void GSession::RunPrg(GSlot* rec,const char* filename)
 {
-	GSessionPrg Prg(filename,this,rec);
+	GSessionPrg Prg(filename,rec);
 	Prg.Load();
 	Prg.Exec();
 }
@@ -590,10 +590,10 @@ void GSession::ClearGroups(tObjType type)
 {
 	switch(type)
 	{
-		case otDoc:
+		case otTopic:
 			ClearTopics();
 			break;
-		case otProfile:
+		case otCommunity:
 			ClearCommunities();
 			break;
 		default:
@@ -607,12 +607,10 @@ void* GSession::NewGroup(tObjType type)
 {
 	switch(type)
 	{
-		case otDoc:
+		case otTopic:
 			return(new GTopic(cNoRef,RDate(""),RDate("")));
-			break;
-		case otProfile:
+		case otCommunity:
 			return(new GCommunity(cNoRef,RDate(""),RDate("")));
-			break;
 		default:
 			throw GException("GSession::NewGroup : Type "+GetObjType(type)+" is not handled");
 	}
@@ -624,10 +622,10 @@ void GSession::InsertGroup(void* ptr,tObjType type)
 {
 	switch(type)
 	{
-		case otDoc:
+		case otTopic:
 			InsertTopic(static_cast<GTopic*>(ptr));
 			break;
-		case otProfile:
+		case otCommunity:
 			InsertCommunity(static_cast<GCommunity*>(ptr));
 			break;
 		default:
@@ -1572,50 +1570,74 @@ void GSession::DoPostCommunity(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::CopyIdealCommunities(void)
+template<class cGroup,class cObj,class cCalc>
+	void GSession::CopyIdealGroups(tObjType objtype,tObjType grouptype,cCalc* calc)
 {
-	GCommunity* grp;
-	GCommunityCalc* CalcDesc;
-
-	// Get current grouping description method
-	CalcDesc=GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod();
+	cGroup* grp;
 
 	// Clear current clustering
-	ClearCommunities();
+	ClearGroups(grouptype);
 
 	// Go through each subjects
 	R::RCursor<GSubject> Grps(GetSubjects()->GetNodes());
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Clear the groups associated to the subject
-		Grps()->ClearGroups();
+		Grps()->ClearIdealGroup(grouptype);
 
-		// If the subject has no subprofiles -> next one.
-		if(!Grps()->GetNbProfiles())
+		// If the subject has no profiles -> next one.
+		if(!Grps()->GetNbObjs(objtype))
 			continue;
 
 		// Create a new group in groups and associated with the current groups
-		grp=new GCommunity(cNoRef,RDate(""),RDate(""));
+		grp=static_cast<cGroup*>(NewGroup(grouptype));
 		AssignId(grp);
-		InsertCommunity(grp);
-		Grps()->InsertGroup(grp);
+		InsertGroup(grp,grouptype);
+		Grps()->AssignIdealGroup(grp);
 
-		// Go through each subprofile
-		RCursor<GProfile> Prof=Grps()->GetProfiles();
-		for(Prof.Start();!Prof.End();Prof.Next())
-			grp->InsertObj(Prof());
+		// Go through each object
+		RCursor<cObj> Objs=Grps()->GetObjs(static_cast<cObj*>(0));
+		for(Objs.Start();!Objs.End();Objs.Next())
+			grp->InsertObj(Objs());
 
 		// Compute Description
-		if(CalcDesc)
-			CalcDesc->Compute(grp);
+		if(calc)
+			calc->Compute(grp);
 	}
+}
 
-	if(Data->SaveResults)
+
+//------------------------------------------------------------------------------
+void GSession::BuildGroupsFromIdeal(tObjType type)
+{
+	switch(type)
 	{
-		Data->Storage->SaveCommunities();
-		RCursor<GCommunity> Groups(Data->Groups);
-		for(Groups.Start();!Groups.End();Groups.Next())
-			Groups()->SetState(osSaved);
+		case otCommunity:
+		{
+			CopyIdealGroups<GCommunity,GProfile,GCommunityCalc>(otProfile,otCommunity,GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod());
+			if(Data->SaveResults)
+			{
+				Data->Storage->SaveCommunities();
+				RCursor<GCommunity> Groups(Data->Groups);
+				for(Groups.Start();!Groups.End();Groups.Next())
+					Groups()->SetState(osSaved);
+			}
+			break;
+		}
+		case otTopic:
+		{
+			CopyIdealGroups<GTopic,GDoc,GTopicCalc>(otDoc,otTopic,GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod());
+			if(Data->SaveResults)
+			{
+				Data->Storage->SaveTopics();
+				RCursor<GTopic> Topics(Data->Topics);
+				for(Topics.Start();!Topics.End();Topics.Next())
+					Topics()->SetState(osSaved);
+			}
+			break;
+		}
+		default:
+			break;
 	}
 }
 

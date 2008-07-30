@@ -252,10 +252,14 @@ public:
 	/**
 	* Get an untyped pointer to a given element of a given type, or null if the
 	* identifier does not correspond to an element.
-	 * Get an untyped pointer to an element of a given type.
-	 * @param type            Type of the element.
-	 * @returns Highest identifier.
-	 */
+	*
+	* The resulting pointer should be cast:
+	* @code
+	* GDoc* Doc=static_cast<GDoc*>(Session->GetElement(otDoc,4));
+	* GTopic* Topic=static_cast<GTopic*>(Session->GetElement(otTopic,4));
+	* @endcode
+	* @param type            Type of the element.
+	*/
 	void* GetElement(tObjType type,size_t id) const;
 
 	/**
@@ -716,10 +720,24 @@ public:
 	*/
 	void DoPostCommunity(GSlot* rec=0);
 
+private:
+
 	/**
-	* Copy the ideal communities as the current one.
+	 * Copy the ideal groups into the current clustering.
+	 * @param objtype         Type of the clustering (otProfile or otDoc).
+	 * @param grouptype       Type of the groups (otCommunity or otTopic).
+	 * @param calc           Method used to compute the groups descriptions.
+	 */
+	template<class cGroup,class cObj,class cCalc> void CopyIdealGroups(tObjType objtype,tObjType grouptype,cCalc* calc);
+
+public:
+
+	/**
+	* Build a type of clustering (otTopic or otCommunity) from the ideal one
+	* based on the documents and the profiles assigned to the subject.
+	* @param type            Type.
 	*/
-	void CopyIdealCommunities(void);
+	void BuildGroupsFromIdeal(tObjType type);
 
 	/**
 	* Load the historic Communities.

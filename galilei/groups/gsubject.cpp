@@ -41,6 +41,8 @@
 #include <guser.h>
 #include <glang.h>
 #include <gdoc.h>
+#include <gcommunity.h>
+#include <gtopic.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -58,15 +60,16 @@ class GSubject::Intern
 {
 public:
 
-	size_t Id;                                        // Identificator of the subject.
-	R::RString Name;                                        // Name of the subject.
+	size_t Id;                                              // Identifier of the subject.
+	RString Name;                                           // Name of the subject.
 	bool Used;                                              // Determine if the subject is used.
-	R::RContainer<GDoc,false,true> Docs;                    // Documents attached to this subject.
-	R::RContainer<GProfile,false,true> Profiles;            // Profiles attached to this subject.
-	R::RContainer<GCommunity,false,true> Groups;                // Groups attached to this subject.
+	RContainer<GDoc,false,true> Docs;                       // Documents attached to this subject.
+	RContainer<GProfile,false,true> Profiles;               // Profiles attached to this subject.
+	GCommunity* Community;                                  // Ideal community.
+	GTopic* Topic;                                          // Ideal topic.
 
 	Intern(size_t id,const char* name,bool u) :
-	 Id(id), Name(name), Used(u), Docs(1000,500), Profiles(10,5), Groups(10,5)
+	 Id(id), Name(name), Used(u), Docs(1000,500), Profiles(10,5), Community(0), Topic(0)
 	{}
 };
 
@@ -154,38 +157,72 @@ bool GSubject::IsIn(GDoc* doc) const
 	return(Data->Docs.IsIn(*doc));
 }
 
-
 //------------------------------------------------------------------------------
-void GSubject::InsertGroup(GCommunity* grp)
+void GSubject::ClearIdealGroup(tObjType type)
 {
-	Data->Groups.InsertPtr(grp);
+	switch(type)
+	{
+		case otCommunity:
+			Data->Community=0;
+			break;
+		case otTopic:
+			Data->Topic=0;
+			break;
+		default:
+			break;
+	}
 }
 
 
 //------------------------------------------------------------------------------
-RCursor<GCommunity> GSubject::GetGroups(void) const
+void GSubject::AssignIdealGroup(GCommunity* com)
 {
-	return(RCursor<GCommunity>(Data->Groups));
+	Data->Community=com;
 }
 
 
 //------------------------------------------------------------------------------
-void GSubject::ClearGroups(void)
+void GSubject::AssignIdealGroup(GTopic* top)
 {
-	Data->Groups.Clear();
+	Data->Topic=top;
 }
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbIdealGroups(void) const
+GCommunity* GSubject::GetIdealCommunity(void) const
+{
+	return(Data->Community);
+}
+
+
+//------------------------------------------------------------------------------
+GTopic* GSubject::GetIdealTopic(void) const
+{
+	return(Data->Topic);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSubject::GetNbIdealGroups(tObjType type) const
 {
 	size_t nb(0);
 
-	if(Data->Profiles.GetNb())
-		nb++;
+	switch(type)
+	{
+		case otProfile:
+			if(Data->Profiles.GetNb())
+				nb++;
+			break;
+		case otDoc:
+			if(Data->Docs.GetNb())
+				nb++;
+			break;
+		default:
+			throw GException("GSubject::GetNbIdealGroups(tObjType) doesn't support type"+GetObjType(type));
+	}
 	RCursor<GSubject> Cur(GetNodes());
 	for(Cur.Start();!Cur.End();Cur.Next())
-		nb+=Cur()->GetNbIdealGroups();
+		nb+=Cur()->GetNbIdealGroups(type);
 	return(nb);
 }
 
@@ -205,12 +242,24 @@ size_t GSubject::GetNbTopicsDocs(void) const
 
 
 //------------------------------------------------------------------------------
-size_t GSubject::GetNbProfiles(const GCommunity* grp) const
+size_t GSubject::GetNbObjs(const GCommunity* com) const
 {
 	size_t tot(0);
 	RCursor<GProfile> Prof(Data->Profiles);
 	for(Prof.Start();!Prof.End();Prof.Next())
-		if(grp->IsIn(Prof()))
+		if(com->IsIn(Prof()))
+			tot++;
+	return(tot);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSubject::GetNbObjs(const GTopic* top) const
+{
+	size_t tot(0);
+	RCursor<GDoc> Doc(Data->Docs);
+	for(Doc.Start();!Doc.End();Doc.Next())
+		if(top->IsIn(Doc()))
 			tot++;
 	return(tot);
 }
@@ -232,21 +281,6 @@ size_t GSubject::GetNbDocs(const RContainer<GDoc,false,false>* docs) const
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GDoc> GALILEI::GSubject::GetDocs(void)
-{
-	R::RCursor<GDoc> cur(Data->Docs);
-	return(cur);
-}
-
-
-//------------------------------------------------------------------------------
-size_t GALILEI::GSubject::GetNbDocs(void) const
-{
-	return(Data->Docs.GetNb());
-}
-
-
-//------------------------------------------------------------------------------
 void GSubject::Insert(GProfile* profile)
 {
 	Data->Profiles.InsertPtr(profile);
@@ -254,16 +288,31 @@ void GSubject::Insert(GProfile* profile)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GProfile> GALILEI::GSubject::GetProfiles(void) const
+R::RCursor<GProfile> GALILEI::GSubject::GetObjs(GProfile*) const
 {
 	return(R::RCursor<GProfile>(Data->Profiles));
 }
 
 
 //------------------------------------------------------------------------------
-size_t GALILEI::GSubject::GetNbProfiles(void) const
+R::RCursor<GDoc> GALILEI::GSubject::GetObjs(GDoc*) const
 {
-	return(Data->Profiles.GetNb());
+	return(R::RCursor<GDoc>(Data->Docs));
+}
+
+
+//------------------------------------------------------------------------------
+size_t GALILEI::GSubject::GetNbObjs(tObjType type) const
+{
+	switch(type)
+	{
+		case otDoc:
+			return(Data->Docs.GetNb());
+		case otProfile:
+			return(Data->Profiles.GetNb());
+		default:
+			return(0);
+	}
 }
 
 
@@ -353,7 +402,8 @@ void GSubject::SetUsed(GSession* session,size_t nbprofiles,size_t& nbsocial)
 void GSubject::ReInit(void)
 {
 	Data->Profiles.Clear();
-	Data->Groups.Clear();
+	Data->Community=0;
+	Data->Topic=0;
 	Data->Used=false;
 }
 

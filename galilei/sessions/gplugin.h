@@ -6,7 +6,7 @@
 
 	Generic Plug-In - Header.
 
-	Copyright 2003-2005 by the Université libre de Bruxelles.
+	Copyright 2003-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -50,7 +50,7 @@
 
 
 //-----------------------------------------------------------------------------
-// include file for dlopen
+// include file to manage dynamic libraries
 #include <dlfcn.h>
 
 
@@ -66,7 +66,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* Type of a function used to show the about box of a plugin.
+* Type of a function used to show the about box of a plug-in.
 */
 typedef void (*About_t)();
 //-----------------------------------------------------------------------------
@@ -95,7 +95,7 @@ protected:
 public:
 
 	/**
-	* Constructor of the plugin.
+	* Constructor of the plug-in.
 	* @param fac            Factory.
 	*/
 	GPlugin(factory* fac);
@@ -118,13 +118,13 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	* Get the factory of the plugin.
+	* Get the factory of the plug-in.
 	*/
 	factory* GetFactory(void) const {return(Factory);}
 
 	/**
-	* Compararison method needed by R::RContainer.
-	* @param plugin          Plugin to compare.
+	* Comparison method needed by R::RContainer.
+	* @param plugin          Plug-in to compare.
 	*/
 	int Compare(const GPlugin& plugin) const;
 
@@ -139,7 +139,7 @@ public:
 	GSession* GetSession(void) const {return(Session);}
 
 	/**
-	* Destructor of the plugin.
+	* Destruct of the plug-in.
 	*/
 	virtual ~GPlugin(void);
 };
@@ -147,10 +147,10 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The GFactoryPlugin class provides a template for a generic plugin factory. A
-* factory handles the loading of the dynamic library containing the plugin.
+* The GFactoryPlugin class provides a template for a generic plug-in factory. A
+* factory handles the loading of the dynamic library containing the plug-in.
 * @author Pascal Francq
-* @short Generic Plugin Factory.
+* @short Generic Plug-in Factory.
 */
 template<class factory,class plugin,class mng>
 	class GFactoryPlugin : public R::RConfig
@@ -158,7 +158,7 @@ template<class factory,class plugin,class mng>
 public:
 
 	/**
-	* Type of a function used to show dialog box of a plugin.
+	* Type of a function used to show dialog box of a plug-in.
 	*/
 	typedef void* (*Configure_t)(GFactoryPlugin*);
 
@@ -170,7 +170,7 @@ protected:
 	mng* Mng;
 
 	/**
-	* Pointer to the plugin.
+	* Pointer to the plug-in.
 	*/
 	plugin* Plugin;
 
@@ -191,17 +191,17 @@ protected:
 
 	/**
 	* Pointer to a function showing the configure box.
-	* @param f               Factory of the pluging to configure.
+	* @param f               Factory of the plug-in to configure.
 	*/
 	void* ConfigDlg;
 
 	/**
-	* The Handle(void *) to maintain the (dlopen)handler for the opened library
+	* The Handle(void *) to maintain the handler for the opened library.
 	*/
 	void* Handle;
 
 	/**
-	* The Handle(void *) to maintain the (dlopen)handler for the opened library
+	* The Handle(void *) to maintain the handler for the opened library.
 	*/
 	void* HandleDlg;
 
@@ -214,9 +214,9 @@ public:
 
 	/**
 	* Constructor.
-	* @param m               Manager of the plugin.
-	* @param n               Name of the Factory/Plugin.
-	* @param f               Lib of the Factory/Plugin.
+	* @param m               Manager of the plug-in.
+	* @param n               Name of the Factory/Plug-in.
+	* @param f               Library of the Factory/Plug-in.
 	*/
 	GFactoryPlugin(mng* m,const R::RString& n,const R::RString& f);
 
@@ -296,7 +296,7 @@ public:
 	virtual void DeletePlugIn(plugin* plug)=0;
 
 	/**
-	* Create a plugin.
+	* Create a plug-in.
 	*/
 	virtual void Create(void)
 	{
@@ -307,7 +307,7 @@ public:
 	}
 
 	/**
-	* Create a plugin.
+	* Create a plug-in.
 	*/
 	virtual void Delete(void)
 	{
@@ -318,7 +318,7 @@ public:
 	}
 
 	/**
-	* Create a plugin.
+	* Create a plug-in.
 	*/
 	virtual void Create(GSession* session)
 	{
@@ -333,7 +333,7 @@ public:
 	}
 
 	/**
-	* Create a plugin.
+	* Delete a plug-in.
 	*/
 	virtual void Delete(GSession* session)
 	{
@@ -373,33 +373,33 @@ public:
 	bool HasConfigure(void) const {return(ConfigDlg);}
 
 	/**
-	* Get the API Version of the plugin.
+	* Get the API Version of the plug-in.
 	* @return C String.
 	*/
 	virtual const char* GetAPIVersion(void) const=0;
 
 	/**
-	* Return the manager of the plugin.
+	* Return the manager of the plug-in.
 	*/
 	mng* GetMng(void) {return(Mng);}
 
 	/**
-	* Get the plugin of this factory.
+	* Get the plug-in of this factory.
 	*/
 	plugin* GetPlugin(void) const {return(Plugin);}
 
 	/**
-	* Get the library of the plugin.
+	* Get the library of the plug-in.
 	*/
 	R::RString GetLib(void) const {return(Lib);}
 
 	/**
-	* Return the version of the plugin.
+	* Return the version of the plug-in.
 	*/
 	const char* GetVersion(void) const {return(this->Version);}
 
 	/**
-	* Destructor.
+	* Destruct the factory.
 	*/
 	virtual ~GFactoryPlugin(void);
 

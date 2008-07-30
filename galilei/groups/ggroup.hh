@@ -283,6 +283,19 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
+	size_t GALILEI::GGroup<cObj,cGroup,type>::GetNbObjs(const GSubject* subject) const
+{
+	size_t tot;
+	R::RCursor<cObj> sub(*this);
+	for(sub.Start(),tot=0;!sub.End();sub.Next())
+		if(subject->IsIn(sub()))
+			tot++;
+	return(tot);
+}
+
+
+//------------------------------------------------------------------------------
+template<class cObj,class cGroup,GALILEI::tObjType type>
 	void GALILEI::GGroup<cObj,cGroup,type>::HasUpdate(cObj* obj)
 {
 	if(R::RContainer<cObj,false,true>::GetPtr(*obj))

@@ -39,7 +39,6 @@
 // include files for GALILEI
 #include <gcommunity.h>
 #include <gdoc.h>
-#include <gsubject.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -93,19 +92,6 @@ int GCommunity::sortOrder(const void *a,const void *b)
 	else
 		return(1);
 }
-
-
-//------------------------------------------------------------------------------
-size_t GCommunity::GetNbProfiles(const GSubject* subject) const
-{
-	size_t tot;
-	RCursor<GProfile> sub(*this);
-	for(sub.Start(),tot=0;!sub.End();sub.Next())
-		if(subject->IsIn(sub()))
-			tot++;
-	return(tot);
-}
-
 
 
 //------------------------------------------------------------------------------

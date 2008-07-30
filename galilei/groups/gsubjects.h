@@ -67,6 +67,7 @@ class GSubjects : public R::RTree<GSubject,true,false>
 {
 protected:
 
+	template<class cGroup> class GroupScore;
 	class Intern;
 
 	/**
@@ -110,7 +111,7 @@ protected:
 	void CreateSet(void);
 
 	/**
-	* Simulatation of assessments for a profile on a given subject.
+	* Simulation of assessments for a profile on a given subject.
 	* @param prof           Profile that assesses the documents.
 	* @param sub            Subject.
 	* @param maxDocsOK      Maximal relevant Documents to assess.
@@ -120,16 +121,22 @@ protected:
 	void ProfileAssess(GProfile* prof,GSubject* sub,size_t maxDocsOK,size_t maxDocsKO,size_t maxDocsH);
 
 	/**
-	* Compute the Recall and the Precision.
+	* Compute the Recall and the Precision for a given clustering.
+	* @param type            Type of the clustering.
+	* @param recall          Total recall.
+	* @param precision       Total precision.
 	*/
-	void ComputeRecallPrecision(void);
+	template<class cGroup,class cObj> void ComputeRecallPrecision(tObjType type,R::RCursor<GroupScore<cGroup> >& grp,double& recall,double& precision);
 
 	/**
-	* Compute the Total based on the Adjusted Rand Index (Hubert and Arabie)
-	* The total is the mean of the total for each languages pondered by the
-	* number of subprofiles by languages.
+	* Compute the Total for a given clustering based on the Adjusted Rand Index
+	* (Hubert and Arabie).
+	* @param objtype         Type of the clustering (otProfile or otDoc).
+	* @param grouptype       Type of the groups (otCommunity or otTopic).
+	* @param grps            Groups computed.
+	* @param total           Total result.
 	*/
-	void ComputeTotal(void);
+	template<class cGroup,class cObj> void ComputeTotal(tObjType objtype,tObjType grouptype,R::RCursor<cGroup>& grps,double& total);
 
 public:
 
@@ -158,20 +165,20 @@ public:
 	bool AddTopic(void);
 
 	/**
-	* Add judgements for some new not used profiles.
+	* Add assessments for some new not used profiles.
 	* @return Number of profiles created.
 	*/
 	size_t AddProfiles(void);
 
 	/**
-	* Computed the percentage of correct assignments for the subprofiles last
+	* Computed the percentage of correct assignments for the profiles last
 	* added.
 	* @return double;
 	*/
 	double ComputePercAss(void);
 
 	/**
-	* Clear the container of last added subprofiles.
+	* Clear the container of last added profiles.
 	*/
 	void ClearLastAdded(void);
 
@@ -189,35 +196,36 @@ public:
 
 	/**
 	* Compare the clustering.
+	* @param type            Type of clustering to compare.
 	*/
-	void Compare(void);
+	void Compare(tObjType type);
 
 	/**
-	* Get the total precision of the groupement.
+	* Get the total precision of the clustering.
 	*/
-	double GetPrecision(void) const;
+	double GetPrecision(tObjType type) const;
 
 	/**
-	* Get the total recall of the groupement.
+	* Get the total recall of the clustering.
 	*/
-	double GetRecall(void) const;
+	double GetRecall(tObjType type) const;
 
 	/**
-	* Get the total recall of the groupement.
+	* Get the total recall of the clustering.
 	*/
-	double GetTotal(void) const;
+	double GetTotal(tObjType type) const;
 
 	/**
-	* Get the precision of a group.
-	* @param grp            Group.
+	* Get the precision of a community.
+	* @param com            Community.
 	*/
-	double GetPrecision(GCommunity* grp) const;
+	double GetPrecision(GCommunity* com) const;
 
 	/**
-	* Get the total recall of a group.
-	* @param grp            Group.
+	* Get the total recall of a community.
+	* @param com            Community.
 	*/
-	double GetRecall(GCommunity* grp) const;
+	double GetRecall(GCommunity* com) const;
 
 	/**
 	* Get the ideal group of the profile.
@@ -232,9 +240,23 @@ public:
 	GSubject* GetIdealGroup(GDoc* doc) const;
 
 	/**
-	* Compute the number of ideal groups for a given topic (and its sub-topics).
+	* Compute the number of ideal groups of a given type (otProfile or otDoc)
+	* for a given topic (and its sub-topics).
+	* @param type            Type.
 	*/
-	size_t GetNbIdealGroups(void) const;
+	size_t GetNbIdealGroups(tObjType type) const;
+
+	/**
+	* Get the precision of a topic.
+	* @param top            Topic.
+	*/
+	double GetPrecision(GTopic* top) const;
+
+	/**
+	* Get the total recall of a topic.
+	* @param top            Topic.
+	*/
+	double GetRecall(GTopic* top) const;
 
 	/**
 	* Compute the number of topics (and its sub-topics) containing a document.
@@ -244,7 +266,7 @@ public:
 	/**
 	* Add a given profile to a subject.
 	* @param profile        Pointer to the profile.
-	* @param subjectid      Identificator of the subject.
+	* @param subjectid      Identifier of the subject.
 	*/
 	void InsertProfileSubject(GProfile* profile,size_t subjectid);
 	/**

@@ -50,12 +50,12 @@ namespace GALILEI{
 /**
 * The GFdbk class provides a representation for assessment on a document.
 * @author Pascal Francq
-* @short Documment Assessment.
+* @short Document Assessment.
 */
 class GFdbk
 {
 	/**
-	* Identificator of the document assessed.
+	* Identifier of the document assessed.
 	*/
 	size_t DocId;
 
@@ -78,7 +78,7 @@ public:
 
 	/**
 	* Constructor.
-	* @param docid           Identificator of the document.
+	* @param docid           Identifier of the document.
 	* @param fdbk            Assessment.
 	* @param when            Date.
 	* @param computed        Last computation.
@@ -86,26 +86,26 @@ public:
 	GFdbk(size_t docid,tDocAssessment fdbk,const R::RDate& when,const R::RDate& computed);
 
 	/**
-	* Compare two assessements to order them using the document identificator.
+	* Compare two assessments to order them using the document identifier.
 	* @see R::RContainer
-	* @param fdbk            Assessement.
+	* @param fdbk            Assessment.
 	* @return int
 	*/
 	int Compare(const GFdbk& fdbk) const;
 
 	/**
-	* Compare two assessements to order them using the document identificator.
+	* Compare two assessments to order them using the document identifier.
 	* @see R::RContainer
-	* @param fdbk            Pointer to an assessement.
+	* @param fdbk            Pointer to an assessment.
 	* @return int
 	*/
 	int Compare(const GFdbk* fdbk) const;
 
 	/**
 	* Compare the document assessed with another document using their
-	* identificators.
+	* identifiers.
 	* @see R::RContainer
-	* @param id              Identificator of the document.
+	* @param id              Identifier of the document.
 	* @return int
 	*/
 	int Compare(const size_t id) const;
@@ -124,7 +124,7 @@ public:
 	tDocAssessment GetFdbk(void) const {return(Fdbk);}
 
 	/**
-	* Get the identificator of the document assessed.
+	* Get the identifier of the document assessed.
 	* @returns size_t.
 	*/
 	size_t GetDocId(void) const {return(DocId);}
@@ -153,7 +153,7 @@ public:
 	void HasUpdate(void);
 
 	/**
-	* Create an erronous assessment with a given percentage. The percentage
+	* Create an erroneous assessment with a given percentage. The percentage
 	* represents the number of assessments that will be changed in comparison to
 	* the original.
 	*
@@ -175,7 +175,7 @@ public:
 	static tDocAssessment ErrorJudgment(tDocAssessment fdbk,double PercErr,R::RRandom* rand);
 
 	/*
-	* Destructor
+	* Destruct the feedback.
 	*/
 	~GFdbk(void);
 };
@@ -199,7 +199,7 @@ protected:
 	/**
 	* Identifier of the profile.
 	*/
-	unsigned Id;
+	size_t Id;
 
 	/**
 	* Name of the profile.

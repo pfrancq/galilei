@@ -43,6 +43,7 @@
 #include <ggalileiapp.h>
 #include <gmeasure.h>
 #include <gstorage.h>
+#include <gsubject.h>
 
 
 //------------------------------------------------------------------------------
@@ -63,32 +64,32 @@ template<class cObj,class cGroup,tObjType type>
 protected:
 
 	/**
-	* Identificator of the group.
+	* Identifier of the group.
 	*/
 	size_t Id;
 
 	/**
-	* Date of the update (objiles have changed).
+	* Date of the update (objects have changed).
 	*/
 	R::RDate Updated;
 
 	/**
-	* Date of last objile computing.
+	* Date of last objects computing.
 	*/
 	R::RDate Computed;
 
 public:
 
 	/**
-	* Construct a group with a specific identificator.
-	* @param id              Identificator.
+	* Construct a group with a specific identifier.
+	* @param id              Identifier.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
 	GGroup(size_t id,const R::RDate& u,const R::RDate& c);
 
 	/**
-	* Compare two groups by comparing their identificator.
+	* Compare two groups by comparing their identifier.
 	* @see R::RContainer
 	* @param grp             Group.
 	* @return int
@@ -96,7 +97,7 @@ public:
 	int Compare(const GGroup& grp) const;
 
 	/**
-	* Compare two groups by comparing their identificator.
+	* Compare two groups by comparing their identifier.
 	* @see R::RContainer
 	* @param grp             Pointer to a group.
 	* @return int
@@ -104,28 +105,27 @@ public:
 	int Compare(const GGroup* grp) const;
 
 	/**
-	* Compare the idenfiticator of a group with another one.
+	* Compare the identifier of a group with another one.
 	* @see R::RContainer
-	* @param id              Identificator.
+	* @param id              Identifier.
 	* @return int
 	*/
 	int Compare(const size_t id) const;
 
 	/**
-	* Get the date of the last update of the subobjile.
+	* Get the date of the last update of the objects.
 	* @returns R::RDate.
 	*/
 	R::RDate GetUpdated(void) const;
 
 	/**
-	* Get the date of the last analysis of the subobjile.
+	* Get the date of the last analysis of the objects.
 	* @returns R::RDate.
 	*/
 	R::RDate GetComputed(void) const;
 
 	/**
-	* Get the identificator of the group.
-	* @return Identificator.
+	* Get the identifier of the group.
 	*/
 	size_t GetId(void) const {return(Id);}
 
@@ -142,7 +142,7 @@ public:
 
 	/**
 	 * Get the similarity measure that must be used when computing the
-	 * similarity between the objects grouped. Un example for profiles:
+	 * similarity between the objects grouped. An example for profiles:
 	 * @code
 	 * virtual GMeasure* GetMinMeasure(void)
 	 * {
@@ -153,37 +153,37 @@ public:
 	virtual GMeasure* GetSimMeasure(void) const=0;
 
 	/**
-	 * Look if a given objile is in the group.
-	 * @param obj           Profile.µ
+	 * Look if a given object is in the group.
+	 * @param obj           Object.
 	 */
 	bool IsIn(const cObj* obj) const;
 
 	/**
-	* Delete a objile from the group. If the group is a Group, the
-	* method modifies the assignation of the objile (the 'Group' pointer).
-	* of the objile is set to null).
-	* @param obj            Profile to delete.
+	* Delete an object from the group. If the group is a Group, the
+	* method modifies the assignment of the object (the 'Group' pointer).
+	* of the object is set to null).
+	* @param obj            Object to delete.
 	*/
 	void DeleteObj(cObj* obj);
 
 	/**
-	* Insert a objile in the group. If the group is a Group, the
-	* method modifies the assignation of the objile (the 'Group' pointer).
-	* of the objile is set to null).
-	* @param obj            Profile to insert.
+	* Insert a object in the group. If the group is a Group, the
+	* method modifies the assignment of the object (the 'Group' pointer).
+	* of the object is set to null).
+	* @param obj            Object to insert.
 	*/
 	void InsertObj(cObj* sp);
 
 	/**
-	* Insert a objile in the group. This signature is needed by a generic
+	* Insert a object in the group. This signature is needed by a generic
 	* k-Means.
-	* @param obj            Profile to insert.
+	* @param obj            Object to insert.
 	* @see R::RGroupingKMeans.
 	*/
 	void InsertPtr(cObj* obj);
 
 	 /**
-	* Delete all objiles.
+	* Delete all objects.
 	*/
 	void DeleteObjs(void);
 
@@ -193,29 +193,29 @@ public:
 	R::RCursor<cObj> GetObjs(void) const;
 
 	/**
-	* Get a cursor over the objiles. This signature is needed by a generic
+	* Get a cursor over the objects. This signature is needed by a generic
 	* k-Means.
 	* @see R::RGroupingKMeans.
 	*/
 	R::RCursor<cObj> GetCursor(void) const;
 
 	/**
-	* Get the number of objiles in the group.
+	* Get the number of objects in the group.
 	*/
 	size_t GetNbObjs(void) const;
 
 	/**
-	* Compute the relevant objile, i.e. the objile whith the highest
-	* average similarity with all the other objiles.
+	* Compute the relevant object, i.e. the object with the highest
+	* average similarity with all the other objects.
 	* @returns Pointer to cObj representing the relevant one.
 	*/
 	cObj* RelevantObj(void) const;
 
 	/**
-	* Compute the sum of the similarities of a given objile to all the
+	* Compute the sum of the similarities of a given object to all the
 	* others.
 	* @param measure         The measure used to compute the similarities.
-	* @param obj            Profile used as reference.
+	* @param obj             Object used as reference.
 	* @returns result.
 	*/
 	double ComputeSumSim(GMeasure* measure,const cObj* obj) const;
@@ -235,13 +235,20 @@ public:
 	void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed);
 
 	/**
-	* This method is call by a objile when it was modified.
-	* @param obj            Profile modified.
+	* Compute the number of objects of a given group that are also in a
+	* subject.
+	* @param subject         Subject.
+	*/
+	size_t GetNbObjs(const GSubject* subject) const;
+
+	/**
+	* This method is call by a object when it was modified.
+	* @param obj             Object modified.
 	*/
 	void HasUpdate(cObj* obj);
 
 	/**
-	* Destructor of a group.
+	* Destruct the group.
 	*/
 	virtual ~GGroup(void);
 };

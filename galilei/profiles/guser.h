@@ -54,9 +54,9 @@ namespace GALILEI{
 class GUser : public R::RContainer<GProfile,false,true>
 {
 	/**
-	* Identificator of the user.
+	* Identifier of the user.
 	*/
-	unsigned Id;
+	size_t Id;
 
 	/**
 	* Name of the user.
@@ -72,7 +72,7 @@ public:
 
 	/**
 	* Construct a user.
-	* @param id             Identificator.
+	* @param id             Identifier.
 	* @param name           Name of the user.
 	* @param fullname       FullName of the user.
 	* @param nb             Number of profiles.
@@ -80,7 +80,7 @@ public:
 	GUser(size_t id,const R::RString name,const R::RString fullname,size_t nb=5);
 
 	/**
-	* Compare two users by comparing their identificator.
+	* Compare two users by comparing their identifier.
 	* @see R::RContainer
 	* @param user            User.
 	* @return int
@@ -88,7 +88,7 @@ public:
 	int Compare(const GUser &user) const;
 
 	/**
-	* Compare two users by comparing their identificator.
+	* Compare two users by comparing their identifier.
 	* @see R::RContainer
 	* @param user            Pointer to a user.
 	* @return int
@@ -96,9 +96,9 @@ public:
 	int Compare(const GUser *user) const;
 
 	/**
-	* Compare the idenfiticator of a user with another one.
+	* Compare the identifier of a user with another one.
 	* @see R::RContainer
-	* @param id              Identificator.
+	* @param id              Identifier.
 	* @return int
 	*/
 	int Compare(const size_t id) const;
@@ -112,7 +112,7 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	* Get the identificator of the user.
+	* Get the identifier of the user.
 	* @return size_t.
 	*/
 	size_t GetId(void) const {return(Id);}
@@ -125,7 +125,7 @@ public:
 
 	/**
 	 * Get a profile with a given name.
-	 * @param name           Nameo fo the profile.
+	 * @param name           Name of the profile.
 	 * @return Pointer to the profile or null if not found.
 	 */
 	GProfile* GetProfile(const R::RString& name) const;
@@ -162,7 +162,7 @@ public:
 	void SetName(const R::RString& name,const R::RString& fullname=R::RString::Null);
 
 	/**
-	* Destructor of a user.
+	* Destruct a user.
 	*/
 	virtual ~GUser(void);
 };
