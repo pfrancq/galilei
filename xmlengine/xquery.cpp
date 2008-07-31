@@ -177,27 +177,27 @@ int XQuery::calculate_specificity(int idfile, int idnode)
 int specif = 0;
 
 /////// Si la BD contient le champ specif dans la table nodelist alors utiliser ce code pour r�cup�rer la valeur de ce champ
-	cmdtag = new GALILEI::GStorageTag("GetSpecif");
+/*	cmdtag = new GALILEI::GStorageTag("GetSpecif");
 	cmdtag->InsertAttr("idfile", RString::Number(idfile));
 	cmdtag->InsertAttr("idnode", RString::Number(idnode));
 	storage->ExecuteCmd(*cmdtag, &specif);
 	delete cmdtag;
-	return specif;
+	return specif;*/
 
 /////// Sinon le calculer avec le code ci dessous
-// XNodeSQL nodesql;
-// bool leaf = false;
-// int i, nbchildren = 0;
-// 	cmdtag = new GALILEI::GStorageTag("GetNodeAttr");
-// 	cmdtag->InsertAttr("idfile", RString::Number(idfile));
-// 	cmdtag->InsertAttr("idnode", RString::Number(idnode));
-// 	storage->ExecuteCmd(*cmdtag, &nodesql);
-// 	delete cmdtag;
-// 	if (nodesql.GetNbChild()==0) nbchildren = 1;
-// 	else
-// 	for (i=nodesql.GetChild1(); i< nodesql.GetChild1()+nodesql.GetNbChild(); i++)
-// 		nbchildren +=  calculate_specificity(idfile, i);
-//return nbchildren;
+ XNodeSQL nodesql;
+ bool leaf = false;
+ int i, nbchildren = 0;
+ 	cmdtag = new GALILEI::GStorageTag("GetNodeAttr");
+ 	cmdtag->InsertAttr("idfile", RString::Number(idfile));
+ 	cmdtag->InsertAttr("idnode", RString::Number(idnode));
+ 	storage->ExecuteCmd(*cmdtag, &nodesql);
+ 	delete cmdtag;
+ 	if (nodesql.GetNbChild()==0) nbchildren = 1;
+ 	else
+ 	for (i=nodesql.GetChild1(); i< nodesql.GetChild1()+nodesql.GetNbChild(); i++)
+ 		 		nbchildren +=  calculate_specificity(idfile, i);
+return nbchildren;
 }
 
 //______________________________________________________________________________
@@ -258,7 +258,7 @@ XQueryRes *XQuery::get_xqueryres(const RString &word)							// Constructs an XQu
 			xnd = new XNode(idnode, type, dis, specif ); 
 			nset->InsertPtr(xnd);	 			// Desallocated by XNodeSet
 			//add parents
-			root = false;
+			/*root = false;
 			idnode2 = idnode;
 			while (!root){
 				cmdtag = new GALILEI::GStorageTag("GetNodeAttr");
@@ -272,7 +272,7 @@ XQueryRes *XQuery::get_xqueryres(const RString &word)							// Constructs an XQu
 				idnode2=nodesql.GetParent();
 				if (idnode2==0) root=true;
 			}
-			dis=0;
+			dis=0;*/
 			//end add parents
 			i++;
 				
@@ -327,7 +327,7 @@ void XQuery::compute_query(XQueryNode *node)									// Resolves the query tree
 }
 //NORMAL//______________________________________________________________________________
 //------------------------------------------------------------------------------
-void XQuery::rank_results()									
+void XQuery::rank_results(R::RString Name)									
 {
 	RCursor<XNodeSet> cqres;
 	GXmlRanking *gxml_rank;
@@ -335,7 +335,7 @@ void XQuery::rank_results()
 
 	cqres.Set(*query_tree.GetTop()->GetQRes());
 	gxml_rank = new GXmlRanking(storage, Params);
-	gxml_rank->Compute(cqres, query_keywords);	
+	gxml_rank->Compute(cqres, query_keywords, Name);	
 }
 
 //______________________________________________________________________________
@@ -422,66 +422,11 @@ void XQuery::extract_result()
 				i++;			
 				content = "";
 				attributes = "";
-				if (cnodesql()->GetNbChild())									// Looks for attrubtes
-				{
-					count_ch = 0;												// Reset the counter to children
-					do
-					{
-//FIXME						storage->GetNodeAttr(idfile, cnodesql()->GetChild1() + nbch, &name, 0, &ch1, 0, &fpos, &flen);
-						cmdtag = new GALILEI::GStorageTag("GetNodeAttr");
-						cmdtag->InsertAttr("idfile", RString::Number(idfile));
-						cmdtag->InsertAttr("idnode", RString::Number(cnodesql()->GetChild1() + count_ch));//TODO nbch??? FIXED
-						storage->ExecuteCmd(*cmdtag, &nodesql);
-						delete cmdtag;
-						if (!nodesql.GetChild1())								// If current child is attribute
-						{														// Retrieve its value 
-							char *buff = new char[nodesql.GetLen()+1];
-							readingfile->Seek(nodesql.GetPos());
-							readingfile->Read(buff, nodesql.GetLen());
-							buff[nodesql.GetLen()] = '\0';
-							attributes += " " + nodesql.GetName() + " = \"" + buff + "\"";
-							//cout << "faiza attribute " << attributes << endl;
-							delete [] buff;
-							
-						}
-						count_ch++;
-						//cout << "faiza child ConstructQuery" <<endl;
-					} while (count_ch < cnodesql()->GetNbChild());
-				}																// Until no more attribute or no more children
-				if (cnodesql()->GetLen())										// If tag has a content
-				{
-					char *buff = new char[cnodesql()->GetLen() +1 ];
-					readingfile->Seek(cnodesql()->GetPos());
-					readingfile->Read(buff, cnodesql()->GetLen());
-					buff[cnodesql()->GetLen()] = '\0';
-					content = "    " + RString(buff) + "\n";
-					//cout << "faiza content " << content << endl;
-					delete [] buff;
-				}
-//				if (content.GetLen() || attributes.GetLen())
-//				{
-				if (snippet.GetLen())
-					snippet += "\n";
-				snippet += "<" + cnodesql()->GetName() + attributes + ">\n";
-				snippet += content;
-				//snippet += "</" + cnodesql()->GetName() + ">";
-//				}
-				//cout <<"faiza snippet " << snippet <<endl;
-				//cout << "faiza nodesql " << endl;
-				
-// 			RString tmp;
-// 			tmp = gettagcontent(idfile, readingfile, "title");
-// 			if (tmp != "")
-// 				title = tmp;
-// 			else
-// 				title = "No title for now!";
-// 			tmp = gettagcontent(idfile, readingfile, "description");
-// 			cout << "faiza descritpion " << tmp << endl;
-// 			if (tmp != "")
-// 				snippet = tmp;
-// 			tmp = gettagcontent(idfile, readingfile, "url");
-// 			if (tmp != "")
-// 				url = tmp;  
+							char *buff = new char[cnodesql()->GetLen()+1];
+							readingfile->Seek(cnodesql()->GetPos());
+							readingfile->Read(buff, cnodesql()->GetLen());
+				snippet = "    " + RString(buff) + "\n";
+				delete [] buff;
 				string str = ""; 								//used to convert i to string
 				ostringstream ostr;
 				ostr << i;
@@ -493,7 +438,6 @@ void XQuery::extract_result()
 				query_result.InsertPtr(new XResult(idfile, title, url1, snippet, cnode()->GetRank()));
 				snippet = "";
 			}
-		
 		} 
 		else
 		{
@@ -606,7 +550,7 @@ try
  		//cout << print().Latin1() << endl;
 		compute_query(query_tree.GetTop());
 		//NORMAL
-		 rank_results();
+		 rank_results(Name);
 		//rank_results(Name);
 		if (resultsFile)
 			(*resultsFile)<< ShowSol().Latin1() << "\n";

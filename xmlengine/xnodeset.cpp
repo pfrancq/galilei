@@ -131,7 +131,7 @@ void XNodeSet::Oper(XConst::tOper op, XNodeSet *p, XNodeSet *q)
 				xn = GetPtr(q->Node());
 				if (xn) {
 					i=0;
-					xn->distance += p->Node()->distance; 
+					xn->distance += q->Node()->distance; 
 // 					for (it = q->Node()->types.begin(); it < q->Node()->types.end();  it++){
 // 						xn->types.push_back(q->Node()->types[i]); 
 // 						i++;

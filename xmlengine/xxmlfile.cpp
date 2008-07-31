@@ -202,6 +202,8 @@ void XXMLFile::load_next_tag()
 				while ((!Cur.IsNull()) && (Cur != RChar('<')))
 					add_next_char(Contains);
 
+					
+
 				// Look if the next '<' is the beginning of "<![CDATA["
 				CDATA = CurString("<![CDATA[",true);
 				if (CDATA)
@@ -212,7 +214,7 @@ void XXMLFile::load_next_tag()
 					// Read until ']]>' is found
 					while ((!Cur.IsNull()) && (!CurString("]]>")))
 						add_next_char(Contains);
-
+					
 					// Skip ]]>
 					for (int i = 4; --i;)
 						Next();
@@ -226,7 +228,7 @@ void XXMLFile::load_next_tag()
 			Text(XMLToString(Contains));
 			XCurTag = dynamic_cast<XXMLTag *> (CurTag);
 			Contains = Contains1.Trim() + " " +Contains.Trim(); 
-			//cout << "faiza contain " << Contains << endl;
+			
 			XCurTag->SetByte(bytepos, oldLen-Len);
 			SkipSpaces();
 	// Read the close tag
@@ -378,6 +380,7 @@ cout<<"Found closing tag ??? while closing tag ??? was expected." << endl;
 void XXMLFile::add_next_char(RString &str)
 {
 	// If it is an eol character, skip it with the SkipEol
+	
 	if (RTextFile::Eol(Cur))
 	{
 		str += '\n';

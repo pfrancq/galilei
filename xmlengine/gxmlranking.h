@@ -95,7 +95,7 @@ public:
 	* @param res             XML tag that will be hold the results.
 	*/
 //NORMAL
-virtual void Compute(RCursor<XNodeSet> cns, RContainer<RString, false, false>& keywordlist);
+virtual void Compute(RCursor<XNodeSet> cns, RContainer<RString, false, false>& keywordlist, R::RString Name);
 //virtual void Compute(R::RString Name);
 
 	virtual ~GXmlRanking(void);

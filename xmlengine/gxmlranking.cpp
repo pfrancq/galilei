@@ -92,6 +92,7 @@ char str[20]  = "";
 	delete cmdtag;
 	for(curs.Start();!curs.End();curs.Next())
 	{	//tf TF d'un terme de la requ�te
+		tf=0;
 		cmdtag = new GALILEI::GStorageTag("ComputeTF");
   		cmdtag->InsertAttr("idfile", RString::Number(_idfile));
 		cmdtag->InsertAttr("word", *curs());
@@ -304,7 +305,7 @@ void GXmlRanking::Compute(R::RString Name)
 }*/
 
  //-NORMAL----------------------------------------------------------------------------
- void GXmlRanking::Compute(RCursor<XNodeSet> cns, RContainer<RString, false, false> &keywordlist) 
+ void GXmlRanking::Compute(RCursor<XNodeSet> cns, RContainer<RString, false, false> &keywordlist, R::RString Name) 
  {
  		double tf_idf, tf_ief;
  		RPromSol *sol;
@@ -317,7 +318,10 @@ void GXmlRanking::Compute(R::RString Name)
  		
  		RString res, file;
  		unsigned int idfile;
- 	
+ 		
+ 		RTextFile Dest(Name);
+ 		Dest.Open(RIO::Append);
+ 			
  		//remplir param ne fonction de ce qui vient de kde (refaire les fenetres de gxmlengine pour saisir les criteres de promethee
  		ThProm=new GXmlProm(&Params);
  		
@@ -334,7 +338,7 @@ void GXmlRanking::Compute(R::RString Name)
  		if (cn.GetNb())				//pour chaque noeud on calcule les crit�res
  			for (cn.Start(); !cn.End(); cn.Next())
  			{
- //				cout << " faiza le noeud " << cn()->GetIdNode() << " file " << idfile << " ";
+     			//Dest <<" faiza le noeud " << cn()->GetIdNode() << " file " << idfile << " ";
  				cn()->Compute_Promethee_Criteria(tf_idf, tf_ief); //tf_idf est calcul� ici et pour plus d'homgeneit� du code on l'attribue � DocSc dans Compute_Promethee_Criteria
  				//cout << " pour le noeud " << cn()->GetIdNode() << " on cree la solution " << Nb << endl;
  				sol=ThProm->NewSol();

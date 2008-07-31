@@ -204,13 +204,14 @@ void XSQLCreateXMLTables::Run(GStorage *storage, const GStorageTag &inst, void *
 
 	db = static_cast<RDb*> (storage->GetInfos());
 	// wordlist (word, localisations)
-	sqlcmd = "CREATE TABLE IF NOT EXISTS wordlist (word TEXT, localisations BIGINT UNSIGNED AUTO_INCREMENT, PRIMARY KEY(localisations), INDEX index_name (word(25)))";
+    sqlcmd = "CREATE TABLE IF NOT EXISTS wordlist (word TEXT, localisations BIGINT UNSIGNED AUTO_INCREMENT, PRIMARY KEY(localisations), INDEX index_name (word(25)))";
 	RQuery(db, sqlcmd);
-	//sqlcmd = "CREATE INDEX index_name ON wordlist (word(20))";
+	
 	// nodelist (idfile, id, name, parent, child1, nbchild, bytepos, bytelen)
 	sqlcmd = "CREATE TABLE IF NOT EXISTS nodelist (idfile BIGINT UNSIGNED, id INT UNSIGNED, ";
 	sqlcmd += "name TEXT, parent INT UNSIGNED, child1 INT UNSIGNED, nbchild INT UNSIGNED, ";
-	sqlcmd += "bytepos BIGINT UNSIGNED, bytelen BIGINT UNSIGNED, INDEX index_node (id, idfile))";
+	sqlcmd += "bytepos BIGINT UNSIGNED, bytelen BIGINT UNSIGNED)";
+	//faiza  inex05 sqlcmd += "bytepos BIGINT UNSIGNED, bytelen BIGINT UNSIGNED, INDEX index_node (id, idfile))";
 	RQuery(db, sqlcmd);
 	sqlcmd = "CREATE TABLE IF NOT EXISTS localisations (id BIGINT UNSIGNED, idfile BIGINT UNSIGNED, idnode INT UNSIGNED) ";
 	RQuery(db, sqlcmd);

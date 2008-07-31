@@ -76,7 +76,10 @@ void XQueryRes::Oper(XConst::tOper op, const XQueryRes *p, const XQueryRes *q)
 			break;
 	case XConst::OR :
 		for (; !cmin->End(); cmin->Next())
-			InsertPtr(new XNodeSet(*(*cmin)()));								// Adds its XNodeSet, will be desallocated by XQueryRes
+		{
+				(*cmin)()->Reduce();
+				InsertPtr(new XNodeSet(*(*cmin)()));								// Adds its XNodeSet, will be desallocated by XQueryRes
+		}
 		break;
 	default : break;															// Avoids warning
 	}

@@ -219,7 +219,7 @@ XQueryRes *XQuery::get_xqueryres(const RString &word)							// Constructs an XQu
 			pos = realpos + 1;													// Position after the ';'
 		} while (nextpos != -1);												// While there is a ';'
 		// Adds the parents
-		for (pos = 0; pos < nset->GetNb(); pos++)								// DO NOT use Start() and Next() because we
+		/*for (pos = 0; pos < nset->GetNb(); pos++)								// DO NOT use Start() and Next() because we
 		{																		//  add element in pset during the for loop
 			xnd = (*nset)[nset->GetNb() - 1 - pos];								// Begins with the END! of the container
 			if (xnd->GetIdNode())												// If not root node (id = 0, hasn't any parent)
@@ -231,10 +231,10 @@ XQueryRes *XQuery::get_xqueryres(const RString &word)							// Constructs an XQu
 				storage->ExecuteCmd(*cmdtag, &nodesql);
 				delete cmdtag;
 				nset->PushUp(nodesql.GetParent(), *xnd);
-				//cout << "noeud rajouté " << RString::Number(nodesql.GetParent()) << endl;
+				//cout << "noeud rajoutï¿½ " << RString::Number(nodesql.GetParent()) << endl;
 			}
 		}
-		qres->InsertPtr(nset);													// Add XNodeSet in the XQueryRes
+		qres->InsertPtr(nset);			*/										// Add XNodeSet in the XQueryRes
 	}
 	return qres;
 }
@@ -451,7 +451,7 @@ RCursor<XResult> XQuery::Query(const RContainer<RString, true, false> &keywordli
 		cout << "ERROR !!!!!!"<<endl;
 	else
 	{
-	    cout << "la requête dans xquery::query " ;
+	    cout << "la requï¿½te dans xquery::query " ;
  		cout << print().Latin1() << endl;
 		compute_query(query_tree.GetTop());
 		cout << ShowSol().Latin1() << endl;

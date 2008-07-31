@@ -272,11 +272,12 @@ vector<int>::iterator it;
 RString XNode::print2() {
 vector<int>::iterator it;
 
-char str[20], str2[20]  = "";
+char str[20], str2[20] , str3[20], str4[20] = "";
 sprintf(str, "%f", CritDocSc);
 sprintf(str2, "%f", CritTfief);	
-
-return  RString(str)+" "+RString(str2)+" "+" "+RString::Number(CritDis)+" "+RString::Number(CritSpecif);
+sprintf(str3, "%G", CritDis);
+sprintf(str4, "%G", CritSpecif);
+return  RString(str)+" "+RString(str2)+" "+"0 "+" "+RString(str3)+" "+RString(str4);
 	
 }
 //______________________________________________________________________________

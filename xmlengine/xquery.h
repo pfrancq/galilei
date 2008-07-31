@@ -82,8 +82,8 @@ public :
 	RString print() const;
 	RString ShowSol() ;
 	//NORMAL
-	void rank_results();
-	//void rank_results(R::RString Name);
+	//void rank_results();
+	void rank_results(R::RString Name);
 	//void temporaire();
 };
 
