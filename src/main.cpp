@@ -55,10 +55,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gprofilecalc.h>
-#include <gsession.h>
-#include <gstorage.h>
 #include <ggalileiapp.h>
+#include <ggalileiprg.h>
 #include <gslotlog.h>
 using namespace GALILEI;
 
@@ -71,37 +69,61 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class UpGALILEI : public GGALILEIApp
+class UpGALILEI : public GGALILEIApp, public GSlot
 {
-	bool DoDocs;        // Only documents should be analyze
-	bool DoProfiles;    // Only profiles should be computed
-	bool DoGroups;      // Only profiles should be clustered.
-
 public:
 	UpGALILEI(int argc, char *argv[]);
 	void Run(void);
+
+	/**
+	* The treatment for a specific document will begin.
+	* @param doc             Document.
+	*/
+	virtual void NextDoc(const GDoc* doc);
+
+	/**
+	* The treatment for a specific document will begin.
+	* @param prof            Profile.
+	*/
+	virtual void NextProfile(const GProfile* prof);
+
+	/**
+	* Method called when executing a sequence of instruction to output some
+	* information.
+	* @param str            String to output.
+	*/
+	virtual void WriteStr(const R::RString& str);
+
+	/**
+	* Start a job.
+	* @param job             Description of the job.
+	*/
+	virtual void StartJob(const R::RString job);
+
+	/**
+	* Forward a warning.
+	* @param msg             Message.
+	*/
+	virtual void Warning(R::RString msg);
+
+	/**
+	* Forward an error.
+	* @param msg             Message.
+	*/
+	virtual void Error(R::RString msg);
+
+	/**
+	* Forward an alert.
+	* @param msg             Message.
+	*/
+	virtual void Alert(R::RString msg);
 };
 
 
 //------------------------------------------------------------------------------
 UpGALILEI::UpGALILEI(int argc, char *argv[])
-	: GGALILEIApp("UpGALILEI",argc,argv,false), DoDocs(true), DoProfiles(true),
-	  DoGroups(true)
+	: GGALILEIApp("UpGALILEI",argc,argv,false), GSlot()
 {
-	// Show Part
-	cout<<"GALILEI Update Version "<<VERSION<<endl;
-	cout<<"Copyright 1999-2007 by the Université Libre de Bruxelles"<<endl;
-
-	// Analyze parameters
-	bool OnlyDocs=Args.IsIn("--only-docs");
-	bool OnlyProfiles=Args.IsIn("--only-profiles");
-	bool OnlyGroups=Args.IsIn("--only-groups");
-	if((!OnlyDocs)&&(OnlyProfiles||OnlyGroups))
-		DoDocs=false;
-	if((!OnlyProfiles)&&(OnlyDocs||OnlyGroups))
-		DoProfiles=false;
-	if((!OnlyGroups)&&(OnlyDocs||OnlyProfiles))
-		DoGroups=false;
 }
 
 
@@ -110,62 +132,15 @@ void UpGALILEI::Run(void)
 {
 	try
 	{
+		cout<<"GALILEI Update Version "<<1.98<<endl;
+		cout<<"Copyright 1999-2008 by the Université Libre de Bruxelles"<<endl;
 		// Init
 		Init();
-		WriteLog("GALILEI Update started");
-		CreateSession();
-
-		// Load database
-		cout<<"Load Data ...";
-		cout.flush();
-		if(DoDocs||DoProfiles)
-			Session->GetStorage()->LoadDocs();
-		if(DoGroups)
-			Session->GetStorage()->LoadCommunities();
-		if(DoProfiles||DoGroups)
-			Session->GetStorage()->LoadUsers();
-		WriteLog("Data loaded");
-		cout<<"OK"<<endl;
-
-		// Analyse Docs
-		if(DoDocs)
-		{
-			cout<<"Analyse Documents ...";
-			cout.flush();
-			Session->AnalyseDocs(Log);
-			WriteLog("Documents analysed");
-			cout<<"OK"<<endl;
-		}
-
-		// Compute profiles
-		if(DoProfiles)
-		{
-			cout<<"Compute Profiles ...";
-			cout.flush();
-			Session->CalcProfiles(Log);
-			cout<<"OK"<<endl;
-			WriteLog("Profiles computed");
-		}
-
-		// Group profiles
-		if(DoGroups)
-		{
-			cout<<"Groups Profiles ...";
-			cout.flush();
-			Session->GroupProfiles(Log);
-			cout<<"OK"<<endl;
-			WriteLog("Groups computed");
-		}
-
-		// End Session
-		WriteLog("Session updated");
-		WriteLog("GALILEI Update stopped");
+		WriteLog("Running program "+(*Args[1]));
+		RunPrg(this,*Args[1]);
+		WriteLog("End program "+(*Args[1]));
+		cout<<"Program finished"<<endl;
 	 }
-	catch(GException& e)
-	{
-		cout<<endl<<"Error: "<<e.GetMsg()<<endl;
-		WriteLog(RString("Error: ")+e.GetMsg());
-	}
 	catch(RException& e)
 	{
 		cout<<endl<<"Error: "<<e.GetMsg()<<endl;
@@ -181,6 +156,58 @@ void UpGALILEI::Run(void)
 		cout<<endl<<"Error while processing"<<endl;
 		WriteLog("Error while processing");
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void UpGALILEI::NextDoc(const GDoc* doc)
+{
+	Log->NextDoc(doc);
+}
+
+
+//------------------------------------------------------------------------------
+void UpGALILEI::NextProfile(const GProfile* prof)
+{
+	Log->NextProfile(prof);
+}
+
+
+//------------------------------------------------------------------------------
+void UpGALILEI::WriteStr(const RString& str)
+{
+	cout<<str<<endl;
+}
+
+
+//------------------------------------------------------------------------------
+void UpGALILEI::StartJob(const R::RString job)
+{
+	Log->StartJob(job);
+}
+
+
+//------------------------------------------------------------------------------
+void UpGALILEI::Warning(R::RString msg)
+{
+	cout<<"Warning: "<<msg<<endl;
+	Log->Warning(msg);
+}
+
+
+//------------------------------------------------------------------------------
+void UpGALILEI::Error(R::RString msg)
+{
+	cout<<"Error: "<<msg<<endl;
+	Log->Error(msg);
+}
+
+
+//------------------------------------------------------------------------------
+void UpGALILEI::Alert(R::RString msg)
+{
+	cout<<"Alert: "<<msg<<endl;
+	Log->Alert(msg);
 }
 
 
