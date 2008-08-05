@@ -38,7 +38,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsession.h>
-#include <gsessionprg.h>
+#include <ggalileiapp.h>
+#include <ggalileiprg.h>
 
 
 //-----------------------------------------------------------------------------
@@ -94,7 +95,7 @@ void KViewPrg::MyThread::run(void)
 {
 	try
 	{
-		Session->RunPrg(Rec,Name);
+		GALILEIApp->RunPrg(Rec,Name);
 		if(GSession::Break())
 		{
 			QMessageBox::information(Rec,"KGALILEICenter","Program Aborded");
@@ -194,7 +195,7 @@ void KViewPrg::run(void)
 	KApplication::kApplication()->processEvents();
 	if(Name.IsEmpty())
 	{
-		GSessionPrg Prg("",0);
+		GGALILEIPrg Prg("",0);
 		RCursor<RPrgClass> Classes(Prg.GetClasses());
 		for(Classes.Start();!Classes.End();Classes.Next())
 		{

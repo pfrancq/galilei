@@ -151,16 +151,20 @@ QLoadSession::QLoadSession(void)
 //-----------------------------------------------------------------------------
 void QLoadSession::DoIt(void)
 {
-	Parent->PutText("Loading Documents ...");
-	Session->GetStorage()->LoadDocs();
+	Parent->PutText("Load Topics ...");
+	Session->LoadTopics();
 	if(GSession::Break())
 		return;
-	Parent->PutText("Load Groups ...");
-	Session->GetStorage()->LoadCommunities();
+	Parent->PutText("Loading Documents ...");
+	Session->LoadDocs();
+	if(GSession::Break())
+		return;
+	Parent->PutText("Load Communities ...");
+	Session->LoadCommunities();
 	if(GSession::Break())
 		return;
 	Parent->PutText("Load Users/Profiles/Feedbacks ...");
-	Session->GetStorage()->LoadUsers();
+	Session->LoadUsers();
 }
 
 
