@@ -54,7 +54,6 @@ using namespace R;
 #include <gsession.h>
 #include <gstorage.h>
 #include <gslot.h>
-#include <gsessionprg.h>
 #include <gstatscalc.h>
 #include <gdoc.h>
 #include <gdocanalyse.h>
@@ -165,25 +164,31 @@ public:
 	GSlot* Slot;                                                      // Slot for the session
 	RDebug* Debug;                                                    // Debug output for the session
 	RContainer<GDoc,true,true> Docs;                                  // Documents handled by the system.
+	bool DocsLoaded;                                                  // Are the documents loaded?
 	RContainer<GDocRefURL,true,true> DocsRefUrl;                      // Documents ordered by URL.
 	RContainer<GUser,true,true> Users;                                // Users handled by the system.
+	bool UsersLoaded;                                                 // Are the users and the profiles loaded?
 	RContainer<GProfile,true,true> Profiles;                          // Profiles handled by the system.
-	RContainer<GCommunity,true,true> Groups;	                      // Groups handled by the system.
+	RContainer<GCommunity,true,true> Communities;	                  // Communities handled by the system.
+	bool CommunitiesLoaded;                                           // Are the communities loaded?
 	RContainer<GTopic,true,true> Topics;	                          // Topics handled by the system.
+	bool TopicsLoaded;                                                // Are the topics loaded?
 	RContainer<GConceptType,true,true> ConceptTypes;                  // Types of Concepts
 	RContainer<GRelationType,true,true> RelationTypes;                // Types of Relations
 	RContainer<GDebugObject,false,true> DebugObjs;                    // Objects given debugging information.
-	size_t MaxDocs;                                             // Maximum number of documents to handle in memory.
-	size_t MaxProfiles;                                         // Maximum number of subprofiles to handle in memory.
-	size_t MaxGroups;                                           // Maximum number of groups to handle in memory.
+	size_t MaxDocs;                                                   // Maximum number of documents to handle in memory.
+	size_t MaxProfiles;                                               // Maximum number of profiles to handle in memory.
+	size_t MaxGroups;                                                 // Maximum number of groups to handle in memory.
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager
 
-	Intern(GStorage* str,size_t mdocs,size_t maxsub,size_t maxgroups,size_t d,size_t u,size_t p)
+	Intern(GStorage* str,size_t mdocs,size_t maxprof,size_t maxgroups,size_t d,size_t u,size_t p,size_t t,size_t c)
 		: Subjects(0), CommunitiesHistoryMng(0), Random(0), Storage(str), SaveResults(true),
-		  Slot(0), Docs(d+(d/2),d/2), DocsRefUrl(d+(d/2),d/2),
-		  Users(u,u/2), Profiles(p,p/2), Groups(100), Topics(100),
-		  ConceptTypes(10,5), RelationTypes(10,5), DebugObjs(100,100),
-		  MaxDocs(mdocs), MaxProfiles(maxsub), MaxGroups(maxgroups), FilterManager(0)
+		  Slot(0), Docs(d+(d/2),d/2), DocsLoaded(false), DocsRefUrl(d+(d/2),d/2),
+		  Users(u,u/2), UsersLoaded(false), Profiles(p,p/2),
+		  Communities(c+(c/2),c/2), CommunitiesLoaded(false),
+		  Topics(t+(t/2),t/2), TopicsLoaded(false),
+		  ConceptTypes(50,10), RelationTypes(10,5), DebugObjs(100,100),
+		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups), FilterManager(0)
 	{
 		CurrentRandom=0;
 		Random = new RRandomGood(CurrentRandom);
@@ -215,7 +220,7 @@ bool GSession::Intern::ExternBreak=false;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxsubprofiles,size_t maxgroups)
+GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofiles,size_t maxgroups)
 	: Data(0)
 {
 	GFactoryStorage* fac=GALILEIApp->GetManager<GStorageManager>("Storage")->GetCurrentFactory();
@@ -230,10 +235,12 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxsubprof
 	fac->Create();
 
 	// Init Part
-	Data=new Intern(fac->GetPlugin(),maxdocs,maxsubprofiles,maxgroups,
+	Data=new Intern(fac->GetPlugin(),maxdocs,maxprofiles,maxgroups,
 			fac->GetPlugin()->GetNbSaved(otDoc),
 			fac->GetPlugin()->GetNbSaved(otUser),
-			fac->GetPlugin()->GetNbSaved(otProfile));
+			fac->GetPlugin()->GetNbSaved(otProfile),
+			fac->GetPlugin()->GetNbSaved(otTopic),
+			fac->GetPlugin()->GetNbSaved(otCommunity));
 
 	Data->Slot=slot;
 	Data->Debug=debug;
@@ -294,7 +301,7 @@ void GSession::ForceReCompute(tObjType type)
 			RCursor<GConceptType> Types(Data->ConceptTypes);
 			for(Types.Start();!Types.End();Types.Next())
 				Types()->Clear(otCommunity);
-			Data->Groups.Clear();
+			Data->Communities.Clear();
 			if(Data->SaveResults)
 				Data->Storage->Clear(otCommunity);
 			break;
@@ -322,7 +329,7 @@ void GSession::ReInit(void)
 	}
 
 	// Clear groups, profiles and users
-	Data->Groups.Clear();
+	Data->Communities.Clear();
 	Data->Profiles.Clear();
 	Data->Users.Clear();
 }
@@ -477,15 +484,6 @@ void GSession::PutDebugInfo(RTextFile& file,const RString& name,const RString& i
 
 
 //------------------------------------------------------------------------------
-void GSession::RunPrg(GSlot* rec,const char* filename)
-{
-	GSessionPrg Prg(filename,rec);
-	Prg.Load();
-	Prg.Exec();
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::SetCurrentRandom(int rand)
 {
 	Data->CurrentRandom=rand;
@@ -531,7 +529,7 @@ size_t GSession::GetNbElements(tObjType type) const
 		case otProfile:
 			return(Data->Profiles.GetNb());
 		case otCommunity:
-			return(Data->Groups.GetNb());
+			return(Data->Communities.GetNb());
 		case otTopic:
 			return(Data->Topics.GetNb());
 		default:
@@ -554,9 +552,9 @@ size_t GSession::GetMaxElementId(tObjType type) const
 				return(0);
 			return(Data->Profiles[Data->Profiles.GetMaxPos()]->GetId());
 		case otCommunity:
-			if(!Data->Groups.GetNb())
+			if(!Data->Communities.GetNb())
 				return(0);
-			return(Data->Groups[Data->Groups.GetMaxPos()]->GetId());
+			return(Data->Communities[Data->Communities.GetMaxPos()]->GetId());
 		case otTopic:
 			if(!Data->Topics.GetNb())
 				return(0);
@@ -847,6 +845,16 @@ void GSession::GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* 
 //
 //------------------------------------------------------------------------------
 
+//------------------------------------------------------------------------------
+void GSession::LoadDocs(void)
+{
+	if(Data->DocsLoaded)
+		return;
+	Data->Storage->LoadDocs();
+	Data->DocsLoaded=true;
+}
+
+
 //-----------------------------------------------------------------------------
 R::RCursor<GDoc> GSession::GetDocs(void) const
 {
@@ -1094,6 +1102,16 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 // GSession::Users
 //
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GSession::LoadUsers(void)
+{
+	if(Data->UsersLoaded)
+		return;
+	Data->Storage->LoadUsers();
+	Data->UsersLoaded=true;
+}
+
 
 //------------------------------------------------------------------------------
 R::RCursor<GUser> GSession::GetUsers(void) const
@@ -1449,16 +1467,26 @@ void GSession::ClearFdbks(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+void GSession::LoadCommunities(void)
+{
+	if(Data->CommunitiesLoaded)
+		return;
+	Data->Storage->LoadCommunities();
+	Data->CommunitiesLoaded=true;
+}
+
+
+//------------------------------------------------------------------------------
 RCursor<GCommunity> GSession::GetCommunities(void)
 {
-	return(RCursor<GCommunity>(Data->Groups));
+	return(RCursor<GCommunity>(Data->Communities));
 }
 
 
 //------------------------------------------------------------------------------
 size_t GSession::GetNbCommunities(void) const
 {
-	return(Data->Groups.GetNb());
+	return(Data->Communities.GetNb());
 }
 
 
@@ -1472,7 +1500,7 @@ GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 			return(0);
 		throw GException("Unknown community "+RString::Number(id));
 	}
-	GCommunity* grp=Data->Groups.GetPtr(id);
+	GCommunity* grp=Data->Communities.GetPtr(id);
 	if(grp)
 		return(grp);
 
@@ -1508,9 +1536,9 @@ void GSession::AssignId(GCommunity* com)
 		return;
 	}
 
-	// The first group has the identificator 1
-	if(Data->Groups.GetNb())
-		com->SetId(Data->Groups[Data->Groups.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first community has an identifier of 1
+	// The first group has the identifier 1
+	if(Data->Communities.GetNb())
+		com->SetId(Data->Communities[Data->Communities.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first community has an identifier of 1
 	else
 		com->SetId(1);
 }
@@ -1519,21 +1547,21 @@ void GSession::AssignId(GCommunity* com)
 //------------------------------------------------------------------------------
 void GSession::InsertCommunity(GCommunity* com)
 {
-	Data->Groups.InsertPtr(com);
+	Data->Communities.InsertPtr(com);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::DeleteCommunity(GCommunity* com)
 {
-	Data->Groups.DeletePtr(com);
+	Data->Communities.DeletePtr(com);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::ClearCommunities(void)
 {
-	Data->Groups.Clear();
+	Data->Communities.Clear();
 }
 
 
@@ -1618,7 +1646,7 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 			if(Data->SaveResults)
 			{
 				Data->Storage->SaveCommunities();
-				RCursor<GCommunity> Groups(Data->Groups);
+				RCursor<GCommunity> Groups(Data->Communities);
 				for(Groups.Start();!Groups.End();Groups.Next())
 					Groups()->SetState(osSaved);
 			}
@@ -1690,6 +1718,16 @@ void GSession::UpdateCommunity(size_t profid)
 // GSession::Topics
 //
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GSession::LoadTopics(void)
+{
+	if(Data->TopicsLoaded)
+		return;
+	Data->Storage->LoadTopics();
+	Data->TopicsLoaded=true;
+}
+
 
 //------------------------------------------------------------------------------
 RCursor<GTopic> GSession::GetTopics(void)

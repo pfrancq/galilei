@@ -59,6 +59,7 @@ using namespace std;
 #include <ggalileiapp.h>
 #include <gsession.h>
 #include <gsubjects.h>
+#include <ggalileiprg.h>
 using namespace GALILEI;
 
 
@@ -208,6 +209,8 @@ GSession* GGALILEIApp::CreateSession(void)
 {
 	if(!HasInitApp)
 		throw GException("Application not initialized");
+	if(Session)
+		throw GException("A session is alreary created");
 
 	// Init Session
 	Session=new GSession(Log,Debug);
@@ -414,6 +417,12 @@ void GGALILEIApp::Apply(void)
 		if(sub)
 			sub->Apply();
 	}
+}
+
+//------------------------------------------------------------------------------
+void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
+{
+	GGALILEIPrg(filename,rec).Exec();
 }
 
 

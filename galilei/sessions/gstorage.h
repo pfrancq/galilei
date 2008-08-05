@@ -6,7 +6,7 @@
 
 	Generic Storage Manager - Header.
 
-	Copyright 2003-2005 by the Université libre de Bruxelles.
+	Copyright 2003-2005 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -148,7 +148,7 @@ public:
 	virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller)=0;
 
 	/**
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~GStorageCmd(void);
 };
@@ -195,7 +195,7 @@ public:
 
 	/**
 	* Constructor.
-	* @param fac             Factory of the plugin.
+	* @param fac             Factory of the plug-in.
 	*/
 	GStorage(GFactoryStorage* fac);
 
@@ -299,18 +299,18 @@ public:
 	/**
 	* Add a dummy entry into  a dummy table;
 	* @param name            Name of the dummy table.
-	* @param id              Identificator of the dymmy entry.
-	* @param desc            Description of the dymmy entry.
-	* @param parentid        Identificator of the parent.
+	* @param id              Identifier of the dummy entry.
+	* @param desc            Description of the dummy entry.
+	* @param parentid        Identifier of the parent.
 	*/
 	virtual void AddDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid)=0;
 
 	/**
 	* Select a dummy entry from a dummy table;
 	* @param name            Name of the dummy table.
-	* @param id              Identificator of the dymmy entry.
-	* @param desc            Description of the dymmy entry.
-	* @param parentid        Identificator of the parent.
+	* @param id              Identifier of the dummy entry.
+	* @param desc            Description of the dummy entry.
+	* @param parentid        Identifier of the parent.
 	* @param filter          Filter to set the fields on which the select is done.
 	*/
 	virtual R::RQuery* SelectDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter)=0;
@@ -318,9 +318,9 @@ public:
 	/**
 	* Clear a dummy entry from a dummy table;
 	* @param name            Name of the dummy table.
-	* @param id              Identificator of the dymmy entry.
-	* @param desc            Description of the dymmy entry.
-	* @param parentid        Identificator of the parent.
+	* @param id              Identifier of the dummy entry.
+	* @param desc            Description of the dummy entry.
+	* @param parentid        Identifier of the parent.
 	* @param filter          Filter to set the fields on which the select is done.
 	*/
 	virtual void ClearDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter)=0;
@@ -412,19 +412,19 @@ public:
 	* Load the description of a given object.
 	* @param infos           Container that will hold the description.
 	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
-	* @param id              Identificator of the object.
+	* @param id              Identifier of the object.
 	*/
 	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,tObjType type,size_t id)=0;
 
 	/**
 	* Load the name of specific concept.
-	* @param id              Idenfificator of the concept.
+	* @param id              Identifier of the concept.
 	* @param type            Type of the concept.
 	*/
 	virtual R::RString LoadConcept(size_t id,GConceptType* type)=0;
 
 	/**
-	* Load the identificator of a specific concept.
+	* Load the identifier of a specific concept.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	*/
@@ -471,7 +471,7 @@ public:
 	/**
 	* Load an indexer.
 	* @param indexer         Pointer to the indexer.
-	* @param langs           Pointer to the langs.
+	* @param langs           Pointer to the languages manager.
 	*/
 	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs)=0;
 
@@ -494,11 +494,15 @@ public:
 	 */
 	virtual void SaveStruct(GDocStruct* docstruct,size_t docid)=0;
 
+protected:
+
 	/**
-	* Method that load the documents from where they are stored. This method
-	* must be overloaded.
+	* Method that load the documents from where they are stored. This method is
+	* called once by the session.
 	*/
 	virtual void LoadDocs(void)=0;
+
+public:
 
 	/**
 	* Save a document where it is stored. This method is called after an
@@ -516,14 +520,19 @@ public:
 	*/
 	// @{
 
+protected:
+
 	/**
-	* Load the subprofiles (and the profiles and the users).
+	* Load the profiles and the users. This method is called once by the
+	* session.
 	*/
 	virtual void LoadUsers(void)=0;
 
+public:
+
 	/**
 	* Method that load a user that is stored.
-	* @param userid          Identificator of the user.
+	* @param userid          Identifier of the user.
 	*/
 	virtual GUser* LoadUser(size_t userid)=0;
 
@@ -535,7 +544,7 @@ public:
 
 	/**
 	* Method that load a profile that is stored.
-	* @param profileid       Identificator of the profile.
+	* @param profileid       Identifier of the profile.
 	*/
 	virtual GProfile* LoadProfile(size_t profileid)=0;
 
@@ -548,7 +557,7 @@ public:
 
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
-	* @param docid           Identificator of the document.
+	* @param docid           Identifier of the document.
 	*/
 	virtual void UpdateProfiles(size_t docid)=0;
 
@@ -578,23 +587,23 @@ public:
 
 	/**
 	* Save profiles in history
-	* @param historicID      Identificator of the historic.
+	* @param historicID      Identifier of the historic.
 	*/
 	virtual void SaveHistoricProfiles(size_t historicID)=0;
 
 	/**
 	* Add a suggestion for a given profile and a given test.
 	* @param name            Name of the test.
-	* @param profileid       Identificator of the profile.
-	* @param docid           Identificator of the document to suggest.
+	* @param profileid       Identifier of the profile.
+	* @param docid           Identifier of the document to suggest.
 	* @param rank            Ranking of the document.
 	*/
 	virtual void AddSugsProfile(const R::RString& name,size_t profileid,size_t docid,size_t rank)=0;
 
 	/**
 	* Add an assessment for a given profile and document.
-	* @param profid          Identificator of the profile.
-	* @param docid           Identificator of the document.
+	* @param profid          Identifier of the profile.
+	* @param docid           Identifier of the document.
 	* @param assess          Feedback.
 	* @param date            Date on the last feedback.
 	* @param computed        Date on the last computation of the document.
@@ -610,10 +619,14 @@ public:
 	*/
 	// @{
 
+protected:
+
 	/**
-	* Load the groups.
+	* Load the groups. This method is called once by the session.
 	*/
 	virtual void LoadCommunities(void)=0;
+
+public:
 
 	/**
 	* Method that load a group that is stored.
@@ -686,10 +699,14 @@ public:
 	*/
 	// @{
 
+protected:
+
 	/**
-	* Load the topics.
+	* Load the topics. This method is called once by the session.
 	*/
 	virtual void LoadTopics(void)=0;
+
+public:
 
 	/**
 	* Method that load a topic that is stored.
@@ -717,9 +734,11 @@ public:
 	// @} Topics
 
 	/**
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~GStorage(void);
+
+	friend class GSession;
 };
 
 
@@ -743,12 +762,12 @@ public:
 	GFactoryStorage(GStorageManager* mng,const char* n,const char* f);
 
 	/**
-	* Create a plugin. Call the method 'InitAccess' from GStorage.
+	* Create a plug-in. Call the method 'InitAccess' from GStorage.
 	*/
 	virtual void Create(void);
 
 	/**
-	* Create a plugin. If there is a current session, generate an exception.
+	* Create a plug-in. If there is a current session, generate an exception.
 	*/
 	virtual void Create(GSession* session);
 
@@ -801,7 +820,7 @@ public:
 	bool InsertCmd(GStorageCmd* cmd);
 
 	/**
-	* Destructor of the storages manager.
+	* Destruct the storages manager.
 	*/
 	virtual ~GStorageManager(void);
 };

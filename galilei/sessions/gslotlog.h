@@ -67,28 +67,22 @@ class GSlotLog : public GSlot, public R::RTextFile
 public:
 
 	/**
-	* Constructor.
+	* Construct the log file.
 	* @param name            Name of the file.
 	*/
 	GSlotLog(const char* name);
 
 	/**
-	* The traitment for a specific document will begin.
+	* The treatment for a specific document will begin.
 	* @param doc            Document.
 	*/
 	virtual void NextDoc(const GDoc* doc);
 
 	/**
-	* The traitment for a specific document will begin.
+	* The treatment for a specific document will begin.
 	* @param prof           Profile.
 	*/
 	virtual void NextProfile(const GProfile* prof);
-
-	/**
-	* Method called by GCommunitying each time a new language is analysed.
-	* @param lang           Pointer to the current lang.
-	*/
-	virtual void NextGroupLang(const GLang* lang);
 
 	/**
 	* Method called when executing a sequence of instruction to output some
@@ -98,20 +92,8 @@ public:
 	virtual void WriteStr(const R::RString& str);
 
 	/**
-	* The traitment for a specific chromosome will begin.
-	* @param id             Identificator of the chromosome.
-	*/
-	virtual void NextChromosome(size_t id);
-
-	/**
-	* The traitment for a specific method will begin.
-	* @param num            Number of the current step.
-	*/
-	virtual void NextMethod(size_t num);
-
-	/**
 	* Start a job.
-	* @param job             Description of ther job.
+	* @param job             Description of the job.
 	*/
 	virtual void StartJob(const R::RString job);
 
@@ -134,7 +116,7 @@ public:
 	virtual void Alert(R::RString msg);
 
 	/**
-	* Destructor.
+	* Destruct the log file.
 	*/
 	virtual ~GSlotLog(void);
 };

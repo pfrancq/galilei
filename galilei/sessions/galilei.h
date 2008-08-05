@@ -181,7 +181,6 @@ class GCommunitiesHistoryManager;
 // forward class declaration - Session Part
 class GDebugObject;
 class GSession;
-class GSessionPrg;
 class GSlot;
 class GSignalHandler;
 class GStatsCalc;
@@ -194,6 +193,7 @@ class GMeasure;
 class GMeasureManager;
 class GFactoryMeasure;
 class GGALILEIApp;
+class GGALILEIPrg;
 
 
 //------------------------------------------------------------------------------

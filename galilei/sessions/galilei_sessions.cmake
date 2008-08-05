@@ -1,5 +1,5 @@
 SET(galilei_sessions_INST_INCLUDES gsession.h
-                                    gsessionprg.h
+                                    ggalileiprg.h
                                     galilei.h
                                     gstorage.h
                                     gslot.h
@@ -15,7 +15,7 @@ SET(galilei_sessions_INST_INCLUDES gsession.h
                                     gplugin.hh)
 
 SET(galilei_sessions_TARGET_SOURCES gsession.cpp
-                                    gsessionprg.cpp
+                                    ggalileiprg.cpp
                                     gslot.cpp
                                     gslotlog.cpp
                                     gstorage.cpp

@@ -72,28 +72,9 @@ void GSlotLog::NextProfile(const GProfile* prof)
 
 
 //------------------------------------------------------------------------------
-void GSlotLog::NextGroupLang(const GLang* lang)
-{
-	WriteLog("Group "+lang->GetName()+" Profiles");
-}
-
-
-//------------------------------------------------------------------------------
 void GSlotLog::WriteStr(const RString& str)
 {
 	WriteLog(str.Latin1());
-}
-
-
-//------------------------------------------------------------------------------
-void GSlotLog::NextChromosome(size_t)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSlotLog::NextMethod(size_t)
-{
 }
 
 

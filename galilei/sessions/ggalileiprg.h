@@ -55,16 +55,20 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GPrgClassSession provides the class 'GSession' which can be used
-* to manipulate the current GALILEI session from a script. The class defines
-* several methods:
+* The GGALILEIPrg provides a class for executing a GALILEI Program. In practice,
+* it provides two classes 'GSession' and 'GGALILEIApp', and defines a global
+* variable GALILEIApp of the type 'GGALILEIApp'.
+*
+* The class 'GSession' can be used to manipulate the current GALILEI session
+* from a script. Only one instance of this class may be created. If the session
+* is not created, it will be created and destroyed by the instance. If the
+* session is already created (for example if KGALILEICenter is already
+* connected), the session is not destroyed. The class defines several methods:
+* - 'GSession(YesDoc,YesProfiles,YesCommunities,YesTopics)': Constructor which
+*   may load the documents ('YesDocs'=="1"), the profiles ('YesProfiles'=="1"),
+*   the communities ('YesCommunities'=="1") and/or the topics
+*   ('YesTopics'=="1").
 * -	'SetRand(Value)': Set the random generator to 'Value'.
-* - 'SetOutput(FileName)': The global results should be stored in 'FileName'.
-* - 'SetGraphOutput(FileName)': The results for graphics should be stored in
-*   'FileName'.
-* - 'SetStatsOutput(FileName)': The detailed results should be stored in
-*   'FileName'.
-* - 'SetTest(Label)': Set the current test label to 'Label'.
 * - 'ExecSql(SQL)': Execute the 'SQL' command.
 * - 'ComputeProfiles()': Compute the profiles.
 * - 'GroupProfiles()': Group the profiles.
@@ -85,57 +89,25 @@ namespace GALILEI{
 * - 'AddAssessments()': Simulate that the profiles assess a given number of
 *   randomly chosen documents.
 * - 'TrackNewProfiles(Yes)': Specify if the new profiles must be tracked
-*   ('Yes'="1") or not ('Yes'="0").
+*   ('Yes'=="1") or not ('Yes'=="0").
 * - 'ClearNewProfiles()': Clear the list of profiles considered as new.
-* - 'ResetTime()': Reset the internal time counter.
-* - 'ComputeTime()': Compute the interval from the last called to ResetTime().
 * - 'RunStat(): Run all enabled statistics.
 * - 'ForceReCompute(Type)': All objects of a given type ("User","Doc",
 *   "Community" or "Topic") should be recomputed.
 * - 'SetSaveResults(Yes)': Specify if the results must be stored in the current
-*   storage ('Yes'="1") or not ('Yes'="0").
+*   storage ('Yes'=="1") or not ('Yes'=="0").
 *
-* Here is an example of a program using the class 'GSession':
-* @code
-* @endcode
-* Only one instance of this class may be created in a given scope.
-* @author Pascal Francq
-* @short GALILEI Session Script Class.
-*/
-class GSessionClass : public R::RPrgClass
-{
-	/**
-	 * Instance created.
-	 */
-	bool Instance;
-
-public:
-
-	/**
-	* Create a class.
-	*/
-	GSessionClass(void);
-
-	/**
-	 * Create a session instance.
-	 * @param prg            Program asking the creation.
-	 * @param name           Name of the variable to create.
-	 * @param params         Parameters of the constructor.
-	 */
-	virtual R::RPrgVar* NewVar(R::RPrg* prg,const R::RString& name,R::RContainer<R::RPrgVar,true,false>& params);
-
-	/**
-	* Destruct the class.
-	*/
-	virtual ~GSessionClass(void);
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GGALILEIApp provides the class 'GGALILEIApp' which can be used to
-* manipulate the GALILEI application from a script. Several methods are defined
-* to manage configuration parameters of the plug-ins:
+* The class 'GGALILEIApp' is used to manipulate the GALILEI application from a
+* script. Several methods are defined to manage configuration parameters of the
+* plug-ins:
+* - 'SetOutput(FileName)': The global results should be stored in 'FileName'.
+* - 'SetGraphOutput(FileName)': The results for graphics should be stored in
+*   'FileName'.
+* - 'SetStatsOutput(FileName)': The detailed results should be stored in
+*   'FileName'.
+* - 'SetTest(Label)': Set the current test label to 'Label'.
+* - 'ComputeTime()': Compute the interval from the last called to ResetTime().
+* - 'ResetTime()': Reset the internal time counter.
 * - 'SetSimulationParam(Name,Value)': Assign a value 'Value' to the
 *   parameter 'Name' used for simulation purposes.
 * - 'SetPlugInParam(Type,PlugIn,Name,Value)': Assign a value 'Value'
@@ -161,47 +133,10 @@ public:
 * GALILEIApp.SetMeasureParam("Profiles Agreements","Count Method","MinDocs","7");
 * GALILEIApp.SetCurrentMeasure("Profiles Agreements","Count Method");
 * @endcode
-*
-* The class creates an instance called 'GALILEIApp' and no other instance may
-* be created.
-*
-* @author Pascal Francq
-* @short GALILEIApp Script Class.
-*/
-class GGALILEIAppClass : public R::RPrgClass
-{
-public:
-	/**
-	* Create a class.
-	* @param prg             Program.
-	*/
-	GGALILEIAppClass(R::RPrg* prg);
-
-	/**
-	 * Create a GALILEIApp instance.
-	 * @param prg            Program asking the creation.
-	 * @param name           Name of the variable to create.
-	 * @param params         Parameters of the constructor.
-	 * @return
-	 */
-	virtual R::RPrgVar* NewVar(R::RPrg* prg,const R::RString& name,R::RContainer<R::RPrgVar,true,false>& params);
-
-	/**
-	* Destruct the class.
-	*/
-	virtual ~GGALILEIAppClass(void);
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GSessionPrg provides a class for executing a GALILEI Program. In practice,
-* it provides two classes 'GSession' and 'GGALILEIApp', and defines a global
-* variable GALILEIApp of the type 'GGALILEIApp'.
 * @author Pascal Francq
 * @short GALILEI Program.
 */
-class GSessionPrg : public R::RPrg
+class GGALILEIPrg : public R::RPrg
 {
 public:
 
@@ -210,12 +145,12 @@ public:
 	* @param f              Name of the file.
 	* @param o              Generic output class.
 	*/
-	GSessionPrg(R::RString f,R::RPrgOutput* o);
+	GGALILEIPrg(R::RString f,R::RPrgOutput* o);
 
 	/**
 	* Destruct.
 	*/
-	virtual ~GSessionPrg(void);
+	virtual ~GGALILEIPrg(void);
 };
 
 

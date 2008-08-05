@@ -44,16 +44,12 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gslotlog.h>
+#include <gpluginmanager.h>
 
 
 //------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-// forward declaration
-class GGenericPluginManager;
 
 
 //------------------------------------------------------------------------------
@@ -248,6 +244,14 @@ public:
 	* Apply the configuration.
 	*/
 	void Apply(void);
+
+	/**
+	* Run a "program".
+	* @param rec             Slot that receive information.
+	* @param filename        Name of the file.
+	*/
+	void RunPrg(GSlot* rec,const R::RString& filename);
+
 
 	/**
 	* Destruct the application.

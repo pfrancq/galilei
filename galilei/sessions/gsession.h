@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2008 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -78,12 +78,12 @@ public:
 	* @param debug           Pointer to a debugger structure.
 	* @param maxdocs         Maximum number of documents to allocate. If zero,
 	*                        everything is allocated.
-	* @param maxsubprofiles  Maximum number of subprofiles to allocate. If
+	* @param maxprofiles     Maximum number of profiles to allocate. If
 	*                        zero, everything is allocated.
 	* @param maxgroups       Maximum number of groups to allocate. If zero,
 	*                        everything is allocated.
 	*/
-	GSession(GSlot* slot=0,R::RDebug* debug=0,size_t maxdocs=0,size_t maxsubprofiles=0,size_t maxgroups=0);
+	GSession(GSlot* slot=0,R::RDebug* debug=0,size_t maxdocs=0,size_t maxprofiles=0,size_t maxgroups=0);
 
 	//-----------------------------------------------------
 	/** @name General Methods
@@ -195,13 +195,6 @@ public:
 	 * @param info           Description of the information needed.
 	 */
 	void PutDebugInfo(R::RTextFile& file,const R::RString& name,const R::RString& info);
-
-	/**
-	* Run a "program" for this session.
-	* @param rec             Slot that receive information.
-	* @param filename        Name of the file.
-	*/
-	void RunPrg(GSlot* rec,const char* filename);
 
 	/**
 	* Set The Current RandomSeed.
@@ -352,7 +345,7 @@ public:
 	R::RCursor<GRelationType> GetRelationTypes(void) const;
 
 	/**
-	* Get the a poitner to a type of relation.
+	* Get the a pointer to a type of relation.
 	* @param id              Identifier of the type.
 	* @param null            If set to true, if the type does not exist,
 	*                        return 0, else an exception is generated.
@@ -361,7 +354,7 @@ public:
 	GRelationType* GetRelationType(size_t id,bool null) const;
 
 	/**
-	* Get the a poitner to a type of relation.
+	* Get the a pointer to a type of relation.
 	* @param name            Name of the type.
 	* @param null            If set to true, if the type does not exist,
 	*                        return 0, else an exception is generated.
@@ -415,7 +408,7 @@ public:
 	*                        used.
 	* @param object          Pointer of the concept that is the object of
 	*                        a relation. If null, all concepts are used.
-	* @param sym             Symetric search?
+	* @param sym             Symmetric search?
 	*/
 	void GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* subject,size_t type,GConcept* object,bool sym);
 
@@ -425,6 +418,11 @@ public:
 	/** @name Documents Methods
 	*/
 	// @{
+
+	/**
+	* Method that load the documents from where they are stored.
+	*/
+	void LoadDocs(void);
 
 	/**
 	* Get a cursor on all the documents.
@@ -462,8 +460,8 @@ public:
 	size_t FillDocs(GDoc** docs);
 
 	/**
-	* Get a document corresponding to a given identificator.
-	* @param id              Identificator of the document.
+	* Get a document corresponding to a given identifier.
+	* @param id              Identifier of the document.
 	* @param load            If set to true, the document is eventually loaded
 	*                        into memory.
 	* @param null            If set to true, if the document does not exist,
@@ -499,15 +497,15 @@ public:
 	void ClearDocs(void);
 
 	/**
-	* Analyse the documents. At the end, all the enabled post-docs methods are
-	* run.
+	* Analyze the documents. At the end, all the enabled post-documents methods
+	* are run.
 	* @param rec             Receiver for the signals.
 	*/
 	void AnalyseDocs(GSlot* rec=0);
 
 	/**
-	* Analyse a document.
-	* @param doc             Pointer to the document to analyse.
+	* Analyze a document.
+	* @param doc             Pointer to the document to analyze.
 	* @param method          Pointer to the method used to analyze. If null,
 	*                        the default method is used.
 	* @param rec             Receiver for the signals.
@@ -515,7 +513,7 @@ public:
 	void AnalyseDoc(GDoc* doc,GDocAnalyse* method=0,GSlot* rec=0);
 
 	/**
-	* Run all the enabled post-docs methods.
+	* Run all the enabled post-documents computing methods.
 	* @param rec             Receiver for the signals.
 	*/
 	void DoPostDocs(GSlot* rec=0);
@@ -533,6 +531,11 @@ public:
 	/** @name Users/Profiles Methods
 	*/
 	// @{
+
+	/**
+	* Load the profiles and the users.
+	*/
+	void LoadUsers(void);
 
 	/**
 	* Get a cursor over the users used in the system.
@@ -557,7 +560,7 @@ public:
 
 	/**
 	* Get a user.
-	* @param id              Identificator.
+	* @param id              Identifier.
 	* @param load            If set to true, the user is eventually loaded into
 	*                        memory.
 	* @param null            If set to true, if the user does not exist,
@@ -588,7 +591,7 @@ public:
 	size_t GetNbProfiles(void) const;
 
 	/**
-	* Get the highest identificator assign to a profile.
+	* Get the highest identifier assign to a profile.
 	*/
 	size_t GetMaxProfileId(void) const;
 
@@ -635,14 +638,14 @@ public:
 
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
-	* @param docid           Identificator of the document.
+	* @param docid           Identifier of the document.
 	*/
 	void UpdateProfiles(size_t docids);
 
 	/**
 	* Insert a new Feedback.
-	* @param profid          Identificator of the profile.
-	* @param docid           Identificator of the document.
+	* @param profid          Identifier of the profile.
+	* @param docid           Identifier of the document.
 	* @param assess          Feedback.
 	* @param date            Date on the last feedback.
 	* @param computed        Date on the last computation of the document.
@@ -662,6 +665,11 @@ public:
 	/** @name Communities Methods
 	*/
 	// @{
+
+	/**
+	* Load the groups. This method is called once by the session.
+	*/
+	void LoadCommunities(void);
 
 	/**
 	* Get a cursor on the communities.
@@ -768,6 +776,11 @@ public:
 	/** @name Topics Methods
 	*/
 	// @{
+
+	/**
+	* Load the topics.
+	*/
+	void LoadTopics(void);
 
 	/**
 	* Get a cursor on the topics.
@@ -893,7 +906,7 @@ public:
 	}
 
 	/**
-	* Destructor.
+	* Destruct the session.
 	*/
 	virtual ~GSession(void);
 

@@ -68,7 +68,7 @@ class GXMLIndex : public GConcept
 	GConcept* XMLTag;
 
 	/**
-	 * Dictionnary of the stems.
+	 * Dictionary of the stems.
 	 */
 	GConceptType* Lang;
 
