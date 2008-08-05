@@ -53,6 +53,10 @@
 using namespace std;
 
 
+//-----------------------------------------------------------------------------
+// Defines
+#define NormalizeVector 0
+
 
 //------------------------------------------------------------------------------
 //
@@ -70,41 +74,47 @@ GSimType::GSimType(GGenericSims* owner,GConceptType* type)
 //------------------------------------------------------------------------------
 double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 {
-	double max1;
-	double max2;
-	double norm1;
-	double norm2;
+	#if NormalizeVector
+		double max1(-2);
+		double max2(-2);
+	#endif
+	double norm1(0.0);
+	double norm2(0.0);
 	double w1,w2,iff1,iff2;
-	double TotalRef;
-	double num;
-//	size_t nb(0);
-
-	// Compute total number of references and the maximum for each type
-	TotalRef=Owner->GetRef(Type);
-	norm1=norm2=num=0.0;
-	max1=Owner->vec1->GetMaxAbsWeight(Type);
-	max2=Owner->vec2->GetMaxAbsWeight(Type);
+	double TotalRef(Owner->GetRef(Type));
+	double num(0.0);
 
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
 		iff1=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj1()->GetId(),Type)));
-		w1=(Obj1()->GetWeight()/max1)*iff1;
+		w1=Obj1()->GetWeight()*iff1;
+		#if NormalizeVector
+			if(Obj1()->GetWeight()>max1)
+				max1=Obj1()->GetWeight();
+		#endif
 		while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())<(*Obj1())))
 		{
 			iff2=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj2()->GetId(),Type)));
-			w2=(Obj2()->GetWeight()/max2)*iff2;
+			w2=Obj2()->GetWeight()*iff2;
+			#if NormalizeVector
+				if(Obj2()->GetWeight()>max2)
+					max2=Obj2()->GetWeight();
+			#endif
 			norm2+=w2*w2;
 			Obj2.Next();
 		}
 		if((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())==(*Obj1())))
 		{
 			// Obj2()==Obj1() -> iff2=iff1
-			w2=(Obj2()->GetWeight()/max2)*iff1;
+			w2=Obj2()->GetWeight()*iff1;
+			#if NormalizeVector
+				if(Obj2()->GetWeight()>max2)
+					max2=Obj2()->GetWeight();
+			#endif
 			norm2+=w2*w2;
 			if((Obj1()->GetWeight()>0)||(Obj2()->GetWeight()>0))
 				num+=w1*w2;
 			Obj2.Next();
-//			nb++;
 		}
 		norm1+=w1*w1;
 		Obj1.Next();
@@ -112,16 +122,24 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 	while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type))
 	{
 		iff2=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj2()->GetId(),Type)));
-		w2=(Obj2()->GetWeight()/max2)*iff2;
+		w2=Obj2()->GetWeight()*iff2;
+		#if NormalizeVector
+			if(w2>max2)
+				max2=w2;
+		#endif
 		norm2+=w2*w2;
 		Obj2.Next();
 	}
 
-//	std::cout<<nb<<std::endl;
 	// Return similarity
-	if((norm1>0.0)&&(norm2>0.0))
-		return(num/(sqrt(norm1)*sqrt(norm2)));
-	return(0.0);
+	if(num==0.0)
+		return(0.0);
+	#if NormalizeVector
+		num/=max1*max2;
+		norm1/=max1*max1;
+		norm2/=max2*max2;
+	#endif
+	return(num/(sqrt(norm1*norm2)));
 }
 
 
@@ -135,23 +153,16 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 //------------------------------------------------------------------------------
 double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 {
-	double max1;
-	double max2;
 	double w1,w2,iff1,iff2;
-	double TotalRef;
-	double num;
-	double den;
-
-	// Compute total number of references and the maximum for each type
-	TotalRef=Owner->GetRef(Type);
-	num=den=0.0;
-	max1=Owner->vec1->GetMaxAbsWeight(Type);
-	max2=Owner->vec2->GetMaxAbsWeight(Type);
+	double TotalRef(Owner->GetRef(Type));
+	double num(0.0);
+	double den(0.0);
 
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
 		iff1=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj1()->GetId(),Type)));
-		w1=(Obj1()->GetWeight()/max1)*iff1;
+		w1=Obj1()->GetWeight()*iff1;
+
 		GXMLIndex* c1=dynamic_cast<GXMLIndex*>(Obj1()->GetConcept());
 		RCursor<GWeightInfo> Cur(Obj2);
 		for(;(!Cur.End())&&(Cur()->GetConcept()->GetType()==Type);Cur.Next())
@@ -163,7 +174,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 				continue;
 
 			iff2=log10(TotalRef/static_cast<double>(Owner->GetRef(Cur()->GetId(),Type)));
-			w2=(Cur()->GetWeight()/max2)*iff2;
+			w2=Cur()->GetWeight()*iff2;
 			den+=fabs(w1*w2);
 			if((w1<0.0)&&(w2<0.0))
 				continue;
@@ -175,9 +186,9 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 		Obj2.Next();
 
 	// Return similarity
-	if(den>0.0)
-		return(num/den);
-	return(0.0);
+	if(den==0.0)
+		return(0.0);
+	return(num/den);
 }
 
 
@@ -357,10 +368,10 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 			break;
 		}
 		case 2:
-			double res(SimilarityIFFL());
+/*			double res(SimilarityIFFL());
 			cout<<"Compute sim("<<static_cast<GDoc*>(obj1)->GetId()<<","<<static_cast<GDoc*>(obj2)->GetId()<<")="<<res<<endl;
-			return(res);
-			//return(SimilarityIFFL());
+			return(res);*/
+			return(SimilarityIFFL());
 	}
 	return(0.0);
 }
