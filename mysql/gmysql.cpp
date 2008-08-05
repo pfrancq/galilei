@@ -225,11 +225,14 @@ size_t GStorageMySQL::GetNbSaved(tObjType type)
 			case otCommunity:
 				return(GetCount("groups"));
 
+			case otTopic:
+				return(GetCount("topics"));
+
 			case otFdbk:
 				return(GetCount("htmlsbyprofiles"));
 
 			default:
-				return(0);
+				throw GException("GStorageMySQL::GetNbSaved: '"+GetObjType(type)+"' not supported");
 		}
 	}
 	catch(RDbException e)
@@ -1400,7 +1403,7 @@ void GStorageMySQL::LoadDocs(void)
 		auto_ptr<RQuery> quer(Db->Query(Sql));
 		for(quer->Start();!quer->End();quer->Next())
 		{
-			// Verify that the langague is active
+			// Verify if its language is active
 			lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn((*quer)[4],false);
 			if((!lang)&&(!(*quer)[4].IsEmpty()))
 				continue;

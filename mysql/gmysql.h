@@ -80,7 +80,7 @@ public:
 
 	/**
 	* Constructor.
-	* @param fac             Factory of the plugin.
+	* @param fac             Factory of the plug-in.
 	*/
 	GStorageMySQL(GFactoryStorage* fac);
 
@@ -88,15 +88,15 @@ protected:
 
 	/**
 	* Count the number of rows of a table.
-	* @param tbl            Table to analyse.
+	* @param tbl            Table to analyze.
 	* @returns Number of rows.
 	*/
 	virtual size_t GetCount(R::RString tbl);
 
 	/**
 	* Count the maximal value for a field of a table.
-	* @param tbl            Table to analyse.
-	* @param fld            Field to analyse.
+	* @param tbl            Table to analyze.
+	* @param fld            Field to analyze.
 	* @returns Maximal value.
 	*/
 	size_t GetMax(R::RString tbl,R::RString fld);
@@ -190,18 +190,18 @@ public:
 	/**
 	* Add a dummy entry into  a dummy table;
 	* @param name            Name of the dummy table.
-	* @param id              Identificator of the dymmy entry.
-	* @param desc            Description of the dymmy entry.
-	* @param parentid        Identificator of the parent.
+	* @param id              Identifier of the dummy entry.
+	* @param desc            Description of the dummy entry.
+	* @param parentid        Identifier of the parent.
 	*/
 	virtual void AddDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid);
 
 	/**
 	* Select a dummy entry from a dummy table;
 	* @param name            Name of the dummy table.
-	* @param id              Identificator of the dymmy entry.
-	* @param desc            Description of the dymmy entry.
-	* @param parentid        Identificator of the parent.
+	* @param id              Identifier of the dummy entry.
+	* @param desc            Description of the dummy entry.
+	* @param parentid        Identifier of the parent.
 	* @param filter          Filter to set the fields on which the select is done.
 	*/
 	virtual R::RQuery* SelectDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter);
@@ -209,9 +209,9 @@ public:
 	/**
 	* Clear a dummy entry from a dummy table;
 	* @param name            Name of the dummy table.
-	* @param id              Identificator of the dymmy entry.
-	* @param desc            Description of the dymmy entry.
-	* @param parentid        Identificator of the parent.
+	* @param id              Identifier of the dummy entry.
+	* @param desc            Description of the dummy entry.
+	* @param parentid        Identifier of the parent.
 	* @param filter          Filter to set the fields on which the select is done.
 	*/
 	virtual void ClearDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter);
@@ -285,7 +285,7 @@ public:
 	* Load the description of a given object.
 	* @param infos           Container that will hold the description.
 	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
-	* @param id              Identificator of the object.
+	* @param id              Identifier of the object.
 	*/
 	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,tObjType type,size_t id);
 
@@ -302,20 +302,20 @@ public:
 	virtual void AssignId(GConcept* concept);
 
 	/**
-	* Delete a data from the dictionnary.
+	* Delete a data from the dictionary.
 	* @param concept         Concept.
 	*/
 	virtual void DeleteConcept(GConcept* concept);
 
 	/**
 	* Load the name of specific concept.
-	* @param id              Idenfificator of the concept.
+	* @param id              Identifier of the concept.
 	* @param type            Type of the concept.
 	*/
 	virtual R::RString LoadConcept(size_t id,GConceptType* type);
 
 	/**
-	* Load the identificator of a specific concept.
+	* Load the identifier of a specific concept.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	*/
@@ -366,7 +366,7 @@ public:
 
 	/**
 	* Method that load a document that is stored.
-	* @param docid           Identificator of the document
+	* @param docid           Identifier of the document
 	*/
 	virtual GDoc* LoadDoc(size_t docid);
 
@@ -411,7 +411,7 @@ public:
 
 	/**
 	* Save a document where it is stored. This method is called after an
-	* analsyis of a document if the result has to be saved. This method must be
+	* analysis of a document if the result has to be saved. This method must be
 	* overloaded.
 	* @param doc             Document to save.
 	*/
@@ -426,13 +426,13 @@ public:
 	// @{
 
 	/**
-	* Load the subprofiles (and the profiles and the users).
+	* Load the profiles (and the profiles and the users).
 	*/
 	virtual void LoadUsers(void);
 
 	/**
 	* Method that load a user that is stored.
-	* @param userid          Identificator of the user.
+	* @param userid          Identifier of the user.
 	*/
 	virtual GUser* LoadUser(size_t userid);
 
@@ -486,8 +486,8 @@ public:
 	virtual void SaveProfile(GProfile* prof);
 
 	/**
-	* Save profiles in histoty
-	* @param sub            Subprofile to save.
+	* Save profiles in history
+	* @param sub            Profile to save.
 	* @param historicID     Identifier of the historic.
 	*/
 	virtual void SaveProfileInHistory(GProfile* sub, size_t historicID);
@@ -640,7 +640,7 @@ public:
 	static void CreateParams(R::RConfig* params);
 
 	/**
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~GStorageMySQL(void);
 };
