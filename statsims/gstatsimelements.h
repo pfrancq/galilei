@@ -313,15 +313,17 @@ template<class E1,class E2>
 		calc->AddTag(xml,tag,"DevSim",devsim);
 		if(File)
 		{
-			RString n1("Min Sim"); n1.SetLen(15," ");
-			RString n2("Avg Sum"); n2.SetLen(15," ");
-			RString n3("Dev Sim"); n3.SetLen(15," ");
-			(*File)<<n1<<n2<<n3<<endl;
-			n1=RString::Number(minsim,"%.5E"); n1.SetLen(15," ");
-			n2=RString::Number(avgsim,"%.5E"); n2.SetLen(15," ");
-			n3=RString::Number(devsim,"%.5E"); n3.SetLen(15," ");
-			(*File)<<n1<<n2<<n3<<endl;
-			(*File)<<"  --------------"<<endl;
+			RString n1(""); n1.SetLen(24," ");
+			RString n2("Min Sim"); n2.SetLen(14," ");
+			RString n3("Avg Sum"); n3.SetLen(14," ");
+			RString n4("Dev Sim"); n4.SetLen(14," ");
+			(*File)<<n1<<n2<<n3<<n4<<endl;
+			n1="Global"; n1.SetLen(24," ");
+			n2=RString::Number(minsim,"%.5E"); n2.SetLen(14," ");
+			n3=RString::Number(avgsim,"%.5E"); n3.SetLen(14," ");
+			n4=RString::Number(devsim,"%.5E"); n4.SetLen(14," ");
+			(*File)<<n1<<n2<<n3<<n4<<endl;
+			(*File)<<"--------------"<<endl;
 		}
 	}
 
@@ -356,7 +358,7 @@ template<class E1,class E2>
 			RString n6(RString::Number(Rie)); n6.SetLen(15," ");
 			RString n7(RString::Number(Overlap,"%.5E")); n7.SetLen(15," ");
 			(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
-			(*File)<<"  --------------"<<endl;
+			(*File)<<"--------------"<<endl;
 		}
 	}
 }

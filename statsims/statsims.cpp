@@ -198,7 +198,7 @@ public:
 
 //------------------------------------------------------------------------------
 GStatsSims::GStatsSims(GFactoryStatsCalc* fac)
-	: GStatsCalc(fac)
+	: GStatsCalc(fac), Details(0)
 {
 }
 
@@ -213,7 +213,13 @@ void GStatsSims::ApplyConfig(void)
 	SameDocProf=Factory->GetBool("SameDocProf");
 	GroupProf=Factory->GetBool("GroupProf");
 	File=Factory->GetBool("File");
+	RString OldName(Name);
 	Name=Factory->Get("Name");
+	if((OldName!=Name)&&Details)
+	{
+		delete Details;
+		Details=0;
+	}
 }
 
 
@@ -237,7 +243,6 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 	RXMLTag* tag;
 	RXMLTag* tag2;
 	RString str;
-	RTextFile* Details=0;
 
 	// Init Main XML Tag
 	tag=new RXMLTag(Factory->GetName());
@@ -246,14 +251,19 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 	// Create Details File if necessary
 	if(File)
 	{
-		try
+		if(Details)
+			(*Details)<<endl<<"-----------------------------------------------------"<<endl<<endl;
+		else
 		{
-			Details=new RTextFile(Name);
-			Details->Open(RIO::Create);
-		}
-		catch(...)
-		{
-			Details=0;
+			try
+			{
+				Details=new RTextFile(Name);
+				Details->Open(RIO::Create);
+			}
+			catch(...)
+			{
+				Details=0;
+			}
 		}
 	}
 
@@ -304,10 +314,6 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 		GStatSimProfGrp Stat(Session,Details);
 		Stat.Run(this,xml,tag2);
 	}
-
-	// Desallocate Details File if necessary
-	if(Details)
-		delete Details;
 }
 
 

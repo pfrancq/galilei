@@ -99,6 +99,11 @@ class GStatsSims : public GStatsCalc
 	*/
 	GMeasure* Measure;
 
+	/**
+	 * File containing the results.
+	 */
+	RTextFile* Details;
+
 public:
 
 	/**
