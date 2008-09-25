@@ -31,6 +31,3 @@ ENDIF(UNIX)
 
 INCLUDE(rfinder.cmake)
 INCLUDE(prj.cmake)
-
-##keep it for compatibility with auto tools...
-INSTALL(FILES libgalilei.m4 DESTINATION share/aclocal)
