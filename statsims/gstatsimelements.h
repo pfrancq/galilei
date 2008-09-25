@@ -39,7 +39,7 @@
 // include files for GALILEI
 #include <gcommunity.h>
 #include <ggalileiapp.h>
-
+#include <gstatscalc.h>
 
 //------------------------------------------------------------------------------
 /**
@@ -93,6 +93,11 @@ protected:
 	size_t NbElements;
 
 	/**
+	 * Number of subjects containing elements compared.
+	 */
+	size_t NbSubjects;
+
+	/**
 	 */
 	bool WriteTitle;
 
@@ -143,7 +148,7 @@ public:
 //
 //------------------------------------------------------------------------------
 
-#include <gstatscalc.h>
+
 //------------------------------------------------------------------------------
 template<class E1,class E2>
 	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,bool same,RTextFile* f)
@@ -156,27 +161,16 @@ template<class E1,class E2>
 template<class E1,class E2>
 	void GStatSimElements<E1,E2>::ComputeSubject(GStatsCalc* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent)
 {
-	double SimIntra;
-	double SimExtra;
+	double SimIntra(0.0);
+	double SimExtra(0.0);
 	double tmp;
 	double LRie;
-	size_t nbIntra;
-	size_t nbExtra;
-	bool Same;
-	double MinIntra;
-	double MaxExtra;
+	size_t nbIntra(0);
+	size_t nbExtra(0);
+	double MinIntra(2.0);
+	double MaxExtra(-2.0);
 	double LOverlap(0.0);
 	size_t LNbElements(0);
-
-	// Create tag
-	RXMLTag* Tag=new RXMLTag(sub->GetName());
-	xml->AddTag(parent,Tag);
-
-	// Init Local Data
-	SimIntra=SimExtra=0.0;
-	nbIntra=nbExtra=0;
-	MinIntra=1.1;
-	MaxExtra=-1.1;
 
 	// Go through each element of this subject
 	R::RCursor<E1> Cur1(GetE1Cursor(sub));
@@ -184,47 +178,62 @@ template<class E1,class E2>
 	{
 		if(!Cur1()->IsDefined()) continue;
 
-		// Go trough the other subjects
+		// Number of elements treated here
+		double min(1.1),max(-1.1);
+		NbElements++;
+		LNbElements++;
+
+
+		// Compute Intra-sim
+		R::RCursor<E2> Cur2(GetE2Cursor(sub));
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			if(SameObjects&&(Cur1()->GetId()==Cur2()->GetId())) continue;
+			Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
+			nbIntra++;
+			SimIntra+=tmp;
+			if(tmp<MinIntra) MinIntra=tmp;
+			if(tmp<min) min=tmp;
+		}
+
+		// Compute Extra-sim
 		R::RCursor<GSubject> Subs2(Session->GetSubjects()->GetNodes());
 		for(Subs2.Start();!Subs2.End();Subs2.Next())
 		{
 			// Look if Same topic
-			Same=(sub==Subs2());
+			if(sub==Subs2()) continue;
 
 			// Go through to other elements
 			R::RCursor<E2> Cur2(GetE2Cursor(Subs2()));
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 			{
-				// If not same language, not defined or same object -> skip it
-				if(!Cur2()->IsDefined()) continue;
-				if(Same&&(Cur1()->GetId()==Cur2()->GetId())) continue;
-
 				Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
-				//cout<<"Sim("<<Cur1()->GetId()<<","<<Cur2()->GetId()<<")="<<tmp<<endl;
-				if(Same)
-				{
-					nbIntra++;
-					SimIntra+=tmp;
-					if(tmp<MinIntra) MinIntra=tmp;
-				}
-				else
-				{
-					nbExtra++;
-					SimExtra+=tmp;
-					if(tmp>MaxExtra) MaxExtra=tmp;
-				}
+				nbExtra++;
+				SimExtra+=tmp;
+				if(tmp>MaxExtra) MaxExtra=tmp;
+				if(tmp>max) max=tmp;
 			}
+		}
+
+		// Compute Overlap for current element
+		if(max>min)
+		{
+			LOverlap++;
+			Overlap++;
 		}
 	}
 
-	// Compute Overlap for current subject
-	if(MaxExtra>MinIntra)
-	{
-		Overlap++;
-		LOverlap++;
-	}
+	if(!LNbElements)
+		return;
 
-	// Compute Rie for current element
+	// Subject contains compared elements
+	NbSubjects++;
+
+	// Create tag
+	RXMLTag* Tag=new RXMLTag(sub->GetName());
+	xml->AddTag(parent,Tag);
+
+	// Compute indicators for current subject
 	if(nbIntra)
 	{
 		SimIntra/=nbIntra;
@@ -241,49 +250,42 @@ template<class E1,class E2>
 		calc->AddTag(xml,Tag,"Mean Extra",SimExtra);
 	}
 
-	if(nbIntra||nbExtra)
-	{
-		NbElements++;
-		LNbElements++;
-	}
-
 	if(SimIntra!=0.0)
 	{
 		LRie=(SimIntra-SimExtra)/SimIntra;
-		LOverlap/=LNbElements;
-		if(File)
-		{
-			if(WriteTitle)
-			{
-				(*File)<<"  --------------"<<endl;
-				RString n1("Name"); n1.SetLen(25," ");
-				RString n2("Min Intra"); n2.SetLen(15," ");
-				RString n3("Mean Intra"); n3.SetLen(15," ");
-				RString n4("Max Extra"); n4.SetLen(15," ");
-				RString n5("Mean Extra"); n5.SetLen(15," ");
-				RString n6("Rie"); n6.SetLen(15," ");
-				RString n7("Overlap"); n7.SetLen(15," ");
-				(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
-				WriteTitle=false;
-			}
-
-			RString n1(sub->GetName()); n1.SetLen(25," ");
-			RString n2(RString::Number(MinIntra,"%.5E")); n2.SetLen(15," ");
-			RString n3(RString::Number(SimIntra,"%.5E")); n3.SetLen(15," ");
-			RString n4(RString::Number(MaxExtra,"%.5E")); n4.SetLen(15," ");
-			RString n5(RString::Number(SimExtra,"%.5E")); n5.SetLen(15," ");
-			RString n6(RString::Number(LRie,"%.5E")); n6.SetLen(15," ");
-			RString n7(RString::Number(LOverlap,"%.5E")); n7.SetLen(15," ");
-			(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
-		}
 		calc->AddTag(xml,Tag,"Rie",LRie);
-		calc->AddTag(xml,Tag,"Overlap",LOverlap);
 	}
+	else
+		LRie=0.0;
 
-	// Go trough Subtopic
-	R::RCursor<GSubject> Cur(sub->GetNodes());
-	for(Cur.Start();!Cur.End();Cur.Next())
-		ComputeSubject(calc,Cur(),xml,Tag);
+	LOverlap/=static_cast<double>(LNbElements);
+	calc->AddTag(xml,Tag,"Overlap",LOverlap);
+
+	// File
+	if(File)
+	{
+		if(WriteTitle)
+		{
+			RString n1("Name"); n1.SetLen(25," ");
+			RString n2("Min Intra"); n2.SetLen(15," ");
+			RString n3("Mean Intra"); n3.SetLen(15," ");
+			RString n4("Max Extra"); n4.SetLen(15," ");
+			RString n5("Mean Extra"); n5.SetLen(15," ");
+			RString n6("Rie"); n6.SetLen(15," ");
+			RString n7("Overlap"); n7.SetLen(15," ");
+			(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
+			WriteTitle=false;
+		}
+
+		RString n1(sub->GetName()); n1.SetLen(25," ");
+		RString n2(RString::Number(MinIntra,"%.5E")); n2.SetLen(15," ");
+		RString n3(RString::Number(SimIntra,"%.5E")); n3.SetLen(15," ");
+		RString n4(RString::Number(MaxExtra,"%.5E")); n4.SetLen(15," ");
+		RString n5(RString::Number(SimExtra,"%.5E")); n5.SetLen(15," ");
+		RString n6(RString::Number(LRie,"%.5E")); n6.SetLen(15," ");
+		RString n7(RString::Number(LOverlap,"%.5E")); n7.SetLen(15," ");
+		(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
+	}
 
 	if(Tag->IsEmpty())
 		xml->DeleteTag(Tag);
@@ -294,23 +296,45 @@ template<class E1,class E2>
 template<class E1,class E2>
 	void GStatSimElements<E1,E2>::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 {
-	// Go through the languages
-	R::RCursor<GSubject> Subs1(Session->GetSubjects()->GetTop()->GetNodes());
-	WriteTitle=true;
-	NbElements=0;
-
 	// Initialization
+	WriteTitle=true;
+	NbElements=NbSubjects=0;
 	Overlap=MeanExtra=MeanIntra=0.0;
 
+	// Compute minimum similarity
+	if(SameObjects)
+	{
+		double minsim,avgsim,devsim;
+		Measure->Info(0,&minsim);
+		Measure->Info(1,&avgsim);
+		Measure->Info(2,&devsim);
+		calc->AddTag(xml,tag,"MinSim",minsim);
+		calc->AddTag(xml,tag,"AvgSim",avgsim);
+		calc->AddTag(xml,tag,"DevSim",devsim);
+		if(File)
+		{
+			RString n1("Min Sim"); n1.SetLen(15," ");
+			RString n2("Avg Sum"); n2.SetLen(15," ");
+			RString n3("Dev Sim"); n3.SetLen(15," ");
+			(*File)<<n1<<n2<<n3<<endl;
+			n1=RString::Number(minsim,"%.5E"); n1.SetLen(15," ");
+			n2=RString::Number(avgsim,"%.5E"); n2.SetLen(15," ");
+			n3=RString::Number(devsim,"%.5E"); n3.SetLen(15," ");
+			(*File)<<n1<<n2<<n3<<endl;
+			(*File)<<"  --------------"<<endl;
+		}
+	}
+
 	// Go trough the subjects
-	for(Subs1.Start();!Subs1.End();Subs1.Next())
-		ComputeSubject(calc,Subs1(),xml,tag);
+	R::RCursor<GSubject> Sub(Session->GetSubjects()->GetNodes());
+	for(Sub.Start();!Sub.End();Sub.Next())
+		ComputeSubject(calc,Sub(),xml,tag);
 
 	// Compute elements statistics
 	if(NbElements)
 	{
-		MeanIntra/=NbElements;
-		MeanExtra/=NbElements;
+		MeanIntra/=static_cast<double>(NbSubjects);
+		MeanExtra/=static_cast<double>(NbSubjects);
 		if(MeanIntra==0.0)
 			Rie=0.0;
 		else
@@ -322,12 +346,6 @@ template<class E1,class E2>
 		calc->AddTag(xml,tag,"Rie",Rie);
 		calc->AddTag(xml,tag,"Overlap",Overlap);
 
-		if(MinSim)
-		{
-			double tmp;
-			Measure->Info(0,&tmp);
-			calc->AddTag(xml,tag,"Min Measure",tmp);
-		}
 		if(File)
 		{
 			RString n1("Global"); n1.SetLen(25," ");
@@ -337,7 +355,8 @@ template<class E1,class E2>
 			RString n5(RString::Number(MeanExtra,"%.5E")); n5.SetLen(15," ");
 			RString n6(RString::Number(Rie)); n6.SetLen(15," ");
 			RString n7(RString::Number(Overlap,"%.5E")); n7.SetLen(15," ");
-			(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl<<endl;
+			(*File)<<n1+n2+n3+n4+n5+n6+n7<<endl;
+			(*File)<<"  --------------"<<endl;
 		}
 	}
 }
