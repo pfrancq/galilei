@@ -347,7 +347,6 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	postDocsAnalyse->setEnabled(true);
 	docsIndexer->setEnabled(true);
 	queryMetaEngine->setEnabled(true);
-	runProgram->setEnabled(true);
 	sessionStats->setEnabled(true);
 	sessionSave->setEnabled(true);
 	docsClear->setEnabled(true);
@@ -397,7 +396,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	postDocsAnalyse->setEnabled(false);
 	docsIndexer->setEnabled(false);
 	queryMetaEngine->setEnabled(false);
-	runProgram->setEnabled(false);
 	sessionStats->setEnabled(false);
 	sessionSave->setEnabled(false);
 	docsClear->setEnabled(false);

@@ -151,7 +151,7 @@ void KViewThTopics::ConstructThTopics(void)
 		for(Sub.Start(); !Sub.End(); Sub.Next())
 		{
 			GDoc* sub=Sub();
-			QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetName()),ToQString(sub->GetURL()));
+			QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetName()));
 			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}
 		if(!gritem->childCount())
@@ -184,7 +184,7 @@ void KViewThTopics::ConstructTopics(void)
 		for(Sub.Start(); !Sub.End(); Sub.Next())
 		{
 			GDoc* sub=Sub();
-			QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetName())+" ("+ToQString(sub->GetURL())+")");
+			QListViewItemType* subitem=new QListViewItemType(sub,gritem,ToQString(sub->GetName()));
 			subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
 		}
 	}
