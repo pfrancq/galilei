@@ -44,6 +44,9 @@
 //-----------------------------------------------------------------------------
 /**
 * The GLangNL class provides a representation for the english language.
+*
+* It is based on the paper "Porter's stemming algorithm for Dutch" from Wessel
+* Kraaij et Renée Pohlmann.
 * @author Pascal Francq
 * @short English Language.
 */
