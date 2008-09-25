@@ -59,8 +59,22 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GGenericSimsDlg::GGenericSimsDlg(const QString& title)
-	: QGMeasure2ElementsDlg(title)
+	: QGMatrixMeasureDlg(title)
 {
+}
+
+
+//-----------------------------------------------------------------------------
+void GGenericSimsDlg::AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLayout* grid,int row,int col)
+{
+	QHBoxLayout*layout = new QHBoxLayout(0,0,6);
+	QLabel* text = new QLabel(GetMeasureSpecific());
+    text->setText(str);
+    layout->addWidget(text);
+//    layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
+	cap = new KDoubleNumInput(GetMeasureSpecific(),str);
+    layout->addWidget(cap);
+    grid->addItem(layout,row,col);
 }
 
 
@@ -73,8 +87,10 @@ void GGenericSimsDlg::Panel(void)
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
 	SimType = new QComboBox(GetMeasureSpecific(),"SimType");
-	SimType->insertItem("Multi-space");
-	SimType->insertItem("Language");
+	SimType->insertItem("Integral of Choquet");
+	SimType->insertItem("Product");
+	SimType->insertItem("Sum");
+	SimType->insertItem("Language only");
     layout->addWidget(SimType);
     QToolTip::add(SimType,"Similarity measure can be the classical cosine between the vectors (Language) or an adapted one to manage multiple spaces (Multi-space)." );
     const char* simText="<p>Choose the <b>similarity measure</b> that will be used. <br/>"
@@ -88,24 +104,42 @@ void GGenericSimsDlg::Panel(void)
     QWhatsThis::add(SimType,simText);
 	GetMeasureSpecificLayout()->addLayout(layout);
 
+	// Factor
 	layout = new QHBoxLayout(0,0,6);
    	text = new QLabel(GetMeasureSpecific());
-    text->setText("Factor");
+    text->setText("Factor for the product");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
 	Factor = new KDoubleNumInput(GetMeasureSpecific(),"Factor");
 	Factor->setPrecision(5);
     layout->addWidget(Factor);
 	GetMeasureSpecificLayout()->addLayout(layout);
+
+	// Parameters
+	QGridLayout* layout2=new QGridLayout(0,3,3);
+	AddCapacity(ContentCapacity,"Content Capacity",layout2,0,0);
+	AddCapacity(StructCapacity,"Structure Capacity",layout2,1,0);
+	AddCapacity(MetaCapacity,"Metadata Capacity",layout2,2,0);
+    layout2->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum),0,1);
+	AddCapacity(ContentStructCapacity,"Content/Structure Capacity",layout2,0,2);
+	AddCapacity(ContentMetaCapacity,"Content/Metadata Capacity",layout2,1,2);
+	AddCapacity(MetaStructCapacity,"Metadata/Structure Capacity",layout2,2,2);
+	GetMeasureSpecificLayout()->addLayout(layout2);
 }
 
 
 //-----------------------------------------------------------------------------
 void GGenericSimsDlg::Init(GFactoryMeasure* params)
 {
-	QGMeasure2ElementsDlg::Init(params);
+	QGMatrixMeasureDlg::Init(params);
 	SimType->setCurrentText(ToQString(params->Get("SimType")));
 	Factor->setValue(params->GetDouble("Factor"));
+	ContentCapacity->setValue(params->GetDouble("ContentCapacity"));
+	StructCapacity->setValue(params->GetDouble("StructCapacity"));
+	MetaCapacity->setValue(params->GetDouble("MetaCapacity"));
+	ContentStructCapacity->setValue(params->GetDouble("ContentStructCapacity"));
+	ContentMetaCapacity->setValue(params->GetDouble("ContentMetaCapacity"));
+	MetaStructCapacity->setValue(params->GetDouble("MetaStructCapacity"));
 }
 
 
@@ -114,5 +148,11 @@ void GGenericSimsDlg::Done(GFactoryMeasure* params)
 {
 	params->Set("SimType",FromQString(SimType->currentText()));
 	params->SetDouble("Factor",Factor->value());
-	QGMeasure2ElementsDlg::Done(params);
+	params->SetDouble("ContentCapacity",ContentCapacity->value());
+	params->SetDouble("StructCapacity",StructCapacity->value());
+	params->SetDouble("MetaCapacity",MetaCapacity->value());
+	params->SetDouble("ContentStructCapacity",ContentStructCapacity->value());
+	params->SetDouble("ContentMetaCapacity",ContentMetaCapacity->value());
+	params->SetDouble("MetaStructCapacity",MetaStructCapacity->value());
+	QGMatrixMeasureDlg::Done(params);
 }

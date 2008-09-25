@@ -48,7 +48,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <qgmeasure2elementsdlg.h>
+#include <qgmatrixmeasuredlg.h>
 #include <gmeasure.h>
 using namespace GALILEI;
 using namespace std;
@@ -68,13 +68,13 @@ static const char *description =
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class MyDlg : public QGMeasure2ElementsDlg
+class MyDlg : public QGMatrixMeasureDlg
 {
 	QSpinBox* MinDocs;
-	
+
 public:
 
-	MyDlg(void) : QGMeasure2ElementsDlg("Disagreement ratios between profiles") {}
+	MyDlg(void) : QGMatrixMeasureDlg("Disagreement ratios between profiles") {}
 	virtual void Panel(void);
 	virtual void Init(GFactoryMeasure* params);
 	virtual void Done(GFactoryMeasure* params);
@@ -98,7 +98,7 @@ void MyDlg::Panel(void)
 //-----------------------------------------------------------------------------
 void MyDlg::Init(GFactoryMeasure* params)
 {
-	QGMeasure2ElementsDlg::Init(params);
+	QGMatrixMeasureDlg::Init(params);
 	MinDocs->setValue(params->GetUInt("MinDocs"));
 }
 
@@ -107,7 +107,7 @@ void MyDlg::Init(GFactoryMeasure* params)
 void MyDlg::Done(GFactoryMeasure* params)
 {
 	params->SetUInt("MinDocs",MinDocs->value());
-	QGMeasure2ElementsDlg::Done(params);
+	QGMatrixMeasureDlg::Done(params);
 }
 
 
@@ -115,7 +115,7 @@ void MyDlg::Done(GFactoryMeasure* params)
 //------------------------------------------------------------------------------
 //
 extern "C" {
-//	
+//
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------

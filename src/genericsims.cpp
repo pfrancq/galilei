@@ -84,6 +84,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 	double TotalRef(Owner->GetRef(Type));
 	double num(0.0);
 
+	LastNbComps=0;
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
 		iff1=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj1()->GetId(),Type)));
@@ -113,7 +114,10 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 			#endif
 			norm2+=w2*w2;
 			if((Obj1()->GetWeight()>0)||(Obj2()->GetWeight()>0))
+			{
 				num+=w1*w2;
+				LastNbComps++;
+			}
 			Obj2.Next();
 		}
 		norm1+=w1*w1;
@@ -207,23 +211,37 @@ GGenericSims::GGenericSims(GFactoryMeasure* fac,tObjType lines,tObjType cols)
 
 
 //------------------------------------------------------------------------------
+RString GGenericSims::GetFilesName(void) const
+{
+	return(RString(GMatrixMeasure::GetFilesName()+RString::Number(SimType)));
+}
+
+
+//------------------------------------------------------------------------------
 void GGenericSims::ApplyConfig(void)
 {
-	if(Session)
-		return;
 	GMatrixMeasure::ApplyConfig();
-	SimType=0;
 	RString type=Factory->Get("SimType");
 	Factor=Factory->GetDouble("Factor");
-	unsigned int sim(0);
-	if(type=="Multi-space")
-		sim=1;
-	if(type=="Language")
-		sim=2;
-	if(!sim)
+	ContentCapacity=Factory->GetDouble("ContentCapacity");
+	StructCapacity=Factory->GetDouble("StructCapacity");
+	MetaCapacity=Factory->GetDouble("MetaCapacity");
+	ContentStructCapacity=Factory->GetDouble("ContentStructCapacity");
+	ContentMetaCapacity=Factory->GetDouble("ContentMetaCapacity");
+	MetaStructCapacity=Factory->GetDouble("MetaStructCapacity");
+	tSimType sim(Undefined);
+	if(type=="Product")
+		sim=Product;
+	else if(type=="Language only")
+		sim=LanguageOnly;
+	else if(type=="Sum")
+		sim=Sum;
+	else if(type=="Integral of Choquet")
+		sim=Choquet;
+	if(sim==Undefined)
 	{
 		cerr<<"No valid similarity measure"<<endl;
-		SimType=1;
+		SimType=Choquet;
 	}
 	else
 		SimType=sim;
@@ -234,13 +252,17 @@ void GGenericSims::ApplyConfig(void)
 void GGenericSims::Connect(GSession* session)
 {
 	GMatrixMeasure::Connect(session);
-	GConceptType* IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
+	MetaSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
+	StructSpace=Session->GetInsertConceptType("XMLStruct","XML Structure");
 	RCursor<GConceptType> Cur(Session->GetConceptTypes());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if(Cur()==IndexSpace)
+		// Takes only the language, the structure and the metadata space
+		if(Cur()==MetaSpace)
 			Types.InsertPtr(new GSimTypeXMLIndex(this,Cur()));
-		else
+		else if(Cur()==StructSpace)
+			Types.InsertPtr(new GSimType(this,Cur()));
+		else if(Cur()->GetLang())
 			Types.InsertPtr(new GSimType(this,Cur()));
 	}
 	CurLang=0;
@@ -257,36 +279,50 @@ void GGenericSims::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-double GGenericSims::SimilarityIFFMV(void)
+bool GGenericSims::ComputeSimSpace(void)
 {
 	// if one vector is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
-		return(0.0);
-
-	double Sim(0.0);
-	double NbComps(GetNbDiffElements());
-	NbComps=Factor*NbComps*(NbComps-1);
-	double CommonSpace(0.0); // Suppose that the two vectors have no common spaces
+		return(false);
 	RCursor<GWeightInfo> ptr(*vec1);
 	RCursor<GWeightInfo> ptr2(*vec2);
 	RCursor<GSimType> Cur(Types);
+	double Ok(false);
+	size_t TotalLangsComp(0);
+
+	SimSpaces[0]=SimSpaces[1]=SimSpaces[2]=0.0;
+
 	for(ptr.Start(),ptr2.Start(),Cur.Start();(!Cur.End())&&(!ptr.End())&&(!ptr2.End());Cur.Next())
 	{
 		if((ptr()->GetConcept()->GetType()==Cur()->Type)&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
 		{
 			// OK Compute it
 			double d=Cur()->Compute(ptr,ptr2);
-			if(d<GetNullValue())
-				d=Factor;
+			//RAssert(fabs(d)<=1.0)
 			if(fabs(d-1.0)<GetNullValue())
 				d=1.0;
 			if(fabs(1.0+d)<GetNullValue())
 				d=-1.0;
-//			cout<<"  "<<d<<endl;
-			RAssert(fabs(d)<=1.0)
-			Sim+=log10(d);
-//			Sim*=(d/NbComps);
-			CommonSpace+=1.0;
+			if(Cur()->Type->GetLang())
+			{
+				// Language -> Make the weighted sum for all languages
+				SimSpaces[0]+=d*static_cast<double>(Cur()->LastNbComps);
+				TotalLangsComp+=Cur()->LastNbComps;
+				Ok=true;
+			}
+			else
+			{
+				if(Cur()->Type==StructSpace)
+				{
+					SimSpaces[1]=d;
+					Ok=true;
+				}
+				if(Cur()->Type==MetaSpace)
+				{
+					SimSpaces[2]=d;
+					Ok=true;
+				}
+			}
 		}
 		else
 		{
@@ -298,16 +334,103 @@ double GGenericSims::SimilarityIFFMV(void)
 				ptr2.Next();
 		}
 	}
-	if(CommonSpace>0.0)
-		return(pow(10,Sim-CommonSpace*log10(NbComps)));
-/*	if(CommonSpace>0.0)
-		return(Sim);*/
-	return(0.0);
+	if(TotalLangsComp)
+		SimSpaces[0]/=static_cast<double>(TotalLangsComp);
+	return(Ok);
 }
 
 
 //------------------------------------------------------------------------------
-double GGenericSims::SimilarityIFFL(void)
+double GGenericSims::SimilarityChoquet(void)
+{
+	if(!ComputeSimSpace())
+		return(0.0);
+
+	// Put them in descending order
+	struct tSimSpace
+	{
+		double Sim;
+		int What;
+		static int Compare(const void *a, const void *b)
+		{
+		  double temp = static_cast<const tSimSpace*>(a)->Sim - static_cast<const tSimSpace*>(b)->Sim;
+		  if(temp>0)
+		    return(1);
+		  else if(temp<0)
+		    return(-1);
+		  else
+		    return(0);
+		}
+
+	};
+	tSimSpace Tab[3];
+	Tab[0].Sim=SimSpaces[0];
+	Tab[0].What=0;
+	Tab[1].Sim=SimSpaces[1];
+	Tab[1].What=1;
+	Tab[2].Sim=SimSpaces[2];
+	Tab[2].What=2;
+	qsort(Tab,static_cast<size_t>(3),sizeof(tSimSpace),tSimSpace::Compare);
+
+	// First element (capacity=1)
+	double Choquet(Tab[0].Sim);
+	Tab[1].Sim-=Tab[0].Sim;
+	Tab[2].Sim-=Tab[0].Sim;
+
+	// Second element: Find the right capacity (in Cap)
+	double Cap;
+	if((Tab[1].What==0&&Tab[2].What==1)||(Tab[1].What==1&&Tab[2].What==0))
+		Cap=ContentStructCapacity;
+	else if((Tab[1].What==0&&Tab[2].What==2)||(Tab[1].What==2&&Tab[2].What==0))
+		Cap=ContentMetaCapacity;
+	else if((Tab[1].What==1&&Tab[2].What==2)||(Tab[1].What==2&&Tab[2].What==1))
+		Cap=MetaStructCapacity;
+	Choquet+=Tab[1].Sim*Cap;
+	Tab[2].Sim-=Tab[1].Sim;
+
+	// Third element : Find the right capacity
+	if(Tab[2].What==0)
+		Cap=ContentCapacity;
+	else if(Tab[2].What==1)
+		Cap=StructCapacity;
+	else if(Tab[2].What==2)
+		Cap=MetaCapacity;
+	return(Choquet+Tab[2].Sim*Cap);
+}
+
+
+//------------------------------------------------------------------------------
+double GGenericSims::SimilaritySum(void)
+{
+	if(!ComputeSimSpace())
+		return(0.0);
+	return((SimSpaces[0]*ContentCapacity+SimSpaces[1]*StructCapacity+SimSpaces[2]*MetaCapacity)/(ContentCapacity+StructCapacity+MetaCapacity));
+}
+
+
+//------------------------------------------------------------------------------
+double GGenericSims::SimilarityProduct(void)
+{
+	if(!ComputeSimSpace())
+		return(0.0);
+	double* ptr=SimSpaces;
+	double Sim(0.0);
+	double NbComps(GetNbDiffElements());
+	NbComps=Factor*NbComps*(NbComps-1);
+
+	// Makes the product of the similarity (a null similarity is replaced by Factor).
+	for(int i=0;i<3;i++,ptr++)
+	{
+		if((*ptr)<=GetNullValue())
+			(*ptr)=Factor;
+		Sim+=log10(*ptr);
+	}
+	return(pow(10,Sim-3.0*log10(NbComps)));
+}
+
+
+//------------------------------------------------------------------------------
+double GGenericSims::SimilarityLang(void)
 {
 	// If one vector is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
@@ -319,7 +442,7 @@ double GGenericSims::SimilarityIFFL(void)
 	// Parse vec1 until a language is found
 	RCursor<GWeightInfo> ptr(*vec1);
 	ptr.Start();
-	while((!ptr.End())&&(ptr()->GetConcept()->GetType()->GetLang()))
+	while((!ptr.End())&&(!ptr()->GetConcept()->GetType()->GetLang()))
 		ptr.Next();
 	if(ptr.End())
 		return(0.0); // No language found -> Similarity is null
@@ -328,7 +451,7 @@ double GGenericSims::SimilarityIFFL(void)
 	// Parse vec2 until first language is found
 	RCursor<GWeightInfo> ptr2(*vec2);
 	ptr2.Start();
-	while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()->GetLang()))
+	while((!ptr2.End())&&(!ptr2()->GetConcept()->GetType()->GetLang()))
 		ptr2.Next();
 	if(ptr.End())
 		return(0.0); // No language found -> Similarity is null
@@ -359,19 +482,17 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 	vec2=static_cast<GWeightInfos*>(obj2);
 	switch(SimType)
 	{
-		case 1:
-		{
-/*			double res(SimilarityIFFMV());
-			cout<<"Compute sim("<<static_cast<GProfile*>(obj1)->GetId()<<","<<static_cast<GProfile*>(obj2)->GetId()<<")="<<res<<endl;
-			return(res);*/
-			return(SimilarityIFFMV());
-			break;
-		}
-		case 2:
-/*			double res(SimilarityIFFL());
-			cout<<"Compute sim("<<static_cast<GDoc*>(obj1)->GetId()<<","<<static_cast<GDoc*>(obj2)->GetId()<<")="<<res<<endl;
-			return(res);*/
-			return(SimilarityIFFL());
+		case Undefined:
+				throw GException("No similarity model defined.");
+				break;
+		case Product:
+			return(SimilarityProduct());
+		case LanguageOnly:
+			return(SimilarityLang());
+		case Sum:
+			return(SimilaritySum());
+		case Choquet:
+			return(SimilarityChoquet());
 	}
 	return(0.0);
 }
@@ -400,6 +521,12 @@ size_t GGenericSims::GetRef(size_t id,GConceptType* type)
 void GGenericSims::CreateParams(RConfig* params)
 {
 	GMatrixMeasure::CreateParams(params);
-	params->InsertParam(new RParamValue("SimType","Multi-space"));
+	params->InsertParam(new RParamValue("SimType","Integral of Choquet"));
 	params->InsertParam(new RParamValue("Factor",0.01));
+	params->InsertParam(new RParamValue("ContentCapacity",0.01));
+	params->InsertParam(new RParamValue("StructCapacity",0.01));
+	params->InsertParam(new RParamValue("MetaCapacity",0.01));
+	params->InsertParam(new RParamValue("ContentStructCapacity",0.01));
+	params->InsertParam(new RParamValue("ContentMetaCapacity",0.01));
+	params->InsertParam(new RParamValue("MetaStructCapacity",0.01));
 }

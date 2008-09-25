@@ -48,7 +48,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <qgmeasure2elementsdlg.h>
+#include <qgmatrixmeasuredlg.h>
 using namespace GALILEI;
 
 
@@ -64,10 +64,16 @@ using namespace GALILEI;
  * }
  * @endcode
  */
-class GGenericSimsDlg : public QGMeasure2ElementsDlg
+class GGenericSimsDlg : public QGMatrixMeasureDlg
 {
     QComboBox* SimType;
 	KDoubleNumInput* Factor;
+	KDoubleNumInput* ContentCapacity;
+	KDoubleNumInput* StructCapacity;
+	KDoubleNumInput* MetaCapacity;
+	KDoubleNumInput* ContentStructCapacity;
+	KDoubleNumInput* ContentMetaCapacity;
+	KDoubleNumInput* MetaStructCapacity;
 
 public:
 
@@ -75,6 +81,7 @@ public:
 	virtual void Panel(void);
 	virtual void Init(GFactoryMeasure* params);
 	virtual void Done(GFactoryMeasure* params);
+	void AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLayout* grid,int row,int col);
 };
 
 

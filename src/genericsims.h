@@ -58,6 +58,7 @@ protected:
 
 	GGenericSims* Owner;
 	GConceptType* Type;
+	size_t LastNbComps;  // Number of comparisons between information entities
 
 public:
 	GSimType(GGenericSims* owner,GConceptType* type);
@@ -86,17 +87,67 @@ class GGenericSims : public GMatrixMeasure
 {
 protected:
 
+	enum tSimType
+	{
+		Undefined            /** Unknown method.*/,
+		LanguageOnly         /** Based only on the languages.*/,
+		Product              /** Product of the different similarities.*/,
+		Sum                  /** Weighted sum of the different similarities.*/,
+		Choquet              /** Use the integral of Choquet.*/
+	};
+
 	/**
 	 * Type of similarity:
-	 * #- 1 : Multi-vector.
-	 * #- 2 : Language only.
 	 */
-	unsigned int SimType;
+	tSimType SimType;
 
 	/**
 	 * Factor used for the computation of the global similarity.
 	 */
 	double Factor;
+
+	/**
+	 * Capacity/Weight of the similarity in the content space.
+	 */
+	double ContentCapacity;
+
+	/**
+	 * Capacity/Weight of the similarity in the structure space.
+	 */
+	double StructCapacity;
+
+	/**
+	 * Capacity/Weight of the similarity in the metadata space.
+	 */
+	double MetaCapacity;
+
+	/**
+	 * Capacity of the combination of the content and structure criteria
+	 * (Choquet).
+	 */
+	double ContentStructCapacity;
+
+	/**
+	 * Capacity of the combination of the content and meta criteria
+	 * (Choquet)
+	 */
+	double ContentMetaCapacity;
+
+	/**
+	 * Capacity of the combination of the metadata and structure criteria
+	 * (Choquet)
+	 */
+	double MetaStructCapacity;
+
+	/**
+	 * Metadata space.
+	 */
+	GConceptType* MetaSpace;
+
+	/**
+	 * Structure space.
+	 */
+	GConceptType* StructSpace;
 
 	/**
 	 * Vector corresponding to the first object.
@@ -123,6 +174,14 @@ protected:
 	 */
 	GSimType* CurType;
 
+	/**
+	 * Similarity in the different spaces:
+	 * #- 0=Content.
+	 * #- 1=Structure.
+	 * #- 2=Metadata.
+	 */
+	double SimSpaces[5];
+
 public:
 
 	/**
@@ -132,6 +191,12 @@ public:
 	 * @param cols            Type of the elements in the columns.
 	*/
 	GGenericSims(GFactoryMeasure* fac,tObjType lines,tObjType cols);
+
+	/**
+	 * Get the name of the files that will be used. By default, it is the name
+	 * of the plug-in.
+	 */
+	virtual R::RString GetFilesName(void) const;
 
 	/**
 	* Configurations were applied from the factory.
@@ -170,22 +235,37 @@ public:
 	size_t GetRef(size_t id,GConceptType* type);
 
 	/**
-	* Compute a similarity between two lists of weighted information entities.
-	* The method uses the cosinus of the corresponding vectors. A vector of a
-	* list is build using this list and a Inverse Frequence Factor (IFF) of the
-	* object type (idf, isf or ivf) for a given information entity space
-	* (language). If one of the list is empty, the similarity is null.
-	*/
-	double SimilarityIFFMV(void);
+	 * Compute the similarity in each space and put them in 'SimSpaces'.
+	 * @return true if something could be computed.
+	 */
+	bool ComputeSimSpace(void);
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
-	* The method uses the cosinus of the corresponding vectors. A vector of a
-	* list is build using this list and a Inverse Frequence Factor (IFF) of the
-	* object type (idf, isf or ivf) for a given information entity space
-	* (language). If one of the list is empty, the similarity is null.
+	* A similarity is computed in each space (content,structure and metadata).
+	* The different similarities are aggregated with the integral of Choquet.
 	*/
-	double SimilarityIFFL(void);
+	double SimilarityChoquet(void);
+
+	/**
+	* Compute a similarity between two lists of weighted information entities.
+	* A similarity is computed in each space (content,structure and metadata).
+	* The different similarities are aggregated with a weighted sum.
+	*/
+	double SimilaritySum(void);
+
+	/**
+	* Compute a similarity between two lists of weighted information entities.
+	* A similarity is computed in each space (content,structure and metadata).
+	* The different similarities are aggregated with a product.
+	*/
+	double SimilarityProduct(void);
+
+	/**
+	* Compute a similarity between two lists of weighted information entities
+	* based on the content space only.
+	*/
+	double SimilarityLang(void);
 
 	/**
 	 * Compute the similarity between two objects that must inherits from the
