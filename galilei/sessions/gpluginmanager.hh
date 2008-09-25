@@ -42,6 +42,8 @@ template<class mng,class factory,class plugin>
 		: GGenericPluginManager(name,version,type), R::RContainer<factory,true,true>(20,10),
 		  R::RContainer<plugin,false,true>(20,10), Current(0)
 {
+			  if(Name=="Documents-Profiles Similarities")
+				  std::cout<<Name<<std::endl;
 }
 
 

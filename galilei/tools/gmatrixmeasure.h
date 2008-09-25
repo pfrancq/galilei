@@ -1,4 +1,4 @@
-/*
+	/*
 
 	GALILEI Research Project
 
@@ -63,11 +63,11 @@ namespace GALILEI{
 * - Symmetric (for example between two same type of elements) or not.
 * - The values can be stored in memory. This can be memory consuming for huge
 *   number of elements.
-* - The values can be stored in files. In this case, for each measure 'mes', 4
-*   files are created : mes.main (containing main information), mes.idx (each
-*   record corresponds to one "line" element), mes.block (each record
-*   corresponds to a block of values) and mes.val (each record corresponds to
-*   a value). All files are created in a sub-directory called after the name of
+* - The values can be stored in files. In this case, for each measure 'mes', at
+*   least two files are created : mes.main (containing main information) and
+*   mes.val1 (each record corresponds to a value). If the measure is not
+*   symmetric, a third file mes.val2 is created (with the other part of the
+*   matrix). All files are created in a sub-directory called after the name of
 *   the world.
 * The class supposes that the identifiers of the elements are continuous and
 * that the first identifier is one.
@@ -78,8 +78,6 @@ class GMatrixMeasure : public GMeasure, public GSignalHandler
 {
 	class Measures;    // A list of measure for a given element.
 	class MeasureRec;  // Record storing a specific measure.
-	class IdxRec;      // Record storing the first block of each element.
-	class BlockRec;    // Record storing a reference to a block of values.
 
 	/**
 	 * Values.
@@ -87,19 +85,14 @@ class GMatrixMeasure : public GMeasure, public GSignalHandler
 	R::RContainer<Measures,true,false>* MemValues;
 
 	/**
-	 * Records of measures.
+	 * Records of measures (First part of the matrix).
 	 */
-	R::RRecFile<MeasureRec,false>* RecValues;
+	R::RRecFile<MeasureRec,false>* RecValues1;
 
 	/**
-	 * Records of index.
+	 * Records of measures (Second part of the matrix).
 	 */
-	R::RRecFile<IdxRec,false>* Idx;
-
-	/**
-	 * Record of blocks.
-	 */
-	R::RRecFile<BlockRec,false>* Blocks;
+	R::RRecFile<MeasureRec,false>* RecValues2;
 
 	/**
 	 * Number of lines in memory.
@@ -183,6 +176,11 @@ class GMatrixMeasure : public GMeasure, public GSignalHandler
 	double DirtyValue;
 
 	/**
+	 * Used to compute the default minimum of the measure.
+	 */
+	double DeviationRate;
+
+	/**
 	* Static minimum of measure.
 	*/
 	double MinMeasure;
@@ -227,6 +225,11 @@ class GMatrixMeasure : public GMeasure, public GSignalHandler
 	 */
 	tObjType Cols;
 
+	/**
+	 * First call.
+	 */
+	bool FirstCall;
+
 public:
 
 	/**
@@ -262,6 +265,22 @@ public:
 	inline double GetNullValue(void) const {return(NullLevel);}
 
 	/**
+	 * Get the root directory where the measures are stored. By default, it
+	 * correspond to "Dir/World/Cat" where :
+	 * - Dir is the parameter specified by the user.
+	 * - World is the name of the session.
+	 * - Cat is the name of the corresponding plug-ins category (where all "/"
+	 * characters in the names are replaced by "-").
+	 */
+	virtual R::RString GetRootDir(void) const;
+
+	/**
+	 * Get the name of the files that will be used. By default, it is the name
+	 * of the plug-in.
+	 */
+	virtual R::RString GetFilesName(void) const;
+
+	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
@@ -271,6 +290,17 @@ public:
 	* @param session         Pointer to the session.
 	*/
 	virtual void Connect(GSession* session);
+
+	/**
+	 * Initialize the measure (first call).
+	 */
+	void Init(void);
+
+	/**
+	* The measure must be re-initialized, i.e. all values must be considered
+	* as dirty.
+	*/
+	virtual void ReInit(void);
 
 	/**
 	* Disconnect to the session.
@@ -377,6 +407,12 @@ private:
 	 * @param line           Element is a line?
 	 */
 	void AddIdentificator(size_t id,bool line);
+
+	/**
+	 * Dirty the current file position.
+	 * @param file           File to dirty.
+	 */
+	void DirtyCurrentFilePos(R::RRecFile<MeasureRec,false>* file);
 
 	/**
 	 * An element has changed and all the measure related to it are not updated

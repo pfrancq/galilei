@@ -57,8 +57,8 @@ class GCommunity : public GGroup<GProfile,GCommunity,otCommunity>
 public:
 
 	/**
-	* Construct a group with a specific identificator.
-	* @param id              Identificator.
+	* Construct a group with a specific identifier.
+	* @param id              Identifier.
 	* @param com             Community.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.

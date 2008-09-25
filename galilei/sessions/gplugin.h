@@ -215,7 +215,8 @@ public:
 	/**
 	* Constructor.
 	* @param m               Manager of the plug-in.
-	* @param n               Name of the Factory/Plug-in.
+	* @param n               Name of the Factory/Plug-in ('/' are replaced by
+	*                        '-' for the configuration file).
 	* @param f               Library of the Factory/Plug-in.
 	*/
 	GFactoryPlugin(mng* m,const R::RString& n,const R::RString& f);
@@ -245,7 +246,7 @@ public:
 	void SetHandler(void* handle) {Handle=handle;}
 
 	/**
-	* Set the Handler of the Dlg library.
+	* Set the Handler of the library containing the dailog box.
 	* @param handleDlg      Handle of the dialog library
 	*/
 	void SetDlgHandler(void* handleDlg) {HandleDlg=handleDlg;}
@@ -270,7 +271,6 @@ public:
 
 	/**
 	* Get the level of the plug-in.
-	* @return int.
 	*/
 	int GetLevel(void) const {return(Level);}
 
@@ -356,19 +356,17 @@ public:
 	void Configure(void);
 
 	/**
-	* Apply the configuration eventually to the plugin.
+	* Apply the configuration eventually to the plug-in.
 	*/
 	void Apply(void);
 
 	/**
 	* Specify if an about box exist.
-	* @return bool
 	*/
 	bool HasAbout(void) const {return(AboutDlg);}
 
 	/**
 	* Specify if a configure box exist.
-	* @return bool
 	*/
 	bool HasConfigure(void) const {return(ConfigDlg);}
 

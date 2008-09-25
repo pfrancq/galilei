@@ -212,6 +212,15 @@ public:
 	cObj* RelevantObj(void) const;
 
 	/**
+	* Compute the relevant object, i.e. the object with the highest
+	* average similarity with all the other objects.
+	* @param avgsim          Variable that will contain the average similarity
+	*                        of the objects with the centroid.
+	* @returns Pointer to cObj representing the relevant one.
+	*/
+	cObj* RelevantObj(double& avgsim) const;
+
+	/**
 	* Compute the sum of the similarities of a given object to all the
 	* others.
 	* @param measure         The measure used to compute the similarities.

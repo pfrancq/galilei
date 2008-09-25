@@ -51,9 +51,7 @@ using namespace std;
 GDebugObject::GDebugObject(const RString& name)
 	: Name(name)
 {
-	GSession* session=GSession::Get();
-	if(session)
-		session->AddDebugObject(this);
+	GSession::AddDebugObject(this);
 }
 
 
@@ -96,7 +94,5 @@ void GDebugObject::PutDebugInfo(RTextFile& file,const RString& info)
 //------------------------------------------------------------------------------
 GDebugObject::~GDebugObject(void)
 {
-	GSession* session=GSession::Get();
-	if(session)
-		session->RemoveDebugObject(this);	
+	GSession::RemoveDebugObject(this);
 }

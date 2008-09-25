@@ -159,7 +159,7 @@ public:
 
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(GSession* session)
-	: RTree<GSubject,true,false>(100,50), Data(0)
+	: GDebugObject("Subjects"), RTree<GSubject,true,false>(100,50), Data(0)
 {
 	Data=new Intern(session);
 	InsertNode(0,new GSubject(0,"Subjects",false));
@@ -1206,6 +1206,55 @@ size_t GSubjects::GetNbSubjects(size_t docid)
 	if(!line)
 		return(0);
 	return(line->GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+RString GSubjects::GetDebugInfo(const RString& info)
+{
+	// Look what to do
+	bool JDoc=(info.FindStr("JDoc")!=-1);
+	bool JCom=(info.FindStr("JCom")!=-1);
+	if((!JDoc)&&(!JCom))
+		return(RString::Null);
+
+/*	if(JCom)
+	{
+		Data->CommunitiesScore.Clear();
+		RCursor<GCommunity> Cur(Data->Session->GetCommunities());
+		for(Cur.Start();!Cur.End();Cur.Next())
+			Data->CommunitiesScore.InsertPtr(new GroupScore<GCommunity>(Cur()));
+		RCursor<GroupScore<GCommunity> > Grp(Data->CommunitiesScore);
+		ComputeRecallPrecision<GCommunity,GProfile>(otProfile,Grp,Data->CommunityRecall,Data->CommunityPrecision);
+		RCursor<GCommunity> GroupsComputed(Data->Session->GetCommunities());
+		ComputeTotal<GCommunity,GProfile>(otProfile,otCommunity,GroupsComputed,Data->CommunityTotal);
+	}*/
+	if(JDoc)
+	{
+		GMeasure* DocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
+		RCursor<GTopic> Cur(Data->Session->GetTopics());
+		RCursor<GTopic> Cur2(Data->Session->GetTopics());
+		double Sim(0.0);
+		double Max(-2.0);
+		double tmp;
+		size_t i,j;
+		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
+		{
+			double d;
+			GDoc* Rel=Cur()->RelevantObj(d);
+			Sim+=d;
+			for(Cur2.Start(),j=0;j<i;Cur2.Next(),j++)
+			{
+				GDoc* Rel2=Cur2()->RelevantObj();
+				DocsSims->Measure(0,Rel->GetId(),Rel2->GetId(),&tmp);
+				if(tmp>Max)
+					Max=tmp;
+			}
+		}
+		Sim=Sim/(Cur.GetNb()*(2+Max));
+		return(RString::Number(Sim));
+	}
+	return(RString::Null);
 }
 
 

@@ -79,47 +79,6 @@ public:
 
 //------------------------------------------------------------------------------
 //
-// class GMatrixMeasure::IdxRec
-//
-//------------------------------------------------------------------------------
-
-class GMatrixMeasure::IdxRec
-{
-public:
-	off_t Pos;
-
-	IdxRec(void) : Pos(RIOFile::MaxSize) {}
-	void Read(R::RRecFile<IdxRec,false>& f)  {f>>Pos;}
-	void Write(R::RRecFile<IdxRec,false>& f) {f<<Pos;}
-};
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GMatrixMeasure::BlockRec
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-class GMatrixMeasure::BlockRec
-{
-public:
-	off_t Pos;
-	size_t FirstId;
-	size_t LastId;
-	off_t Next;
-
-	BlockRec(void) : Pos(RIOFile::MaxSize), FirstId(0), LastId(0), Next(RIOFile::MaxSize) {}
-	BlockRec(size_t f,size_t l) : Pos(RIOFile::MaxSize), FirstId(f), LastId(l), Next(RIOFile::MaxSize) {}
-	void Read(R::RRecFile<BlockRec,false>& f)  {f>>Pos>>FirstId>>LastId>>Next;}
-	void Write(R::RRecFile<BlockRec,false>& f) {f<<Pos<<FirstId<<LastId<<Next;}
-};
-
-
-
-//------------------------------------------------------------------------------
-//
 // class GMatrixMeasure::Measures
 //
 //------------------------------------------------------------------------------
@@ -176,7 +135,7 @@ void GMatrixMeasure::Measures::Extend(size_t olds,size_t news,double dirty)
 
 //------------------------------------------------------------------------------
 GMatrixMeasure::GMatrixMeasure(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym)
-	: GMeasure(fac), GSignalHandler(), MemValues(0), RecValues(0), Idx(0), Blocks(0),
+	: GMeasure(fac), GSignalHandler(), MemValues(0), RecValues1(0), RecValues2(0),
 	  MemNbLines(0), MemNbCols(0), FileNbLines(0), FileNbCols(0), MaxIdLine(0), MaxIdCol(0), NbValues(0), Mean(0.0), Deviation(0.0),
 	  Symmetric(sym),NullLevel(0.000001), DirtyValue(-2.0), MinMeasure(0.5), AutomaticMinMeasure(true),
 	  MinMeasureSense(true), InMemory(true), InFile(false), Lines(lines), Cols(cols)
@@ -199,6 +158,22 @@ void GMatrixMeasure::SetElementsType(bool sym,tObjType lines,tObjType cols)
 }
 
 
+//------------------------------------------------------------------------------
+RString GMatrixMeasure::GetRootDir(void) const
+{
+	RString Cat(GetFactory()->GetType());
+	Cat.Replace('/','-');
+	return(RString(Dir+RFile::GetDirSeparator()+Session->GetStorage()->GetWorld()+RFile::GetDirSeparator()+Cat));
+}
+
+
+//------------------------------------------------------------------------------
+RString GMatrixMeasure::GetFilesName(void) const
+{
+	return(Name);
+}
+
+
 //-----------------------------------------------------------------------------
 void GMatrixMeasure::ApplyConfig(void)
 {
@@ -207,6 +182,7 @@ void GMatrixMeasure::ApplyConfig(void)
 		return;
 	NullLevel=Factory->GetDouble("NullLevel");
 	MinMeasure=Factory->GetDouble("MinMeasure");
+	DeviationRate=Factory->GetDouble("DeviationRate");
 	AutomaticMinMeasure=Factory->GetBool("AutomaticMinMeasure");
 	InMemory=Factory->GetBool("Memory");
 	InFile=Factory->GetBool("File");
@@ -221,9 +197,9 @@ void GMatrixMeasure::Connect(GSession* session)
 	if(InFile)
 	{
 		// Create (if necessary) the directory that will contained the file
-		RString place(Dir+RFile::GetDirSeparator()+Session->GetStorage()->GetWorld());
+		RString place(GetRootDir());
 		RDir::CreateDirIfNecessary(place,true);
-		place+=RFile::GetDirSeparator()+Name+".";
+		place+=RFile::GetDirSeparator()+GetFilesName()+".";
 
 		// Read the main information
 		try
@@ -231,34 +207,135 @@ void GMatrixMeasure::Connect(GSession* session)
 			RBinaryFile Main(place+"main");
 			Main.Open(RIO::Read);
 			Main>>FileNbLines>>FileNbCols>>NbValues>>Mean>>Deviation;
+			FirstCall=true;      // It will be necessary to load from the file
 		}
 		catch(...)
 		{
 			// Suppose the file does not exist
 			FileNbLines=FileNbCols=NbValues=0;
 			Mean=Deviation=0.0;
+			FirstCall=false;     // Nothing to load
 		}
 
 		// Create the three files
-		RecValues=new RRecFile<MeasureRec,false>(place+"val",sizeof(MeasureRec));
-		RecValues->Open(RIO::ReadWrite);
-		Idx=new RRecFile<IdxRec,false>(place+"idx",sizeof(IdxRec));
-		Idx->Open(RIO::ReadWrite);
-		if(!Idx->GetRecNb())
+		RecValues1=new RRecFile<MeasureRec,false>(place+"val1",sizeof(MeasureRec));
+		RecValues1->Open(RIO::ReadWrite);
+		if(!Symmetric)
 		{
-			// Create a first rec corresponding to free blocks
-			IdxRec I;
-			Idx->WriteRec(I);
+			RecValues2=new RRecFile<MeasureRec,false>(place+"val2",sizeof(MeasureRec));
+			RecValues2->Open(RIO::ReadWrite);
 		}
-		Blocks=new RRecFile<BlockRec,false>(place+"block",sizeof(BlockRec));
-		Blocks->Open(RIO::ReadWrite);
-
-		// If also in memory -> load the whole file
-		if(InMemory)
-			LoadFile();
 	}
 	FileMustExtend=MemMustExtend=false;   // Suppose nothing must be added
-	FileDirty=MemDirty=false;             // Suppose memory is add
+	FileDirty=MemDirty=false;             // Suppose memory is added
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::ReInit(void)
+{
+	if(InMemory)
+	{
+		size_t max;
+		for(size_t i=0;i<MaxIdLine;i++)
+		{
+			if(Symmetric)
+				max=i;
+			else
+				max=MaxIdCol;
+			void* obj1=Session->GetElement(Lines,i+1);
+			if(!obj1)
+				continue;
+			for(size_t j=0;j<max;j++)
+			{
+				void* obj2=Session->GetElement(Cols,j+1);
+				if(!obj2)
+					continue;
+				double Value=(*MemValues)[i]->Values[j];
+				if(Value!=DirtyValue)
+					DeleteValue(Value);
+				Value=Compute(obj1,obj2);
+				AddValue(Value);
+				(*MemValues)[i]->Values[j]=Value;
+				if(InFile)
+					WriteValue(i+1,j+1,Value);
+			}
+		}
+	}
+	else if(InFile)
+	{
+		MeasureRec Value;
+		size_t i,j;
+		void* obj1;
+
+		// Go trough the lines first
+		i=0; j=1;  // First element is (1,1)
+		for(RecValues1->Start();!RecValues1->End();j++)
+		{
+			if(i>j)
+			{
+				i++;
+				j=1;
+				obj1=Session->GetElement(Lines,i);
+			}
+			RecValues1->ReadRec(Value);
+			if(!obj1)
+				continue;
+			void* obj2=Session->GetElement(Cols,j);
+			if(!obj2)
+				continue;
+
+			if(Value.Value!=DirtyValue)
+				DeleteValue(Value.Value);
+
+			// Recompute it
+			Value.Value=Compute(obj1,obj2);
+			AddValue(Value.Value);
+			RecValues1->Prev();
+			RecValues1->WriteRec(Value);
+		}
+
+		// If not symmetric -> goes to column
+		if(!Symmetric)
+		{
+			i=1; j=1;  // First element is (1,1)
+			for(RecValues2->Start();!RecValues2->End();j++)
+			{
+				if(i==j)
+				{
+					i++;
+					j=1;
+					obj1=Session->GetElement(Cols,i);
+				}
+				RecValues2->ReadRec(Value);
+				if(!obj1)
+					continue;
+				void* obj2=Session->GetElement(Lines,j);
+				if(!obj2)
+					continue;
+
+				if(Value.Value!=DirtyValue)
+					DeleteValue(Value.Value);
+
+				// Recompute it
+				Value.Value=Compute(obj1,obj2);
+				AddValue(Value.Value);
+				RecValues2->Prev();
+				RecValues2->WriteRec(Value);
+			}
+		}
+	}
+	MemDirty=FileDirty=false;
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::Init(void)
+{
+	// If also in memory -> load the whole file
+	if(InMemory&&InFile)
+		LoadFile();
+	FirstCall=false;
 }
 
 
@@ -268,7 +345,7 @@ void GMatrixMeasure::Disconnect(GSession* session)
 	if(InFile)
 	{
 		// Write the main information
-		RBinaryFile Main(Dir+RFile::GetDirSeparator()+Session->GetStorage()->GetWorld()+RFile::GetDirSeparator()+Name+".main");
+		RBinaryFile Main(GetRootDir()+RFile::GetDirSeparator()+GetFilesName()+".main");
 		Main.Open(RIO::Create);
 		Main<<FileNbLines<<FileNbCols<<NbValues<<Mean<<Deviation;
 	}
@@ -278,20 +355,15 @@ void GMatrixMeasure::Disconnect(GSession* session)
 		delete MemValues;
 		MemValues=0;
 	}
-	if(RecValues)
+	if(RecValues1)
 	{
-		delete RecValues;
-		RecValues=0;
+		delete RecValues1;
+		RecValues1=0;
 	}
-	if(Idx)
+	if(RecValues2)
 	{
-		delete Idx;
-		Idx=0;
-	}
-	if(Blocks)
-	{
-		delete Blocks;
-		Blocks=0;
+		delete RecValues2;
+		RecValues2=0;
 	}
 	FileNbLines=FileNbCols=MemNbLines=MemNbCols=MaxIdLine=MaxIdCol=NbValues=0;
 	Mean=Deviation=0.0;
@@ -310,6 +382,9 @@ void GMatrixMeasure::Measure(size_t measure,...)
 	double* res=va_arg(ap,double*);
 	va_end(ap);
 
+	if(FirstCall)
+		Init();
+
 	if(InFile&&FileMustExtend)
 		ExtendFile();
 
@@ -318,7 +393,8 @@ void GMatrixMeasure::Measure(size_t measure,...)
 		if(MemMustExtend)
 			ExtendMem();
 
-		Check(id1,id2);
+		if(Symmetric)
+			Check(id1,id2); // If Symmetric -> Only half of the matrix
 
 		idx1=id1-1; // First line is empty (id1==1 -> Line=0)
 		idx2=id2-1; // First column is id2=1 -> Col=0
@@ -334,7 +410,7 @@ void GMatrixMeasure::Measure(size_t measure,...)
 				if(obj2)
 					(*res)=Compute(obj1,obj2);
 			}
-			//cout<<"Compute Mem sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
+//			cout<<"Compute Mem sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
 			(*MemValues)[idx1]->Values[idx2]=(*res);
 			AddValue(*res);
 			if(InFile)
@@ -374,13 +450,15 @@ void GMatrixMeasure::Info(size_t info,...)
 	va_start(ap,info);
 	double* res=va_arg(ap,double*);
 	va_end(ap);
-	double deviationrate=1.5;
 
 	if(!AutomaticMinMeasure)
 	{
 		(*res)=MinMeasure;
 		return;
 	}
+
+	if(FirstCall)
+		Init();
 
 	if(InFile&&FileMustExtend)
 		ExtendFile();
@@ -390,13 +468,39 @@ void GMatrixMeasure::Info(size_t info,...)
 			ExtendMem();
 		if(MemDirty)
 			UpdateMem();
-		(*res)=Mean+deviationrate*sqrt(Deviation);
+		switch(info)
+		{
+			case 0:
+				(*res)=Mean+DeviationRate*sqrt(Deviation);
+				break;
+			case 1:
+				(*res)=Mean;
+				break;
+			case 2:
+				(*res)=sqrt(Deviation);
+				break;
+			default:
+				throw GException("GMatrixMeasure: '"+RString::Number(info)+"' not a valid information");
+		}
 	}
 	else if(InFile)
 	{
 		if(FileDirty)
 			UpdateFile();
-		(*res)=Mean+deviationrate*sqrt(Deviation);
+		switch(info)
+		{
+			case 0:
+				(*res)=Mean+DeviationRate*sqrt(Deviation);
+				break;
+			case 1:
+				(*res)=Mean;
+				break;
+			case 2:
+				(*res)=sqrt(Deviation);
+				break;
+			default:
+				throw GException("GMatrixMeasure: '"+RString::Number(info)+"' not a valid information");
+		}
 	}
 	else
 	{
@@ -435,7 +539,20 @@ void GMatrixMeasure::Info(size_t info,...)
 			Mean/=NbComp;
 			Deviation=(Deviation/NbComp)-(Mean*Mean);
 		}
-		(*res)=Mean+deviationrate*sqrt(Deviation);
+		switch(info)
+		{
+			case 0:
+				(*res)=Mean+DeviationRate*sqrt(Deviation);
+				break;
+			case 1:
+				(*res)=Mean;
+				break;
+			case 2:
+				(*res)=sqrt(Deviation);
+				break;
+			default:
+				throw GException("GMatrixMeasure: '"+RString::Number(info)+"' not a valid information");
+		}
 	}
 }
 
@@ -443,30 +560,32 @@ void GMatrixMeasure::Info(size_t info,...)
 //------------------------------------------------------------------------------
 inline double GMatrixMeasure::ReadValue(size_t id1,size_t id2)
 {
-	Check(id1,id2);
+	R::RRecFile<MeasureRec,false>* Read;
 
-	// Go to the index file to find the first block
-	IdxRec Element;
-	Idx->GoToRec(id1);
-	Idx->ReadRec(Element);
-
-	// Go to the first block
-	BlockRec Block;
-	Blocks->GoToRec(Element.Pos);
-	Blocks->ReadRec(Block);
-	while((id2<Block.FirstId)||(id2>Block.LastId))
+	if(Symmetric)
 	{
-		Blocks->GoToRec(Block.Next);
-		Blocks->ReadRec(Block);
+		Read=RecValues1;
+		Check(id1,id2);
+		Read->GoToRec((id1*(id1-1))/2+id2-1);
+	}
+	else
+	{
+		if(id1>id2)
+		{
+			Read=RecValues2;
+			Read->GoToRec(((id2-1)*(id2-1))/2+id1-1);
+		}
+		else
+		{
+			Read=RecValues1;
+			Read->GoToRec((id1*(id1-1))/2+id2-1);
+		}
 	}
 
-	// Move to the correct value
-	RecValues->GoToRec(Block.Pos+id2-Block.FirstId);
-
 	// Read the record at the current position
-	off_t Pos=RecValues->GetPos();
+	off_t Pos=Read->GetPos();
 	MeasureRec Mes;
-	RecValues->ReadRec(Mes);
+	Read->ReadRec(Mes);
 
 	// Verify if there is something to update
 	if(Mes.Value!=DirtyValue)
@@ -483,8 +602,8 @@ inline double GMatrixMeasure::ReadValue(size_t id1,size_t id2)
 	AddValue(Mes.Value);
 
 	// Store new record
-	RecValues->Seek(Pos);      // Necessary because new data may be loaded in between
-	RecValues->WriteRec(Mes);
+	Read->Seek(Pos);      // Necessary because new data may be loaded in between
+	Read->WriteRec(Mes);
 
 	// Return
 	return(Mes.Value);
@@ -494,27 +613,30 @@ inline double GMatrixMeasure::ReadValue(size_t id1,size_t id2)
 //------------------------------------------------------------------------------
 void GMatrixMeasure::WriteValue(size_t id1,size_t id2,double val)
 {
-	Check(id1,id2);
+	R::RRecFile<MeasureRec,false>* Read;
 
-	// Go to the index file to find the first block
-	IdxRec Element;
-	Idx->GoToRec(id1);
-	Idx->ReadRec(Element);
-
-	// Go to the first block
-	BlockRec Block;
-	Blocks->GoToRec(Element.Pos);
-	Blocks->ReadRec(Block);
-	while((id2<Block.FirstId)||(id2>Block.LastId))
+	if(Symmetric)
 	{
-		Blocks->GoToRec(Block.Next);
-		Blocks->ReadRec(Block);
+		Read=RecValues1;
+		Check(id1,id2);
+		Read->GoToRec((id1*(id1-1))/2+id2-1);
+	}
+	else
+	{
+		if(id1>id2)
+		{
+			Read=RecValues2;
+			Read->GoToRec(((id2-1)*(id2-1))/2+id1-1);
+		}
+		else
+		{
+			Read=RecValues1;
+			Read->GoToRec((id1*(id1-1))/2+id2-1);
+		}
 	}
 
-	// Move to the correct value
-	RecValues->GoToRec(Block.Pos+id2-Block.FirstId);
 	MeasureRec Mes(val);
-	RecValues->WriteRec(Mes);
+	Read->WriteRec(Mes);
 }
 
 
@@ -558,85 +680,34 @@ void GMatrixMeasure::ExtendMem(void)
 void GMatrixMeasure::ExtendFile(void)
 {
 	MeasureRec NullMeasure(DirtyValue);
-	IdxRec Index;
-
-	// If the no line -> Insert a false line
-	if(!FileNbLines)
-	{
-		Idx->WriteRec(Index);  // Pos=0 -> Free blocks (for later)
-		if(Symmetric)
-			Idx->WriteRec(Index);  // Pos=1 -> Not used if symmetric measure
-	}
 
 	// Verify first if the existing lines must be extended
-	if((!Symmetric)&&(MaxIdCol>FileNbCols))
+	if((!Symmetric)&&(MaxIdCol>1)&&(MaxIdCol>FileNbCols))
 	{
-		BlockRec NewBlock(FileNbCols+1,MaxIdCol);
-		for(Idx->GoToRec(1);!Idx->End();)
+		// Go to the end of the file of RecValues2
+		RecValues2->GoToRec(RecValues2->GetRecNb());
+		while(FileNbCols<MaxIdCol)
 		{
-			// Read First block
-			Idx->ReadRec(Index);
-
-			// Create new dirty values
-			NewBlock.Pos=RecValues->GetRecNb();
-			RecValues->GoToRec(NewBlock.Pos);
-			for(size_t i=MaxIdCol-FileNbCols+1;--i;)
-				RecValues->WriteRec(NullMeasure);
-
-			// Add a new block of values
-			off_t Pos=Blocks->GetRecNb();
-			Blocks->GoToRec(Pos);
-			Blocks->WriteRec(NewBlock);
-
-			// Find the last block to assign to another one
-			BlockRec Find;
-			Blocks->GoToRec(Index.Pos);
-			Blocks->ReadRec(Find);
-			for(;Find.Next!=RIOFile::MaxSize;)
-			{
-				Blocks->GoToRec(Find.Next);
-				Blocks->ReadRec(Find);
-			}
-			Blocks->Prev();
-			Find.Next=Pos;
-			Blocks->WriteRec(Find);
+			// Write a line of null values
+			for(size_t i=FileNbCols;--i;)
+				RecValues2->WriteRec(NullMeasure);
+			FileNbCols++; // Next line
 		}
 	}
 
 	// Verify if new lines must be added
 	if(MaxIdLine>FileNbLines)
 	{
-		for(size_t id=FileNbLines+1;id<=MaxIdLine;id++)
+		// Go to the end of the file of RecValues1
+		RecValues1->GoToRec(RecValues1->GetRecNb());
+		while(FileNbLines<MaxIdLine)
 		{
-			if(Symmetric&&id==1)
-				continue;
-
-			// Create the line
-			size_t max;
-			if(Symmetric)
-				max=id-1;
-			else
-				max=MaxIdCol;
-			BlockRec NewBlock(1,max);
-
-			// Create new dirty values
-			NewBlock.Pos=RecValues->GetRecNb();
-			RecValues->GoToRec(NewBlock.Pos);
-			for(size_t i=max+1;--i;)
-				RecValues->WriteRec(NullMeasure);
-
-			// Add a new block of values
-			Index.Pos=Blocks->GetRecNb();
-			Blocks->GoToRec(Index.Pos);
-			Blocks->WriteRec(NewBlock);
-
-			// Add the line in the index file
-			Idx->GoToRec(id);
-			Idx->WriteRec(Index);
+			// Write a line of null values
+			for(size_t i=FileNbLines+1;--i;)
+				RecValues1->WriteRec(NullMeasure);
+			FileNbLines++; // Next line
 		}
 	}
-	FileNbLines=MaxIdLine;
-	FileNbCols=MaxIdCol;
 	FileMustExtend=false;
 	FileDirty=true;
 }
@@ -684,6 +755,26 @@ void GMatrixMeasure::AddIdentificator(size_t id,bool line)
 
 
 //------------------------------------------------------------------------------
+void GMatrixMeasure::DirtyCurrentFilePos(R::RRecFile<MeasureRec,false>* file)
+{
+	MeasureRec Value;
+
+	file->ReadRec(Value);
+
+	// If value is already dirty -> Skip it
+	if(Value.Value==DirtyValue)
+		return;
+
+	if(!InFile)
+		DeleteValue(Value.Value);  // Be sure it is not done twice
+	else
+		Value.Value=DirtyValue;
+	file->Prev();
+	file->WriteRec(Value);
+}
+
+
+//------------------------------------------------------------------------------
 void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 {
 	if(line)
@@ -713,36 +804,19 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 		}
 		if(file&&InFile&&(id<=FileNbLines))
 		{
-			IdxRec Element;
-			BlockRec Block;
 			MeasureRec Value;
 
-			// Read the index
-			Idx->GoToRec(id);
-			Idx->ReadRec(Element);
-
-			Block.Next=Element.Pos;
-			while(Block.Next!=RIOFile::MaxSize)
+			// Read the line of RecValues1
+			RecValues1->GoToRec(id*(id-1)/2);
+			for(size_t j=id+1;--j;)
+				DirtyCurrentFilePos(RecValues1);
+			if(!Symmetric)
 			{
-				Blocks->GoToRec(Block.Next);
-				Blocks->ReadRec(Block);
-
-				// Read all values
-				RecValues->GoToRec(Block.Pos);
-				for(size_t j=Block.FirstId;j<=Block.LastId;j++)
+				// Go through each line of RecValues2 to change the right value
+				for(size_t j=2;j<FileNbCols;j++)
 				{
-					RecValues->ReadRec(Value);
-
-					// If value is already dirty -> Skip it
-					if(Value.Value==DirtyValue)
-						continue;
-
-					if(!InFile)
-						DeleteValue(Value.Value);  // Be sure it is not done twice
-					else
-						Value.Value=DirtyValue;
-					RecValues->Prev();
-					RecValues->WriteRec(Value);
+					RecValues2->GoToRec((j-1)*(j-2)/2+id-1);
+					DirtyCurrentFilePos(RecValues2);
 				}
 			}
 			FileDirty=true;
@@ -765,38 +839,16 @@ void GMatrixMeasure::DirtyIdentificator(size_t id,bool line,bool file)
 		}
 		if(file&&InFile&&(id<FileNbCols))
 		{
-			IdxRec Element;
-			BlockRec Block;
-			MeasureRec Value;
-
-			size_t start;
-			if(Symmetric)
-				start=id;
-			else
-				start=1;
-
-			for(Idx->GoToRec(start);!Idx->End();)
+			for(size_t j=id+1;j<=FileNbLines;j++)
 			{
-				Idx->ReadRec(Element);
-				Blocks->GoToRec(Element.Pos);
-				Blocks->ReadRec(Block);
-				while((id<Block.FirstId)||(id>Block.LastId))
-				{
-					Blocks->GoToRec(Block.Next);
-					Blocks->ReadRec(Block);
-				}
-
-				// If value is already dirty -> Skip it
-				RecValues->GoToRec(Block.Pos+id-Block.FirstId);
-				RecValues->ReadRec(Value);
-				if(Value.Value==DirtyValue)
-					continue;
-				if(!InFile)
-					DeleteValue(Value.Value);  // Be sure it is not done twice
-				else
-					Value.Value=DirtyValue;
-				RecValues->Prev();
-				RecValues->WriteRec(Value);
+				RecValues1->GoToRec(j*(j-1)/2+id-1);
+				DirtyCurrentFilePos(RecValues1);
+			}
+			if((!Symmetric)&&(id>1))
+			{
+				RecValues2->GoToRec((id-2)*(id-1)/2);
+				for(size_t j=id;--j;)
+					DirtyCurrentFilePos(RecValues2);
 			}
 			FileDirty=true;
 		}
@@ -882,57 +934,69 @@ void GMatrixMeasure::UpdateMem(void)
 //------------------------------------------------------------------------------
 void GMatrixMeasure::UpdateFile(void)
 {
-	size_t i;
-	IdxRec Element;
-	BlockRec Block;
 	MeasureRec Value;
+	size_t i,j;
+	void* obj1;
 
-	// Parse all values and recompute each dirty values
-	if(Symmetric)
-		i=2;
-	else
-		i=1;
-	for(Idx->GoToRec(i);!Idx->End();i++)
+	// Go trough the lines first
+	i=0; j=1;  // First element is (1,1)
+	for(RecValues1->Start();!RecValues1->End();j++)
 	{
-		// Get a pointer to the object 1 : If no pointer -> goes to next record
-		void* obj1=Session->GetElement(Lines,i);
-		if(!obj1)
+		if(i>j)
 		{
-			Idx->Next();
-			continue;
+			i++;
+			j=1;
+			obj1=Session->GetElement(Lines,i);
 		}
+		RecValues1->ReadRec(Value);
+		if(!obj1)
+			continue;
+		void* obj2=Session->GetElement(Cols,j);
+		if(!obj2)
+			continue;
 
-		// Get the index
-		Idx->ReadRec(Element);
+		// If value OK -> Skip it
+		if(Value.Value!=DirtyValue)
+			continue;
 
-		// Goes to the first block
-		Block.Next=Element.Pos;
-		while(Block.Next!=RIOFile::MaxSize)
+		// Recompute it
+		Value.Value=Compute(obj1,obj2);
+		AddValue(Value.Value);
+		RecValues1->Prev();
+		RecValues1->WriteRec(Value);
+	}
+
+	// If not symmetric -> goes to column
+	if(!Symmetric)
+	{
+		i=1; j=1;  // First element is (1,1)
+		for(RecValues2->Start();!RecValues2->End();j++)
 		{
-			Blocks->GoToRec(Block.Next);
-			Blocks->ReadRec(Block);
-
-			// Read all values
-			RecValues->GoToRec(Block.Pos);
-			for(size_t j=Block.FirstId;j<=Block.LastId;j++)
+			if(i==j)
 			{
-				RecValues->ReadRec(Value);
-
-				// If value OK -> Skip it
-				if(Value.Value!=DirtyValue)
-					continue;
-
-				// Recompute it (if object exists)
-				void* obj2=Session->GetElement(Cols,j);
-				if(!obj2)
-					continue;
-				Value.Value=Compute(obj1,obj2);
-				AddValue(Value.Value);
-				RecValues->Prev();
-				RecValues->WriteRec(Value);
+				i++;
+				j=1;
+				obj1=Session->GetElement(Cols,i);
 			}
+			RecValues2->ReadRec(Value);
+			if(!obj1)
+				continue;
+			void* obj2=Session->GetElement(Lines,j);
+			if(!obj2)
+				continue;
+
+			// If value OK -> Skip it
+			if(Value.Value!=DirtyValue)
+				continue;
+
+			// Recompute it
+			Value.Value=Compute(obj1,obj2);
+			AddValue(Value.Value);
+			RecValues2->Prev();
+			RecValues2->WriteRec(Value);
 		}
 	}
+
 	FileDirty=false;
 }
 
@@ -940,62 +1004,45 @@ void GMatrixMeasure::UpdateFile(void)
 //------------------------------------------------------------------------------
 void GMatrixMeasure::LoadFile(void)
 {
-	size_t i;
-	IdxRec Element;
-	BlockRec Block;
 	MeasureRec Value;
+	size_t i,j;
 
 	// Extend the memory
 	MaxIdLine=FileNbLines;
 	MaxIdCol=FileNbCols;
 	ExtendMem();
 
-	// Load all values
-	if(Symmetric)
-		i=2;
-	else
-		i=1;
-	for(Idx->GoToRec(1);!Idx->End();i++)
+	// Go trough the lines first
+	i=0; j=1;  // First element is (1,1)
+	for(RecValues1->Start();!RecValues1->End();j++)
 	{
-		// Get a pointer to the object 1 : If no pointer -> goes to next record
-		void* obj1=Session->GetElement(Lines,i);
-		if(!obj1)
+		if(j>i)
 		{
-			Idx->Next();
+			i++;
+			j=1;
+		}
+		RecValues1->ReadRec(Value);
+		if(Symmetric&&(i==j))
 			continue;
-		}
+		(*MemValues)[i-1]->Values[j-1]=Value.Value;
+	}
 
-		// Get the index
-		Idx->ReadRec(Element);
-
-		// Goes to the first block
-		Block.Next=Element.Pos;
-		while(Block.Next!=RIOFile::MaxSize)
+	// If not symmetric -> goes to column
+	if(!Symmetric)
+	{
+		i=1; j=1;  // First element is (1,1)
+		for(RecValues2->Start();!RecValues2->End();)
 		{
-			Blocks->GoToRec(Block.Next);
-			Blocks->ReadRec(Block);
-
-			// Read all values
-			RecValues->GoToRec(Block.Pos);
-			for(size_t j=Block.FirstId;j<=Block.LastId;j++)
+			if(i==j)
 			{
-				RecValues->ReadRec(Value);
-
-				// If value not OK -> not into memory
-				if(Value.Value==DirtyValue)
-					continue;
-
-				// Store into memory
-				size_t id1=i;
-				size_t id2=j;
-				Check(id1,id2);
-
-				id1--; // First line is empty (id1==1 -> Line=0)
-				id2--; // First column is id2=1 -> Col=0
-				(*MemValues)[id1]->Values[id2]=Value.Value;
+				i++;
+				j=1;
 			}
+			RecValues2->ReadRec(Value);
+			// Store into memory
+			(*MemValues)[j-1]->Values[i-1]=Value.Value;
+			j++;
 		}
-
 	}
 }
 
@@ -1078,6 +1125,7 @@ void GMatrixMeasure::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("NullLevel",0.00001));
 	params->InsertParam(new RParamValue("MinMeasure",0.05));
+	params->InsertParam(new RParamValue("DeviationRate",1.5));
 	params->InsertParam(new RParamValue("AutomaticMinMeasure",true));
 	params->InsertParam(new RParamValue("Memory",true));
 	params->InsertParam(new RParamValue("File",false));

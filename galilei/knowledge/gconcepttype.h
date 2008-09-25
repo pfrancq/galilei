@@ -86,17 +86,17 @@ class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcep
 	GLang* Lang;
 
 	/**
-	* Array of concepts ordered by identificator.
+	* Array of concepts ordered by identifier.
 	*/
 	GConcept** Direct;
 
 	/**
-	* Highest identificator that the dictionary can handle.
+	* Highest identifier that the dictionary can handle.
 	*/
 	size_t MaxId;
 
 	/**
-	* Highest identificator of the concept stored.
+	* Highest identifier of the concept stored.
 	*/
 	size_t UsedId;
 

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	QGMeasure2ElementsDlg.h
+	QGMatrixMeasureDlg.h
 
 	Configuration For Measures Between Two Elements - Header.
 
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef QGMeasure2ElementsDlgH
-#define QGMeasure2ElementsDlgH
+#ifndef QGMatrixMeasureDlgH
+#define QGMatrixMeasureDlgH
 
 
 //-----------------------------------------------------------------------------
@@ -42,7 +42,7 @@
 
 //------------------------------------------------------------------------------
 // forward declaration
-class DlgMeasure2Elements;         //  Create by Qt uic
+class DlgMatrixMeasure;         //  Create by Qt uic
 
 
 //-----------------------------------------------------------------------------
@@ -57,27 +57,27 @@ namespace GALILEI{
  * @code
  * void Configure(GFactoryMeasure* params)
  * {
- *    QGMeasure2ElementsDlg dlg(Similarities between subprofiles");
+ *    QGMatrixMeasureDlg dlg(Similarities between subprofiles");
  *    dlg.Configure(params);
  * }
  * @endcode
  * @author Pascal Francq
  * @short Configuration For Measures Between Two Elements
  */
-class QGMeasure2ElementsDlg 
+class QGMatrixMeasureDlg
 {
 	/**
 	 * Qt-generated Dialog class
 	 */
-	DlgMeasure2Elements* Dlg;
-	
-public:	
+	DlgMatrixMeasure* Dlg;
+
+public:
 	/**
 	 * Construct the dialog box.
-	 * @param title          Title of the dialog box.      
+	 * @param title          Title of the dialog box.
 	 */
-	QGMeasure2ElementsDlg(const char* str);
-	
+	QGMatrixMeasureDlg(const char* str);
+
 	/**
 	 * Launch the configuration.
 	 * @param params         Pointer to the factory.
@@ -88,7 +88,7 @@ public:
 	 * Method called before the dialog box is initiliazed. By default, it hides
 	 * the groupbox 'MesureSpecific' reserved for specific parameters for the
 	 * measures.
-	 * 
+	 *
 	 * This method can be override to add new widgets. The methods 'Init' and
 	 * 'Done' must be overrided to link these widgets to parameters of the
 	 * plug-in.
@@ -100,14 +100,14 @@ public:
 	 *    text->setText("Minimum common documents");
 	 *    layout->addWidget(text);
 	 *    layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-	 *    MinDocs = new QSpinBox(MeasureSpecific,"MinDocs");    // 'MinDocs' must be added to the class. 
+	 *    MinDocs = new QSpinBox(MeasureSpecific,"MinDocs");    // 'MinDocs' must be added to the class.
 	 *    layout->addWidget(MinDoc);
 	 *    MeasureSpecificLayout->addLayout(layout);
 	 * }
 	 * @endcode
 	 */
 	virtual void Panel(void);
-		
+
 	/**
 	 * Method called before the dialog box is opened. It uses the values of the
 	 * parameters to initialize the dialog box. This method can be overrided
@@ -116,14 +116,14 @@ public:
 	 * @code
 	 * void MyDlg::Init(GFactoryMeasure* params)
 	 * {
-	 *    QGMeasure2ElementsDlg::Init(params);
+	 *    QGMatrixMeasureDlg::Init(params);
 	 *    MinDocs->setValue(params->GetUInt("MinDocs"));    // 'MinDocs' must be added to the class.
 	 * }
 	 * @encode
 	 * @param params         Pointer to the factory.
 	 */
 	virtual void Init(GFactoryMeasure* params);
-	
+
 	/**
 	 * Method called when the dialog box is closed with the 'OK' button. The
 	 * parameters are set based on the value of the dialog box. This method can
@@ -133,27 +133,27 @@ public:
 	 * void MyDlg::Done(GFactoryMeasure* params)
 	 * {
 	 *    params->SetUInt("MinDocs",MinDocs->value());    // 'MinDocs' must be added to the class.
-	 *    QGMeasure2ElementsDlg::Done(params);
+	 *    QGMatrixMeasureDlg::Done(params);
 	 * }
 	 * @endcode
 	 * @param params         Pointer to the factory.
-	 */	
+	 */
 	virtual void Done(GFactoryMeasure* params);
-	
+
 	/**
 	 * Get a pointer to the layout that can be modified.
 	 */
 	QVBoxLayout* GetMeasureSpecificLayout(void);
-	
+
 	/**
 	 * Get a pointer to the groupbox that can be modified.
 	 */
     QGroupBox* GetMeasureSpecific(void);
-    
+
 	/**
 	 * Destructor.
 	 */
-	virtual ~QGMeasure2ElementsDlg(void);
+	virtual ~QGMatrixMeasureDlg(void);
 };
 
 

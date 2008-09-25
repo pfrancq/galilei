@@ -55,6 +55,12 @@ GMeasure::GMeasure(GFactoryMeasure* fac)
 
 
 //------------------------------------------------------------------------------
+void GMeasure::ReInit(void)
+{
+}
+
+
+//------------------------------------------------------------------------------
 void GMeasure::Info(size_t,...)
 {
 }
@@ -77,7 +83,9 @@ GMeasure::~GMeasure(void)
 GFactoryMeasure::GFactoryMeasure(GMeasureManager* m,const RString& t,const RString& n,const RString& f)
 	: GFactoryPlugin<GFactoryMeasure,GMeasure,GMeasureManager>(m,n,f), Type(t)
 {
-	SetConfigInfos("lib/galilei/plugins/Measures/"+t,f.Mid(0,f.GetLen()-3));
+	RString Cat(t);
+	Cat.Replace('/','-');
+	SetConfigInfos("lib/galilei/plugins/Measures/"+Cat,f.Mid(0,f.GetLen()-3));
 }
 
 

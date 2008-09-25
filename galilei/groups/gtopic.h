@@ -57,8 +57,8 @@ class GTopic : public GGroup<GDoc,GTopic,otTopic>
 public:
 
 	/**
-	* Construct a group with a specific identificator.
-	* @param id              Identificator.
+	* Construct a group with a specific identifier.
+	* @param id              Identifier.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/

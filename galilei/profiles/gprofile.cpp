@@ -118,12 +118,12 @@ void GFdbk::HasUpdate(void)
 //------------------------------------------------------------------------------
 tDocAssessment GFdbk::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRandom* rand)
 {
-	double random=rand->Value()*100+1.0;
+	double random=rand->GetValue()*100+1.0;
 
 	// If there is Random change the judgment.
 	if(random<PercErr)
 	{
-		random=rand->Value()*100+1.0;;
+		random=rand->GetValue()*100+1.0;;
 		switch(fdbk & djMaskJudg)
 		{
 			case djOK:

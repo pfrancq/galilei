@@ -175,7 +175,6 @@ public:
 	bool TopicsLoaded;                                                // Are the topics loaded?
 	RContainer<GConceptType,true,true> ConceptTypes;                  // Types of Concepts
 	RContainer<GRelationType,true,true> RelationTypes;                // Types of Relations
-	RContainer<GDebugObject,false,true> DebugObjs;                    // Objects given debugging information.
 	size_t MaxDocs;                                                   // Maximum number of documents to handle in memory.
 	size_t MaxProfiles;                                               // Maximum number of profiles to handle in memory.
 	size_t MaxGroups;                                                 // Maximum number of groups to handle in memory.
@@ -187,7 +186,7 @@ public:
 		  Users(u,u/2), UsersLoaded(false), Profiles(p,p/2),
 		  Communities(c+(c/2),c/2), CommunitiesLoaded(false),
 		  Topics(t+(t/2),t/2), TopicsLoaded(false),
-		  ConceptTypes(50,10), RelationTypes(10,5), DebugObjs(100,100),
+		  ConceptTypes(50,10), RelationTypes(10,5),
 		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups), FilterManager(0)
 	{
 		CurrentRandom=0;
@@ -210,6 +209,7 @@ public:
 // Global variables
 GSession* GSession::Intern::Session=0;
 bool GSession::Intern::ExternBreak=false;
+RContainer<GDebugObject,false,true> DebugObjs(100,100);                    // Objects given debugging information.
 
 
 
@@ -452,23 +452,23 @@ R::RDebug* GSession::GetDebug(void) const
 //------------------------------------------------------------------------------
 void GSession::AddDebugObject(const GDebugObject* debug)
 {
-	Data->DebugObjs.InsertPtr(debug);
+	DebugObjs.InsertPtr(debug);
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::RemoveDebugObject(const GDebugObject* debug)
 {
-	Data->DebugObjs.DeletePtr(debug);
+	DebugObjs.DeletePtr(debug);
 }
 
 
 //------------------------------------------------------------------------------
 RString GSession::GetDebugInfo(const RString& name,const RString& info)
 {
-	GDebugObject* obj=Data->DebugObjs.GetPtr(name);
+	GDebugObject* obj=DebugObjs.GetPtr(name);
 	if(!obj)
-		throw GException("No debugging object called '"+info+"'");
+		throw GException("No debugging object called '"+name+"'");
 	return(obj->GetDebugInfo(info));
 }
 
@@ -476,9 +476,9 @@ RString GSession::GetDebugInfo(const RString& name,const RString& info)
 //------------------------------------------------------------------------------
 void GSession::PutDebugInfo(RTextFile& file,const RString& name,const RString& info)
 {
-	GDebugObject* obj=Data->DebugObjs.GetPtr(name);
+	GDebugObject* obj=DebugObjs.GetPtr(name);
 	if(!obj)
-		throw GException("No debugging object called '"+info+"'");
+		throw GException("No debugging object called '"+name+"'");
 	obj->PutDebugInfo(file,info);
 }
 
@@ -501,7 +501,7 @@ int GSession::GetCurrentRandom(void) const
 //------------------------------------------------------------------------------
 int GSession::GetCurrentRandomValue(size_t max)
 {
-	return(int(Data->Random->Value(max)));
+	return(int(Data->Random->GetValue(max)));
 }
 
 

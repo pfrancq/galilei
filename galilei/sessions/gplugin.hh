@@ -102,9 +102,12 @@ template<class factory>
 //-----------------------------------------------------------------------------
 template<class factory,class plugin,class mng>
 	GFactoryPlugin<factory,plugin,mng>::GFactoryPlugin(mng* m,const R::RString& n,const R::RString& f)
-		: RConfig("lib/galilei/plugins/"+m->GetName(),f.Mid(0,f.GetLen()-3)), Mng(m), Plugin(0), Lib(f), Name(n),
+		: RConfig(), Mng(m), Plugin(0), Lib(f), Name(n),
 	      AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0), Level(0)
 {
+	R::RString Cat(m->GetName());
+	Cat.Replace('/','-');
+	SetConfigInfos("lib/galilei/plugins/"+Cat,f.Mid(0,f.GetLen()-3));
 	InsertParam(new R::RParamValue("Enable",false));
 }
 

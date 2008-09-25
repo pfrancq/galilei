@@ -484,6 +484,15 @@ public:
 };
 
 
+//------------------------------------------------------------------------------
+class GResetMeasureI : public RPrgFunc
+{
+public:
+	GResetMeasureI(void) : RPrgFunc("ResetMeasure","Reset the measure (2th argument) for a given type(1st argument).") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
+};
+
+
 
 //------------------------------------------------------------------------------
 //
@@ -868,7 +877,7 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<
 	for(NbStep=0;;)
 	{
 		// Feedback process
-		for(nb=Random->Value(MaxFBStep)+MinFBStep+1;--nb;)
+		for(nb=Random->GetValue(MaxFBStep)+MinFBStep+1;--nb;)
 		{
 			// Set TestName
 			NbStep++;
@@ -913,7 +922,7 @@ void GRealLifeI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<
 		GALILEIApp->Apply();
 
 		// Look if new topic or existing one
-		if(Random->Value()<Proba)
+		if(Random->GetValue()<Proba)
 		{
 			// Create One profile of an existing topic
 			NewProf=Owner->Session->GetSubjects()->AddProfiles();
@@ -1202,6 +1211,22 @@ void GSetCurrentMeasureI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst*,R::RContai
 
 
 //------------------------------------------------------------------------------
+void GResetMeasureI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst*,R::RContainer<RPrgVar,true,false>& args)
+{
+	if(args.GetNb()!=2)
+		throw RPrgException(prg,"Method needs two parameters.");
+	GMeasureManager* Mng=GALILEIApp->GetManager<GMeasureManager>("Measures");
+	GTypeMeasureManager* Type=Mng->GetMeasureCategory(args[0]->GetValue(prg),false);
+	if(!Type)
+		throw RPrgException(prg,"'"+args[0]->GetValue(prg)+"' is not a valid measure type");
+	o->WriteStr("Current Measure for '"+args[0]->GetValue(prg)+"': "+args[1]->GetValue(prg));
+	GMeasure* Mes=Type->GetPlugIn(args[1]->GetValue(prg),false);
+	Mes->ReInit();
+}
+
+
+
+//------------------------------------------------------------------------------
 //
 // class GSessionClass
 //
@@ -1228,6 +1253,7 @@ GSessionClass::GSessionClass(GInstGALILEIApp* app)
 	Methods.InsertPtr(new GRunStatI());
 	Methods.InsertPtr(new GForceReComputeI());
 	Methods.InsertPtr(new GSetSaveResultsI());
+	Methods.InsertPtr(new GResetMeasureI());
 }
 
 

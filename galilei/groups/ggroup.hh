@@ -184,40 +184,56 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 }
 
 
+//------------------------------------------------------------------------------
+template<class cObj,class cGroup,GALILEI::tObjType type>
+	cObj* GALILEI::GGroup<cObj,cGroup,type>::RelevantObj(double& avgsim) const
+{
+	cObj* rel;
+	double sum;
+
+	// If no objects -> No relevant one.
+	if(!R::RContainer<cObj,false,true>::GetNb())
+	{
+		avgsim=0.0;
+		return(0);
+	}
+
+	// Suppose the first element is the most relevant.
+	R::RCursor<cObj> Prof(*this);
+	Prof.Start();
+	rel=Prof();
+	if(R::RContainer<cObj,false,true>::GetNb()==1)
+	{
+		avgsim=1.0;
+		return(rel);
+	}
+	// Similarities
+	GMeasure* ProfilesSims=GetSimMeasure();
+	avgsim=ComputeSumSim(ProfilesSims,rel);
+
+	// Look if in the other objects, there is a better one
+	for(;!Prof.End();Prof.Next())
+	{
+		sum=ComputeSumSim(ProfilesSims,Prof());
+		if(sum>=avgsim)
+		{
+			rel=Prof();
+			avgsim=sum;
+		}
+	}
+	avgsim/=(R::RContainer<cObj,false,true>::GetNb()-1);
+
+	// return most relevant
+	return(rel);
+}
 
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	cObj* GALILEI::GGroup<cObj,cGroup,type>::RelevantObj(void) const
 {
-	cObj* rel;
-	R::RCursor<cObj> Prof(*this);
-	double refsum,sum;
-
-	// Similarities
-	GMeasure* ProfilesSims=GetSimMeasure();
-
-	// If no objects -> No relevant one.
-	if(!R::RContainer<cObj,false,true>::GetNb())
-		return(0);
-
-	// Suppose the first element is the most relevant.
-	rel=const_cast<cObj*>(R::RContainer<cObj,false,true>::operator[](0));
-	refsum=ComputeSumSim(ProfilesSims,rel);
-
-	// Look if in the other objects, there is a better one
-	for(Prof.Start();!Prof.End();Prof.Next())
-	{
-		sum=ComputeSumSim(ProfilesSims,Prof());
-		if (sum>=refsum)
-		{
-			rel=Prof();
-			refsum=sum;
-		}
-	}
-
-	// return most relevant
-	return(rel);
+	double d;
+	return(RelevantObj(d));
 }
 
 

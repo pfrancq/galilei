@@ -46,6 +46,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gdebugobject.h>
 
 
 //-----------------------------------------------------------------------------
@@ -63,7 +64,7 @@ namespace GALILEI{
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subjects.
 */
-class GSubjects : public R::RTree<GSubject,true,false>
+class GSubjects : public GDebugObject, public R::RTree<GSubject,true,false>
 {
 protected:
 
@@ -278,7 +279,7 @@ public:
 	/**
 	* Add a given document to a subject.
 	* @param doc            Pointer to the document.
-	* @param subjectid      Identificator of the subject.
+	* @param subjectid      Identifier of the subject.
 	*/
 	void InsertDocSubject(GDoc* doc,size_t subjectid);
 
@@ -292,7 +293,7 @@ public:
 
 	/**
 	* Look if a document is from a given subject.
-	* @param docid          Identificator of the document.
+	* @param docid          Identifier of the document.
 	* @param s              Pointer to the subject.
 	* @return bool
 	*/
@@ -308,7 +309,7 @@ public:
 
 	/**
 	* Look if a document is in the parent subject.
-	* @param docid          Identificator of the document.
+	* @param docid          Identifier of the document.
 	* @param s              Subject.
 	* @return bool
 	*/
@@ -322,7 +323,7 @@ public:
 
 	/**
 	* Get a Cursor on the subjects of a given document.
-	* @param docid          Identificator of the document.
+	* @param docid          Identifier of the document.
 	*/
 	R::RCursor<GSubject> GetSubjects(size_t docid);
 
@@ -334,12 +335,19 @@ public:
 
 	/**
 	* Get the number of subjects associated with a given document.
-	* @param docid          Identificator of the document.
+	* @param docid          Identifier of the document.
 	*/
 	size_t GetNbSubjects(size_t docid);
 
 	/**
-	* Destructor of a subject.
+	 * Build some debugging information as a string. A string is given as
+	 * parameter to allow the building of several outputs.
+	 * @param info           Description of the information needed.
+	 */
+	virtual R::RString GetDebugInfo(const R::RString& info);
+
+	/**
+	* Destruct the subjects.
 	*/
 	~GSubjects(void);
 };

@@ -75,6 +75,12 @@ public:
 	GMeasure(GFactoryMeasure* fac);
 
 	/**
+	* The measure must be re-initialized, i.e. all values must be considered
+	* as dirty.
+	*/
+	virtual void ReInit(void);
+
+	/**
 	* Get a measure. Each plug-in can handle several types of measure (first
 	* parameter of the method). The other parameters (including eventually the
 	* result of the measure) depend of the particular plug-in. This means that
@@ -114,7 +120,7 @@ public:
 	virtual void Measure(size_t measure,...)=0;
 
 	/**
-	* Exchange a particular information with the plugin. The other parameters
+	* Exchange a particular information with the plug-in. The other parameters
 	* (including eventually the result of the measure) depend of the particular
 	* plug-in. This means that the caller must exactly know which parameters
 	* are requested by a particular plug-in. This method is not intended to be
@@ -148,7 +154,7 @@ public:
 	virtual void Info(size_t info,...);
 
 	/**
-	* Destructor.
+	* Destruct the measure.
 	*/
 	virtual ~GMeasure(void);
 };
@@ -157,7 +163,7 @@ public:
 //------------------------------------------------------------------------------
 /*
 * The GFactoryMeasure class provides a template for a generic measure factory.
-* A factory handles the loading of the dynamic library containing the plugin.
+* A factory handles the loading of the dynamic library containing the plug-in.
 * @author Pascal Francq
 * @short Generic Measure Factory.
 */
@@ -173,10 +179,12 @@ public:
 
 	/*
 	* Constructor.
-	* @param mng             Manager of the plugin.
-	* @param t               Type of the measure.
-	* @param n               Name of the Factory/Plugin.
-	* @param f               Lib of the Factory/Plugin.
+	* @param mng             Manager of the plug-in.
+	* @param t               Type of the measure  ('/' are replaced by '-' for
+	*                        the configuration file).
+	* @param n               Name of the Factory/Plug-in ('/' are replaced by
+	*                        '-' for the configuration file).
+	* @param f               Library of the Factory/Plug-in.
 	*/
 	GFactoryMeasure(GMeasureManager* mng,const R::RString& t,const R::RString& n,const R::RString& f);
 
@@ -226,8 +234,8 @@ public:
 	/**
 	* Load a plug-in and its dialog boxes.
 	* @param dll             Name of the dynamic link library.
-	* @param handle          Handle to the library contaioning the plug-in.
-	* @param handleDlg       Handle to the library contaioning the dialogs.
+	* @param handle          Handle to the library containing the plug-in.
+	* @param handleDlg       Handle to the library containing the dialogs.
 	*/
 	virtual void Load(const R::RString& dll,void* handle,void* handleDlg);
 
@@ -376,7 +384,7 @@ public:
 	* @param type            Type of the factory.
 	* @param need            If the parameter is true and the plug-in does not
 	*                        exist, generate an exception.
-	* @return Pointer to the plugin, or null/exception if no plug-in is
+	* @return Pointer to the plug-in, or null/exception if no plug-in is
 	* selected or if the list does not need to select one.
 	*/
 	virtual GMeasure* GetCurrentMethod(const R::RString& type,bool need=true) const;

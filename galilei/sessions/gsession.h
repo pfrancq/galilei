@@ -170,13 +170,13 @@ private:
 	 * Add a object given debugging information.
 	 * @param debug          Object.
 	 */
-	void AddDebugObject(const GDebugObject* debug);
+	static void AddDebugObject(const GDebugObject* debug);
 
 	/**
 	 * Remove a object given debugging information.
 	 * @param debug          Object.
 	 */
-	void RemoveDebugObject(const GDebugObject* debug);
+	static void RemoveDebugObject(const GDebugObject* debug);
 
 public:
 
