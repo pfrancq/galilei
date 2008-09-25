@@ -61,7 +61,8 @@ private:
 	R::RContainer<GCAGroup,false,false>* ToDel;
 
 	/**
-	* Value of the Similarity criterion "J".
+	* Value of the Similarity criterion "J" :
+	* (Average Similarity inside each group)/(Maximal similarity between centroids+2) .
 	*/
 	double CritSimJ;
 
@@ -130,18 +131,28 @@ private:
 	*/
 	R::RPromSol** thSols;
 
+	/**
+	 * Identifier of the first of the two most similar centroid.
+	 */
+	size_t MostSimilarGroup1;
+
+	/**
+	 * Identifier of the second of the two most similar centroid.
+	 */
+	size_t MostSimilarGroup2;
+
 public:
 
 	/**
 	* Construct the chromosome.
 	* @param inst           The instance of the problem.
-	* @param id             The identificator of the chromosome.
+	* @param id             The identifier of the chromosome.
 	*/
 	GCAChromo(GCAInst* inst,size_t id);
 
 
 	/**
-	* Initialisation of the chromosome.
+	* Initialization of the chromosome.
 	* @param thData         Pointer to the "thread-dependent" data.
 	*/
 	virtual void Init(GCAThreadData* thData);
@@ -159,7 +170,6 @@ public:
 
 	/**
 	* Construct a valid solution.
-	* @return The function must retrun true if a solution has been constructed.
 	*/
 	virtual void RandomConstruct(void);
 
@@ -184,45 +194,48 @@ public:
 	void DoKMeans(void);
 
 	/**
-	* Divide the group containing the two most dissimilar subprofiles.
+	* Divide the group containing the two most dissimilar objects.
 	*/
-	void DivideWorstSubProfiles(void);
+	void DivideWorstObjects(void);
 
 	/**
-	* Merge the two groups containing the two most similar subprofiles.
+	* Merge the two groups containing the two most similar centroids.
 	*/
-	void MergeBestSubProfiles(void);
+	void MergeBestGroups(void);
 
 	/**
-	* Treat the social subprofiles, i.e. if these subprofiles are alone in a
-	* group, put them in another group.
-	* @param rel                If true, the group is chosen as the one having the
-	*                           closest relevant subprofile. If false, the average
-	*                           similarity is used.
+	* Treat the social objects, i.e. if these objects are alone in a group, put
+	* them in another group.
 	*/
-	void TreatSocialSubProfiles(bool rel);
+	void TreatSocialObjects(void);
 
 	/**
-	* Perform an optimisation.
+	 * kMeans-based Optimization.
+	 */
+	void kMeansOptimisation(void);
+
+	/**
+	* Perform an optimization.
 	*/
 	virtual void Optimisation(void);
 
 	/**
-	* Do the standard mutation of the GGA.
+	* Do a mutation of the chromosome. Since the GCA seems to over-group, the
+	* mutation merge the two groups containing the most similar centroids.
 	*/
-	virtual void Modify(void);
+//	virtual void Mutation(void);
 
 	/**
-	* Look if two subprofiles are in the same group or not.
-	* @param obj1           Identificator of the first subprofile.
-	* @param obj2           Identificator of the second subprofile.
+	* Look if two objects are in the same group or not.
+	* @param obj1            Identifier of the first object.
+	* @param obj2            Identifier of the second object.
 	* @return true if they are in the same group, else false.
 	*/
 	bool SameGroup(size_t obj1,size_t obj2) const;
 
 	/**
-	* The assigment operator.
-	* @param chromo         The chromosome used as source.
+	* The assignment operator.
+	* @param chromo          Chromosome used as source.
 	*/
 	GCAChromo& operator=(const GCAChromo& chromo);
 
@@ -260,7 +273,7 @@ public:
 	double GetFiMinus(void) const {return(FiMinus);}
 
 	/**
-	* Destructor.
+	* Destruct the chromosome.
 	*/
 	virtual ~GCAChromo(void);
 

@@ -167,38 +167,39 @@ void GCAChromo::RandomConstruct(void)
 void GCAChromo::Evaluate(void)
 {
 	size_t i;
-	double min;
-	double tmp;
+	double max(-2.0),tmp;
 
 	CritAgreement=CritDisagreement=CritSimJ=0.0;
 	if(!Used.GetNb())
 		return;
 	if(Used.GetNb()==1)
 		cout<<"Problem"<<endl;
+
+	// Go through the groups to compute each contribution to the average
+	// measures and to find the maximal similarity between the centroids.
 	R::RCursor<GCAGroup> Cur(Used);
 	R::RCursor<GCAGroup> Cur2(Used);
-	for(Cur.Start(),i=0,min=2.0;!Cur.End();Cur.Next(),i++)
+	for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 	{
-		if(!i)
-			Cur()->Evaluate(CritSimJ,CritAgreement,CritDisagreement);
+		Cur()->Evaluate(CritSimJ,CritAgreement,CritDisagreement);
 		if(i<Used.GetNb()-1)
 		{
 			for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
 			{
-				if(!i)
-					Cur2()->Evaluate(CritSimJ,CritAgreement,CritDisagreement);
-				tmp=1-Instance->GetSim(Cur()->GetRelevant()->GetElementId(),Cur2()->GetRelevant()->GetElementId());
-				tmp=tmp*tmp;
-				if(tmp<min)
-					min=tmp;
+				tmp=Instance->GetSim(Cur()->GetCentroid()->GetElementId(),Cur2()->GetCentroid()->GetElementId());
+				if(tmp>max)
+				{
+					max=tmp;
+					MostSimilarGroup1=Cur()->GetId();
+					MostSimilarGroup2=Cur2()->GetId();
+				}
 			}
 		}
 	}
 
-	tmp=static_cast<double>(Instance->Objs.GetNb())*static_cast<double>(Instance->Objs.GetNb()-1)/2;
-	CritAgreement/=tmp;
-	CritDisagreement/=tmp;
-	CritSimJ=min/(CritSimJ*Used.GetNb());
+	CritAgreement/=Used.GetNb();
+	CritDisagreement/=Used.GetNb();
+	CritSimJ=CritSimJ/(Used.GetNb()*(2+max));
 }
 
 
@@ -214,10 +215,7 @@ void GCAChromo::ReAllocate(void)
 	Protos.Clear();
 	R::RCursor<GCAGroup> Grp(Used);
 	for(Grp.Start();!Grp.End();Grp.Next())
-	{
-		Grp()->ComputeRelevant();
-		Protos.InsertPtr(Grp()->GetRelevant());
-	}
+		Protos.InsertPtr(Grp()->GetCentroid());
 
 	// Clear the chromosome
 	Clear();
@@ -228,7 +226,7 @@ void GCAChromo::ReAllocate(void)
 	{
 		grp=ReserveGroup();
 		grp->Insert(CurP());
-		grp->SetRelevant(CurP());
+		grp->SetCentroid(CurP());
 	}
 
 	// Mix randomly thObjs1
@@ -271,7 +269,7 @@ void GCAChromo::ReAllocate(void)
 		if(!grp)
 		{
 			grp=ReserveGroup();
-			grp->SetRelevant(*Cur);
+			grp->SetCentroid(*Cur);
 		}
 
 		// Insert the object in the current group.
@@ -291,9 +289,9 @@ size_t GCAChromo::CalcNewProtosNb(void)
 	Grp.Set(Used);
 	for(Grp.Start(),count=0;!Grp.End();Grp.Next())
 	{
-		OldProto=Grp()->GetRelevant();
-		Grp()->ComputeRelevant();
-		if(OldProto!=Grp()->GetRelevant())
+		OldProto=Grp()->Centroid;
+//		Grp()->ComputeRelevant();
+		if(OldProto!=Grp()->GetCentroid())
 			count++;
 	}
 	return(count);
@@ -341,7 +339,7 @@ void GCAChromo::DoKMeans(void)
 
 
 //-----------------------------------------------------------------------------
-void GCAChromo::DivideWorstSubProfiles(void)
+void GCAChromo::DivideWorstObjects(void)
 {
 	R::RCursor<GCAGroup> Grp;
 	size_t i;
@@ -426,38 +424,12 @@ void GCAChromo::DivideWorstSubProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GCAChromo::MergeBestSubProfiles(void)
+void GCAChromo::MergeBestGroups(void)
 {
-	size_t i,j;
-	GCAGroup* grp1;
-	GCAGroup* grp2;
-	GCAGroup* bestgrp1;
-	GCAGroup* bestgrp2;
-	double sim,maxsim;
-	size_t prof;
+	size_t i;
+	GCAGroup* bestgrp1((*this)[MostSimilarGroup1]);
+	GCAGroup* bestgrp2((*this)[MostSimilarGroup2]);
 	GCAObj** ptr;
-
-	// Find the two groups containing the most similar objects.
-	R::RCursor<GCAObj> Cur(Objs);
-	R::RCursor<GCAObj> Cur2(Objs);
-	for(Cur.Start(),i=Cur.GetNb(),j=0,maxsim=-1.0,bestgrp1=bestgrp2=0;--i;Cur.Next(),j++)
-	{
-		grp1=GetGroup(Cur());
-		prof=Cur()->GetElementId();
-		for(Cur2.GoTo(j+1);!Cur2.End();Cur2.Next())
-		{
-			grp2=GetGroup(Cur2());
-			if(grp1==grp2) continue;
-			sim=Instance->GetSim(prof,Cur2()->GetElementId());
-			if(sim>maxsim)
-			{
-				maxsim=sim;
-				bestgrp1=grp1;
-				bestgrp2=grp2;
-			}
-		}
-	}
-	if((!bestgrp1)||(!bestgrp2)) return;
 
 	// Put the objects of bestgrp1 in bestgrp2 only if there are not already have the same user
 	RCursor<GCAObj> CurObj(GetObjs(*bestgrp1));
@@ -478,7 +450,7 @@ void GCAChromo::MergeBestSubProfiles(void)
 
 
 //-----------------------------------------------------------------------------
-void GCAChromo::TreatSocialSubProfiles(bool rel)
+void GCAChromo::TreatSocialObjects(void)
 {
 	GCAObj* obj;
 	R::RCursor<GCAGroup> Cur1(Used),Cur2(Used);
@@ -500,17 +472,13 @@ void GCAChromo::TreatSocialSubProfiles(bool rel)
 			continue;
 
 		// Find a new group
-		for(Cur2.Start(),max=-1.0,grp=0;!Cur2.End();Cur2.Next())
+		for(Cur2.Start(),max=-2.0,grp=0;!Cur2.End();Cur2.Next())
 		{
 			if((Cur1()==Cur2())||(!Cur2()->GetNbObjs()))
 				continue;
 			if(Cur2()->HasSameUser(obj))
 				continue;
-			Cur2()->ComputeRelevant();
-			if(rel)
-				tmp=Instance->GetSim(obj->GetElementId(),Cur2()->GetRelevant()->GetElementId());
-			else
-				tmp=Cur2()->ComputeHomogeneity(obj);
+			tmp=Instance->GetSim(obj->GetElementId(),Cur2()->GetCentroid()->GetElementId());
 			if(tmp>max)
 			{
 				max=tmp;
@@ -533,7 +501,7 @@ void GCAChromo::TreatSocialSubProfiles(bool rel)
 
 
 //-----------------------------------------------------------------------------
-void GCAChromo::Optimisation(void)
+void GCAChromo::kMeansOptimisation(void)
 {
 	size_t i;
 	size_t nb;
@@ -546,9 +514,6 @@ void GCAChromo::Optimisation(void)
 	if(!Instance->Params->NbDivChromo)
 		return;
 
-	if(Instance->Debug)
-		Instance->Debug->BeginFunc("Optimisation","GChomoIR");
-
 	// Copy the current chromosome in thTests
 	Evaluate();
 	(*thTests[0])=(*this);
@@ -557,10 +522,10 @@ void GCAChromo::Optimisation(void)
 	{
 		(*thTests[i*2-1])=(*LastDiv);
 		LastDiv=thTests[i*2-1];
-		LastDiv->DivideWorstSubProfiles();
+		LastDiv->DivideWorstObjects();
 		(*thTests[i*2])=(*LastMerge);
 		LastMerge=thTests[i*2];
-		LastMerge->MergeBestSubProfiles();
+		LastMerge->MergeBestGroups();
 	}
 
 	// Do K-Means on the temporaries chromosomes.
@@ -568,7 +533,7 @@ void GCAChromo::Optimisation(void)
 	for(i=0;i<nb;i++)
 	{
 		thTests[i]->DoKMeans();
-		thTests[i]->TreatSocialSubProfiles(true);
+		thTests[i]->TreatSocialObjects();
 		thTests[i]->Evaluate();
 	}
 
@@ -593,18 +558,34 @@ void GCAChromo::Optimisation(void)
 				Instance->WriteChromoInfo(this);
 		}
 		delete[] tab;
-		Instance->Debug->EndFunc("Optimisation","GChomoIR");
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GCAChromo::Modify(void)
+void GCAChromo::Optimisation(void)
 {
-	RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::Mutation();
+	if(Instance->Debug)
+		Instance->Debug->BeginFunc("Optimisation","GChomoIR");
+	kMeansOptimisation();
+	if(Instance->Debug)
+		Instance->Debug->EndFunc("Optimisation","GChomoIR");
 }
 
 
+//------------------------------------------------------------------------------
+/*void GCAChromo::Mutation(void)
+{
+	if(this->Instance->Debug)
+		this->Instance->Debug->BeginFunc("Mutation","GChomoIR");
+
+	MergeBestGroups();
+	ComputeOrd();
+
+	if(this->Instance->Debug)
+		this->Instance->Debug->EndFunc("Mutation","GChomoIR");
+}
+*/
 
 //-----------------------------------------------------------------------------
 bool GCAChromo::SameGroup(size_t obj1,size_t obj2) const
@@ -623,6 +604,8 @@ GCAChromo& GCAChromo::operator=(const GCAChromo& chromo)
 	Fi=chromo.Fi;
 	FiPlus=chromo.FiPlus;
 	FiMinus=chromo.FiMinus;
+	MostSimilarGroup1=chromo.MostSimilarGroup1;
+	MostSimilarGroup2=chromo.MostSimilarGroup2;
 	return(*this);
 }
 

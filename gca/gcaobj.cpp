@@ -51,21 +51,21 @@
 
 //-----------------------------------------------------------------------------
 GCAObj::GCAObj(size_t id,GDoc* d)
-	: Id(id), Element(d), ElementId(d->GetId()), Social(false), ParentId(0), SumPjk(0.0)
+	: Id(id), Element(d), ElementId(d->GetId()), Social(true), ParentId(0)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GCAObj::GCAObj(size_t id,GProfile* p)
-	: Id(id), Element(p), ElementId(p->GetId()), Social(p->IsSocial()), ParentId(p->GetUser()->GetId()),SumPjk(0.0)
+	: Id(id), Element(p), ElementId(p->GetId()), Social(p->IsSocial()), ParentId(p->GetUser()->GetId())
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GCAObj::GCAObj(const GCAObj* obj)
-	: Id(obj->Id), Element(obj->Element), ElementId(obj->ElementId), Social(obj->Social), ParentId(obj->ParentId), SumPjk(obj->SumPjk)
+	: Id(obj->Id), Element(obj->Element), ElementId(obj->ElementId), Social(obj->Social), ParentId(obj->ParentId)
 {
 }
 

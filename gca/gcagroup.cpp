@@ -61,7 +61,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class SubProfileLocal
+/*class SubProfileLocal
 {
 public:
 	GCAObj* Prof;
@@ -81,7 +81,7 @@ int sort_function(const void* a,const void* b)
 	else
 		return(1);
 }
-
+*/
 
 
 //-----------------------------------------------------------------------------
@@ -92,16 +92,14 @@ int sort_function(const void* a,const void* b)
 
 //-----------------------------------------------------------------------------
 GCAGroup::GCAGroup(GCAGroup* grp)
-	: RGroup<GCAGroup,GCAObj,GCAChromo>(grp), BestSumDist(0.0),
-	  Relevant(0), Dirty(true), ToEval(true)
+	: RGroup<GCAGroup,GCAObj,GCAChromo>(grp), AvgIntraSim(0.0),AvgAgreement(0.0),AvgDisagreement(0.0),Centroid(0),ToEval(true)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GCAGroup::GCAGroup(GCAChromo* owner,const size_t id)
-	: RGroup<GCAGroup,GCAObj,GCAChromo>(owner,id), BestSumDist(0.0),
-	  Relevant(0), Dirty(true), ToEval(true)
+	: RGroup<GCAGroup,GCAObj,GCAChromo>(owner,id), AvgIntraSim(0.0),AvgAgreement(0.0),AvgDisagreement(0.0),Centroid(0),ToEval(true)
 {
 }
 
@@ -110,9 +108,9 @@ GCAGroup::GCAGroup(GCAChromo* owner,const size_t id)
 void GCAGroup::Clear(void)
 {
 	RGroup<GCAGroup,GCAObj,GCAChromo>::Clear();
-	BestSumDist=0.0;
-	Relevant=0;
-	ToEval=Dirty=true;
+	AvgIntraSim=AvgAgreement=AvgDisagreement=0.0;
+	Centroid=0;
+	ToEval=true;
 }
 
 
@@ -133,25 +131,42 @@ bool GCAGroup::HasSameUser(const GCAObj* obj) const
 //---------------------------------------------------------------------------
 bool GCAGroup::CanInsert(const GCAObj* obj)
 {
-	size_t prof1;
-	size_t prof2;
-
+	// If no objects -> OK
 	if(!NbSubObjects)
 		return(true);
-	prof1=obj->GetElementId();
-	size_t usr1=obj->GetParentId();
+
+	// Verify that no object of the group has the same parent of a disagreement ratios greater than the
+	// maximum allowed.
+	double tmp;
+	size_t prof1(obj->GetElementId());
+	size_t usr1(obj->GetParentId());
 	RCursor<GCAObj> ptr=Owner->GetObjs(*this);
-	for(ptr.Start();!ptr.End();ptr.Next())
+	for(ptr.Start(),LastMaxSim=-2.0;!ptr.End();ptr.Next())
 	{
-		prof2=ptr()->GetElementId();
-		// Do not put two profiles of the same user in the same group
+		// Do not put two objects with the same parent in the same group
 		if(usr1&&(usr1==ptr()->GetParentId()))
 			return(false);
-		// Min sim and min disagreement must be respected
-		if((Owner->Instance->GetSim(prof1,prof2)<=Owner->Instance->Params->MinSimLevel) ||
-		  (Owner->Instance->GetDisagreementRatio(prof1,prof2)>=Owner->Instance->Params->MinDisagreement))
+
+		// Maximum disagreement must be respected
+		if(Owner->Instance->GetDisagreementRatio(prof1,ptr()->GetElementId())>=Owner->Instance->Params->MinDisagreement)
 		  	return(false);
+
+		// Verify the minimum similarity and remember the best similarity
+		tmp=Owner->Instance->GetSim(prof1,ptr()->GetElementId());
+		if(tmp<=0)
+			return(false);
+
+		// Min similairty
+		if(tmp<=Owner->Instance->Params->MinSimLevel)
+			return(false);
+		if(tmp>LastMaxSim)
+			LastMaxSim=tmp;
 	}
+
+/*	if(LastMaxSim<=Owner->Instance->Params->MinSimLevel)
+		return(false);*/
+
+	// OK, it can be grouped.
 	return(true);
 }
 
@@ -159,105 +174,105 @@ bool GCAGroup::CanInsert(const GCAObj* obj)
 //---------------------------------------------------------------------------
 void GCAGroup::PostInsert(const GCAObj* /*obj*/)
 {
-	ToEval=Dirty=true;
+	ToEval=true;
+	Centroid=0;
 }
 
 
 //---------------------------------------------------------------------------
 void GCAGroup::PostDelete(const GCAObj* /*obj*/)
 {
-	ToEval=Dirty=true;
+	ToEval=true;
+	Centroid=0;
 }
 
 
 //---------------------------------------------------------------------------
-double GCAGroup::ComputeSumDist(GCAObj* obj)
+double GCAGroup::ComputeSumSim(GCAObj* obj)
 {
-	double Sum;
-	size_t prof;
-	double tmp;
-
 	if(!NbSubObjects)
 		return(0.0);
-	prof=obj->GetElementId();
+	size_t prof(obj->GetElementId());
+	double Sum(0.0);
 	RCursor<GCAObj> ptr(Owner->GetObjs(*this));
-	for(ptr.Start(),Sum=0.0;!ptr.End();ptr.Next())
+	for(ptr.Start();!ptr.End();ptr.Next())
 	{
 		if(ptr()==obj) continue;
-		tmp=1-Owner->Instance->GetSim(prof,ptr()->GetElementId());
-		Sum+=tmp*tmp;
+		Sum+=Owner->Instance->GetSim(prof,ptr()->GetElementId());
 	}
 	return(Sum);
 }
 
 
 //---------------------------------------------------------------------------
-void GCAGroup::ComputeRelevant(void)
+void GCAGroup::ComputeCentroid(void)
 {
-	double SumDist;
-
-	if(!Dirty)
-		return;
-
 	// If no objects -> No relevant one.
 	if(!NbSubObjects)
 	{
-		Relevant=0;
-		BestSumDist=0.0;
-		Dirty=false;
+		Centroid=0;
+		AvgIntraSim=0.0;
 		return;
 	}
 
 	// Suppose the first element is the most relevant.
 	RCursor<GCAObj> ptr(Owner->GetObjs(*this));
 	ptr.Start();
-	Relevant=(ptr());
-	BestSumDist=ComputeSumDist(ptr());
+	Centroid=(ptr());
+	if(NbSubObjects==1)
+	{
+		AvgIntraSim=1.0;
+		return;
+	}
+	AvgIntraSim=ComputeSumSim(ptr());
 
 	// Look if in the other objects, there is a better one
 	for(ptr.Next();!ptr.End();ptr.Next())
 	{
-		SumDist=ComputeSumDist(ptr());
-		if(SumDist<BestSumDist)
+		double SumSim(ComputeSumSim(ptr()));
+		if(SumSim<AvgIntraSim)
 		{
-			Relevant=(ptr());
-			BestSumDist=SumDist;
+			Centroid=(ptr());
+			AvgIntraSim=SumSim;
 		}
 	}
-	Dirty=false;
+	AvgIntraSim/=(NbSubObjects-1);
 }
 
 
 //---------------------------------------------------------------------------
 void GCAGroup::Evaluate(double& dist,double& agree,double& disagree)
 {
-	ComputeRelevant();
 	if(ToEval)
 	{
-		ToEval=false;
+		if(!Centroid)
+			ComputeCentroid();
 		RCursor<GCAObj> CurObj(Owner->GetObjs(*this));
 		RCursor<GCAObj> CurObj2(Owner->GetObjs(*this));
 		size_t i;
-		for(CurObj.Start(),i=0,AgreementSum=DisagreementSum=0.0;i<GetNbObjs()-1;CurObj.Next(),i++)
+		for(CurObj.Start(),i=0,AvgAgreement=AvgDisagreement=0.0;i<NbSubObjects-1;CurObj.Next(),i++)
 		{
 			for(CurObj2.GoTo(i+1);!CurObj2.End();CurObj2.Next())
 			{
-				AgreementSum+=Owner->Instance->GetAgreementRatio(CurObj()->GetElementId(),CurObj2()->GetElementId());
-				DisagreementSum+=Owner->Instance->GetDisagreementRatio(CurObj()->GetElementId(),CurObj2()->GetElementId());
+				AvgAgreement+=Owner->Instance->GetAgreementRatio(CurObj()->GetElementId(),CurObj2()->GetElementId());
+				AvgDisagreement+=Owner->Instance->GetDisagreementRatio(CurObj()->GetElementId(),CurObj2()->GetElementId());
 			}
 		}
+		AvgAgreement/=NbSubObjects;
+		AvgDisagreement/=NbSubObjects;
+		ToEval=false;
 	}
-	dist+=BestSumDist;
-	agree+=AgreementSum;
-	disagree+=DisagreementSum;
+	dist+=AvgIntraSim;
+	agree+=AvgAgreement;
+	disagree+=AvgDisagreement;
 }
 
 
 //---------------------------------------------------------------------------
-void GCAGroup::SetRelevant(GCAObj* obj)
+void GCAGroup::SetCentroid(GCAObj* obj)
 {
-	Relevant=obj;
-	ToEval=Dirty=true;
+	Centroid=obj;
+	ToEval=true;
 }
 
 
@@ -265,18 +280,17 @@ void GCAGroup::SetRelevant(GCAObj* obj)
 GCAGroup& GCAGroup::operator=(const GCAGroup& grp)
 {
 	RGroup<GCAGroup,GCAObj,GCAChromo>::operator=(grp);
-	BestSumDist=grp.BestSumDist;
-	Relevant=grp.Relevant;
-	Dirty=grp.Dirty;
+	AvgIntraSim=grp.AvgIntraSim;
+	AvgAgreement=grp.AvgAgreement;
+	AvgDisagreement=grp.AvgDisagreement;
+	Centroid=grp.Centroid;
 	ToEval=grp.ToEval;
-	AgreementSum=grp.AgreementSum;
-	DisagreementSum=grp.AgreementSum;
 	return(*this);
 }
 
 
 //---------------------------------------------------------------------------
-double GCAGroup::GetMaxRatioSame(GCAObj* obj)
+/*double GCAGroup::GetMaxRatioSame(GCAObj* obj)
 {
 	double max,tmp;
 	size_t prof=obj->GetElementId();
@@ -291,7 +305,7 @@ double GCAGroup::GetMaxRatioSame(GCAObj* obj)
 	}
 	return(max);
 }
-
+*/
 
 //---------------------------------------------------------------------------
 GCAGroup::~GCAGroup(void)

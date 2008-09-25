@@ -60,7 +60,7 @@ public:
 
 	/**
 	* Construct the IR heuristic.
-	* @param r              The random genrator to use.
+	* @param r              The random generator to use.
 	* @param objs           Pointer to the objects.
 	* @param debug          Debugger.
 	*/
@@ -74,8 +74,9 @@ public:
 
 	/**
 	* Find a group for the next object.
+	* @param obj             Object.
 	*/
-	virtual GCAGroup* FindGroup(void);
+	virtual GCAGroup* FindGroup(GCAObj* obj);
 
 	/**
 	* Verify that no social profiles is alone.

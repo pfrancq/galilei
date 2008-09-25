@@ -52,10 +52,10 @@
 
 //-----------------------------------------------------------------------------
 /**
-* The GPlugin class provides a representation for a basic "plugin" system for
+* The GCAProm represented a PROMETHEE Kernel for the GCA.
 * the GALILEI sessions.
 * @author Pascal Francq
-* @short Generic Plugin.
+* @short GCA PROMETHEE Kernel.
 */
 class GCAProm : public R::RPromKernel
 {

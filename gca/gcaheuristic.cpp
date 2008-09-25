@@ -44,6 +44,7 @@
 #include <gcaobj.h>
 #include <gcainst.h>
 using namespace R;
+using namespace std;
 
 
 
@@ -69,7 +70,7 @@ void GCAHeuristic::Init(GCAChromo* groups)
 
 
 //-----------------------------------------------------------------------------
-GCAGroup* GCAHeuristic::FindGroup(void)
+GCAGroup* GCAHeuristic::FindGroup(GCAObj* obj)
 {
 	GCAGroup* grp;
 	double maxsim;
@@ -77,7 +78,7 @@ GCAGroup* GCAHeuristic::FindGroup(void)
 
 	// Look first if one of the object with a ratio are already grouped
 	// -> If yes, return the group
-	RCursor<GCAMaxRatio> Best(*Ratios[CurObj->GetId()]);
+	RCursor<GCAMaxRatio> Best(*Ratios[obj->GetId()]);
 	for(Best.Start(),grp=0;(!Best.End())&&(!grp);Best.Next())
 		grp=Groups->GetGroup(Best()->ObjId);
 	if(grp)
@@ -88,14 +89,11 @@ GCAGroup* GCAHeuristic::FindGroup(void)
 	for(Cur.Start(),maxsim=-1.0;!Cur.End();Cur.Next())
 	{
 		// If all the hard constraints are not respected -> skip the group.
-		if(!Cur()->CanInsert(CurObj))
+		if(!Cur()->CanInsert(obj))
 			continue;
 
-		// Compute the relevant profile of the current group
-		Cur()->ComputeRelevant();
-
 		// Compute average similarity with the profiles already in the group.
-		sim=Cur()->ComputeHomogeneity(CurObj);
+		sim=Cur()->GetLastMaxSim();
 		if(sim>maxsim)
 		{
 			maxsim=sim;
@@ -138,8 +136,7 @@ void GCAHeuristic::PostRun(void)
 				continue;
 			if(Cur2()->HasSameUser(obj))
 				continue;
-			Cur2()->ComputeRelevant();
-			tmp=Cur2()->ComputeHomogeneity(obj);
+			tmp=Cur2()->ComputeRelSim(obj);
 			if(tmp>max)
 			{
 				max=tmp;

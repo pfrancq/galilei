@@ -84,6 +84,7 @@ bool GAConfigDlg::Configure(RConfig* params )
 	MinDisagreement->setValue(params->GetDouble("Min Disagreement"));
 	Incremental->setChecked(params->GetBool("Incremental"));
 	LocalOptimisation->setChecked(params->GetBool("LocalOptimisation"));
+	Optimisation->setChecked(params->GetBool("Optimisation"));
 	InternalRandom->setChecked(params->GetBool("InternalRandom"));
 	Seed->setDisabled(params->GetBool("InternalRandom"));
 	Seed->setValue(params->GetInt("Seed"));
@@ -113,6 +114,7 @@ bool GAConfigDlg::Configure(RConfig* params )
 		params->SetDouble("Min Disagreement",MinDisagreement->value());
 		params->SetBool("Incremental",Incremental->isChecked());
 		params->SetBool("LocalOptimisation",LocalOptimisation->isChecked());
+		params->SetBool("Optimisation",Optimisation->isChecked());
 		params->SetBool("InternalRandom",InternalRandom->isChecked());
 		params->SetUInt("Seed",Seed->value());
 		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->SetDouble(SimP->value());

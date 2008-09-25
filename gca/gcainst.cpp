@@ -167,24 +167,35 @@ void GCAInst::Init(void)
 	// Init the Ratios
 	GCAMaxRatios* ptr;
 	double ratio;
+	size_t i,j,max;
+
+	if(Objs.GetNb()<50)
+		max=Objs.GetNb();
+	else
+		max=50;
+
 	RCursor<GCAObj> Cur1(Objs);
 	RCursor<GCAObj> Cur2(Objs);
-	for(Cur1.Start();!Cur1.End();Cur1.Next())
+	for(Cur1.Start(),i=1;!Cur1.End();Cur1.Next(),i++)
 	{
-		Ratios.InsertPtrAt(ptr=new GCAMaxRatios(Cur1()->GetId(),Objs.GetNb()),Cur1()->GetId());
+		Ratios.InsertPtrAt(ptr=new GCAMaxRatios(max),Cur1()->GetId());
 
 		// Add all the object with a greater agreement ratio than the minimum
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		for(Cur2.Start(),j=i;--j;Cur2.Next())
 		{
-			if(Cur1()==Cur2()) continue;
 			ratio=GetAgreementRatio(Cur1()->GetElementId(),Cur2()->GetElementId());
 			if(ratio>=Params->MinAgreement)
+			{
 				ptr->InsertPtr(new GCAMaxRatio(Cur2()->GetId(),ratio));
+				Ratios[Cur2()->GetId()]->InsertPtr(new GCAMaxRatio(Cur1()->GetId(),ratio));
+			}
 		}
-
-		// ReOrder to have the best ratio first
-		ptr->ReOrder(GCAMaxRatio::sortOrder);
 	}
+
+	// ReOrder to have the best ratio first
+	RCursor<GCAMaxRatios> Cur(Ratios);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->ReOrder(GCAMaxRatio::sortOrder);
 }
 
 
@@ -217,8 +228,8 @@ bool GCAInst::StopCondition(void)
 void GCAInst::WriteChromoInfo(GCAChromo* c)
 {
 	if(!Debug) return;
-	Debug->PrintInfo("Id "+RString::Number(c->Id)+" (Fi="+RString::Number(c->Fi,"1.5f")+",Fi+="+RString::Number(c->FiPlus,"1.5f")+",Fi-="+RString::Number(c->FiMinus,"1.5f")+
-			" - J="+RString::Number(c->CritSimJ,"1.5f")+" - Agr.="+RString::Number(c->CritAgreement,"1.5f")+" - Disagr.="+RString::Number(c->CritDisagreement,"1.5f"));
+	Debug->PrintInfo("Id "+RString::Number(c->Id)+" (Fi="+RString::Number(c->Fi,"%1.5f")+",Fi+="+RString::Number(c->FiPlus,"%1.5f")+",Fi-="+RString::Number(c->FiMinus,"%1.5f")+
+			" - J="+RString::Number(c->CritSimJ)+" - Agr.="+RString::Number(c->CritAgreement,"%1.5f")+" - Disagr.="+RString::Number(c->CritDisagreement,"%1.5f"));
 }
 
 

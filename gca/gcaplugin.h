@@ -55,49 +55,13 @@
 
 
 //-----------------------------------------------------------------------------
-// forward declaration
-class kMeansGroups;
-
-
-//-----------------------------------------------------------------------------
-/**
- * The kMeansGroup provides a representation for a group holding GCAObj that
- * will be group with kMeans.
- * @author Pascal Francq
- * @short kMeans Group
- */
-class kMeansGroup : public R::RGroup<kMeansGroup,GCAObj,kMeansGroups>
-{
-public:
-
-	/**
-	 * Constructor.
-	 * @param owner          Owner of the group.
-	 * @param id             Identifier of the group.
-	 */
-	kMeansGroup(kMeansGroups* owner,size_t id);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
- *
- */
-class kMeansGroups : public R::RGroups<kMeansGroup,GCAObj,kMeansGroups>
-{
-public:
-	kMeansGroups(R::RCursor<GCAObj> objs,size_t max);
-};
-
-
-//-----------------------------------------------------------------------------
-class kMeansObj : public R::RGroupingKMeans<kMeansGroup,GCAObj,kMeansGroups>
+class kMeans : public R::RGroupingKMeans<CGroup,GCAObj,CGroups>
 {
 	GMeasure* Measure;
 public:
-	kMeansObj(const R::RString& n,R::RRandom* r,R::RCursor<GCAObj> objs,const R::RString& mes,R::RDebug* debug=0);
+	kMeans(const R::RString& n,R::RRandom* r,R::RCursor<GCAObj> objs,const R::RString& mes,R::RDebug* debug=0);
 
-	double Similarity(GCAObj* obj1,GCAObj* obj2);
+	double Similarity(const GCAObj* obj1,const GCAObj* obj2);
 };
 
 
@@ -210,17 +174,22 @@ protected:
 	/**
 	 * Do the k-Means.
 	 */
-	void DokMeans(GSession* session,const R::RString& mes);
+	void DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups);
 
 	/**
 	* Make the grouping.
 	*/
-	virtual void Run(GSession* session,const R::RString& mes);
+	virtual void Run(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups);
 
 	/**
 	 * Catch a best chromosome notification.
 	 */
-	void BestChromo(const R::RNotification& notification);
+	//void BestChromo(const R::RNotification& notification);
+
+	/**
+	 * Handle a generation
+	 */
+	void Gen(const R::RNotification& notification);
 
 public:
 

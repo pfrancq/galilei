@@ -80,7 +80,7 @@ protected:
 	* Make the grouping for a specific Language.
 	*/
 	virtual void Run(void)
-	{GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>::Run(Session,"Documents");}
+	{GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>::Run(Session,"Documents",Session->GetTopics());}
 
 public:
 

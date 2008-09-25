@@ -98,52 +98,6 @@ void Configure(GFactoryPostDoc* params)
 	GAConfigDlg dlg;
 	if(dlg.Configure(params))
 			params->Apply();
-
-/*	dlg.ClusteringMethod->setCurrentText(ToQString(params->Get("Clustering Method")));
-	dlg.NbClusters->setValue(params->GetUInt("NbClusters"));
-	dlg.PopSize->setValue(params->GetUInt("Population Size"));
-	dlg.MaxGen->setValue(params->GetUInt("Max Gen"));
-	dlg.Step->setChecked(params->GetBool("Step"));
-	dlg.StepGen->setValue(params->GetUInt("Step Gen"));
-	dlg.StepGen->setEnabled(params->GetBool("Step"));
-	dlg.MaxKMeans->setValue(params->GetUInt("Max kMeans"));
-	dlg.NbDivChromo->setValue(params->GetUInt("NbDivChromos"));
-	dlg.MinAgreement->setValue(params->GetDouble("Min Agreement"));
-	dlg.Convergence->setValue(params->GetDouble("Convergence"));
-	dlg.MinDisagreement->setValue(params->GetDouble("Min Disagreement"));
-	dlg.SimP->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->GetDouble());
-	dlg.SimQ->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->GetDouble());
-	dlg.SimWeight->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->GetDouble());
-	dlg.AgreementP->setValue(params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("P")->GetDouble());
-	dlg.AgreementQ->setValue(params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Q")->GetDouble());
-	dlg.AgreementWeight->setValue(params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Weight")->GetDouble());
-	dlg.DisagreementP->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("P")->GetDouble());
-	dlg.DisagreementQ->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Q")->GetDouble());
-	dlg.DisagreementWeight->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->GetDouble());
-	if(dlg.exec())
-	{
-		params->Set("Clustering Method",FromQString(dlg.ClusteringMethod->currentText()));
-		params->SetUInt("NbClusters",dlg.NbClusters->value());
-		params->SetUInt("Population Size",dlg.PopSize->value());
-		params->SetUInt("Max Gen",dlg.MaxGen->value());
-		params->SetUInt("Max kMeans",dlg.MaxKMeans->value());
-		params->SetDouble("Convergence",dlg.Convergence->value());
-		params->SetUInt("NbDivChromos",dlg.NbDivChromo->value());
-		params->SetBool("Step",dlg.Step->isChecked());
-		params->SetUInt("Step Gen",dlg.StepGen->value());
-		params->SetDouble("Min Agreement",dlg.MinAgreement->value());
-		params->SetDouble("Min Disagreement",dlg.MinDisagreement->value());
-		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->SetDouble(dlg.SimP->value());
-		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->SetDouble(dlg.SimQ->value());
-		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->SetDouble(dlg.SimWeight->value());
-		params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("P")->SetDouble(dlg.AgreementP->value());
-		params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Q")->SetDouble(dlg.AgreementQ->value());
-		params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Weight")->SetDouble(dlg.AgreementWeight->value());
-		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("P")->SetDouble(dlg.DisagreementP->value());
-		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Q")->SetDouble(dlg.DisagreementQ->value());
-		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->SetDouble(dlg.DisagreementWeight->value());
- 		params->Apply();
- 	}*/
 }
 
 

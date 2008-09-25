@@ -33,6 +33,7 @@
 //-----------------------------------------------------------------------------
 // includes files for GCA
 #include <gca.h>
+#include <gcaobj.h>
 using namespace R;
 
 
@@ -78,7 +79,35 @@ int GCAMaxRatio::sortOrder(const void* a,const void* b)
 //-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCAMaxRatios::GCAMaxRatios(size_t objid,size_t max)
-	: RContainer<GCAMaxRatio,true,false>(max>4?max/4:4), ObjId(objid)
+GCAMaxRatios::GCAMaxRatios(size_t max)
+	: RContainer<GCAMaxRatio,true,false>(max>4?max/4:4)
+{
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class CGroup
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+CGroup::CGroup(CGroups* owner,size_t id)
+	: R::RGroup<CGroup,GCAObj,CGroups>(owner,id)
+{
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class CGroups
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+CGroups::CGroups(R::RCursor<GCAObj> objs,size_t max)
+	: R::RGroups<CGroup,GCAObj,CGroups>(objs,max)
 {
 }

@@ -40,6 +40,7 @@
 #include <rfitness.h>
 #include <rgga.h>
 #include <rparam.h>
+#include <rgroups.h>
 
 
 //-----------------------------------------------------------------------------
@@ -170,9 +171,14 @@ public:
 	R::RParam* ParamsDisagreement;
 
 	/**
-	 * Perform local optimization.
+	 * Perform a local optimization.
 	 */
 	bool LocalOptimisation;
+
+	/**
+	 * Perform an optimization.
+	 */
+	bool Optimisation;
 
 	/**
 	 * Perform an incremental clustering.
@@ -186,6 +192,7 @@ public:
 };
 
 
+//-----------------------------------------------------------------------------
 class GCAMaxRatio
 {
 public:
@@ -205,14 +212,48 @@ public:
 };
 
 
+//-----------------------------------------------------------------------------
 class GCAMaxRatios : public R::RContainer<GCAMaxRatio,true,false>
 {
 public:
+	GCAMaxRatios(size_t max);
+	int Compare(const GCAMaxRatios&) const {return(-1);}
+};
 
-	size_t ObjId;
 
-	GCAMaxRatios(size_t objid,size_t max);
-	int Compare(const GCAMaxRatios& obj) const {return(ObjId-obj.ObjId);}
+//-----------------------------------------------------------------------------
+// forward declaration
+class CGroups;
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The Group provides a representation for a group holding GCAObj (used by
+ * kMeans).
+ * @author Pascal Francq
+ * @short kMeans Group
+ */
+class CGroup : public R::RGroup<CGroup,GCAObj,CGroups>
+{
+public:
+
+	/**
+	 * Constructor.
+	 * @param owner          Owner of the group.
+	 * @param id             Identifier of the group.
+	 */
+	CGroup(CGroups* owner,size_t id);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ *
+ */
+class CGroups : public R::RGroups<CGroup,GCAObj,CGroups>
+{
+public:
+	CGroups(R::RCursor<GCAObj> objs,size_t max);
 };
 
 

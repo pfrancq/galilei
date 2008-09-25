@@ -58,48 +58,20 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-// class kMeansGroup
+// class kMeans
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-kMeansGroup::kMeansGroup(kMeansGroups* owner,size_t id)
-	: R::RGroup<kMeansGroup,GCAObj,kMeansGroups>(owner,id)
-{
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class kMeansGroups
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-kMeansGroups::kMeansGroups(R::RCursor<GCAObj> objs,size_t max)
-	: R::RGroups<kMeansGroup,GCAObj,kMeansGroups>(objs,max)
-{
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class kMeansObj
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-kMeansObj::kMeansObj(const R::RString& n,R::RRandom* r,R::RCursor<GCAObj> objs,const R::RString& mes,R::RDebug* debug)
-	: R::RGroupingKMeans<kMeansGroup,GCAObj,kMeansGroups>(n,r,objs,debug)
+kMeans::kMeans(const R::RString& n,R::RRandom* r,R::RCursor<GCAObj> objs,const R::RString& mes,R::RDebug* debug)
+	: R::RGroupingKMeans<CGroup,GCAObj,CGroups>(n,r,objs,debug)
 {
 	Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities");
 }
 
 
 //-----------------------------------------------------------------------------
-double kMeansObj::Similarity(GCAObj* obj1,GCAObj* obj2)
+double kMeans::Similarity(const GCAObj* obj1,const GCAObj* obj2)
 {
 	double d;
 	Measure->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
@@ -136,6 +108,7 @@ template<class cObj,class cGroup,class cFactory>
 	Convergence=factory->GetDouble("Convergence");
 	NbDivChromo=factory->GetUInt("NbDivChromo");
 	LocalOptimisation=factory->GetBool("LocalOptimisation");
+	Optimisation=factory->GetBool("Optimisation");
 	Incremental=factory->GetBool("Incremental");
 	InternalRandom=factory->GetBool("InternalRandom");
 	Seed=factory->GetInt("Seed");
@@ -233,18 +206,24 @@ template<class cObj,class cGroup,class cFactory>
 	cout<<"   Minimum Similarity="<<d<<endl;
 	cout<<"New GCA"<<endl;
 	GCAInst Instance(session,Objs,this,session->GetDebug(),ObjType,mes,Incremental);
+	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cObj,cGroup,cFactory>::Gen),"RInst::Generation",&Instance);
 	cout<<"Init GCA"<<endl;
 	Instance.Init();
 	Instance.SetLocalOptimisation(LocalOptimisation);
+	Instance.SetOptimisation(Optimisation);
 	if(!InternalRandom)
 		Instance.SetSeed(Seed);
 
 	// Run
 	cout<<"Run GCA (";
-	if(LocalOptimisation)
-		cout<<"local optimization";
+	if(Optimisation)
+		cout<<"optimization";
 	else
-		cout<<"no local optimization";
+		cout<<"no optimization";
+	if(LocalOptimisation)
+		cout<<",local optimization";
+	else
+		cout<<",no local optimization";
 	if(Incremental)
 		cout<<",incremental mode)"<<endl;
 	else
@@ -257,7 +236,7 @@ template<class cObj,class cGroup,class cFactory>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	void GCAPlugIn<cObj,cGroup,cFactory>::DokMeans(GSession* session,const R::RString& mes)
+	void GCAPlugIn<cObj,cGroup,cFactory>::DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
 {
 	cout<<"Do kMeans for "<<GetObjType(ObjType)<<"s"<<endl;
 	RRandomGood Rand(1);
@@ -266,19 +245,37 @@ template<class cObj,class cGroup,class cFactory>
 	else
 		Rand.Reset(Seed);
 
-	kMeansObj kMeans("k-MeansObj",&Rand,Objs,mes);
-	kMeansGroups Sol(Objs,NbClusters);
+	kMeans kMeans("k-MeansObj",&Rand,Objs,mes);
+	kMeans::tInitial start;
+
+	CGroups Sol(Objs,NbClusters);
 	Sol.Init();
+	if(Incremental&&groups.GetNb())
+	{
+		cout<<"Prepare incremental kMeans"<<endl;
+		for(groups.Start();!groups.End();groups.Next())
+		{
+			CGroup* grp;
+			RCursor<cObj> Cur(groups()->GetObjs());
+			if(Cur.GetNb())
+				grp=Sol.ReserveGroup();
+			for(Cur.Start();!Cur.End();Cur.Next())
+				grp->Insert(Objs.GetPtr(Cur()->GetId()-1));
+		}
+		start=kMeans::Incremental;
+	}
+	else
+		start=kMeans::Refine;
 	cout<<"Run kMeans ("<<NbClusters<<" clusters)"<<endl;
-	kMeans.Run(&Sol,MaxKMeans,NbClusters);
+	kMeans.Run(&Sol,MaxKMeans,NbClusters,start);
 	cout<<"kMeans iterates "<<kMeans.GetNbIterations()<<" times"<<endl;
-	ConstructResults<kMeansGroup>(session,Sol);
+	ConstructResults<CGroup>(session,Sol);
 }
 
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	void GCAPlugIn<cObj,cGroup,cFactory>::Run(GSession* session,const R::RString& mes)
+	void GCAPlugIn<cObj,cGroup,cFactory>::Run(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
 {
 	// set the level of the MinSim
 	try
@@ -303,7 +300,7 @@ template<class cObj,class cGroup,class cFactory>
 				DoGCA(session,mes);
 				break;
 			case 2:
-				DokMeans(session,mes);
+				DokMeans(session,mes,groups);
 				break;
 		}
 	}
@@ -332,6 +329,14 @@ template<class cObj,class cGroup,class cFactory>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
+	void GCAPlugIn<cObj,cGroup,cFactory>::Gen(const R::RNotification& notification)
+{
+	cout<<"Gen "<<GetData<size_t>(notification)<<endl;
+}
+
+
+//------------------------------------------------------------------------------
+template<class cObj,class cGroup,class cFactory>
 	void GCAPlugIn<cObj,cGroup,cFactory>::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("Population Size",16));
@@ -346,6 +351,7 @@ template<class cObj,class cGroup,class cFactory>
 	params->InsertParam(new RParamValue("NbClusters",20));
 	params->InsertParam(new RParamValue("Clustering Method","GA"));
 	params->InsertParam(new RParamValue("LocalOptimisation",true));
+	params->InsertParam(new RParamValue("Optimisation",true));
 	params->InsertParam(new RParamValue("Incremental",true));
 	params->InsertParam(new RParamValue("InternalRandom",true));
 	params->InsertParam(new RParamValue("Seed",static_cast<int>(12345)));

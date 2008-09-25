@@ -9,7 +9,7 @@
             <x>0</x>
             <y>0</y>
             <width>536</width>
-            <height>572</height>
+            <height>597</height>
         </rect>
     </property>
     <property name="caption">
@@ -325,6 +325,14 @@
                                         </property>
                                     </widget>
                                 </hbox>
+                            </widget>
+                            <widget class="QCheckBox">
+                                <property name="name">
+                                    <cstring>Optimisation</cstring>
+                                </property>
+                                <property name="text">
+                                    <string>Perform an optimization when possible.</string>
+                                </property>
                             </widget>
                             <widget class="QCheckBox">
                                 <property name="name">

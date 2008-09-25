@@ -72,14 +72,10 @@ protected:
 	bool Social;
 
 	/**
-	 * Identifier of a common parent between elements that could prevent to group them together.
+	 * Identifier of a common parent between elements that could prevent to
+	 * group them together.
 	 */
 	size_t ParentId;
-
-	/**
-	* Sum of all the "probabilities" of the documents.
-	*/
-	double SumPjk;
 
 public:
 

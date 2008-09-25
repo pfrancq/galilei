@@ -60,24 +60,34 @@ class GCAGroup : public R::RGroup<GCAGroup,GCAObj,GCAChromo>
 protected:
 
 	/**
-	* Sum of the distances for the most relevant profile of the group to all
-	* the other profiles.
+	* Average similarity between each object and the centroid.
 	*/
-	double BestSumDist;
-
-	double AgreementSum;
-	double DisagreementSum;
+	double AvgIntraSim;
 
 	/**
-	* Relevant object of the group.
-	*/
-	GCAObj* Relevant;
+	 * Average agreement ratio between the objects of the group.
+	 */
+	double AvgAgreement;
 
 	/**
-	*/
-	bool Dirty;
+	 * Average disagreement ratio between the object of the group.
+	 */
+	double AvgDisagreement;
 
+	/**
+	* Centroid of the group.
+	*/
+	GCAObj* Centroid;
+
+	/**
+	 * Must the group be re-evaluated?
+	 */
 	bool ToEval;
+
+	/**
+	 * Maximum similarity with the last object called by CanInsert.
+	 */
+	double LastMaxSim;
 
 public:
 
@@ -90,7 +100,7 @@ public:
 	/**
 	* Construct the group.
 	* @param owner          Owner of the group.
-	* @param id             Identificator of the group.
+	* @param id             Identifier of the group.
 	* @param data           Data needed for the group.
 	*/
 	GCAGroup(GCAChromo* owner,const size_t id);
@@ -101,79 +111,92 @@ public:
 	virtual void Clear(void);
 
 	/**
-	* Verify if an object correspond to a user already in this group.
+	* Verify if an object has the same parent as another object of the group.
 	* @param obj            Pointer to the object to insert.
 	*/
 	bool HasSameUser(const GCAObj* obj) const;
 
 	/**
-	* Look if an object can be insert in the group.
-	* @param obj            Pointer to the object to insert.
+	* Look if an object can be insert in the group. In practice, the object
+	* must have a minimum similarity and maximum disagreement with the objects
+	* of the group. Moreover, two objects having the same parents cannot be
+	* grouped together.
+	* not allowed.
+	* @param obj             Object to insert.
 	*/
 	virtual bool CanInsert(const GCAObj* obj);
 
 	/**
 	* Method call after an object was inserted in the group.
-	* @param obj            Pointer to the object to insert.
+	* @param obj             Object to insert.
 	*/
 	virtual void PostInsert(const GCAObj* obj);
 
 	/**
 	* Method call after an object was deleted from the group.
-	* @param obj            Pointer to the object to delete.
+	* @param obj             Object to delete.
 	*/
 	virtual void PostDelete(const GCAObj* obj);
+
+	/**
+	 * Get the maximum similarity with the last object called with CanInsert.
+	 */
+	inline double GetLastMaxSim(void) const {return(LastMaxSim);}
 
 private:
 
 	/**
-	* Compute the sum of the distances of a given profile to all the others.
-	* @param obj            Profile used as reference.
-	* @returns result.
+	* Compute the sum of the similarities of a given object to all the others.
+	* If the object is itself in the group, '1.0' is added to the sum.
+	* @param obj             Object.
 	*/
-	double ComputeSumDist(GCAObj* obj);
+	double ComputeSumSim(GCAObj* obj);
+
+	/**
+	* Compute the centroid of the group, i.a. the object which is the most
+	* similar to all the other objects.
+	*/
+	void ComputeCentroid(void);
 
 public:
 
 	/**
-	* Compute the most relevant profile of the group, i.a. the profile which is
-	* the most similar to all the others profiles.
-	*/
-	void ComputeRelevant(void);
-
-	/**
-	* Get the relevant profile of the group, i.a. the profile which is the must
-	* similar to all the others profiles.
+	* Get the centroid of the group.
 	* @return Pointer to GCAObj
 	*/
-	inline GCAObj* GetRelevant(void) {return(Relevant);}
+	inline GCAObj* GetCentroid(void)
+	{
+		if(!Centroid)
+			ComputeCentroid();
+		return(Centroid);
+	}
 
+	/**
+	 * Compute the sum of the average intra-similarity of the objects and the
+	 * average of the agreement and disagreement.
+	 * objects.
+	 * @param dist           Sum of the average intra-similarity.
+	 * @param agree          Sum of the average agreement ratios.
+	 * @param disagree       Sum of the average disagreement ratios.
+	 */
 	void Evaluate(double& dist,double& agree,double& disagree);
 
 	/**
-	*/
-	void SetRelevant(GCAObj* obj);
+	 * Set the centroid of the group. This method must be used with caution.
+	 * @param obj            Object becoming the centroid.
+	 */
+	void SetCentroid(GCAObj* obj);
 
 	/**
-	* Get the average similarity of the group.
-	* @returns double representing the average similarity.
+	* Get the average intra-similarity of the group.
 	*/
-	inline double GetSumDist(void) {return(BestSumDist);}
+	inline double GetAvgIntraSim(void) {return(AvgIntraSim);}
 
 	/**
-	* Compute the similarities of a given profile to the relevant profile of the
-	* group.
-	* @param obj            Profile used as reference.
-	* @returns result.
+	* Compute the similarities of a given object to the centroid of the group.
+	* @param obj             Object.
 	*/
-	inline double ComputeRelSim(const GCAObj* obj) {return(Owner->Instance->GetSim(Relevant->GetElementId(),obj->GetElementId()));}
-
-	/**
-	* Compute a homogeneity for a given profile to the group. Actually, it uses
-	* the similarity with the relevant profile of the group.
-	* @param obj            Profile used as reference.
-	*/
-	inline double ComputeHomogeneity(const GCAObj* obj) {return(ComputeRelSim(obj));}
+	inline double ComputeRelSim(const GCAObj* obj) {return(Owner->Instance->GetSim(GetCentroid()->GetElementId(),obj->GetElementId()));}
 
 	/**
 	* Assignment operator.
@@ -182,12 +205,12 @@ public:
 	GCAGroup& operator=(const GCAGroup& grp);
 
 	/**
-	* Get the maximal value of the ratio of same feedbacks of a subprofile and
+	* Get the maximal value of the ratio of same feedbacks of an object and
 	* the ones of the group.
 	* @param obj            Object to test.
 	* @return double
 	*/
-	double GetMaxRatioSame(GCAObj* obj);
+//	double GetMaxRatioSame(GCAObj* obj);
 
 	/**
 	* Destruct the group.
@@ -195,7 +218,7 @@ public:
 	virtual ~GCAGroup(void);
 
 	// friend classes
-//	friend class GCAChromo;
+	friend class GCAChromo;
  	friend class GCAInst;
 };
 

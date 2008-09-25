@@ -82,7 +82,7 @@ protected:
 	* Make the grouping for a specific Language.
 	*/
 	virtual void Run(void)
-	{GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>::Run(Session,"Profiles");}
+	{GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>::Run(Session,"Profiles",Session->GetCommunities());}
 
 public:
 
