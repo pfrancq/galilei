@@ -1056,9 +1056,9 @@ void GSession::AnalyseDoc(GDoc* doc,GDocAnalyse* method,GSlot* rec)
 	// Save if necessary
 	if(Data->SaveResults&&(doc->GetId()!=cNoRef))
 	{
+		Data->Storage->SaveStruct(doc->GetStruct(),doc->GetId());
 		Data->Storage->SaveDoc(doc);
 		doc->SetState(osSaved);
-		Data->Storage->SaveStruct(doc->GetStruct(),doc->GetId());
 	}
 
 	// Release the structure
