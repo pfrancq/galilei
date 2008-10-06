@@ -869,9 +869,9 @@ void GStorageMySQL::AssignId(GConcept* concept)
 		// Verify that the concept didn't already exist.
 		RString sSql="SELECT conceptid FROM concepts WHERE typeid="+type+" AND name="+name;
 		auto_ptr<RQuery> find(Db->Query(sSql));
+		find->Start();
 		if(!find->End())
 		{
-			find->Start();
 			concept->SetId(strtoul((*find)[0],0,10));
 			return;
 		}
@@ -1211,7 +1211,14 @@ void GStorageMySQL::LoadNode(auto_ptr<RQuery>& nodes,auto_ptr<RQuery>& content,c
 			// Create the node in the structure
 			GConceptType* type(Session->GetConceptType(atoi((*nodes)[1]),false));
 			GConcept* concept=type->GetConcept(atoi((*nodes)[0]));
-			Nodes.InsertPtr(ptr=new GDocStructNode(doc->GetPtr(concept),atoi((*nodes)[6]),static_cast<GDocStructNode::NodeType>(atoi((*nodes)[7]))));
+			GWeightInfo* info=doc->GetPtr(concept);
+			if(!info)
+			{
+				RString msg("Concept "+RString::Number(concept->GetId())+" of type "+RString::Number(concept->GetType()->GetId())+" is not part of document "+RString::Number(doc->GetId()));
+				cerr<<msg<<endl;
+				throw GException(msg);
+			}
+			Nodes.InsertPtr(ptr=new GDocStructNode(info,atoi((*nodes)[6]),static_cast<GDocStructNode::NodeType>(atoi((*nodes)[7]))));
 			docstruct->InsertNode(parent,ptr);
 		}
 
