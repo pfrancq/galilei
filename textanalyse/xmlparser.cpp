@@ -74,7 +74,12 @@ void XMLParser::BeginTag(const RString& namespaceURI,const RString& lName,const 
 	if(GetSection()==RXMLParser::Body)
 	{
 		if(namespaceURI.IsEmpty())
-			index=Filter->Doc->GetURL()+":"+lName;
+		{
+			if(Filter->UseDefaultNamespace)
+				index=Filter->DefaultNamespace+":"+lName;
+			else
+				index=Filter->Doc->GetURL()+":"+lName;
+		}
 		else
 			index=namespaceURI+":"+lName;
 	}
@@ -108,7 +113,12 @@ void XMLParser::AddAttribute(const RString& namespaceURI,const RString& lName, c
 	if(GetSection()==RXMLParser::Body)
 	{
 		if(namespaceURI.IsEmpty())
-			index=Filter->Doc->GetURL()+":"+lName;
+		{
+			if(Filter->UseDefaultNamespace)
+				index=Filter->DefaultNamespace+":"+lName;
+			else
+				index=Filter->Doc->GetURL()+":"+lName;
+		}
 		else
 			index=namespaceURI+":"+lName;
 	}
@@ -154,7 +164,12 @@ void XMLParser::EndTag(const RString& namespaceURI, const RString& lName, const 
 		if(GetSection()==RXMLParser::Body)
 		{
 			if(namespaceURI.IsEmpty())
-				index=Filter->Doc->GetURL()+":"+lName;
+			{
+				if(Filter->UseDefaultNamespace)
+					index=Filter->DefaultNamespace+":"+lName;
+				else
+					index=Filter->Doc->GetURL()+":"+lName;
+			}
 			else
 				index=namespaceURI+":"+lName;
 		}
@@ -224,7 +239,10 @@ void XMLParser::AddStructElement(const RString& element,bool tag)
 //-----------------------------------------------------------------------------
 void XMLParser::AddTagIndex(const RString& element,const RString& content)
 {
-	bool Idx=false;
+	if(!content.GetLen())
+		return;
+
+	bool Idx(false);
 
 	// Find corresponding tag
 	IndexTag* ptr=Filter->IndexTags.GetInsertPtr(element);
@@ -265,6 +283,6 @@ void XMLParser::AddTagIndex(const RString& element,const RString& content)
 		return;
 
 	// OK Index terms
-	while(!car->IsNull())
+	if(Idx)
 		Filter->ExtractWord(Index,1.0,Content,0,0);
 }

@@ -51,6 +51,7 @@ using namespace GALILEI;
 #include <qtooltip.h>
 #include <qwhatsthis.h>
 #include <qgroupbox.h>
+#include <qlineedit.h>
 
 
 //-----------------------------------------------------------------------------
@@ -121,6 +122,9 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.toggleStruct(params->GetBool("ExtractStruct"));
 
 	// Structure - Declarative tags
+	dlg.UseDefaultNamespace->setChecked(params->GetBool("UseDefaultNamespace"));
+	dlg.DefaultNamespace->setEnabled(params->GetBool("UseDefaultNamespace"));
+	dlg.DefaultNamespace->setText(ToQString(params->Get("DefaultNamespace")));
 	dlg.ExtractIndex->setChecked(params->GetBool("ExtractIndex"));
 	dlg.MaxTerms->setValue(params->GetUInt("MaxTerms"));
 	dlg.MaxDepth->setValue(params->GetUInt("MaxDepth"));
@@ -156,6 +160,8 @@ void Configure(GFactoryDocAnalyse* params)
 		params->SetDouble("WeightValues",dlg.WeightValues->value());
 
 		// Structure - Tags and attributes
+		params->SetBool("UseDefaultNamespace",dlg.UseDefaultNamespace->isChecked());
+		params->Set("DefaultNamespace",FromQString(dlg.DefaultNamespace->text()));
 		params->SetBool("ExtractIndex",dlg.ExtractIndex->isChecked());
 		params->SetUInt("MaxTerms",dlg.MaxTerms->value());
 		params->SetUInt("MaxDepth",dlg.MaxDepth->value());

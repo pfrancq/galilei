@@ -138,6 +138,8 @@ void GTextAnalyse::ApplyConfig(void)
 	AttrValues=Factory->GetBool("AttrValues");
 	WeightValues=Factory->GetDouble("WeightValues");
 	FullIndex=Factory->GetBool("FullIndex");
+	UseDefaultNamespace=Factory->GetBool("UseDefaultNamespace");
+	DefaultNamespace=Factory->Get("DefaultNamespace");
 }
 
 
@@ -668,6 +670,8 @@ void GTextAnalyse::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("AttrValues",false));
 	params->InsertParam(new RParamValue("WeightValues",2.0));
 	params->InsertParam(new RParamValue("FullIndex",false));
+	params->InsertParam(new RParamValue("UseDefaultNamespace",false));
+	params->InsertParam(new RParamValue("DefaultNamespace",""));
 }
 
 

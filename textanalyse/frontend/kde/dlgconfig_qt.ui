@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>519</width>
-            <height>542</height>
+            <width>467</width>
+            <height>521</height>
         </rect>
     </property>
     <property name="caption">
@@ -444,7 +444,7 @@ When the languages are not static, the language of a document is always determin
                     <cstring>TabPage</cstring>
                 </property>
                 <attribute name="title">
-                    <string>Structure</string>
+                    <string>XML Structure</string>
                 </attribute>
                 <vbox>
                     <property name="name">
@@ -461,6 +461,29 @@ When the languages are not static, the language of a document is always determin
                             <property name="name">
                                 <cstring>unnamed</cstring>
                             </property>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout14</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>UseDefaultNamespace</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Use default namespace</string>
+                                        </property>
+                                    </widget>
+                                    <widget class="QLineEdit">
+                                        <property name="name">
+                                            <cstring>DefaultNamespace</cstring>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
                             <widget class="QCheckBox">
                                 <property name="name">
                                     <cstring>ExtractStruct</cstring>
@@ -943,6 +966,12 @@ When the languages are not static, the language of a document is always determin
         <signal>toggled(bool)</signal>
         <receiver>DlgConfig_Qt</receiver>
         <slot>toggleStruct(bool)</slot>
+    </connection>
+    <connection>
+        <sender>UseDefaultNamespace</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>DefaultNamespace</receiver>
+        <slot>setEnabled(bool)</slot>
     </connection>
 </connections>
 <includes>

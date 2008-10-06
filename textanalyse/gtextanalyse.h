@@ -380,6 +380,16 @@ class GTextAnalyse : public GDocAnalyse
 	double WeightValues;
 
 	/**
+	 * Must a default namespace be used if tags are found with no namespace.
+	 */
+	bool UseDefaultNamespace;
+
+	/**
+	 * Default namespace to use.
+	 */
+	RString DefaultNamespace;
+
+	/**
 	 * Number of tags.
 	 */
 	size_t NbTags;
