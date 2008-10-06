@@ -154,7 +154,7 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	: KView(doc,parent,name,wflags), Document(document), Fdbks(0), Struct(0),
 	  bDelDoc(false), bDocXML(false)
 {
-	// Window proprieties
+	// Window properties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
 	setCaption("Description of \" "+QString(ToQString(Document->GetName()))+"\"");
 
@@ -163,14 +163,14 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	Infos=new QTabWidget(this);
 	MainLayout->addWidget(Infos);
 
-	// Initialisation of the General Information Widget
+	// Initialization of the General Information Widget
 	General = new QListView(Infos);
 	Infos->insertTab(General,"General Information");
 	General->addColumn("Variable");
 	General->addColumn("Value");
 	ConstructGeneral();
 
-	// Initialisation of the Feedbacks Widget
+	// Initialization of the Feedbacks Widget
 	QGroupBox* boxFdbks=new QGroupBox(Infos);
 	Infos->insertTab(boxFdbks,"Profiles");
 	QVBoxLayout* FdbkLayout = new QVBoxLayout(boxFdbks,0,0,"FdbkLayout");
@@ -224,9 +224,10 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
 	setCaption("Description of \" "+QString(ToQString(Document->GetName()))+"\"");
 
-	// initialization of the tab widget
+	// Main Layout
+	QVBoxLayout* MainLayout = new QVBoxLayout(this,0,0,"MainLayout");
 	Infos=new QTabWidget(this);
-	Infos->resize(size());
+	MainLayout->addWidget(Infos);
 
 	// Initialization of the General Information Widget
 	General = new QListView(Infos);

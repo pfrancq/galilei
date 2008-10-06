@@ -385,7 +385,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 		{
 			// Must be a normal document
 			GSubject* Topic=Subjects->GetNode(parent);
-			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,cNoRef,RDate::GetToday(),RDate::Null,RDate::Null);
+			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,cNoRef,RDate::Null,RDate::GetToday(),RDate::Null);
 			Session->InsertDoc(doc);
 			if(Topic)
 				Topic->Insert(doc);
