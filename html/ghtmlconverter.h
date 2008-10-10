@@ -201,7 +201,7 @@ public:
 
 	/**
 	* This function transform a given string that is supposed to represent a
-	* HTML code (ex: "Ucirc") into the corresponding character (ex: �.
+	* HTML code (ex: "Ucirc") into the corresponding character (ex: "û").
 	* @param code           HTML Code.
 	* @returns A RChar corresponding to the code or 0 if the code is not
 	* identified.
@@ -225,7 +225,7 @@ public:
 	*/
 	~GHTMLConverter(void);
 
-	friend class GFilter;
+	friend class GALILEI::GFilter;
 };
 
 
