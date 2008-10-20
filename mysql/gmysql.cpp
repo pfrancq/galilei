@@ -688,9 +688,9 @@ void GStorageMySQL::AssignId(GConceptType* type)
 		// Verify that the concepttype didn't already exist.
 		RString sSql="SELECT typeid FROM concepttypes WHERE name="+name;
 		auto_ptr<RQuery> find(Db->Query(sSql));
+		find->Start();
 		if(!find->End())
 		{
-			find->Start();
 			type->SetId(strtoul((*find)[0],0,10));
 			return;
 		}
@@ -919,11 +919,9 @@ RString GStorageMySQL::LoadConcept(size_t id,GConceptType* type)
 		RString res;
 		RString sSql("SELECT name FROM concepts WHERE typeid="+Num(type->GetId())+" AND conceptid="+Num(id));
 		auto_ptr<RQuery> w(Db->Query(sSql));
+		w->Start();
 		if(!w->End())
-		{
-			w->Start();
 			res=(*w)[0];
-		}
 		return(res);
 	}
 	catch(RDbException e)
@@ -942,11 +940,9 @@ size_t GStorageMySQL::LoadConcept(const RString name,GConceptType* type)
 		size_t res=0;
 		RString sSql("SELECT conceptid FROM concepts WHERE typeid="+Num(type->GetId())+" AND kwd="+RQuery::SQLValue(name));
 		auto_ptr<RQuery> w(Db->Query(sSql));
+		w->Start();
 		if(!w->End())
-		{
-			w->Start();
 			res=atoi((*w)[0]);
-		}
 		return(res);
 	}
 	catch(RDbException e)
