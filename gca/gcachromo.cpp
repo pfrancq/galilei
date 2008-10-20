@@ -166,8 +166,7 @@ void GCAChromo::RandomConstruct(void)
 //-----------------------------------------------------------------------------
 void GCAChromo::Evaluate(void)
 {
-	size_t i;
-	double max(-2.0),tmp;
+	double super(-2.0), max(-2.0),tmp;
 
 	CritAgreement=CritDisagreement=CritSimJ=0.0;
 	if(!Used.GetNb())
@@ -176,30 +175,33 @@ void GCAChromo::Evaluate(void)
 		cout<<"Problem"<<endl;
 
 	// Go through the groups to compute each contribution to the average
-	// measures and to find the maximal similarity between the centroids.
+	// measures and to find the similarity between the centroids and the meta-centroid.
 	R::RCursor<GCAGroup> Cur(Used);
 	R::RCursor<GCAGroup> Cur2(Used);
-	for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
+		double avg(0.0);
 		Cur()->Evaluate(CritSimJ,CritAgreement,CritDisagreement);
-		if(i<Used.GetNb()-1)
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			for(Cur2.GoTo(i+1);!Cur2.End();Cur2.Next())
+			if(Cur()==Cur2()) continue;
+			tmp=Instance->GetSim(Cur()->GetCentroid()->GetElementId(),Cur2()->GetCentroid()->GetElementId());
+			avg+=tmp;
+			if(tmp>super)
 			{
-				tmp=Instance->GetSim(Cur()->GetCentroid()->GetElementId(),Cur2()->GetCentroid()->GetElementId());
-				if(tmp>max)
-				{
-					max=tmp;
-					MostSimilarGroup1=Cur()->GetId();
-					MostSimilarGroup2=Cur2()->GetId();
-				}
+				super=tmp;
+				MostSimilarGroup1=Cur()->GetId();
+				MostSimilarGroup2=Cur2()->GetId();
 			}
 		}
+		avg/=static_cast<double>(Used.GetNb()-1);
+		if(avg>max)
+			max=avg;
 	}
 
 	CritAgreement/=Used.GetNb();
 	CritDisagreement/=Used.GetNb();
-	CritSimJ=CritSimJ/(Used.GetNb()*(2+max));
+	CritSimJ/=(Used.GetNb()*max);
 }
 
 

@@ -239,13 +239,13 @@ template<class cObj,class cGroup,class cFactory>
 	void GCAPlugIn<cObj,cGroup,cFactory>::DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
 {
 	cout<<"Do kMeans for "<<GetObjType(ObjType)<<"s"<<endl;
-	RRandomGood Rand(1);
+	auto_ptr<RRandom> Rand(RRandom::Create(RRandom::Good,1));
 	if(InternalRandom)
-		Rand.Reset(12345);
+		Rand->Reset(12345);
 	else
-		Rand.Reset(Seed);
+		Rand->Reset(Seed);
 
-	kMeans kMeans("k-MeansObj",&Rand,Objs,mes);
+	kMeans kMeans("k-MeansObj",Rand.get(),Objs,mes);
 	kMeans::tInitial start;
 
 	CGroups Sol(Objs,NbClusters);
@@ -265,7 +265,7 @@ template<class cObj,class cGroup,class cFactory>
 		start=kMeans::Incremental;
 	}
 	else
-		start=kMeans::Refine;
+		start=kMeans::kMeansPlusPlus;
 	cout<<"Run kMeans ("<<NbClusters<<" clusters)"<<endl;
 	kMeans.Run(&Sol,MaxKMeans,NbClusters,start);
 	cout<<"kMeans iterates "<<kMeans.GetNbIterations()<<" times"<<endl;
