@@ -218,7 +218,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDoc(file,file,cNoRef,0,mime,cNoRef,RDate(),RDate::Null,RDate::Null);
+	Document=new GDoc(file,file,cNoRef,0,mime,cNoRef,RDate::Null,RDate(),RDate::Null);
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));

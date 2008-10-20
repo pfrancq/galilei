@@ -327,12 +327,35 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * Create the ideal topics.
-* @param save           Save modified elements.
 */
 class QCreateIdealTopics : public QSessionThread
 {
 public:
 	QCreateIdealTopics(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Start a degradation.
+*/
+class QStartDegradation : public QSessionThread
+{
+public:
+	QStartDegradation(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Do the next step of a degradation.
+*/
+class QNextDegradation : public QSessionThread
+{
+public:
+	QNextDegradation(void) {}
 	virtual void DoIt(void);
 };
 

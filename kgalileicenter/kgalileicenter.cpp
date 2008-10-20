@@ -486,6 +486,7 @@ void KGALILEICenterApp::slotSimulationDlg(void)
 	dlg.RelSubjects->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelSubjects","Subjects"));
 	dlg.NbMinDocsSubject->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbMinDocsSubject","Subjects"));
 	dlg.NbDocsAssess->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbDocsAssess","Subjects"));
+	dlg.SwitchPerc->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("SwitchPerc","Subjects"));
 	if(dlg.exec())
 	{
 		GALILEIApp->GetGALILEIConfig()->SetDouble("NbOK",dlg.NbOK->value(),"Subjects");
@@ -502,6 +503,7 @@ void KGALILEICenterApp::slotSimulationDlg(void)
 		GALILEIApp->GetGALILEIConfig()->SetBool("RelSubjects",dlg.RelSubjects->isChecked(),"Subjects");
 		GALILEIApp->GetGALILEIConfig()->SetUInt("NbMinDocsSubject",dlg.NbMinDocsSubject->value(),"Subjects");
 		GALILEIApp->GetGALILEIConfig()->SetUInt("NbDocsAssess",dlg.NbDocsAssess->value(),"Subjects");
+		GALILEIApp->GetGALILEIConfig()->SetDouble("SwitchPerc",dlg.SwitchPerc->value(),"Subjects");
 	}
 }
 
@@ -566,6 +568,23 @@ void KGALILEICenterApp::slotTopicsCompare(void)
 {
 	if(Doc->GetSession()->GetSubjects())
 		createClient(Doc,new KViewThTopics(Doc,Doc->GetSession()->GetSubjects(),pWorkspace,"View Theoretical Topics",0));
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotStartDegradation(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Start a Degradation");
+	Dlg.Run(new QStartDegradation());
+	Doc->updateAllViews(otTopic);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenterApp::slotNextDegradation(void)
+{
+	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Do the Next Step of a Degradation");
+	Dlg.Run(new QNextDegradation());
 }
 
 

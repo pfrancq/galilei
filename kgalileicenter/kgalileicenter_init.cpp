@@ -165,6 +165,8 @@ void KGALILEICenterApp::initActions(void)
 	topicsCompare=new KAction(i18n("Compare Ideal Topics"),"fileopen",0,this,SLOT(slotTopicsCompare()),actionCollection(),"topicsCompare");
 	textFrench=new KAction(i18n("Analyze &French Stems"),0,0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
 	textEnglish=new KAction(i18n("Analyze &English Stems"),0,0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
+	startDegradation=new KAction(i18n("Start the Degradation"),0,0,this,SLOT(slotStartDegradation()),actionCollection(),"startDegradation");;
+	nextDegradation=new KAction(i18n("Next &Degradation"),0,0,this,SLOT(slotNextDegradation()),actionCollection(),"nextDegradation");;
 
 	// Menu "Settings"
 	setStandardToolBarMenuEnabled(true);
@@ -360,6 +362,8 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	showTopics->setEnabled(true);
 	topicsCalc->setEnabled(true);
 	postTopicsCalc->setEnabled(true);
+	startDegradation->setEnabled(true);
+	nextDegradation->setEnabled(true);
 }
 
 
@@ -409,6 +413,8 @@ void KGALILEICenterApp::DisableAllActions(void)
 	showTopics->setEnabled(false);
 	topicsCalc->setEnabled(false);
 	postTopicsCalc->setEnabled(false);
+	startDegradation->setEnabled(false);
+	nextDegradation->setEnabled(false);
 }
 
 

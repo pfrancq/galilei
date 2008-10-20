@@ -68,10 +68,10 @@
 		<Action name="somView"/>
 		<Action name="showCommunitiesHistorys"/>
 	</Menu>
-	<Menu name="Debug"><text>D&amp;ebug</text>
+	<Menu name="Debug"><text>S&amp;imulation</text>
 		<Action name="simulationDlg"/>
 		<Action name="subjectsCreate"/>
-		<Separator/>		
+		<Separator/>
 		<Action name="communitiesCreate"/>
 		<Action name="topicsCreate"/>
 		<Separator/>
@@ -80,6 +80,9 @@
 		<Separator/>
 		<Action name="communitiesCompare"/>
 		<Action name="topicsCompare"/>
+		<Separator/>
+		<Action name="startDegradation"/>
+		<Action name="nextDegradation"/>
 	</Menu>
 	<Menu name="settings"><text>&amp;Settings</text>
 		<Action name="settings_show_toolbar" />

@@ -499,9 +499,9 @@ void QPostGroupDocs::DoIt(void)
 //-----------------------------------------------------------------------------
 void QCreateIdealSubjects::DoIt(void)
 {
-	Parent->PutText("Create Ideal Communities ...");
+	Parent->PutText("Start a Simulation ...");
 	Session->GetSubjects()->Apply();
-	Session->GetSubjects()->CreateIdeal();
+	Session->GetSubjects()->StartSimulation();
 }
 
 
@@ -518,6 +518,22 @@ void QCreateIdealTopics::DoIt(void)
 {
 	Parent->PutText("Create Ideal Topics ...");
 	Session->BuildGroupsFromIdeal(otTopic);
+}
+
+
+//-----------------------------------------------------------------------------
+void QStartDegradation::DoIt(void)
+{
+	Parent->PutText("Start a Degradation ...");
+	Session->GetSubjects()->PerformDegradation(0,0);
+}
+
+
+//-----------------------------------------------------------------------------
+void QNextDegradation::DoIt(void)
+{
+	Parent->PutText("Do the Next Step of a Degradation ...");
+	Session->GetSubjects()->PerformDegradation(1,0);
 }
 
 

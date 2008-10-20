@@ -437,6 +437,17 @@ private slots:
 	void slotTopicsCompare(void);
 
 	/**
+	 * Start a degradation.
+	 */
+	void slotStartDegradation(void);
+
+	/**
+	 * Doe the nexts step of a degradation.
+	 */
+	void slotNextDegradation(void);
+
+
+	/**
 	* Show the documents window.
 	*/
 	void slotShowDocs(void);
@@ -488,12 +499,12 @@ private slots:
 	void slotFillMIMETypes(void);
 
 	/**
-	* Do some computing on the stems in french.
+	* Do some computing on the stems in French.
 	*/
 	void slotTextFrench(void);
 
 	/**
-	* Do some computing on the stems in english.
+	* Do some computing on the stems in English.
 	*/
 	void slotTextEnglish(void);
 
@@ -639,6 +650,7 @@ public:
 	KAction* analyseXML;
 	KAction* queryMetaEngine;
 	KAction* fillMIMETypes;
+
 	KAction* topicsClear;
 	KAction* showTopics;
 	KAction* topicsCalc;
@@ -654,6 +666,7 @@ public:
 	KAction* communitiesCalc;
 	KAction* postCommunitiesCalc;
 	KAction* communitiesClear;
+
 	KAction* simulationDlg;
 	KAction* communitiesCreate;
 	KAction* topicsCreate;
@@ -663,6 +676,8 @@ public:
 	KAction* communitiesCompare;
 	KAction* topicsCompare;
 	KAction* showCommunitiesHistory;
+	KAction* startDegradation;
+	KAction* nextDegradation;
 
 	KAction* plugins;
 	KAction* configure;

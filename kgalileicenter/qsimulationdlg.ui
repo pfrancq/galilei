@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>434</width>
-            <height>323</height>
+            <width>424</width>
+            <height>375</height>
         </rect>
     </property>
     <property name="caption">
@@ -28,10 +28,10 @@
             </property>
             <widget class="QWidget">
                 <property name="name">
-                    <cstring>tab</cstring>
+                    <cstring>TabPage</cstring>
                 </property>
                 <attribute name="title">
-                    <string>Topics</string>
+                    <string>Documents</string>
                 </attribute>
                 <vbox>
                     <property name="name">
@@ -39,10 +39,10 @@
                     </property>
                     <widget class="QGroupBox">
                         <property name="name">
-                            <cstring>groupBox9</cstring>
+                            <cstring>groupBox5_2</cstring>
                         </property>
                         <property name="title">
-                            <string></string>
+                            <string>Degradation</string>
                         </property>
                         <vbox>
                             <property name="name">
@@ -58,15 +58,15 @@
                                     </property>
                                     <widget class="QLabel">
                                         <property name="name">
-                                            <cstring>textLabel1</cstring>
+                                            <cstring>textLabel1_4</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Number of topics used:</string>
+                                            <string>Percentage of documents switched</string>
                                         </property>
                                     </widget>
                                     <spacer>
                                         <property name="name">
-                                            <cstring>spacer2</cstring>
+                                            <cstring>spacer15</cstring>
                                         </property>
                                         <property name="orientation">
                                             <enum>Horizontal</enum>
@@ -76,261 +76,23 @@
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>22</width>
+                                                <width>40</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
                                     </spacer>
                                     <widget class="KDoubleNumInput">
                                         <property name="name">
-                                            <cstring>NbSubjects</cstring>
+                                            <cstring>SwitchPerc</cstring>
                                         </property>
-                                    </widget>
-                                    <widget class="QCheckBox">
-                                        <property name="name">
-                                            <cstring>RelSubjects</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Percentage</string>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout17</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel1_2</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Minimum number of documents:</string>
-                                        </property>
-                                    </widget>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer2_2</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>Expanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>161</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                    <widget class="KIntNumInput">
-                                        <property name="name">
-                                            <cstring>NbMinDocsSubject</cstring>
+                                        <property name="maxValue">
+                                            <number>100</number>
                                         </property>
                                     </widget>
                                 </hbox>
                             </widget>
                         </vbox>
                     </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer25</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>40</height>
-                            </size>
-                        </property>
-                    </spacer>
-                </vbox>
-            </widget>
-            <widget class="QWidget">
-                <property name="name">
-                    <cstring>tab</cstring>
-                </property>
-                <attribute name="title">
-                    <string>Profiles</string>
-                </attribute>
-                <vbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
-                    <widget class="QGroupBox">
-                        <property name="name">
-                            <cstring>groupBox8</cstring>
-                        </property>
-                        <property name="title">
-                            <string></string>
-                        </property>
-                        <vbox>
-                            <property name="name">
-                                <cstring>unnamed</cstring>
-                            </property>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout18</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel2</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Minimum number of profiles per topic:</string>
-                                        </property>
-                                    </widget>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer3</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>Expanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>142</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                    <widget class="KIntNumInput">
-                                        <property name="name">
-                                            <cstring>NbProfMin</cstring>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout19</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel2_2</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Maximum number of profiles per topic:</string>
-                                        </property>
-                                    </widget>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer3_2</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>Expanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>140</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                    <widget class="KIntNumInput">
-                                        <property name="name">
-                                            <cstring>NbProfMax</cstring>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout13</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel2_2_2</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Percentage of social profiles:</string>
-                                        </property>
-                                    </widget>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer3_2_2</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>Expanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>86</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                    <widget class="KDoubleNumInput">
-                                        <property name="name">
-                                            <cstring>PercSocial</cstring>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                        </vbox>
-                    </widget>
-                    <spacer>
-                        <property name="name">
-                            <cstring>spacer26</cstring>
-                        </property>
-                        <property name="orientation">
-                            <enum>Vertical</enum>
-                        </property>
-                        <property name="sizeType">
-                            <enum>Expanding</enum>
-                        </property>
-                        <property name="sizeHint">
-                            <size>
-                                <width>20</width>
-                                <height>220</height>
-                            </size>
-                        </property>
-                    </spacer>
-                </vbox>
-            </widget>
-            <widget class="QWidget">
-                <property name="name">
-                    <cstring>TabPage</cstring>
-                </property>
-                <attribute name="title">
-                    <string>Documents</string>
-                </attribute>
-                <vbox>
-                    <property name="name">
-                        <cstring>unnamed</cstring>
-                    </property>
                     <widget class="QGroupBox">
                         <property name="name">
                             <cstring>groupBox5</cstring>
@@ -493,7 +255,7 @@
                             <cstring>groupBox7</cstring>
                         </property>
                         <property name="title">
-                            <string></string>
+                            <string>Type of assessments</string>
                         </property>
                         <vbox>
                             <property name="name">
@@ -594,7 +356,271 @@
                         <property name="sizeHint">
                             <size>
                                 <width>20</width>
-                                <height>16</height>
+                                <height>50</height>
+                            </size>
+                        </property>
+                    </spacer>
+                </vbox>
+            </widget>
+            <widget class="QWidget">
+                <property name="name">
+                    <cstring>tab</cstring>
+                </property>
+                <attribute name="title">
+                    <string>Profiles</string>
+                </attribute>
+                <vbox>
+                    <property name="name">
+                        <cstring>unnamed</cstring>
+                    </property>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>groupBox9</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Subjects Used</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout12_2</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Number of subjects used:</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>22</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KDoubleNumInput">
+                                        <property name="name">
+                                            <cstring>NbSubjects</cstring>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>RelSubjects</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Percentage</string>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout17_2</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel1_2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Minimum number of documents:</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer2_2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>161</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>NbMinDocsSubject</cstring>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>groupBox8</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Profiles created</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout18</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Minimum number of profiles per subject:</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer3</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>142</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>NbProfMin</cstring>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout19</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel2_2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Maximum number of profiles per subject:</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer3_2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>140</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KIntNumInput">
+                                        <property name="name">
+                                            <cstring>NbProfMax</cstring>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout13</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel2_2_2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Percentage of social profiles:</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer3_2_2</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>86</width>
+                                                <height>20</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
+                                    <widget class="KDoubleNumInput">
+                                        <property name="name">
+                                            <cstring>PercSocial</cstring>
+                                        </property>
+                                    </widget>
+                                </hbox>
+                            </widget>
+                        </vbox>
+                    </widget>
+                    <spacer>
+                        <property name="name">
+                            <cstring>spacer26</cstring>
+                        </property>
+                        <property name="orientation">
+                            <enum>Vertical</enum>
+                        </property>
+                        <property name="sizeType">
+                            <enum>Expanding</enum>
+                        </property>
+                        <property name="sizeHint">
+                            <size>
+                                <width>20</width>
+                                <height>220</height>
                             </size>
                         </property>
                     </spacer>
@@ -681,8 +707,6 @@
         </widget>
     </vbox>
 </widget>
-<customwidgets>
-</customwidgets>
 <connections>
     <connection>
         <sender>buttonOk</sender>
@@ -697,11 +721,10 @@
         <slot>reject()</slot>
     </connection>
 </connections>
-<includes>
-    <include location="local" impldecl="in implementation">qsimulationdlg.ui.h</include>
-</includes>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
