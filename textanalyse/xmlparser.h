@@ -119,6 +119,11 @@ public:
 	 *                       through the opening and closing tags.
 	 */
 	void AddTagIndex(const RString& element,const RString& content);
+
+	/**
+	 * An invalid code is accepted.
+	 */
+	virtual bool InvalidXMLCodeAccept(void) {return(true);}
 };
 
 

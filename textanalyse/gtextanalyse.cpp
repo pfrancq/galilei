@@ -555,6 +555,7 @@ void GTextAnalyse::Analyze(GDoc *doc,const R::RURI& uri,bool native)
 
 	// Load the xml from the file
 	XMLParser In(this,uri);
+	//cout<<"Analyse "<<uri<<endl;
 	In.Open(RIO::Read);
 	In.Close();
 
