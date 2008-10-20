@@ -81,7 +81,13 @@ void GGenericSimsDlg::AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLay
 //-----------------------------------------------------------------------------
 void GGenericSimsDlg::Panel(void)
 {
-    QHBoxLayout* layout = new QHBoxLayout(0,0,6);
+	// Transform
+	QHBoxLayout* layout = new QHBoxLayout(0,0,6);
+	Transform=new QCheckBox("Transform the similarity from [-1,+1] to [0,1]",GetMeasureSpecific());
+    layout->addWidget(Transform);
+	GetMeasureSpecificLayout()->addLayout(layout);
+
+    layout = new QHBoxLayout(0,0,6);
     QLabel* text = new QLabel(GetMeasureSpecific());
     text->setText("Similarity Type");
     layout->addWidget(text);
@@ -140,6 +146,7 @@ void GGenericSimsDlg::Init(GFactoryMeasure* params)
 	ContentStructCapacity->setValue(params->GetDouble("ContentStructCapacity"));
 	ContentMetaCapacity->setValue(params->GetDouble("ContentMetaCapacity"));
 	MetaStructCapacity->setValue(params->GetDouble("MetaStructCapacity"));
+	Transform->setChecked(params->GetBool("Transform"));
 }
 
 
@@ -154,5 +161,6 @@ void GGenericSimsDlg::Done(GFactoryMeasure* params)
 	params->SetDouble("ContentStructCapacity",ContentStructCapacity->value());
 	params->SetDouble("ContentMetaCapacity",ContentMetaCapacity->value());
 	params->SetDouble("MetaStructCapacity",MetaStructCapacity->value());
+	params->SetBool("Transform",Transform->isChecked());
 	QGMatrixMeasureDlg::Done(params);
 }

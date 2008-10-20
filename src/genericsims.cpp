@@ -143,7 +143,11 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 		norm1/=max1*max1;
 		norm2/=max2*max2;
 	#endif
-	return(num/(sqrt(norm1*norm2)));
+
+	double sim(num/(sqrt(norm1*norm2)));
+	if(Owner->Transform)
+		sim=(sim+1.0)/2.0;
+	return(sim);
 }
 
 
@@ -192,7 +196,13 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 	// Return similarity
 	if(den==0.0)
 		return(0.0);
-	return(num/den);
+
+	double sim(num/den);
+
+	if(Owner->Transform)
+		sim=(sim+1.0)/2.0;
+
+	return(sim);
 }
 
 
@@ -229,6 +239,7 @@ void GGenericSims::ApplyConfig(void)
 	ContentStructCapacity=Factory->GetDouble("ContentStructCapacity");
 	ContentMetaCapacity=Factory->GetDouble("ContentMetaCapacity");
 	MetaStructCapacity=Factory->GetDouble("MetaStructCapacity");
+	Transform=Factory->GetBool("Transform");
 	tSimType sim(Undefined);
 	if(type=="Product")
 		sim=Product;
@@ -480,21 +491,26 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 		return(1.0);
 	vec1=static_cast<GWeightInfos*>(obj1);
 	vec2=static_cast<GWeightInfos*>(obj2);
+	double sim(0.0);
 	switch(SimType)
 	{
 		case Undefined:
-				throw GException("No similarity model defined.");
-				break;
+			throw GException("No similarity model defined.");
+			break;
 		case Product:
-			return(SimilarityProduct());
+			sim=SimilarityProduct();
+			break;
 		case LanguageOnly:
-			return(SimilarityLang());
+			sim=SimilarityLang();
+			break;
 		case Sum:
-			return(SimilaritySum());
+			sim=SimilaritySum();
+			break;
 		case Choquet:
-			return(SimilarityChoquet());
+			sim=SimilarityChoquet();
+			break;
 	}
-	return(0.0);
+	return(sim);
 }
 
 
@@ -529,4 +545,5 @@ void GGenericSims::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("ContentStructCapacity",0.01));
 	params->InsertParam(new RParamValue("ContentMetaCapacity",0.01));
 	params->InsertParam(new RParamValue("MetaStructCapacity",0.01));
+	params->InsertParam(new RParamValue("Transform",false));
 }

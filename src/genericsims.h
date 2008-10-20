@@ -182,6 +182,11 @@ protected:
 	 */
 	double SimSpaces[5];
 
+	/**
+	 * Transform the similarity from [-1,+1] to [0,1].
+	 */
+	bool Transform;
+
 public:
 
 	/**

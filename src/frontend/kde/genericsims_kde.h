@@ -39,6 +39,7 @@
 // include files for Qt
 #include <qcombobox.h>
 #include <qgroupbox.h>
+#include <qcheckbox.h>
 
 
 //------------------------------------------------------------------------------
@@ -74,6 +75,7 @@ class GGenericSimsDlg : public QGMatrixMeasureDlg
 	KDoubleNumInput* ContentStructCapacity;
 	KDoubleNumInput* ContentMetaCapacity;
 	KDoubleNumInput* MetaStructCapacity;
+	QCheckBox* Transform;
 
 public:
 
