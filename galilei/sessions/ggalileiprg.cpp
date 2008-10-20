@@ -302,10 +302,19 @@ public:
 
 
 //------------------------------------------------------------------------------
-class GCreateIdealI : public RPrgFunc
+class GStartSimulationI : public RPrgFunc
 {
 public:
-	GCreateIdealI(void) : RPrgFunc("CreateIdeal","Create a new ideal clustering and new profiles.") {}
+	GStartSimulationI(void) : RPrgFunc("StartSimulation","Create a new ideal clustering and new profiles.") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
+};
+
+
+//------------------------------------------------------------------------------
+class GPerformDegradationI : public RPrgFunc
+{
+public:
+	GPerformDegradationI(void) : RPrgFunc("PerformDegradation","Perform a degradation of an ideal clustering.") {}
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
 };
 
@@ -680,7 +689,7 @@ void GGroupDocsI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer
 
 
 //------------------------------------------------------------------------------
-void GCreateIdealI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
+void GStartSimulationI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
@@ -690,7 +699,49 @@ void GCreateIdealI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContain
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Create Ideal Groups");
 	Owner->Session->GetSubjects()->Apply();
-	Owner->Session->GetSubjects()->CreateIdeal();
+	Owner->Session->GetSubjects()->StartSimulation();
+}
+
+
+//------------------------------------------------------------------------------
+void GPerformDegradationI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
+{
+	// Read Parameters
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+	if((args.GetNb()!=1)&&(args.GetNb()!=2))
+		throw RPrgException(prg,"Method needs at least one parameter.");
+	bool b;
+	char What=args[0]->GetValue(prg).ToInt(b);
+	int Nb;
+	if(What==1)
+	{
+		if(args.GetNb()!=2)
+			throw RPrgException(prg,"Method needs two parameters if the first one is 1.");
+		Nb=args[1]->GetValue(prg).ToInt(b);
+	}
+	else
+		Nb=0;
+
+	// Perform the degradation
+	if((!What)&&o)
+		o->WriteStr("Global Init");
+	if((What==1)&&o)
+	{
+		o->WriteStr("Perform degradation: "+RString::Number(Nb));
+	}
+	Owner->Session->GetSubjects()->PerformDegradation(What,Nb);
+
+	// Compute J and T and put it in a file
+	if(!What)
+		return;
+	double J=Owner->Session->GetSubjects()->GetJ(otTopic);
+	double T=Owner->Session->GetSubjects()->GetTotal(otTopic);
+	if(Owner->App->OFile)
+		(*Owner->App->OFile)<<Owner->App->TestName<<T<<J<<endl;
+	if(Owner->App->GOFile)
+		(*Owner->App->GOFile)<<T<<J<<endl;
 }
 
 
@@ -1140,7 +1191,6 @@ void GSetSaveResultsI::Run(R::RPrg* prg,RPrgOutput*,RPrgVarInst* inst,R::RContai
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
-
 	if(args.GetNb()!=1)
 		throw RPrgException(prg,"Method needs one parameter");
 	if((args[0]->GetValue(prg))=="0")
@@ -1240,7 +1290,8 @@ GSessionClass::GSessionClass(GInstGALILEIApp* app)
 	Methods.InsertPtr(new GComputeProfilesI());
 	Methods.InsertPtr(new GGroupProfilesI());
 	Methods.InsertPtr(new GGroupDocsI());
-	Methods.InsertPtr(new GCreateIdealI());
+	Methods.InsertPtr(new GStartSimulationI());
+	Methods.InsertPtr(new GPerformDegradationI());
 	Methods.InsertPtr(new GFdbksCycleI());
 	Methods.InsertPtr(new GCompareIdealI());
 	Methods.InsertPtr(new GAddIdealI());

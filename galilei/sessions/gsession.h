@@ -252,8 +252,11 @@ public:
 	* GTopic* Topic=static_cast<GTopic*>(Session->GetElement(otTopic,4));
 	* @endcode
 	* @param type            Type of the element.
+	* @param id              Identifier of the element.
+	* @param null            If set to true, if the document does not exist,
+	*                        return 0, else an exception is generated.
 	*/
-	void* GetElement(tObjType type,size_t id) const;
+	void* GetElement(tObjType type,size_t id,bool null=false) const;
 
 	/**
 	 * Clear the groups containing a given type of elements.
@@ -448,9 +451,9 @@ public:
 	size_t GetMaxPosDoc(void) const;
 
 	/**
-	* Fill a given array with all the documents of a given language. The array
-	* must be created and must be large enough to hold all the documents. It
-	* can contained null pointers.
+	* Fill a given array with all the documents. The array must be created and
+	* must be large enough to hold all the documents. It can contained null
+	* pointers.
 	* @see This method is used in GSubjects to create assessments for
 	*      profiles during a simulation of a real system.
 	* @param docs            Pointer to the array.
@@ -660,6 +663,32 @@ public:
 
 	// @} Users/Profiles
 
+	//-----------------------------------------------------
+	/** @name Groups Methods
+	*/
+	// @{
+
+private:
+
+	/**
+	 * Copy the ideal groups into the current clustering.
+	 * @param objtype         Type of the clustering (otProfile or otDoc).
+	 * @param grouptype       Type of the groups (otCommunity or otTopic).
+	 * @param calc           Method used to compute the groups descriptions.
+	 */
+	template<class cGroup,class cObj,class cCalc> void CopyIdealGroups(tObjType objtype,tObjType grouptype,cCalc* calc);
+
+public:
+
+	/**
+	* Build a type of clustering (otTopic or otCommunity) from the ideal one
+	* based on the documents and the profiles assigned to the subject.
+	* @param type            Type.
+	*/
+	void BuildGroupsFromIdeal(tObjType type);
+
+	// @} Groups
+
 
 	//-----------------------------------------------------
 	/** @name Communities Methods
@@ -728,25 +757,6 @@ public:
 	*/
 	void DoPostCommunity(GSlot* rec=0);
 
-private:
-
-	/**
-	 * Copy the ideal groups into the current clustering.
-	 * @param objtype         Type of the clustering (otProfile or otDoc).
-	 * @param grouptype       Type of the groups (otCommunity or otTopic).
-	 * @param calc           Method used to compute the groups descriptions.
-	 */
-	template<class cGroup,class cObj,class cCalc> void CopyIdealGroups(tObjType objtype,tObjType grouptype,cCalc* calc);
-
-public:
-
-	/**
-	* Build a type of clustering (otTopic or otCommunity) from the ideal one
-	* based on the documents and the profiles assigned to the subject.
-	* @param type            Type.
-	*/
-	void BuildGroupsFromIdeal(tObjType type);
-
 	/**
 	* Load the historic Communities.
 	*/
@@ -793,6 +803,17 @@ public:
 	size_t GetNbTopics(void) const;
 
 	/**
+	 * Get the maximal identifier of a topic.
+	 */
+	size_t GetMaxTopicId(void) const;
+
+	/**
+	* Get the maximum position of topics handled.
+	* @returns Number of topics.
+	*/
+	size_t GetMaxPosTopic(void) const;
+
+	/**
 	* Get a topic corresponding to a given identifier.
 	* @param id              Identifier of the topic.
 	* @param load            If set to true, the topic is eventually loaded
@@ -802,6 +823,17 @@ public:
 	* @return Pointer to GTopic.
 	*/
 	GTopic* GetTopic(size_t id,bool load=true,bool null=false) const;
+
+	/**
+	* Fill a given array with all the topics. The array must be created and
+	* must be large enough to hold all the topics. It can contained null
+	* pointers.
+	* @see This method is used in GSubjects to degrade the ideal clustering.
+	* @param topics          Pointer to the array.
+	* @returns Size of the data (including the null pointers) copied in the
+	* array.
+	*/
+	size_t FillTopics(GTopic** topics);
 
 	/**
 	* Assign an identifier to a new topic.

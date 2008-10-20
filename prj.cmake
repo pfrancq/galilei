@@ -1,7 +1,7 @@
 #ok, this file contain specific project definition
 # - dependency checks
 # - file to compile
-# - sub project, 
+# - sub project,
 # - ...
 
 #normaly all def in CMakeLists.txt

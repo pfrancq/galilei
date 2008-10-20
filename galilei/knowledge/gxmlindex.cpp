@@ -38,6 +38,7 @@
 #include <glang.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
@@ -125,7 +126,9 @@ void GXMLIndex::BuildDef(void)
 				break;
 		}
 		size_t id=atoi(Tag);
-		Stems.InsertPtr(Space->GetConcept(id));
+		GConcept* ptr=Space->GetConcept(id);
+		if(ptr)
+			Stems.InsertPtr(ptr);
 	}
 
 	// Find the language of the stem
@@ -139,7 +142,9 @@ void GXMLIndex::BuildDef(void)
 		Old=Pos+1;
 	}
 	size_t id=atoi(Name.Mid(static_cast<size_t>(Old)));
-	Stems.InsertPtr(Space->GetConcept(id));
+	GConcept* ptr=Space->GetConcept(id);
+	if(ptr)
+		Stems.InsertPtr(ptr);
 }
 
 

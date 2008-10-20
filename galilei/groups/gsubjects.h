@@ -139,13 +139,42 @@ protected:
 	*/
 	template<class cGroup,class cObj> void ComputeTotal(tObjType objtype,tObjType grouptype,R::RCursor<cGroup>& grps,double& total);
 
+	/**
+	* Compute the J measure for a given clustering.
+	* @param objtype         Type of the clustering (otProfile or otDoc).
+	* * @param grouptype       Type of the groups (otCommunity or otTopic).
+	* @param grps            Groups computed.
+	* @param J               J Measure.
+	*/
+	template<class cGroup,class cObj> void ComputeJ(tObjType objtype,tObjType grouptype,R::RCursor<cGroup>& grps,double& J);
+
 public:
 
 	/**
-	* Create randomly the judgment for all the users. The results are saved if
-	* the corresponding parameter is set in the session.
+	 * Perform a degradation. The ideal clustering is used as the current one,
+	 * and a list of objects to assign to another group is determined.
+	 * @param what           Describe what to do:
+	 *                       -# Initialize the degradation (what=0).
+	 *                       -# Make the ideal clustering the current one
+	 *                          (what=1). Eventually, randomly selected topics
+	 *                          are merged or split.
+	 *                       -# Take a given percentage of objects and assign
+	 *                          them to a "wrong" group (what=2).
+	 * @param nb             Number of clusters to merge (nb<0) or to split
+	 *                       (nb>0) (only if what==1).
+	 *
+	 * The J measure and the adjusted Rand index are then computed (except for
+	 * what=0).
+	 */
+	void PerformDegradation(char what,int nb);
+
+	/**
+	* Start a simulation. A given set of subjects is chosen, then the users
+	* are created and the assessments for all the users are randomly created.
+	* The results are saved if the corresponding parameter is set in the
+	* session.
 	*/
-	void CreateIdeal(void);
+	void StartSimulation(void);
 
 	/**
 	* Simulate that documents are shared inside the different communities and
@@ -154,7 +183,7 @@ public:
 	void DocumentSharing(void);
 
 	/**
-	* Simulate that existing profiles assess randomly NbDocsAssess choosen
+	* Simulate that existing profiles assess randomly NbDocsAssess chosen
 	* documents.
 	*/
 	void AddAssessments(void);
@@ -215,6 +244,11 @@ public:
 	* Get the total recall of the clustering.
 	*/
 	double GetTotal(tObjType type) const;
+
+	/**
+	* Get the J measure of the clustering.
+	*/
+	double GetJ(tObjType type) const;
 
 	/**
 	* Get the precision of a community.

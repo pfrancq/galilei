@@ -85,8 +85,8 @@ public:
 {
 public:
 	cGroup* Group;              // Pointer to the group.
-	double Precision;              // Precision inside the group.
-	double Recall;                 // Recall inside the group.
+	double Precision;           // Precision inside the group.
+	double Recall;              // Recall inside the group.
 
 	// Constructor and Compare methods.
 	GroupScore(cGroup* grp) : Group(grp), Precision(0.0), Recall(0.0) {}
@@ -121,31 +121,40 @@ public:
 	size_t NbProfMax;                                                    // Maximal number of profiles to create in a subject.
 	size_t NbProfMin;                                                    // Minimal number of profiles to create in a subject.
 	double PercSocial;                                                   // Percentage of profiles that are social.
-	GDoc** tmpDocs;                                                      // Temporary Array of documents.
+	GDoc** tmpDocs;                                                      // Temporary array of documents.
 	size_t NbDocs;                                                       // Number of documents actually managed.
+	GTopic** tmpTopics;                                                  // Temporary array of topics
 	R::RContainer<GFdbk,false,false> NewDocs;                            // New documents to assess.
 	R::RContainer<GProfile,false,true> LastAdded;                        // Latest added profiles.
 	size_t NbDocsAssess;                                                 // Number of documents to be assessed during a feedback process.
 	double CommunityPrecision;                                           // Precision of the profiles clustering.
 	double CommunityRecall;                                              // Recall of the profiles clustering.
 	double CommunityTotal;                                               // Total comparison between for the profiles clustering.
+	double CommunityJ;                                                   // J Measure for the current profiles clustering
 	double TopicPrecision;                                               // Precision of the documents clustering.
 	double TopicRecall;                                                  // Recall of the documents clustering.
 	double TopicTotal;                                                   // Total comparison between for the documents clustering.
+	double TopicJ;                                                       // J Measure for the current documents clustering
 	R::RContainer<GroupScore<GCommunity>,true,true> CommunitiesScore;    // Score of computed communities.
 	R::RContainer<GroupScore<GTopic>,true,true> TopicsScore;             // Score of computed topics.
 	R::RContainer<GSubject,false,false> Profiles;                        // Subjects for the profiles.
 	R::RContainer<R::RContainer<GSubject,false,false>,true,false> Docs;  // Subjects for the documents.
+	double SwitchPerc;                                                   // Percentage of documents to switch at each step.
+	size_t SwitchPos;                                                    // Position of next document to switch.
+	RRandom* SwitchRandom;                                               // Random generator of switching documents.
 
 	Intern(GSession* session) :  Session(session),
-	  tmpDocs(0), NbDocs(0), NewDocs(NbDocs), LastAdded(50,25),
-	  CommunitiesScore(100,50), TopicsScore(100,50), Profiles(1000), Docs(5000)
+	  tmpDocs(0), NbDocs(0), tmpTopics(0), NewDocs(NbDocs), LastAdded(50,25),
+	  CommunitiesScore(100,50), TopicsScore(100,50), Profiles(1000), Docs(5000),
+	  SwitchRandom(0)
 	{
 	}
 
 	~Intern(void)
 	{
 		delete[] tmpDocs;
+		delete[] tmpTopics;
+		delete SwitchRandom;
 	}
 };
 
@@ -184,6 +193,7 @@ void GSubjects::CreateConfig(void)
 	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("RelSubjects",true),"Subjects");
 	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbMinDocsSubject",50),"Subjects");
 	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbDocsAssess",30),"Subjects");
+	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("SwitchPerc",5.0),"Subjects");
 }
 
 
@@ -204,6 +214,7 @@ void GSubjects::Apply(void)
 	Data->RelSubjects=GALILEIApp->GetGALILEIConfig()->GetBool("RelSubjects","Subjects");
 	Data->NbMinDocsSubject=GALILEIApp->GetGALILEIConfig()->GetUInt("NbMinDocsSubject","Subjects");
 	Data->NbDocsAssess=GALILEIApp->GetGALILEIConfig()->GetUInt("NbDocsAssess","Subjects");
+	Data->SwitchPerc=GALILEIApp->GetGALILEIConfig()->GetDouble("SwitchPerc","Subjects");
 }
 
 
@@ -581,8 +592,239 @@ template<class cGroup,class cObj>
 }
 
 
+//-----------------------------------------------------------------------------
+template<class cGroup,class cObj>
+	void GSubjects::ComputeJ(tObjType objtype,tObjType grptype,R::RCursor<cGroup>& grps,double& J)
+{
+	R::RString mes;
+	bool Neg(false);
+
+	// Init
+	R::RContainer<cObj,false,false> Centers(Data->Session->GetNbElements(grptype));
+	J=0;
+	switch(objtype)
+	{
+		case otDoc:
+			mes="Documents";
+			break;
+		case otProfile:
+			mes="Profiles";
+			break;
+		default:
+			throw GException("GSubjects::ComputeJ: '"+GetObjType(objtype)+"' is not a valid type");
+	}
+	GMeasure* Sim=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities");
+
+	// Compute the average intra-similarity and the centers
+	for(grps.Start();!grps.End();grps.Next())
+	{
+		if(!grps()->GetNbObjs())
+			continue;
+		RCursor<cObj> Objs1(grps()->GetObjs());
+		if(grps()->GetNbObjs()==1)
+		{
+			J+=1.0;
+			Objs1.Start();
+			Centers.InsertPtr(Objs1());
+			continue;
+		}
+		double max(-2.0);
+		cObj* CurCenter(0);
+		RCursor<cObj> Objs2(grps()->GetObjs());
+		for(Objs1.Start();!Objs1.End();Objs1.Next())
+		{
+			if(!Objs1()->IsDefined()) continue;
+			double intrasim(0.0);
+			size_t nbintra(0);
+			for(Objs2.Start();!Objs2.End();Objs2.Next())
+			{
+				double tmp;
+				if(!Objs2()->IsDefined()) continue;
+				if(Objs1()==Objs2()) continue;
+				nbintra++;
+				Sim->Measure(0,Objs1()->GetId(),Objs2()->GetId(),&tmp);
+				if(tmp<0.0)
+					Neg=true;
+				intrasim+=tmp;
+			}
+			intrasim/=static_cast<double>(nbintra);
+			if(intrasim>max)
+			{
+				max=intrasim;
+				CurCenter=Objs1();
+			}
+		}
+		J+=max;
+		Centers.InsertPtr(CurCenter);
+	}
+
+	// Compute the maximal similarity between the centers
+	RCursor<cObj> Objs1(Centers);
+	RCursor<cObj> Objs2(Centers);
+	size_t nb(Centers.GetNb()-1);
+	double max(-2.0);
+	for(Objs1.Start();!Objs1.End();Objs1.Next())
+	{
+		double avg(0.0);
+		for(Objs2.Start();!Objs2.End();Objs2.Next())
+		{
+			double tmp;
+			if(Objs1()==Objs2()) continue;
+			Sim->Measure(0,Objs1()->GetId(),Objs2()->GetId(),&tmp);
+			if(tmp<0.0)
+				Neg=true;
+			avg+=tmp;
+		}
+		avg/=static_cast<double>(nb);
+		if(avg>max)
+			max=avg;
+	}
+
+	// Correction if negative values
+	if(Neg)
+	{
+		max=(max+1.0)/2.0;
+		J=(J+1.0)/2.0;
+	}
+	// Compute J
+	J/=(static_cast<double>(Centers.GetNb())*max);
+}
+
+
 //------------------------------------------------------------------------------
-void GSubjects::CreateIdeal(void)
+void GSubjects::PerformDegradation(char what,int nb)
+{
+	switch(what)
+	{
+		case 0:
+			// Apply Config
+			Apply();
+			if(Data->SwitchRandom)
+			{
+				delete Data->SwitchRandom;
+				Data->SwitchRandom=0;
+			}
+			Data->SwitchRandom=RRandom::Create(RRandom::Good);
+
+			// Initialize the elements
+			if(!Data->tmpDocs)
+				Data->tmpDocs=new GDoc*[Data->Session->GetMaxPosDoc()+1];
+			if(!Data->tmpTopics)
+				Data->tmpTopics=new GTopic*[GetNbNodes()+1];
+			return;
+			break;
+
+		case 1:
+			// Re-init the session
+			Data->Session->ReInit();
+
+			// Copy the ideal clustering as the current one
+			Data->Session->BuildGroupsFromIdeal(otTopic);
+
+			Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
+			Data->SwitchRandom->RandOrder(Data->tmpDocs,Data->NbDocs);
+			Data->SwitchPos=0;
+			if(nb>0)
+			{
+				// nb splits
+				size_t Nb(nb);
+				if(Nb>Data->Session->GetNbTopics())
+					Nb=Data->Session->GetNbTopics();
+				Data->Session->FillTopics(Data->tmpTopics);
+				Data->SwitchRandom->RandOrder(Data->tmpTopics,Nb);
+				GTopic** ptr(Data->tmpTopics);
+				for(size_t i=0;i<Nb;ptr++)
+				{
+					if(!(*ptr))
+						continue;
+					i++;
+					size_t split(Data->SwitchRandom->GetValue((*ptr)->GetNbObjs()-1)+2);
+
+					// The first 'split' elements will be copied to a new topic
+					RCursor<GDoc> Docs((*ptr)->GetObjs());
+					RContainer<GDoc,false,false> Dels(Docs.GetNb());
+					for(Docs.Start();--split;Docs.Next())
+						Dels.InsertPtr(Docs());
+					Docs=Dels;
+					GTopic* ptr2=new GTopic(cNoRef,RDate::GetToday(),RDate::Null);
+					Data->Session->AssignId(ptr2);
+					Data->Session->InsertTopic(ptr2);
+					for(Docs.Start();!Docs.End();Docs.Next())
+					{
+						(*ptr)->DeleteObj(Docs());
+						ptr2->InsertObj(Docs());
+					}
+				}
+			}
+			else if(nb<0)
+			{
+				// -nb merges
+				size_t Nb(-nb);
+				if(Nb>Data->Session->GetNbTopics()-2)
+					Nb=Data->Session->GetNbTopics()-2;
+				Data->Session->FillTopics(Data->tmpTopics);
+				for(size_t i=0;i<Nb;i++)
+				{
+					Data->SwitchRandom->RandOrder(Data->tmpTopics,Nb+1);
+					GTopic** ptr(Data->tmpTopics);
+					while(!(*ptr))
+						ptr++;
+					GTopic** ptr2=ptr+1;
+					while(!(*ptr2))
+						ptr2++;
+
+					// Put elements of (*ptr) in (*ptr2)
+					RCursor<GDoc> Docs((*ptr)->GetObjs());
+					RContainer<GDoc,false,false> Dels(Docs.GetNb());
+					for(Docs.Start();!Docs.End();Docs.Next())
+						Dels.InsertPtr(Docs());
+					Docs=Dels;
+					for(Docs.Start();!Docs.End();Docs.Next())
+					{
+						(*ptr)->DeleteObj(Docs());
+						(*ptr2)->InsertObj(Docs());
+					}
+					Data->Session->DeleteTopic(*ptr);
+					(*ptr)=0;
+
+				}
+			}
+			break;
+
+		case 2:
+		{
+			size_t IncPos(static_cast<size_t>((Data->SwitchPerc/100.0)*static_cast<double>(Data->NbDocs)));
+			if(IncPos+Data->SwitchPos>Data->NbDocs)
+				IncPos=Data->NbDocs-Data->SwitchPos;
+			if(!IncPos)
+				return;
+			IncPos++;
+			size_t MaxId(Data->Session->GetMaxTopicId());
+			for(GDoc** ptr=&Data->tmpDocs[Data->SwitchPos];--IncPos;Data->SwitchPos++,ptr++)
+			{
+				size_t ActGrp=(*ptr)->GetGroupId();
+				size_t NewGrp(ActGrp);
+				while((NewGrp==ActGrp)||(!Data->Session->GetTopic(NewGrp,false,true)))
+					NewGrp=Data->SwitchRandom->GetValue(MaxId)+1;
+				Data->Session->GetTopic(ActGrp)->DeleteObj(*ptr);
+				Data->Session->GetTopic(NewGrp)->InsertObj(*ptr);
+			}
+			break;
+		}
+
+		default:
+			throw GException("'"+RString::Number(what)+"' is a wrong parameter for GSubjects::StartDegradation");
+	}
+
+	RCursor<GTopic> Topics(Data->Session->GetTopics());
+	ComputeJ<GTopic,GDoc>(otDoc,otTopic,Topics,Data->TopicJ);
+	RCursor<GTopic> GroupsComputed(Data->Session->GetTopics());
+	ComputeTotal<GTopic,GDoc>(otDoc,otTopic,GroupsComputed,Data->TopicTotal);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubjects::StartSimulation(void)
 {
 	// Apply Config
 	Apply();
@@ -1028,6 +1270,21 @@ double GSubjects::GetTotal(tObjType type) const
 			return(Data->CommunityTotal);
 		case otTopic:
 			return(Data->TopicTotal);
+		default:
+			return(0.0);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+double GSubjects::GetJ(tObjType type) const
+{
+	switch(type)
+	{
+		case otCommunity:
+			return(Data->CommunityJ);
+		case otTopic:
+			return(Data->TopicJ);
 		default:
 			return(0.0);
 	}

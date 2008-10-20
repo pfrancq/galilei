@@ -100,6 +100,7 @@ catch(GException& e)                                                           \
 	else                                                                       \
 		throw GException(e.GetMsg());                                          \
 }                                                                              \
+                                                                               \
 catch(RException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
@@ -190,7 +191,7 @@ public:
 		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups), FilterManager(0)
 	{
 		CurrentRandom=0;
-		Random = new RRandomGood(CurrentRandom);
+		Random=RRandom::Create(RRandom::Good,CurrentRandom);
 	}
 
 	~Intern(void)
@@ -565,18 +566,18 @@ size_t GSession::GetMaxElementId(tObjType type) const
 }
 
 //------------------------------------------------------------------------------
-void* GSession::GetElement(tObjType type,size_t id) const
+void* GSession::GetElement(tObjType type,size_t id,bool null) const
 {
 	switch(type)
 	{
 		case otDoc:
-			return(GetDoc(id,false));
+			return(GetDoc(id,null));
 		case otProfile:
-			return(GetProfile(id,false));
+			return(GetProfile(id,null));
 		case otCommunity:
-			return(GetCommunity(id,false));
+			return(GetCommunity(id,null));
 		case otTopic:
-			return(GetTopic(id,false));
+			return(GetTopic(id,null));
 		default:
 			throw GException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
 	}
@@ -888,7 +889,7 @@ size_t GSession::GetMaxPosDoc(void) const
 //-----------------------------------------------------------------------------
 size_t GSession::FillDocs(GDoc** docs)
 {
-	return(Data->Docs.GetTab(docs));
+	return(Data->Docs.GetTab(docs,1,Data->Docs.GetMaxPos()));
 }
 
 
@@ -1665,6 +1666,7 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 			break;
 		}
 		default:
+			throw GException("GSession::BuildGroupsFromIdeal: '"+GetObjType(type)+"' is not a valid type");
 			break;
 	}
 }
@@ -1736,12 +1738,34 @@ RCursor<GTopic> GSession::GetTopics(void)
 }
 
 
+//-----------------------------------------------------------------------------
+size_t GSession::FillTopics(GTopic** topics)
+{
+	return(Data->Topics.GetTab(topics,1,Data->Topics.GetMaxPos()));
+}
+
+
 //------------------------------------------------------------------------------
 size_t GSession::GetNbTopics(void) const
 {
 	return(Data->Topics.GetNb());
 }
 
+
+//------------------------------------------------------------------------------
+size_t GSession::GetMaxTopicId(void) const
+{
+	if(!Data->Topics.GetNb())
+		return(0);
+	return(Data->Topics[Data->Topics.GetMaxPos()]->GetId());
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GSession::GetMaxPosTopic(void) const
+{
+	return(Data->Topics.GetMaxPos());
+}
 
 
 //------------------------------------------------------------------------------
@@ -1753,7 +1777,7 @@ GTopic* GSession::GetTopic(size_t id,bool load,bool null) const
 			return(0);
 		throw GException("Unknown topic "+RString::Number(id));
 	}
-	GTopic* top=Data->Topics.GetPtr(id);
+	GTopic* top=Data->Topics[id];
 	if(top)
 		return(top);
 
@@ -1800,14 +1824,14 @@ void GSession::AssignId(GTopic* top)
 //------------------------------------------------------------------------------
 void GSession::InsertTopic(GTopic* top)
 {
-	Data->Topics.InsertPtr(top);
+	Data->Topics.InsertPtrAt(top,top->GetId());
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::DeleteTopic(GTopic* top)
 {
-	Data->Topics.DeletePtr(top);
+	Data->Topics.DeletePtrAt(top->GetId(),false);
 }
 
 

@@ -69,7 +69,7 @@ class GMatrixMeasure::MeasureRec
 public:
 	double Value;
 
-	MeasureRec(void) : Value(0.0) {}
+	MeasureRec(void) : Value(NAN) {}
 	MeasureRec(double val) : Value(val) {}
 	void Read(R::RRecFile<MeasureRec,false>& f)  {f>>Value;}
 	void Write(R::RRecFile<MeasureRec,false>& f) {f<<Value;}
@@ -88,41 +88,35 @@ class GMatrixMeasure::Measures
 {
 public:
 	double* Values;      // Values
+	size_t Max;
 
-	Measures(size_t max,double dirty);
-	void Extend(size_t olds,size_t news,double dirty);
+	Measures(size_t max);
+	void Extend(size_t max);
 	int Compare(const Measures&) const {return(-1);}
+	inline void Init(void)  {memset(Values,0xFF,sizeof(double)*Max);}
 	~Measures(void) {delete[] Values;}
 };
 
 
 //------------------------------------------------------------
-GMatrixMeasure::Measures::Measures(size_t max,double dirty) : Values(0)
+GMatrixMeasure::Measures::Measures(size_t max) :
+	Values(0), Max(max)
 {
-	Values=new double[max];
-	// Dirty the new columns
-	double* col;
-	for(max++,col=Values;--max;col++)
-		(*col)=dirty;
+	Values=new double[Max];
+	Init();
 }
 
 
 //------------------------------------------------------------------------------
-void GMatrixMeasure::Measures::Extend(size_t olds,size_t news,double dirty)
+void GMatrixMeasure::Measures::Extend(size_t max)
 {
-	double* tmp=new double[news];
-	if(olds)
-	{
-		memcpy(tmp,Values,sizeof(double)*olds);
-		delete[] Values;
-	}
+	if(Max>max) return;
+	double* tmp=new double[max];
+	memcpy(tmp,Values,sizeof(double)*Max);
+	delete[] Values;
 	Values=tmp;
-
-	// Dirty the new columns
-	double* col;
-	size_t j;
-	for(j=news-olds+1,col=&Values[olds];--j;col++)
-		(*col)=dirty;
+	memset(&Values[Max],0xFF,sizeof(double)*(max-Max));
+	Max=max;
 }
 
 
@@ -137,7 +131,7 @@ void GMatrixMeasure::Measures::Extend(size_t olds,size_t news,double dirty)
 GMatrixMeasure::GMatrixMeasure(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym)
 	: GMeasure(fac), GSignalHandler(), MemValues(0), RecValues1(0), RecValues2(0),
 	  MemNbLines(0), MemNbCols(0), FileNbLines(0), FileNbCols(0), MaxIdLine(0), MaxIdCol(0), NbValues(0), Mean(0.0), Deviation(0.0),
-	  Symmetric(sym),NullLevel(0.000001), DirtyValue(-2.0), MinMeasure(0.5), AutomaticMinMeasure(true),
+	  Symmetric(sym),NullLevel(0.000001), MinMeasure(0.5), AutomaticMinMeasure(true),
 	  MinMeasureSense(true), InMemory(true), InFile(false), Lines(lines), Cols(cols)
 {
 	if(Symmetric&&(Lines!=Cols))
@@ -195,144 +189,48 @@ void GMatrixMeasure::Connect(GSession* session)
 {
 	GMeasure::Connect(session);
 	if(InFile)
-	{
-		// Create (if necessary) the directory that will contained the file
-		RString place(GetRootDir());
-		RDir::CreateDirIfNecessary(place,true);
-		place+=RFile::GetDirSeparator()+GetFilesName()+".";
-
-		// Read the main information
-		try
-		{
-			RBinaryFile Main(place+"main");
-			Main.Open(RIO::Read);
-			Main>>FileNbLines>>FileNbCols>>NbValues>>Mean>>Deviation;
-			FirstCall=true;      // It will be necessary to load from the file
-		}
-		catch(...)
-		{
-			// Suppose the file does not exist
-			FileNbLines=FileNbCols=NbValues=0;
-			Mean=Deviation=0.0;
-			FirstCall=false;     // Nothing to load
-		}
-
-		// Create the three files
-		RecValues1=new RRecFile<MeasureRec,false>(place+"val1",sizeof(MeasureRec));
-		RecValues1->Open(RIO::ReadWrite);
-		if(!Symmetric)
-		{
-			RecValues2=new RRecFile<MeasureRec,false>(place+"val2",sizeof(MeasureRec));
-			RecValues2->Open(RIO::ReadWrite);
-		}
-	}
+		OpenFiles();
 	FileMustExtend=MemMustExtend=false;   // Suppose nothing must be added
-	FileDirty=MemDirty=false;             // Suppose memory is added
+	FileDirty=MemDirty=false;             // Suppose memory and file are updated
 }
 
 
 //------------------------------------------------------------------------------
 void GMatrixMeasure::ReInit(void)
 {
-	if(InMemory)
+	if(InMemory&&MemValues)
 	{
-		size_t max;
-		for(size_t i=0;i<MaxIdLine;i++)
-		{
-			if(Symmetric)
-				max=i;
-			else
-				max=MaxIdCol;
-			void* obj1=Session->GetElement(Lines,i+1);
-			if(!obj1)
-				continue;
-			for(size_t j=0;j<max;j++)
-			{
-				void* obj2=Session->GetElement(Cols,j+1);
-				if(!obj2)
-					continue;
-				double Value=(*MemValues)[i]->Values[j];
-				if(Value!=DirtyValue)
-					DeleteValue(Value);
-				Value=Compute(obj1,obj2);
-				AddValue(Value);
-				(*MemValues)[i]->Values[j]=Value;
-				if(InFile)
-					WriteValue(i+1,j+1,Value);
-			}
-		}
+		RCursor<Measures> Cur(*MemValues);
+		for(Cur.Start();!Cur.End();Cur.Next())
+			Cur()->Init();
 	}
-	else if(InFile)
+	if(InFile)
 	{
+		CloseFiles();
+		OpenFiles();
+		ExtendFile(); // Perhaps necessary
 		MeasureRec Value;
-		size_t i,j;
-		void* obj1;
-
-		// Go trough the lines first
-		i=0; j=1;  // First element is (1,1)
-		for(RecValues1->Start();!RecValues1->End();j++)
+		for(RecValues1->Start();!RecValues1->End();)
 		{
-			if(i>j)
-			{
-				i++;
-				j=1;
-				obj1=Session->GetElement(Lines,i);
-			}
-			RecValues1->ReadRec(Value);
-			if(!obj1)
-				continue;
-			void* obj2=Session->GetElement(Cols,j);
-			if(!obj2)
-				continue;
-
-			if(Value.Value!=DirtyValue)
-				DeleteValue(Value.Value);
-
-			// Recompute it
-			Value.Value=Compute(obj1,obj2);
-			AddValue(Value.Value);
-			RecValues1->Prev();
 			RecValues1->WriteRec(Value);
 		}
-
-		// If not symmetric -> goes to column
 		if(!Symmetric)
 		{
-			i=1; j=1;  // First element is (1,1)
-			for(RecValues2->Start();!RecValues2->End();j++)
+			for(RecValues2->Start();!RecValues2->End();)
 			{
-				if(i==j)
-				{
-					i++;
-					j=1;
-					obj1=Session->GetElement(Cols,i);
-				}
-				RecValues2->ReadRec(Value);
-				if(!obj1)
-					continue;
-				void* obj2=Session->GetElement(Lines,j);
-				if(!obj2)
-					continue;
-
-				if(Value.Value!=DirtyValue)
-					DeleteValue(Value.Value);
-
-				// Recompute it
-				Value.Value=Compute(obj1,obj2);
-				AddValue(Value.Value);
-				RecValues2->Prev();
 				RecValues2->WriteRec(Value);
 			}
 		}
 	}
 	MemDirty=FileDirty=false;
+	Deviation=Mean=0.0;
 }
 
 
 //------------------------------------------------------------------------------
 void GMatrixMeasure::Init(void)
 {
-	// If also in memory -> load the whole file
+	// If File and in memory -> load the whole file
 	if(InMemory&&InFile)
 		LoadFile();
 	FirstCall=false;
@@ -343,27 +241,12 @@ void GMatrixMeasure::Init(void)
 void GMatrixMeasure::Disconnect(GSession* session)
 {
 	if(InFile)
-	{
-		// Write the main information
-		RBinaryFile Main(GetRootDir()+RFile::GetDirSeparator()+GetFilesName()+".main");
-		Main.Open(RIO::Create);
-		Main<<FileNbLines<<FileNbCols<<NbValues<<Mean<<Deviation;
-	}
+		CloseFiles();
 
 	if(MemValues)
 	{
 		delete MemValues;
 		MemValues=0;
-	}
-	if(RecValues1)
-	{
-		delete RecValues1;
-		RecValues1=0;
-	}
-	if(RecValues2)
-	{
-		delete RecValues2;
-		RecValues2=0;
 	}
 	FileNbLines=FileNbCols=MemNbLines=MemNbCols=MaxIdLine=MaxIdCol=NbValues=0;
 	Mean=Deviation=0.0;
@@ -401,41 +284,26 @@ void GMatrixMeasure::Measure(size_t measure,...)
 		(*res)=(*MemValues)[idx1]->Values[idx2];
 
 		// Recomputing it necessary
-		if((*res)==DirtyValue)
+		if(isnan(*res))
 		{
 			void* obj1=Session->GetElement(Lines,id1);
-			if(obj1)
-			{
-				void* obj2=Session->GetElement(Cols,id2);
-				if(obj2)
-					(*res)=Compute(obj1,obj2);
-			}
-//			cout<<"Compute Mem sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
+			void* obj2=Session->GetElement(Cols,id2);
+			(*res)=Compute(obj1,obj2);
 			(*MemValues)[idx1]->Values[idx2]=(*res);
 			AddValue(*res);
 			if(InFile)
 				WriteValue(id1,id2,*res);
 		}
-		//cout<<"Mem: sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
 	}
 	else if(InFile) // Search in binary file
 	{
 		(*res)=ReadValue(id1,id2);
-		//cout<<"File: sim("<<id1<<","<<id2<<")="<<(*res)<<endl;
 	}
 	else  // Recompute it
 	{
 		void* obj1=Session->GetElement(Lines,id1);
-		if(obj1)
-		{
-			void* obj2=Session->GetElement(Cols,id2);
-			if(obj2)
-				(*res)=Compute(obj1,obj2);
-			else
-				(*res)=0.0;
-		}
-		else
-			(*res)=0.0;
+		void* obj2=Session->GetElement(Cols,id2);
+		(*res)=Compute(obj1,obj2);
 	}
 }
 
@@ -468,39 +336,11 @@ void GMatrixMeasure::Info(size_t info,...)
 			ExtendMem();
 		if(MemDirty)
 			UpdateMem();
-		switch(info)
-		{
-			case 0:
-				(*res)=Mean+DeviationRate*sqrt(Deviation);
-				break;
-			case 1:
-				(*res)=Mean;
-				break;
-			case 2:
-				(*res)=sqrt(Deviation);
-				break;
-			default:
-				throw GException("GMatrixMeasure: '"+RString::Number(info)+"' not a valid information");
-		}
 	}
 	else if(InFile)
 	{
 		if(FileDirty)
 			UpdateFile();
-		switch(info)
-		{
-			case 0:
-				(*res)=Mean+DeviationRate*sqrt(Deviation);
-				break;
-			case 1:
-				(*res)=Mean;
-				break;
-			case 2:
-				(*res)=sqrt(Deviation);
-				break;
-			default:
-				throw GException("GMatrixMeasure: '"+RString::Number(info)+"' not a valid information");
-		}
 	}
 	else
 	{
@@ -517,13 +357,13 @@ void GMatrixMeasure::Info(size_t info,...)
 		// Go through all elements
 		for(size_t i=0;i<max-1;i++)
 		{
-			void* obj1=Session->GetElement(Lines,i+2);
+			void* obj1=Session->GetElement(Lines,i+2,true);
 			if(!obj1)
 				continue;
 
 			for(size_t j=0;j<i+1;j++)
 			{
-				void* obj2=Session->GetElement(Cols,j+1);
+				void* obj2=Session->GetElement(Cols,j+1,true);
 				if(!obj2)
 					continue;
 				NbComp+=1.0;
@@ -539,20 +379,82 @@ void GMatrixMeasure::Info(size_t info,...)
 			Mean/=NbComp;
 			Deviation=(Deviation/NbComp)-(Mean*Mean);
 		}
-		switch(info)
-		{
-			case 0:
-				(*res)=Mean+DeviationRate*sqrt(Deviation);
-				break;
-			case 1:
-				(*res)=Mean;
-				break;
-			case 2:
-				(*res)=sqrt(Deviation);
-				break;
-			default:
-				throw GException("GMatrixMeasure: '"+RString::Number(info)+"' not a valid information");
-		}
+	}
+	switch(info)
+	{
+		case 0:
+			(*res)=Mean+DeviationRate*sqrt(Deviation);
+			break;
+		case 1:
+			(*res)=Mean;
+			break;
+		case 2:
+			(*res)=sqrt(Deviation);
+			break;
+		default:
+			throw GException("GMatrixMeasure: '"+RString::Number(info)+"' not a valid information");
+	}
+}
+
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::OpenFiles(void)
+{
+	// Create (if necessary) the directory that will contained the file
+	RString place(GetRootDir());
+	RDir::CreateDirIfNecessary(place,true);
+	place+=RFile::GetDirSeparator()+GetFilesName()+".";
+
+	cout<<"Open "<<place<<endl;
+	Main=new RBinaryFile(place+"main");
+	Main->Open(RIO::ReadWrite);
+	if(!Main->End())
+	{
+		(*Main)>>FileNbLines>>FileNbCols>>NbValues>>Mean>>Deviation;
+		FirstCall=true;      // It will be necessary to load from the file
+	}
+	else
+	{
+		// Suppose the file does not exist
+		FileNbLines=FileNbCols=NbValues=0;
+		Mean=Deviation=0.0;
+		FirstCall=false;     // Nothing to load
+	}
+
+	// Create the files
+	RecValues1=new RRecFile<MeasureRec,false>(place+"val1",sizeof(MeasureRec));
+	RecValues1->Open(RIO::ReadWrite);
+	if(!Symmetric)
+	{
+		RecValues2=new RRecFile<MeasureRec,false>(place+"val2",sizeof(MeasureRec));
+		RecValues2->Open(RIO::ReadWrite);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::CloseFiles(void)
+{
+	// Write the main information
+	if(Main)
+	{
+		Main->Seek(0);
+		(*Main)<<FileNbLines<<FileNbCols<<NbValues<<Mean<<Deviation;
+		delete Main;
+		Main=0;
+	}
+
+	// Close the file
+	if(RecValues1)
+	{
+		delete RecValues1;
+		RecValues1=0;
+	}
+	if(RecValues2)
+	{
+		delete RecValues2;
+		RecValues2=0;
 	}
 }
 
@@ -588,17 +490,12 @@ inline double GMatrixMeasure::ReadValue(size_t id1,size_t id2)
 	Read->ReadRec(Mes);
 
 	// Verify if there is something to update
-	if(Mes.Value!=DirtyValue)
+	if(!isnan(Mes.Value))
 		return(Mes.Value);
 
 	void* obj1=Session->GetElement(Lines,id1);
-	if(obj1)
-	{
-		void* obj2=Session->GetElement(Cols,id2);
-		if(obj2)
-			Mes.Value=Compute(obj1,obj2);
-	}
-//	cout<<"Compute for file: Sim("<<id1<<","<<id2<<")="<<Mes.Value<<endl;
+	void* obj2=Session->GetElement(Cols,id2);
+	Mes.Value=Compute(obj1,obj2);
 	AddValue(Mes.Value);
 
 	// Store new record
@@ -652,7 +549,7 @@ void GMatrixMeasure::ExtendMem(void)
 	{
 		RCursor<Measures> Lines(*MemValues);
 		for(Lines.Start();!Lines.End();Lines.Next())
-			Lines()->Extend(MemNbCols,MaxIdCol,DirtyValue);
+			Lines()->Extend(MaxIdCol);
 	}
 
 	// Verify if new lines must be added
@@ -663,10 +560,10 @@ void GMatrixMeasure::ExtendMem(void)
 			// Create the line
 			size_t max;
 			if(Symmetric)
-				max=id;
+				max=id-1;
 			else
 				max=MaxIdCol;
-			MemValues->InsertPtrAt(new Measures(max,DirtyValue),id-1);
+			MemValues->InsertPtrAt(new Measures(max),id-1);
 		}
 	}
 	MemNbLines=MaxIdLine;
@@ -679,7 +576,7 @@ void GMatrixMeasure::ExtendMem(void)
 //------------------------------------------------------------------------------
 void GMatrixMeasure::ExtendFile(void)
 {
-	MeasureRec NullMeasure(DirtyValue);
+	MeasureRec NullMeasure;
 
 	// Verify first if the existing lines must be extended
 	if((!Symmetric)&&(MaxIdCol>1)&&(MaxIdCol>FileNbCols))
@@ -700,7 +597,7 @@ void GMatrixMeasure::ExtendFile(void)
 	{
 		// Go to the end of the file of RecValues1
 		RecValues1->GoToRec(RecValues1->GetRecNb());
-		while(FileNbLines<MaxIdLine)
+		while(FileNbLines<=MaxIdLine)
 		{
 			// Write a line of null values
 			for(size_t i=FileNbLines+1;--i;)
@@ -762,13 +659,13 @@ void GMatrixMeasure::DirtyCurrentFilePos(R::RRecFile<MeasureRec,false>* file)
 	file->ReadRec(Value);
 
 	// If value is already dirty -> Skip it
-	if(Value.Value==DirtyValue)
+	if(isnan(Value.Value))
 		return;
 
 	if(!InFile)
 		DeleteValue(Value.Value);  // Be sure it is not done twice
 	else
-		Value.Value=DirtyValue;
+		Value.Value=NAN;
 	file->Prev();
 	file->WriteRec(Value);
 }
@@ -907,7 +804,7 @@ void GMatrixMeasure::UpdateMem(void)
 	RCursor<Measures> Rows(*MemValues);
 	for(Rows.Start(),i=1;!Rows.End();Rows.Next(),i++)
 	{
-		void* obj1=Session->GetElement(Lines,i);
+		void* obj1=Session->GetElement(Lines,i,true);
 		if(!obj1)
 			continue;
 		if(Symmetric)
@@ -916,9 +813,9 @@ void GMatrixMeasure::UpdateMem(void)
 			max=MaxIdCol;
 		for(j=1,vals=Rows()->Values;j<max;j++,vals++)
 		{
-			if((*vals)!=DirtyValue)
+			if(!isnan(*vals))
 				continue;
-			void* obj2=Session->GetElement(Cols,j);
+			void* obj2=Session->GetElement(Cols,j,true);
 			if(!obj2)
 				continue;
 			(*vals)=Compute(obj1,obj2);
@@ -946,17 +843,17 @@ void GMatrixMeasure::UpdateFile(void)
 		{
 			i++;
 			j=1;
-			obj1=Session->GetElement(Lines,i);
+			obj1=Session->GetElement(Lines,i,true);
 		}
 		RecValues1->ReadRec(Value);
 		if(!obj1)
 			continue;
-		void* obj2=Session->GetElement(Cols,j);
+		void* obj2=Session->GetElement(Cols,j,true);
 		if(!obj2)
 			continue;
 
 		// If value OK -> Skip it
-		if(Value.Value!=DirtyValue)
+		if(!isnan(Value.Value))
 			continue;
 
 		// Recompute it
@@ -976,17 +873,17 @@ void GMatrixMeasure::UpdateFile(void)
 			{
 				i++;
 				j=1;
-				obj1=Session->GetElement(Cols,i);
+				obj1=Session->GetElement(Cols,i,true);
 			}
 			RecValues2->ReadRec(Value);
 			if(!obj1)
 				continue;
-			void* obj2=Session->GetElement(Lines,j);
+			void* obj2=Session->GetElement(Lines,j,true);
 			if(!obj2)
 				continue;
 
 			// If value OK -> Skip it
-			if(Value.Value!=DirtyValue)
+			if(!isnan(Value.Value))
 				continue;
 
 			// Recompute it
@@ -1050,7 +947,7 @@ void GMatrixMeasure::LoadFile(void)
 //------------------------------------------------------------------------------
 void GMatrixMeasure::AddValue(double val)
 {
-	if(val==DirtyValue)
+	if(isnan(val))
 		return;
 	double oldmean(Mean);
 	Mean=(NbValues*Mean+val)/(NbValues+1);
@@ -1062,7 +959,7 @@ void GMatrixMeasure::AddValue(double val)
 //------------------------------------------------------------------------------
 void GMatrixMeasure::DeleteValue(double& val)
 {
-	if(val==DirtyValue)
+	if(isnan(val))
 		return;
 	if(NbValues==1)
 	{
@@ -1076,7 +973,7 @@ void GMatrixMeasure::DeleteValue(double& val)
 		Deviation=(((Deviation+(oldmean*oldmean))*NbValues)-(val*val))/(NbValues-1)-(Mean*Mean);
 		NbValues--;
 	}
-	val=DirtyValue;
+	val=NAN;
 }
 
 

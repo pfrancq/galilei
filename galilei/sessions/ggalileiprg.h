@@ -96,6 +96,11 @@ namespace GALILEI{
 *   "Community" or "Topic") should be recomputed.
 * - 'SetSaveResults(Yes)': Specify if the results must be stored in the current
 *   storage ('Yes'=="1") or not ('Yes'=="0").
+* - 'PerformDegradation(What,Nb)': Perform a degradation. If 'What'=="0", the
+*   degradation process is launched. If 'What'=="1", the ideal clustering is
+*   used as the current one (eventually 'Nb' groups are split (Nb>0) or merged
+*   (Nb<0)). If 'What'=="2", a given percantage of documents are changed to
+*   another topic.
 *
 * The class 'GGALILEIApp' is used to manipulate the GALILEI application from a
 * script. Several methods are defined to manage configuration parameters of the

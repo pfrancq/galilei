@@ -46,6 +46,7 @@
 namespace R
 {
 	template<class C,bool bOrder> class RRecFile;
+	class RBinaryFile;
 }
 
 
@@ -85,12 +86,19 @@ class GMatrixMeasure : public GMeasure, public GSignalHandler
 	R::RContainer<Measures,true,false>* MemValues;
 
 	/**
-	 * Records of measures (First part of the matrix).
+	 * Main file containing information on the global values.
+	 */
+	R::RBinaryFile* Main;
+
+	/**
+	 * Records of measures (First part of the matrix). This file contains the
+	 * values: (1,1), (2,1), (2,2), (3,1), (3,2), (3,3)...
 	 */
 	R::RRecFile<MeasureRec,false>* RecValues1;
 
 	/**
-	 * Records of measures (Second part of the matrix).
+	 * Records of measures (Second part of the matrix). This file contains the
+	 * values: (1,2), (1,3), (2,3), (1,4), (2,4), (3,4)...
 	 */
 	R::RRecFile<MeasureRec,false>* RecValues2;
 
@@ -168,12 +176,6 @@ class GMatrixMeasure : public GMeasure, public GSignalHandler
 	* Level under which a measure is considered as null;
 	*/
 	double NullLevel;
-
-	/**
-	 * Value representing a dirty one. For example, for a measure in [-1,+1],
-	 * it may be -2 (default).
-	 */
-	double DirtyValue;
 
 	/**
 	 * Used to compute the default minimum of the measure.
@@ -359,6 +361,16 @@ public:
 	size_t GetNbDiffElements(void);
 
 private:
+
+	/**
+	 * Open the files.
+	 */
+	void OpenFiles(void);
+
+	/**
+	 * Close the files.
+	 */
+	void CloseFiles(void);
 
 	/**
 	 * Check if the identifiers must be changed.
