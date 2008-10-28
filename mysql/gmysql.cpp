@@ -34,11 +34,14 @@
 // include files for ANSI C/C++
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 
 
 //------------------------------------------------------------------------------
 // include files for R
 #include <rvectorint.h>
+#include <rdir.h>
+#include <rrecfile.h>
 
 
 //------------------------------------------------------------------------------
@@ -68,9 +71,29 @@
 #include <grelation.h>
 #include <grelationtype.h>
 #include <gdocstruct.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
+
+
+
+//------------------------------------------------------------------------------
+//
+//  Records to store description and structure files
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Record representing an occurrence of concept of a given type with a given weight
+class DescRec
+{
+public:
+	size_t TypeId;     // Identifier of the type.
+	size_t ConceptId;  // Identifier of the concept.
+	double Weight;     // Weight of the concepts.
+
+	DescRec(void) : TypeId(0), ConceptId(0), Weight(NAN) {}
+	void Set(size_t tid,size_t cid,double w) {TypeId=tid,ConceptId=cid,Weight=w;}
+	void Read(RRecFile<DescRec,false>& f)  {f>>TypeId>>ConceptId>>Weight;}
+	void Write(RRecFile<DescRec,false>& f) {f<<TypeId<<ConceptId<<Weight;}
+};
 
 
 
@@ -202,6 +225,23 @@ void GStorageMySQL::ApplyConfig(void)
 	LoadAll=Factory->GetBool("All");
 	Encoding=Factory->Get("Encoding");
 	Filtering=Factory->GetBool("Filtering");
+	Dir=Factory->Get("Dir");
+	try
+	{
+		RDir::CreateDirIfNecessary(Dir+RFile::GetDirSeparator()+Database,true);
+		DirDocs=Dir+RFile::GetDirSeparator()+Database+RFile::GetDirSeparator()+"Documents"+RFile::GetDirSeparator();
+		RDir::CreateDirIfNecessary(DirDocs,false);
+		DirProfiles=Dir+RFile::GetDirSeparator()+Database+RFile::GetDirSeparator()+"Profiles"+RFile::GetDirSeparator();
+		RDir::CreateDirIfNecessary(DirProfiles,false);
+		DirCommunities=Dir+RFile::GetDirSeparator()+Database+RFile::GetDirSeparator()+"Communities"+RFile::GetDirSeparator();
+		RDir::CreateDirIfNecessary(DirCommunities,false);
+		DirTopics=Dir+RFile::GetDirSeparator()+Database+RFile::GetDirSeparator()+"Topics"+RFile::GetDirSeparator();
+		RDir::CreateDirIfNecessary(DirTopics,false);
+	}
+	catch(...)
+	{
+		cerr<<"GStorageMySQL::ApplyConfig: Problems in creating directories in '"<<Dir<<"'"<<endl;
+	}
 	GStorage::ApplyConfig();
 }
 
@@ -601,29 +641,46 @@ void GStorageMySQL::Clear(tObjType objtype)
 	try
 	{
 		RString What;
-		bool Desc(false);
 		bool Group(false);
 		bool Topic(false);
+		bool Doc(false);
 
 		switch(objtype)
 		{
 			case otUser:
 				What="users";
 				break;
-			case otProfile:
-				What="profiles";
-				Desc=true;
+			case otDoc:
+			{
+				What="htmls";
+				RDir DelDir(DirDocs);
+				DelDir.Clear();
+				Doc=true;
 				break;
+			}
+			case otProfile:
+			{
+				What="profiles";
+				RDir DelDir(DirProfiles);
+				DelDir.Clear();
+				break;
+			}
 			case otCommunity:
+			{
 				Group=true;
 				What="groups";
-				Desc=true;
+				RDir DelDir(DirCommunities);
+				DelDir.Clear();
 				break;
+			}
 			case otTopic:
+			{
 				Topic=true;
 				What="topics";
-				Desc=true;
+				RDir DelDir(DirTopics);
+				DelDir.Clear();
 				break;
+			}
 			case otFdbk:
 				What="htmlsbyprofiles";
 				break;
@@ -631,16 +688,121 @@ void GStorageMySQL::Clear(tObjType objtype)
 				throw GException("Cannot clear "+GetObjType(objtype)+" from storage");
 		}
 		auto_ptr<RQuery> Delete(Db->Query("DELETE FROM "+What));
-		if(Desc)
-			auto_ptr<RQuery> DeleteInfos(Db->Query("DELETE FROM "+What+"byconcepts"));
+
 		// If groups -> All profiles are detached
 		if(Group)
 			auto_ptr<RQuery> Update(Db->Query("UPDATE profiles SET groupid=0,attached=NULL"));
+
 		// If topics -> All documents are detached
-		if(Group)
+		if(Topic)
 			auto_ptr<RQuery> Update(Db->Query("UPDATE htmls SET topicid=0,attached=NULL"));
+
+		if(Doc)
+		{
+			auto_ptr<RQuery> Delete1(Db->Query("DELETE FROM htmlsbygroups"));
+			auto_ptr<RQuery> Delete2(Db->Query("DELETE FROM htmlsbylinks"));
+			auto_ptr<RQuery> Delete3(Db->Query("DELETE FROM htmlsbyprofiles"));
+			auto_ptr<RQuery> Delete4(Db->Query("DELETE FROM subjectsbyhtmls"));
+		}
 	}
 	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadInfos(GWeightInfos* infos,tObjType type,size_t id)
+{
+	try
+	{
+		// Find the file to open
+		RString File;
+		switch(type)
+		{
+			case otDoc:
+				File=DirDocs;
+				break;
+			case otProfile:
+				File=DirProfiles;
+				break;
+			case otCommunity:
+				File=DirCommunities;
+				break;
+			case otTopic:
+				File=DirTopics;
+				break;
+			default:
+				throw GException("This type of objects do not have descriptions");
+		};
+		File+=RString::Number(id)+".desc";
+
+		// Read the file
+		DescRec Rec;
+		GConceptType* type;
+		size_t tid=0;
+		size_t i;
+		RRecFile<DescRec,false> Obj(File,sizeof(DescRec));
+		Obj.Open(RIO::Read);
+		for(Obj.Start(),i=0;!Obj.End();i++)
+		{
+			Obj.ReadRec(Rec);
+			if(tid!=Rec.TypeId)
+			{
+				tid=Rec.TypeId;
+				type=Session->GetConceptType(tid,false);
+			}
+			infos->InsertPtrAt(new GWeightInfo(type->GetConcept(Rec.ConceptId),Rec.Weight),i,false);
+		}
+	}
+	catch(RIOException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveInfos(GWeightInfos* infos,tObjType type,size_t id)
+{
+	try
+	{
+		// Find the file to open
+		RString File;
+		switch(type)
+		{
+			case otDoc:
+				File=DirDocs;
+				break;
+			case otProfile:
+				File=DirProfiles;
+				break;
+			case otCommunity:
+				File=DirCommunities;
+				break;
+			case otTopic:
+				File=DirTopics;
+				break;
+			default:
+				throw GException("This type of objects do not have descriptions");
+		};
+		File+=RString::Number(id)+".desc";
+
+		// Create the file
+		DescRec Rec;
+		RRecFile<DescRec,false> Obj(File,sizeof(DescRec));
+		Obj.Open(RIO::Create);
+		RCursor<GWeightInfo> Words(*infos);
+		for(Words.Start();!Words.End();Words.Next())
+		{
+			Rec.Set(Words()->GetType()->GetId(),Words()->GetId(),Words()->GetWeight());
+			Obj.WriteRec(Rec);
+		}
+	}
+	catch(RIOException e)
 	{
 		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
@@ -738,54 +900,6 @@ void GStorageMySQL::LoadRelations(void)
 		auto_ptr<RQuery> Rel(Db->Query("SELECT relationid,name,subjecttid,subjecttypeid,typeid,objectid,objecttypeid,weight FROM relations"));
 		for(Rel->Start();!Rel->End();Rel->Next())
 			Session->InsertRelation(atoi((*Rel)[0]),(*Rel)[1],atoi((*Rel)[2]),atoi((*Rel)[3]),atoi((*Rel)[4]),atoi((*Rel)[5]),atoi((*Rel)[8]),atof((*Rel)[9]));
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::LoadInfos(RContainer<GWeightInfo,false,true>& infos,tObjType type,size_t id)
-{
-	try
-	{
-		size_t i;
-		RString sSql,table;
-
-		switch(type)
-		{
-			case otDoc:
-				table="html";
-				break;
-			case otProfile:
-				table="profile";
-				break;
-			case otCommunity:
-				table="group";
-				break;
-			case otTopic:
-				table="topic";
-				break;
-			default:
-				throw GException("This type of objects do not have descriptions");
-		};
-		sSql="SELECT conceptid,typeid,weight FROM "+table+"sbyconcepts "
-		     "WHERE "+table+"id="+Num(id)+" ORDER BY typeid,conceptid";
-		GConceptType* type;
-		size_t tid=0;
-		auto_ptr<RQuery> sel(Db->Query(sSql));
-		for(sel->Start(),i=0;!sel->End();sel->Next(),i++)
-		{
-			if(tid!=static_cast<size_t>(atol((*sel)[1])))
-			{
-				tid=atol((*sel)[1]);
-				type=Session->GetConceptType(tid,false);
-			}
-			infos.InsertPtrAt(new GWeightInfo(type->GetConcept(atoi((*sel)[0])),atof((*sel)[2])),i,false);
-		}
 	}
 	catch(RDbException e)
 	{
@@ -1103,6 +1217,7 @@ void GStorageMySQL::LoadIndexer(GIndexer* &indexer,GLangManager* langs)
 	RString tbl;
 	GWordOccurs* ptr;
 
+	throw GException("GStorageMySQL::LoadIndexer is not implemented correctly");
 	try
 	{
 		// Search the values to initialize the indexer
@@ -1444,26 +1559,10 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 
 	try
 	{
-		// Delete keywords
 		if(doc->GetLang())
-		{
-			sSql="DELETE FROM htmlsbyconcepts "
-			     "WHERE htmlid="+Num(doc->GetId());
-			auto_ptr<RQuery> deletekwds(Db->Query(sSql));
-			Words=doc->GetInfos();
-			for(Words.Start();!Words.End();Words.Next())
-			{
-				sSql="INSERT INTO htmlsbyconcepts(htmlid,conceptid,weight,typeid) "
-				     "VALUES("+Num(doc->GetId())+","+Num(Words()->GetId())+","+Num(Words()->GetWeight())+","+
-				     Num(Words()->GetType()->GetId())+")";
-				auto_ptr<RQuery> insertkwds(Db->Query(sSql));
-			}
 			l=Lang(doc->GetLang());
-		}
 		else
-		{
 			l="NULL";
-		}
 
 		// Mime type
 		f=doc->GetMIMEType();
@@ -1871,7 +1970,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		                 "WHERE htmlsbyprofiles.htmlid=htmls.htmlid AND profileid="+Num(prof->GetId())));
 
 		// Delete old description
-		sSql="DELETE FROM profilesbyconcepts "
+/*		sSql="DELETE FROM profilesbyconcepts "
 		     "WHERE profileid="+Num(prof->GetId());
 		auto_ptr<RQuery> deletekwds(Db->Query(sSql));
 
@@ -1883,7 +1982,8 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 			     "VALUES("+Num(prof->GetId())+","+Num(Cur()->GetId())+","+Num(Cur()->GetWeight())+
 			     ","+Num(Cur()->GetType()->GetId())+")";
 			auto_ptr<RQuery> insertkwds(Db->Query(sSql));
-		}
+		}*/
+		SaveInfos(prof,otProfile,prof->GetId());
 		prof->SetState(osUpToDate);
 	}
 	catch(RDbException e)
@@ -2238,7 +2338,7 @@ void GStorageMySQL::SaveCommunities(void)
 	try
 	{
 		// Delete groups and goups info
-		auto_ptr<RQuery> delete1(Db->Query("DELETE FROM groupsbyconcepts;"));
+//		auto_ptr<RQuery> delete1(Db->Query("DELETE FROM groupsbyconcepts;"));
 		auto_ptr<RQuery> delete2(Db->Query("DELETE FROM groups"));
 
 
@@ -2262,14 +2362,15 @@ void GStorageMySQL::SaveCommunities(void)
 			}
 
 			// Save the description part
-			WordCur.Set(*GroupsCursor());
+			SaveInfos(GroupsCursor(),otCommunity,GroupsCursor()->GetId());
+/*			WordCur.Set(*GroupsCursor());
 			for(WordCur.Start();!WordCur.End();WordCur.Next())
 			{
 				sSql="INSERT INTO groupsbyconcepts(groupid,conceptid,weight,typeid) "
 				     "VALUES("+Num(GroupsCursor()->GetId())+","+Num(WordCur()->GetId())+","+
 				     Num(WordCur()->GetWeight())+","+Num(WordCur()->GetType()->GetId())+")";
 				auto_ptr<RQuery> InserinfoWord(Db->Query(sSql));
-			}
+			}*/
 		}
 	}
 	catch(RDbException e)
@@ -2459,7 +2560,7 @@ void GStorageMySQL::SaveTopics(void)
 	try
 	{
 		// Delete topics and topics info
-		auto_ptr<RQuery> delete1(Db->Query("DELETE FROM topicsbyconcepts;"));
+		//auto_ptr<RQuery> delete1(Db->Query("DELETE FROM topicsbyconcepts;"));
 		auto_ptr<RQuery> delete2(Db->Query("DELETE FROM topics"));
 
 
@@ -2483,14 +2584,15 @@ void GStorageMySQL::SaveTopics(void)
 			}
 
 			// Save the description part
-			WordCur.Set(*GroupsCursor());
+			SaveInfos(GroupsCursor(),otTopic,GroupsCursor()->GetId());
+			/*WordCur.Set(*GroupsCursor());
 			for(WordCur.Start();!WordCur.End();WordCur.Next())
 			{
 				sSql="INSERT INTO topicsbyconcepts(topicid,conceptid,weight,typeid) "
 				     "VALUES("+Num(GroupsCursor()->GetId())+","+Num(WordCur()->GetId())+","+
 				     Num(WordCur()->GetWeight())+","+Num(WordCur()->GetType()->GetId())+")";
 				auto_ptr<RQuery> InserinfoWord(Db->Query(sSql));
-			}
+			}*/
 		}
 	}
 	catch(RDbException e)
@@ -2518,6 +2620,7 @@ void GStorageMySQL::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("Filtering",false));
 	params->InsertParam(new RParamValue("Filter",""));
 	params->InsertParam(new RParamValue("Encoding","Latin1"));
+	params->InsertParam(new RParamValue("Dir","/var/galilei"));
 	params->InsertParam(new RParamValue("All",true));
 }
 

@@ -43,17 +43,15 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rdb.h>
+using namespace std;
+using namespace R;
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gstorage.h>
 #include <galilei.h>
-
-
-//------------------------------------------------------------------------------
-namespace GALILEI{
-//------------------------------------------------------------------------------
+using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
@@ -68,13 +66,57 @@ class GStorageMySQL : public GStorage
 	/**
 	* Database.
 	*/
-	std::auto_ptr<R::RDb> Db;
+	auto_ptr<R::RDb> Db;
 
-	R::RString Host;
-	R::RString User;
-	R::RString Password;
-	R::RString Database;
-	R::RString Encoding;
+	/**
+	 * Host of the database.
+	 */
+	RString Host;
+
+	/**
+	 * User of the database.
+	 */
+	RString User;
+
+	/**
+	 * Password needed to access.
+	 */
+	RString Password;
+
+	/**
+	 * Name of the database.
+	 */
+	RString Database;
+
+	/**
+	 * Encoding of the database.
+	 */
+	RString Encoding;
+
+	/**
+	 * Directory where to binary files are stored.
+	 */
+	RString Dir;
+
+	/**
+	 * Root dir for the documents.
+	 */
+	RString DirDocs;
+
+	/**
+	 * Root dir for the profiles.
+	 */
+	RString DirProfiles;
+
+	/**
+	 * Root dir for the communities.
+	 */
+	RString DirCommunities;
+
+	/**
+	 * Root dir for the topics.
+	 */
+	RString DirTopics;
 
 public:
 
@@ -108,6 +150,12 @@ protected:
 	* @return string.
 	*/
 	R::RString GetMySQLToDate(R::RString date);
+
+	/**
+	 * Return a SQL string for a given char.
+	 * @param i              The number.
+	 */
+	inline R::RString Num(char i) {return("'"+R::RString::Number(i)+"'");}
 
 	/**
 	 * Return a SQL string for a given unsigned int.
@@ -252,6 +300,23 @@ public:
 	*/
 	virtual void Clear(tObjType objtype);
 
+	/**
+	* Load the description of a given object.
+	* @param infos           Container that will hold the description.
+	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
+	* @param id              Identifier of the object.
+	*/
+	virtual void LoadInfos(GWeightInfos* infos,tObjType type,size_t id);
+
+	/**
+	* Save the description of a given object.
+	* @param infos           Container that will hold the description.
+	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
+	* @param id              Identifier of the object.
+	*/
+	virtual void SaveInfos(GWeightInfos* infos,tObjType type,size_t id);
+
+
 	//@} General methods
 
 
@@ -280,14 +345,6 @@ public:
 	* Load the relation from the database.
 	*/
 	virtual void LoadRelations(void);
-
-	/**
-	* Load the description of a given object.
-	* @param infos           Container that will hold the description.
-	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
-	* @param id              Identifier of the object.
-	*/
-	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,tObjType type,size_t id);
 
 	/**
 	* Loading the all concepts of given concept type.
@@ -644,9 +701,6 @@ public:
 	*/
 	virtual ~GStorageMySQL(void);
 };
-
-
-}  //-------- End of namespace GALILEI -----------------------------------------
 
 
 //------------------------------------------------------------------------------
