@@ -52,6 +52,7 @@
 #include <gstorage.h>
 #include <gslot.h>
 #include <ggalileiapp.h>
+#include <gdocanalyse.h>
 #include <gmeasure.h>
 using namespace GALILEI;
 using namespace R;
@@ -498,6 +499,15 @@ class GResetMeasureI : public RPrgFunc
 {
 public:
 	GResetMeasureI(void) : RPrgFunc("ResetMeasure","Reset the measure (2th argument) for a given type(1st argument).") {}
+	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
+};
+
+
+//------------------------------------------------------------------------------
+class GAnalyzeDocsI : public RPrgFunc
+{
+public:
+	GAnalyzeDocsI(void) : RPrgFunc("AnalyzeDocs","Analyze the documents.") {}
 	virtual void Run(R::RPrg* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
 };
 
@@ -1275,6 +1285,29 @@ void GResetMeasureI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst*,R::RContainer<R
 }
 
 
+//------------------------------------------------------------------------------
+void GAnalyzeDocsI::Run(R::RPrg* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
+{
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
+	if(args.GetNb()!=1)
+		throw RPrgException(prg,"Method needs one parameter");
+	bool RAM;
+	if((args[0]->GetValue(prg))=="0")
+		RAM=false;
+	else
+		RAM=true;
+	if(args.GetNb())
+		throw RPrgException(prg,"The method needs no parameter.");
+	o->WriteStr("Analyze Documents");
+	if(!GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod())
+		throw RPrgException(prg,"No Document Analyzing Method chosen.");
+	Owner->Session->AnalyseDocs(RAM,dynamic_cast<GSlot*>(o));
+}
+
+
 
 //------------------------------------------------------------------------------
 //
@@ -1287,6 +1320,7 @@ GSessionClass::GSessionClass(GInstGALILEIApp* app)
 	: RPrgClass("GSession"), Instance(false), App(app)
 {
 	Methods.InsertPtr(new GExecSqlI());
+	Methods.InsertPtr(new GAnalyzeDocsI());
 	Methods.InsertPtr(new GComputeProfilesI());
 	Methods.InsertPtr(new GGroupProfilesI());
 	Methods.InsertPtr(new GGroupDocsI());

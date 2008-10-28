@@ -41,7 +41,6 @@
 class QListView;
 
 
-
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
@@ -75,7 +74,7 @@ class QGProfile : public QWidget
 public:
 
 	/**
-	* Constructor 
+	* Constructor
 	* @param parent         parent widget.
 	* @param profile        Profile.
 	*/

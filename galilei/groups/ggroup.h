@@ -138,7 +138,7 @@ public:
 	/**
 	* Load information from the current storage.
 	*/
-	virtual void LoadInfos(void) const;
+	virtual void LoadInfos(void) {GWeightInfos::LoadInfos(type,Id);}
 
 	/**
 	 * Get the similarity measure that must be used when computing the
@@ -235,13 +235,13 @@ public:
 	void Clear(void);
 
 	/**
-	* Update the group by assigning it a set of information.
+	* Assign a new description to the group.
 	* @param infos           Pointer to the information.
 	* @param computed        The update is called after a computation (and not
 	*                        after a loading from a database).
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed);
+	void Update(R::RContainer<GWeightInfo,false,true>* infos);
 
 	/**
 	* Compute the number of objects of a given group that are also in a

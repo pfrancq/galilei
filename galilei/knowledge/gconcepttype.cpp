@@ -54,12 +54,12 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConceptType::GConceptType(size_t id,GSession* session,const RString& name,const RString& desc,GLang* lang,size_t s,size_t s2)
+GConceptType::GConceptType(char id,GSession* session,const RString& name,const RString& desc,GLang* lang,size_t s,size_t s2)
 	: GDebugObject(name), RDblHashContainer<GConcept,true>(27,27,s2+(s2/4),s2/4), Id(id), Session(session),
 	  Description(desc), Lang(lang), Direct(0), MaxId(s+s/4), UsedId(0),
 	  Loaded(false), NbRefDocs(0), NbRefProfiles(0), NbRefGroups(0), NbRefTopics(0)
 {
-	if((Id==cNoRef)&&(GSession::Get()))
+	if((!Id)&&(GSession::Get()))
 		GSession::Get()->AssignId(this);
 	Direct=new GConcept*[MaxId];
 	memset(Direct,0,MaxId*sizeof(GConcept*));
@@ -91,7 +91,7 @@ int GConceptType::Compare(const GConceptType* type) const
 
 
 //-----------------------------------------------------------------------------
-int GConceptType::Compare(size_t id) const
+int GConceptType::Compare(char id) const
 {
 	return(Id-id);
 }
@@ -105,7 +105,7 @@ int GConceptType::Compare(const R::RString& name) const
 
 
 //-----------------------------------------------------------------------------
-void GConceptType::SetId(size_t id)
+void GConceptType::SetId(char id)
 {
 	Id=id;
 }

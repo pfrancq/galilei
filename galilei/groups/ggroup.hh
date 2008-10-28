@@ -75,19 +75,6 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::LoadInfos(void) const
-{
-	R::RContainer<GWeightInfo,false,true> Infos(1000,500);
-	GSession* session=GSession::Get();
-	if(session&&session->GetStorage())
-		session->GetStorage()->LoadInfos(Infos,type,Id);
-	if(Infos.GetNb())
-		const_cast<GGroup*>(this)->Update(&Infos,false);
-}
-
-
-//------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
 	R::RDate GALILEI::GGroup<cObj,cGroup,type>::GetUpdated(void) const
 {
 	return(Updated);
@@ -267,33 +254,25 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::Update(R::RContainer<GWeightInfo,false,true>* infos,bool computed)
+	void GALILEI::GGroup<cObj,cGroup,type>::Update(R::RContainer<GWeightInfo,false,true>* infos)
 {
 	// Remove its references
-	if(computed)
-		DelRefs(type);
+	DelRefs(type);
 
 	// Assign information
 	GWeightInfos::Clear();
-	if(computed)
-	{
-		State=osUpdated;
-		Computed.SetToday();
-	}
-	else
-		State=osUpToDate;
+	State=osUpdated;
+	Computed.SetToday();
 	CopyInfos(infos);
 
 	// Clear infos
 	infos->Clear();
 
 	// Update its references
-	if(computed)
-		AddRefs(type);
+	AddRefs(type);
 
 	// Emit an event that it was modified
-	if(computed)
-		GSession::Event(static_cast<const cGroup*>(this),eObjModified);
+	GSession::Event(static_cast<const cGroup*>(this),eObjModified);
 }
 
 

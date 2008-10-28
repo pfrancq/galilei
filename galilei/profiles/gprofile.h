@@ -280,7 +280,7 @@ public:
 	/**
 	* Load information from the current storage.
 	*/
-	virtual void LoadInfos(void) const;
+	virtual void LoadInfos(void) {GWeightInfos::LoadInfos(otProfile,Id);}
 
 	/**
 	* Get the identifier of the profile.
@@ -404,13 +404,11 @@ public:
 	void DeleteFdbk(size_t docid);
 
 	/**
-	* Update the subprofile by assigning it a set of information and a language.
+	* Assign a new description to the profile.
 	* @param infos            Pointer to the information.
-	* @param computed         The update is called after a computation (and not
-	*                         after a loading from a database).
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(R::RContainer<GWeightInfo,false,true>& infos,bool computed);
+	void Update(R::RContainer<GWeightInfo,false,true>& infos);
 
 	/**
 	* Clear the assessment of the profile.

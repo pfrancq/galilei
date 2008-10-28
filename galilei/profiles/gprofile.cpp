@@ -204,18 +204,6 @@ int GProfile::Compare(const size_t id) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::LoadInfos(void) const
-{
-	RContainer<GWeightInfo,false,true> Infos(1000,500);
-	GSession* session=GSession::Get();
-	if(session&&session->GetStorage())
-		session->GetStorage()->LoadInfos(Infos,otProfile,Id);
-	if(Infos.GetNb())
-		const_cast<GProfile*>(this)->Update(Infos,false);
-}
-
-
-//------------------------------------------------------------------------------
 void GProfile::SetId(size_t id)
 {
 	if(id==cNoRef)
@@ -400,37 +388,29 @@ void GProfile::DeleteFdbk(size_t docid)
 
 
 //------------------------------------------------------------------------------
-void GProfile::Update(R::RContainer<GWeightInfo,false,true>& infos,bool computed)
+void GProfile::Update(R::RContainer<GWeightInfo,false,true>& infos)
 {
 	// Remove its references
-	if(computed)
-		DelRefs(otProfile);
+	DelRefs(otProfile);
 
 	// Assign information
 	GWeightInfos::Clear();
-	if(computed)
-	{
-		State=osUpdated;
-		Computed.SetToday();
+	State=osUpdated;
+	Computed.SetToday();
 
-		// Update the group were it belongs
-		if(GSession::Get())
-			GSession::Get()->UpdateCommunity(this);
-	}
-	else
-		State=osUpToDate;
+	// Update the group were it belongs
+	if(GSession::Get())
+		GSession::Get()->UpdateCommunity(this);
 	CopyInfos(&infos);
 
 	// Clear infos
 	infos.Clear();
 
 	// Update its references
-	if(computed)
-		AddRefs(otProfile);
+	AddRefs(otProfile);
 
 	// Emit an event that it was modified
-	if(computed)
-		GSession::Event(this,eObjModified);
+	GSession::Event(this,eObjModified);
 }
 
 

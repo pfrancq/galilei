@@ -50,6 +50,58 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
+class VTR
+{
+public:
+
+	/**
+	* The Type enum represents the different types of nodes in a XML structure.
+	* @short XML Node Type
+	*/
+	enum NodeType
+	{
+		Tag                       /** Tag.*/,
+		Attribute                 /** Attribute.*/,
+		Value                     /** Value of attribute.*/,
+		Content                   /** Content. */
+	};
+
+private:
+
+	/**
+	* Weighted information entity.
+	 */
+	GWeightInfo* Info;
+
+	/**
+	 * Position in the document.
+	 */
+	size_t Pos;
+
+	/**
+	 * Index of in the location cache.
+	 */
+	size_t Child;
+
+	/**
+	 * Depth and type of of the node. The first four bytes indicates the type,
+	 * the rest the depth (maximal depth of 63).
+	 */
+	char TypeDepth;
+
+public:
+};
+
+class LocationCache
+{
+	/**
+	 * Index of the first child. A null index indicates no child.
+	 */
+	size_t Child;
+public:
+};
+
+
 //------------------------------------------------------------------------------
 /**
  * The GOccurInfo class provides a representation for an occurrence of an

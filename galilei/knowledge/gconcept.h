@@ -197,6 +197,13 @@ public:
 	R::RString GetName(void) const {return(Name);}
 
 	/**
+	 * Set the name of the concept. This method works only if the Id==cNoRef.
+	 * The references are cleared.
+	 * @param name
+	 */
+	void SetName(const R::RString& name);
+
+	/**
 	* Increase the number of references on this concept for a given object
 	* type.
 	* @param ObjType        Type of the reference.

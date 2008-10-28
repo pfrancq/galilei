@@ -361,6 +361,23 @@ public:
 	*/
 	virtual void Clear(tObjType objtype)=0;
 
+	/**
+	* Load the description of a given object.
+	* @param infos           Container that will hold the description.
+	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
+	* @param id              Identifier of the object.
+	*/
+	virtual void LoadInfos(GWeightInfos* infos,tObjType type,size_t id)=0;
+
+	/**
+	* Save the description of a given object.
+	* @param infos           Container that will hold the description.
+	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
+	* @param id              Identifier of the object.
+	*/
+	virtual void SaveInfos(GWeightInfos* infos,tObjType type,size_t id)=0;
+
+
 	//@} General methods
 
 
@@ -407,14 +424,6 @@ public:
 	* @param concept         Concept.
 	*/
 	virtual void DeleteConcept(GConcept* concept)=0;
-
-	/**
-	* Load the description of a given object.
-	* @param infos           Container that will hold the description.
-	* @param type            Type of the object (otDoc,otSubProfile,otGroup).
-	* @param id              Identifier of the object.
-	*/
-	virtual void LoadInfos(R::RContainer<GWeightInfo,false,true>& infos,tObjType type,size_t id)=0;
 
 	/**
 	* Load the name of specific concept.

@@ -96,7 +96,10 @@ using namespace std;
 catch(GException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
+	{                                                                          \
+		cerr<<e.GetMsg()<<endl;                                                \
 		rec->WriteStr(e.GetMsg());                                             \
+	}                                                                          \
 	else                                                                       \
 		throw GException(e.GetMsg());                                          \
 }                                                                              \
@@ -104,14 +107,20 @@ catch(GException& e)                                                           \
 catch(RException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
+	{                                                                          \
+		cerr<<e.GetMsg()<<endl;                                                \
 		rec->WriteStr(e.GetMsg());                                             \
+	}                                                                          \
 	else                                                                       \
 		throw GException(e.GetMsg());                                          \
 }                                                                              \
 catch(exception& e)                                                            \
 {                                                                              \
 	if(rec)                                                                    \
-		rec->WriteStr(msg+" "+e.what());                                       \
+	{                                                                          \
+		cerr<<e.what()<<endl;                                                  \
+		rec->WriteStr(e.what());                                               \
+	}                                                                          \
 	else                                                                       \
 		throw GException(msg+" "+e.what());                                    \
 }                                                                              \
@@ -179,7 +188,9 @@ public:
 	size_t MaxDocs;                                                   // Maximum number of documents to handle in memory.
 	size_t MaxProfiles;                                               // Maximum number of profiles to handle in memory.
 	size_t MaxGroups;                                                 // Maximum number of groups to handle in memory.
-	GFilterManager* FilterManager;                                    // Pointer to the filter manager
+	GFilterManager* FilterManager;                                    // Pointer to the filter manager.
+	GDocStruct* tmpStruct;                                            // Temporary structure of a document.
+	GWeightInfos tmpInfos;                                            // Temporary vector of weighted information entities.
 
 	Intern(GStorage* str,size_t mdocs,size_t maxprof,size_t maxgroups,size_t d,size_t u,size_t p,size_t t,size_t c)
 		: Subjects(0), CommunitiesHistoryMng(0), Random(0), Storage(str), SaveResults(true),
@@ -188,7 +199,8 @@ public:
 		  Communities(c+(c/2),c/2), CommunitiesLoaded(false),
 		  Topics(t+(t/2),t/2), TopicsLoaded(false),
 		  ConceptTypes(50,10), RelationTypes(10,5),
-		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups), FilterManager(0)
+		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups), FilterManager(0),
+		  tmpStruct(0), tmpInfos(5000)
 	{
 		CurrentRandom=0;
 		Random=RRandom::Create(RRandom::Good,CurrentRandom);
@@ -997,7 +1009,7 @@ void GSession::ClearDocs(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseDocs(GSlot* rec)
+void GSession::AnalyseDocs(bool ram,GSlot* rec)
 {
 	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
 	if(rec)
@@ -1017,7 +1029,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 	{
 		try
 		{
-			AnalyseDoc(Docs(),Analyse,rec);
+			AnalyseDoc(Docs(),ram,Analyse,rec);
 		}
 		// If a log file specified -> write to it and it is OK
 		// If no log file specified -> Propagate error
@@ -1030,7 +1042,7 @@ void GSession::AnalyseDocs(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseDoc(GDoc* doc,GDocAnalyse* method,GSlot* rec)
+void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 {
 	// Verify that the textanalyse method is selected
 	if(!method)
@@ -1050,16 +1062,32 @@ void GSession::AnalyseDoc(GDoc* doc,GDocAnalyse* method,GSlot* rec)
 
 	RIO::RSmartTempFile docxml;
 	bool Native;
+	bool Save=(Data->SaveResults&&(doc->GetId()!=cNoRef));
 	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml,Native);
-	if(!uri.IsEmpty())
-		method->Analyze(doc,uri,Native);       // Analyze document -> Is something goes wrong -> It failed
+	if(uri.IsEmpty())
+		return;
+
+	// Prepare the analyze
+	Data->tmpInfos.Clear();
+	GLang* Lang=doc->GetLang();
+
+     // Analyze document -> Is something goes wrong -> It failed
+	method->Analyze(doc->GetURL(),uri,Native,Lang,&Data->tmpInfos);
+
+	// Save the description file
+	if(Save)
+		Data->Storage->SaveInfos(&Data->tmpInfos,otDoc,doc->GetId());
+
+	// Set the information to the document
+	doc->Update(Lang,Data->tmpInfos,ram||(!Save));
 
 	// Save if necessary
-	if(Data->SaveResults&&(doc->GetId()!=cNoRef))
+	if(Save)
 	{
-		Data->Storage->SaveStruct(doc->GetStruct(),doc->GetId());
+//		Data->Storage->SaveStruct(doc->GetStruct(),doc->GetId());
 		Data->Storage->SaveDoc(doc);
-		doc->SetState(osSaved);
+		if(ram)
+			doc->SetState(osSaved);
 	}
 
 	// Release the structure

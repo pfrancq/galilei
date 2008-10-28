@@ -138,7 +138,7 @@ void GWeightInfos::SetState(tObjState state)
 
 
 //------------------------------------------------------------------------------
-void GWeightInfos::LoadInfos(void) const
+void GWeightInfos::LoadInfos(void)
 {
 }
 
@@ -149,7 +149,7 @@ RCursor<GWeightInfo> GWeightInfos::GetInfos(void) const
 	if(State==osNeedLoad)
 	{
 		const_cast<GWeightInfos*>(this)->State=osOnDemand;      // The object is on-demand of loading
-		LoadInfos();           // Load it.
+		const_cast<GWeightInfos*>(this)->LoadInfos();           // Load it.
 	}
 	return(RCursor<GWeightInfo>(*this));
 }
@@ -175,7 +175,7 @@ size_t GWeightInfos::GetNb(void) const
  	if(State==osNeedLoad)
 	{
 		const_cast<GWeightInfos*>(this)->State=osOnDemand;      // The object is on-demand of loading
-		LoadInfos();           // Load it.
+		const_cast<GWeightInfos*>(this)->LoadInfos();           // Load it.
 	}
 	return(R::RContainer<GWeightInfo,true,true>::GetNb());
 }

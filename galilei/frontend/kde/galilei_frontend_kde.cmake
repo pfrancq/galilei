@@ -8,13 +8,15 @@ SET(galilei_frontend_kde_INST_INCLUDES ${galilei_frontend_kde_MOC_INCLUDES}
                                         qgdocxml.h
                                         qgmatrixmeasuredlg.h
                                         qlistviewitemtype.h
-                                        qgcommunitieshistory.h)
+                                        qgcommunitieshistory.h
+                                        qgweightinfos.h)
 
 SET(galilei_frontend_kde_TARGET_SOURCES qgprofile.cpp
                                         qgdocxml.cpp
                                         qlistviewitemtype.cpp
                                         qgmatrixmeasuredlg.cpp
-                                        qgcommunitieshistory.cpp)
+                                        qgcommunitieshistory.cpp
+                                        qgweightinfos.cpp)
 
 ###This is not very simple way to produce moc file
 ## A macro must be added

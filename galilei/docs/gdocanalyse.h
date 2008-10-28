@@ -6,7 +6,7 @@
 
 	Generic Document Analysis - Header.
 
-	Copyright 2001-2004 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -68,13 +68,14 @@ public:
 	GDocAnalyse(GFactoryDocAnalyse* fac);
 
 	/**
-	* Analyse a XML representation of a document for a session and store the
-	* results in this document.
-	* @param doc             Reference to the document to analyze.
-	* @param uri             URI to analyze.
+	* Analyze a XML of a document for a session.
+	* @param uri             Original URI.
+	* @param file            File to analyze (may be different from uri).
 	* @param native          Specify if the document is a native XML file.
+	* @param lang            Main language of the document (may be fixed).
+	* @param infos           Vector that will contain the result.
 	*/
-	virtual void Analyze(GDoc* doc,const R::RURI& uri,bool native)=0;
+	virtual void Analyze(const R::RURI& uri,const R::RURI& file,bool native,GLang* &lang,GWeightInfos* infos)=0;
 
 	/**
 	* Destructor of the document analysis method.
@@ -122,7 +123,7 @@ public:
 	GDocAnalyseManager(void);
 
 	/**
-	* Destructor of the manager.
+	* Destruct the manager.
 	*/
 	virtual ~GDocAnalyseManager(void);
 };

@@ -50,7 +50,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GXMLIndex::GXMLIndex(void)
-	: GConcept(), XMLTag(0), Universal(10), Stems(10)
+	: GConcept(), XMLTag(0), Lang(0), Universal(10), Stems(10)
 {
 	BuildDef();
 }
@@ -58,34 +58,39 @@ GXMLIndex::GXMLIndex(void)
 
 //-----------------------------------------------------------------------------
 GXMLIndex::GXMLIndex(const GXMLIndex* index)
-	: GConcept(index), XMLTag(index->XMLTag), Universal(10), Stems(index->Stems)
+	: GConcept(index), XMLTag(index->XMLTag), Lang(index->Lang), Universal(10), Stems(index->Stems)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GXMLIndex::GXMLIndex(const RString& name,GConceptType* type)
-	: GConcept(name,type), XMLTag(0), Universal(10), Stems(10)
+	: GConcept(name,type), XMLTag(0), Lang(type), Universal(10), Stems(10)
 {
 	BuildDef();
 }
 
 
 //-----------------------------------------------------------------------------
-GXMLIndex::GXMLIndex(GConceptType* type,GConcept* tag,GLang* lang,RContainer<GConcept,false,true>& uni,RContainer<GConcept,false,true>& stems)
-	: GConcept(), XMLTag(tag), Universal(uni), Stems(stems)
+GXMLIndex::GXMLIndex(GConceptType* type,GConceptType* lang)
+	: GConcept(RString::Null,type), XMLTag(0), Lang(lang), Universal(10), Stems(10)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+GXMLIndex::GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang)
+	: GConcept(RString::Null,type), XMLTag(tag), Lang(lang), Universal(10), Stems(10)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+GXMLIndex::GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang,RContainer<GConcept,false,true>& uni,RContainer<GConcept,false,true>& stems)
+	: GConcept(), XMLTag(tag), Lang(lang), Universal(uni), Stems(stems)
 {
 	Type=type;
-
-	// Build the Name
-	Name=RString::Number(tag->GetId())+'#';
-	RCursor<GConcept> Cur(Universal);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Name+=':'+RString::Number(Cur()->GetId());
-	Name+=lang->GetCode();
-	Cur.Set(Stems);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Name+=':'+RString::Number(Cur()->GetId());
+	BuildName();
 }
 
 
@@ -132,19 +137,33 @@ void GXMLIndex::BuildDef(void)
 	}
 
 	// Find the language of the stem
-	Space=Session->GetInsertConceptType(Tag+"Stems","");
+	Lang=Session->GetInsertConceptType(Tag+"Stems","");
 
 	// Add now each concept to list
 	for(Pos=Name.Find(':',Old);Pos!=-1;Pos=Name.Find(':',Old))
 	{
 		size_t id=atoi(Name.Mid(static_cast<size_t>(Old),Pos-Old));
-		Stems.InsertPtr(Space->GetConcept(id));
+		Stems.InsertPtr(Lang->GetConcept(id));
 		Old=Pos+1;
 	}
 	size_t id=atoi(Name.Mid(static_cast<size_t>(Old)));
-	GConcept* ptr=Space->GetConcept(id);
+	GConcept* ptr=Lang->GetConcept(id);
 	if(ptr)
 		Stems.InsertPtr(ptr);
+}
+
+
+//-----------------------------------------------------------------------------
+void GXMLIndex::BuildName(void)
+{
+	Name=RString::Number(XMLTag->GetId())+'#';
+	RCursor<GConcept> Cur(Universal);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Name+=':'+RString::Number(Cur()->GetId());
+	Name+=Lang->GetLang()->GetCode();
+	Cur.Set(Stems);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Name+=':'+RString::Number(Cur()->GetId());
 }
 
 
@@ -161,6 +180,17 @@ void GXMLIndex::Clear(void)
 	GConcept::Clear();
 	XMLTag=0;
 	Stems.Clear();
+	Universal.Clear();
+}
+
+
+//-----------------------------------------------------------------------------
+void GXMLIndex::SetTag(GConcept* tag)
+{
+	XMLTag=tag;
+	Stems.Clear();
+	Universal.Clear();
+	BuildName();
 }
 
 
@@ -175,6 +205,43 @@ R::RCursor<GConcept> GXMLIndex::GetUniversalTerms(void) const
 R::RCursor<GConcept> GXMLIndex::GetStems(void) const
 {
 	return(RCursor<GConcept>(Stems));
+}
+
+
+//-----------------------------------------------------------------------------
+bool GXMLIndex::IsEmpty(void) const
+{
+	return((!Universal.GetNb())&&(!Stems.GetNb()));
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GXMLIndex::GetNbWords(void) const
+{
+	return(Universal.GetNb()+Stems.GetNb());
+}
+
+
+//-----------------------------------------------------------------------------
+void GXMLIndex::AddUniversalTerm(GConcept* concept)
+{
+	if(concept->GetType()!=GSession::Get()->GetInsertConceptType("UniversalTerms","Universal Terms"))
+		throw GException("GXMLIndex::AddUniversalTerms: Bad concept type");
+	if(!Universal.IsIn(concept))
+		Universal.InsertPtr(concept);
+	BuildName();
+}
+
+
+//-----------------------------------------------------------------------------
+void GXMLIndex::AddStem(GConcept* concept)
+{
+	if(concept->GetType()!=Lang)
+		throw GException("GXMLIndex::AddStem: Bad concept type");
+	if(!Stems.IsIn(concept))
+		Stems.InsertPtr(concept);
+
+	BuildName();
 }
 
 

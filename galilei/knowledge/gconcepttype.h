@@ -67,7 +67,7 @@ class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcep
 	/**
 	* Identifier of the concept type.
 	*/
-	size_t Id;
+	char Id;
 
 	/**
 	 * Session.
@@ -137,7 +137,7 @@ public:
 	* @param s               Initial number of concepts.
 	* @param s2              Size of the second hash table.
 	*/
-	GConceptType(size_t id,GSession* session,const R::RString& name,const R::RString& desc,GLang* lang,size_t s=20000,size_t s2=5000);
+	GConceptType(char id,GSession* session,const R::RString& name,const R::RString& desc,GLang* lang,size_t s=20000,size_t s2=5000);
 
 	/**
 	* Set the references of a given language. This method is called when
@@ -168,7 +168,7 @@ public:
 	* @param id              Identifier used.
 	* @see R::RContainer.
 	*/
-	int Compare(size_t id) const;
+	int Compare(char id) const;
 
 	/**
 	* Compare an object with a name.
@@ -181,12 +181,12 @@ public:
 	* Set the Identifier of the concept type.
 	* @param id              Identifier.
 	*/
-	void SetId(size_t id);
+	void SetId(char id);
 
 	/**
 	* Get the identifier.
 	*/
-	size_t GetId(void) const {return(Id);}
+	char GetId(void) const {return(Id);}
 
 	/**
 	* Get the description.

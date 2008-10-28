@@ -152,20 +152,6 @@ void GDoc::ReleaseStruct(void)
 
 
 //------------------------------------------------------------------------------
-void GDoc::LoadInfos(void) const
-{
-	if(!Lang)
-		return;
-	RContainer<GWeightInfo,false,true> Infos(1000,500);
-	GSession* session=GSession::Get();
-	if(session&&session->GetStorage())
-		session->GetStorage()->LoadInfos(Infos,otDoc,Id);
-	if(Infos.GetNb())
-		const_cast<GDoc*>(this)->Update(Lang,&Infos,false);
-}
-
-
-//------------------------------------------------------------------------------
 void GDoc::SetGroup(size_t groupid)
 {
 	GroupId=groupid;
@@ -420,18 +406,21 @@ R::RCursor<GLink> GDoc::GetLinks(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed)
+void GDoc::Update(GLang* lang,GWeightInfos& infos,bool ram)
 {
 	// If document had a language -> remove its references
-	if(computed&&Lang&&(Id!=cNoRef))
+	if(Lang&&(Id!=cNoRef))
 		DelRefs(otDoc);
 
 	// Assign language and information
 	GWeightInfos::Clear();
 	Lang=lang;
-	if(computed&&(Id!=cNoRef))
+	if(Id!=cNoRef)
 	{
-		State=osUpdated;
+		if(ram)
+			State=osUpdated;
+		else
+			State=osNeedLoad;
 		Computed.SetToday();
 
 		// Update the profiles that have assessed it.
@@ -440,17 +429,35 @@ void GDoc::Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool 
 	}
 	else
 		State=osUpToDate;
-	CopyInfos(infos);
-
-	// Clear infos
-	infos->Clear();
 
 	// If document has a language -> update its references
-	if(computed&&Lang&&(Id!=cNoRef))
-		AddRefs(otDoc);
+	if(Lang&&(Id!=cNoRef))
+	{
+		GConceptType* type(0);
+		RCursor<GWeightInfo> ptr(infos);
+		for(ptr.Start();!ptr.End();ptr.Next())
+		{
+			// Look if the type of the concept have changed since that the last concept treated
+			if(ptr()->GetConcept()->GetType()!=type)
+			{
+				// Yes -> A new object uses this concept type.
+				type=ptr()->GetConcept()->GetType();
+				type->IncRef(otDoc);
+			}
+
+			// AddRef for the concept
+			type->IncRef(ptr()->GetConcept()->GetId(),otDoc);
+		}
+	}
+
+	if(ram)
+		Transfer(infos);
+
+	// Clear infos
+	infos.Clear();
 
 	// Emit an event that it was modified
-	if(computed&&(Id!=cNoRef))
+	if(Id!=cNoRef)
 		GSession::Event(this,eObjModified);
 }
 

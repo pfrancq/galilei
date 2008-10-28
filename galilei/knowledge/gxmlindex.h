@@ -105,13 +105,28 @@ public:
 
 	/**
 	 * Constructor of a XML Index.
+	 * @param type           Type of the concept.
+	 * @param lang           Language of the stems.
+	 */
+	GXMLIndex(GConceptType* type,GConceptType* lang);
+
+	/**
+	 * Constructor of a XML Index.
+	 * @param type           Type of the concept.
+	 * @param tag            Pointer to the tag.
+	 * @param lang           Language of the stems.
+	 */
+	GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang);
+
+	/**
+	 * Constructor of a XML Index.
 	 * @param type            Type of the concept.
 	 * @param tag            Pointer to the tag.
 	 * @param lang           Language of the stems.
 	 * @param stems          Universal stems.
 	 * @param stems          Language-based stems.
 	 */
-	GXMLIndex(GConceptType* type,GConcept* tag,GLang* lang,R::RContainer<GConcept,false,true>& uni,R::RContainer<GConcept,false,true>& stems);
+	GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang,R::RContainer<GConcept,false,true>& uni,R::RContainer<GConcept,false,true>& stems);
 
 	/**
 	* Constructor of a XML Index. The full definition of the concept is deduced
@@ -133,6 +148,11 @@ protected:
 	 */
 	void BuildDef(void);
 
+	/**
+	 * Build the name of the XML index based on its definition.
+	 */
+	void BuildName(void);
+
 public:
 
 	/**
@@ -145,6 +165,13 @@ public:
 	* Clear all the information of the data.
 	*/
 	virtual void Clear(void);
+
+	/**
+	 * Set the tag for the current index. The list of stems and universal
+	 * terms associated are emptied.
+	 * @param tag            Pointer to the tag.
+	 */
+	void SetTag(GConcept* tag);
 
 	/**
 	 * Get the tag implied in this index.
@@ -167,6 +194,28 @@ public:
 	R::RCursor<GConcept> GetStems(void) const;
 
 	/**
+	 * Verify if the index is empty.
+	 */
+	bool IsEmpty(void) const;
+
+	/**
+	 * Get the number of words associated with the index.
+	 */
+	size_t GetNbWords(void) const;
+
+	/**
+	 * Add a universal term.
+	 * @param concept        Concept to add.
+	 */
+	void AddUniversalTerm(GConcept* concept);
+
+	/**
+	 * Add a stem.
+	 * @param concept        Concept to add.
+	 */
+	void AddStem(GConcept* concept);
+
+	/**
 	 * This method computes the similarity between two XML index. In practice,
 	 * both index must have the same tag. Than a raw comparison is done between
 	 * the two lists of stems.
@@ -176,7 +225,7 @@ public:
 	double GetSimilarity(const GXMLIndex* index) const;
 
 	/**
-	* Desctuctor of a concept.
+	* Destruct the concept.
 	*/
 	virtual ~GXMLIndex(void);
 };

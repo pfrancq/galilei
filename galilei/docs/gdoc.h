@@ -202,7 +202,7 @@ public:
 	/**
 	* Load information from the current storage.
 	*/
-	virtual void LoadInfos(void) const;
+	virtual void LoadInfos(void) {GWeightInfos::LoadInfos(otDoc,Id);}
 
 	/**
 	* Get the URL.
@@ -359,14 +359,13 @@ public:
 	R::RCursor<GLink> GetLinks(void) const;
 
 	/**
-	* Update the document by assigning it a set of information and a language.
+	* Assign a new description to the document.
 	* @param lang            Pointer to the language.
 	* @param infos           Pointer to the information.
-	* @param computed        The update is called after a computation (and not
-	*                        after a loading from a database).
+	* @param ram             Must the information be maintained is RAM.
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GLang* lang,R::RContainer<GWeightInfo,false,true>* infos,bool computed);
+	void Update(GLang* lang,GWeightInfos& infos,bool ram);
 
 public:
 

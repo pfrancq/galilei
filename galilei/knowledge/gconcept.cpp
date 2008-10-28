@@ -131,6 +131,19 @@ void GConcept::SetId(size_t id)
 
 
 //-----------------------------------------------------------------------------
+void GConcept::SetName(const R::RString& name)
+{
+	if(Id!=cNoRef)
+		return;
+	Name=name;
+	NbRefDocs=0;
+	NbRefProfiles=0;
+	NbRefGroups=0;
+	NbRefTopics=0;
+}
+
+
+//-----------------------------------------------------------------------------
 size_t GConcept::IncRef(tObjType ObjType)
 {
 	switch(ObjType)

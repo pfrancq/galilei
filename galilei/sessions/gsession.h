@@ -503,17 +503,22 @@ public:
 	* Analyze the documents. At the end, all the enabled post-documents methods
 	* are run.
 	* @param rec             Receiver for the signals.
+	* @param ram             Must the description of each document be maintain
+	*                        in RAM.
 	*/
-	void AnalyseDocs(GSlot* rec=0);
+	void AnalyseDocs(bool ram=false,GSlot* rec=0);
 
 	/**
 	* Analyze a document.
 	* @param doc             Pointer to the document to analyze.
+	* @param ram             Must the description of the document be maintain
+	*                        in RAM.
+	*
 	* @param method          Pointer to the method used to analyze. If null,
 	*                        the default method is used.
 	* @param rec             Receiver for the signals.
 	*/
-	void AnalyseDoc(GDoc* doc,GDocAnalyse* method=0,GSlot* rec=0);
+	void AnalyseDoc(GDoc* doc,bool ram=true,GDocAnalyse* method=0,GSlot* rec=0);
 
 	/**
 	* Run all the enabled post-documents computing methods.

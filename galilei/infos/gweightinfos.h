@@ -38,6 +38,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gsession.h>
+#include <gstorage.h>
 
 
 //------------------------------------------------------------------------------
@@ -113,10 +115,28 @@ public:
 	*/
 	void SetState(tObjState state);
 
+protected:
+
 	/**
-	* Load information from the current storage.
+	 * Generic method to load information from the storage.
+	 * @param type           Type of the object.
+	 * @param id             Identifier of the object.
+	 */
+	inline void LoadInfos(tObjType type,size_t id)
+	{
+		GSession* session=GSession::Get();
+		if(session&&session->GetStorage())
+			session->GetStorage()->LoadInfos(this,type,id);
+		State=osUpToDate;
+	}
+
+	/**
+	* Load information from the current storage. This method must be rewritten in
+	* the child classes, but the LoadInfos(tObjType,size_t) method can be used.
 	*/
-	virtual void LoadInfos(void) const;
+	virtual void LoadInfos(void);
+
+public:
 
 	/**
 	* Get a Cursor on the weighted information entities.
