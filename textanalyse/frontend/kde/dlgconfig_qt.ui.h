@@ -20,4 +20,6 @@ void DlgConfig_Qt::toggleStruct( bool toggle )
 	WeightStruct->setEnabled(toggle && StructIsContent->isChecked());
 	AttrValues->setEnabled(toggle);
 	WeightValues->setEnabled(toggle && AttrValues->isChecked());	
+	Indexes->setEnabled(toggle);
+	FullIndex->setEnabled(toggle);
 }

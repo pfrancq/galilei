@@ -1,7 +1,7 @@
 PROJECT(textanalyse)
 INCLUDE_DIRECTORIES(.)
 
-SET(SRC gtextanalyse.cpp xmlparser.cpp)
+SET(SRC gtextanalyse.cpp)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 

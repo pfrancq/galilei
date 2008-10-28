@@ -103,7 +103,6 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.MinWordSize->setValue(params->GetUInt("MinWordSize"));
 	dlg.MinStemSize->setValue(params->GetUInt("MinStemSize"));
 	dlg.MinOccur->setValue(params->GetUInt("MinOccur"));
-	dlg.StoreFullWords->setChecked(params->GetBool("StoreFullWords"));
 	dlg.NonLetterWords->setChecked(params->GetBool("NonLetterWords"));
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
 	dlg.NbSameOccur->setValue(params->GetUInt("NbSameOccur"));
@@ -129,12 +128,10 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.MaxTerms->setValue(params->GetUInt("MaxTerms"));
 	dlg.MaxDepth->setValue(params->GetUInt("MaxDepth"));
 	dlg.MaxOccurs->setValue(params->GetUInt("MaxOccurs"));
-	dlg.MaxPercOccurs->setValue(params->GetDouble("MaxPercOccurs"));
 	dlg.ChildTags->setChecked(params->GetBool("ChildTags"));
 	dlg.MaxTerms->setEnabled(params->GetBool("ExtractIndex"));
 	dlg.MaxDepth->setEnabled(params->GetBool("ExtractIndex"));
 	dlg.ChildTags->setEnabled(params->GetBool("ExtractIndex"));
-	dlg.MaxPercOccurs->setEnabled(params->GetBool("ExtractIndex"));
 	dlg.MaxOccurs->setEnabled(params->GetBool("ExtractIndex"));
 
 	if(dlg.exec())
@@ -145,7 +142,6 @@ void Configure(GFactoryDocAnalyse* params)
 		params->SetUInt("MinWordSize",dlg.MinWordSize->value());
 		params->SetUInt("MinStemSize",dlg.MinStemSize->value());
 		params->SetUInt("MinOccur",dlg.MinOccur->value());
-		params->SetBool("StoreFullWords",dlg.StoreFullWords->isChecked());
 		params->SetBool("NonLetterWords",dlg.NonLetterWords->isChecked());
 		params->SetBool("Filtering",dlg.Filtering->isChecked());
 		params->SetUInt("NbSameOccur",dlg.NbSameOccur->value());
@@ -166,7 +162,6 @@ void Configure(GFactoryDocAnalyse* params)
 		params->SetUInt("MaxTerms",dlg.MaxTerms->value());
 		params->SetUInt("MaxDepth",dlg.MaxDepth->value());
 		params->SetBool("ChildTags",dlg.ChildTags->isChecked());
-		params->SetDouble("MaxPercOccurs",dlg.MaxPercOccurs->value());
 		params->SetUInt("MaxOccurs",dlg.MaxOccurs->value());
 		params->Apply();
 	}

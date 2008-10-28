@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>467</width>
-            <height>521</height>
+            <width>466</width>
+            <height>492</height>
         </rect>
     </property>
     <property name="caption">
@@ -284,20 +284,6 @@ When the languages are not static, the language of a document is always determin
                                         </property>
                                     </widget>
                                 </hbox>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>StoreFullWords</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Store the words/stems couples</string>
-                                </property>
-                                <property name="toolTip" stdset="0">
-                                    <string>Should non letter words be used.</string>
-                                </property>
-                                <property name="whatsThis" stdset="0">
-                                    <string>When analysing a document, it is possible to use for the description only words containing letters.</string>
-                                </property>
                             </widget>
                         </vbox>
                     </widget>
@@ -600,7 +586,7 @@ When the languages are not static, the language of a document is always determin
                     </widget>
                     <widget class="QGroupBox">
                         <property name="name">
-                            <cstring>groupBox8</cstring>
+                            <cstring>Indexes</cstring>
                         </property>
                         <property name="title">
                             <string>Indexes</string>
@@ -719,49 +705,6 @@ When the languages are not static, the language of a document is always determin
                             </widget>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout12</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel1_4</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Maximal percentage of occurrences [MaxPercOccurs]</string>
-                                        </property>
-                                    </widget>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer14_2</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>Expanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>40</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                    <widget class="KDoubleNumInput">
-                                        <property name="name">
-                                            <cstring>MaxPercOccurs</cstring>
-                                        </property>
-                                        <property name="maxValue">
-                                            <number>100</number>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
                                     <cstring>layout13</cstring>
                                 </property>
                                 <hbox>
@@ -804,7 +747,7 @@ When the languages are not static, the language of a document is always determin
                     </widget>
                     <spacer>
                         <property name="name">
-                            <cstring>spacer14</cstring>
+                            <cstring>spacer17</cstring>
                         </property>
                         <property name="orientation">
                             <enum>Vertical</enum>
@@ -815,7 +758,7 @@ When the languages are not static, the language of a document is always determin
                         <property name="sizeHint">
                             <size>
                                 <width>20</width>
-                                <height>20</height>
+                                <height>40</height>
                             </size>
                         </property>
                     </spacer>
@@ -973,6 +916,12 @@ When the languages are not static, the language of a document is always determin
         <receiver>DefaultNamespace</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
+    <connection>
+        <sender>ExtractIndex</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>MaxOccurs</receiver>
+        <slot>setEnabled(bool)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">dlgconfig_qt.ui.h</include>
@@ -982,8 +931,6 @@ When the languages are not static, the language of a document is always determin
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>knuminput.h</includehint>
-    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>

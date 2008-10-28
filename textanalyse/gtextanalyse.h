@@ -38,6 +38,7 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rdblhashcontainer.h>
+#include <rxmlparser.h>
 using namespace R;
 
 
@@ -51,16 +52,8 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-class cWordOccur
-{
-public:
-
-	GDocStructNode* Parent;
-	size_t Pos;
-
-	cWordOccur(GDocStructNode* parent,size_t pos) : Parent(parent), Pos(pos) {}
-	int Compare(const cWordOccur&) const {return(-1);}
-};
+// Constants
+const size_t MaxWordLen=50;
 
 
 //-----------------------------------------------------------------------------
@@ -103,33 +96,23 @@ public:
 	bool NormalStem;
 
 	/**
-	 * Occurrences of the word in the XML document.
-	 */
-	R::RContainer<cWordOccur,true,false> Occurs;
-
-	/**
 	 * Create a word.
 	 * @param nblangs        Number of languages.
 	 * @return
 	 */
-	cWord(size_t nblangs);
+	cWord(size_t nblangs) : Word(MaxWordLen+1), InStop(0)
+	{
+		InStop=new bool[nblangs];
+		Clear();
+	}
 
-	inline void Clear(void) {Word=RString::Null; Nb=0; Weight=0.0; NormalStem=false; Occurs.Clear();}
+	inline void Clear(void) {Word.SetLen(0); Nb=0; Weight=0.0; NormalStem=false;}
 	int Compare(const cWord& word) const {return(Word.Compare(word.Word));}
+	int Compare(const cWord* word) const {return(Word.Compare(word->Word));}
 	int Compare(const RString& word) const {return(Word.Compare(word));}
 	size_t HashIndex(size_t idx) const {return(Word.HashIndex(idx));}
-	~cWord(void);
-};
 
-
-//-----------------------------------------------------------------------------
-class cContent : public RContainer<cWord,false,false>
-{
-public:
-
-	cContent(void) : RContainer<cWord,false,false>(10) {}
-
-	int Compare(const cContent&) const {return(-1);}
+	~cWord(void) {delete[] InStop;}
 };
 
 
@@ -138,7 +121,7 @@ public:
  * The IndexTag class represent a tag that, associated with its content, can be
  * used as indexed.
  */
-class IndexTag : public RContainer<cContent,true,false>
+class IndexTag
 {
 public:
 
@@ -152,9 +135,76 @@ public:
 	 */
 	size_t Occurs;
 
-	IndexTag(const RString& name) : RContainer<cContent,true,false>(60), Name(name), Occurs(0) {}
+	GConcept* Tag;
+
+
+	IndexTag(const RString& name) : Name(name), Occurs(0), Tag(0) {}
 	int Compare(const IndexTag& tag) const {return(Name.Compare(tag.Name));}
 	int Compare(const RString& tag) const {return(Name.Compare(tag));}
+};
+
+
+
+//-----------------------------------------------------------------------------
+class cNode
+{
+public:
+
+	union
+	{
+		cWord* Word;
+		IndexTag* Tag;
+	} Obj;
+	size_t Pos;
+	VTR::NodeType Type;
+	char Depth;
+	size_t Child;
+	size_t Nb;
+
+	cNode(void);
+	void Clear(void);
+	void SetTag(IndexTag* tag,size_t pos,char depth);
+	void SetAttr(size_t pos,char depth);
+	void SetAttrValue(cWord* word,size_t pos,char depth);
+	void SetContent(cWord* word,size_t pos,char depth);
+	int Compare(const cNode&) const {return(-1);}
+};
+
+
+//-----------------------------------------------------------------------------
+class cDepth : private RContainer<cNode,true,false>
+{
+	size_t NbNodes;
+	cNode* CurTag;  // Current tag
+	size_t Level;
+public:
+	cDepth(size_t level);
+	void Clear(void);
+	inline RCursor<cNode> GetNodes(void) const;
+	int Compare(const cDepth&) const {return(-1);}
+	inline size_t GetNbNodes(void) const {return(NbNodes);}
+	inline size_t GetLevel(void) const {return(Level);}
+	inline cNode* GetCurTag(void) const {return(CurTag);}
+	friend class cDepths;
+};
+
+
+//-----------------------------------------------------------------------------
+class cDepths : private RContainer<cDepth,true,false>
+{
+	size_t NbDepths;
+	cNode* CurTag;
+
+public:
+
+	cDepths(void);
+	void Clear(void);
+	inline cDepth* GetDepth(size_t depth);
+	inline RCursor<cDepth> GetDepths(void) const;
+	inline RCursor<cDepth> GetDepths(size_t max) const;
+	inline cNode* GetNewNode(size_t depth,bool tag);
+	inline cNode* GetCurTag(void) const {return(CurTag);}
+	inline size_t GetNbDepths(void) const {return(NbDepths);}
 };
 
 
@@ -164,17 +214,22 @@ public:
 * @author Pascal Francq
 * @short Vector Model Documents Analyze.
 */
-class GTextAnalyse : public GDocAnalyse
+class GTextAnalyse : public GDocAnalyse, public RXMLParser
 {
 	/**
-	* Current document to analyze.
+	* Original URI.
 	*/
-	GDoc* Doc;
+	RString URI;
 
 	/**
 	 * Structure computed.
 	 */
 	GDocStruct* Struct;
+
+	/**
+	* Information computed.
+	*/
+	GWeightInfos* Infos;
 
 	/**
 	* Cursor on the different languages defined in the system.
@@ -193,14 +248,14 @@ class GTextAnalyse : public GDocAnalyse
 	R::RDblHashContainer<cWord,false> Hash;
 
 	/**
-	* Information computed.
-	*/
-	R::RContainer<GWeightInfo,false,true> Infos;
-
-	/**
 	 * Index.
 	 */
 	RContainer<IndexTag,true,true> IndexTags;
+
+	/**
+	 * Different depths of the XML file analyzed.
+	 */
+	cDepths Depths;
 
 	/**
 	* Number of words in the document.
@@ -238,6 +293,11 @@ class GTextAnalyse : public GDocAnalyse
 	* that are in the document.
 	*/
 	size_t* Sldiff;
+
+	/**
+	 * Number of languages treated.
+	 */
+	size_t NbLangs;
 
 	/**
 	* Number of words of the stoplist of the selected language that are in the
@@ -315,11 +375,6 @@ class GTextAnalyse : public GDocAnalyse
 	double NormalRatio;
 
 	/**
-	 * Store pairs (full word,stem) in the database?
-	 */
-	bool StoreFullWords;
-
-	/**
 	 * Extract structure elements?
 	 */
 	bool ExtractStruct;
@@ -348,11 +403,6 @@ class GTextAnalyse : public GDocAnalyse
 	 * Maximum depth of a declarative tag
 	 */
 	size_t MaxDepth;
-
-	/**
-	 * Maximal percentage of occurrences of a tag to be considered as index.
-	 */
-	double MaxPercOccurs;
 
 	/**
 	 * Maximal number of occurrences of a tag to be considered as index.
@@ -404,6 +454,16 @@ class GTextAnalyse : public GDocAnalyse
 	 */
 	GConceptType* IndexSpace;
 
+	/**
+	 * Is the current tag a title?
+	 */
+	bool IsTitle;
+
+	/**
+	 * Temporary String;
+	 */
+	RString tmpStr;
+
 public:
 
 	/**
@@ -429,31 +489,48 @@ public:
 	*/
 	virtual void Disconnect(GSession* session);
 
-protected:
-
 	/**
 	* Do some cleaning operations before a analyze.
 	*/
 	void Clear(void);
 
+	// Overload default function
+	virtual void BeginTag(const RString& namespaceURI,const RString& lName,const RString& name);
+	virtual void AddAttribute(const RString& namespaceURI, const RString& lName, const RString& name);
+	virtual void Value(const RString& value);
+	virtual void EndTag(const RString& namespaceURI,const RString& lName,const RString& name);
+	virtual void Text(const RString& text);
+
 	/**
-	* Add a word to the document.
+	 * Transform a code into a character. It call first the valid codes for
+	 * XML, if the code is not valid it is replaced by a space.
+	 * @param code           String representing the code.
+	 * @return Character.
+	 */
+	virtual RChar CodeToChar(RString& code);
+
+	/**
+	 * An invalid code is accepted.
+	 */
+	virtual bool InvalidXMLCodeAccept(void) {return(true);}
+
+	/**
+	* Add a valid word to the document.
 	* @param word           Word to add.
 	* @param weight         Weights of the words added during this analyze.
 	* @param normal         Must the word be considered as a normal stem.
 	* @
 	*/
-	void AddWord(const R::RString& word,double weight,cContent* content,GDocStructNode* parent,size_t pos,bool letters);
+	void AddWord(const RString& word,double weight,bool letters);
 
 	/**
-	* This method extract the new word from a given string if it responds to
-	* the constraints established.
+	* This method extract valid words from a string.
 	* @param str            String.
 	* @param weight         Weights of the words added during this analyze.
 	* @param normal         Must the word be considered as a normal stem.
 	* @returns true if a word was extract.
 	*/
-	void ExtractWord(const R::RString& str,double weight,cContent* content,GDocStructNode* parent,size_t pos);
+	void ExtractValidWords(const RString& str,double weight);
 
 	/**
 	* This methods determine the language of the current structure studied,
@@ -463,41 +540,34 @@ protected:
 	*/
 	void DetermineLang(void);
 
+	/**
+	 * Get a pointer to the concept that is inserted corresponding to a word.
+	 * @param word           Word.
+	 * @return Pointer to the concept or null if the word is not valid with
+	 * respect to the constraints.
+	 */
 	GConcept* GetStemConcept(cWord* word);
 
 	/**
 	* Construct the information about the current document and store it in
 	* Words.
-	* @param documentid            Corresponding document id.
 	*/
-	void ConstructInfos(size_t documentid);
-
-	/**
-	* Insert into database a couple word/stem
-	* @param stemid            Corresponding stemmed word id.
-	* @param word            Original word.
-	* @param docid            Corresponding document id.
-	*/
-	bool StoreWordStemInDatabase(size_t stemid, RString word,size_t docid);
-
-public:
-
-	/**
-	* Analyze a XML representation of a document for a session and store the
-	* results in this document.
-	*
-	* During the analysis of the document, if links point to document that does
-	* not exist in the system, these documents are added in a container.
-	* @param xml            XML Representation used.
-	* @param doc            Corresponding document.
-	* @param native          Specify if the document is a native XML file.
-	*/
-	virtual void Analyze (GDoc *doc,const R::RURI& uri,bool native);
+	void ConstructInfos(void);
 
 	/**
 	 * Index the XML part.
 	 */
 	void IndexXMLPart(void);
+
+	/**
+	* Analyze a XML of a document for a session.
+	* @param uri             Original URI.
+	* @param file            File to analyze (may be different from uri).
+	* @param native          Specify if the document is a native XML file.
+	* @param lang            Main language of the document (may be fixed).
+	* @param infos           Vector that will contain the result.
+	*/
+	virtual void Analyze(const R::RURI& uri,const R::RURI& file,bool native,GLang* &lang,GWeightInfos* infos);
 
 	/**
 	* Create the parameters.
@@ -506,7 +576,7 @@ public:
 	static void CreateParams(RConfig* params);
 
 	/**
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~GTextAnalyse(void);
 
