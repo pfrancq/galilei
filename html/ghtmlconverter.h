@@ -100,14 +100,6 @@ public:
 	GHTMLConverter(GALILEI::GFilter* filter,R::RString name,GALILEI::GDocXML* xmlstruct,const R::RString& encoding="Latin1");
 
 	/**
-	* Construct a HTML file to read.
-	* @param name           Name of the file.
-	* @param xmlstruct      The XML tree associated with the file.
-	* @param encoding       The encoding scheme of the file.
-	*/
-	GHTMLConverter(GALILEI::GFilter* filter,R::RString name,GALILEI::GDocXML& xmlstruct,const R::RString& encoding="Latin1");
-
-	/**
 	* Set the doctype of the XML document. The doctype is transform in lowercase
 	* and XHTML correspond to the open tag 'html'. If html is not the result, an
 	* exception occurs.

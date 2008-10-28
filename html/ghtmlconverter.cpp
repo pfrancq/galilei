@@ -658,15 +658,6 @@ GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML* xmlstruct,c
 
 
 //------------------------------------------------------------------------------
-GHTMLConverter::GHTMLConverter(GFilter* filter,RString name,GDocXML& xmlstruct,const RString& encoding)
- : RXMLFile(name,xmlstruct,encoding), Filter(filter),Doc(&xmlstruct), Tags(200,10),
-   FoundClosingHTML(false),Base(""), ParTag(0)
-{
-	InitValidTags();
-}
-
-
-//------------------------------------------------------------------------------
 void GHTMLConverter::SetDocType(const RString& docType)
 {
 	RString name;
