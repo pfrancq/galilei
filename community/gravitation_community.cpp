@@ -150,7 +150,7 @@ void GCommunityCalcGravitation::Compute(GCommunity* grp)
 	}
 
 	// Update the community.
-	grp->Update(&Infos,true);
+	grp->Update(&Infos);
 }
 
 

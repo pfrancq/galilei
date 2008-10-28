@@ -150,7 +150,7 @@ void GTopicCalcGravitation::Compute(GTopic* grp)
 	}
 
 	// Update the topic.
-	grp->Update(&Infos,true);
+	grp->Update(&Infos);
 }
 
 
