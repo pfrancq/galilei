@@ -293,13 +293,13 @@ void GProfileCalcFeedback::Compute(GProfile* profile)
 	// Compute the global vectors.
 	ComputeGlobal();
 
-	// Compute the vector for each subprofile
+	// Compute the vector for each profile
 	ComputeProfile();
 
 //	WriteFile("/home/pfrancq/tmp");
 
-	// Set the Variable of the subprofile
-	profile->Update(Infos,true);
+	// Set the Variable of the profile
+	profile->Update(Infos);
 }
 
 
