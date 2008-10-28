@@ -46,6 +46,7 @@
 namespace GALILEI
 {
 	class GTopic;
+	class QGWeightInfos;
 }
 
 
@@ -93,7 +94,7 @@ class KViewTopic : public KView
 	/**
 	* Vector representing the group.
 	*/
-	QListView* Vector;
+	QGWeightInfos* Vector;
 
 public:
 
@@ -112,11 +113,6 @@ public:
 	* @return Pointer to a GALILEI::Topic.
 	*/
 	GALILEI::GTopic* GetTopic(void) {return(Topic);}
-
-	/**
-	* Construct the groups widget.
-	*/
-	void ConstructDescription(void);
 
 	/**
 	* Construct the documents widget.

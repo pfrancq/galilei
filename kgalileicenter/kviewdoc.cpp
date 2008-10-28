@@ -59,6 +59,7 @@ using namespace R;
 #include <gstorage.h>
 #include <ggalileiapp.h>
 #include <gconcepttype.h>
+#include <qgweightinfos.h>
 using namespace GALILEI;
 
 
@@ -198,17 +199,13 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
 	ConstructFdbks();
 
-	// Initialisation of the XML Widget
+	// Initialization of the XML Widget
 	XML = new QGDocXML(Infos);
 	Infos->insertTab(XML,"XML Structure");
 
-	// Initialisation of the AnalyseResults Widget
-	Results = new QListView(Infos);
+	// Initialization of the AnalyseResults Widget
+	Results = new QGWeightInfos(Infos,Document,Doc->GetSession());
 	Infos->insertTab(Results,"Description");
-	Results->addColumn("Concept");
-	Results->addColumn("Concept Type");
-	Results->addColumn("Weight");
-	ConstructResults();
 }
 
 
@@ -241,12 +238,8 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	Infos->insertTab(XML,"XML Structure");
 
 	// Initialization of the AnalyseResults Widget
-	Results = new QListView(Infos);
+	Results = new QGWeightInfos(Infos,Document,Doc->GetSession());
 	Infos->insertTab(Results,"Analyse Results");
-	Results->addColumn("Concept");
-	Results->addColumn("Concept Type");
-	Results->addColumn("Weight");
-	ConstructResults();
 }
 
 
@@ -320,40 +313,6 @@ void KViewDoc::ConstructFdbks(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewDoc::ConstructResults(void)
-{
-	class LocalItem : QListViewItem
-	{
-	public:
-		double Val;
-
-		LocalItem(QListView* v,QString name,QString type,double d) : QListViewItem(v,name,type,QString::number(d)), Val(d) {}
-		virtual int compare( QListViewItem *i, int col, bool ascending ) const
-    	{
-			if(col==1)
-			{
-				double d=Val-static_cast<LocalItem*>(i)->Val;
-				if(d==0.0) return(key(0, ascending ).compare( i->key(0, ascending)));
-				if(d>0)
-					return(1);
-				return(-1);
-			}
-			return(key( col, ascending ).lower().compare( i->key( col, ascending).lower()));
-    	}
-	};
-	Results->clear();
-	if(!Document->GetLang()) return;
-	RCursor<GWeightInfo> Words(Document->GetInfos());
-	for (Words.Start();!Words.End();Words.Next())
-	{
-		QString name=ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType()));
-		QString type=ToQString(Words()->GetType()->GetDescription());
-		new LocalItem(Results,name,type,Words()->GetWeight());
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void KViewDoc::ConstructGeneral(void)
 {
 	GLang* l;
@@ -382,8 +341,7 @@ void KViewDoc::update(tObjType type)
 	if(type!=otDoc) return;
 	General->clear();
 	ConstructGeneral();
-	Results->clear();
-	ConstructResults();
+	Results->SetObject(Document);
 }
 
 
@@ -424,7 +382,7 @@ void KViewDoc::AnalyseDocXML(void)
 	General->clear();
 	ConstructGeneral();
 	Results->clear();
-	ConstructResults();
+	Results->SetObject(Document);
 }
 
 

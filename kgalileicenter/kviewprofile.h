@@ -51,6 +51,7 @@ namespace GALILEI
 	class GProfile;
 	class QGProfile;
 	class GInOutputBase;
+	class QGWeightInfos;
 }
 using namespace GALILEI;
 
@@ -71,12 +72,12 @@ class KViewProfile : public KView
 	GALILEI::GProfile* Profile;
 
 	/**
-	* Widget to handle the different information of the document.
+	* Widget to handle the different information of the profile.
 	*/
 	QTabWidget* Infos;
 
 	/**
-	* Widget to handle the different information of the document.
+	* Widget to handle the different information of the profile.
 	*/
 	QTabWidget* InfosSub;
 
@@ -96,7 +97,7 @@ class KViewProfile : public KView
 	QListView* Fdbks;
 
 	/**
-	* Feedback over the documents obtained by link analyse.
+	* Feedback over the documents obtained by link analyze.
 	*/
 	QListView* FdbksLinks;
 
@@ -108,7 +109,7 @@ class KViewProfile : public KView
 	/**
 	* Results of the analyse.
 	*/
-	QListView* Results;
+	class QGWeightInfos* Results;
 
 public:
 
@@ -132,11 +133,6 @@ public:
 	* Construct the feedbacks' widget.
 	*/
 	void ConstructFdbks(void);
-
-	/**
-	* Construct the results' widget.
-	*/
-	void ConstructResults(void);
 
 	/**
 	* Constructs the links' widget.

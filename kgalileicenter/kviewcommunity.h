@@ -46,6 +46,7 @@
 namespace GALILEI
 {
 	class GCommunity;
+	class QGWeightInfos;
 }
 
 
@@ -93,7 +94,7 @@ class KViewCommunity : public KView
 	/**
 	* Vector representing the group.
 	*/
-	QListView* Vector;
+	QGWeightInfos* Vector;
 
 	/**
 	*  Widget of documents assessed as relevant by memebers of the group.
@@ -122,11 +123,6 @@ public:
 	* @return Pointer to a GALILEI::GCommunity.
 	*/
 	GALILEI::GCommunity* GetGroup(void) {return(Group);}
-
-	/**
-	* Construct the groups widget.
-	*/
-	void ConstructDescription(void);
 
 	/**
 	* Construct the profiles widget.

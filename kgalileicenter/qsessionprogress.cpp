@@ -420,7 +420,7 @@ void QCreateDocXML::DoIt(void)
 //-----------------------------------------------------------------------------
 void QAnalyzeXML::DoIt(void)
 {
-	Session->AnalyseDoc(Doc,0,Parent);
+	Session->AnalyseDoc(Doc,true,0,Parent);
 }
 
 
@@ -428,7 +428,7 @@ void QAnalyzeXML::DoIt(void)
 void QAnalyzeDocs::DoIt(void)
 {
 	Parent->PutText("Analyse Documents ...");
-	Session->AnalyseDocs(Parent);
+	Session->AnalyseDocs(false,Parent);
 }
 
 
@@ -729,6 +729,8 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 {
+	if(Canceled)
+		return;
 	NewLabel=QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...";
 	Changed=true;
 }
@@ -737,6 +739,8 @@ void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextDoc(const GDoc* doc)
 {
+	if(Canceled)
+		return;
 	NewLabel=QString("Analyse Doc '")+ToQString(doc->GetName())+"' ...";
 	Changed=true;
 }
@@ -745,6 +749,8 @@ void QSessionProgressDlg::NextDoc(const GDoc* doc)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextProfile(const GProfile* prof)
 {
+	if(Canceled)
+		return;
 	NewLabel=QString("Analyse Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...";
 	Changed=true;
 }
@@ -753,6 +759,8 @@ void QSessionProgressDlg::NextProfile(const GProfile* prof)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextChromosome(size_t id)
 {
+	if(Canceled)
+		return;
 	NewLabel=QString("Analyse Chromosome ")+QString::number(id)+" ...";
 	Changed=true;
 }

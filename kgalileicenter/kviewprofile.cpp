@@ -53,6 +53,7 @@
 #include <gweightinfo.h>
 #include <gconcepttype.h>
 #include <gcommunity.h>
+#include <qgweightinfos.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -131,12 +132,8 @@ KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const cha
 	ConstructLinks();
 
 	// Initialisation of the AnalyseResults Widget
-	Results = new QListView(Infos);
+	Results = new QGWeightInfos(Infos,Profile,Doc->GetSession());
 	Infos->insertTab(Results,"Description");
-	Results->addColumn("Concept");
-	Results->addColumn("Concept Type");
-	Results->addColumn("Weight");
-	ConstructResults();
 }
 
 
@@ -183,39 +180,6 @@ void KViewProfile::ConstructFdbks(void)
 		d=doc->GetUpdated();
 		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),ToQString(d));
 		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewProfile::ConstructResults(void)
-{
-	class LocalItem : QListViewItem
-	{
-	public:
-		double Val;
-
-		LocalItem(QListView* v,QString name,QString type,double d) : QListViewItem(v,name,type,QString::number(d)), Val(d) {}
-		virtual int compare( QListViewItem *i, int col, bool ascending ) const
-    	{
-			if(col==1)
-			{
-				double d=Val-static_cast<LocalItem*>(i)->Val;
-				if(d==0.0) return(key(0, ascending ).compare( i->key(0, ascending)));
-				if(d>0)
-					return(1);
-				return(-1);
-			}
-			return(key( col, ascending ).lower().compare( i->key( col, ascending).lower()));
-    	}
-	};
-	Results->clear();
-	RCursor<GWeightInfo> Words(Profile->GetInfos());
-	for (Words.Start();!Words.End();Words.Next())
-	{
-		QString name=ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType()));
-		QString type=ToQString(Words()->GetType()->GetDescription());
-		new LocalItem(Results,name,type,Words()->GetWeight());
 	}
 }
 
@@ -296,8 +260,7 @@ void KViewProfile::update(tObjType type)
 	{
 		case otProfile:
 			General->slotProfileChanged();
-			Results->clear();
-			ConstructResults();
+			Results->SetObject(Profile);
 			break;
 		case otCommunity:
 			ConstructGroups();
@@ -325,8 +288,7 @@ void KViewProfile::ComputeProfile(void)
 	if(!Dlg.Run(new QComputeProfile(Profile)))
 		return;
 	General->slotProfileChanged();
-	Results->clear();
-	ConstructResults();
+	Results->SetObject(Profile);
 }
 
 

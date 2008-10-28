@@ -48,8 +48,10 @@
 #include <rqt.h>
 #include <gweightinfo.h>
 #include <gtopic.h>
+#include <qgweightinfos.h>
 using namespace GALILEI;
 using namespace R;
+
 
 //-----------------------------------------------------------------------------
 // includes files for Qt/KDE
@@ -105,11 +107,8 @@ KViewTopic::KViewTopic(GTopic* grp,KDoc* doc,QWidget* parent,const char* name,in
 	ConstructDocs();
 
 	// Initialization of Description
-	Vector = new QListView(Infos,"Vector");
+	Vector = new QGWeightInfos(Infos,Topic,Doc->GetSession());
 	Infos->insertTab(Vector,"Description");
-	Vector->addColumn("Information Entity");
-	Vector->addColumn(QString("Weight"));
-	ConstructDescription();
 }
 
 
@@ -141,45 +140,12 @@ void KViewTopic::ConstructGeneral(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewTopic::ConstructDescription(void)
-{
-	class LocalItem : QListViewItem
-	{
-	public:
-		double Val;
-
-		LocalItem(QListView* v,QString str,double d) : QListViewItem(v,str, QString::number(d)), Val(d) {}
-		virtual int compare( QListViewItem *i, int col, bool ascending ) const
-    	{
-			if(col==1)
-			{
-				double d=Val-static_cast<LocalItem*>(i)->Val;
-				if(d==0.0) return(key(0, ascending ).compare( i->key(0, ascending)));
-				if(d>0)
-					return(1);
-				return(-1);
-			}
-			return(key( col, ascending ).lower().compare( i->key( col, ascending).lower()));
-    	}
-	};
-
-	// Read 'Ok'
-	Vector->clear();
-	RCursor<GWeightInfo> Words(Topic->GetInfos());
-	for (Words.Start();!Words.End();Words.Next())
-	{
-		new LocalItem(Vector,ToQString(Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType())), Words()->GetWeight());
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void KViewTopic::update(tObjType type)
 {
 	if(type!=otTopic) return;
 	ConstructDocs();
 	ConstructGeneral();
-	ConstructDescription();
+	Vector->SetObject(Topic);
 }
 
 

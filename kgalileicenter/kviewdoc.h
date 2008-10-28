@@ -50,6 +50,7 @@ namespace GALILEI
 	class GUser;
 	class GProfile;
 	class GSession;
+	class QGWeightInfos;
 }
 using namespace GALILEI;
 
@@ -105,7 +106,7 @@ class KViewDoc : public KView
 	/**
 	* Results of the analyze.
 	*/
-	QListView* Results;
+	GALILEI::QGWeightInfos* Results;
 
 	/**
 	* General information about the document.
@@ -164,11 +165,6 @@ public:
 	* Construct the feedbacks widget.
 	*/
 	void ConstructFdbks(void);
-
-	/**
-	* Construct the results' widget.
-	*/
-	void ConstructResults(void);
 
 	/**
 	* Construct the general information's widget.
