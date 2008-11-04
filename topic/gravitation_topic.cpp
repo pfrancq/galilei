@@ -125,7 +125,7 @@ void GTopicCalcGravitation::Compute(GTopic* grp)
 	if(Vector.GetNb()+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<size_t>((Vector.GetNb()+1)*1.1);
+		MaxOrderSize=static_cast<size_t>((static_cast<double>(Vector.GetNb())+1)*1.1);
 		Order=new GWeightInfo*[MaxOrderSize];
 	}
 	Vector.GetTab(Order);
@@ -137,7 +137,7 @@ void GTopicCalcGravitation::Compute(GTopic* grp)
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbObjs()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/static_cast<double>(grp->GetNbObjs())));
 		}
 	}
 	else
@@ -145,7 +145,7 @@ void GTopicCalcGravitation::Compute(GTopic* grp)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/grp->GetNbObjs()));
+				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/static_cast<double>(grp->GetNbObjs())));
 		}
 	}
 

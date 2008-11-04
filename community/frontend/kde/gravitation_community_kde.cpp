@@ -87,7 +87,7 @@ void Configure(GFactoryCommunityCalc* params)
 {
  	DlgConfig_Qt dlg;
 
-	dlg.MaxSize->setValue(params->GetUInt("Max Size"));
+	dlg.MaxSize->setValue(params->GetInt("Max Size"));
 	if(dlg.exec())
 	{
 		params->SetUInt("Max Size",dlg.MaxSize->value());
