@@ -88,7 +88,7 @@ void Configure(GFactoryPostCommunity* params)
 {
 	DlgConfig_Qt dlg;
 
-	dlg.NbSugs->setValue(params->GetUInt("NbSugs"));
+	dlg.NbSugs->setValue(params->GetInt("NbSugs"));
 	dlg.UseLevels->setChecked(params->GetBool("UseLevels"));
 	dlg.UseGroupsSugs->setChecked(params->GetBool("UseGroupsSugs"));
 	if (dlg.exec())
