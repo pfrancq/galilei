@@ -163,7 +163,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 			{
 				// Yes -> Get the total number of document analyzed.
 				type=Words()->GetConcept()->GetType();
-				TotalRef=type->GetRef(otDoc);
+				TotalRef=static_cast<double>(type->GetRef(otDoc));
 				MaxFreq=doc->GetMaxWeight(type);
 			}
 
@@ -178,13 +178,13 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 	// Compute the vectors
 	Words=Vectors.GetInfos();
 	for(Words.Start();!Words.End();Words.Next())  // Divide the
-		(*Words())*=RelFactor/NbDocsRel;
+		(*Words())*=RelFactor/static_cast<double>(NbDocsRel);
 	Words=VectorsFuzzy.GetInfos();
 	for(Words.Start();!Words.End();Words.Next())
-		(*Vectors.GetInfo(Words()))+=Words()->GetWeight()*FuzzyFactor/NbDocsFuzzy;
+		(*Vectors.GetInfo(Words()))+=Words()->GetWeight()*FuzzyFactor/static_cast<double>(NbDocsFuzzy);
 	Words=VectorsIrrel.GetInfos();
 	for(Words.Start();!Words.End();Words.Next())
-		(*Vectors.GetInfo(Words()))+=Words()->GetWeight()*IrrelFactor/NbDocsIrrel;
+		(*Vectors.GetInfo(Words()))+=Words()->GetWeight()*IrrelFactor/static_cast<double>(NbDocsIrrel);
 
 	// Multiply by the idf factor and remove null weighted information (in VectorsIrrel).
 	Words=Vectors.GetInfos();
@@ -219,7 +219,7 @@ void GProfileCalcFeedback::ComputeProfile(void)
 	if(Vectors.GetNb()+1>MaxOrderSize)
 	{
 		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<size_t>((Vectors.GetNb()+1)*1.1);
+		MaxOrderSize=static_cast<size_t>((static_cast<double>(Vectors.GetNb())+1)*1.1);
 		Order=new GWeightInfo*[MaxOrderSize];
 	}
 	Vectors.GetTab(Order);
@@ -285,7 +285,7 @@ void GProfileCalcFeedback::Compute(GProfile* profile)
 			Infos.InsertPtrAt(ptr=new GWeightInfo(*Cur()),i);
 			if(ptr)
 			{
-				(*ptr)/=log10(TotalRef/static_cast<double>(type->GetRef(Cur()->GetId(),otDoc)));
+				(*ptr)/=log10(static_cast<double>(TotalRef)/static_cast<double>(type->GetRef(Cur()->GetId(),otDoc)));
 			}
 		}
 	}

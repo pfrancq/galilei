@@ -87,8 +87,8 @@ void Configure(GFactoryProfileCalc* params)
 {
  	DlgConfig_Qt dlg;
 
-	dlg.MaxSize->setValue(params->GetUInt("MaxSize"));
-	dlg.NegSize->setValue(params->GetUInt("NegSize"));
+	dlg.MaxSize->setValue(static_cast<int>(params->GetUInt("MaxSize")));
+	dlg.NegSize->setValue(static_cast<int>(params->GetUInt("NegSize")));
 	dlg.RelFactor->setValue(params->GetDouble("RelFactor"));
 	dlg.FuzzyFactor->setValue(params->GetDouble("FuzzyFactor"));
 	dlg.IrrelFactor->setValue(params->GetDouble("IrrelFactor"));
