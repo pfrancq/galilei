@@ -321,7 +321,7 @@ template<class E1,class E2>
 	// Compute indicators for current subject
 	if(nbIntra)
 	{
-		SimIntra/=nbIntra;
+		SimIntra/=static_cast<double>(nbIntra);
 		MeanIntra+=SimIntra;
 		calc->AddTag(xml,Tag,"Min Intra",MinIntra);
 		calc->AddTag(xml,Tag,"Mean Intra",SimIntra);
@@ -329,7 +329,7 @@ template<class E1,class E2>
 
 	if(nbExtra)
 	{
-		SimExtra/=nbExtra;
+		SimExtra/=static_cast<double>(nbExtra);
 		MeanExtra+=SimExtra;
 		calc->AddTag(xml,Tag,"Max Extra",MaxExtra);
 		calc->AddTag(xml,Tag,"Mean Extra",SimExtra);

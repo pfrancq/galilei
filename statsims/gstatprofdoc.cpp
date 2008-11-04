@@ -110,13 +110,13 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 				nbProfJugDoc++;
 			}
 		}
-		sum += nbProfJugDoc;
+		sum+=static_cast<double>(nbProfJugDoc);
 		//(*File) << Docs()->GetId()<<"     "<<nbProfJugDoc<<endl;
 		nbDocs++;
 	}
 	if(nbDocs)
 	{
-		MeanNbProf = sum/ nbDocs;
+		MeanNbProf=sum/static_cast<double>(nbDocs);
 		calc->AddTag(xml,tag,"MeanNbProfAssess",MeanNbProf);
 //	cout << " Mean of profiles juged doc "<<MeanNbProf <<endl;
 	}
@@ -129,14 +129,13 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 //				NoSocialSubProfiles.InsertPtr(Profs1());
 		for(Profs2.GoTo(i+1);!Profs2.End();Profs2.Next())
 		{
-			tmp=Profs1()->GetCommonDocs(Profs2());
-			nbSame=Profs1()->GetCommonOKDocs(Profs2());
-			nbDiff=Profs1()->GetCommonDiffDocs(Profs2());
+			tmp=static_cast<double>(Profs1()->GetCommonDocs(Profs2()));
+			nbSame=static_cast<double>(Profs1()->GetCommonOKDocs(Profs2()));
+			nbDiff=static_cast<double>(Profs1()->GetCommonDiffDocs(Profs2()));
 			if(tmp)
 			{
-				nbSame /=tmp;
+				nbSame/=tmp;
 				MeanSame += nbSame;
-
 				nbDiff /= tmp;
 				MeanDiff += nbDiff;
 				sum++;
