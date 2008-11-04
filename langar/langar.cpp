@@ -105,7 +105,7 @@ int GLangAR::ArabicRule::CheckConditions(RString kwd)
 		position=BeforePos; // postion is reajusted to the correct old suffix in the word
 	else if(AfterPos!=-1)
 	{
-		position=kwd.GetLen()-OldSuffix.GetLen()-AfterPos;
+		position=static_cast<int>(kwd.GetLen()-OldSuffix.GetLen()-AfterPos);
 		if (position<0)
 			return(-1);
 	}

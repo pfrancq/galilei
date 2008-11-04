@@ -72,7 +72,7 @@ public:
 GLangFR::FrenchPorterRule::FrenchPorterRule(const char* os,const char* ns,int oo,int no,int mr)
 	: OldSuffix(0), NewSuffix(0), OldOffset(oo), NewOffset(no), MinRootSize(mr)
 {
-	int l;
+	size_t l;
 	l=strlen(os);
 	OldSuffix=new char[l+1];
 	if(l)
@@ -453,7 +453,7 @@ bool GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,true,f
 	char* ending;
 	int WordSize;
 	char tmp;
-	int len;
+	size_t len;
 
 	len=strlen(kwd);
 	RCursor<FrenchPorterRule> Cur(*rules);
@@ -464,7 +464,7 @@ bool GLangFR::ApplyRules(char* kwd,char* &end,RContainer<FrenchPorterRule,true,f
 		// If the word is leng enough, find the potentiel end suffix and put it
 		// in ending. If the ending isn't corresponding to the rule's suffix,
 		// go to the next rule.
-		if(len<=ptr->OldOffset) continue;
+		if(len<=static_cast<size_t>(ptr->OldOffset)) continue;
 		ending=end-ptr->OldOffset;
 		if(strcmp(ending,ptr->OldSuffix)) continue;
 		tmp=*ending;

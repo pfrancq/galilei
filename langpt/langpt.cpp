@@ -72,8 +72,6 @@ GLangPT::GLangPT(GFactoryLang* fac)
 //-----------------------------------------------------------------------------
 RString GLangPT::GetStemming(const RString& _kwd)
 {
-	char* end;
-	unsigned int len;
 	string word;
 	 word=_kwd.ToString();
 	(*this)(word);

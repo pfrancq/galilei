@@ -77,7 +77,7 @@ GLangNL::DutchPorterRule::DutchPorterRule(const char* os,const char* ns,int oo,i
 	: OldSuffix(0), NewSuffix(0), OldOffset(oo), NewOffset(no), MinRootSize(mr),
 	  Condition(c), Next(n)
 {
-	int l;
+	size_t l;
 	l=strlen(os);
 	OldSuffix=new char[l+1];
 	if(l)
@@ -252,7 +252,7 @@ bool GLangNL::EndsWithe(const char* newend)
 //-----------------------------------------------------------------------------
 bool GLangNL::EndsWithCVD(char* tmp,char* newend)
 {
-	int length;
+	size_t length;
 	char* end;
 	if((length=strlen(tmp))<3)
 		return(false);
@@ -272,7 +272,7 @@ bool GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRule,true,fa
 	int WordSize;
 	char tmp;
 	char* newend;
-	int len;
+	size_t len;
 
 	len=strlen(kwd);
 	RCursor<DutchPorterRule> Cur(*rules);
@@ -283,7 +283,7 @@ bool GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRule,true,fa
 		// If the word is leng enough, find the potentiel end suffix and put it
 		// in ending. If the ending isn't corresponding to the rule's suffix,
 		// go to the next rule.
-		if(len<=ptr->OldOffset) continue;
+		if(len<=static_cast<size_t>(ptr->OldOffset)) continue;
 		ending=end-ptr->OldOffset;
 		if(ptr->Condition==DutchPorterRule::CondUndouble)
 		{
@@ -358,7 +358,7 @@ RString GLangNL::GetStemming(const RString& _kwd)
 	RString res;
 	char kwd[51];
 	char* end;
-	unsigned int len;
+	size_t len;
 
 	// Transform _kwd in lowercase and store it in kwd.
 	res=_kwd.ToLower();

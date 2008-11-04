@@ -72,8 +72,6 @@ GLangNO::GLangNO(GFactoryLang* fac)
 //-----------------------------------------------------------------------------
 RString GLangNO::GetStemming(const RString& _kwd)
 {
-	char* end;
-	unsigned int len;
 	string word;
 	 word=_kwd.ToString();
 	(*this)(word);

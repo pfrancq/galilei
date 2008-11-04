@@ -77,7 +77,7 @@ GLangEN::PorterRule::PorterRule(const char* os,const char* ns,int oo,int no,int 
 	: OldSuffix(0), NewSuffix(0), OldOffset(oo), NewOffset(no), MinRootSize(mr),
 	  Condition(c), Next(n)
 {
-	int l;
+	size_t l;
 	l=strlen(os);
 	OldSuffix=new char[l+1];
 	if(l)
@@ -265,7 +265,7 @@ bool GLangEN::ContainsVowel(const char* kwd)
 //-----------------------------------------------------------------------------
 bool GLangEN::EndsWithCVC(char* kwd,char* &end)
 {
-	int length;
+	size_t length;
 
 	if((length=strlen(kwd))<2)
 		return(false);
@@ -283,7 +283,7 @@ bool GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,true,false>*
 	char* ending;
 	int WordSize;
 	char tmp;
-	int len;
+	size_t len;
 
 	len=strlen(kwd);
 	RCursor<PorterRule> Cur(*rules);
@@ -294,7 +294,7 @@ bool GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,true,false>*
 		// If the word is leng enough, find the potentiel end suffix and put it
 		// in ending. If the ending isn't corresponding to the rule's suffix,
 		// go to the next rule.
-		if(len<=ptr->OldOffset) continue;
+		if(len<=static_cast<size_t>(ptr->OldOffset)) continue;
 		ending=end-ptr->OldOffset;
 		if(strcmp(ending,ptr->OldSuffix)) continue;
 		tmp=*ending;
