@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>466</width>
-            <height>492</height>
+            <width>506</width>
+            <height>473</height>
         </rect>
     </property>
     <property name="caption">
@@ -239,52 +239,6 @@ When the languages are not static, the language of a document is always determin
                                     </widget>
                                 </hbox>
                             </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout5</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
-                                    <widget class="QLabel">
-                                        <property name="name">
-                                            <cstring>textLabel4</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Minimum occur [MinOccur]</string>
-                                        </property>
-                                    </widget>
-                                    <spacer>
-                                        <property name="name">
-                                            <cstring>spacer5</cstring>
-                                        </property>
-                                        <property name="orientation">
-                                            <enum>Horizontal</enum>
-                                        </property>
-                                        <property name="sizeType">
-                                            <enum>Expanding</enum>
-                                        </property>
-                                        <property name="sizeHint">
-                                            <size>
-                                                <width>40</width>
-                                                <height>20</height>
-                                            </size>
-                                        </property>
-                                    </spacer>
-                                    <widget class="KIntNumInput">
-                                        <property name="name">
-                                            <cstring>MinOccur</cstring>
-                                        </property>
-                                        <property name="toolTip" stdset="0">
-                                            <string>Set the minimum number of occurences of a word/stem.</string>
-                                        </property>
-                                        <property name="whatsThis" stdset="0">
-                                            <string>When a word is contained in the document and its number of occurences is lower than this threshold, the word is not used.</string>
-                                        </property>
-                                    </widget>
-                                </hbox>
-                            </widget>
                         </vbox>
                     </widget>
                     <widget class="QGroupBox">
@@ -486,28 +440,33 @@ When the languages are not static, the language of a document is always determin
                                     <string>Full index (structure and positions) [FullIndex]</string>
                                 </property>
                             </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>StructIsContent</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Structure considered as content? [StructIsContent]</string>
-                                </property>
-                            </widget>
+                        </vbox>
+                    </widget>
+                    <widget class="QGroupBox">
+                        <property name="name">
+                            <cstring>groupBox6</cstring>
+                        </property>
+                        <property name="title">
+                            <string>Elements Considered As Content</string>
+                        </property>
+                        <vbox>
+                            <property name="name">
+                                <cstring>unnamed</cstring>
+                            </property>
                             <widget class="QLayoutWidget">
                                 <property name="name">
-                                    <cstring>layout21</cstring>
+                                    <cstring>layout18</cstring>
                                 </property>
                                 <hbox>
                                     <property name="name">
                                         <cstring>unnamed</cstring>
                                     </property>
-                                    <widget class="QLabel">
+                                    <widget class="QCheckBox">
                                         <property name="name">
-                                            <cstring>textLabel3_2</cstring>
+                                            <cstring>StructIsContent</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Weight of structural tokens [WeightStruct]</string>
+                                            <string>Structurral tokens [StructIsContent]</string>
                                         </property>
                                     </widget>
                                     <spacer>
@@ -518,11 +477,11 @@ When the languages are not static, the language of a document is always determin
                                             <enum>Horizontal</enum>
                                         </property>
                                         <property name="sizeType">
-                                            <enum>Expanding</enum>
+                                            <enum>Fixed</enum>
                                         </property>
                                         <property name="sizeHint">
                                             <size>
-                                                <width>40</width>
+                                                <width>20</width>
                                                 <height>20</height>
                                             </size>
                                         </property>
@@ -532,35 +491,17 @@ When the languages are not static, the language of a document is always determin
                                             <cstring>WeightStruct</cstring>
                                         </property>
                                     </widget>
-                                </hbox>
-                            </widget>
-                            <widget class="QCheckBox">
-                                <property name="name">
-                                    <cstring>AttrValues</cstring>
-                                </property>
-                                <property name="text">
-                                    <string>Attributes values are content? [AttrValues]</string>
-                                </property>
-                            </widget>
-                            <widget class="QLayoutWidget">
-                                <property name="name">
-                                    <cstring>layout22</cstring>
-                                </property>
-                                <hbox>
-                                    <property name="name">
-                                        <cstring>unnamed</cstring>
-                                    </property>
                                     <widget class="QLabel">
                                         <property name="name">
-                                            <cstring>textLabel4_2</cstring>
+                                            <cstring>textLabel3_2</cstring>
                                         </property>
                                         <property name="text">
-                                            <string>Weight of attributes values [WeightValues]</string>
+                                            <string>[WeightStruct]</string>
                                         </property>
                                     </widget>
                                     <spacer>
                                         <property name="name">
-                                            <cstring>spacer29</cstring>
+                                            <cstring>spacer15_2</cstring>
                                         </property>
                                         <property name="orientation">
                                             <enum>Horizontal</enum>
@@ -575,11 +516,71 @@ When the languages are not static, the language of a document is always determin
                                             </size>
                                         </property>
                                     </spacer>
+                                </hbox>
+                            </widget>
+                            <widget class="QLayoutWidget">
+                                <property name="name">
+                                    <cstring>layout19</cstring>
+                                </property>
+                                <hbox>
+                                    <property name="name">
+                                        <cstring>unnamed</cstring>
+                                    </property>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
+                                            <cstring>ExtractValues</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Attributes values [ExtractValues]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer29</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Fixed</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>30</width>
+                                                <height>21</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
                                     <widget class="KDoubleNumInput">
                                         <property name="name">
                                             <cstring>WeightValues</cstring>
                                         </property>
                                     </widget>
+                                    <widget class="QLabel">
+                                        <property name="name">
+                                            <cstring>textLabel4_2</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>[WeightValues]</string>
+                                        </property>
+                                    </widget>
+                                    <spacer>
+                                        <property name="name">
+                                            <cstring>spacer16</cstring>
+                                        </property>
+                                        <property name="orientation">
+                                            <enum>Horizontal</enum>
+                                        </property>
+                                        <property name="sizeType">
+                                            <enum>Expanding</enum>
+                                        </property>
+                                        <property name="sizeHint">
+                                            <size>
+                                                <width>16</width>
+                                                <height>21</height>
+                                            </size>
+                                        </property>
+                                    </spacer>
                                 </hbox>
                             </widget>
                         </vbox>
@@ -758,7 +759,7 @@ When the languages are not static, the language of a document is always determin
                         <property name="sizeHint">
                             <size>
                                 <width>20</width>
-                                <height>40</height>
+                                <height>16</height>
                             </size>
                         </property>
                     </spacer>
@@ -899,7 +900,7 @@ When the languages are not static, the language of a document is always determin
         <slot>setEnabled(bool)</slot>
     </connection>
     <connection>
-        <sender>AttrValues</sender>
+        <sender>ExtractValues</sender>
         <signal>toggled(bool)</signal>
         <receiver>WeightValues</receiver>
         <slot>setEnabled(bool)</slot>
@@ -922,17 +923,22 @@ When the languages are not static, the language of a document is always determin
         <receiver>MaxOccurs</receiver>
         <slot>setEnabled(bool)</slot>
     </connection>
+    <connection>
+        <sender>FullIndex</sender>
+        <signal>toggled(bool)</signal>
+        <receiver>DlgConfig_Qt</receiver>
+        <slot>toggleFullIndex(bool)</slot>
+    </connection>
 </connections>
 <includes>
     <include location="local" impldecl="in implementation">dlgconfig_qt.ui.h</include>
 </includes>
 <slots>
     <slot>toggleStruct( bool toggle )</slot>
+    <slot>toggleFullIndex( bool toggle )</slot>
 </slots>
 <layoutdefaults spacing="6" margin="11"/>
 <includehints>
-    <includehint>knuminput.h</includehint>
-    <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>
     <includehint>knuminput.h</includehint>

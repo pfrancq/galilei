@@ -100,12 +100,11 @@ void Configure(GFactoryDocAnalyse* params)
 	// Stems
 	dlg.StaticLang->setChecked(params->GetBool("StaticLang"));
 	dlg.MinStopWords->setValue(params->GetDouble("MinStopWords"));
-	dlg.MinWordSize->setValue(params->GetUInt("MinWordSize"));
-	dlg.MinStemSize->setValue(params->GetUInt("MinStemSize"));
-	dlg.MinOccur->setValue(params->GetUInt("MinOccur"));
+	dlg.MinWordSize->setValue(params->GetInt("MinWordSize"));
+	dlg.MinStemSize->setValue(params->GetInt("MinStemSize"));
 	dlg.NonLetterWords->setChecked(params->GetBool("NonLetterWords"));
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
-	dlg.NbSameOccur->setValue(params->GetUInt("NbSameOccur"));
+	dlg.NbSameOccur->setValue(params->GetInt("NbSameOccur"));
 	dlg.NormalRatio->setValue(params->GetDouble("NormalRatio"));
 	dlg.NbSameOccur->setEnabled(params->GetBool("Filtering"));
 	dlg.NormalRatio->setEnabled(params->GetBool("Filtering"));
@@ -116,7 +115,7 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.FullIndex->setChecked(params->GetBool("FullIndex"));
 	dlg.StructIsContent->setChecked(params->GetBool("StructIsContent"));
 	dlg.WeightStruct->setValue(params->GetDouble("WeightStruct"));
-	dlg.AttrValues->setChecked(params->GetBool("AttrValues"));
+	dlg.ExtractValues->setChecked(params->GetBool("ExtractValues"));
 	dlg.WeightValues->setValue(params->GetDouble("WeightValues"));
 	dlg.toggleStruct(params->GetBool("ExtractStruct"));
 
@@ -125,9 +124,9 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.DefaultNamespace->setEnabled(params->GetBool("UseDefaultNamespace"));
 	dlg.DefaultNamespace->setText(ToQString(params->Get("DefaultNamespace")));
 	dlg.ExtractIndex->setChecked(params->GetBool("ExtractIndex"));
-	dlg.MaxTerms->setValue(params->GetUInt("MaxTerms"));
-	dlg.MaxDepth->setValue(params->GetUInt("MaxDepth"));
-	dlg.MaxOccurs->setValue(params->GetUInt("MaxOccurs"));
+	dlg.MaxTerms->setValue(params->GetInt("MaxTerms"));
+	dlg.MaxDepth->setValue(params->GetInt("MaxDepth"));
+	dlg.MaxOccurs->setValue(params->GetInt("MaxOccurs"));
 	dlg.ChildTags->setChecked(params->GetBool("ChildTags"));
 	dlg.MaxTerms->setEnabled(params->GetBool("ExtractIndex"));
 	dlg.MaxDepth->setEnabled(params->GetBool("ExtractIndex"));
@@ -141,7 +140,6 @@ void Configure(GFactoryDocAnalyse* params)
 		params->SetDouble("MinStopWords",dlg.MinStopWords->value());
 		params->SetUInt("MinWordSize",dlg.MinWordSize->value());
 		params->SetUInt("MinStemSize",dlg.MinStemSize->value());
-		params->SetUInt("MinOccur",dlg.MinOccur->value());
 		params->SetBool("NonLetterWords",dlg.NonLetterWords->isChecked());
 		params->SetBool("Filtering",dlg.Filtering->isChecked());
 		params->SetUInt("NbSameOccur",dlg.NbSameOccur->value());
@@ -152,7 +150,7 @@ void Configure(GFactoryDocAnalyse* params)
 		params->SetBool("FullIndex",dlg.FullIndex->isChecked());
 		params->SetBool("StructIsContent",dlg.StructIsContent->isChecked());
 		params->SetDouble("WeightStruct",dlg.WeightStruct->value());
-		params->SetBool("AttrValues",dlg.AttrValues->isChecked());
+		params->SetBool("ExtractValues",dlg.ExtractValues->isChecked());
 		params->SetDouble("WeightValues",dlg.WeightValues->value());
 
 		// Structure - Tags and attributes

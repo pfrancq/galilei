@@ -64,6 +64,129 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
+// class cWords
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+cWords::cWords(void)
+	: Words(5000,2500), Hash(27,27,500,250), NbWords(0), NbLangs(0)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void cWords::Init(size_t nblangs)
+{
+	if(!NbLangs)
+	{
+		NbLangs=nblangs;
+		for(size_t i=5001;--i;)
+			Words.InsertPtr(new cWord(NbLangs));
+	}
+	else
+	{
+		if(NbLangs>=nblangs)
+			return;
+		Words.Clear();
+		NbLangs=nblangs;
+		for(size_t i=5001;--i;)
+			Words.InsertPtr(new cWord(NbLangs));
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void cWords::Clear(void)
+{
+	RCursor<cWord> Cur(GetWords());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Clear();
+	Hash.Clear();
+	NbWords=0;
+}
+
+
+//-----------------------------------------------------------------------------
+inline RCursor<cWord> cWords::GetWords(void) const
+{
+	return(RCursor<cWord>(Words,0,NbWords));
+}
+
+
+//-----------------------------------------------------------------------------
+inline cWord* cWords::GetWord(const RString& word,bool& find)
+{
+	cWord* ptr;
+
+	// Find the section of double hash table concerned by the current word.
+	RContainer<cWord,false,true>* Section((*(Hash)[word.HashIndex(1)])[word.HashIndex(2)]);
+	// Find the index where the word is or must be.
+	size_t Index=Section->GetIndex<const RString>(word,find);
+	if(find)
+		ptr=(*Section)[Index];
+	else
+	{
+		if(NbWords==Words.GetNb())
+			Words.InsertPtr(ptr=new cWord(NbLangs));
+		else
+			ptr=Words[NbWords];
+		NbWords++;
+		Section->InsertPtrAt(ptr,Index);
+	}
+	return(ptr);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class cStructTokens
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+cStructTokens::cStructTokens(void)
+	: RContainer<cStructToken,true,true>(1000,500), NbTags(0)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void cStructTokens::Clear(void)
+{
+	RCursor<cStructToken> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Clear();
+	NbTags=0;
+}
+
+
+//-----------------------------------------------------------------------------
+inline cStructToken* cStructTokens::AddToken(GConceptType* space,const RString& token)
+{
+	cStructToken* ptr(GetInsertPtr(token));
+	ptr->Occurs++;
+	NbTags++;
+	if(!ptr->Tag)
+	{
+		GConcept t(cNoRef,token,space,0,0,0,0);
+		ptr->Tag=space->InsertConcept(&t);
+	}
+	return(ptr);
+}
+
+
+//-----------------------------------------------------------------------------
+inline RCursor<cStructToken> cStructTokens::GetStructTokens(void) const
+{
+	return(RCursor<cStructToken>(*this));
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
 // class cNode
 //
 //-----------------------------------------------------------------------------
@@ -75,49 +198,49 @@ cNode::cNode(void)
 
 
 //-----------------------------------------------------------------------------
-void cNode::SetTag(IndexTag* tag,size_t pos,char depth)
+void cNode::SetTag(cStructToken* tag,size_t pos,cDepth* depth)
 {
 	Obj.Tag=tag;
-	Type=VTR::Tag;
+	Type=GVTDRec::Tag;
 	Pos=pos;
 	Depth=depth;
-	Child=0;
+	Child=SIZE_MAX;
 	Nb=0;
 }
 
 
 //-----------------------------------------------------------------------------
-void cNode::SetAttr(size_t pos,char depth)
+void cNode::SetAttr(cStructToken* tag,size_t pos,cDepth* depth)
 {
-	Obj.Tag=0;
-	Type=VTR::Attribute;
+	Obj.Tag=tag;
+	Type=GVTDRec::Attribute;
 	Pos=pos;
 	Depth=depth;
-	Child=0;
+	Child=SIZE_MAX;
 	Nb=0;
 }
 
 
 //-----------------------------------------------------------------------------
-void cNode::SetAttrValue(cWord* word,size_t pos,char depth)
-{
-	Obj.Word=word;
-	Type=VTR::Value;
-	Pos=pos;
-	Depth=depth;
-	Child=0;
-	Nb=0;
-}
-
-
-//-----------------------------------------------------------------------------
-void cNode::SetContent(cWord* word,size_t pos,char depth)
+void cNode::SetAttrValue(cWord* word,size_t pos,cDepth* depth)
 {
 	Obj.Word=word;
-	Type=VTR::Content;
+	Type=GVTDRec::Value;
 	Pos=pos;
 	Depth=depth;
-	Child=0;
+	Child=SIZE_MAX;
+	Nb=0;
+}
+
+
+//-----------------------------------------------------------------------------
+void cNode::SetContent(cWord* word,size_t pos,cDepth* depth)
+{
+	Obj.Word=word;
+	Type=GVTDRec::Content;
+	Pos=pos;
+	Depth=depth;
+	Child=SIZE_MAX;
 	Nb=0;
 }
 
@@ -128,7 +251,7 @@ void cNode::Clear(void)
 	Obj.Word=0;
 	Pos=0;
 	Depth=0;
-	Child=0;
+	Child=SIZE_MAX;
 	Nb=0;
 }
 
@@ -141,21 +264,18 @@ void cNode::Clear(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-cDepth::cDepth(size_t level) : RContainer<cNode,true,false>(200,100), NbNodes(0), CurTag(0), Level(level)
+cDepth::cDepth(char level) : RContainer<cNode,false,false>(200,100), NbNodes(0), CurTag(0), Level(level), NbNodesSkipped(0)
 {
-	for(size_t i=201;--i;)
-		InsertPtr(new cNode());
 }
 
 
 //-----------------------------------------------------------------------------
 void cDepth::Clear(void)
 {
-	RCursor<cNode> Cur(GetNodes());
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Clear();
+	RContainer<cNode,false,false>::Clear();
 	NbNodes=0;
 	CurTag=0;
+	NbNodesSkipped=0;
 }
 
 
@@ -174,10 +294,12 @@ inline RCursor<cNode> cDepth::GetNodes(void) const
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-cDepths::cDepths(void) : RContainer<cDepth,true,false>(20,5), NbDepths(0), CurTag(0)
+cDepths::cDepths(void) : RContainer<cDepth,true,false>(20,5), NbDepths(0), Nodes(2000), NbNodes(0)
 {
-	for(size_t i=0;i<20;i++)
+	for(char i=0;i<20;i++)
 		InsertPtr(new cDepth(i));
+	for(size_t i=2001;--i;)
+		Nodes.InsertPtr(new cNode());
 }
 
 
@@ -188,19 +310,22 @@ void cDepths::Clear(void)
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Clear();
 	NbDepths=0;
-	CurTag=0;
+	RCursor<cNode> Node(GetNodes());
+	for(Node.Start();!Node.End();Node.Next())
+		Node()->Clear();
+	NbNodes=0;
 }
 
 
 //-----------------------------------------------------------------------------
-inline cDepth* cDepths::GetDepth(size_t depth)
+inline cDepth* cDepths::GetDepth(char depth)
 {
 	cDepth* ptr;
-	if(depth==GetNb())
+	if(static_cast<size_t>(depth)==GetNb())
 		InsertPtr(ptr=new cDepth(depth));
 	else
 		ptr=(*this)[depth];
-	if(depth+1>NbDepths)
+	if(static_cast<size_t>(depth+1)>NbDepths)
 		NbDepths=depth+1;
 	return(ptr);
 }
@@ -214,30 +339,26 @@ inline RCursor<cDepth> cDepths::GetDepths(void) const
 
 
 //-----------------------------------------------------------------------------
-inline RCursor<cDepth> cDepths::GetDepths(size_t max) const
+inline cNode* cDepths::GetNewNode(cDepth* depth,bool tag)
 {
-	if(max>NbDepths)
-		max=NbDepths;
-	return(RCursor<cDepth>(*this,0,max));
+	cNode* ptr;
+	if(NbNodes==Nodes.GetNb())
+		Nodes.InsertPtr(ptr=new cNode());
+	else
+		ptr=Nodes[NbNodes];
+	NbNodes++;
+	depth->InsertPtr(ptr);
+	depth->NbNodes++;
+	if(tag)
+		depth->CurTag=ptr;
+	return(ptr);
 }
 
 
 //-----------------------------------------------------------------------------
-inline cNode* cDepths::GetNewNode(size_t depth,bool tag)
+inline RCursor<cNode> cDepths::GetNodes(void) const
 {
-	cDepth* CurDepth=GetDepth(depth);
-	cNode* ptr;
-	if(CurDepth->NbNodes==CurDepth->GetNb())
-		CurDepth->InsertPtr(ptr=new cNode());
-	else
-		ptr=(*CurDepth)[CurDepth->NbNodes];
-	CurDepth->NbNodes++;
-	if(tag)
-	{
-		CurTag=ptr;
-		CurDepth->CurTag=ptr;
-	}
-	return(ptr);
+	return(RCursor<cNode>(Nodes,0,NbNodes));
 }
 
 
@@ -250,8 +371,8 @@ inline cNode* cDepths::GetNewNode(size_t depth,bool tag)
 
 //-----------------------------------------------------------------------------
 GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac)
-	: GDocAnalyse(fac), RXMLParser(), Struct(0), Infos(0), Words(5000,2500), Hash(27,27,500,250), IndexTags(100), Depths(),
-	  Sl(0), Sldiff(0), Lang(0), StructSpace(0), IndexSpace(0), IsTitle(false)
+	: GDocAnalyse(fac), RXMLParser(), Words(), StructTokens(/*100*/), Depths(),
+	  Sl(0), Sldiff(0), StructSpace(0), IndexSpace(0), IsTitle(false)
 {
 }
 
@@ -263,7 +384,6 @@ void GTextAnalyse::ApplyConfig(void)
 	MinStopWords=Factory->GetDouble("MinStopWords");
 	MinWordSize=Factory->GetUInt("MinWordSize");
 	MinStemSize=Factory->GetUInt("MinStemSize");
-	MinOccur=Factory->GetUInt("MinOccur");
 	NonLetterWords=Factory->GetBool("NonLetterWords");
 	Filtering=Factory->GetBool("Filtering");
 	NbSameOccur=Factory->GetUInt("NbSameOccur");
@@ -273,10 +393,10 @@ void GTextAnalyse::ApplyConfig(void)
 	ExtractIndex=Factory->GetBool("ExtractIndex");
 	MaxTerms=Factory->GetUInt("MaxTerms");
 	MaxOccurs=Factory->GetUInt("MaxOccurs");
-	MaxDepth=Factory->GetUInt("MaxDepth");
+	MaxDepth=static_cast<char>(Factory->GetUInt("MaxDepth"));
 	ChildTags=Factory->GetBool("ChildTags");
 	WeightStruct=Factory->GetDouble("WeightStruct");
-	AttrValues=Factory->GetBool("AttrValues");
+	ExtractValues=Factory->GetBool("ExtractValues");
 	WeightValues=Factory->GetDouble("WeightValues");
 	FullIndex=Factory->GetBool("FullIndex");
 	UseDefaultNamespace=Factory->GetBool("UseDefaultNamespace");
@@ -294,10 +414,9 @@ void GTextAnalyse::Connect(GSession* session)
 	// Create local structures
 	CurLangs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
 	NbLangs=GALILEIApp->GetManager<GLangManager>("Lang")->GetNbPlugIns();
+	Words.Init(NbLangs);
 	Sl=new size_t[NbLangs];
 	Sldiff=new size_t[NbLangs];
-	for(size_t i=Words.GetMaxNb()+1;--i;)
-		Words.InsertPtr(new cWord(NbLangs));
 
 	// Get the pointers to the concept types
 	StructSpace=Session->GetInsertConceptType("XMLStruct","XML Structure");
@@ -313,8 +432,6 @@ void GTextAnalyse::Disconnect(GSession* session)
 	IndexSpace=0;
 
 	// Local Structures
-	Hash.Clear();
-	Words.Clear();
 	if(Sldiff)
 	{
 		delete[] Sldiff;
@@ -325,8 +442,6 @@ void GTextAnalyse::Disconnect(GSession* session)
 		delete[] Sl;
 		Sl=0;
 	}
-
-	Struct=0;
 
 	if(Session)
 		GDocAnalyse::Disconnect(session);
@@ -342,18 +457,13 @@ void GTextAnalyse::Clear(void)
 	// Clear all structures needed to handle a document
 	memset(Sl,0,sizeof(size_t)*CurLangs.GetNb());
 	memset(Sldiff,0,sizeof(size_t)*CurLangs.GetNb());
-	N=Ndiff=Nwords=V=Vdiff=S=Sdiff=0;
-	RCursor<cWord> Word(Words);
-	for(Word.Start();!Word.End();Word.Next())
-		Word()->Clear();
-	Hash.Clear();
+	N=Nwords=V=Vdiff=S=Sdiff=0;
+	Words.Clear();
 	Depths.Clear();
+	StructTokens.Clear();
+	Infos.Clear();
+	Struct.Clear();
 
-	// Clear Indexes
-	IndexTags.Clear();
-	NbTags=0;
-
-//	TopNode.Clear();
 }
 
 
@@ -364,7 +474,7 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 
 	// If tags are content -> add short name of the tag
 	if(StructIsContent)
-		ExtractValidWords(lName,WeightStruct);
+		ExtractValidWords(lName,WeightStruct,GVTDRec::Tag);
 
 	// Index the tag
 	if(GetSection()==RXMLParser::Body)
@@ -383,19 +493,18 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 		tmpStr=lName;
 	if(tmpStr=="http://purl.org/dc/elements/1.1/:title")
 		IsTitle=true;
-	IndexTag* tag=IndexTags.GetInsertPtr(tmpStr);
-	tag->Occurs++;
-	NbTags++;
 
 	// Stopped the analyze if not necessary anymore
-	if((!FullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
+	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
 		return;
 
 	// Create the tag
-//	cout<<"Index: *"<<tmpStr<<"*"<<endl;
+	//cout<<"Index: *"<<tmpStr<<"*"<<endl;
 	// Get the node of the previous depth
-	cNode* CurNode=Depths.GetNewNode(CurDepth,true);
-	CurNode->SetTag(tag,LastTokenPos,CurDepth);
+	cDepth* Depth=Depths.GetDepth(CurDepth);
+	cNode* CurNode=Depths.GetNewNode(Depth,true);
+	cStructToken* tag=StructTokens.AddToken(StructSpace,tmpStr);
+	CurNode->SetTag(tag,LastTokenPos,Depth);
 
 	// Make the sibling if depth>0
 	if(CurDepth)
@@ -404,8 +513,8 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 		if(parent&&parent->Obj.Tag)
 		{
 //			cout<<"Sibling between '"<<CurNode->Obj.Tag->Name<<"' and '"<<parent->Obj.Tag->Name<<"'"<<endl;
-			if(!parent->Child)
-				parent->Child=Depths.GetDepth(CurDepth)->GetNbNodes()-1;
+			if(parent->Child==SIZE_MAX)
+				parent->Child=Depth->GetNbNodes()-1;
 			parent->Nb++;
 		}
 	}
@@ -419,10 +528,10 @@ void GTextAnalyse::AddAttribute(const RString& namespaceURI,const RString& lName
 
 	// If attributes names are content -> add short parameter name
 	if(StructIsContent)
-		ExtractValidWords(lName,WeightStruct);
+		ExtractValidWords(lName,WeightStruct,GVTDRec::Attribute);
 
 	// Stopped the analyze if not necessary anymore
-	if((!FullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
+	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
 		return;
 
 	// Compute the name of the tag
@@ -440,17 +549,19 @@ void GTextAnalyse::AddAttribute(const RString& namespaceURI,const RString& lName
 	}
 	else
 		tmpStr=lName;
+
+	cDepth* Depth=Depths.GetDepth(CurDepth);
+	cNode* CurNode=Depths.GetNewNode(Depth,false);
+	cStructToken* tag=StructTokens.AddToken(StructSpace,tmpStr);
+	CurNode->SetAttr(tag,LastTokenPos,Depth);
 }
 
 
 //------------------------------------------------------------------------------
-void GTextAnalyse::Value(const RString&)
+void GTextAnalyse::Value(const RString& text)
 {
-	if(!ExtractStruct) return;
-
-	// Stopped the analyze if not necessary anymore
-	if((!FullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
-		return;
+	if(ExtractValues)
+		ExtractValidWords(text,WeightValues,GVTDRec::Value);
 }
 
 
@@ -458,8 +569,8 @@ void GTextAnalyse::Value(const RString&)
 void GTextAnalyse::EndTag(const RString&, const RString& /*lName*/, const RString&)
 {
 	// Stopped the analyze if not necessary anymore
-	if((!FullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
-		return;
+/*	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
+		return;*/
 }
 
 
@@ -471,7 +582,7 @@ void GTextAnalyse::Text(const RString& text)
 		w=2.0;
 	else
 		w=1.0;
-	ExtractValidWords(text,w);
+	ExtractValidWords(text,w,GVTDRec::Content);
 }
 
 
@@ -486,30 +597,22 @@ RChar GTextAnalyse::CodeToChar(RString& str)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AddWord(const RString& word,double weight,bool letters)
+void GTextAnalyse::AddWord(const RString& word,double weight,bool letters,GVTDRec::RecType type)
 {
 	bool Find;
-	size_t Index;
-	cWord* w;
-	RContainer<cWord,false,true>* Section;
 	size_t i;
 	bool *is;
 	size_t* tmp1;
 	size_t* tmp2;
 
-	// Find the section of double hash table concerned by the current word.
-	Section=(*(Hash)[word.HashIndex(1)])[word.HashIndex(2)];
-
-	// Find the index where the word is or must be.
-	Index=Section->GetIndex<const RString>(word,Find);
+	// Find the word
+	cWord* w(Words.GetWord(word,Find));
 
 	// If the word wasn't found, insert it and look for each language if it's
 	// in the corresponding stoplist.
 	if(!Find)
 	{
 		// Create the word and insert it in the Occurs.
-		w=Words[Ndiff++];
-		Section->InsertPtrAt(w,Index);
 		w->OnlyLetters=letters;
 		w->Word=word;
 
@@ -541,7 +644,6 @@ void GTextAnalyse::AddWord(const RString& word,double weight,bool letters)
 	}
 	else
 	{
-		w=(*Section)[Index];
 		if(FindLang)
 		{
 			for(i=NbLangs+1,is=w->InStop,tmp2=Sl;--i;is++,tmp2++)
@@ -564,19 +666,23 @@ void GTextAnalyse::AddWord(const RString& word,double weight,bool letters)
 	w->NormalStem=true;
 
 	// Stopped the analyze if not necessary anymore
-	if((!FullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
+	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
 		return;
 
 	// Create a new node
-	cNode* node=Depths.GetNewNode(CurDepth,false);
-	node->SetContent(w,LastTokenPos,CurDepth);
+	cDepth* Depth=Depths.GetDepth(CurDepth);
+	cNode* node=Depths.GetNewNode(Depth,false);
+	if(type==GVTDRec::Value)
+		node->SetAttrValue(w,LastTokenPos,Depth);
+	else if(type==GVTDRec::Content)
+		node->SetContent(w,LastTokenPos,Depth);
 }
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::ExtractValidWords(const R::RString& str,double weight)
+void GTextAnalyse::ExtractValidWords(const R::RString& str,double weight,GVTDRec::RecType type)
 {
-	//cout<<"Extract ("<<pos<<"): *"<<str<<"*"<<endl;
+//	cout<<"Extract ("<<LastTokenPos<<"): *"<<str<<"*"<<endl;
 	for(const RChar* ptr=str();!ptr->IsNull();)
 	{
 		// Skip Spaces
@@ -684,7 +790,7 @@ void GTextAnalyse::ExtractValidWords(const R::RString& str,double weight)
 		// Add the word.
 		RString word(begin,len);
 		//cout<<"  Index: *"<<word.ToLower()<<"*  ("<<(NoAlpha==0)<<") ="<<(double)(len-NoAlpha)/(double)(len)<<endl;
-		AddWord(word.ToLower(),weight,(NoAlpha==0));
+		AddWord(word.ToLower(),weight,(NoAlpha==0),type);
 	}
 }
 
@@ -701,12 +807,12 @@ void GTextAnalyse::DetermineLang(void)
 	MinFrac=MinStopWords;
 	Lang=0;
 
-	if(!Ndiff)
+	if(!Words.GetNbWords())
 		return;
 
 	for(CurLangs.Start(),i=0,tmp1=Sldiff,tmp2=Sl;!CurLangs.End();CurLangs.Next(),tmp1++,tmp2++,i++)
 	{
-		Frac=((double)(*tmp1))/((double)Ndiff);
+		Frac=((double)(*tmp1))/((double)Words.GetNbWords());
 //		cout<<"  "<<CurLangs()->GetCode()<<" : "<<Frac<<endl;
 		if(((*tmp2)>S)&&(Frac>=MinFrac))
 		{
@@ -748,20 +854,23 @@ GConcept* GTextAnalyse::GetStemConcept(cWord* word)
 void GTextAnalyse::ConstructInfos(void)
 {
 	GWeightInfo* Occur;
-	size_t i;
 	RString stem(MaxWordLen);
 
 	// Insert all the occurrences of the valid words
-	RCursor<cWord> Word(Words);
-	for(i=Ndiff+1,Word.Start();--i;Word.Next())
+	RCursor<cWord> Word(Words.GetWords());
+	for(Word.Start();!Word.End();Word.Next())
 	{
 		if(!Word()->NormalStem)
 			continue;
-		GConcept* concept=GetStemConcept(Word());
-		if(!concept)
-			continue;
 
-		Occur=Infos->GetInsertPtr(concept);
+		if(!Word()->Concept)
+		{
+			Word()->Concept=GetStemConcept(Word());
+			if(!Word()->Concept)
+				continue;
+		}
+
+		Occur=Infos.GetInsertPtr(Word()->Concept);
 		if(!Occur->GetWeight())
 		{
 			Vdiff++;
@@ -770,22 +879,6 @@ void GTextAnalyse::ConstructInfos(void)
 		V+=Word()->Nb;
 		(*Occur)+=Word()->Weight;
 	}
-
-	// Verify that each occurrences is not under the minimal.
-	if(MinOccur<2)
-		return;
-
-	// Delete pointer from container with a cursor.
-	RCursor<GWeightInfo> Cur(*Infos);
-	RContainer<GWeightInfo,false,false> Del(30);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		if(Cur()->GetWeight()<MinOccur)
-			Del.InsertPtr(Cur());
-	}
-	Cur=Del;
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Infos->DeletePtr(*Cur());
 }
 
 
@@ -796,17 +889,18 @@ void GTextAnalyse::IndexXMLPart(void)
 	if(!ExtractStruct) return;
 
 	// Index first the tags
-	RCursor<IndexTag> Tags(IndexTags);
+	RCursor<cStructToken> Tags(StructTokens.GetStructTokens());
 	for(Tags.Start();!Tags.End();Tags.Next())
 	{
-		GConcept t(cNoRef,Tags()->Name,StructSpace,0,0,0,0);
-		Tags()->Tag=StructSpace->InsertConcept(&t);
-		GWeightInfo* info=Infos->GetInsertPtr(Tags()->Tag);
+		if(!Tags()->GetOccurs())
+			continue;
+		GWeightInfo* info=Infos.GetInsertPtr(Tags()->GetTag());
 		(*info)+=1.0;
 	}
-	if((!ExtractIndex)&&(!FullIndex)) return;
+	if((!ExtractIndex)&&(!MustFullIndex)) return;
 
 	// Index the metadata and the structure
+	Struct.SetSizes(Depths.GetNbNodes(),Depths.GetNbDepths());
 	GConceptType* LangSpace=Session->GetInsertConceptType(Lang->GetCode()+RString("Stems"),"");
 	GXMLIndex w(IndexSpace,LangSpace);
 	size_t max(SIZE_MAX),nb;
@@ -814,84 +908,111 @@ void GTextAnalyse::IndexXMLPart(void)
 	if(!ExtractStruct)
 		max=MaxDepth;
 
-	RCursor<cDepth> Depth(Depths.GetDepths(max));
-	//cout<<"Iterate "<<Depth.GetNb()<<endl;
-	for(Depth.Start();!Depth.End();Depth.Next())
+	// Parse the nodes
+	RCursor<cNode> Node(Depths.GetNodes());
+	for(Node.Start(),IsTag=false;!Node.End();Node.Next())
 	{
-		//cout<<Depth()->GetLevel()<<" - "<<Depth()->GetNbNodes()<<endl;
-		// Parse the node at this level
-		RCursor<cNode> Node(Depth()->GetNodes());
-		for(Node.Start(),IsTag=false;!Node.End();Node.Next())
+		cNode* ptr=Node();
+		switch(ptr->Type)
 		{
-			cNode* ptr=Node();
-			if(ptr->Type==VTR::Tag)
+			case GVTDRec::Tag:
 			{
-				//cout<<"  "<<ptr->Obj.Tag->Name<<endl;
+				//cout<<"  <"<<ptr->Obj.Tag->GetName()<<">: "<<ptr->Child<<"("<<ptr->Nb<<")"<<endl;
+				if(MustFullIndex)
+				{
+					if(ptr->Child!=SIZE_MAX)
+						ptr->Child-=Depths.GetDepth(ptr->Depth->Level+1)->NbNodesSkipped;
+					Struct.AddRecord(ptr->Obj.Tag->GetTag(),GVTDRec::Tag,ptr->Pos,ptr->Depth->Level,ptr->Child,ptr->Depth->GetNbNodes());
+				}
 
 				// Already a tag indexed
 				if(IsTag&&nb&&nb<=MaxTerms)
 				{
-					GWeightInfo* info=Infos->GetInsertPtr(IndexSpace->InsertConcept(&w));
+					GWeightInfo* info=Infos.GetInsertPtr(IndexSpace->InsertConcept(&w));
 					(*info)+=1.0;
 					IsTag=false;
 				}
 
 				// Index this tag
-				if(   (((!ChildTags)&&(!ptr->Nb))||(ChildTags)) && (ptr->Obj.Tag->Occurs<=MaxOccurs))
+				//      Maximal depth                          // Child Tags or not                                       // Max occurrences
+				if( (static_cast<size_t>(ptr->Depth->Level)<=MaxDepth)&&  (((!ChildTags)&&(!ptr->Nb))||(ChildTags)) && (ptr->Obj.Tag->GetOccurs()) && (ptr->Obj.Tag->GetOccurs()<=MaxOccurs)      )
 				{
 					//cout<<Node()->Pos<<": "<<Node()->Obj.Tag->Name<<": "<<Node()->Child<<endl;
 					nb=0;
-					w.SetTag(ptr->Obj.Tag->Tag);
+					w.SetTag(ptr->Obj.Tag->GetTag());
 					IsTag=true;
 				}
+				break;
 			}
-			else if(ptr->Type==VTR::Content)
+			case GVTDRec::Attribute:
 			{
-				//cout<<"    "<<ptr->Obj.Word->Word<<endl;
+				if(MustFullIndex)
+					Struct.AddRecord(ptr->Obj.Tag->GetTag(),GVTDRec::Attribute,ptr->Pos,ptr->Depth->Level);
+//					cout<<"  "<<ptr->Obj.Tag->GetName()<<endl;
+				break;
+			}
+			case GVTDRec::Value:
+			{
+				if(MustFullIndex)
+				{
+					if(ptr->Obj.Word->Concept)
+						Struct.AddRecord(ptr->Obj.Word->Concept,GVTDRec::Value,ptr->Pos,ptr->Depth->Level);
+					else
+						ptr->Depth->NbNodesSkipped++;
+				}
+//					cout<<"    +="<<ptr->Obj.Word->Word<<endl;
+				break;
+			}
+			case GVTDRec::Content:
+			{
+				if(MustFullIndex&&ptr->Obj.Word->Concept)
+					Struct.AddRecord(ptr->Obj.Word->Concept,GVTDRec::Content,ptr->Pos,ptr->Depth->Level);
+//					cout<<"    "<<ptr->Obj.Word->Word<<endl;
 				if(IsTag)
 				{
-					// Find the concept in stem space
-					GConcept* concept=GetStemConcept(ptr->Obj.Word);
-					if(!concept)
-						continue;
-					nb++;
-					w.AddStem(concept);
+					if(ptr->Obj.Word->Concept)
+					{
+						nb++;
+						if(nb>MaxTerms)
+							IsTag=false;
+						else
+							w.AddStem(ptr->Obj.Word->Concept);
+					}
+					else
+						ptr->Depth->NbNodesSkipped++;
 				}
+				break;
 			}
 		}
-		// A tag is still indexed
-		if(IsTag&&nb&&nb<=MaxTerms)
-		{
-			GWeightInfo* info=Infos->GetInsertPtr(IndexSpace->InsertConcept(&w));
-			(*info)+=1.0;
-			IsTag=false;
-		}
+	}
+
+	// A tag is still indexed
+	if(IsTag&&nb&&nb<=MaxTerms)
+	{
+		GWeightInfo* info=Infos.GetInsertPtr(IndexSpace->InsertConcept(&w));
+		(*info)+=1.0;
+		IsTag=false;
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyze(const R::RURI& uri,const R::RURI& file,bool native,GLang* &lang,GWeightInfos* infos)
+void GTextAnalyse::Analyze(const GDoc* doc,const R::RURI& file,bool native)
 {
 	RString Name;
 	RCursor<RXMLTag> Tags;
 
 	// Init part
-	URI=uri;
-	Lang=lang;
-	Infos=infos;
 	if(FullIndex&&native)
-	{
-/*		Struct=Doc->GetStruct();
-		Struct->Clear();*/
-	}
+		MustFullIndex=true;
 	else
-		Struct=0;
+		MustFullIndex=false;
+	Lang=doc->GetLang();
 	Clear();
 
 	// If the language must not be found -> Compute LangIndex
 	if(!FindLang)
-		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++);
+		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++) ;
 
 	// Load the xml from the file
 //	cout<<"Analyse "<<uri<<endl;
@@ -912,7 +1033,6 @@ void GTextAnalyse::Analyze(const R::RURI& uri,const R::RURI& file,bool native,GL
 		Struct->Print();
 		cout<<"-----"<<endl;
 	}*/
-	lang=Lang;
 }
 
 
@@ -923,7 +1043,6 @@ void GTextAnalyse::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("MinStopWords",0.09));
 	params->InsertParam(new RParamValue("MinWordSize",3));
 	params->InsertParam(new RParamValue("MinStemSize",3));
-	params->InsertParam(new RParamValue("MinOccur",1));
 	params->InsertParam(new RParamValue("NonLetterWords",true));
 	params->InsertParam(new RParamValue("Filtering",true));
 	params->InsertParam(new RParamValue("NbSameOccur",3));
@@ -936,7 +1055,7 @@ void GTextAnalyse::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("MaxOccurs",5));
 	params->InsertParam(new RParamValue("ChildTags",false));
 	params->InsertParam(new RParamValue("WeightStruct",2.0));
-	params->InsertParam(new RParamValue("AttrValues",false));
+	params->InsertParam(new RParamValue("ExtractValues",false));
 	params->InsertParam(new RParamValue("WeightValues",2.0));
 	params->InsertParam(new RParamValue("FullIndex",false));
 	params->InsertParam(new RParamValue("UseDefaultNamespace",false));

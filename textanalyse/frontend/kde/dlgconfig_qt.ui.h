@@ -18,8 +18,21 @@ void DlgConfig_Qt::toggleStruct( bool toggle )
 {
 	StructIsContent->setEnabled(toggle);
 	WeightStruct->setEnabled(toggle && StructIsContent->isChecked());
-	AttrValues->setEnabled(toggle);
-	WeightValues->setEnabled(toggle && AttrValues->isChecked());	
+	ExtractValues->setEnabled(toggle);
+	WeightValues->setEnabled(toggle && ExtractValues->isChecked());	
 	Indexes->setEnabled(toggle);
 	FullIndex->setEnabled(toggle);
+}
+
+
+void DlgConfig_Qt::toggleFullIndex(bool toggle )
+{
+	if(toggle)
+	{
+	    ExtractValues->setEnabled(false);
+	    ExtractValues->setChecked(true);
+    	    WeightValues->setEnabled(true);
+	}
+	else
+	     ExtractValues->setEnabled(true);
 }
