@@ -99,7 +99,7 @@ void GCAChromo::Init(GCAThreadData* thData)
 //-----------------------------------------------------------------------------
 int GCAChromo::Compare(const GCAChromo* c) const
 {
-	return(Id-c->Id);
+	return(CompareIds(Id,c->Id));
 }
 
 
@@ -199,9 +199,9 @@ void GCAChromo::Evaluate(void)
 			max=avg;
 	}
 
-	CritAgreement/=Used.GetNb();
-	CritDisagreement/=Used.GetNb();
-	CritSimJ/=(Used.GetNb()*max);
+	CritAgreement/=static_cast<double>(Used.GetNb());
+	CritDisagreement/=static_cast<double>(Used.GetNb());
+	CritSimJ/=(static_cast<double>(Used.GetNb())*max);
 }
 
 

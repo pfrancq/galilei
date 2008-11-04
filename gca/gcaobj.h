@@ -1,4 +1,4 @@
-/*
+	/*
 
 	Genetic Community Algorithm
 
@@ -37,6 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+using namespace R;
 using namespace GALILEI;
 
 

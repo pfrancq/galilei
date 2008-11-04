@@ -73,21 +73,21 @@ GCAObj::GCAObj(const GCAObj* obj)
 //-----------------------------------------------------------------------------
 int GCAObj::Compare(const size_t id) const
 {
-	return(Id-id);
+	return(CompareIds(Id,id));
 }
 
 
 //-----------------------------------------------------------------------------
 int GCAObj::Compare(const GCAObj& obj) const
 {
-  return(Id-obj.Id);
+  return(CompareIds(Id,obj.Id));
 }
 
 
 //-----------------------------------------------------------------------------
 int GCAObj::Compare(const GCAObj* obj) const
 {
-  return(Id-obj->Id);
+  return(CompareIds(Id,obj->Id));
 }
 
 

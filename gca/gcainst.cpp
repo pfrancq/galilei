@@ -262,7 +262,7 @@ void GCAInst::PostEvaluate(void)
 	if((*ptr)->GetId())
 	{
 		s=Chromosomes[(*ptr)->GetId()-1];
-		(*s->Fitness)=GetGen()+1.1;
+		(*s->Fitness)=static_cast<double>(GetGen())+1.1;
 		#if BESTSOLSVERIFICATION
 			BestSols.InsertPtr(b=new GCAChromo(this,BestSols.NbPtr));
 			b->Init(thDatas[0]);

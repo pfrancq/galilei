@@ -236,7 +236,7 @@ void GCAGroup::ComputeCentroid(void)
 			AvgIntraSim=SumSim;
 		}
 	}
-	AvgIntraSim/=(NbSubObjects-1);
+	AvgIntraSim/=static_cast<double>(NbSubObjects-1);
 }
 
 
@@ -258,8 +258,8 @@ void GCAGroup::Evaluate(double& dist,double& agree,double& disagree)
 				AvgDisagreement+=Owner->Instance->GetDisagreementRatio(CurObj()->GetElementId(),CurObj2()->GetElementId());
 			}
 		}
-		AvgAgreement/=NbSubObjects;
-		AvgDisagreement/=NbSubObjects;
+		AvgAgreement/=static_cast<double>(NbSubObjects);
+		AvgDisagreement/=static_cast<double>(NbSubObjects);
 		ToEval=false;
 	}
 	dist+=AvgIntraSim;

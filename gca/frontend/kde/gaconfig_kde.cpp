@@ -71,14 +71,14 @@ bool GAConfigDlg::Configure(RConfig* params )
 {
 	//  Init dialog box
 	ClusteringMethod->setCurrentText(ToQString(params->Get("Clustering Method")));
-	NbClusters->setValue(params->GetUInt("NbClusters"));
-	PopSize->setValue(params->GetUInt("Population Size"));
-	MaxGen->setValue(params->GetUInt("Max Gen"));
+	NbClusters->setValue(params->GetInt("NbClusters"));
+	PopSize->setValue(params->GetInt("Population Size"));
+	MaxGen->setValue(params->GetInt("Max Gen"));
 	Step->setChecked(params->GetBool("Step"));
-	StepGen->setValue(params->GetUInt("Step Gen"));
+	StepGen->setValue(params->GetInt("Step Gen"));
 	StepGen->setEnabled(params->GetBool("Step"));
-	MaxKMeans->setValue(params->GetUInt("Max kMeans"));
-	NbDivChromo->setValue(params->GetUInt("NbDivChromos"));
+	MaxKMeans->setValue(params->GetInt("Max kMeans"));
+	NbDivChromo->setValue(params->GetInt("NbDivChromos"));
 	MinAgreement->setValue(params->GetDouble("Min Agreement"));
 	Convergence->setValue(params->GetDouble("Convergence"));
 	MinDisagreement->setValue(params->GetDouble("Min Disagreement"));

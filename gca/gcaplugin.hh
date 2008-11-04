@@ -29,6 +29,10 @@
 */
 
 
+//-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <memory>
+
 
 //-----------------------------------------------------------------------------
 // include files for R Project
@@ -239,7 +243,7 @@ template<class cObj,class cGroup,class cFactory>
 	void GCAPlugIn<cObj,cGroup,cFactory>::DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
 {
 	cout<<"Do kMeans for "<<GetObjType(ObjType)<<"s"<<endl;
-	auto_ptr<RRandom> Rand(RRandom::Create(RRandom::Good,1));
+	std::auto_ptr<RRandom> Rand(RRandom::Create(RRandom::Good,1));
 	if(InternalRandom)
 		Rand->Reset(12345);
 	else
