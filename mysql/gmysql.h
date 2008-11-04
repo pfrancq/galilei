@@ -223,48 +223,6 @@ public:
 	virtual void* GetInfos(void);
 
 	/**
-	* Create a dummy table to store different kid of
-	* data.
-	* @param name            Name of the dummy object.
-	*/
-	virtual void CreateDummy(R::RString name);
-
-	/**
-	* Delete all the data of a given dummy table.
-	* @ param name           Name of the dummy object.
-	*/
-	virtual void ClearDummy(R::RString name);
-
-	/**
-	* Add a dummy entry into  a dummy table;
-	* @param name            Name of the dummy table.
-	* @param id              Identifier of the dummy entry.
-	* @param desc            Description of the dummy entry.
-	* @param parentid        Identifier of the parent.
-	*/
-	virtual void AddDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid);
-
-	/**
-	* Select a dummy entry from a dummy table;
-	* @param name            Name of the dummy table.
-	* @param id              Identifier of the dummy entry.
-	* @param desc            Description of the dummy entry.
-	* @param parentid        Identifier of the parent.
-	* @param filter          Filter to set the fields on which the select is done.
-	*/
-	virtual R::RQuery* SelectDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter);
-
-	/**
-	* Clear a dummy entry from a dummy table;
-	* @param name            Name of the dummy table.
-	* @param id              Identifier of the dummy entry.
-	* @param desc            Description of the dummy entry.
-	* @param parentid        Identifier of the parent.
-	* @param filter          Filter to set the fields on which the select is done.
-	*/
-	virtual void ClearDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter);
-
-	/**
 	* Load the Subjects.
 	*/
 	virtual void LoadSubjects(void);
@@ -306,7 +264,7 @@ public:
 	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
 	* @param id              Identifier of the object.
 	*/
-	virtual void LoadInfos(GWeightInfos* infos,tObjType type,size_t id);
+	virtual void LoadInfos(GWeightInfos& infos,tObjType type,size_t id);
 
 	/**
 	* Save the description of a given object.
@@ -314,7 +272,7 @@ public:
 	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
 	* @param id              Identifier of the object.
 	*/
-	virtual void SaveInfos(GWeightInfos* infos,tObjType type,size_t id);
+	virtual void SaveInfos(GWeightInfos& infos,tObjType type,size_t id);
 
 
 	//@} General methods
@@ -428,37 +386,18 @@ public:
 	virtual GDoc* LoadDoc(size_t docid);
 
 	/**
-	 * Load a specific node.
-	 * @param nodes          Query on all nodes of the corresponding document.
-	 * @param content        Query on all content of the corresponding document.
-	 * @param doc            Document.
-	 * @param docstruct      Structure to load.
-	 * @param parent         Parent node.
-	 * @param nbnodes        Number of nodes to load.
-	 */
-	void LoadNode(std::auto_ptr<R::RQuery>& nodes,std::auto_ptr<R::RQuery>& content,const GDoc* doc,GDocStruct* docstruct,GDocStructNode* parent,size_t nbnodes);
-
-	/**
 	 * Method that load the structure of a document.
+	 * @param docstruct      Structure of the document.
 	 * @param doc            Document.
 	 */
-	virtual GDocStruct* LoadStruct(const GDoc* doc);
-
-	/**
-	 * Save a specific node.
-	 * @param node           Node to save.
-	 * @param topcontent     Id of the first content.
-	 * @param nbcontent      Total number of content.
-	 * @return Identifier of the first subnode.
-	 */
-	size_t SaveNode(GDocStructNode* node,size_t& topcontent,size_t& nbcontent);
+	virtual void LoadStruct(GDocStruct& docstruct,GDoc* doc);
 
 	/**
 	 * Method that save the structure of a document.
 	 * @param docstruct      Structure of the document.
-	 * @param docid          Identifier of the document.
+	 * @param doc            Document.
 	 */
-	virtual void SaveStruct(GDocStruct* docstruct,size_t docid);
+	virtual void SaveStruct(GDocStruct& docstruct,GDoc* doc);
 
 	/**
 	* Method that load the documents from where they are stored. This method
@@ -595,30 +534,11 @@ public:
 	virtual GCommunity* LoadCommunity(size_t groupid);
 
 	/**
-	* Load an historic groups.
-	* @param historicID      Identifier of the historic.
-	* @return Pointer to a historic group.
-	*/
-	virtual GCommunitiesHistory* LoadHistoricCommunities(size_t historicID);
-
-	/**
-	* Load the historic groups.
-	* @param mindate         Date of the first historic to load.
-	* @param maxdate         Date of the last historic to load.
-	*/
-	virtual void LoadHistoricCommunitiesByDate(R::RString mindate, R::RString maxdate);
-
-	/**
 	* Load the list of suggestions for the groups for a given test.
 	* @param name            Name of the test.
 	* @param res             Container that will hold the suggestions.
 	*/
 	virtual void GetSugsCommunities(const R::RString& name,R::RContainer<GSugs,true,false>& res);
-
-	/**
-	* Returns the number of historic groups stored in the database.
-	*/
-	virtual size_t GetHistorySize(void);
 
 	/**
 	* A profile was updated and the corresponding groups must be updated.
@@ -636,11 +556,6 @@ public:
 	* Save the groups of the session.
 	*/
 	virtual void SaveCommunities(void);
-
-	/**
-	* Save the groups in history.
-	*/
-	virtual void SaveCommunitiesHistory(void);
 
 	/**
 	* Add a suggestion for a given community and a given test.
