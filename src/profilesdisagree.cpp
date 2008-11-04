@@ -77,11 +77,11 @@ void GProfilesDisagreement::ApplyConfig(void)
 //------------------------------------------------------------------------------
 double GProfilesDisagreement::Compute(void* obj1,void* obj2)
 {
-	double nbcommon=double(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
+	double nbcommon=static_cast<double>(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
 	if(nbcommon<MinDocs)
 		return(0.0);
 	size_t nbdiff=static_cast<GProfile*>(obj1)->GetCommonDiffDocs(static_cast<GProfile*>(obj2));
-	return(nbdiff/nbcommon);
+	return(static_cast<double>(nbdiff)/nbcommon);
 }
 
 

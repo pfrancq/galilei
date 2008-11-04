@@ -78,11 +78,11 @@ void GProfilesAgreement::ApplyConfig(void)
 //------------------------------------------------------------------------------
 double GProfilesAgreement::Compute(void* obj1,void* obj2)
 {
-	double nbcommon=double(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
+	double nbcommon=static_cast<double>(static_cast<GProfile*>(obj1)->GetCommonDocs(static_cast<GProfile*>(obj2)));
 	if(nbcommon<MinDocs)
 		return(0.0);
 	size_t nbsame=static_cast<GProfile*>(obj1)->GetCommonOKDocs(static_cast<GProfile*>(obj2));
-	return(nbsame/nbcommon);
+	return(static_cast<double>(nbsame)/nbcommon);
 }
 
 

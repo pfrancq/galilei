@@ -99,7 +99,7 @@ void MyDlg::Panel(void)
 void MyDlg::Init(GFactoryMeasure* params)
 {
 	QGMatrixMeasureDlg::Init(params);
-	MinDocs->setValue(params->GetUInt("MinDocs"));
+	MinDocs->setValue(params->GetInt("MinDocs"));
 }
 
 

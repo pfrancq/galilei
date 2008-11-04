@@ -98,7 +98,7 @@ void MyDlg::Panel(void)
 void MyDlg::Init(GFactoryMeasure* params)
 {
 	QGMatrixMeasureDlg::Init(params);
-	MinProfiles->setValue(params->GetUInt("MinProfiles"));
+	MinProfiles->setValue(params->GetInt("MinProfiles"));
 }
 
 

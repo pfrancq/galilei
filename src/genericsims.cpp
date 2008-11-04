@@ -81,7 +81,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 	double norm1(0.0);
 	double norm2(0.0);
 	double w1,w2,iff1,iff2;
-	double TotalRef(Owner->GetRef(Type));
+	double TotalRef(static_cast<double>(Owner->GetRef(Type)));
 	double num(0.0);
 
 	LastNbComps=0;
@@ -162,7 +162,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 {
 	double w1,w2,iff1,iff2;
-	double TotalRef(Owner->GetRef(Type));
+	double TotalRef(static_cast<double>(Owner->GetRef(Type)));
 	double num(0.0);
 	double den(0.0);
 
@@ -426,7 +426,7 @@ double GGenericSims::SimilarityProduct(void)
 		return(0.0);
 	double* ptr=SimSpaces;
 	double Sim(0.0);
-	double NbComps(GetNbDiffElements());
+	double NbComps(static_cast<double>(GetNbDiffElements()));
 	NbComps=Factor*NbComps*(NbComps-1);
 
 	// Makes the product of the similarity (a null similarity is replaced by Factor).
