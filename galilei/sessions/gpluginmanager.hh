@@ -177,7 +177,7 @@ template<class mng,class factory,class plugin>
 		case ptOrdered:
 		{
 			R::RParamList* param=config->FindParam<R::RParamList>(Name,"Plugins");
-			size_t pos;
+			int pos;
 			R::RCursor<R::RString> Cur(param->GetList());
 			for(Cur.Start(),pos=0;!Cur.End();Cur.Next(),pos++)
 			{
@@ -245,7 +245,7 @@ template<class mng,class factory,class plugin>
 	{
 		R::RConfig* config=R::App->GetConfig();
 		config->InsertParam(new R::RParamList(Name),"Plugins");
-		fac->SetLevel(R::RContainer<factory,true,true>::GetNb());
+		fac->SetLevel(static_cast<int>(R::RContainer<factory,true,true>::GetNb()));
 	}
 	if(fac->GetBool("Enable"))
 		fac->Create();

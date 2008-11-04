@@ -48,7 +48,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GIndexer::GIndexer(unsigned ml,GLangManager* langs)
+GIndexer::GIndexer(size_t ml,GLangManager* langs)
 	: RDblHashContainer<GWordOccurs,true>(27,27,ml+(ml/4),ml/4), Langs(langs)
 {
 }

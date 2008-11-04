@@ -57,10 +57,11 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t ownerid)
+GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t nbrecs,size_t nblcs,size_t ownerid)
 	: GWeightInfos(60), URL(url), Name(name), Id(id), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
-	  Fdbks(0), LinkSet(5,2), OwnerId(ownerid), GroupId(grpid), Attached(a)
+	  Fdbks(0), LinkSet(5,2), OwnerId(ownerid), GroupId(grpid), Attached(a),
+	  NbRecs(nbrecs), NbLCs(nblcs)
 {
 	if(Id!=cNoRef)
 		GSession::Event(this,eObjNew);
@@ -79,21 +80,21 @@ bool GDoc::MustCompute(void) const
 //------------------------------------------------------------------------------
 int GDoc::Compare(const GDoc& doc) const
 {
-	return(Id-doc.Id);
+	return(CompareIds(Id,doc.Id));
 }
 
 
 //------------------------------------------------------------------------------
 int GDoc::Compare(const GDoc* doc) const
 {
-	return(Id-doc->Id);
+	return(CompareIds(Id,doc->Id));
 }
 
 
 //------------------------------------------------------------------------------
 int GDoc::Compare(const size_t id) const
 {
-	return(Id-id);
+	return(CompareIds(Id,id));
 }
 
 
@@ -126,15 +127,14 @@ void GDoc::ClearStruct(void)
 //------------------------------------------------------------------------------
 GDocStruct* GDoc::GetStruct(void) const
 {
-	if(!Struct)
+	if((!Struct)&&NbRecs)
 	{
 		// Create the structure and load it from the database
 		GetInfos();
+		const_cast<GDoc*>(this)->Struct=new GDocStruct(NbRecs,NbLCs);
 		GSession* session=GSession::Get();
 		if(session&&session->GetStorage())
-			const_cast<GDoc*>(this)->Struct=session->GetStorage()->LoadStruct(this);
-		if(!Struct)
-			const_cast<GDoc*>(this)->Struct=new GDocStruct(200);
+			session->GetStorage()->LoadStruct(*const_cast<GDoc*>(this)->Struct,const_cast<GDoc*>(this));
 	}
 	return(Struct);
 }
@@ -406,7 +406,7 @@ R::RCursor<GLink> GDoc::GetLinks(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GLang* lang,GWeightInfos& infos,bool ram)
+void GDoc::Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram)
 {
 	// If document had a language -> remove its references
 	if(Lang&&(Id!=cNoRef))
@@ -415,6 +415,8 @@ void GDoc::Update(GLang* lang,GWeightInfos& infos,bool ram)
 	// Assign language and information
 	GWeightInfos::Clear();
 	Lang=lang;
+	NbRecs=docstruct.GetNbRecs();
+	NbLCs=docstruct.GetNbLCs();
 	if(Id!=cNoRef)
 	{
 		if(ram)
@@ -451,7 +453,12 @@ void GDoc::Update(GLang* lang,GWeightInfos& infos,bool ram)
 	}
 
 	if(ram)
+	{
 		Transfer(infos);
+		delete Struct;
+		Struct=0;
+		Struct=new GDocStruct(docstruct);
+	}
 
 	// Clear infos
 	infos.Clear();

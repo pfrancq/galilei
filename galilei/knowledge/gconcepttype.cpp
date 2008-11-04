@@ -180,7 +180,7 @@ void GConceptType::Clear(void)
 void GConceptType::PutDirect(GConcept* concept)
 {
 	GConcept **tmp;
-	unsigned n;
+	size_t n;
 
 	if(concept->GetId()>UsedId) UsedId=concept->GetId();
 	if(concept->GetId()>=MaxId)
@@ -206,11 +206,11 @@ GConcept* GConceptType::InsertConcept(const GConcept* concept)
 	// Empty data are not inserted
 	if(concept->IsEmpty())
 	{
-		RString tmp="Empty concept cannot be inserted into a dictionary - id="+RString(concept->GetId());
+		RString tmp="GConceptType::InsertConcept: Empty concept cannot be inserted into a dictionary - id="+RString::Number(concept->GetId());
 		throw GException(tmp);
 	}
 	if(concept->GetType()!=this)
-		throw GException("Concept has not the correct type");
+		throw GException("GConceptType::InsertConcept: Concept has not the correct type");
 
 	// Look if the data exists in the dictionary. If not, create and insert it.
 	ptr=GetPtr(*concept);
@@ -240,12 +240,12 @@ GConcept* GConceptType::InsertConcept(const GConcept* concept)
 void GConceptType::DeleteConcept(GConcept* concept)
 {
 	if((!concept)||(concept->GetId()>MaxId))
-		throw GException("Cannot delete concept");
+		throw GException("GConceptType::DeleteConcept: Cannot delete concept");
 	Direct[concept->GetId()]=0;
 	if(concept->GetId()==UsedId)
 	{
 		GConcept** concepts=&Direct[UsedId];
-		for(concepts--,UsedId--;UsedId&&(!(*concepts));UsedId--);
+		for(concepts--,UsedId--;UsedId&&(!(*concepts));UsedId--) ;
 	}
 	Session->GetStorage()->DeleteConcept(concept);
 	DeletePtr(*concept);
@@ -256,7 +256,7 @@ void GConceptType::DeleteConcept(GConcept* concept)
 GConcept* GConceptType::GetConcept(size_t id) const
 {
 	if(id>MaxId)
-		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
+		throw GException("GConceptType::GetConcept: Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
 	return(Direct[id]);
 }
 
@@ -278,9 +278,9 @@ GConcept* GConceptType::GetConcept(const RString& name) const
 //------------------------------------------------------------------------------
 double GConceptType::GetIF(size_t id,tObjType ObjType)
 {
-	double nb=Direct[id]->GetRef(ObjType);
+	double nb=static_cast<double>(Direct[id]->GetRef(ObjType));
 	if(nb>0.0)
-		return(log10(GetRef(ObjType)/nb));
+		return(log10(static_cast<double>(GetRef(ObjType))/nb));
 	return(0.0);
 }
 
@@ -291,9 +291,9 @@ void GConceptType::IncRef(size_t id,tObjType ObjType)
 	GConcept* concept;
 
 	if(id>MaxId)
-		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
+		throw GException("GConceptType::IncRef(size_t,tObjType): Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
 	if(!(concept=Direct[id]))
-		throw GException(Description+" "+RString::Number(id)+" does not exist");
+		throw GException("GConceptType::IncRef(size_t,tObjType): "+Description+" "+RString::Number(id)+" does not exist");
 	size_t nb=concept->IncRef(ObjType);
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(concept,ObjType,nb);
@@ -306,9 +306,9 @@ void GConceptType::DecRef(size_t id,tObjType ObjType)
 	GConcept* concept;
 
 	if(id>MaxId)
-		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
+		throw GException("GConceptType::DecRef(size_t,tObjType): Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
 	if(!(concept=Direct[id]))
-		throw GException(Description+" "+RString::Number(id)+" does not exist");
+		throw GException("GConceptType::DecRef(size_t,tObjType): "+Description+" "+RString::Number(id)+" does not exist");
 	size_t nb=concept->DecRef(ObjType);
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
 		Session->GetStorage()->SaveRefs(concept,ObjType,nb);
@@ -321,9 +321,9 @@ size_t GConceptType::GetRef(size_t id,tObjType ObjType)
 	GConcept* concept;
 
 	if(id>MaxId)
-		throw GException("Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
+		throw GException("GConceptType::GetRef(size_t,tObjType): Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
 	if(!(concept=Direct[id]))
-		throw GException(Description+" "+RString::Number(id)+" does not exist");
+		throw GException("GConceptType::GetRef(size_t,tObjType): "+Description+" "+RString::Number(id)+" does not exist");
 	return(concept->GetRef(ObjType));
 }
 
@@ -353,7 +353,7 @@ void GConceptType::IncRef(tObjType ObjType)
 			nb++;
 			break;
 		default:
-			throw GException ("Unknown type to increase");
+			throw GException ("GConceptType::IncRef(tObjType): Unknown type to increase");
 			break;
 	}
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
@@ -370,30 +370,30 @@ void GConceptType::DecRef(tObjType ObjType)
 	{
 		case otDoc:
 			if(!NbRefDocs)
-				throw GException("Cannot decrease null number of references for documents");
+				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for documents");
 			NbRefDocs--;
 			nb=NbRefDocs;
 			break;
 		case otProfile:
 			if(!NbRefProfiles)
-				throw GException("Cannot decrease null number of references for profiles");
+				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for profiles");
 			NbRefProfiles--;
 			nb=NbRefProfiles;
 			break;
 		case otCommunity:
 			if(!NbRefGroups)
-				throw GException("Cannot decrease null number of references for groups");
+				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for groups");
 			NbRefGroups--;
 			nb=NbRefGroups;
 			break;
 		case otTopic:
 			if(!NbRefTopics)
-				throw GException("Cannot decrease null number of references for topics");
+				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for topics");
 			NbRefTopics--;
 			nb=NbRefTopics;
 			break;
 		default:
-			throw GException("Unknown type to decrease");
+			throw GException("GConceptType::DecRef(tObjType): Unknown type to decrease");
 			break;
 	}
 	if(Session&&Session->MustSaveResults()&&Session->GetStorage())

@@ -37,10 +37,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rprgfunc.h>
-#include <rprgclass.h>
-#include <rprg.h>
-#include <rprgvar.h>
+#include <rinterpreter.h>
 
 
 //------------------------------------------------------------------------------
@@ -73,7 +70,7 @@ namespace GALILEI{
 * - 'ComputeProfiles()': Compute the profiles.
 * - 'GroupProfiles()': Group the profiles.
 * - 'GroupDocs()': Group the documents.
-* - 'CreateIdeal()': Create a new ideal clustering and new profiles.
+* - 'StartSimulation()': Create a new ideal clustering and new profiles.
 * - 'FdbksCycle()': Simulate that documents are shared inside the communities
 *   and that the best are assessed.
 * - 'CompareIdeal(Type)': Compare the computed 'Type' groups ("Community",
@@ -141,16 +138,15 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short GALILEI Program.
 */
-class GGALILEIPrg : public R::RPrg
+class GGALILEIPrg : public R::RInterpreter
 {
 public:
 
 	/**
 	* Constructor.
-	* @param f              Name of the file.
 	* @param o              Generic output class.
 	*/
-	GGALILEIPrg(R::RString f,R::RPrgOutput* o);
+	GGALILEIPrg(R::RPrgOutput* o);
 
 	/**
 	* Destruct.

@@ -422,7 +422,7 @@ void GGALILEIApp::Apply(void)
 //------------------------------------------------------------------------------
 void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 {
-	GGALILEIPrg(filename,rec).Exec();
+	GGALILEIPrg(rec).Run(filename);
 }
 
 

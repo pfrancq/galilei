@@ -58,7 +58,7 @@ const size_t MaxWordLen=50;
 
 //------------------------------------------------------------------------------
 GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac)
-	: GPlugin<GFactoryDocAnalyse>(fac)
+	: GPlugin<GFactoryDocAnalyse>(fac), Infos(5000), Struct()
 {
 }
 

@@ -68,7 +68,7 @@ GWeightInfo::GWeightInfo(const GWeightInfo& w)
 int GWeightInfo::Compare(const GWeightInfo& calc) const
 {
 	if(Concept->Type==calc.Concept->Type)
-		return(Concept->Id-calc.Concept->Id);
+		return(CompareIds(Concept->Id,calc.Concept->Id));
 	return(Concept->Type->Id-calc.Concept->Type->Id);
 }
 
@@ -77,7 +77,7 @@ int GWeightInfo::Compare(const GWeightInfo& calc) const
 int GWeightInfo::Compare(const GConcept& concept) const
 {
 	if(Concept->Type==concept.Type)
-		return(Concept->Id-concept.Id);
+		return(CompareIds(Concept->Id,concept.Id));
 	return(Concept->Type->Id-concept.Type->Id);
 }
 
@@ -86,7 +86,7 @@ int GWeightInfo::Compare(const GConcept& concept) const
 int GWeightInfo::Compare(const GConcept* concept) const
 {
 	if(Concept->Type==concept->Type)
-		return(Concept->Id-concept->Id);
+		return(CompareIds(Concept->Id,concept->Id));
 	return(Concept->Type->Id-concept->Type->Id);
 }
 

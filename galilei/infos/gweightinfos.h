@@ -126,7 +126,7 @@ protected:
 	{
 		GSession* session=GSession::Get();
 		if(session&&session->GetStorage())
-			session->GetStorage()->LoadInfos(this,type,id);
+			session->GetStorage()->LoadInfos(*this,type,id);
 		State=osUpToDate;
 	}
 

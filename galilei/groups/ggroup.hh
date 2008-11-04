@@ -51,7 +51,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const GGroup& grp) const
 {
-	return(Id-grp.Id);
+	return(R::CompareIds(Id,grp.Id));
 }
 
 
@@ -61,7 +61,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 {
 	if(!grp)
 		return(1);
-	return(Id-grp->Id);
+	return(R::CompareIds(Id,grp->Id));
 }
 
 
@@ -69,7 +69,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const size_t id) const
 {
-	return(Id-id);
+	return(R::CompareIds(Id,id));
 }
 
 
@@ -208,7 +208,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 			avgsim=sum;
 		}
 	}
-	avgsim/=(R::RContainer<cObj,false,true>::GetNb()-1);
+	avgsim/=static_cast<double>(R::RContainer<cObj,false,true>::GetNb()-1);
 
 	// return most relevant
 	return(rel);

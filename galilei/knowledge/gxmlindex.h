@@ -167,6 +167,11 @@ public:
 	virtual void Clear(void);
 
 	/**
+	* @return A string representing the concept.
+	*/
+	virtual R::RString GetName(void) const;
+
+	/**
 	 * Set the tag for the current index. The list of stems and universal
 	 * terms associated are emptied.
 	 * @param tag            Pointer to the tag.

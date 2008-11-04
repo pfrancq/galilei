@@ -61,13 +61,13 @@ using namespace GALILEI;
 class GCommunityId
 {
 public:
-	int GrpId;       // Group Identifier.
-	int position;    // Position of the group.
+	size_t GrpId;       // Group Identifier.
+	size_t position;    // Position of the group.
 
 	// Constructor and Compare methods.
-	GCommunityId(int RealId,int Position) : GrpId(RealId), position(Position) {}
-	int Compare(const int ID) const {return(GrpId-ID);}
-	int Compare(const GCommunityId& grp) const {return(GrpId-grp.GrpId);}
+	GCommunityId(size_t RealId,size_t Position) : GrpId(RealId), position(Position) {}
+	int Compare(const size_t ID) const {return(CompareIds(GrpId,ID));}
+	int Compare(const GCommunityId& grp) const {return(CompareIds(GrpId,grp.GrpId));}
 };
 
 
@@ -245,17 +245,20 @@ void GSubjects::ChooseSubjects(void)
 
 	// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
 	if(Data->RelSubjects)
-		compt=static_cast<size_t>((GetNbNodes()*Data->NbSubjects)/100)+1;
+		compt=static_cast<size_t>((static_cast<double>(GetNbNodes())*Data->NbSubjects)/100)+1;
 	else
 		compt=static_cast<size_t>(Data->NbSubjects);
 	for(ptr=tab,i=GetNbNodes()+1;(--i)&&compt;ptr++)
 	{
+		if((*ptr)==GetTop())
+			continue;
+
 		// Verify that there is enough documents
 		if((*ptr)->GetNbObjs(otDoc)<Data->NbMinDocsSubject) continue;
 
 		// Number of (social) profiles that will assess documents
 		nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
-		nbsocial=static_cast<size_t>(nbprof*Data->PercSocial/100);
+		nbsocial=static_cast<size_t>(static_cast<double>(nbprof)*Data->PercSocial/100);
 
 		// Set the topic to used and create profiles
 		(*ptr)->SetUsed(Data->Session,nbprof,nbsocial);
@@ -298,19 +301,19 @@ void GSubjects::CreateSet(void)
 		nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
 
 		// Number of profiles that are social
-		nbsocial=static_cast<size_t>(nbprof*Data->PercSocial/100);
+		nbsocial=static_cast<size_t>(static_cast<double>(nbprof)*Data->PercSocial/100);
 
 		// Number of documents to judged by each profile
 		if(Data->RelOK)
-			maxDocsOK=static_cast<size_t>(Subs()->GetNbObjs(otDoc)*Data->NbOK/100);
+			maxDocsOK=static_cast<size_t>(static_cast<double>(Subs()->GetNbObjs(otDoc))*Data->NbOK/100);
 		else
 			maxDocsOK=static_cast<size_t>(Data->NbOK);
 		if(Data->RelKO)
-			maxDocsKO=static_cast<size_t>(Subs()->GetNbObjs(otDoc)*Data->NbKO/100);
+			maxDocsKO=static_cast<size_t>(static_cast<double>(Subs()->GetNbObjs(otDoc))*Data->NbKO/100);
 		else
 			maxDocsKO=static_cast<size_t>(Data->NbKO);
 		if(Data->RelH)
-			maxDocsH=static_cast<size_t>(maxDocsOK*Data->NbH/100);
+			maxDocsH=static_cast<size_t>(static_cast<double>(maxDocsOK)*Data->NbH/100);
 		else
 			maxDocsH=static_cast<size_t>(Data->NbH);
 
@@ -537,9 +540,7 @@ template<class cGroup,class cObj>
 
 	// For each group of ideal group and for each object in this group
 	// -> Compute the different terms of the total
-	int row,position;
-	row=0;
-	//for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
+	size_t row(0),position;
 	RCursor<GSubject> GroupsIdeal(GetNodes());
 	for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
 	{
@@ -569,7 +570,7 @@ template<class cGroup,class cObj>
 		b+=(((*ptr)*((*ptr)-1))/2);
 	for(row=NbRows+1,ptr=VectorRows;--row;ptr++)
 		c+=(((*ptr)*((*ptr)-1))/2);
-	d=(NbTot*(NbTot-1))/2;
+	d=(static_cast<double>(NbTot)*(static_cast<double>(NbTot)-1))/2;
 	num=a-((b*c)/d);
 	den=(0.5*(b+c))-(b*c/d);
 	if(den)
@@ -577,7 +578,7 @@ template<class cGroup,class cObj>
 	else
 		subtotal=1.0;
 	NbObjs+=NbTot;
-	total+=subtotal*NbTot;
+	total+=subtotal*static_cast<double>(NbTot);
 
 	// Compute Total
 	if(NbObjs)
@@ -1015,21 +1016,21 @@ bool GSubjects::AddTopic(void)
 
 	// Number of (social) profiles that will judge documents
 	nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
-	nbsocial=static_cast<size_t>(nbprof*Data->PercSocial/100);
+	nbsocial=static_cast<size_t>(static_cast<double>(nbprof)*Data->PercSocial/100);
 
 	newSubject->SetUsed(Data->Session,nbprof,nbsocial);
 
 	// Number of documents to judged by each profile
 	if(Data->RelOK)
-		maxDocsOK=static_cast<size_t>(newSubject->GetNbObjs(otDoc)*Data->NbOK/100);
+		maxDocsOK=static_cast<size_t>(static_cast<double>(newSubject->GetNbObjs(otDoc))*Data->NbOK/100);
 	else
 		maxDocsOK=static_cast<size_t>(Data->NbOK);
 	if(Data->RelKO)
-		maxDocsKO=static_cast<size_t>(newSubject->GetNbObjs(otDoc)*Data->NbKO/100);
+		maxDocsKO=static_cast<size_t>(static_cast<double>(newSubject->GetNbObjs(otDoc))*Data->NbKO/100);
 	else
 		maxDocsKO=static_cast<size_t>(Data->NbKO);
 	if(Data->RelH)
-		maxDocsH=static_cast<size_t>(maxDocsOK*Data->NbH/100);
+		maxDocsH=static_cast<size_t>(static_cast<double>(maxDocsOK)*Data->NbH/100);
 	else
 		maxDocsH=static_cast<size_t>(Data->NbH);
 
@@ -1069,7 +1070,7 @@ size_t GSubjects::AddProfiles(void)
 
 	//Randomly choose the number of (social) profiles.
 	nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
-	nbsocial=static_cast<size_t>(nbprof*Data->PercSocial/100);
+	nbsocial=static_cast<size_t>(static_cast<double>(nbprof)*Data->PercSocial/100);
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
@@ -1096,15 +1097,15 @@ size_t GSubjects::AddProfiles(void)
 
 	// Number of documents to judged by each profile
 	if(Data->RelOK)
-		maxDocsOK=static_cast<size_t>(usedSubject->GetNbObjs(otDoc)*Data->NbOK/100);
+		maxDocsOK=static_cast<size_t>(static_cast<double>(usedSubject->GetNbObjs(otDoc))*Data->NbOK/100);
 	else
 		maxDocsOK=static_cast<size_t>(Data->NbOK);
 	if(Data->RelKO)
-		maxDocsKO=static_cast<size_t>(usedSubject->GetNbObjs(otDoc)*Data->NbKO/100);
+		maxDocsKO=static_cast<size_t>(static_cast<double>(usedSubject->GetNbObjs(otDoc))*Data->NbKO/100);
 	else
 		maxDocsKO=static_cast<size_t>(Data->NbKO);
 	if(Data->RelH)
-		maxDocsH=static_cast<size_t>(maxDocsOK*Data->NbH/100);
+		maxDocsH=static_cast<size_t>(static_cast<double>(maxDocsOK)*Data->NbH/100);
 	else
 		maxDocsH=static_cast<size_t>(Data->NbH);
 
@@ -1168,7 +1169,7 @@ double GSubjects::ComputePercAss(void)
 	if(!nb)
 		PercAss=1.0;
 	else
-		PercAss/=nb;
+		PercAss/=static_cast<double>(nb);
 	return(PercAss);
 }
 
@@ -1508,7 +1509,7 @@ RString GSubjects::GetDebugInfo(const RString& info)
 					Max=tmp;
 			}
 		}
-		Sim=Sim/(Cur.GetNb()*(2+Max));
+		Sim=Sim/(static_cast<double>(Cur.GetNb())*Max);
 		return(RString::Number(Sim));
 	}
 	return(RString::Null);

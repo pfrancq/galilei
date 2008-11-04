@@ -284,48 +284,6 @@ public:
 	void InsertCmd(GStorageCmd* cmd);
 
 	/**
-	* Create a dummy table to store different kid of
-	* data.
-	* @param name            Name of the dummy object.
-	*/
-	virtual void CreateDummy(R::RString name)=0;
-
-	/**
-	* Delete all the data of a given dummy table.
-	* @ param name           Name of the dummy object.
-	*/
-	virtual void ClearDummy(R::RString name)=0;
-
-	/**
-	* Add a dummy entry into  a dummy table;
-	* @param name            Name of the dummy table.
-	* @param id              Identifier of the dummy entry.
-	* @param desc            Description of the dummy entry.
-	* @param parentid        Identifier of the parent.
-	*/
-	virtual void AddDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid)=0;
-
-	/**
-	* Select a dummy entry from a dummy table;
-	* @param name            Name of the dummy table.
-	* @param id              Identifier of the dummy entry.
-	* @param desc            Description of the dummy entry.
-	* @param parentid        Identifier of the parent.
-	* @param filter          Filter to set the fields on which the select is done.
-	*/
-	virtual R::RQuery* SelectDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter)=0;
-
-	/**
-	* Clear a dummy entry from a dummy table;
-	* @param name            Name of the dummy table.
-	* @param id              Identifier of the dummy entry.
-	* @param desc            Description of the dummy entry.
-	* @param parentid        Identifier of the parent.
-	* @param filter          Filter to set the fields on which the select is done.
-	*/
-	virtual void ClearDummyEntry(R::RString name,size_t id,R::RString desc,size_t parentid,size_t filter)=0;
-
-	/**
 	* Load the Subjects.
 	*/
 	virtual void LoadSubjects(void)=0;
@@ -367,7 +325,7 @@ public:
 	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
 	* @param id              Identifier of the object.
 	*/
-	virtual void LoadInfos(GWeightInfos* infos,tObjType type,size_t id)=0;
+	virtual void LoadInfos(GWeightInfos& infos,tObjType type,size_t id)=0;
 
 	/**
 	* Save the description of a given object.
@@ -375,7 +333,7 @@ public:
 	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
 	* @param id              Identifier of the object.
 	*/
-	virtual void SaveInfos(GWeightInfos* infos,tObjType type,size_t id)=0;
+	virtual void SaveInfos(GWeightInfos& infos,tObjType type,size_t id)=0;
 
 
 	//@} General methods
@@ -492,16 +450,17 @@ public:
 
 	/**
 	 * Method that load the structure of a document.
-	 * @param doc            Pointer to the document.
+	 * @param docstruct      Structure of the document.
+	 * @param doc            Document.
 	 */
-	virtual GDocStruct* LoadStruct(const GDoc* doc)=0;
+	virtual void LoadStruct(GDocStruct& docstruct,GDoc* doc)=0;
 
 	/**
 	 * Method that save the structure of a document.
 	 * @param docstruct      Structure of the document.
-	 * @param docid          Identifier of the document.
+	 * @param doc            Document.
 	 */
-	virtual void SaveStruct(GDocStruct* docstruct,size_t docid)=0;
+	virtual void SaveStruct(GDocStruct& docstruct,GDoc* doc)=0;
 
 protected:
 
@@ -644,30 +603,11 @@ public:
 	virtual GCommunity* LoadCommunity(size_t groupid)=0;
 
 	/**
-	* Load an historic groups.
-	* @param historicID      Identifier of the historic.
-	* @return Pointer to a historic group.
-	*/
-	virtual GCommunitiesHistory* LoadHistoricCommunities(size_t historicID)=0;
-
-	/**
-	* Load the historic groups.
-	* @param mindate         Date of the first historic to load.
-	* @param maxdate         Date of the last historic to load.
-	*/
-	virtual void LoadHistoricCommunitiesByDate(R::RString mindate, R::RString maxdate)=0;
-
-	/**
 	* Load the list of suggestions for the groups for a given test.
 	* @param name            Name of the test.
 	* @param res             Container that will hold the suggestions.
 	*/
 	virtual void GetSugsCommunities(const R::RString& name,R::RContainer<GSugs,true,false>& res)=0;
-
-	/**
-	* Returns the number of historic communities stored in the database.
-	*/
-	virtual size_t GetHistorySize(void)=0;
 
 	/**
 	* A profile was updated and the corresponding communities must be updated.
@@ -685,11 +625,6 @@ public:
 	* Save the communities of the session.
 	*/
 	virtual void SaveCommunities(void)=0;
-
-	/**
-	* Save the communities in history.
-	*/
-	virtual void SaveCommunitiesHistory(void)=0;
 
 	/**
 	* Add a suggestion for a given community and a given test.

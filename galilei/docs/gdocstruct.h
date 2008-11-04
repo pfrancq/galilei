@@ -50,15 +50,23 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
-class VTR
+
+//------------------------------------------------------------------------------
+/**
+ *  The GVTDRec provides a representation for a sort of VTD record to represent
+ *  a XML node (Tag, attribute, value or content).
+ *  @author Pascal Francq
+ *  @short VTD Record
+ */
+class GVTDRec
 {
 public:
 
 	/**
-	* The Type enum represents the different types of nodes in a XML structure.
-	* @short XML Node Type
+	* The Type enum represents the different types of VTD Record..
+	* @short VTD Record Type.
 	*/
-	enum NodeType
+	enum RecType
 	{
 		Tag                       /** Tag.*/,
 		Attribute                 /** Attribute.*/,
@@ -69,9 +77,14 @@ public:
 private:
 
 	/**
-	* Weighted information entity.
+	* Concept.
 	 */
-	GWeightInfo* Info;
+	GConcept* Concept;
+
+	/**
+	 * The type of the node.
+	 */
+	RecType Type;
 
 	/**
 	 * Position in the document.
@@ -79,185 +92,46 @@ private:
 	size_t Pos;
 
 	/**
-	 * Index of in the location cache.
-	 */
-	size_t Child;
-
-	/**
 	 * Depth and type of of the node. The first four bytes indicates the type,
 	 * the rest the depth (maximal depth of 63).
 	 */
-	char TypeDepth;
-
-public:
-};
-
-class LocationCache
-{
-	/**
-	 * Index of the first child. A null index indicates no child.
-	 */
-	size_t Child;
-public:
-};
-
-
-//------------------------------------------------------------------------------
-/**
- * The GOccurInfo class provides a representation for an occurrence of an
- * weighted information entity.
- * @author Pascal Francq
- * @short Occurrence of a Weighted Information Entity.
- */
-class GOccurInfo
-{
-protected:
-
-	/**
-	 * Weighted information entity.
-	 */
-	GWeightInfo* Info;
-
-	/**
-	 * Position of the occurrence.
-	 */
-	size_t Pos;
+	char Depth;
 
 public:
 
 	/**
-	 * Constructor.
-	 * @param info           Information entity.
-	 * @param pos            Position.
+	 * Construct a VTD Record.
+	 * @param concept        Concept associated with the record.
+	 * @param type           Type of the record.
+	 * @param pos            Position in the file.
+	 * @param depth          Depth of the record.
 	 */
-	GOccurInfo(GWeightInfo* info,size_t pos);
+	GVTDRec(GConcept* concept,RecType type,size_t pos,char depth);
 
 	/**
-	 * Compare two elements.
-	 * @param info           Element to compare with.
-	 * @see R::RContainer
+	 * Compare method used by R::RContainer.
 	 */
-	int Compare(const GOccurInfo& info) const;
+	int Compare(const GVTDRec&) const {return(-1);}
 
 	/**
-	 * Get the corresponding information entity.
+	 * Get the concept.
 	 */
-	GWeightInfo* GetInfo(void) const {return(Info);}
+	GConcept* GetConcept(void) const {return(Concept);}
 
 	/**
-	 * Get the position of the node in the XML file.
+	 * Get the type.
+	 */
+	RecType GetType(void) const {return(Type);}
+
+	/**
+	 * Get the position in the file.
 	 */
 	size_t GetPos(void) const {return(Pos);}
 
 	/**
-	 * Print information on the standard output.
+	 * Get the depth of the record.
 	 */
-	void Print(void);
-};
-
-
-//------------------------------------------------------------------------------
-/**
- * The GOccursInfo represent a list of occurrences of a given information entity
- * in a document.
- * @author Pascal Francq
- * @short Occurrences of a Weighted Information Entity.
- */
-class GOccursInfo : public R::RContainer<GOccurInfo,false,false>
-{
-	/**
-	 * Weighted information entity.
-	 */
-	GWeightInfo* Info;
-
-public:
-
-	/**
-	 * Constructor.
-	 * @param info           Information entity.
-	 */
-	GOccursInfo(GWeightInfo* info);
-
-	/**
-	 * Compare two elements.
-	 * @param info           Element to compare with.
-	 * @see R::RContainer
-	 */
-	int Compare(const GOccursInfo& info) const;
-
-	/**
-	 * Compare two elements.
-	 * @param concept        Concept to compare with.
-	 * @see R::RContainer
-	 */
-	int Compare(const GConcept& concept) const;
-};
-
-
-//------------------------------------------------------------------------------
-/**
- * The GDocStructNode provides a representation for a XML node of a given
- * document.
- * @author Pascal Francq
- * @short Node of a Document Structure.
- */
-class GDocStructNode : public GOccurInfo, public R::RNode<GDocStructNode,true,false>
-{
-public:
-
-	/**
-	* The Type enum represents the different types of nodes in a XML structure.
-	* @short XML Node Type
-	*/
-	enum NodeType
-	{
-		Root                      /** Root node (Not the root XML tag).*/,
-		Tag                       /** Tag.*/,
-		Attribute                 /** Attribute.*/
-	};
-
-private:
-
-	/**
-	 * Type of the node.
-	 */
-	NodeType Type;
-
-	/**
-	 * Content of the node.
-	 */
-	R::RContainer<GOccurInfo,true,false> Content;
-
-public:
-
-	/**
-	 * Constructor.
-	 * @param info           Information entity.
-	 * @param pos            Position.
-	 * @param type           Type of the node.
-	 */
-	GDocStructNode(GWeightInfo* info,size_t pos,NodeType type);
-
-	/**
-	 * Get the type of the node.
-	 */
-	NodeType GetType(void) const {return(Type);}
-
-	/**
-	 * Insert a content to the node.
-	 * @param info           Information to insert.
-	 */
-	void InsertContent(GOccurInfo* info);
-
-	/**
-	 * Get the content (text or value) of the node.
-	 */
-	R::RCursor<GOccurInfo> GetContent(void) const;
-
-	/**
-	 * Print information on the standard output.
-	 */
-	void Print(void);
+	char GetDepth(void) const {return(Depth);}
 };
 
 
@@ -268,63 +142,108 @@ public:
  * @author Pascal Francq
  * @short Structure of Document.
  */
-class GDocStruct : private R::RTree<GDocStructNode,true,false>
+class GDocStruct
 {
+	class GLC;
+
 	/**
-	 * Information entities.
+	 * VTD records of the document.
 	 */
-	R::RContainer<GOccursInfo,true,true> Infos;
+	R::RContainer<GVTDRec,true,false> Recs;
+
+	/**
+	 * Location caches.
+	 */
+	R::RContainer<GLC,true,false>* LCs;
 
 public:
 
 	/**
 	 * Constructor.
-	 * @nb                   Number of entities in the document.
+	 * @param vtd            Number of VTD records.
+	 * @param lc             Number of location caches.
 	 */
-	GDocStruct(size_t nb);
+	GDocStruct(void);
 
 	/**
-	 * Get the top node.
+	 * Copy constructor.
+	 * @param docstruct      Original structure.
 	 */
-	GDocStructNode* GetTop(void) const {return(R::RTree<GDocStructNode,true,false>::GetTop());}
+	GDocStruct(const GDocStruct& docstruct);
 
 	/**
-	 * Get the total number of nodes.
+	 * Constructor.
+	 * @param vtd            Number of VTD records.
+	 * @param lc             Number of location caches.
 	 */
-	size_t GetNbNodes(void) const {return(R::RTree<GDocStructNode,true,false>::GetNbNodes());}
+	GDocStruct(size_t vtd,size_t lc);
 
 	/**
-	 * Get the list of occurrences of a concept in the document.
-	 * @param concept        Concept.
+	 * Set the sizes of the container if know.
+	 * @param vtd            Number of VTD records.
+	 * @param lc             Number of location caches.
 	 */
-	R::RCursor<GOccurInfo> GetOccurences(const GConcept* concept) const;
+	void SetSizes(size_t vtd,size_t lc);
 
 	/**
-	 * Insert an occurrence of node in the document.
-	 * @param parent         Parent node.
-	 * @param occur          Occurrence to insert.
+	 * Get the number of "VTD" record in the structure (0 implies that the
+	 * structure is empty).
 	 */
-	void InsertNode(GDocStructNode* parent,GDocStructNode* occur);
+	size_t GetNbRecs(void) const;
 
 	/**
-	 * Insert an occurrence of a specific content the document.
-	 * @param parent         Parent node.
-	 * @param info           Information entity.
-	 * @param pos            Position.
+	 * Get the number of Location caches for the structure.
+	 * @return
 	 */
-	void InsertContent(GDocStructNode* parent,GWeightInfo* info,size_t pos);
+	size_t GetNbLCs(void) const;
 
 	/**
-	 * Print the content of the structure on the standard output.
-	 * @param ptr            Pointer of the node where to start. A null pointer
-	 *                       represents the top node.
+	 * Get the number of entries in a given location cache.
+	 * @param level          Level of the location cache.
 	 */
-	void Print(GDocStructNode* ptr=0);
+	size_t GetNbLCEntries(size_t level) const;
+
+	/**
+	 * Set the number of entries at a given location cache.
+	 * @param level          Level of the location cache.
+	 * @param size           Size.
+	 */
+	void SetNbLCEntries(size_t level,size_t size) const;
+
+	/**
+	 * Add a record to the structure.
+	 * @param concept        Concept associated with the record.
+	 * @param type           Type of the record.
+	 * @param pos            Position in the file.
+	 * @param depth          Depth of the record.
+	 * @param child          Position of the first child in the next level.
+	 * @param nbrecs         An idea of the number of records to store to the
+	 *                       given level.
+	 * @return Pointer to the record created.
+	 */
+	GVTDRec* AddRecord(GConcept* concept,GVTDRec::RecType type,size_t pos,char depth,size_t child=SIZE_MAX,size_t nbrecs=0);
+
+	/**
+	 * Get a pointer to the record.
+	 */
+	R::RCursor<GVTDRec> GetRecs(void) const;
+
+	/**
+	 * Get the position of the first child in the next level.
+	 * @param rec            Record to search from.
+	 * @return SIZE_MAX if the tag has no child.
+	 */
+	size_t GetFirstChild(GVTDRec* rec) const;
 
 	/**
 	 * Clear the structure.
 	 */
 	void Clear(void);
+
+	/**
+	 * Destruct the structure.
+	 */
+	~GDocStruct(void);
 };
 
 

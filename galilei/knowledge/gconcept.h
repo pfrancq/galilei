@@ -194,7 +194,7 @@ public:
 	/**
 	* @return A string representing the concept.
 	*/
-	R::RString GetName(void) const {return(Name);}
+	virtual R::RString GetName(void) const {return(Name);}
 
 	/**
 	 * Set the name of the concept. This method works only if the Id==cNoRef.

@@ -103,10 +103,8 @@ class GLinkCalc;
 class GLinkCalcManager;
 class GLinks;
 class GSugs;
-class GOccurInfo;
-class GOccursInfo;
+class GTVDRec;
 class GDocStruct;
-class GDocStructNode;
 
 
 //------------------------------------------------------------------------------
@@ -167,14 +165,6 @@ class GPostCommunityManager;
 class GPostTopicManager;
 class GFactoryPostCommunity;
 class GFactoryPostTopic;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Historic Part
-class GWeightInfosHistory;
-class GCommunityHistory;
-class GCommunitiesHistory;
-class GCommunitiesHistoryManager;
 
 
 //------------------------------------------------------------------------------

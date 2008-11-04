@@ -55,7 +55,7 @@ GConcept::GConcept(void)
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const GConcept* concept)
-	: Id(concept->Id), Name(concept->Name), Type(concept->Type), NbRefDocs(concept->NbRefDocs),
+	: Id(concept->Id), Name(concept->GetName()), Type(concept->Type), NbRefDocs(concept->NbRefDocs),
 	  NbRefProfiles(concept->NbRefProfiles), NbRefGroups(concept->NbRefGroups), NbRefTopics(concept->NbRefTopics)
 {
 }
@@ -94,7 +94,7 @@ int GConcept::Compare(const R::RString& name) const
 //-----------------------------------------------------------------------------
 int GConcept::Compare(size_t id) const
 {
-	return(Id-id);
+	return(CompareIds(Id,id));
 }
 
 

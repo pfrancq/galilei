@@ -41,7 +41,6 @@ using namespace R;
 #include <ggroup.h>
 #include <guser.h>
 #include <gprofile.h>
-#include <gweightinfoshistory.h>
 #include <gdoc.h>
 using namespace GALILEI;
 
@@ -154,42 +153,6 @@ GALILEI::QListViewItemType::QListViewItemType(GProfile* profile, QListView* pare
 	: QListViewItem(parent,ToQString(profile->GetName()),ToQString(profile->GetUser()->GetFullName()),str1,str2,str3,str4), Type(otProfile)
 {
 	Obj.Profile=profile;
-	Level=0;
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::QListViewItemType::QListViewItemType(GWeightInfosHistory* giwwh, QListView* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3,str4), Type(otHistoricalProfile)
-{
-	Obj.Giwwh=giwwh;
-	Level=0;
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::QListViewItemType::QListViewItemType(GWeightInfosHistory* giwwh, QListViewItem* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3,str4), Type(otHistoricalProfile)
-{
-	Obj.Giwwh=giwwh;
-	Level=0;
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::QListViewItemType::QListViewItemType(GCommunityHistory* grouphistory, QListView* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3,str4), Type(otHistoricalCommunity)
-{
-	Obj.GroupHistory=grouphistory;
-	Level=0;
-}
-
-
-//-----------------------------------------------------------------------------
-GALILEI::QListViewItemType::QListViewItemType(GCommunityHistory* grouphistory, QListViewItem* parent,QString str1,QString str2,QString str3,QString str4)
-	: QListViewItem(parent,str1,str2,str3, str4), Type(otHistoricalCommunity)
-{
-	Obj.GroupHistory=grouphistory;
 	Level=0;
 }
 

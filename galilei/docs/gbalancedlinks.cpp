@@ -68,21 +68,21 @@ void GBalancedLinks::SetWeight(double w)
 //------------------------------------------------------------------------------
 int GBalancedLinks::Compare(const GBalancedLinks* lnk) const
 {
-	return(Doc->GetId()- lnk->GetDoc()->GetId());
+	return(CompareIds(Doc->GetId(),lnk->GetDoc()->GetId()));
 }
 
 
 //------------------------------------------------------------------------------
 int GBalancedLinks::Compare(const GBalancedLinks& lnk) const
 {
-	return(Doc->GetId()- lnk.GetDoc()->GetId());
+	return(CompareIds(Doc->GetId(),lnk.GetDoc()->GetId()));
 }
 
 
 //------------------------------------------------------------------------------
 int GBalancedLinks::Compare(const size_t id) const
 {
-	return(Doc->GetId()-id);
+	return(CompareIds(Doc->GetId(),id));
 }
 
 

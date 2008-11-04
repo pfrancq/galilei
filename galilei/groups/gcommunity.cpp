@@ -61,7 +61,7 @@ public:
 	int Compare(const GFdbkRef&) const {return(-1);}
 	int Compare(const GFdbk* d) const
 	{
-		return(Doc->GetDocId()-d->GetDocId());
+		return(CompareIds(Doc->GetDocId(),d->GetDocId()));
 	}
 };
 

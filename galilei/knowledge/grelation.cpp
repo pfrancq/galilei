@@ -62,14 +62,14 @@ GRelation::GRelation(const R::RString& name,GConcept* subject,size_t type,GConce
 //-----------------------------------------------------------------------------
 int GRelation::Compare(const GRelation& relation) const
 {
-	return(Id-relation.GetId());
+	return(CompareIds(Id,relation.GetId()));
 }
 
 
 //-----------------------------------------------------------------------------
 int GRelation::Compare(size_t id) const
 {
-	return(Id-id);
+	return(CompareIds(Id,id));
 }
 
 

@@ -56,6 +56,7 @@ using namespace R;
 #include <gslot.h>
 #include <gstatscalc.h>
 #include <gdoc.h>
+#include <gdocstruct.h>
 #include <gdocanalyse.h>
 #include <gdocxml.h>
 #include <glinkcalc.h>
@@ -80,7 +81,6 @@ using namespace R;
 #include <gfilter.h>
 #include <gpostdoc.h>
 #include <gweightinfo.h>
-#include <gcommunitieshistory.h>
 #include <gpostcommunity.h>
 #include <gposttopic.h>
 #include <ggalileiapp.h>
@@ -164,7 +164,6 @@ class GSession::Intern
 {
 public:
 	GSubjects* Subjects;                                              // Subjects.
-	GCommunitiesHistoryManager* CommunitiesHistoryMng;                // Historic group manager
 	int CurrentRandom;                                                // Current seek for this session.
 	R::RRandom* Random;                                               // Random number generator
 	GStorage* Storage;                                                // Storage manager
@@ -189,18 +188,15 @@ public:
 	size_t MaxProfiles;                                               // Maximum number of profiles to handle in memory.
 	size_t MaxGroups;                                                 // Maximum number of groups to handle in memory.
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager.
-	GDocStruct* tmpStruct;                                            // Temporary structure of a document.
-	GWeightInfos tmpInfos;                                            // Temporary vector of weighted information entities.
 
 	Intern(GStorage* str,size_t mdocs,size_t maxprof,size_t maxgroups,size_t d,size_t u,size_t p,size_t t,size_t c)
-		: Subjects(0), CommunitiesHistoryMng(0), Random(0), Storage(str), SaveResults(true),
+		: Subjects(0), Random(0), Storage(str), SaveResults(true),
 		  Slot(0), Docs(d+(d/2),d/2), DocsLoaded(false), DocsRefUrl(d+(d/2),d/2),
 		  Users(u,u/2), UsersLoaded(false), Profiles(p,p/2),
 		  Communities(c+(c/2),c/2), CommunitiesLoaded(false),
 		  Topics(t+(t/2),t/2), TopicsLoaded(false),
 		  ConceptTypes(50,10), RelationTypes(10,5),
-		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups), FilterManager(0),
-		  tmpStruct(0), tmpInfos(5000)
+		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups), FilterManager(0)
 	{
 		CurrentRandom=0;
 		Random=RRandom::Create(RRandom::Good,CurrentRandom);
@@ -210,7 +206,6 @@ public:
 	{
 		delete Random;
 		delete Subjects;
-		delete CommunitiesHistoryMng;
 		Session=0;
 		ExternBreak=false;
 	}
@@ -401,15 +396,6 @@ bool GSession::MustSaveResults(void) const
 void GSession::SetSaveResults(bool save)
 {
 	Data->SaveResults=save;
-}
-
-
-//------------------------------------------------------------------------------
-GCommunitiesHistoryManager* GSession::GetCommunitiesHistoryManager(void) const
-{
-	if(!Data->CommunitiesHistoryMng)
-		const_cast<GSession*>(this)->Data->CommunitiesHistoryMng=new GCommunitiesHistoryManager(const_cast<GSession*>(this),20);
-	return(Data->CommunitiesHistoryMng);
 }
 
 
@@ -660,7 +646,7 @@ RCursor<GConceptType> GSession::GetConceptTypes(void) const
 
 
 //-----------------------------------------------------------------------------
-GConceptType* GSession::GetConceptType(size_t id,bool null) const
+GConceptType* GSession::GetConceptType(char id,bool null) const
 {
 	GConceptType* type(0);
 	try
@@ -673,7 +659,7 @@ GConceptType* GSession::GetConceptType(size_t id,bool null) const
 	{
 	}
 	if((!type)&&(!null))
-		throw GException("Unknow concept type "+RString::Number(id));
+		throw GException("GSession::GetConceptType(size_t,bool): Unknown concept type "+RString::Number(id));
 	return(type);
 }
 
@@ -692,7 +678,7 @@ GConceptType* GSession::GetConceptType(const RString& name,bool null) const
 	{
 	}
 	if((!type)&&(!null))
-		throw GException("Unknow concept type '"+name+"'");
+		throw GException("GSession::GetConceptType(const RString&,bool); Unknown concept type '"+name+"'");
 	return(type);
 }
 
@@ -711,13 +697,13 @@ GConceptType* GSession::GetInsertConceptType(const RString& name,const RString& 
 	{
 	}
 	if(!type)
-		Data->ConceptTypes.InsertPtr(type=new GConceptType(cNoRef,this,name,desc,0));
+		Data->ConceptTypes.InsertPtr(type=new GConceptType(0,this,name,desc,0));
 	return(type);
 }
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertConceptType(size_t id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics)
+void GSession::InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics)
 {
 	RString code(name.Mid(0,2));
 	GLang* Lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(code,false);
@@ -788,7 +774,7 @@ void GSession::InsertRelationType(size_t id,const R::RString& name,const R::RStr
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertRelation(size_t id,const R::RString& name,size_t subjectid,size_t subjecttypeid,size_t type,size_t objectid,size_t objecttypeid,double weight)
+void GSession::InsertRelation(size_t id,const R::RString& name,size_t subjectid,char subjecttypeid,size_t type,size_t objectid,char objecttypeid,double weight)
 {
 	// Get the concept related to the subject
 	GConceptType* ctype=GetConceptType(subjecttypeid,false);
@@ -820,12 +806,12 @@ GRelation* GSession::GetRelation(size_t id,size_t type,bool null)
 	if(!relationttype)
 	{
 		if(!null)
-			throw GException("Relation "+RString(id)+" of type "+RString::Number(type)+" does not exist");
+			throw GException("Relation "+RString::Number(id)+" of type "+RString::Number(type)+" does not exist");
 		return(0);
 	}
 	GRelation* rel=relationttype->GetRelation(id);
 	if((!rel)&&(!null))
-		throw GException("Relation "+RString(id)+" of type "+RString::Number(type)+" does not exist");
+		throw GException("Relation "+RString::Number(id)+" of type "+RString::Number(type)+" does not exist");
 	return(rel);
 }
 
@@ -964,7 +950,7 @@ void GSession::AssignId(GDoc* doc)
 		return;
 	}
 
-	// The first document has the identificator 1
+	// The first document has the identifier 1
 	if(Data->Docs.GetNb())
 		doc->SetId(Data->Docs[Data->Docs.GetMaxPos()]->GetId()+1); // Not [GetNb()-1] because first doc has an identificator of 1
 	else
@@ -1067,31 +1053,26 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	if(uri.IsEmpty())
 		return;
 
-	// Prepare the analyze
-	Data->tmpInfos.Clear();
-	GLang* Lang=doc->GetLang();
-
      // Analyze document -> Is something goes wrong -> It failed
-	method->Analyze(doc->GetURL(),uri,Native,Lang,&Data->tmpInfos);
+	method->Analyze(doc,uri,Native);
 
-	// Save the description file
+	// Save the description and the structure
 	if(Save)
-		Data->Storage->SaveInfos(&Data->tmpInfos,otDoc,doc->GetId());
+	{
+		Data->Storage->SaveInfos(method->Infos,otDoc,doc->GetId());
+		Data->Storage->SaveStruct(method->Struct,doc);
+	}
 
 	// Set the information to the document
-	doc->Update(Lang,Data->tmpInfos,ram||(!Save));
+	doc->Update(method->Lang,method->Infos,method->Struct,ram||(!Save));
 
 	// Save if necessary
 	if(Save)
 	{
-//		Data->Storage->SaveStruct(doc->GetStruct(),doc->GetId());
 		Data->Storage->SaveDoc(doc);
 		if(ram)
 			doc->SetState(osSaved);
 	}
-
-	// Release the structure
-	doc->ReleaseStruct();
 }
 
 
@@ -1181,7 +1162,7 @@ GUser* GSession::GetUser(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown user "+RString(id));
+			throw GException("Unknown user "+RString::Number(id));
 	}
 	const_cast<GSession*>(this)->InsertUser(u);
 	return(u);
@@ -1697,24 +1678,6 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 			throw GException("GSession::BuildGroupsFromIdeal: '"+GetObjType(type)+"' is not a valid type");
 			break;
 	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadHistoricCommunitiesById(size_t mingen, size_t maxgen)
-{
-	size_t i;
-
-	// fill the container
-	for (i=mingen; i<maxgen+1; i++)
-		Data->CommunitiesHistoryMng->InsertCommunitiesHistory(Data->Storage->LoadHistoricCommunities(i));
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadHistoricCommunitiesByDate(RString mindate,RString maxdate)
-{
-	Data->Storage->LoadHistoricCommunitiesByDate(mindate,maxdate);
 }
 
 

@@ -61,21 +61,21 @@ GFdbk::GFdbk(size_t docid,tDocAssessment fdbk,const RDate& when,const R::RDate& 
 //------------------------------------------------------------------------------
 int GFdbk::Compare(const GFdbk& profdoc) const
 {
-	return(DocId-profdoc.DocId);
+	return(CompareIds(DocId,profdoc.DocId));
 }
 
 
 //------------------------------------------------------------------------------
 int GFdbk::Compare(const GFdbk* profdoc) const
 {
-	return(DocId-profdoc->DocId);
+	return(CompareIds(DocId,profdoc->DocId));
 }
 
 
 //------------------------------------------------------------------------------
 int GFdbk::Compare(const size_t id) const
 {
-	return(DocId-id);
+	return(CompareIds(DocId,id));
 }
 
 
@@ -185,7 +185,7 @@ GProfile::GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RD
 //------------------------------------------------------------------------------
 int GProfile::Compare(const GProfile &profile) const
 {
-	return(Id-profile.Id);
+	return(CompareIds(Id,profile.Id));
 }
 
 
@@ -199,7 +199,7 @@ int GProfile::Compare(const RString& name) const
 //------------------------------------------------------------------------------
 int GProfile::Compare(const size_t id) const
 {
- 	return(Id-id);
+ 	return(CompareIds(Id,id));
 }
 
 

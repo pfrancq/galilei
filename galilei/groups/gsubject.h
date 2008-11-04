@@ -62,16 +62,7 @@ namespace GALILEI{
 */
 class GSubject: public R::RNode<GSubject,true,false>
 {
-/*	// Identifier of the subject.
-	size_t Id;
-	R::RString Name;                                        // Name of the subject.
-	bool Used;                                              // Determine if the subject is used.
-	R::RContainer<GDoc,false,true> Docs;                    // Documents attached to this subject.
-	R::RContainer<GProfile,false,true> Profiles;            // Profiles attached to this subject.
-	R::RContainer<GCommunity,false,true> Groups;            // Groups attached to this subject.*/
-
 	class Intern;
-
 	Intern* Data;
 
 public:

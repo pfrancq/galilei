@@ -32,6 +32,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <glink.h>
+using namespace R;
 using namespace GALILEI;
 
 
@@ -52,35 +53,35 @@ GLink::GLink(const GDoc* doc)
 //------------------------------------------------------------------------------
 int GLink::Compare(const GLink* link) const
 {
-	return(DocTO->GetId() - link->GetDoc()->GetId());
+	return(CompareIds(DocTO->GetId(),link->GetDoc()->GetId()));
 }
 
 
 //------------------------------------------------------------------------------
 int GLink::Compare(const GLink& link) const
 {
-	return(DocTO->GetId()-link.GetDoc()->GetId());
+	return(CompareIds(DocTO->GetId(),link.GetDoc()->GetId()));
 }
 
 
 //------------------------------------------------------------------------------
-int GLink::Compare( const size_t id) const
+int GLink::Compare(const size_t id) const
 {
-	return (DocTO->GetId()- id);
+	return(CompareIds(DocTO->GetId(),id));
 }
 
 
 //------------------------------------------------------------------------------
 int GLink::Compare(const GDoc* doc) const
 {
-	return(DocTO->GetId()- doc->GetId());
+	return(CompareIds(DocTO->GetId(),doc->GetId()));
 }
 
 
 //------------------------------------------------------------------------------
 int GLink::Compare(const GDoc& doc) const
 {
-	return (DocTO->GetId() - doc.GetId());
+	return(CompareIds(DocTO->GetId(),doc.GetId()));
 }
 
 

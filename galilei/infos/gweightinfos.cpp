@@ -363,7 +363,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 
 			// Yes -> A new total number of references.
 			type=ptr()->GetConcept()->GetType();
-			TotalRef=type->GetRef(ObjType);
+			TotalRef=static_cast<double>(type->GetRef(ObjType));
 			norm1=norm2=Sim=0.0;
 			max1=GetMaxAbsWeight(type);
 			max2=w.GetMaxAbsWeight(type);
@@ -381,7 +381,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
-				TotalRef=type->GetRef(ObjType);
+				TotalRef=static_cast<double>(type->GetRef(ObjType));
 				norm1=norm2=Sim=0.0;
 				max1=GetMaxAbsWeight(type);
 				max2=w.GetMaxAbsWeight(type);
@@ -401,7 +401,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
-				TotalRef=type->GetRef(ObjType);
+				TotalRef=static_cast<double>(type->GetRef(ObjType));
 				norm1=norm2=Sim=0.0;
 				max1=GetMaxAbsWeight(type);
 				max2=w.GetMaxAbsWeight(type);
@@ -430,7 +430,7 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 
 			// Yes -> A new total number of references.
 			type=ptr2()->GetConcept()->GetType();
-			TotalRef=type->GetRef(ObjType);
+			TotalRef=static_cast<double>(type->GetRef(ObjType));
 			norm1=norm2=Sim=0.0;
 			max1=GetMaxAbsWeight(type);
 			max2=w.GetMaxAbsWeight(type);
@@ -483,8 +483,8 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 
 			// Yes -> A new total number of references.
 			type=ptr()->GetConcept()->GetType();
-			TotalRef1=type->GetRef(ObjType1);
-			TotalRef2=type->GetRef(ObjType2);
+			TotalRef1=static_cast<double>(type->GetRef(ObjType1));
+			TotalRef2=static_cast<double>(type->GetRef(ObjType2));
 			norm1=norm2=Sim=0.0;
 			max1=GetMaxAbsWeight(type);
 			max2=w.GetMaxAbsWeight(type);
@@ -505,8 +505,8 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
-				TotalRef1=type->GetRef(ObjType1);
-				TotalRef2=type->GetRef(ObjType2);
+				TotalRef1=static_cast<double>(type->GetRef(ObjType1));
+				TotalRef2=static_cast<double>(type->GetRef(ObjType2));
 				norm1=norm2=Sim=0.0;
 				max1=GetMaxAbsWeight(type);
 				max2=w.GetMaxAbsWeight(type);
@@ -528,8 +528,8 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 
 				// Yes -> A new total number of references.
 				type=ptr2()->GetConcept()->GetType();
-				TotalRef1=type->GetRef(ObjType1);
-				TotalRef2=type->GetRef(ObjType2);
+				TotalRef1=static_cast<double>(type->GetRef(ObjType1));
+				TotalRef2=static_cast<double>(type->GetRef(ObjType2));
 				norm1=norm2=Sim=0.0;
 				max1=GetMaxAbsWeight(type);
 				max2=w.GetMaxAbsWeight(type);
@@ -560,8 +560,8 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 
 			// Yes -> A new total number of references.
 			type=ptr2()->GetConcept()->GetType();
-			TotalRef1=type->GetRef(ObjType1);
-			TotalRef2=type->GetRef(ObjType2);
+			TotalRef1=static_cast<double>(type->GetRef(ObjType1));
+			TotalRef2=static_cast<double>(type->GetRef(ObjType2));
 			norm1=norm2=Sim=0.0;
 			max1=GetMaxAbsWeight(type);
 			max2=w.GetMaxAbsWeight(type);

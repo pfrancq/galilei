@@ -73,7 +73,7 @@ public:
 	*                       for the different letters.
 	* @param langs          Pointer to the languages manager.
 	*/
-	GIndexer(unsigned ml,GLangManager* langs);
+	GIndexer(size_t ml,GLangManager* langs);
 
 	/**
 	* Clear the dictionary.

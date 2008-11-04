@@ -130,6 +130,17 @@ protected:
 	*/
 	R::RDate Attached;
 
+	/**
+	 * Number of "VTD" records of the XML structure (0 implies that the document
+	 * has no structure).
+	 */
+	size_t NbRecs;
+
+	/**
+	 * Number of location caches.
+	 */
+	size_t NbLCs;
+
 public:
 
 	/**
@@ -143,9 +154,11 @@ public:
 	* @param c               Date of the last computation.
 	* @param u               Date of the last updated.
 	* @param a               Date of the last attached.
+	* @param nbrecs          Number of "VTD" records.
+	* @param nblcs           Number of location caches.
 	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t ownerid=0);
+	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t nbrecs,size_t nblcs,size_t ownerid=0);
 
 	/**
 	* Compare two documents by comparing their identifier.
@@ -290,6 +303,18 @@ public:
 	void SetGroup(size_t groupid);
 
 	/**
+	 * Get the number of "VTD" record in the structure of the document (0
+	 * implies that the structure is empty).
+	 */
+	size_t GetNbRecs(void) const {return(NbRecs);}
+
+	/**
+	 * Get the number of Location caches for the structure of the document.
+	 * @return
+	 */
+	size_t GetNbLCs(void) const {return(NbLCs);}
+
+	/**
 	* Get a cursor on the identifier of the profiles which have assesses the
 	* documents.
 	* @return R::RVectorInt*.
@@ -365,7 +390,13 @@ public:
 	* @param ram             Must the information be maintained is RAM.
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GLang* lang,GWeightInfos& infos,bool ram);
+	void Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram);
+
+	/**
+	 * Assign a structure to the current document.
+	 */
+	void AssignStruct() const;
+
 
 public:
 

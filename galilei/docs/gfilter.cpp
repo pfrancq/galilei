@@ -87,12 +87,11 @@ R::RXMLTag* GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
 	char* ptr;
 	char* hold;
 	RXMLTag* sent=0;
-	int len,i=0;
+	size_t len(strlen(block)),i(0);
 	int NbWords;
 	bool EndSentence;
 
 	// Look at block
-	len=strlen(block);
 	if(!len) return(attach);
 
 	// Search Sentences
@@ -181,7 +180,7 @@ R::RXMLTag* GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
 	RChar* ptr;
 	RChar* hold;
 	RXMLTag* sent=0;
-	int len,i=0;
+	size_t len,i=0;
 	int NbWords;
 	bool EndSentence;
 
@@ -274,7 +273,7 @@ R::RXMLTag* GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
 R::RXMLTag* GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 {
 	RXMLTag* sent=0;
-	int pos;
+	size_t pos;
 	int NbWords;
 	bool EndSentence;
 	RString sentence;

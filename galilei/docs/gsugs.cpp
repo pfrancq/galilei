@@ -34,6 +34,7 @@
 // include files for GALILEI
 #include <gsugs.h>
 #include <gdoc.h>
+using namespace R;
 using namespace GALILEI;
 
 
@@ -56,21 +57,21 @@ GSugs::GSugs(tObjType type,size_t id,size_t max)
 //-----------------------------------------------------------------------------
 int GSugs::Compare(const GSugs& sugs) const
 {
-	return(Id-sugs.Id);
+	return(CompareIds(Id,sugs.Id));
 }
 
 
 //-----------------------------------------------------------------------------
 int GSugs::Compare(const GSugs* sugs) const
 {
-	return(Id-sugs->Id);
+	return(CompareIds(Id,sugs->Id));
 }
 
 
 //-----------------------------------------------------------------------------
 int GSugs::Compare(const size_t id) const
 {
-	return(Id-id);
+	return(CompareIds(Id,id));
 }
 
 

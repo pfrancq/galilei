@@ -40,102 +40,53 @@ using namespace R;
 using namespace std;
 
 
-
 //------------------------------------------------------------------------------
 //
-//  GOccurInfo
+//  GVTDRec
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GOccurInfo::GOccurInfo(GWeightInfo* info,size_t pos)
-	: Info(info), Pos(pos)
+GVTDRec::GVTDRec(GConcept* concept,GVTDRec::RecType type,size_t pos,char depth)
+	: Concept(concept), Type(type), Pos(pos), Depth(depth)
 {
-}
-
-
-//------------------------------------------------------------------------------
-int GOccurInfo::Compare(const GOccurInfo& info) const
-{
-	return(Pos-info.Pos);
-}
-
-
-//------------------------------------------------------------------------------
-void GOccurInfo::Print(void)
-{
-	cout<<"    "<<Pos<<" : "<<Info->GetConcept()->GetName()<<" - "<<Info->GetType()->GetName()<<endl;
 }
 
 
 
 //------------------------------------------------------------------------------
 //
-//  GOccursInfo
+//  GLCEntry
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GOccursInfo::GOccursInfo(GWeightInfo* info)
-	: R::RContainer<GOccurInfo,false,false>(5), Info(info)
+class GLCEntry
 {
-}
-
-
-//------------------------------------------------------------------------------
-int GOccursInfo::Compare(const GOccursInfo& info) const
-{
-	return(Info->Compare(*info.Info));
-}
-
-
-//------------------------------------------------------------------------------
-int GOccursInfo::Compare(const GConcept& concept) const
-{
-	return(Info->Compare(concept));
-}
+public:
+	GVTDRec* Rec;
+	size_t Child;
+	GLCEntry(GVTDRec* rec,size_t child) : Rec(rec), Child(child) {}
+	int Compare(const GLCEntry&) const {return(-1);}
+};
 
 
 
 //------------------------------------------------------------------------------
 //
-//  GDocStructNode
+//  GDocSruct::GLC
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocStructNode::GDocStructNode(GWeightInfo* info,size_t pos,NodeType type)
-	: GOccurInfo(info,pos), RNode<GDocStructNode,true,false>(), Type(type),
-	  Content(20,50)
+class GDocStruct::GLC : public RContainer<GLCEntry,true,false>
 {
-}
+public:
 
-
-//------------------------------------------------------------------------------
-void GDocStructNode::InsertContent(GOccurInfo* info)
-{
-	Content.InsertPtr(info);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GOccurInfo> GDocStructNode::GetContent(void) const
-{
-	return(R::RCursor<GOccurInfo>(Content));
-}
-
-
-//------------------------------------------------------------------------------
-void GDocStructNode::Print(void)
-{
-	cout<<Pos<<" : "<<Info->GetConcept()->GetName()<<" - "<<Info->GetType()->GetName();
-	if(Parent&&Parent->Info)
-		cout<<" ("<<Parent->Info->GetConcept()->GetName()<<")";
-	cout<<endl;
-	R::RCursor<GOccurInfo> Cur(Content);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Print();
-}
+	GLC(size_t max) : RContainer<GLCEntry,true,false>(max) {}
+	int Compare(const GLC&) const {return(-1);}
+	~GLC(void) {}
+};
 
 
 
@@ -146,60 +97,134 @@ void GDocStructNode::Print(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocStruct::GDocStruct(size_t nb)
-	: RTree<GDocStructNode,true,false>(nb,nb), Infos(nb)
+GDocStruct::GDocStruct(void)
+	: Recs(2000), LCs(new R::RContainer<GLC,true,false>(10))
 {
-	RTree<GDocStructNode,true,false>::InsertNode(0,new GDocStructNode(0,0,GDocStructNode::Root));
 }
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GOccurInfo> GDocStruct::GetOccurences(const GConcept* concept) const
+GDocStruct::GDocStruct(const GDocStruct& docstruct)
+	: Recs(docstruct.Recs.GetNb()), LCs(new R::RContainer<GLC,true,false>(docstruct.LCs->GetNb()))
 {
-	GOccursInfo* ptr=Infos.GetPtr(concept);
-	if(!ptr)
-		return(R::RCursor<GOccurInfo>());
-	return(R::RCursor<GOccurInfo>(*ptr));
-}
-
-
-//------------------------------------------------------------------------------
-void GDocStruct::InsertNode(GDocStructNode* parent,GDocStructNode* occur)
-{
-	GOccursInfo* ptr=Infos.GetInsertPtr(occur->GetInfo());
-	ptr->InsertPtr(occur);
-	RTree<GDocStructNode,true,false>::InsertNode(parent,occur);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocStruct::InsertContent(GDocStructNode* parent,GWeightInfo* info,size_t pos)
-{
-	GOccurInfo* occur=new GOccurInfo(info,pos);
-	GOccursInfo* ptr=Infos.GetInsertPtr(occur->GetInfo());
-	ptr->InsertPtr(occur);
-	parent->InsertContent(occur);
-}
-
-
-//------------------------------------------------------------------------------
-void GDocStruct::Print(GDocStructNode* ptr)
-{
-	if(!ptr)
-		ptr=GetTop();
-	RCursor<GDocStructNode> Nodes(ptr->GetNodes());
-	for(Nodes.Start();!Nodes.End();Nodes.Next())
+	// Recreate correctly the structure
+	R::RCursor<GVTDRec> Recs(docstruct.Recs);
+	for(Recs.Start();!Recs.End();Recs.Next())
 	{
-		Nodes()->Print();
-		Print(Nodes());
+		size_t child=docstruct.GetFirstChild(Recs());
+		AddRecord(Recs()->GetConcept(),Recs()->GetType(),Recs()->GetPos(),Recs()->GetDepth(),child);
 	}
 }
 
 
 //------------------------------------------------------------------------------
+GDocStruct::GDocStruct(size_t vtd,size_t lc)
+	: Recs(vtd), LCs(new R::RContainer<GLC,true,false>(lc))
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GDocStruct::SetSizes(size_t vtd,size_t lc)
+{
+	Recs.VerifyTab(vtd);
+	LCs->VerifyTab(lc);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GDocStruct::GetNbRecs(void) const
+{
+	return(Recs.GetNb());
+}
+
+
+
+//------------------------------------------------------------------------------
+size_t GDocStruct::GetNbLCs(void) const
+{
+	return(LCs->GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+size_t GDocStruct::GetNbLCEntries(size_t level) const
+{
+	if(level>=LCs->GetNb())
+		return(0);
+	return((*LCs)[level]->GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+void GDocStruct::SetNbLCEntries(size_t level,size_t size) const
+{
+	if(!LCs->VerifyIndex(level))
+		LCs->InsertPtrAt(new GLC(size),level);
+}
+
+
+//------------------------------------------------------------------------------
+GVTDRec* GDocStruct::AddRecord(GConcept* concept,GVTDRec::RecType type,size_t pos,char depth,size_t child,size_t nbrecs)
+{
+	// Create the record and insert it
+	GVTDRec* ptr=new GVTDRec(concept,type,pos,depth);
+	Recs.InsertPtr(ptr);
+
+	// Insert it the location cache if necessary
+	if(type==GVTDRec::Tag)
+	{
+		GLC* Level;
+		if(LCs->VerifyIndex(depth))
+			Level=(*LCs)[depth];
+		else
+		{
+			if(!nbrecs)
+				nbrecs=200;
+			LCs->InsertPtrAt(Level=new GLC(nbrecs),depth);
+		}
+		Level->InsertPtr(new GLCEntry(ptr,child));
+	}
+
+	// Return
+	return(ptr);
+}
+
+
+//------------------------------------------------------------------------------
+R::RCursor<GVTDRec> GDocStruct::GetRecs(void) const
+{
+	return(R::RCursor<GVTDRec>(Recs));
+}
+
+
+//------------------------------------------------------------------------------
+size_t GDocStruct::GetFirstChild(GVTDRec* rec) const
+{
+	if(rec->GetType()!=GVTDRec::Tag)
+		return(SIZE_MAX);
+	RCursor<GLCEntry> Cur(*(*LCs)[rec->GetDepth()]);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Cur()->Rec==rec)
+			return(Cur()->Child);
+	}
+	cerr<<"Big problem in GDocStruct::GetFirstChild"<<endl;
+	return(SIZE_MAX);
+}
+
+
+
+//------------------------------------------------------------------------------
 void GDocStruct::Clear(void)
 {
-	Infos.Clear();
-	RTree<GDocStructNode,true,false>::Clear();
-	RTree<GDocStructNode,true,false>::InsertNode(0,new GDocStructNode(0,0,GDocStructNode::Root));
+	Recs.Clear();
+	LCs->Clear();
+}
+
+
+//------------------------------------------------------------------------------
+GDocStruct::~GDocStruct(void)
+{
+	delete LCs;
 }

@@ -72,8 +72,6 @@ public:
 		GTopic* Topic;
 		GUser* User;
 		GProfile* Profile;
-		GWeightInfosHistory* Giwwh;
-		GCommunityHistory* GroupHistory;
 		GDoc* Doc;
 		GEngineDoc* EngineDoc;
 		GSubject* Subject;
@@ -145,26 +143,6 @@ public:
 	* Constructor for a profile, attached to a listview.
 	*/
 	QListViewItemType(GProfile* profile, QListView* parent,QString str1=QString::null,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
-
-	/**
-	* Constructor for a vector of words, attached to a listview.
-	*/
-	QListViewItemType(GWeightInfosHistory* giwwh, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
-
-	/**
-	* Constructor for a vector of words, attached to a listviewitem.
-	*/
-	QListViewItemType(GWeightInfosHistory* giwwh, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
-
-	/**
-	* Constructor for a historic group, attached to a listview.
-	*/
-	QListViewItemType(GCommunityHistory* grouphistory, QListView* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
-
-	/**
-	* Constructor for a historic group, attached to a listviewitem.
-	*/
-	QListViewItemType(GCommunityHistory* grouphistory, QListViewItem* parent,QString str1,QString str2=QString::null,QString str3=QString::null,QString str4=QString::null);
 
 	/**
 	* Constructor for a doc, attached to a listviewitem.

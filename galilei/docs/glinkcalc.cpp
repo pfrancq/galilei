@@ -65,12 +65,12 @@ void GLinkCalc::InitGraph(void)
 	R::RCursor<GDoc> cur = Session->GetDocs();
 	R::RCursor<GLink> lcur;
 	GLinks* links_out=0;
-	int size=0;
+	size_t size(0);
 
 	if(!Inited)
 	{
 		// Create a container of  outgoing links for all document present in the system
-		size = cur.GetNb() * sizeof(GLinks);
+		size=cur.GetNb()*sizeof(GLinks);
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			Links_Out.InsertPtr( new GLinks( cur() ));
@@ -81,8 +81,8 @@ void GLinkCalc::InitGraph(void)
 		{
 			if (!cur()->GetNbLinks()) continue;
 			links_out=Links_Out.GetPtr(cur()->GetId());
-			lcur = cur()->GetLinks();
-			size += lcur.GetNb() * sizeof(GLink);
+			lcur=cur()->GetLinks();
+			size+=lcur.GetNb()*sizeof(GLink);
 
 			for (lcur.Start();!lcur.End();lcur.Next())
 			{

@@ -124,12 +124,6 @@ public:
 	void SetSaveResults(bool save=true);
 
 	/**
-	* Get the historic groups manager.
-	* @return Pointer to GCommunitysHistoryMng.
-	*/
-	GCommunitiesHistoryManager* GetCommunitiesHistoryManager(void) const;
-
-	/**
 	* Get the storage manager.
 	* @return Pointer to GStorage.
 	*/
@@ -297,7 +291,7 @@ public:
 	*                        return 0, else an exception is generated.
 	* @return Pointer to a GConceptType
 	*/
-	GConceptType* GetConceptType(size_t id,bool null) const;
+	GConceptType* GetConceptType(char id,bool null) const;
 
 	/**
 	* Get the a pointer to a type of concept.
@@ -327,7 +321,7 @@ public:
 	* @param refgroups       Number of groups referenced.
 	* @param reftopics       Number of topics referenced.
 	*/
-	void InsertConceptType(size_t id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics);
+	void InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics);
 
 	/**
 	* Assign an identifier to a new concept type.
@@ -385,9 +379,9 @@ public:
 	* @param weight          Weight of the relation.
 	*/
 	void InsertRelation(size_t id,const R::RString& name,
-	                    size_t subjectid,size_t subjecttypeid,
+	                    size_t subjectid,char subjecttypeid,
 	                    size_t type,
-	                    size_t objectid,size_t objecttypeid,
+	                    size_t objectid,char objecttypeid,
 	                    double weight);
 
 	/**
@@ -761,16 +755,6 @@ public:
 	* @param rec             Receiver of the signals.
 	*/
 	void DoPostCommunity(GSlot* rec=0);
-
-	/**
-	* Load the historic Communities.
-	*/
-	void LoadHistoricCommunitiesById(size_t mingen, size_t maxgen);
-
-	/**
-	* Load the historic Communities.
-	*/
-	void LoadHistoricCommunitiesByDate(R::RString mindate, R::RString maxdate);
 
 	/**
 	* A profile was updated and the corresponding community must be updated.

@@ -53,7 +53,7 @@ GSignalHandler::GSignalHandler(void)
 //------------------------------------------------------------------------------
 int GSignalHandler::Compare(const GSignalHandler& handler) const
 {
-	return(this-(&handler));
+	return(ComparePtrs(this,&handler));
 }
 
 

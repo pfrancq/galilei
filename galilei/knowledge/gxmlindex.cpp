@@ -185,12 +185,21 @@ void GXMLIndex::Clear(void)
 
 
 //-----------------------------------------------------------------------------
+RString GXMLIndex::GetName(void) const
+{
+	if(!Name.GetLen())
+		const_cast<GXMLIndex*>(this)->BuildName();
+	return(Name);
+}
+
+
+//-----------------------------------------------------------------------------
 void GXMLIndex::SetTag(GConcept* tag)
 {
 	XMLTag=tag;
 	Stems.Clear();
 	Universal.Clear();
-	BuildName();
+	Name.SetLen(0);
 }
 
 
@@ -229,7 +238,7 @@ void GXMLIndex::AddUniversalTerm(GConcept* concept)
 		throw GException("GXMLIndex::AddUniversalTerms: Bad concept type");
 	if(!Universal.IsIn(concept))
 		Universal.InsertPtr(concept);
-	BuildName();
+	Name.SetLen(0);
 }
 
 
@@ -240,8 +249,7 @@ void GXMLIndex::AddStem(GConcept* concept)
 		throw GException("GXMLIndex::AddStem: Bad concept type");
 	if(!Stems.IsIn(concept))
 		Stems.InsertPtr(concept);
-
-	BuildName();
+	Name.SetLen(0);
 }
 
 

@@ -91,14 +91,14 @@ GSubject::GSubject(size_t id,const char* name,bool u)
 //------------------------------------------------------------------------------
 int GSubject::Compare(const GSubject& sub) const
 {
-	return(Data->Id-sub.Data->Id);
+	return(CompareIds(Data->Id,sub.Data->Id));
 }
 
 
 //------------------------------------------------------------------------------
 int GSubject::Compare(const size_t id) const
 {
-	return(Data->Id-id);
+	return(CompareIds(Data->Id,id));
 }
 
 
@@ -119,9 +119,8 @@ void GSubject::Insert(GDoc* doc)
 //------------------------------------------------------------------------------
 GSubject* GSubject::GetIdealGroup(GProfile* prof) const
 {
-	if(Data->Profiles.IsIn(prof->GetId()))
+	if(Data->Profiles.IsIn(*prof))
 		return(const_cast<GSubject*>(this));
-
 	GSubject* subject(0);
 	RCursor<GSubject> Cur(GetNodes());
 	for(Cur.Start();(!Cur.End())&&(!subject);Cur.Next())

@@ -59,21 +59,21 @@ GUser::GUser(size_t id,const R::RString name,const R::RString fullname,size_t nb
 //------------------------------------------------------------------------------
 int GUser::Compare(const GUser &user) const
 {
-	return(Id-user.Id);
+	return(CompareIds(Id,user.Id));
 }
 
 
 //------------------------------------------------------------------------------
 int GUser::Compare(const GUser *user) const
 {
-	return(Id-user->Id);
+	return(CompareIds(Id,user->Id));
 }
 
 
 //------------------------------------------------------------------------------
 int GUser::Compare(const size_t id) const
 {
-	return(Id-id);
+	return(CompareIds(Id,id));
 }
 
 

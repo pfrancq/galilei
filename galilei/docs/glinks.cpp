@@ -63,21 +63,21 @@ R::RCursor<GLink> GLinks::GetLinks(void)
 //------------------------------------------------------------------------------
 int GLinks::Compare(const GLinks* lnk) const
 {
-	return(Doc->GetId()- lnk->GetDoc()->GetId());
+	return(CompareIds(Doc->GetId(),lnk->GetDoc()->GetId()));
 }
 
 
 //------------------------------------------------------------------------------
 int GLinks::Compare(const GLinks& lnk) const
 {
-	return(Doc->GetId()- lnk.GetDoc()->GetId());
+	return(CompareIds(Doc->GetId(),lnk.GetDoc()->GetId()));
 }
 
 
 //------------------------------------------------------------------------------
 int GLinks::Compare(const size_t id) const
 {
-	return(Doc->GetId()-id);
+	return(CompareIds(Doc->GetId(),id));
 }
 
 

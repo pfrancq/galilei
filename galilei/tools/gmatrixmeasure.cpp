@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include standard api files
-#include <math.h>
+#include <cmath>
 #include <limits>
 
 
@@ -950,8 +950,8 @@ void GMatrixMeasure::AddValue(double val)
 	if(isnan(val))
 		return;
 	double oldmean(Mean);
-	Mean=(NbValues*Mean+val)/(NbValues+1);
-	Deviation=(((Deviation+(oldmean*oldmean))*NbValues)+(val*val))/(NbValues+1)-(Mean*Mean);
+	Mean=(static_cast<double>(NbValues)*Mean+val)/static_cast<double>(NbValues+1);
+	Deviation=(((Deviation+(oldmean*oldmean))*static_cast<double>(NbValues))+(val*val))/static_cast<double>(NbValues+1)-(Mean*Mean);
 	NbValues++;
 }
 
@@ -969,8 +969,8 @@ void GMatrixMeasure::DeleteValue(double& val)
 	else
 	{
 		double oldmean(Mean);
-		Mean=(NbValues*Mean-val)/(NbValues-1);
-		Deviation=(((Deviation+(oldmean*oldmean))*NbValues)-(val*val))/(NbValues-1)-(Mean*Mean);
+		Mean=(static_cast<double>(NbValues)*Mean-val)/static_cast<double>(NbValues-1);
+		Deviation=(((Deviation+(oldmean*oldmean))*static_cast<double>(NbValues))-(val*val))/static_cast<double>(NbValues-1)-(Mean*Mean);
 		NbValues--;
 	}
 	val=NAN;

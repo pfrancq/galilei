@@ -6,7 +6,7 @@
 
 	Relation Type - Implementation.
 
-	Copyright 2006 by the Universit� Libre de Bruxelles.
+	Copyright 2006-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -55,14 +55,14 @@ GRelationType::GRelationType(size_t id,const R::RString& name,const R::RString& 
 //-----------------------------------------------------------------------------
 int GRelationType::Compare(const GRelationType& type) const
 {
-	return(Id-type.Id);
+	return(CompareIds(Id,type.Id));
 }
 
 
 //-----------------------------------------------------------------------------
 int GRelationType::Compare(size_t id) const
 {
-	return(Id-id);
+	return(CompareIds(Id,id));
 }
 
 

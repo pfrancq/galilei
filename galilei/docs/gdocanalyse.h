@@ -39,6 +39,8 @@
 // include files for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
+#include <gweightinfos.h>
+#include <gdocstruct.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,34 +55,55 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GDocAnalyse class provides a generic method to analyse a document.
-* @author Pascal Francq
-* @short Generic Document Analysis.
-*/
+ * The GDocAnalyse class provides a generic method to analyze a document. The
+ * internal structures, Infos and Struct, are used by GSession to manage the
+ * results (saving, assign them to the documents, etc.). The plug-in is
+ * responsible for their management (such as clearing them between two analysis
+ * if necessary.
+ * @author Pascal Francq
+ * @short Generic Document Analysis.
+ */
 class GDocAnalyse : public GPlugin<GFactoryDocAnalyse>
 {
+protected:
+
+	/**
+	 * Vector that should contain the structure after the analyze.
+	 */
+	GWeightInfos Infos;
+
+	/**
+	 * Structure that should contain the structure after the analyze.
+	 */
+	GDocStruct Struct;
+
+	/**
+	 * Language associated to the document.
+	 */
+	GLang* Lang;
+
 public:
 
 	/**
 	* Constructor of the document analysis method.
-	* @param fac             Factory of the plugin.
+	* @param fac             Factory of the plug-in.
 	*/
 	GDocAnalyse(GFactoryDocAnalyse* fac);
 
 	/**
 	* Analyze a XML of a document for a session.
-	* @param uri             Original URI.
-	* @param file            File to analyze (may be different from uri).
+	* @param doc             Document to analyze.
+	* @param file            File to analyze (may be its XML version).
 	* @param native          Specify if the document is a native XML file.
-	* @param lang            Main language of the document (may be fixed).
-	* @param infos           Vector that will contain the result.
 	*/
-	virtual void Analyze(const R::RURI& uri,const R::RURI& file,bool native,GLang* &lang,GWeightInfos* infos)=0;
+	virtual void Analyze(const GDoc* doc,const R::RURI& file,bool native)=0;
 
 	/**
-	* Destructor of the document analysis method.
+	* Destruct the document analyzer.
 	*/
 	virtual ~GDocAnalyse(void);
+
+	friend class GSession;
 };
 
 
