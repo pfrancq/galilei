@@ -36,6 +36,8 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include <memory>
+using namespace std;
 
 
 //------------------------------------------------------------------------------
@@ -55,7 +57,6 @@
 #include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
-using namespace std;
 
 
 //------------------------------------------------------------------------------
@@ -76,8 +77,8 @@ struct Scoring
 	size_t NbDocs;
 
 	Scoring(size_t id) : SubProfileId(id), Score(0.0), NbDocs(0) {}
-	int Compare(const Scoring& scoring) const {return(SubProfileId-scoring.SubProfileId);}
-	int Compare(const size_t scoring) const {return(SubProfileId-scoring);}
+	int Compare(const Scoring& scoring) const {return(CompareIds(SubProfileId,scoring.SubProfileId));}
+	int Compare(const size_t scoring) const {return(CompareIds(SubProfileId,scoring));}
 };
 
 

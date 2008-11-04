@@ -87,7 +87,7 @@ void Configure(GFactoryPostCommunity* params)
 {
  	DlgConfig_Qt dlg;
 
-	dlg.NbLevels->setValue(params->GetUInt("NbLevels"));
+	dlg.NbLevels->setValue(params->GetInt("NbLevels"));
 
 	if (dlg.exec())
 	{
