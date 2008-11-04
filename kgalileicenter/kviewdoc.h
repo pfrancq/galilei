@@ -51,6 +51,7 @@ namespace GALILEI
 	class GProfile;
 	class GSession;
 	class QGWeightInfos;
+	class QGDocStruct;
 }
 using namespace GALILEI;
 
@@ -107,6 +108,11 @@ class KViewDoc : public KView
 	* Results of the analyze.
 	*/
 	GALILEI::QGWeightInfos* Results;
+
+	/**
+	 * Structure.
+	 */
+	GALILEI::QGDocStruct* DocStruct;
 
 	/**
 	* General information about the document.

@@ -304,7 +304,7 @@ protected:
 			case 1:
 				doc=Session->GetDoc(text,true,true);
 				if(!doc)
-					Session->InsertDoc(doc=new GDoc(text,text,cNoRef,0,"text/html",cNoRef,RDate::GetToday(),RDate::Null,RDate::Null));
+					Session->InsertDoc(doc=new GDoc(text,text,cNoRef,0,"text/html",cNoRef,RDate::GetToday(),RDate::Null,RDate::Null,0,0));
 				break;
 			case 2:
 				user=Session->GetUser(text,true,true);
@@ -385,7 +385,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 		{
 			// Must be a normal document
 			GSubject* Topic=Subjects->GetNode(parent);
-			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,cNoRef,RDate::Null,RDate::GetToday(),RDate::Null);
+			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,0,0);
 			Session->InsertDoc(doc);
 			if(Topic)
 				Topic->Insert(doc);
@@ -522,22 +522,6 @@ void QCreateIdealTopics::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
-void QStartDegradation::DoIt(void)
-{
-	Parent->PutText("Start a Degradation ...");
-	Session->GetSubjects()->PerformDegradation(0,0);
-}
-
-
-//-----------------------------------------------------------------------------
-void QNextDegradation::DoIt(void)
-{
-	Parent->PutText("Do the Next Step of a Degradation ...");
-	Session->GetSubjects()->PerformDegradation(1,0);
-}
-
-
-//-----------------------------------------------------------------------------
 void QMakeFdbks::DoIt(void)
 {
 	Parent->PutText("Make feedbacks ...");
@@ -570,40 +554,6 @@ void QComputeAll::DoIt(void)
 		return;
 	Parent->PutText("Groups Profiles ...");
 	Session->GroupProfiles(Parent);
-}
-
-
-//-----------------------------------------------------------------------------
-void QFillMIMETypes::receiveNextMIMEPath(const char* path,RXMLStruct& xml)
-{
-	DIR* dp;
-	struct dirent* ep;
-	RString Full;
-
-	dp=opendir(path);
-	if(!dp)
-		return;
-	while((ep=readdir(dp)))
-	{
-		if(GSession::Break())
-			return;
-		if((!strcmp(ep->d_name,"."))||(!strcmp(ep->d_name,"..")))
-			continue;
-		Full=RString(path)+"/"+ep->d_name;
-		if(ep->d_type==DT_DIR)
-			receiveNextMIMEPath(Full.Latin1(),xml);
-		if((ep->d_type==DT_REG)&&(fnmatch("*.desktop",ep->d_name,0)==0))
-		{
-			Parent->PutText(ep->d_name);
-		}
-	}
-}
-
-//-----------------------------------------------------------------------------
-void QFillMIMETypes::DoIt(void)
-{
-	RXMLStruct xml;
-	receiveNextMIMEPath(Path,xml);
 }
 
 

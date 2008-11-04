@@ -758,32 +758,32 @@ void QPlugins::updateLevels(void)
 	unsigned int level;
 
 	QListViewItemIterator it(PostCommunity);
- for (level=0; it.current();++it, level++)
- {
-  QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(it.current());
-  f->Fac->Set("Level",level);
- }
+	for(level=0;it.current();++it,level++)
+	{
+		QPostCommunityItem* f=dynamic_cast<QPostCommunityItem*>(it.current());
+		f->Fac->SetUInt("Level",level);
+	}
 
- QListViewItemIterator it2(PostDocs);
- for (level=0; it2.current();++it2, level++)
- {
-  QPostDocItem* f=dynamic_cast<QPostDocItem*>(it2.current());
-  f->Fac->Set("Level",level);
- }
+	QListViewItemIterator it2(PostDocs);
+	for(level=0; it2.current();++it2, level++)
+	{
+		QPostDocItem* f=dynamic_cast<QPostDocItem*>(it2.current());
+		f->Fac->SetUInt("Level",level);
+	}
 
- QListViewItemIterator it3(PreProfile);
- for (level=0; it3.current();++it3, level++)
- {
-  QPreProfileItem* f=dynamic_cast<QPreProfileItem*>(it3.current());
-  f->Fac->Set("Level",level);
- }
+	QListViewItemIterator it3(PreProfile);
+	for(level=0; it3.current();++it3, level++)
+	{
+		QPreProfileItem* f=dynamic_cast<QPreProfileItem*>(it3.current());
+		f->Fac->SetUInt("Level",level);
+	}
 
- QListViewItemIterator it4(PostProfile);
- for (level=0; it4.current();++it4, level++)
- {
-  QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(it4.current());
-  f->Fac->Set("Level",level);
- }
+	QListViewItemIterator it4(PostProfile);
+	for(level=0; it4.current();++it4, level++)
+	{
+		QPostProfileItem* f=dynamic_cast<QPostProfileItem*>(it4.current());
+		f->Fac->SetUInt("Level",level);
+	}
 }
 
 

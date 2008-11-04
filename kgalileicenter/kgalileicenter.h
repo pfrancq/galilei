@@ -437,17 +437,6 @@ private slots:
 	void slotTopicsCompare(void);
 
 	/**
-	 * Start a degradation.
-	 */
-	void slotStartDegradation(void);
-
-	/**
-	 * Doe the nexts step of a degradation.
-	 */
-	void slotNextDegradation(void);
-
-
-	/**
 	* Show the documents window.
 	*/
 	void slotShowDocs(void);
@@ -492,26 +481,6 @@ private slots:
 	* Query the meta engine
 	*/
 	void slotQueryMetaEngine(void);
-
-	/**
-	* Construct the XML structure of the MIME types based on the one of KDE.
-	*/
-	void slotFillMIMETypes(void);
-
-	/**
-	* Do some computing on the stems in French.
-	*/
-	void slotTextFrench(void);
-
-	/**
-	* Do some computing on the stems in English.
-	*/
-	void slotTextEnglish(void);
-
-	/**
-	* Show the chromosomes stored.
-	*/
-	void slotShowHistory(void);
 
 	/**
 	* Toggles the statusbar.
@@ -617,7 +586,7 @@ public:
 	void DoneMeasure(QMyPlugins* dlg);
 
 	/**
-	* Destructor.
+	* Destruct the application.
 	*/
 	~KGALILEICenterApp(void);
 
@@ -636,8 +605,6 @@ public:
 	KAction* sessionQuit;
 
 	KAction* seeDicts;
-	KAction* textFrench;
-	KAction* textEnglish;
 
 	KAction* showDocs;
 	KAction* docAnalyse;
@@ -649,7 +616,6 @@ public:
 	KAction* saveXML;
 	KAction* analyseXML;
 	KAction* queryMetaEngine;
-	KAction* fillMIMETypes;
 
 	KAction* topicsClear;
 	KAction* showTopics;
@@ -675,9 +641,6 @@ public:
 	KAction* doAssessments;
 	KAction* communitiesCompare;
 	KAction* topicsCompare;
-	KAction* showCommunitiesHistory;
-	KAction* startDegradation;
-	KAction* nextDegradation;
 
 	KAction* plugins;
 	KAction* configure;

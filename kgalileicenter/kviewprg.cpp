@@ -40,6 +40,8 @@
 #include <gsession.h>
 #include <ggalileiapp.h>
 #include <ggalileiprg.h>
+#include <rprgfunc.h>
+#include <rprgclass.h>
 
 
 //-----------------------------------------------------------------------------
@@ -75,17 +77,16 @@ class KViewPrg::MyThread : public QThread
 {
 	KViewPrg* Rec;
 	RString Name;
-	GSession* Session;
 
 public:
-	MyThread(GSession* session,KViewPrg* rec,RString name);
+	MyThread(KViewPrg* rec,RString name);
 	virtual void run(void);
 };
 
 
 //-----------------------------------------------------------------------------
-KViewPrg::MyThread::MyThread(GSession* session,KViewPrg* rec,RString name)
-	: QThread(), Rec(rec), Name(name), Session(session)
+KViewPrg::MyThread::MyThread(KViewPrg* rec,RString name)
+	: QThread(), Rec(rec), Name(name)
 {
 }
 
@@ -195,7 +196,7 @@ void KViewPrg::run(void)
 	KApplication::kApplication()->processEvents();
 	if(Name.IsEmpty())
 	{
-		GGALILEIPrg Prg("",0);
+		GGALILEIPrg Prg(0);
 		RCursor<RPrgClass> Classes(Prg.GetClasses());
 		for(Classes.Start();!Classes.End();Classes.Next())
 		{
@@ -212,7 +213,7 @@ void KViewPrg::run(void)
 	}
 	else
 	{
-		Prg=new MyThread(Doc->GetSession(),this,Name);
+		Prg=new MyThread(this,Name);
 		Prg->run();
 	}
 }

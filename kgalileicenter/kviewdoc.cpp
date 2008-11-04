@@ -60,6 +60,8 @@ using namespace R;
 #include <ggalileiapp.h>
 #include <gconcepttype.h>
 #include <qgweightinfos.h>
+#include <qgdocstruct.h>
+#include <gdocstruct.h>
 using namespace GALILEI;
 
 
@@ -206,6 +208,10 @@ KViewDoc::KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int
 	// Initialization of the AnalyseResults Widget
 	Results = new QGWeightInfos(Infos,Document,Doc->GetSession());
 	Infos->insertTab(Results,"Description");
+
+	// Initialization of the AnalyseResults Widget
+	DocStruct = new QGDocStruct(Infos,Document,Doc->GetSession());
+	Infos->insertTab(DocStruct,"Structure");
 }
 
 
@@ -215,7 +221,7 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	  bDelDoc(true), bDocXML(false)
 {
 	// Construct the document
-	Document=new GDoc(file,file,cNoRef,0,mime,cNoRef,RDate::Null,RDate(),RDate::Null);
+	Document=new GDoc(file,file,cNoRef,0,mime,cNoRef,RDate::Null,RDate(),RDate::Null,0,0);
 
 	// Window proprieties
 	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("document.png",KIcon::Small)));
@@ -240,6 +246,10 @@ KViewDoc::KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,c
 	// Initialization of the AnalyseResults Widget
 	Results = new QGWeightInfos(Infos,Document,Doc->GetSession());
 	Infos->insertTab(Results,"Analyse Results");
+
+	// Initialization of the AnalyseResults Widget
+	DocStruct = new QGDocStruct(Infos,0,Doc->GetSession());
+	Infos->insertTab(DocStruct,"Structure");
 }
 
 
@@ -342,6 +352,7 @@ void KViewDoc::update(tObjType type)
 	General->clear();
 	ConstructGeneral();
 	Results->SetObject(Document);
+	DocStruct->SetObject(Document);
 }
 
 
@@ -381,8 +392,8 @@ void KViewDoc::AnalyseDocXML(void)
 	if(!Dlg.Run(new QAnalyzeXML(Document))) return;
 	General->clear();
 	ConstructGeneral();
-	Results->clear();
 	Results->SetObject(Document);
+	DocStruct->SetObject(Document);
 }
 
 

@@ -110,9 +110,7 @@ using namespace std;
 #include "kviewtopic.h"
 #include "kviewthtopics.h"
 #include "kviewprg.h"
-#include "kviewstems.h"
 #include "kviewprofile.h"
-#include "kviewhistory.h"
 #include "kviewdicts.h"
 #include "qsessionprogress.h"
 #include "qcreatedatabase.h"
@@ -121,7 +119,7 @@ using namespace std;
 #include "qexportmatrixdlg.h"
 #include "qsimulationdlg.h"
 #include "configure.h"
-#include "kviewdebug.h"
+#include "kprgconsole.h"
 
 
 
@@ -200,7 +198,7 @@ void KGALILEICenterApp::slotSessionConnect(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotSessionDebugInfo(void)
 {
-	createClient(Doc,new KViewDebug(Doc,pWorkspace,"View Debug Information",0));
+	createClient(Doc,new KPrgConsole(Doc,pWorkspace,"Console",0));
 }
 
 
@@ -479,13 +477,13 @@ void KGALILEICenterApp::slotSimulationDlg(void)
 	dlg.NbH->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbH","Subjects"));
 	dlg.RelH->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelH","Subjects"));
 	dlg.PercErr->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("PercErr","Subjects"));
-	dlg.NbProfMin->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMin","Subjects"));
-	dlg.NbProfMax->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMax","Subjects"));
+	dlg.NbProfMin->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbProfMin","Subjects"));
+	dlg.NbProfMax->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbProfMax","Subjects"));
 	dlg.PercSocial->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("PercSocial","Subjects"));
 	dlg.NbSubjects->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbSubjects","Subjects"));
 	dlg.RelSubjects->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelSubjects","Subjects"));
-	dlg.NbMinDocsSubject->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbMinDocsSubject","Subjects"));
-	dlg.NbDocsAssess->setValue(GALILEIApp->GetGALILEIConfig()->GetUInt("NbDocsAssess","Subjects"));
+	dlg.NbMinDocsSubject->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbMinDocsSubject","Subjects"));
+	dlg.NbDocsAssess->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbDocsAssess","Subjects"));
 	dlg.SwitchPerc->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("SwitchPerc","Subjects"));
 	if(dlg.exec())
 	{
@@ -572,23 +570,6 @@ void KGALILEICenterApp::slotTopicsCompare(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotStartDegradation(void)
-{
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Start a Degradation");
-	Dlg.Run(new QStartDegradation());
-	Doc->updateAllViews(otTopic);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotNextDegradation(void)
-{
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Do the Next Step of a Degradation");
-	Dlg.Run(new QNextDegradation());
-}
-
-
-//-----------------------------------------------------------------------------
 void KGALILEICenterApp::slotShowDocs(void)
 {
 	createClient(Doc,new KViewDocs(Doc,pWorkspace,"View Documents",0));
@@ -657,7 +638,7 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 		{
 			if(dlg.wasCancelled())
 				break;
-			dlg.progressBar()->setProgress((nb*100)/Docs.GetNb());
+			dlg.progressBar()->setProgress(static_cast<int>((nb*100)/Docs.GetNb()));
 			KApplication::kApplication()->processEvents();
 			if(!Docs()->GetLang())
 				continue;
@@ -735,78 +716,6 @@ void KGALILEICenterApp::slotQueryMetaEngine(void)
 		return;
 	}
 	createClient(Doc,new KViewMetaEngine(Doc,pWorkspace,"View Meta Engine Results",0));
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotFillMIMETypes(void)
-{
-	QSessionProgressDlg Dlg(this,0,"Analyse KDE MIME types");
-	Dlg.Run(new QFillMIMETypes("/usr/share/mimelnk"));
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotTextFrench(void)
-{
-	slotStatusMsg(i18n("Opening file..."));
-	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionary files"), this, i18n("Open File..."));
-	if(!url.isEmpty())
-	{
-		createClient(Doc,new KViewStems("fr",url.path(),Doc,pWorkspace,"View Theoretical Communities",0));
-	}
-	slotStatusMsg(i18n("Ready."));
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotTextEnglish(void)
-{
-	slotStatusMsg(i18n("Opening file..."));
-	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.mm|MMorph dictionary files"), this, i18n("Open File..."));
-	if(!url.isEmpty())
-	{
-		createClient(Doc,new KViewStems("en",url.path(),Doc,pWorkspace,"View Theoretical Communities",0));
-	}
-	slotStatusMsg(i18n("Ready."));
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotShowHistory(void)
-{
-	R::RCursor<GFactoryLang> curlang;
-	size_t size, min, max;
-
-	curlang=GALILEIApp->GetManager<GLangManager>("Lang")->GetFactories();
-	size=Doc->GetSession()->GetStorage()->GetHistorySize();
-
-	if (!size)
-	{
-		QMessageBox::information(this," Warning "," No history recorded in the database !!");
-		return;
-	}
-
-	QHistoryDlg dlg(this,0,true);
-	dlg.TLMaxHistory->setText(QString("Max Historic ID (max: ")+QString::number(size)+QString(")"));
-	dlg.SBMinId->setMinValue(1);
-	dlg.SBMinId->setMaxValue(size);
-	dlg.SBMaxId->setMinValue(1);
-	dlg.SBMaxId->setMaxValue(size);
-	dlg.bDate->setChecked(true);
-	dlg.MinDate->setText("0000-00-00");
-	dlg.MaxDate->setText("0000-00-00");
-
-	KApplication::kApplication()->processEvents();
-	if(dlg.exec())
-	{
-		min=dlg.SBMinId->value() ;
-		max=dlg.SBMaxId->value();
-		if(min>max) return;
-		createClient(Doc,new KViewHistory(Doc,0/*dlg.CBGlobal->isChecked()*/,pWorkspace,"Show Chromosomes",0,min,max, dlg.MinDate->text(),dlg.MaxDate->text(), dlg.bDate->isChecked()));
-	}
 }
 
 

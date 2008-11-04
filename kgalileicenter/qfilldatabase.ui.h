@@ -7,6 +7,7 @@
 ** place of a destructor.
 *****************************************************************************/
 
+#include <memory>
 #include "qchooseparent.h"
 #include "qmessagebox.h"
 #include "qlistview.h"

@@ -114,11 +114,11 @@ KViewMetaEngine::KViewMetaEngine(KDoc* doc,QWidget* parent,const char* name,int 
 	NbRes = new KIntSpinBox( groupBoxSearch, "NbRes" );
 	NbRes->setMaxValue(1000);
 	//Set Value: default = the value from meta engine option
-	int tmp=GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()->GetNbResUsed();
-	if(tmp==-1)
+	size_t tmp=GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()->GetNbResUsed();
+	if(!tmp)
 		NbRes->setValue(100);
 	else
-		NbRes->setValue(tmp);
+		NbRes->setValue(static_cast<int>(tmp));
 	layout1->addWidget(NbRes);
 	groupBoxSearchLayout->addLayout( layout1);
 

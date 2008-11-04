@@ -109,11 +109,11 @@ void KGALILEICenterApp::initActions(void)
 	connect(sessionSave,SIGNAL(toggled(bool)),this,SLOT(slotSaveModifier()));
 	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
 	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
-	sessionDebugInfo=new KAction(i18n("Debug &Information"),"help",0,this,SLOT(slotSessionDebugInfo()),actionCollection(),"sessionDebugInfo");
+	sessionDebugInfo=new KAction(i18n("&Konsole"),"help","Ctrl+K",this,SLOT(slotSessionDebugInfo()),actionCollection(),"sessionDebugInfo");
 	createDatabase=new KAction(i18n("Create &MySQL Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
 	importUsersData=new KAction(i18n("Import &Users' Data"),0,0,this,SLOT(slotImportUsersData()),actionCollection(),"importUsersData");
 	importDocs=new KAction(i18n("Import Documents"),"exec",0,this,SLOT(slotImportDocs()),actionCollection(),"importDocs");
-	runProgram=new KAction(i18n("&Run Program"),"rebuild",0,this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
+	runProgram=new KAction(i18n("&Run Program"),"rebuild","Ctrl+R",this,SLOT(slotRunProgram()),actionCollection(),"runProgram");
 	sessionDisconnect=new KAction(i18n("&Disconnect Database"),"connect_no",0,this,SLOT(slotSessionDisconnect()),actionCollection(),"sessionDisconnect");
 	sessionStats=new KAction(i18n("&Statistics"),"gohome",0,this,SLOT(slotSessionStats()),actionCollection(),"sessionStats");
 	sessionQuit=new KAction(i18n("E&xit"),"exit",0,this,SLOT(slotSessionQuit()),actionCollection(),"sessionQuit");
@@ -132,7 +132,6 @@ void KGALILEICenterApp::initActions(void)
 	saveXML=new KAction(i18n("&Save XML Structure"),0,0,this,SLOT(slotSaveXML()),actionCollection(),"saveXML");
 	analyseXML=new KAction(i18n("Analyze &XML Structure"),"filefind",0,this,SLOT(slotAnalyseXML()),actionCollection(),"analyseXML");
 	queryMetaEngine=new KAction(i18n("&Query Meta Engine"),"find",0,this,SLOT(slotQueryMetaEngine()),actionCollection(),"queryMetaEngine");
-	fillMIMETypes=new KAction(i18n("Construct &MIME types from KDE"),"desktop",0,this,SLOT(slotFillMIMETypes()),actionCollection(),"fillMIMETypes");
 
 	// Menu "Topics"
 	topicsClear=new KAction(i18n("Force Re-computing Topics"),0,0,this,SLOT(slotTopicsClear()),actionCollection(),"topicsClear");
@@ -152,7 +151,6 @@ void KGALILEICenterApp::initActions(void)
 	showCommunities=new KAction(i18n("&Show Communities"),"window_list",0,this,SLOT(slotShowCommunities()),actionCollection(),"showCommunities");
 	communitiesCalc=new KAction(i18n("&Group Profiles"),"exec",0,this,SLOT(slotCommunitiesCalc()),actionCollection(),"communitiesCalc");
 	postCommunitiesCalc=new KAction(i18n("Execute &Post-Communities Methods"),0,0,this,SLOT(slotPostCommunities()),actionCollection(),"postCommunitiesCalc");
-	showCommunitiesHistory=new KAction(i18n("Show Communities &History"),0,0,this,SLOT(slotShowHistory	()),actionCollection(),"showCommunitiesHistorys");
 
 	// Menu "Debug"
 	simulationDlg=new KAction(i18n("Simulation &Parameters"),0,0,this,SLOT(slotSimulationDlg()),actionCollection(),"simulationDlg");
@@ -163,10 +161,6 @@ void KGALILEICenterApp::initActions(void)
 	doAssessments=new KAction(i18n("&Assessments Cycle"),0,0,this,SLOT(slotDoAssessments()),actionCollection(),"doAssessments");
 	communitiesCompare=new KAction(i18n("Compare Ideal Communities"),"fileopen",0,this,SLOT(slotCommunitiesCompare()),actionCollection(),"communitiesCompare");
 	topicsCompare=new KAction(i18n("Compare Ideal Topics"),"fileopen",0,this,SLOT(slotTopicsCompare()),actionCollection(),"topicsCompare");
-	textFrench=new KAction(i18n("Analyze &French Stems"),0,0,this,SLOT(slotTextFrench()),actionCollection(),"textFrench");
-	textEnglish=new KAction(i18n("Analyze &English Stems"),0,0,this,SLOT(slotTextEnglish()),actionCollection(),"textEnglish");
-	startDegradation=new KAction(i18n("Start the Degradation"),0,0,this,SLOT(slotStartDegradation()),actionCollection(),"startDegradation");;
-	nextDegradation=new KAction(i18n("Next &Degradation"),0,0,this,SLOT(slotNextDegradation()),actionCollection(),"nextDegradation");;
 
 	// Menu "Settings"
 	setStandardToolBarMenuEnabled(true);
@@ -335,14 +329,11 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	doAssessments->setEnabled(true);
 	communitiesCompare->setEnabled(true);
 	topicsCompare->setEnabled(true);
-	textFrench->setEnabled(true);
-	textEnglish->setEnabled(true);
 	communitiesCalc->setEnabled(true);
 	postCommunitiesCalc->setEnabled(true);
 	subjectsCreate->setEnabled(true);
 	communitiesCreate->setEnabled(true);
 	topicsCreate->setEnabled(true);
-	showCommunitiesHistory->setEnabled(true);
 	showDocs->setEnabled(true);
 	docAnalyse->setEnabled(true);
 	docsAnalyse->setEnabled(true);
@@ -357,13 +348,10 @@ void KGALILEICenterApp::UpdateMenusEntries(void)
 	seeDicts->setEnabled(true);
 	importUsersData->setEnabled(true);
 	importDocs->setEnabled(true);
-	sessionDebugInfo->setEnabled(true);
 	topicsClear->setEnabled(true);
 	showTopics->setEnabled(true);
 	topicsCalc->setEnabled(true);
 	postTopicsCalc->setEnabled(true);
-	startDegradation->setEnabled(true);
-	nextDegradation->setEnabled(true);
 }
 
 
@@ -383,8 +371,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	doAssessments->setEnabled(false);
 	communitiesCompare->setEnabled(false);
 	topicsCompare->setEnabled(false);
-	textFrench->setEnabled(false);
-	textEnglish->setEnabled(false);
 	createXML->setEnabled(false);
 	saveXML->setEnabled(false);
 	analyseXML->setEnabled(false);
@@ -393,7 +379,6 @@ void KGALILEICenterApp::DisableAllActions(void)
 	subjectsCreate->setEnabled(false);
 	communitiesCompare->setEnabled(false);
 	topicsCompare->setEnabled(false);
-	showCommunitiesHistory->setEnabled(false);
 	showDocs->setEnabled(false);
 	docAnalyse->setEnabled(false);
 	docsAnalyse->setEnabled(false);
@@ -408,13 +393,10 @@ void KGALILEICenterApp::DisableAllActions(void)
 	seeDicts->setEnabled(false);
 	importUsersData->setEnabled(false);
 	importDocs->setEnabled(false);
-	sessionDebugInfo->setEnabled(false);
 	topicsClear->setEnabled(false);
 	showTopics->setEnabled(false);
 	topicsCalc->setEnabled(false);
 	postTopicsCalc->setEnabled(false);
-	startDegradation->setEnabled(false);
-	nextDegradation->setEnabled(false);
 }
 
 
@@ -439,6 +421,7 @@ bool KGALILEICenterApp::eventFilter(QObject* object, QEvent* event)
 		}
 		else
 		{
+			delete pView;
 			e->accept();
 			return(true);
 		}

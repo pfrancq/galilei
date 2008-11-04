@@ -2,45 +2,39 @@ PROJECT(kgalileicenter)
 INCLUDE_DIRECTORIES(.)
 
 SET(kgalileicenter_frontend_kde_MOC_INCLUDES kdoc.h
-                                                                                               kgalileicenter.h
-                                                                                               kviewdebug.h
-                                                                                               kviewdicts.h
-                                                                                               kviewdoc.h
-                                                                                               kviewdocs.h
-                                                                                               kviewcommunity.h
-                                                                                               kviewcommunities.h
-                                                                                               kviewtopic.h
-                                                                                               kviewtopics.h                                                                                               
-                                                                                               kview.h
-                                                                                               kviewhistory.h
-                                                                                               kviewmetaengine.h
-                                                                                               kviewprg.h
-                                                                                               kviewprofile.h
-                                                                                               kviewstats.h
-                                                                                               kviewstems.h
-                                                                                               kviewthcommunities.h
-                                                                                               kviewthtopics.h
-                                                                                               kviewusers.h
-                                                                                               qmyplugins.h
-                                                                                               qsessionprogress.h
+                                                                      kgalileicenter.h
+                                                                      kprgconsole.h
+                                                                      kviewdicts.h
+                                                                      kviewdoc.h
+                                                                      kviewdocs.h
+                                                                      kviewcommunity.h
+                                                                      kviewcommunities.h
+                                                                      kviewtopic.h
+                                                                      kviewtopics.h
+                                                                      kview.h
+                                                                      kviewmetaengine.h
+                                                                      kviewprg.h
+                                                                      kviewprofile.h
+                                                                      kviewstats.h
+                                                                      kviewthcommunities.h
+                                                                      kviewthtopics.h
+                                                                      kviewusers.h
+                                                                      qmyplugins.h
+                                                                      qsessionprogress.h)
+
+SET(kgalileicenter_frontend_kde_UI_INCLUDES  qchooseparent.ui
+                                                                   qfilldatabase.ui
+                                                                   qcreatedatabase.ui
+                                                                   qexportmatrixdlg.ui
+                                                                   qplugins.ui
+                                                                   qsimulationdlg.ui
+                                                                   configure.ui
+                                                                   addfdbkdlg.ui
 )
 
-SET(kgalileicenter_frontend_kde_UI_INCLUDES qchooseparent.ui
-                                                                      qhistorydlg.ui
-                                                                      qfilldatabase.ui
-                                                                      qcreatedatabase.ui
-                                                                      qexportmatrixdlg.ui
-                                                                      qplugins.ui
-                                                                      qsimulationdlg.ui
-                                                                      configure.ui
-                                                                      addfdbkdlg.ui
-)
-
-SET (KGALILEICENTER_SOURCES   kviewhistory.cpp
-                                                                      kviewprg.cpp
+SET (KGALILEICENTER_SOURCES                  kviewprg.cpp
                                                                       kgalileicenter_init.cpp
                                                                       kgalileicenter_dlg.cpp
-                                                                      kviewstems.cpp
                                                                       qsessionprogress.cpp
                                                                       kviewusers.cpp
                                                                       kviewthcommunities.cpp
@@ -49,7 +43,7 @@ SET (KGALILEICENTER_SOURCES   kviewhistory.cpp
                                                                       kviewcommunities.cpp
                                                                       kviewcommunity.cpp
                                                                       kviewtopics.cpp
-                                                                      kviewtopic.cpp                                                                      
+                                                                      kviewtopic.cpp
                                                                       kviewdocs.cpp
                                                                       kviewdoc.cpp
                                                                       kviewstats.cpp
@@ -59,7 +53,7 @@ SET (KGALILEICENTER_SOURCES   kviewhistory.cpp
                                                                       kgalileicenter.cpp
                                                                       main.cpp
                                                                       kviewdicts.cpp
-                                                                      kviewdebug.cpp
+                                                                      kprgconsole.cpp
           )
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})

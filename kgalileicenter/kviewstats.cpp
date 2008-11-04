@@ -144,7 +144,7 @@ void KViewStats::ComputeStats(void)
 		QMessageBox::critical(this,"KGALILEICenter","No manager for the statistics plug-ins");
 		return;
 	}
-	QProgressDialog Dlg( "Compute Statistics", "Abort Compute", Mng->GetNbPlugIns()+1 ,this, "progress", TRUE );
+	QProgressDialog Dlg("Compute Statistics", "Abort Compute",static_cast<int>(Mng->GetNbPlugIns())+1,this,"progress",TRUE);
 
 
 	// Create the root node

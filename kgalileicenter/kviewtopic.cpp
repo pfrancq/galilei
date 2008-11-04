@@ -193,7 +193,7 @@ void KViewTopic::slotMenu(int)
 			if(!size) continue;
 			if(size>maxsize)
 			{
-				newsize=size+static_cast<size_t>(0.5*size);
+				newsize=size+static_cast<size_t>(0.5*static_cast<double>(size));
 				tmp=new GWeightInfo*[newsize];
 				if(tab)
 				{

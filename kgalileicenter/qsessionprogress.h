@@ -36,12 +36,17 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <memory>
+using namespace std;
+
+
+//-----------------------------------------------------------------------------
 // forward class declaration for GALIEI
 #include <gslot.h>
 #include <rdb.h>
 using namespace GALILEI;
 using namespace R;
-using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -338,30 +343,6 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Start a degradation.
-*/
-class QStartDegradation : public QSessionThread
-{
-public:
-	QStartDegradation(void) {}
-	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Do the next step of a degradation.
-*/
-class QNextDegradation : public QSessionThread
-{
-public:
-	QNextDegradation(void) {}
-	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
 * Make a feedback cycle.
 */
 class QMakeFdbks : public QSessionThread
@@ -423,23 +404,6 @@ private:
 public:
 	QLoadDictionaries(QListView* dicts,GSession* session) : Dicts(dicts), Session(session) {}
 	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Analazse next MIME path for MIME types.
-* @param path           Path to a KDE desktop files.
-* @param xml            XML structure holding the actual mime types.
-*/
-class QFillMIMETypes : public QSessionThread
-{
-	const char* Path;
-public:
-	QFillMIMETypes(const char* path) : Path(path) {}
-	virtual void DoIt(void);
-private:
-	void receiveNextMIMEPath(const char* path,RXMLStruct& xml);
 };
 
 

@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	KViewDebug.h
+	KPrgConsole.h
 
-	Window to manipulate debugging information - Header.
+	Window to manipulate a program console - Header.
 
-	Copyright 2007 by the Université Libre de Bruxelles.
+	Copyright 2007-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -38,11 +38,14 @@
 //-----------------------------------------------------------------------------
 // include files for R Project
 #include <rcontainer.h>
+#include <rqconsole.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <qlistviewitemtype.h>
+#include <ggalileiprg.h>
 using namespace GALILEI;
 
 
@@ -61,7 +64,6 @@ class QSpacerItem;
 class QLabel;
 class QLineEdit;
 class QPushButton;
-class QTextEdit;
 
 
 //-----------------------------------------------------------------------------
@@ -71,53 +73,54 @@ class QTextEdit;
 
 //-----------------------------------------------------------------------------
 /**
-* The KViewMetaEngine class represents a window to manipulate a specific groups.
+* The KPrgConsole class provides a window holding a console for the GALILEI
+* interpreter.
 * @author Pascal Francq.
-* @version $Revision: 466 $
-* @short Group' Window.
+* @short Program Console.
 */
-class KViewDebug : public KView
+class KPrgConsole : public KView
 {
 	Q_OBJECT
 
-    QLabel* textLabel1;
-    QLineEdit* Object;
-    QPushButton* Run;
-    QLabel* textLabel2;
-    QLineEdit* Info;
-    QTextEdit* Results;
+	/**
+	 * Console to control the output.
+	 */
+	RQConsole* Results;
 
-    QVBoxLayout* Form1Layout;
-    QHBoxLayout* layout1;
-    QHBoxLayout* layout2;
+    /**
+     * GALILEI interpreter.
+     */
+    GGALILEIPrg* Prg;
 
 public:
 
 	/**
 	* Constructor for the view
-	* @param grp            Corresponding group.
 	* @param doc            Document instance that the view represents.
 	* @param parent         Parent of the window.
 	* @param name           Name of the window.
 	* @param wflags         Flags.
 	*/
-	KViewDebug(KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KPrgConsole(KDoc* doc,QWidget* parent,const char* name,int wflags);
 
 protected slots:
 
-    virtual void languageChange(void);
-
-    virtual void run(void);
+	/**
+	 * Receive a command from the console widget.
+	 */
+    void RunCmd(QString cmd);
 
 public:
 
 	/**
-	* Gets called to redraw the document contents if it has been modified.
-	* @param type            Type.
-	*/
-	virtual void update(tObjType type);
+	 * Nothing to update.
+	 */
+	virtual void update(GALILEI::tObjType) {}
 
-	virtual ~KViewDebug(void);
+	/**
+	 * Destruct the window.
+	 */
+	virtual ~KPrgConsole(void);
 };
 
 
