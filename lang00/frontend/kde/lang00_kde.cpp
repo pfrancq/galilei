@@ -6,7 +6,7 @@
 
 	A KDE about box - Implementation.
 
-	Copyright 2006 by the Universit鿽Libre de Bruxelles.
+	Copyright 2006 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -39,14 +39,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is the universal language plugin.");
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
 
 
 
@@ -57,11 +51,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "fr", I18N_NOOP("Universal Language"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 2006, Universit� Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData("00", 0, ki18n("Universal Language"),
+		"1.0", ki18n("This is the universal language plugin."), KAboutData::License_GPL,
+		ki18n("(c) 2006, Université Libre de Bruxelles\nCAD/CAM Department"),  KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 

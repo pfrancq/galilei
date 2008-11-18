@@ -1,5 +1,5 @@
-IF(KDE3_FOUND)
+IF(KDE4_FOUND)
     SET(langfr_AVAILABLE_FRONTENDS kde)
-    SET(langfr_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    SET(langfr_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(langfr_frontend langfr kde langfr_INCLUDES)
-ENDIF(KDE3_FOUND)
+ENDIF(KDE4_FOUND)

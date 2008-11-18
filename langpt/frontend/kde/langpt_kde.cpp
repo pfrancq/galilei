@@ -6,7 +6,7 @@
 
 	A KDE about box for Portuguese language - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2001 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -39,14 +39,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is the portuguese language plugin using a stemming algorithm based on snowball algorithms.");
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
 
 
 
@@ -57,12 +51,12 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "pt", I18N_NOOP("Portuguese Language"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("David Wartel",I18N_NOOP("Maintainer"), "dwartel@ulb.ac.be");
-	aboutData.addAuthor("Blake Madden",I18N_NOOP("C++ stemming algorithm writter"), "madden_blake@hotmail.com");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "pt", 0, ki18n("Portuguese Language"),
+		"1.0", ki18n("This is the portuguese language plugin using a stemming algorithm based on snowball algorithms."), KAboutData::License_GPL,
+		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Maintainer"), "dwartel@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Blake Madden"),ki18n("C++ stemming algorithm writter"), "madden_blake@hotmail.com");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 

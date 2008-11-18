@@ -6,7 +6,7 @@
 
 	A KDE about box for HTML filter - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2006 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -39,33 +39,29 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfilter.h>
-#include <../langar.h>
+#include <glang.h>
+#include <kaboutdata.h>
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
+#include <ui_config.h>
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-#include <kurlrequester.h>
-
-
 //------------------------------------------------------------------------------
-// include files for QtWidget
-#include <qlineedit.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for Current
-#include <dlgconfig_qt.h>
-
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is the arabic language plugin using the Porter stemming algorithm.");
+class Config : public KDialog, public Ui_Config
+{
+public:
+	Config(void)
+	{
+		setCaption("Configure E-mail Plug-In");
+		QWidget* widget=new QWidget(this);
+		setupUi(widget);
+		setMainWidget(widget);
+		setButtons(KDialog::Cancel|KDialog::Apply);
+		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		adjustSize();
+	}
+};
 
 
 
@@ -76,13 +72,13 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "fr", I18N_NOOP("Arabic Language"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("David Wartel",I18N_NOOP("Contributor"), "dwartel@ulb.ac.be");
-	aboutData.addAuthor("Sarah Rolfo",I18N_NOOP("linguist"), "srolfo@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "ar", 0, ki18n("Arabic Language"),
+		"1.0", ki18n("This is the arabic language plugin using the Porter stemming algorithm."), KAboutData::License_GPL,
+		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Contributor"), "dwartel@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Sarah Rolfo"),ki18n("Linguist"), "srolfo@ulb.ac.be");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 
@@ -90,14 +86,14 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryLang* params)
 {
- 	DlgConfig_Qt dlg;
+ 	Config dlg;
 
-	dlg.Rules->setURL(ToQString(params->Get("RulesFile")));
+	dlg.Rules->setUrl(ToQString(params->Get("RulesFile")));
 	dlg.Encoding->setText(ToQString(params->Get("Encoding")));
 
 	if(dlg.exec())
 	{
-		params->Set("RulesFile",FromQString(dlg.Rules->url()));
+		params->Set("RulesFile",FromQString(dlg.Rules->url().url()));
 		params->Set("Encoding", FromQString(dlg.Encoding->text()));
  		params->Apply();
  	}
