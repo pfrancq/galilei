@@ -531,11 +531,6 @@ public:
 	virtual RChar CodeToChar(RString& code);
 
 	/**
-	 * An invalid code is accepted.
-	 */
-	virtual bool InvalidXMLCodeAccept(void) {return(true);}
-
-	/**
 	* Add a valid word to the document.
 	* @param word           Word to add.
 	* @param weight         Weights of the words added during this analyze.

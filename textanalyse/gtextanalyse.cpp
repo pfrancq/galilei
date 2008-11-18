@@ -374,6 +374,7 @@ GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac)
 	: GDocAnalyse(fac), RXMLParser(), Words(), StructTokens(/*100*/), Depths(),
 	  Sl(0), Sldiff(0), StructSpace(0), IndexSpace(0), IsTitle(false)
 {
+	SetInvalidXMLCodes(true);
 }
 
 
