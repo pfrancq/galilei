@@ -1,5 +1,5 @@
-IF(KDE3_FOUND)
+IF(KDE4_FOUND)
     SET(gravitation_community_AVAILABLE_FRONTENDS kde)
-    SET(gravitation_community_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    SET(gravitation_community_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(gravitation_community_frontend gravitation_community kde gravitation_community_INCLUDES)
-ENDIF(KDE3_FOUND)
+ENDIF(KDE4_FOUND)
