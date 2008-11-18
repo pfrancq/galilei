@@ -4,9 +4,9 @@
 
 	KViewDicts.h
 
-	Window to show all the dictionnaries - Header.
+	Window to show all the dictionaries - Header.
 
-	Copyright 2006-2007 by the Université Libre de Bruxelles.
+	Copyright 2006-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -37,69 +37,38 @@
 
 
 //-----------------------------------------------------------------------------
-// foward declaration for GALILEI
-#include <gslot.h>
-namespace GALILEI
-{
-	class GDoc;
-	class GLang;
-	class GConcept;
-	class GRelation;
-}
-using namespace GALILEI;
+// include files for R/GALILEI
+#include <rcontainer.h>
+#include <gconcepttype.h>
+#include <grelation.h>
 using namespace R;
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
+// include files for KDE/Qt
+#include <QtGui/QMdiSubWindow>
+
+
+//---------------------------------------------------------------------------
 // include files for current application
-#include "kview.h"
-
-
-//-----------------------------------------------------------------------------
-// foward class declaration
-class QListView;
-class QListViewItem;
-class QLabel;
+#include <ui_kviewdicts.h>
 
 
 //-----------------------------------------------------------------------------
 /**
-* The KViewDicts class provides a window to list all the documents
-* treated by the system and classify by their language.
-* @auhtor Pascal Francq and David Wartel
-* @short Documents Window.
+* The KViewDicts class provides a window to list all the dictionaries.
+* @author Pascal Francq
+* @short Dictionaries Window.
 */
-class KViewDicts : public KView
+class KViewDicts : public QMdiSubWindow, public Ui_KViewDicts
 {
 	Q_OBJECT
-
-	class LocalItem;
-	class LocalItem2;
-
-	/**
-	* Listview (tree view) of dictionnaries.
-	*/
-	QListView* Dicts;
-
-	/**
-	* Current dictionnary widget.
-	*/
-	QListView* Dict;
-
-	/**
-	* Relations implied by the current concept.
-	*/
-	QListView* Relations;
 
 	/**
 	* Current concept type.
 	*/
 	GConceptType* CurDict;
-
-	/**
-	* Current Concept.
-	*/
-	QLabel* CurConcept;
 
 	/**
 	*/
@@ -109,62 +78,66 @@ public:
 
 	/**
 	* Constructor for the view
-	* @param doc            Document instance that the view represents.
-	* @param parent         Parent of the window.
-	* @param name           Name of the window.
-	* @param wflags         Flags.
 	*/
-	KViewDicts(KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewDicts(void);
 
 	/**
-	* Creates the listview of dictionnaries
+	* Creates the list of dictionaries.
 	*/
-	void CreateDictsListView(void);
+	void create(void);
+
+private:
 
 	/**
+	 * Build a string representing a concept.
 	*/
 	QString BuildConcept(GConcept* concept);
 
 protected slots:
 
 	/**
-	* Show a given dictionnary when a double-click on a type.
-	* @param item            Language.
-	*/
-	void slotDoubleClick(QListViewItem* item);
+	 * Update the window.
+	 */
+	void update(void);
 
 	/**
-	* Show relations.
+	* A given dictionary was select.
+	* @param item            Item.
+	* @param col             Column.
 	*/
-	void slotRelations(QListViewItem* item);
+	void selectDict(QTreeWidgetItem* item,int col);
 
 	/**
-	* Right button pressed in the dictionnary.
+	* a given concept was selected.
+	* @param item            Item.
+	* @param col             Column.
 	*/
-	void slotRightButtonDict(QListViewItem* item,const QPoint& pos,int p);
+	void selectConcept(QTreeWidgetItem* item,int col);
 
 	/**
-	* Right button pressed in the relations.
-	*/
-	void slotRightButtonRelations(QListViewItem* item,const QPoint& pos,int p);
-
-	void slotDeleteConcept(void);
-	void slotNewConcept(void);
-	void slotDeleteRelation(void);
-	void slotNewRelation(void);
-
-protected:
+	 * The user want to create a new concept.
+	 */
+	void newConcept(void);
 
 	/**
-	* Gets called to redraw the document contents if it has been modified.
-	* @param type            Type.
-	*/
-	virtual void update(tObjType type);
+	 * The user want to delete the current concept.
+	 */
+	void delConcept(void);
+
+	/**
+	 * The user want to create a new relation.
+	 */
+	void newRelation(void);
+
+	/**
+	 * The user want to delete the current relation.
+	 */
+	void delRelation(void);
 
 public:
 
 	/**
-	* Destructor for the main view.
+	* Destruct for the main view.
 	*/
 	~KViewDicts(void);
 };

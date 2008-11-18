@@ -31,44 +31,25 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef KViewDebugH
-#define KViewDebugH
+#ifndef KPrgConsoleH
+#define KPrgConsoleH
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rcontainer.h>
-#include <rqconsole.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <qlistviewitemtype.h>
+// include files for R/GALILEI
 #include <ggalileiprg.h>
+using namespace R;
 using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qvariant.h>
-#include <qdialog.h>
+// include files for KDE/Qt
+#include <QtGui/QMdiSubWindow>
 
 
-//-----------------------------------------------------------------------------
-// forward declaration
-class QVBoxLayout;
-class QHBoxLayout;
-class QGridLayout;
-class QSpacerItem;
-class QLabel;
-class QLineEdit;
-class QPushButton;
-
-
-//-----------------------------------------------------------------------------
+//---------------------------------------------------------------------------
 // include files for current application
-#include "kview.h"
+#include <ui_kprgconsole.h>
 
 
 //-----------------------------------------------------------------------------
@@ -78,14 +59,9 @@ class QPushButton;
 * @author Pascal Francq.
 * @short Program Console.
 */
-class KPrgConsole : public KView
+class KPrgConsole : public QMdiSubWindow, public Ui_KPrgConsole
 {
 	Q_OBJECT
-
-	/**
-	 * Console to control the output.
-	 */
-	RQConsole* Results;
 
     /**
      * GALILEI interpreter.
@@ -95,13 +71,9 @@ class KPrgConsole : public KView
 public:
 
 	/**
-	* Constructor for the view
-	* @param doc            Document instance that the view represents.
-	* @param parent         Parent of the window.
-	* @param name           Name of the window.
-	* @param wflags         Flags.
+	* Construct the window.
 	*/
-	KPrgConsole(KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KPrgConsole(void);
 
 protected slots:
 
@@ -111,11 +83,6 @@ protected slots:
     void RunCmd(QString cmd);
 
 public:
-
-	/**
-	 * Nothing to update.
-	 */
-	virtual void update(GALILEI::tObjType) {}
 
 	/**
 	 * Destruct the window.

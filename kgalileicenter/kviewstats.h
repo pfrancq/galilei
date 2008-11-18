@@ -6,7 +6,7 @@
 
 	Window for the running some instruction to the session - Header.
 
-	Copyright 2002 by the Universit� Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -42,16 +42,13 @@ using namespace R;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qlistview.h>
-#include <qsplitter.h>
-#include <qtabwidget.h>
-#include <qmultilineedit.h>
+// include files for KDE/Qt
+#include <QtGui/QMdiSubWindow>
 
 
 //-----------------------------------------------------------------------------
 // include files for current application
-#include "kview.h"
+#include <ui_kviewstats.h>
 
 
 //-----------------------------------------------------------------------------
@@ -61,31 +58,16 @@ using namespace R;
 * @author Pascal Francq.
 * @short Statistics Window for Instructions.
 */
-class KViewStats : public KView
+class KViewStats : public QMdiSubWindow, public Ui_KViewStats
 {
 	Q_OBJECT
-
-	/**
-	* Tree Used to show the results.
-	*/
-	QListView* Res;
 
 public:
 
 	/**
 	* Constructor for the view.
-	* @param doc            Document instance that the view represents.
-	* @param parent         Parent of the window.
-	* @param name           Name of the window.
-	* @param wflags         Flags.
 	*/
-	KViewStats(KDoc* doc,QWidget* parent,const char* name,int wflags);
-
-	/**
-	* Gets called to redraw the document contents if it has been modified.
-	* @param type            Type.
-	*/
-	virtual void update(tObjType type);
+	KViewStats(void);
 
 protected:
 
@@ -94,22 +76,17 @@ protected:
 	* @param t              Tag to construct.
 	* @param parent         Parent that holds the tag.
 	*/
-	void ConstructTag(RXMLTag* t,QListViewItem* parent);
+	void ConstructTag(RXMLTag* t,QTreeWidgetItem* parent);
 
 	/**
 	* Compute the statistics.
 	*/
 	void ComputeStats(void);
 
-	/**
-	* Called when the main window is resize by the user.
-	*/
-	void resizeEvent(QResizeEvent *);
-
 public:
 
 	/**
-	* Destructor for the view.
+	* Destruct the view.
 	*/
 	~KViewStats(void);
 };

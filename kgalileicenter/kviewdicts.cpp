@@ -32,83 +32,95 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <qlistviewitemtype.h>
+// include files for R/GALILEI Projects
 #include <rqt.h>
-#include <gdoc.h>
 #include <gconcept.h>
-#include <gconcepttype.h>
 #include <grelationtype.h>
 #include <grelation.h>
-#include <glang.h>
-#include <gsession.h>
 #include <ggalileiapp.h>
-using namespace GALILEI;
-using namespace R;
+#include <gsession.h>
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qpixmap.h>
-#include <qlistview.h>
-#include <qlayout.h>
-#include <qsplitter.h>
-#include <qlabel.h>
-#include <qpopupmenu.h>
-#include <qinputdialog.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kiconloader.h>
+// include files for Qt/KDE
+#include <QtGui/QInputDialog>
 #include <kmessagebox.h>
 
 
 //-----------------------------------------------------------------------------
-// includes files for current application
-#include "kviewdicts.h"
-#include "qsessionprogress.h"
-#include "kdoc.h"
+// application specific includes
+#include <kviewdicts.h>
+#include <qsessionprogress.h>
+
 
 
 //-----------------------------------------------------------------------------
 //
-// class KViewDicts::LocalItem
+// class QDict
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class KViewDicts::LocalItem : public QListViewItem
+class QGObject : public QTreeWidgetItem
 {
 public:
-	size_t Id;
 
-	LocalItem(QListView* v,size_t id,QString str) : QListViewItem(v,QString::number(id),str), Id(id) {}
-	virtual int compare( QListViewItem *i, int col, bool ascending ) const
+	union
 	{
-		if(col==0)
-		{
-			double d=static_cast<double>(Id)-static_cast<double>(static_cast<LocalItem*>(i)->Id);
-			if(d==0.0) return(key(0, ascending ).compare( i->key(0, ascending)));
-			if(d>0)
-				return(1);
-			return(-1);
-		}
-		return(key( col, ascending ).compare( i->key( col, ascending)));
+		GConceptType* Dict;
+		GConcept* Concept;
+		GRelation* Rel;
+	} Obj;
+
+	tObjType Type;
+
+	QGObject(QTreeWidget* parent,GConceptType* dict)
+		: QTreeWidgetItem(parent,QStringList()<<ToQString(dict->GetDescription())), Type(otConceptType)
+	{
+		Obj.Dict=dict;
+		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
+	}
+
+	QGObject(QTreeWidget* parent,GConcept* concept,const QString& id)
+		: QTreeWidgetItem(parent,QStringList()<<id<<ToQString(concept->GetName())), Type(otConcept)
+	{
+		Obj.Concept=concept;
+		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
+	}
+
+	QGObject(QTreeWidget* parent,GRelation* rel,const QString& str1,const QString& str2,const QString& str3)
+		: QTreeWidgetItem(parent,QStringList()<<str1<<str2<<str3), Type(otRelation)
+	{
+		Obj.Rel=rel;
 	}
 };
 
 
-//-----------------------------------------------------------------------------
-class KViewDicts::LocalItem2 : public QListViewItem
-{
-public:
-	GRelation* Rel;
 
-	LocalItem2(QListView* v,GRelation* rel,GSession* session,KViewDicts* d) :
-	    QListViewItem(v,d->BuildConcept(rel->GetSubject()),
-	    ToQString(session->GetRelationType(rel->GetType(),false)->GetName()),
-	    d->BuildConcept(rel->GetObject())) , Rel(rel) {}
+//-----------------------------------------------------------------------------
+//
+// class QLoadDicts
+//
+//-----------------------------------------------------------------------------
+
+class QLoadDicts : public QSessionThread
+{
+private:
+
+	QTreeWidget* Dicts;
+
+public:
+	QLoadDicts(QTreeWidget* dicts) : Dicts(dicts) {}
+	virtual void DoIt(void)
+	{
+		// Go trough each language and create a Item.
+		RCursor<GConceptType> Types(GALILEIApp->GetSession()->GetConceptTypes());
+		for(Types.Start();!Types.End();Types.Next())
+		{
+			Types()->Load();
+			new QGObject(Dicts,Types());
+		}
+	}
 };
 
 
@@ -120,71 +132,64 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewDicts::KViewDicts(KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Dicts(0), Dict(0), CurDict(0), CurConcept(0), Rels(0)
+KViewDicts::KViewDicts(void)
+	: QMdiSubWindow(), Ui_KViewDicts(), CurDict(0), Rels(0)
 {
-	setCaption("Dictionnaries");
-	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("window_list.png",KIcon::Small)));
-
-	QHBoxLayout* tabLayout = new QHBoxLayout(this, 0, 0, "tabLayout");
-	QSplitter* splitter=new QSplitter(Qt::Horizontal,this);
-	tabLayout->addWidget(splitter);
-
-	Dicts = new QListView(splitter,"QListView of KViewDicts");
-	Dicts->addColumn(QString("Dictionnaries"));
-	Dicts->setRootIsDecorated(true);
-	connect(Dicts,SIGNAL(doubleClicked(QListViewItem*)),this,SLOT(slotDoubleClick(QListViewItem*)));
-	//tabLayout->addWidget(Dicts);
-
-	QSplitter* splitter2=new QSplitter(Qt::Vertical,splitter);
-	Dict = new QListView(splitter2,"QListView of KViewDict");
-	Dict->addColumn(QString("ID"));
-	Dict->addColumn(QString("Name"));
-	Dict->setRootIsDecorated(false);
-	connect(Dict,SIGNAL(doubleClicked(QListViewItem*)),this,SLOT(slotRelations(QListViewItem*)));
-	connect(Dict,SIGNAL(rightButtonPressed(QListViewItem*,const QPoint&,int)),this,SLOT(slotRightButtonDict(QListViewItem*,const QPoint&,int)));
-
-	QFrame* frm=new QFrame(splitter2);
-	QVBoxLayout* tab2 = new QVBoxLayout(frm, 0, 0, "tab2");
-//	splitter->setLayout(tab2);
-	CurConcept=new QLabel("Nothing",frm);
-	tab2->addWidget(CurConcept);
-	Relations=new QListView(frm,"Relations of KViewDict");
-	Relations->addColumn(QString("Subject"));
-	Relations->addColumn(QString("Type"));
-	Relations->addColumn(QString("Object"));
-	connect(Relations,SIGNAL(rightButtonPressed(QListViewItem*,const QPoint&,int)),this,SLOT(slotRightButtonRelations(QListViewItem*,const QPoint&,int)));
-	tab2->addWidget(Relations);
-
-	CreateDictsListView();
+	QWidget* ptr=new QWidget();
+	setupUi(ptr);
+	setWidget(ptr);
+	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setWindowTitle("Dictionaries");
+	connect(Dicts,SIGNAL(itemActivated(QTreeWidgetItem*,int)),this,SLOT(selectDict(QTreeWidgetItem*,int)));
+	connect(Dict,SIGNAL(itemActivated(QTreeWidgetItem*,int)),this,SLOT(selectConcept(QTreeWidgetItem*,int)));
+	connect(NewConcept,SIGNAL(pressed()),this,SLOT(newConcept()));
+	connect(DelConcept,SIGNAL(pressed()),this,SLOT(delConcept()));
+	connect(NewRelation,SIGNAL(pressed()),this,SLOT(newRelation()));
+	connect(DelRelation,SIGNAL(pressed()),this,SLOT(delRelation()));
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewDicts::CreateDictsListView(void)
+void KViewDicts::create(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Load Dictionaries",true);
-	Dlg.Run(new QLoadDictionaries(Dicts,Doc->GetSession()));
+	QSessionProgressDlg Dlg(this,"Load Dictionaries",true);
+	QLoadDicts* Task(new QLoadDicts(Dicts));
+	connect(Task,SIGNAL(finish()),this,SLOT(update()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewDicts::slotDoubleClick(QListViewItem* item)
+void KViewDicts::update(void)
 {
-	QLoadDictionaries::QListViewItemDict* ptr=dynamic_cast<QLoadDictionaries::QListViewItemDict*>(item);
+//	cout<<"Update"<<endl;
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewDicts::selectDict(QTreeWidgetItem* item,int)
+{
+	QGObject* ptr(dynamic_cast<QGObject*>(item));
 	if(!ptr)
 		return;
 	Dict->clear();
-	CurDict=ptr->Dict;
+	CurDict=ptr->Obj.Dict;
+//	cout<<"OK :"<<CurDict->GetConceptMaxId()<<endl;
 
 	size_t i;
 	const GConcept** concepts;
-	for(i=ptr->Dict->GetConceptMaxId()+2,concepts=ptr->Dict->GetConcepts();--i;concepts++)
+	for(i=CurDict->GetConceptMaxId()+2,concepts=CurDict->GetConcepts();--i;concepts++)
 		if(*concepts)
-			new LocalItem(Dict,(*concepts)->GetId(),ToQString((*concepts)->GetName()));
+		{
+			QString w(QString::number((*concepts)->GetId()));
+			while(w.length()<10)
+				w.prepend(' ');
+			new QGObject(Dict,const_cast<GConcept*>(*concepts),w);
+		}
 }
 
-//-----------------------------------------------------------------------------
+
+////-----------------------------------------------------------------------------
 QString KViewDicts::BuildConcept(GConcept* concept)
 {
 	return("\""+ToQString(concept->GetName())+"\" ("+QString::number(concept->GetId())+","+QString::number(concept->GetType()->GetId())+")");
@@ -192,98 +197,71 @@ QString KViewDicts::BuildConcept(GConcept* concept)
 
 
 //-----------------------------------------------------------------------------
-void KViewDicts::slotRelations(QListViewItem* item)
+void KViewDicts::selectConcept(QTreeWidgetItem* item,int)
 {
-	LocalItem* ptr=dynamic_cast<LocalItem*>(item);
+	QGObject* ptr(dynamic_cast<QGObject*>(item));
+	if(!ptr)
+		return;
 	if((!ptr)||(!CurDict))
 		return;
-	GConcept* concept=CurDict->GetConcept(ptr->Id);
-	CurConcept->setText(BuildConcept(concept));
+	GConcept* concept(ptr->Obj.Concept);
 	Relations->clear();
 	Rels.Clear();
-	Doc->GetSession()->GetRelations(Rels,concept,cNoRef,0,true);
+	GALILEIApp->GetSession()->GetRelations(Rels,concept,cNoRef,0,true);
 	RCursor<GRelation> Cur(Rels);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		new LocalItem2(Relations,Cur(),Doc->GetSession(),this);
+		new QGObject(Relations,Cur(),
+				 BuildConcept(Cur()->GetSubject()),
+				 ToQString(GALILEIApp->GetSession()->GetRelationType(Cur()->GetType(),false)->GetName()),
+				 BuildConcept(Cur()->GetObject()));
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewDicts::slotRightButtonDict(QListViewItem*,const QPoint& pos,int)
+void KViewDicts::newConcept(void)
 {
-	if(!CurDict)
-		return;
-	QPopupMenu Menu(this,"Local");
-	if(Dict->currentItem())
-		Menu.insertItem("Delete Concept",this,SLOT(slotDeleteConcept(void)));
-	Menu.insertItem("&Create New Concept",this,SLOT(slotNewConcept(void)));
-	Menu.exec(pos);
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewDicts::slotDeleteConcept(void)
-{
-	LocalItem* ptr=dynamic_cast<LocalItem*>(Dict->currentItem());
-	GConcept* concept=CurDict->GetConcept(ptr->Id);
-	if(KMessageBox::warningYesNo(this,"Do you want to delete the concept "+BuildConcept(concept)+"?","Warning")==KMessageBox::No)
-		return;
-	Dict->takeItem(ptr);
-	CurDict->DeleteConcept(concept);
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewDicts::slotNewConcept(void)
-{
-	bool ok;
-	QString text = QInputDialog::getText("New concept", "Enter the name of the concept:",QLineEdit::Normal,QString::null,&ok,this);
-	if(ok&&!text.isEmpty())
+	bool Ok;
+	QString text(QInputDialog::getText(this,"New concept", "Enter the name of the concept:",QLineEdit::Normal,QString(),&Ok));
+	if(Ok&&!text.isEmpty())
 	{
 		GConcept concept(FromQString(text),CurDict);
 		GConcept* ptr=CurDict->InsertConcept(&concept);
-		new LocalItem(Dict,ptr->GetId(),text);
+		QString w(QString::number(ptr->GetId()));
+		while(w.length()<10)
+			w.prepend(' ');
+		new QGObject(Dict,ptr,w);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewDicts::slotRightButtonRelations(QListViewItem*,const QPoint& pos,int)
+void KViewDicts::delConcept(void)
 {
-	if(CurConcept->text()=="Nothing")
+	QGObject* ptr(dynamic_cast<QGObject*>(Dict->currentItem()));
+	if(!ptr) return;
+	GConcept* concept(ptr->Obj.Concept);
+	if(KMessageBox::warningYesNo(this,"Do you want to delete the concept "+BuildConcept(concept)+"?","Warning")==KMessageBox::No)
 		return;
-	QPopupMenu Menu(this,"Local");
-	if(Relations->currentItem())
-		Menu.insertItem("Delete Relation",this,SLOT(slotDeleteRelation(void)));
-	Menu.insertItem("&Create New Relation",this,SLOT(slotNewRelation(void)));
-	Menu.exec(pos);
+	delete ptr;
+	CurDict->DeleteConcept(concept);
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewDicts::slotDeleteRelation(void)
+void KViewDicts::newRelation(void)
 {
-//	LocalItem2* ptr=dynamic_cast<LocalItem2*>(Relations->currentItem());
+	RToDo("KViewDicts::newRelation(void)");
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewDicts::delRelation(void)
+{
+	QGObject* ptr(dynamic_cast<QGObject*>(Relations->currentItem()));
+	if(!ptr) return;
 	if(KMessageBox::warningYesNo(this,"Do you want to delete the current relation?","Warning")==KMessageBox::No)
 		return;
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewDicts::slotNewRelation(void)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewDicts::update(tObjType type)
-{
-	if(type!=otLang) return;
-	Dict->clear();
-	Relations->clear();
-	CurDict=0;
-	CurConcept=0;
-	CurConcept->setText("Nothing");
+	RToDo("KViewDicts::delRelation(void)");
 }
 
 

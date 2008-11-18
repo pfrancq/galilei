@@ -39,31 +39,11 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R
+// include files for R/GALILEI
 #include <rqt.h>
 #include <rdir.h>
+#include <ggalileiapp.h>
 #include <rxmlfile.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for Qt
-#include <qframe.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qmessagebox.h>
-#include <qlayout.h>
-#include <qlistviewitemtype.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <klocale.h>
-#include <kapplication.h>
-#include <kiconloader.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
 #include <gsession.h>
 #include <gstorage.h>
 #include <gdoc.h>
@@ -89,10 +69,28 @@ using namespace R;
 using namespace std;
 
 
+
+//-----------------------------------------------------------------------------
+// include files for Qt
+#include <QtGui/QFrame>
+#include <QtGui/QLabel>
+#include <QtGui/QPushButton>
+#include <QtGui/QMessageBox>
+#include <QtGui/QLayout>
+
+
+
+//-----------------------------------------------------------------------------
+// include files for KDE
+#include <klocale.h>
+#include <kapplication.h>
+#include <kiconloader.h>
+
+
 //-----------------------------------------------------------------------------
 // include files for current project
-#include "qsessionprogress.h"
-#include <kdoc.h>
+#include <qsessionprogress.h>
+
 
 
 //-----------------------------------------------------------------------------
@@ -103,15 +101,14 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 QSessionThread::QSessionThread(void)
-	: QThread(), Parent(0), Session(0)
+	: QThread(), Parent(0)
 {
 }
 
 //-----------------------------------------------------------------------------
-void QSessionThread::Set(GSession* session,QSessionProgressDlg* parent)
+void QSessionThread::Set(QSessionProgressDlg* parent)
 {
 	Parent=parent;
-	Session=session;
 }
 
 
@@ -121,24 +118,30 @@ void QSessionThread::run(void)
 	try
 	{
 		DoIt();
+		emit finish();
+		if(GSession::Break())
+			Parent->setLabelText("Canceled");
+		else
+			Parent->setLabelText("Finish");
 	}
 	catch(GException& e)
 	{
-		Parent->PutError(e.GetMsg());
+		Parent->setLabelText(e.GetMsg());
 	}
 	catch(RException& e)
 	{
-		Parent->PutError(e.GetMsg());
+		Parent->setLabelText(e.GetMsg());
 	}
 	catch(std::exception& e)
 	{
-		Parent->PutError(e.what());
+		Parent->setLabelText(e.what());
 	}
 	catch(...)
 	{
-		Parent->PutError("Undefined Error");
+		Parent->setLabelText("Undefined Error");
 	}
-	Parent->Finish();
+	Parent->Running=false;
+	Parent->setButtonText(i18n("OK"));
 }
 
 
@@ -151,20 +154,20 @@ QLoadSession::QLoadSession(void)
 //-----------------------------------------------------------------------------
 void QLoadSession::DoIt(void)
 {
-	Parent->PutText("Load Topics ...");
-	Session->LoadTopics();
+	Parent->setLabelText("Load Topics ...");
+	GALILEIApp->GetSession()->LoadTopics();
 	if(GSession::Break())
 		return;
-	Parent->PutText("Loading Documents ...");
-	Session->LoadDocs();
+	Parent->setLabelText("Loading Documents ...");
+	GALILEIApp->GetSession()->LoadDocs();
 	if(GSession::Break())
 		return;
-	Parent->PutText("Load Communities ...");
-	Session->LoadCommunities();
+	Parent->setLabelText("Load Communities ...");
+	GALILEIApp->GetSession()->LoadCommunities();
 	if(GSession::Break())
 		return;
-	Parent->PutText("Load Users/Profiles/Feedbacks ...");
-	Session->LoadUsers();
+	Parent->setLabelText("Load Users/Profiles/Feedbacks ...");
+	GALILEIApp->GetSession()->LoadUsers();
 }
 
 
@@ -172,14 +175,14 @@ void QLoadSession::DoIt(void)
 void QCreateDB::DoIt(void)
 {
 	// Create the database
-	Parent->PutText("Database structure created");
+	Parent->setLabelText("Database structure created");
 	RDb::CreateMySQLDatabase(Host,User,Pass,Name);
 	auto_ptr<RDb> Db(RDb::Get(RDb::MySQL,Name,Host,User,Pass,"utf-8"));
 	if(GSession::Break())
 		return;
 
  	// Construct tables
- 	Parent->PutText("Dump Database model");
+ 	Parent->setLabelText("Dump Database model");
  	RunSQL(SchemaURL+"DbModel.sql",Db);
 	if(GSession::Break())
 		return;
@@ -188,7 +191,7 @@ void QCreateDB::DoIt(void)
  	RCursor<GLang> Langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
  	for(Langs.Start();!Langs.End();Langs.Next())
  	{
- 		Parent->PutText("Import stoplist for "+Langs()->GetName());
+ 		Parent->setLabelText(ToQString("Import stoplist for "+Langs()->GetName()));
  		RString Stop=SchemaURL+"DbStopList_"+Langs()->GetCode()+".sql";
  		try
  		{
@@ -246,106 +249,14 @@ void QCreateDB::RunSQL(const RURI& path,std::auto_ptr<RDb>& Db)
 
 
 //-----------------------------------------------------------------------------
-class ImportFile : public RXMLFile
-{
-	GDoc* doc;
-	GUser* user;
-	GProfile* profile;
-	tDocAssessment docass;
-	int what;
-	GSession* Session;
-
-public:
-
-	ImportFile(const RString& name,const RString& encoding,GSession* session)
-		: RXMLFile(name,0,encoding), doc(0), user(0), profile(0), docass(djUnknow), what(0), Session(session) {}
-
-protected:
-
-	//-------------------------------------------------------------------------
-	void BeginTag(const RString&, const RString&, const RString& name,RContainer<RXMLAttr,true,true>&)
-	{
-		if(name=="url")
-			what=1;
-		else if(name=="user")
-			what=2;
-		else if(name=="cat")
-			what=3;
-		else if(name=="valeur")
-			what=4;
-	}
-
-
-	//-------------------------------------------------------------------------
-	void EndTag(const RString&, const RString&, const RString& name)
-	{
-		if(name!="vote")
-			return;
-		Session->InsertFdbk(profile->GetId(),doc->GetId(),docass,RDate::GetToday(),RDate::Null,true);
-		doc=0;
-		user=0;
-		profile=0;
-		docass=djUnknow;
-		what=0;
-	}
-
-
-	//-------------------------------------------------------------------------
-	void Text(const RString& text)
-	{
-		RCharCursor Cur(text);
-
-		while((!Cur.End())&&(Cur().IsSpace()))
-			Cur.Next();
-		if(Cur.End())
-			return;
-		switch(what)
-		{
-			case 1:
-				doc=Session->GetDoc(text,true,true);
-				if(!doc)
-					Session->InsertDoc(doc=new GDoc(text,text,cNoRef,0,"text/html",cNoRef,RDate::GetToday(),RDate::Null,RDate::Null,0,0));
-				break;
-			case 2:
-				user=Session->GetUser(text,true,true);
-				if(!user)
-					Session->InsertUser(user=new GUser(cNoRef,text,text));
-				break;
-			case 3:
-				profile=user->GetPtr(text,false);
-				if(!profile)
-					Session->InsertProfile(profile=new GProfile(user,cNoRef,text,0,RDate::GetToday(),RDate::GetToday(),RDate::GetToday(),true));
-				break;
-			case 4:
-				if(text=="+1")
-					docass=djOK;
-				else if(text=="-1")
-					docass=djOutScope;
-				break;
-		}
-		what=0;
-	}
-};
-
-
-//-----------------------------------------------------------------------------
-void QImportUsersData::DoIt(void)
-{
-	Parent->PutText("Analyze XML File");
-	ImportFile File(XML,"utf-8",Session);
-	File.Open(RIO::Read);
-}
-
-
-//-----------------------------------------------------------------------------
 void QImportDocs::DoIt(void)
 {
 	FilterManager=GALILEIApp->GetManager<GFilterManager>("Filter");
-	Subjects=Session->GetSubjects(true);
+	Subjects=GALILEIApp->GetSession()->GetSubjects(true);
 	CurDepth=0;
 	ParseDir(Dir,Parent);
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveSubjects();
+	if(GALILEIApp->GetSession()->MustSaveResults()&&GALILEIApp->GetSession()->GetStorage())
+		GALILEIApp->GetSession()->GetStorage()->SaveSubjects();
 }
 
 
@@ -386,7 +297,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 			// Must be a normal document
 			GSubject* Topic=Subjects->GetNode(parent);
 			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,0,0);
-			Session->InsertDoc(doc);
+			GALILEIApp->GetSession()->InsertDoc(doc);
 			if(Topic)
 				Topic->Insert(doc);
 		}
@@ -398,184 +309,150 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 //-----------------------------------------------------------------------------
 void QCreateDocXML::DoIt(void)
 {
-	Parent->PutText("Creating XML Structure ...");
-	if(XML)
-	{
-		delete XML;
-		XML=0;
-	}
-
-	RIO::RSmartTempFile docxml;
+	Parent->setLabelText("Creating XML Structure ...");
 	bool Native;
-	RURI uri=GALILEIApp->GetManager<GFilterManager>("Filter")->WhatAnalyze(Doc,docxml,Native);
-	if(!uri.IsEmpty())
-	{
-		XML=new RXMLStruct();
-		RXMLFile In(uri,XML);
-		In.Open(RIO::Read);
-	}
+	if(!GALILEIApp->GetSession()->GetDocXML(Doc,XML,Native))
+		throw GException("XML file could not be created");
 }
 
 
 //-----------------------------------------------------------------------------
 void QAnalyzeXML::DoIt(void)
 {
-	Session->AnalyseDoc(Doc,true,0,Parent);
+	GALILEIApp->GetSession()->AnalyseDoc(Doc,true,0,Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QAnalyzeDocs::DoIt(void)
 {
-	Parent->PutText("Analyse Documents ...");
-	Session->AnalyseDocs(false,Parent);
+	Parent->setLabelText("Analyze Documents ...");
+	GALILEIApp->GetSession()->AnalyseDocs(false,Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QPostAnalyzeDocs::DoIt(void)
 {
-	Parent->PutText("Do Post-Documents Methods ...");
-	Session->DoPostDocs(Parent);
+	Parent->setLabelText("Do Post-Documents Methods ...");
+	GALILEIApp->GetSession()->DoPostDocs(Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QComputeProfiles::DoIt(void)
 {
-	Parent->PutText("Compute Profiles ...");
-	Session->CalcProfiles(Parent);
+	Parent->setLabelText("Compute Profiles ...");
+	GALILEIApp->GetSession()->CalcProfiles(Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QPostComputeProfiles::DoIt(void)
 {
-	Parent->PutText("Do Post-Profiles Methods ...");
-	Session->DoPostProfiles(Parent);
+	Parent->setLabelText("Do Post-Profiles Methods ...");
+	GALILEIApp->GetSession()->DoPostProfiles(Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QComputeProfile::DoIt(void)
 {
-	Parent->PutText("Compute Profile ...");
-	Session->CalcProfile(Profile,Parent);
+	Parent->setLabelText("Compute Profile ...");
+	GALILEIApp->GetSession()->CalcProfile(Profile,Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QGroupProfiles::DoIt(void)
 {
-	Parent->PutText("Groups Profiles ...");
-	Session->GroupProfiles(Parent);
+	Parent->setLabelText("Groups Profiles ...");
+	GALILEIApp->GetSession()->GroupProfiles(Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QPostGroupProfiles::DoIt(void)
 {
-	Parent->PutText("Do Post-Community Methods ...");
-	Session->DoPostCommunity(Parent);
+	Parent->setLabelText("Do Post-Community Methods ...");
+	GALILEIApp->GetSession()->DoPostCommunity(Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QGroupDocs::DoIt(void)
 {
-	Parent->PutText("Groups Documents ...");
-	Session->GroupDocs(Parent);
+	Parent->setLabelText("Groups Documents ...");
+	GALILEIApp->GetSession()->GroupDocs(Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QPostGroupDocs::DoIt(void)
 {
-	Parent->PutText("Do Post-Topic Methods ...");
-	Session->DoPostTopic(Parent);
+	Parent->setLabelText("Do Post-Topic Methods ...");
+	GALILEIApp->GetSession()->DoPostTopic(Parent);
 }
 
 
 //-----------------------------------------------------------------------------
 void QCreateIdealSubjects::DoIt(void)
 {
-	Parent->PutText("Start a Simulation ...");
-	Session->GetSubjects()->Apply();
-	Session->GetSubjects()->StartSimulation();
+	Parent->setLabelText("Start a Simulation ...");
+	GALILEIApp->GetSession()->GetSubjects()->Apply();
+	GALILEIApp->GetSession()->GetSubjects()->StartSimulation();
 }
 
 
 //-----------------------------------------------------------------------------
 void QCreateIdealCommunities::DoIt(void)
 {
-	Parent->PutText("Create Ideal Communities ...");
-	Session->BuildGroupsFromIdeal(otCommunity);
+	Parent->setLabelText("Create Ideal Communities ...");
+	GALILEIApp->GetSession()->BuildGroupsFromIdeal(otCommunity);
 }
 
 
 //-----------------------------------------------------------------------------
 void QCreateIdealTopics::DoIt(void)
 {
-	Parent->PutText("Create Ideal Topics ...");
-	Session->BuildGroupsFromIdeal(otTopic);
+	Parent->setLabelText("Create Ideal Topics ...");
+	GALILEIApp->GetSession()->BuildGroupsFromIdeal(otTopic);
 }
 
 
 //-----------------------------------------------------------------------------
 void QMakeFdbks::DoIt(void)
 {
-	Parent->PutText("Make feedbacks ...");
-	Session->GetSubjects()->Apply();
-	Session->GetSubjects()->DocumentSharing();
+	Parent->setLabelText("Make feedbacks ...");
+	GALILEIApp->GetSession()->GetSubjects()->Apply();
+	GALILEIApp->GetSession()->GetSubjects()->DocumentSharing();
 }
 
 
 //-----------------------------------------------------------------------------
 void QMakeAssessments::DoIt(void)
 {
-	Parent->PutText("Make assessments ...");
-	Session->GetSubjects()->Apply();
-	Session->GetSubjects()->AddAssessments();
+	Parent->setLabelText("Make assessments ...");
+	GALILEIApp->GetSession()->GetSubjects()->Apply();
+	GALILEIApp->GetSession()->GetSubjects()->AddAssessments();
 }
 
 
 //-----------------------------------------------------------------------------
 void QComputeAll::DoIt(void)
 {
-	Parent->PutText("Analyse Documents ...");
-	Session->AnalyseDocs(Parent);
+	Parent->setLabelText("Analyse Documents ...");
+	GALILEIApp->GetSession()->AnalyseDocs(Parent);
 	if(GSession::Break())
 		return;
-	Parent->PutText("Compute Profiles ...");
-	Session->CalcProfiles(Parent);
+	Parent->setLabelText("Compute Profiles ...");
+	GALILEIApp->GetSession()->CalcProfiles(Parent);
 	if(GSession::Break())
 		return;
 	if(GSession::Break())
 		return;
-	Parent->PutText("Groups Profiles ...");
-	Session->GroupProfiles(Parent);
-}
-
-
-//-----------------------------------------------------------------------------
-QLoadDictionaries::QListViewItemDict::QListViewItemDict(QListView* parent,GConceptType* dict)
-	: QListViewItem(parent,ToQString(dict->GetName())), Dict(dict)
-{
-	setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("xmag.png",KIcon::Small)));
-}
-
-
-
-//-----------------------------------------------------------------------------
-void QLoadDictionaries::DoIt(void)
-{
-	// Go trough each language and create a Item.
-	RCursor<GConceptType> Types(Session->GetConceptTypes());
-	for(Types.Start();!Types.End();Types.Next())
-	{
-		QListViewItem* ptr=new QListViewItemDict(Dicts,Types());
-		ptr->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("locale.png",KIcon::Small)));
-	}
+	Parent->setLabelText("Groups Profiles ...");
+	GALILEIApp->GetSession()->GroupProfiles(Parent);
 }
 
 
@@ -587,166 +464,72 @@ void QLoadDictionaries::DoIt(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,GSession* s,const char* c,bool cancel)
-    : QSemiModal(parent,"QSessionProgressDlg",true), GSlot(), btnOk(0), Session(s), Running(false), Cancel(cancel), Canceled(false)
+QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,const QString& c,bool cancel)
+    : KProgressDialog(parent,c,""), GSlot(), Running(false)
 {
-	resize(200, 28 );
-	setCaption(i18n(c));
-
-	QVBoxLayout* Layout = new QVBoxLayout( this, 11, 6, "QConnectMySQLLayout");
-
-	txtRem = new QLabel( this, "txtRem" );
-	txtRem->setGeometry( QRect( 10, 10, 80, 20 ) );
-	txtRem->setText(c+QString(" ..."));
-	Layout->addWidget(txtRem);
-
-	QFrame* Line = new QFrame( this, "Line1" );
-	Line->setFrameStyle( QFrame::HLine | QFrame::Sunken );
-	Layout->addWidget(Line);
-
-	QHBoxLayout* HLayout = new QHBoxLayout( 0, 0, 6, "layout9_2");
-	QSpacerItem* spacer5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-	HLayout->addItem( spacer5 );
-	btnOk = new QPushButton( this, "buttonOk_2" );
-	btnOk->setGeometry( QRect( 260, 50, 80, 22 ) );
-	btnOk->setText( i18n( "&OK" ) );
-	btnOk->setAutoDefault( TRUE );
-	btnOk->setDefault( TRUE );
-	btnOk->setEnabled(false);
-	HLayout->addWidget(btnOk);
-	spacer5 = new QSpacerItem( 40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum );
-	HLayout->addItem( spacer5 );
-	Layout->addItem(HLayout);
+	showCancelButton(cancel);
+	setAllowCancel(cancel);
+	setAutoClose(false);
+	progressBar()->setVisible(false);
+	adjustSize();
 }
 
 
 //-----------------------------------------------------------------------------
 bool QSessionProgressDlg::Run(QSessionThread* task)
 {
-	if(Cancel)
-	{
-		btnOk->setText(i18n("&Cancel"));
-		btnOk->setEnabled(true);
-	}
-	KApplication::kApplication()->processEvents();
-	task->Set(Session,this);
 	Running=true;
-	Changed=false;
-	Canceled=false;
-	Error=false;
-	GSession::ResetBreak();
+	task->Set(this);
 	task->start();
-	connect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
-	show();
-	while(Running)
-	{
-		if(Changed)
-		{
-			txtRem->setText(NewLabel);
-			Changed=false;
-		}
-		KApplication::kApplication()->processEvents();
-	}
-	if(!Canceled)
-	{
-		if(!Error)
-			txtRem->setText("Finish");
-		else
-			if(Changed)
-			{
-				txtRem->setText(NewLabel);
-				Changed=false;
-			}
-	}
-	else
-		txtRem->setText("Canceled");
-	btnOk->setEnabled(true);
-	btnOk->setText(i18n("&OK"));
-	disconnect(btnOk,SIGNAL(clicked()),this,SLOT(receiveButton()));
-	connect(btnOk,SIGNAL(clicked()),this,SLOT(close()));
-	exec();
-	delete task;
-
+	const int res = KProgressDialog::exec();
 	if(GSession::Break())
-	{
 		GSession::ResetBreak();
-		return(false);
-	}
-	return(true);
+	delete task;
+	return(res);
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 {
-	if(Canceled)
-		return;
-	NewLabel=QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...";
-	Changed=true;
+	setLabelText(QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...");
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextDoc(const GDoc* doc)
 {
-	if(Canceled)
-		return;
-	NewLabel=QString("Analyse Doc '")+ToQString(doc->GetName())+"' ...";
-	Changed=true;
+	setLabelText(QString("Analyze Doc '")+ToQString(doc->GetName())+"' ...");
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextProfile(const GProfile* prof)
 {
-	if(Canceled)
-		return;
-	NewLabel=QString("Analyse Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...";
-	Changed=true;
+	setLabelText(QString("Analyze Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...");
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextChromosome(size_t id)
 {
-	if(Canceled)
-		return;
-	NewLabel=QString("Analyse Chromosome ")+QString::number(id)+" ...";
-	Changed=true;
+	setLabelText(QString("Analyze Chromosome ")+QString::number(id)+" ...");
 }
 
 
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::receiveButton()
-{
-	if(btnOk)
-		btnOk->setEnabled(false);
-	GSession::SetBreak();
-	Canceled=true;
-}
-
 
 //-----------------------------------------------------------------------------
-void QSessionProgressDlg::PutText(const char* text)
+void QSessionProgressDlg::reject(void)
 {
-	NewLabel=text;
-	Changed=true;
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::PutError(const char* text)
-{
-	NewLabel=text;
-	Changed=true;
-	Error=true;
-}
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::Finish(void)
-{
-	Running=false;
+	if(Running)
+		GSession::SetBreak();
+	else
+	{
+		if(GSession::Break())
+			done(0);
+		else
+			done(1);
+	}
 }
 
 

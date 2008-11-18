@@ -1,14 +1,14 @@
-<!DOCTYPE kpartgui>
-<kpartgui name="kgalileicenter" version="0.1">
+<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
+<kpartgui name="kgalileicenter" version="1.98">
 <MenuBar>
 	<Menu name="connect"><text>&amp;Session</text>
 		<Action name="sessionSave"/>
 		<Separator/>
 		<Action name="sessionConnect"/>
 		<Action name="sessionDisconnect"/>
-		<Action name="sessionDebugInfo"/>
 		<separator/>
 		<Action name="sessionCompute"/>
+		<Action name="programConsole"/>
 		<Action name="runProgram"/>
 		<Action name="sessionStats"/>
 		<separator/>
@@ -19,14 +19,14 @@
 		<Action name="sessionQuit"/>
 	</Menu>
 	<Menu name="Knowledge"><text>&amp;Knowledge</text>
-		<Action name="seeDicts"/>
+		<Action name="showDicts"/>
 	</Menu>
 	<Menu name="Documents"><text>&amp;Documents</text>
 		<Action name="docsClear"/>
 		<Separator/>
 		<Action name="showDocs"/>
 		<separator/>
-		<Action name="docsAnalyse"/>
+		<Action name="docsAnalyse"/>		
 		<Action name="postDocsAnalyse"/>
 		<Action name="docsIndexer"/>
 		<separator/>
@@ -73,14 +73,12 @@
 		<Action name="communitiesCompare"/>
 		<Action name="topicsCompare"/>
 	</Menu>
-	<Menu name="settings"><text>&amp;Settings</text>
-		<Action name="settings_show_toolbar" />
-		<Action name="settings_statusbar"/>
-		<Separator />
-		<Action name="plugins"/>
-		<Action name="configure"/>
+	<Menu name="window"><text>&amp;Window</text>
+		<Action name="window_closeall"/>
+		<Separator/>
+		<Action name="window_tile" />
+		<Action name="window_cascade"/>
 	</Menu>
-	<Action name="window_menu"/>
 	<Menu name="help"><text>&amp;Help</text>
 		<Action name="helpProgram"/>
 	 </Menu>
@@ -88,16 +86,14 @@
 <ToolBar fullWidth="true" name="mainToolBar">
 	<Action name="sessionConnect"/>
 	<Separator/>
+	<Action name="docsAnalyse"/>
+	<Action name="showDocs"/>	
+	<Separator/>
 	<Action name="showUsers"/>
 	<Action name="profilesCalc"/>
 	<Separator/>
-	<Action name="showGroups"/>
-	<Action name="groupsCalc"/>
-	<Separator/>
-	<Action name="docsAnalyse"/>
-	<Action name="showDocs"/>
-	<Action name="createXML"/>
-	<Action name="analyseXML"/>
+	<Action name="showCommunities"/>
+	<Action name="communitiesCalc"/>
 	<Separator/>
 	<Action name="sessionQuit"/>
 </ToolBar>

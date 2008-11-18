@@ -1,0 +1,273 @@
+<ui version="4.0" >
+ <class>QPlugInsList</class>
+ <widget class="QWidget" name="QPlugInsList" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>523</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <property name="CurrentSelect" stdset="0" >
+   <bool>false</bool>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" >
+   <item>
+    <layout class="QHBoxLayout" name="_26" >
+     <item>
+      <widget class="QLabel" name="textLabel1_2_3_2_2" >
+       <property name="toolTip" >
+        <string>Choose current method</string>
+       </property>
+       <property name="text" >
+        <string>Current Method</string>
+       </property>
+       <property name="wordWrap" >
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="spacer4_2_3_2_2" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType" >
+        <enum>QSizePolicy::Fixed</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QComboBox" name="Current" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
+       <property name="toolTip" >
+        <string>Choose current method</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QListWidget" name="List" >
+     <property name="resizeMode" >
+      <enum>QListView::Fixed</enum>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="_37" >
+     <item>
+      <widget class="QPushButton" name="Configure" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
+       <property name="text" >
+        <string>Configure</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="About" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
+       <property name="text" >
+        <string>About</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="spacer3_2_3_3" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType" >
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>29</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="KPushButton" name="Up" >
+       <property name="text" >
+        <string>Up</string>
+       </property>
+       <property name="icon" >
+        <iconset>
+         <normaloff>../../../../../usr/share/icons/default.kde4/16x16/actions/go-up.png</normaloff>../../../../../usr/share/icons/default.kde4/16x16/actions/go-up.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KPushButton" name="Down" >
+       <property name="text" >
+        <string>Down</string>
+       </property>
+       <property name="icon" >
+        <iconset>
+         <normaloff>../../../../../usr/share/icons/default.kde4/16x16/actions/go-down.png</normaloff>../../../../../usr/share/icons/default.kde4/16x16/actions/go-down.png</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="spacer3_2_3_3_2" >
+       <property name="orientation" >
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType" >
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0" >
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="Enable" >
+       <property name="enabled" >
+        <bool>false</bool>
+       </property>
+       <property name="text" >
+        <string>Enable method</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KPushButton</class>
+   <extends>QPushButton</extends>
+   <header>kpushbutton.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>Configure</sender>
+   <signal>pressed()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotConfigure()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>30</x>
+     <y>273</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>2</x>
+     <y>214</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>About</sender>
+   <signal>pressed()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotAbout()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>123</x>
+     <y>272</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>-1</x>
+     <y>152</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>List</sender>
+   <signal>currentItemChanged(QListWidgetItem*,QListWidgetItem*)</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotChange(QListWidgetItem*,QListWidgetItem*)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>193</x>
+     <y>54</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>-2</x>
+     <y>50</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Enable</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotEnable(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>413</x>
+     <y>282</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>518</x>
+     <y>-1</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Down</sender>
+   <signal>clicked()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotDown()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>318</x>
+     <y>282</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>522</x>
+     <y>30</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Up</sender>
+   <signal>clicked()</signal>
+   <receiver>QPlugInsList</receiver>
+   <slot>slotUp()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>257</x>
+     <y>281</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>523</x>
+     <y>94</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>slotConfigure()</slot>
+  <slot>slotAbout()</slot>
+  <slot>slotChange(QListWidgetItem*,QListWidgetItem*)</slot>
+  <slot>slotEnable(bool)</slot>
+  <slot>slotDown()</slot>
+  <slot>slotUp()</slot>
+ </slots>
+</ui>

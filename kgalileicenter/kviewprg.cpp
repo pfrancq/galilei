@@ -31,37 +31,27 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
+// include files for R/GALILEI
 #include <rqt.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
 #include <gsession.h>
 #include <ggalileiapp.h>
 #include <ggalileiprg.h>
 #include <rprgfunc.h>
 #include <rprgclass.h>
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qthread.h>
-#include <qpixmap.h>
-#include <qmessagebox.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
+// include files for Qt/KDE
+#include <kmessagebox.h>
+#include <QtCore/QThread>
+#include <QtGui/QCloseEvent>
 #include <kapplication.h>
-#include <kiconloader.h>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
-#include "kviewprg.h"
-#include "kdoc.h"
-using namespace std;
+#include <kviewprg.h>
 
 
 
@@ -99,29 +89,29 @@ void KViewPrg::MyThread::run(void)
 		GALILEIApp->RunPrg(Rec,Name);
 		if(GSession::Break())
 		{
-			QMessageBox::information(Rec,"KGALILEICenter","Program Aborded");
+			KMessageBox::information(Rec,"Program Aborded");
 			GSession::ResetBreak();
 		}
 		else
 		{
-			QMessageBox::information(Rec,"KGALILEICenter","Program Executed");
+			KMessageBox::information(Rec,"Program Executed");
 		}
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(Rec,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+		KMessageBox::error(Rec,e.GetMsg(),"GException");
 	}
 	catch(RException& e)
 	{
-		QMessageBox::critical(Rec,"KGALILEICenter - R Exception",e.GetMsg());
+		KMessageBox::error(Rec,e.GetMsg(),"RException");
 	}
 	catch(std::exception& e)
 	{
-		QMessageBox::critical(Rec,"KGALILEICenter - std::exception",e.what());
+		KMessageBox::error(Rec,e.what(),"std::exception");
 	}
 	catch(...)
 	{
-		QMessageBox::critical(Rec,"KGALILEICenter - Undefined Error","Problem");
+		KMessageBox::error(Rec,"Undefined Error");
 	}
 	Rec->endPrg();
 }
@@ -135,22 +125,14 @@ void KViewPrg::MyThread::run(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewPrg::KViewPrg(KDoc* doc, QWidget* parent,RString name,int wflags)
-	: KView(doc,parent,name,wflags), GSlot(), Name(name), Prg(0)
+KViewPrg::KViewPrg(const RString& name)
+	: QMdiSubWindow(), Ui_KViewPrg(), Name(name), Prg(0)
 {
-	// Window proprieties
-	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("make.png",KIcon::Small)));
-	setCaption(ToQString(name));
-
-	Output=new QTextEdit(this,"Output");
-	Output->setReadOnly(true);
-	Output->resize(size());
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewPrg::update(tObjType)
-{
+	QWidget* ptr=new QWidget();
+	setupUi(ptr);
+	setWidget(ptr);
+	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setWindowTitle(ToQString(Name));
 }
 
 
@@ -220,13 +202,6 @@ void KViewPrg::run(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewPrg::resizeEvent(QResizeEvent *)
-{
-	Output->resize(size());
-}
-
-
-//-----------------------------------------------------------------------------
 void KViewPrg::endPrg(void)
 {
 	delete Prg;
@@ -235,17 +210,16 @@ void KViewPrg::endPrg(void)
 
 
 //-----------------------------------------------------------------------------
-bool KViewPrg::canClose(void)
+void KViewPrg::closeEvent(QCloseEvent *event)
 {
-	// If nothing running -> can close
 	if(!Prg)
+		event->accept();
+	else
 	{
-		return(true);
+		// Ah ah, something runs -> ask to break it
+		GSession::SetBreak();
+		event->ignore();
 	}
-
-	// Ah ah, something runs -> ask to break it
-	GSession::SetBreak();
-	return(false);
 }
 
 

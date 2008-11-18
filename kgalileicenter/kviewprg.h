@@ -44,13 +44,13 @@ using namespace R;
 
 
 //-----------------------------------------------------------------------------
-// forward declaration
-#include <qtextedit.h>
+// include files for KDE/Qt
+#include <QtGui/QMdiSubWindow>
 
 
 //-----------------------------------------------------------------------------
 // include files for current application
-#include "kview.h"
+#include <ui_kviewprg.h>
 
 
 //-----------------------------------------------------------------------------
@@ -59,16 +59,11 @@ using namespace R;
 * @author Pascal Francq.
 * @short Window for Programs.
 */
-class KViewPrg : public KView, public GSlot
+class KViewPrg : public QMdiSubWindow, public Ui_KViewPrg, public GSlot
 {
 	class MyThread;
 
 	Q_OBJECT
-
-	/**
-	* Widget to see the output.
-	*/
-	QTextEdit* Output;
 
 	/**
 	* Name of the program.
@@ -84,33 +79,24 @@ public:
 
 	/**
 	* Constructor for the view.
-	* @param doc            Document instance that the view represents.
-	* @param parent         Parent of the window.
 	* @param name           Name of the program.
-	* @param wflags         Flags.
 	*/
-	KViewPrg(KDoc* doc,QWidget* parent,RString name,int wflags);
+	KViewPrg(const RString& name);
 
 	/**
-	* Gets called to redraw the document contents if it has been modified.
-	* @param type            Type.
-	*/
-	virtual void update(tObjType type);
-
-	/**
-	* The traitment for a specific document will begin.
+	* The treatment for a specific document will begin.
 	* @param doc            Document.
 	*/
 	virtual void NextDoc(const GDoc* doc);
 
 	/**
-	* The traitment for a specific document will begin.
+	* The treatment for a specific document will begin.
 	* @param prof           Profile.
 	*/
 	virtual void NextProfile(const GProfile* prof);
 
 	/**
-	* Method called by GCommunitying each time a new language is analysed.
+	* Method called by GCommunitying each time a new language is analyzed.
 	* @param lang           Pointer to the current lang.
 	*/
 	virtual void NextGroupLang(const GLang* lang);
@@ -137,15 +123,6 @@ public:
 	*/
 	bool isRunning(void) {return(Prg);}
 
-protected:
-
-	/**
-	* Called when the main window is resize by the user.
-	*/
-	void resizeEvent(QResizeEvent *);
-
-public:
-
 	/**
 	* The program is finished.
 	*/
@@ -153,11 +130,14 @@ public:
 
 	/**
 	* Look if the window can be closed.
+	* @param event           Close event.
 	*/
-	bool canClose(void);
+	virtual void closeEvent(QCloseEvent* event);
+
+public:
 
 	/**
-	* Destructor for the view.
+	* Destruct the view.
 	*/
 	~KViewPrg(void);
 };

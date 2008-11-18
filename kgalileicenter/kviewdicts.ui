@@ -1,0 +1,166 @@
+<ui version="4.0" >
+ <class>KViewDicts</class>
+ <widget class="QWidget" name="KViewDicts" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>717</width>
+    <height>537</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout" >
+   <item>
+    <widget class="QSplitter" name="splitter_2" >
+     <property name="orientation" >
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <widget class="QSplitter" name="splitter" >
+      <property name="orientation" >
+       <enum>Qt::Vertical</enum>
+      </property>
+      <widget class="QGroupBox" name="groupBox" >
+       <property name="title" >
+        <string>Dictionnaries</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout" >
+        <item>
+         <widget class="QTreeWidget" name="Dicts" >
+          <property name="rootIsDecorated" >
+           <bool>false</bool>
+          </property>
+          <column>
+           <property name="text" >
+            <string>Dictionnary</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QGroupBox" name="groupBox_2" >
+       <property name="title" >
+        <string>Concepts</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2" >
+        <item>
+         <widget class="QTreeWidget" name="Dict" >
+          <property name="rootIsDecorated" >
+           <bool>false</bool>
+          </property>
+          <column>
+           <property name="text" >
+            <string>Identifier</string>
+           </property>
+          </column>
+          <column>
+           <property name="text" >
+            <string>Name</string>
+           </property>
+          </column>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2" >
+          <item>
+           <widget class="QPushButton" name="NewConcept" >
+            <property name="text" >
+             <string>New Concept</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer" >
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QPushButton" name="DelConcept" >
+            <property name="text" >
+             <string>Delete Concept</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </widget>
+     <widget class="QGroupBox" name="groupBox_3" >
+      <property name="title" >
+       <string>Relations</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3" >
+       <item>
+        <widget class="QTreeWidget" name="Relations" >
+         <property name="rootIsDecorated" >
+          <bool>false</bool>
+         </property>
+         <column>
+          <property name="text" >
+           <string>Subject</string>
+          </property>
+         </column>
+         <column>
+          <property name="text" >
+           <string>Type</string>
+          </property>
+         </column>
+         <column>
+          <property name="text" >
+           <string>Object</string>
+          </property>
+         </column>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_3" >
+         <item>
+          <widget class="QPushButton" name="NewRelation" >
+           <property name="text" >
+            <string>New Relation</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="DelRelation" >
+           <property name="text" >
+            <string>Delete Relation</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

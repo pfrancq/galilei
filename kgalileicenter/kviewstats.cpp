@@ -6,7 +6,7 @@
 
 	Window for the running some instruction to the session - Implementation.
 
-	Copyright 2002-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -48,21 +48,17 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qprogressdialog.h>
-#include <qmessagebox.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kapp.h>
-#include <kiconloader.h>
+// include files for Qt/KDE
+#include <kprogressdialog.h>
+#include <QtGui/QMessageBox>
+#include <kapplication.h>
+//#include <kiconloader.h>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
-#include "kviewstats.h"
-#include "kdoc.h"
+#include <kviewstats.h>
+
 
 
 //-----------------------------------------------------------------------------
@@ -72,20 +68,14 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewStats::KViewStats(KDoc* doc, QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags)
+KViewStats::KViewStats(void)
+	: QMdiSubWindow(), Ui_KViewStats()
 {
-	// Init part
-	setCaption("Compute Statistics");
-	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("mathematica.png",KIcon::Small)));
-
-	// Results
-	Res = new QListView(this,"Results");
-	Res->addColumn("Element");
-	Res->addColumn("Value");
-	Res->setRootIsDecorated(true);
-	Res->setSorting(-1);
-	Res->setResizeMode(QListView::AllColumns);
+	QWidget* ptr=new QWidget();
+	setupUi(ptr);
+	setWidget(ptr);
+	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setWindowTitle("Statistics");
 
 	// Compute Statistics
 	ComputeStats();
@@ -93,38 +83,15 @@ KViewStats::KViewStats(KDoc* doc, QWidget* parent,const char* name,int wflags)
 
 
 //-----------------------------------------------------------------------------
-void KViewStats::update(tObjType)
+void KViewStats::ConstructTag(RXMLTag* t,QTreeWidgetItem* parent)
 {
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewStats::ConstructTag(RXMLTag* t,QListViewItem* parent)
-{
+	QTreeWidgetItem* ptr;
 	R::RCursor<RXMLTag> Cur(t->GetNodes());
-	QListViewItem* ptr=0,*ptr2;
-	QListViewItem* prec=0;
-	RString Val;
-
  	for(Cur.Start();!Cur.End();Cur.Next())
  	{
-		Val=Cur()->GetAttrValue("Value");
- 		if(!prec)
- 		{
-			if(Val.IsEmpty())
- 				prec=ptr=new QListViewItem(parent,ToQString(Cur()->GetName()));
-			else
-				prec=ptr=new QListViewItem(parent,ToQString(Cur()->GetName()),ToQString(Val));
- 		}
- 		else
- 		{
-			if(Val.IsEmpty())
- 				prec=ptr=new QListViewItem(parent,prec,ToQString(Cur()->GetName()));
-			else
-				prec=ptr=new QListViewItem(parent,prec,ToQString(Cur()->GetName()),ToQString(Val));
- 		}
+		ptr=new QTreeWidgetItem(parent,QStringList()<<ToQString(Cur()->GetName())<<ToQString(Cur()->GetAttrValue("Value")));
  		if(!Cur()->GetContent().IsEmpty())
- 			ptr2=new QListViewItem(ptr,ToQString(Cur()->GetContent()));
+ 			ptr=new QTreeWidgetItem(parent,QStringList()<<ToQString(Cur()->GetContent())<<"");
  		ConstructTag(Cur(),ptr);
  	}
 }
@@ -144,8 +111,8 @@ void KViewStats::ComputeStats(void)
 		QMessageBox::critical(this,"KGALILEICenter","No manager for the statistics plug-ins");
 		return;
 	}
-	QProgressDialog Dlg("Compute Statistics", "Abort Compute",static_cast<int>(Mng->GetNbPlugIns())+1,this,"progress",TRUE);
-
+	KProgressDialog Dlg(this,"Compute Statistics");
+	Dlg.progressBar()->setMaximum(static_cast<int>(Mng->GetNbPlugIns())+1);
 
 	// Create the root node
 	Root=new RXMLTag("Statistics");
@@ -153,29 +120,22 @@ void KViewStats::ComputeStats(void)
 
 	// Compute the statistics
 	Dlg.setMinimumDuration(0);
-	Dlg.setProgress(0);
+	Dlg.progressBar()->setValue(0);
 	KApplication::kApplication()->processEvents();
 	R::RCursor<GStatsCalc> Cur(Mng->GetPlugIns());
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
-		Dlg.setProgress(i);
+		Dlg.progressBar()->setValue(i);
 		Dlg.setLabelText(ToQString(Cur()->GetPlugInName()));
 		KApplication::kApplication()->processEvents();
 		if(Dlg.wasCancelled())
 			break;
 		Cur()->Compute(&xml,*Root);
 	}
-	Dlg.setProgress(i);
+	Dlg.progressBar()->setValue(i);
 
 	// Show the results
-	ConstructTag(Root,new QListViewItem(Res,"Statistics"));
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewStats::resizeEvent(QResizeEvent*)
-{
-	Res->resize(size());
+	ConstructTag(Root,new QTreeWidgetItem(Results,QStringList()<<"Statistics"<<""));
 }
 
 

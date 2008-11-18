@@ -44,20 +44,21 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for Qt
-#include <qdir.h>
-#include <qprinter.h>
-#include <qvbox.h>
-#include <qtooltip.h>
-#include <qprinter.h>
-#include <qworkspace.h>
-#include <qlabel.h>
-#include <qaction.h>
+#include <QtCore/QDir>
+#include <QtGui/QToolTip>
+#include <QtGui/QWorkspace>
+#include <QtGui/QLabel>
+#include <QtGui/QAction>
+#include <QtGui/QVBoxLayout>
+#include <QtGui/QCloseEvent>
 
 
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaction.h>
-#include <kapp.h>
+#include <kactioncollection.h>
+#include <ktoggleaction.h>
+#include <kapplication.h>
 #include <kiconloader.h>
 #include <kfiledialog.h>
 #include <kmenubar.h>
@@ -66,7 +67,8 @@ using namespace R;
 #include <kstdaction.h>
 #include <kshortcut.h>
 #include <kstatusbar.h>
-#include <kpopupmenu.h>
+#include <ktoolbar.h>
+#include <kmenu.h>
 #include <kmessagebox.h>
 
 
@@ -86,10 +88,10 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 KGALILEICenterApp::KGALILEICenterApp(int argc, char *argv[])
-	: KMainWindow(0,"KGALILEICenterApp"), GGALILEIApp("KGALILEICenter",argc,argv,true), Doc(0), Debug(0)
+	: KXmlGuiWindow(0), GGALILEIApp("KGALILEICenter",argc,argv,true), Doc(0), Debug(0)
 {
 	Init();
-	Config=kapp->config();
+//	Config=kapp->config();
 	initStatusBar();
 	initView();
 	initActions();
@@ -100,15 +102,19 @@ KGALILEICenterApp::KGALILEICenterApp(int argc, char *argv[])
 	DisableAllActions();
 }
 
-
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::initActions(void)
 {
 	// Menu "Connect"
-	sessionSave=new KToggleAction(i18n("Save Results"),0,0,0,actionCollection(),"sessionSave");
-	connect(sessionSave,SIGNAL(toggled(bool)),this,SLOT(slotSaveModifier()));
-	sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
-	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
+//	sessionSave=new KToggleAction(i18n("Save Results"),0,0,0,actionCollection(),"sessionSave");
+//	connect(sessionSave,SIGNAL(toggled(bool)),this,SLOT(slotSaveModifier()));
+	//sessionConnect=new KAction(i18n("&Connect Database"),"connect_established",0,this,SLOT(slotSessionConnect()),actionCollection(),"sessionConnect");
+	sessionConnect=actionCollection()->addAction("sessionConnect");
+	sessionConnect->setText(i18n("&Connect Database"));
+	sessionConnect->setIcon(KIcon("connect_established"));
+//	sessionConnect->setShortcut(Qt::Key_F6);
+	connect(sessionConnect,SIGNAL(triggered()),this,SLOT(sessionConnect()));
+/*	sessionCompute=new KAction(i18n("Compute &Session"),"make_kdevelop",0,this,SLOT(slotSessionCompute()),actionCollection(),"sessionCompute");
 	sessionDebugInfo=new KAction(i18n("&Konsole"),"help","Ctrl+K",this,SLOT(slotSessionDebugInfo()),actionCollection(),"sessionDebugInfo");
 	createDatabase=new KAction(i18n("Create &MySQL Database"),"exec",0,this,SLOT(slotCreateDatabase()),actionCollection(),"createDatabase");
 	importUsersData=new KAction(i18n("Import &Users' Data"),0,0,this,SLOT(slotImportUsersData()),actionCollection(),"importUsersData");
@@ -173,11 +179,11 @@ void KGALILEICenterApp::initActions(void)
 	windowTile = new KAction(i18n("&Tile"), 0, 0, this, SLOT(slotWindowTile()), actionCollection(),"window_tile");
 	windowCascade = new KAction(i18n("&Cascade"), 0, 0, this, SLOT(slotWindowCascade()), actionCollection(),"window_cascade");
 	windowMenu = new KActionMenu(i18n("&Window"), actionCollection(), "window_menu");
-	connect(windowMenu->popupMenu(),SIGNAL(aboutToShow()),this,SLOT(windowMenuAboutToShow()));
+	connect(windowMenu->popupMenu(),SIGNAL(aboutToShow()),this,SLOT(windowMenuAboutToShow()));*/
 
 	// Help Menu
-	helpProgram = new KAction(i18n("List of all classes"), 0, 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
-/*	helpProgram=new KAction("List of all classes",0,0,this,SLOT(slotHelpProgram()),this);
+/*	helpProgram = new KAction(i18n("List of all classes"), 0, 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
+	helpProgram=new KAction("List of all classes",0,0,this,SLOT(slotHelpProgram()),this);
 	menuBar()->insertItem ("&Help",helpProgram);*/
 
 	createGUI();
@@ -188,8 +194,8 @@ void KGALILEICenterApp::initActions(void)
 void KGALILEICenterApp::initStatusBar(void)
 {
 	dbStatus= new QLabel(statusBar());
-	dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_no.png",KIcon::Small)));
-	statusBar()->addWidget(dbStatus, 0, true );
+	dbStatus->setPixmap(KIconLoader::global()->loadIcon("connect_no.png",KIconLoader::Small));
+	statusBar()->insertWidget(0,dbStatus);
 	statusBar()->insertItem(i18n("Ready."),1);
 }
 
@@ -197,9 +203,12 @@ void KGALILEICenterApp::initStatusBar(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::initView(void)
 {
-	QVBox* view_back = new QVBox(this);
-	view_back->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
+	QWidget* view_back(new QWidget(this));
+	QVBoxLayout *layout = new QVBoxLayout;
+//	view_back->setFrameStyle( QFrame::StyledPanel | QFrame::Sunken );
 	pWorkspace = new QWorkspace(view_back);
+	layout->addWidget(pWorkspace);
+	view_back->setLayout(layout);
 	connect(pWorkspace, SIGNAL(windowActivated(QWidget*)), this, SLOT(slotWindowActivated(QWidget*)));
 	setCentralWidget(view_back);
 }
@@ -221,80 +230,69 @@ void KGALILEICenterApp::createClient(KDoc* doc,KView* view)
 void KGALILEICenterApp::saveOptions(void)
 {
 	RString paths("");
-	Config->setGroup("General Options");
-	Config->writeEntry("Geometry", size());
-	Config->writeEntry("Show Toolbar", toolBar()->isVisible());
-	Config->writeEntry("Show Statusbar",statusBar()->isVisible());
-	Config->writeEntry("ToolBarPos", (int) toolBar("mainToolBar")->barPos());
-	Config->writeEntry("Save Results",sessionSave->isChecked());
+	KConfig Config;
+	KConfigGroup General(&Config,"General");
+
+	General.writeEntry("Geometry", size());
+	General.writeEntry("Show Toolbar", toolBar()->isVisible());
+	General.writeEntry("Show Statusbar",statusBar()->isVisible());
+//	General.writeEntry("ToolBarPos", (int) toolBar("mainToolBar")->barPos());
+	General.writeEntry("Save Results",sessionSave->isChecked());
 
 	// Save options for database creation
-	Config->writeEntry("StructuresPath",StructuresPath);
-	Config->writeEntry("PrgPath",PrgPath);
+	General.writeEntry("StructuresPath",ToQString(StructuresPath));
+	General.writeEntry("PrgPath",ToQString(PrgPath));
 
 	// Save options for the plug-ins dialog box
-	Config->writeEntry("DlgMainTabIdx",DlgMainTabIdx);
-	Config->writeEntry("DlgDocsTabIdx",DlgDocsTabIdx);
-	Config->writeEntry("DlgProfilesTabIdx",DlgProfilesTabIdx);
-	Config->writeEntry("DlgCommunitiesTabIdx",DlgCommunitiesTabIdx);
-	Config->writeEntry("DlgSearchTabIdx",DlgSearchTabIdx);
+	General.writeEntry("DlgMainTabIdx",DlgMainTabIdx);
+	General.writeEntry("DlgDocsTabIdx",DlgDocsTabIdx);
+	General.writeEntry("DlgProfilesTabIdx",DlgProfilesTabIdx);
+	General.writeEntry("DlgCommunitiesTabIdx",DlgCommunitiesTabIdx);
+	General.writeEntry("DlgSearchTabIdx",DlgSearchTabIdx);
 }
 
 
 //-----------------------------------------------------------------------------
 void KGALILEICenterApp::readOptions(void)
 {
-	Config->setGroup("General Options");
+	KConfig Config;
+	KConfigGroup General(&Config,"General");
 
 	// bar status settings
-	bool bViewToolbar = Config->readBoolEntry("Show Toolbar", true);
+	bool bViewToolbar = General.readEntry("Show Toolbar", true);
 	if(bViewToolbar)
 		toolBar()->show();
 	else
 		toolBar()->hide();
-	bool bViewStatusbar = Config->readBoolEntry("Show Statusbar", true);
+	bool bViewStatusbar = General.readEntry("Show Statusbar", true);
 	viewStatusBar->setChecked(bViewStatusbar);
 	slotViewStatusBar();
 
 	// bar position settings
-	KToolBar::BarPosition toolBarPos;
-	toolBarPos=(KToolBar::BarPosition) Config->readNumEntry("ToolBarPos", KToolBar::Top);
-	toolBar("mainToolBar")->setBarPos(toolBarPos);
+/*	KToolBar::BarPosition toolBarPos;
+	toolBarPos=(KToolBar::BarPosition) General.readEntry("ToolBarPos", KToolBar::Top);
+	toolBar("mainToolBar")->setBarPos(toolBarPos);*/
 
 	// Always Calc Enable/Disable
-	sessionSave->setChecked(Config->readBoolEntry("Save Results",false));
+	sessionSave->setChecked(General.readEntry("Save Results",false));
 
 	// Size
-	QSize size=Config->readSizeEntry("Geometry");
+	QSize size=General.readEntry("Geometry",QSize());
 	if(!size.isEmpty())
 	{
 		resize(size);
 	}
 
 	// Read create database options
-	StructuresPath=Config->readEntry("StructuresPath","http://stic.ulb.ac.be").ascii();
-	PrgPath=Config->readEntry("PrgPath","").ascii();
+	StructuresPath=FromQString(General.readEntry("StructuresPath","http://stic.ulb.ac.be"));
+	PrgPath=FromQString(General.readEntry("PrgPath",""));
 
 	// Save options for the plug-ins dialog box
-	DlgMainTabIdx=Config->readNumEntry("DlgMainTabIdx",0);
-	DlgDocsTabIdx=Config->readNumEntry("DlgDocsTabIdx",0);
-	DlgProfilesTabIdx=Config->readNumEntry("DlgProfilesTabIdx",0);
-	DlgCommunitiesTabIdx=Config->readNumEntry("DlgCommunitiesTabIdx",0);
-	DlgSearchTabIdx=Config->readNumEntry("DlgSearchTabIdx",0);
-
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::saveProperties(KConfig* /*_cfg*/)
-{
-
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::readProperties(KConfig* /*_cfg*/)
-{
+	DlgMainTabIdx=General.readEntry("DlgMainTabIdx",0);
+	DlgDocsTabIdx=General.readEntry("DlgDocsTabIdx",0);
+	DlgProfilesTabIdx=General.readEntry("DlgProfilesTabIdx",0);
+	DlgCommunitiesTabIdx=General.readEntry("DlgCommunitiesTabIdx",0);
+	DlgSearchTabIdx=General.readEntry("DlgSearchTabIdx",0);
 }
 
 

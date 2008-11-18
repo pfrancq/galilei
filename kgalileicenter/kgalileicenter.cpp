@@ -35,624 +35,595 @@
 #include <pwd.h>
 #include <unistd.h>
 #include <math.h>
-
-
-
-//-----------------------------------------------------------------------------
-// include files for R Project
-#include <rxmlfile.h>
-#include <rstring.h>
-#include <rcontainer.h>
-#include <rqt.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <gdocxml.h>
-#include <gstorage.h>
-#include <gprofile.h>
-#include <ggroup.h>
-#include <gsubject.h>
-#include <gsubjects.h>
-#include <glang.h>
-#include <gweightinfo.h>
-#include <ggalileiapp.h>
-using namespace GALILEI;
 using namespace std;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qprinter.h>
-#include <qmessagebox.h>
-#include <qworkspace.h>
-#include <qlineedit.h>
-#include <qcheckbox.h>
-#include <qradiobutton.h>
-#include <qcombobox.h>
-#include <qspinbox.h>
-#include <kdatepicker.h>
+// include files for R/GALILEI
+#include <rqt.h>
+#include <gmetaengine.h>
+using namespace R;
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for KDE
-#include <kaction.h>
-#include <kapp.h>
-#include <kmessagebox.h>
-#include <kmimetype.h>
-#include <kfiledialog.h>
-#include <klocale.h>
-#include <kio/job.h>
-#include <kio/netaccess.h>
-#include <kpopupmenu.h>
+// include files for Qt/KDE
+#include <QtGui/QMdiSubWindow>
 #include <kstatusbar.h>
-#include <kurlrequester.h>
-#include <kprogress.h>
-#include <kprocess.h>
-#include <kiconloader.h>
+#include <kactioncollection.h>
+#include <kstandardaction.h>
+#include <KDE/KLocale>
+#include <kfiledialog.h>
+#include <kmessagebox.h>
+#include <kapplication.h>
+#include <kactionmenu.h>
 
 
 //-----------------------------------------------------------------------------
-// application specific includes
-#include "kgalileicenter.h"
-#include "kdoc.h"
-#include "kview.h"
-#include "kviewdocs.h"
-#include "kviewdoc.h"
-#include "kviewmetaengine.h"
-#include "kviewusers.h"
-#include "kviewstats.h"
-#include "kviewthcommunities.h"
-#include "kviewcommunities.h"
-#include "kviewcommunity.h"
-#include "kviewtopics.h"
-#include "kviewtopic.h"
-#include "kviewthtopics.h"
-#include "kviewprg.h"
-#include "kviewprofile.h"
-#include "kviewdicts.h"
-#include "qsessionprogress.h"
-#include "qcreatedatabase.h"
-#include "qfilldatabase.h"
-#include "qhistorydlg.h"
-#include "qexportmatrixdlg.h"
-#include "qsimulationdlg.h"
-#include "configure.h"
-#include "kprgconsole.h"
+// include files for current application
+#include <kgalileicenter.h>
+#include <qsessionprogress.h>
+#include <configure.h>
+#include <kviewdoc.h>
+#include <kviewmetaengine.h>
+#include <kviewprg.h>
+#include <qfilldatabase.h>
+#include <kviewstats.h>
+#include <kviewgroup.h>
+#include <kviewgroups.h>
+#include <kviewusers.h>
+#include <kviewidealgroups.h>
+#include <kviewprofile.h>
+#include <kviewdicts.h>
+#include <ui_qcreatedatabase.h>
+#include <kprgconsole.h>
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class KGALILEICenterApp
+// class KGALILEICenter
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KDoc* KGALILEICenterApp::getDocument(void) const
+KGALILEICenter::KGALILEICenter(int argc, char *argv[])
+	: KXmlGuiWindow(0), GGALILEIApp("KGALILEICenter",argc,argv,true),
+	  Desktop(new QMdiArea(this)), Status(new QLabel(statusBar())), Doc(0), Debug(0)
 {
-	return(Doc);
+    setAcceptDrops(true);
+    setCentralWidget(Desktop);
+
+    initActions();
+
+	Status->setPixmap(KIconLoader::global()->loadIcon("network-disconnect",KIconLoader::Small));
+	statusBar()->insertWidget(0,Status);
+	statusBar()->insertItem(i18n("Ready."),1);
+    statusBar()->show();
+    setupGUI();
+    Init();
+    readOptions();
+	sessionConnected(false);
 }
 
 
 //-----------------------------------------------------------------------------
-GSession* KGALILEICenterApp::getSession(void) const
+KAction* KGALILEICenter::addAction(const char* title,const char* name,const char* slot,const char* icon,const char* key)
 {
-	if(!Doc)
-		return(0);
-	return(Doc->GetSession());
+	KAction* ptr(new KAction(i18n(title),this));
+	if(icon)
+		ptr->setIcon(KIcon(icon));
+	if(key)
+		ptr->setShortcut(QKeySequence(tr(key)));
+	actionCollection()->addAction(QLatin1String(name),ptr);
+	connect(ptr,SIGNAL(triggered(bool)),this,slot);
+	return(ptr);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSessionConnect(void)
+void KGALILEICenter::initActions(void)
 {
-	QString method;
-	GSession* Sess;
-	bool DestroyDoc(false);
+	// Menu "Connect"
+	aSessionSave=new KToggleAction(i18n("Save Results"),this);
+	actionCollection()->addAction(QLatin1String("sessionSave"),aSessionSave);
+	connect(aSessionSave,SIGNAL(toggled(bool)),this,SLOT(saveModifier()));
+	aSessionConnect=addAction("&Connect","sessionConnect",SLOT(sessionConnect()),"network-connect");
+	Actions.insert(Actions.size(),addAction("&Disconnect","sessionDisconnect",SLOT(sessionDisconnect()),"network-disconnect"));
+	Actions.insert(Actions.size(),addAction("Compute &Session","sessionCompute",SLOT(sessionCompute()),"system-run"));
+	addAction("&Konsole","programConsole",SLOT(programConsole()),"terminal","Ctrl+K");
+	addAction("Create &MySQL Database","createDatabase",SLOT(createDatabase()));
+	Actions.insert(Actions.size(),addAction("Import Documents","importDocs",SLOT(importDocs()),"tab-new"));
+	Actions.insert(Actions.size(),addAction("&Run Program","runProgram",SLOT(runProgram()),"fork","Ctrl+R"));
+	Actions.insert(Actions.size(),addAction("&Statistics","sessionStats",SLOT(sessionStats()),"view-statistics"));
+	addAction("E&xit","sessionQuit",SLOT(sessionQuit()),"window-close","Ctrl+Q");
 
-	slotStatusMsg(i18n("Connecting..."));
-	Doc=0;
-	try
-	{
-		Doc=new KDoc(this);
-		DestroyDoc=true;
-		Sess = CreateSession();
-		Doc->SetSession(Sess);
-		slotSaveModifier();
-		QSessionProgressDlg dlg(this,Sess,"Loading from Database");
-		if(dlg.Run(new QLoadSession()))
-		{
-			sessionConnect->setEnabled(false);
-			UpdateMenusEntries();
-			dbStatus->setPixmap(QPixmap(KGlobal::iconLoader()->loadIcon("connect_established",KIcon::Small)));
-		}
-		DestroyDoc=false;
-		slotStatusMsg(i18n("Connected"));
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
-	}
-	catch(std::exception& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
-	}
-	catch(...)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
-	}
-	if(DestroyDoc)
-	{
-		delete Doc;
-		Doc=0;
-	}
+	// Menu "Knowledge"
+	Actions.insert(Actions.size(),addAction("See &Dictionnaries","showDicts",SLOT(showDicts())));
+
+	// Menu "Document"
+	Actions.insert(Actions.size(),addAction("&Force Re-computing Documents","docsClear",SLOT(docsClear())));
+	Actions.insert(Actions.size(),addAction("Show &Documents","showDocs",SLOT(showDocs()),"text-xml"));
+	Actions.insert(Actions.size(),addAction("Load and Analyze a Document","docAnalyse",SLOT(docAnalyse())));
+	Actions.insert(Actions.size(),addAction("&Analyze Documents","docsAnalyse",SLOT(docsAnalyse()),"kfind"));
+	Actions.insert(Actions.size(),addAction("Execute &Post-Documents Methods","postDocsAnalyse",SLOT(postDocsAnalyse())));
+	Actions.insert(Actions.size(),addAction("&Export Documents","docsIndexer",SLOT(docsIndexer())));
+	Actions.insert(Actions.size(),addAction("&Create XML Structure","createXML",SLOT(createXML())));
+	Actions.insert(Actions.size(),addAction("&Save XML Structure","saveXML",SLOT(saveXML())));
+	Actions.insert(Actions.size(),addAction("&Query Meta Engine","queryMetaEngine",SLOT(queryMetaEngine()),"edit-find"));
+
+	// Menu "Topics"
+	Actions.insert(Actions.size(),addAction("Force Re-computing Topics","topicsClear",SLOT(topicsClear())));
+	Actions.insert(Actions.size(),addAction("Group Documents","topicsCalc",SLOT(topicsCalc())));
+	Actions.insert(Actions.size(),addAction("Execute Post-Topic Methods","postTopicsCalc",SLOT(postTopicsCalc())));
+	Actions.insert(Actions.size(),addAction("Show &Topics","showTopics",SLOT(showTopics()),"window_new"));
+
+	// Menu "Users"
+	Actions.insert(Actions.size(),addAction("&Force Re-computing profiles","profilesClear",SLOT(profilesClear())));
+	Actions.insert(Actions.size(),addAction("&Show Users","showUsers",SLOT(showUsers()),"meeting-attending"));
+	Actions.insert(Actions.size(),addAction("&Calc Profiles","profilesCalc",SLOT(profilesCalc()),"media-playback-start"));
+	Actions.insert(Actions.size(),addAction("Execute &Post-Profiles Methods","postProfilesCalc",SLOT(postProfilesCalc())));
+	Actions.insert(Actions.size(),addAction("Calc &Profile","profileCalc",SLOT(profileCalc())));
+
+	// Menu "Communities"
+	Actions.insert(Actions.size(),addAction("&Force Re-computing Communities","communitiesClear",SLOT(communitiesClear())));
+	Actions.insert(Actions.size(),addAction("&Show Communities","showCommunities",SLOT(showCommunities()),"user-group-new"));
+	Actions.insert(Actions.size(),addAction("&Group Profiles","communitiesCalc",SLOT(communitiesCalc()),"media-seek-forward"));
+	Actions.insert(Actions.size(),addAction("Execute &Post-Communities Methods","postCommunitiesCalc",SLOT(postCommunities())));
+
+	// Menu "Debug"
+	Actions.insert(Actions.size(),addAction("Initialize the simulation","subjectsCreate",SLOT(subjectsCreate())));
+	Actions.insert(Actions.size(),addAction("Create Ideal &Communities","communitiesCreate",SLOT(communitiesCreate())));
+	Actions.insert(Actions.size(),addAction("Create Ideal &Topics","topicsCreate",SLOT(topicsCreate())));
+	Actions.insert(Actions.size(),addAction("&Feedback Cycle","doFdbks",SLOT(doFdbks())));
+	Actions.insert(Actions.size(),addAction("&Assessments Cycle","doAssessments",SLOT(doAssessments())));
+	Actions.insert(Actions.size(),addAction("Compare Communities Topics","communitiesCompare",SLOT(communitiesCompare())));
+	Actions.insert(Actions.size(),addAction("Compare Ideal Topics","topicsCompare",SLOT(topicsCompare())));
+
+	// Menu "Window"
+	KAction* windowCloseAll(new KAction(i18n("&Close All"),this));
+	actionCollection()->addAction(QLatin1String("window_closeall"),windowCloseAll);
+	connect(windowCloseAll,SIGNAL(triggered(bool)),Desktop,SLOT(closeAllSubWindows()));
+	KAction* windowTile(new KAction(i18n("&Tile"),this));
+	actionCollection()->addAction(QLatin1String("window_tile"),windowTile);
+	connect(windowTile,SIGNAL(triggered(bool)),Desktop,SLOT(tileSubWindows()));
+	KAction* windowCascade(new KAction(i18n("&Cascade"),this));
+	actionCollection()->addAction(QLatin1String("window_cascade"),windowCascade);
+	connect(windowCascade,SIGNAL(triggered(bool)),Desktop,SLOT(cascadeSubWindows()));
+
+	// Help Menu
+//	helpProgram = new KAction(i18n("List of all classes"), 0, 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
+//	helpProgram=new KAction("List of all classes",0,0,this,SLOT(slotHelpProgram()),this);
+//	menuBar()->insertItem ("&Help",helpProgram);*/
+
+    KStandardAction::preferences(this,SLOT(optionsPreferences()),actionCollection());
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSessionDebugInfo(void)
+void KGALILEICenter::readOptions(void)
 {
-	createClient(Doc,new KPrgConsole(Doc,pWorkspace,"Console",0));
+	KConfig Config;
+	KConfigGroup General(&Config,"KGALILEICenter");
+
+	aSessionSave->setChecked(General.readEntry("Save Results",false));
+	PrgPath=FromQString(General.readEntry("PrgPath",""));
+
+	Configure::readOptions();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSessionCompute(void)
+void KGALILEICenter::saveOptions(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Complete Session");
-	if(!Dlg.Run(new QComputeAll()))
-		return;
-	Doc->updateAllViews(otDoc);
-	Doc->updateAllViews(otProfile);
-	Doc->updateAllViews(otCommunity);
+	KConfig Config;
+	KConfigGroup General(&Config,"KGALILEICenter");
 
-	if(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
-	{
-		Doc->updateAllViews(otNoClass);
-	}
+	General.writeEntry("Save Results",aSessionSave->isChecked());
+	General.writeEntry("PrgPath",ToQString(PrgPath));
+
+	Configure::saveOptions();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSessionDisconnect(void)
+void KGALILEICenter::emitDocsChanged(void)
 {
-	try
-	{
-		if(Doc)
-		{
-			Doc->closeDocument();
-			delete Doc;
-			Doc=0;
-		}
-		DisableAllActions();
-		sessionConnect->setEnabled(true);
-		statusBar()->changeItem("Not Connected !",1);
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
-	}
-	catch(std::exception& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
-	}
-	catch(...)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
-	}
+	emit docsChanged();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSessionStats(void)
+void KGALILEICenter::emitTopicsChanged(void)
 {
-	createClient(Doc,new KViewStats(Doc,pWorkspace,"View statistics",0));
+	emit topicsChanged();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSessionQuit(void)
+void KGALILEICenter::emitProfilesChanged(void)
 {
-	slotStatusMsg(i18n("Exiting..."));
+	emit profilesChanged();
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::emitCommunitiesChanged(void)
+{
+	emit communitiesChanged();
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::sessionConnected(bool connected)
+{
+	aSessionConnect->setEnabled(!connected);
+	aSessionSave->setEnabled(connected);
+	for(int i=0;i<Actions.count();i++)
+		Actions.at(i)->setEnabled(connected);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::sessionQuit(void)
+{
+	statusMsg(i18n("Exiting..."));
+	sessionDisconnect();
 	saveOptions();
-	slotStatusMsg(i18n("Ready."));
+	statusMsg(i18n("Ready."));
 	close();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotCreateDatabase(void)
+void KGALILEICenter::sessionConnect(void)
 {
-	QCreateDatabase dlg(this,0,true);
-	dlg.BasicURL->setText(ToQString(StructuresPath));
+	bool DestroyDoc(false);
+
+	statusMsg(i18n("Connecting..."));
+	try
+	{
+		DestroyDoc=true;
+		Doc=CreateSession();
+		saveModifier();
+		QSessionProgressDlg dlg(this,"Loading from Database");
+		if(dlg.Run(new QLoadSession()))
+		{
+			sessionConnected(true);
+			Status->setPixmap(QPixmap(KIconLoader::global()->loadIcon("network-connect",KIconLoader::Small)));
+			DestroyDoc=false;
+			statusMsg(i18n("Connected"));
+		}
+		else
+			statusMsg(i18n("Ready"));
+	}
+	catch(GException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+	}
+	catch(RException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"R Exception");
+	}
+	catch(std::exception& e)
+	{
+		KMessageBox::error(this,e.what(),"std::exception");
+	}
+	catch(...)
+	{
+		KMessageBox::error(this,"Undefined Error");
+	}
+	if(DestroyDoc)
+	{
+		DeleteSession();
+		Doc=0;
+	}
+}
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::sessionDisconnect(void)
+{
+	if(Doc)
+	{
+		Desktop->closeAllSubWindows();
+		DeleteSession();
+		Doc=0;
+		sessionConnected(false);
+		statusMsg(i18n("Not Connected !"));
+		Status->setPixmap(KIconLoader::global()->loadIcon("network-disconnect",KIconLoader::Small));
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::sessionCompute(void)
+{
+	QSessionProgressDlg Dlg(this,"Compute Complete Session");
+	QComputeAll* Task(new QComputeAll());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
+	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
+	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
+	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::programConsole(void)
+{
+	KPrgConsole* ptr(new KPrgConsole());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::createDatabase(void)
+{
+	KDialog dlg(this);
+	Ui_QCreateDatabase Ui;
+	QWidget* widget=new QWidget(&dlg);
+	Ui.setupUi(widget);
+	dlg.setMainWidget(widget);
+
 	if(!dlg.exec())
 		return;
-	StructuresPath=FromQString(dlg.BasicURL->text());
 
 	try
 	{
-		QSessionProgressDlg d(this,0,"Create Database");
-		d.Run(new QCreateDB(FromQString(dlg.DbName->text()),FromQString(dlg.hostName->text()),
-			FromQString(dlg.userName->text()),FromQString(dlg.password->text()),FromQString(dlg.BasicURL->text())));
+		QSessionProgressDlg d(this,"Create Database");
+		d.Run(new QCreateDB(FromQString(Ui.DbName->text()),FromQString(Ui.hostName->text()),
+			FromQString(Ui.userName->text()),FromQString(Ui.password->text()),FromQString(Ui.BasicURL->text())));
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+		KMessageBox::error(this,e.GetMsg(),"R Exception");
 	}
 	catch(std::exception& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
+		KMessageBox::error(this,e.what(),"std::exception");
 	}
 	catch(...)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+		KMessageBox::error(this,"Undefined Error");
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotImportUsersData(void)
+void KGALILEICenter::importDocs(void)
 {
-	try
-	{
-		//Create de DB
-		QString name=KFileDialog::getOpenFileName("~",QString::null,this,"Users' Data XML file");
-		if(name.isEmpty())
-			return;
-		QSessionProgressDlg d(this,Doc->GetSession(),"Import Users' Data");
-		d.Run(new QImportUsersData(FromQString(name)));
-		Doc->updateAllViews(otDoc);
-		Doc->updateAllViews(otProfile);
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
-	}
-	catch(std::exception& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
-	}
-	catch(...)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotImportDocs(void)
-{
-	QFillEmptyDatabase dlg(this,0,true);
+	QFillDatabase dlg(this);
 	dlg.KUDirectory->setMode(KFile::Directory);
 
 	if(dlg.exec())
 	{
-		RString catDirectory  = FromQString(dlg.KUDirectory->url());
+		RString catDirectory  = FromQString(dlg.KUDirectory->url().url());
 		int depth = dlg.Depth->value();
 		RString parentName = FromQString(dlg.ParentName->text());
 
 		// if the database name field is empty -> ERROR
-		if( catDirectory.IsEmpty())
+		if(catDirectory.IsEmpty())
 		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must specify a directory containing all the categories! "));
+			KMessageBox::error(this,"You must specify a directory containing all the categories! ");
 			return;
 		}
 		if((dlg.HasParent->isChecked())&& parentName.IsEmpty())
 		{
-			QMessageBox::critical(this,"KGALILEICenter",QString("You must insert a NAME for the parent or unchecked the \"Has Parent\" option! "));
+			KMessageBox::error(this,"You must insert a NAME for the parent or unchecked the \"Has Parent\" option! ");
 			return;
 		}
 
-		QSessionProgressDlg Dlg(this,Doc->GetSession(),"Fill Database");
+		QSessionProgressDlg Dlg(this,"Fill Database");
 		Dlg.Run(new QImportDocs(catDirectory,depth,parentName,FromQString(dlg.DefaultMIMEType->text())));
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotShowUsers(void)
+void KGALILEICenter::runProgram(void)
 {
-	createClient(Doc,new KViewUsers(Doc,pWorkspace,"View users",0));
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotProfilesCalc(void)
-{
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Profiles");
-	if(!Dlg.Run(new QComputeProfiles()))
-		return;
-	Doc->updateAllViews(otProfile);
-	//test whether a linking method has been used during Profile computation.
-	//if true -->refresh Links
-	if(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
+	QString url(KFileDialog::getOpenFileName(KUrl(ToQString(PrgPath)),"*.kprg|KGALILEICenter Programs",Desktop,"Open Program File..."));
+	if(url.isEmpty())
 	{
-		Doc->updateAllViews(otNoClass);
+		QMessageBox::critical(this,"KGALILEICenter","File could not be found");
+		return;
 	}
-
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotPostProfilesCalc(void)
-{
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Profiles Analyze");
-	if(!Dlg.Run(new QPostComputeProfiles()))
-		return;
-	Doc->updateAllViews(otProfile);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotProfileCalc(void)
-{
-	KViewProfile* m = dynamic_cast<KViewProfile*>(pWorkspace->activeWindow());
-	if(!m) return;
-	((KViewProfile*)m)->ComputeProfile();
-	slotWindowActivated(m);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotShowCommunities(void)
-{
-	createClient(Doc,new KViewCommunities(Doc,pWorkspace,"View Communities",0));
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotCommunitiesCalc(void)
-{
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Communities");
-	if(!Dlg.Run(new QGroupProfiles()))
-		return;
-	Doc->updateAllViews(otCommunity);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotPostCommunities(void)
-{
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Communities Analyze");
-	if(!Dlg.Run(new QPostGroupProfiles()))
-		return;
-	Doc->updateAllViews(otCommunity);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotShowTopics(void)
-{
-	createClient(Doc,new KViewTopics(Doc,pWorkspace,"View Topics",0));
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotTopicsCalc(void)
-{
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Topics");
-	if(!Dlg.Run(new QGroupDocs()))
-		return;
-	Doc->updateAllViews(otTopic);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotPostTopics(void)
-{
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Topics Analyze");
-	if(!Dlg.Run(new QPostGroupDocs()))
-		return;
-	Doc->updateAllViews(otTopic);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSimulationDlg(void)
-{
-	QSimulationDlg dlg(this);
-
-	dlg.NbOK->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbOK","Subjects"));
-	dlg.RelOK->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelOK","Subjects"));
-	dlg.NbKO->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbKO","Subjects"));
-	dlg.RelKO->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelKO","Subjects"));
-	dlg.NbH->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbH","Subjects"));
-	dlg.RelH->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelH","Subjects"));
-	dlg.PercErr->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("PercErr","Subjects"));
-	dlg.NbProfMin->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbProfMin","Subjects"));
-	dlg.NbProfMax->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbProfMax","Subjects"));
-	dlg.PercSocial->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("PercSocial","Subjects"));
-	dlg.NbSubjects->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbSubjects","Subjects"));
-	dlg.RelSubjects->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelSubjects","Subjects"));
-	dlg.NbMinDocsSubject->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbMinDocsSubject","Subjects"));
-	dlg.NbDocsAssess->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbDocsAssess","Subjects"));
-	dlg.SwitchPerc->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("SwitchPerc","Subjects"));
-	if(dlg.exec())
+	KViewPrg* ptr(new KViewPrg(FromQString(url)));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+	try
 	{
-		GALILEIApp->GetGALILEIConfig()->SetDouble("NbOK",dlg.NbOK->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetBool("RelOK",dlg.RelOK->isChecked(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetDouble("NbKO",dlg.NbKO->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetBool("RelKO",dlg.RelKO->isChecked(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetDouble("NbH",dlg.NbH->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetBool("RelH",dlg.RelH->isChecked(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetDouble("PercErr",dlg.PercErr->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMin",dlg.NbProfMin->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMax",dlg.NbProfMax->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetDouble("PercSocial",dlg.PercSocial->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetDouble("NbSubjects",dlg.NbSubjects->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetBool("RelSubjects",dlg.RelSubjects->isChecked(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetUInt("NbMinDocsSubject",dlg.NbMinDocsSubject->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetUInt("NbDocsAssess",dlg.NbDocsAssess->value(),"Subjects");
-		GALILEIApp->GetGALILEIConfig()->SetDouble("SwitchPerc",dlg.SwitchPerc->value(),"Subjects");
+		ptr->run();
+	}
+	catch(GException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+	}
+	catch(RException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"R Exception");
+	}
+	catch(std::exception& e)
+	{
+		KMessageBox::error(this,e.what(),"std::exception");
+	}
+	catch(...)
+	{
+		KMessageBox::error(this,"Undefined Error");
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSubjectsCreate(void)
+void KGALILEICenter::sessionStats(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Subjects");
-	Dlg.Run(new QCreateIdealSubjects());
-	Doc->updateAllViews(otCommunity);
-	Doc->updateAllViews(otUser);
-	Doc->updateAllViews(otDoc);
+	KViewStats* ptr(new KViewStats());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotCommunitiesCreate(void)
+void KGALILEICenter::statusMsg(const QString& text)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Communities");
-	Dlg.Run(new QCreateIdealCommunities());
-	Doc->updateAllViews(otCommunity);
+	statusBar()->changeItem(text,1);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotTopicsCreate(void)
+void KGALILEICenter::saveModifier(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Create Ideal Topics");
-	Dlg.Run(new QCreateIdealTopics());
-	Doc->updateAllViews(otTopic);
+	if(Doc)
+		Doc->SetSaveResults(aSessionSave->isChecked());
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotDoFdbks(void)
+void KGALILEICenter::optionsPreferences(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Feedback Cycle");
-	Dlg.Run(new QMakeFdbks());
-	Doc->updateAllViews(otProfile);
+	Configure Dlg(this);
+	Dlg.exec(Doc);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotDoAssessments(void)
+void KGALILEICenter::showDicts(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Assessments Cycle");
-	Dlg.Run(new QMakeAssessments());
-	Doc->updateAllViews(otProfile);
+	KViewDicts* ptr(new KViewDicts());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+	ptr->create();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotCommunitiesCompare(void)
+void KGALILEICenter::docsClear()
 {
-	if(Doc->GetSession()->GetSubjects())
-		createClient(Doc,new KViewThCommunities(Doc,Doc->GetSession()->GetSubjects(),pWorkspace,"View Theoretical Communities",0));
+	if(Doc)
+		Doc->ForceReCompute(otDoc);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotTopicsCompare(void)
+void KGALILEICenter::showDocs(void)
 {
-	if(Doc->GetSession()->GetSubjects())
-		createClient(Doc,new KViewThTopics(Doc,Doc->GetSession()->GetSubjects(),pWorkspace,"View Theoretical Topics",0));
+	QGObjectsList* ptr(new QGObjectsList());
+	connect(ptr,SIGNAL(Show(GDoc*)),this,SLOT(showDoc(GDoc*)));
+	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	Desktop->addSubWindow(ptr)->setWindowTitle("Documents");
+	ptr->Set(QGObjectsList::Docs);
+	ptr->adjustSize();
+	ptr->show();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotShowDocs(void)
+void KGALILEICenter::showDoc(GDoc* doc)
 {
-	createClient(Doc,new KViewDocs(Doc,pWorkspace,"View Documents",0));
+	KViewDoc* ptr(new KViewDoc(doc));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotDocAnalyse(void)
+void KGALILEICenter::docAnalyse(void)
 {
-	KViewDoc* m;
-
-	slotStatusMsg(i18n("Opening file..."));
-	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(QString::null,i18n("*.*"), this, i18n("Open File..."));
+	statusMsg(i18n("Opening file..."));
+	QString url(KFileDialog::getOpenFileName(KUrl("~"),"*.*",Desktop,"Document to Analyze"));
 	if(!url.isEmpty())
 	{
-//		try
+		KViewDoc* ptr(new KViewDoc(FromQString(url),FromQString(KMimeType::findByPath(url)->name())));
+		Desktop->addSubWindow(ptr);
+		ptr->adjustSize();
+		ptr->show();
+		try
 		{
-			createClient(Doc,m=new KViewDoc(url.path(),KMimeType::findByURL(url)->name(),Doc,pWorkspace,"View Document",0));
-			m->AnalyseDocXML();
-			slotWindowActivated(m);
+			ptr->AnalyseDocXML();
 		}
-//		catch(GException& e)
-//		{
-//			QMessageBox::critical(this,"KGALILEICenter",e.GetMsg());
-//		}
+		catch(GException& e)
+		{
+			KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+		}
+		catch(RException& e)
+		{
+			KMessageBox::error(this,e.GetMsg(),"R Exception");
+		}
+		catch(std::exception& e)
+		{
+			KMessageBox::error(this,e.what(),"std::exception");
+		}
+		catch(...)
+		{
+			KMessageBox::error(this,"Undefined Error");
+		}
 	}
-	slotStatusMsg(i18n("Ready."));
+	statusMsg(i18n("Ready."));
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotDocsAnalyse(void)
+void KGALILEICenter::docsAnalyse(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Analyse Documents");
-	if(!Dlg.Run(new QAnalyzeDocs()))
-		return;
-	Doc->updateAllViews(otDoc);
+	QSessionProgressDlg Dlg(this,"Analyze Documents");
+	QAnalyzeDocs* Task(new QAnalyzeDocs());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotPostDocsAnalyse(void)
+void KGALILEICenter::postDocsAnalyse(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Post-Documents Analyse");
-	if(!Dlg.Run(new QPostAnalyzeDocs()))
-		return;
-	Doc->updateAllViews(otDoc);
+	QSessionProgressDlg Dlg(this,"Post-Documents Analyse");
+	QPostAnalyzeDocs* Task(new QPostAnalyzeDocs());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotDocsIndexer(void)
+void KGALILEICenter::docsIndexer(void)
 {
-	QString dir=KFileDialog::getExistingDirectory(QString::null,this,"Choose directory where to export the files");
+	QString dir(KFileDialog::getExistingDirectory(KUrl(),this,"Choose directory where to export the files"));
 	if(!dir.isEmpty())
 	{
 	 	KProgressDialog dlg(this,"Progress","Export documents");
 		dlg.show();
 		KApplication::kApplication()->processEvents();
-		RString pre(dir.latin1());
+		RString pre(FromQString(dir));
 		pre+="/doc";
-		RCursor<GDoc> Docs=Doc->GetSession()->GetDocs();
+		RCursor<GDoc> Docs(Doc->GetDocs());
 		size_t nb;
 		for(Docs.Start(),nb=0;!Docs.End();Docs.Next(),nb++)
 		{
 			if(dlg.wasCancelled())
 				break;
-			dlg.progressBar()->setProgress(static_cast<int>((nb*100)/Docs.GetNb()));
+			dlg.progressBar()->setValue(static_cast<int>((nb*100)/Docs.GetNb()));
 			KApplication::kApplication()->processEvents();
 			if(!Docs()->GetLang())
 				continue;
-			RString name=pre+RString::Number(Docs()->GetId())+".txt";
-			dlg.setLabel(name.Latin1());
+			RString name(pre+RString::Number(Docs()->GetId())+".txt");
+			dlg.setLabelText(ToQString(name));
 			KApplication::kApplication()->processEvents();
-			RTextFile file(name.Latin1());
+			RTextFile file(name);
 			file.Open(RIO::Create);
 			RCursor<GWeightInfo> Words(Docs()->GetInfos());
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				for(size_t i=lround(Words()->GetWeight())+1;--i;)
 				{
-					file<<Doc->GetSession()->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType());
+					file<<Doc->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType());
 				}
 				file<<endl;
 			}
@@ -663,27 +634,24 @@ void KGALILEICenterApp::slotDocsIndexer(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotCreateXML(void)
+void KGALILEICenter::createXML(void)
 {
-	KViewDoc* m = dynamic_cast<KViewDoc*>(pWorkspace->activeWindow());
-	if(!m) return;
-	m->CreateDocXML();
-	slotWindowActivated(m);
+	KViewDoc* win(dynamic_cast<KViewDoc*>(Desktop->activeSubWindow()));
+	if(!win) return;
+	win->CreateDocXML();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSaveXML(void)
+void KGALILEICenter::saveXML(void)
 {
-	int dlg;
-	KURL url;
-
-	KViewDoc* m = dynamic_cast<KViewDoc*>(pWorkspace->activeWindow());
-	if(!m) return;
-	dlg=KMessageBox::No;
+	KViewDoc* win(dynamic_cast<KViewDoc*>(Desktop->activeSubWindow()));
+	if(!win) return;
+	int dlg (KMessageBox::No);
+	KUrl url;
 	while(dlg!=KMessageBox::Yes)
 	{
-		url=KFileDialog::getSaveURL(QString::null,i18n("*.docxml"), this, i18n("Save DocXML File..."));
+		url=KFileDialog::getSaveUrl(KUrl("~"),i18n("*.docxml"), this, i18n("Save DocXML File..."));
 		if(url.isEmpty()) return;
 		QFile Test(url.path());
 		if(Test.exists())
@@ -694,341 +662,301 @@ void KGALILEICenterApp::slotSaveXML(void)
 		else
 			dlg=KMessageBox::Yes;
 	}
-	m->SaveDocXML(url.path());
+	win->SaveDocXML(FromQString(url.path()));
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotAnalyseXML(void)
-{
-	KViewDoc* m = dynamic_cast<KViewDoc*>(pWorkspace->activeWindow());
-	if(!m) return;
-	m->AnalyseDocXML();
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotQueryMetaEngine(void)
+void KGALILEICenter::queryMetaEngine(void)
 {
 	if(!GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod(false))
 	{
 		QMessageBox::information(this," Error "," No Meta Engine Method selected!!");
 		return;
 	}
-	createClient(Doc,new KViewMetaEngine(Doc,pWorkspace,"View Meta Engine Results",0));
+	KViewMetaEngine* ptr(new KViewMetaEngine());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotViewStatusBar(void)
+void KGALILEICenter::topicsClear(void)
 {
-	slotStatusMsg(i18n("Toggle the statusbar..."));
-	if(!viewStatusBar->isChecked())
-	{
-		statusBar()->hide();
-	}
-	else
-	{
-		statusBar()->show();
-	}
-	slotStatusMsg(i18n("Ready."));
+	if(Doc)
+		Doc->ForceReCompute(otTopic);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::windowMenuAboutToShow(void)
+void KGALILEICenter::topicsCalc(void)
 {
-	windowMenu->popupMenu()->clear();
-	windowMenu->insert(windowCascade);
-	windowMenu->insert(windowTile);
-	if(pWorkspace->windowList().isEmpty())
-	{
-		windowCascade->setEnabled(false);
-		windowTile->setEnabled(false);
-	}
-	else
-	{
-		windowCascade->setEnabled(true);
-		windowTile->setEnabled(true);
-	}
-	windowMenu->popupMenu()->insertSeparator();
-
-	QWidgetList windows = pWorkspace->windowList();
-	for(int i=0;i<int(windows.count());++i)
-	{
-		int id = windowMenu->popupMenu()->insertItem(QString("&%1 ").arg(i+1)+windows.at(i)->caption(),this,SLOT(windowMenuActivated(int)));
-		windowMenu->popupMenu()->setItemParameter(id,i);
-		windowMenu->popupMenu()->setItemChecked(id,pWorkspace->activeWindow()==windows.at(i));
-	}
+	QSessionProgressDlg Dlg(this,"Compute Topics");
+	QGroupDocs* Task(new QGroupDocs());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::windowMenuActivated(int id)
+void KGALILEICenter::postTopicsCalc(void)
 {
-	QWidget* w = pWorkspace->windowList().at( id );
-	if(w)
-		w->setFocus();
+	QSessionProgressDlg Dlg(this,"Post-Topics Analyze");
+	QPostGroupDocs* Task(new QPostGroupDocs());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotWindowTile(void)
+void KGALILEICenter::showTopics(void)
 {
-	pWorkspace->tile();
+	KViewTopics* ptr(new KViewTopics());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotWindowCascade(void)
+void KGALILEICenter::showTopic(GTopic* topic)
 {
-	pWorkspace->cascade();
+	KViewTopic* ptr(new KViewTopic(topic));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotStatusMsg(const QString& text)
+void KGALILEICenter::profilesClear()
 {
-	statusBar()->clear();
-	statusBar()->changeItem(text,1);
+	if(Doc)
+		Doc->ForceReCompute(otProfile);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSaveModifier(void)
+void KGALILEICenter::showUsers(void)
 {
-	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->SetSaveResults(sessionSave->isChecked());
+	KViewUsers* ptr(new KViewUsers());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotDocsClear()
+void KGALILEICenter::showProfile(GProfile* profile)
 {
-	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->ForceReCompute(otDoc);
+	KViewProfile* ptr(new KViewProfile(profile));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotProfilesClear()
+void KGALILEICenter::profilesCalc(void)
 {
-	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->ForceReCompute(otProfile);
+	QSessionProgressDlg Dlg(this,"Compute Profiles");
+	QComputeProfiles* Task(new QComputeProfiles());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotCommunitiesClear()
+void KGALILEICenter::postProfilesCalc(void)
 {
-	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->ForceReCompute(otCommunity);
+	QSessionProgressDlg Dlg(this,"Post-Profiles Analyze");
+	QPostComputeProfiles* Task(new QPostComputeProfiles());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotTopicsClear()
+void KGALILEICenter::profileCalc(void)
 {
-	if(Doc&&Doc->GetSession())
-		Doc->GetSession()->ForceReCompute(otTopic);
+	KViewProfile* win(dynamic_cast<KViewProfile*>(Desktop->activeSubWindow()));
+	if(!win) return;
+	win->ComputeProfile();
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotConfigure(void)
+void KGALILEICenter::communitiesClear()
 {
-	ConfigureDlg Dlg;
-	Dlg.Init(this);
-	if(Dlg.exec())
-	{
-		Dlg.Done(this);
-	}
+	if(Doc)
+		Doc->ForceReCompute(otCommunity);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotRunProgram(void)
+void KGALILEICenter::showCommunities(void)
 {
-	QString tmpfile;
-	char tmp[100];
-	KViewPrg* o;
+	KViewCommunities* ptr(new KViewCommunities());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
 
-	KApplication::kApplication()->processEvents();
-	KURL url=KFileDialog::getOpenURL(ToQString(PrgPath),i18n("*.kprg|KGALILEICenter Programs"), this, i18n("Open File..."));
-	if(url.isEmpty())
-	{
-		QMessageBox::critical(this,"KGALILEICenter","File could not be found");
-		return;
-	}
-	KIO::NetAccess::download(url,tmpfile,this);
-	strcpy(tmp,tmpfile);
-	try
-	{
-		createClient(Doc,o=new KViewPrg(Doc,pWorkspace,tmp,0));
-		o->run();
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
-	}
-	catch(std::exception& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
-	}
-	catch(...)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
-	}
-	KIO::NetAccess::removeTempFile( tmpfile );
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotHelpProgram(void)
+void KGALILEICenter::showCommunity(GCommunity* community)
 {
-	KViewPrg* o;
-
-	KApplication::kApplication()->processEvents();
-	try
-	{
-		createClient(Doc,o=new KViewPrg(Doc,pWorkspace,"",0));
-		o->run();
-	}
-	catch(GException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
-		return;
-	}
-	catch(RException& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
-		return;
-	}
-	catch(std::exception& e)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
-		return;
-	}
-	catch(...)
-	{
-		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
-		return;
-	}
+	KViewCommunity* ptr(new KViewCommunity(community));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
 }
 
-
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotWindowActivated(QWidget*)
+void KGALILEICenter::communitiesCalc(void)
 {
-	if(dynamic_cast<KView*>(pWorkspace->activeWindow()))
-		setCaption(pWorkspace->activeWindow()->caption());
-	else
-		setCaption("KGALILEICenter");
-
-	// Update menu
-	if(dynamic_cast<KViewUsers*>(pWorkspace->activeWindow()))
-	{
-		createXML->setEnabled(false);
-		saveXML->setEnabled(false);
-		analyseXML->setEnabled(false);
-	}
-	else if(dynamic_cast<KViewDocs*>(pWorkspace->activeWindow()))
-	{
-		createXML->setEnabled(false);
-		saveXML->setEnabled(false);
-		analyseXML->setEnabled(false);
-	}
-	else if(dynamic_cast<KViewDoc*>(pWorkspace->activeWindow()))
-	{
-		createXML->setEnabled(!(((KViewDoc*)pWorkspace->activeWindow())->IsDocXML()));
-		saveXML->setEnabled(((KViewDoc*)pWorkspace->activeWindow())->IsDocXML());
-		analyseXML->setEnabled(((KViewDoc*)pWorkspace->activeWindow())->IsDocXML());
-	}
-	else if(dynamic_cast<KViewProfile*>(pWorkspace->activeWindow()))
-	{
-		createXML->setEnabled(false);
-		saveXML->setEnabled(false);
-		analyseXML->setEnabled(false);
-	}
-	else if(dynamic_cast<KViewCommunities*>(pWorkspace->activeWindow()))
-	{
-		saveXML->setEnabled(false);
-		createXML->setEnabled(false);
-		analyseXML->setEnabled(false);
-	}
-	else
-	{
-		createXML->setEnabled(false);
-		saveXML->setEnabled(false);
-		analyseXML->setEnabled(false);
-	}
+	QSessionProgressDlg Dlg(this,"Compute Communities");
+	QGroupProfiles* Task(new QGroupProfiles());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotHandleItem(QListViewItem* item)
+void KGALILEICenter::postCommunities(void)
 {
-	QListViewItemType* obj=(QListViewItemType*)item;
-
-	switch(obj->Type)
-	{
-		case otProfile:
-			createClient(Doc,new KViewProfile(obj->Obj.Profile,Doc,pWorkspace,"View Profile",0));
-			break;
-
-		case otDoc:
-			createClient(Doc,new KViewDoc(obj->Obj.Doc,Doc,pWorkspace,"View Document",0));
-			break;
-
-		case otCommunity:
-			createClient(Doc,new KViewCommunity(obj->Obj.Community,Doc,pWorkspace,"View Community",0));
-			break;
-
-		case otTopic:
-			createClient(Doc,new KViewTopic(obj->Obj.Topic,Doc,pWorkspace,"View Topic",0));
-			break;
-
-		case otNoClass:
-		default:
-			break;
-	}
+	QSessionProgressDlg Dlg(this,"Post-Communities Analyze");
+	QPostGroupProfiles* Task(new QPostGroupProfiles());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenterApp::slotSeeDicts(void)
+void KGALILEICenter::subjectsCreate(void)
 {
-	createClient(Doc,new KViewDicts(Doc,pWorkspace,"View Dictionaries",0));
+	QSessionProgressDlg Dlg(this,"Create Ideal Subjects");
+	 QCreateIdealSubjects* Task(new  QCreateIdealSubjects());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
+	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
+	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
+	Dlg.Run(Task);
 }
 
 
 //-----------------------------------------------------------------------------
-KGALILEICenterApp::~KGALILEICenterApp(void)
+void KGALILEICenter::topicsCreate(void)
+{
+	QSessionProgressDlg Dlg(this,"Create Ideal Topics");
+	QCreateIdealTopics* Task(new QCreateIdealTopics());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::communitiesCreate(void)
+{
+	QSessionProgressDlg Dlg(this,"Create Ideal Communities");
+	QCreateIdealCommunities* Task(new QCreateIdealCommunities());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
+	Dlg.Run(Task);
+}
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::doFdbks(void)
+{
+	QSessionProgressDlg Dlg(this,"Feedback Cycle");
+	QMakeFdbks* Task(new QMakeFdbks());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
+	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::doAssessments(void)
+{
+	QSessionProgressDlg Dlg(this,"Assessments Cycle");
+	QMakeAssessments* Task(new QMakeAssessments());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
+	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::communitiesCompare(void)
+{
+	KViewIdealCommunities* ptr(new KViewIdealCommunities());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::topicsCompare(void)
+{
+	KViewIdealTopics* ptr(new KViewIdealTopics());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
+
+////-----------------------------------------------------------------------------
+//void KGALILEICenterApp::slotHelpProgram(void)
+//{
+//	KViewPrg* o;
+//
+//	KApplication::kApplication()->processEvents();
+//	try
+//	{
+//		createClient(Doc,o=new KViewPrg(Doc,pWorkspace,"",0));
+//		o->run();
+//	}
+///	catch(GException& e)
+//{
+//	KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+//}
+//catch(RException& e)
+//{
+//	KMessageBox::error(this,e.GetMsg(),"R Exception");
+//}
+//catch(std::exception& e)
+//{
+//	KMessageBox::error(this,e.what(),"std::exception");
+//}
+//catch(...)
+//{
+//	KMessageBox::error(this,"Undefined Error");
+//}
+//}
+
+
+//-----------------------------------------------------------------------------
+KGALILEICenter::~KGALILEICenter(void)
 {
 	try
 	{
 		delete Debug;
-		if(Doc)
-			delete Doc;
 	}
 	catch(GException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - GALILEI Exception",e.GetMsg());
+		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
 	}
 	catch(RException& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - R Exception",e.GetMsg());
+		KMessageBox::error(this,e.GetMsg(),"R Exception");
 	}
 	catch(std::exception& e)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - std::exception",e.what());
+		KMessageBox::error(this,e.what(),"std::exception");
 	}
 	catch(...)
 	{
-		QMessageBox::critical(this,"KGALILEICenter - Undefined Error","Problem");
+		KMessageBox::error(this,"Undefined Error");
 	}
 }

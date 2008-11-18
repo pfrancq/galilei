@@ -36,37 +36,22 @@
 
 
 //-----------------------------------------------------------------------------
-// forward class declaration for GALILEI
-namespace R
-{
-	class RXMLStruct;
-}
+// include files for R/GALILEI
+#include <rxmlstruct.h>
+#include <gdoc.h>
 using namespace R;
-namespace GALILEI
-{
-	class GDoc;
-	class GDocXML;
-	class QGDocXML;
-	class GUser;
-	class GProfile;
-	class GSession;
-	class QGWeightInfos;
-	class QGDocStruct;
-}
 using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qlistview.h>
-#include <qtabwidget.h>
-class QPushButton;
+// include files for KDE/Qt
+#include <QtGui/QMdiSubWindow>
 
 
 //---------------------------------------------------------------------------
 // include files for current application
-#include "kview.h"
-#include "addfdbkdlg.h"
+#include <ui_kviewdoc.h>
+#include <ui_addfdbkdlg.h>
 
 
 //---------------------------------------------------------------------------
@@ -75,7 +60,7 @@ class QPushButton;
 * @author Pascal Francq
 * @short Document Window.
 */
-class KViewDoc : public KView
+class KViewDoc : public QMdiSubWindow, public Ui_KViewDoc
 {
 	Q_OBJECT
 
@@ -85,123 +70,55 @@ class KViewDoc : public KView
 	GDoc* Document;
 
 	/**
-	* Widget to handle the different information of the document.
-	*/
-	QTabWidget* Infos;
-
-	/**
-	* Feedback of the profiles on the document.
-	*/
-	QListView* Fdbks;
-
-	/**
-	* Feedback of the profiles on the document if from link analysis.
-	*/
-	QListView* FdbksLinks;
-
-	/**
-	 * Add a new feedback for a given document.
-	 */
-	QPushButton* NewFdbk;
-
-	/**
-	* Results of the analyze.
-	*/
-	GALILEI::QGWeightInfos* Results;
-
-	/**
-	 * Structure.
-	 */
-	GALILEI::QGDocStruct* DocStruct;
-
-	/**
-	* General information about the document.
-	*/
-	QListView* General;
-
-	/**
-	* MIME type of the file.
-	*/
-	QListViewItem* InfoMIME;
-
-	/**
-	* Widget to show XML structure representing the content of the document.
-	*/
-	QGDocXML* XML;
-
-	/**
 	* XML structure representing the content of the document.
 	*/
-	RXMLStruct* Struct;
+	RXMLStruct* XML;
 
 	/**
-	* Delete the Document when deleting the window?
+	* Delete the document when deleting the window?
 	*/
 	bool bDelDoc;
-
-	/**
-	* DocXML Computed?
-	*/
-	bool bDocXML;
 
 public:
 
 	/**
 	* Constructor for the view
-	* @param document       Document to represent.
-	* @param doc            Document instance that the view represents.
-	* @param parent         Parent of the window.
-	* @param name           Name of the window.
-	* @param wflags         Flags.
+	* @param doc            Document to represent.
 	*/
-	KViewDoc(GDoc* document,KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewDoc(GDoc* doc);
 
 	/**
 	* Constructor for the view
 	* @param file           Document to represent.
 	* @param mime           Mime Type of the document.
-	* @param doc            Document instance that the view represents.
-	* @param parent         Parent of the window.
-	* @param name           Name of the window.
-	* @param wflags         Flags.
 	*/
-	KViewDoc(const char* file,const char* mime,KDoc* doc,QWidget* parent,const char* name,int wflags);
+	KViewDoc(const RURI& file,const RString& mime);
+
+private:
 
 	/**
-	* Construct the feedbacks widget.
-	*/
-	void ConstructFdbks(void);
+	 * Set up the view.
+	 */
+	void setUp(void);
 
-	/**
-	* Construct the general information's widget.
-	*/
-	void ConstructGeneral(void);
-
-	/**
-	* Gets called to redraw the document contents if it has been modified.
-	* @param type            Type.
-	*/
-	virtual void update(tObjType type);
-
-protected slots:
+public slots:
 
 	/**
 	* Add a new feedback.
 	*/
-	void slotNewFdbk(void);
+	void newFdbk(void);
+
+	/**
+	 * Update the view.
+	 */
+	void update(void);
+
+	/**
+	 * Update the view.
+	 */
+	void updateXML(void);
 
 public:
-
-	/**
-	* Get the doc of this window.
-	* @return Pointer to a GALILEI::GDoc.
-	*/
-	GDoc* GetDoc(void) const {return(Document);}
-
-	/**
-	* Look if the DocXML is already been computed for
-	*/
-	bool IsDocXML(void) const {return(bDocXML);}
 
 	/**
 	* Create a GDocXML structure for the current document and show it in the
@@ -210,38 +127,73 @@ public:
 	void CreateDocXML(void);
 
 	/**
-	* Save the GDocXML structure for the current document.
+	* Save the XML structure for the current document.
 	* @param name           File where to store the file.
 	*/
-	void SaveDocXML(const char* name);
+	void SaveDocXML(const RURI& name);
 
 	/**
-	* Analyse a GDocXML structure of the current document and show the results.
+	* Analyze a GDocXML structure of the current document and show the results.
 	*/
 	void AnalyseDocXML(void);
 
 	/**
-	* Destructor.
+	* Destruct the widget.
 	*/
 	~KViewDoc(void);
 };
 
 
 //-----------------------------------------------------------------------------
-class MyAddFdbkDlg : public AddFdbkDlg
+/**
+ * Dialog box used to choose a feedback of a given profile of a particular
+ * user.
+ * @short Adding Feedback
+ * @author Pascal Francq.
+ */
+class AddFdbkDlg : public KDialog, public Ui_AddFdbkDlg
 {
 	Q_OBJECT
-public:
-	GALILEI::GSession* Session;
-	GALILEI::GUser* User;
-	GALILEI::GProfile* Prof;
 
-	MyAddFdbkDlg(QWidget* parent,GALILEI::GSession* session);
+	/**
+	 * Current user.
+	 */
+	GUser* User;
+
+	/**
+	 * Current profile.
+	 */
+	GProfile* Prof;
+
+public:
+
+	/**
+	 * Construct the dialog box.
+	 * @param parent         Parent wisget.
+	 */
+	AddFdbkDlg(QWidget* parent);
+
+private:
+
+	/**
+	 * Build the list of all profiles for the current user.
+	 */
 	void FillProfiles(void);
 
-public slots:
+private slots:
+
+	/**
+	 * The current user was changed.
+	 */
 	void slotChangeUser(const QString& string);
+
+	/**
+	 * The current profile was changed.
+	 * @param string
+	 */
 	void slotChangeProfile(const QString& string);
+
+	friend class KViewDoc;
 };
 
 

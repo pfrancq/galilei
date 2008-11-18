@@ -32,43 +32,16 @@
 
 
 //-----------------------------------------------------------------------------
-// includes files for Qt
-#include <qpixmap.h>
-#include <qtabwidget.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <glang.h>
-#include <qgprofile.h>
-#include <guser.h>
-#include <gprofile.h>
-#include <gdoc.h>
-#include <ggroup.h>
-#include <gsession.h>
-#include <qlistviewitemtype.h>
+// include files for R/GALILEI
 #include <rqt.h>
-#include <ggalileiapp.h>
-#include <gstorage.h>
-#include <gweightinfo.h>
-#include <gconcepttype.h>
-#include <gcommunity.h>
-#include <qgweightinfos.h>
-using namespace GALILEI;
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kiconloader.h>
+#include <guser.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for current application
-#include "kviewprofile.h"
-#include "qsessionprogress.h"
-#include "kdoc.h"
-#include <qtable.h>
+#include <kviewprofile.h>
+#include <qsessionprogress.h>
+#include <kgalileicenter.h>
 
 
 
@@ -79,216 +52,51 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewProfile::KViewProfile(GProfile* profile,KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Profile(profile), Fdbks(0)
+KViewProfile::KViewProfile(GProfile* profile)
+	: QMdiSubWindow(), Ui_KViewProfile(), Profile(profile)
 {
-	// Window initialisation
-	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
-	setCaption("Profile \""+QString(ToQString(Profile->GetName()))+"\"");
-
-	// initialisation of the tab widget
-	Infos=new QTabWidget(this);
-	Infos->resize(size());
-
-	// Initialisation of the General Information Widget
-	General = new QGProfile(Infos,Profile);
-	Infos->insertTab(General,"General Information");
-
-	// Initialisation of the User Widget
-	User = new QListView(Infos);
-	Infos->insertTab(User,"User");
-	User->addColumn("Variable");
-	User->addColumn("Value");
-	ConstructUser();
-
-	// Initialisation of the Groups Widget
-	Groups=new QListView(Infos);
-	Infos->insertTab(Groups,"Groups");
-	Groups->addColumn(QString("Profiles"));
-	Groups->addColumn(QString("Users"));
-	Groups->addColumn(QString("Attached"));
-	Groups->setRootIsDecorated(true);
-	connect(Groups,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	ConstructGroups();
-
-	// Initialisation of the Feedbacks Widget
-	Fdbks = new QListView(Infos);
-	Infos->insertTab(Fdbks,"Documents");
-	Fdbks->addColumn(QString("Document"));
-	Fdbks->addColumn(QString("URL"));
-	Fdbks->addColumn(QString("Date"));
-	Fdbks->setRootIsDecorated(true);
-	connect(Fdbks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	ConstructFdbks();
-
-	// Initialisation of the Links Widget
-	FdbksLinks = new QListView(Infos);
-	Infos->insertTab(FdbksLinks,"Links");
-	FdbksLinks->addColumn(QString("Document"));
-	FdbksLinks->addColumn(QString("URL"));
-	FdbksLinks->addColumn(QString("Date"));
-	FdbksLinks->setRootIsDecorated(true);
-	connect(FdbksLinks,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	ConstructLinks();
-
-	// Initialisation of the AnalyseResults Widget
-	Results = new QGWeightInfos(Infos,Profile,Doc->GetSession());
-	Infos->insertTab(Results,"Description");
+	QWidget* ptr=new QWidget();
+	setupUi(ptr);
+	setWidget(ptr);
+	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setWindowTitle(ToQString(profile->GetName())+" ("+ToQString(profile->GetUser()->GetFullName())+")");
+	Vars->Set(Profile);
+	Desc->Set(Profile);
+	Assessments->Set(QGObjectsList::Assessments,Profile);
+	Links->Set(QGObjectsList::Links,Profile);
+	GCommunity* Group(GSession::Get()->GetCommunity(Profile->GetGroupId(),true,true));
+	if(Group)
+		Community->Set(QGObjectsList::Profiles,Group);
+	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(profilesChanged()),this,SLOT(updateProfile()));
+	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(communitiesChanged()),this,SLOT(updateCommunity()));
+	connect(Community,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewProfile::ConstructFdbks(void)
+void KViewProfile::updateProfile(void)
 {
-	QListViewItem *p;
-	RDate d;
-	RCursor<GFdbk> Docs;
-	GDoc* doc;
-
-	if(!Fdbks) return;
-
-	// Init different judgements
-	Fdbks->clear();
-	QListViewItemType* ok= new QListViewItemType(Fdbks, "Relevant Documennts");
-	ok->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
-	QListViewItemType* ko= new QListViewItemType(Fdbks, "Fuzzy Relevant Documents");
-	ko->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("remove.png",KIcon::Small)));
-	QListViewItemType* hs= new QListViewItemType(Fdbks, "Irrelevant Documents");
-	hs->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("stop.png",KIcon::Small)));
-
-	// Add Judgements from profiles.
-	Docs=Profile->GetFdbks();
-	for(Docs.Start();!Docs.End();Docs.Next())
-	{
-		switch(Docs()->GetFdbk())
-		{
-			case djOK:
-				p=ok;
-				break;
-			case djKO:
-				p=ko;
-				break;
-			case djOutScope:
-				p=hs;
-				break;
-			default:
-				p=0;
-				break;
-		}
-		if(!p) continue;
-		doc=GSession::Get()->GetDoc(Docs()->GetDocId());
-		d=doc->GetUpdated();
-		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),ToQString(d));
-		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("konqueror.png",KIcon::Small)));
-	}
+	Vars->Set(Profile);
+	Desc->Set(Profile);
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewProfile::ConstructLinks(void)
+void KViewProfile::updateCommunity(void)
 {
-	QListViewItem *p;
-	RDate d;
-	RString iconName="";
-	RCursor<GFdbk> Docs;
-	GDoc* doc;
-
-	if(!FdbksLinks) return;
-
-	// Init different judgements for document from link analysis.
-	FdbksLinks->clear();
-	QListViewItemType* lh= new QListViewItemType(FdbksLinks, "Hub Documents");
-	lh->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
-	QListViewItemType* la= new QListViewItemType(FdbksLinks, "Authority Documents");
-	la->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("ok.png",KIcon::Small)));
-
-	// Add Judgements from profiles.
-	Docs=Profile->GetFdbks();
-	for(Docs.Start();!Docs.End();Docs.Next())
-	{
-		p=0;
-		if(Docs()->GetFdbk()&djAutority)
-		{
-			p=la;
-			iconName="konquerorAutho.png";
-		}
-		if(Docs()->GetFdbk()&djHub)
-		{
-			p=lh;
-			iconName="konquerorHub.png";
-		}
-		if(!p) continue;
-		doc=GSession::Get()->GetDoc(Docs()->GetDocId());
-		d=doc->GetUpdated();
-		QListViewItemType* prof = new QListViewItemType(doc,p,ToQString(doc->GetName()),ToQString(doc->GetURL()),ToQString(d));
-		prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon(ToQString(iconName),KIcon::Small)));
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewProfile::ConstructGroups(void)
-{
-	Groups->clear();
-	GCommunity* gr=GSession::Get()->GetCommunity(Profile->GetGroupId(),true,true);
-	if(!gr) return;
-	RCursor<GProfile> Prof(gr->GetObjs());
-	for(Prof.Start();!Prof.End();Prof.Next())
-	{
-		QListViewItemType* subitem=new QListViewItemType(Prof(),Groups,ToQString(Profile->GetAttached()));
-		subitem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("find.png",KIcon::Small)));
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewProfile::ConstructUser(void)
-{
-	const GUser* usr=Profile->GetUser();
-
-	User->clear();
-	new QListViewItem(User,"ID",ToQString(RString::Number(usr->GetId())));
-	new QListViewItem(User,"Full Name",ToQString(usr->GetFullName()));
-	new QListViewItem(User,"Name",ToQString(usr->GetName()));
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewProfile::update(tObjType type)
-{
-	switch(type)
-	{
-		case otProfile:
-			General->slotProfileChanged();
-			Results->SetObject(Profile);
-			break;
-		case otCommunity:
-			ConstructGroups();
-			break;
-		case otFdbk:
-			ConstructLinks();
-			break;
-		default:
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewProfile::resizeEvent(QResizeEvent *)
-{
-	Infos->resize(size());
+	GCommunity* Group(GSession::Get()->GetCommunity(Profile->GetGroupId(),true,true));
+	if(Group)
+		Community->Set(QGObjectsList::Profiles,Group);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewProfile::ComputeProfile(void)
 {
-	QSessionProgressDlg Dlg(this,Doc->GetSession(),"Compute Profile");
-	if(!Dlg.Run(new QComputeProfile(Profile)))
-		return;
-	General->slotProfileChanged();
-	Results->SetObject(Profile);
+	QSessionProgressDlg Dlg(this,"Compute Profile");
+	QComputeProfile* Task(new QComputeProfile(Profile));
+	connect(Task,SIGNAL(finish()),this,SLOT(updateProfile()));
+	Dlg.Run(Task);
 }
 
 

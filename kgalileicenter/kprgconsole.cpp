@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	KViewDebug.cpp
+	KPrgConsole.cpp
 
 	Window to manipulate a program console - Implementation.
 
@@ -57,9 +57,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // include files for current application
-#include "kdoc.h"
-#include "kprgconsole.h"
-#include "qsessionprogress.h"
+#include <kprgconsole.h>
+#include <qsessionprogress.h>
 
 
 
@@ -70,14 +69,15 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KPrgConsole::KPrgConsole(KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags), Prg(0)
+KPrgConsole::KPrgConsole(void)
+	: QMdiSubWindow(), Ui_KPrgConsole(), Prg(0)
 {
-	setCaption("Console");
-	QVBoxLayout* Layout = new QVBoxLayout( this, 0, 0, "Form1Layout");
-    Results=new RQConsole(this,"Results");
+	QWidget* ptr=new QWidget();
+	setupUi(ptr);
+	setWidget(ptr);
+	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setWindowTitle("Console");
     Prg=new GGALILEIPrg(Results);
-    Layout->addWidget( Results );
     connect(Results,SIGNAL(EnterCmd(QString)),this,SLOT(RunCmd(QString)));
 }
 

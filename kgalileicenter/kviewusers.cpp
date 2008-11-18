@@ -39,6 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsession.h>
+#include <ggalileiapp.h>
 #include <guser.h>
 #include <gprofile.h>
 #include <gstorage.h>
@@ -48,22 +49,14 @@ using namespace std;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qpixmap.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qinputdialog.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
-#include <kiconloader.h>
+// include files for Qt/KDE
+#include <QtGui/QInputDialog>
 
 
 //-----------------------------------------------------------------------------
 // application specific includes
-#include "kviewusers.h"
-#include "kdoc.h"
+#include <kviewusers.h>
+#include <kgalileicenter.h>
 
 
 
@@ -74,96 +67,27 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewUsers::KViewUsers(KDoc* doc,QWidget* parent,const char* name,int wflags)
-	: KView(doc,parent,name,wflags)
+KViewUsers::KViewUsers(void)
+	: QMdiSubWindow(), Ui_KViewUsers()
 {
-	setCaption("List of users");
-	setIcon(QPixmap(KGlobal::iconLoader()->loadIcon("kdmconfig.png",KIcon::Small)));
-
-	// Main Layout
-	QVBoxLayout* MainLayout = new QVBoxLayout(this,0,0,"MainLayout");
-
-	// Search Bar
-	QHBoxLayout* SearchLayout = new QHBoxLayout(0,0,0,"SearchLayout");
-	SearchLayout->setAlignment(Qt::AlignTop);
-	NewUser=new QPushButton(this);
-	NewUser->setAutoDefault(TRUE);
-	NewUser->setText("New User");
+	QWidget* ptr=new QWidget();
+	setupUi(ptr);
+	setWidget(ptr);
+	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setWindowTitle("Users");
 	connect(NewUser,SIGNAL(clicked()),this,SLOT(slotAddUser()));
-	SearchLayout->addWidget(NewUser);
-	SearchLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Fixed, QSizePolicy::Minimum ));
-	ModifyUser=new QPushButton(this);
-	ModifyUser->setAutoDefault(TRUE);
-	ModifyUser->setText("Modify User");
 	connect(ModifyUser,SIGNAL(clicked()),this,SLOT(slotModifyUser()));
-	SearchLayout->addWidget(ModifyUser);
-	SearchLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum ));
-	NewProfile=new QPushButton(this);
-	NewProfile->setAutoDefault(TRUE);
-	NewProfile->setText("New Profile");
 	connect(NewProfile,SIGNAL(clicked()),this,SLOT(slotAddProfile()));
-	SearchLayout->addWidget(NewProfile);
-	SearchLayout->addItem(new QSpacerItem(10, 10, QSizePolicy::Fixed, QSizePolicy::Minimum ));
-	ModifyProfile=new QPushButton(this);
-	ModifyProfile->setAutoDefault(TRUE);
-	ModifyProfile->setText("Modify Profile");
 	connect(ModifyProfile,SIGNAL(clicked()),this,SLOT(slotModifyProfile()));
-	SearchLayout->addWidget(ModifyProfile);
-//	SearchLayout->addItem(new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum ));
-    MainLayout->addLayout(SearchLayout);
-
-	// Users
-	Users = new QListView(this);
-	Users->resize(size());
-	Users->addColumn(QString("User"));
-	Users->setRootIsDecorated(true);
-	MainLayout->addWidget(Users);
-	connect(Users,SIGNAL(doubleClicked(QListViewItem*)),parent->parent()->parent(),SLOT(slotHandleItem(QListViewItem*)));
-	CreateUsersListView();
+	connect(List,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
+	List->Set(QGObjectsList::Users);
 }
 
 
 //-----------------------------------------------------------------------------
-GUser* KViewUsers::GetCurrentUser(void)
+void KViewUsers::update(void)
 {
-	QListViewItemType* t;
-
-	t=(QListViewItemType*)Users->selectedItem();
-	if(!t)
-		return(0);
-	if(t->Type!=otUser)
-		return(0);
-	return(t->Obj.User);
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewUsers::CreateUsersListView(void)
-{
-	R::RCursor<GUser> CurUsr=Doc->GetSession()->GetUsers();
-	QListViewItemType* useritem=0;
-	QListViewItemType* prof;
-
-	for(CurUsr.Start();!CurUsr.End();CurUsr.Next())
-	{
-		useritem = new QListViewItemType(CurUsr(),Users,ToQString(CurUsr()->GetFullName()));
-		useritem->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("personal.png",KIcon::Small)));
-		RCursor<GProfile> cProfile(*CurUsr());
-		for(cProfile.Start();!cProfile.End();cProfile.Next())
-		{
-			prof=new QListViewItemType(cProfile(), useritem,ToQString(cProfile()->GetName()));
-			prof->setPixmap(0,QPixmap(KGlobal::iconLoader()->loadIcon("kdict.png",KIcon::Small)));
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewUsers::update(tObjType type)
-{
-	if((type!=otProfile)&&(type!=otUser)) return;
-	Users->clear();
-	CreateUsersListView();
+	List->Set(QGObjectsList::Users);
 }
 
 
@@ -171,12 +95,11 @@ void KViewUsers::update(tObjType type)
 void KViewUsers::slotAddUser(void)
 {
 	bool Ok;
-	QString Name=QInputDialog::getText("New User", "Enter the name:",QLineEdit::Normal,QString::null,&Ok,this);
+	QString Name(QInputDialog::getText(this,"New User", "Enter the name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		GSession* session=getDocument()->GetSession();
-		session->InsertUser(new GUser(cNoRef,FromQString(Name),FromQString(Name)));
-		update(otUser);
+		GALILEIApp->GetSession()->InsertUser(new GUser(cNoRef,FromQString(Name),FromQString(Name)));
+		update();
 	}
 }
 
@@ -184,19 +107,15 @@ void KViewUsers::slotAddUser(void)
 //-----------------------------------------------------------------------------
 void KViewUsers::slotModifyUser(void)
 {
-	QListViewItemType* t((QListViewItemType*)Users->selectedItem());
-	if((!t)||(t->Type!=otUser))
-		return;
-	GUser* usr=t->Obj.User;
+	GUser* usr(List->GetCurrentUser());
+	if(!usr) return;
 	bool Ok;
-	QString Name=QInputDialog::getText("Modify User", "Enter the new name:",QLineEdit::Normal,ToQString(usr->GetName()),&Ok,this);
+	QString Name(QInputDialog::getText(this,"Modify User", "Enter the new name:",QLineEdit::Normal,ToQString(usr->GetName()),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		GSession* session=getDocument()->GetSession();
-		GStorage* save=session->GetStorage();
 		usr->SetName(FromQString(Name));
-		save->SaveUser(usr);
-		t->setText(0,Name);
+		GALILEIApp->GetSession()->GetStorage()->SaveUser(usr);
+		List->currentItem()->setText(0,Name);
 	}
 }
 
@@ -204,19 +123,15 @@ void KViewUsers::slotModifyUser(void)
 //-----------------------------------------------------------------------------
 void KViewUsers::slotAddProfile(void)
 {
-	QListViewItemType* t((QListViewItemType*)Users->selectedItem());
-	if((!t)||(t->Type!=otUser))
-		return;
-	GUser* usr=t->Obj.User;
+	GUser* usr(List->GetCurrentUser());
+	if(!usr) return;
 	bool Ok;
-	QString Name=QInputDialog::getText("Add Profile to "+ToQString(usr->GetName()), "Enter the profile name:",QLineEdit::Normal,QString::null,&Ok,this);
+	QString Name(QInputDialog::getText(this,"Add Profile to "+ToQString(usr->GetName()), "Enter the profile name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		GSession* session=getDocument()->GetSession();
-		GStorage* save=session->GetStorage();
-		session->InsertProfile(new GProfile(usr,cNoRef,FromQString(Name),cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,true,20));
-		save->SaveUser(usr);
-		update(otUser);
+		GALILEIApp->GetSession()->InsertProfile(new GProfile(usr,cNoRef,FromQString(Name),cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,true,20));
+		GALILEIApp->GetSession()->GetStorage()->SaveUser(usr);
+		update();
 	}
 }
 
@@ -224,19 +139,15 @@ void KViewUsers::slotAddProfile(void)
 //-----------------------------------------------------------------------------
 void KViewUsers::slotModifyProfile(void)
 {
-	QListViewItemType* t((QListViewItemType*)Users->selectedItem());
-	if((!t)||(t->Type!=otProfile))
-		return;
-	GProfile* prof=t->Obj.Profile;
+	GProfile* prof(List->GetCurrentProfile());
+	if(!prof) return;
 	bool Ok;
-	QString Name=QInputDialog::getText("Modify Profile", "Enter the new name:",QLineEdit::Normal,ToQString(prof->GetName()),&Ok,this);
+	QString Name(QInputDialog::getText(this,"Modify Profile", "Enter the new name:",QLineEdit::Normal,ToQString(prof->GetName()),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		GSession* session=getDocument()->GetSession();
-		GStorage* save=session->GetStorage();
 		prof->SetName(FromQString(Name));
-		save->SaveProfile(prof);
-		t->setText(0,Name);
+		GALILEIApp->GetSession()->GetStorage()->SaveProfile(prof);
+		List->currentItem()->setText(0,Name);
 	}
 }
 

@@ -50,15 +50,14 @@ using namespace R;
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qsemimodal.h>
-#include <qthread.h>
-#include <qlistview.h>
+// include files for Qt/KDE
+#include <QtCore/QThread>
+#include <kprogressdialog.h>
 
 
 //-----------------------------------------------------------------------------
 // include files for current application
-#include "kgalileicenter.h"
+class QSessionProgressDlg;
 
 
 //-----------------------------------------------------------------------------
@@ -68,14 +67,45 @@ using namespace R;
 */
 class QSessionThread : public QThread
 {
+	Q_OBJECT
+
 protected:
+
+	/**
+	 * Parent widget.
+	 */
 	QSessionProgressDlg* Parent;
-	GSession* Session;
-public:
+
+	/**
+	 * Constructor.
+	 */
 	QSessionThread(void);
-	void Set(GSession* session,QSessionProgressDlg* parent);
+
+	/**
+	 * Set the parent widget.
+	 * @param parent         Parent widget.
+	 */
+	void Set(QSessionProgressDlg* parent);
+
+	/**
+	 * Main run of the thread.
+	 * @see DoIt.
+	 */
 	virtual void run(void);
+
+	/**
+	 * Do the real task. This is the method to overload for child classes.
+	 */
 	virtual void DoIt(void)=0;
+
+signals:
+
+	/**
+	 * The signal is emitted when the job was done without any errors.
+	 */
+	void finish(void);
+
+	friend class QSessionProgressDlg;
 };
 
 
@@ -115,19 +145,6 @@ public:
 		: Name(name), Host(host), User(user),Pass(pass),SchemaURL(path+"/galilei/db/mysql/") {}
 	virtual void DoIt(void);
 	void RunSQL(const RURI& path,std::auto_ptr<RDb>& Db);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Import Users' Data.
-*/
-class QImportUsersData : public QSessionThread
-{
-	RString XML;
-public:
-	QImportUsersData(RString xml) : XML(xml) {}
-	virtual void DoIt(void);
 };
 
 
@@ -381,54 +398,13 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Load the dictionaries.
-*/
-class QLoadDictionaries : public QSessionThread
-{
-public:
-
-	//-----------------------------------------------------------------------------
-	class QListViewItemDict : public QListViewItem
-	{
-	public:
-		GConceptType* Dict;
-
-		QListViewItemDict(QListView* parent,GConceptType* dict);
-	};
-
-private:
-
-	QListView* Dicts;
-	GSession* Session;
-
-public:
-	QLoadDictionaries(QListView* dicts,GSession* session) : Dicts(dicts), Session(session) {}
-	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
 * The QSessionProgressDlg provides a dialog box to show the progress of
 * something done on a session.
 * @author Pascal Francq
 * @short Progress Dialog Box.
 */
-class QSessionProgressDlg : public QSemiModal, public GSlot
+class QSessionProgressDlg : public KProgressDialog, public GSlot
 {
-	Q_OBJECT
-
-	/**
-	* 'OK' button to close the dialog box. Must be disable when beginning
-	* computation and enabled at the end.
-	*/
-	QPushButton* btnOk;
-
-	/**
-	* Label to show the message of the current process.
-	*/
-	QLabel* txtRem;
-
 	/**
 	* Session.
 	*/
@@ -439,29 +415,15 @@ class QSessionProgressDlg : public QSemiModal, public GSlot
 	*/
 	bool Running;
 
-	/**
-	* Should cancel appears?
-	*/
-	bool Cancel;
-
-	QString NewLabel;
-
-	bool Changed;
-
-	bool Canceled;
-
-	bool Error;
-
 public:
 
 	/**
 	* Constructor.
 	* @param parent         Parent widget.
-	* @param s              Session from which to load.
 	* @param c              Caption of the dialog box.
 	* @param cancel         Cancel Button?
 	*/
-	QSessionProgressDlg(QWidget* parent,GSession* s,const char* c,bool cancel=true);
+	QSessionProgressDlg(QWidget* parent,const QString& c,bool cancel=true);
 
 	/**
 	* Run a thread "in" this dialog box.
@@ -493,26 +455,10 @@ public:
 	*/
 	virtual void NextChromosome(size_t id);
 
-public slots:
-
 	/**
-	* Slot when button is pressed.
-	*/
-	void receiveButton();
-
-public:
-
-	/**
-	* Put some text.
-	* @param text            Text to show.
-	*/
-	void PutText(const char* text);
-
-	/**
-	* Put an error.
-	* @param text            Text to show.
-	*/
-	void PutError(const char* text);
+	 * The 'Cancel' Button was called.
+	 */
+	virtual void reject(void);
 
 	/**
 	* Put the dialog in the final state.
@@ -523,6 +469,8 @@ public:
 	* Destruct.
 	*/
 	virtual ~QSessionProgressDlg(void);
+
+	friend class QSessionThread;
 };
 
 

@@ -1,81 +1,61 @@
 PROJECT(kgalileicenter)
 INCLUDE_DIRECTORIES(.)
 
-SET(kgalileicenter_frontend_kde_MOC_INCLUDES kdoc.h
-                                                                      kgalileicenter.h
-                                                                      kprgconsole.h
-                                                                      kviewdicts.h
-                                                                      kviewdoc.h
-                                                                      kviewdocs.h
-                                                                      kviewcommunity.h
-                                                                      kviewcommunities.h
-                                                                      kviewtopic.h
-                                                                      kviewtopics.h
-                                                                      kview.h
-                                                                      kviewmetaengine.h
-                                                                      kviewprg.h
-                                                                      kviewprofile.h
-                                                                      kviewstats.h
-                                                                      kviewthcommunities.h
-                                                                      kviewthtopics.h
-                                                                      kviewusers.h
-                                                                      qmyplugins.h
-                                                                      qsessionprogress.h)
-
-SET(kgalileicenter_frontend_kde_UI_INCLUDES  qchooseparent.ui
-                                                                   qfilldatabase.ui
-                                                                   qcreatedatabase.ui
-                                                                   qexportmatrixdlg.ui
-                                                                   qplugins.ui
-                                                                   qsimulationdlg.ui
-                                                                   configure.ui
-                                                                   addfdbkdlg.ui
+SET (KGALILEICENTER_SOURCES
+main.cpp
+kgalileicenter.cpp
+qsessionprogress.cpp
+qpluginslist.cpp
+configure.cpp
+kviewdoc.cpp
+kviewmetaengine.cpp
+kviewprg.cpp
+qfilldatabase.cpp
+kviewstats.cpp
+kviewgroup.cpp
+kviewusers.cpp
+kviewgroups.cpp
+kviewidealgroups.cpp
+kviewprofile.cpp
+kviewdicts.cpp
+kprgconsole.cpp
 )
-
-SET (KGALILEICENTER_SOURCES                  kviewprg.cpp
-                                                                      kgalileicenter_init.cpp
-                                                                      kgalileicenter_dlg.cpp
-                                                                      qsessionprogress.cpp
-                                                                      kviewusers.cpp
-                                                                      kviewthcommunities.cpp
-                                                                      kviewthtopics.cpp
-                                                                      kviewprofile.cpp
-                                                                      kviewcommunities.cpp
-                                                                      kviewcommunity.cpp
-                                                                      kviewtopics.cpp
-                                                                      kviewtopic.cpp
-                                                                      kviewdocs.cpp
-                                                                      kviewdoc.cpp
-                                                                      kviewstats.cpp
-                                                                      kview.cpp
-                                                                      kdoc.cpp
-                                                                      kviewmetaengine.cpp
-                                                                      kgalileicenter.cpp
-                                                                      main.cpp
-                                                                      kviewdicts.cpp
-                                                                      kprgconsole.cpp
-          )
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
-SET(KDE_LIBS  ${QT_AND_KDECORE_LIBS} ${KDE3_LIB_DIR}/libkdeui.so  ${KDE3_LIB_DIR}/libkio.so )
+KDE4_HANDLE_AUTOMOC(${KGALILEICENTER_SOURCES})
 
-###This is not very simple way to produce moc file
-## A macro must be added
-FOREACH(file ${kgalileicenter_frontend_kde_MOC_INCLUDES})
-    SET(REALFILE ${file})
-    KDE3_ADD_MOC_FILES(kgalileicenter_frontend_kde_MOCFILE ${REALFILE})
-ENDFOREACH(file ${kgalileicenter_frontend_kde_MOC_INCLUDES})
+KDE4_ADD_UI_FILES(KGALILEICENTER_SOURCES
+qpluginslist.ui
+configure.ui
+kviewdoc.ui
+addfdbkdlg.ui
+kviewmetaengine.ui
+kviewprg.ui
+qfilldatabase.ui
+kviewstats.ui
+kviewgroup.ui
+kviewusers.ui
+kviewgroups.ui
+kviewidealgroups.ui
+kviewprofile.ui
+qcreatedatabase.ui
+kviewdicts.ui
+kprgconsole.ui
+#qchooseparent.ui
+)
 
-FOREACH(file ${kgalileicenter_frontend_kde_UI_INCLUDES})
-    SET(REALFILE ${file})
-   KDE3_ADD_UI_FILES(kgalileicenter_frontend_kde_UIFILE ${REALFILE})
-ENDFOREACH(file ${kgalileicenter_frontend_kde_UI_INCLUDES})
 
-#    ADD_LIBRARY(galilei SHARED ${galilei_TARGET_SOURCES})
-KDE3_ADD_EXECUTABLE(kgalileicenter ${kgalileicenter_frontend_kde_UIFILE}
-                                                                   ${kgalileicenter_frontend_kde_MOCFILE}
-                                                                   ${KGALILEICENTER_SOURCES} )
-TARGET_LINK_LIBRARIES(kgalileicenter galilei galileikde roptimization rcore rcorekde rmath ${KDE_LIBS})
+KDE4_ADD_KCFG_FILES(kgalileicenter kgalileicenterui.rc)
 
-#KDE3_ADD_KCFG_FILES(kgalileicenter kgalileicenterui.rc)
+KDE4_ADD_EXECUTABLE(kgalileicenter ${KGALILEICENTER_SOURCES})
+TARGET_LINK_LIBRARIES(kgalileicenter galilei galileikde roptimization rcore rcorekde rmath ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${KDE4_KPARTS_LIBS})
+
+
+########### install files ###############
+install(TARGETS kgalileicenter ${INSTALL_TARGETS_DEFAULT_ARGS})
+install( FILES kgalileicenter.desktop  DESTINATION ${XDG_APPS_INSTALL_DIR} )
+#install( FILES test.kcfg  DESTINATION  ${KCFG_INSTALL_DIR} )
+install(FILES kgalileicenterui.rc  DESTINATION  ${DATA_INSTALL_DIR}/kgalileicenter )
+install(FILES kgalileicenterui.rc  DESTINATION  /usr/share/kde4/apps/kgalileicenter )
+kde4_install_icons(${ICON_INSTALL_DIR})

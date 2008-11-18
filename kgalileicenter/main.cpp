@@ -1,10 +1,10 @@
 /*
 
-	main.cpp
+	Main.cpp
 
 	Main program - Implementation.
 
-	Copyright 2001 by the Université libre de Bruxelles.
+	Copyright 2001-2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -28,7 +28,7 @@
 
 
 //-----------------------------------------------------------------------------
-#include <cstdlib>
+//#include <cstdlib>
 #include <stdexcept>
 #include <iostream>
 using namespace std;
@@ -36,82 +36,78 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 // include files for R
+#include <rstd.h>
 #include <rdate.h>
+using namespace R;
+
 
 //-----------------------------------------------------------------------------
 // include files for KDE
-#include <kcmdlineargs.h>
+#include <kapplication.h>
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kapp.h>
-#include <qmessagebox.h>
+#include <kcmdlineargs.h>
+#include <KDE/KLocale>
 
 
 //-----------------------------------------------------------------------------
 // include files for current application
-#include "kgalileicenter.h"
+#include <kgalileicenter.h>
 
 
 //-----------------------------------------------------------------------------
 // Description of the application
 static const char *description =
-	I18N_NOOP("This application provides a control center for the GALILEI project.");
-
-
-
-//-----------------------------------------------------------------------------
-// Arguments to add at the command prompt
-static KCmdLineOptions options[] =
-{
-  { "+[File]", I18N_NOOP("file to open"), 0 },
-  { 0, 0, 0 }
-};
+	"This application provides a control center for the GALILEI project.";
 
 
 //-----------------------------------------------------------------------------
 int main(int argc, char *argv[])
 {
 	setlocale(LC_CTYPE,"");
-	QString year=QString("(c) 1998-")+QString::number(R::RDate::GetToday().GetYear())+QString(", Université Libre de Bruxelles\nDepartment of Information and Communication Science");
 
-	KAboutData aboutData( "kgalileicenter", I18N_NOOP("KGALILEICenter"),
-		"1.89", description, KAboutData::License_GPL,year, 0, "http://galilei.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Project Manager"), "pfrancq@ulb.ac.be");
-	aboutData.addCredit("Nicolas Kumps",I18N_NOOP("Past Researcher"), 0);
-	aboutData.addCredit("Marjorie Paternostre",I18N_NOOP("Past Researcher"),0);
-	aboutData.addCredit("Stéphane Rideau",I18N_NOOP("Past Researcher"), 0);
-	aboutData.addCredit("Valery Vandaele",I18N_NOOP("Past Researcher"), "");
-	aboutData.addAuthor("David Wartel",I18N_NOOP("Consultant"), "david.wartel@e-parkos.com");
-	aboutData.addCredit("Marco Saerens",I18N_NOOP("Professor"), "saerens@isys.ucl.ac.be");
-	aboutData.addAuthor("Jean-Baptiste Valsamis",I18N_NOOP("Past Researcher"),"jvalsami@ulb.ac.be");
-	aboutData.addCredit("Faiza Gaultier",I18N_NOOP("Senior Researcher"),"fabbaci@ulb.ac.be");
-	aboutData.addCredit("Sarah Rolfo",I18N_NOOP("Past Researcher"),0);
+    // Information about the application
+	KAboutData aboutData("kgalileicenter",0,ki18n("KGALILEICenter"),"1.89",ki18n(description),
+			KAboutData::License_GPL,ki18n("(C) 1998-2008 Université Libre de Bruxelles"),KLocalizedString(),"http://galilei.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Project Manager"),"pfrancq@ulb.ac.be");
+	aboutData.addCredit(ki18n("Nicolas Kumps"),ki18n("Past Researcher"));
+	aboutData.addCredit(ki18n("Marjorie Paternostre"),ki18n("Past Researcher"));
+	aboutData.addCredit(ki18n("Stéphane Rideau"),ki18n("Past Researcher"));
+	aboutData.addCredit(ki18n("Valery Vandaele"),ki18n("Past Researcher"));
+	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Consultant"));
+	aboutData.addCredit(ki18n("Marco Saerens"),ki18n("Professor"),"saerens@isys.ucl.ac.be");
+	aboutData.addAuthor(ki18n("Jean-Baptiste Valsamis"),ki18n("Past Researcher"),"jvalsami@ulb.ac.be");
+	aboutData.addCredit(ki18n("Faiza Gaultier"),ki18n("Senior Researcher"),"fabbaci@ulb.ac.be");
+	aboutData.addCredit(ki18n("Sarah Rolfo"),ki18n("Past Researcher"));
+
+	// Init
 	KCmdLineArgs::init( argc, argv, &aboutData );
-	KCmdLineArgs::addCmdLineOptions( options ); // Add our own options.
+    KCmdLineOptions options;
+	KCmdLineArgs::addCmdLineOptions(options);
 
+	// Run
 	try
 	{
 		KApplication app;
-		if(app.isRestored())
+		KGALILEICenter* Center=new KGALILEICenter(argc,argv);
+		if(app.isSessionRestored())
 		{
-			RESTORE(KGALILEICenterApp(argc,argv));
+//			RESTORE(Center);
 		}
 		else
 		{
-			KGALILEICenterApp *testmdi = new KGALILEICenterApp(argc,argv);
-			testmdi->show();
+			Center->show();
 		}
-		return app.exec();
+		return(app.exec());
 	}
-	catch(GALILEI::GException& e)
+	catch(GException& e)
 	{
 		cout<<e.GetMsg()<<endl;
 	}
-	catch(R::RException& e)
+	catch(RException& e)
 	{
 		cout<<e.GetMsg()<<endl;
 	}
-	catch(std::exception& e)
+	catch(exception& e)
 	{
 		cout<<e.what()<<endl;
 	}
