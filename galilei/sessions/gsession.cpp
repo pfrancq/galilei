@@ -40,7 +40,7 @@
 // include files for R Project
 #include <random.h>
 #include <rcursor.h>
-#include <rtextfile.h>
+#include <rxmlfile.h>
 using namespace R;
 
 
@@ -1030,7 +1030,7 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 //------------------------------------------------------------------------------
 void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 {
-	// Verify that the textanalyse method is selected
+	// Verify that the document analysis method is selected
 	if(!method)
 	{
 		method=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
@@ -1075,6 +1075,20 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	}
 }
 
+
+//------------------------------------------------------------------------------
+bool GSession::GetDocXML(GDoc* doc,R::RXMLStruct* xml,bool& native)
+{
+	RIO::RSmartTempFile docxml;
+	xml->Clear();
+	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml,native);
+	if(uri.IsEmpty())
+		return(false);
+	RXMLFile XML(uri,xml);
+	XML.SetInvalidXMLCodes(true);
+	XML.Open(RIO::Read);
+	return(true);
+}
 
 //------------------------------------------------------------------------------
 void GSession::DoPostDocs(GSlot* rec)

@@ -91,6 +91,14 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("search engine"));
 		case otEngineDoc:
 			return(RString("document proposed by a search engine"));
+		case otConcept:
+			return(RString("concept"));
+		case otConceptType:
+			return(RString("concept type"));
+		case otRelation:
+			return(RString("relation"));
+		case otRelationType:
+			return(RString("relation type"));
 	}
 	return(RString("unknown"));
 }
@@ -167,7 +175,7 @@ R::RString GALILEI::GetAssessment(tDocAssessment assessment)
 		str="irrelevant";
 	if(assessment&djHub)
 		str+="/hub";
-	if(assessment&djAutority)
+	if(assessment&djAuthority)
 		str+="/authority";
 	return(str);
 }
@@ -186,7 +194,7 @@ R::RString GALILEI::GetAssessmentCode(tDocAssessment assessment)
 		code="H";
 	if(assessment&djHub)
 		code+="H";
-	if(assessment&djAutority)
+	if(assessment&djAuthority)
 		code+="A";
 	return(code);
 }
@@ -220,10 +228,10 @@ tDocAssessment GALILEI::GetAssessmentType(const R::RString& assessment)
 	switch(assessment[static_cast<size_t>(1)].Unicode())
 	{
 		case 'H':
-			jug = tDocAssessment(jug | djHub);
+			jug = tDocAssessment(jug|djHub);
 			break;
 		case 'A':
-			jug = tDocAssessment(jug | djAutority);
+			jug = tDocAssessment(jug|djAuthority);
 			break;
 		default:
 			break;

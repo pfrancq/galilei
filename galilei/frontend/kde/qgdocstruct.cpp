@@ -40,13 +40,13 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <ui_qgdocstruct.h>
 #include <qgdocstruct.h>
 #include <gdoc.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
+#include <ggalileiapp.h>
 #include <gsession.h>
-#include <gstorage.h>
-#include <gxmlindex.h>
 using namespace GALILEI;
 
 
@@ -58,31 +58,28 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-QGDocStruct::QGDocStruct(QWidget* parent,GDoc* obj,GSession* session)
-	: QListView(parent), Session(session)
+QGDocStruct::QGDocStruct(QWidget* parent)
+	: QWidget(parent), Ui(new Ui_QGDocStruct)
 {
-	setSorting(-1);
-	addColumn("Concept");
-	addColumn("Concept Type");
-	addColumn("Position");
-	addColumn("Level");
-	addColumn("Child");
-	IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
-	SetObject(obj);
+	static_cast<Ui_QGDocStruct*>(Ui)->setupUi(this);
 }
 
 
 
 //------------------------------------------------------------------------------
-void QGDocStruct::SetObject(GDoc* obj)
+void QGDocStruct::Set(GDoc* obj)
 {
-	clear();
-	Object=obj;
-	if(!Object) return;
+	if(!obj) return;
+
+	// Init
+	QTreeWidget* RecsList(static_cast<Ui_QGDocStruct*>(Ui)->RecsList);
+	GSession* Session=GALILEIApp->GetSession();
+	RecsList->clear();
+
 
 	// Show the information entities
-	QListViewItem* ptr(0);
-	GDocStruct* xml=Object->GetStruct();
+	QTreeWidgetItem* ptr(0);
+	GDocStruct* xml=obj->GetStruct();
 	if(!xml)
 		return;
 	R::RCursor<GVTDRec> Recs(xml->GetRecs());
@@ -99,7 +96,14 @@ void QGDocStruct::SetObject(GDoc* obj)
 			Child="-1";
 		else
 			Child.setNum(child);
-		ptr=new QListViewItem(this,ptr,name,type,QString::number(Recs()->GetPos()),QString::number(Recs()->GetDepth()),Child);
+		ptr=new QTreeWidgetItem(RecsList,QStringList()<<name<<type<<QString::number(Recs()->GetPos())<<QString::number(Recs()->GetDepth())<<Child);
 	}
-	Object->ReleaseStruct();
+	obj->ReleaseStruct();
+}
+
+
+//------------------------------------------------------------------------------
+QGDocStruct::~QGDocStruct(void)
+{
+	delete static_cast<Ui_QGDocStruct*>(Ui);
 }

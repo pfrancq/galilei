@@ -515,6 +515,16 @@ public:
 	void AnalyseDoc(GDoc* doc,bool ram=true,GDocAnalyse* method=0,GSlot* rec=0);
 
 	/**
+	 * Get the XML structure corresponding to a document. If the document is
+	 * not a XML one, a filter is searched.
+	 * @param doc            Document.
+	 * @param xml            XML struct that will be hold the result.
+	 * @param native         Native document.
+	 * @return True if the XML structure could be created.
+	 */
+	bool GetDocXML(GDoc* doc,R::RXMLStruct* xml,bool& native);
+
+	/**
 	* Run all the enabled post-documents computing methods.
 	* @param rec             Receiver for the signals.
 	*/

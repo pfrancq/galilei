@@ -39,11 +39,13 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <ui_qgweightinfos.h>
 #include <qgweightinfos.h>
 #include <gweightinfo.h>
 #include <gsession.h>
 #include <gstorage.h>
 #include <gxmlindex.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 
 
@@ -55,48 +57,28 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-QGWeightInfos::QGWeightInfos(QWidget* parent,GWeightInfos* obj,GSession* session)
-	: QListView(parent), Session(session)
+QGWeightInfos::QGWeightInfos(QWidget* parent)
+	: QWidget(parent), Ui(new Ui_QGWeightInfos())
 {
-	addColumn("Concept");
-	addColumn("Concept Type");
-	addColumn("Weight");
-	IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
-	SetObject(obj);
+	static_cast<Ui_QGWeightInfos*>(Ui)->setupUi(this);
 }
 
 
 
 //------------------------------------------------------------------------------
-void QGWeightInfos::SetObject(GWeightInfos* obj)
+void QGWeightInfos::Set(GWeightInfos* obj)
 {
-	class LocalItem : QListViewItem
-	{
-	public:
-		double Val;
+	if(!obj) return;
 
-		LocalItem(QListView* v,QString name,QString type,double d) : QListViewItem(v,name,type,QString::number(d)), Val(d) {}
-		virtual int compare( QListViewItem *i, int col, bool ascending ) const
-    	{
-			if(col==1)
-			{
-				double d=Val-static_cast<LocalItem*>(i)->Val;
-				if(d==0.0) return(key(0, ascending ).compare( i->key(0, ascending)));
-				if(d>0)
-					return(1);
-				return(-1);
-			}
-			return(key( col, ascending ).lower().compare( i->key( col, ascending).lower()));
-    	}
-	};
-
-	clear();
-	Object=obj;
-	if(!Object) return;
+	// Init
+	GSession* Session=GALILEIApp->GetSession();
+	GConceptType* IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
+	QTreeWidget* Infos(static_cast<Ui_QGWeightInfos*>(Ui)->Infos);
+	Infos->clear();
 
 	// Show the information entities
-	RCursor<GWeightInfo> Words(Object->GetInfos());
-	for (Words.Start();!Words.End();Words.Next())
+	RCursor<GWeightInfo> Words(obj->GetInfos());
+	for(Words.Start();!Words.End();Words.Next())
 	{
 		QString name;
 		if(Words()->GetType()==IndexSpace)
@@ -131,7 +113,17 @@ void QGWeightInfos::SetObject(GWeightInfos* obj)
 			name=ToQString(Session->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType()));
 		}
 		QString type=ToQString(Words()->GetType()->GetDescription());
-		new LocalItem(this,name,type,Words()->GetWeight());
+		QString w(QString::number(Words()->GetWeight()));
+		while(w.length()<10)
+			w.prepend(' ');
+		new QTreeWidgetItem(Infos,QStringList()<<name<<type<<w);
 	}
+	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->sortItems(0,Qt::AscendingOrder);
+}
 
+
+//------------------------------------------------------------------------------
+QGWeightInfos::~QGWeightInfos(void)
+{
+	delete static_cast<Ui_QGWeightInfos*>(Ui);
 }

@@ -102,8 +102,8 @@ template<class factory>
 //-----------------------------------------------------------------------------
 template<class factory,class plugin,class mng>
 	GFactoryPlugin<factory,plugin,mng>::GFactoryPlugin(mng* m,const R::RString& n,const R::RString& f)
-		: RConfig(), Mng(m), Plugin(0), Lib(f), Name(n),
-	      AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0), Level(0)
+		: GPluginConfig(n), Mng(m), Plugin(0), Lib(f),
+	      AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0)
 {
 	R::RString Cat(m->GetName());
 	Cat.Replace('/','-');

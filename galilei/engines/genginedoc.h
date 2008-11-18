@@ -6,7 +6,7 @@
 
 	Class to store the results of the extraction from a search engine - Header.
 
-	Copyright 2004 by the Universit�Libre de Bruxelles.
+	Copyright 2004 by the Université Libre de Bruxelles.
 
 	Authors:
 		Valery Vandaele (vavdaele@ulb.ac.be)
@@ -60,10 +60,10 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GEngineDoc class provides a representation for the storage of
-* the results extracted from a search engine
+* The GEngineDoc class provides a representation for a document proposed by a
+* search engine (with its ranking).
 * @author Valery Vandaele
-* @short storage of results from a search engine
+* @short Search Engine Result
 */
 class GEngineDoc
 {
@@ -85,12 +85,12 @@ private:
 	R::RString Description;
 
 	/**
-	* The global ranking for the curent document
+	* The global ranking for the current document
 	*/
 	size_t GlobalRank;
 
 	/**
-	* The global ranking for the curent document
+	* The global ranking for the current document
 	*/
 	size_t GlobalRank2;
 
@@ -186,7 +186,7 @@ public:
 	R::RCursor<GRanking> GetRankings(void);
 
 	/**
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~GEngineDoc(void);
 };

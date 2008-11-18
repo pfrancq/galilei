@@ -1,0 +1,40 @@
+<ui version="4.0" >
+ <class>QGObjectsList</class>
+ <widget class="QWidget" name="QGObjectsList" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>629</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" >
+   <item>
+    <widget class="QTreeWidget" name="List" >
+     <property name="dragEnabled" >
+      <bool>false</bool>
+     </property>
+     <property name="rootIsDecorated" >
+      <bool>true</bool>
+     </property>
+     <column>
+      <property name="text" >
+       <string>Object</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Info</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

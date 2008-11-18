@@ -167,7 +167,7 @@ void GCommunity::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,f
 			{
 				// Verify if the document is a relevant hub or authority.
 				tDocAssessment j=Fdbks()->GetFdbk();
-				if(!( (j & (djOK & djHub)) || (j & (djOK & djAutority)))) continue;
+				if(!((j&(djOK&djHub))||(j&(djOK&djAuthority)))) continue;
 
 				// Verify if already inserted in Docs.
 				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
@@ -185,7 +185,7 @@ void GCommunity::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,f
 		{
 			// Verify if the document is relevant.
 			tDocAssessment j=Fdbks()->GetFdbk();
-			if(!(j & djOK)) continue;
+			if(!(j&djOK)) continue;
 
 			// Verify if already inserted in Docs or if it was not assessed by the
 			// corresponding profile.

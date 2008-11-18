@@ -214,7 +214,11 @@ enum tObjType
 	otTopic                  /** Topic. */,
 	otSubject                /** Subject (Theoretical topic of documents). */,
 	otEngine                 /** Search engine.*/,
-	otEngineDoc              /** Document proposed by a search engine.*/
+	otEngineDoc              /** Document proposed by a search engine.*/,
+	otConcept                /** Concept.*/,
+	otConceptType            /** Concept Type.*/,
+	otRelation               /** Relation.*/,
+	otRelationType 	         /** Relation Type.*/
 };
 
 
@@ -285,20 +289,20 @@ R::RString GetEvent(tEvent event);
 * Assessment over a document.
 *
 * The 4 first bits are used to express the assessment of the Doc (OK,KO,N), the
-* 5th and 6th bits are used to express the status of the Doc (Hub, Autority ).
+* 5th and 6th bits are used to express the status of the Doc (Hub, Authority ).
 *  The masks are used to separate the assessment and the status of a doc.
 * @short Document Assessment
 */
 enum tDocAssessment
 {
-	djUnknow                 /** Unknow judgement.*/=0,
+	djUnknow                 /** Unknown assessment.*/=0,
 	djOK                     /** Document is relevant.*/=1,
 	djKO                     /** Document is fuzzy relevant.*/=2,
 	djOutScope               /** Document is irrelevant.*/=8,
 	djHub                    /** Document is a Hub.*/=16,
-	djAutority               /** Document is an Autority.*/=32,
+	djAuthority              /** Document is an Authority.*/=32,
 	djMaskJudg               /** Mask for the assessment of the doc.*/=15,
-	djMaskHubAuto            /** Mask for the Hub or Autority.*/=48
+	djMaskHubAuto            /** Mask for the Hub or Authority.*/=48
 };
 
 

@@ -42,8 +42,6 @@ template<class mng,class factory,class plugin>
 		: GGenericPluginManager(name,version,type), R::RContainer<factory,true,true>(20,10),
 		  R::RContainer<plugin,false,true>(20,10), Current(0)
 {
-			  if(Name=="Documents-Profiles Similarities")
-				  std::cout<<Name<<std::endl;
 }
 
 
@@ -262,7 +260,7 @@ template<class mng,class factory,class plugin>
 	factory* fac;
 	fac=R::RContainer<factory,true,true>::GetPtr(name,PluginsType!=ptOrdered);
 	if((!fac)&need)
-		throw GException(R::RString("No plug-in '")+name+"' availaible for "+Name+".");
+		throw GException(R::RString("No plug-in '")+name+"' available for "+Name+".");
 	return(fac);
 }
 
@@ -307,7 +305,7 @@ template<class mng,class factory,class plugin>
 	if(fac)
 		return(fac->GetPlugin());
 	if(need)
-		throw GException(R::RString("No plug-in '")+name+"' availaible for "+Name+".");
+		throw GException(R::RString("No plug-in '")+name+"' available for "+Name+".");
 	return(0);
 }
 
@@ -339,7 +337,7 @@ template<class mng,class factory,class plugin>
 		return;
 	Current=GetFactory(name,need);
 	if((!Current)&&need)
-		throw GException(R::RString("No plug-in '")+name+"' availaible for "+Name+".");
+		throw GException(R::RString("No plug-in '")+name+"' available for "+Name+".");
 }
 
 
@@ -348,12 +346,12 @@ template<class mng,class factory,class plugin>
 	plugin* GPluginManager<mng,factory,plugin>::GetCurrentMethod(bool need) const
 {
 	if((!Current)&&need)
-		throw GException("No current plug-in availaible for "+Name+".");
+		throw GException("No current plug-in available for "+Name+".");
 	if(!Current)
 		return(0);
 	plugin* plug=Current->GetPlugin();
 	if((!plug)&&need)
-		throw GException("No current plug-in availaible for "+Name+".");
+		throw GException("No current plug-in available for "+Name+".");
 	return(plug);
 }
 
@@ -363,7 +361,7 @@ template<class mng,class factory,class plugin>
 	factory* GPluginManager<mng,factory,plugin>::GetCurrentFactory(bool need) const
 {
 	if((!Current)&&need)
-		throw GException("No current plug-in availaible for "+Name+".");
+		throw GException("No current plug-in available for "+Name+".");
 	return(Current);
 }
 
@@ -373,7 +371,7 @@ template<class mng,class factory,class plugin>
 	plugin* GPluginManager<mng,factory,plugin>::GetCurrentPlugIn(bool need) const
 {
 	if((!Current)&&need)
-		throw GException("No current plug-in availaible for "+Name+".");
+		throw GException("No current plug-in available for "+Name+".");
 	if(!Current)
 		return(0);
 	return(Current->GetPlugin());

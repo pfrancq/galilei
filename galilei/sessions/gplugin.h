@@ -147,13 +147,119 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+ * The GPluginConfig class provides a generic configuration for a plug-in. All
+ * factories should inherit from this class. Moreover, it provides a unique
+ * class to configure all plug-ins.
+ * @short Generic PlugIn Configuration
+ * @author Pascal Francq
+ */
+class GPluginConfig : public R::RConfig
+{
+protected:
+
+	/**
+	* Name of the plug-in.
+	*/
+	R::RString Name;
+
+	/**
+	* Specific order of the plug-in in the list.
+	*/
+	int Level;
+
+public:
+
+	/**
+	* Constructor.
+	* @param m               Manager of the plug-in.
+	* @param n               Name of the Factory/Plug-in ('/' are replaced by
+	*                        '-' for the configuration file).
+	* @param f               Library of the Factory/Plug-in.
+	*/
+	GPluginConfig(const R::RString& n) : R::RConfig(), Name(n), Level(0) {}
+
+	/**
+	* Get the level of the plug-in.
+	*/
+	int GetLevel(void) const {return(Level);}
+
+	/**
+	* Set the level of the plug-in.
+	* @param level           Level of the plug-in.
+	*/
+	void SetLevel(int level) {Level=level;}
+
+	/**
+	* Name of the plug-in.
+	*/
+	R::RString GetName(void) const {return(Name);}
+
+	/**
+	* Create a plug-in.
+	*/
+	virtual void Create(void)=0;
+
+	/**
+	* Create a plug-in.
+	*/
+	virtual void Delete(void)=0;
+
+	/**
+	* Create a plug-in.
+	*/
+	virtual void Create(GSession* session)=0;
+
+	/**
+	* Delete a plug-in.
+	*/
+	virtual void Delete(GSession* session)=0;
+
+	/**
+	* Show 'about' information.
+	*/
+	virtual void About(void)=0;
+
+	/**
+	* Configure the parameters.
+	*/
+	virtual void Configure(void)=0;
+
+	/**
+	* Apply the configuration eventually to the plug-in.
+	*/
+	virtual void Apply(void)=0;
+
+	/**
+	* Specify if an about box exist.
+	*/
+	virtual bool HasAbout(void) const=0;
+
+	/**
+	* Specify if a configure box exist.
+	*/
+	virtual bool HasConfigure(void) const=0;
+
+	/**
+	* Specify if the plug-in is created.
+	*/
+	virtual bool IsCreated(void) const=0;
+
+	/**
+	 * Destruct the generic factory.
+	 */
+	virtual ~GPluginConfig(void) {}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * The GFactoryPlugin class provides a template for a generic plug-in factory. A
 * factory handles the loading of the dynamic library containing the plug-in.
 * @author Pascal Francq
 * @short Generic Plug-in Factory.
 */
 template<class factory,class plugin,class mng>
-	class GFactoryPlugin : public R::RConfig
+	class GFactoryPlugin : public GPluginConfig
 {
 public:
 
@@ -180,11 +286,6 @@ protected:
 	R::RString Lib;
 
 	/**
-	* Name of the plug-in.
-	*/
-	R::RString Name;
-
-	/**
 	* Pointer to a function showing the about box.
 	*/
 	About_t AboutDlg;
@@ -204,11 +305,6 @@ protected:
 	* The Handle(void *) to maintain the handler for the opened library.
 	*/
 	void* HandleDlg;
-
-	/**
-	* Specific order of the plug-in in the list.
-	*/
-	int Level;
 
 public:
 
@@ -268,22 +364,6 @@ public:
 	* @param level           Level to compare.
 	*/
 	int Compare(const size_t level) const;
-
-	/**
-	* Get the level of the plug-in.
-	*/
-	int GetLevel(void) const {return(Level);}
-
-	/**
-	* Set the level of the plug-in.
-	* @param level           Level of the plug-in.
-	*/
-	void SetLevel(int level) {Level=level;}
-
-	/**
-	* Name of the plug-in.
-	*/
-	R::RString GetName(void) const {return(Name);}
 
 	/**
 	* Create a new plug-in and eventually connect it to the session.
@@ -348,27 +428,27 @@ public:
 	/**
 	* Show 'about' information.
 	*/
-	void About(void);
+	virtual void About(void);
 
 	/**
 	* Configure the parameters.
 	*/
-	void Configure(void);
+	virtual void Configure(void);
 
 	/**
 	* Apply the configuration eventually to the plug-in.
 	*/
-	void Apply(void);
+	virtual void Apply(void);
 
 	/**
 	* Specify if an about box exist.
 	*/
-	bool HasAbout(void) const {return(AboutDlg);}
+	virtual bool HasAbout(void) const {return(AboutDlg);}
 
 	/**
 	* Specify if a configure box exist.
 	*/
-	bool HasConfigure(void) const {return(ConfigDlg);}
+	virtual bool HasConfigure(void) const {return(ConfigDlg);}
 
 	/**
 	* Get the API Version of the plug-in.
@@ -385,6 +465,11 @@ public:
 	* Get the plug-in of this factory.
 	*/
 	plugin* GetPlugin(void) const {return(Plugin);}
+
+	/**
+	* Specify if the plug-in is created.
+	*/
+	virtual bool IsCreated(void) const {return(Plugin);}
 
 	/**
 	* Get the library of the plug-in.

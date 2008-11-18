@@ -736,6 +736,7 @@ void GSubjects::PerformDegradation(char what,int nb)
 				GTopic** ptr(Data->tmpTopics);
 				for(size_t i=0;i<Nb;ptr++)
 				{
+					if(GSession::Break()) return;
 					if(!(*ptr))
 						continue;
 					i++;
@@ -766,6 +767,7 @@ void GSubjects::PerformDegradation(char what,int nb)
 				Data->Session->FillTopics(Data->tmpTopics);
 				for(size_t i=0;i<Nb;i++)
 				{
+					if(GSession::Break()) return;
 					Data->SwitchRandom->RandOrder(Data->tmpTopics,Nb+1);
 					GTopic** ptr(Data->tmpTopics);
 					while(!(*ptr))

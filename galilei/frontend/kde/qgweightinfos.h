@@ -41,8 +41,8 @@
 
 
 //------------------------------------------------------------------------------
-// include files for Qt
-#include <qlistview.h>
+// include files for Qt/KDE
+#include <QtGui/QWidget>
 
 
 //-----------------------------------------------------------------------------
@@ -57,38 +57,28 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Description Displayer
  */
-class QGWeightInfos : public QListView
+class QGWeightInfos : public QWidget
 {
-	/**
-	 * Object for which the description must be shown
-	 */
-	GWeightInfos* Object;
-
-	/**
-	 * Current session.
-	 */
-	GSession* Session;
-
-	/**
-	 * Index space.
-	 */
-	GConceptType* IndexSpace;
+	void* Ui;
 
 public:
 
 	/**
 	 * Construct a widget that can display the description of an object.
 	 * @param parent         Parent widget.
-	 * @param obj            Object to display.
-	 * @param session        Corresponding session.
 	 */
-	QGWeightInfos(QWidget* parent,GWeightInfos* obj,GSession* session);
+	QGWeightInfos(QWidget* parent);
 
 	/**
 	 * Set the current object to display. The widget is redraw.
 	 * @param obj            Object to display.
 	 */
-	void SetObject(GWeightInfos* obj);
+	void Set(GWeightInfos* obj);
+
+	/**
+	 * Destruct the widget.
+	 */
+	virtual ~QGWeightInfos(void);
 };
 
 

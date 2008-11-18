@@ -6,7 +6,7 @@
 
 	Configuration For Measures Between Two Elements - Header.
 
-	Copyright 2007 by the Université Libre de Bruxelles.
+	Copyright 2007-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -36,19 +36,21 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for Qt/KDE
+#include <QtGui/QGroupBox>
+#include <QtGui/QBoxLayout>
+#include <kdialog.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-
-
-//------------------------------------------------------------------------------
-// forward declaration
-class DlgMatrixMeasure;         //  Create by Qt uic
+//class Ui_QGMatrixMeasureDlg;
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
 
 //------------------------------------------------------------------------------
 /**
@@ -64,19 +66,26 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Configuration For Measures Between Two Elements
  */
-class QGMatrixMeasureDlg
+class QGMatrixMeasureDlg : public KDialog
 {
-	/**
-	 * Qt-generated Dialog class
-	 */
-	DlgMatrixMeasure* Dlg;
+	void* Ui;
 
 public:
 	/**
 	 * Construct the dialog box.
 	 * @param title          Title of the dialog box.
 	 */
-	QGMatrixMeasureDlg(const char* str);
+	QGMatrixMeasureDlg(const QString& title);
+
+	/**
+	 * Get a pointer to the group box holding the specific part.
+	 */
+	QGroupBox* GetMeasureSpecific(void);
+
+	/**
+	 * Get a pointer to the group box's layout holding the specific part.
+	 */
+	QBoxLayout* GetMeasureSpecificLayout(void);
 
 	/**
 	 * Launch the configuration.
@@ -85,24 +94,24 @@ public:
 	void Configure(GFactoryMeasure* params);
 
 	/**
-	 * Method called before the dialog box is initiliazed. By default, it hides
+	 * Method called before the dialog box is initialized. By default, it hides
 	 * the groupbox 'MesureSpecific' reserved for specific parameters for the
 	 * measures.
 	 *
 	 * This method can be override to add new widgets. The methods 'Init' and
-	 * 'Done' must be overrided to link these widgets to parameters of the
+	 * 'Done' must be overwritten to link these widgets to parameters of the
 	 * plug-in.
 	 * @code
 	 * void MyDlg::Panel(void)
 	 * {
 	 *    QHBoxLayout* layout = new QHBoxLayout(0,0,6);
-	 *    QLabel* text = new QLabel(MeasureSpecific);
+	 *    QLabel* text = new QLabel(GetMeasureSpecific());
 	 *    text->setText("Minimum common documents");
 	 *    layout->addWidget(text);
 	 *    layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
 	 *    MinDocs = new QSpinBox(MeasureSpecific,"MinDocs");    // 'MinDocs' must be added to the class.
 	 *    layout->addWidget(MinDoc);
-	 *    MeasureSpecificLayout->addLayout(layout);
+	 *    GetMeasureSpecificLayout()->addLayout(layout);
 	 * }
 	 * @endcode
 	 */
@@ -141,17 +150,7 @@ public:
 	virtual void Done(GFactoryMeasure* params);
 
 	/**
-	 * Get a pointer to the layout that can be modified.
-	 */
-	QVBoxLayout* GetMeasureSpecificLayout(void);
-
-	/**
-	 * Get a pointer to the groupbox that can be modified.
-	 */
-    QGroupBox* GetMeasureSpecific(void);
-
-	/**
-	 * Destructor.
+	 * Destruct the dialog box.
 	 */
 	virtual ~QGMatrixMeasureDlg(void);
 };

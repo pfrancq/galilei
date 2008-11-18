@@ -1,0 +1,52 @@
+<ui version="4.0" >
+ <class>QGDocStruct</class>
+ <widget class="QWidget" name="QGDocStruct" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>804</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout" >
+   <item>
+    <widget class="QTreeWidget" name="RecsList" >
+     <property name="rootIsDecorated" >
+      <bool>false</bool>
+     </property>
+     <column>
+      <property name="text" >
+       <string>Concept</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>ConceptType</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Position</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Level</string>
+      </property>
+     </column>
+     <column>
+      <property name="text" >
+       <string>Child</string>
+      </property>
+     </column>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
