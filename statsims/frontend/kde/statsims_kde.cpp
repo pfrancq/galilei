@@ -6,7 +6,7 @@
 
 	A KDE about box for the groups evaluation. - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -43,33 +43,29 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for QT
-#include <qvariant.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qdialog.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
+// include files for KDE/Qt
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-#include <kurlrequester.h>
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
+#include <ui_config.h>
 
 
-//-----------------------------------------------------------------------------
-// include files for Current
-#include <dlgconfig_qt.h>
+//------------------------------------------------------------------------------
+class Config : public KDialog, public Ui_Config
+{
+public:
+	Config(void)
+	{
+		setCaption("Configure E-mail Plug-In");
+		QWidget* widget=new QWidget(this);
+		setupUi(widget);
+		setMainWidget(widget);
+		setButtons(KDialog::Cancel|KDialog::Apply);
+		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		adjustSize();
+	}
+};
 
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This statistic computes several measures based on the similarities.");
 
 
 //------------------------------------------------------------------------------
@@ -79,13 +75,13 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "statssims", I18N_NOOP("Similarity Statistics"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Valery Vandaele",I18N_NOOP("Researcher"), "vavdaele@ulb.ac.be");
-	aboutData.addCredit("Julien Lamoral",I18N_NOOP("Past researcher"), "jlamoral@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "statssims", 0, ki18n("Similarity Statistics"),
+		"1.0", ki18n("This statistic computes several measures based on the similarities."), KAboutData::License_GPL,
+		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Researcher"), "vavdaele@ulb.ac.be");
+	aboutData.addCredit(ki18n("Julien Lamoral"),ki18n("Past researcher"), "jlamoral@ulb.ac.be");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 
@@ -93,7 +89,7 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryStatsCalc* params)
 {
- 	DlgConfig_Qt dlg;
+ 	Config dlg;
 
 	dlg.Docs->setChecked(params->GetBool("Docs"));
 	dlg.ProfDoc->setChecked(params->GetBool("ProfDoc"));
@@ -102,7 +98,7 @@ void Configure(GFactoryStatsCalc* params)
 	dlg.SameDocProf->setChecked(params->GetBool("SameDocProf"));
 	dlg.GroupProf->setChecked(params->GetBool("GroupProf"));
 	dlg.File->setChecked(params->GetBool("File"));
-	dlg.Name->setURL(ToQString(params->Get("Name")));
+	dlg.Name->setUrl(ToQString(params->Get("Name")));
 	dlg.Name->setEnabled(params->GetBool("File"));
 	if(dlg.exec())
 	{
@@ -113,7 +109,7 @@ void Configure(GFactoryStatsCalc* params)
 		params->SetBool("SameDocProf",dlg.SameDocProf->isChecked());
 		params->SetBool("GroupProf",dlg.GroupProf->isChecked());
 		params->SetBool("File",dlg.File->isChecked());
-		params->Set("Name",FromQString(dlg.Name->url()));
+		params->Set("Name",FromQString(dlg.Name->url().url()));
  		params->Apply();
  	}
 }
