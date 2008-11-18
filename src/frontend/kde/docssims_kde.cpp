@@ -31,30 +31,16 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qlabel.h>
-#include <qgroupbox.h>
-#include <qlayout.h>
-#include <qcombobox.h>
-#include <knuminput.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include "genericsims_kde.h"
 
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("The cosinus method is used to computed the similarities between the documents.");
 
 
 //------------------------------------------------------------------------------
@@ -64,11 +50,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "cosinus", I18N_NOOP("Cosinus Method"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Contributor"), "pfrancq@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "docssims", 0, ki18n("Cosinus Method"),
+		"1.0",ki18n("The cosinus method is used to computed the similarities between the documents."), KAboutData::License_GPL,
+		ki18n("(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 

@@ -36,14 +36,10 @@
 
 
 //------------------------------------------------------------------------------
-// include files for Qt
-#include <qcombobox.h>
-#include <qgroupbox.h>
-#include <qcheckbox.h>
-
-
-//------------------------------------------------------------------------------
-// include files for KDE
+// include files for Qt/KDE
+#include <QtGui/QComboBox>
+#include <QtGui/QGroupBox>
+#include <QtGui/QCheckBox>
 #include <knuminput.h>
 
 

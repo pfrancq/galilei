@@ -31,12 +31,11 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qlabel.h>
-#include <qgroupbox.h>
-#include <qlayout.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
+// include files for Qt/KDE
+#include <QtGui/QLabel>
+#include <QtGui/QLayout>
+#include <QtGui/QToolTip>
+#include <QtGui/QWhatsThis>
 
 
 //------------------------------------------------------------------------------
@@ -49,6 +48,7 @@ using namespace R;
 // include files for GALILEI
 #include "genericsims_kde.h"
 #include <gmeasure.h>
+
 
 
 //-----------------------------------------------------------------------------
@@ -67,12 +67,13 @@ GGenericSimsDlg::GGenericSimsDlg(const QString& title)
 //-----------------------------------------------------------------------------
 void GGenericSimsDlg::AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLayout* grid,int row,int col)
 {
-	QHBoxLayout*layout = new QHBoxLayout(0,0,6);
+	QHBoxLayout* layout = new QHBoxLayout();
 	QLabel* text = new QLabel(GetMeasureSpecific());
     text->setText(str);
     layout->addWidget(text);
 //    layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-	cap = new KDoubleNumInput(GetMeasureSpecific(),str);
+	cap = new KDoubleNumInput(GetMeasureSpecific());
+	cap->setSpecialValueText(str);
     layout->addWidget(cap);
     grid->addItem(layout,row,col);
 }
@@ -82,23 +83,23 @@ void GGenericSimsDlg::AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLay
 void GGenericSimsDlg::Panel(void)
 {
 	// Transform
-	QHBoxLayout* layout = new QHBoxLayout(0,0,6);
+	QHBoxLayout* layout = new QHBoxLayout();
 	Transform=new QCheckBox("Transform the similarity from [-1,+1] to [0,1]",GetMeasureSpecific());
     layout->addWidget(Transform);
 	GetMeasureSpecificLayout()->addLayout(layout);
 
-    layout = new QHBoxLayout(0,0,6);
+    layout = new QHBoxLayout();
     QLabel* text = new QLabel(GetMeasureSpecific());
     text->setText("Similarity Type");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-	SimType = new QComboBox(GetMeasureSpecific(),"SimType");
-	SimType->insertItem("Integral of Choquet");
-	SimType->insertItem("Product");
-	SimType->insertItem("Sum");
-	SimType->insertItem("Language only");
+	SimType = new QComboBox(GetMeasureSpecific());
+	SimType->addItem("Integral of Choquet");
+	SimType->addItem("Product");
+	SimType->addItem("Sum");
+	SimType->addItem("Language only");
     layout->addWidget(SimType);
-    QToolTip::add(SimType,"Similarity measure can be the classical cosine between the vectors (Language) or an adapted one to manage multiple spaces (Multi-space)." );
+    SimType->setToolTip("Similarity measure can be the classical cosine between the vectors (Language) or an adapted one to manage multiple spaces (Multi-space)." );
     const char* simText="<p>Choose the <b>similarity measure</b> that will be used. <br/>"
                         "The <em>Multi-space</em> measure computes a similarity based on the different spaces where the "
     	                "elements are indexed (Content space, index space and structure space). Each space may have its own measure"
@@ -107,22 +108,23 @@ void GGenericSimsDlg::Panel(void)
     	                "The <em>Language</em> measure is the classical cosine between the two vectors. It is supposed that "
     	                "they are both indexed in one common language. If the vectors are indexed in several language spaces, the result is "
     	                "undefined.</p>";
-    QWhatsThis::add(SimType,simText);
+    SimType->setWhatsThis(simText);
 	GetMeasureSpecificLayout()->addLayout(layout);
 
 	// Factor
-	layout = new QHBoxLayout(0,0,6);
+	layout = new QHBoxLayout();
    	text = new QLabel(GetMeasureSpecific());
     text->setText("Factor for the product");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-	Factor = new KDoubleNumInput(GetMeasureSpecific(),"Factor");
-	Factor->setPrecision(5);
+	Factor = new KDoubleNumInput(GetMeasureSpecific());
+	Factor->setSpecialValueText("Factor");
+	Factor->setDecimals(5);
     layout->addWidget(Factor);
 	GetMeasureSpecificLayout()->addLayout(layout);
 
 	// Parameters
-	QGridLayout* layout2=new QGridLayout(0,3,3);
+	QGridLayout* layout2=new QGridLayout();
 	AddCapacity(ContentCapacity,"Content Capacity",layout2,0,0);
 	AddCapacity(StructCapacity,"Structure Capacity",layout2,1,0);
 	AddCapacity(MetaCapacity,"Metadata Capacity",layout2,2,0);
@@ -138,7 +140,7 @@ void GGenericSimsDlg::Panel(void)
 void GGenericSimsDlg::Init(GFactoryMeasure* params)
 {
 	QGMatrixMeasureDlg::Init(params);
-	SimType->setCurrentText(ToQString(params->Get("SimType")));
+	SimType->setCurrentIndex(SimType->findText(ToQString(params->Get("SimType"))));
 	Factor->setValue(params->GetDouble("Factor"));
 	ContentCapacity->setValue(params->GetDouble("ContentCapacity"));
 	StructCapacity->setValue(params->GetDouble("StructCapacity"));

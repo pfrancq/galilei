@@ -491,6 +491,8 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 		return(1.0);
 	vec1=static_cast<GWeightInfos*>(obj1);
 	vec2=static_cast<GWeightInfos*>(obj2);
+	if((!vec1->IsDefined())||(!vec2->IsDefined()))
+		return(0.0);
 	double sim(0.0);
 	switch(SimType)
 	{

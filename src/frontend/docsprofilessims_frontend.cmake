@@ -1,5 +1,5 @@
-IF(KDE3_FOUND)
+IF(KDE4_FOUND)
     SET(docsprofilessims_AVAILABLE_FRONTENDS kde)
-    SET(docsprofilessims_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    SET(docsprofilessims_kde_DEPENDENCY rcorekde galileikde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(docsprofilessims_frontend docsprofilessims kde docsprofilessims_INCLUDES)
-ENDIF(KDE3_FOUND)
+ENDIF(KDE4_FOUND)

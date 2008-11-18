@@ -31,19 +31,14 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for Qt
-#include <qlabel.h>
-#include <qgroupbox.h>
-#include <qlayout.h>
-#include <qspinbox.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
+// include files for Qt/KDE
+#include <QtGui/QLabel>
+#include <QtGui/QGroupBox>
+#include <QtGui/QHBoxLayout>
+#include <QtGui/QSpinBox>
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-#include <knuminput.h>
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
 
 
 //------------------------------------------------------------------------------
@@ -52,12 +47,6 @@
 #include <gmeasure.h>
 using namespace GALILEI;
 using namespace std;
-
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("The count method is used to computed the disagreements between the profiles.");
 
 
 
@@ -84,12 +73,12 @@ public:
 //-----------------------------------------------------------------------------
 void MyDlg::Panel(void)
 {
-    QHBoxLayout* layout = new QHBoxLayout(0,0,6);
+    QHBoxLayout* layout = new QHBoxLayout();
     QLabel* text = new QLabel(GetMeasureSpecific());
     text->setText("Minimum common documents");
     layout->addWidget(text);
     layout->addItem(new QSpacerItem(140,20,QSizePolicy::Expanding, QSizePolicy::Minimum));
-   	MinDocs = new QSpinBox(GetMeasureSpecific(),"MinDocs");
+   	MinDocs = new QSpinBox(GetMeasureSpecific());
     layout->addWidget(MinDocs);
 	GetMeasureSpecificLayout()->addLayout(layout);
 }
@@ -121,12 +110,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "count", I18N_NOOP("Count Method"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Contributor"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("David Wartel",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "profilesdisagree", 0, ki18n("Count Method"),
+		"1.0", ki18n("The count method is used to computed the disagreements between the profiles."), KAboutData::License_GPL,
+		ki18n("(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 

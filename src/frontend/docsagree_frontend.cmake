@@ -1,5 +1,5 @@
-IF(KDE3_FOUND)
+IF(KDE4_FOUND)
     SET(docsagree_AVAILABLE_FRONTENDS kde)
-    SET(docsagree_kde_DEPENDENCY rcorekde ${QT_AND_KDECORE_LIBS})
+    SET(docsagree_kde_DEPENDENCY rcorekde galileikde galileikde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
     ADD_FRONTEND_SOURCE_FILE(docsagree_frontend docsagree kde docsagree_INCLUDES)
-ENDIF(KDE3_FOUND)
+ENDIF(KDE4_FOUND)
