@@ -6,7 +6,7 @@
 
 	A KDE dialog box for MySQL database - Implementation.
 
-	Copyright 2005 by the Université Libre de Bruxelles.
+	Copyright 2005-2008 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -42,38 +42,29 @@ using namespace R;
 using namespace GALILEI;
 
 
-//-----------------------------------------------------------------------------
-// include files for QT
-#include <qvariant.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qdialog.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
-#include <qgroupbox.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
+// include files for KDE/Qt
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-#include <knuminput.h>
-#include <qcombobox.h>
-#include <kurlrequester.h>
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
+#include <ui_config.h>
 
 
-//-----------------------------------------------------------------------------
-// include files for Current
-#include <dlgconfig_qt.h>
-#include <dlgconfig_qt.ui.h>
+//------------------------------------------------------------------------------
+class Config : public KDialog, public Ui_Config
+{
+public:
+	Config(void)
+	{
+		setCaption("Configure MySQl Plug-In");
+		QWidget* widget=new QWidget(this);
+		setupUi(widget);
+		setMainWidget(widget);
+		setButtons(KDialog::Cancel|KDialog::Apply);
+		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		adjustSize();
+	}
+};
 
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is a MySQL database.");
 
 
 //------------------------------------------------------------------------------
@@ -84,11 +75,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "text", I18N_NOOP("MySQL"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 12005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "text", 0, ki18n("MySQL"),
+		"1.0",ki18n("This is a storage based on MySQL database."), KAboutData::License_GPL,
+		ki18n("(c) 2005-2008, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 
@@ -96,19 +87,19 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryStorage* params)
 {
-	DlgConfig_Qt dlg;
+	Config dlg;
 
 	dlg.txtDb->setText(ToQString(params->Get("Database")));
 	dlg.txtLogin->setText(ToQString(params->Get("User")));
 	dlg.txtPwd->setText(ToQString(params->Get("Password")));
 	dlg.txtHost->setText(ToQString(params->Get("Host")));
-	dlg.cbEncoding->setCurrentText(ToQString(params->Get("Encoding")));
+	dlg.cbEncoding->setCurrentIndex(dlg.cbEncoding->findText(ToQString(params->Get("Encoding"))));
 	dlg.Filter->setDate(QDate::fromString(ToQString(params->Get("Filter")),Qt::ISODate));
 	dlg.Modified->setChecked(!params->GetBool("All"));
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
 	dlg.Filter->setEnabled(params->GetBool("Filtering"));
 	dlg.groupBox1_2->setEnabled(params->GetBool("Filtering"));
-	dlg.Dir->setURL(ToQString(params->Get("Dir")));
+	dlg.Dir->setUrl(ToQString(params->Get("Dir")));
 	if(dlg.exec())
 	{
 		params->Set("Database",FromQString(dlg.txtDb->text()));
@@ -119,7 +110,7 @@ void Configure(GFactoryStorage* params)
 		params->SetBool("All",!dlg.Modified->isChecked());
 		params->Set("Filter",FromQString(dlg.Filter->date().toString(Qt::ISODate)));
 		params->SetBool("Filtering",dlg.Filtering->isChecked());
-		params->Set("Dir",FromQString(dlg.Dir->url()));
+		params->Set("Dir",FromQString(dlg.Dir->url().url()));
 	}
 }
 

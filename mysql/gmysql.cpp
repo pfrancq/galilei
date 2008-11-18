@@ -160,7 +160,7 @@ RString GStorageMySQL::Num(double d)
 //------------------------------------------------------------------------------
 double GStorageMySQL::atof(const R::RString& str)
 {
-	double d2;
+	double d2(0.0);
 	RString res(str);
 	double d1=std::atof(str);
 	int i=res.Find(',');
@@ -592,15 +592,16 @@ void GStorageMySQL::LoadInfos(GWeightInfos& infos,tObjType type,size_t id)
 				throw GException("This type of objects do not have descriptions");
 		};
 		File+=RString::Number(id)+".desc";
+		if(!RFile::Exists(File)) return;
 
 		// Read the file
 		DescRec Rec;
-		GConceptType* type;
+		GConceptType* type(0);
 		char tid=0;
 		size_t i;
 		RRecFile<DescRec,false> Obj(File,sizeof(DescRec));
 		Obj.Open(RIO::Read);
-		for(Obj.Start(),i=0;!Obj.End();i++)
+		for(i=0;!Obj.End();i++)
 		{
 			Obj.ReadRec(Rec);
 			if(tid!=Rec.TypeId)
