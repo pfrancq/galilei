@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GSubProfilesLevel_KDE.cpp
+	SubsLevel_KDE.cpp
 
-	A KDE about box for the statistical method. - Implementation.
+	A KDE about box for the computation of the profile ranking. - Implementation.
 
-	Copyright 2003 by the Universit� Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		David Wartel (dwartel@e-parkos.com).
@@ -36,34 +36,29 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for QT
-#include <qvariant.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qdialog.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
-#include <qcombobox.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
+// include files for KDE/Qt
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-#include <knuminput.h>
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
+#include <ui_config.h>
 
 
-//-----------------------------------------------------------------------------
-// include files for Current
-#include <dlgconfig_qt.h>
+//------------------------------------------------------------------------------
+class Config : public KDialog, public Ui_Config
+{
+public:
+	Config(void)
+	{
+		setCaption("Configure Level Computation");
+		QWidget* widget=new QWidget(this);
+		setupUi(widget);
+		setMainWidget(widget);
+		setButtons(KDialog::Cancel|KDialog::Apply);
+		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		adjustSize();
+	}
+};
 
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This plugin computes the level of each subprofiles (expert, normal,...).");
 
 
 //------------------------------------------------------------------------------
@@ -73,11 +68,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "sugs", I18N_NOOP("Suggestions"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("David Wartel",I18N_NOOP("Maintainer"), "dwartel@e-parkos.com");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "sugs", 0, ki18n("Suggestions"),
+		"1.0", ki18n("This plugin computes the level of each profiles (expert, normal,...)."), KAboutData::License_GPL,
+		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Maintainer"), "dwartel@e-parkos.com");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 
@@ -85,7 +80,7 @@ void About(void)
  //------------------------------------------------------------------------------
 void Configure(GFactoryPostCommunity* params)
 {
- 	DlgConfig_Qt dlg;
+ 	Config dlg;
 
 	dlg.NbLevels->setValue(params->GetInt("NbLevels"));
 
