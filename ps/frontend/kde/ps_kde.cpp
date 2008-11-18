@@ -39,14 +39,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is the PostScript filter for GALILEI.");
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
 
 
 
@@ -57,14 +51,14 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "ps", I18N_NOOP("PostScript Filter"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 2003, Université Libre de Bruxelles\nCAD/CAM Department\n"
-		" It is based on the pstotext program.", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Paul McJones",I18N_NOOP("pstotext author"), "mcjones@pa.dec.com");
-	aboutData.addAuthor("Andrew Birrell",I18N_NOOP("pstotext author"), "birrell@pa.dec.com");
-	aboutData.setLicenseText( I18N_NOOP("GRANT.  Subject to the provisions contained herein, Digital Equipment\n"
+	KAboutData aboutData( "ps", 0, ki18n("PostScript Filter"),
+		"1.0", ki18n("This is the PostScript filter for GALILEI. It is based on the pstotext program."),
+		KAboutData::License_GPL, ki18n("(c) 2003, Université Libre de Bruxelles\nCAD/CAM Department\n"),
+		KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Paul McJones"),ki18n("pstotext author"), "mcjones@pa.dec.com");
+	aboutData.addAuthor(ki18n("Andrew Birrell"),ki18n("pstotext author"), "birrell@pa.dec.com");
+	aboutData.setLicenseText(ki18n("GRANT.  Subject to the provisions contained herein, Digital Equipment\n"
 		"Corporation (\"Digital\") hereby grants you a non-exclusive license to\n"
 		"use its accompanying proprietary software product and associated\n"
 		"documentation (\"Software\") free of charge pursuant to the terms and\n"
@@ -149,7 +143,7 @@ void About(void)
 		"Rights in Technical Data and Computer Software clause at DFARS\n"
 		"252.227-7013, and in similar clauses in the NASA FAR Supplement.\n"
 		"Contractor/manufacturer is Digital Equipment Corporation."));
-	KAboutApplication dlg(&aboutData);
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 

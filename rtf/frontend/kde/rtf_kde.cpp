@@ -6,7 +6,7 @@
 
 	A KDE about box for RTF filter - Implementation.
 
-	Copyright 2003 by the Universit� Libre de Bruxelles.
+	Copyright 2003 by the Universit� Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -34,14 +34,8 @@
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is the RTF filter for GALILEI.");
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
 
 
 
@@ -52,11 +46,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "html", I18N_NOOP("RTF Filter"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 2003, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Nicolas Kumps",I18N_NOOP("Maintainer"), "nkumps@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "html", 0, ki18n("RTF Filter"),
+		"1.0", ki18n("This is the RTF filter for GALILEI."), KAboutData::License_GPL,
+		ki18n("(c) 2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Nicolas Kumps"),ki18n("Maintainer"), "nkumps@ulb.ac.be");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 

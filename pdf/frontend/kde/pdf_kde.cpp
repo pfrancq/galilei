@@ -39,14 +39,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is the PDF filter for GALILEI.");
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
 
 
 
@@ -57,13 +51,12 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "pdf", I18N_NOOP("PDF Filter"),
-		"1.1", description, KAboutData::License_GPL,
-		"(c) 2003-2006, Université Libre de Bruxelles\nCAD/CAM Department\n"
-		" It is highly based on the Xpdf project 3.01.", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Glyph & Cog, LLC",I18N_NOOP("Xpdf Project"), "derekn@foolabs.com");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "pdf",0, ki18n("PDF Filter"),
+		"1.1",ki18n("This is the PDF filter for GALILEI.  It is highly based on the Xpdf project 3.01."), KAboutData::License_GPL,
+		ki18n("(c) 2003-2006, UniversitÃ© Libre de Bruxelles\nCAD/CAM Department\n"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Glyph & Cog, LLC"),ki18n("Xpdf Project"), "derekn@foolabs.com");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 

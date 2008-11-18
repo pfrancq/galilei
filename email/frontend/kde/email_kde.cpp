@@ -6,7 +6,7 @@
 
 	A KDE about box for email filter - Implementation.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
+	Copyright 2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -37,47 +37,43 @@ using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
-// include files for QT
-#include <qvariant.h>
-#include <qcheckbox.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qdialog.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for KDE
+// include files for KDE/Qt
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
+#include <ui_config.h>
 
 
-//-----------------------------------------------------------------------------
-// include files for Current
-#include <dlgconfig_qt.h>
+//------------------------------------------------------------------------------
+class Config : public KDialog, public Ui_Config
+{
+public:
+	Config(void)
+	{
+		setCaption("Configure E-mail Plug-In");
+		QWidget* widget=new QWidget(this);
+		setupUi(widget);
+		setMainWidget(widget);
+		setButtons(KDialog::Cancel|KDialog::Apply);
+		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		adjustSize();
+	}
+};
 
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is the EMail filter for GALILEI.");
 
 
 //------------------------------------------------------------------------------
 extern "C" {
 //------------------------------------------------------------------------------
 
-
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "email", I18N_NOOP("EMail Filter"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData("email", 0, ki18n("EMail Filter"),
+		"1.0",ki18n("This is the EMail filter for GALILEI."), KAboutData::License_GPL,
+		ki18n("(c) 1998-2008, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"),"pfrancq@ulb.ac.be");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 
@@ -85,7 +81,7 @@ void About(void)
 //------------------------------------------------------------------------------
 void Configure(GFactoryFilter* params)
 {
-	DlgConfig_Qt dlg;
+	Config dlg;
 
 	dlg.BlankLines->setChecked(params->GetBool("BlankLines"));
 	if(dlg.exec())

@@ -39,14 +39,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is the MSDoc filter for GALILEI.");
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
 
 
 
@@ -57,17 +51,16 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "msdoc", I18N_NOOP("MSDoc Filter"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 2003, Université Libre de Bruxelles\nCAD/CAM Department\n"
-		" It is highly based on the wvWare project.", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Vandaele Valery",I18N_NOOP("Maintainer"), "vavdaele@ulb.ac.be");
-	aboutData.addAuthor("Dom Lachowicz",I18N_NOOP("wvWare Project"), "cinamod@hotmail.com");
-	aboutData.addAuthor("Shaheed Haque",I18N_NOOP("wvWare Project"), "srhaque@iee.org");
-	aboutData.addAuthor("Werner Trobin",I18N_NOOP("wvWare Project"), "trobin@kde.org");
-	aboutData.addAuthor("David Faure",I18N_NOOP("wvWare Project"), "faure@kde.org");
+	KAboutData aboutData("msdoc",0, ki18n("MSDoc Filter"),
+		"1.0",ki18n("This is the MSDoc filter for GALILEI. It is highly based on the wvWare project."), KAboutData::License_GPL,
+		ki18n("(c) 2003, Université Libre de Bruxelles\nCAD/CAM Department\n"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Vandaele Valery"),ki18n("Maintainer"), "vavdaele@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Dom Lachowicz"),ki18n("wvWare Project"), "cinamod@hotmail.com");
+	aboutData.addAuthor(ki18n("Shaheed Haque"),ki18n("wvWare Project"), "srhaque@iee.org");
+	aboutData.addAuthor(ki18n("Werner Trobin"),ki18n("wvWare Project"), "trobin@kde.org");
+	aboutData.addAuthor(ki18n("David Faure"),ki18n("wvWare Project"), "faure@kde.org");
 
-	KAboutApplication dlg(&aboutData);
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 
