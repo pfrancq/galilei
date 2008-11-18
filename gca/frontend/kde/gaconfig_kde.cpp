@@ -31,20 +31,9 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R
+// include files for R/GALILEI
 #include <rqt.h>
 using namespace R;
-
-
-//------------------------------------------------------------------------------
-// include files for Qt
-#include <qcheckbox.h>
-#include <qcombobox.h>
-
-
-//------------------------------------------------------------------------------
-// include files for KDE
-#include <knuminput.h>
 
 
 //-----------------------------------------------------------------------------
@@ -61,16 +50,22 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GAConfigDlg::GAConfigDlg(void)
-	: DlgConfig_Qt()
 {
+	setCaption("Configure GCA Plug-In");
+	QTabWidget* widget=new QTabWidget(this);
+	setupUi(widget);
+	setMainWidget(widget);
+	setButtons(KDialog::Cancel|KDialog::Apply);
+	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+	adjustSize();
 }
 
 
 //------------------------------------------------------------------------------
-bool GAConfigDlg::Configure(RConfig* params )
+bool GAConfigDlg::Configure(RConfig* params)
 {
 	//  Init dialog box
-	ClusteringMethod->setCurrentText(ToQString(params->Get("Clustering Method")));
+	ClusteringMethod->setCurrentIndex(ClusteringMethod->findText(ToQString(params->Get("Clustering Method"))));
 	NbClusters->setValue(params->GetInt("NbClusters"));
 	PopSize->setValue(params->GetInt("Population Size"));
 	MaxGen->setValue(params->GetInt("Max Gen"));

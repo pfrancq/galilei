@@ -37,11 +37,11 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 // include files for current plug-in
-#include <dlgconfig_qt.h>
+#include <ui_config.h>
 
 
 //------------------------------------------------------------------------------
-class GAConfigDlg : public DlgConfig_Qt
+class GAConfigDlg : public KDialog, public Ui_Config
 {
 public:
 	GAConfigDlg(void);

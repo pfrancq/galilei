@@ -1,0 +1,1113 @@
+<ui version="4.0" >
+ <class>Config</class>
+ <widget class="QTabWidget" name="Config" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>518</width>
+    <height>678</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>TabWidget</string>
+  </property>
+  <property name="currentIndex" >
+   <number>0</number>
+  </property>
+  <widget class="QWidget" name="tab" >
+   <attribute name="title" >
+    <string>General</string>
+   </attribute>
+   <layout class="QVBoxLayout" name="verticalLayout_2" >
+    <item>
+     <widget class="QGroupBox" name="groupBox" >
+      <property name="title" >
+       <string>Clustering Method</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout" >
+       <item>
+        <widget class="QLabel" name="textLabel1_3" >
+         <property name="text" >
+          <string>Method</string>
+         </property>
+         <property name="wordWrap" >
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QComboBox" name="ClusteringMethod" >
+         <item>
+          <property name="text" >
+           <string>GA</string>
+          </property>
+         </item>
+         <item>
+          <property name="text" >
+           <string>k-Means</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer23_2" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType" >
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>361</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_2" >
+      <property name="title" >
+       <string>Random Number Generator</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout" >
+       <item>
+        <widget class="QCheckBox" name="InternalRandom" >
+         <property name="text" >
+          <string>Use Internal Random Number Generator</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" >
+         <item>
+          <widget class="QLabel" name="textLabel1_4" >
+           <property name="text" >
+            <string>Seed value of the generator</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer24_3" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="KIntSpinBox" name="Seed" >
+           <property name="maxValue" stdset="0" >
+            <number>35000</number>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer25" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer" >
+      <property name="orientation" >
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0" >
+       <size>
+        <width>20</width>
+        <height>448</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="tab" >
+   <attribute name="title" >
+    <string>Genetic Algorithms</string>
+   </attribute>
+   <layout class="QVBoxLayout" name="verticalLayout_7" >
+    <item>
+     <widget class="QGroupBox" name="groupBox_3" >
+      <property name="title" >
+       <string>General</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_3" >
+       <item>
+        <layout class="QHBoxLayout" name="_3" >
+         <item>
+          <widget class="QLabel" name="textLabel6_2" >
+           <property name="toolTip" >
+            <string>Set the maximum number of generations of the GVCA.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The end condition used by the GVCA is a maximum number of iterations specified by &lt;b>maximum generation&lt;/b>.</string>
+           </property>
+           <property name="text" >
+            <string>Maximum Generations</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer98_2" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="KIntNumInput" name="MaxGen" >
+           <property name="toolTip" >
+            <string>Set the maximum number of generations of the GVCA.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The end condition used by the GVCA is a maximum number of iterations specified by &lt;b>maximum generation&lt;/b>.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_2" >
+         <item>
+          <widget class="QLabel" name="textLabel6" >
+           <property name="toolTip" >
+            <string>Set the size of the population for the GVCA.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When running, the GVCA uses a population containing &lt;b>population size&lt;/b> number of chromosomes. A population size of &lt;i>16&lt;/i> is a good choice.</string>
+           </property>
+           <property name="text" >
+            <string>Population Size</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer98" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="KIntNumInput" name="PopSize" >
+           <property name="toolTip" >
+            <string>Set the size of the population for the GVCA.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When running, the GVCA uses a population containing &lt;b>population size&lt;/b> number of chromosomes. A population size of &lt;i>16&lt;/i> is a good choice.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="Optimisation" >
+         <property name="text" >
+          <string>Perform an optimization when possible.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="LocalOptimisation" >
+         <property name="text" >
+          <string>Perform a local optimization when possible.</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QCheckBox" name="Incremental" >
+         <property name="text" >
+          <string>Perform an incremental clustering</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_4" >
+      <property name="title" >
+       <string>Hard Constraints</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_4" >
+       <item>
+        <layout class="QHBoxLayout" name="_5" >
+         <item>
+          <widget class="QLabel" name="textLabel8" >
+           <property name="toolTip" >
+            <string>Set a threshold for the minimum agreement ratio between two profiles to force them to be grouped together.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>If the &lt;b>agreement ratio&lt;/b> between two subprofiles is greater or equal to the &lt;b>Minimum Agreement Threshold&lt;/b>, the two profiles are always grouped together.</string>
+           </property>
+           <property name="text" >
+            <string>Minimum Agreement Ratio</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer101" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="MinAgreement" >
+           <property name="toolTip" >
+            <string>Set a threshold for the minimum agreement ratio between two documents to force them to be grouped together.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>If the &lt;b>agreement ratio&lt;/b> between two documents is greater or equal to the &lt;b>Minimum Agreement Threshold&lt;/b>, the two documents are always grouped together.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_4" >
+         <item>
+          <widget class="QLabel" name="textLabel8_2" >
+           <property name="toolTip" >
+            <string>Set a threshold for the minimum disagreement ratio between two profiles to avoid them to be grouped together.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>If the &lt;b>disagreement ratio&lt;/b> between two subprofiles is greater or equal to the &lt;b>Minimum Disagreement Threshold&lt;/b>, the two profiles can never be grouped together.</string>
+           </property>
+           <property name="text" >
+            <string>Minimum Disagreement Ratio</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer101_2" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="MinDisagreement" >
+           <property name="toolTip" >
+            <string>Set a threshold for the minimum disagreement ratio between two documents to avoid them to be grouped together.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>If the &lt;b>disagreement ratio&lt;/b> between two documents is greater or equal to the &lt;b>Minimum Disagreement Threshold&lt;/b>, the two docments can never be grouped together.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_5" >
+      <property name="title" >
+       <string>Promethee Evaluation</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_5" >
+       <item>
+        <layout class="QHBoxLayout" name="_8" >
+         <item>
+          <widget class="QLabel" name="textLabel1_6" >
+           <property name="text" >
+            <string>Disagreement</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer2_8" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::MinimumExpanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>10</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="txts_8" >
+           <property name="toolTip" >
+            <string>Set the preference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is greather than &lt;b>p&lt;/p>, the best solution is prefered.</string>
+           </property>
+           <property name="text" >
+            <string>P</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="DisagreementP" >
+           <property name="toolTip" >
+            <string>Set the preference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is greather than &lt;b>p&lt;/p>, the best solution is prefered.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer2_2_6" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>10</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="txts_2_6" >
+           <property name="toolTip" >
+            <string>Set the indeference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is smaller than &lt;b>q&lt;/p>, the two solutions are considered to be similar.</string>
+           </property>
+           <property name="text" >
+            <string>Q</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="DisagreementQ" >
+           <property name="toolTip" >
+            <string>Set the indeference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is smaller than &lt;b>q&lt;/p>, the two solutions are considered to be similar.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer2_3_6" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>10</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="txts_3_6" >
+           <property name="toolTip" >
+            <string>Set the weight.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The &lt;b>weight&lt;/b> for the criterion specify its importance in comparison to the others criteria.</string>
+           </property>
+           <property name="text" >
+            <string>Weight</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="DisagreementWeight" >
+           <property name="toolTip" >
+            <string>Set the weight.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The &lt;b>weight&lt;/b> for the criterion specify its importance in comparison to the others criteria.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_7" >
+         <item>
+          <widget class="QLabel" name="textLabel1" >
+           <property name="whatsThis" >
+            <string>The &lt;b>J measure&lt;/b> represents a ratio between the minimum distance separating two virtual communities and the compactness of each virtual community.</string>
+           </property>
+           <property name="text" >
+            <string>"J" Measure</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer2" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::MinimumExpanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>10</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="txts" >
+           <property name="toolTip" >
+            <string>Set the preference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is greather than &lt;b>p&lt;/p>, the best solution is prefered.</string>
+           </property>
+           <property name="text" >
+            <string>P</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="SimP" >
+           <property name="toolTip" >
+            <string>Set the preference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is greather than &lt;b>p&lt;/p>, the best solution is prefered.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer2_2" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>10</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="txts_2" >
+           <property name="toolTip" >
+            <string>Set the indeference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is smaller than &lt;b>q&lt;/p>, the two solutions are considered to be similar.</string>
+           </property>
+           <property name="text" >
+            <string>Q</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="SimQ" >
+           <property name="toolTip" >
+            <string>Set the indeference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is smaller than &lt;b>q&lt;/p>, the two solutions are considered to be similar.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer2_3" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>10</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="txts_3" >
+           <property name="toolTip" >
+            <string>Set the weight.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The &lt;b>weight&lt;/b> for the criterion specify its importance in comparison to the others criteria.</string>
+           </property>
+           <property name="text" >
+            <string>Weight</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="SimWeight" >
+           <property name="toolTip" >
+            <string>Set the weight.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The &lt;b>weight&lt;/b> for the criterion specify its importance in comparison to the others criteria.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_6" >
+         <item>
+          <widget class="QLabel" name="textLabel1_5" >
+           <property name="text" >
+            <string>Agreement</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer2_7" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::MinimumExpanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>10</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="txts_7" >
+           <property name="toolTip" >
+            <string>Set the preference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is greather than &lt;b>p&lt;/p>, the best solution is prefered.</string>
+           </property>
+           <property name="text" >
+            <string>P</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="AgreementP" >
+           <property name="toolTip" >
+            <string>Set the preference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is greather than &lt;b>p&lt;/p>, the best solution is prefered.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer2_2_5" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>10</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="txts_2_5" >
+           <property name="toolTip" >
+            <string>Set the indeference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is smaller than &lt;b>q&lt;/p>, the two solutions are considered to be similar.</string>
+           </property>
+           <property name="text" >
+            <string>Q</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="AgreementQ" >
+           <property name="toolTip" >
+            <string>Set the indeference threshold.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>When the relativ difference for two solutions for the criterion is smaller than &lt;b>q&lt;/p>, the two solutions are considered to be similar.</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer2_3_5" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Fixed</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>10</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QLabel" name="txts_3_5" >
+           <property name="toolTip" >
+            <string>Set the weight.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The &lt;b>weight&lt;/b> for the criterion specify its importance in comparison to the others criteria.</string>
+           </property>
+           <property name="text" >
+            <string>Weight</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="AgreementWeight" >
+           <property name="toolTip" >
+            <string>Set the weight.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The &lt;b>weight&lt;/b> for the criterion specify its importance in comparison to the others criteria.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_6" >
+      <property name="title" >
+       <string>k-Means Optimization</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_6" >
+       <item>
+        <layout class="QHBoxLayout" name="_9" >
+         <item>
+          <widget class="QLabel" name="textLabel1_2" >
+           <property name="toolTip" >
+            <string>Set the number of derived solutions to created from the original chromosome.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The optimization process of a given chromosome is based on a &lt;b>k-Means&lt;/b> algorithm running on several solutions, where each solutions is obtained by deriving the chromosome and creating two solutions where one group is splited and one where two groups are merged.</string>
+           </property>
+           <property name="text" >
+            <string>Number of derived solutions</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer22" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="KIntNumInput" name="NbDivChromo" />
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_7" >
+      <property name="title" >
+       <string>Debug</string>
+      </property>
+      <layout class="QHBoxLayout" name="horizontalLayout_2" >
+       <item>
+        <widget class="QCheckBox" name="Step" >
+         <property name="toolTip" >
+          <string>Set id the step mode is activ.</string>
+         </property>
+         <property name="whatsThis" >
+          <string>When &lt;b>step mode&lt;/b> is checked and the GVCA is launched manually, it stops after a given number of steps.</string>
+         </property>
+         <property name="text" >
+          <string>Step Mode</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="spacer97" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType" >
+          <enum>QSizePolicy::Expanding</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>167</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="textLabel7" >
+         <property name="toolTip" >
+          <string>Set the number of steps in the step mode.</string>
+         </property>
+         <property name="whatsThis" >
+          <string>The GVCA manually launched stops each time a given number of iterations was run.</string>
+         </property>
+         <property name="text" >
+          <string>Number of Steps</string>
+         </property>
+         <property name="wordWrap" >
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="KIntNumInput" name="StepGen" >
+         <property name="toolTip" >
+          <string>Set the number of steps in the step mode.</string>
+         </property>
+         <property name="whatsThis" >
+          <string>The GVCA manually launched stops each time a given number of iterations was run.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QWidget" name="tab_2" >
+   <attribute name="title" >
+    <string>k-Means</string>
+   </attribute>
+   <layout class="QVBoxLayout" name="verticalLayout_10" >
+    <item>
+     <widget class="QGroupBox" name="groupBox_8" >
+      <property name="title" >
+       <string>General Parameters</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_8" >
+       <item>
+        <layout class="QHBoxLayout" name="_11" >
+         <item>
+          <widget class="QLabel" name="textLabel6_2_22" >
+           <property name="toolTip" >
+            <string>Set the ratio of convergence to stop the iterations of the k-Means.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The GVCA uses a k-Means as an optimisation operator. The ratio of convergence between two iterations of this k-Means can be fixed.</string>
+           </property>
+           <property name="text" >
+            <string>k-Means Convergence ratio</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer98_2_2" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="KDoubleNumInput" name="Convergence" >
+           <property name="toolTip" >
+            <string>Set the ratio of convergence to stop the iterations of the k-Means.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The GVCA uses a k-Means as an optimisation operator. The ratio of convergence between two iterations of this k-Means can be fixed.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="_10" >
+         <item>
+          <widget class="QLabel" name="textLabel6_2_2" >
+           <property name="toolTip" >
+            <string>Set the maximum number of iterations of the k-Means.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The GVCA uses a k-Means as an optimisation operator. The maximum number of steps can be fixed.</string>
+           </property>
+           <property name="text" >
+            <string>k-Means Iterations</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer98_2_2" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="KIntNumInput" name="MaxKMeans" >
+           <property name="toolTip" >
+            <string>Set the maximum number of iterations of the k-Means.</string>
+           </property>
+           <property name="whatsThis" >
+            <string>The GVCA uses a k-Means as an optimisation operator. The maximum number of steps can be fixed.</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_9" >
+      <property name="title" >
+       <string>k-Means Clustering</string>
+      </property>
+      <layout class="QVBoxLayout" name="verticalLayout_9" >
+       <item>
+        <layout class="QHBoxLayout" name="_12" >
+         <item>
+          <widget class="QLabel" name="textLabel2" >
+           <property name="text" >
+            <string>Clusters Number</string>
+           </property>
+           <property name="wordWrap" >
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="spacer24_2" >
+           <property name="orientation" >
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeType" >
+            <enum>QSizePolicy::Expanding</enum>
+           </property>
+           <property name="sizeHint" stdset="0" >
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="KIntNumInput" name="NbClusters" />
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+    </item>
+    <item>
+     <spacer name="verticalSpacer_2" >
+      <property name="orientation" >
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0" >
+       <size>
+        <width>20</width>
+        <height>525</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KDoubleNumInput</class>
+   <extends>QWidget</extends>
+   <header>knuminput.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KIntNumInput</class>
+   <extends>QWidget</extends>
+   <header>knuminput.h</header>
+  </customwidget>
+  <customwidget>
+   <class>KIntSpinBox</class>
+   <extends>QSpinBox</extends>
+   <header>knuminput.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

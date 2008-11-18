@@ -31,44 +31,22 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
+// include files for R/GALILEI Project
 #include <ggroupprofiles.h>
-
-
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <../../gca.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for QT
-#include <qvariant.h>
-#include <qcheckbox.h>
-#include <qcombobox.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qdialog.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
-#include <klocale.h>
-#include <kaboutapplication.h>
-#include <knuminput.h>
+#include <kaboutapplicationdialog.h>
+#include <KDE/KLocale>
 
 
 //-----------------------------------------------------------------------------
 // include files for current plug-in
 #include <gaconfig_kde.h>
 
-
-//-----------------------------------------------------------------------------
-// Description of the application
-static const char *description =
-	I18N_NOOP("This is the Genetic Community Algorithm for GALILEI.");
 
 
 //------------------------------------------------------------------------------
@@ -78,11 +56,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "GVCA", I18N_NOOP("Genetic Community Algorithm"),
-		"1.0", description, KAboutData::License_GPL,
-		"(c) 1998-2005, Université Libre de Bruxelles\nCAD/CAM Department", 0, "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor("Pascal Francq",I18N_NOOP("Maintainer"), "pfrancq@ulb.ac.be");
-	KAboutApplication dlg(&aboutData);
+	KAboutData aboutData( "GCA", 0, ki18n("Genetic Community Algorithm"),
+		"1.0",ki18n("This is the Genetic Community Algorithm for GALILEI."), KAboutData::License_GPL,
+		ki18n("(c) 1998-2005, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 
