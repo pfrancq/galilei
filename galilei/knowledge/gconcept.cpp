@@ -233,7 +233,7 @@ size_t GConcept::GetRef(tObjType ObjType) const
 
 
 //-----------------------------------------------------------------------------
-void GConcept::Clear(tObjType ObjType)
+void GConcept::ClearRef(tObjType ObjType)
 {
 	switch(ObjType)
 	{

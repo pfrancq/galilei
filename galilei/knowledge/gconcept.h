@@ -229,7 +229,7 @@ public:
 	* specific object.
 	* @param ObjType        Type of the object.
 	*/
-	virtual void Clear(tObjType ObjType);
+	virtual void ClearRef(tObjType ObjType);
 
 	/**
 	* Clear all the information of the concept.
@@ -243,11 +243,12 @@ public:
 	virtual bool IsEmpty(void) const;
 
 	/**
-	* Desctuct the concept.
+	* Destruct the concept.
 	*/
 	virtual ~GConcept(void);
 
 	friend class GWeightInfo;
+	friend class GConceptType;
 };
 
 

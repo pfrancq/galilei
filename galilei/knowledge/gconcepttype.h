@@ -58,7 +58,7 @@ namespace GALILEI{
 * language-dependent (such as words or stems).
 *
 * It also manage a dictionary of concepts, each concept having its own
-* identificator and name.
+* identifier and name.
 * @param author Pascal Francq
 * @param short Concept Type.
 */
@@ -277,6 +277,14 @@ public:
 	bool IsIn(const R::RString& name) const;
 
 	/**
+	 * Rename a concept.
+	 * @param concept        Concept to rename.
+	 * @param name           New name.
+	 * @return Pointer to the correct concept (may be an existing one).
+	 */
+	GConcept* RenameConcept(GConcept* concept,const R::RString& name);
+
+	/**
 	* Get a given concept from the dictionary.
 	* @param name            Name of the concept to look for.
 	* @return Pointer to the concept.
@@ -345,7 +353,7 @@ public:
 	* Clear the number of objects of a given type using the dictionary.
 	* @param ObjType        Type of the object.
 	*/
-	void Clear(tObjType ObjType);
+	void ClearRef(tObjType ObjType);
 
 	/**
 	 * Destruct.

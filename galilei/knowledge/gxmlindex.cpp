@@ -194,6 +194,14 @@ RString GXMLIndex::GetName(void) const
 
 
 //-----------------------------------------------------------------------------
+void GXMLIndex::SetConceptTypes(GConceptType* type,GConceptType* lang)
+{
+	Type=type;
+	Lang=lang;
+}
+
+
+//-----------------------------------------------------------------------------
 void GXMLIndex::SetTag(GConcept* tag)
 {
 	XMLTag=tag;

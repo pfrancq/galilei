@@ -286,7 +286,7 @@ void GSession::ForceReCompute(tObjType type)
 			// Delete the topics
 			RCursor<GConceptType> Types(Data->ConceptTypes);
 			for(Types.Start();!Types.End();Types.Next())
-				Types()->Clear(otTopic);
+				Types()->ClearRef(otTopic);
 			Data->Topics.Clear();
 			if(Data->SaveResults)
 				Data->Storage->Clear(otTopic);
@@ -298,7 +298,7 @@ void GSession::ForceReCompute(tObjType type)
 			// Delete the profiles -> Also groups
 			RCursor<GConceptType> Types(Data->ConceptTypes);
 			for(Types.Start();!Types.End();Types.Next())
-				Types()->Clear(otProfile);
+				Types()->ClearRef(otProfile);
 			Data->Profiles.Clear();
 			if(Data->SaveResults)
 				Data->Storage->Clear(otProfile);
@@ -308,7 +308,7 @@ void GSession::ForceReCompute(tObjType type)
 			// Delete the groups
 			RCursor<GConceptType> Types(Data->ConceptTypes);
 			for(Types.Start();!Types.End();Types.Next())
-				Types()->Clear(otCommunity);
+				Types()->ClearRef(otCommunity);
 			Data->Communities.Clear();
 			if(Data->SaveResults)
 				Data->Storage->Clear(otCommunity);
@@ -326,14 +326,14 @@ void GSession::ReInit(void)
 	if(Data->Subjects)
 		Data->Subjects->ReInit();
 
-	// Clear Fdbks
+	// Clear feedbacks
 	ClearFdbks();
 
 	RCursor<GConceptType> Types(Data->ConceptTypes);
 	for(Types.Start();!Types.End();Types.Next())
 	{
-		Types()->Clear(otCommunity);
-		Types()->Clear(otProfile);
+		Types()->ClearRef(otCommunity);
+		Types()->ClearRef(otProfile);
 	}
 
 	// Clear groups, profiles and users
@@ -402,6 +402,8 @@ void GSession::SetSaveResults(bool save)
 //------------------------------------------------------------------------------
 GStorage* GSession::GetStorage(void) const
 {
+	if(!Data->Storage)
+		throw GException("No storage");
 	return(Data->Storage);
 }
 
@@ -562,6 +564,7 @@ size_t GSession::GetMaxElementId(tObjType type) const
 			throw GException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
 	}
 }
+
 
 //------------------------------------------------------------------------------
 void* GSession::GetElement(tObjType type,size_t id,bool null) const
@@ -745,7 +748,7 @@ GRelationType* GSession::GetRelationType(size_t id,bool null) const
 	if(!type)
 	{
 		if(!null)
-			throw GException("Unknow relation type "+RString::Number(id));
+			throw GException("Unknown relation type "+RString::Number(id));
 		return(0);
 	}
 	return(type);
@@ -759,7 +762,7 @@ GRelationType* GSession::GetRelationType(const RString& name,bool null) const
 	if(!type)
 	{
 		if(!null)
-			throw GException("Unknow relation type "+name);
+			throw GException("Unknown relation type "+name);
 		return(0);
 	}
 	return(type);
@@ -952,7 +955,7 @@ void GSession::AssignId(GDoc* doc)
 
 	// The first document has the identifier 1
 	if(Data->Docs.GetNb())
-		doc->SetId(Data->Docs[Data->Docs.GetMaxPos()]->GetId()+1); // Not [GetNb()-1] because first doc has an identificator of 1
+		doc->SetId(Data->Docs[Data->Docs.GetMaxPos()]->GetId()+1); // Not [GetNb()-1] because first doc has an identifier of 1
 	else
 		doc->SetId(1);
 }
@@ -973,7 +976,7 @@ void GSession::InsertDoc(GDoc* d)
 	// Insert the document
 	Data->Docs.InsertPtrAt(d,d->GetId());
 
-	//insert the doc in the DocsRefUrl container.
+	// Insert the doc in the DocsRefUrl container.
 	Data->DocsRefUrl.InsertPtr(new GDocRefURL(d));
 
 	if(NewOne)
@@ -997,11 +1000,11 @@ void GSession::ClearDocs(void)
 //------------------------------------------------------------------------------
 void GSession::AnalyseDocs(bool ram,GSlot* rec)
 {
-	// Opens and appends the Log File for all errors occuring in the filter or analyse phase.
+	// Opens and appends the Log File for all errors occurring in the filter or analyze phase.
 	if(rec)
 	{
 		RString err("Documents Filtering and Analysis on Data Set : "+Data->Storage->GetFactory()->GetName()+ " on : " +RString::Number(RDate::GetToday().GetDay())+"/"+ RString::Number(RDate::GetToday().GetMonth())+"/"+RString::Number(RDate::GetToday().GetYear()));
-		rec->WriteStr("Analyse documents");
+		rec->WriteStr("Analyze documents");
 	}
 
 	// Get the method
@@ -1009,7 +1012,7 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 	if(!Analyse)
 		throw GException("No document analysis method chosen.");
 
-	// Analyse the documents - Go through the existing documents
+	// Analyze the documents - Go through the existing documents
 	R::RCursor<GDoc> Docs=GetDocs();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
@@ -1223,9 +1226,9 @@ void GSession::AssignId(GUser* user)
 		return;
 	}
 
-	// The first user has the identificator 1
+	// The first user has the identifier 1
 	if(Data->Users.GetNb())
-		user->SetId(Data->Users[Data->Users.GetMaxPos()]->GetId()+1); // Not [GetNb()-1] because first user has an identificator of 1
+		user->SetId(Data->Users[Data->Users.GetMaxPos()]->GetId()+1); // Not [GetNb()-1] because first user has an identifier of 1
 	else
 		user->SetId(1);
 }
@@ -1321,7 +1324,7 @@ void GSession::AssignId(GProfile* p)
 
 	// The first profile has the identifier 1
 	if(Data->Profiles.GetNb())
-		p->SetId(Data->Profiles[Data->Profiles.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first profile has an identificator of 1
+		p->SetId(Data->Profiles[Data->Profiles.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first profile has an identifier of 1
 	else
 		p->SetId(1);
 }
@@ -1394,7 +1397,7 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 	if(rec)
 		rec->NextProfile(profile);
 
-	// If necessary, calc Links on the profile description
+	// If necessary, compute Links on the profile description
 	if(LinkCalc)
 		LinkCalc->Compute(profile);
 
@@ -1913,6 +1916,8 @@ void GSession::UpdateTopic(size_t docid)
 //------------------------------------------------------------------------------
 GSession* GSession::Get(void)
 {
+	if(!Intern::Session)
+		throw GException("No session");
 	return(Intern::Session);
 }
 

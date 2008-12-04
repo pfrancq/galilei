@@ -269,6 +269,33 @@ bool GConceptType::IsIn(const RString& name) const
 
 
 //------------------------------------------------------------------------------
+GConcept* GConceptType::RenameConcept(GConcept* concept,const R::RString& name)
+{
+	// Look if the new name is not already in the dictionary
+	GConcept* ptr=RDblHashContainer<GConcept,true>::GetPtr(name);
+	if(ptr)
+	{
+		// Both concept must be merge and the old one deleted
+		ptr->NbRefDocs+=concept->NbRefDocs;
+		ptr->NbRefProfiles+=concept->NbRefProfiles;
+		ptr->NbRefGroups+=concept->NbRefGroups;
+		ptr->NbRefTopics+=concept->NbRefTopics;
+		DeleteConcept(concept);
+		return(ptr);
+	}
+	else
+	{
+		// Rename really the concept
+		DeletePtr(*concept,true,false);
+		concept->Name=name;
+		InsertPtr(concept);
+		Session->GetStorage()->SaveConcept(concept);
+		return(concept);
+	}
+}
+
+
+//------------------------------------------------------------------------------
 GConcept* GConceptType::GetConcept(const RString& name) const
 {
 	return(RDblHashContainer<GConcept,true>::GetPtr(name));
@@ -427,7 +454,7 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 
 
 //------------------------------------------------------------------------------
-void GConceptType::Clear(tObjType ObjType)
+void GConceptType::ClearRef(tObjType ObjType)
 {
 	GConcept** ptr;
 	size_t i;
@@ -438,7 +465,7 @@ void GConceptType::Clear(tObjType ObjType)
 	for(i=MaxId+1,ptr=Direct;--i;ptr++)
 	{
 		if(!(*ptr)) continue;
-		(*ptr)->Clear(ObjType);
+		(*ptr)->ClearRef(ObjType);
 	}
 
 	switch(ObjType)

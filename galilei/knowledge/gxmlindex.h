@@ -172,6 +172,13 @@ public:
 	virtual R::RString GetName(void) const;
 
 	/**
+	 * Set the concept types associated with the current index.
+	 * @param type           Type of the concept.
+	 * @param lang           Language of the stems.
+	 */
+	void SetConceptTypes(GConceptType* type,GConceptType* lang);
+
+	/**
 	 * Set the tag for the current index. The list of stems and universal
 	 * terms associated are emptied.
 	 * @param tag            Pointer to the tag.
