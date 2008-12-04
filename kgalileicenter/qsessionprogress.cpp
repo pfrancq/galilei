@@ -255,8 +255,7 @@ void QImportDocs::DoIt(void)
 	Subjects=GALILEIApp->GetSession()->GetSubjects(true);
 	CurDepth=0;
 	ParseDir(Dir,Parent);
-	if(GALILEIApp->GetSession()->MustSaveResults()&&GALILEIApp->GetSession()->GetStorage())
-		GALILEIApp->GetSession()->GetStorage()->SaveSubjects();
+	GALILEIApp->GetSession()->GetStorage()->SaveSubjects();
 }
 
 
@@ -273,33 +272,30 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 		// If directory -> go deep
 		if(dynamic_cast<RDir*>(Files()))
 		{
-
-			RString cat(parent);
-			GSubject* Topic;
+			GSubject* Subject;
+			RString cat(Files()->GetFileName());
 
 			// Find parent topic
 			if(parent.IsEmpty())
-				Topic=Subjects->GetTop();
+				Subject=Subjects->GetTop();
 			else
-				Topic=Subjects->GetNode(parent);
+			{
+				Subject=Subjects->GetNode(parent);
+				cat=parent+"/"+cat;
+			}
 
 			if(CurDepth<=Depth)
-			{
-				if(!cat.IsEmpty())
-					cat+="/";
-				cat+=Files()->GetFileName();
-				Subjects->InsertNode(Topic,new GSubject(Subjects->GetNbNodes(),cat,false));
-			}
+				Subjects->InsertNode(Subject,new GSubject(Subjects->GetNbNodes(),cat,false));
 			ParseDir(Files()->GetURI(),cat);
 		}
 		else
 		{
 			// Must be a normal document
-			GSubject* Topic=Subjects->GetNode(parent);
+			GSubject* Subject=Subjects->GetNode(parent);
 			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,0,0);
 			GALILEIApp->GetSession()->InsertDoc(doc);
-			if(Topic)
-				Topic->Insert(doc);
+			if(Subject)
+				Subject->Insert(doc);
 		}
 	}
 	CurDepth--;
