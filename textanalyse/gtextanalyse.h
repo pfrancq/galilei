@@ -111,7 +111,7 @@ public:
 		Clear();
 	}
 
-	inline void Clear(void) {Word.SetLen(0); Nb=0; Weight=0.0; NormalStem=false; Concept=0;}
+	inline void Clear(void) {Word.SetLen(0); Nb=0; Weight=0.0; OnlyLetters=true; NormalStem=false; Concept=0;}
 	int Compare(const cWord& word) const {return(Word.Compare(word.Word));}
 	int Compare(const cWord* word) const {return(Word.Compare(word->Word));}
 	int Compare(const RString& word) const {return(Word.Compare(word));}
@@ -192,6 +192,7 @@ public:
 	cStructTokens(void);
 	void Clear(void);
 	inline cStructToken* AddToken(GConceptType* space,const RString& token);
+	inline void ChangeTokenNS(cStructToken* token,const RString& uri);
 	inline RCursor<cStructToken> GetStructTokens(void) const;
 	size_t GetNbTags(void) const {return(NbTags);}
 };
@@ -485,6 +486,11 @@ class GTextAnalyse : public GDocAnalyse, public RXMLParser
 	 */
 	RString tmpStr;
 
+	/**
+	 * Last tag inserted.
+	 */
+	cStructToken* LastInsertTag;
+
 public:
 
 	/**
@@ -517,6 +523,7 @@ public:
 
 	// Overload default function
 	virtual void BeginTag(const RString& namespaceURI,const RString& lName,const RString& name);
+	virtual void ResolveNamespace(const RString& namespaceURI);
 	virtual void AddAttribute(const RString& namespaceURI, const RString& lName, const RString& name);
 	virtual void Value(const RString& value);
 	virtual void EndTag(const RString& namespaceURI,const RString& lName,const RString& name);
@@ -593,8 +600,6 @@ public:
 	* Destruct.
 	*/
 	virtual ~GTextAnalyse(void);
-
-	friend class XMLParser;
 };
 
 

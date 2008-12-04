@@ -178,6 +178,42 @@ inline cStructToken* cStructTokens::AddToken(GConceptType* space,const RString& 
 
 
 //-----------------------------------------------------------------------------
+inline void cStructTokens::ChangeTokenNS(cStructToken* token,const RString& uri)
+{
+	int i=token->GetName().Find(':',-1);
+	RString Name(uri+token->GetName().Mid(i));
+
+//	cout<<"Change "<<token->GetName()<<" with "<<Name<<endl;
+	if(token->Occurs>1)
+	{
+		cerr<<"cStructTokens::ChangeTokenNS : Create a new token not implemented"<<endl;
+		//token->Occurs--;
+	}
+	else
+	{
+		// Rename token
+		//cout<<"Rename token"<<endl;
+		DeletePtr(*token,true,false);
+		token->Name=Name;
+		InsertPtr(token);
+		GConcept* tag=token->Tag;
+		if(tag->GetRef(otNoClass))
+		{
+			// New concept must be created.
+			GConcept t(cNoRef,Name,tag->GetType(),0,0,0,0);
+			token->Tag=tag->GetType()->InsertConcept(&t);
+		}
+		else
+		{
+			// Concept must be renamed
+			//cout<<"Rename concept"<<endl;
+			token->Tag=tag->GetType()->RenameConcept(tag,Name);
+		}
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 inline RCursor<cStructToken> cStructTokens::GetStructTokens(void) const
 {
 	return(RCursor<cStructToken>(*this));
@@ -464,7 +500,6 @@ void GTextAnalyse::Clear(void)
 	StructTokens.Clear();
 	Infos.Clear();
 	Struct.Clear();
-
 }
 
 
@@ -504,8 +539,8 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 	// Get the node of the previous depth
 	cDepth* Depth=Depths.GetDepth(CurDepth);
 	cNode* CurNode=Depths.GetNewNode(Depth,true);
-	cStructToken* tag=StructTokens.AddToken(StructSpace,tmpStr);
-	CurNode->SetTag(tag,LastTokenPos,Depth);
+	LastInsertTag=StructTokens.AddToken(StructSpace,tmpStr);
+	CurNode->SetTag(LastInsertTag,LastTokenPos,Depth);
 
 	// Make the sibling if depth>0
 	if(CurDepth)
@@ -519,6 +554,16 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 			parent->Nb++;
 		}
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GTextAnalyse::ResolveNamespace(const RString& namespaceURI)
+{
+	// Stopped the analyze if not necessary anymore
+	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
+		return;
+	StructTokens.ChangeTokenNS(LastInsertTag,namespaceURI);
 }
 
 
@@ -854,9 +899,6 @@ GConcept* GTextAnalyse::GetStemConcept(cWord* word)
 //-----------------------------------------------------------------------------
 void GTextAnalyse::ConstructInfos(void)
 {
-	GWeightInfo* Occur;
-	RString stem(MaxWordLen);
-
 	// Insert all the occurrences of the valid words
 	RCursor<cWord> Word(Words.GetWords());
 	for(Word.Start();!Word.End();Word.Next())
@@ -871,7 +913,7 @@ void GTextAnalyse::ConstructInfos(void)
 				continue;
 		}
 
-		Occur=Infos.GetInsertPtr(Word()->Concept);
+		GWeightInfo* Occur(Infos.GetInsertPtr(Word()->Concept));
 		if(!Occur->GetWeight())
 		{
 			Vdiff++;
@@ -932,6 +974,8 @@ void GTextAnalyse::IndexXMLPart(void)
 					GWeightInfo* info=Infos.GetInsertPtr(IndexSpace->InsertConcept(&w));
 					(*info)+=1.0;
 					IsTag=false;
+					w.Clear();
+					w.SetConceptTypes(IndexSpace,LangSpace);
 				}
 
 				// Index this tag
