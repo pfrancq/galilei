@@ -161,13 +161,7 @@ protected:
 	 * Return a SQL string for a given unsigned int.
 	 * @param i              The number.
 	 */
-	inline R::RString Num(unsigned int i) {return("'"+R::RString::Number(i)+"'");}
-
-	/**
-	 * Return a SQL string for a given size_.
-	 * @param i              The number.
-	 */
-	inline R::RString Num(unsigned long i) {return("'"+R::RString::Number(i)+"'");}
+	inline R::RString Num(size_t i) {return("'"+R::RString::Number(i)+"'");}
 
 	/**
 	 * Return a SQL string for a given double.

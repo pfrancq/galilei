@@ -937,7 +937,11 @@ void GStorageMySQL::SaveConcept(GConcept* concept)
 		// Insert the new word in the database
 		Sql="INSERT INTO concepts(conceptid,name,typeid,refprofiles,refgroups,refdocs,reftopics) ";
 		Sql+="VALUES("+Num(concept->GetId())+","+RQuery::SQLValue(concept->GetName())+","+
-		     Num(concept->GetType()->GetId())+",0,0,0,0)";
+		               Num(concept->GetType()->GetId())+","+
+		               Num(concept->GetRef(otProfile))+","+
+		               Num(concept->GetRef(otCommunity))+","+
+		               Num(concept->GetRef(otDoc))+","+
+		               Num(concept->GetRef(otTopic))+")";
 		auto_ptr<RQuery> Insert(Db->Query(Sql));
 	}
 	catch(RDbException e)
