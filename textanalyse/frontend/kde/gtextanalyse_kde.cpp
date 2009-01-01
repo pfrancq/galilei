@@ -127,7 +127,6 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.StaticLang->setChecked(params->GetBool("StaticLang"));
 	dlg.MinStopWords->setValue(params->GetDouble("MinStopWords"));
 	dlg.MinWordSize->setValue(params->GetInt("MinWordSize"));
-	dlg.MinStemSize->setValue(params->GetInt("MinStemSize"));
 	dlg.NonLetterWords->setChecked(params->GetBool("NonLetterWords"));
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
 	dlg.NbSameOccur->setValue(params->GetInt("NbSameOccur"));
@@ -150,6 +149,8 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.DefaultNamespace->setEnabled(params->GetBool("UseDefaultNamespace"));
 	dlg.DefaultNamespace->setText(ToQString(params->Get("DefaultNamespace")));
 	dlg.ExtractIndex->setChecked(params->GetBool("ExtractIndex"));
+	dlg.DetectMetaTag->setChecked(params->GetBool("DetectMetaTag"));
+	dlg.MetaTagFile->setUrl(ToQString(params->Get("MetaTagFile")));
 	dlg.MaxTerms->setValue(params->GetInt("MaxTerms"));
 	dlg.MaxDepth->setValue(params->GetInt("MaxDepth"));
 	dlg.MaxOccurs->setValue(params->GetInt("MaxOccurs"));
@@ -158,6 +159,9 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.MaxDepth->setEnabled(params->GetBool("ExtractIndex"));
 	dlg.ChildTags->setEnabled(params->GetBool("ExtractIndex"));
 	dlg.MaxOccurs->setEnabled(params->GetBool("ExtractIndex"));
+	dlg.DetectMetaTag->setEnabled(params->GetBool("ExtractIndex"));
+	dlg.MetaTagFile->setEnabled(params->GetBool("ExtractIndex"));
+	dlg.MetaTagFile->setEnabled(!params->GetBool("DetectMetaTag"));
 
 	if(dlg.exec())
 	{
@@ -165,7 +169,6 @@ void Configure(GFactoryDocAnalyse* params)
 		params->SetBool("StaticLang",dlg.StaticLang->isChecked());
 		params->SetDouble("MinStopWords",dlg.MinStopWords->value());
 		params->SetUInt("MinWordSize",dlg.MinWordSize->value());
-		params->SetUInt("MinStemSize",dlg.MinStemSize->value());
 		params->SetBool("NonLetterWords",dlg.NonLetterWords->isChecked());
 		params->SetBool("Filtering",dlg.Filtering->isChecked());
 		params->SetUInt("NbSameOccur",dlg.NbSameOccur->value());
@@ -187,6 +190,9 @@ void Configure(GFactoryDocAnalyse* params)
 		params->SetUInt("MaxDepth",dlg.MaxDepth->value());
 		params->SetBool("ChildTags",dlg.ChildTags->isChecked());
 		params->SetUInt("MaxOccurs",dlg.MaxOccurs->value());
+		params->SetBool("DetectMetaTag",dlg.DetectMetaTag->isChecked());
+		params->Set("MetaTagFile",FromQString(dlg.MetaTagFile->url().url()));
+
 		params->Apply();
 	}
 }

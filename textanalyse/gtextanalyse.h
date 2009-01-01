@@ -47,7 +47,15 @@ using namespace R;
 #include <galilei.h>
 #include <gdocanalyse.h>
 #include <glang.h>
+#include <gxmlindex.h>
 using namespace GALILEI;
+
+
+//-----------------------------------------------------------------------------
+/*
+ *
+ */
+
 
 
 //-----------------------------------------------------------------------------
@@ -152,7 +160,7 @@ public:
 //-----------------------------------------------------------------------------
 /**
  * The cStructToken class represent a structural token. If it is a tag,
- * associated with its content, can be used as indexed.
+ * associated with its content, it can be used as indexed.
  */
 class cStructToken
 {
@@ -233,7 +241,8 @@ class cDepth : private RContainer<cNode,false,false>
 public:
 	char Level;
 	size_t NbNodesSkipped; // Number of nodes skipped because stopwords
-
+	GXMLIndex* CurIndex;   // Current index.
+	size_t NbCurIndex;     // Number of elements associated to the current index.
 
 	cDepth(char level);
 	void Clear(void);
@@ -268,10 +277,15 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The GTextAnalyse class provides a method to analyze a document.
-* @author Pascal Francq
-* @short Vector Model Documents Analyze.
-*/
+ * The GTextAnalyse class provides a method to analyze a document. The plug-in
+ * maintains several lists of elements through the analysis of a XML documents:
+ * - Words: The list of each word appearing in the document.
+ * - StructTokens: The list of structural tokens appearing in the document.
+ * - Depths: The different information associated to each depth of the
+ *   document.
+ * @author Pascal Francq
+ * @short XML Documents Analyze.
+ */
 class GTextAnalyse : public GDocAnalyse, public RXMLParser
 {
 	/**
@@ -376,11 +390,6 @@ class GTextAnalyse : public GDocAnalyse, public RXMLParser
 	size_t MinWordSize;
 
 	/**
-	* Minimum number of characters to have a valid stem.
-	*/
-	size_t MinStemSize;
-
-	/**
 	* Determine if the extracted words may contain other things than letters.
 	*/
 	bool NonLetterWords;
@@ -440,6 +449,21 @@ class GTextAnalyse : public GDocAnalyse, public RXMLParser
 	 * May declarative tags have child tags?
 	 */
 	bool ChildTags;
+
+	/**
+	 * Should the meta-tag be detected or must they be defined.
+	 */
+	bool DetectMetaTag;
+
+	/**
+	 * Name of the file containing the meta-tags.
+	 */
+	RString MetaTagFile;
+
+	/**
+	 * Meta tags.
+	 */
+	RContainer<RString,true,true> MetaTags;
 
 	/**
 	 * Weight of each tag and parameter name when they are considered as stems.
@@ -595,6 +619,14 @@ public:
 	* @param params          Parameters to configure.
 	*/
 	static void CreateParams(RConfig* params);
+
+	/**
+	 * @return true if the analyze of the current tag must be stopped.
+	 */
+	inline bool StopAnalyseTag(void) const
+	{
+		return((!MustFullIndex)&&(   (!ExtractIndex)    || (    ExtractIndex&&(DetectMetaTag&&(GetCurrentDepth()>MaxDepth)) ) ) );
+	}
 
 	/**
 	* Destruct.

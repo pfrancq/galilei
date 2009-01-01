@@ -31,6 +31,11 @@
 
 
 //-----------------------------------------------------------------------------
+// DEBUG Mode
+#define DEBUG 0
+
+
+//-----------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <ctype.h>
 #include <dirent.h>
@@ -50,7 +55,6 @@
 #include <gdoc.h>
 #include <gdocxml.h>
 #include <gconcept.h>
-#include <gxmlindex.h>
 #include <gconcepttype.h>
 #include <gweightinfo.h>
 #include <gsession.h>
@@ -300,7 +304,9 @@ void cNode::Clear(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-cDepth::cDepth(char level) : RContainer<cNode,false,false>(200,100), NbNodes(0), CurTag(0), Level(level), NbNodesSkipped(0)
+cDepth::cDepth(char level)
+	: RContainer<cNode,false,false>(200,100), NbNodes(0), CurTag(0),
+	  Level(level), NbNodesSkipped(0), CurIndex(0), NbCurIndex(0)
 {
 }
 
@@ -312,6 +318,9 @@ void cDepth::Clear(void)
 	NbNodes=0;
 	CurTag=0;
 	NbNodesSkipped=0;
+	delete CurIndex;
+	CurIndex=0;
+	NbCurIndex=0;
 }
 
 
@@ -408,7 +417,7 @@ inline RCursor<cNode> cDepths::GetNodes(void) const
 //-----------------------------------------------------------------------------
 GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac)
 	: GDocAnalyse(fac), RXMLParser(), Words(), StructTokens(/*100*/), Depths(),
-	  Sl(0), Sldiff(0), StructSpace(0), IndexSpace(0), IsTitle(false)
+	  Sl(0), Sldiff(0), MetaTags(20), StructSpace(0), IndexSpace(0), IsTitle(false)
 {
 	SetInvalidXMLCodes(true);
 }
@@ -420,7 +429,6 @@ void GTextAnalyse::ApplyConfig(void)
 	StaticLang=Factory->GetBool("StaticLang");
 	MinStopWords=Factory->GetDouble("MinStopWords");
 	MinWordSize=Factory->GetUInt("MinWordSize");
-	MinStemSize=Factory->GetUInt("MinStemSize");
 	NonLetterWords=Factory->GetBool("NonLetterWords");
 	Filtering=Factory->GetBool("Filtering");
 	NbSameOccur=Factory->GetUInt("NbSameOccur");
@@ -438,6 +446,27 @@ void GTextAnalyse::ApplyConfig(void)
 	FullIndex=Factory->GetBool("FullIndex");
 	UseDefaultNamespace=Factory->GetBool("UseDefaultNamespace");
 	DefaultNamespace=Factory->Get("DefaultNamespace");
+	DetectMetaTag=Factory->GetBool("DetectMetaTag");
+	MetaTagFile=Factory->Get("MetaTagFile");
+	MetaTags.Clear();
+	if(!DetectMetaTag)
+	{
+		try
+		{
+			RTextFile Tags(MetaTagFile);
+			Tags.Open(RIO::Read);
+			while(!Tags.End())
+				MetaTags.InsertPtr(new RString(Tags.GetLine()));
+		}
+		catch(RException& e)
+		{
+			cerr<<e.GetMsg()<<endl;
+		}
+		catch(...)
+		{
+			cerr<<"Unknown error"<<endl;
+		}
+	}
 }
 
 
@@ -520,7 +549,7 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 			if(UseDefaultNamespace)
 				tmpStr=DefaultNamespace+":"+lName;
 			else
-				tmpStr=URI+":"+lName;
+				tmpStr=URI()+":"+lName;
 		}
 		else
 			tmpStr=namespaceURI+":"+lName;
@@ -531,11 +560,16 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 		IsTitle=true;
 
 	// Stopped the analyze if not necessary anymore
-	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
+	#if DEBUG
+		cout<<"Test: *"<<tmpStr<<"* ("<<(int)GetCurrentDepth()<<")"<<endl;
+	#endif
+	if(StopAnalyseTag())
 		return;
 
 	// Create the tag
-	//cout<<"Index: *"<<tmpStr<<"*"<<endl;
+	#if DEBUG
+		cout<<"\tIndex: *"<<tmpStr<<"*"<<endl;
+	#endif
 	// Get the node of the previous depth
 	cDepth* Depth=Depths.GetDepth(CurDepth);
 	cNode* CurNode=Depths.GetNewNode(Depth,true);
@@ -561,7 +595,7 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 void GTextAnalyse::ResolveNamespace(const RString& namespaceURI)
 {
 	// Stopped the analyze if not necessary anymore
-	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
+	if(StopAnalyseTag())
 		return;
 	StructTokens.ChangeTokenNS(LastInsertTag,namespaceURI);
 }
@@ -577,7 +611,7 @@ void GTextAnalyse::AddAttribute(const RString& namespaceURI,const RString& lName
 		ExtractValidWords(lName,WeightStruct,GVTDRec::Attribute);
 
 	// Stopped the analyze if not necessary anymore
-	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
+	if(StopAnalyseTag())
 		return;
 
 	// Compute the name of the tag
@@ -588,7 +622,7 @@ void GTextAnalyse::AddAttribute(const RString& namespaceURI,const RString& lName
 			if(UseDefaultNamespace)
 				tmpStr=DefaultNamespace+":"+lName;
 			else
-				tmpStr=URI+":"+lName;
+				tmpStr=URI()+":"+lName;
 		}
 		else
 			tmpStr=namespaceURI+":"+lName;
@@ -607,7 +641,9 @@ void GTextAnalyse::AddAttribute(const RString& namespaceURI,const RString& lName
 void GTextAnalyse::Value(const RString& text)
 {
 	if(ExtractValues)
+	{
 		ExtractValidWords(text,WeightValues,GVTDRec::Value);
+	}
 }
 
 
@@ -617,6 +653,8 @@ void GTextAnalyse::EndTag(const RString&, const RString& /*lName*/, const RStrin
 	// Stopped the analyze if not necessary anymore
 /*	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
 		return;*/
+/*	if(CurDepth)
+		CurNode=Depths.GetDepth(CurDepth-1)->GetCurTag();*/
 }
 
 
@@ -712,7 +750,7 @@ void GTextAnalyse::AddWord(const RString& word,double weight,bool letters,GVTDRe
 	w->NormalStem=true;
 
 	// Stopped the analyze if not necessary anymore
-	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
+	if(StopAnalyseTag())
 		return;
 
 	// Create a new node
@@ -726,45 +764,63 @@ void GTextAnalyse::AddWord(const RString& word,double weight,bool letters,GVTDRe
 
 
 //-----------------------------------------------------------------------------
+inline bool SepChar(const RChar* ptr)
+{
+	return(
+			(ptr->IsSpace())||
+			((*ptr)=='\'')||((*ptr)=='"')||
+			((*ptr)=='.')||((*ptr)==';')||((*ptr)==',')||((*ptr)==':')||((*ptr)=='!')||((*ptr)=='?')||((*ptr)=='~')||
+			((*ptr)=='(')||((*ptr)==')')||((*ptr)=='[')||((*ptr)==']')||((*ptr)=='{')||((*ptr)=='}')
+		  );
+}
+
+
+//-----------------------------------------------------------------------------
 void GTextAnalyse::ExtractValidWords(const R::RString& str,double weight,GVTDRec::RecType type)
 {
 //	cout<<"Extract ("<<LastTokenPos<<"): *"<<str<<"*"<<endl;
 	for(const RChar* ptr=str();!ptr->IsNull();)
 	{
 		// Skip Spaces
-		while((!ptr->IsNull())&&(ptr->IsSpace()))
+/*		while((!ptr->IsNull())&&(ptr->IsSpace()))
+			ptr++;
+		if(ptr->IsNull())
+			return;*/
+		while(SepChar(ptr))
 			ptr++;
 		if(ptr->IsNull())
 			return;
 
 		// If only letters word -> skip non letters
-		if(!NonLetterWords)
+/*		if(!NonLetterWords)
 		{
 			while((!ptr->IsNull())&&(!ptr->IsAlpha()))
 				ptr++;
 
 			if(ptr->IsNull())
 				return;
-		}
+		}*/
 
 		// Always skip ' or "
-		while((!ptr->IsNull())&&(((*ptr)=='\'')||((*ptr)=='"')))
+/*		while((!ptr->IsNull())&&(((*ptr)=='\'')||((*ptr)=='"')))
 			ptr++;
 		if(ptr->IsNull())
-			return;
+			return;*/
 
 		// Start to read characters and suppose there no non-alpha characters
-		size_t NoAlpha(0);
 		const RChar* begin(ptr);
-		size_t len(0);
-		size_t MaxSame(0);  // Maximal number of identical characters in a row
-		size_t ActSame(0);  // How many identical characters are actually in a row
-		RChar Last(0);      // Reference character
 
 		// Parse until :
 		// a) A ' or a " was found
 		// b) A non letter character was found and only letters are aloud
-		while((!ptr->IsNull())&&((*ptr)!='\'')&&((*ptr)!='"')&&((!NonLetterWords&&ptr->IsAlpha())||(NonLetterWords)))
+		size_t NoAlpha(0);   // Number of non-alphabetic characters
+		size_t len(0);       // Size of the word
+		size_t MaxSame(0);  // Maximal number of identical characters in a row
+		size_t ActSame(0);  // How many identical characters are actually in a row
+		RChar Last(0);      // Reference character
+		//while((!ptr->IsNull())&&((*ptr)!='\'')&&((*ptr)!='"')&&((!NonLetterWords&&ptr->IsAlpha())||(NonLetterWords)))
+		//while((!ptr->IsNull())&&(ptr->IsAlNum()))
+		while((!ptr->IsNull())&&(!SepChar(ptr)))
 		{
 			if(Last==(*ptr))
 				ActSame++;
@@ -780,15 +836,13 @@ void GTextAnalyse::ExtractValidWords(const R::RString& str,double weight,GVTDRec
 			ptr++;
 			len++;
 		}
-		if(ActSame>MaxSame)
-			MaxSame=ActSame;
 
 		// Verify that the string is not empty
-		if(!len)
-			continue;
+/*		if(!len)
+			continue;*/
 
 		// If the last characters added are punctuation then remove them
-		bool RemovePunct=false;
+/*		bool RemovePunct=false;
 		const RChar* LastPtr=ptr-1;
 		size_t NbSkip=0;
 		while(len&&(((*LastPtr)=='?')||((*LastPtr)=='!')||((*LastPtr)==',')||((*LastPtr)==';')||((*LastPtr)=='.')||((*LastPtr)==':')))
@@ -798,14 +852,14 @@ void GTextAnalyse::ExtractValidWords(const R::RString& str,double weight,GVTDRec
 			NoAlpha--;
 			RemovePunct=true;
 			NbSkip++;
-		}
+		}*/
 
 		// Verify that the string is not empty
-		if(!len)
-			continue;
+/*		if(!len)
+			continue;*/
 
 		// If Filtering and remove multiple ending punctuation -> recompute MaxSame
-		if(RemovePunct&&Filtering&&(NbSkip==MaxSame))
+		/*if(RemovePunct&&Filtering&&(NbSkip==MaxSame))
 		{
 			// Must verify again the whole string
 			size_t i;
@@ -823,19 +877,22 @@ void GTextAnalyse::ExtractValidWords(const R::RString& str,double weight,GVTDRec
 			}
 			if(ActSame>MaxSame)
 				MaxSame=ActSame;
-		}
+		}*/
 
-		// Simply verify if there are not too much same characters in a row
-		if(Filtering&&(MaxSame>NbSameOccur))
-			continue;
-
-		// Verify that the string is not empty and (if necessary) if there are enough letters in the word
-		if((!len)||(Filtering&&((double)(len-NoAlpha)/(double)(len)<NormalRatio)))
+		// Verify that the string matches the rules:
+		if( (!NonLetterWords&&(NoAlpha>0)) ||    // 1. If letters-only -> Verify that no non-letters are present
+			(NonLetterWords&&Filtering&&	     // 2. If non-letters allowed -> verify if the filtering is activate and valid
+				(
+						(MaxSame>NbSameOccur)||                             // Not too much same characters in a row
+						((double)(len-NoAlpha)/(double)(len)<NormalRatio))) // Ratio must be respected
+				)
 			continue;
 
 		// Add the word.
 		RString word(begin,len);
-		//cout<<"  Index: *"<<word.ToLower()<<"*  ("<<(NoAlpha==0)<<") ="<<(double)(len-NoAlpha)/(double)(len)<<endl;
+		#if DEBUG
+			cout<<"  Index word: *"<<word.ToLower()<<"*  ("<<(NoAlpha==0)<<") ="<<(double)(len-NoAlpha)/(double)(len)<<endl;
+		#endif
 		AddWord(word.ToLower(),weight,(NoAlpha==0),type);
 	}
 }
@@ -880,16 +937,12 @@ GConcept* GTextAnalyse::GetStemConcept(cWord* word)
 	if(word->InStop[LangIndex])
 		return(0);
 
-	// if len<MinWordSize -> do not treat it.
-	if(word->Word.GetLen()<MinWordSize)
-		return(0);
-
 	// If only letters -> apply stemming algorithm.
 	if(word->OnlyLetters)
 		stem=Lang->GetStemming(word->Word);
 	else
 		stem=word->Word;
-	if(stem.GetLen()<MinStemSize)
+	if(stem.GetLen()<MinWordSize)
 		return(0);
 	GConcept w(cNoRef,stem,Lang->GetDict(),0,0,0,0);
 	return(Lang->GetDict()->InsertConcept(&w));
@@ -931,6 +984,9 @@ void GTextAnalyse::IndexXMLPart(void)
 {
 	if(!ExtractStruct) return;
 
+	#if DEBUG
+		cout<<endl<<"IndexXMLPart"<<endl;
+	#endif
 	// Index first the tags
 	RCursor<cStructToken> Tags(StructTokens.GetStructTokens());
 	for(Tags.Start();!Tags.End();Tags.Next())
@@ -945,22 +1001,28 @@ void GTextAnalyse::IndexXMLPart(void)
 	// Index the metadata and the structure
 	Struct.SetSizes(Depths.GetNbNodes(),Depths.GetNbDepths());
 	GConceptType* LangSpace=Session->GetInsertConceptType(Lang->GetCode()+RString("Stems"),"");
-	GXMLIndex w(IndexSpace,LangSpace);
-	size_t max(SIZE_MAX),nb;
-	bool IsTag;
+//	GXMLIndex w(IndexSpace,LangSpace);
+	size_t max(SIZE_MAX)/*, nb(0)*/;
+//	bool IsTag(false);   // Is there a current tag indexed ?
+	cDepth* Depth(0);
 	if(!ExtractStruct)
 		max=MaxDepth;
 
 	// Parse the nodes
 	RCursor<cNode> Node(Depths.GetNodes());
-	for(Node.Start(),IsTag=false;!Node.End();Node.Next())
+	for(Node.Start();!Node.End();Node.Next())
 	{
 		cNode* ptr=Node();
+		Depth=ptr->Depth;
+		if(!ptr->Depth->CurIndex)
+			ptr->Depth->CurIndex=new GXMLIndex(IndexSpace,LangSpace);
 		switch(ptr->Type)
 		{
 			case GVTDRec::Tag:
 			{
-				//cout<<"  <"<<ptr->Obj.Tag->GetName()<<">: "<<ptr->Child<<"("<<ptr->Nb<<")"<<endl;
+				#if DEBUG
+					cout<<"Tag: <"<<ptr->Obj.Tag->GetName()<<">: "<<ptr->Pos<<" - "<<(int)ptr->Depth->Level<<" ("<<ptr->Child<<":"<<ptr->Nb<<")";
+				#endif
 				if(MustFullIndex)
 				{
 					if(ptr->Child!=SIZE_MAX)
@@ -969,31 +1031,48 @@ void GTextAnalyse::IndexXMLPart(void)
 				}
 
 				// Already a tag indexed
-				if(IsTag&&nb&&nb<=MaxTerms)
+				if(ptr->Depth->NbCurIndex)
 				{
-					GWeightInfo* info=Infos.GetInsertPtr(IndexSpace->InsertConcept(&w));
+					GWeightInfo* info=Infos.GetInsertPtr(IndexSpace->InsertConcept(ptr->Depth->CurIndex));
 					(*info)+=1.0;
-					IsTag=false;
-					w.Clear();
-					w.SetConceptTypes(IndexSpace,LangSpace);
+//					IsTag=false;
+					ptr->Depth->CurIndex->Clear();
+					ptr->Depth->CurIndex->SetConceptTypes(IndexSpace,LangSpace);
+					ptr->Depth->NbCurIndex=0;
 				}
 
 				// Index this tag
-				//      Maximal depth                          // Child Tags or not                                       // Max occurrences
-				if( (static_cast<size_t>(ptr->Depth->Level)<=MaxDepth)&&  (((!ChildTags)&&(!ptr->Nb))||(ChildTags)) && (ptr->Obj.Tag->GetOccurs()) && (ptr->Obj.Tag->GetOccurs()<=MaxOccurs)      )
+				if(
+					(
+						(!DetectMetaTag)&&(MetaTags.IsIn(ptr->Obj.Tag->GetName()))       // No detection -> Look in list
+					) ||
+					(
+						DetectMetaTag&&                                                            // Detection ->
+						(ptr->Depth->Level<=MaxDepth)                                              // Maximal depth
+						&&  (((!ChildTags)&&(!ptr->Nb))||(ChildTags))                              // Child Tags or not
+						&& (ptr->Obj.Tag->GetOccurs()) && (ptr->Obj.Tag->GetOccurs()<=MaxOccurs)   // Max occurrences
+					)
+				)
 				{
-					//cout<<Node()->Pos<<": "<<Node()->Obj.Tag->Name<<": "<<Node()->Child<<endl;
-					nb=0;
-					w.SetTag(ptr->Obj.Tag->GetTag());
-					IsTag=true;
+					#if DEBUG
+						cout<<" - Index";
+					#endif
+					ptr->Depth->CurIndex->SetTag(ptr->Obj.Tag->GetTag());
+					ptr->Depth->NbCurIndex=0;
+//					IsTag=true;
 				}
+				#if DEBUG
+					cout<<endl;
+				#endif
 				break;
 			}
 			case GVTDRec::Attribute:
 			{
 				if(MustFullIndex)
 					Struct.AddRecord(ptr->Obj.Tag->GetTag(),GVTDRec::Attribute,ptr->Pos,ptr->Depth->Level);
-//					cout<<"  "<<ptr->Obj.Tag->GetName()<<endl;
+					#if DEBUG
+						cout<<"\tAttribute: "<<ptr->Obj.Tag->GetName()<<endl;
+					#endif
 				break;
 			}
 			case GVTDRec::Value:
@@ -1005,38 +1084,51 @@ void GTextAnalyse::IndexXMLPart(void)
 					else
 						ptr->Depth->NbNodesSkipped++;
 				}
-//					cout<<"    +="<<ptr->Obj.Word->Word<<endl;
+				#if DEBUG
+					cout<<"\t\t+="<<ptr->Obj.Word->Word<<endl;
+				#endif
 				break;
 			}
 			case GVTDRec::Content:
 			{
 				if(MustFullIndex&&ptr->Obj.Word->Concept)
 					Struct.AddRecord(ptr->Obj.Word->Concept,GVTDRec::Content,ptr->Pos,ptr->Depth->Level);
-//					cout<<"    "<<ptr->Obj.Word->Word<<endl;
-				if(IsTag)
+				#if DEBUG
+					if(ptr->Obj.Word->Concept)
+					{
+						cout<<"\tWord: "<<ptr->Obj.Word->Word;
+						if(ptr->Depth->CurIndex->GetXMLTag())
+							cout<<" - Add to XML index to "<<ptr->Depth->CurIndex->GetXMLTag()->GetName();
+						cout<<endl;
+					}
+				#endif
+				if(ptr->Depth->CurIndex->GetXMLTag())
 				{
 					if(ptr->Obj.Word->Concept)
 					{
-						nb++;
-						if(nb>MaxTerms)
-							IsTag=false;
+						ptr->Depth->NbCurIndex++;
+						if(DetectMetaTag&&(ptr->Depth->NbCurIndex>MaxTerms))
+							ptr->Depth->NbCurIndex=0;
 						else
-							w.AddStem(ptr->Obj.Word->Concept);
+							Depth->CurIndex->AddStem(ptr->Obj.Word->Concept);
 					}
 					else
-						ptr->Depth->NbNodesSkipped++;
+						Depth->NbNodesSkipped++;
 				}
 				break;
 			}
 		}
 	}
 
-	// A tag is still indexed
-	if(IsTag&&nb&&nb<=MaxTerms)
+	// Verify that they are not tags in the different depth
+	RCursor<cDepth> Cur(Depths.GetDepths());
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		GWeightInfo* info=Infos.GetInsertPtr(IndexSpace->InsertConcept(&w));
-		(*info)+=1.0;
-		IsTag=false;
+		if(Cur()->NbCurIndex)
+		{
+			GWeightInfo* info=Infos.GetInsertPtr(IndexSpace->InsertConcept(Cur()->CurIndex));
+			(*info)+=1.0;
+		}
 	}
 }
 
@@ -1087,7 +1179,6 @@ void GTextAnalyse::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("StaticLang",false));
 	params->InsertParam(new RParamValue("MinStopWords",0.09));
 	params->InsertParam(new RParamValue("MinWordSize",3));
-	params->InsertParam(new RParamValue("MinStemSize",3));
 	params->InsertParam(new RParamValue("NonLetterWords",true));
 	params->InsertParam(new RParamValue("Filtering",true));
 	params->InsertParam(new RParamValue("NbSameOccur",3));
@@ -1105,6 +1196,8 @@ void GTextAnalyse::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("FullIndex",false));
 	params->InsertParam(new RParamValue("UseDefaultNamespace",false));
 	params->InsertParam(new RParamValue("DefaultNamespace",""));
+	params->InsertParam(new RParamValue("MetaTagFile",""));
+	params->InsertParam(new RParamValue("DetectMetaTag",true));
 }
 
 
