@@ -186,6 +186,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 			den+=fabs(w1*w2);
 			if((w1<0.0)&&(w2<0.0))
 				continue;
+//			cout<<c1->GetSimilarity(c2)<<endl;
 			num+=c1->GetSimilarity(c2)*w1*w2;
 		}
 		Obj1.Next();
@@ -347,6 +348,7 @@ bool GGenericSims::ComputeSimSpace(void)
 	}
 	if(TotalLangsComp)
 		SimSpaces[0]/=static_cast<double>(TotalLangsComp);
+//	cout<<"\t(0,"<<SimSpaces[0]<<")\t(1,"<<SimSpaces[1]<<")\t(2,"<<SimSpaces[2]<<")";
 	return(Ok);
 }
 
@@ -385,8 +387,6 @@ double GGenericSims::SimilarityChoquet(void)
 
 	// First element (capacity=1)
 	double Choquet(Tab[0].Sim);
-	Tab[1].Sim-=Tab[0].Sim;
-	Tab[2].Sim-=Tab[0].Sim;
 
 	// Second element: Find the right capacity (in Cap)
 	double Cap;
@@ -396,8 +396,9 @@ double GGenericSims::SimilarityChoquet(void)
 		Cap=ContentMetaCapacity;
 	else if((Tab[1].What==1&&Tab[2].What==2)||(Tab[1].What==2&&Tab[2].What==1))
 		Cap=MetaStructCapacity;
-	Choquet+=Tab[1].Sim*Cap;
-	Tab[2].Sim-=Tab[1].Sim;
+	else
+		Cap=0;
+	Choquet+=(Tab[1].Sim-Tab[0].Sim)*Cap;
 
 	// Third element : Find the right capacity
 	if(Tab[2].What==0)
@@ -406,7 +407,7 @@ double GGenericSims::SimilarityChoquet(void)
 		Cap=StructCapacity;
 	else if(Tab[2].What==2)
 		Cap=MetaCapacity;
-	return(Choquet+Tab[2].Sim*Cap);
+	return(Choquet+(Tab[2].Sim-Tab[1].Sim)*Cap);
 }
 
 
@@ -431,11 +432,7 @@ double GGenericSims::SimilarityProduct(void)
 
 	// Makes the product of the similarity (a null similarity is replaced by Factor).
 	for(int i=0;i<3;i++,ptr++)
-	{
-		if((*ptr)<=GetNullValue())
-			(*ptr)=Factor;
-		Sim+=log10(*ptr);
-	}
+		Sim+=log10(*ptr+Factor);
 	return(pow(10,Sim-3.0*log10(NbComps)));
 }
 
@@ -512,6 +509,7 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 			sim=SimilarityChoquet();
 			break;
 	}
+//	cout<<"\t->\t"<<sim<<endl;
 	return(sim);
 }
 
