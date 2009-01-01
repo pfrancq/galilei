@@ -43,6 +43,7 @@ qcreatedatabase.ui
 kviewdicts.ui
 kprgconsole.ui
 #qchooseparent.ui
+qdebuginfo.ui
 )
 
 

@@ -292,7 +292,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 		{
 			// Must be a normal document
 			GSubject* Subject=Subjects->GetNode(parent);
-			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI(),cNoRef,0,DefaultMIME,cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,0,0);
+			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI()(),cNoRef,Lang,DefaultMIME,cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,0,0);
 			GALILEIApp->GetSession()->InsertDoc(doc);
 			if(Subject)
 				Subject->Insert(doc);

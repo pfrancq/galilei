@@ -11,6 +11,7 @@
 		<Action name="programConsole"/>
 		<Action name="runProgram"/>
 		<Action name="sessionStats"/>
+		<Action name="sessionDebug"/>
 		<separator/>
 		<Action name="createDatabase"/>
 		<Action name="importDocs"/>
@@ -25,6 +26,7 @@
 		<Action name="docsClear"/>
 		<Separator/>
 		<Action name="showDocs"/>
+		<Action name="exportDocs"/>
 		<separator/>
 		<Action name="docsAnalyse"/>		
 		<Action name="postDocsAnalyse"/>

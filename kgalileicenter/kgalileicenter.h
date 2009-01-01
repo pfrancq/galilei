@@ -195,6 +195,11 @@ private slots:
 	void sessionCompute(void);
 
 	/**
+	 * Ask for a given debugging information.
+	 */
+	void sessionDebug(void);
+
+	/**
 	 * Show a program console.
 	 */
 	void programConsole(void);
@@ -250,6 +255,11 @@ private slots:
 	 * Show the documents.
 	 */
 	void showDocs(void);
+
+	/**
+	 * Export the documents.
+	 */
+	void exportDocs(void);
 
 	/**
 	 * Show a document.

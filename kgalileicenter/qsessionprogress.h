@@ -168,11 +168,12 @@ class QImportDocs : public QSessionThread
 	GFilterManager* FilterManager;
 	int CurrentDocId;
 	GSubjects* Subjects;
+	GLang* Lang;
 
 public:
-	QImportDocs(const RString& dir,int depth,const RString& parent,const RString& mime)
+	QImportDocs(const RString& dir,int depth,const RString& parent,const RString& mime,GLang* lang)
 		: Dir(dir),Depth(depth), Parent(parent),DefaultMIME(mime),
-		  FilterManager(0),CurrentDocId(0)
+		  FilterManager(0),CurrentDocId(0), Lang(lang)
 	{}
 	virtual void DoIt(void);
 private:

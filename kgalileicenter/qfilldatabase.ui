@@ -6,19 +6,19 @@
     <x>0</x>
     <y>0</y>
     <width>343</width>
-    <height>234</height>
+    <height>269</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
    <item>
     <widget class="QGroupBox" name="groupBox2" >
      <property name="title" >
       <string>Documents</string>
      </property>
-     <layout class="QVBoxLayout" >
+     <layout class="QVBoxLayout" name="verticalLayout" >
       <item>
        <layout class="QHBoxLayout" name="_2" >
         <item>
@@ -61,6 +61,20 @@
            <string>text/xml</string>
           </property>
          </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout" >
+        <item>
+         <widget class="QCheckBox" name="FixLanguage" >
+          <property name="text" >
+           <string>Fix the language</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="Language" />
         </item>
        </layout>
       </item>
@@ -186,12 +200,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>60</x>
-     <y>203</y>
+     <x>74</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel" >
-     <x>177</x>
-     <y>205</y>
+     <x>248</x>
+     <y>254</y>
     </hint>
    </hints>
   </connection>
@@ -202,12 +216,28 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>87</x>
-     <y>205</y>
+     <x>101</x>
+     <y>251</y>
     </hint>
     <hint type="destinationlabel" >
-     <x>271</x>
-     <y>212</y>
+     <x>328</x>
+     <y>253</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>FixLanguage</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Language</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>19</x>
+     <y>128</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>213</x>
+     <y>129</y>
     </hint>
    </hints>
   </connection>

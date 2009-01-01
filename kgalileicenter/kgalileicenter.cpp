@@ -41,6 +41,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <rqt.h>
+#include <glang.h>
 #include <gmetaengine.h>
 using namespace R;
 using namespace GALILEI;
@@ -76,6 +77,7 @@ using namespace GALILEI;
 #include <kviewprofile.h>
 #include <kviewdicts.h>
 #include <ui_qcreatedatabase.h>
+#include <ui_qdebuginfo.h>
 #include <kprgconsole.h>
 
 
@@ -131,19 +133,21 @@ void KGALILEICenter::initActions(void)
 	aSessionConnect=addAction("&Connect","sessionConnect",SLOT(sessionConnect()),"network-connect");
 	Actions.insert(Actions.size(),addAction("&Disconnect","sessionDisconnect",SLOT(sessionDisconnect()),"network-disconnect"));
 	Actions.insert(Actions.size(),addAction("Compute &Session","sessionCompute",SLOT(sessionCompute()),"system-run"));
-	addAction("&Konsole","programConsole",SLOT(programConsole()),"terminal","Ctrl+K");
+	addAction("&Console","programConsole",SLOT(programConsole()),"terminal","Ctrl+K");
 	addAction("Create &MySQL Database","createDatabase",SLOT(createDatabase()));
 	Actions.insert(Actions.size(),addAction("Import Documents","importDocs",SLOT(importDocs()),"tab-new"));
 	Actions.insert(Actions.size(),addAction("&Run Program","runProgram",SLOT(runProgram()),"fork","Ctrl+R"));
 	Actions.insert(Actions.size(),addAction("&Statistics","sessionStats",SLOT(sessionStats()),"view-statistics"));
+	Actions.insert(Actions.size(),addAction("&Debug Information","sessionDebug",SLOT(sessionDebug()),"help"));
 	addAction("E&xit","sessionQuit",SLOT(sessionQuit()),"window-close","Ctrl+Q");
 
 	// Menu "Knowledge"
-	Actions.insert(Actions.size(),addAction("See &Dictionnaries","showDicts",SLOT(showDicts())));
+	Actions.insert(Actions.size(),addAction("See &Dictionaries","showDicts",SLOT(showDicts())));
 
 	// Menu "Document"
 	Actions.insert(Actions.size(),addAction("&Force Re-computing Documents","docsClear",SLOT(docsClear())));
 	Actions.insert(Actions.size(),addAction("Show &Documents","showDocs",SLOT(showDocs()),"text-xml"));
+	Actions.insert(Actions.size(),addAction("Export Documents Description","exportDocs",SLOT(exportDocs())));
 	Actions.insert(Actions.size(),addAction("Load and Analyze a Document","docAnalyse",SLOT(docAnalyse())));
 	Actions.insert(Actions.size(),addAction("&Analyze Documents","docsAnalyse",SLOT(docsAnalyse()),"kfind"));
 	Actions.insert(Actions.size(),addAction("Execute &Post-Documents Methods","postDocsAnalyse",SLOT(postDocsAnalyse())));
@@ -161,9 +165,9 @@ void KGALILEICenter::initActions(void)
 	// Menu "Users"
 	Actions.insert(Actions.size(),addAction("&Force Re-computing profiles","profilesClear",SLOT(profilesClear())));
 	Actions.insert(Actions.size(),addAction("&Show Users","showUsers",SLOT(showUsers()),"meeting-attending"));
-	Actions.insert(Actions.size(),addAction("&Calc Profiles","profilesCalc",SLOT(profilesCalc()),"media-playback-start"));
+	Actions.insert(Actions.size(),addAction("&Compute Profiles","profilesCalc",SLOT(profilesCalc()),"media-playback-start"));
 	Actions.insert(Actions.size(),addAction("Execute &Post-Profiles Methods","postProfilesCalc",SLOT(postProfilesCalc())));
-	Actions.insert(Actions.size(),addAction("Calc &Profile","profileCalc",SLOT(profileCalc())));
+	Actions.insert(Actions.size(),addAction("Compute &Profile","profileCalc",SLOT(profileCalc())));
 
 	// Menu "Communities"
 	Actions.insert(Actions.size(),addAction("&Force Re-computing Communities","communitiesClear",SLOT(communitiesClear())));
@@ -349,6 +353,23 @@ void KGALILEICenter::sessionCompute(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenter::sessionDebug(void)
+{
+	KDialog dlg(this);
+	dlg.setCaption("Choose debug information");
+	Ui_QDebugInfo Ui;
+	QWidget* widget=new QWidget(&dlg);
+	Ui.setupUi(widget);
+	dlg.setMainWidget(widget);
+	RCursor<GDebugObject> Objs(Doc->GetDebugObjects());
+	for(Objs.Start();!Objs.End();Objs.Next())
+		Ui.Object->addItem(ToQString(Objs()->GetName()));
+	if(dlg.exec())
+		Doc->DebugInfo(FromQString(Ui.Object->currentText()),FromQString(Ui.Info->text()));
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenter::programConsole(void)
 {
 	KPrgConsole* ptr(new KPrgConsole());
@@ -396,18 +417,38 @@ void KGALILEICenter::createDatabase(void)
 
 
 //-----------------------------------------------------------------------------
+class cLang
+{
+public:
+	QString Name;
+	GLang* Lang;
+
+	cLang(const QString& name,GLang* lang) : Name(name), Lang(lang) {}
+	int Compare(const cLang& lang) const {return(Name.compare(lang.Name));}
+	int Compare(const QString& lang) const {return(Name.compare(lang));}
+};
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenter::importDocs(void)
 {
 	QFillDatabase dlg(this);
 	dlg.KUDirectory->setMode(KFile::Directory);
 
+	// Set the language parameters
+	RContainer<cLang,true,true> theLangs(20);
+	dlg.Language->setEnabled(false);
+	RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
+	for(Langs.Start();!Langs.End();Langs.Next())
+	{
+		theLangs.InsertPtr(new cLang(ToQString(Langs()->GetName()),Langs()));
+		dlg.Language->addItem(ToQString(Langs()->GetName()));
+	}
+
 	if(dlg.exec())
 	{
-		RString catDirectory  = FromQString(dlg.KUDirectory->url().url());
-		int depth = dlg.Depth->value();
-		RString parentName = FromQString(dlg.ParentName->text());
-
-		// if the database name field is empty -> ERROR
+		RString catDirectory(FromQString(dlg.KUDirectory->url().url()));
+		RString parentName(FromQString(dlg.ParentName->text()));
 		if(catDirectory.IsEmpty())
 		{
 			KMessageBox::error(this,"You must specify a directory containing all the categories! ");
@@ -418,9 +459,11 @@ void KGALILEICenter::importDocs(void)
 			KMessageBox::error(this,"You must insert a NAME for the parent or unchecked the \"Has Parent\" option! ");
 			return;
 		}
-
+		GLang* Lang(0);
+		if(dlg.FixLanguage->isChecked())
+			Lang=theLangs.GetPtr(dlg.Language->currentText())->Lang;
 		QSessionProgressDlg Dlg(this,"Fill Database");
-		Dlg.Run(new QImportDocs(catDirectory,depth,parentName,FromQString(dlg.DefaultMIMEType->text())));
+		Dlg.Run(new QImportDocs(catDirectory,dlg.Depth->value(),parentName,FromQString(dlg.DefaultMIMEType->text()),Lang));
 	}
 }
 
@@ -523,6 +566,51 @@ void KGALILEICenter::showDocs(void)
 	ptr->Set(QGObjectsList::Docs);
 	ptr->adjustSize();
 	ptr->show();
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::exportDocs(void)
+{
+	QString file(KFileDialog::getSaveFileName(KUrl(),"*.*",this,"Choose file where to export the files descriptions"));
+	if(!file.isEmpty())
+	{
+		RTextFile Export(FromQString(file),"utf-8");
+		Export.Open(RIO::Create);
+		Export<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
+		Export<<"<!DOCTYPE documents>"<<endl;
+		Export<<"<documents>"<<endl;
+		RCursor<GDoc> Docs(Doc->GetDocs());
+		for(Docs.Start();!Docs.End();Docs.Next())
+		{
+			Export<<"\t<document id=\""+RString::Number(Docs()->GetId())+"\" url=\""+Docs()->GetURL()()+"\">"<<endl;
+			R::RCursor<GWeightInfo> Infos(Docs()->GetInfos());
+			GConceptType* type(0);
+			double norm(0.0),max(0.0);
+			for(Infos.Start();!Infos.End();Infos.Next())
+			{
+				if(type!=Infos()->GetType())
+				{
+					if(type)
+						Export<<"\t\t\t<norm>"<<RString::Number(sqrt(norm))<<"</norm>"<<endl<<"\t\t</vector>"<<endl;
+					type=Infos()->GetType();
+					norm=0.0;
+					max=Docs()->GetMaxAbsWeight(type);
+					Export<<"\t\t<vector type=\""<<type->GetName()<<"\">"<<endl;
+				}
+				Export<<"\t\t\t"<<"\t"<<RString::Number(Infos()->GetId())<<"\t";
+				double w(Infos()->GetWeight());
+				double tfidf(Infos()->GetConcept()->GetType()->GetIF(Infos()->GetConcept()->GetId(),otDoc)*w/max);
+				Export<<RString::Number(w)<<"\t"<<RString::Number(tfidf);
+				norm+=tfidf*tfidf;
+				Export<<endl;
+			}
+			if(type)
+				Export<<"\t\t\t<norm>"<<RString::Number(sqrt(norm))<<"</norm>"<<endl<<"\t\t</vector>"<<endl;
+			Export<<"\t</document>"<<endl;
+		}
+		Export<<"</documents>"<<endl;
+	}
 }
 
 

@@ -128,7 +128,7 @@ KViewDoc::KViewDoc(GDoc* doc)
 
 //-----------------------------------------------------------------------------
 KViewDoc::KViewDoc(const RURI& file,const RString& mime)
-	: QMdiSubWindow(), Ui_KViewDoc(), Document(new GDoc(file,file,cNoRef,0,mime,cNoRef,RDate::Null,RDate(),RDate::Null,0,0)), XML(0), bDelDoc(true)
+	: QMdiSubWindow(), Ui_KViewDoc(), Document(new GDoc(file,file(),cNoRef,0,mime,cNoRef,RDate::Null,RDate(),RDate::Null,0,0)), XML(0), bDelDoc(true)
 {
 	setUp();
 }
