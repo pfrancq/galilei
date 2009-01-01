@@ -89,7 +89,7 @@ GFilterPDF::GFilterPDF(GFactoryFilter* fac)
 
 
 //------------------------------------------------------------------------------
-void GFilterPDF::Analyze(const RURI&,const RString& file,const RString& docxml)
+void GFilterPDF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 {
 	RXMLTag* part;
 	RXMLTag* tag;
@@ -104,10 +104,10 @@ void GFilterPDF::Analyze(const RURI&,const RString& file,const RString& docxml)
 
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
-	Doc->AddIdentifier(Doc->GetURL());
+	Doc->AddIdentifier(Doc->GetURL()());
 
 	// parse args
-	fileName = new GString(Doc->GetFile());
+	fileName = new GString(Doc->GetFile()());
 
 	// read config file
 	globalParams = new GlobalParams("");

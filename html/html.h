@@ -39,6 +39,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilter.h>
+#include <rhtmlfile.h>
 
 
 //-----------------------------------------------------------------------------
@@ -48,7 +49,7 @@
 * @author Pascal Francq
 * @short HTML's Filter.
 */
-class GFilterHTML: public GALILEI::GFilter
+class GFilterHTML: public GALILEI::GFilter, R::RHTMLFile
 {
 public:
 
@@ -65,7 +66,7 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const R::RURI& uri,const R::RString& file,const R::RString& docxml);
+	virtual void Analyze(const R::RURI& uri,const R::RURI& file,const R::RURI& docxml);
 
 	/**
 	* Create the parameters.

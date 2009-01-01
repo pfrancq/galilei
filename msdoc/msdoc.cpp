@@ -199,7 +199,7 @@ void GFilterMSDoc::WriteParagraph(RString par)
 
 
 //------------------------------------------------------------------------------
-void GFilterMSDoc::Analyze(const RURI&,const RString& file,const RString& docxml)
+void GFilterMSDoc::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 {
 	//RXMLTag* tag;
 	RString *fileName;
@@ -216,14 +216,14 @@ void GFilterMSDoc::Analyze(const RURI&,const RString& file,const RString& docxml
 	FieldType=0;
 
 	// Create the metaData tag and the first information
-	Doc->AddIdentifier(Doc->GetURL());
+	Doc->AddIdentifier(Doc->GetURL()());
 
 
 	// get fileName
-	fileName = new RString(file);
+	fileName = new RString(file());
 
 	// Init Parser
-	Parser = wvWare::ParserFactory::createParser(file);
+	Parser = wvWare::ParserFactory::createParser(file());
 	TableHandler = new  wvWare::TableHandler();
 
 	if(Parser)  // I in case of major ERROR -> Unsupported format

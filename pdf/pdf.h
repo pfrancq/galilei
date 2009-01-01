@@ -6,7 +6,7 @@
 
 	A PDF filter - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2001-2003 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -82,7 +82,7 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const R::RURI& uri,const R::RString& file,const R::RString& docxml);
+	virtual void Analyze(const R::RURI& uri,const R::RURI& file,const R::RURI& docxml);
 
 protected:
 

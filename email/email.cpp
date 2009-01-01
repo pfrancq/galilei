@@ -205,7 +205,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 
 
 //-----------------------------------------------------------------------------
-void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml)
+void GFilterEMail::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 {
 	RXMLTag* part;
 	RXMLTag* tag;
@@ -223,7 +223,7 @@ void GFilterEMail::Analyze(const RURI&,const RString& file,const RString& docxml
 
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
-	Doc->AddIdentifier(Doc->GetURL());
+	Doc->AddIdentifier(Doc->GetURL()());
 
 	// Email have at the beginning information on each line.
 	Header=true;        // There headers to read.

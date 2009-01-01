@@ -178,7 +178,7 @@ void GFilterPS::StrToBuffer(const char* str)
 
 
 //------------------------------------------------------------------------------
-void GFilterPS::Analyze(const RURI&,const RString& file,const RString& docxml)
+void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 {
 	RXMLTag* part;
 	RXMLTag* tag;
@@ -194,7 +194,7 @@ void GFilterPS::Analyze(const RURI&,const RString& file,const RString& docxml)
 
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
-	Doc->AddIdentifier(Doc->GetURL());
+	Doc->AddIdentifier(Doc->GetURL()());
 
 
 	// Analyse Doc->GetFile()
@@ -218,7 +218,7 @@ void GFilterPS::Analyze(const RURI&,const RString& file,const RString& docxml)
 			(debugfilter ? "" : "-q"),
 			rotate_path,
 			ocr_path,
-			Doc->GetFile().Latin1()
+			Doc->GetFile()().Latin1()
 			);
 	if (debugfilter)
 		cerr<<gs_cmdline<<endl;

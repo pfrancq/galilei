@@ -1,7 +1,7 @@
 PROJECT(html)
 INCLUDE_DIRECTORIES(.)
 
-SET(SRC html.cpp ghtmlconverter.cpp)
+SET(SRC html.cpp)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 

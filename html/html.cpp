@@ -31,8 +31,12 @@
 
 
 //------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <memory>
+
+
+//------------------------------------------------------------------------------
 // include files for R
-#include <ghtmlconverter.h>
 #include <rxmlfile.h>
 
 
@@ -55,27 +59,27 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GFilterHTML::GFilterHTML(GFactoryFilter* fac)
-	: GFilter(fac)
+	: GFilter(fac), R::RHTMLFile()
 {
 	AddMIME("text/html");
+	Doc=0;
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterHTML::Analyze(const RURI&,const RString& file,const RString& docxml)
+void GFilterHTML::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 {
-	Doc=new GDocXML(docxml,file);
-
-	//Convert html file to docxml structure
-	GHTMLConverter Src(this,file,Doc);
-	Src.Open(RIO::Read);
-
-	Doc->AddIdentifier(file);
-
-	// Save the structure and delete everything
-	RXMLFile Out(docxml,Doc);
-	Out.Open(RIO::Create);
-	delete Doc;
+	try
+	{
+		RXMLStruct Doc;
+		Open(file,&Doc,RIO::Read,"iso-8859-1");
+		RXMLFile Out(docxml,&Doc);
+		Out.Open(RIO::Create);
+	}
+	catch(RIOException& e)
+	{
+		throw GException(e.GetMsg());
+	}
 }
 
 

@@ -60,11 +60,11 @@ class GFilterEMail;
  */
 class EMailCmd
 {
-protected:	
+protected:
 	RString Cmd;
 	GFilterEMail* Filter;
 public:
-	
+
 	EMailCmd(GFilterEMail* filter,const RString& cmd) : Cmd(cmd),Filter(filter) {}
 	int Compare(const EMailCmd& cmd) const {return(Cmd.Compare(cmd.Cmd));}
 	int Compare(const EMailCmd* cmd) const {return(Cmd.Compare(cmd->Cmd));}
@@ -93,7 +93,7 @@ class GFilterEMail : public GFilter
 	 * All avalaible commands.
 	 */
 	RContainer<EMailCmd,true,true> Cmds;
-	
+
 public:
 
 	/**
@@ -127,7 +127,7 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const RURI& uri,const RString& file,const RString& docxml);	
+	virtual void Analyze(const RURI& uri,const RURI& file,const RURI& docxml);
 
 	/**
 	* Create the parameters.

@@ -342,7 +342,7 @@ void GFilterRTF::FindBlock(RString str,bool text)
 
 
 //------------------------------------------------------------------------------
-void GFilterRTF::Analyze(const RURI&,const RString& file,const RString& docxml)
+void GFilterRTF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 {
 	RXMLTag* part;
 	bool Stop;
@@ -359,7 +359,7 @@ void GFilterRTF::Analyze(const RURI&,const RString& file,const RString& docxml)
 
 	// Create the metaData tag and the first information
 	part=Doc->GetMetaData();
-	Doc->AddIdentifier(Doc->GetURL());
+	Doc->AddIdentifier(Doc->GetURL()());
 
 	//Treat Content
 	part=Doc->GetContent();
