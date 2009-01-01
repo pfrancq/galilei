@@ -460,27 +460,40 @@ void GSession::AddDebugObject(const GDebugObject* debug)
 //------------------------------------------------------------------------------
 void GSession::RemoveDebugObject(const GDebugObject* debug)
 {
-	DebugObjs.DeletePtr(debug);
+	DebugObjs.DeletePtr(*debug);
 }
 
 
 //------------------------------------------------------------------------------
-RString GSession::GetDebugInfo(const RString& name,const RString& info)
+RCursor<GDebugObject> GSession::GetDebugObjects(void) const
 {
-	GDebugObject* obj=DebugObjs.GetPtr(name);
-	if(!obj)
-		throw GException("No debugging object called '"+name+"'");
-	return(obj->GetDebugInfo(info));
+	return(RCursor<GDebugObject>(DebugObjs));
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::PutDebugInfo(RTextFile& file,const RString& name,const RString& info)
+void GSession::SetActiveDebugObject(const R::RString& name,bool active)
 {
 	GDebugObject* obj=DebugObjs.GetPtr(name);
 	if(!obj)
 		throw GException("No debugging object called '"+name+"'");
-	obj->PutDebugInfo(file,info);
+	if(active)
+		obj->Debug=Data->Debug;
+	else
+		obj->Debug=0;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::DebugInfo(const RString& name,const RString& info)
+{
+	GDebugObject* obj=DebugObjs.GetPtr(name);
+	if(!obj)
+		throw GException("No debugging object called '"+name+"'");
+	RDebug* old(obj->Debug);
+	obj->Debug=Data->Debug;
+	obj->DebugInfo(info);
+	obj->Debug=old;
 }
 
 
@@ -1022,7 +1035,7 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 		}
 		// If a log file specified -> write to it and it is OK
 		// If no log file specified -> Propagate error
-		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()+"("+RString::Number(Docs()->GetId())+"):")
+		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()()+"("+RString::Number(Docs()->GetId())+"):")
 	}
 
 	// Launch post doc methods
@@ -1053,10 +1066,11 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	bool Native;
 	bool Save=(Data->SaveResults&&(doc->GetId()!=cNoRef));
 	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml,Native);
-	if(uri.IsEmpty())
+	if(uri().IsEmpty())
 		return;
 
      // Analyze document -> Is something goes wrong -> It failed
+	bool DelRef(doc->IsDefined());
 	method->Analyze(doc,uri,Native);
 
 	// Save the description and the structure
@@ -1067,7 +1081,7 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	}
 
 	// Set the information to the document
-	doc->Update(method->Lang,method->Infos,method->Struct,ram||(!Save));
+	doc->Update(method->Lang,method->Infos,method->Struct,ram||(!Save),DelRef);
 
 	// Save if necessary
 	if(Save)
@@ -1085,7 +1099,7 @@ bool GSession::GetDocXML(GDoc* doc,R::RXMLStruct* xml,bool& native)
 	RIO::RSmartTempFile docxml;
 	xml->Clear();
 	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml,native);
-	if(uri.IsEmpty())
+	if(uri().IsEmpty())
 		return(false);
 	RXMLFile XML(uri,xml);
 	XML.SetInvalidXMLCodes(true);

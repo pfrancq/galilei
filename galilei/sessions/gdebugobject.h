@@ -37,7 +37,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rtextfile.h>
+#include <rdebug.h>
 
 
 //-----------------------------------------------------------------------------
@@ -52,7 +52,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
  * Each object that should provide some debugging information must inherit this
- * class and rergister itself to the session. Each such object must have an
+ * class and register itself to the session. Each such object must have an
  * unique name.
  * @author Pascal Francq
  * @short Debugging Object
@@ -60,14 +60,19 @@ namespace GALILEI{
 class GDebugObject
 {
 protected:
-	
+
 	/**
 	 * Name of the object.
 	 */
 	R::RString Name;
-	
+
+	/**
+	 * File where the information should be store.
+	 */
+	R::RDebug* Debug;
+
 public:
-	
+
 	/**
 	 * Constructor.
 	 * @param name           Name of the object.
@@ -80,45 +85,41 @@ public:
 	 * @see R::RContainer.
 	 */
 	int Compare(const GDebugObject& obj) const;
-	
-	/**
-	 * Compare an object with another one.
-	 * @param obj            Object.
-	 * @see R::RContainer.
-	 */
-	int Compare(const GDebugObject* obj) const;
-	
+
 	/**
 	* Compare an object with a name.
 	* @param name            Name used.
 	* @see R::RContainer.
 	*/
 	int Compare(const R::RString& name) const;
-	
+
 	/**
 	* Get the name.
 	*/
-	R::RString GetName(void) const {return(Name);}
-	
+	inline R::RString GetName(void) const {return(Name);}
+
 	/**
-	 * Build some debugging information as a string. A string is given as
-	 * parameter to allow the building of several outputs.
+	 * @return Pointer to the output where the debugging information should be
+	 * stored. If null, no information should be build for the object.
+	 * @see GSession::SetActiveDebugObjects(const R::RString&,bool)
+	 */
+	inline R::RDebug* GetDebug(void) const {return(Debug);}
+
+	/**
+	 * Build some debugging information and put the results in the debugging
+	 * files of GALILEI. A string is given as parameter to allow the building
+	 * of several outputs.
+	 * @remark GetDebug() can be used since it status is managed by GSession.
 	 * @param info           Description of the information needed.
 	 */
-	virtual R::RString GetDebugInfo(const R::RString& info);
-	
+	virtual void DebugInfo(const R::RString& info);
+
 	/**
-	 * Put debugging information in a text file. This method calls the
-	 * CreateInfo method.
-	 * @param file           RTextFile where to write.
-	 * @param info           Description of the information needed.
-	 */
-	void PutDebugInfo(R::RTextFile& file,const R::RString& info);
-	
-	/**
-	 * Destructor.
+	 * Destruct the debug object.
 	 */
 	virtual ~GDebugObject(void);
+
+	friend class GSession;
 };
 
 

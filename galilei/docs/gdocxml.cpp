@@ -35,6 +35,7 @@
 #include <gdocxml.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
@@ -45,7 +46,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocXML::GDocXML(RString url,RString filename)
+GDocXML::GDocXML(const RURI& url,const RURI& filename)
 	: RXMLStruct(), URL(url), FileName(filename)
 {
 	InitDocXML();
@@ -70,14 +71,14 @@ void GDocXML::InitDocXML(void)
 
 
 //------------------------------------------------------------------------------
-RString GDocXML::GetURL(void) const
+RURI GDocXML::GetURL(void) const
 {
 	return(URL);
 }
 
 
 //------------------------------------------------------------------------------
-RString GDocXML::GetFile(void) const
+RURI GDocXML::GetFile(void) const
 {
 	return(FileName);
 }

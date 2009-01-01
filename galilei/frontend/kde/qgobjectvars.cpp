@@ -69,7 +69,7 @@ void QGObjectVars::Set(GDoc* doc)
 	if(!doc) return;
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->clear();
 	AddVar("Identifier",doc->GetId());
-	AddVar("URL",doc->GetURL());
+	AddVar("URL",doc->GetURL()());
 	AddVar("Name",doc->GetName());
 	AddVar("MIME",doc->GetMIMEType());
 	AddVar("Language",doc->GetLang());

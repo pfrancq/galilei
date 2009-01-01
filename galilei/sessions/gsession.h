@@ -175,20 +175,23 @@ private:
 public:
 
 	/**
+	 * @return a cursor on all debug objects.
+	 */
+	R::RCursor<GDebugObject> GetDebugObjects(void) const;
+
+	/**
+	 * Set if a particular debug object should be activated.
+	 * @param name
+	 * @param active
+	 */
+	void SetActiveDebugObject(const R::RString& name,bool active);
+
+	/**
 	 * Build some debugging information concerning an object with a given name.
 	 * @param name           Name of the object.
 	 * @param info           Description of the information needed.
 	 */
-	virtual R::RString GetDebugInfo(const R::RString& name,const R::RString& info);
-
-	/**
-	 * Put debugging information concerning an object with a given name in a
-	 * text file.
-	 * @param file           RTextFile where to write.
-	 * @param name           Name of the object.
-	 * @param info           Description of the information needed.
-	 */
-	void PutDebugInfo(R::RTextFile& file,const R::RString& name,const R::RString& info);
+	virtual void DebugInfo(const R::RString& name,const R::RString& info);
 
 	/**
 	* Set The Current RandomSeed.

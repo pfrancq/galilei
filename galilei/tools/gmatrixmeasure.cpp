@@ -52,6 +52,7 @@
 #include <ggroup.h>
 #include <ggalileiapp.h>
 #include <gcommunity.h>
+#include <gtopic.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -833,7 +834,7 @@ void GMatrixMeasure::UpdateFile(void)
 {
 	MeasureRec Value;
 	size_t i,j;
-	void* obj1;
+	void* obj1(0);
 
 	// Go trough the lines first
 	i=0; j=1;  // First element is (1,1)
@@ -1013,6 +1014,19 @@ void GMatrixMeasure::Event(GCommunity* community, tEvent event)
 			UpdateElement(community,event,true);
 		if(Cols==otCommunity)
 			UpdateElement(community,event,false);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GMatrixMeasure::Event(GTopic* topic, tEvent event)
+{
+	if(InMemory||InFile)
+	{
+		if(Lines==otTopic)
+			UpdateElement(topic,event,true);
+		if(Cols==otTopic)
+			UpdateElement(topic,event,false);
 	}
 }
 

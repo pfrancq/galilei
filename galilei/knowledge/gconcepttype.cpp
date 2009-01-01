@@ -123,29 +123,40 @@ void GConceptType::Load(void) const
 
 
 //------------------------------------------------------------------------------
-RString GConceptType::GetDebugInfo(const RString& info)
+void GConceptType::DebugInfo(const RString& info)
 {
 	// Look what to do
 	bool Idf=(info.FindStr("idf")!=-1);
 	bool Ipf=(info.FindStr("ipf")!=-1);
-	bool Igf=(info.FindStr("igf")!=-1);
+	bool Icf=(info.FindStr("igf")!=-1);
 	bool Itf=(info.FindStr("itf")!=-1);
-	if((!Idf)&&(!Ipf)&&(!Igf))
-		return(RString::Null);
+	if((!Idf)&&(!Ipf)&&(!Icf)&&(!Itf))
+		return;
 
 	Load(); // Load the concepts if necessary
 
-	RString str;
+	RString str("id\tname                            ");
 	GConcept** ptr;
 	size_t i;
+	GetDebug()->BeginTag("conceptType","name=\""+Name+"\"");
+	if(Idf)
+		str+="\tidf";
+	if(Ipf)
+		str+="\tipf";
+	if(Icf)
+		str+="\ticf";
+	if(Itf)
+		str+="\titf";
+	GetDebug()->PrintComment(str);
 	for(i=MaxId+1,ptr=Direct;--i;ptr++)
 	{
 		if(!(*ptr))
 			continue;
 
 		// Suppose we reserved 32 characters for names
+		str=RString::Number((*ptr)->GetId());
 		RString name=(*ptr)->GetName();
-		str+=name;
+		str+="\t"+name;
 		if(name.GetLen()<32)
 		{
 			for(size_t j=32-name.GetLen()+1;--j;)
@@ -155,13 +166,13 @@ RString GConceptType::GetDebugInfo(const RString& info)
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otDoc));
 		if(Ipf)
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otProfile));
-		if(Igf)
+		if(Icf)
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otCommunity));
 		if(Itf)
 			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otTopic));
-		str+="\n";
+		GetDebug()->PrintComment(str);
 	}
-	return(str);
+	GetDebug()->EndTag("conceptType");
 }
 
 

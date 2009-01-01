@@ -119,28 +119,28 @@ protected:
 public:
 
 	/**
-	* Analyse a block of text and create a list of tags 'docxml:sentence'.
+	* Analyze a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
 	R::RXMLTag* AnalyzeBlock(char* block,R::RXMLTag* attach);
 
 	/**
-	* Analyse a block of text and create a list of tags 'docxml:sentence'.
+	* Analyze a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
 	R::RXMLTag* AnalyzeBlock(R::RChar* block,R::RXMLTag* attach);
 
 	/**
-	* Analyse a block of text and create a list of tags 'docxml:sentence'.
+	* Analyze a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
 	* @param attach         XML tag where the sentences must be attach.
 	*/
 	R::RXMLTag* AnalyzeBlock(const R::RString& block,R::RXMLTag* attach);
 
 	/**
-	* Analyse a list of keywords sepating by a single character.
+	* Analyze a list of keywords separating by a single character.
 	* @param list           List of keywords.
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
@@ -148,7 +148,7 @@ public:
 	R::RXMLTag* AnalyzeKeywords(char* list,char sep,R::RXMLTag* attach);
 
 	/**
-	* Analyse a list of keywords sepating by a single character.
+	* Analyze a list of keywords separating by a single character.
 	* @param list           List of keywords.
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
@@ -156,7 +156,7 @@ public:
 	R::RXMLTag* AnalyzeKeywords(R::RChar* list,R::RChar sep,R::RXMLTag* attach);
 
 	/**
-	* Analyse a list of keywords sepating by a single character.
+	* Analyze a list of keywords separating by a single character.
 	* @param list           List of keywords.
 	* @param sep            Separator to use.
 	* @param attach         XML tag where the sentences must be attach.
@@ -171,10 +171,10 @@ public:
 	* @param file            Local file to analyze.
 	* @param docxml          Local file that will containing the DocXML.
 	*/
-	virtual void Analyze(const R::RURI& uri,const R::RString& file,const R::RString& docxml)=0;
+	virtual void Analyze(const R::RURI& uri,const R::RURI& file,const R::RURI& docxml)=0;
 
 	/**
-	* Destructor of the filter.
+	* Destruct the filter.
 	*/
 	virtual ~GFilter(void);
 };

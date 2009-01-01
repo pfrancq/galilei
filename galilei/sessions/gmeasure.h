@@ -210,9 +210,18 @@ public:
 	/**
 	 * Get a pointer to the configuration structure for a specific plug-in.
 	 * @param name           Name of the plug-in.
+	 * @param type           Type of the factory
+	 * @return Pointer to R::RConfig.
+	 */
+	virtual R::RConfig* GetConfig(const R::RString& name,const R::RString&) const {return(GetFactory(name,false));}
+
+	/**
+	 * Get a pointer to the configuration structure for a specific plug-in.
+	 * @param name           Name of the plug-in.
 	 * @return Pointer to R::RConfig.
 	 */
 	virtual R::RConfig* GetConfig(const R::RString& name) const {return(GetFactory(name));}
+
 };
 
 

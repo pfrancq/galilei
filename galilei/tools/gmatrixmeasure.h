@@ -489,11 +489,21 @@ private:
 public:
 
 	/**
+	* A specific language has changed.
+	*/
+	virtual void Event(GLang*, tEvent) {}
+
+	/**
 	* A specific document has changed.
 	* @param doc             Document.
 	* @param event           Event.
 	*/
 	virtual void Event(GDoc* doc, tEvent event);
+
+	/**
+	* A specific user has changed.
+	*/
+	virtual void Event(GUser*, tEvent) {}
 
 	/**
 	* A specific profile has changed.
@@ -508,6 +518,13 @@ public:
 	* @param event           Event.
 	*/
 	virtual void Event(GCommunity* community, tEvent event);
+
+	/**
+	* A specific topic has changed.
+	* @param topic           Topic.
+	* @param event           Event.
+	*/
+	virtual void Event(GTopic* topic, tEvent event);
 
 	/**
 	* Create the parameters.

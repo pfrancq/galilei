@@ -74,7 +74,7 @@ public :
 	GLink(const GDoc* doc);
 
 	/**
-	* Compare two links by comparing the identificators of the corresponding
+	* Compare two links by comparing the identifiers of the corresponding
 	* documents.
 	* @see R::RContainer
 	* @param link           Pointer to a link.
@@ -83,7 +83,7 @@ public :
 	int Compare(const GLink* link) const;
 
 	/**
-	* Compare two links by comparing the identificators of the corresponding
+	* Compare two links by comparing the identifiers of the corresponding
 	* documents.
 	* @see R::RContainer
 	* @param link           Link.
@@ -92,9 +92,9 @@ public :
 	int Compare(const GLink& link) const;
 
 	/**
-	* Compare an identificator of the document of a link with an identificator.
+	* Compare an identifier of the document of a link with an identifier.
 	* @see R::RContainer
-	* @param id             Identificator.
+	* @param id             Identifier.
 	* @return int
 	*/
 	int Compare(const size_t id) const;
@@ -118,18 +118,18 @@ public :
 	int Compare(const GDoc& doc) const;
 
 	/**
-	* Increase the number of occurences of the link.
+	* Increase the number of occurrences of the link.
 	*/
 	void IncOccurs(void) {Occurs++;}
 
 	/**
-	* Set the number of occurence of the link.
-	* @param nbO            The Number of occurences.
+	* Set the number of occurrence of the link.
+	* @param nbO            The Number of occurrences.
 	*/
 	void SetOccurs(size_t nbO) {Occurs = nbO;}
 
 	/**
-	* Get the number of occurences of the link.
+	* Get the number of occurrences of the link.
 	*/
 	size_t GetOccurs(void) const {return(Occurs);}
 
@@ -137,7 +137,7 @@ public :
 	* Get the url of the document corresponding to the link.
 	* @return RString representing the URL.
 	*/
-	R::RString GetURL(void) const {return(DocTO->GetURL());}
+	R::RURI GetURL(void) const {return(DocTO->GetURL());}
 
 	/**
 	* Get the document pointed by the link.
@@ -146,12 +146,12 @@ public :
 	const GDoc* GetDoc(void) const {return(DocTO);}
 
 	/**
-	* Get the identificator of the document pointed by the link.
+	* Get the identifier of the document pointed by the link.
 	*/
 	size_t GetId(void) const {return DocTO->GetId();}
 
 	/**
-	* Destructor of a link.
+	* Destruct of a link.
 	*/
 	virtual ~GLink(void);
 };

@@ -215,11 +215,11 @@ public:
 	void Load(void) const;
 
 	/**
-	 * Build some debugging information as a string. A string is given as
-	 * parameter to allow the building of several outputs.
-	 * @param info           Description of the information needed.
+	 * Build some debugging information.
+	 * @param info           Description of the information needed ("idf","itf"
+	 *                       ,"ipf" or "icf" are allowed).
 	 */
-	virtual R::RString GetDebugInfo(const R::RString& info);
+	virtual void DebugInfo(const R::RString& info);
 
 	/**
 	* Clear the dictionary.

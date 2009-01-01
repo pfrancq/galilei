@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GDebugObject.h
+	GTest.cpp
 
-	Object that can provide debugging information - Implementation.
+	Internal Testing - Implementation.
 
-	Copyright 2007 by the Université Libre de Bruxelles.
+	Copyright 2008 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,52 +31,48 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gdebugobject.h>
+// include files for GALILEI Project
+#include <gtest.h>
 #include <gsession.h>
-#include <gslot.h>
-using namespace R;
+#include <gconcepttype.h>
+#include <glang.h>
 using namespace GALILEI;
+using namespace R;
 using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-// class GDebugObject
+// class GTest
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDebugObject::GDebugObject(const RString& name)
-	: Name(name), Debug(0)
+GTest::GTest(const RString& file)
+	: Results(file)
 {
-	GSession::AddDebugObject(this);
+	Results.Open(RIO::Create);
 }
 
 
 //------------------------------------------------------------------------------
-int GDebugObject::Compare(const GDebugObject& obj) const
+void GTest::Run(void)
 {
-	return(Name.Compare(obj.Name));
+	GSession* Session(GSession::Get());
+
+	// Compute idf, ipf, icf and itf factors
+	RCursor<GConceptType> Types(Session->GetConceptTypes());
+	for(Types.Start();!Types.End();Types.Next())
+	{
+		GLang* Lang(Types()->GetLang());
+		if(Lang&&(Lang->GetStop()==Types()))
+			continue;
+	}
 }
 
 
 //------------------------------------------------------------------------------
-int GDebugObject::Compare(const R::RString& name) const
+GTest::~GTest(void)
 {
-	return(Name.Compare(name));
-}
-
-
-//------------------------------------------------------------------------------
-void GDebugObject::DebugInfo(const RString&)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GDebugObject::~GDebugObject(void)
-{
-	GSession::RemoveDebugObject(this);
 }

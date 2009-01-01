@@ -63,12 +63,12 @@ class GDocXML : public R::RXMLStruct
 	/**
 	* URL of the document.
 	*/
-	R::RString URL;
+	R::RURI URL;
 
 	/**
-	* File containg the document (must be local).
+	* File containing the document (must be local).
 	*/
-	R::RString FileName;
+	R::RURI FileName;
 
 	/**
 	* Tag holding the metadata.
@@ -91,7 +91,7 @@ public:
 	* @param url            URL of the document.
 	* @param filename       File of the document.
 	*/
-	GDocXML(R::RString url,R::RString filename);
+	GDocXML(const R::RURI& url,const R::RURI& filename);
 
 	/**
 	* Initialize the DocXML structure with the default tags and entities.
@@ -102,13 +102,13 @@ public:
 	* Get the URL.
 	* @returns Pointer to a C string.
 	*/
-	R::RString GetURL(void) const;
+	R::RURI GetURL(void) const;
 
 	/**
 	* Get the File Name.
 	* @returns Pointer to a C string.
 	*/
-	R::RString GetFile(void) const;
+	R::RURI GetFile(void) const;
 
 	/**
 	* Get an access to the metadata of the document.
@@ -132,7 +132,7 @@ public:
 	R::RXMLTag* GetLinks(void);
 
 	/**
-	* Add a tag metaData to the links stucture.
+	* Add a tag metaData to the links structure.
 	* @returns a pointer to the tag containing the metaData of the link.
 	*/
 	R::RXMLTag* AddLink(void);

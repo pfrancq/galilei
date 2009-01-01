@@ -388,9 +388,11 @@ public:
 	* @param lang            Pointer to the language.
 	* @param infos           Pointer to the information.
 	* @param ram             Must the information be maintained is RAM.
+	* @param delref          Delete the references (must be set to true if the
+	*                        document has already a description).
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram);
+	void Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref);
 
 	/**
 	 * Assign a structure to the current document.

@@ -116,7 +116,7 @@ void QGWeightInfos::Set(GWeightInfos* obj)
 		QString w(QString::number(Words()->GetWeight()));
 		while(w.length()<10)
 			w.prepend(' ');
-		new QTreeWidgetItem(Infos,QStringList()<<name<<type<<w);
+		new QTreeWidgetItem(Infos,QStringList()<<name<<type<<w<<QString::number(Words()->GetConcept()->GetId()));
 	}
 	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->sortItems(0,Qt::AscendingOrder);
 }

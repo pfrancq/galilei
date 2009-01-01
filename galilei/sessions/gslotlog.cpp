@@ -60,7 +60,7 @@ GSlotLog::GSlotLog(const char* name)
 //------------------------------------------------------------------------------
 void GSlotLog::NextDoc(const GDoc* doc)
 {
-	WriteLog("Analyze "+doc->GetURL()+" ("+RString::Number(doc->GetId())+")");
+	WriteLog("Analyze "+doc->GetURL()()+" ("+RString::Number(doc->GetId())+")");
 }
 
 

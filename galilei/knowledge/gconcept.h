@@ -218,7 +218,7 @@ public:
 	size_t DecRef(tObjType ObjType);
 
 	/**
-	* Get the number of references on this concpet for a given object type.
+	* Get the number of references on this concept for a given object type.
 	* @param ObjType        Type of the reference.
 	* @returns size_t.
 	*/

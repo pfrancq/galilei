@@ -564,7 +564,7 @@ void GFilterManager::FindMIMEType(void)
 	// Goes through all defined MIME types
 	RCursor<GMIMEExt> Cur(Exts);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		if(fnmatch(Cur()->Ext,Doc->GetURL(),0)!=FNM_NOMATCH)
+		if(fnmatch(Cur()->Ext,Doc->GetURL()(),0)!=FNM_NOMATCH)
 		{
 			Doc->SetMIMEType(Cur()->Name);
 			return;
@@ -589,7 +589,7 @@ bool GFilterManager::IsValidContent(const R::RString& MIME)
 RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml,bool& native)
 {
 	RIO::RSmartTempFile DwnFile;      // Temporary file containing the downloaded file  (if necessary).
-	RString NonXMLFile;               // Non XML-File file.
+	RURI NonXMLFile;               // Non XML-File file.
 
 	// Init Part;
 	Doc=doc;
@@ -628,7 +628,7 @@ RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml,bool& nat
 
 	// If no MIME type -> Exception
 	if(doc->GetMIMEType().IsEmpty())
-		throw GException("Cannot find MIME type for "+doc->GetURL());
+		throw GException("Cannot find MIME type for "+doc->GetURL()());
 
 	// If no filter -> Exception
 	if(!Filter)

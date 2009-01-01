@@ -406,10 +406,10 @@ R::RCursor<GLink> GDoc::GetLinks(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram)
+void GDoc::Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref)
 {
 	// If document had a language -> remove its references
-	if(Lang&&(Id!=cNoRef))
+	if(delref&&Lang&&(Id!=cNoRef))
 		DelRefs(otDoc);
 
 	// Assign language and information
