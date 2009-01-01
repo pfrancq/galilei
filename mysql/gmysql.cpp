@@ -1051,7 +1051,7 @@ void GStorageMySQL::AssignId(GDoc* doc)
 	{
 		// Reserved an identifier
 		RString sSql="INSERT INTO htmls(html,title,langid) "
-		             "VALUES("+RQuery::SQLValue(doc->GetURL())+","+RQuery::SQLValue(doc->GetName())+","+Lang(doc->GetLang())+")";
+		             "VALUES("+RQuery::SQLValue(doc->GetURL()())+","+RQuery::SQLValue(doc->GetName())+","+Lang(doc->GetLang())+")";
 		auto_ptr<RQuery> Insert(Db->Query(sSql));
 
 		// Get the id and assign it to the document
@@ -1319,7 +1319,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 		{
 			// Insert the document
 			sSql="INSERT INTO htmls(htmlid,html,title,mimetype,langid,updated,calculated,topicid,attached,nbnodes,nbcontent) "
-			     "VALUES("+Num(doc->GetId())+","+RQuery::SQLValue(doc->GetURL())+","+
+			     "VALUES("+Num(doc->GetId())+","+RQuery::SQLValue(doc->GetURL()())+","+
 			     RQuery::SQLValue(doc->GetName())+","+f+","+l+","+RQuery::SQLValue(doc->GetUpdated())+
 			     ","+RQuery::SQLValue(doc->GetComputed())+","+Num(doc->GetGroupId())+","+RQuery::SQLValue(doc->GetAttached())+
 			     ","+Num(doc->GetNbRecs())+","+Num(doc->GetNbLCs())+")";
@@ -1328,7 +1328,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 		else
 		{
 			// Update the document
-			sSql="UPDATE htmls SET html="+RQuery::SQLValue(doc->GetURL())+",title="+
+			sSql="UPDATE htmls SET html="+RQuery::SQLValue(doc->GetURL()())+",title="+
 			     RQuery::SQLValue(doc->GetName())+",mimetype="+f+",langid="+l+
 			     ",updated="+RQuery::SQLValue(doc->GetUpdated())+",calculated="+RQuery::SQLValue(doc->GetComputed())+
 			     ",topicid="+Num(doc->GetGroupId())+",attached="+RQuery::SQLValue(doc->GetAttached())+
