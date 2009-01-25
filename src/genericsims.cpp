@@ -80,23 +80,20 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 	#endif
 	double norm1(0.0);
 	double norm2(0.0);
-	double w1,w2,iff1,iff2;
-	double TotalRef(static_cast<double>(Owner->GetRef(Type)));
+	double w1,w2;
 	double num(0.0);
 
 	LastNbComps=0;
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
-		iff1=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj1()->GetId(),Type)));
-		w1=Obj1()->GetWeight()*iff1;
+		w1=Obj1()->GetWeight()*Owner->GetIF(Obj1()->GetConcept());
 		#if NormalizeVector
 			if(Obj1()->GetWeight()>max1)
 				max1=Obj1()->GetWeight();
 		#endif
 		while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())<(*Obj1())))
 		{
-			iff2=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj2()->GetId(),Type)));
-			w2=Obj2()->GetWeight()*iff2;
+			w2=Obj2()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
 			#if NormalizeVector
 				if(Obj2()->GetWeight()>max2)
 					max2=Obj2()->GetWeight();
@@ -107,7 +104,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 		if((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())==(*Obj1())))
 		{
 			// Obj2()==Obj1() -> iff2=iff1
-			w2=Obj2()->GetWeight()*iff1;
+			w2=Obj2()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
 			#if NormalizeVector
 				if(Obj2()->GetWeight()>max2)
 					max2=Obj2()->GetWeight();
@@ -125,8 +122,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 	}
 	while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type))
 	{
-		iff2=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj2()->GetId(),Type)));
-		w2=Obj2()->GetWeight()*iff2;
+		w2=Obj2()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
 		#if NormalizeVector
 			if(w2>max2)
 				max2=w2;
@@ -161,15 +157,13 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 //------------------------------------------------------------------------------
 double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 {
-	double w1,w2,iff1,iff2;
-	double TotalRef(static_cast<double>(Owner->GetRef(Type)));
+	double w1,w2;
 	double num(0.0);
 	double den(0.0);
 
 	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
 	{
-		iff1=log10(TotalRef/static_cast<double>(Owner->GetRef(Obj1()->GetId(),Type)));
-		w1=Obj1()->GetWeight()*iff1;
+		w1=Obj1()->GetWeight()*Owner->GetIF(Obj1()->GetConcept());
 
 		GXMLIndex* c1=dynamic_cast<GXMLIndex*>(Obj1()->GetConcept());
 		RCursor<GWeightInfo> Cur(Obj2);
@@ -181,8 +175,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 			if(c1->GetXMLTag()!=c2->GetXMLTag())
 				continue;
 
-			iff2=log10(TotalRef/static_cast<double>(Owner->GetRef(Cur()->GetId(),Type)));
-			w2=Cur()->GetWeight()*iff2;
+			w2=Cur()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
 			den+=fabs(w1*w2);
 			if((w1<0.0)&&(w2<0.0))
 				continue;
@@ -515,7 +508,7 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 
 
 //------------------------------------------------------------------------------
-size_t GGenericSims::GetRef(GConceptType* type)
+/*size_t GGenericSims::GetRef(GConceptType* type)
 {
 	size_t nb(type->GetRef(GetLinesType()));
 	if(GetLinesType()!=GetColsType())
@@ -530,6 +523,16 @@ size_t GGenericSims::GetRef(size_t id,GConceptType* type)
 	if(GetLinesType()!=GetColsType())
 		nb+=type->GetRef(id,GetColsType());
 	return(nb);
+}
+*/
+
+//------------------------------------------------------------------------------
+double GGenericSims::GetIF(GConcept* concept)
+{
+	double IF(concept->GetIF(GetLinesType()));
+	if(GetLinesType()!=GetColsType())
+		IF+=concept->GetIF(GetColsType());
+	return(IF);
 }
 
 

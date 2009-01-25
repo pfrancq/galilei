@@ -227,7 +227,7 @@ public:
 	 * @param type           Concept type.
 	 * @return Number of references.
 	 */
-	size_t GetRef(GConceptType* type);
+	//size_t GetRef(GConceptType* type);
 
 	/**
 	 * Get the total number of references of a given concept in a given space.
@@ -237,7 +237,15 @@ public:
 	 * @param type           Concept type.
 	 * @return Number of references.
 	 */
-	size_t GetRef(size_t id,GConceptType* type);
+	//size_t GetRef(size_t id,GConceptType* type);
+
+	/**
+	 * @return the inverse factor of a given concept. If the elements in the
+	 * line and in the columns are different, the sum of both types are
+	 * computed.
+	 * @param concept        Concept.
+	 */
+	double GetIF(GConcept* concept);
 
 	/**
 	 * Compute the similarity in each space and put them in 'SimSpaces'.
