@@ -31,15 +31,15 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R
+// include files for R/GALILEI
 #include <rcursor.h>
-
-
-//------------------------------------------------------------------------------
-// include files for GALILEI
 #include <gcommunity.h>
 #include <ggalileiapp.h>
 #include <gstatscalc.h>
+using namespace R;
+using namespace GALILEI;
+using namespace std;
+
 
 //------------------------------------------------------------------------------
 /**
@@ -101,7 +101,7 @@ protected:
 	/**
 	* Statistics Output file.
 	*/
-	R::RTextFile* File;
+	R::RTextFile* Results;
 
 	/**
 	*/
@@ -187,7 +187,7 @@ public:
 //------------------------------------------------------------------------------
 template<class E1,class E2>
 	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,bool same,RTextFile* f)
-	: Session(ses), File(f), Centers(50), SameObjects(same)
+	: Session(ses), Results(f), Centers(50), SameObjects(same)
 {
 }
 
@@ -202,7 +202,7 @@ template<class E1,class E2>
 	double SimEExtra(0.0);        // Extra-similarity of the element
 	double MaxSimIntra(-2.0);     // Maximal intra-similarity
 	double tmp;
-	double LRie(0.0),LLocalRie,LFrac(0.0),LLocalFrac;
+	double LRie(0.0),LLocalRie(0.0),LFrac(0.0),LLocalFrac(0.0);
 	size_t nbIntra(0);            // Number of element Intra of the cluster
 	size_t nbExtra(0);            // Number of element Extra of the cluster
 	size_t nbEIntra;              // Number of element Intra of the element
@@ -355,7 +355,7 @@ template<class E1,class E2>
 	calc->AddTag(xml,Tag,"Overlap",LOverlap);
 
 	// File
-	if(File)
+	if(Results)
 	{
 		if(WriteTitle)
 		{
@@ -370,7 +370,7 @@ template<class E1,class E2>
 			RString n9("LocalFrac"); n9.SetLen(15," ");
 			RString n10("Overlap"); n10.SetLen(15," ");
 			RString n11("J"); n11.SetLen(15," ");
-			(*File)<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
+			(*Results)<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
 			WriteTitle=false;
 		}
 
@@ -385,7 +385,7 @@ template<class E1,class E2>
 		RString n9(RString::Number(LLocalFrac,"%.5E")); n9.SetLen(15," ");
 		RString n10(RString::Number(LOverlap,"%.5E")); n10.SetLen(15," ");
 		RString n11("------"); n11.SetLen(15," ");
-		(*File)<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
+		(*Results)<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
 	}
 
 	if(Tag->IsEmpty())
@@ -414,19 +414,19 @@ template<class E1,class E2>
 		calc->AddTag(xml,tag,"MinSim",minsim);
 		calc->AddTag(xml,tag,"AvgSim",avgsim);
 		calc->AddTag(xml,tag,"DevSim",devsim);
-		if(File)
+		if(Results)
 		{
 			RString n1(""); n1.SetLen(25," ");
 			RString n2("Min Sim"); n2.SetLen(15," ");
 			RString n3("Avg Sim"); n3.SetLen(15," ");
 			RString n4("Dev Sim"); n4.SetLen(15," ");
-			(*File)<<n1+n2+n3+n4<<endl;
+			(*Results)<<n1+n2+n3+n4<<endl;
 			n1="Global"; n1.SetLen(24," ");
 			n2=RString::Number(minsim,"%.5E"); n2.SetLen(15," ");
 			n3=RString::Number(avgsim,"%.5E"); n3.SetLen(15," ");
 			n4=RString::Number(devsim,"%.5E"); n4.SetLen(15," ");
-			(*File)<<n1+n2+n3+n4<<endl;
-			(*File)<<"--------------"<<endl;
+			(*Results)<<n1+n2+n3+n4<<endl;
+			(*Results)<<"--------------"<<endl;
 		}
 	}
 
@@ -488,7 +488,7 @@ template<class E1,class E2>
 		calc->AddTag(xml,tag,"Overlap",Overlap);
 		calc->AddTag(xml,tag,"J",J);
 
-		if(File)
+		if(Results)
 		{
 			RString n1("Global"); n1.SetLen(25," ");
 			RString n2("------"); n2.SetLen(15," ");
@@ -501,8 +501,8 @@ template<class E1,class E2>
 			RString n9(RString::Number(LocalFrac)); n9.SetLen(15," ");
 			RString n10(RString::Number(Overlap,"%.5E")); n10.SetLen(15," ");
 			RString n11(RString::Number(J,"%.5E")); n11.SetLen(15," ");
-			(*File)<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
-			(*File)<<"--------------"<<endl;
+			(*Results)<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
+			(*Results)<<"--------------"<<endl;
 		}
 	}
 }

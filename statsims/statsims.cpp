@@ -198,7 +198,7 @@ public:
 
 //------------------------------------------------------------------------------
 GStatsSims::GStatsSims(GFactoryStatsCalc* fac)
-	: GStatsCalc(fac), Details(0)
+	: GStatsCalc(fac), ResultsFile(0)
 {
 }
 
@@ -212,14 +212,18 @@ void GStatsSims::ApplyConfig(void)
 	Profiles=Factory->GetBool("Profiles");
 	SameDocProf=Factory->GetBool("SameDocProf");
 	GroupProf=Factory->GetBool("GroupProf");
-	File=Factory->GetBool("File");
-	RString OldName(Name);
-	Name=Factory->Get("Name");
-	if((OldName!=Name)&&Details)
+	SaveResults=Factory->GetBool("SaveResults");
+	RURI OldName(Results);
+	Results=Factory->Get("Results");
+	if((OldName!=Results)&&ResultsFile)
 	{
-		delete Details;
-		Details=0;
+		delete ResultsFile;
+		ResultsFile=0;
 	}
+	ExportDocsSims=Factory->GetBool("ExportDocsSims");
+	DocsSims=Factory->Get("DocsSims");
+	ExportDocsIncs=Factory->GetBool("ExportDocsIncs");
+	DocsIncs=Factory->Get("DocsIncs");
 }
 
 
@@ -238,6 +242,83 @@ void GStatsSims::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
+void GStatsSims::DoExportDocsSims(void)
+{
+	if(!ExportDocsSims)
+		return;
+
+	// Get the measure
+	GMeasure* Measure(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities"));
+	double tmp;
+	bool NewLine;
+	bool NewComma;
+
+	// Create the file
+	RTextFile Export(DocsSims);
+	Export.Open(RIO::Create);
+
+	// Save the sims
+	R::RCursor<GDoc> Objs1(Session->GetDocs());
+	R::RCursor<GDoc> Objs2(Session->GetDocs());
+	for(Objs1.Start(),NewLine=false;!Objs1.End();Objs1.Next())
+	{
+		if(NewLine)
+			Export<<endl;
+		for(Objs2.Start(),NewComma=false;!Objs2.End();Objs2.Next())
+		{
+			if(NewComma)
+				Export<<',';
+			if(Objs1()==Objs2())
+				Export<<"1.000000E+00";
+			else
+			{
+				Measure->Measure(0,Objs1()->GetId(),Objs2()->GetId(),&tmp);
+				Export<<tmp;
+			}
+			NewComma=true;
+		}
+		NewLine=true;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStatsSims::DoExportDocsIncs(void)
+{
+	if(!ExportDocsIncs)
+		return;
+
+	double tmp;
+	bool NewLine;
+	bool NewComma;
+
+	// Create the file
+	RTextFile Export(DocsIncs);
+	Export.Open(RIO::Create);
+
+	// Save the sims
+	R::RCursor<GDoc> Objs1(Session->GetDocs());
+	R::RCursor<GDoc> Objs2(Session->GetDocs());
+	for(Objs1.Start(),NewLine=false;!Objs1.End();Objs1.Next())
+	{
+		if(NewLine)
+			Export<<endl;
+		for(Objs2.Start(),NewComma=false;!Objs2.End();Objs2.Next())
+		{
+			if(NewComma)
+				Export<<',';
+			if(Objs1()==Objs2())
+				Export<<"1.000000E+00";
+			else
+				Export<<Objs1()->Inclusion(*Objs2(),otDoc);
+			NewComma=true;
+		}
+		NewLine=true;
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 {
 	RXMLTag* tag;
@@ -249,20 +330,20 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 	xml->AddTag(&res,tag);
 
 	// Create Details File if necessary
-	if(File)
+	if(SaveResults)
 	{
-		if(Details)
-			(*Details)<<endl<<"-----------------------------------------------------"<<endl<<endl;
+		if(ResultsFile)
+			(*ResultsFile)<<endl<<"-----------------------------------------------------"<<endl<<endl;
 		else
 		{
 			try
 			{
-				Details=new RTextFile(Name);
-				Details->Open(RIO::Create);
+				ResultsFile=new RTextFile(Results);
+				ResultsFile->Open(RIO::Create);
 			}
 			catch(...)
 			{
-				Details=0;
+				ResultsFile=0;
 			}
 		}
 	}
@@ -271,47 +352,51 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 	if(GroupDoc||GroupProf)
 		Session->BuildGroupsFromIdeal(otCommunity);
 
+	// Export matrices
+	DoExportDocsSims();
+	DoExportDocsIncs();
+
 	// Compute Statistics
 	if(Docs)
 	{
 		tag2=new RXMLTag("Documents");
 		xml->AddTag(tag,tag2);
-		GStatSimDocs Stat(Session,Details);
+		GStatSimDocs Stat(Session,ResultsFile);
 		Stat.Run(this,xml,tag2);
 	}
 	if(ProfDoc)
 	{
 		tag2=new RXMLTag("Documents-Profiles");
 		xml->AddTag(tag,tag2);
-		GStatSimDocProf Stat(Session,Details);
+		GStatSimDocProf Stat(Session,ResultsFile);
 		Stat.Run(this,xml,tag2);
 	}
 	if(GroupDoc)
 	{
 		tag2=new RXMLTag("Documents-Groups");
 		xml->AddTag(tag,tag2);
-		GStatSimDocGrp Stat(Session,Details);
+		GStatSimDocGrp Stat(Session,ResultsFile);
 		Stat.Run(this,xml,tag2);
 	}
 	if(Profiles)
 	{
 		tag2=new RXMLTag("Profiles");
 		xml->AddTag(tag,tag2);
-		GStatSimProfiles Stat(Session,Details);
+		GStatSimProfiles Stat(Session,ResultsFile);
 		Stat.Run(this,xml,tag2);
 	}
 	if(SameDocProf)
 	{
 		tag2=new RXMLTag("Profiles-Common-Documents");
 		xml->AddTag(tag,tag2);
-		GStatProfDoc Stat(Session,Details);
+		GStatProfDoc Stat(Session,ResultsFile);
 		Stat.Run(this,xml,tag2);
 	}
 	if(GroupProf)
 	{
 		tag2=new RXMLTag("Profiles-Groups");
 		xml->AddTag(tag,tag2);
-		GStatSimProfGrp Stat(Session,Details);
+		GStatSimProfGrp Stat(Session,ResultsFile);
 		Stat.Run(this,xml,tag2);
 	}
 }
@@ -326,8 +411,12 @@ void GStatsSims::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("Profiles",false));
 	params->InsertParam(new RParamValue("SameDocProf",false));
 	params->InsertParam(new RParamValue("GroupProf",false));
-	params->InsertParam(new RParamValue("File",false));
-	params->InsertParam(new RParamValue("Name",""));
+	params->InsertParam(new RParamValue("SaveResults",false));
+	params->InsertParam(new RParamValue("Results",""));
+	params->InsertParam(new RParamValue("ExportDocsSims",false));
+	params->InsertParam(new RParamValue("DocsSims",""));
+	params->InsertParam(new RParamValue("ExportDocsIncs",false));
+	params->InsertParam(new RParamValue("DocsIncs",""));
 }
 
 

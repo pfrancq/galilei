@@ -36,14 +36,13 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI
+// include files for R/GALILEI
+#include <ruri.h>
 #include <galilei.h>
 #include <gstatscalc.h>
-
-
-//-----------------------------------------------------------------------------
-namespace GALILEI{
-//-----------------------------------------------------------------------------
+using namespace R;
+using namespace GALILEI;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -86,14 +85,34 @@ class GStatsSims : public GStatsCalc
 	bool GroupProf;
 
 	/**
-	* Should the details of the computation be stored in a file.
+	* Should the results of the computation be stored in a file.
 	*/
-	bool File;
+	bool SaveResults;
 
 	/**
 	* Name of the file.
 	*/
-	R::RString Name;
+	RURI Results;
+
+	/**
+	 * Export the similarities between documents?
+	 */
+	bool ExportDocsSims;
+
+	/**
+	 * File to store the similarities between documents.
+	 */
+	RURI DocsSims;
+
+	/**
+	 * Export documents inclusions ?
+	 */
+	bool ExportDocsIncs;
+
+	/**
+	 * File to store the documents inclusions.
+	 */
+	RURI DocsIncs;
 
 	/**
 	*/
@@ -102,7 +121,7 @@ class GStatsSims : public GStatsCalc
 	/**
 	 * File containing the results.
 	 */
-	RTextFile* Details;
+	RTextFile* ResultsFile;
 
 public:
 
@@ -130,6 +149,16 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
+	 * Export the documents similarities in a file.
+	 */
+	void DoExportDocsSims(void);
+
+	/**
+	 * Export the documents inclusions in a file.
+	 */
+	void DoExportDocsIncs(void);
+
+	/**
 	* Compute the statistics.
 	* @param res             XML tag that will be hold the results.
 	*/
@@ -148,9 +177,6 @@ public:
 	*/
 	virtual ~GStatsSims(void);
 };
-
-
-}  //-------- End of namespace GALILEI ----------------------------------------
 
 
 //-----------------------------------------------------------------------------

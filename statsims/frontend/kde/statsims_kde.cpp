@@ -97,9 +97,15 @@ void Configure(GFactoryStatsCalc* params)
 	dlg.Profiles->setChecked(params->GetBool("Profiles"));
 	dlg.SameDocProf->setChecked(params->GetBool("SameDocProf"));
 	dlg.GroupProf->setChecked(params->GetBool("GroupProf"));
-	dlg.File->setChecked(params->GetBool("File"));
-	dlg.Name->setUrl(ToQString(params->Get("Name")));
-	dlg.Name->setEnabled(params->GetBool("File"));
+	dlg.SaveResults->setChecked(params->GetBool("SaveResults"));
+	dlg.Results->setUrl(ToQString(params->Get("Results")));
+	dlg.Results->setEnabled(dlg.SaveResults->isChecked());
+	dlg.ExportDocsSims->setChecked(params->GetBool("ExportDocsSims"));
+	dlg.DocsSims->setUrl(ToQString(params->Get("DocsSims")));
+	dlg.DocsSims->setEnabled(dlg.ExportDocsSims->isChecked());
+	dlg.ExportDocsIncs->setChecked(params->GetBool("ExportDocsIncs"));
+	dlg.DocsIncs->setUrl(ToQString(params->Get("DocsIncs")));
+	dlg.DocsIncs->setEnabled(dlg.ExportDocsIncs->isChecked());
 	if(dlg.exec())
 	{
 		params->SetBool("Docs",dlg.Docs->isChecked());
@@ -108,8 +114,12 @@ void Configure(GFactoryStatsCalc* params)
 		params->SetBool("Profiles",dlg.Profiles->isChecked());
 		params->SetBool("SameDocProf",dlg.SameDocProf->isChecked());
 		params->SetBool("GroupProf",dlg.GroupProf->isChecked());
-		params->SetBool("File",dlg.File->isChecked());
-		params->Set("Name",FromQString(dlg.Name->url().url()));
+		params->SetBool("SaveResults",dlg.SaveResults->isChecked());
+		params->Set("Results",FromQString(dlg.Results->url().url()));
+		params->SetBool("ExportDocsSims",dlg.ExportDocsSims->isChecked());
+		params->Set("DocsSims",FromQString(dlg.DocsSims->url().url()));
+		params->SetBool("ExportDocsIncs",dlg.ExportDocsIncs->isChecked());
+		params->Set("DocsIncs",FromQString(dlg.DocsIncs->url().url()));
  		params->Apply();
  	}
 }
