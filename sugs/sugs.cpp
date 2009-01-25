@@ -47,7 +47,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //include files for R
-#include <rdb.h>
+#include <rdbmysql.h>
 
 
 //------------------------------------------------------------------------------
@@ -92,13 +92,13 @@ void GComputeSubProfileSugsCmd::Run(GALILEI::GStorage* storage,const GALILEI::GS
 	try
 	{
 		Sql="DELETE FROM sugsbyprofiles WHERE profileid="+RString::Number(prof->GetId());
-		auto_ptr<RQuery> initsugs(storeMySQL->Query(Sql));
+		RQuery initsugs(storeMySQL,Sql);
 		Sql="INSERT INTO sugsbyprofiles(profileid,test,htmlid,rank) ";
 		Sql+="SELECT "+RString::Number(prof->GetId())+",'From other members',htmlid,htmlsbygroups.score FROM htmlsbygroups,subprofiles,profiles ";
 		Sql+="WHERE htmlsbygroups.groupid=profiles.groupid AND profiles.profileid="+RString::Number(prof->GetId())+" AND htmlid NOT IN ";
 		Sql+="(SELECT htmlid FROM htmlsbyprofiles WHERE profileid="+RString::Number(prof->GetId())+") ";
 		Sql+="ORDER BY htmlsbygroups.score LIMIT "+inst.GetAttrValue("NbSugs");
-		auto_ptr<RQuery> insertsugs(storeMySQL->Query(Sql));
+		RQuery insertsugs(storeMySQL,Sql);
 	}
 	catch(RException& e)
 	{
