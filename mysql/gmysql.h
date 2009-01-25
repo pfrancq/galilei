@@ -42,7 +42,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rdb.h>
+#include <rdbmysql.h>
 using namespace std;
 using namespace R;
 
@@ -64,9 +64,9 @@ using namespace GALILEI;
 class GStorageMySQL : public GStorage
 {
 	/**
-	* Database.
+	* MySQL Database.
 	*/
-	auto_ptr<R::RDb> Db;
+	RDbMySQL* Db;
 
 	/**
 	 * Host of the database.
