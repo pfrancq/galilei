@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Slots Part.
 
-	Copyright 2001-2008 by the Université Libre de Bruxelles.
+	Copyright 2001-2009 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -76,7 +76,7 @@ using namespace GALILEI;
 #include <kviewidealgroups.h>
 #include <kviewprofile.h>
 #include <kviewdicts.h>
-#include <ui_qcreatedatabase.h>
+#include <qcreatedatabase.h>
 #include <ui_qdebuginfo.h>
 #include <kprgconsole.h>
 
@@ -382,89 +382,14 @@ void KGALILEICenter::programConsole(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::createDatabase(void)
 {
-	KDialog dlg(this);
-	Ui_QCreateDatabase Ui;
-	QWidget* widget=new QWidget(&dlg);
-	Ui.setupUi(widget);
-	dlg.setMainWidget(widget);
-
-	if(!dlg.exec())
-		return;
-
-	try
-	{
-		QSessionProgressDlg d(this,"Create Database");
-		d.Run(new QCreateDB(FromQString(Ui.DbName->text()),FromQString(Ui.hostName->text()),
-			FromQString(Ui.userName->text()),FromQString(Ui.password->text()),FromQString(Ui.BasicURL->text())));
-	}
-	catch(GException& e)
-	{
-		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
-	}
-	catch(RException& e)
-	{
-		KMessageBox::error(this,e.GetMsg(),"R Exception");
-	}
-	catch(std::exception& e)
-	{
-		KMessageBox::error(this,e.what(),"std::exception");
-	}
-	catch(...)
-	{
-		KMessageBox::error(this,"Undefined Error");
-	}
+	QCreateDatabase(this).run();
 }
-
-
-//-----------------------------------------------------------------------------
-class cLang
-{
-public:
-	QString Name;
-	GLang* Lang;
-
-	cLang(const QString& name,GLang* lang) : Name(name), Lang(lang) {}
-	int Compare(const cLang& lang) const {return(Name.compare(lang.Name));}
-	int Compare(const QString& lang) const {return(Name.compare(lang));}
-};
 
 
 //-----------------------------------------------------------------------------
 void KGALILEICenter::importDocs(void)
 {
-	QFillDatabase dlg(this);
-	dlg.KUDirectory->setMode(KFile::Directory);
-
-	// Set the language parameters
-	RContainer<cLang,true,true> theLangs(20);
-	dlg.Language->setEnabled(false);
-	RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
-	for(Langs.Start();!Langs.End();Langs.Next())
-	{
-		theLangs.InsertPtr(new cLang(ToQString(Langs()->GetName()),Langs()));
-		dlg.Language->addItem(ToQString(Langs()->GetName()));
-	}
-
-	if(dlg.exec())
-	{
-		RString catDirectory(FromQString(dlg.KUDirectory->url().url()));
-		RString parentName(FromQString(dlg.ParentName->text()));
-		if(catDirectory.IsEmpty())
-		{
-			KMessageBox::error(this,"You must specify a directory containing all the categories! ");
-			return;
-		}
-		if((dlg.HasParent->isChecked())&& parentName.IsEmpty())
-		{
-			KMessageBox::error(this,"You must insert a NAME for the parent or unchecked the \"Has Parent\" option! ");
-			return;
-		}
-		GLang* Lang(0);
-		if(dlg.FixLanguage->isChecked())
-			Lang=theLangs.GetPtr(dlg.Language->currentText())->Lang;
-		QSessionProgressDlg Dlg(this,"Fill Database");
-		Dlg.Run(new QImportDocs(catDirectory,dlg.Depth->value(),parentName,FromQString(dlg.DefaultMIMEType->text()),Lang));
-	}
+	QFillDatabase(this).run();
 }
 
 

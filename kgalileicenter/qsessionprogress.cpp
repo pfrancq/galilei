@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session  - Implementation.
 
-	Copyright 2001-2008 by the Université Libre de Bruxelles.
+	Copyright 2001-2009 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -168,137 +168,6 @@ void QLoadSession::DoIt(void)
 		return;
 	Parent->setLabelText("Load Users/Profiles/Feedbacks ...");
 	GALILEIApp->GetSession()->LoadUsers();
-}
-
-
-//-----------------------------------------------------------------------------
-void QCreateDB::DoIt(void)
-{
-	// Create the database
-	Parent->setLabelText("Database structure created");
-	RDb::CreateMySQLDatabase(Host,User,Pass,Name);
-	auto_ptr<RDb> Db(RDb::Get(RDb::MySQL,Name,Host,User,Pass,"utf-8"));
-	if(GSession::Break())
-		return;
-
- 	// Construct tables
- 	Parent->setLabelText("Dump Database model");
- 	RunSQL(SchemaURL+"DbModel.sql",Db);
-	if(GSession::Break())
-		return;
-
- 	// Import stoplists
- 	RCursor<GLang> Langs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
- 	for(Langs.Start();!Langs.End();Langs.Next())
- 	{
- 		Parent->setLabelText(ToQString("Import stoplist for "+Langs()->GetName()));
- 		RString Stop=SchemaURL+"DbStopList_"+Langs()->GetCode()+".sql";
- 		try
- 		{
- 		//if(RFile::Exists(Stop))
- 				RunSQL(Stop,Db);
- 		}
- 		catch(...)
- 		{
- 		}
- 		if(GSession::Break())
- 			return;
- 	}
-}
-
-
-//-----------------------------------------------------------------------------
-void QCreateDB::RunSQL(const RURI& path,std::auto_ptr<RDb>& Db)
-{
-	RString sql("");
-	RString line("");
-	bool endFound=false;
-
- 	RTextFile file(path,"utf-8");
-	file.Open(RIO::Read);
-
-	while((!file.End())&&(!GSession::Break()))
-	{
-		line=file.GetLine();
-		if(line.IsEmpty() || line.FindStr("/*!")>=0 || line.FindStr("--")>=0 || line.Find('#')>=0)
-			continue;
-
-		endFound=false;
-		while(!file.End() && !endFound)
-		{
-			if(line.IsEmpty() || line.FindStr("--")>=0 || line.FindStr("--")>=0 || line.Find('#')>=0)
-			{
-				sql="";
-				endFound=true;
-				continue;
-			}
-			sql+=line;
-			if(line.Find(';')>=0)
-				endFound=true;
-			else
-				line=file.GetLine();
-		}
-		if(!sql.IsEmpty())
-		{
-			auto_ptr<RQuery> Sendquery(Db->Query(sql));
-		}
-
-		sql="";
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void QImportDocs::DoIt(void)
-{
-	FilterManager=GALILEIApp->GetManager<GFilterManager>("Filter");
-	Subjects=GALILEIApp->GetSession()->GetSubjects(true);
-	CurDepth=0;
-	ParseDir(Dir,Parent);
-	GALILEIApp->GetSession()->GetStorage()->SaveSubjects();
-}
-
-
-//-----------------------------------------------------------------------------
-void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
-{
-	// Go through the directory
-	CurDepth++;
-	RDir Dir(uri);
-	Dir.Open(RIO::Read);
-	RCursor<RFile> Files(Dir.GetEntries());
-	for(Files.Start();!Files.End();Files.Next())
-	{
-		// If directory -> go deep
-		if(dynamic_cast<RDir*>(Files()))
-		{
-			GSubject* Subject;
-			RString cat(Files()->GetFileName());
-
-			// Find parent topic
-			if(parent.IsEmpty())
-				Subject=Subjects->GetTop();
-			else
-			{
-				Subject=Subjects->GetNode(parent);
-				cat=parent+"/"+cat;
-			}
-
-			if(CurDepth<=Depth)
-				Subjects->InsertNode(Subject,new GSubject(Subjects->GetNbNodes(),cat,false));
-			ParseDir(Files()->GetURI(),cat);
-		}
-		else
-		{
-			// Must be a normal document
-			GSubject* Subject=Subjects->GetNode(parent);
-			GDoc* doc=new GDoc(Files()->GetURI(),Files()->GetURI()(),cNoRef,Lang,DefaultMIME,cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,0,0);
-			GALILEIApp->GetSession()->InsertDoc(doc);
-			if(Subject)
-				Subject->Insert(doc);
-		}
-	}
-	CurDepth--;
 }
 
 
@@ -476,12 +345,19 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 {
 	Running=true;
 	task->Set(this);
+	QEventLoop q;
+	setModal(true);
+	connect(this, SIGNAL(accepted()), &q, SLOT(quit()));
+	connect(this, SIGNAL(rejected()), &q, SLOT(quit()));
+	Ret=true;
+	show();
 	task->start();
-	const int res = KProgressDialog::exec();
+	q.exec();
 	if(GSession::Break())
 		GSession::ResetBreak();
 	delete task;
-	return(res);
+	//return(res);
+	return(Ret);
 }
 
 
@@ -517,12 +393,19 @@ void QSessionProgressDlg::NextChromosome(size_t id)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::reject(void)
 {
+	cout<<"reject"<<endl;
 	if(Running)
+	{
 		GSession::SetBreak();
+		Ret=false;
+	}
 	else
 	{
 		if(GSession::Break())
+		{
 			done(0);
+			Ret=false;
+		}
 		else
 			done(1);
 	}

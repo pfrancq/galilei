@@ -6,7 +6,7 @@
 
 	Main Window - Header.
 
-	Copyright 2001-2008 by the Université libre de Bruxelles.
+	Copyright 2001-2009 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).

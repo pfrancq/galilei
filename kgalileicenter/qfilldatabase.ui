@@ -5,14 +5,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>343</width>
-    <height>269</height>
+    <width>348</width>
+    <height>296</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_2" >
+  <layout class="QVBoxLayout" name="verticalLayout_3" >
    <item>
     <widget class="QGroupBox" name="groupBox2" >
      <property name="title" >
@@ -86,7 +86,14 @@
      <property name="title" >
       <string>Topics</string>
      </property>
-     <layout class="QVBoxLayout" name="_4" >
+     <layout class="QVBoxLayout" name="verticalLayout_2" >
+      <item>
+       <widget class="QCheckBox" name="Topics" >
+        <property name="text" >
+         <string>Documents are catogorized on a directory basis?</string>
+        </property>
+       </widget>
+      </item>
       <item>
        <layout class="QHBoxLayout" name="_5" >
         <item>
@@ -200,12 +207,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>74</x>
-     <y>251</y>
+     <x>88</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel" >
      <x>248</x>
-     <y>254</y>
+     <y>281</y>
     </hint>
    </hints>
   </connection>
@@ -216,12 +223,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel" >
-     <x>101</x>
-     <y>251</y>
+     <x>115</x>
+     <y>278</y>
     </hint>
     <hint type="destinationlabel" >
      <x>328</x>
-     <y>253</y>
+     <y>280</y>
     </hint>
    </hints>
   </connection>
@@ -238,6 +245,70 @@
     <hint type="destinationlabel" >
      <x>213</x>
      <y>129</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Topics</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>HasParent</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>188</x>
+     <y>200</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>56</x>
+     <y>267</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Topics</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ParentName</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>262</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>235</x>
+     <y>258</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Topics</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>ChooseBtn</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>285</x>
+     <y>197</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>288</x>
+     <y>263</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>Topics</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Depth</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>223</x>
+     <y>199</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>296</x>
+     <y>232</y>
     </hint>
    </hints>
   </connection>

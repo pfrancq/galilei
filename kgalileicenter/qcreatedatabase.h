@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	QFillDatabase.cpp
+	QCreateDatabase.cpp
 
-	Fill the database with a list of document - Header.
+	Create the database - Header.
 
-	Copyright 2008-2009 by the Université libre de Bruxelles.
+	Copyright 2009 by the Université libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -31,8 +31,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef QFillDatabaseH
-#define QFillDatabaseH
+#ifndef QCreateDatabaseH
+#define QCreateDatabaseH
 
 
 //------------------------------------------------------------------------------
@@ -42,48 +42,42 @@ using namespace R;
 
 
 //------------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <QtGui/QListWidgetItem>
-
-
-//------------------------------------------------------------------------------
 // include files for current project
-#include <ui_qfilldatabase.h>
+#include <ui_qcreatedatabase.h>
 
 
 //------------------------------------------------------------------------------
 /**
- * The QFillDatabase provides a class for importing a set of documents in the
- * current database. The documents may be categorized on a directory basis.
+ * The QCreateDatabase provides a class for create a MySQL database.
  * @author Pascal Francq
- * @short Fill Database
+ * @short Create Database
  */
-class QFillDatabase : private KDialog, private Ui_QFillDatabase
+class QCreateDatabase : private KDialog, private Ui_QCreateDatabase
 {
 	/**
-	 * Current language chosen.
+	 * Name of the database;
 	 */
-	GLang* Lang;
+	RString Name;
 
 	/**
-	 * Directory to import;
+	 * User;
 	 */
-	RString Dir;
+	RString User;
 
 	/**
-	 * Are the documents to import categorized.
+	 * Password.
 	 */
-	bool Categorized;
+	RString Pwd;
 
 	/**
-	 * Name of the parent;
+	 * Host
 	 */
-	RString Parent;
+	RString Host;
 
 	/**
-	 * Default MIME Type.
+	 * URL containing the SQL file which will create the database.
 	 */
-	RString DefaultMIME;
+	RString DbSchema;
 
 public:
 
@@ -91,36 +85,15 @@ public:
 	 * Constructor.
 	 * @param parent         Parent widget.
 	 */
-	QFillDatabase(QWidget* parent);
+	QCreateDatabase(QWidget* parent);
 
 	/**
 	 * Show the dialog box. If the user clicks on the 'OK' button, the database
-	 * is filled.
+	 * is created.
 	 */
 	void run(void);
 
-public slots:
-
-	/**
-	 * The parent has changed.
-	 * @param s              Index of the parent.
-	 */
-	void ChangeParent(int s);
-
-	/**
-	 * Insert a list of sub-subjects related to the one chosen as parent.
-	 * @param db             Database.
-	 * @param parentId       Identifier of the parent.
-	 * @param item           Item representing the parent.
-	 */
-	void InsertSubItem(RDb* db,int parentId,QListWidgetItem* item);
-
-	/**
-	 * Choose the name of the parent.
-	 */
-	void ChooseParentName(void);
-
-	friend class QImportDocs;
+	friend class QCreateDB;
 };
 
 

@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session - Header.
 
-	Copyright 2001-2008 by the Université Libre de Bruxelles.
+	Copyright 2001-2009 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -44,7 +44,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // forward class declaration for GALIEI
 #include <gslot.h>
-#include <rdb.h>
+#include <rdbmysql.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -119,65 +119,6 @@ class QLoadSession : public QSessionThread
 public:
 	QLoadSession(void);
 	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Create a new Database.
-* @param dbname         The name of the Db.
-* @param host           The host of the database.
-* @param user           The user of the database.
-* @param pass           The password of the database.
-* @param UseStopList    Specifies if the StopList must be dumped.
-* @param UseUsers       Specifies if the Users list must be dumped.
-*/
-class QCreateDB : public QSessionThread
-{
-	RString Name;
-	RString Host;
-	RString User;
-	RString Pass;
-	RString SchemaURL;
-
-public:
-	QCreateDB(RString name,RString host,RString user,RString pass,RString path)
-		: Name(name), Host(host), User(user),Pass(pass),SchemaURL(path+"/galilei/db/mysql/") {}
-	virtual void DoIt(void);
-	void RunSQL(const RURI& path,std::auto_ptr<RDb>& Db);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Fill a database Database.
-* @param dbname         The name of the Db.
-* @param host           The host of the database.
-* @param user           The user of the database.
-* @param pass           The password of the database.
-* @param UseStopList    Specifies if the StopList must be dumped.
-* @param UseUsers       Specifies if the Users list must be dumped.
-*/
-class QImportDocs : public QSessionThread
-{
-	RString Dir;
-	int Depth;
-	int CurDepth;
-	RString Parent;
-	RString DefaultMIME;
-	GFilterManager* FilterManager;
-	int CurrentDocId;
-	GSubjects* Subjects;
-	GLang* Lang;
-
-public:
-	QImportDocs(const RString& dir,int depth,const RString& parent,const RString& mime,GLang* lang)
-		: Dir(dir),Depth(depth), Parent(parent),DefaultMIME(mime),
-		  FilterManager(0),CurrentDocId(0), Lang(lang)
-	{}
-	virtual void DoIt(void);
-private:
-	void ParseDir(const RURI& uri,const RString& parent);
 };
 
 
@@ -406,6 +347,8 @@ public:
 */
 class QSessionProgressDlg : public KProgressDialog, public GSlot
 {
+	Q_OBJECT
+
 	/**
 	* Session.
 	*/
@@ -415,6 +358,11 @@ class QSessionProgressDlg : public KProgressDialog, public GSlot
 	* Is something running?
 	*/
 	bool Running;
+
+	/**
+	 * Return results.
+	 */
+	int Ret;
 
 public:
 

@@ -11,6 +11,7 @@ kviewdoc.cpp
 kviewmetaengine.cpp
 kviewprg.cpp
 qfilldatabase.cpp
+qcreatedatabase.cpp
 kviewstats.cpp
 kviewgroup.cpp
 kviewusers.cpp

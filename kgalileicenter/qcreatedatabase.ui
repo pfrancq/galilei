@@ -5,7 +5,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>363</width>
+    <width>529</width>
     <height>267</height>
    </rect>
   </property>
@@ -178,7 +178,7 @@
       <item>
        <widget class="QLabel" name="textLabel1" >
         <property name="text" >
-         <string>Basic URL</string>
+         <string>URL</string>
         </property>
         <property name="wordWrap" >
          <bool>false</bool>
@@ -186,17 +186,20 @@
        </widget>
       </item>
       <item>
-       <widget class="QLineEdit" name="BasicURL" >
-        <property name="text" >
-         <string>http://www.imrdp.org/galilei/schema</string>
-        </property>
-       </widget>
+       <widget class="KUrlRequester" name="URL" />
       </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KUrlRequester</class>
+   <extends>QFrame</extends>
+   <header>kurlrequester.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
