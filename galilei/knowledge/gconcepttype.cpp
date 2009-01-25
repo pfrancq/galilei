@@ -57,7 +57,7 @@ using namespace R;
 GConceptType::GConceptType(char id,GSession* session,const RString& name,const RString& desc,GLang* lang,size_t s,size_t s2)
 	: GDebugObject(name), RDblHashContainer<GConcept,true>(27,27,s2+(s2/4),s2/4), Id(id), Session(session),
 	  Description(desc), Lang(lang), Direct(0), MaxId(s+s/4), UsedId(0),
-	  Loaded(false), NbRefDocs(0), NbRefProfiles(0), NbRefGroups(0), NbRefTopics(0)
+	  Loaded(false), NbRefDocs(0), NbRefProfiles(0), NbRefCommunities(0), NbRefTopics(0)
 {
 	if((!Id)&&(GSession::Get()))
 		GSession::Get()->AssignId(this);
@@ -67,11 +67,11 @@ GConceptType::GConceptType(char id,GSession* session,const RString& name,const R
 
 
 //------------------------------------------------------------------------------
-void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics)
+void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics)
 {
 	NbRefDocs=refdocs;
 	NbRefProfiles=refprofiles;
-	NbRefGroups=refgroups;
+	NbRefCommunities=refcommunities;
 	NbRefTopics=reftopics;
 }
 
@@ -289,7 +289,7 @@ GConcept* GConceptType::RenameConcept(GConcept* concept,const R::RString& name)
 		// Both concept must be merge and the old one deleted
 		ptr->NbRefDocs+=concept->NbRefDocs;
 		ptr->NbRefProfiles+=concept->NbRefProfiles;
-		ptr->NbRefGroups+=concept->NbRefGroups;
+		ptr->NbRefCommunities+=concept->NbRefCommunities;
 		ptr->NbRefTopics+=concept->NbRefTopics;
 		DeleteConcept(concept);
 		return(ptr);
@@ -382,8 +382,8 @@ void GConceptType::IncRef(tObjType ObjType)
 			nb=NbRefProfiles;
 			break;
 		case otCommunity:
-			NbRefGroups++;
-			nb=NbRefGroups;
+			NbRefCommunities++;
+			nb=NbRefCommunities;
 			break;
 		case otTopic:
 			NbRefTopics++;
@@ -419,10 +419,10 @@ void GConceptType::DecRef(tObjType ObjType)
 			nb=NbRefProfiles;
 			break;
 		case otCommunity:
-			if(!NbRefGroups)
-				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for groups");
-			NbRefGroups--;
-			nb=NbRefGroups;
+			if(!NbRefCommunities)
+				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for communities");
+			NbRefCommunities--;
+			nb=NbRefCommunities;
 			break;
 		case otTopic:
 			if(!NbRefTopics)
@@ -451,13 +451,13 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 			return(NbRefProfiles);
 			break;
 		case otCommunity:
-			return(NbRefGroups);
+			return(NbRefCommunities);
 			break;
 		case otTopic:
 			return(NbRefTopics);
 			break;
 		default:
-			return(NbRefDocs+NbRefProfiles+NbRefGroups);
+			return(NbRefDocs+NbRefProfiles+NbRefCommunities);
 			break;
 	}
 	return(0);
@@ -488,7 +488,7 @@ void GConceptType::ClearRef(tObjType ObjType)
 			NbRefProfiles=0;
 			break;
 		case otCommunity:
-			NbRefGroups=0;
+			NbRefCommunities=0;
 			break;
 		case otTopic:
 			NbRefTopics=0;
@@ -496,7 +496,7 @@ void GConceptType::ClearRef(tObjType ObjType)
 		default:
 			NbRefDocs=0;
 			NbRefProfiles=0;
-			NbRefGroups=0;
+			NbRefCommunities=0;
 			NbRefTopics=0;
 			break;
 	}

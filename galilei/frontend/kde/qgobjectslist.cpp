@@ -693,6 +693,7 @@ void QGObjectsList::HandleItem(QTreeWidgetItem* item,int)
 	}
 }
 
+
 //------------------------------------------------------------------------------
 QGObjectsList::~QGObjectsList(void)
 {

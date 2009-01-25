@@ -116,9 +116,9 @@ class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcep
 	size_t NbRefProfiles;
 
 	/**
-	* Number of references in groups.
+	* Number of references in communities.
 	*/
-	size_t NbRefGroups;
+	size_t NbRefCommunities;
 
 	/**
 	 * Number of references in topics.
@@ -144,10 +144,10 @@ public:
 	* connecting to and disconnecting from a session.
 	* @param refdocs         Number of documents referenced.
 	* @param refprofiles     Number of profiles referenced.
-	* @param refgroups       Number of groups referenced.
+	* @param refcommunities  Number of communities referenced.
 	* @param reftopics       Number of topics referenced.
 	*/
-	void SetReferences(size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics);
+	void SetReferences(size_t refdocs,size_t refprofiles,size_t refcommunitie,size_t reftopics);
 
 	/**
 	* Compare two concepts types.

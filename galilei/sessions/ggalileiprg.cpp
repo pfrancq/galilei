@@ -31,6 +31,10 @@
 
 
 //------------------------------------------------------------------------------
+#define SHOWINST 0
+
+
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rprgvarinst.h>
 #include <rprgvar.h>
@@ -522,8 +526,22 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+inline void ShowInst(RPrgFunc* func,RInterpreter* prg,RContainer<RPrgVar,true,false>& args)
+{
+	#if SHOWINST
+		cout<<func->GetName()<<" ";
+		RCursor<RPrgVar> A(args);
+		for(A.Start();!A.End();A.Next())
+			cout<<A()->GetValue(prg)<<" ";
+		cout<<endl;
+	#endif
+}
+
+
+//------------------------------------------------------------------------------
 void GSetRandI::Run(RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -538,13 +556,13 @@ void GSetRandI::Run(RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,RContainer
 	{
 		Owner->Session->SetCurrentRandom(Rand);
 	}
-
 }
 
 
 //------------------------------------------------------------------------------
 void GOutputI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstGALILEIApp* Owner=dynamic_cast<GInstGALILEIApp*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -568,6 +586,7 @@ void GOutputI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCont
 //------------------------------------------------------------------------------
 void GGOutputI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstGALILEIApp* Owner=dynamic_cast<GInstGALILEIApp*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -589,6 +608,7 @@ void GGOutputI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCon
 //------------------------------------------------------------------------------
 void GSOutputI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstGALILEIApp* Owner=dynamic_cast<GInstGALILEIApp*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -610,6 +630,7 @@ void GSOutputI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCon
 //------------------------------------------------------------------------------
 void GSetTestI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstGALILEIApp* Owner=dynamic_cast<GInstGALILEIApp*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -625,6 +646,7 @@ void GSetTestI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCon
 //------------------------------------------------------------------------------
 void GSetLogI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -639,6 +661,7 @@ void GSetLogI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCont
 //------------------------------------------------------------------------------
 void GExecSqlI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -653,6 +676,7 @@ void GExecSqlI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCon
 //------------------------------------------------------------------------------
 void GComputeProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -668,6 +692,7 @@ void GComputeProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst
 //------------------------------------------------------------------------------
 void GGroupProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -685,6 +710,7 @@ void GGroupProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R
 //------------------------------------------------------------------------------
 void GGroupDocsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -703,6 +729,7 @@ void GGroupDocsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RC
 //------------------------------------------------------------------------------
 void GStartSimulationI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -718,6 +745,7 @@ void GStartSimulationI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst
 //------------------------------------------------------------------------------
 void GPerformDegradationI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	// Read Parameters
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
@@ -760,6 +788,7 @@ void GPerformDegradationI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* i
 //------------------------------------------------------------------------------
 void GFdbksCycleI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -775,6 +804,7 @@ void GFdbksCycleI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::R
 //------------------------------------------------------------------------------
 void GCompareIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -821,6 +851,7 @@ void GCompareIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R:
 //------------------------------------------------------------------------------
 void GSetSimulationParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
 	GALILEIApp->GetGALILEIConfig()->Set(args[0]->GetValue(prg),args[1]->GetValue(prg));
@@ -830,6 +861,7 @@ void GSetSimulationParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::
 //------------------------------------------------------------------------------
 void GAddIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -845,6 +877,7 @@ void GAddIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 //------------------------------------------------------------------------------
 void GAddProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -908,6 +941,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o,GInstSession* Owner)
 //------------------------------------------------------------------------------
 void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -1038,6 +1072,7 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 //------------------------------------------------------------------------------
 void GAddAssessmentsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -1053,6 +1088,7 @@ void GAddAssessmentsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,
 //------------------------------------------------------------------------------
 void GTrackNewProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -1078,6 +1114,7 @@ void GTrackNewProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* ins
 //------------------------------------------------------------------------------
 void GClearNewProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -1092,6 +1129,7 @@ void GClearNewProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* ins
 //------------------------------------------------------------------------------
 void GResetTimeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstGALILEIApp* Owner=dynamic_cast<GInstGALILEIApp*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -1106,6 +1144,7 @@ void GResetTimeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RC
 //------------------------------------------------------------------------------
 void GComputeTimeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstGALILEIApp* Owner=dynamic_cast<GInstGALILEIApp*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -1114,7 +1153,7 @@ void GComputeTimeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::
 	time_t end(time(0));
 	double cpu_time;
 	cpu_time=difftime(end,Owner->ClockRef);
-	o->WriteStr("Ellapsed Time "+RString::Number(cpu_time));
+	o->WriteStr("Elapsed Time "+RString::Number(cpu_time));
 }
 
 
@@ -1138,6 +1177,7 @@ void GRunStatI::Print(R::RPrgOutput* o,RXMLTag* tag,int depth)
 //------------------------------------------------------------------------------
 void GRunStatI::Run(R::RInterpreter* prg,RPrgOutput* out,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -1176,6 +1216,7 @@ void GRunStatI::Run(R::RInterpreter* prg,RPrgOutput* out,RPrgVarInst* inst,R::RC
 //------------------------------------------------------------------------------
 void GForceReComputeI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -1200,6 +1241,7 @@ void GForceReComputeI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst* inst,R:
 //------------------------------------------------------------------------------
 void GSetSaveResultsI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
@@ -1215,6 +1257,7 @@ void GSetSaveResultsI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst* inst,R:
 //------------------------------------------------------------------------------
 void GSetPlugInParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	if(args.GetNb()!=4)
 		throw RPrgException(prg,"Method needs four parameters.");
 	GGenericPluginManager* Mng=GALILEIApp->GetManager<GGenericPluginManager>(args[0]->GetValue(prg));
@@ -1231,6 +1274,7 @@ void GSetPlugInParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RCon
 //------------------------------------------------------------------------------
 void GSetCurrentPlugInI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst*,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
 	GGenericPluginManager* Mng=GALILEIApp->GetManager<GGenericPluginManager>(args[0]->GetValue(prg));
@@ -1244,6 +1288,7 @@ void GSetCurrentPlugInI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst*,R::
 //------------------------------------------------------------------------------
 void GSetMeasureParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	if(args.GetNb()!=4)
 		throw RPrgException(prg,"Method needs four parameters.");
 	GMeasureManager* Mng=GALILEIApp->GetManager<GMeasureManager>("Measures");
@@ -1261,6 +1306,7 @@ void GSetMeasureParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RCo
 //------------------------------------------------------------------------------
 void GSetCurrentMeasureI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst*,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
 	GMeasureManager* Mng=GALILEIApp->GetManager<GMeasureManager>("Measures");
@@ -1275,6 +1321,7 @@ void GSetCurrentMeasureI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst*,R:
 //------------------------------------------------------------------------------
 void GResetMeasureI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst*,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
 	GMeasureManager* Mng=GALILEIApp->GetManager<GMeasureManager>("Measures");
@@ -1290,6 +1337,7 @@ void GResetMeasureI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst*,R::RCon
 //------------------------------------------------------------------------------
 void GAnalyzeDocsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
+	ShowInst(this,prg,args);
 	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");

@@ -236,6 +236,43 @@ double GWeightInfos::GetMaxAbsWeight(GConceptType* type) const
 
 
 //------------------------------------------------------------------------------
+double GWeightInfos::Inclusion(const GWeightInfos& w,tObjType ObjType) const
+{
+	// if one list is empty -> the inclusion is null
+	if((!GetNb())||(!w.GetNb()))
+		return(0.0);
+
+	double num(0.0), den(0.0),tmp;
+	double max;
+	RCursor<GWeightInfo> ptr(*this);
+	RCursor<GWeightInfo> ptr2(w);
+	GConceptType* type(0);
+
+	// Start the first list
+	for(ptr.Start(),ptr2.Start();!ptr.End();ptr.Next())
+	{
+		// Look if the type of the concept have changed since that the last concept treated
+		if(ptr()->GetConcept()->GetType()!=type)
+		{
+			// Yes -> A new total number of references.
+			type=ptr()->GetConcept()->GetType();
+			max=GetMaxAbsWeight(type);
+		}
+
+		// While the element of the second list is not the current one, skip it.
+		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
+			ptr2.Next();
+		tmp=(ptr()->GetWeight()*ptr()->GetConcept()->GetIF(ObjType))/max;
+		den+=tmp;
+		if((!ptr2.End())&&(ptr()->GetId()==ptr2()->GetId()))
+			num+=tmp;
+	}
+
+	return(num/den);
+}
+
+
+//------------------------------------------------------------------------------
 double GWeightInfos::Similarity(const GWeightInfos& w) const
 {
 	// if one list is empty -> the similarity is null
@@ -369,8 +406,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 			max2=w.GetMaxAbsWeight(type);
 		}
 
-		iff=TotalRef/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType));
-		w1=(ptr()->GetWeight()/max1)*log10(iff);
+		iff=ptr()->GetConcept()->GetIF(ObjType);
+		w1=(ptr()->GetWeight()/max1)*iff;
 		while((!ptr2.End())&&((*ptr2())<(*ptr())))
 		{
 			if(ptr2()->GetConcept()->GetType()!=type)
@@ -386,8 +423,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 				max1=GetMaxAbsWeight(type);
 				max2=w.GetMaxAbsWeight(type);
 			}
-			iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType));
-			w2=(ptr2()->GetWeight()/max2)*log10(iff);
+			iff=ptr2()->GetConcept()->GetIF(ObjType);
+			w2=(ptr2()->GetWeight()/max2)*iff;
 			norm2+=w2*w2;
 			ptr2.Next();
 		}
@@ -408,8 +445,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 			}
 			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
-				iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType));
-				w2=(ptr2()->GetWeight()/max2)*log10(iff);
+				iff=ptr2()->GetConcept()->GetIF(ObjType);
+				w2=(ptr2()->GetWeight()/max2)*iff;
 				norm2+=w2*w2;
 				norm1+=w1*w1;
 				Sim+=w1*w2;
@@ -435,8 +472,8 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 			max1=GetMaxAbsWeight(type);
 			max2=w.GetMaxAbsWeight(type);
 		}
-		iff=TotalRef/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType));
-		w2=(ptr2()->GetWeight()/max2)*log10(iff);
+		iff=ptr2()->GetConcept()->GetIF(ObjType);
+		w2=(ptr2()->GetWeight()/max2)*iff;
 		norm2+=w2*w2;
 		ptr2.Next();
 	}
@@ -490,10 +527,10 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 			max2=w.GetMaxAbsWeight(type);
 		}
 
-		iff1=TotalRef1/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType1));
-		iff2=TotalRef2/static_cast<double>(type->GetRef(ptr()->GetId(),ObjType2));
+		iff1=ptr()->GetConcept()->GetIF(ObjType1);
+		iff2=ptr()->GetConcept()->GetIF(ObjType2);
 
-		w1=(ptr()->GetWeight()/max1)*log10(iff1)*log10(iff2);
+		w1=(ptr()->GetWeight()/max1)*iff1*iff2;
 		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
 		{
 			// Look if the type of the concept have changed since that the last concept treated
@@ -511,9 +548,9 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 				max1=GetMaxAbsWeight(type);
 				max2=w.GetMaxAbsWeight(type);
 			}
-			iff1=TotalRef1/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType1));
-			iff2=TotalRef2/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType2));
-			w2=(ptr2()->GetWeight()/max2)*log10(iff1)*log10(iff2);
+			iff1=ptr2()->GetConcept()->GetIF(ObjType1);
+			iff2=ptr2()->GetConcept()->GetIF(ObjType2);
+			w2=(ptr2()->GetWeight()/max2)*iff1*iff2;
 			norm2+=w2*w2;
 			ptr2.Next();
 		}
@@ -536,9 +573,9 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 			}
 			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
 			{
-				iff1=TotalRef1/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType1));
-				iff2=TotalRef2/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType2));
-				w2=(ptr2()->GetWeight()/max2)*log10(iff1)*log10(iff2);
+				iff1=ptr2()->GetConcept()->GetIF(ObjType1);
+				iff2=ptr2()->GetConcept()->GetIF(ObjType2);
+				w2=(ptr2()->GetWeight()/max2)*iff1*iff2;
 				norm2+=w2*w2;
 				norm1+=w1*w1;
 				Sim+=w1*w2;
@@ -566,9 +603,9 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 			max1=GetMaxAbsWeight(type);
 			max2=w.GetMaxAbsWeight(type);
 		}
-		iff1=TotalRef1/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType1));
-		iff2=TotalRef2/static_cast<double>(type->GetRef(ptr2()->GetId(),ObjType2));
-		w2=(ptr2()->GetWeight()/max2)*log10(iff1)*log10(iff2);
+		iff1=ptr2()->GetConcept()->GetIF(ObjType1);
+		iff2=ptr2()->GetConcept()->GetIF(ObjType2);
+		w2=(ptr2()->GetWeight()/max2)*iff1*iff2;
 		norm2+=w2*w2;
 		ptr2.Next();
 	}

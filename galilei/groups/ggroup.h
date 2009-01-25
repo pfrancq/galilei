@@ -6,7 +6,7 @@
 
 	Generic Group - Header.
 
-	Copyright 2008 by the Université Libre de Bruxelles.
+	Copyright 2008-2009 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -77,6 +77,11 @@ protected:
 	* Date of last objects computing.
 	*/
 	R::RDate Computed;
+
+	/**
+	 * Data associated to the corresponding ideal subject.
+	 */
+	GSubjectData<cObj>* Data;
 
 public:
 
@@ -260,6 +265,8 @@ public:
 	* Destruct the group.
 	*/
 	virtual ~GGroup(void);
+
+	friend class GSubjects;
 };
 
 

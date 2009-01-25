@@ -6,7 +6,7 @@
 
 	Subject - Header.
 
-	Copyright 2002-2008 by the Université Libre de Bruxelles.
+	Copyright 2002-2009 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be)
@@ -50,6 +50,44 @@
 //------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+/**
+ * The GSubjectData represents a set of information related to subjects and
+ * that can be associated to a group (topic or community). In particular,
+ * quality measures associated with a given (computed) group in comparison with
+ * the corresponding (ideal) subject.
+ */
+template<class cObj>
+	class GSubjectData
+{
+	/**
+	 * Centroid of a group.
+	 */
+	cObj* Centroid;
+
+	/**
+	 * Average similarity of the objects of the group to the centroid.
+	 */
+	double AvgSim;
+
+public:
+
+	/**
+	 * Constructor.
+	 */
+	GSubjectData(void) : Centroid(0), AvgSim(-2.0) {}
+
+	/**
+	 * Method called each time a group is modified.
+	 */
+	void Dirty(void)
+	{
+		Centroid=0;
+	}
+
+	friend class GSubjects;
+};
 
 
 //------------------------------------------------------------------------------

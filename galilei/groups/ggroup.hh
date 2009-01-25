@@ -6,7 +6,7 @@
 
 	Generic Group - Inline Implementation.
 
-	Copyright 2008 by the Université Libre de Bruxelles.
+	Copyright 2008-2009 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -40,7 +40,7 @@
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	GALILEI::GGroup<cObj,cGroup,type>::GGroup(size_t id,const R::RDate& u,const R::RDate& c)
 	: R::RContainer<cObj,false,true>(20,10), GALILEI::GWeightInfos(60), Id(id),
-	  Updated(u), Computed(c)
+	  Updated(u), Computed(c), Data(0)
 {
 	if(Id!=R::cNoRef)
 		GALILEI::GSession::Event(static_cast<const cGroup*>(this),eObjNew);
@@ -114,6 +114,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 {
 	obj->SetGroup(0);
 	R::RContainer<cObj,false,true>::DeletePtr(*obj);
+	if(Data)
+		Data->Dirty();
 //	State=osUpdated;
 }
 
@@ -125,6 +127,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	R::RContainer<cObj,false,true>::InsertPtr(obj);
 //	State=osUpdated;
 	obj->SetGroup(Id);
+	if(Data)
+		Data->Dirty();
 }
 
 
@@ -133,6 +137,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	void GALILEI::GGroup<cObj,cGroup,type>::InsertPtr(cObj* obj)
 {
 	InsertProfile(obj);
+	if(Data)
+		Data->Dirty();
 }
 
 
@@ -144,6 +150,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	R::RCursor<cObj> Objs(*this);
 	for(Objs.Start();!Objs.End();Objs.Next())
 		Objs()->SetGroup(0);
+	if(Data)
+		Data->Dirty();
 }
 
 
@@ -249,6 +257,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	void GALILEI::GGroup<cObj,cGroup,type>::Clear(void)
 {
 	GWeightInfos::Clear();
+	if(Data)
+		Data->Dirty();
 }
 
 
@@ -272,6 +282,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	AddRefs(type);
 
 	// Emit an event that it was modified
+	if(Data)
+		Data->Dirty();
 	GSession::Event(static_cast<const cGroup*>(this),eObjModified);
 }
 
@@ -310,6 +322,8 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 			Prof()->SetGroup(R::cNoRef);
 		if(State==osDelete)  // The object has modified the references count but was not saved
 			DelRefs(type);
+		if(Data)
+			delete Data;
 	}
 	catch(...)
 	{

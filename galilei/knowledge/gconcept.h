@@ -82,19 +82,39 @@ protected:
 	size_t NbRefDocs;
 
 	/**
+	 * Inverse factor for documents.
+	 */
+	double IfDocs;
+
+	/**
 	* Number of references in profiles.
 	*/
 	size_t NbRefProfiles;
 
 	/**
-	* Number of references in groups.
+	 * Inverse factor for profiles.
+	 */
+	double IfProfiles;
+
+	/**
+	* Number of references in communities.
 	*/
-	size_t NbRefGroups;
+	size_t NbRefCommunities;
+
+	/**
+	 * Inverse factor for communities.
+	 */
+	double IfCommunities;
 
 	/**
 	 * Number of references in topics.
 	 */
 	size_t NbRefTopics;
+
+	/**
+	 * Inverse factor for topics.
+	 */
+	double IfTopics;
 
 public:
 
@@ -123,10 +143,10 @@ public:
 	* @param type            Type of the concept.
 	* @param refdocs         Number of documents referenced.
 	* @param refprofiles     Number of profiles referenced.
-	* @param refgroups       Number of groups referenced.
+	* @param refcommunities  Number of groups referenced.
 	* @param reftopics       Number of topics referenced.
 	*/
-	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics);
+	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics);
 
 	/**
 	* Compare two concepts.
@@ -223,6 +243,13 @@ public:
 	* @returns size_t.
 	*/
 	size_t GetRef(tObjType ObjType) const;
+
+	/**
+	 * @return The inverse factor of the concept for a given object type (such
+	 * as the idf factor for documents.
+	* @param ObjType        Type of the reference.
+	 */
+	double GetIF(tObjType ObjType) const;
 
 	/**
 	* Clear the information of the references of the concept linked to a

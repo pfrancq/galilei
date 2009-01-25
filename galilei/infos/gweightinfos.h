@@ -210,7 +210,16 @@ public:
 	double Similarity(const GWeightInfos& w) const;
 
 	/**
-	* Compute a similarity between two lists of weighted information entities.
+	 * @return the inclusion factor of the lists of weighted information
+	 * entities. The methods computes a ratio (weighted by the tf-idf factors)
+	 * of the elements of the first list being in the second one.
+	 * @param w              Pointer to a list of weighted information entities.
+	 * @param ObjType        Type of the object.
+	 */
+	double Inclusion(const GWeightInfos& w,tObjType ObjType) const;
+
+	/**
+	* @return the similarity between two lists of weighted information entities.
 	* The method uses the cosinus of the corresponding vectors. A vector of a
 	* list is build using this list and a Inverse Frequence Factor (IFF) of the
 	* object type (idf, isf or ivf) for a given information entity space

@@ -6,7 +6,7 @@
 
 	Subjects - Implementation.
 
-	Copyright 2002-2008 by the Université Libre de Bruxelles.
+	Copyright 2002-2009 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -621,16 +621,31 @@ template<class cGroup,class cObj>
 	{
 		if(!grps()->GetNbObjs())
 			continue;
+
+		// Verify if the group has a data allocated -> Create it
+		if(!grps()->Data)
+			grps()->Data=new GSubjectData<cObj>();
+
+		// Verify if the info is updated -> If yes -> continue
+		if(grps()->Data->Centroid)
+		{
+			J+=grps()->Data->AvgSim;
+			Centers.InsertPtr(grps()->Data->Centroid);
+			continue;
+		}
+
 		RCursor<cObj> Objs1(grps()->GetObjs());
 		if(grps()->GetNbObjs()==1)
 		{
 			J+=1.0;
 			Objs1.Start();
+			grps()->Data->AvgSim=1.0;
+			grps()->Data->Centroid=Objs1();
 			Centers.InsertPtr(Objs1());
 			continue;
 		}
-		double max(-2.0);
-		cObj* CurCenter(0);
+		grps()->Data->AvgSim=-2.0;
+		grps()->Data->Centroid=0;
 		RCursor<cObj> Objs2(grps()->GetObjs());
 		for(Objs1.Start();!Objs1.End();Objs1.Next())
 		{
@@ -649,14 +664,16 @@ template<class cGroup,class cObj>
 				intrasim+=tmp;
 			}
 			intrasim/=static_cast<double>(nbintra);
-			if(intrasim>max)
+			if(intrasim>grps()->Data->AvgSim)
 			{
-				max=intrasim;
-				CurCenter=Objs1();
+				grps()->Data->AvgSim=intrasim;
+				grps()->Data->Centroid=Objs1();
 			}
 		}
-		J+=max;
-		Centers.InsertPtr(CurCenter);
+		J+=grps()->Data->AvgSim;
+		if(!grps()->Data->Centroid)
+			throw GException("GSubjects::ComputeJ : Cluster "+RString::Number(grps()->GetId())+" has no objects");
+		Centers.InsertPtr(grps()->Data->Centroid);
 	}
 
 	// Compute the maximal similarity between the centers

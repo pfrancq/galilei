@@ -31,7 +31,7 @@
 
 
 //------------------------------------------------------------------------------
-// include standard api files
+// include files for C/C++ ANSI
 #include <cmath>
 #include <limits>
 
@@ -285,7 +285,7 @@ void GMatrixMeasure::Measure(size_t measure,...)
 		(*res)=(*MemValues)[idx1]->Values[idx2];
 
 		// Recomputing it necessary
-		if(isnan(*res))
+		if((*res)!=(*res))
 		{
 			void* obj1=Session->GetElement(Lines,id1);
 			void* obj2=Session->GetElement(Cols,id2);
@@ -491,7 +491,7 @@ inline double GMatrixMeasure::ReadValue(size_t id1,size_t id2)
 	Read->ReadRec(Mes);
 
 	// Verify if there is something to update
-	if(!isnan(Mes.Value))
+	if(Mes.Value==Mes.Value)
 		return(Mes.Value);
 
 	void* obj1=Session->GetElement(Lines,id1);
@@ -660,7 +660,7 @@ void GMatrixMeasure::DirtyCurrentFilePos(R::RRecFile<MeasureRec,false>* file)
 	file->ReadRec(Value);
 
 	// If value is already dirty -> Skip it
-	if(isnan(Value.Value))
+	if(Value.Value==Value.Value)
 		return;
 
 	if(!InFile)
@@ -814,7 +814,7 @@ void GMatrixMeasure::UpdateMem(void)
 			max=MaxIdCol;
 		for(j=1,vals=Rows()->Values;j<max;j++,vals++)
 		{
-			if(!isnan(*vals))
+			if((*vals)==(*vals))
 				continue;
 			void* obj2=Session->GetElement(Cols,j,true);
 			if(!obj2)
@@ -854,7 +854,7 @@ void GMatrixMeasure::UpdateFile(void)
 			continue;
 
 		// If value OK -> Skip it
-		if(!isnan(Value.Value))
+		if(Value.Value==Value.Value)
 			continue;
 
 		// Recompute it
@@ -884,7 +884,7 @@ void GMatrixMeasure::UpdateFile(void)
 				continue;
 
 			// If value OK -> Skip it
-			if(!isnan(Value.Value))
+			if(Value.Value==Value.Value)
 				continue;
 
 			// Recompute it
@@ -948,7 +948,7 @@ void GMatrixMeasure::LoadFile(void)
 //------------------------------------------------------------------------------
 void GMatrixMeasure::AddValue(double val)
 {
-	if(isnan(val))
+	if(val!=val)
 		return;
 	double oldmean(Mean);
 	Mean=(static_cast<double>(NbValues)*Mean+val)/static_cast<double>(NbValues+1);
@@ -960,7 +960,7 @@ void GMatrixMeasure::AddValue(double val)
 //------------------------------------------------------------------------------
 void GMatrixMeasure::DeleteValue(double& val)
 {
-	if(isnan(val))
+	if(val!=val)
 		return;
 	if(NbValues==1)
 	{
