@@ -81,7 +81,7 @@ class GMetaEngineSum : public GMetaEngine
 	/**
 	* Maximum number of document to return
 	*/
-	int MaxResNb;
+	unsigned int MaxResNb;
 
 	/**
 	* Number of keywords to keep to create a valid query.
@@ -169,7 +169,7 @@ public:
 	/**
 	* Get the number of results to use (choosed in the option)
 	*/
-	unsigned int GetNbResUsed(void){return MaxResNb;};
+	size_t GetNbResUsed(void) {return(MaxResNb);};
 
 	/**
 	* Clear all results from the search engine

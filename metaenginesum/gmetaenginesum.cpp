@@ -49,6 +49,7 @@ using namespace R;
 #include <gsession.h>
 #include <ggalileiapp.h>
 using namespace GALILEI;
+using namespace std;
 
 
 //------------------------------------------------------------------------------
@@ -227,7 +228,7 @@ void GMetaEngineSum::Query(RContainer<RString,true,false> &keyWords, bool useAll
 				p_up=1;
 			if(p>p_up)
 				p_up=p;
-			for(p; p<=p_up; p++)
+			for(/*p*/; p<=p_up; p++)
 			{
 				CombineQuery(0,p);
 			}

@@ -1,6 +1,6 @@
-SET(metaenginesum_frontend_kde_UI_INCLUDES dlgconfig_qt.ui)
+SET(metaenginesum_frontend_kde_UI_INCLUDES config.ui)
 
-SET(sugs_frontend_kde_TARGET_SOURCES gmetaenginesum_kde.cpp)
+SET(metaenginesum_frontend_kde_TARGET_SOURCES gmetaenginesum_kde.cpp)
 
 FOREACH(file ${metaenginesum_frontend_kde_UI_INCLUDES})
    SET(REALFILE frontend/kde/${file})
