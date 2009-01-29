@@ -32,4 +32,4 @@ ENDIF(disable-kde)
 
 
 SET(SUB_PROJECT metaenginesum)
-ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(metaenginesum)
