@@ -33,10 +33,12 @@ using namespace R;
 
 class XXMLFile : public RXMLFile
 {
+	size_t Len,TotalLen;
+
 private :
-	
+
 	XXMLTag *XCurTag;
-	
+
 	void load_header();
 	void  load_next_tag();
 	void  load_attributes(RContainer<RXMLAttr, false, true> &attrs, RChar EndTag1 = '/', RChar EndTag2 = '>');
@@ -45,11 +47,9 @@ private :
 	void add_next_char(RString &str);
 
 public :
-	
+
 	XXMLFile(const RString &name, RXMLStruct *xmlstruct, const RString &encoding = "UTF-8");
-	XXMLFile(const RString &name, RXMLStruct &xmlstruct, const RString &encoding = "UTF-8");
 	XXMLFile(RIOFile &file, RXMLStruct *xmlstruct, const RString &encoding = "UTF-8");
-	XXMLFile(RIOFile &file, RXMLStruct &xmlstruct, const RString &encoding = "UTF-8");
 	void Open(RIO::ModeType mode);
 };
 

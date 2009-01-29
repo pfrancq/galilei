@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupingGGA.cpp
+	GCommunityingGGA.cpp
 
 	Heuristic using a GGA - Implementation
 
@@ -39,7 +39,7 @@
 // include files for R Project
 
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 #include <rcursor.h>
 #include <rdebug.h>
 #include <rdebug.h>
@@ -63,12 +63,12 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-//  GGroupingGGA
+//  GCommunityingGGA
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GXmlRanking::GXmlRanking(GStorage *_storage, GXmlParams _Params) 	
+GXmlRanking::GXmlRanking(GStorage *_storage, GXmlParams _Params)
 {
 storage = _storage;
 Params = _Params;
@@ -96,7 +96,7 @@ char str[20]  = "";
 		cmdtag = new GALILEI::GStorageTag("ComputeTF");
   		cmdtag->InsertAttr("idfile", RString::Number(_idfile));
 		cmdtag->InsertAttr("word", *curs());
-		storage->ExecuteCmd(*cmdtag, &tf); 
+		storage->ExecuteCmd(*cmdtag, &tf);
 		sprintf(str, "%f", tf);
 		cout << "tf : " << str<< endl;
 		//calcul de n : nombre de document contenant ti
@@ -111,9 +111,9 @@ char str[20]  = "";
 		delete cmdtag;
 		delete cmdtag_2;
 	}
-	
+
   	//cmdtag->InsertAttr("word", word);
-  	
+
 
 return idfTot;
 }
@@ -138,7 +138,7 @@ char str[20]  = "";
 		cmdtag = new GALILEI::GStorageTag("ComputeTF");
   		cmdtag->InsertAttr("idfile", RString::Number(_idfile));
 		cmdtag->InsertAttr("word", *curs());
-		storage->ExecuteCmd(*cmdtag, &tf); 
+		storage->ExecuteCmd(*cmdtag, &tf);
 		//calcul de n : nombre d'elements contenant ti
 		cmdtag_2 = new GALILEI::GStorageTag("Compute_n");
 		cmdtag_2->InsertAttr("word", *curs());
@@ -149,14 +149,14 @@ char str[20]  = "";
 		delete cmdtag;
 		delete cmdtag_2;
 	}
-	
+
   	//cmdtag->InsertAttr("word", word);
-  	
+
 
 return idfTot;
 }
 //-----------------------------------------------------------------------------
-//void GXmlRanking::Compute(R::RString Name) 
+//void GXmlRanking::Compute(R::RString Name)
 //{
 //	bool find_at_least_one_ele=0;
 //	RPromSol *sol;
@@ -165,7 +165,7 @@ return idfTot;
 //	RTextFile src(name_data_file);
 //	RTextFile Dest(Name);
 //	Dest.Open(RIO::Append);
-//	double criteria_values[4]; 
+//	double criteria_values[4];
 //	src.Open(RIO::Read);
 //	int Nb=0;
 //	ThProm=new GXmlProm(&Params);
@@ -173,9 +173,9 @@ return idfTot;
 //	char str[10];
 //	//RContainer<RString, true, false> elements(3941,1);
 //	RString elementName;
-//		Dest << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl; 
-// 		Dest << "<inex-submission participant-id=\"24\" run-id=\""<< Name.Mid(74) << "\" task=\"COS.Thorough\" query=\"automatic\" submission-type=\"adhoc\">" << endl; 
-//		Dest << "<topic-fields title=\"yes\" castitle=\"no\" description=\"no\" narrative=\"no\" ontopic_keywords=\"no\"/>" << endl; 
+//		Dest << "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>" << endl;
+// 		Dest << "<inex-submission participant-id=\"24\" run-id=\""<< Name.Mid(74) << "\" task=\"COS.Thorough\" query=\"automatic\" submission-type=\"adhoc\">" << endl;
+//		Dest << "<topic-fields title=\"yes\" castitle=\"no\" description=\"no\" narrative=\"no\" ontopic_keywords=\"no\"/>" << endl;
 //		Dest << "<description>run based son sectoin index with best entry point based on first retrieved element</description>" << endl;
 //		Dest << "<collections>" << endl;
 //  		Dest << "<collection>ieee</collection>" << endl;
@@ -188,7 +188,7 @@ return idfTot;
 //			i=1;
 //			find_at_least_one_ele=0;
 //		}
-//		else if (line.FindStr("</topic>",0,true)!=-1){ 
+//		else if (line.FindStr("</topic>",0,true)!=-1){
 //			if (find_at_least_one_ele){
 //			ThProm->ComputePrometheeII();
 //			Sols=ThProm->GetSols();
@@ -209,9 +209,9 @@ return idfTot;
 //		}else if (line.FindStr("</rsv>",0,true)!=-1){
 //			i=1;
 //		}else {
-//			if (i==1 )	
+//			if (i==1 )
 //				if (line != ""){
-//					elementName=line; 
+//					elementName=line;
 //					find_at_least_one_ele = 1;
 //				}
 //			if (i==2 )		//tfidf
@@ -219,7 +219,7 @@ return idfTot;
 //			if (i==3 )//tfief
 //				criteria_values[1]= atof ( line.Latin1());
 //			if (i==4 ){//type
-//			}	
+//			}
 //			if (i==5 ) //dis
 //				criteria_values[2]= atof ( line.Latin1());
 //			if (i==6 ){ //specif
@@ -235,7 +235,7 @@ return idfTot;
 //}
 /*
 //-----------------------------------------------------------------------------
-void GXmlRanking::Compute(R::RString Name) 
+void GXmlRanking::Compute(R::RString Name)
 {
 	bool find_at_least_one_ele=0;
 	RPromSol *sol;
@@ -244,7 +244,7 @@ void GXmlRanking::Compute(R::RString Name)
 	RTextFile src(name_data_file);
 	RTextFile Dest(Name);
 	Dest.Open(RIO::Append);
-	double criteria_values[5]; 
+	double criteria_values[5];
 	src.Open(RIO::Read);
 	int Nb=0;
 	ThProm=new GXmlProm(&Params);
@@ -259,7 +259,7 @@ void GXmlRanking::Compute(R::RString Name)
 			i=1;
 			find_at_least_one_ele=0;
 		}
-		else if (line.FindStr("</topic>",0,true)!=-1){ 
+		else if (line.FindStr("</topic>",0,true)!=-1){
 			if (find_at_least_one_ele){
 			ThProm->ComputePrometheeII();
 			Sols=ThProm->GetSols();
@@ -281,9 +281,9 @@ void GXmlRanking::Compute(R::RString Name)
 		}else if (line.FindStr("</rsv>",0,true)!=-1){
 			i=1;
 		}else {
-			if (i==1 )	
+			if (i==1 )
 				if (line != ""){
-					elements.InsertPtr(new RString(line)); 
+					elements.InsertPtr(new RString(line));
 					find_at_least_one_ele = 1;
 				}
 			if (i==2 )
@@ -291,9 +291,9 @@ void GXmlRanking::Compute(R::RString Name)
 			if (i==3 )
 				criteria_values[1]= atof ( line.Latin1());
 			if (i==4 )
-				criteria_values[2]= atof ( line.Latin1());		
+				criteria_values[2]= atof ( line.Latin1());
 			if (i==5 )
-				criteria_values[3]= atof ( line.Latin1());	
+				criteria_values[3]= atof ( line.Latin1());
 			if (i==6 ){
 				criteria_values[4]= atof ( line.Latin1());
 				sol=ThProm->NewSol();
@@ -305,27 +305,27 @@ void GXmlRanking::Compute(R::RString Name)
 }*/
 
  //-NORMAL----------------------------------------------------------------------------
- void GXmlRanking::Compute(RCursor<XNodeSet> cns, RContainer<RString, false, false> &keywordlist, R::RString Name) 
+ void GXmlRanking::Compute(RCursor<XNodeSet> cns, RContainer<RString, false, false> &keywordlist, R::RString Name)
  {
  		double tf_idf, tf_ief;
  		RPromSol *sol;
  		GXmlFrag *frag;
  		unsigned int Nb=0; //number of solutions
  		unsigned int i=0;
- 		
+
  		bool ThereAreSolutons = false;
  		RCursor<XNode> cn;
- 		
+
  		RString res, file;
  		unsigned int idfile;
- 		
+
  		RTextFile Dest(Name);
  		Dest.Open(RIO::Append);
- 			
+
  		//remplir param ne fonction de ce qui vient de kde (refaire les fenetres de gxmlengine pour saisir les criteres de promethee
  		ThProm=new GXmlProm(&Params);
- 		
- 		
+
+
  	for (cns.Start(); !cns.End(); cns.Next())
  	{
  		ThereAreSolutons = true;
@@ -344,20 +344,20 @@ void GXmlRanking::Compute(R::RString Name)
  				sol=ThProm->NewSol();
  				ThProm->Assign(sol,cn());
  				cn()->SetRank(tf_idf);
- 				//cout << "sol : docsc " << cn()->CritDocSc <<endl; //<<": type " << cn()->CritType <<": dis " << cn()->CritDis << endl; 
+ 				//cout << "sol : docsc " << cn()->CritDocSc <<endl; //<<": type " << cn()->CritType <<": dis " << cn()->CritDis << endl;
  				Nb++;
  			}
  	}
  	if (ThereAreSolutons){
- 		ThProm->ComputePrometheeII();	
+ 		ThProm->ComputePrometheeII();
  		Sols=ThProm->GetSols();
- 
+
  		// Nous allons remplir le champ Rank de chaque noeud 'solution')
  		i = 0;
  		for (cns.Start(); !cns.End(); cns.Next())
  		{
  			cn.Set(*cns());
- 			if (cn.GetNb())			
+ 			if (cn.GetNb())
  				for (cn.Start(); !cn.End(); cn.Next())
  				{	int j=0;
  					bool found = false;
@@ -365,14 +365,14 @@ void GXmlRanking::Compute(R::RString Name)
  					//chercher la solution qui correspond � cn()
  					while(!found && j<Nb){
  						if ((*Sols)->GetId() == i) { //on a trouv� la solution qui correspond a notre noeud qui au au niv i de cn
- 							
+
  							cn()->SetRank((*Sols)->GetFi());
  							//cout << "le rank de la sol " << (*Sols)->GetId() << " est donn�e au noeud " << cn()->GetIdNode() << endl;
  							found = true;
  						}
  						Sols++;
  						j++;
- 						
+
  					}
  					i++;
  				}
@@ -383,16 +383,16 @@ void GXmlRanking::Compute(R::RString Name)
  		//cout << "fi de la solution " << (*Sols)->GetId() << ": " << (*Sols)->GetFi() << ", " << (*Sols)->GetFiPlus() << ", " << (*Sols)->GetFiMinus() << endl;
  		//Sols++;
  	//}
- // 			Line=src.GetLine();		
+ // 			Line=src.GetLine();
  // 			cout << Line << endl;
- // 			
+ //
  // 			frag =new GXmlFrag(Nb);
  // 			if (i==1 )
- // 				frag->CritDocSc = atof ( Line );	
+ // 				frag->CritDocSc = atof ( Line );
  // 			if (i==2 )
- // 				frag->CritType = atof ( Line );		
+ // 				frag->CritType = atof ( Line );
  // 			if (i==3 )
- // 				frag->CritDis = atof ( Line );	
+ // 				frag->CritDis = atof ( Line );
  // 			if (i==4 )
  // 				frag->CritOcc = atof ( Line );
  // 			if (i==5 )
@@ -407,20 +407,20 @@ void GXmlRanking::Compute(R::RString Name)
  // 			}
  // 			i++;
  // 			}
- // 
+ //
  // 		ThProm->ComputePrometheeII();
  // 		Sols=ThProm->GetSols();
- // 	
+ //
  // 		RTextFile Dest(NameOut);
  // 		Dest.Open(RIO::Append);
- // 		
+ //
  // 		for(i=Nb-1; i>0; i--){
  // 			Dest << "fi de la solution " << (*Sols)->GetId() << ": " << (*Sols)->GetFi() << ", " << (*Sols)->GetFiPlus() << ", " << (*Sols)->GetFiMinus() << endl;
  // 			Sols++;
  // 		}
- // 		Dest << "--------------------------------------------------------------------------------------------------------------------"<< endl; 
+ // 		Dest << "--------------------------------------------------------------------------------------------------------------------"<< endl;
  		//Juste un exemple : cout << Params.ParamsDocSc.P << endl;
- 	
+
  }
 
 
@@ -429,7 +429,7 @@ void GXmlRanking::Compute(R::RString Name)
 //-----------------------------------------------------------------------------
 GXmlRanking::~GXmlRanking(void)
 {
-	
+
 }
 
 

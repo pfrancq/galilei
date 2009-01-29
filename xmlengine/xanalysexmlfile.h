@@ -26,7 +26,7 @@
 #include <rcursor.h>
 #include <rxmlstruct.h>
 #include <rio.h>
-#include <rmysql.h>
+#include <rdbmysql.h>
 #include <rdblhashcontainer.h>
 using namespace R;
 
@@ -54,7 +54,7 @@ private :
 	GALILEI::GStorage *storage;
 	GALILEI::GStorageTag *cmdtag;
 	XXMLFile *xfile;
-	
+
 	GLang* Lang;
 
 	int curr_idnode;
@@ -68,7 +68,7 @@ private :
 	void getWords(XXMLTag *tag);
 	void search_breadth();
 
-	
+
 public :
 
 	XAnalyseXMLFile(GALILEI::GStorage *_storage, const RString &_filename);

@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GGroupingGGA.h
+	GCommunityingGGA.h
 
 	Heuristic using a GGA - Header.
 
@@ -49,7 +49,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 /**
-* The GGroupingGGA provides a representation for a method to group some
+* The GCommunityingGGA provides a representation for a method to group some
 * subprofiles using a grouping genetic algorithm.
 * @author Pascal Francq
 * @short GGA Method.

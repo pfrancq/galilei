@@ -45,7 +45,7 @@
 #include <gindexer.h>
 #include <gwordoccurs.h>
 #include <gpluginmanagers.h>*/
-
+#include <rquery.h>
 #include "xsqlcmd.h"
 
 using namespace GALILEI;
@@ -206,7 +206,7 @@ void XSQLCreateXMLTables::Run(GStorage *storage, const GStorageTag &inst, void *
 	// wordlist (word, localisations)
     sqlcmd = "CREATE TABLE IF NOT EXISTS wordlist (word TEXT, localisations BIGINT UNSIGNED AUTO_INCREMENT, PRIMARY KEY(localisations), INDEX index_name (word(25)))";
 	RQuery(db, sqlcmd);
-	
+
 	// nodelist (idfile, id, name, parent, child1, nbchild, bytepos, bytelen)
 	sqlcmd = "CREATE TABLE IF NOT EXISTS nodelist (idfile BIGINT UNSIGNED, id INT UNSIGNED, ";
 	sqlcmd += "name TEXT, parent INT UNSIGNED, child1 INT UNSIGNED, nbchild INT UNSIGNED, ";
@@ -283,7 +283,7 @@ void XSQLGetSizeFile::Run(GStorage *storage, const GStorageTag &inst, void *call
 	*static_cast<int *>(caller) = -1;
 	sqlcmd = "SELECT size FROM filemanager WHERE id = \"" + inst.GetAttrValue("idfile") + "\"";
 
-	
+
 	RQuery rq(db, sqlcmd);
 	rq.Start();
 	if (!rq.End())
@@ -312,14 +312,14 @@ void XSQLGetLocalisations::Run(GStorage *storage, const GStorageTag &inst, void 
 	RDb *db;
 
 	db = static_cast<RDb*> (storage->GetInfos());
-	
+
 	sqlcmd = "SELECT localisations FROM wordlist WHERE word = \"" + inst.GetAttrValue("word") + "\"";
 	RQuery rq(db, sqlcmd);
-	
+
 	rq.Start();
 	if (!rq.End())
 		*static_cast<RString *>(caller) = rq[0];
-	
+
 }
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
@@ -382,7 +382,7 @@ void XSQLGetLocalisationsList::Run(GStorage *storage, const GStorageTag &inst, v
 		static_cast<vector<int> *>(caller)->push_back(atoi(rq[0].Latin1()));
 		//suivi du idnode
 		static_cast<vector<int> *>(caller)->push_back(atoi(rq[1].Latin1()));
-	}//on retourne donc un vecteur de string tel que � la position x(ximpair) il y'a le idfile et � x+1 le idnode 
+	}//on retourne donc un vecteur de string tel que � la position x(ximpair) il y'a le idfile et � x+1 le idnode
 
 }
 
@@ -408,7 +408,7 @@ void XSQLGetLocalisationsListSize::Run(GStorage *storage, const GStorageTag &ins
 	db = static_cast<RDb*> (storage->GetInfos());
 	*static_cast<int *>(caller) = -1;
 	sqlcmd = "SELECT COUNT(*) FROM localisations WHERE id= \"" + inst.GetAttrValue("id") + "\"";
-	
+
 	//cout << sqlcmd << endl;
 
 	RQuery rq(db, sqlcmd);
@@ -507,7 +507,8 @@ void XSQLGetNbNodes::Run(GStorage *storage, const GStorageTag &inst, void *calle
 	db = static_cast<RDb*> (storage->GetInfos());
 	sqlcmd = "SELECT * FROM nodelist WHERE idfile = " + inst.GetAttrValue("idfile") ;
 	RQuery rq(db, sqlcmd);
-	*static_cast<int *>(caller)=	rq.GetNb();
+    //*static_cast<int *>(caller)=	rq.GetNb();
+	throw RException("XSQLGetNbNodes::Run : RQuery n'a plus de fonction GetNb()");
 }
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
@@ -533,7 +534,8 @@ void XSQLGetTotalWordInFile::Run(GStorage *storage, const GStorageTag &inst, voi
 	db = static_cast<RDb*> (storage->GetInfos());
 	sqlcmd = "SELECT COUNT(*) FROM localisations WHERE idfile = " + inst.GetAttrValue("idfile") ;
 	RQuery rq(db, sqlcmd);
-	*static_cast<int *>(caller)=	rq.GetNb();
+	//*static_cast<int *>(caller)=	rq.GetNb();
+	throw RException("XSQLGetTotalWordInFile::Run : RQuery n'a plus de fonction GetNb()");
 }
 
 //______________________________________________________________________________
@@ -558,7 +560,8 @@ void XSQLFullSpecifField::Run(GStorage *storage, const GStorageTag &inst, void *
 	db = static_cast<RDb*> (storage->GetInfos());
 	sqlcmd = "UPDATE nodelist SET specif= " + inst.GetAttrValue("specif") + " WHERE idfile=" + inst.GetAttrValue("idfile") +" AND id="+ inst.GetAttrValue("idnode") ;
 	RQuery rq(db, sqlcmd);
-	*static_cast<int *>(caller)=rq.GetNb();
+	//*static_cast<int *>(caller)=rq.GetNb();
+	throw RException("XSQLFullSpecifField::Run : RQuery n'a plus de fonction GetNb()");
 }
 
 //______________________________________________________________________________
@@ -653,7 +656,8 @@ void XSQLAddXMLFile::Run(GStorage *storage, const GStorageTag &inst, void *calle
 	delete rq;
 	sqlcmd = "SELECT id FROM filemanager WHERE id = " + RString::Number(*static_cast<int *>(caller));
 	rq = new RQuery(db, sqlcmd);
-	if (rq->GetNb())
+	rq->Start();
+	if (!rq->End())
 	{
 		ok = false;																// Start dichotomous search
 		start = 0;																// Set initial conditions
@@ -733,9 +737,9 @@ void XSQLAddXMLWord::Run(GStorage *storage, const GStorageTag &inst, void *calle
 	RString sqlcmd,  word, idfile, localisation, nodes;
 	RDb *db;
 	int pos1, pos2;
-	
+
 	GStorageTag *cmdtag;
-	RContainer<RString, true, false> splitnodes(1000);	
+	RContainer<RString, true, false> splitnodes(1000);
 	RCursor<RString> cnodes;
 
 	db = static_cast<RDb*> (storage->GetInfos());
@@ -748,14 +752,14 @@ void XSQLAddXMLWord::Run(GStorage *storage, const GStorageTag &inst, void *calle
 	delete cmdtag;
 	if (localisation.GetLen())
 	{	nodes.Split(splitnodes, ';');
-		cnodes.Set(splitnodes);											
+		cnodes.Set(splitnodes);
 		for (cnodes.Start(); !cnodes.End(); cnodes.Next())	//  NOTE : the substrings fk:n1;n2... are ordered
-		{												
-			sqlcmd = "INSERT INTO localisations VALUES(\""+localisation+"\","+ idfile+",\""+(cnodes()->Latin1())+"\")";	
+		{
+			sqlcmd = "INSERT INTO localisations VALUES(\""+localisation+"\","+ idfile+",\""+(cnodes()->Latin1())+"\")";
 			RQuery(db, sqlcmd);
 		}
 	}else{
-		
+
 		sqlcmd = "INSERT INTO wordlist (word) VALUES(\""+word+"\")";
 		RQuery(db, sqlcmd);
 		cmdtag = new GALILEI::GStorageTag("GetLocalisations");
@@ -763,14 +767,14 @@ void XSQLAddXMLWord::Run(GStorage *storage, const GStorageTag &inst, void *calle
 		storage->ExecuteCmd(*cmdtag, &localisation);
 		delete cmdtag;
 		nodes.Split(splitnodes, ';');
-		cnodes.Set(splitnodes);											
+		cnodes.Set(splitnodes);
 		for (cnodes.Start(); !cnodes.End(); cnodes.Next())	//  NOTE : the substrings fk:n1;n2... are ordered
-		{												
-			sqlcmd = "INSERT INTO localisations VALUES(\""+localisation+"\","+ idfile+",\""+(cnodes()->Latin1())+"\")";	
+		{
+			sqlcmd = "INSERT INTO localisations VALUES(\""+localisation+"\","+ idfile+",\""+(cnodes()->Latin1())+"\")";
 			RQuery(db, sqlcmd);
 		}
 	}
-	
+
 }
 /*void XSQLAddXMLWord::Run(GStorage *storage, const GStorageTag &inst, void *caller)
 {
@@ -778,7 +782,7 @@ void XSQLAddXMLWord::Run(GStorage *storage, const GStorageTag &inst, void *calle
 	RDb *db;
 	unsigned int currid, idfile;
 	int pos1, pos2;
-	
+
 	db = static_cast<RDb*> (storage->GetInfos());
 	idfile = atoi(inst.GetAttrValue("idfile").Latin1());
 	word = inst.GetAttrValue("word");
@@ -813,18 +817,18 @@ void XSQLUpdateXMLWord::Run(GStorage *storage, const GStorageTag &inst, void *ca
 	RDb *db;
 	unsigned int currid, idfile;
 	int pos1, pos2;
-	
+
 
 	db = static_cast<RDb*> (storage->GetInfos());
 	idfile = atoi(inst.GetAttrValue("idfile").Latin1());
 	word = inst.GetAttrValue("word");
 	localisations = inst.GetAttrValue("localisations");
 
-	
+
 		res = "#" + RString::Number(idfile) + ":" + localisations;
 		sqlcmd = "UPDATE wordlist SET localisations = CONCAT(lo, \""   + res + "\") WHERE word = \"" + word + "\"";
 		//cout << "faiza mysql        " << sqlcmd  << endl;
-	
+
 	RQuery(db, sqlcmd);
 }
 
@@ -893,7 +897,7 @@ XSQLComputeTF::XSQLComputeTF() : GStorageCmd("ComputeTF", "MySQL")
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
 void XSQLComputeTF::Run(GStorage *storage, const GStorageTag &inst, void *caller)
-{   
+{
 
 	RString localisation, sqlcmd;
 	RDb *db;
@@ -904,7 +908,7 @@ void XSQLComputeTF::Run(GStorage *storage, const GStorageTag &inst, void *caller
 
 	db = static_cast<RDb*> (storage->GetInfos());
 
-	
+
 	idfile =  inst.GetAttrValue("idfile").Latin1();
 	word = inst.GetAttrValue("word");
 	cmdtag = new GALILEI::GStorageTag("GetLocalisations");
@@ -919,16 +923,16 @@ void XSQLComputeTF::Run(GStorage *storage, const GStorageTag &inst, void *caller
 	delete cmdtag;
 
 	if (localisation.GetLen())
-	{	
+	{
 		cmdtag = new GALILEI::GStorageTag("GetNbOccInFile");
 		cmdtag->InsertAttr("id", localisation);
 		cmdtag->InsertAttr("idfile", idfile);
 		storage->ExecuteCmd(*cmdtag, &t);
-		delete cmdtag;	
+		delete cmdtag;
 	if (nb==0) nb=1;
-		*static_cast<double *>(caller) = (double)t / (double)nb; 
+		*static_cast<double *>(caller) = (double)t / (double)nb;
 	}
-	
+
 }
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
@@ -952,14 +956,14 @@ void XSQLComputeD::Run(GStorage *storage, const GStorageTag &inst, void *caller)
 
 	db = static_cast<RDb*> (storage->GetInfos());
 	sqlcmd = " SELECT COUNT(*) FROM filemanager ";
-	
+
 	RQuery rq(db, sqlcmd);
 	rq.Start();
 	if (!rq.End())
 		*static_cast<int *>(caller) = atoi(rq[0].Latin1());*/
 
 	*static_cast<int *>(caller) = 16810;
-		
+
 }
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
@@ -977,7 +981,7 @@ XSQLCompute_d::XSQLCompute_d() : GStorageCmd("Compute_d", "MySQL")
 //------------------------------------------------------------------------------
 void XSQLCompute_d::Run(GStorage *storage, const GStorageTag &inst, void *caller)
 {
-	
+
 	RString localisation, sqlcmd;
 	RDb *db;
 	RString str, word;
@@ -993,22 +997,22 @@ void XSQLCompute_d::Run(GStorage *storage, const GStorageTag &inst, void *caller
 	storage->ExecuteCmd(*cmdtag, &localisation);
 	delete cmdtag;
 	if (localisation.GetLen())
-	{	
+	{
 		cmdtag = new GALILEI::GStorageTag("GetLocalisationsList");
 		cmdtag->InsertAttr("id", localisation);
 		storage->ExecuteCmd(*cmdtag, &localisationsList);
-		delete cmdtag;	
+		delete cmdtag;
 		d=0;
 		for (int i=0; i<localisationsList.size(); i++)							//  localisationsList = idfile idnode idfile idnode
-		{	
-			d++;																		// 
-			idfile = localisationsList[i];	
+		{
+			d++;																		//
+			idfile = localisationsList[i];
 			i++; i++;
 			while (i<localisationsList.size() && localisationsList[i]==idfile){
 				i++; i++;
 			}
 			i--;
-			
+
 		}
 
 		*static_cast<int *>(caller) = d; // n ici = nombre de documents où apparait le terme word dans toute la collection
@@ -1037,12 +1041,12 @@ void XSQLComputeN::Run(GStorage *storage, const GStorageTag &inst, void *caller)
 
 	db = static_cast<RDb*> (storage->GetInfos());
 	sqlcmd = " SELECT COUNT(*) FROM nodelist ";
-	
+
 	RQuery rq(db, sqlcmd);
 	rq.Start();
 	if (!rq.End())
 		*static_cast<int *>(caller) = atoi(rq[0].Latin1());*/
-		
+
 		*static_cast<int *>(caller) = 7646004 ;
 }
 //______________________________________________________________________________
@@ -1061,7 +1065,7 @@ XSQLCompute_n::XSQLCompute_n() : GStorageCmd("Compute_n", "MySQL")
 //------------------------------------------------------------------------------
 void XSQLCompute_n::Run(GStorage *storage, const GStorageTag &inst, void *caller)
 {
-	
+
 	RString localisation, sqlcmd;
 	RDb *db;
 	RString str, word;
@@ -1077,11 +1081,11 @@ void XSQLCompute_n::Run(GStorage *storage, const GStorageTag &inst, void *caller
 	storage->ExecuteCmd(*cmdtag, &localisation);
 	delete cmdtag;
 	if (localisation.GetLen())
-	{	
+	{
 		cmdtag = new GALILEI::GStorageTag("GetLocalisationsListSize");
 		cmdtag->InsertAttr("id", localisation);
 		storage->ExecuteCmd(*cmdtag, &localisationsListSize);
-		delete cmdtag;	
+		delete cmdtag;
 		*static_cast<double *>(caller) = (double) localisationsListSize/(double) 2;
 	}
 }
@@ -1107,13 +1111,13 @@ void XSQLGetSpecif::Run(GStorage *storage, const GStorageTag &inst, void *caller
 	RDb *db;
 
 	db = static_cast<RDb*> (storage->GetInfos());
-	
+
 	sqlcmd = "SELECT specif FROM nodelist WHERE idfile = " + inst.GetAttrValue("idfile") + " AND id = " + inst.GetAttrValue("idnode");
 	RQuery rq(db, sqlcmd);
 	rq.Start();
 	if (!rq.End())
 		*static_cast<int *>(caller) = atoi(rq[0].Latin1());
-	
+
 }
 //______________________________________________________________________________
 //------------------------------------------------------------------------------

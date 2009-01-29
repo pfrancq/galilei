@@ -19,13 +19,13 @@
  ***************************************************************************/
 // include files for ANSI C/C++
 #include <stdlib.h>
-#include <iostream.h>
+#include <iostream>
 
 
 #include "xquery.h"
 #include "xanalysexmlfile.h"
 #include "xstuff.h"
-#include "sstream" 
+#include "sstream"
 #include "gxmlranking.h"
 
 using namespace GALILEI;
@@ -80,7 +80,7 @@ bool XQuery::analyse_query(const RContainer<RString, false, false> &query_list_n
 	XConst::tOper op;
 	XQueryNode *child = 0;
 	bool isneg, leftnright, testl, testr;
-	
+
 	pos = query_list_noalloc.GetNb();											// Goes to the end of the container
 	if (!pos)																	// If container is empty
 		return false;															// Sends error
@@ -91,7 +91,7 @@ bool XQuery::analyse_query(const RContainer<RString, false, false> &query_list_n
 			query_tree.InsertNode(parent, new XQueryNode(new RString (Lang->GetStemming(*query_list_noalloc[0]))));
 	else																		// Otherwise, container has many words
 	{
-		 
+
 		leftnright = false;														// Set initial values
 		eleft = -1;
 		sleft = 0;
@@ -164,7 +164,7 @@ bool XQuery::analyse_query(const RContainer<RString, false, false> &query_list_n
 			else																// If both expr are false, do nothing
 			{
 				query_tree.DeleteNode(child);
-				return false;													
+				return false;
 			}
 		}
 	}
@@ -216,23 +216,23 @@ XQueryRes *XQuery::get_xqueryres(const RString &word)							// Constructs an XQu
 	bool root;
 
 	qres = new XQueryRes;
-//FIXME	path = storage->GetStringNodes(word);									
+//FIXME	path = storage->GetStringNodes(word);
 	cmdtag = new GALILEI::GStorageTag("GetLocalisations");
 	cmdtag->InsertAttr("word", word);
 	storage->ExecuteCmd(*cmdtag, &localisations);
-	
+
 	delete cmdtag;
 	cmdtag = new GALILEI::GStorageTag("GetLocalisationsList");
 	cmdtag->InsertAttr("id", localisations);
 	storage->ExecuteCmd(*cmdtag, &localisationsList);
-	delete cmdtag;	
-														// 
+	delete cmdtag;
+														//
 	for (int i=0; i<localisationsList.size(); i++)							//  localisationsList = idfile idnode idfile idnode
-	{																			// 
-		idfile = localisationsList[i];	
+	{																			//
+		idfile = localisationsList[i];
 
 		nset = new XNodeSet(idfile);
-		dis = 0 ; 
+		dis = 0 ;
 		do{
 			i++;
 			idnode = localisationsList[i];
@@ -253,9 +253,9 @@ XQueryRes *XQuery::get_xqueryres(const RString &word)							// Constructs an XQu
 				else
 					type = XConst::TAGVAL;
 			 if (type == XConst::ATTNAM || type == XConst::ATTVAL)				// If attribute, then get the id of the node  that represent the tag containing the attr
-			     idnode = nodesql.GetParent();	
+			     idnode = nodesql.GetParent();
 			specif = 1;															//specificty of the first element is 1
-			xnd = new XNode(idnode, type, dis, specif ); 
+			xnd = new XNode(idnode, type, dis, specif );
 			nset->InsertPtr(xnd);	 			// Desallocated by XNodeSet
 			//add parents
 			/*root = false;
@@ -275,10 +275,10 @@ XQueryRes *XQuery::get_xqueryres(const RString &word)							// Constructs an XQu
 			dis=0;*/
 			//end add parents
 			i++;
-				
-		}while (idfile == localisationsList[i]);		
+
+		}while (idfile == localisationsList[i]);
 		nset->Reduce();
-		qres->InsertPtr(nset);		
+		qres->InsertPtr(nset);
 		i--;											// Add XNodeSet in the XQueryRes
 	}
 	return qres;
@@ -295,7 +295,7 @@ void XQuery::compute_query(XQueryNode *node)									// Resolves the query tree
 	switch (node->GetType())													// Selecting type of node
 	{
 	case XQueryNode::STRING :													// Node type : String
-		//stem = Lang->GetStemming(node->GetWord().ToLower());										
+		//stem = Lang->GetStemming(node->GetWord().ToLower());
 		node->Set(get_xqueryres(node->GetWord()));								// Find the nodes in MySQL where the word occurs
 		break;																	//  and add it as a XQueryRes
 	case XQueryNode::OPERATOR :										// 	if (GetNb())
@@ -306,10 +306,10 @@ void XQuery::compute_query(XQueryNode *node)									// Resolves the query tree
 // 			if ((xn) && !(xn==Node())) {
 // 				i=0;
 // 				for (it = Node()->types.begin(); it < Node()->types.end();  it++)
-// 					xn->types.push_back(Node()->types[i]); 
+// 					xn->types.push_back(Node()->types[i]);
 // 				DeletePtr(Node());
 // 				Prev();
-// 			} 
+// 			}
 // 	}			// Operator
 		qres = new XQueryRes;													// Create empty set (filled according to the oper)
 		compute_query((*node)[0]);												// Compute left part of operator
@@ -320,14 +320,14 @@ void XQuery::compute_query(XQueryNode *node)									// Resolves the query tree
 		}
 		else
 			(*node)[1]->Set(new XQueryRes);										//  then intersection is empty too
-		
+
 		node->Set(qres);														// Add the XQueryRes to current node
 	default : break;															// Avoids warning
 	}
 }
 //NORMAL//______________________________________________________________________________
 //------------------------------------------------------------------------------
-void XQuery::rank_results(R::RString Name)									
+void XQuery::rank_results(R::RString Name)
 {
 	RCursor<XNodeSet> cqres;
 	GXmlRanking *gxml_rank;
@@ -335,18 +335,18 @@ void XQuery::rank_results(R::RString Name)
 
 	cqres.Set(*query_tree.GetTop()->GetQRes());
 	gxml_rank = new GXmlRanking(storage, Params);
-	gxml_rank->Compute(cqres, query_keywords, Name);	
+	gxml_rank->Compute(cqres, query_keywords, Name);
 }
 
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
-//void XQuery::rank_results(R::RString Name)									
+//void XQuery::rank_results(R::RString Name)
 //{
 //	RCursor<XNodeSet> cqres;
 //	GXmlRanking *gxml_rank;
 //
 //	gxml_rank = new GXmlRanking(storage, Params);
-//	gxml_rank->Compute(Name);	
+//	gxml_rank->Compute(Name);
 //}
 
 //______________________________________________________________________________
@@ -397,12 +397,12 @@ void XQuery::extract_result()
 //  			delete analysexml;
 				sync = true;
 		}
-		
+
 		if (readingfile->IsOpen() && sync)										// If everything ok
 		{
 			contentfilerefs.Clear();
 			rank = 0;
-			for (cnode.Start(); !cnode.End(); cnode.Next())   //les noeuds pertinents sont retir�s de la table sql nodelist  
+			for (cnode.Start(); !cnode.End(); cnode.Next())   //les noeuds pertinents sont retir�s de la table sql nodelist
 			{
 				//rank += cnode()->ComputeRank();
 				cmdtag = new GALILEI::GStorageTag("GetNodeAttr");
@@ -418,8 +418,8 @@ void XQuery::extract_result()
 			int i =0;
 
 			for (cnodesql.Start(); !cnodesql.End(); cnodesql.Next())			// For each reference in a file
-			{																	//  begins the read procedure									
-				i++;			
+			{																	//  begins the read procedure
+				i++;
 				content = "";
 				attributes = "";
 							char *buff = new char[cnodesql()->GetLen()+1];
@@ -430,22 +430,22 @@ void XQuery::extract_result()
 				string str = ""; 								//used to convert i to string
 				ostringstream ostr;
 				ostr << i;
-				str = ostr.str(); 
-				url1 = url + str;						//differenciate url of the differents elements of the same document otherwise the  
-														//metaengine shows only the first element because it does not replicate urls 
+				str = ostr.str();
+				url1 = url + str;						//differenciate url of the differents elements of the same document otherwise the
+														//metaengine shows only the first element because it does not replicate urls
 				//retreive Rank of the node
 				cnode.GoTo(i-1);
 				query_result.InsertPtr(new XResult(idfile, title, url1, snippet, cnode()->GetRank()));
 				snippet = "";
 			}
-		} 
+		}
 		else
 		{
 			if (sync)
 				snippet = "File doesn't exist anymore! Please update the database to view result for this file.";
 			else
 				snippet = "File changed! Please update the database to view result for this file.";
-		
+
 		//cout << "faiza nbre de query_result insert " <<endl;
 		query_result.InsertPtr(new XResult(idfile, title, url, snippet, 0));
 		}
@@ -479,7 +479,7 @@ void XQuery::extract_result()
 // {
 // 	__OPEN__();																	// DEBUG!
 // 	RCursor<XResult> res;														// Cursor to the results of the query
-// 	
+//
 // 	query_tree.Copy(keywordtree);
 // 	cout << print().Latin1() << endl;
 // 	compute_query(query_tree.GetTop());
@@ -497,7 +497,7 @@ void XQuery::extract_result()
 // int nbnodes, specif, rien;
 // 	for (int idfilet=122; idfilet<16810; idfilet++)
 // 	{
-// 	
+//
 // 		cmdtag = new GALILEI::GStorageTag("GetNbNodes");
 // 		cmdtag->InsertAttr("idfile", RString::Number(idfilet));
 // 		storage->ExecuteCmd(*cmdtag, &nbnodes);
@@ -514,7 +514,7 @@ void XQuery::extract_result()
 // 			storage->ExecuteCmd(*cmdtag, &rien);
 // 			delete cmdtag;
 // 		}
-// 			
+//
 // 	}
 // }
 
@@ -525,7 +525,7 @@ RCursor<XResult> XQuery::Query(const RContainer<RString, true, false> &keywordli
 	RCursor<XResult> res;														// Cursor to the results of the query
 	RContainer<RString, false, false> keywordlist_noalloc(keywordlist);
 	bool test;
-	R::RTextFile* resultsFile;	
+	R::RTextFile* resultsFile;
 
 	test = analyse_query(keywordlist_noalloc);
 try
@@ -570,7 +570,7 @@ RString XQuery::gettagcontent(int idfile, RIOFile *file, RString tag)
 	int size;
 	RString res;
 	XNodeSQL nodesql;
-	
+
 //FIXME	storage->GetIdNodes(idfile, tag, vint, &size);
 	cmdtag = new GALILEI::GStorageTag("GetIdNodes");
 	cmdtag->InsertAttr("idfile", RString::Number(idfile));
@@ -611,7 +611,7 @@ RString XQuery::print() const
 	RContainer<XQueryNode, true, false> tmp(10);
 	RString s;
 	int i;
-	
+
 	fifo.Push(query_tree.GetTop());										// Put the first node in Fifo
 	while (fifo.GetNb())														// While there are nodes from Fifo
 	{
@@ -656,7 +656,7 @@ RString XQuery::print() const
 }
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
-void XQuery::extract_query_keywords() 
+void XQuery::extract_query_keywords()
 {
 	Lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn("en");
 	XQueryNode *tag, *tmpqn;
@@ -665,7 +665,7 @@ void XQuery::extract_query_keywords()
 	RContainer<XQueryNode, true, false> tmp(10);
 	RString s;
 	int i;
-	
+
 	fifo.Push(query_tree.GetTop());										// Put the first node in Fifo
 	while (fifo.GetNb())														// While there are nodes from Fifo
 	{
@@ -681,7 +681,7 @@ void XQuery::extract_query_keywords()
 		}
 		else if (i > 2)
 		{
-			
+
 		}
 		if (tag->GetType() != XQueryNode::OPERATOR)
 		{
@@ -693,13 +693,13 @@ void XQuery::extract_query_keywords()
 }
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
-RString XQuery::ShowSol() 
+RString XQuery::ShowSol()
 {
 	RCursor<XNode> cnset;
 	RCursor<XNodeSet> cqres;
 	RString resTotal, resFile, resNode, file;
 	unsigned int idfile, idnode;
-	XNodeSQL nodesql;	
+	XNodeSQL nodesql;
 	vector<int> brothersIds;
 	cqres.Set(*query_tree.GetTop()->GetQRes());
 	resTotal = "" ;
@@ -720,16 +720,16 @@ RString XQuery::ShowSol()
 		if (cnset.GetNb())
 			for (cnset.Start(); !cnset.End(); cnset.Next())
 			{
-				
-				resNode= "";			
-		
+
+				resNode= "";
+
 				idnode = cnset()->GetIdNode();
-				//De l�  : 
+				//De l�  :
 				cmdtag = new GALILEI::GStorageTag("GetNodeAttr");
 				cmdtag->InsertAttr("idfile", RString::Number(idfile));
 				cmdtag->InsertAttr("idnode", RString::Number(idnode));
 				storage->ExecuteCmd(*cmdtag, &nodesql);
-				delete cmdtag;	
+				delete cmdtag;
 					//on cherche l'�ge du noeud
 				cmdtag = new GALILEI::GStorageTag("GetIdNodes");
 				cmdtag->InsertAttr("idfile", RString::Number(idfile));
@@ -738,10 +738,10 @@ RString XQuery::ShowSol()
 				storage->ExecuteCmd(*cmdtag, &brothersIds);
 				delete cmdtag;
 				for (i=0; brothersIds[i]!=nodesql.GetIdNode() ; i++){}
-									
+
 				resNode = nodesql.GetName()+"["+RString::Number(i+1)+"]/";
 				brothersIds.clear();
-					//fin recherche �ge d'un noeud. un elet sec a un age x si il est le x ieme fils qui s'appelle sec 
+					//fin recherche �ge d'un noeud. un elet sec a un age x si il est le x ieme fils qui s'appelle sec
 
 				if (idnode != 0 )
 				{
@@ -752,7 +752,7 @@ RString XQuery::ShowSol()
 						cmdtag->InsertAttr("idfile", RString::Number(idfile));
 						cmdtag->InsertAttr("idnode", RString::Number(nodesql.GetParent()));
 						storage->ExecuteCmd(*cmdtag, &nodesql);
-						delete cmdtag;	
+						delete cmdtag;
 						if (nodesql.GetIdNode() == 0 )
 							root = true;
 						//on cherche l'�ge du noeud
@@ -761,19 +761,19 @@ RString XQuery::ShowSol()
 						cmdtag->InsertAttr("name", nodesql.GetName());
 						cmdtag->InsertAttr("parent", RString::Number(nodesql.GetParent()));
 						storage->ExecuteCmd(*cmdtag, &brothersIds);
-						delete cmdtag;	
+						delete cmdtag;
 						for (i=0; brothersIds[i]!=nodesql.GetIdNode() ; i++){}
 						resNode = nodesql.GetName()+"["+RString::Number(i+1)+"]/"+ resNode;
 						brothersIds.clear();
-						//fin recherche �ge d'un noeud. un elet sec a un age x si il est le x ieme fils qui s'appelle sec 
+						//fin recherche �ge d'un noeud. un elet sec a un age x si il est le x ieme fils qui s'appelle sec
 					}
 					cout << endl;
 				}
-				//Jusqu'l� : pour inex on cherchait le nom complet de node 
+				//Jusqu'l� : pour inex on cherchait le nom complet de node
 				//resTotal += resFile +  resNode+" ; "+cnset()->print2()+ "\n";
 				resTotal += resFile +  resNode+" ; "+cnset()->print()+ "\n";
 			}
-		
+
 	}
 	return resTotal;
 }

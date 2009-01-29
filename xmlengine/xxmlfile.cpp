@@ -27,21 +27,7 @@ XXMLFile::XXMLFile(const RString &name, RXMLStruct *xmlstruct, const RString &en
 
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
-XXMLFile::XXMLFile(const RString &name, RXMLStruct &xmlstruct, const RString &encoding)
-: RXMLFile(name, xmlstruct, encoding)
-{
-}
-
-//______________________________________________________________________________
-//------------------------------------------------------------------------------
 XXMLFile::XXMLFile(RIOFile &file, RXMLStruct *xmlstruct, const RString &encoding)
-: RXMLFile(file, xmlstruct, encoding)
-{
-}
-
-//______________________________________________________________________________
-//------------------------------------------------------------------------------
-XXMLFile::XXMLFile(RIOFile &file, RXMLStruct &xmlstruct, const RString &encoding)
 : RXMLFile(file, xmlstruct, encoding)
 {
 }
@@ -70,7 +56,7 @@ void XXMLFile::load_header()
 	RContainer<RXMLAttr, false, true> Attrs(10);
 	RXMLAttr* Attr;
 	RCursor<RXMLAttr> curs_attrs;
-	
+
 	// Skip Spaces and comments
 	SkipSpaces();
 	// Search after "<? xml"
@@ -144,7 +130,7 @@ void XXMLFile::load_next_tag()
 
 	oldLen = Len; // Initiate the total length of the tag
 
-	if ((Cur != RChar('<')) || (GetNextCur() == RChar('/')))
+	if ((Cur != RChar('<')) || (GetNextChar() == RChar('/')))
 	{
 	cout << "Not a tag" << endl; //FIXME throw eInvalidXMLFile(this, "Not a tag");
 	}
@@ -152,7 +138,7 @@ void XXMLFile::load_next_tag()
 	// Read name of the tag
 	Next(); // Skip <
 	SkipSpaces();
-	
+
 	while ((!Cur.IsNull()) && (!Cur.IsSpace()) && (Cur != RChar('>')) && (Cur != RChar('/')))
 	{
 		TagName += Cur;
@@ -183,9 +169,9 @@ void XXMLFile::load_next_tag()
 	SkipSpaces();
 	bytepos = TotalLen - Len;
 
-	while ((!Cur.IsNull()) && ((Cur != RChar('<')) || (GetNextCur() != RChar('/'))))
+	while ((!Cur.IsNull()) && ((Cur != RChar('<')) || (GetNextChar() != RChar('/'))))
 	{
-		if((Cur == RChar('<')) && (GetNextCur() != RChar('/')))
+		if((Cur == RChar('<')) && (GetNextChar() != RChar('/')))
 		{
 			// It is a tag -> read it
 			Contains1 = Contains;
@@ -202,7 +188,7 @@ void XXMLFile::load_next_tag()
 				while ((!Cur.IsNull()) && (Cur != RChar('<')))
 					add_next_char(Contains);
 
-					
+
 
 				// Look if the next '<' is the beginning of "<![CDATA["
 				CDATA = CurString("<![CDATA[",true);
@@ -214,21 +200,21 @@ void XXMLFile::load_next_tag()
 					// Read until ']]>' is found
 					while ((!Cur.IsNull()) && (!CurString("]]>")))
 						add_next_char(Contains);
-					
+
 					// Skip ]]>
 					for (int i = 4; --i;)
 						Next();
 				}
 			}
 			//Contains = Contains.Trim();
-			
+
 		}
-			
+
 	}
 			Text(XMLToString(Contains));
 			XCurTag = dynamic_cast<XXMLTag *> (CurTag);
-			Contains = Contains1.Trim() + " " +Contains.Trim(); 
-			
+			Contains = Contains1.Trim() + " " +Contains.Trim();
+
 			XCurTag->SetByte(bytepos, oldLen-Len);
 			SkipSpaces();
 	// Read the close tag
@@ -256,7 +242,7 @@ void XXMLFile::load_attributes(RContainer<RXMLAttr, false, true> &attrs, RChar E
 	bool Quotes;
 	unsigned int bytepos = 0;
 	XXMLAttr *attrtmp;
-	
+
 	while ((!Cur.IsNull()) && (Cur!=EndTag1) && (Cur!=EndTag2))
 	{
 		// Read the Name
@@ -304,7 +290,7 @@ cout << "Quote must be used to delimit the parameter value in a tag." << endl;
 
 				// Read until a space or the end of the tag
 				bytepos = TotalLen - Len;
-				while ((!Cur.IsNull()) && (!Cur.IsSpace()) && (!(((Cur == EndTag1) && (GetNextCur() == EndTag2)) || (Cur == EndTag2))))
+				while ((!Cur.IsNull()) && (!Cur.IsSpace()) && (!(((Cur == EndTag1) && (GetNextChar() == EndTag2)) || (Cur == EndTag2))))
 				{
 					attrv += Cur;
 					Next();
@@ -380,7 +366,7 @@ cout<<"Found closing tag ??? while closing tag ??? was expected." << endl;
 void XXMLFile::add_next_char(RString &str)
 {
 	// If it is an eol character, skip it with the SkipEol
-	
+
 	if (RTextFile::Eol(Cur))
 	{
 		str += '\n';

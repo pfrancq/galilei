@@ -30,19 +30,19 @@ using namespace R;
 
 #include "xgeneral.h"
 #include "xnode.h"
-#include "vector.h"
+//#include "vector.h"
 #include <gstorage.h>
 
 class XNodeSet : public RContainer<XNode, true, true>
 {
 private :
-	
+
 	int idfile;
 	int currpos;
 	int currid;
-	
+
 public :
-	
+
 	XNodeSet(const int _idfile = 0);
 	XNodeSet(const XNodeSet &xns);
 	int GetIdFile() const;
@@ -72,7 +72,7 @@ public :
 	{
 		RString res;
 		RCursor<XNode> c(*this);
-		
+
 		res += "idfile = " + RString::Number(idfile) + "\n";
 		for (c.Start(); !c.End(); c.Next())
 			res += "      " + c()->print() + "\n";

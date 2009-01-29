@@ -23,7 +23,7 @@
 #include <ctime>
 
 XAnalyseXMLFile::XAnalyseXMLFile(GALILEI::GStorage *_storage, const RString &_filename):
-//,  RDblHashContainer<RString, 27, 27, true> &_globalWordList  ) : 
+//,  RDblHashContainer<RString, 27, 27, true> &_globalWordList  ) :
 wordslist(1000), nodeslist(600)
 {
 	storage = _storage;
@@ -42,7 +42,7 @@ void XAnalyseXMLFile::AnalyseDoc()
 	time_t temps_actF;
 
 	time(&temps_actD);
-	xfile = new XXMLFile(filename, xstruct);									// Gets the XML structure in a RTree
+	xfile = new XXMLFile(filename, &xstruct);									// Gets the XML structure in a RTree
 	xfile->Open(RIO::Read);														// The structure is caught when file is opened
 	xfile->Close();
 	Lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn("en");
@@ -56,7 +56,7 @@ void XAnalyseXMLFile::AnalyseDoc()
 	storage->ExecuteCmd(*cmdtag, &idfile);
 	delete cmdtag;
 	search_breadth();															// Performs a breadth search. (Oh, really ?)
-	cnl.Set(nodeslist);	
+	cnl.Set(nodeslist);
 	for (cnl.Start(); !cnl.End(); cnl.Next())									// For each node of the file, add it in the nodelist table
 	{
 //FIXME		storage->AddXMLNode(idfile, cnl()->GetIdNode(), cnl()->GetName(), cnl()->GetParent(), cnl()->GetChild1(), cnl()->GetNbChild(), cnl()->GetPos(), cnl()->GetLen());
@@ -88,9 +88,9 @@ void XAnalyseXMLFile::AnalyseDoc()
 	{
 //FIXME		storage->AddXMLWord(idfile, cwl()->GetWord(), cwl()->GetNodes());
 		//cout << "faiza cwl() dans xanalysexmlfile() " << cwl()->GetWord() <<endl;
-		
+
 		if(!globalWordList->IsIn(cwl()->GetWord())){
-			
+
 			cmdtag = new GALILEI::GStorageTag("AddXMLWord");
 			cmdtag->InsertAttr("idfile", RString::Number(idfile));
 			cmdtag->InsertAttr("word", cwl()->GetWord());
@@ -99,10 +99,10 @@ void XAnalyseXMLFile::AnalyseDoc()
 			cmdtag->InsertAttr("nodes", cwl()->GetNodes());
 			storage->ExecuteCmd(*cmdtag, 0);
 			delete cmdtag;
-			//cout << "faiza le mot --------------------" << cwl()->GetWord() << " est rajoute a global list " << endl;									
-			globalWordList->InsertPtr(new RString(cwl()->GetWord()));			
+			//cout << "faiza le mot --------------------" << cwl()->GetWord() << " est rajoute a global list " << endl;
+			globalWordList->InsertPtr(new RString(cwl()->GetWord()));
 		}else{
-			
+
 			cmdtag = new GALILEI::GStorageTag("UpdateXMLWord");
 			cmdtag->InsertAttr("idfile", RString::Number(idfile));
 			cmdtag->InsertAttr("word", cwl()->GetWord());
@@ -114,7 +114,7 @@ void XAnalyseXMLFile::AnalyseDoc()
 		}
 	}*/
 	time(&temps_actF);
-	if (difftime(temps_actF,temps_actD)) 
+	if (difftime(temps_actF,temps_actD))
 	cout << "temps pris par analyseDoc pour le fichier  " << idfile << "----------- "<< difftime(temps_actF,temps_actD) << endl;
 }
 
@@ -141,7 +141,7 @@ void XAnalyseXMLFile::get_property()											// Gets utc and size of the file
 {
 	struct stat st_stat;
 	int handle;
-	
+
 	utc = size = 0;
 	handle = open(filename.Latin1(), O_RDONLY);
 	if (handle != -1)
@@ -159,20 +159,20 @@ void XAnalyseXMLFile::insertWord(const RString &w)								// Inserts word w with
 {
 	XWordSQL *wi;
 	RString wlower(w.ToLower());												// Sets to lower case
-	
+
 
 	//cout << "faiza les mots -----------------------------------" << wlower << endl;
-	
+
 	if (!Lang->InStop(wlower)){
 		RString stem=Lang->GetStemming(wlower);
-	
+
 		if (!wordslist.IsIn<RString>(stem))										// If word not exists
 			wordslist.InsertPtr(new XWordSQL(stem, curr_idnode));					// Creates and adds it to the list
 		else
 		{																			// Otherwise :
 			wi = wordslist.GetPtr<RString>(stem);									// Gets the WordItem
 			wi->AddNode(curr_idnode);												// And adds it a node id
-					
+
 		}
 	}
 }
@@ -227,7 +227,7 @@ void XAnalyseXMLFile::search_breadth()
 	XXMLTag *tag;
 	RCursor<RXMLTag> curs_tag;
 	RCursor<RXMLAttr> curs_attr;
-	
+
 	tagsfifo.Push(dynamic_cast<XXMLElem *> (xstruct.GetTop()));					// Put the first node (ie the root node) in Fifo
 	parentsfifo.Push(new int(idfile));											// Note : the idparent of root node is the idfile. Why ? Don't remember... Yes I remember now! It is to set a a value for curr_idparent!!!
 	// Note the new int... See explaination at end of this function!
@@ -253,7 +253,7 @@ void XAnalyseXMLFile::search_breadth()
 		tmpnode->SetLen(elem->GetLen());										// Sets the number of chars of between start and stop tag in the file
 		nodeslist.InsertPtr(tmpnode);											// Insert the node in the RContainer
 		insertWord(elem->Getname());											// Insert the word in the RContainer of words appearing in the file
-								
+
 		parseWords(elem->Getvalue());											// Gets the words of value (ie tag content or attribute value)
 		if (elem->GetType() == XXMLElem::TAG)									// If the node is a tag (ie and not an attribute)
 		{
@@ -325,7 +325,7 @@ XAnalyseXMLFile::~XAnalyseXMLFile()
 {
 	RCursor<XWordItem> curswl(wordslist);
 	RCursor<XNodeSQL> cursnl(nodeslist);
-	
+
 	cout << "+==========" << endl << "| WORDSLIST" << endl << "+----------" << endl;
 	for (curswl.Start(); !curswl.End(); curswl.Next())
 		cout << "| " << curswl()->print().Latin1() << endl;
