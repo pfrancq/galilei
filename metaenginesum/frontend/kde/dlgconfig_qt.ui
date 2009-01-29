@@ -1,0 +1,508 @@
+<!DOCTYPE UI><UI version="3.2" stdsetdef="1">
+<class>DlgConfig_Qt</class>
+<widget class="QDialog">
+    <property name="name">
+        <cstring>DlgConfig_Qt</cstring>
+    </property>
+    <property name="geometry">
+        <rect>
+            <x>0</x>
+            <y>0</y>
+            <width>428</width>
+            <height>474</height>
+        </rect>
+    </property>
+    <property name="caption">
+        <string>Configure GOOGLE Engine</string>
+    </property>
+    <property name="sizeGripEnabled">
+        <bool>true</bool>
+    </property>
+    <grid>
+        <property name="name">
+            <cstring>unnamed</cstring>
+        </property>
+        <widget class="QLayoutWidget" row="0" column="0">
+            <property name="name">
+                <cstring>layout8</cstring>
+            </property>
+            <vbox>
+                <property name="name">
+                    <cstring>unnamed</cstring>
+                </property>
+                <widget class="QGroupBox">
+                    <property name="name">
+                        <cstring>General</cstring>
+                    </property>
+                    <property name="title">
+                        <string>General options</string>
+                    </property>
+                    <vbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox">
+                            <property name="name">
+                                <cstring>UseWeight</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Use Engine weight</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>specifies if the meta engine must use weight defined for each engine( see engine configuration) or use an identical weight for every engine</string>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout4</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QCheckBox">
+                                    <property name="name">
+                                        <cstring>LimitRes</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Limits the number of results to be displayed : </string>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer5_3</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>61</width>
+                                            <height>20</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                                <widget class="KIntSpinBox">
+                                    <property name="name">
+                                        <cstring>MaxResNb</cstring>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>1000</number>
+                                    </property>
+                                    <property name="toolTip" stdset="0">
+                                        <string>if the limitation is used, no more than "X" results will be displayed</string>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                        <widget class="QLayoutWidget">
+                            <property name="name">
+                                <cstring>layout6</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>textLabel1</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>The number of keywords to use to create a query :</string>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer6</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>10</width>
+                                            <height>21</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                                <widget class="KIntSpinBox">
+                                    <property name="name">
+                                        <cstring>NValue</cstring>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                    </vbox>
+                </widget>
+                <widget class="QButtonGroup">
+                    <property name="name">
+                        <cstring>QueryModeOption</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Query Mode option</string>
+                    </property>
+                    <property name="checkable">
+                        <bool>false</bool>
+                    </property>
+                    <property name="checked">
+                        <bool>false</bool>
+                    </property>
+                    <property name="exclusive">
+                        <bool>true</bool>
+                    </property>
+                    <property name="toolTip" stdset="0">
+                        <string>Choose the working mode of the meta engine</string>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>The General Option allows the user to choose between different working mode for the &lt;b&gt;Meta Engine&lt;/b&gt; :&lt;br&gt;
+&lt;u&gt;&lt;b&gt;1.Single Query Mode:&lt;/b&gt;&lt;/u&gt;
+&lt;p&gt; The set of keywords received by the meta engine is used in is totality to create one query.&lt;/p&gt;
+&lt;u&gt;&lt;b&gt;2. Combinaison of query terms:&lt;/b&gt;&lt;/u&gt;
+&lt;p&gt;The set of keywords received by the meta engine is used to create several combinaison of the keywords. All these combinaisons are used as query. The meta engine retreive the results for each combinaison of keywords and the rank all the results together. &lt;br&gt; 
+The &lt;b&gt;among&lt;/b&gt; of combinaison is determiner by the PUpper Value witch determine the "p" value for a combinaison Cnp where "n" is the number of keywords retreived by the meta engine&lt;/p&gt;
+&lt;u&gt;&lt;b&gt;3. Ranch of combinaisons of the query terms&lt;/b&gt;&lt;/u&gt;
+&lt;p&gt;This option enable the meta engine to use a ranch of combinaisons (defined as in point 2). Two Value must be specified for the "p" value, the lower value and the upper value. Combinaisons are then create using as value "p" all the value between the two threshold&lt;/p&gt;</string>
+                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox" row="2" column="0">
+                            <property name="name">
+                                <cstring>checkBox3</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Use a Ranch of combinaisons of the query terms</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>the queries are formed using different combinaison of the keywords (P is the parameter for the combinaison)</string>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox" row="0" column="0">
+                            <property name="name">
+                                <cstring>SingleQuery</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Use Single query</string>
+                            </property>
+                            <property name="checked">
+                                <bool>true</bool>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>All keywords are used to create one query</string>
+                            </property>
+                        </widget>
+                        <widget class="QCheckBox" row="1" column="0">
+                            <property name="name">
+                                <cstring>CombineQuery</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Use a Combinaison of the query terms</string>
+                            </property>
+                            <property name="toolTip" stdset="0">
+                                <string>the queries are formed using a combinaison of the keywords (P is the parameter for the combinaison)</string>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+                <widget class="QButtonGroup">
+                    <property name="name">
+                        <cstring>CombinaisonOptions</cstring>
+                    </property>
+                    <property name="title">
+                        <string>Combinaison options</string>
+                    </property>
+                    <property name="exclusive">
+                        <bool>true</bool>
+                    </property>
+                    <property name="whatsThis" stdset="0">
+                        <string>This panel able the configuration of the parameters used to generate combinaison of the query.&lt;br&gt;&lt;br&gt;
+The "&lt;b&gt;P Lower &lt;/b&gt;" Value represents the number of keywords used to generate one query. The mete engine creates all the possible combinaison to put "P" keywords from the given set into the formed query. All the queries are processed and the results are ranked.&lt;br&gt;
+The "&lt;b&gt;P Upper&lt;/b&gt;" Value is used when ranch of combinaison must be retreived.The meta engine create all the queries for all the diferents combinaisons with "P" value contained between "P Lower" and "P Upper".&lt;br&gt;&lt;br&gt;
+Values of "P" can be defined in two ways:&lt;br&gt;
+&lt;u&gt;&lt;b&gt;1. Percentage value:&lt;/b&gt;&lt;/u&gt;
+The values of "P" are expressed as a percentage of the number of keywords available in the keywords set received by the meta engine.&lt;br&gt;
+&lt;u&gt;&lt;b&gt;2. Absolute value:&lt;/b&gt;&lt;/u&gt;
+The values of "P" are expressed as absolute values. If the values of P are greater than the number of keywods received by the engine, the values of "P" will be remplaced by this value.</string>
+                    </property>
+                    <grid>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <widget class="QCheckBox" row="2" column="0">
+                            <property name="name">
+                                <cstring>UseAbsValue</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Use Absolute value</string>
+                            </property>
+                        </widget>
+                        <widget class="QLayoutWidget" row="1" column="0">
+                            <property name="name">
+                                <cstring>layout9</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>PLowerPCLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Lower value fo P :</string>
+                                    </property>
+                                </widget>
+                                <widget class="KIntSpinBox">
+                                    <property name="name">
+                                        <cstring>PLowerPC</cstring>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>100</number>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer5</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>68</width>
+                                            <height>21</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>PUpperPCLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Upper value of P :</string>
+                                    </property>
+                                </widget>
+                                <widget class="KIntSpinBox">
+                                    <property name="name">
+                                        <cstring>PUpperPC</cstring>
+                                    </property>
+                                    <property name="maxValue">
+                                        <number>100</number>
+                                    </property>
+                                    <property name="lineStep">
+                                        <number>1</number>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                        <widget class="QLayoutWidget" row="3" column="0">
+                            <property name="name">
+                                <cstring>layout10</cstring>
+                            </property>
+                            <hbox>
+                                <property name="name">
+                                    <cstring>unnamed</cstring>
+                                </property>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>PLowerAbsLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Lower value fo P :</string>
+                                    </property>
+                                </widget>
+                                <widget class="KIntSpinBox">
+                                    <property name="name">
+                                        <cstring>PLowerAbs</cstring>
+                                    </property>
+                                </widget>
+                                <spacer>
+                                    <property name="name">
+                                        <cstring>spacer5_2</cstring>
+                                    </property>
+                                    <property name="orientation">
+                                        <enum>Horizontal</enum>
+                                    </property>
+                                    <property name="sizeType">
+                                        <enum>Expanding</enum>
+                                    </property>
+                                    <property name="sizeHint">
+                                        <size>
+                                            <width>68</width>
+                                            <height>21</height>
+                                        </size>
+                                    </property>
+                                </spacer>
+                                <widget class="QLabel">
+                                    <property name="name">
+                                        <cstring>PUpperAbsLabel</cstring>
+                                    </property>
+                                    <property name="text">
+                                        <string>Upper value of P :</string>
+                                    </property>
+                                </widget>
+                                <widget class="KIntSpinBox">
+                                    <property name="name">
+                                        <cstring>PUpperAbs</cstring>
+                                    </property>
+                                </widget>
+                            </hbox>
+                        </widget>
+                        <widget class="QCheckBox" row="0" column="0">
+                            <property name="name">
+                                <cstring>UsePercentValue</cstring>
+                            </property>
+                            <property name="text">
+                                <string>Use percentage value</string>
+                            </property>
+                            <property name="checked">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                    </grid>
+                </widget>
+                <spacer>
+                    <property name="name">
+                        <cstring>spacer16</cstring>
+                    </property>
+                    <property name="orientation">
+                        <enum>Vertical</enum>
+                    </property>
+                    <property name="sizeType">
+                        <enum>Expanding</enum>
+                    </property>
+                    <property name="sizeHint">
+                        <size>
+                            <width>31</width>
+                            <height>16</height>
+                        </size>
+                    </property>
+                </spacer>
+                <widget class="QLayoutWidget">
+                    <property name="name">
+                        <cstring>Layout1</cstring>
+                    </property>
+                    <hbox>
+                        <property name="name">
+                            <cstring>unnamed</cstring>
+                        </property>
+                        <property name="margin">
+                            <number>0</number>
+                        </property>
+                        <property name="spacing">
+                            <number>6</number>
+                        </property>
+                        <spacer>
+                            <property name="name">
+                                <cstring>Horizontal Spacing2</cstring>
+                            </property>
+                            <property name="orientation">
+                                <enum>Horizontal</enum>
+                            </property>
+                            <property name="sizeType">
+                                <enum>Expanding</enum>
+                            </property>
+                            <property name="sizeHint">
+                                <size>
+                                    <width>222</width>
+                                    <height>20</height>
+                                </size>
+                            </property>
+                        </spacer>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>buttonOk</cstring>
+                            </property>
+                            <property name="text">
+                                <string>&amp;OK</string>
+                            </property>
+                            <property name="accel">
+                                <string></string>
+                            </property>
+                            <property name="autoDefault">
+                                <bool>true</bool>
+                            </property>
+                            <property name="default">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                        <widget class="QPushButton">
+                            <property name="name">
+                                <cstring>buttonCancel</cstring>
+                            </property>
+                            <property name="text">
+                                <string>&amp;Cancel</string>
+                            </property>
+                            <property name="accel">
+                                <string></string>
+                            </property>
+                            <property name="autoDefault">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                    </hbox>
+                </widget>
+            </vbox>
+        </widget>
+    </grid>
+</widget>
+<connections>
+    <connection>
+        <sender>QueryModeOption</sender>
+        <signal>clicked(int)</signal>
+        <receiver>DlgConfig_Qt</receiver>
+        <slot>ChangeGeneralMode(int)</slot>
+    </connection>
+    <connection>
+        <sender>buttonCancel</sender>
+        <signal>clicked()</signal>
+        <receiver>DlgConfig_Qt</receiver>
+        <slot>reject()</slot>
+    </connection>
+    <connection>
+        <sender>buttonOk</sender>
+        <signal>clicked()</signal>
+        <receiver>DlgConfig_Qt</receiver>
+        <slot>accept()</slot>
+    </connection>
+    <connection>
+        <sender>CombinaisonOptions</sender>
+        <signal>clicked(int)</signal>
+        <receiver>DlgConfig_Qt</receiver>
+        <slot>ChangeOptionMode(int)</slot>
+    </connection>
+    <connection>
+        <sender>LimitRes</sender>
+        <signal>stateChanged(int)</signal>
+        <receiver>DlgConfig_Qt</receiver>
+        <slot>LimitActivatedChanged(int)</slot>
+    </connection>
+</connections>
+<includes>
+    <include location="local" impldecl="in implementation">dlgconfig_qt.ui.h</include>
+</includes>
+<slots>
+    <slot>ChangeGeneralMode( int m )</slot>
+    <slot>ChangeOptionMode( int m )</slot>
+    <slot>LimitActivatedChanged( int s )</slot>
+</slots>
+<layoutdefaults spacing="6" margin="11"/>
+<includehints>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+    <includehint>knuminput.h</includehint>
+</includehints>
+</UI>
