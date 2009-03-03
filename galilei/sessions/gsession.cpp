@@ -97,18 +97,27 @@ catch(GException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
 	{                                                                          \
+		cerr<<msg<<" "<<e.GetMsg()<<endl;                                      \
+		rec->WriteStr(e.GetMsg());                                             \
+	}                                                                          \
+	else                                                                       \
+		throw GException(e.GetMsg());                                          \
+}                                                                              \
+catch(RIOException& e)                                                         \
+{                                                                              \
+	if(rec)                                                                    \
+	{                                                                          \
 		cerr<<e.GetMsg()<<endl;                                                \
 		rec->WriteStr(e.GetMsg());                                             \
 	}                                                                          \
 	else                                                                       \
 		throw GException(e.GetMsg());                                          \
 }                                                                              \
-                                                                               \
 catch(RException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
 	{                                                                          \
-		cerr<<e.GetMsg()<<endl;                                                \
+		cerr<<msg<<" "<<e.GetMsg()<<endl;                                      \
 		rec->WriteStr(e.GetMsg());                                             \
 	}                                                                          \
 	else                                                                       \
@@ -118,7 +127,7 @@ catch(exception& e)                                                            \
 {                                                                              \
 	if(rec)                                                                    \
 	{                                                                          \
-		cerr<<e.what()<<endl;                                                  \
+		cerr<<msg<<" "<<e.what()<<endl;                                        \
 		rec->WriteStr(e.what());                                               \
 	}                                                                          \
 	else                                                                       \
