@@ -393,7 +393,6 @@ void QSessionProgressDlg::NextChromosome(size_t id)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::reject(void)
 {
-	cout<<"reject"<<endl;
 	if(Running)
 	{
 		GSession::SetBreak();
