@@ -70,35 +70,35 @@ GMetaEngineSum::GMetaEngineSum(GFactoryMetaEngine* fac)
 void GMetaEngineSum::ApplyConfig(void)
 {
 
-	UseWeight=Factory->GetBool("UseWeight");
-	if(Factory->GetBool("LimitRes"))
-	{
-		MaxResNb=Factory->GetUInt("MaxResNb");
-	}
-	else
-		MaxResNb=-1;
-	NValue=Factory->GetUInt("NValue");
-	unsigned int mode=Factory->GetUInt("QueryMode");
-	switch(mode)
-	{
-		case 1:
-			SingleQuery=true;
-			RanchQuery=false;
-			break;
-		case 2:
-			SingleQuery=false;
-			RanchQuery=false;
-			break;
-		case 0:
-			SingleQuery=false;
-			RanchQuery=true;
-			break;
-	}
-	PercentValue=Factory->GetBool("PercentValue");
-	PLowerPC=Factory->GetUInt("PLowerPC");
-	PUpperPC=Factory->GetUInt("PUpperPC");
-	PLowerAbs=Factory->GetUInt("PLowerAbs");
-	PUpperAbs=Factory->GetUInt("PUpperAbs");
+//	UseWeight=Factory->GetBool("UseWeight");
+//	if(Factory->GetBool("LimitRes"))
+//	{
+//		MaxResNb=Factory->GetUInt("MaxResNb");
+//	}
+//	else
+//		MaxResNb=-1;
+//	NValue=Factory->GetUInt("NValue");
+//	unsigned int mode=Factory->GetUInt("QueryMode");
+//	switch(mode)
+//	{
+//		case 1:
+//			SingleQuery=true;
+//			RanchQuery=false;
+//			break;
+//		case 2:
+//			SingleQuery=false;
+//			RanchQuery=false;
+//			break;
+//		case 0:
+//			SingleQuery=false;
+//			RanchQuery=true;
+//			break;
+//	}
+//	PercentValue=Factory->GetBool("PercentValue");
+//	PLowerPC=Factory->GetUInt("PLowerPC");
+//	PUpperPC=Factory->GetUInt("PUpperPC");
+//	PLowerAbs=Factory->GetUInt("PLowerAbs");
+//	PUpperAbs=Factory->GetUInt("PUpperAbs");
 }
 
 
