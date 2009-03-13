@@ -78,7 +78,7 @@ void GEngineXML::ApplyConfig()
 	Weight = Factory->GetDouble("Weight");
 	ask_update = Factory->GetBool("Update");
 	ask_reset = ask_update && Factory->GetBool("Reset");
-	//cout<<"update? "<<ask_update<<" reset? "<<Factory->GetBool("Reset")<<" nbres? "<<NbResults<<" weight? "<<Weight<<endl;
+	cout<<"update? "<<ask_update<<" reset? "<<Factory->GetBool("Reset")<<" nbres? "<<NbResults<<" weight? "<<Weight<<endl;
 		Params.ParamsDocSc=Factory->FindParam<RParamStruct>("DocSc Criterion");
 		//Params->ParamsType.Set(Factory->FindParam<RParamStruct>("Type Criterion"));
 		Params.ParamsDis=Factory->FindParam<RParamStruct>("Distance Criterion");
@@ -190,11 +190,11 @@ RString GEngineXML::ConstructQuery(RContainer<RString, false, false> &keyWords)
  void GEngineXML::Process(R::RContainer<R::RString,false,false> &keyWords) throw(GException)
  {
  	RCursor<XResult> cres;
- 	unsigned int res = 0, currRank = 0;
+ 	unsigned int currRank = 0;
  	RString url, title, description;
  	XQuery xquery(Session->GetStorage(), Params);
  	RContainer<RString, true, false> query_list(20);
- 
+
  	try
  	{
  		if (ask_reset)
@@ -215,11 +215,11 @@ RString GEngineXML::ConstructQuery(RContainer<RString, false, false> &keyWords)
   		ConstructQuery(keyWords).Split(query_list, RChar(' '));					// Same line as the 4 above, query_list
  		time_t temps_actD;
  		time_t temps_actF;
- 
+
  		time(&temps_actD);
  		cres = xquery.Query(query_list, Name);										//   is a container of words and symbols
  		time(&temps_actF);
- 		if (difftime(temps_actF,temps_actD)) 
+ 		if (difftime(temps_actF,temps_actD))
  		cout << "temps prispour cette requ�te  " << difftime(temps_actF,temps_actD) << endl;
  		for (cres.Start(); !cres.End() && currRank < NbResults; cres.Next())
  		{

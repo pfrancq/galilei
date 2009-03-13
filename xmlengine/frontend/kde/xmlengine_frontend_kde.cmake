@@ -1,4 +1,4 @@
-SET(xmlengine_frontend_kde_UI_INCLUDES dlgconfig_qt.ui)
+SET(xmlengine_frontend_kde_UI_INCLUDES genginexml.ui)
 
 SET(xmlengine_frontend_kde_TARGET_SOURCES genginexml_kde.cpp)
 
