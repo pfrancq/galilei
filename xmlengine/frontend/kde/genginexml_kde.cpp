@@ -49,9 +49,10 @@ using namespace GALILEI;
 #include <Qt3Support/q3table.h>
 #include <ui_genginexml.h>
 #include <QtGui/qfiledialog.h>
-#include "genginexml_kde.h"
+#include <genginexml_kde.h>
+
 //------------------------------------------------------------------------------
-GEngineXML_KDE::GEngineXML_KDE()
+GEngineXML_KDE::GEngineXML_KDE(void)
 {
 		setCaption("Configure XML Engine Plug-In");
 		QWidget* widget=new QWidget(this);
@@ -310,5 +311,4 @@ void Configure(GFactoryEngine* params)
 
 	}
 // end of extern
-//------------------------------------------------------------------------------
 

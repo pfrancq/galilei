@@ -555,6 +555,9 @@
               </column>
              </widget>
             </item>
+            <item row="0" column="0" >
+             <widget class="QLineEdit" name="pathLEdit" />
+            </item>
             <item row="0" column="1" >
              <widget class="QPushButton" name="openButton" >
               <property name="text" >
@@ -562,15 +565,10 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="0" >
-             <widget class="QLineEdit" name="pathLEdit" />
-            </item>
            </layout>
            <zorder>subfCBox</zorder>
            <zorder>pathLView</zorder>
            <zorder>pathLEdit</zorder>
-           <zorder>toolButton</zorder>
-           <zorder>widget</zorder>
            <zorder>openButton</zorder>
           </widget>
          </item>
@@ -677,86 +675,5 @@
   <include location="local" >kpushbutton.h</include>
  </includes>
  <resources/>
- <connections>
-  <connection>
-   <sender>openButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Config</receiver>
-   <slot>OpenDir()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>501</x>
-     <y>201</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>remButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Config</receiver>
-   <slot>RemoveFolder()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>313</x>
-     <y>509</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>addButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Config</receiver>
-   <slot>AddFolder()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>210</x>
-     <y>509</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>cancelButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Config</receiver>
-   <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>503</x>
-     <y>782</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>okButton</sender>
-   <signal>clicked()</signal>
-   <receiver>Config</receiver>
-   <slot>OnOk()</slot>
-   <hints>
-    <hint type="sourcelabel" >
-     <x>451</x>
-     <y>782</y>
-    </hint>
-    <hint type="destinationlabel" >
-     <x>20</x>
-     <y>20</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
