@@ -202,5 +202,22 @@ In practice, the minimum measure is computed as the sum of the average and the p
   <include location="local" >kpushbutton.h</include>
  </includes>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>File</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>Dir</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>53</x>
+     <y>113</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>201</x>
+     <y>117</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

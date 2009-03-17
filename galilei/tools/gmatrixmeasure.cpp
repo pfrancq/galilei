@@ -172,13 +172,14 @@ RString GMatrixMeasure::GetFilesName(void) const
 //-----------------------------------------------------------------------------
 void GMatrixMeasure::ApplyConfig(void)
 {
-	// Nothing can be changed when a session is running
+	DeviationRate=Factory->GetDouble("DeviationRate");
+	MinMeasure=Factory->GetDouble("MinMeasure");
+	AutomaticMinMeasure=Factory->GetBool("AutomaticMinMeasure");
+
+	// Some elements cannot be changed when a session is running
 	if(Session)
 		return;
 	NullLevel=Factory->GetDouble("NullLevel");
-	MinMeasure=Factory->GetDouble("MinMeasure");
-	DeviationRate=Factory->GetDouble("DeviationRate");
-	AutomaticMinMeasure=Factory->GetBool("AutomaticMinMeasure");
 	InMemory=Factory->GetBool("Memory");
 	InFile=Factory->GetBool("File");
 	Dir=Factory->Get("Dir");

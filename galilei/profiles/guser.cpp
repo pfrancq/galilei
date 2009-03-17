@@ -110,7 +110,7 @@ R::RCursor<GProfile> GUser::GetProfiles(void)
 //------------------------------------------------------------------------------
 size_t GUser::GetNbProfiles(void) const
 {
-	return(this->GetNb());
+	return(GetNb());
 }
 
 
