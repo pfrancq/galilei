@@ -1,7 +1,7 @@
 PROJECT(gca)
 INCLUDE_DIRECTORIES(.)
 
-SET(COMMON_SRC gcaobj.cpp gcachromo.cpp gcagroup.cpp gcainst.cpp gca.cpp gcaheuristic.cpp gcaprom.cpp)
+SET(COMMON_SRC  gcagroup.cpp gcachromo.cpp gcainst.cpp gca.cpp)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 

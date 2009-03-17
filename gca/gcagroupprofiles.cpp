@@ -81,8 +81,7 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void)
-	{GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>::Run(Session,"Profiles",Session->GetCommunities());}
+	virtual void Run(void) {RunGrouping(Session,"Profiles",Session->GetCommunities());}
 
 public:
 

@@ -6,7 +6,7 @@
 
 	Chromosome - Header
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
+	Copyright 2002-2009 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -37,14 +37,15 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rchromog.h>
-#include <rpromkernel.h>
+#include <rchromosc.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
 // include files for GCA
 #include <gca.h>
-#include <gcaprom.h>
+#include <gcainst.h>
+#include <gcagroup.h>
 
 
 //-----------------------------------------------------------------------------
@@ -54,93 +55,8 @@
 * @author Pascal Francq
 * @short IR Chromosome.
 */
-class GCAChromo : public R::RChromoG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>
+class GCAChromo : public RChromoSC<GCAInst,GCAChromo,GCAThreadData,GCAGroup,GCAObj>
 {
-private:
-
-	R::RContainer<GCAGroup,false,false>* ToDel;
-
-	/**
-	* Value of the Similarity criterion "J" :
-	* (Average Similarity inside each group)/(Maximal similarity between centroids+2) .
-	*/
-	double CritSimJ;
-
-	/**
-	* Value of the "Agreement" criterion.
-	*/
-	double CritAgreement;
-
-	/**
-	* Value of the "Disagreement" criterion.
-	*/
-	double CritDisagreement;
-
-	/**
-	* Fi minus value.
-	*/
-	double FiMinus;
-
-	/**
-	* Fi minus value.
-	*/
-	double FiPlus;
-
-	/**
-	* Fi minus value.
-	*/
-	double Fi;
-
-	/**
-	* Temporary array of Objects (Thread dependent data).
-	*/
-	GCAObj** thObjs1;
-
-	/**
-	* Number of objects in thObjs1.
-	*/
-	size_t NbObjs1;
-
-	/**
-	* Temporary array of Objects (Thread dependent data).
-	*/
-	GCAObj** thObjs2;
-
-	/**
-	* Number of objects in thObjs2.
-	*/
-	size_t NbObjs2;
-
-	/**
-	* Prototypes used for the KMeans.
-	*/
-	R::RContainer<GCAObj,false,false> Protos;
-
-	/**
-	* Test Chromosome (Thread dependent data).
-	*/
-	GCAChromo** thTests;
-
-	/**
-	* PROMETHE  Kernel used by the chromosome.
-	*/
-	GCAProm* thProm;
-
-	/**
-	* Array of solutions to create in PROMETHEE Kernel.
-	*/
-	R::RPromSol** thSols;
-
-	/**
-	 * Identifier of the first of the two most similar centroid.
-	 */
-	size_t MostSimilarGroup1;
-
-	/**
-	 * Identifier of the second of the two most similar centroid.
-	 */
-	size_t MostSimilarGroup2;
-
 public:
 
 	/**
@@ -149,18 +65,6 @@ public:
 	* @param id             The identifier of the chromosome.
 	*/
 	GCAChromo(GCAInst* inst,size_t id);
-
-
-	/**
-	* Initialization of the chromosome.
-	* @param thData         Pointer to the "thread-dependent" data.
-	*/
-	virtual void Init(GCAThreadData* thData);
-
-	/**
-	* Method needed by R::RContainer.
-	*/
-	int Compare(const GCAChromo* c) const;
 
 	/**
 	* Construct the chromosome based on existing groups.
@@ -172,105 +76,6 @@ public:
 	* Construct a valid solution.
 	*/
 	virtual void RandomConstruct(void);
-
-	/**
-	* Evaluation of the chromosome.
-	*/
-	virtual void Evaluate(void);
-
-	/**
-	*  Reallocate the objects to the groups based on the different prototypes.
-	*/
-	void ReAllocate(void);
-
-	/**
-	* Compute the number of new prototypes until the last K-Means iteration.
-	*/
-	size_t CalcNewProtosNb(void);
-
-	/**
-	* Perform a K-Means on the chromosome.
-	*/
-	void DoKMeans(void);
-
-	/**
-	* Divide the group containing the two most dissimilar objects.
-	*/
-	void DivideWorstObjects(void);
-
-	/**
-	* Merge the two groups containing the two most similar centroids.
-	*/
-	void MergeBestGroups(void);
-
-	/**
-	* Treat the social objects, i.e. if these objects are alone in a group, put
-	* them in another group.
-	*/
-	void TreatSocialObjects(void);
-
-	/**
-	 * kMeans-based Optimization.
-	 */
-	void kMeansOptimisation(void);
-
-	/**
-	* Perform an optimization.
-	*/
-	virtual void Optimisation(void);
-
-	/**
-	* Do a mutation of the chromosome. Since the GCA seems to over-group, the
-	* mutation merge the two groups containing the most similar centroids.
-	*/
-//	virtual void Mutation(void);
-
-	/**
-	* Look if two objects are in the same group or not.
-	* @param obj1            Identifier of the first object.
-	* @param obj2            Identifier of the second object.
-	* @return true if they are in the same group, else false.
-	*/
-	bool SameGroup(size_t obj1,size_t obj2) const;
-
-	/**
-	* The assignment operator.
-	* @param chromo          Chromosome used as source.
-	*/
-	GCAChromo& operator=(const GCAChromo& chromo);
-
-	/**
-	* Get the value of the 'J' measure.
-	* @returns double.
-	*/
-	double GetSimJ(void) {return(CritSimJ);}
-
-	/**
-	* Get the value of the agreement criterion for the chromosome.
-	* @returns double.
-	*/
-	double GetAgreementCriterion(void) const {return(CritAgreement);}
-
-	/**
-	* Get the value of the disagreement criterion for the chromosome.
-	* @returns double.
-	*/
-	double GetDisagreementCriterion(void) const {return(CritDisagreement);}
-
-	/**
-	* @return Fi of the solution.
-	*/
-	double GetFi(void) const {return(Fi);}
-
-	/**
-	* @return Fi+ of the solution.
-	*/
-	double GetFiPlus(void) const {return(FiPlus);}
-
-	/**
-	* @return Fi- of the solution.
-	*/
-	double GetFiMinus(void) const {return(FiMinus);}
 
 	/**
 	* Destruct the chromosome.

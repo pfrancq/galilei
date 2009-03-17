@@ -259,7 +259,7 @@ template<class cObj,class cGroup,class cFactory>
 		cout<<"Prepare incremental kMeans"<<endl;
 		for(groups.Start();!groups.End();groups.Next())
 		{
-			CGroup* grp;
+			CGroup* grp(0);
 			RCursor<cObj> Cur(groups()->GetObjs());
 			if(Cur.GetNb())
 				grp=Sol.ReserveGroup();
@@ -279,7 +279,7 @@ template<class cObj,class cGroup,class cFactory>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup,class cFactory>
-	void GCAPlugIn<cObj,cGroup,cFactory>::Run(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
+	void GCAPlugIn<cObj,cGroup,cFactory>::RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
 {
 	// set the level of the MinSim
 	try

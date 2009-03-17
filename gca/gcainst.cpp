@@ -52,8 +52,6 @@
 #include <gcainst.h>
 #include <gcachromo.h>
 #include <gcagroup.h>
-#include <gcaobj.h>
-#include <gcaheuristic.h>
 using namespace R;
 using namespace std;
 
@@ -67,52 +65,14 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GCAThreadData::GCAThreadData(GCAInst* owner)
-	: RThreadDataG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>(owner),
-	  ToDel(owner->Objs.GetNb()<4?4:owner->Objs.GetNb()/4), tmpObjs1(0),tmpObjs2(0), Tests(0),
-	  Prom(Owner->Params), Sols(0), NbSols((Owner->Params->NbDivChromo*2)+2)
+	: RThreadDataSC<GCAInst,GCAChromo,GCAThreadData,GCAGroup,GCAObj>(owner)
 {
-	RPromSol** s;
-	size_t i;
-
-	Tests=new GCAChromo*[NbSols];
-	Sols=new RPromSol*[NbSols];
-	for(i=NbSols+1,s=Sols;--i;s++)
-		(*s)=Prom.NewSol();
-}
-
-
-//-----------------------------------------------------------------------------
-void GCAThreadData::Init(void)
-{
-	size_t i;
-
-	RThreadDataG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::Init();
-	tmpObjs1=new GCAObj*[Owner->Objs.GetNb()];
-	tmpObjs2=new GCAObj*[Owner->Objs.GetNb()];
-	for(i=0;i<NbSols;i++)
-	{
-		Tests[i]=new GCAChromo(Owner,Owner->GetPopSize()+1+i);
-		Tests[i]->Init(this);
-		(static_cast<RGroups<GCAGroup,GCAObj,GCAChromo>*>(Tests[i]))->Init();
-	}
 }
 
 
 //-----------------------------------------------------------------------------
 GCAThreadData::~GCAThreadData(void)
 {
-	GCAChromo** C;
-	size_t i;
-
-	if(Tests)
-	{
-		for(i=NbSols+1,C=Tests;--i;C++)
-			delete (*C);
-		delete[] Tests;
-	}
-	delete[] Sols;
-	delete[] tmpObjs1;
-	delete[] tmpObjs2;
 }
 
 
@@ -124,17 +84,10 @@ GCAThreadData::~GCAThreadData(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,GCAParams* p,RDebug *debug,tObjType type,const R::RString& mes,bool inc)
-	: RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>(p->PopSize,objs,"FirstFit","GCA",debug),
-	GCAProm(p), Params(p), Sols(0), Session(ses), NoSocialProfiles(objs.GetNb()),
-	Ratios(objs.GetNb()), Sims(0),Agree(0), Disagree(0), Type(type), Incremental(inc)
-#if BESTSOLSVERIFICATION
-	  , BestSols(p->MaxGen,p->MaxGen/2)
-#endif
+GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,RParamsSC* p,RDebug *debug,tObjType type,const R::RString& mes,bool inc)
+	: RInstSC<GCAInst,GCAChromo,GCAThreadData,GCAGroup,GCAObj>(objs,p,debug,inc),
+	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
 {
-	RPromSol** ptr;
-	size_t i;
-
 	// Init measures
 	Sims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities");
 	Agree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Agreements");
@@ -142,195 +95,8 @@ GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,GCAParams* p,RDebug *debug,t
 
 	if((!Sims)||(!Agree)||(!Disagree))
 		throw GException("GCAInst::GCAInst : Type "+GetObjType(Type)+" not supported");
-
-	// Change Freq
-	SetMutationParams(5,8,1);
-
-	// Init Solutions of the PROMETHEE part
-	Sols=new RPromSol*[GetPopSize()+1];
-	if(Sols)
-	{
-		for(i=GetPopSize()+2,ptr=Sols;--i;ptr++)
-		{
-			(*ptr)=NewSol();
-		}
-	}
 }
 
-
-//-----------------------------------------------------------------------------
-void GCAInst::Init(void)
-{
-	// Init the GGA
-	RInstG<GCAInst,GCAChromo,GCAFitness,GCAThreadData,GCAGroup,GCAObj>::Init();
-
-	// Init the Ratios
-	GCAMaxRatios* ptr;
-	double ratio;
-	size_t i,j,max;
-
-	if(Objs.GetNb()<50)
-		max=Objs.GetNb();
-	else
-		max=50;
-
-	RCursor<GCAObj> Cur1(Objs);
-	RCursor<GCAObj> Cur2(Objs);
-	for(Cur1.Start(),i=1;!Cur1.End();Cur1.Next(),i++)
-	{
-		Ratios.InsertPtrAt(ptr=new GCAMaxRatios(max),Cur1()->GetId());
-
-		// Add all the object with a greater agreement ratio than the minimum
-		for(Cur2.Start(),j=i;--j;Cur2.Next())
-		{
-			ratio=GetAgreementRatio(Cur1()->GetElementId(),Cur2()->GetElementId());
-			if(ratio>=Params->MinAgreement)
-			{
-				ptr->InsertPtr(new GCAMaxRatio(Cur2()->GetId(),ratio));
-				Ratios[Cur2()->GetId()]->InsertPtr(new GCAMaxRatio(Cur1()->GetId(),ratio));
-			}
-		}
-	}
-
-	// ReOrder to have the best ratio first
-	RCursor<GCAMaxRatios> Cur(Ratios);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->ReOrder(GCAMaxRatio::sortOrder);
-}
-
-
-//-----------------------------------------------------------------------------
-RGroupingHeuristic<GCAGroup,GCAObj,GCAChromo>* GCAInst::CreateHeuristic(void)
-{
-	return(new GCAHeuristic(Random,Objs,Ratios,Debug));
-}
-
-
-//-----------------------------------------------------------------------------
-GCAObj* GCAInst::GetObj(size_t id) const
-{
-	R::RCursor<GCAObj> Cur(Objs);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		if(Cur()->GetElementId()==id)
-			return(Cur());
-	return(0);
-}
-
-
-//-----------------------------------------------------------------------------
-bool GCAInst::StopCondition(void)
-{
-	return(GetGen()==Params->MaxGen);
-}
-
-
-//-----------------------------------------------------------------------------
-void GCAInst::WriteChromoInfo(GCAChromo* c)
-{
-	if(!Debug) return;
-	Debug->PrintInfo("Id "+RString::Number(c->Id)+" (Fi="+RString::Number(c->Fi,"%1.5f")+",Fi+="+RString::Number(c->FiPlus,"%1.5f")+",Fi-="+RString::Number(c->FiMinus,"%1.5f")+
-			" - J="+RString::Number(c->CritSimJ)+" - Agr.="+RString::Number(c->CritAgreement,"%1.5f")+" - Disagr.="+RString::Number(c->CritDisagreement,"%1.5f"));
-}
-
-
-//-----------------------------------------------------------------------------
-void GCAInst::PostEvaluate(void)
-{
-	size_t i;
-	GCAChromo** C;
-	GCAChromo* s;
-	#if BESTSOLSVERIFICATION
-		GCAChromo* b;
-		GCAGroupData GrpData;
-	#endif
-	RPromSol** Res;
-	RPromSol** ptr;
-	double r;
-
-	if(Debug)
-		Debug->BeginFunc("PostEvaluate","GCAInst");
-	ptr=Sols;
-	Assign(*ptr,BestChromosome);
-	for(i=GetPopSize()+1,C=Chromosomes,ptr++;--i;C++,ptr++)
-		Assign(*ptr,*C);
-	ComputePrometheeII();
-	Res=GetSols();
-	ptr=Res;
-
-	// Look if the best chromosome ever is still the best (and have some groups)
-	// -> If not, change the fitness of the best solution.
-	if((*ptr)->GetId())
-	{
-		s=Chromosomes[(*ptr)->GetId()-1];
-		(*s->Fitness)=static_cast<double>(GetGen())+1.1;
-		#if BESTSOLSVERIFICATION
-			BestSols.InsertPtr(b=new GCAChromo(this,BestSols.NbPtr));
-			b->Init(thDatas[0]);
-			(static_cast<RGroups<GCAGroup,GCAObj,GCAGroupData,GCAChromo>*>(b))->Init(&GrpData);
-			(*b)=(*s);
-		#endif
-	}
-	else
-	{
-		s=BestChromosome;
-		// Verify that BestChromosome has at least one group
-		// -> If not, exchange the first two solutions
-		if(!BestChromosome->Used.GetNb())
-		{
-			RPromSol* old=(*ptr);
-			(*ptr)=(*(ptr+1));
-			(*(ptr+1))=old;
-			s=Chromosomes[(*ptr)->GetId()-1];
-		}
-
-		if(s->Fitness->Value==0.0)
-			(*s->Fitness)=1.1;
-	}
-	s->FiPlus=(*ptr)->GetFiPlus();
-	s->FiMinus=(*ptr)->GetFiMinus();
-	s->Fi=(*ptr)->GetFi();
-	if(Debug)
-		WriteChromoInfo(s);
-	ptr++;
-
-	//  The second best has the fitness of 1
-	if((*ptr)->GetId())
-	{
-		s=Chromosomes[(*ptr)->GetId()-1];
-		(*s->Fitness)=1.0;
-	}
-	else
-		s=BestChromosome;
-	s->FiPlus=(*ptr)->GetFiPlus();
-	s->FiMinus=(*ptr)->GetFiMinus();
-	s->Fi=(*ptr)->GetFi();
-	if(Debug)
-		WriteChromoInfo(s);
-
-	// Look for the rest
-	for(i=GetPopSize(),ptr++;--i;ptr++)
-	{
-		r=((double)i)/((double)(GetPopSize()));
-		if((*ptr)->GetId())
-		{
-			s=Chromosomes[(*ptr)->GetId()-1];
-			(*s->Fitness)=r;
-		}
-		else
-			s=BestChromosome;
-		s->FiPlus=(*ptr)->GetFiPlus();
-		s->FiMinus=(*ptr)->GetFiMinus();
-		s->Fi=(*ptr)->GetFi();
-		if(Debug)
-			WriteChromoInfo(s);
-	}
-
-	// Delete the resulting array
-	delete[] Res;
-
-	if(Debug)
-		Debug->EndFunc("PostEvaluate","GCAInst");
-}
 
 
 //-----------------------------------------------------------------------------
@@ -360,37 +126,7 @@ double GCAInst::GetSim(size_t element1,size_t element2) const
 }
 
 
-
-//-----------------------------------------------------------------------------
-void GCAInst::PostRun(void)
-{
-#if BESTSOLSVERIFICATION
-	RPromSol* s;
-
-	// Init Criterion and Solutions of the PROMETHEE part
-	GCAProm::ClearSols();
-	for(BestSols.Start();!BestSols.End();BestSols.Next())
-	{
-		s=NewSol();
-		Assign(s,BestSols());
-	}
-	ComputePrometheeII();
-	(*BestChromosome)=(*BestSols.Tab[GetBestSol()->GetId()]);
-	emitBestSig();
-#endif
-}
-
-
-//-----------------------------------------------------------------------------
-void GCAInst::HandlerNotFound(const RNotification& /*notification*/)
-{
-//	std::cout<<" GCA '"<<notification.GetName()<<"' not treated (Gen="<<Gen<<")."<<std::endl;
-}
-
-
 //-----------------------------------------------------------------------------
 GCAInst::~GCAInst(void)
 {
-	if(Sols)
-		delete[] Sols;
 }

@@ -36,11 +36,11 @@
 
 //-----------------------------------------------------------------------------
 // includes files for R Project
-#include <rpromcriterion.h>
-#include <rfitness.h>
-#include <rgga.h>
+#include <scga.h>
 #include <rparam.h>
 #include <rgroups.h>
+#include <robjsc.h>
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -57,168 +57,6 @@ class GCAChromo;
 class GCAInst;
 class GCAObj;
 class GCAHeuristic;
-class GCAParams;
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GCAFitness provides a representation for a fitness function for the
-* information retrieval problem.
-* @author Pascal Francq
-* @short IR Fitness.
-*/
-class GCAFitness : public R::RFitness<double,true>
-{
-public:
-
-	/**
-	* Constructor of the fitness function used for the Bin Packing.
-	*/
-	GCAFitness(void) : R::RFitness<double,true>() {}
-
-	/**
-	* Assignment operator with a fitness f.
-	*/
-	GCAFitness& operator=(const GCAFitness &f)
-	{
-		R::RFitness<double,true>::operator=(f);
-		return(*this);
-	}
-
-	/**
-	* Assignment operator with a double value.
-	*/
-	GCAFitness& operator=(const double val)
-	{
-		R::RFitness<double,true>::operator=(val);
-		return(*this);
-	}
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GCAParam represents all the parameter used in the GCA module.
-* @short GCA Parameters.
-*/
-class GCAParams
-{
-public:
-
-	/**
-	* Size of the population of the GA.
-	*/
-	size_t PopSize;
-
-	/**
-	* Maximal number of generation to run.
-	*/
-	size_t MaxGen;
-
-	/**
-	* Is the GA in step mode?
-	*/
-	bool Step;
-
-	/**
-	* Number of generation for each step.
-	*/
-	size_t StepGen;
-
-	/**
-	* Minimum similarity level between the profiles of a group.
-	*/
-	double MinSimLevel;
-
-	/**
-	* Minimum threshold for the agreement ratio.
-	*/
-	double MinAgreement;
-
-	/**
-	* Minimum threshold for the disagreement ratio.
-	*/
-	double MinDisagreement;
-
-	/**
-	* Maximal Number of k-Means.
-	*/
-	size_t MaxKMeans;
-
-	/**
-	* Convergence ratio between two k-Means iterations.
-	*/
-	double Convergence;
-
-	/**
-	* Number of derived chromosomes must be constructed for the optimization.
-	*/
-	size_t NbDivChromo;
-
-	/**
-	* Parameter for the criterion "Similarity".
-	*/
-	R::RParam* ParamsSim;
-
-	/**
-	* Parameter for the criterion "Agreement".
-	*/
-	R::RParam* ParamsAgreement;
-
-	/**
-	* Parameter for the criterion "Disagreement".
-	*/
-	R::RParam* ParamsDisagreement;
-
-	/**
-	 * Perform a local optimization.
-	 */
-	bool LocalOptimisation;
-
-	/**
-	 * Perform an optimization.
-	 */
-	bool Optimisation;
-
-	/**
-	 * Perform an incremental clustering.
-	 */
-	bool Incremental;
-
-	/**
-	* Constructor.
-	*/
-	GCAParams(void);
-};
-
-
-//-----------------------------------------------------------------------------
-class GCAMaxRatio
-{
-public:
-	size_t ObjId;
-	double Ratio;
-
-	GCAMaxRatio(size_t objid,double ratio) : ObjId(objid), Ratio(ratio) {}
-
-	int Compare(const GCAMaxRatio& ratio) const {return(static_cast<int>(Ratio-ratio.Ratio));}
-
-	/**
-	* Static function used to order the object by ratio.
-	* @param a              Pointer to the first object.
-	* @param b              Pointer to the second object.
-	*/
-	static int sortOrder(const void* a,const void* b);
-};
-
-
-//-----------------------------------------------------------------------------
-class GCAMaxRatios : public R::RContainer<GCAMaxRatio,true,false>
-{
-public:
-	GCAMaxRatios(size_t max);
-	int Compare(const GCAMaxRatios&) const {return(-1);}
-};
 
 
 //-----------------------------------------------------------------------------
@@ -254,6 +92,63 @@ class CGroups : public R::RGroups<CGroup,GCAObj,CGroups>
 {
 public:
 	CGroups(R::RCursor<GCAObj> objs,size_t max);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GCAObj class provides a representation of a profile or a document to
+* group.
+* @author Pascal Francq
+* @short IR Object.
+*/
+class GCAObj : public RObjSC
+{
+protected:
+
+	/**
+	* Pointer to the element.
+	*/
+	void* Element;
+
+	/**
+	 * Identifier of the element.
+	 */
+	size_t ElementId;
+
+public:
+
+	/**
+	* Construct the object.
+	* @param id             Identifier.
+	* @param d              Corresponding document.
+	*/
+	GCAObj(size_t id,GDoc* d);
+
+	/**
+	* Construct the object.
+	* @param id             Identifier.
+	* @param p              Corresponding profile.
+	*/
+	GCAObj(size_t id,GProfile* p);
+
+	/**
+	* Return a pointer to the element.
+	*/
+	inline void* GetElement(void) const {return(Element);}
+
+	/**
+	 * Return the identifier of the element.
+	 */
+	inline size_t GetElementId(void) const {return(ElementId);}
+
+	/**
+	* Destruct the object.
+	*/
+	~GCAObj(void);
+
+	// friend classes
+	friend class GCAGroup;
 };
 
 

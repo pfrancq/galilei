@@ -51,7 +51,6 @@
 // include files
 #include <gca.h>
 #include <gcachromo.h>
-#include <gcaobj.h>
 
 
 //-----------------------------------------------------------------------------
@@ -74,7 +73,7 @@ public:
  * @short Generic GCA PlugIn
  */
 template<class cObj,class cGroup,class cFactory>
-	class GCAPlugIn : public R::RObject, public GCAParams
+	class GCAPlugIn : public R::RObject, public RParamsSC
 {
 protected:
 
@@ -179,7 +178,7 @@ protected:
 	/**
 	* Make the grouping.
 	*/
-	virtual void Run(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups);
+	void RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups);
 
 	/**
 	 * Catch a best chromosome notification.

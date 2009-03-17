@@ -31,56 +31,42 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <gdoc.h>
+#include <gprofile.h>
+#include <guser.h>
+#include <gsession.h>
+
+
+//-----------------------------------------------------------------------------
 // includes files for GCA
 #include <gca.h>
-#include <gcaobj.h>
 using namespace R;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// GCAParams
+// class GCAObj
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAParams::GCAParams(void)
+GCAObj::GCAObj(size_t id,GDoc* d)
+	: RObjSC(id,d->GetName()), Element(d), ElementId(d->GetId())
 {
 }
 
 
-
 //-----------------------------------------------------------------------------
-//
-// GCAMaxRatio
-//
-//-----------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-int GCAMaxRatio::sortOrder(const void* a,const void* b)
+GCAObj::GCAObj(size_t id,GProfile* p)
+	: RObjSC(id,p->GetName(),p->IsSocial(),p->GetUser()->GetId()), Element(p), ElementId(p->GetId())
 {
-	double af=(*((GCAMaxRatio**)(a)))->Ratio;
-	double bf=(*((GCAMaxRatio**)(b)))->Ratio;
-
-	if(af==bf) return(0);
-	if(af>bf)
-		return(-1);
-	else
-		return(1);
 }
 
 
-
 //-----------------------------------------------------------------------------
-//
-// GCAMaxRatios
-//
-//-----------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GCAMaxRatios::GCAMaxRatios(size_t max)
-	: RContainer<GCAMaxRatio,true,false>(max>4?max/4:4)
+GCAObj::~GCAObj(void)
 {
 }
 
