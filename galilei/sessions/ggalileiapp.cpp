@@ -136,7 +136,6 @@ void GGALILEIApp::CreateConfig(void)
 	GALILEIConfig.InsertParam(new RParamValue("Log File","/var/log/galilei/galilei.log"));
 	GALILEIConfig.InsertParam(new RParamValue("Debug File","/home/pfrancq/debug-galilei.xml"));
 	GALILEIConfig.InsertParam(new RParamList("PlugIns Path"));
-	GSubjects::CreateConfig();
 
 	// Plug-ins manager parameters
 	R::RCursor<GGenericPluginManager> Managers(*this);

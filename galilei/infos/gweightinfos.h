@@ -174,16 +174,9 @@ public:
  	size_t GetNb(void) const;
 
 	/**
-	* Verify if a list is empty.
-	* @return bool
+	* @return True if a list is not empty.
 	*/
-	bool IsEmpty(void) const {return(!GetNb());}
-
-	/**
-	* Verify if a list is not empty.
-	* @return bool
-	*/
-	bool IsDefined(void) const {return(GetNb());}
+	virtual bool IsDefined(void) const {return(GetNb());}
 
 	/**
 	* Compute the maximal weight of the information entities in the list for a

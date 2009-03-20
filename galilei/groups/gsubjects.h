@@ -85,11 +85,6 @@ public:
 	GSubjects(GSession* session);
 
 	/**
-	* Create the configuration.
-	*/
-	static void CreateConfig(void);
-
-	/**
 	* Assign the values of the parameters to the corresponding variables.
 	*/
 	void Apply(void);
@@ -100,6 +95,13 @@ public:
 	void ReInit(void);
 
 protected:
+
+	/**
+	 * Select a subject.
+	 * @param subject        Subject to select.
+	 * @param createdocs     Must documents be created ?
+	 */
+	void SelectSubject(GSubject* subject,bool createdocs);
 
 	/**
 	* Choose the subjects that will be used.

@@ -198,6 +198,11 @@ public:
 	void ClearInfos(void);
 
 	/**
+	* @return True if a list is not empty.
+	*/
+	virtual bool IsDefined(void) const {return(Lang);}
+
+	/**
 	 * Clear the structure associated with the document.
 	 */
 	void ClearStruct(void);

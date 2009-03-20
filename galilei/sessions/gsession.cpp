@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2008 by the Université libre de Bruxelles.
+	Copyright 2001-2009 by the Université libre de Bruxelles.
 
 	Authors:
 		GALILEI Team (pfrancq@ulb.ac.be)
@@ -197,6 +197,7 @@ public:
 	size_t MaxProfiles;                                               // Maximum number of profiles to handle in memory.
 	size_t MaxGroups;                                                 // Maximum number of groups to handle in memory.
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager.
+	bool ClusterSelectedDocs;                                         // Limit the clustering of the documents to the selected ones.
 
 	Intern(GStorage* str,size_t mdocs,size_t maxprof,size_t maxgroups,size_t d,size_t u,size_t p,size_t t,size_t c)
 		: Subjects(0), Random(0), Storage(str), SaveResults(true),
@@ -265,6 +266,30 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 
 	if(!Intern::Session)
 		Intern::Session=this;
+
+	// Create the configurations
+	SetConfigInfos("lib/galilei/sessions",Data->Storage->GetWorld());
+	InsertParam(new RParamValue("NbOK",10.0),"Subjects");
+	InsertParam(new RParamValue("RelOK",true),"Subjects");
+	InsertParam(new RParamValue("NbKO",10.0),"Subjects");
+	InsertParam(new RParamValue("RelKO",true),"Subjects");
+	InsertParam(new RParamValue("NbH",50.0),"Subjects");
+	InsertParam(new RParamValue("RelH",true),"Subjects");
+	InsertParam(new RParamValue("PercErr",0.0),"Subjects");
+	InsertParam(new RParamValue("NbProfMin",2),"Subjects");
+	InsertParam(new RParamValue("NbProfMax",10),"Subjects");
+	InsertParam(new RParamValue("PercSocial",100.0),"Subjects");
+	InsertParam(new RParamValue("NbSubjects",100.0),"Subjects");
+	InsertParam(new RParamValue("RelSubjects",true),"Subjects");
+	InsertParam(new RParamValue("NbMinDocsSubject",50),"Subjects");
+	InsertParam(new RParamValue("NbDocsAssess",30),"Subjects");
+	InsertParam(new RParamValue("SwitchPerc",5.0),"Subjects");
+	InsertParam(new RParamValue("ManualSubjects",false),"Subjects");
+	InsertParam(new RParamValue("NbDocsPerSubject",100.0),"Subjects");
+	InsertParam(new RParamValue("PercNbDocsPerSubject",true),"Subjects");
+	InsertParam(new RParamValue("ClusterSelectedDocs",false),"Subjects");
+	InsertParam(new RParamList("SelectedSubjects"),"Subjects");
+	Load(false);
 }
 
 
@@ -274,6 +299,15 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 // GSession::General
 //
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GSession::Apply(void)
+{
+	Data->ClusterSelectedDocs=GetBool("ClusterSelectedDocs","Subjects");
+	if(Data->Subjects)
+		Data->Subjects->Apply();
+}
+
 
 //------------------------------------------------------------------------------
 void GSession::ForceReCompute(tObjType type)
@@ -1663,8 +1697,8 @@ template<class cGroup,class cObj,class cCalc>
 		// Clear the groups associated to the subject
 		Grps()->ClearIdealGroup(grouptype);
 
-		// If the subject has no profiles -> next one.
-		if(!Grps()->GetNbObjs(objtype))
+		// If the subject has no objects or is not selected -> next one.
+		if((!Grps()->IsUsed())&&(!Grps()->GetNbObjs(objtype)))
 			continue;
 
 		// Create a new group in groups and associated with the current groups
@@ -1883,7 +1917,7 @@ void GSession::GroupDocs(GSlot* rec)
 		throw GException("No documents grouping method chosen.");
 
     // Group the profiles
-	Grouping->Grouping(rec,Data->SaveResults);
+	Grouping->Grouping(rec,Data->SaveResults,Data->ClusterSelectedDocs);
 	DoPostTopic(rec);
 }
 
@@ -1976,6 +2010,9 @@ void GSession::ResetBreak(void)
 //------------------------------------------------------------------------------
 GSession::~GSession(void)
 {
+	// Save the configurations
+	Save();
+
 	// Delete the storage
 	Data->Storage->GetFactory()->Delete();
 

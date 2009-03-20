@@ -40,6 +40,8 @@
 #include <ggalileiapp.h>
 #include <gstorage.h>
 #include <gslot.h>
+#include <gsubjects.h>
+#include <gsubject.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -64,21 +66,38 @@ GGroupDocs::GGroupDocs(GFactoryGroupDocs* fac)
 
 
 //-----------------------------------------------------------------------------
-void GGroupDocs::Grouping(GSlot*,bool save)
+void GGroupDocs::Grouping(GSlot*,bool save,bool debug)
 {
 	// How to compute the groups
 	GTopicCalc* CalcDesc=GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod();
+
 	Docs.Clear();
-	RCursor<GDoc> cur(Session->GetDocs());
-	for(cur.Start();!cur.End();cur.Next())
+
+	if(debug)
 	{
-		#ifdef GROUP_DOCS_NOT_DEFINED
-		if(cur()->IsDefined()||cur()->GetNbJudgedDocs())
-			Docs.InsertPtr(cur());
-		#else
-		if(cur()->IsDefined())
-			Docs.InsertPtr(cur());
-		#endif
+		GSubjects* Subjects(Session->GetSubjects());
+		RCursor<GSubject> Cur(Subjects->GetNodes());
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			if(!Cur()->IsUsed()) continue;
+			RCursor<GDoc> ToGroup(Cur()->GetObjs(static_cast<GDoc*>(0)));
+			for(ToGroup.Start();!ToGroup.End();ToGroup.Next())
+				Docs.InsertPtr(ToGroup());
+		}
+	}
+	else
+	{
+		RCursor<GDoc> cur(Session->GetDocs());
+		for(cur.Start();!cur.End();cur.Next())
+		{
+			#ifdef GROUP_DOCS_NOT_DEFINED
+			if(cur()->IsDefined()||cur()->GetNbJudgedDocs())
+				Docs.InsertPtr(cur());
+			#else
+			if(cur()->IsDefined())
+				Docs.InsertPtr(cur());
+			#endif
+		}
 	}
 
 	// Make the grouping

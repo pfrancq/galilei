@@ -526,16 +526,20 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+#if SHOWINST
 inline void ShowInst(RPrgFunc* func,RInterpreter* prg,RContainer<RPrgVar,true,false>& args)
 {
-	#if SHOWINST
 		cout<<func->GetName()<<" ";
 		RCursor<RPrgVar> A(args);
 		for(A.Start();!A.End();A.Next())
 			cout<<A()->GetValue(prg)<<" ";
 		cout<<endl;
-	#endif
 }
+#else
+inline void ShowInst(RPrgFunc*,RInterpreter*,RContainer<RPrgVar,true,false>&)
+{
+}
+#endif
 
 
 //------------------------------------------------------------------------------

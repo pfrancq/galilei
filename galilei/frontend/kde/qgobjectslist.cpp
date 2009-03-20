@@ -51,6 +51,7 @@
 #include <gtopic.h>
 #include <gcommunity.h>
 #include <gmetaengine.h>
+using namespace std;
 using namespace R;
 using namespace GALILEI;
 

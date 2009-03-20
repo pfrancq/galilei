@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2008 by the Université Libre de Bruxelles.
+	Copyright 2001-2009 by the Université Libre de Bruxelles.
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).
@@ -43,6 +43,7 @@
 #include <galilei.h>
 #include <genginedoc.h>
 #include <gsignalhandler.h>
+#include <rconfig.h>
 
 
 //------------------------------------------------------------------------------
@@ -56,7 +57,7 @@ namespace GALILEI{
 * @author GALILEI Team
 * @short Generic Session.
 */
-class GSession
+class GSession : public R::RConfig
 {
 	class Intern;
 
@@ -89,6 +90,12 @@ public:
 	/** @name General Methods
 	*/
 	// @{
+
+	/**
+	 * Apply the internal configuration. This method must be called to take
+	 * changes in the configuration into account.
+	 */
+	void Apply(void);
 
 	/**
 	* Force some objects to be re-computed even if they are updated.

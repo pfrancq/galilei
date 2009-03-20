@@ -89,8 +89,9 @@ public:
 	* Group the Documents.
 	* @param rec            Receiver of the signals.
 	* @param save           Save modified elements.
+	* @param debug          Dubug mode (cluster only the selected documents).
 	*/
-	void Grouping(GSlot* rec,bool save);
+	void Grouping(GSlot* rec,bool save,bool debug);
 
 	/**
 	* Destruct the documents grouping method.

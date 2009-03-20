@@ -243,7 +243,7 @@ double GWeightInfos::Inclusion(const GWeightInfos& w,tObjType ObjType) const
 		return(0.0);
 
 	double num(0.0), den(0.0),tmp;
-	double max;
+	double max(-1.0);
 	RCursor<GWeightInfo> ptr(*this);
 	RCursor<GWeightInfo> ptr2(w);
 	GConceptType* type(0);
@@ -279,9 +279,9 @@ double GWeightInfos::Similarity(const GWeightInfos& w) const
 	if((!GetNb())||(!w.GetNb()))
 		return(0.0);
 
-	double Sim;
-	double norm1;
-	double norm2;
+	double Sim(0.0);
+	double norm1(0.0);
+	double norm2(0.0);
 	double GlobalSim(1.0);
 	GConceptType* type(0);
 	RCursor<GWeightInfo> ptr(*this);
@@ -374,12 +374,12 @@ double GWeightInfos::SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const
 	if((!GetNb())||(!w.GetNb()))
 		return(0.0);
 
-	double max1;
-	double max2;
+	double max1(0.0);
+	double max2(0.0);
 	double GlobalSim(1.0);
-	double Sim;
-	double norm1;
-	double norm2;
+	double Sim(0.0);
+	double norm1(0.0);
+	double norm2(0.0);
 	double w1,w2,iff;
 	double TotalRef;
 	GConceptType* type(0);
@@ -493,11 +493,11 @@ double GWeightInfos::SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObj
 		return(0.0);
 
 	double GlobalSim(1.0);
-	double Sim;
-	double norm1;
-	double norm2;
-	double max1;
-	double max2;
+	double Sim(0.0);
+	double norm1(0.0);
+	double norm2(0.0);
+	double max1(0.0);
+	double max2(0.0);
 	double w1,w2,iff1,iff2;
 	double TotalRef1;
 	double TotalRef2;
@@ -716,7 +716,7 @@ void GWeightInfos::DelRefs(tObjType ObjType) const
 void GWeightInfos::RecomputeIFF(tObjType ObjType)
 {
 	if(!GetNb()) return;
-	double max,iff,ref;
+	double max(0.0),iff,ref(0.0);
 	GConceptType* type(0);
 
 	RCursor<GWeightInfo> ptr(*this);

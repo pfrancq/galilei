@@ -100,8 +100,45 @@ public:
 */
 class GSubject: public R::RNode<GSubject,true,false>
 {
-	class Intern;
-	Intern* Data;
+	/**
+	 * Identifier of the subject.
+	 */
+	size_t Id;
+
+	/**
+	 * Name of the subject.
+	 */
+	R::RString Name;
+
+	/**
+	 * Determine if the subject is used.
+	 */
+	bool Used;
+
+	/**
+	 * Documents attached to this subject.
+	 */
+	R::RContainer<GDoc,false,true> AllDocs;
+
+	/**
+	 * Documents attached to this subject and selected.
+	 */
+	R::RContainer<GDoc,false,true> Docs;
+
+	/**
+	 * Profiles attached to this subject.
+	 */
+	R::RContainer<GProfile,false,true> Profiles;
+
+	/**
+	 * Ideal community.
+	 */
+	GCommunity* Community;
+
+	/**
+	 * Ideal topic.
+	 */
+	GTopic* Topic;
 
 public:
 
@@ -272,6 +309,11 @@ public:
 	size_t GetNbObjs(tObjType type) const;
 
 	/**
+	 * @return The total number of documents assigned to this subject.
+	 */
+	size_t GetNbTotalDocs(void) const {return(AllDocs.GetNb());}
+
+	/**
 	* Return the name of the Subject.
 	* @return RString.
 	*/
@@ -295,20 +337,27 @@ public:
 	*/
 	bool IsUsed(void) const;
 
+private:
+
 	/**
 	* Set the status of the subject. When the subject is not used anymore, no
 	* more profiles are associated to it. It is possible to add a given number
 	* of profiles to the subject. Eventually, new users are created.
 	* @param session         Session.
+	* @param random          Random number generator.
+	* @param nbdocs          Number of documents to select.
+	* @param tmp             Temporary array.
 	* @param nbprofiles      Number of profiles to create for this subject.
 	* @param nbsocial        Number of social profiles still to create.
 	*/
-	void SetUsed(GSession* session,size_t nbprofiles,size_t& nbsocial);
+	void SetUsed(GSession* session,R::RRandom* random,size_t nbdocs,GDoc** tmp,size_t nbprofiles,size_t& nbsocial);
 
 	/**
 	* Initialize the subject (reset all profiles assigned).
 	*/
 	void ReInit(void);
+
+public:
 
 	/**
 	* Destruct the subject.

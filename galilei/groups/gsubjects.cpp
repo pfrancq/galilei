@@ -121,6 +121,8 @@ public:
 	size_t NbProfMax;                                                    // Maximal number of profiles to create in a subject.
 	size_t NbProfMin;                                                    // Minimal number of profiles to create in a subject.
 	double PercSocial;                                                   // Percentage of profiles that are social.
+	double NbDocsPerSubject;                                             // Number of objects per subject.
+	bool PercNbDocsPerSubject;                                           // Number of objects per subject given as percentage.
 	GDoc** tmpDocs;                                                      // Temporary array of documents.
 	size_t NbDocs;                                                       // Number of documents actually managed.
 	GTopic** tmpTopics;                                                  // Temporary array of topics
@@ -177,44 +179,33 @@ GSubjects::GSubjects(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::CreateConfig(void)
-{
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbOK",10.0),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("RelOK",true),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbKO",10.0),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("RelKO",true),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbH",50.0),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("RelH",true),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("PercErr",0.0),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbProfMin",2),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbProfMax",10),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("PercSocial",100.0),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbSubjects",100.0),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("RelSubjects",true),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbMinDocsSubject",50),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("NbDocsAssess",30),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->InsertParam(new RParamValue("SwitchPerc",5.0),"Subjects");
-}
-
-
-//------------------------------------------------------------------------------
 void GSubjects::Apply(void)
 {
-	Data->NbOK=GALILEIApp->GetGALILEIConfig()->GetDouble("NbOK","Subjects");
-	Data->RelOK=GALILEIApp->GetGALILEIConfig()->GetBool("RelOK","Subjects");
-	Data->NbKO=GALILEIApp->GetGALILEIConfig()->GetDouble("NbKO","Subjects");
-	Data->RelKO=GALILEIApp->GetGALILEIConfig()->GetBool("RelKO","Subjects");
-	Data->NbH=GALILEIApp->GetGALILEIConfig()->GetDouble("NbH","Subjects");
-	Data->RelH=GALILEIApp->GetGALILEIConfig()->GetBool("RelH","Subjects");
-	Data->PercErr=GALILEIApp->GetGALILEIConfig()->GetDouble("PercErr","Subjects");
-	Data->NbProfMin=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMin","Subjects");
-	Data->NbProfMax=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMax","Subjects");
-	Data->PercSocial=GALILEIApp->GetGALILEIConfig()->GetDouble("PercSocial","Subjects");
-	Data->NbSubjects=GALILEIApp->GetGALILEIConfig()->GetDouble("NbSubjects","Subjects");
-	Data->RelSubjects=GALILEIApp->GetGALILEIConfig()->GetBool("RelSubjects","Subjects");
-	Data->NbMinDocsSubject=GALILEIApp->GetGALILEIConfig()->GetUInt("NbMinDocsSubject","Subjects");
-	Data->NbDocsAssess=GALILEIApp->GetGALILEIConfig()->GetUInt("NbDocsAssess","Subjects");
-	Data->SwitchPerc=GALILEIApp->GetGALILEIConfig()->GetDouble("SwitchPerc","Subjects");
+	Data->NbOK=Data->Session->GetDouble("NbOK","Subjects");
+	Data->RelOK=Data->Session->GetBool("RelOK","Subjects");
+	Data->NbKO=Data->Session->GetDouble("NbKO","Subjects");
+	Data->RelKO=Data->Session->GetBool("RelKO","Subjects");
+	Data->NbH=Data->Session->GetDouble("NbH","Subjects");
+	Data->RelH=Data->Session->GetBool("RelH","Subjects");
+	Data->PercErr=Data->Session->GetDouble("PercErr","Subjects");
+	Data->NbProfMin=Data->Session->GetUInt("NbProfMin","Subjects");
+	Data->NbProfMax=Data->Session->GetUInt("NbProfMax","Subjects");
+	Data->PercSocial=Data->Session->GetDouble("PercSocial","Subjects");
+	Data->NbSubjects=Data->Session->GetDouble("NbSubjects","Subjects");
+	Data->RelSubjects=Data->Session->GetBool("RelSubjects","Subjects");
+	Data->NbMinDocsSubject=Data->Session->GetUInt("NbMinDocsSubject","Subjects");
+	Data->NbDocsAssess=Data->Session->GetUInt("NbDocsAssess","Subjects");
+	Data->SwitchPerc=Data->Session->GetDouble("SwitchPerc","Subjects");
+	Data->NbDocsPerSubject=Data->Session->GetDouble("NbDocsPerSubject","Subjects");
+	Data->PercNbDocsPerSubject=Data->Session->GetBool("PercNbDocsPerSubject","Subjects");
+	RParamList* Selected=Data->Session->FindParam<RParamList>("SelectedSubjects","Subjects");
+	if(Selected)
+	{
+		// Go trough the subjects
+		RCursor<GSubject> Cur(GetNodes());
+		for(Cur.Start();!Cur.End();Cur.Next())
+			Cur()->Used=(Selected->GetPos(Cur()->GetName())!=SIZE_MAX);
+	}
 }
 
 
@@ -229,44 +220,74 @@ void GSubjects::ReInit(void)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::ChooseSubjects(void)
+void GSubjects::SelectSubject(GSubject* subject,bool createdocs)
 {
-	R::RCursor<GSubject> Subs;
-	size_t compt;
-	size_t nbprof,nbsocial;
-	GSubject** tab(0);
-	GSubject** ptr;
-	size_t i;
-
-	// Randomly mix the subjects in tab
-	tab=new GSubject*[GetNbNodes()];
-	RTree<GSubject,true,false>::GetTab(tab);
-	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
-
-	// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
-	if(Data->RelSubjects)
-		compt=static_cast<size_t>((static_cast<double>(GetNbNodes())*Data->NbSubjects)/100)+1;
-	else
-		compt=static_cast<size_t>(Data->NbSubjects);
-	for(ptr=tab,i=GetNbNodes()+1;(--i)&&compt;ptr++)
+	// Compute number of documents to select
+	size_t nbdocs(0);
+	if(createdocs)
 	{
-		if((*ptr)==GetTop())
-			continue;
-
-		// Verify that there is enough documents
-		if((*ptr)->GetNbObjs(otDoc)<Data->NbMinDocsSubject) continue;
-
-		// Number of (social) profiles that will assess documents
-		nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
-		nbsocial=static_cast<size_t>(static_cast<double>(nbprof)*Data->PercSocial/100);
-
-		// Set the topic to used and create profiles
-		(*ptr)->SetUsed(Data->Session,nbprof,nbsocial);
-		compt--;
+		if(Data->PercNbDocsPerSubject)
+			nbdocs=static_cast<size_t>(Data->NbDocsPerSubject*subject->GetNbTotalDocs());
+		else
+		{
+			if(Data->NbDocsPerSubject)
+				nbdocs=Data->NbDocsPerSubject;
+			else
+				nbdocs=subject->GetNbTotalDocs();
+		}
 	}
 
-	// delete tab;
-	delete[] tab;
+	// Number of (social) profiles that will assess documents
+	size_t nbprof(Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin);
+	size_t nbsocial(static_cast<size_t>(static_cast<double>(nbprof)*Data->PercSocial/100));
+
+	// Set the topic to used and create profiles
+	subject->SetUsed(Data->Session,Data->Session->GetRandom(),nbdocs,Data->tmpDocs,nbprof,nbsocial);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubjects::ChooseSubjects(void)
+{
+	// If the subjects must be selected automatically -> Select them
+	if(!Data->Session->GetBool("ManualSubjects","Subjects"))
+	{
+		size_t compt;
+		GSubject** tab(0);
+		GSubject** ptr;
+		size_t i;
+
+		// Randomly mix the subjects in tab
+		tab=new GSubject*[GetNbNodes()];
+		RTree<GSubject,true,false>::GetTab(tab);
+		Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
+
+		// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
+		if(Data->RelSubjects)
+			compt=static_cast<size_t>((static_cast<double>(GetNbNodes())*Data->NbSubjects)/100)+1;
+		else
+			compt=static_cast<size_t>(Data->NbSubjects);
+		for(ptr=tab,i=GetNbNodes()+1;(--i)&&compt;ptr++)
+		{
+			if((*ptr)==GetTop())
+				continue;
+
+			// Verify that there is enough documents
+			if((*ptr)->GetNbObjs(otDoc)<Data->NbMinDocsSubject) continue;
+
+			(*ptr)->Used=true;
+			compt--;
+		}
+
+		// delete tab;
+		delete[] tab;
+	}
+
+	// Start the simulation for all selected subjects
+	RCursor<GSubject> Cur(GetNodes());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if(Cur()->Used)
+			SelectSubject(Cur(),true);
 }
 
 
@@ -1004,7 +1025,6 @@ bool GSubjects::AddTopic(void)
 	size_t i;
 	GSubject* newSubject;
 	RCursor<GProfile> Prof;
-	size_t nbprof,nbsocial;
 	size_t maxDocsOK,maxDocsKO,maxDocsH;
 
 	// Apply Configuration
@@ -1030,14 +1050,12 @@ bool GSubjects::AddTopic(void)
 	// If no subject found -> do nothing
 	if(!newSubject) return(false);
 
+	// Number of (social) profiles that will judge documents
+	newSubject->Used=true;
+	SelectSubject(newSubject,true);
+
 	// Copy the documents of the same language of the session in Docs;
 	Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
-
-	// Number of (social) profiles that will judge documents
-	nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
-	nbsocial=static_cast<size_t>(static_cast<double>(nbprof)*Data->PercSocial/100);
-
-	newSubject->SetUsed(Data->Session,nbprof,nbsocial);
 
 	// Number of documents to judged by each profile
 	if(Data->RelOK)
@@ -1052,7 +1070,6 @@ bool GSubjects::AddTopic(void)
 		maxDocsH=static_cast<size_t>(static_cast<double>(maxDocsOK)*Data->NbH/100);
 	else
 		maxDocsH=static_cast<size_t>(Data->NbH);
-
 
 	// Assess documents
 	Prof=newSubject->GetObjs(static_cast<GProfile*>(0));
@@ -1078,7 +1095,6 @@ size_t GSubjects::AddProfiles(void)
 	GSubject** tab;
 	GSubject** ptr;
 	size_t i;
-	size_t nbprof, nbsocial;
 	GSubject* usedSubject;
 	R::RCursor<GCommunity> CurGrps;
 	size_t maxDocsOK,maxDocsKO,maxDocsH;
@@ -1086,10 +1102,6 @@ size_t GSubjects::AddProfiles(void)
 
 	// Apply Config
 	Apply();
-
-	//Randomly choose the number of (social) profiles.
-	nbprof=Data->Session->GetCurrentRandomValue(Data->NbProfMax-Data->NbProfMin+1)+Data->NbProfMin;
-	nbsocial=static_cast<size_t>(static_cast<double>(nbprof)*Data->PercSocial/100);
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
@@ -1111,6 +1123,8 @@ size_t GSubjects::AddProfiles(void)
 	if(!usedSubject)
 		return(0);
 
+	SelectSubject(usedSubject,false);
+
 	// Copy the documents of the same language of the session in Docs;
 	Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
 
@@ -1127,9 +1141,6 @@ size_t GSubjects::AddProfiles(void)
 		maxDocsH=static_cast<size_t>(static_cast<double>(maxDocsOK)*Data->NbH/100);
 	else
 		maxDocsH=static_cast<size_t>(Data->NbH);
-
-
-	usedSubject->SetUsed(Data->Session,nbprof,nbsocial);
 
 	// Assess documents
 	Prof=usedSubject->GetObjs(static_cast<GProfile*>(0));
