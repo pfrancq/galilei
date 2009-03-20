@@ -285,18 +285,17 @@ template<class cObj,class cGroup,class cFactory>
 	try
 	{
 		// If no element to group -> skip it
-		size_t nb=session->GetNbElements(ObjType);
-		if(!nb)
+		RCursor<cObj> Cur(GetObjs());
+		if(!Cur.GetNb())
 			return;
+		Objs.Clear(Cur.GetNb());
 
 		// Create objects
-		cout<<"Create objects";
-		Objs.Clear(nb);
-		RCursor<cObj> Cur(GetObjs());
+		cout<<"Create objects...";
 		size_t i(0);
 		for(Cur.Start();!Cur.End();Cur.Next(),i++)
 			Objs.InsertPtr(new GCAObj(i,Cur()));
-		cout<<endl;
+		cout<<" "<<i+1<<" created"<<endl;
 
 		switch(ClusteringMethod)
 		{

@@ -74,7 +74,7 @@ protected:
 	/**
 	 * Get a pointer to the objects to cluster.
 	 */
-	virtual R::RCursor<GDoc> GetObjs(void) const {return(Session->GetDocs());}
+	virtual R::RCursor<GDoc> GetObjs(void) const {return(RCursor<GDoc>(Docs));}
 
 	/**
 	* Make the grouping for a specific Language.
