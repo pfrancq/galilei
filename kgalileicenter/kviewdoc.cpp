@@ -140,7 +140,7 @@ void KViewDoc::setUp(void)
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
 	setWidget(ptr);
-	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(Document->GetName()));
 	Vars->Set(Document);
 	Desc->Set(Document);

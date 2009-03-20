@@ -51,7 +51,7 @@ template<class cGroup>
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
 	setWidget(ptr);
-	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setAttribute(Qt::WA_DeleteOnClose);
 }
 
 

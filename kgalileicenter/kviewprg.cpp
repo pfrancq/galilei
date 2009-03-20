@@ -131,7 +131,7 @@ KViewPrg::KViewPrg(const RString& name)
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
 	setWidget(ptr);
-	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(Name));
 }
 

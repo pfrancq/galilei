@@ -40,6 +40,7 @@ using namespace std;
 // include files for Qt/KDE
 #include <kfiledialog.h>
 #include <QtGui/QMessageBox>
+#include <QtGui/QHeaderView>
 
 
 //-----------------------------------------------------------------------------
@@ -51,6 +52,9 @@ using namespace std;
 #include <gpreprofile.h>
 #include <gpostdoc.h>
 #include <gmeasure.h>
+#include <gsession.h>
+#include <gsubjects.h>
+#include <gsubject.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -71,6 +75,45 @@ static int ProfilesTabIdx;
 static int CommunitiesTabIdx;
 static int SearchTabIdx;
 static int MeasuresCatIdx;
+
+
+
+//------------------------------------------------------------------------------
+//
+// class QSubjectItem
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class QSubjectItem : public QTreeWidgetItem
+{
+public:
+	GSubject* Subject;
+	bool Select;
+
+	void select(bool select)
+	{
+		if(select)
+		{
+			setIcon(0,KIconLoader::global()->loadIcon("dialog-ok-apply.png",KIconLoader::Small));
+			Select=true;
+		}
+		else
+		{
+			setIcon(0,KIconLoader::global()->loadIcon("edit-delete.png",KIconLoader::Small));
+			Select=false;
+		}
+	}
+	void set(GSubject* subject)
+	{
+		Subject=subject;
+		select(subject->IsUsed());
+		setText(1,ToQString(subject->GetName()));
+	}
+
+	QSubjectItem(QTreeWidget* parent,GSubject* subject) : QTreeWidgetItem(parent) {set(subject);}
+	QSubjectItem(QTreeWidgetItem* parent,GSubject* subject) : QTreeWidgetItem(parent) {set(subject);}
+};
 
 
 
@@ -98,6 +141,8 @@ Configure::Configure(QWidget* parent)
 //------------------------------------------------------------------------------
 void Configure::exec(GSession* session)
 {
+	Session=session;
+
 	initGeneral();
 	initSimulation();
 	initPlugIns();
@@ -115,7 +160,7 @@ void Configure::exec(GSession* session)
 	{
 		applyGeneral();
 		applySimulation();
-		applyPlugIns(session);
+		applyPlugIns();
 	}
 
 	MainTabIdx=MainTab->currentIndex();
@@ -218,44 +263,116 @@ void Configure::applyGeneral(void)
 
 
 //------------------------------------------------------------------------------
+void Configure::addSubject(GSubject* subject,QTreeWidgetItem* parent)
+{
+	QSubjectItem* item;
+	if(parent)
+		item=new QSubjectItem(parent,subject);
+	else
+		item=new QSubjectItem(Subjects,subject);
+
+	// Child subjects
+ 	RCursor<GSubject> Cur(subject->GetNodes());
+ 	for(Cur.Start();!Cur.End();Cur.Next())
+ 		addSubject(Cur(),item);
+}
+
+
+//------------------------------------------------------------------------------
 void Configure::initSimulation(void)
 {
-	NbOK->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbOK","Subjects"));
-	RelOK->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelOK","Subjects"));
-	NbKO->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbKO","Subjects"));
-	RelKO->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelKO","Subjects"));
-	NbH->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbH","Subjects"));
-	RelH->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelH","Subjects"));
-	PercErr->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("PercErr","Subjects"));
-	NbProfMin->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbProfMin","Subjects"));
-	NbProfMax->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbProfMax","Subjects"));
-	PercSocial->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("PercSocial","Subjects"));
-	NbSubjects->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("NbSubjects","Subjects"));
-	RelSubjects->setChecked(GALILEIApp->GetGALILEIConfig()->GetBool("RelSubjects","Subjects"));
-	NbMinDocsSubject->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbMinDocsSubject","Subjects"));
-	NbDocsAssess->setValue(GALILEIApp->GetGALILEIConfig()->GetInt("NbDocsAssess","Subjects"));
-	SwitchPerc->setValue(GALILEIApp->GetGALILEIConfig()->GetDouble("SwitchPerc","Subjects"));
+	// If no session -> No Simulation Parameters
+	if(!Session)
+	{
+		SimulationTab->setEnabled(false);
+		return;
+	}
+
+	// Read Values
+	NbOK->setValue(Session->GetDouble("NbOK","Subjects"));
+	RelOK->setChecked(Session->GetBool("RelOK","Subjects"));
+	NbKO->setValue(Session->GetDouble("NbKO","Subjects"));
+	RelKO->setChecked(Session->GetBool("RelKO","Subjects"));
+	NbH->setValue(Session->GetDouble("NbH","Subjects"));
+	RelH->setChecked(Session->GetBool("RelH","Subjects"));
+	PercErr->setValue(Session->GetDouble("PercErr","Subjects"));
+	NbProfMin->setValue(Session->GetInt("NbProfMin","Subjects"));
+	NbProfMax->setValue(Session->GetInt("NbProfMax","Subjects"));
+	PercSocial->setValue(Session->GetDouble("PercSocial","Subjects"));
+	NbSubjects->setValue(Session->GetDouble("NbSubjects","Subjects"));
+	RelSubjects->setChecked(Session->GetBool("RelSubjects","Subjects"));
+	NbMinDocsSubject->setValue(Session->GetInt("NbMinDocsSubject","Subjects"));
+	NbDocsAssess->setValue(Session->GetInt("NbDocsAssess","Subjects"));
+	SwitchPerc->setValue(Session->GetDouble("SwitchPerc","Subjects"));
+	ManualSubjects->setChecked(Session->GetBool("ManualSubjects","Subjects"));
+	NbDocsPerSubject->setValue(Session->GetDouble("NbDocsPerSubject","Subjects"));
+	PercNbDocsPerSubject->setChecked(Session->GetBool("PercNbDocsPerSubject","Subjects"));
+	ClusterSelectedDocs->setChecked(Session->GetBool("ClusterSelectedDocs","Subjects"));
+
+	// Read Subjects
+	Subjects->header()->setResizeMode(0,QHeaderView::ResizeToContents);
+	Subjects->header()->setResizeMode(1,QHeaderView::Stretch);
+	connect(Subjects,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(subjectClicked(QTreeWidgetItem*,int)));
+	Subjects->setEnabled(Session->GetBool("ManualSubjects","Subjects"));
+
+	if(!Session) return;
+	GSubjects* TheSubjects(Session->GetSubjects());
+	if(!TheSubjects) return;
+	RCursor<GSubject> Cur(TheSubjects->GetTop()->GetNodes());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		addSubject(Cur(),0);
+}
+
+
+//------------------------------------------------------------------------------
+void Configure::applySubSubjects(QTreeWidgetItem* parent)
+{
+	for(int i=0;i<parent->childCount();i++)
+	{
+		QSubjectItem* item(dynamic_cast<QSubjectItem*>(parent->child(i)));
+		if(!item) continue;
+		if(item->Select)
+			Session->AddToList("SelectedSubjects",FromQString(item->text(1)),"Subjects");
+		applySubSubjects(item);
+	}
 }
 
 
 //------------------------------------------------------------------------------
 void Configure::applySimulation(void)
 {
-	GALILEIApp->GetGALILEIConfig()->SetDouble("NbOK",NbOK->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetBool("RelOK",RelOK->isChecked(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetDouble("NbKO",NbKO->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetBool("RelKO",RelKO->isChecked(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetDouble("NbH",NbH->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetBool("RelH",RelH->isChecked(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetDouble("PercErr",PercErr->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMin",NbProfMin->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMax",NbProfMax->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetDouble("PercSocial",PercSocial->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetDouble("NbSubjects",NbSubjects->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetBool("RelSubjects",RelSubjects->isChecked(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetUInt("NbMinDocsSubject",NbMinDocsSubject->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetUInt("NbDocsAssess",NbDocsAssess->value(),"Subjects");
-	GALILEIApp->GetGALILEIConfig()->SetDouble("SwitchPerc",SwitchPerc->value(),"Subjects");
+	if(!Session)
+		return;
+
+	Session->SetDouble("NbOK",NbOK->value(),"Subjects");
+	Session->SetBool("RelOK",RelOK->isChecked(),"Subjects");
+	Session->SetDouble("NbKO",NbKO->value(),"Subjects");
+	Session->SetBool("RelKO",RelKO->isChecked(),"Subjects");
+	Session->SetDouble("NbH",NbH->value(),"Subjects");
+	Session->SetBool("RelH",RelH->isChecked(),"Subjects");
+	Session->SetDouble("PercErr",PercErr->value(),"Subjects");
+	Session->SetUInt("NbProfMin",NbProfMin->value(),"Subjects");
+	Session->SetUInt("NbProfMax",NbProfMax->value(),"Subjects");
+	Session->SetDouble("PercSocial",PercSocial->value(),"Subjects");
+	Session->SetDouble("NbSubjects",NbSubjects->value(),"Subjects");
+	Session->SetBool("RelSubjects",RelSubjects->isChecked(),"Subjects");
+	Session->SetUInt("NbMinDocsSubject",NbMinDocsSubject->value(),"Subjects");
+	Session->SetUInt("NbDocsAssess",NbDocsAssess->value(),"Subjects");
+	Session->SetDouble("SwitchPerc",SwitchPerc->value(),"Subjects");
+	Session->SetBool("ManualSubjects",ManualSubjects->isChecked(),"Subjects");
+	Session->SetDouble("NbDocsPerSubject",NbDocsPerSubject->value(),"Subjects");
+	Session->SetBool("PercNbDocsPerSubject",PercNbDocsPerSubject->isChecked(),"Subjects");
+	Session->SetBool("ClusterSelectedDocs",ClusterSelectedDocs->isChecked(),"Subjects");
+	Session->Reset("SelectedSubjects","Subjects");
+	for(int i=0;i<Subjects->topLevelItemCount();i++)
+	{
+		QSubjectItem* item(dynamic_cast<QSubjectItem*>(Subjects->topLevelItem(i)));
+		if(!item) continue;
+		if(item->Select)
+			Session->AddToList("SelectedSubjects",FromQString(item->text(1)),"Subjects");
+		applySubSubjects(item);
+	}
+	Session->Apply();
 }
 
 
@@ -308,31 +425,31 @@ void Configure::initPlugIns(void)
 
 
 //-----------------------------------------------------------------------------
-void Configure::applyPlugIns(GSession* session)
+void Configure::applyPlugIns(void)
 {
 	// Apply plug-ins
-	Storages->apply(session);
-	Filters->apply(session);
-	ProfileCalcs->apply(session);
-	GroupProfiles->apply(session);
-	GroupDocs->apply(session);
-	CommunityCalcs->apply(session);
-	TopicCalcs->apply(session);
-	StatsCalcs->apply(session);
-	LinkCalcs->apply(session);
-	PostDocs->apply(session);
-	PreProfiles->apply(session);
-	DocAnalyses->apply(session);
-	PostTopics->apply(session);
-	Engines->apply(session);
-	MetaEngines->apply(session);
-	Langs->apply(session);
-	PostProfiles->apply(session);
-	PostCommunities->apply(session);
+	Storages->apply(Session);
+	Filters->apply(Session);
+	ProfileCalcs->apply(Session);
+	GroupProfiles->apply(Session);
+	GroupDocs->apply(Session);
+	CommunityCalcs->apply(Session);
+	TopicCalcs->apply(Session);
+	StatsCalcs->apply(Session);
+	LinkCalcs->apply(Session);
+	PostDocs->apply(Session);
+	PreProfiles->apply(Session);
+	DocAnalyses->apply(Session);
+	PostTopics->apply(Session);
+	Engines->apply(Session);
+	MetaEngines->apply(Session);
+	Langs->apply(Session);
+	PostProfiles->apply(Session);
+	PostCommunities->apply(Session);
 
 	// Apply Measures
 	for(int row=0;row<Measures->count();row++)
-		dynamic_cast<QPlugInsList*>(Measures->widget(row))->apply(session);
+		dynamic_cast<QPlugInsList*>(Measures->widget(row))->apply(Session);
 
 	// Sort POST_X Managers;
 	GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
@@ -359,3 +476,20 @@ void Configure::slotDelDir(void)
 	if(row>-1)
 		delete Dirs->item(row);
 }
+
+
+//-----------------------------------------------------------------------------
+void Configure::subjectClicked(QTreeWidgetItem* item, int column)
+{
+	QSubjectItem* Subject(dynamic_cast<QSubjectItem*>(item));
+	if(!item) return;
+	if(column==0)
+	{
+		Subject->select(!Subject->Select);
+	}
+	else
+	{
+		Subjects->expandItem(item);
+	}
+}
+

@@ -138,7 +138,7 @@ KViewDicts::KViewDicts(void)
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
 	setWidget(ptr);
-	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("Dictionaries");
 	connect(Dicts,SIGNAL(itemActivated(QTreeWidgetItem*,int)),this,SLOT(selectDict(QTreeWidgetItem*,int)));
 	connect(Dict,SIGNAL(itemActivated(QTreeWidgetItem*,int)),this,SLOT(selectConcept(QTreeWidgetItem*,int)));

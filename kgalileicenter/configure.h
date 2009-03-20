@@ -35,6 +35,12 @@
 #define ConfigureDlgH
 
 
+//-----------------------------------------------------------------------------
+// include files for R/GALILEI Project
+#include <galilei.h>
+using namespace GALILEI;
+
+
 //------------------------------------------------------------------------------
 // include files for current project
 #include <ui_configure.h>
@@ -50,6 +56,11 @@
 class Configure : KDialog, Ui_Configure
 {
 	Q_OBJECT
+
+	/**
+	 * Session (if any).
+	 */
+	GSession* Session;
 
 public:
 
@@ -88,9 +99,22 @@ private:
 	void applyGeneral(void);
 
 	/**
+	 * Add a subject to the list of subjects.
+	 * @param subject        Subject.
+	 * @param parent         Parent intem (if null, the subject is a top one).
+	 */
+	void addSubject(GSubject* subject,QTreeWidgetItem* parent);
+
+	/**
 	 * Initialize the simulation part.
 	 */
 	void initSimulation(void);
+
+	/**
+	 * Apply the configuration for all sub-subjects of a given one.
+	 * @param parent         Parent subject.
+	 */
+	void applySubSubjects(QTreeWidgetItem* parent);
 
 	/**
 	 * Apply the simulation part.
@@ -104,9 +128,8 @@ private:
 
 	/**
 	 * Apply the plug-ins part.
-	 * @param session        Current session (if created).
 	 */
-	void applyPlugIns(GSession* session);
+	void applyPlugIns(void);
 
 public slots:
 
@@ -119,6 +142,13 @@ public slots:
 	 * Slot called when the button to delete a directory was pressed.
 	 */
 	void slotDelDir(void);
+
+	/**
+	 * Slot called when a subject is clicked.
+	 * @param item           Item.
+	 * @param column         Column.
+	 */
+	void subjectClicked(QTreeWidgetItem* item, int column);
 };
 
 

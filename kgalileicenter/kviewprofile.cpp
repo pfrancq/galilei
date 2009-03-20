@@ -58,7 +58,7 @@ KViewProfile::KViewProfile(GProfile* profile)
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
 	setWidget(ptr);
-	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(profile->GetName())+" ("+ToQString(profile->GetUser()->GetFullName())+")");
 	Vars->Set(Profile);
 	Desc->Set(Profile);

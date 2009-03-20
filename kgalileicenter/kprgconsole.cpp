@@ -75,7 +75,7 @@ KPrgConsole::KPrgConsole(void)
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
 	setWidget(ptr);
-	ptr->setAttribute(Qt::WA_DeleteOnClose);
+	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("Console");
     Prg=new GGALILEIPrg(Results);
     connect(Results,SIGNAL(EnterCmd(QString)),this,SLOT(RunCmd(QString)));

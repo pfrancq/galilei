@@ -851,7 +851,7 @@ void KGALILEICenter::postCommunities(void)
 void KGALILEICenter::subjectsCreate(void)
 {
 	QSessionProgressDlg Dlg(this,"Create Ideal Subjects");
-	 QCreateIdealSubjects* Task(new  QCreateIdealSubjects());
+	QCreateIdealSubjects* Task(new QCreateIdealSubjects());
 	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
