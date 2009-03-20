@@ -107,8 +107,8 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 {
 	RCursor<GWeightInfo> Words;
 	RCursor<GFdbk> Docs;
-	double MaxFreq;
-	double TotalRef;
+	double MaxFreq(0.0);
+	double TotalRef(0);
 	GConceptType* type(0);
 	GWeightInfos* Cur;
 
@@ -212,7 +212,7 @@ void GProfileCalcFeedback::ComputeProfile(void)
 	size_t i,nb,nb2;
 
 	// Choose the elements to stay.
-	if(Vectors.IsEmpty())
+	if(!Vectors.IsDefined())
 		return;
 
 	// Put in Order an ordered version of Global
@@ -270,7 +270,7 @@ void GProfileCalcFeedback::Compute(GProfile* profile)
 	// If incremental mode -> copy information of the profile in 'Vectors'.
 	if(IncrementalMode&&profile->IsDefined())
 	{
-		size_t i,TotalRef;
+		size_t i,TotalRef(0);
 		Cur=profile->GetInfos();
 		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 		{
