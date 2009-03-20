@@ -1168,7 +1168,7 @@ void GStorageMySQL::LoadStruct(GDocStruct& docstruct,GDoc* doc)
 	{
 		// Read the file
 		DescRec Rec;
-		GConceptType* ctype;
+		GConceptType* ctype(0);
 		size_t tId,pos,nbchild;
 		char tTypeId(0),type_id;
 		char depth;
@@ -1501,7 +1501,7 @@ void GStorageMySQL::GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,t
 {
 	RString sSql;
 	size_t profileid,idx;
-	GSugs* sugs;
+	GSugs* sugs(0);
 
 	try
 	{
@@ -1869,7 +1869,7 @@ void GStorageMySQL::GetSugsCommunities(const R::RString& name,R::RContainer<GSug
 {
 	RString sSql;
 	size_t groupid,idx;
-	GSugs* sugs;
+	GSugs* sugs(0);
 
 	try
 	{
