@@ -354,8 +354,9 @@ private:
 
 	/**
 	* Initialize the subject (reset all profiles assigned).
+	* @param unselected      Specify if the subject must (eventually) be unselected.
 	*/
-	void ReInit(void);
+	void ReInit(bool unselected);
 
 public:
 

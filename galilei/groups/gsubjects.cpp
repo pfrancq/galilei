@@ -212,10 +212,12 @@ void GSubjects::Apply(void)
 //------------------------------------------------------------------------------
 void GSubjects::ReInit(void)
 {
+	bool unselected(!Data->Session->GetBool("ManualSubjects","Subjects"));
+
 	// Re-init the subjects
 	RCursor<GSubject> Subjects(GetNodes());
 	for(Subjects.Start();!Subjects.End();Subjects.Next())
-		Subjects()->ReInit();
+		Subjects()->ReInit(unselected);
 }
 
 

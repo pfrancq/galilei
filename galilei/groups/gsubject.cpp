@@ -386,8 +386,10 @@ void GSubject::SetUsed(GSession* session,RRandom* random,size_t nbdocs,GDoc** tm
 
 
 //------------------------------------------------------------------------------
-void GSubject::ReInit(void)
+void GSubject::ReInit(bool unselected)
 {
+	if(unselected)
+		Used=false;
 	Profiles.Clear();
 	Docs.Clear();
 	Community=0;

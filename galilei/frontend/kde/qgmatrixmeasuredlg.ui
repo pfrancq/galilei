@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>299</width>
+    <width>295</width>
     <height>316</height>
    </rect>
   </property>
@@ -112,7 +112,11 @@
          </spacer>
         </item>
         <item>
-         <widget class="KDoubleNumInput" name="MinSim" />
+         <widget class="KDoubleNumInput" name="MinSim" >
+          <property name="minimum" >
+           <double>-9999.000000000000000</double>
+          </property>
+         </widget>
         </item>
        </layout>
       </item>
@@ -153,6 +157,12 @@ In practice, the minimum measure is computed as the sum of the average and the p
         </item>
         <item>
          <widget class="KDoubleNumInput" name="DeviationRate" >
+          <property name="minimum" >
+           <double>-9999.000000000000000</double>
+          </property>
+          <property name="decimals" >
+           <number>5</number>
+          </property>
           <property name="minValue" stdset="0" >
            <number>-10</number>
           </property>

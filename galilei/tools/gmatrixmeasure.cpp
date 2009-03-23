@@ -133,7 +133,7 @@ GMatrixMeasure::GMatrixMeasure(GFactoryMeasure* fac,tObjType lines,tObjType cols
 	: GMeasure(fac), GSignalHandler(), MemValues(0), RecValues1(0), RecValues2(0),
 	  MemNbLines(0), MemNbCols(0), FileNbLines(0), FileNbCols(0), MaxIdLine(0), MaxIdCol(0), NbValues(0), Mean(0.0), Deviation(0.0),
 	  Symmetric(sym),NullLevel(0.000001), MinMeasure(0.5), AutomaticMinMeasure(true),
-	  MinMeasureSense(true), InMemory(true), InFile(false), Lines(lines), Cols(cols)
+	  MinMeasureSense(true), InMemory(true), InFile(false), Lines(lines), Cols(cols), FirstCall(true)
 {
 	if(Symmetric&&(Lines!=Cols))
 		throw GException("Symmetric measures are only allowed if the elements are of the same type");
@@ -194,6 +194,7 @@ void GMatrixMeasure::Connect(GSession* session)
 		OpenFiles();
 	FileMustExtend=MemMustExtend=false;   // Suppose nothing must be added
 	FileDirty=MemDirty=false;             // Suppose memory and file are updated
+	FirstCall=true;
 }
 
 
