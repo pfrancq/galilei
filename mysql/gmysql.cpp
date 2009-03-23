@@ -2184,6 +2184,7 @@ void GStorageMySQL::CreateParams(RConfig* params)
 //------------------------------------------------------------------------------
 GStorageMySQL::~GStorageMySQL(void)
 {
+	delete Db;
 }
 
 
