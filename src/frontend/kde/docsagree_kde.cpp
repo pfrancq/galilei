@@ -2,14 +2,12 @@
 
 	GALILEI Research Project
 
-	GDocsAgree_KDE.cpp
+	DocsAgree_KDE.cpp
 
-	A KDE about box for the documents agreement measure - Implementation.
+	Agreement between documents (KDE Part) - Implementation.
 
-	Copyright 2003-2007 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -110,9 +108,10 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "docsagree", 0, ki18n("Count Method"),
-		"1.0", ki18n("The count method is used to computed the agreements between the documents."), KAboutData::License_GPL,
-		ki18n("(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+		"1.0", ki18n("The count method is used to computed the agreement ratios between the documents."), KAboutData::License_GPL,
+		ki18n("(C) 2003-2009 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

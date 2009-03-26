@@ -4,12 +4,11 @@
 
 	GenericSims_KDE.h
 
-	GenericSims - Implementation.
+	Generic Similarity Measure (KDE Part) - Implementation.
 
-	Copyright 2005-2008 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003 by Valery Vandaele.
+	Copyright 2003-2007 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
