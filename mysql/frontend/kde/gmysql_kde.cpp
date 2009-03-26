@@ -4,12 +4,13 @@
 
 	GMySQL_KDE.cpp
 
-	A KDE dialog box for MySQL database - Implementation.
+	Storage Manager using a MySQL Database (KDE Part)- Implementation.
 
-	Copyright 2005-2008 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2004 by Julien Lamoral.
+	Copyright 2001-2004 by Valery Vandaele.
+	Copyright 2001-2004 by David Wartel.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -75,10 +76,14 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "text", 0, ki18n("MySQL"),
+	KAboutData aboutData("mysql", 0, ki18n("MySQL"),
 		"1.0",ki18n("This is a storage based on MySQL database."), KAboutData::License_GPL,
-		ki18n("(c) 2005-2008, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001-2004 by Julien Lamoral, Valery Vandaele and David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Developer"));
+	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Developer"));
+	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
