@@ -4,10 +4,8 @@
 
 	Main program - Implementation.
 
-	Copyright 2001-2008 by the Université libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -67,16 +65,18 @@ int main(int argc, char *argv[])
 
     // Information about the application
 	KAboutData aboutData("kgalileicenter",0,ki18n("KGALILEICenter"),"1.89",ki18n(description),
-			KAboutData::License_GPL,ki18n("(C) 1998-2008 Université Libre de Bruxelles"),KLocalizedString(),"http://galilei.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Project Manager"),"pfrancq@ulb.ac.be");
-	aboutData.addCredit(ki18n("Nicolas Kumps"),ki18n("Past Researcher"));
-	aboutData.addCredit(ki18n("Marjorie Paternostre"),ki18n("Past Researcher"));
-	aboutData.addCredit(ki18n("Stéphane Rideau"),ki18n("Past Researcher"));
-	aboutData.addCredit(ki18n("Valery Vandaele"),ki18n("Past Researcher"));
-	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Consultant"));
-	aboutData.addCredit(ki18n("Marco Saerens"),ki18n("Professor"),"saerens@isys.ucl.ac.be");
-	aboutData.addAuthor(ki18n("Jean-Baptiste Valsamis"),ki18n("Past Researcher"),"jvalsami@ulb.ac.be");
+			KAboutData::License_GPL,ki18n("(C) 1998-2009 by Pascal Francq\n(C) 1998-2008 by the Université Libre de Bruxelles (ULB)"),
+			KLocalizedString(),"http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Project Manager"),"pascal@francq.info");
 	aboutData.addCredit(ki18n("Faiza Gaultier"),ki18n("Senior Researcher"),"fabbaci@ulb.ac.be");
+	aboutData.addCredit(ki18n("Nicolas Kumps"),ki18n("Past Researcher"));
+	aboutData.addCredit(ki18n("Stéphane Rideau"),ki18n("Past Researcher"));
+	aboutData.addCredit(ki18n("Jean-Baptiste Valsamis"),ki18n("Past Researcher"),"jvalsami@ulb.ac.be");
+	aboutData.addCredit(ki18n("Valery Vandaele"),ki18n("Past Researcher"));
+	aboutData.addCredit(ki18n("David Wartel"),ki18n("Past Researcher"));
+	aboutData.addCredit(ki18n("Xavier Sacré"),ki18n("CMake Support"));
+	aboutData.addCredit(ki18n("Marco Saerens"),ki18n("Professor"),"saerens@isys.ucl.ac.be");
+	aboutData.addCredit(ki18n("Marjorie Paternostre"),ki18n("Past Researcher"));
 	aboutData.addCredit(ki18n("Sarah Rolfo"),ki18n("Past Researcher"));
 
 	// Init

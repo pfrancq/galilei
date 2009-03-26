@@ -6,10 +6,9 @@
 
 	Window to manipulate a specific group - Implementation.
 
-	Copyright 2001 by the Universite Libre de Bruxelles.
-
-	Authors:
-		Valery Vandaele(vavdaele@ulb.ac.be).
+	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001 by Valery Vandaele.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
