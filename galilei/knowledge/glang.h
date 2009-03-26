@@ -6,10 +6,8 @@
 
 	Generic Language - Header.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -79,12 +77,12 @@ protected:
 	* Dictionnaries of stopwords.
 	*/
 	GConceptType* Stop;
-	
+
 	/**
 	* Dictionnaries of stems.
 	*/
 	GConceptType* Dict;
-	
+
 	/**
 	* List of word that must be skipped when there are part of a sequence
 	* beginning with a number.
@@ -170,7 +168,7 @@ public:
 	* @return Pointer to GSession.
 	*/
 	GSession* GetSession(void) const {return(Session);}
-	
+
 	/**
 	* Get the dictionary of words attached to the language.
 	* @return Pointer to GDict.

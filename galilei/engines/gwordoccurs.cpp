@@ -4,12 +4,10 @@
 
 	GWordOccurs.cpp
 
-	Word Occurences - Implementation.
+	Word Occurrences - Implementation.
 
-	Copyright 2004-2007 by the Université ibre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2004-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2004-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -91,10 +89,10 @@ void GWordOccurs::AddDoc(size_t docid)
 void GWordOccurs::FilterDocs(R::RVectorInt<size_t,true>& docs) const
 {
 	RVectorInt<size_t,true>& Cur=const_cast<RVectorInt<size_t,true>&>(Docs);
-	
+
 	if(docs.GetNb())
 	{
-		// Remove all documents that are not in Docs	
+		// Remove all documents that are not in Docs
 		for(Cur.Start();!Cur.End();Cur.Next())
 			if(docs.IsIn(Docs()))
 				docs.Delete(Docs());

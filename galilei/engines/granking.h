@@ -6,10 +6,8 @@
 
 	Class to represent the ranking of results from a Search engine - Header.
 
-	Copyright 2004 by the Universit�Libre de Bruxelles.
-
-	Authors:
-		Valery Vandaele (vavdaele@ulb.ac.be)
+	Copyright 2003-2004 by Valery Vandaele.
+	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public

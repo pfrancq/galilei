@@ -6,10 +6,8 @@
 
 	Generic Profiles Grouping Method - Implementation
 
-	Copyright 2001-2008 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -81,10 +79,10 @@ void GGroupProfiles::Grouping(GSlot*,bool save)
 			Profiles.InsertPtr(cur());
 		#endif
 	}
-		
+
 	// Make the grouping
 	Run();
-		
+
 	// Compute the description of the groups and Save the information.
 	if(CalcDesc)
 	{
@@ -100,7 +98,7 @@ void GGroupProfiles::Grouping(GSlot*,bool save)
 		R::RCursor<GCommunity> Groups(Session->GetCommunities());
 		for(Groups.Start();!Groups.End();Groups.Next())
 			Groups()->SetState(osSaved);
-	}	
+	}
 }
 
 

@@ -6,10 +6,8 @@
 
 	Generic Signal Handler for a GALILEI Session - Header.
 
-	Copyright 2005-2008 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -100,14 +98,14 @@ public:
 	* @param event           Event.
 	*/
 	virtual void Event(GCommunity* community, tEvent event);
-	
+
 	/**
 	* A specific topic has changed.
 	* @param topic           Topic.
 	* @param event           Event.
 	*/
 	virtual void Event(GTopic* topic, tEvent event);
-	
+
 	/**
 	* Destructor.
 	*/

@@ -6,10 +6,8 @@
 
 	Generic Documents Post-Analysis Method - Header.
 
-	Copyright 2003 by the Universit�Libre de Bruxelles.
-
-	Authors
-		 Kumps Nicolas (nkumps@ulb.ac.be)
+	Copyright 2003-2004 by Nicolas Kumps.
+	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
