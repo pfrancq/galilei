@@ -2,14 +2,13 @@
 
 	GALILEI Research Project
 
-	GFilterHTML_KDE.cpp
+	HTML_KDE.cpp
 
-	A KDE about box for HTML filter - Implementation.
+	A HTML filter (KDE Part) - Implementation.
 
-	Copyright 2001 by the Universit� Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2003 by Valery Vandaele.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -48,9 +47,10 @@ void About(void)
 {
 	KAboutData aboutData("html",0, ki18n("HTML Filter"),
 		"2.0", ki18n("This is the HTML filter for GALILEI."), KAboutData::License_GPL,
-		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Maintainer"), "vvandaele@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Contributor"), "pfrancq@ulb.ac.be");
+		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001-2003 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Developer"));
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

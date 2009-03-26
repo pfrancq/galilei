@@ -2,14 +2,12 @@
 
 	GALILEI Research Project
 
-	GFilterHTML_KDE.cpp
+	MSDocL_KDE.cpp
 
-	A KDE about box for HTML filter - Implementation.
+	A MSDoc filter (KDE Part) - Implementation.
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2001-2004 by Valery Vandaele.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -53,8 +51,9 @@ void About(void)
 {
 	KAboutData aboutData("msdoc",0, ki18n("MSDoc Filter"),
 		"1.0",ki18n("This is the MSDoc filter for GALILEI. It is highly based on the wvWare project."), KAboutData::License_GPL,
-		ki18n("(c) 2003, Université Libre de Bruxelles\nCAD/CAM Department\n"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Vandaele Valery"),ki18n("Maintainer"), "vavdaele@ulb.ac.be");
+		ki18n("(C) 2001-2004 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Vandaele Valery"),ki18n("Developer"), "vavdaele@ulb.ac.be");
 	aboutData.addAuthor(ki18n("Dom Lachowicz"),ki18n("wvWare Project"), "cinamod@hotmail.com");
 	aboutData.addAuthor(ki18n("Shaheed Haque"),ki18n("wvWare Project"), "srhaque@iee.org");
 	aboutData.addAuthor(ki18n("Werner Trobin"),ki18n("wvWare Project"), "trobin@kde.org");

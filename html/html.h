@@ -2,15 +2,13 @@
 
 	GALILEI Research Project
 
-	GFilterHTML.h
+	HTML.h
 
 	A HTML filter - Header.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
-		Vandaele Valery (vavdaele@ulb.ac.be)
+	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2003 by Valery Vandaele.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public

@@ -2,14 +2,13 @@
 
 	GALILEI Research Project
 
-	GFilterHTML_KDE.cpp
+	RTF_KDE.cpp
 
-	A KDE about box for RTF filter - Implementation.
+	A RTF filter (KDE Part) - Implementation.
 
-	Copyright 2003 by the Universit� Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2001-2004 by Valery Vandaele.
+	Copyright 2001-2004 by Nicolas Kumps.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -46,10 +45,12 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "html", 0, ki18n("RTF Filter"),
+	KAboutData aboutData("rtf", 0, ki18n("RTF Filter"),
 		"1.0", ki18n("This is the RTF filter for GALILEI."), KAboutData::License_GPL,
-		ki18n("(c) 2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Nicolas Kumps"),ki18n("Maintainer"), "nkumps@ulb.ac.be");
+		ki18n("(C) 2001-2004 by Nicolas Kumps and Valery Vandaele\n(c) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Nicolas Kumps"),ki18n("developer"));
+	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("developer"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

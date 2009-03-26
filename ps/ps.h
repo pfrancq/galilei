@@ -2,12 +2,13 @@
 
 	GALILEI Research Project
 
-	GFilterPS.h
+	PS.h
 
-	A PS filter - Header.
+	A PostScript filter - Header.
 
-	Copyright (C) 1995-1998, Digital Equipment Corporation.
-	All rights reserved.
+	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 1995-1998 by Digital Equipment Corporation.
 	See the file pstotext.txt for a full description.
 
 	Modified by:
@@ -19,9 +20,6 @@
 			right, so the GS output is dumped to a temporary file that's
  			read, instead of reading from pipes (which is, of course, how
  			VMS implements pipes anyway).  Also added -output option.
-		Pascal Francq (pfrancq@ulb.ac.be)
-			Create Filter for GALILEI
-
 */
 
 

@@ -2,14 +2,13 @@
 
 	GALILEI Research Project
 
-	GFilterPDF.h
+	PDF.h
 
 	A PDF filter - Header.
 
-	Copyright 2001-2003 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 1996-2005 by Glyph & Cog, LLC.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public

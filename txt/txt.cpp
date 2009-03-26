@@ -2,14 +2,12 @@
 
 	GALILEI Research Project
 
-	GFilterTXT.cpp
+	TXT.cpp
 
-	Filter for TXT Files - Implementation.
+	Filter for text Files - Implementation.
 
-	Copyright 2001-2007 by the Université Libre de Bruxelles.
-
-	Authors:
-		Vandaele Valery (vavdaele@ulb.ac.be).
+	Copyright 2001 by Valery Vandaele.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
