@@ -1,15 +1,12 @@
 /*
 
-	Genetic Document Algorithm
+	GALILEI Research Project
 
-	GGDAGrouping_KDE.cpp
+	GCAGroupDocs_KDE.cpp
 
-	Config and about dialogs - Implementation.
+	GCA Plug-in for Documents (KDE Part) - Implementation.
 
-	Copyright 2006-2007 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -56,10 +53,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "GDA", 0, ki18n("Genetic Document Algorithm"),
-		"1.0", ki18n("This is the Genetic Document Algorithm for GALILEI."), KAboutData::License_GPL,
-		ki18n("(c) 2005, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	KAboutData aboutData("gca_docs", 0, ki18n("GCA Plug-in for Documents"),
+		"1.0", ki18n("This is a genetic algorithm to cluster documents."),KAboutData::License_GPL,
+		ki18n("(C) 2008-2009 by Pascal Francq"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

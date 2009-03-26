@@ -1,15 +1,13 @@
 /*
 
-	Genetic Community Algorithm
+	GALILEI Research Project
 
-	GCAGrouping_KDE.cpp
+	GCAGroupProfiles_KDE.cpp
 
-	Config and about dialogs - Implementation.
+	GCA Plug-in for Profiles (KDE Part) - Implementation.
 
-	Copyright 2003-2007 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -56,10 +54,11 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "GCA", 0, ki18n("Genetic Community Algorithm"),
-		"1.0",ki18n("This is the Genetic Community Algorithm for GALILEI."), KAboutData::License_GPL,
-		ki18n("(c) 1998-2005, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+	KAboutData aboutData( "gca_profiles", 0, ki18n("GCA Plug-in for Profiles"),
+		"1.0",ki18n("This is a genetic algorithm to cluster profiles."), KAboutData::License_GPL,
+		ki18n("(C) 2003-2009 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

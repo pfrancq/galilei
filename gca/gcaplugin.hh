@@ -1,15 +1,13 @@
 /*
 
-	GCA Project
+	GALILEI Research Project
 
 	GCAPlugIn.hh
 
 	Generic Plug-in for GCA - Template Implementation
 
-	Copyright 2008 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -212,6 +210,7 @@ template<class cObj,class cGroup,class cFactory>
 	GCAInst Instance(session,Objs,this,session->GetDebug(),ObjType,mes,Incremental);
 	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cObj,cGroup,cFactory>::Gen),"RInst::Generation",&Instance);
 	cout<<"Init GCA"<<endl;
+//	Instance.SetVerify(true);
 	Instance.Init();
 	Instance.SetLocalOptimisation(LocalOptimisation);
 	Instance.SetOptimisation(Optimisation);
@@ -242,7 +241,7 @@ template<class cObj,class cGroup,class cFactory>
 template<class cObj,class cGroup,class cFactory>
 	void GCAPlugIn<cObj,cGroup,cFactory>::DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
 {
-	cout<<"Do kMeans for "<<GetObjType(ObjType)<<"s"<<endl;
+	cout<<"Do kMeans for "<<Objs.GetNb()<<" "<<GetObjType(ObjType)<<"s"<<endl;
 	std::auto_ptr<RRandom> Rand(RRandom::Create(RRandom::Good,1));
 	if(InternalRandom)
 		Rand->Reset(12345);
@@ -272,7 +271,7 @@ template<class cObj,class cGroup,class cFactory>
 		start=kMeans::kMeansPlusPlus;
 	cout<<"Run kMeans ("<<NbClusters<<" clusters)"<<endl;
 	kMeans.Run(&Sol,MaxKMeans,NbClusters,start);
-	cout<<"kMeans iterates "<<kMeans.GetNbIterations()<<" times"<<endl;
+	cout<<"kMeans iterates "<<kMeans.GetNbIterations()<<" times (max="<<MaxKMeans<<")"<<endl;
 	ConstructResults<CGroup>(session,Sol);
 }
 
@@ -295,7 +294,7 @@ template<class cObj,class cGroup,class cFactory>
 		size_t i(0);
 		for(Cur.Start();!Cur.End();Cur.Next(),i++)
 			Objs.InsertPtr(new GCAObj(i,Cur()));
-		cout<<" "<<i+1<<" created"<<endl;
+		cout<<" "<<i<<" created"<<endl;
 
 		switch(ClusteringMethod)
 		{
