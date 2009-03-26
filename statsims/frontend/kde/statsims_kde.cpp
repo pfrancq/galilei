@@ -2,14 +2,12 @@
 
 	GALILEI Research Project
 
-	GEvalGroups_KDE.cpp
+	StatSims_KDE.cpp
 
-	A KDE about box for the groups evaluation. - Implementation.
+	Similarity Statistics (KDE Part) - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -77,10 +75,11 @@ void About(void)
 {
 	KAboutData aboutData( "statssims", 0, ki18n("Similarity Statistics"),
 		"1.0", ki18n("This statistic computes several measures based on the similarities."), KAboutData::License_GPL,
-		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Researcher"), "vavdaele@ulb.ac.be");
-	aboutData.addCredit(ki18n("Julien Lamoral"),ki18n("Past researcher"), "jlamoral@ulb.ac.be");
+		ki18n("(C) 2003-2009 by Pascal Francq\n(C) 2003-2004 by Valery Vandaele\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Past Researcher"));
+	aboutData.addCredit(ki18n("Julien Lamoral"),ki18n("Past researcher"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
