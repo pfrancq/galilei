@@ -2,14 +2,12 @@
 
 	GALILEI Research Project
 
-	GLangNL.cpp
+	LangNL.cpp
 
 	Dutch Language - Implementation.
 
-	Copyright 2003-2008 by the Université Libre de Bruxelles.
-
-	Authors:
-		Nicolas Kumps (nkumps@ulb.ac.be).
+	Copyright 2001 by Nicolas Kumps.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public

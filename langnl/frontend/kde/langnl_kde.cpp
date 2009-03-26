@@ -2,14 +2,12 @@
 
 	GALILEI Research Project
 
-	GLangNL_KDE.cpp
+	LangNL_KDE.cpp
 
-	A KDE about box for HTML filter - Implementation.
+	Dutch Language (KDE Part) - Implementation.
 
-	Copyright 2003 by the Université Libre de Bruxelles.
-
-	Authors:
-		Nicolas Kumps (nkumps@ulb.ac.be).
+	Copyright 2001 by Nicolas Kumps.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,7 +30,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfilter.h>
+#include <glang.h>
 using namespace GALILEI;
 
 
@@ -53,10 +51,10 @@ void About(void)
 {
 	KAboutData aboutData( "nl", 0, ki18n("Dutch Language"),
 		"1.0", ki18n("This is the dutch language plugin using the Porter stemming algorithm."), KAboutData::License_GPL,
-		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Nicolas Kumps"),ki18n("Maintainer"), "nkumps@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Contributor"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Contributor"), "jlamoral@ulb.ac.be");
+		ki18n("(C) 2001 by Nicolas Kumps\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Nicolas Kumps"),ki18n("Developer"));
+	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Contributor"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

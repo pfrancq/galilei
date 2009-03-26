@@ -2,11 +2,11 @@
 
 	GALILEI Research Project
 
-	GLangNO_KDE.cpp
+	LangNO_KDE.cpp
 
-	A KDE about box for Norwegian language - Implementation.
+	Norwegian language (KDE Part) - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
+	Copyright 2001 by the Université Libre de Bruxelles (ULB).
 
 	Authors:
 		David Wartel (dwartel@ulb.ac.be).
@@ -32,7 +32,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfilter.h>
+#include <glang.h>
 using namespace GALILEI;
 
 
@@ -53,8 +53,9 @@ void About(void)
 {
 	KAboutData aboutData( "no", 0, ki18n("Norwegian Language"),
 		"1.0", ki18n("This is the norwegian language plugin using a stemming algorithm based on snowball algorithms."), KAboutData::License_GPL,
-		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Maintainer"), "dwartel@ulb.ac.be");
+		ki18n("(C) 2001 by David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
 	aboutData.addAuthor(ki18n("Blake Madden"),ki18n("C++ stemming algorithm writter"), "madden_blake@hotmail.com");
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();

@@ -2,15 +2,13 @@
 
 	GALILEI Research Project
 
-	GLangAR_KDE.cpp
+	LangAR_KDE.cpp
 
-	A KDE about box for HTML filter - Implementation.
+	Arabic Language (KDE Part) - Implementation.
 
-	Copyright 2006 by the Université Libre de Bruxelles.
-
-	Authors:
-		David Wartel (dwartel@ulb.ac.be).
-		Sarah Rolfo (srolfo@ulb.ac.be).
+	Copyright 2004 by David Wartel.
+	Copyright 2004 by Sarah Rolfo.
+	Copyright 2004-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -74,10 +72,10 @@ void About(void)
 {
 	KAboutData aboutData( "ar", 0, ki18n("Arabic Language"),
 		"1.0", ki18n("This is the arabic language plugin using the Porter stemming algorithm."), KAboutData::License_GPL,
-		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Contributor"), "dwartel@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Sarah Rolfo"),ki18n("Linguist"), "srolfo@ulb.ac.be");
+		ki18n("(C) 2004 by David Wartel and Sarah Rolfo\n(c) 2004-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
+	aboutData.addAuthor(ki18n("Sarah Rolfo"),ki18n("Linguist"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

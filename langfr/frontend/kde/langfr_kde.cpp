@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GLangFR_KDE.cpp
+	LangFR_KDE.cpp
 
-	A KDE about box for HTML filter - Implementation.
+	French Language (KDE Part) - Implementation.
 
-	Copyright 2001 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001 by Julien Lamoral.
+	Copyright 2001 by Marjorie Paternostre.
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -53,10 +53,11 @@ void About(void)
 {
 	KAboutData aboutData( "fr", 0,ki18n("French Language"),
 		"1.0", ki18n("This is the french language plugin using the Carry stemming algorithm."), KAboutData::License_GPL,
-		ki18n("(c) 1998-2003, Université Libre de Bruxelles\nCAD/CAM Department"), KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Marjorie Paternostre"),ki18n("Carry inventor"), "marjorie.paternostre@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Contributor"), "jlamoral@ulb.ac.be");
+		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001 by Marjorie Paternostre\n(C) 2001 by Julien Lamoral\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Marjorie Paternostre"),ki18n("Carry inventor"));
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Developer"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

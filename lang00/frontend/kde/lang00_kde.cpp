@@ -2,14 +2,12 @@
 
 	GALILEI Research Project
 
-	GLang00_KDE.cpp
+	Lang00_KDE.cpp
 
-	A KDE about box - Implementation.
+	Universal Language (KDE Part) - Implementation.
 
-	Copyright 2006 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -32,7 +30,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gfilter.h>
+#include <glang.h>
 using namespace GALILEI;
 
 
@@ -53,8 +51,9 @@ void About(void)
 {
 	KAboutData aboutData("00", 0, ki18n("Universal Language"),
 		"1.0", ki18n("This is the universal language plugin."), KAboutData::License_GPL,
-		ki18n("(c) 2006, Université Libre de Bruxelles\nCAD/CAM Department"),  KLocalizedString(), "http://cfao.ulb.ac.be", "pfrancq@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pfrancq@ulb.ac.be");
+		ki18n("(C) 2006-2009 by Pascal Francq\n(C) 2006-2008 by the Université Libre de Bruxelles (ULB)"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

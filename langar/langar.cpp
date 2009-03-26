@@ -2,15 +2,13 @@
 
 	GALILEI Research Project
 
-	GLangAR.cpp
+	LangAR.cpp
 
 	Arabic Language - Implementation.
 
-	Copyright 2004-2008 by the Université Libre de Bruxelles.
-
-	Authors:
-		David Wartel (dwartel@ulb.ac.be).
-		Sarah Rolfo (srolfo@ulb.ac.be).
+	Copyright 2004 by David Wartel.
+	Copyright 2004 by Sarah Rolfo.
+	Copyright 2004-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
