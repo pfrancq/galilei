@@ -2,15 +2,13 @@
 
 	GALILEI Research Project
 
-	GSubProfilesLevel.cpp
+	SubsLevel.cpp
 
 	Compute Profiles and Documents Levels - Implementation
 
-	Copyright 2005 by the Université Libre de Bruxelles.
-
-	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
-		David Wartel (dwartel@e-parkos.com)
+	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2005 by David Wartel.
+	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
