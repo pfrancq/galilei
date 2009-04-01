@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GChromoIR.cpp
+	GXMLFrag.cpp
 
 	Chromosome for an IR Problem - Implementation
 
-	Copyright 2002-2005 by the Université Libre de Bruxelles.
+	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Faïza Abbaci (fabbaci@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -59,7 +59,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GXmlFrag::GXmlFrag(unsigned int id) 
+GALILEI::GXmlFrag::GXmlFrag(unsigned int id)
 	: RContainer<RPromCritValue, true, true>(5,3),
 	  CritDocSc(0.0), CritTfief(0.0), CritDis(0.0),  CritSpecif(0.0),  ID(id)
 {

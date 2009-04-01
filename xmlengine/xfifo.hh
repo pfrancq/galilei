@@ -56,7 +56,7 @@ inline elem *XFifo<elem>::PopFirst()
 {
 	elem *temp;
 	XFifoNode<elem> *del;
-	
+
 	if (!first)
 		return 0;
 	temp = first->ptr;

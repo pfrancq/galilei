@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GChromoIR.h
+	GXMLFrag.h
 
 	Chromosome for an IR Problem - Header
 
-	Copyright 2001 by the Universit�Libre de Bruxelles.
+	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Faïza Abbaci (fabbaci@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -68,7 +68,7 @@ public:
 	* Value of the "Document Score" criterion.tf-idf
 	*/
 	double CritDocSc;
-	
+
 	/**
 	* Value of the "Type" criterion.
 	*/
@@ -94,14 +94,14 @@ public:
 	*/
 	double CritTfief;
 
-	
+
 	/**
 	* Global Factor
 	*/
 	double Global;
 
 
-	
+
 
 	/**
 	* Construct the chromosome.
@@ -110,27 +110,27 @@ public:
 	*/
 	GXmlFrag(unsigned int id);
 
-	
+
 	/**
 	* Method needed by R::RContainer.
 	*/
 	int Compare(const GXmlFrag* c) const;
 
-	
+
 	/**
 	* Get the global value for the chromosome.
 	*/
 	double GetGlobal(void) const {return(Global);}
 
-	
-	
-	
+
+
+
 	/**
 	* Get the value of the "Document Score" criterion for the fragment.
 	* @returns double.
 	*/
 	double GetCritDocSc(void) const {return(CritDocSc);}
-	
+
 	/**
 	* Get the value of the "Type" criterion for the fragment.
 	* @returns double.

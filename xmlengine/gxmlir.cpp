@@ -6,10 +6,10 @@
 
 	GA for the Information Retrieval Problem - Implementation.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	CCopyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Faïza Abbaci (fabbaci@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -36,11 +36,6 @@
 using namespace GALILEI;
 using namespace R;
 using namespace std;
-
-
-
-
-
 
 //-----------------------------------------------------------------------------
 //

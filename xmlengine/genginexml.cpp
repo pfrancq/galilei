@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GEngineGoogle.cpp
+	GXMLEngine
 
 	Extractor of results from the Google search engine - Implementation.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Valery Vandaele (vavdaele@ulb.ac.be)
+		Faïza Abbaci (fabbaci@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -66,7 +66,6 @@ void fct_print(const char *str)
 //------------------------------------------------------------------------------
 GEngineXML::GEngineXML(GFactoryEngine *fac) : GEngine(fac), Name(""), NbResults(40), Weight(1.0)
 {
-//Params = new GXmlParams;
 }
 
 //______________________________________________________________________________
@@ -208,10 +207,6 @@ RString GEngineXML::ConstructQuery(RContainer<RString, false, false> &keyWords)
  			UpdateDb();
  		ask_update = false;
  		ask_reset = false;
- /*        RString temp;
-         temp = ConstructQuery(keyWords);
-         cout << temp.Latin1() << endl;
- 		temp.Split(query_list, RChar(' '));*/
   		ConstructQuery(keyWords).Split(query_list, RChar(' '));					// Same line as the 4 above, query_list
  		time_t temps_actD;
  		time_t temps_actF;
@@ -220,7 +215,7 @@ RString GEngineXML::ConstructQuery(RContainer<RString, false, false> &keyWords)
  		cres = xquery.Query(query_list, Name);										//   is a container of words and symbols
  		time(&temps_actF);
  		if (difftime(temps_actF,temps_actD))
- 		cout << "temps prispour cette requ�te  " << difftime(temps_actF,temps_actD) << endl;
+ 		cout << "Time consumed for this query  " << difftime(temps_actF,temps_actD) << endl;
  		for (cres.Start(); !cres.End() && currRank < NbResults; cres.Next())
  		{
  			url = cres()->GetUrl();

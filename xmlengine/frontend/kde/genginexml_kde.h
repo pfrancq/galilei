@@ -50,7 +50,7 @@ public slots:
 	void EditLine();
 	virtual void AddFolder();
 	void RemoveFolder();
-	//------------------------------------------------------------------------------
+	void RemoveAllFolders();
 	void OpenDir();
 	void SelectItem();
 };

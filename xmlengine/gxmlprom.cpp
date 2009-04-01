@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GIRProm.cpp
+	GXMLProm.cpp
 
 	PROMETHEE Kernel for Grouping - Implementation.
 
-	Copyright 2001-2002 by the Universit� Libre de Bruxelles.
+	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Faïza Abbaci (fabbaci@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -54,15 +54,15 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 
-//RPromKernel("GALILEIXMLL",3,5) le 3 devra changer pour �tre calcul� automatiquement selon le nombre de frag � trier
+
 //-----------------------------------------------------------------------------
 GALILEI::GXmlProm::GXmlProm(GXmlParams* p) throw(bad_alloc)
 	: RPromKernel("GALILEIXMLL",3,5), Params(p), CritDocSc(0),CritTfief(0),CritDis(0), CritSpecif(0), Sols(0)
 {
 	//if(Params->ParamsDocSc.Weight)
 		AddCriterion(CritDocSc= new RPromLinearCriterion(RPromCriterion::Maximize,Params->ParamsDocSc, "DocSc"));
-		
-	//if(Params->ParamsTfief.Weight) pas encore calcul�
+
+	//if(Params->ParamsTfief.Weight)
 		AddCriterion(CritTfief= new RPromLinearCriterion(RPromCriterion::Maximize,Params->ParamsTfief,"Tfief"));
 
 	//if(Params->ParamsType.Weight)
@@ -71,7 +71,7 @@ GALILEI::GXmlProm::GXmlProm(GXmlParams* p) throw(bad_alloc)
 	//if(Params->ParamsDis.Weight)
 		AddCriterion(CritDis= new RPromLinearCriterion(RPromCriterion::Minimize,Params->ParamsDis,"Dis"));
 
-	//if(Params->ParamsOcc.Weight)pas encore calcul�
+	//if(Params->ParamsOcc.Weight)
 		//CritOcc=NewCriterion(RPromCriterion::Maximize,"Occurrence",Params->ParamsOcc);
 
 	//if(Params->ParamsSpecif.Weight)
@@ -88,7 +88,7 @@ void GALILEI::GXmlProm::Assign(RPromSol* s,XNode* n)
 	RPromKernel::Assign(s,CritDis,n->CritDis);
 //	RPromKernel::Assign(s,CritOcc,n->CritOcc);
 	RPromKernel::Assign(s,CritSpecif,n->CritSpecif);
-	
+
 }
 //-----------------------------------------------------------------------------
 void GALILEI::GXmlProm::Assign(RPromSol* s, double criteria_values[4])
@@ -99,5 +99,5 @@ void GALILEI::GXmlProm::Assign(RPromSol* s, double criteria_values[4])
 	RPromKernel::Assign(s,CritDis,criteria_values[2]);
 //	RPromKernel::Assign(s,CritOcc,n->CritOcc);
 	RPromKernel::Assign(s,CritSpecif,criteria_values[3]);
-	
+
 }

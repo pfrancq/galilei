@@ -6,10 +6,10 @@
 
 	Heuristic using a GGA - Implementation
 
-	Copyright 2002-2005 by the Université Libre de Bruxelles.
+	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Faïza Abbaci (fabbaci@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -55,66 +55,50 @@ using namespace GALILEI;
 using namespace R;
 using namespace std;
 //-----------------------------------------------------------------------------
-// include files for GALILEI
-
-
-
-
-
-//-----------------------------------------------------------------------------
-//
-//  GCommunityingGGA
-//
-//-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
 GXmlRanking::GXmlRanking(GStorage *_storage, GXmlParams _Params)
 {
-storage = _storage;
-Params = _Params;
+	storage = _storage;
+	Params = _Params;
 }
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
 double GXmlRanking::TFIDF(int _idfile,  RContainer<RString, false, false> &_keywordlist)
 {
-int tfidf=0;
-RCursor<RString> curs(_keywordlist);
-//� voir !!!  XSQLComputeTF() * XSQLComputeIDF()
+	int tfidf=0;
+	RCursor<RString> curs(_keywordlist);
 
 
-double tf, idf, idfTot = 0;
-int d =0;
-int D=1;
-char str[20]  = "";
- 	//calcul de N : nombre total des documents de la collection
+	double tf, idf, idfTot = 0;
+	int d =0;
+	int D=1;
+	char str[20]  = "";
+ 	//compute N : total number of documents in the collection
 	cmdtag = new GALILEI::GStorageTag("ComputeD");
 	storage->ExecuteCmd(*cmdtag, &D);
 	delete cmdtag;
 	for(curs.Start();!curs.End();curs.Next())
-	{	//tf TF d'un terme de la requ�te
+	{	//tf TF of a query keyword
 		tf=0;
 		cmdtag = new GALILEI::GStorageTag("ComputeTF");
   		cmdtag->InsertAttr("idfile", RString::Number(_idfile));
 		cmdtag->InsertAttr("word", *curs());
 		storage->ExecuteCmd(*cmdtag, &tf);
-		sprintf(str, "%f", tf);
-		cout << "tf : " << str<< endl;
-		//calcul de n : nombre de document contenant ti
+		//sprintf(str, "%f", tf);
+		//cout << "tf : " << str<< endl;
+		//Compute n : number of documents containing the keyword ti
 		cmdtag_2 = new GALILEI::GStorageTag("Compute_d");
 		cmdtag_2->InsertAttr("word", *curs());
 		storage->ExecuteCmd(*cmdtag_2, &d);
-		cout << "n : " << d << endl;
+		//cout << "n : " << d << endl;
 		idf = fabs(log(D/d));
 		idfTot += tf * idf;
-		sprintf(str, "%f", idfTot);
-		cout << "idfTot : " << str<< endl;
+		//sprintf(str, "%f", idfTot);
+		//cout << "idfTot : " << str<< endl;
 		delete cmdtag;
 		delete cmdtag_2;
 	}
-
-  	//cmdtag->InsertAttr("word", word);
-
-
 return idfTot;
 }
 //------------------------------------------------------------------------------
@@ -122,24 +106,23 @@ double GXmlRanking::TFIDF_Nodes(int _idfile,  RContainer<RString, false, false> 
 {
 int tfidf=0;
 RCursor<RString> curs(_keywordlist);
-//� voir !!!  XSQLComputeTF() * XSQLComputeIDF()
 
 
 double tf, idf, idfTot = 0;
 double n =0;
 int N=1;
 char str[20]  = "";
- 	//calcul de N : nombre total des documents de la collection
+	//compute N : total number of documents in the collection
 	cmdtag = new GALILEI::GStorageTag("ComputeN");
 	storage->ExecuteCmd(*cmdtag, &N);
 	delete cmdtag;
 	for(curs.Start();!curs.End();curs.Next())
-	{	//tf TF d'un terme de la requ�te
+	{	//tf TF of a keyword of q query
 		cmdtag = new GALILEI::GStorageTag("ComputeTF");
   		cmdtag->InsertAttr("idfile", RString::Number(_idfile));
 		cmdtag->InsertAttr("word", *curs());
 		storage->ExecuteCmd(*cmdtag, &tf);
-		//calcul de n : nombre d'elements contenant ti
+		//ccompoute n : number of elements containing ti
 		cmdtag_2 = new GALILEI::GStorageTag("Compute_n");
 		cmdtag_2->InsertAttr("word", *curs());
 		storage->ExecuteCmd(*cmdtag_2, &n);
@@ -149,10 +132,6 @@ char str[20]  = "";
 		delete cmdtag;
 		delete cmdtag_2;
 	}
-
-  	//cmdtag->InsertAttr("word", word);
-
-
 return idfTot;
 }
 //-----------------------------------------------------------------------------
@@ -322,104 +301,62 @@ void GXmlRanking::Compute(R::RString Name)
  		RTextFile Dest(Name);
  		Dest.Open(RIO::Append);
 
- 		//remplir param ne fonction de ce qui vient de kde (refaire les fenetres de gxmlengine pour saisir les criteres de promethee
  		ThProm=new GXmlProm(&Params);
 
 
- 	for (cns.Start(); !cns.End(); cns.Next())
- 	{
- 		ThereAreSolutons = true;
- 		idfile = cns()->GetIdFile();
- 		// compute tf*idf
- 		tf_idf = TFIDF(idfile, keywordlist);
- 		tf_ief = TFIDF_Nodes(idfile, keywordlist);
- 		//cout << "tf-idf idfile " << idfile << "-" << tf_idf << endl;
- 		cn.Set(*cns());
- 		if (cn.GetNb())				//pour chaque noeud on calcule les crit�res
- 			for (cn.Start(); !cn.End(); cn.Next())
- 			{
-     			//Dest <<" faiza le noeud " << cn()->GetIdNode() << " file " << idfile << " ";
- 				cn()->Compute_Promethee_Criteria(tf_idf, tf_ief); //tf_idf est calcul� ici et pour plus d'homgeneit� du code on l'attribue � DocSc dans Compute_Promethee_Criteria
- 				//cout << " pour le noeud " << cn()->GetIdNode() << " on cree la solution " << Nb << endl;
- 				sol=ThProm->NewSol();
- 				ThProm->Assign(sol,cn());
- 				cn()->SetRank(tf_idf);
- 				//cout << "sol : docsc " << cn()->CritDocSc <<endl; //<<": type " << cn()->CritType <<": dis " << cn()->CritDis << endl;
- 				Nb++;
- 			}
- 	}
- 	if (ThereAreSolutons){
- 		ThProm->ComputePrometheeII();
- 		Sols=ThProm->GetSols();
+		for (cns.Start(); !cns.End(); cns.Next())
+		{
+			ThereAreSolutons = true;
+			idfile = cns()->GetIdFile();
+			// compute tf*idf
+			tf_idf = TFIDF(idfile, keywordlist);
+			tf_ief = TFIDF_Nodes(idfile, keywordlist);
+			//cout << "tf-idf idfile " << idfile << "-" << tf_idf << endl;
+			cn.Set(*cns());
+			if (cn.GetNb())				//pour chaque noeud on calcule les crit�res
+				for (cn.Start(); !cn.End(); cn.Next())
+				{
+					//Dest <<" faiza le noeud " << cn()->GetIdNode() << " file " << idfile << " ";
+					cn()->Compute_Promethee_Criteria(tf_idf, tf_ief); //tf_idf est calcul� ici et pour plus d'homgeneit� du code on l'attribue � DocSc dans Compute_Promethee_Criteria
+					//cout << " pour le noeud " << cn()->GetIdNode() << " on cree la solution " << Nb << endl;
+					sol=ThProm->NewSol();
+					ThProm->Assign(sol,cn());
+					cn()->SetRank(tf_idf);
+					//cout << "sol : docsc " << cn()->CritDocSc <<endl; //<<": type " << cn()->CritType <<": dis " << cn()->CritDis << endl;
+					Nb++;
+				}
+		}
+		if (ThereAreSolutons){
+			ThProm->ComputePrometheeII();
+			Sols=ThProm->GetSols();
 
- 		// Nous allons remplir le champ Rank de chaque noeud 'solution')
- 		i = 0;
- 		for (cns.Start(); !cns.End(); cns.Next())
- 		{
- 			cn.Set(*cns());
- 			if (cn.GetNb())
- 				for (cn.Start(); !cn.End(); cn.Next())
- 				{	int j=0;
- 					bool found = false;
- 					Sols=ThProm->GetSols();
- 					//chercher la solution qui correspond � cn()
- 					while(!found && j<Nb){
- 						if ((*Sols)->GetId() == i) { //on a trouv� la solution qui correspond a notre noeud qui au au niv i de cn
+			// We fill the field Rank of every node ( 'solution')
+			i = 0;
+			for (cns.Start(); !cns.End(); cns.Next())
+			{
+				cn.Set(*cns());
+				if (cn.GetNb())
+					for (cn.Start(); !cn.End(); cn.Next())
+					{	int j=0;
+						bool found = false;
+						Sols=ThProm->GetSols();
+						//found the solution conrresponding to cn()
+						while(!found && j<Nb){
+							if ((*Sols)->GetId() == i) { //on a trouv� la solution qui correspond a notre noeud qui au au niv i de cn
 
- 							cn()->SetRank((*Sols)->GetFi());
- 							//cout << "le rank de la sol " << (*Sols)->GetId() << " est donn�e au noeud " << cn()->GetIdNode() << endl;
- 							found = true;
- 						}
- 						Sols++;
- 						j++;
+								cn()->SetRank((*Sols)->GetFi());
+								//cout << "le rank de la sol " << (*Sols)->GetId() << " est donn�e au noeud " << cn()->GetIdNode() << endl;
+								found = true;
+							}
+							Sols++;
+							j++;
 
- 					}
- 					i++;
- 				}
- 		}
- 	}
- 	Sols=ThProm->GetSols();
- 	//for(i=0; i<Nb; i++){
- 		//cout << "fi de la solution " << (*Sols)->GetId() << ": " << (*Sols)->GetFi() << ", " << (*Sols)->GetFiPlus() << ", " << (*Sols)->GetFiMinus() << endl;
- 		//Sols++;
- 	//}
- // 			Line=src.GetLine();
- // 			cout << Line << endl;
- //
- // 			frag =new GXmlFrag(Nb);
- // 			if (i==1 )
- // 				frag->CritDocSc = atof ( Line );
- // 			if (i==2 )
- // 				frag->CritType = atof ( Line );
- // 			if (i==3 )
- // 				frag->CritDis = atof ( Line );
- // 			if (i==4 )
- // 				frag->CritOcc = atof ( Line );
- // 			if (i==5 )
- // 				frag->CritSpecif = atof ( Line );
- // 			if (i==6 ){
- // 				i=0;
- // 				frag->CritHier = atof ( Line );
- // 				sol=ThProm->NewSol();
- // 				ThProm->Assign(sol,frag);
- // 				delete frag;
- // 				Nb++;
- // 			}
- // 			i++;
- // 			}
- //
- // 		ThProm->ComputePrometheeII();
- // 		Sols=ThProm->GetSols();
- //
- // 		RTextFile Dest(NameOut);
- // 		Dest.Open(RIO::Append);
- //
- // 		for(i=Nb-1; i>0; i--){
- // 			Dest << "fi de la solution " << (*Sols)->GetId() << ": " << (*Sols)->GetFi() << ", " << (*Sols)->GetFiPlus() << ", " << (*Sols)->GetFiMinus() << endl;
- // 			Sols++;
- // 		}
- // 		Dest << "--------------------------------------------------------------------------------------------------------------------"<< endl;
- 		//Juste un exemple : cout << Params.ParamsDocSc.P << endl;
+						}
+						i++;
+					}
+			}
+		}
+		Sols=ThProm->GetSols();
 
  }
 

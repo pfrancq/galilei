@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GEngineGoogle.h
+	GXMLEngine
 
 	Engine for extraction of results from the Yahoo search engine - Header.
 
-	Copyright 2001-2003 by the Universit�Libre de Bruxelles.
+	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Valery Vandaele (vavdaele@ulb.ac.be)
+		Faïza Abbaci (fabbaci@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -40,9 +40,7 @@
 #include <galilei.h>
 #include <gengine.h>
 #include <genginedoc.h>
-//#include <engines/genginemanager.h>
-//#include <gmetaenginemanager.h>
-//#include <gmetaengine.h>
+
 //-----------------------------------------------------------------------------
 // include files for XML
 #include <xquery.h>
@@ -54,19 +52,18 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GEngineGoogle class provides a representation for a results extractor
-* for Google Search Engine
-* @author Valery Vandaele
-* @short results extractor for Google engine
+* The GEngineXML class provides a search engine over XML documents
+* @author Faïza Abbaci
+* @short XML serach engine
 */
 class GEngineXML : public GEngine
 {
-	
+
 	/**
 	* Name of the file.
 	*/
 	R::RString Name;
-	
+
 	/**
 	* Param of Promethee
 	*/

@@ -23,32 +23,56 @@
 
 #include <fcntl.h>
 using namespace std;
+#include <rxmlparser.h>
+#include <rxmlstruct.h>
 
-#include <rxmlfile.h>
-#include <rtextfile.h>
 using namespace R;
 
 #include "xgeneral.h"
 #include "xtag.h"
 
-class XXMLFile : public RXMLFile
+class XXMLFile : public RXMLParser
 {
 	size_t Len,TotalLen;
 
+protected:
+	/**
+	* The structure associated with the XML file.
+	*/
+	RXMLStruct* XMLStruct;
+
 private :
+
+	//XXMLTag *XCurTag;
+
+	/**
+	* Current tag treated.
+	*/
+
+	RXMLTag* CurTag;
+	/**
+	* Current attribute treated.
+	*/
+
+	RXMLAttr* CurAttr;
+
+	/**
+	* Name of an attribute in the headers.
+	*/
+
+	RString AttrName;
 
 	XXMLTag *XCurTag;
 
-	void load_header();
-	void  load_next_tag();
-	void  load_attributes(RContainer<RXMLAttr, false, true> &attrs, RChar EndTag1 = '/', RChar EndTag2 = '>');
-	void begin_tag(const RString &name, RContainer<RXMLAttr, false, true> &attrs);
-	void end_tag(const RString& name);
-	void add_next_char(RString &str);
+	virtual void BeginTag(const RString& namespaceURI, const RString& lName, const RString& name);
+	virtual void EndTag(const RString& namespaceURI, const RString& lName, const RString& name);
+	virtual void Value(const RString& value);
+	virtual void Text(const RString& text);
+	virtual void AddAttribute(const RString& namespaceURI, const RString& lName, const RString& name);
+	virtual void AddEntity(const RString& name,const RString& value);
 
 public :
-
-	XXMLFile(const RString &name, RXMLStruct *xmlstruct, const RString &encoding = "UTF-8");
+	XXMLFile(const RURI& uri, RXMLStruct *xmlstruct, const RString &encoding = "UTF-8");
 	XXMLFile(RIOFile &file, RXMLStruct *xmlstruct, const RString &encoding = "UTF-8");
 	void Open(RIO::ModeType mode);
 };

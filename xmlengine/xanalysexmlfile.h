@@ -1,7 +1,9 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Jean-Baptiste Valsamis                          *
- *   jvalsami@ulb.ac.be                                                    *
- *                                                                         *
+ *   Copyright 2004-2009 by the Universit�Libre de Bruxelles.
+
+	Authors:
+		Faïza Abbaci (fabbaci@ulb.ac.be)
+		                                             *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
  *   the Free Software Foundation; either version 2 of the License, or     *
@@ -48,7 +50,6 @@ private :
 
 	RContainer<XWordSQL, true, true> wordslist;
 	RContainer<XNodeSQL, true, false> nodeslist;
-	//RDblHashContainer<RString, 27, 27, true> *globalWordList;
 	RXMLStruct xstruct;
 	RString filename;
 	GALILEI::GStorage *storage;
@@ -72,7 +73,6 @@ private :
 public :
 
 	XAnalyseXMLFile(GALILEI::GStorage *_storage, const RString &_filename);
-//, RDblHashContainer<RString, 27, 27, true> &_globalWordList);
 	void AnalyseDoc();
 	bool IsFileSync();
 	void DropSQL();

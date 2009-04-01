@@ -20,15 +20,18 @@
 
 #include "xxmlfile.h"
 
-XXMLFile::XXMLFile(const RString &name, RXMLStruct *xmlstruct, const RString &encoding)
-: RXMLFile(name, xmlstruct, encoding)
+
+//------------------------------------------------------------------------------
+
+XXMLFile::XXMLFile(const RURI& uri, RXMLStruct* xmlstruct,const RString &encoding)
+: RXMLParser(uri,encoding), XMLStruct(xmlstruct), CurTag(0)
 {
 }
 
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
 XXMLFile::XXMLFile(RIOFile &file, RXMLStruct *xmlstruct, const RString &encoding)
-: RXMLFile(file, xmlstruct, encoding)
+: RXMLParser(file,encoding), XMLStruct(xmlstruct), CurTag(0)
 {
 }
 
@@ -40,342 +43,112 @@ void XXMLFile::Open(RIO::ModeType mode)
 	switch (Mode)
 	{
 		case RIO::Read :
-			load_header();
-			load_next_tag();
+			CurTag=0;
+			CurAttr=0;
+			XMLStruct->Clear(); // Make sure the xml structure is empty
+			RXMLParser::Open(mode);
 			break;
 		default :
-			RXMLFile::Open(mode);
+			RXMLParser::Open(mode);
 	};
 }
 
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
-void XXMLFile::load_header()
-{
-	RString Content;
-	RContainer<RXMLAttr, false, true> Attrs(10);
-	RXMLAttr* Attr;
-	RCursor<RXMLAttr> curs_attrs;
-
-	// Skip Spaces and comments
-	SkipSpaces();
-	// Search after "<? xml"
-	if (CurString("<?"))
-	{
-		// Skip <?
-		Next(); Next();
-
-		// Search for parameters until ?> is found
-		load_attributes(Attrs, '?', '>');
-		if ((Attr=Attrs.GetPtr<const char*>("version")))
-			XMLStruct->SetVersion(Attr->GetValue());
-		if ((Attr=Attrs.GetPtr<const char*>("encoding")))
-			SetEncoding(Attr->GetValue());
-
-		// Skip ?>
-		Next(); Next();
-	}
-	curs_attrs.Set(Attrs);
-	for (curs_attrs.Start(); !curs_attrs.End(); curs_attrs.Next())
-		delete curs_attrs();
-	// Skip Spaces
-	SkipSpaces();
-
-	// Search after "!DOCTYPE"
-	if (CurString("<!"))
-	{
-		Next(); Next(); // Skip <?
-		if (!CurString("DOCTYPE", false))
-{
-//FIXME			throw RIOException(this, "Wrong DOCTYPE command");
-cout << "Wrong DOCTYPE command" << endl;
-return;
-}
-
-		// Skip DOCTYPE
-		for (int i = 8; --i;)
-			Next();
-
-		// Read the DocType
-		SkipSpaces();
-		while ((!Cur.IsNull()) && (Cur != RChar('>')) && (!Cur.IsSpace()))
-		{
-			Content += Cur;
-			Next();
-		}
-		SetDocType(XMLToString(Content));
-		while ((!Cur.IsNull()) && (Cur != RChar('>')))
-			Next();
-		Next();
-	}
-
-	// Skip Spaces and comments
-	SkipSpaces();
-}
 
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
-void XXMLFile::load_next_tag()
+void XXMLFile::BeginTag(const RString& namespaceURI, const RString& , const RString& name)
 {
-	RString attrn,attrv;
-	RString TagName;
-	RString Contains, Contains1;
-	RContainer<RXMLAttr, false, true> Attrs(10);
-	RChar What;
-	RString Code;
-	bool CDATA;
-	unsigned int bytepos;
-	int oldLen = 0;
-	int pos =  0;
+		XXMLTag *xtag;
 
-	oldLen = Len; // Initiate the total length of the tag
 
-	if ((Cur != RChar('<')) || (GetNextChar() == RChar('/')))
-	{
-	cout << "Not a tag" << endl; //FIXME throw eInvalidXMLFile(this, "Not a tag");
-	}
+		// Create the tag
+		xtag = new XXMLTag(name);
+		xtag->SetByte(GetPos(),GetPos()); //the second GetPos will have another value when we get the endtag
+		XMLStruct->AddTag(CurTag, xtag);
 
-	// Read name of the tag
-	Next(); // Skip <
-	SkipSpaces();
-
-	while ((!Cur.IsNull()) && (!Cur.IsSpace()) && (Cur != RChar('>')) && (Cur != RChar('/')))
-	{
-		TagName += Cur;
-		Next();
-	}
-	SkipSpaces();
-
-	// Read Attributes
-	load_attributes(Attrs);
-
-	// It is a closing tag?
-	CurTagClosing = (Cur == RChar('/'));
-	if (CurTagClosing)
-		Next();
-
-	// Treat the tag
-	begin_tag(TagName, Attrs);
-	// Verify if it has sub-tags
-	if (CurTagClosing)
-	{
-		end_tag(TagName);
-		Next(); // Skip >
-		SkipSpaces();
-		return;
-	}
-	// Treat sub-tags
-	Next();
-	SkipSpaces();
-	bytepos = TotalLen - Len;
-
-	while ((!Cur.IsNull()) && ((Cur != RChar('<')) || (GetNextChar() != RChar('/'))))
-	{
-		if((Cur == RChar('<')) && (GetNextChar() != RChar('/')))
+		// If no top tag -> insert it
+		if(!XMLStruct->GetTop())
 		{
-			// It is a tag -> read it
-			Contains1 = Contains;
-			load_next_tag();
-		}
-		else
-		{
-			// It is content -> read it as long as there is no open tag.
-			Contains.Clear();
-			CDATA = true; // Suppose that first '<' found is a "<![CDATA["
-			while (CDATA)
+			// Test if is a XML document (DocType=true) or a HTML document (DocType=false)
+			if(!DocType.IsEmpty())
 			{
-				// Read text until '<'
-				while ((!Cur.IsNull()) && (Cur != RChar('<')))
-					add_next_char(Contains);
-
-
-
-				// Look if the next '<' is the beginning of "<![CDATA["
-				CDATA = CurString("<![CDATA[",true);
-				if (CDATA)
-				{
-					// Skip <![CDATA[
-					for (int i = 10; --i;)
-						Next();
-					// Read until ']]>' is found
-					while ((!Cur.IsNull()) && (!CurString("]]>")))
-						add_next_char(Contains);
-
-					// Skip ]]>
-					for (int i = 4; --i;)
-						Next();
-				}
-			}
-			//Contains = Contains.Trim();
-
-		}
-
-	}
-			Text(XMLToString(Contains));
-			XCurTag = dynamic_cast<XXMLTag *> (CurTag);
-			Contains = Contains1.Trim() + " " +Contains.Trim();
-
-			XCurTag->SetByte(bytepos, oldLen-Len);
-			SkipSpaces();
-	// Read the close tag
-	CurTagClosing = true;
-	Next(); Next();  // Normal character
-	TagName.Clear();
-	SkipSpaces();
-	while ((!Cur.IsNull()) && (!Cur.IsSpace()) && (Cur!=RChar('>')))
-	{
-		TagName += Cur;
-		Next();
-	}
-	SkipSpaces();
-	Next(); // Skip >
-	end_tag(TagName);
-	SkipSpaces();
-}
-
-//______________________________________________________________________________
-//------------------------------------------------------------------------------
-void XXMLFile::load_attributes(RContainer<RXMLAttr, false, true> &attrs, RChar EndTag1, RChar EndTag2)
-{
-	RString attrn, attrv;
-	RChar What;
-	bool Quotes;
-	unsigned int bytepos = 0;
-	XXMLAttr *attrtmp;
-
-	while ((!Cur.IsNull()) && (Cur!=EndTag1) && (Cur!=EndTag2))
-	{
-		// Read the Name
-		attrn.Clear();
-		while ((!Cur.IsNull()) && (!Cur.IsSpace()) && (Cur != RChar('=')) && (Cur != RChar('>')))
-		{
-			attrn += Cur;
-			Next();
-		}
-
-		// Determine if a value is assign
-		SkipSpaces();
-		if (Cur == RChar('='))
-		{
-			// A value is assigned
-			Next();  // Skip =
-			SkipSpaces();
-
-			// Determine if the parameter is delimited by quotes
-			What = Cur;
-			Quotes = ((What == RChar('\'')) || (What == RChar('"')));
-
-			// Read the parameter
-			attrv.Clear();
-			if(Quotes)
-			{
-				Next(); // Skip the quote
-				bytepos = TotalLen - Len;
-				// Read until the next quote is found
-				while ((!Cur.IsNull()) && (Cur!=What))
-				{
-					attrv += Cur;
-					Next();
-				}
-				Next();
+				// Name of the Tag must be name of the DocType
+				if(xtag->GetName()!=DocType)
+					throw RIOException(this,"Not a valid XML file");
 			}
 			else
 			{
-				// If Quote must be used -> generate an exeception
-				if(OnlyQuote())
-{
-cout << "Quote must be used to delimit the parameter value in a tag." << endl;
-//FIXME				throw RIOException(this, "Quote must be used to delimit the parameter value in a tag.");
-}
+				RString TopName=xtag->GetName().ToLower();
 
-				// Read until a space or the end of the tag
-				bytepos = TotalLen - Len;
-				while ((!Cur.IsNull()) && (!Cur.IsSpace()) && (!(((Cur == EndTag1) && (GetNextChar() == EndTag2)) || (Cur == EndTag2))))
-				{
-					attrv += Cur;
-					Next();
-				}
+				// Is it a HTML file?
+				// -> If Not, consider the first tag is the DOCTYPE
+				if(TopName!="html")
+					DocType=TopName;
+					//throw RIOException(this,"Not a valid HTML file");
 			}
-			attrtmp = new XXMLAttr(attrn, XMLToString(attrv));
-			SkipSpaces();
 		}
-		else
-			attrtmp = new XXMLAttr(attrn, "");
-		attrtmp->SetByte(bytepos, attrv.GetLen());
-		attrs.InsertPtr(attrtmp);
-	}
+
+		// Make the tag the current one
+		CurTag=xtag;
 }
 
 //______________________________________________________________________________
 //------------------------------------------------------------------------------
-void XXMLFile::begin_tag(const RString &name, RContainer<RXMLAttr, false, true> &attrs)
+void XXMLFile::EndTag(const RString& , const RString& , const RString& )
 {
-	XXMLTag *tag;
-	RCursor<RXMLAttr> Cur;
+	int pos = dynamic_cast<XXMLTag *> (CurTag)->GetPos();
+	int len = GetPos() - pos;
 
-	// Create the tag
-	tag = new XXMLTag(name);
-	Cur.Set(attrs);
-	for (Cur.Start(); !Cur.End(); Cur.Next())
-		tag->InsertAttr(Cur());//new XXMLAttr(Cur()->GetName(), Cur()->GetValue()));
-	// If no top tag -> insert it
-	if (!XMLStruct->GetTop())
-	{
-		// Test if is a XML document (DocType=true) or a HTML document (DocType=false)
-		if (!DocType.IsEmpty())
-		{
-			// Name of the Tag must be name of the DocType
-			if (tag->GetName() != DocType)
-{
-cout << "Not a valid XML file" << endl;
-//FIXME				throw RIOException(this, "Not a valid XML file");
-}
-		}
-		else
-		{
-			RString TopName = tag->GetName().ToLower();
-
-			// Is it a HTML file?
-			// -> If Not, consider the first tag is the DOCTYPE
-			if (TopName != "html")
-				DocType = TopName;
-				//throw RIOException(this,"Not a valid HTML file");
-		}
-	}
-
-	// Add the tag the XML structure and make it the current tag
-	XCurTag = dynamic_cast<XXMLTag *> (CurTag);
-	XMLStruct->AddTag(CurTag, tag);
-	CurTag = tag;
-}
-
-//______________________________________________________________________________
-//------------------------------------------------------------------------------
-void XXMLFile::end_tag(const RString& name)
-{
-	if (CurTag->GetName() != name)
-{
-cout<<"Found closing tag ??? while closing tag ??? was expected." << endl;
-//FIXME		throw RIOException(this, "Found closing tag '" + name + "' while closing tag '" + CurTag->GetName() + "' was expected.");
-}
+	dynamic_cast<XXMLTag *> (CurTag)->SetByte(pos, len);
 	CurTag = CurTag->GetParent();
 }
 
-//______________________________________________________________________________
 //------------------------------------------------------------------------------
-void XXMLFile::add_next_char(RString &str)
-{
-	// If it is an eol character, skip it with the SkipEol
 
-	if (RTextFile::Eol(Cur))
-	{
-		str += '\n';
-		SkipEol();
-	}
+void XXMLFile::Value(const RString& value)
+{
+	int pos = dynamic_cast<XXMLAttr *> (CurAttr)->GetPos();
+	int len = GetPos() - pos;
+	dynamic_cast<XXMLAttr *> (CurAttr)->SetByte(pos, len);
+
+	if(CurAttr)
+		CurAttr->AddValue(value);
 	else
 	{
-		// Normal character
-		str += Cur;
-		Next();
+		if(AttrName=="version")
+			XMLStruct->SetVersion(value);
+		if(AttrName=="encoding")
+			SetEncoding(value);
 	}
 }
+//------------------------------------------------------------------------------
+void XXMLFile::Text(const RString& text)
+{
+	CurTag->AddContent(text);
+}
+//------------------------------------------------------------------------------
+void XXMLFile::AddAttribute(const RString& namespaceURI,const RString& lName, const RString&)
+{
+	XXMLAttr* attrtmp;
+	attrtmp = new XXMLAttr(lName, "");
+	attrtmp->SetByte(GetPos(),GetPos()); //the second GetPos() will be fixed when the value of the attribute is encountred
+
+	if(CurTag)
+		CurTag->InsertAttr(attrtmp);//CurAttr=XMLStruct->NewAttr(lName,namespaceURI));
+	else
+		AttrName=lName;
+
+	CurAttr = attrtmp;
+}
+
+void XXMLFile::AddEntity(const RString& name,const RString& value)
+{
+	XMLStruct->InsertEntity(name,value);
+}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+
+
+

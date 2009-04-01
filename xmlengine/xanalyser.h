@@ -1,6 +1,8 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Jean-Baptiste Valsamis                          *
- *   jvalsami@ulb.ac.be                                                    *
+ *   Copyright 2004-2009 by the Universit�Libre de Bruxelles.
+
+	Authors:
+		Faïza Abbaci (fabbaci@ulb.ac.be)                                                  *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -34,16 +36,15 @@ using namespace R;
 class XAnalyser
 {
 private :
-	
+
 	GALILEI::GStorageTag *cmdtag;
 	RContainer<RString, true, true> insert;
 	RContainer<RString, true, true> exist;
-	//RDblHashContainer<RString, 27, 27, true> globalWordList;
 	GALILEI::GStorage *storage;
 	void (*output)(const char *s);
-	
+
 	void print(const RString &s) const;
-	
+
 public :
 
 	XAnalyser(GALILEI::GStorage *_storage, void (*_output)(const char *s) = 0);

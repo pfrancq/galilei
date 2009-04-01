@@ -6,10 +6,10 @@
 
 	GA for the Information Retrieval Problem - Header.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Faïza Abbaci (fabbaci@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -73,14 +73,14 @@ public:
 
 		/**
 		* Parameter for the criterion "Type".
-		
+
 		R::RParam*  ParamsType;*/
-		
+
 		/**
 		* Parameter for the criterion "Dis".
 		*/
 		R::RParam*  ParamsDis;
-		
+
 		/**
 		* Parameter for the criterion ""Occ".
 		*

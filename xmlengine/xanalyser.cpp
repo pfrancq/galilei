@@ -1,6 +1,8 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Jean-Baptiste Valsamis                          *
- *   jvalsami@ulb.ac.be                                                    *
+ *   Copyright 2004-2009 by the Universit�Libre de Bruxelles.
+
+	Authors:
+		Faïza Abbaci (fabbaci@ulb.ac.be)                                                   *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -44,7 +46,7 @@ void XAnalyser::AddPath(RString path, const bool &include_subfolders)
 	struct stat m;
 	RString str, name, *pop;
 	XFifo<RString> fifodir;
-	
+
 	if (path[path.GetLen() - 1] != '/')											// Formatting paths by ending them with a '/'
 		path += "/";
 	dir = opendir(path.Latin1());												// Open directory
@@ -97,7 +99,7 @@ void XAnalyser::Update()
 	storage->ExecuteCmd(*cmdtag, &exist);//FIXME :: pb new RContainer!!! FIXED
 	delete cmdtag;
 	cout<<"start sql"<<endl;
-	curs.Set(exist);		
+	curs.Set(exist);
 														// Cursor that go through indexed files
 	for (curs.Start(); !curs.End(); curs.Next())
 	{
@@ -127,7 +129,7 @@ void XAnalyser::Update()
 	print("================================================");
 	for (curs.Start(); !curs.End(); curs.Next())								// Here we have all the files to analyse in the RContainer insert
 	{
-		
+
 		xmlfile = new XAnalyseXMLFile(storage, *curs() );
 		//print(RString("Analyse : ") + curs()->Latin1() + "...");
 		xmlfile->AnalyseDoc();													// Analyses the XML file

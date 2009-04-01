@@ -58,21 +58,28 @@ GEngineXML_KDE::GEngineXML_KDE(void)
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
 		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		showButton(KDialog::Ok, false);
+		showButton(KDialog::Cancel, false);
+
+		connect( pathLView, SIGNAL( itemSelectionChanged() ), this, SLOT( SelectItem() ) );
+		connect( pathLEdit, SIGNAL( textChanged(const QString&) ), this, SLOT( EditLine() ) );
+		connect( updateDB, SIGNAL( toggled(bool) ), this, SLOT( OnUpdate() ) );
 		connect(openButton, SIGNAL(clicked()), this, SLOT(OpenDir()));
 		connect(remButton, SIGNAL(clicked()), this, SLOT(RemoveFolder()));
+		connect(remAllButton, SIGNAL(clicked()), this, SLOT(RemoveAllFolders()));
 		connect(addButton, SIGNAL(clicked()), this, SLOT(AddFolder()));
 		connect(cancelButton, SIGNAL(clicked()), this, SLOT(close()));
-		connect(okButton, SIGNAL(clicked()), this, SLOT(GEngineXML_KDE::OnOk()));
-
+		connect(okButton, SIGNAL(clicked()), this, SLOT(OnOk()));
+		//init();
 		adjustSize();
 }
-
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
 GEngineXML_KDE::~GEngineXML_KDE(void)
 {
 }
-
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
 void GEngineXML_KDE::ExternAddPath(const char *path, bool inc_subf)
 	{
 		DIR *dir;
@@ -89,130 +96,141 @@ void GEngineXML_KDE::ExternAddPath(const char *path, bool inc_subf)
 			pathLView->addTopLevelItem(lvitem);
 		}
 	}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+char* GEngineXML_KDE::GetAllPaths()
+{
+	QTreeWidgetItem *lvitem;
+	RString temp;
+	RString car[2] = {"0", "1"};
+	char *res;
+	int cpt=1;
+	lvitem = pathLView->itemAt(1,0);
 
-	char* GEngineXML_KDE::GetAllPaths()
-	{
-		QTreeWidgetItem *lvitem;
-		RString temp;
-		RString car[2] = {"0", "1"};
-		char *res;
-		int cpt=1;
-		lvitem = pathLView->itemAt(1,0);
-		while (lvitem){
-			temp += RString(car[lvitem->text(1) == "x"] + lvitem->text(0).toLatin1().constData()) + ".";
-			cpt++;
-			lvitem = pathLView->itemAt(cpt,0);
-		}
-		//for (lvitem = pathLView->firstChild(); lvitem != 0; lvitem = lvitem->nextSibling())
-		//	temp += RString(car[lvitem->text(1) == "x"] + lvitem->text(0).toLatin1().constData()) + ".";
-		res = new char[temp.GetLen() + 1];
-		sprintf(res, "%s", temp.Latin1());
-		return res;
+	for (int i = 0; i < pathLView->topLevelItemCount(); i++){
+		temp += RString(car[pathLView->topLevelItem(i)->text(1) == "x"] + pathLView->topLevelItem(i)->text(0).toLatin1().constData()) ;
+		if (i!= pathLView->topLevelItemCount()-1)
+			temp += ".";
 	}
-	void GEngineXML_KDE::OnUpdate()
+	res = new char[temp.GetLen()+1];
+	sprintf(res, "%s", temp.Latin1());
+	return res;
+}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+void GEngineXML_KDE::OnUpdate()
+{
+	if (updateDB->isChecked())
+		resetDB->setEnabled(true);
+	else
+		resetDB->setEnabled(false);
+}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+void GEngineXML_KDE::CheckLView()
+{
+	DIR *dir;
+	bool ok = false;
+	dir = opendir(pathLEdit->text().ascii());
+	if (dir != 0)
 	{
-		if (updateDB->isChecked())
-			resetDB->setEnabled(true);
+		ok = true;
+		closedir(dir);
+	}
+	addButton->setEnabled(ok);
+	remButton->setEnabled(pathLView->topLevelItemCount());
+}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+void GEngineXML_KDE::init()
+{
+	pathLEdit->setText("/home/fgaultier/Documents/CollectionsXML/");
+	OnUpdate();
+	CheckLView();
+
+}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+void GEngineXML_KDE::SetUpdate_Reset(bool state_update, bool state_reset)
+{
+	updateDB->setChecked(state_update);
+	resetDB->setChecked(state_reset);
+}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+void GEngineXML_KDE::OnOk()
+{
+	accept();
+}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+void GEngineXML_KDE::EditLine()
+{
+	CheckLView();
+}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+void GEngineXML_KDE::AddFolder()
+{
+	QTreeWidgetItem *lvitem;
+	QString path(pathLEdit->text());
+
+	if (path[path.length() - 1] != '/')
+	{
+		path += "/";
+		pathLEdit->setText(path);
+	}
+
+	if (pathLView->findItems(pathLEdit->text(),Qt::MatchCaseSensitive, 0).isEmpty())
+	{
+
+		if (subfCBox->isChecked())
+			lvitem = new QTreeWidgetItem(pathLView,QStringList()<<pathLEdit->text()<<"x");
 		else
-			resetDB->setEnabled(false);
-	}
+			lvitem = new QTreeWidgetItem(pathLView,QStringList()<<pathLEdit->text()<<" ");
+	} else{
 
-	void GEngineXML_KDE::CheckLView()
-	{
-		DIR *dir;
-		bool ok = false;
-
-		dir = opendir(pathLEdit->text().ascii());
-		if (dir != 0)
-		{
-			ok = true;
-			closedir(dir);
-		}
-		addButton->setEnabled(ok);
-		remButton->setEnabled(pathLView->topLevelItemCount());
-	}
-
-	void GEngineXML_KDE::init()
-	{
-
-		pathLView->setColumnWidth(0, 430);
-		pathLView->setColumnWidth(1, 90);
-		pathLEdit->setText("/home/fgaultier/Documents/CollectionsXML/Inex06/Collection/essaiJB1doc/");
-		OnUpdate();
-		CheckLView();
-	}
-	void GEngineXML_KDE::SetUpdate_Reset(bool state_update, bool state_reset)
-	{
-		updateDB->setChecked(state_update);
-		resetDB->setChecked(state_reset);
-	}
-	void GEngineXML_KDE::OnOk()
-	{
-		accept();
-	}
-	void GEngineXML_KDE::EditLine()
-	{
-		CheckLView();
-	}
-	void GEngineXML_KDE::AddFolder()
-	{
-		QTreeWidgetItem *lvitem;
-		QString path(pathLEdit->text());
-
-		if (path[path.length() - 1] != '/')
-		{
-			path += "/";
-			pathLEdit->setText(path);
-		}
 		lvitem = pathLView->findItems(pathLEdit->text(),Qt::MatchCaseSensitive, 0).first();
-		if (lvitem != 0)
-				lvitem->setText(1, subfCBox->isChecked() ? "x" : " ");
-		else
-		{
-			lvitem = new QTreeWidgetItem(pathLView);
-			lvitem->setText(0, pathLEdit->text());
-			lvitem->setText(1, subfCBox->isChecked() ? "x" : " ");
-			pathLView->addTopLevelItem(lvitem);
-		}
-		CheckLView();
+		lvitem->setText(1, subfCBox->isChecked() ? "x" : " ");
 	}
-
-	//______________________________________________________________________________
-	//------------------------------------------------------------------------------
-	void GEngineXML_KDE::RemoveFolder()
-	{
-
-		pathLView->takeTopLevelItem(pathLView->indexOfTopLevelItem(pathLView->selectedItems().first()));
-		CheckLView();
-	}
-
-	//______________________________________________________________________________
-	//------------------------------------------------------------------------------
-	void GEngineXML_KDE::OpenDir()
-	{
-		QFileDialog *fdlg;
-		QString pathres;
-
-		fdlg = new QFileDialog(this);
-		fdlg->setDir(pathLEdit->text());
-		fdlg->setMode(QFileDialog::Directory);
-		fdlg->setFilter("*");
-		if (fdlg->exec() == QDialog::Accepted)
-			pathres = fdlg->selectedFile();
-		pathLEdit->setText(pathres);
-	}
-
-	void GEngineXML_KDE::SelectItem()
-	{
-		if (pathLView->selectedItems().first())
-			pathLEdit->setText(pathLView->selectedItems().first()->text(0));
-	}
-
-
-
+	CheckLView();
+}
+//______________________________________________________________________________
 //------------------------------------------------------------------------------
-
+void GEngineXML_KDE::RemoveFolder()
+{
+	if(!pathLView->currentItem()) return;
+	delete pathLView->currentItem();
+}
+//______________________________________________________________________________
 //------------------------------------------------------------------------------
+	void GEngineXML_KDE::RemoveAllFolders()
+	{
+		pathLView->clear();
+	}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+void GEngineXML_KDE::OpenDir()
+{
+	QFileDialog *fdlg;
+	QString pathres;
+
+	fdlg = new QFileDialog(this);
+	fdlg->setDir(pathLEdit->text());
+	fdlg->setMode(QFileDialog::Directory);
+	fdlg->setFilter("*");
+	if (fdlg->exec() == QDialog::Accepted)
+		pathres = fdlg->selectedFile();
+	pathLEdit->setText(pathres);
+}
+//______________________________________________________________________________
+//------------------------------------------------------------------------------
+void GEngineXML_KDE::SelectItem()
+{
+	if(!pathLView->currentItem()) return;
+	if (pathLView->selectedItems().first())
+		pathLEdit->setText(pathLView->selectedItems().first()->text(0));
+}
 
 //------------------------------------------------------------------------------
 extern "C" {
@@ -240,7 +258,6 @@ void Configure(GFactoryEngine* params)
 		RCursor<RString> curs;
 
 
-	//	throw RException("Adapt to the new structure");
 		dlg.Name->setUrl(ToQString(params->Get("Name")));
 		dlg.nbres->setValue(params->GetDouble("NbResults"));
 		dlg.weight->setValue(params->GetDouble("Weight"));
@@ -305,10 +322,6 @@ void Configure(GFactoryEngine* params)
 		}
 }
 
-
-
-//------------------------------------------------------------------------------
-
-	}
+}
 // end of extern
 

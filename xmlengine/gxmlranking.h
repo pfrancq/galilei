@@ -2,14 +2,14 @@
 
 	GALILEI Research Project
 
-	GCommunityingGGA.h
+	GXMLRanking.h
 
 	Heuristic using a GGA - Header.
 
-	Copyright 2002 by the Universit�Libre de Bruxelles.
+	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
+		Faïza Abbaci (fabbaci@ulb.ac.be)
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -48,19 +48,13 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-/**
-* The GCommunityingGGA provides a representation for a method to group some
-* subprofiles using a grouping genetic algorithm.
-* @author Pascal Francq
-* @short GGA Method.
-*/
-class GXmlRanking 
+class GXmlRanking
 {
 
 
 protected:
 	/**
-	* Parameters of the GA used.
+	* Parameters .
 	*/
 	GXmlParams Params;
 	/**
@@ -68,7 +62,7 @@ protected:
 	*/
 	GXmlProm* ThProm;
 	/**
-	* Solutions corresponding 
+	* Solutions corresponding
 	*/
 	R::RPromSol** Sols;
 
@@ -80,14 +74,14 @@ public:
 	GALILEI::GStorageTag *cmdtag_2;
 
 	double TFIDF(int _idfile, RContainer<RString, false, false>& _keywordlist); //calculate TF-IDF factor (traditionnal)
-	double TFIDF_Nodes(int _idfile, RContainer<RString, false, false>& _keywordlist); //calculate TF-IEF 
+	double TFIDF_Nodes(int _idfile, RContainer<RString, false, false>& _keywordlist); //calculate TF-IEF
 	/**
 	* Constructor.
 	* @param cnset nodes to rank
 	*/
 	GXmlRanking(GALILEI::GStorage *_storage, GALILEI::GXmlParams _Params);
 
-	
+
 
 	/**
 	* Compute the statistics.
@@ -95,8 +89,8 @@ public:
 	* @param res             XML tag that will be hold the results.
 	*/
 //NORMAL
-virtual void Compute(RCursor<XNodeSet> cns, RContainer<RString, false, false>& keywordlist, R::RString Name);
-//virtual void Compute(R::RString Name);
+	virtual void Compute(RCursor<XNodeSet> cns, RContainer<RString, false, false>& keywordlist, R::RString Name);
+	//virtual void Compute(R::RString Name);
 
 	virtual ~GXmlRanking(void);
 };

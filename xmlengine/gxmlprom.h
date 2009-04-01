@@ -2,15 +2,14 @@
 
 	GALILEI Research Project
 
-	GIRProm.h
+	GXMLProm.h
 
 	PROMETHEE Kernel for Grouping - Header.
 
-	Copyright 2001-2002 by the Universit� Libre de Bruxelles.
+	Copyright 2004-2009 by the Universit�Libre de Bruxelles.
 
 	Authors:
-		Pascal Francq (pfrancq@ulb.ac.be).
-
+		Faïza Abbaci (fabbaci@ulb.ac.be)
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
 	License as published by the Free Software Foundation; either
@@ -54,19 +53,14 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-/**
-* The GPlugin class provides a representation for a basic "plugin" system for
-* the GALILEI sessions.
-* @author Pascal Francq
-* @short Generic Plugin.
-*/
+
 class GXmlProm : public R::RPromKernel
 {
 	/**
 	* Parameters.
 	*/
 	GXmlParams* Params;
-	
+
 	/**
 	* Criteria representing the global score of the document containing the fragment  tf-idf
 	*/
@@ -74,7 +68,7 @@ class GXmlProm : public R::RPromKernel
 
 	/**
 	* Criteria representing the "Type" of a fragment.
-	
+
 	R::RPromCriterion* CritType;*/
 
 	/**
@@ -97,7 +91,7 @@ class GXmlProm : public R::RPromKernel
 	R::RPromCriterion* CritTfief;
 
 	/**
-	* Solutions corresponding 
+	* Solutions corresponding
 	*/
 	R::RPromSol** Sols;
 

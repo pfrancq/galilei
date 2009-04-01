@@ -18,7 +18,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
  ***************************************************************************/
 
-#ifndef __XTAGH__			// Avoids multiple declarations
+#ifndef __XTAGH__
 #define __XTAGH__
 
 #include <rxmltag.h>
@@ -34,7 +34,7 @@ class XXMLTag;
 class XXMLElem
 {
 public :
-	
+
 	enum tElem
 	{
 		TAG,
@@ -42,12 +42,12 @@ public :
 	};
 
 protected :
-	
+
 	unsigned int pos, len;
 	tElem type;
-	
+
 public :
-	
+
 	void SetByte(unsigned int _pos, unsigned int _len);
 	unsigned int GetPos();
 	unsigned int GetLen();
@@ -65,7 +65,7 @@ public :
 class XXMLTag : public RXMLTag, public XXMLElem
 {
 public :
-	
+
 //	XXMLTag();
 	XXMLTag(RString _name);
 	virtual RString Getname();

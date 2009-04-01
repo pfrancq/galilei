@@ -1,6 +1,8 @@
 /***************************************************************************
- *   Copyright (C) 2005 by Jean-Baptiste Valsamis                          *
- *   jvalsami@ulb.ac.be                                                    *
+ *   Copyright 2004-2009 by the Universit�Libre de Bruxelles.
+
+	Authors:
+		Faïza Abbaci (fabbaci@ulb.ac.be)                                              *
  *                                                                         *
  *   This program is free software; you can redistribute it and/or modify  *
  *   it under the terms of the GNU General Public License as published by  *
@@ -35,14 +37,12 @@ using namespace std;
 using namespace R;
 
 #include "xgeneral.h"
-//#include "xpathxml.h"
 #include "xworditem.h"
 #include "xnodesql.h"
 #include "xtag.h"
 #include "xfifo.h"
 #include "xxmlfile.h"
 #include "xsqlfunc.h"
-//#include "xgeneral.h"
 
 class XAnalyseXML
 {
@@ -67,7 +67,6 @@ public :
 	void GetFileProperty(const RString &filename);
 	void AnalyseDoc(const RString &filename);
 	bool file_sync(const RString &filename);
-//	void SearchDepth();
 	void search_breadth();
 	void CreateSQL();
 	void DropSQL();
