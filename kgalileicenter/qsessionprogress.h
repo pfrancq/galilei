@@ -42,7 +42,6 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // forward class declaration for GALIEI
 #include <gslot.h>
-#include <rdbmysql.h>
 using namespace GALILEI;
 using namespace R;
 

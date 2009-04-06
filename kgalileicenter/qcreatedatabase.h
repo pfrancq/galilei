@@ -33,12 +33,6 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R/GALILEI
-#include <rdb.h>
-using namespace R;
-
-
-//------------------------------------------------------------------------------
 // include files for current project
 #include <ui_qcreatedatabase.h>
 

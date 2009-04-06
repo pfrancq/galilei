@@ -219,6 +219,7 @@ void Configure::initGeneral(void)
 	DebugFile->setUrl(R::ToQString(App->GetDebugFileName()));
 	PrgPath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
 	PrgPath->setUrl(R::ToQString(App->PrgPath));
+	IndexDir->setUrl(ToQString(App->GetIndexDir()));
 
 	// Directories
 	R::RCursor<R::RString> Cur(App->GetPlugInsPath());
@@ -238,6 +239,7 @@ void Configure::applyGeneral(void)
 	App->SetDebugFileName(R::FromQString(DebugFile->url().url()));
 	App->PrgPath=R::FromQString(PrgPath->url().url());
 	QString debug=DebugFile->url().url();
+	App->SetIndexDir(FromQString(IndexDir->url().url()));
 	if(!debug.isEmpty())
 	{
 	try

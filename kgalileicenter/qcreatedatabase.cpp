@@ -27,33 +27,22 @@
 
 
 
+//------------------------------------------------------------------------------
+// include files for current project
+#include <qsessionprogress.h>
+#include <qcreatedatabase.h>
+
+
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI
-/*#include <rcursor.h>
-
-#include <rdir.h>**/
 #include <rqt.h>
-#include <glang.h>
-#include <ggalileiapp.h>
-#include <gsession.h>
-/*#include <gsubjects.h>
-#include <gsubject.h>
-#include <gdoc.h>
-
-#include <gfilter.h>*/
+#include <rdbmysql.h>
 using namespace R;
-using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <kmessagebox.h>
-
-
-//------------------------------------------------------------------------------
-// include files for current project
-#include <qcreatedatabase.h>
-#include <qsessionprogress.h>
 
 
 
