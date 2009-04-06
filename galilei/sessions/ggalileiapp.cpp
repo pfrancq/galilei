@@ -133,6 +133,7 @@ void GGALILEIApp::CreateConfig(void)
 	Config.InsertParam(new RParamValue("PlugIns Config","default"));
 	GALILEIConfig.InsertParam(new RParamValue("Log File","/var/log/galilei/galilei.log"));
 	GALILEIConfig.InsertParam(new RParamValue("Debug File","/home/pfrancq/debug-galilei.xml"));
+	GALILEIConfig.InsertParam(new RParamValue("IndexDir","/var/galilei"));
 	GALILEIConfig.InsertParam(new RParamList("PlugIns Path"));
 
 	// Plug-ins manager parameters
@@ -153,6 +154,7 @@ void GGALILEIApp::Init(void)
 	// Get the parameters
 	GALILEIConfig.Load();
 	LogFileName=GALILEIConfig.Get("Log File");
+	IndexDir=GALILEIConfig.Get("IndexDir");
 	DebugFileName=GALILEIConfig.Get("Debug File");
 	RContainer<RParam,false,false> Paths(15);
 	RCursor<RString> Cur(GALILEIConfig.GetList("PlugIns Path"));

@@ -360,6 +360,7 @@ public:
 
 	friend class GConcept;
 	friend class GWeightInfo;
+	friend class GIndexer;
 };
 
 

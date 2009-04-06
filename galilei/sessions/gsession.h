@@ -65,6 +65,11 @@ class GSession : public R::RConfig
 	Intern* Data;
 
 	/**
+	 * Indexer.
+	 */
+	GIndexer* Indexer;
+
+	/**
 	* Handlers of GALILEi signals.
 	*/
 	static R::RContainer<GSignalHandler,false,false> Handlers;
@@ -129,10 +134,14 @@ public:
 	void SetSaveResults(bool save=true);
 
 	/**
-	* Get the storage manager.
-	* @return Pointer to GStorage.
+	* @return Pointer to storage manager.
 	*/
 	GStorage* GetStorage(void) const;
+
+	/**
+	 * @return Pointer to the indexer.
+	 */
+	GIndexer* GetIndexer(void) const;
 
 	/**
 	* Get the subjects defined.

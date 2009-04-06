@@ -44,6 +44,7 @@ using namespace std;
 #include <gconcepttype.h>
 #include <ggalileiapp.h>
 #include <gsession.h>
+#include <gstorage.h>
 using namespace GALILEI;
 
 

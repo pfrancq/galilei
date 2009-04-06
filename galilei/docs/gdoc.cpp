@@ -40,7 +40,7 @@
 #include <glang.h>
 #include <gweightinfo.h>
 #include <gsession.h>
-#include <gstorage.h>
+#include <gindexer.h>
 #include <gprofile.h>
 #include <gdocstruct.h>
 using namespace GALILEI;
@@ -131,8 +131,8 @@ GDocStruct* GDoc::GetStruct(void) const
 		GetInfos();
 		const_cast<GDoc*>(this)->Struct=new GDocStruct(NbRecs,NbLCs);
 		GSession* session=GSession::Get();
-		if(session&&session->GetStorage())
-			session->GetStorage()->LoadStruct(*const_cast<GDoc*>(this)->Struct,const_cast<GDoc*>(this));
+		if(session)
+			session->GetIndexer()->LoadStruct(*const_cast<GDoc*>(this)->Struct,const_cast<GDoc*>(this));
 	}
 	return(Struct);
 }

@@ -86,6 +86,7 @@ using namespace R;
 #include <gposttopic.h>
 #include <ggalileiapp.h>
 #include <gdebugobject.h>
+#include <gindexer.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -240,7 +241,7 @@ RContainer<GDebugObject,false,true> DebugObjs(100,100);                    // Ob
 
 //------------------------------------------------------------------------------
 GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofiles,size_t maxgroups)
-	: Data(0)
+	: Data(0), Indexer(new GIndexer(this))
 {
 	GFactoryStorage* fac=GALILEIApp->GetManager<GStorageManager>("Storage")->GetCurrentFactory();
 	if(!fac)
@@ -290,6 +291,7 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 	InsertParam(new RParamValue("PercNbDocsPerSubject",true),"Subjects");
 	InsertParam(new RParamValue("ClusterSelectedDocs",false),"Subjects");
 	InsertParam(new RParamList("SelectedSubjects"),"Subjects");
+	InsertParam(new RParamValue("IndexDir","/var/galilei"),"Indexer");
 	Load(false);
 }
 
@@ -307,6 +309,7 @@ void GSession::Apply(void)
 	Data->ClusterSelectedDocs=GetBool("ClusterSelectedDocs","Subjects");
 	if(Data->Subjects)
 		Data->Subjects->Apply();
+	Indexer->Apply();
 }
 
 
@@ -323,6 +326,8 @@ void GSession::ForceReCompute(tObjType type)
 			RCursor<GDoc> Docs(Data->Docs);
 			for(Docs.Start();!Docs.End();Docs.Next())
 				Docs()->ClearInfos();
+			if(Data->SaveResults)
+				Indexer->Clear(otDoc);
 			Break=false;
 		}
 		case otTopic:
@@ -333,7 +338,10 @@ void GSession::ForceReCompute(tObjType type)
 				Types()->ClearRef(otTopic);
 			Data->Topics.Clear();
 			if(Data->SaveResults)
+			{
+				Indexer->Clear(otTopic);
 				Data->Storage->Clear(otTopic);
+			}
 			if(Break)
 				break;
 		}
@@ -345,7 +353,10 @@ void GSession::ForceReCompute(tObjType type)
 				Types()->ClearRef(otProfile);
 			Data->Profiles.Clear();
 			if(Data->SaveResults)
+			{
+				Indexer->Clear(otProfile);
 				Data->Storage->Clear(otProfile);
+			}
 		}
 		case otCommunity:
 		{
@@ -355,7 +366,10 @@ void GSession::ForceReCompute(tObjType type)
 				Types()->ClearRef(otCommunity);
 			Data->Communities.Clear();
 			if(Data->SaveResults)
+			{
+				Indexer->Clear(otCommunity);
 				Data->Storage->Clear(otCommunity);
+			}
 			break;
 		}
 		default:
@@ -449,6 +463,13 @@ GStorage* GSession::GetStorage(void) const
 	if(!Data->Storage)
 		throw GException("No storage");
 	return(Data->Storage);
+}
+
+
+//------------------------------------------------------------------------------
+GIndexer* GSession::GetIndexer(void) const
+{
+	return(Indexer);
 }
 
 
@@ -1120,8 +1141,8 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	// Save the description and the structure
 	if(Save)
 	{
-		Data->Storage->SaveInfos(method->Infos,otDoc,doc->GetId());
-		Data->Storage->SaveStruct(method->Struct,doc);
+		Indexer->SaveInfos(method->Infos,otDoc,doc->GetId());
+		Indexer->SaveStruct(method->Struct,doc);
 	}
 
 	// Set the information to the document
@@ -2018,4 +2039,6 @@ GSession::~GSession(void)
 	Data->Storage->GetFactory()->Delete();
 
 	delete Data;
+
+	delete Indexer;
 }

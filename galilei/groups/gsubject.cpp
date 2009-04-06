@@ -117,9 +117,9 @@ GSubject* GSubject::GetIdealGroup(GDoc* doc) const
 
 
 //------------------------------------------------------------------------------
-bool GSubject::IsIn(GProfile* prof) const
+void GSubject::AddDocs(GDoc** docs,size_t& nb)
 {
-	return(Profiles.IsIn(*prof));
+	nb+=Docs.GetTab(&docs[nb]);
 }
 
 
@@ -127,6 +127,13 @@ bool GSubject::IsIn(GProfile* prof) const
 bool GSubject::IsIn(GDoc* doc) const
 {
 	return(Docs.IsIn(*doc));
+}
+
+
+//------------------------------------------------------------------------------
+bool GSubject::IsIn(GProfile* prof) const
+{
+	return(Profiles.IsIn(*prof));
 }
 
 

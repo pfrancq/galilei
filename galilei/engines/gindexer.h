@@ -35,7 +35,6 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rdblhashcontainer.h>
 #include <rvectorint.h>
 
 
@@ -51,68 +50,113 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GIndexer class provides a representation for a dictionary of data, each data
-* having is own identificator and name. These data may be stopwords.
+* The GIndexer class provides a class to manage the indexing of documents,
+* profiles, topics and communities. In practice, it manages binary files:
+* - The vectors representing the objects (GWeightInfos) in ".desc" files.
+* - The XML structure of the documents (GDocStruct) in ".struct" files.
+* - The index of the objects ".index" files.
+*
+* Each session has its own directory (the name of the corresponding world) and
+* each type of objects has its own directory in it ("Documents", "Profiles",
+* etc).
 * @author Pascal Francq
-* @short Dictionary.
+* @short Indexer.
 */
-class GIndexer : protected R::RDblHashContainer<GWordOccurs,true>
+class GIndexer
 {
 	/**
-	* Pointer to the managers holding all the languages handled by the system.
-	*/
-	GLangManager* Langs;
+	 * Session.
+	 */
+	GSession* Session;
+
+	/**
+	 * Root dir for the documents.
+	 */
+	R::RString DirDocs;
+
+	/**
+	 * Root dir for the profiles.
+	 */
+	R::RString DirProfiles;
+
+	/**
+	 * Root dir for the communities.
+	 */
+	R::RString DirCommunities;
+
+	/**
+	 * Root dir for the topics.
+	 */
+	R::RString DirTopics;
 
 public:
 
 	/**
-	* Constructor of the dictionary.
-	* @param ml             Maximal number of data to create at initialisation
-	*                       for the different letters.
-	* @param langs          Pointer to the languages manager.
+	* Construct the indexer.
+	* @param session         Session.
 	*/
-	GIndexer(size_t ml,GLangManager* langs);
+	GIndexer(GSession* session);
 
 	/**
-	* Clear the dictionary.
-	*/
-	void Clear(void);
+	 * Apply the configuration.
+	 */
+	void Apply(void);
 
 	/**
-	* Insert a word in the indexer.
-	* @param word            Word to insert.
+	* Clear the information of a given object type related to the indexation.
+	* @param objtype         Type of the object.
 	*/
-	void InsertWord(R::RString word);
+	void Clear(tObjType objtype);
 
 	/**
-	* Delete a given word.
-	* @param word            Word to insert.
+	* Load the description of a given object.
+	* @param infos           Container that will hold the description.
+	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
+	* @param id              Identifier of the object.
 	*/
-	void DeleteData(R::RString word);
+	void LoadInfos(GWeightInfos& infos,tObjType type,size_t id);
 
 	/**
-	* Look if a given word is indexed.
-	* @param word            Name fo the data to look for.
-	* @return true if the data is in the dictionary.
+	* Save the description of a given object.
+	* @param infos           Container that will hold the description.
+	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
+	* @param id              Identifier of the object.
 	*/
-	bool IsIndexed(const R::RString& word) const;
+	void SaveInfos(GWeightInfos& infos,tObjType type,size_t id);
 
 	/**
-	* Get a given data from the dictionary.
-	* @param word            Name fo the data to look for.
-	* @return Pointer to the data.
-	*/
-	GWordOccurs* GetWord(const R::RString& word) const;
+	 * Method that load the structure of a document.
+	 * @param docstruct      Structure of the document.
+	 * @param doc            Document.
+	 */
+	void LoadStruct(GDocStruct& docstruct,GDoc* doc);
 
 	/**
-	* Run a query given as string.
-	* @param query           String containing the query.
-	* @param docs            Identifiers of documents.
-	*/
-	void RunQuery(R::RString query,R::RVectorInt<size_t,true>& docs) const;
+	 * Method that save the structure of a document.
+	 * @param docstruct      Structure of the document.
+	 * @param doc            Document.
+	 */
+	void SaveStruct(GDocStruct& docstruct,GDoc* doc);
 
 	/**
-	* Destructor of the dictionary.
+	 * Build the reference for a given type of objects.
+	 * @param type            Type of objects to search for.
+	 *
+	 * The indexer will use a buffer part of the index and parses several times
+	 * all the objects computed.
+	 */
+	void BuildRefs(tObjType type);
+
+	/**
+	* Find all the references of a given concept.
+	* @param concept         Concept to search for.
+	* @param refs            Vector that will contain the references.
+	* @param type            Type of objects to search for.
+	*/
+	void FindRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjType type) const;
+
+	/**
+	* Destruct the indexer.
 	*/
 	virtual ~GIndexer(void);
 };

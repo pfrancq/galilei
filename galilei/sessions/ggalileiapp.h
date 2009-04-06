@@ -105,6 +105,11 @@ protected:
 	*/
 	R::RConfig GALILEIConfig;
 
+	/**
+	 * Directory where to binary files of the indexation are stored.
+	 */
+	R::RString IndexDir;
+
 public:
 
 	/**
@@ -180,6 +185,17 @@ public:
 	* @param name            Name.
 	*/
 	void SetDebugFileName(const R::RString& name) {DebugFileName=name;}
+
+	/**
+	* Get the name of the index directory.
+	*/
+	R::RString GetIndexDir(void) const {return(IndexDir);}
+
+	/**
+	* Set the name of the index directory.
+	* @param name            Name.
+	*/
+	void SetIndexDir(const R::RString& name) {IndexDir=name;}
 
 	/**
 	* Get the list of plug-ins paths.

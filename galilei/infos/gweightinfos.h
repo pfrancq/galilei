@@ -37,7 +37,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gsession.h>
-#include <gstorage.h>
+#include <gindexer.h>
 
 
 //------------------------------------------------------------------------------
@@ -123,8 +123,8 @@ protected:
 	inline void LoadInfos(tObjType type,size_t id)
 	{
 		GSession* session=GSession::Get();
-		if(session&&session->GetStorage())
-			session->GetStorage()->LoadInfos(*this,type,id);
+		if(session)
+			session->GetIndexer()->LoadInfos(*this,type,id);
 		State=osUpToDate;
 	}
 

@@ -191,14 +191,21 @@ public:
 	bool IsIn(GProfile* prof) const;
 
 	/**
+	 * Add the documents to the current.
+	 * @param docs           Array where the documents will be added.
+	 * @param nb             Number of documents will be increased.
+	 */
+	void AddDocs(GDoc** docs,size_t& nb);
+
+	/**
 	* Verify if a document is part of the subject.
 	* @param doc             Pointer to the document.
 	*/
 	bool IsIn(GDoc* doc) const;
 
 	/**
-	 *
-	 * @param com
+	 * Clear the ideal group of a given type.
+	 * @param type           Type of the group.
 	 */
 	void ClearIdealGroup(tObjType type);
 

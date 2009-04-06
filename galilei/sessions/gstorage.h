@@ -310,25 +310,9 @@ public:
 
 	/**
 	* Clear the information of a given object type from the storage.
+	* @param objtype         Type of the object.
 	*/
 	virtual void Clear(tObjType objtype)=0;
-
-	/**
-	* Load the description of a given object.
-	* @param infos           Container that will hold the description.
-	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
-	* @param id              Identifier of the object.
-	*/
-	virtual void LoadInfos(GWeightInfos& infos,tObjType type,size_t id)=0;
-
-	/**
-	* Save the description of a given object.
-	* @param infos           Container that will hold the description.
-	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
-	* @param id              Identifier of the object.
-	*/
-	virtual void SaveInfos(GWeightInfos& infos,tObjType type,size_t id)=0;
-
 
 	//@} General methods
 
@@ -430,31 +414,10 @@ public:
 	virtual void AssignId(GDoc* doc)=0;
 
 	/**
-	* Load an indexer.
-	* @param indexer         Pointer to the indexer.
-	* @param langs           Pointer to the languages manager.
-	*/
-	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs)=0;
-
-	/**
 	* Method that load a document that is stored.
 	* @param docid           Identifier of the document
 	*/
 	virtual GDoc* LoadDoc(size_t docid)=0;
-
-	/**
-	 * Method that load the structure of a document.
-	 * @param docstruct      Structure of the document.
-	 * @param doc            Document.
-	 */
-	virtual void LoadStruct(GDocStruct& docstruct,GDoc* doc)=0;
-
-	/**
-	 * Method that save the structure of a document.
-	 * @param docstruct      Structure of the document.
-	 * @param doc            Document.
-	 */
-	virtual void SaveStruct(GDocStruct& docstruct,GDoc* doc)=0;
 
 protected:
 

@@ -273,7 +273,7 @@ void GSubjects::ChooseSubjects(void)
 				continue;
 
 			// Verify that there is enough documents
-			if((*ptr)->GetNbObjs(otDoc)<Data->NbMinDocsSubject) continue;
+			if((*ptr)->GetNbTotalDocs()<Data->NbMinDocsSubject) continue;
 
 			(*ptr)->Used=true;
 			compt--;
@@ -299,20 +299,24 @@ void GSubjects::CreateSet(void)
 	size_t maxDocsOK,maxDocsKO,maxDocsH;
 	RCursor<GFactoryLang> CurLang;
 
-	// Init Part
+	// Fill Data->tmpDocs with the list of documents that could be selected to be assess by profiles
 	Data->LastAdded.Clear();
 	if(!Data->tmpDocs)
 		Data->tmpDocs=new GDoc*[Data->Session->GetMaxPosDoc()+1];
-
-	// Go through all the subjects which are used
+	Data->NbDocs=0;
 	RCursor<GSubject> Subs(GetNodes());
 	for(Subs.Start();!Subs.End();Subs.Next())
 	{
 		if(!Subs()->IsUsed())
 			continue;
+		Subs()->AddDocs(Data->tmpDocs,Data->NbDocs);
+	}
 
-		// Copy the documents of the session in Docs;
-		Data->NbDocs=Data->Session->FillDocs(Data->tmpDocs);
+	// Go through all the subjects which are used to create the profiles
+	for(Subs.Start();!Subs.End();Subs.Next())
+	{
+		if(!Subs()->IsUsed())
+			continue;
 
 		// Number of profiles that will assess documents
 		if(Data->NbProfMax>Subs()->GetNbObjs(otProfile))
@@ -881,8 +885,10 @@ void GSubjects::StartSimulation(void)
 	{
 		Data->Session->GetStorage()->Clear(otUser);
 		Data->Session->GetStorage()->Clear(otProfile);
+		Data->Session->GetIndexer()->Clear(otProfile);
 		Data->Session->GetStorage()->Clear(otFdbk);
 		Data->Session->GetStorage()->Clear(otCommunity);
+		Data->Session->GetIndexer()->Clear(otCommunity);
 		RCursor<GUser> Users(Data->Session->GetUsers());
 		for(Users.Start();!Users.End();Users.Next())
 			Data->Session->GetStorage()->SaveUser(Users());
