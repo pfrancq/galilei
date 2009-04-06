@@ -144,9 +144,6 @@ public:
 	* Destruct the object.
 	*/
 	~GCAObj(void);
-
-	// friend classes
-	friend class GCAGroup;
 };
 
 

@@ -108,7 +108,7 @@ template<class cObj,class cGroup,class cFactory>
 	MinDisagreement=factory->GetDouble("Min Disagreement");
 	MaxKMeans=factory->GetUInt("Max kMeans");
 	Convergence=factory->GetDouble("Convergence");
-	NbDivChromo=factory->GetUInt("NbDivChromo");
+	NbDivChromo=factory->GetUInt("NbDivChromos");
 	LocalOptimisation=factory->GetBool("LocalOptimisation");
 	Optimisation=factory->GetBool("Optimisation");
 	Incremental=factory->GetBool("Incremental");

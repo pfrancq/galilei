@@ -120,21 +120,21 @@ public:
 	* @param element1        First element.
 	* @param element2        Second element.
 	*/
-	virtual double GetDisagreementRatio(size_t element1,size_t element2) const;
+	virtual double GetDisagreementRatio(const GCAObj* obj1,const GCAObj* obj2) const;
 
 	/**
 	* Get the disagreement ratio between two elements.
 	* @param element1        First element.
 	* @param element2        Second element.
 	*/
-	virtual double GetAgreementRatio(size_t element1,size_t element2) const;
+	virtual double GetAgreementRatio(const GCAObj* obj1,const GCAObj* obj2) const;
 
 	/**
 	* Compute the similarity between two elements.
 	* @param element1        First element.
 	* @param element2        Second element.
 	*/
-	virtual double GetSim(size_t element1,size_t element2) const;
+	virtual double GetSim(const GCAObj* obj1,const GCAObj* obj2) const;
 
 	/**
 	* Destruct the instance.

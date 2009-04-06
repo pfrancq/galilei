@@ -98,28 +98,28 @@ GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,RParamsSC* p,RDebug *debug,t
 
 
 //-----------------------------------------------------------------------------
-double GCAInst::GetDisagreementRatio(size_t element1,size_t element2) const
+double GCAInst::GetDisagreementRatio(const GCAObj* obj1,const GCAObj* obj2) const
 {
 	double d;
-	Disagree->Measure(0,element1,element2,&d);
+	Disagree->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
 	return(d);
 }
 
 
 //-----------------------------------------------------------------------------
-double GCAInst::GetAgreementRatio(size_t element1,size_t element2) const
+double GCAInst::GetAgreementRatio(const GCAObj* obj1,const GCAObj* obj2) const
 {
 	double d;
-	Agree->Measure(0,element1,element2,&d);
+	Agree->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
 	return(d);
 }
 
 
 //-----------------------------------------------------------------------------
-double GCAInst::GetSim(size_t element1,size_t element2) const
+double GCAInst::GetSim(const GCAObj* obj1,const GCAObj* obj2) const
 {
 	double d;
-	Sims->Measure(0,element1,element2,&d);
+	Sims->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
 	return(d);
 }
 

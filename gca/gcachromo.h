@@ -42,8 +42,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 // include files for GCA
 #include <gca.h>
-#include <gcainst.h>
 #include <gcagroup.h>
+#include <gcainst.h>
 
 
 //-----------------------------------------------------------------------------
