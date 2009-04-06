@@ -104,7 +104,6 @@ void Configure(GFactoryStorage* params)
 	dlg.Filtering->setChecked(params->GetBool("Filtering"));
 	dlg.Filter->setEnabled(params->GetBool("Filtering"));
 	dlg.groupBox1_2->setEnabled(params->GetBool("Filtering"));
-	dlg.Dir->setUrl(ToQString(params->Get("Dir")));
 	if(dlg.exec())
 	{
 		params->Set("Database",FromQString(dlg.txtDb->text()));
@@ -115,7 +114,6 @@ void Configure(GFactoryStorage* params)
 		params->SetBool("All",!dlg.Modified->isChecked());
 		params->Set("Filter",FromQString(dlg.Filter->date().toString(Qt::ISODate)));
 		params->SetBool("Filtering",dlg.Filtering->isChecked());
-		params->Set("Dir",FromQString(dlg.Dir->url().url()));
 	}
 }
 

@@ -94,31 +94,6 @@ class GStorageMySQL : public GStorage
 	 */
 	RString Encoding;
 
-	/**
-	 * Directory where to binary files are stored.
-	 */
-	RString Dir;
-
-	/**
-	 * Root dir for the documents.
-	 */
-	RString DirDocs;
-
-	/**
-	 * Root dir for the profiles.
-	 */
-	RString DirProfiles;
-
-	/**
-	 * Root dir for the communities.
-	 */
-	RString DirCommunities;
-
-	/**
-	 * Root dir for the topics.
-	 */
-	RString DirTopics;
-
 public:
 
 	/**
@@ -253,23 +228,6 @@ public:
 	*/
 	virtual void Clear(tObjType objtype);
 
-	/**
-	* Load the description of a given object.
-	* @param infos           Container that will hold the description.
-	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
-	* @param id              Identifier of the object.
-	*/
-	virtual void LoadInfos(GWeightInfos& infos,tObjType type,size_t id);
-
-	/**
-	* Save the description of a given object.
-	* @param infos           Container that will hold the description.
-	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
-	* @param id              Identifier of the object.
-	*/
-	virtual void SaveInfos(GWeightInfos& infos,tObjType type,size_t id);
-
-
 	//@} General methods
 
 
@@ -368,31 +326,10 @@ public:
 	virtual void AssignId(GDoc* doc);
 
 	/**
-	* Load an indexer.
-	* @param indexer         Pointer to the indexer.
-	* @param langs           Pointer to the langs.
-	*/
-	virtual void LoadIndexer(GIndexer* &indexer,GLangManager* langs);
-
-	/**
 	* Method that load a document that is stored.
 	* @param docid           Identifier of the document
 	*/
 	virtual GDoc* LoadDoc(size_t docid);
-
-	/**
-	 * Method that load the structure of a document.
-	 * @param docstruct      Structure of the document.
-	 * @param doc            Document.
-	 */
-	virtual void LoadStruct(GDocStruct& docstruct,GDoc* doc);
-
-	/**
-	 * Method that save the structure of a document.
-	 * @param docstruct      Structure of the document.
-	 * @param doc            Document.
-	 */
-	virtual void SaveStruct(GDocStruct& docstruct,GDoc* doc);
 
 	/**
 	* Method that load the documents from where they are stored. This method
