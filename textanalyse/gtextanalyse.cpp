@@ -172,7 +172,7 @@ inline cStructToken* cStructTokens::AddToken(GConceptType* space,const RString& 
 	NbTags++;
 	if(!ptr->Tag)
 	{
-		GConcept t(cNoRef,token,space,0,0,0,0);
+		GConcept t(token,space);
 		ptr->Tag=space->InsertConcept(&t);
 	}
 	return(ptr);
@@ -202,7 +202,7 @@ inline void cStructTokens::ChangeTokenNS(cStructToken* token,const RString& uri)
 		if(tag->GetRef(otNoClass))
 		{
 			// New concept must be created.
-			GConcept t(cNoRef,Name,tag->GetType(),0,0,0,0);
+			GConcept t(Name,tag->GetType());
 			token->Tag=tag->GetType()->InsertConcept(&t);
 		}
 		else
@@ -942,7 +942,7 @@ GConcept* GTextAnalyse::GetStemConcept(cWord* word)
 		stem=word->Word;
 	if(stem.GetLen()<MinWordSize)
 		return(0);
-	GConcept w(cNoRef,stem,Lang->GetDict(),0,0,0,0);
+	GConcept w(stem,Lang->GetDict());
 	return(Lang->GetDict()->InsertConcept(&w));
 }
 
