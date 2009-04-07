@@ -146,6 +146,7 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("&Force Re-computing Documents","docsClear",SLOT(docsClear())));
 	Actions.insert(Actions.size(),addAction("Show &Documents","showDocs",SLOT(showDocs()),"text-xml"));
 	Actions.insert(Actions.size(),addAction("Export Documents Description","exportDocs",SLOT(exportDocs())));
+	Actions.insert(Actions.size(),addAction("Index Documents","indexDocs",SLOT(indexDocs())));
 	Actions.insert(Actions.size(),addAction("Load and Analyze a Document","docAnalyse",SLOT(docAnalyse())));
 	Actions.insert(Actions.size(),addAction("&Analyze Documents","docsAnalyse",SLOT(docsAnalyse()),"kfind"));
 	Actions.insert(Actions.size(),addAction("Execute &Post-Documents Methods","postDocsAnalyse",SLOT(postDocsAnalyse())));
@@ -534,6 +535,15 @@ void KGALILEICenter::exportDocs(void)
 		}
 		Export<<"</documents>"<<endl;
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::indexDocs(void)
+{
+	QSessionProgressDlg Dlg(this,"Index documents");
+	QIndexDocs* Task(new QIndexDocs());
+	Dlg.Run(Task);
 }
 
 

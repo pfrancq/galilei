@@ -39,6 +39,7 @@
 #include <ggalileiapp.h>
 #include <gstorage.h>
 #include <gfilter.h>
+#include <gsession.h>
 using namespace R;
 using namespace GALILEI;
 

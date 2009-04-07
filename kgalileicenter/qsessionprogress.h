@@ -324,13 +324,23 @@ public:
 //-----------------------------------------------------------------------------
 /**
 * Compute all the elements.
-* @param modified       Recompute only modified elements or all.
-* @param save           Save modified elements.
 */
 class QComputeAll : public QSessionThread
 {
 public:
 	QComputeAll(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Index the documents.
+*/
+class QIndexDocs : public QSessionThread
+{
+public:
+	QIndexDocs(void) {}
 	virtual void DoIt(void);
 };
 
@@ -382,6 +392,12 @@ public:
 	* @param lang           Pointer to the current lang.
 	*/
 	virtual void NextGroupLang(const GLang* lang);
+
+	/**
+	* The treatment for a specific concept type will begin.
+	* @param type            Concept type.
+	*/
+	virtual void NextConceptType(const GConceptType* type);
 
 	/**
 	* The traitment for a specific document will begin.

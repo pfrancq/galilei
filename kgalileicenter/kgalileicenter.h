@@ -260,6 +260,11 @@ private slots:
 	void exportDocs(void);
 
 	/**
+	 * Index the documents.
+	 */
+	void indexDocs(void);
+
+	/**
 	 * Show a document.
 	 */
 	void showDoc(GDoc* doc);

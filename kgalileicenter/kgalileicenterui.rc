@@ -27,6 +27,7 @@
 		<Separator/>
 		<Action name="showDocs"/>
 		<Action name="exportDocs"/>
+		<Action name="indexDocs"/>
 		<separator/>
 		<Action name="docsAnalyse"/>		
 		<Action name="postDocsAnalyse"/>

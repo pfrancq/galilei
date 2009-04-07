@@ -220,6 +220,7 @@ void Configure::initGeneral(void)
 	PrgPath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
 	PrgPath->setUrl(R::ToQString(App->PrgPath));
 	IndexDir->setUrl(ToQString(App->GetIndexDir()));
+	IndexRamSize->setValue(App->GetIndexRamSize());
 
 	// Directories
 	R::RCursor<R::RString> Cur(App->GetPlugInsPath());
@@ -240,18 +241,19 @@ void Configure::applyGeneral(void)
 	App->PrgPath=R::FromQString(PrgPath->url().url());
 	QString debug=DebugFile->url().url();
 	App->SetIndexDir(FromQString(IndexDir->url().url()));
+	App->SetIndexRamSize(IndexRamSize->value());
 	if(!debug.isEmpty())
 	{
-	try
-	{
-		App->Debug=new R::RDebugXML(R::FromQString(debug));
-		if(App->GetSession())
-			App->GetSession()->SetDebug(App->Debug);
-	}
-	catch(...)
-	{
-		QMessageBox::critical(this,"KGALILEICenter","Error while creating '"+debug+"'");
-	}
+		try
+		{
+			App->Debug=new R::RDebugXML(R::FromQString(debug));
+			if(App->GetSession())
+				App->GetSession()->SetDebug(App->Debug);
+		}
+		catch(...)
+		{
+			QMessageBox::critical(this,"KGALILEICenter","Error while creating '"+debug+"'");
+		}
 	}
 
 	// Directories

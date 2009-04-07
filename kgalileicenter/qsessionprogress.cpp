@@ -62,6 +62,7 @@
 #include <gconcept.h>
 #include <gconcepttype.h>
 #include <gfilter.h>
+#include <gindexer.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -319,6 +320,14 @@ void QComputeAll::DoIt(void)
 }
 
 
+//-----------------------------------------------------------------------------
+void QIndexDocs::DoIt(void)
+{
+	Parent->setLabelText("Index Documents ...");
+	GALILEIApp->GetSession()->GetIndexer()->BuildRefs(otDoc,Parent);
+}
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -363,6 +372,13 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 {
 	setLabelText(QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...");
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::NextConceptType(const GConceptType* type)
+{
+	setLabelText(QString("Treat ")+ToQString(type->GetName())+" ...");
 }
 
 
