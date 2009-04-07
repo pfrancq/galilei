@@ -647,18 +647,22 @@ void GStorageMySQL::LoadConcepts(GConceptType* type)
 
 		// Create and insert the dictionary
 		// Load the dictionary from the database
-		sSql="SELECT conceptid,name,refdocs,refprofiles,refgroups,reftopics FROM concepts WHERE typeid="+Num(type->GetId());
+		sSql="SELECT conceptid,name,refdocs,refprofiles,refgroups,reftopics,indexdocs FROM concepts WHERE typeid="+Num(type->GetId());
 		RQuery dicts(Db,sSql);
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
 			if(Index)
 			{
-				GXMLIndex w(atoi(dicts[0]),dicts[1],type,atoi(dicts[2]),atoi(dicts[3]),atoi(dicts[4]),atoi(dicts[5]));
+				GXMLIndex w(dicts[0].ToSizeT(),dicts[1],type,
+						dicts[2].ToSizeT(),dicts[6].ToOffT(),
+						dicts[3].ToSizeT(),dicts[4].ToSizeT(),dicts[5].ToSizeT());
 				type->InsertConcept(&w);
 			}
 			else
 			{
-				GConcept w(atoi(dicts[0]),dicts[1],type,atoi(dicts[2]),atoi(dicts[3]),atoi(dicts[4]),atoi(dicts[5]));
+				GConcept w(dicts[0].ToSizeT(),dicts[1],type,
+						dicts[2].ToSizeT(),dicts[6].ToOffT(),
+						dicts[3].ToSizeT(),dicts[4].ToSizeT(),dicts[5].ToSizeT());
 				type->InsertConcept(&w);
 			}
 		}
@@ -828,6 +832,44 @@ void GStorageMySQL::SaveRefs(const GConcept* concept,tObjType what,size_t refs)
 				break;
 			default:
 				throw GException("This type of objects do not have descriptions");
+		};
+		RQuery(Db,sSql);
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,off_t pos)
+{
+	try
+	{
+		RString sSql;
+
+		switch(what)
+		{
+			case otDoc:
+				sSql="UPDATE concepts SET indexdocs="+RString::Number(pos)+
+				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
+				break;
+/*			case otProfile:
+				sSql="UPDATE concepts SET refprofiles="+Num(refs)+
+				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
+				break;
+			case otCommunity:
+				sSql="UPDATE concepts SET refgroups="+Num(refs)+
+				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
+				break;
+			case otTopic:
+				sSql="UPDATE concepts SET reftopics="+Num(refs)+
+				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
+				break;*/
+			default:
+				throw GException("This type of objects do not have index");
 		};
 		RQuery(Db,sSql);
 	}

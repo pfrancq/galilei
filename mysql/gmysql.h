@@ -304,6 +304,14 @@ public:
 	virtual void SaveRefs(const GConcept* concept,tObjType what,size_t refs);
 
 	/**
+	 * Save the index information of a given object type for a given concept.
+	 * @param concept         Concept.
+	 * @param what            Type of the object (otDoc,otSubProfile,otGroup).
+	 * @param pos             Position of the index.
+	 */
+	virtual void SaveIndex(const GConcept* concept,tObjType what,off_t pos);
+
+	/**
 	* Save the references of a given object type for a given concept type.
 	* @param type            Type of the concept.
 	* @param what            Type of the object (otDoc,otSubProfile,otGroup).
