@@ -56,6 +56,7 @@ using namespace std;
 #include <gcommunity.h>
 #include <gtopic.h>
 #include <gconcept.h>
+#include <gslot.h>
 using namespace GALILEI;
 
 
@@ -91,7 +92,7 @@ public:
 
 //------------------------------------------------------------------------------
 GIndexer::GIndexer(GSession* session)
-	: Session(session)
+	: Session(session), DocsInvertedFile(0)
 {
 }
 
@@ -330,10 +331,43 @@ void GIndexer::SaveStruct(GDocStruct& docstruct,GDoc* doc)
 
 
 //------------------------------------------------------------------------------
-void GIndexer::BuildRefs(tObjType type)
+void GIndexer::BuildBuffer(size_t* buffer,GConcept* min,GConcept* max)
 {
-/*	const size_t MaxBuffer(1024*1024);
-	off_t* Buffer[MaxBuffer/sizeof(off_t)];*/
+/*	cout<<"Index concepts between ("<<(int)min->GetType()->GetId()<<","<<min->GetId();
+	cout<<") and ("<<(int)max->GetType()->GetId()<<","<<max->GetId()<<")"<<endl;*/
+
+	if(!max)
+		max=min;
+	GWeightInfos Doc(10000);
+
+	// Go through the documents
+	RCursor<GDoc> Docs(Session->GetDocs());
+	for(Docs.Start();!Docs.End();Docs.Next())
+	{
+		// Load the description in Infos
+		Doc.Clear();
+		LoadInfos(Doc,otDoc,Docs()->GetId());
+
+		// Go thought the information entities
+		RCursor<GWeightInfo> Infos(Doc.GetInfos());
+		for(Infos.Start();!Infos.End();Infos.Next())
+		{
+			if(((*Infos())<min)||((*Infos())>max)) continue;
+
+			// Set that Infos() is referenced in Docs()
+			GConcept* ptr(Infos()->GetConcept());
+			buffer[static_cast<size_t>(/*Infos()->GetConcept()*/ptr->IndexDocs++)]=Docs()->GetId();
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GIndexer::BuildRefs(tObjType type,GSlot* slot)
+{
+	const size_t MaxBuffer(GALILEIApp->GetIndexRamSize()*1024/sizeof(size_t));
+	cout<<MaxBuffer<<endl;
+	size_t* Buffer(new size_t[MaxBuffer*sizeof(size_t)]);
 
 	// Open the indexer
 	RString IndexName(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetStorage()->GetWorld()+RFile::GetDirSeparator()+"Index");
@@ -350,26 +384,144 @@ void GIndexer::BuildRefs(tObjType type)
 	RBinaryFile Index(IndexName);
 	Index.Open(RIO::Create);
 
-	// Go trough all the concepts
-/*	GConcept* MinConcept(0);
+	// Go trough all the concepts a first time
+	GConcept* MinConcept(0);
 	GConcept* MaxConcept(0);
 	RCursor<GConceptType> Types(Session->GetConceptTypes());
 	Types.Start();
+	if(slot)
+		slot->NextConceptType(Types());
 	GConcept** Concepts(Types()->Direct);
-	size_t Nb(Types()->GetNb());
-	MinConcept=(*Concepts);
+	size_t Nb(Types()->MaxId);
+	size_t i(0);
+	size_t PosMem(0);
+	for(;;Concepts++,i++)
+	{
+		// Test if not end of the current concept type
+		if(i==Nb)
+		{
+			do
+			{
+				Types.Next();
+				if(Types.End()) // End of the concepts (-> End of do-while)
+					break;
+				if(slot)
+					slot->NextConceptType(Types());
+				Concepts=Types()->Direct;
+				Nb=Types()->MaxId;
+				i=0;
+			}
+			while(!Nb);
+			if(Types.End()) // End of the concepts (-> End of for)
+				break;
+		}
+
+		// If no concept -> skip it
+		if(!(*Concepts)) continue;
+
+		// Verify if the maximum buffer is obtained if this concept is treated
+		if(PosMem+(*Concepts)->NbRefDocs>=MaxBuffer)
+		{
+			BuildBuffer(Buffer,MinConcept,MaxConcept);
+			Index.Write(reinterpret_cast<char*>(Buffer),PosMem*sizeof(size_t));
+			MinConcept=MaxConcept=0;
+			PosMem=0;
+		}
+
+		// Treat the concept
+		if(!MinConcept)
+			MinConcept=(*Concepts);
+		(*Concepts)->IndexDocs=PosMem;
+		PosMem+=(*Concepts)->NbRefDocs;
+		MaxConcept=(*Concepts); // Suppose this concept is the last one to index
+	}
+	if(PosMem) // Something left to write
+	{
+		BuildBuffer(Buffer,MinConcept,MaxConcept);
+		Index.Write(reinterpret_cast<char*>(Buffer),PosMem*sizeof(size_t));
+	}
+
+	delete[] Buffer;
+
+
+	// Go trough all the concepts a second time
+	Types.Start();
+	if(slot)
+		slot->NextConceptType(Types());
+	Concepts=Types()->Direct;
+	Nb=Types()->MaxId;
 	i=0;
-	size_t NbMem(0);*/
+	off_t PosFile(0);
+	for(;;Concepts++,i++)
+	{
+		// Test if not end of the current concept type
+		if(i==Nb)
+		{
+			do
+			{
+				Types.Next();
+				if(Types.End()) // End of the concepts (-> End of do-while)
+					break;
+				if(slot)
+					slot->NextConceptType(Types());
+				Concepts=Types()->Direct;
+				Nb=Types()->MaxId;
+				i=0;
+			}
+			while(!Nb);
+			if(Types.End()) // End of the concepts (-> End of for)
+				break;
+		}
+
+		// Add the concepts to the current index
+		if(!(*Concepts)) continue;
+		(*Concepts)->IndexDocs=PosFile;
+		PosFile+=(*Concepts)->NbRefDocs*sizeof(size_t);
+		Session->GetStorage()->SaveIndex(*Concepts,otDoc,(*Concepts)->IndexDocs);
+	}
 }
 
 
 //------------------------------------------------------------------------------
-void GIndexer::FindRefs(GConcept* /*concept*/,R::RVectorInt<size_t,true>& /*refs*/,tObjType /*type*/) const
+void GIndexer::FindRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjType type)
 {
+	if(type!=otDoc)
+		throw GException("GIndexer::FindRefs: Cannot find an index for "+GetObjType(type));
+
+	// If the inverted file is not open -> open it
+	if(!DocsInvertedFile)
+	{
+		RString IndexName(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Session->GetStorage()->GetWorld()+RFile::GetDirSeparator()+"Index"+RFile::GetDirSeparator());
+		switch(type)
+		{
+			case otDoc:
+				IndexName+="Documents.index";
+				break;
+			default:
+				throw GException("GIndexer::FindRefs: Cannot find an index for "+GetObjType(type));
+		}
+
+		DocsInvertedFile=new RBinaryFile(IndexName);
+		DocsInvertedFile->Open(RIO::Read);
+	}
+
+	// Fill refs
+	refs.Clear();
+	off_t Pos(concept->IndexDocs);
+	if(Pos==9223372036854775807)
+		return;
+	DocsInvertedFile->Seek(Pos);
+	for(size_t nb(concept->NbRefDocs+1);--nb;)
+	{
+		size_t DocId;
+		DocsInvertedFile->Read(reinterpret_cast<char*>(&DocId),sizeof(size_t));
+		refs.Insert(DocId);
+	}
 }
 
 
 //------------------------------------------------------------------------------
 GIndexer::~GIndexer(void)
 {
+	delete DocsInvertedFile;
 }

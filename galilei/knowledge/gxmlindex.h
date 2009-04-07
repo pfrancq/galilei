@@ -133,11 +133,13 @@ public:
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	* @param refdocs         Number of documents referenced.
+	* @param indexdocs       Position in the inverted file related to the
+	*                        documents.
 	* @param refprofiles     Number of profiles referenced.
 	* @param refgroups       Number of groups referenced.
 	* @param reftopics       Number of topics referenced.
 	*/
-	GXMLIndex(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refsubprofiles,size_t refgroups,size_t reftopics);
+	GXMLIndex(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refsubprofiles,size_t refgroups,size_t reftopics);
 
 protected:
 

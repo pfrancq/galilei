@@ -36,8 +36,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gsession.h>
-#include <gindexer.h>
 
 
 //------------------------------------------------------------------------------
@@ -120,13 +118,7 @@ protected:
 	 * @param type           Type of the object.
 	 * @param id             Identifier of the object.
 	 */
-	inline void LoadInfos(tObjType type,size_t id)
-	{
-		GSession* session=GSession::Get();
-		if(session)
-			session->GetIndexer()->LoadInfos(*this,type,id);
-		State=osUpToDate;
-	}
+	void LoadInfos(tObjType type,size_t id);
 
 	/**
 	* Load information from the current storage. This method must be rewritten in
@@ -194,7 +186,7 @@ public:
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
-	* The method uses the cosinus of the corresponding vectors build directly
+	* The method uses the cosines of the corresponding vectors build directly
 	* from the lists. If one of the list is empty, the similarity is null.
 	* @param w              Pointer to a list of weighted information entities.
 	*/
@@ -211,8 +203,8 @@ public:
 
 	/**
 	* @return the similarity between two lists of weighted information entities.
-	* The method uses the cosinus of the corresponding vectors. A vector of a
-	* list is build using this list and a Inverse Frequence Factor (IFF) of the
+	* The method uses the cosines of the corresponding vectors. A vector of a
+	* list is build using this list and a Inverse Frequency Factor (IFF) of the
 	* object type (idf, isf or ivf) for a given information entity space
 	* (language). If one of the list is empty, the similarity is null.
 	* @param w              Pointer to a list of weighted information entities.
@@ -222,8 +214,8 @@ public:
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
-	* The method uses the cosinus of the corresponding vectors. A vector of a
-	* list is build using this list and two Inverse Frequence Factors (IFF) of
+	* The method uses the cosines of the corresponding vectors. A vector of a
+	* list is build using this list and two Inverse Frequency Factors (IFF) of
 	* the object type (idf, isf or ivf) for a given information entity space
 	* (language). If one of the list is empty, the similarity is null.
 	* @param w              Reference to a list of weighted information entities.
@@ -274,7 +266,7 @@ public:
 
 	/**
 	* Modify the list by applying for each information entity the Inverse
-	* Frequence Factor (IFF) of the object type (idf, isf or ivf).
+	* Frequency Factor (IFF) of the object type (idf, isf or ivf).
 	* @param ObjType        Type of the reference.
 	*/
 	void RecomputeIFF(tObjType ObjType);
@@ -290,7 +282,7 @@ public:
 	void RecomputeQuery(tObjType ObjType,GLang* lang);
 
 	/**
-	* Destructor of a list of weighted information entities.
+	* Destruct the list of weighted information entities.
 	*/
 	virtual ~GWeightInfos(void);
 };

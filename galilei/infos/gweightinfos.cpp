@@ -40,6 +40,8 @@
 #include <glang.h>
 #include <gconcepttype.h>
 #include <gconcept.h>
+#include <gindexer.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -132,6 +134,16 @@ void GWeightInfos::SetState(tObjState state)
 		LoadInfos();           // Load it.
 	}
 	State=state;
+}
+
+
+//------------------------------------------------------------------------------
+void GWeightInfos::LoadInfos(tObjType type,size_t id)
+{
+	GSession* session=GSession::Get();
+	if(session)
+		session->GetIndexer()->LoadInfos(*this,type,id);
+	State=osUpToDate;
 }
 
 

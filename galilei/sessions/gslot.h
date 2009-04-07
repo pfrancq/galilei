@@ -65,6 +65,12 @@ public:
 	GSlot(void);
 
 	/**
+	* The treatment for a specific concept type will begin.
+	* @param type            Concept type.
+	*/
+	virtual void NextConceptType(const GConceptType* type);
+
+	/**
 	* The treatment for a specific document will begin.
 	* @param doc             Document.
 	*/

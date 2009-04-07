@@ -85,6 +85,11 @@ protected:
 	double IfDocs;
 
 	/**
+	 * Position in the inverted file corresponding to the documents.
+	 */
+	off_t IndexDocs;
+
+	/**
 	* Number of references in profiles.
 	*/
 	size_t NbRefProfiles;
@@ -140,11 +145,13 @@ public:
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	* @param refdocs         Number of documents referenced.
+	* @param indexdocs       Position in the inverted file related to the
+	*                        documents.
 	* @param refprofiles     Number of profiles referenced.
 	* @param refcommunities  Number of groups referenced.
 	* @param reftopics       Number of topics referenced.
 	*/
-	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics);
+	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics);
 
 	/**
 	* Compare two concepts.
@@ -178,6 +185,18 @@ public:
 	* @param c               Concept used.
 	*/
 	bool operator!=(const GConcept& c) const;
+
+	/**
+	* Less-than operator.
+	* @param c               Concept used.
+	*/
+	bool operator<(const GConcept& c) const;
+
+	/**
+	* Greater-than operator.
+	* @param c               Concept used.
+	*/
+	bool operator>(const GConcept& c) const;
 
 	/**
 	 * Do a deep copy of the current concept.
@@ -274,6 +293,7 @@ public:
 
 	friend class GWeightInfo;
 	friend class GConceptType;
+	friend class GIndexer;
 };
 
 

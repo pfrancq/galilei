@@ -43,6 +43,7 @@
 #include <gmeasure.h>
 #include <gcommunity.h>
 #include <gtopic.h>
+#include <gindexer.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;

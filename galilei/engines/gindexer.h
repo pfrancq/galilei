@@ -36,6 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rvectorint.h>
+#include <rbinaryfile.h>
 
 
 //------------------------------------------------------------------------------
@@ -89,6 +90,11 @@ class GIndexer
 	 */
 	R::RString DirTopics;
 
+	/**
+	 * Inverted file for documents.
+	 */
+	R::RBinaryFile* DocsInvertedFile;
+
 public:
 
 	/**
@@ -138,14 +144,29 @@ public:
 	 */
 	void SaveStruct(GDocStruct& docstruct,GDoc* doc);
 
+private:
+
+	/**
+	 * Build the buffer for a range of concepts.
+	 * @param buffer                   Buffer to fill.
+	 * @param min                      "Minimum" concept.
+	 * @param max                      "Maximum" concept.
+	 */
+	void BuildBuffer(size_t* buffer,GConcept* min,GConcept* max);
+
+public:
+
 	/**
 	 * Build the reference for a given type of objects.
 	 * @param type            Type of objects to search for.
+	 * @param slot            Slot to use.
 	 *
-	 * The indexer will use a buffer part of the index and parses several times
-	 * all the objects computed.
+	 * The indexer will use a buffer to build part of the index. It parses the
+	 * whole document collection as many times as necessary to treat all the
+	 * concepts. The number of passes increases if the size of the buffer
+	 * decreases.
 	 */
-	void BuildRefs(tObjType type);
+	void BuildRefs(tObjType type,GSlot* slot=0);
 
 	/**
 	* Find all the references of a given concept.
@@ -153,7 +174,7 @@ public:
 	* @param refs            Vector that will contain the references.
 	* @param type            Type of objects to search for.
 	*/
-	void FindRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjType type) const;
+	void FindRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjType type);
 
 	/**
 	* Destruct the indexer.

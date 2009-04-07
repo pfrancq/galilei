@@ -94,8 +94,8 @@ GXMLIndex::GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang,RContai
 
 
 //-----------------------------------------------------------------------------
-GXMLIndex::GXMLIndex(size_t id,const RString& name,GConceptType* type,size_t refdocs,size_t refsubprofiles,size_t refgroups,size_t reftopics)
-	: GConcept(id,name,type,refdocs,refsubprofiles,refgroups,reftopics), XMLTag(0), Universal(10), Stems(10)
+GXMLIndex::GXMLIndex(size_t id,const RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refsubprofiles,size_t refgroups,size_t reftopics)
+	: GConcept(id,name,type,refdocs,indexdocs,refsubprofiles,refgroups,reftopics), XMLTag(0), Universal(10), Stems(10)
 {
 	BuildDef();
 }

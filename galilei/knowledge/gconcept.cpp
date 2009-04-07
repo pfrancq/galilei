@@ -51,7 +51,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(void)
-	: Id(cNoRef), Name(RString::Null), Type(0), NbRefDocs(0), IfDocs(NAN),
+	: Id(cNoRef), Name(RString::Null), Type(0), NbRefDocs(0), IfDocs(NAN), IndexDocs(9223372036854775807),
 	  NbRefProfiles(0), IfProfiles(NAN), NbRefCommunities(0), IfCommunities(NAN),
 	  NbRefTopics(0), IfTopics(NAN)
 {
@@ -61,7 +61,7 @@ GConcept::GConcept(void)
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const GConcept* concept)
 	: Id(concept->Id), Name(concept->GetName()), Type(concept->Type),
-	  NbRefDocs(concept->NbRefDocs), IfDocs(concept->IfDocs),
+	  NbRefDocs(concept->NbRefDocs), IfDocs(concept->IfDocs), IndexDocs(concept->IndexDocs),
 	  NbRefProfiles(concept->NbRefProfiles), IfProfiles(concept->IfProfiles),
 	  NbRefCommunities(concept->NbRefCommunities), IfCommunities(concept->IfCommunities),
 	  NbRefTopics(concept->NbRefTopics), IfTopics(concept->IfTopics)
@@ -71,7 +71,7 @@ GConcept::GConcept(const GConcept* concept)
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const RString& name,GConceptType* type)
-	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0), IfDocs(NAN),
+	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0), IfDocs(NAN), IndexDocs(9223372036854775807),
 	  NbRefProfiles(0), IfProfiles(NAN), NbRefCommunities(0), IfCommunities(NAN),
 	  NbRefTopics(0), IfTopics(NAN)
 {
@@ -79,8 +79,8 @@ GConcept::GConcept(const RString& name,GConceptType* type)
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(size_t id,const RString& name,GConceptType* type,size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics)
-	: Id(id), Name(name), Type(type), NbRefDocs(refdocs), IfDocs(NAN) ,
+GConcept::GConcept(size_t id,const RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics)
+	: Id(id), Name(name), Type(type), NbRefDocs(refdocs), IfDocs(NAN), IndexDocs(indexdocs),
 	  NbRefProfiles(refprofiles), IfProfiles(NAN), NbRefCommunities(refcommunities), IfCommunities(NAN),
 	  NbRefTopics(reftopics), IfTopics(NAN)
 {
@@ -127,6 +127,24 @@ bool GConcept::operator!=(const GConcept& c) const
 
 
 //-----------------------------------------------------------------------------
+bool GConcept::operator<(const GConcept& c) const
+{
+	if((Type<c.Type)||((Type==c.Type)&&((Id<c.Id))))
+		return(true);
+	return(false);
+}
+
+
+//-----------------------------------------------------------------------------
+bool GConcept::operator>(const GConcept& c) const
+{
+	if((Type>c.Type)||((Type==c.Type)&&((Id>c.Id))))
+		return(true);
+	return(false);
+}
+
+
+//-----------------------------------------------------------------------------
 GConcept* GConcept::DeepCopy(void) const
 {
 	return(new GConcept(this));
@@ -149,6 +167,7 @@ void GConcept::SetName(const R::RString& name)
 	NbRefDocs=0;
 	IfDocs=NAN;
 	NbRefProfiles=0;
+	IndexDocs=9223372036854775807;
 	IfProfiles=NAN;
 	NbRefCommunities=0;
 	IfCommunities=NAN;
@@ -314,6 +333,7 @@ void GConcept::ClearRef(tObjType ObjType)
 		case otDoc:
 			NbRefDocs=0;
 			IfDocs=NAN;
+			IndexDocs=9223372036854775807;
 			break;
 		case otProfile:
 			NbRefProfiles=0;
@@ -348,6 +368,7 @@ void GConcept::Clear(void)
 	Name=RString::Null;
 	NbRefDocs=0;
 	IfDocs=NAN;
+	IndexDocs=9223372036854775807;
 	NbRefProfiles=0;
 	IfProfiles=NAN;
 	NbRefCommunities=0;
