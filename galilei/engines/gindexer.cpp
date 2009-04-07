@@ -483,7 +483,7 @@ void GIndexer::BuildRefs(tObjType type,GSlot* slot)
 
 
 //------------------------------------------------------------------------------
-void GIndexer::FindRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjType type)
+void GIndexer::FindRefs(GConcept* concept,R::RVectorInt<size_t,false>& refs,tObjType type)
 {
 	if(type!=otDoc)
 		throw GException("GIndexer::FindRefs: Cannot find an index for "+GetObjType(type));
@@ -508,7 +508,7 @@ void GIndexer::FindRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjT
 	// Fill refs
 	refs.Clear();
 	off_t Pos(concept->IndexDocs);
-	if(Pos==9223372036854775807)
+	if(Pos==MaxOffT)
 		return;
 	DocsInvertedFile->Seek(Pos);
 	for(size_t nb(concept->NbRefDocs+1);--nb;)

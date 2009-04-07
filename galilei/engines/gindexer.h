@@ -171,10 +171,12 @@ public:
 	/**
 	* Find all the references of a given concept.
 	* @param concept         Concept to search for.
-	* @param refs            Vector that will contain the references.
+	* @param refs            Vector that will contain the references. The
+	*                        vector is emptied and the documents identifiers
+	*                        are ordered.
 	* @param type            Type of objects to search for.
 	*/
-	void FindRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjType type);
+	void FindRefs(GConcept* concept,R::RVectorInt<size_t,false>& refs,tObjType type);
 
 	/**
 	* Destruct the indexer.
