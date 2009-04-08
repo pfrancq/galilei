@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	SubsLevel_KDE.cpp
+	Theasurus_KDE.cpp
 
-	Compute Profiles and Documents Levels (KDE part) - Implementation.
+	Thesaurus Creation (KDE part) - Implementation.
 
-	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2003-2005 by David Wartel.
-	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -28,9 +26,12 @@
 */
 
 
+
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gpostcommunity.h>
+// include files for R/GALILEI
+#include <gposttopic.h>
+#include <rqt.h>
+using namespace R;
 using namespace GALILEI;
 
 
@@ -42,13 +43,14 @@ using namespace GALILEI;
 #include <ui_config.h>
 
 
+
 //------------------------------------------------------------------------------
 class Config : public KDialog, public Ui_Config
 {
 public:
 	Config(void)
 	{
-		setCaption("Configure Level Computation");
+		setCaption("Configure Theasurus Creation");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
 		setMainWidget(widget);
@@ -67,27 +69,38 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "subs", 0, ki18n("Profiles Levels"),
-		"1.0", ki18n("This plugin computes the level of each profiles (expert, normal,...)."), KAboutData::License_GPL,
-		ki18n("(C) 2005-2009 by Pascal Francq\n(C) 2003-2005 by David Wartel\n(C) 2003-2008 by Université Libre de Bruxelles (ULB)"),
+	KAboutData aboutData("thesaurus", 0, ki18n("Thesaurus Creation"),
+		"1.0", ki18n("This plug-in computes a thesaurus based on the topic."), KAboutData::License_GPL,
+		ki18n("(C) 2008-2009 by Pascal Francq"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }
 
 
  //------------------------------------------------------------------------------
-void Configure(GFactoryPostCommunity* params)
+void Configure(GFactoryPostTopic* params)
 {
  	Config dlg;
 
-	dlg.NbLevels->setValue(params->GetInt("NbLevels"));
-
-	if (dlg.exec())
+ 	RString Heuristic(params->Get("GAHeuristic"));
+ 	int i;
+ 	for(i=0;i<dlg.Heuristic->count();i++)
+ 	{
+ 		if(Heuristic==FromQString(dlg.Heuristic->itemText(i)))
+ 			break;
+ 	}
+	dlg.Heuristic->setCurrentIndex(i);
+	dlg.MaxGen->setValue(params->GetUInt("MaxGen"));
+	dlg.PopSize->setValue(params->GetUInt("PopSize"));
+	dlg.Verify->setChecked(params->GetBool("Verify"));
+	if(dlg.exec())
 	{
-		params->SetUInt("NbLevels", dlg.NbLevels->value());
+		params->Set("Heuristic",FromQString(dlg.Heuristic->currentText()));
+		params->SetUInt("MaxGen",dlg.MaxGen->value());
+		params->SetUInt("PopSize",dlg.PopSize->value());
+		params->SetBool("Verify",dlg.Verify->isChecked());
 		params->Apply();
 	}
 }

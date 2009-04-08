@@ -1,7 +1,13 @@
 PROJECT(thesaurus)
 INCLUDE_DIRECTORIES(.)
 
-SET(SRC thesaurus.cpp)
+SET(SRC
+    ghga.cpp
+    gnodeinfos.cpp
+    gchromoh.cpp
+    ginsth.cpp
+    thesaurus.cpp
+)
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 

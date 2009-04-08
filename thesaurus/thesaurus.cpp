@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	SubsLevel.cpp
+	Thesaurus.cpp
 
-	Compute Profiles and Documents Levels - Implementation
+	Thesaurus Creation - Implementation
 
-	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2003-2005 by David Wartel.
-	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,251 +28,174 @@
 
 
 //------------------------------------------------------------------------------
-// include specific files
-#include <stdlib.h>
-#include <time.h>
-#include <math.h>
-#include <memory>
-using namespace std;
-
-
-//------------------------------------------------------------------------------
-//include files for R
-#include <rdbmysql.h>
-
-
-//------------------------------------------------------------------------------
-//include files for GALILEI
+//include files for R/GALILEI
 #include <gsession.h>
-#include <gprofile.h>
-#include <gdoc.h>
-#include <gcommunity.h>
-#include <glang.h>
-#include <gstorage.h>
-#include <ggalileiapp.h>
-#include <gstorage.h>
-using namespace GALILEI;
-using namespace R;
+#include <gtopic.h>
 
 
 //------------------------------------------------------------------------------
-//include files for GALILEI PLUGINS
+//include files for current plug-in
 #include <thesaurus.h>
-
-
-//------------------------------------------------------------------------------
-//
-//  Scoring
-//
-//------------------------------------------------------------------------------
-
-struct Scoring
-{
-	size_t SubProfileId;
-	double Score;
-	size_t NbDocs;
-
-	Scoring(size_t id) : SubProfileId(id), Score(0.0), NbDocs(0) {}
-	int Compare(const Scoring& scoring) const {return(CompareIds(SubProfileId,scoring.SubProfileId));}
-	int Compare(const size_t scoring) const {return(CompareIds(SubProfileId,scoring));}
-};
+#include <ginsth.h>
+#include <gchromoh.h>
 
 
 
 //------------------------------------------------------------------------------
 //
-//  GSubProfilesLevelCmd
+//  Thesaurus
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfilesLevelCmd::GSubProfilesLevelCmd(void) : GStorageCmd("SubProfilesLevelCMD", "MySQL")
+Thesaurus::Thesaurus(GFactoryPostTopic* fac)
+		: GPostTopic(fac), Objs(100), Words(20000)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* caller)
+void Thesaurus::ApplyConfig(void)
 {
-	RString sql;
-	GCommunity* grp;
-	RDb* storeMySQL;
-	size_t sublevel; //level of the subprofile
-	size_t  levelswidth; // width (between 0 and 100) of a level
-	double subscore; // score of the subprofile
+	GPostTopic::ApplyConfig();
+	Heuristic=Factory->Get("GAHeuristic");
+	MaxGen=Factory->GetUInt("MaxGen");
+	PopSize=Factory->GetUInt("PopSize");
+	Verify=Factory->GetBool("Verify");
+}
 
-	grp=static_cast<GCommunity*>(caller); //subprofile was given by caller
-	storeMySQL=static_cast<RDb*>(storage->GetInfos());
-	RContainer<Scoring,true,true> Scores(grp->GetNbObjs());
 
-	levelswidth=100/atoi(inst.GetAttrValue("NbLevels").Latin1());
+//------------------------------------------------------------------------------
+void Thesaurus::Connect(GSession* session)
+{
+	GPostTopic::Connect(session);
+}
 
+
+//------------------------------------------------------------------------------
+void Thesaurus::Disconnect(GSession* session)
+{
+	GPostTopic::Disconnect(session);
+}
+
+
+//-----------------------------------------------------------------------------
+void Thesaurus::ConstructResults(RCursor<GNodeInfos>)
+{
+/*	for(Cur.Start();!Cur.End();Cur.Next())
+		constNode(0,cur,Cur());*/
+
+/*	size_t* tab;
+	size_t* ptr;
+
+	session->ClearGroups(GroupType);
+	for(Sol.Start();!Sol.End();Sol.Next())
+	{
+		cGroup* g=static_cast<cGroup*>(session->NewGroup(GroupType));
+		session->AssignId(g);
+		ptr=tab=Sol()->GetObjectsId();
+		while((*ptr)!=cNoRef)
+			g->InsertObj(static_cast<cObj*>(Objs[*(ptr++)]->GetElement()));
+		delete[] tab;
+		session->InsertGroup(g,GroupType);
+	}*/
+}
+
+
+//------------------------------------------------------------------------------
+void Thesaurus::Run(void)
+{
 	try
 	{
-		// Init
-		RQuery initsubprofiles(storeMySQL,"UPDATE profiles SET level='0',score='0' WHERE groupid="+RString::Number(grp->GetId()));
+		// If no element to group -> skip it
+		RCursor<GTopic> Cur(Session->GetTopics());
+		if(!Cur.GetNb())
+			return;
+		Objs.Clear(Cur.GetNb());
+		Words.Clear();
 
-		// Find all documents assessed as relevant by someone of the group
-		sql="SELECT DISTINCT(htmlid) FROM htmlsbyprofiles,profiles WHERE htmlsbyprofiles.profileid=profiles.profileid AND judgement='O' AND profiles.groupid="+RString::Number(grp->GetId());
-		RQuery docs(storeMySQL,sql);
-		for(docs.Start();!docs.End();docs.Next())
+		// Create objects
+		cout<<"Create objects...";
+		size_t i(0);
+		RObjH* obj;
+		for(Cur.Start();!Cur.End();Cur.Next(),i++)
 		{
-			// Class all profiles assessing the current document by date
-			sql="SELECT profiles.profileid, COUNT(*) FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND profiles.groupid="+RString::Number(grp->GetId())+" AND judgement='O' AND htmlid="+docs[0]+" ORDER BY when2";
-			RQuery subprofiles(storeMySQL,sql);
-			subprofiles.Start();
-			if(subprofiles.End())
-				continue;
-			size_t nb=atoi(subprofiles[1])-1;
-			if(!nb) continue;
-			subscore=static_cast<double>(nb)/static_cast<double>(grp->GetNbObjs()-1);
-			Scoring* ptr=Scores.GetInsertPtr(atoi(subprofiles[0]));
-			ptr->Score+=subscore;
-			ptr->NbDocs++;
+			RCursor<GWeightInfo> Infos(Cur()->GetInfos());
+			Objs.InsertPtr(obj=new RObjH(i,"Topic "+RString::Number(Cur()->GetId()),Infos.GetNb()));
+			for(Infos.Start();!Infos.End();Infos.Next())
+			{
+				Word* w(Words.GetInsertPtr(Infos()->GetConcept()));
+				if(w->Id==cNoRef)
+					w->Id=Words.GetNb()-1;
+				obj->AddAttribute(w->Id);
+			}
 		}
 
-		// Goes through each Profile
-		RCursor<Scoring> Cur(Scores);
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			// Compute the score,level and store it in the database
-			Cur()->Score/=static_cast<double>(Cur()->NbDocs);
-			sublevel=(int(100*Cur()->Score)+(levelswidth-1))/levelswidth;
-			sql="UPDATE profiles SET level='"+RString::Number(sublevel)+"',score='"+RString::Number(Cur()->Score)+"' WHERE profileid="+RString::Number(Cur()->SubProfileId);
-			RQuery update(storeMySQL,sql);
-		}
+		cout<<" "<<i<<" created"<<endl;
+
+		// Init the GCA
+		cout<<"New HCA"<<endl;
+		GInstH Instance(MaxGen,PopSize,Objs,Heuristic,Session->GetDebug());
+		InsertObserver(reinterpret_cast<tNotificationHandler>(&Thesaurus::Gen),"RInst::Generation",&Instance);
+		cout<<"Init HCA"<<endl;
+	//	Instance.SetVerify(true);
+		Instance.Init();
+/*		Instance.SetLocalOptimisation(LocalOptimisation);
+		Instance.SetOptimisation(Optimisation);
+		if(!InternalRandom)
+			Instance.SetSeed(Seed);*/
+
+		// Run
+		cout<<"Run HCA"<<endl;
+		Instance.Run();
+		cout<<"Build solutions"<<endl;
+		ConstructResults(Instance.BestChromosome->GetNodes(Instance.BestChromosome->GetTop()));
+	}
+	catch(RGAException& e)
+	{
+		throw GException(e.GetMsg());
+	}
+	catch(GException& e)
+	{
+		throw GException(e.GetMsg());
 	}
 	catch(RException& e)
 	{
 		throw GException(e.GetMsg());
 	}
-	catch(...)
+	catch(exception& e)
 	{
-		throw GException("Unknown problem");
-	}
-}
-
-
-//------------------------------------------------------------------------------
-GSubProfilesLevelCmd::~GSubProfilesLevelCmd(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GDocsLevelCmd
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GDocsLevelCmd::GDocsLevelCmd(void) : GStorageCmd("DocsLevelCMD", "MySQL")
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GDocsLevelCmd::Run(GStorage* storage,const GStorageTag&,void*)
-{
-	try
-	{
-		// Compute score for documents
-		RDb* storeMySQL=static_cast<RDb*>(storage->GetInfos());
-		RQuery intidocs(storeMySQL,"DELETE FROM htmlsbygroups");
-		RQuery insertdocs(storeMySQL,"INSERT INTO htmlsbygroups(groupid,htmlid,score) SELECT groupid,htmlid,SUM(score) FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND judgement='O' GROUP BY groupid,htmlid");
-	}
-	catch(RException& e)
-	{
-		throw GException(e.GetMsg());
+		throw GException(e.what());
 	}
 	catch(...)
 	{
-		throw GException("Unknown problem");
+		throw GException("Unknown Problem");
 	}
 }
 
-
 //------------------------------------------------------------------------------
-GDocsLevelCmd::~GDocsLevelCmd(void)
+void Thesaurus::Gen(const R::RNotification& notification)
 {
+	cout<<"Gen "<<GetData<size_t>(notification)<<endl;
 }
 
 
 
 //------------------------------------------------------------------------------
-//
-//  GSubProfilesLevel
-//
-//------------------------------------------------------------------------------
+void Thesaurus::CreateParams(RConfig* params)
+{
+	params->InsertParam(new RParamValue("GAHeuristic","FirstFit"));
+	params->InsertParam(new RParamValue("MaxGen",50));
+	params->InsertParam(new RParamValue("PopSize",16));
+	params->InsertParam(new RParamValue("Verify",false));
+}
+
 
 //------------------------------------------------------------------------------
-GSubProfilesLevel::GSubProfilesLevel(GFactoryPostCommunity* fac)
-		: GPostCommunity(fac), Docs(2000,500)
+Thesaurus::~Thesaurus(void)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::CreateParams(RConfig* params)
-{
-	params->InsertParam(new RParamValue("NbLevels",5));
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfilesLevel::ApplyConfig(void)
-{
-	GPostCommunity::ApplyConfig();
-	NbLevels=Factory->GetUInt("NbLevels");
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfilesLevel::Connect(GSession* session)
-{
-	// Try to insert the command, eventually, delete it
-	GPostCommunity::Connect(session);
-	GSubProfilesLevelCmd* command=new GSubProfilesLevelCmd();
-	if(!GALILEIApp->GetManager<GStorageManager>("Storage")->InsertCmd(command))
-		delete command;
-	GDocsLevelCmd* command2=new GDocsLevelCmd();
-	if(!GALILEIApp->GetManager<GStorageManager>("Storage")->InsertCmd(command2))
-		delete command2;
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfilesLevel::Disconnect(GSession* session)
-{
-	GPostCommunity::Disconnect(session);
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfilesLevel::Run(void)
-{
-	if (!NbLevels)
-		throw GException ("[Compute Subprofiles Level]: Error: number of levels is null !");
-	GStorageTag tag("SubProfilesLevelCMD");
-	tag.InsertAttr("NbLevels",RString::Number(NbLevels));
-
-	RCursor<GCommunity> Groups(Session->GetCommunities());
-	for(Groups.Start();!Groups.End();Groups.Next())
-	{
-		void* caller=static_cast<void*>(Groups());
-		Session->GetStorage()->ExecuteCmd(tag,caller);
-	}
-	GStorageTag tag2("DocsLevelCMD");
-	Session->GetStorage()->ExecuteCmd(tag2,0);
-}
-
-
-//------------------------------------------------------------------------------
-GSubProfilesLevel::~GSubProfilesLevel(void)
-{
-}
-
-
-//------------------------------------------------------------------------------
-CREATE_POSTCOMMUNITY_FACTORY("Thesaurus Creation",GSubProfilesLevel)
+CREATE_POSTTOPIC_FACTORY("Thesaurus Creation",Thesaurus)

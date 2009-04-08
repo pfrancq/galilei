@@ -2,13 +2,11 @@
 
 	GALILEI Research Project
 
-	SubsLevel.h
+	Thesaurus.h
 
-	Compute Profiles and Documents Levels - Header.
+	Thesaurus Creation - Header.
 
-	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2003-2005 by David Wartel.
-	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,90 +28,79 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GSubsLevelH
-#define GSubsLevelH
+#ifndef ThesaurusH
+#define ThesaurusH
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gpostcommunity.h>
-#include <gstorage.h>
+// include files for R/GALILEI
+#include <robject.h>
+#include <gposttopic.h>
+#include <robjh.h>
+#include <rnotification.h>
+#include <gconcept.h>
+using namespace GALILEI;
+using namespace R;
 
 
-//------------------------------------------------------------------------------
-namespace GALILEI{
-//------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------
+// include files for current plug-in
+#include <gnodeinfos.h>
 
 
-class GSubProfilesLevelCmd : public GStorageCmd
+//-----------------------------------------------------------------------------
+/**
+* The class Word represents a word and an id.
+*/
+class Word
 {
 public:
+	size_t Id;
+	const GConcept* Concept;
 
-	/**
-	* Constructor of a command.
-	* @param cmd             Name of the command.
-	*/
-	GSubProfilesLevelCmd();
-
-	/**
-	* Run the command.
-	* @param storage         Pointer to the command.
-	* @param inst            XML tag representing the instruction.
-	* @param caller          Caller of the function.
-	*/
-	virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller);
-
-	/**
-	* Constructor of a command.
-	* @param cmd             Name of the command.
-	*/
-	~GSubProfilesLevelCmd();
-};
-
-
-class GDocsLevelCmd : public GStorageCmd
-{
-	public:
-
-	/**
-	 * Constructor of a command.
-	 * @param cmd             Name of the command.
-	 */
-		GDocsLevelCmd();
-
-	/**
-		 * Run the command.
-		 * @param storage         Pointer to the command.
-		 * @param inst            XML tag representing the instruction.
-		 * @param caller          Caller of the function.
-	 */
-		virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller);
-
-	/**
-		 * Constructor of a command.
-		 * @param cmd             Name of the command.
-	 */
-		~GDocsLevelCmd();
+	Word(const GConcept* concept) : Id(cNoRef), Concept(concept) {}
+	int Compare(const Word& concept) const {return(Concept->Compare(concept.Concept));}
+	int Compare(const GConcept* concept) const {return(Concept->Compare(*concept));}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* The GSubProfilesLevel provides a method to level of each subprofiles
-* @author David wartel
-* @short SubProfiles level computation.
+* The Thesaurus provides a plug-in to create a thesaurus
+* @author Pascal Francq
+* @short Thesaurus Creation.
 */
-class GSubProfilesLevel  : public GPostCommunity
+class Thesaurus  : public RObject, public GPostTopic
 {
 	/**
-	* Array of documents.
+	* HGA Objects.
 	*/
-	R::RContainer<GFdbk,false,false> Docs;
+	RContainer<RObjH,true,false> Objs;
 
-	/*
-	* number of levels for subprofiles
+	/**
+	 * The words.
+	 */
+	RContainer<Word,true,true> Words;
+
+	/**
+	* Heuristic to used for the GA.
 	*/
-	size_t NbLevels;
+	RString Heuristic;
+
+	/**
+	* Maximum number of generation.
+	*/
+	unsigned int MaxGen;
+
+	/**
+	* Size of the Population.
+	*/
+	unsigned int PopSize;
+
+	/**
+	 * Verify the GA?
+	 */
+	bool Verify;
 
 public:
 
@@ -121,13 +108,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GSubProfilesLevel(GFactoryPostCommunity* fac);
-
-	/**
-	* Create the parameters.
-	* @param params          Parameters to configure.
-	*/
-	static void CreateParams(RConfig* params);
+	Thesaurus(GFactoryPostTopic* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -146,19 +127,29 @@ public:
 	*/
 	virtual void Disconnect(GSession* session);
 
+	void ConstructResults(RCursor<GNodeInfos> Sol);
+
     /**
-	* Make the grouping for a specific Language.
+	* Run the thesaurus creation.
 	*/
 	virtual void Run(void);
 
 	/**
-	* Destructor.
+	 * Handle a generation
+	 */
+	void Gen(const RNotification& notification);
+
+	/**
+	* Create the parameters.
+	* @param params          Parameters to configure.
 	*/
-	virtual ~GSubProfilesLevel(void);
+	static void CreateParams(RConfig* params);
+
+	/**
+	* Destruct the plug-in.
+	*/
+	virtual ~Thesaurus(void);
 };
-
-
-}  //-------- End of namespace GALILEI----------------------------------------
 
 
 //-----------------------------------------------------------------------------
