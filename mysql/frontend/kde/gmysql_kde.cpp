@@ -43,6 +43,7 @@ using namespace R;
 using namespace GALILEI;
 
 
+//------------------------------------------------------------------------------
 // include files for KDE/Qt
 #include <kaboutdata.h>
 #include <kaboutapplicationdialog.h>
