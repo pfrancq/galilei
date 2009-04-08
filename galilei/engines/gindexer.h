@@ -175,6 +175,19 @@ public:
 	*                        vector is emptied and the documents identifiers
 	*                        are ordered.
 	* @param type            Type of objects to search for.
+	*
+	* Here is an example of a search for all the documents containing the
+	* English word "connection":
+	* @code
+	* GConceptType* English(Session->GetConceptType("enStems",false));  // Get a pointer to the English dictionary.
+	* RString Word(English->GetLang()->GetStemming("connection"));      // Get the stem to search for.
+	* GConcept* Concept(English->GetConcept(Word));                     // Get the corresponding concept.
+	* RVectorInt<size_t,false> Docs(20);                                // Vector that will contain the documents identifiers.
+	* Session->GetIndexer()->FindRefs(Concept,Docs,otDoc);              // Make the search.
+	* for(Docs.Start();!Docs.End().Docs.Next())
+	*    cout<<Docs()<<"\t";                                            // Print the identifiers.
+	* cout<<endl;
+	* @endcode
 	*/
 	void FindRefs(GConcept* concept,R::RVectorInt<size_t,false>& refs,tObjType type);
 
