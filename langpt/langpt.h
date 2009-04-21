@@ -51,7 +51,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GLangPT class provides a representation for the portuguese language.
+* The GLangPT class provides a representation for the Portuguese language.
 * @author David Wartel
 * @short Portuguese language.
 */
@@ -61,10 +61,16 @@ class GLangPT : public GLang , public stemming::portuguese_stem<char, std::char_
 public:
 
 	/**
-	* Constructor of the portuguese language.
+	* Constructor of the Portuguese language.
 	* @param fac             Factory.
 	*/
 	GLangPT(GFactoryLang* fac);
+
+	/**
+	 * Fill a container with all the stop words associated with the language.
+	 * @param stop           Container.
+	 */
+	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop);
 
 	/**
 	* Function that return stemming of a word.
@@ -72,7 +78,6 @@ public:
 	* @return The stemming of the word.
 	*/
 	virtual R::RString GetStemming(const R::RString& _kwd);
-
 
 public:
 

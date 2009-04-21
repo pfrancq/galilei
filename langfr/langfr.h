@@ -54,29 +54,35 @@ class GLangFR : public GALILEI::GLang
 	/**
 	* List of Rules '1'.
 	*/
-	R::RContainer<FrenchPorterRule,true,false>* Rules1;
+	R::RContainer<FrenchPorterRule,true,false> Rules1;
 
     /**
 	* List of Rules '2'.
 	*/
-	R::RContainer<FrenchPorterRule,true,false>* Rules2;
+	R::RContainer<FrenchPorterRule,true,false> Rules2;
 
 	/**
 	* List of Rules '3'.
 	*/
-	R::RContainer<FrenchPorterRule,true,false>* Rules3;
+	R::RContainer<FrenchPorterRule,true,false> Rules3;
 
 public:
 
 	/**
-	* Constructor of the french language.
+	* Constructor of the French language.
 	* @param fac             Factory.
 	*/
 	GLangFR(GALILEI::GFactoryLang* fac);
 
 	/**
+	 * Fill a container with all the stop words associated with the language.
+	 * @param stop           Container.
+	 */
+	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop);
+
+	/**
 	* Function that return stemming of a word. The "French" Porter's algorithm is
-	* basicly implemented.
+	* basically implemented.
 	* @param _kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
@@ -96,7 +102,7 @@ private:
 
 	/**
 	* Test if a word contains some vowels.
-	* @param kwd            Word analyse.
+	* @param kwd            Word analyze.
 	* @returns True if the word contains vowels.
 	*/
 	bool ContainsVowel(const char* kwd);
@@ -104,19 +110,19 @@ private:
 	/**
 	* Count the syllables in a way describes in Porter. To compute this, a
 	* finite state machine is used.
-	* @param kwd            Word to analyse.
+	* @param kwd            Word to analyze.
 	* @return Number of syllables.
 	*/
 	int GetWordSize(char* kwd);
 
 	/**
-	* Apply the different rules of the porter's algorithm to a gieven word.
+	* Apply the different rules of the porter's algorithm to a given word.
 	* @param kwd            Pointer to the begin of the word.
 	* @param end            Pointer that will hold the end of the word.
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	bool ApplyRules(char* kwd,char* &end,R::RContainer<FrenchPorterRule,true,false>* rules,int ruleslevel);
+	bool ApplyRules(char* kwd,char* &end,R::RContainer<FrenchPorterRule,true,false>& rules);
 
 public:
 
@@ -127,7 +133,7 @@ public:
 	static void CreateParams(R::RConfig* params);
 
 	/**
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~GLangFR(void);
 };

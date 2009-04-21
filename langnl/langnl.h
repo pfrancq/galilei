@@ -55,55 +55,61 @@ class GLangNL : public GALILEI::GLang
 	/**
 	* List of Rules '1a'.
 	*/
-	R::RContainer<DutchPorterRule,true,false>* Rules1a;
+	R::RContainer<DutchPorterRule,true,false> Rules1a;
 
 	/**
 	* List of Rules '1b'.
 	*/
-	R::RContainer<DutchPorterRule,true,false>* Rules1b;
+	R::RContainer<DutchPorterRule,true,false> Rules1b;
 
 	/**
 	* List of Rules '1c'.
 	*/
-	R::RContainer<DutchPorterRule,true,false>* Rules1c;
+	R::RContainer<DutchPorterRule,true,false> Rules1c;
 
 	/**
 	* List of Rules '2a'.
 	*/
-	R::RContainer<DutchPorterRule,true,false>* Rules2a;
+	R::RContainer<DutchPorterRule,true,false> Rules2a;
 
 	/**
 	* List of Rules '2aa'.
 	*/
-	R::RContainer<DutchPorterRule,true,false>* Rules2aa;
+	R::RContainer<DutchPorterRule,true,false> Rules2aa;
 
 	/**
 	* List of Rules '3a'.
 	*/
-	R::RContainer<DutchPorterRule,true,false>* Rules3a;
+	R::RContainer<DutchPorterRule,true,false> Rules3a;
 
 	/**
 	* List of Rules '3b'.
 	*/
-	R::RContainer<DutchPorterRule,true,false>* Rules3b;
+	R::RContainer<DutchPorterRule,true,false> Rules3b;
 
 	/**
 	* List of Rules '4'.
 	*/
-	R::RContainer<DutchPorterRule,true,false>* Rules4;
+	R::RContainer<DutchPorterRule,true,false> Rules4;
 
 	/**
 	* List of Rules '5'.
 	*/
-	R::RContainer<DutchPorterRule,true,false>* Rules5;
+	R::RContainer<DutchPorterRule,true,false> Rules5;
 
 public:
 
 	/**
-	* Constructor of the english language.
+	* Constructor of the Dutch language.
 	* @param fac             Factory.
 	*/
 	GLangNL(GALILEI::GFactoryLang* fac);
+
+	/**
+	 * Fill a container with all the stop words associated with the language.
+	 * @param stop           Container.
+	 */
+	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop);
 
 	/**
 	* Function that return stemming of a word. The Porter's algorithm is
@@ -127,24 +133,24 @@ private:
 
 	/**
 	* Test if a word contains some vowels.
-	* @param kwd            Word analyse.
+	* @param kwd            Word analyze.
 	* @returns True if the word contains vowels.
 	*/
 	bool ContainsVowel(const char* kwd);
 
-	/*
+	/**
 	* Test if the word after stemming ends with a non-vowel.
 	* @param newend            End of the word.
 	*/
 	bool EndsWithCons(const char* newend);
 
-	/*
+	/**
 	* Test if the word after stemming ends with a 'c'.
 	* @param newend            End of the word.
 	*/
 	bool EndsWithc(const char* newend);
 
-	/*
+	/**
 	* Test if the word after stemming ends with a 'e'
 	* @param newend            End of the word.
 	*/
@@ -153,7 +159,7 @@ private:
 	/**
 	* Test if the word is ending with a combinaison of CVD (D = non vowel
 	* other than l).
-	* @param kwd            Word to analyse.
+	* @param kwd            Word to analyze.
 	* @param end            Pointer that will hold the end of the word.
 	* @returns True if the word is ending with CVD.
 	*/
@@ -162,19 +168,19 @@ private:
 	/**
 	* Count the syllables in a way describes in Porter. To compute this, a
 	* finite state machine is used.
-	* @param kwd            Word to analyse.
+	* @param kwd            Word to analyze.
 	* @return Number of syllables.
 	*/
 	int GetWordSize(char* kwd);
 
 	/**
-	* Apply the different rules of the porter's algorithm to a gieven word.
+	* Apply the different rules of the porter's algorithm to a given word.
 	* @param kwd            Pointer to the begin of the word.
 	* @param end            Pointer that will hold the end of the word.
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	bool ApplyRules(char* kwd,char* &end,R::RContainer<DutchPorterRule,true,false>* rules);
+	bool ApplyRules(char* kwd,char* &end,R::RContainer<DutchPorterRule,true,false>& rules);
 
 public:
 
@@ -185,7 +191,7 @@ public:
 	static void CreateParams(R::RConfig* params);
 
 	/**
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~GLangNL(void);
 };

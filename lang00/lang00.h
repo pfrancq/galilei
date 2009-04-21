@@ -56,6 +56,12 @@ public:
 	GLang00(GALILEI::GFactoryLang* fac);
 
 	/**
+	 * Fill a container with all the stop words associated with the language.
+	 * @param stop           Container.
+	 */
+	virtual void GetStopWords(R::RContainer<R::RString,true,false>&) {}
+
+	/**
 	* Function that return stemming of a word, in this case the word is
 	* returned without any modification.
 	* @param _kwd            Word to find the stemming.

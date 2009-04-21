@@ -77,4 +77,4 @@ GLang00::~GLang00(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Universisal",GLang00,"00")
+CREATE_LANG_FACTORY("Universal",GLang00,"00")

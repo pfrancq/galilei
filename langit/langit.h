@@ -67,12 +67,17 @@ public:
 	GLangIT(GFactoryLang* fac);
 
 	/**
+	 * Fill a container with all the stop words associated with the language.
+	 * @param stop           Container.
+	 */
+	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop);
+
+	/**
 	* Function that return stemming of a word.
 	* @param _kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
 	virtual R::RString GetStemming(const R::RString& _kwd);
-
 
 public:
 

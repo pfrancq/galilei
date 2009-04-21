@@ -51,9 +51,9 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GLangFI class provides a representation for the finnish language.
+* The GLangFI class provides a representation for the Finnish language.
 * @author David Wartel
-* @short Finiish language.
+* @short Finnish language.
 */
 class GLangFI : public GLang , public stemming::finnish_stem<char, std::char_traits<char> >
 {
@@ -61,10 +61,16 @@ class GLangFI : public GLang , public stemming::finnish_stem<char, std::char_tra
 public:
 
 	/**
-	* Constructor of the finnish language.
+	* Constructor of the Finnish language.
 	* @param fac             Factory.
 	*/
 	GLangFI(GFactoryLang* fac);
+
+	/**
+	 * Fill a container with all the stop words associated with the language.
+	 * @param stop           Container.
+	 */
+	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop);
 
 	/**
 	* Function that return stemming of a word.
@@ -72,7 +78,6 @@ public:
 	* @return The stemming of the word.
 	*/
 	virtual R::RString GetStemming(const R::RString& _kwd);
-
 
 public:
 

@@ -51,7 +51,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GLangSE class provides a representation for the swedish language.
+* The GLangSE class provides a representation for the Swedish language.
 * @author David Wartel
 * @short Swedish language.
 */
@@ -61,10 +61,16 @@ class GLangSE : public GLang , public stemming::swedish_stem<char, std::char_tra
 public:
 
 	/**
-	* Constructor of the swedish language.
+	* Constructor of the Swedish language.
 	* @param fac             Factory.
 	*/
 	GLangSE(GFactoryLang* fac);
+
+	/**
+	 * Fill a container with all the stop words associated with the language.
+	 * @param stop           Container.
+	 */
+	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop);
 
 	/**
 	* Function that return stemming of a word.
@@ -72,7 +78,6 @@ public:
 	* @return The stemming of the word.
 	*/
 	virtual R::RString GetStemming(const R::RString& _kwd);
-
 
 public:
 
