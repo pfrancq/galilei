@@ -258,10 +258,9 @@ public:
 	virtual void LoadRelations(void);
 
 	/**
-	* Loading the all concepts of given concept type.
-	* @param type            Type of concepts.
+	* Loading the all concepts.
 	*/
-	virtual void LoadConcepts(GConceptType* type);
+	virtual void LoadConcepts(void);
 
 	/**
 	* Loading the all concepts of given concept type.
@@ -278,9 +277,8 @@ public:
 	/**
 	* Load the name of specific concept.
 	* @param id              Identifier of the concept.
-	* @param type            Type of the concept.
 	*/
-	virtual R::RString LoadConcept(size_t id,GConceptType* type);
+	virtual R::RString LoadConcept(size_t id);
 
 	/**
 	* Load the identifier of a specific concept.

@@ -232,7 +232,7 @@
               </item>
               <item>
                <property name="text" >
-                <string>utf-8</string>
+                <string>utf8</string>
                </property>
               </item>
              </widget>
