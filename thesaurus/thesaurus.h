@@ -127,6 +127,8 @@ public:
 	*/
 	virtual void Disconnect(GSession* session);
 
+	void PrintObj(RObjH* obj,char depth);
+	void PrintNode(GNodeInfos* node,char depth);
 	void ConstructResults(RCursor<GNodeInfos> Sol);
 
     /**

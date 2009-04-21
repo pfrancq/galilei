@@ -80,25 +80,61 @@ void Thesaurus::Disconnect(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void Thesaurus::ConstructResults(RCursor<GNodeInfos>)
+void Thesaurus::PrintObj(RObjH* obj,char depth)
 {
-/*	for(Cur.Start();!Cur.End();Cur.Next())
-		constNode(0,cur,Cur());*/
-
-/*	size_t* tab;
-	size_t* ptr;
-
-	session->ClearGroups(GroupType);
-	for(Sol.Start();!Sol.End();Sol.Next())
+	RString Deb;
+	for(int i=0;i<depth;i++)
+		Deb+="\t";
+	cout<<Deb<<"Obj "<<obj->GetId()<<" (";
+	RAttrList List(obj->GetAttr());
+	int i;
+	for(List.Start(),i=0;!List.End();List.Next(),i++)
 	{
-		cGroup* g=static_cast<cGroup*>(session->NewGroup(GroupType));
-		session->AssignId(g);
-		ptr=tab=Sol()->GetObjectsId();
-		while((*ptr)!=cNoRef)
-			g->InsertObj(static_cast<cObj*>(Objs[*(ptr++)]->GetElement()));
-		delete[] tab;
-		session->InsertGroup(g,GroupType);
-	}*/
+		if(i)
+			cout<<",";
+		cout<<Words[List()]->Concept->GetName();
+	}
+	cout<<endl;
+}
+
+
+//-----------------------------------------------------------------------------
+void Thesaurus::PrintNode(GNodeInfos* node,char depth)
+{
+	RString Deb;
+	for(int i=0;i<depth;i++)
+		Deb+="\t";
+
+	// Print Node attributes
+	cout<<Deb<<"Node (";
+	RAttrList List(node->GetAttr());
+	int i;
+	for(List.Start(),i=0;!List.End();List.Next(),i++)
+	{
+		if(i)
+			cout<<",";
+		cout<<Words[List()]->Concept->GetName();
+	}
+	cout<<endl;
+
+	// Print objects
+	Deb+="\t";
+	RCursor<RObjH> Objs(node->GetObjs());
+	for(Objs.Start();!Objs.End();Objs.Next())
+		cout<<Deb<<Objs()->GetName()<<endl;
+
+	// Print sub-nodes
+	RCursor<GNodeInfos> Cur(node->GetNodes());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		PrintNode(Cur(),depth+1);
+}
+
+
+//-----------------------------------------------------------------------------
+void Thesaurus::ConstructResults(RCursor<GNodeInfos> Cur)
+{
+	for(Cur.Start();!Cur.End();Cur.Next())
+		PrintNode(Cur(),0);
 }
 
 
@@ -121,7 +157,7 @@ void Thesaurus::Run(void)
 		for(Cur.Start();!Cur.End();Cur.Next(),i++)
 		{
 			RCursor<GWeightInfo> Infos(Cur()->GetInfos());
-			Objs.InsertPtr(obj=new RObjH(i,"Topic "+RString::Number(Cur()->GetId()),Infos.GetNb()));
+			Objs.InsertPtr(obj=new RObjH(i,Cur()->GetName(),Infos.GetNb()));
 			for(Infos.Start();!Infos.End();Infos.Next())
 			{
 				Word* w(Words.GetInsertPtr(Infos()->GetConcept()));
@@ -131,14 +167,17 @@ void Thesaurus::Run(void)
 			}
 		}
 
-		cout<<" "<<i<<" created"<<endl;
+		cout<<" "<<i<<" created ("<<Words.GetNb()<<" different concepts)"<<endl;
+//		RCursor<RObjH> Test(Objs);
+//		for(Test.Start();!Test.End();Test.Next())
+//			PrintObj(Test(),1);
 
 		// Init the GCA
 		cout<<"New HCA"<<endl;
 		GInstH Instance(MaxGen,PopSize,Objs,Heuristic,Session->GetDebug());
 		InsertObserver(reinterpret_cast<tNotificationHandler>(&Thesaurus::Gen),"RInst::Generation",&Instance);
 		cout<<"Init HCA"<<endl;
-	//	Instance.SetVerify(true);
+		Instance.SetVerify(Verify);
 		Instance.Init();
 /*		Instance.SetLocalOptimisation(LocalOptimisation);
 		Instance.SetOptimisation(Optimisation);
