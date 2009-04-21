@@ -314,6 +314,11 @@ public:
 	size_t GetNbObjs(tObjType type) const;
 
 	/**
+	* Get a cursor over the all the documents contained in the subject.
+	*/
+	R::RCursor<GDoc> GetTotalDocs(void) const {return(R::RCursor<GDoc>(AllDocs));}
+
+	/**
 	 * @return The total number of documents assigned to this subject.
 	 */
 	size_t GetNbTotalDocs(void) const {return(AllDocs.GetNb());}

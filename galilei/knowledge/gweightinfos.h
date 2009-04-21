@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Weighted Information Entities.
 */
-class GWeightInfos : public R::RContainer<GWeightInfo,true,true>
+class GWeightInfos : private R::RContainer<GWeightInfo,true,true>
 {
 protected:
 
@@ -78,19 +78,7 @@ public:
 	* Assignment operator for lists of weighted information entities.
 	* @param w              Source list of weighted information entities.
 	*/
-	GWeightInfos& operator=(const GWeightInfos& w);
-
-	/**
-	* Assignment operator for lists of weighted information entities.
-	* @param w              Source list of weighted information entities.
-	*/
 	void CopyInfos(const R::RContainer<GWeightInfo,false,true>* infos);
-
-	/**
-	* Deep copy of a list of weighted information entities.
-	* @param src            Source list of weighted information entities.
-	*/
-	void Copy(const GWeightInfos& src);
 
 	/**
 	* Static function used to order the information entities by weights.
@@ -146,11 +134,43 @@ public:
 	void DeleteInfo(GWeightInfo* info);
 
 	/**
+	* Delete an information related to a given concept.
+	* @param concept         Concept to delete.
+	*/
+	void DeleteInfo(GConcept* concept);
+
+	/**
 	 * Get a pointer to a weighted information based on a given one. If it is
 	 * not found, it is created with a null weight.
 	 * @param info           Weighted information.
 	 */
 	GWeightInfo* GetInfo(const GWeightInfo* info);
+
+	/**
+	 * Get a pointer to a weighted information based on a given concept. If it
+	 * is not found, it is created with a null weight.
+	 * @param concept        Concept.
+	 */
+	GWeightInfo* GetInfo(GConcept* concept);
+
+	/**
+	 * Delete a weighted information related to a given concept.
+	 * @param concept        Concept.
+	 */
+	void DeleteInfo(const GConcept* concept);
+
+	/**
+	 * Verify if a given concept is in the vector.
+	 * @param concept        Concept.
+	 */
+	bool IsIn(const GConcept* concept) const;
+
+	/**
+	 * Fill an array with the weighted information.
+	 * @param tab            Array to fill.
+	 * @return the number of elements copied.
+	 */
+	size_t GetTab(const GWeightInfo** tab) const {return(R::RContainer<GWeightInfo,true,true>::GetTab(tab));}
 
 	/**
 	* Clear the container.
@@ -166,7 +186,7 @@ public:
 	/**
 	* @return True if a list is not empty.
 	*/
-	virtual bool IsDefined(void) const {return(GetNb());}
+	bool IsDefined(void) const {return(GetNb());}
 
 	/**
 	* Compute the maximal weight of the information entities in the list for a
@@ -210,7 +230,7 @@ public:
 	* @param w              Pointer to a list of weighted information entities.
 	* @param ObjType        Type of the object.
 	*/
-	double SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const;
+//	double SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const;
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
@@ -222,7 +242,7 @@ public:
 	* @param ObjType1       First type of the object.
 	* @param ObjType2       Second type of the object.
 	*/
-	double SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObjType ObjType2) const;
+//	double SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObjType ObjType2) const;
 
 	/**
 	* Compute a boolean similarity between two lists of weighted information
@@ -282,9 +302,18 @@ public:
 	void RecomputeQuery(tObjType ObjType,GLang* lang);
 
 	/**
+	 * Print the vector to the standard output.
+	 * @param msg            Header message.
+	 */
+	void Print(R::RString msg);
+
+	/**
 	* Destruct the list of weighted information entities.
 	*/
 	virtual ~GWeightInfos(void);
+
+	friend class GIndexer;
+	friend class GDoc;
 };
 
 

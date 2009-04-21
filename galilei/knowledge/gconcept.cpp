@@ -50,15 +50,6 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(void)
-	: Id(cNoRef), Name(RString::Null), Type(0), NbRefDocs(0), IfDocs(NAN), IndexDocs(MaxOffT),
-	  NbRefProfiles(0), IfProfiles(NAN), NbRefCommunities(0), IfCommunities(NAN),
-	  NbRefTopics(0), IfTopics(NAN)
-{
-}
-
-
-//-----------------------------------------------------------------------------
 GConcept::GConcept(const GConcept* concept)
 	: Id(concept->Id), Name(concept->GetName()), Type(concept->Type),
 	  NbRefDocs(concept->NbRefDocs), IfDocs(concept->IfDocs), IndexDocs(concept->IndexDocs),
@@ -71,10 +62,12 @@ GConcept::GConcept(const GConcept* concept)
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const RString& name,GConceptType* type)
-	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0), IfDocs(NAN), IndexDocs(MaxOffT),
+	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0), IfDocs(NAN), IndexDocs(0),
 	  NbRefProfiles(0), IfProfiles(NAN), NbRefCommunities(0), IfCommunities(NAN),
 	  NbRefTopics(0), IfTopics(NAN)
 {
+	if(!type)
+		throw GException("GConcept::GConcept: Cannot create a concept no type");
 }
 
 
@@ -102,49 +95,6 @@ int GConcept::Compare(const R::RString& name) const
 
 
 //-----------------------------------------------------------------------------
-int GConcept::Compare(size_t id) const
-{
-	return(CompareIds(Id,id));
-}
-
-
-//-----------------------------------------------------------------------------
-bool GConcept::operator==(const GConcept& c) const
-{
-	if((Type!=c.Type)||(Id!=c.Id))
-		return(false);
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
-bool GConcept::operator!=(const GConcept& c) const
-{
-	if((Type==c.Type)&&(Id==c.Id))
-		return(false);
-	return(true);
-}
-
-
-//-----------------------------------------------------------------------------
-bool GConcept::operator<(const GConcept& c) const
-{
-	if((Type<c.Type)||((Type==c.Type)&&((Id<c.Id))))
-		return(true);
-	return(false);
-}
-
-
-//-----------------------------------------------------------------------------
-bool GConcept::operator>(const GConcept& c) const
-{
-	if((Type>c.Type)||((Type==c.Type)&&((Id>c.Id))))
-		return(true);
-	return(false);
-}
-
-
-//-----------------------------------------------------------------------------
 GConcept* GConcept::DeepCopy(void) const
 {
 	return(new GConcept(this));
@@ -167,7 +117,7 @@ void GConcept::SetName(const R::RString& name)
 	NbRefDocs=0;
 	IfDocs=NAN;
 	NbRefProfiles=0;
-	IndexDocs=MaxOffT;
+	IndexDocs=0;
 	IfProfiles=NAN;
 	NbRefCommunities=0;
 	IfCommunities=NAN;
@@ -243,6 +193,42 @@ size_t GConcept::DecRef(tObjType ObjType)
 			break;
 		default:
 			throw GException("Unknown type to decrease concept "+RString::Number(Id));
+			break;
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GConcept::ClearRef(tObjType ObjType)
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			NbRefDocs=0;
+			IfDocs=NAN;
+			IndexDocs=0;
+			break;
+		case otProfile:
+			NbRefProfiles=0;
+			IfProfiles=NAN;
+			break;
+		case otCommunity:
+			NbRefCommunities=0;
+			IfCommunities=NAN;
+			break;
+		case otTopic:
+			NbRefTopics=0;
+			IfTopics=NAN;
+			break;
+		default:
+			NbRefDocs=0;
+			IfDocs=NAN;
+			NbRefProfiles=0;
+			IfProfiles=NAN;
+			NbRefCommunities=0;
+			IfCommunities=NAN;
+			NbRefTopics=0;
+			IfTopics=NAN;
 			break;
 	}
 }
@@ -326,49 +312,13 @@ double GConcept::GetIF(tObjType ObjType) const
 
 
 //-----------------------------------------------------------------------------
-void GConcept::ClearRef(tObjType ObjType)
-{
-	switch(ObjType)
-	{
-		case otDoc:
-			NbRefDocs=0;
-			IfDocs=NAN;
-			IndexDocs=MaxOffT;
-			break;
-		case otProfile:
-			NbRefProfiles=0;
-			IfProfiles=NAN;
-			break;
-		case otCommunity:
-			NbRefCommunities=0;
-			IfCommunities=NAN;
-			break;
-		case otTopic:
-			NbRefTopics=0;
-			IfTopics=NAN;
-			break;
-		default:
-			NbRefDocs=0;
-			IfDocs=NAN;
-			NbRefProfiles=0;
-			IfProfiles=NAN;
-			NbRefCommunities=0;
-			IfCommunities=NAN;
-			NbRefTopics=0;
-			IfTopics=NAN;
-			break;
-	}
-}
-
-
-//-----------------------------------------------------------------------------
 void GConcept::Clear(void)
 {
 	Id=cNoRef;
 	Name=RString::Null;
 	NbRefDocs=0;
 	IfDocs=NAN;
-	IndexDocs=MaxOffT;
+	IndexDocs=0;
 	NbRefProfiles=0;
 	IfProfiles=NAN;
 	NbRefCommunities=0;

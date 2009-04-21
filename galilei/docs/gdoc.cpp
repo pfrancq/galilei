@@ -36,6 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdoc.h>
+#include <gtopic.h>
 #include <glink.h>
 #include <glang.h>
 #include <gweightinfo.h>
@@ -55,12 +56,21 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t nbrecs,size_t nblcs,size_t ownerid)
+GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t nbrecs,size_t nblcs)
 	: GWeightInfos(60), URL(url), Name(name), Id(id), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
-	  Fdbks(0), LinkSet(5,2), OwnerId(ownerid), GroupId(grpid), Attached(a),
+	  Fdbks(0), LinkSet(5,2), GroupId(grpid), Attached(a),
 	  NbRecs(nbrecs), NbLCs(nblcs)
 {
+	// Verify if the topic exists in memory
+	RAssert(GroupId!=cNoRef);
+	if(GroupId&&(GSession::Get()))
+	{
+		GTopic* grp=GSession::Get()->GetTopic(GroupId,false,false);
+		if(grp)
+			grp->InsertObj(this);
+	}
+
 	if(Id!=cNoRef)
 		GSession::Event(this,eObjNew);
 }
@@ -132,7 +142,7 @@ GDocStruct* GDoc::GetStruct(void) const
 		const_cast<GDoc*>(this)->Struct=new GDocStruct(NbRecs,NbLCs);
 		GSession* session=GSession::Get();
 		if(session)
-			session->GetIndexer()->LoadStruct(*const_cast<GDoc*>(this)->Struct,const_cast<GDoc*>(this));
+			session->LoadStruct(*const_cast<GDoc*>(this)->Struct,const_cast<GDoc*>(this));
 	}
 	return(Struct);
 }
@@ -152,8 +162,9 @@ void GDoc::ReleaseStruct(void)
 //------------------------------------------------------------------------------
 void GDoc::SetGroup(size_t groupid)
 {
+	RAssert(groupid!=cNoRef);
 	GroupId=groupid;
-	if(GroupId!=cNoRef)
+	if(GroupId)
 		Attached.SetToday();
 }
 
@@ -432,23 +443,7 @@ void GDoc::Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram
 
 	// If document has a language -> update its references
 	if(Lang&&(Id!=cNoRef))
-	{
-		GConceptType* type(0);
-		RCursor<GWeightInfo> ptr(infos);
-		for(ptr.Start();!ptr.End();ptr.Next())
-		{
-			// Look if the type of the concept have changed since that the last concept treated
-			if(ptr()->GetConcept()->GetType()!=type)
-			{
-				// Yes -> A new object uses this concept type.
-				type=ptr()->GetConcept()->GetType();
-				type->IncRef(otDoc);
-			}
-
-			// AddRef for the concept
-			type->IncRef(ptr()->GetConcept()->GetId(),otDoc);
-		}
-	}
+		infos.AddRefs(otDoc);
 
 	if(ram)
 	{

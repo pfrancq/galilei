@@ -61,7 +61,7 @@ protected:
 	GConcept* Concept;
 
 	/**
-	* Weight associated wih the concept.
+	* Weight associated with the concept.
 	*/
 	double Weight;
 
@@ -70,9 +70,15 @@ public:
 	/**
 	* Constructor of a weighed information entity.
 	* @param concept         Identifier of the information entity.
+	*/
+	GWeightInfo(GConcept* concept);
+
+	/**
+	* Constructor of a weighed information entity.
+	* @param concept         Identifier of the information entity.
 	* @param w               Weight of the information entity.
 	*/
-	GWeightInfo(GConcept* concept,double w=0.0);
+	GWeightInfo(GConcept* concept,double w);
 
 	/**
 	* Copy constructor of a weighed information entity.
@@ -106,30 +112,6 @@ public:
 	* @return int
 	*/
 	int Compare(const GConcept* concept) const;
-
-	/**
-	 * == operator for GWeightInfo.
-	 * @param other          Element to compare with.
-	 */
-	bool operator==(const GWeightInfo &other) const;
-
-	/**
-	 * != operator for GWeightInfo.
-	 * @param other          Element to compare with.
-	 */
-	bool operator!=(const GWeightInfo &other) const;
-
-	/**
-	 * < operator for GWeightInfo.
-	 * @param other          Element to compare with.
-	 */
-	bool operator<(const GWeightInfo &other) const;
-
-	/**
-	 * > operator for GWeightInfo.
-	 * @param other          Element to compare with.
-	 */
-	bool operator>(const GWeightInfo &other) const;
 
 	/**
 	* Get the identifier of the concept.

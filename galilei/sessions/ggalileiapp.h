@@ -209,7 +209,7 @@ public:
 
 	/**
 	* Set the size of the RAM (in GB) used to build the index.
-	* @param name            Name.
+	* @param size            Size in GB.
 	*/
 	void SetIndexRamSize(unsigned int size) {IndexRamSize=size;}
 

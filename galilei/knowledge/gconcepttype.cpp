@@ -39,9 +39,11 @@ using namespace std;
 #include <gconcepttype.h>
 #include <gconcept.h>
 #include <gsession.h>
+#include <gontology.h>
 #include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
@@ -52,15 +54,11 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConceptType::GConceptType(char id,GSession* session,const RString& name,const RString& desc,GLang* lang,size_t s,size_t s2)
-	: GDebugObject(name), RDblHashContainer<GConcept,true>(27,27,s2+(s2/4),s2/4), Id(id), Session(session),
-	  Description(desc), Lang(lang), Direct(0), MaxId(s+s/4), UsedId(0),
-	  Loaded(false), NbRefDocs(0), NbRefProfiles(0), NbRefCommunities(0), NbRefTopics(0)
+GConceptType::GConceptType(char id,GOntology* ontology,const RString& name,const RString& desc,GLang* lang,size_t s)
+	: GDebugObject(name), RDblHashContainer<GConcept,false>(27,27,s,s/4),
+	  Ontology(ontology), Id(id),
+	  Description(desc), Lang(lang), NbRefDocs(0), NbRefProfiles(0), NbRefCommunities(0), NbRefTopics(0)
 {
-	if((!Id)&&(GSession::Get()))
-		GSession::Get()->AssignId(this);
-	Direct=new GConcept*[MaxId];
-	memset(Direct,0,MaxId*sizeof(GConcept*));
 }
 
 
@@ -77,21 +75,14 @@ void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refcom
 //-----------------------------------------------------------------------------
 int GConceptType::Compare(const GConceptType& type) const
 {
-	return(Id-type.Id);
+	return(Name.Compare(type.Name));
 }
 
 
 //-----------------------------------------------------------------------------
 int GConceptType::Compare(const GConceptType* type) const
 {
-	return(Id-type->Id);
-}
-
-
-//-----------------------------------------------------------------------------
-int GConceptType::Compare(char id) const
-{
-	return(Id-id);
+	return(Name.Compare(type->Name));
 }
 
 
@@ -110,17 +101,6 @@ void GConceptType::SetId(char id)
 
 
 //------------------------------------------------------------------------------
-void GConceptType::Load(void) const
-{
-	if((!Loaded)&&Session&&Session->GetStorage())
-	{
-		Session->GetStorage()->LoadConcepts(const_cast<GConceptType*>(this));
-		const_cast<GConceptType*>(this)->Loaded=true;
-	}
-}
-
-
-//------------------------------------------------------------------------------
 void GConceptType::DebugInfo(const RString& info)
 {
 	// Look what to do
@@ -131,11 +111,7 @@ void GConceptType::DebugInfo(const RString& info)
 	if((!Idf)&&(!Ipf)&&(!Icf)&&(!Itf))
 		return;
 
-	Load(); // Load the concepts if necessary
-
 	RString str("id\tname                            ");
-	GConcept** ptr;
-	size_t i;
 	GetDebug()->BeginTag("conceptType","name=\""+Name+"\"");
 	if(Idf)
 		str+="\tidf";
@@ -146,30 +122,40 @@ void GConceptType::DebugInfo(const RString& info)
 	if(Itf)
 		str+="\titf";
 	GetDebug()->PrintComment(str);
-	for(i=MaxId+1,ptr=Direct;--i;ptr++)
-	{
-		if(!(*ptr))
-			continue;
 
-		// Suppose we reserved 32 characters for names
-		str=RString::Number((*ptr)->GetId());
-		RString name=(*ptr)->GetName();
-		str+="\t"+name;
-		if(name.GetLen()<32)
-		{
-			for(size_t j=32-name.GetLen()+1;--j;)
-				str+=' ';
-		}
-		if(Idf)
-			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otDoc));
-		if(Ipf)
-			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otProfile));
-		if(Icf)
-			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otCommunity));
-		if(Itf)
-			str+="\t"+RString::Number(GetIF((*ptr)->GetId(),otTopic));
-		GetDebug()->PrintComment(str);
-	}
+    // Parse the double hash table
+    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(GetCursor());
+    for(Cur.Start();!Cur.End();Cur.Next())
+    {
+       RCursor<RDblHashContainer<GConcept,false>::Hash2> Cur2(*Cur());
+       for(Cur2.Start();!Cur2.End();Cur2.Next())
+       {
+          RCursor<GConcept> Cur3(*Cur2());
+          for(Cur3.Start();!Cur3.End();Cur3.Next())
+          {
+        	  if(!Cur3()) continue;
+
+        	  // Suppose we reserved 32 characters for names
+        	  str=RString::Number(Cur3()->GetId());
+        	  RString name=Cur3()->GetName();
+        	  str+="\t"+name;
+        	  if(name.GetLen()<32)
+        	  {
+        		  for(size_t j=32-name.GetLen()+1;--j;)
+        			  str+=' ';
+        	  }
+        	  if(Idf)
+        		  str+="\t"+RString::Number(Cur3()->GetIF(otDoc));
+        	  if(Ipf)
+        		  str+="\t"+RString::Number(Cur3()->GetIF(otProfile));
+        	  if(Icf)
+        		  str+="\t"+RString::Number(Cur3()->GetIF(otCommunity));
+        	  if(Itf)
+        		  str+="\t"+RString::Number(Cur3()->GetIF(otTopic));
+        	  GetDebug()->PrintComment(str);
+          }
+       }
+    }
 	GetDebug()->EndTag("conceptType");
 }
 
@@ -177,190 +163,22 @@ void GConceptType::DebugInfo(const RString& info)
 //------------------------------------------------------------------------------
 void GConceptType::Clear(void)
 {
-	RDblHashContainer<GConcept,true>::Clear();
-	memset(Direct,0,MaxId*sizeof(GConcept*));
-	UsedId=0;
-	Loaded=false;
+	RDblHashContainer<GConcept,false>::Clear();
 	SetReferences(0,0,0,0);
-}
-
-
-//------------------------------------------------------------------------------
-void GConceptType::PutDirect(GConcept* concept)
-{
-	GConcept **tmp;
-	size_t n;
-
-	if(concept->GetId()>UsedId) UsedId=concept->GetId();
-	if(concept->GetId()>=MaxId)
-	{
-		n=concept->GetId()+1000;
-		tmp=new GConcept*[n];
-		memcpy(tmp,Direct,MaxId*sizeof(GConcept*));
-		memset(&tmp[MaxId],0,(n-MaxId)*sizeof(GConcept*));
-		delete[] Direct;
-		Direct=tmp;
-		MaxId=n;
-	}
-	Direct[concept->GetId()]=concept;
-}
-
-
-//------------------------------------------------------------------------------
-GConcept* GConceptType::InsertConcept(const GConcept* concept)
-{
-	GConcept* ptr;
-	bool InDirect=false;
-
-	// Empty data are not inserted
-	if(concept->IsEmpty())
-	{
-		RString tmp="GConceptType::InsertConcept: Empty concept cannot be inserted into a dictionary - id="+RString::Number(concept->GetId());
-		throw GException(tmp);
-	}
-	if(concept->GetType()!=this)
-		throw GException("GConceptType::InsertConcept: Concept has not the correct type");
-
-	// Look if the data exists in the dictionary. If not, create and insert it.
-	ptr=GetPtr(*concept);
-	if(!ptr)
-	{
-		ptr=concept->DeepCopy();
-		InsertPtr(ptr);
-		InDirect=true;
-	}
-
-	// Look if data has an identifier. If not, assign one.
-	if(ptr->GetId()==cNoRef)
-	{
-		Session->AssignId(ptr);
-		InDirect=true;
-	}
-
-	// Finally, if an identifier has been assigned and/or a new one -> Direct
-	if(InDirect)
-		PutDirect(ptr);
-
-	return(ptr);
-}
-
-
-//------------------------------------------------------------------------------
-void GConceptType::DeleteConcept(GConcept* concept)
-{
-	if((!concept)||(concept->GetId()>MaxId))
-		throw GException("GConceptType::DeleteConcept: Cannot delete concept");
-	Direct[concept->GetId()]=0;
-	if(concept->GetId()==UsedId)
-	{
-		GConcept** concepts=&Direct[UsedId];
-		for(concepts--,UsedId--;UsedId&&(!(*concepts));UsedId--) ;
-	}
-	Session->GetStorage()->DeleteConcept(concept);
-	DeletePtr(*concept);
-}
-
-
-//------------------------------------------------------------------------------
-GConcept* GConceptType::GetConcept(size_t id) const
-{
-	if(id>MaxId)
-		throw GException("GConceptType::GetConcept: Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
-	return(Direct[id]);
 }
 
 
 //------------------------------------------------------------------------------
 bool GConceptType::IsIn(const RString& name) const
 {
-	return(RDblHashContainer<GConcept,true>::IsIn(name));
-}
-
-
-//------------------------------------------------------------------------------
-GConcept* GConceptType::RenameConcept(GConcept* concept,const R::RString& name)
-{
-	// Look if the new name is not already in the dictionary
-	GConcept* ptr=RDblHashContainer<GConcept,true>::GetPtr(name);
-	if(ptr)
-	{
-		// Both concept must be merge and the old one deleted
-		ptr->NbRefDocs+=concept->NbRefDocs;
-		ptr->NbRefProfiles+=concept->NbRefProfiles;
-		ptr->NbRefCommunities+=concept->NbRefCommunities;
-		ptr->NbRefTopics+=concept->NbRefTopics;
-		DeleteConcept(concept);
-		return(ptr);
-	}
-	else
-	{
-		// Rename really the concept
-		DeletePtr(*concept,true,false);
-		concept->Name=name;
-		InsertPtr(concept);
-		Session->GetStorage()->SaveConcept(concept);
-		return(concept);
-	}
+	return(RDblHashContainer<GConcept,false>::IsIn(name));
 }
 
 
 //------------------------------------------------------------------------------
 GConcept* GConceptType::GetConcept(const RString& name) const
 {
-	return(RDblHashContainer<GConcept,true>::GetPtr(name));
-}
-
-
-//------------------------------------------------------------------------------
-double GConceptType::GetIF(size_t id,tObjType ObjType)
-{
-	double nb=static_cast<double>(Direct[id]->GetRef(ObjType));
-	if(nb>0.0)
-		return(log10(static_cast<double>(GetRef(ObjType))/nb));
-	return(0.0);
-}
-
-
-//------------------------------------------------------------------------------
-void GConceptType::IncRef(size_t id,tObjType ObjType)
-{
-	GConcept* concept;
-
-	if(id>MaxId)
-		throw GException("GConceptType::IncRef(size_t,tObjType): Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
-	if(!(concept=Direct[id]))
-		throw GException("GConceptType::IncRef(size_t,tObjType): "+Description+" "+RString::Number(id)+" does not exist");
-	size_t nb=concept->IncRef(ObjType);
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(concept,ObjType,nb);
-}
-
-
-//------------------------------------------------------------------------------
-void GConceptType::DecRef(size_t id,tObjType ObjType)
-{
-	GConcept* concept;
-
-	if(id>MaxId)
-		throw GException("GConceptType::DecRef(size_t,tObjType): Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
-	if(!(concept=Direct[id]))
-		throw GException("GConceptType::DecRef(size_t,tObjType): "+Description+" "+RString::Number(id)+" does not exist");
-	size_t nb=concept->DecRef(ObjType);
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(concept,ObjType,nb);
-}
-
-
-//------------------------------------------------------------------------------
-size_t GConceptType::GetRef(size_t id,tObjType ObjType)
-{
-	GConcept* concept;
-
-	if(id>MaxId)
-		throw GException("GConceptType::GetRef(size_t,tObjType): Cannot access "+Description+" "+RString::Number(id)+">"+RString::Number(MaxId));
-	if(!(concept=Direct[id]))
-		throw GException("GConceptType::GetRef(size_t,tObjType): "+Description+" "+RString::Number(id)+" does not exist");
-	return(concept->GetRef(ObjType));
+	return(RDblHashContainer<GConcept,false>::GetPtr(name));
 }
 
 
@@ -392,8 +210,8 @@ void GConceptType::IncRef(tObjType ObjType)
 			throw GException ("GConceptType::IncRef(tObjType): Unknown type to increase");
 			break;
 	}
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(this,ObjType,nb);
+	if(Ontology->SaveResults)
+		Ontology->Storage->SaveRefs(this,ObjType,nb);
 }
 
 
@@ -432,8 +250,8 @@ void GConceptType::DecRef(tObjType ObjType)
 			throw GException("GConceptType::DecRef(tObjType): Unknown type to decrease");
 			break;
 	}
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(this,ObjType,nb);
+	if(Ontology->SaveResults)
+		Ontology->Storage->SaveRefs(this,ObjType,nb);
 }
 
 
@@ -465,17 +283,21 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 //------------------------------------------------------------------------------
 void GConceptType::ClearRef(tObjType ObjType)
 {
-	GConcept** ptr;
-	size_t i;
-
 	// Look once if the results must be saved
-	Load(); // Load the concepts if necessary
+	bool Save(Ontology->MustSaveResults());
 
-	for(i=MaxId+1,ptr=Direct;--i;ptr++)
-	{
-		if(!(*ptr)) continue;
-		(*ptr)->ClearRef(ObjType);
-	}
+    // Parse the double hash table
+    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(GetCursor());
+    for(Cur.Start();!Cur.End();Cur.Next())
+    {
+       RCursor<RDblHashContainer<GConcept,false>::Hash2> Cur2(*Cur());
+       for(Cur2.Start();!Cur2.End();Cur2.Next())
+       {
+          RCursor<GConcept> Cur3(*Cur2());
+          for(Cur3.Start();!Cur3.End();Cur3.Next())
+        	  Cur3()->ClearRef(ObjType);
+       }
+    }
 
 	switch(ObjType)
 	{
@@ -499,14 +321,33 @@ void GConceptType::ClearRef(tObjType ObjType)
 			break;
 	}
 
-	// If necessary, put the references to 0. The storage should also reset all the references for the concepts
-	if(Session&&Session->MustSaveResults()&&Session->GetStorage())
-		Session->GetStorage()->SaveRefs(this,ObjType,0);
+	// If necessary, put the references to 0. The storage should also reset all the references for the concepts.
+	if(Save)
+		Ontology->Storage->SaveRefs(this,ObjType,0);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GConceptType::IncRef(GConcept* concept,tObjType ObjType)
+{
+	size_t nb(concept->IncRef(ObjType));
+	if(Ontology->SaveResults)
+		Ontology->Storage->SaveRefs(concept,ObjType,nb);
+	return(nb);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GConceptType::DecRef(GConcept* concept,tObjType ObjType)
+{
+	size_t nb(concept->DecRef(ObjType));
+	if(Ontology->SaveResults)
+		Ontology->Storage->SaveRefs(concept,ObjType,nb);
+	return(nb);
 }
 
 
 //------------------------------------------------------------------------------
 GConceptType::~GConceptType(void)
 {
-	if(Direct) delete[] Direct;
 }

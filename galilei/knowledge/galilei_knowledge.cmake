@@ -7,6 +7,7 @@ SET(galilei_knowledge_INST_INCLUDES
     gxmlindex.h
     gweightinfos.h
     gweightinfo.h
+    gontology.h
 )
     
                               
@@ -19,4 +20,5 @@ SET(galilei_knowledge_TARGET_SOURCES
     gxmlindex.cpp
     gweightinfos.cpp
     gweightinfo.cpp
+    gontology.cpp
 )

@@ -81,7 +81,7 @@ void QGWeightInfos::Set(GWeightInfos* obj)
 		if(Words()->GetType()==IndexSpace)
 		{
 			GXMLIndex* idx=dynamic_cast<GXMLIndex*>(Words()->GetConcept());
-			RString FullTagName(Session->GetStorage()->LoadConcept(idx->GetXMLTag()->GetId(),idx->GetXMLTag()->GetType()));
+			RString FullTagName(Session->GetStorage()->LoadConcept(idx->GetXMLTag()->GetId()));
 			RString TagName(FullTagName.Mid(FullTagName.Find(':',-1)+1));
 			name="<"+ToQString(TagName)+">";
 			bool SkipComma(true);
@@ -92,7 +92,7 @@ void QGWeightInfos::Set(GWeightInfos* obj)
 					SkipComma=false;
 				else
 					name+=" ";
-				name+=ToQString(Session->GetStorage()->LoadConcept(Universal()->GetId(),Universal()->GetType()));
+				name+=ToQString(Session->GetStorage()->LoadConcept(Universal()->GetId()));
 			}
 			RCursor<GConcept> Stems(idx->GetStems());
 			for(Stems.Start();!Stems.End();Stems.Next())
@@ -101,13 +101,13 @@ void QGWeightInfos::Set(GWeightInfos* obj)
 					SkipComma=false;
 				else
 					name+=" ";
-				name+=ToQString(Session->GetStorage()->LoadConcept(Stems()->GetId(),Stems()->GetType()));
+				name+=ToQString(Session->GetStorage()->LoadConcept(Stems()->GetId()));
 			}
 			name+="</"+ToQString(TagName)+">";
 		}
 		else
 		{
-			name=ToQString(Session->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType()));
+			name=ToQString(Session->GetStorage()->LoadConcept(Words()->GetId()));
 		}
 		QString type=ToQString(Words()->GetType()->GetDescription());
 		QString w(QString::number(Words()->GetWeight()));
@@ -116,6 +116,10 @@ void QGWeightInfos::Set(GWeightInfos* obj)
 		new QTreeWidgetItem(Infos,QStringList()<<name<<type<<w<<QString::number(Words()->GetConcept()->GetId()));
 	}
 	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->sortItems(0,Qt::AscendingOrder);
+	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(0);
+	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(1);
+	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(2);
+	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(3);
 }
 
 

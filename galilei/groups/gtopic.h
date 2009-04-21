@@ -56,10 +56,11 @@ public:
 	/**
 	* Construct a group with a specific identifier.
 	* @param id              Identifier.
+	* @param name            Name of the topic.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GTopic(size_t id,const R::RDate& u,const R::RDate& c);
+	GTopic(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
 	 * Get the similarity measure that must be used when computing the

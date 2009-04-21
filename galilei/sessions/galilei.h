@@ -49,6 +49,23 @@
 
 //------------------------------------------------------------------------------
 /**
+ * \mainpage GALILEI Research Project
+ *
+ * \section intro_sec Introduction
+ *
+ * GALILEI is a research and development platform in the field of information
+ * science.
+ *
+ * \section main_classes_sec Main classes
+ * The main classes are:
+ * - GALILEI::GOntology.
+ * - GALILEI::GIndexer
+ *
+ */
+
+
+//------------------------------------------------------------------------------
+/**
 * \namespace GALILEI
 * \brief GALILEI Classes.
 *
@@ -71,13 +88,9 @@ class GRelationType;
 class GLang;
 class GFactoryLang;
 class GLangManager;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Information Part
 class GWeightInfo;
 class GWeightInfos;
-class GInfosWeightsHistory;
+class GOntology;
 
 
 //------------------------------------------------------------------------------
@@ -115,7 +128,6 @@ class GRanking;
 class GMetaEngine;
 class GFactoryMetaEngine;
 class GMetaEngineManager;
-class GWordOccurs;
 class GIndexer;
 
 

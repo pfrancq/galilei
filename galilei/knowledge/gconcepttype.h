@@ -51,7 +51,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GDict provides a representation for a given type of concepts. Each
+* The GConceptType provides a representation for a given type of concepts. Each
 * type can be universal (independent of a given language such as names) or
 * language-dependent (such as words or stems).
 *
@@ -60,17 +60,19 @@ namespace GALILEI{
 * @param author Pascal Francq
 * @param short Concept Type.
 */
-class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcept,true>
+class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcept,false>
 {
+private:
+
+	/**
+	 * Ontology.
+	 */
+	GOntology* Ontology;
+
 	/**
 	* Identifier of the concept type.
 	*/
 	char Id;
-
-	/**
-	 * Session.
-	 */
-	GSession* Session;
 
 	/**
 	* Short description of the type.
@@ -82,26 +84,6 @@ class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcep
 	 * language, it must be null.
 	 */
 	GLang* Lang;
-
-	/**
-	* Array of concepts ordered by identifier.
-	*/
-	GConcept** Direct;
-
-	/**
-	* Highest identifier that the dictionary can handle.
-	*/
-	size_t MaxId;
-
-	/**
-	* Highest identifier of the concept stored.
-	*/
-	size_t UsedId;
-
-	/**
-	* State of the dictionary.
-	*/
-	bool Loaded;
 
 	/**
 	* Number of references in documents.
@@ -128,14 +110,12 @@ public:
 	/**
 	* Construct a concept type.
 	* @param id              Identifier of the type.
-	* @param session         Session.
 	* @param name            Name of the type.
 	* @param desc            Short description.
 	* @param lang            Language eventually associated to the concept type.
-	* @param s               Initial number of concepts.
-	* @param s2              Size of the second hash table.
+	* @param s              Size of the second hash table.
 	*/
-	GConceptType(char id,GSession* session,const R::RString& name,const R::RString& desc,GLang* lang,size_t s=20000,size_t s2=5000);
+	GConceptType(char id,GOntology* ontology,const R::RString& name,const R::RString& desc,GLang* lang,size_t s);
 
 	/**
 	* Set the references of a given language. This method is called when
@@ -160,13 +140,6 @@ public:
 	* @see R::RContainer.
 	*/
 	int Compare(const GConceptType* type) const;
-
-	/**
-	* Compare a concept with an identifier.
-	* @param id              Identifier used.
-	* @see R::RContainer.
-	*/
-	int Compare(char id) const;
 
 	/**
 	* Compare an object with a name.
@@ -203,16 +176,6 @@ public:
 	GLang* GetLang(void) const {return(Lang);}
 
 	/**
-	 * Is the dictionary of concepts loaded.
-	 */
-	bool IsLoaded(void) const {return(Loaded);}
-
-	/**
-	 * Load the concepts if necessary.
-	 */
-	void Load(void) const;
-
-	/**
 	 * Build some debugging information.
 	 * @param info           Description of the information needed ("idf","itf"
 	 *                       ,"ipf" or "icf" are allowed).
@@ -224,48 +187,13 @@ public:
 	*/
 	void Clear(void);
 
-private:
-
 	/**
-	* Put a concept in direct.
-	* @param concept         Pointer to the concept to insert.
+	* Get a cursor over the main hash table.
 	*/
-	void PutDirect(GConcept* concept);
-
-public:
-
-	/**
-	* Insert a concept in the dictionary. In practice, it is a copy of the
-	* concept which is inserted.
-	* @param concept         Concept to insert.
-	* @return Pointer to the concept inserted in the dictionary.
-	*/
-	GConcept* InsertConcept(const GConcept* concept);
-
-	/**
-	* Delete a given concept from the dictionary.
-	* @param concept         Concept to delete.
-	*/
-	void DeleteConcept(GConcept* concept);
-
-	/**
-	* Get the concept with a specific identifier.
-	* @param id             Identifier.
-	* @return Pointer to a GConcept.
-	*/
-	GConcept* GetConcept(size_t id) const;
-
-	/**
-	* Get the highest identifier of the concept stored by the dictionary.
-	* @return size_t
-	*/
-	size_t GetConceptMaxId(void) const {return(UsedId);}
-
-	/**
-	* Get the list of the concepts currently defined in the dictionary.
-	* @returns const Pointer to array of GConcept*.
-	*/
-	const GConcept** GetConcepts(void) const {return(const_cast<const GConcept**>(Direct));}
+	R::RCursor<Hash> GetConcepts(void) const
+	{
+		return(R::RCursor<Hash>(GetCursor()));
+	}
 
 	/**
 	* Look if a given concept is in the dictionary.
@@ -273,14 +201,6 @@ public:
 	* @return true if the concept is in the dictionary.
 	*/
 	bool IsIn(const R::RString& name) const;
-
-	/**
-	 * Rename a concept.
-	 * @param concept        Concept to rename.
-	 * @param name           New name.
-	 * @return Pointer to the correct concept (may be an existing one).
-	 */
-	GConcept* RenameConcept(GConcept* concept,const R::RString& name);
 
 	/**
 	* Get a given concept from the dictionary.
@@ -293,38 +213,6 @@ public:
 	* Get the total number of concepts.
 	*/
 	size_t GetNbConcepts(void) const {return(GetNb());}
-
-	/**
-	 * Get the 'Inverse Frequency' factor of a given concept type.
-	* @param id             Identifier of the concept.
-	* @param ObjType        Type of the object.
-	*/
-	double GetIF(size_t id,tObjType ObjType);
-
-	/**
-	* Increase the number of objects of a given type that make a reference to a
-	* concept.
-	* @param id             Identifier of the concept.
-	* @param ObjType        Type of the object.
-	*/
-	void IncRef(size_t id,tObjType ObjType);
-
-	/**
-	* Decrease the number of objects of a given type that make a reference to a
-	* concept.
-	* @param id             Identifier of the concept.
-	* @param ObjType        Type of the object.
-	*/
-	void DecRef(size_t id,tObjType ObjType);
-
-	/**
-	* Get the number of objects of a given type that make a reference to a
-	* concept.
-	* @param id             Identifier of the concept.
-	* @param ObjType        Type of the object.
-	* @return size_t.
-	*/
-	size_t GetRef(size_t id,tObjType ObjType);
 
 	/**
 	* Increase the number of objects of a given type using the dictionary of the
@@ -354,6 +242,24 @@ public:
 	void ClearRef(tObjType ObjType);
 
 	/**
+	* Increase the number of objects of a given type that make a reference to a
+	* concept.
+	* @param concept        Concept.
+	* @param ObjType        Type of the object.
+	*/
+	size_t IncRef(GConcept* concept,tObjType ObjType);
+
+	/**
+	* Decrease the number of objects of a given type that make a reference to a
+	* concept.
+	* @param concept        Concept.
+	* @param ObjType        Type of the object.
+	*/
+	size_t DecRef(GConcept* concept,tObjType ObjType);
+
+public:
+
+	/**
 	 * Destruct.
 	 */
 	virtual ~GConceptType(void);
@@ -361,6 +267,7 @@ public:
 	friend class GConcept;
 	friend class GWeightInfo;
 	friend class GIndexer;
+	friend class GOntology;
 };
 
 

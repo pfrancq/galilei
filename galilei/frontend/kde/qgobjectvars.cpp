@@ -74,6 +74,8 @@ void QGObjectVars::Set(GDoc* doc)
 	AddVar("Last Computed",doc->GetComputed());
 	AddVar("Last Attached",doc->GetAttached());
 	AddVar("State",doc->GetState());
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
 }
 
 
@@ -84,6 +86,8 @@ void QGObjectVars::Set(GTopic* topic)
 	AddVar("Last Updated",topic->GetUpdated());
 	AddVar("Last Computed",topic->GetComputed());
 	AddVar("Status",topic->GetState());
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
 }
 
 
@@ -94,6 +98,8 @@ void QGObjectVars::Set(GCommunity* community)
 	AddVar("Last Updated",community->GetUpdated());
 	AddVar("Last Computed",community->GetComputed());
 	AddVar("Status",community->GetState());
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
 }
 
 
@@ -106,6 +112,8 @@ void QGObjectVars::Set(GProfile* profile)
 	AddVar("Last Computed",profile->GetComputed());
 	AddVar("Last Attached",profile->GetAttached());
 	AddVar("Status",profile->GetState());
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
+	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
 }
 
 

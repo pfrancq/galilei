@@ -167,7 +167,7 @@ GProfile::GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RD
 		throw GException("Profile "+RString::Number(id)+" has no parent user");
 	User->InsertPtr(this);
 
-	// Verify if the group is existing in memory
+	// Verify if the community exists in memory
 	if((GroupId!=cNoRef)&&(GSession::Get()))
 	{
 		GCommunity* grp=GSession::Get()->GetCommunity(GroupId,false,false);

@@ -42,6 +42,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gbasicsession.h>
 
 
 //------------------------------------------------------------------------------
@@ -63,13 +64,8 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Indexer.
 */
-class GIndexer
+class GIndexer : virtual public GBasicSession
 {
-	/**
-	 * Session.
-	 */
-	GSession* Session;
-
 	/**
 	 * Root dir for the documents.
 	 */
@@ -99,9 +95,8 @@ public:
 
 	/**
 	* Construct the indexer.
-	* @param session         Session.
 	*/
-	GIndexer(GSession* session);
+	GIndexer(void);
 
 	/**
 	 * Apply the configuration.
@@ -109,7 +104,7 @@ public:
 	void Apply(void);
 
 	/**
-	* Clear the information of a given object type related to the indexation.
+	* Clear the information of a given object type related to the indexing.
 	* @param objtype         Type of the object.
 	*/
 	void Clear(tObjType objtype);
@@ -152,7 +147,7 @@ private:
 	 * @param min                      "Minimum" concept.
 	 * @param max                      "Maximum" concept.
 	 */
-	void BuildBuffer(size_t* buffer,GConcept* min,GConcept* max);
+	void BuildBuffer(size_t* buffer,size_t min,size_t max);
 
 public:
 
@@ -179,11 +174,11 @@ public:
 	* Here is an example of a search for all the documents containing the
 	* English word "connection":
 	* @code
-	* GConceptType* English(Session->GetConceptType("enStems",false));  // Get a pointer to the English dictionary.
+	* GConceptType* English(Session->GetConceptType("enTerms",false));  // Get a pointer to the English dictionary.
 	* RString Word(English->GetLang()->GetStemming("connection"));      // Get the stem to search for.
 	* GConcept* Concept(English->GetConcept(Word));                     // Get the corresponding concept.
 	* RVectorInt<size_t,false> Docs(20);                                // Vector that will contain the documents identifiers.
-	* Session->GetIndexer()->FindRefs(Concept,Docs,otDoc);              // Make the search.
+	* Session->FindRefs(Concept,Docs,otDoc);                            // Make the search.
 	* for(Docs.Start();!Docs.End().Docs.Next())
 	*    cout<<Docs()<<"\t";                                            // Print the identifiers.
 	* cout<<endl;

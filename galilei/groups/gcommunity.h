@@ -57,11 +57,11 @@ public:
 	/**
 	* Construct a group with a specific identifier.
 	* @param id              Identifier.
-	* @param com             Community.
+	* @param name            Name of the community.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GCommunity(size_t id,const R::RDate& u,const R::RDate& c);
+	GCommunity(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
 	 * Get the similarity measure that must be used when computing the

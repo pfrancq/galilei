@@ -83,11 +83,6 @@ class GXMLIndex : public GConcept
 public:
 
 	/**
-	* Constructor of a concept.
-	*/
-	GXMLIndex(void);
-
-	/**
 	 * Copy constructor.
 	 * @param index          Original index.
 	 */

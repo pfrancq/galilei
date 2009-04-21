@@ -122,11 +122,6 @@ protected:
 public:
 
 	/**
-	* Constructor of a concept.
-	*/
-	GConcept(void);
-
-	/**
 	 * Copy constructor.
 	 * @param concept        Original concept.
 	 */
@@ -166,37 +161,6 @@ public:
 	* @see R::RContainer
 	*/
 	int Compare(const R::RString& name) const;
-
-	/**
-	* Compare a concept with a given identifier.
-	* @param id              Identifier used.
-	* @see R::RContainer
-	*/
-	int Compare(size_t id) const;
-
-	/**
-	* Equal operator.
-	* @param c               Concept used.
-	*/
-	bool operator==(const GConcept& c) const;
-
-	/**
-	* Non-equal operator.
-	* @param c               Concept used.
-	*/
-	bool operator!=(const GConcept& c) const;
-
-	/**
-	* Less-than operator.
-	* @param c               Concept used.
-	*/
-	bool operator<(const GConcept& c) const;
-
-	/**
-	* Greater-than operator.
-	* @param c               Concept used.
-	*/
-	bool operator>(const GConcept& c) const;
 
 	/**
 	 * Do a deep copy of the current concept.
@@ -240,6 +204,8 @@ public:
 	 */
 	void SetName(const R::RString& name);
 
+private:
+
 	/**
 	* Increase the number of references on this concept for a given object
 	* type.
@@ -255,6 +221,15 @@ public:
 	size_t DecRef(tObjType ObjType);
 
 	/**
+	* Clear the information of the references of the concept linked to a
+	* specific object.
+	* @param ObjType        Type of the object.
+	*/
+	virtual void ClearRef(tObjType ObjType);
+
+public:
+
+	/**
 	* Get the number of references on this concept for a given object type.
 	* @param ObjType        Type of the reference.
 	* @returns size_t.
@@ -267,13 +242,6 @@ public:
 	* @param ObjType        Type of the reference.
 	 */
 	double GetIF(tObjType ObjType) const;
-
-	/**
-	* Clear the information of the references of the concept linked to a
-	* specific object.
-	* @param ObjType        Type of the object.
-	*/
-	virtual void ClearRef(tObjType ObjType);
 
 	/**
 	* Clear all the information of the concept.
@@ -294,6 +262,7 @@ public:
 	friend class GWeightInfo;
 	friend class GConceptType;
 	friend class GIndexer;
+	friend class GOntology;
 };
 
 

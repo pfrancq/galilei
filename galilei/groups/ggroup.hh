@@ -30,14 +30,14 @@
 
 //------------------------------------------------------------------------------
 //
-//  GGroup<cObj>
+//  GGroup<cObj,cGroup,tObjType>
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	GALILEI::GGroup<cObj,cGroup,type>::GGroup(size_t id,const R::RDate& u,const R::RDate& c)
-	: R::RContainer<cObj,false,true>(20,10), GALILEI::GWeightInfos(60), Id(id),
+	GALILEI::GGroup<cObj,cGroup,type>::GGroup(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c)
+	: R::RContainer<cObj,false,true>(20,10), GALILEI::GWeightInfos(60), Id(id), Name(name),
 	  Updated(u), Computed(c), Data(0)
 {
 	if(Id!=R::cNoRef)

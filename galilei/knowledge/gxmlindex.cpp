@@ -47,14 +47,6 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GXMLIndex::GXMLIndex(void)
-	: GConcept(), XMLTag(0), Lang(0), Universal(10), Stems(10)
-{
-	BuildDef();
-}
-
-
-//-----------------------------------------------------------------------------
 GXMLIndex::GXMLIndex(const GXMLIndex* index)
 	: GConcept(index), XMLTag(index->XMLTag), Lang(index->Lang), Universal(10), Stems(index->Stems)
 {
@@ -85,9 +77,8 @@ GXMLIndex::GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang)
 
 //-----------------------------------------------------------------------------
 GXMLIndex::GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang,RContainer<GConcept,false,true>& uni,RContainer<GConcept,false,true>& stems)
-	: GConcept(), XMLTag(tag), Lang(lang), Universal(uni), Stems(stems)
+	: GConcept(RString::Null,type), XMLTag(tag), Lang(lang), Universal(uni), Stems(stems)
 {
-	Type=type;
 	BuildName();
 }
 
@@ -109,7 +100,7 @@ void GXMLIndex::BuildDef(void)
 	// Find the tag id of the XML tag
 	GConceptType* Space=Session->GetConceptType("XMLStruct","XML Structure");
 	int Pos=Name.Find('#');
-	XMLTag=Space->GetConcept(atoi(Name.Mid(0,Pos)));
+	XMLTag=Session->GetConcept(atoi(Name.Mid(0,Pos)));
 
 	// Find the universal part -> numbers until string of 2
 	int Old=Pos+1;
@@ -129,23 +120,23 @@ void GXMLIndex::BuildDef(void)
 				break;
 		}
 		size_t id=atoi(Tag);
-		GConcept* ptr=Space->GetConcept(id);
+		GConcept* ptr=Session->GetConcept(id);
 		if(ptr)
 			Stems.InsertPtr(ptr);
 	}
 
 	// Find the language of the stem
-	Lang=Session->GetInsertConceptType(Tag+"Stems","");
+	Lang=Session->GetInsertConceptType(Tag+"Terms","");
 
 	// Add now each concept to list
 	for(Pos=Name.Find(':',Old);Pos!=-1;Pos=Name.Find(':',Old))
 	{
 		size_t id=atoi(Name.Mid(static_cast<size_t>(Old),Pos-Old));
-		Stems.InsertPtr(Lang->GetConcept(id));
+		Stems.InsertPtr(Session->GetConcept(id));
 		Old=Pos+1;
 	}
 	size_t id=atoi(Name.Mid(static_cast<size_t>(Old)));
-	GConcept* ptr=Lang->GetConcept(id);
+	GConcept* ptr=Session->GetConcept(id);
 	if(ptr)
 		Stems.InsertPtr(ptr);
 }

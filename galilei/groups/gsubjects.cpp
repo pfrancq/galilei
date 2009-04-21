@@ -791,7 +791,7 @@ void GSubjects::PerformDegradation(char what,int nb)
 					for(Docs.Start();--split;Docs.Next())
 						Dels.InsertPtr(Docs());
 					Docs=Dels;
-					GTopic* ptr2=new GTopic(cNoRef,RDate::GetToday(),RDate::Null);
+					GTopic* ptr2=new GTopic(cNoRef,"Split "+RString::Number(i),RDate::GetToday(),RDate::Null);
 					Data->Session->AssignId(ptr2);
 					Data->Session->InsertTopic(ptr2);
 					for(Docs.Start();!Docs.End();Docs.Next())
@@ -886,10 +886,10 @@ void GSubjects::StartSimulation(void)
 	{
 		Data->Session->GetStorage()->Clear(otUser);
 		Data->Session->GetStorage()->Clear(otProfile);
-		Data->Session->GetIndexer()->Clear(otProfile);
+		Data->Session->Clear(otProfile);
 		Data->Session->GetStorage()->Clear(otFdbk);
 		Data->Session->GetStorage()->Clear(otCommunity);
-		Data->Session->GetIndexer()->Clear(otCommunity);
+		Data->Session->Clear(otCommunity);
 		RCursor<GUser> Users(Data->Session->GetUsers());
 		for(Users.Start();!Users.End();Users.Next())
 			Data->Session->GetStorage()->SaveUser(Users());

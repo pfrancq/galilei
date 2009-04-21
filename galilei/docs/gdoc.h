@@ -41,7 +41,6 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
 #include <gweightinfos.h>
 
 
@@ -114,11 +113,6 @@ protected:
 	R::RContainer<GLink,true,true> LinkSet;
 
 	/**
-	* Id of the owner
-	*/
-	size_t OwnerId;
-
-	/**
 	* Identifiers of the corresponding topic.
 	*/
 	size_t GroupId;
@@ -154,9 +148,8 @@ public:
 	* @param a               Date of the last attached.
 	* @param nbrecs          Number of "VTD" records.
 	* @param nblcs           Number of location caches.
-	* @param ownerid         Owner Identifier of the document.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t nbrecs,size_t nblcs,size_t ownerid=0);
+	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t nbrecs,size_t nblcs);
 
 	/**
 	* Compare two documents by comparing their identifier.
@@ -194,11 +187,6 @@ public:
 	* Clear the information associated with the document.
 	*/
 	void ClearInfos(void);
-
-	/**
-	* @return True if a list is not empty.
-	*/
-	virtual bool IsDefined(void) const {return(Lang);}
 
 	/**
 	 * Clear the structure associated with the document.
@@ -282,11 +270,6 @@ public:
 	* @param id              Identifier.
 	*/
 	void SetId(size_t id);
-
-	/**
-	* Get the owner identifier of the document.
-	*/
-	size_t GetOwnerId(void) const {return(OwnerId);}
 
 	/**
 	* Get the date of the last attachment.
@@ -401,7 +384,6 @@ public:
 	 * Assign a structure to the current document.
 	 */
 	void AssignStruct() const;
-
 
 public:
 

@@ -84,7 +84,7 @@ void QGDocStruct::Set(GDoc* obj)
 	for(Recs.Start();!Recs.End();Recs.Next())
 	{
 		QString name;
-		name=ToQString(Session->GetStorage()->LoadConcept(Recs()->GetConcept()->GetId(),Recs()->GetConcept()->GetType()));
+		name=ToQString(Session->GetStorage()->LoadConcept(Recs()->GetConcept()->GetId()));
 		if(Recs()->GetType()==GVTDRec::Tag)
 			name="<"+name+">";
 		QString type=ToQString(Recs()->GetConcept()->GetType()->GetDescription());
@@ -97,6 +97,12 @@ void QGDocStruct::Set(GDoc* obj)
 		ptr=new QTreeWidgetItem(RecsList,QStringList()<<name<<type<<QString::number(Recs()->GetPos())<<QString::number(Recs()->GetDepth())<<Child);
 	}
 	obj->ReleaseStruct();
+
+	RecsList->resizeColumnToContents(0);
+	RecsList->resizeColumnToContents(1);
+	RecsList->resizeColumnToContents(2);
+	RecsList->resizeColumnToContents(3);
+	RecsList->resizeColumnToContents(4);
 }
 
 

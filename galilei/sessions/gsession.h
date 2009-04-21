@@ -32,8 +32,13 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GSessionH
-#define GSessionH
+#ifndef GSession_H
+#define GSession_H
+
+
+//------------------------------------------------------------------------------
+// include files for R Project
+#include <rconfig.h>
 
 
 //------------------------------------------------------------------------------
@@ -41,7 +46,8 @@
 #include <galilei.h>
 #include <genginedoc.h>
 #include <gsignalhandler.h>
-#include <rconfig.h>
+#include <gindexer.h>
+#include <gontology.h>
 
 
 //------------------------------------------------------------------------------
@@ -55,7 +61,7 @@ namespace GALILEI{
 * @author GALILEI Team
 * @short Generic Session.
 */
-class GSession : public R::RConfig
+class GSession : public R::RConfig, public GIndexer, public GOntology
 {
 	class Intern;
 
@@ -63,11 +69,6 @@ class GSession : public R::RConfig
 	* Internal data.
 	*/
 	Intern* Data;
-
-	/**
-	 * Indexer.
-	 */
-	GIndexer* Indexer;
 
 	/**
 	* Handlers of GALILEi signals.
@@ -121,27 +122,6 @@ public:
 	* @param str             String to analyze.
 	*/
 	R::RString AnalyzeString(const R::RString& str);
-
-	/**
-	* Verify if the results of the computations must be saved.
-	*/
-	bool MustSaveResults(void) const;
-
-	/**
-	* Set if the results of the computation must be saved or not.
-	* @param save            Save the objects after computation?
-	*/
-	void SetSaveResults(bool save=true);
-
-	/**
-	* @return Pointer to storage manager.
-	*/
-	GStorage* GetStorage(void) const;
-
-	/**
-	 * @return Pointer to the indexer.
-	 */
-	GIndexer* GetIndexer(void) const;
 
 	/**
 	* Get the subjects defined.
@@ -278,8 +258,9 @@ public:
 	/**
 	 * Create a new "blank" group for a given type of elements.
 	 * @param type            Type of the element.
+	 * @param name            Name of the group.
 	 */
-	void* NewGroup(tObjType type);
+	void* NewGroup(tObjType type,const R::RString& name);
 
 	/**
 	 * Insert a group of elements of a given type in the system.
@@ -294,63 +275,6 @@ public:
 	/** @name Knowledge Methods
 	*/
 	// @{
-
-	/**
-	* Get all concept types defined.
-	* @return RCursor over GConceptType.
-	*/
-	R::RCursor<GConceptType> GetConceptTypes(void) const;
-
-	/**
-	* Get the a pointer to a type of concept.
-	* @param id              Identifier of the type.
-	* @param null            If set to true, if the type does not exist,
-	*                        return 0, else an exception is generated.
-	* @return Pointer to a GConceptType
-	*/
-	GConceptType* GetConceptType(char id,bool null) const;
-
-	/**
-	* Get the a pointer to a type of concept.
-	* @param name            Name of the type.
-	* @param null            If set to true, if the type does not exist,
-	*                        return 0, else an exception is generated.
-	* @return Pointer to a GConceptType
-	*/
-	GConceptType* GetConceptType(const R::RString& name,bool null) const;
-
-	/**
-	* Get the a pointer to a type of concept. If the concept type doesn't
-	* exist, it is created.
-	* @param name            Name of the type.
-	* @param desc            Short description
-	* @return Pointer to a GConceptType
-	*/
-	GConceptType* GetInsertConceptType(const R::RString& name,const R::RString& desc);
-
-	/**
-	* Insert a new concept type.
-	* @param id              Identifier of the type.
-	* @param name            Name of the type.
-	* @param desc            Short description.
-	* @param refdocs         Number of documents referenced.
-	* @param refprofiles     Number of profiles referenced.
-	* @param refgroups       Number of groups referenced.
-	* @param reftopics       Number of topics referenced.
-	*/
-	void InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics);
-
-	/**
-	* Assign an identifier to a new concept type.
-	* @param type            Concept type.
-	*/
-	void AssignId(GConceptType* type);
-
-	/**
-	* Assign an identifier to a new concept.
-	* @param concept         Concept.
-	*/
-	void AssignId(GConcept* concept);
 
 	/**
 	* Get all relation types defined.
@@ -389,17 +313,11 @@ public:
 	* @param id              Identifier of the relation.
 	* @param name            Name of the relation.
 	* @param subjectid       Identifier of the subject.
-	* @param subjecttypeid   Type of the subject.
 	* @param type            Type of the relation.
 	* @param objectid        Identifier of the object.
-	* @param objecttypeid    Type of the object.
 	* @param weight          Weight of the relation.
 	*/
-	void InsertRelation(size_t id,const R::RString& name,
-	                    size_t subjectid,char subjecttypeid,
-	                    size_t type,
-	                    size_t objectid,char objecttypeid,
-	                    double weight);
+	void InsertRelation(size_t id,const R::RString& name,size_t subjectid,size_t type,size_t objectid,double weight);
 
 	/**
 	* Get a relation.

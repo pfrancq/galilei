@@ -17,7 +17,7 @@
     <widget class="QTreeWidget" name="Infos" >
      <property name="maximumSize" >
       <size>
-       <width>508</width>
+       <width>16777215</width>
        <height>16777215</height>
       </size>
      </property>

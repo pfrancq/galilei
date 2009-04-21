@@ -74,12 +74,12 @@ protected:
 	class SkipWord;
 
 	/**
-	* Dictionnaries of stopwords.
+	* Dictionaries of stopwords.
 	*/
 	GConceptType* Stop;
 
 	/**
-	* Dictionnaries of stems.
+	* Dictionaries of stems.
 	*/
 	GConceptType* Dict;
 
@@ -156,6 +156,12 @@ public:
 	void SkipSequence(const R::RString& word);
 
 	/**
+	 * Fill a container with all the stop words associated with the language.
+	 * @param stop           Container.
+	 */
+	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop)=0;
+
+	/**
 	* Function that computes the stem of a word. Of course, this method must be
 	* overloaded by the child classes.
 	* @param kwd            Word for which the stem must be computed.
@@ -197,7 +203,7 @@ public:
 	bool MustSkipSequence(const R::RChar* seq);
 
 	/**
-	* Destructor.
+	* Destruct.
 	*/
 	virtual ~GLang(void);
 };

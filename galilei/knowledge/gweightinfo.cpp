@@ -49,6 +49,13 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+GWeightInfo::GWeightInfo(GConcept* concept)
+  : Concept(concept), Weight(0.0)
+{
+}
+
+
+//------------------------------------------------------------------------------
 GWeightInfo::GWeightInfo(GConcept* concept,double w)
   : Concept(concept), Weight(w)
 {
@@ -65,27 +72,30 @@ GWeightInfo::GWeightInfo(const GWeightInfo& w)
 //------------------------------------------------------------------------------
 int GWeightInfo::Compare(const GWeightInfo& calc) const
 {
-	if(Concept->Type==calc.Concept->Type)
+	int i(CompareIds(Concept->GetType()->GetId(),calc.Concept->GetType()->GetId()));
+	if(!i)
 		return(CompareIds(Concept->Id,calc.Concept->Id));
-	return(Concept->Type->Id-calc.Concept->Type->Id);
+	return(i);
 }
 
 
 //------------------------------------------------------------------------------
 int GWeightInfo::Compare(const GConcept& concept) const
 {
-	if(Concept->Type==concept.Type)
+	int i(CompareIds(Concept->GetType()->GetId(),concept.GetType()->GetId()));
+	if(!i)
 		return(CompareIds(Concept->Id,concept.Id));
-	return(Concept->Type->Id-concept.Type->Id);
+	return(i);
 }
 
 
 //------------------------------------------------------------------------------
 int GWeightInfo::Compare(const GConcept* concept) const
 {
-	if(Concept->Type==concept->Type)
+	int i(CompareIds(Concept->GetType()->GetId(),concept->GetType()->GetId()));
+	if(!i)
 		return(CompareIds(Concept->Id,concept->Id));
-	return(Concept->Type->Id-concept->Type->Id);
+	return(i);
 }
 
 
@@ -138,48 +148,9 @@ GWeightInfo& GWeightInfo::operator/=(double w)
 
 
 //------------------------------------------------------------------------------
-bool GWeightInfo::operator==(const GWeightInfo &other) const
-{
-	if(Concept->Type==other.Concept->Type)
-		return(Concept->Id==other.Concept->Id);
-	return(false);
-}
-
-
-//------------------------------------------------------------------------------
-bool GWeightInfo::operator!=(const GWeightInfo &other) const
-{
-	if(Concept->Type==other.Concept->Type)
-		return(Concept->Id!=other.Concept->Id);
-	return(true);
-
-}
-
-
-//------------------------------------------------------------------------------
-bool GWeightInfo::operator<(const GWeightInfo &other) const
-{
-	if(Concept->Type==other.Concept->Type)
-		return(Concept->Id<other.Concept->Id);
-	return(Concept->Type->Id<other.Concept->Type->Id);
-
-}
-
-
-//------------------------------------------------------------------------------
-bool GWeightInfo::operator>(const GWeightInfo &other) const
-{
-	if(Concept->Type==other.Concept->Type)
-		return(Concept->Id>other.Concept->Id);
-	return(Concept->Type->Id>other.Concept->Type->Id);
-
-}
-
-
-//------------------------------------------------------------------------------
 double GWeightInfo::GetQueryWeight(tObjType ObjType,double max) const
 {
-	return((Weight/max)*log10(static_cast<double>(Concept->Type->GetRef(ObjType))/static_cast<double>(Concept->Type->GetRef(Concept->Id,ObjType))));
+	return((Weight/max)*Concept->GetIF(ObjType));
 }
 
 

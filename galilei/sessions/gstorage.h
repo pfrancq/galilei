@@ -344,10 +344,9 @@ public:
 	virtual void LoadRelations(void)=0;
 
 	/**
-	* Loading all concepts of given concept type.
-	* @param type            Type of concepts.
+	* Loading all concepts.
 	*/
-	virtual void LoadConcepts(GConceptType* type)=0;
+	virtual void LoadConcepts(void)=0;
 
 	/**
 	* Assign an identifier to a new concept of a given type.
@@ -364,9 +363,8 @@ public:
 	/**
 	* Load the name of specific concept.
 	* @param id              Identifier of the concept.
-	* @param type            Type of the concept.
 	*/
-	virtual R::RString LoadConcept(size_t id,GConceptType* type)=0;
+	virtual R::RString LoadConcept(size_t id)=0;
 
 	/**
 	* Load the identifier of a specific concept.
@@ -439,7 +437,7 @@ public:
 
 	/**
 	* Save a document where it is stored. This method is called after an
-	* analsyis of a document if the result has to be saved. This method must be
+	* analysis of a document if the result has to be saved. This method must be
 	* overloaded.
 	* @param doc             Document to save.
 	*/

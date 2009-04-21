@@ -1016,8 +1016,8 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 		// One profile must be created
 		nbminprof=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMin");
 		nbmaxprof=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMax");
-		GALILEIApp->GetGALILEIConfig()->Set("NbProfMin",1);
-		GALILEIApp->GetGALILEIConfig()->Set("NbProfMax",1);
+		GALILEIApp->GetGALILEIConfig()->Set("NbProfMin","1");
+		GALILEIApp->GetGALILEIConfig()->Set("NbProfMax","1");
 		GALILEIApp->Apply();
 
 		// Look if new topic or existing one

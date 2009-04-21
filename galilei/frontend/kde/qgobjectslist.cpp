@@ -149,28 +149,28 @@ public:
 	}
 
 	QGObject(QTreeWidget* parent,GTopic* topic)
-		: QTreeWidgetItem(parent, QStringList()<<"Topic ("+QString::number(topic->GetId())+")"<<QString::number(topic->GetNbObjs())), Type(otTopic)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString(topic->GetName())<<QString::number(topic->GetNbObjs())), Type(otTopic)
 	{
 		Obj.Topic=topic;
 		setIcon(0,KIconLoader::global()->loadIcon("window_new",KIconLoader::Small));
 	}
 
 	QGObject(QTreeWidget* parent,GTopic* topic,const QString& score)
-		: QTreeWidgetItem(parent, QStringList()<<"Topic ("+QString::number(topic->GetId())+")"<<score), Type(otTopic)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString(topic->GetName())<<score), Type(otTopic)
 	{
 		Obj.Topic=topic;
 		setIcon(0,KIconLoader::global()->loadIcon("window_new",KIconLoader::Small));
 	}
 
 	QGObject(QTreeWidget* parent,GCommunity* community)
-		: QTreeWidgetItem(parent, QStringList()<<"Community ("+QString::number(community->GetId())+")"<<QString::number(community->GetNbObjs())), Type(otCommunity)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString(community->GetName())<<QString::number(community->GetNbObjs())), Type(otCommunity)
 	{
 		Obj.Community=community;
 		setIcon(0,KIconLoader::global()->loadIcon("user-group-new",KIconLoader::Small));
 	}
 
 	QGObject(QTreeWidget* parent,GCommunity* community,const QString& score)
-		: QTreeWidgetItem(parent, QStringList()<<"Community ("+QString::number(community->GetId())+")"<<score), Type(otCommunity)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString(community->GetName())<<score), Type(otCommunity)
 	{
 		Obj.Community=community;
 		setIcon(0,KIconLoader::global()->loadIcon("group-user-new",KIconLoader::Small));
@@ -384,6 +384,9 @@ void QGObjectsList::Set(oType type)
 			std::cerr<<"QGObjectsList::Populate(oType): No populate"<<std::endl;
 			break;
 	}
+
+	List->resizeColumnToContents(0);
+	List->resizeColumnToContents(1);
 }
 
 
@@ -432,6 +435,9 @@ void QGObjectsList::Set(oType type,GDoc* doc)
 		if(!p) continue;
 		new QGObject(p,prof,fdbk->GetWhen());
 	}
+
+	List->resizeColumnToContents(0);
+	List->resizeColumnToContents(1);
 }
 
 
@@ -490,6 +496,8 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 		if(!p) continue;
 		new QGObject(p,doc,Docs()->GetWhen());
 	}
+	List->resizeColumnToContents(0);
+	List->resizeColumnToContents(1);
 }
 
 
@@ -503,6 +511,8 @@ void QGObjectsList::Set(oType type,GTopic* topic)
 	RCursor<GDoc> Cur(topic->GetObjs());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		new QGObject(List,Cur(),Cur()->GetAttached());
+	List->resizeColumnToContents(0);
+	List->resizeColumnToContents(1);
 }
 
 
@@ -516,6 +526,8 @@ void QGObjectsList::Set(oType type,GCommunity* community)
 	RCursor<GProfile> Cur(community->GetObjs());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		new QGObject(List,Cur(),Cur()->GetAttached());
+	List->resizeColumnToContents(0);
+	List->resizeColumnToContents(1);
 }
 
 
@@ -534,6 +546,8 @@ void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres)
 		QTreeWidgetItem* ptr=new QGObject(List,Cur());
 		new QTreeWidgetItem(ptr,QStringList()<<ToQString(Cur()->GetDescription())<<"");
 	}
+	List->resizeColumnToContents(0);
+	List->resizeColumnToContents(1);
 }
 
 

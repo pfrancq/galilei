@@ -99,11 +99,11 @@ catch(GException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
 	{                                                                          \
-		cerr<<msg<<" "<<e.GetMsg()<<endl;                                      \
-		rec->WriteStr(e.GetMsg());                                             \
+		cerr<<msg<<e.GetMsg()<<endl;                                           \
+		rec->WriteStr(msg+e.GetMsg());                                         \
 	}                                                                          \
 	else                                                                       \
-		throw GException(e.GetMsg());                                          \
+		throw GException(msg+e.GetMsg());                                      \
 }                                                                              \
 catch(RIOException& e)                                                         \
 {                                                                              \
@@ -119,28 +119,28 @@ catch(RException& e)                                                           \
 {                                                                              \
 	if(rec)                                                                    \
 	{                                                                          \
-		cerr<<msg<<" "<<e.GetMsg()<<endl;                                      \
-		rec->WriteStr(e.GetMsg());                                             \
+		cerr<<msg<<e.GetMsg()<<endl;                                           \
+		rec->WriteStr(msg+e.GetMsg());                                         \
 	}                                                                          \
 	else                                                                       \
-		throw GException(e.GetMsg());                                          \
+		throw GException(msg+e.GetMsg());                                      \
 }                                                                              \
 catch(exception& e)                                                            \
 {                                                                              \
 	if(rec)                                                                    \
 	{                                                                          \
-		cerr<<msg<<" "<<e.what()<<endl;                                        \
-		rec->WriteStr(e.what());                                               \
+		cerr<<msg<<e.what()<<endl;                                             \
+		rec->WriteStr(msg+e.what());                                           \
 	}                                                                          \
 	else                                                                       \
-		throw GException(msg+" "+e.what());                                    \
+		throw GException(msg+e.what());                                        \
 }                                                                              \
 catch(...)                                                                     \
 {                                                                              \
 	if(rec)                                                                    \
-		rec->WriteStr(msg+" Undefined error");                                 \
+		rec->WriteStr(msg+"Undefined error");                                  \
 	else                                                                       \
-		throw GException(msg+" Undefined error");                              \
+		throw GException(msg+"Undefined error");                               \
 }
 
 
@@ -177,10 +177,8 @@ public:
 	GSubjects* Subjects;                                              // Subjects.
 	int CurrentRandom;                                                // Current seek for this session.
 	R::RRandom* Random;                                               // Random number generator
-	GStorage* Storage;                                                // Storage manager
 	static GSession* Session;                                         // Static pointer to the session
 	static bool ExternBreak;                                          // Should the session stop as soon as possible?
-	bool SaveResults;                                                 // Must the results be saved after computed?
 	GSlot* Slot;                                                      // Slot for the session
 	RDebug* Debug;                                                    // Debug output for the session
 	RContainer<GDoc,true,true> Docs;                                  // Documents handled by the system.
@@ -201,8 +199,8 @@ public:
 	GFilterManager* FilterManager;                                    // Pointer to the filter manager.
 	bool ClusterSelectedDocs;                                         // Limit the clustering of the documents to the selected ones.
 
-	Intern(GStorage* str,size_t mdocs,size_t maxprof,size_t maxgroups,size_t d,size_t u,size_t p,size_t t,size_t c)
-		: Subjects(0), Random(0), Storage(str), SaveResults(true),
+	Intern(size_t mdocs,size_t maxprof,size_t maxgroups,size_t d,size_t u,size_t p,size_t t,size_t c)
+		: Subjects(0), Random(0),
 		  Slot(0), Docs(d+(d/2),d/2), DocsLoaded(false), DocsRefUrl(d+(d/2),d/2),
 		  Users(u,u/2), UsersLoaded(false), Profiles(p,p/2),
 		  Communities(c+(c/2),c/2), CommunitiesLoaded(false),
@@ -241,26 +239,15 @@ RContainer<GDebugObject,false,true> DebugObjs(100,100);                    // Ob
 
 //------------------------------------------------------------------------------
 GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofiles,size_t maxgroups)
-	: Data(0), Indexer(new GIndexer(this))
+	: GIndexer(), GOntology(Storage->GetNbSaved(otConcept)), Data(0)
 {
-	GFactoryStorage* fac=GALILEIApp->GetManager<GStorageManager>("Storage")->GetCurrentFactory();
-	if(!fac)
-		throw GException("No Storage");
-
-	// Delete the storage if necessary
-	if(fac->GetPlugin())
-		fac->Delete();
-
-	// Create the storage
-	fac->Create();
-
 	// Init Part
-	Data=new Intern(fac->GetPlugin(),maxdocs,maxprofiles,maxgroups,
-			fac->GetPlugin()->GetNbSaved(otDoc),
-			fac->GetPlugin()->GetNbSaved(otUser),
-			fac->GetPlugin()->GetNbSaved(otProfile),
-			fac->GetPlugin()->GetNbSaved(otTopic),
-			fac->GetPlugin()->GetNbSaved(otCommunity));
+	Data=new Intern(maxdocs,maxprofiles,maxgroups,
+			Storage->GetNbSaved(otDoc),
+			Storage->GetNbSaved(otUser),
+			Storage->GetNbSaved(otProfile),
+			Storage->GetNbSaved(otTopic),
+			Storage->GetNbSaved(otCommunity));
 
 	Data->Slot=slot;
 	Data->Debug=debug;
@@ -270,7 +257,7 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 		Intern::Session=this;
 
 	// Create the configurations
-	SetConfigInfos("lib/galilei/sessions",Data->Storage->GetWorld());
+	SetConfigInfos("lib/galilei/sessions",Storage->GetWorld());
 	InsertParam(new RParamValue("NbOK",10.0),"Subjects");
 	InsertParam(new RParamValue("RelOK",true),"Subjects");
 	InsertParam(new RParamValue("NbKO",10.0),"Subjects");
@@ -309,7 +296,7 @@ void GSession::Apply(void)
 	Data->ClusterSelectedDocs=GetBool("ClusterSelectedDocs","Subjects");
 	if(Data->Subjects)
 		Data->Subjects->Apply();
-	Indexer->Apply();
+	GIndexer::Apply();
 }
 
 
@@ -326,8 +313,8 @@ void GSession::ForceReCompute(tObjType type)
 			RCursor<GDoc> Docs(Data->Docs);
 			for(Docs.Start();!Docs.End();Docs.Next())
 				Docs()->ClearInfos();
-			if(Data->SaveResults)
-				Indexer->Clear(otDoc);
+			if(SaveResults)
+				GIndexer::Clear(otDoc);
 			Break=false;
 		}
 		case otTopic:
@@ -337,10 +324,10 @@ void GSession::ForceReCompute(tObjType type)
 			for(Types.Start();!Types.End();Types.Next())
 				Types()->ClearRef(otTopic);
 			Data->Topics.Clear();
-			if(Data->SaveResults)
+			if(SaveResults)
 			{
-				Indexer->Clear(otTopic);
-				Data->Storage->Clear(otTopic);
+				GIndexer::Clear(otTopic);
+				Storage->Clear(otTopic);
 			}
 			if(Break)
 				break;
@@ -352,10 +339,10 @@ void GSession::ForceReCompute(tObjType type)
 			for(Types.Start();!Types.End();Types.Next())
 				Types()->ClearRef(otProfile);
 			Data->Profiles.Clear();
-			if(Data->SaveResults)
+			if(SaveResults)
 			{
-				Indexer->Clear(otProfile);
-				Data->Storage->Clear(otProfile);
+				GIndexer::Clear(otProfile);
+				Storage->Clear(otProfile);
 			}
 		}
 		case otCommunity:
@@ -365,10 +352,10 @@ void GSession::ForceReCompute(tObjType type)
 			for(Types.Start();!Types.End();Types.Next())
 				Types()->ClearRef(otCommunity);
 			Data->Communities.Clear();
-			if(Data->SaveResults)
+			if(SaveResults)
 			{
-				Indexer->Clear(otCommunity);
-				Data->Storage->Clear(otCommunity);
+				GIndexer::Clear(otCommunity);
+				Storage->Clear(otCommunity);
 			}
 			break;
 		}
@@ -425,8 +412,8 @@ RString GSession::AnalyzeString(const RString& str)
 			{
 				if(Rem=="world")
 				{
-					if(Data->Storage)
-						Res+=Data->Storage->GetWorld();
+					if(Storage)
+						Res+=Storage->GetWorld();
 					else
 						Res+='%'+Rem+'%';
 				}
@@ -444,43 +431,13 @@ RString GSession::AnalyzeString(const RString& str)
 
 
 //------------------------------------------------------------------------------
-bool GSession::MustSaveResults(void) const
-{
-	return(Data->SaveResults);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::SetSaveResults(bool save)
-{
-	Data->SaveResults=save;
-}
-
-
-//------------------------------------------------------------------------------
-GStorage* GSession::GetStorage(void) const
-{
-	if(!Data->Storage)
-		throw GException("No storage");
-	return(Data->Storage);
-}
-
-
-//------------------------------------------------------------------------------
-GIndexer* GSession::GetIndexer(void) const
-{
-	return(Indexer);
-}
-
-
-//------------------------------------------------------------------------------
 GSubjects* GSession::GetSubjects(bool load) const
 {
 	if((!Data->Subjects)&&(load))
 	{
 		Data->Subjects=new GSubjects(const_cast<GSession*>(this));
-		if(Data->Storage)
-			const_cast<GSession*>(this)->Data->Storage->LoadSubjects();
+		if(Storage)
+			const_cast<GSession*>(this)->Storage->LoadSubjects();
 		Data->Subjects->Apply();
 	}
 	return(Data->Subjects);
@@ -681,14 +638,14 @@ void GSession::ClearGroups(tObjType type)
 
 
 //------------------------------------------------------------------------------
-void* GSession::NewGroup(tObjType type)
+void* GSession::NewGroup(tObjType type,const RString& name)
 {
 	switch(type)
 	{
 		case otTopic:
-			return(new GTopic(cNoRef,RDate(""),RDate("")));
+			return(new GTopic(cNoRef,name,RDate(""),RDate("")));
 		case otCommunity:
-			return(new GCommunity(cNoRef,RDate(""),RDate("")));
+			return(new GCommunity(cNoRef,name,RDate(""),RDate("")));
 		default:
 			throw GException("GSession::NewGroup : Type "+GetObjType(type)+" is not handled");
 	}
@@ -718,99 +675,6 @@ void GSession::InsertGroup(void* ptr,tObjType type)
 // GSession::Knowledge
 //
 //------------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-RCursor<GConceptType> GSession::GetConceptTypes(void) const
-{
-	return(RCursor<GConceptType>(Data->ConceptTypes));
-}
-
-
-//-----------------------------------------------------------------------------
-GConceptType* GSession::GetConceptType(char id,bool null) const
-{
-	GConceptType* type(0);
-	try
-	{
-		type=Data->ConceptTypes[id];
-		if(type)
-			type->Load();
-	}
-	catch(...)
-	{
-	}
-	if((!type)&&(!null))
-		throw GException("GSession::GetConceptType(size_t,bool): Unknown concept type "+RString::Number(id));
-	return(type);
-}
-
-
-//-----------------------------------------------------------------------------
-GConceptType* GSession::GetConceptType(const RString& name,bool null) const
-{
-	GConceptType* type(0);
-	try
-	{
-		type=Data->ConceptTypes.GetPtr(name,false);
-		if(type)
-			type->Load();
-	}
-	catch(...)
-	{
-	}
-	if((!type)&&(!null))
-		throw GException("GSession::GetConceptType(const RString&,bool); Unknown concept type '"+name+"'");
-	return(type);
-}
-
-
-//-----------------------------------------------------------------------------
-GConceptType* GSession::GetInsertConceptType(const RString& name,const RString& desc)
-{
-	GConceptType* type(0);
-	try
-	{
-		type=Data->ConceptTypes.GetPtr(name,false);
-		if(type)
-			type->Load();
-	}
-	catch(...)
-	{
-	}
-	if(!type)
-		Data->ConceptTypes.InsertPtr(type=new GConceptType(0,this,name,desc,0));
-	return(type);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics)
-{
-	RString code(name.Mid(0,2));
-	GLang* Lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(code,false);
-	if(!Lang)
-		GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn("00");
-	size_t s=26;
-	size_t s2=5000;
-	GConceptType* type=new GConceptType(id,this,name,desc,Lang,s,s2);
-	type->SetReferences(refdocs,refprofiles,refgroups,reftopics);
-	Data->ConceptTypes.InsertPtrAt(type,id);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignId(GConceptType* type)
-{
-	Data->Storage->AssignId(type);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignId(GConcept* concept)
-{
-	Data->Storage->AssignId(concept);
-}
-
 
 //-----------------------------------------------------------------------------
 RCursor<GRelationType> GSession::GetRelationTypes(void) const
@@ -855,23 +719,17 @@ void GSession::InsertRelationType(size_t id,const R::RString& name,const R::RStr
 
 
 //-----------------------------------------------------------------------------
-void GSession::InsertRelation(size_t id,const R::RString& name,size_t subjectid,char subjecttypeid,size_t type,size_t objectid,char objecttypeid,double weight)
+void GSession::InsertRelation(size_t id,const R::RString& name,size_t subjectid,size_t type,size_t objectid,double weight)
 {
 	// Get the concept related to the subject
-	GConceptType* ctype=GetConceptType(subjecttypeid,false);
-	if(!ctype)
-		throw GException("Object "+RString::Number(subjectid)+" of type "+RString::Number(subjecttypeid)+" does not exist");
-	GConcept* subject=ctype->GetConcept(subjectid);
+	GConcept* subject=GetConcept(subjectid);
 	if(!subject)
-		throw GException("Object "+RString::Number(subjectid)+" of type "+RString::Number(subjecttypeid)+" does not exist");
+		throw GException("Object "+RString::Number(subjectid)+" does not exist");
 
 	// Get the concept related to the object
-	ctype=GetConceptType(objecttypeid,false);
-	if(!ctype)
-		throw GException("Object "+RString::Number(objectid)+" of type "+RString::Number(objecttypeid)+" does not exist");
-	GConcept* object=ctype->GetConcept(objectid);
+	GConcept* object=GetConcept(objectid);
 	if(!object)
-		throw GException("Object "+RString::Number(objectid)+" of type "+RString::Number(objecttypeid)+" does not exist");
+		throw GException("Object "+RString::Number(objectid)+" does not exist");
 
 	GRelationType* relationttype=Data->RelationTypes.GetPtr(type);
 	if(!relationttype)
@@ -898,7 +756,7 @@ GRelation* GSession::GetRelation(size_t id,size_t type,bool null)
 
 
 //------------------------------------------------------------------------------
-void GSession::GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* subject,size_t type,GConcept* object,bool sym)
+void GSession::GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* /*subject*/,size_t type,GConcept* /*object*/,bool /*sym*/)
 {
 	RCursor<GRelationType> Types(Data->RelationTypes);
 	for(Types.Start();!Types.End();Types.Next())
@@ -908,10 +766,10 @@ void GSession::GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* 
 		RCursor<GRelation> Rel(Types()->GetRelations());
 		for(Rel.Start();!Rel.End();Rel.Next())
 		{
-			if((subject)&&(((*subject)!=(*Rel()->GetSubject()))||(sym&&((*subject)!=(*Rel()->GetObject())))))
+/*			if((subject)&&(((*subject)!=(*Rel()->GetSubject()))||(sym&&((*subject)!=(*Rel()->GetObject())))))
 				continue;
 			if((object)&&(((*object)!=(*Rel()->GetObject()))||(sym&&((*object)!=(*Rel()->GetSubject())))))
-				continue;
+				continue;*/
 			rel.InsertPtr(Rel());
 		}
 	}
@@ -930,7 +788,7 @@ void GSession::LoadDocs(void)
 {
 	if(Data->DocsLoaded)
 		return;
-	Data->Storage->LoadDocs();
+	Storage->LoadDocs();
 	Data->DocsLoaded=true;
 }
 
@@ -984,14 +842,14 @@ GDoc* GSession::GetDoc(size_t id,bool load,bool null) const
 		return(d);
 	if(!load)
 		return(0);
-	if(Data->Storage->IsAllInMemory())
+	if(Storage->IsAllInMemory())
 	{
 		if(null)
 			return(0);
 		else
 			throw GException("Unknown document "+RString::Number(id));
 	}
-	d=Data->Storage->LoadDoc(id);
+	d=Storage->LoadDoc(id);
 	if(!d)
 	{
 		if(null)
@@ -1025,9 +883,9 @@ GDoc* GSession::GetDoc(const char* url,bool,bool null) const
 void GSession::AssignId(GDoc* doc)
 {
 	// If all documents are not in memory -> use the database
-	if(!Data->Storage->IsAllInMemory())
+	if(!Storage->IsAllInMemory())
 	{
-		Data->Storage->AssignId(doc);
+		Storage->AssignId(doc);
 		return;
 	}
 
@@ -1060,8 +918,8 @@ void GSession::InsertDoc(GDoc* d)
 	if(NewOne)
 	{
 		// If new one and all documents are in memory -> store it in the database
-		if(Data->Storage->IsAllInMemory())
-			Data->Storage->SaveDoc(d);
+		if(Storage->IsAllInMemory())
+			Storage->SaveDoc(d);
 		Event(d,eObjCreated);
 	}
 }
@@ -1081,7 +939,7 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 	// Opens and appends the Log File for all errors occurring in the filter or analyze phase.
 	if(rec)
 	{
-		RString err("Documents Filtering and Analysis on Data Set : "+Data->Storage->GetFactory()->GetName()+ " on : " +RString::Number(RDate::GetToday().GetDay())+"/"+ RString::Number(RDate::GetToday().GetMonth())+"/"+RString::Number(RDate::GetToday().GetYear()));
+		RString err("Documents Filtering and Analysis on Data Set : "+Storage->GetFactory()->GetName()+ " on : " +RString::Number(RDate::GetToday().GetDay())+"/"+ RString::Number(RDate::GetToday().GetMonth())+"/"+RString::Number(RDate::GetToday().GetYear()));
 		rec->WriteStr("Analyze documents");
 	}
 
@@ -1100,7 +958,7 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 		}
 		// If a log file specified -> write to it and it is OK
 		// If no log file specified -> Propagate error
-		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()()+"("+RString::Number(Docs()->GetId())+"):")
+		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()()+"("+RString::Number(Docs()->GetId())+"): ")
 	}
 
 	// Launch post doc methods
@@ -1129,7 +987,7 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 
 	RIO::RSmartTempFile docxml;
 	bool Native;
-	bool Save=(Data->SaveResults&&(doc->GetId()!=cNoRef));
+	bool Save=(SaveResults&&(doc->GetId()!=cNoRef));
 	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml,Native);
 	if(uri().IsEmpty())
 		return;
@@ -1138,20 +996,20 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	bool DelRef(doc->IsDefined());
 	method->Analyze(doc,uri,Native);
 
-	// Save the description and the structure
+	// Save the binary files
 	if(Save)
 	{
-		Indexer->SaveInfos(method->Infos,otDoc,doc->GetId());
-		Indexer->SaveStruct(method->Struct,doc);
+		SaveInfos(method->Infos,otDoc,doc->GetId());
+		SaveStruct(method->Struct,doc);
 	}
 
 	// Set the information to the document
 	doc->Update(method->Lang,method->Infos,method->Struct,ram||(!Save),DelRef);
 
-	// Save if necessary
+	// Save the description and the structure
 	if(Save)
 	{
-		Data->Storage->SaveDoc(doc);
+		Storage->SaveDoc(doc);
 		if(ram)
 			doc->SetState(osSaved);
 	}
@@ -1214,7 +1072,7 @@ void GSession::LoadUsers(void)
 {
 	if(Data->UsersLoaded)
 		return;
-	Data->Storage->LoadUsers();
+	Storage->LoadUsers();
 	Data->UsersLoaded=true;
 }
 
@@ -1245,14 +1103,14 @@ GUser* GSession::GetUser(size_t id,bool load,bool null) const
 		return(u);
 	if(!load)
 		return(0);
-	if(Data->Storage->IsAllInMemory())
+	if(Storage->IsAllInMemory())
 	{
 		if(null)
 			return(0);
 		else
 			throw GException("Unknown user "+RString::Number(id));
 	}
-	u=Data->Storage->LoadUser(id);
+	u=Storage->LoadUser(id);
 	if(!u)
 	{
 		if(null)
@@ -1275,14 +1133,14 @@ GUser* GSession::GetUser(const RString name,bool load,bool null) const
 		return(u);
 	if(!load)
 		return(0);
-	if(Data->Storage->IsAllInMemory())
+	if(Storage->IsAllInMemory())
 	{
 		if(null)
 			return(0);
 		else
 			throw GException("Unknown user "+name);
 	}
-	u=Data->Storage->LoadUser(name);
+	u=Storage->LoadUser(name);
 	if(!u)
 	{
 		if(null)
@@ -1299,9 +1157,9 @@ GUser* GSession::GetUser(const RString name,bool load,bool null) const
 void GSession::AssignId(GUser* user)
 {
 	// If all users are not in memory -> use the database
-	if(!Data->Storage->IsAllInMemory())
+	if(!Storage->IsAllInMemory())
 	{
-		Data->Storage->AssignId(user);
+		Storage->AssignId(user);
 		return;
 	}
 
@@ -1327,8 +1185,8 @@ void GSession::InsertUser(GUser* user)
 	if(NewOne)
 	{
 		// If new one and all users are in memory -> store it in the database
-		if(Data->Storage->IsAllInMemory())
-			Data->Storage->SaveUser(user);
+		if(Storage->IsAllInMemory())
+			Storage->SaveUser(user);
 		if(Data->Slot)
 			Data->Slot->Alert("User "+user->GetName()+" created ("+RString::Number(user->GetId())+")");
 		Event(user,eObjCreated);
@@ -1371,14 +1229,14 @@ GProfile* GSession::GetProfile(size_t id,bool load,bool null) const
 		return(p);
 	if(!load)
 		return(0);
-	if(Data->Storage->IsAllInMemory())
+	if(Storage->IsAllInMemory())
 	{
 		if(null)
 			return(0);
 		else
 			throw GException("Unknown profile "+RString::Number(id)+" in memory");
 	}
-	p=Data->Storage->LoadProfile(id);
+	p=Storage->LoadProfile(id);
 	if(!p)
 	{
 		if(null)
@@ -1395,9 +1253,9 @@ GProfile* GSession::GetProfile(size_t id,bool load,bool null) const
 void GSession::AssignId(GProfile* p)
 {
 	// If all profiles are not in memory -> use the database
-	if(!Data->Storage->IsAllInMemory())
+	if(!Storage->IsAllInMemory())
 	{
-		Data->Storage->AssignId(p);
+		Storage->AssignId(p);
 		return;
 	}
 
@@ -1423,8 +1281,8 @@ void GSession::InsertProfile(GProfile* p)
 	if(NewOne)
 	{
 		// If new one and all profiles are in memory -> store it in the database
-		if(Data->Storage->IsAllInMemory())
-			Data->Storage->SaveProfile(p);
+		if(Storage->IsAllInMemory())
+			Storage->SaveProfile(p);
 		if(Data->Slot)
 			Data->Slot->Alert("Profile "+p->GetName()+" for user "+p->GetUser()->GetName()+" created ("+RString::Number(p->GetId())+")");
 		Event(p,eObjCreated);
@@ -1487,8 +1345,8 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 	if(!profile->MustCompute()) return;
 	Profiling->Compute(profile);
 	if(Intern::ExternBreak) return;
-	if(Data->SaveResults&&(profile->GetId()!=cNoRef))
-		Data->Storage->SaveProfile(profile);
+	if(SaveResults&&(profile->GetId()!=cNoRef))
+		Storage->SaveProfile(profile);
 }
 
 
@@ -1530,8 +1388,8 @@ void GSession::UpdateProfiles(size_t docid)
 	}
 
 	// Use database
-	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
-		Data->Storage->UpdateProfiles(docid);
+	if((!Storage->IsAllInMemory())||(SaveResults))
+		Storage->UpdateProfiles(docid);
 }
 
 
@@ -1544,8 +1402,8 @@ void GSession::InsertFdbk(size_t profid,size_t docid,tDocAssessment assess,R::RD
 	GDoc* doc=GetDoc(docid,false);
 	if(doc)
 		doc->InsertFdbk(profid);
-	if(newone&&((!Data->Storage->IsAllInMemory())||(Data->SaveResults)))
-		Data->Storage->AddFdbk(profid,docid,assess,date,computed);
+	if(newone&&((!Storage->IsAllInMemory())||(SaveResults)))
+		Storage->AddFdbk(profid,docid,assess,date,computed);
 }
 
 
@@ -1577,7 +1435,7 @@ void GSession::LoadCommunities(void)
 {
 	if(Data->CommunitiesLoaded)
 		return;
-	Data->Storage->LoadCommunities();
+	Storage->LoadCommunities();
 	Data->CommunitiesLoaded=true;
 }
 
@@ -1612,14 +1470,14 @@ GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 
 	if(!load)
 		return(0);
-	if(Data->Storage->IsAllInMemory())
+	if(Storage->IsAllInMemory())
 	{
 		if(null)
 			return(0);
 		else
 			throw GException("Unknown community "+RString::Number(id));
 	}
-	grp=Data->Storage->LoadCommunity(id);
+	grp=Storage->LoadCommunity(id);
 	if(!grp)
 	{
 		if(null)
@@ -1636,9 +1494,9 @@ GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 void GSession::AssignId(GCommunity* com)
 {
 	// If all groups are not in memory -> use the database
-	if(!Data->Storage->IsAllInMemory())
+	if(!Storage->IsAllInMemory())
 	{
-		Data->Storage->AssignId(com);
+		Storage->AssignId(com);
 		return;
 	}
 
@@ -1681,7 +1539,7 @@ void GSession::GroupProfiles(GSlot* rec)
 		throw GException("No profiles grouping method chosen.");
 
     // Group the profiles
-	Grouping->Grouping(rec,Data->SaveResults);
+	Grouping->Grouping(rec,SaveResults);
 	DoPostCommunity(rec);
 }
 
@@ -1724,7 +1582,7 @@ template<class cGroup,class cObj,class cCalc>
 			continue;
 
 		// Create a new group in groups and associated with the current groups
-		grp=static_cast<cGroup*>(NewGroup(grouptype));
+		grp=static_cast<cGroup*>(NewGroup(grouptype,Grps()->GetName()));
 		AssignId(grp);
 		InsertGroup(grp,grouptype);
 		Grps()->AssignIdealGroup(grp);
@@ -1749,9 +1607,9 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 		case otCommunity:
 		{
 			CopyIdealGroups<GCommunity,GProfile,GCommunityCalc>(otProfile,otCommunity,GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod());
-			if(Data->SaveResults)
+			if(SaveResults)
 			{
-				Data->Storage->SaveCommunities();
+				Storage->SaveCommunities();
 				RCursor<GCommunity> Groups(Data->Communities);
 				for(Groups.Start();!Groups.End();Groups.Next())
 					Groups()->SetState(osSaved);
@@ -1761,9 +1619,9 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 		case otTopic:
 		{
 			CopyIdealGroups<GTopic,GDoc,GTopicCalc>(otDoc,otTopic,GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod());
-			if(Data->SaveResults)
+			if(SaveResults)
 			{
-				Data->Storage->SaveTopics();
+				Storage->SaveTopics();
 				RCursor<GTopic> Topics(Data->Topics);
 				for(Topics.Start();!Topics.End();Topics.Next())
 					Topics()->SetState(osSaved);
@@ -1788,8 +1646,8 @@ void GSession::UpdateCommunity(GProfile* prof)
 	}
 
 	// Use database
-	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
-		Data->Storage->UpdateCommunities(prof->GetId());
+	if((!Storage->IsAllInMemory())||(SaveResults))
+		Storage->UpdateCommunities(prof->GetId());
 }
 
 
@@ -1813,7 +1671,7 @@ void GSession::LoadTopics(void)
 {
 	if(Data->TopicsLoaded)
 		return;
-	Data->Storage->LoadTopics();
+	Storage->LoadTopics();
 	Data->TopicsLoaded=true;
 }
 
@@ -1870,14 +1728,14 @@ GTopic* GSession::GetTopic(size_t id,bool load,bool null) const
 
 	if(!load)
 		return(0);
-	if(Data->Storage->IsAllInMemory())
+	if(Storage->IsAllInMemory())
 	{
 		if(null)
 			return(0);
 		else
 			throw GException("Unknown topic "+RString::Number(id));
 	}
-	top=Data->Storage->LoadTopic(id);
+	top=Storage->LoadTopic(id);
 	if(!top)
 	{
 		if(null)
@@ -1894,9 +1752,9 @@ GTopic* GSession::GetTopic(size_t id,bool load,bool null) const
 void GSession::AssignId(GTopic* top)
 {
 	// If all groups are not in memory -> use the database
-	if(!Data->Storage->IsAllInMemory())
+	if(!Storage->IsAllInMemory())
 	{
-		Data->Storage->AssignId(top);
+		Storage->AssignId(top);
 		return;
 	}
 
@@ -1939,7 +1797,7 @@ void GSession::GroupDocs(GSlot* rec)
 		throw GException("No documents grouping method chosen.");
 
     // Group the profiles
-	Grouping->Grouping(rec,Data->SaveResults,Data->ClusterSelectedDocs);
+	Grouping->Grouping(rec,SaveResults,Data->ClusterSelectedDocs);
 	DoPostTopic(rec);
 }
 
@@ -1972,8 +1830,8 @@ void GSession::UpdateTopic(GDoc* doc)
 	}
 
 	// Use database
-	if((!Data->Storage->IsAllInMemory())||(Data->SaveResults))
-		Data->Storage->UpdateTopics(doc->GetId());
+	if((!Storage->IsAllInMemory())||(SaveResults))
+		Storage->UpdateTopics(doc->GetId());
 }
 
 
@@ -2035,10 +1893,5 @@ GSession::~GSession(void)
 	// Save the configurations
 	Save();
 
-	// Delete the storage
-	Data->Storage->GetFactory()->Delete();
-
 	delete Data;
-
-	delete Indexer;
 }

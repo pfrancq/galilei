@@ -407,7 +407,7 @@ void GMatrixMeasure::OpenFiles(void)
 	RDir::CreateDirIfNecessary(place,true);
 	place+=RFile::GetDirSeparator()+GetFilesName()+".";
 
-	cout<<"Open "<<place<<endl;
+	//cout<<"Open "<<place<<endl;
 	Main=new RBinaryFile(place+"main");
 	Main->Open(RIO::ReadWrite);
 	if(!Main->End())

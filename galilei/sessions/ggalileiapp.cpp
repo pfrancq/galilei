@@ -216,12 +216,12 @@ GSession* GGALILEIApp::CreateSession(void)
 	// Init Session
 	Session=new GSession(Log,Debug);
 	Session->Apply();
-	GStorageManager* Mng=GetManager<GStorageManager>("Storage");
-	GStorage* fac=Mng->GetCurrentPlugIn();
-	fac->Connect(Session);
-	fac->LoadConceptTypes();
-	fac->LoadRelationTypes();
-//	fac->GetPlugin()->LoadRelations();
+	GStorageManager* Mng(Session->GetStorage()->GetFactory()->GetMng());
+	Session->GetStorage()->Connect(Session);
+	Session->GetStorage()->LoadConceptTypes();
+	Session->GetStorage()->LoadConcepts();
+	Session->GetStorage()->LoadRelationTypes();
+	Session->GetStorage()->LoadRelations();
 	WriteLog("Session created");
 
 	// Connect plugins

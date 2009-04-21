@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GTopic.cpp
+	GBasicSession.h
 
-	Topic - Implementation.
+	Basic Session - Header.
 
 	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
 
@@ -28,33 +28,73 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdlib.h>
+#ifndef GBasicSession_H
+#define GBasicSession_H
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gtopic.h>
-#include <gdoc.h>
-using namespace GALILEI;
-using namespace R;
-
+#include <galilei.h>
 
 
 //------------------------------------------------------------------------------
-//
-//  GTopic
-//
+namespace GALILEI{
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
-GTopic::GTopic(size_t id,const RString& name,const RDate& u,const RDate& c)
-	: GGroup<GDoc,GTopic,otTopic>(id,name,u,c)
+/**
+* The GBasicSession provides the base class for every class that should given
+* GSession. Each intermediate class should inherit it virtually.
+* @author Pascal Francq
+* @short Basic Session.
+*/
+class GBasicSession
 {
-}
+protected:
+
+	/**
+	 * Storage manager.
+	 */
+	GStorage* Storage;
+
+	/**
+	 *  Must the results be saved after computed ?
+	 */
+	bool SaveResults;
+
+public:
+
+	/**
+	 * Construct the basic session. In practice, the storage is created.
+	 */
+	GBasicSession(void);
+
+	/**
+	* @return Pointer to storage manager.
+	*/
+	GStorage* GetStorage(void) const;
+
+	/**
+	* Verify if the results of the computations must be saved.
+	*/
+	bool MustSaveResults(void) const {return(SaveResults);}
+
+	/**
+	* Set if the results of the computation must be saved or not.
+	* @param save            Save the objects after computation?
+	*/
+	void SetSaveResults(bool save=true) {SaveResults=save;}
+
+	/**
+	 * Destruct the basic session. In practice, the storage is deleted.
+	 */
+	virtual ~GBasicSession(void);
+};
+
+
+}  //-------- End of namespace GALILEI -----------------------------------------
 
 
 //------------------------------------------------------------------------------
-GTopic::~GTopic(void)
-{
-}
+#endif

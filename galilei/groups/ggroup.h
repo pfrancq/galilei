@@ -53,6 +53,8 @@ namespace GALILEI{
 /**
 * This class represent a generic group of objects represented by GWeightInfos.
 * @param cObj                Object contained.
+* @param cGroup              Group.
+* @param type                Type of the object.
 * @author Pascal Francq
 * @short Generic Group.
 */
@@ -65,6 +67,11 @@ protected:
 	* Identifier of the group.
 	*/
 	size_t Id;
+
+	/**
+	 * Name of the group.
+	 */
+	R::RString Name;
 
 	/**
 	* Date of the update (objects have changed).
@@ -86,10 +93,11 @@ public:
 	/**
 	* Construct a group with a specific identifier.
 	* @param id              Identifier.
+	* @param name            Name of the group.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GGroup(size_t id,const R::RDate& u,const R::RDate& c);
+	GGroup(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
 	* Compare two groups by comparing their identifier.
@@ -137,6 +145,11 @@ public:
 	* @param id              Identifier.
 	*/
 	void SetId(size_t id);
+
+	/**
+	 * @return Name of the group.
+	 */
+	R::RString GetName(void) const {return(Name);}
 
 	/**
 	* Load information from the current storage.

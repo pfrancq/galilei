@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GTopic.cpp
+	GBasicSession.h
 
-	Topic - Implementation.
+	Basic Session - Implementation.
 
 	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
 
@@ -28,33 +28,50 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdlib.h>
-
-
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gtopic.h>
-#include <gdoc.h>
+// include files GALILEI
+#include <gbasicsession.h>
+#include <ggalileiapp.h>
+#include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-//  GTopic
+// class GBasicSession
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GTopic::GTopic(size_t id,const RString& name,const RDate& u,const RDate& c)
-	: GGroup<GDoc,GTopic,otTopic>(id,name,u,c)
+GBasicSession::GBasicSession(void)
+	: Storage(0), SaveResults(true)
 {
+	GFactoryStorage* fac(GALILEIApp->GetManager<GStorageManager>("Storage")->GetCurrentFactory());
+	if(!fac)
+		throw GException("No Storage");
+
+	// Delete the storage if necessary and re-create it
+	if(fac->GetPlugin())
+		fac->Delete();
+	fac->Create();
+	Storage=fac->GetPlugin();
 }
 
 
 //------------------------------------------------------------------------------
-GTopic::~GTopic(void)
+GStorage* GBasicSession::GetStorage(void) const
 {
+	if(!Storage)
+		throw GException("No storage");
+	return(Storage);
+}
+
+
+//------------------------------------------------------------------------------
+GBasicSession::~GBasicSession(void)
+{
+	// Delete the storage
+	Storage->GetFactory()->Delete();
 }
