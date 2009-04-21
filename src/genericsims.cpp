@@ -90,7 +90,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 			if(Obj1()->GetWeight()>max1)
 				max1=Obj1()->GetWeight();
 		#endif
-		while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())<(*Obj1())))
+		while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&(Obj2()->GetConcept()->GetId()<Obj1()->GetConcept()->GetId()))
 		{
 			w2=Obj2()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
 			#if NormalizeVector
@@ -100,7 +100,7 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 			norm2+=w2*w2;
 			Obj2.Next();
 		}
-		if((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&((*Obj2())==(*Obj1())))
+		if((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&(Obj2()->GetConcept()->GetId()==Obj1()->GetConcept()->GetId()))
 		{
 			// Obj2()==Obj1() -> iff2=iff1
 			w2=Obj2()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
@@ -288,8 +288,8 @@ bool GGenericSims::ComputeSimSpace(void)
 	// if one vector is not defined -> the similarity must be null
 	if((!vec1->GetNb())||(!vec2->GetNb()))
 		return(false);
-	RCursor<GWeightInfo> ptr(*vec1);
-	RCursor<GWeightInfo> ptr2(*vec2);
+	RCursor<GWeightInfo> ptr(vec1->GetInfos());
+	RCursor<GWeightInfo> ptr2(vec2->GetInfos());
 	RCursor<GSimType> Cur(Types);
 	double Ok(false);
 	size_t TotalLangsComp(0);
@@ -440,7 +440,7 @@ double GGenericSims::SimilarityLang(void)
 	// Suppose the two vectors have only a language in common.
 
 	// Parse vec1 until a language is found
-	RCursor<GWeightInfo> ptr(*vec1);
+	RCursor<GWeightInfo> ptr(vec1->GetInfos());
 	ptr.Start();
 	while((!ptr.End())&&(!ptr()->GetConcept()->GetType()->GetLang()))
 		ptr.Next();
@@ -449,7 +449,7 @@ double GGenericSims::SimilarityLang(void)
 	GConceptType* Lang=(ptr()->GetConcept()->GetType());
 
 	// Parse vec2 until first language is found
-	RCursor<GWeightInfo> ptr2(*vec2);
+	RCursor<GWeightInfo> ptr2(vec2->GetInfos());
 	ptr2.Start();
 	while((!ptr2.End())&&(!ptr2()->GetConcept()->GetType()->GetLang()))
 		ptr2.Next();
