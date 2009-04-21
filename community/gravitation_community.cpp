@@ -61,7 +61,7 @@ using namespace std;
 GCommunityCalcGravitation::GCommunityCalcGravitation(GFactoryCommunityCalc* fac)
 	: GCommunityCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
-	Order=new GWeightInfo*[MaxOrderSize];
+	Order=new const GWeightInfo*[MaxOrderSize];
 }
 
 
@@ -91,12 +91,12 @@ void GCommunityCalcGravitation::Compute(GCommunity* grp)
 {
 	size_t i;
 	GWeightInfo* ins;
-	GWeightInfo** w;
+	const GWeightInfo** w;
 
 	// Clear the Vector.
 	Vector.Clear();
 	// Clear Infos
-	// Rem: Since Infos is not responsible for allocation/desallocation
+	// Rem: Since Infos is not responsible for allocation/deallocation
 	//      -> parse it to prevent memory leaks
 	RCursor<GWeightInfo> Cur(Infos);
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -114,7 +114,7 @@ void GCommunityCalcGravitation::Compute(GCommunity* grp)
 		RCursor<GWeightInfo> Cur(Prof()->GetInfos());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			ins=Vector.GetInsertPtr(*Cur());
+			ins=Vector.GetInfo(Cur());
 			(*ins)+=Cur()->GetWeight();
 		}
 	}
@@ -124,7 +124,7 @@ void GCommunityCalcGravitation::Compute(GCommunity* grp)
 	{
 		if(Order) delete[] Order;
 		MaxOrderSize=static_cast<size_t>((static_cast<double>(Vector.GetNb())+1)*1.1);
-		Order=new GWeightInfo*[MaxOrderSize];
+		Order=new const GWeightInfo*[MaxOrderSize];
 	}
 	Vector.GetTab(Order);
 	if(Vector.GetNb())

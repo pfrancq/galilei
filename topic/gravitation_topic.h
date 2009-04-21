@@ -67,7 +67,7 @@ class GTopicCalcGravitation : public GTopicCalc
 	/**
 	* Ordered vector for current computed profile.
 	*/
-	GWeightInfo** Order;
+	const GWeightInfo** Order;
 
 	/**
 	* Internal vector.
