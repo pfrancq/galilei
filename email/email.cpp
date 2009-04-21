@@ -183,7 +183,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 	if((ptr->IsNull())||((*ptr)!=':'))
 		return(false);
 
-	// Mark end of command and put it in lowercase and Skip ':'
+	// Mark end of command and put it in lower case and Skip ':'
 	Cmd=line.Mid(0,len).ToLower();
 	ptr++;
 
@@ -192,7 +192,7 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 	while((!ptr->IsNull())&&(((*ptr)==' ')||((*ptr)==RChar('\t'))))
 		ptr++;
 
-	// Analyse the different metaData possible.
+	// Analyze the different metaData possible.
 	RString metaData(ptr);
 	EMailCmd* cmd=Cmds.GetPtr(Cmd);
 	if(cmd)
@@ -243,7 +243,7 @@ void GFilterEMail::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 			}
 		}
 
-		// Analyse the line for a command.
+		// Analyze the line for a command.
 		Header=ExtractCmd(Line);
 		if(Header)
 		{
