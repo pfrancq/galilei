@@ -68,7 +68,7 @@ GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac)
 	  Vectors(5000), VectorsIrrel(5000), VectorsFuzzy(5000),
 	  NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
 {
-	Order=new GWeightInfo*[MaxOrderSize];
+	Order=new const GWeightInfo*[MaxOrderSize];
 }
 
 
@@ -151,7 +151,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 				break;
 		}
 
-		// Add total number of words and the occurences of each word of the current document.
+		// Add total number of words and the occurrences of each word of the current document.
 		Words=doc->GetInfos();
 		type=0; // No current type
 		for(Words.Start();!Words.End();Words.Next())
@@ -168,7 +168,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 			if(Words()->GetId()>32868&&Words()->GetType()->GetId()==26)
 				cout<<"Problem when aggreging documents"<<endl;
 
-			// Compute and add the frequence
+			// Compute and add the frequency
 			(*Cur->GetInfo(Words()))+=Words()->GetWeight()/MaxFreq;
 		}
 	}
@@ -193,20 +193,20 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 		// Look if the type of the concept have changed since that the last concept treated
 		if(Words()->GetConcept()->GetType()!=type)
 			type=Words()->GetConcept()->GetType();
-		(*Words())*=log10(TotalRef/static_cast<double>(type->GetRef(Words()->GetId(),otDoc)));
+		(*Words())*=Words()->GetConcept()->GetIF(otDoc);
 		if(fabs(Words()->GetWeight())<0.00001)
 			VectorsIrrel.GetInfo(Words());
 	}
 	Words=VectorsIrrel.GetInfos();
 	for(Words.Start();!Words.End();Words.Next())
-		Vectors.DeletePtr(Words()->GetConcept());
+		Vectors.DeleteInfo(Words()->GetConcept());
 }
 
 
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::ComputeProfile(void)
 {
-	GWeightInfo** ptr;
+	const GWeightInfo** ptr;
 	size_t i,nb,nb2;
 
 	// Choose the elements to stay.
@@ -218,7 +218,7 @@ void GProfileCalcFeedback::ComputeProfile(void)
 	{
 		if(Order) delete[] Order;
 		MaxOrderSize=static_cast<size_t>((static_cast<double>(Vectors.GetNb())+1)*1.1);
-		Order=new GWeightInfo*[MaxOrderSize];
+		Order=new const GWeightInfo*[MaxOrderSize];
 	}
 	Vectors.GetTab(Order);
 	if(Vectors.GetNb())
@@ -258,7 +258,7 @@ void GProfileCalcFeedback::Compute(GProfile* profile)
 	GConceptType* type(0);
 
 	// Clear Infos
-	// Rem: Since Infos is not responsible for allocation/desallocation
+	// Rem: Since Infos is not responsible for allocation/deallocation
 	//      -> parse it to prevent memory leaks
 	RCursor<GWeightInfo> Cur(Infos);
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -283,7 +283,7 @@ void GProfileCalcFeedback::Compute(GProfile* profile)
 			Infos.InsertPtrAt(ptr=new GWeightInfo(*Cur()),i);
 			if(ptr)
 			{
-				(*ptr)/=log10(static_cast<double>(TotalRef)/static_cast<double>(type->GetRef(Cur()->GetId(),otDoc)));
+				(*ptr)/=Cur()->GetConcept()->GetIF(otDoc);
 			}
 		}
 	}
@@ -308,7 +308,7 @@ void GProfileCalcFeedback::WriteFile(const RString& dir)
 	RDir::CreateDirIfNecessary(dir);
 	RTextFile Out(dir+RFile::GetDirSeparator()+name);
 	Out.Open(RIO::Create);
-	GWeightInfo** ptr;
+	const GWeightInfo** ptr;
 	size_t i;
 	for(i=Vectors.GetNb()+1,ptr=Order;--i;ptr++)
 		Out<<(*ptr)->GetId()<<(*ptr)->GetType()<<(*ptr)->GetWeight()<<endl;

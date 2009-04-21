@@ -145,7 +145,7 @@ protected:
 	/**
 	* Ordered vector for current computed profile.
 	*/
-	GWeightInfo** Order;
+	const GWeightInfo** Order;
 
 	/**
 	* Maximal size allocate for a profile.
