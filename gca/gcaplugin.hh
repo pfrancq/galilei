@@ -182,7 +182,7 @@ template<class cObj,class cGroup,class cFactory>
 	session->ClearGroups(GroupType);
 	for(Sol.Start();!Sol.End();Sol.Next())
 	{
-		cGroup* g=static_cast<cGroup*>(session->NewGroup(GroupType));
+		cGroup* g=static_cast<cGroup*>(session->NewGroup(GroupType,RString::Number(Sol()->GetId())));
 		session->AssignId(g);
 		ptr=tab=Sol()->GetObjectsId();
 		while((*ptr)!=cNoRef)
