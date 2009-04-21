@@ -34,26 +34,16 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R Project
+// include files for R/GALILEI Projects
 #include <rdblhashcontainer.h>
 #include <rxmlparser.h>
-using namespace R;
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
 #include <galilei.h>
 #include <gdocanalyse.h>
 #include <glang.h>
 #include <gxmlindex.h>
+using namespace R;
 using namespace GALILEI;
-
-
-//-----------------------------------------------------------------------------
-/*
- *
- */
-
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -104,6 +94,9 @@ public:
 	 */
 	bool NormalStem;
 
+	/**
+	 * Corresponding concept.
+	 */
 	GConcept* Concept;
 
 	/**
@@ -201,6 +194,7 @@ public:
 	inline void ChangeTokenNS(cStructToken* token,const RString& uri);
 	inline RCursor<cStructToken> GetStructTokens(void) const;
 	size_t GetNbTags(void) const {return(NbTags);}
+	void Test(void);
 };
 
 
@@ -497,6 +491,11 @@ class GTextAnalyse : public GDocAnalyse, public RXMLParser
 	 * Index space.
 	 */
 	GConceptType* IndexSpace;
+
+	/**
+	 * Space of the language.
+	 */
+	GConceptType* LangSpace;
 
 	/**
 	 * Is the current tag a title?
