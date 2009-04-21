@@ -114,10 +114,7 @@ public:
 		// Go trough each language and create a Item.
 		RCursor<GConceptType> Types(GALILEIApp->GetSession()->GetConceptTypes());
 		for(Types.Start();!Types.End();Types.Next())
-		{
-			Types()->Load();
 			new QGObject(Dicts,Types());
-		}
 	}
 };
 
@@ -172,18 +169,24 @@ void KViewDicts::selectDict(QTreeWidgetItem* item,int)
 		return;
 	Dict->clear();
 	CurDict=ptr->Obj.Dict;
-//	cout<<"OK :"<<CurDict->GetConceptMaxId()<<endl;
 
-	size_t i;
-	const GConcept** concepts;
-	for(i=CurDict->GetConceptMaxId()+2,concepts=CurDict->GetConcepts();--i;concepts++)
-		if(*concepts)
-		{
-			QString w(QString::number((*concepts)->GetId()));
-			while(w.length()<10)
-				w.prepend(' ');
-			new QGObject(Dict,const_cast<GConcept*>(*concepts),w);
-		}
+    // Parse the double hash table
+    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(CurDict->GetConcepts());
+    for(Cur.Start();!Cur.End();Cur.Next())
+    {
+       RCursor<RDblHashContainer<GConcept,false>::Hash2> Cur2(*Cur());
+       for(Cur2.Start();!Cur2.End();Cur2.Next())
+       {
+          RCursor<GConcept> Cur3(*Cur2());
+          for(Cur3.Start();!Cur3.End();Cur3.Next())
+          {
+        	  QString w(QString::number(Cur3()->GetId()));
+        	  while(w.length()<10)
+        		  w.prepend(' ');
+        	  new QGObject(Dict,const_cast<GConcept*>(Cur3()),w);
+          }
+       }
+    }
 }
 
 
@@ -223,7 +226,7 @@ void KViewDicts::newConcept(void)
 	if(Ok&&!text.isEmpty())
 	{
 		GConcept concept(FromQString(text),CurDict);
-		GConcept* ptr=CurDict->InsertConcept(&concept);
+		GConcept* ptr=GALILEIApp->GetSession()->InsertConcept(&concept);
 		QString w(QString::number(ptr->GetId()));
 		while(w.length()<10)
 			w.prepend(' ');
@@ -241,7 +244,7 @@ void KViewDicts::delConcept(void)
 	if(KMessageBox::warningYesNo(this,"Do you want to delete the concept "+BuildConcept(concept)+"?","Warning")==KMessageBox::No)
 		return;
 	delete ptr;
-	CurDict->DeleteConcept(concept);
+	GALILEIApp->GetSession()->DeleteConcept(concept);
 }
 
 

@@ -37,6 +37,8 @@
 // include files for R/GALILEI
 #include <rqt.h>
 #include <rdbmysql.h>
+#include <ggalileiapp.h>
+#include <glang.h>
 using namespace R;
 
 
@@ -61,9 +63,27 @@ class QCreateDB : public QSessionThread
 	QCreateDatabase* Info;
 public:
 	QCreateDB(QCreateDatabase* info) : Info(info) {}
+	RString GetConceptType(const RString& name,const RString& desc,RDb* Db);
 	virtual void DoIt(void);
 	void RunSQL(const RURI& path,RDb* Db);
 };
+
+
+//-----------------------------------------------------------------------------
+RString QCreateDB::GetConceptType(const RString& name,const RString& desc,RDb* Db)
+{
+	RQuery Select(Db,"SELECT typeid FROM concepttypes WHERE name='"+name+"'");
+	Select.Start();
+	if(!Select.End())
+	{
+		return(Select[0]);
+	}
+
+	RQuery Insert(Db,"INSERT INTO concepttypes(name,description) VALUES('"+name+"','"+desc+"')");
+	RQuery GetId(Db,"SELECT typeid FROM concepttypes WHERE typeid=LAST_INSERT_ID()");
+	GetId.Start();
+	return(GetId[0]);
+}
 
 
 //-----------------------------------------------------------------------------
@@ -72,9 +92,29 @@ void QCreateDB::DoIt(void)
 	// Create the database
 	Parent->setLabelText("Database structure created");
 	RDbMySQL::Create(Info->Name,Info->Host,Info->User,Info->Pwd);
-	RDbMySQL Db(Info->Name,Info->Host,Info->User,Info->Pwd,"utf-8");
+	RDbMySQL Db(Info->Name,Info->Host,Info->User,Info->Pwd,"utf8");
  	Parent->setLabelText("Dump Database model");
  	RunSQL(Info->DbSchema,&Db);
+ 	Parent->setLabelText("Create Languages (terms and stopwords)");
+ 	RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
+ 	RContainer<RString,true,false> Stops(200);
+ 	for(Langs.Start();!Langs.End();Langs.Next())
+ 	{
+ 		// Create the concept types
+ 		RString Code(Langs()->GetCode());
+ 		GetConceptType(Code+"Terms",Langs()->GetName()+" Terms",&Db);
+ 		RString TypeId(GetConceptType(Code+"Stopwords",Langs()->GetName()+" Stopwords",&Db));
+
+ 		Stops.Clear();
+ 		Langs()->GetStopWords(Stops);
+ 		RCursor<RString> Cur(Stops);
+ 		for(Cur.Start();!Cur.End();Cur.Next())
+ 			RQuery InsertStopWord(&Db,"INSERT INTO concepts(name,typeid) VALUES("+RQuery::SQLValue(*Cur())+","+TypeId+")");
+ 	}
+
+ 	Parent->setLabelText("Create Other Concept Types");
+ 	GetConceptType("XMLStruct","XML Structure",&Db);
+ 	GetConceptType("XMLIndex","XML Index",&Db);
 }
 
 
@@ -140,7 +180,7 @@ QCreateDatabase::QCreateDatabase(QWidget* parent)
 //------------------------------------------------------------------------------
 void QCreateDatabase::run(void)
 {
-	URL->setUrl(KUrl("http://homepages.ulb.ac.be/~pfrancq/data/NewDb.sql"));
+	URL->setUrl(KUrl("http://www.imrdp.org/NewDb.sql"));
 	if(!exec())
 		return;
 	try

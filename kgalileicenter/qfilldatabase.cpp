@@ -123,10 +123,13 @@ void QImportDocs::DoIt(void)
 //-----------------------------------------------------------------------------
 void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 {
+	bool InDir(true);
+
 	// Go through the directory
 	CurDepth++;
 	RDir Dir(uri);
 	Dir.Open(RIO::Read);
+	Parent->setLabelText(ToQString(uri.GetPath()));
 	RCursor<RFile> Files(Dir.GetEntries());
 	for(Files.Start();!Files.End();Files.Next())
 	{
@@ -151,11 +154,17 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 			}
 
 			ParseDir(Files()->GetURI(),cat);
+			InDir=false;
 		}
 		else
 		{
+			if(!InDir)
+			{
+				InDir=true;
+				Parent->setLabelText(ToQString(uri.GetPath()));
+			}
 			// Must be a normal document
-			GDoc* doc(new GDoc(Files()->GetURI(),Files()->GetURI()(),cNoRef,Info->Lang,Info->DefaultMIME,cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,0,0));
+			GDoc* doc(new GDoc(Files()->GetURI(),Files()->GetURI()(),cNoRef,Info->Lang,Info->DefaultMIME,0,RDate::Null,RDate::GetToday(),RDate::Null,0,0));
 			GALILEIApp->GetSession()->InsertDoc(doc);
 			if(Info->Categorized)
 			{

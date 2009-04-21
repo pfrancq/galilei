@@ -34,6 +34,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R/GALILEI
+#include <rqt.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for current application
 #include <kviewgroup.h>
 #include <kgalileicenter.h>
@@ -79,7 +84,7 @@ template<class cGroup>
 KViewTopic::KViewTopic(GTopic* topic)
 	: KViewGroup<GTopic>(topic)
 {
-	setWindowTitle("Topic "+QString::number(Obj->GetId()));
+	setWindowTitle(ToQString("Topic '"+Obj->GetName()+"'"));
 	ObjectsTab->setTabText(1,"Documents");
 	connect(Objects,SIGNAL(Show(GDoc*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showDoc(GDoc*)));
 	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(topicsChanged()),this,SLOT(update()));
@@ -105,7 +110,7 @@ void KViewTopic::update(void)
 KViewCommunity::KViewCommunity(GCommunity* community)
 	: KViewGroup<GCommunity>(community)
 {
-	setWindowTitle("Community "+QString::number(Obj->GetId()));
+	setWindowTitle(ToQString("Community '"+Obj->GetName()+"'"));
 	ObjectsTab->setTabText(1,"Profiles");
 	connect(Objects,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
 	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(communitiesChanged()),this,SLOT(update()));

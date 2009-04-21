@@ -145,14 +145,10 @@ void QSessionThread::run(void)
 
 
 //-----------------------------------------------------------------------------
-QLoadSession::QLoadSession(void)
+void QCreateSession::DoIt(void)
 {
-}
-
-
-//-----------------------------------------------------------------------------
-void QLoadSession::DoIt(void)
-{
+	Parent->setLabelText("Load Concepts and Relations ...");
+	Session=GALILEIApp->CreateSession();
 	Parent->setLabelText("Load Topics ...");
 	GALILEIApp->GetSession()->LoadTopics();
 	if(GSession::Break())
@@ -324,7 +320,7 @@ void QComputeAll::DoIt(void)
 void QIndexDocs::DoIt(void)
 {
 	Parent->setLabelText("Index Documents ...");
-	GALILEIApp->GetSession()->GetIndexer()->BuildRefs(otDoc,Parent);
+	GALILEIApp->GetSession()->BuildRefs(otDoc,Parent);
 }
 
 
@@ -356,7 +352,8 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 	setModal(true);
 	connect(this, SIGNAL(accepted()), &q, SLOT(quit()));
 	connect(this, SIGNAL(rejected()), &q, SLOT(quit()));
-	Ret=true;
+	connect(task, SIGNAL(finish()), this, SLOT(Finish()));
+	Ret=false; // Suppose something goes wrong
 	show();
 	task->start();
 	q.exec();
@@ -371,28 +368,32 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 {
-	setLabelText(QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...");
+	if(lang)
+		setLabelText(QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...");
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextConceptType(const GConceptType* type)
 {
-	setLabelText(QString("Treat ")+ToQString(type->GetName())+" ...");
+	if(type)
+		setLabelText(QString("Treat ")+ToQString(type->GetName())+" ...");
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextDoc(const GDoc* doc)
 {
-	setLabelText(QString("Analyze Doc '")+ToQString(doc->GetName())+"' ...");
+	if(doc)
+		setLabelText(QString("Analyze Doc '")+ToQString(doc->GetName())+"' ...");
 }
 
 
 //-----------------------------------------------------------------------------
 void QSessionProgressDlg::NextProfile(const GProfile* prof)
 {
-	setLabelText(QString("Analyze Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...");
+	if(prof)
+		setLabelText(QString("Analyze Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...");
 }
 
 
@@ -408,20 +409,21 @@ void QSessionProgressDlg::NextChromosome(size_t id)
 void QSessionProgressDlg::reject(void)
 {
 	if(Running)
-	{
 		GSession::SetBreak();
-		Ret=false;
-	}
 	else
 	{
 		if(GSession::Break())
-		{
 			done(0);
-			Ret=false;
-		}
 		else
 			done(1);
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+void QSessionProgressDlg::Finish(void)
+{
+	Ret=true;
 }
 
 

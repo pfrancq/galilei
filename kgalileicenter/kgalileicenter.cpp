@@ -287,15 +287,14 @@ void KGALILEICenter::sessionConnect(void)
 	try
 	{
 		DestroyDoc=true;
-		Doc=CreateSession();
-		saveModifier();
 		QSessionProgressDlg dlg(this,"Loading from Database");
-		if(dlg.Run(new QLoadSession()))
+		if(dlg.Run(new QCreateSession(Doc)))
 		{
 			sessionConnected(true);
 			Status->setPixmap(QPixmap(KIconLoader::global()->loadIcon("network-connect",KIconLoader::Small)));
 			DestroyDoc=false;
 			statusMsg(i18n("Connected"));
+			saveModifier();
 		}
 		else
 			statusMsg(i18n("Ready"));
@@ -524,7 +523,7 @@ void KGALILEICenter::exportDocs(void)
 				}
 				Export<<"\t\t\t"<<"\t"<<RString::Number(Infos()->GetId())<<"\t";
 				double w(Infos()->GetWeight());
-				double tfidf(Infos()->GetConcept()->GetType()->GetIF(Infos()->GetConcept()->GetId(),otDoc)*w/max);
+				double tfidf(Infos()->GetConcept()->GetIF(otDoc)*w/max);
 				Export<<RString::Number(w)<<"\t"<<RString::Number(tfidf);
 				norm+=tfidf*tfidf;
 				Export<<endl;
@@ -644,7 +643,7 @@ void KGALILEICenter::docsIndexer(void)
 			{
 				for(size_t i=lround(Words()->GetWeight())+1;--i;)
 				{
-					file<<Doc->GetStorage()->LoadConcept(Words()->GetId(),Words()->GetType());
+					file<<Doc->GetStorage()->LoadConcept(Words()->GetId());
 				}
 				file<<endl;
 			}

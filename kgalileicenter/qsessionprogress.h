@@ -108,13 +108,13 @@ signals:
 
 //-----------------------------------------------------------------------------
 /**
-* Load a session.
+* Create a session.
 */
-class QLoadSession : public QSessionThread
+class QCreateSession : public QSessionThread
 {
-
+	GSession* &Session;
 public:
-	QLoadSession(void);
+	QCreateSession(GSession* &session) : Session(session) {}
 	virtual void DoIt(void);
 };
 
@@ -388,7 +388,7 @@ public:
 	bool Run(QSessionThread* task);
 
 	/**
-	* Method called each time a new language is analysed.
+	* Method called each time a new language is analyzed.
 	* @param lang           Pointer to the current lang.
 	*/
 	virtual void NextGroupLang(const GLang* lang);
@@ -400,13 +400,13 @@ public:
 	virtual void NextConceptType(const GConceptType* type);
 
 	/**
-	* The traitment for a specific document will begin.
+	* The treatment for a specific document will begin.
 	* @param doc            Document.
 	*/
 	virtual void NextDoc(const GDoc* doc);
 
 	/**
-	* The traitment for a specific profile will begin.
+	* The treatment for a specific profile will begin.
 	* @param prof           Profile.
 	*/
 	virtual void NextProfile(const GProfile* prof);
@@ -422,10 +422,14 @@ public:
 	 */
 	virtual void reject(void);
 
+public slots:
+
 	/**
 	* Put the dialog in the final state.
 	*/
 	void Finish(void);
+
+public:
 
 	/**
 	* Destruct.
