@@ -37,11 +37,14 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gweightinfos.h>
+#include <gweightinfosobj.h>
 #include <gweightinfo.h>
 #include <glang.h>
 #include <gconcept.h>
 #include <gprofile.h>
 #include <gdoc.h>
+#include <gtopic.h>
+#include <gcommunity.h>
 #include <gxmlindex.h>
 #include <gsession.h>
 
@@ -478,8 +481,43 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 {
 	if(obj1==obj2)
 		return(1.0);
-	vec1=static_cast<GWeightInfos*>(obj1);
-	vec2=static_cast<GWeightInfos*>(obj2);
+
+	switch(GetLinesType())
+	{
+		case otDoc:
+			vec1=static_cast<GDoc*>(obj1)->GetVector();
+			break;
+		case otProfile:
+			vec1=static_cast<GProfile*>(obj1)->GetVector();
+			break;
+		case otCommunity:
+			vec1=static_cast<GCommunity*>(obj1)->GetVector();
+			break;
+		case otTopic:
+			vec1=static_cast<GTopic*>(obj1)->GetVector();
+			break;
+
+		default:
+			throw GException("GGenericSims::Compute : '"+GetObjType(GetLinesType())+"' not a valid line type");
+	}
+	switch(GetColsType())
+	{
+		case otDoc:
+			vec2=static_cast<GDoc*>(obj2)->GetVector();
+			break;
+		case otProfile:
+			vec2=static_cast<GProfile*>(obj2)->GetVector();
+			break;
+		case otCommunity:
+			vec2=static_cast<GCommunity*>(obj2)->GetVector();
+			break;
+		case otTopic:
+			vec2=static_cast<GTopic*>(obj2)->GetVector();
+			break;
+
+		default:
+			throw GException("GGenericSims::Compute : '"+GetObjType(GetColsType())+"' not a valid column type");
+	}
 	if((!vec1->IsDefined())||(!vec2->IsDefined()))
 		return(0.0);
 	double sim(0.0);
