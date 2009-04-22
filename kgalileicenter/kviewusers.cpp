@@ -127,7 +127,7 @@ void KViewUsers::slotAddProfile(void)
 	QString Name(QInputDialog::getText(this,"Add Profile to "+ToQString(usr->GetName()), "Enter the profile name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		GALILEIApp->GetSession()->InsertProfile(new GProfile(usr,cNoRef,FromQString(Name),cNoRef,RDate::Null,RDate::GetToday(),RDate::Null,true,20));
+		GALILEIApp->GetSession()->InsertProfile(new GProfile(usr,FromQString(Name),true));
 		GALILEIApp->GetSession()->GetStorage()->SaveUser(usr);
 		update();
 	}

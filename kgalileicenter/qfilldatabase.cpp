@@ -164,7 +164,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 				Parent->setLabelText(ToQString(uri.GetPath()));
 			}
 			// Must be a normal document
-			GDoc* doc(new GDoc(Files()->GetURI(),Files()->GetURI()(),cNoRef,Info->Lang,Info->DefaultMIME,0,RDate::Null,RDate::GetToday(),RDate::Null,0,0));
+			GDoc* doc(new GDoc(Files()->GetURI(),Files()->GetURI()(),Info->Lang,Info->DefaultMIME));
 			GALILEIApp->GetSession()->InsertDoc(doc);
 			if(Info->Categorized)
 			{

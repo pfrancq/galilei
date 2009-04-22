@@ -59,7 +59,7 @@ KViewProfile::KViewProfile(GProfile* profile)
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(profile->GetName())+" ("+ToQString(profile->GetUser()->GetFullName())+")");
 	Vars->Set(Profile);
-	Desc->Set(Profile);
+	Desc->Set(Profile->GetVector());
 	Assessments->Set(QGObjectsList::Assessments,Profile);
 	Links->Set(QGObjectsList::Links,Profile);
 	GCommunity* Group(GSession::Get()->GetCommunity(Profile->GetGroupId(),true,true));
@@ -75,7 +75,7 @@ KViewProfile::KViewProfile(GProfile* profile)
 void KViewProfile::updateProfile(void)
 {
 	Vars->Set(Profile);
-	Desc->Set(Profile);
+	Desc->Set(Profile->GetVector());
 }
 
 

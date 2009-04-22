@@ -507,7 +507,7 @@ void KGALILEICenter::exportDocs(void)
 		for(Docs.Start();!Docs.End();Docs.Next())
 		{
 			Export<<"\t<document id=\""+RString::Number(Docs()->GetId())+"\" url=\""+Docs()->GetURL()()+"\">"<<endl;
-			R::RCursor<GWeightInfo> Infos(Docs()->GetInfos());
+			R::RCursor<GWeightInfo> Infos(Docs()->GetVector()->GetInfos());
 			GConceptType* type(0);
 			double norm(0.0),max(0.0);
 			for(Infos.Start();!Infos.End();Infos.Next())
@@ -518,7 +518,7 @@ void KGALILEICenter::exportDocs(void)
 						Export<<"\t\t\t<norm>"<<RString::Number(sqrt(norm))<<"</norm>"<<endl<<"\t\t</vector>"<<endl;
 					type=Infos()->GetType();
 					norm=0.0;
-					max=Docs()->GetMaxAbsWeight(type);
+					max=Docs()->GetVector()->GetMaxAbsWeight(type);
 					Export<<"\t\t<vector type=\""<<type->GetName()<<"\">"<<endl;
 				}
 				Export<<"\t\t\t"<<"\t"<<RString::Number(Infos()->GetId())<<"\t";
@@ -638,7 +638,7 @@ void KGALILEICenter::docsIndexer(void)
 			KApplication::kApplication()->processEvents();
 			RTextFile file(name);
 			file.Open(RIO::Create);
-			RCursor<GWeightInfo> Words(Docs()->GetInfos());
+			RCursor<GWeightInfo> Words(Docs()->GetVector()->GetInfos());
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				for(size_t i=lround(Words()->GetWeight())+1;--i;)

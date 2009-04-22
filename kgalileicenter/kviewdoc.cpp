@@ -126,7 +126,7 @@ KViewDoc::KViewDoc(GDoc* doc)
 
 //-----------------------------------------------------------------------------
 KViewDoc::KViewDoc(const RURI& file,const RString& mime)
-	: QMdiSubWindow(), Ui_KViewDoc(), Document(new GDoc(file,file(),cNoRef,0,mime,cNoRef,RDate::Null,RDate(),RDate::Null,0,0)), XML(0), bDelDoc(true)
+	: QMdiSubWindow(), Ui_KViewDoc(), Document(new GDoc(file,file(),0,mime)), XML(0), bDelDoc(true)
 {
 	setUp();
 }
@@ -141,7 +141,7 @@ void KViewDoc::setUp(void)
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(Document->GetName()));
 	Vars->Set(Document);
-	Desc->Set(Document);
+	Desc->Set(Document->GetVector());
 	Struct->Set(Document);
 	Assessments->Set(QGObjectsList::Assessments,Document);
 	connect(AddFeedback,SIGNAL(pressed()),this,SLOT(newFdbk()));
@@ -172,7 +172,7 @@ void KViewDoc::newFdbk(void)
 void KViewDoc::update(void)
 {
 	Vars->Set(Document);
-	Desc->Set(Document);
+	Desc->Set(Document->GetVector());
 	Struct->Set(Document);
 }
 
