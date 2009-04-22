@@ -178,11 +178,14 @@ template<class cObj,class cGroup,class cFactory>
 {
 	size_t* tab;
 	size_t* ptr;
+	size_t i;
+	RString Label(GetObjType(GroupType).Mid(0,1).ToUpper()+GetObjType(GroupType).Mid(1)+" ");
+
 
 	session->ClearGroups(GroupType);
-	for(Sol.Start();!Sol.End();Sol.Next())
+	for(Sol.Start(),i=1;!Sol.End();Sol.Next(),i++)
 	{
-		cGroup* g=static_cast<cGroup*>(session->NewGroup(GroupType,RString::Number(Sol()->GetId())));
+		cGroup* g(static_cast<cGroup*>(session->NewGroup(GroupType,Label+RString::Number(i))));
 		session->AssignId(g);
 		ptr=tab=Sol()->GetObjectsId();
 		while((*ptr)!=cNoRef)
