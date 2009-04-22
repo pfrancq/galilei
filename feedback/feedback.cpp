@@ -152,7 +152,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 		}
 
 		// Add total number of words and the occurrences of each word of the current document.
-		Words=doc->GetInfos();
+		Words=doc->GetVector()->GetInfos();
 		type=0; // No current type
 		for(Words.Start();!Words.End();Words.Next())
 		{
@@ -162,7 +162,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 				// Yes -> Get the total number of document analyzed.
 				type=Words()->GetConcept()->GetType();
 				TotalRef=static_cast<double>(type->GetRef(otDoc));
-				MaxFreq=doc->GetMaxWeight(type);
+				MaxFreq=doc->GetVector()->GetMaxWeight(type);
 			}
 
 			if(Words()->GetId()>32868&&Words()->GetType()->GetId()==26)
@@ -269,7 +269,7 @@ void GProfileCalcFeedback::Compute(GProfile* profile)
 	if(IncrementalMode&&profile->IsDefined())
 	{
 		size_t i,TotalRef(0);
-		Cur=profile->GetInfos();
+		Cur=profile->GetVector()->GetInfos();
 		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 		{
 			// Look if the type of the concept have changed since that the last concept treated
