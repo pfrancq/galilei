@@ -202,7 +202,7 @@ void GIndexer::LoadInfos(GWeightInfos& infos,tObjType type,size_t id)
 
 
 //------------------------------------------------------------------------------
-void GIndexer::SaveInfos(GWeightInfos& infos,tObjType type,size_t id)
+void GIndexer::SaveInfos(const GWeightInfos& infos,tObjType type,size_t id)
 {
 	try
 	{

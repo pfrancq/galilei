@@ -123,7 +123,7 @@ public:
 	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
 	* @param id              Identifier of the object.
 	*/
-	void SaveInfos(GWeightInfos& infos,tObjType type,size_t id);
+	void SaveInfos(const GWeightInfos& infos,tObjType type,size_t id);
 
 	/**
 	 * Method that load the structure of a document.

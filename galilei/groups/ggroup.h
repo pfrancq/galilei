@@ -35,7 +35,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gweightinfos.h>
+#include <gweightinfosobj.h>
 #include <gweightinfo.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
@@ -59,14 +59,15 @@ namespace GALILEI{
 * @short Generic Group.
 */
 template<class cObj,class cGroup,tObjType type>
-	class GGroup : protected R::RContainer<cObj,false,true>, public GWeightInfos
+	class GGroup : protected R::RContainer<cObj,false,true>, public GWeightInfosObj<cGroup,type>
 {
-protected:
+	using GWeightInfosObj<cGroup,type>::Id;
+	using GWeightInfosObj<cGroup,type>::CopyInfos;
+	using GWeightInfosObj<cGroup,type>::AddRefs;
+	using GWeightInfosObj<cGroup,type>::DelRefs;
+	using GWeightInfosObj<cGroup,type>::State;
 
-	/**
-	* Identifier of the group.
-	*/
-	size_t Id;
+protected:
 
 	/**
 	 * Name of the group.
@@ -96,8 +97,9 @@ public:
 	* @param name            Name of the group.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
+	* @param size           Size of the vector.
 	*/
-	GGroup(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c);
+	GGroup(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c,size_t size);
 
 	/**
 	* Compare two groups by comparing their identifier.
@@ -136,25 +138,9 @@ public:
 	R::RDate GetComputed(void) const;
 
 	/**
-	* Get the identifier of the group.
-	*/
-	size_t GetId(void) const {return(Id);}
-
-	/**
-	* Set the identifier.
-	* @param id              Identifier.
-	*/
-	void SetId(size_t id);
-
-	/**
 	 * @return Name of the group.
 	 */
 	R::RString GetName(void) const {return(Name);}
-
-	/**
-	* Load information from the current storage.
-	*/
-	virtual void LoadInfos(void) {GWeightInfos::LoadInfos(type,Id);}
 
 	/**
 	 * Get the similarity measure that must be used when computing the
@@ -257,7 +243,7 @@ public:
 	*                        after a loading from a database).
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(R::RContainer<GWeightInfo,false,true>* infos);
+	void Update(R::RContainer<GWeightInfo,false,true>& infos);
 
 	/**
 	* Compute the number of objects of a given group that are also in a

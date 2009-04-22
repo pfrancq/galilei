@@ -173,10 +173,6 @@ void GMatrixMeasure::ApplyConfig(void)
 	DeviationRate=Factory->GetDouble("DeviationRate");
 	MinMeasure=Factory->GetDouble("MinMeasure");
 	AutomaticMinMeasure=Factory->GetBool("AutomaticMinMeasure");
-
-	// Some elements cannot be changed when a session is running
-	if(Session)
-		return;
 	NullLevel=Factory->GetDouble("NullLevel");
 	InMemory=Factory->GetBool("Memory");
 	InFile=Factory->GetBool("File");
@@ -906,8 +902,10 @@ void GMatrixMeasure::LoadFile(void)
 	size_t i,j;
 
 	// Extend the memory
-	MaxIdLine=FileNbLines;
-	MaxIdCol=FileNbCols;
+	if(FileNbLines>MaxIdLine)
+		MaxIdLine=FileNbLines;
+	if(FileNbCols>MaxIdCol)
+		MaxIdCol=FileNbCols;
 	ExtendMem();
 
 	// Go trough the lines first

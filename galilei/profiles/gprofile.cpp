@@ -159,8 +159,27 @@ GFdbk::~GFdbk(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,size_t nbf)
-  : GWeightInfos(60), User(usr),Id(id), Name(name),
+GProfile::GProfile(GUser* usr,const R::RString name,bool s)
+  : GWeightInfosObj<GProfile,otProfile>(cNoRef,0,osNew), User(usr),Name(name),
+    Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null), GroupId(0), Attached(RDate::Null)
+{
+	if(!User)
+		throw GException("New profile has no parent user");
+	User->InsertPtr(this);
+
+	// Verify if the community exists in memory
+	if(GroupId&&(GSession::Get()))
+	{
+		GCommunity* grp=GSession::Get()->GetCommunity(GroupId,false,false);
+		if(grp)
+			grp->InsertObj(this);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+GProfile::GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,size_t size,bool s,size_t nbf)
+  : GWeightInfosObj<GProfile,otProfile>(id,size,osNew), User(usr),Name(name),
     Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c), GroupId(grpid), Attached(a)
 {
 	if(!User)
@@ -168,15 +187,12 @@ GProfile::GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RD
 	User->InsertPtr(this);
 
 	// Verify if the community exists in memory
-	if((GroupId!=cNoRef)&&(GSession::Get()))
+	if(GroupId&&(GSession::Get()))
 	{
 		GCommunity* grp=GSession::Get()->GetCommunity(GroupId,false,false);
 		if(grp)
 			grp->InsertObj(this);
 	}
-
-	if(Id!=cNoRef)
-		GSession::Event(this,eObjNew);
 }
 
 
@@ -198,16 +214,6 @@ int GProfile::Compare(const RString& name) const
 int GProfile::Compare(const size_t id) const
 {
  	return(CompareIds(Id,id));
-}
-
-
-//------------------------------------------------------------------------------
-void GProfile::SetId(size_t id)
-{
-	if(id==cNoRef)
-		throw GException("Cannot assign cNoRef to a profile");
-	Id=id;
-	GSession::Event(this,eObjNew);
 }
 
 
@@ -392,14 +398,14 @@ void GProfile::Update(R::RContainer<GWeightInfo,false,true>& infos)
 	DelRefs(otProfile);
 
 	// Assign information
-	GWeightInfos::Clear();
+	GWeightInfosObj<GProfile,otProfile>::Clear();
 	State=osUpdated;
 	Computed.SetToday();
 
 	// Update the group were it belongs
 	if(GSession::Get())
 		GSession::Get()->UpdateCommunity(this);
-	CopyInfos(&infos);
+	CopyInfos(infos);
 
 	// Clear infos
 	infos.Clear();
@@ -438,22 +444,11 @@ void GProfile::HasUpdate(size_t docid)
 //------------------------------------------------------------------------------
 GProfile::~GProfile(void)
 {
-	GSession::Event(this,eObjDelete);
-	try
+	// Remove it from its group if necessary
+	if(GroupId&&(GSession::Get()))
 	{
-		// Remove it from its group if necessary
-		if((GroupId!=cNoRef)&&(GSession::Get()))
-		{
-			GCommunity* grp=GSession::Get()->GetCommunity(GroupId);
-			if(grp)
-				grp->DeleteObj(this);
-		}
-
-		// Remove its references
-		if(State==osDelete)  // The object has modified the references count but was not saved
-			DelRefs(otProfile);
-	}
-	catch(...)
-	{
+		GCommunity* grp=GSession::Get()->GetCommunity(GroupId);
+		if(grp)
+			grp->DeleteObj(this);
 	}
 }

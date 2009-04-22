@@ -41,7 +41,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gweightinfos.h>
+#include <gweightinfosobj.h>
 
 
 //------------------------------------------------------------------------------
@@ -58,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Document.
 */
-class GDoc : public GWeightInfos
+class GDoc : public GWeightInfosObj<GDoc,otDoc>
 {
 protected:
 
@@ -71,11 +71,6 @@ protected:
 	* Name of the document.
 	*/
 	R::RString Name;
-
-	/**
-	* Identifier of the document.
-	*/
-	size_t Id;
 
 	/**
 	 * Structure of the document.
@@ -136,6 +131,15 @@ protected:
 public:
 
 	/**
+	* Construct a new document.
+	* @param url             URL of the document.
+	* @param name            Name of the document.
+	* @param lang            Language of the document.
+	* @param mime            MIME type of the document.
+	*/
+	GDoc(const R::RURI& url,const R::RString& name,GLang* lang,const R::RString& mime);
+
+	/**
 	* Construct a document.
 	* @param url             URL of the document.
 	* @param name            Name of the document.
@@ -146,10 +150,11 @@ public:
 	* @param c               Date of the last computation.
 	* @param u               Date of the last updated.
 	* @param a               Date of the last attached.
+	* @param size            Size of the vector.
 	* @param nbrecs          Number of "VTD" records.
 	* @param nblcs           Number of location caches.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t nbrecs,size_t nblcs);
+	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t size,size_t nbrecs,size_t nblcs);
 
 	/**
 	* Compare two documents by comparing their identifier.
@@ -206,7 +211,7 @@ public:
 	/**
 	* Load information from the current storage.
 	*/
-	virtual void LoadInfos(void) {GWeightInfos::LoadInfos(otDoc,Id);}
+//	virtual void LoadInfos(void) {GWeightInfos::LoadInfos(otDoc,Id);}
 
 	/**
 	* Get the URL.
@@ -259,17 +264,6 @@ public:
 	* Verify if the document must be (re-)computed.
 	*/
 	bool MustCompute(void) const;
-
-	/**
-	* Get the identifier of the document.
-	*/
-	size_t GetId(void) const {return(Id);}
-
-	/**
-	* Set the identifier of the document.
-	* @param id              Identifier.
-	*/
-	void SetId(size_t id);
 
 	/**
 	* Get the date of the last attachment.

@@ -48,8 +48,15 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GTopic::GTopic(size_t id,const RString& name,const RDate& u,const RDate& c)
-	: GGroup<GDoc,GTopic,otTopic>(id,name,u,c)
+GTopic::GTopic(const RString& name)
+	: GGroup<GDoc,GTopic,otTopic>(cNoRef,name,RDate::GetToday(),RDate::Null,0)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GTopic::GTopic(size_t id,const RString& name,const RDate& u,const RDate& c,size_t size)
+	: GGroup<GDoc,GTopic,otTopic>(id,name,u,c,size)
 {
 }
 

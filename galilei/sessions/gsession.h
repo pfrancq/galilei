@@ -431,9 +431,9 @@ public:
 	/**
 	* Analyze the documents. At the end, all the enabled post-documents methods
 	* are run.
-	* @param rec             Receiver for the signals.
 	* @param ram             Must the description of each document be maintain
 	*                        in RAM.
+	* @param rec             Receiver for the signals.
 	*/
 	void AnalyseDocs(bool ram=false,GSlot* rec=0);
 

@@ -643,9 +643,9 @@ void* GSession::NewGroup(tObjType type,const RString& name)
 	switch(type)
 	{
 		case otTopic:
-			return(new GTopic(cNoRef,name,RDate(""),RDate("")));
+			return(new GTopic(name));
 		case otCommunity:
-			return(new GCommunity(cNoRef,name,RDate(""),RDate("")));
+			return(new GCommunity(name));
 		default:
 			throw GException("GSession::NewGroup : Type "+GetObjType(type)+" is not handled");
 	}
@@ -999,14 +999,16 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	// Save the binary files
 	if(Save)
 	{
-		SaveInfos(method->Infos,otDoc,doc->GetId());
-		SaveStruct(method->Struct,doc);
+		if(method->Infos.IsDefined())
+			SaveInfos(method->Infos,otDoc,doc->GetId());
+		if(method->Struct.GetNbRecs())
+			SaveStruct(method->Struct,doc);
 	}
 
 	// Set the information to the document
 	doc->Update(method->Lang,method->Infos,method->Struct,ram||(!Save),DelRef);
 
-	// Save the description and the structure
+	// Save the information related to the document
 	if(Save)
 	{
 		Storage->SaveDoc(doc);
@@ -1344,9 +1346,13 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 	if(Intern::ExternBreak) return;
 	if(!profile->MustCompute()) return;
 	Profiling->Compute(profile);
-	if(Intern::ExternBreak) return;
 	if(SaveResults&&(profile->GetId()!=cNoRef))
+	{
+		if(profile->IsDefined())
+			SaveInfos(*profile->GetVector(),otProfile,profile->GetId());
 		Storage->SaveProfile(profile);
+	}
+	if(Intern::ExternBreak) return;
 }
 
 
@@ -1532,14 +1538,39 @@ void GSession::ClearCommunities(void)
 //------------------------------------------------------------------------------
 void GSession::GroupProfiles(GSlot* rec)
 {
-	GGroupProfiles* Grouping=GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod();
-
-	// Verify that there is a method to cluster the profile
+	// Verify that there is a method to cluster the profiles
+	GGroupProfiles* Grouping(GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod());
 	if(!Grouping)
 		throw GException("No profiles grouping method chosen.");
 
+	// How to compute the groups
+	GCommunityCalc* CalcDesc(GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod());
+
     // Group the profiles
-	Grouping->Grouping(rec,SaveResults);
+	Grouping->Grouping(rec);
+
+	// If something to save to to compute -> Pass through the communities
+	if(SaveResults||CalcDesc)
+	{
+		if(SaveResults)
+			Storage->Clear(otCommunity);
+
+		// Compute the description of the groups and Save the information.
+		R::RCursor<GCommunity> Groups(GetCommunities());
+		for(Groups.Start();!Groups.End();Groups.Next())
+		{
+			if(CalcDesc)
+				CalcDesc->Compute(Groups());
+			if(SaveResults)
+			{
+				if(Groups()->IsDefined())
+					SaveInfos(*Groups()->GetVector(),otCommunity,Groups()->GetId());
+				Storage->SaveCommunity(Groups());
+				Groups()->SetState(osSaved);
+			}
+		}
+	}
+
 	DoPostCommunity(rec);
 }
 
@@ -1609,10 +1640,15 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 			CopyIdealGroups<GCommunity,GProfile,GCommunityCalc>(otProfile,otCommunity,GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod());
 			if(SaveResults)
 			{
-				Storage->SaveCommunities();
+				Storage->Clear(otCommunity);
 				RCursor<GCommunity> Groups(Data->Communities);
 				for(Groups.Start();!Groups.End();Groups.Next())
+				{
+					if(Groups()->IsDefined())
+						SaveInfos(*Groups()->GetVector(),otCommunity,Groups()->GetId());
+					Storage->SaveCommunity(Groups());
 					Groups()->SetState(osSaved);
+				}
 			}
 			break;
 		}
@@ -1621,10 +1657,15 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 			CopyIdealGroups<GTopic,GDoc,GTopicCalc>(otDoc,otTopic,GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod());
 			if(SaveResults)
 			{
-				Storage->SaveTopics();
+				Storage->Clear(otTopic);
 				RCursor<GTopic> Topics(Data->Topics);
 				for(Topics.Start();!Topics.End();Topics.Next())
+				{
+					if(Topics()->IsDefined())
+						SaveInfos(*Topics()->GetVector(),otTopic,Topics()->GetId());
+					Storage->SaveTopic(Topics());
 					Topics()->SetState(osSaved);
+				}
 			}
 			break;
 		}
@@ -1790,14 +1831,39 @@ void GSession::ClearTopics(void)
 //------------------------------------------------------------------------------
 void GSession::GroupDocs(GSlot* rec)
 {
-	GGroupDocs* Grouping=GALILEIApp->GetManager<GGroupDocsManager>("GroupDocs")->GetCurrentMethod();
-
-	// Verify that there is a method to cluster the profile
+	// Verify that there is a method to cluster the documents
+	GGroupDocs* Grouping(GALILEIApp->GetManager<GGroupDocsManager>("GroupDocs")->GetCurrentMethod());
 	if(!Grouping)
 		throw GException("No documents grouping method chosen.");
 
-    // Group the profiles
-	Grouping->Grouping(rec,SaveResults,Data->ClusterSelectedDocs);
+	// How to compute the groups
+	GTopicCalc* CalcDesc(GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod());
+
+    // Group the documents
+	Grouping->Grouping(rec,Data->ClusterSelectedDocs);
+
+	// If something to save to to compute -> Pass through the topics
+	if(SaveResults||CalcDesc)
+	{
+		if(SaveResults)
+			Storage->Clear(otTopic);
+
+		// Compute the description of the groups and Save the information.
+		R::RCursor<GTopic> Groups(GetTopics());
+		for(Groups.Start();!Groups.End();Groups.Next())
+		{
+			if(CalcDesc)
+				CalcDesc->Compute(Groups());
+			if(SaveResults)
+			{
+				if(Groups()->IsDefined())
+					SaveInfos(*Groups()->GetVector(),otTopic,Groups()->GetId());
+				Storage->SaveTopic(Groups());
+				Groups()->SetState(osSaved);
+			}
+		}
+	}
+
 	DoPostTopic(rec);
 }
 

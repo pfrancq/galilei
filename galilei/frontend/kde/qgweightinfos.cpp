@@ -63,7 +63,7 @@ QGWeightInfos::QGWeightInfos(QWidget* parent)
 
 
 //------------------------------------------------------------------------------
-void QGWeightInfos::Set(GWeightInfos* obj)
+void QGWeightInfos::Set(const GWeightInfos* obj)
 {
 	if(!obj) return;
 

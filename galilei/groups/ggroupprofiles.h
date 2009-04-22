@@ -86,9 +86,8 @@ public:
 	/**
 	* Group the Profiles.
 	* @param rec            Receiver of the signals.
-	* @param save           Save modified elements.
 	*/
-	void Grouping(GSlot* rec,bool save);
+	void Grouping(GSlot* rec);
 
 	/**
 	* Destructor of the profiles grouping method.

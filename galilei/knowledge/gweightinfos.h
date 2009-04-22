@@ -36,6 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gweightinfo.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,13 +54,6 @@ namespace GALILEI{
 */
 class GWeightInfos : private R::RContainer<GWeightInfo,true,true>
 {
-protected:
-
-	/**
-	* State of the object.
-	*/
-	tObjState State;
-
 public:
 
 	/**
@@ -75,51 +69,26 @@ public:
 	GWeightInfos(const GWeightInfos& w);
 
 	/**
-	* Assignment operator for lists of weighted information entities.
-	* @param w              Source list of weighted information entities.
-	*/
-	void CopyInfos(const R::RContainer<GWeightInfo,false,true>* infos);
-
-	/**
 	* Static function used to order the information entities by weights.
 	* @param a              Pointer to the first object.
 	* @param b              Pointer to the second object.
 	*/
 	static int sortOrder(const void* a,const void* b);
 
-	/**
-	* Return the state of the document.
-	* @returns tObjState value.
-	*/
-	inline tObjState GetState(void) const {return(State);}
-
-	/**
-	* Set the state of the document.
-	* @param state           New state.
-	*/
-	void SetState(tObjState state);
-
 protected:
 
 	/**
-	 * Generic method to load information from the storage.
-	 * @param type           Type of the object.
-	 * @param id             Identifier of the object.
-	 */
-	void LoadInfos(tObjType type,size_t id);
-
-	/**
-	* Load information from the current storage. This method must be rewritten in
-	* the child classes, but the LoadInfos(tObjType,size_t) method can be used.
+	* Assignment operator for lists of weighted information entities.
+	* @param w              Source list of weighted information entities.
 	*/
-	virtual void LoadInfos(void);
+	void CopyInfos(const R::RContainer<GWeightInfo,false,true>& infos);
 
 public:
 
 	/**
 	* Get a Cursor on the weighted information entities.
 	*/
-	R::RCursor<GWeightInfo> GetInfos(void) const;
+	R::RCursor<GWeightInfo> GetInfos(void) const {return(R::RCursor<GWeightInfo>(*this));}
 
 	/**
 	* Insert an information.
@@ -163,7 +132,7 @@ public:
 	 * Verify if a given concept is in the vector.
 	 * @param concept        Concept.
 	 */
-	bool IsIn(const GConcept* concept) const;
+	bool IsIn(const GConcept* concept) const {return(R::RContainer<GWeightInfo,true,true>::IsIn(concept));}
 
 	/**
 	 * Fill an array with the weighted information.
@@ -175,13 +144,13 @@ public:
 	/**
 	* Clear the container.
 	*/
-	void Clear(void);
+	void Clear(void) {R::RContainer<GWeightInfo,true,true>::Clear();}
 
 	 /**
  	* Get the number of elements in the container.
  	* @return size_t.
  	*/
- 	size_t GetNb(void) const;
+ 	size_t GetNb(void) const {return(R::RContainer<GWeightInfo,true,true>::GetNb());}
 
 	/**
 	* @return True if a list is not empty.
@@ -220,29 +189,6 @@ public:
 	 * @param ObjType        Type of the object.
 	 */
 	double Inclusion(const GWeightInfos& w,tObjType ObjType) const;
-
-	/**
-	* @return the similarity between two lists of weighted information entities.
-	* The method uses the cosines of the corresponding vectors. A vector of a
-	* list is build using this list and a Inverse Frequency Factor (IFF) of the
-	* object type (idf, isf or ivf) for a given information entity space
-	* (language). If one of the list is empty, the similarity is null.
-	* @param w              Pointer to a list of weighted information entities.
-	* @param ObjType        Type of the object.
-	*/
-//	double SimilarityIFF(const GWeightInfos& w,tObjType ObjType) const;
-
-	/**
-	* Compute a similarity between two lists of weighted information entities.
-	* The method uses the cosines of the corresponding vectors. A vector of a
-	* list is build using this list and two Inverse Frequency Factors (IFF) of
-	* the object type (idf, isf or ivf) for a given information entity space
-	* (language). If one of the list is empty, the similarity is null.
-	* @param w              Reference to a list of weighted information entities.
-	* @param ObjType1       First type of the object.
-	* @param ObjType2       Second type of the object.
-	*/
-//	double SimilarityIFF2(const GWeightInfos& w,tObjType ObjType1,tObjType ObjType2) const;
 
 	/**
 	* Compute a boolean similarity between two lists of weighted information
@@ -292,16 +238,6 @@ public:
 	void RecomputeIFF(tObjType ObjType);
 
 	/**
-	* Method used to recompute the weights of the information entities using the
-	* formula proposed by Salton and Buckley with the current weights used as
-	* initial values. Only the information entities referred at least in one
-	* object of the corresponding type are used.
-	* @param ObjType        Type of the reference.
-	* @param lang           Information entity space (Language).
-	*/
-	void RecomputeQuery(tObjType ObjType,GLang* lang);
-
-	/**
 	 * Print the vector to the standard output.
 	 * @param msg            Header message.
 	 */
@@ -314,6 +250,10 @@ public:
 
 	friend class GIndexer;
 	friend class GDoc;
+	friend class GWeightInfosObj<GDoc,otDoc>;
+	friend class GWeightInfosObj<GProfile,otProfile>;
+	friend class GWeightInfosObj<GTopic,otTopic>;
+	friend class GWeightInfosObj<GCommunity,otCommunity>;
 };
 
 

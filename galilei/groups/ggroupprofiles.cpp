@@ -63,10 +63,8 @@ GGroupProfiles::GGroupProfiles(GFactoryGroupProfiles* fac)
 
 
 //-----------------------------------------------------------------------------
-void GGroupProfiles::Grouping(GSlot*,bool save)
+void GGroupProfiles::Grouping(GSlot*)
 {
-	// How to compute the groups
-	GCommunityCalc* CalcDesc=GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod();
 	Profiles.Clear();
 	RCursor<GProfile> cur(Session->GetProfiles());
 	for(cur.Start();!cur.End();cur.Next())
@@ -82,23 +80,6 @@ void GGroupProfiles::Grouping(GSlot*,bool save)
 
 	// Make the grouping
 	Run();
-
-	// Compute the description of the groups and Save the information.
-	if(CalcDesc)
-	{
-		R::RCursor<GCommunity> Groups(Session->GetCommunities());
-		for(Groups.Start();!Groups.End();Groups.Next())
-			CalcDesc->Compute(Groups());
-	}
-
-	// Save if necessary
-	if(save)
-	{
-		Session->GetStorage()->SaveCommunities();
-		R::RCursor<GCommunity> Groups(Session->GetCommunities());
-		for(Groups.Start();!Groups.End();Groups.Next())
-			Groups()->SetState(osSaved);
-	}
 }
 
 

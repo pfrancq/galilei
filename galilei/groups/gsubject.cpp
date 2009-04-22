@@ -366,7 +366,7 @@ void GSubject::SetUsed(GSession* session,RRandom* random,size_t nbdocs,GDoc** tm
 	{
 		if(Cur()->GetPtr(Name,false))
 			continue;
-		prof=new GProfile(Cur(),cNoRef,Name,cNoRef,RDate::GetToday(),RDate::GetToday(),RDate::GetToday(),nbsocial,5);
+		prof=new GProfile(Cur(),Name,nbsocial);
 		session->AssignId(prof);
 		session->InsertProfile(prof);
 		if(nbsocial)

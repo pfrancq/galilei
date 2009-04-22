@@ -54,13 +54,20 @@ class GTopic : public GGroup<GDoc,GTopic,otTopic>
 public:
 
 	/**
-	* Construct a group with a specific identifier.
+	* Construct a new topic.
+	* @param name            Name of the topic.
+	*/
+	GTopic(const R::RString& name);
+
+	/**
+	* Construct a topic with a specific identifier.
 	* @param id              Identifier.
 	* @param name            Name of the topic.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
+	* @param size           Size of the vector.
 	*/
-	GTopic(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c);
+	GTopic(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c,size_t size);
 
 	/**
 	 * Get the similarity measure that must be used when computing the

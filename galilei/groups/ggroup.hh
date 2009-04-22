@@ -36,12 +36,10 @@
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	GALILEI::GGroup<cObj,cGroup,type>::GGroup(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c)
-	: R::RContainer<cObj,false,true>(20,10), GALILEI::GWeightInfos(60), Id(id), Name(name),
+	GALILEI::GGroup<cObj,cGroup,type>::GGroup(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c,size_t size)
+	: R::RContainer<cObj,false,true>(20,10), GWeightInfosObj<cGroup,type>(id,size,osNew), Name(name),
 	  Updated(u), Computed(c), Data(0)
 {
-	if(Id!=R::cNoRef)
-		GALILEI::GSession::Event(static_cast<const cGroup*>(this),eObjNew);
 }
 
 
@@ -84,17 +82,6 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	R::RDate GALILEI::GGroup<cObj,cGroup,type>::GetComputed(void) const
 {
 	return(Computed);
-}
-
-
-//------------------------------------------------------------------------------
-template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::SetId(size_t id)
-{
-	if(id==R::cNoRef)
-		throw GException("Cannot assign cNoRef to a group");
-	Id=id;
-	GSession::Event(static_cast<const cGroup*>(this),eObjNew);
 }
 
 
@@ -262,19 +249,19 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::Update(R::RContainer<GWeightInfo,false,true>* infos)
+	void GALILEI::GGroup<cObj,cGroup,type>::Update(R::RContainer<GWeightInfo,false,true>& infos)
 {
 	// Remove its references
 	DelRefs(type);
 
 	// Assign information
-	GWeightInfos::Clear();
+	GWeightInfosObj<cGroup,type>::Clear();
 	State=osUpdated;
 	Computed.SetToday();
 	CopyInfos(infos);
 
 	// Clear infos
-	infos->Clear();
+	infos.Clear();
 
 	// Update its references
 	AddRefs(type);
@@ -312,18 +299,9 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	GALILEI::GGroup<cObj,cGroup,type>::~GGroup(void)
 {
-	GSession::Event(static_cast<const cGroup*>(this),eObjDelete);
-	try
-	{
-		R::RCursor<cObj> Prof(*this);
-		for(Prof.Start();!Prof.End();Prof.Next())
-			Prof()->SetGroup(R::cNoRef);
-		if(State==osDelete)  // The object has modified the references count but was not saved
-			DelRefs(type);
-		if(Data)
-			delete Data;
-	}
-	catch(...)
-	{
-	}
+	R::RCursor<cObj> Prof(*this);
+	for(Prof.Start();!Prof.End();Prof.Next())
+		Prof()->SetGroup(0);
+	if(Data)
+		delete Data;
 }

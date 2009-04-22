@@ -8,6 +8,8 @@ SET(galilei_knowledge_INST_INCLUDES
     gweightinfos.h
     gweightinfo.h
     gontology.h
+    gweightinfosobj.h
+    gweightinfosobj.hh
 )
     
                               

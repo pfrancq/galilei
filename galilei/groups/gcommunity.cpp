@@ -72,8 +72,15 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunity::GCommunity(size_t id,const RString& name,const RDate& u,const RDate& c)
-	: GGroup<GProfile,GCommunity,otCommunity>(id,name,u,c)
+GCommunity::GCommunity(const RString& name)
+	: GGroup<GProfile,GCommunity,otCommunity>(cNoRef,name,RDate::GetToday(),RDate::Null,0)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GCommunity::GCommunity(size_t id,const RString& name,const RDate& u,const RDate& c,size_t size)
+	: GGroup<GProfile,GCommunity,otCommunity>(id,name,u,c,size)
 {
 }
 

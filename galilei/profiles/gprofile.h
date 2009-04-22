@@ -36,7 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gweightinfos.h>
+#include <gweightinfosobj.h>
 
 
 //------------------------------------------------------------------------------
@@ -185,7 +185,7 @@ public:
 * @author Pascal Francq
 * @short Profile.
 */
-class GProfile :  public GWeightInfos
+class GProfile :  public GWeightInfosObj<GProfile,otProfile>
 {
 protected:
 
@@ -193,11 +193,6 @@ protected:
 	* The owner of the profile.
 	*/
 	GUser* User;
-
-	/**
-	* Identifier of the profile.
-	*/
-	size_t Id;
 
 	/**
 	* Name of the profile.
@@ -238,7 +233,15 @@ protected:
 public:
 
     /**
-	* Constructor of a profile.
+	* Construct a new profile.
+	* @param usr             User of the profile.
+	* @param name            Name of the profile.
+	* @param s               Social?
+	*/
+	GProfile(GUser* usr,const R::RString name,bool s);
+
+    /**
+	* Construct a profile.
 	* @param usr             User of the profile.
 	* @param id              Identifier of the profile.
 	* @param name            Name of the profile.
@@ -246,10 +249,11 @@ public:
 	* @param a               Date where it was attached.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
+	* @param size            Size of the vector.
 	* @param s               Social?
 	* @param nbf             Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s=true,size_t nbf=100);
+	GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,size_t size,bool s,size_t nbf);
 
 	/**
 	* Compare two profiles by comparing their identifier.
@@ -274,23 +278,6 @@ public:
 	* @return int
 	*/
 	int Compare(const size_t id) const;
-
-	/**
-	* Load information from the current storage.
-	*/
-	virtual void LoadInfos(void) {GWeightInfos::LoadInfos(otProfile,Id);}
-
-	/**
-	* Get the identifier of the profile.
-	* @return Identifier.
-	*/
-	size_t GetId(void) const {return(Id);}
-
-	/**
-	* Set the identifier.
-	* @param id              Identifier.
-	*/
-	void SetId(size_t id);
 
 	/**
 	* Get the name of the profile.
@@ -370,7 +357,7 @@ public:
 	size_t GetCommonDocs(const GProfile* prof) const;
 
 	/**
-	* Get the number of common document with different judgement between two
+	* Get the number of common document with different assessments between two
 	* profiles.
 	* @param prof            Pointer to a profile.
 	*/
@@ -388,7 +375,7 @@ public:
 
 	/**
 	* Insert an assessment to the list of the profile.
-	* @param docid           Identificator of the document.
+	* @param docid           Identifier of the document.
 	* @param assess          Assessment.
 	* @param date            Date.
 	* @param update          Last update of the document.
@@ -397,7 +384,7 @@ public:
 
 	/**
 	* Delete an assessment from the list of the profile.
-	* @param docid           Identificator of the document.
+	* @param docid           Identifier of the document.
 	*/
 	void DeleteFdbk(size_t docid);
 
@@ -415,13 +402,13 @@ public:
 
 	/**
 	* Get the feedback of the profile on a specific document.
-	* @param docid           Identificator of the document.
+	* @param docid           Identifier of the document.
 	*/
 	GFdbk* GetFdbk(size_t docid) const;
 
 	/**
 	* This method is call by a document when it was modified.
-	* @param docid           Identificator of the document.
+	* @param docid           Identifier of the document.
 	*/
 	void HasUpdate(size_t docid);
 

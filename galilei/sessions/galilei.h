@@ -80,131 +80,6 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Knowledge Part
-class GConcept;
-class GConceptType;
-class GRelation;
-class GRelationType;
-class GLang;
-class GFactoryLang;
-class GLangManager;
-class GWeightInfo;
-class GWeightInfos;
-class GOntology;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Documents Part
-class GFilter;
-class GFactoryFilter;
-class GFilterManager;
-class GTopic;
-class GDoc;
-class GDocAnalyse;
-class GDocAnalyseManager;
-class GPostDoc;
-class GPostDocManager;
-class GFactoryPostDoc;
-class GDocXML;
-class GFactoryDocAnalyse;
-class GBalancedLinks;
-class GFactoryLinkCalc;
-class GLink;
-class GLinkCalc;
-class GLinkCalcManager;
-class GLinks;
-class GSugs;
-class GTVDRec;
-class GDocStruct;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Engines Part
-class GEngine;
-class GFactoryEngine;
-class GEngineManager;
-class GEngineDoc;
-class GRanking;
-class GMetaEngine;
-class GFactoryMetaEngine;
-class GMetaEngineManager;
-class GIndexer;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Profiles Part
-class GUser;
-class GProfile;
-class GFdbk;
-class GProfileCalc;
-class GFactoryProfileCalc;
-class GProfileCalcManager;
-class GPreProfile;
-class GPostProfile;
-class GFactoryPreProfile;
-class GFactoryPostProfile;
-class GPreProfileManager;
-class GPostProfileManager;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Communities Part
-class GCommunity;
-class GGroupProfiles;
-class GFactoryGroupProfiles;
-class GFactoryGroupDocs;
-class GGroupProfilesManager;
-class GGroupDocsManager;
-class GCommunityCalc;
-class GCommunityCalcManager;
-class GTopicCalcManager;
-class GSubject;
-class GSubjects;
-class GPostCommunity;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Topics Part
-class GTopic;
-class GGroupDocs;
-class GTopicCalc;
-class GFactoryCommunityCalc;
-class GFactoryTopicCalc;
-class GPostTopic;
-class GPostCommunityManager;
-class GPostTopicManager;
-class GFactoryPostCommunity;
-class GFactoryPostTopic;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Session Part
-class GDebugObject;
-class GSession;
-class GSlot;
-class GSignalHandler;
-class GStatsCalc;
-class GFactoryStatsCalc;
-class GStatsCalcManager;
-class GStorage;
-class GStorageManager;
-class GFactoryStorage;
-class GMeasure;
-class GMeasureManager;
-class GFactoryMeasure;
-class GGALILEIApp;
-class GGALILEIPrg;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Tools Part
-class GTool;
-class GFactoryTool;
-class GToolManager;
-class GMatrixMeasure;
-
-
-//------------------------------------------------------------------------------
 /**
 * Types of GALILEI objects.
 */
@@ -391,6 +266,132 @@ public:
 	GException(void) throw()
 		: R::RException() {}
 };
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Knowledge Part
+class GConcept;
+class GConceptType;
+class GRelation;
+class GRelationType;
+class GLang;
+class GFactoryLang;
+class GLangManager;
+class GWeightInfo;
+class GWeightInfos;
+template<class cObj,tObjType type> class GWeightInfosObj;
+class GOntology;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Documents Part
+class GFilter;
+class GFactoryFilter;
+class GFilterManager;
+class GTopic;
+class GDoc;
+class GDocAnalyse;
+class GDocAnalyseManager;
+class GPostDoc;
+class GPostDocManager;
+class GFactoryPostDoc;
+class GDocXML;
+class GFactoryDocAnalyse;
+class GBalancedLinks;
+class GFactoryLinkCalc;
+class GLink;
+class GLinkCalc;
+class GLinkCalcManager;
+class GLinks;
+class GSugs;
+class GTVDRec;
+class GDocStruct;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Engines Part
+class GEngine;
+class GFactoryEngine;
+class GEngineManager;
+class GEngineDoc;
+class GRanking;
+class GMetaEngine;
+class GFactoryMetaEngine;
+class GMetaEngineManager;
+class GIndexer;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Profiles Part
+class GUser;
+class GProfile;
+class GFdbk;
+class GProfileCalc;
+class GFactoryProfileCalc;
+class GProfileCalcManager;
+class GPreProfile;
+class GPostProfile;
+class GFactoryPreProfile;
+class GFactoryPostProfile;
+class GPreProfileManager;
+class GPostProfileManager;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Communities Part
+class GCommunity;
+class GGroupProfiles;
+class GFactoryGroupProfiles;
+class GFactoryGroupDocs;
+class GGroupProfilesManager;
+class GGroupDocsManager;
+class GCommunityCalc;
+class GCommunityCalcManager;
+class GTopicCalcManager;
+class GSubject;
+class GSubjects;
+class GPostCommunity;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Topics Part
+class GTopic;
+class GGroupDocs;
+class GTopicCalc;
+class GFactoryCommunityCalc;
+class GFactoryTopicCalc;
+class GPostTopic;
+class GPostCommunityManager;
+class GPostTopicManager;
+class GFactoryPostCommunity;
+class GFactoryPostTopic;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Session Part
+class GDebugObject;
+class GSession;
+class GSlot;
+class GSignalHandler;
+class GStatsCalc;
+class GFactoryStatsCalc;
+class GStatsCalcManager;
+class GStorage;
+class GStorageManager;
+class GFactoryStorage;
+class GMeasure;
+class GMeasureManager;
+class GFactoryMeasure;
+class GGALILEIApp;
+class GGALILEIPrg;
+
+
+//------------------------------------------------------------------------------
+// forward class declaration - Tools Part
+class GTool;
+class GFactoryTool;
+class GToolManager;
+class GMatrixMeasure;
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

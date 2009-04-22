@@ -63,11 +63,8 @@ GGroupDocs::GGroupDocs(GFactoryGroupDocs* fac)
 
 
 //-----------------------------------------------------------------------------
-void GGroupDocs::Grouping(GSlot*,bool save,bool debug)
+void GGroupDocs::Grouping(GSlot*,bool debug)
 {
-	// How to compute the groups
-	GTopicCalc* CalcDesc=GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod();
-
 	Docs.Clear();
 
 	if(debug)
@@ -99,23 +96,6 @@ void GGroupDocs::Grouping(GSlot*,bool save,bool debug)
 
 	// Make the grouping
 	Run();
-
-	// Compute the description of the topics and save the information.
-	if(CalcDesc)
-	{
-		R::RCursor<GTopic> Groups(Session->GetTopics());
-		for(Groups.Start();!Groups.End();Groups.Next())
-			CalcDesc->Compute(Groups());
-	}
-
-	// Save if necessary
-	if(save)
-	{
-		Session->GetStorage()->SaveTopics();
-		R::RCursor<GTopic> Groups(Session->GetTopics());
-		for(Groups.Start();!Groups.End();Groups.Next())
-			Groups()->SetState(osSaved);
-	}
 }
 
 

@@ -55,13 +55,20 @@ class GCommunity : public GGroup<GProfile,GCommunity,otCommunity>
 public:
 
 	/**
-	* Construct a group with a specific identifier.
+	* Construct a new community group.
+	* @param name            Name of the community.
+	*/
+	GCommunity(const R::RString& name);
+
+	/**
+	* Construct a community with a specific identifier.
 	* @param id              Identifier.
 	* @param name            Name of the community.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
+	* @param size           Size of the vector.
 	*/
-	GCommunity(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c);
+	GCommunity(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c,size_t size);
 
 	/**
 	 * Get the similarity measure that must be used when computing the

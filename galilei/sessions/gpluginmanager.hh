@@ -245,8 +245,8 @@ template<class mng,class factory,class plugin>
 	}
 	if(fac->GetBool("Enable"))
 		fac->Create();
-
-	fac->Apply();
+	else
+		fac->Apply();
 	R::RContainer<factory,true,true>::InsertPtr(fac);
 }
 

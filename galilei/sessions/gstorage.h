@@ -517,12 +517,6 @@ public:
 	virtual void SaveProfile(GProfile* prof)=0;
 
 	/**
-	* Save profiles in history
-	* @param historicID      Identifier of the historic.
-	*/
-	virtual void SaveHistoricProfiles(size_t historicID)=0;
-
-	/**
 	* Add a suggestion for a given profile and a given test.
 	* @param name            Name of the test.
 	* @param profileid       Identifier of the profile.
@@ -580,14 +574,15 @@ public:
 
 	/**
 	* Assign an identifier to a new community.
-	* @param grp            Group.
+	* @param grp            Community.
 	*/
 	virtual void AssignId(GCommunity* grp)=0;
 
 	/**
-	* Save the communities of the session.
+	* Save a community.
+	* @param grp            Community.
 	*/
-	virtual void SaveCommunities(void)=0;
+	virtual void SaveCommunity(GCommunity* grp)=0;
 
 	/**
 	* Add a suggestion for a given community and a given test.
@@ -634,9 +629,10 @@ public:
 	virtual void AssignId(GTopic* top)=0;
 
 	/**
-	* Save the topics of the session.
+	* Save a topic.
+	* @param grp            Topic.
 	*/
-	virtual void SaveTopics(void)=0;
+	virtual void SaveTopic(GTopic* grp)=0;
 
 	// @} Topics
 

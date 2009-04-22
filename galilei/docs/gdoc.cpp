@@ -56,8 +56,25 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t nbrecs,size_t nblcs)
-	: GWeightInfos(60), URL(url), Name(name), Id(id), Struct(0),
+GDoc::GDoc(const RURI& url,const RString& name,GLang* lang,const RString& mime)
+	: GWeightInfosObj<GDoc,otDoc>(cNoRef,0,osNew), URL(url), Name(name), Struct(0),
+	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
+	  Fdbks(0), LinkSet(5,2), GroupId(0), Attached(RDate::Null),
+	  NbRecs(0), NbLCs(0)
+{
+	// Verify if the topic exists in memory
+	if(GroupId&&(GSession::Get()))
+	{
+		GTopic* grp=GSession::Get()->GetTopic(GroupId,false,false);
+		if(grp)
+			grp->InsertObj(this);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a,size_t size,size_t nbrecs,size_t nblcs)
+	: GWeightInfosObj<GDoc,otDoc>(id,size,osNew), URL(url), Name(name), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), LinkSet(5,2), GroupId(grpid), Attached(a),
 	  NbRecs(nbrecs), NbLCs(nblcs)
@@ -70,9 +87,6 @@ GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RStri
 		if(grp)
 			grp->InsertObj(this);
 	}
-
-	if(Id!=cNoRef)
-		GSession::Event(this,eObjNew);
 }
 
 
@@ -117,7 +131,7 @@ int GDoc::Compare(const GLang* lang) const
 void GDoc::ClearInfos(void)
 {
 	// Clear the information
-	GWeightInfos::Clear();
+	GWeightInfosObj<GDoc,otDoc>::Clear();
 
 	// Make sure that it will be re-computed
 	Computed=RDate::Null;
@@ -138,7 +152,7 @@ GDocStruct* GDoc::GetStruct(void) const
 	if((!Struct)&&NbRecs)
 	{
 		// Create the structure and load it from the database
-		GetInfos();
+		GetVector();
 		const_cast<GDoc*>(this)->Struct=new GDocStruct(NbRecs,NbLCs);
 		GSession* session=GSession::Get();
 		if(session)
@@ -208,16 +222,6 @@ RString GDoc::GetMIMEType(void) const
 void GDoc::SetMIMEType(const RString& mime)
 {
 	MIMEType=mime;
-}
-
-
-//------------------------------------------------------------------------------
-void GDoc::SetId(size_t id)
-{
-	if(id==cNoRef)
-		throw GException("Cannot assign cNoRef to a document");
-	Id=id;
-	GSession::Event(this,eObjNew);
 }
 
 
@@ -422,10 +426,12 @@ void GDoc::Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram
 		DelRefs(otDoc);
 
 	// Assign language and information
-	GWeightInfos::Clear();
+	GWeightInfosObj<GDoc,otDoc>::Clear();
 	Lang=lang;
 	NbRecs=docstruct.GetNbRecs();
 	NbLCs=docstruct.GetNbLCs();
+	SetSize(infos.GetNb());   // Set the correct size for the document
+
 	if(Id!=cNoRef)
 	{
 		if(ram)
@@ -465,19 +471,9 @@ void GDoc::Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram
 //------------------------------------------------------------------------------
 GDoc::~GDoc(void)
 {
-	GSession::Event(this,eObjDelete);
 	if(Struct)
 		delete Struct;
-	try
-	{
-		// Delete feedbacks vector
-		delete Fdbks;
 
-		// If document have a language -> remove its references
-		if(Lang&&(State==osDelete))  // The object has modified the references count but was not saved
-			DelRefs(otDoc);
-	}
-	catch(...)
-	{
-	}
+	// Delete feedbacks vector
+	delete Fdbks;
 }

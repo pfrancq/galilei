@@ -791,7 +791,7 @@ void GSubjects::PerformDegradation(char what,int nb)
 					for(Docs.Start();--split;Docs.Next())
 						Dels.InsertPtr(Docs());
 					Docs=Dels;
-					GTopic* ptr2=new GTopic(cNoRef,"Split "+RString::Number(i),RDate::GetToday(),RDate::Null);
+					GTopic* ptr2=new GTopic("Split "+RString::Number(i));
 					Data->Session->AssignId(ptr2);
 					Data->Session->InsertTopic(ptr2);
 					for(Docs.Start();!Docs.End();Docs.Next())
