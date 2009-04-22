@@ -156,7 +156,7 @@ void Thesaurus::Run(void)
 		RObjH* obj;
 		for(Cur.Start();!Cur.End();Cur.Next(),i++)
 		{
-			RCursor<GWeightInfo> Infos(Cur()->GetInfos());
+			RCursor<GWeightInfo> Infos(Cur()->GetVector()->GetInfos());
 			Objs.InsertPtr(obj=new RObjH(i,Cur()->GetName(),Infos.GetNb()));
 			for(Infos.Start();!Infos.End();Infos.Next())
 			{
