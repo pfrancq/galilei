@@ -103,15 +103,15 @@ void GCommunityCalcGravitation::Compute(GCommunity* grp)
 		delete Cur();
 	Infos.Clear();
 
-	// If no sprofiles -> No relevant one.
+	// If no profiles -> No relevant one.
 	if(!grp->GetNbObjs()) return;
 
-	// Go through the sprofiles and sum the weights.
+	// Go through the profiles and sum the weights.
 	RCursor<GProfile> Prof(grp->GetObjs());
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		// Go trough the words of the current profile
-		RCursor<GWeightInfo> Cur(Prof()->GetInfos());
+		RCursor<GWeightInfo> Cur(Prof()->GetVector()->GetInfos());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			ins=Vector.GetInfo(Cur());
@@ -148,7 +148,7 @@ void GCommunityCalcGravitation::Compute(GCommunity* grp)
 	}
 
 	// Update the community.
-	grp->Update(&Infos);
+	grp->Update(Infos);
 }
 
 

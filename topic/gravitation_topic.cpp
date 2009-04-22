@@ -110,7 +110,7 @@ void GTopicCalcGravitation::Compute(GTopic* grp)
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		// Go trough the words of the current document
-		RCursor<GWeightInfo> Cur(Prof()->GetInfos());
+		RCursor<GWeightInfo> Cur(Prof()->GetVector()->GetInfos());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			ins=Vector.GetInfo(Cur());
@@ -147,7 +147,7 @@ void GTopicCalcGravitation::Compute(GTopic* grp)
 	}
 
 	// Update the topic.
-	grp->Update(&Infos);
+	grp->Update(Infos);
 }
 
 
