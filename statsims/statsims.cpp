@@ -307,7 +307,7 @@ void GStatsSims::DoExportDocsIncs(void)
 			if(Objs1()==Objs2())
 				Export<<"1.000000E+00";
 			else
-				Export<<Objs1()->Inclusion(*Objs2(),otDoc);
+				Export<<Objs1()->GetVector()->Inclusion(*Objs2()->GetVector(),otDoc);
 			NewComma=true;
 		}
 		NewLine=true;
