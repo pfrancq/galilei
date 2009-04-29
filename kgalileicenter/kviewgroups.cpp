@@ -65,6 +65,7 @@ KViewTopics::KViewTopics(void)
 {
 	setWindowTitle("Topics");
 	connect(Objects,SIGNAL(Show(GDoc*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showDoc(GDoc*)));
+	connect(Objects,SIGNAL(Show(GTopic*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showTopic(GTopic*)));
 	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(topicsChanged()),this,SLOT(update()));
 	connect(What,SIGNAL(returnPressed()),this,SLOT(FindNext()));
 	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));
@@ -99,6 +100,7 @@ KViewCommunities::KViewCommunities(void)
 {
 	setWindowTitle("Communities");
 	connect(Objects,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
+	connect(Objects,SIGNAL(Show(GCommunity*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showCommunity(GCommunity*)));
 	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(communitiesChanged()),this,SLOT(update()));
 	connect(What,SIGNAL(returnPressed()),this,SLOT(FindNext()));
 	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));

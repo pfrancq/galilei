@@ -46,6 +46,8 @@
 		<Action name="showTopics"/>
 		<Action name="topicsCalc"/>
 		<Action name="postTopicsCalc"/>
+		<separator/>
+		<Action name="showClasses"/>
 	</Menu>
 	<Menu name="Users"><text>&amp;Users</text>
 		<Action name="subprofilesClear"/>

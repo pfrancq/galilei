@@ -38,7 +38,7 @@
 // include files for R/GALILEI
 #include <rcontainer.h>
 #include <gconcepttype.h>
-#include <grelation.h>
+#include <gstatement.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -67,10 +67,6 @@ class KViewDicts : public QMdiSubWindow, public Ui_KViewDicts
 	* Current concept type.
 	*/
 	GConceptType* CurDict;
-
-	/**
-	*/
-	RContainer<GRelation,false,false> Rels;
 
 public:
 
@@ -123,14 +119,14 @@ protected slots:
 	void delConcept(void);
 
 	/**
-	 * The user want to create a new relation.
+	 * The user want to create a new statement.
 	 */
-	void newRelation(void);
+	void newStatement(void);
 
 	/**
-	 * The user want to delete the current relation.
+	 * The user want to delete the current statement.
 	 */
-	void delRelation(void);
+	void delStatement(void);
 
 public:
 

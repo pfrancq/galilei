@@ -423,6 +423,11 @@ private slots:
 	 */
 	 void topicsCompare(void);
 
+	 /**
+	  * Show the classes.
+	  */
+	 void showClasses(void);
+
 	 //	/**
 	 //	* Show help on program.
 	 //	*/

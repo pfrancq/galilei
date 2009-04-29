@@ -116,7 +116,11 @@ void QImportDocs::DoIt(void)
 {
 	ParseDir(Info->Dir,Info->Parent);
 	if(Info->Categorized)
-		GALILEIApp->GetSession()->GetStorage()->SaveSubjects();
+	{
+		RCursor<GSubject> Cur(GALILEIApp->GetSession()->GetSubjects()->GetNodes());
+		for(Cur.Start();!Cur.End();Cur.Next())
+			GALILEIApp->GetSession()->GetStorage()->SaveSubject(Cur());
+	}
 }
 
 
@@ -142,15 +146,13 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 			// Find parent topic
 			if(Info->Categorized)
 			{
-				if(parent.IsEmpty())
-					Subject=Subjects->GetTop();
-				else
+				if(!parent.IsEmpty())
 				{
 					Subject=Subjects->GetNode(parent);
 					cat=parent+"/"+cat;
 				}
 				if(CurDepth<=Info->Depth->value())
-					Subjects->InsertNode(Subject,new GSubject(Subjects->GetNbNodes(),cat,false));
+					Subjects->InsertNode(Subject,new GSubject(Subjects->GetNbNodes(),cat,true));
 			}
 
 			ParseDir(Files()->GetURI(),cat);
@@ -170,7 +172,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 			{
 				GSubject* Subject(Subjects->GetNode(parent));
 				if(Subject)
-					Subject->Insert(doc);
+					Subject->Insert(doc,true);
 			}
 		}
 	}

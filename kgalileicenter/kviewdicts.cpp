@@ -33,8 +33,8 @@
 // include files for R/GALILEI Projects
 #include <rqt.h>
 #include <gconcept.h>
-#include <grelationtype.h>
-#include <grelation.h>
+#include <gpredicate.h>
+#include <gstatement.h>
 #include <ggalileiapp.h>
 #include <gsession.h>
 
@@ -67,7 +67,7 @@ public:
 	{
 		GConceptType* Dict;
 		GConcept* Concept;
-		GRelation* Rel;
+		GStatement* Statement;
 	} Obj;
 
 	tObjType Type;
@@ -86,10 +86,10 @@ public:
 		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
 	}
 
-	QGObject(QTreeWidget* parent,GRelation* rel,const QString& str1,const QString& str2,const QString& str3)
-		: QTreeWidgetItem(parent,QStringList()<<str1<<str2<<str3), Type(otRelation)
+	QGObject(QTreeWidget* parent,GStatement* statement,const QString& str1,const QString& str2,const QString& str3)
+		: QTreeWidgetItem(parent,QStringList()<<str1<<str2<<str3), Type(otStatement)
 	{
-		Obj.Rel=rel;
+		Obj.Statement=statement;
 	}
 };
 
@@ -128,7 +128,7 @@ public:
 
 //-----------------------------------------------------------------------------
 KViewDicts::KViewDicts(void)
-	: QMdiSubWindow(), Ui_KViewDicts(), CurDict(0), Rels(0)
+	: QMdiSubWindow(), Ui_KViewDicts(), CurDict(0)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -139,8 +139,8 @@ KViewDicts::KViewDicts(void)
 	connect(Dict,SIGNAL(itemActivated(QTreeWidgetItem*,int)),this,SLOT(selectConcept(QTreeWidgetItem*,int)));
 	connect(NewConcept,SIGNAL(pressed()),this,SLOT(newConcept()));
 	connect(DelConcept,SIGNAL(pressed()),this,SLOT(delConcept()));
-	connect(NewRelation,SIGNAL(pressed()),this,SLOT(newRelation()));
-	connect(DelRelation,SIGNAL(pressed()),this,SLOT(delRelation()));
+	connect(NewStatement,SIGNAL(pressed()),this,SLOT(newStatement()));
+	connect(DelStatement,SIGNAL(pressed()),this,SLOT(delStatement()));
 }
 
 
@@ -205,16 +205,16 @@ void KViewDicts::selectConcept(QTreeWidgetItem* item,int)
 		return;
 	if((!ptr)||(!CurDict))
 		return;
-	GConcept* concept(ptr->Obj.Concept);
-	Relations->clear();
-	Rels.Clear();
-	GALILEIApp->GetSession()->GetRelations(Rels,concept,cNoRef,0,true);
-	RCursor<GRelation> Cur(Rels);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		new QGObject(Relations,Cur(),
-				 BuildConcept(Cur()->GetSubject()),
-				 ToQString(GALILEIApp->GetSession()->GetRelationType(Cur()->GetType(),false)->GetName()),
-				 BuildConcept(Cur()->GetObject()));
+//	GConcept* concept(ptr->Obj.Concept);
+	Statements->clear();
+//	Rels.Clear();
+//	GALILEIApp->GetSession()->GetRelations(Rels,concept,cNoRef,0,true);
+//	RCursor<GRelation> Cur(Rels);
+//	for(Cur.Start();!Cur.End();Cur.Next())
+//		new QGObject(Relations,Cur(),
+//				 BuildConcept(Cur()->GetSubject()),
+//				 ToQString(GALILEIApp->GetSession()->GetPredicate(Cur()->GetType(),false)->GetName()),
+//				 BuildConcept(Cur()->GetObject()));
 }
 
 
@@ -249,20 +249,20 @@ void KViewDicts::delConcept(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewDicts::newRelation(void)
+void KViewDicts::newStatement(void)
 {
-	RToDo("KViewDicts::newRelation(void)");
+	RToDo("KViewDicts::newStatement(void)");
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewDicts::delRelation(void)
+void KViewDicts::delStatement(void)
 {
-	QGObject* ptr(dynamic_cast<QGObject*>(Relations->currentItem()));
+	QGObject* ptr(dynamic_cast<QGObject*>(Statements->currentItem()));
 	if(!ptr) return;
-	if(KMessageBox::warningYesNo(this,"Do you want to delete the current relation?","Warning")==KMessageBox::No)
+	if(KMessageBox::warningYesNo(this,"Do you want to delete the current statement?","Warning")==KMessageBox::No)
 		return;
-	RToDo("KViewDicts::delRelation(void)");
+	RToDo("KViewDicts::delStatement(void)");
 }
 
 

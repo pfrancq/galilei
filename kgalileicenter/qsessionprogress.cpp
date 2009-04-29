@@ -147,8 +147,12 @@ void QSessionThread::run(void)
 //-----------------------------------------------------------------------------
 void QCreateSession::DoIt(void)
 {
-	Parent->setLabelText("Load Concepts and Relations ...");
+	Parent->setLabelText("Load Concepts, Predicates and Statements ...");
 	Session=GALILEIApp->CreateSession();
+	if(GSession::Break())
+		return;
+	Parent->setLabelText("Load Classes ...");
+	GALILEIApp->GetSession()->LoadClasses();
 	Parent->setLabelText("Load Topics ...");
 	GALILEIApp->GetSession()->LoadTopics();
 	if(GSession::Break())

@@ -319,7 +319,7 @@ void Configure::initSimulation(void)
 	if(!Session) return;
 	GSubjects* TheSubjects(Session->GetSubjects());
 	if(!TheSubjects) return;
-	RCursor<GSubject> Cur(TheSubjects->GetTop()->GetNodes());
+	RCursor<GSubject> Cur(TheSubjects->GetTopNodes());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		addSubject(Cur(),0);
 }
@@ -364,13 +364,11 @@ void Configure::applySimulation(void)
 	Session->SetDouble("NbDocsPerSubject",NbDocsPerSubject->value(),"Subjects");
 	Session->SetBool("PercNbDocsPerSubject",PercNbDocsPerSubject->isChecked(),"Subjects");
 	Session->SetBool("ClusterSelectedDocs",ClusterSelectedDocs->isChecked(),"Subjects");
-	Session->Reset("SelectedSubjects","Subjects");
 	for(int i=0;i<Subjects->topLevelItemCount();i++)
 	{
 		QSubjectItem* item(dynamic_cast<QSubjectItem*>(Subjects->topLevelItem(i)));
 		if(!item) continue;
-		if(item->Select)
-			Session->AddToList("SelectedSubjects",FromQString(item->text(1)),"Subjects");
+		item->Subject->SetUsed(Session,item->Select);
 		applySubSubjects(item);
 	}
 	Session->Apply();

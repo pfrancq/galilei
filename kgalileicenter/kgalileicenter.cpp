@@ -71,6 +71,7 @@ using namespace GALILEI;
 #include <kviewgroup.h>
 #include <kviewgroups.h>
 #include <kviewusers.h>
+#include <kviewclasses.h>
 #include <kviewidealgroups.h>
 #include <kviewprofile.h>
 #include <kviewdicts.h>
@@ -160,6 +161,7 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Group Documents","topicsCalc",SLOT(topicsCalc())));
 	Actions.insert(Actions.size(),addAction("Execute Post-Topic Methods","postTopicsCalc",SLOT(postTopicsCalc())));
 	Actions.insert(Actions.size(),addAction("Show &Topics","showTopics",SLOT(showTopics()),"window_new"));
+	Actions.insert(Actions.size(),addAction("Show &Classes","showClasses",SLOT(showClasses()),"view-list-tree"));
 
 	// Menu "Users"
 	Actions.insert(Actions.size(),addAction("&Force Re-computing profiles","profilesClear",SLOT(profilesClear())));
@@ -924,6 +926,17 @@ void KGALILEICenter::topicsCompare(void)
 	ptr->adjustSize();
 	ptr->show();
 }
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::showClasses(void)
+{
+	KViewClasses* ptr(new KViewClasses());
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();
+}
+
 
 
 ////-----------------------------------------------------------------------------

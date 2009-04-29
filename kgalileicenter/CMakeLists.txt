@@ -20,6 +20,7 @@ kviewidealgroups.cpp
 kviewprofile.cpp
 kviewdicts.cpp
 kprgconsole.cpp
+kviewclasses.cpp
 )
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
@@ -45,6 +46,7 @@ kviewdicts.ui
 kprgconsole.ui
 #qchooseparent.ui
 qdebuginfo.ui
+kviewclasses.ui
 )
 
 
