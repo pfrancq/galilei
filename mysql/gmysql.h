@@ -137,6 +137,12 @@ protected:
 	 * Return a SQL string for a given unsigned int.
 	 * @param i              The number.
 	 */
+	inline R::RString Num(int i) {return("'"+R::RString::Number(i)+"'");}
+
+	/**
+	 * Return a SQL string for a given unsigned int.
+	 * @param i              The number.
+	 */
 	inline R::RString Num(size_t i) {return("'"+R::RString::Number(i)+"'");}
 
 	/**
@@ -198,10 +204,11 @@ public:
 	virtual void LoadSubjects(void);
 
 	/**
-	 * Save the subjects, including the information on the documents and the
-	 * profiles assigned to them.
+	 * Save the subject, including the information on the documents (and which
+	 * ones are used) and the profiles assigned to them.
+	 * @param subject        Subject to save.
 	 */
-	virtual void SaveSubjects(void);
+	virtual void SaveSubject(GSubject* subject);
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
@@ -246,16 +253,6 @@ public:
 	* @param type            Concept type.
 	*/
 	virtual void AssignId(GConceptType* type);
-
-	/**
-	* Load the relation types from the database.
-	*/
-	virtual void LoadRelationTypes(void);
-
-	/**
-	* Load the relation from the database.
-	*/
-	virtual void LoadRelations(void);
 
 	/**
 	* Loading the all concepts.
@@ -316,6 +313,46 @@ public:
 	* @param refs            Number of references.
 	*/
 	virtual void SaveRefs(GConceptType* type,tObjType what,size_t refs);
+
+	/**
+	* Load the predicates from the database.
+	*/
+	virtual void LoadPredicates(void);
+
+	/**
+	* Assign an identifier to a new predicate.
+	* @param predicate       Predicate.
+	*/
+	virtual void AssignId(GPredicate* predicate);
+
+	/**
+	* Load the statements from the database.
+	*/
+	virtual void LoadStatements(void);
+
+	/**
+	* Assign an identifier to a new statement.
+	* @param statement       Statement.
+	*/
+	virtual void AssignId(GStatement* statement);
+
+	/**
+	* Method that load the classes from where they are stored. This method is
+	* called once by the session.
+	*/
+	void LoadClasses(void);
+
+	/**
+	* Assign an identifier to a new class.
+	* @param class           Class.
+	*/
+	virtual void AssignId(GClass* theclass);
+
+	/**
+	 * Save a class.
+	 * @param theclass        Class.
+	 */
+	virtual void SaveClass(GClass* theclass);
 
 	// @} Knowledge Methods
 

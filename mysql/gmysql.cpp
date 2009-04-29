@@ -63,8 +63,9 @@
 #include <gconcept.h>
 #include <gxmlindex.h>
 #include <gconcepttype.h>
-#include <grelation.h>
-#include <grelationtype.h>
+#include <gstatement.h>
+#include <gpredicate.h>
+#include <gclass.h>
 
 
 
@@ -250,10 +251,6 @@ void* GStorageMySQL::GetInfos(void)
 //------------------------------------------------------------------------------
 void GStorageMySQL::LoadSubjects(void)
 {
-	RString sSql;
-	GSubject* subject;
-	GSubject* subsubject;
-
 	try
 	{
 		// Verify the subjects exist and clear them
@@ -265,33 +262,32 @@ void GStorageMySQL::LoadSubjects(void)
 		Session->GetSubjects()->Clear();
 
 		// Load the subjects
-		GSubject* Top=Session->GetSubjects()->GetTop();
-		RQuery sub(Db,"SELECT subjectid,name,used FROM subjects WHERE parent=0");
+		RQuery sub(Db,"SELECT subjectid,name,used,parent FROM subjects");
 		for(sub.Start();!sub.End();sub.Next())
 		{
-			Session->GetSubjects()->InsertNode(Top,subject=new GSubject(atoi(sub[0]),sub[1],atoi(sub[2])));
-			sSql="SELECT subjectid,name,used FROM subjects WHERE parent="+sub[0];
-			RQuery subsub(Db,sSql);
-			for(subsub.Start();!subsub.End();subsub.Next())
-				Session->GetSubjects()->InsertNode(subject,subsubject=new GSubject(atoi(subsub[0]),subsub[1],atoi(subsub[2])));
+			size_t ParentId(sub[3].ToSizeT());
+			GSubject* Parent(0);
+			if(ParentId)
+				Parent=Session->GetSubjects()->GetSubject(ParentId);
+			Session->GetSubjects()->InsertNode(Parent,new GSubject(sub[0].ToSizeT(),sub[1],sub[2].ToBool(true)));
 		}
 
 		//  Make Link between documents and subjects
-		RQuery docs(Db,"SELECT docid,subjectid FROM subjectsbydocs");
+		RQuery docs(Db,"SELECT docid,subjectid,used FROM subjectsbydocs");
 		for(docs.Start();!docs.End();docs.Next())
 		{
-			GDoc* d=Session->GetDoc(atoi(docs[0]));
+			GDoc* d=Session->GetDoc(docs[0].ToSizeT());
 			if(!d) continue;
-			Session->GetSubjects()->InsertDocSubject(d,atoi(docs[1]));
+			Session->GetSubjects()->InsertDocSubject(d,docs[1].ToSizeT(),docs[2].ToBool(true));
 		}
 
 		// Make links between profiles and subjects
-		RQuery profiles(Db,"SELECT profileid,subjectid FROM profiles");
+		RQuery profiles(Db,"SELECT profileid,subjectid FROM profiles WHERE subjectid<>0");
 		for(profiles.Start();!profiles.End();profiles.Next())
 		{
-			GProfile* prof=Session->GetProfile(atoi(profiles[0]));
+			GProfile* prof=Session->GetProfile(profiles[0].ToSizeT());
 			if(!prof) continue;
-			Session->GetSubjects()->InsertProfileSubject(prof,atoi(profiles[1]));
+			Session->GetSubjects()->InsertProfileSubject(prof,profiles[1].ToSizeT());
 		}
 		if(Session->GetSlot())
 			Session->GetSlot()->EndJob();
@@ -307,51 +303,49 @@ void GStorageMySQL::LoadSubjects(void)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveSubjects(void)
+void GStorageMySQL::SaveSubject(GSubject* subject)
 {
 	try
 	{
-		// Verify the subjects exists
-		if(!Session->GetSubjects()) return;
+		if(subject->GetId()==0)
+			return;
+
+		// Clear
+		RQuery(Db,"DELETE FROM subjectsbydocs WHERE subjectid="+Num(subject->GetId()));
+		RQuery(Db,"UPDATE profiles SET subjectid=0 WHERE subjectid="+Num(subject->GetId()));
+		RQuery(Db,"DELETE FROM subjects WHERE subjectid="+Num(subject->GetId()));
+
 		RString sSql;
 
 		if(Session->GetSlot())
 			Session->GetSlot()->StartJob("Save subjects");
 
-		// Clear all subjects information
-		RQuery Del1(Db,"DELETE FROM subjectsbydocs");
-		RQuery Del2(Db,"DELETE FROM subjects");
-		RQuery Del3(Db,"UPDATE profiles SET subjectid=0");
+		size_t parent(0);
+		RString used;
+		if(subject->IsUsed())
+			used=",'1')";
+		else
+			used=",'0')";
 
-		RCursor<GSubject> Cur(Session->GetSubjects()->GetNodes());
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			size_t parent(0);
-			GSubject* ptr=Cur()->GetParent();
-			if(ptr)
-				parent=ptr->GetId();
-			if(!ptr) continue;
-			RString used;
-			if(Cur()->IsUsed())
-				used=",'1')";
-			else
-				used=",'0')";
+		// Insert the topic
+		sSql="INSERT INTO subjects(subjectid,name,parent,used) VALUES("+
+			Num(subject->GetId())+",'"+subject->GetName()+"',"+Num(parent)+used;
+		RQuery Ins1(Db,sSql);
 
-			// Insert the topic
-			sSql="INSERT INTO subjects(subjectid,name,parent,used) VALUES("+
-				Num(Cur()->GetId())+",'"+Cur()->GetName()+"',"+Num(parent)+used;
-			RQuery Ins1(Db,sSql);
+		// Assign all the documents to the topic
+		RCursor<GDoc> Docs(subject->GetTotalDocs());
+		for(Docs.Start();!Docs.End();Docs.Next())
+			RQuery(Db,"INSERT INTO subjectsbydocs(subjectid,docid,used) VALUES("+Num(subject->GetId())+","+Num(Docs()->GetId())+",'0')");
 
-			// Assign all the documents to the topic
-			RCursor<GDoc> Docs(Cur()->GetTotalDocs());
-			for(Docs.Start();!Docs.End();Docs.Next())
-				RQuery(Db,"INSERT INTO subjectsbydocs(subjectid,docid) VALUES("+Num(Cur()->GetId())+","+Num(Docs()->GetId())+")");
+		// Set which documents are used
+		RCursor<GDoc> SelectedDocs(subject->GetObjs(static_cast<GDoc*>(0)));
+		for(SelectedDocs.Start();!SelectedDocs.End();SelectedDocs.Next())
+			RQuery(Db,"UPDATE subjectsbydocs SET used='1' WHERE subjectid="+Num(subject->GetId())+" AND docid="+Num(SelectedDocs()->GetId()));
 
-			// AsSubPsign the profiles to the topic
-			RCursor<GProfile> Profiles(Cur()->GetObjs(static_cast<GProfile*>(0)));
-			for(Profiles.Start();!Profiles.End();Profiles.Next())
-				RQuery(Db,"UPDATE profiles SET subjectid="+Num(Cur()->GetId())+" WHERE profileid="+Num(Profiles()->GetId()));
-		}
+		// Asssign the profiles to the topic
+		RCursor<GProfile> Profiles(subject->GetObjs(static_cast<GProfile*>(0)));
+		for(Profiles.Start();!Profiles.End();Profiles.Next())
+			RQuery(Db,"UPDATE profiles SET subjectid="+Num(subject->GetId())+" WHERE profileid="+Num(Profiles()->GetId()));
 	}
 	catch(RDbException e)
 	{
@@ -447,46 +441,68 @@ void GStorageMySQL::Clear(tObjType objtype)
 {
 	try
 	{
+		// Look What to do
 		RString What;
 		bool Group(false);
 		bool Topic(false);
 		bool Doc(false);
-
+		bool ResetAutoIncrement(false);
 		switch(objtype)
 		{
 			case otUser:
 				What="users";
+				ResetAutoIncrement=true;
 				break;
 			case otDoc:
 			{
 				What="docs";
 				Doc=true;
+				ResetAutoIncrement=true;
 				break;
 			}
 			case otProfile:
 			{
 				What="profiles";
+				ResetAutoIncrement=true;
 				break;
 			}
 			case otCommunity:
 			{
 				Group=true;
 				What="communities";
+				ResetAutoIncrement=true;
 				break;
 			}
 			case otTopic:
 			{
 				Topic=true;
 				What="topics";
+				ResetAutoIncrement=true;
 				break;
 			}
 			case otFdbk:
 				What="docsbyprofiles";
 				break;
+			case otSubject:
+			{
+				What="subjects";
+				RQuery Del1(Db,"DELETE FROM subjectsbydocs");
+				RQuery Del3(Db,"UPDATE profiles SET subjectid=0");
+				ResetAutoIncrement=true;
+				break;
+			}
+			case otClass:
+				What="classes";
+				ResetAutoIncrement=true;
+				break;
 			default:
 				throw GException("Cannot clear "+GetObjType(objtype)+" from storage");
 		}
+
+		// Clear the table and reset eventually the auto-increment field
 		RQuery Delete(Db,"DELETE FROM "+What);
+		if(ResetAutoIncrement)
+			RQuery Reset(Db,"ALTER TABLE "+What+" AUTO_INCREMENT = 1");
 
 		// If communities -> All profiles are detached
 		if(Group)
@@ -555,7 +571,7 @@ void GStorageMySQL::AssignId(GConceptType* type)
 		find.Start();
 		if(!find.End())
 		{
-			type->SetId(static_cast<char>(strtoul(find[0],0,10)));
+			type->SetId(find[0].ToChar());
 			return;
 		}
 
@@ -564,44 +580,10 @@ void GStorageMySQL::AssignId(GConceptType* type)
 		RQuery insert(Db,sSql);
 
 		// Get the next id
-		sSql=RString("");
+		sSql=RString("SELECT typeid FROM concepttypes WHERE typeid=LAST_INSERT_ID()");
 		RQuery getinsert(Db,sSql);
 		getinsert.Start();
-		type->SetId(static_cast<char>(strtoul(getinsert[0],0,10)));
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::LoadRelationTypes(void)
-{
-	try
-	{
-		RQuery Types(Db,"SELECT typeid,name,description FROM relationtypes");
-		for(Types.Start();!Types.End();Types.Next())
-			Session->InsertRelationType(atoi(Types[0]),Types[1],Types[2]);
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::LoadRelations(void)
-{
-	try
-	{
-		RQuery Rel(Db,"SELECT relationid,predicate,subjectid,typeid,objectid,weight FROM relations");
-		for(Rel.Start();!Rel.End();Rel.Next())
-			Session->InsertRelation(atoi(Rel[0]),Rel[1],atoi(Rel[2]),atoi(Rel[3]),atoi(Rel[4]),atof(Rel[5]));
+		type->SetId(getinsert[0].ToChar());
 	}
 	catch(RDbException e)
 	{
@@ -675,7 +657,7 @@ void GStorageMySQL::AssignId(GConcept* concept)
 		sSql=RString("SELECT conceptid FROM concepts WHERE conceptid=LAST_INSERT_ID()");
 		RQuery getinsert(Db,sSql);
 		getinsert.Start();
-		concept->SetId(strtoul(getinsert[0],0,10));
+		concept->SetId(getinsert[0].ToSizeT());
 	}
 	catch(RDbException e)
 	{
@@ -705,13 +687,12 @@ RString GStorageMySQL::LoadConcept(size_t id)
 {
 	try
 	{
-		RString res;
 		RString sSql("SELECT name FROM concepts WHERE conceptid="+Num(id));
 		RQuery w(Db,sSql);
 		w.Start();
 		if(!w.End())
-			res=w[0];
-		return(res);
+			return(w[0]);
+		return(RString::Null);
 	}
 	catch(RDbException e)
 	{
@@ -726,13 +707,12 @@ size_t GStorageMySQL::LoadConcept(const RString name,GConceptType* type)
 {
 	try
 	{
-		size_t res=0;
 		RString sSql("SELECT conceptid FROM concepts WHERE typeid="+Num(type->GetId())+" AND kwd="+RQuery::SQLValue(name));
 		RQuery w(Db,sSql);
 		w.Start();
 		if(!w.End())
-			res=atoi(w[0]);
-		return(res);
+			return(w[0].ToSizeT());
+		return(0);
 	}
 	catch(RDbException e)
 	{
@@ -879,6 +859,223 @@ void GStorageMySQL::SaveRefs(GConceptType* type,tObjType what,size_t refs)
 			default:
 				throw GException("This type of objects do not have descriptions");
 		};
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadPredicates(void)
+{
+	try
+	{
+		RQuery Types(Db,"SELECT predicateid,name,description FROM predicates");
+		for(Types.Start();!Types.End();Types.Next())
+			Session->InsertPredicate(Types[0].ToSizeT(),Types[1],Types[2]);
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::AssignId(GPredicate* predicate)
+{
+	try
+	{
+		// Init some strings
+		RString name=RQuery::SQLValue(predicate->GetName());
+
+		// Verify that the predicate didn't already exist.
+		RString sSql="SELECT predicateid FROM predicates WHERE name="+name;
+		RQuery find(Db,sSql);
+		find.Start();
+		if(!find.End())
+		{
+			predicate->SetId(find[0].ToSizeT());
+			return;
+		}
+
+		// Insert the new predicate
+		sSql="INSERT INTO predicates(name,description) VALUES("+name+","+RQuery::SQLValue(predicate->GetDescription())+")";
+		RQuery insert(Db,sSql);
+
+		// Get the next id
+		sSql=RString("SELECT predicateid FROM predicates WHERE predicateid=LAST_INSERT_ID()");
+		RQuery getinsert(Db,sSql);
+		getinsert.Start();
+		predicate->SetId(getinsert[0].ToSizeT());
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadStatements(void)
+{
+	try
+	{
+		RQuery Statements(Db,"SELECT statementid,subject,subjecttype,predicate,object,objecttype,weight FROM statements");
+		for(Statements.Start();!Statements.End();Statements.Next())
+			Session->InsertStatement(Statements[0].ToSizeT(),
+					Statements[1].ToSizeT(),static_cast<tObjType>(Statements[2].ToInt()),
+					Statements[3].ToSizeT(),
+					Statements[4].ToSizeT(),static_cast<tObjType>(Statements[5].ToInt()),
+					Statements[6].ToDouble());
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::AssignId(GStatement* statement)
+{
+	try
+	{
+		// Init some strings
+		RString subject(Num(statement->GetSubject()->GetId()));
+		RString subjecttype(Num(statement->GetSubject()->GetObjType()));
+		RString predicate(Num(statement->GetPredicate()->GetId()));
+		RString object(Num(statement->GetObject()->GetId()));
+		RString objecttype(Num(statement->GetObject()->GetObjType()));
+
+		// Verify that the statement didn't already exist.
+		RString sSql="SELECT statementid FROM statements WHERE subject="+subject+" AND subjecttype="+subjecttype+
+		             " AND predicate="+predicate+" AND object="+object+" AND objecttype="+objecttype;
+		RQuery find(Db,sSql);
+		find.Start();
+		if(!find.End())
+		{
+			statement->SetId(find[0].ToSizeT());
+			return;
+		}
+
+		// Insert the new statement
+		RQuery insert(Db,"INSERT INTO statements(subject,subjecttype,predicate,object,onjecttype,weight) VALUES("+
+				         subject+","+subjecttype+","+predicate+","+object+","+objecttype+","+Num(statement->GetWeight())+")");
+
+		// Get the next id
+		sSql=RString("SELECT statementid FROM statements WHERE statementid=LAST_INSERT_ID()");
+		RQuery getinsert(Db,sSql);
+		getinsert.Start();
+		statement->SetId(getinsert[0].ToSizeT());
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadClasses(void)
+{
+	try
+	{
+		if(Session->GetSlot())
+			Session->GetSlot()->StartJob("Load Classes");
+
+		// Load the classes
+		RQuery sub(Db,"SELECT classid,name,parent,vectorsize FROM classes");
+		for(sub.Start();!sub.End();sub.Next())
+		{
+			size_t ParentId();
+			GClass* Parent(Session->GetClass(sub[2].ToSizeT(),true));
+			GClass* Class(Session->InsertClass(Parent,sub[0].ToSizeT(),sub[1],sub[3].ToSizeT()));
+			Class->SetState(osNeedLoad);
+		}
+
+		if(Session->GetSlot())
+			Session->GetSlot()->EndJob();
+	}
+	catch(RDbException e)
+	{
+		if(Session->GetSlot())
+			Session->GetSlot()->EndJob();
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::AssignId(GClass* theclass)
+{
+	try
+	{
+		// Init some strings
+		RString name=RQuery::SQLValue(theclass->GetName());
+
+		// Verify that the class didn't already exist.
+		RQuery find(Db,"SELECT classid FROM classes WHERE name="+name);
+		find.Start();
+		if(!find.End())
+		{
+			theclass->SetId(find[0].ToSizeT());
+			return;
+		}
+
+		// Insert the new class
+		RQuery insert(Db,"INSERT INTO classes(name) VALUES("+name+")");
+
+		// Get the next id
+		RQuery getinsert(Db,"SELECT classid FROM classes WHERE classid=LAST_INSERT_ID()");
+		getinsert.Start();
+		theclass->SetId(getinsert[0].ToSizeT());
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveClass(GClass* theclass)
+{
+	try
+	{
+		// Init
+		RString id(Num(theclass->GetId()));
+		size_t ParentId(0);
+		if(theclass->GetParent())
+			ParentId=theclass->GetParent()->GetId();
+
+		// Test if the class already exists.
+		RQuery Test(Db,"SELECT COUNT(1) FROM classes WHERE classid="+id);
+		Test.Start();
+		if(!atoi(Test[0]))
+		{
+			// Insert the class
+			RString sSql("INSERT INTO classes(classid,name,parent,vectorsize) "
+			             " VALUES("+id+","+RQuery::SQLValue(theclass->GetName())+","+Num(ParentId)+","+Num(theclass->GetSize())+")");
+			RQuery Insert(Db,sSql);
+		}
+		else
+		{
+			// Update the class
+			RString sSql("UPDATE classes "
+				 "SET name="+RQuery::SQLValue(theclass->GetName())+",parent="+Num(ParentId)+",vectorsize="+Num(theclass->GetSize())+
+			     " WHERE classid="+id);
+			RQuery Update(Db,sSql);
+		}
+		theclass->SetState(osUpToDate);
 	}
 	catch(RDbException e)
 	{
