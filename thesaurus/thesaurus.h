@@ -56,11 +56,11 @@ class Word
 {
 public:
 	size_t Id;
-	const GConcept* Concept;
+	GConcept* Concept;
 
-	Word(const GConcept* concept) : Id(cNoRef), Concept(concept) {}
-	int Compare(const Word& concept) const {return(Concept->Compare(concept.Concept));}
-	int Compare(const GConcept* concept) const {return(Concept->Compare(*concept));}
+	Word(GConcept* concept) : Id(cNoRef), Concept(concept) {}
+	int Compare(const Word& concept) const {return(Concept->GetId()-concept.Concept->GetId());}
+	int Compare(const GConcept* concept) const {return(Concept->GetId()-concept->GetId());}
 };
 
 
@@ -83,6 +83,11 @@ class Thesaurus  : public RObject, public GPostTopic
 	RContainer<Word,true,true> Words;
 
 	/**
+	 * The words.
+	 */
+	RContainer<Word,false,false> WordsByIds;
+
+	/**
 	* Heuristic to used for the GA.
 	*/
 	RString Heuristic;
@@ -101,6 +106,16 @@ class Thesaurus  : public RObject, public GPostTopic
 	 * Verify the GA?
 	 */
 	bool Verify;
+
+	/**
+	 * Number of information entities used for the objects.
+	 */
+	size_t NumInfos;
+
+	/**
+	 * Array of concepts used.
+	 */
+	RContainer<GWeightInfo,true,false> Concepts;
 
 public:
 
@@ -127,9 +142,24 @@ public:
 	*/
 	virtual void Disconnect(GSession* session);
 
-	void PrintObj(RObjH* obj,char depth);
-	void PrintNode(GNodeInfos* node,char depth);
+	/**
+	 * Build a particular node
+	 * @param node           Node.
+	 * @param parent         Parent class.
+	 */
+	void BuildNode(GNodeInfos* node,GClass* parent);
+
+	/**
+	 * Construct the classes from a given solution.
+	 * @param Sol            Solution.
+	 */
 	void ConstructResults(RCursor<GNodeInfos> Sol);
+
+	/**
+	 * Print an object.
+	 * @param obj            Object.
+	 */
+	void PrintObj(RObjH* obj);
 
     /**
 	* Run the thesaurus creation.

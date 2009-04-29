@@ -28,9 +28,10 @@
 
 
 //------------------------------------------------------------------------------
-//include files for R/GALILEI
+// include files for R/GALILEI
 #include <gsession.h>
 #include <gtopic.h>
+#include <gclass.h>
 
 
 //------------------------------------------------------------------------------
@@ -49,7 +50,7 @@
 
 //------------------------------------------------------------------------------
 Thesaurus::Thesaurus(GFactoryPostTopic* fac)
-		: GPostTopic(fac), Objs(100), Words(20000)
+		: GPostTopic(fac), Objs(100), Words(20000), WordsByIds(20000), Concepts(200)
 {
 }
 
@@ -62,6 +63,7 @@ void Thesaurus::ApplyConfig(void)
 	MaxGen=Factory->GetUInt("MaxGen");
 	PopSize=Factory->GetUInt("PopSize");
 	Verify=Factory->GetBool("Verify");
+	NumInfos=Factory->GetUInt("NumInfos");
 }
 
 
@@ -80,61 +82,58 @@ void Thesaurus::Disconnect(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void Thesaurus::PrintObj(RObjH* obj,char depth)
+void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 {
-	RString Deb;
-	for(int i=0;i<depth;i++)
-		Deb+="\t";
-	cout<<Deb<<"Obj "<<obj->GetId()<<" (";
-	RAttrList List(obj->GetAttr());
-	int i;
-	for(List.Start(),i=0;!List.End();List.Next(),i++)
-	{
-		if(i)
-			cout<<",";
-		cout<<Words[List()]->Concept->GetName();
-	}
-	cout<<endl;
-}
+	RString Name(RString::Null);
 
-
-//-----------------------------------------------------------------------------
-void Thesaurus::PrintNode(GNodeInfos* node,char depth)
-{
-	RString Deb;
-	for(int i=0;i<depth;i++)
-		Deb+="\t";
-
-	// Print Node attributes
-	cout<<Deb<<"Node (";
-	RAttrList List(node->GetAttr());
-	int i;
-	for(List.Start(),i=0;!List.End();List.Next(),i++)
-	{
-		if(i)
-			cout<<",";
-		cout<<Words[List()]->Concept->GetName();
-	}
-	cout<<endl;
-
-	// Print objects
-	Deb+="\t";
+	// Build Name
 	RCursor<RObjH> Objs(node->GetObjs());
+	bool Plus=false;
 	for(Objs.Start();!Objs.End();Objs.Next())
-		cout<<Deb<<Objs()->GetName()<<endl;
+	{
+		if(Plus)
+			Name+="+";
+		else
+			Plus=true,
+		Name+=Objs()->GetName();
+	}
+
+	// Create the class
+	GClass* Class(Session->InsertClass(parent,cNoRef,Name));
+
+	// Build the vector representing its concepts
+	RAttrList List(node->GetAttr());
+	RContainer<GWeightInfo,false,true> Infos(List.GetNbAttr());
+	for(List.Start();!List.End();List.Next())
+		Infos.InsertPtr(new GWeightInfo(WordsByIds[List()]->Concept,1.0));
+	Session->AssignInfos(Class,Infos);
 
 	// Print sub-nodes
 	RCursor<GNodeInfos> Cur(node->GetNodes());
 	for(Cur.Start();!Cur.End();Cur.Next())
-		PrintNode(Cur(),depth+1);
+		BuildNode(Cur(),Class);
 }
 
 
 //-----------------------------------------------------------------------------
 void Thesaurus::ConstructResults(RCursor<GNodeInfos> Cur)
 {
+	// Clear the classes.
+	Session->ForceReCompute(otClass);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		PrintNode(Cur(),0);
+		BuildNode(Cur(),0);
+}
+
+
+//------------------------------------------------------------------------------
+void Thesaurus::PrintObj(RObjH* obj)
+{
+	cout<<obj->GetName()<<endl;
+	RAttrList List(obj->GetAttr());
+	for(List.Start();!List.End();List.Next())
+	{
+		cout<<"    "<<List()<<" - "<<WordsByIds[List()]->Concept->GetName()<<endl;
+	}
 }
 
 
@@ -156,21 +155,48 @@ void Thesaurus::Run(void)
 		RObjH* obj;
 		for(Cur.Start();!Cur.End();Cur.Next(),i++)
 		{
-			RCursor<GWeightInfo> Infos(Cur()->GetVector()->GetInfos());
-			Objs.InsertPtr(obj=new RObjH(i,Cur()->GetName(),Infos.GetNb()));
-			for(Infos.Start();!Infos.End();Infos.Next())
+			GTopic* Topic(Cur());
+
+			// Order the vector by weight:
+			// 1. Get the vector.
+			// 2. Mulitply by the tf-idf factors of the topic
+			// 3. Order it.
+			const GWeightInfos* Desc(Topic->GetVector());
+			if(Desc->GetNb()>Concepts.GetNb())
 			{
-				Word* w(Words.GetInsertPtr(Infos()->GetConcept()));
+				for(size_t nb=Desc->GetNb()-Concepts.GetNb()+20;--nb;)
+					Concepts.InsertPtr(new GWeightInfo(0));
+			}
+			RCursor<GWeightInfo> Infos(Desc->GetInfos());
+			RCursor<GWeightInfo> Cur(Concepts);
+			for(Infos.Start(),Cur.Start();!Infos.End();Infos.Next(),Cur.Next())
+			{
+				GWeightInfo Info(Infos()->GetConcept(),Infos()->GetWeight()*Infos()->GetConcept()->GetIF(otTopic));
+				(*Cur())=Info;
+			}
+			Concepts.ReOrder(GWeightInfos::sortOrder);
+
+			// Create the object
+			Objs.InsertPtr(obj=new RObjH(i,Topic->GetName(),NumInfos));
+			size_t j,k;
+			for(Cur.Start(),j=0,k=0;(k<NumInfos)&&(j<Desc->GetNb());Cur.Next(),j++)
+			{
+				// Verify that it a word
+				GConcept* Concept(Cur()->GetConcept());
+				if(!Concept->GetType()->GetLang())
+					continue;
+				k++;
+				Word* w(Words.GetInsertPtr(Concept));
 				if(w->Id==cNoRef)
+				{
 					w->Id=Words.GetNb()-1;
+					WordsByIds.InsertPtrAt(w,w->Id,false);
+				}
 				obj->AddAttribute(w->Id);
 			}
+			//PrintObj(obj);
 		}
-
 		cout<<" "<<i<<" created ("<<Words.GetNb()<<" different concepts)"<<endl;
-//		RCursor<RObjH> Test(Objs);
-//		for(Test.Start();!Test.End();Test.Next())
-//			PrintObj(Test(),1);
 
 		// Init the GCA
 		cout<<"New HCA"<<endl;
@@ -179,10 +205,6 @@ void Thesaurus::Run(void)
 		cout<<"Init HCA"<<endl;
 		Instance.SetVerify(Verify);
 		Instance.Init();
-/*		Instance.SetLocalOptimisation(LocalOptimisation);
-		Instance.SetOptimisation(Optimisation);
-		if(!InternalRandom)
-			Instance.SetSeed(Seed);*/
 
 		// Run
 		cout<<"Run HCA"<<endl;
@@ -227,6 +249,7 @@ void Thesaurus::CreateParams(RConfig* params)
 	params->InsertParam(new RParamValue("MaxGen",50));
 	params->InsertParam(new RParamValue("PopSize",16));
 	params->InsertParam(new RParamValue("Verify",false));
+	params->InsertParam(new RParamValue("NumInfos",20));
 }
 
 

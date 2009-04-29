@@ -95,12 +95,14 @@ void Configure(GFactoryPostTopic* params)
 	dlg.MaxGen->setValue(params->GetUInt("MaxGen"));
 	dlg.PopSize->setValue(params->GetUInt("PopSize"));
 	dlg.Verify->setChecked(params->GetBool("Verify"));
+	dlg.NumInfos->setValue(params->GetUInt("NumInfos"));
 	if(dlg.exec())
 	{
 		params->Set("Heuristic",FromQString(dlg.Heuristic->currentText()));
 		params->SetUInt("MaxGen",dlg.MaxGen->value());
 		params->SetUInt("PopSize",dlg.PopSize->value());
 		params->SetBool("Verify",dlg.Verify->isChecked());
+		params->SetUInt("NumInfos",dlg.NumInfos->value());
 		params->Apply();
 	}
 }
