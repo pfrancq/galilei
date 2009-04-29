@@ -2,12 +2,11 @@
 
 	GALILEI Research Project
 
-	GSignalHandler.cpp
+	GObject.cpp
 
-	Generic Signal Handler for GALILEI Session - Implementation.
+	Generic GALILEI Object - Implementation.
 
-	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2005-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2009 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,67 +29,34 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gsignalhandler.h>
+#include <gobject.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-//  class GSignalHandler
+//  GObject
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSignalHandler::GSignalHandler(void)
+GObject::GObject(size_t id,const RString& name,tObjType objtype)
+	: Id(id), Name(name), ObjType(objtype)
 {
 }
 
 
 //------------------------------------------------------------------------------
-int GSignalHandler::Compare(const GSignalHandler& handler) const
-{
-	return(ComparePtrs(this,&handler));
-}
-
-
-//------------------------------------------------------------------------------
-void GSignalHandler::Event(GLang*, tEvent)
+GObject::GObject(const GObject* obj)
+	: Id(obj->Id), Name(obj->Name), ObjType(obj->ObjType)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSignalHandler::Event(GDoc*, tEvent)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSignalHandler::Event(GUser*, tEvent)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSignalHandler::Event(GProfile*, tEvent)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSignalHandler::Event(GCommunity*, tEvent)
-{
-}
-
-//------------------------------------------------------------------------------
-void GSignalHandler::Event(GTopic*, tEvent)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GSignalHandler::~GSignalHandler(void)
+GObject::~GObject(void)
 {
 }

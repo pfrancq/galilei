@@ -45,6 +45,8 @@
 #include <rtextfile.h>
 #include <random.h>
 #include <rdebug.h>
+#include <rnotificationcenter.h>
+
 
 
 //------------------------------------------------------------------------------
@@ -102,8 +104,9 @@ enum tObjType
 	otEngineDoc              /** Document proposed by a search engine.*/,
 	otConcept                /** Concept.*/,
 	otConceptType            /** Concept Type.*/,
-	otRelation               /** Relation.*/,
-	otRelationType 	         /** Relation Type.*/
+	otPredicate              /** Predicate.*/,
+	otStatement 	         /** Statement.*/,
+	otClass                  /** Class.*/
 };
 
 
@@ -143,30 +146,6 @@ enum tObjState
 * @param state               State.
 */
 R::RString GetState(tObjState state);
-
-
-//------------------------------------------------------------------------------
-/**
-* GALILEI event.
-* @short Event
-*/
-enum tEvent
-{
-	eUnknow                  /** Unknow event.*/,
-	eObjCreated              /** An object was created in the system.*/,
-	eObjNew                  /** An object was created in memory.*/,
-	eObjModified             /** An object was modified.*/,
-	eObjDelete               /** An Object will be deleted from memory.*/,
-	eObjDestroyed            /** An object was destroyed from the system.*/
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* Get a string representing a event.
-* @param event               Event.
-*/
-R::RString GetEvent(tEvent event);
 
 
 //------------------------------------------------------------------------------
@@ -262,7 +241,7 @@ public:
 
 	/**
 	* Construct an exception.
-	*/
+	*///------------------------------------------------------------------------------
 	GException(void) throw()
 		: R::RException() {}
 };
@@ -272,15 +251,16 @@ public:
 // forward class declaration - Knowledge Part
 class GConcept;
 class GConceptType;
-class GRelation;
-class GRelationType;
+class GPredicate;
+class GStatement;
 class GLang;
 class GFactoryLang;
 class GLangManager;
 class GWeightInfo;
 class GWeightInfos;
-template<class cObj,tObjType type> class GWeightInfosObj;
+class GWeightInfosObj;
 class GOntology;
+class GClass;
 
 
 //------------------------------------------------------------------------------
@@ -369,10 +349,10 @@ class GFactoryPostTopic;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Session Part
+class GObject;
 class GDebugObject;
 class GSession;
 class GSlot;
-class GSignalHandler;
 class GStatsCalc;
 class GFactoryStatsCalc;
 class GStatsCalcManager;
@@ -392,6 +372,54 @@ class GTool;
 class GFactoryTool;
 class GToolManager;
 class GMatrixMeasure;
+
+
+//------------------------------------------------------------------------------
+/**
+ * The GEvent provides information when the notification message
+ * "ObjectChanged" is emitted.
+ * @author Pascal Francq
+ * @short Event information.
+ */
+struct GEvent
+{
+	/**
+	* GALILEI event.
+	* @short Event
+	*/
+	enum tEvent
+	{
+		eUnknow                  /** Unknown event.*/,
+		eObjCreated              /** An object was created in the system.*/,
+		eObjNew                  /** An object was created in memory.*/,
+		eObjModified             /** An object was modified.*/,
+		eObjDelete               /** An Object will be deleted from memory.*/,
+		eObjDestroyed            /** An object was destroyed from the system.*/
+	};
+
+	/**
+	 * Event.
+	 */
+	tEvent Event;
+
+	/**
+	 * Object.
+	 */
+	const GObject* Object;
+
+	/**
+	 * Construct the event.
+	 * @param event          Type of the event.
+	 * @param object         Object about which the signal is emitted.
+	 */
+	GEvent(tEvent event,const GObject* object) : Event(event), Object(object) {}
+
+	/**
+	* Get a string representing a event.
+	* @param event               Event.
+	*/
+	static R::RString GetEvent(tEvent event);
+};
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

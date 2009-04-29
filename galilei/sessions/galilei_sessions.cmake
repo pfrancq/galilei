@@ -8,13 +8,13 @@ SET(galilei_sessions_INST_INCLUDES
     gslotlog.h
     gplugin.h
     gstatscalc.h
-    gsignalhandler.h
     gmeasure.h
     ggalileiapp.h
     gdebugobject.h
     gpluginmanager.h
     gpluginmanager.hh
     gplugin.hh
+    gobject.h
 )
 
 
@@ -28,9 +28,9 @@ SET(galilei_sessions_TARGET_SOURCES
     gstatscalc.cpp
     gplugin.hh
     gpluginmanager.cpp
-    gsignalhandler.cpp
     galilei.cpp
     gmeasure.cpp
     ggalileiapp.cpp
     gdebugobject.cpp
+    gobject.cpp
 )

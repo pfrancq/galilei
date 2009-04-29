@@ -58,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Document.
 */
-class GDoc : public GWeightInfosObj<GDoc,otDoc>
+class GDoc : public GWeightInfosObj
 {
 protected:
 
@@ -66,11 +66,6 @@ protected:
 	* URL of the document.
 	*/
 	R::RURI URL;
-
-	/**
-	* Name of the document.
-	*/
-	R::RString Name;
 
 	/**
 	 * Structure of the document.
@@ -209,21 +204,10 @@ public:
 	void ReleaseStruct(void);
 
 	/**
-	* Load information from the current storage.
-	*/
-//	virtual void LoadInfos(void) {GWeightInfos::LoadInfos(otDoc,Id);}
-
-	/**
 	* Get the URL.
 	* @returns RURI.
 	*/
 	R::RURI GetURL(void) const {return(URL);}
-
-	/**
-	* Get the name of the document.
-	* @returns RString.
-	*/
-	R::RString GetName(void) const {return(Name);}
 
 	/**
 	* @return Pointer to the Language.

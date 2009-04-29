@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GRelation.cpp
+	GPredicate.cpp
 
-	Relation - Implementation.
+	Predicate - Implementation.
 
 	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
@@ -30,8 +30,8 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <grelation.h>
-#include <gconcept.h>
+#include <gpredicate.h>
+#include <gstatement.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -39,40 +39,53 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-// GRelation
+// GPredicate
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GRelation::GRelation(size_t id,const R::RString& name,GConcept* subject,size_t type,GConcept* object,double weight)
-	: Id(id), Name(name), Subject(subject), Type(type), Object(object), Weight(weight)
+GPredicate::GPredicate(size_t id,const RString& name,const RString& desc)
+	: Id(id), Name(name), Description(desc), Statements(20)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GRelation::GRelation(const R::RString& name,GConcept* subject,size_t type,GConcept* object,double weight)
-	: Id(cNoRef), Name(name), Subject(subject), Type(type), Object(object), Weight(weight)
+int GPredicate::Compare(const GPredicate& predicate) const
 {
+	return(Name.Compare(predicate.Name));
 }
 
 
 //-----------------------------------------------------------------------------
-int GRelation::Compare(const GRelation& relation) const
+int GPredicate::Compare(const RString& name) const
 {
-	return(CompareIds(Id,relation.GetId()));
+	return(Name.Compare(name));
 }
 
 
 //-----------------------------------------------------------------------------
-int GRelation::Compare(size_t id) const
-{
-	return(CompareIds(Id,id));
-}
-
-
-//-----------------------------------------------------------------------------
-void GRelation::SetId(size_t id)
+void GPredicate::SetId(size_t id)
 {
 	Id=id;
+}
+
+
+//-----------------------------------------------------------------------------
+RCursor<GStatement> GPredicate::GetStatements(void) const
+{
+	return(RCursor<GStatement>(Statements));
+}
+
+
+//-----------------------------------------------------------------------------
+void GPredicate::InsertStatement(GStatement* statement)
+{
+	Statements.InsertPtr(statement);
+}
+
+
+//-----------------------------------------------------------------------------
+GPredicate::~GPredicate(void)
+{
 }

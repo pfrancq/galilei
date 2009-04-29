@@ -40,7 +40,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <gobject.h>
 
 
 //-----------------------------------------------------------------------------
@@ -55,19 +55,9 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Concept
 */
-class GConcept
+class GConcept : public GObject
 {
 protected:
-
-	/**
-	* Identifier of the concept.
-	*/
-	size_t Id;
-
-	/**
-	* Name of the concept.
-	*/
-	R::RString Name;
 
 	/**
 	* Type of the concept.
@@ -187,23 +177,6 @@ public:
 	*/
 	void SetId(size_t id);
 
-	/**
-	* @return Identifier of the concept.
-	*/
-	size_t GetId(void) const {return(Id);}
-
-	/**
-	* @return A string representing the concept.
-	*/
-	virtual R::RString GetName(void) const {return(Name);}
-
-	/**
-	 * Set the name of the concept. This method works only if the Id==cNoRef.
-	 * The references are cleared.
-	 * @param name
-	 */
-	void SetName(const R::RString& name);
-
 private:
 
 	/**
@@ -237,9 +210,10 @@ public:
 	size_t GetRef(tObjType ObjType) const;
 
 	/**
-	 * @return The inverse factor of the concept for a given object type (such
-	 * as the idf factor for documents.
-	* @param ObjType        Type of the reference.
+	 * Compute the inverse factor of the concept for a given object type (such
+	 * as the 'idf' for documents). In practice, the factor is computed once.
+	 * @return Inverse factor
+	 * @param ObjType        Type of the reference.
 	 */
 	double GetIF(tObjType ObjType) const;
 

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GRelationType.h
+	GPredicate.h
 
-	Relation Type - Header.
+	Predicate - Header.
 
 	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
@@ -29,8 +29,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GRelationType_H
-#define GRelationType_H
+#ifndef GPredicate_H
+#define GPredicate_H
 
 
 //------------------------------------------------------------------------------
@@ -49,55 +49,48 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GRelationType provides a representation for a given type of relations.
+* The GPredicate provides a representation for a predicate.
 * @param author Pascal Francq
-* @param short Relation Type.
+* @param short Predicate.
 */
-class GRelationType
+class GPredicate
 {
 	/**
-	* Identifier of the relation type.
+	* Identifier of the predicate.
 	*/
 	size_t Id;
 
 	/**
-	* Name of the relation type.
+	* Name of the predicate.
 	*/
 	R::RString Name;
 
 	/**
-	* Short description of the type.
+	* Short description of the predicate.
 	*/
 	R::RString Description;
 
 	/**
-	* Relations of the type.
+	* Statements of the predicate.
 	*/
-	R::RContainer<GRelation,true,true> Relations;
+	R::RContainer<GStatement,false,true> Statements;
 
 public:
 
 	/**
-	* Construct a relation type.
-	* @param id              Identifier of the type.
-	* @param name            Name of the type.
+	* Construct a predicate.
+	* @param id              Identifier of the predicate.
+	* @param name            Name of the predicate.
 	* @param desc            Short description.
 	*/
-	GRelationType(size_t id,const R::RString& name,const R::RString& desc);
+	GPredicate(size_t id,const R::RString& name,const R::RString& desc);
 
 	/**
-	* Compare two relations types.
-	* @param type            Relation type used.
+	* Compare two predicates.
+	* @param predicate            Predicate used.
 	* @see R::RContainer.
 	*/
-	int Compare(const GRelationType& type) const;
-
-	/**
-	* Compare a relation with an identifier.
-	* @param id              Identifier used.
-	* @see R::RContainer.
-	*/
-	int Compare(size_t id) const;
+	int Compare(const GPredicate& predicate) const;
 
 	/**
 	* Compare a relation with a name.
@@ -112,6 +105,12 @@ public:
 	size_t GetId(void) const {return(Id);}
 
 	/**
+	 * Set the identifier.
+	 * @param id             Identifier.
+	 */
+	void SetId(size_t id);
+
+	/**
 	* Get the name.
 	*/
 	R::RString GetName(void) const {return(Name);}
@@ -122,34 +121,27 @@ public:
 	R::RString GetDescription(void) const {return(Description);}
 
 	/**
-	* Get a relation of a given type.
-	* @param id              Identifier of the relation.
-	* @return Pointer to a GRelation.
+	* Get a cursor over the statements.
+	* @return R::RCursor over GStatement
 	*/
-	GRelation* GetRelation(size_t id);
-
-	/**
-	* Get a cursor over the relations of this type.
-	* @return R::RCursor over GRelation
-	*/
-	R::RCursor<GRelation> GetRelations(void) const;
+	R::RCursor<GStatement> GetStatements(void) const;
 
 protected:
 
 	/**
-	* Insert a relation.
-	* @param relation        Relation to insert.
+	* Insert a statement.
+	* @param relation        Statement to insert.
 	*/
-	void InsertRelation(GRelation* relation);
+	void InsertStatement(GStatement* statement);
 
 public:
 
 	/**
 	* Destructor.
 	*/
-	virtual ~GRelationType(void);
+	virtual ~GPredicate(void);
 
-	friend class GSession;
+	friend class GOntology;
 };
 
 

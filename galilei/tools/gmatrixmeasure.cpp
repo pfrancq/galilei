@@ -128,15 +128,15 @@ void GMatrixMeasure::Measures::Extend(size_t max)
 
 //------------------------------------------------------------------------------
 GMatrixMeasure::GMatrixMeasure(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym)
-	: GMeasure(fac), GSignalHandler(), MemValues(0), RecValues1(0), RecValues2(0),
+	: RObject(fac->GetName()), GMeasure(fac), MemValues(0), RecValues1(0), RecValues2(0),
 	  MemNbLines(0), MemNbCols(0), FileNbLines(0), FileNbCols(0), MaxIdLine(0), MaxIdCol(0), NbValues(0), Mean(0.0), Deviation(0.0),
 	  Symmetric(sym),NullLevel(0.000001), MinMeasure(0.5), AutomaticMinMeasure(true),
 	  MinMeasureSense(true), InMemory(true), InFile(false), Lines(lines), Cols(cols), FirstCall(true)
 {
 	if(Symmetric&&(Lines!=Cols))
 		throw GException("Symmetric measures are only allowed if the elements are of the same type");
-	GSession::AddHandler(this);
 	Name=fac->GetName();
+	InsertObserver(HANDLER(GMatrixMeasure::Handle),"ObjectChanged");
 }
 
 
@@ -769,22 +769,40 @@ void GMatrixMeasure::DestroyIdentificator(size_t,bool)
 
 
 //------------------------------------------------------------------------------
-template<class C>
-	void GMatrixMeasure::UpdateElement(C* element,tEvent event,bool line)
+void GMatrixMeasure::Handle(const RNotification& notification)
 {
-	switch(event)
+	GEvent& Event(GetData<GEvent&>(notification));
+//    cout<<"From GMatrixMeasure ("<<Name<<"): "<<endl;
+//    cout<<"    Event: "<<GetEvent(Event.Event)<<endl;
+//    cout<<"    Object ("<<GetObjType(Event.Object->GetObjType())<<": "<<Event.Object->GetId()<<endl;
+
+    bool DoLines(Lines==Event.Object->GetObjType());
+    bool DoCols(Cols==Event.Object->GetObjType());
+	switch(Event.Event)
 	{
-		case eObjNew:
-			AddIdentificator(element->GetId(),line);
+		case GEvent::eObjNew:
+			if(DoLines)
+				AddIdentificator(Event.Object->GetId(),true);
+			if(DoCols)
+				AddIdentificator(Event.Object->GetId(),false);
 			break;
-		case eObjModified:
-			DirtyIdentificator(element->GetId(),line,true);
+		case GEvent::eObjModified:
+			if(DoLines)
+				DirtyIdentificator(Event.Object->GetId(),true,true);
+			if(DoCols)
+				DirtyIdentificator(Event.Object->GetId(),false,true);
 			break;
-		case eObjDelete:
-			DeleteIdentificator(element->GetId(),line);
+		case GEvent::eObjDelete:
+			if(DoLines)
+			DeleteIdentificator(Event.Object->GetId(),true);
+			if(DoCols)
+				DeleteIdentificator(Event.Object->GetId(),false);
 			break;
-		case eObjDestroyed:
-			DestroyIdentificator(element->GetId(),line);
+		case GEvent::eObjDestroyed:
+			if(DoLines)
+				DestroyIdentificator(Event.Object->GetId(),true);
+			if(DoCols)
+				DestroyIdentificator(Event.Object->GetId(),false);
 			break;
 		default:
 			break;
@@ -977,59 +995,6 @@ void GMatrixMeasure::DeleteValue(double& val)
 
 
 //------------------------------------------------------------------------------
-void GMatrixMeasure::Event(GDoc* doc, tEvent event)
-{
-	if(InMemory||InFile)
-	{
-		if(Lines==otDoc)
-			UpdateElement(doc,event,true);
-		if(Cols==otDoc)
-			UpdateElement(doc,event,false);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GMatrixMeasure::Event(GProfile* prof, tEvent event)
-{
-	if(InMemory||InFile)
-	{
-		if(Lines==otProfile)
-			UpdateElement(prof,event,true);
-		if(Cols==otProfile)
-			UpdateElement(prof,event,false);
-		//	cout<<"Profile "<<prof->GetId()<<" : "<<GetEvent(event)<<" ("<<GetPlugInName()<<")"<<endl;
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GMatrixMeasure::Event(GCommunity* community, tEvent event)
-{
-	if(InMemory||InFile)
-	{
-		if(Lines==otCommunity)
-			UpdateElement(community,event,true);
-		if(Cols==otCommunity)
-			UpdateElement(community,event,false);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GMatrixMeasure::Event(GTopic* topic, tEvent event)
-{
-	if(InMemory||InFile)
-	{
-		if(Lines==otTopic)
-			UpdateElement(topic,event,true);
-		if(Cols==otTopic)
-			UpdateElement(topic,event,false);
-	}
-}
-
-
-//------------------------------------------------------------------------------
 void GMatrixMeasure::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("NullLevel",0.00001));
@@ -1045,5 +1010,4 @@ void GMatrixMeasure::CreateParams(RConfig* params)
 //------------------------------------------------------------------------------
 GMatrixMeasure::~GMatrixMeasure(void)
 {
-	GSession::DeleteHandler(this);
 }

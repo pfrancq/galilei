@@ -59,20 +59,15 @@ namespace GALILEI{
 * @short Generic Group.
 */
 template<class cObj,class cGroup,tObjType type>
-	class GGroup : protected R::RContainer<cObj,false,true>, public GWeightInfosObj<cGroup,type>
+	class GGroup : protected R::RContainer<cObj,false,true>, public GWeightInfosObj
 {
-	using GWeightInfosObj<cGroup,type>::Id;
-	using GWeightInfosObj<cGroup,type>::CopyInfos;
-	using GWeightInfosObj<cGroup,type>::AddRefs;
-	using GWeightInfosObj<cGroup,type>::DelRefs;
-	using GWeightInfosObj<cGroup,type>::State;
+	using GWeightInfosObj::Id;
+	using GWeightInfosObj::CopyInfos;
+	using GWeightInfosObj::AddRefs;
+	using GWeightInfosObj::DelRefs;
+	using GWeightInfosObj::State;
 
 protected:
-
-	/**
-	 * Name of the group.
-	 */
-	R::RString Name;
 
 	/**
 	* Date of the update (objects have changed).
@@ -136,11 +131,6 @@ public:
 	* @returns R::RDate.
 	*/
 	R::RDate GetComputed(void) const;
-
-	/**
-	 * @return Name of the group.
-	 */
-	R::RString GetName(void) const {return(Name);}
 
 	/**
 	 * Get the similarity measure that must be used when computing the

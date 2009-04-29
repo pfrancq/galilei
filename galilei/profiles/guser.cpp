@@ -49,8 +49,6 @@ GUser::GUser(size_t id,const R::RString name,const R::RString fullname,size_t nb
  : RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
    FullName(fullname)
 {
-	if(Id!=cNoRef)
-		GSession::Event(this,eObjNew);
 }
 
 
@@ -140,5 +138,4 @@ void GUser::SetName(const RString& name,const RString& fullname)
 //------------------------------------------------------------------------------
 GUser::~GUser(void)
 {
- GSession::Event(this,eObjDelete);
 }

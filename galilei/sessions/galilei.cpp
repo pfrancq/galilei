@@ -32,19 +32,9 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gsession.h>
-#include <gsignalhandler.h>
 #include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
-
-
-
-//------------------------------------------------------------------------------
-//
-// Static Variables
-//
-//------------------------------------------------------------------------------
-R::RContainer<GSignalHandler,false,false> GSession::Handlers(30,20);
 
 
 
@@ -55,7 +45,7 @@ R::RContainer<GSignalHandler,false,false> GSession::Handlers(30,20);
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-R::RString GALILEI::GetObjType(tObjType objtype)
+RString GALILEI::GetObjType(tObjType objtype)
 {
 	switch(objtype)
 	{
@@ -93,17 +83,19 @@ R::RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("concept"));
 		case otConceptType:
 			return(RString("concept type"));
-		case otRelation:
-			return(RString("relation"));
-		case otRelationType:
-			return(RString("relation type"));
+		case otPredicate:
+			return(RString("predicate"));
+		case otStatement:
+			return(RString("statement"));
+		case otClass:
+			return(RString("class"));
 	}
 	return(RString("unknown"));
 }
 
 
 //------------------------------------------------------------------------------
-R::RString GALILEI::GetState(tObjState state)
+RString GALILEI::GetState(tObjState state)
 {
 	switch(state)
 	{
@@ -137,7 +129,7 @@ R::RString GALILEI::GetState(tObjState state)
 
 
 //------------------------------------------------------------------------------
-R::RString GALILEI::GetEvent(tEvent event)
+RString GEvent::GetEvent(tEvent event)
 {
 	switch(event)
 	{
@@ -159,7 +151,7 @@ R::RString GALILEI::GetEvent(tEvent event)
 
 
 //------------------------------------------------------------------------------
-R::RString GALILEI::GetAssessment(tDocAssessment assessment)
+RString GALILEI::GetAssessment(tDocAssessment assessment)
 {
 	RString str;
 
@@ -180,7 +172,7 @@ R::RString GALILEI::GetAssessment(tDocAssessment assessment)
 
 
 //------------------------------------------------------------------------------
-R::RString GALILEI::GetAssessmentCode(tDocAssessment assessment)
+RString GALILEI::GetAssessmentCode(tDocAssessment assessment)
 {
 	RString code;
 
@@ -199,7 +191,7 @@ R::RString GALILEI::GetAssessmentCode(tDocAssessment assessment)
 
 
 //-----------------------------------------------------------------------------
-tDocAssessment GALILEI::GetAssessmentType(const R::RString& assessment)
+tDocAssessment GALILEI::GetAssessmentType(const RString& assessment)
 {
 	tDocAssessment jug;
 

@@ -36,7 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
-#include <gsignalhandler.h>
+#include <robject.h>
 
 
 //------------------------------------------------------------------------------
@@ -73,7 +73,7 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Matrix Measure.
 */
-class GMatrixMeasure : public GMeasure, public GSignalHandler
+class GMatrixMeasure : public R::RObject, public GMeasure
 {
 	class Measures;    // A list of measure for a given element.
 	class MeasureRec;  // Record storing a specific measure.
@@ -240,6 +240,13 @@ public:
 	 * @param sym             Symmetric measure?
 	 */
 	GMatrixMeasure(GFactoryMeasure* fac,tObjType lines,tObjType cols,bool sym);
+
+	/**
+	 * Virtual method inherits from R::RObject and that must be re-implemented
+	 * in all child classes.
+	 * @return Name of the class.
+	 */
+	virtual R::RCString GetClassName(void) const {return("GMatrixMeasure");}
 
 	/**
 	 * Set the type of the elements.
@@ -449,13 +456,10 @@ private:
 
 	/**
 	 * This template method handles the modification of the status of a given
-	 * element. This method is used by all the Event methods.
-	 * @param C              Class of the element.
-	 * @param element        Pointer to the element.
-	 * @param event          Event (type of modification).
-	 * @param line           Element is a line?
+	 * object.
+	 * @param notification   Notification received.
 	 */
-	template<class C> void UpdateElement(C* element,tEvent event,bool line);
+	void Handle(const R::RNotification& notification);
 
 	/**
 	 * All the measures must be updated in memory.
@@ -485,44 +489,6 @@ private:
 	void DeleteValue(double& val);
 
 public:
-
-	/**
-	* A specific language has changed.
-	*/
-	virtual void Event(GLang*, tEvent) {}
-
-	/**
-	* A specific document has changed.
-	* @param doc             Document.
-	* @param event           Event.
-	*/
-	virtual void Event(GDoc* doc, tEvent event);
-
-	/**
-	* A specific user has changed.
-	*/
-	virtual void Event(GUser*, tEvent) {}
-
-	/**
-	* A specific profile has changed.
-	* @param prof            Profile.
-	* @param event           Event.
-	*/
-	virtual void Event(GProfile* prof, tEvent event);
-
-	/**
-	* A specific group has changed.
-	* @param community       Community.
-	* @param event           Event.
-	*/
-	virtual void Event(GCommunity* community, tEvent event);
-
-	/**
-	* A specific topic has changed.
-	* @param topic           Topic.
-	* @param event           Event.
-	*/
-	virtual void Event(GTopic* topic, tEvent event);
 
 	/**
 	* Create the parameters.

@@ -160,7 +160,7 @@ GFdbk::~GFdbk(void)
 
 //------------------------------------------------------------------------------
 GProfile::GProfile(GUser* usr,const R::RString name,bool s)
-  : GWeightInfosObj<GProfile,otProfile>(cNoRef,0,osNew), User(usr),Name(name),
+  : GWeightInfosObj(cNoRef,otProfile,name,0,osNew), User(usr),
     Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null), GroupId(0), Attached(RDate::Null)
 {
 	if(!User)
@@ -179,7 +179,7 @@ GProfile::GProfile(GUser* usr,const R::RString name,bool s)
 
 //------------------------------------------------------------------------------
 GProfile::GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,size_t size,bool s,size_t nbf)
-  : GWeightInfosObj<GProfile,otProfile>(id,size,osNew), User(usr),Name(name),
+  : GWeightInfosObj(id,otProfile,name,size,osNew), User(usr),
     Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c), GroupId(grpid), Attached(a)
 {
 	if(!User)
@@ -214,13 +214,6 @@ int GProfile::Compare(const RString& name) const
 int GProfile::Compare(const size_t id) const
 {
  	return(CompareIds(Id,id));
-}
-
-
-//------------------------------------------------------------------------------
-RString GProfile::GetName(void) const
-{
-	return(Name);
 }
 
 
@@ -398,7 +391,7 @@ void GProfile::Update(R::RContainer<GWeightInfo,false,true>& infos)
 	DelRefs(otProfile);
 
 	// Assign information
-	GWeightInfosObj<GProfile,otProfile>::Clear();
+	GWeightInfosObj::Clear();
 	State=osUpdated;
 	Computed.SetToday();
 
@@ -414,7 +407,7 @@ void GProfile::Update(R::RContainer<GWeightInfo,false,true>& infos)
 	AddRefs(otProfile);
 
 	// Emit an event that it was modified
-	GSession::Event(this,eObjModified);
+	Emit(GEvent::eObjModified);
 }
 
 

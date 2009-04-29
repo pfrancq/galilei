@@ -36,6 +36,9 @@
 #include <glang.h>
 #include <gstorage.h>
 #include <gsession.h>
+#include <gpredicate.h>
+#include <gstatement.h>
+#include <gclass.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -50,8 +53,32 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GOntology::GOntology(size_t nbconcepts)
-	: ConceptTypes(20), ConceptTypesByIds(20), Concepts(nbconcepts>50000?nbconcepts:50000,10000)
+	: ConceptTypes(20), ConceptTypesByIds(20), Concepts(nbconcepts>50000?nbconcepts:50000,10000),
+	  Predicates(30), PredicatesByIds(30), Statements(5000,5000)
 {
+}
+
+
+//-----------------------------------------------------------------------------
+GObject* GOntology::GetObject(size_t id,tObjType objtype)
+{
+	switch(objtype)
+	{
+		case otConcept:
+			return(Concepts[id]);
+
+		default:
+			throw GException("GOntology::GetObject(size_t,tObjType): '"+GetObjType(objtype)+"' is not a valid type");
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GOntology::ClearRef(tObjType type)
+{
+	RCursor<GConceptType> Types(ConceptTypes);
+	for(Types.Start();!Types.End();Types.Next())
+		Types()->ClearRef(type);
 }
 
 
@@ -153,7 +180,7 @@ GConcept* GOntology::InsertConcept(const GConcept* concept)
 		InDirect=true;
 	}
 
-	// Look if data has an identifier. If not, assign one.
+	// Look if data has an identifier. If not, assignconst one.
 	if(ptr->GetId()==cNoRef)
 	{
 		Storage->AssignId(ptr);
@@ -202,7 +229,7 @@ GConcept* GOntology::RenameConcept(GConcept* concept,const R::RString& name)
 	if((!concept)||(!concept->GetType()))
 		throw GException("GOntology::RenameConcept: Cannot rename concept");
 
-	// Look if the new name is not already in the dictionary
+	// Look if the new name is not  already in the dictionary
 	GConcept* ptr=concept->GetType()->GetPtr(name);
 	if(ptr==concept)
 		return(concept);
@@ -225,6 +252,112 @@ GConcept* GOntology::RenameConcept(GConcept* concept,const R::RString& name)
 		Storage->SaveConcept(concept);
 		return(concept);
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+RCursor<GPredicate> GOntology::GetPredicates(void) const
+{
+	return(RCursor<GPredicate>(Predicates));
+}
+
+
+//-----------------------------------------------------------------------------
+GPredicate* GOntology::GetPredicate(size_t id,bool null)
+{
+	GPredicate* type=PredicatesByIds[id];
+	if(!type)
+	{
+		if(!null)
+			throw GException("Unknown relation type "+RString::Number(id));
+		return(0);
+	}
+	return(type);
+}
+
+
+//-----------------------------------------------------------------------------
+GPredicate* GOntology::GetPredicate(const RString& name,bool null)
+{
+	GPredicate* type=Predicates.GetPtr(name,false);
+	if(!type)
+	{
+		if(!null)
+			throw GException("Unknown relation type "+name);
+		return(0);
+	}
+	return(type);
+}
+
+
+//-----------------------------------------------------------------------------
+GPredicate* GOntology::InsertPredicate(size_t id,const R::RString& name,const R::RString& desc)
+{
+	bool InDirect(false);
+
+	GPredicate* ptr(Predicates.GetPtr(name));
+	if(!ptr)
+	{
+		ptr=new GPredicate(id,name,desc);
+		InDirect=true;
+		Predicates.InsertPtr(ptr);
+	}
+
+	if(ptr->GetId()==cNoRef)
+	{
+		Storage->AssignId(ptr);
+		InDirect=true;
+	}
+
+	if(InDirect)
+		PredicatesByIds.InsertPtrAt(ptr,ptr->GetId(),true);
+
+	return(ptr);
+}
+
+
+//-----------------------------------------------------------------------------
+void GOntology::InsertStatement(size_t id,size_t subject,tObjType subjecttype,size_t predicate,size_t object,tObjType objecttype,double weight)
+{
+	// Get the concept related to the subject
+	GObject* Subject(GetObject(subject,subjecttype));
+	if(!Subject)
+		throw GException("Object "+RString::Number(subject)+" does not exist");
+
+	// Get the concept related to the object
+	GObject* Object(GetObject(object,objecttype));
+	if(!Object)
+		throw GException("Object "+RString::Number(object)+" does not exist");
+
+	// Find the predicate
+	GPredicate* Predicate(PredicatesByIds[predicate]);
+	if(!Predicate)
+		throw GException("Predicate "+RString::Number(predicate)+" does not exist");
+
+	// Insert the statement
+	bool InDirect(true);
+	GStatement* Statement(new GStatement(id,Subject,Predicate,Object,weight));
+	Predicate->InsertStatement(Statement);
+
+	// Look if data has an identifier. If not, assign one.
+	if(Statement->GetId()==cNoRef)
+	{
+		Storage->AssignId(Statement);
+		InDirect=true;
+	}
+
+	if(InDirect)
+		Statements.InsertPtrAt(Statement,Statement->GetId(),true);
+}
+
+
+//-----------------------------------------------------------------------------
+GStatement* GOntology::GetStatement(size_t id)
+{
+	GStatement* Statement(Statements[id]);
+	if(!Statement)
+		throw GException("'"+RString::Number(id)+"' is not a valid concept identifier");
+	return(Statement);
 }
 
 

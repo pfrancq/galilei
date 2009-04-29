@@ -49,6 +49,34 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 //
+// class Item
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class Item : public QTreeWidgetItem
+{
+public:
+
+	Item(QTreeWidget* parent,const QStringList & strings) : QTreeWidgetItem(parent,strings) {}
+
+private:
+
+	bool operator<(const QTreeWidgetItem &other) const
+	{
+		int column(treeWidget()->sortColumn());
+		if(column==2)
+			return(text(column).toDouble()<other.text(column).toDouble());
+		else if(column==3)
+			return(text(column).toUInt()<other.text(column).toUInt());
+		return(text(column).toLower()<other.text(column).toLower());
+	}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
 // class QGWeightInfos
 //
 //------------------------------------------------------------------------------
@@ -113,7 +141,7 @@ void QGWeightInfos::Set(const GWeightInfos* obj)
 		QString w(QString::number(Words()->GetWeight()));
 		while(w.length()<10)
 			w.prepend(' ');
-		new QTreeWidgetItem(Infos,QStringList()<<name<<type<<w<<QString::number(Words()->GetConcept()->GetId()));
+		new Item(Infos,QStringList()<<name<<type<<w<<QString::number(Words()->GetConcept()->GetId()));
 	}
 	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->sortItems(0,Qt::AscendingOrder);
 	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(0);

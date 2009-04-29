@@ -87,6 +87,11 @@ class GIndexer : virtual public GBasicSession
 	R::RString DirTopics;
 
 	/**
+	 * Root dir for the classes.
+	 */
+	R::RString DirClasses;
+
+	/**
 	 * Inverted file for documents.
 	 */
 	R::RBinaryFile* DocsInvertedFile;

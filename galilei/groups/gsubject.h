@@ -96,7 +96,7 @@ public:
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subject
 */
-class GSubject: public R::RNode<GSubject,true,false>
+class GSubject: public R::RNode<GSubject,true>
 {
 	/**
 	 * Identifier of the subject.
@@ -271,8 +271,9 @@ public:
 	/**
 	* Insert a document to the list of those contained in the subject.
 	* @param doc             Pointer to the document.
+	* @param used           Document currently used.
 	*/
-	void Insert(GDoc* doc);
+	void Insert(GDoc* doc,bool used);
 
 	/**
 	* Insert a profile to the list of those contained in the subject.
@@ -364,11 +365,20 @@ private:
 
 	/**
 	* Initialize the subject (reset all profiles assigned).
+	* @param session         Session.
 	* @param unselected      Specify if the subject must (eventually) be unselected.
 	*/
-	void ReInit(bool unselected);
+	void ReInit(GSession* session,bool unselected);
 
 public:
+
+	/**
+	* Set the status of the subject. When the subject is not used anymore, no
+	* more profiles are associated to it.
+	* @param session         Session.
+	* @param used            Used or not ?
+	*/
+	void SetUsed(GSession* session,bool used);
 
 	/**
 	* Destruct the subject.

@@ -183,11 +183,6 @@ public:
 	virtual void DebugInfo(const R::RString& info);
 
 	/**
-	* Clear the dictionary.
-	*/
-	void Clear(void);
-
-	/**
 	* Get a cursor over the main hash table.
 	*/
 	R::RCursor<Hash> GetConcepts(void) const

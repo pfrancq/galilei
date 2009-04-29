@@ -37,7 +37,7 @@
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	GALILEI::GGroup<cObj,cGroup,type>::GGroup(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c,size_t size)
-	: R::RContainer<cObj,false,true>(20,10), GWeightInfosObj<cGroup,type>(id,size,osNew), Name(name),
+	: R::RContainer<cObj,false,true>(20,10), GWeightInfosObj(id,type,name,size,osNew),
 	  Updated(u), Computed(c), Data(0)
 {
 }
@@ -241,7 +241,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	void GALILEI::GGroup<cObj,cGroup,type>::Clear(void)
 {
-	GWeightInfos::Clear();
+	GWeightInfosObj::Clear();
 	if(Data)
 		Data->Dirty();
 }
@@ -255,7 +255,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	DelRefs(type);
 
 	// Assign information
-	GWeightInfosObj<cGroup,type>::Clear();
+	GWeightInfosObj::Clear();
 	State=osUpdated;
 	Computed.SetToday();
 	CopyInfos(infos);
@@ -269,7 +269,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	// Emit an event that it was modified
 	if(Data)
 		Data->Dirty();
-	GSession::Event(static_cast<const cGroup*>(this),eObjModified);
+	Emit(GEvent::eObjModified);
 }
 
 

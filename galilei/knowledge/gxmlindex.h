@@ -162,11 +162,6 @@ public:
 	virtual void Clear(void);
 
 	/**
-	* @return A string representing the concept.
-	*/
-	virtual R::RString GetName(void) const;
-
-	/**
 	 * Set the concept types associated with the current index.
 	 * @param type           Type of the concept.
 	 * @param lang           Language of the stems.

@@ -45,7 +45,6 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <genginedoc.h>
-#include <gsignalhandler.h>
 #include <gindexer.h>
 #include <gontology.h>
 
@@ -71,9 +70,14 @@ class GSession : public R::RConfig, public GIndexer, public GOntology
 	Intern* Data;
 
 	/**
-	* Handlers of GALILEi signals.
-	*/
-	static R::RContainer<GSignalHandler,false,false> Handlers;
+	 * Classes organizing the concepts.
+	 */
+	R::RTree<GClass,true> Classes;
+
+	/**
+	 * Determine if all the classes were loaded.
+	 */
+	bool ClassesLoaded;
 
 public:
 
@@ -214,6 +218,58 @@ public:
 
 	//@} General methods
 
+
+	//-----------------------------------------------------
+	/** @name Knowledge Methods
+	*/
+	// @{
+
+	/**
+	* Method that load the classes from where they are stored.
+	*/
+	void LoadClasses(void);
+
+	/**
+	* Get a cursor on all the classes.
+	*/
+	R::RCursor<GClass> GetClasses(void) const {return(R::RCursor<GClass>(Classes.GetNodes()));}
+
+	/**
+	* Get a cursor on the top classes.
+	*/
+	R::RCursor<GClass> GetTopClasses(void) const {return(R::RCursor<GClass>(Classes.GetTopNodes()));}
+
+	/**
+	 * Search for a class with a given identifier.
+	 * @param id             Identifier.
+	 * @param null           If true, 0 is returned if the class is not found,
+	 *                       else an exception is generated.
+	 * @return Pointer to the class.
+	 */
+	GClass* GetClass(size_t id,bool null);
+
+	/**
+	 * Insert a class in the tree of classes.
+	 * @param parent         Parent class (0 if root class).
+	 * @param id             Identifier (or cNoRef if a new class must be
+	 *                       created).
+	 * @param name           Name of the class (if RString::Null, the name is
+	 *                       "Class id").
+	 * @param size           Size of the vector (0 if a new class).
+	 * @return Pointer to the class.
+	 */
+	GClass* InsertClass(GClass* parent,size_t id=R::cNoRef,const R::RString& name=R::RString::Null,size_t size=0);
+
+	/**
+	 * Assign a specific description to a given class. If necessary, the
+	 * description is saved.
+	 * @param theclass       The class.
+	 * @param infos          Vector to assign.
+	 */
+	void AssignInfos(GClass* theclass,R::RContainer<GWeightInfo,false,true>& infos);
+
+	//@} Knowledge methods
+
 	//-----------------------------------------------------
 	/** @name Generic Methods
 	*/
@@ -270,81 +326,6 @@ public:
 	void InsertGroup(void* ptr,tObjType type);
 
 	//@} General methods
-
-	//-----------------------------------------------------
-	/** @name Knowledge Methods
-	*/
-	// @{
-
-	/**
-	* Get all relation types defined.
-	* @return RCursor over GRelationType.
-	*/
-	R::RCursor<GRelationType> GetRelationTypes(void) const;
-
-	/**
-	* Get the a pointer to a type of relation.
-	* @param id              Identifier of the type.
-	* @param null            If set to true, if the type does not exist,
-	*                        return 0, else an exception is generated.
-	* @return Pointer to a GRelationType
-	*/
-	GRelationType* GetRelationType(size_t id,bool null) const;
-
-	/**
-	* Get the a pointer to a type of relation.
-	* @param name            Name of the type.
-	* @param null            If set to true, if the type does not exist,
-	*                        return 0, else an exception is generated.
-	* @return Pointer to a GRelationType
-	*/
-	GRelationType* GetRelationType(const R::RString& name,bool null) const;
-
-	/**
-	* Insert a new relation type.
-	* @param id              Identifier of the type.
-	* @param name            Name of the type.
-	* @param desc            Short description.
-	*/
-	void InsertRelationType(size_t id,const R::RString& name,const R::RString& desc);
-
-	/**
-	* Insert a new relation.
-	* @param id              Identifier of the relation.
-	* @param name            Name of the relation.
-	* @param subjectid       Identifier of the subject.
-	* @param type            Type of the relation.
-	* @param objectid        Identifier of the object.
-	* @param weight          Weight of the relation.
-	*/
-	void InsertRelation(size_t id,const R::RString& name,size_t subjectid,size_t type,size_t objectid,double weight);
-
-	/**
-	* Get a relation.
-	* @param id              Identifier of the relation.
-	* @param type            Type of the relation.
-	* @param null            If set to true, if the type does not exist,
-	*                        return 0, else an exception is generated.
-	* @return Pointer to a relation.
-	*/
-	GRelation* GetRelation(size_t id,size_t type,bool null);
-
-	/**
-	* Get a set of relations corresponding to a set of criteria and put them
-	* into a container.
-	* @param rel             Container where the relations will be inserted.
-	*                        The container is not cleared by this method.
-	* @param subject         Pointer to the concept that is the subject of
-	*                        a relation. If null, all concepts are used.
-	* @param type            Type of the relation. If cNoRef, all types are
-	*                        used.
-	* @param object          Pointer of the concept that is the object of
-	*                        a relation. If null, all concepts are used.
-	* @param sym             Symmetric search?
-	*/
-	void GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* subject,size_t type,GConcept* object,bool sym);
-
-	//@} Knowledge methods
 
 	//-----------------------------------------------------
 	/** @name Documents Methods
@@ -843,33 +824,6 @@ public:
 	* to allow the session to do something again.
 	*/
 	static void ResetBreak(void);
-
-	/**
-	* Add a handler to the list of handlers.
-	* @param handler         Pointer to the handler.
-	*/
-	static void AddHandler(GSignalHandler* handler) {Handlers.InsertPtr(handler);}
-
-	/**
-	* Delete a handler from the list of handlers.
-	* @param handler         Pointer to the handler.
-	*/
-
-	static void DeleteHandler(GSignalHandler* handler) {Handlers.DeletePtr(*handler);}
-
-	/**
-	* Emit a signal for a given object.
-	* @param O               Class of the object.
-	* @param obj             Pointer to the object.
-	* @param event           Event.
-	*/
-	template<class O> static void Event(O* obj, tEvent event)
-	{
-		if(!obj) return;
-		R::RCursor<GSignalHandler> Handlers(GSession::Handlers);
-		for(Handlers.Start();!Handlers.End();Handlers.Next())
-			Handlers()->Event(obj,event);
-	}
 
 	/**
 	* Destruct the session.

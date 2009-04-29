@@ -54,7 +54,7 @@ GDocXML::GDocXML(const RURI& url,const RURI& filename)
 //------------------------------------------------------------------------------
 void GDocXML::InitDocXML(void)
 {
-	if(Top)
+	if(GetTop())
 		return;
 
 	RXMLTag* t;

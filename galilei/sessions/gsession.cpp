@@ -48,10 +48,6 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <glang.h>
-#include <gconcepttype.h>
-#include <gconcept.h>
-#include <grelationtype.h>
-#include <grelation.h>
 #include <gsession.h>
 #include <gstorage.h>
 #include <gslot.h>
@@ -87,6 +83,7 @@ using namespace R;
 #include <ggalileiapp.h>
 #include <gdebugobject.h>
 #include <gindexer.h>
+#include <gclass.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -191,8 +188,6 @@ public:
 	bool CommunitiesLoaded;                                           // Are the communities loaded?
 	RContainer<GTopic,true,true> Topics;	                          // Topics handled by the system.
 	bool TopicsLoaded;                                                // Are the topics loaded?
-	RContainer<GConceptType,true,true> ConceptTypes;                  // Types of Concepts
-	RContainer<GRelationType,true,true> RelationTypes;                // Types of Relations
 	size_t MaxDocs;                                                   // Maximum number of documents to handle in memory.
 	size_t MaxProfiles;                                               // Maximum number of profiles to handle in memory.
 	size_t MaxGroups;                                                 // Maximum number of groups to handle in memory.
@@ -205,7 +200,6 @@ public:
 		  Users(u,u/2), UsersLoaded(false), Profiles(p,p/2),
 		  Communities(c+(c/2),c/2), CommunitiesLoaded(false),
 		  Topics(t+(t/2),t/2), TopicsLoaded(false),
-		  ConceptTypes(50,10), RelationTypes(10,5),
 		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups), FilterManager(0)
 	{
 		CurrentRandom=0;
@@ -239,7 +233,9 @@ RContainer<GDebugObject,false,true> DebugObjs(100,100);                    // Ob
 
 //------------------------------------------------------------------------------
 GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofiles,size_t maxgroups)
-	: GIndexer(), GOntology(Storage->GetNbSaved(otConcept)), Data(0)
+	: GIndexer(), GOntology(Storage->GetNbSaved(otConcept)),
+	  Data(0),
+	  Classes(300,100), ClassesLoaded(false)
 {
 	// Init Part
 	Data=new Intern(maxdocs,maxprofiles,maxgroups,
@@ -277,7 +273,6 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 	InsertParam(new RParamValue("NbDocsPerSubject",100.0),"Subjects");
 	InsertParam(new RParamValue("PercNbDocsPerSubject",true),"Subjects");
 	InsertParam(new RParamValue("ClusterSelectedDocs",false),"Subjects");
-	InsertParam(new RParamList("SelectedSubjects"),"Subjects");
 	InsertParam(new RParamValue("IndexDir","/var/galilei"),"Indexer");
 	Load(false);
 }
@@ -320,9 +315,7 @@ void GSession::ForceReCompute(tObjType type)
 		case otTopic:
 		{
 			// Delete the topics
-			RCursor<GConceptType> Types(Data->ConceptTypes);
-			for(Types.Start();!Types.End();Types.Next())
-				Types()->ClearRef(otTopic);
+			ClearRef(otTopic);
 			Data->Topics.Clear();
 			if(SaveResults)
 			{
@@ -335,9 +328,7 @@ void GSession::ForceReCompute(tObjType type)
 		case otProfile:
 		{
 			// Delete the profiles -> Also groups
-			RCursor<GConceptType> Types(Data->ConceptTypes);
-			for(Types.Start();!Types.End();Types.Next())
-				Types()->ClearRef(otProfile);
+			ClearRef(otProfile);
 			Data->Profiles.Clear();
 			if(SaveResults)
 			{
@@ -347,10 +338,8 @@ void GSession::ForceReCompute(tObjType type)
 		}
 		case otCommunity:
 		{
-			// Delete the groups
-			RCursor<GConceptType> Types(Data->ConceptTypes);
-			for(Types.Start();!Types.End();Types.Next())
-				Types()->ClearRef(otCommunity);
+			// Delete the communities
+			ClearRef(otCommunity);
 			Data->Communities.Clear();
 			if(SaveResults)
 			{
@@ -359,8 +348,20 @@ void GSession::ForceReCompute(tObjType type)
 			}
 			break;
 		}
+		case otClass:
+		{
+			// Delete the classs
+			//ClearRef(otClass);
+			Classes.Clear();
+			if(SaveResults)
+			{
+				GIndexer::Clear(otClass);
+				Storage->Clear(otClass);
+			}
+			break;
+		}
 		default:
-			throw GException("Only 'otDoc', 'otUser' and 'otGroup' are allowed.");
+			throw GException("GSession::ForceReCompute(tObjType): '"+GetObjType(type)+"' is not allowed");
 	}
 }
 
@@ -374,12 +375,8 @@ void GSession::ReInit(void)
 	// Clear feedbacks
 	ClearFdbks();
 
-	RCursor<GConceptType> Types(Data->ConceptTypes);
-	for(Types.Start();!Types.End();Types.Next())
-	{
-		Types()->ClearRef(otCommunity);
-		Types()->ClearRef(otProfile);
-	}
+	ClearRef(otCommunity);
+	ClearRef(otProfile);
 
 	// Clear groups, profiles and users
 	Data->Communities.Clear();
@@ -551,6 +548,68 @@ R::RRandom* GSession::GetRandom(void) const
 
 //------------------------------------------------------------------------------
 //
+// GSession::Knowledge
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GSession::LoadClasses(void)
+{
+	if(ClassesLoaded)
+		return;
+	Storage->LoadClasses();
+	ClassesLoaded=true;
+}
+
+
+//------------------------------------------------------------------------------
+GClass* GSession::InsertClass(GClass* parent,size_t id,const RString& name,size_t size)
+{
+	// Create the class
+	RString Name(name);
+	if(Name==RString::Null)
+		Name="Class "+RString::Number(Classes.GetNbNodes()+1);
+	GClass* Class(new GClass(id,Name,size));
+
+	// Look if data has an identifier. If not, assign one.
+	if(Class->GetId()==cNoRef)
+		Storage->AssignId(Class);
+
+	// Insert it in the tree
+	Classes.InsertNode(parent,Class);
+	return(Class);
+}
+
+
+//------------------------------------------------------------------------------
+GClass* GSession::GetClass(size_t id,bool null)
+{
+	RCursor<GClass> Cur(Classes.GetNodes());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if(Cur()->GetId()==id)
+			return(Cur());
+	if(!null)
+		throw GException("GSession::GetClass(size_t,bool): Class '"+RString::Number(id)+"' not found");
+	return(0);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AssignInfos(GClass* theclass,R::RContainer<GWeightInfo,false,true>& infos)
+{
+	theclass->Update(infos);
+	if(SaveResults)
+	{
+		if(theclass->GetVector()->IsDefined())
+			SaveInfos(*theclass->GetVector(),otClass,theclass->GetId());
+		Storage->SaveClass(theclass);
+	}
+}
+
+
+
+//------------------------------------------------------------------------------
+//
 // GSession::Generic
 //
 //------------------------------------------------------------------------------
@@ -665,113 +724,6 @@ void GSession::InsertGroup(void* ptr,tObjType type)
 			break;
 		default:
 			throw GException("GSession::InsertGroup : Type "+GetObjType(type)+" is not handled");
-	}
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// GSession::Knowledge
-//
-//------------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-RCursor<GRelationType> GSession::GetRelationTypes(void) const
-{
-	return(RCursor<GRelationType>(Data->RelationTypes));
-}
-
-
-//-----------------------------------------------------------------------------
-GRelationType* GSession::GetRelationType(size_t id,bool null) const
-{
-	GRelationType* type=Data->RelationTypes.GetPtr(id);
-	if(!type)
-	{
-		if(!null)
-			throw GException("Unknown relation type "+RString::Number(id));
-		return(0);
-	}
-	return(type);
-}
-
-
-//-----------------------------------------------------------------------------
-GRelationType* GSession::GetRelationType(const RString& name,bool null) const
-{
-	GRelationType* type=Data->RelationTypes.GetPtr(name,false);
-	if(!type)
-	{
-		if(!null)
-			throw GException("Unknown relation type "+name);
-		return(0);
-	}
-	return(type);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::InsertRelationType(size_t id,const R::RString& name,const R::RString& desc)
-{
-	Data->RelationTypes.InsertPtr(new GRelationType(id,name,desc));
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::InsertRelation(size_t id,const R::RString& name,size_t subjectid,size_t type,size_t objectid,double weight)
-{
-	// Get the concept related to the subject
-	GConcept* subject=GetConcept(subjectid);
-	if(!subject)
-		throw GException("Object "+RString::Number(subjectid)+" does not exist");
-
-	// Get the concept related to the object
-	GConcept* object=GetConcept(objectid);
-	if(!object)
-		throw GException("Object "+RString::Number(objectid)+" does not exist");
-
-	GRelationType* relationttype=Data->RelationTypes.GetPtr(type);
-	if(!relationttype)
-		throw GException("Relation type "+RString::Number(type)+" does not exist");
-	relationttype->InsertRelation(new GRelation(id,name,subject,type,object,weight));
-}
-
-
-//-----------------------------------------------------------------------------
-GRelation* GSession::GetRelation(size_t id,size_t type,bool null)
-{
-	GRelationType* relationttype=Data->RelationTypes.GetPtr(type);
-	if(!relationttype)
-	{
-		if(!null)
-			throw GException("Relation "+RString::Number(id)+" of type "+RString::Number(type)+" does not exist");
-		return(0);
-	}
-	GRelation* rel=relationttype->GetRelation(id);
-	if((!rel)&&(!null))
-		throw GException("Relation "+RString::Number(id)+" of type "+RString::Number(type)+" does not exist");
-	return(rel);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::GetRelations(R::RContainer<GRelation,false,false>& rel,GConcept* /*subject*/,size_t type,GConcept* /*object*/,bool /*sym*/)
-{
-	RCursor<GRelationType> Types(Data->RelationTypes);
-	for(Types.Start();!Types.End();Types.Next())
-	{
-		if((type!=cNoRef)&&(type!=Types()->GetId()))
-			continue;
-		RCursor<GRelation> Rel(Types()->GetRelations());
-		for(Rel.Start();!Rel.End();Rel.Next())
-		{
-/*			if((subject)&&(((*subject)!=(*Rel()->GetSubject()))||(sym&&((*subject)!=(*Rel()->GetObject())))))
-				continue;
-			if((object)&&(((*object)!=(*Rel()->GetObject()))||(sym&&((*object)!=(*Rel()->GetSubject())))))
-				continue;*/
-			rel.InsertPtr(Rel());
-		}
 	}
 }
 
@@ -920,7 +872,7 @@ void GSession::InsertDoc(GDoc* d)
 		// If new one and all documents are in memory -> store it in the database
 		if(Storage->IsAllInMemory())
 			Storage->SaveDoc(d);
-		Event(d,eObjCreated);
+		d->Emit(GEvent::eObjCreated);
 	}
 }
 
@@ -1191,7 +1143,6 @@ void GSession::InsertUser(GUser* user)
 			Storage->SaveUser(user);
 		if(Data->Slot)
 			Data->Slot->Alert("User "+user->GetName()+" created ("+RString::Number(user->GetId())+")");
-		Event(user,eObjCreated);
 	}
 }
 
@@ -1287,7 +1238,7 @@ void GSession::InsertProfile(GProfile* p)
 			Storage->SaveProfile(p);
 		if(Data->Slot)
 			Data->Slot->Alert("Profile "+p->GetName()+" for user "+p->GetUser()->GetName()+" created ("+RString::Number(p->GetId())+")");
-		Event(p,eObjCreated);
+		p->Emit(GEvent::eObjCreated);
 	}
 }
 

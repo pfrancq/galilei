@@ -37,9 +37,9 @@
 // include files for GALILEI
 #include <gconcept.h>
 #include <gconcepttype.h>
-#include <grelation.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
@@ -51,7 +51,7 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const GConcept* concept)
-	: Id(concept->Id), Name(concept->GetName()), Type(concept->Type),
+	: GObject(concept), Type(concept->Type),
 	  NbRefDocs(concept->NbRefDocs), IfDocs(concept->IfDocs), IndexDocs(concept->IndexDocs),
 	  NbRefProfiles(concept->NbRefProfiles), IfProfiles(concept->IfProfiles),
 	  NbRefCommunities(concept->NbRefCommunities), IfCommunities(concept->IfCommunities),
@@ -62,7 +62,7 @@ GConcept::GConcept(const GConcept* concept)
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const RString& name,GConceptType* type)
-	: Id(cNoRef), Name(name), Type(type), NbRefDocs(0), IfDocs(NAN), IndexDocs(0),
+	: GObject(cNoRef,name,otConcept), Type(type), NbRefDocs(0), IfDocs(NAN), IndexDocs(0),
 	  NbRefProfiles(0), IfProfiles(NAN), NbRefCommunities(0), IfCommunities(NAN),
 	  NbRefTopics(0), IfTopics(NAN)
 {
@@ -73,7 +73,7 @@ GConcept::GConcept(const RString& name,GConceptType* type)
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(size_t id,const RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics)
-	: Id(id), Name(name), Type(type), NbRefDocs(refdocs), IfDocs(NAN), IndexDocs(indexdocs),
+	: GObject(id,name,otConcept), Type(type), NbRefDocs(refdocs), IfDocs(NAN), IndexDocs(indexdocs),
 	  NbRefProfiles(refprofiles), IfProfiles(NAN), NbRefCommunities(refcommunities), IfCommunities(NAN),
 	  NbRefTopics(reftopics), IfTopics(NAN)
 {
@@ -109,24 +109,6 @@ void GConcept::SetId(size_t id)
 
 
 //-----------------------------------------------------------------------------
-void GConcept::SetName(const R::RString& name)
-{
-	if(Id!=cNoRef)
-		return;
-	Name=name;
-	NbRefDocs=0;
-	IfDocs=NAN;
-	NbRefProfiles=0;
-	IndexDocs=0;
-	IfProfiles=NAN;
-	NbRefCommunities=0;
-	IfCommunities=NAN;
-	NbRefTopics=0;
-	IfTopics=NAN;
-}
-
-
-//-----------------------------------------------------------------------------
 size_t GConcept::IncRef(tObjType ObjType)
 {
 	switch(ObjType)
@@ -152,7 +134,7 @@ size_t GConcept::IncRef(tObjType ObjType)
 			return(NbRefTopics);
 			break;
 		default:
-			throw GException("Unknown type to increase concept "+RString::Number(Id));
+			return(0);
 			break;
 	}
 }
@@ -192,7 +174,7 @@ size_t GConcept::DecRef(tObjType ObjType)
 			return(NbRefTopics);
 			break;
 		default:
-			throw GException("Unknown type to decrease concept "+RString::Number(Id));
+			return(0);
 			break;
 	}
 }
@@ -221,14 +203,7 @@ void GConcept::ClearRef(tObjType ObjType)
 			IfTopics=NAN;
 			break;
 		default:
-			NbRefDocs=0;
-			IfDocs=NAN;
-			NbRefProfiles=0;
-			IfProfiles=NAN;
-			NbRefCommunities=0;
-			IfCommunities=NAN;
-			NbRefTopics=0;
-			IfTopics=NAN;
+			cerr<<"GConcept::ClearRef: Not normal"<<endl;
 			break;
 	}
 }
@@ -252,7 +227,7 @@ size_t GConcept::GetRef(tObjType ObjType) const
 			return(NbRefTopics);
 			break;
 		default:
-			return(NbRefDocs+NbRefProfiles+NbRefCommunities);
+			return(0);
 			break;
 	}
 	return(0);

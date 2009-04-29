@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GRelationType.cpp
+	GStatement.cpp
 
-	Relation Type - Implementation.
+	Statement - Implementation.
 
 	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
@@ -30,8 +30,9 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <grelationtype.h>
-#include <grelation.h>
+#include <gstatement.h>
+#include <gpredicate.h>
+#include <gconcept.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -39,59 +40,32 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-// GRelationType
+// GStatement
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GRelationType::GRelationType(size_t id,const R::RString& name,const R::RString& desc)
-	: Id(id), Name(name), Description(desc), Relations(20)
+GStatement::GStatement(size_t id,GObject* subject,GPredicate* predicate,GObject* object,double weight)
+	: Id(id), Subject(subject), Predicate(predicate), Object(object), Weight(weight)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-int GRelationType::Compare(const GRelationType& type) const
+int GStatement::Compare(const GStatement& statement) const
 {
-	return(CompareIds(Id,type.Id));
+	int i(CompareIds(Subject->GetId(),statement.Subject->GetId()));
+	if(i)
+		return(i);
+	i=CompareIds(Object->GetId(),statement.Object->GetId());
+	if(i)
+		return(i);
+	return(CompareIds(Predicate->GetId(),statement.Predicate->GetId()));
 }
 
 
 //-----------------------------------------------------------------------------
-int GRelationType::Compare(size_t id) const
+void GStatement::SetId(size_t id)
 {
-	return(CompareIds(Id,id));
-}
-
-
-//-----------------------------------------------------------------------------
-int GRelationType::Compare(const R::RString& name) const
-{
-	return(Name.Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-GRelation* GRelationType::GetRelation(size_t id)
-{
-	return(Relations.GetPtr(id));
-}
-
-//-----------------------------------------------------------------------------
-R::RCursor<GRelation> GRelationType::GetRelations(void) const
-{
-	return(R::RCursor<GRelation>(Relations));
-}
-
-
-//-----------------------------------------------------------------------------
-void GRelationType::InsertRelation(GRelation* relation)
-{
-	Relations.InsertPtr(relation);
-}
-
-
-//-----------------------------------------------------------------------------
-GRelationType::~GRelationType(void)
-{
+	Id=id;
 }

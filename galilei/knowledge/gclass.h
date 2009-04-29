@@ -2,12 +2,11 @@
 
 	GALILEI Research Project
 
-	GSignalHandler.h
+	GClass.h
 
-	Generic Signal Handler for a GALILEI Session - Header.
+	Class regrouping concepts - Header.
 
-	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2009 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -29,13 +28,13 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GSignalHandlerH
-#define GSignalHandlerH
-
+#ifndef GClassH
+#define GClassH
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gweightinfosobj.h>
 
 
 //------------------------------------------------------------------------------
@@ -45,71 +44,65 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GSignalHandler class provides a representation for a handler of signals
-* emit by a GALILEI session.
+* The GClass provides a representation for a group of concepts. All the classes
+* are part of tree.
 * @author Pascal Francq
-* @short Generic Signal Handler.
+* @short Concepts Class.
 */
-class GSignalHandler
+class GClass : public R::RNode<GClass,true>, public GWeightInfosObj
 {
 public:
 
 	/**
-	* Constructor.
+	* Construct a class with a specific identifier.
+	* @param id              Identifier.
+	* @param name            Name of the class.
+	* @param size            Size of the vector.
 	*/
-	GSignalHandler(void);
+	GClass(size_t id,const R::RString& name,size_t size);
 
 	/**
-	* Compare method used by R::RContainer.
+	* Compare two groups by comparing their identifier.
+	* @see R::RContainer
+	* @param grp             Group.
+	* @return int
 	*/
-	int Compare(const GSignalHandler& handler) const;
+	int Compare(const GClass& grp) const;
 
 	/**
-	* A specific lang has changed.
-	* @param lang            Language.
-	* @param event           Event.
+	* Compare two groups by comparing their identifier.
+	* @see R::RContainer
+	* @param grp             Pointer to a group.
+	* @return int
 	*/
-	virtual void Event(GLang* lang, tEvent event);
+	int Compare(const GClass* grp) const;
 
 	/**
-	* A specific document has changed.
-	* @param doc             Document.
-	* @param event           Event.
+	* Compare the identifier of a group with another one.
+	* @see R::RContainer
+	* @param id              Identifier.
+	* @return int
 	*/
-	virtual void Event(GDoc* doc, tEvent event);
+	int Compare(const size_t id) const;
+
+private:
 
 	/**
-	* A specific user has changed.
-	* @param user            User.
-	* @param event           Event.
+	* Assign a new description to the class.
+	* @param infos           Pointer to the information.
+	* \warning The container infos is cleared by this method.
 	*/
-	virtual void Event(GUser* user, tEvent event);
+	void Update(R::RContainer<GWeightInfo,false,true>& infos);
+
+public:
 
 	/**
-	* A specific profile has changed.
-	* @param prof            Profile.
-	* @param event           Event.
+	* Destruct the group.
 	*/
-	virtual void Event(GProfile* prof, tEvent event);
+	virtual ~GClass(void);
 
-	/**
-	* A specific community has changed.
-	* @param community       Community.
-	* @param event           Event.
-	*/
-	virtual void Event(GCommunity* community, tEvent event);
-
-	/**
-	* A specific topic has changed.
-	* @param topic           Topic.
-	* @param event           Event.
-	*/
-	virtual void Event(GTopic* topic, tEvent event);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GSignalHandler(void);
+	friend class GOntlogy;
+	friend class GSession;
 };
 
 

@@ -6,7 +6,7 @@
 
 	Object represented by a list of weighted information entities - Header.
 
-	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2009 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -35,6 +35,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gweightinfos.h>
+#include <gobject.h>
 #include <gsession.h>
 
 
@@ -53,15 +54,9 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Generic Vector Object
  */
-template<class cObj,tObjType type>
-	class GWeightInfosObj
+class GWeightInfosObj : public GObject
 {
 protected:
-
-	/**
-	 * Identifier of the object.
-	 */
-	size_t Id;
 
 	/**
 	* State of the object.
@@ -87,10 +82,11 @@ public:
 	/**
 	 * Construct a object.
 	 * @param id             Identifier.
+	 * @param objtype        ObjType.
 	 * @param size           Size of the vector.
 	 * @param state          State of the object.
 	 */
-	GWeightInfosObj(size_t id,size_t size,tObjState state);
+	GWeightInfosObj(size_t id,tObjType objtype,const R::RString& name,size_t size,tObjState state);
 
 	/**
 	 * @return The size of the vector the last time the object was computed
@@ -149,7 +145,7 @@ protected:
 	 * Set the new size of the object.
 	 * @param size
 	 */
-	inline void SetSize(size_t size);
+	void SetSize(size_t size) {Size=size;}
 
 	/**
 	* Add the references for the information entities of the object type in a
@@ -157,7 +153,7 @@ protected:
 	* inverse frequency factors.
 	* @param ObjType        Type of the reference.
 	*/
-	inline void AddRefs(tObjType ObjType) const;
+	inline void AddRefs(tObjType ObjType) const {GetVector()->AddRefs(ObjType);}
 
 	/**
 	* Delete the references for the information entities of the object type in a
@@ -165,13 +161,13 @@ protected:
 	* inverse frequency factors.
 	* @param ObjType        Type of the reference.
 	*/
-	inline void DelRefs(tObjType ObjType) const;
+	inline void DelRefs(tObjType ObjType) const {GetVector()->DelRefs(ObjType);}
 
 	/**
 	 * Transfer the contain of a vector to the current object.
 	 * @param info           Original vector.
 	 */
-	inline void Transfer(GWeightInfos& info);
+	void Transfer(GWeightInfos& info);
 
 public:
 
@@ -180,11 +176,6 @@ public:
 	 */
 	virtual ~GWeightInfosObj(void);
 };
-
-
-//-----------------------------------------------------------------------------
-// Template implementation
-#include <gweightinfosobj.hh>
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

@@ -32,6 +32,10 @@
 #define GOntology_H
 
 
+//-----------------------------------------------------------------------------
+// include files forR
+#include <rtree.h>
+
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
@@ -68,6 +72,21 @@ class GOntology : virtual public GBasicSession
 	*/
 	R::RContainer<GConcept,true,false> Concepts;
 
+	/**
+	 * Predicates.
+	 */
+	R::RContainer<GPredicate,false,true> Predicates;
+
+	/**
+	 * Predicates (accessed by identifiers).
+	 */
+	R::RContainer<GPredicate,true,false> PredicatesByIds;
+
+	/**
+	 * Array of statements ordered.
+	 */
+	R::RContainer<GStatement,true,false> Statements;
+
 public:
 
 	/**
@@ -75,6 +94,20 @@ public:
 	 * @param nbconcepts     Number of concepts actually managed.
 	 */
 	GOntology(size_t nbconcepts);
+
+	/**
+	 * Find an object of a given type and with a particular identifier.
+	 * @param id             Identifier.
+	 * @param objtype        Type.
+	 * @return Pointer to the object.
+	 */
+	GObject* GetObject(size_t id,tObjType objtype);
+
+	/**
+	 * Clear the references of a given type of objects.
+	 * @param type           Type.
+	 */
+	void ClearRef(tObjType type);
 
 	/**
 	* Get all concept types defined.
@@ -111,7 +144,7 @@ public:
 
 	/**
 	* Insert a new concept type.
-	* @param id              Identifier of the type.
+	* @param id              Identifier of the type.relation type
 	* @param name            Name of the type.
 	* @param desc            Short description.
 	* @param refdocs         Number of documents referenced.
@@ -155,6 +188,56 @@ public:
 	 * @return Pointer to the correct concept (may be an existing one).
 	 */
 	GConcept* RenameConcept(GConcept* concept,const R::RString& name);
+
+	/**
+	* Get all predicates defined.
+	*/
+	R::RCursor<GPredicate> GetPredicates(void) const;
+
+	/**
+	* Get the a pointer to a predicate.relation type
+	* @param id              Identifier of the type.
+	* @param null            If set to true, if the type does not exist,
+	*                        return 0, else an exception is generated.
+	* @return Pointer to a GRelationType
+	*/
+	GPredicate* GetPredicate(size_t id,bool null);
+
+	/**
+	* Get the a pointer to a predicate.
+	* @param name            Name of the type.
+	* @param null            If set to true, if the type does not exist,
+	*                        return 0, else an exception is generated.
+	* @return Pointer to a GRelationType
+	*/
+	GPredicate* GetPredicate(const R::RString& name,bool null);
+
+	/**
+	* Insert a new predicate.
+	* @param id              Identifier of the type.
+	* @param name            Name of the type.
+	* @param desc            Short description.
+	*/
+	GPredicate* InsertPredicate(size_t id,const R::RString& name,const R::RString& desc);
+
+	/**
+	* Insert a new statement.
+	* @param id              Identifier of the statement.
+	* @param subject         Identifier of the subject.
+	* @param subjecttype     Type of the subject.
+	* @param predicate       Identifier of the predicate.
+	* @param object          Identifier of the object.
+	* @param objecttype      Type of the object.
+	* @param weight          Weight of the statement.
+	*/
+	void InsertStatement(size_t id,size_t subject,tObjType subjecttype,size_t predicate,size_t object,tObjType objecttype,double weight);
+
+	/**
+	* Get a statement.
+	* @param id              Identifier of the statement.
+	* @return Pointer to a statement.
+	*/
+	GStatement* GetStatement(size_t id);
 
 	/**
 	 * Destruct the ontology.

@@ -250,10 +250,7 @@ public:
 
 	friend class GIndexer;
 	friend class GDoc;
-	friend class GWeightInfosObj<GDoc,otDoc>;
-	friend class GWeightInfosObj<GProfile,otProfile>;
-	friend class GWeightInfosObj<GTopic,otTopic>;
-	friend class GWeightInfosObj<GCommunity,otCommunity>;
+	friend class GWeightInfosObj;
 };
 
 

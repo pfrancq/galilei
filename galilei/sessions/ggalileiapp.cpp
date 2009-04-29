@@ -220,8 +220,8 @@ GSession* GGALILEIApp::CreateSession(void)
 	Session->GetStorage()->Connect(Session);
 	Session->GetStorage()->LoadConceptTypes();
 	Session->GetStorage()->LoadConcepts();
-	Session->GetStorage()->LoadRelationTypes();
-	Session->GetStorage()->LoadRelations();
+	Session->GetStorage()->LoadPredicates();
+	Session->GetStorage()->LoadStatements();
 	WriteLog("Session created");
 
 	// Connect plugins

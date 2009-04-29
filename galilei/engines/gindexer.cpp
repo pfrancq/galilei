@@ -125,6 +125,12 @@ void GIndexer::Clear(tObjType objtype)
 			DelDir.Clear();
 			break;
 		}
+		case otClass:
+		{
+			RDir DelDir(DirClasses);
+			DelDir.Clear();
+			break;
+		}
 		default:
 			break;
 	}
@@ -147,6 +153,8 @@ void GIndexer::Apply(void)
 		RDir::CreateDirIfNecessary(DirCommunities,false);
 		DirTopics=Dir+RFile::GetDirSeparator()+Name+RFile::GetDirSeparator()+"Topics"+RFile::GetDirSeparator();
 		RDir::CreateDirIfNecessary(DirTopics,false);
+		DirClasses=Dir+RFile::GetDirSeparator()+Name+RFile::GetDirSeparator()+"Classes"+RFile::GetDirSeparator();
+		RDir::CreateDirIfNecessary(DirClasses,false);
 	}
 	catch(...)
 	{
@@ -175,6 +183,9 @@ void GIndexer::LoadInfos(GWeightInfos& infos,tObjType type,size_t id)
 				break;
 			case otTopic:
 				File=DirTopics;
+				break;
+			case otClass:
+				File=DirClasses;
 				break;
 			default:
 				throw GException("This type of objects do not have descriptions");
@@ -221,6 +232,9 @@ void GIndexer::SaveInfos(const GWeightInfos& infos,tObjType type,size_t id)
 				break;
 			case otTopic:
 				File=DirTopics;
+				break;
+			case otClass:
+				File=DirClasses;
 				break;
 			default:
 				throw GException("This type of objects do not have descriptions");

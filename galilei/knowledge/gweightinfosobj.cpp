@@ -4,9 +4,9 @@
 
 	GWeightInfosObj.hh
 
-	Object represented by a list of weighted information entities - Inline Implementation.
+	Object represented by a list of weighted information entities - Implementation.
 
-	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2009 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -27,25 +27,32 @@
 
 
 
+//-----------------------------------------------------------------------------
+// include files for GALILEI
+#include <gweightinfosobj.h>
+using namespace GALILEI;
+using namespace R;
+using namespace std;
+
+
+
 //------------------------------------------------------------------------------
 //
-//  GWeightInfosObj<cObj,tObjType>
+//  GWeightInfosObj
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	GWeightInfosObj<cObj,type>::GWeightInfosObj(size_t id,size_t size,tObjState state)
-		: Id(id), State(state), Vector(0), Size(size)
+GWeightInfosObj::GWeightInfosObj(size_t id,tObjType objtype,const R::RString& name,size_t size,tObjState state)
+	: GObject(id,name,objtype), State(state), Vector(0), Size(size)
 {
 	if(Id!=R::cNoRef)
-		GSession::Event(static_cast<cObj*>(this),eObjNew);
+		Emit(GEvent::eObjNew);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	const GWeightInfos* GWeightInfosObj<cObj,type>::GetVector(void) const
+const GWeightInfos* GWeightInfosObj::GetVector(void) const
 {
 	if(!Vector)
 			const_cast<GWeightInfosObj*>(this)->Vector=new GWeightInfos(Size);
@@ -54,16 +61,15 @@ template<class cObj,tObjType type>
 		const_cast<GWeightInfosObj*>(this)->State=osOnDemand;      // The object is on-demand of loading
 		GSession* session=GSession::Get();
 		if(session)
-			session->LoadInfos(*Vector,type,Id);                   // Load the object
-		const_cast<GWeightInfosObj*>(this)->State=osUpToDate;      // It is updated !
+			session->LoadInfos(*Vector,ObjType,Id);                   // Load the object
+		const_cast<GWeightInfosObj*>(this)->State=osUpToDate;         // It is updated !
 	}
 	return(Vector);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	void GWeightInfosObj<cObj,type>::SetState(tObjState state)
+void GWeightInfosObj::SetState(tObjState state)
 {
 	if((State==osNeedLoad)&&(state==osDelete))
 	{
@@ -75,27 +81,25 @@ template<class cObj,tObjType type>
 		const_cast<GWeightInfosObj*>(this)->State=osOnDemand;      // The object is on-demand of loading
 		GSession* session=GSession::Get();
 		if(session)
-			session->LoadInfos(*Vector,type,Id);                   // Load the object
-		const_cast<GWeightInfosObj*>(this)->State=osUpToDate;      // It is updated !
+			session->LoadInfos(*Vector,ObjType,Id);                   // Load the object
+		const_cast<GWeightInfosObj*>(this)->State=osUpToDate;         // It is updated !
 	}
 	State=state;
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	void GWeightInfosObj<cObj,type>::SetId(size_t id)
+void GWeightInfosObj::SetId(size_t id)
 {
 	if(id==R::cNoRef)
-		throw GException("Cannot assign cNoRef to a "+GetObjType(type));
+		throw GException("Cannot assign cNoRef to a "+GALILEI::GetObjType(ObjType));
 	Id=id;
-	GSession::Event(static_cast<cObj*>(this),eObjNew);
+	Emit(GEvent::eObjNew);
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	void GWeightInfosObj<cObj,type>::CopyInfos(const R::RContainer<GWeightInfo,false,true>& infos)
+void GWeightInfosObj::CopyInfos(const R::RContainer<GWeightInfo,false,true>& infos)
 {
 	Size=infos.GetNb();
 	State=osUpToDate;
@@ -114,8 +118,7 @@ template<class cObj,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	void GWeightInfosObj<cObj,type>::Clear(void)
+void GWeightInfosObj::Clear(void)
 {
 	Size=0;
 	if(Vector)
@@ -124,32 +127,7 @@ template<class cObj,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	void GWeightInfosObj<cObj,type>::SetSize(size_t size)
-{
-	Size=size;
-}
-
-
-//------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	void GWeightInfosObj<cObj,type>::AddRefs(tObjType ObjType) const
-{
-	GetVector()->AddRefs(ObjType);
-}
-
-
-//------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	void GWeightInfosObj<cObj,type>::DelRefs(tObjType ObjType) const
-{
-	GetVector()->DelRefs(ObjType);
-}
-
-
-//------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	void GWeightInfosObj<cObj,type>::Transfer(GWeightInfos& info)
+void GWeightInfosObj::Transfer(GWeightInfos& info)
 {
 	Size=info.GetNb();
 	GetVector();
@@ -158,15 +136,14 @@ template<class cObj,tObjType type>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,tObjType type>
-	GWeightInfosObj<cObj,type>::~GWeightInfosObj(void)
+GWeightInfosObj::~GWeightInfosObj(void)
 {
-	GSession::Event(static_cast<cObj*>(this),eObjDelete);
+	Emit(GEvent::eObjDelete);
 
 	try
 	{
 		if(State==osDelete)  // The object has modified the references count but was not saved
-			Vector->DelRefs(type);
+			Vector->DelRefs(ObjType);
 	}
 	catch(...)
 	{

@@ -185,7 +185,7 @@ public:
 * @author Pascal Francq
 * @short Profile.
 */
-class GProfile :  public GWeightInfosObj<GProfile,otProfile>
+class GProfile : public GWeightInfosObj
 {
 protected:
 
@@ -193,11 +193,6 @@ protected:
 	* The owner of the profile.
 	*/
 	GUser* User;
-
-	/**
-	* Name of the profile.
-	*/
-	R::RString Name;
 
 	/**
 	* Documents assessed by profile.
@@ -278,12 +273,6 @@ public:
 	* @return int
 	*/
 	int Compare(const size_t id) const;
-
-	/**
-	* Get the name of the profile.
-	* @return RString.
-	*/
-	R::RString GetName(void) const;
 
 	/**
 	 * Set the name of the profile.

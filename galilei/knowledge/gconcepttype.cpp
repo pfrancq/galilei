@@ -161,14 +161,6 @@ void GConceptType::DebugInfo(const RString& info)
 
 
 //------------------------------------------------------------------------------
-void GConceptType::Clear(void)
-{
-	RDblHashContainer<GConcept,false>::Clear();
-	SetReferences(0,0,0,0);
-}
-
-
-//------------------------------------------------------------------------------
 bool GConceptType::IsIn(const RString& name) const
 {
 	return(RDblHashContainer<GConcept,false>::IsIn(name));
@@ -207,7 +199,7 @@ void GConceptType::IncRef(tObjType ObjType)
 			nb++;
 			break;
 		default:
-			throw GException ("GConceptType::IncRef(tObjType): Unknown type to increase");
+			nb=0;
 			break;
 	}
 	if(Ontology->SaveResults)
@@ -247,7 +239,7 @@ void GConceptType::DecRef(tObjType ObjType)
 			nb=NbRefTopics;
 			break;
 		default:
-			throw GException("GConceptType::DecRef(tObjType): Unknown type to decrease");
+			nb=0;
 			break;
 	}
 	if(Ontology->SaveResults)
@@ -273,7 +265,7 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 			return(NbRefTopics);
 			break;
 		default:
-			return(NbRefDocs+NbRefProfiles+NbRefCommunities);
+			return(0);
 			break;
 	}
 	return(0);
@@ -314,10 +306,8 @@ void GConceptType::ClearRef(tObjType ObjType)
 			NbRefTopics=0;
 			break;
 		default:
-			NbRefDocs=0;
-			NbRefProfiles=0;
-			NbRefCommunities=0;
-			NbRefTopics=0;
+			cerr<<"GConceptType::ClearRef: Not normal"<<endl;
+			return;
 			break;
 	}
 

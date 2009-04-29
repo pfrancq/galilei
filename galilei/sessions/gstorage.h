@@ -283,10 +283,11 @@ public:
 	virtual void LoadSubjects(void)=0;
 
 	/**
-	 * Save the subjects, including the information on the documents and the
-	 * profiles assigned to them.
+	 * Save the subject, including the information on the documents (and which
+	 * ones are used) and the profiles assigned to them.
+	 * @param subject        Subject to save.
 	 */
-	virtual void SaveSubjects(void)=0;
+	virtual void SaveSubject(GSubject* subject)=0;
 
 	/**
 	* Execute a sequence of steps needed to construct data. Typically, this
@@ -332,16 +333,6 @@ public:
 	* @param type            Concept type.
 	*/
 	virtual void AssignId(GConceptType* type)=0;
-
-	/**
-	* Load the relation types from the database.
-	*/
-	virtual void LoadRelationTypes(void)=0;
-
-	/**
-	* Load the relation from the database.
-	*/
-	virtual void LoadRelations(void)=0;
 
 	/**
 	* Loading all concepts.
@@ -404,6 +395,50 @@ public:
 	* @param refs            Number of references.
 	*/
 	virtual void SaveRefs(GConceptType* type,tObjType what,size_t refs)=0;
+
+	/**
+	* Load the predicates from the database.
+	*/
+	virtual void LoadPredicates(void)=0;
+
+	/**
+	* Assign an identifier to a new predicate.
+	* @param predicate       Predicate.
+	*/
+	virtual void AssignId(GPredicate* predicate)=0;
+
+	/**
+	* Load the statements from the database.
+	*/
+	virtual void LoadStatements(void)=0;
+
+	/**
+	* Assign an identifier to a new statement.
+	* @param statement       Statement.
+	*/
+	virtual void AssignId(GStatement* statement)=0;
+
+protected:
+
+	/**
+	* Method that load the classes from where they are stored. This method is
+	* called once by the session.
+	*/
+	virtual void LoadClasses(void)=0;
+
+public:
+
+	/**
+	* Assign an identifier to a new class.
+	* @param theclass        Class.
+	*/
+	virtual void AssignId(GClass* theclass)=0;
+
+	/**
+	 * Save a class.
+	 * @param theclass        Class.
+	 */
+	virtual void SaveClass(GClass* theclass)=0;
 
 	// @} Knowledge Methods
 

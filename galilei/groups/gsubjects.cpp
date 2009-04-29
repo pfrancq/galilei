@@ -169,10 +169,9 @@ public:
 
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(GSession* session)
-	: GDebugObject("Subjects"), RTree<GSubject,true,false>(100,50), Data(0)
+	: GDebugObject("Subjects"), RTree<GSubject,true>(100,50), Data(0)
 {
 	Data=new Intern(session);
-	InsertNode(0,new GSubject(0,"Subjects",false));
 	Apply();
 }
 
@@ -197,14 +196,6 @@ void GSubjects::Apply(void)
 	Data->SwitchPerc=Data->Session->GetDouble("SwitchPerc","Subjects");
 	Data->NbDocsPerSubject=Data->Session->GetDouble("NbDocsPerSubject","Subjects");
 	Data->PercNbDocsPerSubject=Data->Session->GetBool("PercNbDocsPerSubject","Subjects");
-	RParamList* Selected=Data->Session->FindParam<RParamList>("SelectedSubjects","Subjects");
-	if(Selected)
-	{
-		// Go trough the subjects
-		RCursor<GSubject> Cur(GetNodes());
-		for(Cur.Start();!Cur.End();Cur.Next())
-			Cur()->Used=(Selected->GetPos(Cur()->GetName())!=SIZE_MAX);
-	}
 }
 
 
@@ -216,7 +207,7 @@ void GSubjects::ReInit(void)
 	// Re-init the subjects
 	RCursor<GSubject> Subjects(GetNodes());
 	for(Subjects.Start();!Subjects.End();Subjects.Next())
-		Subjects()->ReInit(unselected);
+		Subjects()->ReInit(Data->Session,unselected);
 }
 
 
@@ -260,7 +251,7 @@ void GSubjects::ChooseSubjects(void)
 
 		// Randomly mix the subjects in tab
 		tab=new GSubject*[GetNbNodes()];
-		RTree<GSubject,true,false>::GetTab(tab);
+		RTree<GSubject,true>::GetTab(tab);
 		Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 		// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
@@ -270,9 +261,6 @@ void GSubjects::ChooseSubjects(void)
 			compt=static_cast<size_t>(Data->NbSubjects);
 		for(ptr=tab,i=GetNbNodes()+1;(--i)&&compt;ptr++)
 		{
-			if((*ptr)==GetTop())
-				continue;
-
 			// Verify that there is enough documents
 			if((*ptr)->GetNbTotalDocs()<Data->NbMinDocsSubject) continue;
 
@@ -410,7 +398,7 @@ void GSubjects::ProfileAssess(GProfile* prof,GSubject* sub,size_t maxDocsOK,size
 GSubject* GSubjects::GetIdealGroup(GProfile* prof) const
 {
 	GSubject* subject(0);
-	RCursor<GSubject> Cur(Top->GetNodes());
+	RCursor<GSubject> Cur(GetTopNodes());
 	for(Cur.Start();(!Cur.End())&&(!subject);Cur.Next())
 		subject=Cur()->GetIdealGroup(prof);
 	return(subject);
@@ -422,7 +410,7 @@ GSubject* GSubjects::GetIdealGroup(GDoc* doc) const
 {
 	GSubject* subject;
 
-	RCursor<GSubject> Cur(Top->GetNodes());
+	RCursor<GSubject> Cur(GetTopNodes());
 	for(Cur.Start(),subject=0;(!Cur.End())&&(!subject);Cur.Next())
 		subject=Cur()->GetIdealGroup(doc);
 	return(subject);
@@ -499,7 +487,7 @@ size_t GSubjects::GetNbIdealGroups(tObjType type) const
 {
 	size_t nb;
 
-	RCursor<GSubject> Cur(Top->GetNodes());
+	RCursor<GSubject> Cur(GetTopNodes());
 	for(Cur.Start(),nb=0;!Cur.End();Cur.Next())
 		nb+=Cur()->GetNbIdealGroups(type);
 	return(nb);
@@ -511,7 +499,7 @@ size_t GSubjects::GetNbTopicsDocs(void) const
 {
 	size_t nb;
 
-	RCursor<GSubject> Cur(Top->GetNodes());
+	RCursor<GSubject> Cur(GetTopNodes());
 	for(Cur.Start(),nb=0;!Cur.End();Cur.Next())
 		nb+=Cur()->GetNbTopicsDocs();
 	return(nb);
@@ -1039,7 +1027,7 @@ bool GSubjects::AddTopic(void)
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
-	RTree<GSubject,true,false>::GetTab(tab);
+	RTree<GSubject,true>::GetTab(tab);
 	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Find the first not used subject having at least NbMinDocsSubject documents.
@@ -1112,7 +1100,7 @@ size_t GSubjects::AddProfiles(void)
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
-	RTree<GSubject,true,false>::GetTab(tab);
+	RTree<GSubject,true>::GetTab(tab);
 	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Find the first used subject having at least NbMinDocsSubject documents.
@@ -1221,14 +1209,14 @@ void GSubjects::ClearLastAdded(void)
 //------------------------------------------------------------------------------
 GSubject* GSubjects::GetSubject(size_t id)
 {
-	return(RTree<GSubject,true,false>::GetNode(id,false));
+	return(RTree<GSubject,true>::GetNode(id));
 }
 
 
 //------------------------------------------------------------------------------
 void GSubjects::Clear(void)
 {
-	RTree<GSubject,true,false>::Clear();
+	RTree<GSubject,true>::Clear();
 	Data->Profiles.Clear();
 	InsertNode(0,new GSubject(0,"Subjects",false));
 }
@@ -1368,7 +1356,7 @@ double GSubjects::GetRecall(GTopic* top) const
 //------------------------------------------------------------------------------
 void GSubjects::InsertProfileSubject(GProfile* profile,size_t subjectid)
 {
-	GSubject* subject=RTree<GSubject,true,false>::GetNode(subjectid,false);
+	GSubject* subject=RTree<GSubject,true>::GetNode(subjectid);
 
 	if(!subject)
 		return;
@@ -1390,9 +1378,9 @@ GSubject* GSubjects::GetSubject(GProfile* prof)
 
 
 //------------------------------------------------------------------------------
-void GSubjects::InsertDocSubject(GDoc* doc,size_t subjectid)
+void GSubjects::InsertDocSubject(GDoc* doc,size_t subjectid,bool used)
 {
-	GSubject* subject=RTree<GSubject,true,false>::GetNode<size_t>(subjectid,false);
+	GSubject* subject=RTree<GSubject,true>::GetNode(subjectid);
 	if(!subject)
 		return;
 	R::RContainer<GSubject,false,false>* line;
@@ -1411,7 +1399,7 @@ void GSubjects::InsertDocSubject(GDoc* doc,size_t subjectid)
 		}
 	}
 	line->InsertPtr(subject);
-	subject->Insert(doc);
+	subject->Insert(doc,used);
 }
 
 

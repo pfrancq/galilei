@@ -174,15 +174,6 @@ void GXMLIndex::Clear(void)
 
 
 //-----------------------------------------------------------------------------
-RString GXMLIndex::GetName(void) const
-{
-	if(!Name.GetLen())
-		const_cast<GXMLIndex*>(this)->BuildName();
-	return(Name);
-}
-
-
-//-----------------------------------------------------------------------------
 void GXMLIndex::SetConceptTypes(GConceptType* type,GConceptType* lang)
 {
 	Type=type;

@@ -57,7 +57,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RURI& url,const RString& name,GLang* lang,const RString& mime)
-	: GWeightInfosObj<GDoc,otDoc>(cNoRef,0,osNew), URL(url), Name(name), Struct(0),
+	: GWeightInfosObj(cNoRef,otDoc,name,0,osNew), URL(url), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
 	  Fdbks(0), LinkSet(5,2), GroupId(0), Attached(RDate::Null),
 	  NbRecs(0), NbLCs(0)
@@ -74,7 +74,7 @@ GDoc::GDoc(const RURI& url,const RString& name,GLang* lang,const RString& mime)
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a,size_t size,size_t nbrecs,size_t nblcs)
-	: GWeightInfosObj<GDoc,otDoc>(id,size,osNew), URL(url), Name(name), Struct(0),
+	: GWeightInfosObj(id,otDoc,name,size,osNew), URL(url), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), LinkSet(5,2), GroupId(grpid), Attached(a),
 	  NbRecs(nbrecs), NbLCs(nblcs)
@@ -87,6 +87,7 @@ GDoc::GDoc(const RURI& url,const RString& name,size_t id,GLang* lang,const RStri
 		if(grp)
 			grp->InsertObj(this);
 	}
+	NotificationCenter.PostNotification<GDoc*>("DocChanged",this);
 }
 
 
@@ -131,7 +132,7 @@ int GDoc::Compare(const GLang* lang) const
 void GDoc::ClearInfos(void)
 {
 	// Clear the information
-	GWeightInfosObj<GDoc,otDoc>::Clear();
+	GWeightInfosObj::Clear();
 
 	// Make sure that it will be re-computed
 	Computed=RDate::Null;
@@ -426,7 +427,7 @@ void GDoc::Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram
 		DelRefs(otDoc);
 
 	// Assign language and information
-	GWeightInfosObj<GDoc,otDoc>::Clear();
+	GWeightInfosObj::Clear();
 	Lang=lang;
 	NbRecs=docstruct.GetNbRecs();
 	NbLCs=docstruct.GetNbLCs();
@@ -464,7 +465,7 @@ void GDoc::Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram
 
 	// Emit an event that it was modified
 	if(Id!=cNoRef)
-		GSession::Event(this,eObjModified);
+		Emit(GEvent::eObjModified);
 }
 
 

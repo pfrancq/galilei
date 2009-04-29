@@ -62,7 +62,7 @@ namespace GALILEI{
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subjects.
 */
-class GSubjects : public GDebugObject, public R::RTree<GSubject,true,false>
+class GSubjects : public GDebugObject, public R::RTree<GSubject,true>
 {
 protected:
 
@@ -314,8 +314,9 @@ public:
 	* Add a given document to a subject.
 	* @param doc            Pointer to the document.
 	* @param subjectid      Identifier of the subject.
+	* @param used           Document currently used.
 	*/
-	void InsertDocSubject(GDoc* doc,size_t subjectid);
+	void InsertDocSubject(GDoc* doc,size_t subjectid,bool used);
 
 	/**
 	* Look if a document is from a given subject.

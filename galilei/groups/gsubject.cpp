@@ -56,7 +56,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GSubject::GSubject(size_t id,const char* name,bool u)
-	 : RNode<GSubject,true,false>(),  Id(id), Name(name), Used(u), AllDocs(1000,500), Docs(1000,500), Profiles(10,5), Community(0), Topic(0)
+	 : RNode<GSubject,true>(),  Id(id), Name(name), Used(u), AllDocs(1000,500), Docs(1000,500), Profiles(10,5), Community(0), Topic(0)
 {
 }
 
@@ -83,9 +83,11 @@ int GSubject::Compare(const RString& name) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::Insert(GDoc* doc)
+void GSubject::Insert(GDoc* doc,bool used)
 {
 	AllDocs.InsertPtr(doc);
+	if(used)
+		Docs.InsertPtr(doc);
 }
 
 
@@ -340,6 +342,9 @@ void GSubject::SetUsed(GSession* session,RRandom* random,size_t nbdocs,GDoc** tm
 		"Faiza Gaultier","Marco Saerens","Marjorie Paternostre","David Wartel","Valery Vandaele","Nicolas Kumps","Julien Lamoral",
 		"Sarah Rolfo","Jean-Baptiste Valsamis","Jean-Pierre Devroey","Herve Gilson"};
 
+	// Used it.
+	Used=true;
+
 	// Verify that they are enough users -> If not, create new ones
 	if(session->GetNbUsers()<nbprofiles+Profiles.GetNb())
 	{
@@ -387,11 +392,15 @@ void GSubject::SetUsed(GSession* session,RRandom* random,size_t nbdocs,GDoc** tm
 		for(size_t i=nbdocs+1;--i;ptr++)
 			Docs.InsertPtr(*ptr);
 	}
+
+	// Save if necessary
+	if(session->MustSaveResults())
+		session->GetStorage()->SaveSubject(this);
 }
 
 
 //------------------------------------------------------------------------------
-void GSubject::ReInit(bool unselected)
+void GSubject::ReInit(GSession* session,bool unselected)
 {
 	if(unselected)
 		Used=false;
@@ -399,6 +408,17 @@ void GSubject::ReInit(bool unselected)
 	Docs.Clear();
 	Community=0;
 	Topic=0;
+	if(session->MustSaveResults())
+		session->GetStorage()->SaveSubject(this);
+}
+
+
+//------------------------------------------------------------------------------
+void GSubject::SetUsed(GSession* session,bool used)
+{
+	Used=used;
+	if(session->MustSaveResults())
+		session->GetStorage()->SaveSubject(this);
 }
 
 
