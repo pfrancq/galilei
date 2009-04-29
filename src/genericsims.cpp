@@ -259,8 +259,8 @@ void GGenericSims::ApplyConfig(void)
 void GGenericSims::Connect(GSession* session)
 {
 	GMatrixMeasure::Connect(session);
-	MetaSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
-	StructSpace=Session->GetInsertConceptType("XMLStruct","XML Structure");
+	MetaSpace=Session->GetConceptType("XMLIndex",false);
+	StructSpace=Session->GetConceptType("XMLStruct",false);
 	RCursor<GConceptType> Cur(Session->GetConceptTypes());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
@@ -269,7 +269,7 @@ void GGenericSims::Connect(GSession* session)
 			Types.InsertPtr(new GSimTypeXMLIndex(this,Cur()));
 		else if(Cur()==StructSpace)
 			Types.InsertPtr(new GSimType(this,Cur()));
-		else if(Cur()->GetLang())
+		else if(Cur()->GetName().Mid(2)=="Terms")
 			Types.InsertPtr(new GSimType(this,Cur()));
 	}
 	CurLang=0;
