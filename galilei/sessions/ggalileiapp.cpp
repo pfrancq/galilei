@@ -192,7 +192,7 @@ void GGALILEIApp::Init(void)
 
 	//------------------------------------------------------------------------------
 	// Load plug-ins
-	cout<<"Load and config plug-ins ...";
+	cout<<"Load and configure plug-ins ...";
 	cout.flush();
 	Load(PlugInsPath,LoadDialogs);
 	R::RCursor<GGenericPluginManager> Managers(*this);
@@ -211,9 +211,9 @@ GSession* GGALILEIApp::CreateSession(void)
 	if(!HasInitApp)
 		throw GException("Application not initialized");
 	if(Session)
-		throw GException("A session is alreary created");
+		throw GException("A session is already created");
 
-	// Init Session
+	// Initialize Session
 	Session=new GSession(Log,Debug);
 	Session->Apply();
 	GStorageManager* Mng(Session->GetStorage()->GetFactory()->GetMng());
@@ -229,7 +229,7 @@ GSession* GGALILEIApp::CreateSession(void)
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(Cur()!=Mng)
 			Cur()->Connect(Session);
-	WriteLog("Plugins connected to session");
+	WriteLog("Plug-ins connected to session");
 
 	return(Session);
 }

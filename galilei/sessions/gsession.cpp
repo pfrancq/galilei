@@ -83,7 +83,6 @@ using namespace R;
 #include <ggalileiapp.h>
 #include <gdebugobject.h>
 #include <gindexer.h>
-#include <gclass.h>
 using namespace GALILEI;
 using namespace std;
 

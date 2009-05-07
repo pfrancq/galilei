@@ -31,6 +31,12 @@
 #ifndef GClassH
 #define GClassH
 
+
+//------------------------------------------------------------------------------
+// include files for R
+#include <rtree.h>
+
+
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
@@ -49,7 +55,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Concepts Class.
 */
-class GClass : public R::RNode<GClass,true>, public GWeightInfosObj
+class GClass : public R::RNode<GClasses,GClass,true>, public GWeightInfosObj
 {
 public:
 
@@ -103,6 +109,25 @@ public:
 
 	friend class GOntlogy;
 	friend class GSession;
+};
+
+
+//------------------------------------------------------------------------------
+/**
+ * The GClasses provides just a tree of GClass.
+ * @author Pascal Francq.
+ * @short Classes
+ */
+class GClasses : public R::RTree<GClasses,GClass,true>
+{
+public:
+
+	/**
+	* Construct a tree of classes.
+	* @param max            Initial size of the array of top nodes.
+	* @param inc            Increment size of the array.
+	*/
+	GClasses(size_t max,size_t inc);
 };
 
 

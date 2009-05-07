@@ -62,7 +62,7 @@ namespace GALILEI{
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subjects.
 */
-class GSubjects : public GDebugObject, public R::RTree<GSubject,true>
+class GSubjects : public GDebugObject, public R::RTree<GSubjects,GSubject,true>
 {
 protected:
 

@@ -36,7 +36,6 @@
 // include files for GALILEI
 #include <gweightinfos.h>
 #include <gobject.h>
-#include <gsession.h>
 
 
 //------------------------------------------------------------------------------

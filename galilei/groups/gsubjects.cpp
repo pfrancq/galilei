@@ -169,7 +169,7 @@ public:
 
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(GSession* session)
-	: GDebugObject("Subjects"), RTree<GSubject,true>(100,50), Data(0)
+	: GDebugObject("Subjects"), RTree<GSubjects,GSubject,true>(100,50), Data(0)
 {
 	Data=new Intern(session);
 	Apply();
@@ -251,7 +251,7 @@ void GSubjects::ChooseSubjects(void)
 
 		// Randomly mix the subjects in tab
 		tab=new GSubject*[GetNbNodes()];
-		RTree<GSubject,true>::GetTab(tab);
+		RTree<GSubjects,GSubject,true>::GetTab(tab);
 		Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 		// Choose the first percgrp subjects having at least NbMinDocsSubject documents.
@@ -1027,7 +1027,7 @@ bool GSubjects::AddTopic(void)
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
-	RTree<GSubject,true>::GetTab(tab);
+	RTree<GSubjects,GSubject,true>::GetTab(tab);
 	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Find the first not used subject having at least NbMinDocsSubject documents.
@@ -1100,7 +1100,7 @@ size_t GSubjects::AddProfiles(void)
 
 	// Randomly mix the subjects in tab
 	tab=new GSubject*[GetNbNodes()];
-	RTree<GSubject,true>::GetTab(tab);
+	RTree<GSubjects,GSubject,true>::GetTab(tab);
 	Data->Session->GetRandom()->RandOrder<GSubject*>(tab,GetNbNodes());
 
 	// Find the first used subject having at least NbMinDocsSubject documents.
@@ -1209,14 +1209,14 @@ void GSubjects::ClearLastAdded(void)
 //------------------------------------------------------------------------------
 GSubject* GSubjects::GetSubject(size_t id)
 {
-	return(RTree<GSubject,true>::GetNode(id));
+	return(RTree<GSubjects,GSubject,true>::GetNode(id));
 }
 
 
 //------------------------------------------------------------------------------
 void GSubjects::Clear(void)
 {
-	RTree<GSubject,true>::Clear();
+	RTree<GSubjects,GSubject,true>::Clear();
 	Data->Profiles.Clear();
 	InsertNode(0,new GSubject(0,"Subjects",false));
 }
@@ -1356,7 +1356,7 @@ double GSubjects::GetRecall(GTopic* top) const
 //------------------------------------------------------------------------------
 void GSubjects::InsertProfileSubject(GProfile* profile,size_t subjectid)
 {
-	GSubject* subject=RTree<GSubject,true>::GetNode(subjectid);
+	GSubject* subject=RTree<GSubjects,GSubject,true>::GetNode(subjectid);
 
 	if(!subject)
 		return;
@@ -1380,7 +1380,7 @@ GSubject* GSubjects::GetSubject(GProfile* prof)
 //------------------------------------------------------------------------------
 void GSubjects::InsertDocSubject(GDoc* doc,size_t subjectid,bool used)
 {
-	GSubject* subject=RTree<GSubject,true>::GetNode(subjectid);
+	GSubject* subject=RTree<GSubjects,GSubject,true>::GetNode(subjectid);
 	if(!subject)
 		return;
 	R::RContainer<GSubject,false,false>* line;

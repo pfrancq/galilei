@@ -44,7 +44,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GClass::GClass(size_t id,const R::RString& name,size_t size)
-	: R::RNode<GClass,true>(), GWeightInfosObj(id,otClass,name,size,osNew)
+	: R::RNode<GClasses,GClass,true>(), GWeightInfosObj(id,otClass,name,size,osNew)
 {
 }
 
@@ -92,3 +92,18 @@ void GClass::Update(RContainer<GWeightInfo,false,true>& infos)
 GClass::~GClass(void)
 {
 }
+
+
+
+//------------------------------------------------------------------------------
+//
+//  GClasses
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GClasses::GClasses(size_t max,size_t inc)
+	: RTree<GClasses,GClass,true>(max,inc)
+{
+}
+

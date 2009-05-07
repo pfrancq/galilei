@@ -96,7 +96,7 @@ public:
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subject
 */
-class GSubject: public R::RNode<GSubject,true>
+class GSubject: public R::RNode<GSubjects,GSubject,true>
 {
 	/**
 	 * Identifier of the subject.

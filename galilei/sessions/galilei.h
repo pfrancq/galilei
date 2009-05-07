@@ -261,6 +261,7 @@ class GWeightInfos;
 class GWeightInfosObj;
 class GOntology;
 class GClass;
+class GClasses;
 
 
 //------------------------------------------------------------------------------

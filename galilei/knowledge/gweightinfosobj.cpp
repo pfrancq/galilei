@@ -30,6 +30,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gweightinfosobj.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;

@@ -56,7 +56,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GSubject::GSubject(size_t id,const char* name,bool u)
-	 : RNode<GSubject,true>(),  Id(id), Name(name), Used(u), AllDocs(1000,500), Docs(1000,500), Profiles(10,5), Community(0), Topic(0)
+	 : RNode<GSubjects,GSubject,true>(),  Id(id), Name(name), Used(u), AllDocs(1000,500), Docs(1000,500), Profiles(10,5), Community(0), Topic(0)
 {
 }
 

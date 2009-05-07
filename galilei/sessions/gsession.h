@@ -47,6 +47,7 @@
 #include <genginedoc.h>
 #include <gindexer.h>
 #include <gontology.h>
+#include <gclass.h>
 
 
 //------------------------------------------------------------------------------
@@ -72,7 +73,7 @@ class GSession : public R::RConfig, public GIndexer, public GOntology
 	/**
 	 * Classes organizing the concepts.
 	 */
-	R::RTree<GClass,true> Classes;
+	GClasses Classes;
 
 	/**
 	 * Determine if all the classes were loaded.
