@@ -84,7 +84,7 @@ void Thesaurus::Disconnect(GSession* session)
 //-----------------------------------------------------------------------------
 void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 {
-	RString Name(RString::Null);
+	RString Name("Node "+RString::Number(node->GetId()));
 
 	// Build Name
 	RCursor<RObjH> Objs(node->GetObjs());
@@ -94,9 +94,14 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 		if(Plus)
 			Name+="+";
 		else
-			Plus=true,
+		{
+			Name+=" (";
+			Plus=true;
+		}
 		Name+=Objs()->GetName();
 	}
+	if(Plus)
+		Name+=")";
 
 	// Create the class
 	GClass* Class(Session->InsertClass(parent,cNoRef,Name));
@@ -210,7 +215,7 @@ void Thesaurus::Run(void)
 		cout<<"Run HCA"<<endl;
 		Instance.Run();
 		cout<<"Build solutions"<<endl;
-		ConstructResults(Instance.BestChromosome->GetNodes(Instance.BestChromosome->GetTop()));
+		ConstructResults(Instance.BestChromosome->GetTopNodes());
 	}
 	catch(RGAException& e)
 	{

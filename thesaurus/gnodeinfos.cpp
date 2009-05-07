@@ -50,13 +50,6 @@ GNodeInfos::GNodeInfos(GChromoH* owner,size_t id,size_t max)
 
 
 //------------------------------------------------------------------------------
-GNodeInfos::GNodeInfos(const GNodeInfos* w)
-	: RNodeGA<GNodeInfos,RObjH,GChromoH>(w)
-{
-}
-
-
-//------------------------------------------------------------------------------
 int GNodeInfos::Compare(const GNodeInfos* n) const
 {
 	return(Id-n->Id);
@@ -79,16 +72,15 @@ void GNodeInfos::Evaluate(double& val, double nbchoices)
 	// For each objects add number of choices to get there
 	val+=NbSubObjects*nbchoices;
 
-	// Go through each subnodes in order to continue computing the value
-	RCursor<GNodeInfos> Cur(Owner->GetNodes(*this));
+	// Go through each child nodes in order to continue computing the value
+	RCursor<GNodeInfos> Cur(GetNodes());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Evaluate(val,nbchoices);
 }
 
 
 //------------------------------------------------------------------------------
-GNodeInfos& GNodeInfos::operator=(const GNodeInfos& w)
+void GNodeInfos::CopyInfos(const GNodeInfos& w)
 {
-	RNodeGA<GNodeInfos,RObjH,GChromoH>::operator=(w);
-	return(*this);
+	RNodeGA<GNodeInfos,RObjH,GChromoH>::CopyInfos(w);
 }

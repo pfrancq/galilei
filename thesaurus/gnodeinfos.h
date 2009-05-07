@@ -52,14 +52,12 @@ public:
 	*/
 	GNodeInfos(GChromoH* owner,size_t id,size_t max);
 
-	GNodeInfos(const GNodeInfos* w);
-
 	int Compare(const GNodeInfos* n) const;
 
 	int Compare(const GNodeInfos& n) const;
 
 	void Evaluate(double& val, double nbchoices);
-	GNodeInfos& operator=(const GNodeInfos& w);
+	virtual void CopyInfos(const GNodeInfos& w);
 };
 
 
