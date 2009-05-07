@@ -32,7 +32,7 @@
      <item>
       <widget class="QCheckBox" name="ShowAll">
        <property name="text">
-        <string>Show All Descriptor</string>
+        <string>Show All Descriptors</string>
        </property>
       </widget>
      </item>
