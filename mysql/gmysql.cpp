@@ -785,7 +785,7 @@ void GStorageMySQL::SaveRefs(const GConcept* concept,tObjType what,size_t refs)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,off_t pos)
+void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,size_t indexdocs)
 {
 	try
 	{
@@ -794,7 +794,7 @@ void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,off_t pos)
 		switch(what)
 		{
 			case otDoc:
-				sSql="UPDATE concepts SET indexdocs="+RString::Number(pos)+" WHERE conceptid="+Num(concept->GetId());
+				sSql="UPDATE concepts SET indexdocs="+RString::Number(indexdocs)+" WHERE conceptid="+Num(concept->GetId());
 				break;
 /*			case otProfile:
 				sSql="UPDATE concepts SET refprofiles="+Num(refs)+
@@ -992,12 +992,12 @@ void GStorageMySQL::LoadClasses(void)
 			Session->GetSlot()->StartJob("Load Classes");
 
 		// Load the classes
-		RQuery sub(Db,"SELECT classid,name,parent,vectorsize FROM classes");
+		RQuery sub(Db,"SELECT classid,name,parent,blockid FROM classes");
 		for(sub.Start();!sub.End();sub.Next())
 		{
 			size_t ParentId();
 			GClass* Parent(Session->GetClass(sub[2].ToSizeT(),true));
-			GClass* Class(Session->InsertClass(Parent,sub[0].ToSizeT(),sub[1],sub[3].ToSizeT()));
+			GClass* Class(Session->InsertClass(Parent,sub[0].ToSizeT(),sub[3].ToSizeT(),sub[1]));
 			Class->SetState(osNeedLoad);
 		}
 
@@ -1063,15 +1063,15 @@ void GStorageMySQL::SaveClass(GClass* theclass)
 		if(!atoi(Test[0]))
 		{
 			// Insert the class
-			RString sSql("INSERT INTO classes(classid,name,parent,vectorsize) "
-			             " VALUES("+id+","+RQuery::SQLValue(theclass->GetName())+","+Num(ParentId)+","+Num(theclass->GetSize())+")");
+			RString sSql("INSERT INTO classes(classid,name,parent,blockid) "
+			             " VALUES("+id+","+RQuery::SQLValue(theclass->GetName())+","+Num(ParentId)+","+Num(theclass->GetBlockId())+")");
 			RQuery Insert(Db,sSql);
 		}
 		else
 		{
 			// Update the class
 			RString sSql("UPDATE classes "
-				 "SET name="+RQuery::SQLValue(theclass->GetName())+",parent="+Num(ParentId)+",vectorsize="+Num(theclass->GetSize())+
+				 "SET name="+RQuery::SQLValue(theclass->GetName())+",parent="+Num(ParentId)+",blockid="+Num(theclass->GetBlockId())+
 			     " WHERE classid="+id);
 			RQuery Update(Db,sSql);
 		}
@@ -1123,7 +1123,7 @@ GDoc* GStorageMySQL::LoadDoc(size_t docid)
 	{
 		GDoc* doc;
 
-		RQuery quer (Db,"SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,nbnodes,nbcontent,vectorsize "
+		RQuery quer (Db,"SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid "
 		                "FROM docs WHERE docid="+Num(docid));
 		quer.Start();
 		if(quer.End())
@@ -1134,8 +1134,8 @@ GDoc* GStorageMySQL::LoadDoc(size_t docid)
 		if((!lang)&&(!quer[4].IsEmpty()))
 			return(0);
 
-		doc=new GDoc(quer[1],quer[2],docid,lang,quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8]),
-				quer[11].ToSizeT(),quer[9].ToSizeT(),quer[10].ToSizeT());
+		doc=new GDoc(quer[1],quer[2],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
+				     quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8]));
 		doc->SetState(osNeedLoad);
 
 		// Load the links of the document loaded.
@@ -1158,7 +1158,7 @@ void GStorageMySQL::LoadDocs(void)
 {
 	try
 	{
-		RString Sql("SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,nbnodes,nbcontent,vectorsize FROM docs");
+		RString Sql("SELECT docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid FROM docs");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";
 		if(Filtering)
@@ -1177,8 +1177,8 @@ void GStorageMySQL::LoadDocs(void)
 			if((!lang)&&(!quer[4].IsEmpty()))
 				continue;
 			size_t docid(quer[0].ToSizeT());
-			GDoc* doc(new GDoc(quer[1],quer[2],docid,lang,quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),
-					     GetMySQLToDate(quer[8]),quer[11].ToSizeT(),quer[9].ToSizeT(),quer[10].ToSizeT()));
+			GDoc* doc(new GDoc(quer[1],quer[2],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
+					           quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8])));
 			Session->InsertDoc(doc);
 			doc->SetState(osNeedLoad);
 
@@ -1229,11 +1229,11 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 		if(!atoi(Test[0]))
 		{
 			// Insert the document
-			sSql="INSERT INTO docs(docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,nbnodes,nbcontent,vectorsize) "
+			sSql="INSERT INTO docs(docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid) "
 			     "VALUES("+Num(doc->GetId())+","+RQuery::SQLValue(doc->GetURL()())+","+
 			     RQuery::SQLValue(doc->GetName())+","+f+","+l+","+RQuery::SQLValue(doc->GetUpdated())+
 			     ","+RQuery::SQLValue(doc->GetComputed())+","+Num(doc->GetGroupId())+","+RQuery::SQLValue(doc->GetAttached())+
-			     ","+Num(doc->GetNbRecs())+","+Num(doc->GetNbLCs())+","+Num(doc->GetSize())+")";
+			     ","+Num(doc->GetBlockId())+","+Num(doc->GetStructId())+")";
 			RQuery Insert(Db,sSql);
 		}
 		else
@@ -1243,7 +1243,7 @@ void GStorageMySQL::SaveDoc(GDoc* doc)
 			     RQuery::SQLValue(doc->GetName())+",mimetype="+f+",langid="+l+
 			     ",updated="+RQuery::SQLValue(doc->GetUpdated())+",calculated="+RQuery::SQLValue(doc->GetComputed())+
 			     ",topicid="+Num(doc->GetGroupId())+",attached="+RQuery::SQLValue(doc->GetAttached())+
-			     ",vectorsize="+Num(doc->GetSize())+",nbnodes="+Num(doc->GetNbRecs())+",nbcontent="+Num(doc->GetNbLCs())+
+			     ",blockid="+Num(doc->GetBlockId())+",structid="+Num(doc->GetStructId())+
 				 " WHERE docid="+Num(doc->GetId());
 			RQuery Update(Db,sSql);
 		}
@@ -1287,7 +1287,7 @@ void GStorageMySQL::LoadUsers(void)
 				Session->InsertUser(new GUser(atoi(Users[0]),Users[1],Users[2],10));
 
 			// Load profiles
-			RString Sql("SELECT profileid,description,social,userid,attached,communityid,updated,calculated,vectorsize FROM profiles");
+			RString Sql("SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid FROM profiles");
 			if(!LoadAll)
 				Sql+=" WHERE calculated<updated";
 			if(Filtering)
@@ -1303,9 +1303,9 @@ void GStorageMySQL::LoadUsers(void)
 			{
 				GUser* user=Session->GetUser(Profiles[3].ToSizeT());
 				size_t groupid(Profiles[5].ToSizeT());
-				Session->InsertProfile(prof=new GProfile(user,Profiles[0].ToSizeT(),Profiles[1],groupid,
+				Session->InsertProfile(prof=new GProfile(user,Profiles[0].ToSizeT(),Profiles[8].ToSizeT(),Profiles[1],groupid,
 						GetMySQLToDate(Profiles[4]),GetMySQLToDate(Profiles[6]),GetMySQLToDate(Profiles[7]),
-						Profiles[8].ToSizeT(),Profiles[2].ToBool(false),5));
+						Profiles[2].ToBool(false),5));
 				prof->SetState(osNeedLoad);
 			}
 
@@ -1369,7 +1369,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		GLangManager* Langs=GALILEIApp->GetManager<GLangManager>("Lang");
 
 		// Load Profile
-		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,vectorsize "
+		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid "
 		                  "FROM profiles WHERE profileid="+Num(profileid));
 		Profile.Start();
 		if(Profile.End())
@@ -1380,9 +1380,9 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		size_t groupid=Profile[5].ToSizeT();
 
 		// Create the profile
-		GProfile* prof=new GProfile(user,Profile[0].ToSizeT(),Profile[1],groupid,
+		GProfile* prof=new GProfile(user,Profile[0].ToSizeT(),Profile[8].ToSizeT(),Profile[1],groupid,
 				GetMySQLToDate(Profile[4]),GetMySQLToDate(Profile[6]),GetMySQLToDate(Profile[7]),
-				Profile[8].ToSizeT(),Profile[2].ToBool(true),5);
+				Profile[2].ToBool(true),5);
 		prof->SetState(osNeedLoad);
 
 		// Load Feedbacks
@@ -1569,13 +1569,13 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		if(!atoi(Test[0]))
 		{
 			// Insert the profile (if subjects -> save topicid)
-			sSql="INSERT INTO profiles(profileid,description,social,userid,updated,calculated,attached,vectorsize";
+			sSql="INSERT INTO profiles(profileid,description,social,userid,updated,calculated,attached,blockid";
 			if(Session->GetSubjects(false))
 				sSql+=",subjectid";
 			sSql+=") VALUES("+Num(profid)+","+RQuery::SQLValue(prof->GetName())+","+
 			      Num(social)+","+Num(prof->GetUser()->GetId())+","+
 			      RQuery::SQLValue(prof->GetUpdated())+","+RQuery::SQLValue(prof->GetComputed())+","+RQuery::SQLValue(prof->GetAttached())+
-			      ","+Num(prof->GetSize());
+			      ","+Num(prof->GetBlockId());
 			if(Session->GetSubjects(false))
 			{
 				GSubject* sub=Session->GetSubjects(false)->GetSubject(prof);
@@ -1593,7 +1593,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 			sSql="UPDATE profiles SET description="+RQuery::SQLValue(prof->GetName())+",social="+Num(social)+
 			     ",userid="+Num(prof->GetUser()->GetId())+",updated="+RQuery::SQLValue(prof->GetUpdated())+
 			     ",calculated="+RQuery::SQLValue(prof->GetComputed())+",attached="+RQuery::SQLValue(prof->GetAttached())+
-			     ",vectorsize="+Num(prof->GetSize());
+			     ",blockid="+Num(prof->GetBlockId());
 			if(Session->GetSubjects(false))
 			{
 				GSubject* sub=Session->GetSubjects(false)->GetSubject(prof);
@@ -1686,7 +1686,7 @@ void GStorageMySQL::LoadCommunities(void)
 
 	try
 	{
-		RString Sql("SELECT communityid,updated,calculated,name,vectorsize FROM communities");
+		RString Sql("SELECT communityid,updated,calculated,name,blockid FROM communities");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";
 		if(Filtering)
@@ -1700,7 +1700,7 @@ void GStorageMySQL::LoadCommunities(void)
 		RQuery Groups(Db,Sql);
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
-			group=new GCommunity(Groups[0].ToSizeT(),Groups[3],Groups[1],Groups[2],Groups[4].ToSizeT());
+			group=new GCommunity(Groups[0].ToSizeT(),Groups[4].ToSizeT(),Groups[3],Groups[1],Groups[2]);
 			group->SetState(osNeedLoad);
 			Session->InsertCommunity(group);
 		}
@@ -1718,11 +1718,11 @@ GCommunity* GStorageMySQL::LoadCommunity(size_t communityid)
 {
 	try
 	{
-		RQuery Group(Db,"SELECT communityid,updated,calculated,name,vectorsize FROM communities WHERE communityid="+RString::Number(communityid));
+		RQuery Group(Db,"SELECT communityid,updated,calculated,name,blockid FROM communities WHERE communityid="+RString::Number(communityid));
 		Group.Start();
 		if(Group.End())
 			return(0);
-		GCommunity* group=new GCommunity(Group[0].ToSizeT(),Group[3],Group[1],Group[2],Group[4].ToSizeT());
+		GCommunity* group=new GCommunity(Group[0].ToSizeT(),Group[4].ToSizeT(),Group[3],Group[1],Group[2]);
 		group->SetState(osNeedLoad);
 
 		return(group);
@@ -1828,12 +1828,12 @@ void GStorageMySQL::SaveCommunity(GCommunity* grp)
 	try
 	{
 		// Delete group and groups info
-		sSql="INSERT INTO communities(communityid,updated,calculated,name,vectorsize) "
+		sSql="INSERT INTO communities(communityid,updated,calculated,name,blockid) "
 		     "VALUES("+Num(grp->GetId())+","+
 		     RQuery::SQLValue(grp->GetUpdated())+","+
 		     RQuery::SQLValue(grp->GetComputed())+","+
 		     RQuery::SQLValue(grp->GetName())+","+
-		     Num(grp->GetSize())+")";
+		     Num(grp->GetBlockId())+")";
 		RQuery insert1(Db,sSql);
 
 		// Save Profiles infos
@@ -1888,7 +1888,7 @@ void GStorageMySQL::LoadTopics(void)
 
 	try
 	{
-		RString Sql("SELECT topicid,updated,calculated,name,vectorsize FROM topics");
+		RString Sql("SELECT topicid,updated,calculated,name,blockid FROM topics");
 		if(!LoadAll)
 			Sql+=" WHERE calculated<updated";
 		if(Filtering)
@@ -1902,7 +1902,7 @@ void GStorageMySQL::LoadTopics(void)
 		RQuery Groups(Db,Sql);
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
-			group=new GTopic(Groups[0].ToSizeT(),Groups[3],Groups[1],Groups[2],Groups[4].ToSizeT());
+			group=new GTopic(Groups[0].ToSizeT(),Groups[4].ToSizeT(),Groups[3],Groups[1],Groups[2]);
 			group->SetState(osNeedLoad);
 			Session->InsertTopic(group);
 		}
@@ -1920,11 +1920,11 @@ GTopic* GStorageMySQL::LoadTopic(size_t topicid)
 {
 	try
 	{
-		RQuery Group(Db,"SELECT topicid,updated,calculated,name,vectorsize FROM topics WHERE topicid="+RString::Number(topicid));
+		RQuery Group(Db,"SELECT topicid,updated,calculated,name,blockid FROM topics WHERE topicid="+RString::Number(topicid));
 		Group.Start();
 		if(Group.End())
 			return(0);
-		GTopic* group=new GTopic(Group[0].ToSizeT(),Group[3],Group[1],Group[2],Group[4].ToSizeT());
+		GTopic* group=new GTopic(Group[0].ToSizeT(),Group[4].ToSizeT(),Group[3],Group[1],Group[2]);
 		group->SetState(osNeedLoad);
 
 		return(group);
@@ -1989,12 +1989,12 @@ void GStorageMySQL::SaveTopic(GTopic* grp)
 
 	try
 	{
-		sSql="INSERT INTO topics(topicid,updated,calculated,name,vectorsize) "
+		sSql="INSERT INTO topics(topicid,updated,calculated,name,blockid) "
 		     "VALUES("+Num(grp->GetId())+","+
 		     RQuery::SQLValue(grp->GetUpdated())+","+
 		     RQuery::SQLValue(grp->GetComputed())+","+
 			 RQuery::SQLValue(grp->GetName())+","+
-			 Num(grp->GetSize())+")";
+			 Num(grp->GetBlockId())+")";
 		RQuery insert1(Db,sSql);
 
 		// Save documents infos
