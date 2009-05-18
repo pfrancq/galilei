@@ -104,7 +104,7 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 		Name+=")";
 
 	// Create the class
-	GClass* Class(Session->InsertClass(parent,cNoRef,Name));
+	GClass* Class(Session->InsertClass(parent,cNoRef,0,Name));
 
 	// Build the vector representing its concepts
 	RAttrList List(node->GetAttr());
