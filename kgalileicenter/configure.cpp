@@ -141,6 +141,7 @@ void Configure::exec(GSession* session)
 	Session=session;
 
 	initGeneral();
+	initIndexer();
 	initSimulation();
 	initPlugIns();
 
@@ -156,8 +157,11 @@ void Configure::exec(GSession* session)
 	if(KDialog::exec())
 	{
 		applyGeneral();
+		applyIndexer();
 		applySimulation();
 		applyPlugIns();
+		if(Session)
+			Session->Apply();
 	}
 
 	MainTabIdx=MainTab->currentIndex();
@@ -219,8 +223,6 @@ void Configure::initGeneral(void)
 	DebugFile->setUrl(R::ToQString(App->GetDebugFileName()));
 	PrgPath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
 	PrgPath->setUrl(R::ToQString(App->PrgPath));
-	IndexDir->setUrl(ToQString(App->GetIndexDir()));
-	IndexRamSize->setValue(App->GetIndexRamSize());
 
 	// Directories
 	R::RCursor<R::RString> Cur(App->GetPlugInsPath());
@@ -240,8 +242,6 @@ void Configure::applyGeneral(void)
 	App->SetDebugFileName(R::FromQString(DebugFile->url().url()));
 	App->PrgPath=R::FromQString(PrgPath->url().url());
 	QString debug=DebugFile->url().url();
-	App->SetIndexDir(FromQString(IndexDir->url().url()));
-	App->SetIndexRamSize(IndexRamSize->value());
 	if(!debug.isEmpty())
 	{
 		try
@@ -276,6 +276,76 @@ void Configure::addSubject(GSubject* subject,QTreeWidgetItem* parent)
  	RCursor<GSubject> Cur(subject->GetNodes());
  	for(Cur.Start();!Cur.End();Cur.Next())
  		addSubject(Cur(),item);
+}
+
+
+//------------------------------------------------------------------------------
+void Configure::initIndexer(void)
+{
+	KGALILEICenter* App=dynamic_cast<KGALILEICenter*>(parentWidget());
+	IndexDir->setUrl(ToQString(App->GetIndexDir()));
+
+	// If no session -> No other Indexer Parameters
+	if(!Session)
+	{
+		DocsDesc->setEnabled(false);
+		DocsStruct->setEnabled(false);
+		DocsIndex->setEnabled(false);
+		ProfilesDesc->setEnabled(false);
+		CommunitiesDesc->setEnabled(false);
+		TopicsDesc->setEnabled(false);
+		ClassesDesc->setEnabled(false);
+		return;
+	}
+
+	IndexDocsInc->setChecked(Session->GetBool("IndexDocsInc","Indexer"));
+	QList<QString> Types;
+	Types << "DocsDesc" << "DocsStruct" << "DocsIndex" << "ProfilesDesc" << "CommunitiesDesc" << "TopicsDesc" << "ClassesDesc";
+	for(int i=0;i<Types.size();++i)
+	{
+		QString name(Types.at(i)+"Block");
+		KIntNumInput* Block(findChild<KIntNumInput*>(name));
+		Block->setValue(Session->GetUInt(FromQString(name),"Indexer"));
+		name=Types.at(i)+"Tolerance";
+		KIntNumInput* Tolerance(findChild<KIntNumInput*>(name));
+		Tolerance->setValue(Session->GetUInt(FromQString(name),"Indexer"));
+		name=Types.at(i)+"Cache";
+		KIntNumInput* Cache(findChild<KIntNumInput*>(name));
+		Cache->setValue(Session->GetUInt(FromQString(name),"Indexer"));
+		name=Types.at(i)+"Type";
+		QComboBox* Type(findChild<QComboBox*>(name));
+		Type->setCurrentIndex(Session->GetInt(FromQString(name),"Indexer"));
+	 }
+}
+
+
+//------------------------------------------------------------------------------
+void Configure::applyIndexer(void)
+{
+	KGALILEICenter* App=dynamic_cast<KGALILEICenter*>(parentWidget());
+	App->SetIndexDir(FromQString(IndexDir->url().url()));
+	if(!Session)
+		return;
+
+	Session->SetBool("IndexDocsInc",IndexDocsInc->isChecked(),"Indexer");
+	QList<QString> Types;
+	Types << "DocsDesc" << "DocsStruct" << "DocsIndex" << "ProfilesDesc" << "CommunitiesDesc" << "TopicsDesc" << "ClassesDesc";
+	for(int i=0;i<Types.size();++i)
+	{
+		QString name(Types.at(i)+"Block");
+		KIntNumInput* Block(findChild<KIntNumInput*>(name));
+		Session->SetUInt(FromQString(name),Block->value(),"Indexer");
+		name=Types.at(i)+"Tolerance";
+		KIntNumInput* Tolerance(findChild<KIntNumInput*>(name));
+		Session->SetUInt(FromQString(name),Tolerance->value(),"Indexer");
+		name=Types.at(i)+"Cache";
+		KIntNumInput* Cache(findChild<KIntNumInput*>(name));
+		Session->SetUInt(FromQString(name),Cache->value(),"Indexer");
+		name=Types.at(i)+"Type";
+		QComboBox* Type(findChild<QComboBox*>(name));
+		Session->SetInt(FromQString(name),Type->currentIndex(),"Indexer");
+	 }
+
 }
 
 
@@ -371,7 +441,6 @@ void Configure::applySimulation(void)
 		item->Subject->SetUsed(Session,item->Select);
 		applySubSubjects(item);
 	}
-	Session->Apply();
 }
 
 

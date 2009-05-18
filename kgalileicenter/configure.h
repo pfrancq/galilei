@@ -96,6 +96,16 @@ private:
 	void applyGeneral(void);
 
 	/**
+	 * Initialize the indexer part.
+	 */
+	void initIndexer(void);
+
+	/**
+	 * Apply the indexer part.
+	 */
+	void applyIndexer(void);
+
+	/**
 	 * Add a subject to the list of subjects.
 	 * @param subject        Subject.
 	 * @param parent         Parent intem (if null, the subject is a top one).

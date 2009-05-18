@@ -1,99 +1,100 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>Configure</class>
- <widget class="QWidget" name="Configure" >
-  <property name="geometry" >
+ <widget class="QWidget" name="Configure">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>852</width>
-    <height>599</height>
+    <width>844</width>
+    <height>668</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_5" >
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <widget class="QTabWidget" name="MainTab" >
-     <property name="currentIndex" >
+    <widget class="QTabWidget" name="MainTab">
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="Widget8" >
-      <attribute name="title" >
+     <widget class="QWidget" name="Widget8">
+      <attribute name="title">
        <string>Ge&amp;neral</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_10" >
+      <layout class="QVBoxLayout" name="verticalLayout_10">
        <item>
-        <widget class="QGroupBox" name="groupBox_2" >
-         <property name="title" >
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
           <string>General</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_3" >
+         <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <layout class="QHBoxLayout" name="_2" >
+           <layout class="QHBoxLayout" name="_2">
             <item>
-             <widget class="QLabel" name="textLabel2" >
-              <property name="text" >
+             <widget class="QLabel" name="textLabel2">
+              <property name="text">
                <string>Plug-ins configuration:</string>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>false</bool>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="KUrlRequester" name="PlugInsConfig" />
+             <widget class="KUrlRequester" name="PlugInsConfig"/>
             </item>
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="_3" >
+           <layout class="QHBoxLayout" name="_3">
             <item>
-             <widget class="QLabel" name="textLabel3" >
-              <property name="text" >
+             <widget class="QLabel" name="textLabel3">
+              <property name="text">
                <string>Log file:</string>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>false</bool>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="KUrlRequester" name="LogFile" />
+             <widget class="KUrlRequester" name="LogFile"/>
             </item>
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="_4" >
+           <layout class="QHBoxLayout" name="_4">
             <item>
-             <widget class="QLabel" name="textLabel4" >
-              <property name="text" >
+             <widget class="QLabel" name="textLabel4">
+              <property name="text">
                <string>Debug file:</string>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>false</bool>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="KUrlRequester" name="DebugFile" />
+             <widget class="KUrlRequester" name="DebugFile"/>
             </item>
            </layout>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="_5" >
+           <layout class="QHBoxLayout" name="_5">
             <item>
-             <widget class="QLabel" name="textLabel4_2" >
-              <property name="text" >
+             <widget class="QLabel" name="textLabel4_2">
+              <property name="text">
                <string>Directory of programs:</string>
               </property>
-              <property name="wordWrap" >
+              <property name="wordWrap">
                <bool>false</bool>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="KUrlRequester" name="PrgPath" />
+             <widget class="KUrlRequester" name="PrgPath"/>
             </item>
            </layout>
           </item>
@@ -101,96 +102,39 @@
         </widget>
        </item>
        <item>
-        <widget class="QGroupBox" name="groupBox4" >
-         <property name="title" >
-          <string>Binary Storages</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_4" >
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_4" >
-            <item>
-             <widget class="QLabel" name="textLabel1_6" >
-              <property name="text" >
-               <string>Path</string>
-              </property>
-              <property name="wordWrap" >
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="KUrlRequester" name="IndexDir" />
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2" >
-            <item>
-             <widget class="QLabel" name="label_2" >
-              <property name="text" >
-               <string>Buffer size used for constructing the index (in MB)</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="KIntNumInput" name="IndexRamSize" >
-              <property name="minimum" >
-               <number>0</number>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer_2" >
-              <property name="orientation" >
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0" >
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox" >
-         <property name="title" >
+        <widget class="QGroupBox" name="groupBox">
+         <property name="title">
           <string>Plug-Ins Directories</string>
          </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3" >
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
           <item>
-           <widget class="QListWidget" name="Dirs" />
+           <widget class="QListWidget" name="Dirs"/>
           </item>
           <item>
-           <layout class="QVBoxLayout" name="_77" >
+           <layout class="QVBoxLayout" name="_77">
             <item>
-             <widget class="QPushButton" name="buttonAdd" >
-              <property name="text" >
+             <widget class="QPushButton" name="buttonAdd">
+              <property name="text">
                <string>Add ...</string>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="buttonDel" >
-              <property name="text" >
+             <widget class="QPushButton" name="buttonDel">
+              <property name="text">
                <string>Delete</string>
               </property>
              </widget>
             </item>
             <item>
-             <spacer name="spacer5" >
-              <property name="orientation" >
+             <spacer name="spacer5">
+              <property name="orientation">
                <enum>Qt::Vertical</enum>
               </property>
-              <property name="sizeType" >
+              <property name="sizeType">
                <enum>QSizePolicy::Expanding</enum>
               </property>
-              <property name="sizeHint" stdset="0" >
+              <property name="sizeHint" stdset="0">
                <size>
                 <width>20</width>
                 <height>100</height>
@@ -204,92 +148,1200 @@
         </widget>
        </item>
       </layout>
-      <zorder>groupBox_2</zorder>
-      <zorder>groupBox</zorder>
-      <zorder>groupBox4</zorder>
      </widget>
-     <widget class="QWidget" name="tab" >
-      <attribute name="title" >
+     <widget class="QWidget" name="tab_15">
+      <attribute name="title">
+       <string>Indexer</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_12">
+       <item>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QLabel" name="textLabel1_6">
+           <property name="text">
+            <string>Indexing Path</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="KUrlRequester" name="IndexDir"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="DocsDesc">
+         <property name="title">
+          <string>Documents Descriptions</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="_6">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Block size (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="KIntNumInput" name="DocsDescBlock">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the size of a block in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_5">
+            <property name="text">
+             <string>Tolerance (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="KIntNumInput" name="DocsDescTolerance">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the tolerance in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="whatsThis">
+             <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
+If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Blocks in cache</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="KIntNumInput" name="DocsDescCache">
+            <property name="toolTip">
+             <string>Specify the number of blocks maintened in the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
+A large cache speeds up the treatment but needs more RAM.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="8">
+           <widget class="QLabel" name="label_6">
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="9">
+           <widget class="QComboBox" name="DocsDescType">
+            <property name="toolTip">
+             <string>Specify the type of the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write back&lt;/span&gt;, a modified block is only saved when it is removed from memory. If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write through&lt;/span&gt;, each write operations is directly done on the disc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Write Through</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Write Back</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="DocsStruct">
+         <property name="title">
+          <string>Documents Structures</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="_7">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_7">
+            <property name="text">
+             <string>Block size (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="KIntNumInput" name="DocsStructBlock">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the size of a block in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_8">
+            <property name="text">
+             <string>Tolerance (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="KIntNumInput" name="DocsStructTolerance">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the tolerance in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="whatsThis">
+             <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
+If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>Blocks in cache</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="KIntNumInput" name="DocsStructCache">
+            <property name="toolTip">
+             <string>Specify the number of blocks maintened in the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
+A large cache speeds up the treatment but needs more RAM.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="8">
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="9">
+           <widget class="QComboBox" name="DocsStructType">
+            <property name="toolTip">
+             <string>Specify the type of the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write back&lt;/span&gt;, a modified block is only saved when it is removed from memory. If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write through&lt;/span&gt;, each write operations is directly done on the disc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Write Through</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Write Back</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <spacer name="horizontalSpacer_5">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_6">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="DocsIndex">
+         <property name="title">
+          <string>Documents Inverted File</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_11">
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <widget class="QLabel" name="label_11">
+              <property name="text">
+               <string>Block size (KB)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="KIntNumInput" name="DocsIndexBlock">
+              <property name="toolTip">
+               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the size of a block in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="statusTip">
+               <string/>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_8">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_12">
+              <property name="text">
+               <string>Tolerance (KB)</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="KIntNumInput" name="DocsIndexTolerance">
+              <property name="toolTip">
+               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the tolerance in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <property name="whatsThis">
+               <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
+If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer_7">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_13">
+              <property name="text">
+               <string>Blocks in cache</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="KIntNumInput" name="DocsIndexCache">
+              <property name="toolTip">
+               <string>Specify the number of blocks maintened in the cache.</string>
+              </property>
+              <property name="whatsThis">
+               <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
+A large cache speeds up the treatment but needs more RAM.</string>
+              </property>
+              <property name="minimum">
+               <number>0</number>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_14">
+              <property name="text">
+               <string>Type</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="DocsIndexType">
+              <property name="toolTip">
+               <string>Specify the type of the cache.</string>
+              </property>
+              <property name="whatsThis">
+               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write back&lt;/span&gt;, a modified block is only saved when it is removed from memory. If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write through&lt;/span&gt;, each write operations is directly done on the disc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              </property>
+              <item>
+               <property name="text">
+                <string>Write Through</string>
+               </property>
+              </item>
+              <item>
+               <property name="text">
+                <string>Write Back</string>
+               </property>
+              </item>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="IndexDocsInc">
+            <property name="text">
+             <string>Incremental document indexing.</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="frameShadow">
+          <enum>QFrame::Plain</enum>
+         </property>
+         <property name="lineWidth">
+          <number>2</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="ProfilesDesc">
+         <property name="title">
+          <string>Profiles Descriptions</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="_16">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>Block size (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="KIntNumInput" name="ProfilesDescBlock">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the size of a block in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>Tolerance (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="KIntNumInput" name="ProfilesDescTolerance">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the tolerance in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="whatsThis">
+             <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
+If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>Blocks in cache</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="KIntNumInput" name="ProfilesDescCache">
+            <property name="toolTip">
+             <string>Specify the number of blocks maintened in the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
+A large cache speeds up the treatment but needs more RAM.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="8">
+           <widget class="QLabel" name="label_18">
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="9">
+           <widget class="QComboBox" name="ProfilesDescType">
+            <property name="toolTip">
+             <string>Specify the type of the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write back&lt;/span&gt;, a modified block is only saved when it is removed from memory. If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write through&lt;/span&gt;, each write operations is directly done on the disc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Write Through</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Write Back</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <spacer name="horizontalSpacer_9">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_10">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="CommunitiesDesc">
+         <property name="title">
+          <string>Communities Descriptions</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="_27">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_19">
+            <property name="text">
+             <string>Block size (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="KIntNumInput" name="CommunitiesDescBlock">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the size of a block in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Tolerance (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="KIntNumInput" name="CommunitiesDescTolerance">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the tolerance in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="whatsThis">
+             <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
+If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QLabel" name="label_21">
+            <property name="text">
+             <string>Blocks in cache</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="KIntNumInput" name="CommunitiesDescCache">
+            <property name="toolTip">
+             <string>Specify the number of blocks maintened in the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
+A large cache speeds up the treatment but needs more RAM.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="8">
+           <widget class="QLabel" name="label_22">
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="9">
+           <widget class="QComboBox" name="CommunitiesDescType">
+            <property name="toolTip">
+             <string>Specify the type of the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write back&lt;/span&gt;, a modified block is only saved when it is removed from memory. If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write through&lt;/span&gt;, each write operations is directly done on the disc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Write Through</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Write Back</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <spacer name="horizontalSpacer_11">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_12">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="TopicsDesc">
+         <property name="title">
+          <string>Topics Descriptions</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="_30">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_23">
+            <property name="text">
+             <string>Block size (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="KIntNumInput" name="TopicsDescBlock">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the size of a block in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_24">
+            <property name="text">
+             <string>Tolerance (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="KIntNumInput" name="TopicsDescTolerance">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the tolerance in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="whatsThis">
+             <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
+If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QLabel" name="label_25">
+            <property name="text">
+             <string>Blocks in cache</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="KIntNumInput" name="TopicsDescCache">
+            <property name="toolTip">
+             <string>Specify the number of blocks maintened in the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
+A large cache speeds up the treatment but needs more RAM.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="8">
+           <widget class="QLabel" name="label_26">
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="9">
+           <widget class="QComboBox" name="TopicsDescType">
+            <property name="toolTip">
+             <string>Specify the type of the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write back&lt;/span&gt;, a modified block is only saved when it is removed from memory. If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write through&lt;/span&gt;, each write operations is directly done on the disc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Write Through</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Write Back</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <spacer name="horizontalSpacer_13">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_14">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="ClassesDesc">
+         <property name="title">
+          <string>Classes Descriptions</string>
+         </property>
+         <property name="flat">
+          <bool>false</bool>
+         </property>
+         <property name="checkable">
+          <bool>false</bool>
+         </property>
+         <layout class="QGridLayout" name="_32">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_27">
+            <property name="text">
+             <string>Block size (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="KIntNumInput" name="ClassesDescBlock">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the size of a block in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="statusTip">
+             <string/>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;The binary files are composed from several blocks, each block having the same size. The user can specify the size in KB of the blocks.&lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; color:#ff0000;&quot;&gt;Warning&lt;/span&gt;: Once the size is fixed, it must &lt;span style=&quot; font-weight:600;&quot;&gt;not&lt;/span&gt; be modify (or the files must be deleted from the disk).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QLabel" name="label_28">
+            <property name="text">
+             <string>Tolerance (KB)</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <widget class="KIntNumInput" name="ClassesDescTolerance">
+            <property name="toolTip">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Specify the tolerance in &lt;span style=&quot; font-weight:600;&quot;&gt;KB&lt;/span&gt;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="whatsThis">
+             <string>The tolerance specifies the amount of space reserved in a given block for further modifications in the objects already contained in it.
+If the objects indexed are computed onece, the tolerance can be fixed to 0.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="6">
+           <widget class="QLabel" name="label_29">
+            <property name="text">
+             <string>Blocks in cache</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="7">
+           <widget class="KIntNumInput" name="ClassesDescCache">
+            <property name="toolTip">
+             <string>Specify the number of blocks maintened in the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>Specify the number of blocks stored in the cache. If the cache is full and a new block must be loaded, the less used block is removed.
+A large cache speeds up the treatment but needs more RAM.</string>
+            </property>
+            <property name="minimum">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="8">
+           <widget class="QLabel" name="label_30">
+            <property name="text">
+             <string>Type</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="9">
+           <widget class="QComboBox" name="ClassesDescType">
+            <property name="toolTip">
+             <string>Specify the type of the cache.</string>
+            </property>
+            <property name="whatsThis">
+             <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Century Schoolbook L'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write back&lt;/span&gt;, a modified block is only saved when it is removed from memory. If the type is &lt;span style=&quot; font-style:italic;&quot;&gt;write through&lt;/span&gt;, each write operations is directly done on the disc.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <item>
+             <property name="text">
+              <string>Write Through</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Write Back</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="0" column="5">
+           <spacer name="horizontalSpacer_15">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item row="0" column="2">
+           <spacer name="horizontalSpacer_16">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>433</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="tab">
+      <attribute name="title">
        <string>Simulation Parameters</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" >
+      <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="QTabWidget" name="SimulationTab" >
-         <property name="currentIndex" >
+        <widget class="QTabWidget" name="SimulationTab">
+         <property name="currentIndex">
           <number>0</number>
          </property>
-         <widget class="QWidget" name="tab_14" >
-          <attribute name="title" >
+         <widget class="QWidget" name="tab_14">
+          <attribute name="title">
            <string>Documents</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_9" >
+          <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
-            <widget class="QCheckBox" name="ManualSubjects" >
-             <property name="text" >
+            <widget class="QCheckBox" name="ManualSubjects">
+             <property name="text">
               <string>Manual Subjects Selection</string>
              </property>
             </widget>
            </item>
            <item>
-            <widget class="QTreeWidget" name="Subjects" >
-             <property name="minimumSize" >
+            <widget class="QTreeWidget" name="Subjects">
+             <property name="minimumSize">
               <size>
                <width>812</width>
                <height>0</height>
               </size>
              </property>
-             <property name="expandsOnDoubleClick" >
+             <property name="expandsOnDoubleClick">
               <bool>false</bool>
              </property>
              <column>
-              <property name="text" >
+              <property name="text">
                <string>Used</string>
               </property>
              </column>
              <column>
-              <property name="text" >
+              <property name="text">
                <string>Name</string>
               </property>
              </column>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox9" >
-             <property name="title" >
+            <widget class="QGroupBox" name="groupBox9">
+             <property name="title">
               <string>Automatic Subjects Selection</string>
              </property>
-             <layout class="QVBoxLayout" name="_17" >
+             <layout class="QVBoxLayout" name="_17">
               <item>
-               <layout class="QHBoxLayout" name="_18" >
+               <layout class="QHBoxLayout" name="_18">
                 <item>
-                 <widget class="QLabel" name="textLabel1" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel1">
+                  <property name="text">
                    <string>Number of subjects used:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="NbSubjects" />
+                 <widget class="KDoubleNumInput" name="NbSubjects"/>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="RelSubjects" >
-                  <property name="text" >
+                 <widget class="QCheckBox" name="RelSubjects">
+                  <property name="text">
                    <string>Percentage</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer2" >
-                  <property name="orientation" >
+                 <spacer name="spacer2">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>22</width>
                     <height>20</height>
@@ -300,29 +1352,29 @@
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="_19" >
+               <layout class="QHBoxLayout" name="_19">
                 <item>
-                 <widget class="QLabel" name="textLabel1_2" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel1_2">
+                  <property name="text">
                    <string>Minimum number of documents:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="KIntNumInput" name="NbMinDocsSubject" />
+                 <widget class="KIntNumInput" name="NbMinDocsSubject"/>
                 </item>
                 <item>
-                 <spacer name="spacer2_2" >
-                  <property name="orientation" >
+                 <spacer name="spacer2_2">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>161</width>
                     <height>20</height>
@@ -336,36 +1388,36 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_3" >
-             <property name="title" >
+            <widget class="QGroupBox" name="groupBox_3">
+             <property name="title">
               <string>Documents Selection</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_7" >
+             <layout class="QVBoxLayout" name="verticalLayout_7">
               <item>
-               <layout class="QHBoxLayout" name="horizontalLayout" >
+               <layout class="QHBoxLayout" name="horizontalLayout">
                 <item>
-                 <widget class="QLabel" name="label" >
-                  <property name="text" >
+                 <widget class="QLabel" name="label">
+                  <property name="text">
                    <string>Number of documents selected (0 means all):</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="NbDocsPerSubject" />
+                 <widget class="KDoubleNumInput" name="NbDocsPerSubject"/>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="PercNbDocsPerSubject" >
-                  <property name="text" >
+                 <widget class="QCheckBox" name="PercNbDocsPerSubject">
+                  <property name="text">
                    <string>Percenatge</string>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="horizontalSpacer" >
-                  <property name="orientation" >
+                 <spacer name="horizontalSpacer">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>332</width>
                     <height>20</height>
@@ -376,8 +1428,8 @@
                </layout>
               </item>
               <item>
-               <widget class="QCheckBox" name="ClusterSelectedDocs" >
-                <property name="text" >
+               <widget class="QCheckBox" name="ClusterSelectedDocs">
+                <property name="text">
                  <string>Documents clustering limited to the documents selected.</string>
                 </property>
                </widget>
@@ -386,39 +1438,39 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox5_3" >
-             <property name="title" >
+            <widget class="QGroupBox" name="groupBox5_3">
+             <property name="title">
               <string>Document Clustering Degradation</string>
              </property>
-             <layout class="QVBoxLayout" name="_25" >
+             <layout class="QVBoxLayout" name="_25">
               <item>
-               <layout class="QHBoxLayout" name="_26" >
+               <layout class="QHBoxLayout" name="_26">
                 <item>
-                 <widget class="QLabel" name="textLabel1_5" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel1_5">
+                  <property name="text">
                    <string>Percentage of documents switched</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="SwitchPerc" >
-                  <property name="maxValue" stdset="0" >
+                 <widget class="KDoubleNumInput" name="SwitchPerc">
+                  <property name="maxValue" stdset="0">
                    <number>100</number>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer15" >
-                  <property name="orientation" >
+                 <spacer name="spacer15">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>40</width>
                     <height>20</height>
@@ -433,38 +1485,38 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="tab_2" >
-          <attribute name="title" >
+         <widget class="QWidget" name="tab_2">
+          <attribute name="title">
            <string>Profiles</string>
           </attribute>
-          <layout class="QVBoxLayout" name="verticalLayout_8" >
+          <layout class="QVBoxLayout" name="verticalLayout_8">
            <item>
-            <widget class="QGroupBox" name="groupBox8" >
-             <property name="title" >
+            <widget class="QGroupBox" name="groupBox8">
+             <property name="title">
               <string>Profiles created</string>
              </property>
-             <layout class="QVBoxLayout" name="_20" >
+             <layout class="QVBoxLayout" name="_20">
               <item>
-               <layout class="QHBoxLayout" name="_21" >
+               <layout class="QHBoxLayout" name="_21">
                 <item>
-                 <widget class="QLabel" name="textLabel2_2" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel2_2">
+                  <property name="text">
                    <string>Minimum number of profiles per subject:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer3" >
-                  <property name="orientation" >
+                 <spacer name="spacer3">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>142</width>
                     <height>20</height>
@@ -473,31 +1525,31 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="KIntNumInput" name="NbProfMin" />
+                 <widget class="KIntNumInput" name="NbProfMin"/>
                 </item>
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="_22" >
+               <layout class="QHBoxLayout" name="_22">
                 <item>
-                 <widget class="QLabel" name="textLabel2_3" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel2_3">
+                  <property name="text">
                    <string>Maximum number of profiles per subject:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer3_2" >
-                  <property name="orientation" >
+                 <spacer name="spacer3_2">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>140</width>
                     <height>20</height>
@@ -506,31 +1558,31 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="KIntNumInput" name="NbProfMax" />
+                 <widget class="KIntNumInput" name="NbProfMax"/>
                 </item>
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="_23" >
+               <layout class="QHBoxLayout" name="_23">
                 <item>
-                 <widget class="QLabel" name="textLabel2_2_2" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel2_2_2">
+                  <property name="text">
                    <string>Percentage of social profiles:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer3_2_2" >
-                  <property name="orientation" >
+                 <spacer name="spacer3_2_2">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>86</width>
                     <height>20</height>
@@ -539,7 +1591,7 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="PercSocial" />
+                 <widget class="KDoubleNumInput" name="PercSocial"/>
                 </item>
                </layout>
               </item>
@@ -547,32 +1599,32 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox5" >
-             <property name="title" >
+            <widget class="QGroupBox" name="groupBox5">
+             <property name="title">
               <string>Percentage of documents assessed per profile</string>
              </property>
-             <layout class="QVBoxLayout" name="_9" >
+             <layout class="QVBoxLayout" name="_9">
               <item>
-               <layout class="QHBoxLayout" name="_10" >
+               <layout class="QHBoxLayout" name="_10">
                 <item>
-                 <widget class="QLabel" name="textLabel1_3" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel1_3">
+                  <property name="text">
                    <string>Relevant documents:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer2_3" >
-                  <property name="orientation" >
+                 <spacer name="spacer2_3">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>37</width>
                     <height>20</height>
@@ -581,11 +1633,11 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="NbOK" />
+                 <widget class="KDoubleNumInput" name="NbOK"/>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="RelOK" >
-                  <property name="text" >
+                 <widget class="QCheckBox" name="RelOK">
+                  <property name="text">
                    <string>Percentage</string>
                   </property>
                  </widget>
@@ -593,26 +1645,26 @@
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="_11" >
+               <layout class="QHBoxLayout" name="_11">
                 <item>
-                 <widget class="QLabel" name="textLabel1_3_2" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel1_3_2">
+                  <property name="text">
                    <string>Fuzzy relevant documents:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer2_3_2" >
-                  <property name="orientation" >
+                 <spacer name="spacer2_3_2">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>16</width>
                     <height>20</height>
@@ -621,11 +1673,11 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="NbKO" />
+                 <widget class="KDoubleNumInput" name="NbKO"/>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="RelKO" >
-                  <property name="text" >
+                 <widget class="QCheckBox" name="RelKO">
+                  <property name="text">
                    <string>Percentage</string>
                   </property>
                  </widget>
@@ -633,26 +1685,26 @@
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="_12" >
+               <layout class="QHBoxLayout" name="_12">
                 <item>
-                 <widget class="QLabel" name="textLabel1_3_3" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel1_3_3">
+                  <property name="text">
                    <string>Irrelevant documents:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer2_3_3" >
-                  <property name="orientation" >
+                 <spacer name="spacer2_3_3">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>32</width>
                     <height>20</height>
@@ -661,11 +1713,11 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="NbH" />
+                 <widget class="KDoubleNumInput" name="NbH"/>
                 </item>
                 <item>
-                 <widget class="QCheckBox" name="RelH" >
-                  <property name="text" >
+                 <widget class="QCheckBox" name="RelH">
+                  <property name="text">
                    <string>Percentage</string>
                   </property>
                  </widget>
@@ -676,32 +1728,32 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox7" >
-             <property name="title" >
+            <widget class="QGroupBox" name="groupBox7">
+             <property name="title">
               <string>Type of assessments</string>
              </property>
-             <layout class="QVBoxLayout" name="_13" >
+             <layout class="QVBoxLayout" name="_13">
               <item>
-               <layout class="QHBoxLayout" name="_14" >
+               <layout class="QHBoxLayout" name="_14">
                 <item>
-                 <widget class="QLabel" name="textLabel1_3_3_2" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel1_3_3_2">
+                  <property name="text">
                    <string>Percentage of erronous assessments:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer2_3_3_2" >
-                  <property name="orientation" >
+                 <spacer name="spacer2_3_3_2">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>32</width>
                     <height>20</height>
@@ -710,31 +1762,31 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="KDoubleNumInput" name="PercErr" />
+                 <widget class="KDoubleNumInput" name="PercErr"/>
                 </item>
                </layout>
               </item>
               <item>
-               <layout class="QHBoxLayout" name="_15" >
+               <layout class="QHBoxLayout" name="_15">
                 <item>
-                 <widget class="QLabel" name="textLabel1_3_3_2_2" >
-                  <property name="text" >
+                 <widget class="QLabel" name="textLabel1_3_3_2_2">
+                  <property name="text">
                    <string>Number of documents shared:</string>
                   </property>
-                  <property name="wordWrap" >
+                  <property name="wordWrap">
                    <bool>false</bool>
                   </property>
                  </widget>
                 </item>
                 <item>
-                 <spacer name="spacer2_3_3_2_2" >
-                  <property name="orientation" >
+                 <spacer name="spacer2_3_3_2_2">
+                  <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
-                  <property name="sizeType" >
+                  <property name="sizeType">
                    <enum>QSizePolicy::Expanding</enum>
                   </property>
-                  <property name="sizeHint" stdset="0" >
+                  <property name="sizeHint" stdset="0">
                    <size>
                     <width>165</width>
                     <height>20</height>
@@ -743,7 +1795,7 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="KIntNumInput" name="NbDocsAssess" />
+                 <widget class="KIntNumInput" name="NbDocsAssess"/>
                 </item>
                </layout>
               </item>
@@ -751,14 +1803,14 @@
             </widget>
            </item>
            <item>
-            <spacer name="spacer26" >
-             <property name="orientation" >
+            <spacer name="spacer26">
+             <property name="orientation">
               <enum>Qt::Vertical</enum>
              </property>
-             <property name="sizeType" >
+             <property name="sizeType">
               <enum>QSizePolicy::Expanding</enum>
              </property>
-             <property name="sizeHint" stdset="0" >
+             <property name="sizeHint" stdset="0">
               <size>
                <width>20</width>
                <height>220</height>
@@ -772,109 +1824,109 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="tab_3" >
-      <attribute name="title" >
+     <widget class="QWidget" name="tab_3">
+      <attribute name="title">
        <string>Plug-ins</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2" >
+      <layout class="QVBoxLayout" name="verticalLayout_2">
        <item>
-        <widget class="QGroupBox" name="groupBox8_2" >
-         <property name="title" >
+        <widget class="QGroupBox" name="groupBox8_2">
+         <property name="title">
           <string>Plug-Ins Configuration</string>
          </property>
-         <layout class="QVBoxLayout" name="_24" >
+         <layout class="QVBoxLayout" name="_24">
           <item>
-           <widget class="QTabWidget" name="PlugInsTab" >
-            <property name="currentIndex" >
+           <widget class="QTabWidget" name="PlugInsTab">
+            <property name="currentIndex">
              <number>0</number>
             </property>
-            <widget class="QWidget" name="TabPage_2" >
-             <attribute name="title" >
+            <widget class="QWidget" name="TabPage_2">
+             <attribute name="title">
               <string>Storages</string>
              </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_6" >
+             <layout class="QVBoxLayout" name="verticalLayout_6">
               <item>
-               <widget class="QPlugInsList" native="1" name="Storages" />
+               <widget class="QPlugInsList" name="Storages" native="true"/>
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="tab_4" >
-             <attribute name="title" >
+            <widget class="QWidget" name="tab_4">
+             <attribute name="title">
               <string>Documents</string>
              </attribute>
-             <layout class="QVBoxLayout" name="_28" >
+             <layout class="QVBoxLayout" name="_28">
               <item>
-               <widget class="QTabWidget" name="DocsTab" >
-                <property name="currentIndex" >
+               <widget class="QTabWidget" name="DocsTab">
+                <property name="currentIndex">
                  <number>6</number>
                 </property>
-                <widget class="QWidget" name="tab_5" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="tab_5">
+                 <attribute name="title">
                   <string>Filters</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_29" >
+                 <layout class="QVBoxLayout" name="_29">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="Filters" />
+                   <widget class="QPlugInsList" name="Filters" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="tab_6" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="tab_6">
+                 <attribute name="title">
                   <string>Languages</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_31" >
+                 <layout class="QVBoxLayout" name="_31">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="Langs" />
+                   <widget class="QPlugInsList" name="Langs" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="TabPage_3" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="TabPage_3">
+                 <attribute name="title">
                   <string>Document Analysis</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_33" >
+                 <layout class="QVBoxLayout" name="_33">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="DocAnalyses" />
+                   <widget class="QPlugInsList" name="DocAnalyses" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="TabPage_4" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="TabPage_4">
+                 <attribute name="title">
                   <string>Corpus Analysis</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_36" >
+                 <layout class="QVBoxLayout" name="_36">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="PostDocs" />
+                   <widget class="QPlugInsList" name="PostDocs" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="TabPage_5" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="TabPage_5">
+                 <attribute name="title">
                   <string>Documents Grouping</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_38" >
+                 <layout class="QVBoxLayout" name="_38">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="GroupDocs" />
+                   <widget class="QPlugInsList" name="GroupDocs" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="TabPage_6" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="TabPage_6">
+                 <attribute name="title">
                   <string>Topic Computing</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_42" >
+                 <layout class="QVBoxLayout" name="_42">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="TopicCalcs" />
+                   <widget class="QPlugInsList" name="TopicCalcs" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="TabPage_7" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="TabPage_7">
+                 <attribute name="title">
                   <string>Topics Analysis</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_45" >
+                 <layout class="QVBoxLayout" name="_45">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="PostTopics" />
+                   <widget class="QPlugInsList" name="PostTopics" native="true"/>
                   </item>
                  </layout>
                 </widget>
@@ -882,53 +1934,53 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="tab_7" >
-             <attribute name="title" >
+            <widget class="QWidget" name="tab_7">
+             <attribute name="title">
               <string>Linking</string>
              </attribute>
-             <layout class="QVBoxLayout" name="_47" >
+             <layout class="QVBoxLayout" name="_47">
               <item>
-               <widget class="QPlugInsList" native="1" name="LinkCalcs" />
+               <widget class="QPlugInsList" name="LinkCalcs" native="true"/>
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="TabPage_8" >
-             <attribute name="title" >
+            <widget class="QWidget" name="TabPage_8">
+             <attribute name="title">
               <string>Profiles</string>
              </attribute>
-             <layout class="QVBoxLayout" name="_50" >
+             <layout class="QVBoxLayout" name="_50">
               <item>
-               <widget class="QTabWidget" name="ProfilesTab" >
-                <property name="currentIndex" >
+               <widget class="QTabWidget" name="ProfilesTab">
+                <property name="currentIndex">
                  <number>1</number>
                 </property>
-                <widget class="QWidget" name="PreProfiling" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="PreProfiling">
+                 <attribute name="title">
                   <string>PreProfiling</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_51" >
+                 <layout class="QVBoxLayout" name="_51">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="PreProfiles" />
+                   <widget class="QPlugInsList" name="PreProfiles" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="tab_8" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="tab_8">
+                 <attribute name="title">
                   <string>Profile Computing</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_53" >
+                 <layout class="QVBoxLayout" name="_53">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="ProfileCalcs" />
+                   <widget class="QPlugInsList" name="ProfileCalcs" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="tab_9" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="tab_9">
+                 <attribute name="title">
                   <string>Profiles Analysis</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_56" >
+                 <layout class="QVBoxLayout" name="_56">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="PostProfiles" />
+                   <widget class="QPlugInsList" name="PostProfiles" native="true"/>
                   </item>
                  </layout>
                 </widget>
@@ -936,43 +1988,43 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="TabPage_9" >
-             <attribute name="title" >
+            <widget class="QWidget" name="TabPage_9">
+             <attribute name="title">
               <string>Communities</string>
              </attribute>
-             <layout class="QVBoxLayout" name="_58" >
+             <layout class="QVBoxLayout" name="_58">
               <item>
-               <widget class="QTabWidget" name="CommunitiesTab" >
-                <property name="currentIndex" >
+               <widget class="QTabWidget" name="CommunitiesTab">
+                <property name="currentIndex">
                  <number>0</number>
                 </property>
-                <widget class="QWidget" name="tab_10" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="tab_10">
+                 <attribute name="title">
                   <string>Profiles Grouping</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_59" >
+                 <layout class="QVBoxLayout" name="_59">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="GroupProfiles" />
+                   <widget class="QPlugInsList" name="GroupProfiles" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="tab_11" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="tab_11">
+                 <attribute name="title">
                   <string>Community Computing</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_63" >
+                 <layout class="QVBoxLayout" name="_63">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="CommunityCalcs" />
+                   <widget class="QPlugInsList" name="CommunityCalcs" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="TabPage_10" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="TabPage_10">
+                 <attribute name="title">
                   <string>Communities Analysis</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_66" >
+                 <layout class="QVBoxLayout" name="_66">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="PostCommunities" />
+                   <widget class="QPlugInsList" name="PostCommunities" native="true"/>
                   </item>
                  </layout>
                 </widget>
@@ -980,17 +2032,17 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="TabPage_11" >
-             <attribute name="title" >
+            <widget class="QWidget" name="TabPage_11">
+             <attribute name="title">
               <string>Measures</string>
              </attribute>
-             <layout class="QVBoxLayout" name="_68" >
+             <layout class="QVBoxLayout" name="_68">
               <item>
-               <layout class="QHBoxLayout" name="_69" >
+               <layout class="QHBoxLayout" name="_69">
                 <item>
-                 <widget class="QListWidget" name="MeasuresCats" >
-                  <property name="sizePolicy" >
-                   <sizepolicy vsizetype="Expanding" hsizetype="MinimumExpanding" >
+                 <widget class="QListWidget" name="MeasuresCats">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -998,55 +2050,55 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QStackedWidget" name="Measures" >
-                  <property name="currentIndex" >
+                 <widget class="QStackedWidget" name="Measures">
+                  <property name="currentIndex">
                    <number>0</number>
                   </property>
-                  <widget class="QWidget" name="page_2" />
+                  <widget class="QWidget" name="page_2"/>
                  </widget>
                 </item>
                 <item>
-                 <widget class="QFrame" name="frame3" >
-                  <property name="frameShape" >
+                 <widget class="QFrame" name="frame3">
+                  <property name="frameShape">
                    <enum>QFrame::StyledPanel</enum>
                   </property>
-                  <property name="frameShadow" >
+                  <property name="frameShadow">
                    <enum>QFrame::Raised</enum>
                   </property>
-                  <layout class="QVBoxLayout" name="_70" />
+                  <layout class="QVBoxLayout" name="_70"/>
                  </widget>
                 </item>
                </layout>
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="TabPage_12" >
-             <attribute name="title" >
+            <widget class="QWidget" name="TabPage_12">
+             <attribute name="title">
               <string>Search</string>
              </attribute>
-             <layout class="QVBoxLayout" name="_73" >
+             <layout class="QVBoxLayout" name="_73">
               <item>
-               <widget class="QTabWidget" name="SearchTab" >
-                <property name="currentIndex" >
+               <widget class="QTabWidget" name="SearchTab">
+                <property name="currentIndex">
                  <number>0</number>
                 </property>
-                <widget class="QWidget" name="tab_12" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="tab_12">
+                 <attribute name="title">
                   <string>Engines</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_74" >
+                 <layout class="QVBoxLayout" name="_74">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="Engines" />
+                   <widget class="QPlugInsList" name="Engines" native="true"/>
                   </item>
                  </layout>
                 </widget>
-                <widget class="QWidget" name="tab_13" >
-                 <attribute name="title" >
+                <widget class="QWidget" name="tab_13">
+                 <attribute name="title">
                   <string>Meta Engines</string>
                  </attribute>
-                 <layout class="QVBoxLayout" name="_76" >
+                 <layout class="QVBoxLayout" name="_76">
                   <item>
-                   <widget class="QPlugInsList" native="1" name="MetaEngines" />
+                   <widget class="QPlugInsList" name="MetaEngines" native="true"/>
                   </item>
                  </layout>
                 </widget>
@@ -1054,13 +2106,13 @@
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="TabPage_13" >
-             <attribute name="title" >
+            <widget class="QWidget" name="TabPage_13">
+             <attribute name="title">
               <string>Statistics</string>
              </attribute>
-             <layout class="QVBoxLayout" name="_80" >
+             <layout class="QVBoxLayout" name="_80">
               <item>
-               <widget class="QPlugInsList" native="1" name="StatsCalcs" />
+               <widget class="QPlugInsList" name="StatsCalcs" native="true"/>
               </item>
              </layout>
             </widget>
@@ -1106,11 +2158,11 @@
    <receiver>Measures</receiver>
    <slot>setCurrentIndex(int)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>95</x>
      <y>137</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>128</x>
      <y>137</y>
     </hint>
@@ -1122,11 +2174,11 @@
    <receiver>groupBox9</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>79</x>
      <y>85</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>24</x>
      <y>480</y>
     </hint>
@@ -1138,11 +2190,11 @@
    <receiver>Subjects</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>87</x>
      <y>75</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>200</x>
      <y>115</y>
     </hint>
