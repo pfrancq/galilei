@@ -63,12 +63,12 @@ public:
 	/**
 	* Construct a community with a specific identifier.
 	* @param id              Identifier.
+	* @param blockid        Identifier of the block.
 	* @param name            Name of the community.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
-	* @param size           Size of the vector.
 	*/
-	GCommunity(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c,size_t size);
+	GCommunity(size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
 	 * Get the similarity measure that must be used when computing the

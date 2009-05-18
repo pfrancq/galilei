@@ -67,9 +67,9 @@ public:
 
 	/**
 	* Compute a topic.
-	* @param grp            Topic to compute.
+	* @param topic           Topic to compute.
 	*/
-	virtual void Compute(GTopic* top)=0;
+	virtual void Compute(GTopic* topic)=0;
 
 	/**
 	* Destruct.

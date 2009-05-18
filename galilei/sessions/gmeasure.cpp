@@ -357,6 +357,13 @@ void GMeasureManager::SetCurrentMethod(const R::RString& type,const R::RString& 
 
 
 //------------------------------------------------------------------------------
+void GMeasureManager::SetCurrentMethod(const R::RString&,bool)
+{
+	throw GException("No type specified");
+}
+
+
+//------------------------------------------------------------------------------
 GMeasure* GMeasureManager::GetCurrentMethod(const R::RString& type,bool need) const
 {
 	GTypeMeasureManager* Manager=GetPtr(type);

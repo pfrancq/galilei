@@ -110,10 +110,11 @@ public:
 	/**
 	* Construct a concept type.
 	* @param id              Identifier of the type.
+	* @param ontology        Ontology.
 	* @param name            Name of the type.
 	* @param desc            Short description.
 	* @param lang            Language eventually associated to the concept type.
-	* @param s              Size of the second hash table.
+	* @param s               Size of the second hash table.
 	*/
 	GConceptType(char id,GOntology* ontology,const R::RString& name,const R::RString& desc,GLang* lang,size_t s);
 
@@ -125,7 +126,7 @@ public:
 	* @param refcommunities  Number of communities referenced.
 	* @param reftopics       Number of topics referenced.
 	*/
-	void SetReferences(size_t refdocs,size_t refprofiles,size_t refcommunitie,size_t reftopics);
+	void SetReferences(size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics);
 
 	/**
 	* Compare two concepts types.

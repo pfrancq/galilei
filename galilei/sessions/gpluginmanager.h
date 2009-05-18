@@ -129,8 +129,8 @@ public :
 	/*
 	* Load all plug-ins and their dialog boxes.
 	* @param dll             Name of the dynamic link library.
-	* @param handle          Handle to the library contaioning the plug-in.
-	* @param handleDlg       Handle to the library contaioning the dialogs.
+	* @param handle          Handle to the library containing the plug-in.
+	* @param handleDlg       Handle to the library containing the dialogs.
 	*/
 	virtual void Load(const R::RString& dll,void* handle,void* handleDlg)=0;
 
@@ -348,10 +348,10 @@ public:
 	/**
 	 * Get a pointer to the configuration structure for a specific plug-in.
 	 * @param name           Name of the plug-in.
-	 * @param type           Type of the factory
+	 * @param type           Type of the factory. By default, it is not used.
 	 * @return Pointer to R::RConfig.
 	 */
-	virtual R::RConfig* GetConfig(const R::RString& name,const R::RString&) const {return(GetFactory(name,false));}
+	virtual R::RConfig* GetConfig(const R::RString& name,const R::RString& type) const;
 
 	/**
 	 * Apply the configuration for a plug-in corresponding to a given

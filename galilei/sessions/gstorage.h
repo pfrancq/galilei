@@ -381,10 +381,10 @@ public:
 	/**
 	 * Save the index information of a given object type for a given concept.
 	 * @param concept         Concept.
-	 * @param what            Type of the object (otDoc,otSubProfile,otGroup).
-	 * @param pos             Position of the index.
+	 * @param what            Type of the object (Only otDoc supported).
+	 * @param indexdocs       Identifier of the block containing the index.
 	 */
-	virtual void SaveIndex(const GConcept* concept,tObjType what,off_t pos)=0;
+	virtual void SaveIndex(const GConcept* concept,tObjType what,size_t indexdocs)=0;
 
 	/**
 	* Save the references of a given object type for a given concept type. If

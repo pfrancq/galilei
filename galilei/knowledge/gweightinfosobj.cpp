@@ -44,8 +44,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfosObj::GWeightInfosObj(size_t id,tObjType objtype,const R::RString& name,size_t size,tObjState state)
-	: GObject(id,name,objtype), State(state), Vector(0), Size(size)
+GWeightInfosObj::GWeightInfosObj(size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state)
+	: GObject(id,name,objtype), State(state), Vector(0), BlockId(blockid)
 {
 	if(Id!=R::cNoRef)
 		Emit(GEvent::eObjNew);
@@ -56,14 +56,17 @@ GWeightInfosObj::GWeightInfosObj(size_t id,tObjType objtype,const R::RString& na
 const GWeightInfos* GWeightInfosObj::GetVector(void) const
 {
 	if(!Vector)
-			const_cast<GWeightInfosObj*>(this)->Vector=new GWeightInfos(Size);
- 	if((State==osNeedLoad)&&Size)
 	{
-		const_cast<GWeightInfosObj*>(this)->State=osOnDemand;      // The object is on-demand of loading
-		GSession* session=GSession::Get();
-		if(session)
-			session->LoadInfos(*Vector,ObjType,Id);                   // Load the object
-		const_cast<GWeightInfosObj*>(this)->State=osUpToDate;         // It is updated !
+		if(BlockId)
+		{
+			const_cast<GWeightInfosObj*>(this)->State=osOnDemand;      // The object is on-demand of loading
+			GSession* session=GSession::Get();
+			if(session)
+				session->LoadInfos(const_cast<GWeightInfosObj*>(this)->Vector,ObjType,BlockId,Id); // Load the object
+			const_cast<GWeightInfosObj*>(this)->State=osUpToDate;         // It is updated !
+		}
+		else
+			const_cast<GWeightInfosObj*>(this)->Vector=new GWeightInfos(1);
 	}
 	return(Vector);
 }
@@ -72,18 +75,9 @@ const GWeightInfos* GWeightInfosObj::GetVector(void) const
 //------------------------------------------------------------------------------
 void GWeightInfosObj::SetState(tObjState state)
 {
-	if((State==osNeedLoad)&&(state==osDelete))
+	if((!Vector)&&(state==osDelete))
 	{
-		if(!Vector)
-			const_cast<GWeightInfosObj*>(this)->Vector=new GWeightInfos(Size);
-
-		// Force to load the description since the references must be decreased
-		// in the destructor.
-		const_cast<GWeightInfosObj*>(this)->State=osOnDemand;      // The object is on-demand of loading
-		GSession* session=GSession::Get();
-		if(session)
-			session->LoadInfos(*Vector,ObjType,Id);                   // Load the object
-		const_cast<GWeightInfosObj*>(this)->State=osUpToDate;         // It is updated !
+		GetVector();
 	}
 	State=state;
 }
@@ -102,12 +96,11 @@ void GWeightInfosObj::SetId(size_t id)
 //------------------------------------------------------------------------------
 void GWeightInfosObj::CopyInfos(const R::RContainer<GWeightInfo,false,true>& infos)
 {
-	Size=infos.GetNb();
 	State=osUpToDate;
-	if(Size)
+	if(infos.GetNb())
 	{
 		if(!Vector)
-			Vector=new GWeightInfos(Size);
+			Vector=new GWeightInfos(infos.GetNb());
 		Vector->CopyInfos(infos);
 	}
 	else
@@ -121,7 +114,6 @@ void GWeightInfosObj::CopyInfos(const R::RContainer<GWeightInfo,false,true>& inf
 //------------------------------------------------------------------------------
 void GWeightInfosObj::Clear(void)
 {
-	Size=0;
 	if(Vector)
 		Vector->Clear();
 }
@@ -130,7 +122,6 @@ void GWeightInfosObj::Clear(void)
 //------------------------------------------------------------------------------
 void GWeightInfosObj::Transfer(GWeightInfos& info)
 {
-	Size=info.GetNb();
 	GetVector();
 	Vector->Transfer(info);
 }
@@ -144,7 +135,7 @@ GWeightInfosObj::~GWeightInfosObj(void)
 	try
 	{
 		if(State==osDelete)  // The object has modified the references count but was not saved
-			Vector->DelRefs(ObjType);
+			GetVector()->DelRefs(ObjType);
 	}
 	catch(...)
 	{

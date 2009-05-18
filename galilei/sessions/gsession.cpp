@@ -272,7 +272,7 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 	InsertParam(new RParamValue("NbDocsPerSubject",100.0),"Subjects");
 	InsertParam(new RParamValue("PercNbDocsPerSubject",true),"Subjects");
 	InsertParam(new RParamValue("ClusterSelectedDocs",false),"Subjects");
-	InsertParam(new RParamValue("IndexDir","/var/galilei"),"Indexer");
+	GIndexer::CreateConfig(this);
 	Load(false);
 }
 
@@ -290,7 +290,7 @@ void GSession::Apply(void)
 	Data->ClusterSelectedDocs=GetBool("ClusterSelectedDocs","Subjects");
 	if(Data->Subjects)
 		Data->Subjects->Apply();
-	GIndexer::Apply();
+	GIndexer::Apply(this);
 }
 
 
@@ -562,13 +562,13 @@ void GSession::LoadClasses(void)
 
 
 //------------------------------------------------------------------------------
-GClass* GSession::InsertClass(GClass* parent,size_t id,const RString& name,size_t size)
+GClass* GSession::InsertClass(GClass* parent,size_t id,size_t blockid,const RString& name)
 {
 	// Create the class
 	RString Name(name);
 	if(Name==RString::Null)
 		Name="Class "+RString::Number(Classes.GetNbNodes()+1);
-	GClass* Class(new GClass(id,Name,size));
+	GClass* Class(new GClass(id,blockid,Name));
 
 	// Look if data has an identifier. If not, assign one.
 	if(Class->GetId()==cNoRef)
@@ -599,8 +599,8 @@ void GSession::AssignInfos(GClass* theclass,R::RContainer<GWeightInfo,false,true
 	theclass->Update(infos);
 	if(SaveResults)
 	{
-		if(theclass->GetVector()->IsDefined())
-			SaveInfos(*theclass->GetVector(),otClass,theclass->GetId());
+		if(theclass->Vector)
+			SaveInfos(theclass->Vector,otClass,theclass->BlockId,theclass->Id);
 		Storage->SaveClass(theclass);
 	}
 }
@@ -947,17 +947,17 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	bool DelRef(doc->IsDefined());
 	method->Analyze(doc,uri,Native);
 
-	// Save the binary files
+	// Save the description and the structure
 	if(Save)
 	{
 		if(method->Infos.IsDefined())
-			SaveInfos(method->Infos,otDoc,doc->GetId());
+			SaveInfos(&method->Infos,otDoc,doc->BlockId,doc->Id);
 		if(method->Struct.GetNbRecs())
-			SaveStruct(method->Struct,doc);
+			SaveStruct(&method->Struct,doc->StructId,doc->Id);
 	}
 
 	// Set the information to the document
-	doc->Update(method->Lang,method->Infos,method->Struct,ram||(!Save),DelRef);
+	doc->Update(this,method->Lang,method->Infos,method->Struct,ram||(!Save),DelRef,IndexDocsInc);
 
 	// Save the information related to the document
 	if(Save)
@@ -1299,7 +1299,7 @@ void GSession::CalcProfile(GProfile* profile,GSlot* rec)
 	if(SaveResults&&(profile->GetId()!=cNoRef))
 	{
 		if(profile->IsDefined())
-			SaveInfos(*profile->GetVector(),otProfile,profile->GetId());
+			SaveInfos(profile->Vector,otProfile,profile->BlockId,profile->Id);
 		Storage->SaveProfile(profile);
 	}
 	if(Intern::ExternBreak) return;
@@ -1514,7 +1514,7 @@ void GSession::GroupProfiles(GSlot* rec)
 			if(SaveResults)
 			{
 				if(Groups()->IsDefined())
-					SaveInfos(*Groups()->GetVector(),otCommunity,Groups()->GetId());
+					SaveInfos(Groups()->Vector,otCommunity,Groups()->BlockId,Groups()->Id);
 				Storage->SaveCommunity(Groups());
 				Groups()->SetState(osSaved);
 			}
@@ -1595,7 +1595,7 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 				for(Groups.Start();!Groups.End();Groups.Next())
 				{
 					if(Groups()->IsDefined())
-						SaveInfos(*Groups()->GetVector(),otCommunity,Groups()->GetId());
+						SaveInfos(Groups()->Vector,otCommunity,Groups()->BlockId,Groups()->Id);
 					Storage->SaveCommunity(Groups());
 					Groups()->SetState(osSaved);
 				}
@@ -1612,7 +1612,7 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 				for(Topics.Start();!Topics.End();Topics.Next())
 				{
 					if(Topics()->IsDefined())
-						SaveInfos(*Topics()->GetVector(),otTopic,Topics()->GetId());
+						SaveInfos(Topics()->Vector,otTopic,Topics()->BlockId,Topics()->Id);
 					Storage->SaveTopic(Topics());
 					Topics()->SetState(osSaved);
 				}
@@ -1807,7 +1807,7 @@ void GSession::GroupDocs(GSlot* rec)
 			if(SaveResults)
 			{
 				if(Groups()->IsDefined())
-					SaveInfos(*Groups()->GetVector(),otTopic,Groups()->GetId());
+					SaveInfos(Groups()->Vector,otTopic,Groups()->BlockId,Groups()->Id);
 				Storage->SaveTopic(Groups());
 				Groups()->SetState(osSaved);
 			}

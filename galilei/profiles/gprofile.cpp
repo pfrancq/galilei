@@ -160,7 +160,7 @@ GFdbk::~GFdbk(void)
 
 //------------------------------------------------------------------------------
 GProfile::GProfile(GUser* usr,const R::RString name,bool s)
-  : GWeightInfosObj(cNoRef,otProfile,name,0,osNew), User(usr),
+  : GWeightInfosObj(cNoRef,0,otProfile,name,osNew), User(usr),
     Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null), GroupId(0), Attached(RDate::Null)
 {
 	if(!User)
@@ -178,8 +178,8 @@ GProfile::GProfile(GUser* usr,const R::RString name,bool s)
 
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,size_t size,bool s,size_t nbf)
-  : GWeightInfosObj(id,otProfile,name,size,osNew), User(usr),
+GProfile::GProfile(GUser* usr,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,size_t nbf)
+  : GWeightInfosObj(id,blockid,otProfile,name,osNew), User(usr),
     Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c), GroupId(grpid), Attached(a)
 {
 	if(!User)

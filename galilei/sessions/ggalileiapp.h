@@ -111,7 +111,7 @@ protected:
 	R::RString IndexDir;
 
 	/**
-	 * Amount of RAM (in MBà) used by the indexer to build the index.
+	 * Amount of RAM (in MB) used by the indexer to build the index.
 	 */
 	unsigned int IndexRamSize;
 

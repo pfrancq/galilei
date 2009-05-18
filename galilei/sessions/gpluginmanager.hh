@@ -310,6 +310,14 @@ template<class mng,class factory,class plugin>
 
 //-----------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
+R::RConfig* GPluginManager<mng,factory,plugin>::GetConfig(const R::RString& name,const R::RString&) const
+{
+	return(GetFactory(name,false));
+}
+
+
+//-----------------------------------------------------------------------------
+template<class mng,class factory,class plugin>
 	void GPluginManager<mng,factory,plugin>::ApplyConfig(R::RConfig* config)
 {
 	factory* Factory=dynamic_cast<factory*>(config);

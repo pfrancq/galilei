@@ -239,16 +239,16 @@ public:
 	* Construct a profile.
 	* @param usr             User of the profile.
 	* @param id              Identifier of the profile.
+	* @param blockid        Identifier of the block.
 	* @param name            Name of the profile.
 	* @param grpid           Community identifier.
 	* @param a               Date where it was attached.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
-	* @param size            Size of the vector.
 	* @param s               Social?
 	* @param nbf             Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,size_t id,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,size_t size,bool s,size_t nbf);
+	GProfile(GUser* usr,size_t id,size_t blockid,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,size_t nbf);
 
 	/**
 	* Compare two profiles by comparing their identifier.

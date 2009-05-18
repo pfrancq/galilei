@@ -113,15 +113,9 @@ protected:
 	R::RDate Attached;
 
 	/**
-	 * Number of "VTD" records of the XML structure (0 implies that the document
-	 * has no structure).
+	 * Block identifier of the struct.
 	 */
-	size_t NbRecs;
-
-	/**
-	 * Number of location caches.
-	 */
-	size_t NbLCs;
+	size_t StructId;
 
 public:
 
@@ -139,17 +133,16 @@ public:
 	* @param url             URL of the document.
 	* @param name            Name of the document.
 	* @param id              Identifier of the document.
+	* @param blockid         Identifier of the block for the description.
+	* @param structid        Identifier of the block for the structure.
 	* @param lang            Language of the document.
 	* @param mime            MIME type of the document.
 	* @param grpid           Topic identifier.
 	* @param c               Date of the last computation.
 	* @param u               Date of the last updated.
 	* @param a               Date of the last attached.
-	* @param size            Size of the vector.
-	* @param nbrecs          Number of "VTD" records.
-	* @param nblcs           Number of location caches.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,size_t id,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a,size_t size,size_t nbrecs,size_t nblcs);
+	GDoc(const R::RURI& url,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
 
 	/**
 	* Compare two documents by comparing their identifier.
@@ -267,16 +260,11 @@ public:
 	void SetGroup(size_t groupid);
 
 	/**
-	 * Get the number of "VTD" record in the structure of the document (0
-	 * implies that the structure is empty).
+	 * Get the identifier of the block containing the structure. If null, it
+	 * means that the object is not defined.
+	 * @return Identifier of the block.
 	 */
-	size_t GetNbRecs(void) const {return(NbRecs);}
-
-	/**
-	 * Get the number of Location caches for the structure of the document.
-	 * @return
-	 */
-	size_t GetNbLCs(void) const {return(NbLCs);}
+	inline size_t GetStructId(void) const {return(StructId);}
 
 	/**
 	* Get a cursor on the identifier of the profiles which have assesses the
@@ -347,21 +335,20 @@ public:
 	*/
 	R::RCursor<GLink> GetLinks(void) const;
 
+private:
+
 	/**
 	* Assign a new description to the document.
+	* @param session         Session.
 	* @param lang            Pointer to the language.
 	* @param infos           Pointer to the information.
 	* @param ram             Must the information be maintained is RAM.
 	* @param delref          Delete the references (must be set to true if the
 	*                        document has already a description).
+	* @param index           Must the document be indexed ?
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref);
-
-	/**
-	 * Assign a structure to the current document.
-	 */
-	void AssignStruct() const;
+	void Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref,bool index);
 
 public:
 
@@ -369,6 +356,9 @@ public:
 	* Destruct the document.
 	*/
 	virtual ~GDoc(void);
+
+	friend class GSession;
+	friend class GIndexer;
 };
 
 

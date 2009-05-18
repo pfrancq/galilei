@@ -75,9 +75,9 @@ protected:
 	double IfDocs;
 
 	/**
-	 * Position in the inverted file corresponding to the documents.
+	 * Identifier of the block in the inverted file.
 	 */
-	off_t IndexDocs;
+	size_t IndexDocs;
 
 	/**
 	* Number of references in profiles.
@@ -130,13 +130,12 @@ public:
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	* @param refdocs         Number of documents referenced.
-	* @param indexdocs       Position in the inverted file related to the
-	*                        documents.
+	* @param indexdocs       Identifier of the block the inverted file related to the documents.
 	* @param refprofiles     Number of profiles referenced.
 	* @param refcommunities  Number of groups referenced.
 	* @param reftopics       Number of topics referenced.
 	*/
-	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics);
+	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics);
 
 	/**
 	* Compare two concepts.
@@ -161,7 +160,7 @@ public:
 	/**
 	* Compute the first hash index of the name of a concept.
 	* @see R::RHashContainer
-	* @param c               Concept.
+	* @param idx             Index of the hash index.
 	*/
 	virtual size_t HashIndex(size_t idx) const
 		{return(Name.HashIndex(idx));}

@@ -130,7 +130,7 @@ protected:
 
 	/**
 	* Insert a statement.
-	* @param relation        Statement to insert.
+	* @param statement       Statement to insert.
 	*/
 	void InsertStatement(GStatement* statement);
 

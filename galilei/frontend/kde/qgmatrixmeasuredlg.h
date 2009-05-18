@@ -117,7 +117,7 @@ public:
 
 	/**
 	 * Method called before the dialog box is opened. It uses the values of the
-	 * parameters to initialize the dialog box. This method can be overrided
+	 * parameters to initialize the dialog box. This method can be override
 	 * (normally with the 'Panel' and 'Done' methods) to synchronized new
 	 * parameters and widgets.
 	 * @code

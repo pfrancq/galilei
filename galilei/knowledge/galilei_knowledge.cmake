@@ -5,24 +5,26 @@ SET(galilei_knowledge_INST_INCLUDES
     gpredicate.h 
     glang.h 
     gxmlindex.h
-    gweightinfos.h
     gweightinfo.h
-    gontology.h
+    gweightinfos.h
+    gindexer.h
     gweightinfosobj.h
     gclass.h
+    gontology.h    
 )
     
                               
 SET(galilei_knowledge_TARGET_SOURCES
-    gconcept.cpp 
-    gconcepttype.cpp 
+    gconcepttype.cpp
+    gconcept.cpp      
     gstatement.cpp
     gpredicate.cpp 
     glang.cpp
     gxmlindex.cpp
-    gweightinfos.cpp
     gweightinfo.cpp
+    gweightinfos.cpp    
+    gindexer.cpp    
     gweightinfosobj.cpp
-    gontology.cpp
     gclass.cpp
+    gontology.cpp    
 )

@@ -49,14 +49,14 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GTopic::GTopic(const RString& name)
-	: GGroup<GDoc,GTopic,otTopic>(cNoRef,name,RDate::GetToday(),RDate::Null,0)
+	: GGroup<GDoc,GTopic,otTopic>(cNoRef,0,name,RDate::GetToday(),RDate::Null)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GTopic::GTopic(size_t id,const RString& name,const RDate& u,const RDate& c,size_t size)
-	: GGroup<GDoc,GTopic,otTopic>(id,name,u,c,size)
+GTopic::GTopic(size_t id,size_t blockid,const RString& name,const RDate& u,const RDate& c)
+	: GGroup<GDoc,GTopic,otTopic>(id,blockid,name,u,c)
 {
 }
 

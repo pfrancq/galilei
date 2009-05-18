@@ -169,10 +169,8 @@ public:
 
 	/**
 	* Constructor.
-	* @param m               Manager of the plug-in.
 	* @param n               Name of the Factory/Plug-in ('/' are replaced by
 	*                        '-' for the configuration file).
-	* @param f               Library of the Factory/Plug-in.
 	*/
 	GPluginConfig(const R::RString& n) : R::RConfig(), Name(n), Level(0) {}
 

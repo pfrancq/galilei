@@ -124,6 +124,7 @@ protected:
 	/**
 	* Compute the Recall and the Precision for a given clustering.
 	* @param type            Type of the clustering.
+	* @param grp             Cursor of the score of the different groups.
 	* @param recall          Total recall.
 	* @param precision       Total precision.
 	*/

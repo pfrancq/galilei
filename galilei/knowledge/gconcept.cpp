@@ -72,7 +72,7 @@ GConcept::GConcept(const RString& name,GConceptType* type)
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(size_t id,const RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics)
+GConcept::GConcept(size_t id,const RString& name,GConceptType* type,size_t refdocs,size_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics)
 	: GObject(id,name,otConcept), Type(type), NbRefDocs(refdocs), IfDocs(NAN), IndexDocs(indexdocs),
 	  NbRefProfiles(refprofiles), IfProfiles(NAN), NbRefCommunities(refcommunities), IfCommunities(NAN),
 	  NbRefTopics(reftopics), IfTopics(NAN)

@@ -59,12 +59,8 @@ RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("user"));
 		case otProfile:
 			return(RString("profile"));
-		case otHistoricalProfile:
-			return(RString("historical profile"));
 		case otCommunity:
 			return(RString("community"));
-		case otHistoricalCommunity:
-			return(RString("historical community"));
 		case otFdbk:
 			return(RString("assessment"));
 		case otLang:

@@ -29,14 +29,10 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include<math.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gweightinfo.h>
 #include <glang.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 

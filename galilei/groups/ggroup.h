@@ -89,12 +89,12 @@ public:
 	/**
 	* Construct a group with a specific identifier.
 	* @param id              Identifier.
+	* @param blockid         Identifier of the block.
 	* @param name            Name of the group.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
-	* @param size           Size of the vector.
 	*/
-	GGroup(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c,size_t size);
+	GGroup(size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
 	* Compare two groups by comparing their identifier.
@@ -164,7 +164,7 @@ public:
 	* of the object is set to null).
 	* @param obj            Object to insert.
 	*/
-	void InsertObj(cObj* sp);
+	void InsertObj(cObj* obj);
 
 	/**
 	* Insert a object in the group. This signature is needed by a generic
@@ -229,8 +229,6 @@ public:
 	/**
 	* Assign a new description to the group.
 	* @param infos           Pointer to the information.
-	* @param computed        The update is called after a computation (and not
-	*                        after a loading from a database).
 	* \warning The container infos is cleared by this method.
 	*/
 	void Update(R::RContainer<GWeightInfo,false,true>& infos);

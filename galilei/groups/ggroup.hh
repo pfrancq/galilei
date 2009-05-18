@@ -36,8 +36,8 @@
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	GALILEI::GGroup<cObj,cGroup,type>::GGroup(size_t id,const R::RString& name,const R::RDate& u,const R::RDate& c,size_t size)
-	: R::RContainer<cObj,false,true>(20,10), GWeightInfosObj(id,type,name,size,osNew),
+	GALILEI::GGroup<cObj,cGroup,type>::GGroup(size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c)
+	: R::RContainer<cObj,false,true>(20,10), GWeightInfosObj(id,blockid,type,name,osNew),
 	  Updated(u), Computed(c), Data(0)
 {
 }

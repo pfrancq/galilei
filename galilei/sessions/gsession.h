@@ -254,12 +254,12 @@ public:
 	 * @param parent         Parent class (0 if root class).
 	 * @param id             Identifier (or cNoRef if a new class must be
 	 *                       created).
+	 * @param blockid        Identifier of the block containing the description.
 	 * @param name           Name of the class (if RString::Null, the name is
 	 *                       "Class id").
-	 * @param size           Size of the vector (0 if a new class).
 	 * @return Pointer to the class.
 	 */
-	GClass* InsertClass(GClass* parent,size_t id=R::cNoRef,const R::RString& name=R::RString::Null,size_t size=0);
+	GClass* InsertClass(GClass* parent,size_t id=R::cNoRef,size_t blockid=0,const R::RString& name=R::RString::Null);
 
 	/**
 	 * Assign a specific description to a given class. If necessary, the
@@ -569,7 +569,7 @@ public:
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identifier of the document.
 	*/
-	void UpdateProfiles(size_t docids);
+	void UpdateProfiles(size_t docid);
 
 	/**
 	* Insert a new Feedback.
@@ -759,7 +759,7 @@ public:
 
 	/**
 	* Insert a topic.
-	* @param top             Topic.
+	* @param topic           Topic.
 	*/
 	void InsertTopic(GTopic* topic);
 

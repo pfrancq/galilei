@@ -384,7 +384,7 @@ public:
 	* @param need            If the parameter is true and the plug-in does not
 	*                        exist, generate an exception.
 	*/
-	virtual void SetCurrentMethod(const R::RString&,bool) {throw GException("No type specified");}
+	virtual void SetCurrentMethod(const R::RString& name,bool need);
 
 	/**
 	* Get the current method.

@@ -151,14 +151,12 @@ class GDocStruct
 	/**
 	 * Location caches.
 	 */
-	R::RContainer<GLC,true,false>* LCs;
+	R::RContainer<GLC,true,false> LCs;
 
 public:
 
 	/**
-	 * Constructor.
-	 * @param vtd            Number of VTD records.
-	 * @param lc             Number of location caches.
+	 * Default constructor.
 	 */
 	GDocStruct(void);
 

@@ -79,7 +79,7 @@ protected:
 
 	/**
 	* Assignment operator for lists of weighted information entities.
-	* @param w              Source list of weighted information entities.
+	* @param infos           Source list of weighted information entities.
 	*/
 	void CopyInfos(const R::RContainer<GWeightInfo,false,true>& infos);
 
@@ -142,9 +142,10 @@ public:
 	size_t GetTab(const GWeightInfo** tab) const {return(R::RContainer<GWeightInfo,true,true>::GetTab(tab));}
 
 	/**
-	* Clear the container.
+	* Clear the vector and extend it if necessary.
+	* @param size            Expected size of the vector.
 	*/
-	void Clear(void) {R::RContainer<GWeightInfo,true,true>::Clear();}
+	void Clear(size_t size=0) {R::RContainer<GWeightInfo,true,true>::Clear(size);}
 
 	 /**
  	* Get the number of elements in the container.

@@ -316,18 +316,26 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
-	* Get a measure between two elements. There are three parameters.
+	* Get a measure between two elements. There are at least one parameters:
 	* @param measure         Type of the measure (0).
-	* @param id1             Identifier of the first element.
-	* @param id2             Identifier of the second element.
+	*
+	* By default, this class supposes that three more parameters are passed:
+	* - Identifier of the first element (size_t).
+	* - Identifier of the second element (size_t).
+	* - A pointer to a variable of type double
 	*/
 	virtual void Measure(size_t measure,...);
 
 	/**
-	* Access to the minmum of the measure of two similar elements. There are
+	* Access to several information related to the matrix of measure, such as
+	* the minimum of the measure of two similar elements. There are
 	* maximum two parameters.
-	* @param measure         Type of the measure (0).
-	 */
+	* @param info        Type of the information to take.
+	*
+	* By default, the only information is the minimum of values stored in the
+	* matrix. One more parameter must be passed:
+	* - A pointer to a variable of type double
+	*/
 	virtual void Info(size_t info,...);
 
 	/**

@@ -95,14 +95,14 @@ public:
 
 //------------------------------------------------------------------------------
 GDocStruct::GDocStruct(void)
-	: Recs(2000), LCs(new R::RContainer<GLC,true,false>(10))
+	: Recs(2000), LCs(10)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GDocStruct::GDocStruct(const GDocStruct& docstruct)
-	: Recs(docstruct.Recs.GetNb()), LCs(new R::RContainer<GLC,true,false>(docstruct.LCs->GetNb()))
+	: Recs(docstruct.Recs.GetNb()), LCs(docstruct.LCs.GetNb())
 {
 	// Recreate correctly the structure
 	R::RCursor<GVTDRec> Recs(docstruct.Recs);
@@ -116,7 +116,7 @@ GDocStruct::GDocStruct(const GDocStruct& docstruct)
 
 //------------------------------------------------------------------------------
 GDocStruct::GDocStruct(size_t vtd,size_t lc)
-	: Recs(vtd), LCs(new R::RContainer<GLC,true,false>(lc))
+	: Recs(vtd), LCs(lc)
 {
 }
 
@@ -125,7 +125,7 @@ GDocStruct::GDocStruct(size_t vtd,size_t lc)
 void GDocStruct::SetSizes(size_t vtd,size_t lc)
 {
 	Recs.VerifyTab(vtd);
-	LCs->VerifyTab(lc);
+	LCs.VerifyTab(lc);
 }
 
 
@@ -140,24 +140,24 @@ size_t GDocStruct::GetNbRecs(void) const
 //------------------------------------------------------------------------------
 size_t GDocStruct::GetNbLCs(void) const
 {
-	return(LCs->GetNb());
+	return(LCs.GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 size_t GDocStruct::GetNbLCEntries(size_t level) const
 {
-	if(level>=LCs->GetNb())
+	if(level>=LCs.GetNb())
 		return(0);
-	return((*LCs)[level]->GetNb());
+	return(LCs[level]->GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 void GDocStruct::SetNbLCEntries(size_t level,size_t size) const
 {
-	if(!LCs->VerifyIndex(level))
-		LCs->InsertPtrAt(new GLC(size),level);
+	if(!LCs.VerifyIndex(level))
+		const_cast<GDocStruct*>(this)->LCs.InsertPtrAt(new GLC(size),level);
 }
 
 
@@ -172,13 +172,13 @@ GVTDRec* GDocStruct::AddRecord(GConcept* concept,GVTDRec::RecType type,size_t po
 	if(type==GVTDRec::Tag)
 	{
 		GLC* Level;
-		if(LCs->VerifyIndex(depth))
-			Level=(*LCs)[depth];
+		if(LCs.VerifyIndex(depth))
+			Level=LCs[depth];
 		else
 		{
 			if(!nbrecs)
 				nbrecs=200;
-			LCs->InsertPtrAt(Level=new GLC(nbrecs),depth);
+			LCs.InsertPtrAt(Level=new GLC(nbrecs),depth);
 		}
 		Level->InsertPtr(new GLCEntry(ptr,child));
 	}
@@ -200,7 +200,7 @@ size_t GDocStruct::GetFirstChild(GVTDRec* rec) const
 {
 	if(rec->GetType()!=GVTDRec::Tag)
 		return(SIZE_MAX);
-	RCursor<GLCEntry> Cur(*(*LCs)[rec->GetDepth()]);
+	RCursor<GLCEntry> Cur(*LCs[rec->GetDepth()]);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		if(Cur()->Rec==rec)
@@ -216,12 +216,11 @@ size_t GDocStruct::GetFirstChild(GVTDRec* rec) const
 void GDocStruct::Clear(void)
 {
 	Recs.Clear();
-	LCs->Clear();
+	LCs.Clear();
 }
 
 
 //------------------------------------------------------------------------------
 GDocStruct::~GDocStruct(void)
 {
-	delete LCs;
 }

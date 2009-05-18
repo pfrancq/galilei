@@ -43,8 +43,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GClass::GClass(size_t id,const R::RString& name,size_t size)
-	: R::RNode<GClasses,GClass,true>(), GWeightInfosObj(id,otClass,name,size,osNew)
+GClass::GClass(size_t id,size_t blockid,const R::RString& name)
+	: R::RNode<GClasses,GClass,true>(), GWeightInfosObj(id,blockid,otClass,name,osNew)
 {
 }
 

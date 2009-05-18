@@ -62,10 +62,10 @@ public:
 	/**
 	* Construct a class with a specific identifier.
 	* @param id              Identifier.
+	* @param blockid         Identifier of the block.
 	* @param name            Name of the class.
-	* @param size            Size of the vector.
 	*/
-	GClass(size_t id,const R::RString& name,size_t size);
+	GClass(size_t id,size_t blockid,const R::RString& name);
 
 	/**
 	* Compare two groups by comparing their identifier.

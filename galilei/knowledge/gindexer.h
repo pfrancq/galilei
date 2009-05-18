@@ -36,7 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rvectorint.h>
-#include <rbinaryfile.h>
+#include <rconfig.h>
 
 
 //------------------------------------------------------------------------------
@@ -66,35 +66,34 @@ namespace GALILEI{
 */
 class GIndexer : virtual public GBasicSession
 {
-	/**
-	 * Root dir for the documents.
-	 */
-	R::RString DirDocs;
+	class IndexFile;
 
 	/**
-	 * Root dir for the profiles.
+	 * Index of the documents.
 	 */
-	R::RString DirProfiles;
+	IndexFile* IndexDocs;
 
 	/**
-	 * Root dir for the communities.
+	 * Files containing all the descriptions for the different objects.
 	 */
-	R::RString DirCommunities;
+	R::RContainer<IndexFile,true,true> Desc;
 
 	/**
-	 * Root dir for the topics.
+	 * File containing the structure of the documents.
 	 */
-	R::RString DirTopics;
+	IndexFile* StructDoc;
 
 	/**
-	 * Root dir for the classes.
+	 * Temporary vector of references.
 	 */
-	R::RString DirClasses;
+	R::RVectorInt<size_t,true> tmpRefs;
+
+protected:
 
 	/**
-	 * Inverted file for documents.
+	 * Documents must be indexed incrementally.
 	 */
-	R::RBinaryFile* DocsInvertedFile;
+	bool IndexDocsInc;
 
 public:
 
@@ -104,9 +103,16 @@ public:
 	GIndexer(void);
 
 	/**
-	 * Apply the configuration.
+	 * Create the configuration.
+	 * @param config         Config file.
 	 */
-	void Apply(void);
+	void CreateConfig(R::RConfig* config);
+
+	/**
+	 * Apply the configuration.
+	 * @param config         Config file.
+	 */
+	void Apply(R::RConfig* config);
 
 	/**
 	* Clear the information of a given object type related to the indexing.
@@ -116,57 +122,49 @@ public:
 
 	/**
 	* Load the description of a given object.
-	* @param infos           Container that will hold the description.
+	* @param infos           Container that will hold the description. If null,it is created.
 	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
+	* @param blockid         Identifier of the block of the object.
 	* @param id              Identifier of the object.
 	*/
-	void LoadInfos(GWeightInfos& infos,tObjType type,size_t id);
+	void LoadInfos(GWeightInfos* &infos,tObjType type,size_t blockid,size_t id);
 
 	/**
 	* Save the description of a given object.
 	* @param infos           Container that will hold the description.
 	* @param type            Type of the object (otDoc,otProfile,otCommunity,otTopic).
+	* @param blockid         Identifier of the block of the object (0 means the block will be found).
 	* @param id              Identifier of the object.
 	*/
-	void SaveInfos(const GWeightInfos& infos,tObjType type,size_t id);
+	void SaveInfos(const GWeightInfos* infos,tObjType type,size_t& blockid,size_t id);
 
 	/**
 	 * Method that load the structure of a document.
-	 * @param docstruct      Structure of the document.
-	 * @param doc            Document.
+	 * @param docstruct      Structure of the document. If null,it is created.
+	 * @param blockid        Identifier of the block of the object.
+	 * @param id             Identifier of the object.
 	 */
-	void LoadStruct(GDocStruct& docstruct,GDoc* doc);
+	void LoadStruct(GDocStruct* &docstruct,size_t blockid,size_t id);
 
 	/**
 	 * Method that save the structure of a document.
 	 * @param docstruct      Structure of the document.
-	 * @param doc            Document.
+  	 * @param blockid        Identifier of the block of the object (0 means the block will be found).
+ 	 * @param id             Identifier of the object.
 	 */
-	void SaveStruct(GDocStruct& docstruct,GDoc* doc);
-
-private:
-
-	/**
-	 * Build the buffer for a range of concepts.
-	 * @param buffer                   Buffer to fill.
-	 * @param min                      "Minimum" concept.
-	 * @param max                      "Maximum" concept.
-	 */
-	void BuildBuffer(size_t* buffer,size_t min,size_t max);
+	void SaveStruct(GDocStruct* docstruct,size_t& blockid,size_t id);
 
 public:
 
 	/**
-	 * Build the reference for a given type of objects.
-	 * @param type            Type of objects to search for.
-	 * @param slot            Slot to use.
-	 *
-	 * The indexer will use a buffer to build part of the index. It parses the
-	 * whole document collection as many times as necessary to treat all the
-	 * concepts. The number of passes increases if the size of the buffer
-	 * decreases.
+	 * Update the index of a given type. In practice, the vector is parsed and,
+	 * for each concept, the inverted file is update.
+	 * @param infos          Vector.
+	 * @param type           Type of the object (Actually, only otDoc is supported).
+	 * @param id             Identifier of the object.
+	 * @param add            Object must be added or removed from the index.
 	 */
-	void BuildRefs(tObjType type,GSlot* slot=0);
+	void UpdateRefs(const GWeightInfos& infos,tObjType type,size_t id,bool add);
 
 	/**
 	* Find all the references of a given concept.
@@ -182,14 +180,21 @@ public:
 	* GConceptType* English(Session->GetConceptType("enTerms",false));  // Get a pointer to the English dictionary.
 	* RString Word(English->GetLang()->GetStemming("connection"));      // Get the stem to search for.
 	* GConcept* Concept(English->GetConcept(Word));                     // Get the corresponding concept.
-	* RVectorInt<size_t,false> Docs(20);                                // Vector that will contain the documents identifiers.
-	* Session->FindRefs(Concept,Docs,otDoc);                            // Make the search.
-	* for(Docs.Start();!Docs.End().Docs.Next())
+	* RVectorInt<size_t,true> Docs(20);                                 // Vector that will contain the documents identifiers.
+	* Session->LoadRefs(Concept,Docs,otDoc);                            // Make the search.
+	* for(Docs.Start();!Docs.End();Docs.Next())
 	*    cout<<Docs()<<"\t";                                            // Print the identifiers.
 	* cout<<endl;
 	* @endcode
 	*/
-	void FindRefs(GConcept* concept,R::RVectorInt<size_t,false>& refs,tObjType type);
+	void LoadRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjType type);
+
+	/**
+	 * Build the references from scratch.
+	 * @param type           Type of the object (Actually, only otDoc is supported).
+	 * @param slot           Slot receiving the information.
+	 */
+	void BuildRefs(tObjType type,GSlot* slot=0);
 
 	/**
 	* Destruct the indexer.

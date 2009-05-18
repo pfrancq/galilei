@@ -1,11 +1,11 @@
 PROJECT(galilei)
 INCLUDE_DIRECTORIES(.)
 
+ADD_SOURCE_FILE(galilei knowledge galilei_INCLUDES)
 ADD_SOURCE_FILE(galilei docs galilei_INCLUDES)
 ADD_SOURCE_FILE(galilei engines galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei groups galilei_INCLUDES)
-ADD_SOURCE_FILE(galilei knowledge galilei_INCLUDES)
 ADD_SOURCE_FILE(galilei profiles galilei_INCLUDES)
+ADD_SOURCE_FILE(galilei groups galilei_INCLUDES)
 ADD_SOURCE_FILE(galilei sessions galilei_INCLUDES)
 ADD_SOURCE_FILE(galilei tools galilei_INCLUDES)
 

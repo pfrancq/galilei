@@ -70,32 +70,27 @@ private:
 	GWeightInfos* Vector;
 
 	/**
-	 * Size of the vector. This information must be store with the object
-	 * information. It is used to known if the object is defined (Size>0) or
-	 * not (Size=0).
+	 * Identifier of the block containing the description of the object. If
+	 * null, the object has no description.
 	 */
-	size_t Size;
+	size_t BlockId;
 
 public:
 
 	/**
 	 * Construct a object.
-	 * @param id             Identifier.
+	 * @param id             Identifier of the object.
+	 * @param blockid        Identifier of the block.
 	 * @param objtype        ObjType.
-	 * @param size           Size of the vector.
+	 * @param name           Name of the object.
 	 * @param state          State of the object.
 	 */
-	GWeightInfosObj(size_t id,tObjType objtype,const R::RString& name,size_t size,tObjState state);
-
-	/**
-	 * @return The size of the vector the last time the object was computed
-	 */
-	size_t GetSize(void) const {return(Size);}
+	GWeightInfosObj(size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state);
 
 	/**
 	* @return True if the object is defined.
 	*/
-	bool IsDefined(void) const {return(Size);}
+	bool IsDefined(void) const {return(BlockId);}
 
 	/**
 	 * @return Get the vector associated to the object. It is loaded if
@@ -118,13 +113,20 @@ public:
 	/**
 	* Get the identifier of the document.
 	*/
-	size_t GetId(void) const {return(Id);}
+	inline size_t GetId(void) const {return(Id);}
 
 	/**
 	* Set the identifier of the document.
 	* @param id              Identifier.
 	*/
 	void SetId(size_t id);
+
+	/**
+	 * Get the identifier of the block containing the description. If null, it
+	 * means that the object is not defined.
+	 * @return Identifier of the block.
+	 */
+	inline size_t GetBlockId(void) const {return(BlockId);}
 
 protected:
 
@@ -139,12 +141,6 @@ protected:
 	 * not removed from the disk.
 	 */
 	void Clear(void);
-
-	/**
-	 * Set the new size of the object.
-	 * @param size
-	 */
-	void SetSize(size_t size) {Size=size;}
 
 	/**
 	* Add the references for the information entities of the object type in a
@@ -174,6 +170,9 @@ public:
 	 * Destruct the object.
 	 */
 	virtual ~GWeightInfosObj(void);
+
+	friend class GSession;
+	friend class GIndexer;
 };
 
 

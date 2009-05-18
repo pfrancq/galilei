@@ -158,8 +158,8 @@ public:
 	GWeightInfo& operator+=(double w);
 
 	/**
-	* Substract a weight to the current one.
-	* @param w              Weight to substract.
+	* Subtract a weight to the current one.
+	* @param w              Weight to subtract.
 	*/
 	GWeightInfo& operator-=(double w);
 
@@ -178,7 +178,7 @@ public:
 	/**
 	* Compute the transformed weight of a given information entity using a
 	* inverse frequency factor of the object type (idf,isf or ivf). The inverse
-	* frenquency of an informatio entity is linked to a specific language.
+	* Frequency of an information entity is linked to a specific language.
 	* @param ObjType        Type of the object.
 	* @param max            Maximal value of the vector containing the word.
 	* @return double.
@@ -189,6 +189,8 @@ public:
 	* Destructor of a weighted information entity.
 	*/
 	virtual ~GWeightInfo(void);
+
+	friend class GIndexer;
 };
 
 
