@@ -33,11 +33,6 @@
 #define GXMLIndex_H
 
 
-//------------------------------------------------------------------------------
-// include files for R
-#include <rvectorint.h>
-
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gconcept.h>

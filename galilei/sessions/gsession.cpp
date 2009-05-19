@@ -1330,7 +1330,7 @@ void GSession::UpdateProfiles(size_t docid)
 	GDoc* doc=GetDoc(docid);
 	if(doc)
 	{
-		RVectorInt<size_t,true>* fdbks=doc->GetFdbks();
+		RNumContainer<size_t,true>* fdbks=doc->GetFdbks();
 		if(fdbks)
 		{
 			for(fdbks->Start();!fdbks->End();fdbks->Next())

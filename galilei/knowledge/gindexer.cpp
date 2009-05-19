@@ -396,7 +396,7 @@ void GIndexer::UpdateRefs(const GWeightInfos& infos,tObjType type,size_t id,bool
 
 
 //------------------------------------------------------------------------------
-void GIndexer::LoadRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjType type)
+void GIndexer::LoadRefs(GConcept* concept,RNumContainer<size_t,true>& refs,tObjType type)
 {
 	if(type!=otDoc)
 		throw GException("GIndexer::LoadRefs: Cannot find an index for "+GetObjType(type));

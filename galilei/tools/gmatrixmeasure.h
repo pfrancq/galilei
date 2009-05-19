@@ -463,7 +463,7 @@ private:
 	void DestroyIdentificator(size_t id,bool line);
 
 	/**
-	 * This template method handles the modification of the status of a given
+	 * This method handles the modification of the status of a given
 	 * object.
 	 * @param notification   Notification received.
 	 */

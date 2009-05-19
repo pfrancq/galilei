@@ -36,9 +36,9 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rvectorint.h>
 #include <rrecfile.h>
 #include <rdir.h>
+
 
 //------------------------------------------------------------------------------
 // include files for GALILEI

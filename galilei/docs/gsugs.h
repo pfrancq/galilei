@@ -35,7 +35,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rvectorint.h>
+#include <rnumcontainer.h>
 
 
 //-----------------------------------------------------------------------------
@@ -70,7 +70,7 @@ class GSugs
 	/**
 	* Identifiers of the documents suggested.
 	*/
-	R::RVectorInt<size_t,false> Docs;
+	R::RNumContainer<size_t,false> Docs;
 
 public:
 

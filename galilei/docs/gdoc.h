@@ -35,7 +35,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rvectorint.h>
+#include <rnumcontainer.h>
 #include <ruri.h>
 
 
@@ -95,7 +95,7 @@ protected:
 	/**
 	* Identifiers of the profiles which have assessed the document.
 	*/
-	R::RVectorInt<size_t,true>* Fdbks;
+	R::RNumContainer<size_t,true>* Fdbks;
 
 	/**
 	* Links "out" of the document.
@@ -269,9 +269,9 @@ public:
 	/**
 	* Get a cursor on the identifier of the profiles which have assesses the
 	* documents.
-	* @return R::RVectorInt*.
+	* @return R::RVector*.
 	*/
-	R::RVectorInt<size_t,true>* GetFdbks(void) const;
+	R::RNumContainer<size_t,true>* GetFdbks(void) const;
 
 	/**
 	* Add a profile to the list of those which have assess the document.

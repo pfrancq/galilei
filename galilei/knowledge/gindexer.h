@@ -35,7 +35,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R Project
-#include <rvectorint.h>
+#include <rnumcontainer.h>
 #include <rconfig.h>
 
 
@@ -86,7 +86,7 @@ class GIndexer : virtual public GBasicSession
 	/**
 	 * Temporary vector of references.
 	 */
-	R::RVectorInt<size_t,true> tmpRefs;
+	R::RNumContainer<size_t,true> tmpRefs;
 
 protected:
 
@@ -180,14 +180,14 @@ public:
 	* GConceptType* English(Session->GetConceptType("enTerms",false));  // Get a pointer to the English dictionary.
 	* RString Word(English->GetLang()->GetStemming("connection"));      // Get the stem to search for.
 	* GConcept* Concept(English->GetConcept(Word));                     // Get the corresponding concept.
-	* RVectorInt<size_t,true> Docs(20);                                 // Vector that will contain the documents identifiers.
+	* RNumContainer<size_t,true> Docs(20);                              // Vector that will contain the documents identifiers.
 	* Session->LoadRefs(Concept,Docs,otDoc);                            // Make the search.
 	* for(Docs.Start();!Docs.End();Docs.Next())
 	*    cout<<Docs()<<"\t";                                            // Print the identifiers.
 	* cout<<endl;
 	* @endcode
 	*/
-	void LoadRefs(GConcept* concept,R::RVectorInt<size_t,true>& refs,tObjType type);
+	void LoadRefs(GConcept* concept,R::RNumContainer<size_t,true>& refs,tObjType type);
 
 	/**
 	 * Build the references from scratch.

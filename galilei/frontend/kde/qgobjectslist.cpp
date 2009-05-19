@@ -405,7 +405,7 @@ void QGObjectsList::Set(oType type,GDoc* doc)
 	QGObject* hs= new QGObject(List,djOutScope);
 
 	// Add Assessment
-	RVectorInt<size_t,true>* Profiles(doc->GetFdbks());
+	RNumContainer<size_t,true>* Profiles(doc->GetFdbks());
 	if(!Profiles)
 		return;
 	for(Profiles->Start();!Profiles->End();Profiles->Next())

@@ -29,11 +29,6 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R Project
-#include <rvectorint.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdoc.h>
 #include <gtopic.h>
@@ -225,7 +220,7 @@ void GDoc::SetMIMEType(const RString& mime)
 
 
 //------------------------------------------------------------------------------
-R::RVectorInt<size_t,true>* GDoc::GetFdbks(void) const
+R::RNumContainer<size_t,true>* GDoc::GetFdbks(void) const
 {
 	return(Fdbks);
 }
@@ -235,7 +230,7 @@ R::RVectorInt<size_t,true>* GDoc::GetFdbks(void) const
 void GDoc::InsertFdbk(size_t id)
 {
 	if(!Fdbks)
-		Fdbks=new R::RVectorInt<size_t,true>(500);
+		Fdbks=new R::RNumContainer<size_t,true>(500);
 	Fdbks->Insert(id);
 }
 
