@@ -1333,9 +1333,10 @@ void GSession::UpdateProfiles(size_t docid)
 		RNumContainer<size_t,true>* fdbks=doc->GetFdbks();
 		if(fdbks)
 		{
-			for(fdbks->Start();!fdbks->End();fdbks->Next())
+			RNumCursor<size_t> Cur(*fdbks);
+			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				GProfile* prof=GetProfile((*fdbks)());
+				GProfile* prof=GetProfile(Cur());
 				if(!prof)
 					continue;
 				prof->HasUpdate(docid);

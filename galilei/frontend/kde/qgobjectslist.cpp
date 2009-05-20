@@ -408,9 +408,10 @@ void QGObjectsList::Set(oType type,GDoc* doc)
 	RNumContainer<size_t,true>* Profiles(doc->GetFdbks());
 	if(!Profiles)
 		return;
-	for(Profiles->Start();!Profiles->End();Profiles->Next())
+	RNumCursor<size_t> Cur(*Profiles);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		GProfile* prof(Session->GetProfile((*Profiles)()));
+		GProfile* prof(Session->GetProfile(Cur()));
 		if(!prof)
 			continue;
 		GFdbk* fdbk=prof->GetFdbk(doc->GetId());

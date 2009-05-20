@@ -41,12 +41,13 @@
 #include <rstring.h>
 #include <rcontainer.h>
 #include <rcursor.h>
+#include <rnumcontainer.h>
+#include <rnumcursor.h>
 #include <rxmltag.h>
 #include <rtextfile.h>
 #include <random.h>
 #include <rdebug.h>
 #include <rnotificationcenter.h>
-
 
 
 //------------------------------------------------------------------------------

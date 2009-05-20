@@ -270,15 +270,16 @@ size_t GDoc::GetCommonOKProfiles(const GDoc* doc) const
 		return(0);
 
 	// Go through the profiles that have asses this documents
-	for(Fdbks->Start();!Fdbks->End();Fdbks->Next())
+	RNumCursor<size_t> Cur(*Fdbks);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		// Find the corresponding feedback
-		GProfile* Profile=Session->GetProfile((*Fdbks)(),true);
+		GProfile* Profile=Session->GetProfile(Cur(),true);
 		if(!Profile)
-			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number(Cur()));
 		cor=Profile->GetFdbk(Id);
 		if(!cor)
-			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number(Cur()));
 
 		// If the assessment was not "OK"  -> Nothing
 		f=cor->GetFdbk();
@@ -316,15 +317,16 @@ size_t GDoc::GetCommonProfiles(const GDoc* doc) const
 		return(0);
 
 	// Go through the profiles that have asses this documents
-	for(Fdbks->Start();!Fdbks->End();Fdbks->Next())
+	RNumCursor<size_t> Cur(*Fdbks);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		// Find the corresponding feedback
-		GProfile* Profile=Session->GetProfile((*Fdbks)(),true);
+		GProfile* Profile=Session->GetProfile(Cur(),true);
 		if(!Profile)
-			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number(Cur()));
 		cor=Profile->GetFdbk(Id);
 		if(!cor)
-			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number(Cur()));
 
 		// Search if the second document was also assessed by the profile
 		cor=Profile->GetFdbk(doc->GetId());
@@ -355,15 +357,16 @@ size_t GDoc::GetCommonDiffProfiles(const GDoc* doc) const
 		return(0);
 
 	// Go through the profiles that have asses this documents
-	for(Fdbks->Start();!Fdbks->End();Fdbks->Next())
+	RNumCursor<size_t> Cur(*Fdbks);
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		// Find the corresponding feedback
-		GProfile* Profile=Session->GetProfile((*Fdbks)(),true);
+		GProfile* Profile=Session->GetProfile(Cur(),true);
 		if(!Profile)
-			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number(Cur()));
 		cor=Profile->GetFdbk(Id);
 		if(!cor)
-			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number((*Fdbks)()));
+			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number(Cur()));
 		IsOK1=(cor->GetFdbk() & djOK);
 
 		// Search if the second document was also assessed differently by the profile
