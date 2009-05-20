@@ -107,8 +107,8 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 	GClass* Class(Session->InsertClass(parent,cNoRef,0,Name));
 
 	// Build the vector representing its concepts
-	RAttrList List(node->GetAttr());
-	RContainer<GWeightInfo,false,true> Infos(List.GetNbAttr());
+	RNumCursor<size_t> List(node->GetAttr());
+	RContainer<GWeightInfo,false,true> Infos(List.GetNb());
 	for(List.Start();!List.End();List.Next())
 		Infos.InsertPtr(new GWeightInfo(WordsByIds[List()]->Concept,1.0));
 	Session->AssignInfos(Class,Infos);
@@ -134,7 +134,7 @@ void Thesaurus::ConstructResults(RCursor<GNodeInfos> Cur)
 void Thesaurus::PrintObj(RObjH* obj)
 {
 	cout<<obj->GetName()<<endl;
-	RAttrList List(obj->GetAttr());
+	RNumCursor<size_t> List(obj->GetAttr());
 	for(List.Start();!List.End();List.Next())
 	{
 		cout<<"    "<<List()<<" - "<<WordsByIds[List()]->Concept->GetName()<<endl;
