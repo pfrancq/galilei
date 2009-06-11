@@ -40,6 +40,7 @@ using namespace R;
 #include <QtGui/QGroupBox>
 #include <knuminput.h>
 #include <kurlrequester.h>
+#include <kmessagebox.h>
 
 
 //------------------------------------------------------------------------------
@@ -47,6 +48,7 @@ using namespace R;
 #include <gmeasure.h>
 #include <qgmatrixmeasuredlg.h>
 #include <ui_qgmatrixmeasuredlg.h>
+#include <gsession.h>
 using namespace GALILEI;
 
 
@@ -65,6 +67,7 @@ QGMatrixMeasureDlg::QGMatrixMeasureDlg(const QString& title)
 	setMainWidget(widget);
 	setButtons(KDialog::Cancel|KDialog::Apply);
 	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+	connect(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Type,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeType(int)));
 	setCaption(title);
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Dir->setMode(KFile::Directory);
 	adjustSize();
@@ -101,30 +104,43 @@ void QGMatrixMeasureDlg::Configure(GFactoryMeasure* params)
 //-----------------------------------------------------------------------------
 void QGMatrixMeasureDlg::Init(GFactoryMeasure* params)
 {
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->NullSimLevel->setDecimals(10);
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->NullSimLevel->setValue(params->GetDouble("NullLevel"));
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MinSim->setValue(params->GetDouble("MinMeasure"));
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->DeviationRate->setValue(params->GetDouble("DeviationRate"));
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->DeviationRate->setEnabled(params->GetBool("AutomaticMinMeasure"));
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->StaticMinSim->setChecked(!params->GetBool("AutomaticMinMeasure"));
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MinSim->setEnabled(!params->GetBool("AutomaticMinMeasure"));
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Memory->setChecked(params->GetBool("Memory"));
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->File->setChecked(params->GetBool("File"));
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Dir->setUrl(ToQString(params->Get("Dir")));
-	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Dir->setEnabled(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->File->isChecked());
+	Ui_QGMatrixMeasureDlg* Dlg(static_cast<Ui_QGMatrixMeasureDlg*>(Ui));
+	Dlg->CutoffFrequency->setDecimals(10);
+	Dlg->CutoffFrequency->setValue(params->GetDouble("Cutoff Frequency"));
+	Dlg->MinSim->setValue(params->GetDouble("MinMeasure"));
+	Dlg->DeviationRate->setValue(params->GetDouble("DeviationRate"));
+	Dlg->DeviationRate->setEnabled(params->GetBool("AutomaticMinMeasure"));
+	Dlg->StaticMinSim->setChecked(!params->GetBool("AutomaticMinMeasure"));
+	Dlg->MinSim->setEnabled(!params->GetBool("AutomaticMinMeasure"));
+	Dlg->Memory->setChecked(params->GetBool("Memory"));
+	Dlg->Memory->setEnabled(!GSession::IsConnected());
+	Dlg->File->setChecked(params->GetBool("Storage"));
+	Dlg->File->setEnabled(!GSession::IsConnected());
+	Dlg->Dir->setUrl(ToQString(params->Get("Dir")));
+	Dlg->Dir->setEnabled(!GSession::IsConnected());
+	Dlg->Dir->setEnabled(Dlg->File->isChecked());
+	Dlg->Type->setCurrentIndex(params->GetInt("Type"));
+	Dlg->Type->setEnabled(!GSession::IsConnected());
+	Dlg->NbNearest->setValue(params->GetUInt("NbNearest"));
+	Dlg->NbSamples->setValue(params->GetUInt("NbSamples"));
+	ChangeType(params->GetInt("Type"));
 }
 
 
 //-----------------------------------------------------------------------------
 void QGMatrixMeasureDlg::Done(GFactoryMeasure* params)
 {
-	params->SetDouble("NullLevel",static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->NullSimLevel->value());
-	params->SetDouble("MinMeasure",static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MinSim->value());
-	params->SetDouble("DeviationRate",static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->DeviationRate->value());
-	params->SetBool("AutomaticMinMeasure",!static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->StaticMinSim->isChecked());
-	params->SetBool("Memory",static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Memory->isChecked());
-	params->SetBool("File",static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->File->isChecked());
-	params->Set("Dir",FromQString(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Dir->url().url()));
+	Ui_QGMatrixMeasureDlg* Dlg(static_cast<Ui_QGMatrixMeasureDlg*>(Ui));
+	params->SetDouble("Cutoff Frequency",Dlg->CutoffFrequency->value());
+	params->SetDouble("MinMeasure",Dlg->MinSim->value());
+	params->SetDouble("DeviationRate",Dlg->DeviationRate->value());
+	params->SetBool("AutomaticMinMeasure",!Dlg->StaticMinSim->isChecked());
+	params->SetUInt("NbNearest",Dlg->NbNearest->value());
+	params->SetUInt("NbSamples",Dlg->NbSamples->value());
+	params->SetBool("Memory",Dlg->Memory->isChecked());
+	params->SetBool("Storage",Dlg->File->isChecked());
+	params->Set("Dir",FromQString(Dlg->Dir->url().url()));
+	params->SetInt("Type",Dlg->Type->currentIndex());
 }
 
 
@@ -132,6 +148,14 @@ void QGMatrixMeasureDlg::Done(GFactoryMeasure* params)
 void QGMatrixMeasureDlg::Panel(void)
 {
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MeasureSpecific->hide();
+}
+
+
+//-----------------------------------------------------------------------------
+void QGMatrixMeasureDlg::ChangeType(int type)
+{
+	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->NbNearest->setEnabled(type==2);
+	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->NbSamples->setEnabled(type==2);
 }
 
 

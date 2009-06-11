@@ -69,7 +69,7 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/*
+/**
 * The GGenericPluginManager class provides a template for a generic plug-in manager.
 * @author Pascal Francq
 */
@@ -131,8 +131,9 @@ public :
 	* @param dll             Name of the dynamic link library.
 	* @param handle          Handle to the library containing the plug-in.
 	* @param handleDlg       Handle to the library containing the dialogs.
+	* @param config          Configuration structure.
 	*/
-	virtual void Load(const R::RString& dll,void* handle,void* handleDlg)=0;
+	virtual void Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config)=0;
 
 	/*
 	* Connect to the session.
@@ -260,8 +261,9 @@ public:
 	* @param dll             Name of the dynamic link library.
 	* @param handle          Handle to the library of the plug-in.
 	* @param handleDlg       Handle to the library of the dialogs.
+	* @param config          Configuration structure.
 	*/
-	virtual void Load(const R::RString& dll,void* handle,void* handleDlg);
+	virtual void Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config);
 
 	/**
 	* Connect to the session.
@@ -295,8 +297,9 @@ public:
 	/**
 	* Register a factory of a plug-in.
 	* @param fac             Factory to register.
+	* @param config          Configuration structure.
 	*/
-	void RegisterFactory(factory* fac);
+	void RegisterFactory(factory* fac,R::RConfig* config);
 
 	/**
 	* Get a pointer to a given factory.

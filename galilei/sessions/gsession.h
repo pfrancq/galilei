@@ -810,6 +810,11 @@ public:
 	static GSession* Get(void);
 
 	/**
+	 * Look if a session is current connected.
+	 */
+	static bool IsConnected(void);
+
+	/**
 	* See if the session must break.
 	*/
 	static bool Break(void);

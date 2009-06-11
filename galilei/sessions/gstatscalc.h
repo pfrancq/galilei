@@ -99,7 +99,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryStatsCalc represent a factory for a given statistics method.
 * @author Pascal Francq
 * @short Generic Statistics Factory.

@@ -100,7 +100,7 @@ public:
 	}
 
 	QGObject(QTreeWidgetItem* parent,GDoc* doc)
-		: QTreeWidgetItem(parent, QStringList()<<ToQString(doc->GetName())<<ToQString(doc->GetURL()())), Type(otDoc)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetName())<<ToQString(doc->GetURL()())), Type(otDoc)
 	{
 		Obj.Doc=doc;
 		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));

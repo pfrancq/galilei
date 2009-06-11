@@ -179,8 +179,8 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
-* The GFactoryDocFilter represent a factory for a given filter.
+/**
+* The GFactoryFilter represent a factory for a given filter.
 * @author Pascal Francq
 * @short Generic Filter Factory.
 */

@@ -80,7 +80,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryPostProfile represent a factory for a given post grouping method.
 * @author Pascal Francq
 * @short Generic Post Grouping Factory.
@@ -89,7 +89,7 @@ class GFactoryPostProfile : public GFactoryPlugin<GFactoryPostProfile,GPostProfi
 {
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.

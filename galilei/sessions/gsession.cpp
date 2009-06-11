@@ -1877,6 +1877,13 @@ GSession* GSession::Get(void)
 
 
 //------------------------------------------------------------------------------
+bool GSession::IsConnected(void)
+{
+	return(Intern::Session);
+}
+
+
+//------------------------------------------------------------------------------
 bool GSession::Break(void)
 {
 	return(Intern::ExternBreak);

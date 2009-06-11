@@ -79,7 +79,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryTopicCalc represent a factory for a given topic computing method.
 * @author Pascal Francq
 * @short Generic Topic Computing Factory.
@@ -88,7 +88,7 @@ class GFactoryTopicCalc : public GFactoryPlugin<GFactoryTopicCalc,GTopicCalc,GTo
 {
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plug-in.
 	* @param n               Name of the Factory/Plug-in.

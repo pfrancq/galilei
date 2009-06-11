@@ -110,11 +110,6 @@ protected:
 	 */
 	R::RString IndexDir;
 
-	/**
-	 * Amount of RAM (in MB) used by the indexer to build the index.
-	 */
-	unsigned int IndexRamSize;
-
 public:
 
 	/**
@@ -201,17 +196,6 @@ public:
 	* @param name            Name.
 	*/
 	void SetIndexDir(const R::RString& name) {IndexDir=name;}
-
-	/**
-	* @return the size of the RAM (in GB) used to build the index.
-	*/
-	unsigned int GetIndexRamSize(void) const {return(IndexRamSize);}
-
-	/**
-	* Set the size of the RAM (in GB) used to build the index.
-	* @param size            Size in GB.
-	*/
-	void SetIndexRamSize(unsigned int size) {IndexRamSize=size;}
 
 	/**
 	* Get the list of plug-ins paths.

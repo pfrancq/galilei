@@ -159,7 +159,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryMeasure class provides a template for a generic measure factory.
 * A factory handles the loading of the dynamic library containing the plug-in.
 * @author Pascal Francq
@@ -175,7 +175,7 @@ class GFactoryMeasure : public GFactoryPlugin<GFactoryMeasure,GMeasure,GMeasureM
 
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plug-in.
 	* @param t               Type of the measure  ('/' are replaced by '-' for
@@ -194,7 +194,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GTypeMeasureManager class provides a manager for all measures of a given
 * type.
 * @author Pascal Francq
@@ -203,12 +203,16 @@ public:
 class GTypeMeasureManager : public GPluginManager<GTypeMeasureManager,GFactoryMeasure,GMeasure>
 {
 public:
+
+	/**
+	 * Constructor.
+	 * @param type           Type of the measure.
+	 */
 	GTypeMeasureManager(const R::RString& type);
 
 	/**
 	 * Get a pointer to the configuration structure for a specific plug-in.
 	 * @param name           Name of the plug-in.
-	 * @param type           Type of the factory
 	 * @return Pointer to R::RConfig.
 	 */
 	virtual R::RConfig* GetConfig(const R::RString& name,const R::RString&) const {return(GetFactory(name,false));}
@@ -243,8 +247,9 @@ public:
 	* @param dll             Name of the dynamic link library.
 	* @param handle          Handle to the library containing the plug-in.
 	* @param handleDlg       Handle to the library containing the dialogs.
+	* @param config          Configuration structure.
 	*/
-	virtual void Load(const R::RString& dll,void* handle,void* handleDlg);
+	virtual void Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config);
 
 	/**
 	* Connect to the session.
@@ -278,8 +283,9 @@ public:
 	/**
 	* Register a factory of a plug-in.
 	* @param fac             Factory to register.
+	* @param config          Configuration structure.
 	*/
-	void RegisterFactory(GFactoryMeasure* fac);
+	void RegisterFactory(GFactoryMeasure* fac,R::RConfig* config);
 
 	/**
 	* Get a pointer to a given factory.

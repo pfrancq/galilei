@@ -79,7 +79,7 @@ public :
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryPostDoc represent a factory for a given document post analysis
 * method.
 * @author Nicolas Kumps

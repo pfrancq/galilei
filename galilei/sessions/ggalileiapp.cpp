@@ -134,7 +134,6 @@ void GGALILEIApp::CreateConfig(void)
 	GALILEIConfig.InsertParam(new RParamValue("Log File","/var/log/galilei/galilei.log"));
 	GALILEIConfig.InsertParam(new RParamValue("Debug File","/home/pfrancq/debug-galilei.xml"));
 	GALILEIConfig.InsertParam(new RParamValue("IndexDir","/var/galilei"));
-	GALILEIConfig.InsertParam(new RParamValue("IndexRamSize",512));
 	GALILEIConfig.InsertParam(new RParamList("PlugIns Path"));
 
 	// Plug-ins manager parameters
@@ -157,7 +156,6 @@ void GGALILEIApp::Init(void)
 	LogFileName=GALILEIConfig.Get("Log File");
 	DebugFileName=GALILEIConfig.Get("Debug File");
 	IndexDir=GALILEIConfig.Get("IndexDir");
-	IndexRamSize=GALILEIConfig.GetUInt("IndexRamSize");
 	RContainer<RParam,false,false> Paths(15);
 	RCursor<RString> Cur(GALILEIConfig.GetList("PlugIns Path"));
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -389,7 +387,7 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 			}
 			void* handleDlg=dlopen(Dlg.Latin1(),RTLD_NOW);
 
-			Manager->Load(Short,handle,handleDlg);
+			Manager->Load(Short,handle,handleDlg,&GALILEIConfig);
 		}
 	}
 }
@@ -410,7 +408,6 @@ void GGALILEIApp::Apply(void)
 	GALILEIConfig.Set("Log File",LogFileName);
 	GALILEIConfig.Set("Debug File",DebugFileName);
 	GALILEIConfig.Set("IndexDir",IndexDir);
-	GALILEIConfig.SetUInt("IndexRamSize",IndexRamSize);
 	GALILEIConfig.Reset("PlugIns Path");
 	RCursor<RString> Cur(PlugInsPath);
 	for(Cur.Start();!Cur.End();Cur.Next())

@@ -80,7 +80,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryCommunityCalc represent a factory for a given community computing
 * method.
 * @author Pascal Francq
@@ -90,7 +90,7 @@ class GFactoryCommunityCalc : public GFactoryPlugin<GFactoryCommunityCalc,GCommu
 {
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plug-in.
 	* @param n               Name of the Factory/Plug-in.

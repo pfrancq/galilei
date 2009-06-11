@@ -97,7 +97,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryGroupDocs represent a factory for a given documents grouping
 * method.
 * @author Pascal Francq
@@ -107,7 +107,7 @@ class GFactoryGroupDocs : public GFactoryPlugin<GFactoryGroupDocs,GGroupDocs,GGr
 {
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plug-in.
 	* @param n               Name of the Factory/Plug-in.

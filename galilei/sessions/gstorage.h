@@ -681,7 +681,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryStorage represent a factory for a given storage.
 * @author Pascal Francq
 * @short Generic Storage Factory.

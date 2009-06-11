@@ -43,7 +43,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-//class Ui_QGMatrixMeasureDlg;
 
 
 //-----------------------------------------------------------------------------
@@ -53,11 +52,11 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
  * Generic dialog box to configure a measure between two elements. A plug-in
- * must be created with the GMeasure2Elements class.
+ * must be created with the GMatrixMeasure class.
  * @code
  * void Configure(GFactoryMeasure* params)
  * {
- *    QGMatrixMeasureDlg dlg(Similarities between subprofiles");
+ *    QGMatrixMeasureDlg dlg(Similarities between profiles");
  *    dlg.Configure(params);
  * }
  * @endcode
@@ -66,9 +65,15 @@ namespace GALILEI{
  */
 class QGMatrixMeasureDlg : public KDialog
 {
+	Q_OBJECT
+
+	/**
+	 * Pointer to the widget created by Qt.
+	 */
 	void* Ui;
 
 public:
+
 	/**
 	 * Construct the dialog box.
 	 * @param title          Title of the dialog box.
@@ -126,7 +131,7 @@ public:
 	 *    QGMatrixMeasureDlg::Init(params);
 	 *    MinDocs->setValue(params->GetUInt("MinDocs"));    // 'MinDocs' must be added to the class.
 	 * }
-	 * @encode
+	 * @endcode
 	 * @param params         Pointer to the factory.
 	 */
 	virtual void Init(GFactoryMeasure* params);
@@ -146,6 +151,16 @@ public:
 	 * @param params         Pointer to the factory.
 	 */
 	virtual void Done(GFactoryMeasure* params);
+
+public slots:
+
+	/**
+	 * Change type of the measure.
+	 * @param type           Type.
+	 */
+	void ChangeType(int type);
+
+public:
 
 	/**
 	 * Destruct the dialog box.

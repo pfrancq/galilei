@@ -80,7 +80,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryPreProfile represent a factory for a given pre grouping method.
 * @author Pascal Francq
 * @short Generic Pre Grouping Factory.
@@ -89,7 +89,7 @@ class GFactoryPreProfile : public GFactoryPlugin<GFactoryPreProfile,GPreProfile,
 {
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.

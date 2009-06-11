@@ -123,7 +123,7 @@ GMeasureManager::GMeasureManager(void)
 
 
 //-----------------------------------------------------------------------------
-void GMeasureManager::Load(const R::RString& dll,void* handle,void* handleDlg)
+void GMeasureManager::Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config)
 {
 	typedef GFactoryMeasure* FactoryInit(GMeasureManager*,const char*);
 
@@ -145,7 +145,7 @@ void GMeasureManager::Load(const R::RString& dll,void* handle,void* handleDlg)
 		return;
 
 	// Register main plugin
-	RegisterFactory(myfactory);
+	RegisterFactory(myfactory,config);
 
 	// Try to create the dialogs if necessary
 	if(!handleDlg)
@@ -155,10 +155,10 @@ void GMeasureManager::Load(const R::RString& dll,void* handle,void* handleDlg)
 	error=dlerror();
 	if(!error)
 		myfactory->SetAbout(about);
-	void* config= dlsym(handleDlg,"Configure");
+	void* configdll= dlsym(handleDlg,"Configure");
 	error=dlerror();
 	if(!error)
-		myfactory->SetConfig(config);
+		myfactory->SetConfig(configdll);
 }
 
 
@@ -219,14 +219,13 @@ void GMeasureManager::SaveConfig(R::RConfig* config)
 
 
 //-----------------------------------------------------------------------------
-void GMeasureManager::RegisterFactory(GFactoryMeasure* fac)
+void GMeasureManager::RegisterFactory(GFactoryMeasure* fac,R::RConfig* config)
 {
 	GTypeMeasureManager* Manager=GetInsertPtr(fac->GetType());
-	Manager->RegisterFactory(fac);
+	Manager->RegisterFactory(fac,config);
 
 	// Look if a param exist in the config structure
-	RConfig* Config=dynamic_cast<GGALILEIApp*>(App)->GetGALILEIConfig();
-	RParamStruct* param=Config->FindParam<RParamStruct>("Measures","Plugins");
+	RParamStruct* param=config->FindParam<RParamStruct>("Measures","Plugins");
 	RParam* Exist=param->Get<RParam>(fac->GetType());
 	if(!Exist)
 		param->Insert(new RParamValue(fac->GetType(),"None"));

@@ -85,7 +85,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryProfileCalc represent a factory for a given profile computing
 * method.
 * @author Pascal Francq
@@ -95,7 +95,7 @@ class GFactoryProfileCalc : public GFactoryPlugin<GFactoryProfileCalc,GProfileCa
 {
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.

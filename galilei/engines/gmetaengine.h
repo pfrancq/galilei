@@ -112,7 +112,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryMetaEngine represent a factory for a given meta engine.
 * @author Vandaele Valery
 * @short Generic meta engine Factory.

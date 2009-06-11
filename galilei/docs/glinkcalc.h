@@ -108,7 +108,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryLinkCalc represent a factory for a given link method.
 * @author Vandaele Valery
 * @short Generic Link Factory.

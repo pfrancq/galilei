@@ -71,7 +71,7 @@ template<class mng,class factory,class plugin>
 
 //-----------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	void GPluginManager<mng,factory,plugin>::Load(const R::RString& dll,void* handle,void* handleDlg)
+	void GPluginManager<mng,factory,plugin>::Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config)
 {
 	typedef factory* FactoryInit(mng*,const char*);
 
@@ -92,7 +92,7 @@ template<class mng,class factory,class plugin>
 		return;
 
 	// Register main plug-in
-	RegisterFactory(myfactory);
+	RegisterFactory(myfactory,config);
 
 	// Try to create the dialogs if necessary
 	if(!handleDlg)
@@ -101,10 +101,10 @@ template<class mng,class factory,class plugin>
 	error=dlerror();
 	if(!error)
 		myfactory->SetAbout(about);
-	void* config= dlsym(handleDlg,"Configure");
+	void* configdll= dlsym(handleDlg,"Configure");
 	error=dlerror();
 	if(!error)
-		myfactory->SetConfig(config);
+		myfactory->SetConfig(configdll);
 }
 
 
@@ -234,12 +234,11 @@ template<class mng,class factory,class plugin>
 
 //-----------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	void GPluginManager<mng,factory,plugin>::RegisterFactory(factory* fac)
+	void GPluginManager<mng,factory,plugin>::RegisterFactory(factory* fac,R::RConfig* config)
 {
 	fac->Load(false);
 	if(PluginsType==ptOrdered)
 	{
-		R::RConfig* config=R::App->GetConfig();
 		config->InsertParam(new R::RParamList(Name),"Plugins");
 		fac->SetLevel(static_cast<int>(R::RContainer<factory,true,true>::GetNb()));
 	}

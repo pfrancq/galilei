@@ -106,7 +106,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryDocAnalyse represent a factory for a given document analysis
 * method.
 * @author Pascal Francq

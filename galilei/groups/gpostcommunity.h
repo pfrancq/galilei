@@ -80,7 +80,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryPostCommunity represent a factory for a given post-community
 * method.
 * @author Pascal Francq
@@ -90,7 +90,7 @@ class GFactoryPostCommunity : public GFactoryPlugin<GFactoryPostCommunity,GPostC
 {
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.

@@ -82,6 +82,10 @@ public:
 private:
 
 	Q_OBJECT
+
+	/**
+	 * Pointer to the widget created by Qt.
+	 */
 	void* Ui;
 
 public:

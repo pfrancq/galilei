@@ -78,7 +78,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryTool represent a factory for a given tool.
 * @author Pascal Francq
 * @short Generic Tool Factory.

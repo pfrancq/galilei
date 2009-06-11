@@ -56,7 +56,11 @@ namespace GALILEI{
  */
 class QGObjectVars : public QWidget
 {
+	/**
+	 * Pointer to the widget created by Qt.
+	 */
 	void* Ui;
+
 public:
 
 	/**

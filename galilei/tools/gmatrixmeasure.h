@@ -34,18 +34,15 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gmeasure.h>
-#include <robject.h>
+// include files for R Project
+#include <rgenericmatrix.h>
+#include <rmatrixstorage.h>
 
 
 //------------------------------------------------------------------------------
-// forward declaration
-namespace R
-{
-	template<class C,bool bOrder> class RRecFile;
-	class RBinaryFile;
-}
+// include files for GALILEI
+#include <gmeasure.h>
+#include <robject.h>
 
 
 //------------------------------------------------------------------------------
@@ -55,70 +52,78 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GMatrixMeasure class provides a representation for a measure represented
-* by a matrix a value, such as between two elements.
+* The GMatrixMeasure class provides a representation for a measure, \f$ [M]=m_{i,j} \f$,
+* represented by a matrix of values, such as the similarity between two
+* elements. A cutoff frequency can be specified.
 *
-* Each measure has different properties:
-* - Symmetric (for example between two same type of elements) or not.
-* - The values can be stored in memory. This can be memory consuming for huge
-*   number of elements.
-* - The values can be stored in files. In this case, for each measure 'mes', at
-*   least two files are created : mes.main (containing main information) and
-*   mes.val1 (each record corresponds to a value). If the measure is not
-*   symmetric, a third file mes.val2 is created (with the other part of the
-*   matrix). All files are created in a sub-directory called after the name of
-*   the world.
-* The class supposes that the identifiers of the elements are continuous and
+* The class maintains the mean and the deviation of the values computed. A
+* minimum value is computed using:
+*
+* \f$ \min([M])=\overline{[M]}+DeviationRate \cdot \sigma_{[M]} \f$
+*
+* The measure may be symmetric: \f$ m_{i,j}=m_{j,i} \; \forall i,j \f$
+*
+* The user has three choices to manage the matrix :
+* -# The full matrix is maintained. It is the fastest access but it uses also
+*    the most amount of memory. This is particularly useful if most values are
+*    not null.
+* -# A sparse matrix is maintained. It uses less memory that the full matrix,
+*    but is also slower. This is particularly useful if most values are
+*    null. If most values are not null, this is never a good choice.
+* -# A list of nearest neighbors is maintained for each element (line). The
+*    class tries to compute, for each value \f$ i \f$, a given number of
+*    minimal values \f$ m_{i,\bullet} \f$. This type needs to have the matrix
+*    stored in memory or in a file.
+*
+* The user may also specified if the matrix is maintained in memory, in a file
+* or both. In this latest mode, the matrix is loaded the first time and saved
+* at the end. The matrix is created in memory at the first call to it.
+*
+* If the full matrix is managed, changes (such as a modification of an element)
+* imply only the re-computation of the corresponding line and column. In the
+* other cases, the whole matrix is re-computed (also if only one element
+* changed).
+*
+* @remarks The class supposes that the identifiers of the elements are continuous and
 * that the first identifier is one.
 * @author Pascal Francq.
 * @short Matrix Measure.
 */
 class GMatrixMeasure : public R::RObject, public GMeasure
 {
-	class Measures;    // A list of measure for a given element.
-	class MeasureRec;  // Record storing a specific measure.
+public:
 
 	/**
-	 * Values.
+	 * Type of the matrix managing the measure.
 	 */
-	R::RContainer<Measures,true,false>* MemValues;
+	enum tType
+	{
+		Full,             /** Full matrix.*/
+		Sparse,           /** Sparse matrix.*/
+		NearestNeighbors  /** Nearest neighbors matrix.*/
+	};
+
+private:
 
 	/**
-	 * Main file containing information on the global values.
+	 * Type of the measure.
 	 */
-	R::RBinaryFile* Main;
+	tType Type;
 
 	/**
-	 * Records of measures (First part of the matrix). This file contains the
-	 * values: (1,1), (2,1), (2,2), (3,1), (3,2), (3,3)...
+	 *  Is the measure symmetric, i.e. measure(i,j)=measure(j,i) ?
 	 */
-	R::RRecFile<MeasureRec,false>* RecValues1;
+	bool Symmetric;
 
 	/**
-	 * Records of measures (Second part of the matrix). This file contains the
-	 * values: (1,2), (1,3), (2,3), (1,4), (2,4), (3,4)...
+	 * Matrix in memory (if needed).
 	 */
-	R::RRecFile<MeasureRec,false>* RecValues2;
+	R::RGenericMatrix* Matrix;
 
 	/**
-	 * Number of lines in memory.
+	 * Storage of the matrix (if needed).
 	 */
-	size_t MemNbLines;
-
-	/**
-	 * Number of columns in memory.
-	 */
-	size_t MemNbCols;
-
-	/**
-	 * Number of lines in files.
-	 */
-	size_t FileNbLines;
-
-	/**
-	 * Number of columns in files
-	 */
-	size_t FileNbCols;
+	R::RMatrixStorage Storage;
 
 	/**
 	 * Maximal identifier of new lines to created.
@@ -131,29 +136,14 @@ class GMatrixMeasure : public R::RObject, public GMeasure
 	size_t MaxIdCol;
 
 	/**
-	 * Number of values computed.
+	 * Matrix must be extended (in memory or in file).
 	 */
-	size_t NbValues;
+	bool MustExtend;
 
 	/**
-	 * Structures in memory must be extended.
+	 * Matrix is dirty (in memory or file).
 	 */
-	bool MemMustExtend;
-
-	/**
-	 * Structures in files must be extended.
-	 */
-	bool FileMustExtend;
-
-	/**
-	 * The status of the memory is dirty.
-	 */
-	bool MemDirty;
-
-	/**
-	 * The status of the file is dirty.
-	 */
-	bool FileDirty;
+	bool Dirty;
 
 	/**
 	 * Mean of the measures.
@@ -161,19 +151,19 @@ class GMatrixMeasure : public R::RObject, public GMeasure
 	double Mean;
 
 	/**
+	 * Number of values computed.
+	 */
+	size_t NbValues;
+
+	/**
+	* Cutoff frequency;
+	*/
+	double CutoffFrequency;
+
+	/**
 	 * Deviation of the measures.
 	 */
 	double Deviation;
-
-	/**
-	 *  Is the measure symmetric, i.e. measure(i,j)=measure(j,i) ?
-	 */
-	bool Symmetric;
-
-	/**
-	* Level under which a measure is considered as null;
-	*/
-	double NullLevel;
 
 	/**
 	 * Used to compute the default minimum of the measure.
@@ -201,9 +191,9 @@ class GMatrixMeasure : public R::RObject, public GMeasure
 	bool InMemory;
 
 	/**
-	 * Measures in a file.
+	 * Measures in a storage.
 	 */
-	bool InFile;
+	bool InStorage;
 
 	/**
 	 * Name of measures.
@@ -216,6 +206,16 @@ class GMatrixMeasure : public R::RObject, public GMeasure
 	R::RString Dir;
 
 	/**
+	 * Number of nearest neighbors.
+	 */
+	size_t NbNearest;
+
+	/**
+	 * Number of samples used to computed the neighbors.
+	 */
+	size_t NbSamples;
+
+	/**
 	 * Type of the elements representing the lines.
 	 */
 	tObjType Lines;
@@ -224,11 +224,6 @@ class GMatrixMeasure : public R::RObject, public GMeasure
 	 * Type of the elements representing the columns.
 	 */
 	tObjType Cols;
-
-	/**
-	 * First call.
-	 */
-	bool FirstCall;
 
 public:
 
@@ -269,7 +264,7 @@ public:
 	/**
 	 * Get the value corresponding to a value that must be considered as null.
 	 */
-	inline double GetNullValue(void) const {return(NullLevel);}
+	inline double GetCutoffFrequency(void) const {return(CutoffFrequency);}
 
 	/**
 	 * Get the root directory where the measures are stored. By default, it
@@ -294,52 +289,68 @@ public:
 
 	/**
 	* Connect to the session.
+	*
+	* The storage of the matrix is opened (if necessary).
 	* @param session         Pointer to the session.
 	*/
 	virtual void Connect(GSession* session);
 
 	/**
-	 * Initialize the measure (first call).
-	 */
-	void Init(void);
-
-	/**
-	* The measure must be re-initialized, i.e. all values must be considered
-	* as dirty.
-	*/
-	virtual void ReInit(void);
-
-	/**
 	* Disconnect to the session.
+	*
+	* If the matrix was initialized and a storage exists, the matrix is saved.
+	* Then, the matrix is deallocated (if necessary) and the file is closed (if
+	* necessary). The statistical elements are eventually saved with the matrix.
 	* @param session         Pointer to the session.
 	*/
 	virtual void Disconnect(GSession* session);
 
 	/**
-	* Get a measure between two elements. There are at least one parameters:
-	* @param measure         Type of the measure (0).
+	* The measure must be re-initialized, i.e. all values must be considered
+	* as dirty. If the matrix is allocated, it is cleared. If the measures are
+	* only managed through the storage, the storage is also cleared.
+	*/
+	virtual void ReInit(void);
+
+	/**
+	* Get a measure between two elements. If the values are in memory, the
+	* method verifies if the matrix must be allocated or modified in memory.
+	* If the values are only in files, the storage is modified if necessary.
 	*
-	* By default, this class supposes that three more parameters are passed:
+	* If the matrix manages the nearest neighbors, if the second element is not
+	* a nearest neighbor of the first one, the measure is null. If the matrix
+	* is neither stored in memory nor in a file, the result is always the
+	* measure between the two elements.
+	* @param measure         Type of the measure (not used since only one value
+	*                        is stored for each element).
+	* The class supposes that three more parameters are passed:
 	* - Identifier of the first element (size_t).
 	* - Identifier of the second element (size_t).
-	* - A pointer to a variable of type double
+	* - A pointer to a variable of type double that will contain the result.
 	*/
 	virtual void Measure(size_t measure,...);
 
 	/**
-	* Access to several information related to the matrix of measure, such as
-	* the minimum of the measure of two similar elements. There are
-	* maximum two parameters.
-	* @param info        Type of the information to take.
+	* Access to several information related to the matrix of measure. The
+	* matrix is eventually updated (in memory or in file) if necessary.
 	*
-	* By default, the only information is the minimum of values stored in the
-	* matrix. One more parameter must be passed:
-	* - A pointer to a variable of type double
+	* If the matrix is not stored in memory or in file, the statistics are
+	* computed on the whole matrix. If the matrix manages the nearest
+	* neighbors, the statistics are computed on the pair tested to detect the
+	* nearest neighbors.
+	* @param info        Type of the information to take. Three values are
+	*                    accepted:
+	*                    - case '0': The minimum value.
+	*                    - case '1': The mean value.
+	*                    - case '2': The deviation of the values.
+	*
+	* The class supposes that one more parameter is passed:
+	* - A pointer to a variable of type double that will contain the result.
 	*/
 	virtual void Info(size_t info,...);
 
 	/**
-	 * Compute the measure for two elements.
+	 * Compute the measure for two elements. This method must be overloaded.
 
 	 * @param obj1            Pointer to the first element.
 	 * @param obj2            Pointer to the second element.
@@ -376,45 +387,10 @@ public:
 private:
 
 	/**
-	 * Open the files.
+	 * Creates the matrix in memory. If necessary, the matrix is loaded from
+	 * the storage
 	 */
-	void OpenFiles(void);
-
-	/**
-	 * Close the files.
-	 */
-	void CloseFiles(void);
-
-	/**
-	 * Check if the identifiers must be changed.
-	 * @param id1
-	 * @param id2
-	 */
-	inline void Check(size_t& id1,size_t& id2) const
-	{
-		if((Symmetric)&&(id1<id2))
-		{
-			size_t tmp(id1);
-			id1=id2;
-			id2=tmp;
-		}
-	}
-
-	/**
-	 * Read a value of a measure between two elements identified by the
-	 * identifiers id1 and id2.
-	 * @param id1            Identifier of the first element.
-	 * @param id2            Identifier of the second element.
-	 */
-	inline double ReadValue(size_t id1,size_t id2);
-
-	/**
-	 * Write a given value in the file.
-	 * @param id1            Identifier of the first element.
-	 * @param id2            Identifier of the second element.
-	 * @param val            Value to write.
-	 */
-	void WriteValue(size_t id1,size_t id2,double val);
+	void InitMatrix(void);
 
 	/**
 	 * Extend the internal structure.
@@ -422,26 +398,26 @@ private:
 	void ExtendMem(void);
 
 	/**
-	 * Extend the files structure.
+	 * Extend the storage.
 	 */
-	void ExtendFile(void);
+	void ExtendStorage(void);
 
 	/**
-	 * An element was added and all the measure related to it must be created.
+	 * An element is added. Look and remember if the memory or the storage must
+	 * be extended. If the matrix is managed in memory, the storage is not
+	 * modified until the de-connection from the session.
 	 * @param id             Identifier of the element.
-	 * @param line           Element is a line?
+	 * @param line           Element is a line or a column?
 	 */
 	void AddIdentificator(size_t id,bool line);
 
 	/**
-	 * Dirty the current file position.
-	 * @param file           File to dirty.
-	 */
-	void DirtyCurrentFilePos(R::RRecFile<MeasureRec,false>* file);
-
-	/**
-	 * An element has changed and all the measure related to it are not updated
-	 * anymore.
+	 * An element is changed. If the matrix is fully managed, the values
+	 * corresponding to the line and column are setting to NAN and the matrix
+	 * is declared dirty. In the other cases, the matrix is just declare dirty.
+	 *
+	 * If the matrix is managed in memory and in files, the storage is not
+	 * modified until the de-connection from the session.
 	 * @param id             Identifier of the element.
 	 * @param line           Element is a line?
 	 * @param file           File must be affected too?
@@ -450,6 +426,7 @@ private:
 
 	/**
 	 * An element is deleted and all the measure related to it are modified.
+	 * In practice, it calls DirtyIdentificator.
 	 * @param id             Identifier of the element.
 	 * @param line           Element is a line?
 	 */
@@ -457,6 +434,7 @@ private:
 
 	/**
 	 * An element is destroyed and all the measure related to it are modified.
+	 * In practice, it calls DirtyIdentificator.
 	 * @param id             Identifier of the element.
 	 * @param line           Element is a line?
 	 */
@@ -470,28 +448,40 @@ private:
 	void Handle(const R::RNotification& notification);
 
 	/**
-	 * All the measures must be updated in memory.
+	 * Update the sparse matrix. All the measures are re-computed and stored
+	 * either in memory or in files (depending the options).
+	 */
+	void UpdateSparse(void);
+
+	/**
+	 * Update the nearest neighbors. All the measures are re-computed and
+	 * stored either in memory or in files (depending the options).
+	 */
+	void UpdateNearestNeighbors(void);
+
+	/**
+	 * All the measures must be updated in memory. If the matrix is fully
+	 * managed, only the changed values are re-computed. Else, everything is
+	 * re-computed.
 	 */
 	void UpdateMem(void);
 
 	/**
-	 * All the measures must be updated in files.
+	 * All the measures must be updated in the storage. If the matrix is fully
+	 * managed, only the changed values are re-computed. Else, everything is
+	 * re-computed.
 	 */
-	void UpdateFile(void);
+	void UpdateStorage(void);
 
 	/**
-	 * Load a file into memory.
-	 */
-	void LoadFile(void);
-
-	/**
-	 * Add a new value.
+	 * A value is added to the statistics.
 	 * @param val            Value to add.
 	 */
 	void AddValue(double val);
 
 	/**
-	 * Delete a new value.
+	 * A value must be removed from the statistics. The value is set
+	 * to NAN.
 	 * @param val            Value to delete.
 	 */
 	void DeleteValue(double& val);

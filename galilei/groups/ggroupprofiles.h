@@ -97,7 +97,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryGroupProfiles represent a factory for a given profiles grouping
 * method.
 * @author Pascal Francq
@@ -107,7 +107,7 @@ class GFactoryGroupProfiles : public GFactoryPlugin<GFactoryGroupProfiles,GGroup
 {
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.

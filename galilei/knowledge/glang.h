@@ -210,7 +210,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-/*
+/**
 * The GFactoryLang represent a factory for a given language.
 * @author Pascal Francq
 * @short Generic Language Factory.
@@ -224,7 +224,7 @@ class GFactoryLang : public GFactoryPlugin<GFactoryLang,GLang,GLangManager>
 
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plugin.
 	* @param n               Name of the Factory/Plugin.
@@ -234,15 +234,15 @@ public:
 	GFactoryLang(GLangManager* mng,const char* n,const char* f,const char* c)
 		: GFactoryPlugin<GFactoryLang,GLang,GLangManager>(mng,n,f) {strcpy(Code,c);}
 
-	/*
+	/**
 	* Compare function like strcmp used in particular for RContainer class.
-	* @param lang           Factory used for the comparaison.
+	* @param lang           Factory used for the comparison.
 	*/
 	int Compare(const GFactoryLang& lang) const {return(strcmp(Code,lang.Code));}
 
-	/*
+	/**
 	* Compare function like strcmp used in particular for RContainer class.
-	* @param code           Code used for the comparaison.
+	* @param code           Code used for the comparison.
 	*/
 	int Compare(const char* code) const {return(strcmp(Code,code));}
 };

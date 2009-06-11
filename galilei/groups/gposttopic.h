@@ -78,7 +78,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryPostTopic represent a factory for a given post-topic method.
 * @author Pascal Francq
 * @short Generic Post-Topic Computing Method Factory.
@@ -87,7 +87,7 @@ class GFactoryPostTopic : public GFactoryPlugin<GFactoryPostTopic,GPostTopic,GPo
 {
 public:
 
-	/*
+	/**
 	* Constructor.
 	* @param mng             Manager of the plug-in.
 	* @param n               Name of the Factory/Plug-in.

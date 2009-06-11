@@ -56,6 +56,9 @@ namespace GALILEI{
  */
 class QGWeightInfos : public QWidget
 {
+	/**
+	 * Pointer to the widget created by Qt.
+	 */
 	void* Ui;
 
 public:

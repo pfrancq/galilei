@@ -111,7 +111,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-/*
+/**
 * The GFactoryEngine represent a factory for a given link method.
 * @author Vandaele Valery
 * @short Generic Search engine Factory.
