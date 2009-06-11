@@ -306,9 +306,9 @@ bool GGenericSims::ComputeSimSpace(void)
 			// OK Compute it
 			double d=Cur()->Compute(ptr,ptr2);
 			//RAssert(fabs(d)<=1.0)
-			if(fabs(d-1.0)<GetNullValue())
+			if(fabs(d-1.0)<GetCutoffFrequency())
 				d=1.0;
-			if(fabs(1.0+d)<GetNullValue())
+			if(fabs(1.0+d)<GetCutoffFrequency())
 				d=-1.0;
 			if(Cur()->Type->GetLang())
 			{
@@ -470,7 +470,7 @@ double GGenericSims::SimilarityLang(void)
 		CurType=Types.GetPtr(CurLang);
 	}
 	double d=CurType->Compute(ptr,ptr2);
-	if(fabs(d)<GetNullValue())
+	if(fabs(d)<GetCutoffFrequency())
 		return(0.0);
 	return(d);
 }
