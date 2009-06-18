@@ -234,7 +234,7 @@ void GALILEI::GLangAR::LoadRules(void)
 	try
 	{
 		//Read Rules
-		RTextFile rules_file(Factory->Get("RulesFile"), Factory->Get("Encoding"));
+		RTextFile rules_file(Factory->Get("RulesFile"), Factory->Get("Encoding").Latin1());
 		rules_file.Open(RIO::Read);
 
 		//treat on read line

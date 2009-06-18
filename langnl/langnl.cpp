@@ -56,41 +56,16 @@ class GLangNL::DutchPorterRule
 public:
 	enum tCondition{CondNothing,CondEndsWithCons,CondNotc,CondNote,CondUndouble};
 
-	char* OldSuffix;
-	char* NewSuffix;
-	int OldOffset;
-	int NewOffset;
+	RString OldSuffix;
+	RString NewSuffix;
 	int MinRootSize;
 	tCondition Condition;
 	bool Next;
 
-	DutchPorterRule(const char* os,const char* ns,int oo,int no,int mr=-1,tCondition c=CondNothing,bool n=false);
+	DutchPorterRule(const RString& os,const RString& ns,int mr=-1,tCondition c=CondNothing,bool n=false)
+		: OldSuffix(os), NewSuffix(ns), MinRootSize(mr), Condition(c), Next(n) {}
 	int Compare(const DutchPorterRule&) const {return(-1);}
-	~DutchPorterRule(void);
 };
-
-
-//-----------------------------------------------------------------------------
-GLangNL::DutchPorterRule::DutchPorterRule(const char* os,const char* ns,int oo,int no,int mr,tCondition c,bool n)
-	: OldSuffix(0), NewSuffix(0), OldOffset(oo), NewOffset(no), MinRootSize(mr),
-	  Condition(c), Next(n)
-{
-	size_t l;
-	l=strlen(os);
-	OldSuffix=new char[l+1];
-	memcpy(OldSuffix,os,sizeof(char)*(l+1));
-	l=strlen(ns);
-	NewSuffix=new char[l+1];
-	memcpy(NewSuffix,ns,sizeof(char)*(l+1));
-}
-
-
-//-----------------------------------------------------------------------------
-GLangNL::DutchPorterRule::~DutchPorterRule(void)
-{
-	delete[] OldSuffix;
-	delete[] NewSuffix;
-}
 
 
 
@@ -106,61 +81,61 @@ GLangNL::GLangNL(GFactoryLang* fac)
 	  Rules2aa(20), Rules3a(1), Rules3b(6), Rules4(4), Rules5(1)
 {
 	// Rules 1a
-	Rules1a.InsertPtr(new DutchPorterRule("heden","heid",4,3,0));
+	Rules1a.InsertPtr(new DutchPorterRule("heden","heid",0));
 
 
 	// Rules 1b
-	Rules1b.InsertPtr(new DutchPorterRule("ene","",2,-1,0,DutchPorterRule::CondEndsWithCons));
-	Rules1b.InsertPtr(new DutchPorterRule("en","",1,-1,0,DutchPorterRule::CondEndsWithCons));
+	Rules1b.InsertPtr(new DutchPorterRule("ene","",0,DutchPorterRule::CondEndsWithCons));
+	Rules1b.InsertPtr(new DutchPorterRule("en","",0,DutchPorterRule::CondEndsWithCons));
 
 	// Rules 1c
-	Rules1c.InsertPtr(new DutchPorterRule("se","",1,-1,0,DutchPorterRule::CondEndsWithCons));
-	Rules1c.InsertPtr(new DutchPorterRule("s","",0,-1,0,DutchPorterRule::CondEndsWithCons));
+	Rules1c.InsertPtr(new DutchPorterRule("se","",0,DutchPorterRule::CondEndsWithCons));
+	Rules1c.InsertPtr(new DutchPorterRule("s","",0,DutchPorterRule::CondEndsWithCons));
 
 	// Rules 2a
-	Rules2a.InsertPtr(new DutchPorterRule("e","",0,-1,0,DutchPorterRule::CondEndsWithCons,true));
+	Rules2a.InsertPtr(new DutchPorterRule("e","",0,DutchPorterRule::CondEndsWithCons,true));
 
 	// Rules 2aa
-	Rules2aa.InsertPtr(new DutchPorterRule("bb","b",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("cc","c",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("dd","d",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("ff","f",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("gg","g",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("hh","h",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("jj","j",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("kk","k",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("ll","l",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("mm","m",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("nn","n",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("pp","p",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("qq","q",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("rr","r",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("ss","s",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("tt","t",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("vv","v",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("ww","w",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("xx","x",1,0));
-	Rules2aa.InsertPtr(new DutchPorterRule("zz","z",1,0));
+	Rules2aa.InsertPtr(new DutchPorterRule("bb","b"));
+	Rules2aa.InsertPtr(new DutchPorterRule("cc","c"));
+	Rules2aa.InsertPtr(new DutchPorterRule("dd","d"));
+	Rules2aa.InsertPtr(new DutchPorterRule("ff","f"));
+	Rules2aa.InsertPtr(new DutchPorterRule("gg","g"));
+	Rules2aa.InsertPtr(new DutchPorterRule("hh","h"));
+	Rules2aa.InsertPtr(new DutchPorterRule("jj","j"));
+	Rules2aa.InsertPtr(new DutchPorterRule("kk","k"));
+	Rules2aa.InsertPtr(new DutchPorterRule("ll","l"));
+	Rules2aa.InsertPtr(new DutchPorterRule("mm","m"));
+	Rules2aa.InsertPtr(new DutchPorterRule("nn","n"));
+	Rules2aa.InsertPtr(new DutchPorterRule("pp","p"));
+	Rules2aa.InsertPtr(new DutchPorterRule("qq","q"));
+	Rules2aa.InsertPtr(new DutchPorterRule("rr","r"));
+	Rules2aa.InsertPtr(new DutchPorterRule("ss","s"));
+	Rules2aa.InsertPtr(new DutchPorterRule("tt","t"));
+	Rules2aa.InsertPtr(new DutchPorterRule("vv","v"));
+	Rules2aa.InsertPtr(new DutchPorterRule("ww","w"));
+	Rules2aa.InsertPtr(new DutchPorterRule("xx","x"));
+	Rules2aa.InsertPtr(new DutchPorterRule("zz","z"));
 
 	// Rules 3a
-	Rules3a.InsertPtr(new DutchPorterRule("heid","",3,-1,1,DutchPorterRule::CondNotc,true));
+	Rules3a.InsertPtr(new DutchPorterRule("heid","",1,DutchPorterRule::CondNotc,true));
 
 	// Rules 3b
-	Rules3b.InsertPtr(new DutchPorterRule("end","",2,-1,1));
-	Rules3b.InsertPtr(new DutchPorterRule("ing","",2,-1,1,DutchPorterRule::CondNote));
-	Rules3b.InsertPtr(new DutchPorterRule("ig","",1,-1,1,DutchPorterRule::CondNote));
-	Rules3b.InsertPtr(new DutchPorterRule("lijk","",3,-1,1,DutchPorterRule::CondNothing,true));
-	Rules3b.InsertPtr(new DutchPorterRule("baar","",3,-1,1));
-	Rules3b.InsertPtr(new DutchPorterRule("bar","",2,-1,1));
+	Rules3b.InsertPtr(new DutchPorterRule("end","",1));
+	Rules3b.InsertPtr(new DutchPorterRule("ing","",1,DutchPorterRule::CondNote));
+	Rules3b.InsertPtr(new DutchPorterRule("ig","",1,DutchPorterRule::CondNote));
+	Rules3b.InsertPtr(new DutchPorterRule("lijk","",1,DutchPorterRule::CondNothing,true));
+	Rules3b.InsertPtr(new DutchPorterRule("baar","",1));
+	Rules3b.InsertPtr(new DutchPorterRule("bar","",1));
 
 	// Rules 4
-	Rules4.InsertPtr(new DutchPorterRule("aa","a",2,1,-1,DutchPorterRule::CondUndouble));
-	Rules4.InsertPtr(new DutchPorterRule("oo","o",2,1,-1,DutchPorterRule::CondUndouble));
-	Rules4.InsertPtr(new DutchPorterRule("uu","u",2,1,-1,DutchPorterRule::CondUndouble));
-	Rules4.InsertPtr(new DutchPorterRule("ee","e",2,1,-1,DutchPorterRule::CondUndouble));
+	Rules4.InsertPtr(new DutchPorterRule("aa","a",-1,DutchPorterRule::CondUndouble));
+	Rules4.InsertPtr(new DutchPorterRule("oo","o",-1,DutchPorterRule::CondUndouble));
+	Rules4.InsertPtr(new DutchPorterRule("uu","u",-1,DutchPorterRule::CondUndouble));
+	Rules4.InsertPtr(new DutchPorterRule("ee","e",-1,DutchPorterRule::CondUndouble));
 
 	// Rule 5
-	Rules5.InsertPtr(new DutchPorterRule("v","f",0,0,-1));
+	Rules5.InsertPtr(new DutchPorterRule("v","f",-1));
 
 	// Skip Words
 	SkipSequence("th");
@@ -173,163 +148,124 @@ GLangNL::GLangNL(GFactoryLang* fac)
 
 
 //-----------------------------------------------------------------------------
-int GLangNL::GetWordSize(char* kwd)
+int GLangNL::GetWordSize(const RString& kwd)
 {
-	int Result=0;             // WordSize of the word.
-	int State=0;              // Current state of the machine.
+	size_t Result(0);             // WordSize of the word.
+	size_t State(0);              // Current state of the machine.
+	const RChar* ptr(kwd());
 
-	while(*kwd)
+	while(!ptr->IsNull())
 	{
 		switch(State)
 		{
 			case 0:
-				State=(IsVowel(*kwd))?1:2;
+				State=(IsVowel(*ptr))?1:2;
 				break;
 
 			case 1:
-				State=(IsVowel(*kwd))?1:2;
+				State=(IsVowel(*ptr))?1:2;
 				if(State==2) Result++;
 				break;
 
 			case 2:
-				State=((IsVowel(*kwd))||((*kwd)=='y'))?1:2;
+				State=((IsVowel(*ptr))||((*ptr)=='y'))?1:2;
 				break;
 		}
-		kwd++;
+		ptr++;
 	}
 	return(Result);
 }
 
 
+
 //-----------------------------------------------------------------------------
-bool GLangNL::EndsWithCons(const char* newend)
+bool GLangNL::EndsWithCons(const RString& kwd)
 {
-	if(!(*newend))
+	if(!kwd.GetLen())
 		return(false);
 	else
-		return(!strchr("aáäeéëèiíoóöuóöy",*newend));
+		return(RString("aáäeéëèiíoóöuóöy").Find(kwd[kwd.GetLen()-1]==-1));
 }
 
 
 //-----------------------------------------------------------------------------
-bool GLangNL::EndsWithc(const char* newend)
+bool GLangNL::EndsWithc(const RString& kwd)
 {
-	if(!(*newend))
+	if(!kwd.GetLen())
 		return(false);
 	else
-		return(strchr("c",*newend));
+		return(kwd[kwd.GetLen()-1]=='c');
 }
 
 
 //-----------------------------------------------------------------------------
-bool GLangNL::EndsWithe(const char* newend)
+bool GLangNL::EndsWithe(const RString& kwd)
 {
-	if(!(*newend))
+	if(!kwd.GetLen())
 		return(false);
 	else
-		return(strchr("eéë",*newend));
+		return(RString("eéë").Find(kwd[kwd.GetLen()-1])!=-1);
 }
 
 
 //-----------------------------------------------------------------------------
-bool GLangNL::EndsWithCVD(char* tmp,char* newend)
+bool GLangNL::EndsWithCVD(const R::RString& kwd)
 {
-	size_t length;
-	char* end;
-	if((length=strlen(tmp))<3)
+	if(kwd.GetLen()<3)
 		return(false);
-	end=tmp+length-1;
-	return(  (!strchr("aáäeéëèiíoóöuóöyl",*end--))  &&    // Consonant
-	         (strchr("aáäeéëoóöuúü",*end--))     &&       // Vowel
-	         (strchr("aáäeéëoóöuúü",*end))     &&         // Vowel
-	         (!strchr("aáäeéëèiíoóöuóöy",*newend))        // Consonant
+	RChar End(kwd[kwd.GetLen()-1]);
+	RChar End2(kwd[kwd.GetLen()-2]);
+	RChar End3(kwd[kwd.GetLen()-3]);
+	return(  (RString("aáäeéëèiíoóöuóöyl").Find(End)==-1)  &&     // Consonant
+	         (RString("aáäeéëoóöuúü").Find(End2)!=-1)     &&    // Vowel
+	         (RString("aáäeéëoóöuúü").Find(End3)!=-1)  &&         // Vowel
+             (RString("aáäeéëèiíoóöuóöy").Find(End2)!=-1)             // Consonant
 	      );
 }
 
 
 //-----------------------------------------------------------------------------
-bool GLangNL::ApplyRules(char* kwd,char* &end,RContainer<DutchPorterRule,true,false>& rules)
+bool GLangNL::ApplyRules(RString& kwd,RContainer<DutchPorterRule,true,false>& rules)
 {
-	DutchPorterRule* ptr;
-	char* ending;
-	int WordSize;
-	char tmp;
-	char* newend;
-	size_t len;
-
-	len=strlen(kwd);
 	RCursor<DutchPorterRule> Cur(rules);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		ptr=Cur();
-
-		// If the word length is enough, find the potential end suffix and put it
-		// in ending. If the ending isn't corresponding to the rule's suffix,
-		// go to the next rule.
-		if(len<=static_cast<size_t>(ptr->OldOffset)) continue;
-		ending=end-ptr->OldOffset;
-		if(ptr->Condition==DutchPorterRule::CondUndouble)
-		{
-			if(strncmp(ending,ptr->OldSuffix,2)) continue;
-		}
-		else
-		{
-			if(strcmp(ending,ptr->OldSuffix)) continue;
-		}
-		tmp=*ending;
-		newend=ending-1;
-		(*ending)=0;
-		WordSize=GetWordSize(kwd);
+		// Verify if the old suffix correspond to the end of the word
+		if(!kwd.IsAt(Cur()->OldSuffix,-Cur()->OldSuffix.GetLen()))
+			continue;
 
 		// Verify if the minimum root size is Ok.
-		if(ptr->MinRootSize>=WordSize)
-		{
-			(*ending)=tmp;
+		int WordSize(GetWordSize(kwd));
+		if(Cur()->MinRootSize>=WordSize)
 			continue;
-		}
+
 
 		// If there is a condition verify it.
-		switch(ptr->Condition)
+		switch(Cur()->Condition)
 		{
 			case DutchPorterRule::CondEndsWithCons:
-				if(!EndsWithCons(newend))
-				{
-					(*ending)=tmp;
-					return(ptr->Next);
-				}
+				if(!EndsWithCons(kwd))
+					return(Cur()->Next);
 				break;
 			case DutchPorterRule::CondNotc:
-				if(EndsWithc(newend))
-				{
-					(*ending)=tmp;
-					return(ptr->Next);
-				}
+				if(EndsWithc(kwd))
+					return(Cur()->Next);
 				break;
 			case DutchPorterRule::CondNote:
-				if(EndsWithe(newend))
-				{
-					(*ending)=tmp;
-					return(ptr->Next);
-				}
+				if(EndsWithe(kwd))
+					return(Cur()->Next);
 				break;
 			case DutchPorterRule::CondUndouble:
-				{
-					(*ending)=tmp;
-					if(!EndsWithCVD(ending,newend))
-						return(ptr->Next);
-					else (*ending)=0;
-				}
+					if(!EndsWithCVD(kwd))
+						return(Cur()->Next);
 				break;
 			default:
 				break;
 		}
 
-		// Replace the old suffix by the new one, update len and return 'Next'.
-		strcat(kwd,ptr->NewSuffix);
-		if(ptr->Condition==DutchPorterRule::CondUndouble)
-			strncat(kwd,(end), strlen(end));
-		end=ending+ptr->NewOffset;
-		return(ptr->Next);
+		// Replace the old suffix by the new one, and return 'Next'.
+		kwd.Insert(Cur()->NewSuffix,-Cur()->OldSuffix.GetLen(),(size_t)-1);
+		return(Cur()->Next);
 	}
 	return(false);
 }
@@ -1541,42 +1477,27 @@ void GLangNL::GetStopWords(RContainer<RString,true,false>& stop)
 
 
 //-----------------------------------------------------------------------------
-RString GLangNL::GetStemming(const RString& _kwd)
+RString GLangNL::GetStemming(const RString& kwd)
 {
-	RString res;
-	char kwd[51];
-	char* end;
-	size_t len;
-
-	// Transform _kwd in lowercase and store it in kwd.
-	res=_kwd.ToLower();
-	if(res.GetLen()>50) return(res);
-	strcpy(kwd,res);
-	len=_kwd.GetLen()-1;
-	end=&kwd[len];
+	// Transform kwd in lower case and store it in res.
+	RString res(kwd.ToLower());
+	if(res.GetLen()>50)
+		return(res);
 
 	// Do the different steps of the Porter algorithm.
-	ApplyRules(kwd,end,Rules1a);
-	ApplyRules(kwd,end,Rules1b);
-	ApplyRules(kwd,end,Rules1c);
-	if(ApplyRules(kwd,end,Rules2a))
-		ApplyRules(kwd,end,Rules2aa);
-	if(ApplyRules(kwd,end,Rules3a))
-		ApplyRules(kwd,end,Rules1b);
-	if(ApplyRules(kwd,end,Rules3b))
-		if(ApplyRules(kwd,end,Rules2a))
-			ApplyRules(kwd,end,Rules2aa);
-	ApplyRules(kwd,end,Rules4);
-	ApplyRules(kwd,end,Rules5);
+	ApplyRules(res,Rules1a);
+	ApplyRules(res,Rules1b);
+	ApplyRules(res,Rules1c);
+	if(ApplyRules(res,Rules2a))
+		ApplyRules(res,Rules2aa);
+	if(ApplyRules(res,Rules3a))
+		ApplyRules(res,Rules1b);
+	if(ApplyRules(res,Rules3b))
+		if(ApplyRules(res,Rules2a))
+			ApplyRules(res,Rules2aa);
+	ApplyRules(res,Rules4);
+	ApplyRules(res,Rules5);
 
-
-	// Put the result in res and return it.
-	end=kwd;
-	while((*end)&&(!isspace(*end)))
-		end++;
-	if(*end)
-		(*end)=0;
-	res=kwd;
 	return(res);
 }
 

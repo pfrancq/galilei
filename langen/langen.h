@@ -52,52 +52,52 @@ class GLangEN : public GALILEI::GLang
 	/**
 	* List of Rules '1a'.
 	*/
-	R::RContainer<PorterRule,true,false>* Rules1a;
+	R::RContainer<PorterRule,true,false> Rules1a;
 
 	/**
 	* List of Rules '1b'.
 	*/
-	R::RContainer<PorterRule,true,false>* Rules1b;
+	R::RContainer<PorterRule,true,false> Rules1b;
 
 	/**
 	* List of Rules '1bb'.
 	*/
-	R::RContainer<PorterRule,true,false>* Rules1bb;
+	R::RContainer<PorterRule,true,false> Rules1bb;
 
 	/**
 	* List of Rules '1c'.
 	*/
-	R::RContainer<PorterRule,true,false>* Rules1c;
+	R::RContainer<PorterRule,true,false> Rules1c;
 
 	/**
 	* List of Rules '2'.
 	*/
-	R::RContainer<PorterRule,true,false>* Rules2;
+	R::RContainer<PorterRule,true,false> Rules2;
 
 	/**
 	* List of Rules '3'.
 	*/
-	R::RContainer<PorterRule,true,false>* Rules3;
+	R::RContainer<PorterRule,true,false> Rules3;
 
 	/**
 	* List of Rules '4'.
 	*/
-	R::RContainer<PorterRule,true,false>* Rules4;
+	R::RContainer<PorterRule,true,false> Rules4;
 
 	/**
 	* List of Rules '5a'.
 	*/
-	R::RContainer<PorterRule,true,false>* Rules5a;
+	R::RContainer<PorterRule,true,false> Rules5a;
 
 	/**
 	* List of Rules '5b'.
 	*/
-	R::RContainer<PorterRule,true,false>* Rules5b;
+	R::RContainer<PorterRule,true,false> Rules5b;
 
 public:
 
 	/**
-	* Constructor of the english language.
+	* Constructor of the English language.
 	* @param fac             Factory.
 	*/
 	GLangEN(GALILEI::GFactoryLang* fac);
@@ -114,7 +114,7 @@ public:
 	* @param _kwd            Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	virtual R::RString GetStemming(const R::RString& _kwd);
+	virtual R::RString GetStemming(const R::RString& kwd);
 
 private:
 
@@ -123,42 +123,40 @@ private:
 	* 'a', 'e', 'i', 'o' or 'u'.
 	* @return True if the character is a "normal" vowel.
 	*/
-	inline bool IsVowel(char c)
+	inline bool IsVowel(R::RChar c)
 	{
 		return((c=='a')||(c=='e')||(c=='i')||(c=='o')||(c=='u'));
 	}
 
 	/**
 	* Test if a word contains some vowels.
-	* @param kwd            Word analyse.
+	* @param kwd            Word analyze.
 	* @returns True if the word contains vowels.
 	*/
-	bool ContainsVowel(const char* kwd);
+	bool ContainsVowel(const R::RString& kwd);
 
 	/**
-	* Test if the word is ending with a combinaison of CVC.
-	* @param kwd            Word to analyse.
-	* @param end            Pointer that will hold the end of the word.
+	* Test if the word is ending with a combination of CVC.
+	* @param kwd            Word to analyze.
 	* @returns True if the word is ending with CVC.
 	*/
-	bool EndsWithCVC(char* kwd,char* &end);
+	bool EndsWithCVC(const R::RString& kwd);
 
 	/**
-	* Count the syllables in a way describes in Porter. To compute this, a
-	* finite state machine is used.
-	* @param kwd            Word to analyse.
-	* @return Number of syllables.
+	* Count the syllables in a way describes by Porter. To method uses a finite
+	* state machine to compute it.
+	* @param kwd            Word to analyze.
 	*/
-	int GetWordSize(char* kwd);
+	int GetWordSize(const R::RString& kwd);
 
 	/**
-	* Apply the different rules of the porter's algorithm to a gieven word.
+	* Apply the different rules of the porter's algorithm to a given word.
 	* @param kwd            Pointer to the begin of the word.
 	* @param end            Pointer that will hold the end of the word.
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	bool ApplyRules(char* kwd,char* &end,R::RContainer<PorterRule,true,false>* rules);
+	bool ApplyRules(R::RString& kwd,R::RContainer<PorterRule,true,false>& rules);
 
 public:
 

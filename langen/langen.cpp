@@ -56,41 +56,16 @@ class GLangEN::PorterRule
 public:
 	enum tCondition{CondNothing,CondContainsVowel,CondAddAnE,CondRemoveAnE};
 
-	char* OldSuffix;
-	char* NewSuffix;
-	int OldOffset;
-	int NewOffset;
+	RString OldSuffix;
+	RString NewSuffix;
 	int MinRootSize;
 	tCondition Condition;
 	bool Next;
 
-	PorterRule(const char* os,const char* ns,int oo,int no,int mr=-1,tCondition c=CondNothing,bool n=false);
+	PorterRule(const RString& os,const RString& ns,int mr=-1,tCondition c=CondNothing,bool n=false)
+		: OldSuffix(os), NewSuffix(ns), MinRootSize(mr), Condition(c), Next(n) {}
 	int Compare(const PorterRule&) const {return(-1);}
-	~PorterRule(void);
 };
-
-
-//-----------------------------------------------------------------------------
-GLangEN::PorterRule::PorterRule(const char* os,const char* ns,int oo,int no,int mr,tCondition c,bool n)
-	: OldSuffix(0), NewSuffix(0), OldOffset(oo), NewOffset(no), MinRootSize(mr),
-	  Condition(c), Next(n)
-{
-	size_t l;
-	l=strlen(os);
-	OldSuffix=new char[l+1];
-	memcpy(OldSuffix,os,sizeof(char)*(l+1));
-	l=strlen(ns);
-	NewSuffix=new char[l+1];
-	memcpy(NewSuffix,ns,sizeof(char)*(l+1));
-}
-
-
-//-----------------------------------------------------------------------------
-GLangEN::PorterRule::~PorterRule(void)
-{
-	delete[] OldSuffix;
-	delete[] NewSuffix;
-}
 
 
 
@@ -102,108 +77,99 @@ GLangEN::PorterRule::~PorterRule(void)
 
 //-----------------------------------------------------------------------------
 GLangEN::GLangEN(GFactoryLang* fac)
-	: GLang(fac,"English","en"), Rules1a(0), Rules1b(0), Rules1bb(0), Rules1c(0),
-	  Rules2(0), Rules3(0), Rules4(0), Rules5a(0), Rules5b(0)
+	: GLang(fac,"English","en"), Rules1a(4,2), Rules1b(3,2), Rules1bb(15,5), Rules1c(1,2),
+	  Rules2(20,5), Rules3(7,5), Rules4(20,5), Rules5a(2,5), Rules5b(1,5)
 {
 	// Rules 1a
-	Rules1a=new RContainer<PorterRule,true,false>(4,2);
-	Rules1a->InsertPtr(new PorterRule("sses","ss",3,1));
-	Rules1a->InsertPtr(new PorterRule("ies","i",2,0));
-	Rules1a->InsertPtr(new PorterRule("ss","ss",1,1));
-	Rules1a->InsertPtr(new PorterRule("s","",0,-1));
+	Rules1a.InsertPtr(new PorterRule("sses","ss"));
+	Rules1a.InsertPtr(new PorterRule("ies","i"));
+	Rules1a.InsertPtr(new PorterRule("ss","ss"));
+	Rules1a.InsertPtr(new PorterRule("s",""));
 
 	// Rules 1b
-	Rules1b=new RContainer<PorterRule,true,false>(3,2);
-	Rules1b->InsertPtr(new PorterRule("eed","ee",2,1,0,PorterRule::CondNothing,true));
-	Rules1b->InsertPtr(new PorterRule("ed","",1,-1,-1,PorterRule::CondContainsVowel,true));
-	Rules1b->InsertPtr(new PorterRule("ing","",2,-1,-1,PorterRule::CondContainsVowel,true));
+	Rules1b.InsertPtr(new PorterRule("eed","ee",0,PorterRule::CondNothing,true));
+	Rules1b.InsertPtr(new PorterRule("ed","",-1,PorterRule::CondContainsVowel,true));
+	Rules1b.InsertPtr(new PorterRule("ing","",-1,PorterRule::CondContainsVowel,true));
 
 	// Rules 1bb
-	Rules1bb=new RContainer<PorterRule,true,false>(15,5);
-	Rules1bb->InsertPtr(new PorterRule("at","ate",1,2));
-	Rules1bb->InsertPtr(new PorterRule("bl","ble",1,2));
-	Rules1bb->InsertPtr(new PorterRule("iz","ize",1,2));
-	Rules1bb->InsertPtr(new PorterRule("bb","b",1,0));
-	Rules1bb->InsertPtr(new PorterRule("dd","d",1,0));
-	Rules1bb->InsertPtr(new PorterRule("ff","f",1,0));
-	Rules1bb->InsertPtr(new PorterRule("gg","g",1,0));
-	Rules1bb->InsertPtr(new PorterRule("mm","m",1,0));
-	Rules1bb->InsertPtr(new PorterRule("nn","n",1,0));
-	Rules1bb->InsertPtr(new PorterRule("pp","p",1,0));
-	Rules1bb->InsertPtr(new PorterRule("rr","r",1,0));
-	Rules1bb->InsertPtr(new PorterRule("tt","t",1,0));
-	Rules1bb->InsertPtr(new PorterRule("ww","w",1,0));
-	Rules1bb->InsertPtr(new PorterRule("xx","x",1,0));
-	Rules1bb->InsertPtr(new PorterRule("","e",0,0));
+	Rules1bb.InsertPtr(new PorterRule("at","ate"));
+	Rules1bb.InsertPtr(new PorterRule("bl","ble"));
+	Rules1bb.InsertPtr(new PorterRule("iz","ize"));
+	Rules1bb.InsertPtr(new PorterRule("bb","b"));
+	Rules1bb.InsertPtr(new PorterRule("dd","d"));
+	Rules1bb.InsertPtr(new PorterRule("ff","f"));
+	Rules1bb.InsertPtr(new PorterRule("gg","g"));
+	Rules1bb.InsertPtr(new PorterRule("mm","m"));
+	Rules1bb.InsertPtr(new PorterRule("nn","n"));
+	Rules1bb.InsertPtr(new PorterRule("pp","p"));
+	Rules1bb.InsertPtr(new PorterRule("rr","r"));
+	Rules1bb.InsertPtr(new PorterRule("tt","t"));
+	Rules1bb.InsertPtr(new PorterRule("ww","w"));
+	Rules1bb.InsertPtr(new PorterRule("xx","x"));
+	Rules1bb.InsertPtr(new PorterRule("","e"));
 
 	// Rules 1c
-	Rules1c=new RContainer<PorterRule,true,false>(1,2);
-	Rules1c->InsertPtr(new PorterRule("y","i",0,0,-1,PorterRule::CondContainsVowel));
+	Rules1c.InsertPtr(new PorterRule("y","i",-1,PorterRule::CondContainsVowel));
 
 	// Rules 2
-	Rules2=new RContainer<PorterRule,true,false>(20,5);
-	Rules2->InsertPtr(new PorterRule("ational","ate",6,2,0));
-	Rules2->InsertPtr(new PorterRule("tional","tion",5,3,0));
-	Rules2->InsertPtr(new PorterRule("enci","ence",3,3,0));
-	Rules2->InsertPtr(new PorterRule("anci","ance",3,3,0));
-	Rules2->InsertPtr(new PorterRule("izer","ize",3,2,0));
-	Rules2->InsertPtr(new PorterRule("abli","able",3,3,0));
-	Rules2->InsertPtr(new PorterRule("alli","al",3,1,0));
-	Rules2->InsertPtr(new PorterRule("entli","ent",4,2,0));
-	Rules2->InsertPtr(new PorterRule("eli","e",2,0,0));
-	Rules2->InsertPtr(new PorterRule("ousli","ous",4,2,0));
-	Rules2->InsertPtr(new PorterRule("ization","ize",6,2,0));
-	Rules2->InsertPtr(new PorterRule("ation","ate",4,2,0));
-	Rules2->InsertPtr(new PorterRule("ator","ate",3,2,0));
-	Rules2->InsertPtr(new PorterRule("alism","al",4,1,0));
-	Rules2->InsertPtr(new PorterRule("iveness","ive",6,2,0));
-	Rules2->InsertPtr(new PorterRule("fulnes","ful",5,2,0));
-	Rules2->InsertPtr(new PorterRule("ousness","ous",6,2,0));
-	Rules2->InsertPtr(new PorterRule("aliti","al",4,1,0));
-	Rules2->InsertPtr(new PorterRule("iviti","ive",4,2,0));
-	Rules2->InsertPtr(new PorterRule("biliti","ble",5,2,0));
+	Rules2.InsertPtr(new PorterRule("ational","ate",0));
+	Rules2.InsertPtr(new PorterRule("tional","tion",0));
+	Rules2.InsertPtr(new PorterRule("enci","ence",0));
+	Rules2.InsertPtr(new PorterRule("anci","ance",0));
+	Rules2.InsertPtr(new PorterRule("izer","ize",0));
+	Rules2.InsertPtr(new PorterRule("abli","able",0));
+	Rules2.InsertPtr(new PorterRule("alli","al",0));
+	Rules2.InsertPtr(new PorterRule("entli","ent",0));
+	Rules2.InsertPtr(new PorterRule("eli","e",0));
+	Rules2.InsertPtr(new PorterRule("ousli","ous",0));
+	Rules2.InsertPtr(new PorterRule("ization","ize",0));
+	Rules2.InsertPtr(new PorterRule("ation","ate",0));
+	Rules2.InsertPtr(new PorterRule("ator","ate",0));
+	Rules2.InsertPtr(new PorterRule("alism","al",0));
+	Rules2.InsertPtr(new PorterRule("iveness","ive",0));
+	Rules2.InsertPtr(new PorterRule("fulnes","ful",0));
+	Rules2.InsertPtr(new PorterRule("ousness","ous",0));
+	Rules2.InsertPtr(new PorterRule("aliti","al",0));
+	Rules2.InsertPtr(new PorterRule("iviti","ive",0));
+	Rules2.InsertPtr(new PorterRule("biliti","ble",0));
 
 	// Rules 3
-	Rules3=new RContainer<PorterRule,true,false>(7,5);
-	Rules3->InsertPtr(new PorterRule("icate","ic",4,1,0));
-	Rules3->InsertPtr(new PorterRule("ative","",4,-1,0));
-	Rules3->InsertPtr(new PorterRule("alize","al",4,1,0));
-	Rules3->InsertPtr(new PorterRule("iciti","ic",4,1,0));
-	Rules3->InsertPtr(new PorterRule("ical","ic",3,1,0));
-	Rules3->InsertPtr(new PorterRule("ful","",2,-1,0));
-	Rules3->InsertPtr(new PorterRule("ness","",3,-1,0));
+	Rules3.InsertPtr(new PorterRule("icate","ic",0));
+	Rules3.InsertPtr(new PorterRule("ative","",0));
+	Rules3.InsertPtr(new PorterRule("alize","al",0));
+	Rules3.InsertPtr(new PorterRule("iciti","ic",0));
+	Rules3.InsertPtr(new PorterRule("ical","ic",0));
+	Rules3.InsertPtr(new PorterRule("ful","",0));
+	Rules3.InsertPtr(new PorterRule("ness","",0));
 
 	// Rules 4
-	Rules4=new RContainer<PorterRule,true,false>(20,5);
-	Rules4->InsertPtr(new PorterRule("al","",1,-1,1));
-	Rules4->InsertPtr(new PorterRule("ance","",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("ence","",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("er","",1,-1,1));
-	Rules4->InsertPtr(new PorterRule("ic","",1,-1,1));
-	Rules4->InsertPtr(new PorterRule("able","",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("ible","",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("ant","",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ement","",4,-1,1));
-	Rules4->InsertPtr(new PorterRule("ment","",3,-1,1));
-	Rules4->InsertPtr(new PorterRule("ent","",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("sion","s",3,0,1));
-	Rules4->InsertPtr(new PorterRule("tion","t",3,0,1));
-	Rules4->InsertPtr(new PorterRule("ou","",1,-1,1));
-	Rules4->InsertPtr(new PorterRule("ism","",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ate","",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("iti","",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ous","",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ive","",2,-1,1));
-	Rules4->InsertPtr(new PorterRule("ize","",2,-1,1));
+	Rules4.InsertPtr(new PorterRule("al","",1));
+	Rules4.InsertPtr(new PorterRule("ance","",1));
+	Rules4.InsertPtr(new PorterRule("ence","",1));
+	Rules4.InsertPtr(new PorterRule("er","",1));
+	Rules4.InsertPtr(new PorterRule("ic","",1));
+	Rules4.InsertPtr(new PorterRule("able","",1));
+	Rules4.InsertPtr(new PorterRule("ible","",1));
+	Rules4.InsertPtr(new PorterRule("ant","",1));
+	Rules4.InsertPtr(new PorterRule("ement","",1));
+	Rules4.InsertPtr(new PorterRule("ment","",1));
+	Rules4.InsertPtr(new PorterRule("ent","",1));
+	Rules4.InsertPtr(new PorterRule("sion","s",1));
+	Rules4.InsertPtr(new PorterRule("tion","t",1));
+	Rules4.InsertPtr(new PorterRule("ou","",1));
+	Rules4.InsertPtr(new PorterRule("ism","",1));
+	Rules4.InsertPtr(new PorterRule("ate","",1));
+	Rules4.InsertPtr(new PorterRule("iti","",1));
+	Rules4.InsertPtr(new PorterRule("ous","",1));
+	Rules4.InsertPtr(new PorterRule("ive","",1));
+	Rules4.InsertPtr(new PorterRule("ize","",1));
 
 	// Rules 5a
-	Rules5a=new RContainer<PorterRule,true,false>(2,5);
-	Rules5a->InsertPtr(new PorterRule("e","",0,-1,1));
-	Rules5a->InsertPtr(new PorterRule("e","",0,-1,-1,PorterRule::CondRemoveAnE));
+	Rules5a.InsertPtr(new PorterRule("e","",1));
+	Rules5a.InsertPtr(new PorterRule("e","",-1,PorterRule::CondRemoveAnE));
 
 	// Rules 5b
-	Rules5b=new RContainer<PorterRule,true,false>(1,5);
-	Rules5b->InsertPtr(new PorterRule("ll","l",1,0,1));
+	Rules5b.InsertPtr(new PorterRule("ll","l",1));
 
 	// Skip Words
 	SkipSequence("th");
@@ -212,128 +178,6 @@ GLangEN::GLangEN(GFactoryLang* fac)
 	SkipSequence("rd");
 	SkipSequence("s");
 	SkipSequence("ies");
-}
-
-
-//-----------------------------------------------------------------------------
-int GLangEN::GetWordSize(char* kwd)
-{
-	int Result=0;             // WordSize of the word.
-	int State=0;              // Current state of the machine.
-
-	while(*kwd)
-	{
-		switch(State)
-		{
-			case 0:
-				State=(IsVowel(*kwd))?1:2;
-				break;
-
-			case 1:
-				State=(IsVowel(*kwd))?1:2;
-				if(State==2) Result++;
-				break;
-
-			case 2:
-				State=((IsVowel(*kwd))||((*kwd)=='y'))?1:2;
-				break;
-		}
-		kwd++;
-	}
-	return(Result);
-}
-
-
-//-----------------------------------------------------------------------------
-bool GLangEN::ContainsVowel(const char* kwd)
-{
-	if(!(*kwd))
-		return(false);
-	else
-		return((IsVowel(*kwd))||(strpbrk(kwd+1,"aeiouy")));
-}
-
-
-//-----------------------------------------------------------------------------
-bool GLangEN::EndsWithCVC(char* kwd,char* &end)
-{
-	size_t length;
-
-	if((length=strlen(kwd))<2)
-		return(false);
-	end=kwd+length-1;
-	return(  (!strchr("aeiouwxy",*end--))  &&     // Consonant
-	         (strchr("aeiouy",*end--))     &&     // Vowel
-	         (!strchr("aeiou",*end))              // Consonant
-	      );
-}
-
-//-----------------------------------------------------------------------------
-bool GLangEN::ApplyRules(char* kwd,char* &end,RContainer<PorterRule,true,false>* rules)
-{
-	PorterRule* ptr;
-	char* ending;
-	int WordSize;
-	char tmp;
-	size_t len;
-
-	len=strlen(kwd);
-	RCursor<PorterRule> Cur(*rules);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		ptr=Cur();
-
-		// If the word's length is enough, find the potential end suffix and put it
-		// in ending. If the ending isn't corresponding to the rule's suffix,
-		// go to the next rule.
-		if(len<=static_cast<size_t>(ptr->OldOffset)) continue;
-		ending=end-ptr->OldOffset;
-		if(strcmp(ending,ptr->OldSuffix)) continue;
-		tmp=*ending;
-		(*ending)=0;
-		WordSize=GetWordSize(kwd);
-
-		// Verify if the minimum root size is Ok.
-		if(ptr->MinRootSize>=WordSize)
-		{
-			(*ending)=tmp;
-			continue;
-		}
-
-		// If there is a condition verify it.
-		switch(ptr->Condition)
-		{
-			case PorterRule::CondContainsVowel:
-				if(!ContainsVowel(kwd))
-				{
-					(*ending)=tmp;
-					return(ptr->Next);
-				}
-				break;
-			case PorterRule::CondAddAnE:
-				if((WordSize!=1)||(EndsWithCVC(kwd,end)))
-				{
-					(*ending)=tmp;
-					return(ptr->Next);
-				}
-				break;
-			case PorterRule::CondRemoveAnE:
-				if((WordSize!=1)||(EndsWithCVC(kwd,end)))
-				{
-					(*ending)=tmp;
-					return(ptr->Next);
-				}
-				break;
-			default:
-				break;
-		}
-
-		// Replace the old suffix by the new one, update len and return 'Next'.
-		strcat(kwd,ptr->NewSuffix);
-		end=ending+ptr->NewOffset;
-		return(ptr->Next);
-	}
-	return(false);
 }
 
 
@@ -910,39 +754,121 @@ void GLangEN::GetStopWords(RContainer<RString,true,false>& stop)
 
 
 //-----------------------------------------------------------------------------
-RString GLangEN::GetStemming(const RString& _kwd)
+int GLangEN::GetWordSize(const RString& kwd)
 {
-	RString res;
-	char kwd[51];
-	char* end;
-	size_t len;
+	size_t Result(0);             // WordSize of the word.
+	size_t State(0);              // Current state of the machine.
+	const RChar* ptr(kwd());
 
-	// Transform _kwd in lowercase and store it in kwd.
-	res=_kwd.ToLower();
+	while(!ptr->IsNull())
+	{
+		switch(State)
+		{
+			case 0:
+				State=(IsVowel(*ptr))?1:2;
+				break;
+
+			case 1:
+				State=(IsVowel(*ptr))?1:2;
+				if(State==2) Result++;
+				break;
+
+			case 2:
+				State=((IsVowel(*ptr))||((*ptr)=='y'))?1:2;
+				break;
+		}
+		ptr++;
+	}
+	return(Result);
+}
+
+
+//-----------------------------------------------------------------------------
+bool GLangEN::ContainsVowel(const RString& kwd)
+{
+	if(!kwd.GetLen())
+		return(false);
+	else
+		return((IsVowel(kwd[0]))||(kwd.FindAnyStr("aeiouy",1)!=-1));
+}
+
+
+//-----------------------------------------------------------------------------
+bool GLangEN::EndsWithCVC(const R::RString& kwd)
+{
+	if(kwd.GetLen()<2)
+		return(false);
+	RChar End(kwd[kwd.GetLen()-1]);
+	RChar End2(kwd[kwd.GetLen()-2]);
+	RChar End3(kwd[kwd.GetLen()-3]);
+	return(  (RString("aeiouwxy").Find(End)==-1)  &&     // Consonant
+	         (RString("aeiouy").Find(End2)!=-1)     &&     // Vowel
+	         (RString("aeiou").Find(End3)==-1)              // Consonant
+	      );
+}
+
+
+//-----------------------------------------------------------------------------
+bool GLangEN::ApplyRules(RString& kwd,RContainer<PorterRule,true,false>& rules)
+{
+	RCursor<PorterRule> Cur(rules);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		// Verify if the old suffix correspond to the end of the word
+		if(!kwd.IsAt(Cur()->OldSuffix,-Cur()->OldSuffix.GetLen()))
+			continue;
+
+		// Verify if the minimum root size is Ok.
+		int WordSize(GetWordSize(kwd));
+		if(Cur()->MinRootSize>=WordSize)
+			continue;
+
+		// If there is a condition verify it.
+		switch(Cur()->Condition)
+		{
+			case PorterRule::CondContainsVowel:
+				if(!ContainsVowel(kwd))
+					return(Cur()->Next);
+				break;
+			case PorterRule::CondAddAnE:
+				if((WordSize!=1)||(EndsWithCVC(kwd)))
+					return(Cur()->Next);
+				break;
+			case PorterRule::CondRemoveAnE:
+				if((WordSize!=1)||(EndsWithCVC(kwd)))
+					return(Cur()->Next);
+				break;
+			default:
+				break;
+		}
+
+		// Replace the old suffix by the new one, and return 'Next'.
+		kwd.Insert(Cur()->NewSuffix,-Cur()->OldSuffix.GetLen(),(size_t)-1);
+		return(Cur()->Next);
+	}
+	return(false);
+}
+
+
+//-----------------------------------------------------------------------------
+RString GLangEN::GetStemming(const RString& kwd)
+{
+	// Transform kwd in lower case and store it in res.
+	RString res(kwd.ToLower());
 	if(res.GetLen()>50)
 		return(res);
-	strcpy(kwd,res);
-	len=_kwd.GetLen()-1;
-	end=&kwd[len];
 
 	// Do the different steps of the Porter algorithm.
-	ApplyRules(kwd,end,Rules1a);
-	if(ApplyRules(kwd,end,Rules1b))
-		ApplyRules(kwd,end,Rules1bb);
-	ApplyRules(kwd,end,Rules1c);
-	ApplyRules(kwd,end,Rules2);
-	ApplyRules(kwd,end,Rules3);
-	ApplyRules(kwd,end,Rules4);
-	ApplyRules(kwd,end,Rules5a);
-	ApplyRules(kwd,end,Rules5b);
+	ApplyRules(res,Rules1a);
+	if(ApplyRules(res,Rules1b))
+		ApplyRules(res,Rules1bb);
+	ApplyRules(res,Rules1c);
+	ApplyRules(res,Rules2);
+	ApplyRules(res,Rules3);
+	ApplyRules(res,Rules4);
+	ApplyRules(res,Rules5a);
+	ApplyRules(res,Rules5b);
 
-	// Put the result in res and return it.
-	end=kwd;
-	while((*end)&&(!isspace(*end)))
-		end++;
-	if(*end)
-		(*end)=0;
-	res=kwd;
 	return(res);
 }
 
@@ -956,15 +882,6 @@ void GLangEN::CreateParams(RConfig*)
 //-----------------------------------------------------------------------------
 GLangEN::~GLangEN(void)
 {
-	if(Rules1a) delete Rules1a;
-	if(Rules1b) delete Rules1b;
-	if(Rules1bb) delete Rules1bb;
-	if(Rules1c) delete Rules1c;
-	if(Rules2) delete Rules2;
-	if(Rules3) delete Rules3;
-	if(Rules4) delete Rules4;
-	if(Rules5a) delete Rules5a;
-	if(Rules5b) delete Rules5b;
 }
 
 

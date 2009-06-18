@@ -41,12 +41,12 @@
 
 //-----------------------------------------------------------------------------
 /**
-* The GLangNL class provides a representation for the english language.
+* The GLangNL class provides a representation for the Dutch language.
 *
 * It is based on the paper "Porter's stemming algorithm for Dutch" from Wessel
 * Kraaij et Renée Pohlmann.
 * @author Pascal Francq
-* @short English Language.
+* @short Duth Language.
 */
 class GLangNL : public GALILEI::GLang
 {
@@ -126,9 +126,14 @@ private:
 	* 'a', 'e', 'i', 'o' or 'u'.
 	* @return True if the character is a "normal" vowel.
 	*/
-	inline bool IsVowel(char c)
+	inline bool IsVowel(R::RChar c)
 	{
-		return((c=='a')||(c=='e')||(c=='i')||(c=='o')||(c=='u')||((c>=(char)129)&&(c<=(char)151))||(c==(char)153)||(c==(char)154)||((c>=(char)160)&&(c<=(char)165)));
+		return((c=='a')||(c=='e')||(c=='i')||(c=='o')||(c=='u')||
+				(c==R::RChar(165))||
+				((c>=R::RChar(129))&&(c<=R::RChar(151)))||
+				(c==R::RChar(153))||
+				(c==R::RChar(154))||
+				((c>=R::RChar(160))&&(c<=R::RChar(165))));
 	}
 
 	/**
@@ -136,34 +141,33 @@ private:
 	* @param kwd            Word analyze.
 	* @returns True if the word contains vowels.
 	*/
-	bool ContainsVowel(const char* kwd);
+	bool ContainsVowel(const R::RString& kwd);
 
 	/**
 	* Test if the word after stemming ends with a non-vowel.
 	* @param newend            End of the word.
 	*/
-	bool EndsWithCons(const char* newend);
+	bool EndsWithCons(const R::RString& kwd);
 
 	/**
 	* Test if the word after stemming ends with a 'c'.
 	* @param newend            End of the word.
 	*/
-	bool EndsWithc(const char* newend);
+	bool EndsWithc(const R::RString& kwd);
 
 	/**
 	* Test if the word after stemming ends with a 'e'
 	* @param newend            End of the word.
 	*/
-	bool EndsWithe(const char* newend);
+	bool EndsWithe(const R::RString& kwd);
 
 	/**
-	* Test if the word is ending with a combinaison of CVD (D = non vowel
+	* Test if the word is ending with a combination of CVD (D = non vowel
 	* other than l).
 	* @param kwd            Word to analyze.
-	* @param end            Pointer that will hold the end of the word.
 	* @returns True if the word is ending with CVD.
 	*/
-	bool EndsWithCVD(char* tmp,char* newend);
+	bool EndsWithCVD(const R::RString& kwd);
 
 	/**
 	* Count the syllables in a way describes in Porter. To compute this, a
@@ -171,7 +175,7 @@ private:
 	* @param kwd            Word to analyze.
 	* @return Number of syllables.
 	*/
-	int GetWordSize(char* kwd);
+	int GetWordSize(const R::RString& kwd);
 
 	/**
 	* Apply the different rules of the porter's algorithm to a given word.
@@ -180,7 +184,7 @@ private:
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	bool ApplyRules(char* kwd,char* &end,R::RContainer<DutchPorterRule,true,false>& rules);
+	bool ApplyRules(R::RString& kwd,R::RContainer<DutchPorterRule,true,false>& rules);
 
 public:
 

@@ -43,7 +43,7 @@
 
 //-----------------------------------------------------------------------------
 /**
-* The GLangFR class provides a representation for the french language.
+* The GLangFR class provides a representation for the French language.
 * @author Pascal Francq
 * @short French language.
 */
@@ -83,10 +83,10 @@ public:
 	/**
 	* Function that return stemming of a word. The "French" Porter's algorithm is
 	* basically implemented.
-	* @param _kwd            Word to find the stemming.
+	* @param kwd             Word to find the stemming.
 	* @return The stemming of the word.
 	*/
-	virtual R::RString GetStemming(const R::RString& _kwd);
+	virtual R::RString GetStemming(const R::RString& kwd);
 
 private:
 
@@ -95,34 +95,30 @@ private:
 	* 'a', 'e', 'i', 'o' or 'u'.
 	* @return True if the character is a "normal" vowel.
 	*/
-	inline bool IsVowel(char c)
+	inline bool IsVowel(R::RChar c)
 	{
-		return((c=='a')||(c=='e')||(c=='i')||(c=='o')||(c=='u')||((c>=(char)129)&&(c<=(char)151))||(c==(char)153)||(c==(char)154)||((c>=(char)160)&&(c<=(char)165)));
+		return((c=='a')||(c=='e')||(c=='i')||(c=='o')||(c=='u')||
+				(c==R::RChar(165))||
+				((c>=R::RChar(129))&&(c<=R::RChar(151)))||
+				(c==R::RChar(153))||
+				(c==R::RChar(154))||
+				((c>=R::RChar(160))&&(c<=R::RChar(165))));
 	}
 
 	/**
-	* Test if a word contains some vowels.
-	* @param kwd            Word analyze.
-	* @returns True if the word contains vowels.
-	*/
-	bool ContainsVowel(const char* kwd);
-
-	/**
-	* Count the syllables in a way describes in Porter. To compute this, a
-	* finite state machine is used.
+	* Count the syllables in a way describes by Porter. To method uses a finite
+	* state machine to compute it.
 	* @param kwd            Word to analyze.
-	* @return Number of syllables.
 	*/
-	int GetWordSize(char* kwd);
+	int GetWordSize(const R::RString& kwd);
 
 	/**
 	* Apply the different rules of the porter's algorithm to a given word.
-	* @param kwd            Pointer to the begin of the word.
-	* @param end            Pointer that will hold the end of the word.
+	* @param kwd            Word.
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	bool ApplyRules(char* kwd,char* &end,R::RContainer<FrenchPorterRule,true,false>& rules);
+	bool ApplyRules(R::RString& kwd,R::RContainer<FrenchPorterRule,true,false>& rules);
 
 public:
 
