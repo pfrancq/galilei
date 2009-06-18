@@ -92,7 +92,7 @@ class GStorageMySQL : public GStorage
 	/**
 	 * Encoding of the database.
 	 */
-	RString Encoding;
+	RCString Encoding;
 
 public:
 

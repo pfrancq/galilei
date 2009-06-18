@@ -190,7 +190,7 @@ void GStorageMySQL::ApplyConfig(void)
 	Database=Factory->Get("Database");
 	Filter.SetDate(Factory->Get("Filter"));
 	LoadAll=Factory->GetBool("All");
-	Encoding=Factory->Get("Encoding");
+	Encoding=Factory->Get("Encoding").Latin1();
 	Filtering=Factory->GetBool("Filtering");
 	GStorage::ApplyConfig();
 }
@@ -636,7 +636,7 @@ void GStorageMySQL::AssignId(GConcept* concept)
 		RString type=Num(concept->GetType()->GetId());
 
 		// Verify that the concept didn't already exist.
-		RString sSql="SELECT conceptid FROM concepts WHERE typeid="+type+" AND name="+name;
+		RString sSql="SELECT conceptid,name FROM concepts WHERE typeid="+type+" AND name="+name;
 		RQuery find(Db,sSql);
 		find.Start();
 		if(!find.End())
