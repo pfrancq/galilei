@@ -109,7 +109,7 @@ void cWords::Clear(void)
 //-----------------------------------------------------------------------------
 inline RCursor<cWord> cWords::GetWords(void) const
 {
-	return(RCursor<cWord>(Words,0,NbWords));
+	return(RCursor<cWord>(Words,0,NbWords-1));
 }
 
 
@@ -255,6 +255,8 @@ cNode::cNode(void)
 //-----------------------------------------------------------------------------
 void cNode::SetTag(cStructToken* tag,size_t pos,cDepth* depth)
 {
+	if(!depth)
+		throw GException("GTextAnalyze::cNode::SetTag(cStructToken*,size_t,cDepth*) : depth is null");
 	Obj.Tag=tag;
 	Type=GVTDRec::Tag;
 	Pos=pos;
@@ -267,6 +269,8 @@ void cNode::SetTag(cStructToken* tag,size_t pos,cDepth* depth)
 //-----------------------------------------------------------------------------
 void cNode::SetAttr(cStructToken* tag,size_t pos,cDepth* depth)
 {
+	if(!depth)
+		throw GException("GTextAnalyze::cNode::SetAttr(cStructToken*,size_t,cDepth*) : depth is null");
 	Obj.Tag=tag;
 	Type=GVTDRec::Attribute;
 	Pos=pos;
@@ -279,6 +283,8 @@ void cNode::SetAttr(cStructToken* tag,size_t pos,cDepth* depth)
 //-----------------------------------------------------------------------------
 void cNode::SetAttrValue(cWord* word,size_t pos,cDepth* depth)
 {
+	if(!depth)
+		throw GException("GTextAnalyze::cNode::SetAttrValue(cStructToken*,size_t,cDepth*) : depth is null");
 	Obj.Word=word;
 	Type=GVTDRec::Value;
 	Pos=pos;
@@ -291,6 +297,8 @@ void cNode::SetAttrValue(cWord* word,size_t pos,cDepth* depth)
 //-----------------------------------------------------------------------------
 void cNode::SetContent(cWord* word,size_t pos,cDepth* depth)
 {
+	if(!depth)
+		throw GException("GTextAnalyze::cNode::SetContent(cStructToken*,size_t,cDepth*) : depth is null");
 	Obj.Word=word;
 	Type=GVTDRec::Content;
 	Pos=pos;
@@ -342,7 +350,7 @@ void cDepth::Clear(void)
 //-----------------------------------------------------------------------------
 inline RCursor<cNode> cDepth::GetNodes(void) const
 {
-	return(RCursor<cNode>(*this,0,NbNodes));
+	return(RCursor<cNode>(*this,0,NbNodes-1));
 }
 
 
@@ -394,7 +402,7 @@ inline cDepth* cDepths::GetDepth(char depth)
 //-----------------------------------------------------------------------------
 inline RCursor<cDepth> cDepths::GetDepths(void) const
 {
-	return(RCursor<cDepth>(*this,0,NbDepths));
+	return(RCursor<cDepth>(*this,0,NbDepths-1));
 }
 
 
@@ -418,7 +426,7 @@ inline cNode* cDepths::GetNewNode(cDepth* depth,bool tag)
 //-----------------------------------------------------------------------------
 inline RCursor<cNode> cDepths::GetNodes(void) const
 {
-	return(RCursor<cNode>(Nodes,0,NbNodes));
+	return(RCursor<cNode>(Nodes,0,NbNodes-1));
 }
 
 
@@ -970,9 +978,11 @@ void GTextAnalyse::IndexXMLPart(void)
 	for(Node.Start();!Node.End();Node.Next())
 	{
 		cNode* ptr=Node();
-		Depth=ptr->Depth;
-		if(!ptr->Depth->CurIndex)
-			ptr->Depth->CurIndex=new GXMLIndex(IndexSpace,LangSpace);
+		Depth=ptr->Depth;  //<-- Pal
+/*		if(!Depth)
+			continue;*/
+		if(!Depth->CurIndex)
+			Depth->CurIndex=new GXMLIndex(IndexSpace,LangSpace);
 		switch(ptr->Type)
 		{
 			case GVTDRec::Tag:
@@ -1106,7 +1116,7 @@ void GTextAnalyse::Analyze(const GDoc* doc,const R::RURI& file,bool native)
 		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++) ;
 
 	// Load the xml from the file
-//	cout<<"Analyse "<<file.GetPath()<<endl;
+	//cout<<"Analyse "<<file.GetPath()<<endl;
 	Open(file,RIO::Read,"UTF-8");
 	Close();
 
@@ -1122,11 +1132,6 @@ void GTextAnalyse::Analyze(const GDoc* doc,const R::RURI& file,bool native)
 		throw GException("TextAnalyse : Invalid language "+Lang->GetName());
 	ConstructInfos();
 	IndexXMLPart();
-/*	if(Struct)
-	{
-		Struct->Print();
-		cout<<"-----"<<endl;
-	}*/
 }
 
 

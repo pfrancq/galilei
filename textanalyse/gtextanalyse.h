@@ -166,7 +166,7 @@ class cStructToken
 	size_t Occurs;
 
 	/**
-	 * Pointer
+	 * Pointer to the corresponding concept.
 	 */
 	GConcept* Tag;
 
@@ -200,19 +200,45 @@ public:
 
 
 //-----------------------------------------------------------------------------
+/**
+ * A node of the file, it can be a word or a structural token
+ */
 class cNode
 {
 public:
 
+	/**
+	 * Object of the node.
+	 */
 	union
 	{
 		cWord* Word;
 		cStructToken* Tag;
 	} Obj;
+
+	/**
+	 * Position in the file.
+	 */
 	size_t Pos;
+
+	/**
+	 * Corresponding record type.
+	 */
 	GVTDRec::RecType Type;
+
+	/**
+	 * Pointer to the depth.
+	 */
 	cDepth* Depth;
+
+	/**
+	 * Position of the first child.
+	 */
 	size_t Child;
+
+	/**
+	 * Number of child.
+	 */
 	size_t Nb;
 
 	cNode(void);
