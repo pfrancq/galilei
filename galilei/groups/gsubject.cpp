@@ -83,6 +83,23 @@ int GSubject::Compare(const RString& name) const
 
 
 //------------------------------------------------------------------------------
+void GSubject::ComputeDepth(size_t curdepth,size_t& depth) const
+{
+	if(GetNbNodes())
+	{
+		RCursor<GSubject> Subjects(GetNodes());
+		for(Subjects.Start();!Subjects.End();Subjects.Next())
+			Subjects()->ComputeDepth(curdepth+1,depth);
+	}
+	else
+	{
+		if(curdepth+1>depth)
+			depth=curdepth+1;
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GSubject::Insert(GDoc* doc,bool used)
 {
 	AllDocs.InsertPtr(doc);

@@ -119,6 +119,8 @@ public:
 	size_t NbMinDocsSubject;                                             // Minimal number of documents in a subject to use it.
 	size_t NbProfMax;                                                    // Maximal number of profiles to create in a subject.
 	size_t NbProfMin;                                                    // Minimal number of profiles to create in a subject.
+	size_t MaxDepth;                                                     // Maximal depth of the subjects to be treated.
+	size_t Depth;                                                        // Depth of the subjects.
 	double PercSocial;                                                   // Percentage of profiles that are social.
 	double NbDocsPerSubject;                                             // Number of objects per subject.
 	bool PercNbDocsPerSubject;                                           // Number of objects per subject given as percentage.
@@ -144,7 +146,7 @@ public:
 	size_t SwitchPos;                                                    // Position of next document to switch.
 	RRandom* SwitchRandom;                                               // Random generator of switching documents.
 
-	Intern(GSession* session) :  Session(session),
+	Intern(GSession* session) :  Session(session), Depth(0),
 	  tmpDocs(0), NbDocs(0), tmpTopics(0), NewDocs(NbDocs), LastAdded(50,25),
 	  CommunitiesScore(100,50), TopicsScore(100,50), Profiles(1000), Docs(5000),
 	  SwitchRandom(0)
@@ -188,6 +190,7 @@ void GSubjects::Apply(void)
 	Data->PercErr=Data->Session->GetDouble("PercErr","Subjects");
 	Data->NbProfMin=Data->Session->GetUInt("NbProfMin","Subjects");
 	Data->NbProfMax=Data->Session->GetUInt("NbProfMax","Subjects");
+	Data->MaxDepth=Data->Session->GetUInt("MaxDepth","Subjects");
 	Data->PercSocial=Data->Session->GetDouble("PercSocial","Subjects");
 	Data->NbSubjects=Data->Session->GetDouble("NbSubjects","Subjects");
 	Data->RelSubjects=Data->Session->GetBool("RelSubjects","Subjects");
@@ -208,6 +211,20 @@ void GSubjects::ReInit(void)
 	RCursor<GSubject> Subjects(GetNodes());
 	for(Subjects.Start();!Subjects.End();Subjects.Next())
 		Subjects()->ReInit(Data->Session,unselected);
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSubjects::GetDepth(void)
+{
+	if(!Data->Depth)
+	{
+		// Re-compute the depth.
+		RCursor<GSubject> Subjects(GetTopNodes());
+		for(Subjects.Start();!Subjects.End();Subjects.Next())
+			Subjects()->ComputeDepth(0,Data->Depth);
+	}
+	return(Data->Depth);
 }
 
 
@@ -1218,7 +1235,6 @@ void GSubjects::Clear(void)
 {
 	RTree<GSubjects,GSubject,true>::Clear();
 	Data->Profiles.Clear();
-	InsertNode(0,new GSubject(0,"Subjects",false));
 }
 
 

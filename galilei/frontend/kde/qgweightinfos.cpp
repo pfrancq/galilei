@@ -26,6 +26,12 @@
 */
 
 
+
+//------------------------------------------------------------------------------
+// include files for Qt/KDE
+#include <kmessagebox.h>
+
+
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rcursor.h>
@@ -95,59 +101,78 @@ void QGWeightInfos::Set(const GWeightInfos* obj)
 {
 	if(!obj) return;
 
-	// Init
-	GSession* Session=GALILEIApp->GetSession();
-	GConceptType* IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
-	QTreeWidget* Infos(static_cast<Ui_QGWeightInfos*>(Ui)->Infos);
-	Infos->clear();
-
-	// Show the information entities
-	RCursor<GWeightInfo> Words(obj->GetInfos());
-	for(Words.Start();!Words.End();Words.Next())
+	try
 	{
-		QString name;
-		if(Words()->GetType()==IndexSpace)
+		// Init
+		GSession* Session=GALILEIApp->GetSession();
+		GConceptType* IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
+		QTreeWidget* Infos(static_cast<Ui_QGWeightInfos*>(Ui)->Infos);
+		Infos->clear();
+
+		// Show the information entities
+		RCursor<GWeightInfo> Words(obj->GetInfos());
+		for(Words.Start();!Words.End();Words.Next())
 		{
-			GXMLIndex* idx=dynamic_cast<GXMLIndex*>(Words()->GetConcept());
-			RString FullTagName(Session->GetStorage()->LoadConcept(idx->GetXMLTag()->GetId()));
-			RString TagName(FullTagName.Mid(FullTagName.Find(':',-1)+1));
-			name="<"+ToQString(TagName)+">";
-			bool SkipComma(true);
-			RCursor<GConcept> Universal(idx->GetUniversalTerms());
-			for(Universal.Start();!Universal.End();Universal.Next())
+			QString name;
+			if(Words()->GetType()==IndexSpace)
 			{
-				if(SkipComma)
-					SkipComma=false;
-				else
-					name+=" ";
-				name+=ToQString(Session->GetStorage()->LoadConcept(Universal()->GetId()));
+				GXMLIndex* idx=dynamic_cast<GXMLIndex*>(Words()->GetConcept());
+				RString FullTagName(Session->GetStorage()->LoadConcept(idx->GetXMLTag()->GetId()));
+				RString TagName(FullTagName.Mid(FullTagName.Find(':',-1)+1));
+				name="<"+ToQString(TagName)+">";
+				bool SkipComma(true);
+				RCursor<GConcept> Universal(idx->GetUniversalTerms());
+				for(Universal.Start();!Universal.End();Universal.Next())
+				{
+					if(SkipComma)
+						SkipComma=false;
+					else
+						name+=" ";
+					name+=ToQString(Session->GetStorage()->LoadConcept(Universal()->GetId()));
+				}
+				RCursor<GConcept> Stems(idx->GetStems());
+				for(Stems.Start();!Stems.End();Stems.Next())
+				{
+					if(SkipComma)
+						SkipComma=false;
+					else
+						name+=" ";
+					name+=ToQString(Session->GetStorage()->LoadConcept(Stems()->GetId()));
+				}
+				name+="</"+ToQString(TagName)+">";
 			}
-			RCursor<GConcept> Stems(idx->GetStems());
-			for(Stems.Start();!Stems.End();Stems.Next())
+			else
 			{
-				if(SkipComma)
-					SkipComma=false;
-				else
-					name+=" ";
-				name+=ToQString(Session->GetStorage()->LoadConcept(Stems()->GetId()));
+				name=ToQString(Session->GetStorage()->LoadConcept(Words()->GetId()));
 			}
-			name+="</"+ToQString(TagName)+">";
+			QString type=ToQString(Words()->GetType()->GetDescription());
+			QString w(QString::number(Words()->GetWeight()));
+			while(w.length()<10)
+				w.prepend(' ');
+			new Item(Infos,QStringList()<<name<<type<<w<<QString::number(Words()->GetConcept()->GetId()));
 		}
-		else
-		{
-			name=ToQString(Session->GetStorage()->LoadConcept(Words()->GetId()));
-		}
-		QString type=ToQString(Words()->GetType()->GetDescription());
-		QString w(QString::number(Words()->GetWeight()));
-		while(w.length()<10)
-			w.prepend(' ');
-		new Item(Infos,QStringList()<<name<<type<<w<<QString::number(Words()->GetConcept()->GetId()));
+		static_cast<Ui_QGWeightInfos*>(Ui)->Infos->sortItems(0,Qt::AscendingOrder);
+		static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(0);
+		static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(1);
+		static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(2);
+		static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(3);
 	}
-	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->sortItems(0,Qt::AscendingOrder);
-	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(0);
-	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(1);
-	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(2);
-	static_cast<Ui_QGWeightInfos*>(Ui)->Infos->resizeColumnToContents(3);
+	catch(GException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+	}
+	catch(RException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"R Exception");
+	}
+	catch(std::exception& e)
+	{
+		KMessageBox::error(this,e.what(),"std::exception");
+	}
+	catch(...)
+	{
+		KMessageBox::error(this,"Undefined Error");
+	}
 }
 
 

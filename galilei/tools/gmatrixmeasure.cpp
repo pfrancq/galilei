@@ -131,8 +131,8 @@ void GMatrixMeasure::ApplyConfig(void)
 	bool NewNbSamples(Factory->GetUInt("NbSamples"));
 	if(NewNbSamples<NewNbNearest)
 		NewNbSamples=2*NewNbNearest;
-	if((Type==NearestNeighbors)&&((NewNbNearest!=NbNearest)||(NewNbSamples!=NbSamples)))
-		Dirty=true;
+	if((Session)&&(Type==NearestNeighbors)&&((NewNbNearest!=NbNearest)||(NewNbSamples!=NbSamples)))
+			Dirty=true;
 	NbNearest=NewNbNearest;
 	NbSamples=NewNbSamples;
 
@@ -197,6 +197,12 @@ void GMatrixMeasure::Connect(GSession* session)
 			MaxIdLine=MaxIdCol=NbValues=0;
 			Mean=Deviation=0.0;
 		}
+	}
+	else
+	{
+		// New matrix
+		MaxIdLine=MaxIdCol=NbValues=0;
+		Mean=Deviation=0.0;
 	}
 	MustExtend=false;   // Suppose matrix is correct
 }

@@ -173,6 +173,15 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
+	 * Compute the maximal depth of a subject. In practice, it is the depth of
+	 * the child node or depth+1.
+	 * @param curdepth       Depth of the parent (or 0 if no parent).
+	 * @param depth          Value containing the depth. It is replaced, if the
+	 *                       depth of the current node is greater.
+	 */
+	void ComputeDepth(size_t curdepth,size_t& depth) const;
+
+	/**
 	* Get the ideal group of the profile.
 	* @param prof            Profile.
 	*/

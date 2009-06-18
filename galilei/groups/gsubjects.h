@@ -91,6 +91,12 @@ public:
 	*/
 	void ReInit(void);
 
+	/**
+	 * Compute the depth of the tree formed by all the subjects.
+	 * @return
+	 */
+	size_t GetDepth(void);
+
 protected:
 
 	/**

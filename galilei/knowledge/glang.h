@@ -58,12 +58,12 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GLang class provides a representation for a generic language. Each
-* language has to be implemented as a plugin. The virtual function GetStemming
+* language has to be implemented as a plug-in. The virtual function GetStemming
 * must be implemented for the different languages.
 *
 * Each language is composed from:
 * - A name ("English") and a code ("en") ;
-* - A set of dictionnaries of concepts (stems, stopwords, ...);
+* - A set of dictionaries of concepts (stems, stopwords, ...);
 * - A list of words to skip during the analysis.
 * @author Pascal Francq.
 * @short Generic Language.

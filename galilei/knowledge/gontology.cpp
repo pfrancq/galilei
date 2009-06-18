@@ -180,7 +180,7 @@ GConcept* GOntology::InsertConcept(const GConcept* concept)
 		InDirect=true;
 	}
 
-	// Look if data has an identifier. If not, assignconst one.
+	// Look if data has an identifier. If not, assign one.
 	if(ptr->GetId()==cNoRef)
 	{
 		Storage->AssignId(ptr);

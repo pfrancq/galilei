@@ -262,6 +262,7 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 	InsertParam(new RParamValue("PercErr",0.0),"Subjects");
 	InsertParam(new RParamValue("NbProfMin",2),"Subjects");
 	InsertParam(new RParamValue("NbProfMax",10),"Subjects");
+	InsertParam(new RParamValue("MaxDepth",0),"Subjects");
 	InsertParam(new RParamValue("PercSocial",100.0),"Subjects");
 	InsertParam(new RParamValue("NbSubjects",100.0),"Subjects");
 	InsertParam(new RParamValue("RelSubjects",true),"Subjects");
