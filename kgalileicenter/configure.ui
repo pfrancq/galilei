@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="MainTab">
      <property name="currentIndex">
-      <number>0</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="Widget8">
       <attribute name="title">
@@ -1276,6 +1276,57 @@ p, li { white-space: pre-wrap; }
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_9">
            <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_2">
+             <item>
+              <widget class="QLabel" name="label_2">
+               <property name="text">
+                <string>Maximal Depth</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="KIntNumInput" name="MaxDepth">
+               <property name="minimum">
+                <number>0</number>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_31">
+               <property name="text">
+                <string>/</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="Depth">
+               <property name="sizePolicy">
+                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                 <horstretch>0</horstretch>
+                 <verstretch>0</verstretch>
+                </sizepolicy>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <spacer name="horizontalSpacer_2">
+               <property name="orientation">
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0">
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+            </layout>
+           </item>
+           <item>
             <widget class="QCheckBox" name="ManualSubjects">
              <property name="text">
               <string>Manual Subjects Selection</string>
@@ -1310,7 +1361,7 @@ p, li { white-space: pre-wrap; }
              <property name="title">
               <string>Automatic Subjects Selection</string>
              </property>
-             <layout class="QVBoxLayout" name="_17">
+             <layout class="QVBoxLayout" name="verticalLayout_4">
               <item>
                <layout class="QHBoxLayout" name="_18">
                 <item>

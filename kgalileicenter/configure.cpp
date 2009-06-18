@@ -369,6 +369,9 @@ void Configure::initSimulation(void)
 	PercErr->setValue(Session->GetDouble("PercErr","Subjects"));
 	NbProfMin->setValue(Session->GetInt("NbProfMin","Subjects"));
 	NbProfMax->setValue(Session->GetInt("NbProfMax","Subjects"));
+	MaxDepth->setValue(Session->GetInt("MaxDepth","Subjects"));
+	MaxDepth->setMaximum(Session->GetSubjects()->GetDepth());
+	Depth->setText(QString::number(Session->GetSubjects()->GetDepth()));
 	PercSocial->setValue(Session->GetDouble("PercSocial","Subjects"));
 	NbSubjects->setValue(Session->GetDouble("NbSubjects","Subjects"));
 	RelSubjects->setChecked(Session->GetBool("RelSubjects","Subjects"));
@@ -424,6 +427,7 @@ void Configure::applySimulation(void)
 	Session->SetDouble("PercErr",PercErr->value(),"Subjects");
 	Session->SetUInt("NbProfMin",NbProfMin->value(),"Subjects");
 	Session->SetUInt("NbProfMax",NbProfMax->value(),"Subjects");
+	Session->SetUInt("MaxDepth",MaxDepth->value(),"Subjects");
 	Session->SetDouble("PercSocial",PercSocial->value(),"Subjects");
 	Session->SetDouble("NbSubjects",NbSubjects->value(),"Subjects");
 	Session->SetBool("RelSubjects",RelSubjects->isChecked(),"Subjects");

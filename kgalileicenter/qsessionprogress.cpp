@@ -373,7 +373,7 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 {
 	if(lang)
-		setLabelText(QString("Groups Profiles for '")+ToQString(lang->GetName())+"' ...");
+		setLabelText("Treat "+ToQString(lang->GetName())+" language");
 }
 
 
@@ -381,7 +381,7 @@ void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 void QSessionProgressDlg::NextConceptType(const GConceptType* type)
 {
 	if(type)
-		setLabelText(QString("Treat ")+ToQString(type->GetName())+" ...");
+		setLabelText("Treat concept type '"+ToQString(type->GetName())+"'");
 }
 
 
@@ -389,7 +389,15 @@ void QSessionProgressDlg::NextConceptType(const GConceptType* type)
 void QSessionProgressDlg::NextDoc(const GDoc* doc)
 {
 	if(doc)
-		setLabelText(QString("Analyze Doc '")+ToQString(doc->GetName())+"' ...");
+	{
+		QString DocName(ToQString(doc->GetName()));
+		if(DocName.length()>80)
+		{
+			DocName.resize(77);
+			DocName+="...";
+		}
+		setLabelText("Treat document '"+ToQString(doc->GetName())+"'");
+	}
 }
 
 
@@ -397,16 +405,8 @@ void QSessionProgressDlg::NextDoc(const GDoc* doc)
 void QSessionProgressDlg::NextProfile(const GProfile* prof)
 {
 	if(prof)
-		setLabelText(QString("Analyze Profile '")+ToQString(prof->GetName())+"' of User '"+ToQString(prof->GetUser()->GetFullName())+"' ...");
+		setLabelText("Treat profile '"+ToQString(prof->GetName())+"' ("+ToQString(prof->GetUser()->GetFullName())+")");
 }
-
-
-//-----------------------------------------------------------------------------
-void QSessionProgressDlg::NextChromosome(size_t id)
-{
-	setLabelText(QString("Analyze Chromosome ")+QString::number(id)+" ...");
-}
-
 
 
 //-----------------------------------------------------------------------------

@@ -412,12 +412,6 @@ public:
 	virtual void NextProfile(const GProfile* prof);
 
 	/**
-	* The treatment for a specific chromosome will begin.
-	* @param id             Identifier of the chromosome.
-	*/
-	virtual void NextChromosome(size_t id);
-
-	/**
 	 * The 'Cancel' Button was called.
 	 */
 	virtual void reject(void);

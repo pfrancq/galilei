@@ -28,6 +28,11 @@
 
 
 
+//------------------------------------------------------------------------------
+// include files for Qt/KDE
+#include <kmessagebox.h>
+
+
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI Projects
 #include <rqt.h>
@@ -141,7 +146,14 @@ void KViewDoc::setUp(void)
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(Document->GetName()));
 	Vars->Set(Document);
-	Desc->Set(Document->GetVector());
+	try
+	{
+		Desc->Set(Document->GetVector());
+	}
+	catch(GException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+	}
 	Struct->Set(Document);
 	Assessments->Set(QGObjectsList::Assessments,Document);
 	connect(AddFeedback,SIGNAL(pressed()),this,SLOT(newFdbk()));
