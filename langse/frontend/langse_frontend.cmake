@@ -1,5 +1,0 @@
-IF(KDE4_FOUND)
-    SET(langse_AVAILABLE_FRONTENDS kde)
-    SET(langse_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
-    ADD_FRONTEND_SOURCE_FILE(langse_frontend langse kde langse_INCLUDES)
-ENDIF(KDE4_FOUND)

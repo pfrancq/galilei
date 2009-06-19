@@ -6,8 +6,10 @@
 
 	Italian Language - Header.
 
+	Copyright 2001-2009 by the Snowball Project.
+	Copyright 2001-2009 by Pascal Francq.
 	Copyright 2001 by David Wartel.
-	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB)..
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -34,14 +36,19 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R
+#include <rtextencoding.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <glang.h>
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI_PLUGINS
-#include <italian_stem.h>
+// include files for the Snowball Project
+#include <libstemmer.h>
 
 
 //-----------------------------------------------------------------------------
@@ -51,12 +58,20 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GLangIT class provides a representation for the italian language.
-* @author David Wartel
+* The GLangIT class provides a representation for the Italian language.
 * @short Italian language.
 */
-class GLangIT : public GLang , public stemming::italian_stem<char, std::char_traits<char> >
+class GLangIT : public GLang
 {
+	/**
+	 * Stemmer.
+	 */
+	struct sb_stemmer* Stemmer;
+
+	/**
+	 * Encoding.
+	 */
+	R::RTextEncoding* StdCodec;
 
 public:
 

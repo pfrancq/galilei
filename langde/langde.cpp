@@ -6,6 +6,8 @@
 
 	German Language - Implementation.
 
+	Copyright 2001-2009 by the Snowball Project.
+	Copyright 2001-2009 by Pascal Francq.
 	Copyright 2001 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -48,11 +50,6 @@ using namespace GALILEI;
 using namespace std;
 
 
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-using namespace stemming;
-
-
 
 //-----------------------------------------------------------------------------
 //
@@ -62,8 +59,10 @@ using namespace stemming;
 
 //-----------------------------------------------------------------------------
 GLangDE::GLangDE(GFactoryLang* fac)
-	: GLang(fac,"German","de")
+	: GLang(fac,"German","de"), Stemmer(sb_stemmer_new("german",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
+    if(!Stemmer)
+    	throw GException("GLangDE : German is not available for stemming");
 }
 
 
@@ -304,12 +303,11 @@ void GLangDE::GetStopWords(RContainer<RString,true,false>& stop)
 
 
 //-----------------------------------------------------------------------------
-RString GLangDE::GetStemming(const RString& _kwd)
+RString GLangDE::GetStemming(const RString& kwd)
 {
-	string word;
-	 word=_kwd.ToString();
-	(*this)(word);
-	return RString(word);
+	RCString Str(StdCodec->FromUnicode(kwd));
+	const sb_symbol * stemmed = sb_stemmer_stem(Stemmer,(const sb_symbol*)Str(),Str.GetLen());
+	return RString((char *)stemmed);
 }
 
 
@@ -322,6 +320,8 @@ void GLangDE::CreateParams(RConfig*)
 //-----------------------------------------------------------------------------
 GLangDE::~GLangDE(void)
 {
+	if(Stemmer)
+		sb_stemmer_delete(Stemmer);
 }
 
 

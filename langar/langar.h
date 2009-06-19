@@ -47,7 +47,7 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GLangAR class provides a representation for the arabic language.
+* The GLangAR class provides a representation for the Arabic language.
 * @author David Wartel
 * @short Arabic Language.
 */
@@ -58,42 +58,42 @@ class GLangAR : public GLang
 	/**
 	* List of Rules '0' (vowels rules)
 	*/
-	R::RContainer<ArabicRule,true,false>* Rules0;
+	R::RContainer<ArabicRule,true,false> Rules0;
 
 	/**
 	* List of Rules '1a'.
 	*/
-	R::RContainer<ArabicRule,true,false>* Rules1;
+	R::RContainer<ArabicRule,true,false> Rules1;
 
 	/**
 	* List of Rules '2'.
 	*/
-	R::RContainer<ArabicRule,true,false>* Rules2;
+	R::RContainer<ArabicRule,true,false> Rules2;
 
 	/**
 	* List of Rules '3'.
 	*/
-	R::RContainer<ArabicRule,true,false>* Rules3;
+	R::RContainer<ArabicRule,true,false> Rules3;
 
 	/**
 	* List of Rules '4'.
 	*/
-	R::RContainer<ArabicRule,true,false>* Rules4;
+	R::RContainer<ArabicRule,true,false> Rules4;
 
 	/**
 	* List of Rules '5'.
 	*/
-	R::RContainer<ArabicRule,true,false>* Rules5;
+	R::RContainer<ArabicRule,true,false> Rules5;
 
 	/**
 	* List of Rules '6'.
 	*/
-	R::RContainer<ArabicRule,true,false>* Rules6;
+	R::RContainer<ArabicRule,true,false> Rules6;
 
 	/**
 	* List of Rules '7'.
 	*/
-	R::RContainer<ArabicRule,true,false>* Rules7;
+	R::RContainer<ArabicRule,true,false> Rules7;
 
 	/*
 	* rules file.
@@ -103,7 +103,7 @@ class GLangAR : public GLang
 public:
 
 	/**
-	* Constructor of the english language.
+	* Constructor of the Arabic language.
 	* @param fac             Factory.
 	*/
 	GLangAR(GFactoryLang* fac);
@@ -112,7 +112,7 @@ public:
 	 * Fill a container with all the stop words associated with the language.
 	 * @param stop           Container.
 	 */
-	virtual void GetStopWords(R::RContainer<R::RString,true,false>&) {}
+	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop);
 
 	/**
 	* Function that return stemming of a word. The Porter's algorithm is
@@ -136,7 +136,7 @@ private:
 	* @param rules          Rules to apply.
 	* @return True if a rule applied needs a next step to be execute.
 	*/
-	void ApplyRules(R::RString& kwd,R::RContainer<ArabicRule,true,false>* rules);
+	void ApplyRules(R::RString& kwd,R::RContainer<ArabicRule,true,false>& rules);
 
 public:
 

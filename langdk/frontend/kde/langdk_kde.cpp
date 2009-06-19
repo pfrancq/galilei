@@ -53,8 +53,8 @@ void About(void)
 		"1.0", ki18n("This is the danish language plugin using a stemming algorithm based on snowball algorithms."), KAboutData::License_GPL,
 		ki18n("(C) 2001 by David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"), "dwartel@ulb.ac.be");
-	aboutData.addAuthor(ki18n("Blake Madden"),ki18n("C++ stemming algorithm writter"), "madden_blake@hotmail.com");
+	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
+	aboutData.addAuthor(ki18n("Snowball Project"),ki18n("Stemming algorithm"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

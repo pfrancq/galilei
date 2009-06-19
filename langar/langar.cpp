@@ -78,8 +78,7 @@ public:
 			size_t nb_min_letters,int equality_pos, RString equality,int forbidden_pos, RString forbidden_letter,bool cycle_rule,bool next_level);
 	int Compare(const ArabicRule&) const {return(-1);} // force rules to be sorted as entered;
 	bool Apply(RString& kwd); //function to apply the rule -> returns true if a stemmer is applied
-	int CheckConditions(RString kwd); // return (-1) if condtions are not verified, else return the position of the old suffix in the word kwd
-	~ArabicRule(void);
+	int CheckConditions(RString kwd); // return (-1) if conditions are not verified, else return the position of the old suffix in the word kwd
 };
 
 
@@ -100,31 +99,31 @@ int GLangAR::ArabicRule::CheckConditions(RString kwd)
 
 	//find the correct position of the old suffix
 	if(BeforePos!=-1)
-		position=BeforePos; // postion is reajusted to the correct old suffix in the word
+		position=BeforePos; // position is readjusted to the correct old suffix in the word
 	else if(AfterPos!=-1)
 	{
 		position=static_cast<int>(kwd.GetLen()-OldSuffix.GetLen()-AfterPos);
 		if (position<0)
 			return(-1);
 	}
-	if (position==-1)	//position is not hard-coded :find the first occurence of the old suffix
+	if (position==-1)	//position is not hard-coded :find the first occurrence of the old suffix
 	{
 		position=kwd.FindStr(OldSuffix,0);
 		if (position==-1)
 			 return(-1);
 	}
 
-	// checking before pos condtions
+	// Checking before position conditions
 	if((kwd.Mid(position, OldSuffix.GetLen()).Compare(OldSuffix)))
-		return(-1); //before pos
+		return(-1); // Before position
 
-	// checking before condtions
-	if(AfterPos!=-1&&(((kwd.GetLen()-OldSuffix.GetLen()-position)!=AfterPos)))
+	// checking before conditions
+	if((AfterPos!=-1)&&(((kwd.GetLen()-OldSuffix.GetLen()-size_t(position))!=size_t(AfterPos))))
 		return(-1);
 
-	//now verify if this old suffix is the old suffix to change (if old suffix appears many times in the word)
-	//check before postion and after position.
-	//check miminum of letters
+	// Now verify if this old suffix is the old suffix to change (if old suffix appears many times in the word)
+	// Check before position and after position.
+	// Check minimum of letters
 	if(kwd.GetLen()<NbMinLetters)
 	 	return(-1);
 
@@ -177,14 +176,6 @@ bool GLangAR::ArabicRule::Apply(RString& kwd)
 }
 
 
-//-----------------------------------------------------------------------------
-GLangAR::ArabicRule::~ArabicRule(void)
-{
-	if(OldSuffix) delete[] OldSuffix;
-	if(NewSuffix) delete[] NewSuffix;
-}
-
-
 
 //-----------------------------------------------------------------------------
 //
@@ -194,22 +185,353 @@ GLangAR::ArabicRule::~ArabicRule(void)
 
 //-----------------------------------------------------------------------------
 GALILEI::GLangAR::GLangAR(GFactoryLang* fac)
-	: GLang(fac,"Arabic","ar"), Rules1(0), Rules2(0), Rules3(0), Rules4(0),
-		 Rules5(0), Rules6(0), Rules7(0)
+	: GLang(fac,"Arabic","ar"), Rules0(5,5), Rules1(5,5), Rules2(5,5), Rules3(5,5), Rules4(5,5),
+		 Rules5(5,5), Rules6(5,5), Rules7(5,5)
 {
- 	// Create Rules
-	Rules0=new RContainer<ArabicRule,true,false>(5,5);
-	Rules1=new RContainer<ArabicRule,true,false>(5,5);
-	Rules2=new RContainer<ArabicRule,true,false>(5,5);
-	Rules3=new RContainer<ArabicRule,true,false>(5,5);
-	Rules4=new RContainer<ArabicRule,true,false>(5,5);
-	Rules5=new RContainer<ArabicRule,true,false>(5,5);
-	Rules6=new RContainer<ArabicRule,true,false>(5,5);
-	Rules7=new RContainer<ArabicRule,true,false>(5,5);
-
-
-	//Load rules;
+	// Load rules;
 	LoadRules();
+}
+
+
+//-----------------------------------------------------------------------------
+void GLangAR::GetStopWords(RContainer<RString,true,false>& stop)
+{
+	stop.InsertPtr(new RString("عشر"));
+	stop.InsertPtr(new RString("عبد"));
+	stop.InsertPtr(new RString("عدد"));
+	stop.InsertPtr(new RString("عدة"));
+	stop.InsertPtr(new RString("عشرة"));
+	stop.InsertPtr(new RString("عدم"));
+	stop.InsertPtr(new RString("عام"));
+	stop.InsertPtr(new RString("عاما"));
+	stop.InsertPtr(new RString("عرفات"));
+	stop.InsertPtr(new RString("عن"));
+	stop.InsertPtr(new RString("عند"));
+	stop.InsertPtr(new RString("عمان"));
+	stop.InsertPtr(new RString("عندما"));
+	stop.InsertPtr(new RString("علي"));
+	stop.InsertPtr(new RString("عليه"));
+	stop.InsertPtr(new RString("عليها"));
+	stop.InsertPtr(new RString("عملية"));
+	stop.InsertPtr(new RString("زيارة"));
+	stop.InsertPtr(new RString("سبتمبر"));
+	stop.InsertPtr(new RString("ساراييفو"));
+	stop.InsertPtr(new RString("سنة"));
+	stop.InsertPtr(new RString("سوريا"));
+	stop.InsertPtr(new RString("سنوات"));
+	stop.InsertPtr(new RString("تشرين"));
+	stop.InsertPtr(new RString("تم"));
+	stop.InsertPtr(new RString("تموز"));
+	stop.InsertPtr(new RString("ضد"));
+	stop.InsertPtr(new RString("بعد"));
+	stop.InsertPtr(new RString("بعض"));
+	stop.InsertPtr(new RString("اعادة"));
+	stop.InsertPtr(new RString("اعلن"));
+	stop.InsertPtr(new RString("اعلنت"));
+	stop.InsertPtr(new RString("حزب"));
+	stop.InsertPtr(new RString("حزيران"));
+	stop.InsertPtr(new RString("بسبب"));
+	stop.InsertPtr(new RString("اسرائيل"));
+	stop.InsertPtr(new RString("حسين"));
+	stop.InsertPtr(new RString("حتى"));
+	stop.InsertPtr(new RString("اتفاق"));
+	stop.InsertPtr(new RString("صرب"));
+	stop.InsertPtr(new RString("اذا"));
+	stop.InsertPtr(new RString("احد"));
+	stop.InsertPtr(new RString("اثر"));
+	stop.InsertPtr(new RString("غزة"));
+	stop.InsertPtr(new RString("برس"));
+	stop.InsertPtr(new RString("باسم"));
+	stop.InsertPtr(new RString("اجتماع"));
+	stop.InsertPtr(new RString("غدا"));
+	stop.InsertPtr(new RString("شخصا"));
+	stop.InsertPtr(new RString("صباح"));
+	stop.InsertPtr(new RString("اطار"));
+	stop.InsertPtr(new RString("اربعة"));
+	stop.InsertPtr(new RString("بغداد"));
+	stop.InsertPtr(new RString("اخرى"));
+	stop.InsertPtr(new RString("باريس"));
+	stop.InsertPtr(new RString("رابين"));
+	stop.InsertPtr(new RString("شرق"));
+	stop.InsertPtr(new RString("بان"));
+	stop.InsertPtr(new RString("ابو"));
+	stop.InsertPtr(new RString("اجل"));
+	stop.InsertPtr(new RString("غير"));
+	stop.InsertPtr(new RString("حركة"));
+	stop.InsertPtr(new RString("رئيس"));
+	stop.InsertPtr(new RString("جديدة"));
+	stop.InsertPtr(new RString("اطلاق"));
+	stop.InsertPtr(new RString("بشكل"));
+	stop.InsertPtr(new RString("بطولة"));
+	stop.InsertPtr(new RString("صحيفة"));
+	stop.InsertPtr(new RString("حاليا"));
+	stop.InsertPtr(new RString("بن"));
+	stop.InsertPtr(new RString("به"));
+	stop.InsertPtr(new RString("ثم"));
+	stop.InsertPtr(new RString("اف"));
+	stop.InsertPtr(new RString("ان"));
+	stop.InsertPtr(new RString("او"));
+	stop.InsertPtr(new RString("اي"));
+	stop.InsertPtr(new RString("بها"));
+	stop.InsertPtr(new RString("جهة"));
+	stop.InsertPtr(new RString("صفر"));
+	stop.InsertPtr(new RString("حيث"));
+	stop.InsertPtr(new RString("اكد"));
+	stop.InsertPtr(new RString("الا"));
+	stop.InsertPtr(new RString("اما"));
+	stop.InsertPtr(new RString("العسكرية"));
+	stop.InsertPtr(new RString("العراق"));
+	stop.InsertPtr(new RString("العاصمة"));
+	stop.InsertPtr(new RString("العربية"));
+	stop.InsertPtr(new RString("العراقي"));
+	stop.InsertPtr(new RString("العراقية"));
+	stop.InsertPtr(new RString("العام"));
+	stop.InsertPtr(new RString("العالم"));
+	stop.InsertPtr(new RString("العلاقات"));
+	stop.InsertPtr(new RString("العمل"));
+	stop.InsertPtr(new RString("امس"));
+	stop.InsertPtr(new RString("السعودية"));
+	stop.InsertPtr(new RString("الساعة"));
+	stop.InsertPtr(new RString("السبت"));
+	stop.InsertPtr(new RString("السابق"));
+	stop.InsertPtr(new RString("روسيا"));
+	stop.InsertPtr(new RString("السلطة"));
+	stop.InsertPtr(new RString("السلطات"));
+	stop.InsertPtr(new RString("السلام"));
+	stop.InsertPtr(new RString("التعاون"));
+	stop.InsertPtr(new RString("التحرير"));
+	stop.InsertPtr(new RString("التى"));
+	stop.InsertPtr(new RString("اكتوبر"));
+	stop.InsertPtr(new RString("دورة"));
+	stop.InsertPtr(new RString("اكثر"));
+	stop.InsertPtr(new RString("ايار"));
+	stop.InsertPtr(new RString("ايضا"));
+	stop.InsertPtr(new RString("الجزائر"));
+	stop.InsertPtr(new RString("حماس"));
+	stop.InsertPtr(new RString("الاسرائيلي"));
+	stop.InsertPtr(new RString("الاسرائيلية"));
+	stop.InsertPtr(new RString("الاسبوع"));
+	stop.InsertPtr(new RString("الاسلحة"));
+	stop.InsertPtr(new RString("الاسلامية"));
+	stop.InsertPtr(new RString("ذكرت"));
+	stop.InsertPtr(new RString("الاتحاد"));
+	stop.InsertPtr(new RString("الاتفاق"));
+	stop.InsertPtr(new RString("ثلاثة"));
+	stop.InsertPtr(new RString("الحرب"));
+	stop.InsertPtr(new RString("الاحد"));
+	stop.InsertPtr(new RString("الذاتي"));
+	stop.InsertPtr(new RString("الشرطة"));
+	stop.InsertPtr(new RString("الاربعاء"));
+	stop.InsertPtr(new RString("الغربية"));
+	stop.InsertPtr(new RString("الخارجية"));
+	stop.InsertPtr(new RString("الاردن"));
+	stop.InsertPtr(new RString("الشرق"));
+	stop.InsertPtr(new RString("ايران"));
+	stop.InsertPtr(new RString("الحدود"));
+	stop.InsertPtr(new RString("الرئيس"));
+	stop.InsertPtr(new RString("الاخيرة"));
+	stop.InsertPtr(new RString("الثاني"));
+	stop.InsertPtr(new RString("الثانية"));
+	stop.InsertPtr(new RString("الاثنين"));
+	stop.InsertPtr(new RString("شمال"));
+	stop.InsertPtr(new RString("بيان"));
+	stop.InsertPtr(new RString("دمشق"));
+	stop.InsertPtr(new RString("الذى"));
+	stop.InsertPtr(new RString("الان"));
+	stop.InsertPtr(new RString("امام"));
+	stop.InsertPtr(new RString("ايام"));
+	stop.InsertPtr(new RString("خلال"));
+	stop.InsertPtr(new RString("الشيخ"));
+	stop.InsertPtr(new RString("الجيش"));
+	stop.InsertPtr(new RString("الدور"));
+	stop.InsertPtr(new RString("الضفة"));
+	stop.InsertPtr(new RString("الجمعة"));
+	stop.InsertPtr(new RString("بيريز"));
+	stop.InsertPtr(new RString("الاوسط"));
+	stop.InsertPtr(new RString("الروسي"));
+	stop.InsertPtr(new RString("البوسنة"));
+	stop.InsertPtr(new RString("الروسية"));
+	stop.InsertPtr(new RString("بيروت"));
+	stop.InsertPtr(new RString("الانتخابات"));
+	stop.InsertPtr(new RString("البلاد"));
+	stop.InsertPtr(new RString("الدفاع"));
+	stop.InsertPtr(new RString("الثلثاء"));
+	stop.InsertPtr(new RString("الانباء"));
+	stop.InsertPtr(new RString("الثلاثاء"));
+	stop.InsertPtr(new RString("الاوروبي"));
+	stop.InsertPtr(new RString("حوالى"));
+	stop.InsertPtr(new RString("الذين"));
+	stop.InsertPtr(new RString("الدول"));
+	stop.InsertPtr(new RString("الحكم"));
+	stop.InsertPtr(new RString("الامم"));
+	stop.InsertPtr(new RString("الامن"));
+	stop.InsertPtr(new RString("الاول"));
+	stop.InsertPtr(new RString("الدولة"));
+	stop.InsertPtr(new RString("الخليج"));
+	stop.InsertPtr(new RString("الخميس"));
+	stop.InsertPtr(new RString("الاميركي"));
+	stop.InsertPtr(new RString("الاميركية"));
+	stop.InsertPtr(new RString("الدولي"));
+	stop.InsertPtr(new RString("الاولى"));
+	stop.InsertPtr(new RString("الدولية"));
+	stop.InsertPtr(new RString("الحكومة"));
+	stop.InsertPtr(new RString("بين"));
+	stop.InsertPtr(new RString("ذلك"));
+	stop.InsertPtr(new RString("دول"));
+	stop.InsertPtr(new RString("دون"));
+	stop.InsertPtr(new RString("حول"));
+	stop.InsertPtr(new RString("حين"));
+	stop.InsertPtr(new RString("الف"));
+	stop.InsertPtr(new RString("الى"));
+	stop.InsertPtr(new RString("انه"));
+	stop.InsertPtr(new RString("اول"));
+	stop.InsertPtr(new RString("ضمن"));
+	stop.InsertPtr(new RString("جنوب"));
+	stop.InsertPtr(new RString("دولة"));
+	stop.InsertPtr(new RString("انها"));
+	stop.InsertPtr(new RString("جميع"));
+	stop.InsertPtr(new RString("الوزراء"));
+	stop.InsertPtr(new RString("المتحدث"));
+	stop.InsertPtr(new RString("المتحدة"));
+	stop.InsertPtr(new RString("دولار"));
+	stop.InsertPtr(new RString("النار"));
+	stop.InsertPtr(new RString("الوضع"));
+	stop.InsertPtr(new RString("القدس"));
+	stop.InsertPtr(new RString("المحتلة"));
+	stop.InsertPtr(new RString("المصدر"));
+	stop.InsertPtr(new RString("المباراة"));
+	stop.InsertPtr(new RString("المصري"));
+	stop.InsertPtr(new RString("الماضي"));
+	stop.InsertPtr(new RString("المصرية"));
+	stop.InsertPtr(new RString("المرحلة"));
+	stop.InsertPtr(new RString("القدم"));
+	stop.InsertPtr(new RString("اللجنة"));
+	stop.InsertPtr(new RString("المجلس"));
+	stop.InsertPtr(new RString("الفرنسي"));
+	stop.InsertPtr(new RString("الفرنسية"));
+	stop.InsertPtr(new RString("القاهرة"));
+	stop.InsertPtr(new RString("المدينة"));
+	stop.InsertPtr(new RString("المانيا"));
+	stop.InsertPtr(new RString("الوطنية"));
+	stop.InsertPtr(new RString("المجموعة"));
+	stop.InsertPtr(new RString("الله"));
+	stop.InsertPtr(new RString("الفلسطيني"));
+	stop.InsertPtr(new RString("الفلسطينية"));
+	stop.InsertPtr(new RString("الفلسطينيين"));
+	stop.InsertPtr(new RString("الوقت"));
+	stop.InsertPtr(new RString("المقرر"));
+	stop.InsertPtr(new RString("القوات"));
+	stop.InsertPtr(new RString("النهائي"));
+	stop.InsertPtr(new RString("المقبل"));
+	stop.InsertPtr(new RString("المنطقة"));
+	stop.InsertPtr(new RString("الولايات"));
+	stop.InsertPtr(new RString("المفاوضات"));
+	stop.InsertPtr(new RString("الملك"));
+	stop.InsertPtr(new RString("اليمن"));
+	stop.InsertPtr(new RString("اليوم"));
+	stop.InsertPtr(new RString("ايلول"));
+	stop.InsertPtr(new RString("الكويت"));
+	stop.InsertPtr(new RString("و6"));
+	stop.InsertPtr(new RString("قد"));
+	stop.InsertPtr(new RString("لا"));
+	stop.InsertPtr(new RString("ما"));
+	stop.InsertPtr(new RString("مع"));
+	stop.InsertPtr(new RString("وزارة"));
+	stop.InsertPtr(new RString("وزير"));
+	stop.InsertPtr(new RString("مساء"));
+	stop.InsertPtr(new RString("قتل"));
+	stop.InsertPtr(new RString("كرة"));
+	stop.InsertPtr(new RString("مصر"));
+	stop.InsertPtr(new RString("هذا"));
+	stop.InsertPtr(new RString("فاز"));
+	stop.InsertPtr(new RString("كأس"));
+	stop.InsertPtr(new RString("ياسر"));
+	stop.InsertPtr(new RString("قرار"));
+	stop.InsertPtr(new RString("مصدر"));
+	stop.InsertPtr(new RString("واحد"));
+	stop.InsertPtr(new RString("قطاع"));
+	stop.InsertPtr(new RString("مصادر"));
+	stop.InsertPtr(new RString("مباراة"));
+	stop.InsertPtr(new RString("مبارك"));
+	stop.InsertPtr(new RString("واضاف"));
+	stop.InsertPtr(new RString("واضافت"));
+	stop.InsertPtr(new RString("فرانس"));
+	stop.InsertPtr(new RString("واشنطن"));
+	stop.InsertPtr(new RString("فان"));
+	stop.InsertPtr(new RString("قبل"));
+	stop.InsertPtr(new RString("قال"));
+	stop.InsertPtr(new RString("كان"));
+	stop.InsertPtr(new RString("لدى"));
+	stop.InsertPtr(new RString("نحو"));
+	stop.InsertPtr(new RString("هذه"));
+	stop.InsertPtr(new RString("وان"));
+	stop.InsertPtr(new RString("محمد"));
+	stop.InsertPtr(new RString("واكد"));
+	stop.InsertPtr(new RString("يذكر"));
+	stop.InsertPtr(new RString("مجلس"));
+	stop.InsertPtr(new RString("فرنسا"));
+	stop.InsertPtr(new RString("كريستوفر"));
+	stop.InsertPtr(new RString("كانت"));
+	stop.InsertPtr(new RString("واوضح"));
+	stop.InsertPtr(new RString("لبنان"));
+	stop.InsertPtr(new RString("مايو"));
+	stop.InsertPtr(new RString("مدينة"));
+	stop.InsertPtr(new RString("مجموعة"));
+	stop.InsertPtr(new RString("كانون"));
+	stop.InsertPtr(new RString("فى"));
+	stop.InsertPtr(new RString("كل"));
+	stop.InsertPtr(new RString("لم"));
+	stop.InsertPtr(new RString("لن"));
+	stop.InsertPtr(new RString("له"));
+	stop.InsertPtr(new RString("من"));
+	stop.InsertPtr(new RString("هو"));
+	stop.InsertPtr(new RString("هي"));
+	stop.InsertPtr(new RString("قوة"));
+	stop.InsertPtr(new RString("كما"));
+	stop.InsertPtr(new RString("لها"));
+	stop.InsertPtr(new RString("منذ"));
+	stop.InsertPtr(new RString("وقد"));
+	stop.InsertPtr(new RString("ولا"));
+	stop.InsertPtr(new RString("نفسه"));
+	stop.InsertPtr(new RString("موسكو"));
+	stop.InsertPtr(new RString("مقتل"));
+	stop.InsertPtr(new RString("لقاء"));
+	stop.InsertPtr(new RString("لكرة"));
+	stop.InsertPtr(new RString("نقطة"));
+	stop.InsertPtr(new RString("قوات"));
+	stop.InsertPtr(new RString("مقابل"));
+	stop.InsertPtr(new RString("لندن"));
+	stop.InsertPtr(new RString("هناك"));
+	stop.InsertPtr(new RString("وقال"));
+	stop.InsertPtr(new RString("وكان"));
+	stop.InsertPtr(new RString("منطقة"));
+	stop.InsertPtr(new RString("منظمة"));
+	stop.InsertPtr(new RString("نهاية"));
+	stop.InsertPtr(new RString("وكالة"));
+	stop.InsertPtr(new RString("وقالت"));
+	stop.InsertPtr(new RString("وكانت"));
+	stop.InsertPtr(new RString("للامم"));
+	stop.InsertPtr(new RString("فيه"));
+	stop.InsertPtr(new RString("كلم"));
+	stop.InsertPtr(new RString("لكن"));
+	stop.InsertPtr(new RString("وفي"));
+	stop.InsertPtr(new RString("وقف"));
+	stop.InsertPtr(new RString("ولم"));
+	stop.InsertPtr(new RString("ومن"));
+	stop.InsertPtr(new RString("وهو"));
+	stop.InsertPtr(new RString("وهي"));
+	stop.InsertPtr(new RString("يوم"));
+	stop.InsertPtr(new RString("فيها"));
+	stop.InsertPtr(new RString("منها"));
+	stop.InsertPtr(new RString("مليار"));
+	stop.InsertPtr(new RString("لوكالة"));
+	stop.InsertPtr(new RString("يكون"));
+	stop.InsertPtr(new RString("يمكن"));
+	stop.InsertPtr(new RString("كلينتون"));
+	stop.InsertPtr(new RString("مليون"));
+	stop.InsertPtr(new RString("يوليو"));
+	stop.InsertPtr(new RString("يونيو"));
+	stop.InsertPtr(new RString("نيويورك"));
 }
 
 
@@ -278,28 +600,28 @@ void GALILEI::GLangAR::LoadRules(void)
 			switch(rule->Level)
 			{
 				case(0):
-					Rules0->InsertPtr(rule);
+					Rules0.InsertPtr(rule);
 					break;
 				case(1):
-					Rules1->InsertPtr(rule);
+					Rules1.InsertPtr(rule);
 					break;
 				case(2):
-					Rules2->InsertPtr(rule);
+					Rules2.InsertPtr(rule);
 					break;
 				case(3):
-					Rules3->InsertPtr(rule);
+					Rules3.InsertPtr(rule);
 					break;
 				case(4):
-					Rules4->InsertPtr(rule);
+					Rules4.InsertPtr(rule);
 					break;
 				case(5):
-					Rules5->InsertPtr(rule);
+					Rules5.InsertPtr(rule);
 					break;
 				case(6):
-					Rules6->InsertPtr(rule);
+					Rules6.InsertPtr(rule);
 					break;
 				case(7):
-					Rules7->InsertPtr(rule);
+					Rules7.InsertPtr(rule);
 					break;
 				default:
 					cout <<" wrong arabic rule level"<<endl;
@@ -316,11 +638,9 @@ void GALILEI::GLangAR::LoadRules(void)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GLangAR::ApplyRules(RString& kwd,RContainer<ArabicRule,true,false>* rules)
+void GALILEI::GLangAR::ApplyRules(RString& kwd,RContainer<ArabicRule,true,false>& rules)
 {
-	RString tmp=kwd.Mid(0,strlen(kwd));
-
-	RCursor<ArabicRule> Cur(*rules);
+	RCursor<ArabicRule> Cur(rules);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		if(Cur()->Apply(kwd))
@@ -359,14 +679,6 @@ RString GALILEI::GLangAR::GetStemming(const RString& _kwd)
 //-----------------------------------------------------------------------------
 GALILEI::GLangAR::~GLangAR(void)
 {
-	if (Rules0)	delete Rules0;
-	if (Rules1)	delete Rules1;
-	if (Rules2)	delete Rules2;
-	if (Rules3)	delete Rules3;
-	if (Rules4)	delete Rules4;
-	if (Rules5)	delete Rules5;
-	if (Rules6)	delete Rules6;
-	if (Rules7)	delete Rules7;
 }
 
 

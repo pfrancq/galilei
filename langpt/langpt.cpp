@@ -6,8 +6,10 @@
 
 	Portuguese Language - Implementation.
 
+	Copyright 2001-2009 by the Snowball Project.
+	Copyright 2001-2009 by Pascal Francq.
 	Copyright 2001 by David Wartel.
-	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).).
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -48,11 +50,6 @@ using namespace GALILEI;
 using namespace std;
 
 
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-using namespace stemming;
-
-
 
 //-----------------------------------------------------------------------------
 //
@@ -62,8 +59,10 @@ using namespace stemming;
 
 //-----------------------------------------------------------------------------
 GLangPT::GLangPT(GFactoryLang* fac)
-	: GLang(fac,"Portuguese","pt")
+	: GLang(fac,"Portuguese","pt"), Stemmer(sb_stemmer_new("portuguese",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
+    if(!Stemmer)
+    	throw GException("GLangPT : Portuguese is not available for stemming");
 }
 
 
@@ -276,12 +275,11 @@ void GLangPT::GetStopWords(RContainer<RString,true,false>& stop)
 
 
 //-----------------------------------------------------------------------------
-RString GLangPT::GetStemming(const RString& _kwd)
+RString GLangPT::GetStemming(const RString& kwd)
 {
-	string word;
-	 word=_kwd.ToString();
-	(*this)(word);
-	return RString(word);
+	RCString Str(StdCodec->FromUnicode(kwd));
+	const sb_symbol * stemmed = sb_stemmer_stem(Stemmer,(const sb_symbol*)Str(),Str.GetLen());
+	return RString((char *)stemmed);
 }
 
 
@@ -294,6 +292,8 @@ void GLangPT::CreateParams(RConfig*)
 //-----------------------------------------------------------------------------
 GLangPT::~GLangPT(void)
 {
+	if(Stemmer)
+		sb_stemmer_delete(Stemmer);
 }
 
 

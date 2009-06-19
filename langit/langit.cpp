@@ -6,6 +6,8 @@
 
 	Italian Language - Implementation.
 
+	Copyright 2001-2009 by the Snowball Project.
+	Copyright 2001-2009 by Pascal Francq.
 	Copyright 2001 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -48,11 +50,6 @@ using namespace GALILEI;
 using namespace std;
 
 
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-using namespace stemming;
-
-
 
 //-----------------------------------------------------------------------------
 //
@@ -62,8 +59,10 @@ using namespace stemming;
 
 //-----------------------------------------------------------------------------
 GLangIT::GLangIT(GFactoryLang* fac)
-	: GLang(fac,"Italian","it")
+	: GLang(fac,"Italian","it"), Stemmer(sb_stemmer_new("italian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
+    if(!Stemmer)
+    	throw GException("GLangIT : Italian is not available for stemming");
 }
 
 
@@ -352,12 +351,11 @@ void GLangIT::GetStopWords(RContainer<RString,true,false>& stop)
 
 
 //-----------------------------------------------------------------------------
-RString GLangIT::GetStemming(const RString& _kwd)
+RString GLangIT::GetStemming(const RString& kwd)
 {
-	string word;
-	word=_kwd.ToString();
-	(*this)(word);
-	return RString(word);
+	RCString Str(StdCodec->FromUnicode(kwd));
+	const sb_symbol * stemmed = sb_stemmer_stem(Stemmer,(const sb_symbol*)Str(),Str.GetLen());
+	return RString((char *)stemmed);
 }
 
 
@@ -370,6 +368,8 @@ void GLangIT::CreateParams(RConfig*)
 //-----------------------------------------------------------------------------
 GLangIT::~GLangIT(void)
 {
+	if(Stemmer)
+		sb_stemmer_delete(Stemmer);
 }
 
 

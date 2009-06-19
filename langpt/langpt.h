@@ -6,6 +6,8 @@
 
 	Portuguese Language - Header.
 
+	Copyright 2001-2009 by the Snowball Project.
+	Copyright 2001-2009 by Pascal Francq.
 	Copyright 2001 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -34,14 +36,19 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R
+#include <rtextencoding.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <glang.h>
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI_PLUGINS
-#include <portuguese_stem.h>
+// include files for the Snowball Project
+#include <libstemmer.h>
 
 
 //-----------------------------------------------------------------------------
@@ -52,11 +59,19 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * The GLangPT class provides a representation for the Portuguese language.
-* @author David Wartel
 * @short Portuguese language.
 */
-class GLangPT : public GLang , public stemming::portuguese_stem<char, std::char_traits<char> >
+class GLangPT : public GLang
 {
+	/**
+	 * Stemmer.
+	 */
+	struct sb_stemmer* Stemmer;
+
+	/**
+	 * Encoding.
+	 */
+	R::RTextEncoding* StdCodec;
 
 public:
 

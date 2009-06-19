@@ -6,6 +6,8 @@
 
 	Danish Language - Header.
 
+	Copyright 2001-2009 by the Snowball Project.
+	Copyright 2001-2009 by Pascal Francq.
 	Copyright 2001 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -34,14 +36,19 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R
+#include <rtextencoding.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <glang.h>
 
 
 //-----------------------------------------------------------------------------
-// include files for GALILEI_PLUGINS
-#include <danish_stem.h>
+// include files for the Snowball Project
+#include <libstemmer.h>
 
 
 //-----------------------------------------------------------------------------
@@ -51,12 +58,20 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GLangDK class provides a representation for the danish language.
-* @author David Wartel
+* The GLangDK class provides a representation for the Danish language.
 * @short Danish language.
 */
-class GLangDK : public GLang , public stemming::danish_stem<char, std::char_traits<char> >
+class GLangDK : public GLang
 {
+	/**
+	 * Stemmer.
+	 */
+	struct sb_stemmer* Stemmer;
+
+	/**
+	 * Encoding.
+	 */
+	R::RTextEncoding* StdCodec;
 
 public:
 

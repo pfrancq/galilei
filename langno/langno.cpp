@@ -6,6 +6,8 @@
 
 	Norwegian Language - Implementation.
 
+	Copyright 2001-2009 by the Snowball Project.
+	Copyright 2001-2009 by Pascal Francq.
 	Copyright 2001 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -48,11 +50,6 @@ using namespace GALILEI;
 using namespace std;
 
 
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-using namespace stemming;
-
-
 
 //-----------------------------------------------------------------------------
 //
@@ -62,8 +59,10 @@ using namespace stemming;
 
 //-----------------------------------------------------------------------------
 GLangNO::GLangNO(GFactoryLang* fac)
-	: GLang(fac,"Norwegian","no")
+	: GLang(fac,"Norwegian","no"), Stemmer(sb_stemmer_new("norwegian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
+    if(!Stemmer)
+    	throw GException("GLangNO : Norwegian is not available for stemming");
 }
 
 
@@ -254,12 +253,11 @@ void GLangNO::GetStopWords(RContainer<RString,true,false>& stop)
 
 
 //-----------------------------------------------------------------------------
-RString GLangNO::GetStemming(const RString& _kwd)
+RString GLangNO::GetStemming(const RString& kwd)
 {
-	string word;
-	 word=_kwd.ToString();
-	(*this)(word);
-	return RString(word);
+	RCString Str(StdCodec->FromUnicode(kwd));
+	const sb_symbol * stemmed = sb_stemmer_stem(Stemmer,(const sb_symbol*)Str(),Str.GetLen());
+	return RString((char *)stemmed);
 }
 
 
@@ -272,6 +270,8 @@ void GLangNO::CreateParams(RConfig*)
 //-----------------------------------------------------------------------------
 GLangNO::~GLangNO(void)
 {
+	if(Stemmer)
+		sb_stemmer_delete(Stemmer);
 }
 
 
