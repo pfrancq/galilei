@@ -1,0 +1,5 @@
+IF(KDE4_FOUND)
+    SET(langro_AVAILABLE_FRONTENDS kde)
+    SET(langro_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(langro_frontend langro kde langro_INCLUDES)
+ENDIF(KDE4_FOUND)

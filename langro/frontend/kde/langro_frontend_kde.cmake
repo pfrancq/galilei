@@ -1,0 +1,3 @@
+SET(langro_frontend_kde_TARGET_SOURCES langro_kde.cpp)
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
