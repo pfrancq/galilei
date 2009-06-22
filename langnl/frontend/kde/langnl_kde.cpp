@@ -6,6 +6,7 @@
 
 	Dutch Language (KDE Part) - Implementation.
 
+	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
 	Copyright 2001 by Nicolas Kumps.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -50,8 +51,8 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "nl", 0, ki18n("Dutch Language"),
-		"1.0", ki18n("This is the dutch language plugin using the Porter stemming algorithm."), KAboutData::License_GPL,
-		ki18n("(C) 2001 by Nicolas Kumps\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB"),
+		"1.5", ki18n("This is the dutch language plugin using the Porter stemming algorithm."), KAboutData::License_GPL,
+		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001 by Nicolas Kumps\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Nicolas Kumps"),ki18n("Developer"));
 	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Contributor"));

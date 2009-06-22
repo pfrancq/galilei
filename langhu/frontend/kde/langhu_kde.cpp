@@ -6,8 +6,8 @@
 
 	Hugarian language (KDE Part) - Implementation.
 
-	Copyright 2001 by David Wartel.
-	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2001-2009 by the Snowball Project.
+	Copyright 2008-2009 by Pascal Francq.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -51,7 +51,7 @@ void About(void)
 {
 	KAboutData aboutData("hu", 0, ki18n("Hungarian Language"),
 		"1.0", ki18n("This is the swedish language plugin using a stemming algorithm based on snowball algorithms."), KAboutData::License_GPL,
-		ki18n("(C) 2001 by David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB"),
+		ki18n("(C) 2001-2009 by the Snowball Project\n(C) 2008-2009 by Pascal Francq"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
 	aboutData.addAuthor(ki18n("Snowball Project"),ki18n("Stemming algorithm"));

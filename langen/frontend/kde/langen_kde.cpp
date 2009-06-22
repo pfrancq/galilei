@@ -50,7 +50,7 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "en", 0, ki18n("English Language"),
-		"1.0", ki18n("This is the english language plugin using the Porter stemming algorithm."), KAboutData::License_GPL,
+		"1.5", ki18n("This is the english language plugin using the Porter stemming algorithm."), KAboutData::License_GPL,
 		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.irmdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");

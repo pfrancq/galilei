@@ -7,8 +7,7 @@
 	French Language (KDE Part) - Implementation.
 
 	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2001 by Julien Lamoral.
-	Copyright 2001 by Marjorie Paternostre.
+	Copyright 2001 by Marjorie Paternostre and Julien Lamoral.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -52,8 +51,8 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "fr", 0,ki18n("French Language"),
-		"1.0", ki18n("This is the french language plugin using the Carry stemming algorithm."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001 by Marjorie Paternostre\n(C) 2001 by Julien Lamoral\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		"1.5", ki18n("This is the french language plugin using the Carry stemming algorithm."), KAboutData::License_GPL,
+		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001 by Marjorie Paternostre and Julien Lamoral\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Marjorie Paternostre"),ki18n("Carry inventor"));
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
