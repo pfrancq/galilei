@@ -453,14 +453,14 @@ template<class cGroup,class cObj>
 		NbProf+=InGrp;
 		grp()->Precision=grp()->Recall=0.0;
 		RAssert(InGrp);
-		RCursor<cObj> Prof(grp()->Group->GetObjs());
+		RCursor<cObj> Objs(grp()->Group->GetObjs());
 		if(InGrp==1)
 		{
-			Prof.Start();
-			ThGrp=GetIdealGroup(Prof());
-			RAssert(ThGrp);
+			Objs.Start();
+			ThGrp=GetIdealGroup(Objs());
+			if(!ThGrp)
+				throw GException("GSubjects::ComputeRecallPrecision(tObjType,RCursor<GroupScore<cGroup> >&,double& recall,double&): ThGrp cannot be null");
 			InThGrp=ThGrp->GetNbObjs(type);
-			RAssert(InThGrp);
 			grp()->Precision=1.0;
 			if(InThGrp==1)
 				grp()->Recall=1.0;
@@ -469,12 +469,12 @@ template<class cGroup,class cObj>
 		}
 		else
 		{
-			for(Prof.Start();!Prof.End();Prof.Next())
+			for(Objs.Start();!Objs.End();Objs.Next())
 			{
-				ThGrp=GetIdealGroup(Prof());
-				RAssert(ThGrp);
+				ThGrp=GetIdealGroup(Objs());
+				if(!ThGrp)
+					throw GException("GSubjects::ComputeRecallPrecision(tObjType,RCursor<GroupScore<cGroup> >&,double& recall,double&): ThGrp cannot be null");
 				InThGrp=ThGrp->GetNbObjs(type);
-				RAssert(InThGrp);
 				if(InThGrp==1)
 					grp()->Recall+=1.0;
 				else

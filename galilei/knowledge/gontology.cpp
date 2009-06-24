@@ -207,7 +207,7 @@ GConcept* GOntology::GetConcept(size_t id)
 {
 	GConcept* concept(Concepts[id]);
 	if(!concept)
-		throw GException("'"+RString::Number(id)+"' is not a valid concept identifier");
+		throw GException("GOntology::GetConcept(size_t) : '"+RString::Number(id)+"' is not a valid concept identifier");
 	return(concept);
 }
 

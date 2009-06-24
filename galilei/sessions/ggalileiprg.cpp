@@ -235,6 +235,15 @@ public:
 
 
 //------------------------------------------------------------------------------
+class GPrintOutputI : public RPrgFunc
+{
+public:
+	GPrintOutputI(void) : RPrgFunc("PrintOutput","Print a line in the output file") {}
+	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
+};
+
+
+//------------------------------------------------------------------------------
 class GGOutputI : public RPrgFunc
 {
 public:
@@ -567,7 +576,7 @@ void GOutputI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCont
 	ShowInst(this,prg,args);
 	GInstGALILEIApp* Owner=dynamic_cast<GInstGALILEIApp*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GGALILEIApp'");
 
 	if(args.GetNb()!=1)
 		throw RPrgException(prg,"A filename must be specified.");
@@ -579,8 +588,28 @@ void GOutputI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCont
 	}
 	Owner->OFile=new RTextFile((args[0]->GetValue(prg)));
 	Owner->OFile->Open(RIO::Create);
-	Owner->OFile->SetSeparator("\t");
-	(*Owner->OFile)<<"Sets"<<"Recall"<<"Precision"<<"Total";
+	Owner->OFile->SetSeparator(" ");
+}
+
+
+//------------------------------------------------------------------------------
+void GPrintOutputI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
+{
+	ShowInst(this,prg,args);
+	GInstGALILEIApp* Owner=dynamic_cast<GInstGALILEIApp*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GGALILEIApp'");
+	if(!Owner->OFile)
+		throw RPrgException(prg,"No current output defined");
+
+	RCursor<RPrgVar> Cur(args);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		RString Str(Cur()->GetValue(prg));
+		if(Str.GetLen()<25)
+			Str.SetLen(25," ");
+		(*Owner->OFile)<<Str;
+	}
 	(*Owner->OFile)<<endl;
 }
 
@@ -739,7 +768,6 @@ void GStartSimulationI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst
 	if(args.GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Create Ideal Groups");
-	Owner->Session->GetSubjects()->Apply();
 	Owner->Session->GetSubjects()->StartSimulation();
 }
 
@@ -835,9 +863,30 @@ void GCompareIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R:
 		o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->Total));
 	if(Owner->App->OFile)
 	{
-		(*Owner->App->OFile)<<Owner->App->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total;
+		RString Str;
+		Str=Owner->App->TestName;
+		if(Str.GetLen()<25)
+			Str.SetLen(25," ");
+		(*Owner->App->OFile)<<Str;
+		Str=RString::Number(Owner->Recall);
+		if(Str.GetLen()<25)
+			Str.SetLen(25," ");
+		(*Owner->App->OFile)<<Str;
+		Str=RString::Number(Owner->Precision);
+		if(Str.GetLen()<25)
+			Str.SetLen(25," ");
+		(*Owner->App->OFile)<<Str;
+		Str=RString::Number(Owner->Total);
+		if(Str.GetLen()<25)
+			Str.SetLen(25," ");
+		(*Owner->App->OFile)<<Str;
 		if(Owner->TrackNewProfiles)
-			(*Owner->App->OFile)<<Owner->PercAss;
+		{
+			Str=RString::Number(Owner->PercAss);
+			if(Str.GetLen()<25)
+				Str.SetLen(25," ");
+			(*Owner->App->OFile)<<Str;
+		}
 		(*Owner->App->OFile)<<endl;
 	}
 	if(Owner->App->GOFile)
@@ -851,12 +900,15 @@ void GCompareIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R:
 
 
 //------------------------------------------------------------------------------
-void GSetSimulationParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RContainer<RPrgVar,true,false>& args)
+void GSetSimulationParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	ShowInst(this,prg,args);
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
-	GALILEIApp->GetGALILEIConfig()->Set(args[0]->GetValue(prg),args[1]->GetValue(prg));
+	Owner->Session->Set(args[0]->GetValue(prg),args[1]->GetValue(prg),"Subjects");
 }
 
 
@@ -1391,6 +1443,7 @@ GSessionClass::GSessionClass(GInstGALILEIApp* app)
 	Methods.InsertPtr(new GForceReComputeI());
 	Methods.InsertPtr(new GSetSaveResultsI());
 	Methods.InsertPtr(new GResetMeasureI());
+	Methods.InsertPtr(new GSetSimulationParamI());
 }
 
 
@@ -1424,13 +1477,13 @@ GSessionClass::~GSessionClass(void)
 GGALILEIAppClass::GGALILEIAppClass(void)
 	: RPrgClass("GGALILEIApp")
 {
-	Methods.InsertPtr(new GSetSimulationParamI());
 	Methods.InsertPtr(new GSetPlugInParamI());
 	Methods.InsertPtr(new GSetCurrentPlugInI());
 	Methods.InsertPtr(new GSetMeasureParamI());
 	Methods.InsertPtr(new GSetCurrentMeasureI());
 	Methods.InsertPtr(new GSetLogI());
 	Methods.InsertPtr(new GOutputI());
+	Methods.InsertPtr(new GPrintOutputI());
 	Methods.InsertPtr(new GGOutputI());
 	Methods.InsertPtr(new GSOutputI());
 	Methods.InsertPtr(new GSetTestI());
