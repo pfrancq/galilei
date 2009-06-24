@@ -390,13 +390,14 @@ void QSessionProgressDlg::NextDoc(const GDoc* doc)
 {
 	if(doc)
 	{
-		QString DocName(ToQString(doc->GetName()));
-		if(DocName.length()>80)
+		QString DocName;//(ToQString(doc->GetName()));
+		if(doc->GetName().GetLen()>80)
 		{
-			DocName.resize(77);
-			DocName+="...";
+			DocName+=ToQString(doc->GetName().Mid(0,20))+"..."+ToQString(doc->GetName().Mid(doc->GetName().GetLen()-57,57));
 		}
-		setLabelText("Treat document '"+ToQString(doc->GetName())+"'");
+		else
+			ToQString(doc->GetName());
+		setLabelText("Treat document '"+DocName+"'");
 	}
 }
 
