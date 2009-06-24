@@ -324,7 +324,7 @@ void GStorageMySQL::SaveSubject(GSubject* subject)
 
 		// Insert the topic
 		sSql="INSERT INTO subjects(subjectid,name,parent,used) VALUES("+
-			Num(subject->GetId())+",'"+subject->GetName()+"',"+Num(parent)+used;
+			Num(subject->GetId())+","+RQuery::SQLValue(subject->GetName())+","+Num(parent)+used;
 		RQuery Ins1(Db,sSql);
 
 		// Assign all the documents to the topic
