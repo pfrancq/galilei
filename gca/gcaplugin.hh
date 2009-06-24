@@ -57,6 +57,10 @@ using namespace R;
 using namespace std;
 
 
+//-----------------------------------------------------------------------------
+const bool Cout=false;
+
+
 
 //-----------------------------------------------------------------------------
 //
@@ -202,17 +206,23 @@ template<class cObj,class cGroup,class cFactory>
 {
 	double d;
 
-	cout<<"Do GCA for "<<GetObjType(ObjType)<<"s"<<endl;
+	if(Cout)
+		cout<<"Do GCA for "<<GetObjType(ObjType)<<"s"<<endl;
 
 	// Init the GCA
-	cout<<"Get minimum similarity"<<endl;
+	if(Cout)
+		cout<<"Get minimum similarity"<<endl;
 	GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities")->Info(0,&d);
 	MinSimLevel=d;
-	cout<<"   Minimum Similarity="<<d<<endl;
-	cout<<"New GCA"<<endl;
+	if(Cout)
+	{
+		cout<<"   Minimum Similarity="<<d<<endl;
+		cout<<"New GCA"<<endl;
+	}
 	GCAInst Instance(session,Objs,this,session->GetDebug(),ObjType,mes,Incremental);
 	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cObj,cGroup,cFactory>::Gen),"RInst::Generation",&Instance);
-	cout<<"Init GCA"<<endl;
+	if(Cout)
+		cout<<"Init GCA"<<endl;
 //	Instance.SetVerify(true);
 	Instance.Init();
 	Instance.SetLocalOptimisation(LocalOptimisation);
@@ -221,21 +231,25 @@ template<class cObj,class cGroup,class cFactory>
 		Instance.SetSeed(Seed);
 
 	// Run
-	cout<<"Run GCA (";
-	if(Optimisation)
-		cout<<"optimization";
-	else
-		cout<<"no optimization";
-	if(LocalOptimisation)
-		cout<<",local optimization";
-	else
-		cout<<",no local optimization";
-	if(Incremental)
-		cout<<",incremental mode)"<<endl;
-	else
-		cout<<",from scratch)"<<endl;
+	if(Cout)
+	{
+		cout<<"Run GCA (";
+		if(Optimisation)
+			cout<<"optimization";
+		else
+			cout<<"no optimization";
+		if(LocalOptimisation)
+			cout<<",local optimization";
+		else
+			cout<<",no local optimization";
+		if(Incremental)
+			cout<<",incremental mode)"<<endl;
+		else
+			cout<<",from scratch)"<<endl;
+	}
 	Instance.Run();
-	cout<<"Build solutions"<<endl;
+	if(Cout)
+		cout<<"Build solutions"<<endl;
 	ConstructResults<GCAGroup>(session,Instance.BestChromosome->Used);
 }
 
@@ -293,11 +307,13 @@ template<class cObj,class cGroup,class cFactory>
 		Objs.Clear(Cur.GetNb());
 
 		// Create objects
-		cout<<"Create objects...";
+		if(Cout)
+			cout<<"Create objects...";
 		size_t i(0);
 		for(Cur.Start();!Cur.End();Cur.Next(),i++)
 			Objs.InsertPtr(new GCAObj(i,Cur()));
-		cout<<" "<<i<<" created"<<endl;
+		if(Cout)
+			cout<<" "<<i<<" created"<<endl;
 
 		switch(ClusteringMethod)
 		{
@@ -336,7 +352,8 @@ template<class cObj,class cGroup,class cFactory>
 template<class cObj,class cGroup,class cFactory>
 	void GCAPlugIn<cObj,cGroup,cFactory>::Gen(const R::RNotification& notification)
 {
-	cout<<"Gen "<<GetData<size_t>(notification)<<endl;
+	if(Cout)
+		cout<<"Gen "<<GetData<size_t>(notification)<<endl;
 }
 
 
