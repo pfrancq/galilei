@@ -50,7 +50,7 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData("00", 0, ki18n("Universal Language"),
-		"1.0", ki18n("This is the universal language plugin."), KAboutData::License_GPL,
+		"1.0", ki18n("This is the universal language plug-in"), KAboutData::License_GPL,
 		ki18n("(C) 2006-2009 by Pascal Francq\n(C) 2006-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");

@@ -51,7 +51,7 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "nl", 0, ki18n("Dutch Language"),
-		"1.5", ki18n("This is the dutch language plugin using the Porter stemming algorithm."), KAboutData::License_GPL,
+		"1.5", ki18n("This is the Dutch language plug-in using the Kraaij and Pohlmann stemming algorithm"), KAboutData::License_GPL,
 		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001 by Nicolas Kumps\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Nicolas Kumps"),ki18n("Developer"));

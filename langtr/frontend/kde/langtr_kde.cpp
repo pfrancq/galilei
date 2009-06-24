@@ -2,12 +2,12 @@
 
 	GALILEI Research Project
 
-	LangEN_KDE.cpp
+	LangTR_KDE.cpp
 
-	English Language (KDE Part) - Implementation.
+	Turkish language (KDE Part) - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2001-2009 by the Snowball Project.
+	Copyright 2008-2009 by Pascal Francq.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -49,12 +49,12 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "en", 0, ki18n("English Language"),
-		"1.5", ki18n("This is the English language plug-in using the Porter stemming algorithm"), KAboutData::License_GPL,
-		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
-		KLocalizedString(), "http://www.irmdp.org", "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
-	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Contributor"));
+	KAboutData aboutData("tr", 0, ki18n("Turkish Language"),
+		"1.0", ki18n("This is the Turkish language plug-in using a stemming algorithm based on Snowball"), KAboutData::License_GPL,
+		ki18n("(C) 2001-2009 by the Snowball Project\n(C) 2008-2009 by Pascal Francq"),
+		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
+	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
+	aboutData.addAuthor(ki18n("Snowball Project"),ki18n("Stemming algorithm"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
 }

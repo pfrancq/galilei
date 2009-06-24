@@ -31,7 +31,7 @@ ELSE(disable-kde)
 ENDIF(disable-kde)
 
 
-SET(plugins libstemmer lang00 langar langde langdk langen langes langfi langfr langhu langit langnl langno langpt langro langru langsv)
+SET(plugins libstemmer lang00 langar langde langdk langen langes langfi langfr langhu langit langnl langno langpt langro langru langsv langtr)
 FOREACH(plugin ${plugins})
     SET(SUB_PROJECT ${plugin})
     ADD_SUBDIRECTORY(${plugin})

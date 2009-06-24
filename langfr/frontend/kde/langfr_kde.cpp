@@ -51,7 +51,7 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "fr", 0,ki18n("French Language"),
-		"1.5", ki18n("This is the french language plugin using the Carry stemming algorithm."), KAboutData::License_GPL,
+		"1.5", ki18n("This is the French language plug-in using the Carry stemming algorithm"), KAboutData::License_GPL,
 		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001 by Marjorie Paternostre and Julien Lamoral\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Marjorie Paternostre"),ki18n("Carry inventor"));

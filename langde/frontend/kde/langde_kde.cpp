@@ -52,7 +52,7 @@ extern "C" {
 void About(void)
 {
 	KAboutData aboutData( "de", 0, ki18n("German Language"),
-		"1.5", ki18n("This is the german language plugin using a stemming algorithm based on snowball algorithms."), KAboutData::License_GPL,
+		"1.5", ki18n("This is the German language plug-in using a stemming algorithm based on Snowball"), KAboutData::License_GPL,
 		ki18n("(C) 2001-2009 by the Snowball Project\n(C) 2001-2009 by Pascal Francq\n(C) 2001 by David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
