@@ -16,6 +16,13 @@ IF(WIN32)
         TARGET_LINK_LIBRARIES(${simplugin} galilei roptimization rcore rmath genericsim)
     ENDFOREACH(simplugin ${simplugins})
 
+  SET(plugins profilesagree profilesdisagree docsagree docsdisagree)
+  FOREACH(plugin ${plugins})
+        ADD_LIBRARY(${plugin} STATIC ${plugin}.cpp)
+        SET_TARGET_PROPERTIES(${plugin} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
+        TARGET_LINK_LIBRARIES(${plugin} galilei roptimization rcore rmath)
+  ENDFOREACH(plugin ${plugins})
+
 ELSE(WIN32)
 
     # Static libraries
