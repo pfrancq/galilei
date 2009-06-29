@@ -5,18 +5,19 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
 IF(WIN32)
     # Static libraries
-    ADD_LIBRARY(gca STATIC ${COMMON_SRC})
-    SET_TARGET_PROPERTIES(gca PROPERTIES COMPILE_FLAGS -fPIC)
+    ADD_LIBRARY(genericsim STATIC genericsims.cpp)
+    SET_TARGET_PROPERTIES(genericsim PROPERTIES COMPILE_FLAGS -fPIC)
 
     # Create plug-ins
-    ADD_LIBRARY(gca_profiles STATIC gcagroupprofiles.cpp)
-    SET_TARGET_PROPERTIES(gca_profiles PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
-    TARGET_LINK_LIBRARIES(gca_profiles galilei roptimization rcore rmath genericsim)
-    ADD_LIBRARY(gca_docs STATIC gcagroupdocs.cpp)
-    SET_TARGET_PROPERTIES(gca_docs PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
-    TARGET_LINK_LIBRARIES(gca_docs galilei roptimization rcore rmath genericsim)
-    
+    SET(simplugins profilessims docssims docsprofilessims docsgroupssims profilesgroupssims)
+    FOREACH(simplugin ${simplugins})
+        ADD_LIBRARY(${simplugin} STATIC ${simplugin}.cpp)
+        SET_TARGET_PROPERTIES(${simplugin} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
+        TARGET_LINK_LIBRARIES(${simplugin} galilei roptimization rcore rmath genericsim)
+    ENDFOREACH(simplugin ${simplugins})
+        
 ELSE(WIN32)
+
     # Static libraries
     ADD_LIBRARY(genericsim STATIC genericsims.cpp)
     SET_TARGET_PROPERTIES(genericsim PROPERTIES COMPILE_FLAGS -fPIC)
