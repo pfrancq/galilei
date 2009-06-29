@@ -1596,7 +1596,7 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 				RCursor<GCommunity> Groups(Data->Communities);
 				for(Groups.Start();!Groups.End();Groups.Next())
 				{
-					if(Groups()->IsDefined())
+					if(Groups()->GetVector()->IsDefined())
 						SaveInfos(Groups()->Vector,otCommunity,Groups()->BlockId,Groups()->Id);
 					Storage->SaveCommunity(Groups());
 					Groups()->SetState(osSaved);
@@ -1613,7 +1613,7 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 				RCursor<GTopic> Topics(Data->Topics);
 				for(Topics.Start();!Topics.End();Topics.Next())
 				{
-					if(Topics()->IsDefined())
+					if(Topics()->GetVector()->IsDefined())
 						SaveInfos(Topics()->Vector,otTopic,Topics()->BlockId,Topics()->Id);
 					Storage->SaveTopic(Topics());
 					Topics()->SetState(osSaved);

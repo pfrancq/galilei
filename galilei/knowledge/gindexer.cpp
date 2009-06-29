@@ -126,9 +126,9 @@ void GIndexer::CreateConfig(RConfig* config)
 	config->InsertParam(new RParamValue("DocsDescType",RBlockFile::WriteBack),"Indexer");
 
 	// Documents structures
-	config->InsertParam(new RParamValue("DocsStructBlock",1024),"Indexer");
+	config->InsertParam(new RParamValue("DocsStructBlock",4096),"Indexer");
 	config->InsertParam(new RParamValue("DocsStructTolerance",10),"Indexer");
-	config->InsertParam(new RParamValue("DocsStructCache",20),"Indexer");
+	config->InsertParam(new RParamValue("DocsStructCache",40),"Indexer");
 	config->InsertParam(new RParamValue("DocsStructType",RBlockFile::WriteBack),"Indexer");
 
 	// Documents inverted file
@@ -259,7 +259,6 @@ void GIndexer::SaveInfos(const GWeightInfos* infos,tObjType type,size_t& blockid
 	}
 	catch(RIOException e)
 	{
-		cerr<<e.GetMsg()<<endl;
 		throw GException(RString("GIndexer::SaveInfos: ")+e.GetMsg());
 	}
 }

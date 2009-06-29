@@ -146,7 +146,7 @@ public:
 	* @param name            Name of the subject.
 	* @param u               Used?
 	*/
-	GSubject(size_t id,const char* name,bool u);
+	GSubject(size_t id,const R::RString& name,bool u);
 
 	/**
 	* Compare two subjects by comparing their identifier.
