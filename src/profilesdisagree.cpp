@@ -51,6 +51,7 @@ class GProfilesDisagreement : public GMatrixMeasure
 	size_t MinDocs;
 public:
 	GProfilesDisagreement(GFactoryMeasure* fac);
+	virtual R::RCString GetClassName(void) const {return("GProfilesDisagreement");}
 	virtual void ApplyConfig(void);
 	double Compute(void* obj1,void* obj2);
 	static void CreateParams(RConfig* params);

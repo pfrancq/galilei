@@ -45,6 +45,7 @@ class GDocsCommunitiesSims : public GGenericSims
 {
 public:
 	GDocsCommunitiesSims(GFactoryMeasure* fac) : GGenericSims(fac,otDoc,otCommunity) {}
+	virtual R::RCString GetClassName(void) const {return("GDocsCommunitiesSims");}
 };
 
 

@@ -47,6 +47,7 @@ class GProfilesSims : public GGenericSims
 {
 public:
 	GProfilesSims(GFactoryMeasure* fac) : GGenericSims(fac,otProfile,otProfile) {}
+	virtual R::RCString GetClassName(void) const {return("GProfilesSims");}
 };
 
 

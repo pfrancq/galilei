@@ -45,6 +45,7 @@ class GDocsProfilesSims : public GGenericSims
 {
 public:
 	GDocsProfilesSims(GFactoryMeasure* fac) : GGenericSims(fac,otDoc,otProfile) {}
+	virtual R::RCString GetClassName(void) const {return("GDocsProfilesSims");}
 };
 
 

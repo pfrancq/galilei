@@ -197,6 +197,13 @@ public:
 	GGenericSims(GFactoryMeasure* fac,tObjType lines,tObjType cols);
 
 	/**
+	 * Virtual method inherits from R::RObject and that must be re-implemented
+	 * in all child classes.
+	 * @return Name of the class.
+	 */
+	virtual R::RCString GetClassName(void) const {return("GGenericSims");}
+
+	/**
 	 * Get the name of the files that will be used. By default, it is the name
 	 * of the plug-in.
 	 */
