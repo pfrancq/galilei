@@ -156,17 +156,19 @@ void Thesaurus::Run(void)
 
 		// Create objects
 		cout<<"Create objects...";
-		size_t i(0);
+		size_t id(0);
 		RObjH* obj;
-		for(Cur.Start();!Cur.End();Cur.Next(),i++)
+		for(Cur.Start();!Cur.End();Cur.Next())
 		{
+			// Get the vector of the current topic -> if null, treat next object
 			GTopic* Topic(Cur());
+			const GWeightInfos* Desc(Topic->GetVector());
+			if(!Desc->GetNb())
+				continue;
 
 			// Order the vector by weight:
-			// 1. Get the vector.
-			// 2. Mulitply by the tf-idf factors of the topic
-			// 3. Order it.
-			const GWeightInfos* Desc(Topic->GetVector());
+			// 1. Multiply by the tf-idf factors of the topic
+			// 2. Order it.
 			if(Desc->GetNb()>Concepts.GetNb())
 			{
 				for(size_t nb=Desc->GetNb()-Concepts.GetNb()+20;--nb;)
@@ -182,7 +184,7 @@ void Thesaurus::Run(void)
 			Concepts.ReOrder(GWeightInfos::sortOrder);
 
 			// Create the object
-			Objs.InsertPtr(obj=new RObjH(i,Topic->GetName(),NumInfos));
+			Objs.InsertPtr(obj=new RObjH(id,Topic->GetName(),NumInfos));
 			size_t j,k;
 			for(Cur.Start(),j=0,k=0;(k<NumInfos)&&(j<Desc->GetNb());Cur.Next(),j++)
 			{
@@ -199,9 +201,10 @@ void Thesaurus::Run(void)
 				}
 				obj->AddAttribute(w->Id);
 			}
+			id++; // Increment the identifier
 			//PrintObj(obj);
 		}
-		cout<<" "<<i<<" created ("<<Words.GetNb()<<" different concepts)"<<endl;
+		cout<<" "<<id<<" created ("<<Words.GetNb()<<" different concepts)"<<endl;
 
 		// Init the GCA
 		cout<<"New HCA"<<endl;
