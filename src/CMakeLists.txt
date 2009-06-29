@@ -15,7 +15,7 @@ IF(WIN32)
         SET_TARGET_PROPERTIES(${simplugin} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
         TARGET_LINK_LIBRARIES(${simplugin} galilei roptimization rcore rmath genericsim)
     ENDFOREACH(simplugin ${simplugins})
-        
+
 ELSE(WIN32)
 
     # Static libraries
@@ -27,7 +27,7 @@ ELSE(WIN32)
   FOREACH(simplugin ${simplugins})
     ADD_LIBRARY(${simplugin} SHARED ${simplugin}.cpp)
     ADD_SOURCE_FILE(${simplugin} frontend ${simplugin}_INCLUDES)
-    ADD_FRONTEND(${simplugin} 2 2 2.0.0 lib "r/galilei" gcap_rofiles_INCLUDES)
+    ADD_FRONTEND(${simplugin} 2 2 2.0.0 lib "r/galilei" ${simplugin}_INCLUDES)
     TARGET_LINK_LIBRARIES(${simplugin} galilei roptimization rcore rmath genericsim dl)
   ENDFOREACH(simplugin ${simplugins})
 
@@ -35,7 +35,7 @@ ELSE(WIN32)
   FOREACH(plugin ${plugins})
     ADD_LIBRARY(${plugin} SHARED ${plugin}.cpp)
     ADD_SOURCE_FILE(${plugin} frontend ${plugin}_INCLUDES)
-    ADD_FRONTEND(${plugin} 2 2 2.0.0 lib "r/galilei" gcap_rofiles_INCLUDES)
+    ADD_FRONTEND(${plugin} 2 2 2.0.0 lib "r/galilei" ${plugin}_INCLUDES)
     TARGET_LINK_LIBRARIES(${plugin} galilei roptimization rcore rmath dl)
   ENDFOREACH(plugin ${plugins})
 
