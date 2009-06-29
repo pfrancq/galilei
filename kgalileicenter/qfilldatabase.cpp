@@ -152,7 +152,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 					cat=parent+"/"+cat;
 				}
 				if(CurDepth<=Info->Depth->value())
-					Subjects->InsertNode(Subject,new GSubject(Subjects->GetNbNodes(),cat,true));
+					Subjects->InsertNode(Subject,new GSubject(Subjects->GetNbNodes()+1,cat,true));
 			}
 
 			ParseDir(Files()->GetURI(),cat);
