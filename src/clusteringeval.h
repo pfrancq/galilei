@@ -212,6 +212,22 @@ public:
 private:
 
 	/**
+	 * Look if the object is alone in the ideal group.
+	 * @param obj            Object.
+	 * @return true if the object is alone.
+	 */
+	virtual bool IsObjAloneInIdealGroup(cObj* obj);
+
+	/**
+	 * Compute the "best" recall and precision for a given set of objects and a
+	 * computed group.
+	 * @param objs           Objects.
+	 * @param grp            Score of the computed group.
+	 * @param ingroup        Number of objects in the computed group.
+	 */
+	virtual void ComputeBestLocalRecallPrecision(RCursor<cObj>& objs,ClusterScore<cGroup>* grp,size_t ingroup);
+
+	/**
 	 * Compute the recall and the precision.
 	 */
 	void ComputeRecallPrecision(void);

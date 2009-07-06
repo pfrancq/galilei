@@ -139,13 +139,45 @@ template<class cGroup,class cObj>
 
 //------------------------------------------------------------------------------
 template<class cGroup,class cObj>
+	bool ClusteringEval<cGroup,cObj>::IsObjAloneInIdealGroup(cObj* obj)
+{
+	const GSubject* ThGrp(Session->GetIdealGroup(obj));
+	if(!ThGrp)
+		throw GException("ClusteringEval<cGroup,cObj>::IsObjAloneInIdealGroup(cObj*): ThGrp cannot be null");
+	return(ThGrp->GetNbObjs(ObjType)==1);
+}
+
+
+//------------------------------------------------------------------------------
+template<class cGroup,class cObj>
+	void ClusteringEval<cGroup,cObj>::ComputeBestLocalRecallPrecision(RCursor<cObj>& objs,ClusterScore<cGroup>* grp,size_t ingroup)
+{
+	for(objs.Start();!objs.End();objs.Next())
+	{
+		const GSubject* ThGrp(Session->GetIdealGroup(objs()));
+		if(!ThGrp)
+			throw GException("ClusteringEval<cGroup,cObj>::ComputeBestLocalRecallPrecision(cObj*,ClusterScore<cGroup>*,size_t): ThGrp cannot be null");
+		size_t InThGrp(ThGrp->GetNbObjs(ObjType));
+		if(InThGrp==1)
+			grp->Recall+=1.0;
+		else
+		{
+			size_t ElseInThGrp(ThGrp->GetNbObjs(grp->Group)-1);
+			grp->Precision+=((double)(ElseInThGrp))/((double)(ingroup-1));
+			size_t ElseInGrp(grp->Group->GetNbObjs(ThGrp)-1);
+			grp->Recall+=((double)(ElseInGrp))/((double)(InThGrp-1));
+		}
+	}
+	Precision+=grp->Precision;
+	Recall+=grp->Recall;
+}
+
+
+//------------------------------------------------------------------------------
+template<class cGroup,class cObj>
 	void ClusteringEval<cGroup,cObj>::ComputeRecallPrecision(void)
 {
-	GSubject* ThGrp;        // Subject of the corresponding ideal group.
 	size_t InGrp;           // Number of objects in the computed group.
-	size_t ElseInGrp;       // Number of objects in the computed group that are also in the ideal one.
-	size_t InThGrp;         // Number of objects in the corresponding ideal group.
-	size_t ElseInThGrp;     // Number of objects in the corresponding ideal group that are also in the computed one.
 	size_t NbObjs(0);       // Number of objects grouped.
 
 	// Re-create the classes for the score of each cluster
@@ -156,7 +188,6 @@ template<class cGroup,class cObj>
 
 	// Compute the recall and the precision
 	Precision=Recall=0.0;
-	GSubjects* Subjects(Session->GetSubjects());
 	RCursor<ClusterScore<cGroup> > Grps(ClustersScore);
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
@@ -168,36 +199,15 @@ template<class cGroup,class cObj>
 		if(InGrp==1)
 		{
 			Objs.Start();
-			ThGrp=Subjects->GetIdealGroup(Objs());
-			if(!ThGrp)
-				throw GException("GSubjects::ComputeRecallPrecision(tObjType,RCursor<GroupScore<cGroup> >&,double& recall,double&): ThGrp cannot be null");
-			InThGrp=ThGrp->GetNbObjs(ObjType);
-			Grps()->Precision=1.0;
-			if(InThGrp==1)
+			if(IsObjAloneInIdealGroup(Objs()))
 				Grps()->Recall=1.0;
+			Grps()->Precision=1.0;
 			Precision+=Grps()->Precision;
 			Recall+=Grps()->Recall;
 		}
 		else
 		{
-			for(Objs.Start();!Objs.End();Objs.Next())
-			{
-				ThGrp=Subjects->GetIdealGroup(Objs());
-				if(!ThGrp)
-					throw GException("GSubjects::ComputeRecallPrecision(tObjType,RCursor<GroupScore<cGroup> >&,double& recall,double&): ThGrp cannot be null");
-				InThGrp=ThGrp->GetNbObjs(ObjType);
-				if(InThGrp==1)
-					Grps()->Recall+=1.0;
-				else
-				{
-					ElseInThGrp=ThGrp->GetNbObjs(Grps()->Group)-1;
-					Grps()->Precision+=((double)(ElseInThGrp))/((double)(InGrp-1));
-					ElseInGrp=Grps()->Group->GetNbObjs(ThGrp)-1;
-					Grps()->Recall+=((double)(ElseInGrp))/((double)(InThGrp-1));
-				}
-			}
-			Precision+=Grps()->Precision;
-			Recall+=Grps()->Recall;
+			ComputeBestLocalRecallPrecision(Objs,Grps(),InGrp);
 			Grps()->Precision/=(double)InGrp;
 			Grps()->Recall/=(double)InGrp;
 		}
@@ -228,12 +238,11 @@ template<class cGroup,class cObj>
 	double* ptr;
 
 	// Initialization part
-	GSubjects* Subjects(Session->GetSubjects());
 	AdjustedRandIndex=0.0;
 
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
-	NbRows=Subjects->GetNbIdealGroups(ObjType);
+	NbRows=Session->GetNbIdealGroups(ObjType);
 	NbCols=Session->GetNbElements(GroupType);
 	if((!NbRows)||(!NbCols))
 		return;
@@ -258,7 +267,7 @@ template<class cGroup,class cObj>
 	// For each group of ideal group and for each object in this group
 	// -> Compute the different terms of the total
 	size_t row(0),position;
-	RCursor<GSubject> GroupsIdeal(Subjects->GetNodes());
+	RCursor<GSubject> GroupsIdeal(Session->GetSubjects());
 	for(GroupsIdeal.Start(),NbTot=0;!GroupsIdeal.End();GroupsIdeal.Next())
 	{
 		if(!GroupsIdeal()->GetNbObjs(ObjType))

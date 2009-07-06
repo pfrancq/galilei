@@ -48,6 +48,8 @@ class TopicsEval : public ClusteringEval<GTopic,GDoc>
 public:
 	TopicsEval(GFactoryMeasure* fac);
 	virtual R::RCString GetClassName(void) const {return("TopicsEval");}
+	virtual bool IsObjAloneInIdealGroup(GDoc* obj);
+	virtual void ComputeBestLocalRecallPrecision(RCursor<GDoc>& objs,ClusterScore<GTopic>* grp,size_t ingroup);
 	void Handle(const R::RNotification& notification);
 	static void CreateParams(R::RConfig*) {}
 	virtual RCursor<GTopic> GetClusters(void) {return(Session->GetTopics());}
@@ -59,6 +61,61 @@ TopicsEval::TopicsEval(GFactoryMeasure* fac)
 	: ClusteringEval<GTopic,GDoc>(fac,otTopic,otDoc)
 {
 	InsertObserver(HANDLER(TopicsEval::Handle),"ObjectChanged");
+}
+
+
+//------------------------------------------------------------------------------
+bool TopicsEval::IsObjAloneInIdealGroup(GDoc* obj)
+{
+	RCursor<GSubject> ThGrp(Session->GetIdealGroups(obj));
+	for(ThGrp.Start();!ThGrp.End();ThGrp.Next())
+		if(ThGrp()->GetNbObjs(otDoc)==1)
+			return(true);
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+void TopicsEval::ComputeBestLocalRecallPrecision(RCursor<GDoc>& objs,ClusterScore<GTopic>* grp,size_t ingroup)
+{
+	for(objs.Start();!objs.End();objs.Next())
+	{
+		double bestrecall(0.0),bestprecision(0.0),bestFMeasure(0.0);
+		RCursor<GSubject> ThGrp(Session->GetIdealGroups(objs()));
+		for(ThGrp.Start();!ThGrp.End();ThGrp.Next())
+		{
+			double recall(0.0),precision(0.0);
+			size_t InThGrp(ThGrp()->GetNbObjs(ObjType));
+			if(InThGrp==1)
+				recall=1.0;
+			else
+			{
+				size_t ElseInThGrp(ThGrp()->GetNbObjs(grp->Group)-1);
+				precision+=((double)(ElseInThGrp))/((double)(ingroup-1));
+				size_t ElseInGrp(grp->Group->GetNbObjs(ThGrp())-1);
+				recall+=((double)(ElseInGrp))/((double)(InThGrp-1));
+			}
+			if((recall==1)&&(precision==1))
+			{
+				bestrecall=recall;
+				bestprecision=precision;
+				break;
+			}
+			else
+			if((recall>bestrecall)||(precision>bestprecision))
+			{
+				double FMeasure((2*recall*precision)/(recall+precision));
+				if(FMeasure>bestFMeasure)
+				{
+					bestrecall=recall;
+					bestprecision=precision;
+					bestFMeasure=FMeasure;
+				}
+			}
+		}
+		grp->Precision+=bestprecision;
+		grp->Recall+=bestrecall;
+	}
 }
 
 
