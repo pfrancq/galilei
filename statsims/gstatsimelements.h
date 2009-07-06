@@ -242,7 +242,7 @@ template<class E1,class E2>
 		}
 
 		// Compute Extra-sim
-		R::RCursor<GSubject> Subs2(Session->GetSubjects()->GetNodes());
+		R::RCursor<GSubject> Subs2(Session->GetSubjects());
 		for(Subs2.Start();!Subs2.End();Subs2.Next())
 		{
 			// Look if Same topic
@@ -430,7 +430,7 @@ template<class E1,class E2>
 
 	// Go trough the subjects
 	Centers.Clear();
-	R::RCursor<GSubject> Sub(Session->GetSubjects()->GetNodes());
+	R::RCursor<GSubject> Sub(Session->GetSubjects());
 	for(Sub.Start();!Sub.End();Sub.Next())
 		ComputeSubject(calc,Sub(),xml,tag);
 	if(SameObjects)
