@@ -248,13 +248,11 @@ void GStorageMySQL::LoadSubjects(void)
 {
 	try
 	{
-		// Verify the subjects exist and clear them
-		if(!Session->GetSubjects()) return;
-
 		if(Session->GetSlot())
 			Session->GetSlot()->StartJob("Load subjects");
 
-		Session->GetSubjects()->Clear();
+		// Verify the subjects exist and clear them
+		Session->Clear(GetCount("subjects"),GetCount("docs"),GetCount("profiles"));
 
 		// Load the subjects
 		RQuery sub(Db,"SELECT subjectid,name,used,parent FROM subjects");
@@ -263,8 +261,8 @@ void GStorageMySQL::LoadSubjects(void)
 			size_t ParentId(sub[3].ToSizeT());
 			GSubject* Parent(0);
 			if(ParentId)
-				Parent=Session->GetSubjects()->GetSubject(ParentId);
-			Session->GetSubjects()->InsertNode(Parent,new GSubject(sub[0].ToSizeT(),sub[1],sub[2].ToBool(true)));
+				Parent=Session->GetSubject(ParentId);
+			Session->InsertSubject(Parent,new GSubject(sub[0].ToSizeT(),sub[1],sub[2].ToBool(true)));
 		}
 
 		//  Make Link between documents and subjects
@@ -273,7 +271,25 @@ void GStorageMySQL::LoadSubjects(void)
 		{
 			GDoc* d=Session->GetDoc(docs[0].ToSizeT());
 			if(!d) continue;
-			Session->GetSubjects()->InsertDocSubject(d,docs[1].ToSizeT(),docs[2].ToBool(true));
+			size_t UsedId,CatId;
+
+			switch(docs[2].ToSizeT())
+			{
+				case 0:
+					CatId=docs[1].ToSizeT();
+					UsedId=cNoRef;
+					break;
+				case 1:
+					CatId=cNoRef;
+					UsedId=docs[1].ToSizeT();
+					break;
+				case 2:
+					CatId=UsedId=docs[1].ToSizeT();
+					break;
+				default:
+					throw GException("GStorageMySQL::LoadSubjects(void) : used cannot only takes 0,1 or 2");
+			}
+			Session->Insert(d,CatId,UsedId);
 		}
 
 		// Make links between profiles and subjects
@@ -282,8 +298,9 @@ void GStorageMySQL::LoadSubjects(void)
 		{
 			GProfile* prof=Session->GetProfile(profiles[0].ToSizeT());
 			if(!prof) continue;
-			Session->GetSubjects()->InsertProfileSubject(prof,profiles[1].ToSizeT());
+			Session->Insert(prof,profiles[1].ToSizeT());
 		}
+
 		if(Session->GetSlot())
 			Session->GetSlot()->EndJob();
 	}
@@ -315,7 +332,11 @@ void GStorageMySQL::SaveSubject(GSubject* subject)
 		if(Session->GetSlot())
 			Session->GetSlot()->StartJob("Save subjects");
 
-		size_t parent(0);
+		size_t parentid;
+		if(subject->GetParent())
+			parentid=subject->GetParent()->GetId();
+		else
+			parentid=0;
 		RString used;
 		if(subject->IsUsed())
 			used=",'1')";
@@ -324,23 +345,43 @@ void GStorageMySQL::SaveSubject(GSubject* subject)
 
 		// Insert the topic
 		sSql="INSERT INTO subjects(subjectid,name,parent,used) VALUES("+
-			Num(subject->GetId())+","+RQuery::SQLValue(subject->GetName())+","+Num(parent)+used;
-		RQuery Ins1(Db,sSql);
+			Num(subject->GetId())+","+RQuery::SQLValue(subject->GetName())+","+Num(parentid)+used;
+		RQuery Ins(Db,sSql);
 
-		// Assign all the documents to the topic
+		// Get all the documents assigned to the subject
 		RCursor<GDoc> Docs(subject->GetTotalDocs());
 		for(Docs.Start();!Docs.End();Docs.Next())
-			RQuery(Db,"INSERT INTO subjectsbydocs(subjectid,docid,used) VALUES("+Num(subject->GetId())+","+Num(Docs()->GetId())+",'0')");
+		{
+			// Look if the document is also selected in this subject
+			RString used;
+			if(subject->IsIn(Docs()))
+				used="'2')";  // Categorized and selected
+			else
+				used="'0')"; // Just categorized
 
-		// Set which documents are used
+			// Look if the couple(subject,doc) is already in the database
+			sSql="INSERT INTO subjectsbydocs(subjectid,docid,used) VALUES("+Num(subject->GetId())+","+Num(Docs()->GetId())+","+used;
+			RQuery(Db,sSql);
+		}
+
+		// See if some selected documents are not categorized to the subject
 		RCursor<GDoc> SelectedDocs(subject->GetObjs(static_cast<GDoc*>(0)));
 		for(SelectedDocs.Start();!SelectedDocs.End();SelectedDocs.Next())
-			RQuery(Db,"UPDATE subjectsbydocs SET used='1' WHERE subjectid="+Num(subject->GetId())+" AND docid="+Num(SelectedDocs()->GetId()));
+		{
+			if(subject->IsCategorized(SelectedDocs()))
+				continue;
 
-		// Asssign the profiles to the topic
+			sSql="INSERT INTO subjectsbydocs(subjectid,docid,used) VALUES("+Num(subject->GetId())+","+Num(SelectedDocs()->GetId())+",'1')";
+			RQuery(Db,sSql);
+		}
+
+		// Assign the profiles to the topic
 		RCursor<GProfile> Profiles(subject->GetObjs(static_cast<GProfile*>(0)));
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
-			RQuery(Db,"UPDATE profiles SET subjectid="+Num(subject->GetId())+" WHERE profileid="+Num(Profiles()->GetId()));
+		{
+			sSql="UPDATE profiles SET subjectid="+Num(subject->GetId())+" WHERE profileid="+Num(Profiles()->GetId());
+			RQuery(Db,sSql);
+		}
 	}
 	catch(RDbException e)
 	{
@@ -1564,21 +1605,16 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		if(!atoi(Test[0]))
 		{
 			// Insert the profile (if subjects -> save topicid)
-			sSql="INSERT INTO profiles(profileid,description,social,userid,updated,calculated,attached,blockid";
-			if(Session->GetSubjects(false))
-				sSql+=",subjectid";
+			sSql="INSERT INTO profiles(profileid,description,social,userid,updated,calculated,attached,blockid,subjectid";
 			sSql+=") VALUES("+Num(profid)+","+RQuery::SQLValue(prof->GetName())+","+
 			      Num(social)+","+Num(prof->GetUser()->GetId())+","+
 			      RQuery::SQLValue(prof->GetUpdated())+","+RQuery::SQLValue(prof->GetComputed())+","+RQuery::SQLValue(prof->GetAttached())+
 			      ","+Num(prof->GetBlockId());
-			if(Session->GetSubjects(false))
-			{
-				GSubject* sub=Session->GetSubjects(false)->GetSubject(prof);
-				if(sub)
-					sSql+=","+RString::Number(sub->GetId());
-				else
-					sSql+=",0";
-			}
+			const GSubject* sub(Session->GetIdealGroup(prof));
+			if(sub)
+				sSql+=","+RString::Number(sub->GetId());
+			else
+				sSql+=",0";
 			sSql+=")";
 			RQuery Insert(Db,sSql);
 		}
@@ -1589,14 +1625,11 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 			     ",userid="+Num(prof->GetUser()->GetId())+",updated="+RQuery::SQLValue(prof->GetUpdated())+
 			     ",calculated="+RQuery::SQLValue(prof->GetComputed())+",attached="+RQuery::SQLValue(prof->GetAttached())+
 			     ",blockid="+Num(prof->GetBlockId());
-			if(Session->GetSubjects(false))
-			{
-				GSubject* sub=Session->GetSubjects(false)->GetSubject(prof);
-				if(sub)
-					sSql+=",subjectid="+Num(sub->GetId());
-				else
-					sSql+=",subjectid=0";
-			}
+			const GSubject* sub(Session->GetIdealGroup(prof));
+			if(sub)
+				sSql+=",subjectid="+Num(sub->GetId());
+			else
+				sSql+=",subjectid=0";
 			sSql+=" WHERE profileid="+Num(profid);
 			RQuery Update(Db,sSql);
 		}
