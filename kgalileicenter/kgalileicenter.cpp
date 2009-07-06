@@ -911,20 +911,58 @@ void KGALILEICenter::doAssessments(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::communitiesCompare(void)
 {
-	KViewIdealCommunities* ptr(new KViewIdealCommunities());
-	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
-	ptr->show();
+	try
+	{
+		KViewIdealCommunities* ptr(new KViewIdealCommunities());
+		Desktop->addSubWindow(ptr);
+		ptr->adjustSize();
+		ptr->show();
+	}
+	catch(GException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+	}
+	catch(RException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"R Exception");
+	}
+	catch(std::exception& e)
+	{
+		KMessageBox::error(this,e.what(),"std::exception");
+	}
+	catch(...)
+	{
+		KMessageBox::error(this,"Undefined Error");
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 void KGALILEICenter::topicsCompare(void)
 {
-	KViewIdealTopics* ptr(new KViewIdealTopics());
-	Desktop->addSubWindow(ptr);
-	ptr->adjustSize();
-	ptr->show();
+	try
+	{
+		KViewIdealTopics* ptr(new KViewIdealTopics());
+		Desktop->addSubWindow(ptr);
+		ptr->adjustSize();
+		ptr->show();
+	}
+	catch(GException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+	}
+	catch(RException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"R Exception");
+	}
+	catch(std::exception& e)
+	{
+		KMessageBox::error(this,e.what(),"std::exception");
+	}
+	catch(...)
+	{
+		KMessageBox::error(this,"Undefined Error");
+	}
 }
 
 

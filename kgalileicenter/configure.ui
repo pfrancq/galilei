@@ -1479,9 +1479,16 @@ p, li { white-space: pre-wrap; }
                </layout>
               </item>
               <item>
+               <widget class="QCheckBox" name="MultipleSubjects">
+                <property name="text">
+                 <string>Documents can be assigned to multiple subjects</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QCheckBox" name="ClusterSelectedDocs">
                 <property name="text">
-                 <string>Documents clustering limited to the documents selected.</string>
+                 <string>Documents clustering limited to the documents selected</string>
                 </property>
                </widget>
               </item>

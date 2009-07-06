@@ -80,11 +80,17 @@ KViewIdealTopics::KViewIdealTopics(void)
 //-----------------------------------------------------------------------------
 void KViewIdealTopics::update(void)
 {
-	GALILEIApp->GetSession()->GetSubjects()->Compare(otTopic);
+	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Topics Evaluation"));
+	if(!Compare)
+		throw GException("'Topics Evaluation' is not a valid evaluation measure");
+	double precision,recall,total;
+	Compare->Info(0,&recall);
+	Compare->Info(1,&precision);
+	Compare->Info(2,&total);
 	setWindowTitle("Clustering Comparison: "
-	               "Precision="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetPrecision(otTopic))+
-	               " - Recall="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetRecall(otTopic))+
-	               " - Total="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetTotal(otTopic)));
+	               "Precision="+QString::number(precision)+
+	               " - Recall="+QString::number(recall)+
+	               " - Total="+QString::number(total));
 	Ideal->Set(QGObjectsList::IdealTopics);
 	Computed->Set(QGObjectsList::CompTopics);
 }
@@ -118,11 +124,17 @@ KViewIdealCommunities::KViewIdealCommunities(void)
 //-----------------------------------------------------------------------------
 void KViewIdealCommunities::update(void)
 {
-	GALILEIApp->GetSession()->GetSubjects()->Compare(otCommunity);
+	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Communities Evaluation"));
+	if(!Compare)
+		throw GException("'Communities Evaluation' is not a valid evaluation measure");
+	double precision,recall,total;
+	Compare->Info(0,&recall);
+	Compare->Info(1,&precision);
+	Compare->Info(2,&total);
 	setWindowTitle("Clustering Comparison: "
-	               "Precision="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetPrecision(otTopic))+
-	               " - Recall="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetRecall(otTopic))+
-	               " - Total="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetTotal(otTopic)));
+	               "Precision="+QString::number(precision)+
+	               " - Recall="+QString::number(recall)+
+	               " - Total="+QString::number(total));
 	Ideal->Set(QGObjectsList::IdealCommunities);
 	Computed->Set(QGObjectsList::CompCommunities);
 }

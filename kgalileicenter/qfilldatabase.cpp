@@ -94,7 +94,7 @@ class QImportDocs : public QSessionThread
 {
 	QFillDatabase* Info;
 	GFilterManager* FilterManager;
-	GSubjects* Subjects;
+	GSession* Session;
 	int CurDepth;
 public:
 	QImportDocs(QFillDatabase* info);
@@ -106,7 +106,7 @@ public:
 //-----------------------------------------------------------------------------
 QImportDocs::QImportDocs(QFillDatabase* info)
 	: Info(info), FilterManager(GALILEIApp->GetManager<GFilterManager>("Filter")),
-	  Subjects(GALILEIApp->GetSession()->GetSubjects(true)), CurDepth(0)
+	  Session(GALILEIApp->GetSession()), CurDepth(0)
 {
 }
 
@@ -117,7 +117,7 @@ void QImportDocs::DoIt(void)
 	ParseDir(Info->Dir,Info->Parent);
 	if(Info->Categorized)
 	{
-		RCursor<GSubject> Cur(GALILEIApp->GetSession()->GetSubjects()->GetNodes());
+		RCursor<GSubject> Cur(Session->GetSubjects());
 		for(Cur.Start();!Cur.End();Cur.Next())
 			GALILEIApp->GetSession()->GetStorage()->SaveSubject(Cur());
 	}
@@ -148,11 +148,11 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 			{
 				if(!parent.IsEmpty())
 				{
-					Subject=Subjects->GetNode(parent);
+					Subject=Session->GetSubject(parent);
 					cat=parent+"/"+cat;
 				}
 				if(CurDepth<=Info->Depth->value())
-					Subjects->InsertNode(Subject,new GSubject(Subjects->GetNbNodes()+1,cat,true));
+					Session->InsertSubject(Subject,new GSubject(Session->GetNbSubjects()+1,cat,true));
 			}
 
 			ParseDir(Files()->GetURI(),cat);
@@ -170,9 +170,9 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 			GALILEIApp->GetSession()->InsertDoc(doc);
 			if(Info->Categorized)
 			{
-				GSubject* Subject(Subjects->GetNode(parent));
+				GSubject* Subject(Session->GetSubject(parent));
 				if(Subject)
-					Subject->Insert(doc,true);
+					GALILEIApp->GetSession()->Insert(doc,Subject->GetId(),cNoRef);
 			}
 		}
 	}

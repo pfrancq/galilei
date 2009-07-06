@@ -63,6 +63,7 @@
 #include <gconcepttype.h>
 #include <gfilter.h>
 #include <gindexer.h>
+#include <gsimulator.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -263,8 +264,7 @@ void QPostGroupDocs::DoIt(void)
 void QCreateIdealSubjects::DoIt(void)
 {
 	Parent->setLabelText("Start a Simulation ...");
-	GALILEIApp->GetSession()->GetSubjects()->Apply();
-	GALILEIApp->GetSession()->GetSubjects()->StartSimulation();
+	GALILEIApp->GetSession()->GetSimulator()->StartSimulation();
 }
 
 
@@ -288,8 +288,7 @@ void QCreateIdealTopics::DoIt(void)
 void QMakeFdbks::DoIt(void)
 {
 	Parent->setLabelText("Make feedbacks ...");
-	GALILEIApp->GetSession()->GetSubjects()->Apply();
-	GALILEIApp->GetSession()->GetSubjects()->DocumentSharing();
+	GALILEIApp->GetSession()->GetSimulator()->ShareDocuments();
 }
 
 
@@ -297,8 +296,7 @@ void QMakeFdbks::DoIt(void)
 void QMakeAssessments::DoIt(void)
 {
 	Parent->setLabelText("Make assessments ...");
-	GALILEIApp->GetSession()->GetSubjects()->Apply();
-	GALILEIApp->GetSession()->GetSubjects()->AddAssessments();
+	GALILEIApp->GetSession()->GetSimulator()->AddAssessments();
 }
 
 

@@ -52,6 +52,7 @@ using namespace std;
 #include <gsession.h>
 #include <gsubjects.h>
 #include <gsubject.h>
+#include <gsimulator.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -273,7 +274,7 @@ void Configure::addSubject(GSubject* subject,QTreeWidgetItem* parent)
 		item=new QSubjectItem(Subjects,subject);
 
 	// Child subjects
- 	RCursor<GSubject> Cur(subject->GetNodes());
+ 	RCursor<GSubject> Cur(subject->GetSubjects());
  	for(Cur.Start();!Cur.End();Cur.Next())
  		addSubject(Cur(),item);
 }
@@ -360,28 +361,29 @@ void Configure::initSimulation(void)
 	}
 
 	// Read Values
-	NbOK->setValue(Session->GetDouble("NbOK","Subjects"));
-	RelOK->setChecked(Session->GetBool("RelOK","Subjects"));
-	NbKO->setValue(Session->GetDouble("NbKO","Subjects"));
-	RelKO->setChecked(Session->GetBool("RelKO","Subjects"));
-	NbH->setValue(Session->GetDouble("NbH","Subjects"));
-	RelH->setChecked(Session->GetBool("RelH","Subjects"));
-	PercErr->setValue(Session->GetDouble("PercErr","Subjects"));
-	NbProfMin->setValue(Session->GetInt("NbProfMin","Subjects"));
-	NbProfMax->setValue(Session->GetInt("NbProfMax","Subjects"));
-	MaxDepth->setValue(Session->GetInt("MaxDepth","Subjects"));
-	MaxDepth->setMaximum(Session->GetSubjects()->GetDepth());
-	Depth->setText(QString::number(Session->GetSubjects()->GetDepth()));
-	PercSocial->setValue(Session->GetDouble("PercSocial","Subjects"));
-	NbSubjects->setValue(Session->GetDouble("NbSubjects","Subjects"));
-	RelSubjects->setChecked(Session->GetBool("RelSubjects","Subjects"));
-	NbMinDocsSubject->setValue(Session->GetInt("NbMinDocsSubject","Subjects"));
-	NbDocsAssess->setValue(Session->GetInt("NbDocsAssess","Subjects"));
-	SwitchPerc->setValue(Session->GetDouble("SwitchPerc","Subjects"));
-	ManualSubjects->setChecked(Session->GetBool("ManualSubjects","Subjects"));
-	NbDocsPerSubject->setValue(Session->GetDouble("NbDocsPerSubject","Subjects"));
-	PercNbDocsPerSubject->setChecked(Session->GetBool("PercNbDocsPerSubject","Subjects"));
-	ClusterSelectedDocs->setChecked(Session->GetBool("ClusterSelectedDocs","Subjects"));
+	NbOK->setValue(Session->GetDouble("NbOK","Simulator"));
+	RelOK->setChecked(Session->GetBool("RelOK","Simulator"));
+	NbKO->setValue(Session->GetDouble("NbKO","Simulator"));
+	RelKO->setChecked(Session->GetBool("RelKO","Simulator"));
+	NbH->setValue(Session->GetDouble("NbH","Simulator"));
+	RelH->setChecked(Session->GetBool("RelH","Simulator"));
+	PercErr->setValue(Session->GetDouble("PercErr","Simulator"));
+	NbProfMin->setValue(Session->GetInt("NbProfMin","Simulator"));
+	NbProfMax->setValue(Session->GetInt("NbProfMax","Simulator"));
+	MaxDepth->setValue(Session->GetInt("MaxDepth","Simulator"));
+	MaxDepth->setMaximum(Session->GetMaxDepth());
+	Depth->setText(QString::number(Session->GetMaxDepth()));
+	PercSocial->setValue(Session->GetDouble("PercSocial","Simulator"));
+	NbSubjects->setValue(Session->GetDouble("NbSubjects","Simulator"));
+	RelSubjects->setChecked(Session->GetBool("RelSubjects","Simulator"));
+	NbMinDocsSubject->setValue(Session->GetInt("NbMinDocsSubject","Simulator"));
+	NbDocsAssess->setValue(Session->GetInt("NbDocsAssess","Simulator"));
+	SwitchPerc->setValue(Session->GetDouble("SwitchPerc","Simulator"));
+	ManualSubjects->setChecked(Session->GetBool("ManualSubjects","Simulator"));
+	NbDocsPerSubject->setValue(Session->GetDouble("NbDocsPerSubject","Simulator"));
+	PercNbDocsPerSubject->setChecked(Session->GetBool("PercNbDocsPerSubject","Simulator"));
+	ClusterSelectedDocs->setChecked(Session->GetBool("ClusterSelectedDocs","Simulator"));
+	MultipleSubjects->setChecked(Session->GetBool("MultipleSubjects","Simulator"));
 
 	// Read Subjects
 	Subjects->header()->setResizeMode(0,QHeaderView::ResizeToContents);
@@ -390,9 +392,7 @@ void Configure::initSimulation(void)
 	Subjects->setEnabled(Session->GetBool("ManualSubjects","Subjects"));
 
 	if(!Session) return;
-	GSubjects* TheSubjects(Session->GetSubjects());
-	if(!TheSubjects) return;
-	RCursor<GSubject> Cur(TheSubjects->GetTopNodes());
+	RCursor<GSubject> Cur(Session->GetTopSubjects());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		addSubject(Cur(),0);
 }
@@ -406,7 +406,7 @@ void Configure::applySubSubjects(QTreeWidgetItem* parent)
 		QSubjectItem* item(dynamic_cast<QSubjectItem*>(parent->child(i)));
 		if(!item) continue;
 		if(item->Select)
-			Session->AddToList("SelectedSubjects",FromQString(item->text(1)),"Subjects");
+			Session->AddToList("SelectedSubjects",FromQString(item->text(1)),"Simulator");
 		applySubSubjects(item);
 	}
 }
@@ -418,31 +418,32 @@ void Configure::applySimulation(void)
 	if(!Session)
 		return;
 
-	Session->SetDouble("NbOK",NbOK->value(),"Subjects");
-	Session->SetBool("RelOK",RelOK->isChecked(),"Subjects");
-	Session->SetDouble("NbKO",NbKO->value(),"Subjects");
-	Session->SetBool("RelKO",RelKO->isChecked(),"Subjects");
-	Session->SetDouble("NbH",NbH->value(),"Subjects");
-	Session->SetBool("RelH",RelH->isChecked(),"Subjects");
-	Session->SetDouble("PercErr",PercErr->value(),"Subjects");
-	Session->SetUInt("NbProfMin",NbProfMin->value(),"Subjects");
-	Session->SetUInt("NbProfMax",NbProfMax->value(),"Subjects");
-	Session->SetUInt("MaxDepth",MaxDepth->value(),"Subjects");
-	Session->SetDouble("PercSocial",PercSocial->value(),"Subjects");
-	Session->SetDouble("NbSubjects",NbSubjects->value(),"Subjects");
-	Session->SetBool("RelSubjects",RelSubjects->isChecked(),"Subjects");
-	Session->SetUInt("NbMinDocsSubject",NbMinDocsSubject->value(),"Subjects");
-	Session->SetUInt("NbDocsAssess",NbDocsAssess->value(),"Subjects");
-	Session->SetDouble("SwitchPerc",SwitchPerc->value(),"Subjects");
-	Session->SetBool("ManualSubjects",ManualSubjects->isChecked(),"Subjects");
-	Session->SetDouble("NbDocsPerSubject",NbDocsPerSubject->value(),"Subjects");
-	Session->SetBool("PercNbDocsPerSubject",PercNbDocsPerSubject->isChecked(),"Subjects");
-	Session->SetBool("ClusterSelectedDocs",ClusterSelectedDocs->isChecked(),"Subjects");
+	Session->SetDouble("NbOK",NbOK->value(),"Simulator");
+	Session->SetBool("RelOK",RelOK->isChecked(),"Simulator");
+	Session->SetDouble("NbKO",NbKO->value(),"Simulator");
+	Session->SetBool("RelKO",RelKO->isChecked(),"Simulator");
+	Session->SetDouble("NbH",NbH->value(),"Simulator");
+	Session->SetBool("RelH",RelH->isChecked(),"Simulator");
+	Session->SetDouble("PercErr",PercErr->value(),"Simulator");
+	Session->SetUInt("NbProfMin",NbProfMin->value(),"Simulator");
+	Session->SetUInt("NbProfMax",NbProfMax->value(),"Simulator");
+	Session->SetUInt("MaxDepth",MaxDepth->value(),"Simulator");
+	Session->SetDouble("PercSocial",PercSocial->value(),"Simulator");
+	Session->SetDouble("NbSubjects",NbSubjects->value(),"Simulator");
+	Session->SetBool("RelSubjects",RelSubjects->isChecked(),"Simulator");
+	Session->SetUInt("NbMinDocsSubject",NbMinDocsSubject->value(),"Simulator");
+	Session->SetUInt("NbDocsAssess",NbDocsAssess->value(),"Simulator");
+	Session->SetDouble("SwitchPerc",SwitchPerc->value(),"Simulator");
+	Session->SetBool("ManualSubjects",ManualSubjects->isChecked(),"Simulator");
+	Session->SetDouble("NbDocsPerSubject",NbDocsPerSubject->value(),"Simulator");
+	Session->SetBool("PercNbDocsPerSubject",PercNbDocsPerSubject->isChecked(),"Simulator");
+	Session->SetBool("ClusterSelectedDocs",ClusterSelectedDocs->isChecked(),"Simulator");
+	Session->SetBool("MultipleSubjects",MultipleSubjects->isChecked(),"Simulator");
 	for(int i=0;i<Subjects->topLevelItemCount();i++)
 	{
 		QSubjectItem* item(dynamic_cast<QSubjectItem*>(Subjects->topLevelItem(i)));
 		if(!item) continue;
-		item->Subject->SetUsed(Session,item->Select);
+		Session->GetSimulator()->SetManualUsed(item->Subject,item->Select);
 		applySubSubjects(item);
 	}
 }
