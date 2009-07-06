@@ -124,10 +124,10 @@ int GDoc::Compare(const GLang* lang) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::ClearInfos(void)
+void GDoc::ClearInfos(bool disk)
 {
 	// Clear the information
-	GWeightInfosObj::Clear();
+	GWeightInfosObj::Clear(disk);
 
 	// Make sure that it will be re-computed
 	Computed=RDate::Null;
@@ -135,10 +135,13 @@ void GDoc::ClearInfos(void)
 
 
 //------------------------------------------------------------------------------
-void GDoc::ClearStruct(void)
+void GDoc::ClearStruct(bool disk)
 {
 	if(Struct)
 		Struct->Clear();
+	if(disk)
+		StructId=0;
+
 }
 
 

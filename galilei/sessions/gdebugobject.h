@@ -49,9 +49,10 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
- * Each object that should provide some debugging information must inherit this
- * class and register itself to the session. Each such object must have an
- * unique name.
+ * GDebugObject provides a representation for an object from which debugging
+ * information can be asked.
+ *
+ * Each single object should have an unique name.
  * @author Pascal Francq
  * @short Debugging Object
  */

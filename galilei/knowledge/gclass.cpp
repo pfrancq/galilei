@@ -50,6 +50,14 @@ GClass::GClass(size_t id,size_t blockid,const R::RString& name)
 
 
 //------------------------------------------------------------------------------
+void GClass::Clear(void)
+{
+	RNode<GClasses,GClass,true>::Clear();
+	GWeightInfosObj::Clear();
+}
+
+
+//------------------------------------------------------------------------------
 int GClass::Compare(const GClass& grp) const
 {
 	return(R::CompareIds(Id,grp.Id));

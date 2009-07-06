@@ -45,6 +45,16 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
+	GSubjectData<cObj>* GALILEI::GGroup<cObj,cGroup,type>::GetData(void) const
+{
+	if(!Data)
+		const_cast<GGroup*>(this)->Data=new GSubjectData<cObj>();
+	return(Data);
+}
+
+
+//------------------------------------------------------------------------------
+template<class cObj,class cGroup,GALILEI::tObjType type>
 	int GALILEI::GGroup<cObj,cGroup,type>::Compare(const GGroup& grp) const
 {
 	return(R::CompareIds(Id,grp.Id));

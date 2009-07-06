@@ -300,12 +300,18 @@ void QGObjectsList::Set(oType type)
 		}
 		case CompTopics:
 		{
+			GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Topics Evaluation"));
+			if(!Compare)
+				throw GException("'Topics Evaluation' is not a valid evaluation measure");
 			RCursor<GTopic> Grps(Session->GetTopics());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
+				double precision,recall;
+				Compare->Measure(0,Grps()->GetId(),&recall);
+				Compare->Measure(1,Grps()->GetId(),&precision);
 				QGObject* item(new QGObject(List,Grps(),
-						       "Precision="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetPrecision(Grps()))+
-						       " - Recall="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetRecall(Grps()))));
+						       "Precision="+QString::number(precision)+
+						       " - Recall="+QString::number(recall)));
 				RCursor<GDoc> Objs(Grps()->GetObjs());
 				for(Objs.Start();!Objs.End();Objs.Next())
 					new QGObject(item,Objs());
@@ -315,7 +321,7 @@ void QGObjectsList::Set(oType type)
 		case IdealTopics:
 		{
 			// Go through each subjects
-			R::RCursor<GSubject> Grps(Session->GetSubjects()->GetNodes());
+			R::RCursor<GSubject> Grps(Session->GetSubjects());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				if(!Grps()->GetNbObjs(otDoc))
@@ -353,12 +359,18 @@ void QGObjectsList::Set(oType type)
 		}
 		case CompCommunities:
 		{
+			GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Communities Evaluation"));
+			if(!Compare)
+				throw GException("'Communities Evaluation' is not a valid evaluation measure");
 			RCursor<GCommunity> Grps(Session->GetCommunities());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
+				double recall,precision;
+				Compare->Measure(0,Grps()->GetId(),&recall);
+				Compare->Measure(1,Grps()->GetId(),&precision);
 				QGObject* item(new QGObject(List,Grps(),
-						       "Precision="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetPrecision(Grps()))+
-						       " - Recall="+QString::number(GALILEIApp->GetSession()->GetSubjects()->GetRecall(Grps()))));
+						       "Precision="+QString::number(precision)+
+						       " - Recall="+QString::number(recall)));
 				RCursor<GProfile> Objs(Grps()->GetObjs());
 				for(Objs.Start();!Objs.End();Objs.Next())
 					new QGObject(item,Objs());
@@ -368,7 +380,7 @@ void QGObjectsList::Set(oType type)
 		case IdealCommunities:
 		{
 			// Go through each subjects
-			R::RCursor<GSubject> Grps(Session->GetSubjects()->GetNodes());
+			R::RCursor<GSubject> Grps(Session->GetSubjects());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				if(!Grps()->GetNbObjs(otCommunity))

@@ -118,7 +118,15 @@ public:
 	* Clear the information of a given object type related to the indexing.
 	* @param objtype         Type of the object.
 	*/
-	void Clear(tObjType objtype);
+	void ClearIndexFiles(tObjType objtype);
+
+	/**
+	 * Flush the caches of a given object type: All the blocks in memory that
+	 * are dirtied are save on disk. This can be useful to do after a long
+	 * computation (such as the document analysis).
+	 * @param objtype         Type of the object.
+	 */
+	void Flush(tObjType objtype);
 
 	/**
 	* Load the description of a given object.
@@ -153,8 +161,6 @@ public:
  	 * @param id             Identifier of the object.
 	 */
 	void SaveStruct(GDocStruct* docstruct,size_t& blockid,size_t id);
-
-public:
 
 	/**
 	 * Update the index of a given type. In practice, the vector is parsed and,

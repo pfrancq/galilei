@@ -106,15 +106,6 @@ GIndexer::GIndexer(void)
 
 
 //------------------------------------------------------------------------------
-void GIndexer::Clear(tObjType objtype)
-{
-	IndexFile* ptr(Desc.GetPtr(objtype));
-	if(ptr)
-		ptr->Clear();
-}
-
-
-//------------------------------------------------------------------------------
 void GIndexer::CreateConfig(RConfig* config)
 {
 	config->InsertParam(new RParamValue("IndexDocsInc",false),"Indexer");
@@ -127,8 +118,8 @@ void GIndexer::CreateConfig(RConfig* config)
 
 	// Documents structures
 	config->InsertParam(new RParamValue("DocsStructBlock",4096),"Indexer");
-	config->InsertParam(new RParamValue("DocsStructTolerance",10),"Indexer");
-	config->InsertParam(new RParamValue("DocsStructCache",40),"Indexer");
+	config->InsertParam(new RParamValue("DocsStructTolerance",40),"Indexer");
+	config->InsertParam(new RParamValue("DocsStructCache",20),"Indexer");
 	config->InsertParam(new RParamValue("DocsStructType",RBlockFile::WriteBack),"Indexer");
 
 	// Documents inverted file
@@ -195,6 +186,36 @@ void GIndexer::Apply(RConfig* config)
 	{
 		cerr<<"GIndexer::Apply: Problems in creating directories in '"<<Dir<<"'"<<endl;
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GIndexer::ClearIndexFiles(tObjType objtype)
+{
+	switch(objtype)
+	{
+		case otDocStruct:
+			StructDoc->Clear();
+			break;
+		case otDocIndex:
+			IndexDocs->Clear();
+			break;
+		default:
+			IndexFile* ptr(Desc.GetPtr(objtype));
+			if(!ptr)
+				throw GException("GIndexer::ClearIndexFiles(tObjType) : The objects of type '"+GetObjType(objtype)+"' do not have descriptions");
+			ptr->Clear();
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GIndexer::Flush(tObjType objtype)
+{
+	IndexFile* ptr(Desc.GetPtr(objtype));
+	if(!ptr)
+		throw GException("GIndexer::Flush(tObjType) : The objects of type '"+GetObjType(objtype)+"' do not have descriptions");
+	ptr->Flush();
 }
 
 

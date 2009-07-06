@@ -83,6 +83,7 @@ using namespace R;
 #include <ggalileiapp.h>
 #include <gdebugobject.h>
 #include <gindexer.h>
+#include <gsimulator.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -170,7 +171,7 @@ public:
 class GSession::Intern
 {
 public:
-	GSubjects* Subjects;                                              // Subjects.
+	//GSubjects* Subjects;                                              // Subjects.
 	int CurrentRandom;                                                // Current seek for this session.
 	R::RRandom* Random;                                               // Random number generator
 	static GSession* Session;                                         // Static pointer to the session
@@ -194,7 +195,7 @@ public:
 	bool ClusterSelectedDocs;                                         // Limit the clustering of the documents to the selected ones.
 
 	Intern(size_t mdocs,size_t maxprof,size_t maxgroups,size_t d,size_t u,size_t p,size_t t,size_t c)
-		: Subjects(0), Random(0),
+		: /*Subjects(0),*/ Random(0),
 		  Slot(0), Docs(d+(d/2),d/2), DocsLoaded(false), DocsRefUrl(d+(d/2),d/2),
 		  Users(u,u/2), UsersLoaded(false), Profiles(p,p/2),
 		  Communities(c+(c/2),c/2), CommunitiesLoaded(false),
@@ -208,7 +209,7 @@ public:
 	~Intern(void)
 	{
 		delete Random;
-		delete Subjects;
+	//	delete Subjects;
 		Session=0;
 		ExternBreak=false;
 	}
@@ -232,9 +233,9 @@ RContainer<GDebugObject,false,true> DebugObjs(100,100);                    // Ob
 
 //------------------------------------------------------------------------------
 GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofiles,size_t maxgroups)
-	: GIndexer(), GOntology(Storage->GetNbSaved(otConcept)),
+	: GIndexer(), GOntology(Storage->GetNbSaved(otConcept)), GSubjects(),
 	  Data(0),
-	  Classes(300,100), ClassesLoaded(false)
+	  Classes(300,100), ClassesLoaded(false), Simulator(0)
 {
 	// Init Part
 	Data=new Intern(maxdocs,maxprofiles,maxgroups,
@@ -253,26 +254,7 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 
 	// Create the configurations
 	SetConfigInfos("lib/galilei/sessions",Storage->GetWorld());
-	InsertParam(new RParamValue("NbOK",10.0),"Subjects");
-	InsertParam(new RParamValue("RelOK",true),"Subjects");
-	InsertParam(new RParamValue("NbKO",10.0),"Subjects");
-	InsertParam(new RParamValue("RelKO",true),"Subjects");
-	InsertParam(new RParamValue("NbH",50.0),"Subjects");
-	InsertParam(new RParamValue("RelH",true),"Subjects");
-	InsertParam(new RParamValue("PercErr",0.0),"Subjects");
-	InsertParam(new RParamValue("NbProfMin",2),"Subjects");
-	InsertParam(new RParamValue("NbProfMax",10),"Subjects");
-	InsertParam(new RParamValue("MaxDepth",0),"Subjects");
-	InsertParam(new RParamValue("PercSocial",100.0),"Subjects");
-	InsertParam(new RParamValue("NbSubjects",100.0),"Subjects");
-	InsertParam(new RParamValue("RelSubjects",true),"Subjects");
-	InsertParam(new RParamValue("NbMinDocsSubject",50),"Subjects");
-	InsertParam(new RParamValue("NbDocsAssess",30),"Subjects");
-	InsertParam(new RParamValue("SwitchPerc",5.0),"Subjects");
-	InsertParam(new RParamValue("ManualSubjects",false),"Subjects");
-	InsertParam(new RParamValue("NbDocsPerSubject",100.0),"Subjects");
-	InsertParam(new RParamValue("PercNbDocsPerSubject",true),"Subjects");
-	InsertParam(new RParamValue("ClusterSelectedDocs",false),"Subjects");
+	GSimulator::CreateConfig(this);
 	GIndexer::CreateConfig(this);
 	Load(false);
 }
@@ -289,8 +271,8 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 void GSession::Apply(void)
 {
 	Data->ClusterSelectedDocs=GetBool("ClusterSelectedDocs","Subjects");
-	if(Data->Subjects)
-		Data->Subjects->Apply();
+	if(Simulator)
+		Simulator->Apply();
 	GIndexer::Apply(this);
 }
 
@@ -307,9 +289,18 @@ void GSession::ForceReCompute(tObjType type)
 			// Clear the information of the documents -> Also profiles and groups and topics
 			RCursor<GDoc> Docs(Data->Docs);
 			for(Docs.Start();!Docs.End();Docs.Next())
-				Docs()->ClearInfos();
+			{
+				Docs()->ClearInfos(SaveResults);
+				Docs()->ClearStruct(SaveResults);
+				if(SaveResults)
+					Storage->SaveDoc(Docs());
+			}
 			if(SaveResults)
-				GIndexer::Clear(otDoc);
+			{
+				ClearIndexFiles(otDoc);
+				ClearIndexFiles(otDocIndex);
+				ClearIndexFiles(otDocStruct);
+			}
 			Break=false;
 		}
 		case otTopic:
@@ -319,7 +310,7 @@ void GSession::ForceReCompute(tObjType type)
 			Data->Topics.Clear();
 			if(SaveResults)
 			{
-				GIndexer::Clear(otTopic);
+				ClearIndexFiles(otTopic);
 				Storage->Clear(otTopic);
 			}
 			if(Break)
@@ -332,7 +323,7 @@ void GSession::ForceReCompute(tObjType type)
 			Data->Profiles.Clear();
 			if(SaveResults)
 			{
-				GIndexer::Clear(otProfile);
+				ClearIndexFiles(otProfile);
 				Storage->Clear(otProfile);
 			}
 		}
@@ -343,19 +334,19 @@ void GSession::ForceReCompute(tObjType type)
 			Data->Communities.Clear();
 			if(SaveResults)
 			{
-				GIndexer::Clear(otCommunity);
+				ClearIndexFiles(otCommunity);
 				Storage->Clear(otCommunity);
 			}
 			break;
 		}
 		case otClass:
 		{
-			// Delete the classs
-			//ClearRef(otClass);
+			// Delete the classes
+			ClearRef(otClass);
 			Classes.Clear();
 			if(SaveResults)
 			{
-				GIndexer::Clear(otClass);
+				ClearIndexFiles(otClass);
 				Storage->Clear(otClass);
 			}
 			break;
@@ -369,9 +360,6 @@ void GSession::ForceReCompute(tObjType type)
 //------------------------------------------------------------------------------
 void GSession::ReInit(void)
 {
-	if(Data->Subjects)
-		Data->Subjects->ReInit();
-
 	// Clear feedbacks
 	ClearFdbks();
 
@@ -382,6 +370,9 @@ void GSession::ReInit(void)
 	Data->Communities.Clear();
 	Data->Profiles.Clear();
 	Data->Users.Clear();
+
+	// Re-initialize the subjects
+	GSubjects::ReInit();
 }
 
 
@@ -428,16 +419,14 @@ RString GSession::AnalyzeString(const RString& str)
 
 
 //------------------------------------------------------------------------------
-GSubjects* GSession::GetSubjects(bool load) const
+GSimulator* GSession::GetSimulator(void) const
 {
-	if((!Data->Subjects)&&(load))
+	if(!Simulator)
 	{
-		Data->Subjects=new GSubjects(const_cast<GSession*>(this));
-		if(Storage)
-			const_cast<GSession*>(this)->Storage->LoadSubjects();
-		Data->Subjects->Apply();
+		const_cast<GSession*>(this)->Simulator=new GSimulator(const_cast<GSession*>(this));
+		Simulator->Apply();
 	}
-	return(Data->Subjects);
+	return(Simulator);
 }
 
 
@@ -775,13 +764,6 @@ size_t GSession::GetMaxPosDoc(void) const
 }
 
 
-//-----------------------------------------------------------------------------
-size_t GSession::FillDocs(GDoc** docs)
-{
-	return(Data->Docs.GetTab(docs,1,Data->Docs.GetMaxPos()));
-}
-
-
 //-------------------------------------------------------------------------------
 GDoc* GSession::GetDoc(size_t id,bool load,bool null) const
 {
@@ -912,6 +894,7 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 		// If no log file specified -> Propagate error
 		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()()+"("+RString::Number(Docs()->GetId())+"): ")
 	}
+	Flush(otDoc);   // Force to save all documents description
 
 	// Launch post doc methods
 	DoPostDocs(rec);
@@ -1271,6 +1254,8 @@ void GSession::CalcProfiles(GSlot* rec)
 			cerr<<e.GetMsg()<<endl;
 		}
 	}
+	Flush(otProfile);   // Force to save all profiles description
+
 	DoPostProfiles(rec);
 }
 
@@ -1483,7 +1468,13 @@ void GSession::DeleteCommunity(GCommunity* com)
 //------------------------------------------------------------------------------
 void GSession::ClearCommunities(void)
 {
+	// Clear the communities
 	Data->Communities.Clear();
+	if(SaveResults)
+	{
+		Storage->Clear(otCommunity);
+		ClearIndexFiles(otCommunity);
+	}
 }
 
 
@@ -1522,6 +1513,7 @@ void GSession::GroupProfiles(GSlot* rec)
 			}
 		}
 	}
+	Flush(otCommunity);   // Force to save all communities description
 
 	DoPostCommunity(rec);
 }
@@ -1554,7 +1546,7 @@ template<class cGroup,class cObj,class cCalc>
 	ClearGroups(grouptype);
 
 	// Go through each subjects
-	R::RCursor<GSubject> Grps(GetSubjects()->GetNodes());
+	R::RCursor<GSubject> Grps(GetSubjects());
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Clear the groups associated to the subject
@@ -1570,10 +1562,11 @@ template<class cGroup,class cObj,class cCalc>
 		InsertGroup(grp,grouptype);
 		Grps()->AssignIdealGroup(grp);
 
-		// Go through each object
+		// Go through each object (verify that each object can be assigned only once)
 		RCursor<cObj> Objs=Grps()->GetObjs(static_cast<cObj*>(0));
 		for(Objs.Start();!Objs.End();Objs.Next())
-			grp->InsertObj(Objs());
+			if(!Objs()->GetGroupId())
+				grp->InsertObj(Objs());
 
 		// Compute Description
 		if(calc)
@@ -1776,7 +1769,13 @@ void GSession::DeleteTopic(GTopic* top)
 //------------------------------------------------------------------------------
 void GSession::ClearTopics(void)
 {
+	// Clear the topics
 	Data->Topics.Clear();
+	if(SaveResults)
+	{
+		Storage->Clear(otTopic);
+		ClearIndexFiles(otTopic);
+	}
 }
 
 
@@ -1815,6 +1814,7 @@ void GSession::GroupDocs(GSlot* rec)
 			}
 		}
 	}
+	Flush(otTopic);   // Force to save all topics description
 
 	DoPostTopic(rec);
 }
@@ -1919,4 +1919,5 @@ GSession::~GSession(void)
 	Save();
 
 	delete Data;
+	delete Simulator;
 }

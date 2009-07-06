@@ -97,6 +97,12 @@ public:
 	GGroup(size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
+	 * Get the data associated to the corresponding ideal subject.
+	 * @return
+	 */
+	GSubjectData<cObj>* GetData(void) const;
+
+	/**
 	* Compare two groups by comparing their identifier.
 	* @see R::RContainer
 	* @param grp             Group.

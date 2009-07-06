@@ -105,7 +105,9 @@ enum tObjType
 	otConceptType            /** Concept Type.*/,
 	otPredicate              /** Predicate.*/,
 	otStatement 	         /** Statement.*/,
-	otClass                  /** Class.*/
+	otClass                  /** Class.*/,
+	otDocStruct              /** Document structure. */,
+	otDocIndex               /** Document index. */
 };
 
 
@@ -372,6 +374,7 @@ class GTool;
 class GFactoryTool;
 class GToolManager;
 class GMatrixMeasure;
+class GSimulator;
 
 
 //------------------------------------------------------------------------------

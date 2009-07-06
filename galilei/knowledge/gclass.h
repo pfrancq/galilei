@@ -68,6 +68,11 @@ public:
 	GClass(size_t id,size_t blockid,const R::RString& name);
 
 	/**
+	 * Clear the node.
+	 */
+	virtual void Clear(void);
+
+	/**
 	* Compare two groups by comparing their identifier.
 	* @see R::RContainer
 	* @param grp             Group.

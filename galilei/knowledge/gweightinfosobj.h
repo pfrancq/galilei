@@ -139,8 +139,10 @@ protected:
 	/**
 	 * Clear the vector corresponding to the object. The corresponding file is
 	 * not removed from the disk.
+	 * @param disk            Clear the reference to the corresponding block on
+	 *                        disk.
 	 */
-	void Clear(void);
+	void Clear(bool disk=false);
 
 	/**
 	* Add the references for the information entities of the object type in a

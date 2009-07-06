@@ -48,6 +48,7 @@
 #include <gindexer.h>
 #include <gontology.h>
 #include <gclass.h>
+#include <gsubjects.h>
 
 
 //------------------------------------------------------------------------------
@@ -61,7 +62,7 @@ namespace GALILEI{
 * @author GALILEI Team
 * @short Generic Session.
 */
-class GSession : public R::RConfig, public GIndexer, public GOntology
+class GSession : public R::RConfig, public GIndexer, public GOntology, public GSubjects
 {
 	class Intern;
 
@@ -79,6 +80,11 @@ class GSession : public R::RConfig, public GIndexer, public GOntology
 	 * Determine if all the classes were loaded.
 	 */
 	bool ClassesLoaded;
+
+	/**
+	 * The simulator (if any).
+	 */
+	GSimulator* Simulator;
 
 public:
 
@@ -114,7 +120,7 @@ public:
 	void ForceReCompute(tObjType type);
 
 	/**
-	* Re-init the session (clear all containers).
+	* Re-initialize the session (clear all containers).
 	*/
 	void ReInit(void);
 
@@ -129,11 +135,9 @@ public:
 	R::RString AnalyzeString(const R::RString& str);
 
 	/**
-	* Get the subjects defined.
-	* @param load            If true, the subjects are loaded from the
-	*                        database if necessary.
-	*/
-	GSubjects* GetSubjects(bool load=true) const;
+	 * @return Simulator associated with the session.
+	 */
+	GSimulator* GetSimulator(void) const;
 
 	/**
 	* Set the slot for the session.
@@ -360,18 +364,6 @@ public:
 	* @returns Number of documents.
 	*/
 	size_t GetMaxPosDoc(void) const;
-
-	/**
-	* Fill a given array with all the documents. The array must be created and
-	* must be large enough to hold all the documents. It can contained null
-	* pointers.
-	* @see This method is used in GSubjects to create assessments for
-	*      profiles during a simulation of a real system.
-	* @param docs            Pointer to the array.
-	* @returns Size of the data (including the null pointers) copied in the
-	* array.
-	*/
-	size_t FillDocs(GDoc** docs);
 
 	/**
 	* Get a document corresponding to a given identifier.
@@ -837,6 +829,7 @@ public:
 	virtual ~GSession(void);
 
 	friend class GDebugObject;
+	friend class GSimulator;
 };
 
 

@@ -112,10 +112,12 @@ void GWeightInfosObj::CopyInfos(const R::RContainer<GWeightInfo,false,true>& inf
 
 
 //------------------------------------------------------------------------------
-void GWeightInfosObj::Clear(void)
+void GWeightInfosObj::Clear(bool disk)
 {
 	if(Vector)
 		Vector->Clear();
+	if(disk)
+		BlockId=0;
 }
 
 

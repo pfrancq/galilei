@@ -177,14 +177,18 @@ public:
 	int Compare(const GLang* lang) const;
 
 	/**
-	* Clear the information associated with the document.
-	*/
-	void ClearInfos(void);
+	 * Clear the information associated with the document.
+	 * @param disk            Clear the reference to the corresponding block on
+	 *                        disk.
+	 */
+	void ClearInfos(bool disk);
 
 	/**
 	 * Clear the structure associated with the document.
+	 * @param disk            Clear the reference to the corresponding block on
+	 *                        disk.
 	 */
-	void ClearStruct(void);
+	void ClearStruct(bool disk);
 
 	/**
 	 * Get the structure of the document.

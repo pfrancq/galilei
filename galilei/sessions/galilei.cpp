@@ -85,6 +85,10 @@ RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("statement"));
 		case otClass:
 			return(RString("class"));
+		case otDocStruct:
+			return(RString("Document structure."));
+		case otDocIndex:
+			return(RString("Document index."));
 	}
 	return(RString("unknown"));
 }

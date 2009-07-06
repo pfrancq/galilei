@@ -58,6 +58,8 @@
 #include <ggalileiapp.h>
 #include <gdocanalyse.h>
 #include <gmeasure.h>
+#include <gsimulator.h>
+#include <gsubject.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -95,6 +97,21 @@ public:
 	GGALILEIAppClass(void);
 	virtual R::RPrgVar* NewVar(R::RInterpreter* prg,RPrgOutput* o,const R::RString& name,R::RContainer<R::RPrgVar,true,false>& params);
 	virtual ~GGALILEIAppClass(void);
+};
+
+
+//------------------------------------------------------------------------------
+class GSimulatorClass : public R::RPrgClass
+{
+public:
+	bool Instance;
+	GSession* Session;
+	GSimulator* Simulator;
+	GInstGALILEIApp* App;
+
+	GSimulatorClass(GInstGALILEIApp* app);
+	virtual R::RPrgVar* NewVar(R::RInterpreter* prg,RPrgOutput* o,const R::RString& name,R::RContainer<R::RPrgVar,true,false>& params);
+	virtual ~GSimulatorClass(void);
 };
 
 
@@ -154,11 +171,6 @@ class GInstSession : public RPrgVarInst
 {
 public:
 	GSession* Session;		             // Session.
-	double Precision;	             	 // Precision of the current clustering.
-	double Recall;			             // Recall of the current clustering.
-	double Total;			             // Total comparison between for the current clustering.
-	double PercAss;			             // Percentage of correct assignments for the profiles last added.
-	bool TrackNewProfiles;	             // When TrackNewProfile is true, the system
 	bool DelSession;                     // Must the session be destroyed?
 	GInstGALILEIApp* App;                // Application
 
@@ -169,7 +181,7 @@ public:
 
 //------------------------------------------------------------------------------
 GInstSession::GInstSession(const RString& name,GSessionClass* c,GSession* session,RInterpreter* prg,RContainer<R::RPrgVar,true,false>& args,GInstGALILEIApp* app)
- : RPrgVarInst(name,c), Session(session), TrackNewProfiles(false), App(app)
+ : RPrgVarInst(name,c), Session(session), App(app)
 {
 	if(args.GetNb()!=4)
 		throw RPrgException(prg,"Constructor needs four parameters");
@@ -206,6 +218,45 @@ GInstSession::~GInstSession(void)
 		GALILEIApp->DeleteSession();
 		dynamic_cast<GSessionClass*>(GetClass())->Instance=false;
 	}
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GInstSimulator
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GInstSimulator : public RPrgVarInst
+{
+public:
+	GSession* Session;		             // Session.
+	GSimulator* Simulator;               // Simulator.
+	double Precision;	             	 // Precision of the current clustering.
+	double Recall;			             // Recall of the current clustering.
+	double AdjustedRandIndex;		     // Adjusted Rand index of the current clustering.
+	double J;		                     // J measure of the current clustering.
+	double PercAss;			             // Percentage of correct assignments for the profiles last added.
+	bool TrackNewProfiles;	             // When TrackNewProfile is true, the system
+	GInstGALILEIApp* App;                // Application
+
+	GInstSimulator(const RString& name,GSimulatorClass* c,GSession* session,GInstGALILEIApp* app);
+	virtual ~GInstSimulator(void);
+};
+
+
+//------------------------------------------------------------------------------
+GInstSimulator::GInstSimulator(const RString& name,GSimulatorClass* c,GSession* session,GInstGALILEIApp* app)
+ : RPrgVarInst(name,c), Session(session), Simulator(session->GetSimulator()), TrackNewProfiles(false), App(app)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GInstSimulator::~GInstSimulator(void)
+{
 }
 
 
@@ -334,10 +385,10 @@ public:
 
 
 //------------------------------------------------------------------------------
-class GFdbksCycleI : public RPrgFunc
+class GShareDocumentsI : public RPrgFunc
 {
 public:
-	GFdbksCycleI(void) : RPrgFunc("FdbksCycle","Simulate that documents are shared inside the different communities and that the best are assessed.") {}
+	GShareDocumentsI(void) : RPrgFunc("ShareDocuments","Simulate that documents are shared inside the different communities and that the best are assessed.") {}
 	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
 };
 
@@ -382,7 +433,8 @@ public:
 class GRealLifeI : public RPrgFunc
 {
 	char What[2];
-	void CommonTasks(R::RPrgOutput* o,GInstSession* Owner);
+	void CommonTasks(R::RPrgOutput* o,GInstSimulator* Owner);
+	GMeasure* Compare;
 public:
 	GRealLifeI(void) : RPrgFunc("RealLife","Perform the simulation of a complete system running a given number of step times.") {}
 	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
@@ -394,24 +446,6 @@ class GAddAssessmentsI : public RPrgFunc
 {
 public:
 	GAddAssessmentsI(void) : RPrgFunc("AddAssessments","Simulate that the profiles assess a given number of randomly chosen documents.") {}
-	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
-};
-
-
-//------------------------------------------------------------------------------
-class GTrackNewProfilesI : public RPrgFunc
-{
-public:
-	GTrackNewProfilesI(void) : RPrgFunc("TrackNewProfiles","Specify if the new profiles must be tracked.") {}
-	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
-};
-
-
-//------------------------------------------------------------------------------
-class GClearNewProfilesI : public RPrgFunc
-{
-public:
-	GClearNewProfilesI(void) : RPrgFunc("ClearNewProfiles","Clear the list of profiles considered as new.") {}
 	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
 };
 
@@ -761,14 +795,14 @@ void GGroupDocsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RC
 void GStartSimulationI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	GInstSimulator* Owner=dynamic_cast<GInstSimulator*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 
 	if(args.GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Create Ideal Groups");
-	Owner->Session->GetSubjects()->StartSimulation();
+	Owner->Simulator->StartSimulation();
 }
 
 
@@ -777,9 +811,9 @@ void GPerformDegradationI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* i
 {
 	ShowInst(this,prg,args);
 	// Read Parameters
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	GInstSimulator* Owner=dynamic_cast<GInstSimulator*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 	if((args.GetNb()!=1)&&(args.GetNb()!=2))
 		throw RPrgException(prg,"Method needs at least one parameter.");
 	bool b;
@@ -801,33 +835,36 @@ void GPerformDegradationI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* i
 	{
 		o->WriteStr("Perform degradation: "+RString::Number(Nb));
 	}
-	Owner->Session->GetSubjects()->PerformDegradation(What,Nb);
+	Owner->Simulator->PerformDegradation(What,Nb);
 
 	// Compute J and T and put it in a file
 	if(!What)
 		return;
-	double J=Owner->Session->GetSubjects()->GetJ(otTopic);
-	double T=Owner->Session->GetSubjects()->GetTotal(otTopic);
+	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Topics Evaluation"));
+	if(!Compare)
+		throw RPrgException(prg,"'Topics Evaluation' is not a valid evaluation measure");
+	Compare->Info(2,&Owner->AdjustedRandIndex);
+	Compare->Info(3,&Owner->J);
 	if(Owner->App->OFile)
-		(*Owner->App->OFile)<<Owner->App->TestName<<T<<J<<endl;
+		(*Owner->App->OFile)<<Owner->App->TestName<<Owner->AdjustedRandIndex<<Owner->J<<endl;
 	if(Owner->App->GOFile)
-		(*Owner->App->GOFile)<<T<<J<<endl;
+		(*Owner->App->GOFile)<<Owner->AdjustedRandIndex<<Owner->J<<endl;
 }
 
 
 //------------------------------------------------------------------------------
-void GFdbksCycleI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
+void GShareDocumentsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	GInstSimulator* Owner=dynamic_cast<GInstSimulator*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 
 	if(args.GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
-	o->WriteStr("Create Feedbacks Cycle");
-	Owner->Session->GetSubjects()->Apply();
-	Owner->Session->GetSubjects()->DocumentSharing();
+	o->WriteStr("Share Documents");
+	Owner->Simulator->Apply();
+	Owner->Simulator->ShareDocuments();
 }
 
 
@@ -835,32 +872,30 @@ void GFdbksCycleI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::R
 void GCompareIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	GInstSimulator* Owner=dynamic_cast<GInstSimulator*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 
 	if(args.GetNb()!=1)
-		throw RPrgException(prg,"Method needs one parameter.");
+		throw RPrgException(prg,"Method needs one parameter");
 	RString objects=args[0]->GetValue(prg);
 	tObjType type(otNoClass);
-	if(objects=="Community")
+	if(objects=="Communities Evaluation")
 		type=otCommunity;
-	if(objects=="Topic")
+	if(objects=="Topics Evaluation")
 		type=otTopic;
 	if(type==otNoClass)
 		throw RPrgException(prg,"Compare with unsupported type");
 	o->WriteStr("Compare with Ideal "+objects+" Groups");
-	Owner->Session->GetSubjects()->Compare(type);
-	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision(type);
-	Owner->Recall=Owner->Session->GetSubjects()->GetRecall(type);
-	Owner->Total=Owner->Session->GetSubjects()->GetTotal(type);
-	if(Owner->TrackNewProfiles)
-	{
-		Owner->PercAss=Owner->Session->GetSubjects()->ComputePercAss();
-		o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->Total)+"  -  New: "+RString::Number(Owner->PercAss));
-	}
-	else
-		o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->Total));
+
+	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(objects));
+	if(!Compare)
+		throw RPrgException(prg,"'"+objects+"' is not a valid evaluation measure");
+	Compare->Info(0,&Owner->Recall);
+	Compare->Info(1,&Owner->Precision);
+	Compare->Info(2,&Owner->AdjustedRandIndex);
+
+	o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->AdjustedRandIndex));
 	if(Owner->App->OFile)
 	{
 		RString Str;
@@ -876,7 +911,7 @@ void GCompareIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R:
 		if(Str.GetLen()<25)
 			Str.SetLen(25," ");
 		(*Owner->App->OFile)<<Str;
-		Str=RString::Number(Owner->Total);
+		Str=RString::Number(Owner->AdjustedRandIndex);
 		if(Str.GetLen()<25)
 			Str.SetLen(25," ");
 		(*Owner->App->OFile)<<Str;
@@ -891,7 +926,7 @@ void GCompareIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R:
 	}
 	if(Owner->App->GOFile)
 	{
-		(*Owner->App->GOFile)<<Owner->Recall<<Owner->Precision<<Owner->Total;
+		(*Owner->App->GOFile)<<Owner->Recall<<Owner->Precision<<Owner->AdjustedRandIndex;
 		if(Owner->TrackNewProfiles)
 			(*Owner->App->GOFile)<<Owner->PercAss;
 		(*Owner->App->GOFile)<<endl;
@@ -903,9 +938,9 @@ void GCompareIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R:
 void GSetSimulationParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	GInstSimulator* Owner=dynamic_cast<GInstSimulator*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
 	Owner->Session->Set(args[0]->GetValue(prg),args[1]->GetValue(prg),"Subjects");
@@ -916,15 +951,15 @@ void GSetSimulationParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst* ins
 void GAddIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	GInstSimulator* Owner=dynamic_cast<GInstSimulator*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 
 	if(args.GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Create New Ideal Group");
-	Owner->Session->GetSubjects()->Apply();
-	Owner->Session->GetSubjects()->AddTopic();
+	Owner->Simulator->Apply();
+	Owner->Simulator->AddSubject();
 }
 
 
@@ -932,20 +967,20 @@ void GAddIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 void GAddProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	GInstSimulator* Owner=dynamic_cast<GInstSimulator*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 
 	if(args.GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Adding Profiles");
-	Owner->Session->GetSubjects()->Apply();
-	o->WriteStr(RString::Number(Owner->Session->GetSubjects()->AddProfiles())+" new profiles created");
+	Owner->Simulator->Apply();
+	o->WriteStr(RString::Number(Owner->Simulator->AddProfiles())+" new profiles created");
 }
 
 
 //------------------------------------------------------------------------------
-void GRealLifeI::CommonTasks(RPrgOutput* o,GInstSession* Owner)
+void GRealLifeI::CommonTasks(RPrgOutput* o,GInstSimulator* Owner)
 {
 	GSlot* rec=dynamic_cast<GSlot*>(o);
 
@@ -978,17 +1013,16 @@ void GRealLifeI::CommonTasks(RPrgOutput* o,GInstSession* Owner)
 		rec->Interact();
 		rec->WriteStr("Compare with Ideal Groups");
 	}
-	Owner->Session->GetSubjects()->Compare(otCommunity);
-	Owner->Precision=Owner->Session->GetSubjects()->GetPrecision(otCommunity);
-	Owner->Recall=Owner->Session->GetSubjects()->GetRecall(otCommunity);
-	Owner->Total=Owner->Session->GetSubjects()->GetTotal(otCommunity);
+	Compare->Info(0,&Owner->Recall);
+	Compare->Info(1,&Owner->Precision);
+	Compare->Info(2,&Owner->AdjustedRandIndex);
 	if(rec)
-		o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->Total));
+		o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->AdjustedRandIndex));
 	if(GSession::Break()) return;
 	if(Owner->App->OFile)
-		(*Owner->App->OFile)<<Owner->App->TestName<<Owner->Recall<<Owner->Precision<<Owner->Total<<What<<endl;
+		(*Owner->App->OFile)<<Owner->App->TestName<<Owner->Recall<<Owner->Precision<<Owner->AdjustedRandIndex<<What<<endl;
 	if(Owner->App->GOFile)
-		(*Owner->App->GOFile)<<Owner->Recall<<Owner->Precision<<Owner->Total<<What<<endl;
+		(*Owner->App->GOFile)<<Owner->Recall<<Owner->Precision<<Owner->AdjustedRandIndex<<What<<endl;
 }
 
 
@@ -996,9 +1030,13 @@ void GRealLifeI::CommonTasks(RPrgOutput* o,GInstSession* Owner)
 void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	GInstSimulator* Owner=dynamic_cast<GInstSimulator*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
+
+	Compare=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Communities Evaluation");
+	if(!Compare)
+		throw RPrgException(prg,"'Communities Evaluation' is not a valid evaluation measure");
 
 	size_t MaxStep;
 	size_t MinFBStep;
@@ -1042,8 +1080,8 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 			}
 			if(GSession::Break()) return;
 			What[0]='F';
-			Owner->Session->GetSubjects()->Apply();
-			Owner->Session->GetSubjects()->DocumentSharing();
+			Owner->Simulator->Apply();
+			Owner->Simulator->ShareDocuments();
 			CommonTasks(o,Owner);
 
 			// Verify Nb Steps
@@ -1076,7 +1114,7 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 		if(Random->GetValue()<Proba)
 		{
 			// Create One profile of an existing topic
-			NewProf=Owner->Session->GetSubjects()->AddProfiles();
+			NewProf=Owner->Simulator->AddProfiles();
 			GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMin",nbminprof);
 			GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMax",nbmaxprof);
 
@@ -1086,7 +1124,7 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 		else
 		{
 			// Create one profile of a new topic
-			if(Owner->Session->GetSubjects()->AddTopic())
+			if(Owner->Simulator->AddSubject())
 			{
 				What[0]='N';
 				NewProf=1;
@@ -1094,7 +1132,7 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 			else
 			{
 				Proba=1.0;  // Cannot create any new topic
-				NewProf=Owner->Session->GetSubjects()->AddProfiles();
+				NewProf=Owner->Simulator->AddProfiles();
 				GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMin",nbminprof);
 				GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMax",nbmaxprof);
 
@@ -1110,8 +1148,8 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 		if(!NewProf)
 		{
 			What[0]='F';
-			Owner->Session->GetSubjects()->Apply();
-			Owner->Session->GetSubjects()->DocumentSharing();
+			Owner->Simulator->Apply();
+			Owner->Simulator->ShareDocuments();
 		}
 
 		// Compute, Group and Compare
@@ -1127,56 +1165,15 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 void GAddAssessmentsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
 {
 	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	GInstSimulator* Owner=dynamic_cast<GInstSimulator*>(inst);
 	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 
 	if(args.GetNb())
 		throw RPrgException(prg,"Method needs no parameters.");
 	o->WriteStr("Adding Assessments");
-	Owner->Session->GetSubjects()->Apply();
-	Owner->Session->GetSubjects()->AddAssessments();
-}
-
-
-//------------------------------------------------------------------------------
-void GTrackNewProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
-{
-	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
-	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
-
-	if(args.GetNb()!=1)
-		throw RPrgException(prg,"The method needs one parameter (\"0\" or \"1\") to specify if the profiles must be tracked.");
-	if(args.GetNb())
-	{
-		if((args[0]->GetValue(prg))=="0")
-		{
-			o->WriteStr("Track New Profiles: false");
-			Owner->TrackNewProfiles=false;
-		}
-		else
-		{
-			o->WriteStr("Track New Profiles: true");
-			Owner->TrackNewProfiles=true;
-		}
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GClearNewProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
-{
-	ShowInst(this,prg,args);
-	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
-	if(!Owner)
-		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
-
-	if(args.GetNb())
-		throw RPrgException(prg,"Method needs no parameter.");
-	o->WriteStr("Clear New Profiles");
-	Owner->Session->GetSubjects()->ClearLastAdded();
+	Owner->Simulator->Apply();
+	Owner->Simulator->AddAssessments();
 }
 
 
@@ -1415,6 +1412,48 @@ void GAnalyzeDocsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::
 
 //------------------------------------------------------------------------------
 //
+// class GSimulatorClass
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GSimulatorClass::GSimulatorClass(GInstGALILEIApp* app)
+	: RPrgClass("GSimulator"), Instance(false), App(app)
+{
+	Methods.InsertPtr(new GStartSimulationI());
+	Methods.InsertPtr(new GPerformDegradationI());
+	Methods.InsertPtr(new GShareDocumentsI());
+	Methods.InsertPtr(new GCompareIdealI());
+	Methods.InsertPtr(new GAddIdealI());
+	Methods.InsertPtr(new GAddProfilesI());
+	Methods.InsertPtr(new GRealLifeI());
+	Methods.InsertPtr(new GAddAssessmentsI());
+	Methods.InsertPtr(new GSetSimulationParamI());
+}
+
+
+//------------------------------------------------------------------------------
+RPrgVar* GSimulatorClass::NewVar(RInterpreter* prg,RPrgOutput*,const RString& name,RContainer<RPrgVar,true,false>& params)
+{
+	if(Instance)
+		throw RPrgException(prg,"Only one instance of 'GSimulator' may exist");
+	if(params.GetNb())
+		throw RPrgException(prg,"Constructor of 'GSimulator' has no parameter");
+	RPrgVar* Var=new GInstSimulator(name,this,GALILEIApp->GetSession(),App);
+	Instance=true;
+	return(Var);
+}
+
+
+//------------------------------------------------------------------------------
+GSimulatorClass::~GSimulatorClass(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
 // class GSessionClass
 //
 //------------------------------------------------------------------------------
@@ -1428,22 +1467,11 @@ GSessionClass::GSessionClass(GInstGALILEIApp* app)
 	Methods.InsertPtr(new GComputeProfilesI());
 	Methods.InsertPtr(new GGroupProfilesI());
 	Methods.InsertPtr(new GGroupDocsI());
-	Methods.InsertPtr(new GStartSimulationI());
-	Methods.InsertPtr(new GPerformDegradationI());
-	Methods.InsertPtr(new GFdbksCycleI());
-	Methods.InsertPtr(new GCompareIdealI());
-	Methods.InsertPtr(new GAddIdealI());
-	Methods.InsertPtr(new GAddProfilesI());
-	Methods.InsertPtr(new GRealLifeI());
-	Methods.InsertPtr(new GAddAssessmentsI());
-	Methods.InsertPtr(new GTrackNewProfilesI());
-	Methods.InsertPtr(new GClearNewProfilesI());
 	Methods.InsertPtr(new GSetRandI());
 	Methods.InsertPtr(new GRunStatI());
 	Methods.InsertPtr(new GForceReComputeI());
 	Methods.InsertPtr(new GSetSaveResultsI());
 	Methods.InsertPtr(new GResetMeasureI());
-	Methods.InsertPtr(new GSetSimulationParamI());
 }
 
 
@@ -1521,6 +1549,7 @@ GGALILEIPrg::GGALILEIPrg(RPrgOutput* o)
 	GInstGALILEIApp* App;
 	AddVar(App=new GInstGALILEIApp("GALILEIApp",ptr));
 	AddClass(new GSessionClass(App));
+	AddClass(new GSimulatorClass(App));
 }
 
 

@@ -69,8 +69,7 @@ void GGroupDocs::Grouping(GSlot*,bool debug)
 
 	if(debug)
 	{
-		GSubjects* Subjects(Session->GetSubjects());
-		RCursor<GSubject> Cur(Subjects->GetNodes());
+		RCursor<GSubject> Cur(Session->GetSubjects());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			if(!Cur()->IsUsed()) continue;

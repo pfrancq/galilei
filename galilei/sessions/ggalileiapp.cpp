@@ -57,6 +57,7 @@ using namespace std;
 #include <ggalileiapp.h>
 #include <gsession.h>
 #include <gsubjects.h>
+#include <gsubject.h>
 #include <ggalileiprg.h>
 using namespace GALILEI;
 
@@ -82,6 +83,7 @@ using namespace GALILEI;
 #include <gstatscalc.h>
 #include <gstorage.h>
 #include <gmeasure.h>
+#include <gsimulator.h>
 #include <gtool.h>
 
 
@@ -414,7 +416,7 @@ void GGALILEIApp::Apply(void)
 		GALILEIConfig.AddToList("PlugIns Path",*Cur());
 	if(Session)
 	{
-		GSubjects* sub=Session->GetSubjects();
+		GSimulator* sub=Session->GetSimulator();
 		if(sub)
 			sub->Apply();
 	}

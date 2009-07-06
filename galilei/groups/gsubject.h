@@ -43,6 +43,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gsubjects.h>
 
 
 //------------------------------------------------------------------------------
@@ -59,6 +60,8 @@ namespace GALILEI{
 template<class cObj>
 	class GSubjectData
 {
+public:
+
 	/**
 	 * Centroid of a group.
 	 */
@@ -68,8 +71,6 @@ template<class cObj>
 	 * Average similarity of the objects of the group to the centroid.
 	 */
 	double AvgSim;
-
-public:
 
 	/**
 	 * Constructor.
@@ -83,8 +84,6 @@ public:
 	{
 		Centroid=0;
 	}
-
-	friend class GSubjects;
 };
 
 
@@ -96,8 +95,10 @@ public:
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subject
 */
-class GSubject: public R::RNode<GSubjects,GSubject,true>
+class GSubject : protected R::RNode<GSubjects,GSubject,true>
 {
+private:
+
 	/**
 	 * Identifier of the subject.
 	 */
@@ -114,14 +115,20 @@ class GSubject: public R::RNode<GSubjects,GSubject,true>
 	bool Used;
 
 	/**
-	 * Documents attached to this subject.
+	 * Documents categorized to this subject.
 	 */
-	R::RContainer<GDoc,false,true> AllDocs;
+	R::RContainer<GDoc,false,true> CategorizedDocs;
 
 	/**
-	 * Documents attached to this subject and selected.
+	 * Selected documents attached to this subject.
 	 */
 	R::RContainer<GDoc,false,true> Docs;
+
+	/**
+	 * Store where the documents are attached. The index of a document in
+	 * CategorizedDocs corresponds to the index in this container.
+	 */
+	R::RContainer<GSubject,false,false> WhereDocs;
 
 	/**
 	 * Profiles attached to this subject.
@@ -138,6 +145,11 @@ class GSubject: public R::RNode<GSubjects,GSubject,true>
 	 */
 	GTopic* Topic;
 
+	/**
+	 * Depth of the topic.
+	 */
+	size_t Depth;
+
 public:
 
 	/**
@@ -147,6 +159,27 @@ public:
 	* @param u               Used?
 	*/
 	GSubject(size_t id,const R::RString& name,bool u);
+
+	/**
+	* Get a cursor over all the child subjects.
+	*/
+	inline R::RCursor<GSubject> GetSubjects(void) const {return(Tree->GetSubjects(this));}
+
+	/**
+	* Initialize the subject (reset all profiles assigned).
+	*/
+	void ReInit(void);
+
+	/**
+	 * Get the depth of the tree formed by all the subjects.
+	 */
+	size_t GetDepth(void) const {return(Depth);}
+
+	/**
+	 * Get the parent of the subject.
+	 * @return pointer to the parent or null if it is a top subject.
+	 */
+	GSubject* GetParent(void) const {return(Parent);}
 
 	/**
 	* Compare two subjects by comparing their identifier.
@@ -173,44 +206,45 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	 * Compute the maximal depth of a subject. In practice, it is the depth of
-	 * the child node or depth+1.
-	 * @param curdepth       Depth of the parent (or 0 if no parent).
-	 * @param depth          Value containing the depth. It is replaced, if the
-	 *                       depth of the current node is greater.
-	 */
-	void ComputeDepth(size_t curdepth,size_t& depth) const;
-
-	/**
-	* Get the ideal group of the profile.
-	* @param prof            Profile.
-	*/
-	GSubject* GetIdealGroup(GProfile* prof) const;
-
-	/**
-	* Get the ideal group of the document.
-	* @param doc            Document.
-	*/
-	GSubject* GetIdealGroup(GDoc* doc) const;
-
-	/**
 	* Verify if a profile is part of the subject.
 	* @param prof            Pointer to the profile.
 	*/
 	bool IsIn(GProfile* prof) const;
 
 	/**
-	 * Add the documents to the current.
-	 * @param docs           Array where the documents will be added.
-	 * @param nb             Number of documents will be increased.
-	 */
-	void AddDocs(GDoc** docs,size_t& nb);
-
-	/**
-	* Verify if a document is part of the subject.
+	* Verify if a document is selected in the subject.
 	* @param doc             Pointer to the document.
 	*/
 	bool IsIn(GDoc* doc) const;
+
+	/**
+	* Verify if a document is categorized in the subject.
+	* @param doc             Pointer to the document.
+	*/
+	bool IsCategorized(GDoc* doc) const;
+
+	/**
+	* Fill a given array with all the documents. If the subject has the maximal
+	* depth, all the documents of its sub-subjects are also inserted.
+	*
+	* The array must be created and must be large enough to hold all the
+	* documents.
+	* @see This method is used in GSimulator to create assessments for
+	*      profiles during a simulation of a real system.
+	* @param docs            Pointer to the array.
+	* @param maxdepth        Maximal depth.
+	* @param nb              Number of elements in the array.
+	*/
+	void FillDocs(GDoc** docs,size_t& nb,size_t maxdepth);
+
+	/**
+	 * Compute the maximal number of documents available for the subject (and
+	 * its sub-subject).
+	 * @param maxdepth       Maximal depth.
+	 * @return the number of documents related to this subject that can be
+	 * inserted.
+	 */
+	size_t GetMaxDocs(size_t maxdepth);
 
 	/**
 	 * Clear the ideal group of a given type.
@@ -277,18 +311,7 @@ public:
 	*/
 	size_t GetNbDocs(const R::RContainer<GDoc,false,false>* docs) const;
 
-	/**
-	* Insert a document to the list of those contained in the subject.
-	* @param doc             Pointer to the document.
-	* @param used           Document currently used.
-	*/
-	void Insert(GDoc* doc,bool used);
-
-	/**
-	* Insert a profile to the list of those contained in the subject.
-	* @param profile          Pointer to the profile.
-	*/
-	void Insert(GProfile* profile);
+public:
 
 	/**
 	* Get a cursor over the profiles contained in the subject.
@@ -326,12 +349,12 @@ public:
 	/**
 	* Get a cursor over the all the documents contained in the subject.
 	*/
-	R::RCursor<GDoc> GetTotalDocs(void) const {return(R::RCursor<GDoc>(AllDocs));}
+	R::RCursor<GDoc> GetTotalDocs(void) const {return(R::RCursor<GDoc>(CategorizedDocs));}
 
 	/**
 	 * @return The total number of documents assigned to this subject.
 	 */
-	size_t GetNbTotalDocs(void) const {return(AllDocs.GetNb());}
+	size_t GetNbTotalDocs(void) const {return(CategorizedDocs.GetNb());}
 
 	/**
 	* Return the name of the Subject.
@@ -349,45 +372,13 @@ public:
 	* Get the identifier of the Subject.
 	* @returns The id of the subject.
 	*/
-	size_t GetId(void) const;
+	size_t GetId(void) const {return(Id);}
 
 	/**
 	* Verify if the subject is used.
 	* @return bool.
 	*/
-	bool IsUsed(void) const;
-
-private:
-
-	/**
-	* Set the status of the subject. When the subject is not used anymore, no
-	* more profiles are associated to it. It is possible to add a given number
-	* of profiles to the subject. Eventually, new users are created.
-	* @param session         Session.
-	* @param random          Random number generator.
-	* @param nbdocs          Number of documents to select.
-	* @param tmp             Temporary array.
-	* @param nbprofiles      Number of profiles to create for this subject.
-	* @param nbsocial        Number of social profiles still to create.
-	*/
-	void SetUsed(GSession* session,R::RRandom* random,size_t nbdocs,GDoc** tmp,size_t nbprofiles,size_t& nbsocial);
-
-	/**
-	* Initialize the subject (reset all profiles assigned).
-	* @param session         Session.
-	* @param unselected      Specify if the subject must (eventually) be unselected.
-	*/
-	void ReInit(GSession* session,bool unselected);
-
-public:
-
-	/**
-	* Set the status of the subject. When the subject is not used anymore, no
-	* more profiles are associated to it.
-	* @param session         Session.
-	* @param used            Used or not ?
-	*/
-	void SetUsed(GSession* session,bool used);
+	bool IsUsed(void) const {return(Used);}
 
 	/**
 	* Destruct the subject.
@@ -395,6 +386,7 @@ public:
 	virtual ~GSubject(void);
 
 	friend class GSubjects;
+	friend class GSimulator;
 };
 
 
