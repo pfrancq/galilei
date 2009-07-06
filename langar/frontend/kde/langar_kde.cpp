@@ -42,25 +42,7 @@ using namespace R;
 #include <kaboutdata.h>
 #include <kaboutapplicationdialog.h>
 #include <KDE/KLocale>
-#include <ui_config.h>
 using namespace GALILEI;
-
-
-//------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
-{
-public:
-	Config(void)
-	{
-		setCaption("Configure E-mail Plug-In");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
-		adjustSize();
-	}
-};
 
 
 
@@ -79,23 +61,6 @@ void About(void)
 	aboutData.addAuthor(ki18n("Sarah Rolfo"),ki18n("Linguist"));
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
-}
-
-
-//------------------------------------------------------------------------------
-void Configure(GFactoryLang* params)
-{
- 	Config dlg;
-
-	dlg.Rules->setUrl(ToQString(params->Get("RulesFile")));
-	dlg.Encoding->setText(ToQString(params->Get("Encoding")));
-
-	if(dlg.exec())
-	{
-		params->Set("RulesFile",FromQString(dlg.Rules->url().url()));
-		params->Set("Encoding", FromQString(dlg.Encoding->text()));
- 		params->Apply();
- 	}
 }
 
 

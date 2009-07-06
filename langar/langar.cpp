@@ -62,8 +62,6 @@ using namespace std;
 class GALILEI::GLangAR::ArabicRule
 {
 public:
-	size_t Id;
-	size_t Level;
 	RString OldSuffix;
 	RString NewSuffix;
 	int BeforePos;
@@ -75,22 +73,17 @@ public:
 	RString ForbiddenLetter;
 	bool CycleRule; // true if the rule has to be applied until it can not any more, false if the rule has to ben applied one once
 	bool NextLevel; // must go to next level if rule is applied
-	ArabicRule(size_t id,size_t level,RString os,RString ns,int before_pos,int after_pos,
-			size_t nb_min_letters,int equality_pos, RString equality,int forbidden_pos, RString forbidden_letter,bool cycle_rule,bool next_level);
+	ArabicRule(const RString& os,const RString& ns,int before_pos,int after_pos,
+			size_t nb_min_letters,int equality_pos, const RString& equality,int forbidden_pos, const RString& forbidden_letter,bool cycle_rule,bool next_level)
+			: OldSuffix(os), NewSuffix(ns), BeforePos(before_pos), AfterPos(after_pos), NbMinLetters(nb_min_letters),
+			EqualityPos(equality_pos), Equality(equality), ForbiddenPos(forbidden_pos), ForbiddenLetter(forbidden_letter), CycleRule(cycle_rule), NextLevel(next_level)
+{
+}
+
 	int Compare(const ArabicRule&) const {return(-1);} // force rules to be sorted as entered;
 	bool Apply(RString& kwd); //function to apply the rule -> returns true if a stemmer is applied
 	int CheckConditions(RString kwd); // return (-1) if conditions are not verified, else return the position of the old suffix in the word kwd
 };
-
-
-//-----------------------------------------------------------------------------
-GLangAR::ArabicRule::ArabicRule(size_t id,size_t level, RString os, RString ns,  int before_pos, int after_pos,
-		size_t nb_min_letters, int equality_pos, RString equality, int forbidden_pos, RString forbidden_letter, bool cycle_rule, bool next_level)
-	: Id(id), Level(level), OldSuffix(os), NewSuffix(ns), BeforePos(before_pos), AfterPos(after_pos), NbMinLetters(nb_min_letters),
-		EqualityPos(equality_pos), Equality(equality), ForbiddenPos(forbidden_pos), ForbiddenLetter(forbidden_letter), CycleRule(cycle_rule), NextLevel(next_level)
-{
-}
-
 
 
 //-----------------------------------------------------------------------------
@@ -124,9 +117,6 @@ int GLangAR::ArabicRule::CheckConditions(RString kwd)
 
 	// Now verify if this old suffix is the old suffix to change (if old suffix appears many times in the word)
 	// Check before position and after position.
-	// Check minimum of letters
-	if(kwd.GetLen()<NbMinLetters)
-	 	return(-1);
 
 	//check for equality index and letters
 	if(EqualityPos!=-1)
@@ -189,8 +179,271 @@ GALILEI::GLangAR::GLangAR(GFactoryLang* fac)
 	: GLang(fac,"Arabic","ar"), Rules0(5,5), Rules1(5,5), Rules2(5,5), Rules3(5,5), Rules4(5,5),
 		 Rules5(5,5), Rules6(5,5), Rules7(5,5)
 {
+	// Rules 0
+	Rules0.InsertPtr(new ArabicRule("َ","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("ً","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("ُ","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("ْ","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("ِ","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("ٍ","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("ٌ","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("ّ","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("ـ","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("`","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("؛","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("،","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("؟","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules0.InsertPtr(new ArabicRule("°","",-1,-1,0,-1,"",-1,"",true,true));
+	Rules1.InsertPtr(new ArabicRule("أ","ا",-1,-1,0,-1,"",-1,"",true,true));
+	Rules1.InsertPtr(new ArabicRule("آ","ا",-1,-1,0,-1,"",-1,"",true,true));
+	Rules1.InsertPtr(new ArabicRule("إ","ا",-1,-1,0,-1,"",-1,"",true,true));
+	Rules1.InsertPtr(new ArabicRule("ؤو","ا",-1,-1,0,-1,"",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ائ","ا",3,1,5,0,"ال",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ائ","ي",-1,-1,5,-1,"",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ئا","ا",-1,-1,0,-1,"",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ئ","ا",-1,-1,0,-1,"",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ئي","ا",-1,-1,0,-1,"",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ؤ","ي",2,-1,5,4,"اء",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ؤ","ي",4,-1,0,6,"اء",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ؤ","ي",3,-1,0,5,"اء",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ؤ","ي",1,-1,0,3,"اء",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ؤ","ا",-1,-1,0,-1,"",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ائي","",3,0,0,-1,"",0,"ال",false,false));
+	Rules1.InsertPtr(new ArabicRule("يء","ا",-1,0,0,-1,"",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("واء","وء",-1,0,5,-1,"",-1,"",false,false));
+	Rules1.InsertPtr(new ArabicRule("ؤ","ي",1,3,0,3,"اء",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("يات","ا",4,0,0,0,"ال",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ية","ا",4,0,0,0,"ال",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("يات","",-1,0,4,-1,"",0,"ب",false,false));
+	Rules2.InsertPtr(new ArabicRule("يات","ا",2,0,0,-1,"",1,"و",false,false));
+	Rules2.InsertPtr(new ArabicRule("ية","ا",2,0,0,-1,"",1,"و",false,false));
+	Rules2.InsertPtr(new ArabicRule("ية","",2,0,0,-1,"",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ية","ي",3,0,0,-1,"",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ية","",-1,0,5,-1,"",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("تان","",-1,0,5,-1,"",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ان","",-1,0,7,-1,"",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ان","ان",-1,0,0,0,"وال",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ان","",-1,0,5,0,"اي",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ان","ان",3,0,0,0,"لل",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ان","ان",3,0,0,0,"و",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ان","ان",3,0,0,0,"ف",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ان","ان",3,0,0,0,"ب",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ان","",-1,0,5,-1,"",0,"ا",false,false));
+	Rules2.InsertPtr(new ArabicRule("ات","",-1,0,4,-1,"",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ة","",-1,0,3,-1,"",-1,"",false,false));
+	Rules2.InsertPtr(new ArabicRule("ى","",-1,0,3,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("الب","الب",0,3,0,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("وال","",0,-1,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ولل","",0,-1,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("وسي","",0,-1,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("وست","",0,-1,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("وسا","",0,-1,6,-1,"",3,"ا",false,false));
+	Rules3.InsertPtr(new ArabicRule("وسن","",0,-1,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("بال","",0,-1,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("كال","",0,-1,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("فال","",0,-1,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("فال","",0,-1,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("وفل","ل",0,-1,7,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("فلت","",0,-1,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("للن","ن",0,-1,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("لل","",0,-1,4,-1,"",3,"ان",false,false));
+	Rules3.InsertPtr(new ArabicRule("لي","",0,-1,4,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("لت","",0,-1,4,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("لا","",0,-1,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("لن","",0,-1,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ال","",0,-1,4,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("سي","",0,-1,4,-1,"",2,"ا",false,false));
+	Rules3.InsertPtr(new ArabicRule("ست","ت",0,-1,6,3,"ا",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ست","",0,-1,4,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("سا","",0,-1,5,-1,"",2,"ا",false,false));
+	Rules3.InsertPtr(new ArabicRule("سن","",0,-1,4,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("فل","",0,-1,5,-1,"",4,"ين",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتكما","",-1,0,7,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتهما","",-1,0,7,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتكن","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتهم","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتنا","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتهن","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتها","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتكم","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تكما","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تهما","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتك","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اته","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تها","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تكم","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اتي","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تكن","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تهم","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تهن","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("كما","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اهم","هم",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("هما","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تنا","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تي","",-1,0,4,-1,"",1,"ي",false,false));
+	Rules3.InsertPtr(new ArabicRule("تك","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ته","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("يني","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("تني","",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اني","ني",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ني","",-1,0,5,-1,"",2,"ي",false,false));
+	Rules3.InsertPtr(new ArabicRule("ها","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("نا","",-1,0,5,-1,"",3,"ا",false,false));
+	Rules3.InsertPtr(new ArabicRule("كم","كم",-1,0,5,1,"م",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("اكم","كم",-1,0,6,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("كم","",-1,0,5,0,"ا",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("كم","",-1,0,5,-1,"",2,"ا",false,false));
+	Rules3.InsertPtr(new ArabicRule("كن","كن",3,0,0,0,"و",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("كن","",-1,0,5,-1,"",3,"ا",false,false));
+	Rules3.InsertPtr(new ArabicRule("هم","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("هن","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ك","ك",-1,0,5,2,"ت",0,"مس",false,false));
+	Rules3.InsertPtr(new ArabicRule("يك","ك",3,0,0,0,"ا",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ك","ك",3,0,0,0,"و",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ك","ك",3,0,0,0,"ل",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ك","ك",-1,0,6,1,"ا",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ك","ك",3,0,0,0,"م",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ك","",-1,0,4,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ه","ه",-1,0,4,0,"موا",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ه","ه",-1,0,5,1,"موا",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ه","",-1,0,4,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ت","",-1,0,4,-1,"",0,"ب",false,false));
+	Rules3.InsertPtr(new ArabicRule("ت","",0,4,0,3,"ون",2,"ا",false,false));
+	Rules3.InsertPtr(new ArabicRule("ي","",0,4,0,3,"ون",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ت","",0,4,0,3,"وا",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ي","",-1,0,5,-1,"",-1,"",false,false));
+	Rules3.InsertPtr(new ArabicRule("ت","",0,4,0,3,"ين",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ينيين","",-1,0,8,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ينيون","",-1,0,8,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("يين","ين",2,0,0,0,"ت",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("يين","",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ينيا","",-1,0,8,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("يون","",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("يني","",-1,0,6,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("اون","اون",-1,0,0,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ون","",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("اين","ا",-1,0,0,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("و","",0,-1,5,3,"ين",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("و","",0,-1,5,2,"يا",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ف","",0,-1,4,3,"ا",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ف","",0,-1,5,3,"ين",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ين","",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("اء","ا",-1,0,0,0,"فا",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("اء","ا",4,0,0,0,"با",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("اء","ا",3,0,0,0,"ا",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("وا","",-1,0,4,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("اء","ا",2,0,0,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("اء","",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ي","",-1,0,4,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("تما","",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("نا","",-1,0,4,-1,"",0,"ا",false,false));
+	Rules4.InsertPtr(new ArabicRule("تم","",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("يون","ين",1,0,0,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ون","",2,0,0,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("تن","",-1,0,3,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("اكن","كن",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ن","",-1,0,4,0,"اي",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ا","",0,-1,4,3,"ن",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("وان","و",2,0,0,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ان","ن",-1,0,4,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ن","ن",3,0,0,1,"ا",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ن","ن",4,0,0,0,"موا",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("امن","امن",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ن","ن",3,0,0,0,"و",2,"ي",false,false));
+	Rules4.InsertPtr(new ArabicRule("ن","",-1,0,4,-1,"",2,"ي",false,false));
+	Rules4.InsertPtr(new ArabicRule("يا","",-1,0,5,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ا","",-1,0,4,-1,"",-1,"",false,false));
+	Rules4.InsertPtr(new ArabicRule("ا","",2,1,0,0,"و",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("فا","",0,3,0,4,"ا",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("الب","ب",0,-1,5,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("فا","",0,-1,7,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ا","",2,3,0,0,"ت",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("فا","ف",0,2,0,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("با","ب",0,2,0,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("با","",0,5,0,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("با","",0,4,0,3,"ت",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("با","",0,4,0,4,"ا",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("با","",0,3,0,4,"ا",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ب","ب",0,-1,3,1,"ي",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("بب","ب",0,-1,3,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("باو","و",0,-1,5,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ب","",0,-1,5,2,"يا",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("با","",0,-1,8,6,"ا",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("با","با",0,1,0,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ب","ب",0,3,0,2,"ا",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ب","",0,-1,4,-1,"",2,"ي",false,false));
+	Rules5.InsertPtr(new ArabicRule("واو","و",0,-1,5,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("وا","",0,-1,5,-1,"",3,"ا",false,false));
+	Rules5.InsertPtr(new ArabicRule("وا","ا",1,3,0,4,"ي",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("وا","و",0,3,0,-1,"",3,"ا",false,false));
+	Rules5.InsertPtr(new ArabicRule("ا","",2,-1,4,0,"ا",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ا","",0,-1,4,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("تا","",-1,0,0,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("وي","",0,-1,6,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("و","",0,-1,4,-1,"",2,"ي",false,false));
+	Rules5.InsertPtr(new ArabicRule("ف","",0,-1,4,2,"يو",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ف","",0,-1,4,-1,"",2,"ي",false,false));
+	Rules5.InsertPtr(new ArabicRule("ا","",-1,0,4,-1,"",3,"ت",false,false));
+	Rules5.InsertPtr(new ArabicRule("و","",0,3,0,2,"ين",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("و","",0,-1,4,2,"يو",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("و","",0,-1,4,-1,"",2,"ي",false,false));
+	Rules5.InsertPtr(new ArabicRule("ك","",0,-1,4,2,"يو",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ك","",0,-1,4,-1,"",2,"ي",false,false));
+	Rules5.InsertPtr(new ArabicRule("ل","",0,-1,4,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("وي","",3,0,0,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ي","",0,-1,4,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("اي","و",0,3,0,3,"ا",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ت","ت",0,4,0,3,"ي",1,"ت",false,false));
+	Rules5.InsertPtr(new ArabicRule("ت","",0,-1,4,-1,"",2,"ا",false,false));
+	Rules5.InsertPtr(new ArabicRule("نوا","نو",0,1,0,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("نيا","نو",0,1,0,-1,"",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ن","ن",0,3,0,2,"ا",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ن","ن",0,-1,4,2,"ي",-1,"",false,false));
+	Rules5.InsertPtr(new ArabicRule("ن","",0,-1,4,-1,"",1,"ا",false,false));
+	Rules5.InsertPtr(new ArabicRule("و","",-1,0,4,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("نتي","نتي",0,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ا","",2,3,0,0,"م",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ي","و",3,1,0,1,"ا",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ي","",3,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ا","",4,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("يا","",2,1,0,1,"ت",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ا","",3,1,0,1,"ت",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("يا","",2,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("اا","ي",2,1,0,0,"م",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("اا","",2,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("و","و",3,1,0,0,"م",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ي","",4,0,0,0,"م",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("او","",2,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ا","",3,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ا","",2,2,0,-1,"",0,"ت",false,false));
+	Rules6.InsertPtr(new ArabicRule("ايا","يا",2,0,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("وا","",1,2,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("وا","و",1,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("اا","و",1,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ا","",1,2,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("اي","ي",2,0,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("وي","ي",1,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("و","و",2,1,0,0,"م",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("و","",2,1,0,-1,"",0,"و",false,false));
+	Rules6.InsertPtr(new ArabicRule("ي","",2,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ي","",1,2,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("يا","ا",1,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ا","",4,1,0,-1,"",-1,"",false,false));
+	Rules6.InsertPtr(new ArabicRule("ا","",2,1,0,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("ي","",3,1,0,0,"م",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("او","اا",1,0,0,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("ي","",0,2,0,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("وي","اا",1,0,0,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("اى","اا",1,0,0,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("وى","اا",1,0,0,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("ا","",2,0,0,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("و","ا",1,1,0,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("ي","",2,0,0,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("ي","",-1,0,4,-1,"",-1,"",false,false));
+	Rules7.InsertPtr(new ArabicRule("ا","اا",1,0,0,-1,"",-1,"",false,false));
+
 	// Load rules;
-	LoadRules();
+//	LoadRules();
 }
 
 
@@ -537,104 +790,8 @@ void GLangAR::GetStopWords(RContainer<RString,true,false>& stop)
 
 
 //------------------------------------------------------------------------------
-void GLangAR::CreateParams(RConfig* params)
+void GLangAR::CreateParams(RConfig*)
 {
-	params->InsertParam(new RParamValue("RulesFile","/etc/galilei/arabic_rule.csv"));
-	params->InsertParam(new RParamValue("Encoding","utf-8"));
-}
-
-
-//-----------------------------------------------------------------------------
-void GALILEI::GLangAR::LoadRules(void)
-{
-	RString* tab;
-	RString w;
-	RChar separator(char(0x23)); // semi-colon ';' separator
-	size_t tmp, i, nbargs=13;
-	int sep;
-	ArabicRule* rule;
-
-	try
-	{
-		//Read Rules
-		RTextFile rules_file(Factory->Get("RulesFile"), Factory->Get("Encoding").Latin1());
-		rules_file.Open(RIO::Read);
-
-		//treat on read line
-		while (!rules_file.End())
-		{
-			w=rules_file.GetWord();
-
-			//load one rule
-			tab=new RString[nbargs];
-			tmp=0;
-			for (i=0; i<nbargs;i++)
-			{
-				sep=w.Find(separator,tmp);
-				if( sep==-1)
-				{
-					tab[i++]=w.Mid(tmp);
-					break;
-				}
-				else
-				{
-					tab[i]=w.Mid(tmp, (sep-tmp));
-					tmp=sep+1;
-				}
-			}
-			if (i<nbargs)
-				cout <<" not enough argument found in arabic rules loading..."<<i << "arguments found ("<<nbargs<<" needed)"<<endl;
-
-			//insert rule
-			int before_pos=(!tab[4].GetLen())? -1: atoi(tab[4].Latin1());;
-			int after_pos= (!tab[5].GetLen())? -1: atoi(tab[5].Latin1());
-			int equality_pos=(!tab[7].GetLen())? -1: atoi(tab[7].Latin1())-1;
-			int forbidden_pos=(!tab[10].GetLen())? -1: atoi(tab[10].Latin1())-1;;
-			RString old_suffix=(tab[2].GetLen())? tab[2].Mid(1,tab[2].GetLen()-2) : tab[2];//remove the " characters
-			RString new_suffix=(tab[3].GetLen())? tab[3].Mid(1,tab[3].GetLen()-2) : tab[3]; //remove the " characters
-			RString equality=(tab[8].GetLen())? tab[8].Mid(1,tab[8].GetLen()-2) : tab[8]; //remove the " characters
-			RString forbidden_letter=(tab[9].GetLen())? tab[9].Mid(1,tab[9].GetLen()-2) : tab[9]; //remove the " characters;
-			bool cycle_rule=(!tab[11].GetLen())? 0: atoi(tab[11].Latin1()); //remove the " characters;
-			bool next_level=(!tab[12].GetLen())? 0: atoi(tab[12].Latin1()); //remove the " characters;
-			rule=new ArabicRule(atoi(tab[1].Latin1()),atoi(tab[0].Latin1()),old_suffix,new_suffix,before_pos, after_pos,
-				atoi(tab[6].Latin1()),equality_pos,equality,forbidden_pos,forbidden_letter, cycle_rule, next_level);
-			switch(rule->Level)
-			{
-				case(0):
-					Rules0.InsertPtr(rule);
-					break;
-				case(1):
-					Rules1.InsertPtr(rule);
-					break;
-				case(2):
-					Rules2.InsertPtr(rule);
-					break;
-				case(3):
-					Rules3.InsertPtr(rule);
-					break;
-				case(4):
-					Rules4.InsertPtr(rule);
-					break;
-				case(5):
-					Rules5.InsertPtr(rule);
-					break;
-				case(6):
-					Rules6.InsertPtr(rule);
-					break;
-				case(7):
-					Rules7.InsertPtr(rule);
-					break;
-				default:
-					cout <<" wrong arabic rule level"<<endl;
-					break;
-			}
-			if(tab)
-				delete[] tab;
-		}
-	}
-	catch(...)
-	{
-	}
 }
 
 
@@ -653,26 +810,24 @@ void GALILEI::GLangAR::ApplyRules(RString& kwd,RContainer<ArabicRule,true,false>
 }
 
 //-----------------------------------------------------------------------------
-RString GALILEI::GLangAR::GetStemming(const RString& _kwd)
+RString GALILEI::GLangAR::GetStemming(const RString& kwd)
 {
-	RString res;
-	RString kwd;
-
-	kwd=_kwd;
-	return kwd;
+	// Transform kwd in lower case and store it in res.
+	RString res(kwd.ToLower());
+	if(res.GetLen()>50)
+		return(res);
 
 	// Do the different steps of the Porter algorithm.
-	ApplyRules(kwd,Rules0);
-	ApplyRules(kwd,Rules1);
-	ApplyRules(kwd,Rules2);
-	ApplyRules(kwd,Rules3);
-	ApplyRules(kwd,Rules4);
-	ApplyRules(kwd,Rules5);
-	ApplyRules(kwd,Rules6);
-	ApplyRules(kwd,Rules7);
+	ApplyRules(res,Rules0);
+	ApplyRules(res,Rules1);
+	ApplyRules(res,Rules2);
+	ApplyRules(res,Rules3);
+	ApplyRules(res,Rules4);
+	ApplyRules(res,Rules5);
+	ApplyRules(res,Rules6);
+	ApplyRules(res,Rules7);
 
 	// Put the result in res and return it.
-	res=kwd;
 	return(res);
 }
 

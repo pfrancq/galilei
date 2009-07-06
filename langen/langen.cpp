@@ -789,7 +789,7 @@ bool GLangEN::ContainsVowel(const RString& kwd)
 	if(!kwd.GetLen())
 		return(false);
 	else
-		return((IsVowel(kwd[0]))||(kwd.FindAnyStr("aeiouy",1)!=-1));
+		return((IsVowel(kwd[static_cast<size_t>(0)]))||(kwd.FindAnyStr("aeiouy",1)!=-1));
 }
 
 
