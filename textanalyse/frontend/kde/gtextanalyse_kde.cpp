@@ -27,38 +27,18 @@
 */
 
 
-//------------------------------------------------------------------------------
-// include files for R
-#include <rqt.h>
-using namespace R;
-
-
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gdocanalyse.h>
-using namespace GALILEI;
-
 
 //-----------------------------------------------------------------------------
-// include files for KDE/Qt
-#include <kaboutdata.h>
-#include <kaboutapplicationdialog.h>
-#include <KDE/KLocale>
-#include <ui_config.h>
+// include files for current project
+#include <gtextanalyse_kde.h>
+
 
 
 //------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
-{
-//	Q_OBJECT
-
-public:
-	Config(void);
-public slots:
-	void toggleStruct( bool toggle );
-	void toggleFullIndex(bool toggle );
-};
-
+//
+// class Config
+//
+//------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 Config::Config(void)
@@ -70,10 +50,12 @@ Config::Config(void)
 	setMainWidget(widget);
 	setButtons(KDialog::Cancel|KDialog::Apply);
 	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+	connect(ExtractStruct,SIGNAL(toggled(bool)),this,SLOT(toggleExtractStruct(bool)));
+	connect(FullIndex,SIGNAL(toggled(bool)),this,SLOT(toggleFullIndex(bool)));
 	adjustSize();
 }
 
-void Config::toggleStruct( bool toggle )
+void Config::toggleExtractStruct( bool toggle )
 {
 	StructIsContent->setEnabled(toggle);
 	WeightStruct->setEnabled(toggle && StructIsContent->isChecked());
@@ -88,12 +70,12 @@ void Config::toggleFullIndex(bool toggle )
 {
 	if(toggle)
 	{
-	    ExtractValues->setEnabled(false);
-	    ExtractValues->setChecked(true);
-    	    WeightValues->setEnabled(true);
+		ExtractValues->setEnabled(false);
+		ExtractValues->setChecked(true);
+		WeightValues->setEnabled(true);
 	}
 	else
-	     ExtractValues->setEnabled(true);
+		ExtractValues->setEnabled(true);
 }
 
 
@@ -141,7 +123,7 @@ void Configure(GFactoryDocAnalyse* params)
 	dlg.WeightStruct->setValue(params->GetDouble("WeightStruct"));
 	dlg.ExtractValues->setChecked(params->GetBool("ExtractValues"));
 	dlg.WeightValues->setValue(params->GetDouble("WeightValues"));
-	dlg.toggleStruct(params->GetBool("ExtractStruct"));
+	dlg.toggleExtractStruct(params->GetBool("ExtractStruct"));
 
 	// Structure - Declarative tags
 	dlg.UseDefaultNamespace->setChecked(params->GetBool("UseDefaultNamespace"));
@@ -200,3 +182,4 @@ void Configure(GFactoryDocAnalyse* params)
 //------------------------------------------------------------------------------
 }     // End of extern
 //------------------------------------------------------------------------------
+
