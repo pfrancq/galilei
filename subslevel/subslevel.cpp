@@ -4,7 +4,7 @@
 
 	SubsLevel.cpp
 
-	Compute Profiles and Documents Levels - Implementation
+	Compute Profiles and Documents Confidence - Implementation
 
 	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2005 by David Wartel.
@@ -53,177 +53,37 @@ using namespace std;
 #include <gstorage.h>
 #include <ggalileiapp.h>
 #include <gstorage.h>
-using namespace GALILEI;
-using namespace R;
+
 
 
 //------------------------------------------------------------------------------
-//include files for GALILEI PLUGINS
+// include file for current plug-in
 #include <subslevel.h>
 
 
-//------------------------------------------------------------------------------
-//
-//  Scoring
-//
-//------------------------------------------------------------------------------
-
-struct Scoring
-{
-	size_t SubProfileId;
-	double Score;
-	size_t NbDocs;
-
-	Scoring(size_t id) : SubProfileId(id), Score(0.0), NbDocs(0) {}
-	int Compare(const Scoring& scoring) const {return(CompareIds(SubProfileId,scoring.SubProfileId));}
-	int Compare(const size_t scoring) const {return(CompareIds(SubProfileId,scoring));}
-};
-
-
 
 //------------------------------------------------------------------------------
 //
-//  GSubProfilesLevelCmd
+//  SubsLevel
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubProfilesLevelCmd::GSubProfilesLevelCmd(void) : GStorageCmd("SubProfilesLevelCMD", "MySQL")
+SubsLevel::SubsLevel(GFactoryPostCommunity* fac)
+		: GPostCommunity(fac), Fdbks(0,200), Docs(), Scores(0,200)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevelCmd::Run(GStorage* storage,const GStorageTag& inst,void* caller)
-{
-	RString sql;
-	GCommunity* grp;
-	RDb* storeMySQL;
-	size_t sublevel; //level of the subprofile
-	size_t  levelswidth; // width (between 0 and 100) of a level
-	double subscore; // score of the subprofile
-
-	grp=static_cast<GCommunity*>(caller); //subprofile was given by caller
-	storeMySQL=static_cast<RDb*>(storage->GetInfos());
-	RContainer<Scoring,true,true> Scores(grp->GetNbObjs());
-
-	levelswidth=100/atoi(inst.GetAttrValue("NbLevels").Latin1());
-
-	try
-	{
-		// Init
-		RQuery initsubprofiles(storeMySQL,"UPDATE profiles SET level='0',score='0' WHERE groupid="+RString::Number(grp->GetId()));
-
-		// Find all documents assessed as relevant by someone of the group
-		sql="SELECT DISTINCT(htmlid) FROM htmlsbyprofiles,profiles WHERE htmlsbyprofiles.profileid=profiles.profileid AND judgement='O' AND profiles.groupid="+RString::Number(grp->GetId());
-		RQuery docs(storeMySQL,sql);
-		for(docs.Start();!docs.End();docs.Next())
-		{
-			// Class all profiles assessing the current document by date
-			sql="SELECT profiles.profileid, COUNT(*) FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND profiles.groupid="+RString::Number(grp->GetId())+" AND judgement='O' AND htmlid="+docs[0]+" ORDER BY when2";
-			RQuery subprofiles(storeMySQL,sql);
-			subprofiles.Start();
-			if(subprofiles.End())
-				continue;
-			size_t nb=atoi(subprofiles[1])-1;
-			if(!nb) continue;
-			subscore=static_cast<double>(nb)/static_cast<double>(grp->GetNbObjs()-1);
-			Scoring* ptr=Scores.GetInsertPtr(atoi(subprofiles[0]));
-			ptr->Score+=subscore;
-			ptr->NbDocs++;
-		}
-
-		// Goes through each Profile
-		RCursor<Scoring> Cur(Scores);
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			// Compute the score,level and store it in the database
-			Cur()->Score/=static_cast<double>(Cur()->NbDocs);
-			sublevel=(int(100*Cur()->Score)+(levelswidth-1))/levelswidth;
-			sql="UPDATE profiles SET level='"+RString::Number(sublevel)+"',score='"+RString::Number(Cur()->Score)+"' WHERE profileid="+RString::Number(Cur()->SubProfileId);
-			RQuery update(storeMySQL,sql);
-		}
-	}
-	catch(RException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(...)
-	{
-		throw GException("Unknown problem");
-	}
-}
-
-
-//------------------------------------------------------------------------------
-GSubProfilesLevelCmd::~GSubProfilesLevelCmd(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GDocsLevelCmd
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GDocsLevelCmd::GDocsLevelCmd(void) : GStorageCmd("DocsLevelCMD", "MySQL")
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GDocsLevelCmd::Run(GStorage* storage,const GStorageTag&,void*)
-{
-	try
-	{
-		// Compute score for documents
-		RDb* storeMySQL=static_cast<RDb*>(storage->GetInfos());
-		RQuery intidocs(storeMySQL,"DELETE FROM htmlsbygroups");
-		RQuery insertdocs(storeMySQL,"INSERT INTO htmlsbygroups(groupid,htmlid,score) SELECT groupid,htmlid,SUM(score) FROM profiles,htmlsbyprofiles WHERE profiles.profileid=htmlsbyprofiles.profileid AND judgement='O' GROUP BY groupid,htmlid");
-	}
-	catch(RException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(...)
-	{
-		throw GException("Unknown problem");
-	}
-}
-
-
-//------------------------------------------------------------------------------
-GDocsLevelCmd::~GDocsLevelCmd(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GSubProfilesLevel
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GSubProfilesLevel::GSubProfilesLevel(GFactoryPostCommunity* fac)
-		: GPostCommunity(fac), Docs(2000,500)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GSubProfilesLevel::CreateParams(RConfig* params)
+void SubsLevel::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("NbLevels",5));
 }
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::ApplyConfig(void)
+void SubsLevel::ApplyConfig(void)
 {
 	GPostCommunity::ApplyConfig();
 	NbLevels=Factory->GetUInt("NbLevels");
@@ -231,50 +91,151 @@ void GSubProfilesLevel::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::Connect(GSession* session)
+void SubsLevel::Connect(GSession* session)
 {
 	// Try to insert the command, eventually, delete it
 	GPostCommunity::Connect(session);
-	GSubProfilesLevelCmd* command=new GSubProfilesLevelCmd();
-	if(!GALILEIApp->GetManager<GStorageManager>("Storage")->InsertCmd(command))
-		delete command;
-	GDocsLevelCmd* command2=new GDocsLevelCmd();
-	if(!GALILEIApp->GetManager<GStorageManager>("Storage")->InsertCmd(command2))
-		delete command2;
+	Fdbks.Clear(2000,500);
+	Docs.Clear(2000,500);
+	Scores.Clear(500,200);
 }
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::Disconnect(GSession* session)
+int SubsLevel::SortOrderAssessed(const void* a,const void* b)
 {
-	GPostCommunity::Disconnect(session);
+	RDate ad((*((ProfileDoc**)(a)))->When);
+	RDate bd((*((ProfileDoc**)(b)))->When);
+
+	if(ad==bd) return(0);
+	if(ad>bd)
+		return(-1);
+	else
+		return(1);
 }
 
 
 //------------------------------------------------------------------------------
-void GSubProfilesLevel::Run(void)
+void SubsLevel::ComputeFdbks(size_t docid,GCommunity* group)
 {
-	if (!NbLevels)
-		throw GException ("[Compute Subprofiles Level]: Error: number of levels is null !");
-	GStorageTag tag("SubProfilesLevelCMD");
-	tag.InsertAttr("NbLevels",RString::Number(NbLevels));
+	// Fill Fdbks with all the relevant of the profiles of the group
+	Fdbks.Clear();
+	RCursor<GProfile> Profiles(group->GetObjs());
+	for(Profiles.Start();!Profiles.End();Profiles.Next())
+	{
+		GFdbk* fdbk(Profiles()->GetFdbk(docid));
+		if(!fdbk) continue;
+		switch(fdbk->GetFdbk())
+		{
+			case djOK:
+				Fdbks.InsertPtr(new ProfileDoc(Profiles()->GetId(),fdbk->GetWhen()));
+			default:
+				break;
+		}
+	}
+}
 
+
+//------------------------------------------------------------------------------
+void SubsLevel::ComputeOrderedFdbks(size_t docid,GCommunity* group)
+{
+	// Fill Fdbks with all the relevant of the profiles of the group
+	ComputeFdbks(docid,group);
+
+	// Ordered the feedbacks by date
+	Fdbks.ReOrder(SortOrderAssessed);
+}
+
+
+//------------------------------------------------------------------------------
+void SubsLevel::ComputeProfilesConfidence(void)
+{
+	double LevelWidth(100/NbLevels);
+
+	// Compute the confidence on a community basis
 	RCursor<GCommunity> Groups(Session->GetCommunities());
 	for(Groups.Start();!Groups.End();Groups.Next())
 	{
-		void* caller=static_cast<void*>(Groups());
-		Session->GetStorage()->ExecuteCmd(tag,caller);
+		// At least two profiles in the community is needed
+		if(Groups()->GetNbObjs()<2) continue;
+
+		// Get the list of relevant documents of the community
+		Groups()->GetRelevantDocs(Docs);
+
+		// Go through each document
+		RCursor<GDocRanking> Doc(Docs);
+		for(Doc.Start();!Doc.End();Doc.Next())
+		{
+			// Get the feedbacks on the document ordered by date
+			ComputeOrderedFdbks(Doc()->GetDocId(),Groups());
+			if(Fdbks.GetNb()<2) continue;
+
+			ProfileScoring* ptr(Scores.GetInsertPtr(Fdbks[0]->ProfileId));
+			ptr->Score+=static_cast<double>(Fdbks.GetNb()-1)/static_cast<double>(Groups()->GetNbObjs());
+			ptr->NbDocs++;
+		}
 	}
-	GStorageTag tag2("DocsLevelCMD");
-	Session->GetStorage()->ExecuteCmd(tag2,0);
+
+	// Compute the global score and level for the profiles (and save them eventually).
+	RCursor<GProfile> Profiles(Session->GetProfiles());
+	for(Profiles.Start();!Profiles.End();Profiles.Next())
+	{
+		ProfileScoring* ptr(Scores.GetPtr(Profiles()->GetId()));
+		if(ptr)
+		{
+			double Score(ptr->Score/static_cast<double>(ptr->NbDocs));
+			Profiles()->SetConfidence(Score,(Score*100+LevelWidth-1)/LevelWidth);
+		}
+		else
+			Profiles()->SetConfidence(0,0);
+		if(Session->MustSaveResults())
+			Session->GetStorage()->SaveProfile(Profiles());
+	}
 }
 
 
 //------------------------------------------------------------------------------
-GSubProfilesLevel::~GSubProfilesLevel(void)
+void SubsLevel::ComputeDocsConfidence(void)
 {
+	// Compute the confidence on a community basis
+	RCursor<GCommunity> Groups(Session->GetCommunities());
+	for(Groups.Start();!Groups.End();Groups.Next())
+	{
+		// Get the list of relevant documents of the community
+		Groups()->GetRelevantDocs(Docs);
+
+		// Go through each document
+		RCursor<GDocRanking> Doc(Docs);
+		for(Doc.Start();!Doc.End();Doc.Next())
+		{
+			// Sum the score of each profiles
+			ComputeFdbks(Doc()->GetDocId(),Groups());
+			RCursor<ProfileDoc> Cur(Fdbks);
+			for(Cur.Start();!Cur.End();Cur.Next())
+			{
+				ProfileScoring* ptr(Scores.GetPtr(Cur()->ProfileId));
+				if(ptr)
+					Doc()->SetRanking(Doc()->GetRanking()+ptr->Score);
+			}
+		}
+
+		// Save it
+		Session->GetStorage()->SaveDocs(Docs);
+	}
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_POSTCOMMUNITY_FACTORY("Subprofiles Level Computation",GSubProfilesLevel)
+void SubsLevel::Run(void)
+{
+	if(!NbLevels)
+		ThrowGException("Number of levels cannot be null");
+
+	ComputeProfilesConfidence();
+	if(Session->MustSaveResults())
+		ComputeDocsConfidence();
+}
+
+
+//------------------------------------------------------------------------------
+CREATE_POSTCOMMUNITY_FACTORY("Profiles/Documents Confidence Computation",SubsLevel)

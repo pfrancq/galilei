@@ -4,7 +4,7 @@
 
 	SubsLevel.h
 
-	Compute Profiles and Documents Levels - Header.
+	Compute Profiles and Documents Confidence - Header.
 
 	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2005 by David Wartel.
@@ -37,81 +37,64 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gpostcommunity.h>
+#include <gcommunity.h>
 #include <gstorage.h>
+using namespace GALILEI;
+using namespace R;
+using namespace std;
 
 
 //------------------------------------------------------------------------------
-namespace GALILEI{
-//------------------------------------------------------------------------------
-
-
-class GSubProfilesLevelCmd : public GStorageCmd
+struct ProfileScoring
 {
-public:
+	size_t ProfileId;
+	double Score;
+	size_t NbDocs;
 
-	/**
-	* Constructor of a command.
-	* @param cmd             Name of the command.
-	*/
-	GSubProfilesLevelCmd();
-
-	/**
-	* Run the command.
-	* @param storage         Pointer to the command.
-	* @param inst            XML tag representing the instruction.
-	* @param caller          Caller of the function.
-	*/
-	virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller);
-
-	/**
-	* Constructor of a command.
-	* @param cmd             Name of the command.
-	*/
-	~GSubProfilesLevelCmd();
+	ProfileScoring(size_t id) : ProfileId(id), Score(0.0), NbDocs(0) {}
+	int Compare(const ProfileScoring& scoring) const {return(CompareIds(ProfileId,scoring.ProfileId));}
+	int Compare(const size_t id) const {return(CompareIds(ProfileId,id));}
 };
 
 
-class GDocsLevelCmd : public GStorageCmd
+//------------------------------------------------------------------------------
+struct ProfileDoc
 {
-	public:
+	size_t ProfileId;
+	RDate When;
 
-	/**
-	 * Constructor of a command.
-	 * @param cmd             Name of the command.
-	 */
-		GDocsLevelCmd();
-
-	/**
-		 * Run the command.
-		 * @param storage         Pointer to the command.
-		 * @param inst            XML tag representing the instruction.
-		 * @param caller          Caller of the function.
-	 */
-		virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller);
-
-	/**
-		 * Constructor of a command.
-		 * @param cmd             Name of the command.
-	 */
-		~GDocsLevelCmd();
+	ProfileDoc(size_t profileid,const RDate& when)
+		: ProfileId(profileid), When(when) {}
+	int Compare(const ProfileDoc&) const {return(-1);}
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* The GSubProfilesLevel provides a method to level of each subprofiles
-* @author David wartel
-* @short SubProfiles level computation.
+* The SubsLevel provides a method to compute each grouped profile and the
+* corresponding assessed documents.
+* @author Pascal Francq and David wartel
+* @short Compute Profiles and Documents Confidence
 */
-class GSubProfilesLevel  : public GPostCommunity
+class SubsLevel  : public GPostCommunity
 {
 	/**
 	* Array of documents.
 	*/
-	R::RContainer<GFdbk,false,false> Docs;
+	R::RContainer<ProfileDoc,false,false> Fdbks;
 
-	/*
-	* number of levels for subprofiles
+	/**
+	 * A list of relevant documents.
+	 */
+	GCommunityDocs Docs;
+
+	/**
+	 * Scores of the profiles.
+	 */
+	RContainer<ProfileScoring,true,true> Scores;
+
+	/**
+	* Number of levels for the profiles.
 	*/
 	size_t NbLevels;
 
@@ -121,7 +104,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GSubProfilesLevel(GFactoryPostCommunity* fac);
+	SubsLevel(GFactoryPostCommunity* fac);
 
 	/**
 	* Create the parameters.
@@ -141,24 +124,43 @@ public:
 	virtual void Connect(GSession* session);
 
 	/**
-	* Disconnect from a Session.
-	* @param session         The session.
+	* Static function used to order the feedbacks by date (the latest
+	* first). The function can be used with the RContainer::ReOrder method.
+	* @param a              Pointer to the first object.
+	* @param b              Pointer to the second object.
 	*/
-	virtual void Disconnect(GSession* session);
-
-    /**
-	* Make the grouping for a specific Language.
-	*/
-	virtual void Run(void);
+	static int SortOrderAssessed(const void* a,const void* b);
 
 	/**
-	* Destructor.
+	 * Compute a date-ordered list of assessments of a given document for a
+	 * given community.
+	 * @param docid          Document identifier.
+	 * @param group          Community.
+	 */
+	void ComputeOrderedFdbks(size_t docid,GCommunity* group);
+
+	/**
+	 * Compute a list of assessments of a given document for a given community.
+	 * @param docid          Document identifier.
+	 * @param group          Community.
+	 */
+	void ComputeFdbks(size_t docid,GCommunity* group);
+
+	/**
+	 * Compute the confidence of the profiles.
+	 */
+	void ComputeProfilesConfidence(void);
+
+	/**
+	 * Compute the confidence of the documents.
+	 */
+	void ComputeDocsConfidence(void);
+
+    /**
+	* Compute the confidence scores of the profiles and the documents.
 	*/
-	virtual ~GSubProfilesLevel(void);
+	virtual void Run(void);
 };
-
-
-}  //-------- End of namespace GALILEI----------------------------------------
 
 
 //-----------------------------------------------------------------------------
