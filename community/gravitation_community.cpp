@@ -128,7 +128,7 @@ void GCommunityCalcGravitation::Compute(GCommunity* grp)
 	}
 	Vector.GetTab(Order);
 	if(Vector.GetNb())
-		qsort(static_cast<void*>(Order),Vector.GetNb(),sizeof(GWeightInfo*),GWeightInfos::sortOrder);
+		qsort(static_cast<void*>(Order),Vector.GetNb(),sizeof(GWeightInfo*),GWeightInfos::SortOrder);
 	Order[Vector.GetNb()]=0;
 	if(MaxNonZero)
 	{
