@@ -41,6 +41,7 @@ using namespace std;
 #include <rqt.h>
 #include <glang.h>
 #include <gmetaengine.h>
+#include <gtool.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -77,6 +78,7 @@ using namespace GALILEI;
 #include <kviewdicts.h>
 #include <qcreatedatabase.h>
 #include <ui_qdebuginfo.h>
+#include <ui_qchooselist.h>
 #include <kprgconsole.h>
 
 
@@ -155,6 +157,7 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("&Create XML Structure","createXML",SLOT(createXML())));
 	Actions.insert(Actions.size(),addAction("&Save XML Structure","saveXML",SLOT(saveXML())));
 	Actions.insert(Actions.size(),addAction("&Query Meta Engine","queryMetaEngine",SLOT(queryMetaEngine()),"edit-find"));
+	Actions.insert(Actions.size(),addAction("Compute &Suggestions","computeSugs",SLOT(computeSugs())));
 
 	// Menu "Topics"
 	Actions.insert(Actions.size(),addAction("Force Re-computing Topics","topicsClear",SLOT(topicsClear())));
@@ -197,6 +200,7 @@ void KGALILEICenter::initActions(void)
 	connect(windowCascade,SIGNAL(triggered(bool)),Desktop,SLOT(cascadeSubWindows()));
 
 	// Help Menu
+	Actions.insert(Actions.size(),addAction("Run &Tool","runTool",SLOT(runTool())));
 //	helpProgram = new KAction(i18n("List of all classes"), 0, 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
 //	helpProgram=new KAction("List of all classes",0,0,this,SLOT(slotHelpProgram()),this);
 //	menuBar()->insertItem ("&Help",helpProgram);*/
@@ -905,6 +909,47 @@ void KGALILEICenter::doAssessments(void)
 	QMakeAssessments* Task(new QMakeAssessments());
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
 	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::computeSugs(void)
+{
+	QSessionProgressDlg Dlg(this,"Compute Suggestions");
+	QComputeSugs* Task(new QComputeSugs());
+	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::runTool(void)
+{
+	GToolManager* Manager(GALILEIApp->GetManager<GToolManager>("Tool"));
+	if((!Manager)||(!Manager->GetNbPlugIns()))
+	{
+		KMessageBox::error(this,"No tools are enabled","KGALILEICenter Error");
+		return;
+	}
+
+	// Create the dialog box
+	KDialog Choose(this);
+	Ui_QChooseList Ui;
+	QWidget* widget(new QWidget(&Choose));
+	Ui.setupUi(widget);
+	Choose.setMainWidget(widget);
+
+	// Init the dialog box
+	Ui.Desc->setText("Choose the tool to run");
+	RCursor<GTool> Tools(Manager->GetPlugIns());
+	for(Tools.Start();!Tools.End();Tools.Next())
+		Ui.List->addItem(ToQString(Tools()->GetPlugInName()));
+	Ui.List->setCurrentRow(0);
+	if(Choose.exec())
+	{
+		QSessionProgressDlg Dlg(this,"Tool");
+		QRunTool* Task(new QRunTool(FromQString(Ui.List->item(Ui.List->currentRow())->text())));
+		Dlg.Run(Task);
+	}
 }
 
 

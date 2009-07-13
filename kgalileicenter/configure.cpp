@@ -48,6 +48,7 @@ using namespace std;
 #include <gpostprofile.h>
 #include <gpreprofile.h>
 #include <gpostdoc.h>
+#include <gcomputesugs.h>
 #include <gmeasure.h>
 #include <gsession.h>
 #include <gsubjects.h>
@@ -458,6 +459,7 @@ void Configure::initPlugIns(void)
 	GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
 	GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
 	GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->ReOrder();
+	GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs")->ReOrder();
 
 	// Goes through managers
 	Storages->init(QPlugInsList::Storages);
@@ -478,6 +480,8 @@ void Configure::initPlugIns(void)
 	DocAnalyses->init(QPlugInsList::DocAnalyses);
 	Engines->init(QPlugInsList::Engines);
 	MetaEngines->init(QPlugInsList::MetaEngines);
+	ComputeSugs->init(QPlugInsList::ComputeSugs);
+	Tools->init(QPlugInsList::Tools);
 
 	// Init Measures
 	GMeasureManager* Manager=GALILEIApp->GetManager<GMeasureManager>("Measures");
@@ -519,6 +523,8 @@ void Configure::applyPlugIns(void)
 	Langs->apply(Session);
 	PostProfiles->apply(Session);
 	PostCommunities->apply(Session);
+	ComputeSugs->apply(Session);
+	Tools->apply(Session);
 
 	// Apply Measures
 	for(int row=0;row<Measures->count();row++)
@@ -530,6 +536,7 @@ void Configure::applyPlugIns(void)
 	GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
 	GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
 	GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->ReOrder();
+	GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs")->ReOrder();
 }
 
 

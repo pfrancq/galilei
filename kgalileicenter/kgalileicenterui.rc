@@ -16,6 +16,7 @@
 		<Action name="createDatabase"/>
 		<Action name="importDocs"/>
 		<Action name="importUsersData"/>
+		<Action name="runTool"/>			
 		<separator/>
 		<Action name="sessionQuit"/>
 	</Menu>
@@ -39,6 +40,8 @@
 		<Action name="analyseXML"/>
 		<separator/>
 		<Action name="queryMetaEngine"/>
+		<separator/>
+		<Action name="computeSugs"/>
 	</Menu>
 	<Menu name="Topics"><text>&amp;Topics</text>
 		<Action name="topicsClear"/>

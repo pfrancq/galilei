@@ -80,7 +80,9 @@ public:
 		DocAnalyses,                /** XML Document Analyzers.*/
 		Engines,                    /** Search Engines.*/
 		MetaEngines,                /** Meta-search Engines.*/
-		Measures                    /** Measures for a given Category.*/
+		Measures,                   /** Measures for a given Category.*/
+		ComputeSugs,                /** Compute Suggestions.*/
+		Tools                       /** Tools. */
 	};
 
 private:

@@ -44,7 +44,7 @@ kviewprofile.ui
 qcreatedatabase.ui
 kviewdicts.ui
 kprgconsole.ui
-#qchooseparent.ui
+qchooselist.ui
 qdebuginfo.ui
 kviewclasses.ui
 )

@@ -323,6 +323,35 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+* Compute the suggestions.
+*/
+class QComputeSugs : public QSessionThread
+{
+public:
+	QComputeSugs(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Run a tool.
+*/
+class QRunTool : public QSessionThread
+{
+	/**
+	 * Name of the tool.
+	 */
+	RString Tool;
+
+public:
+	QRunTool(const RString& tool) : Tool(tool) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Compute all the elements.
 */
 class QComputeAll : public QSessionThread

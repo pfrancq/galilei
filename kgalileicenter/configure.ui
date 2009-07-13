@@ -2054,7 +2054,7 @@ p, li { white-space: pre-wrap; }
               <item>
                <widget class="QTabWidget" name="CommunitiesTab">
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <widget class="QWidget" name="tab_10">
                  <attribute name="title">
@@ -2171,6 +2171,26 @@ p, li { white-space: pre-wrap; }
              <layout class="QVBoxLayout" name="_80">
               <item>
                <widget class="QPlugInsList" name="StatsCalcs" native="true"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_16">
+             <attribute name="title">
+              <string>Suggestions</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_13">
+              <item>
+               <widget class="QPlugInsList" name="ComputeSugs" native="true"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_17">
+             <attribute name="title">
+              <string>Tools</string>
+             </attribute>
+             <layout class="QVBoxLayout" name="verticalLayout_14">
+              <item>
+               <widget class="QPlugInsList" name="Tools" native="true"/>
               </item>
              </layout>
             </widget>

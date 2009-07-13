@@ -224,7 +224,7 @@ void QPostComputeProfiles::DoIt(void)
 void QComputeProfile::DoIt(void)
 {
 	Parent->setLabelText("Compute Profile ...");
-	GALILEIApp->GetSession()->CalcProfile(Profile,Parent);
+	GALILEIApp->GetSession()->CalcProfile(Profile,0,0,Parent);
 }
 
 
@@ -297,6 +297,22 @@ void QMakeAssessments::DoIt(void)
 {
 	Parent->setLabelText("Make assessments ...");
 	GALILEIApp->GetSession()->GetSimulator()->AddAssessments();
+}
+
+
+//-----------------------------------------------------------------------------
+void QComputeSugs::DoIt(void)
+{
+	Parent->setLabelText("Make suggestions ...");
+	GALILEIApp->GetSession()->ComputeSugs();
+}
+
+
+//-----------------------------------------------------------------------------
+void QRunTool::DoIt(void)
+{
+	Parent->setLabelText("Run tool '"+ToQString(Tool)+"' ...");
+	GALILEIApp->GetSession()->RunTool(Tool);
 }
 
 

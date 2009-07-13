@@ -50,6 +50,8 @@
 #include <gstatscalc.h>
 #include <gstorage.h>
 #include <gmeasure.h>
+#include <gtool.h>
+#include <gcomputesugs.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -175,6 +177,10 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 			setObjectName("PostCommunities");
 			init<GFactoryPostCommunity,GPostCommunityManager>(GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity"),false,true,true);
 			break;
+		case ComputeSugs:
+			setObjectName("ComputeSugs");
+			init<GFactoryComputeSugs,GComputeSugsManager>(GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs"),false,true,true);
+			break;
 		case ProfileCalcs:
 			setObjectName("ProfileCalcs");
 			init<GFactoryProfileCalc,GProfileCalcManager>(GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc"),true,true,false);
@@ -198,6 +204,10 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 		case StatsCalcs:
 			setObjectName("StatsCalcs");
 			init<GFactoryStatsCalc,GStatsCalcManager>(GALILEIApp->GetManager<GStatsCalcManager>("StatsCalc"),false,true,false);
+			break;
+		case Tools:
+			setObjectName("Tools");
+			init<GFactoryTool,GToolManager>(GALILEIApp->GetManager<GToolManager>("Tool"),false,true,false);
 			break;
 		case LinkCalcs:
 			setObjectName("LinkCalcs");

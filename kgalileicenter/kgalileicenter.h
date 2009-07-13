@@ -414,6 +414,16 @@ private slots:
 	void doAssessments(void);
 
 	/**
+	 * Compute the suggestions.
+	 */
+	void computeSugs(void);
+
+	/**
+	 * Run a specific tool.
+	 */
+	void runTool(void);
+
+	/**
 	 * Compare the current communities with the ideal ones.
 	 */
 	void communitiesCompare(void);
@@ -421,7 +431,7 @@ private slots:
 	/**
 	 * Compare the current topics with the ideal ones.
 	 */
-	 void topicsCompare(void);
+	void topicsCompare(void);
 
 	 /**
 	  * Show the classes.
