@@ -43,6 +43,7 @@
 // include files for GALILEI
 #include <glang.h>
 #include <glink.h>
+#include <gsuggestion.h>
 #include <gsugs.h>
 #include <guser.h>
 #include <gprofile.h>
@@ -419,55 +420,6 @@ void GStorageMySQL::ExecuteData(const R::RString& filename)
 	catch(std::bad_alloc)
 	{
 		throw GException("Memory Problem");
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::CreateSugs(const R::RString& name)
-{
-	RString sSql;
-
-	try
-	{
-		sSql="DELETE FROM sugsbyprofiles";
-		if(!name.IsEmpty())
-			sSql+=" WHERE test="+RQuery::SQLValue(name);
-		RQuery create3(Db,sSql);
-		sSql="DELETE FROM sugsbycommunities";
-		if(!name.IsEmpty())
-			sSql+=" WHERE test="+RQuery::SQLValue(name);
-		RQuery create4(Db,sSql);
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::GetSugsTests(R::RContainer<R::RString,true,true>& res)
-{
-	RString sSql;
-
-	try
-	{
-		res.Clear();
-		sSql="SELECT DISTINCT(test) FROM sugsbyprofiles";
-		RQuery profilestests(Db,sSql);
-		for(profilestests.Start();!profilestests.End();profilestests.Next())
-			res.GetInsertPtr<RString>(profilestests[0]);
-		sSql="SELECT DISTINCT(test) FROM sugsbycommunities";
-		RQuery groupstests(Db,sSql);
-		for(groupstests.Start();!groupstests.End();groupstests.Next())
-			res.GetInsertPtr<RString>(groupstests[0]);
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
 	}
 }
 
@@ -1323,7 +1275,7 @@ void GStorageMySQL::LoadUsers(void)
 				Session->InsertUser(new GUser(atoi(Users[0]),Users[1],Users[2],10));
 
 			// Load profiles
-			RString Sql("SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid FROM profiles");
+			RString Sql("SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level FROM profiles");
 			if(!LoadAll)
 				Sql+=" WHERE calculated<updated";
 			if(Filtering)
@@ -1341,7 +1293,7 @@ void GStorageMySQL::LoadUsers(void)
 				size_t groupid(Profiles[5].ToSizeT());
 				Session->InsertProfile(prof=new GProfile(user,Profiles[0].ToSizeT(),Profiles[8].ToSizeT(),Profiles[1],groupid,
 						GetMySQLToDate(Profiles[4]),GetMySQLToDate(Profiles[6]),GetMySQLToDate(Profiles[7]),
-						Profiles[2].ToBool(false),5));
+						Profiles[2].ToBool(false),Profiles[9].ToDouble(),Profiles[10].ToChar(),5));
 				prof->SetState(osNeedLoad);
 			}
 
@@ -1405,7 +1357,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		GLangManager* Langs=GALILEIApp->GetManager<GLangManager>("Lang");
 
 		// Load Profile
-		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid "
+		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level "
 		                  "FROM profiles WHERE profileid="+Num(profileid));
 		Profile.Start();
 		if(Profile.End())
@@ -1418,7 +1370,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		// Create the profile
 		GProfile* prof=new GProfile(user,Profile[0].ToSizeT(),Profile[8].ToSizeT(),Profile[1],groupid,
 				GetMySQLToDate(Profile[4]),GetMySQLToDate(Profile[6]),GetMySQLToDate(Profile[7]),
-				Profile[2].ToBool(true),5);
+				Profile[2].ToBool(true),Profile[9].ToDouble(),Profile[10].ToChar(),5);
 		prof->SetState(osNeedLoad);
 
 		// Load Feedbacks
@@ -1436,46 +1388,6 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		return(prof);
 	}
 	catch(RDbException& e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,true,false>& res)
-{
-	RString sSql;
-	size_t profileid,idx;
-	GSugs* sugs(0);
-
-	try
-	{
-		res.Clear();
-		sSql="SELECT profileid,docid,rank,test FROM sugsbyprofiles "
-		     "WHERE test="+RQuery::SQLValue(name)+" ORDER BY profileid,rank";
-		RQuery load(Db,sSql);
-		for(load.Start(),profileid=cNoRef;!load.End();load.Next())
-		{
-			idx=atoi(load[0]);
-
-			// If not the same -> new profile
-			if(idx!=profileid)
-			{
-				// If valid profile -> assign the information to it
-				if(profileid!=cNoRef)
-					res.InsertPtr(sugs);
-				profileid=idx;
-				sugs=new GSugs(otProfile,profileid,50);
-			}
-			sugs->AddSugs(atoi(load[1]));
-		}
-		if(profileid!=cNoRef)
-			res.InsertPtr(sugs);
-
-	}
-	catch(RDbException e)
 	{
 		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
@@ -1605,11 +1517,11 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		if(!atoi(Test[0]))
 		{
 			// Insert the profile (if subjects -> save topicid)
-			sSql="INSERT INTO profiles(profileid,description,social,userid,updated,calculated,attached,blockid,subjectid";
+			sSql="INSERT INTO profiles(profileid,description,social,userid,updated,calculated,attached,blockid,score,level,subjectid";
 			sSql+=") VALUES("+Num(profid)+","+RQuery::SQLValue(prof->GetName())+","+
 			      Num(social)+","+Num(prof->GetUser()->GetId())+","+
 			      RQuery::SQLValue(prof->GetUpdated())+","+RQuery::SQLValue(prof->GetComputed())+","+RQuery::SQLValue(prof->GetAttached())+
-			      ","+Num(prof->GetBlockId());
+			      ","+Num(prof->GetBlockId())+","+Num(prof->GetConfidenceScore())+","+Num(prof->GetConfidenceLevel());
 			const GSubject* sub(Session->GetIdealGroup(prof));
 			if(sub)
 				sSql+=","+RString::Number(sub->GetId());
@@ -1624,7 +1536,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 			sSql="UPDATE profiles SET description="+RQuery::SQLValue(prof->GetName())+",social="+Num(social)+
 			     ",userid="+Num(prof->GetUser()->GetId())+",updated="+RQuery::SQLValue(prof->GetUpdated())+
 			     ",calculated="+RQuery::SQLValue(prof->GetComputed())+",attached="+RQuery::SQLValue(prof->GetAttached())+
-			     ",blockid="+Num(prof->GetBlockId());
+			     ",blockid="+Num(prof->GetBlockId())+",score="+Num(prof->GetConfidenceScore())+",level="+Num(prof->GetConfidenceLevel());
 			const GSubject* sub(Session->GetIdealGroup(prof));
 			if(sub)
 				sSql+=",subjectid="+Num(sub->GetId());
@@ -1652,25 +1564,6 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		RQuery Update(Db,"UPDATE docs,docsbyprofiles SET docsbyprofiles.langid=docs.langid,docsbyprofiles.computed=docs.calculated "
 		                 "WHERE docsbyprofiles.docid=docs.docid AND profileid="+Num(prof->GetId()));
 		prof->SetState(osUpToDate);
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageMySQL::AddSugsProfile(const R::RString& name,size_t profileid,size_t docid,size_t rank)
-{
-	RString sSql;
-
-	try
-	{
-		sSql="INSERT INTO sugsbyprofiles(profileid,docid,rank,test) "
-		     "VALUES("+Num(profileid)+","+Num(docid)+","+Num(rank)+","+RQuery::SQLValue(name)+")";
-		RQuery create(Db,sSql);
 	}
 	catch(RDbException e)
 	{
@@ -1764,46 +1657,6 @@ GCommunity* GStorageMySQL::LoadCommunity(size_t communityid)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::GetSugsCommunities(const R::RString& name,R::RContainer<GSugs,true,false>& res)
-{
-	RString sSql;
-	size_t groupid,idx;
-	GSugs* sugs(0);
-
-	try
-	{
-		res.Clear();
-		sSql="SELECT communityid,docid,rank,test "
-		     "FROM sugsbycommunities ORDER BY communityid,rank WHERE test="+RQuery::SQLValue(name);
-		RQuery load(Db,sSql);
-		for(load.Start(),groupid=cNoRef;!load.End();load.Next())
-		{
-			idx=atoi(load[0]);
-
-			// If not the same -> new group
-			if(idx!=groupid)
-			{
-				// If valid group -> assign the information to it
-				if(groupid!=cNoRef)
-					res.InsertPtr(sugs);
-				groupid=idx;
-				sugs=new GSugs(otCommunity,groupid,50);
-			}
-			sugs->AddSugs(atoi(load[1]));
-		}
-		if(groupid!=cNoRef)
-			res.InsertPtr(sugs);
-
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
 void GStorageMySQL::UpdateCommunities(size_t subid)
 {
 	try
@@ -1883,21 +1736,27 @@ void GStorageMySQL::SaveCommunity(GCommunity* grp)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddSugsCommunity(const R::RString& name,size_t groupid,size_t docid,size_t rank)
+void GStorageMySQL::SaveDocs(const GCommunityDocs& docs)
 {
-	RString sSql;
+	if(!docs.GetCommunityId()) return;
 
-	try
-	{
-		sSql="INSERT INTO sugsbycommunities(communityid,docid,rank,test) "
-		     "VALUES("+Num(groupid)+","+Num(docid)+","+Num(rank)+","+RQuery::SQLValue(name)+")";
-		RQuery create(Db,sSql);
-	}
-	catch(RDbException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(e.GetMsg());
-	}
+	// Delete the existing documents
+	RQuery Del(Db,"DELETE FROM docsbycommunities WHERE communityid="+Num(docs.GetCommunityId()));
+
+	// Save the new documents
+	RCursor<GDocRanking> Doc(docs);
+	for(Doc.Start();!Doc.End();Doc.Next())
+		RQuery Ins(Db,"INSERT INTO docsbycommunities(communityid,docid,ranking) VALUES("+
+				Num(docs.GetCommunityId())+","+Num(Doc()->GetDocId())+","+Num(Doc()->GetRanking())+")");
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadDocs(GCommunityDocs& docs)
+{
+	RQuery Get(Db,"SELECT docid,ranking FROM docsbycommunities WHERE communityid="+Num(docs.GetCommunityId()));
+	for(Get.Start();!Get.End();Get.Next())
+		docs.InsertPtr(new GDocRanking(Get[0].ToSizeT(),Get[1].ToDouble()));
 }
 
 
@@ -2038,6 +1897,72 @@ void GStorageMySQL::SaveTopic(GTopic* grp)
 	catch(RDbException e)
 	{
 		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+//
+// Topics Methods
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::SaveSugs(const GSugs& sugs,size_t max)
+{
+	if(!max) return;
+	RString Table("sugsby");
+	RString Id;
+	switch(sugs.GetType())
+	{
+		case otProfile:
+			Table+="profiles";
+			Id="profileid";
+			break;
+		case otCommunity:
+			Table+="communities";
+			Id="communityid";
+			break;
+		default:
+			ThrowGException("Invalid list of suggestions");
+	}
+	RQuery Del(Db,"DELETE FROM "+Table+" WHERE "+Id+"="+Num(sugs.GetAddresseeId()));
+	RString InsSql("INSERT INTO "+Table+"("+Id+",docid,ranking,proposed,info) VALUES("+Num(sugs.GetAddresseeId())+",");
+	RCursor<GSuggestion> Cur(sugs,0,max);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		RQuery Ins(Db,InsSql+Num(Cur()->GetDocId())+","+Num(Cur()->GetRanking())+","+RQuery::SQLValue(Cur()->GetProposed())+","+RQuery::SQLValue(Cur()->GetInfo())+")");
+}
+
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::LoadSugs(GSugs& sugs)
+{
+	RString Table("sugsby");
+	RString Id;
+	switch(sugs.GetType())
+	{
+		case otProfile:
+			Table+="profiles";
+			Id="profileid";
+			break;
+		case otCommunity:
+			Table+="communities";
+			Id="communityid";
+			break;
+		default:
+			ThrowGException("Invalid list of suggestions");
+	}
+
+	try
+	{
+		RQuery Load(Db,"SELECT docid,ranking,proposed,info FROM "+Table+" WHERE "+Id+"="+Num(sugs.GetAddresseeId())+" ORDER BY "+Id+",rank");
+		for(Load.Start();!Load.End();Load.Next())
+			sugs.InsertPtr(new GSuggestion(Load[0].ToSizeT(),Load[1].ToDouble(),Load[2],Load[3]));
+	}
+	catch(RDbException e)
+	{
 		throw GException(e.GetMsg());
 	}
 }
