@@ -181,8 +181,8 @@ template<class mng,class factory,class plugin>
 				if(fac)
 					fac->SetLevel(pos);
 			}
-			break;
 			ReOrder();
+			break;
 		}
 
 		case ptSelect:
@@ -234,14 +234,11 @@ template<class mng,class factory,class plugin>
 
 //-----------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
-	void GPluginManager<mng,factory,plugin>::RegisterFactory(factory* fac,R::RConfig* config)
+	void GPluginManager<mng,factory,plugin>::RegisterFactory(factory* fac,R::RConfig*)
 {
 	fac->Load(false);
 	if(PluginsType==ptOrdered)
-	{
-		config->InsertParam(new R::RParamList(Name),"Plugins");
 		fac->SetLevel(static_cast<int>(R::RContainer<factory,true,true>::GetNb()));
-	}
 	if(fac->GetBool("Enable"))
 		fac->Create();
 	else

@@ -71,7 +71,7 @@ GWeightInfos::GWeightInfos(const GWeightInfos& w)
 
 
 //------------------------------------------------------------------------------
-int GWeightInfos::sortOrder(const void* a,const void* b)
+int GWeightInfos::SortOrder(const void* a,const void* b)
 {
 	double af=(*((GWeightInfo**)(a)))->GetWeight();
 	double bf=(*((GWeightInfo**)(b)))->GetWeight();

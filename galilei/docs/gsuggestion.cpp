@@ -2,12 +2,14 @@
 
 	GALILEI Research Project
 
-	GSugs.cpp
+	GSuggestion.cpp
 
-	Suggestions - Implementation.
+	Suggestion - Header.
 
-	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2005-2008 Université Libre de Bruxelles (ULB).
+	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
+
+	Authors:
+		Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,50 +32,63 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gsugs.h>
 #include <gsuggestion.h>
-#include <gdoc.h>
+using namespace std;
 using namespace R;
 using namespace GALILEI;
-using namespace std;
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class GSugs
+// class GDocRanking
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GSugs::GSugs(size_t max)
-	: RContainer<GSuggestion,true,false>(max), Type(otCommunity), Id(0)
+GDocRanking::GDocRanking(size_t docid,double ranking)
+	: DocId(docid), Ranking(ranking)
 {
 }
 
 
-//-----------------------------------------------------------------------------
-GSugs::GSugs(tObjType type,size_t id,size_t max)
-	: RContainer<GSuggestion,true,false>(max), Type(type), Id(id)
+//------------------------------------------------------------------------------
+int GDocRanking::Compare(const GDocRanking& ranking) const
 {
-	if((Type!=otProfile)&&(Type!=otCommunity))
-		ThrowGException("Suggestions only for profiles or groups");
+	return(CompareIds(DocId,ranking.DocId));
 }
 
 
-//-----------------------------------------------------------------------------
-int GSugs::Compare(const GSugs& sugs) const
+//------------------------------------------------------------------------------
+int GDocRanking::Compare(size_t docid) const
 {
-	if(Type!=sugs.Type)
-		ThrowGException("Suggestions must be from the same type");
-	return(CompareIds(Id,sugs.Id));
+	return(CompareIds(DocId,docid));
 }
 
 
-//-----------------------------------------------------------------------------
-void GSugs::SetAddresseeId(tObjType type,size_t id)
+//------------------------------------------------------------------------------
+int GDocRanking::SortOrderRanking(const void* a,const void* b)
 {
-	Id=id;
-	Type=type;
-	RContainer<GSuggestion,true,false>::Clear();
+	double af=(*((GSuggestion**)(a)))->Ranking;
+	double bf=(*((GSuggestion**)(b)))->Ranking;
+
+	if(af==bf) return(0);
+	if(af>bf)
+		return(-1);
+	else
+		return(1);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class GSuggestion
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GSuggestion::GSuggestion(size_t docid,double ranking,const RDate& proposed,const RString& info)
+	: GDocRanking(docid,ranking), Proposed(proposed), Info(info)
+{
 }

@@ -37,6 +37,7 @@
 // include files for GALILEI
 #include <gcommunity.h>
 #include <gdoc.h>
+#include <gsuggestion.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -86,135 +87,57 @@ GCommunity::GCommunity(size_t id,size_t blockid,const RString& name,const RDate&
 
 
 //------------------------------------------------------------------------------
-int GCommunity::sortOrder(const void *a,const void *b)
+void GCommunity::GetRelevantDocs(GCommunityDocs& docs)
 {
-	double af=(*((GFdbkRef**)(a)))->Sim;
-	double bf=(*((GFdbkRef**)(b)))->Sim;
+	RContainer<GDocRanking,false,true> RelevantDocs(100);       // Container of relevant documents.
+	docs.SetCommunityId(GetId());
 
-	if(af==bf) return(0);
-	if(af>bf)
-		return(-1);
-	else
-		return(1);
-}
-
-
-//------------------------------------------------------------------------------
-void GCommunity::NotJudgedDocsList(RContainer<GFdbk,false,true>& docs, GProfile* prof) const
-{
-	// Clear container.
-	docs.Clear();
-
+	// Go through the profiles
 	RCursor<GProfile> Prof(*this);
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
-		if(Prof()==prof) continue;
-
-		// Go through the assessments of the profile grouped together through this subprofile
-		RCursor<GFdbk> Fdbks(Prof()->GetFdbks());
-		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
-		{
-			// Verify that it was not assessed by the corresponding profile
-			if(prof->GetFdbk(Fdbks()->GetDocId())) continue;
-
-			// Verify if already inserted:
-			// If not -> insert it in docs.
-			// If yes -> Verify judgement
-			GFdbk* ptr=docs.GetPtr<const GFdbk*>(Fdbks());
-			if(ptr)
-			{
-				tDocAssessment j=ptr->GetFdbk();
-				switch( j & djMaskJudg)
-				{
-					case djKO:
-						if(Fdbks()->GetFdbk() & djOK)
-						{
-							docs.DeletePtr(ptr);
-							docs.InsertPtr(Fdbks());
-						}
-						break;
-					case djOutScope:
-						if((Fdbks()->GetFdbk() & djOK)&&(Fdbks()->GetFdbk() & djKO))
-						{
-							docs.DeletePtr(ptr);
-							docs.InsertPtr(Fdbks());
-						}
-						break;
-				}
-			}
-			else
-				docs.InsertPtr(Fdbks());
-		}
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GCommunity::NotJudgedDocsRelList(GMeasure* measure,RContainer<GFdbk,false,false>& docs, GProfile* prof,GSession*) const
-{
-	if(!measure)
-		throw GException("No documents/profiles similarities");
-
-	// Clear container.
-	docs.Clear();
-	RContainer<GFdbkRef,true,false> Docs(50,25);
-
-	// Go through the subprofiles
-	RCursor<GProfile> Prof(*this);
-	for(Prof.Start();!Prof.End();Prof.Next())
-	{
-		//If current treated profile is the profile "prof" ->Then only add links docs
-		if(Prof()==prof)
-		{
-			// Go through the assessments of the profile grouped together through this profile
-			RCursor<GFdbk> Fdbks(Prof()->GetFdbks());
-			for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
-			{
-				// Verify if the document is a relevant hub or authority.
-				tDocAssessment j=Fdbks()->GetFdbk();
-				if(!((j&(djOK&djHub))||(j&(djOK&djAuthority)))) continue;
-
-				// Verify if already inserted in Docs.
-				if(Docs.GetPtr<const GFdbk*>(Fdbks())) continue;
-				// Insert it.
-				double res;
-				measure->Measure(0,Fdbks()->GetDocId(),prof->GetId(),&res);
-				Docs.InsertPtr(new GFdbkRef(Fdbks(),res));
-			}
-			continue;
-		}
-
-		// Go through the assessments of the profile grouped together through this profile
+		// Go through the assessments of the profile
 		RCursor<GFdbk> Fdbks(Prof()->GetFdbks());
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify if the document is relevant.
-			tDocAssessment j=Fdbks()->GetFdbk();
-			if(!(j&djOK)) continue;
+			if(Fdbks()->GetFdbk()!=djOK) continue;
 
-			// Verify if already inserted in Docs or if it was not assessed by the
-			// corresponding profile.
-			if((Docs.GetPtr<const GFdbk*>(Fdbks()))||(prof->GetFdbk(Fdbks()->GetDocId()))) continue;
-
-			// Insert it.
-			double res;
-			measure->Measure(0,prof->GetId(),Fdbks()->GetDocId(),&res);
-			Docs.InsertPtr(new GFdbkRef(Fdbks(),res));
+			// Insert the document in RelevantDocs
+			RelevantDocs.GetInsertPtr(Fdbks()->GetDocId());
 		}
 	}
 
-	// Sort the container by similarity
-	if(docs.GetNb())
-		docs.ReOrder(sortOrder);
-
-	// Copy the result in docs
-	RCursor<GFdbkRef> Cur(Docs);
+	// Copy all the documents in docs
+	RCursor<GDocRanking> Cur(RelevantDocs);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		docs.InsertPtr(Cur()->Doc);
+		docs.InsertPtr(Cur());
 }
 
 
 //------------------------------------------------------------------------------
 GCommunity::~GCommunity(void)
 {
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+//  GCommunityDocs
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GCommunityDocs::GCommunityDocs(size_t size,size_t communityid)
+	: RContainer<GDocRanking,true,false>(size), CommunityId(communityid)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GCommunityDocs::SetCommunityId(size_t communityid)
+{
+	CommunityId=communityid;
+	RContainer<GDocRanking,true,false>::Clear();
 }

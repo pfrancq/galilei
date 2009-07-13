@@ -2,12 +2,11 @@
 
 	GALILEI Research Project
 
-	GTest.cpp
+	GComputeSugs.cpp
 
-	Internal Testing - Implementation.
+	Generic Suggestions Computing Method - Implementation.
 
 	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -29,48 +28,47 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI Project
-#include <gtest.h>
-#include <gsession.h>
-#include <gconcepttype.h>
-#include <glang.h>
+// include files for GALILEI
+#include <gcomputesugs.h>
 using namespace GALILEI;
 using namespace R;
-using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-// class GTest
+//  GComputeSugs
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GTest::GTest(const RString& file)
-	: Results(file)
+GComputeSugs::GComputeSugs(GFactoryComputeSugs* fac)
+	: GPlugin<GFactoryComputeSugs>(fac)
 {
-	Results.Open(RIO::Create);
 }
 
 
 //------------------------------------------------------------------------------
-void GTest::Run(void)
+GComputeSugs::~GComputeSugs(void)
 {
-	GSession* Session(GSession::Get());
+}
 
-	// Compute idf, ipf, icf and itf factors
-	RCursor<GConceptType> Types(Session->GetConceptTypes());
-	for(Types.Start();!Types.End();Types.Next())
-	{
-		GLang* Lang(Types()->GetLang());
-		if(Lang&&(Lang->GetStop()==Types()))
-			continue;
-	}
+
+
+//------------------------------------------------------------------------------
+//
+// class GComputeSugsManager
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GComputeSugsManager::GComputeSugsManager(void)
+	: GPluginManager<GComputeSugsManager,GFactoryComputeSugs,GComputeSugs>("ComputeSugs",API_COMPUTESUGS_VERSION,ptOrdered)
+{
 }
 
 
 //------------------------------------------------------------------------------
-GTest::~GTest(void)
+GComputeSugsManager::~GComputeSugsManager(void)
 {
 }

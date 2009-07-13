@@ -297,19 +297,6 @@ public:
 	virtual void ExecuteData(const R::RString& filename)=0;
 
 	/**
-	* Prepare a given number of suggestions for a test. If the name is null,
-	* all the tests must be deleted.
-	* @param name            Name of the test.
-	*/
-	virtual void CreateSugs(const R::RString& name)=0;
-
-	/**
-	* Get the different tests that were made.
-	* @param res             Container that will hold the names.
-	*/
-	virtual void GetSugsTests(R::RContainer<R::RString,true,true>& res)=0;
-
-	/**
 	* Clear the information of a given object type from the storage.
 	* @param objtype         Type of the object.
 	*/
@@ -515,13 +502,6 @@ public:
 	virtual GProfile* LoadProfile(size_t profileid)=0;
 
 	/**
-	* Load the list of suggestions for the profiles for a given test.
-	* @param name            Name of the test.
-	* @param res             Container that will hold the suggestions.
-	*/
-	virtual void GetSugsProfiles(const R::RString& name,R::RContainer<GSugs,true,false>& res)=0;
-
-	/**
 	* A document was updated and the corresponding feedbacks must be updated.
 	* @param docid           Identifier of the document.
 	*/
@@ -550,15 +530,6 @@ public:
 	* @param prof            Profile to save.
 	*/
 	virtual void SaveProfile(GProfile* prof)=0;
-
-	/**
-	* Add a suggestion for a given profile and a given test.
-	* @param name            Name of the test.
-	* @param profileid       Identifier of the profile.
-	* @param docid           Identifier of the document to suggest.
-	* @param rank            Ranking of the document.
-	*/
-	virtual void AddSugsProfile(const R::RString& name,size_t profileid,size_t docid,size_t rank)=0;
 
 	/**
 	* Add an assessment for a given profile and document.
@@ -595,13 +566,6 @@ public:
 	virtual GCommunity* LoadCommunity(size_t groupid)=0;
 
 	/**
-	* Load the list of suggestions for the groups for a given test.
-	* @param name            Name of the test.
-	* @param res             Container that will hold the suggestions.
-	*/
-	virtual void GetSugsCommunities(const R::RString& name,R::RContainer<GSugs,true,false>& res)=0;
-
-	/**
 	* A profile was updated and the corresponding communities must be updated.
 	* @param profid          Identifier of the profile.
 	*/
@@ -620,13 +584,16 @@ public:
 	virtual void SaveCommunity(GCommunity* grp)=0;
 
 	/**
-	* Add a suggestion for a given community and a given test.
-	* @param name            Name of the test.
-	* @param groupid         Identifier of the community.
-	* @param docid           Identifier of the document to suggest.
-	* @param rank            Ranking of the document.
-	*/
-	virtual void AddSugsCommunity(const R::RString& name,size_t groupid,size_t docid,size_t rank)=0;
+	 * Save the relevant documents associated with a given community.
+	 * @param docs           List of relevant.
+	 */
+	virtual void SaveDocs(const GCommunityDocs& docs)=0;
+
+	/**
+	 * Load the relevant documents associated with a given community.
+	 * @param docs           List of relevant.
+	 */
+	virtual void LoadDocs(GCommunityDocs& docs)=0;
 
 	// @} Communities
 
@@ -670,6 +637,28 @@ public:
 	virtual void SaveTopic(GTopic* grp)=0;
 
 	// @} Topics
+
+
+	//-----------------------------------------------------
+	/** @name Suggestions Methods
+	*/
+	// @{
+
+	/**
+	* Save a list of suggestions.
+	* @param sugs            Suggestions.
+	* @param max             Maximum number of suggestions to save.
+	*/
+	virtual void SaveSugs(const GSugs& sugs,size_t max=R::cNoRef)=0;
+
+	/**
+	* Load a list of suggestions.
+	* @param sugs            Suggestions.
+	*/
+	virtual void LoadSugs(GSugs& sugs)=0;
+
+	// @} Suggestions
+
 
 	/**
 	* Destruct.
@@ -750,7 +739,6 @@ public:
 	* @param plug            Plug-in disabled.
 	*/
 	virtual void DisablePlugIn(GStorage* plug);
-
 
 	/**
 	* Add a specific command

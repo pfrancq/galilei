@@ -28,10 +28,6 @@
 
 
 //------------------------------------------------------------------------------
-// include files for Qt/QKDE
-
-
-//------------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <rqt.h>
 #include <glang.h>
@@ -73,7 +69,6 @@ void QGObjectVars::Set(GDoc* doc)
 	AddVar("Last Updated",doc->GetUpdated());
 	AddVar("Last Computed",doc->GetComputed());
 	AddVar("Last Attached",doc->GetAttached());
-	AddVar("State",doc->GetState());
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
 }
@@ -85,7 +80,6 @@ void QGObjectVars::Set(GTopic* topic)
 	AddVar("Identifier",topic->GetId());
 	AddVar("Last Updated",topic->GetUpdated());
 	AddVar("Last Computed",topic->GetComputed());
-	AddVar("Status",topic->GetState());
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
 }
@@ -97,7 +91,6 @@ void QGObjectVars::Set(GCommunity* community)
 	AddVar("Identifier",community->GetId());
 	AddVar("Last Updated",community->GetUpdated());
 	AddVar("Last Computed",community->GetComputed());
-	AddVar("Status",community->GetState());
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
 }
@@ -111,7 +104,8 @@ void QGObjectVars::Set(GProfile* profile)
 	AddVar("Last Updated",profile->GetUpdated());
 	AddVar("Last Computed",profile->GetComputed());
 	AddVar("Last Attached",profile->GetAttached());
-	AddVar("Status",profile->GetState());
+	AddVar("Confidence Score",profile->GetConfidenceScore());
+	AddVar("Confidence Level",profile->GetConfidenceLevel());
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(0);
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->resizeColumnToContents(1);
 }
@@ -126,6 +120,20 @@ void QGObjectVars::AddVar(const QString& var,const RString& value)
 
 //------------------------------------------------------------------------------
 void QGObjectVars::AddVar(const QString& var,size_t value)
+{
+	new QTreeWidgetItem(static_cast<Ui_QGObjectVars*>(Ui)->Vars,QStringList()<<var<<QString::number(value));
+}
+
+
+//------------------------------------------------------------------------------
+void QGObjectVars::AddVar(const QString& var,char value)
+{
+	new QTreeWidgetItem(static_cast<Ui_QGObjectVars*>(Ui)->Vars,QStringList()<<var<<QString::number(value));
+}
+
+
+//------------------------------------------------------------------------------
+void QGObjectVars::AddVar(const QString& var,double value)
 {
 	new QTreeWidgetItem(static_cast<Ui_QGObjectVars*>(Ui)->Vars,QStringList()<<var<<QString::number(value));
 }

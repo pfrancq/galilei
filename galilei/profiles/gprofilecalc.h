@@ -37,6 +37,7 @@
 // include files for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
+#include <gweightinfos.h>
 
 
 //------------------------------------------------------------------------------
@@ -63,6 +64,13 @@ class GSubProfileRef;
 */
 class GProfileCalc : public GPlugin<GFactoryProfileCalc>
 {
+protected:
+
+	/**
+	 * Container that should contain the structure after the analyze.
+	 */
+	R::RContainer<GWeightInfo,false,true> Infos;
+
 public:
 
 	/**
@@ -81,6 +89,8 @@ public:
 	* Destructor of the computing method.
 	*/
 	virtual ~GProfileCalc(void);
+
+	friend class GSession;
 };
 
 

@@ -48,6 +48,8 @@
 #include <gtopic.h>
 #include <gcommunity.h>
 #include <gmetaengine.h>
+#include <gsugs.h>
+#include <gsuggestion.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -106,6 +108,13 @@ public:
 		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
 	}
 
+	QGObject(QTreeWidgetItem* parent,GDoc* doc,const RDate& when)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString(doc->GetName())<<ToQString(when)), Type(otDoc)
+	{
+		Obj.Doc=doc;
+		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
+	}
+
 	QGObject(QTreeWidget* parent,GDoc* doc,const RDate& when)
 		: QTreeWidgetItem(parent, QStringList()<<ToQString(doc->GetName())<<ToQString(when)), Type(otDoc)
 	{
@@ -113,8 +122,8 @@ public:
 		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
 	}
 
-	QGObject(QTreeWidgetItem* parent,GDoc* doc,const RDate& when)
-		: QTreeWidgetItem(parent, QStringList()<<ToQString(doc->GetName())<<ToQString(when)), Type(otDoc)
+	QGObject(QTreeWidget* parent,GDoc* doc,const RString& info,double num,const RDate& when)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString(doc->GetName())<<ToQString(info)+" ["+QString::number(num)+","+ToQString(when)+"]"), Type(otDoc)
 	{
 		Obj.Doc=doc;
 		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));
@@ -193,12 +202,6 @@ public:
 			case djOutScope:
 				setText(0,"Irrelevant Documents");
 				setIcon(0,KIconLoader::global()->loadIcon("folder-red",KIconLoader::Small));
-				break;
-			case djAuthority:
-				setText(0,"Authorities");
-				break;
-			case djHub:
-				setText(0,"Hubs");
 				break;
 			default:
 				break;
@@ -463,51 +466,59 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 	QTreeWidget* List(static_cast<Ui_QGObjectsList*>(Ui)->List);
 	List->clear();
 
-	// Init different Assessments
-	QGObject *ok(0),*ko(0),*hs(0),*lh(0),*la(0);
-	if(type==Assessments)
+	switch(type)
 	{
-		ok=new QGObject(List,djOK);
-		ko=new QGObject(List,djKO);
-		hs=new QGObject(List,djOutScope);
-	}
-	if(type==Links)
-	{
-		lh=new QGObject(List,djAuthority);
-		la=new QGObject(List,djHub);
-	}
-
-	// Add Assessment
-	RCursor<GFdbk> Docs(profile->GetFdbks());
-	for(Docs.Start();!Docs.End();Docs.Next())
-	{
-		GDoc* doc(Session->GetDoc(Docs()->GetDocId()));
-		if(!doc)
-			continue;
-		QGObject *p(0);
-		switch(Docs()->GetFdbk())
+		case Assessments:
 		{
-			case djOK:
-				p=ok;
-				break;
-			case djKO:
-				p=ko;
-				break;
-			case djOutScope:
-				p=hs;
-				break;
-			case djAuthority:
-				p=la;
-				break;
-			case djHub:
-				p=lh;
-				break;
-			default:
-				p=0;
-				break;
+			// Init different Assessments
+			QGObject *ok(new QGObject(List,djOK));
+			QGObject *ko(new QGObject(List,djKO));
+			QGObject *hs(new QGObject(List,djOutScope));
+
+			// Add Assessment
+			RCursor<GFdbk> Docs(profile->GetFdbks());
+			for(Docs.Start();!Docs.End();Docs.Next())
+			{
+				GDoc* doc(Session->GetDoc(Docs()->GetDocId()));
+				if(!doc)
+					continue;
+				QGObject *p(0);
+				switch(Docs()->GetFdbk())
+				{
+					case djOK:
+						p=ok;
+						break;
+					case djKO:
+						p=ko;
+						break;
+					case djOutScope:
+						p=hs;
+						break;
+					default:
+						p=0;
+						break;
+				}
+				if(!p) continue;
+				new QGObject(p,doc,Docs()->GetWhen());
+			}
+			break;
 		}
-		if(!p) continue;
-		new QGObject(p,doc,Docs()->GetWhen());
+		case Links:
+		{
+			GSugs Sugs(otProfile,profile->GetId(),40);
+			Session->GetStorage()->LoadSugs(Sugs);
+			Sugs.ReOrder(GDocRanking::SortOrderRanking);
+			RCursor<GSuggestion> Cur(Sugs);
+			for(Cur.Start();!Cur.End();Cur.Next())
+			{
+				GDoc* doc(Session->GetDoc(Cur()->GetDocId()));
+				if(!doc) continue;
+				new QGObject(List,doc,Cur()->GetInfo(),Cur()->GetRanking(),Cur()->GetProposed());
+			}
+			break;
+		}
+		default:
+			return;
 	}
 	List->resizeColumnToContents(0);
 	List->resizeColumnToContents(1);

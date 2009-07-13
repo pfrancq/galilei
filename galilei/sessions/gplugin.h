@@ -338,7 +338,7 @@ public:
 	void SetHandler(void* handle) {Handle=handle;}
 
 	/**
-	* Set the Handler of the library containing the dailog box.
+	* Set the Handler of the library containing the dialog box.
 	* @param handleDlg      Handle of the dialog library
 	*/
 	void SetDlgHandler(void* handleDlg) {HandleDlg=handleDlg;}

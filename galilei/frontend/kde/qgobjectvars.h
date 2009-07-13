@@ -114,6 +114,20 @@ private:
 	 * @param var            Name of the variable.
 	 * @param value          Value of the variable.
 	 */
+	void AddVar(const QString& var,char value);
+
+	/**
+	 * Add a variable.
+	 * @param var            Name of the variable.
+	 * @param value          Value of the variable.
+	 */
+	void AddVar(const QString& var,double value);
+
+	/**
+	 * Add a variable.
+	 * @param var            Name of the variable.
+	 * @param value          Value of the variable.
+	 */
 	void AddVar(const QString& var,const GLang* value);
 
 	/**

@@ -221,6 +221,12 @@ public:
 	*/
 	R::RRandom* GetRandom(void) const;
 
+	/**
+	 * Run a given tool.
+	 * @param tool           Name of the tool.
+	 */
+	void RunTool(const R::RString& tool);
+
 	//@} General methods
 
 
@@ -546,10 +552,12 @@ public:
 
 	/**
 	* Compute a profile.
-	* @param rec             Receiver for the signals.
 	* @param profile         Profile to compute.
+	* @param method          Profile Computation method.
+	* @param linkcalc        Link Computation method.
+	* @param rec             Receiver for the signals.
 	*/
-	void CalcProfile(GProfile* profile,GSlot* rec=0);
+	void CalcProfile(GProfile* profile,GProfileCalc* method=0,GLinkCalc* linkcalc=0,GSlot* rec=0);
 
 	/**
 	* Run all enabled post-profiles methods.
@@ -792,6 +800,20 @@ public:
 	void UpdateTopic(size_t docid);
 
 	// @} Topics
+
+
+	//-----------------------------------------------------
+	/** @name Suggestions Methods
+	*/
+	// @{
+
+	/**
+	* Run all the enabled suggestions computing methods.
+	* @param rec             Receiver of the signals.
+	*/
+	void ComputeSugs(GSlot* rec=0);
+
+	// @} Suggestions
 
 
 	//-----------------------------------------------------

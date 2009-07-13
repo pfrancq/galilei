@@ -225,6 +225,16 @@ protected:
 	*/
 	R::RDate Attached;
 
+	/**
+	 * Confidence score (to maximize).
+	 */
+	double Score;
+
+	/**
+	 * Confidence Level (to maximize).
+	 */
+	char Level;
+
 public:
 
     /**
@@ -246,9 +256,11 @@ public:
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	* @param s               Social?
+	* @param score           Score of the profile.
+	* @param Level           Level of the profile.
 	* @param nbf             Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,size_t id,size_t blockid,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,size_t nbf);
+	GProfile(GUser* usr,size_t id,size_t blockid,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,double score,char level,size_t nbf);
 
 	/**
 	* Compare two profiles by comparing their identifier.
@@ -332,6 +344,27 @@ public:
 	* @returns R::RDate.
 	*/
 	R::RDate GetAttached(void) const;
+
+	/**
+	 * The confidence score represent an absolute measure of the confidence of
+	 * a given profile.
+	 * @return the confidence score of the profile.
+	 */
+	double GetConfidenceScore(void) const {return(Score);}
+
+	/**
+	 * The confidence level represent a relative measure of the confidence of a
+	 * given profile in comparison to all other profiles.
+	 * @return the confidence level of the profile.
+	 */
+	char GetConfidenceLevel(void) const {return(Level);}
+
+	/**
+	 * Set the confidence score and level of the profile.
+	 * @param score          Confidence level.
+	 * @param level          Confidence score.
+	 */
+	void SetConfidence(double score,char level);
 
 	/**
 	* Get the number of common OK document between two profiles.

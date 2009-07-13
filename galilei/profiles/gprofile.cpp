@@ -122,7 +122,7 @@ tDocAssessment GFdbk::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRandom* 
 	if(random<PercErr)
 	{
 		random=rand->GetValue()*100+1.0;;
-		switch(fdbk & djMaskJudg)
+		switch(fdbk)
 		{
 			case djOK:
 				if(random<25.0)
@@ -139,6 +139,8 @@ tDocAssessment GFdbk::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRandom* 
 					return(djOK);
 				else
 					return(djKO);
+			default:
+				break;
 		}
 	}
 	return(fdbk);
@@ -161,7 +163,8 @@ GFdbk::~GFdbk(void)
 //------------------------------------------------------------------------------
 GProfile::GProfile(GUser* usr,const R::RString name,bool s)
   : GWeightInfosObj(cNoRef,0,otProfile,name,osNew), User(usr),
-    Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null), GroupId(0), Attached(RDate::Null)
+    Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null),
+    GroupId(0), Attached(RDate::Null), Score(0.0), Level(0)
 {
 	if(!User)
 		throw GException("New profile has no parent user");
@@ -178,9 +181,10 @@ GProfile::GProfile(GUser* usr,const R::RString name,bool s)
 
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,size_t nbf)
+GProfile::GProfile(GUser* usr,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,double score,char level,size_t nbf)
   : GWeightInfosObj(id,blockid,otProfile,name,osNew), User(usr),
-    Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c), GroupId(grpid), Attached(a)
+    Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c),
+    GroupId(grpid), Attached(a), Score(score), Level(level)
 {
 	if(!User)
 		throw GException("Profile "+RString::Number(id)+" has no parent user");
@@ -255,6 +259,14 @@ void GProfile::SetGroup(size_t groupid)
 RDate GProfile::GetAttached(void) const
 {
 	return(Attached);
+}
+
+
+//------------------------------------------------------------------------------
+void GProfile::SetConfidence(double score,char level)
+{
+	Score=score;
+	Level=level;
 }
 
 
@@ -421,7 +433,7 @@ void GProfile::ClearFdbks(void)
 //------------------------------------------------------------------------------
 GFdbk* GProfile::GetFdbk(size_t docid) const
 {
-	return(Fdbks.GetPtr<size_t>(docid));
+	return(Fdbks.GetPtr(docid));
 }
 
 

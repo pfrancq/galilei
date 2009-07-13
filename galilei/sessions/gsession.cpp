@@ -84,6 +84,8 @@ using namespace R;
 #include <gdebugobject.h>
 #include <gindexer.h>
 #include <gsimulator.h>
+#include <gcomputesugs.h>
+#include <gtool.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -531,6 +533,16 @@ int GSession::GetCurrentRandomValue(size_t max)
 R::RRandom* GSession::GetRandom(void) const
 {
 	return(Data->Random);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::RunTool(const R::RString& tool)
+{
+	GTool* Tool(GALILEIApp->GetManager<GToolManager>("Tool")->GetPlugIn(tool,false));
+	if(!Tool)
+		ThrowGException("No tool method named '"+tool+"'");
+	Tool->Run();
 }
 
 
@@ -1241,13 +1253,16 @@ void GSession::CalcProfiles(GSlot* rec)
 		PreProfile()->Run();
 	}
 
+	GProfileCalc* Profiling(GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod());
+	GLinkCalc* LinkCalc(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false));
+
 	R::RCursor<GProfile> Prof=GetProfiles();
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		if(Intern::ExternBreak) return;
 		try
 		{
-			CalcProfile(Prof(),rec);
+			CalcProfile(Prof(),Profiling,LinkCalc,rec);
 		}
 		catch(GException& e)
 		{
@@ -1261,34 +1276,39 @@ void GSession::CalcProfiles(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::CalcProfile(GProfile* profile,GSlot* rec)
+void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* linkcalc,GSlot* rec)
 {
-	GProfileCalc* Profiling=GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod();
-	GLinkCalc* LinkCalc=GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false);
-
-	if(!Profiling)
-		throw GException("No computing method chosen.");
+	if(!method)
+	{
+		method=GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod();
+		if(!method)
+			ThrowGException("No computing method chosen");
+	}
 
 	if(rec)
 		rec->NextProfile(profile);
 
 	// If necessary, compute Links on the profile description
-	if(LinkCalc)
-		LinkCalc->Compute(profile);
+	if(linkcalc)
+		linkcalc->Compute(profile);
 
 	if(rec)
 		rec->Interact();
 
 	if(Intern::ExternBreak) return;
 	if(!profile->MustCompute()) return;
-	Profiling->Compute(profile);
-	if(SaveResults&&(profile->GetId()!=cNoRef))
+	bool Save(SaveResults&&(profile->GetId()!=cNoRef));
+	method->Compute(profile);
+
+	// Set the Variable of the profile
+	profile->Update(method->Infos);
+
+	if(Save)
 	{
-		if(profile->IsDefined())
+		if(method->Infos.GetNb())
 			SaveInfos(profile->Vector,otProfile,profile->BlockId,profile->Id);
 		Storage->SaveProfile(profile);
 	}
-	if(Intern::ExternBreak) return;
 }
 
 
@@ -1858,6 +1878,30 @@ void GSession::UpdateTopic(size_t docid)
 {
 	GDoc* doc=GetDoc(docid,false,false);
 	UpdateTopic(doc);
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// GSession::Sugs
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GSession::ComputeSugs(GSlot* rec)
+{
+	// Run all suggestions methods that are enabled
+	R::RCursor<GComputeSugs> ComputeSugs(GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs")->GetPlugIns());
+	for(ComputeSugs.Start();!ComputeSugs.End();ComputeSugs.Next())
+	{
+		if(rec)
+			rec->Interact();
+		if(Intern::ExternBreak) return;
+		if(rec)
+			rec->WriteStr("Suggestions computing method : "+ComputeSugs()->GetFactory()->GetName());
+		ComputeSugs()->Run();
+	}
 }
 
 

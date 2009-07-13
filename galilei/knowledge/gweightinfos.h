@@ -73,7 +73,7 @@ public:
 	* @param a              Pointer to the first object.
 	* @param b              Pointer to the second object.
 	*/
-	static int sortOrder(const void* a,const void* b);
+	static int SortOrder(const void* a,const void* b);
 
 protected:
 

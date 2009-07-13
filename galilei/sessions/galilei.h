@@ -107,7 +107,8 @@ enum tObjType
 	otStatement 	         /** Statement.*/,
 	otClass                  /** Class.*/,
 	otDocStruct              /** Document structure. */,
-	otDocIndex               /** Document index. */
+	otDocIndex               /** Document index. */,
+	otSuggestion             /** Suggestion.*/
 };
 
 
@@ -160,14 +161,10 @@ R::RString GetState(tObjState state);
 */
 enum tDocAssessment
 {
-	djUnknow                 /** Unknown assessment.*/=0,
-	djOK                     /** Document is relevant.*/=1,
-	djKO                     /** Document is fuzzy relevant.*/=2,
-	djOutScope               /** Document is irrelevant.*/=8,
-	djHub                    /** Document is a Hub.*/=16,
-	djAuthority              /** Document is an Authority.*/=32,
-	djMaskJudg               /** Mask for the assessment of the doc.*/=15,
-	djMaskHubAuto            /** Mask for the Hub or Authority.*/=48
+	djUnknow                 /** Unknown assessment.*/,
+	djOK                     /** Document is relevant.*/,
+	djKO                     /** Document is fuzzy relevant.*/,
+	djOutScope               /** Document is irrelevant.*/
 };
 
 
@@ -241,11 +238,30 @@ public:
 		: R::RException(str) {}
 
 	/**
+	* Construct an exception with the message "func [where]: str". A typical use is:
+	* @code
+	* if(!ptr)
+	* 	throw GException(__PRETTY_FUNCTION__,__LINE__,"ptr cannot be a null pointer");
+	* @endcode
+	* @see The ThrowGException marco.
+	* @param func                     Function producing the error.
+	* @param where                    Line position of the error.
+	* @param str                      Message of the error.
+	*/
+	GException(const char* func,long where,const char* str) throw()
+		: R::RException(func,where,str) {}
+
+	/**
 	* Construct an exception.
 	*///------------------------------------------------------------------------------
 	GException(void) throw()
 		: R::RException() {}
 };
+
+
+//------------------------------------------------------------------------------
+// Macro to generate a GException
+#define ThrowGException(msg) throw GException(__PRETTY_FUNCTION__,__LINE__,msg)
 
 
 //------------------------------------------------------------------------------
@@ -285,6 +301,8 @@ class GLink;
 class GLinkCalc;
 class GLinkCalcManager;
 class GLinks;
+class GDocRanking;
+class GSuggestion;
 class GSugs;
 class GTVDRec;
 class GDocStruct;
@@ -322,6 +340,7 @@ class GPostProfileManager;
 //------------------------------------------------------------------------------
 // forward class declaration - Communities Part
 class GCommunity;
+class GCommunityDocs;
 class GGroupProfiles;
 class GFactoryGroupProfiles;
 class GFactoryGroupDocs;
@@ -375,6 +394,9 @@ class GFactoryTool;
 class GToolManager;
 class GMatrixMeasure;
 class GSimulator;
+class GFactoryComputeSugs;
+class GComputeSugs;
+class GComputeSugsManager;
 
 
 //------------------------------------------------------------------------------

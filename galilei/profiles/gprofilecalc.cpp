@@ -43,7 +43,7 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GProfileCalc::GProfileCalc(GFactoryProfileCalc* fac)
-	: GPlugin<GFactoryProfileCalc>(fac)
+	: GPlugin<GFactoryProfileCalc>(fac), Infos(5000)
 {
 }
 

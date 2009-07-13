@@ -37,6 +37,7 @@
 // include files for GALILEI
 #include <ggroup.h>
 #include <gprofile.h>
+#include <gsuggestion.h>
 
 
 //------------------------------------------------------------------------------
@@ -77,40 +78,55 @@ public:
 	 virtual GMeasure* GetSimMeasure(void) const
 	 	{return(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities"));}
 
-private:
-
 	/**
-	* Static function used to ordered by similarity.
-	*/
-	static int sortOrder(const void *a,const void *b);
-
-public:
-
-	/**
-	* Construct the list of all feedbacks of the profiles of a group not
-	* already assessed by a given profile. If a document is assessed multiple
-	* times differently, most important OK>N>KO>H.
-	* @param docs            Documents not assessed.
-	* @param prof            Profile.
-	*/
-	void NotJudgedDocsList(R::RContainer<GFdbk,false,true>& docs, GProfile* prof) const;
-
-	/**
-	* Construct the list of all relevant documents of the profiles of a
-	* group not already assessed by a given profile and ordered in descending
-	* order of their similarity with the chosen profile.
-	* @param measure         The measure used to compute the similarities.
-	* @param docs            Documents not assessed.
-	* @param prof            Profile.
-	* @param session         Session.
-	* \warning This method uses an internal container which is not optimal.
-	*/
-	void NotJudgedDocsRelList(GMeasure* measure,R::RContainer<GFdbk,false,false>& docs, GProfile* prof,GSession* session) const;
+	 * Get the list of relevant documents, i.e. documents assessed as relevant
+	 * by at least one profile of the community. All the documents have a null
+	 * ranking.
+	 *
+	 * If a document is assessed one time as relevant and multiple times as
+	 * irrelevant, it is also added to the list.
+	 * @param docs           List that will be filled (and cleared before).
+	 */
+	void GetRelevantDocs(GCommunityDocs& docs);
 
 	/**
 	* Destructor of a group.
 	*/
 	virtual ~GCommunity(void);
+};
+
+
+//------------------------------------------------------------------------------
+/**
+ * The GCommunityDocs class provides a representation for a set of documents
+ * assessed as relevant by the members of a community.
+ */
+class GCommunityDocs : public R::RContainer<GDocRanking,true,false>
+{
+	/**
+	 * Identifier of the community.
+	 */
+	size_t CommunityId;
+
+public:
+
+	/**
+	 * Create a list of relevant documents.
+	 * @param size           Initial size of the list.
+	 * @param communityid    Identifier of the community.
+	 */
+	GCommunityDocs(size_t size=0,size_t communityid=0);
+
+	/**
+	 * Assign a new community identifier and clear the list.
+	 * @param communityid    Identifier of the community.
+	 */
+	void SetCommunityId(size_t communityid);
+
+	/**
+	 * @return the identifier of the community.
+	 */
+	size_t GetCommunityId(void) const {return(CommunityId);}
 };
 
 

@@ -86,9 +86,11 @@ RString GALILEI::GetObjType(tObjType objtype)
 		case otClass:
 			return(RString("class"));
 		case otDocStruct:
-			return(RString("Document structure."));
+			return(RString("document structure"));
 		case otDocIndex:
-			return(RString("Document index."));
+			return(RString("document index"));
+		case otSuggestion:
+			return(RString("suggestion"));
 	}
 	return(RString("unknown"));
 }
@@ -153,40 +155,36 @@ RString GEvent::GetEvent(tEvent event)
 //------------------------------------------------------------------------------
 RString GALILEI::GetAssessment(tDocAssessment assessment)
 {
-	RString str;
-
-	if(assessment&djUnknow)
-		str="unknown";
-	if(assessment&djOK)
-	str="relevant";
-	if(assessment&djKO)
-		str="fuzzy relevant";
-	if(assessment&djOutScope)
-		str="irrelevant";
-	if(assessment&djHub)
-		str+="/hub";
-	if(assessment&djAuthority)
-		str+="/authority";
-	return(str);
+	switch(assessment)
+	{
+		case djUnknow:
+			return(RString("unknown"));
+		case djOK:
+			return(RString("relevant"));
+		case djKO:
+			return(RString("fuzzy relevant"));
+		case djOutScope:
+			return(RString("irrelevant"));
+	}
+	return(RString("unknown"));
 }
 
 
 //------------------------------------------------------------------------------
 RString GALILEI::GetAssessmentCode(tDocAssessment assessment)
 {
-	RString code;
-
-	if(assessment&djOK)
-		code="O";
-	if(assessment&djKO)
-		code="K";
-	if(assessment&djOutScope)
-		code="H";
-	if(assessment&djHub)
-		code+="H";
-	if(assessment&djAuthority)
-		code+="A";
-	return(code);
+	switch(assessment)
+	{
+		case djUnknow:
+			return(RString("?"));
+		case djOK:
+			return(RString("O"));
+		case djKO:
+			return(RString("K"));
+		case djOutScope:
+			return(RString("H"));
+	}
+	return(RString("?"));
 }
 
 
@@ -209,21 +207,6 @@ tDocAssessment GALILEI::GetAssessmentType(const RString& assessment)
 			break;
 		default:
 			jug=djUnknow;
-			break;
-	}
-	if(assessment.GetLen()==1)
-		return(jug);
-
-	// Eventually hub or authority
-	switch(assessment[static_cast<size_t>(1)].Unicode())
-	{
-		case 'H':
-			jug = tDocAssessment(jug|djHub);
-			break;
-		case 'A':
-			jug = tDocAssessment(jug|djAuthority);
-			break;
-		default:
 			break;
 	}
 	return(jug);

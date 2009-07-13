@@ -47,6 +47,8 @@
 #include <gindexer.h>
 #include <guser.h>
 #include <glink.h>
+#include <gsuggestion.h>
+#include <gsugs.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -259,6 +261,7 @@ bool GSimulator::AddSubject(void)
 void GSimulator::ShareDocuments(void)
 {
 	size_t i;
+	GSugs Sugs(200);
 
 	// Suppose no profiles added
 	NewProfiles.Clear();
@@ -266,8 +269,8 @@ void GSimulator::ShareDocuments(void)
 	// Apply Configuration
 	Apply();
 
-	// Similarities
-	GMeasure* ProfilesDocsSims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Profiles Similarities");
+	// Compute the enabled suggestions computing methods
+	Session->ComputeSugs();
 
 	// Go through the groups
 	R::RCursor<GCommunity> Grps(Session->GetCommunities());
@@ -277,13 +280,11 @@ void GSimulator::ShareDocuments(void)
 		RCursor<GProfile> Profile(Grps()->GetObjs());
 		for(Profile.Start();!Profile.End();Profile.Next())
 		{
-			Grps()->NotJudgedDocsRelList(ProfilesDocsSims,NewDocs,Profile(),Session);
+			Sugs.SetAddresseeId(otProfile,Profile()->GetId());
+			Session->GetStorage()->LoadSugs(Sugs);
+			Sugs.ReOrder(GDocRanking::SortOrderRanking);
 
-			// Mix the documents and assess the first NbDocsAssess one
-			//Session->GetRandom()->RandOrder<GDoc*>(TmpDocs,NbTmpDocs);
-			//ProfileAssess(Prof(),Subs(),NbDocsAssess,cNoRef,cNoRef,cNoRef);
-
-			RCursor<GFdbk> Cur(NewDocs);
+			RCursor<GSuggestion> Cur(Sugs);
 			for(Cur.Start(),i=NbDocsAssess+1;(!Cur.End())&&(--i);Cur.Next())
 			{
 				GDoc* doc=Session->GetDoc(Cur()->GetDocId());

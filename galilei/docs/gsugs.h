@@ -47,18 +47,17 @@
 namespace GALILEI{
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
 /**
-* This class provides a representation for a list of suggestion for a given
+* This class provides a representation for a list of suggestions for a given
 * addressee.
 * @author Pascal Francq
 * @short Suggestions
 */
-class GSugs
+class GSugs : public R::RContainer<GSuggestion,true,false>
 {
 	/**
-	* Type of the addressee of the suggestions (otProfile or otGroup).
+	* Type of the addressee of the suggestions (otProfile or otCommunity).
 	*/
 	tObjType Type;
 
@@ -67,15 +66,16 @@ class GSugs
 	*/
 	size_t Id;
 
-	/**
-	* Identifiers of the documents suggested.
-	*/
-	R::RNumContainer<size_t,false> Docs;
-
 public:
 
 	/**
-	* Constructor of the suggestion.
+	* Constructor of the suggestions.
+	* @param max            Maximum number of suggestions.
+	*/
+	GSugs(size_t max);
+
+	/**
+	* Constructor of the suggestions.
 	* @param type           Type of the addressee.
 	* @param id             Identifier of the addressee.
 	* @param max            Maximum number of suggestions.
@@ -83,7 +83,7 @@ public:
 	GSugs(tObjType type,size_t id,size_t max);
 
 	/**
-	* Compare two addressees by comparing their identifier.
+	* Compare two suggestions by comparing their addressee.
 	* @see R::RContainer
 	* @param sugs            Suggestion.
 	* @return int
@@ -91,32 +91,21 @@ public:
 	int Compare(const GSugs& sugs) const;
 
 	/**
-	* Compare two addressees by comparing their identifier.
-	* @see R::RContainer
-	* @param sugs            Suggestion.
-	* @return int
-	*/
-	int Compare(const GSugs* sugs) const;
+	 * @return the type of the addressee.
+	 */
+	tObjType GetType(void) const {return(Type);}
 
 	/**
-	* Compare the identifier of a addressee with a given identifier.
-	* @see R::RContainer
-	* @param id              Identifier.
-	* @return int
-	*/
-	int Compare(const size_t id) const;
+	 * @return Identifier of the addressee.
+	 */
+	size_t GetAddresseeId(void) const {return(Id);}
 
 	/**
-	* Add a suggestion to the list.
-	* @param id              Identifier of the document.
-	*/
-	void AddSugs(size_t id);
-
-	/**
-	* Add a suggestion to the list.
-	* @param doc             Pointer to the document.
-	*/
-	void AddSugs(const GDoc* doc);
+	 * Set the identifier of the addressee. The container is cleared.
+	 * @param type           Type of the addressee.
+	 * @param id             Identifier.
+	 */
+	void SetAddresseeId(tObjType type,size_t id);
 };
 
 
