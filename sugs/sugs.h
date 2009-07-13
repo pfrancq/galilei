@@ -29,32 +29,40 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GSugsH
-#define GSugsH
+#ifndef SugsH
+#define SugsH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpostcommunity.h>
+#include <gcomputesugs.h>
+#include <gsugs.h>
 using namespace R;
+using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
 /**
 * The GSugs provides a method to compute for each profile a set of potential
-* relevant documents ordred by similarity.
+* relevant documents ordered by similarity.
 * @author Pascal Francq
 * @short Suggestions.
 */
-class GSugs : public GALILEI::GPostCommunity
+class Sugs : public GComputeSugs
 {
 	/**
-	* Array of documents.
+	* Suggestion.
 	*/
-	R::RContainer<GALILEI::GFdbk,false,false>* Docs;
+	GSugs TheSugs;
 
+	/**
+	 * Use the confidence levels.
+	 */
 	bool UseLevels;
 
+	/**
+	 * Number of suggestions.
+	 */
 	size_t NbSugs;
 
 public:
@@ -63,7 +71,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GSugs(GALILEI::GFactoryPostCommunity* fac);
+	Sugs(GFactoryComputeSugs* fac);
 
 	/**
 	* Create the parameters.
@@ -76,27 +84,10 @@ public:
 	*/
 	virtual void ApplyConfig(void);
 
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GALILEI::GSession* session);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GALILEI::GSession* session);
-
     /**
 	* Make the grouping for a specific Language.
 	*/
 	virtual void Run(void);
-
-	/**
-	* Destructor.
-	*/
-	virtual ~GSugs(void);
 };
 
 

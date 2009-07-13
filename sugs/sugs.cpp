@@ -58,72 +58,26 @@ using namespace std;
 #include <ggalileiapp.h>
 #include <gmeasure.h>
 #include <gstorage.h>
+#include <gsuggestion.h>
 using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-//  GComputeSubProfileSugsCmd
+//  Sugs
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GComputeSubProfileSugsCmd : public GALILEI::GStorageCmd
-{
-public:
-	GComputeSubProfileSugsCmd(void) : GALILEI::GStorageCmd("ComputeSubProfileSugsCmd", "MySQL") {}
-	virtual void Run(GALILEI::GStorage* storage,const GALILEI::GStorageTag& inst,void* caller);
-	~GComputeSubProfileSugsCmd() {}
-};
-
-
-//------------------------------------------------------------------------------
-void GComputeSubProfileSugsCmd::Run(GALILEI::GStorage* storage,const GALILEI::GStorageTag& inst,void* caller)
-{
-	// Get all the parameters
-	GALILEI::GProfile* prof=static_cast<GALILEI::GProfile*>(caller);
-	RDb* storeMySQL=static_cast<RDb*>(storage->GetInfos());;
-	RString Sql;
-
-	try
-	{
-		Sql="DELETE FROM sugsbyprofiles WHERE profileid="+RString::Number(prof->GetId());
-		RQuery initsugs(storeMySQL,Sql);
-		Sql="INSERT INTO sugsbyprofiles(profileid,test,htmlid,rank) ";
-		Sql+="SELECT "+RString::Number(prof->GetId())+",'From other members',htmlid,htmlsbygroups.score FROM htmlsbygroups,subprofiles,profiles ";
-		Sql+="WHERE htmlsbygroups.groupid=profiles.groupid AND profiles.profileid="+RString::Number(prof->GetId())+" AND htmlid NOT IN ";
-		Sql+="(SELECT htmlid FROM htmlsbyprofiles WHERE profileid="+RString::Number(prof->GetId())+") ";
-		Sql+="ORDER BY htmlsbygroups.score LIMIT "+inst.GetAttrValue("NbSugs");
-		RQuery insertsugs(storeMySQL,Sql);
-	}
-	catch(RException& e)
-	{
-		throw GALILEI::GException(e.GetMsg());
-	}
-	catch(...)
-	{
-		throw GALILEI::GException("Unknown problem");
-	}
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GSugs
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GSugs::GSugs(GALILEI::GFactoryPostCommunity* fac)
-		: GALILEI::GPostCommunity(fac), Docs(0)
+Sugs::Sugs(GFactoryComputeSugs* fac)
+	: GComputeSugs(fac), TheSugs(otProfile,0,30)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSugs::CreateParams(RConfig* params)
+void Sugs::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("NbSugs",50));
 	params->InsertParam(new RParamValue("UseLevels",false));
@@ -131,91 +85,80 @@ void GSugs::CreateParams(RConfig* params)
 
 
 //------------------------------------------------------------------------------
-void GSugs::ApplyConfig(void)
+void Sugs::ApplyConfig(void)
 {
-	GPostCommunity::ApplyConfig();
+	GComputeSugs::ApplyConfig();
 	NbSugs=Factory->GetUInt("NbSugs");
 	UseLevels=Factory->GetBool("UseLevels");
 }
 
 
 //------------------------------------------------------------------------------
-void GSugs::Connect(GALILEI::GSession* session)
+void Sugs::Run(void)
 {
-	GALILEI::GPostCommunity::Connect(session);
-	GComputeSubProfileSugsCmd* command=new GComputeSubProfileSugsCmd();
-	if(!GALILEI::GALILEIApp->GetManager<GALILEI::GStorageManager>("Storage")->InsertCmd(command))
-		delete command;
-}
+	RString Info("GSugs plug-in");
+	GALILEI::GMeasure* Sim(GALILEI::GALILEIApp->GetManager<GALILEI::GMeasureManager>("Measures")->GetCurrentMethod("Documents/Profiles Similarities"));
+	GCommunityDocs Docs;
 
-
-//------------------------------------------------------------------------------
-void GSugs::Disconnect(GALILEI::GSession* session)
-{
-	GALILEI::GPostCommunity::Disconnect(session);
-}
-
-
-//------------------------------------------------------------------------------
-void GSugs::Run(void)
-{
-	if(!UseLevels)
+	// Go trough the communities
+	RCursor<GALILEI::GCommunity> Grps(Session->GetCommunities());
+	for(Grps.Start();!Grps.End();Grps.Next())
 	{
-		if(!Docs)
-			Docs=new R::RContainer<GALILEI::GFdbk,false,false>(2000,500);
-
-		R::RCursor<GALILEI::GCommunity> Grps;
-		RCursor<GALILEI::GProfile> Sub;
-		RCursor<GALILEI::GFdbk> Doc;
-		size_t i;
-
-		// Clear the table
-		RDate Now(RDate::GetToday());
-		Session->GetStorage()->CreateSugs(Now);
-
-		// Similarities
-		GALILEI::GMeasure* ProfilesDocsSims=GALILEI::GALILEIApp->GetManager<GALILEI::GMeasureManager>("Measures")->GetCurrentMethod("Documents/Profiles Similarities");
-
-		// -1- Store sugestion with description= S+order
-		// Go through the groups
-		Grps=Session->GetCommunities();
-		for(Grps.Start();!Grps.End();Grps.Next())
+		// Prepare the relevant documents
+		if(UseLevels)
 		{
-			// Go through the subprofiles
-			Sub=Grps()->GetObjs();
-			for(Sub.Start();!Sub.End();Sub.Next())
-			{
-				// Get all relevant documents ordered
-				Grps()->NotJudgedDocsRelList(ProfilesDocsSims,*Docs,Sub(),Session);
-
-				// Store them in the database
-				Doc.Set(*Docs);
-				for(Doc.Start(),i=0;!Doc.End();Doc.Next(),i++)
-					Session->GetStorage()->AddSugsProfile(Now,Sub()->GetId(),Doc()->GetDocId(),i);
-			}
+			// Load the relevant documents for the current community and order it
+			Docs.SetCommunityId(Grps()->GetId());
+			Session->GetStorage()->LoadDocs(Docs);
+			Docs.ReOrder(GDocRanking::SortOrderRanking);
 		}
-	}
-	else
-	{
-		GALILEI::GStorageTag tag("ComputeSubProfileSugsCmd");
-		tag.InsertAttr("NbSugs",RString::Number(NbSugs));
-		RCursor<GALILEI::GProfile> Profiles(Session->GetProfiles());
+		else
+		{
+			// Get the list of relevant documents of the community
+			Grps()->GetRelevantDocs(Docs);
+		}
+
+		// Go through each profile
+		RCursor<GALILEI::GProfile> Profiles(Grps()->GetObjs());
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
 		{
-			void* caller=static_cast<void*>(Profiles());
-			Session->GetStorage()->ExecuteCmd(tag,caller);
+			// Prepare the suggestions
+			TheSugs.Clear();
+			TheSugs.SetAddresseeId(otProfile,Profiles()->GetId());
+
+			// If the levels are not used -> the similarity is used to rank the documents
+			if(!UseLevels)
+			{
+				// Go through each document to compute the similarity
+				RCursor<GDocRanking> Doc(Docs);
+				for(Doc.Start();!Doc.End();Doc.Next())
+				{
+					double res;
+					Sim->Measure(0,Doc()->GetDocId(),Profiles()->GetId(),&res);
+					Doc()->SetRanking(res);
+				}
+
+				// Order the ranking
+				Docs.ReOrder(GDocRanking::SortOrderRanking);
+			}
+
+			// Take the first NbSugs documents not assessed
+			size_t Nb(0);
+			RCursor<GDocRanking> Doc(Docs);
+			for(Doc.Start();(!Doc.End())&&(Nb<NbSugs);Doc.Next())
+			{
+				if(Profiles()->GetFdbk(Doc()->GetDocId())) continue;
+				TheSugs.InsertPtr(new GSuggestion(Doc()->GetDocId(),Doc()->GetRanking(),RDate::GetToday(),Info));
+				Nb++;
+			}
+
+			if(Session->MustSaveResults())
+				Session->GetStorage()->SaveSugs(TheSugs,Nb);
 		}
 	}
+
 }
 
 
 //------------------------------------------------------------------------------
-GSugs::~GSugs(void)
-{
-	delete Docs;
-}
-
-
-
-//------------------------------------------------------------------------------
-CREATE_POSTCOMMUNITY_FACTORY("Suggestions",GSugs)
+CREATE_COMPUTESUGS_FACTORY("Compute Suggestions",Sugs)

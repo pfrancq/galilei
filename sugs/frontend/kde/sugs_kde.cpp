@@ -30,7 +30,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpostcommunity.h>
+#include <gcomputesugs.h>
 using namespace GALILEI;
 
 
@@ -78,18 +78,16 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryPostCommunity* params)
+void Configure(GFactoryComputeSugs* params)
 {
 	Config dlg;
 
 	dlg.NbSugs->setValue(params->GetInt("NbSugs"));
 	dlg.UseLevels->setChecked(params->GetBool("UseLevels"));
-	dlg.UseGroupsSugs->setChecked(params->GetBool("UseGroupsSugs"));
 	if (dlg.exec())
 	{
 		params->SetUInt("NbSugs", dlg.NbSugs->value());
 		params->SetBool("UseLevels", dlg.UseLevels->isChecked());
-		params->SetBool("UseGroupsSugs", dlg.UseGroupsSugs->isChecked());
 		params->Apply();
 	}
 }
