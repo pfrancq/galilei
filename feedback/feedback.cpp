@@ -63,7 +63,7 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac)
-	: GProfileCalc(fac), Infos(5000,2500), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
+	: GProfileCalc(fac), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
 	  FuzzyFactor(0.25), IrrelFactor(0.75),
 	  Vectors(5000), VectorsIrrel(5000), VectorsFuzzy(5000),
 	  NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
@@ -133,7 +133,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 		if((!doc)||(!doc->IsDefined())) continue;
 
 		// Find list in function of the feedback
-		switch(Docs()->GetFdbk() & djMaskJudg )
+		switch(Docs()->GetFdbk())
 		{
 			case djOK:
 				NbDocsRel++;
@@ -164,9 +164,6 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 				TotalRef=static_cast<double>(type->GetRef(otDoc));
 				MaxFreq=doc->GetVector()->GetMaxWeight(type);
 			}
-
-			if(Words()->GetId()>32868&&Words()->GetType()->GetId()==26)
-				cout<<"Problem when aggreging documents"<<endl;
 
 			// Compute and add the frequency
 			(*Cur->GetInfo(Words()))+=Words()->GetWeight()/MaxFreq;
@@ -222,7 +219,7 @@ void GProfileCalcFeedback::ComputeProfile(void)
 	}
 	Vectors.GetTab(Order);
 	if(Vectors.GetNb())
-		qsort(static_cast<void*>(Order),Vectors.GetNb(),sizeof(GWeightInfo*),GWeightInfos::sortOrder);
+		qsort(static_cast<void*>(Order),Vectors.GetNb(),sizeof(GWeightInfo*),GWeightInfos::SortOrder);
 
 	//If MaxNonZero is null -> take all the words.
 	if(MaxNonZero)
@@ -295,9 +292,6 @@ void GProfileCalcFeedback::Compute(GProfile* profile)
 	ComputeProfile();
 
 //	WriteFile("/home/pfrancq/tmp");
-
-	// Set the Variable of the profile
-	profile->Update(Infos);
 }
 
 

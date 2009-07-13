@@ -78,11 +78,6 @@ protected:
 	GProfile* Profile;
 
 	/**
-	* Information computed.
-	*/
-	R::RContainer<GWeightInfo,false,true> Infos;
-
-	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	size_t MaxNonZero;
