@@ -181,7 +181,7 @@ void Thesaurus::Run(void)
 				GWeightInfo Info(Infos()->GetConcept(),Infos()->GetWeight()*Infos()->GetConcept()->GetIF(otTopic));
 				(*Cur())=Info;
 			}
-			Concepts.ReOrder(GWeightInfos::sortOrder);
+			Concepts.ReOrder(GWeightInfos::SortOrder);
 
 			// Create the object
 			Objs.InsertPtr(obj=new RObjH(id,Topic->GetName(),NumInfos));
