@@ -347,7 +347,7 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 
 	// Verify if the ideal group should be created
 	if(GroupDoc||GroupProf)
-		Session->BuildGroupsFromIdeal(otCommunity);
+		Session->BuildIdealClustering(otCommunity);
 
 	// Export matrices
 	DoExportDocsSims();
