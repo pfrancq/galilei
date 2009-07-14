@@ -299,6 +299,30 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+* Create the ideal topics from the classes.
+*/
+class QCreateIdealTopicsFromClasses : public QSessionThread
+{
+public:
+	QCreateIdealTopicsFromClasses(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Create the ideal classes.
+*/
+class QCreateIdealClasses : public QSessionThread
+{
+public:
+	QCreateIdealClasses(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Make a feedback cycle.
 */
 class QMakeFdbks : public QSessionThread

@@ -394,6 +394,16 @@ private slots:
 	void topicsCreate(void);
 
 	/**
+	 * Create ideal topics from classes.
+	 */
+	void topicsClassesCreate(void);
+
+	/**
+	 * Create ideal classes.
+	 */
+	void classesCreate(void);
+
+	/**
 	 * Create ideal subjects.
 	 */
 	void subjectsCreate(void);

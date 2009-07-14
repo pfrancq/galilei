@@ -74,6 +74,8 @@
 		<Separator/>
 		<Action name="communitiesCreate"/>
 		<Action name="topicsCreate"/>
+		<Action name="topicsClassesCreate"/>		
+		<Action name="classesCreate"/>		
 		<Separator/>
 		<Action name="doFdbks"/>
 		<Action name="doAssessments"/>

@@ -183,6 +183,8 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Initialize the simulation","subjectsCreate",SLOT(subjectsCreate())));
 	Actions.insert(Actions.size(),addAction("Create Ideal &Communities","communitiesCreate",SLOT(communitiesCreate())));
 	Actions.insert(Actions.size(),addAction("Create Ideal &Topics","topicsCreate",SLOT(topicsCreate())));
+	Actions.insert(Actions.size(),addAction("Create Ideal T&opics (using the classes)","topicsClassesCreate",SLOT(topicsClassesCreate())));
+	Actions.insert(Actions.size(),addAction("Create Ideal C&lasses","classesCreate",SLOT(classesCreate())));
 	Actions.insert(Actions.size(),addAction("&Feedback Cycle","doFdbks",SLOT(doFdbks())));
 	Actions.insert(Actions.size(),addAction("&Assessments Cycle","doAssessments",SLOT(doAssessments())));
 	Actions.insert(Actions.size(),addAction("Compare Communities Topics","communitiesCompare",SLOT(communitiesCompare())));
@@ -878,6 +880,26 @@ void KGALILEICenter::topicsCreate(void)
 {
 	QSessionProgressDlg Dlg(this,"Create Ideal Topics");
 	QCreateIdealTopics* Task(new QCreateIdealTopics());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::topicsClassesCreate(void)
+{
+	QSessionProgressDlg Dlg(this,"Create Ideal Topics");
+	QCreateIdealTopicsFromClasses* Task(new QCreateIdealTopicsFromClasses());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::classesCreate(void)
+{
+	QSessionProgressDlg Dlg(this,"Create Ideal Classes");
+	QCreateIdealClasses* Task(new QCreateIdealClasses());
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
 }

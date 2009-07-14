@@ -272,7 +272,7 @@ void QCreateIdealSubjects::DoIt(void)
 void QCreateIdealCommunities::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Communities ...");
-	GALILEIApp->GetSession()->BuildGroupsFromIdeal(otCommunity);
+	GALILEIApp->GetSession()->BuildIdealClustering(otCommunity);
 }
 
 
@@ -280,8 +280,25 @@ void QCreateIdealCommunities::DoIt(void)
 void QCreateIdealTopics::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Topics ...");
-	GALILEIApp->GetSession()->BuildGroupsFromIdeal(otTopic);
+	GALILEIApp->GetSession()->BuildIdealClustering(otTopic);
 }
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealTopicsFromClasses::DoIt(void)
+{
+	Parent->setLabelText("Create Ideal Topics ...");
+	GALILEIApp->GetSession()->BuildIdealClustering(otLeafClass);
+}
+
+
+//-----------------------------------------------------------------------------
+void QCreateIdealClasses::DoIt(void)
+{
+	Parent->setLabelText("Create Ideal Classes ...");
+	GALILEIApp->GetSession()->BuildIdealClustering(otClass);
+}
+
 
 
 //-----------------------------------------------------------------------------
