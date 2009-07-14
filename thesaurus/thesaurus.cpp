@@ -113,7 +113,7 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 		Infos.InsertPtr(new GWeightInfo(WordsByIds[List()]->Concept,1.0));
 	Session->AssignInfos(Class,Infos);
 
-	// Print sub-nodes
+	// Create sub-classes
 	RCursor<GNodeInfos> Cur(node->GetNodes());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		BuildNode(Cur(),Class);
