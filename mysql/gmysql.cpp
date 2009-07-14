@@ -528,9 +528,10 @@ void GStorageMySQL::LoadConceptTypes(void)
 {
 	try
 	{
-		RQuery Types(Db,"SELECT typeid,name,description,refdocs,refprofiles,refcommunities,reftopics FROM concepttypes");
+		RQuery Types(Db,"SELECT typeid,name,description,refdocs,refprofiles,refcommunities,reftopics,refclasses FROM concepttypes");
 		for(Types.Start();!Types.End();Types.Next())
-			Session->InsertConceptType(static_cast<char>(atoi(Types[0])),Types[1],Types[2],atoi(Types[3]),atoi(Types[4]),atoi(Types[5]),atoi(Types[6]));
+			Session->InsertConceptType(static_cast<char>(atoi(Types[0])),Types[1],Types[2],
+					Types[3].ToSizeT(),Types[4].ToSizeT(),Types[5].ToSizeT(),Types[6].ToSizeT(),Types[7].ToSizeT());
 	}
 	catch(RDbException e)
 	{
@@ -590,7 +591,7 @@ void GStorageMySQL::LoadConcepts(void)
 
 		// Create and insert the dictionary
 		// Load the dictionary from the database
-		RQuery dicts(Db,"SELECT conceptid,name,refdocs,refprofiles,refcommunities,reftopics,indexdocs,typeid FROM concepts");
+		RQuery dicts(Db,"SELECT conceptid,name,refdocs,refprofiles,refcommunities,reftopics,indexdocs,typeid,refclasses FROM concepts");
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
 			size_t TypeId(dicts[7].ToSizeT());
@@ -599,14 +600,14 @@ void GStorageMySQL::LoadConcepts(void)
 			{
 				GXMLIndex w(dicts[0].ToSizeT(),dicts[1],Type,
 						dicts[2].ToSizeT(),dicts[6].ToOffT(),
-						dicts[3].ToSizeT(),dicts[4].ToSizeT(),dicts[5].ToSizeT());
+						dicts[3].ToSizeT(),dicts[4].ToSizeT(),dicts[5].ToSizeT(),dicts[8].ToSizeT());
 				Session->InsertConcept(&w);
 			}
 			else
 			{
 				GConcept w(dicts[0].ToSizeT(),dicts[1],Type,
 						dicts[2].ToSizeT(),dicts[6].ToOffT(),
-						dicts[3].ToSizeT(),dicts[4].ToSizeT(),dicts[5].ToSizeT());
+						dicts[3].ToSizeT(),dicts[4].ToSizeT(),dicts[5].ToSizeT(),dicts[8].ToSizeT());
 				Session->InsertConcept(&w);
 			}
 		}
@@ -721,13 +722,14 @@ void GStorageMySQL::SaveConcept(GConcept* concept)
 		RQuery Delete(Db,"DELETE FROM concepts WHERE conceptid="+Num(concept->GetId()));
 
 		// Insert the new word in the database
-		Sql="INSERT INTO concepts(conceptid,name,typeid,refprofiles,refcommunities,refdocs,reftopics) ";
+		Sql="INSERT INTO concepts(conceptid,name,typeid,refprofiles,refcommunities,refdocs,reftopics,refclasses) ";
 		Sql+="VALUES("+Num(concept->GetId())+","+RQuery::SQLValue(concept->GetName())+","+
 		               Num(concept->GetType()->GetId())+","+
 		               Num(concept->GetRef(otProfile))+","+
 		               Num(concept->GetRef(otCommunity))+","+
 		               Num(concept->GetRef(otDoc))+","+
-		               Num(concept->GetRef(otTopic))+")";
+		               Num(concept->GetRef(otTopic))+","+
+		               Num(concept->GetRef(otClass))+")";
 		RQuery Insert(Db,Sql);
 	}
 	catch(RDbException e)
@@ -759,14 +761,16 @@ void GStorageMySQL::SaveRefs(const GConcept* concept,tObjType what,size_t refs)
 			case otTopic:
 				sSql="UPDATE concepts SET reftopics="+Num(refs)+" WHERE conceptid="+Num(concept->GetId());
 				break;
+			case otClass:
+				sSql="UPDATE concepts SET refclasses="+Num(refs)+" WHERE conceptid="+Num(concept->GetId());
+				break;
 			default:
-				throw GException("This type of objects do not have descriptions");
+				ThrowGException("This type of objects do not have descriptions");
 		};
 		RQuery(Db,sSql);
 	}
 	catch(RDbException e)
 	{
-		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
 	}
 }
@@ -797,7 +801,7 @@ void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,size_t index
 				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
 				break;*/
 			default:
-				throw GException("This type of objects do not have index");
+				ThrowGException("This type of objects do not have index");
 		};
 		RQuery(Db,sSql);
 	}
@@ -844,8 +848,15 @@ void GStorageMySQL::SaveRefs(GConceptType* type,tObjType what,size_t refs)
 					RQuery(Db,"UPDATE concepts SET reftopics=0 WHERE typeid="+Num(type->GetId()));
 				break;
 			}
+			case otClass:
+			{
+				RQuery(Db,"UPDATE concepttypes SET refclasses="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
+				if(refs==0)
+					RQuery(Db,"UPDATE concepts SET refclasses=0 WHERE typeid="+Num(type->GetId()));
+				break;
+			}
 			default:
-				throw GException("This type of objects do not have descriptions");
+				ThrowGException("This type of objects do not have descriptions");
 		};
 	}
 	catch(RDbException e)
@@ -1008,9 +1019,13 @@ void GStorageMySQL::AssignId(GClass* theclass)
 	{
 		// Init some strings
 		RString name=RQuery::SQLValue(theclass->GetName());
-
+		RString Id;
+		if(theclass->GetParent())
+			Id=Num(theclass->GetParent()->GetId());
+		else
+			Id="'0'";
 		// Verify that the class didn't already exist.
-		RQuery find(Db,"SELECT classid FROM classes WHERE name="+name);
+		RQuery find(Db,"SELECT classid FROM classes WHERE name="+name+" and parent="+Id);
 		find.Start();
 		if(!find.End())
 		{
@@ -1028,7 +1043,6 @@ void GStorageMySQL::AssignId(GClass* theclass)
 	}
 	catch(RDbException e)
 	{
-		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
 	}
 }
