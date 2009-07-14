@@ -149,10 +149,11 @@ public:
 	* @param desc            Short description.
 	* @param refdocs         Number of documents referenced.
 	* @param refprofiles     Number of profiles referenced.
-	* @param refgroups       Number of groups referenced.
+	* @param refgroups       Number of commuinities referenced.
 	* @param reftopics       Number of topics referenced.
+	* @param refclasses      Number of classes referenced.
 	*/
-	void InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics);
+	void InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses);
 
 	/**
 	* Get all concepts defined.

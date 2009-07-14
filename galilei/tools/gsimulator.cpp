@@ -471,7 +471,7 @@ void GSimulator::PerformDegradation(char what,int nb)
 			Session->ReInit();
 
 			// Copy the ideal clustering as the current one
-			Session->BuildGroupsFromIdeal(otTopic);
+			Session->BuildIdealClustering(otTopic);
 			NbTmpDocs=Session->FillSelectedDocs(TmpDocs);
 			SwitchRandom->RandOrder(TmpDocs,NbTmpDocs);
 			SwitchPos=0;

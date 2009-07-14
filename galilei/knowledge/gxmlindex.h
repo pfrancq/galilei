@@ -128,8 +128,9 @@ public:
 	* @param refprofiles     Number of profiles referenced.
 	* @param refcommunities  Number of communities referenced.
 	* @param reftopics       Number of topics referenced.
+	* @param refclasses      Number of classes referenced.
 	*/
-	GXMLIndex(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics);
+	GXMLIndex(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics,size_t refclasses);
 
 protected:
 

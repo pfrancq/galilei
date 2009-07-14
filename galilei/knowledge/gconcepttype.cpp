@@ -57,18 +57,19 @@ using namespace std;
 GConceptType::GConceptType(char id,GOntology* ontology,const RString& name,const RString& desc,GLang* lang,size_t s)
 	: GDebugObject(name), RDblHashContainer<GConcept,false>(27,27,s,s/4),
 	  Ontology(ontology), Id(id),
-	  Description(desc), Lang(lang), NbRefDocs(0), NbRefProfiles(0), NbRefCommunities(0), NbRefTopics(0)
+	  Description(desc), Lang(lang), NbRefDocs(0), NbRefProfiles(0), NbRefCommunities(0), NbRefTopics(0), NbRefClasses(0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics)
+void GConceptType::SetReferences(size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics,size_t refclasses)
 {
 	NbRefDocs=refdocs;
 	NbRefProfiles=refprofiles;
 	NbRefCommunities=refcommunities;
 	NbRefTopics=reftopics;
+	NbRefClasses=refclasses;
 }
 
 
@@ -106,9 +107,10 @@ void GConceptType::DebugInfo(const RString& info)
 	// Look what to do
 	bool Idf=(info.FindStr("idf")!=-1);
 	bool Ipf=(info.FindStr("ipf")!=-1);
-	bool Icf=(info.FindStr("igf")!=-1);
+	bool Icf=(info.FindStr("icf")!=-1);
 	bool Itf=(info.FindStr("itf")!=-1);
-	if((!Idf)&&(!Ipf)&&(!Icf)&&(!Itf))
+	bool Iclf=(info.FindStr("iclf")!=-1);
+	if((!Idf)&&(!Ipf)&&(!Icf)&&(!Itf)&&(!Iclf))
 		return;
 
 	RString str("id\tname                            ");
@@ -121,6 +123,8 @@ void GConceptType::DebugInfo(const RString& info)
 		str+="\ticf";
 	if(Itf)
 		str+="\titf";
+	if(Iclf)
+		str+="\ticlf";
 	GetDebug()->PrintComment(str);
 
     // Parse the double hash table
@@ -152,6 +156,8 @@ void GConceptType::DebugInfo(const RString& info)
         		  str+="\t"+RString::Number(Cur3()->GetIF(otCommunity));
         	  if(Itf)
         		  str+="\t"+RString::Number(Cur3()->GetIF(otTopic));
+        	  if(Iclf)
+        		  str+="\t"+RString::Number(Cur3()->GetIF(otClass));
         	  GetDebug()->PrintComment(str);
           }
        }
@@ -196,10 +202,12 @@ void GConceptType::IncRef(tObjType ObjType)
 		case otTopic:
 			NbRefTopics++;
 			nb=NbRefTopics;
-			nb++;
 			break;
+		case otClass:
+			NbRefClasses++;
+			nb=NbRefClasses;
 		default:
-			nb=0;
+			ThrowGException("'"+GetObjType(ObjType)+"' is not a valid type");
 			break;
 	}
 	if(Ontology->SaveResults)
@@ -216,30 +224,36 @@ void GConceptType::DecRef(tObjType ObjType)
 	{
 		case otDoc:
 			if(!NbRefDocs)
-				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for documents");
+				ThrowGException("Cannot decrease null number of references for documents");
 			NbRefDocs--;
 			nb=NbRefDocs;
 			break;
 		case otProfile:
 			if(!NbRefProfiles)
-				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for profiles");
+				ThrowGException("Cannot decrease null number of references for profiles");
 			NbRefProfiles--;
 			nb=NbRefProfiles;
 			break;
 		case otCommunity:
 			if(!NbRefCommunities)
-				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for communities");
+				ThrowGException("Cannot decrease null number of references for communities");
 			NbRefCommunities--;
 			nb=NbRefCommunities;
 			break;
 		case otTopic:
 			if(!NbRefTopics)
-				throw GException("GConceptType::DecRef(tObjType): Cannot decrease null number of references for topics");
+				ThrowGException("Cannot decrease null number of references for topics");
 			NbRefTopics--;
 			nb=NbRefTopics;
 			break;
+		case otClass:
+			if(!NbRefClasses)
+				ThrowGException("Cannot decrease null number of references for classes");
+			NbRefClasses--;
+			nb=NbRefClasses;
+			break;
 		default:
-			nb=0;
+			ThrowGException("'"+GetObjType(ObjType)+"' is not a valid type");
 			break;
 	}
 	if(Ontology->SaveResults)
@@ -264,8 +278,11 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 		case otTopic:
 			return(NbRefTopics);
 			break;
+		case otClass:
+			return(NbRefClasses);
+			break;
 		default:
-			return(0);
+			ThrowGException("'"+GetObjType(ObjType)+"' is not a valid type");
 			break;
 	}
 	return(0);
@@ -305,9 +322,11 @@ void GConceptType::ClearRef(tObjType ObjType)
 		case otTopic:
 			NbRefTopics=0;
 			break;
+		case otClass:
+			NbRefClasses=0;
+			break;
 		default:
-			cerr<<"GConceptType::ClearRef: Not normal"<<endl;
-			return;
+			ThrowGException("'"+GetObjType(ObjType)+"' is not a valid type");
 			break;
 	}
 

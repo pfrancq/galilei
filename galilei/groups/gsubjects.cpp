@@ -124,6 +124,14 @@ R::RCursor<GSubject> GSubjects::GetSubjects(const GSubject* subject) const
 
 
 //------------------------------------------------------------------------------
+size_t GSubjects::GetNbSubjects(const GSubject* subject) const
+{
+	VerifyLoad();
+	return(subject->GetNbNodes());
+}
+
+
+//------------------------------------------------------------------------------
 GSubject* GSubjects::GetSubject(const RString& subject) const
 {
 	VerifyLoad();

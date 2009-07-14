@@ -105,6 +105,11 @@ private:
 	 */
 	size_t NbRefTopics;
 
+	/**
+	 * Number of references in classes.
+	 */
+	size_t NbRefClasses;
+
 public:
 
 	/**
@@ -125,8 +130,9 @@ public:
 	* @param refprofiles     Number of profiles referenced.
 	* @param refcommunities  Number of communities referenced.
 	* @param reftopics       Number of topics referenced.
+	* @param refclasses      Number of classes referenced.
 	*/
-	void SetReferences(size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics);
+	void SetReferences(size_t refdocs,size_t refprofiles,size_t refcommunities,size_t reftopics,size_t refclasses);
 
 	/**
 	* Compare two concepts types.

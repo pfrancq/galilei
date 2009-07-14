@@ -607,11 +607,17 @@ private:
 public:
 
 	/**
-	* Build a type of clustering (otTopic or otCommunity) from the ideal one
-	* based on the documents and the profiles assigned to the subject.
-	* @param type            Type.
+	* Build an ideal clustering based on the subjects.
+	* @param type            Type of clustering:
+	* 						 - otTopic: Each subject containing documents
+	*                          correspond to a topic.
+	*                        - otClass: Each final subject correspond to a
+	*                          topic where the descriptions is based on the
+	*                          different words of the parent subjects.
+	*                        - otCommunity: Each subject containing profiles
+	*                          correspond to a community.
 	*/
-	void BuildGroupsFromIdeal(tObjType type);
+	void BuildIdealClustering(tObjType type);
 
 	// @} Groups
 

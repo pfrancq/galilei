@@ -95,6 +95,41 @@ int GSubject::Compare(const RString& name) const
 
 
 //------------------------------------------------------------------------------
+void GSubject::BuildInfos(R::RContainer<GWeightInfo,false,true>& infos)
+{
+	GSession* Session(GSession::Get());
+
+	// Clear Infos
+	// Rem: Since Infos is not responsible for allocation/deallocation
+	//      -> parse it to prevent memory leaks
+	RCursor<GWeightInfo> Info(infos);
+	for(Info.Start();!Info.End();Info.Next())
+		delete Info();
+	infos.Clear();
+
+	// Guess the language of the subject
+	GLang* Lang(GuessLang());
+	if(!Lang)
+		return;
+
+	// Build the description
+	GConceptType* Type(Session->GetConceptType(Lang->GetCode()+RString("Terms"),false));  // Get a pointer to the corresponding dictionary.
+	if(!Type)
+		ThrowGException("Internal problem");
+	for(GSubject* cur(this);cur;cur=cur->GetParent())
+	{
+		GConcept concept(cur->GetName(),Type);
+		GConcept* ptr(Session->InsertConcept(&concept));
+		GWeightInfo* ins(infos.GetPtr(ptr));
+		if(ins)
+			(*ins)+=1.0;
+		else
+			infos.InsertPtr(new GWeightInfo(ptr,1.0));
+	}
+}
+
+
+//------------------------------------------------------------------------------
 bool GSubject::IsIn(GDoc* doc) const
 {
 	return(Docs.IsIn(*doc));
@@ -313,6 +348,60 @@ RString GSubject::GetFullName(void) const
 		parent=parent->GetParent();
 	}
 	return(ret);
+}
+
+
+//------------------------------------------------------------------------------
+// Structure representing the number of documents for each language.
+struct LangCount
+{
+	GLang* Lang;
+	size_t NbDocs;
+
+	LangCount(GLang* lang) : Lang(lang), NbDocs(0) {}
+	int Compare(const LangCount& lang) const {return(Lang->Compare(lang.Lang));}
+	int Compare(const GLang* lang) const {return(Lang->Compare(lang));}
+	static int SortOrderNbDocs(const void* a,const void* b)
+	{
+		size_t af=(*((LangCount**)(a)))->NbDocs;
+		size_t bf=(*((LangCount**)(b)))->NbDocs;
+
+		if(af==bf) return(0);
+		if(af>bf)
+			return(-1);
+		else
+			return(1);
+	}
+};
+
+
+//------------------------------------------------------------------------------
+GLang* GSubject::GuessLang(void) const
+{
+	RContainer<LangCount,true,true> Langs(20);
+
+	RCursor<GDoc> Doc(CategorizedDocs);
+	for(Doc.Start();!Doc.End();Doc.Next())
+	{
+		LangCount* ptr(Langs.GetInsertPtr(Doc()->GetLang()));
+		ptr->NbDocs++;
+	}
+
+	// If no language found, looks in the childs
+	if(!Langs.GetNb())
+	{
+		RCursor<GSubject> Cur(GetSubjects());
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			GLang* Lang(Cur()->GuessLang());
+			if(Lang) return(Lang);
+		}
+		return(0);
+	}
+
+	// Order the container to find the language with the maximum number of documents
+	Langs.ReOrder(LangCount::SortOrderNbDocs);
+	return(Langs[0]->Lang);
 }
 
 

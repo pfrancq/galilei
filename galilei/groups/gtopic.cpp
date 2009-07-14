@@ -36,6 +36,7 @@
 // include files for GALILEI
 #include <gtopic.h>
 #include <gdoc.h>
+#include <glang.h>
 using namespace GALILEI;
 using namespace R;
 

@@ -91,6 +91,10 @@ RString GALILEI::GetObjType(tObjType objtype)
 			return(RString("document index"));
 		case otSuggestion:
 			return(RString("suggestion"));
+		case otDocRanking:
+			return(RString("document ranking"));
+		case otLeafClass:
+			return(RString("leaf class"));
 	}
 	return(RString("unknown"));
 }

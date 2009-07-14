@@ -108,7 +108,10 @@ enum tObjType
 	otClass                  /** Class.*/,
 	otDocStruct              /** Document structure. */,
 	otDocIndex               /** Document index. */,
-	otSuggestion             /** Suggestion.*/
+	otSuggestion             /** Suggestion.*/,
+	otDocRanking             /** Document ranking.*/,
+	otLeafClass              /** Class without childs (used only for simulation
+	                         purposes).*/
 };
 
 

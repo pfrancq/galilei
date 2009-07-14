@@ -104,6 +104,16 @@ protected:
 	 */
 	double IfTopics;
 
+	/**
+	 * Number of references in classes.
+	 */
+	size_t NbRefClasses;
+
+	/**
+	 * Inverse factor for classes.
+	 */
+	double IfClasses;
+
 public:
 
 	/**
@@ -127,10 +137,11 @@ public:
 	* @param refdocs         Number of documents referenced.
 	* @param indexdocs       Identifier of the block the inverted file related to the documents.
 	* @param refprofiles     Number of profiles referenced.
-	* @param refcommunities  Number of groups referenced.
+	* @param refcommunities  Number of communities referenced.
 	* @param reftopics       Number of topics referenced.
+	* @param refclasses      Number of classes referenced.
 	*/
-	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics);
+	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics,size_t refclasses);
 
 	/**
 	* Compare two concepts.

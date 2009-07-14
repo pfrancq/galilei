@@ -145,14 +145,14 @@ GConceptType* GOntology::GetInsertConceptType(const RString& name,const RString&
 
 
 //-----------------------------------------------------------------------------
-void GOntology::InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics)
+void GOntology::InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses)
 {
 	RString code(name.Mid(0,2));
 	GLang* Lang(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(code,false));
 	GConceptType* type=new GConceptType(id,this,name,desc,Lang,5000);
 	if(!id)
 		Storage->AssignId(type);
-	type->SetReferences(refdocs,refprofiles,refgroups,reftopics);
+	type->SetReferences(refdocs,refprofiles,refgroups,reftopics,refclasses);
 	ConceptTypes.InsertPtr(type);
 	ConceptTypesByIds.InsertPtrAt(type,type->GetId(),true);
 }
@@ -163,13 +163,13 @@ GConcept* GOntology::InsertConcept(const GConcept* concept)
 {
 	GConceptType* Type;
 	if((!concept)||(!(Type=concept->GetType())))
-		throw GException("GOntology::InsertConcept: Cannot insert concept");
+		ThrowGException("Cannot insert the concept");
 
 	bool InDirect(false);
 
 	// Invalid concept are not inserted
 	if(concept->IsEmpty())
-		throw GException("GOntology::InsertConcept: Empty concept cannot be inserted into a dictionary - id="+RString::Number(concept->GetId()));
+		ThrowGException("Empty concept cannot be inserted into a dictionary - id="+RString::Number(concept->GetId()));
 
 	// Look if the data exists in the dictionary. If not, create and insert it.
 	GConcept* ptr(Type->GetPtr(*concept));

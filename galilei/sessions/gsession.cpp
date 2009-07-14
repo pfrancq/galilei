@@ -572,12 +572,13 @@ GClass* GSession::InsertClass(GClass* parent,size_t id,size_t blockid,const RStr
 		Name="Class "+RString::Number(Classes.GetNbNodes()+1);
 	GClass* Class(new GClass(id,blockid,Name));
 
+	// Insert it in the tree
+	Classes.InsertNode(parent,Class);
+
 	// Look if data has an identifier. If not, assign one.
 	if(Class->GetId()==cNoRef)
 		Storage->AssignId(Class);
 
-	// Insert it in the tree
-	Classes.InsertNode(parent,Class);
 	return(Class);
 }
 
@@ -1573,7 +1574,7 @@ template<class cGroup,class cObj,class cCalc>
 		Grps()->ClearIdealGroup(grouptype);
 
 		// If the subject has no objects or is not selected -> next one.
-		if((!Grps()->IsUsed())&&(!Grps()->GetNbObjs(objtype)))
+		if((!Grps()->IsUsed())||(!Grps()->GetNbObjs(objtype)))
 			continue;
 
 		// Create a new group in groups and associated with the current groups
@@ -1595,8 +1596,26 @@ template<class cGroup,class cObj,class cCalc>
 }
 
 
+//-----------------------------------------------------------------------------
+void BuildSubject(GSession* session,GSubject* subject,GClass* parent)
+{
+	// Create the class
+	GClass* Class(session->InsertClass(parent,cNoRef,0,subject->GetName()));
+
+	// Build the vector representing its concepts
+	RContainer<GWeightInfo,false,true> Infos(60);
+	subject->BuildInfos(Infos);
+	session->AssignInfos(Class,Infos);
+
+	// Create sub-classes
+	RCursor<GSubject> Cur(subject->GetSubjects());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		BuildSubject(session,Cur(),Class);
+}
+
+
 //------------------------------------------------------------------------------
-void GSession::BuildGroupsFromIdeal(tObjType type)
+void GSession::BuildIdealClustering(tObjType type)
 {
 	switch(type)
 	{
@@ -1634,8 +1653,61 @@ void GSession::BuildGroupsFromIdeal(tObjType type)
 			}
 			break;
 		}
+		case otClass:
+		{
+			// Clear current classes
+			ForceReCompute(otClass);
+			RCursor<GSubject> Top(GetTopSubjects());
+			for(Top.Start();!Top.End();Top.Next())
+				BuildSubject(this,Top(),0);
+			break;
+		}
+		case otLeafClass:
+		{
+			RContainer<GWeightInfo,false,true> Infos(60);
+
+			// Clear current topics clustering
+			ClearGroups(otTopic);
+
+			// Go through each subjects
+			R::RCursor<GSubject> Grps(GetSubjects());
+			for(Grps.Start();!Grps.End();Grps.Next())
+			{
+				// Clear the groups associated to the subject
+				Grps()->ClearIdealGroup(otTopic);
+
+				// If the subject is not a final one, has no objects or is not selected -> next one.
+				if((!Grps()->IsUsed())||(!Grps()->GetNbObjs(otDoc))||(Grps()->GetNbSubjects()))
+					continue;
+
+				// Create a new group in groups and associated with the current groups
+				GTopic* grp(static_cast<GTopic*>(NewGroup(otTopic,Grps()->GetName())));
+				AssignId(grp);
+				InsertGroup(grp,otTopic);
+				Grps()->AssignIdealGroup(grp);
+
+				// Update the topic.
+				grp->Update(Infos);
+				Grps()->BuildInfos(Infos);
+
+				// Save the results if necessary
+				if(SaveResults)
+				{
+					Storage->Clear(otTopic);
+					RCursor<GTopic> Topics(Data->Topics);
+					for(Topics.Start();!Topics.End();Topics.Next())
+					{
+						if(Topics()->GetVector()->IsDefined())
+							SaveInfos(Topics()->Vector,otTopic,Topics()->BlockId,Topics()->Id);
+						Storage->SaveTopic(Topics());
+						Topics()->SetState(osSaved);
+					}
+				}
+			}
+			break;
+		}
 		default:
-			throw GException("GSession::BuildGroupsFromIdeal: '"+GetObjType(type)+"' is not a valid type");
+			ThrowGException("'"+GetObjType(type)+"' is not a valid type");
 			break;
 	}
 }

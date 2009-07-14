@@ -166,6 +166,11 @@ public:
 	inline R::RCursor<GSubject> GetSubjects(void) const {return(Tree->GetSubjects(this));}
 
 	/**
+	* @return number of child subjects.
+	*/
+	inline size_t GetNbSubjects(void) const {return(Tree->GetNbSubjects(this));}
+
+	/**
 	* Initialize the subject (reset all profiles assigned).
 	*/
 	void ReInit(void);
@@ -204,6 +209,15 @@ public:
 	* @return int
 	*/
 	int Compare(const R::RString& name) const;
+
+	/**
+	 * Build a vector of weighted information entities representing the
+	 * subject. In practice, all the name of the subject and its parents are
+	 * used.
+	 * @param infos          Container that will contain the vector (it is
+	 *                       cleared by the method).
+	 */
+	void BuildInfos(R::RContainer<GWeightInfo,false,true>& infos);
 
 	/**
 	* Verify if a profile is part of the subject.
@@ -379,6 +393,13 @@ public:
 	* @return bool.
 	*/
 	bool IsUsed(void) const {return(Used);}
+
+	/**
+	 * Guess the language of a subject. It is the language of the most
+	 * documents.
+	 * @return a pointer to the corresponding GLang.
+	 */
+	GLang* GuessLang(void) const;
 
 	/**
 	* Destruct the subject.

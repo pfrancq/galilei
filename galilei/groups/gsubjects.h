@@ -141,6 +141,12 @@ public:
 	R::RCursor<GSubject> GetSubjects(const GSubject* subject) const;
 
 	/**
+	* @return the number of child subjects of a given subject.
+	* @param subject            Parent subject. If null, the top subjects are returned.
+	*/
+	size_t GetNbSubjects(const GSubject* subject) const;
+
+	/**
 	* Get a pointer to a certain node of the tree.
 	* @param subject         Subject.
 	* @return Return the pointer or 0 if the element is not in the tree.
