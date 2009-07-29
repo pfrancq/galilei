@@ -1,0 +1,5 @@
+IF(KDE4_FOUND)
+    SET(classeseval_AVAILABLE_FRONTENDS kde)
+    SET(classeseval_kde_DEPENDENCY rcorekde galileikde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(classeseval_frontend classeseval kde classeseval_INCLUDES)
+ENDIF(KDE4_FOUND)

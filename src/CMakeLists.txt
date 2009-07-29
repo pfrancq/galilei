@@ -6,7 +6,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 IF(WIN32)
 
     # Create plug-ins
-    SET(simplugins topicseval communitieseval)
+    SET(simplugins topicseval communitieseval classeseval)
     FOREACH(simplugin ${simplugins})
         ADD_LIBRARY(${simplugin} STATIC ${simplugin}.cpp)
         SET_TARGET_PROPERTIES(${simplugin} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:MSVCRTD;MSVCRT;LIBCMT;LIBCMTD")
@@ -16,7 +16,7 @@ IF(WIN32)
 ELSE(WIN32)
 
     # Create plug-ins
-  SET(plugins topicseval communitieseval)
+  SET(plugins topicseval communitieseval classeseval)
   FOREACH(plugin ${plugins})
     ADD_LIBRARY(${plugin} SHARED ${plugin}.cpp)
     ADD_SOURCE_FILE(${plugin} frontend ${plugin}_INCLUDES)

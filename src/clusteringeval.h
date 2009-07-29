@@ -35,6 +35,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
+#include <robject.h>
 #include <rcontainer.h>
 using namespace R;
 
@@ -42,7 +43,6 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
-#include <robject.h>
 #include <gsubjects.h>
 #include <gsubject.h>
 using namespace GALILEI;
