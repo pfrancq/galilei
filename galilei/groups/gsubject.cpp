@@ -57,7 +57,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 GSubject::GSubject(size_t id,const RString& name,bool u)
 	 : RNode<GSubjects,GSubject,true>(),  Id(id), Name(name), Used(u),
-	   CategorizedDocs(1000), Docs(1000), WhereDocs(1000), Profiles(10,5), Community(0), Topic(0)
+	   CategorizedDocs(1000), Docs(1000), WhereDocs(1000), Profiles(10,5),
+	   Community(0), Topic(0)
 {
 }
 
@@ -95,7 +96,7 @@ int GSubject::Compare(const RString& name) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::BuildInfos(R::RContainer<GWeightInfo,false,true>& infos)
+void GSubject::BuildInfos(R::RContainer<GWeightInfo,false,true>& infos) const
 {
 	GSession* Session(GSession::Get());
 
@@ -110,15 +111,26 @@ void GSubject::BuildInfos(R::RContainer<GWeightInfo,false,true>& infos)
 	// Guess the language of the subject
 	GLang* Lang(GuessLang());
 	if(!Lang)
-		return;
+		ThrowGException("Cannot guess the language of '"+Name+"'");
 
 	// Build the description
 	GConceptType* Type(Session->GetConceptType(Lang->GetCode()+RString("Terms"),false));  // Get a pointer to the corresponding dictionary.
 	if(!Type)
 		ThrowGException("Internal problem");
-	for(GSubject* cur(this);cur;cur=cur->GetParent())
+	for(const GSubject* cur(this);cur;cur=cur->GetParent())
 	{
-		GConcept concept(cur->GetName(),Type);
+		RString Name;
+
+		// Verify that the subject has not the same as the parent
+		if(cur->GetParent())
+		{
+			Name=cur->GetName();
+			if(cur->GetParent()->GetName()==cur->GetName())
+				Name+="_2";
+		}
+		else
+			Name=cur->GetName();
+		GConcept concept(Name,Type);
 		GConcept* ptr(Session->InsertConcept(&concept));
 		GWeightInfo* ins(infos.GetPtr(ptr));
 		if(ins)
@@ -126,6 +138,11 @@ void GSubject::BuildInfos(R::RContainer<GWeightInfo,false,true>& infos)
 		else
 			infos.InsertPtr(new GWeightInfo(ptr,1.0));
 	}
+
+/*	cout<<"Description of '"<<Name<<"' ("<<infos.GetNb()<<")"<<endl;
+	RCursor<GWeightInfo> Cur(infos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		cout<<"\t"<<Cur()->GetConcept()->GetName()<<endl;*/
 }
 
 
@@ -195,30 +212,16 @@ void GSubject::ClearIdealGroup(tObjType type)
 
 
 //------------------------------------------------------------------------------
-void GSubject::AssignIdealGroup(GCommunity* com)
+void GSubject::AssignIdeal(GCommunity* com)
 {
 	Community=com;
 }
 
 
 //------------------------------------------------------------------------------
-void GSubject::AssignIdealGroup(GTopic* top)
+void GSubject::AssignIdeal(GTopic* top)
 {
 	Topic=top;
-}
-
-
-//------------------------------------------------------------------------------
-GCommunity* GSubject::GetIdealCommunity(void) const
-{
-	return(Community);
-}
-
-
-//------------------------------------------------------------------------------
-GTopic* GSubject::GetIdealTopic(void) const
-{
-	return(Topic);
 }
 
 
@@ -376,7 +379,7 @@ struct LangCount
 
 
 //------------------------------------------------------------------------------
-GLang* GSubject::GuessLang(void) const
+GLang* GSubject::GuessLang(bool lookparent) const
 {
 	RContainer<LangCount,true,true> Langs(20);
 
@@ -387,21 +390,60 @@ GLang* GSubject::GuessLang(void) const
 		ptr->NbDocs++;
 	}
 
-	// If no language found, looks in the childs
+	// If no language found, look in the children and then in parents
 	if(!Langs.GetNb())
 	{
+		// Look in the children (without to search in their parents of course).
 		RCursor<GSubject> Cur(GetSubjects());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			GLang* Lang(Cur()->GuessLang());
+			GLang* Lang(Cur()->GuessLang(false));
 			if(Lang) return(Lang);
 		}
+
+		// Look in the parents
+		if(lookparent)
+		{
+			for(GSubject* cur(GetParent());cur;cur=cur->GetParent())
+			{
+				GLang* Lang(cur->GuessLang());
+				if(Lang) return(Lang);
+			}
+		}
+
+		// Really not found
 		return(0);
 	}
 
 	// Order the container to find the language with the maximum number of documents
 	Langs.ReOrder(LangCount::SortOrderNbDocs);
 	return(Langs[0]->Lang);
+}
+
+
+//------------------------------------------------------------------------------
+double GSubject::GetUpOperationCost(void) const
+{
+	double Cost;
+	R::RContainer<GWeightInfo,false,true> Vector(30);
+	BuildInfos(Vector);
+
+	if(Parent)
+	{
+		// The cost is the difference between the number of information entities of
+		// the current class with its parents (it is of course supposed that all the
+		// information entities of the parent are in the current class).
+		R::RContainer<GWeightInfo,false,true> ParentVector(30);
+		Parent->BuildInfos(ParentVector);
+		Cost=Vector.GetNb()-ParentVector.GetNb();
+	}
+	else
+	{
+		// No parent -> all the information entities are to be 'added'.
+		Cost=Vector.GetNb();
+	}
+
+	return(Cost);
 }
 
 

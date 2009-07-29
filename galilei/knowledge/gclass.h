@@ -108,6 +108,18 @@ private:
 public:
 
 	/**
+	 * Get the cost of an Up operation of the current node. By default, the
+	 * cost equals to 1.
+	 *
+	 * In their paper <em>TreeRank: A Similarity Measure for Nearest Neighbor
+	 * Searching in Phylogenetic Databases</em>, Wang, Shan, Shasha and Piel
+	 * define the up operation as the operation that moves a token from one
+	 * node to its parent.
+	 * @return Cost of the up operation.
+	 */
+	virtual double GetUpOperationCost(void) const;
+
+	/**
 	* Destruct the group.
 	*/
 	virtual ~GClass(void);

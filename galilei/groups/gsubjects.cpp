@@ -58,7 +58,7 @@ using namespace GALILEI;
 
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(void)
-	: RTree<GSubjects,GSubject,true>(0,200), Subjects(0,200), MaxDepth(0),
+	: RTree<GSubjects,GSubject,true>(0,200), Subjects(0,200),
 	SelectedDocs(0), DocsSubjects(0), ProfilesSubject(0), ToLoad(true)
 {
 }
@@ -145,12 +145,6 @@ void GSubjects::InsertSubject(GSubject* to,GSubject* subject)
 	VerifyLoad();
 	R::RTree<GSubjects,GSubject,true>::InsertNode(to,subject);
 	Subjects.InsertPtr(subject);
-	if(to)
-		subject->Depth=to->Depth+1;
-	else
-		subject->Depth=1;
-	if(subject->Depth>MaxDepth)
-		MaxDepth=subject->Depth;
 }
 
 
@@ -170,7 +164,7 @@ void GSubjects::Clear(size_t nbsubjects,size_t nbdocs,size_t nbprofiles)
 size_t GSubjects::GetMaxDepth(void) const
 {
 	VerifyLoad();
-	return(MaxDepth);
+	return(R::RTree<GSubjects,GSubject,true>::MaxDepth);
 }
 
 
@@ -318,6 +312,13 @@ size_t GSubjects::GetNbIdealGroups(GDoc* doc) const
 	if(!line)
 		return(0);
 	return(line->GetNb());
+}
+
+
+//------------------------------------------------------------------------------
+double GSubjects::GetUpOperationsCost(const GSubject* u,const GSubject* v) const
+{
+	return(R::RTree<GSubjects,GSubject,true>::GetUpOperationsCost(u,v));
 }
 
 

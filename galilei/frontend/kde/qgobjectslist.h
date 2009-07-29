@@ -76,7 +76,9 @@ public:
 		Communities,        /** Communities are listed.*/
 		CompCommunities,    /** Communities with their quality are listed.*/
 		IdealCommunities,   /** Ideal communities are listed.*/
-		Assessments         /** Assessments are listed. */
+		Assessments,        /** Assessments are listed. */
+		Subjects,           /** Subjects are listed.*/
+		Classes             /** Classes are listed.*/
 	};
 
 private:
@@ -223,6 +225,11 @@ signals:
 	 * A community must be shown.
 	 */
 	void Show(GCommunity* community);
+
+	/**
+	 * A class must be shown.
+	 */
+	void Show(GClass* theclass);
 };
 
 

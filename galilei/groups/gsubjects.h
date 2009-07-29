@@ -70,11 +70,6 @@ protected:
 	R::RContainer<GSubject,false,true> Subjects;
 
 	/**
-	 * Depth of the tree representing the subjects.
-	 */
-	size_t MaxDepth;
-
-	/**
 	 * Container of selected documents.
 	 */
 	R::RContainer<GDoc,false,true> SelectedDocs;
@@ -258,6 +253,20 @@ public:
 	* @param doc            Pointer to the document.
 	*/
 	size_t GetNbIdealGroups(GDoc* doc) const;
+
+	/**
+	 * Get the cost of the Up operations to move a token from a node to another
+	 * one.
+	 *
+	 * In their paper <em>TreeRank: A Similarity Measure for Nearest Neighbor
+	 * Searching in Phylogenetic Databases</em>, Wang, Shan, Shasha and Piel
+	 * define a similarity measure between two trees based on the different
+	 * costs of up operations of the nodes of each tree.
+	 * @param u              First node.
+	 * @param v              Second node.
+	 * @return Cost of the up operations.
+	 */
+	double GetUpOperationsCost(const GSubject* u,const GSubject* v) const;
 
 	/**
 	* Destruct the subjects.

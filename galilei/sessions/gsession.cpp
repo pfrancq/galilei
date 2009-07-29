@@ -1581,7 +1581,7 @@ template<class cGroup,class cObj,class cCalc>
 		grp=static_cast<cGroup*>(NewGroup(grouptype,Grps()->GetName()));
 		AssignId(grp);
 		InsertGroup(grp,grouptype);
-		Grps()->AssignIdealGroup(grp);
+		Grps()->AssignIdeal(grp);
 
 		// Go through each object (verify that each object can be assigned only once)
 		RCursor<cObj> Objs=Grps()->GetObjs(static_cast<cObj*>(0));
@@ -1600,7 +1600,7 @@ template<class cGroup,class cObj,class cCalc>
 void BuildSubject(GSession* session,GSubject* subject,GClass* parent)
 {
 	// Create the class
-	GClass* Class(session->InsertClass(parent,cNoRef,0,subject->GetName()));
+	GClass* Class(session->InsertClass(parent,cNoRef,0,"Subject "+RString::Number(subject->GetId())+" ("+subject->GetName()+")"));
 
 	// Build the vector representing its concepts
 	RContainer<GWeightInfo,false,true> Infos(60);
@@ -1677,18 +1677,18 @@ void GSession::BuildIdealClustering(tObjType type)
 				Grps()->ClearIdealGroup(otTopic);
 
 				// If the subject is not a final one, has no objects or is not selected -> next one.
-				if((!Grps()->IsUsed())||(!Grps()->GetNbObjs(otDoc))||(Grps()->GetNbSubjects()))
+				if((!Grps()->IsUsed())||(Grps()->GetNbSubjects()))
 					continue;
 
 				// Create a new group in groups and associated with the current groups
 				GTopic* grp(static_cast<GTopic*>(NewGroup(otTopic,Grps()->GetName())));
 				AssignId(grp);
 				InsertGroup(grp,otTopic);
-				Grps()->AssignIdealGroup(grp);
+				Grps()->AssignIdeal(grp);
 
 				// Update the topic.
-				grp->Update(Infos);
 				Grps()->BuildInfos(Infos);
+				grp->Update(Infos);
 
 				// Save the results if necessary
 				if(SaveResults)

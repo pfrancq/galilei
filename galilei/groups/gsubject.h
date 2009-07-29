@@ -145,11 +145,6 @@ private:
 	 */
 	GTopic* Topic;
 
-	/**
-	 * Depth of the topic.
-	 */
-	size_t Depth;
-
 public:
 
 	/**
@@ -176,9 +171,9 @@ public:
 	void ReInit(void);
 
 	/**
-	 * Get the depth of the tree formed by all the subjects.
+	 * Get the depth of the subject.
 	 */
-	size_t GetDepth(void) const {return(Depth);}
+	size_t GetDepth(void) const {return(R::RNode<GSubjects,GSubject,true>::GetDepth());}
 
 	/**
 	 * Get the parent of the subject.
@@ -217,7 +212,7 @@ public:
 	 * @param infos          Container that will contain the vector (it is
 	 *                       cleared by the method).
 	 */
-	void BuildInfos(R::RContainer<GWeightInfo,false,true>& infos);
+	void BuildInfos(R::RContainer<GWeightInfo,false,true>& infos) const;
 
 	/**
 	* Verify if a profile is part of the subject.
@@ -266,13 +261,15 @@ public:
 	 */
 	void ClearIdealGroup(tObjType type);
 
+private:
+
 	/**
 	* Assign an ideal community to the subject. This method can only be used
 	* when the current clustering becomes the ideal
 	* one.
 	* @param com             Community.
 	*/
-	void AssignIdealGroup(GCommunity* com);
+	void AssignIdeal(GCommunity* com);
 
 	/**
 	* Assign an ideal topic to the subject. This method can only be used
@@ -280,17 +277,19 @@ public:
 	* one.
 	* @param top             Community.
 	*/
-	void AssignIdealGroup(GTopic* top);
+	void AssignIdeal(GTopic* top);
+
+public:
 
 	/**
 	 * Get the ideal community associated with the subject.
 	 */
-	GCommunity* GetIdealCommunity(void) const;
+	GCommunity* GetIdealCommunity(void) const {return(Community);}
 
 	/**
 	 * Get the ideal topic associated with the subject.
 	 */
-	GTopic* GetIdealTopic(void) const;
+	GTopic* GetIdealTopic(void) const {return(Topic);}
 
 	/**
 	* Get the number of groups of a given type (otProfile or otDoc) associated
@@ -396,16 +395,31 @@ public:
 
 	/**
 	 * Guess the language of a subject. It is the language of the most
-	 * documents.
+	 * documents attached to this subject. If not found, it is supposed that
+	 * the language is the one of the parent.
+	 * @param lookparent     Look also in the parents.
 	 * @return a pointer to the corresponding GLang.
 	 */
-	GLang* GuessLang(void) const;
+	GLang* GuessLang(bool lookparent=true) const;
+
+	/**
+	 * Get the cost of an Up operation of the current node. By default, the
+	 * cost equals to 1.
+	 *
+	 * In their paper <em>TreeRank: A Similarity Measure for Nearest Neighbor
+	 * Searching in Phylogenetic Databases</em>, Wang, Shan, Shasha and Piel
+	 * define the up operation as the operation that moves a token from one
+	 * node to its parent.
+	 * @return Cost of the up operation.
+	 */
+	virtual double GetUpOperationCost(void) const;
 
 	/**
 	* Destruct the subject.
 	*/
 	virtual ~GSubject(void);
 
+	friend class GSession;
 	friend class GSubjects;
 	friend class GSimulator;
 };

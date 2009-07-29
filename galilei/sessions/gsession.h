@@ -246,6 +246,11 @@ public:
 	R::RCursor<GClass> GetClasses(void) const {return(R::RCursor<GClass>(Classes.GetNodes()));}
 
 	/**
+	 * @return Pointer to the class.
+	 */
+	GClasses* GetClassTree(void) {return(&Classes);}
+
+	/**
 	* Get a cursor on the top classes.
 	*/
 	R::RCursor<GClass> GetTopClasses(void) const {return(R::RCursor<GClass>(Classes.GetTopNodes()));}

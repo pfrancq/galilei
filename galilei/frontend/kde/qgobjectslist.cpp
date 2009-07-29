@@ -80,6 +80,7 @@ public:
 		GCommunity* Community;
 		GUser* User;
 		GSubject* Subject;
+		GClass* Class;
 	} Obj;
 
 	/**
@@ -215,6 +216,26 @@ public:
 		setIcon(0,KIconLoader::global()->loadIcon("document",KIconLoader::Small));
 	}
 
+	QGObject(QTreeWidget* parent,GSubject* subject) : QTreeWidgetItem(parent,QStringList()<<ToQString(subject->GetName())<<QString::number(subject->GetId()))
+	{
+		Obj.Subject=subject;
+	}
+
+	QGObject(QTreeWidgetItem* parent,GSubject* subject) : QTreeWidgetItem(parent,QStringList()<<ToQString(subject->GetName())<<QString::number(subject->GetId()))
+	{
+		Obj.Subject=subject;
+	}
+
+	QGObject(QTreeWidget* parent,GClass* theclass) : QTreeWidgetItem(parent,QStringList()<<ToQString(theclass->GetName())<<QString::number(theclass->GetId()))
+	{
+		Obj.Class=theclass;
+	}
+
+	QGObject(QTreeWidgetItem* parent,GClass* theclass) : QTreeWidgetItem(parent,QStringList()<<ToQString(theclass->GetName())<<QString::number(theclass->GetId()))
+	{
+		Obj.Class=theclass;
+	}
+
 	bool HasDescription(void) const
 	{
 		return((Type==otDoc)||(Type==otTopic)||(Type==otProfile)||(Type==otCommunity));
@@ -260,6 +281,38 @@ QGObjectsList::QGObjectsList(QWidget* parent)
 {
 	static_cast<Ui_QGObjectsList*>(Ui)->setupUi(this);
 	connect(static_cast<Ui_QGObjectsList*>(Ui)->List,SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)),this,SLOT(HandleItem(QTreeWidgetItem*,int)));
+}
+
+
+//------------------------------------------------------------------------------
+void addSubject(GSubject* subject,QTreeWidget* tree,QTreeWidgetItem* parent)
+{
+	QGObject* item;
+	if(parent)
+		item=new QGObject(parent,subject);
+	else
+		item=new QGObject(tree,subject);
+
+	// Child subjects
+ 	RCursor<GSubject> Cur(subject->GetSubjects());
+ 	for(Cur.Start();!Cur.End();Cur.Next())
+ 		addSubject(Cur(),tree,item);
+}
+
+
+//------------------------------------------------------------------------------
+void addClass(GClass* theclass,QTreeWidget* tree,QTreeWidgetItem* parent)
+{
+	QGObject* item;
+	if(parent)
+		item=new QGObject(parent,theclass);
+	else
+		item=new QGObject(tree,theclass);
+
+	// Child classes
+ 	RCursor<GClass> Cur(theclass->GetNodes());
+ 	for(Cur.Start();!Cur.End();Cur.Next())
+ 		addClass(Cur(),tree,item);
 }
 
 
@@ -393,6 +446,20 @@ void QGObjectsList::Set(oType type)
 				for(Objs.Start();!Objs.End();Objs.Next())
 					new QGObject(item,Objs());
 			}
+			break;
+		}
+		case Subjects:
+		{
+			RCursor<GSubject> Cur(Session->GetTopSubjects());
+			for(Cur.Start();!Cur.End();Cur.Next())
+				addSubject(Cur(),List,0);
+			break;
+		}
+		case Classes:
+		{
+			RCursor<GClass> Cur(GALILEIApp->GetSession()->GetTopClasses());
+			for(Cur.Start();!Cur.End();Cur.Next())
+				addClass(Cur(),List,0);
 			break;
 		}
 		default:
@@ -723,6 +790,9 @@ void QGObjectsList::HandleItem(QTreeWidgetItem* item,int)
 			break;
 		case otTopic:
 			emit Show(obj->Obj.Topic);
+			break;
+		case otClass:
+			emit Show(obj->Obj.Class);
 			break;
 		default:
 			break;
