@@ -33,6 +33,12 @@
 #include <gsubjects.h>
 
 
+//-----------------------------------------------------------------------------
+// include files for Qt/KDE
+#include <QtGui/QProgressDialog>
+#include <kapplication.h>
+
+
 //------------------------------------------------------------------------------
 // include files for current application
 #include <kviewidealgroups.h>
@@ -87,7 +93,7 @@ void KViewIdealTopics::update(void)
 	Compare->Info(0,&recall);
 	Compare->Info(1,&precision);
 	Compare->Info(2,&total);
-	setWindowTitle("Clustering Comparison: "
+	setWindowTitle("Topics Comparison: "
 	               "Precision="+QString::number(precision)+
 	               " - Recall="+QString::number(recall)+
 	               " - Total="+QString::number(total));
@@ -131,7 +137,7 @@ void KViewIdealCommunities::update(void)
 	Compare->Info(0,&recall);
 	Compare->Info(1,&precision);
 	Compare->Info(2,&total);
-	setWindowTitle("Clustering Comparison: "
+	setWindowTitle("Communities Comparison: "
 	               "Precision="+QString::number(precision)+
 	               " - Recall="+QString::number(recall)+
 	               " - Total="+QString::number(total));
@@ -143,4 +149,57 @@ void KViewIdealCommunities::update(void)
 //-----------------------------------------------------------------------------
 KViewIdealCommunities::~KViewIdealCommunities(void)
 {
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class KViewIdealClasses
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+KViewIdealClasses::KViewIdealClasses(void)
+	: QMdiSubWindow(), Ui_KViewIdealGroups()
+{
+	// Set up the widget
+	QWidget* ptr=new QWidget();
+	setupUi(ptr);
+	setWidget(ptr);
+	setAttribute(Qt::WA_DeleteOnClose);
+
+	// Connect the window and update it
+	connect(Ideal,SIGNAL(Show(GClass*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showClass(GClass*)));
+	connect(Computed,SIGNAL(Show(GClass*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showClass(GClass*)));
+	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(classesChanged()),this,SLOT(update()));
+	update();
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewIdealClasses::update(void)
+{
+	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Classes Evaluation"));
+	if(!Compare)
+		throw GException("'Classes Evaluation' is not a valid evaluation measure");
+    QProgressDialog Progress("Classes Evaluation...", "Abort Evaluation", 0,3, this);
+    Progress.setMinimumDuration(0);
+    Progress.setWindowModality(Qt::WindowModal);
+	double treerank;
+    Progress.setValue(0);
+	KApplication::kApplication()->processEvents();
+	Computed->Set(QGObjectsList::Classes);
+    if(Progress.wasCanceled())
+            return;
+    Progress.setValue(1);
+	KApplication::kApplication()->processEvents();
+	Ideal->Set(QGObjectsList::Subjects);
+	Progress.setValue(2);
+	KApplication::kApplication()->processEvents();
+    if(Progress.wasCanceled())
+            return;
+    Compare->Info(0,&treerank);
+	setWindowTitle("Classes Comparison: TreeRank="+QString::number(treerank));
+	Progress.setValue(3);
 }

@@ -136,4 +136,28 @@ public:
 
 
 //-----------------------------------------------------------------------------
+/**
+* The KViewIdealClasses class represents a window to manipulate the ideal
+* classes of the system.
+* @author Pascal Francq.
+* @short Ideal Classes Window.
+*/
+class KViewIdealClasses : public QMdiSubWindow, public Ui_KViewIdealGroups
+{
+	Q_OBJECT
+
+public:
+
+	KViewIdealClasses(void);
+
+public slots:
+
+	/**
+	* Gets called to redraw the window.
+	*/
+	void update(void);
+};
+
+
+//-----------------------------------------------------------------------------
 #endif

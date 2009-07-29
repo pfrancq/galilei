@@ -443,10 +443,21 @@ private slots:
 	 */
 	void topicsCompare(void);
 
+	/**
+	 * Compare the current classes with the ideal ones.
+	 */
+	void classesCompare(void);
+
 	 /**
 	  * Show the classes.
 	  */
 	 void showClasses(void);
+
+	/**
+	 * Show a given class.
+	 * @param class      Class.
+	 */
+	void showClass(GClass* theclass);
 
 	 //	/**
 	 //	* Show help on program.
@@ -474,6 +485,11 @@ signals:
 	 * The communities were re-computed.
 	 */
 	void communitiesChanged(void);
+
+	/**
+	 * The classes were re-computed.
+	 */
+	void classesChanged(void);
 
 public:
 

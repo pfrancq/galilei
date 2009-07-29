@@ -189,6 +189,7 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("&Assessments Cycle","doAssessments",SLOT(doAssessments())));
 	Actions.insert(Actions.size(),addAction("Compare Communities Topics","communitiesCompare",SLOT(communitiesCompare())));
 	Actions.insert(Actions.size(),addAction("Compare Ideal Topics","topicsCompare",SLOT(topicsCompare())));
+	Actions.insert(Actions.size(),addAction("Compare Ideal Classes","classesCompare",SLOT(classesCompare())));
 
 	// Menu "Window"
 	KAction* windowCloseAll(new KAction(i18n("&Close All"),this));
@@ -1034,6 +1035,35 @@ void KGALILEICenter::topicsCompare(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenter::classesCompare(void)
+{
+	try
+	{
+		KViewIdealClasses* ptr(new KViewIdealClasses());
+		Desktop->addSubWindow(ptr);
+		ptr->adjustSize();
+		ptr->show();
+	}
+	catch(GException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"GALILEI Exception");
+	}
+	catch(RException& e)
+	{
+		KMessageBox::error(this,e.GetMsg(),"R Exception");
+	}
+	catch(std::exception& e)
+	{
+		KMessageBox::error(this,e.what(),"std::exception");
+	}
+	catch(...)
+	{
+		KMessageBox::error(this,"Undefined Error");
+	}
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenter::showClasses(void)
 {
 	KViewClasses* ptr(new KViewClasses());
@@ -1042,6 +1072,15 @@ void KGALILEICenter::showClasses(void)
 	ptr->show();
 }
 
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::showClass(GClass* /*theclass*/)
+{
+/*	KViewCommunity* ptr(new KViewCommunity(community));
+	Desktop->addSubWindow(ptr);
+	ptr->adjustSize();
+	ptr->show();*/
+}
 
 
 ////-----------------------------------------------------------------------------
