@@ -84,24 +84,28 @@ void Thesaurus::Disconnect(GSession* session)
 //-----------------------------------------------------------------------------
 void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 {
-	RString Name("Node "+RString::Number(node->GetId()));
-
 	// Build Name
-	RCursor<RObjH> Objs(node->GetObjs());
-	bool Plus=false;
-	for(Objs.Start();!Objs.End();Objs.Next())
+	RString Name("Node "+RString::Number(node->GetId()));
+	if(!node->GetNbNodes())
 	{
-		if(Plus)
-			Name+="+";
-		else
+		if(node->GetNbObjs()>1)
+			cout<<"Warning: Node "<<node->GetId()<<" has "<<node->GetNbObjs()<<" objects attached"<<endl;
+		RCursor<RObjH> Objs(node->GetObjs());
+		bool Plus=false;
+		for(Objs.Start();!Objs.End();Objs.Next())
 		{
-			Name+=" (";
-			Plus=true;
+			if(Plus)
+				Name+="+";
+			else
+			{
+				Name+=" (";
+				Plus=true;
+			}
+			Name+=Objs()->GetName();
 		}
-		Name+=Objs()->GetName();
+		if(Plus)
+			Name+=")";
 	}
-	if(Plus)
-		Name+=")";
 
 	// Create the class
 	GClass* Class(Session->InsertClass(parent,cNoRef,0,Name));
@@ -164,7 +168,10 @@ void Thesaurus::Run(void)
 			GTopic* Topic(Cur());
 			const GWeightInfos* Desc(Topic->GetVector());
 			if(!Desc->GetNb())
+			{
+				cout<<"'"<<Topic->GetName()<<"' ("<<Topic->GetId()<<") skipped"<<endl;
 				continue;
+			}
 
 			// Order the vector by weight:
 			// 1. Multiply by the tf-idf factors of the topic
