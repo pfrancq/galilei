@@ -49,12 +49,12 @@ namespace GALILEI{
 /**
 * The GProfileCalcFeedback class provides an implementation of the computing
 * method "Feedback" inspired from the user relevance methods of the search
-* engines. The vector of the profile is computed with a linear combinaison of
+* engines. The vector of the profile is computed with a linear combination of
 * the vectors of documents judged by the profile.
 *
 * The different parameters of the method:
 * @param MaxNonZero         Maximal number of weights of the profile vector not
-*                           to be zero. If this paramater is null, all the
+*                           to be zero. If this parameter is null, all the
 *                           weights are left.
 * @param IdfFactor          Specify if for the weights of documents the idf
 *                           factor of the vector model theory must be computed.
@@ -64,7 +64,7 @@ namespace GALILEI{
 * @param NoRelfactor        Factor corresponding to the no relevant documents
 *                           (H).
 * @param AddFuzzy           Specify if the fuzzy part must be added or
-*                           substract.
+*                           Subtract.
 * @author Pascal Francq
 * @short "Feedbacks" Profile Computing Method.
 */
@@ -75,7 +75,7 @@ protected:
 	/**
 	 * Current profile computed.
 	 */
-	GProfile* Profile;
+	const GProfile* Profile;
 
 	/**
 	* Maximal number of the non-zero weights in the vector.
@@ -195,11 +195,11 @@ public:
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
-	virtual void Compute(GProfile* profile);
+	virtual void Compute(const GProfile* profile);
 
 	/**
 	 * Write the content of the 'Order' vector in a file called 'subprofileX'
-	 * where X is the identifier of the subprofile in a directory.
+	 * where X is the identifier of the profile in a directory.
 	 * @param dir            Directory where to write.
 	 */
 	void WriteFile(const RString& dir);

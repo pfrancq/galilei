@@ -116,8 +116,8 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 	VectorsFuzzy.Clear();
 	NbDocsRel=NbDocsFuzzy=NbDocsIrrel=NbDocs=0;
 
-	// Go through all documents, add the frequences of the words of "OK"
-	// documents and substract the frequences of the words of "KO" documents.
+	// Go through all documents, add the frequencies of the words of "OK"
+	// documents and subtract the frequencies of the words of "KO" documents.
 	Docs=Profile->GetFdbks();
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
@@ -152,7 +152,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 		}
 
 		// Add total number of words and the occurrences of each word of the current document.
-		Words=doc->GetVector()->GetInfos();
+		Words=doc->GetVector().GetInfos();
 		type=0; // No current type
 		for(Words.Start();!Words.End();Words.Next())
 		{
@@ -162,7 +162,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 				// Yes -> Get the total number of document analyzed.
 				type=Words()->GetConcept()->GetType();
 				TotalRef=static_cast<double>(type->GetRef(otDoc));
-				MaxFreq=doc->GetVector()->GetMaxWeight(type);
+				MaxFreq=doc->GetVector().GetMaxWeight(type);
 			}
 
 			// Compute and add the frequency
@@ -239,34 +239,29 @@ void GProfileCalcFeedback::ComputeProfile(void)
 
 	// Copy the relevant entities
 	for(i=nb+1,ptr=Order;--i;ptr++)
-		Infos.InsertPtr(new GWeightInfo(**ptr));
+		Infos.InsertInfo(new GWeightInfo(**ptr));
 
 	// Copy the irrelevant entities
 	for(i=nb2+1,ptr=&Order[Vectors.GetNb()-1];--i;ptr--)
-		Infos.InsertPtr(new GWeightInfo(**ptr));
+		Infos.InsertInfo(new GWeightInfo(**ptr));
 }
 
 
 //-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Compute(GProfile* profile)
+void GProfileCalcFeedback::Compute(const GProfile* profile)
 {
 	Profile=profile;
 	GWeightInfo* ptr;
 	GConceptType* type(0);
 
 	// Clear Infos
-	// Rem: Since Infos is not responsible for allocation/deallocation
-	//      -> parse it to prevent memory leaks
-	RCursor<GWeightInfo> Cur(Infos);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		delete Cur();
 	Infos.Clear();
 
 	// If incremental mode -> copy information of the profile in 'Vectors'.
 	if(IncrementalMode&&profile->IsDefined())
 	{
 		size_t i,TotalRef(0);
-		Cur=profile->GetVector()->GetInfos();
+		RCursor<GWeightInfo> Cur(profile->GetVector().GetInfos());
 		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
 		{
 			// Look if the type of the concept have changed since that the last concept treated
@@ -277,7 +272,7 @@ void GProfileCalcFeedback::Compute(GProfile* profile)
 				TotalRef=type->GetRef(otDoc);
 			}
 
-			Infos.InsertPtrAt(ptr=new GWeightInfo(*Cur()),i);
+			Infos.InsertInfo(ptr=new GWeightInfo(*Cur()));
 			if(ptr)
 			{
 				(*ptr)/=Cur()->GetConcept()->GetIF(otDoc);
@@ -327,11 +322,6 @@ GProfileCalcFeedback::~GProfileCalcFeedback(void)
 	// Clear Infos
 	// Rem: Since Infos is not responsible for allocation/desallocation
 	//      -> parse it to prevent memory leaks
-	RCursor<GWeightInfo> Cur(Infos);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		delete Cur();
-	Infos.Clear();
-
 	if(Order) delete[] Order;
 }
 
