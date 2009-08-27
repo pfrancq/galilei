@@ -69,8 +69,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-SubsLevel::SubsLevel(GFactoryPostCommunity* fac)
-		: GPostCommunity(fac), Fdbks(0,200), Docs(), Scores(0,200)
+SubsLevel::SubsLevel(GFactoryComputeTrust* fac)
+		: GComputeTrust(fac), Fdbks(0,200), Docs(), Scores(0,200)
 {
 }
 
@@ -85,7 +85,7 @@ void SubsLevel::CreateParams(RConfig* params)
 //------------------------------------------------------------------------------
 void SubsLevel::ApplyConfig(void)
 {
-	GPostCommunity::ApplyConfig();
+	GComputeTrust::ApplyConfig();
 	NbLevels=Factory->GetUInt("NbLevels");
 }
 
@@ -94,7 +94,7 @@ void SubsLevel::ApplyConfig(void)
 void SubsLevel::Connect(GSession* session)
 {
 	// Try to insert the command, eventually, delete it
-	GPostCommunity::Connect(session);
+	GComputeTrust::Connect(session);
 	Fdbks.Clear(2000,500);
 	Docs.Clear(2000,500);
 	Scores.Clear(500,200);
@@ -238,4 +238,4 @@ void SubsLevel::Run(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_POSTCOMMUNITY_FACTORY("Profiles/Documents Confidence Computation",SubsLevel)
+CREATE_COMPUTETRUST_FACTORY("Profiles/Documents Trust Computation",SubsLevel)

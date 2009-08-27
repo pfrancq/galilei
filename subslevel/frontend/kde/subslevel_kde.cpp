@@ -30,7 +30,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpostcommunity.h>
+#include <gcomputetrust.h>
 using namespace GALILEI;
 
 
@@ -67,8 +67,8 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "subs", 0, ki18n("Profiles Levels"),
-		"1.0", ki18n("This plugin computes the level of each profiles (expert, normal,...)."), KAboutData::License_GPL,
+	KAboutData aboutData( "subs", 0, ki18n("Profiles/Documents Trust Computation"),
+		"1.0", ki18n("This plug-in computes the level of each profiles (expert, normal,...)."), KAboutData::License_GPL,
 		ki18n("(C) 2005-2009 by Pascal Francq\n(C) 2003-2005 by David Wartel\n(C) 2003-2008 by Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
@@ -79,7 +79,7 @@ void About(void)
 
 
  //------------------------------------------------------------------------------
-void Configure(GFactoryPostCommunity* params)
+void Configure(GFactoryComputeTrust* params)
 {
  	Config dlg;
 

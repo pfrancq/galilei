@@ -36,7 +36,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gpostcommunity.h>
+#include <gcomputetrust.h>
 #include <gcommunity.h>
 #include <gstorage.h>
 using namespace GALILEI;
@@ -76,7 +76,7 @@ struct ProfileDoc
 * @author Pascal Francq and David wartel
 * @short Compute Profiles and Documents Confidence
 */
-class SubsLevel  : public GPostCommunity
+class SubsLevel  : public GComputeTrust
 {
 	/**
 	* Array of documents.
@@ -104,7 +104,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	SubsLevel(GFactoryPostCommunity* fac);
+	SubsLevel(GFactoryComputeTrust* fac);
 
 	/**
 	* Create the parameters.
