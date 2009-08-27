@@ -48,6 +48,7 @@
 #include <gprofile.h>
 #include <gmeasure.h>
 #include <ggalileiapp.h>
+#include <gsimulator.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -307,7 +308,7 @@ void GStatsSims::DoExportDocsIncs(void)
 			if(Objs1()==Objs2())
 				Export<<"1.000000E+00";
 			else
-				Export<<Objs1()->GetVector()->Inclusion(*Objs2()->GetVector(),otDoc);
+				Export<<Objs1()->GetVector().Inclusion(Objs2()->GetVector(),otDoc);
 			NewComma=true;
 		}
 		NewLine=true;
@@ -345,9 +346,9 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 		}
 	}
 
-	// Verify if the ideal group should be created
+	// Verify if the ideal communities should be created
 	if(GroupDoc||GroupProf)
-		Session->BuildIdealClustering(otCommunity);
+		Session->GetSimulator()->BuildIdealCommunities();
 
 	// Export matrices
 	DoExportDocsSims();
