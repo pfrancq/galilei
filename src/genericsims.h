@@ -151,12 +151,12 @@ protected:
 	/**
 	 * Vector corresponding to the first object.
 	 */
-	const GWeightInfos* vec1;
+	GWeightInfosObj* vec1;
 
 	/**
 	 * Vector corresponding to the second object.
 	 */
-	const GWeightInfos* vec2;
+	GWeightInfosObj* vec2;
 
 	/**
 	 * Similarity to compute for the different spaces.

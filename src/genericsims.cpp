@@ -211,7 +211,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 
 //------------------------------------------------------------------------------
 GGenericSims::GGenericSims(GFactoryMeasure* fac,tObjType lines,tObjType cols)
-	: GMatrixMeasure(fac,lines,cols,lines==cols), Types(30)
+	: GMatrixMeasure(fac,lines,cols,lines==cols), vec1(0), vec2(0), Types(30)
 {
 }
 
@@ -289,10 +289,10 @@ void GGenericSims::Disconnect(GSession* session)
 bool GGenericSims::ComputeSimSpace(void)
 {
 	// if one vector is not defined -> the similarity must be null
-	if((!vec1->GetNb())||(!vec2->GetNb()))
+	if((!vec1->GetVector().GetNb())||(!vec2->GetVector().GetNb()))
 		return(false);
-	RCursor<GWeightInfo> ptr(vec1->GetInfos());
-	RCursor<GWeightInfo> ptr2(vec2->GetInfos());
+	RCursor<GWeightInfo> ptr(vec1->GetVector().GetInfos());
+	RCursor<GWeightInfo> ptr2(vec2->GetVector().GetInfos());
 	RCursor<GSimType> Cur(Types);
 	double Ok(false);
 	size_t TotalLangsComp(0);
@@ -436,14 +436,14 @@ double GGenericSims::SimilarityProduct(void)
 double GGenericSims::SimilarityLang(void)
 {
 	// If one vector is not defined -> the similarity must be null
-	if((!vec1->GetNb())||(!vec2->GetNb()))
+	if((!vec1->GetVector().GetNb())||(!vec2->GetVector().GetNb()))
 		return(0.0);
 
 	//-------------------------------------------------------
 	// Suppose the two vectors have only a language in common.
 
 	// Parse vec1 until a language is found
-	RCursor<GWeightInfo> ptr(vec1->GetInfos());
+	RCursor<GWeightInfo> ptr(vec1->GetVector().GetInfos());
 	ptr.Start();
 	while((!ptr.End())&&(!ptr()->GetConcept()->GetType()->GetLang()))
 		ptr.Next();
@@ -452,7 +452,7 @@ double GGenericSims::SimilarityLang(void)
 	GConceptType* Lang=(ptr()->GetConcept()->GetType());
 
 	// Parse vec2 until first language is found
-	RCursor<GWeightInfo> ptr2(vec2->GetInfos());
+	RCursor<GWeightInfo> ptr2(vec2->GetVector().GetInfos());
 	ptr2.Start();
 	while((!ptr2.End())&&(!ptr2()->GetConcept()->GetType()->GetLang()))
 		ptr2.Next();
@@ -481,44 +481,9 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 {
 	if(obj1==obj2)
 		return(1.0);
-
-	switch(GetLinesType())
-	{
-		case otDoc:
-			vec1=static_cast<GDoc*>(obj1)->GetVector();
-			break;
-		case otProfile:
-			vec1=static_cast<GProfile*>(obj1)->GetVector();
-			break;
-		case otCommunity:
-			vec1=static_cast<GCommunity*>(obj1)->GetVector();
-			break;
-		case otTopic:
-			vec1=static_cast<GTopic*>(obj1)->GetVector();
-			break;
-
-		default:
-			throw GException("GGenericSims::Compute : '"+GetObjType(GetLinesType())+"' not a valid line type");
-	}
-	switch(GetColsType())
-	{
-		case otDoc:
-			vec2=static_cast<GDoc*>(obj2)->GetVector();
-			break;
-		case otProfile:
-			vec2=static_cast<GProfile*>(obj2)->GetVector();
-			break;
-		case otCommunity:
-			vec2=static_cast<GCommunity*>(obj2)->GetVector();
-			break;
-		case otTopic:
-			vec2=static_cast<GTopic*>(obj2)->GetVector();
-			break;
-
-		default:
-			throw GException("GGenericSims::Compute : '"+GetObjType(GetColsType())+"' not a valid column type");
-	}
-	if((!vec1->IsDefined())||(!vec2->IsDefined()))
+	vec1=static_cast<GWeightInfosObj*>(obj1);
+	vec2=static_cast<GWeightInfosObj*>(obj2);
+	if((!vec1->GetVector().IsDefined())||(!vec2->GetVector().IsDefined()))
 		return(0.0);
 	double sim(0.0);
 	switch(SimType)
