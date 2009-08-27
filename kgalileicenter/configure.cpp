@@ -49,6 +49,7 @@ using namespace std;
 #include <gpreprofile.h>
 #include <gpostdoc.h>
 #include <gcomputesugs.h>
+#include <gcomputetrust.h>
 #include <gmeasure.h>
 #include <gsession.h>
 #include <gsubjects.h>
@@ -460,6 +461,7 @@ void Configure::initPlugIns(void)
 	GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
 	GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->ReOrder();
 	GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs")->ReOrder();
+	GALILEIApp->GetManager<GComputeTrustManager>("ComputeTrust")->ReOrder();
 
 	// Goes through managers
 	Storages->init(QPlugInsList::Storages);
@@ -481,6 +483,7 @@ void Configure::initPlugIns(void)
 	Engines->init(QPlugInsList::Engines);
 	MetaEngines->init(QPlugInsList::MetaEngines);
 	ComputeSugs->init(QPlugInsList::ComputeSugs);
+	ComputeTrust->init(QPlugInsList::ComputeTrust);
 	Tools->init(QPlugInsList::Tools);
 
 	// Init Measures
@@ -524,6 +527,7 @@ void Configure::applyPlugIns(void)
 	PostProfiles->apply(Session);
 	PostCommunities->apply(Session);
 	ComputeSugs->apply(Session);
+	ComputeTrust->apply(Session);
 	Tools->apply(Session);
 
 	// Apply Measures
@@ -537,6 +541,7 @@ void Configure::applyPlugIns(void)
 	GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
 	GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->ReOrder();
 	GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs")->ReOrder();
+	GALILEIApp->GetManager<GComputeTrustManager>("ComputeTrust")->ReOrder();
 }
 
 

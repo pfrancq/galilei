@@ -112,11 +112,11 @@ QString KViewClasses::buildDesc(GClass* c)
 {
 	QString ret;
 
-	RCursor<GWeightInfo> Cur(c->GetVector()->GetInfos());
+	RCursor<GWeightInfo> Cur(c->GetVector().GetInfos());
 	bool Comma=false;
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		if((!AllDescriptors)&&(c->GetParent())&&(c->GetParent()->GetVector()->IsIn(Cur()->GetConcept())))
+		if((!AllDescriptors)&&(c->GetParent())&&(c->GetParent()->GetVector().IsIn(Cur()->GetConcept())))
 			continue;
 		if(Comma)
 			ret+=",";

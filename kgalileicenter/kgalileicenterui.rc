@@ -41,6 +41,7 @@
 		<separator/>
 		<Action name="queryMetaEngine"/>
 		<separator/>
+		<Action name="computeTrust"/>
 		<Action name="computeSugs"/>
 	</Menu>
 	<Menu name="Topics"><text>&amp;Topics</text>
@@ -69,13 +70,16 @@
 		<Action name="postCommunitiesCalc"/>
 	</Menu>
 	<Menu name="Debug"><text>S&amp;imulation</text>
+		<Action name="testSubjects"/>
+		<Separator/>
 		<Action name="simulationDlg"/>
 		<Action name="subjectsCreate"/>
 		<Separator/>
 		<Action name="communitiesCreate"/>
 		<Action name="topicsCreate"/>
 		<Action name="topicsClassesCreate"/>		
-		<Action name="classesCreate"/>		
+		<Action name="classesCreate"/>
+		<Action name="classesDocsCreate"/>		
 		<Separator/>
 		<Action name="doFdbks"/>
 		<Action name="doAssessments"/>

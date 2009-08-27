@@ -52,6 +52,7 @@
 #include <gmeasure.h>
 #include <gtool.h>
 #include <gcomputesugs.h>
+#include <gcomputetrust.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -180,6 +181,10 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 		case ComputeSugs:
 			setObjectName("ComputeSugs");
 			init<GFactoryComputeSugs,GComputeSugsManager>(GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs"),false,true,true);
+			break;
+		case ComputeTrust:
+			setObjectName("ComputeTrust");
+			init<GFactoryComputeTrust,GComputeTrustManager>(GALILEIApp->GetManager<GComputeTrustManager>("ComputeTrust"),false,true,true);
 			break;
 		case ProfileCalcs:
 			setObjectName("ProfileCalcs");

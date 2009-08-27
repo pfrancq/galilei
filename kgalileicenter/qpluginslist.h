@@ -82,6 +82,7 @@ public:
 		MetaEngines,                /** Meta-search Engines.*/
 		Measures,                   /** Measures for a given Category.*/
 		ComputeSugs,                /** Compute Suggestions.*/
+		ComputeTrust,               /** Compute Trust.*/
 		Tools                       /** Tools. */
 	};
 

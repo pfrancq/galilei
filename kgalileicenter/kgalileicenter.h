@@ -404,6 +404,11 @@ private slots:
 	void classesCreate(void);
 
 	/**
+	 * Create ideal classes.
+	 */
+	void classesDocsCreate(void);
+
+	/**
 	 * Create ideal subjects.
 	 */
 	void subjectsCreate(void);
@@ -414,6 +419,11 @@ private slots:
 	void communitiesCreate(void);
 
 	/**
+	 * Test the subjects.
+	 */
+	void testSubjects(void);
+
+	/**
 	 * Make a feedback cycle.
 	 */
 	void doFdbks(void);
@@ -422,6 +432,11 @@ private slots:
 	 * Make a assessments cycle.
 	 */
 	void doAssessments(void);
+
+	/**
+	 * Compute the trust.
+	 */
+	void computeTrust(void);
 
 	/**
 	 * Compute the suggestions.

@@ -157,7 +157,8 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("&Create XML Structure","createXML",SLOT(createXML())));
 	Actions.insert(Actions.size(),addAction("&Save XML Structure","saveXML",SLOT(saveXML())));
 	Actions.insert(Actions.size(),addAction("&Query Meta Engine","queryMetaEngine",SLOT(queryMetaEngine()),"edit-find"));
-	Actions.insert(Actions.size(),addAction("Compute &Suggestions","computeSugs",SLOT(computeSugs())));
+	Actions.insert(Actions.size(),addAction("Compute Suggestions","computeSugs",SLOT(computeSugs())));
+	Actions.insert(Actions.size(),addAction("Compute Trust","computeTrust",SLOT(computeTrust())));
 
 	// Menu "Topics"
 	Actions.insert(Actions.size(),addAction("Force Re-computing Topics","topicsClear",SLOT(topicsClear())));
@@ -180,11 +181,13 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Execute &Post-Communities Methods","postCommunitiesCalc",SLOT(postCommunities())));
 
 	// Menu "Debug"
+	Actions.insert(Actions.size(),addAction("Test Subjects","testSubjects",SLOT(testSubjects())));
 	Actions.insert(Actions.size(),addAction("Initialize the simulation","subjectsCreate",SLOT(subjectsCreate())));
 	Actions.insert(Actions.size(),addAction("Create Ideal &Communities","communitiesCreate",SLOT(communitiesCreate())));
 	Actions.insert(Actions.size(),addAction("Create Ideal &Topics","topicsCreate",SLOT(topicsCreate())));
 	Actions.insert(Actions.size(),addAction("Create Ideal T&opics (using the classes)","topicsClassesCreate",SLOT(topicsClassesCreate())));
 	Actions.insert(Actions.size(),addAction("Create Ideal C&lasses","classesCreate",SLOT(classesCreate())));
+	Actions.insert(Actions.size(),addAction("Create Ideal C&lasses (using documents)","classesDocsCreate",SLOT(classesDocsCreate())));
 	Actions.insert(Actions.size(),addAction("&Feedback Cycle","doFdbks",SLOT(doFdbks())));
 	Actions.insert(Actions.size(),addAction("&Assessments Cycle","doAssessments",SLOT(doAssessments())));
 	Actions.insert(Actions.size(),addAction("Compare Communities Topics","communitiesCompare",SLOT(communitiesCompare())));
@@ -516,7 +519,7 @@ void KGALILEICenter::exportDocs(void)
 		for(Docs.Start();!Docs.End();Docs.Next())
 		{
 			Export<<"\t<document id=\""+RString::Number(Docs()->GetId())+"\" url=\""+Docs()->GetURL()()+"\">"<<endl;
-			R::RCursor<GWeightInfo> Infos(Docs()->GetVector()->GetInfos());
+			R::RCursor<GWeightInfo> Infos(Docs()->GetVector().GetInfos());
 			GConceptType* type(0);
 			double norm(0.0),max(0.0);
 			for(Infos.Start();!Infos.End();Infos.Next())
@@ -527,7 +530,7 @@ void KGALILEICenter::exportDocs(void)
 						Export<<"\t\t\t<norm>"<<RString::Number(sqrt(norm))<<"</norm>"<<endl<<"\t\t</vector>"<<endl;
 					type=Infos()->GetType();
 					norm=0.0;
-					max=Docs()->GetVector()->GetMaxAbsWeight(type);
+					max=Docs()->GetVector().GetMaxAbsWeight(type);
 					Export<<"\t\t<vector type=\""<<type->GetName()<<"\">"<<endl;
 				}
 				Export<<"\t\t\t"<<"\t"<<RString::Number(Infos()->GetId())<<"\t";
@@ -647,7 +650,7 @@ void KGALILEICenter::docsIndexer(void)
 			KApplication::kApplication()->processEvents();
 			RTextFile file(name);
 			file.Open(RIO::Create);
-			RCursor<GWeightInfo> Words(Docs()->GetVector()->GetInfos());
+			RCursor<GWeightInfo> Words(Docs()->GetVector().GetInfos());
 			for(Words.Start();!Words.End();Words.Next())
 			{
 				for(size_t i=lround(Words()->GetWeight())+1;--i;)
@@ -907,6 +910,16 @@ void KGALILEICenter::classesCreate(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenter::classesDocsCreate(void)
+{
+	QSessionProgressDlg Dlg(this,"Create Ideal Classes");
+	QCreateIdealDocsClasses* Task(new QCreateIdealDocsClasses());
+	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
+	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenter::communitiesCreate(void)
 {
 	QSessionProgressDlg Dlg(this,"Create Ideal Communities");
@@ -914,6 +927,16 @@ void KGALILEICenter::communitiesCreate(void)
 	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
 	Dlg.Run(Task);
 }
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::testSubjects(void)
+{
+	QSessionProgressDlg Dlg(this,"Test Subjects");
+	QTestSubjects* Task(new QTestSubjects());
+	Dlg.Run(Task);
+}
+
 
 //-----------------------------------------------------------------------------
 void KGALILEICenter::doFdbks(void)
@@ -931,6 +954,15 @@ void KGALILEICenter::doAssessments(void)
 	QSessionProgressDlg Dlg(this,"Assessments Cycle");
 	QMakeAssessments* Task(new QMakeAssessments());
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
+	Dlg.Run(Task);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::computeTrust(void)
+{
+	QSessionProgressDlg Dlg(this,"Compute Trust");
+	QComputeTrust* Task(new QComputeTrust());
 	Dlg.Run(Task);
 }
 

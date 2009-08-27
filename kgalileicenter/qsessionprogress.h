@@ -323,6 +323,30 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
+* Create the ideal classes using documents.
+*/
+class QCreateIdealDocsClasses : public QSessionThread
+{
+public:
+	QCreateIdealDocsClasses(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Test the subjects.
+*/
+class QTestSubjects : public QSessionThread
+{
+public:
+	QTestSubjects(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
 * Make a feedback cycle.
 */
 class QMakeFdbks : public QSessionThread
@@ -341,6 +365,18 @@ class QMakeAssessments : public QSessionThread
 {
 public:
 	QMakeAssessments(void) {}
+	virtual void DoIt(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* Compute the trust.
+*/
+class QComputeTrust : public QSessionThread
+{
+public:
+	QComputeTrust(void) {}
 	virtual void DoIt(void);
 };
 

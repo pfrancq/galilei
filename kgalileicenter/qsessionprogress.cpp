@@ -272,7 +272,7 @@ void QCreateIdealSubjects::DoIt(void)
 void QCreateIdealCommunities::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Communities ...");
-	GALILEIApp->GetSession()->BuildIdealClustering(otCommunity);
+	GALILEIApp->GetSession()->GetSimulator()->BuildIdealCommunities();
 }
 
 
@@ -280,7 +280,7 @@ void QCreateIdealCommunities::DoIt(void)
 void QCreateIdealTopics::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Topics ...");
-	GALILEIApp->GetSession()->BuildIdealClustering(otTopic);
+	GALILEIApp->GetSession()->GetSimulator()->BuildIdealTopics();
 }
 
 
@@ -288,7 +288,7 @@ void QCreateIdealTopics::DoIt(void)
 void QCreateIdealTopicsFromClasses::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Topics ...");
-	GALILEIApp->GetSession()->BuildIdealClustering(otLeafClass);
+	GALILEIApp->GetSession()->GetSimulator()->BuildIdealLeafTopics();
 }
 
 
@@ -296,9 +296,24 @@ void QCreateIdealTopicsFromClasses::DoIt(void)
 void QCreateIdealClasses::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Classes ...");
-	GALILEIApp->GetSession()->BuildIdealClustering(otClass);
+	GALILEIApp->GetSession()->GetSimulator()->BuildIdealClasses();
 }
 
+
+//-----------------------------------------------------------------------------
+void QCreateIdealDocsClasses::DoIt(void)
+{
+	Parent->setLabelText("Create Ideal Classes ...");
+	GALILEIApp->GetSession()->GetSimulator()->BuildIdealDocsClasses();
+}
+
+
+//-----------------------------------------------------------------------------
+void QTestSubjects::DoIt(void)
+{
+	Parent->setLabelText("Test Subjects ...");
+	GALILEIApp->GetSession()->TestSubjects();
+}
 
 
 //-----------------------------------------------------------------------------
@@ -314,6 +329,14 @@ void QMakeAssessments::DoIt(void)
 {
 	Parent->setLabelText("Make assessments ...");
 	GALILEIApp->GetSession()->GetSimulator()->AddAssessments();
+}
+
+
+//-----------------------------------------------------------------------------
+void QComputeTrust::DoIt(void)
+{
+	Parent->setLabelText("Determine trust ...");
+	GALILEIApp->GetSession()->ComputeTrust();
 }
 
 
