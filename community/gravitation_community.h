@@ -56,11 +56,6 @@ namespace GALILEI{
 class GCommunityCalcGravitation : public GCommunityCalc
 {
 	/**
-	* Information computed.
-	*/
-	R::RContainer<GWeightInfo,false,true> Infos;
-
-	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	size_t MaxNonZero;
@@ -109,7 +104,7 @@ public:
 	* Compute a group.
 	* @param grp            Group to compute.
 	*/
-	virtual void Compute(GCommunity* grp);
+	virtual void Compute(const GCommunity* grp);
 
 	/**
 	* Create the parameters.

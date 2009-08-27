@@ -55,11 +55,6 @@ namespace GALILEI{
 class GTopicCalcGravitation : public GTopicCalc
 {
 	/**
-	* Information computed.
-	*/
-	R::RContainer<GWeightInfo,false,true> Infos;
-
-	/**
 	* Maximal number of the non-zero weights in the vector.
 	*/
 	size_t MaxNonZero;
@@ -108,7 +103,7 @@ public:
 	* Compute a group.
 	* @param grp            Topic to compute.
 	*/
-	virtual void Compute(GTopic* grp);
+	virtual void Compute(const GTopic* grp);
 
 	/**
 	* Create the parameters.

@@ -58,7 +58,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GTopicCalcGravitation::GTopicCalcGravitation(GFactoryTopicCalc* fac)
-	: GTopicCalc(fac), Infos(5000,2500), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
+	: GTopicCalc(fac), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new const GWeightInfo*[MaxOrderSize];
 }
@@ -86,20 +86,14 @@ void GTopicCalcGravitation::Disconnect(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GTopicCalcGravitation::Compute(GTopic* grp)
+void GTopicCalcGravitation::Compute(const GTopic* grp)
 {
 	size_t i;
 	GWeightInfo* ins;
 	const GWeightInfo** w;
 
-	// Clear the Vector.
+	// Clear the Vectors
 	Vector.Clear();
-	// Clear Infos
-	// Rem: Since Infos is not responsible for allocation/desallocation
-	//      -> parse it to prevent memory leaks
-	RCursor<GWeightInfo> Cur(Infos);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		delete Cur();
 	Infos.Clear();
 
 	// If no documents -> No relevant one.
@@ -110,7 +104,7 @@ void GTopicCalcGravitation::Compute(GTopic* grp)
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		// Go trough the words of the current document
-		RCursor<GWeightInfo> Cur(Prof()->GetVector()->GetInfos());
+		RCursor<GWeightInfo> Cur(Prof()->GetVector().GetInfos());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			ins=Vector.GetInfo(Cur());
@@ -134,7 +128,7 @@ void GTopicCalcGravitation::Compute(GTopic* grp)
 		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/static_cast<double>(grp->GetNbObjs())));
+				Infos.InsertInfo(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/static_cast<double>(grp->GetNbObjs())));
 		}
 	}
 	else
@@ -142,12 +136,9 @@ void GTopicCalcGravitation::Compute(GTopic* grp)
 		for(w=Order;(*w);w++)
 		{
 			if((*w)->GetWeight()>0)
-				Infos.InsertPtr(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/static_cast<double>(grp->GetNbObjs())));
+				Infos.InsertInfo(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/static_cast<double>(grp->GetNbObjs())));
 		}
 	}
-
-	// Update the topic.
-	grp->Update(Infos);
 }
 
 
@@ -161,14 +152,6 @@ void GTopicCalcGravitation::CreateParams(RConfig* params)
 //-----------------------------------------------------------------------------
 GTopicCalcGravitation::~GTopicCalcGravitation(void)
 {
-	// Clear Infos
-	// Rem: Since Infos is not responsible for allocation/deallocation
-	//      -> parse it to prevent memory leaks
-	RCursor<GWeightInfo> Cur(Infos);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		delete Cur();
-	Infos.Clear();
-
 	if(Order) delete[] Order;
 }
 
