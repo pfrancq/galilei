@@ -191,6 +191,7 @@ public:
 	virtual ~GWeightInfo(void);
 
 	friend class GIndexer;
+	friend class GWeightInfos;
 };
 
 

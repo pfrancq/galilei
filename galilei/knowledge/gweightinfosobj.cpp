@@ -53,7 +53,7 @@ GWeightInfosObj::GWeightInfosObj(size_t id,size_t blockid,tObjType objtype,const
 
 
 //------------------------------------------------------------------------------
-const GWeightInfos* GWeightInfosObj::GetVector(void) const
+const GWeightInfos& GWeightInfosObj::GetVector(void) const
 {
 	if(!Vector)
 	{
@@ -68,7 +68,7 @@ const GWeightInfos* GWeightInfosObj::GetVector(void) const
 		else
 			const_cast<GWeightInfosObj*>(this)->Vector=new GWeightInfos(1);
 	}
-	return(Vector);
+	return(*Vector);
 }
 
 
@@ -137,7 +137,7 @@ GWeightInfosObj::~GWeightInfosObj(void)
 	try
 	{
 		if(State==osDelete)  // The object has modified the references count but was not saved
-			GetVector()->DelRefs(ObjType);
+			GetVector().DelRefs(ObjType);
 	}
 	catch(...)
 	{

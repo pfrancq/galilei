@@ -2,12 +2,12 @@
 
 	GALILEI Research Project
 
-	GDocAnalyse.cpp
+	GComputeTrust.cpp
 
-	AGeneric Document Analysis - Implementation.
+	Generic Trust Computing Method - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
+	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -29,40 +29,28 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <ctype.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocanalyse.h>
-#include <gdoc.h>
-#include <gprofile.h>
-using namespace R;
+#include <gcomputetrust.h>
 using namespace GALILEI;
-
-
-//------------------------------------------------------------------------------
-// Constant
-const size_t MaxWordLen=50;
+using namespace R;
 
 
 
 //------------------------------------------------------------------------------
 //
-// class GDocAnalyse
+//  GComputeTrust
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac)
-	: GPlugin<GFactoryDocAnalyse>(fac), Infos(5000), Struct()
+GComputeTrust::GComputeTrust(GFactoryComputeTrust* fac)
+	: GPlugin<GFactoryComputeTrust>(fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GDocAnalyse::~GDocAnalyse(void)
+GComputeTrust::~GComputeTrust(void)
 {
 }
 
@@ -70,18 +58,18 @@ GDocAnalyse::~GDocAnalyse(void)
 
 //------------------------------------------------------------------------------
 //
-// class GDocAnalyseManager
+// class GComputeTrustManager
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyseManager::GDocAnalyseManager(void)
-	: GPluginManager<GDocAnalyseManager,GFactoryDocAnalyse,GDocAnalyse>("DocAnalyse",API_DOCANALYSE_VERSION,ptSelect)
+GComputeTrustManager::GComputeTrustManager(void)
+	: GPluginManager<GComputeTrustManager,GFactoryComputeTrust,GComputeTrust>("ComputeTrust",API_COMPUTETRUST_VERSION,ptOrdered)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GDocAnalyseManager::~GDocAnalyseManager(void)
+GComputeTrustManager::~GComputeTrustManager(void)
 {
 }

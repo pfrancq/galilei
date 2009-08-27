@@ -96,7 +96,7 @@ public:
 	 * @return Get the vector associated to the object. It is loaded if
 	 * necessary.
 	 */
-	const GWeightInfos* GetVector(void) const;
+	const GWeightInfos& GetVector(void) const;
 
 	/**
 	* @return the state of the object.
@@ -150,7 +150,7 @@ protected:
 	* inverse frequency factors.
 	* @param ObjType        Type of the reference.
 	*/
-	inline void AddRefs(tObjType ObjType) const {GetVector()->AddRefs(ObjType);}
+	inline void AddRefs(tObjType ObjType) const {GetVector().AddRefs(ObjType);}
 
 	/**
 	* Delete the references for the information entities of the object type in a
@@ -158,7 +158,7 @@ protected:
 	* inverse frequency factors.
 	* @param ObjType        Type of the reference.
 	*/
-	inline void DelRefs(tObjType ObjType) const {GetVector()->DelRefs(ObjType);}
+	inline void DelRefs(tObjType ObjType) const {GetVector().DelRefs(ObjType);}
 
 	/**
 	 * Transfer the contain of a vector to the current object.
@@ -175,6 +175,7 @@ public:
 
 	friend class GSession;
 	friend class GIndexer;
+	friend class GSimulator;
 };
 
 

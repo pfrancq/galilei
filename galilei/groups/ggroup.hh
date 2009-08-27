@@ -259,7 +259,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::Update(R::RContainer<GWeightInfo,false,true>& infos)
+	void GALILEI::GGroup<cObj,cGroup,type>::Update(GWeightInfos& infos)
 {
 	// Remove its references
 	DelRefs(type);
@@ -268,7 +268,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	GWeightInfosObj::Clear();
 	State=osUpdated;
 	Computed.SetToday();
-	CopyInfos(infos);
+	GWeightInfosObj::Transfer(infos);
 
 	// Clear infos
 	infos.Clear();

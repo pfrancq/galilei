@@ -36,6 +36,7 @@
 // include files for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
+#include <gweightinfos.h>
 
 
 //------------------------------------------------------------------------------
@@ -57,6 +58,13 @@ namespace GALILEI{
 */
 class GTopicCalc : public GPlugin<GFactoryTopicCalc>
 {
+protected:
+
+	/**
+	 * Container that should contain the structure after the analyze.
+	 */
+	GWeightInfos Infos;
+
 public:
 
 	/**
@@ -69,12 +77,14 @@ public:
 	* Compute a topic.
 	* @param topic           Topic to compute.
 	*/
-	virtual void Compute(GTopic* topic)=0;
+	virtual void Compute(const GTopic* topic)=0;
 
 	/**
 	* Destruct.
 	*/
 	virtual ~GTopicCalc(void);
+
+	friend class GSession;
 };
 
 

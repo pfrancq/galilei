@@ -397,7 +397,7 @@ void GProfile::DeleteFdbk(size_t docid)
 
 
 //------------------------------------------------------------------------------
-void GProfile::Update(R::RContainer<GWeightInfo,false,true>& infos)
+void GProfile::Update(GWeightInfos& infos)
 {
 	// Remove its references
 	DelRefs(otProfile);
@@ -410,7 +410,7 @@ void GProfile::Update(R::RContainer<GWeightInfo,false,true>& infos)
 	// Update the group were it belongs
 	if(GSession::Get())
 		GSession::Get()->UpdateCommunity(this);
-	CopyInfos(infos);
+	Transfer(infos);
 
 	// Clear infos
 	infos.Clear();

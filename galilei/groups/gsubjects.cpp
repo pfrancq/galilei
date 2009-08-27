@@ -59,7 +59,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 GSubjects::GSubjects(void)
 	: RTree<GSubjects,GSubject,true>(0,200), Subjects(0,200),
-	SelectedDocs(0), DocsSubjects(0), ProfilesSubject(0), ToLoad(true)
+	SelectedDocs(0), DocsSubjects(0), ProfilesSubject(0), ToLoad(true), DescType(dtNames)
 {
 }
 
@@ -92,7 +92,109 @@ void GSubjects::ReInit(void)
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GSubject> GSubjects::GetTopSubjects(void) const
+void GSubjects::SetDescType(tDescType type)
+{
+	if(type!=DescType)
+	{
+		// All descriptions of the subjects must be deleted.
+		RCursor<GSubject> Cur(GetSubjects());
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			if(Cur()->Vector)
+			{
+				delete Cur()->Vector;
+				Cur()->Vector=0;
+			}
+		}
+	}
+	DescType=type;
+}
+
+struct NewGenericSubject
+{
+	GSubject* Subject;
+	GSubject* Parent;
+
+	NewGenericSubject(GSubject* subject,GSubject* parent) : Subject(subject), Parent(parent) {}
+	int Compare(const NewGenericSubject&) const {return(-1);}
+};
+
+
+//------------------------------------------------------------------------------
+void GSubjects::TestSubjects(void)
+{
+	GSession* Session(GSession::Get());
+	RContainer<GSubject,false,false> ToDel(500); // Subjects to delete
+	RContainer<NewGenericSubject,true,false> ToIns(500);   // Subjects to insert
+
+	size_t NbNoLeaf(0);
+	size_t NbLeaf(0);
+	RCursor<GSubject> Cur(GetSubjects());
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		GSubject* Subject(Cur());
+		if(Subject->GetNbSubjects()&&Subject->Docs.GetNb())
+		{
+			// If no child subjects have documents or children -> it is OK.
+			bool OK(true);
+			RCursor<GSubject> Cur2(Subject->GetSubjects());
+			for(Cur2.Start();(!Cur2.End())&&OK;Cur2.Next())
+				if(Cur2()->GetNbSubjects()||Cur2()->CategorizedDocs.GetNb())
+					OK=false;
+			if(!OK)
+			{
+				NbNoLeaf++;
+
+				// Create a new subject
+				GSubject* NewSubject(new GSubject(GetNb()+NbNoLeaf,Subject->Name+" general",true));
+				ToIns.InsertPtr(new NewGenericSubject(NewSubject,Cur()));
+
+				// Transfer all the document from Cur() to subject
+				RCursor<GDoc> Docs(Subject->CategorizedDocs);
+				for(Docs.Start();!Docs.End();Docs.Next())
+					NewSubject->CategorizedDocs.InsertPtr(Docs());
+				Docs.Set(Subject->Docs);
+				for(Docs.Start();!Docs.End();Docs.Next())
+					NewSubject->Docs.InsertPtr(Docs());
+				Subject->CategorizedDocs.Clear();
+				Subject->Docs.Clear();
+			}
+		}
+		else if(!Subject->GetNbSubjects()&&!Subject->CategorizedDocs.GetNb())
+		{
+			ToDel.InsertPtr(Subject);
+			NbLeaf++;
+		}
+	}
+
+	// Delete the nodes
+	Cur.Set(ToDel);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		DeleteNode(Cur(),true);
+
+	// Insert the nodes
+	RCursor<NewGenericSubject> New(ToIns);
+	for(New.Start();!New.End();New.Next())
+		InsertSubject(New()->Parent,New()->Subject);
+
+	// Save if necessary
+	if(Session->MustSaveResults())
+	{
+		Session->Storage->Clear(otSubject);
+		Cur=GetSubjects();
+		for(Cur.Start();!Cur.End();Cur.Next())
+			Session->Storage->SaveSubject(Cur());
+	}
+
+	cout<<"There are "<<GetNbSubjects()<<" subjects:"<<endl;
+	cout<<"  "<<NbNoLeaf<<" no leaf nodes have some documents attached"<<endl;
+	cout<<"  "<<NbLeaf<<" leaf nodes have no documents attached"<<endl;
+	cout<<"  "<<static_cast<double>(NbNoLeaf+NbLeaf)*100.0/static_cast<double>(GetNbSubjects())<<"% of invalid subjects"<<endl;
+}
+
+
+//------------------------------------------------------------------------------
+RCursor<GSubject> GSubjects::GetTopSubjects(void) const
 {
 	VerifyLoad();
 	return(R::RTree<GSubjects,GSubject,true>::GetTopNodes());
@@ -108,7 +210,7 @@ size_t GSubjects::GetNbSubjects(void) const
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GSubject> GSubjects::GetSubjects(void) const
+RCursor<GSubject> GSubjects::GetSubjects(void) const
 {
 	VerifyLoad();
 	return(R::RTree<GSubjects,GSubject,true>::GetNodes());

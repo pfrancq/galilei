@@ -58,7 +58,7 @@ using namespace std;
 GSubject::GSubject(size_t id,const RString& name,bool u)
 	 : RNode<GSubjects,GSubject,true>(),  Id(id), Name(name), Used(u),
 	   CategorizedDocs(1000), Docs(1000), WhereDocs(1000), Profiles(10,5),
-	   Community(0), Topic(0)
+	   Community(0), Topic(0), Vector(0)
 {
 }
 
@@ -96,53 +96,101 @@ int GSubject::Compare(const RString& name) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::BuildInfos(R::RContainer<GWeightInfo,false,true>& infos) const
+GWeightInfos& GSubject::GetVector(void) const
 {
+	if(Vector)
+		return(*Vector);
+
 	GSession* Session(GSession::Get());
 
-	// Clear Infos
-	// Rem: Since Infos is not responsible for allocation/deallocation
-	//      -> parse it to prevent memory leaks
-	RCursor<GWeightInfo> Info(infos);
-	for(Info.Start();!Info.End();Info.Next())
-		delete Info();
-	infos.Clear();
-
-	// Guess the language of the subject
-	GLang* Lang(GuessLang());
-	if(!Lang)
-		ThrowGException("Cannot guess the language of '"+Name+"'");
-
-	// Build the description
-	GConceptType* Type(Session->GetConceptType(Lang->GetCode()+RString("Terms"),false));  // Get a pointer to the corresponding dictionary.
-	if(!Type)
-		ThrowGException("Internal problem");
-	for(const GSubject* cur(this);cur;cur=cur->GetParent())
+	switch(Tree->DescType)
 	{
-		RString Name;
-
-		// Verify that the subject has not the same as the parent
-		if(cur->GetParent())
+		// Description is build based on the name of the subject and its parents
+		case GSubjects::dtNames:
 		{
-			Name=cur->GetName();
-			if(cur->GetParent()->GetName()==cur->GetName())
-				Name+="_2";
+			// Create the vector
+			const_cast<GSubject*>(this)->Vector=new GWeightInfos(30);
+
+			// Guess the language of the subject
+			GLang* Lang(GuessLang());
+			if(!Lang)
+				ThrowGException("Cannot guess the language of '"+Name+"'");
+
+			// Build the description
+			GConceptType* Type(Session->GetConceptType(Lang->GetCode()+RString("Terms"),false));  // Get a pointer to the corresponding dictionary.
+			if(!Type)
+				ThrowGException("Internal problem");
+			for(const GSubject* cur(this);cur;cur=cur->GetParent())
+			{
+				RString Name;
+
+				// Verify that the subject has not the same as the parent
+				if(cur->GetParent())
+				{
+					Name=cur->GetName();
+					if(cur->GetParent()->GetName()==cur->GetName())
+						Name+="_2";
+				}
+				else
+					Name=cur->GetName();
+				GConcept concept(Name,Type);
+				GConcept* ptr(Session->InsertConcept(&concept));
+				GWeightInfo* ins(const_cast<GSubject*>(this)->Vector->GetInfo(ptr));
+				(*ins)+=1.0;
+			}
+			break;
 		}
-		else
-			Name=cur->GetName();
-		GConcept concept(Name,Type);
-		GConcept* ptr(Session->InsertConcept(&concept));
-		GWeightInfo* ins(infos.GetPtr(ptr));
-		if(ins)
-			(*ins)+=1.0;
-		else
-			infos.InsertPtr(new GWeightInfo(ptr,1.0));
+
+		// Description is build:
+		// 1. If a leaf node : The center of gravitation of the documents.
+		// 2. If a non-leaf node : The center of gravitation of the children.
+		case GSubjects::dtDocs:
+		{
+			// Create the vector
+			const_cast<GSubject*>(this)->Vector=new GWeightInfos(30);
+
+			// If the subject is not selected -> next one.
+			if(!Used)
+				return(*Vector);
+
+			// Look if a leaf-node
+			if(GetNbSubjects())
+			{
+				// No, it has no documents
+				if(Docs.GetNb())
+					ThrowGException("No-leaf nodes cannot have documents attached");
+
+				// Compute the common information entities of all the children
+				RCursor<GSubject> Child(GetSubjects());
+				Child.Start();
+				(*Vector)=Child()->GetVector();
+				for(;!Child.End();Child.Next())
+					Vector->Intersection(Child()->GetVector());
+				(*Vector)/=Child.GetNb();
+			}
+			else
+			{
+				// No, it has no documents
+				if(!Docs.GetNb())
+					ThrowGException("Leaf nodes cannot have documents attached");
+
+				// Compute the center of gravitation of all documents
+				RCursor<GDoc> Cur(Docs);
+				for(Cur.Start();!Cur.End();Cur.Next())
+					(*Vector)+=Cur()->GetVector();
+				(*Vector)/=Docs.GetNb();
+			}
+
+			break;
+		}
 	}
 
 /*	cout<<"Description of '"<<Name<<"' ("<<infos.GetNb()<<")"<<endl;
 	RCursor<GWeightInfo> Cur(infos);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		cout<<"\t"<<Cur()->GetConcept()->GetName()<<endl;*/
+
+	return(*Vector);
 }
 
 
@@ -425,22 +473,17 @@ GLang* GSubject::GuessLang(bool lookparent) const
 double GSubject::GetUpOperationCost(void) const
 {
 	double Cost;
-	R::RContainer<GWeightInfo,false,true> Vector(30);
-	BuildInfos(Vector);
-
 	if(Parent)
 	{
 		// The cost is the difference between the number of information entities of
 		// the current class with its parents (it is of course supposed that all the
 		// information entities of the parent are in the current class).
-		R::RContainer<GWeightInfo,false,true> ParentVector(30);
-		Parent->BuildInfos(ParentVector);
-		Cost=Vector.GetNb()-ParentVector.GetNb();
+		Cost=GetVector().GetNb()-Parent->GetVector().GetNb();
 	}
 	else
 	{
 		// No parent -> all the information entities are to be 'added'.
-		Cost=Vector.GetNb();
+		Cost=GetVector().GetNb();
 	}
 
 	return(Cost);
@@ -450,4 +493,5 @@ double GSubject::GetUpOperationCost(void) const
 //------------------------------------------------------------------------------
 GSubject::~GSubject(void)
 {
+	delete Vector;
 }

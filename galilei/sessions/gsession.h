@@ -282,7 +282,7 @@ public:
 	 * @param theclass       The class.
 	 * @param infos          Vector to assign.
 	 */
-	void AssignInfos(GClass* theclass,R::RContainer<GWeightInfo,false,true>& infos);
+	void AssignInfos(GClass* theclass,GWeightInfos& infos);
 
 	//@} Knowledge methods
 
@@ -595,39 +595,6 @@ public:
 	// @} Users/Profiles
 
 	//-----------------------------------------------------
-	/** @name Groups Methods
-	*/
-	// @{
-
-private:
-
-	/**
-	 * Copy the ideal groups into the current clustering.
-	 * @param objtype         Type of the clustering (otProfile or otDoc).
-	 * @param grouptype       Type of the groups (otCommunity or otTopic).
-	 * @param calc           Method used to compute the groups descriptions.
-	 */
-	template<class cGroup,class cObj,class cCalc> void CopyIdealGroups(tObjType objtype,tObjType grouptype,cCalc* calc);
-
-public:
-
-	/**
-	* Build an ideal clustering based on the subjects.
-	* @param type            Type of clustering:
-	* 						 - otTopic: Each subject containing documents
-	*                          correspond to a topic.
-	*                        - otClass: Each final subject correspond to a
-	*                          topic where the descriptions is based on the
-	*                          different words of the parent subjects.
-	*                        - otCommunity: Each subject containing profiles
-	*                          correspond to a community.
-	*/
-	void BuildIdealClustering(tObjType type);
-
-	// @} Groups
-
-
-	//-----------------------------------------------------
 	/** @name Communities Methods
 	*/
 	// @{
@@ -817,6 +784,12 @@ public:
 	/** @name Suggestions Methods
 	*/
 	// @{
+
+	/**
+	* Run all the enabled trust computing methods.
+	* @param rec             Receiver of the signals.
+	*/
+	void ComputeTrust(GSlot* rec=0);
 
 	/**
 	* Run all the enabled suggestions computing methods.

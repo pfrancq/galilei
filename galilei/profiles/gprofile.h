@@ -257,7 +257,7 @@ public:
 	* @param c               Date of the last computation.
 	* @param s               Social?
 	* @param score           Score of the profile.
-	* @param Level           Level of the profile.
+	* @param level           Level of the profile.
 	* @param nbf             Number of Feedbacks.
 	*/
 	GProfile(GUser* usr,size_t id,size_t blockid,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,double score,char level,size_t nbf);
@@ -415,7 +415,7 @@ public:
 	* @param infos            Pointer to the information.
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(R::RContainer<GWeightInfo,false,true>& infos);
+	void Update(GWeightInfos& infos);
 
 	/**
 	* Clear the assessment of the profile.

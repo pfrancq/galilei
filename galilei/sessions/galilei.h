@@ -109,9 +109,7 @@ enum tObjType
 	otDocStruct              /** Document structure. */,
 	otDocIndex               /** Document index. */,
 	otSuggestion             /** Suggestion.*/,
-	otDocRanking             /** Document ranking.*/,
-	otLeafClass              /** Class without childs (used only for simulation
-	                         purposes).*/
+	otDocRanking             /** Document ranking.*/
 };
 
 
@@ -322,6 +320,9 @@ class GMetaEngine;
 class GFactoryMetaEngine;
 class GMetaEngineManager;
 class GIndexer;
+class GFactoryComputeTrust;
+class GComputeTrust;
+class GComputeTrustManager;
 
 
 //------------------------------------------------------------------------------

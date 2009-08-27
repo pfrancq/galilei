@@ -2,12 +2,12 @@
 
 	GALILEI Research Project
 
-	GCommunityCalc.h
+	GComputeTrust.h
 
-	Generic Community Computing Method - Header.
+	Generic Trust Computing Method - Header.
 
-	Copyright 2002-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -29,15 +29,14 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GCommunityCalcH
-#define GCommunityCalcH
+#ifndef GComputeTrustH
+#define GComputeTrustH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
-#include <gweightinfos.h>
 
 
 //------------------------------------------------------------------------------
@@ -47,56 +46,46 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 // API VERSION
-#define API_COMMUNITYCALC_VERSION "2.0"
+#define API_COMPUTETRUST_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
 /**
-* The GCommunityCalc class provides a representation for a generic method to
-* compute the description of a specific community.
+* The GComputeTrust class provides a representation for a generic method for
+* trust computing.
 * @author Pascal Francq
-* @short Generic Community Computing Method.
+* @short Generic Trust Computing Method.
 */
-class GCommunityCalc : public GPlugin<GFactoryCommunityCalc>
+class GComputeTrust : public GPlugin<GFactoryComputeTrust>
 {
-protected:
-
-	/**
-	 * Container that should contain the structure after the analyze.
-	 */
-	GWeightInfos Infos;
-
 public:
 
 	/**
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GCommunityCalc(GFactoryCommunityCalc* fac);
+	GComputeTrust(GFactoryComputeTrust* fac);
 
 	/**
-	* Compute a community.
-	* @param com            Community to compute.
+	* Run the trust computing method.
 	*/
-	virtual void Compute(const GCommunity* com)=0;
+	virtual void Run(void)=0;
 
 	/**
-	* Destruct.
+	* Destructor.
 	*/
-	virtual ~GCommunityCalc(void);
-
-	friend class GSession;
+	virtual ~GComputeTrust(void);
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* The GFactoryCommunityCalc represent a factory for a given community computing
+* The GFactoryComputeTrust represent a factory for a given trust computing
 * method.
 * @author Pascal Francq
-* @short Generic Community Computing Factory.
+* @short Generic Trust Computing Factory.
 */
-class GFactoryCommunityCalc : public GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>
+class GFactoryComputeTrust : public GFactoryPlugin<GFactoryComputeTrust,GComputeTrust,GComputeTrustManager>
 {
 public:
 
@@ -106,37 +95,37 @@ public:
 	* @param n               Name of the Factory/Plug-in.
 	* @param f               Library of the Factory/Plug-in.
 	*/
-	GFactoryCommunityCalc(GCommunityCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>(mng,n,f) {}
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GCommunityCalcManager class provides a representation for a manager
-* responsible to manage all the community computing methods.
-* @author Pascal Francq
-* @short Community Computing Methods Manager.
-*/
-class GCommunityCalcManager : public GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>
-{
-public:
-
-	/**
-	* Construct the community computing method manager.
-	*/
-	GCommunityCalcManager(void);
-
-	/**
-	* Destruct the community computing methods manager.
-	*/
-	virtual ~GCommunityCalcManager(void);
+	GFactoryComputeTrust(GComputeTrustManager* mng,const char* n,const char* f)
+	 : GFactoryPlugin<GFactoryComputeTrust,GComputeTrust,GComputeTrustManager>(mng,n,f) {}
 };
 
 
 //------------------------------------------------------------------------------
-#define CREATE_COMMUNITYCALC_FACTORY(name,plugin)\
-	CREATE_FACTORY(GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc,plugin,"CommunityCalc",API_COMMUNITYCALC_VERSION,name)
+/**
+* The GComputeTrustManager class provides a representation for a manager
+* responsible to manage all the trust computing methods.
+* @author Pascal Francq
+* @short Trust Computing Methods Manager.
+*/
+class GComputeTrustManager : public GPluginManager<GComputeTrustManager,GFactoryComputeTrust,GComputeTrust>
+{
+public:
+
+	/**
+	* Construct the trust computing methods manager.
+	*/
+	GComputeTrustManager(void);
+
+	/**
+	* Destruct the trust computing methods manager.
+	*/
+	virtual ~GComputeTrustManager(void);
+};
+
+
+//------------------------------------------------------------------------------
+#define CREATE_COMPUTETRUST_FACTORY(name,plugin)\
+	CREATE_FACTORY(GALILEI::GComputeTrustManager,GALILEI::GFactoryComputeTrust,GALILEI::GComputeTrust,plugin,"ComputeTrust",API_COMPUTETRUST_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

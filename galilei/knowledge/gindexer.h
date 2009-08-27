@@ -144,7 +144,7 @@ public:
 	* @param blockid         Identifier of the block of the object (0 means the block will be found).
 	* @param id              Identifier of the object.
 	*/
-	void SaveInfos(const GWeightInfos* infos,tObjType type,size_t& blockid,size_t id);
+	void SaveInfos(const GWeightInfos& infos,tObjType type,size_t& blockid,size_t id);
 
 	/**
 	 * Method that load the structure of a document.

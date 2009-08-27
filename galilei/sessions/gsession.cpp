@@ -85,6 +85,7 @@ using namespace R;
 #include <gindexer.h>
 #include <gsimulator.h>
 #include <gcomputesugs.h>
+#include <gcomputetrust.h>
 #include <gtool.h>
 using namespace GALILEI;
 using namespace std;
@@ -597,13 +598,13 @@ GClass* GSession::GetClass(size_t id,bool null)
 
 
 //------------------------------------------------------------------------------
-void GSession::AssignInfos(GClass* theclass,R::RContainer<GWeightInfo,false,true>& infos)
+void GSession::AssignInfos(GClass* theclass,GWeightInfos& infos)
 {
 	theclass->Update(infos);
 	if(SaveResults)
 	{
 		if(theclass->Vector)
-			SaveInfos(theclass->Vector,otClass,theclass->BlockId,theclass->Id);
+			SaveInfos(*theclass->Vector,otClass,theclass->BlockId,theclass->Id);
 		Storage->SaveClass(theclass);
 	}
 }
@@ -948,7 +949,7 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	if(Save)
 	{
 		if(method->Infos.IsDefined())
-			SaveInfos(&method->Infos,otDoc,doc->BlockId,doc->Id);
+			SaveInfos(method->Infos,otDoc,doc->BlockId,doc->Id);
 		if(method->Struct.GetNbRecs())
 			SaveStruct(&method->Struct,doc->StructId,doc->Id);
 	}
@@ -1307,7 +1308,7 @@ void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* lin
 	if(Save)
 	{
 		if(method->Infos.GetNb())
-			SaveInfos(profile->Vector,otProfile,profile->BlockId,profile->Id);
+			SaveInfos(method->Infos,otProfile,profile->BlockId,profile->Id);
 		Storage->SaveProfile(profile);
 	}
 }
@@ -1524,11 +1525,14 @@ void GSession::GroupProfiles(GSlot* rec)
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
 			if(CalcDesc)
+			{
 				CalcDesc->Compute(Groups());
+				Groups()->Update(CalcDesc->Infos);
+			}
 			if(SaveResults)
 			{
-				if(Groups()->IsDefined())
-					SaveInfos(Groups()->Vector,otCommunity,Groups()->BlockId,Groups()->Id);
+				if(CalcDesc&&CalcDesc->Infos.IsDefined())
+					SaveInfos(CalcDesc->Infos,otCommunity,Groups()->BlockId,Groups()->Id);
 				Storage->SaveCommunity(Groups());
 				Groups()->SetState(osSaved);
 			}
@@ -1553,162 +1557,6 @@ void GSession::DoPostCommunity(GSlot* rec)
 		if(rec)
 			rec->WriteStr("Post-community method : "+PostCommunity()->GetFactory()->GetName());
 		PostCommunity()->Run();
-	}
-}
-
-
-//------------------------------------------------------------------------------
-template<class cGroup,class cObj,class cCalc>
-	void GSession::CopyIdealGroups(tObjType objtype,tObjType grouptype,cCalc* calc)
-{
-	cGroup* grp;
-
-	// Clear current clustering
-	ClearGroups(grouptype);
-
-	// Go through each subjects
-	R::RCursor<GSubject> Grps(GetSubjects());
-	for(Grps.Start();!Grps.End();Grps.Next())
-	{
-		// Clear the groups associated to the subject
-		Grps()->ClearIdealGroup(grouptype);
-
-		// If the subject has no objects or is not selected -> next one.
-		if((!Grps()->IsUsed())||(!Grps()->GetNbObjs(objtype)))
-			continue;
-
-		// Create a new group in groups and associated with the current groups
-		grp=static_cast<cGroup*>(NewGroup(grouptype,Grps()->GetName()));
-		AssignId(grp);
-		InsertGroup(grp,grouptype);
-		Grps()->AssignIdeal(grp);
-
-		// Go through each object (verify that each object can be assigned only once)
-		RCursor<cObj> Objs=Grps()->GetObjs(static_cast<cObj*>(0));
-		for(Objs.Start();!Objs.End();Objs.Next())
-			if(!Objs()->GetGroupId())
-				grp->InsertObj(Objs());
-
-		// Compute Description
-		if(calc)
-			calc->Compute(grp);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void BuildSubject(GSession* session,GSubject* subject,GClass* parent)
-{
-	// Create the class
-	GClass* Class(session->InsertClass(parent,cNoRef,0,"Subject "+RString::Number(subject->GetId())+" ("+subject->GetName()+")"));
-
-	// Build the vector representing its concepts
-	RContainer<GWeightInfo,false,true> Infos(60);
-	subject->BuildInfos(Infos);
-	session->AssignInfos(Class,Infos);
-
-	// Create sub-classes
-	RCursor<GSubject> Cur(subject->GetSubjects());
-	for(Cur.Start();!Cur.End();Cur.Next())
-		BuildSubject(session,Cur(),Class);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::BuildIdealClustering(tObjType type)
-{
-	switch(type)
-	{
-		case otCommunity:
-		{
-			CopyIdealGroups<GCommunity,GProfile,GCommunityCalc>(otProfile,otCommunity,GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod());
-			if(SaveResults)
-			{
-				Storage->Clear(otCommunity);
-				RCursor<GCommunity> Groups(Data->Communities);
-				for(Groups.Start();!Groups.End();Groups.Next())
-				{
-					if(Groups()->GetVector()->IsDefined())
-						SaveInfos(Groups()->Vector,otCommunity,Groups()->BlockId,Groups()->Id);
-					Storage->SaveCommunity(Groups());
-					Groups()->SetState(osSaved);
-				}
-			}
-			break;
-		}
-		case otTopic:
-		{
-			CopyIdealGroups<GTopic,GDoc,GTopicCalc>(otDoc,otTopic,GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod());
-			if(SaveResults)
-			{
-				Storage->Clear(otTopic);
-				RCursor<GTopic> Topics(Data->Topics);
-				for(Topics.Start();!Topics.End();Topics.Next())
-				{
-					if(Topics()->GetVector()->IsDefined())
-						SaveInfos(Topics()->Vector,otTopic,Topics()->BlockId,Topics()->Id);
-					Storage->SaveTopic(Topics());
-					Topics()->SetState(osSaved);
-				}
-			}
-			break;
-		}
-		case otClass:
-		{
-			// Clear current classes
-			ForceReCompute(otClass);
-			RCursor<GSubject> Top(GetTopSubjects());
-			for(Top.Start();!Top.End();Top.Next())
-				BuildSubject(this,Top(),0);
-			break;
-		}
-		case otLeafClass:
-		{
-			RContainer<GWeightInfo,false,true> Infos(60);
-
-			// Clear current topics clustering
-			ClearGroups(otTopic);
-
-			// Go through each subjects
-			R::RCursor<GSubject> Grps(GetSubjects());
-			for(Grps.Start();!Grps.End();Grps.Next())
-			{
-				// Clear the groups associated to the subject
-				Grps()->ClearIdealGroup(otTopic);
-
-				// If the subject is not a final one, has no objects or is not selected -> next one.
-				if((!Grps()->IsUsed())||(Grps()->GetNbSubjects()))
-					continue;
-
-				// Create a new group in groups and associated with the current groups
-				GTopic* grp(static_cast<GTopic*>(NewGroup(otTopic,Grps()->GetName())));
-				AssignId(grp);
-				InsertGroup(grp,otTopic);
-				Grps()->AssignIdeal(grp);
-
-				// Update the topic.
-				Grps()->BuildInfos(Infos);
-				grp->Update(Infos);
-
-				// Save the results if necessary
-				if(SaveResults)
-				{
-					Storage->Clear(otTopic);
-					RCursor<GTopic> Topics(Data->Topics);
-					for(Topics.Start();!Topics.End();Topics.Next())
-					{
-						if(Topics()->GetVector()->IsDefined())
-							SaveInfos(Topics()->Vector,otTopic,Topics()->BlockId,Topics()->Id);
-						Storage->SaveTopic(Topics());
-						Topics()->SetState(osSaved);
-					}
-				}
-			}
-			break;
-		}
-		default:
-			ThrowGException("'"+GetObjType(type)+"' is not a valid type");
-			break;
 	}
 }
 
@@ -1896,11 +1744,14 @@ void GSession::GroupDocs(GSlot* rec)
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
 			if(CalcDesc)
+			{
 				CalcDesc->Compute(Groups());
+				Groups()->Update(CalcDesc->Infos);
+			}
 			if(SaveResults)
 			{
-				if(Groups()->IsDefined())
-					SaveInfos(Groups()->Vector,otTopic,Groups()->BlockId,Groups()->Id);
+				if(CalcDesc&&CalcDesc->Infos.IsDefined())
+					SaveInfos(CalcDesc->Infos,otTopic,Groups()->BlockId,Groups()->Id);
 				Storage->SaveTopic(Groups());
 				Groups()->SetState(osSaved);
 			}
@@ -1959,6 +1810,23 @@ void GSession::UpdateTopic(size_t docid)
 // GSession::Sugs
 //
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GSession::ComputeTrust(GSlot* rec)
+{
+	// Run all trust methods that are enabled
+	R::RCursor<GComputeTrust> ComputeTrust(GALILEIApp->GetManager<GComputeTrustManager>("ComputeTrust")->GetPlugIns());
+	for(ComputeTrust.Start();!ComputeTrust.End();ComputeTrust.Next())
+	{
+		if(rec)
+			rec->Interact();
+		if(Intern::ExternBreak) return;
+		if(rec)
+			rec->WriteStr("Trust computing method : "+ComputeTrust()->GetFactory()->GetName());
+		ComputeTrust()->Run();
+	}
+}
+
 
 //------------------------------------------------------------------------------
 void GSession::ComputeSugs(GSlot* rec)

@@ -73,7 +73,7 @@ public:
 	 * Set the current object to display. The widget is redraw.
 	 * @param obj            Object to display.
 	 */
-	void Set(const GWeightInfos* obj);
+	void Set(const GWeightInfos& obj);
 
 	/**
 	 * Destruct the widget.

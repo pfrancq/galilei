@@ -89,7 +89,8 @@ public:
 
 //------------------------------------------------------------------------------
 /**
-* This Class implement a representation for a subject, i.e. an ideal group.
+* This Class implement a representation for a subject, i.e. an ideal group of
+* documents and profiles.
 *
 * This class is used for validation purposes.
 * @author Pascal Francq, Julien Lamoral and David Wartel.
@@ -144,6 +145,11 @@ private:
 	 * Ideal topic.
 	 */
 	GTopic* Topic;
+
+	/**
+	 * Vector representing the description of the subject.
+	 */
+	GWeightInfos* Vector;
 
 public:
 
@@ -206,13 +212,12 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	 * Build a vector of weighted information entities representing the
-	 * subject. In practice, all the name of the subject and its parents are
-	 * used.
-	 * @param infos          Container that will contain the vector (it is
-	 *                       cleared by the method).
+	 * Get the vector of weighted information entities representing the
+	 * subject. In practice, it is computed as name of the subject and its
+	 * parents, or as the gravitation center of the documents (for a leaf node)
+	 * or of the children (for a non-leaf node).
 	 */
-	void BuildInfos(R::RContainer<GWeightInfo,false,true>& infos) const;
+	GWeightInfos& GetVector(void) const;
 
 	/**
 	* Verify if a profile is part of the subject.

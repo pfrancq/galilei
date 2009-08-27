@@ -97,10 +97,8 @@ QGWeightInfos::QGWeightInfos(QWidget* parent)
 
 
 //------------------------------------------------------------------------------
-void QGWeightInfos::Set(const GWeightInfos* obj)
+void QGWeightInfos::Set(const GWeightInfos& obj)
 {
-	if(!obj) return;
-
 	try
 	{
 		// Init
@@ -110,7 +108,7 @@ void QGWeightInfos::Set(const GWeightInfos* obj)
 		Infos->clear();
 
 		// Show the information entities
-		RCursor<GWeightInfo> Words(obj->GetInfos());
+		RCursor<GWeightInfo> Words(obj.GetInfos());
 		for(Words.Start();!Words.End();Words.Next())
 		{
 			QString name;

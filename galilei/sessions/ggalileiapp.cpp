@@ -86,6 +86,7 @@ using namespace GALILEI;
 #include <gsimulator.h>
 #include <gtool.h>
 #include <gcomputesugs.h>
+#include <gcomputetrust.h>
 
 
 //------------------------------------------------------------------------------
@@ -126,6 +127,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GGroupDocsManager());
 	InsertPtr(new GPostTopicManager());
 	InsertPtr(new GComputeSugsManager());
+	InsertPtr(new GComputeTrustManager());
 	GALILEIApp=this;
 }
 

@@ -81,12 +81,12 @@ int GClass::Compare(const size_t id) const
 
 
 //------------------------------------------------------------------------------
-void GClass::Update(RContainer<GWeightInfo,false,true>& infos)
+void GClass::Update(GWeightInfos& infos)
 {
 	// Assign information
 	GWeightInfosObj::Clear();
 	State=osUpdated;
-	CopyInfos(infos);
+	Transfer(infos);
 
 	// Clear infos
 	infos.Clear();
@@ -100,19 +100,18 @@ void GClass::Update(RContainer<GWeightInfo,false,true>& infos)
 double GClass::GetUpOperationCost(void) const
 {
 	double Cost;
-	const GWeightInfos* Vector(GetVector());
 
 	if(Parent)
 	{
 		// The cost is the difference between the number of information entities of
 		// the current class with its parents (it is of course supposed that all the
 		// information entities of the parent are in the current class).
-		Cost=Vector->GetNb()-Parent->GetVector()->GetNb();
+		Cost=GetVector().GetNb()-Parent->GetVector().GetNb();
 	}
 	else
 	{
 		// No parent -> all the information entities are to be 'added'.
-		Cost=Vector->GetNb();
+		Cost=GetVector().GetNb();
 	}
 
 	return(Cost);

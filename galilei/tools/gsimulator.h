@@ -316,7 +316,60 @@ private:
 	*/
 	void ProfileAssess(GProfile* prof,GSubject* sub,size_t max,size_t maxDocsOK,size_t maxDocsKO,size_t maxDocsH);
 
+	/**
+	 * Copy the ideal groups into the current clustering.
+	 * @param objtype         Type of the clustering (otProfile or otDoc).
+	 * @param grouptype       Type of the groups (otCommunity or otTopic).
+	 * @param calc           Method used to compute the groups descriptions.
+	 */
+	template<class cGroup,class cObj,class cCalc> void CopyIdealGroups(tObjType objtype,tObjType grouptype,cCalc* calc);
+
+	/**
+	 * Build a new class corresponding to a given subject.
+	 * @param subject        Corresponding subject.
+	 * @param parent         Parent class.
+	 */
+	void BuildClass(GSubject* subject,GClass* parent);
+
 public:
+
+	/**
+	 * Build the ideal communities, each community corresponds to a subject
+	 * having documents. The descriptions of the communities are computed using
+	 * the current plug-in.
+	 */
+	void BuildIdealCommunities(void);
+
+	/**
+	 * Build the ideal topics, each topic corresponds to a subject having
+	 * documents. The descriptions of the topics are computing using the
+	 * current plug-in.
+	 */
+	void BuildIdealTopics(void);
+
+	/**
+	 * Build the ideal topics, each topic correspond to a "leaf" subject. The
+	 * descriptions of the topics are formed using the labels of the subject
+	 * and its parents (each label correspond to one information entity, i.e.
+	 * "genetic algorithms" is considered as one 'term').
+	 */
+	void BuildIdealLeafTopics(void);
+
+	/**
+	 * Build the ideal classes, each class correspond to a subject.  The
+	 * descriptions of the classes are formed using the labels of the subject
+	 * and its parents (each label correspond to one information entity, i.e.
+	 * "genetic algorithms" is considered as one 'term').
+	 */
+	void BuildIdealClasses(void);
+
+	/**
+	 * Build the ideal classes, each class correspond to a subject.  The
+	 * descriptions of the classes are formed using the description of the
+	 * documents (for a "leaf" subject) or the children (for a "non-leaf"
+	 * subject).
+	 */
+	void BuildIdealDocsClasses(void);
 
 	/**
 	 * Destruct the simulator.

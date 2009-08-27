@@ -43,7 +43,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GTopicCalc::GTopicCalc(GFactoryTopicCalc* fac)
-	: GPlugin<GFactoryTopicCalc>(fac)
+	: GPlugin<GFactoryTopicCalc>(fac), Infos(5000)
 {
 }
 

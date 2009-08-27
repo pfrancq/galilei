@@ -62,6 +62,17 @@ namespace GALILEI{
 */
 class GSubjects : protected R::RTree<GSubjects,GSubject,true>, virtual public GBasicSession
 {
+public:
+
+	/**
+	 * Type of the descriptions used for the subjects.
+	 */
+	enum tDescType
+	{
+		dtNames,             //!< Names of the subjects are used.
+		dtDocs		         //!< Selected documents are used.
+	};
+
 protected:
 
 	/**
@@ -91,6 +102,11 @@ protected:
 	 */
 	bool ToLoad;
 
+	/**
+	 * Type of the description.
+	 */
+	tDescType DescType;
+
 public:
 
 	/**
@@ -111,6 +127,17 @@ public:
 	* Re-initialize the subjects.
 	*/
 	void ReInit(void);
+
+	/**
+	 * Set the descriptions of the subjects.
+	 * @param type           TYpe of the subjects.
+	 */
+	void SetDescType(tDescType type);
+
+	/**
+	 * Test if the subjects are well-formed.
+	 */
+	void TestSubjects(void);
 
 	/**
 	* Get a cursor over the top nodes.
@@ -272,6 +299,8 @@ public:
 	* Destruct the subjects.
 	*/
 	~GSubjects(void);
+
+	friend class GSubject;
 };
 
 

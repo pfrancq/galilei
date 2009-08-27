@@ -442,6 +442,126 @@ void GWeightInfos::Print(R::RString msg)
 
 
 //------------------------------------------------------------------------------
+void GWeightInfos::Intersection(const GWeightInfos& infos)
+{
+	RContainer<GWeightInfo,false,false> ToDel(20);
+	RCursor<GWeightInfo> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		// If in infos, add it -> else delete
+		GWeightInfo* Info(infos.GetPtr(*Cur()));
+		if(!Info)
+			ToDel.InsertPtr(Cur());
+		else
+			Cur()->Weight+=Info->Weight;
+	}
+
+	// Delete the necessary information entities
+	Cur.Set(ToDel);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		DeleteInfo(Cur());
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfos& GWeightInfos::operator+=(const GWeightInfos& infos)
+{
+	RCursor<GWeightInfo> Cur(infos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		GWeightInfo* Info(GetInfo(Cur()));
+		Info->Weight+=Cur()->Weight;
+	}
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfos& GWeightInfos::operator-=(const GWeightInfos& infos)
+{
+	RCursor<GWeightInfo> Cur(infos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		GWeightInfo* Info(GetInfo(Cur()));
+		Info->Weight-=Cur()->Weight;
+	}
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfos& GWeightInfos::operator*=(const double nb)
+{
+	RCursor<GWeightInfo> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Weight*=nb;
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfos& GWeightInfos::operator/=(const double nb)
+{
+	RCursor<GWeightInfo> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Weight/=nb;
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
 GWeightInfos::~GWeightInfos(void)
 {
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+// General Functions and operators
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GWeightInfos GALILEI::operator+(const GWeightInfos &arg1,const GWeightInfos &arg2)
+{
+	GWeightInfos res(arg1);
+	res+=arg2;
+	return(res);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfos GALILEI::operator-(const GWeightInfos &arg1,const GWeightInfos &arg2)
+{
+	GWeightInfos res(arg1);
+	res-=arg2;
+	return(res);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfos GALILEI::operator*(const double arg1,const GWeightInfos &arg2)
+{
+	GWeightInfos res(arg2);
+	res*=arg1;
+	return(res);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfos GALILEI::operator*(const GWeightInfos& arg1,const double arg2)
+{
+	GWeightInfos res(arg1);
+	res*=arg2;
+	return(res);
+}
+
+
+//------------------------------------------------------------------------------
+GWeightInfos GALILEI::operator/(const GWeightInfos& arg1,const double arg2)
+{
+	GWeightInfos res(arg1);
+	res/=arg2;
+	return(res);
 }

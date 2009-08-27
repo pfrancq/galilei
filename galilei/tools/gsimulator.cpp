@@ -49,6 +49,8 @@
 #include <glink.h>
 #include <gsuggestion.h>
 #include <gsugs.h>
+#include <gcommunitycalc.h>
+#include <gtopiccalc.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -471,7 +473,7 @@ void GSimulator::PerformDegradation(char what,int nb)
 			Session->ReInit();
 
 			// Copy the ideal clustering as the current one
-			Session->BuildIdealClustering(otTopic);
+			BuildIdealTopics();
 			NbTmpDocs=Session->FillSelectedDocs(TmpDocs);
 			SwitchRandom->RandOrder(TmpDocs,NbTmpDocs);
 			SwitchPos=0;
@@ -808,6 +810,171 @@ void GSimulator::ProfileAssess(GProfile* prof,GSubject* sub,size_t max,size_t ma
 			}
 		}
 	}
+}
+
+
+//------------------------------------------------------------------------------
+template<class cGroup,class cObj,class cCalc>
+	void GSimulator::CopyIdealGroups(tObjType objtype,tObjType grouptype,cCalc* calc)
+{
+	cGroup* grp;
+
+	// Clear current clustering
+	Session->ClearGroups(grouptype);
+
+	// Go through each subjects
+	R::RCursor<GSubject> Grps(Session->GetSubjects());
+	for(Grps.Start();!Grps.End();Grps.Next())
+	{
+		// Clear the groups associated to the subject
+		Grps()->ClearIdealGroup(grouptype);
+
+		// If the subject has no objects or is not selected -> next one.
+		if((!Grps()->IsUsed())||(!Grps()->GetNbObjs(objtype)))
+			continue;
+
+		// Create a new group in groups and associated with the current groups
+		grp=static_cast<cGroup*>(Session->NewGroup(grouptype,Grps()->GetName()));
+		Session->AssignId(grp);
+		Session->InsertGroup(grp,grouptype);
+		Grps()->AssignIdeal(grp);
+
+		// Go through each object (verify that each object can be assigned only once)
+		RCursor<cObj> Objs=Grps()->GetObjs(static_cast<cObj*>(0));
+		for(Objs.Start();!Objs.End();Objs.Next())
+			if(!Objs()->GetGroupId())
+				grp->InsertObj(Objs());
+
+		// Compute Description
+		if(calc)
+			calc->Compute(grp);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GSimulator::BuildClass(GSubject* subject,GClass* parent)
+{
+	// Create the class
+	GClass* Class(Session->InsertClass(parent,cNoRef,0,"Subject "+RString::Number(subject->GetId())+" ("+subject->GetName()+")"));
+
+	// Build the vector representing its concepts
+	Session->AssignInfos(Class,subject->GetVector());
+
+	// Create sub-classes
+	RCursor<GSubject> Cur(subject->GetSubjects());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		BuildClass(Cur(),Class);
+}
+
+
+//------------------------------------------------------------------------------
+void GSimulator::BuildIdealCommunities(void)
+{
+	CopyIdealGroups<GCommunity,GProfile,GCommunityCalc>(otProfile,otCommunity,GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod());
+	if(Session->MustSaveResults())
+	{
+		Session->GetStorage()->Clear(otCommunity);
+		RCursor<GCommunity> Groups(Session->GetCommunities());
+		for(Groups.Start();!Groups.End();Groups.Next())
+		{
+			if(Groups()->GetVector().IsDefined())
+				Session->SaveInfos(Groups()->GetVector(),otCommunity,Groups()->BlockId,Groups()->Id);
+			Session->GetStorage()->SaveCommunity(Groups());
+			Groups()->SetState(osSaved);
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSimulator::BuildIdealTopics(void)
+{
+	CopyIdealGroups<GTopic,GDoc,GTopicCalc>(otDoc,otTopic,GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod());
+	if(Session->MustSaveResults())
+	{
+		Session->GetStorage()->Clear(otTopic);
+		RCursor<GTopic> Topics(Session->GetTopics());
+		for(Topics.Start();!Topics.End();Topics.Next())
+		{
+			if(Topics()->GetVector().IsDefined())
+				Session->SaveInfos(Topics()->GetVector(),otTopic,Topics()->BlockId,Topics()->Id);
+			Session->GetStorage()->SaveTopic(Topics());
+			Topics()->SetState(osSaved);
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSimulator::BuildIdealLeafTopics(void)
+{
+	Session->SetDescType(GSubjects::dtNames);
+	RContainer<GWeightInfo,false,true> Infos(60);
+
+	// Clear current topics clustering
+	Session->ClearGroups(otTopic);
+
+	// Go through each subjects
+	R::RCursor<GSubject> Grps(Session->GetSubjects());
+	for(Grps.Start();!Grps.End();Grps.Next())
+	{
+		// Clear the groups associated to the subject
+		Grps()->ClearIdealGroup(otTopic);
+
+		// If the subject is not a final one, has no objects or is not selected -> next one.
+		if((!Grps()->IsUsed())||(Grps()->GetNbSubjects()))
+			continue;
+
+		// Create a new group in groups and associated with the current groups
+		GTopic* grp(static_cast<GTopic*>(Session->NewGroup(otTopic,Grps()->GetName())));
+		Session->AssignId(grp);
+		Session->InsertGroup(grp,otTopic);
+		Grps()->AssignIdeal(grp);
+
+		// Update the topic.
+		grp->Update(Grps()->GetVector());
+
+		// Save the results if necessary
+		if(Session->MustSaveResults())
+		{
+			Session->GetStorage()->Clear(otTopic);
+			RCursor<GTopic> Topics(Session->GetTopics());
+			for(Topics.Start();!Topics.End();Topics.Next())
+			{
+				if(Topics()->GetVector().IsDefined())
+					Session->SaveInfos(Topics()->GetVector(),otTopic,Topics()->BlockId,Topics()->Id);
+				Session->GetStorage()->SaveTopic(Topics());
+				Topics()->SetState(osSaved);
+			}
+		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSimulator::BuildIdealClasses(void)
+{
+	Session->SetDescType(GSubjects::dtNames);
+
+	// Clear current classes
+	Session->ForceReCompute(otClass);
+	RCursor<GSubject> Top(Session->GetTopSubjects());
+	for(Top.Start();!Top.End();Top.Next())
+		BuildClass(Top(),0);
+}
+
+
+//------------------------------------------------------------------------------
+void GSimulator::BuildIdealDocsClasses(void)
+{
+	Session->SetDescType(GSubjects::dtDocs);
+
+	// Clear current classes
+	Session->ForceReCompute(otClass);
+	RCursor<GSubject> Top(Session->GetTopSubjects());
+	for(Top.Start();!Top.End();Top.Next())
+		BuildClass(Top(),0);
 }
 
 

@@ -253,23 +253,23 @@ void GIndexer::LoadInfos(GWeightInfos* &infos,tObjType type,size_t blockid,size_
 
 
 //------------------------------------------------------------------------------
-void GIndexer::SaveInfos(const GWeightInfos* infos,tObjType type,size_t& blockid,size_t id)
+void GIndexer::SaveInfos(const GWeightInfos& infos,tObjType type,size_t& blockid,size_t id)
 {
 	try
 	{
-		size_t size(infos->GetNb()),concept;
+		size_t size(infos.GetNb()),concept;
 		double weight;
 		if(!size)
 			return;
 
 		IndexFile* ptr(Desc.GetPtr(type));
 		if(!ptr)
-			throw GException("GIndexer::SaveInfos : The objects of type '"+GetObjType(type)+"' do not have descriptions");
+			ThrowGException("The objects of type '"+GetObjType(type)+"' do not have descriptions");
 
 		// Position the block file to the correct position and write the size
 		ptr->Seek(blockid,id,sizeof(size_t)+size*SizeRecDesc);
 		ptr->Write((char*)&size,sizeof(size_t));
-		RCursor<GWeightInfo> Cur(*infos);
+		RCursor<GWeightInfo> Cur(infos);
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			concept=Cur()->GetId();
@@ -280,7 +280,7 @@ void GIndexer::SaveInfos(const GWeightInfos* infos,tObjType type,size_t& blockid
 	}
 	catch(RIOException e)
 	{
-		throw GException(RString("GIndexer::SaveInfos: ")+e.GetMsg());
+		ThrowGException(e.GetMsg());
 	}
 }
 

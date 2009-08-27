@@ -69,7 +69,7 @@ protected:
 	/**
 	 * Container that should contain the structure after the analyze.
 	 */
-	R::RContainer<GWeightInfo,false,true> Infos;
+	GWeightInfos Infos;
 
 public:
 
@@ -83,7 +83,7 @@ public:
 	* Compute a profile.
 	* @param profile         Reference to the profile to compute.
 	*/
-	virtual void Compute(GProfile* profile)=0;
+	virtual void Compute(const GProfile* profile)=0;
 
 	/**
 	* Destructor of the computing method.

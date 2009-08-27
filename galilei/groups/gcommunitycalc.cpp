@@ -44,7 +44,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GCommunityCalc::GCommunityCalc(GFactoryCommunityCalc* fac)
-	: GPlugin<GFactoryCommunityCalc>(fac)
+	: GPlugin<GFactoryCommunityCalc>(fac), Infos(5000)
 {
 }
 

@@ -394,6 +394,24 @@ public:
 
 
 //------------------------------------------------------------------------------
+class GComputeTrustI : public RPrgFunc
+{
+public:
+	GComputeTrustI(void) : RPrgFunc("ComputeTrust","Compute the trust.") {}
+	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
+};
+
+
+//------------------------------------------------------------------------------
+class GComputeSugsI : public RPrgFunc
+{
+public:
+	GComputeSugsI(void) : RPrgFunc("ComputeSugs","ComputeSugs.") {}
+	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
+};
+
+
+//------------------------------------------------------------------------------
 class GCompareIdealI : public RPrgFunc
 {
 public:
@@ -865,6 +883,36 @@ void GShareDocumentsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,
 	o->WriteStr("Share Documents");
 	Owner->Simulator->Apply();
 	Owner->Simulator->ShareDocuments();
+}
+
+
+//------------------------------------------------------------------------------
+void GComputeTrustI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
+{
+	ShowInst(this,prg,args);
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
+	if(args.GetNb())
+		throw RPrgException(prg,"Method needs no parameters.");
+	o->WriteStr("Share Documents");
+	Owner->Session->ComputeTrust();
+}
+
+
+//------------------------------------------------------------------------------
+void GComputeSugsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RContainer<RPrgVar,true,false>& args)
+{
+	ShowInst(this,prg,args);
+	GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
+	if(!Owner)
+		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
+
+	if(args.GetNb())
+		throw RPrgException(prg,"Method needs no parameters.");
+	o->WriteStr("Share Documents");
+	Owner->Session->ComputeSugs();
 }
 
 
@@ -1472,6 +1520,8 @@ GSessionClass::GSessionClass(GInstGALILEIApp* app)
 	Methods.InsertPtr(new GForceReComputeI());
 	Methods.InsertPtr(new GSetSaveResultsI());
 	Methods.InsertPtr(new GResetMeasureI());
+	Methods.InsertPtr(new GComputeSugsI());
+	Methods.InsertPtr(new GComputeTrustI());
 }
 
 

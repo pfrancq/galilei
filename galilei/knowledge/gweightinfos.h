@@ -245,6 +245,38 @@ public:
 	void Print(R::RString msg);
 
 	/**
+	 * Build the intersection between a vector of information entities and
+	 * another one. In practice, the weight of the information entities in both
+	 * vectors are added, the rest is deleted.
+	 * @param infos          Vector to search for the intersection.
+	 */
+	void Intersection(const GWeightInfos& infos);
+
+	/**
+	 * Addition operator for a vector of information entities.
+	 * @param infos          Vector to add.
+	 */
+	GWeightInfos& operator+=(const GWeightInfos& infos);
+
+	/**
+	 * Subtraction operator for a vector of information entities.
+	 * @param infos          Vector to add.
+	 */
+	GWeightInfos& operator-=(const GWeightInfos& infos);
+
+	/**
+	 * Multiplication operator for a vector of information entities.
+	 * @param nb             Number to multiply by.
+	 */
+	GWeightInfos& operator*=(const double nb);
+
+	/**
+	 * Division operator for a vector of information entities.
+	 * @param nb             Number to multiply by.
+	 */
+	GWeightInfos& operator/=(const double nb);
+
+	/**
 	* Destruct the list of weighted information entities.
 	*/
 	virtual ~GWeightInfos(void);
@@ -253,6 +285,45 @@ public:
 	friend class GDoc;
 	friend class GWeightInfosObj;
 };
+
+
+//------------------------------------------------------------------------------
+// General methods
+
+/**
+ * Addition operation for two vectors of information entities.
+ * @param arg1               First vector.
+ * @param arg2               Second vector.
+ */
+GWeightInfos operator+(const GWeightInfos &arg1,const GWeightInfos &arg2);
+
+/**
+ * Subtraction operation for two vectors of information entities.
+ * @param arg1               First vector.
+ * @param arg2               Second vector.
+ */
+GWeightInfos operator-(const GWeightInfos &arg1,const GWeightInfos &arg2);
+
+/**
+ * Multiplication operation for a vector of information entities and a number.
+ * @param arg1               Number.
+ * @param arg2               Vector.
+ */
+GWeightInfos operator*(const double arg1,const GWeightInfos &arg2);
+
+/**
+ * Multiplication operation for a vector of information entities and a number.
+ * @param arg1               Vector.
+ * @param arg2               Number.
+ */
+GWeightInfos operator*(const GWeightInfos& arg1,const double arg2);
+
+/**
+ * Division operation for a vector of information entities and a number.
+ * @param arg1               Vector.
+ * @param arg2               Number.
+ */
+GWeightInfos operator/(const GWeightInfos& arg1,const double arg2);
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

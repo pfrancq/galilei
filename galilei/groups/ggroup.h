@@ -237,7 +237,7 @@ public:
 	* @param infos           Pointer to the information.
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(R::RContainer<GWeightInfo,false,true>& infos);
+	void Update(GWeightInfos& infos);
 
 	/**
 	* Compute the number of objects of a given group that are also in a
