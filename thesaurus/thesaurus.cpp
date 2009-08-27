@@ -112,9 +112,9 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 
 	// Build the vector representing its concepts
 	RNumCursor<size_t> List(node->GetAttr());
-	RContainer<GWeightInfo,false,true> Infos(List.GetNb());
+	GWeightInfos Infos(List.GetNb());
 	for(List.Start();!List.End();List.Next())
-		Infos.InsertPtr(new GWeightInfo(WordsByIds[List()]->Concept,1.0));
+		Infos.InsertInfo(new GWeightInfo(WordsByIds[List()]->Concept,1.0));
 	Session->AssignInfos(Class,Infos);
 
 	// Create sub-classes
@@ -166,8 +166,7 @@ void Thesaurus::Run(void)
 		{
 			// Get the vector of the current topic -> if null, treat next object
 			GTopic* Topic(Cur());
-			const GWeightInfos* Desc(Topic->GetVector());
-			if(!Desc->GetNb())
+			if(!Topic->GetVector().GetNb())
 			{
 				cout<<"'"<<Topic->GetName()<<"' ("<<Topic->GetId()<<") skipped"<<endl;
 				continue;
@@ -176,12 +175,13 @@ void Thesaurus::Run(void)
 			// Order the vector by weight:
 			// 1. Multiply by the tf-idf factors of the topic
 			// 2. Order it.
-			if(Desc->GetNb()>Concepts.GetNb())
+			const GWeightInfos& Desc(Topic->GetVector());
+			if(Desc.GetNb()>Concepts.GetNb())
 			{
-				for(size_t nb=Desc->GetNb()-Concepts.GetNb()+20;--nb;)
+				for(size_t nb=Desc.GetNb()-Concepts.GetNb()+20;--nb;)
 					Concepts.InsertPtr(new GWeightInfo(0));
 			}
-			RCursor<GWeightInfo> Infos(Desc->GetInfos());
+			RCursor<GWeightInfo> Infos(Desc.GetInfos());
 			RCursor<GWeightInfo> Cur(Concepts);
 			for(Infos.Start(),Cur.Start();!Infos.End();Infos.Next(),Cur.Next())
 			{
@@ -193,7 +193,7 @@ void Thesaurus::Run(void)
 			// Create the object
 			Objs.InsertPtr(obj=new RObjH(id,Topic->GetName(),NumInfos));
 			size_t j,k;
-			for(Cur.Start(),j=0,k=0;(k<NumInfos)&&(j<Desc->GetNb());Cur.Next(),j++)
+			for(Cur.Start(),j=0,k=0;(k<NumInfos)&&(j<Desc.GetNb());Cur.Next(),j++)
 			{
 				// Verify that it a word
 				GConcept* Concept(Cur()->GetConcept());
