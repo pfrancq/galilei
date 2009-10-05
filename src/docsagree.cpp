@@ -76,11 +76,7 @@ void GDocsAgreement::ApplyConfig(void)
 //------------------------------------------------------------------------------
 double GDocsAgreement::Compute(void* obj1,void* obj2)
 {
-	double nbcommon=static_cast<double>(static_cast<GDoc*>(obj1)->GetCommonProfiles(static_cast<GDoc*>(obj2)));
-	if(nbcommon<MinProfiles)
-		return(0.0);
-	size_t nbsame=static_cast<GDoc*>(obj1)->GetCommonOKProfiles(static_cast<GDoc*>(obj2));
-	return(static_cast<double>(nbsame)/nbcommon);
+	return(static_cast<GDoc*>(obj1)->GetAgreementRatio(static_cast<GDoc*>(obj2),MinProfiles));
 }
 
 
