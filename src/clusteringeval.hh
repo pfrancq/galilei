@@ -237,6 +237,13 @@ template<class cGroup,class cObj>
 	double* VectorColsTemp;                       // Temporary sum of the columns of the matrix
 	double* ptr;
 
+	// If only one element and one group -> Adjusted Rand Index=1.
+	if((Session->GetNbElements(ObjType)==1)&&(Session->GetNbElements(GroupType)==1))
+	{
+		AdjustedRandIndex=1.0;
+		return;
+	}
+
 	// Initialization part
 	AdjustedRandIndex=0.0;
 
@@ -318,6 +325,7 @@ template<class cGroup,class cObj>
 	if (VectorColsTemp) delete[] VectorColsTemp;
 	DirtyAdjustedRandIndex=false;
 }
+
 
 //-----------------------------------------------------------------------------
 template<class cGroup,class cObj>
