@@ -198,7 +198,7 @@ inline void cStructTokens::ChangeTokenNS(cStructToken* token,const RString& uri)
 		token->Name=Name;
 		InsertPtr(token);
 		GConcept* tag=token->Tag;
-		if(tag->GetRef(otNoClass))
+		if(tag->GetRef(otAnyClass))
 		{
 			// New concept must be created.
 			GConcept t(Name,tag->GetType());
