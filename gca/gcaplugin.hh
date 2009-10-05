@@ -217,6 +217,11 @@ template<class cObj,class cGroup,class cFactory>
 	if(Cout)
 	{
 		cout<<"   Minimum Similarity="<<d<<endl;
+		double nb;
+		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities")->Info(1,&nb);
+		cout<<"   Mean="<<nb<<endl;
+		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities")->Info(2,&nb);
+		cout<<"   Deviation="<<nb<<endl;
 		cout<<"New GCA"<<endl;
 	}
 	GCAInst Instance(session,Objs,this,session->GetDebug(),ObjType,mes,Incremental);
