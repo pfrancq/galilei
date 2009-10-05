@@ -190,7 +190,7 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Create Ideal C&lasses (using documents)","classesDocsCreate",SLOT(classesDocsCreate())));
 	Actions.insert(Actions.size(),addAction("&Feedback Cycle","doFdbks",SLOT(doFdbks())));
 	Actions.insert(Actions.size(),addAction("&Assessments Cycle","doAssessments",SLOT(doAssessments())));
-	Actions.insert(Actions.size(),addAction("Compare Communities Topics","communitiesCompare",SLOT(communitiesCompare())));
+	Actions.insert(Actions.size(),addAction("Compare Ideal Communities","communitiesCompare",SLOT(communitiesCompare())));
 	Actions.insert(Actions.size(),addAction("Compare Ideal Topics","topicsCompare",SLOT(topicsCompare())));
 	Actions.insert(Actions.size(),addAction("Compare Ideal Classes","classesCompare",SLOT(classesCompare())));
 
