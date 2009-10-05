@@ -218,6 +218,11 @@ public:
 	GSimulator(GSession* session);
 
 	/**
+	 * @return The session corresponding to the simulator.
+	 */
+	GSession* GetSession(void) const {return(Session);}
+
+	/**
 	 * Create the configuration parameter related to the simulator.
 	 * @param config         Configuration file.
 	 */
@@ -233,8 +238,9 @@ public:
 	* are created and the assessments for all the users are randomly created.
 	* The results are saved if the corresponding parameter is set in the
 	* session.
+	* @param create          Must topics be selected (and profiles created).
 	*/
-	void StartSimulation(void);
+	void StartSimulation(bool create=true);
 
 	/**
 	* Add a new not used topic.

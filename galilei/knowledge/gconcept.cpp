@@ -246,6 +246,9 @@ size_t GConcept::GetRef(tObjType ObjType) const
 		case otClass:
 			return(NbRefClasses);
 			break;
+		case otAnyClass:
+			return(NbRefDocs+NbRefProfiles+NbRefCommunities+NbRefTopics+NbRefClasses);
+			break;
 		default:
 			ThrowGException("Unknown type for concept "+RString::Number(Id));
 			break;

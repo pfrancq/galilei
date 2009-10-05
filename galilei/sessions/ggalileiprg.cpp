@@ -370,7 +370,7 @@ public:
 class GStartSimulationI : public RPrgFunc
 {
 public:
-	GStartSimulationI(void) : RPrgFunc("StartSimulation","Create a new ideal clustering and new profiles.") {}
+	GStartSimulationI(void) : RPrgFunc("Start","Create a new ideal clustering and new profiles.") {}
 	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
 };
 
@@ -424,7 +424,7 @@ public:
 class GSetSimulationParamI : public RPrgFunc
 {
 public:
-	GSetSimulationParamI(void) : RPrgFunc("SetSimulationParam","Specify a value (2d argument) for a simulation parameter (1st argument).") {}
+	GSetSimulationParamI(void) : RPrgFunc("SetParam","Specify a value (2d argument) for a simulation parameter (1st argument).") {}
 	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args);
 };
 
@@ -991,7 +991,8 @@ void GSetSimulationParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst* ins
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
-	Owner->Session->Set(args[0]->GetValue(prg),args[1]->GetValue(prg),"Subjects");
+	Owner->Simulator->GetSession()->Set(args[0]->GetValue(prg),args[1]->GetValue(prg),"Simulator");
+	Owner->Simulator->Apply();
 }
 
 
@@ -1086,126 +1087,113 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 	if(!Compare)
 		throw RPrgException(prg,"'Communities Evaluation' is not a valid evaluation measure");
 
-	size_t MaxStep;
-	size_t MinFBStep;
-	size_t MaxFBStep;
-	size_t NbStep;
-	double Proba;
-	RRandom* Random;
-	size_t nb;
-	size_t NewProf;
-	size_t nbminprof,nbmaxprof;
-	GSlot* rec=dynamic_cast<GSlot*>(o);
-
 	if(args.GetNb()!=4)
 		throw RPrgException(prg,"Method needs four parameters.");
+
+	if(GSession::Break()) return;
+
+	// Save the information related to the number of profiles created (here it is always 1,1
+	// Set the new parameters
+	size_t NbMinProf(Owner->Simulator->GetSession()->GetUInt("NbProfMin"));
+	size_t NbMaxProf(Owner->Simulator->GetSession()->GetUInt("NbProfMax"));
+	double PercSocial(Owner->Simulator->GetSession()->GetUInt("PercSocial"));
+	double NbSubjects(Owner->Simulator->GetSession()->GetUInt("NbSubjects"));
+	bool RelSubjects(Owner->Simulator->GetSession()->GetUInt("RelSubjects"));
+	Owner->Simulator->GetSession()->Set("NbProfMin","1");
+	Owner->Simulator->GetSession()->Set("NbProfMax","1");
+	Owner->Simulator->GetSession()->Set("PercSocial","0.0");
+	Owner->Simulator->GetSession()->Set("NbSubjects","1.0");
+	Owner->Simulator->GetSession()->Set("RelSubjectsl","false");
+	Owner->Simulator->Apply();
+
+	// Initialize the parameters
+	GSlot* rec(dynamic_cast<GSlot*>(o));
+	RRandom* Random(Owner->Session->GetRandom());
+	size_t MaxStep(atoi(args[0]->GetValue(prg)));                  // Maximum number of steps.
+	size_t MinFBStep(atoi(args[1]->GetValue(prg)));                // Minimum number of feedbacks before a new profile is created.
+	size_t MaxFBStep(atoi(args[2]->GetValue(prg))-MinFBStep+1);    // Maximum number of feedbacks before a new profile is created.
+	if(MaxFBStep<MinFBStep)
+		MaxFBStep=MinFBStep;
+	double Proba(atof(args[3]->GetValue(prg)));                    // Probability to create a profile of an existing topic
+	size_t NbFdbks(0);                                             // Number of feedbacks left to perform before a profile must be created.
+	What[1]=0;
+
+	// Perform the real life
 	if(rec)
 	{
 		rec->Interact();
 		rec->WriteStr("Real Life: "+args[0]->GetValue(prg)+","+args[1]->GetValue(prg)+","+args[2]->GetValue(prg)+","+args[3]->GetValue(prg));
 	}
-	if(GSession::Break()) return;
-	Random=Owner->Session->GetRandom();
-	MaxStep=atoi(args[0]->GetValue(prg));
-	MinFBStep=atoi(args[1]->GetValue(prg));
-	MaxFBStep=atoi(args[2]->GetValue(prg))-MinFBStep+1;
-	Proba=atof(args[3]->GetValue(prg));
-	What[1]=0;
-	for(NbStep=0;;)
+	Owner->Simulator->StartSimulation(false);
+	for(size_t NbStep=0;NbStep<MaxStep;NbStep++)
 	{
-		// Feedback process
-		for(nb=Random->GetValue(MaxFBStep)+MinFBStep+1;--nb;)
-		{
-			// Set TestName
-			NbStep++;
-			Owner->App->TestName=RString::Number(NbStep);
+		// The step performed
+		Owner->App->TestName=RString::Number(NbStep);
 
-			// Create Feedbacks
+		// Look the number of feedbacks left
+		if(NbFdbks)
+		{
+			// One feedback left done
+			NbFdbks--;
 			if(rec)
 			{
 				rec->Interact();
 				rec->WriteStr("Create Feedbacks Cycle");
 			}
-			if(GSession::Break()) return;
+
 			What[0]='F';
-			Owner->Simulator->Apply();
 			Owner->Simulator->ShareDocuments();
-			CommonTasks(o,Owner);
-
-			// Verify Nb Steps
-			if(NbStep>MaxStep) break;
-		}
-
-		// Verify Nb Steps
-		if(NbStep>MaxStep) break;
-		NbStep++;
-
-		// Set TestName
-		Owner->App->TestName=RString::Number(NbStep);
-
-		// Create 1 new profile
-		if(rec)
-		{
-			rec->Interact();
-			rec->WriteStr("Create 1 new profile");
-		}
-		if(GSession::Break()) return;
-
-		// One profile must be created
-		nbminprof=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMin");
-		nbmaxprof=GALILEIApp->GetGALILEIConfig()->GetUInt("NbProfMax");
-		GALILEIApp->GetGALILEIConfig()->Set("NbProfMin","1");
-		GALILEIApp->GetGALILEIConfig()->Set("NbProfMax","1");
-		GALILEIApp->Apply();
-
-		// Look if new topic or existing one
-		if(Random->GetValue()<Proba)
-		{
-			// Create One profile of an existing topic
-			NewProf=Owner->Simulator->AddProfiles();
-			GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMin",nbminprof);
-			GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMax",nbmaxprof);
-
-			if(NewProf)
-				What[0]='E';
 		}
 		else
 		{
-			// Create one profile of a new topic
-			if(Owner->Simulator->AddSubject())
+			// Create a new profile
+			if(rec)
 			{
-				What[0]='N';
-				NewProf=1;
+				rec->Interact();
+				rec->WriteStr("Create 1 new profile");
+			}
+
+			// Look if new topic or existing one
+			What[0]='-';   // Suppose no profile can be created
+			if(NbStep&&(Random->GetValue()<Proba))
+			{
+				// Create One profile of an existing topic
+				if(Owner->Simulator->AddProfiles())
+					What[0]='E';
 			}
 			else
 			{
-				Proba=1.0;  // Cannot create any new topic
-				NewProf=Owner->Simulator->AddProfiles();
-				GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMin",nbminprof);
-				GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMax",nbmaxprof);
-
-				if(NewProf)
-					What[0]='E';
+				// Create one profile of a new topic
+				if(Owner->Simulator->AddSubject())
+				{
+					What[0]='N';
+				}
+				else
+				{
+					Proba=1.0;  // Cannot create any new topic
+					if(Owner->Simulator->AddProfiles())
+						What[0]='E';
+				}
 			}
-		}
-		GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMin",nbminprof);
-		GALILEIApp->GetGALILEIConfig()->SetUInt("NbProfMax",nbmaxprof);
-		GALILEIApp->Apply();
 
-		// If no profile was created -> normal feedback cycle
-		if(!NewProf)
-		{
-			What[0]='F';
-			Owner->Simulator->Apply();
-			Owner->Simulator->ShareDocuments();
+			// How much feedbacks now ?
+			if(NbStep)     // No feedback cycle alone
+				NbFdbks=Random->GetValue(MaxFBStep-MinFBStep+1)+MinFBStep;
 		}
 
 		// Compute, Group and Compare
+		if(GSession::Break()) return;
 		CommonTasks(o,Owner);
-
-		// Verify Nb Steps
-		if(NbStep>MaxStep) break;
+		if(GSession::Break()) return;
 	}
+
+	// Restore the values saved
+	Owner->Simulator->GetSession()->SetUInt("NbProfMin",NbMinProf);
+	Owner->Simulator->GetSession()->SetUInt("NbProfMax",NbMaxProf);
+	Owner->Simulator->GetSession()->SetUInt("PercSocial",PercSocial);
+	Owner->Simulator->GetSession()->SetUInt("NbSubjects",NbSubjects);
+	Owner->Simulator->GetSession()->SetUInt("RelSubjects",RelSubjects);
+	Owner->Simulator->Apply();
 }
 
 

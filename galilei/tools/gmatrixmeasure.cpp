@@ -420,6 +420,10 @@ void GMatrixMeasure::Info(size_t info,...)
 	{
 		case 0:
 			(*res)=Mean+DeviationRate*sqrt(Deviation);
+			if((*res)>1.0)
+				(*res)=1.0;
+			if((*res)<-1.0)
+				(*res)=-1.0;
 			break;
 		case 1:
 			(*res)=Mean;

@@ -439,9 +439,9 @@ void QGObjectsList::Set(oType type)
 			R::RCursor<GSubject> Grps(Session->GetSubjects());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
-				if(!Grps()->GetNbObjs(otCommunity))
+				if(!Grps()->GetNbObjs(otProfile))
 					continue;
-				QGObject* item(new QGObject(List,Grps(),Grps()->GetNbObjs(otCommunity)));
+				QGObject* item(new QGObject(List,Grps(),Grps()->GetNbObjs(otProfile)));
 				RCursor<GProfile> Objs(Grps()->GetObjs(static_cast<GProfile*>(0)));
 				for(Objs.Start();!Objs.End();Objs.Next())
 					new QGObject(item,Objs());

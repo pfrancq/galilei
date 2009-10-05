@@ -275,7 +275,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-// Extern variables
+// Global variables
 /**
 * Pointer to the current application running a GALILEI session.
 */

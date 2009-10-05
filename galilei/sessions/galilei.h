@@ -89,6 +89,7 @@ namespace GALILEI{
 enum tObjType
 {
 	otNoClass                /** No specific class. */,
+	otAnyClass               /** Any class. */,
 	otSession                /** GALILEI Session. */,
 	otDoc                    /** Document. */,
 	otUser                   /** User.*/,

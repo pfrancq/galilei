@@ -367,23 +367,25 @@ public:
 	void SetConfidence(double score,char level);
 
 	/**
-	* Get the number of common OK document between two profiles.
-	* @param prof            Pointer to a profile.
+	* Compute the agreement ratio between two profiles, i.e. the ratio between
+	* the number of documents assessed as relevant by both profiles, and the
+	* total number of documents assessed by both profiles.
+	* @param prof            Second profile.
+	* @param nbmin           Minimum number of common documents for a non null
+	*                        ratio.
 	*/
-	size_t GetCommonOKDocs(const GProfile* prof) const;
+	double GetAgreementRatio(const GProfile* prof,size_t nbmin) const;
 
 	/**
-	* Get the number of common document between two profiles.
-	* @param prof            Pointer to a profile.
+	* Compute the disagreement ratio between two profiles, i.e. the ratio
+	* between the number of documents assessed as relevant by one of the
+	* profiles and differently by the other one, and the total number of
+	* documents assessed by both profiles.
+	* @param prof            Second profile.
+	* @param nbmin           Minimum number of common documents for a non null
+	*                        ratio.
 	*/
-	size_t GetCommonDocs(const GProfile* prof) const;
-
-	/**
-	* Get the number of common document with different assessments between two
-	* profiles.
-	* @param prof            Pointer to a profile.
-	*/
-	size_t GetCommonDiffDocs(const GProfile* prof) const;
+	double GetDisagreementRatio(const GProfile* prof,size_t nbmin) const;
 
 	/**
 	* Get the number of assessed documents.

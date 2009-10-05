@@ -51,6 +51,8 @@ RString GALILEI::GetObjType(tObjType objtype)
 	{
 		case otNoClass:
 			return(RString("unknown"));
+		case otAnyClass:
+			return(RString("any class"));
 		case otSession:
 			return(RString("session"));
 		case otDoc:

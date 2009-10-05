@@ -1307,8 +1307,8 @@ void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* lin
 
 	if(Save)
 	{
-		if(method->Infos.GetNb())
-			SaveInfos(method->Infos,otProfile,profile->BlockId,profile->Id);
+		if(profile->GetVector().GetNb())
+			SaveInfos(profile->GetVector(),otProfile,profile->BlockId,profile->Id);
 		Storage->SaveProfile(profile);
 	}
 }

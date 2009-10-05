@@ -209,7 +209,9 @@ public:
 
 	/**
 	* Get the number of references on this concept for a given object type.
-	* @param ObjType        Type of the reference.
+	* @param ObjType        Type of the reference. If otAnyType, the method
+	*                       returns the number of references of all the
+	*                       objects.
 	* @returns size_t.
 	*/
 	size_t GetRef(tObjType ObjType) const;

@@ -90,7 +90,7 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-// Extern variables
+// Global variables
 GGALILEIApp* GALILEI::GALILEIApp=0;
 
 

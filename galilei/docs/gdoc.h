@@ -295,24 +295,25 @@ public:
 	void ClearFdbks(void);
 
 	/**
-	* Get the number of common profiles which have assess both documents as
-	* relevant.
-	* @param doc            Pointer to a document.
+	* Compute the agreement ratio between two documents, i.e. the ratio between
+	* the number of profiles assessing them as relevant, and the total number
+	* of profiles assessing them.
+	* @param doc             Second document.
+	* @param nbmin           Minimum number of common profiles for a non null
+	*                        ratio.
 	*/
-	size_t GetCommonOKProfiles(const GDoc* doc) const;
+	double GetAgreementRatio(const GDoc* doc,size_t nbmin) const;
 
 	/**
-	* Get the number of common profiles which have assess both documents.
-	* @param doc            Pointer to a document.
+	* Compute the disagreement ratio between two documents, i.e. the ratio
+	* between the number of profiles assessing them one as relevant and the
+	* other one differently by the other one, and the total number of profiles
+	* assessing them.
+	* @param doc             Second document.
+	* @param nbmin           Minimum number of common profiles for a non null
+	*                        ratio.
 	*/
-	size_t GetCommonProfiles(const GDoc* doc) const;
-
-	/**
-	* Get the number of common profiles which have assess both documents
-	* differently.
-	* @param doc            Pointer to a document.
-	*/
-	size_t GetCommonDiffProfiles(const GDoc* doc) const;
+	double GetDisagreementRatio(const GDoc* doc,size_t nbmin) const;
 
 	/**
 	* Get the number of times the documents was assessed.

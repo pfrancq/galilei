@@ -281,6 +281,9 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 		case otClass:
 			return(NbRefClasses);
 			break;
+		case otAnyClass:
+			return(NbRefDocs+NbRefProfiles+NbRefCommunities+NbRefTopics+NbRefClasses);
+			break;
 		default:
 			ThrowGException("'"+GetObjType(ObjType)+"' is not a valid type");
 			break;

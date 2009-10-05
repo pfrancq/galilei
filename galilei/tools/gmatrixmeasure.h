@@ -98,8 +98,8 @@ public:
 	 */
 	enum tType
 	{
-		Full,             /** Full matrix.*/
-		Sparse,           /** Sparse matrix.*/
+		Full,              /** Full matrix.*/
+		Sparse,            /** Sparse matrix.*/
 		NearestNeighbors  /** Nearest neighbors matrix.*/
 	};
 

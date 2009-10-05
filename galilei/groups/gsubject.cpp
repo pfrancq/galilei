@@ -156,10 +156,6 @@ GWeightInfos& GSubject::GetVector(void) const
 			// Look if a leaf-node
 			if(GetNbSubjects())
 			{
-				// No, it has no documents
-				if(Docs.GetNb())
-					ThrowGException("No-leaf nodes cannot have documents attached");
-
 				// Compute the common information entities of all the children
 				RCursor<GSubject> Child(GetSubjects());
 				Child.Start();
@@ -172,7 +168,7 @@ GWeightInfos& GSubject::GetVector(void) const
 			{
 				// No, it has no documents
 				if(!Docs.GetNb())
-					ThrowGException("Leaf nodes cannot have documents attached");
+					ThrowGException("Leaf subject '"+Name+"' has no documents attached");
 
 				// Compute the center of gravitation of all documents
 				RCursor<GDoc> Cur(Docs);
@@ -184,12 +180,6 @@ GWeightInfos& GSubject::GetVector(void) const
 			break;
 		}
 	}
-
-/*	cout<<"Description of '"<<Name<<"' ("<<infos.GetNb()<<")"<<endl;
-	RCursor<GWeightInfo> Cur(infos);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		cout<<"\t"<<Cur()->GetConcept()->GetName()<<endl;*/
-
 	return(*Vector);
 }
 

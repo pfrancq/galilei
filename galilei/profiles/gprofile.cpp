@@ -271,85 +271,50 @@ void GProfile::SetConfidence(double score,char level)
 
 
 //------------------------------------------------------------------------------
-size_t GProfile::GetCommonOKDocs(const GProfile* prof) const
+double GProfile::GetAgreementRatio(const GProfile* prof,size_t nbmin) const
 {
-	tDocAssessment f;
-	GFdbk* cor;
-	size_t nb=0;
+	double nbcommon(0.0), nbagree(0.0);
 
-	// Go through the document judged by the corresponding profile
-	RCursor<GFdbk> fdbks=GetFdbks();
+	// Go through the document assessed by the profile
+	RCursor<GFdbk> fdbks(GetFdbks());
 	for(fdbks.Start();!fdbks.End();fdbks.Next())
 	{
-		// If the document is not "good"  -> Nothing
-		f=fdbks()->GetFdbk();
-		if(!(f & djOK)) continue;
-		// Look for the same document in the other profile. If not found or the
-		// document is not "good" -> Nothing
-		cor=prof->GetFdbk(fdbks()->GetDocId());
-		if(!cor) continue;
-		f=cor->GetFdbk();
-		if(!(f & djOK)) continue;
+		// Look for the same document in the other profile.
+		GFdbk* f1(fdbks());
+		GFdbk* f2(prof->GetFdbk(f1->GetDocId()));
+		if(!f2) continue;
 
-		// Increase the number of common documents
-		nb++;
+		nbcommon+=1.0;  // A common document
+		if((f1->GetFdbk()==djOK)&&(f2->GetFdbk()==djOK))
+			nbagree+=1.0;
 	}
-	return(nb);
+	if(nbcommon<nbmin)
+		return(0.0);
+	return(nbagree/nbcommon);
 }
 
 
 //------------------------------------------------------------------------------
-size_t GProfile::GetCommonDocs(const GProfile* prof) const
+double GProfile::GetDisagreementRatio(const GProfile* prof,size_t nbmin) const
 {
-	tDocAssessment f;
-	GFdbk* cor;
-	size_t nb=0;
+	double nbcommon(0.0), nbdisagree(0.0);
 
-	// Go through the document judged by the corresponding profile
-	RCursor<GFdbk> Fdbks=GetFdbks();
-	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
+	// Go through the document assessed by the profile
+	RCursor<GFdbk> fdbks(GetFdbks());
+	for(fdbks.Start();!fdbks.End();fdbks.Next())
 	{
-		f=Fdbks()->GetFdbk();
-		// Look for the same document in the other profile. If not found or the
-		// document is not "good" -> Nothing
-		cor=prof->GetFdbk(Fdbks()->GetDocId());
-		if(!cor) continue;
-		f=cor->GetFdbk();
+		// Look for the same document in the other profile.
+		GFdbk* f1(fdbks());
+		GFdbk* f2(prof->GetFdbk(f1->GetDocId()));
+		if(!f2) continue;
 
-		// Increase the number of common documents
-		nb++;
+		nbcommon+=1.0;  // A common document
+		if(((f1->GetFdbk()==djOK)&&(f2->GetFdbk()!=djOK))||((f1->GetFdbk()!=djOK)&&(f2->GetFdbk()==djOK)))
+			nbdisagree+=1.0;
 	}
-	return(nb);
-}
-
-
-//------------------------------------------------------------------------------
-size_t GProfile::GetCommonDiffDocs(const GProfile* prof) const
-{
-	tDocAssessment f;
-	GFdbk* cor;
-	size_t nb=0;
-	bool bOK,bOK2;
-
-	// Go through the document judged by the corresponding profile
-	RCursor<GFdbk> Fdbks=GetFdbks();
-	for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
-	{
-		f=Fdbks()->GetFdbk();
-		bOK=(f & djOK);
-
-		// If the document was not judged by the other profile or have not the
-		// same judgment -> Nothing
-		cor=prof->GetFdbk(Fdbks()->GetDocId());
-		if(!cor) continue;
-		f=cor->GetFdbk();
-		bOK2=(f & djOK);
-		if(bOK==bOK2) continue;
-
-		// Increase the number of common documents with different judgement
-		nb++;
-	}
-	return(nb);
+	if(nbcommon<nbmin)
+		return(0.0);
+	return(nbdisagree/nbcommon);
 }
 
 

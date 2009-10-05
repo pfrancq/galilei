@@ -233,7 +233,9 @@ public:
 	/**
 	* Get the number of objects of a given type using the dictionary of the
 	* language.
-	* @param ObjType        Type of the object.
+	* @param ObjType        Type of the reference. If otAnyType, the method
+	*                       returns the number of references of all the
+	*                       objects.
 	*/
 	size_t GetRef(tObjType ObjType) const;
 

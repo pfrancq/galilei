@@ -138,7 +138,7 @@ void GSimulator::Apply(void)
 
 
 //------------------------------------------------------------------------------
-void GSimulator::StartSimulation(void)
+void GSimulator::StartSimulation(bool create)
 {
 	// Initialize the session and the subjects
 	Session->ReInit();
@@ -152,8 +152,18 @@ void GSimulator::StartSimulation(void)
 	Apply();
 
 	// Select the subjects
-	SelectSubjects();
-	CreateAssessments();
+	if(create)
+	{
+		SelectSubjects();
+		CreateAssessments();
+	}
+	else
+	{
+		// No subject is selected.
+		RCursor<GSubject> Subjects(Session->GetSubjects());
+		for(Subjects.Start();!Subjects.End();Subjects.Next())
+			Subjects()->Used=false;
+	}
 
 	// Save the new situation if necessary
 	if(Session->MustSaveResults())
@@ -429,9 +439,12 @@ size_t GSimulator::AddProfiles(void)
 	for(Prof.Start();!Prof.End();Prof.Next())
 		ProfileAssess(Prof(),usedSubject,cNoRef,maxDocsOK,maxDocsKO,maxDocsH);
 
-	// optional saving
+	// Optional saving
 	if(Session->MustSaveResults())
 	{
+		RCursor<GUser> Users(Session->GetUsers());
+		for(Users.Start();!Users.End();Users.Next())
+			Session->GetStorage()->SaveUser(Users());
 		RCursor<GProfile> Profiles(NewProfiles);
 		for(Profiles.Start();!Profiles.End();Profiles.Next())
 			Session->GetStorage()->SaveProfile(Profiles());

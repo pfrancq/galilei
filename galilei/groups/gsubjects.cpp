@@ -187,8 +187,10 @@ void GSubjects::TestSubjects(void)
 	}
 
 	cout<<"There are "<<GetNbSubjects()<<" subjects:"<<endl;
-	cout<<"  "<<NbNoLeaf<<" no leaf nodes have some documents attached"<<endl;
-	cout<<"  "<<NbLeaf<<" leaf nodes have no documents attached"<<endl;
+	if(NbNoLeaf)
+		cout<<"  "<<NbNoLeaf<<" non-leaf subjects have some documents attached"<<endl;
+	if(NbLeaf)
+		cout<<"  "<<NbLeaf<<" leaf subjects have no documents attached"<<endl;
 	cout<<"  "<<static_cast<double>(NbNoLeaf+NbLeaf)*100.0/static_cast<double>(GetNbSubjects())<<"% of invalid subjects"<<endl;
 }
 
