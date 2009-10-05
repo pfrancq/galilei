@@ -1575,7 +1575,10 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		}
 
 		// Update other information from the documents
-		RQuery Update(Db,"UPDATE docs,docsbyprofiles SET docsbyprofiles.langid=docs.langid,docsbyprofiles.computed=docs.calculated "
+		RQuery Update(Db,"UPDATE docs,docsbyprofiles SET "
+				         "docsbyprofiles.langid=docs.langid,"
+				         "docsbyprofiles.computed=docs.calculated,"
+				         "docsbyprofiles.updated=docs.updated "
 		                 "WHERE docsbyprofiles.docid=docs.docid AND profileid="+Num(prof->GetId()));
 		prof->SetState(osUpToDate);
 	}
@@ -1971,7 +1974,7 @@ void GStorageMySQL::LoadSugs(GSugs& sugs)
 
 	try
 	{
-		RQuery Load(Db,"SELECT docid,ranking,proposed,info FROM "+Table+" WHERE "+Id+"="+Num(sugs.GetAddresseeId())+" ORDER BY "+Id+",rank");
+		RQuery Load(Db,"SELECT docid,ranking,proposed,info FROM "+Table+" WHERE "+Id+"="+Num(sugs.GetAddresseeId())+" ORDER BY "+Id+",ranking");
 		for(Load.Start();!Load.End();Load.Next())
 			sugs.InsertPtr(new GSuggestion(Load[0].ToSizeT(),Load[1].ToDouble(),Load[2],Load[3]));
 	}
