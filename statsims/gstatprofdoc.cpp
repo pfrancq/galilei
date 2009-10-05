@@ -127,17 +127,9 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 //				NoSocialSubProfiles.InsertPtr(Profs1());
 		for(Profs2.GoTo(i+1);!Profs2.End();Profs2.Next())
 		{
-			tmp=static_cast<double>(Profs1()->GetCommonDocs(Profs2()));
-			nbSame=static_cast<double>(Profs1()->GetCommonOKDocs(Profs2()));
-			nbDiff=static_cast<double>(Profs1()->GetCommonDiffDocs(Profs2()));
-			if(tmp)
-			{
-				nbSame/=tmp;
-				MeanSame += nbSame;
-				nbDiff /= tmp;
-				MeanDiff += nbDiff;
-				sum++;
-			}
+			MeanSame+=Profs1()->GetAgreementRatio(Profs2(),1);
+			MeanDiff+=Profs1()->GetDisagreementRatio(Profs2(),1);
+			sum++;
 		}
 	}
 
