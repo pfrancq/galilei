@@ -45,6 +45,9 @@ using namespace R;
 class GNodeInfos : public RNodeGA<GNodeInfos,RObjH,GChromoH>
 {
 public:
+
+	using RNode<GChromoH,GNodeInfos,false>::GetNodes;
+
 	/**
 	* Construct the node.
 	* @param owner          Owner of the node.
