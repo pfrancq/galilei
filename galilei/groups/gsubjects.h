@@ -301,6 +301,8 @@ public:
 	~GSubjects(void);
 
 	friend class GSubject;
+	friend class R::RTree<GSubjects,GSubject,true>;
+	friend class R::RNode<GSubjects,GSubject,true>;
 };
 
 

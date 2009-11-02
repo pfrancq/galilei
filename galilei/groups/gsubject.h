@@ -98,8 +98,6 @@ public:
 */
 class GSubject : protected R::RNode<GSubjects,GSubject,true>
 {
-private:
-
 	/**
 	 * Identifier of the subject.
 	 */
@@ -426,6 +424,8 @@ public:
 
 	friend class GSession;
 	friend class GSubjects;
+	friend class R::RTree<GSubjects,GSubject,true>;
+	friend class R::RNode<GSubjects,GSubject,true>;
 	friend class GSimulator;
 };
 
