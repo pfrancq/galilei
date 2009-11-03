@@ -172,10 +172,10 @@ void GGALILEIApp::Init(void)
 		// Create (if necessary) Log file
 		if(LogFileName!=RString::Null)
 		{
-			cout<<"Create log file "<<LogFileName<<"...";
+			//cout<<"Create log file "<<LogFileName<<"...";
 			cout.flush();
 			Log=new GSlotLog(LogFileName);
-			cout<<"OK"<<endl;
+			//cout<<"OK"<<endl;
 		}
 	}
 	catch(...)
@@ -196,13 +196,13 @@ void GGALILEIApp::Init(void)
 
 	//------------------------------------------------------------------------------
 	// Load plug-ins
-	cout<<"Load and configure plug-ins ...";
+	//cout<<"Load and configure plug-ins ...";
 	cout.flush();
 	Load(PlugInsPath,LoadDialogs);
 	R::RCursor<GGenericPluginManager> Managers(*this);
 	for(Managers.Start();!Managers.End();Managers.Next())
 		Managers()->ReadConfig(&GALILEIConfig);
-	cout<<"OK"<<endl;
+	//cout<<"OK"<<endl;
 
 	// Init OK
 	HasInitApp=true;

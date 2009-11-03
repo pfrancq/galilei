@@ -72,6 +72,7 @@ namespace GALILEI{
 /**
 * The GGenericPluginManager class provides a template for a generic plug-in manager.
 * @author Pascal Francq
+* @short Generic Plug-In Manager
 */
 class GGenericPluginManager
 {
@@ -89,24 +90,24 @@ public:
 
 protected:
 
-	/*
+	/**
 	* The name of the manager
 	*/
 	R::RString Name;
 
-	/*
+	/**
 	* Version of the manager
 	*/
 	R::RString Version;
 
-	/*
+	/**
 	* Types of plug-ins handle by the manager.
 	*/
 	tPluginsType PluginsType;
 
 public :
 
-	/*
+	/**
 	* Constructor for the manager of plug-ins manager.
 	* @param name            Name of the manager.
 	* @param version         Version of the manager.
@@ -126,7 +127,7 @@ public :
 	*/
 	int Compare(const R::RString& name) const;
 
-	/*
+	/**
 	* Load all plug-ins and their dialog boxes.
 	* @param dll             Name of the dynamic link library.
 	* @param handle          Handle to the library containing the plug-in.
@@ -135,46 +136,46 @@ public :
 	*/
 	virtual void Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config)=0;
 
-	/*
+	/**
 	* Connect to the session.
 	* @param session         Pointer to the session.
 	*/
 	virtual void Connect(GSession* session)=0;
 
-	/*
+	/**
 	* Disconnect to the session.
 	* @param session         Pointer to the session.
 	*/
 	virtual void Disconnect(GSession* session)=0;
 
-	/*
+	/**
 	* Create the config parameters.
 	* @param config          Configuration structure.
 	*/
 	virtual void CreateConfig(R::RConfig* config)=0;
 
-	/*
+	/**
 	* Read config of the manager.
 	* @param config          Configuration structure.
 	*/
 	virtual void ReadConfig(R::RConfig* config)=0;
 
-	/*
+	/**
 	* @param config          Configuration structure.
 	*/
 	virtual void SaveConfig(R::RConfig* config)=0;
 
-	/*
+	/**
 	* Get the name of the current Manager.
 	*/
 	R::RString GetName(void) const {return(Name);}
 
-	/*
+	/**
 	* Get the name of the current Manager.
 	*/
 	R::RString GetVersion(void) const {return(Version);}
 
-	/*
+	/**
 	* Get the type of the plug-ins.
 	*/
 	tPluginsType GetPluginsType(void) const {return(PluginsType);}
@@ -195,6 +196,12 @@ public :
 	virtual void ApplyConfig(R::RConfig* config)=0;
 
 	/**
+	 * Get the names of the plug-ins.
+	 * @param plugins        Container that will hold the names.
+	 */
+	virtual void GetPluginsName(R::RContainer<R::RString,true,false>& plugins);
+
+	/**
 	* Set the current method if the plug-ins must have a selected one.
 	* @param name            Name of the method.
 	* @param need            If the parameter is true and the plug-in does not
@@ -202,7 +209,7 @@ public :
 	*/
 	virtual void SetCurrentMethod(const R::RString& name,bool need=true)=0;
 
-	/*
+	/**
 	* Destruct.
 	*/
 	virtual ~GGenericPluginManager(void);
@@ -375,6 +382,12 @@ public:
 	*                        exist, generate an exception.
 	*/
 	virtual void SetCurrentMethod(const R::RString& name,bool need=true);
+
+	/**
+	 * Get the names of the plug-ins.
+	 * @param plugins        Container that will hold the names.
+	 */
+	virtual void GetPluginsName(R::RContainer<R::RString,true,false>& plugins);
 
 	/**
 	* Get the current method.

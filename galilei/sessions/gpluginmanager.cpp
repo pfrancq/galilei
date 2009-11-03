@@ -65,6 +65,13 @@ int GGenericPluginManager::Compare(const RString& name) const
 
 
 //-----------------------------------------------------------------------------
+void GGenericPluginManager::GetPluginsName(RContainer<RString,true,false>& plugins)
+{
+	plugins.Clear();
+}
+
+
+//-----------------------------------------------------------------------------
 GGenericPluginManager::~GGenericPluginManager(void)
 {
 }

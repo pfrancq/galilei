@@ -546,7 +546,7 @@ GFilterManager::GFilterManager(void)
 	}
 	catch(...)
 	{
-		cerr<<"Cannot load '/etc/galilei/galilei.mimes'"<<endl;
+		//cerr<<"Cannot load '/etc/galilei/galilei.mimes'"<<endl;
 	}
 }
 

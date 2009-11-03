@@ -343,6 +343,17 @@ template<class mng,class factory,class plugin>
 }
 
 
+//-----------------------------------------------------------------------------
+template<class mng,class factory,class plugin>
+	void GPluginManager<mng,factory,plugin>::GetPluginsName(R::RContainer<R::RString,true,false>& plugins)
+{
+	plugins.Clear();
+	R::RCursor<factory> Cur(*this);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		plugins.InsertPtr(new R::RString(Cur()->GetName()));
+}
+
+
 //------------------------------------------------------------------------------
 template<class mng,class factory,class plugin>
 	plugin* GPluginManager<mng,factory,plugin>::GetCurrentMethod(bool need) const
