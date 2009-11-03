@@ -65,7 +65,6 @@ public:
 	QCreateDB(QCreateDatabase* info) : Info(info) {}
 	RString GetConceptType(const RString& name,const RString& desc,RDb* Db);
 	virtual void DoIt(void);
-	void RunSQL(const RURI& path,RDb* Db);
 };
 
 
@@ -94,7 +93,7 @@ void QCreateDB::DoIt(void)
 	RDbMySQL::Create(Info->Name,Info->Host,Info->User,Info->Pwd);
 	RDbMySQL Db(Info->Name,Info->Host,Info->User,Info->Pwd,"utf8");
  	Parent->setLabelText("Dump Database model");
- 	RunSQL(Info->DbSchema,&Db);
+ 	Db.RunSQLFile(Info->DbSchema);
  	Parent->setLabelText("Create Languages (terms and stopwords)");
  	RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
  	RContainer<RString,true,false> Stops(200);
@@ -115,47 +114,6 @@ void QCreateDB::DoIt(void)
  	Parent->setLabelText("Create Other Concept Types");
  	GetConceptType("XMLStruct","XML Structure",&Db);
  	GetConceptType("XMLIndex","XML Index",&Db);
-}
-
-
-//-----------------------------------------------------------------------------
-void QCreateDB::RunSQL(const RURI& path,RDb* Db)
-{
-	RString sql("");
-	RString line("");
-	bool endFound=false;
-
- 	RTextFile file(path,"utf-8");
-	file.Open(RIO::Read);
-
-	while(!file.End())
-	{
-		line=file.GetLine();
-		if(line.IsEmpty() || line.FindStr("/*!")>=0 || line.FindStr("--")>=0 || line.Find('#')>=0)
-			continue;
-
-		endFound=false;
-		while(!file.End() && !endFound)
-		{
-			if(line.IsEmpty() || line.FindStr("--")>=0 || line.FindStr("--")>=0 || line.Find('#')>=0)
-			{
-				sql="";
-				endFound=true;
-				continue;
-			}
-			sql+=line;
-			if(line.Find(';')>=0)
-				endFound=true;
-			else
-				line=file.GetLine();
-		}
-		if(!sql.IsEmpty())
-		{
-			RQuery Sendquery(Db,sql);
-		}
-
-		sql="";
-	}
 }
 
 
