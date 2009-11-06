@@ -93,7 +93,6 @@ public:
 class QImportDocs : public QSessionThread
 {
 	QFillDatabase* Info;
-	GFilterManager* FilterManager;
 	GSession* Session;
 	int CurDepth;
 public:
@@ -105,8 +104,7 @@ public:
 
 //-----------------------------------------------------------------------------
 QImportDocs::QImportDocs(QFillDatabase* info)
-	: Info(info), FilterManager(GALILEIApp->GetManager<GFilterManager>("Filter")),
-	  Session(GALILEIApp->GetSession()), CurDepth(0)
+	: Info(info), Session(GALILEIApp->GetSession()), CurDepth(0)
 {
 }
 
@@ -206,11 +204,11 @@ void QFillDatabase::run(void)
 	Topics->setChecked(true);
 	RContainer<cLang,true,true> theLangs(20);
 	Language->setEnabled(false);
-	RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
+	RCastCursor<GPlugin,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
-		theLangs.InsertPtr(new cLang(ToQString(Langs()->GetName()),Langs()));
-		Language->addItem(ToQString(Langs()->GetName()));
+		theLangs.InsertPtr(new cLang(ToQString(Langs()->GetLangName()),Langs()));
+		Language->addItem(ToQString(Langs()->GetLangName()));
 	}
 
 	// Execute

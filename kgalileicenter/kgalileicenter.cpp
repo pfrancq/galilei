@@ -701,7 +701,7 @@ void KGALILEICenter::saveXML(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::queryMetaEngine(void)
 {
-	if(!GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod(false))
+	if(!GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine",false))
 	{
 		QMessageBox::information(this," Error "," No Meta Engine Method selected!!");
 		return;
@@ -979,7 +979,7 @@ void KGALILEICenter::computeSugs(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::runTool(void)
 {
-	GToolManager* Manager(GALILEIApp->GetManager<GToolManager>("Tool"));
+	GPluginManager* Manager(GALILEIApp->GetManager("Tool"));
 	if((!Manager)||(!Manager->GetNbPlugIns()))
 	{
 		KMessageBox::error(this,"No tools are enabled","KGALILEICenter Error");
@@ -995,9 +995,9 @@ void KGALILEICenter::runTool(void)
 
 	// Init the dialog box
 	Ui.Desc->setText("Choose the tool to run");
-	RCursor<GTool> Tools(Manager->GetPlugIns());
+	RCastCursor<GPlugin,GTool> Tools(Manager->GetPlugIns<GTool>());
 	for(Tools.Start();!Tools.End();Tools.Next())
-		Ui.List->addItem(ToQString(Tools()->GetPlugInName()));
+		Ui.List->addItem(ToQString(Tools()->GetName()));
 	Ui.List->setCurrentRow(0);
 	if(Choose.exec())
 	{

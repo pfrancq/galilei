@@ -76,11 +76,11 @@ using namespace R;
 class QPlugIn : public QListWidgetItem
 {
 public:
-	GPluginConfig* PlugIn;          // Plug-in Configuration.
+	GPluginFactory* PlugIn;          // Plug-in Configuration.
 	bool Enable;                    // Must the plug-in be enabled?
 	bool WasEnable;                 // Was the plug-in enabled ?
 
-	QPlugIn(QListWidget* lst,GPluginConfig* fac,const QString& desc)
+	QPlugIn(QListWidget* lst,GPluginFactory* fac,const QString& desc)
 		: QListWidgetItem(desc,lst), PlugIn(fac), Enable(fac->IsCreated()), WasEnable(fac->IsCreated())	{}
 };
 
@@ -101,8 +101,7 @@ QPlugInsList::QPlugInsList(QWidget* parent)
 
 
 //-----------------------------------------------------------------------------
-template<class Factory,class Manager>
-	void QPlugInsList::init(Manager* mng,bool current,bool enable,bool updown)
+void QPlugInsList::init(const RString& mng,bool current,bool enable,bool updown,const RString& list)
 {
 	QPlugIn* def;
 	QPlugIn* cur;
@@ -116,17 +115,17 @@ template<class Factory,class Manager>
 	Enable->setVisible(enable);
 	Up->setVisible(updown);
 	Down->setVisible(updown);
-	R::RCursor<Factory> Cur(mng->GetFactories());
-	Factory* Fac=mng->GetCurrentFactory(false);
+	GPluginFactory* Fac(GALILEIApp->GetCurrentFactory(mng,list,false));
 
 	// Goes through the plug-ins
 	def=cur=0;
 	if(current)
 		Current->insertItem(0,"None");
 	cur=0;
+	RCursor<GPluginFactory> Cur(GALILEIApp->GetFactories(mng,list));
 	for(Cur.Start(),idx=1;!Cur.End();Cur.Next(),idx++)
 	{
-		str=ToQString(Cur()->GetName());
+		str=ToQString(Cur()->GetDesc());
 		str+=" [";
 		str+=ToQString(Cur()->GetLib());
 		str+="]";
@@ -160,91 +159,91 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 	{
 		case Storages:
 			setObjectName("Storage");
-			init<GFactoryStorage,GStorageManager>(GALILEIApp->GetManager<GStorageManager>("Storage"),true,false,false);
+			init("Storage",true,false,false);
 			break;
 		case Filters:
 			setObjectName("Filters");
-			init<GFactoryFilter,GFilterManager>(GALILEIApp->GetManager<GFilterManager>("Filter"),false,true,false);
+			init("Filter",false,true,false);
 			break;
 		case Langs:
 			setObjectName("Languages");
-			init<GFactoryLang,GLangManager>(GALILEIApp->GetManager<GLangManager>("Lang"),false,true,false);
+			init("Lang",false,true,false);
 			break;
 		case PostProfiles:
 			setObjectName("PostProfiles");
-			init<GFactoryPostProfile,GPostProfileManager>(GALILEIApp->GetManager<GPostProfileManager>("PostProfile"),false,true,true);
+			init("PostProfile",false,true,true);
 			break;
 		case PostCommunities:
 			setObjectName("PostCommunities");
-			init<GFactoryPostCommunity,GPostCommunityManager>(GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity"),false,true,true);
+			init("PostCommunity",false,true,true);
 			break;
 		case ComputeSugs:
 			setObjectName("ComputeSugs");
-			init<GFactoryComputeSugs,GComputeSugsManager>(GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs"),false,true,true);
+			init("ComputeSugs",false,true,true);
 			break;
 		case ComputeTrust:
 			setObjectName("ComputeTrust");
-			init<GFactoryComputeTrust,GComputeTrustManager>(GALILEIApp->GetManager<GComputeTrustManager>("ComputeTrust"),false,true,true);
+			init("ComputeTrust",false,true,true);
 			break;
 		case ProfileCalcs:
 			setObjectName("ProfileCalcs");
-			init<GFactoryProfileCalc,GProfileCalcManager>(GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc"),true,true,false);
+			init("ProfileCalc",true,true,false);
 			break;
 		case GroupProfiles:
 			setObjectName("GroupProfiles");
-			init<GFactoryGroupProfiles,GGroupProfilesManager>(GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles"),true,true,false);
+			init("GroupProfiles",true,true,false);
 			break;
 		case GroupDocs:
 			setObjectName("GroupDocs");
-			init<GFactoryGroupDocs,GGroupDocsManager>(GALILEIApp->GetManager<GGroupDocsManager>("GroupDocs"),true,true,false);
+			init("GroupDocs",true,true,false);
 			break;
 		case CommunityCalcs:
 			setObjectName("CommunityCalcs");
-			init<GFactoryCommunityCalc,GCommunityCalcManager>(GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc"),true,true,false);
+			init("CommunityCalc",true,true,false);
 			break;
 		case TopicCalcs:
 			setObjectName("TopicCalcs");
-			init<GFactoryTopicCalc,GTopicCalcManager>(GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc"),true,true,false);
+			init("TopicCalc",true,true,false);
 			break;
 		case StatsCalcs:
 			setObjectName("StatsCalcs");
-			init<GFactoryStatsCalc,GStatsCalcManager>(GALILEIApp->GetManager<GStatsCalcManager>("StatsCalc"),false,true,false);
+			init("StatsCalc",false,true,false);
 			break;
 		case Tools:
 			setObjectName("Tools");
-			init<GFactoryTool,GToolManager>(GALILEIApp->GetManager<GToolManager>("Tool"),false,true,false);
+			init("Tool",false,true,false);
 			break;
 		case LinkCalcs:
 			setObjectName("LinkCalcs");
-			init<GFactoryLinkCalc,GLinkCalcManager>(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc"),true,true,false);
+			init("LinkCalc",true,true,false);
 			break;
 		case PostDocs:
 			setObjectName("PostDocs");
-			init<GFactoryPostDoc,GPostDocManager>(GALILEIApp->GetManager<GPostDocManager>("PostDoc"),false,true,true);
+			init("PostDoc",false,true,true);
 			break;
 		case PreProfiles:
 			setObjectName("PreProfiles");
-			init<GFactoryPreProfile,GPreProfileManager>(GALILEIApp->GetManager<GPreProfileManager>("PreProfile"),false,true,true);
+			init("PreProfile",false,true,true);
 			break;
 		case PostTopics:
 			setObjectName("PostTopics");
-			init<GFactoryPostTopic,GPostTopicManager>(GALILEIApp->GetManager<GPostTopicManager>("PostTopic"),false,true,true);
+			init("PostTopic",false,true,true);
 			break;
 		case DocAnalyses:
 			setObjectName("DocAnalyses");
-			init<GFactoryDocAnalyse,GDocAnalyseManager>(GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse"),true,true,false);
+			init("DocAnalyse",true,true,false);
 			break;
 		case Engines:
 			setObjectName("Engines");
-			init<GFactoryEngine,GEngineManager>(GALILEIApp->GetManager<GEngineManager>("Engine"),false,true,false);
+			init("Engine",false,true,false);
 			break;
 		case MetaEngines:
 			setObjectName("MetaEngines");
-			init<GFactoryMetaEngine,GMetaEngineManager>(GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine"),true,true,false);
+			init("MetaEngine",true,true,false);
 			break;
 		case Measures:
 			setObjectName(ToQString(Cat));
-			init<GFactoryMeasure,GTypeMeasureManager>(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Cat),true,true,false);
+			init("Measures",true,true,false,Cat);
 			break;
 	}
 }
@@ -294,34 +293,34 @@ void QPlugInsList::apply(GSession* session)
 		switch(Type)
 		{
 			case Storages:
-				GALILEIApp->GetManager<GStorageManager>("Storage")->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("Storage",FromQString(Current->currentText()),false);
 				break;
 			case GroupDocs:
-				GALILEIApp->GetManager<GGroupDocsManager>("GroupDocs")->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("GroupDocs",FromQString(Current->currentText()),false);
 				break;
 			case GroupProfiles:
-				GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("GroupProfiles",FromQString(Current->currentText()),false);
 				break;
 			case CommunityCalcs:
-				GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("CommunityCalc",FromQString(Current->currentText()),false);
 				break;
 			case TopicCalcs:
-				GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("TopicCalc",FromQString(Current->currentText()),false);
 				break;
 			case MetaEngines:
-				GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("MetaEngine",FromQString(Current->currentText()),false);
 				break;
 			case DocAnalyses:
-				GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("DocAnalyse",FromQString(Current->currentText()),false);
 				break;
 			case LinkCalcs:
-				GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("LinkCalc",FromQString(Current->currentText()),false);
 				break;
 			case ProfileCalcs:
-				GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("ProfileCalc",FromQString(Current->currentText()),false);
 				break;
 			case Measures:
-				GALILEIApp->GetManager<GMeasureManager>("Measures")->GetMeasureCategory(Cat)->SetCurrentMethod(FromQString(Current->currentText()),false);
+				GALILEIApp->SetCurrentPlugIn("Measures",FromQString(Current->currentText()),Cat,false);
 				break;
 			default:
 				std::cout<<objectName().toLatin1().data()<<" is not treated"<<std::endl;

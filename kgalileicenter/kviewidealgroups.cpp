@@ -86,9 +86,7 @@ KViewIdealTopics::KViewIdealTopics(void)
 //-----------------------------------------------------------------------------
 void KViewIdealTopics::update(void)
 {
-	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Topics Evaluation"));
-	if(!Compare)
-		throw GException("'Topics Evaluation' is not a valid evaluation measure");
+	GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Topics Evaluation"));
 	double precision,recall,total;
 	Compare->Info(0,&recall);
 	Compare->Info(1,&precision);
@@ -130,9 +128,7 @@ KViewIdealCommunities::KViewIdealCommunities(void)
 //-----------------------------------------------------------------------------
 void KViewIdealCommunities::update(void)
 {
-	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Communities Evaluation"));
-	if(!Compare)
-		throw GException("'Communities Evaluation' is not a valid evaluation measure");
+	GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Communities Evaluation"));
 	double precision,recall,total;
 	Compare->Info(0,&recall);
 	Compare->Info(1,&precision);
@@ -180,9 +176,7 @@ KViewIdealClasses::KViewIdealClasses(void)
 //-----------------------------------------------------------------------------
 void KViewIdealClasses::update(void)
 {
-	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Classes Evaluation"));
-	if(!Compare)
-		throw GException("'Classes Evaluation' is not a valid evaluation measure");
+	GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Classes Evaluation"));
     QProgressDialog Progress("Classes Evaluation...", "Abort Evaluation", 0,3, this);
     Progress.setMinimumDuration(0);
     Progress.setWindowModality(Qt::WindowModal);

@@ -427,7 +427,7 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 void QSessionProgressDlg::NextGroupLang(const GLang* lang)
 {
 	if(lang)
-		setLabelText("Treat "+ToQString(lang->GetName())+" language");
+		setLabelText("Treat "+ToQString(lang->GetLangName())+" language");
 }
 
 

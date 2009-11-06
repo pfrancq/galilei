@@ -95,14 +95,14 @@ void QCreateDB::DoIt(void)
  	Parent->setLabelText("Dump Database model");
  	Db.RunSQLFile(Info->DbSchema);
  	Parent->setLabelText("Create Languages (terms and stopwords)");
- 	RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
+ 	RCastCursor<GPlugin,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
  	RContainer<RString,true,false> Stops(200);
  	for(Langs.Start();!Langs.End();Langs.Next())
  	{
  		// Create the concept types
  		RString Code(Langs()->GetCode());
- 		GetConceptType(Code+"Terms",Langs()->GetName()+" Terms",&Db);
- 		RString TypeId(GetConceptType(Code+"Stopwords",Langs()->GetName()+" Stopwords",&Db));
+ 		GetConceptType(Code+"Terms",Langs()->GetLangName()+" Terms",&Db);
+ 		RString TypeId(GetConceptType(Code+"Stopwords",Langs()->GetLangName()+" Stopwords",&Db));
 
  		Stops.Clear();
  		Langs()->GetStopWords(Stops);

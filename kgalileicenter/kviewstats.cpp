@@ -102,7 +102,7 @@ void KViewStats::ComputeStats(void)
 	RXMLTag* Root;
 
 	int i;
-	GStatsCalcManager* Mng=GALILEIApp->GetManager<GStatsCalcManager>("StatsCalc");
+	GPluginManager* Mng=GALILEIApp->GetManager("StatsCalc");
 
 	if(!Mng)
 	{
@@ -120,11 +120,11 @@ void KViewStats::ComputeStats(void)
 	Dlg.setMinimumDuration(0);
 	Dlg.progressBar()->setValue(0);
 	KApplication::kApplication()->processEvents();
-	R::RCursor<GStatsCalc> Cur(Mng->GetPlugIns());
+	R::RCastCursor<GPlugin,GStatsCalc> Cur(Mng->GetPlugIns<GStatsCalc>());
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 	{
 		Dlg.progressBar()->setValue(i);
-		Dlg.setLabelText(ToQString(Cur()->GetPlugInName()));
+		Dlg.setLabelText(ToQString(Cur()->GetName()));
 		KApplication::kApplication()->processEvents();
 		if(Dlg.wasCancelled())
 			break;

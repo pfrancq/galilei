@@ -100,7 +100,7 @@ KViewMetaEngine::KViewMetaEngine(void)
 	setWidget(ptr);
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("Query meta engine");
-	size_t tmp=GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod()->GetNbResUsed();
+	size_t tmp=GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine")->GetNbResUsed();
 	if(!tmp)
 		NbRes->setValue(100);
 	else
@@ -112,7 +112,7 @@ KViewMetaEngine::KViewMetaEngine(void)
 //-----------------------------------------------------------------------------
 void KViewMetaEngine::showResults(void)
 {
-	Results->Set(QGObjectsList::Docs,GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod(),NbRes->value());
+	Results->Set(QGObjectsList::Docs,GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"),NbRes->value());
 	ResLabel->setText("<b>"+QString::number(NbRes->value())+" Results displayed.</b>");
 }
 

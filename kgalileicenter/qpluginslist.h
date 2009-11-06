@@ -124,8 +124,9 @@ private:
 	 * @param current        Current plug-in may be chosen.
 	 * @param enable         Plug-ins can be enabled/disabled.
 	 * @param updown         Plug-ins can be ordered.
+	 * @param list           List of plug-in (eventually).
 	 */
-	template<class Factory,class Manager> void init(Manager* mng,bool current,bool enable,bool updown);
+	void init(const RString& mng,bool current,bool enable,bool updown,const RString& list=RString::Null);
 
 public:
 

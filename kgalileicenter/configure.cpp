@@ -455,13 +455,13 @@ void Configure::applySimulation(void)
 void Configure::initPlugIns(void)
 {
 	// Sort POST_X Managers;
-	GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
-	GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
-	GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
-	GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
-	GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->ReOrder();
-	GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs")->ReOrder();
-	GALILEIApp->GetManager<GComputeTrustManager>("ComputeTrust")->ReOrder();
+	GALILEIApp->GetManager("PostDoc")->ReOrder();
+	GALILEIApp->GetManager("PreProfile")->ReOrder();
+	GALILEIApp->GetManager("PostProfile")->ReOrder();
+	GALILEIApp->GetManager("PostCommunity")->ReOrder();
+	GALILEIApp->GetManager("PostTopic")->ReOrder();
+	GALILEIApp->GetManager("ComputeSugs")->ReOrder();
+	GALILEIApp->GetManager("ComputeTrust")->ReOrder();
 
 	// Goes through managers
 	Storages->init(QPlugInsList::Storages);
@@ -487,8 +487,8 @@ void Configure::initPlugIns(void)
 	Tools->init(QPlugInsList::Tools);
 
 	// Init Measures
-	GMeasureManager* Manager=GALILEIApp->GetManager<GMeasureManager>("Measures");
-	RCursor<GTypeMeasureManager> Cur(Manager->GetMeasureCategories());
+	GPluginManager* Manager(GALILEIApp->GetManager("Measures"));
+	RCursor<GPluginList> Cur(Manager->GetPlugInList());
 	int row;
 	Measures->removeWidget(Measures->widget(0));
 	for(Cur.Start(),row=0;!Cur.End();Cur.Next(),row++)
@@ -535,13 +535,13 @@ void Configure::applyPlugIns(void)
 		dynamic_cast<QPlugInsList*>(Measures->widget(row))->apply(Session);
 
 	// Sort POST_X Managers;
-	GALILEIApp->GetManager<GPostDocManager>("PostDoc")->ReOrder();
-	GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->ReOrder();
-	GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->ReOrder();
-	GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->ReOrder();
-	GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->ReOrder();
-	GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs")->ReOrder();
-	GALILEIApp->GetManager<GComputeTrustManager>("ComputeTrust")->ReOrder();
+	GALILEIApp->GetManager("PostDoc")->ReOrder();
+	GALILEIApp->GetManager("PreProfile")->ReOrder();
+	GALILEIApp->GetManager("PostProfile")->ReOrder();
+	GALILEIApp->GetManager("PostCommunity")->ReOrder();
+	GALILEIApp->GetManager("PostTopic")->ReOrder();
+	GALILEIApp->GetManager("ComputeSugs")->ReOrder();
+	GALILEIApp->GetManager("ComputeTrust")->ReOrder();
 }
 
 
