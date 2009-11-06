@@ -91,7 +91,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryStorage* params)
+void Configure(GPluginFactory* params)
 {
 	Config dlg;
 

@@ -72,7 +72,7 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorageMySQL::GStorageMySQL(GFactoryStorage* fac)
+GStorageMySQL::GStorageMySQL(GPluginFactory* fac)
 	: GStorage(fac), Db(0)
 {
 }
@@ -1132,7 +1132,7 @@ GDoc* GStorageMySQL::LoadDoc(size_t docid)
 			return(0);
 
 		// Verify that the langague is active
-		GLang* lang=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(quer[4],false);
+		GLang* lang(GALILEIApp->GetPlugIn<GLang>("Lang",quer[4],false));
 		if((!lang)&&(!quer[4].IsEmpty()))
 			return(0);
 
@@ -1175,7 +1175,7 @@ void GStorageMySQL::LoadDocs(void)
 		for(quer.Start();!quer.End();quer.Next())
 		{
 			// Verify if its language is active
-			GLang* lang(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(quer[4],false));
+			GLang* lang(GALILEIApp->GetPlugIn<GLang>("Lang",quer[4],false));
 			if((!lang)&&(!quer[4].IsEmpty()))
 				continue;
 			size_t docid(quer[0].ToSizeT());
@@ -1368,7 +1368,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 {
 	try
 	{
-		GLangManager* Langs=GALILEIApp->GetManager<GLangManager>("Lang");
+		GPluginManager* Langs=GALILEIApp->GetManager("Lang");
 
 		// Load Profile
 		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level "
@@ -1394,7 +1394,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		{
 			Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
 			// Since the profile is not in the session -> we must manually insert the profile.
-			GLang* lang=Langs->GetPlugIn(fdbks[5],false);
+			GLang* lang(Langs->GetPlugIn<GLang>(fdbks[5],false));
 			if(!lang)
 				continue;
 			prof->InsertFdbk(atoi(fdbks[0]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
@@ -2015,10 +2015,4 @@ GStorageMySQL::~GStorageMySQL(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_STORAGE_FACTORY("MySQL",GStorageMySQL)
-
-
-//------------------------------------------------------------------------------
-void TheFactory::UpdateSchema(const R::RXMLStruct&)
-{
-}
+CREATE_STORAGE_FACTORY("MySQL","MySQL",GStorageMySQL)

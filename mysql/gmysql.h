@@ -100,7 +100,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GStorageMySQL(GFactoryStorage* fac);
+	GStorageMySQL(GPluginFactory* fac);
 
 protected:
 
