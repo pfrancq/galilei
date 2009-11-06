@@ -194,7 +194,7 @@ public:
 	 * @param lines           Type of the elements in the lines.
 	 * @param cols            Type of the elements in the columns.
 	*/
-	GGenericSims(GFactoryMeasure* fac,tObjType lines,tObjType cols);
+	GGenericSims(GPluginFactory* fac,tObjType lines,tObjType cols);
 
 	/**
 	 * Virtual method inherits from R::RObject and that must be re-implemented

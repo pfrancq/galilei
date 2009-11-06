@@ -44,10 +44,10 @@ using namespace GALILEI;
 class GDocsProfilesSims : public GGenericSims
 {
 public:
-	GDocsProfilesSims(GFactoryMeasure* fac) : GGenericSims(fac,otDoc,otProfile) {}
+	GDocsProfilesSims(GPluginFactory* fac) : GGenericSims(fac,otDoc,otProfile) {}
 	virtual R::RCString GetClassName(void) const {return("GDocsProfilesSims");}
 };
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Documents/Profiles Similarities","Multi-vector",GDocsProfilesSims)
+CREATE_MEASURE_FACTORY("Documents/Profiles Similarities","Multi-vector","Multi-vector",GDocsProfilesSims)

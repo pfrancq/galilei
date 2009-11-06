@@ -63,8 +63,8 @@ public:
 
 	MyDlg(void) : QGMatrixMeasureDlg("Disagreement ratios between profiles") {}
 	virtual void Panel(void);
-	virtual void Init(GFactoryMeasure* params);
-	virtual void Done(GFactoryMeasure* params);
+	virtual void Init(GPluginFactory* params);
+	virtual void Done(GPluginFactory* params);
 };
 
 
@@ -83,7 +83,7 @@ void MyDlg::Panel(void)
 
 
 //-----------------------------------------------------------------------------
-void MyDlg::Init(GFactoryMeasure* params)
+void MyDlg::Init(GPluginFactory* params)
 {
 	QGMatrixMeasureDlg::Init(params);
 	MinDocs->setValue(params->GetInt("MinDocs"));
@@ -91,7 +91,7 @@ void MyDlg::Init(GFactoryMeasure* params)
 
 
 //-----------------------------------------------------------------------------
-void MyDlg::Done(GFactoryMeasure* params)
+void MyDlg::Done(GPluginFactory* params)
 {
 	params->SetUInt("MinDocs",MinDocs->value());
 	QGMatrixMeasureDlg::Done(params);
@@ -119,7 +119,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryMeasure* params)
+void Configure(GPluginFactory* params)
 {
 	MyDlg dlg;
 	dlg.Configure(params);
