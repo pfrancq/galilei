@@ -78,7 +78,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryCommunityCalc* params)
+void Configure(GPluginFactory* params)
 {
  	Config dlg;
 

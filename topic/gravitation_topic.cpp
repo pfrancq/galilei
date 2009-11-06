@@ -57,7 +57,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GTopicCalcGravitation::GTopicCalcGravitation(GFactoryTopicCalc* fac)
+GTopicCalcGravitation::GTopicCalcGravitation(GPluginFactory* fac)
 	: GTopicCalc(fac), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new const GWeightInfo*[MaxOrderSize];
@@ -157,4 +157,4 @@ GTopicCalcGravitation::~GTopicCalcGravitation(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_TOPICCALC_FACTORY("Gravitation Method for Topics",GTopicCalcGravitation)
+CREATE_TOPICCALC_FACTORY("Gravitation Method for Topics","Gravitation Method for Topics",GTopicCalcGravitation)
