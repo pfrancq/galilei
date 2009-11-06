@@ -309,7 +309,7 @@ class GTextAnalyse : public GDocAnalyse, public RXMLParser
 	/**
 	* Cursor on the different languages defined in the system.
 	*/
-	R::RCursor<GLang> CurLangs;
+	R::RCastCursor<GPlugin,GLang> CurLangs;
 
 	/**
 	 * Words.
@@ -544,7 +544,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GTextAnalyse(GFactoryDocAnalyse* fac);
+	GTextAnalyse(GPluginFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.

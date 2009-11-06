@@ -438,7 +438,7 @@ inline RCursor<cNode> cDepths::GetNodes(void) const
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GTextAnalyse::GTextAnalyse(GFactoryDocAnalyse* fac)
+GTextAnalyse::GTextAnalyse(GPluginFactory* fac)
 	: GDocAnalyse(fac), RXMLParser(), Words(), StructTokens(/*100*/), Depths(),
 	  Sl(0), Sldiff(0), MetaTags(20), StructSpace(0), IndexSpace(0), IsTitle(false)
 {
@@ -501,8 +501,8 @@ void GTextAnalyse::Connect(GSession* session)
 	GDocAnalyse::Connect(session);
 
 	// Create local structures
-	CurLangs=GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns();
-	NbLangs=GALILEIApp->GetManager<GLangManager>("Lang")->GetNbPlugIns();
+	CurLangs=GALILEIApp->GetPlugIns<GLang>("Lang");
+	NbLangs=GALILEIApp->GetManager("Lang")->GetNbPlugIns();
 	Words.Init(NbLangs);
 	Sl=new size_t[NbLangs];
 	Sldiff=new size_t[NbLangs];
@@ -1129,7 +1129,7 @@ void GTextAnalyse::Analyze(const GDoc* doc,const R::RURI& file,bool native)
 	// Construct Information from the stop words extracted and the XML
 	LangSpace=Session->GetConceptType(Lang->GetCode()+RString("Terms"),true);
 	if(!LangSpace)
-		throw GException("TextAnalyse : Invalid language "+Lang->GetName());
+		ThrowGException("TextAnalyse : Invalid language "+Lang->GetLangName());
 	ConstructInfos();
 	IndexXMLPart();
 }
@@ -1171,4 +1171,4 @@ GTextAnalyse::~GTextAnalyse(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_DOCANALYSE_FACTORY("Text Analyse",GTextAnalyse)
+CREATE_DOCANALYSE_FACTORY("Text Analyse","Text Analyse",GTextAnalyse)

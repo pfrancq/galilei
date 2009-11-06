@@ -100,7 +100,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryDocAnalyse* params)
+void Configure(GPluginFactory* params)
 {
 	Config dlg;
 
