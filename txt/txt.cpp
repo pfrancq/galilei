@@ -26,6 +26,8 @@
 
 */
 
+
+
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <txt.h>
@@ -47,7 +49,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterTXT::GFilterTXT(GFactoryFilter* fac)
+GFilterTXT::GFilterTXT(GPluginFactory* fac)
 	: GFilter(fac)
 {
 	AddMIME("text/plain");
@@ -136,4 +138,4 @@ GFilterTXT::~GFilterTXT(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("Text Filter",GFilterTXT)
+CREATE_FILTER_FACTORY("Text Filter","Text Filter",GFilterTXT)

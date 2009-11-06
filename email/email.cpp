@@ -141,7 +141,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterEMail::GFilterEMail(GFactoryFilter* fac)
+GFilterEMail::GFilterEMail(GPluginFactory* fac)
 	: GFilter(fac), BlankLines(false), Cmds(20)
 {
 	AddMIME("text/email");
@@ -332,4 +332,4 @@ GFilterEMail::~GFilterEMail(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("EMail Filter",GFilterEMail)
+CREATE_FILTER_FACTORY("EMail Filter","EMail Filter",GFilterEMail)

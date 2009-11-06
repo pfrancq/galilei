@@ -61,7 +61,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterMSDoc::GFilterMSDoc(GFactoryFilter* fac)
+GFilterMSDoc::GFilterMSDoc(GPluginFactory* fac)
 	: GFilter(fac)
 {
  	AddMIME("application/msword");
@@ -381,4 +381,4 @@ GFilterMSDoc::~GFilterMSDoc()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("MSDoc Filter",GFilterMSDoc)
+CREATE_FILTER_FACTORY("MSDoc Filter","MSDoc Filter",GFilterMSDoc)

@@ -86,7 +86,7 @@ public:
 	* @param fac            Factory.
 	* @param name           Name of the filter.
 	*/
-	GFilterRTF(GALILEI::GFactoryFilter* fac);
+	GFilterRTF(GALILEI::GPluginFactory* fac);
 
 	/**
 	* Analyze a document with a given URI that was downloaded in a local

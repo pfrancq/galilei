@@ -57,7 +57,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterHTML::GFilterHTML(GFactoryFilter* fac)
+GFilterHTML::GFilterHTML(GPluginFactory* fac)
 	: GFilter(fac), R::RHTMLFile()
 {
 	AddMIME("text/html");
@@ -95,4 +95,4 @@ GFilterHTML::~GFilterHTML()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("HTML Filter",GFilterHTML)
+CREATE_FILTER_FACTORY("HTML Filter","HTML Filter",GFilterHTML)

@@ -46,7 +46,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterRTF::GFilterRTF(GFactoryFilter* fac)
+GFilterRTF::GFilterRTF(GPluginFactory* fac)
 	: GFilter(fac), Tags(0),
 	 Chars(50,5)
 {
@@ -529,5 +529,5 @@ GFilterRTF::~GFilterRTF()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("RTF Filter",GFilterRTF)
+CREATE_FILTER_FACTORY("RTF Filter","RTF Filter",GFilterRTF)
 

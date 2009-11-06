@@ -176,7 +176,7 @@ public:
 	* Construct the MSDoc filter for a specific MSDoc document.
 	* @param fac            Factory.
 	*/
-	GFilterMSDoc(GALILEI::GFactoryFilter* fac);
+	GFilterMSDoc(GALILEI::GPluginFactory* fac);
 
 	/**
 	* Analyze a document with a given URI that was downloaded in a local

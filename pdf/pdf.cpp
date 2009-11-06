@@ -78,7 +78,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterPDF::GFilterPDF(GFactoryFilter* fac)
+GFilterPDF::GFilterPDF(GPluginFactory* fac)
 	: GFilter(fac)
 {
 	AddMIME("text/pdf");
@@ -284,4 +284,4 @@ GFilterPDF::~GFilterPDF()
 
 
 //------------------------------------------------------------------------------
-CREATE_FILTER_FACTORY("PDF Filter",GFilterPDF)
+CREATE_FILTER_FACTORY("PDF Filter","PDF Filter",GFilterPDF)
