@@ -45,18 +45,13 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_COMPUTETRUST_VERSION "2.0"
-
-
-//------------------------------------------------------------------------------
 /**
 * The GComputeTrust class provides a representation for a generic method for
 * trust computing.
 * @author Pascal Francq
 * @short Generic Trust Computing Method.
 */
-class GComputeTrust : public GPlugin<GFactoryComputeTrust>
+class GComputeTrust : public GPlugin
 {
 public:
 
@@ -64,7 +59,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GComputeTrust(GFactoryComputeTrust* fac);
+	GComputeTrust(GPluginFactory* fac);
 
 	/**
 	* Run the trust computing method.
@@ -79,53 +74,8 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
-* The GFactoryComputeTrust represent a factory for a given trust computing
-* method.
-* @author Pascal Francq
-* @short Generic Trust Computing Factory.
-*/
-class GFactoryComputeTrust : public GFactoryPlugin<GFactoryComputeTrust,GComputeTrust,GComputeTrustManager>
-{
-public:
-
-	/**
-	* Constructor.
-	* @param mng             Manager of the plug-in.
-	* @param n               Name of the Factory/Plug-in.
-	* @param f               Library of the Factory/Plug-in.
-	*/
-	GFactoryComputeTrust(GComputeTrustManager* mng,const char* n,const char* f)
-	 : GFactoryPlugin<GFactoryComputeTrust,GComputeTrust,GComputeTrustManager>(mng,n,f) {}
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GComputeTrustManager class provides a representation for a manager
-* responsible to manage all the trust computing methods.
-* @author Pascal Francq
-* @short Trust Computing Methods Manager.
-*/
-class GComputeTrustManager : public GPluginManager<GComputeTrustManager,GFactoryComputeTrust,GComputeTrust>
-{
-public:
-
-	/**
-	* Construct the trust computing methods manager.
-	*/
-	GComputeTrustManager(void);
-
-	/**
-	* Destruct the trust computing methods manager.
-	*/
-	virtual ~GComputeTrustManager(void);
-};
-
-
-//------------------------------------------------------------------------------
-#define CREATE_COMPUTETRUST_FACTORY(name,plugin)\
-	CREATE_FACTORY(GALILEI::GComputeTrustManager,GALILEI::GFactoryComputeTrust,GALILEI::GComputeTrust,plugin,"ComputeTrust",API_COMPUTETRUST_VERSION,name)
+#define CREATE_COMPUTETRUST_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GComputeTrust,plugin,"ComputeTrust",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

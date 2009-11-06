@@ -48,8 +48,6 @@
 //------------------------------------------------------------------------------
 namespace GALILEI{
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_ENGINE_VERSION "2.0"
 
 
 //------------------------------------------------------------------------------
@@ -59,7 +57,7 @@ namespace GALILEI{
 * @author Valery Vandaele
 * @short Results extractor for search engine
 */
-class GEngine : public GPlugin<GFactoryEngine>
+class GEngine : public GPlugin
 {
 protected:
 	/**
@@ -77,7 +75,7 @@ public:
 	/**
 	* Construct the extractor for the Yahoo engine.
 	*/
-	GEngine(GFactoryEngine* fac);
+	GEngine(GPluginFactory* fac);
 
 	/**
 	* Process the Engine extraction. All results will be extracted, the url of the next page...
@@ -110,55 +108,9 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryEngine represent a factory for a given link method.
-* @author Vandaele Valery
-* @short Generic Search engine Factory.
-*/
-class GFactoryEngine : public GFactoryPlugin<GFactoryEngine,GEngine,GEngineManager>
-{
-public:
-
-	/*
-	* Constructor.
-	* @param mng             Manager of the plugin.
-	* @param n               Name of the Factory/Plugin.
-	* @param f               Lib of the Factory/Plugin.
-	*/
-	GFactoryEngine(GEngineManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryEngine,GEngine,GEngineManager>(mng,n,f) {}
-};
-
-
-
-
-//------------------------------------------------------------------------------
-/**
-* The GEngineManager class provides a representation for a manager
-* responsible to manage all the search engines.
-* @author Vandaele Valery
-* @short search engine Manager.
-*/
-class GEngineManager : public GPluginManager<GEngineManager,GFactoryEngine,GEngine>
-{
-public:
-
-	/**
-	* Constructor of a manager.
-	*/
-	GEngineManager(void);
-
-	/**
-	* Destructor of the manager.
-	*/
-	virtual ~GEngineManager(void);
-};
-
-
 //-------------------------------------------------------------------------------
-#define CREATE_ENGINE_FACTORY(name,plugin)\
-	CREATE_FACTORY(GEngineManager,GFactoryEngine,GEngine,plugin,"Engine",API_ENGINE_VERSION,name)
+#define CREATE_ENGINE_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GEngine,plugin,"Engine",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

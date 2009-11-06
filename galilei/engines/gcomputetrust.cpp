@@ -43,33 +43,13 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GComputeTrust::GComputeTrust(GFactoryComputeTrust* fac)
-	: GPlugin<GFactoryComputeTrust>(fac)
+GComputeTrust::GComputeTrust(GPluginFactory* fac)
+	: GPlugin(fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GComputeTrust::~GComputeTrust(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GComputeTrustManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GComputeTrustManager::GComputeTrustManager(void)
-	: GPluginManager<GComputeTrustManager,GFactoryComputeTrust,GComputeTrust>("ComputeTrust",API_COMPUTETRUST_VERSION,ptOrdered)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GComputeTrustManager::~GComputeTrustManager(void)
 {
 }

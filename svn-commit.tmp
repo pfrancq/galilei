@@ -1,0 +1,109 @@
+- Modified plug-ins architecture : all plug-ins share the same factory and manager types.
+--Cette ligne, et les suivantes ci-dessous, seront ignorées--
+
+M    galilei/frontend/kde/qgmatrixmeasuredlg.cpp
+M    galilei/frontend/kde/qgmatrixmeasuredlg.h
+M    galilei/frontend/kde/qgobjectslist.cpp
+M    galilei/frontend/kde/qgobjectvars.cpp
+D    galilei/groups/gposttopic.h
+M    galilei/groups/gcommunity.h
+D    galilei/groups/gpostcommunity.cpp
+M    galilei/groups/galilei_groups.cmake
+D    galilei/groups/gpostcommunity.h
+R  + galilei/groups/ggroupprofiles.cpp
+R  + galilei/groups/gtopiccalc.cpp
+R  + galilei/groups/ggroupdocs.cpp
+R  + galilei/groups/ggroupprofiles.h
+R  + galilei/groups/gtopiccalc.h
+R  + galilei/groups/gcommunitycalc.cpp
+R  + galilei/groups/ggroupdocs.h
+R  + galilei/groups/gcommunitycalc.h
+M    galilei/groups/gtopic.h
+D    galilei/groups/gposttopic.cpp
+M    galilei/knowledge/gontology.cpp
+M    galilei/knowledge/glang.cpp
+M    galilei/knowledge/glang.h
+D    galilei/tools
+A  + galilei/plugins
+A  + galilei/plugins/gpostcommunity.cpp
+A  + galilei/plugins/gmatrixmeasure.h
+A  + galilei/plugins/galilei_plugins.cmake
+A  + galilei/plugins/gpluginmanager.h
+A  + galilei/plugins/gplugin.h
+A  + galilei/plugins/gpostprofile.cpp
+A  + galilei/plugins/gmeasure.h
+A  + galilei/plugins/gpreprofile.h
+D    galilei/plugins/gcomputesugs.cpp
+D    galilei/plugins/gsimulator.cpp
+A  + galilei/plugins/gpostdoc.h
+A  + galilei/plugins/gstatscalc.cpp
+A  + galilei/plugins/gtool.h
+D    galilei/plugins/gtest.h
+D    galilei/plugins/gmeasure2elements.h
+A  + galilei/plugins/gmatrixmeasure.cpp
+A  + galilei/plugins/gposttopic.h
+A  + galilei/plugins/gpluginmanager.cpp
+A  + galilei/plugins/gplugin.cpp
+A  + galilei/plugins/gpostcommunity.h
+A  + galilei/plugins/gmeasure.cpp
+A  + galilei/plugins/gpreprofile.cpp
+A  + galilei/plugins/gpostprofile.h
+A  + galilei/plugins/gpostdoc.cpp
+A  + galilei/plugins/gtool.cpp
+D    galilei/plugins/galilei_tools.cmake
+D    galilei/plugins/gtest.cpp
+D    galilei/plugins/gmeasure2elements.cpp
+D    galilei/plugins/gcomputesugs.h
+D    galilei/plugins/gsimulator.h
+A  + galilei/plugins/gposttopic.cpp
+A  + galilei/plugins/gstatscalc.h
+M    galilei/Doxyfile
+D    galilei/profiles/gpreprofile.cpp
+M    galilei/profiles/gprofilecalc.h
+D    galilei/profiles/gpostprofile.h
+D    galilei/profiles/gpreprofile.h
+M    galilei/profiles/galilei_profiles.cmake
+A  + galilei/profiles/glinkcalc.cpp
+M    galilei/profiles/gprofilecalc.cpp
+A  + galilei/profiles/glinkcalc.h
+D    galilei/profiles/gpostprofile.cpp
+D    galilei/sessions/gpluginmanager.h
+D    galilei/sessions/gplugin.h
+M    galilei/sessions/galilei.h
+M    galilei/sessions/gstorage.cpp
+D    galilei/sessions/gpluginmanager.hh
+D    galilei/sessions/gmeasure.h
+M    galilei/sessions/ggalileiapp.h
+A  + galilei/sessions/gsimulator.cpp
+D    galilei/sessions/gstatscalc.cpp
+M    galilei/sessions/gsession.cpp
+D    galilei/sessions/gpluginmanager.cpp
+D    galilei/sessions/gmeasure.cpp
+M    galilei/sessions/ggalileiapp.cpp
+M    galilei/sessions/gstorage.h
+D    galilei/sessions/gplugin.hh
+M    galilei/sessions/ggalileiprg.cpp
+M    galilei/sessions/galilei_sessions.cmake
+A  + galilei/sessions/gsimulator.h
+M    galilei/sessions/gbasicsession.cpp
+D    galilei/sessions/gstatscalc.h
+R  + galilei/docs/gdocanalyse.h
+R  + galilei/docs/gfilter.h
+M    galilei/docs/galilei_docs.cmake
+D    galilei/docs/gpostdoc.cpp
+D    galilei/docs/glinkcalc.cpp
+D    galilei/docs/gpostdoc.h
+R  + galilei/docs/gdocanalyse.cpp
+R  + galilei/docs/gfilter.cpp
+D    galilei/docs/glinkcalc.h
+R  + galilei/engines/gengine.h
+R  + galilei/engines/gmetaengine.cpp
+R  + galilei/engines/gcomputetrust.cpp
+A  + galilei/engines/gcomputesugs.cpp
+R  + galilei/engines/gmetaengine.h
+R  + galilei/engines/gcomputetrust.h
+A  + galilei/engines/gcomputesugs.h
+R  + galilei/engines/gengine.cpp
+M    galilei/engines/galilei_engines.cmake
+M    galilei/CMakeLists.txt
+M    galileimacro.cmake

@@ -614,26 +614,7 @@ EXCLUDE_PATTERNS       = *.hh
 # wildcard * is used, a substring. Examples: ANamespace, AClass, 
 # AClass::ANamespace, ANamespace::*Test
 
-EXCLUDE_SYMBOLS        = GALILEI::GFactoryMeasure \
-                         GALILEI::GFactoryStatsCalc \
-                         GALILEI::GFactoryStorage \
-                         GALILEI::GFactoryTool \
-                         GALILEI::GFactoryDocAnalyse \
-                         GALILEI::GFactoryFilter \
-                         GALILEI::GFactoryLinkCalc \
-                         GALILEI::GFactoryPostDoc \
-                         GALILEI::GFactoryMetaEngine \
-                         GALILEI::GFactoryEngine \
-                         GALILEI::GFactoryCommunityCalc \
-                         GALILEI::GFactoryGroupDocs \
-                         GALILEI::GFactoryGroupProfiles \
-                         GALILEI::GFactoryPostCommunity \
-                         GALILEI::GFactoryPostTopic \
-                         GALILEI::GFactoryTopicCalc \
-                         GALILEI::GFactoryLang \
-                         GALILEI::GFactoryPostProfile \
-                         GALILEI::GFactoryPreProfile \
-                         GALILEI::GFactoryProfileCalc
+EXCLUDE_SYMBOLS        =
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or 
 # directories that contain example code fragments that are included (see 

@@ -52,33 +52,13 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMetaEngine::GMetaEngine(GFactoryMetaEngine* fac)
-	: GPlugin<GFactoryMetaEngine>(fac)
+GMetaEngine::GMetaEngine(GPluginFactory* fac)
+	: GPlugin(fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GMetaEngine::~GMetaEngine(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GMetaEngineManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GMetaEngineManager::GMetaEngineManager(void)
-	: GPluginManager<GMetaEngineManager,GFactoryMetaEngine,GMetaEngine>("MetaEngine",API_METAENGINE_VERSION,ptSelect)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GMetaEngineManager::~GMetaEngineManager(void)
 {
 }

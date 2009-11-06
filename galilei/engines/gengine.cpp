@@ -51,33 +51,13 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngine::GEngine(GFactoryEngine* fac)
-	: GPlugin<GFactoryEngine>(fac), Weight(1)
+GEngine::GEngine(GPluginFactory* fac)
+	: GPlugin(fac), Weight(1)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GEngine::~GEngine(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GEngineManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GEngineManager::GEngineManager(void)
-	: GPluginManager<GEngineManager,GFactoryEngine,GEngine>("Engine",API_ENGINE_VERSION,ptList)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GEngineManager::~GEngineManager(void)
 {
 }

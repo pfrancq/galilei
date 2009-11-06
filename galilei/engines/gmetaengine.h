@@ -46,25 +46,20 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_METAENGINE_VERSION "2.0"
-
-
-//------------------------------------------------------------------------------
 /**
 * The GMetaEngine class provides a representation for a generic results extractor
 * for differents Search Engines
 * @author Valery Vandaele
 * @short Generic results extractor for different search engines
 */
-class GMetaEngine : public GPlugin<GFactoryMetaEngine>
+class GMetaEngine : public GPlugin
 {
 public:
 
 	/**
 	* Construct the extractor for the Yahoo engine.
 	*/
-	GMetaEngine(GFactoryMetaEngine* fac);
+	GMetaEngine(GPluginFactory* fac);
 
 	/**
 	* Send a query to the meta Search engine
@@ -111,53 +106,9 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryMetaEngine represent a factory for a given meta engine.
-* @author Vandaele Valery
-* @short Generic meta engine Factory.
-*/
-class GFactoryMetaEngine : public GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GMetaEngineManager>
-{
-public:
-
-	/*
-	* Constructor.
-	* @param mng             Manager of the plugin.
-	* @param n               Name of the Factory/Plugin.
-	* @param f               Lib of the Factory/Plugin.
-	*/
-	GFactoryMetaEngine(GMetaEngineManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryMetaEngine,GMetaEngine,GMetaEngineManager>(mng,n,f) {}
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GMetaEngineManager class provides a representation for a manager
-* responsible to manage all the search engines.
-* @author Vandaele Valery
-* @short search engine Manager.
-*/
-class GMetaEngineManager : public GPluginManager<GMetaEngineManager,GFactoryMetaEngine,GMetaEngine>
-{
-public:
-
-	/**
-	* Constructor of a manager.
-	*/
-	GMetaEngineManager(void);
-
-	/**
-	* Destructor of the manager.
-	*/
-	virtual ~GMetaEngineManager(void);
-};
-
-
 //-------------------------------------------------------------------------------
-#define CREATE_METAENGINE_FACTORY(name,plugin)\
-	CREATE_FACTORY(GMetaEngineManager,GFactoryMetaEngine,GMetaEngine,plugin,"MetaEngine",API_METAENGINE_VERSION,name)
+#define CREATE_METAENGINE_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GMetaEngine,plugin,"MetaEngine",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------
