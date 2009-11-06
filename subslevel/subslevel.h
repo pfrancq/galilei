@@ -104,7 +104,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	SubsLevel(GFactoryComputeTrust* fac);
+	SubsLevel(GPluginFactory* fac);
 
 	/**
 	* Create the parameters.

@@ -79,7 +79,7 @@ void About(void)
 
 
  //------------------------------------------------------------------------------
-void Configure(GFactoryComputeTrust* params)
+void Configure(GPluginFactory* params)
 {
  	Config dlg;
 

@@ -69,7 +69,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-SubsLevel::SubsLevel(GFactoryComputeTrust* fac)
+SubsLevel::SubsLevel(GPluginFactory* fac)
 		: GComputeTrust(fac), Fdbks(0,200), Docs(), Scores(0,200)
 {
 }
@@ -238,4 +238,4 @@ void SubsLevel::Run(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_COMPUTETRUST_FACTORY("Profiles/Documents Trust Computation",SubsLevel)
+CREATE_COMPUTETRUST_FACTORY("Profiles/Documents Trust Computation","Profiles/Documents Trust Computation",SubsLevel)
