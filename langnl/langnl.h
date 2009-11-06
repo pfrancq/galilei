@@ -38,6 +38,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <glang.h>
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -104,7 +105,7 @@ public:
 	* Constructor of the Dutch language.
 	* @param fac             Factory.
 	*/
-	GLangNL(GALILEI::GFactoryLang* fac);
+	GLangNL(GPluginFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

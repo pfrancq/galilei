@@ -79,7 +79,7 @@ public:
 	* Constructor of the spanish language.
 	* @param fac             Factory.
 	*/
-	GLangES(GFactoryLang* fac);
+	GLangES(GPluginFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

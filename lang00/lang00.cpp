@@ -51,7 +51,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLang00::GLang00(GFactoryLang* fac)
+GLang00::GLang00(GPluginFactory* fac)
 	: GLang(fac,"Universal","00")
 {
 }
@@ -77,4 +77,4 @@ GLang00::~GLang00(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Universal",GLang00,"00")
+CREATE_LANG_FACTORY("00","Universal",GLang00)

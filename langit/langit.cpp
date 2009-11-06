@@ -58,7 +58,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangIT::GLangIT(GFactoryLang* fac)
+GLangIT::GLangIT(GPluginFactory* fac)
 	: GLang(fac,"Italian","it"), Stemmer(sb_stemmer_new("italian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
@@ -374,4 +374,4 @@ GLangIT::~GLangIT(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Italian",GLangIT,"it")
+CREATE_LANG_FACTORY("it","Italian",GLangIT)

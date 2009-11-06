@@ -37,6 +37,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <glang.h>
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -100,7 +101,7 @@ public:
 	* Constructor of the English language.
 	* @param fac             Factory.
 	*/
-	GLangEN(GALILEI::GFactoryLang* fac);
+	GLangEN(GPluginFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

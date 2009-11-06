@@ -58,7 +58,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangDE::GLangDE(GFactoryLang* fac)
+GLangDE::GLangDE(GPluginFactory* fac)
 	: GLang(fac,"German","de"), Stemmer(sb_stemmer_new("german",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
@@ -326,4 +326,4 @@ GLangDE::~GLangDE(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("German",GLangDE,"de")
+CREATE_LANG_FACTORY("de","German",GLangDE)

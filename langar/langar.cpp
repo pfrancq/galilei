@@ -175,7 +175,7 @@ bool GLangAR::ArabicRule::Apply(RString& kwd)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GLangAR::GLangAR(GFactoryLang* fac)
+GALILEI::GLangAR::GLangAR(GPluginFactory* fac)
 	: GLang(fac,"Arabic","ar"), Rules0(5,5), Rules1(5,5), Rules2(5,5), Rules3(5,5), Rules4(5,5),
 		 Rules5(5,5), Rules6(5,5), Rules7(5,5)
 {
@@ -839,4 +839,4 @@ GALILEI::GLangAR::~GLangAR(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Arabic",GLangAR,"ar")
+CREATE_LANG_FACTORY("ar","Arabic",GLangAR)

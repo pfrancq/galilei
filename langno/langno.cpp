@@ -58,7 +58,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangNO::GLangNO(GFactoryLang* fac)
+GLangNO::GLangNO(GPluginFactory* fac)
 	: GLang(fac,"Norwegian","no"), Stemmer(sb_stemmer_new("norwegian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
@@ -276,4 +276,4 @@ GLangNO::~GLangNO(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Norwegian",GLangNO,"no")
+CREATE_LANG_FACTORY("no","Norwegian",GLangNO)

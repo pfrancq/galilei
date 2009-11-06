@@ -73,7 +73,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangFR::GLangFR(GFactoryLang* fac)
+GLangFR::GLangFR(GPluginFactory* fac)
 	: GLang(fac,"French","fr"), Rules1(130), Rules2(10), Rules3(10)
 {
 	// Rules 1
@@ -1017,4 +1017,4 @@ GLangFR::~GLangFR(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("French",GLangFR,"fr")
+CREATE_LANG_FACTORY("fr","French",GLangFR)

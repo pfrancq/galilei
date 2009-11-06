@@ -58,7 +58,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangDK::GLangDK(GFactoryLang* fac)
+GLangDK::GLangDK(GPluginFactory* fac)
 	: GLang(fac,"Danish","dk"), Stemmer(sb_stemmer_new("danish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
@@ -189,4 +189,4 @@ GLangDK::~GLangDK(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Danish",GLangDK,"dk")
+CREATE_LANG_FACTORY("dk","Danish",GLangDK)

@@ -38,6 +38,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <glang.h>
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -71,7 +72,7 @@ public:
 	* Constructor of the French language.
 	* @param fac             Factory.
 	*/
-	GLangFR(GALILEI::GFactoryLang* fac);
+	GLangFR(GPluginFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

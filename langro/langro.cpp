@@ -56,7 +56,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangRO::GLangRO(GFactoryLang* fac)
+GLangRO::GLangRO(GPluginFactory* fac)
 	: GLang(fac,"Romanian","ro"), Stemmer(sb_stemmer_new("romanian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
@@ -228,4 +228,4 @@ GLangRO::~GLangRO(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Romanian",GLangRO,"ro")
+CREATE_LANG_FACTORY("ro","Romanian",GLangRO)

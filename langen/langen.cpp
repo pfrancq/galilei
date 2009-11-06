@@ -76,7 +76,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangEN::GLangEN(GFactoryLang* fac)
+GLangEN::GLangEN(GPluginFactory* fac)
 	: GLang(fac,"English","en"), Rules1a(4,2), Rules1b(3,2), Rules1bb(15,5), Rules1c(1,2),
 	  Rules2(20,5), Rules3(7,5), Rules4(20,5), Rules5a(2,5), Rules5b(1,5)
 {
@@ -886,4 +886,4 @@ GLangEN::~GLangEN(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("English",GLangEN,"en")
+CREATE_LANG_FACTORY("en","English",GLangEN)

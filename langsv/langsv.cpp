@@ -58,7 +58,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangSV::GLangSV(GFactoryLang* fac)
+GLangSV::GLangSV(GPluginFactory* fac)
 	: GLang(fac,"Swedish","sv"), Stemmer(sb_stemmer_new("swedish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
 	if(!Stemmer)
@@ -209,4 +209,4 @@ GLangSV::~GLangSV(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Swedish",GLangSV,"sv")
+CREATE_LANG_FACTORY("sv","Swedish",GLangSV)

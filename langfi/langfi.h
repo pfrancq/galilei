@@ -79,7 +79,7 @@ public:
 	* Constructor of the Finnish language.
 	* @param fac             Factory.
 	*/
-	GLangFI(GFactoryLang* fac);
+	GLangFI(GPluginFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

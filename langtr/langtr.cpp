@@ -56,7 +56,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangTR::GLangTR(GFactoryLang* fac)
+GLangTR::GLangTR(GPluginFactory* fac)
 	: GLang(fac,"Turkish","tr"), Stemmer(sb_stemmer_new("turkish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
@@ -208,4 +208,4 @@ GLangTR::~GLangTR(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Turkish",GLangTR,"tr")
+CREATE_LANG_FACTORY("tr","Turkish",GLangTR)

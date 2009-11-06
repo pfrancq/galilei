@@ -56,7 +56,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangRU::GLangRU(GFactoryLang* fac)
+GLangRU::GLangRU(GPluginFactory* fac)
 	: GLang(fac,"Russian","ru"), Stemmer(sb_stemmer_new("russian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
@@ -253,4 +253,4 @@ GLangRU::~GLangRU(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_LANG_FACTORY("Russian",GLangRU,"ru")
+CREATE_LANG_FACTORY("ru","Russian",GLangRU)
