@@ -62,7 +62,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GProfileCalcFeedback::GProfileCalcFeedback(GFactoryProfileCalc* fac)
+GProfileCalcFeedback::GProfileCalcFeedback(GPluginFactory* fac)
 	: GProfileCalc(fac), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
 	  FuzzyFactor(0.25), IrrelFactor(0.75),
 	  Vectors(5000), VectorsIrrel(5000), VectorsFuzzy(5000),
@@ -327,4 +327,4 @@ GProfileCalcFeedback::~GProfileCalcFeedback(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_PROFILECALC_FACTORY("Optimist and Pessimist Feedback Method",GProfileCalcFeedback)
+CREATE_PROFILECALC_FACTORY("Optimist and Pessimist Feedback Method","Optimist and Pessimist Feedback Method",GProfileCalcFeedback)
