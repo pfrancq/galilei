@@ -77,7 +77,7 @@ class ClassesEval : public R::RObject, public GMeasure
 	RContainer<ClassSubject,true,false> LeafNodes;
 
 public:
-	ClassesEval(GFactoryMeasure* fac);
+	ClassesEval(GPluginFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("ClassesEval");}
 	void Handle(const R::RNotification& notification);
 
@@ -116,7 +116,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-ClassesEval::ClassesEval(GFactoryMeasure* fac)
+ClassesEval::ClassesEval(GPluginFactory* fac)
 	: GMeasure(fac), LeafNodes(3000)
 {
 	InsertObserver(HANDLER(ClassesEval::Handle),"ObjectChanged");
@@ -226,4 +226,4 @@ void ClassesEval::ComputeRankTree(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Classes Evaluation","TreeRank",ClassesEval)
+CREATE_MEASURE_FACTORY("Classes Evaluation","TreeRank","TreeRank",ClassesEval)

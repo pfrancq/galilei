@@ -36,7 +36,7 @@
 
 //-----------------------------------------------------------------------------
 template<class cGroup,class cObj>
-	ClusteringEval<cGroup,cObj>::ClusteringEval(GFactoryMeasure* fac,tObjType grouptype,tObjType objtype)
+	ClusteringEval<cGroup,cObj>::ClusteringEval(GPluginFactory* fac,tObjType grouptype,tObjType objtype)
 		: GMeasure(fac), GroupType(grouptype), ObjType(objtype), ClustersScore(100,50)
 {
 }
@@ -348,7 +348,7 @@ template<class cGroup,class cObj>
 		default:
 			throw GException("ClusteringEval<cGroup,cObj>::ComputeJ(void): '"+GetObjType(ObjType)+"' is not a valid type");
 	}
-	GMeasure* Sim(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities"));
+	GMeasure* Sim(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities"));
 
 	// Compute the average intra-similarity and the centers
 	RCursor<cGroup> Grps(GetClusters());

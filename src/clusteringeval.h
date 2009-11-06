@@ -158,7 +158,7 @@ public:
 	 * @param grouptype      Type of the clusters.
 	 * @param objtype        Type of the objects grouped.
 	 */
-	ClusteringEval(GFactoryMeasure* fac,tObjType grouptype,tObjType objtype);
+	ClusteringEval(GPluginFactory* fac,tObjType grouptype,tObjType objtype);
 
 	/**
 	 * Virtual method inherits from R::RObject and that must be re-implemented
