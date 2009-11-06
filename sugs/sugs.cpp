@@ -59,6 +59,8 @@ using namespace std;
 #include <gmeasure.h>
 #include <gstorage.h>
 #include <gsuggestion.h>
+using namespace GALILEI;
+using namespace R;
 using namespace std;
 
 
@@ -70,7 +72,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-Sugs::Sugs(GFactoryComputeSugs* fac)
+Sugs::Sugs(GPluginFactory* fac)
 	: GComputeSugs(fac), TheSugs(otProfile,0,30)
 {
 }
@@ -97,7 +99,7 @@ void Sugs::ApplyConfig(void)
 void Sugs::Run(void)
 {
 	RString Info("GSugs plug-in");
-	GALILEI::GMeasure* Sim(GALILEI::GALILEIApp->GetManager<GALILEI::GMeasureManager>("Measures")->GetCurrentMethod("Documents/Profiles Similarities"));
+	GMeasure* Sim(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Profiles Similarities"));
 	GCommunityDocs Docs;
 
 	// Go trough the communities
@@ -161,4 +163,4 @@ void Sugs::Run(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_COMPUTESUGS_FACTORY("Compute Suggestions",Sugs)
+CREATE_COMPUTESUGS_FACTORY("Compute Suggestions","Compute Suggestions",Sugs)
