@@ -55,33 +55,13 @@ const size_t MaxWordLen=50;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyse::GDocAnalyse(GFactoryDocAnalyse* fac)
-	: GPlugin<GFactoryDocAnalyse>(fac), Infos(5000), Struct()
+GDocAnalyse::GDocAnalyse(GPluginFactory* fac)
+	: GPlugin(fac), Infos(5000), Struct()
 {
 }
 
 
 //------------------------------------------------------------------------------
 GDocAnalyse::~GDocAnalyse(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GDocAnalyseManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GDocAnalyseManager::GDocAnalyseManager(void)
-	: GPluginManager<GDocAnalyseManager,GFactoryDocAnalyse,GDocAnalyse>("DocAnalyse",API_DOCANALYSE_VERSION,ptSelect)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GDocAnalyseManager::~GDocAnalyseManager(void)
 {
 }

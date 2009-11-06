@@ -47,11 +47,6 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_DOCANALYSE_VERSION "2.0"
-
-
-//------------------------------------------------------------------------------
 /**
  * The GDocAnalyse class provides a generic method to analyze a document. The
  * internal structures, Infos and Struct, are used by GSession to manage the
@@ -61,7 +56,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Generic Document Analysis.
  */
-class GDocAnalyse : public GPlugin<GFactoryDocAnalyse>
+class GDocAnalyse : public GPlugin
 {
 protected:
 
@@ -86,7 +81,7 @@ public:
 	* Constructor of the document analysis method.
 	* @param fac             Factory of the plug-in.
 	*/
-	GDocAnalyse(GFactoryDocAnalyse* fac);
+	GDocAnalyse(GPluginFactory* fac);
 
 	/**
 	* Analyze a XML of a document for a session.
@@ -105,54 +100,9 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryDocAnalyse represent a factory for a given document analysis
-* method.
-* @author Pascal Francq
-* @short Generic Document Analysis Factory.
-*/
-class GFactoryDocAnalyse : public GFactoryPlugin<GFactoryDocAnalyse,GDocAnalyse,GDocAnalyseManager>
-{
-public:
-
-	/*
-	* Constructor.
-	* @param mng             Manager of the plugin.
-	* @param n               Name of the Factory/Plugin.
-	* @param f               Lib of the Factory/Plugin.
-	*/
-	GFactoryDocAnalyse(GDocAnalyseManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryDocAnalyse,GDocAnalyse,GDocAnalyseManager>(mng,n,f) {}
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GDocAnalyseManager class provides a representation for a manager
-* responsible to manage all the doc analysis methods.
-* @author Pascal Francq
-* @short Doc Analysis Method Manager.
-*/
-class GDocAnalyseManager : public GPluginManager<GDocAnalyseManager,GFactoryDocAnalyse,GDocAnalyse>
-{
-public:
-
-	/**
-	* Constructor of a manager.
-	*/
-	GDocAnalyseManager(void);
-
-	/**
-	* Destruct the manager.
-	*/
-	virtual ~GDocAnalyseManager(void);
-};
-
-
 //-------------------------------------------------------------------------------
-#define CREATE_DOCANALYSE_FACTORY(name,plugin)\
-	CREATE_FACTORY(GDocAnalyseManager,GFactoryDocAnalyse,GDocAnalyse,plugin,"DocAnalyse",API_DOCANALYSE_VERSION,name)
+#define CREATE_DOCANALYSE_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GDocAnalyse,plugin,"DocAnalyse",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

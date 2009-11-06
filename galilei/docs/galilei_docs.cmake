@@ -1,16 +1,14 @@
 SET(galilei_docs_INST_INCLUDES
-	gbalancedlinks.h
-	gdocanalyse.h
-	gdocxml.h
-	glinkcalc.h
+	gbalancedlinks.h	
+	gdocxml.h	
 	glinks.h
 	gdoc.h
 	gsuggestion.h
 	gsugs.h
-	glink.h
-	gpostdoc.h
-	gfilter.h
+	glink.h		
 	gdocstruct.h
+	gdocanalyse.h
+	gfilter.h	
 )
 
 
@@ -18,13 +16,11 @@ SET(galilei_docs_TARGET_SOURCES
 	gbalancedlinks.cpp
 	gdoc.cpp
 	gsuggestion.cpp
-	gsugs.cpp
-	glinkcalc.cpp
+	gsugs.cpp	
 	glink.cpp
-	gdocanalyse.cpp
 	gdocxml.cpp
 	glinks.cpp
-	gpostdoc.cpp
-	gfilter.cpp
 	gdocstruct.cpp
+	gdocanalyse.cpp
+	gfilter.cpp	
 )

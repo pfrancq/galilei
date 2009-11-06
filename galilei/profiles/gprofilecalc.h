@@ -46,23 +46,13 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_PROFILECALC_VERSION "2.0"
-
-
-//------------------------------------------------------------------------------
-// forward declaration
-class GSubProfileRef;
-
-
-//------------------------------------------------------------------------------
 /**
 * The GProfileCalc class provides a representation for a method to compute a
 * specific profile.
 * @author Pascal Francq
 * @short Generic Profile Computing Method.
 */
-class GProfileCalc : public GPlugin<GFactoryProfileCalc>
+class GProfileCalc : public GPlugin
 {
 protected:
 
@@ -75,9 +65,9 @@ public:
 
 	/**
 	* Construct the computing method.
-	* @param fac             Factory of the plugin.
+	* @param fac             Factory of the plug-in.
 	*/
-	GProfileCalc(GFactoryProfileCalc* fac);
+	GProfileCalc(GPluginFactory* fac);
 
 	/**
 	* Compute a profile.
@@ -94,54 +84,9 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryProfileCalc represent a factory for a given profile computing
-* method.
-* @author Pascal Francq
-* @short Generic Profile Computing Factory.
-*/
-class GFactoryProfileCalc : public GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>
-{
-public:
-
-	/**
-	* Constructor.
-	* @param mng             Manager of the plugin.
-	* @param n               Name of the Factory/Plugin.
-	* @param f               Lib of the Factory/Plugin.
-	*/
-	GFactoryProfileCalc(GProfileCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryProfileCalc,GProfileCalc,GProfileCalcManager>(mng,n,f) {}
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GProfileCalcManager class provides a representation for a manager
-* responsible to manage all the profile computing methods.
-* @author Pascal Francq
-* @short Profile Computing Methods Manager.
-*/
-class GProfileCalcManager : public GPluginManager<GProfileCalcManager,GFactoryProfileCalc,GProfileCalc>
-{
-public:
-
-	/**
-	* Construct the profile computing methods manager.
-	*/
-	GProfileCalcManager(void);
-
-	/**
-	* Destructor of the profile computing methods manager.
-	*/
-	virtual ~GProfileCalcManager(void);
-};
-
-
 //-------------------------------------------------------------------------------
-#define CREATE_PROFILECALC_FACTORY(name,plugin)\
-	CREATE_FACTORY(GProfileCalcManager,GFactoryProfileCalc,GProfileCalc,plugin,"ProfileCalc",API_PROFILECALC_VERSION,name)
+#define CREATE_PROFILECALC_FACTORY(name,desc,plugin) \
+	CREATE_FACTORY(GALILEI::GProfileCalc,plugin,"ProfileCalc",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

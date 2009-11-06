@@ -2,11 +2,12 @@
 
 	GALILEI Research Project
 
-	GPostTopic.cpp
+	GLinkCalc.cpp
 
-	Generic Post-Topic Computing Method - Implementation.
+	Generic Link Method - Implementation.
 
-	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2004 by Valery Vandaele.
+	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -28,47 +29,21 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gposttopic.h>
+//include file for GALILEI
+#include <glinkcalc.h>
 using namespace GALILEI;
 using namespace R;
 
 
 
 //------------------------------------------------------------------------------
-//
-//  GPostTopic
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GPostTopic::GPostTopic(GFactoryPostTopic* fac)
-	: GPlugin<GFactoryPostTopic>(fac)
+GLinkCalc::GLinkCalc(GPluginFactory* fac)
+	: GPlugin(fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GPostTopic::~GPostTopic(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GPostTopicManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GPostTopicManager::GPostTopicManager(void)
-	: GPluginManager<GPostTopicManager,GFactoryPostTopic,GPostTopic>("PostTopic",API_POSTTOPIC_VERSION,ptOrdered)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GPostTopicManager::~GPostTopicManager(void)
+GLinkCalc::~GLinkCalc(void)
 {
 }

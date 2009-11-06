@@ -66,8 +66,8 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLang::GLang(GFactoryLang* fac,const RString& lang,const char* code)
-	: RLang(lang,code), GPlugin<GFactoryLang>(fac), Stop(0), Dict(0),
+GLang::GLang(GPluginFactory* fac,const RString& lang,const char* code)
+	: RLang(lang,code), GPlugin(fac), Stop(0), Dict(0),
 	  SkipWords(50,20)
 {
 	SkipWords.InsertPtr(new SkipWord("min"));
@@ -192,25 +192,5 @@ bool GLang::MustSkipSequence(const RChar* seq)
 
 //------------------------------------------------------------------------------
 GLang::~GLang(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GLangManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GLangManager::GLangManager(void)
-  : GPluginManager<GLangManager,GFactoryLang,GLang>("Lang",API_LANG_VERSION,ptList)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GLangManager::~GLangManager(void)
 {
 }

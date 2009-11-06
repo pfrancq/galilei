@@ -46,18 +46,13 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_COMMUNITYCALC_VERSION "2.0"
-
-
-//------------------------------------------------------------------------------
 /**
 * The GCommunityCalc class provides a representation for a generic method to
 * compute the description of a specific community.
 * @author Pascal Francq
 * @short Generic Community Computing Method.
 */
-class GCommunityCalc : public GPlugin<GFactoryCommunityCalc>
+class GCommunityCalc : public GPlugin
 {
 protected:
 
@@ -72,7 +67,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GCommunityCalc(GFactoryCommunityCalc* fac);
+	GCommunityCalc(GPluginFactory* fac);
 
 	/**
 	* Compute a community.
@@ -90,53 +85,8 @@ public:
 
 
 //------------------------------------------------------------------------------
-/**
-* The GFactoryCommunityCalc represent a factory for a given community computing
-* method.
-* @author Pascal Francq
-* @short Generic Community Computing Factory.
-*/
-class GFactoryCommunityCalc : public GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>
-{
-public:
-
-	/**
-	* Constructor.
-	* @param mng             Manager of the plug-in.
-	* @param n               Name of the Factory/Plug-in.
-	* @param f               Library of the Factory/Plug-in.
-	*/
-	GFactoryCommunityCalc(GCommunityCalcManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryCommunityCalc,GCommunityCalc,GCommunityCalcManager>(mng,n,f) {}
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GCommunityCalcManager class provides a representation for a manager
-* responsible to manage all the community computing methods.
-* @author Pascal Francq
-* @short Community Computing Methods Manager.
-*/
-class GCommunityCalcManager : public GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>
-{
-public:
-
-	/**
-	* Construct the community computing method manager.
-	*/
-	GCommunityCalcManager(void);
-
-	/**
-	* Destruct the community computing methods manager.
-	*/
-	virtual ~GCommunityCalcManager(void);
-};
-
-
-//------------------------------------------------------------------------------
-#define CREATE_COMMUNITYCALC_FACTORY(name,plugin)\
-	CREATE_FACTORY(GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc,plugin,"CommunityCalc",API_COMMUNITYCALC_VERSION,name)
+#define CREATE_COMMUNITYCALC_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GCommunityCalc,plugin,"CommunityCalc",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

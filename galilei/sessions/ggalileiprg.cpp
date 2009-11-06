@@ -766,7 +766,7 @@ void GComputeProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst
 	if(args.GetNb())
 		throw RPrgException(prg,"The method needs no parameter.");
 	o->WriteStr("Compute Profiles");
-	if(!GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod())
+	if(!GALILEIApp->GetCurrentPlugIn<GProfileCalc>("ProfileCalc"))
 		throw RPrgException(prg,"No Profiling Method chosen.");
 	Owner->Session->CalcProfiles(dynamic_cast<GSlot*>(o));
 }
@@ -782,9 +782,9 @@ void GGroupProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R
 	if(args.GetNb())
 		throw RPrgException(prg,"The method needs no parameter.");
 	o->WriteStr("Group Profiles");
-	if(!GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod())
+	if(!GALILEIApp->GetCurrentPlugIn<GGroupProfiles>("GroupProfiles"))
 		throw RPrgException(prg,"No Profiles Grouping Method chosen.");
-	if(!GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod())
+	if(!GALILEIApp->GetCurrentPlugIn<GPlugin>("CommunityCalc"))
 		throw RPrgException(prg,"No Community Description Method chosen.");
 	Owner->Session->GroupProfiles(dynamic_cast<GSlot*>(o));
 }
@@ -801,9 +801,9 @@ void GGroupDocsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RC
 	if(args.GetNb())
 		throw RPrgException(prg,"The method needs no parameter.");
 	o->WriteStr("Group Documents");
-	if(!GALILEIApp->GetManager<GGroupDocsManager>("GroupDocs")->GetCurrentMethod())
+	if(!GALILEIApp->GetCurrentPlugIn<GGroupDocs>("GroupDocs"))
 		throw RPrgException(prg,"No Documents Grouping Method chosen.");
-	if(!GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod())
+	if(!GALILEIApp->GetCurrentPlugIn<GTopicCalc>("TopicCalc"))
 		throw RPrgException(prg,"No Topic Description Method chosen.");
 	Owner->Session->GroupDocs(dynamic_cast<GSlot*>(o));
 }
@@ -858,7 +858,7 @@ void GPerformDegradationI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* i
 	// Compute J and T and put it in a file
 	if(!What)
 		return;
-	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Topics Evaluation"));
+	GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Topics Evaluation"));
 	if(!Compare)
 		throw RPrgException(prg,"'Topics Evaluation' is not a valid evaluation measure");
 	Compare->Info(2,&Owner->AdjustedRandIndex);
@@ -936,7 +936,7 @@ void GCompareIdealI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R:
 		throw RPrgException(prg,"Compare with unsupported type");
 	o->WriteStr("Compare with Ideal "+objects+" Groups");
 
-	GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(objects));
+	GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",objects));
 	if(!Compare)
 		throw RPrgException(prg,"'"+objects+"' is not a valid evaluation measure");
 	Compare->Info(0,&Owner->Recall);
@@ -1040,9 +1040,9 @@ void GRealLifeI::CommonTasks(RPrgOutput* o,GInstSimulator* Owner)
 		rec->WriteStr("Compute Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	if(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false))
-		GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false)->ApplyConfig();
-	GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod()->ApplyConfig();
+	if(GALILEIApp->GetCurrentPlugIn<GLinkCalc>("LinkCalc",false))
+		GALILEIApp->GetCurrentPlugIn<GLinkCalc>("LinkCalc")->ApplyConfig();
+	GALILEIApp->GetCurrentPlugIn<GProfileCalc>("ProfileCalc")->ApplyConfig();
 	Owner->Session->CalcProfiles(rec);
 
 	// Group Profiles
@@ -1052,8 +1052,8 @@ void GRealLifeI::CommonTasks(RPrgOutput* o,GInstSimulator* Owner)
 		rec->WriteStr("Group Profiles: Current Method");
 	}
 	if(GSession::Break()) return;
-	GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod()->ApplyConfig();
-	GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod()->ApplyConfig();
+	GALILEIApp->GetCurrentPlugIn<GGroupProfiles>("GroupProfiles")->ApplyConfig();
+	GALILEIApp->GetCurrentPlugIn<GPlugin>("CommunityCalc")->ApplyConfig();
 	Owner->Session->GroupProfiles(rec);
 
 	// Compare Ideal
@@ -1083,7 +1083,7 @@ void GRealLifeI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::RCo
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 
-	Compare=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Communities Evaluation");
+	Compare=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Communities Evaluation");
 	if(!Compare)
 		throw RPrgException(prg,"'Communities Evaluation' is not a valid evaluation measure");
 
@@ -1269,32 +1269,19 @@ void GRunStatI::Run(R::RInterpreter* prg,RPrgOutput* out,RPrgVarInst* inst,R::RC
 	if(!Owner)
 		throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
 
-	GStatsCalc* Calc;
-	RXMLStruct xml;
-	RXMLTag* Root;
-	int i;
-
 	if(args.GetNb())
 		throw RPrgException(prg,"Method needs no parameter");
 
-	GStatsCalcManager* Mng=GALILEIApp->GetManager<GStatsCalcManager>("StatsCalc");
-	if(!Mng)
-		throw RPrgException(prg,"No manager for the statistics plug-ins");
-
 	// Create the root node
-	Root=new RXMLTag("Statistics");
+	RXMLStruct xml;
+	RXMLTag* Root(new RXMLTag("Statistics"));
 	xml.AddTag(0,Root);
 
 	// Compute the statistics
-	R::RCursor<GFactoryStatsCalc> Cur(Mng->GetFactories());
+	int i;
+	R::RCastCursor<GPlugin,GStatsCalc> Cur(GALILEIApp->GetPlugIns<GStatsCalc>("StatsCalc"));
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
-	{
-		Calc=Cur()->GetPlugin();
-		if(Calc)
-		{
-			Calc->Compute(&xml,*Root);
-		}
-	}
+		Cur()->Compute(&xml,*Root);
 	if(out)
 		Print(out,Root,0);
 }
@@ -1347,14 +1334,11 @@ void GSetPlugInParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RCon
 	ShowInst(this,prg,args);
 	if(args.GetNb()!=4)
 		throw RPrgException(prg,"Method needs four parameters.");
-	GGenericPluginManager* Mng=GALILEIApp->GetManager<GGenericPluginManager>(args[0]->GetValue(prg));
-	if(!Mng)
-		throw RPrgException(prg,"'"+args[0]->GetValue(prg)+"' is not a valid plug-in manager");
-	RConfig* Config(Mng->GetConfig(args[1]->GetValue(prg)));
+	GPluginFactory* Config(GALILEIApp->GetFactory(args[0]->GetValue(prg),args[1]->GetValue(prg)));
 	if(!Config)
 		throw RPrgException(prg,"'"+args[1]->GetValue(prg)+"' is not a plug-in for the manager '"+args[0]->GetValue(prg)+"'");
 	Config->Set(args[2]->GetValue(prg),args[3]->GetValue(prg));
-	Mng->ApplyConfig(Config);
+	Config->Apply();
 }
 
 
@@ -1364,11 +1348,8 @@ void GSetCurrentPlugInI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst*,R::
 	ShowInst(this,prg,args);
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
-	GGenericPluginManager* Mng=GALILEIApp->GetManager<GGenericPluginManager>(args[0]->GetValue(prg));
-	if(!Mng)
-		throw RPrgException(prg,"'"+args[0]->GetValue(prg)+"' is not a valid plug-in manager");
+	GALILEIApp->SetCurrentPlugIn(args[0]->GetValue(prg),args[1]->GetValue(prg),false);
 	o->WriteStr("Current Method for '"+args[0]->GetValue(prg)+"': "+args[1]->GetValue(prg));
-	Mng->SetCurrentMethod(args[1]->GetValue(prg),false);
 }
 
 
@@ -1378,15 +1359,11 @@ void GSetMeasureParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RCo
 	ShowInst(this,prg,args);
 	if(args.GetNb()!=4)
 		throw RPrgException(prg,"Method needs four parameters.");
-	GMeasureManager* Mng=GALILEIApp->GetManager<GMeasureManager>("Measures");
-	GTypeMeasureManager* Type=Mng->GetMeasureCategory(args[0]->GetValue(prg),false);
-	if(!Type)
-		throw RPrgException(prg,"'"+args[0]->GetValue(prg)+"' is not a valid measure type");
-	RConfig* Config(Type->GetConfig(args[1]->GetValue(prg)));
+	GPluginFactory* Config(GALILEIApp->GetFactory("Measures",args[0]->GetValue(prg),args[1]->GetValue(prg)));
 	if(!Config)
 		throw RPrgException(prg,"'"+args[1]->GetValue(prg)+"' is not a measure for the type '"+args[0]->GetValue(prg)+"'");
 	Config->Set(args[2]->GetValue(prg),args[3]->GetValue(prg));
-	Mng->ApplyConfig(Config);
+	Config->Apply();
 }
 
 
@@ -1396,12 +1373,8 @@ void GSetCurrentMeasureI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst*,R:
 	ShowInst(this,prg,args);
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
-	GMeasureManager* Mng=GALILEIApp->GetManager<GMeasureManager>("Measures");
-	GTypeMeasureManager* Type=Mng->GetMeasureCategory(args[0]->GetValue(prg),false);
-	if(!Type)
-		throw RPrgException(prg,"'"+args[0]->GetValue(prg)+"' is not a valid measure type");
+	GALILEIApp->SetCurrentPlugIn("Measures",args[0]->GetValue(prg),args[1]->GetValue(prg),false);
 	o->WriteStr("Current Measure for '"+args[0]->GetValue(prg)+"': "+args[1]->GetValue(prg));
-	Type->SetCurrentMethod(args[1]->GetValue(prg),false);
 }
 
 
@@ -1411,12 +1384,8 @@ void GResetMeasureI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst*,R::RCon
 	ShowInst(this,prg,args);
 	if(args.GetNb()!=2)
 		throw RPrgException(prg,"Method needs two parameters.");
-	GMeasureManager* Mng=GALILEIApp->GetManager<GMeasureManager>("Measures");
-	GTypeMeasureManager* Type=Mng->GetMeasureCategory(args[0]->GetValue(prg),false);
-	if(!Type)
-		throw RPrgException(prg,"'"+args[0]->GetValue(prg)+"' is not a valid measure type");
+	GMeasure* Mes(GALILEIApp->GetPlugIn<GMeasure>("Measures",args[0]->GetValue(prg),args[1]->GetValue(prg)));
 	o->WriteStr("Current Measure for '"+args[0]->GetValue(prg)+"': "+args[1]->GetValue(prg));
-	GMeasure* Mes=Type->GetPlugIn(args[1]->GetValue(prg),false);
 	Mes->ReInit();
 }
 
@@ -1439,7 +1408,7 @@ void GAnalyzeDocsI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R::
 	if(args.GetNb())
 		throw RPrgException(prg,"The method needs no parameter.");
 	o->WriteStr("Analyze Documents");
-	if(!GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod())
+	if(!GALILEIApp->GetCurrentPlugIn<GDocAnalyse>("DocAnalyse"))
 		throw RPrgException(prg,"No Document Analyzing Method chosen.");
 	Owner->Session->AnalyseDocs(RAM,dynamic_cast<GSlot*>(o));
 }

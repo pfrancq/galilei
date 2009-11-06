@@ -50,11 +50,6 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_FILTER_VERSION "2.0"
-
-
-//------------------------------------------------------------------------------
 /**
 * The GFilter class provides a representation of a generic filter that transform
 * a document of a given type into a DocXML document. Each filter is associated
@@ -63,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Filter.
 */
-class GFilter : public GPlugin<GFactoryFilter>
+class GFilter : public GPlugin
 {
 protected:
 
@@ -78,7 +73,7 @@ public:
 	* Construct the filter.
 	* @param fac            Factory.
 	*/
-	GFilter(GFactoryFilter* fac);
+	GFilter(GPluginFactory* fac);
 
 protected:
 
@@ -178,131 +173,9 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryFilter represent a factory for a given filter.
-* @author Pascal Francq
-* @short Generic Filter Factory.
-*/
-class GFactoryFilter : public GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>
-{
-public:
-
-	/*
-	* Constructor.
-	* @param mng             Manager of the plugin.
-	* @param n               Name of the Factory/Plugin.
-	* @param f               Lib of the Factory/Plugin.
-	*/
-	GFactoryFilter(GFilterManager* mng,R::RString n,R::RString f)
-		: GFactoryPlugin<GFactoryFilter,GFilter,GFilterManager>(mng,n,f) {}
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GFilterManager class provides a representation for a generic manager that
-* handles :
-* - Plugins of filters.
-* - A list of association between a MIME type and a filter.
-* - URL, by downloading the file and making a local copy available (this copy
-*   has to be remove after the analysis).
-* @author Pascal Francq
-* @short Generic URL Manager.
-*/
-class GFilterManager : public GPluginManager<GFilterManager,GFactoryFilter,GFilter>, public R::RDownload
-{
-protected:
-
-	class GMIMEFilter;
-	class GMIMEExt;
-
-	/**
-	* List of all pairs (MIME type,filter) available.
-	*/
-	R::RContainer<GMIMEFilter,true,true> MIMES;
-
-	/**
-	* List of all pairs (extension, MIME type) available.
-	*/
-	R::RContainer<GMIMEExt,true,true> Exts;
-
-	/**
-	 * Filter that should analyze the file.
-	 */
-	GFilter* Filter;
-
-	/**
-	 * Document to analyze.
-	 */
-	GDoc* Doc;
-
-public:
-
-	/**
-	* Construct the filter manager.
-	*/
-	GFilterManager(void);
-
-protected:
-
-	/**
-	 * Find the MIME type of a file based on its extension (Ex. ".html" gives
-	 * "text/html").
-	 */
-	void FindMIMEType(void);
-
-	/**
-	 * If the protocol is HTTP and the server returns a content type for the
-	 * downloaded file. This function verifies that a filter exist for the
-	 * document to download.
-	 * @param MIME           MIME type send by the server.
-	 * @return true if the file should be downloaded.
-	 */
-	virtual bool IsValidContent(const R::RString& MIME);
-
-public:
-
-	/**
-	* Return the URI of the file to analyze. If the file is not a XML file, the
-	* method tries to determine the MIME type and to find a corresponding
-	* filter.
-	* @param doc             Document to analyze.
-	* @param docxml          Temporary file containing the DocXML if necessary.
-	* @param native          Variable modified by the method to specify of the
-	*                        original file is a XML one.
-	* @return The result depends:
-	* #- The original URI is given back if it is a XML file.
-	* #- A local temporary file containing a XML version of the file if a
-	*    filter was used (the temporary file must be deleted by the caller).
-	* @exception A GException is generated if the document could not be
-	* analyzed (no MIME type, no filter, ...).
-	*/
-	R::RURI WhatAnalyze(GDoc* doc,R::RIO::RSmartTempFile& docxml,bool& native);
-
-	/**
-	* Add a pair (MIME type,filter).
-	* @param mime           Name of the MIME type.
-	* @param f              Pointer to the filter.
-	*/
-	void AddMIME(const char* mime,GFilter* f);
-
-	/**
-	* Delete all the MIME type associated with a filter.
-	* @param f              Pointer to the filter.
-	*/
-	void DelMIMES(GFilter* f);
-
-	/**
-	* Destructor of filter manager.
-	*/
-	virtual ~GFilterManager(void);
-};
-
-
 //-------------------------------------------------------------------------------
-#define CREATE_FILTER_FACTORY(name,plugin)\
-	CREATE_FACTORY(GFilterManager,GFactoryFilter,GFilter,plugin,"Filter",API_FILTER_VERSION,name)
+#define CREATE_FILTER_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GFilter,plugin,"Filter",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

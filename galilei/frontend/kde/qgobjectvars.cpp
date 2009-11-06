@@ -142,7 +142,7 @@ void QGObjectVars::AddVar(const QString& var,double value)
 //------------------------------------------------------------------------------
 void QGObjectVars::AddVar(const QString& var,const GLang* value)
 {
-	new QTreeWidgetItem(static_cast<Ui_QGObjectVars*>(Ui)->Vars,QStringList()<<var<<((value)?ToQString(value->GetName()):"?????"));
+	new QTreeWidgetItem(static_cast<Ui_QGObjectVars*>(Ui)->Vars,QStringList()<<var<<((value)?ToQString(value->GetLangName()):"?????"));
 }
 
 

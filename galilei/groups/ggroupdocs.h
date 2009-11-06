@@ -45,18 +45,13 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_GROUPDOCS_VERSION "2"
-
-
-//------------------------------------------------------------------------------
 /**
 * The GGroupDocs provides a representation for a generic method to group some
 * documents.
 * @author Pascal Francq
 * @short Generic Documents Grouping Method.
 */
-class GGroupDocs : public GPlugin<GFactoryGroupDocs>
+class GGroupDocs : public GPlugin
 {
 protected:
 
@@ -71,7 +66,7 @@ public:
 	* Constructor of the documents grouping method.
 	* @param fac             Factory of the plug-in.
 	*/
-	GGroupDocs(GFactoryGroupDocs* fac);
+	GGroupDocs(GPluginFactory* fac);
 
 protected:
 
@@ -96,54 +91,9 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryGroupDocs represent a factory for a given documents grouping
-* method.
-* @author Pascal Francq
-* @short Generic Documents Grouping Factory.
-*/
-class GFactoryGroupDocs : public GFactoryPlugin<GFactoryGroupDocs,GGroupDocs,GGroupDocsManager>
-{
-public:
-
-	/**
-	* Constructor.
-	* @param mng             Manager of the plug-in.
-	* @param n               Name of the Factory/Plug-in.
-	* @param f               Library of the Factory/Plug-in.
-	*/
-	GFactoryGroupDocs(GGroupDocsManager* mng,const char* n,const char* f)
-		 : GFactoryPlugin<GFactoryGroupDocs,GGroupDocs,GGroupDocsManager>(mng,n,f) {}
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GGroupDocsManager class provides a representation for a manager
-* responsible to manage all the documents grouping methods.
-* @author Pascal Francq
-* @short Documents Grouping Methods Manager.
-*/
-class GGroupDocsManager : public GPluginManager<GGroupDocsManager,GFactoryGroupDocs,GGroupDocs>
-{
-public:
-
-	/**
-	* Construct the documents grouping methods manager.
-	*/
-	GGroupDocsManager(void);
-
-	/**
-	* Destruct the documents grouping methods manager.
-	*/
-	virtual ~GGroupDocsManager(void);
-};
-
-
 //-------------------------------------------------------------------------------
-#define CREATE_GROUPDOCS_FACTORY(name,plugin)\
-	CREATE_FACTORY(GGroupDocsManager,GFactoryGroupDocs,GGroupDocs,plugin,"GroupDocs",API_GROUPDOCS_VERSION,name)
+#define CREATE_GROUPDOCS_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GGroupDocs,plugin,"GroupDocs",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

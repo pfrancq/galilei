@@ -49,104 +49,6 @@
 namespace GALILEI{
 //------------------------------------------------------------------------------
 
-//------------------------------------------------------------------------------
-// API VERSION
-#define API_STORAGE_VERSION "2.0"
-
-
-//-----------------------------------------------------------------------------
-/**
-* This class represent a XML tag containing a storage command.
-* @author Pascal Francq
-* @short Generic XML Storage tag.
-*/
-class GStorageTag : public R::RXMLTag
-{
-public:
-
-	/**
-	* Construct a XML Tag.
-	* @param cmd             Name of the cmd.
-	*/
-	GStorageTag(const R::RString& cmd);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* This class represents a generic command that a storage must execute.
-* @author Pascal Francq
-* @short Generic Storage Command.
-*/
-class GStorageCmd
-{
-	/**
-	* Name of the command.
-	*/
-	R::RString Cmd;
-
-	/**
-	* Name of the storage manager supported.
-	*/
-	R::RString Storage;
-
-public:
-
-	/**
-	* Constructor of a command.
-	* @param cmd             Name of the command.
-	* @param storage         Name of the storage.
-	*/
-	GStorageCmd(const R::RString cmd,const R::RString storage);
-
-	/**
-	* Compare two commands.
-	* @param cmd             Command to compare to.
-	*/
-	int Compare(const GStorageCmd& cmd) const;
-
-	/**
-	* Compare a command with a name.
-	* @param cmd             Name to compare to.
-	*/
-	int Compare(const R::RString& cmd) const;
-
-	/**
-	* Get the name of the command.
-	*/
-	R::RString GetName(void) const;
-
-	/**
-	* Get the name of the storage.
-	*/
-	R::RString GetStorage(void) const;
-
-	/**
-	* Connect to a storage.
-	* @param storage         Pointer to the storage.
-	*/
-	virtual void Connect(GStorage* storage);
-
-	/**
-	* Disconnect to the storage.
-	* @param storage         Pointer to the storage.
-	*/
-	virtual void Disconnect(GStorage* storage);
-
-	/**
-	* Run the command.
-	* @param storage         Pointer to the command.
-	* @param inst            XML tag representing the instruction.
-	* @param caller          Caller of the function.
-	*/
-	virtual void Run(GStorage* storage,const GStorageTag& inst,void* caller)=0;
-
-	/**
-	* Destruct.
-	*/
-	virtual ~GStorageCmd(void);
-};
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -155,7 +57,7 @@ public:
 * @author GALILEI Team
 * @short Generic Storage Manager.
 */
-class GStorage : public GPlugin<GFactoryStorage>
+class GStorage : public GPlugin
 {
 protected:
 
@@ -180,18 +82,13 @@ protected:
 	*/
 	bool AllMemory;
 
-	/**
-	* All available commands.
-	*/
-	R::RContainer<GStorageCmd,false,true> Commands;
-
 public:
 
 	/**
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GStorage(GFactoryStorage* fac);
+	GStorage(GPluginFactory* fac);
 
 	//-----------------------------------------------------
 	/** @name General Methods
@@ -213,18 +110,6 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
-
-	/**
-	* Connect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compute the number of objects of a given type which are saved.
@@ -255,27 +140,6 @@ public:
 	*  Get the filtering date.
 	*/
 	R::RDate GetFilter(void) const;
-
-	/**
-	* Verify if a given command is supported by the storage.
-	* @param cmd             Name of the command.
-	*/
-	bool IsCmdSupported(const R::RString cmd) const;
-
-	/**
-	* Execute a command.
-	* @param inst            XML Tag representing a command and its parameters.
-	* @param caller          Caller of the function.
-	*/
-	void ExecuteCmd(const GStorageTag& inst,void* caller);
-
-	/**
-	* Insert a new command in the storage. The command is inserted if :
-	* -# The name of the storage must be compatible with the one of the command.
-	* -# Another command with the same name does not exist.
-	* @param                 cmd Command to insert.
-	*/
-	void InsertCmd(GStorageCmd* cmd);
 
 	/**
 	* Load the Subjects.
@@ -669,132 +533,9 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-/**
-* The GFactoryStorage represent a factory for a given storage.
-* @author Pascal Francq
-* @short Generic Storage Factory.
-*/
-class GFactoryStorage : public GFactoryPlugin<GFactoryStorage,GStorage,GStorageManager>
-{
-
-public:
-
-	/*
-	* Constructor.
-	* @param mng             Manager of the plugin.
-	* @param n               Name of the Factory/Plugin.
-	* @param f               Lib of the Factory/Plugin.
-	*/
-	GFactoryStorage(GStorageManager* mng,const char* n,const char* f);
-
-	/**
-	* Create a plug-in. Call the method 'InitAccess' from GStorage.
-	*/
-	virtual void Create(void);
-
-	/**
-	* Create a plug-in. If there is a current session, generate an exception.
-	*/
-	virtual void Create(GSession* session);
-
-	/**
-	* Update a database.
-	*/
-	virtual void UpdateSchema(const R::RXMLStruct& schema)=0;
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GStorageManager class provides a representation for a manager
-* responsible to manage all storages.
-* @author Pascal Francq
-* @short Storages Manager.
-*/
-class GStorageManager : public GPluginManager<GStorageManager,GFactoryStorage,GStorage>
-{
-private:
-
-	/**
-	* All available commands.
-	*/
-	R::RContainer<GStorageCmd,false,true> Commands;
-
-public:
-
-	/**
-	* Construct the storages manager.
-	*/
-	GStorageManager(void);
-
-	/**
-	* Signal that a plug-in was enabled.
-	* @param plug            Plug-in enabled.
-	*/
-	virtual void EnablePlugIn(GStorage* plug);
-
-	/**
-	* Signal that a plug-in was disabled.
-	* @param plug            Plug-in disabled.
-	*/
-	virtual void DisablePlugIn(GStorage* plug);
-
-	/**
-	* Add a specific command
-	*/
-	bool InsertCmd(GStorageCmd* cmd);
-
-	/**
-	* Destruct the storages manager.
-	*/
-	virtual ~GStorageManager(void);
-};
-
-
 //-------------------------------------------------------------------------------
-#define CREATE_DBFACTORY(manager,factory,genericplugin,plugin,lib,API,name)    \
-	class TheFactory : public factory                                          \
-{                                                                              \
-	static factory* Inst;                                                      \
-	TheFactory(manager* mng,const char* l) : factory(mng,name,l)               \
-	{                                                                          \
-		plugin::CreateParams(this);                                            \
-	}                                                                          \
-	virtual ~TheFactory(void) {}                                               \
-public:                                                                        \
-	static factory* CreateInst(manager* mng,const char* l)                     \
-	{                                                                          \
-		if(!Inst)                                                              \
-			Inst = new TheFactory(mng,l);                                      \
-		return(Inst);                                                          \
-	}                                                                          \
-	virtual const char* GetAPIVersion(void)      const {return(API);}          \
-	virtual void UpdateSchema(const R::RXMLStruct& schema);                    \
-	virtual genericplugin* NewPlugIn(void)                                     \
-	{                                                                          \
-		return(new plugin(this));                                              \
-	}                                                                          \
-	virtual void DeletePlugIn(genericplugin* plug)                             \
-	{                                                                          \
-		delete plug;                                                           \
-	}                                                                          \
-};                                                                             \
-factory* TheFactory::Inst = 0;                                                 \
-                                                                               \
-extern "C" factory* FactoryCreate(manager* mng,const char* l)                  \
-{                                                                              \
-	return(TheFactory::CreateInst(mng,l));                                     \
-}                                                                              \
-extern "C" const char* LibType(void)                                           \
-{                                                                              \
-	return(lib);                                                               \
-}
-
-
-//-------------------------------------------------------------------------------
-#define CREATE_STORAGE_FACTORY(name,plugin)\
-	CREATE_DBFACTORY(GStorageManager,GFactoryStorage,GStorage,plugin,"Storage",API_STORAGE_VERSION,name)
+#define CREATE_STORAGE_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GStorage,plugin,"Storage",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

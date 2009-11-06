@@ -38,93 +38,14 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-// GStorageTag
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GStorageTag::GStorageTag(const RString& cmd)
-	: RXMLTag("StorageCmd")
-{
-	InsertAttr("nameCmd",cmd);
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// GStorageCmd
-//
-//------------------------------------------------------------------------------
-
-
-//------------------------------------------------------------------------------
-GStorageCmd::GStorageCmd(const R::RString cmd,const R::RString storage)
-	: Cmd(cmd), Storage(storage)
-{
-}
-
-
-//------------------------------------------------------------------------------
-int GStorageCmd::Compare(const GStorageCmd& cmd) const
-{
-	int i=Cmd.Compare(cmd.Cmd);
-	if(i)
-		return(i);
-	return(Storage.Compare(cmd.Storage));
-}
-
-
-//------------------------------------------------------------------------------
-int GStorageCmd::Compare(const R::RString& cmd) const
-{
-	return(Cmd.Compare(cmd));
-}
-
-
-//------------------------------------------------------------------------------
-RString GStorageCmd::GetName(void) const
-{
-	return(Cmd);
-}
-
-
-//------------------------------------------------------------------------------
-RString GStorageCmd::GetStorage(void) const
-{
-	return(Storage);
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageCmd::Connect(GStorage*)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageCmd::Disconnect(GStorage*)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GStorageCmd::~GStorageCmd(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
 // GStorage
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorage::GStorage(GFactoryStorage* fac)
-	: GPlugin<GFactoryStorage>(fac), LoadAll(true), Filter(RDate::GetToday()), Filtering(false),
-	  AllMemory(true), Commands(30,15)
+GStorage::GStorage(GPluginFactory* fac)
+	: GPlugin(fac), LoadAll(true), Filter(RDate::GetToday()), Filtering(false),
+	  AllMemory(true)
 {
 }
 
@@ -133,28 +54,6 @@ GStorage::GStorage(GFactoryStorage* fac)
 void GStorage::ApplyConfig(void)
 {
 	AllMemory=(LoadAll&&(!Filtering));
-}
-
-
-//------------------------------------------------------------------------------
-void GStorage::Connect(GSession* session)
-{
-	GPlugin<GFactoryStorage>::Connect(session);
-
-	RCursor<GStorageCmd> Cur(Commands);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Connect(this);
-}
-
-
-//------------------------------------------------------------------------------
-void GStorage::Disconnect(GSession* session)
-{
-	RCursor<GStorageCmd> Cur(Commands);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Disconnect(this);
-
-	GPlugin<GFactoryStorage>::Disconnect(session);
 }
 
 
@@ -187,129 +86,6 @@ R::RDate GStorage::GetFilter(void) const
 
 
 //------------------------------------------------------------------------------
-bool GStorage::IsCmdSupported(const R::RString cmd) const
-{
-	return(Commands.IsIn(cmd));
-}
-
-
-//------------------------------------------------------------------------------
-void GStorage::ExecuteCmd(const GStorageTag& inst,void* caller)
-{
-	GStorageCmd* cmd=Commands.GetPtr(inst.GetAttrValue("nameCmd"));
-	if(!cmd)
-		throw GException("Command '"+inst.GetAttrValue("nameCmd")+"' not support on storage "+Factory->GetName());
-	cmd->Run(this,inst,caller);
-}
-
-
-//------------------------------------------------------------------------------
-void GStorage::InsertCmd(GStorageCmd* cmd)
-{
-	Commands.InsertPtr(cmd);
-	cmd->Connect(this);
-}
-
-
-//------------------------------------------------------------------------------
 GStorage::~GStorage(void)
-{
-}
-
-
-//------------------------------------------------------------------------------
-//
-// class GFactoryStorage
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GFactoryStorage::GFactoryStorage(GStorageManager* mng,const char* n,const char* f)
-	: GFactoryPlugin<GFactoryStorage,GStorage,GStorageManager>(mng,n,f)
-{
-/*	R::RXMLTag* tag=new R::RXMLTag("plugin");
-	xml->AddTag(parent,tag);
-	tag->InsertAttr("name",GetName());
-	tag->InsertAttr("enable","False");
-	GParams::SaveConfig(xml,tag);*/
-}
-
-
-//-----------------------------------------------------------------------------
-void GFactoryStorage::Create(void)
-{
-	if(Plugin) return;
-	Plugin=NewPlugIn();
-	Plugin->ApplyConfig();
- 	Plugin->InitAccess();
-	Mng->EnablePlugIn(Plugin);
-}
-
-
-//-----------------------------------------------------------------------------
-void GFactoryStorage::Create(GSession* session)
-{
-	if(session)
-		throw GException("Cannot create storage when a session is already created");
-	Create();
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GStorageManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GStorageManager::GStorageManager(void)
-	: GPluginManager<GStorageManager,GFactoryStorage,GStorage>("Storage",API_STORAGE_VERSION,ptSelect), Commands(50,50)
-{
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageManager::EnablePlugIn(GStorage* plug)
-{
-	// Enable plugin
-	GPluginManager<GStorageManager,GFactoryStorage,GStorage>::EnablePlugIn(plug);
-
-	// Dispatch commands for this plugin
-	RCursor<GStorageCmd> Cur(Commands);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		if (Cur()->GetStorage()==plug->GetFactory()->GetName())
-			plug->InsertCmd(Cur());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GStorageManager::DisablePlugIn(GStorage* plug)
-{
-	// Disable plugin
-	GPluginManager<GStorageManager,GFactoryStorage,GStorage>::DisablePlugIn(plug);
-}
-
-
-//------------------------------------------------------------------------------
-bool GStorageManager::InsertCmd(GStorageCmd* cmd)
-{
-	// Verify that the command does not exists
-	if(Commands.GetPtr(*cmd))
-		return(false);
-	Commands.InsertPtr(cmd);
-
-	//get current plugin and test if command must be inserted into it
-	GStorage* store=GetCurrentMethod();
-	if(store && store->GetFactory()->GetName()==cmd->GetStorage())
-		store->InsertCmd(cmd);
-	return(true);
-}
-
-
-//------------------------------------------------------------------------------
-GStorageManager::~GStorageManager(void)
 {
 }

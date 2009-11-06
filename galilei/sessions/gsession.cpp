@@ -194,7 +194,6 @@ public:
 	size_t MaxDocs;                                                   // Maximum number of documents to handle in memory.
 	size_t MaxProfiles;                                               // Maximum number of profiles to handle in memory.
 	size_t MaxGroups;                                                 // Maximum number of groups to handle in memory.
-	GFilterManager* FilterManager;                                    // Pointer to the filter manager.
 	bool ClusterSelectedDocs;                                         // Limit the clustering of the documents to the selected ones.
 
 	Intern(size_t mdocs,size_t maxprof,size_t maxgroups,size_t d,size_t u,size_t p,size_t t,size_t c)
@@ -203,7 +202,7 @@ public:
 		  Users(u,u/2), UsersLoaded(false), Profiles(p,p/2),
 		  Communities(c+(c/2),c/2), CommunitiesLoaded(false),
 		  Topics(t+(t/2),t/2), TopicsLoaded(false),
-		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups), FilterManager(0)
+		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups)
 	{
 		CurrentRandom=0;
 		Random=RRandom::Create(RRandom::Good,CurrentRandom);
@@ -250,7 +249,6 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 
 	Data->Slot=slot;
 	Data->Debug=debug;
-	Data->FilterManager=GALILEIApp->GetManager<GFilterManager>("Filter");
 
 	if(!Intern::Session)
 		Intern::Session=this;
@@ -355,7 +353,7 @@ void GSession::ForceReCompute(tObjType type)
 			break;
 		}
 		default:
-			throw GException("GSession::ForceReCompute(tObjType): '"+GetObjType(type)+"' is not allowed");
+			ThrowGException("GSession::ForceReCompute(tObjType): '"+GetObjType(type)+"' is not allowed");
 	}
 }
 
@@ -487,7 +485,7 @@ void GSession::SetActiveDebugObject(const R::RString& name,bool active)
 {
 	GDebugObject* obj=DebugObjs.GetPtr(name);
 	if(!obj)
-		throw GException("No debugging object called '"+name+"'");
+		ThrowGException("No debugging object called '"+name+"'");
 	if(active)
 		obj->Debug=Data->Debug;
 	else
@@ -500,7 +498,7 @@ void GSession::DebugInfo(const RString& name,const RString& info)
 {
 	GDebugObject* obj=DebugObjs.GetPtr(name);
 	if(!obj)
-		throw GException("No debugging object called '"+name+"'");
+		ThrowGException("No debugging object called '"+name+"'");
 	RDebug* old(obj->Debug);
 	obj->Debug=Data->Debug;
 	obj->DebugInfo(info);
@@ -540,9 +538,7 @@ R::RRandom* GSession::GetRandom(void) const
 //------------------------------------------------------------------------------
 void GSession::RunTool(const R::RString& tool)
 {
-	GTool* Tool(GALILEIApp->GetManager<GToolManager>("Tool")->GetPlugIn(tool,false));
-	if(!Tool)
-		ThrowGException("No tool method named '"+tool+"'");
+	GTool* Tool(GALILEIApp->GetPlugIn<GTool>("Tool",tool));
 	Tool->Run();
 }
 
@@ -592,7 +588,7 @@ GClass* GSession::GetClass(size_t id,bool null)
 		if(Cur()->GetId()==id)
 			return(Cur());
 	if(!null)
-		throw GException("GSession::GetClass(size_t,bool): Class '"+RString::Number(id)+"' not found");
+		ThrowGException("GSession::GetClass(size_t,bool): Class '"+RString::Number(id)+"' not found");
 	return(0);
 }
 
@@ -631,7 +627,7 @@ size_t GSession::GetNbElements(tObjType type) const
 		case otTopic:
 			return(Data->Topics.GetNb());
 		default:
-			throw GException("GSession::GetNbElements : Type "+GetObjType(type)+" is not handled");
+			ThrowGException("GSession::GetNbElements : Type "+GetObjType(type)+" is not handled");
 	}
 }
 
@@ -658,7 +654,7 @@ size_t GSession::GetMaxElementId(tObjType type) const
 				return(0);
 			return(Data->Topics[Data->Topics.GetMaxPos()]->GetId());
 		default:
-			throw GException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
+			ThrowGException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
 	}
 }
 
@@ -677,7 +673,7 @@ void* GSession::GetElement(tObjType type,size_t id,bool null) const
 		case otTopic:
 			return(GetTopic(id,null));
 		default:
-			throw GException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
+			ThrowGException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
 	}
 }
 
@@ -694,7 +690,7 @@ void GSession::ClearGroups(tObjType type)
 			ClearCommunities();
 			break;
 		default:
-			throw GException("GSession::ClearGroups : Type "+GetObjType(type)+" is not handled");
+			ThrowGException("GSession::ClearGroups : Type "+GetObjType(type)+" is not handled");
 	}
 }
 
@@ -709,7 +705,7 @@ void* GSession::NewGroup(tObjType type,const RString& name)
 		case otCommunity:
 			return(new GCommunity(name));
 		default:
-			throw GException("GSession::NewGroup : Type "+GetObjType(type)+" is not handled");
+			ThrowGException("GSession::NewGroup : Type "+GetObjType(type)+" is not handled");
 	}
 }
 
@@ -726,7 +722,7 @@ void GSession::InsertGroup(void* ptr,tObjType type)
 			InsertCommunity(static_cast<GCommunity*>(ptr));
 			break;
 		default:
-			throw GException("GSession::InsertGroup : Type "+GetObjType(type)+" is not handled");
+			ThrowGException("GSession::InsertGroup : Type "+GetObjType(type)+" is not handled");
 	}
 }
 
@@ -795,7 +791,7 @@ GDoc* GSession::GetDoc(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown document "+RString::Number(id));
+			ThrowGException("Unknown document "+RString::Number(id));
 	}
 	d=Storage->LoadDoc(id);
 	if(!d)
@@ -803,7 +799,7 @@ GDoc* GSession::GetDoc(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown document "+RString::Number(id));
+			ThrowGException("Unknown document "+RString::Number(id));
 	}
 	const_cast<GSession*>(this)->InsertDoc(d);
 	return(d);
@@ -821,7 +817,7 @@ GDoc* GSession::GetDoc(const char* url,bool,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown document '"+RString(url)+"'");
+			ThrowGException("Unknown document '"+RString(url)+"'");
 	}
 	return(ref->Doc);
 }
@@ -892,9 +888,7 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 	}
 
 	// Get the method
-	GDocAnalyse* Analyse=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
-	if(!Analyse)
-		throw GException("No document analysis method chosen.");
+	GDocAnalyse* Analyse(GALILEIApp->GetCurrentPlugIn<GDocAnalyse>("DocAnalyse"));
 
 	// Analyze the documents - Go through the existing documents
 	R::RCursor<GDoc> Docs=GetDocs();
@@ -920,11 +914,7 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 {
 	// Verify that the document analysis method is selected
 	if(!method)
-	{
-		method=GALILEIApp->GetManager<GDocAnalyseManager>("DocAnalyse")->GetCurrentMethod();
-		if(!method)
-			throw GException("No document analysis method chosen.");
-	}
+		method=GALILEIApp->GetCurrentPlugIn<GDocAnalyse>("DocAnalyse");
 
 	if(!doc->MustCompute()) return;
 	if(rec)
@@ -937,7 +927,7 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	RIO::RSmartTempFile docxml;
 	bool Native;
 	bool Save=(SaveResults&&(doc->GetId()!=cNoRef));
-	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml,Native);
+	RURI uri=GALILEIApp->WhatAnalyze(doc,docxml,Native);
 	if(uri().IsEmpty())
 		return;
 
@@ -972,7 +962,7 @@ bool GSession::GetDocXML(GDoc* doc,R::RXMLStruct* xml,bool& native)
 {
 	RIO::RSmartTempFile docxml;
 	xml->Clear();
-	RURI uri=Data->FilterManager->WhatAnalyze(doc,docxml,native);
+	RURI uri=GALILEIApp->WhatAnalyze(doc,docxml,native);
 	if(uri().IsEmpty())
 		return(false);
 	RXMLFile XML(uri,xml);
@@ -985,7 +975,7 @@ bool GSession::GetDocXML(GDoc* doc,R::RXMLStruct* xml,bool& native)
 void GSession::DoPostDocs(GSlot* rec)
 {
 	// Run all post-doc methods that are enabled
-	R::RCursor<GPostDoc> PostDocs=GALILEIApp->GetManager<GPostDocManager>("PostDoc")->GetPlugIns();
+	R::RCastCursor<GPlugin,GPostDoc> PostDocs(GALILEIApp->GetPlugIns<GPostDoc>("PostDoc"));
 	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
 	{
 		if(rec)
@@ -1001,11 +991,8 @@ void GSession::DoPostDocs(GSlot* rec)
 //------------------------------------------------------------------------------
 void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 {
-	GMetaEngine* metaEngine;
 	// Verify that a meta engine is selected
-	metaEngine=GALILEIApp->GetManager<GMetaEngineManager>("MetaEngine")->GetCurrentMethod();
-	if(!metaEngine)
-		throw GException("No meta engine method chosen.");
+	GMetaEngine* metaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
 	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
 	metaEngine->Process();
 }
@@ -1059,7 +1046,7 @@ GUser* GSession::GetUser(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown user "+RString::Number(id));
+			ThrowGException("Unknown user "+RString::Number(id));
 	}
 	u=Storage->LoadUser(id);
 	if(!u)
@@ -1089,7 +1076,7 @@ GUser* GSession::GetUser(const RString name,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown user "+name);
+			ThrowGException("Unknown user "+name);
 	}
 	u=Storage->LoadUser(name);
 	if(!u)
@@ -1097,7 +1084,7 @@ GUser* GSession::GetUser(const RString name,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown user "+name);
+			ThrowGException("Unknown user "+name);
 	}
 	const_cast<GSession*>(this)->InsertUser(u);
 	return(u);
@@ -1184,7 +1171,7 @@ GProfile* GSession::GetProfile(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown profile "+RString::Number(id)+" in memory");
+			ThrowGException("Unknown profile "+RString::Number(id)+" in memory");
 	}
 	p=Storage->LoadProfile(id);
 	if(!p)
@@ -1192,7 +1179,7 @@ GProfile* GSession::GetProfile(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown profile "+RString::Number(id)+" in storage");
+			ThrowGException("Unknown profile "+RString::Number(id)+" in storage");
 	}
 	const_cast<GSession*>(this)->InsertProfile(p);
 	return(p);
@@ -1244,7 +1231,7 @@ void GSession::InsertProfile(GProfile* p)
 void GSession::CalcProfiles(GSlot* rec)
 {
 	// Run all pre-profile methods that are enabled
-	R::RCursor<GPreProfile> PreProfile=GALILEIApp->GetManager<GPreProfileManager>("PreProfile")->GetPlugIns();
+	R::RCastCursor<GPlugin,GPreProfile> PreProfile(GALILEIApp->GetPlugIns<GPreProfile>("PreProfile"));
 	for(PreProfile.Start();!PreProfile.End();PreProfile.Next())
 	{
 		if(rec)
@@ -1255,8 +1242,8 @@ void GSession::CalcProfiles(GSlot* rec)
 		PreProfile()->Run();
 	}
 
-	GProfileCalc* Profiling(GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod());
-	GLinkCalc* LinkCalc(GALILEIApp->GetManager<GLinkCalcManager>("LinkCalc")->GetCurrentMethod(false));
+	GProfileCalc* Profiling(GALILEIApp->GetCurrentPlugIn<GProfileCalc>("ProfileCalc"));
+	GLinkCalc* LinkCalc(GALILEIApp->GetCurrentPlugIn<GLinkCalc>("LinkCalc",RString::Null,false));
 
 	R::RCursor<GProfile> Prof=GetProfiles();
 	for(Prof.Start();!Prof.End();Prof.Next())
@@ -1281,11 +1268,7 @@ void GSession::CalcProfiles(GSlot* rec)
 void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* linkcalc,GSlot* rec)
 {
 	if(!method)
-	{
-		method=GALILEIApp->GetManager<GProfileCalcManager>("ProfileCalc")->GetCurrentMethod();
-		if(!method)
-			ThrowGException("No computing method chosen");
-	}
+		method=GALILEIApp->GetCurrentPlugIn<GProfileCalc>("ProfileCalc");
 
 	if(rec)
 		rec->NextProfile(profile);
@@ -1318,7 +1301,7 @@ void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* lin
 void GSession::DoPostProfiles(GSlot* rec)
 {
 	// Run all post-profiles methods that are enabled
-	R::RCursor<GPostProfile> PostProfile=GALILEIApp->GetManager<GPostProfileManager>("PostProfile")->GetPlugIns();
+	R::RCastCursor<GPlugin,GPostProfile> PostProfile(GALILEIApp->GetPlugIns<GPostProfile>("PostProfile"));
 	for(PostProfile.Start();!PostProfile.End();PostProfile.Next())
 	{
 		if(rec)
@@ -1427,7 +1410,7 @@ GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 	{
 		if(null)
 			return(0);
-		throw GException("Unknown community "+RString::Number(id));
+		ThrowGException("Unknown community "+RString::Number(id));
 	}
 	GCommunity* grp=Data->Communities.GetPtr(id);
 	if(grp)
@@ -1440,7 +1423,7 @@ GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown community "+RString::Number(id));
+			ThrowGException("Unknown community "+RString::Number(id));
 	}
 	grp=Storage->LoadCommunity(id);
 	if(!grp)
@@ -1448,7 +1431,7 @@ GCommunity* GSession::GetCommunity(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown community "+RString::Number(id));
+			ThrowGException("Unknown community "+RString::Number(id));
 	}
 	const_cast<GSession*>(this)->InsertCommunity(grp);
 	return(grp);
@@ -1504,12 +1487,10 @@ void GSession::ClearCommunities(void)
 void GSession::GroupProfiles(GSlot* rec)
 {
 	// Verify that there is a method to cluster the profiles
-	GGroupProfiles* Grouping(GALILEIApp->GetManager<GGroupProfilesManager>("GroupProfiles")->GetCurrentMethod());
-	if(!Grouping)
-		throw GException("No profiles grouping method chosen.");
+	GGroupProfiles* Grouping(GALILEIApp->GetCurrentPlugIn<GGroupProfiles>("GroupProfiles"));
 
 	// How to compute the groups
-	GCommunityCalc* CalcDesc(GALILEIApp->GetManager<GCommunityCalcManager>("CommunityCalc")->GetCurrentMethod());
+	GCommunityCalc* CalcDesc(GALILEIApp->GetCurrentPlugIn<GCommunityCalc>("CommunityCalc"));
 
     // Group the profiles
 	Grouping->Grouping(rec);
@@ -1548,7 +1529,7 @@ void GSession::GroupProfiles(GSlot* rec)
 void GSession::DoPostCommunity(GSlot* rec)
 {
 	// Run all post-community methods that are enabled
-	R::RCursor<GPostCommunity> PostCommunity=GALILEIApp->GetManager<GPostCommunityManager>("PostCommunity")->GetPlugIns();
+	R::RCastCursor<GPlugin,GPostCommunity> PostCommunity(GALILEIApp->GetPlugIns<GPostCommunity>("PostCommunity"));
 	for(PostCommunity.Start();!PostCommunity.End();PostCommunity.Next())
 	{
 		if(rec)
@@ -1646,7 +1627,7 @@ GTopic* GSession::GetTopic(size_t id,bool load,bool null) const
 	{
 		if(null)
 			return(0);
-		throw GException("Unknown topic "+RString::Number(id));
+		ThrowGException("Unknown topic "+RString::Number(id));
 	}
 	GTopic* top=Data->Topics[id];
 	if(top)
@@ -1659,7 +1640,7 @@ GTopic* GSession::GetTopic(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown topic "+RString::Number(id));
+			ThrowGException("Unknown topic "+RString::Number(id));
 	}
 	top=Storage->LoadTopic(id);
 	if(!top)
@@ -1667,7 +1648,7 @@ GTopic* GSession::GetTopic(size_t id,bool load,bool null) const
 		if(null)
 			return(0);
 		else
-			throw GException("Unknown topic "+RString::Number(id));
+			ThrowGException("Unknown topic "+RString::Number(id));
 	}
 	const_cast<GSession*>(this)->InsertTopic(top);
 	return(top);
@@ -1723,12 +1704,10 @@ void GSession::ClearTopics(void)
 void GSession::GroupDocs(GSlot* rec)
 {
 	// Verify that there is a method to cluster the documents
-	GGroupDocs* Grouping(GALILEIApp->GetManager<GGroupDocsManager>("GroupDocs")->GetCurrentMethod());
-	if(!Grouping)
-		throw GException("No documents grouping method chosen.");
+	GGroupDocs* Grouping(GALILEIApp->GetCurrentPlugIn<GGroupDocs>("GroupDocs"));
 
 	// How to compute the groups
-	GTopicCalc* CalcDesc(GALILEIApp->GetManager<GTopicCalcManager>("TopicCalc")->GetCurrentMethod());
+	GTopicCalc* CalcDesc(GALILEIApp->GetCurrentPlugIn<GTopicCalc>("TopicCalc"));
 
     // Group the documents
 	Grouping->Grouping(rec,Data->ClusterSelectedDocs);
@@ -1767,7 +1746,7 @@ void GSession::GroupDocs(GSlot* rec)
 void GSession::DoPostTopic(GSlot* rec)
 {
 	// Run all post-topic methods that are enabled
-	R::RCursor<GPostTopic> Post=GALILEIApp->GetManager<GPostTopicManager>("PostTopic")->GetPlugIns();
+	R::RCastCursor<GPlugin,GPostTopic> Post(GALILEIApp->GetPlugIns<GPostTopic>("PostTopic"));
 	for(Post.Start();!Post.End();Post.Next())
 	{
 		if(rec)
@@ -1815,7 +1794,7 @@ void GSession::UpdateTopic(size_t docid)
 void GSession::ComputeTrust(GSlot* rec)
 {
 	// Run all trust methods that are enabled
-	R::RCursor<GComputeTrust> ComputeTrust(GALILEIApp->GetManager<GComputeTrustManager>("ComputeTrust")->GetPlugIns());
+	R::RCastCursor<GPlugin,GComputeTrust> ComputeTrust(GALILEIApp->GetPlugIns<GComputeTrust>("ComputeTrust"));
 	for(ComputeTrust.Start();!ComputeTrust.End();ComputeTrust.Next())
 	{
 		if(rec)
@@ -1832,7 +1811,7 @@ void GSession::ComputeTrust(GSlot* rec)
 void GSession::ComputeSugs(GSlot* rec)
 {
 	// Run all suggestions methods that are enabled
-	R::RCursor<GComputeSugs> ComputeSugs(GALILEIApp->GetManager<GComputeSugsManager>("ComputeSugs")->GetPlugIns());
+	R::RCastCursor<GPlugin,GComputeSugs> ComputeSugs(GALILEIApp->GetPlugIns<GComputeSugs>("ComputeSugs"));
 	for(ComputeSugs.Start();!ComputeSugs.End();ComputeSugs.Next())
 	{
 		if(rec)

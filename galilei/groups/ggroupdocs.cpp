@@ -56,8 +56,8 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupDocs::GGroupDocs(GFactoryGroupDocs* fac)
-	: GPlugin<GFactoryGroupDocs>(fac), Docs(100,50)
+GGroupDocs::GGroupDocs(GPluginFactory* fac)
+	: GPlugin(fac), Docs(100,50)
 {
 }
 
@@ -100,25 +100,5 @@ void GGroupDocs::Grouping(GSlot*,bool debug)
 
 //------------------------------------------------------------------------------
 GGroupDocs::~GGroupDocs(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GGroupDocsManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GGroupDocsManager::GGroupDocsManager(void)
-	: GPluginManager<GGroupDocsManager,GFactoryGroupDocs,GGroupDocs>("GroupDocs",API_GROUPDOCS_VERSION,ptSelect)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GGroupDocsManager::~GGroupDocsManager(void)
 {
 }

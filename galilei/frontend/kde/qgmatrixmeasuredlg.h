@@ -94,7 +94,7 @@ public:
 	 * Launch the configuration.
 	 * @param params         Pointer to the factory.
 	 */
-	void Configure(GFactoryMeasure* params);
+	void Configure(GPluginFactory* params);
 
 	/**
 	 * Method called before the dialog box is initialized. By default, it hides
@@ -134,7 +134,7 @@ public:
 	 * @endcode
 	 * @param params         Pointer to the factory.
 	 */
-	virtual void Init(GFactoryMeasure* params);
+	virtual void Init(GPluginFactory* params);
 
 	/**
 	 * Method called when the dialog box is closed with the 'OK' button. The
@@ -150,7 +150,7 @@ public:
 	 * @endcode
 	 * @param params         Pointer to the factory.
 	 */
-	virtual void Done(GFactoryMeasure* params);
+	virtual void Done(GPluginFactory* params);
 
 public slots:
 

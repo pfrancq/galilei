@@ -148,7 +148,7 @@ GConceptType* GOntology::GetInsertConceptType(const RString& name,const RString&
 void GOntology::InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses)
 {
 	RString code(name.Mid(0,2));
-	GLang* Lang(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIn(code,false));
+	GLang* Lang(GALILEIApp->GetPlugIn<GLang>("Lang",code,false));
 	GConceptType* type=new GConceptType(id,this,name,desc,Lang,5000);
 	if(!id)
 		Storage->AssignId(type);

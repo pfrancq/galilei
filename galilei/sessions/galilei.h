@@ -273,8 +273,6 @@ class GConceptType;
 class GPredicate;
 class GStatement;
 class GLang;
-class GFactoryLang;
-class GLangManager;
 class GWeightInfo;
 class GWeightInfos;
 class GWeightInfosObj;
@@ -285,45 +283,31 @@ class GClasses;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Documents Part
-class GFilter;
-class GFactoryFilter;
-class GFilterManager;
 class GTopic;
 class GDoc;
-class GDocAnalyse;
-class GDocAnalyseManager;
-class GPostDoc;
-class GPostDocManager;
-class GFactoryPostDoc;
 class GDocXML;
 class GFactoryDocAnalyse;
 class GBalancedLinks;
-class GFactoryLinkCalc;
 class GLink;
-class GLinkCalc;
-class GLinkCalcManager;
 class GLinks;
 class GDocRanking;
 class GSuggestion;
 class GSugs;
 class GTVDRec;
 class GDocStruct;
+class GDocAnalyse;
+class GFilter;
 
 
 //------------------------------------------------------------------------------
 // forward class declaration - Engines Part
-class GEngine;
-class GFactoryEngine;
-class GEngineManager;
 class GEngineDoc;
 class GRanking;
-class GMetaEngine;
-class GFactoryMetaEngine;
-class GMetaEngineManager;
 class GIndexer;
-class GFactoryComputeTrust;
+class GComputeSugs;
 class GComputeTrust;
-class GComputeTrustManager;
+class GEngine;
+class GMetaEngine;
 
 
 //------------------------------------------------------------------------------
@@ -332,45 +316,20 @@ class GUser;
 class GProfile;
 class GFdbk;
 class GProfileCalc;
-class GFactoryProfileCalc;
-class GProfileCalcManager;
-class GPreProfile;
-class GPostProfile;
-class GFactoryPreProfile;
-class GFactoryPostProfile;
-class GPreProfileManager;
-class GPostProfileManager;
+class GLinkCalc;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Communities Part
+// forward class declaration - Groups Part
 class GCommunity;
 class GCommunityDocs;
-class GGroupProfiles;
-class GFactoryGroupProfiles;
-class GFactoryGroupDocs;
-class GGroupProfilesManager;
-class GGroupDocsManager;
-class GCommunityCalc;
-class GCommunityCalcManager;
-class GTopicCalcManager;
 class GSubject;
 class GSubjects;
-class GPostCommunity;
-
-
-//------------------------------------------------------------------------------
-// forward class declaration - Topics Part
 class GTopic;
 class GGroupDocs;
+class GGroupProfiles;
 class GTopicCalc;
-class GFactoryCommunityCalc;
-class GFactoryTopicCalc;
-class GPostTopic;
-class GPostCommunityManager;
-class GPostTopicManager;
-class GFactoryPostCommunity;
-class GFactoryPostTopic;
+class GCommunityCalc;
 
 
 //------------------------------------------------------------------------------
@@ -379,29 +338,26 @@ class GObject;
 class GDebugObject;
 class GSession;
 class GSlot;
-class GStatsCalc;
-class GFactoryStatsCalc;
-class GStatsCalcManager;
 class GStorage;
-class GStorageManager;
-class GFactoryStorage;
-class GMeasure;
-class GMeasureManager;
-class GFactoryMeasure;
 class GGALILEIApp;
 class GGALILEIPrg;
+class GSimulator;
 
 
 //------------------------------------------------------------------------------
-// forward class declaration - Tools Part
-class GTool;
-class GFactoryTool;
-class GToolManager;
+// forward class declaration - Plug-ins Part
+class GPlugin;
+class GPluginFactory;
+class GPluginManager;
+class GMeasure;
 class GMatrixMeasure;
-class GSimulator;
-class GFactoryComputeSugs;
-class GComputeSugs;
-class GComputeSugsManager;
+class GTool;
+class GPostDoc;
+class GPostTopic;
+class GPostCommunity;
+class GPreProfile;
+class GPostProfile;
+class GStatsCalc;
 
 
 //------------------------------------------------------------------------------

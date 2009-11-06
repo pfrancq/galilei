@@ -43,33 +43,13 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunityCalc::GCommunityCalc(GFactoryCommunityCalc* fac)
-	: GPlugin<GFactoryCommunityCalc>(fac), Infos(5000)
+GCommunityCalc::GCommunityCalc(GPluginFactory* fac)
+	: GPlugin(fac), Infos(5000)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GCommunityCalc::~GCommunityCalc(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GCommunityCalcManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GCommunityCalcManager::GCommunityCalcManager(void)
-	: GPluginManager<GCommunityCalcManager,GFactoryCommunityCalc,GCommunityCalc>("CommunityCalc",API_COMMUNITYCALC_VERSION,ptSelect)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GCommunityCalcManager::~GCommunityCalcManager(void)
 {
 }

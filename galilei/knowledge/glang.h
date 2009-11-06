@@ -51,11 +51,6 @@ namespace GALILEI{
 
 
 //------------------------------------------------------------------------------
-// API VERSION
-#define API_LANG_VERSION "2.0"
-
-
-//------------------------------------------------------------------------------
 /**
 * The GLang class provides a representation for a generic language. Each
 * language has to be implemented as a plug-in. The virtual function GetStemming
@@ -68,7 +63,7 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Generic Language.
 */
-class GLang : public R::RLang, public GPlugin<GFactoryLang>
+class GLang : public R::RLang, public GPlugin
 {
 protected:
 	class SkipWord;
@@ -97,7 +92,17 @@ public:
 	* @param lang           Name of the language.
 	* @param code           Code of the language.
 	*/
-	GLang(GFactoryLang* fac,const R::RString& lang,const char* code);
+	GLang(GPluginFactory* fac,const R::RString& lang,const char* code);
+
+	/**
+	 * @return the name of the language.
+	 */
+	R::RString GetLangName(void) const {return(RLang::GetName());}
+
+	/**
+	 * @return the name of the plug-in.
+	 */
+	R::RString GetPlugInName(void) const {return(GPlugin::GetName());}
 
 	/**
 	* Connect to a Session.
@@ -209,110 +214,9 @@ public:
 };
 
 
-//-----------------------------------------------------------------------------
-/**
-* The GFactoryLang represent a factory for a given language.
-* @author Pascal Francq
-* @short Generic Language Factory.
-*/
-class GFactoryLang : public GFactoryPlugin<GFactoryLang,GLang,GLangManager>
-{
-	/**
-	* Code of the language.
-	*/
-	char Code[3];
-
-public:
-
-	/**
-	* Constructor.
-	* @param mng             Manager of the plugin.
-	* @param n               Name of the Factory/Plugin.
-	* @param f               Lib of the Factory/Plugin.
-	* @param c               Code of the language.
-	*/
-	GFactoryLang(GLangManager* mng,const char* n,const char* f,const char* c)
-		: GFactoryPlugin<GFactoryLang,GLang,GLangManager>(mng,n,f) {strcpy(Code,c);}
-
-	/**
-	* Compare function like strcmp used in particular for RContainer class.
-	* @param lang           Factory used for the comparison.
-	*/
-	int Compare(const GFactoryLang& lang) const {return(strcmp(Code,lang.Code));}
-
-	/**
-	* Compare function like strcmp used in particular for RContainer class.
-	* @param code           Code used for the comparison.
-	*/
-	int Compare(const char* code) const {return(strcmp(Code,code));}
-};
-
-
 //------------------------------------------------------------------------------
-/**
-* The GLangManager class provides a representation for a manager for the languages
-* handled by the system. In fact, each language is a plugin.
-* @author Pascal Francq
-* @short Languages.
-*/
-class GLangManager : public GPluginManager<GLangManager,GFactoryLang,GLang>
-{
-public:
-
-	/**
-	* Constructor of the manager.
-	*/
-	GLangManager(void);
-
-	/**
-	* Destructor of the manager.
-	*/
-	virtual ~GLangManager(void);
-};
-
-
-//------------------------------------------------------------------------------
-#define CREATE_LANG_FACTORY(name,C,code)                                                  \
-class TheFactory : public GFactoryLang                                                    \
-{                                                                                         \
-private:                                                                                  \
-	static GFactoryLang* Inst;                                                            \
-	TheFactory(GLangManager* mng,const char* l) : GFactoryLang(mng,name,l,code)           \
-	{                                                                                     \
-		C::CreateParams(this);                                                            \
-	}                                                                                     \
-	virtual ~TheFactory(void) {}                                                          \
-public:                                                                                   \
-	static GFactoryLang* CreateInst(GLangManager* mng,const char* l)                      \
-	{                                                                                     \
-		if(!Inst)                                                                         \
-			Inst = new TheFactory(mng,l);                                                 \
-		return(Inst);                                                                     \
-	}                                                                                     \
-	virtual GLang* NewPlugIn(void)                                                        \
-	{                                                                                     \
-		return(new C(this));                                                              \
-	}                                                                                     \
-	virtual void DeletePlugIn(GLang* plug)                                                \
-	{                                                                                     \
-		delete plug;                                                                      \
-	}                                                                                     \
-	virtual const char* GetAPIVersion(void) const {return(API_LANG_VERSION);}             \
-};                                                                                        \
-                                                                                          \
-GFactoryLang* TheFactory::Inst = 0;                                                       \
-                                                                                          \
-extern "C"                                                                                \
-{                                                                                         \
-	GFactoryLang* FactoryCreate(GLangManager* mng,const char* l)                          \
-	{                                                                                     \
-		return(TheFactory::CreateInst(mng,l));                                            \
-	}                                                                                     \
-	const char* LibType(void)                                                             \
-	{                                                                                     \
-		return("Lang");                                                                   \
-	}                                                                                     \
-}
+#define CREATE_LANG_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GLang,plugin,"Lang",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

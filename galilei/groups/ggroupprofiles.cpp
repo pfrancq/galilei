@@ -56,8 +56,8 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupProfiles::GGroupProfiles(GFactoryGroupProfiles* fac)
-	: GPlugin<GFactoryGroupProfiles>(fac), Profiles(100,50)
+GGroupProfiles::GGroupProfiles(GPluginFactory* fac)
+	: GPlugin(fac), Profiles(100,50)
 {
 }
 
@@ -85,25 +85,5 @@ void GGroupProfiles::Grouping(GSlot*)
 
 //------------------------------------------------------------------------------
 GGroupProfiles::~GGroupProfiles(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GGroupProfilesManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GGroupProfilesManager::GGroupProfilesManager(void)
-	: GPluginManager<GGroupProfilesManager,GFactoryGroupProfiles,GGroupProfiles>("GroupProfiles",API_GROUPPROFILES_VERSION,ptSelect)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GGroupProfilesManager::~GGroupProfilesManager(void)
 {
 }

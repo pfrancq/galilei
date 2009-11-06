@@ -29,23 +29,10 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <ctype.h>
-#include <stdexcept>
-#include <fnmatch.h>
-
-
-//------------------------------------------------------------------------------
-// include files for R Library
-#include <rxmlfile.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
+#include <ggalileiapp.h>
 #include <gdocxml.h>
-#include <gdoc.h>
 #include <gfilter.h>
-#include <gslot.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -59,8 +46,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilter::GFilter(GFactoryFilter* fac)
-	: GPlugin<GFactoryFilter>(fac), Doc(0)
+GFilter::GFilter(GPluginFactory* fac)
+	: GPlugin(fac), Doc(0)
 {
 }
 
@@ -68,14 +55,14 @@ GFilter::GFilter(GFactoryFilter* fac)
 //---------------------------------------------------------------------------
 void GFilter::AddMIME(const char* name)
 {
-	GetFactory()->GetMng()->AddMIME(name,this);
+	GALILEIApp->AddMIME(name,this);
 }
 
 
 //---------------------------------------------------------------------------
 void GFilter::AddMIME(RString name)
 {
-	GetFactory()->GetMng()->AddMIME(name,this);
+	GALILEIApp->AddMIME(name,this);
 }
 
 
@@ -465,209 +452,5 @@ R::RXMLTag* GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* atta
 
 //------------------------------------------------------------------------------
 GFilter::~GFilter(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GFilterManager::GMIMEFilter
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-class GFilterManager::GMIMEFilter
-{
-public:
-	RString Name;
-	GFilter* Filter;
-
-	GMIMEFilter(const char* n,GFilter* f) : Name(n), Filter(f) {}
-	int Compare(const GMIMEFilter* f) const {return(Name.Compare(f->Name));}
-	int Compare(const GMIMEFilter& f) const {return(Name.Compare(f.Name));}
-	int Compare(const R::RString& t) const {return(Name.Compare(t));}
-};
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GFilterManager::GMIMEExt
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-class GFilterManager::GMIMEExt
-{
-public:
-	RString Name;
-	RString Ext;
-
-	GMIMEExt(const RString& n,const RString& e) : Name(n), Ext(e) {}
-	int Compare(const GMIMEExt* f) const {return(Name.Compare(f->Ext));}
-	int Compare(const GMIMEExt& f) const {return(Name.Compare(f.Ext));}
-	int Compare(const R::RString& e) const {return(Name.Compare(e));}
-	int Compare(const char* e) const {return(Name.Compare(e));}
-};
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GFilterManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GFilterManager::GFilterManager(void)
-	: GPluginManager<GFilterManager,GFactoryFilter,GFilter>("Filter",API_FILTER_VERSION,ptList),
-	  RDownload(), MIMES(50,25), Exts(50,25)
-{
-	// Try to open list of MIME types
-	try
-	{
-		RXMLStruct xml;
-		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
-		File.Open(R::RIO::Read);
-		// Go trough all MIME types
-		RXMLTag* Types=xml.GetTag("mimeTypes");
-		if(!Types)
-			throw GException("MIME type file \"/etc/galilei/galilei.mimes\" is invalid");
-		R::RCursor<RXMLTag> Cur(Types->GetNodes());
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			RString MIME(Cur()->GetAttrValue("code"));
-			// Go through all file extension
-			R::RCursor<RXMLTag> Cur2(Cur()->GetNodes());
-			for(Cur2.Start();!Cur2.End();Cur2.Next())
-				Exts.InsertPtr(new GMIMEExt(MIME,Cur2()->GetAttrValue("ext")));
-		}
-	}
-	catch(...)
-	{
-		//cerr<<"Cannot load '/etc/galilei/galilei.mimes'"<<endl;
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterManager::FindMIMEType(void)
-{
-	// If MIME type already exist -> return
-	RString MIME=Doc->GetMIMEType();
-	if(!MIME.IsEmpty())
-		return;
-
-	// Goes through all defined MIME types
-	RCursor<GMIMEExt> Cur(Exts);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		if(fnmatch(Cur()->Ext,Doc->GetURL()(),0)!=FNM_NOMATCH)
-		{
-			Doc->SetMIMEType(Cur()->Name);
-			return;
-		}
-}
-
-
-//------------------------------------------------------------------------------
-bool GFilterManager::IsValidContent(const R::RString& MIME)
-{
-	if(Doc->GetMIMEType().IsEmpty())
-		Doc->SetMIMEType(MIME);
-	GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
-	if(!ptr)
-		return(false);
-	Filter=ptr->Filter;
-	return(true);
-}
-
-
-//------------------------------------------------------------------------------
-RURI GFilterManager::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml,bool& native)
-{
-	RIO::RSmartTempFile DwnFile;      // Temporary file containing the downloaded file  (if necessary).
-	RURI NonXMLFile;               // Non XML-File file.
-
-	// Init Part;
-	Doc=doc;
-	Filter=0;
-	native=true;       // Suppose real XML file
-
-	// Guess the MIME type if necessary
-	FindMIMEType();
-
-	// If it is known to be a XML file -> file can directly analyzed.
-	if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
-		return(Doc->GetURL());
-
-	// The file is perhaps not a XML file -> Try to transform it into DocXML
-
-	// If it is not a local	file -> Download it
-	if(Doc->GetURL().GetScheme()!="file")
-	{
-		NonXMLFile=DwnFile.GetName();
-		DownloadFile(Doc->GetURL(),NonXMLFile);
-
-		// Perhaps the server holding the file has provide a MIME type which can be XML
-		if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
-			return(Doc->GetURL());
-	}
-	else
-	{
-		NonXMLFile=Doc->GetURL().GetPath();
-		GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
-		if(ptr)
-			Filter=ptr->Filter;
-	}
-
-	// No XML file
-	native=false;
-
-	// If no MIME type -> Exception
-	if(doc->GetMIMEType().IsEmpty())
-		throw GException("Cannot find MIME type for "+doc->GetURL()());
-
-	// If no filter -> Exception
-	if(!Filter)
-		throw GException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
-
-	// Analyze the file
-	Filter->Analyze(Doc->GetURL(),NonXMLFile,docxml.GetName());
-
-	// Return file to realy analyze
-	return(docxml.GetName());
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterManager::AddMIME(const char* mime,GFilter* f)
-{
-	MIMES.InsertPtr(new GMIMEFilter(mime,f));
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterManager::DelMIMES(GFilter* f)
-{
-	RContainer<GMIMEFilter,false,false> Rem(5,5);
-
-	// Find All MIMES types to deleted
-	RCursor<GMIMEFilter> Cur(MIMES);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		if(Cur()->Filter==f)
-			Rem.InsertPtr(Cur());
-	}
-
-	// Delete all MIMES
-	Cur.Set(Rem);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		MIMES.DeletePtr(Cur());
-}
-
-
-//------------------------------------------------------------------------------
-GFilterManager::~GFilterManager(void)
 {
 }

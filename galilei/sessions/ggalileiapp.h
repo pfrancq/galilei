@@ -36,6 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for R
 #include <rapplication.h>
+#include <rdownload.h>
 
 
 //------------------------------------------------------------------------------
@@ -56,8 +57,11 @@ namespace GALILEI{
 * @short GALILEI Application
 * @author Pascal Francq
 */
-class GGALILEIApp : public R::RApplication, public R::RContainer<GGenericPluginManager,true,false>
+class GGALILEIApp : public R::RApplication, public R::RContainer<GPluginManager,true,false>, public R::RDownload
 {
+	class GMIMEFilter;
+	class GMIMEExt;
+
 protected:
 
 	/**
@@ -109,6 +113,26 @@ protected:
 	 * Directory where to binary files of the index are stored.
 	 */
 	R::RString IndexDir;
+
+	/**
+	* List of all pairs (MIME type,filter) available.
+	*/
+	R::RContainer<GMIMEFilter,true,true> MIMES;
+
+	/**
+	* List of all pairs (extension, MIME type) available.
+	*/
+	R::RContainer<GMIMEExt,true,true> Exts;
+
+	/**
+	 * Filter that should analyze the file.
+	 */
+	GFilter* Filter;
+
+	/**
+	 * Document to analyze.
+	 */
+	GDoc* Doc;
 
 public:
 
@@ -242,16 +266,156 @@ public:
 	* Get a cursor over all the managers.
 	* @return GPluginManager A cursor on the managers
 	*/
-	R::RCursor<GGenericPluginManager> GetManagers(void);
+	R::RCursor<GPluginManager> GetManagers(void);
 
 	/**
 	* Get the manager associated to the "name".
-	* @param name         The name of the manager to be found
-	* @return GPluginManager The plug-ins manager.
+	* @param mng             Name of the manager to be found.
 	*/
-	template<class Manager> Manager* GetManager(const R::RString& name)
+	GPluginManager* GetManager(const R::RString& mng) const;
+
+	/**
+	* Get the factories of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param list            List.
+	*/
+	R::RCursor<GPluginFactory> GetFactories(const R::RString& mng,const R::RString& list=R::RString::Null) const;
+
+	/**
+	* Get the plug-ins of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param list            List.
+	*/
+	template<class plugin> R::RCastCursor<GPlugin,plugin> GetPlugIns(const R::RString& mng,const R::RString& list=R::RString::Null) const
 	{
-		return(dynamic_cast<Manager*>(GetPtr(name)));
+		GPluginManager* ptr(GetPtr(mng));
+		if(!ptr)
+			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+		return(ptr->GetPlugIns<plugin>(list));
+	}
+
+	/**
+	* Get a factory of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param name            Name of the plug-in.
+	* @param list            List.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	GPluginFactory* GetFactory(const R::RString& mng,const R::RString& name,const R::RString& list,int need=1) const;
+
+	/**
+	* Get a factory of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param name            Name of the plug-in.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	GPluginFactory* GetFactory(const R::RString& mng,const R::RString& name,int need=1) const
+	{
+		return(GetFactory(mng,name,R::RString::Null,need));
+	}
+
+	/**
+	* Get a plug-in of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param name            Name of the plug-in.
+	* @param list            List.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	template<class plugin> plugin* GetPlugIn(const R::RString& mng,const R::RString& name,const R::RString& list,int need=1) const
+	{
+		GPluginManager* ptr(GetPtr(mng));
+		if(!ptr)
+			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+		return(ptr->GetPlugIn<plugin>(name,list,need));
+	}
+
+	/**
+	* Get a plug-in of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param name            Name of the plug-in.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	template<class plugin> plugin* GetPlugIn(const R::RString& mng,const R::RString& name,int need=1) const
+	{
+		return(GetPlugIn<plugin>(mng,name,R::RString::Null,need));
+	}
+
+	/**
+	* Get the current factory of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param list            List.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	GPluginFactory* GetCurrentFactory(const R::RString& mng,const R::RString& list,int need=1) const;
+
+	/**
+	* Get the current factory of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	GPluginFactory* GetCurrentFactory(const R::RString& mng,int need=1) const
+	{
+		return(GetCurrentFactory(mng,R::RString::Null,need));
+	}
+
+	/**
+	* Get the current plug-in of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param list            List.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	template<class plugin> plugin* GetCurrentPlugIn(const R::RString& mng,const R::RString& list,int need=1) const
+	{
+		GPluginManager* ptr(GetPtr(mng));
+		if(!ptr)
+			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+		return(ptr->GetCurrentPlugIn<plugin>(list,need));
+	}
+
+	/**
+	* Get the current plug-in of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	template<class plugin> plugin* GetCurrentPlugIn(const R::RString& mng,int need=1) const
+	{
+		return(GetCurrentPlugIn<plugin>(mng,R::RString::Null,need));
+	}
+
+	/**
+	* Set the current plug-in for a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param name            Name of the method.
+	* @param list            List.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	void SetCurrentPlugIn(const R::RString& mng,const R::RString& name,const R::RString& list,int need=1)
+	{
+		GPluginManager* ptr(GetPtr(mng));
+		if(!ptr)
+			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+		ptr->SetCurrentPlugIn(name,list,need);
+	}
+
+	/**
+	* Set the current plug-in for a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param name            Name of the method.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	void SetCurrentPlugIn(const R::RString& mng,const R::RString& name,int need=1)
+	{
+		SetCurrentPlugIn(mng,name,R::RString::Null,need);
 	}
 
 	/**
@@ -266,6 +430,55 @@ public:
 	*/
 	void RunPrg(GSlot* rec,const R::RString& filename);
 
+
+protected:
+
+	/**
+	 * Find the MIME type of a file based on its extension (Ex. ".html" gives
+	 * "text/html").
+	 */
+	void FindMIMEType(void);
+
+	/**
+	 * If the protocol is HTTP and the server returns a content type for the
+	 * downloaded file. This function verifies that a filter exist for the
+	 * document to download.
+	 * @param MIME           MIME type send by the server.
+	 * @return true if the file should be downloaded.
+	 */
+	virtual bool IsValidContent(const R::RString& MIME);
+
+public:
+
+	/**
+	* Return the URI of the file to analyze. If the file is not a XML file, the
+	* method tries to determine the MIME type and to find a corresponding
+	* filter.
+	* @param doc             Document to analyze.
+	* @param docxml          Temporary file containing the DocXML if necessary.
+	* @param native          Variable modified by the method to specify of the
+	*                        original file is a XML one.
+	* @return The result depends:
+	* #- The original URI is given back if it is a XML file.
+	* #- A local temporary file containing a XML version of the file if a
+	*    filter was used (the temporary file must be deleted by the caller).
+	* @exception A GException is generated if the document could not be
+	* analyzed (no MIME type, no filter, ...).
+	*/
+	R::RURI WhatAnalyze(GDoc* doc,R::RIO::RSmartTempFile& docxml,bool& native);
+
+	/**
+	* Add a pair (MIME type,filter).
+	* @param mime           Name of the MIME type.
+	* @param f              Pointer to the filter.
+	*/
+	void AddMIME(const char* mime,GFilter* f);
+
+	/**
+	* Delete all the MIME type associated with a filter.
+	* @param f              Pointer to the filter.
+	*/
+	void DelMIMES(GFilter* f);
 
 	/**
 	* Destruct the application.

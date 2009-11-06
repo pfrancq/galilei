@@ -5,32 +5,24 @@ SET(galilei_sessions_INST_INCLUDES
     galilei.h
     gstorage.h
     gslot.h
-    gslotlog.h
-    gplugin.h
-    gstatscalc.h
-    gmeasure.h
+    gslotlog.h    
     ggalileiapp.h
     gdebugobject.h
-    gpluginmanager.h
-    gpluginmanager.hh
-    gplugin.hh
     gobject.h
+    gsimulator.h
 )
 
 
 SET(galilei_sessions_TARGET_SOURCES
+	galilei.cpp
+	gobject.cpp
+    gdebugobject.cpp        	
+    gslot.cpp
+    gslotlog.cpp
+    gstorage.cpp          
     gbasicsession.cpp
     gsession.cpp
     ggalileiprg.cpp
-    gslot.cpp
-    gslotlog.cpp
-    gstorage.cpp
-    gstatscalc.cpp
-    gplugin.hh
-    gpluginmanager.cpp
-    galilei.cpp
-    gmeasure.cpp
     ggalileiapp.cpp
-    gdebugobject.cpp
-    gobject.cpp
+    gsimulator.cpp
 )

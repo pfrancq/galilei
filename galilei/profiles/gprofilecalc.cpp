@@ -42,33 +42,13 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfileCalc::GProfileCalc(GFactoryProfileCalc* fac)
-	: GPlugin<GFactoryProfileCalc>(fac), Infos(5000)
+GProfileCalc::GProfileCalc(GPluginFactory* fac)
+	: GPlugin(fac), Infos(5000)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GProfileCalc::~GProfileCalc(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GProfileCalcManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GProfileCalcManager::GProfileCalcManager(void)
-	: GPluginManager<GProfileCalcManager,GFactoryProfileCalc,GProfileCalc>("ProfileCalc",API_PROFILECALC_VERSION,ptSelect)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GProfileCalcManager::~GProfileCalcManager(void)
 {
 }

@@ -89,7 +89,7 @@ public:
 	tObjType Type;
 
 	QGObject(QTreeWidget* parent,GLang* lang)
-		: QTreeWidgetItem(parent, QStringList()<<((lang)?ToQString(lang->GetName()):"?????")<<""), Type(otLang)
+		: QTreeWidgetItem(parent, QStringList()<<((lang)?ToQString(lang->GetLangName()):"?????")<<""), Type(otLang)
 	{
 		Obj.Lang=lang;
 		setIcon(0,KIconLoader::global()->loadIcon("flag-yellow",KIconLoader::Small));
@@ -330,7 +330,7 @@ void QGObjectsList::Set(oType type)
 		case Docs:
 		{
 			// Go trough each language and create a Item.
-			RCursor<GLang> Langs(GALILEIApp->GetManager<GLangManager>("Lang")->GetPlugIns());
+			RCastCursor<GPlugin,GLang> Langs(GALILEIApp->GetPlugIns<GPlugin>("Lang"));
 			RContainer<LangItem,true,true> LangItems(Langs.GetNb());
 			LangItems.InsertPtr(new LangItem(0,new QGObject(List,static_cast<GLang*>(0))));
 			for(Langs.Start();!Langs.End();Langs.Next())
@@ -339,7 +339,7 @@ void QGObjectsList::Set(oType type)
 			// Go through the documents and attach to the item of the corresponding language.
 			RCursor<GDoc> Docs(Session->GetDocs());
 			for(Docs.Start();!Docs.End();Docs.Next())
-				new QGObject(LangItems.GetPtr<const GLang*>(Docs()->GetLang())->Item,Docs());
+				new QGObject(LangItems.GetPtr(Docs()->GetLang())->Item,Docs());
 			break;
 		}
 		case Topics:
@@ -356,7 +356,7 @@ void QGObjectsList::Set(oType type)
 		}
 		case CompTopics:
 		{
-			GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Topics Evaluation"));
+			GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Topics Evaluation"));
 			if(!Compare)
 				throw GException("'Topics Evaluation' is not a valid evaluation measure");
 			RCursor<GTopic> Grps(Session->GetTopics());
@@ -415,7 +415,7 @@ void QGObjectsList::Set(oType type)
 		}
 		case CompCommunities:
 		{
-			GMeasure* Compare(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Communities Evaluation"));
+			GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Communities Evaluation"));
 			if(!Compare)
 				throw GException("'Communities Evaluation' is not a valid evaluation measure");
 			RCursor<GCommunity> Grps(Session->GetCommunities());

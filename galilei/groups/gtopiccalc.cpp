@@ -42,33 +42,13 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GTopicCalc::GTopicCalc(GFactoryTopicCalc* fac)
-	: GPlugin<GFactoryTopicCalc>(fac), Infos(5000)
+GTopicCalc::GTopicCalc(GPluginFactory* fac)
+	: GPlugin(fac), Infos(5000)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GTopicCalc::~GTopicCalc(void)
-{
-}
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GTopicCalcManager
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GTopicCalcManager::GTopicCalcManager(void)
-	: GPluginManager<GTopicCalcManager,GFactoryTopicCalc,GTopicCalc>("TopicCalc",API_TOPICCALC_VERSION,ptSelect)
-{
-}
-
-
-//------------------------------------------------------------------------------
-GTopicCalcManager::~GTopicCalcManager(void)
 {
 }

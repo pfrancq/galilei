@@ -41,6 +41,7 @@
 	#include <io.h>
 #endif
 #include <fcntl.h>
+#include <fnmatch.h>
 using namespace std;
 
 
@@ -59,6 +60,7 @@ using namespace std;
 #include <gsubjects.h>
 #include <gsubject.h>
 #include <ggalileiprg.h>
+#include <gdoc.h>
 using namespace GALILEI;
 
 
@@ -97,37 +99,108 @@ GGALILEIApp* GALILEI::GALILEIApp=0;
 
 //------------------------------------------------------------------------------
 //
+// class GGALILEIApp::GMIMEFilter
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GGALILEIApp::GMIMEFilter
+{
+public:
+	RString Name;
+	GFilter* Filter;
+
+	GMIMEFilter(const char* n,GFilter* f) : Name(n), Filter(f) {}
+	int Compare(const GMIMEFilter* f) const {return(Name.Compare(f->Name));}
+	int Compare(const GMIMEFilter& f) const {return(Name.Compare(f.Name));}
+	int Compare(const R::RString& t) const {return(Name.Compare(t));}
+};
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GGALILEIApp::GMIMEExt
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GGALILEIApp::GMIMEExt
+{
+public:
+	RString Name;
+	RString Ext;
+
+	GMIMEExt(const RString& n,const RString& e) : Name(n), Ext(e) {}
+	int Compare(const GMIMEExt* f) const {return(Name.Compare(f->Ext));}
+	int Compare(const GMIMEExt& f) const {return(Name.Compare(f.Ext));}
+	int Compare(const R::RString& e) const {return(Name.Compare(e));}
+	int Compare(const char* e) const {return(Name.Compare(e));}
+};
+
+
+
+
+//------------------------------------------------------------------------------
+//
 // class GGALILEIApp
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
-	: RApplication(name,argc,argv), RContainer<GGenericPluginManager,true,false>(20,10), Log(0), Debug(0), Session(0), LoadDialogs(dlg),
-	  PlugInsPath(10), GALILEIConfig()
+	: RApplication(name,argc,argv), RContainer<GPluginManager,true,false>(20,10), RDownload(), Log(0), Debug(0), Session(0), LoadDialogs(dlg),
+	  PlugInsPath(10), GALILEIConfig(), MIMES(50,25), Exts(50,25)
 {
-	InsertPtr(new GStorageManager());
-	InsertPtr(new GLinkCalcManager());
-	InsertPtr(new GDocAnalyseManager());
-	InsertPtr(new GPostDocManager());
-	InsertPtr(new GFilterManager());
-	InsertPtr(new GEngineManager());
-	InsertPtr(new GMetaEngineManager());
-	InsertPtr(new GCommunityCalcManager());
-	InsertPtr(new GGroupProfilesManager());
-	InsertPtr(new GPostCommunityManager());
-	InsertPtr(new GProfileCalcManager());
-	InsertPtr(new GPreProfileManager());
-	InsertPtr(new GPostProfileManager());
-	InsertPtr(new GStatsCalcManager());
-	InsertPtr(new GMeasureManager());
-	InsertPtr(new GLangManager());
-	InsertPtr(new GToolManager());
-	InsertPtr(new GTopicCalcManager());
-	InsertPtr(new GGroupDocsManager());
-	InsertPtr(new GPostTopicManager());
-	InsertPtr(new GComputeSugsManager());
-	InsertPtr(new GComputeTrustManager());
+	// Create the managers of plug-ins
+	InsertPtr(new GPluginManager("Storage",GPluginManager::ptSelect));
+	InsertPtr(new GPluginManager("LinkCalc",GPluginManager::ptSelect));
+	InsertPtr(new GPluginManager("DocAnalyse",GPluginManager::ptSelect));
+	InsertPtr(new GPluginManager("PostDoc",GPluginManager::ptOrdered));
+	InsertPtr(new GPluginManager("Filter",GPluginManager::ptList));
+	InsertPtr(new GPluginManager("Engine",GPluginManager::ptList));
+	InsertPtr(new GPluginManager("MetaEngine",GPluginManager::ptSelect));
+	InsertPtr(new GPluginManager("CommunityCalc",GPluginManager::ptSelect));
+	InsertPtr(new GPluginManager("GroupProfiles",GPluginManager::ptSelect));
+	InsertPtr(new GPluginManager("PostCommunity",GPluginManager::ptOrdered));
+	InsertPtr(new GPluginManager("ProfileCalc",GPluginManager::ptSelect));
+	InsertPtr(new GPluginManager("PreProfile",GPluginManager::ptOrdered));
+	InsertPtr(new GPluginManager("PostProfile",GPluginManager::ptOrdered));
+	InsertPtr(new GPluginManager("StatsCalc",GPluginManager::ptList));
+	InsertPtr(new GPluginManager("Measures",GPluginManager::ptListSelect));
+	InsertPtr(new GPluginManager("Lang",GPluginManager::ptList));
+	InsertPtr(new GPluginManager("Tool",GPluginManager::ptList));
+	InsertPtr(new GPluginManager("TopicCalc",GPluginManager::ptSelect));
+	InsertPtr(new GPluginManager("GroupDocs",GPluginManager::ptSelect));
+	InsertPtr(new GPluginManager("PostTopic",GPluginManager::ptOrdered));
+	InsertPtr(new GPluginManager("ComputeSugs",GPluginManager::ptOrdered));
+	InsertPtr(new GPluginManager("ComputeTrust",GPluginManager::ptOrdered));
+
+	// Try to open list of MIME types
+	try
+	{
+		RXMLStruct xml;
+		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
+		File.Open(R::RIO::Read);
+		// Go trough all MIME types
+		RXMLTag* Types=xml.GetTag("mimeTypes");
+		if(!Types)
+			throw GException("MIME type file \"/etc/galilei/galilei.mimes\" is invalid");
+		R::RCursor<RXMLTag> Cur(Types->GetNodes());
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			RString MIME(Cur()->GetAttrValue("code"));
+			// Go through all file extension
+			R::RCursor<RXMLTag> Cur2(Cur()->GetNodes());
+			for(Cur2.Start();!Cur2.End();Cur2.Next())
+				Exts.InsertPtr(new GMIMEExt(MIME,Cur2()->GetAttrValue("ext")));
+		}
+	}
+	catch(...)
+	{
+		//cerr<<"Cannot load '/etc/galilei/galilei.mimes'"<<endl;
+	}
+
 	GALILEIApp=this;
 }
 
@@ -143,7 +216,7 @@ void GGALILEIApp::CreateConfig(void)
 	GALILEIConfig.InsertParam(new RParamList("PlugIns Path"));
 
 	// Plug-ins manager parameters
-	R::RCursor<GGenericPluginManager> Managers(*this);
+	R::RCursor<GPluginManager> Managers(*this);
 	for(Managers.Start();!Managers.End();Managers.Next())
 		Managers()->CreateConfig(&GALILEIConfig);
 }
@@ -199,7 +272,7 @@ void GGALILEIApp::Init(void)
 	//cout<<"Load and configure plug-ins ...";
 	cout.flush();
 	Load(PlugInsPath,LoadDialogs);
-	R::RCursor<GGenericPluginManager> Managers(*this);
+	R::RCursor<GPluginManager> Managers(*this);
 	for(Managers.Start();!Managers.End();Managers.Next())
 		Managers()->ReadConfig(&GALILEIConfig);
 	//cout<<"OK"<<endl;
@@ -220,7 +293,7 @@ GSession* GGALILEIApp::CreateSession(void)
 	// Initialize Session
 	Session=new GSession(Log,Debug);
 	Session->Apply();
-	GStorageManager* Mng(Session->GetStorage()->GetFactory()->GetMng());
+	GPluginManager* Mng(Session->GetStorage()->GetFactory()->GetMng());
 	Session->GetStorage()->Connect(Session);
 	Session->GetStorage()->LoadConceptTypes();
 	Session->GetStorage()->LoadConcepts();
@@ -229,7 +302,7 @@ GSession* GGALILEIApp::CreateSession(void)
 	WriteLog("Session created");
 
 	// Connect plugins
-	RCursor<GGenericPluginManager> Cur(*this);
+	RCursor<GPluginManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(Cur()!=Mng)
 			Cur()->Connect(Session);
@@ -244,7 +317,7 @@ void GGALILEIApp::DeleteSession(void)
 {
 	if(!Session)
 		return;
-	RCursor<GGenericPluginManager> Cur(*this);
+	RCursor<GPluginManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Disconnect(Session);
 	delete Session;
@@ -332,7 +405,7 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 		FindPlugins(*Path(),PlugIns,Dlgs);
 
 	// Analyze the plug-ins category by category
-	RCursor<GGenericPluginManager> Mngs(*this);
+	RCursor<GPluginManager> Mngs(*this);
 	for(Mngs.Start();!Mngs.End();Mngs.Next())
 	{
 
@@ -357,7 +430,7 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 				continue;
 			}
 			const char* Lib=LibType();
-			GGenericPluginManager* Manager=GetPtr(Lib);
+			GPluginManager* Manager=GetPtr(Lib);
 			if((!Manager)||(Manager!=Mngs()))
 				continue;
 
@@ -400,9 +473,46 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 
 
 //-----------------------------------------------------------------------------
-RCursor<GGenericPluginManager> GGALILEIApp::GetManagers(void)
+RCursor<GPluginManager> GGALILEIApp::GetManagers(void)
 {
-	return(RCursor<GGenericPluginManager>(*this));
+	return(RCursor<GPluginManager>(*this));
+}
+
+
+//-----------------------------------------------------------------------------
+GPluginManager* GGALILEIApp::GetManager(const R::RString& mng) const
+{
+	return(GetPtr(mng));
+}
+
+
+//-----------------------------------------------------------------------------
+RCursor<GPluginFactory> GGALILEIApp::GetFactories(const R::RString& mng,const R::RString& list) const
+{
+	GPluginManager* ptr(GetPtr(mng));
+	if(!ptr)
+		ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+	return(ptr->GetFactories(list));
+}
+
+
+//-----------------------------------------------------------------------------
+GPluginFactory* GGALILEIApp::GetFactory(const R::RString& mng,const R::RString& name,const R::RString& list,int need) const
+{
+	GPluginManager* ptr(GetPtr(mng));
+	if(!ptr)
+		ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+	return(ptr->GetFactory(name,list,need));
+}
+
+
+//------------------------------------------------------------------------------
+GPluginFactory* GGALILEIApp::GetCurrentFactory(const R::RString& mng,const R::RString& list,int need) const
+{
+	GPluginManager* ptr(GetPtr(mng));
+	if(!ptr)
+		ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+	return(ptr->GetCurrentFactory(list,need));
 }
 
 
@@ -434,6 +544,122 @@ void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 
 
 //------------------------------------------------------------------------------
+void GGALILEIApp::FindMIMEType(void)
+{
+	// If MIME type already exist -> return
+	RString MIME=Doc->GetMIMEType();
+	if(!MIME.IsEmpty())
+		return;
+
+	// Goes through all defined MIME types
+	RCursor<GMIMEExt> Cur(Exts);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if(fnmatch(Cur()->Ext,Doc->GetURL()(),0)!=FNM_NOMATCH)
+		{
+			Doc->SetMIMEType(Cur()->Name);
+			return;
+		}
+}
+
+
+//------------------------------------------------------------------------------
+bool GGALILEIApp::IsValidContent(const R::RString& MIME)
+{
+	if(Doc->GetMIMEType().IsEmpty())
+		Doc->SetMIMEType(MIME);
+	GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
+	if(!ptr)
+		return(false);
+	Filter=ptr->Filter;
+	return(true);
+}
+
+
+//------------------------------------------------------------------------------
+RURI GGALILEIApp::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml,bool& native)
+{
+	RIO::RSmartTempFile DwnFile;      // Temporary file containing the downloaded file  (if necessary).
+	RURI NonXMLFile;               // Non XML-File file.
+
+	// Init Part;
+	Doc=doc;
+	Filter=0;
+	native=true;       // Suppose real XML file
+
+	// Guess the MIME type if necessary
+	FindMIMEType();
+
+	// If it is known to be a XML file -> file can directly analyzed.
+	if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
+		return(Doc->GetURL());
+
+	// The file is perhaps not a XML file -> Try to transform it into DocXML
+
+	// If it is not a local	file -> Download it
+	if(Doc->GetURL().GetScheme()!="file")
+	{
+		NonXMLFile=DwnFile.GetName();
+		DownloadFile(Doc->GetURL(),NonXMLFile);
+
+		// Perhaps the server holding the file has provide a MIME type which can be XML
+		if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
+			return(Doc->GetURL());
+	}
+	else
+	{
+		NonXMLFile=Doc->GetURL().GetPath();
+		GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
+		if(ptr)
+			Filter=ptr->Filter;
+	}
+
+	// No XML file
+	native=false;
+
+	// If no MIME type -> Exception
+	if(doc->GetMIMEType().IsEmpty())
+		throw GException("Cannot find MIME type for "+doc->GetURL()());
+
+	// If no filter -> Exception
+	if(!Filter)
+		throw GException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
+
+	// Analyze the file
+	Filter->Analyze(Doc->GetURL(),NonXMLFile,docxml.GetName());
+
+	// Return file to realy analyze
+	return(docxml.GetName());
+}
+
+
+//------------------------------------------------------------------------------
+void GGALILEIApp::AddMIME(const char* mime,GFilter* f)
+{
+	MIMES.InsertPtr(new GMIMEFilter(mime,f));
+}
+
+
+//------------------------------------------------------------------------------
+void GGALILEIApp::DelMIMES(GFilter* f)
+{
+	RContainer<GMIMEFilter,false,false> Rem(5,5);
+
+	// Find All MIMES types to deleted
+	RCursor<GMIMEFilter> Cur(MIMES);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Cur()->Filter==f)
+			Rem.InsertPtr(Cur());
+	}
+
+	// Delete all MIMES
+	Cur.Set(Rem);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		MIMES.DeletePtr(Cur());
+}
+
+
+//------------------------------------------------------------------------------
 GGALILEIApp::~GGALILEIApp(void)
 {
 	// No more App
@@ -444,7 +670,7 @@ GGALILEIApp::~GGALILEIApp(void)
 
 	// Get the parameters back
 	Apply();
-	R::RCursor<GGenericPluginManager> Managers(*this);
+	R::RCursor<GPluginManager> Managers(*this);
 	for(Managers.Start();!Managers.End();Managers.Next())
 		Managers()->SaveConfig(&GALILEIConfig);
 	GALILEIConfig.Save();
