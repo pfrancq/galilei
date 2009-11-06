@@ -80,7 +80,7 @@ void About(void)
 
 
  //------------------------------------------------------------------------------
-void Configure(GFactoryPostTopic* params)
+void Configure(GPluginFactory* params)
 {
  	Config dlg;
 

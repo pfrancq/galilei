@@ -123,7 +123,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	Thesaurus(GFactoryPostTopic* fac);
+	Thesaurus(GPluginFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.

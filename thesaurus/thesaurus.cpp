@@ -49,7 +49,7 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-Thesaurus::Thesaurus(GFactoryPostTopic* fac)
+Thesaurus::Thesaurus(GPluginFactory* fac)
 		: GPostTopic(fac), Objs(100), Words(20000), WordsByIds(20000), Concepts(200)
 {
 }
@@ -275,4 +275,4 @@ Thesaurus::~Thesaurus(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_POSTTOPIC_FACTORY("Thesaurus Creation",Thesaurus)
+CREATE_POSTTOPIC_FACTORY("Thesaurus Creation","Thesaurus Creation",Thesaurus)
