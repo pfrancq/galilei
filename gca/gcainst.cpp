@@ -87,9 +87,9 @@ GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,RParamsSC* p,RDebug *debug,t
 	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
 {
 	// Init measures
-	Sims=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities");
-	Agree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Agreements");
-	Disagree=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Disagreements");
+	Sims=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities");
+	Agree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Agreements");
+	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Disagreements");
 
 	if((!Sims)||(!Agree)||(!Disagree))
 		throw GException("GCAInst::GCAInst : Type "+GetObjType(Type)+" not supported");

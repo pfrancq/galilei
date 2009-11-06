@@ -70,7 +70,7 @@ public:
  * @author Pascal Francq
  * @short Generic GCA PlugIn
  */
-template<class cObj,class cGroup,class cFactory>
+template<class cObj,class cGroup>
 	class GCAPlugIn : public R::RObject, public RParamsSC
 {
 protected:
@@ -125,7 +125,7 @@ public:
 	/**
 	* Configurations were applied from the factory.
 	*/
-	void ApplyConfig(cFactory* factory);
+	void ApplyConfig(GPluginFactory* factory);
 
 protected:
 

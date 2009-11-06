@@ -44,7 +44,7 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short GGA for Documents.
 */
-class GCAGroupDocs : public GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>, public GGroupDocs
+class GCAGroupDocs : public GCAPlugIn<GDoc,GTopic>, public GGroupDocs
 {
 public:
 
@@ -52,8 +52,8 @@ public:
 	* Constructor.
 	* @param f              Factory.
 	*/
-	GCAGroupDocs(GFactoryGroupDocs* fac)
-		: GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>("Documents Grouping",otDoc,otTopic), GGroupDocs(fac) {}
+	GCAGroupDocs(GPluginFactory* fac)
+		: GCAPlugIn<GDoc,GTopic>("Documents Grouping",otDoc,otTopic), GGroupDocs(fac) {}
 
 	/**
 	 * Class name.
@@ -64,7 +64,7 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void)
-	{GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>::ApplyConfig(Factory);}
+	{GCAPlugIn<GDoc,GTopic>::ApplyConfig(Factory);}
 
 protected:
 
@@ -85,9 +85,9 @@ public:
 	* @param params          Parameters to configure.
 	*/
 	static void CreateParams(R::RConfig* params)
-	{GCAPlugIn<GDoc,GTopic,GFactoryGroupDocs>::CreateParams(params);}
+	{GCAPlugIn<GDoc,GTopic>::CreateParams(params);}
 };
 
 
 //------------------------------------------------------------------------------
-CREATE_GROUPDOCS_FACTORY("GCA for Documents",GCAGroupDocs)
+CREATE_GROUPDOCS_FACTORY("GCA for Documents","GCA for Documents",GCAGroupDocs)

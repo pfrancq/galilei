@@ -47,7 +47,7 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short GGA for Profiles.
 */
-class GCAGroupProfiles : public GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>, public GGroupProfiles
+class GCAGroupProfiles : public GCAPlugIn<GProfile,GCommunity>, public GGroupProfiles
 {
 public:
 
@@ -55,8 +55,8 @@ public:
 	* Constructor.
 	* @param f              Factory.
 	*/
-	GCAGroupProfiles(GFactoryGroupProfiles* fac)
-		: GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>("Profiles Grouping",otProfile,otCommunity), GGroupProfiles(fac) {}
+	GCAGroupProfiles(GPluginFactory* fac)
+		: GCAPlugIn<GProfile,GCommunity>("Profiles Grouping",otProfile,otCommunity), GGroupProfiles(fac) {}
 
 	/**
 	 * Class name.
@@ -67,7 +67,7 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void)
-	{GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>::ApplyConfig(Factory);}
+	{GCAPlugIn<GProfile,GCommunity>::ApplyConfig(Factory);}
 
 protected:
 
@@ -88,9 +88,9 @@ public:
 	* @param params          Parameters to configure.
 	*/
 	static void CreateParams(R::RConfig* params)
-	{GCAPlugIn<GProfile,GCommunity,GFactoryGroupProfiles>::CreateParams(params);}
+	{GCAPlugIn<GProfile,GCommunity>::CreateParams(params);}
 };
 
 
 //------------------------------------------------------------------------------
-CREATE_GROUPPROFILES_FACTORY("GCA for Profiles",GCAGroupProfiles)
+CREATE_GROUPPROFILES_FACTORY("GCA for Profiles","GCA for Profiles",GCAGroupProfiles)

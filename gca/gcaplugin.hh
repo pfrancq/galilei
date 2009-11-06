@@ -72,7 +72,7 @@ const bool Cout=false;
 kMeans::kMeans(const R::RString& n,R::RRandom* r,R::RCursor<GCAObj> objs,const R::RString& mes,R::RDebug* debug)
 	: R::RGroupingKMeans<CGroup,GCAObj,CGroups>(n,r,objs,debug)
 {
-	Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities");
+	Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities");
 }
 
 
@@ -93,16 +93,16 @@ double kMeans::Similarity(const GCAObj* obj1,const GCAObj* obj2)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	GCAPlugIn<cObj,cGroup,cFactory>::GCAPlugIn(const RString& name,tObjType objtype,tObjType grouptype)
+template<class cObj,class cGroup>
+	GCAPlugIn<cObj,cGroup>::GCAPlugIn(const RString& name,tObjType objtype,tObjType grouptype)
 		: RObject(name), Objs(20), ObjType(objtype),GroupType(grouptype)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	void GCAPlugIn<cObj,cGroup,cFactory>::ApplyConfig(cFactory* factory)
+template<class cObj,class cGroup>
+	void GCAPlugIn<cObj,cGroup>::ApplyConfig(GPluginFactory* factory)
 {
 	PopSize=factory->GetUInt("Population Size");
 	MaxGen=factory->GetUInt("Max Gen");
@@ -132,24 +132,24 @@ template<class cObj,class cGroup,class cFactory>
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	bool GCAPlugIn<cObj,cGroup,cFactory>::IsCoherent(const cGroup* /*grp*/) const
+template<class cObj,class cGroup>
+	bool GCAPlugIn<cObj,cGroup>::IsCoherent(const cGroup* /*grp*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	bool GCAPlugIn<cObj,cGroup,cFactory>::IsCoherent(const cGroup* /*grp*/,const cObj* /*sub*/) const
+template<class cObj,class cGroup>
+	bool GCAPlugIn<cObj,cGroup>::IsCoherent(const cGroup* /*grp*/,const cObj* /*sub*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	bool GCAPlugIn<cObj,cGroup,cFactory>::IsValid(cGroup* /*grp*/)
+template<class cObj,class cGroup>
+	bool GCAPlugIn<cObj,cGroup>::IsValid(cGroup* /*grp*/)
 {
 //	GSubProfileCursor Cur1,Cur2;
 //	size_t i,j;
@@ -177,8 +177,8 @@ template<class cObj,class cGroup,class cFactory>
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	template<class cAlgoGroup> void GCAPlugIn<cObj,cGroup,cFactory>::ConstructResults(GSession* session,R::RCursor<cAlgoGroup> Sol)
+template<class cObj,class cGroup>
+	template<class cAlgoGroup> void GCAPlugIn<cObj,cGroup>::ConstructResults(GSession* session,R::RCursor<cAlgoGroup> Sol)
 {
 	size_t* tab;
 	size_t* ptr;
@@ -201,8 +201,8 @@ template<class cObj,class cGroup,class cFactory>
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	void GCAPlugIn<cObj,cGroup,cFactory>::DoGCA(GSession* session,const R::RString& mes)
+template<class cObj,class cGroup>
+	void GCAPlugIn<cObj,cGroup>::DoGCA(GSession* session,const R::RString& mes)
 {
 	double d;
 
@@ -212,20 +212,20 @@ template<class cObj,class cGroup,class cFactory>
 	// Init the GCA
 	if(Cout)
 		cout<<"Get minimum similarity"<<endl;
-	GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities")->Info(0,&d);
+	GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities")->Info(0,&d);
 	MinSimLevel=d;
 	if(Cout)
 	{
 		cout<<"   Minimum Similarity="<<d<<endl;
 		double nb;
-		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities")->Info(1,&nb);
+		GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities")->Info(1,&nb);
 		cout<<"   Mean="<<nb<<endl;
-		GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod(mes+" Similarities")->Info(2,&nb);
+		GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities")->Info(2,&nb);
 		cout<<"   Deviation="<<nb<<endl;
 		cout<<"New GCA"<<endl;
 	}
 	GCAInst Instance(session,Objs,this,session->GetDebug(),ObjType,mes,Incremental);
-	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cObj,cGroup,cFactory>::Gen),"RInst::Generation",&Instance);
+	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cObj,cGroup>::Gen),"RInst::Generation",&Instance);
 	if(Cout)
 		cout<<"Init GCA"<<endl;
 //	Instance.SetVerify(true);
@@ -260,8 +260,8 @@ template<class cObj,class cGroup,class cFactory>
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	void GCAPlugIn<cObj,cGroup,cFactory>::DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
+template<class cObj,class cGroup>
+	void GCAPlugIn<cObj,cGroup>::DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
 {
 	cout<<"Do kMeans for "<<Objs.GetNb()<<" "<<GetObjType(ObjType)<<"s"<<endl;
 	std::auto_ptr<RRandom> Rand(RRandom::Create(RRandom::Good,1));
@@ -299,8 +299,8 @@ template<class cObj,class cGroup,class cFactory>
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	void GCAPlugIn<cObj,cGroup,cFactory>::RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
+template<class cObj,class cGroup>
+	void GCAPlugIn<cObj,cGroup>::RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
 {
 	// set the level of the MinSim
 	try
@@ -354,8 +354,8 @@ template<class cObj,class cGroup,class cFactory>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	void GCAPlugIn<cObj,cGroup,cFactory>::Gen(const R::RNotification& notification)
+template<class cObj,class cGroup>
+	void GCAPlugIn<cObj,cGroup>::Gen(const R::RNotification& notification)
 {
 	if(Cout)
 		cout<<"Gen "<<GetData<size_t>(notification)<<endl;
@@ -363,8 +363,8 @@ template<class cObj,class cGroup,class cFactory>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	void GCAPlugIn<cObj,cGroup,cFactory>::CreateParams(RConfig* params)
+template<class cObj,class cGroup>
+	void GCAPlugIn<cObj,cGroup>::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("Population Size",16));
 	params->InsertParam(new RParamValue("Max Gen",30));
@@ -389,7 +389,7 @@ template<class cObj,class cGroup,class cFactory>
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup,class cFactory>
-	GCAPlugIn<cObj,cGroup,cFactory>::~GCAPlugIn(void)
+template<class cObj,class cGroup>
+	GCAPlugIn<cObj,cGroup>::~GCAPlugIn(void)
 {
 }
