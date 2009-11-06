@@ -86,7 +86,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GFactoryStatsCalc* params)
+void Configure(GPluginFactory* params)
 {
  	Config dlg;
 

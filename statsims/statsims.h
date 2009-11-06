@@ -127,7 +127,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GStatsSims(GFactoryStatsCalc* fac);
+	GStatsSims(GPluginFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.

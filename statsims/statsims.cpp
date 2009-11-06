@@ -75,7 +75,7 @@ class GStatSimDocs : public GStatSimElements<GDoc,GDoc>
 public:
 	GStatSimDocs(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,true,f)
 	{
-		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
@@ -98,7 +98,7 @@ public:
 
 	GStatSimProfiles(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GProfile>(ses,true,f)
 	{
-		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
 	}
 
 	virtual R::RCursor<GProfile> GetE1Cursor(GSubject* sub)
@@ -123,7 +123,7 @@ public:
 
 	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GCommunity>(ses,false,f), Com(1)
 	{
-		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Groups Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Groups Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
@@ -147,7 +147,7 @@ public:
 
 	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GProfile>(ses,false,f)
 	{
-		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents/Profiles Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Profiles Similarities");
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
@@ -172,7 +172,7 @@ public:
 
 	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GCommunity>(ses,false,f), Com(1)
 	{
-		Measure=GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Profiles/Groups Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles/Groups Similarities");
 	}
 
 	virtual R::RCursor<GProfile> GetE1Cursor(GSubject* sub)
@@ -196,7 +196,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsSims::GStatsSims(GFactoryStatsCalc* fac)
+GStatsSims::GStatsSims(GPluginFactory* fac)
 	: GStatsCalc(fac), ResultsFile(0)
 {
 }
@@ -247,7 +247,7 @@ void GStatsSims::DoExportDocsSims(void)
 		return;
 
 	// Get the measure
-	GMeasure* Measure(GALILEIApp->GetManager<GMeasureManager>("Measures")->GetCurrentMethod("Documents Similarities"));
+	GMeasure* Measure(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities"));
 	double tmp;
 	bool NewLine;
 	bool NewComma;
@@ -425,4 +425,4 @@ GStatsSims::~GStatsSims(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_STATSCALC_FACTORY("Similarity Statistics",GStatsSims)
+CREATE_STATSCALC_FACTORY("Similarity Statistics","Similarity Statistics",GStatsSims)
