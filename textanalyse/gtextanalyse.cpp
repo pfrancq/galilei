@@ -438,7 +438,7 @@ inline RCursor<cNode> cDepths::GetNodes(void) const
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GTextAnalyse::GTextAnalyse(GPluginFactory* fac)
+GTextAnalyse::GTextAnalyse(GPlugInFactory* fac)
 	: GDocAnalyse(fac), RXMLParser(), Words(), StructTokens(/*100*/), Depths(),
 	  Sl(0), Sldiff(0), MetaTags(20), StructSpace(0), IndexSpace(0), IsTitle(false)
 {
