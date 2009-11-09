@@ -72,7 +72,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-Sugs::Sugs(GPluginFactory* fac)
+Sugs::Sugs(GPlugInFactory* fac)
 	: GComputeSugs(fac), TheSugs(otProfile,0,30)
 {
 }

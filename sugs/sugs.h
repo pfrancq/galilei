@@ -71,7 +71,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	Sugs(GPluginFactory* fac);
+	Sugs(GPlugInFactory* fac);
 
 	/**
 	* Create the parameters.
