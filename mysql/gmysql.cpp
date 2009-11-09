@@ -72,7 +72,7 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorageMySQL::GStorageMySQL(GPluginFactory* fac)
+GStorageMySQL::GStorageMySQL(GPlugInFactory* fac)
 	: GStorage(fac), Db(0)
 {
 }
@@ -1368,7 +1368,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 {
 	try
 	{
-		GPluginManager* Langs=GALILEIApp->GetManager("Lang");
+		GPlugInManager* Langs=GALILEIApp->GetManager("Lang");
 
 		// Load Profile
 		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level "
