@@ -49,7 +49,7 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-Thesaurus::Thesaurus(GPluginFactory* fac)
+Thesaurus::Thesaurus(GPlugInFactory* fac)
 		: GPostTopic(fac), Objs(100), Words(20000), WordsByIds(20000), Concepts(200)
 {
 }
