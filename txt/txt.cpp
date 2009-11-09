@@ -49,7 +49,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterTXT::GFilterTXT(GPluginFactory* fac)
+GFilterTXT::GFilterTXT(GPlugInFactory* fac)
 	: GFilter(fac)
 {
 	AddMIME("text/plain");

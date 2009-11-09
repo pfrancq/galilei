@@ -99,7 +99,7 @@ public:
 	* @param fac            Factory.
 	* @param name           Name of the filter.
 	*/
-	GFilterEMail(GPluginFactory* fac);
+	GFilterEMail(GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.

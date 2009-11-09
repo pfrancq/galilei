@@ -61,7 +61,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterMSDoc::GFilterMSDoc(GPluginFactory* fac)
+GFilterMSDoc::GFilterMSDoc(GPlugInFactory* fac)
 	: GFilter(fac)
 {
  	AddMIME("application/msword");

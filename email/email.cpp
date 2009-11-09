@@ -141,7 +141,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterEMail::GFilterEMail(GPluginFactory* fac)
+GFilterEMail::GFilterEMail(GPlugInFactory* fac)
 	: GFilter(fac), BlankLines(false), Cmds(20)
 {
 	AddMIME("text/email");

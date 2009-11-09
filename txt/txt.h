@@ -61,7 +61,7 @@ public:
 	* @param fac            Factory.
 	* @param name           Name of the filter.
 	*/
-	GFilterTXT(GALILEI::GPluginFactory* fac);
+	GFilterTXT(GALILEI::GPlugInFactory* fac);
 
 public:
 

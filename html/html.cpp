@@ -57,7 +57,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterHTML::GFilterHTML(GPluginFactory* fac)
+GFilterHTML::GFilterHTML(GPlugInFactory* fac)
 	: GFilter(fac), R::RHTMLFile()
 {
 	AddMIME("text/html");

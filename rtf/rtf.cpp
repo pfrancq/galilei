@@ -46,7 +46,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterRTF::GFilterRTF(GPluginFactory* fac)
+GFilterRTF::GFilterRTF(GPlugInFactory* fac)
 	: GFilter(fac), Tags(0),
 	 Chars(50,5)
 {

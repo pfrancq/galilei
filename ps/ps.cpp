@@ -150,7 +150,7 @@ static int cleanup() {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterPS::GFilterPS(GPluginFactory* fac)
+GFilterPS::GFilterPS(GPlugInFactory* fac)
 	: GFilter(fac)
 {
 	AddMIME("application/x-postscript");

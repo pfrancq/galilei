@@ -81,7 +81,7 @@ public:
 	* Construct the HTML filter for a specific HTML document.
 	* @param fac            Factory.
 	*/
-	GFilterPS(GALILEI::GPluginFactory* fac);
+	GFilterPS(GALILEI::GPlugInFactory* fac);
 
 	/**
 	* Analyze a document with a given URI that was downloaded in a local
