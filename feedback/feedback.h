@@ -158,7 +158,7 @@ public:
 	* Constructor.
 	* @param session        Session.
 	*/
-	GProfileCalcFeedback(GPluginFactory* fac);
+	GProfileCalcFeedback(GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
