@@ -50,7 +50,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Post-Topic Computing Method.
 */
-class GPostTopic : public GPlugin
+class GPostTopic : public GPlugIn
 {
 public:
 
@@ -58,7 +58,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GPostTopic(GPluginFactory* fac);
+	GPostTopic(GPlugInFactory* fac);
 
 	/**
 	* Run the post-topic method.

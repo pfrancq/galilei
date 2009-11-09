@@ -49,8 +49,8 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsCalc::GStatsCalc(GPluginFactory* fac)
-	: GPlugin(fac)
+GStatsCalc::GStatsCalc(GPlugInFactory* fac)
+	: GPlugIn(fac)
 {
 }
 

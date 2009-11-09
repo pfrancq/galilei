@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Nicolas Kumps
 * @short Generic Document Post Analysis Method.
 */
-class GPostDoc : public GPlugin
+class GPostDoc : public GPlugIn
 {
 public :
 
@@ -59,7 +59,7 @@ public :
 	* Constructor of the documents post-analysis method.
 	* @param fac             Factory of the plugin.
 	*/
-	GPostDoc(GPluginFactory* fac);
+	GPostDoc(GPlugInFactory* fac);
 
 	/**
 	* Run the method.

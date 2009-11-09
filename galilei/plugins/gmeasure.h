@@ -57,7 +57,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Measures.
 */
-class GMeasure : public GPlugin
+class GMeasure : public GPlugIn
 {
 public:
 
@@ -65,7 +65,7 @@ public:
 	* Constructor of a measure.
 	* @param fac             Plug-in factory.
 	*/
-	GMeasure(GPluginFactory* fac);
+	GMeasure(GPlugInFactory* fac);
 
 	/**
 	* The measure must be re-initialized, i.e. all values must be considered

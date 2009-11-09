@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GPlugin.h
+	GPlugIn.h
 
 	Generic Plug-In - Implementation.
 
@@ -39,12 +39,12 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 //
-// class GPlugin
+// class GPlugIn
 //
 //-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPlugin::GPlugin(GPluginFactory* fac)
+GPlugIn::GPlugIn(GPlugInFactory* fac)
   	: Factory(fac), Session(0)
 {
 	if(!fac)
@@ -53,55 +53,55 @@ GPlugin::GPlugin(GPluginFactory* fac)
 
 
 //------------------------------------------------------------------------------
-void GPlugin::Connect(GSession* session)
+void GPlugIn::Connect(GSession* session)
 {
 	Session=session;
 }
 
 
 //------------------------------------------------------------------------------
-void GPlugin::Disconnect(GSession*)
+void GPlugIn::Disconnect(GSession*)
 {
 	Session=0;
 }
 
 
 //------------------------------------------------------------------------------
-void GPlugin::ApplyConfig(void)
+void GPlugIn::ApplyConfig(void)
 {
 }
 
 
 //------------------------------------------------------------------------------
-int GPlugin::Compare(const GPlugin& plugin) const
+int GPlugIn::Compare(const GPlugIn& plugin) const
 {
 	return(Factory->Compare(*plugin.GetFactory()));
 }
 
 
 //------------------------------------------------------------------------------
-int GPlugin::Compare(const RString& plugin) const
+int GPlugIn::Compare(const RString& plugin) const
 {
 	return(Factory->Compare(plugin));
 }
 
 
 //------------------------------------------------------------------------------
-RString GPlugin::GetName(void) const
+RString GPlugIn::GetName(void) const
 {
-	return(Factory->GPluginFactory::GetName());
+	return(Factory->GPlugInFactory::GetName());
 }
 
 
 //------------------------------------------------------------------------------
-RString GPlugin::GetDesc(void) const
+RString GPlugIn::GetDesc(void) const
 {
-	return(Factory->GPluginFactory::GetDesc());
+	return(Factory->GPlugInFactory::GetDesc());
 }
 
 
 //------------------------------------------------------------------------------
-GPlugin::~GPlugin(void)
+GPlugIn::~GPlugIn(void)
 {
 }
 
@@ -109,19 +109,19 @@ GPlugin::~GPlugin(void)
 
 //-----------------------------------------------------------------------------
 //
-// class GPluginFactory
+// class GPlugInFactory
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GPluginFactory::GPluginFactory(GPluginManager* mng,const R::RString& name,const R::RString& desc,const R::RString& lib,const R::RString& list)
+GPlugInFactory::GPlugInFactory(GPlugInManager* mng,const R::RString& name,const R::RString& desc,const R::RString& lib,const R::RString& list)
 		: Name(name), Desc(desc),Level(0), Mng(mng), Plugin(0), Lib(lib),
 	      AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0), List(list)
 {
 	RString Cat(mng->GetName());
 	Cat.Replace('/','-');
 
-	if(mng->GetPluginsType()==GPluginManager::ptListSelect)
+	if(mng->GetPlugInType()==GPlugInManager::ptListSelect)
 	{
 		RString ListName(List);
 		ListName.Replace('/','-');
@@ -136,7 +136,7 @@ GPluginFactory::GPluginFactory(GPluginManager* mng,const R::RString& name,const 
 
 
 //-----------------------------------------------------------------------------
-int GPluginFactory::Compare(const GPluginFactory& f) const
+int GPlugInFactory::Compare(const GPlugInFactory& f) const
 {
 	int a=Level-f.Level;
 	if(!a)
@@ -146,21 +146,21 @@ int GPluginFactory::Compare(const GPluginFactory& f) const
 
 
 //-----------------------------------------------------------------------------
-int GPluginFactory::Compare(const R::RString& name) const
+int GPlugInFactory::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
 }
 
 
 //-----------------------------------------------------------------------------
-int GPluginFactory::Compare(const size_t level) const
+int GPlugInFactory::Compare(const size_t level) const
 {
 	return(Level-level);
 }
 
 
 //-----------------------------------------------------------------------------
-void GPluginFactory::Create(void)
+void GPlugInFactory::Create(void)
 {
 	if(Plugin) return;
 	Plugin=NewPlugIn();
@@ -170,7 +170,7 @@ void GPluginFactory::Create(void)
 
 
 //-----------------------------------------------------------------------------
-void GPluginFactory::Delete(void)
+void GPlugInFactory::Delete(void)
 {
 	if(!Plugin) return;
 	Mng->DisablePlugIn(Plugin);
@@ -179,7 +179,7 @@ void GPluginFactory::Delete(void)
 }
 
 //-----------------------------------------------------------------------------
-void GPluginFactory::Create(GSession* session)
+void GPlugInFactory::Create(GSession* session)
 {
 	if(!Plugin)
 	{
@@ -193,7 +193,7 @@ void GPluginFactory::Create(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GPluginFactory::Delete(GSession* session)
+void GPlugInFactory::Delete(GSession* session)
 {
 	if(!Plugin) return;
 	if(session)
@@ -205,7 +205,7 @@ void GPluginFactory::Delete(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GPluginFactory::About(void)
+void GPlugInFactory::About(void)
 {
 	if(AboutDlg)
 		AboutDlg();
@@ -213,7 +213,7 @@ void GPluginFactory::About(void)
 
 
 //-----------------------------------------------------------------------------
-void GPluginFactory::Configure(void)
+void GPlugInFactory::Configure(void)
 {
 	if(ConfigDlg)
 	{
@@ -224,7 +224,7 @@ void GPluginFactory::Configure(void)
 
 
 //-----------------------------------------------------------------------------
-void GPluginFactory::Apply(void)
+void GPlugInFactory::Apply(void)
 {
 	if(Plugin)
 		Plugin->ApplyConfig();
@@ -232,7 +232,7 @@ void GPluginFactory::Apply(void)
 
 
 //-----------------------------------------------------------------------------
-GPluginFactory::~GPluginFactory(void)
+GPlugInFactory::~GPlugInFactory(void)
 {
 	// Save configuration file
 	Save();

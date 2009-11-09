@@ -56,8 +56,8 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupProfiles::GGroupProfiles(GPluginFactory* fac)
-	: GPlugin(fac), Profiles(100,50)
+GGroupProfiles::GGroupProfiles(GPlugInFactory* fac)
+	: GPlugIn(fac), Profiles(100,50)
 {
 }
 

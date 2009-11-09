@@ -57,7 +57,7 @@ namespace GALILEI{
 * @author GALILEI Team
 * @short Generic Storage Manager.
 */
-class GStorage : public GPlugin
+class GStorage : public GPlugIn
 {
 protected:
 
@@ -88,7 +88,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GStorage(GPluginFactory* fac);
+	GStorage(GPlugInFactory* fac);
 
 	//-----------------------------------------------------
 	/** @name General Methods

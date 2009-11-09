@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Community Computing Method.
 */
-class GCommunityCalc : public GPlugin
+class GCommunityCalc : public GPlugIn
 {
 protected:
 
@@ -67,7 +67,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GCommunityCalc(GPluginFactory* fac);
+	GCommunityCalc(GPlugInFactory* fac);
 
 	/**
 	* Compute a community.

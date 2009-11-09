@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Profiles Grouping Method.
 */
-class GGroupProfiles : public GPlugin
+class GGroupProfiles : public GPlugIn
 {
 protected:
 
@@ -67,7 +67,7 @@ public:
 	* Constructor of the profiles grouping method.
 	* @param fac             Factory of the plug-in.
 	*/
-	GGroupProfiles(GPluginFactory* fac);
+	GGroupProfiles(GPlugInFactory* fac);
 
 protected:
 

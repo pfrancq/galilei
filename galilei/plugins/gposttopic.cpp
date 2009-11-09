@@ -42,8 +42,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostTopic::GPostTopic(GPluginFactory* fac)
-	: GPlugin(fac)
+GPostTopic::GPostTopic(GPlugInFactory* fac)
+	: GPlugIn(fac)
 {
 }
 

@@ -51,8 +51,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngine::GEngine(GPluginFactory* fac)
-	: GPlugin(fac), Weight(1)
+GEngine::GEngine(GPlugInFactory* fac)
+	: GPlugIn(fac), Weight(1)
 {
 }
 

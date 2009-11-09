@@ -37,8 +37,8 @@ using namespace R;
 
 
 //------------------------------------------------------------------------------
-GLinkCalc::GLinkCalc(GPluginFactory* fac)
-	: GPlugin(fac)
+GLinkCalc::GLinkCalc(GPlugInFactory* fac)
+	: GPlugIn(fac)
 {
 }
 

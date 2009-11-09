@@ -56,7 +56,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Generic Document Analysis.
  */
-class GDocAnalyse : public GPlugin
+class GDocAnalyse : public GPlugIn
 {
 protected:
 
@@ -81,7 +81,7 @@ public:
 	* Constructor of the document analysis method.
 	* @param fac             Factory of the plug-in.
 	*/
-	GDocAnalyse(GPluginFactory* fac);
+	GDocAnalyse(GPlugInFactory* fac);
 
 	/**
 	* Analyze a XML of a document for a session.

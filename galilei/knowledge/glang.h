@@ -63,7 +63,7 @@ namespace GALILEI{
 * @author Pascal Francq.
 * @short Generic Language.
 */
-class GLang : public R::RLang, public GPlugin
+class GLang : public R::RLang, public GPlugIn
 {
 protected:
 	class SkipWord;
@@ -92,7 +92,7 @@ public:
 	* @param lang           Name of the language.
 	* @param code           Code of the language.
 	*/
-	GLang(GPluginFactory* fac,const R::RString& lang,const char* code);
+	GLang(GPlugInFactory* fac,const R::RString& lang,const char* code);
 
 	/**
 	 * @return the name of the language.
@@ -102,7 +102,7 @@ public:
 	/**
 	 * @return the name of the plug-in.
 	 */
-	R::RString GetPlugInName(void) const {return(GPlugin::GetName());}
+	R::RString GetPlugInName(void) const {return(GPlugIn::GetName());}
 
 	/**
 	* Connect to a Session.

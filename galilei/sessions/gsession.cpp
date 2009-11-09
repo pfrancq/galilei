@@ -975,7 +975,7 @@ bool GSession::GetDocXML(GDoc* doc,R::RXMLStruct* xml,bool& native)
 void GSession::DoPostDocs(GSlot* rec)
 {
 	// Run all post-doc methods that are enabled
-	R::RCastCursor<GPlugin,GPostDoc> PostDocs(GALILEIApp->GetPlugIns<GPostDoc>("PostDoc"));
+	R::RCastCursor<GPlugIn,GPostDoc> PostDocs(GALILEIApp->GetPlugIns<GPostDoc>("PostDoc"));
 	for(PostDocs.Start();!PostDocs.End();PostDocs.Next())
 	{
 		if(rec)
@@ -1231,7 +1231,7 @@ void GSession::InsertProfile(GProfile* p)
 void GSession::CalcProfiles(GSlot* rec)
 {
 	// Run all pre-profile methods that are enabled
-	R::RCastCursor<GPlugin,GPreProfile> PreProfile(GALILEIApp->GetPlugIns<GPreProfile>("PreProfile"));
+	R::RCastCursor<GPlugIn,GPreProfile> PreProfile(GALILEIApp->GetPlugIns<GPreProfile>("PreProfile"));
 	for(PreProfile.Start();!PreProfile.End();PreProfile.Next())
 	{
 		if(rec)
@@ -1301,7 +1301,7 @@ void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* lin
 void GSession::DoPostProfiles(GSlot* rec)
 {
 	// Run all post-profiles methods that are enabled
-	R::RCastCursor<GPlugin,GPostProfile> PostProfile(GALILEIApp->GetPlugIns<GPostProfile>("PostProfile"));
+	R::RCastCursor<GPlugIn,GPostProfile> PostProfile(GALILEIApp->GetPlugIns<GPostProfile>("PostProfile"));
 	for(PostProfile.Start();!PostProfile.End();PostProfile.Next())
 	{
 		if(rec)
@@ -1529,7 +1529,7 @@ void GSession::GroupProfiles(GSlot* rec)
 void GSession::DoPostCommunity(GSlot* rec)
 {
 	// Run all post-community methods that are enabled
-	R::RCastCursor<GPlugin,GPostCommunity> PostCommunity(GALILEIApp->GetPlugIns<GPostCommunity>("PostCommunity"));
+	R::RCastCursor<GPlugIn,GPostCommunity> PostCommunity(GALILEIApp->GetPlugIns<GPostCommunity>("PostCommunity"));
 	for(PostCommunity.Start();!PostCommunity.End();PostCommunity.Next())
 	{
 		if(rec)
@@ -1746,7 +1746,7 @@ void GSession::GroupDocs(GSlot* rec)
 void GSession::DoPostTopic(GSlot* rec)
 {
 	// Run all post-topic methods that are enabled
-	R::RCastCursor<GPlugin,GPostTopic> Post(GALILEIApp->GetPlugIns<GPostTopic>("PostTopic"));
+	R::RCastCursor<GPlugIn,GPostTopic> Post(GALILEIApp->GetPlugIns<GPostTopic>("PostTopic"));
 	for(Post.Start();!Post.End();Post.Next())
 	{
 		if(rec)
@@ -1794,7 +1794,7 @@ void GSession::UpdateTopic(size_t docid)
 void GSession::ComputeTrust(GSlot* rec)
 {
 	// Run all trust methods that are enabled
-	R::RCastCursor<GPlugin,GComputeTrust> ComputeTrust(GALILEIApp->GetPlugIns<GComputeTrust>("ComputeTrust"));
+	R::RCastCursor<GPlugIn,GComputeTrust> ComputeTrust(GALILEIApp->GetPlugIns<GComputeTrust>("ComputeTrust"));
 	for(ComputeTrust.Start();!ComputeTrust.End();ComputeTrust.Next())
 	{
 		if(rec)
@@ -1811,7 +1811,7 @@ void GSession::ComputeTrust(GSlot* rec)
 void GSession::ComputeSugs(GSlot* rec)
 {
 	// Run all suggestions methods that are enabled
-	R::RCastCursor<GPlugin,GComputeSugs> ComputeSugs(GALILEIApp->GetPlugIns<GComputeSugs>("ComputeSugs"));
+	R::RCastCursor<GPlugIn,GComputeSugs> ComputeSugs(GALILEIApp->GetPlugIns<GComputeSugs>("ComputeSugs"));
 	for(ComputeSugs.Start();!ComputeSugs.End();ComputeSugs.Next())
 	{
 		if(rec)

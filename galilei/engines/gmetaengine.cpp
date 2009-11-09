@@ -52,8 +52,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMetaEngine::GMetaEngine(GPluginFactory* fac)
-	: GPlugin(fac)
+GMetaEngine::GMetaEngine(GPlugInFactory* fac)
+	: GPlugIn(fac)
 {
 }
 

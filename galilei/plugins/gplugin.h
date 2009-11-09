@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GPlugin.h
+	GPlugIn.h
 
 	Generic Plug-In - Header.
 
@@ -29,8 +29,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPluginH
-#define GPluginH
+#ifndef GPlugInH
+#define GPlugInH
 
 
 //------------------------------------------------------------------------------
@@ -77,18 +77,18 @@ typedef void (*About_t)();
 
 //-----------------------------------------------------------------------------
 /**
-* The GPlugin class provides a template for a generic plug-in.
+* The GPlugIn class provides a template for a generic plug-in.
 * @author Pascal Francq
 * @short Generic Plug-in.
 */
-class GPlugin
+class GPlugIn
 {
 protected:
 
 	/**
 	* Pointer to the factory.
 	*/
-	GPluginFactory* Factory;
+	GPlugInFactory* Factory;
 
 	/**
 	* Session.
@@ -101,7 +101,7 @@ public:
 	* Constructor of the plug-in.
 	* @param fac            Factory.
 	*/
-	GPlugin(GPluginFactory* fac);
+	GPlugIn(GPlugInFactory* fac);
 
 	/**
 	* Connect to the session.
@@ -123,13 +123,13 @@ public:
 	/**
 	* Get the factory of the plug-in.
 	*/
-	GPluginFactory* GetFactory(void) const {return(Factory);}
+	GPlugInFactory* GetFactory(void) const {return(Factory);}
 
 	/**
 	* Comparison method needed by R::RContainer.
 	* @param plugin          Plug-in to compare.
 	*/
-	int Compare(const GPlugin& plugin) const;
+	int Compare(const GPlugIn& plugin) const;
 
 	/**
 	* Comparison method needed by R::RContainer.
@@ -155,25 +155,25 @@ public:
 	/**
 	* Destruct of the plug-in.
 	*/
-	virtual ~GPlugin(void);
+	virtual ~GPlugIn(void);
 };
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GPluginFactory class provides a template for a generic plug-in factory. A
+* The GPlugInFactory class provides a template for a generic plug-in factory. A
 * factory handles the loading of the dynamic library containing the plug-in.
 * @author Pascal Francq
 * @short Generic Plug-in Factory.
 */
-class GPluginFactory : public R::RConfig
+class GPlugInFactory : public R::RConfig
 {
 public:
 
 	/**
 	* Type of a function used to show dialog box of a plug-in.
 	*/
-	typedef void* (*Configure_t)(GPluginFactory*);
+	typedef void* (*Configure_t)(GPlugInFactory*);
 
 protected:
 
@@ -195,12 +195,12 @@ protected:
 	/**
 	* Plug-in Manager associated.
 	*/
-	GPluginManager* Mng;
+	GPlugInManager* Mng;
 
 	/**
 	* Pointer to the plug-in.
 	*/
-	GPlugin* Plugin;
+	GPlugIn* Plugin;
 
 	/**
 	* File of the library.
@@ -245,7 +245,7 @@ public:
 	* @param list            List of the plug-in. Must be a null string if the
 	*                        plug-in is not part of multiple lists.
 	*/
-	GPluginFactory(GPluginManager* mng,const R::RString& name,const R::RString& desc,const R::RString& lib,const R::RString& list);
+	GPlugInFactory(GPlugInManager* mng,const R::RString& name,const R::RString& desc,const R::RString& lib,const R::RString& list);
 
 	/**
 	* Get the level of the plug-in.
@@ -277,7 +277,7 @@ public:
 	* Get the manager of the factory.
 	* @return Pointer to the manager.
 	*/
-	GPluginManager* GetMng(void) const {return(Mng);}
+	GPlugInManager* GetMng(void) const {return(Mng);}
 
 	/**
 	* Set the about box.
@@ -307,7 +307,7 @@ public:
 	* Comparison method needed by R::RContainer.
 	* @param f               Factory to compare.
 	*/
-	int Compare(const GPluginFactory& f) const;
+	int Compare(const GPlugInFactory& f) const;
 
 	/**
 	* Comparison method needed by R::RContainer.
@@ -324,12 +324,12 @@ public:
 	/**
 	* Create a new plug-in and eventually connect it to the session.
 	*/
-	virtual GPlugin* NewPlugIn(void)=0;
+	virtual GPlugIn* NewPlugIn(void)=0;
 
 	/**
 	* Delete a plug-in and eventually disconnect it to the session.
 	*/
-	virtual void DeletePlugIn(GPlugin* plug)=0;
+	virtual void DeletePlugIn(GPlugIn* plug)=0;
 
 	/**
 	* Create a plug-in.
@@ -385,12 +385,12 @@ public:
 	/**
 	* Return the manager of the plug-in.
 	*/
-	GPluginManager* GetMng(void) {return(Mng);}
+	GPlugInManager* GetMng(void) {return(Mng);}
 
 	/**
 	* Get the plug-in of this factory.
 	*/
-	GPlugin* GetPlugin(void) const {return(Plugin);}
+	template<class plugin> plugin* GetPlugIn(void) const {return(static_cast<plugin*>(Plugin));}
 
 	/**
 	* Specify if the plug-in is created.
@@ -410,25 +410,25 @@ public:
 	/**
 	* Destruct the factory.
 	*/
-	virtual ~GPluginFactory(void);
+	virtual ~GPlugInFactory(void);
 
 	// friend class
-	friend class GPlugin;
+	friend class GPlugIn;
 };
 
 
 //-------------------------------------------------------------------------------
 #define CREATE_FACTORY(base,plugin,type,list,name,desc)                                            \
-class TheFactory : public GALILEI::GPluginFactory                                                  \
+class TheFactory : public GALILEI::GPlugInFactory                                                  \
 {                                                                                                  \
-	static GALILEI::GPluginFactory* Inst;                                                          \
-	TheFactory(GALILEI::GPluginManager* mng,const char* t) : GPluginFactory(mng,name,desc,t,list)  \
+	static GALILEI::GPlugInFactory* Inst;                                                          \
+	TheFactory(GALILEI::GPlugInManager* mng,const char* t) : GPlugInFactory(mng,name,desc,t,list)  \
 	{                                                                                              \
 		plugin::CreateParams(this);                                                                \
 	}                                                                                              \
 	virtual ~TheFactory(void) {}                                                                   \
 public:                                                                                            \
-	static GALILEI::GPluginFactory* CreateInst(GALILEI::GPluginManager* mng,const char* t)         \
+	static GALILEI::GPlugInFactory* CreateInst(GALILEI::GPlugInManager* mng,const char* t)         \
 	{                                                                                              \
 		if(!Inst)                                                                                  \
 			Inst = new TheFactory(mng,t);                                                          \
@@ -437,19 +437,19 @@ public:                                                                         
 	virtual const char* GetAPIVersion(void) const                                                  \
 		{return(API_PLUG_IN_VERSION);}                                                             \
 		                                                                                           \
-	virtual GALILEI::GPlugin* NewPlugIn(void)                                                      \
+	virtual GALILEI::GPlugIn* NewPlugIn(void)                                                      \
 	{                                                                                              \
 		base* ptr(new plugin(this));                                                               \
 		return(ptr);                                                                               \
 	}                                                                                              \
-	virtual void DeletePlugIn(GALILEI::GPlugin* plug)                                              \
+	virtual void DeletePlugIn(GALILEI::GPlugIn* plug)                                              \
 	{                                                                                              \
 		delete plug;                                                                               \
 	}                                                                                              \
 };                                                                                                 \
-GALILEI::GPluginFactory* TheFactory::Inst = 0;                                                     \
+GALILEI::GPlugInFactory* TheFactory::Inst = 0;                                                     \
                                                                                                    \
-extern "C" GALILEI::GPluginFactory* FactoryCreate(GALILEI::GPluginManager* mng,const char* t)      \
+extern "C" GALILEI::GPlugInFactory* FactoryCreate(GALILEI::GPlugInManager* mng,const char* t)      \
 {                                                                                                  \
 	return(TheFactory::CreateInst(mng,t));                                                         \
 }                                                                                                  \

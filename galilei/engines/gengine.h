@@ -57,7 +57,7 @@ namespace GALILEI{
 * @author Valery Vandaele
 * @short Results extractor for search engine
 */
-class GEngine : public GPlugin
+class GEngine : public GPlugIn
 {
 protected:
 	/**
@@ -75,7 +75,7 @@ public:
 	/**
 	* Construct the extractor for the Yahoo engine.
 	*/
-	GEngine(GPluginFactory* fac);
+	GEngine(GPlugInFactory* fac);
 
 	/**
 	* Process the Engine extraction. All results will be extracted, the url of the next page...

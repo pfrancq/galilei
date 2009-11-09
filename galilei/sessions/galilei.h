@@ -346,9 +346,9 @@ class GSimulator;
 
 //------------------------------------------------------------------------------
 // forward class declaration - Plug-ins Part
-class GPlugin;
-class GPluginFactory;
-class GPluginManager;
+class GPlugIn;
+class GPlugInFactory;
+class GPlugInManager;
 class GMeasure;
 class GMatrixMeasure;
 class GTool;

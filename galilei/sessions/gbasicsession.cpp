@@ -48,15 +48,15 @@ using namespace std;
 GBasicSession::GBasicSession(void)
 	: Storage(0), SaveResults(true)
 {
-	GPluginFactory* fac(GALILEIApp->GetCurrentFactory("Storage"));
+	GPlugInFactory* fac(GALILEIApp->GetCurrentFactory("Storage"));
 	if(!fac)
 		throw GException("No Storage");
 
 	// Delete the storage if necessary and re-create it
-	if(fac->GetPlugin())
+	if(fac->GetPlugIn<GStorage>())
 		fac->Delete();
 	fac->Create();
-	Storage=static_cast<GStorage*>(fac->GetPlugin());
+	Storage=fac->GetPlugIn<GStorage>();
 	Storage->InitAccess();
 }
 

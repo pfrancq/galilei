@@ -46,8 +46,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMeasure::GMeasure(GPluginFactory* fac)
-	: GPlugin(fac)
+GMeasure::GMeasure(GPlugInFactory* fac)
+	: GPlugIn(fac)
 {
 }
 

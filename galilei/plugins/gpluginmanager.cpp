@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GPlugins.cpp
+	GPlugIns.cpp
 
 	Generic Plug-In Managers - Implementation.
 
@@ -39,44 +39,44 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-// class GPluginList
+// class GPlugInList
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GPluginList::GPluginList(R::RString name)
+GPlugInList::GPlugInList(R::RString name)
 	: Name(name), Factories(20,10), Plugins(20,10), Current(0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-int GPluginList::Compare(const GPluginList& list) const
+int GPlugInList::Compare(const GPlugInList& list) const
 {
 	return(Name.Compare(list.Name));
 }
 
 
 //------------------------------------------------------------------------------
-int GPluginList::Compare(const R::RString& name) const
+int GPlugInList::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
 }
 
 
 //-----------------------------------------------------------------------------
-void GPluginList::Connect(GSession* session)
+void GPlugInList::Connect(GSession* session)
 {
-	R::RCursor<GPlugin> Cur(Plugins);
+	R::RCursor<GPlugIn> Cur(Plugins);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Connect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GPluginList::Disconnect(GSession* session)
+void GPlugInList::Disconnect(GSession* session)
 {
-	R::RCursor<GPlugin> Cur(Plugins);
+	R::RCursor<GPlugIn> Cur(Plugins);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Disconnect(session);
 }
@@ -85,37 +85,37 @@ void GPluginList::Disconnect(GSession* session)
 
 //-----------------------------------------------------------------------------
 //
-// class GPluginManager
+// class GPlugInManager
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GPluginManager::GPluginManager(R::RString name,tPluginsType type)
+GPlugInManager::GPlugInManager(R::RString name,tPluginsType type)
 	: Name(name), Version(API_PLUG_IN_VERSION), PluginsType(type)
 {
 	if(PluginsType==ptListSelect)
-		Data.Lists=new R::RContainer<GPluginList,true,true>(10,5);
+		Data.Lists=new R::RContainer<GPlugInList,true,true>(10,5);
 	else
-		Data.List=new GPluginList(RString::Null);
+		Data.List=new GPlugInList(RString::Null);
 }
 
 
 //------------------------------------------------------------------------------
-int GPluginManager::Compare(const GPluginManager& pmng) const
+int GPlugInManager::Compare(const GPlugInManager& pmng) const
 {
 	return(Name.Compare(pmng.Name));
 }
 
 
 //------------------------------------------------------------------------------
-int GPluginManager::Compare(const R::RString& name) const
+int GPlugInManager::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
 }
 
 
 //------------------------------------------------------------------------------
-void GPluginManager::ReOrder(void)
+void GPlugInManager::ReOrder(void)
 {
 	if(PluginsType!=ptOrdered)
 		return;
@@ -125,13 +125,13 @@ void GPluginManager::ReOrder(void)
 
 
 //-----------------------------------------------------------------------------
-void GPluginManager::Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config)
+void GPlugInManager::Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config)
 {
-	typedef GPluginFactory* FactoryInit(GPluginManager*,const char*);
+	typedef GPlugInFactory* FactoryInit(GPlugInManager*,const char*);
 
 	char* error;
 
-	// Try to create the GPluginFactory
+	// Try to create the GPlugInFactory
 	FactoryInit* initFac=reinterpret_cast<FactoryInit*>(reinterpret_cast<size_t>(dlsym(handle,"FactoryCreate")));
 	error=dlerror();
 	if(error)
@@ -139,14 +139,14 @@ void GPluginManager::Load(const R::RString& dll,void* handle,void* handleDlg,R::
 		std::cerr<<error<<std::endl;
 		return;
 	}
-	GPluginFactory *myGPluginFactory= initFac(this,dll);
+	GPlugInFactory *myGPlugInFactory= initFac(this,dll);
 
-	// Verify the versions of the GPluginFactory and the session
-	if(Version.Compare(myGPluginFactory->GetAPIVersion()))
+	// Verify the versions of the GPlugInFactory and the session
+	if(Version.Compare(myGPlugInFactory->GetAPIVersion()))
 		return;
 
 	// Register main plug-in
-	RegisterFactory(myGPluginFactory,config);
+	RegisterFactory(myGPlugInFactory,config);
 
 	// Try to create the dialogs if necessary
 	if(!handleDlg)
@@ -154,20 +154,20 @@ void GPluginManager::Load(const R::RString& dll,void* handle,void* handleDlg,R::
 	About_t about=reinterpret_cast<About_t>(reinterpret_cast<size_t>(dlsym(handleDlg,"About")));
 	error=dlerror();
 	if(!error)
-		myGPluginFactory->SetAbout(about);
+		myGPlugInFactory->SetAbout(about);
 	void* configdll= dlsym(handleDlg,"Configure");
 	error=dlerror();
 	if(!error)
-		myGPluginFactory->SetConfig(configdll);
+		myGPlugInFactory->SetConfig(configdll);
 }
 
 
 //-----------------------------------------------------------------------------
-void GPluginManager::Connect(GSession* session)
+void GPlugInManager::Connect(GSession* session)
 {
 	if(PluginsType==ptListSelect)
 	{
-		RCursor<GPluginList> Cur(*Data.Lists);
+		RCursor<GPlugInList> Cur(*Data.Lists);
 		for(Cur.Start();!Cur.End();Cur.Next())
 			Cur()->Connect(session);
 	}
@@ -177,11 +177,11 @@ void GPluginManager::Connect(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GPluginManager::Disconnect(GSession* session)
+void GPlugInManager::Disconnect(GSession* session)
 {
 	if(PluginsType==ptListSelect)
 	{
-		RCursor<GPluginList> Cur(*Data.Lists);
+		RCursor<GPlugInList> Cur(*Data.Lists);
 		for(Cur.Start();!Cur.End();Cur.Next())
 			Cur()->Disconnect(session);
 	}
@@ -191,7 +191,7 @@ void GPluginManager::Disconnect(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GPluginManager::CreateConfig(R::RConfig* config)
+void GPlugInManager::CreateConfig(R::RConfig* config)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
@@ -215,7 +215,7 @@ void GPluginManager::CreateConfig(R::RConfig* config)
 
 
 //------------------------------------------------------------------------------
-void GPluginManager::ReadConfig(R::RConfig* config)
+void GPlugInManager::ReadConfig(R::RConfig* config)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
@@ -227,7 +227,7 @@ void GPluginManager::ReadConfig(R::RConfig* config)
 			R::RCursor<R::RString> Cur(param->GetList());
 			for(Cur.Start(),pos=0;!Cur.End();Cur.Next(),pos++)
 			{
-				GPluginFactory* fac(Data.List->Factories.GetPtr(*Cur(),false));
+				GPlugInFactory* fac(Data.List->Factories.GetPtr(*Cur(),false));
 				if(fac)
 					fac->SetLevel(pos);
 			}
@@ -255,7 +255,7 @@ void GPluginManager::ReadConfig(R::RConfig* config)
 
 
 //------------------------------------------------------------------------------
-void GPluginManager::SaveConfig(R::RConfig* config)
+void GPlugInManager::SaveConfig(R::RConfig* config)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
@@ -266,7 +266,7 @@ void GPluginManager::SaveConfig(R::RConfig* config)
 			if(param)
 			{
 				param->Reset();
-				R::RCursor<GPluginFactory> Cur(Data.List->Factories);
+				R::RCursor<GPlugInFactory> Cur(Data.List->Factories);
 				for(Cur.Start();!Cur.End();Cur.Next())
 					param->Insert(Cur()->GetName());
 			}
@@ -287,7 +287,7 @@ void GPluginManager::SaveConfig(R::RConfig* config)
 		case ptListSelect:
 		{
 			RParamStruct* ptr=config->FindParam<RParamStruct>("Measures","Plugins");
-			RCursor<GPluginList> Cur(*Data.Lists);
+			RCursor<GPlugInList> Cur(*Data.Lists);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
 				RParamValue* param=ptr->Get<RParamValue>(Cur()->GetName());
@@ -308,10 +308,10 @@ void GPluginManager::SaveConfig(R::RConfig* config)
 
 
 //-----------------------------------------------------------------------------
-void GPluginManager::RegisterFactory(GPluginFactory* fac,R::RConfig* config)
+void GPlugInManager::RegisterFactory(GPlugInFactory* fac,R::RConfig* config)
 {
 	// Find the correct list
-	GPluginList* List;
+	GPlugInList* List;
 	if(PluginsType==ptListSelect)
 	{
 		List=Data.Lists->GetInsertPtr(fac->GetList());
@@ -340,18 +340,30 @@ void GPluginManager::RegisterFactory(GPluginFactory* fac,R::RConfig* config)
 
 
 //-----------------------------------------------------------------------------
-RCursor<GPluginList> GPluginManager::GetPlugInList(void) const
+RCursor<GPlugInList> GPlugInManager::GetPlugInLists(void) const
 {
 	if(PluginsType==ptListSelect)
-		return(RCursor<GPluginList>(*Data.Lists));
-	return(RCursor<GPluginList>());
+		return(RCursor<GPlugInList>(*Data.Lists));
+	return(RCursor<GPlugInList>());
 }
 
 
 //-----------------------------------------------------------------------------
-GPluginFactory* GPluginManager::GetFactory(const R::RString& name,const R::RString& list,int need) const
+GPlugInList* GPlugInManager::GetPlugInList(const R::RString& list,int need) const
 {
-	GPluginList* List;
+	if(PluginsType!=ptListSelect)
+		ThrowGException("No plug-ins list for manager '"+Name+"'");
+	GPlugInList* List(Data.Lists->GetPtr(list));
+	if((!List)&&need)
+		ThrowGException("No plug-ins list '"+list+"' for manager '"+Name+"'");
+	return(List);
+}
+
+
+//-----------------------------------------------------------------------------
+GPlugInFactory* GPlugInManager::GetFactory(const R::RString& name,const R::RString& list,int need) const
+{
+	GPlugInList* List;
 	if(PluginsType==ptListSelect)
 	{
 		List=Data.Lists->GetPtr(list);
@@ -361,7 +373,7 @@ GPluginFactory* GPluginManager::GetFactory(const R::RString& name,const R::RStri
 	else
 		List=Data.List;
 
-	GPluginFactory* fac(List->Factories.GetPtr(name,PluginsType!=ptOrdered));
+	GPlugInFactory* fac(List->Factories.GetPtr(name,PluginsType!=ptOrdered));
 	if((!fac)&need)
 		throw GException("No plug-in '"+name+"' available for '"+Name+"'");
 	return(fac);
@@ -369,9 +381,9 @@ GPluginFactory* GPluginManager::GetFactory(const R::RString& name,const R::RStri
 
 
 //-----------------------------------------------------------------------------
-size_t GPluginManager::GetNbFactories(const RString& list) const
+size_t GPlugInManager::GetNbFactories(const RString& list) const
 {
-	GPluginList* List;
+	GPlugInList* List;
 	if(PluginsType==ptListSelect)
 	{
 		List=Data.Lists->GetPtr(list);
@@ -386,9 +398,9 @@ size_t GPluginManager::GetNbFactories(const RString& list) const
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GPluginFactory> GPluginManager::GetFactories(const R::RString& list) const
+R::RCursor<GPlugInFactory> GPlugInManager::GetFactories(const R::RString& list) const
 {
-	GPluginList* List;
+	GPlugInList* List;
 	if(PluginsType==ptListSelect)
 	{
 		List=Data.Lists->GetPtr(list);
@@ -397,14 +409,14 @@ R::RCursor<GPluginFactory> GPluginManager::GetFactories(const R::RString& list) 
 	}
 	else
 		List=Data.List;
-	return(RCursor<GPluginFactory>(List->Factories));
+	return(RCursor<GPlugInFactory>(List->Factories));
 }
 
 
 //-----------------------------------------------------------------------------
-void GPluginManager::EnablePlugIn(GPlugin* plug)
+void GPlugInManager::EnablePlugIn(GPlugIn* plug)
 {
-	GPluginList* List;
+	GPlugInList* List;
 	if(PluginsType==ptListSelect)
 	{
 		List=Data.Lists->GetPtr(plug->GetFactory()->GetList());
@@ -423,9 +435,9 @@ void GPluginManager::EnablePlugIn(GPlugin* plug)
 
 
 //-----------------------------------------------------------------------------
-void GPluginManager::DisablePlugIn(GPlugin* plug)
+void GPlugInManager::DisablePlugIn(GPlugIn* plug)
 {
-	GPluginList* List;
+	GPlugInList* List;
 	if(PluginsType==ptListSelect)
 	{
 		List=Data.Lists->GetPtr(plug->GetFactory()->GetList());
@@ -444,9 +456,9 @@ void GPluginManager::DisablePlugIn(GPlugin* plug)
 
 
 //-----------------------------------------------------------------------------
-size_t GPluginManager::GetNbPlugIns(const RString& list) const
+size_t GPlugInManager::GetNbPlugIns(const RString& list) const
 {
-	GPluginList* List;
+	GPlugInList* List;
 	if(PluginsType==ptListSelect)
 	{
 		List=Data.Lists->GetPtr(list);
@@ -460,9 +472,9 @@ size_t GPluginManager::GetNbPlugIns(const RString& list) const
 
 
 //------------------------------------------------------------------------------
-void GPluginManager::SetCurrentPlugIn(const R::RString& name,const R::RString& list,int need)
+void GPlugInManager::SetCurrentPlugIn(const R::RString& name,const R::RString& list,int need)
 {
-	GPluginList* List;
+	GPlugInList* List;
 	if(PluginsType==ptListSelect)
 	{
 		List=Data.Lists->GetPtr(list);
@@ -488,9 +500,9 @@ void GPluginManager::SetCurrentPlugIn(const R::RString& name,const R::RString& l
 
 
 //------------------------------------------------------------------------------
-GPluginFactory* GPluginManager::GetCurrentFactory(const R::RString& list,int need) const
+GPlugInFactory* GPlugInManager::GetCurrentFactory(const R::RString& list,int need) const
 {
-	GPluginList* List;
+	GPlugInList* List;
 	if(PluginsType==ptListSelect)
 	{
 		List=Data.Lists->GetPtr(list);
@@ -507,7 +519,7 @@ GPluginFactory* GPluginManager::GetCurrentFactory(const R::RString& list,int nee
 
 
 //------------------------------------------------------------------------------
-GPluginManager::~GPluginManager(void)
+GPlugInManager::~GPlugInManager(void)
 {
 	if(PluginsType==ptListSelect)
 		delete Data.Lists;

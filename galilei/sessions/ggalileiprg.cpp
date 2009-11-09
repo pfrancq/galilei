@@ -784,7 +784,7 @@ void GGroupProfilesI::Run(R::RInterpreter* prg,RPrgOutput* o,RPrgVarInst* inst,R
 	o->WriteStr("Group Profiles");
 	if(!GALILEIApp->GetCurrentPlugIn<GGroupProfiles>("GroupProfiles"))
 		throw RPrgException(prg,"No Profiles Grouping Method chosen.");
-	if(!GALILEIApp->GetCurrentPlugIn<GPlugin>("CommunityCalc"))
+	if(!GALILEIApp->GetCurrentPlugIn<GPlugIn>("CommunityCalc"))
 		throw RPrgException(prg,"No Community Description Method chosen.");
 	Owner->Session->GroupProfiles(dynamic_cast<GSlot*>(o));
 }
@@ -1053,7 +1053,7 @@ void GRealLifeI::CommonTasks(RPrgOutput* o,GInstSimulator* Owner)
 	}
 	if(GSession::Break()) return;
 	GALILEIApp->GetCurrentPlugIn<GGroupProfiles>("GroupProfiles")->ApplyConfig();
-	GALILEIApp->GetCurrentPlugIn<GPlugin>("CommunityCalc")->ApplyConfig();
+	GALILEIApp->GetCurrentPlugIn<GPlugIn>("CommunityCalc")->ApplyConfig();
 	Owner->Session->GroupProfiles(rec);
 
 	// Compare Ideal
@@ -1279,7 +1279,7 @@ void GRunStatI::Run(R::RInterpreter* prg,RPrgOutput* out,RPrgVarInst* inst,R::RC
 
 	// Compute the statistics
 	int i;
-	R::RCastCursor<GPlugin,GStatsCalc> Cur(GALILEIApp->GetPlugIns<GStatsCalc>("StatsCalc"));
+	R::RCastCursor<GPlugIn,GStatsCalc> Cur(GALILEIApp->GetPlugIns<GStatsCalc>("StatsCalc"));
 	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
 		Cur()->Compute(&xml,*Root);
 	if(out)
@@ -1334,7 +1334,7 @@ void GSetPlugInParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RCon
 	ShowInst(this,prg,args);
 	if(args.GetNb()!=4)
 		throw RPrgException(prg,"Method needs four parameters.");
-	GPluginFactory* Config(GALILEIApp->GetFactory(args[0]->GetValue(prg),args[1]->GetValue(prg)));
+	GPlugInFactory* Config(GALILEIApp->GetFactory(args[0]->GetValue(prg),args[1]->GetValue(prg)));
 	if(!Config)
 		throw RPrgException(prg,"'"+args[1]->GetValue(prg)+"' is not a plug-in for the manager '"+args[0]->GetValue(prg)+"'");
 	Config->Set(args[2]->GetValue(prg),args[3]->GetValue(prg));
@@ -1359,7 +1359,7 @@ void GSetMeasureParamI::Run(R::RInterpreter* prg,RPrgOutput*,RPrgVarInst*,R::RCo
 	ShowInst(this,prg,args);
 	if(args.GetNb()!=4)
 		throw RPrgException(prg,"Method needs four parameters.");
-	GPluginFactory* Config(GALILEIApp->GetFactory("Measures",args[0]->GetValue(prg),args[1]->GetValue(prg)));
+	GPlugInFactory* Config(GALILEIApp->GetFactory("Measures",args[0]->GetValue(prg),args[1]->GetValue(prg)));
 	if(!Config)
 		throw RPrgException(prg,"'"+args[1]->GetValue(prg)+"' is not a measure for the type '"+args[0]->GetValue(prg)+"'");
 	Config->Set(args[2]->GetValue(prg),args[3]->GetValue(prg));

@@ -58,7 +58,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Filter.
 */
-class GFilter : public GPlugin
+class GFilter : public GPlugIn
 {
 protected:
 
@@ -73,7 +73,7 @@ public:
 	* Construct the filter.
 	* @param fac            Factory.
 	*/
-	GFilter(GPluginFactory* fac);
+	GFilter(GPlugInFactory* fac);
 
 protected:
 

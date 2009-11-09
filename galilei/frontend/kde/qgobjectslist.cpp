@@ -330,7 +330,7 @@ void QGObjectsList::Set(oType type)
 		case Docs:
 		{
 			// Go trough each language and create a Item.
-			RCastCursor<GPlugin,GLang> Langs(GALILEIApp->GetPlugIns<GPlugin>("Lang"));
+			RCastCursor<GPlugIn,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
 			RContainer<LangItem,true,true> LangItems(Langs.GetNb());
 			LangItems.InsertPtr(new LangItem(0,new QGObject(List,static_cast<GLang*>(0))));
 			for(Langs.Start();!Langs.End();Langs.Next())

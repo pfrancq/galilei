@@ -43,8 +43,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPreProfile::GPreProfile(GPluginFactory* fac)
-	: GPlugin(fac)
+GPreProfile::GPreProfile(GPlugInFactory* fac)
+	: GPlugIn(fac)
 {
 }
 

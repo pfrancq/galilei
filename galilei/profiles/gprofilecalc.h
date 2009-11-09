@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Profile Computing Method.
 */
-class GProfileCalc : public GPlugin
+class GProfileCalc : public GPlugIn
 {
 protected:
 
@@ -67,7 +67,7 @@ public:
 	* Construct the computing method.
 	* @param fac             Factory of the plug-in.
 	*/
-	GProfileCalc(GPluginFactory* fac);
+	GProfileCalc(GPlugInFactory* fac);
 
 	/**
 	* Compute a profile.

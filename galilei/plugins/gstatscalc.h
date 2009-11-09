@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Statistics Method.
 */
-class GStatsCalc : public GPlugin
+class GStatsCalc : public GPlugIn
 {
 public:
 
@@ -59,7 +59,7 @@ public:
 	* Construct the statistics method.
 	* @param fac             Factory of the plug-in.
 	*/
-	GStatsCalc(GPluginFactory* fac);
+	GStatsCalc(GPlugInFactory* fac);
 
 	/**
 	* Compute the statistics.

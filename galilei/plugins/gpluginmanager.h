@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GPlugins.h
+	GPlugIns.h
 
 	Generic Plug-In Managers - Header.
 
@@ -29,8 +29,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GPluginsH
-#define GPluginsH
+#ifndef GPlugInsH
+#define GPlugInsH
 
 
 //------------------------------------------------------------------------------
@@ -70,12 +70,12 @@ namespace GALILEI{
 
 
 /**
- * The GPluginList manages a given list of plug-ins. It is manage by an
- * instance of a GPluginManager.
+ * The GPlugInList manages a given list of plug-ins. It is manage by an
+ * instance of a GPlugInManager.
  * @author Pascal Francq
  * @short List of plug-ins.
  */
-class GPluginList
+class GPlugInList
 {
 	/**
 	* The name of the list.
@@ -85,17 +85,17 @@ class GPluginList
 	/**
 	 * Factories.
 	 */
-	R::RContainer<GPluginFactory,true,true> Factories;
+	R::RContainer<GPlugInFactory,true,true> Factories;
 
 	/**
 	 * Enabled plug-ins.
 	 */
-	R::RContainer<GPlugin,false,true> Plugins;
+	R::RContainer<GPlugIn,false,true> Plugins;
 
 	/**
 	* Current selected plug-in.
 	*/
-	GPluginFactory* Current;
+	GPlugInFactory* Current;
 
 public:
 
@@ -103,7 +103,7 @@ public:
 	* Constructor for the list of plug-ins.
 	* @param name            Name of the list.
 	*/
-	GPluginList(R::RString name);
+	GPlugInList(R::RString name);
 
 	/**
 	* Get the name of the plug-in list.
@@ -114,7 +114,7 @@ public:
 	* Comparison method needed by R::RContainer.
 	* @param list            Plug-ins list to compare.
 	*/
-	int Compare(const GPluginList& list) const;
+	int Compare(const GPlugInList& list) const;
 
 	/**
 	* Comparison method needed by R::RContainer.
@@ -130,9 +130,9 @@ public:
 	/**
 	* Get a cursor over the registered factories.
 	*/
-	R::RCursor<GPluginFactory> GetFactories(void) const
+	R::RCursor<GPlugInFactory> GetFactories(void) const
 	{
-		return(R::RCursor<GPluginFactory>(Factories));
+		return(R::RCursor<GPlugInFactory>(Factories));
 	}
 
 	/**
@@ -143,9 +143,9 @@ public:
 	/**
 	* Get a cursor over the enabled plug-ins.
 	*/
-	template<class plugin> R::RCastCursor<GPlugin,plugin> GetPlugIns(void) const
+	template<class plugin> R::RCastCursor<GPlugIn,plugin> GetPlugIns(void) const
 	{
-		return(R::RCastCursor<GPlugin,plugin>(Plugins));
+		return(R::RCastCursor<GPlugIn,plugin>(Plugins));
 	}
 
 private:
@@ -162,17 +162,17 @@ private:
 	*/
 	void Disconnect(GSession* session);
 
-	friend class GPluginManager;
+	friend class GPlugInManager;
 };
 
 
 //-----------------------------------------------------------------------------
 /**
-* The GPluginManager class provides a plug-in manager.
+* The GPlugInManager class provides a plug-in manager.
 * @author Pascal Francq
 * @short Plug-ins Manager.
 */
-class GPluginManager
+class GPlugInManager
 {
 public:
 	/**
@@ -209,8 +209,8 @@ protected:
 	 */
 	union
 	{
-		GPluginList* List;
-		R::RContainer<GPluginList,true,true>* Lists;
+		GPlugInList* List;
+		R::RContainer<GPlugInList,true,true>* Lists;
 	} Data;
 
 public:
@@ -220,7 +220,7 @@ public:
 	* @param name            Name of the manager.
 	* @param type            Type of the manager.
 	*/
-	GPluginManager(R::RString name,tPluginsType type);
+	GPlugInManager(R::RString name,tPluginsType type);
 
 	/**
 	* Get the name of the current Manager.
@@ -235,13 +235,13 @@ public:
 	/**
 	* Get the type of the plug-ins.
 	*/
-	tPluginsType GetPluginsType(void) const {return(PluginsType);}
+	tPluginsType GetPlugInType(void) const {return(PluginsType);}
 
 	/**
 	* Comparison method needed by R::RContainer.
 	* @param pmng            Plug-ins manager to compare.
 	*/
-	int Compare(const GPluginManager& pmng) const;
+	int Compare(const GPlugInManager& pmng) const;
 
 	/**
 	* Comparison method needed by R::RContainer.
@@ -298,33 +298,41 @@ public:
 	* @param fac             Factory to register.
 	* @param config          Configuration structure.
 	*/
-	void RegisterFactory(GPluginFactory* fac,R::RConfig* config);
+	void RegisterFactory(GPlugInFactory* fac,R::RConfig* config);
 
 	/**
 	 * @return List of the plug-ins list if supported, or an empty cursor.
 	 */
-	R::RCursor<GPluginList> GetPlugInList(void) const;
+	R::RCursor<GPlugInList> GetPlugInLists(void) const;
 
 	/**
-	* Get a pointer to a given GPluginFactory.
-	* @param name            Name of the GPluginFactory.
+	 * @return a given plug-ins list.
+	 * @param list            List.
+	 * @param need            If the parameter is non-null and the plug-in
+     *                        doesn't exist, generate an exception.
+	 */
+	GPlugInList* GetPlugInList(const R::RString& list,int need=1) const;
+
+	/**
+	* Get a pointer to a given GPlugInFactory.
+	* @param name            Name of the GPlugInFactory.
 	* @param list            List.
 	* @param need            If the parameter is non-null and the plug-in
     *                        doesn't exist, generate an exception.
-	* @return Pointer to the GPluginFactory, or null/exception if the GPluginFactory does not
+	* @return Pointer to the GPlugInFactory, or null/exception if the GPlugInFactory does not
 	* exist.
 	*/
-	GPluginFactory* GetFactory(const R::RString& name,const R::RString& list,int need=1) const;
+	GPlugInFactory* GetFactory(const R::RString& name,const R::RString& list,int need=1) const;
 
 	/**
-	* Get a pointer to a given GPluginFactory.
-	* @param name            Name of the GPluginFactory.
+	* Get a pointer to a given GPlugInFactory.
+	* @param name            Name of the GPlugInFactory.
 	* @param need            If the parameter is non-null and the plug-in does
 	*                        doesn't exist, generate an exception.
-	* @return Pointer to the GPluginFactory, or null/exception if the GPluginFactory does not
+	* @return Pointer to the GPlugInFactory, or null/exception if the GPlugInFactory does not
 	* exist.
 	*/
-	GPluginFactory* GetFactory(const R::RString& name,int need=1) const
+	GPlugInFactory* GetFactory(const R::RString& name,int need=1) const
 	{
 		return(GetFactory(name,R::RString::Null,need));
 	}
@@ -339,19 +347,19 @@ public:
 	* Get a cursor over the registered factories.
 	* @param list            List.
 	*/
-	R::RCursor<GPluginFactory> GetFactories(const R::RString& list=R::RString::Null) const;
+	R::RCursor<GPlugInFactory> GetFactories(const R::RString& list=R::RString::Null) const;
 
 	/**
 	* Signal that a plug-in was enabled.
 	* @param plug            Plug-in enabled.
 	*/
-	void EnablePlugIn(GPlugin* plug);
+	void EnablePlugIn(GPlugIn* plug);
 
 	/**
 	* Signal that a plug-in was disabled.
 	* @param plug            Plug-in disabled.
 	*/
-	void DisablePlugIn(GPlugin* plug);
+	void DisablePlugIn(GPlugIn* plug);
 
 	/**
 	* Get the number of enabled plug-ins.
@@ -370,7 +378,7 @@ public:
 	*/
 	template<class plugin> plugin* GetPlugIn(const R::RString& name,const R::RString& list,int need=1) const
 	{
-		GPluginList* List;
+		GPlugInList* List;
 		if(PluginsType==ptListSelect)
 		{
 			List=Data.Lists->GetPtr(list);
@@ -403,9 +411,9 @@ public:
 	* Get a cursor over the enabled plug-ins.
 	* @param list            List.
 	*/
-	template<class plugin> R::RCastCursor<GPlugin,plugin> GetPlugIns(const R::RString& list=R::RString::Null) const
+	template<class plugin> R::RCastCursor<GPlugIn,plugin> GetPlugIns(const R::RString& list=R::RString::Null) const
 	{
-		GPluginList* List;
+		GPlugInList* List;
 		if(PluginsType==ptListSelect)
 		{
 			List=Data.Lists->GetPtr(list);
@@ -414,7 +422,7 @@ public:
 		}
 		else
 			List=Data.List;
-		return(R::RCastCursor<GPlugin,plugin>(List->Plugins));
+		return(R::RCastCursor<GPlugIn,plugin>(List->Plugins));
 	}
 
 	/**
@@ -442,12 +450,12 @@ public:
 	* @param list            List.
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
-	* @return Pointer to the GPlugin, or null/exception if no plug-in is
+	* @return Pointer to the GPlugIn, or null/exception if no plug-in is
 	* selected or if the list does not need to select one.
 	*/
 	template<class plugin> plugin* GetCurrentPlugIn(const R::RString& list,int need=1) const
 	{
-		GPluginList* List;
+		GPlugInList* List;
 		if(PluginsType==ptListSelect)
 		{
 			List=Data.Lists->GetPtr(list);
@@ -461,7 +469,7 @@ public:
 			ThrowGException("No current plug-in available for '"+Name+"'");
 		if(!List->Current)
 			return(0);
-		plugin* plug=dynamic_cast<plugin*>(List->Current->GetPlugin());
+		plugin* plug=List->Current->GetPlugIn<plugin>();
 		if((!plug)&&need)
 			ThrowGException("No active plug-in available for '"+Name+"'");
 		return(plug);
@@ -471,7 +479,7 @@ public:
 	* Get the current method.
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
-	* @return Pointer to the GPlugin, or null/exception if no plug-in is
+	* @return Pointer to the GPlugIn, or null/exception if no plug-in is
 	* selected or if the list does not need to select one.
 	*/
 	template<class plugin> plugin* GetCurrentPlugIn(int need=1) const
@@ -480,23 +488,23 @@ public:
 	}
 
 	/**
-	* Get the current GPluginFactory.
+	* Get the current GPlugInFactory.
 	* @param list            List.
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
-	* @return Pointer to the GPluginFactory, or null/exception if no plug-in is
+	* @return Pointer to the GPlugInFactory, or null/exception if no plug-in is
 	* selected or if the list does not need to select one.
 	*/
-	GPluginFactory* GetCurrentFactory(const R::RString& list,int need=1) const;
+	GPlugInFactory* GetCurrentFactory(const R::RString& list,int need=1) const;
 
 	/**
-	* Get the current GPluginFactory.
+	* Get the current GPlugInFactory.
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
-	* @return Pointer to the GPluginFactory, or null/exception if no plug-in is
+	* @return Pointer to the GPlugInFactory, or null/exception if no plug-in is
 	* selected or if the list does not need to select one.
 	*/
-	GPluginFactory* GetCurrentFactory(int need=1) const
+	GPlugInFactory* GetCurrentFactory(int need=1) const
 	{
 		return(GetCurrentFactory(R::RString::Null,need));
 	}
@@ -504,7 +512,7 @@ public:
 	/**
 	 *  Destructor the plug-ins manager.
 	 */
-	virtual ~GPluginManager(void);
+	virtual ~GPlugInManager(void);
 };
 
 

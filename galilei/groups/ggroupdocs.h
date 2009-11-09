@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Documents Grouping Method.
 */
-class GGroupDocs : public GPlugin
+class GGroupDocs : public GPlugIn
 {
 protected:
 
@@ -66,7 +66,7 @@ public:
 	* Constructor of the documents grouping method.
 	* @param fac             Factory of the plug-in.
 	*/
-	GGroupDocs(GPluginFactory* fac);
+	GGroupDocs(GPlugInFactory* fac);
 
 protected:
 

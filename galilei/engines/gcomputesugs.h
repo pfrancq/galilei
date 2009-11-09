@@ -50,7 +50,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Suggestions Computing Method.
 */
-class GComputeSugs : public GPlugin
+class GComputeSugs : public GPlugIn
 {
 public:
 
@@ -58,7 +58,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GComputeSugs(GPluginFactory* fac);
+	GComputeSugs(GPlugInFactory* fac);
 
 	/**
 	* Run the suggestions computing method.

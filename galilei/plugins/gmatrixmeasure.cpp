@@ -76,7 +76,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GMatrixMeasure::GMatrixMeasure(GPluginFactory* fac,tObjType lines,tObjType cols,bool sym)
+GMatrixMeasure::GMatrixMeasure(GPlugInFactory* fac,tObjType lines,tObjType cols,bool sym)
 	: RObject(fac->GetName()), GMeasure(fac), Symmetric(sym), Matrix(0), Storage(),
 	  MinMeasureSense(true), Lines(lines), Cols(cols)
 {

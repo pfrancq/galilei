@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Wartel David
 * @short Generic Post-Profiling Computing Method.
 */
-class GPostProfile : public GPlugin
+class GPostProfile : public GPlugIn
 {
 public:
 
@@ -59,7 +59,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GPostProfile(GPluginFactory* fac);
+	GPostProfile(GPlugInFactory* fac);
 
 	/**
 	* Run the post-group method.

@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Topic Computing Method.
 */
-class GTopicCalc : public GPlugin
+class GTopicCalc : public GPlugIn
 {
 protected:
 
@@ -66,7 +66,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GTopicCalc(GPluginFactory* fac);
+	GTopicCalc(GPlugInFactory* fac);
 
 	/**
 	* Compute a topic.

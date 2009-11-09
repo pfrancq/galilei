@@ -52,7 +52,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Post-Community Computing Method.
 */
-class GPostCommunity : public GPlugin
+class GPostCommunity : public GPlugIn
 {
 public:
 
@@ -60,7 +60,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GPostCommunity(GPluginFactory* fac);
+	GPostCommunity(GPlugInFactory* fac);
 
 	/**
 	* Run the post-community method.

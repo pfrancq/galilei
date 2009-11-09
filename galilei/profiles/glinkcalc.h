@@ -50,7 +50,7 @@ namespace GALILEI{
 * @author Vandaele Valery
 * @short Generic Link Method.
 */
-class GLinkCalc : public GPlugin
+class GLinkCalc : public GPlugIn
 {
 public:
 
@@ -58,7 +58,7 @@ public:
 	* Construct the computing method.
 	* @param fac            Factory of the plug-in.
 	*/
-	GLinkCalc(GPluginFactory* fac);
+	GLinkCalc(GPlugInFactory* fac);
 
 	/**
 	* Compute the links for a given profile.
@@ -75,7 +75,7 @@ public:
 
 //-------------------------------------------------------------------------------
 #define CREATE_LINKCALC_FACTORY(name,plugin)\
-	CREATE_FACTORY(GPluginManager,GPluginFactory,GLinkCalc,plugin,"LinkCalc",API_LINKCALC_VERSION,name)
+	CREATE_FACTORY(GPlugInManager,GPlugInFactory,GLinkCalc,plugin,"LinkCalc",API_LINKCALC_VERSION,name)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

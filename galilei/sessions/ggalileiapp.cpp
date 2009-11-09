@@ -149,32 +149,32 @@ public:
 
 //------------------------------------------------------------------------------
 GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
-	: RApplication(name,argc,argv), RContainer<GPluginManager,true,false>(20,10), RDownload(), Log(0), Debug(0), Session(0), LoadDialogs(dlg),
+	: RApplication(name,argc,argv), RContainer<GPlugInManager,true,false>(20,10), RDownload(), Log(0), Debug(0), Session(0), LoadDialogs(dlg),
 	  PlugInsPath(10), GALILEIConfig(), MIMES(50,25), Exts(50,25)
 {
 	// Create the managers of plug-ins
-	InsertPtr(new GPluginManager("Storage",GPluginManager::ptSelect));
-	InsertPtr(new GPluginManager("LinkCalc",GPluginManager::ptSelect));
-	InsertPtr(new GPluginManager("DocAnalyse",GPluginManager::ptSelect));
-	InsertPtr(new GPluginManager("PostDoc",GPluginManager::ptOrdered));
-	InsertPtr(new GPluginManager("Filter",GPluginManager::ptList));
-	InsertPtr(new GPluginManager("Engine",GPluginManager::ptList));
-	InsertPtr(new GPluginManager("MetaEngine",GPluginManager::ptSelect));
-	InsertPtr(new GPluginManager("CommunityCalc",GPluginManager::ptSelect));
-	InsertPtr(new GPluginManager("GroupProfiles",GPluginManager::ptSelect));
-	InsertPtr(new GPluginManager("PostCommunity",GPluginManager::ptOrdered));
-	InsertPtr(new GPluginManager("ProfileCalc",GPluginManager::ptSelect));
-	InsertPtr(new GPluginManager("PreProfile",GPluginManager::ptOrdered));
-	InsertPtr(new GPluginManager("PostProfile",GPluginManager::ptOrdered));
-	InsertPtr(new GPluginManager("StatsCalc",GPluginManager::ptList));
-	InsertPtr(new GPluginManager("Measures",GPluginManager::ptListSelect));
-	InsertPtr(new GPluginManager("Lang",GPluginManager::ptList));
-	InsertPtr(new GPluginManager("Tool",GPluginManager::ptList));
-	InsertPtr(new GPluginManager("TopicCalc",GPluginManager::ptSelect));
-	InsertPtr(new GPluginManager("GroupDocs",GPluginManager::ptSelect));
-	InsertPtr(new GPluginManager("PostTopic",GPluginManager::ptOrdered));
-	InsertPtr(new GPluginManager("ComputeSugs",GPluginManager::ptOrdered));
-	InsertPtr(new GPluginManager("ComputeTrust",GPluginManager::ptOrdered));
+	InsertPtr(new GPlugInManager("Storage",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("LinkCalc",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("DocAnalyse",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("PostDoc",GPlugInManager::ptOrdered));
+	InsertPtr(new GPlugInManager("Filter",GPlugInManager::ptList));
+	InsertPtr(new GPlugInManager("Engine",GPlugInManager::ptList));
+	InsertPtr(new GPlugInManager("MetaEngine",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("CommunityCalc",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("GroupProfiles",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("PostCommunity",GPlugInManager::ptOrdered));
+	InsertPtr(new GPlugInManager("ProfileCalc",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("PreProfile",GPlugInManager::ptOrdered));
+	InsertPtr(new GPlugInManager("PostProfile",GPlugInManager::ptOrdered));
+	InsertPtr(new GPlugInManager("StatsCalc",GPlugInManager::ptList));
+	InsertPtr(new GPlugInManager("Measures",GPlugInManager::ptListSelect));
+	InsertPtr(new GPlugInManager("Lang",GPlugInManager::ptList));
+	InsertPtr(new GPlugInManager("Tool",GPlugInManager::ptList));
+	InsertPtr(new GPlugInManager("TopicCalc",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("GroupDocs",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("PostTopic",GPlugInManager::ptOrdered));
+	InsertPtr(new GPlugInManager("ComputeSugs",GPlugInManager::ptOrdered));
+	InsertPtr(new GPlugInManager("ComputeTrust",GPlugInManager::ptOrdered));
 
 	// Try to open list of MIME types
 	try
@@ -216,7 +216,7 @@ void GGALILEIApp::CreateConfig(void)
 	GALILEIConfig.InsertParam(new RParamList("PlugIns Path"));
 
 	// Plug-ins manager parameters
-	R::RCursor<GPluginManager> Managers(*this);
+	R::RCursor<GPlugInManager> Managers(*this);
 	for(Managers.Start();!Managers.End();Managers.Next())
 		Managers()->CreateConfig(&GALILEIConfig);
 }
@@ -272,7 +272,7 @@ void GGALILEIApp::Init(void)
 	//cout<<"Load and configure plug-ins ...";
 	cout.flush();
 	Load(PlugInsPath,LoadDialogs);
-	R::RCursor<GPluginManager> Managers(*this);
+	R::RCursor<GPlugInManager> Managers(*this);
 	for(Managers.Start();!Managers.End();Managers.Next())
 		Managers()->ReadConfig(&GALILEIConfig);
 	//cout<<"OK"<<endl;
@@ -293,7 +293,7 @@ GSession* GGALILEIApp::CreateSession(void)
 	// Initialize Session
 	Session=new GSession(Log,Debug);
 	Session->Apply();
-	GPluginManager* Mng(Session->GetStorage()->GetFactory()->GetMng());
+	GPlugInManager* Mng(Session->GetStorage()->GetFactory()->GetMng());
 	Session->GetStorage()->Connect(Session);
 	Session->GetStorage()->LoadConceptTypes();
 	Session->GetStorage()->LoadConcepts();
@@ -302,7 +302,7 @@ GSession* GGALILEIApp::CreateSession(void)
 	WriteLog("Session created");
 
 	// Connect plugins
-	RCursor<GPluginManager> Cur(*this);
+	RCursor<GPlugInManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(Cur()!=Mng)
 			Cur()->Connect(Session);
@@ -317,7 +317,7 @@ void GGALILEIApp::DeleteSession(void)
 {
 	if(!Session)
 		return;
-	RCursor<GPluginManager> Cur(*this);
+	RCursor<GPlugInManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Disconnect(Session);
 	delete Session;
@@ -405,7 +405,7 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 		FindPlugins(*Path(),PlugIns,Dlgs);
 
 	// Analyze the plug-ins category by category
-	RCursor<GPluginManager> Mngs(*this);
+	RCursor<GPlugInManager> Mngs(*this);
 	for(Mngs.Start();!Mngs.End();Mngs.Next())
 	{
 
@@ -430,7 +430,7 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 				continue;
 			}
 			const char* Lib=LibType();
-			GPluginManager* Manager=GetPtr(Lib);
+			GPlugInManager* Manager=GetPtr(Lib);
 			if((!Manager)||(Manager!=Mngs()))
 				continue;
 
@@ -473,23 +473,23 @@ void GGALILEIApp::Load(const R::RContainer<R::RString,true,false>& dirs,bool dlg
 
 
 //-----------------------------------------------------------------------------
-RCursor<GPluginManager> GGALILEIApp::GetManagers(void)
+RCursor<GPlugInManager> GGALILEIApp::GetManagers(void)
 {
-	return(RCursor<GPluginManager>(*this));
+	return(RCursor<GPlugInManager>(*this));
 }
 
 
 //-----------------------------------------------------------------------------
-GPluginManager* GGALILEIApp::GetManager(const R::RString& mng) const
+GPlugInManager* GGALILEIApp::GetManager(const R::RString& mng) const
 {
 	return(GetPtr(mng));
 }
 
 
 //-----------------------------------------------------------------------------
-RCursor<GPluginFactory> GGALILEIApp::GetFactories(const R::RString& mng,const R::RString& list) const
+RCursor<GPlugInFactory> GGALILEIApp::GetFactories(const R::RString& mng,const R::RString& list) const
 {
-	GPluginManager* ptr(GetPtr(mng));
+	GPlugInManager* ptr(GetPtr(mng));
 	if(!ptr)
 		ThrowGException("'"+mng+"' is not a valid plug-ins manager");
 	return(ptr->GetFactories(list));
@@ -497,9 +497,9 @@ RCursor<GPluginFactory> GGALILEIApp::GetFactories(const R::RString& mng,const R:
 
 
 //-----------------------------------------------------------------------------
-GPluginFactory* GGALILEIApp::GetFactory(const R::RString& mng,const R::RString& name,const R::RString& list,int need) const
+GPlugInFactory* GGALILEIApp::GetFactory(const R::RString& mng,const R::RString& name,const R::RString& list,int need) const
 {
-	GPluginManager* ptr(GetPtr(mng));
+	GPlugInManager* ptr(GetPtr(mng));
 	if(!ptr)
 		ThrowGException("'"+mng+"' is not a valid plug-ins manager");
 	return(ptr->GetFactory(name,list,need));
@@ -507,9 +507,9 @@ GPluginFactory* GGALILEIApp::GetFactory(const R::RString& mng,const R::RString& 
 
 
 //------------------------------------------------------------------------------
-GPluginFactory* GGALILEIApp::GetCurrentFactory(const R::RString& mng,const R::RString& list,int need) const
+GPlugInFactory* GGALILEIApp::GetCurrentFactory(const R::RString& mng,const R::RString& list,int need) const
 {
-	GPluginManager* ptr(GetPtr(mng));
+	GPlugInManager* ptr(GetPtr(mng));
 	if(!ptr)
 		ThrowGException("'"+mng+"' is not a valid plug-ins manager");
 	return(ptr->GetCurrentFactory(list,need));
@@ -670,7 +670,7 @@ GGALILEIApp::~GGALILEIApp(void)
 
 	// Get the parameters back
 	Apply();
-	R::RCursor<GPluginManager> Managers(*this);
+	R::RCursor<GPlugInManager> Managers(*this);
 	for(Managers.Start();!Managers.End();Managers.Next())
 		Managers()->SaveConfig(&GALILEIConfig);
 	GALILEIConfig.Save();

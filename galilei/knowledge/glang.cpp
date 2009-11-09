@@ -66,8 +66,8 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLang::GLang(GPluginFactory* fac,const RString& lang,const char* code)
-	: RLang(lang,code), GPlugin(fac), Stop(0), Dict(0),
+GLang::GLang(GPlugInFactory* fac,const RString& lang,const char* code)
+	: RLang(lang,code), GPlugIn(fac), Stop(0), Dict(0),
 	  SkipWords(50,20)
 {
 	SkipWords.InsertPtr(new SkipWord("min"));

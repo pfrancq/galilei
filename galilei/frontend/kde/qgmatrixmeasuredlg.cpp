@@ -88,7 +88,7 @@ QBoxLayout* QGMatrixMeasureDlg::GetMeasureSpecificLayout(void)
 
 
 //-----------------------------------------------------------------------------
-void QGMatrixMeasureDlg::Configure(GPluginFactory* params)
+void QGMatrixMeasureDlg::Configure(GPlugInFactory* params)
 {
 	Panel();
 	Init(params);
@@ -102,7 +102,7 @@ void QGMatrixMeasureDlg::Configure(GPluginFactory* params)
 
 
 //-----------------------------------------------------------------------------
-void QGMatrixMeasureDlg::Init(GPluginFactory* params)
+void QGMatrixMeasureDlg::Init(GPlugInFactory* params)
 {
 	Ui_QGMatrixMeasureDlg* Dlg(static_cast<Ui_QGMatrixMeasureDlg*>(Ui));
 	Dlg->CutoffFrequency->setDecimals(10);
@@ -128,7 +128,7 @@ void QGMatrixMeasureDlg::Init(GPluginFactory* params)
 
 
 //-----------------------------------------------------------------------------
-void QGMatrixMeasureDlg::Done(GPluginFactory* params)
+void QGMatrixMeasureDlg::Done(GPlugInFactory* params)
 {
 	Ui_QGMatrixMeasureDlg* Dlg(static_cast<Ui_QGMatrixMeasureDlg*>(Ui));
 	params->SetDouble("Cutoff Frequency",Dlg->CutoffFrequency->value());

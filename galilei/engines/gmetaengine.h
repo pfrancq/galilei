@@ -52,14 +52,14 @@ namespace GALILEI{
 * @author Valery Vandaele
 * @short Generic results extractor for different search engines
 */
-class GMetaEngine : public GPlugin
+class GMetaEngine : public GPlugIn
 {
 public:
 
 	/**
 	* Construct the extractor for the Yahoo engine.
 	*/
-	GMetaEngine(GPluginFactory* fac);
+	GMetaEngine(GPlugInFactory* fac);
 
 	/**
 	* Send a query to the meta Search engine

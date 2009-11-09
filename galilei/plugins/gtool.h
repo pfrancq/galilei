@@ -50,7 +50,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Tool.
 */
-class GTool : public GPlugin
+class GTool : public GPlugIn
 {
 public:
 
@@ -58,7 +58,7 @@ public:
 	* Construct the tool.
 	* @param fac             Factory of the plug-in.
 	*/
-	GTool(GPluginFactory* fac);
+	GTool(GPlugInFactory* fac);
 
 	/**
 	* Run the tool.

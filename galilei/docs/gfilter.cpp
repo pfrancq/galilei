@@ -46,8 +46,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilter::GFilter(GPluginFactory* fac)
-	: GPlugin(fac), Doc(0)
+GFilter::GFilter(GPlugInFactory* fac)
+	: GPlugIn(fac), Doc(0)
 {
 }
 

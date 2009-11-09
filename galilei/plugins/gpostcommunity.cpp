@@ -44,8 +44,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostCommunity::GPostCommunity(GPluginFactory* fac)
-	: GPlugin(fac)
+GPostCommunity::GPostCommunity(GPlugInFactory* fac)
+	: GPlugIn(fac)
 {
 }
 

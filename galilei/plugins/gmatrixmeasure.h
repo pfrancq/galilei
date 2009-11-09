@@ -234,7 +234,7 @@ public:
 	 * @param cols            Type of the elements in the columns.
 	 * @param sym             Symmetric measure?
 	 */
-	GMatrixMeasure(GPluginFactory* fac,tObjType lines,tObjType cols,bool sym);
+	GMatrixMeasure(GPlugInFactory* fac,tObjType lines,tObjType cols,bool sym);
 
 	/**
 	 * Virtual method inherits from R::RObject and that must be re-implemented

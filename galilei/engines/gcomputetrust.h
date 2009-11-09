@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Generic Trust Computing Method.
 */
-class GComputeTrust : public GPlugin
+class GComputeTrust : public GPlugIn
 {
 public:
 
@@ -59,7 +59,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GComputeTrust(GPluginFactory* fac);
+	GComputeTrust(GPlugInFactory* fac);
 
 	/**
 	* Run the trust computing method.

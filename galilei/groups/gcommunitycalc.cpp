@@ -43,8 +43,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunityCalc::GCommunityCalc(GPluginFactory* fac)
-	: GPlugin(fac), Infos(5000)
+GCommunityCalc::GCommunityCalc(GPlugInFactory* fac)
+	: GPlugIn(fac), Infos(5000)
 {
 }
 

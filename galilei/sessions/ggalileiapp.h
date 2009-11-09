@@ -57,7 +57,7 @@ namespace GALILEI{
 * @short GALILEI Application
 * @author Pascal Francq
 */
-class GGALILEIApp : public R::RApplication, public R::RContainer<GPluginManager,true,false>, public R::RDownload
+class GGALILEIApp : public R::RApplication, public R::RContainer<GPlugInManager,true,false>, public R::RDownload
 {
 	class GMIMEFilter;
 	class GMIMEExt;
@@ -264,31 +264,31 @@ public:
 
 	/**
 	* Get a cursor over all the managers.
-	* @return GPluginManager A cursor on the managers
+	* @return GPlugInManager A cursor on the managers
 	*/
-	R::RCursor<GPluginManager> GetManagers(void);
+	R::RCursor<GPlugInManager> GetManagers(void);
 
 	/**
 	* Get the manager associated to the "name".
 	* @param mng             Name of the manager to be found.
 	*/
-	GPluginManager* GetManager(const R::RString& mng) const;
+	GPlugInManager* GetManager(const R::RString& mng) const;
 
 	/**
 	* Get the factories of a given manager.
 	* @param mng             Name of the manager to be found.
 	* @param list            List.
 	*/
-	R::RCursor<GPluginFactory> GetFactories(const R::RString& mng,const R::RString& list=R::RString::Null) const;
+	R::RCursor<GPlugInFactory> GetFactories(const R::RString& mng,const R::RString& list=R::RString::Null) const;
 
 	/**
 	* Get the plug-ins of a given manager.
 	* @param mng             Name of the manager to be found.
 	* @param list            List.
 	*/
-	template<class plugin> R::RCastCursor<GPlugin,plugin> GetPlugIns(const R::RString& mng,const R::RString& list=R::RString::Null) const
+	template<class plugin> R::RCastCursor<GPlugIn,plugin> GetPlugIns(const R::RString& mng,const R::RString& list=R::RString::Null) const
 	{
-		GPluginManager* ptr(GetPtr(mng));
+		GPlugInManager* ptr(GetPtr(mng));
 		if(!ptr)
 			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
 		return(ptr->GetPlugIns<plugin>(list));
@@ -302,7 +302,7 @@ public:
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
 	*/
-	GPluginFactory* GetFactory(const R::RString& mng,const R::RString& name,const R::RString& list,int need=1) const;
+	GPlugInFactory* GetFactory(const R::RString& mng,const R::RString& name,const R::RString& list,int need=1) const;
 
 	/**
 	* Get a factory of a given manager.
@@ -311,7 +311,7 @@ public:
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
 	*/
-	GPluginFactory* GetFactory(const R::RString& mng,const R::RString& name,int need=1) const
+	GPlugInFactory* GetFactory(const R::RString& mng,const R::RString& name,int need=1) const
 	{
 		return(GetFactory(mng,name,R::RString::Null,need));
 	}
@@ -326,7 +326,7 @@ public:
 	*/
 	template<class plugin> plugin* GetPlugIn(const R::RString& mng,const R::RString& name,const R::RString& list,int need=1) const
 	{
-		GPluginManager* ptr(GetPtr(mng));
+		GPlugInManager* ptr(GetPtr(mng));
 		if(!ptr)
 			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
 		return(ptr->GetPlugIn<plugin>(name,list,need));
@@ -351,7 +351,7 @@ public:
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
 	*/
-	GPluginFactory* GetCurrentFactory(const R::RString& mng,const R::RString& list,int need=1) const;
+	GPlugInFactory* GetCurrentFactory(const R::RString& mng,const R::RString& list,int need=1) const;
 
 	/**
 	* Get the current factory of a given manager.
@@ -359,7 +359,7 @@ public:
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
 	*/
-	GPluginFactory* GetCurrentFactory(const R::RString& mng,int need=1) const
+	GPlugInFactory* GetCurrentFactory(const R::RString& mng,int need=1) const
 	{
 		return(GetCurrentFactory(mng,R::RString::Null,need));
 	}
@@ -373,7 +373,7 @@ public:
 	*/
 	template<class plugin> plugin* GetCurrentPlugIn(const R::RString& mng,const R::RString& list,int need=1) const
 	{
-		GPluginManager* ptr(GetPtr(mng));
+		GPlugInManager* ptr(GetPtr(mng));
 		if(!ptr)
 			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
 		return(ptr->GetCurrentPlugIn<plugin>(list,need));
@@ -400,7 +400,7 @@ public:
 	*/
 	void SetCurrentPlugIn(const R::RString& mng,const R::RString& name,const R::RString& list,int need=1)
 	{
-		GPluginManager* ptr(GetPtr(mng));
+		GPlugInManager* ptr(GetPtr(mng));
 		if(!ptr)
 			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
 		ptr->SetCurrentPlugIn(name,list,need);

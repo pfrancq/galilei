@@ -51,7 +51,7 @@ namespace GALILEI{
 * @author Wartel David
 * @short Generic Pre-Profiling Computing Method.
 */
-class GPreProfile : public GPlugin
+class GPreProfile : public GPlugIn
 {
 public:
 
@@ -59,7 +59,7 @@ public:
 	* Constructor.
 	* @param fac             Factory of the plug-in.
 	*/
-	GPreProfile(GPluginFactory* fac);
+	GPreProfile(GPlugInFactory* fac);
 
 	/**
 	* Run the pre-group method.
