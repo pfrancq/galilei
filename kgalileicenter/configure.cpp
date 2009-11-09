@@ -487,8 +487,8 @@ void Configure::initPlugIns(void)
 	Tools->init(QPlugInsList::Tools);
 
 	// Init Measures
-	GPluginManager* Manager(GALILEIApp->GetManager("Measures"));
-	RCursor<GPluginList> Cur(Manager->GetPlugInList());
+	GPlugInManager* Manager(GALILEIApp->GetManager("Measures"));
+	RCursor<GPlugInList> Cur(Manager->GetPlugInLists());
 	int row;
 	Measures->removeWidget(Measures->widget(0));
 	for(Cur.Start(),row=0;!Cur.End();Cur.Next(),row++)

@@ -204,7 +204,7 @@ void QFillDatabase::run(void)
 	Topics->setChecked(true);
 	RContainer<cLang,true,true> theLangs(20);
 	Language->setEnabled(false);
-	RCastCursor<GPlugin,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
+	RCastCursor<GPlugIn,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
 	for(Langs.Start();!Langs.End();Langs.Next())
 	{
 		theLangs.InsertPtr(new cLang(ToQString(Langs()->GetLangName()),Langs()));

@@ -979,7 +979,7 @@ void KGALILEICenter::computeSugs(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::runTool(void)
 {
-	GPluginManager* Manager(GALILEIApp->GetManager("Tool"));
+	GPlugInManager* Manager(GALILEIApp->GetManager("Tool"));
 	if((!Manager)||(!Manager->GetNbPlugIns()))
 	{
 		KMessageBox::error(this,"No tools are enabled","KGALILEICenter Error");
@@ -995,7 +995,7 @@ void KGALILEICenter::runTool(void)
 
 	// Init the dialog box
 	Ui.Desc->setText("Choose the tool to run");
-	RCastCursor<GPlugin,GTool> Tools(Manager->GetPlugIns<GTool>());
+	RCastCursor<GPlugIn,GTool> Tools(Manager->GetPlugIns<GTool>());
 	for(Tools.Start();!Tools.End();Tools.Next())
 		Ui.List->addItem(ToQString(Tools()->GetName()));
 	Ui.List->setCurrentRow(0);

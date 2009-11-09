@@ -95,7 +95,7 @@ void QCreateDB::DoIt(void)
  	Parent->setLabelText("Dump Database model");
  	Db.RunSQLFile(Info->DbSchema);
  	Parent->setLabelText("Create Languages (terms and stopwords)");
- 	RCastCursor<GPlugin,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
+ 	RCastCursor<GPlugIn,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
  	RContainer<RString,true,false> Stops(200);
  	for(Langs.Start();!Langs.End();Langs.Next())
  	{

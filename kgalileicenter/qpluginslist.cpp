@@ -76,11 +76,11 @@ using namespace R;
 class QPlugIn : public QListWidgetItem
 {
 public:
-	GPluginFactory* PlugIn;          // Plug-in Configuration.
+	GPlugInFactory* PlugIn;          // Plug-in Configuration.
 	bool Enable;                    // Must the plug-in be enabled?
 	bool WasEnable;                 // Was the plug-in enabled ?
 
-	QPlugIn(QListWidget* lst,GPluginFactory* fac,const QString& desc)
+	QPlugIn(QListWidget* lst,GPlugInFactory* fac,const QString& desc)
 		: QListWidgetItem(desc,lst), PlugIn(fac), Enable(fac->IsCreated()), WasEnable(fac->IsCreated())	{}
 };
 
@@ -115,14 +115,14 @@ void QPlugInsList::init(const RString& mng,bool current,bool enable,bool updown,
 	Enable->setVisible(enable);
 	Up->setVisible(updown);
 	Down->setVisible(updown);
-	GPluginFactory* Fac(GALILEIApp->GetCurrentFactory(mng,list,false));
+	GPlugInFactory* Fac(GALILEIApp->GetCurrentFactory(mng,list,false));
 
 	// Goes through the plug-ins
 	def=cur=0;
 	if(current)
 		Current->insertItem(0,"None");
 	cur=0;
-	RCursor<GPluginFactory> Cur(GALILEIApp->GetFactories(mng,list));
+	RCursor<GPlugInFactory> Cur(GALILEIApp->GetFactories(mng,list));
 	for(Cur.Start(),idx=1;!Cur.End();Cur.Next(),idx++)
 	{
 		str=ToQString(Cur()->GetDesc());
