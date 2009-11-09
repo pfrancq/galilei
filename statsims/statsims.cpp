@@ -196,7 +196,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsSims::GStatsSims(GPluginFactory* fac)
+GStatsSims::GStatsSims(GPlugInFactory* fac)
 	: GStatsCalc(fac), ResultsFile(0)
 {
 }
