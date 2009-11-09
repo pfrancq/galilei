@@ -73,6 +73,7 @@ class RunGALILEIProgram : public GGALILEIApp, public GSlot
 {
 	RContainer<RString,true,false> Cmd;
 	RString CurCat;
+	RString CurList;
 	RString CurPlugin;
 
 public:
@@ -315,7 +316,7 @@ void RunGALILEIProgram::CreateMySQL(void)
  	cout<<"Dump Database model"<<endl;
  	Db.RunSQLFile("http://www.otlet-institute.org/NewDb.sql");
  	cout<<"Create Languages (terms and stopwords)"<<endl;
- 	RCastCursor<GPlugin,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
+ 	RCastCursor<GPlugIn,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
  	RContainer<RString,true,false> Stops(200);
  	for(Langs.Start();!Langs.End();Langs.Next())
  	{
@@ -345,12 +346,18 @@ void RunGALILEIProgram::Show(void)
 		case 1:
 		{
 			if(CurCat==RString::Null)
-				cout<<"No plug-in category chosen"<<endl;
-			else if(CurPlugin==RString::Null)
-				cout<<"No plug-in chosen for category '"<<CurCat<<"'"<<endl;
+			{
+				cerr<<"No plug-in category chosen"<<endl;
+				return;
+			}
+			if(CurPlugin==RString::Null)
+			{
+				cerr<<"No plug-in chosen for category '"<<CurCat<<"'"<<endl;
+				return;
+			}
 			else
 				cout<<"Current plug-in category '"<<CurCat<<"', current plug-in '"<<CurPlugin<<"'"<<endl;
-			GPluginFactory* Config(GALILEIApp->GetPlugIn<GPluginFactory>(CurCat,CurPlugin));
+			GPlugInFactory* Config(GALILEIApp->GetPlugIn<GPlugInFactory>(CurCat,CurPlugin));
 			if(!Config)
 				cerr<<"Problem"<<endl;
 			break;
@@ -359,7 +366,7 @@ void RunGALILEIProgram::Show(void)
 		{
 			if((*Cmd[1])=="cats")
 			{
-				R::RCursor<GPluginManager> Cur(GetManagers());
+				R::RCursor<GPlugInManager> Cur(GetManagers());
 				int nb(0);
 				for(Cur.Start();!Cur.End();Cur.Next(),nb++)
 				{
@@ -370,19 +377,54 @@ void RunGALILEIProgram::Show(void)
 					}
 					RString Name(Cur()->GetName());
 					Name.SetLen(20," ");
-					cout<<Name;
+					cout<<Name<<"  ";
 				}
 				cout<<endl;
 			}
-			else if((*Cmd[1])=="plug-ins")
+			else if((*Cmd[1])=="plugins")
 			{
 				if(CurCat==RString::Null)
+				{
 					cerr<<"No plug-in category chosen"<<endl;
-				GPluginManager* Cat(GetManager(CurCat));
-/*				R::RContainer<R::RString,true,false> plugins(20);
-				Cat->GetPluginsName(plugins);
+					return;
+				}
+				if((GetManager(CurCat)->GetPlugInType()==GPlugInManager::ptListSelect)&&(CurList==RString::Null))
+				{
+					cerr<<"No list selected for plug-in category '"<<CurCat<<"'"<<endl;
+					return;
+				}
+				RCursor<GPlugInFactory> Cur;
+				if(GetManager(CurCat)->GetPlugInType()==GPlugInManager::ptListSelect)
+					Cur=GetManager(CurCat)->GetPlugInList(CurList)->GetFactories();
+				else
+					Cur=GetFactories(CurCat);
+				for(Cur.Start();!Cur.End();Cur.Next())
+				{
+					cout<<"[";
+					if(Cur()->GetPlugIn<GPlugIn>())
+						cout<<"*";
+					else
+						cout<<" ";
+					cout<<"]  "<<Cur()->GetName();
+					if(Cur()->GetName()!=Cur()->GetDesc())
+						cout<<" ("<<Cur()->GetDesc()<<")";
+					cout<<endl;
+				}
+			}
+			else if((*Cmd[1])=="lists")
+			{
+				if(CurCat==RString::Null)
+				{
+					cerr<<"No plug-in category chosen"<<endl;
+					return;
+				}
+				if(GetManager(CurCat)->GetPlugInType()!=GPlugInManager::ptListSelect)
+				{
+					cerr<<"plug-in category '"<<CurCat<<"' has no list"<<endl;
+					return;
+				}
+				RCursor<GPlugInList> Cur(GetManager(CurCat)->GetPlugInLists());
 				int nb(0);
-				RCursor<RString> Cur(plugins);
 				for(Cur.Start();!Cur.End();Cur.Next(),nb++)
 				{
 					if(nb==3)
@@ -390,14 +432,14 @@ void RunGALILEIProgram::Show(void)
 						cout<<endl;
 						nb=0;
 					}
-					RString Name(*Cur());
-					Name.SetLen(20," ");
-					cout<<Name;
-				}*/
+					RString Name(Cur()->GetName());
+					Name.SetLen(30," ");
+					cout<<Name<<"  ";
+				}
 				cout<<endl;
 			}
 			else
-				cerr<<"The possible parameters of show are: cats or plug-ins"<<endl;
+				cerr<<"The possible parameters of show are: cats or plugins"<<endl;
 			break;
 		}
 		default:
@@ -414,22 +456,43 @@ void RunGALILEIProgram::Set(void)
 		cerr<<"Set need at least two parameters"<<endl;
 	if((*Cmd[1])=="cat")
 	{
-		GPluginManager* Cat(GetManager(*Cmd[2]));
+		GPlugInManager* Cat(GetManager(*Cmd[2]));
 		if(Cat)
 		{
 			CurCat=(*Cmd[2]);
+			CurList=RString::Null;
 			CurPlugin=RString::Null;
 			cout<<"Plug-ins category '"<<CurCat<<"' chosen"<<endl;
 		}
 		else
 			cerr<<"Invalid plug-ins category '"<<(*Cmd[2])<<"'"<<endl;
 	}
-	else if((*Cmd[1])=="plug-in")
+	else if((*Cmd[1])=="list")
+	{
+		if(CurCat==RString::Null)
+		{
+			cerr<<"No plug-in category chosen"<<endl;
+			return;
+		}
+		if(GetManager(CurCat)->GetPlugInType()!=GPlugInManager::ptListSelect)
+		{
+			cerr<<"plug-in category '"<<CurCat<<"' has no list"<<endl;
+			return;
+		}
+		if(GetManager(CurCat)->GetPlugInList(*Cmd[2]))
+		{
+			CurList=(*Cmd[2]);
+			CurPlugin=RString::Null;
+			cout<<"Plug-in list '"<<CurList<<"' in '"<<CurCat<<"' chosen"<<endl;
+		}
+		else
+			cerr<<"Invalid plug-in list '"<<*Cmd[2]<<"' for category '"<<CurCat<<"'"<<endl;
+	}
+	else if((*Cmd[1])=="plugin")
 	{
 		if(CurCat==RString::Null)
 			cerr<<"No plug-ins category chosen"<<endl;
-		GPluginManager* Cat(GetManager(CurCat));
-		R::RContainer<R::RString,true,false> plugins(20);
+		GPlugInManager* Cat(GetManager(CurCat));
 /*		Cat->GetPluginsName(plugins);
 		if(plugins.IsIn(*Cmd[2]))
 		{
@@ -445,7 +508,7 @@ void RunGALILEIProgram::Set(void)
 			cerr<<"No plug-in chosen"<<endl;
 	}
 	else
-		cerr<<"Set needs either cat, plug-in or config"<<endl;
+		cerr<<"Set needs either cat, plugin, list or config"<<endl;
 }
 
 
