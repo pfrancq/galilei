@@ -65,7 +65,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPluginFactory* params)
+void Configure(GPlugInFactory* params)
 {
 	GAConfigDlg dlg;
 	if(dlg.Configure(params))

@@ -52,7 +52,7 @@ public:
 	* Constructor.
 	* @param f              Factory.
 	*/
-	GCAGroupDocs(GPluginFactory* fac)
+	GCAGroupDocs(GPlugInFactory* fac)
 		: GCAPlugIn<GDoc,GTopic>("Documents Grouping",otDoc,otTopic), GGroupDocs(fac) {}
 
 	/**

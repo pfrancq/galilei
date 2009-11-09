@@ -55,7 +55,7 @@ public:
 	* Constructor.
 	* @param f              Factory.
 	*/
-	GCAGroupProfiles(GPluginFactory* fac)
+	GCAGroupProfiles(GPlugInFactory* fac)
 		: GCAPlugIn<GProfile,GCommunity>("Profiles Grouping",otProfile,otCommunity), GGroupProfiles(fac) {}
 
 	/**

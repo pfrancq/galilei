@@ -102,7 +102,7 @@ template<class cObj,class cGroup>
 
 //-----------------------------------------------------------------------------
 template<class cObj,class cGroup>
-	void GCAPlugIn<cObj,cGroup>::ApplyConfig(GPluginFactory* factory)
+	void GCAPlugIn<cObj,cGroup>::ApplyConfig(GPlugInFactory* factory)
 {
 	PopSize=factory->GetUInt("Population Size");
 	MaxGen=factory->GetUInt("Max Gen");

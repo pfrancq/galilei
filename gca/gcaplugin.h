@@ -125,7 +125,7 @@ public:
 	/**
 	* Configurations were applied from the factory.
 	*/
-	void ApplyConfig(GPluginFactory* factory);
+	void ApplyConfig(GPlugInFactory* factory);
 
 protected:
 
