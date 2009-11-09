@@ -72,7 +72,7 @@ public:
 	* Constructor of the French language.
 	* @param fac             Factory.
 	*/
-	GLangFR(GPluginFactory* fac);
+	GLangFR(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

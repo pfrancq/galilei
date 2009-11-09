@@ -73,7 +73,7 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangFR::GLangFR(GPluginFactory* fac)
+GLangFR::GLangFR(GPlugInFactory* fac)
 	: GLang(fac,"French","fr"), Rules1(130), Rules2(10), Rules3(10)
 {
 	// Rules 1

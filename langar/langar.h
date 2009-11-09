@@ -107,7 +107,7 @@ public:
 	* Constructor of the Arabic language.
 	* @param fac             Factory.
 	*/
-	GLangAR(GPluginFactory* fac);
+	GLangAR(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

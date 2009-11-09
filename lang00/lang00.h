@@ -54,7 +54,7 @@ public:
 	* Constructor of the universal language.
 	* @param fac             Factory.
 	*/
-	GLang00(GPluginFactory* fac);
+	GLang00(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

@@ -79,7 +79,7 @@ public:
 	* Constructor of the danish language.
 	* @param fac             Factory.
 	*/
-	GLangDK(GPluginFactory* fac);
+	GLangDK(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

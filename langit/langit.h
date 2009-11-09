@@ -79,7 +79,7 @@ public:
 	* Constructor of the italian language.
 	* @param fac             Factory.
 	*/
-	GLangIT(GPluginFactory* fac);
+	GLangIT(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

@@ -79,7 +79,7 @@ public:
 	* Constructor of the Swedish language.
 	* @param fac             Factory.
 	*/
-	GLangSV(GPluginFactory* fac);
+	GLangSV(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

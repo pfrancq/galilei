@@ -105,7 +105,7 @@ public:
 	* Constructor of the Dutch language.
 	* @param fac             Factory.
 	*/
-	GLangNL(GPluginFactory* fac);
+	GLangNL(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

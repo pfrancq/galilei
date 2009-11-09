@@ -80,7 +80,7 @@ public:
 	* Constructor of the norwegian language.
 	* @param fac             Factory.
 	*/
-	GLangNO(GPluginFactory* fac);
+	GLangNO(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

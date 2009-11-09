@@ -101,7 +101,7 @@ public:
 	* Constructor of the English language.
 	* @param fac             Factory.
 	*/
-	GLangEN(GPluginFactory* fac);
+	GLangEN(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

@@ -58,7 +58,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangPT::GLangPT(GPluginFactory* fac)
+GLangPT::GLangPT(GPlugInFactory* fac)
 	: GLang(fac,"Portuguese","pt"), Stemmer(sb_stemmer_new("portuguese",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)

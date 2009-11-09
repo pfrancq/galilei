@@ -79,7 +79,7 @@ public:
 	* Constructor of the Portuguese language.
 	* @param fac             Factory.
 	*/
-	GLangPT(GPluginFactory* fac);
+	GLangPT(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

@@ -56,7 +56,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangHU::GLangHU(GPluginFactory* fac)
+GLangHU::GLangHU(GPlugInFactory* fac)
 	: GLang(fac,"Hungarian","hu"), Stemmer(sb_stemmer_new("hungarian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)

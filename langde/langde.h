@@ -79,7 +79,7 @@ public:
 	* Constructor of the german language.
 	* @param fac             Factory.
 	*/
-	GLangDE(GPluginFactory* fac);
+	GLangDE(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.

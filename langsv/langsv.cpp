@@ -58,7 +58,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangSV::GLangSV(GPluginFactory* fac)
+GLangSV::GLangSV(GPlugInFactory* fac)
 	: GLang(fac,"Swedish","sv"), Stemmer(sb_stemmer_new("swedish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
 	if(!Stemmer)

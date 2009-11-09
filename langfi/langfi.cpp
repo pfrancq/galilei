@@ -58,7 +58,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangFI::GLangFI(GPluginFactory* fac)
+GLangFI::GLangFI(GPlugInFactory* fac)
 	: GLang(fac,"Finnish","fi"), Stemmer(sb_stemmer_new("finnish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
 	if(!Stemmer)

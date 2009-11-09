@@ -77,7 +77,7 @@ public:
 	* Constructor of the Hungarian language.
 	* @param fac             Factory.
 	*/
-	GLangTR(GPluginFactory* fac);
+	GLangTR(GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.
