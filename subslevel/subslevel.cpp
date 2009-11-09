@@ -69,7 +69,7 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-SubsLevel::SubsLevel(GPluginFactory* fac)
+SubsLevel::SubsLevel(GPlugInFactory* fac)
 		: GComputeTrust(fac), Fdbks(0,200), Docs(), Scores(0,200)
 {
 }

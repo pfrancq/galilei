@@ -104,7 +104,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	SubsLevel(GPluginFactory* fac);
+	SubsLevel(GPlugInFactory* fac);
 
 	/**
 	* Create the parameters.
