@@ -36,7 +36,7 @@
 
 //-----------------------------------------------------------------------------
 template<class cGroup,class cObj>
-	ClusteringEval<cGroup,cObj>::ClusteringEval(GPluginFactory* fac,tObjType grouptype,tObjType objtype)
+	ClusteringEval<cGroup,cObj>::ClusteringEval(GPlugInFactory* fac,tObjType grouptype,tObjType objtype)
 		: GMeasure(fac), GroupType(grouptype), ObjType(objtype), ClustersScore(100,50)
 {
 }

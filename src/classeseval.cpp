@@ -77,7 +77,7 @@ class ClassesEval : public R::RObject, public GMeasure
 	RContainer<ClassSubject,true,false> LeafNodes;
 
 public:
-	ClassesEval(GPluginFactory* fac);
+	ClassesEval(GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("ClassesEval");}
 	void Handle(const R::RNotification& notification);
 
@@ -116,7 +116,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-ClassesEval::ClassesEval(GPluginFactory* fac)
+ClassesEval::ClassesEval(GPlugInFactory* fac)
 	: GMeasure(fac), LeafNodes(3000)
 {
 	InsertObserver(HANDLER(ClassesEval::Handle),"ObjectChanged");

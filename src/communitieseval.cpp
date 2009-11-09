@@ -46,7 +46,7 @@
 class CommunitiesEval : public ClusteringEval<GCommunity,GProfile>
 {
 public:
-	CommunitiesEval(GPluginFactory* fac);
+	CommunitiesEval(GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("CommunitiesEval");}
 	void Handle(const R::RNotification& notification);
 	static void CreateParams(R::RConfig*) {}
@@ -55,7 +55,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-CommunitiesEval::CommunitiesEval(GPluginFactory* fac)
+CommunitiesEval::CommunitiesEval(GPlugInFactory* fac)
 	: ClusteringEval<GCommunity,GProfile>(fac,otCommunity,otProfile)
 {
 	InsertObserver(HANDLER(CommunitiesEval::Handle),"ObjectChanged");
