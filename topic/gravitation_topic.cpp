@@ -57,7 +57,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GTopicCalcGravitation::GTopicCalcGravitation(GPluginFactory* fac)
+GTopicCalcGravitation::GTopicCalcGravitation(GPlugInFactory* fac)
 	: GTopicCalc(fac), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new const GWeightInfo*[MaxOrderSize];

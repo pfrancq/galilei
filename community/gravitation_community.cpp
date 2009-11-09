@@ -58,7 +58,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCommunityCalcGravitation::GCommunityCalcGravitation(GPluginFactory* fac)
+GCommunityCalcGravitation::GCommunityCalcGravitation(GPlugInFactory* fac)
 	: GCommunityCalc(fac), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new const GWeightInfo*[MaxOrderSize];

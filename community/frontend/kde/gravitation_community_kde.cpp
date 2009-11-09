@@ -78,7 +78,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPluginFactory* params)
+void Configure(GPlugInFactory* params)
 {
  	Config dlg;
 

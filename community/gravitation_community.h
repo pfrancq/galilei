@@ -81,7 +81,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GCommunityCalcGravitation(GPluginFactory* fac);
+	GCommunityCalcGravitation(GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.

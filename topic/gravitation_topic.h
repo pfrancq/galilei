@@ -80,7 +80,7 @@ public:
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GTopicCalcGravitation(GPluginFactory* fac);
+	GTopicCalcGravitation(GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
