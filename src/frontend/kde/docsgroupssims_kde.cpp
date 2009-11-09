@@ -59,7 +59,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPluginFactory* params)
+void Configure(GPlugInFactory* params)
 {
 	GGenericSimsDlg dlg("Similarities between documents and communities");
 	dlg.Configure(params);

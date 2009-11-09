@@ -50,7 +50,7 @@ class GProfilesDisagreement : public GMatrixMeasure
 {
 	size_t MinDocs;
 public:
-	GProfilesDisagreement(GPluginFactory* fac);
+	GProfilesDisagreement(GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("GProfilesDisagreement");}
 	virtual void ApplyConfig(void);
 	double Compute(void* obj1,void* obj2);
@@ -59,7 +59,7 @@ public:
 
 
 //------------------------------------------------------------------------------
-GProfilesDisagreement::GProfilesDisagreement(GPluginFactory* fac)
+GProfilesDisagreement::GProfilesDisagreement(GPlugInFactory* fac)
 	: GMatrixMeasure(fac,otProfile,otProfile,true)
 {
 }

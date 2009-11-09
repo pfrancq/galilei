@@ -136,7 +136,7 @@ void GGenericSimsDlg::Panel(void)
 
 
 //-----------------------------------------------------------------------------
-void GGenericSimsDlg::Init(GPluginFactory* params)
+void GGenericSimsDlg::Init(GPlugInFactory* params)
 {
 	QGMatrixMeasureDlg::Init(params);
 	SimType->setCurrentIndex(SimType->findText(ToQString(params->Get("SimType"))));
@@ -152,7 +152,7 @@ void GGenericSimsDlg::Init(GPluginFactory* params)
 
 
 //-----------------------------------------------------------------------------
-void GGenericSimsDlg::Done(GPluginFactory* params)
+void GGenericSimsDlg::Done(GPlugInFactory* params)
 {
 	params->Set("SimType",FromQString(SimType->currentText()));
 	params->SetDouble("Factor",Factor->value());

@@ -210,7 +210,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGenericSims::GGenericSims(GPluginFactory* fac,tObjType lines,tObjType cols)
+GGenericSims::GGenericSims(GPlugInFactory* fac,tObjType lines,tObjType cols)
 	: GMatrixMeasure(fac,lines,cols,lines==cols), vec1(0), vec2(0), Types(30)
 {
 }
