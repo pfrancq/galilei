@@ -99,19 +99,19 @@ public:
 	* Forward a warning.
 	* @param msg             Message.
 	*/
-	virtual void Warning(R::RString msg);
+	virtual void Warning(const R::RString& msg);
 
 	/**
 	* Forward an error.
 	* @param msg             Message.
 	*/
-	virtual void Error(R::RString msg);
+	virtual void Error(const R::RString& msg);
 
 	/**
 	* Forward an alert.
 	* @param msg             Message.
 	*/
-	virtual void Alert(R::RString msg);
+	virtual void Alert(const R::RString& msg);
 
 	/**
 	* Destruct the log file.

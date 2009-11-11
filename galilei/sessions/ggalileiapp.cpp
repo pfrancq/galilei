@@ -185,7 +185,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 		// Go trough all MIME types
 		RXMLTag* Types=xml.GetTag("mimeTypes");
 		if(!Types)
-			throw GException("MIME type file \"/etc/galilei/galilei.mimes\" is invalid");
+			ThrowGException("MIME type file \"/etc/galilei/galilei.mimes\" is invalid");
 		R::RCursor<RXMLTag> Cur(Types->GetNodes());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
@@ -547,7 +547,7 @@ void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 void GGALILEIApp::FindMIMEType(void)
 {
 	// If MIME type already exist -> return
-	RString MIME=Doc->GetMIMEType();
+	RString MIME(Doc->GetMIMEType());
 	if(!MIME.IsEmpty())
 		return;
 
@@ -567,7 +567,7 @@ bool GGALILEIApp::IsValidContent(const R::RString& MIME)
 {
 	if(Doc->GetMIMEType().IsEmpty())
 		Doc->SetMIMEType(MIME);
-	GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
+	GMIMEFilter* ptr(MIMES.GetPtr(Doc->GetMIMEType()));
 	if(!ptr)
 		return(false);
 	Filter=ptr->Filter;
@@ -606,12 +606,7 @@ RURI GGALILEIApp::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml,bool& native
 			return(Doc->GetURL());
 	}
 	else
-	{
 		NonXMLFile=Doc->GetURL().GetPath();
-		GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
-		if(ptr)
-			Filter=ptr->Filter;
-	}
 
 	// No XML file
 	native=false;
@@ -621,10 +616,16 @@ RURI GGALILEIApp::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml,bool& native
 		throw GException("Cannot find MIME type for "+doc->GetURL()());
 
 	// If no filter -> Exception
+	GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
+	if(ptr)
+		Filter=ptr->Filter;
 	if(!Filter)
-		throw GException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
+		ThrowGException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
 
 	// Analyze the file
+	if(!RFile::Exists(NonXMLFile))
+		ThrowGException("File '"+NonXMLFile()+"' not exist");
+
 	Filter->Analyze(Doc->GetURL(),NonXMLFile,docxml.GetName());
 
 	// Return file to realy analyze
@@ -656,6 +657,16 @@ void GGALILEIApp::DelMIMES(GFilter* f)
 	Cur.Set(Rem);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		MIMES.DeletePtr(Cur());
+}
+
+
+//------------------------------------------------------------------------------
+void GGALILEIApp::RunTool(const R::RString& name,GSlot* slot,bool need)
+{
+	GTool* Tool(GetPlugIn<GTool>("Tool",name));
+	if((!Tool)&&need)
+		ThrowGException("Tool '"+name+"' does not exist");
+	Tool->Run(slot);
 }
 
 

@@ -60,8 +60,8 @@ void GDocXML::InitDocXML(void)
 	RXMLTag* t;
 	AddTag(0,t=new RXMLTag("rdf:RDF"));
 	InsertEntity("xmlns:rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-	InsertEntity("xmlns:dc","http://purl.org/dc/elements/1.1/");
-	InsertEntity("xmlns:docxml","http://www.imrdp.org/docxml");
+	InsertEntity("xmlns:dc","http://purl.org/dc/elements/1.1");
+	InsertEntity("xmlns:docxml","http://www.otlet-institute.org/docxml");
 	AddTag(t,MetaData=new RXMLTag("docxml:metaData"));
 	AddTag(t,Content=new RXMLTag("docxml:content"));
 	AddTag(t,Links=new RXMLTag("docxml:links"));

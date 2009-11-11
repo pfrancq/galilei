@@ -92,19 +92,19 @@ void GSlot::Interact(void)
 
 
 //------------------------------------------------------------------------------
-void GSlot::Warning(R::RString)
+void GSlot::Warning(const R::RString&)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::Error(R::RString)
+void GSlot::Error(const R::RString&)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GSlot::Alert(R::RString)
+void GSlot::Alert(const R::RString&)
 {
 }
 

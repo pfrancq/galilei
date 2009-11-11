@@ -535,14 +535,6 @@ R::RRandom* GSession::GetRandom(void) const
 }
 
 
-//------------------------------------------------------------------------------
-void GSession::RunTool(const R::RString& tool)
-{
-	GTool* Tool(GALILEIApp->GetPlugIn<GTool>("Tool",tool));
-	Tool->Run();
-}
-
-
 
 //------------------------------------------------------------------------------
 //
@@ -927,7 +919,7 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	RIO::RSmartTempFile docxml;
 	bool Native;
 	bool Save=(SaveResults&&(doc->GetId()!=cNoRef));
-	RURI uri=GALILEIApp->WhatAnalyze(doc,docxml,Native);
+	RURI uri(GALILEIApp->WhatAnalyze(doc,docxml,Native));
 	if(uri().IsEmpty())
 		return;
 

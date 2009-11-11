@@ -62,8 +62,9 @@ public:
 
 	/**
 	* Run the tool.
+	* @param slot            Slot for comments.
 	*/
-	virtual void Run(void)=0;
+	virtual void Run(GSlot* slot)=0;
 
 	/**
 	* Destructor of the tool.

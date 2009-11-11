@@ -221,12 +221,6 @@ public:
 	*/
 	R::RRandom* GetRandom(void) const;
 
-	/**
-	 * Run a given tool.
-	 * @param tool           Name of the tool.
-	 */
-	void RunTool(const R::RString& tool);
-
 	//@} General methods
 
 

@@ -84,21 +84,21 @@ void GSlotLog::StartJob(const R::RString job)
 
 
 //------------------------------------------------------------------------------
-void GSlotLog::Warning(R::RString msg)
+void GSlotLog::Warning(const R::RString& msg)
 {
 	WriteLog("Warning: "+msg);
 }
 
 
 //------------------------------------------------------------------------------
-void GSlotLog::Error(R::RString msg)
+void GSlotLog::Error(const R::RString& msg)
 {
 	WriteLog("Error: "+msg);
 }
 
 
 //------------------------------------------------------------------------------
-void GSlotLog::Alert(R::RString msg)
+void GSlotLog::Alert(const R::RString& msg)
 {
 	WriteLog("Alert: "+msg);
 }

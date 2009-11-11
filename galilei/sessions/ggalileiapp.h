@@ -481,6 +481,15 @@ public:
 	void DelMIMES(GFilter* f);
 
 	/**
+	 * Run a specific tool.
+	 * @param name           Name of the tool.
+	 * @param slot           Slot.
+	 * @param need           If set to true and the tool doesn't exist, it
+	 *                       generates an exception.
+	 */
+	void RunTool(const R::RString& name,GSlot* slot=0,bool need=true);
+
+	/**
 	* Destruct the application.
 	*/
 	virtual ~GGALILEIApp(void);
