@@ -206,7 +206,7 @@ void KGALILEICenter::initActions(void)
 	connect(windowCascade,SIGNAL(triggered(bool)),Desktop,SLOT(cascadeSubWindows()));
 
 	// Help Menu
-	Actions.insert(Actions.size(),addAction("Run &Tool","runTool",SLOT(runTool())));
+	addAction("Run &Tool","runTool",SLOT(runTool()));
 //	helpProgram = new KAction(i18n("List of all classes"), 0, 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
 //	helpProgram=new KAction("List of all classes",0,0,this,SLOT(slotHelpProgram()),this);
 //	menuBar()->insertItem ("&Help",helpProgram);*/

@@ -501,6 +501,24 @@ public:
 	virtual void NextProfile(const GProfile* prof);
 
 	/**
+	* Forward a warning.
+	* @param msg             Message.
+	*/
+	virtual void Warning(const R::RString& msg);
+
+	/**
+	* Forward an error.
+	* @param msg             Message.
+	*/
+	virtual void Error(const R::RString& msg);
+
+	/**
+	* Forward an alert.
+	* @param msg             Message.
+	*/
+	virtual void Alert(const R::RString& msg);
+
+	/**
 	 * The 'Cancel' Button was called.
 	 */
 	virtual void reject(void);

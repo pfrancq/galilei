@@ -85,6 +85,7 @@ using namespace std;
 #include <klocale.h>
 #include <kapplication.h>
 #include <kiconloader.h>
+#include <kmessagebox.h>
 
 
 //-----------------------------------------------------------------------------
@@ -352,7 +353,7 @@ void QComputeSugs::DoIt(void)
 void QRunTool::DoIt(void)
 {
 	Parent->setLabelText("Run tool '"+ToQString(Tool)+"' ...");
-	GALILEIApp->GetSession()->RunTool(Tool);
+	GALILEIApp->RunTool(Tool,Parent);
 }
 
 
@@ -469,6 +470,27 @@ void QSessionProgressDlg::NextProfile(const GProfile* prof)
 {
 	if(prof)
 		setLabelText("Treat profile '"+ToQString(prof->GetName())+"' ("+ToQString(prof->GetUser()->GetFullName())+")");
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgressDlg::Warning(const R::RString&)
+{
+	//KMessageBox::information(0,ToQString(msg),"GALILEI Warning");
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgressDlg::Error(const R::RString& msg)
+{
+	ThrowGException(msg);
+}
+
+
+//------------------------------------------------------------------------------
+void QSessionProgressDlg::Alert(const R::RString&)
+{
+	//KMessageBox::information(0,ToQString(msg),"GALILEI Alert");
 }
 
 
