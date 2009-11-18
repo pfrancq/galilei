@@ -860,7 +860,10 @@ template<class cGroup,class cObj,class cCalc>
 
 		// Compute Description
 		if(calc)
+		{
 			calc->Compute(grp);
+			grp->Update(calc->Infos);
+		}
 	}
 }
 
@@ -884,7 +887,11 @@ void GSimulator::BuildClass(GSubject* subject,GClass* parent)
 //------------------------------------------------------------------------------
 void GSimulator::BuildIdealCommunities(void)
 {
-	CopyIdealGroups<GCommunity,GProfile,GCommunityCalc>(otProfile,otCommunity,GALILEIApp->GetCurrentPlugIn<GCommunityCalc>("CommunityCalc"));
+	GCommunityCalc* CalcDesc(GALILEIApp->GetCurrentPlugIn<GCommunityCalc>("CommunityCalc"));
+	if(!CalcDesc)
+		ThrowGException("No current plug-in to compute the communities");
+
+	CopyIdealGroups<GCommunity,GProfile,GCommunityCalc>(otProfile,otCommunity,CalcDesc);
 	if(Session->MustSaveResults())
 	{
 		Session->GetStorage()->Clear(otCommunity);
@@ -893,6 +900,7 @@ void GSimulator::BuildIdealCommunities(void)
 		{
 			if(Groups()->GetVector().IsDefined())
 				Session->SaveInfos(Groups()->GetVector(),otCommunity,Groups()->BlockId,Groups()->Id);
+
 			Session->GetStorage()->SaveCommunity(Groups());
 			Groups()->SetState(osSaved);
 		}
@@ -903,7 +911,11 @@ void GSimulator::BuildIdealCommunities(void)
 //------------------------------------------------------------------------------
 void GSimulator::BuildIdealTopics(void)
 {
-	CopyIdealGroups<GTopic,GDoc,GTopicCalc>(otDoc,otTopic,GALILEIApp->GetCurrentPlugIn<GTopicCalc>("TopicCalc"));
+	GTopicCalc* CalcDesc(GALILEIApp->GetCurrentPlugIn<GTopicCalc>("TopicCalc"));
+	if(!CalcDesc)
+		ThrowGException("No current plug-in to compute the topics");
+
+	CopyIdealGroups<GTopic,GDoc,GTopicCalc>(otDoc,otTopic,CalcDesc);
 	if(Session->MustSaveResults())
 	{
 		Session->GetStorage()->Clear(otTopic);

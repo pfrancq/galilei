@@ -80,6 +80,7 @@ public:
 	virtual ~GTopicCalc(void);
 
 	friend class GSession;
+	friend class GSimulator;
 };
 
 

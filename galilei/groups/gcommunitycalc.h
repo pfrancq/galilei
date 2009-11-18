@@ -81,6 +81,7 @@ public:
 	virtual ~GCommunityCalc(void);
 
 	friend class GSession;
+	friend class GSimulator;
 };
 
 
