@@ -150,14 +150,15 @@ void RunGALILEIProgram::Run(void)
 	cout<<"Copyright 1999-2009 by the Paul Otlet Institute"<<endl;
 
 	// Look if a program must be executed or a console mode launched
-	if(Args.GetNb()==2)
+	RString Prg(GetParamValue("run"));
+	if(!Prg.IsEmpty())
 	{
 		// Execute a program
 		try
 		{
-			WriteLog("Running program "+(*Args[1]));
-			RunPrg(this,*Args[1]);
-			WriteLog("End program "+(*Args[1]));
+			WriteLog("Running program "+Prg);
+			RunPrg(this,Prg);
+			WriteLog("End program "+Prg);
 			cout<<"Program finished"<<endl;
 		 }
 		catch(RException& e)
