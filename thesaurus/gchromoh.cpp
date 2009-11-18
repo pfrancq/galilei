@@ -29,6 +29,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <values.h>
+
+
+//------------------------------------------------------------------------------
 // include files for R
 #include <robjh.h>
 
@@ -52,7 +57,7 @@ using namespace R;
 GChromoH::GChromoH(GInstH* inst,unsigned id)
 	: RChromoH<GInstH,GChromoH,GFitnessH,GThreadDataH,GNodeInfos,RObjH>(inst,id)
 {
-	(*Fitness)=100.0;
+	(*Fitness)=MAXDOUBLE;
 }
 
 
