@@ -116,12 +116,12 @@ void GFilterTXT::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 		AnalyzeBlock(Line,tag);
 		if(tag->IsEmpty())
 			Doc->DeleteTag(tag);
-
-		// Save the structure and delete everything
-		RXMLFile Out(docxml,Doc);
-		Out.Open(RIO::Create);
-		delete Doc;
 	}
+
+	// Save the structure and delete everything
+	RXMLFile Out(docxml,Doc);
+	Out.Open(RIO::Create);
+	delete Doc;
 }
 
 
