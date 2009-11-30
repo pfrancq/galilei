@@ -5,7 +5,7 @@
 # - ...
 
 #normaly all def in CMakeLists.txt
-PROJECT(textanalyse CXX)
+PROJECT(textanalyze CXX)
 
 R_LOAD_DEPENDENCY("R" "R_LIB" "r")
 R_LOAD_DEPENDENCY("GALILEI" "GALILEI_LIB" "galilei")
@@ -30,5 +30,5 @@ ELSE(disable-kde)
 	ENDIF(KDE4_FOUND)
 ENDIF(disable-kde)
 
-SET(SUB_PROJECT textanalyse)
-ADD_SUBDIRECTORY(textanalyse)
+SET(SUB_PROJECT textanalyze)
+ADD_SUBDIRECTORY(textanalyze)
