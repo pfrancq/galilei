@@ -152,20 +152,20 @@ void Thesaurus::Run(void)
 	try
 	{
 		// If no element to group -> skip it
-		RCursor<GTopic> Cur(Session->GetTopics());
-		if(!Cur.GetNb())
+		RCursor<GTopic> Topics(Session->GetTopics());
+		if(!Topics.GetNb())
 			return;
-		Objs.Clear(Cur.GetNb());
+		Objs.Clear(Topics.GetNb());
 		Words.Clear();
 
 		// Create objects
 		cout<<"Create objects...";
 		size_t id(0);
 		RObjH* obj;
-		for(Cur.Start();!Cur.End();Cur.Next())
+		for(Topics.Start();!Topics.End();Topics.Next())
 		{
 			// Get the vector of the current topic -> if null, treat next object
-			GTopic* Topic(Cur());
+			GTopic* Topic(Topics());
 			if(!Topic->GetVector().GetNb())
 			{
 				cout<<"'"<<Topic->GetName()<<"' ("<<Topic->GetId()<<") skipped"<<endl;
