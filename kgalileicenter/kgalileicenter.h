@@ -272,17 +272,17 @@ private slots:
 	/**
 	 * Analyze a document.
 	 */
-	void docAnalyse(void);
+	void docAnalyze(void);
 
 	/**
 	 * Analyze all the documents.
 	 */
-	void docsAnalyse(void);
+	void docsAnalyze(void);
 
 	/**
 	 * Post-analyze all the documents.
 	 */
-	void postDocsAnalyse(void);
+	void postDocsAnalyze(void);
 
 	/**
 	 * Create for each document a corresponding file containing the keywords in

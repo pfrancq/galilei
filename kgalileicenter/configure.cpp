@@ -479,7 +479,7 @@ void Configure::initPlugIns(void)
 	PostDocs->init(QPlugInsList::PostDocs);
 	PreProfiles->init(QPlugInsList::PreProfiles);
 	PostTopics->init(QPlugInsList::PostTopics);
-	DocAnalyses->init(QPlugInsList::DocAnalyses);
+	DocAnalyzes->init(QPlugInsList::DocAnalyzes);
 	Engines->init(QPlugInsList::Engines);
 	MetaEngines->init(QPlugInsList::MetaEngines);
 	ComputeSugs->init(QPlugInsList::ComputeSugs);
@@ -519,7 +519,7 @@ void Configure::applyPlugIns(void)
 	LinkCalcs->apply(Session);
 	PostDocs->apply(Session);
 	PreProfiles->apply(Session);
-	DocAnalyses->apply(Session);
+	DocAnalyzes->apply(Session);
 	PostTopics->apply(Session);
 	Engines->apply(Session);
 	MetaEngines->apply(Session);

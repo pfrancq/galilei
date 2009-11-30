@@ -133,7 +133,7 @@ public:
 	/**
 	* Analyze a GDocXML structure of the current document and show the results.
 	*/
-	void AnalyseDocXML(void);
+	void AnalyzeDocXML(void);
 
 	/**
 	* Destruct the widget.

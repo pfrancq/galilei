@@ -77,7 +77,7 @@ public:
 		PostDocs,                   /** Post-documents Computing Methods.*/
 		PreProfiles,                /** Pre-profiles Computing Methods.*/
 		PostTopics,                 /** Post-topics Computing Methods.*/
-		DocAnalyses,                /** XML Document Analyzers.*/
+		DocAnalyzes,                /** XML Document Analyzers.*/
 		Engines,                    /** Search Engines.*/
 		MetaEngines,                /** Meta-search Engines.*/
 		Measures,                   /** Measures for a given Category.*/

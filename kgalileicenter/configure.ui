@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="MainTab">
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="Widget8">
       <attribute name="title">
@@ -1896,7 +1896,7 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QTabWidget" name="PlugInsTab">
             <property name="currentIndex">
-             <number>8</number>
+             <number>0</number>
             </property>
             <widget class="QWidget" name="TabPage_2">
              <attribute name="title">
@@ -1940,17 +1940,17 @@ p, li { white-space: pre-wrap; }
                 </widget>
                 <widget class="QWidget" name="TabPage_3">
                  <attribute name="title">
-                  <string>Document Analysis</string>
+                  <string>Document Analyzis</string>
                  </attribute>
                  <layout class="QVBoxLayout" name="_33">
                   <item>
-                   <widget class="QPlugInsList" name="DocAnalyses" native="true"/>
+                   <widget class="QPlugInsList" name="DocAnalyzes" native="true"/>
                   </item>
                  </layout>
                 </widget>
                 <widget class="QWidget" name="TabPage_4">
                  <attribute name="title">
-                  <string>Corpus Analysis</string>
+                  <string>Corpus Analyzis</string>
                  </attribute>
                  <layout class="QVBoxLayout" name="_36">
                   <item>
@@ -1980,7 +1980,7 @@ p, li { white-space: pre-wrap; }
                 </widget>
                 <widget class="QWidget" name="TabPage_7">
                  <attribute name="title">
-                  <string>Topics Analysis</string>
+                  <string>Topics Analyzis</string>
                  </attribute>
                  <layout class="QVBoxLayout" name="_45">
                   <item>
@@ -2010,7 +2010,7 @@ p, li { white-space: pre-wrap; }
               <item>
                <widget class="QTabWidget" name="ProfilesTab">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>2</number>
                 </property>
                 <widget class="QWidget" name="PreProfiling">
                  <attribute name="title">
@@ -2034,7 +2034,7 @@ p, li { white-space: pre-wrap; }
                 </widget>
                 <widget class="QWidget" name="tab_9">
                  <attribute name="title">
-                  <string>Profiles Analysis</string>
+                  <string>Profiles Analyzis</string>
                  </attribute>
                  <layout class="QVBoxLayout" name="_56">
                   <item>
@@ -2078,7 +2078,7 @@ p, li { white-space: pre-wrap; }
                 </widget>
                 <widget class="QWidget" name="TabPage_10">
                  <attribute name="title">
-                  <string>Communities Analysis</string>
+                  <string>Communities Analyzis</string>
                  </attribute>
                  <layout class="QVBoxLayout" name="_66">
                   <item>

@@ -30,14 +30,14 @@
 		<Action name="exportDocs"/>
 		<Action name="indexDocs"/>
 		<separator/>
-		<Action name="docsAnalyse"/>		
-		<Action name="postDocsAnalyse"/>
+		<Action name="docsAnalyze"/>		
+		<Action name="postDocsAnalyze"/>
 		<Action name="docsIndexer"/>
 		<separator/>
-		<Action name="docAnalyse"/>
+		<Action name="docAnalyze"/>
 		<Action name="createXML"/>
 		<Action name="saveXML"/>
-		<Action name="analyseXML"/>
+		<Action name="analyzeXML"/>
 		<separator/>
 		<Action name="queryMetaEngine"/>
 		<separator/>
@@ -102,7 +102,7 @@
 <ToolBar fullWidth="true" name="mainToolBar">
 	<Action name="sessionConnect"/>
 	<Separator/>
-	<Action name="docsAnalyse"/>
+	<Action name="docsAnalyze"/>
 	<Action name="showDocs"/>	
 	<Separator/>
 	<Action name="showUsers"/>

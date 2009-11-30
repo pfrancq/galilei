@@ -150,9 +150,9 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Show &Documents","showDocs",SLOT(showDocs()),"text-xml"));
 	Actions.insert(Actions.size(),addAction("Export Documents Description","exportDocs",SLOT(exportDocs())));
 	Actions.insert(Actions.size(),addAction("Index Documents","indexDocs",SLOT(indexDocs())));
-	Actions.insert(Actions.size(),addAction("Load and Analyze a Document","docAnalyse",SLOT(docAnalyse())));
-	Actions.insert(Actions.size(),addAction("&Analyze Documents","docsAnalyse",SLOT(docsAnalyse()),"kfind"));
-	Actions.insert(Actions.size(),addAction("Execute &Post-Documents Methods","postDocsAnalyse",SLOT(postDocsAnalyse())));
+	Actions.insert(Actions.size(),addAction("Load and Analyze a Document","docAnalyze",SLOT(docAnalyze())));
+	Actions.insert(Actions.size(),addAction("&Analyze Documents","docsAnalyze",SLOT(docsAnalyze()),"kfind"));
+	Actions.insert(Actions.size(),addAction("Execute &Post-Documents Methods","postDocsAnalyze",SLOT(postDocsAnalyze())));
 	Actions.insert(Actions.size(),addAction("&Export Documents","docsIndexer",SLOT(docsIndexer())));
 	Actions.insert(Actions.size(),addAction("&Create XML Structure","createXML",SLOT(createXML())));
 	Actions.insert(Actions.size(),addAction("&Save XML Structure","saveXML",SLOT(saveXML())));
@@ -569,7 +569,7 @@ void KGALILEICenter::showDoc(GDoc* doc)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenter::docAnalyse(void)
+void KGALILEICenter::docAnalyze(void)
 {
 	statusMsg(i18n("Opening file..."));
 	QString url(KFileDialog::getOpenFileName(KUrl("~"),"*.*",Desktop,"Document to Analyze"));
@@ -581,7 +581,7 @@ void KGALILEICenter::docAnalyse(void)
 		ptr->show();
 		try
 		{
-			ptr->AnalyseDocXML();
+			ptr->AnalyzeDocXML();
 		}
 		catch(GException& e)
 		{
@@ -605,7 +605,7 @@ void KGALILEICenter::docAnalyse(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenter::docsAnalyse(void)
+void KGALILEICenter::docsAnalyze(void)
 {
 	QSessionProgressDlg Dlg(this,"Analyze Documents");
 	QAnalyzeDocs* Task(new QAnalyzeDocs());
@@ -615,9 +615,9 @@ void KGALILEICenter::docsAnalyse(void)
 
 
 //-----------------------------------------------------------------------------
-void KGALILEICenter::postDocsAnalyse(void)
+void KGALILEICenter::postDocsAnalyze(void)
 {
-	QSessionProgressDlg Dlg(this,"Post-Documents Analyse");
+	QSessionProgressDlg Dlg(this,"Post-Documents Analyze");
 	QPostAnalyzeDocs* Task(new QPostAnalyzeDocs());
 	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
 	Dlg.Run(Task);

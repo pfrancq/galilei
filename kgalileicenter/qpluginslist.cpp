@@ -31,7 +31,7 @@
 // include files for R/GALILEI Project
 #include <ggalileiapp.h>
 #include <rqt.h>
-#include <gdocanalyse.h>
+#include <gdocanalyze.h>
 #include <gfilter.h>
 #include <glinkcalc.h>
 #include <gpostdoc.h>
@@ -229,9 +229,9 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 			setObjectName("PostTopics");
 			init("PostTopic",false,true,true);
 			break;
-		case DocAnalyses:
-			setObjectName("DocAnalyses");
-			init("DocAnalyse",true,true,false);
+		case DocAnalyzes:
+			setObjectName("DocAnalyzes");
+			init("DocAnalyze",true,true,false);
 			break;
 		case Engines:
 			setObjectName("Engines");
@@ -310,8 +310,8 @@ void QPlugInsList::apply(GSession* session)
 			case MetaEngines:
 				GALILEIApp->SetCurrentPlugIn("MetaEngine",FromQString(Current->currentText()),false);
 				break;
-			case DocAnalyses:
-				GALILEIApp->SetCurrentPlugIn("DocAnalyse",FromQString(Current->currentText()),false);
+			case DocAnalyzes:
+				GALILEIApp->SetCurrentPlugIn("DocAnalyze",FromQString(Current->currentText()),false);
 				break;
 			case LinkCalcs:
 				GALILEIApp->SetCurrentPlugIn("LinkCalc",FromQString(Current->currentText()),false);

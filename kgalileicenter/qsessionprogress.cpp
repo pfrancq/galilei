@@ -46,8 +46,7 @@
 #include <gstorage.h>
 #include <gdoc.h>
 #include <glang.h>
-#include <gdocanalyse.h>
-#include <gdocxml.h>
+#include <gdocanalyze.h>
 #include <gpostdoc.h>
 #include <gdoc.h>
 #include <guser.h>
@@ -177,15 +176,14 @@ void QCreateDocXML::DoIt(void)
 {
 	Parent->setLabelText("Creating XML Structure ...");
 	bool Native;
-	if(!GALILEIApp->GetSession()->GetDocXML(Doc,XML,Native))
-		throw GException("XML file could not be created");
+	GALILEIApp->GetSession()->GetXMLStruct(Doc,XML,Native);
 }
 
 
 //-----------------------------------------------------------------------------
 void QAnalyzeXML::DoIt(void)
 {
-	GALILEIApp->GetSession()->AnalyseDoc(Doc,true,0,Parent);
+	GALILEIApp->GetSession()->AnalyzeDoc(Doc,true,0,Parent);
 }
 
 
@@ -193,7 +191,7 @@ void QAnalyzeXML::DoIt(void)
 void QAnalyzeDocs::DoIt(void)
 {
 	Parent->setLabelText("Analyze Documents ...");
-	GALILEIApp->GetSession()->AnalyseDocs(false,Parent);
+	GALILEIApp->GetSession()->AnalyzeDocs(false,Parent);
 }
 
 
@@ -360,8 +358,8 @@ void QRunTool::DoIt(void)
 //-----------------------------------------------------------------------------
 void QComputeAll::DoIt(void)
 {
-	Parent->setLabelText("Analyse Documents ...");
-	GALILEIApp->GetSession()->AnalyseDocs(Parent);
+	Parent->setLabelText("Analyze Documents ...");
+	GALILEIApp->GetSession()->AnalyzeDocs(Parent);
 	if(GSession::Break())
 		return;
 	Parent->setLabelText("Compute Profiles ...");

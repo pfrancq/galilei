@@ -219,7 +219,7 @@ void KViewDoc::SaveDocXML(const RURI& name)
 
 
 //-----------------------------------------------------------------------------
-void KViewDoc::AnalyseDocXML(void)
+void KViewDoc::AnalyzeDocXML(void)
 {
 	QSessionProgressDlg Dlg(QMdiSubWindow::widget(),ToQString("Analyze Document "+Document->GetName()));
 	QAnalyzeXML* Task(new QAnalyzeXML(Document));
