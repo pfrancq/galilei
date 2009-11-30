@@ -41,7 +41,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocanalyse.h>
+#include <gdocanalyze.h>
 using namespace GALILEI;
 
 

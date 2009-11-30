@@ -30,7 +30,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for current project
-#include <gtextanalyse_kde.h>
+#include <gtextanalyze_kde.h>
 
 
 

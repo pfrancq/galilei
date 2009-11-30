@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GTextAnalyse.cpp
+	GTextAnalyze.cpp
 
 	Analyze a document - Implementation.
 
@@ -49,9 +49,8 @@ const bool Debug=false;
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gtextanalyse.h>
+#include <gtextanalyze.h>
 #include <gdoc.h>
-#include <gdocxml.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
 #include <gweightinfo.h>
@@ -433,21 +432,21 @@ inline RCursor<cNode> cDepths::GetNodes(void) const
 
 //-----------------------------------------------------------------------------
 //
-// class GTextAnalyse
+// class GTextAnalyze
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GTextAnalyse::GTextAnalyse(GPlugInFactory* fac)
-	: GDocAnalyse(fac), RXMLParser(), Words(), StructTokens(/*100*/), Depths(),
-	  Sl(0), Sldiff(0), MetaTags(20), StructSpace(0), IndexSpace(0), IsTitle(false)
+GTextAnalyze::GTextAnalyze(GPlugInFactory* fac)
+	: GDocAnalyze(fac), Words(), StructTokens(/*100*/), Depths(),
+	  Sl(0), Sldiff(0), MetaTags(20), StructSpace(0), IndexSpace(0), IsTitle(false),
+	  IsIdentifier(false)
 {
-	SetInvalidXMLCodes(true);
 }
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::ApplyConfig(void)
+void GTextAnalyze::ApplyConfig(void)
 {
 	StaticLang=Factory->GetBool("StaticLang");
 	MinStopWords=Factory->GetDouble("MinStopWords");
@@ -494,11 +493,11 @@ void GTextAnalyse::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Connect(GSession* session)
+void GTextAnalyze::Connect(GSession* session)
 {
 	// First initialization
 	if(Session) return;
-	GDocAnalyse::Connect(session);
+	GDocAnalyze::Connect(session);
 
 	// Create local structures
 	CurLangs=GALILEIApp->GetPlugIns<GLang>("Lang");
@@ -519,7 +518,7 @@ void GTextAnalyse::Connect(GSession* session)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Disconnect(GSession* session)
+void GTextAnalyze::Disconnect(GSession* session)
 {
 	// Spaces are null
 	StructSpace=0;
@@ -538,12 +537,12 @@ void GTextAnalyse::Disconnect(GSession* session)
 	}
 
 	if(Session)
-		GDocAnalyse::Disconnect(session);
+		GDocAnalyze::Disconnect(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Clear(void)
+void GTextAnalyze::Clear(void)
 {
 	// Language information
 	FindLang=((!Lang)||(!StaticLang));
@@ -557,11 +556,13 @@ void GTextAnalyse::Clear(void)
 	StructTokens.Clear();
 	Infos.Clear();
 	Struct.Clear();
+	IsTitle=false;
+	IsIdentifier=false;
 }
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,const RString&)
+void GTextAnalyze::BeginTag(const RString& namespaceURI,const RString& lName,const RString&)
 {
 	if(!ExtractStruct) return;
 
@@ -584,8 +585,10 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 	}
 	else
 		tmpStr=lName;
-	if(tmpStr=="http://purl.org/dc/elements/1.1/:title")
+	if(tmpStr=="http://purl.org/dc/elements/1.1:title")
 		IsTitle=true;
+	else if(tmpStr=="http://purl.org/dc/elements/1.1:identifier")
+		IsIdentifier=true;
 
 	// Stopped the analyze if not necessary anymore
 	if(Debug)
@@ -598,15 +601,15 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 		cout<<"\tIndex: *"<<tmpStr<<"*"<<endl;
 
 	// Get the node of the previous depth
-	cDepth* Depth=Depths.GetDepth(CurDepth);
+	cDepth* Depth=Depths.GetDepth(GetCurrentDepth());
 	cNode* CurNode=Depths.GetNewNode(Depth,true);
 	LastInsertTag=StructTokens.AddToken(StructSpace,tmpStr);
-	CurNode->SetTag(LastInsertTag,LastTokenPos,Depth);
+	CurNode->SetTag(LastInsertTag,GetLastTokenPos(),Depth);
 
 	// Make the sibling if depth>0
-	if(CurDepth)
+	if(GetCurrentDepth())
 	{
-		cNode* parent=Depths.GetDepth(CurDepth-1)->GetCurTag();
+		cNode* parent=Depths.GetDepth(GetCurrentDepth()-1)->GetCurTag();
 		if(parent&&parent->Obj.Tag)
 		{
 			if(Debug)
@@ -620,7 +623,7 @@ void GTextAnalyse::BeginTag(const RString& namespaceURI,const RString& lName,con
 
 
 //------------------------------------------------------------------------------
-void GTextAnalyse::ResolveNamespace(const RString& namespaceURI)
+void GTextAnalyze::ResolveNamespace(const RString& namespaceURI)
 {
 	// Stopped the analyze if not necessary anymore
 	if(StopAnalyseTag())
@@ -630,7 +633,7 @@ void GTextAnalyse::ResolveNamespace(const RString& namespaceURI)
 
 
 //------------------------------------------------------------------------------
-void GTextAnalyse::AddAttribute(const RString& namespaceURI,const RString& lName, const RString&)
+void GTextAnalyze::AddAttribute(const RString& namespaceURI,const RString& lName, const RString&)
 {
 	if(!ExtractStruct) return;
 
@@ -658,15 +661,15 @@ void GTextAnalyse::AddAttribute(const RString& namespaceURI,const RString& lName
 	else
 		tmpStr=lName;
 
-	cDepth* Depth=Depths.GetDepth(CurDepth);
+	cDepth* Depth=Depths.GetDepth(GetCurrentDepth());
 	cNode* CurNode=Depths.GetNewNode(Depth,false);
 	cStructToken* tag=StructTokens.AddToken(StructSpace,tmpStr);
-	CurNode->SetAttr(tag,LastTokenPos,Depth);
+	CurNode->SetAttr(tag,GetLastTokenPos(),Depth);
 }
 
 
 //------------------------------------------------------------------------------
-void GTextAnalyse::Value(const RString& text)
+void GTextAnalyze::Value(const RString& text)
 {
 	if(ExtractValues)
 	{
@@ -676,7 +679,7 @@ void GTextAnalyse::Value(const RString& text)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::EndTag(const RString&, const RString& /*lName*/, const RString&)
+void GTextAnalyze::EndTag(const RString&, const RString& /*lName*/, const RString&)
 {
 	// Stopped the analyze if not necessary anymore
 /*	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
@@ -687,11 +690,19 @@ void GTextAnalyse::EndTag(const RString&, const RString& /*lName*/, const RStrin
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Text(const RString& text)
+void GTextAnalyze::Text(const RString& text)
 {
+	if(IsIdentifier)
+	{
+		IsIdentifier=false;
+		return;
+	}
 	double w;
 	if(IsTitle)
+	{
+		IsTitle=false;
 		w=2.0;
+	}
 	else
 		w=1.0;
 	ExtractValidWords(text,w,GVTDRec::Content);
@@ -699,7 +710,7 @@ void GTextAnalyse::Text(const RString& text)
 
 
 //------------------------------------------------------------------------------
-RChar GTextAnalyse::CodeToChar(RString& str)
+RChar GTextAnalyze::CodeToChar(RString& str)
 {
 	RChar res=RXMLParser::CodeToChar(str);
 	if(res!=0)
@@ -709,7 +720,7 @@ RChar GTextAnalyse::CodeToChar(RString& str)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::AddWord(const RString& word,double weight,bool letters,GVTDRec::RecType type)
+void GTextAnalyze::AddWord(const RString& word,double weight,bool letters,GVTDRec::RecType type)
 {
 	bool Find;
 	size_t i;
@@ -782,12 +793,12 @@ void GTextAnalyse::AddWord(const RString& word,double weight,bool letters,GVTDRe
 		return;
 
 	// Create a new node
-	cDepth* Depth=Depths.GetDepth(CurDepth);
+	cDepth* Depth=Depths.GetDepth(GetCurrentDepth());
 	cNode* node=Depths.GetNewNode(Depth,false);
 	if(type==GVTDRec::Value)
-		node->SetAttrValue(w,LastTokenPos,Depth);
+		node->SetAttrValue(w,GetLastTokenPos(),Depth);
 	else if(type==GVTDRec::Content)
-		node->SetContent(w,LastTokenPos,Depth);
+		node->SetContent(w,GetLastTokenPos(),Depth);
 }
 
 
@@ -805,10 +816,10 @@ inline bool SepChar(const RChar* ptr)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::ExtractValidWords(const R::RString& str,double weight,GVTDRec::RecType type)
+void GTextAnalyze::ExtractValidWords(const R::RString& str,double weight,GVTDRec::RecType type)
 {
 	if(Debug)
-		cout<<"Extract ("<<LastTokenPos<<"): *"<<str<<"*"<<endl;
+		cout<<"Extract ("<<GetLastTokenPos()<<"): *"<<str<<"*"<<endl;
 	for(const RChar* ptr=str();!ptr->IsNull();)
 	{
 		// Skip Spaces
@@ -864,7 +875,7 @@ void GTextAnalyse::ExtractValidWords(const R::RString& str,double weight,GVTDRec
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::DetermineLang(void)
+void GTextAnalyze::DetermineLang(void)
 {
 	double Frac,MinFrac;
 	size_t i;
@@ -894,7 +905,7 @@ void GTextAnalyse::DetermineLang(void)
 
 
 //-----------------------------------------------------------------------------
-GConcept* GTextAnalyse::GetStemConcept(cWord* word)
+GConcept* GTextAnalyze::GetStemConcept(cWord* word)
 {
 	RString stem(MaxWordLen);
 
@@ -915,7 +926,7 @@ GConcept* GTextAnalyse::GetStemConcept(cWord* word)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::ConstructInfos(void)
+void GTextAnalyze::ConstructInfos(void)
 {
 	// Insert all the occurrences of the valid words
 	RCursor<cWord> Word(Words.GetWords());
@@ -945,7 +956,7 @@ void GTextAnalyse::ConstructInfos(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::IndexXMLPart(void)
+void GTextAnalyze::IndexXMLPart(void)
 {
 	if(!ExtractStruct) return;
 
@@ -979,8 +990,10 @@ void GTextAnalyse::IndexXMLPart(void)
 	{
 		cNode* ptr=Node();
 		Depth=ptr->Depth;  //<-- Pal
-/*		if(!Depth)
-			continue;*/
+		if(!Depth)
+			continue;
+		if(!Depth)
+			ThrowGException("Invalid XML structure");
 		if(!Depth->CurIndex)
 			Depth->CurIndex=new GXMLIndex(IndexSpace,LangSpace);
 		switch(ptr->Type)
@@ -1098,12 +1111,10 @@ void GTextAnalyse::IndexXMLPart(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyse::Analyze(const GDoc* doc,const R::RURI& file,bool native)
+void GTextAnalyze::PrepareAnalyze(const GDoc* doc,bool native)
 {
-	RString Name;
-	RCursor<RXMLTag> Tags;
-
 	// Init part
+	Native=native;
 	if(FullIndex&&native)
 		MustFullIndex=true;
 	else
@@ -1114,13 +1125,16 @@ void GTextAnalyse::Analyze(const GDoc* doc,const R::RURI& file,bool native)
 	// If the language must not be found -> Compute LangIndex
 	if(!FindLang)
 		for(CurLangs.Start(),LangIndex=0;CurLangs()!=Lang;CurLangs.Next(),LangIndex++) ;
+}
 
-	// Load the xml from the file
-	//cout<<"Analyse "<<file.GetPath()<<endl;
-	Open(file,RIO::Read,"UTF-8");
-	Close();
 
-	// // Determine the Language if necessary. If the language cannot be found -> document is not indexed.
+//-----------------------------------------------------------------------------
+void GTextAnalyze::TerminateAnalyze(void)
+{
+	RString Name;
+	RCursor<RXMLTag> Tags;
+
+	// Determine the Language if necessary. If the language cannot be found -> document is not indexed.
 	if(FindLang)
 		DetermineLang();
 	if(!Lang)
@@ -1136,7 +1150,7 @@ void GTextAnalyse::Analyze(const GDoc* doc,const R::RURI& file,bool native)
 
 
 //------------------------------------------------------------------------------
-void GTextAnalyse::CreateParams(RConfig* params)
+void GTextAnalyze::CreateParams(RConfig* params)
 {
 	params->InsertParam(new RParamValue("StaticLang",false));
 	params->InsertParam(new RParamValue("MinStopWords",0.09));
@@ -1164,11 +1178,11 @@ void GTextAnalyse::CreateParams(RConfig* params)
 
 
 //-----------------------------------------------------------------------------
-GTextAnalyse::~GTextAnalyse(void)
+GTextAnalyze::~GTextAnalyze(void)
 {
 	Disconnect(0);
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_DOCANALYSE_FACTORY("Text Analyse","Text Analyse",GTextAnalyse)
+CREATE_DOCANALYZE_FACTORY("Text Analyze","Text Analyze",GTextAnalyze)

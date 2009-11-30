@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GTextAnalyse.h
+	GTextAnalyze.h
 
 	Analyze a document - Header.
 
@@ -29,16 +29,15 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GTextAnalyseH
-#define GTextAnalyseH
+#ifndef GTextAnalyzeH
+#define GTextAnalyzeH
 
 
 //------------------------------------------------------------------------------
 // include files for R/GALILEI Projects
 #include <rdblhashcontainer.h>
-#include <rxmlparser.h>
 #include <galilei.h>
-#include <gdocanalyse.h>
+#include <gdocanalyze.h>
 #include <glang.h>
 #include <gxmlindex.h>
 using namespace R;
@@ -295,7 +294,7 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
- * The GTextAnalyse class provides a method to analyze a document. The plug-in
+ * The GTextAnalyze class provides a method to analyze a document. The plug-in
  * maintains several lists of elements through the analysis of a XML documents:
  * - Words: The list of each word appearing in the document.
  * - StructTokens: The list of structural tokens appearing in the document.
@@ -304,7 +303,7 @@ public:
  * @author Pascal Francq
  * @short XML Documents Analyze.
  */
-class GTextAnalyse : public GDocAnalyse, public RXMLParser
+class GTextAnalyze : public GDocAnalyze
 {
 	/**
 	* Cursor on the different languages defined in the system.
@@ -529,6 +528,11 @@ class GTextAnalyse : public GDocAnalyse, public RXMLParser
 	bool IsTitle;
 
 	/**
+	 * Is the current tag an identifier ?
+	 */
+	bool IsIdentifier;
+
+	/**
 	 * Temporary String;
 	 */
 	RString tmpStr;
@@ -538,13 +542,18 @@ class GTextAnalyse : public GDocAnalyse, public RXMLParser
 	 */
 	cStructToken* LastInsertTag;
 
+	/**
+	 * Native XML file.
+	 */
+	bool Native;
+
 public:
 
 	/**
 	* Constructor.
 	* @param fac             Factory.
 	*/
-	GTextAnalyse(GPlugInFactory* fac);
+	GTextAnalyze(GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -630,12 +639,18 @@ public:
 	void IndexXMLPart(void);
 
 	/**
-	* Analyze a XML of a document for a session.
-	* @param doc             Document to analyze.
-	* @param file            File to analyze (may be its XML version).
-	* @param native          Specify if the document is a native XML file.
+	 * Prepare the analyze of a document. The method is called by 'GSession'
+	 * before the XML document is read.
+	 * @param doc             Document to analyze.
+	 * @param native          Specify if the document is a native XML file.
+	 */
+	virtual void PrepareAnalyze(const GDoc* doc,bool native);
+
+	/**
+	* Terminate the analysis of a XML document. The method is called by
+	* GSession after the XML document is read.
 	*/
-	virtual void Analyze(const GDoc* doc,const R::RURI& file,bool native);
+	virtual void TerminateAnalyze(void);
 
 	/**
 	* Create the parameters.
@@ -648,13 +663,13 @@ public:
 	 */
 	inline bool StopAnalyseTag(void) const
 	{
-		return((!MustFullIndex)&&(   (!ExtractIndex)    || (    ExtractIndex&&(DetectMetaTag&&(GetCurrentDepth()>MaxDepth)) ) ) );
+		return((!Native) ||  ((!MustFullIndex)&&(   (!ExtractIndex)    || (    ExtractIndex&&(DetectMetaTag&&(GetCurrentDepth()>MaxDepth)) ) )) );
 	}
 
 	/**
 	* Destruct.
 	*/
-	virtual ~GTextAnalyse(void);
+	virtual ~GTextAnalyze(void);
 };
 
 
