@@ -29,12 +29,6 @@
 
 
 
-//------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gfilter.h>
-using namespace GALILEI;
-
-
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
