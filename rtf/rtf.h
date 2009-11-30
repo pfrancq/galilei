@@ -39,6 +39,9 @@
 #include <galilei.h>
 #include <gfilter.h>
 #include <codetochar.h>
+using namespace GALILEI;
+using namespace R;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -48,7 +51,7 @@
 * @author Nicolas Kumps,Vandaele Valery
 * @short RTF's Filter.
 */
-class GFilterRTF: public GALILEI::GFilter
+class GFilterRTF: public GFilter
 {
 	class Tag
 	{
@@ -67,7 +70,7 @@ class GFilterRTF: public GALILEI::GFilter
 	/**
 	* Header Tags.
 	*/
-	R::RContainer<Tag,true,true>* Tags;
+	RContainer<Tag,true,true>* Tags;
 
 	/**
 	* Pointer to parameters of the current tag.
@@ -77,7 +80,9 @@ class GFilterRTF: public GALILEI::GFilter
 	/**
 	* The container of XML code
 	*/
-	R::RContainer<CodeToChar,true,true> Chars;
+	RContainer<CodeToChar,true,true> Chars;
+
+	RXMLParser* Parser;
 
 public:
 
@@ -86,16 +91,17 @@ public:
 	* @param fac            Factory.
 	* @param name           Name of the filter.
 	*/
-	GFilterRTF(GALILEI::GPlugInFactory* fac);
+	GFilterRTF(GPlugInFactory* fac);
 
 	/**
-	* Analyze a document with a given URI that was downloaded in a local
-	* temporary file and for which a DocXML must be created.
+	* Analyze a document with a given URI for which a DocXML must be created.
+	* This method must be re-implemented by all filters.
+	* @param doc             Document to analyze.
 	* @param uri             URI of the file to analyze.
-	* @param file            Local file to analyze.
-	* @param docxml          Local file that will containing the DocXML.
+	* @param parser          Current parser of the XML stream.
+	* @param rec             Receiver for the signals.
 	*/
-	virtual void Analyze(const R::RURI& uri,const R::RURI& file,const R::RURI& docxml);
+	virtual void Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* rec);
 
 protected:
 
@@ -109,33 +115,33 @@ protected:
 	* @param str		the string to search
 	* @param text          if true ->text else metadatas
 	*/
-	void FindBlock(R::RString str,bool text=false);
+	void FindBlock(RString str,bool text=false);
 
 	/*
 	* Find the first tag in the string
 	* @return       The tag found
 	*/
-	Tag* FindTag(R::RString str);
+	Tag* FindTag(RString str);
 
 	/**
-	* Analyse the content of the string and save it in the right docxmlTag
-	* @param str            the string to analyse
+	* Analyze the content of the string and save it in the right docxmlTag
+	* @param str            the string to analyze
 	* @param t              Tag associated with the text to insert
 	*/
-	void AnalyseMeta(R::RString str, Tag* t);
+	void AnalyzeMeta(RString str, Tag* t);
 
 	/**
-	* Analyse the content of the string and save it in the right docxmlTag
-	* @param str            the string to analyse
+	* Analyze the content of the string and save it in the right docxmlTag
+	* @param str            the string to analyze
 	*/
-	void AnalyseText(R::RString str);
+	void AnalyzeText(RString str);
 
 	/*
 	* Replace codes from the srting
 	* @param str            the ingoing string
 	* @return RString       the string with code replaced.
 	*/
-	R::RString ReplaceCodes(R::RString str);
+	RString ReplaceCodes(RString str);
 
 public:
 
@@ -143,7 +149,7 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(R::RConfig* params);
+	static void CreateParams(RConfig* params);
 
 	/**
 	*The destructor

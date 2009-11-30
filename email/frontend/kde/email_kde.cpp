@@ -39,24 +39,6 @@ using namespace GALILEI;
 #include <kaboutdata.h>
 #include <kaboutapplicationdialog.h>
 #include <KDE/KLocale>
-#include <ui_config.h>
-
-
-//------------------------------------------------------------------------------
-class Config : public KDialog, public Ui_Config
-{
-public:
-	Config(void)
-	{
-		setCaption("Configure E-mail Plug-In");
-		QWidget* widget=new QWidget(this);
-		setupUi(widget);
-		setMainWidget(widget);
-		setButtons(KDialog::Cancel|KDialog::Apply);
-		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
-		adjustSize();
-	}
-};
 
 
 
@@ -76,19 +58,6 @@ void About(void)
 	dlg.exec();
 }
 
-
-//------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
-{
-	Config dlg;
-
-	dlg.BlankLines->setChecked(params->GetBool("BlankLines"));
-	if(dlg.exec())
-	{
-		params->SetBool("BlankLines",dlg.BlankLines->isChecked());
-		params->Apply();
-	}
-}
 
 //------------------------------------------------------------------------------
 }     // End of extern

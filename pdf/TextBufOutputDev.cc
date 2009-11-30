@@ -36,7 +36,7 @@
 // needed for setting type/creator of MacOS files
 #include "ICSupport.h"
 #endif
-using namespace R;
+
 
 //------------------------------------------------------------------------
 // declare global variables;
@@ -44,7 +44,7 @@ unsigned int RCharInc=200000;
 RChar* TextBufOutputDev::RCharBuffer;
 size_t TextBufOutputDev::RCharLen;
 size_t TextBufOutputDev::RCharMax;
-
+RTextEncoding* TextBufOutputDev::Encoding=0;
 
 
 //------------------------------------------------------------------------
@@ -1722,6 +1722,10 @@ void TextPage::updateFont(GfxState *state) {
 
   // adjust the font size
   gfxFont = state->getFont();
+  if(gfxFont)
+  {
+//	  std::cout<<gfxFont->getType()<<std::endl;
+  }
   curFontSize = state->getTransformedFontSize();
   if (gfxFont && gfxFont->getType() == fontType3) {
     // This is a hack which makes it possible to deal with some Type 3
@@ -3500,9 +3504,10 @@ TextWordList *TextPage::makeWordList(GBool physLayout) {
 
 static void outputToRChar(void* /*stream*/, char *text, int len)
 {
-	bool isUnicode;
+/*	bool isUnicode;
 	int i;
 	Unicode u;
+
 
 	if(((text[0] & 0xff) == 0xfe) && ((text[1] & 0xff) == 0xff))
 	{
@@ -3547,6 +3552,33 @@ static void outputToRChar(void* /*stream*/, char *text, int len)
 			TextBufOutputDev::RCharBuffer=tmp;
 		}
 		TextBufOutputDev::RCharBuffer[TextBufOutputDev::RCharLen++]=u;
+	}*/
+//	std::cout<<text<<std::endl;
+	//std::cout<<"*"<<globalParams->getTextEncodingName()->getCString()<<"*"<<std::endl;
+	RString Add(TextBufOutputDev::Encoding->ToUnicode(text,len));
+//	std::cout<<Add<<std::endl;
+	RChar* ptr(Add());
+	for(size_t i=Add.GetLen()+1;--i;ptr++)
+	{
+		// Must create the buffer
+		if(!TextBufOutputDev::RCharBuffer)
+		{
+			TextBufOutputDev::RCharMax=RCharInc;
+			TextBufOutputDev::RCharLen=0;
+			TextBufOutputDev::RCharBuffer=new RChar[TextBufOutputDev::RCharMax];
+		}
+
+		if(TextBufOutputDev::RCharLen==TextBufOutputDev::RCharMax)
+		{
+			RChar* tmp;
+
+			TextBufOutputDev::RCharMax+=RCharInc;
+			tmp=new RChar[TextBufOutputDev::RCharMax];
+			memcpy(tmp,TextBufOutputDev::RCharBuffer,TextBufOutputDev::RCharLen*sizeof(RChar));
+			delete[] TextBufOutputDev::RCharBuffer;
+			TextBufOutputDev::RCharBuffer=tmp;
+		}
+		TextBufOutputDev::RCharBuffer[TextBufOutputDev::RCharLen++]=(*ptr);
 	}
 }
 

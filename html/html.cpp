@@ -42,11 +42,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <html.h>
-#include <gfilter.h>
-#include <gdocxml.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
+#include <gslot.h>
 
 
 
@@ -58,26 +54,25 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GFilterHTML::GFilterHTML(GPlugInFactory* fac)
-	: GFilter(fac), R::RHTMLFile()
+	: GFilter(fac)
 {
 	AddMIME("text/html");
-	Doc=0;
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterHTML::Analyze(const RURI&,const RURI& file,const RURI& docxml)
+void GFilterHTML::Analyze(GDoc*,const RURI& uri,RXMLParser* parser,GSlot* rec)
 {
 	try
 	{
-		RXMLStruct Doc;
-		Open(file,&Doc,RIO::Read,"iso-8859-1");
-		RXMLFile Out(docxml,&Doc);
-		Out.Open(RIO::Create);
+		parser->SetHTMLMode(true);
+		parser->Open(uri,RIO::Read,"iso-8859-1");
+		parser->Close();
 	}
 	catch(RIOException& e)
 	{
-		throw GException(e.GetMsg());
+		if(rec)
+			rec->Warning(e.GetMsg());
 	}
 }
 

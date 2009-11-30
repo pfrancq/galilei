@@ -19,6 +19,9 @@
 
 #include <stdio.h>
 
+#include <rtextencoding.h>
+using namespace R;
+
 
 #include "gtypes.h"
 #include "GfxFont.h"
@@ -482,7 +485,7 @@ public:
 	static R::RChar* RCharBuffer;
 	static size_t RCharLen;
 	static size_t RCharMax;
-
+	static RTextEncoding* Encoding;
 
   // Open a text output file.  If <fileName> is NULL, no file is
   // written (this is useful, e.g., for searching text).  If

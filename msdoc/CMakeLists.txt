@@ -3,7 +3,7 @@ INCLUDE_DIRECTORIES(.)
 
 SET(SRC msdoc.cpp)
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR} ${LIBWV2_INCLUDE_PATH})
 
 IF(WIN32)
     ADD_LIBRARY(msdoc STATIC ${SRC})
@@ -13,5 +13,5 @@ ELSE(WIN32)
     ADD_LIBRARY(msdoc SHARED ${SRC})
     ADD_SOURCE_FILE(msdoc frontend msdoc_INCLUDES)
     ADD_FRONTEND(msdoc 2 2 2.0.0 lib "r/galilei" msdoc_INCLUDES)
-    TARGET_LINK_LIBRARIES(msdoc galilei roptimization rcore rmath wv2 dl)
+    TARGET_LINK_LIBRARIES(msdoc galilei roptimization rcore rmath dl  ${LIBWV2_LIB_PATH})
 ENDIF(WIN32)

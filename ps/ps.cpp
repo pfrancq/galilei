@@ -45,11 +45,8 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <ps.h>
-#include <gdocxml.h>
-#include <rxmlfile.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
+#include <gdoc.h>
+#include <rdownload.h>
 
 
 //------------------------------------------------------------------------------
@@ -179,10 +176,8 @@ void GFilterPS::StrToBuffer(const char* str)
 
 
 //------------------------------------------------------------------------------
-void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
+void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 {
-	RXMLTag* part;
-	RXMLTag* tag;
 	bool Paragraph;
 	char gs_cmdline[2*MAXPATHLEN];
 	int status;
@@ -190,15 +185,27 @@ void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 		FILE *cfile;
 	#endif
 
+
+	// Create a local file if necessary
+	RIO::RSmartTempFile Tmp;
+	RString fileName;
+	if(uri.GetScheme()!="file")
+	{
+		fileName=Tmp.GetName().GetPath();
+		RDownload Dwn;
+		Dwn.DownloadFile(uri,Tmp.GetName().GetPath());
+	}
+	else
+		fileName=uri.GetPath();
+
 	// Init Part
-	Doc=new GDocXML(docxml,file);
+	StartStream(parser);
 
 	// Create the metaData tag and the first information
-	part=Doc->GetMetaData();
-	Doc->AddIdentifier(Doc->GetURL()());
+	AddDublinCoreMetaData("identifier",doc->GetURL()());
+	WriteMetaDataStream(parser);
 
-
-	// Analyse Doc->GetFile()
+	// Analyze Doc->GetFile()
 
 	ocr_path = make_temp(ocr);
 
@@ -219,7 +226,7 @@ void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 			(debugfilter ? "" : "-q"),
 			rotate_path,
 			ocr_path,
-			Doc->GetFile()().Latin1()
+			fileName.Latin1()
 			);
 	if (debugfilter)
 		cerr<<gs_cmdline<<endl;
@@ -246,8 +253,8 @@ void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 		if (gs==0)
 		{
 			perror(cmd);
-			delete Doc;
-				throw GException("Not valid PS file");
+			EndStream(parser);
+			ThrowGException("Not valid PS file");
 		}
 	#endif
 
@@ -255,8 +262,8 @@ void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 	if (status)
 	{
 		cerr<<cmd<<": internal error "<<status<<endl;
-		delete Doc;
-			throw GException("Not valid PS file");
+		EndStream(parser);
+		ThrowGException("Not valid PS file");
 	}
 	if (cork)
 	{
@@ -264,8 +271,8 @@ void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 		if (status)
 		{
 			cerr<<cmd<<": internal error "<<status<<endl;
-			delete Doc;
-				throw GException("Not valid PS file");
+			EndStream(parser);
+			ThrowGException("Not valid PS file");
 		}
 	}
 
@@ -287,8 +294,8 @@ void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 		{
 			cerr<<cmd<<": internal error "<<status<<endl;
 			delete[] CharBuffer;
-			delete Doc;
-				throw GException("Not valid PS file");
+			EndStream(parser);
+			ThrowGException("Not valid PS file");
 		}
 		if(word)
 		{
@@ -309,18 +316,17 @@ void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 	{
 		cerr<<cmd<<": internal error "<<status<<endl;
 		delete[] CharBuffer;
-		delete Doc;
-			throw GException("Not valid PS file");
+		EndStream(parser);
+		ThrowGException("Not valid PS file");
 	}
 
 	// Look for the content
-	part=Doc->GetContent();
 	Begin=Pos=CharBuffer; // Remember the first line which is not a command
 	SkipSpaces();
 	Pos=Begin;
 	while(!Pos->IsNull())
 	{
-		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+		StartParagraph(parser);
 		SkipSpaces();
 		Begin=Pos;
 		// Paragraph are supposed to be terminated by at least one blank line
@@ -343,7 +349,8 @@ void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 				Paragraph=false;
 			}
 		}
-		AnalyzeBlock(Begin,tag);
+		AnalyzeBlock(Begin,parser);
+		EndParagraph(parser);
 	}
 
 	// Clean up
@@ -353,10 +360,7 @@ void GFilterPS::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 	}
 	delete[] CharBuffer;
 
-	// Save the structure and delete everything
-	RXMLFile Out(docxml,Doc);
-	Out.Open(RIO::Create);
-	delete Doc;
+	EndStream(parser);
 }
 
 

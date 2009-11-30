@@ -67,7 +67,7 @@ public:
 	int Compare(const EMailCmd& cmd) const {return(Cmd.Compare(cmd.Cmd));}
 	int Compare(const EMailCmd* cmd) const {return(Cmd.Compare(cmd->Cmd));}
 	int Compare(const RString cmd) const {return(Cmd.Compare(cmd));}
-	virtual void DoIt(GDocXML* doc,const RString& meta)=0;
+	virtual void DoIt(const RString&) {}
 	virtual ~EMailCmd(void) {}
 };
 
@@ -82,13 +82,7 @@ public:
 class GFilterEMail : public GFilter
 {
 	/**
-	* Determine if blank lines are allowed between commands in
-	* the mails.
-	*/
-	bool BlankLines;
-
-	/**
-	 * All avalaible commands.
+	 * All available commands.
 	 */
 	RContainer<EMailCmd,true,true> Cmds;
 
@@ -101,17 +95,11 @@ public:
 	*/
 	GFilterEMail(GPlugInFactory* fac);
 
-	/**
-	* Configurations were applied from the factory.
-	*/
-	virtual void ApplyConfig(void);
-
 protected:
 
 	/**
 	* Try to extract the command and the info after.
-	* @param line           Line to analyse.
-	* @param metaData       Pointer to the tag representing the metaData.
+	* @param line           Line to analyze.
 	* @return true if a command can be extracted, false if it is the end.
 	*/
 	bool ExtractCmd(const RString& line);
@@ -119,13 +107,14 @@ protected:
 public:
 
 	/**
-	* Analyze a document with a given URI that was downloaded in a local
-	* temporary file and for which a DocXML must be created.
+	* Analyze a document with a given URI for which a DocXML must be created.
+	* This method must be re-implemented by all filters.
+	* @param doc             Document to analyze.
 	* @param uri             URI of the file to analyze.
-	* @param file            Local file to analyze.
-	* @param docxml          Local file that will containing the DocXML.
+	* @param parser          Current parser of the XML stream.
+	* @param rec             Receiver for the signals.
 	*/
-	virtual void Analyze(const RURI& uri,const RURI& file,const RURI& docxml);
+	virtual void Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* rec);
 
 	/**
 	* Create the parameters.

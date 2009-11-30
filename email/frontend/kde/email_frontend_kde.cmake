@@ -1,4 +1,4 @@
-SET(email_frontend_kde_UI_INCLUDES config.ui)
+SET(email_frontend_kde_UI_INCLUDES)
 
 SET(email_frontend_kde_TARGET_SOURCES email_kde.cpp)
 

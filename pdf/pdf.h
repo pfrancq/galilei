@@ -38,7 +38,9 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gfilter.h>
-
+using namespace GALILEI;
+using namespace R;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -54,7 +56,7 @@ class UnicodeMap;
 * @author Pascal Francq
 * @short HTML's Filter.
 */
-class GFilterPDF: public GALILEI::GFilter
+class GFilterPDF : public GFilter
 {
 	/**
 	* Pointer to the current position in the buffer.
@@ -72,16 +74,17 @@ public:
 	* Construct the HTML filter for a specific HTML document.
 	* @param fac            Factory.
 	*/
-	GFilterPDF(GALILEI::GPlugInFactory* fac);
+	GFilterPDF(GPlugInFactory* fac);
 
 	/**
-	* Analyze a document with a given URI that was downloaded in a local
-	* temporary file and for which a DocXML must be created.
+	* Analyze a document with a given URI for which a DocXML must be created.
+	* This method must be re-implemented by all filters.
+	* @param doc             Document to analyze.
 	* @param uri             URI of the file to analyze.
-	* @param file            Local file to analyze.
-	* @param docxml          Local file that will containing the DocXML.
+	* @param parser          Current parser of the XML stream.
+	* @param rec             Receiver for the signals.
 	*/
-	virtual void Analyze(const R::RURI& uri,const R::RURI& file,const R::RURI& docxml);
+	virtual void Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* rec);
 
 protected:
 
@@ -91,7 +94,7 @@ protected:
 	* @param key             Name of the metadata to get.
 	* @return R::RString.
 	*/
-	R::RString CreateString(Dict* infoDict,char* key);
+	R::RString CreateString(Dict* infoDict,const char* key);
 
 	/**
 	* Get a meta data representing a date from the PDF file.
@@ -99,7 +102,7 @@ protected:
 	* @param key             Name of the metadata to get.
 	* @return R::RString.
 	*/
-	R::RString CreateDate(Dict* infoDict,char* key);
+	R::RString CreateDate(Dict* infoDict,const char* key);
 
 	/**
 	* This function skip spaces.
@@ -115,7 +118,7 @@ public:
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(R::RConfig* params);
+	static void CreateParams(RConfig* params);
 
 	/**
 	* Destructor.

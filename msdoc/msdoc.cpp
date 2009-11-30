@@ -46,11 +46,9 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <msdoc.h>
-#include <gdocxml.h>
+#include <gdoc.h>
 #include <rxmlfile.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
+#include <rdownload.h>
 
 
 
@@ -140,12 +138,12 @@ void GFilterMSDoc::AddField()
 {
 	switch(FieldType)
 	{
-		case 0:    Doc->AddIdentifier(FieldValue); break; //Add filename
-		case 1:    Doc->AddTitle(FieldValue); break;  // Add the title of the page.
-		case 2:    Doc->AddCreator(FieldValue); break; //Add the author of the page.
-		case 3:    AnalyzeKeywords(FieldValue,',',Doc->AddSubject(RString::Null,0)); break;  // Add keywords
-		case 4:    Doc->AddDate(FieldValue); break;  // Add the Date
-		case 5:    Doc->AddIdentifier(FieldValue,Doc->AddLink()); break;
+		case 0:    AddDublinCoreMetaData("identifier",FieldValue); break; //Add filename
+		case 1:    AddDublinCoreMetaData("title",FieldValue); break;  // Add the title of the page.
+		case 2:    AddDublinCoreMetaData("creator",FieldValue); break; //Add the author of the page.
+		case 3:    AddDublinCoreMetaData("subject",FieldValue,GFilter::Keywords,','); break;  // Add keywords
+		case 4:    AddDublinCoreMetaData("date",FieldValue); break;  // Add the Date
+		case 5:    AddDublinCoreMetaData("identifier",FieldValue); break;
 	}
 }
 
@@ -153,21 +151,17 @@ void GFilterMSDoc::AddField()
 //------------------------------------------------------------------------------
 void GFilterMSDoc::ReadMetaData()
 {
-	RString str="";
 	wvWare::AssociatedStrings strings(Parser->associatedStrings());
-
-
 	if (!strings.author().isNull())
 	{
-		str=ConvertChar(ConvertUtoRString(strings.author()));
-		Doc->AddCreator(str);
+		RString str(ConvertChar(ConvertUtoRString(strings.author())));
+		AddDublinCoreMetaData("creator",str);
 	}
 	if(!strings.title().isNull())
 	{
-		str=ConvertChar(ConvertUtoRString(strings.title()));
-		Doc->AddTitle(str);
+		RString str(ConvertChar(ConvertUtoRString(strings.title())));
+		AddDublinCoreMetaData("title",str);
 	}
-
 }
 
 
@@ -182,14 +176,11 @@ void GFilterMSDoc::subDocFound(const wvWare::FunctorBase* functor, int data)
 //------------------------------------------------------------------------------
 void GFilterMSDoc::WriteParagraph(RString par)
 {
-	RXMLTag* part;
-	RXMLTag* tag;
-
 	if ( !par.IsEmpty() )
 	{
-		part=Doc->GetContent();
-		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
-		AnalyzeBlock(par,tag);
+		StartParagraph(XMLParser);
+		AnalyzeBlock(par,XMLParser);
+		EndParagraph(XMLParser);
 	}
 
 	Paragraph="";
@@ -197,13 +188,14 @@ void GFilterMSDoc::WriteParagraph(RString par)
 
 
 //------------------------------------------------------------------------------
-void GFilterMSDoc::Analyze(const RURI&,const RURI& file,const RURI& docxml)
+void GFilterMSDoc::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 {
 	//RXMLTag* tag;
 	RString *fileName;
 
 	// Init Part*/
-	Doc=new GDocXML(docxml,file);
+	XMLParser=parser;
+	StartStream(parser);
 	bodyFound=false;
 	endNoteNumber=0;
 	footNoteNumber=0;
@@ -214,31 +206,36 @@ void GFilterMSDoc::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 	FieldType=0;
 
 	// Create the metaData tag and the first information
-	Doc->AddIdentifier(Doc->GetURL()());
+	AddDublinCoreMetaData("identifier",doc->GetURL()());
 
-
-	// get fileName
-	fileName = new RString(file());
+	// Create a local file if necessary
+	RIO::RSmartTempFile Tmp;
+	if(uri.GetScheme()!="file")
+	{
+		fileName = new RString(Tmp.GetName().GetPath());
+		RDownload Dwn;
+		Dwn.DownloadFile(uri,*fileName);
+	}
+	else
+		fileName = new RString(uri.GetPath());
 
 	// Init Parser
-	Parser = wvWare::ParserFactory::createParser(file());
+	Parser = wvWare::ParserFactory::createParser(*fileName);
 	TableHandler = new  wvWare::TableHandler();
 
-	if(Parser)  // I in case of major ERROR -> Unsupported format
-	{
-		Parser->setSubDocumentHandler(this);
-		Parser->setTextHandler(this);
-		Parser->setTableHandler(TableHandler);
+	if(!Parser)
+		ThrowGException("The file in use has incompatible format");
 
-		ReadMetaData();
-	}
+	Parser->setSubDocumentHandler(this);
+	Parser->setTextHandler(this);
+	Parser->setTableHandler(TableHandler);
+	ReadMetaData();
+	WriteMetaDataStream(parser);
 
-	if (Parser == 0L)
-		throw(GException("The file in use has incompatible format"));
-	if (!Parser->parse())
-		throw(GException("An error occurs during file parsing"));
-	if (!bodyFound)
-		throw(GException("The document body was not found : wrong format"));
+	if(!Parser->parse())
+		ThrowGException("An error occurs during file parsing");
+	if(!bodyFound)
+		ThrowGException("The document body was not found : wrong format");
 
 	// process SubDocQueue
 	while(! SubDocQueue.empty())
@@ -252,10 +249,7 @@ void GFilterMSDoc::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 	// process tables ??
 
 
-	// Save the structure and delete everything
-	RXMLFile Out(docxml,Doc);
-	Out.Open(RIO::Create);
-	delete Doc;
+	EndStream(parser);
 }
 
 

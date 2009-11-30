@@ -61,13 +61,11 @@
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
+// include files for R/GALILEI
 #include <pdf.h>
-#include <gdocxml.h>
+#include <gdoc.h>
 #include <rxmlfile.h>
-using namespace GALILEI;
-using namespace R;
-using namespace std;
+#include <rdownload.h>
 
 
 
@@ -88,10 +86,8 @@ GFilterPDF::GFilterPDF(GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-void GFilterPDF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
+void GFilterPDF::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 {
-	RXMLTag* part;
-	RXMLTag* tag;
 	PDFDoc *pdf;
 	GString *fileName;
 	TextBufOutputDev *textOut;
@@ -99,14 +95,22 @@ void GFilterPDF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 	bool Paragraph;
 
 	// Init Part
-	Doc=new GDocXML(docxml,file);
+	StartStream(parser);
 
 	// Create the metaData tag and the first information
-	part=Doc->GetMetaData();
-	Doc->AddIdentifier(Doc->GetURL()());
+	AddDublinCoreMetaData("identifier",doc->GetURL()());
 
 	// parse args
-	fileName = new GString(Doc->GetFile()());
+	// Create a local file if necessary
+	RIO::RSmartTempFile Tmp;
+	if(uri.GetScheme()!="file")
+	{
+		fileName = new GString(Tmp.GetName().GetPath());
+		RDownload Dwn;
+		Dwn.DownloadFile(uri,Tmp.GetName().GetPath());
+	}
+	else
+		fileName = new GString(uri.GetPath());
 
 	// read config file
 	globalParams = new GlobalParams("");
@@ -119,9 +123,11 @@ void GFilterPDF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 	{
 		delete globalParams;
 		delete pdf;
-		delete Doc;
-		throw GException("Not valid PDF file");
+		WriteMetaDataStream(parser);
+		EndStream(parser);
+		ThrowGException("Not valid PDF file");
 	}
+	TextBufOutputDev::Encoding=RTextEncoding::GetTextEncoding(globalParams->getTextEncodingName()->getCString());
 
 	// Write Meta Data
 	pdf->getDocInfo(&info);
@@ -130,22 +136,22 @@ void GFilterPDF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 		RString str;
 		str=CreateString(info.getDict(),"Title");
 		if(!str.IsEmpty())
-			Doc->AddTitle(str);
+			AddDublinCoreMetaData("title",str);
 		str=CreateString(info.getDict(),"Subject");
 		if(!str.IsEmpty())
-			Doc->AddSubject(str);
+			AddDublinCoreMetaData("subject",str);
 		str=CreateString(info.getDict(),"Keywords");
 		if(!str.IsEmpty())
-			AnalyzeKeywords(str,',',Doc->AddSubject(RString::Null,0));
+			AddDublinCoreMetaData("subject",str,GFilter::Keywords,',');
 		str=CreateString(info.getDict(),"Author");
 		if(!str.IsEmpty())
-			Doc->AddCreator(str);
+			AddDublinCoreMetaData("creator",str);
 		str=CreateString(info.getDict(),"Creator");
 		if(!str.IsEmpty())
-			Doc->AddCreator(str);
+			AddDublinCoreMetaData("creator",str);
 		str=CreateString(info.getDict(),"Producer");
 		if(!str.IsEmpty())
-			Doc->AddPublisher(str);
+			AddDublinCoreMetaData("publisher",str);
 /*		str=CreateDate(info.getDict(),"CreationDate");
 		if(!str.IsEmpty())
 			Doc->AddDate(str);
@@ -154,6 +160,7 @@ void GFilterPDF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 			Doc->AddDate(str);*/
 	}
 	info.free();
+	WriteMetaDataStream(parser);
 
 	// write text file
 	textOut = new TextBufOutputDev(false, false, false);
@@ -163,13 +170,12 @@ void GFilterPDF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
   	}
 
 	// Look for the content
-	part=Doc->GetContent();
 	Begin=Pos=TextBufOutputDev::RCharBuffer; // Remember the first line which is not a command
 	SkipSpaces();
 	Pos=Begin;
 	while(Pos&&(!Pos->IsNull()))
 	{
-		Doc->AddTag(part,tag=new RXMLTag("docxml:p"));
+		StartParagraph(parser);
 		SkipSpaces();
 		Begin=Pos;
 		// Paragraph are supposed to be terminated by at least one blank line
@@ -192,7 +198,8 @@ void GFilterPDF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 				Paragraph=false;
 			}
 		}
-		AnalyzeBlock(Begin,tag);
+		AnalyzeBlock(Begin,parser);
+		EndParagraph(parser);
 	}
 
 	// Clean up
@@ -200,15 +207,12 @@ void GFilterPDF::Analyze(const RURI&,const RURI& file,const RURI& docxml)
 	delete pdf;
 	delete globalParams;
 
-	// Save the structure and delete everything
-	RXMLFile Out(docxml,Doc);
-	Out.Open(RIO::Create);
-	delete Doc;
+	EndStream(parser);
 }
 
 
 //------------------------------------------------------------------------------
-RString GFilterPDF::CreateString(Dict* infoDict,char* key/*,UnicodeMap *uMap*/)
+RString GFilterPDF::CreateString(Dict* infoDict,const char* key/*,UnicodeMap *uMap*/)
 {
 	RString res;
 	Object obj;
@@ -217,7 +221,7 @@ RString GFilterPDF::CreateString(Dict* infoDict,char* key/*,UnicodeMap *uMap*/)
 	Unicode u;
 	int i;
 
-	if(infoDict->lookup(static_cast<char*>(key),&obj)->isString())
+	if(infoDict->lookup(const_cast<char*>(key),&obj)->isString())
 	{
 		s1 = obj.getString();
 		if((s1->getChar(0) & 0xff) == 0xfe && (s1->getChar(1) & 0xff) == 0xff)
@@ -251,13 +255,13 @@ RString GFilterPDF::CreateString(Dict* infoDict,char* key/*,UnicodeMap *uMap*/)
 
 
 //------------------------------------------------------------------------------
-RString GFilterPDF::CreateDate(Dict* infoDict,char* key)
+RString GFilterPDF::CreateDate(Dict* infoDict,const char* key)
 {
 	RString res;
 	Object obj;
 	char *s;
 
-	if(infoDict->lookup(key, &obj)->isString())
+	if(infoDict->lookup(const_cast<char*>(key),&obj)->isString())
 	{
 		s = obj.getString()->getCString();
 		if (s[0] == 'D' && s[1] == ':')

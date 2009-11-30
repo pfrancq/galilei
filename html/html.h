@@ -38,6 +38,9 @@
 // include files for GALILEI
 #include <gfilter.h>
 #include <rhtmlfile.h>
+using namespace GALILEI;
+using namespace R;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
@@ -47,7 +50,7 @@
 * @author Pascal Francq
 * @short HTML's Filter.
 */
-class GFilterHTML: public GALILEI::GFilter, R::RHTMLFile
+class GFilterHTML: public GFilter
 {
 public:
 
@@ -55,22 +58,23 @@ public:
 	* Construct the HTML filter for a specific HTML document.
 	* @param fac            Factory.
 	*/
-	GFilterHTML(GALILEI::GPlugInFactory* fac);
+	GFilterHTML(GPlugInFactory* fac);
 
 	/**
-	* Analyze a document with a given URI that was downloaded in a local
-	* temporary file and for which a DocXML must be created.
+	* Analyze a document with a given URI for which a DocXML must be created.
+	* This method must be re-implemented by all filters.
+	* @param doc             Document to analyze.
 	* @param uri             URI of the file to analyze.
-	* @param file            Local file to analyze.
-	* @param docxml          Local file that will containing the DocXML.
+	* @param parser          Current parser of the XML stream.
+	* @param rec             Receiver for the signals.
 	*/
-	virtual void Analyze(const R::RURI& uri,const R::RURI& file,const R::RURI& docxml);
+	virtual void Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* rec);
 
 	/**
 	* Create the parameters.
 	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(R::RConfig* params);
+	static void CreateParams(RConfig* params);
 
 	/**
 	*The destructor
