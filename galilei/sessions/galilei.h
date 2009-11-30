@@ -285,8 +285,6 @@ class GClasses;
 // forward class declaration - Documents Part
 class GTopic;
 class GDoc;
-class GDocXML;
-class GFactoryDocAnalyse;
 class GBalancedLinks;
 class GLink;
 class GLinks;
@@ -295,7 +293,7 @@ class GSuggestion;
 class GSugs;
 class GTVDRec;
 class GDocStruct;
-class GDocAnalyse;
+class GDocAnalyze;
 class GFilter;
 
 

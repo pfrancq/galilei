@@ -31,11 +31,32 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <ggalileiapp.h>
-#include <gdocxml.h>
 #include <gfilter.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
+
+
+
+//------------------------------------------------------------------------------
+//
+// class GFilter::MetaData
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+class GFilter::MetaData
+{
+public:
+
+	RString Name;
+	RString Value;
+	MetaDataType Type;
+	RChar Sep;
+
+	MetaData(const RString& name,const RString& val,MetaDataType type,RChar sep) : Name(name), Value(val), Type(type), Sep(sep) {}
+	int Compare(const MetaData&) const {return(-1);}
+};
 
 
 
@@ -47,7 +68,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GFilter::GFilter(GPlugInFactory* fac)
-	: GPlugIn(fac), Doc(0)
+	: GPlugIn(fac), MetaDatas(20)
 {
 }
 
@@ -67,205 +88,13 @@ void GFilter::AddMIME(RString name)
 
 
 //------------------------------------------------------------------------------
-R::RXMLTag* GFilter::AnalyzeBlock(char* block,RXMLTag* attach)
+void GFilter::AnalyzeBlock(const RString& block,R::RXMLParser* parser)
 {
-	char* ptr;
-	char* hold;
-	RXMLTag* sent=0;
-	size_t len(strlen(block)),i(0);
-	int NbWords;
-	bool EndSentence;
-
-	// Look at block
-	if(!len) return(attach);
-
-	// Search Sentences
-	ptr=block;
-	while(*ptr)
-	{
-		// Skip leading spaces.
-		while((*ptr)&&(isspace(*ptr)))
-		{
-			ptr++;
-			len--;
-		}
-		block=ptr;
-
-		// Search sentence
-		NbWords=0;
-		EndSentence=false;
-
-		// If Only 1 word or no space between a punctuation and the next
-		// word, no sentence created.
-		while((*ptr)&&(!EndSentence))
-		{
-			// While not ending of a sentence, go through
-			while((*ptr)&&(!IsEndSentence(*ptr)))
-			{
-				// If the next characters are spaces, replace them all by a
-				// unique space.
-				if(isspace(*ptr))
-				{
-					(*(ptr++))=' ';    // Space character always a ' '.
-					i=(--len);
-					hold=ptr;
-					while((*ptr)&&(isspace(*ptr)))
-					{
-						len--;
-						ptr++;
-					}
-					if(i>len)      // Look if there more than one space character.
-					{
-						memmove(hold,ptr,(len+1)*sizeof(char));
-						ptr=hold;
-					}
-					NbWords++;
-				}
-				else
-				{
-					ptr++;
-					len--;
-				}
-			}
-			// Verify if it is a correct end of sentence
-			if((*ptr)&&((NbWords<1)||(!isspace(*(ptr+1)))))
-			{
-				// Skip the punctuation
-				ptr++;
-				len--;
-			}
-			else
-				EndSentence=true;      // End of sentence.
-		}
-		if(*ptr)       // Skip Punctuation.
-		{
-			len--;
-			(*(ptr++))=0;
-		}
-
-		// Insert sentence
-		if(*block)
-		{
-			// Verify that it is not a single '.'
-			if((!ispunct(*block))||(*(block+1)))
-			{
-				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
-				sent->AddContent(block);
-			}
-			block=ptr;
-		}
-	}
-	return(attach);
-}
-
-
-//------------------------------------------------------------------------------
-R::RXMLTag* GFilter::AnalyzeBlock(RChar* block,RXMLTag* attach)
-{
-	RChar* ptr;
-	RChar* hold;
-	RXMLTag* sent=0;
-	size_t len,i=0;
-	int NbWords;
-	bool EndSentence;
-
-	// Look at block
-	len=RChar::StrLen(block);
-	if(!len) return(attach);
-
-	// Search Sentences
-	ptr=block;
-	while(!ptr->IsNull())
-	{
-		// Skip leading spaces.
-		while((!ptr->IsNull())&&(ptr->IsSpace()))
-		{
-			ptr++;
-			len--;
-		}
-		block=ptr;
-
-		// Search sentence
-		NbWords=0;
-		EndSentence=false;
-
-		// If Only 1 word or no space between a punctuation and the next
-		// word, no sentence created.
-		while((!ptr->IsNull())&&(!EndSentence))
-		{
-			// While not ending of a sentence, go through
-			//while((!ptr->IsNull())&&(!ptr->IsPunct()))
-			while((!ptr->IsNull())&&(!IsEndSentence(*ptr)))
-			{
-				// If the next characters are spaces, replace them all by a
-				// unique space.
-				if(ptr->IsSpace())
-				{
-					(*(ptr++))=RChar(' ');    // Space character always a ' '.
-					i=(--len);
-					hold=ptr;
-					while((!ptr->IsNull())&&(ptr->IsSpace()))
-					{
-						len--;
-						ptr++;
-					}
-					if(i>len)      // Look if there more than one space character.
-					{
-						memcpy(hold,ptr,(len+1)*sizeof(RChar));
-						ptr=hold;
-					}
-					NbWords++;
-				}
-				else
-				{
-					ptr++;
-					len--;
-				}
-			}
-			// Verify if it is a correct end of sentence
-			if((!ptr->IsNull())&&((NbWords<1)||(!(ptr+1)->IsSpace())))
-			{
-				// Skip the punctuation
-				ptr++;
-				len--;
-			}
-			else
-				EndSentence=true;      // End of sentence.
-		}
-		if(!ptr->IsNull())       // Skip Punctuation.
-		{
-			len--;
-			(*(ptr++))=0;
-		}
-
-		// Insert sentence
-		if(!block->IsNull())
-		{
-			// Verify that it is not a single '.'
-			if((!block->IsPunct())||((block+1)->IsNull()))
-			{
-				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
-				sent->AddContent(block);
-			}
-			block=ptr;
-		}
-	}
-	return(attach);
-}
-
-
-//------------------------------------------------------------------------------
-R::RXMLTag* GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
-{
-	RXMLTag* sent=0;
 	size_t pos;
 	int NbWords;
 	bool EndSentence;
 	RString sentence;
 	RCharCursor Cur(block);
-
-	// Look at block
-	if(!block.GetLen()) return(attach);
 
 	// Search Sentences
 	while(!Cur.End())
@@ -329,99 +158,20 @@ R::RXMLTag* GFilter::AnalyzeBlock(const RString& block,RXMLTag* attach)
 			// Verify that it is not a single '.'
 			if((!sentence[static_cast<size_t>(0)].IsPunct())||(sentence.GetLen()>1))
 			{
-				Doc->AddTag(attach,sent=new RXMLTag("docxml:sentence"));
-				sent->AddContent(sentence);
+				parser->BeginTag("http://www.otlet-institute.org/docxml","sentence","docxml:sentence");
+				parser->Text(sentence);
+				parser->EndTag("http://www.otlet-institute.org/docxml","sentence","docxml:sentence");
 			}
 			sentence.Clear();
 		}
 	}
-	return(attach);
 }
 
 
 //------------------------------------------------------------------------------
-R::RXMLTag* GFilter::AnalyzeKeywords(char* list,char sep,RXMLTag* attach)
-{
-	char* ptr;
-	RXMLTag* kwd=0;
-	size_t len;
-
-	ptr=list;
-	while(*ptr)
-	{
-		// Skip Spaces.
-		while((*ptr)&&(isspace(*ptr)))
-			ptr++;
-		list=ptr;
-
-		// Search the next keywords.
-		len=0;
-		while((*ptr)&&(!isspace(*ptr))&&((*ptr)!=sep))
-		{
-			ptr++;
-			len++;
-		}
-		if(len)
-		{
-			Doc->AddTag(attach,kwd=new RXMLTag("docxml:keyword"));
-			if(*ptr)
-				(*(ptr++))=0;          // Skip separator.
-			kwd->InsertAttr("docxml:value",list);
-		}
-		else
-		{
-			ptr++;
-			list=ptr;
-		}
-	}
-	return(attach);
-}
-
-
-//------------------------------------------------------------------------------
-R::RXMLTag* GFilter::AnalyzeKeywords(RChar* list,RChar sep,RXMLTag* attach)
-{
-	RChar* ptr;
-	RXMLTag* kwd=0;
-	size_t len;
-
-	ptr=list;
-	while(!ptr->IsNull())
-	{
-		// Skip Spaces.
-		while((!ptr->IsNull())&&(ptr->IsSpace()))
-			ptr++;
-		list=ptr;
-
-		// Search the next keywords.
-		len=0;
-		while((!ptr->IsNull())&&(ptr->IsSpace())&&((*ptr)!=sep))
-		{
-			ptr++;
-			len++;
-		}
-		if(len)
-		{
-			Doc->AddTag(attach,kwd=new RXMLTag("docxml:keyword"));
-			if(!ptr->IsNull())
-				(*(ptr++))=0;          // Skip separator.
-			kwd->InsertAttr("docxml:value",list);
-		}
-		else
-		{
-			ptr++;
-			list=ptr;
-		}
-	}
-	return(attach);
-}
-
-
-//------------------------------------------------------------------------------
-R::RXMLTag* GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* attach)
+void GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLParser* parser)
 {
 	RCharCursor Cur;
-	RXMLTag* kwd;
 	size_t pos;
 
 	Cur.Set(list);
@@ -437,8 +187,10 @@ R::RXMLTag* GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* atta
 			Cur.Next();
 		if(Cur.GetPos()-pos)
 		{
-			Doc->AddTag(attach,kwd=new RXMLTag("docxml:keyword"));
-			kwd->InsertAttr("docxml:value",list.Mid(pos,Cur.GetPos()-pos));
+			parser->BeginTag("http://www.otlet-institute.org/docxml","keyword","docxml:keyword");
+			parser->AddAttribute("http://www.otlet-institute.org/docxml","value","docxml:value");
+			parser->Value(list.Mid(pos,Cur.GetPos()-pos));
+			parser->EndTag("http://www.otlet-institute.org/docxml","keyword","docxml:keyword");
 		}
 		else
 		{
@@ -446,7 +198,138 @@ R::RXMLTag* GFilter::AnalyzeKeywords(const RString& list,RChar sep,RXMLTag* atta
 				Cur.Next();
 		}
 	}
-	return(attach);
+}
+
+
+//------------------------------------------------------------------------------
+void GFilter::Clear(R::RXMLParser* parser)
+{
+	MetaDatas.Clear();
+	parser->InitParser();
+}
+
+//------------------------------------------------------------------------------
+void GFilter::StartStream(R::RXMLParser* parser)
+{
+	parser->ResetDepth();
+	parser->SetSection(RXMLParser::Header);
+	parser->AddEntity("xmlns:rdf","http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+	parser->AddEntity("xmlns:dc","http://purl.org/dc/elements/1.1");
+	parser->AddEntity("xmlns:docxml","http://www.otlet-institute.org/docxml");
+	parser->SetSection(RXMLParser::DOCTYPE);
+	parser->SetDocType("rdf:RDF");
+	parser->BeginTag("http://www.w3.org/1999/02/22-rdf-syntax-ns#","RDF","rdf:RDF");
+	parser->ResetDepth();
+	parser->SetSection(RXMLParser::Body);
+}
+
+
+//------------------------------------------------------------------------------
+void GFilter::AddDublinCoreMetaData(const R::RString& name,const R::RString& value,MetaDataType type,R::RChar sep)
+{
+	MetaDatas.InsertPtr(new MetaData(name,value,type,sep));
+}
+
+
+//------------------------------------------------------------------------------
+void GFilter::WriteMetaDataStream(R::RXMLParser* parser)
+{
+	if(!MetaDatas.GetNb())
+		return;
+	parser->BeginTag("http://www.otlet-institute.org/docxml","metaData","docxml:metaData");
+	RCursor<MetaData> Cur(MetaDatas);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		parser->BeginTag("http://purl.org/dc/elements/1.1",Cur()->Name,"dc:"+Cur()->Name);
+		switch(Cur()->Type)
+		{
+			case RawText:
+				parser->Text(Cur()->Value);
+				break;
+			case Sentence:
+				AnalyzeBlock(Cur()->Value,parser);
+				break;
+			case Keywords:
+				AnalyzeKeywords(Cur()->Value,Cur()->Sep,parser);
+				break;
+		}
+		parser->EndTag("http://purl.org/dc/elements/1.1",Cur()->Name,"dc:"+Cur()->Name);
+	}
+	parser->EndTag("http://www.otlet-institute.org/docxml","metaData","docxml:metaData");
+	parser->BeginTag("http://www.otlet-institute.org/docxml","content","docxml:content");
+}
+
+
+//------------------------------------------------------------------------------
+void GFilter::StartParagraph(R::RXMLParser* parser)
+{
+	parser->BeginTag("http://www.otlet-institute.org/docxml","p","docxml:p");
+}
+
+
+//------------------------------------------------------------------------------
+void GFilter::EndParagraph(R::RXMLParser* parser)
+{
+	parser->EndTag("http://www.otlet-institute.org/docxml","p","docxml:p");
+}
+
+
+//------------------------------------------------------------------------------
+void GFilter::ExtractTextualContent(RTextFile& file,RXMLParser* parser,const RString& text)
+{
+	RString Line,NextLine;
+	bool Read(text.IsEmpty());
+
+	while(!file.End())
+	{
+		StartParagraph(parser);
+
+		if(Read)
+		{
+			if(!file.End())
+				Line=NextLine;
+		}
+		else
+		{
+			Line=text;
+			Read=true;
+		}
+
+		// Paragraph are supposed to be terminated by at least one blank line
+		bool Paragraph(true);
+		while((!file.End())&&Paragraph)
+		{
+			// Read a Line
+			NextLine=file.GetLine(false);
+
+			// Look if it is a blank line
+			RChar* ptr(NextLine());
+			while((!ptr->IsNull())&&(ptr->IsSpace()))
+				ptr++;
+
+			// If blank line -> it is the end of a paragraph
+			if(ptr->IsNull())
+			{
+				Paragraph=false;
+			}
+			else
+			{
+				if(!Line.IsEmpty())
+					Line+=' ';
+				Line+=NextLine;
+			}
+		}
+		AnalyzeBlock(Line,parser);
+		EndParagraph(parser);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GFilter::EndStream(R::RXMLParser* parser)
+{
+	parser->EndTag("http://www.otlet-institute.org/docxml","content","docxml:content");
+	parser->EndTag("http://www.w3.org/1999/02/22-rdf-syntax-ns#","RDF","rdf:RDF");
 }
 
 

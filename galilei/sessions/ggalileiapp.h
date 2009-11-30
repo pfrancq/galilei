@@ -451,21 +451,17 @@ protected:
 public:
 
 	/**
-	* Return the URI of the file to analyze. If the file is not a XML file, the
-	* method tries to determine the MIME type and to find a corresponding
-	* filter.
-	* @param doc             Document to analyze.
-	* @param docxml          Temporary file containing the DocXML if necessary.
-	* @param native          Variable modified by the method to specify of the
-	*                        original file is a XML one.
-	* @return The result depends:
-	* #- The original URI is given back if it is a XML file.
-	* #- A local temporary file containing a XML version of the file if a
-	*    filter was used (the temporary file must be deleted by the caller).
-	* @exception A GException is generated if the document could not be
-	* analyzed (no MIME type, no filter, ...).
-	*/
-	R::RURI WhatAnalyze(GDoc* doc,R::RIO::RSmartTempFile& docxml,bool& native);
+	 * Pre-analyze a document to find the correct MIME type.
+	 * @return the filter needed to analyze the document, or null if the
+	 * document is a XML one.
+	 * @param doc             Document to analyze.
+	 * @param uri             File to analyze (can be a local copy of the
+	 *                        original file).
+	 * @param tmp             Necessary if a file must be downloaded.
+	 * @exception A GException is generated if the document could not be
+	 * analyzed (no MIME type, no filter, ...).
+	 */
+	GFilter* FindMIMEType(GDoc* doc,R::RURI& uri,R::RIO::RSmartTempFile& tmp);
 
 	/**
 	* Add a pair (MIME type,filter).

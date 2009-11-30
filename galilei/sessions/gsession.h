@@ -414,7 +414,7 @@ public:
 	*                        in RAM.
 	* @param rec             Receiver for the signals.
 	*/
-	void AnalyseDocs(bool ram=false,GSlot* rec=0);
+	void AnalyzeDocs(bool ram=false,GSlot* rec=0);
 
 	/**
 	* Analyze a document.
@@ -426,7 +426,7 @@ public:
 	*                        the default method is used.
 	* @param rec             Receiver for the signals.
 	*/
-	void AnalyseDoc(GDoc* doc,bool ram=true,GDocAnalyse* method=0,GSlot* rec=0);
+	void AnalyzeDoc(GDoc* doc,bool ram=true,GDocAnalyze* method=0,GSlot* rec=0);
 
 	/**
 	 * Get the XML structure corresponding to a document. If the document is
@@ -434,9 +434,9 @@ public:
 	 * @param doc            Document.
 	 * @param xml            XML struct that will be hold the result.
 	 * @param native         Native document.
-	 * @return True if the XML structure could be created.
+	 * @param rec             Receiver for the signals.
 	 */
-	bool GetDocXML(GDoc* doc,R::RXMLStruct* xml,bool& native);
+	void GetXMLStruct(GDoc* doc,R::RXMLStruct* xml,bool& native,GSlot* rec=0);
 
 	/**
 	* Run all the enabled post-documents computing methods.

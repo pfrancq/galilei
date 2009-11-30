@@ -35,11 +35,13 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rdownload.h>
+#include <rxmlparser.h>
+#include <rtextfile.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
+#include <galilei.h>
 #include <gplugin.h>
 #include <gpluginmanager.h>
 
@@ -54,20 +56,27 @@ namespace GALILEI{
 * The GFilter class provides a representation of a generic filter that transform
 * a document of a given type into a DocXML document. Each filter is associated
 * with a given set of MIME types. This association is used to determine which
-* filter should analyse a document.
+* filter should analyze a document.
 * @author Pascal Francq
 * @short Generic Filter.
 */
 class GFilter : public GPlugIn
 {
-protected:
+	class MetaData;
 
-	/**
-	* DocXML document that will contain the result of the document analysis.
-	*/
-	GDocXML* Doc;
+	R::RContainer<MetaData,true,false> MetaDatas;
 
 public:
+
+	/**
+	 * Determine how the metadata should be analyzed.
+	 */
+	enum MetaDataType
+	{
+		RawText,             /** Raw text.*/
+		Sentence,            /** Sentences.*/
+		Keywords             /** Keywords.*/
+	};
 
 	/**
 	* Construct the filter.
@@ -114,57 +123,90 @@ public:
 	/**
 	* Analyze a block of text and create a list of tags 'docxml:sentence'.
 	* @param block          Block containing the text.
-	* @param attach         XML tag where the sentences must be attach.
+	* @param parser         Parser of the XML stream.
 	*/
-	R::RXMLTag* AnalyzeBlock(char* block,R::RXMLTag* attach);
-
-	/**
-	* Analyze a block of text and create a list of tags 'docxml:sentence'.
-	* @param block          Block containing the text.
-	* @param attach         XML tag where the sentences must be attach.
-	*/
-	R::RXMLTag* AnalyzeBlock(R::RChar* block,R::RXMLTag* attach);
-
-	/**
-	* Analyze a block of text and create a list of tags 'docxml:sentence'.
-	* @param block          Block containing the text.
-	* @param attach         XML tag where the sentences must be attach.
-	*/
-	R::RXMLTag* AnalyzeBlock(const R::RString& block,R::RXMLTag* attach);
+	void AnalyzeBlock(const R::RString& block,R::RXMLParser* parser);
 
 	/**
 	* Analyze a list of keywords separating by a single character.
 	* @param list           List of keywords.
 	* @param sep            Separator to use.
-	* @param attach         XML tag where the sentences must be attach.
+	* @param parser         Parser of the XML stream.
 	*/
-	R::RXMLTag* AnalyzeKeywords(char* list,char sep,R::RXMLTag* attach);
+	void AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLParser* parser);
 
 	/**
-	* Analyze a list of keywords separating by a single character.
-	* @param list           List of keywords.
-	* @param sep            Separator to use.
-	* @param attach         XML tag where the sentences must be attach.
+	 * Clear local information.
+	 */
+	void Clear(R::RXMLParser* parser);
+
+	//-----------------------------------------------------
+	/** @name DocXML Methods
 	*/
-	R::RXMLTag* AnalyzeKeywords(R::RChar* list,R::RChar sep,R::RXMLTag* attach);
+	// @{
 
 	/**
-	* Analyze a list of keywords separating by a single character.
-	* @param list           List of keywords.
-	* @param sep            Separator to use.
-	* @param attach         XML tag where the sentences must be attach.
-	*/
-	R::RXMLTag* AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLTag* attach);
+	 * Start a DocXML stream.
+	 * @param parser         Parser of the XML stream.
+	 */
+	void StartStream(R::RXMLParser* parser);
 
 	/**
-	* Analyze a document with a given URI that was downloaded in a local
-	* temporary file and for which a DocXML must be created. This method must
-	* be reimplemented by all filters.
+	 * Add a given metadata defined by the Dublin core.
+	 * @code
+	 * parser->AddDublinCoreMetaData("title","This is the title of the document");
+	 * @endcode
+	 * @param name           Name of the metadata (without namespace and
+	 *                       prefix).
+	 * @param value          Value.
+	 * @param type           Type of the metadata.
+	 * @param sep            Separator (only for keywords)
+	 */
+	void AddDublinCoreMetaData(const R::RString& name,const R::RString& value,MetaDataType type=RawText,R::RChar sep=',');
+
+	/**
+	 * Start a DocXML stream.
+	 * @param parser         Parser of the XML stream.
+	 */
+	void WriteMetaDataStream(R::RXMLParser* parser);
+
+	/**
+	 * Start a paragraph.
+	 * @param parser         Parser of the XML stream.
+	 */
+	void StartParagraph(R::RXMLParser* parser);
+
+	/**
+	 * End a paragraph.
+	 * @param parser         Parser of the XML stream.
+	 */
+	void EndParagraph(R::RXMLParser* parser);
+
+	/**
+	 * Extract textual content from a file.
+	 * @param file           File.
+	 * @param parser         Parser of the XML stream.
+	 * @param text           Text to add.
+	 */
+	void ExtractTextualContent(R::RTextFile& file,R::RXMLParser* parser,const R::RString& text=R::RString::Null);
+
+	/**
+	 * End a DocXML stream.
+	 * @param parser         Parser of the XML stream.
+	 */
+	void EndStream(R::RXMLParser* parser);
+
+	//@} DocXML Methods
+
+	/**
+	* Analyze a document with a given URI for which a DocXML must be created.
+	* This method must be re-implemented by all filters.
+	* @param doc             Document to analyze.
 	* @param uri             URI of the file to analyze.
-	* @param file            Local file to analyze.
-	* @param docxml          Local file that will containing the DocXML.
+	* @param parser          Current parser of the XML stream.
+	* @param rec             Receiver for the signals.
 	*/
-	virtual void Analyze(const R::RURI& uri,const R::RURI& file,const R::RURI& docxml)=0;
+	virtual void Analyze(GDoc* doc,const R::RURI& uri,R::RXMLParser* parser,GSlot* rec)=0;
 
 	/**
 	* Destruct the filter.

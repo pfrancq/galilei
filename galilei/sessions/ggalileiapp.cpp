@@ -68,7 +68,7 @@ using namespace GALILEI;
 // include files for GALILEI (PlugIns)
 #include <glang.h>
 #include <glinkcalc.h>
-#include <gdocanalyse.h>
+#include <gdocanalyze.h>
 #include <gpostdoc.h>
 #include <gfilter.h>
 #include <gengine.h>
@@ -155,7 +155,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	// Create the managers of plug-ins
 	InsertPtr(new GPlugInManager("Storage",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("LinkCalc",GPlugInManager::ptSelect));
-	InsertPtr(new GPlugInManager("DocAnalyse",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("DocAnalyze",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("PostDoc",GPlugInManager::ptOrdered));
 	InsertPtr(new GPlugInManager("Filter",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("Engine",GPlugInManager::ptList));
@@ -576,43 +576,35 @@ bool GGALILEIApp::IsValidContent(const R::RString& MIME)
 
 
 //------------------------------------------------------------------------------
-RURI GGALILEIApp::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml,bool& native)
+GFilter* GGALILEIApp::FindMIMEType(GDoc* doc,RURI& uri,RIO::RSmartTempFile& tmp)
 {
-	RIO::RSmartTempFile DwnFile;      // Temporary file containing the downloaded file  (if necessary).
-	RURI NonXMLFile;               // Non XML-File file.
-
 	// Init Part;
 	Doc=doc;
 	Filter=0;
-	native=true;       // Suppose real XML file
+	uri=Doc->GetURL();
 
 	// Guess the MIME type if necessary
 	FindMIMEType();
 
 	// If it is known to be a XML file -> file can directly analyzed.
 	if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
-		return(Doc->GetURL());
+		return(0);
 
 	// The file is perhaps not a XML file -> Try to transform it into DocXML
 
 	// If it is not a local	file -> Download it
 	if(Doc->GetURL().GetScheme()!="file")
 	{
-		NonXMLFile=DwnFile.GetName();
-		DownloadFile(Doc->GetURL(),NonXMLFile);
+		uri=tmp.GetName();
+		DownloadFile(Doc->GetURL(),uri);
 
 		// Perhaps the server holding the file has provide a MIME type which can be XML
 		if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
-			return(Doc->GetURL());
+			return(0);
 	}
-	else
-		NonXMLFile=Doc->GetURL().GetPath();
-
-	// No XML file
-	native=false;
 
 	// If no MIME type -> Exception
-	if(doc->GetMIMEType().IsEmpty())
+	if(Doc->GetMIMEType().IsEmpty())
 		throw GException("Cannot find MIME type for "+doc->GetURL()());
 
 	// If no filter -> Exception
@@ -621,15 +613,7 @@ RURI GGALILEIApp::WhatAnalyze(GDoc* doc,RIO::RSmartTempFile& docxml,bool& native
 		Filter=ptr->Filter;
 	if(!Filter)
 		ThrowGException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
-
-	// Analyze the file
-	if(!RFile::Exists(NonXMLFile))
-		ThrowGException("File '"+NonXMLFile()+"' not exist");
-
-	Filter->Analyze(Doc->GetURL(),NonXMLFile,docxml.GetName());
-
-	// Return file to realy analyze
-	return(docxml.GetName());
+	return(Filter);
 }
 
 

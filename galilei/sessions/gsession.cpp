@@ -54,8 +54,7 @@ using namespace R;
 #include <gstatscalc.h>
 #include <gdoc.h>
 #include <gdocstruct.h>
-#include <gdocanalyse.h>
-#include <gdocxml.h>
+#include <gdocanalyze.h>
 #include <glinkcalc.h>
 #include <glink.h>
 #include <gpostdoc.h>
@@ -870,7 +869,7 @@ void GSession::ClearDocs(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseDocs(bool ram,GSlot* rec)
+void GSession::AnalyzeDocs(bool ram,GSlot* rec)
 {
 	// Opens and appends the Log File for all errors occurring in the filter or analyze phase.
 	if(rec)
@@ -880,7 +879,7 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 	}
 
 	// Get the method
-	GDocAnalyse* Analyse(GALILEIApp->GetCurrentPlugIn<GDocAnalyse>("DocAnalyse"));
+	GDocAnalyze* Analyze(GALILEIApp->GetCurrentPlugIn<GDocAnalyze>("DocAnalyze"));
 
 	// Analyze the documents - Go through the existing documents
 	R::RCursor<GDoc> Docs=GetDocs();
@@ -888,7 +887,7 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 	{
 		try
 		{
-			AnalyseDoc(Docs(),ram,Analyse,rec);
+			AnalyzeDoc(Docs(),ram,Analyze,rec);
 		}
 		// If a log file specified -> write to it and it is OK
 		// If no log file specified -> Propagate error
@@ -902,11 +901,11 @@ void GSession::AnalyseDocs(bool ram,GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
+void GSession::AnalyzeDoc(GDoc* doc,bool ram,GDocAnalyze* method,GSlot* rec)
 {
 	// Verify that the document analysis method is selected
 	if(!method)
-		method=GALILEIApp->GetCurrentPlugIn<GDocAnalyse>("DocAnalyse");
+		method=GALILEIApp->GetCurrentPlugIn<GDocAnalyze>("DocAnalyze");
 
 	if(!doc->MustCompute()) return;
 	if(rec)
@@ -916,16 +915,25 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 	}
 	if(Intern::ExternBreak) return;
 
-	RIO::RSmartTempFile docxml;
-	bool Native;
+	//cout<<"Analyze "<<file.GetPath()<<endl;
+	R::RIO::RSmartTempFile TmpFile;
+	RURI File;
 	bool Save=(SaveResults&&(doc->GetId()!=cNoRef));
-	RURI uri(GALILEIApp->WhatAnalyze(doc,docxml,Native));
-	if(uri().IsEmpty())
-		return;
-
-     // Analyze document -> Is something goes wrong -> It failed
-	bool DelRef(doc->IsDefined());
-	method->Analyze(doc,uri,Native);
+	GFilter* Filter(GALILEIApp->FindMIMEType(doc,File,TmpFile));
+   	bool DelRef(doc->IsDefined());
+   	method->SetHTMLMode(true);
+	method->PrepareAnalyze(doc,Filter==0);
+	if(Filter)
+	{
+		Filter->Clear(method);
+		Filter->Analyze(doc,File,method,rec);
+	}
+	else
+	{
+		method->Open(File,RIO::Read,"UTF-8");
+		method->Close();
+	}
+	method->TerminateAnalyze();
 
 	// Save the description and the structure
 	if(Save)
@@ -950,18 +958,24 @@ void GSession::AnalyseDoc(GDoc* doc,bool ram,GDocAnalyse* method,GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-bool GSession::GetDocXML(GDoc* doc,R::RXMLStruct* xml,bool& native)
+void GSession::GetXMLStruct(GDoc* doc,R::RXMLStruct* xml,bool& native,GSlot* rec)
 {
-	RIO::RSmartTempFile docxml;
 	xml->Clear();
-	RURI uri=GALILEIApp->WhatAnalyze(doc,docxml,native);
-	if(uri().IsEmpty())
-		return(false);
-	RXMLFile XML(uri,xml);
+	R::RIO::RSmartTempFile TmpFile;
+	RURI File;
+	GFilter* Filter(GALILEIApp->FindMIMEType(doc,File,TmpFile));
+	RXMLFile XML(File,xml);
 	XML.SetInvalidXMLCodes(true);
-	XML.Open(RIO::Read);
-	return(true);
+	native=(Filter==0);
+	if(Filter)
+	{
+		Filter->Clear(&XML);
+		Filter->Analyze(doc,File,&XML,rec);
+	}
+	else
+		XML.Open(RIO::Read);
 }
+
 
 //------------------------------------------------------------------------------
 void GSession::DoPostDocs(GSlot* rec)

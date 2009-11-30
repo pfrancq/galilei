@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GDocAnalyse.cpp
+	GDocAnalyze.cpp
 
 	AGeneric Document Analysis - Implementation.
 
@@ -35,7 +35,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocanalyse.h>
+#include <gdocanalyze.h>
 #include <gdoc.h>
 #include <gprofile.h>
 using namespace R;
@@ -50,18 +50,19 @@ const size_t MaxWordLen=50;
 
 //------------------------------------------------------------------------------
 //
-// class GDocAnalyse
+// class GDocAnalyze
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyse::GDocAnalyse(GPlugInFactory* fac)
-	: GPlugIn(fac), Infos(5000), Struct()
+GDocAnalyze::GDocAnalyze(GPlugInFactory* fac)
+	: GPlugIn(fac), RXMLParser(), Infos(5000), Struct()
 {
+	SetInvalidXMLCodes(true);
 }
 
 
 //------------------------------------------------------------------------------
-GDocAnalyse::~GDocAnalyse(void)
+GDocAnalyze::~GDocAnalyze(void)
 {
 }

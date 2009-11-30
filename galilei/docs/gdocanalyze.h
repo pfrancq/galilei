@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GDocAnalyse.h
+	GDocAnalyze.h
 
 	Generic Document Analysis - Header.
 
@@ -29,8 +29,13 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GDocAnalyseH
-#define GDocAnalyseH
+#ifndef GDocAnalyzeH
+#define GDocAnalyzeH
+
+
+//------------------------------------------------------------------------------
+// include files for R
+#include <rxmlparser.h>
 
 
 //------------------------------------------------------------------------------
@@ -48,7 +53,7 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
- * The GDocAnalyse class provides a generic method to analyze a document. The
+ * The GDocAnalyze class provides a generic method to analyze a document. The
  * internal structures, Infos and Struct, are used by GSession to manage the
  * results (saving, assign them to the documents, etc.). The plug-in is
  * responsible for their management (such as clearing them between two analysis
@@ -56,7 +61,7 @@ namespace GALILEI{
  * @author Pascal Francq
  * @short Generic Document Analysis.
  */
-class GDocAnalyse : public GPlugIn
+class GDocAnalyze : public GPlugIn, public R::RXMLParser
 {
 protected:
 
@@ -81,28 +86,34 @@ public:
 	* Constructor of the document analysis method.
 	* @param fac             Factory of the plug-in.
 	*/
-	GDocAnalyse(GPlugInFactory* fac);
+	GDocAnalyze(GPlugInFactory* fac);
 
 	/**
-	* Analyze a XML of a document for a session.
-	* @param doc             Document to analyze.
-	* @param file            File to analyze (may be its XML version).
-	* @param native          Specify if the document is a native XML file.
+	 * Prepare the analyze of a document. The method is called by GSession
+	 * before the XML document is read.
+	 * @param doc             Document to analyze.
+	 * @param native          Specify if the document is a native XML file.
+	 */
+	virtual void PrepareAnalyze(const GDoc* doc,bool native)=0;
+
+	/**
+	* Terminate the analysis of a XML document. The method is called by
+	* GSession after the XML document is read.
 	*/
-	virtual void Analyze(const GDoc* doc,const R::RURI& file,bool native)=0;
+	virtual void TerminateAnalyze(void)=0;
 
 	/**
 	* Destruct the document analyzer.
 	*/
-	virtual ~GDocAnalyse(void);
+	virtual ~GDocAnalyze(void);
 
 	friend class GSession;
 };
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_DOCANALYSE_FACTORY(name,desc,plugin)\
-	CREATE_FACTORY(GALILEI::GDocAnalyse,plugin,"DocAnalyse",R::RString::Null,name,desc)
+#define CREATE_DOCANALYZE_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GDocAnalyze,plugin,"DocAnalyze",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

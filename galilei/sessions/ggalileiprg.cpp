@@ -56,7 +56,7 @@
 #include <gstorage.h>
 #include <gslot.h>
 #include <ggalileiapp.h>
-#include <gdocanalyse.h>
+#include <gdocanalyze.h>
 #include <gmeasure.h>
 #include <gsimulator.h>
 #include <gsubject.h>
@@ -1264,9 +1264,9 @@ public:
 			RAM=false;
 		else
 			RAM=true;
-		if(!GALILEIApp->GetCurrentPlugIn<GDocAnalyse>("DocAnalyse"))
+		if(!GALILEIApp->GetCurrentPlugIn<GDocAnalyze>("DocAnalyze"))
 			throw RPrgException(prg,"No Document Analyzing Method chosen.");
-		Owner->Session->AnalyseDocs(RAM,dynamic_cast<GSlot*>(o));
+		Owner->Session->AnalyzeDocs(RAM,dynamic_cast<GSlot*>(o));
 	}
 };
 
