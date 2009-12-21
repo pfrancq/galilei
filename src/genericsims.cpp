@@ -73,81 +73,93 @@ GSimType::GSimType(GGenericSims* owner,GConceptType* type)
 }
 
 
+
 //------------------------------------------------------------------------------
-double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
+//
+// class GSimTypeCosinys
+//
+//------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------
+void GSimTypeCosinus::Init(void)
 {
-	#if NormalizeVector
-		double max1(-2);
-		double max2(-2);
-	#endif
-	double norm1(0.0);
-	double norm2(0.0);
-	double w1,w2;
-	double num(0.0);
-
+	Norm1=0.0;
+	Norm2=0.0;
+	Num=0.0;
+	Value=0.0;
 	LastNbComps=0;
-	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
-	{
-		w1=Obj1()->GetWeight()*Owner->GetIF(Obj1()->GetConcept());
-		#if NormalizeVector
-			if(Obj1()->GetWeight()>max1)
-				max1=Obj1()->GetWeight();
-		#endif
-		while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&(Obj2()->GetConcept()->GetId()<Obj1()->GetConcept()->GetId()))
-		{
-			w2=Obj2()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
-			#if NormalizeVector
-				if(Obj2()->GetWeight()>max2)
-					max2=Obj2()->GetWeight();
-			#endif
-			norm2+=w2*w2;
-			Obj2.Next();
-		}
-		if((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type)&&(Obj2()->GetConcept()->GetId()==Obj1()->GetConcept()->GetId()))
-		{
-			// Obj2()==Obj1() -> iff2=iff1
-			w2=Obj2()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
-			#if NormalizeVector
-				if(Obj2()->GetWeight()>max2)
-					max2=Obj2()->GetWeight();
-			#endif
-			norm2+=w2*w2;
-			if((Obj1()->GetWeight()>0)||(Obj2()->GetWeight()>0))
-			{
-				num+=w1*w2;
-				LastNbComps++;
-			}
-			Obj2.Next();
-		}
-		norm1+=w1*w1;
-		Obj1.Next();
-	}
-	while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type))
-	{
-		w2=Obj2()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
-		#if NormalizeVector
-			if(w2>max2)
-				max2=w2;
-		#endif
-		norm2+=w2*w2;
-		Obj2.Next();
-	}
-
-	// Return similarity
-	if(num==0.0)
-		return(0.0);
 	#if NormalizeVector
-		num/=max1*max2;
-		norm1/=max1*max1;
-		norm2/=max2*max2;
+		Max1=-2;
+		Max2=-2;
 	#endif
-
-	double sim(num/(sqrt(norm1*norm2)));
-	if(Owner->Transform)
-		sim=(sim+1.0)/2.0;
-	return(sim);
 }
 
+
+//------------------------------------------------------------------------------
+void GSimTypeCosinus::Add(GWeightInfo* info1,GWeightInfo* info2)
+{
+	double w1(info1->GetWeight()*Owner->GetIF(info1->GetConcept()));
+	Norm1+=w1*w1;
+	double w2(info2->GetWeight()*Owner->GetIF(info2->GetConcept()));
+	Norm2+=w2*w2;
+	if((info1->GetWeight()>0)||(info2->GetWeight()>0))
+	{
+		Num+=w1*w2;
+		LastNbComps++;
+	}
+	#if NormalizeVector
+	if(info1->GetWeight()>Max1)
+		Max1=info1->GetWeight();
+	if(info2->GetWeight()>Max2)
+		Max2=info2->GetWeight();
+	#endif
+
+}
+
+
+//------------------------------------------------------------------------------
+void GSimTypeCosinus::AddObj1(GWeightInfo* info)
+{
+	double w1(info->GetWeight()*Owner->GetIF(info->GetConcept()));
+	Norm1+=w1*w1;
+	#if NormalizeVector
+		if(info->GetWeight()>Max1)
+			Max1=info->GetWeight();
+	#endif
+}
+
+
+//------------------------------------------------------------------------------
+void GSimTypeCosinus::AddObj2(GWeightInfo* info)
+{
+	double w2(info->GetWeight()*Owner->GetIF(info->GetConcept()));
+	Norm2+=w2*w2;
+	#if NormalizeVector
+		if(info->GetWeight()>Max2)
+			Max2=info->GetWeight();
+	#endif
+
+}
+
+
+//------------------------------------------------------------------------------
+void GSimTypeCosinus::Done(void)
+{
+	if(Num==0.0)
+		Value=0.0;
+	else
+	{
+		#if NormalizeVector
+			Num/=Max1*max2;
+			Norm1/=Max1*Max1;
+			Norm2/=Max2*Max2;
+		#endif
+		Value=Num/(sqrt(Norm1*Norm2));
+	}
+	if(Owner->Transform)
+		Value=(Value+1.0)/2.0;
+}
 
 
 //------------------------------------------------------------------------------
@@ -157,48 +169,73 @@ double GSimType::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2)
+void GSimTypeXMLIndex::Init(void)
+{
+	Obj1.Clear();
+	Obj2.Clear();
+	Value=0;
+}
+
+
+//------------------------------------------------------------------------------
+void GSimTypeXMLIndex::Add(GWeightInfo* info1,GWeightInfo* info2)
+{
+	Obj1.InsertPtr(info1);
+	Obj2.InsertPtr(info2);
+}
+
+
+//------------------------------------------------------------------------------
+void GSimTypeXMLIndex::AddObj1(GWeightInfo* info)
+{
+	Obj1.InsertPtr(info);
+}
+
+
+//------------------------------------------------------------------------------
+void GSimTypeXMLIndex::AddObj2(GWeightInfo* info)
+{
+	Obj2.InsertPtr(info);
+}
+
+
+//------------------------------------------------------------------------------
+void GSimTypeXMLIndex::Done(void)
 {
 	double w1,w2;
 	double num(0.0);
 	double den(0.0);
 
-	while((!Obj1.End())&&(Obj1()->GetConcept()->GetType()==Type))
+	RCursor<GWeightInfo> Cur1(Obj1);
+	RCursor<GWeightInfo> Cur2(Obj2);
+	for(Cur1.Start();!Cur1.End();Cur1.Next())
 	{
-		w1=Obj1()->GetWeight()*Owner->GetIF(Obj1()->GetConcept());
+		w1=Cur1()->GetWeight()*Owner->GetIF(Cur1()->GetConcept());
 
-		GXMLIndex* c1=dynamic_cast<GXMLIndex*>(Obj1()->GetConcept());
-		RCursor<GWeightInfo> Cur(Obj2);
-		for(;(!Cur.End())&&(Cur()->GetConcept()->GetType()==Type);Cur.Next())
+		GXMLIndex* c1(dynamic_cast<GXMLIndex*>(Cur1()->GetConcept()));
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
 		{
-			GXMLIndex* c2=dynamic_cast<GXMLIndex*>(Cur()->GetConcept());
+			GXMLIndex* c2(dynamic_cast<GXMLIndex*>(Cur2()->GetConcept()));
 
 			// Compare only if both index are based on the same XML tag
 			if(c1->GetXMLTag()!=c2->GetXMLTag())
 				continue;
 
-			w2=Cur()->GetWeight()*Owner->GetIF(Obj2()->GetConcept());
+			w2=Cur2()->GetWeight()*Owner->GetIF(Cur2()->GetConcept());
 			den+=fabs(w1*w2);
 			if((w1<0.0)&&(w2<0.0))
 				continue;
 //			cout<<c1->GetSimilarity(c2)<<endl;
 			num+=c1->GetSimilarity(c2)*w1*w2;
 		}
-		Obj1.Next();
 	}
-	while((!Obj2.End())&&(Obj2()->GetConcept()->GetType()==Type))
-		Obj2.Next();
 
 	// Return similarity
-	if(den==0.0)
-		return(0.0);
-
-	double sim(num/den);
+	if(den!=0.0)
+		Value=num/den;
 
 	if(Owner->Transform)
-		sim=(sim+1.0)/2.0;
-
-	return(sim);
+		Value=(Value+1.0)/2.0;
 }
 
 
@@ -211,7 +248,7 @@ double GSimTypeXMLIndex::Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>
 
 //------------------------------------------------------------------------------
 GGenericSims::GGenericSims(GPlugInFactory* fac,tObjType lines,tObjType cols)
-	: GMatrixMeasure(fac,lines,cols,lines==cols), vec1(0), vec2(0), Types(30)
+	: GMatrixMeasure(fac,lines,cols,lines==cols), vec1(0), vec2(0), Types(30), Valid(30)
 {
 }
 
@@ -258,6 +295,7 @@ void GGenericSims::ApplyConfig(void)
 //------------------------------------------------------------------------------
 void GGenericSims::Connect(GSession* session)
 {
+	GSimType* ptr;
 	GMatrixMeasure::Connect(session);
 	MetaSpace=Session->GetConceptType("XMLIndex",false);
 	StructSpace=Session->GetConceptType("XMLStruct",false);
@@ -266,11 +304,20 @@ void GGenericSims::Connect(GSession* session)
 	{
 		// Takes only the language, the structure and the metadata space
 		if(Cur()==MetaSpace)
-			Types.InsertPtr(new GSimTypeXMLIndex(this,Cur()));
+		{
+			Types.InsertPtrAt(ptr=new GSimTypeXMLIndex(this,Cur()),Cur()->GetId());
+			Valid.InsertPtr(ptr);
+		}
 		else if(Cur()==StructSpace)
-			Types.InsertPtr(new GSimType(this,Cur()));
+		{
+			Types.InsertPtrAt(ptr=new GSimTypeCosinus(this,Cur()),Cur()->GetId());
+			Valid.InsertPtr(ptr);
+		}
 		else if(Cur()->GetName().Mid(2)=="Terms")
-			Types.InsertPtr(new GSimType(this,Cur()));
+		{
+			Types.InsertPtrAt(ptr=new GSimTypeCosinus(this,Cur()),Cur()->GetId());
+			Valid.InsertPtr(ptr);
+		}
 	}
 	CurLang=0;
 	CurType=0;
@@ -291,59 +338,73 @@ bool GGenericSims::ComputeSimSpace(void)
 	// if one vector is not defined -> the similarity must be null
 	if((!vec1->GetVector().GetNb())||(!vec2->GetVector().GetNb()))
 		return(false);
-	RCursor<GWeightInfo> ptr(vec1->GetVector().GetInfos());
-	RCursor<GWeightInfo> ptr2(vec2->GetVector().GetInfos());
-	RCursor<GSimType> Cur(Types);
 	double Ok(false);
 	size_t TotalLangsComp(0);
+	RCursor<GSimType> Sims(Valid);
+
+	// Init all the measures
+	for(Sims.Start();!Sims.End();Sims.Next())
+		Sims()->Init();
 
 	SimSpaces[0]=SimSpaces[1]=SimSpaces[2]=0.0;
 
-	for(ptr.Start(),ptr2.Start(),Cur.Start();(!Cur.End())&&(!ptr.End())&&(!ptr2.End());Cur.Next())
+	// Go trough all the information
+	RCursor<GWeightInfo> Info1(vec1->GetVector().GetInfos());
+	RCursor<GWeightInfo> Info2(vec2->GetVector().GetInfos());
+	for(Info1.Start(),Info2.Start();!Info1.End();Info1.Next())
 	{
-		if((ptr()->GetConcept()->GetType()==Cur()->Type)&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
+		for(;(!Info2.End())&&(Info2()->GetId()<Info1()->GetId());Info2.Next())
+			Types[Info2()->GetConcept()->GetType()->GetId()]->AddObj2(Info2());
+
+		if((!Info2.End())&&(Info2()->GetId()==Info1()->GetId()))
+			Types[Info2()->GetConcept()->GetType()->GetId()]->Add(Info1(),Info2());
+		else
+			Types[Info1()->GetConcept()->GetType()->GetId()]->AddObj1(Info1());
+	}
+	for(;!Info2.End();Info2.Next())
+		Types[Info2()->GetConcept()->GetType()->GetId()]->AddObj2(Info2());
+
+	// Done all the measures
+	for(Sims.Start();!Sims.End();Sims.Next())
+		Sims()->Done();
+
+	// Dispatch the measures
+	for(Sims.Start();!Sims.End();Sims.Next())
+	{
+		// OK Compute it
+		double d(Sims()->Value);
+		//RAssert(fabs(d)<=1.0)
+		if(fabs(d-1.0)<GetCutoffFrequency())
+			d=1.0;
+		if(fabs(1.0+d)<GetCutoffFrequency())
+			d=-1.0;
+		if(Sims()->Type->GetLang())
 		{
-			// OK Compute it
-			double d=Cur()->Compute(ptr,ptr2);
-			//RAssert(fabs(d)<=1.0)
-			if(fabs(d-1.0)<GetCutoffFrequency())
-				d=1.0;
-			if(fabs(1.0+d)<GetCutoffFrequency())
-				d=-1.0;
-			if(Cur()->Type->GetLang())
-			{
-				// Language -> Make the weighted sum for all languages
-				SimSpaces[0]+=d*static_cast<double>(Cur()->LastNbComps);
-				TotalLangsComp+=Cur()->LastNbComps;
-				Ok=true;
-			}
-			else
-			{
-				if(Cur()->Type==StructSpace)
-				{
-					SimSpaces[1]=d;
-					Ok=true;
-				}
-				if(Cur()->Type==MetaSpace)
-				{
-					SimSpaces[2]=d;
-					Ok=true;
-				}
-			}
+			// Language -> Make the weighted sum for all languages
+			SimSpaces[0]+=d*static_cast<double>(Sims()->LastNbComps);
+			TotalLangsComp+=Sims()->LastNbComps;
+			Ok=true;
 		}
 		else
 		{
-			// At least one of the vector has no concepts of type Cur()->Type
-			// Skip it
-			while((!ptr.End())&&(ptr()->GetConcept()->GetType()==Cur()->Type))
-				ptr.Next();
-			while((!ptr2.End())&&(ptr2()->GetConcept()->GetType()==Cur()->Type))
-				ptr2.Next();
+			if(Sims()->Type==StructSpace)
+			{
+				SimSpaces[1]=d;
+				Ok=true;
+			}
+			if(Sims()->Type==MetaSpace)
+			{
+				SimSpaces[2]=d;
+				Ok=true;
+			}
 		}
 	}
+
 	if(TotalLangsComp)
 		SimSpaces[0]/=static_cast<double>(TotalLangsComp);
 //	cout<<"\t(0,"<<SimSpaces[0]<<")\t(1,"<<SimSpaces[1]<<")\t(2,"<<SimSpaces[2]<<")";
+
+
 	return(Ok);
 }
 
@@ -441,35 +502,72 @@ double GGenericSims::SimilarityLang(void)
 
 	//-------------------------------------------------------
 	// Suppose the two vectors have only a language in common.
+	GLang* Lang(0);
+	CurType=0;
 
-	// Parse vec1 until a language is found
-	RCursor<GWeightInfo> ptr(vec1->GetVector().GetInfos());
-	ptr.Start();
-	while((!ptr.End())&&(!ptr()->GetConcept()->GetType()->GetLang()))
-		ptr.Next();
-	if(ptr.End())
-		return(0.0); // No language found -> Similarity is null
-	GConceptType* Lang=(ptr()->GetConcept()->GetType());
-
-	// Parse vec2 until first language is found
-	RCursor<GWeightInfo> ptr2(vec2->GetVector().GetInfos());
-	ptr2.Start();
-	while((!ptr2.End())&&(!ptr2()->GetConcept()->GetType()->GetLang()))
-		ptr2.Next();
-	if(ptr.End())
-		return(0.0); // No language found -> Similarity is null
-
-	// If both language are not the same -> Similarity is null
-	if(Lang!=ptr2()->GetConcept()->GetType())
-		return(0.0);
-
-	// Compute it now.
-	if(CurLang!=Lang)
+	// Go trough all the information
+	RCursor<GWeightInfo> Info1(vec1->GetVector().GetInfos());
+	RCursor<GWeightInfo> Info2(vec2->GetVector().GetInfos());
+	for(Info1.Start(),Info2.Start();!Info1.End();Info1.Next())
 	{
-		CurLang=Lang;
-		CurType=Types.GetPtr(CurLang);
+		// Skip all non language element
+		GLang* Act1(Info1()->GetConcept()->GetType()->GetLang());
+		if(!Act1)
+			continue;
+
+		// Verify Language
+		if(Lang)
+		{
+			// Only one language accepted
+			if(Lang!=Act1)
+				return(0.0);
+		}
+		else
+		{
+			Lang=Act1;
+			CurType=Types[Info1()->GetConcept()->GetType()->GetId()];
+			CurType->Init();
+		}
+
+		for(;(!Info2.End())&&(Info2()->GetId()<Info1()->GetId());Info2.Next())
+		{
+			// Skip all non language element
+			GLang* Act2(Info2()->GetConcept()->GetType()->GetLang());
+			if(!Act2)
+				continue;
+
+			// Only one language accepted
+			if(Lang!=Act2)
+				return(0.0);
+
+			CurType->AddObj2(Info2());
+		}
+
+		if((!Info2.End())&&(Info2()->GetId()==Info1()->GetId()))
+			CurType->Add(Info1(),Info2());
+		else
+			CurType->AddObj1(Info1());
 	}
-	double d=CurType->Compute(ptr,ptr2);
+	for(;!Info2.End();Info2.Next())
+	{
+		// Skip all non language element
+		GLang* Act2(Info2()->GetConcept()->GetType()->GetLang());
+		if(!Act2)
+			continue;
+
+		// Only one language accepted
+		if(Lang!=Act2)
+			return(0.0);
+
+		CurType->AddObj2(Info2());
+	}
+
+	// Done the measure
+	if(!CurType)
+		return(0.0);
+	CurType->Done();
+
+	double d(CurType->Value);
 	if(fabs(d)<GetCutoffFrequency())
 		return(0.0);
 	return(d);
@@ -508,25 +606,6 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 	return(sim);
 }
 
-
-//------------------------------------------------------------------------------
-/*size_t GGenericSims::GetRef(GConceptType* type)
-{
-	size_t nb(type->GetRef(GetLinesType()));
-	if(GetLinesType()!=GetColsType())
-		nb+=type->GetRef(GetColsType());
-	return(nb);
-}
-
-//------------------------------------------------------------------------------
-size_t GGenericSims::GetRef(size_t id,GConceptType* type)
-{
-	size_t nb(type->GetRef(id,GetLinesType()));
-	if(GetLinesType()!=GetColsType())
-		nb+=type->GetRef(id,GetColsType());
-	return(nb);
-}
-*/
 
 //------------------------------------------------------------------------------
 double GGenericSims::GetIF(GConcept* concept)

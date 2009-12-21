@@ -44,6 +44,7 @@ using namespace R;
 // include files for GALILEI
 #include <gmatrixmeasure.h>
 #include <gconcepttype.h>
+#include <gweightinfo.h>
 using namespace GALILEI;
 
 
@@ -58,10 +59,15 @@ protected:
 	GGenericSims* Owner;
 	GConceptType* Type;
 	size_t LastNbComps;  // Number of comparisons between information entities
+	double Value;
 
 public:
 	GSimType(GGenericSims* owner,GConceptType* type);
-	virtual double Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2);
+	virtual void Init(void)=0;
+	virtual void Add(GWeightInfo* info1,GWeightInfo* info2)=0;
+	virtual void AddObj1(GWeightInfo* info)=0;
+	virtual void AddObj2(GWeightInfo* info)=0;
+	virtual void Done(void)=0;
 	int Compare(const GSimType& t) const {return(Type->Compare(t.Type));}
 	int Compare(const GSimType* t) const {return(Type->Compare(t->Type));}
 	int Compare(const GConceptType* t) const {return(Type->Compare(t));}
@@ -70,14 +76,39 @@ public:
 	friend class GGenericSims;
 };
 
+//------------------------------------------------------------------------------
+class GSimTypeCosinus : public GSimType
+{
+	double Norm1;
+	double Norm2;
+	double Num;
+	double Max1;
+	double Max2;
+public:
+	GSimTypeCosinus(GGenericSims* owner,GConceptType* type) :
+		GSimType(owner,type) {}
+	virtual void Init(void);
+	virtual void Add(GWeightInfo* info1,GWeightInfo* info2);
+	virtual void AddObj1(GWeightInfo* info);
+	virtual void AddObj2(GWeightInfo* info);
+	virtual void Done(void);
+};
+
 
 //------------------------------------------------------------------------------
 class GSimTypeXMLIndex : public GSimType
 {
+	RContainer<GWeightInfo,false,false> Obj1;
+	RContainer<GWeightInfo,false,false> Obj2;
+
 public:
 	GSimTypeXMLIndex(GGenericSims* owner,GConceptType* type) :
-		GSimType(owner,type) {}
-	virtual double Compute(RCursor<GWeightInfo>& Obj1,RCursor<GWeightInfo>& Obj2);
+		GSimType(owner,type), Obj1(100), Obj2(100) {}
+	virtual void Init(void);
+	virtual void Add(GWeightInfo* info1,GWeightInfo* info2);
+	virtual void AddObj1(GWeightInfo* info);
+	virtual void AddObj2(GWeightInfo* info);
+	virtual void Done(void);
 };
 
 
@@ -161,7 +192,8 @@ protected:
 	/**
 	 * Similarity to compute for the different spaces.
 	 */
-	RContainer<GSimType,true,true> Types;
+	RContainer<GSimType,true,false> Types;
+	RContainer<GSimType,false,false> Valid;
 
 	/**
 	 * Current language used for the cosine measure.
@@ -227,25 +259,6 @@ public:
 	virtual void Disconnect(GSession* session);
 
 	/**
-	 * Get the total number of references of a given space. If the elements
-	 * in the line and in the columns are different, the sum of both types are
-	 * computed.
-	 * @param type           Concept type.
-	 * @return Number of references.
-	 */
-	//size_t GetRef(GConceptType* type);
-
-	/**
-	 * Get the total number of references of a given concept in a given space.
-	 * If the elements in the line and in the columns are different, the sum of
-	 * both types are computed.
-	 * @param id             Identifier of the concept.
-	 * @param type           Concept type.
-	 * @return Number of references.
-	 */
-	//size_t GetRef(size_t id,GConceptType* type);
-
-	/**
 	 * @return the inverse factor of a given concept. If the elements in the
 	 * line and in the columns are different, the sum of both types are
 	 * computed.
@@ -298,6 +311,7 @@ public:
 	static void CreateParams(RConfig* params);
 
 	friend class GSimType;
+	friend class GSimTypeCosinus;
 	friend class GSimTypeXMLIndex;
 };
 
