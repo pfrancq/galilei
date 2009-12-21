@@ -110,6 +110,11 @@ protected:
 	 */
 	int Seed;
 
+	/**
+	 * Cout information.
+	 */
+	bool Cout;
+
 public:
 
 	/**

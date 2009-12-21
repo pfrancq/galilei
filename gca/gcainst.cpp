@@ -82,8 +82,8 @@ GCAThreadData::~GCAThreadData(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,RParamsSC* p,RDebug *debug,tObjType type,const R::RString& mes,bool inc)
-	: RInstSC<GCAInst,GCAChromo,GCAThreadData,GCAGroup,GCAObj>(objs,p,debug,inc),
+GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,RParamsSC* p,RDebug *debug,tObjType type,const R::RString& mes)
+	: RInstSC<GCAInst,GCAChromo,GCAThreadData,GCAGroup,GCAObj>(objs,p,debug),
 	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
 {
 	// Init measures

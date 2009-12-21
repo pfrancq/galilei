@@ -112,7 +112,7 @@ template<class cObj,class cGroup>
 void GCAChromo::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-	if(Instance->Incremental)
+	if(Instance->Params->Incremental)
 	{
 		switch(Instance->Type)
 		{

@@ -57,10 +57,6 @@ using namespace R;
 using namespace std;
 
 
-//-----------------------------------------------------------------------------
-const bool Cout=false;
-
-
 
 //-----------------------------------------------------------------------------
 //
@@ -128,6 +124,9 @@ template<class cObj,class cGroup>
 	if(what=="k-Means")
 		ClusteringMethod=2;
 	NbClusters=factory->GetUInt("NbClusters");
+	Cout=factory->GetBool("Cout");
+	NbMinObjs=factory->GetUInt("NbMinObjs");
+	NbMaxObjs=factory->GetUInt("NbMaxObjs");
 }
 
 
@@ -224,7 +223,7 @@ template<class cObj,class cGroup>
 		cout<<"   Deviation="<<nb<<endl;
 		cout<<"New GCA"<<endl;
 	}
-	GCAInst Instance(session,Objs,this,session->GetDebug(),ObjType,mes,Incremental);
+	GCAInst Instance(session,Objs,this,session->GetDebug(),ObjType,mes);
 	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cObj,cGroup>::Gen),"RInst::Generation",&Instance);
 	if(Cout)
 		cout<<"Init GCA"<<endl;
@@ -385,6 +384,9 @@ template<class cObj,class cGroup>
 	params->InsertParam(RPromLinearCriterion::CreateParam("Sim Criterion"));
 	params->InsertParam(RPromLinearCriterion::CreateParam("Agreement Criterion"));
 	params->InsertParam(RPromLinearCriterion::CreateParam("Disagreement Criterion"));
+	params->InsertParam(new RParamValue("Cout",false));
+	params->InsertParam(new RParamValue("NbMinObjs",0));
+	params->InsertParam(new RParamValue("NbMaxObjs",cNoRef));
 }
 
 

@@ -90,6 +90,9 @@ bool GAConfigDlg::Configure(RConfig* params)
 	DisagreementP->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("P")->GetDouble());
 	DisagreementQ->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Q")->GetDouble());
 	DisagreementWeight->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->GetDouble());
+	Cout->setChecked(params->GetBool("Cout"));
+	NbMinObjs->setText(QString::number(params->GetULong("NbMinObjs")));
+	NbMaxObjs->setText(QString::number(params->GetULong("NbMaxObjs")));
 
 	// Execute and if 'OK' -> Apply changes
 	if(exec())
@@ -119,6 +122,9 @@ bool GAConfigDlg::Configure(RConfig* params)
 		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("P")->SetDouble(DisagreementP->value());
 		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Q")->SetDouble(DisagreementQ->value());
 		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->SetDouble(DisagreementWeight->value());
+		params->SetBool("Cout",Cout->isChecked());
+		params->SetUInt("NbMinObjs",NbMinObjs->text().toULong());
+		params->SetUInt("NbMaxObjs",NbMaxObjs->text().toULong());
 		return(true);
  	}
 
