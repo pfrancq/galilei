@@ -50,8 +50,6 @@ kviewclasses.ui
 )
 
 
-KDE4_ADD_KCFG_FILES(kgalileicenter kgalileicenterui.rc)
-
 KDE4_ADD_EXECUTABLE(kgalileicenter ${KGALILEICENTER_SOURCES})
 TARGET_LINK_LIBRARIES(kgalileicenter galilei galileikde roptimization rcore rcorekde rmath ${KDE4_KDEUI_LIBS} ${KDE4_KDECORE_LIBS} ${KDE4_KPARTS_LIBS})
 
@@ -59,7 +57,6 @@ TARGET_LINK_LIBRARIES(kgalileicenter galilei galileikde roptimization rcore rcor
 ########### install files ###############
 install(TARGETS kgalileicenter ${INSTALL_TARGETS_DEFAULT_ARGS})
 install( FILES kgalileicenter.desktop  DESTINATION ${XDG_APPS_INSTALL_DIR} )
-#install( FILES test.kcfg  DESTINATION  ${KCFG_INSTALL_DIR} )
 install(FILES kgalileicenterui.rc  DESTINATION  ${DATA_INSTALL_DIR}/kgalileicenter )
 install(FILES kgalileicenterui.rc  DESTINATION  /usr/share/kde4/apps/kgalileicenter )
 kde4_install_icons(${ICON_INSTALL_DIR})
