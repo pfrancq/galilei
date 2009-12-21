@@ -822,11 +822,23 @@ void GTextAnalyze::ExtractValidWords(const R::RString& str,double weight,GVTDRec
 		cout<<"Extract ("<<GetLastTokenPos()<<"): *"<<str<<"*"<<endl;
 	for(const RChar* ptr=str();!ptr->IsNull();)
 	{
-		// Skip Spaces
-		while(SepChar(ptr))
-			ptr++;
-		if(ptr->IsNull())
-			return;
+
+		// Skip Spaces and leading not alpha characters if Non letters words are not extracted
+		for(bool Cont=true;Cont;)
+		{
+			Cont=false;
+			while(SepChar(ptr))
+				ptr++;
+			if(ptr->IsNull())
+				return;
+			if(!NonLetterWords)
+			{
+				const RChar* tmp(ptr);
+				while((!ptr->IsNull())&&(!ptr->IsAlpha()))
+					ptr++;
+				Cont=(ptr!=tmp);
+			}
+		}
 
 		// Start to read characters and suppose there no non-alpha characters
 		const RChar* begin(ptr);
@@ -1114,6 +1126,7 @@ void GTextAnalyze::IndexXMLPart(void)
 void GTextAnalyze::PrepareAnalyze(const GDoc* doc,bool native)
 {
 	// Init part
+	//cout<<doc->GetName()<<endl;
 	Native=native;
 	if(FullIndex&&native)
 		MustFullIndex=true;
