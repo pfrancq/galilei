@@ -202,8 +202,6 @@ template<class cGroup,class cObj>
 			if(IsObjAloneInIdealGroup(Objs()))
 				Grps()->Recall=1.0;
 			Grps()->Precision=1.0;
-			Precision+=Grps()->Precision;
-			Recall+=Grps()->Recall;
 		}
 		else
 		{
@@ -211,6 +209,8 @@ template<class cGroup,class cObj>
 			Grps()->Precision/=(double)InGrp;
 			Grps()->Recall/=(double)InGrp;
 		}
+		Precision+=Grps()->Precision;
+		Recall+=Grps()->Recall;
 	}
 	if(NbObjs)
 	{
