@@ -921,7 +921,7 @@ void GSession::AnalyzeDoc(GDoc* doc,bool ram,GDocAnalyze* method,GSlot* rec)
 	bool Save=(SaveResults&&(doc->GetId()!=cNoRef));
 	GFilter* Filter(GALILEIApp->FindMIMEType(doc,File,TmpFile));
    	bool DelRef(doc->IsDefined());
-   	method->SetHTMLMode(true);
+   	method->SetHTMLMode(false);
 	method->PrepareAnalyze(doc,Filter==0);
 	if(Filter)
 	{

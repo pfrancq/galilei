@@ -34,6 +34,11 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for R
+#include <rvector.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gweightinfos.h>
 #include <glang.h>
@@ -133,21 +138,15 @@ double GWeightInfos::GetMaxWeight(GConceptType* type) const
 	if(!GetNb())
 		throw GException("GWeightInfos is empty for GetMaxHeight");
 
-	// Suppose first weight is the highest
-	RCursor<GWeightInfo> ptr(*this);
-	ptr.Start();
-	while((!ptr.End())&&(ptr()->GetType()!=type))
-		ptr.Next();
-
-	if(ptr.End())
-		return(0.0);
-	double max(ptr()->GetWeight());
-
-	// Look if there is a greater one.
-	for(ptr.Next();(!ptr.End())&&(ptr()->GetType()==type);ptr.Next())
+	// Find the biggest weight
+	double max(-numeric_limits<double>().max());
+	RCursor<GWeightInfo> Infos(*this);
+	for(Infos.Start();!Infos.End();Infos.Next())
 	{
-		if(ptr()->GetWeight()>max)
-			max=ptr()->GetWeight();
+		if(Infos()->GetType()!=type)
+			continue;
+		if(Infos()->GetWeight()>max)
+			max=Infos()->GetWeight();
 	}
 	return(max);
 }
@@ -160,21 +159,15 @@ double GWeightInfos::GetMaxAbsWeight(GConceptType* type) const
 	if(!GetNb())
 		throw GException("GWeightInfos is empty for GetMaxHeight");
 
-	// Suppose first weight is the highest
-	RCursor<GWeightInfo> ptr(*this);
-	ptr.Start();
-	while((!ptr.End())&&(ptr()->GetType()!=type))
-		ptr.Next();
-
-	if(ptr.End())
-		return(0.0);
-	double max(fabs(ptr()->GetWeight()));
-
-	// Look if there is a greater one.
-	for(ptr.Next();(!ptr.End())&&(ptr()->GetType()==type);ptr.Next())
+	// Find the biggest absolute weight
+	double max(0);
+	RCursor<GWeightInfo> Infos(*this);
+	for(Infos.Start();!Infos.End();Infos.Next())
 	{
-		if(fabs(ptr()->GetWeight())>max)
-			max=fabs(ptr()->GetWeight());
+		if(Infos()->GetType()!=type)
+			continue;
+		if(Infos()->GetWeight()>fabs(max))
+			max=fabs(Infos()->GetWeight());
 	}
 	return(max);
 }
@@ -187,128 +180,46 @@ double GWeightInfos::Inclusion(const GWeightInfos& w,tObjType ObjType) const
 	if((!GetNb())||(!w.GetNb()))
 		return(0.0);
 
-	double num(0.0), den(0.0),tmp;
-	double max(-1.0);
-	RCursor<GWeightInfo> ptr(*this);
-	RCursor<GWeightInfo> ptr2(w);
-	GConceptType* type(0);
+	// Initialize
+	RVector Max(GSession::Get()->GetNbConceptTypes());
+	RVector Num(GSession::Get()->GetNbConceptTypes());
+	RVector Den(GSession::Get()->GetNbConceptTypes());
+	Max.Init(GSession::Get()->GetNbConceptTypes(),-numeric_limits<double>().max());
+	Num.Init(GSession::Get()->GetNbConceptTypes(),0.0);
+	Den.Init(GSession::Get()->GetNbConceptTypes(),0.0);
 
 	// Start the first list
+	RCursor<GWeightInfo> ptr(*this);
+	RCursor<GWeightInfo> ptr2(w);
 	for(ptr.Start(),ptr2.Start();!ptr.End();ptr.Next())
 	{
-		// Look if the type of the concept have changed since that the last concept treated
-		if(ptr()->GetConcept()->GetType()!=type)
-		{
-			// Yes -> A new total number of references.
-			type=ptr()->GetConcept()->GetType();
-			max=GetMaxAbsWeight(type);
-		}
+		size_t TypeId(ptr()->GetConcept()->GetType()->GetId());
+
+		// Verify if it is not the highest weight
+		if(fabs(ptr()->GetWeight())>Max[TypeId])
+			Max[TypeId]=fabs(ptr()->GetWeight());
 
 		// While the element of the second list is not the current one, skip it.
 		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
 			ptr2.Next();
-		tmp=(ptr()->GetWeight()*ptr()->GetConcept()->GetIF(ObjType))/max;
-		den+=tmp;
+		double tmp(ptr()->GetWeight()*ptr()->GetConcept()->GetIF(ObjType));
+		Den[TypeId]+=tmp;
 		if((!ptr2.End())&&(ptr()->GetId()==ptr2()->GetId()))
-			num+=tmp;
+			Num[TypeId]+=tmp;
 	}
 
+	double num(0.0), den(0.0);
+	RNumCursor<double> Cur1(Max);
+	RNumCursor<double> Cur2(Num);
+	RNumCursor<double> Cur3(Den);
+	for(Cur1.Start(),Cur2.Start(),Cur3.Start();!Cur1.End();Cur1.Next(),Cur2.Next(),Cur3.Next())
+	{
+		if(Cur3()==0.0)
+			continue;
+		den+=Cur3()/Cur1();
+		num+=Cur2()/Cur1();
+	}
 	return(num/den);
-}
-
-
-//------------------------------------------------------------------------------
-double GWeightInfos::Similarity(const GWeightInfos& w) const
-{
-	// if one list is empty -> the similarity is null
-	if((!GetNb())||(!w.GetNb()))
-		return(0.0);
-
-	double Sim(0.0);
-	double norm1(0.0);
-	double norm2(0.0);
-	double GlobalSim(1.0);
-	GConceptType* type(0);
-	RCursor<GWeightInfo> ptr(*this);
-	RCursor<GWeightInfo> ptr2(w);
-
-	ptr.Start();
-	ptr2.Start();
-	while(!ptr.End())
-	{
-		// Look if the type of the concept have changed since that the last concept treated
-		if(ptr()->GetConcept()->GetType()!=type)
-		{
-			// If a type exist -> modify global sim
-			if(type)
-				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-
-			// Yes -> A new total number of references.
-			type=ptr()->GetConcept()->GetType();
-			norm1=norm2=Sim=0.0;
-		}
-
-		while((!ptr2.End())&&(ptr2()->GetId()<ptr()->GetId()))
-		{
-			// Look if the type of the concept have changed since that the last concept treated
-			if(ptr2()->GetConcept()->GetType()!=type)
-			{
-				// If a type exist -> modify global sim
-				if(type)
-					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-
-				// Yes -> A new total number of references.
-				type=ptr2()->GetConcept()->GetType();
-				norm1=norm2=Sim=0.0;
-			}
-			norm2+=ptr2()->GetWeight()*ptr2()->GetWeight();
-			ptr2.Next();
-		}
-		if((!ptr2.End())&&(ptr2()->GetId()==ptr()->GetId()))
-		{
-			// Look if the type of the concept have changed since that the last concept treated
-			if(ptr2()->GetConcept()->GetType()!=type)
-			{
-				// If a type exist -> modify global sim
-				if(type)
-					GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-
-				// Yes -> A new total number of references.
-				type=ptr2()->GetConcept()->GetType();
-				norm1=norm2=Sim=0.0;
-			}
-			if((ptr()->GetWeight()>0)||(ptr2()->GetWeight()>0))
-			{
-				norm2+=ptr2()->GetWeight()*ptr2()->GetWeight();
-				norm1+=ptr()->GetWeight()*ptr()->GetWeight();
-				Sim+=ptr()->GetWeight()*ptr2()->GetWeight();
-			}
-			ptr2.Next();
-		}
-		else
-			norm1+=ptr()->GetWeight()*ptr()->GetWeight();
-		ptr.Next();
-	}
-	while(!ptr2.End())
-	{
-		// Look if the type of the concept have changed since that the last concept treated
-		if(ptr2()->GetConcept()->GetType()!=type)
-		{
-			// If a type exist -> modify global sim
-			if(type)
-				GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-
-			// Yes -> A new total number of references.
-			type=ptr2()->GetConcept()->GetType();
-			norm1=norm2=Sim=0.0;
-		}
-		norm2+=ptr2()->GetWeight()*ptr2()->GetWeight();
-		ptr2.Next();
-	}
-	// If a type exist -> modify global sim
-	if(type)
-		GlobalSim*=(Sim+Factor)/((sqrt(norm1)*sqrt(norm2))+Factor);
-	return(GlobalSim);
 }
 
 
@@ -368,19 +279,22 @@ void GWeightInfos::Extract(GWeightInfos& dest,const GLang* lang,bool universal)
 void GWeightInfos::AddRefs(tObjType ObjType) const
 {
 	if(!GetNb()) return;
-	GConceptType* type(0);
+	RVectorBool Types(GSession::Get()->GetNbConceptTypes());
+	Types.Init(GSession::Get()->GetNbConceptTypes(),true);
+
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		// Look if the type of the concept have changed since that the last concept treated
-		if(ptr()->GetConcept()->GetType()!=type)
+		GConceptType* type(ptr()->GetConcept()->GetType());
+		size_t TypeId(type->GetId());
+		if(Types[TypeId])
 		{
 			// Yes -> A new object uses this concept type.
-			type=ptr()->GetConcept()->GetType();
 			type->IncRef(ObjType);
+			Types[TypeId]=false;
 		}
 
-		// AddRef for the concept
+		// IncRef for the concept
 		type->IncRef(ptr()->GetConcept(),ObjType);
 	}
 }
@@ -390,19 +304,22 @@ void GWeightInfos::AddRefs(tObjType ObjType) const
 void GWeightInfos::DelRefs(tObjType ObjType) const
 {
 	if(!GetNb()) return;
-	GConceptType* type(0);
+	RVectorBool Types(GSession::Get()->GetNbConceptTypes());
+	Types.Init(GSession::Get()->GetNbConceptTypes(),true);
+
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
 	{
-		// Look if the type of the concept have changed since that the last concept treated
-		if(ptr()->GetConcept()->GetType()!=type)
+		GConceptType* type(ptr()->GetConcept()->GetType());
+		size_t TypeId(type->GetId());
+		if(Types[TypeId])
 		{
-			// Yes -> A new object does not use this concept type anymore.
-			type=ptr()->GetConcept()->GetType();
+			// Yes -> An old object uses this concept type.
 			type->DecRef(ObjType);
+			Types[TypeId]=false;
 		}
 
-		// AddRef for the concept
+		// DecRef for the concept
 		type->DecRef(ptr()->GetConcept(),ObjType);
 	}
 }
@@ -412,8 +329,12 @@ void GWeightInfos::DelRefs(tObjType ObjType) const
 void GWeightInfos::RecomputeIFF(tObjType ObjType)
 {
 	if(!GetNb()) return;
+
+	// Initialize
 	double max(0.0),iff,ref(0.0);
 	GConceptType* type(0);
+	RVector Max(GSession::Get()->GetNbConceptTypes());
+	Max.Init(GSession::Get()->GetNbConceptTypes(),-numeric_limits<double>().max());
 
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
@@ -421,7 +342,10 @@ void GWeightInfos::RecomputeIFF(tObjType ObjType)
 		if(type!=ptr()->GetConcept()->GetType())
 		{
 			type=ptr()->GetConcept()->GetType();
-			max=GetMaxAbsWeight(type);
+			size_t Id(ptr()->GetConcept()->GetType()->GetId());
+			if(Max[Id]==-numeric_limits<double>().max())
+				Max[Id]=GetMaxAbsWeight(type);
+			max=Max[Id];
 			ref=static_cast<double>(type->GetRef(ObjType));
 		}
 		iff=ref/static_cast<double>(ptr()->GetConcept()->GetRef(ObjType));

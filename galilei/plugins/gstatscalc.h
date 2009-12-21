@@ -74,8 +74,9 @@ public:
 	* @param parent          XML tag that will be hold the result.
 	* @param element         Name of the element.
 	* @param val             Value.
+	* @return a pointer to the tag created.
 	*/
-	void AddTag(R::RXMLStruct* xml,R::RXMLTag* parent,R::RString element,double val);
+	R::RXMLTag* AddTag(R::RXMLStruct* xml,R::RXMLTag* parent,R::RString element,double val);
 
 	/**
 	* Add a tag representing an element with a value.
@@ -83,8 +84,9 @@ public:
 	* @param parent          XML tag that will be hold the result.
 	* @param element         Name of the element.
 	* @param val             Value.
+	* @return a pointer to the tag created.
 	*/
-	void AddTag(R::RXMLStruct* xml,R::RXMLTag* parent,R::RString element,R::RString val);
+	R::RXMLTag* AddTag(R::RXMLStruct* xml,R::RXMLTag* parent,R::RString element,R::RString val);
 
 	/**
 	* Destructor of the statistics method.

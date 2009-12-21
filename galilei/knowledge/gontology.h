@@ -110,6 +110,11 @@ public:
 	void ClearRef(tObjType type);
 
 	/**
+	 * @return the number of concept types.
+	 */
+	size_t GetNbConceptTypes(void) const {return(ConceptTypes.GetNb());}
+
+	/**
 	* Get all concept types defined.
 	* @return RCursor over GConceptType.
 	*/

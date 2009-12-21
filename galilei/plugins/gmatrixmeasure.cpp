@@ -282,7 +282,7 @@ void GMatrixMeasure::Measure(size_t measure,...)
 			void* obj2=Session->GetElement(Cols,id2);
 			(*res)=Compute(obj1,obj2);
 			(*Matrix)(id1-1,id2-1)=(*res);
-			if(abs(*res)<CutoffFrequency)
+			if(fabs(*res)<CutoffFrequency)
 				(*res)=0.0;     // High-pass filter
 			AddValue(*res);
 		}
@@ -1019,8 +1019,9 @@ void GMatrixMeasure::UpdateMem(void)
 					void* obj2=Session->GetElement(Cols,Cur2.GetPos()+1,true);
 					if(!obj2)
 						continue;
+
 					double res(Compute(obj1,obj2));
-					if(abs(res)<CutoffFrequency)
+					if(fabs(res)<CutoffFrequency)
 						res=0.0;
 					Cur2()=res;
 					AddValue(Cur2());

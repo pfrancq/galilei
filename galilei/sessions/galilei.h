@@ -50,32 +50,6 @@
 #include <rnotificationcenter.h>
 
 
-//------------------------------------------------------------------------------
-/**
- * \mainpage GALILEI Research Project
- *
- * \section intro_sec Introduction
- *
- * GALILEI is a research and development platform in the field of information
- * science.
- *
- * \section main_classes_sec Main classes
- * The main classes are:
- * - GALILEI::GOntology.
- * - GALILEI::GIndexer
- *
- */
-
-
-//------------------------------------------------------------------------------
-/**
-* \namespace GALILEI
-* \brief GALILEI Classes.
-*
-* This namespace declares all the classes implemented during the GALILEI
-* project.
-*/
-
 
 //------------------------------------------------------------------------------
 namespace GALILEI{

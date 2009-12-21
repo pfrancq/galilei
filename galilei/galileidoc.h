@@ -2,12 +2,11 @@
 
 	GALILEI Research Project
 
-	GStatsCalc.cpp
+	GALILEIDoc.h
 
-	Generic Statistics Method - Implementation.
+	GALILEI Documentation - Header.
 
-	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
-	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2009 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -29,53 +28,50 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R
-#include <rxmlfile.h>
-using namespace R;
+#ifndef GALILEIDOCH
+#define GALILEIDOCH
 
 
 //------------------------------------------------------------------------------
-// include files for GALILEI
-#include <gstatscalc.h>
-#include <rxmlfile.h>
-using namespace GALILEI;
-
+namespace GALILEI{
+//------------------------------------------------------------------------------
 
 
 //------------------------------------------------------------------------------
-//
-//  GStatsCalc
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GStatsCalc::GStatsCalc(GPlugInFactory* fac)
-	: GPlugIn(fac)
-{
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,double val)
-{
-	RXMLTag* tag(new RXMLTag(element));
-	xml->AddTag(parent,tag);
-	tag->InsertAttr("Value",RString::Number(val));
-	return(tag);
-}
-
-
-//------------------------------------------------------------------------------
-RXMLTag* GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,RString val)
-{
-	RXMLTag* tag(new RXMLTag(element));
-	xml->AddTag(parent,tag);
-	tag->InsertAttr("Value",val);
-	return(tag);
-}
+/**
+ * \mainpage GALILEI Research Project
+ *
+ * \section intro_sec Introduction
+ *
+ * GALILEI is a research and development platform in the field of information
+ * science.
+ *
+ * \section galilei_main_classes_sec Main classes
+ * The main classes are:
+ * - GGALILEIApp.
+ * - GSession.
+ *
+ * A new application using the GALILEI platform should define a class
+ * inheriting from GGALILEIApp. This class will manage the plug-ins and their
+ * configurations. A global variable GALILEIApp is created.
+ *
+ * To work on a given "world" (a given set of documents and profiles), the
+ * application should create a session through GALILEIApp.CreateSession. To
+ * delete the session, GALILEIApp.DeleteSession should be called.
+ */
 
 
 //------------------------------------------------------------------------------
-GStatsCalc::~GStatsCalc(void)
-{
-}
+/**
+* \namespace GALILEI
+* \brief GALILEI Classes.
+*
+* This namespace declares all the classes implemented during the GALILEI
+* project.
+*/
+
+
+}  //-------- End of namespace GALILEI -----------------------------------------
+
+//------------------------------------------------------------------------------
+#endif

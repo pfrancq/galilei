@@ -471,7 +471,12 @@ public:
 			return(0);
 		plugin* plug=List->Current->GetPlugIn<plugin>();
 		if((!plug)&&need)
-			ThrowGException("No active plug-in available for '"+Name+"'");
+		{
+			if(PluginsType==ptListSelect)
+				ThrowGException("plug-in '"+List->Current->GetName()+"' of '"+list+"' is not enabled");
+			else
+				ThrowGException("plug-in '"+List->Current->GetName()+"' of '"+Name+"' is not enabled");
+		}
 		return(plug);
 	}
 

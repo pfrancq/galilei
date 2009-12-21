@@ -68,7 +68,7 @@ GObject* GOntology::GetObject(size_t id,tObjType objtype)
 			return(Concepts[id]);
 
 		default:
-			throw GException("GOntology::GetObject(size_t,tObjType): '"+GetObjType(objtype)+"' is not a valid type");
+			ThrowGException("'"+GetObjType(objtype)+"' is not a valid type");
 	}
 }
 
@@ -101,7 +101,7 @@ GConceptType* GOntology::GetConceptType(char id,bool null)
 	{
 	}
 	if((!type)&&(!null))
-		throw GException("GSession::GetConceptType(size_t,bool): Unknown concept type "+RString::Number(id));
+		ThrowGException("Unknown concept type "+RString::Number(id));
 	return(type);
 }
 
@@ -118,7 +118,7 @@ GConceptType* GOntology::GetConceptType(const RString& name,bool null)
 	{
 	}
 	if((!type)&&(!null))
-		throw GException("GSession::GetConceptType(const RString&,bool); Unknown concept type '"+name+"'");
+		ThrowGException("Unknown concept type '"+name+"'");
 	return(type);
 }
 
@@ -205,9 +205,11 @@ R::RCursor<GConcept> GOntology::GetConcepts(void) const
 //------------------------------------------------------------------------------
 GConcept* GOntology::GetConcept(size_t id)
 {
+	if(id>Concepts.GetMaxPos())
+		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
 	GConcept* concept(Concepts[id]);
 	if(!concept)
-		throw GException("GOntology::GetConcept(size_t) : '"+RString::Number(id)+"' is not a valid concept identifier");
+		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
 	return(concept);
 }
 
@@ -216,7 +218,7 @@ GConcept* GOntology::GetConcept(size_t id)
 void GOntology::DeleteConcept(GConcept* concept)
 {
 	if((!concept)||(!concept->GetType()))
-		throw GException("GOntology::DeleteConcept: Cannot delete concept");
+		ThrowGException("Cannot delete concept");
 	Storage->DeleteConcept(concept);
 	concept->GetType()->DeletePtr(*concept);
 	Concepts.DeletePtrAt(concept->GetId(),false);
@@ -227,7 +229,7 @@ void GOntology::DeleteConcept(GConcept* concept)
 GConcept* GOntology::RenameConcept(GConcept* concept,const R::RString& name)
 {
 	if((!concept)||(!concept->GetType()))
-		throw GException("GOntology::RenameConcept: Cannot rename concept");
+		ThrowGException("Cannot rename concept");
 
 	// Look if the new name is not  already in the dictionary
 	GConcept* ptr=concept->GetType()->GetPtr(name);
@@ -269,7 +271,7 @@ GPredicate* GOntology::GetPredicate(size_t id,bool null)
 	if(!type)
 	{
 		if(!null)
-			throw GException("Unknown relation type "+RString::Number(id));
+			ThrowGException("Unknown relation type "+RString::Number(id));
 		return(0);
 	}
 	return(type);
@@ -283,7 +285,7 @@ GPredicate* GOntology::GetPredicate(const RString& name,bool null)
 	if(!type)
 	{
 		if(!null)
-			throw GException("Unknown relation type "+name);
+			ThrowGException("Unknown relation type "+name);
 		return(0);
 	}
 	return(type);
@@ -322,17 +324,17 @@ void GOntology::InsertStatement(size_t id,size_t subject,tObjType subjecttype,si
 	// Get the concept related to the subject
 	GObject* Subject(GetObject(subject,subjecttype));
 	if(!Subject)
-		throw GException("Object "+RString::Number(subject)+" does not exist");
+		ThrowGException("Object "+RString::Number(subject)+" does not exist");
 
 	// Get the concept related to the object
 	GObject* Object(GetObject(object,objecttype));
 	if(!Object)
-		throw GException("Object "+RString::Number(object)+" does not exist");
+		ThrowGException("Object "+RString::Number(object)+" does not exist");
 
 	// Find the predicate
 	GPredicate* Predicate(PredicatesByIds[predicate]);
 	if(!Predicate)
-		throw GException("Predicate "+RString::Number(predicate)+" does not exist");
+		ThrowGException("Predicate "+RString::Number(predicate)+" does not exist");
 
 	// Insert the statement
 	bool InDirect(true);
@@ -356,7 +358,7 @@ GStatement* GOntology::GetStatement(size_t id)
 {
 	GStatement* Statement(Statements[id]);
 	if(!Statement)
-		throw GException("'"+RString::Number(id)+"' is not a valid concept identifier");
+		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
 	return(Statement);
 }
 

@@ -175,14 +175,6 @@ public:
 	double GetMaxAbsWeight(GConceptType* type) const;
 
 	/**
-	* Compute a similarity between two lists of weighted information entities.
-	* The method uses the cosines of the corresponding vectors build directly
-	* from the lists. If one of the list is empty, the similarity is null.
-	* @param w              Pointer to a list of weighted information entities.
-	*/
-	double Similarity(const GWeightInfos& w) const;
-
-	/**
 	 * @return the inclusion factor of the lists of weighted information
 	 * entities. The methods computes a ratio (weighted by the tf-idf factors)
 	 * of the elements of the first list being in the second one.
