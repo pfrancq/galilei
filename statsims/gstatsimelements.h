@@ -135,15 +135,26 @@ protected:
 	 */
 	bool Neg;
 
+	/**
+	 * Type of the first objects.
+	 */
+	tObjType ObjType1;
+
+	/**
+	 * Type of the second objects.
+	 */
+	tObjType ObjType2;
+
 public:
 
 	/**
 	* Constructor.
 	* @param ses            The GALILEI session.
-	* @param same           Same objects?
+	* @param objtype1       Type of the first objects.
+	* @param objtype2       Type of the second objects.
 	* @param f              File.
 	*/
-	GStatSimElements(GSession* ses,bool same,R::RTextFile* f);
+	GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,R::RTextFile* f);
 
 	/**
 	 * Cursor over the first type of objects.
@@ -161,6 +172,8 @@ public:
 	* Compute the similarities statistics.
 	*/
 	void Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag);
+
+	void AnalyzeObjs(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* parent,size_t id1,size_t id2);
 
 	/**
 	 * Compute the similarities for a given subject.
@@ -184,9 +197,52 @@ public:
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,bool same,RTextFile* f)
-	: Session(ses), Results(f), Centers(50), SameObjects(same)
+	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,RTextFile* f)
+	: Session(ses), Results(f), Centers(50), SameObjects(objtype1==objtype2),
+	  ObjType1(objtype1), ObjType2(objtype2)
 {
+}
+
+
+//------------------------------------------------------------------------------
+template<class E1,class E2>
+	void GStatSimElements<E1,E2>::AnalyzeObjs(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* parent,size_t id1,size_t id2)
+{
+	GWeightInfosObj* Obj1(static_cast<GWeightInfosObj*>(Session->GetElement(ObjType1,id1)));
+	GWeightInfosObj* Obj2(static_cast<GWeightInfosObj*>(Session->GetElement(ObjType2,id2)));
+	calc->AddTag(xml,parent,"Intra",Obj1->GetName());
+	calc->AddTag(xml,parent,"Extra",Obj2->GetName());
+
+	// See the common words
+	RCursor<GWeightInfo> Vec1(Obj1->GetVector().GetInfos());
+	RCursor<GWeightInfo> Vec2(Obj2->GetVector().GetInfos());
+	Vec1.Start();
+	Vec2.Start();
+	while(!Vec1.End())
+	{
+		// Parse all the elements of Vec2 with an identifier lower than the current element of Vec1
+		while((!Vec2.End())&&(Vec2()->GetId()<Vec1()->GetId()))
+			Vec2.Next();
+
+		// Verify if both elements are identical
+		if((!Vec2.End())&&(Vec2()->GetId()==Vec1()->GetId()))
+		{
+			// Print the word
+			RString Value1(RString::Number(Vec1()->GetWeight()));
+			RString Value2(RString::Number(Vec2()->GetWeight()));
+			RString Idf;
+			if(SameObjects)
+			{
+				Idf=","+RString::Number(Vec1()->GetConcept()->GetIF(ObjType1));
+				//Idf=","+Idf;
+			}
+
+			calc->AddTag(xml,parent,Vec1()->GetConcept()->GetName(),Value1+","+Value2+Idf);
+		}
+
+		// Next element of Vec1
+		Vec1.Next();
+	}
 }
 
 
@@ -198,7 +254,7 @@ template<class E1,class E2>
 	double SimExtra(0.0);         // Extra-similarity of the cluster
 	double SimEIntra(0.0);        // Intra-similarity of the element
 	double SimEExtra(0.0);        // Extra-similarity of the element
-	double MaxSimIntra(-2.0);     // Maximal intra-similarity
+	double MaxSimIntra(-2.0);     // Maximal intra-similarity in the current cluster
 	double tmp;
 	double LRie(0.0),LLocalRie(0.0),LFrac(0.0),LLocalFrac(0.0);
 	size_t nbIntra(0);            // Number of element Intra of the cluster
@@ -207,6 +263,8 @@ template<class E1,class E2>
 	size_t nbEExtra;              // Number of element Extra of the element
 	double MinIntra(2.0);
 	double MaxExtra(-2.0);
+	size_t IdIntraMax;         // Name of the intra-element corresponding to the maximal extra-similarity.
+	size_t IdExtraMax;         // Name of the extra-element corresponding to the maximal extra-similarity.
 	double LOverlap(0.0);
 	size_t LNbElements(0);
 	E1* Center(0);                // Center of the subject
@@ -260,7 +318,12 @@ template<class E1,class E2>
 				nbEExtra++;
 				SimExtra+=tmp;
 				SimEExtra+=tmp;
-				if(tmp>MaxExtra) MaxExtra=tmp;
+				if(tmp>MaxExtra)
+				{
+					MaxExtra=tmp;
+					IdIntraMax=Cur1()->GetId();
+					IdExtraMax=Cur2()->GetId();
+				}
 				if(tmp>max) max=tmp;
 			}
 		}
@@ -329,7 +392,8 @@ template<class E1,class E2>
 	{
 		SimExtra/=static_cast<double>(nbExtra);
 		MeanExtra+=SimExtra;
-		calc->AddTag(xml,Tag,"Max Extra",MaxExtra);
+		RXMLTag* max(calc->AddTag(xml,Tag,"Max Extra",MaxExtra));
+		AnalyzeObjs(calc,xml,max,IdIntraMax,IdExtraMax);
 		calc->AddTag(xml,Tag,"Mean Extra",SimExtra);
 	}
 

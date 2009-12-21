@@ -73,7 +73,7 @@ using namespace std;
 class GStatSimDocs : public GStatSimElements<GDoc,GDoc>
 {
 public:
-	GStatSimDocs(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,true,f)
+	GStatSimDocs(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,otDoc,otDoc,f)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
 	}
@@ -96,7 +96,7 @@ class GStatSimProfiles : public GStatSimElements<GProfile,GProfile>
 {
 public:
 
-	GStatSimProfiles(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GProfile>(ses,true,f)
+	GStatSimProfiles(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GProfile>(ses,otProfile,otProfile,f)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
 	}
@@ -121,7 +121,7 @@ class GStatSimDocGrp : public GStatSimElements<GDoc,GCommunity>
 
 public:
 
-	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GCommunity>(ses,false,f), Com(1)
+	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GCommunity>(ses,otDoc,otCommunity,f), Com(1)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Groups Similarities");
 	}
@@ -145,7 +145,7 @@ class GStatSimDocProf : public GStatSimElements<GDoc,GProfile>
 {
 public:
 
-	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GProfile>(ses,false,f)
+	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GProfile>(ses,otDoc,otProfile,f)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Profiles Similarities");
 	}
@@ -170,7 +170,7 @@ class GStatSimProfGrp : public GStatSimElements<GProfile,GCommunity>
 
 public:
 
-	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GCommunity>(ses,false,f), Com(1)
+	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GCommunity>(ses,otProfile,otCommunity,f), Com(1)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles/Groups Similarities");
 	}
