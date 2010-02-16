@@ -57,7 +57,7 @@ void RunGALILEIProgram::Run(void)
 	Init();
 
 	cout<<"UpGALILEI Version "<<1.98<<endl;
-	cout<<"Copyright 1999-2009 by the Paul Otlet Institute"<<endl;
+	cout<<"Copyright 1999-2010 by the Paul Otlet Institute"<<endl;
 
 	// Look if a program must be executed or a console mode launched
 	RString Prg(GetParamValue("run"));
