@@ -6,7 +6,7 @@
 
 	Feedback-based Profile Computing Method - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -51,6 +51,7 @@ using namespace R;
 #include <gweightinfo.h>
 #include <glang.h>
 #include <gsession.h>
+#include <gfdbk.h>
 using namespace GALILEI;
 
 
@@ -123,7 +124,7 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 	{
 		// If the assessment of the document is not relevant
 		// -> don't treat for the profiles computing
-		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & djOutScope)) continue;
+		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & ftIrrelevant)) continue;
 
 		// If incremental mode and document has no change -> continue
 		if(IncrementalMode&&(!Docs()->MustUse(Profile))) continue;
@@ -135,12 +136,12 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 		// Find list in function of the feedback
 		switch(Docs()->GetFdbk())
 		{
-			case djOK:
+			case ftRelevant:
 				NbDocsRel++;
 				Cur=&Vectors;
 				break;
 
-			case djKO:
+			case ftFuzzyRelevant:
 				NbDocsFuzzy++;
 				Cur=&VectorsFuzzy;
 				break;
