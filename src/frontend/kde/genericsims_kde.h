@@ -6,7 +6,7 @@
 
 	Generic Similarity Measure (KDE Part) - Implementation.
 
-	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
 	Copyright 2003-2007 by the Université Libre de Bruxelles (ULB).
 
