@@ -6,8 +6,8 @@
 
 	Romanian Language - Header.
 
-	Copyright 2001-2009 by the Snowball Project.
-	Copyright 2008-2009 by Pascal Francq.
+	Copyright 2001-2010 by the Snowball Project.
+	Copyright 2008-2010 by Pascal Francq.
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public

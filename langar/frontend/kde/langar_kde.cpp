@@ -6,7 +6,7 @@
 
 	Arabic Language (KDE Part) - Implementation.
 
-	Copyright 2004-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2004-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2004 by David Wartel.
 	Copyright 2004 by Sarah Rolfo.
 	Copyright 2004-2008 by the Université Libre de Bruxelles (ULB).
@@ -55,7 +55,7 @@ void About(void)
 {
 	KAboutData aboutData( "ar", 0, ki18n("Arabic Language"),
 		"1.5", ki18n("This is the Arabic language plug-in using a Porter-based stemming algorithm"), KAboutData::License_GPL,
-		ki18n("(C) 2004-2009 by Pascal Francq\n(C) 2004 by David Wartel and Sarah Rolfo\n(c) 2004-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2004-2010 by Pascal Francq\n(C) 2004 by David Wartel and Sarah Rolfo\n(c) 2004-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
 	aboutData.addAuthor(ki18n("Sarah Rolfo"),ki18n("Linguist"));
