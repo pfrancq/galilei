@@ -87,7 +87,7 @@ void GWeightInfosObj::SetState(tObjState state)
 void GWeightInfosObj::SetId(size_t id)
 {
 	if(id==R::cNoRef)
-		throw GException("Cannot assign cNoRef to a "+GALILEI::GetObjType(ObjType));
+		ThrowGException("Cannot assign cNoRef to a "+GALILEI::GetObjType(ObjType,false,false));
 	Id=id;
 	Emit(GEvent::eObjNew);
 }

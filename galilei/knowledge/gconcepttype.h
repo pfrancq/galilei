@@ -6,7 +6,7 @@
 
 	Concept Type - Header.
 
-	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -41,7 +41,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gdebugobject.h>
+#include <gobject.h>
 
 
 //-----------------------------------------------------------------------------
@@ -60,7 +60,7 @@ namespace GALILEI{
 * @param author Pascal Francq
 * @param short Concept Type.
 */
-class GConceptType : public GDebugObject, protected R::RDblHashContainer<GConcept,false>
+class GConceptType : public GObject, protected R::RDblHashContainer<GConcept,false>
 {
 private:
 
@@ -68,11 +68,6 @@ private:
 	 * Ontology.
 	 */
 	GOntology* Ontology;
-
-	/**
-	* Identifier of the concept type.
-	*/
-	char Id;
 
 	/**
 	* Short description of the type.
@@ -121,7 +116,7 @@ public:
 	* @param lang            Language eventually associated to the concept type.
 	* @param s               Size of the second hash table.
 	*/
-	GConceptType(char id,GOntology* ontology,const R::RString& name,const R::RString& desc,GLang* lang,size_t s);
+	GConceptType(size_t id,GOntology* ontology,const R::RString& name,const R::RString& desc,GLang* lang,size_t s);
 
 	/**
 	* Set the references of a given language. This method is called when
@@ -156,17 +151,6 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	* Set the Identifier of the concept type.
-	* @param id              Identifier.
-	*/
-	void SetId(char id);
-
-	/**
-	* Get the identifier.
-	*/
-	char GetId(void) const {return(Id);}
-
-	/**
 	* Get the description.
 	*/
 	R::RString GetDescription(void) const {return(Description);}
@@ -181,13 +165,6 @@ public:
 	 * is universal, returns 0.
 	 */
 	GLang* GetLang(void) const {return(Lang);}
-
-	/**
-	 * Build some debugging information.
-	 * @param info           Description of the information needed ("idf","itf"
-	 *                       ,"ipf" or "icf" are allowed).
-	 */
-	virtual void DebugInfo(const R::RString& info);
 
 	/**
 	* Get a cursor over the main hash table.

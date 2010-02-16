@@ -1,14 +1,16 @@
 SET(galilei_profiles_INST_INCLUDES
-	gprofilecalc.h
-	gprofile.h
+	gfdbk.h
 	guser.h
+	gprofile.h
+	gprofilecalc.h	
 	glinkcalc.h
 )
 
 
 SET(galilei_profiles_TARGET_SOURCES
-	gprofilecalc.cpp
-	gprofile.cpp
+	gfdbk.cpp
 	guser.cpp
+	gprofile.cpp
+	gprofilecalc.cpp	
 	glinkcalc.cpp
 )

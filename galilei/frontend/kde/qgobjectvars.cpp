@@ -6,7 +6,7 @@
 
 	Widget to show the variables of a given object - Implementation.
 
-	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2010 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -100,6 +100,7 @@ void QGObjectVars::Set(GCommunity* community)
 void QGObjectVars::Set(GProfile* profile)
 {
 	AddVar("Identifier",profile->GetId());
+	AddVar("Type",GetProfileType(profile->GetProfileType(),true,false));
 	AddVar("Social",profile->IsSocial());
 	AddVar("Last Updated",profile->GetUpdated());
 	AddVar("Last Computed",profile->GetComputed());
@@ -156,7 +157,7 @@ void QGObjectVars::AddVar(const QString& var,bool value)
 //------------------------------------------------------------------------------
 void QGObjectVars::AddVar(const QString& var,const tObjState value)
 {
-	new QTreeWidgetItem(static_cast<Ui_QGObjectVars*>(Ui)->Vars,QStringList()<<var<<ToQString(GetState(value)));
+	new QTreeWidgetItem(static_cast<Ui_QGObjectVars*>(Ui)->Vars,QStringList()<<var<<ToQString(GetState(value,true)));
 }
 
 

@@ -6,7 +6,7 @@
 
 	Document - Header.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -350,10 +350,9 @@ private:
 	* @param ram             Must the information be maintained is RAM.
 	* @param delref          Delete the references (must be set to true if the
 	*                        document has already a description).
-	* @param index           Must the document be indexed ?
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref,bool index);
+	void Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref);
 
 public:
 

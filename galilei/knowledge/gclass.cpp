@@ -30,6 +30,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gclass.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -81,8 +82,12 @@ int GClass::Compare(const size_t id) const
 
 
 //------------------------------------------------------------------------------
-void GClass::Update(GWeightInfos& infos)
+void GClass::Update(GSession* session,GWeightInfos& infos)
 {
+	// Remove its references
+	DelRefs(otClass);
+	session->UpdateRefs(infos,otClass,Id,false);
+
 	// Assign information
 	GWeightInfosObj::Clear();
 	State=osUpdated;
@@ -90,6 +95,10 @@ void GClass::Update(GWeightInfos& infos)
 
 	// Clear infos
 	infos.Clear();
+
+	// Update its references
+	AddRefs(otClass);
+	session->UpdateRefs(infos,otClass,Id,true);
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);

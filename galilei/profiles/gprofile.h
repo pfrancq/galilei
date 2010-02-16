@@ -4,9 +4,9 @@
 
 	GProfile.h
 
-	Profile - Implementation.
+	Profile - Header.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -46,142 +46,11 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GFdbk class provides a representation for assessment on a document.
-* @author Pascal Francq
-* @short Document Assessment.
-*/
-class GFdbk
-{
-	/**
-	* Identifier of the document assessed.
-	*/
-	size_t DocId;
-
-	/**
-	* Assessment of the profile.
-	*/
-	tDocAssessment Fdbk;
-
-	/**
-	* When the assessment was made.
-	*/
-	R::RDate When;
-
-	/**
-	* Date of the last computation of the document when it was modified.
-	*/
-	R::RDate Computed;
-
-public:
-
-	/**
-	* Constructor.
-	* @param docid           Identifier of the document.
-	* @param fdbk            Assessment.
-	* @param when            Date.
-	* @param computed        Last computation.
-	*/
-	GFdbk(size_t docid,tDocAssessment fdbk,const R::RDate& when,const R::RDate& computed);
-
-	/**
-	* Compare two assessments to order them using the document identifier.
-	* @see R::RContainer
-	* @param fdbk            Assessment.
-	* @return int
-	*/
-	int Compare(const GFdbk& fdbk) const;
-
-	/**
-	* Compare two assessments to order them using the document identifier.
-	* @see R::RContainer
-	* @param fdbk            Pointer to an assessment.
-	* @return int
-	*/
-	int Compare(const GFdbk* fdbk) const;
-
-	/**
-	* Compare the document assessed with another document using their
-	* identifiers.
-	* @see R::RContainer
-	* @param id              Identifier of the document.
-	* @return int
-	*/
-	int Compare(const size_t id) const;
-
-	/**
-	* New assessment.
-	* @param fdbk            Assessment.
-	* @param date            Date.
-	*/
-	void NewFdbk(tDocAssessment fdbk,const R::RDate& date);
-
-	/**
-	* Get the assessment for the document.
-	* @returns Profile's assessment.
-	*/
-	tDocAssessment GetFdbk(void) const {return(Fdbk);}
-
-	/**
-	* Get the identifier of the document assessed.
-	* @returns size_t.
-	*/
-	size_t GetDocId(void) const {return(DocId);}
-
-	/**
-	* Get the date of the assessment on the document.
-	* @returns R::RDate.
-	*/
-	R::RDate GetWhen(void) const;
-
-	/**
-	* Get the date of last computation of the document.
-	* @returns R::RDate.
-	*/
-	R::RDate GetComputed(void) const;
-
-	/**
-	* Must the assessment be used to compute a profile.
-	* @param profile         profile.
-	*/
-	bool MustUse(const GProfile* profile) const;
-
-	/**
-	* The document assessed was updated.
-	*/
-	void HasUpdate(void);
-
-	/**
-	* Create an erroneous assessment with a given percentage. The percentage
-	* represents the number of assessments that will be changed in comparison to
-	* the original.
-	*
-	* The changed assessment depends on the original assessment :
-	* - If the original assessment is relevant, the changed assessment has a
-	*   probability of 0.75 to be fuzzy relevant and a probability of 0.25 to be
-	*   irrelevant.
-	* - If the original assessment is fuzzy relevant, the changed assessment has
-	*   a probability of 0.5 to be relevant and a probability of 0.5 to be
-	*   irrelevant.
-	* - If the original assessment is irrelevant, the changed assessment has a
-	*   probability of 0.75 to be fuzzy relevant and a probability of 0.25 to be
-	*   relevant.
-	* @param fdbk            Original assessment.
-	* @param PercErr         Percentage of error.
-	* @param rand            Pointer to the random number generator to use.
-	* @returns tDocAssessment
-	*/
-	static tDocAssessment ErrorJudgment(tDocAssessment fdbk,double PercErr,R::RRandom* rand);
-
-	/*
-	* Destruct the feedback.
-	*/
-	~GFdbk(void);
-};
-
-
-//------------------------------------------------------------------------------
-/**
-* The GProfile class provides a representation of a profile.
+* The GProfile class provides a representation of a profile, i.e. a description
+* of some knowledge attached to people. This can be an interest, an expertise,
+* etc.
+*
+* Each profile is associated to a set feedbacks on documents.
 * @author Pascal Francq
 * @short Profile.
 */
@@ -193,6 +62,11 @@ protected:
 	* The owner of the profile.
 	*/
 	GUser* User;
+
+	/**
+	 * Type of the profile.
+	 */
+	tProfileType Type;
 
 	/**
 	* Documents assessed by profile.
@@ -240,16 +114,18 @@ public:
     /**
 	* Construct a new profile.
 	* @param usr             User of the profile.
+	* @param type            Type of the profile.
 	* @param name            Name of the profile.
 	* @param s               Social?
 	*/
-	GProfile(GUser* usr,const R::RString name,bool s);
+	GProfile(GUser* usr,tProfileType type,const R::RString name,bool s);
 
     /**
 	* Construct a profile.
 	* @param usr             User of the profile.
+	* @param type            Type of the profile.
 	* @param id              Identifier of the profile.
-	* @param blockid        Identifier of the block.
+	* @param blockid         Identifier of the block.
 	* @param name            Name of the profile.
 	* @param grpid           Community identifier.
 	* @param a               Date where it was attached.
@@ -260,7 +136,8 @@ public:
 	* @param level           Level of the profile.
 	* @param nbf             Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,size_t id,size_t blockid,const R::RString name,size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,double score,char level,size_t nbf);
+	GProfile(GUser* usr,tProfileType type,size_t id,size_t blockid,const R::RString name,
+			 size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,double score,char level,size_t nbf);
 
 	/**
 	* Compare two profiles by comparing their identifier.
@@ -285,6 +162,11 @@ public:
 	* @return int
 	*/
 	int Compare(const size_t id) const;
+
+	/**
+	 * @return the type of the profile.
+	 */
+	tProfileType GetProfileType(void) const {return(Type);}
 
 	/**
 	 * Set the name of the profile.
@@ -398,26 +280,27 @@ public:
 	R::RCursor<GFdbk> GetFdbks(void) const;
 
 	/**
-	* Insert an assessment to the list of the profile.
+	* Add a feedback to the list of the profile.
 	* @param docid           Identifier of the document.
-	* @param assess          Assessment.
+	* @param fdbk            Feedback type.
 	* @param date            Date.
 	* @param update          Last update of the document.
 	*/
-	void InsertFdbk(size_t docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update);
+	void AddFdbk(size_t docid,tFdbkType fdbk,const R::RDate& date,const R::RDate& update);
 
 	/**
-	* Delete an assessment from the list of the profile.
+	* Delete a feedback from the list of the profile.
 	* @param docid           Identifier of the document.
 	*/
 	void DeleteFdbk(size_t docid);
 
 	/**
 	* Assign a new description to the profile.
+	* @param session         Session.
 	* @param infos            Pointer to the information.
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GWeightInfos& infos);
+	void Update(GSession* session,GWeightInfos& infos);
 
 	/**
 	* Clear the assessment of the profile.

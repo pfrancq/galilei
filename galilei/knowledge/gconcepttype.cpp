@@ -6,7 +6,7 @@
 
 	Concept Type - Implementation.
 
-	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -54,10 +54,10 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConceptType::GConceptType(char id,GOntology* ontology,const RString& name,const RString& desc,GLang* lang,size_t s)
-	: GDebugObject(name), RDblHashContainer<GConcept,false>(27,27,s,s/4),
-	  Ontology(ontology), Id(id),
-	  Description(desc), Lang(lang), NbRefDocs(0), NbRefProfiles(0), NbRefCommunities(0), NbRefTopics(0), NbRefClasses(0)
+GConceptType::GConceptType(size_t id,GOntology* ontology,const RString& name,const RString& desc,GLang* lang,size_t s)
+	: GObject(id,name,otConceptType), RDblHashContainer<GConcept,false>(27,27,s,s/4),
+	  Ontology(ontology), Description(desc), Lang(lang), NbRefDocs(0), NbRefProfiles(0),
+	  NbRefCommunities(0), NbRefTopics(0), NbRefClasses(0)
 {
 }
 
@@ -91,78 +91,6 @@ int GConceptType::Compare(const GConceptType* type) const
 int GConceptType::Compare(const R::RString& name) const
 {
 	return(Name.Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-void GConceptType::SetId(char id)
-{
-	Id=id;
-}
-
-
-//------------------------------------------------------------------------------
-void GConceptType::DebugInfo(const RString& info)
-{
-	// Look what to do
-	bool Idf=(info.FindStr("idf")!=-1);
-	bool Ipf=(info.FindStr("ipf")!=-1);
-	bool Icf=(info.FindStr("icf")!=-1);
-	bool Itf=(info.FindStr("itf")!=-1);
-	bool Iclf=(info.FindStr("iclf")!=-1);
-	if((!Idf)&&(!Ipf)&&(!Icf)&&(!Itf)&&(!Iclf))
-		return;
-
-	RString str("id\tname                            ");
-	GetDebug()->BeginTag("conceptType","name=\""+Name+"\"");
-	if(Idf)
-		str+="\tidf";
-	if(Ipf)
-		str+="\tipf";
-	if(Icf)
-		str+="\ticf";
-	if(Itf)
-		str+="\titf";
-	if(Iclf)
-		str+="\ticlf";
-	GetDebug()->PrintComment(str);
-
-    // Parse the double hash table
-    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(GetCursor());
-    for(Cur.Start();!Cur.End();Cur.Next())
-    {
-       RCursor<RDblHashContainer<GConcept,false>::Hash2> Cur2(*Cur());
-       for(Cur2.Start();!Cur2.End();Cur2.Next())
-       {
-          RCursor<GConcept> Cur3(*Cur2());
-          for(Cur3.Start();!Cur3.End();Cur3.Next())
-          {
-        	  if(!Cur3()) continue;
-
-        	  // Suppose we reserved 32 characters for names
-        	  str=RString::Number(Cur3()->GetId());
-        	  RString name=Cur3()->GetName();
-        	  str+="\t"+name;
-        	  if(name.GetLen()<32)
-        	  {
-        		  for(size_t j=32-name.GetLen()+1;--j;)
-        			  str+=' ';
-        	  }
-        	  if(Idf)
-        		  str+="\t"+RString::Number(Cur3()->GetIF(otDoc));
-        	  if(Ipf)
-        		  str+="\t"+RString::Number(Cur3()->GetIF(otProfile));
-        	  if(Icf)
-        		  str+="\t"+RString::Number(Cur3()->GetIF(otCommunity));
-        	  if(Itf)
-        		  str+="\t"+RString::Number(Cur3()->GetIF(otTopic));
-        	  if(Iclf)
-        		  str+="\t"+RString::Number(Cur3()->GetIF(otClass));
-        	  GetDebug()->PrintComment(str);
-          }
-       }
-    }
-	GetDebug()->EndTag("conceptType");
 }
 
 
@@ -207,7 +135,7 @@ void GConceptType::IncRef(tObjType ObjType)
 			NbRefClasses++;
 			nb=NbRefClasses;
 		default:
-			ThrowGException("'"+GetObjType(ObjType)+"' is not a valid type");
+			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 	if(Ontology->SaveResults)
@@ -253,7 +181,7 @@ void GConceptType::DecRef(tObjType ObjType)
 			nb=NbRefClasses;
 			break;
 		default:
-			ThrowGException("'"+GetObjType(ObjType)+"' is not a valid type");
+			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 	if(Ontology->SaveResults)
@@ -285,7 +213,7 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 			return(NbRefDocs+NbRefProfiles+NbRefCommunities+NbRefTopics+NbRefClasses);
 			break;
 		default:
-			ThrowGException("'"+GetObjType(ObjType)+"' is not a valid type");
+			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 	return(0);
@@ -329,7 +257,7 @@ void GConceptType::ClearRef(tObjType ObjType)
 			NbRefClasses=0;
 			break;
 		default:
-			ThrowGException("'"+GetObjType(ObjType)+"' is not a valid type");
+			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 

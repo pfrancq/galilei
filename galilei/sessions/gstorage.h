@@ -6,7 +6,7 @@
 
 	Generic Storage Manager - Header.
 
-	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -396,14 +396,14 @@ public:
 	virtual void SaveProfile(GProfile* prof)=0;
 
 	/**
-	* Add an assessment for a given profile and document.
+	* Add a feedback for a given profile and document.
 	* @param profid          Identifier of the profile.
 	* @param docid           Identifier of the document.
-	* @param assess          Feedback.
+	* @param fdbk            Feedback type.
 	* @param date            Date on the last feedback.
 	* @param computed        Date on the last computation of the document.
 	*/
-	virtual void AddFdbk(size_t profid,size_t docid,tDocAssessment assess,R::RDate date,R::RDate computed)=0;
+	virtual void AddFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate date,R::RDate computed)=0;
 
 
 	// @} Users/Profiles

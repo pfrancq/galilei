@@ -100,10 +100,11 @@ private:
 
 	/**
 	* Assign a new description to the class.
+	* @param session         Session.
 	* @param infos           Pointer to the information.
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GWeightInfos& infos);
+	void Update(GSession* session,GWeightInfos& infos);
 
 public:
 

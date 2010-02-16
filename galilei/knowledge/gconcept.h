@@ -6,7 +6,7 @@
 
 	Concept - Header.
 
-	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -70,7 +70,7 @@ protected:
 	double IfDocs;
 
 	/**
-	 * Identifier of the block in the inverted file.
+	 * Identifier of the block in the inverted file for the documents.
 	 */
 	size_t IndexDocs;
 
@@ -85,6 +85,11 @@ protected:
 	double IfProfiles;
 
 	/**
+	 * Identifier of the block in the inverted file for the profiles.
+	 */
+	size_t IndexProfiles;
+
+	/**
 	* Number of references in communities.
 	*/
 	size_t NbRefCommunities;
@@ -93,6 +98,11 @@ protected:
 	 * Inverse factor for communities.
 	 */
 	double IfCommunities;
+
+	/**
+	 * Identifier of the block in the inverted file for the communities.
+	 */
+	size_t IndexCommunities;
 
 	/**
 	 * Number of references in topics.
@@ -105,6 +115,11 @@ protected:
 	double IfTopics;
 
 	/**
+	 * Identifier of the block in the inverted file for the topics.
+	 */
+	size_t IndexTopics;
+
+	/**
 	 * Number of references in classes.
 	 */
 	size_t NbRefClasses;
@@ -113,6 +128,11 @@ protected:
 	 * Inverse factor for classes.
 	 */
 	double IfClasses;
+
+	/**
+	 * Identifier of the block in the inverted file for the classes.
+	 */
+	size_t IndexClasses;
 
 public:
 
@@ -135,13 +155,27 @@ public:
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	* @param refdocs         Number of documents referenced.
-	* @param indexdocs       Identifier of the block the inverted file related to the documents.
+	* @param idxdocs         Identifier of the block the inverted file related
+	*                        to the documents.
 	* @param refprofiles     Number of profiles referenced.
+	* @param idxprofiles     Identifier of the block the inverted file related
+	*                        to the profiles.
 	* @param refcommunities  Number of communities referenced.
+	* @param idxcommunities  Identifier of the block the inverted file related
+	*                        to the communities.
 	* @param reftopics       Number of topics referenced.
+	* @param idxtopics       Identifier of the block the inverted file related
+	*                        to the topics.
 	* @param refclasses      Number of classes referenced.
+	* @param idxclasses      Identifier of the block the inverted file related
+	*                        to the classes.
 	*/
-	GConcept(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,size_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics,size_t refclasses);
+	GConcept(size_t id, const R::RString& name, GConceptType* type,
+			size_t refdocs, size_t idxdocs,
+			size_t refprofiles, size_t idxprofiles,
+			size_t refcommunities, size_t idxcommunities,
+			size_t reftopics, size_t idxtopics,
+			size_t refclasses,size_t idxclasses);
 
 	/**
 	* Compare two concepts.
@@ -156,6 +190,11 @@ public:
 	* @see R::RContainer
 	*/
 	int Compare(const R::RString& name) const;
+
+	/**
+	* @return the type of the object.
+	*/
+	virtual tObjType GetObjType(void) const {return(otConcept);}
 
 	/**
 	 * Do a deep copy of the current concept.
@@ -183,6 +222,19 @@ public:
 	void SetId(size_t id);
 
 private:
+
+	/**
+	 * @return the index of the concept for a given object type.
+	 * @param ObjType        Type of the reference.
+	 */
+	size_t GetIndex(tObjType ObjType) const;
+
+	/**
+	 * Set the index of the concept for a given object type.
+	 * @param ObjType        Type of the reference.
+	 * @param index          Index to set.
+	 */
+	void SetIndex(tObjType ObjType,size_t index);
 
 	/**
 	* Increase the number of references on this concept for a given object

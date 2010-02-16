@@ -6,7 +6,7 @@
 
 	Ontology - Implementation.
 
-	Copyright 2008-2009 by Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2008-2010 by Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -67,8 +67,11 @@ GObject* GOntology::GetObject(size_t id,tObjType objtype)
 		case otConcept:
 			return(Concepts[id]);
 
+		case otConceptType:
+			return(ConceptTypesByIds[id]);
+
 		default:
-			ThrowGException("'"+GetObjType(objtype)+"' is not a valid type");
+			ThrowGException(GetObjType(objtype,true,true)+" are not managed");
 	}
 }
 
@@ -319,17 +322,17 @@ GPredicate* GOntology::InsertPredicate(size_t id,const R::RString& name,const R:
 
 
 //-----------------------------------------------------------------------------
-void GOntology::InsertStatement(size_t id,size_t subject,tObjType subjecttype,size_t predicate,size_t object,tObjType objecttype,double weight)
+void GOntology::InsertStatement(size_t id,size_t predicate,size_t xi,tObjType xitype,size_t xj,tObjType xjtype,double weight)
 {
-	// Get the concept related to the subject
-	GObject* Subject(GetObject(subject,subjecttype));
-	if(!Subject)
-		ThrowGException("Object "+RString::Number(subject)+" does not exist");
+	// Get the concept related to Xi
+	GObject* Xi(GetObject(xi,xitype));
+	if(!Xi)
+		ThrowGException("Object "+RString::Number(xi)+" is not a "+GetObjType(xitype,false,false));
 
 	// Get the concept related to the object
-	GObject* Object(GetObject(object,objecttype));
-	if(!Object)
-		ThrowGException("Object "+RString::Number(object)+" does not exist");
+	GObject* Xj(GetObject(xj,xjtype));
+	if(!Xj)
+		ThrowGException("Object "+RString::Number(xj)+" is not a "+GetObjType(xjtype,false,false));
 
 	// Find the predicate
 	GPredicate* Predicate(PredicatesByIds[predicate]);
@@ -338,7 +341,7 @@ void GOntology::InsertStatement(size_t id,size_t subject,tObjType subjecttype,si
 
 	// Insert the statement
 	bool InDirect(true);
-	GStatement* Statement(new GStatement(id,Subject,Predicate,Object,weight));
+	GStatement* Statement(new GStatement(id,Predicate,Xi,Xj,weight));
 	Predicate->InsertStatement(Statement);
 
 	// Look if data has an identifier. If not, assign one.

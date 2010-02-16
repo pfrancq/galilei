@@ -2,12 +2,12 @@
 
 	GALILEI Research Project
 
-	GWeightInfo.cpp
+	GFdbk.cpp
 
-	Weighted information entity - Implementation.
+	Feedback - Implementation.
 
-	Copyright 2002-2010 by Pascal Francq (pascal@francq.info).
-	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -30,118 +30,112 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gweightinfo.h>
-#include <glang.h>
-#include <gsession.h>
+#include <gfdbk.h>
+#include <gprofile.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-//  GWeightInfo
+// class GFdbk
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(GConcept* concept)
-  : Concept(concept), Weight(0.0)
+GFdbk::GFdbk(size_t docid,tFdbkType fdbk,const RDate& done,const R::RDate& computed)
+  : DocId(docid), Fdbk(fdbk), Done(done), Computed(computed)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(GConcept* concept,double w)
-  : Concept(concept), Weight(w)
+int GFdbk::Compare(const GFdbk& profdoc) const
 {
+	return(CompareIds(DocId,profdoc.DocId));
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GWeightInfo& w)
-  : Concept(w.Concept), Weight(w.Weight)
+int GFdbk::Compare(const size_t id) const
 {
+	return(CompareIds(DocId,id));
 }
 
 
 //------------------------------------------------------------------------------
-int GWeightInfo::Compare(const GWeightInfo& calc) const
+void GFdbk::NewFdbk(tFdbkType fdbk,const RDate& date)
 {
-	return(CompareIds(Concept->Id,calc.Concept->Id));
+	Fdbk=fdbk;
+	Done=date;
 }
 
 
 //------------------------------------------------------------------------------
-int GWeightInfo::Compare(const GConcept& concept) const
+RDate GFdbk::GetDone(void) const
 {
-	return(CompareIds(Concept->Id,concept.Id));
+	return(Done);
 }
 
 
 //------------------------------------------------------------------------------
-int GWeightInfo::Compare(const GConcept* concept) const
+RDate GFdbk::GetComputed(void) const
 {
-	return(CompareIds(Concept->Id,concept->Id));
+	return(Computed);
 }
 
 
 //------------------------------------------------------------------------------
-void GWeightInfo::SetWeight(double w)
+bool GFdbk::MustUse(const GProfile* profile) const
 {
-	Weight=w;
+	return((Done>profile->GetComputed())||(Computed>profile->GetComputed()));
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i)
+void GFdbk::HasUpdate(void)
 {
-	Concept=i.Concept;
-	Weight=i.Weight;
-	return(*this);
+	Computed.SetToday();
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator+=(double w)
+tFdbkType GFdbk::ErrorFdbk(tFdbkType fdbk,double PercErr,RRandom* rand)
 {
-	Weight+=w;
-	return(*this);
+	double random=rand->GetValue()*100+1.0;
+
+	// If there is Random change the judgment.
+	if(random<PercErr)
+	{
+		random=rand->GetValue()*100+1.0;;
+		switch(fdbk)
+		{
+			case ftRelevant:
+				if(random<25.0)
+					return(ftIrrelevant);
+				else
+					return(ftFuzzyRelevant);
+			case ftFuzzyRelevant:
+				if(random<50.0)
+					return(ftRelevant);
+				else
+					return(ftIrrelevant);
+			case ftIrrelevant:
+				if(random<25.0)
+					return(ftRelevant);
+				else
+					return(ftFuzzyRelevant);
+			default:
+				ThrowGException(GetFdbkType(fdbk,true)+" is not supported");
+		}
+	}
+	return(fdbk);
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator-=(double w)
-{
-	Weight-=w;
-	return(*this);
-}
-
-
-//------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator*=(double w)
-{
-	Weight*=w;
-	return(*this);
-}
-
-
-//------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator/=(double w)
-{
-	Weight/=w;
-	return(*this);
-}
-
-
-//------------------------------------------------------------------------------
-double GWeightInfo::GetQueryWeight(tObjType ObjType,double max) const
-{
-	return((Weight/max)*Concept->GetIF(ObjType));
-}
-
-
-//------------------------------------------------------------------------------
-GWeightInfo::~GWeightInfo(void)
+GFdbk::~GFdbk(void)
 {
 }

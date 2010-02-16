@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -80,7 +80,6 @@ using namespace R;
 #include <gpostcommunity.h>
 #include <gposttopic.h>
 #include <ggalileiapp.h>
-#include <gdebugobject.h>
 #include <gindexer.h>
 #include <gsimulator.h>
 #include <gcomputesugs.h>
@@ -222,7 +221,6 @@ public:
 // Global variables
 GSession* GSession::Intern::Session=0;
 bool GSession::Intern::ExternBreak=false;
-RContainer<GDebugObject,false,true> DebugObjs(100,100);                    // Objects given debugging information.
 
 
 
@@ -297,9 +295,9 @@ void GSession::ForceReCompute(tObjType type)
 			}
 			if(SaveResults)
 			{
-				ClearIndexFiles(otDoc);
-				ClearIndexFiles(otDocIndex);
-				ClearIndexFiles(otDocStruct);
+				ClearDesc(otDoc);
+				ClearIndex(otDoc);
+				ClearStruct();
 			}
 			Break=false;
 		}
@@ -310,7 +308,8 @@ void GSession::ForceReCompute(tObjType type)
 			Data->Topics.Clear();
 			if(SaveResults)
 			{
-				ClearIndexFiles(otTopic);
+				ClearDesc(otTopic);
+				ClearIndex(otTopic);
 				Storage->Clear(otTopic);
 			}
 			if(Break)
@@ -323,7 +322,8 @@ void GSession::ForceReCompute(tObjType type)
 			Data->Profiles.Clear();
 			if(SaveResults)
 			{
-				ClearIndexFiles(otProfile);
+				ClearDesc(otProfile);
+				ClearIndex(otProfile);
 				Storage->Clear(otProfile);
 			}
 		}
@@ -334,7 +334,8 @@ void GSession::ForceReCompute(tObjType type)
 			Data->Communities.Clear();
 			if(SaveResults)
 			{
-				ClearIndexFiles(otCommunity);
+				ClearDesc(otCommunity);
+				ClearIndex(otCommunity);
 				Storage->Clear(otCommunity);
 			}
 			break;
@@ -346,13 +347,14 @@ void GSession::ForceReCompute(tObjType type)
 			Classes.Clear();
 			if(SaveResults)
 			{
-				ClearIndexFiles(otClass);
+				ClearDesc(otClass);
+				ClearIndex(otClass);
 				Storage->Clear(otClass);
 			}
 			break;
 		}
 		default:
-			ThrowGException("GSession::ForceReCompute(tObjType): '"+GetObjType(type)+"' is not allowed");
+			ThrowGException(GetObjType(type,true,true)+" are not allowed");
 	}
 }
 
@@ -445,63 +447,16 @@ GSlot* GSession::GetSlot(void) const
 
 
 //------------------------------------------------------------------------------
-void GSession::SetDebug(R::RDebug* debug)
+void GSession::SetDebug(RDebug* debug)
 {
 	Data->Debug=debug;
 }
 
 
 //------------------------------------------------------------------------------
-R::RDebug* GSession::GetDebug(void) const
+RDebug* GSession::GetDebug(void) const
 {
 	return(Data->Debug);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AddDebugObject(const GDebugObject* debug)
-{
-	DebugObjs.InsertPtr(debug);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::RemoveDebugObject(const GDebugObject* debug)
-{
-	DebugObjs.DeletePtr(*debug);
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GDebugObject> GSession::GetDebugObjects(void) const
-{
-	return(RCursor<GDebugObject>(DebugObjs));
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::SetActiveDebugObject(const R::RString& name,bool active)
-{
-	GDebugObject* obj=DebugObjs.GetPtr(name);
-	if(!obj)
-		ThrowGException("No debugging object called '"+name+"'");
-	if(active)
-		obj->Debug=Data->Debug;
-	else
-		obj->Debug=0;
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::DebugInfo(const RString& name,const RString& info)
-{
-	GDebugObject* obj=DebugObjs.GetPtr(name);
-	if(!obj)
-		ThrowGException("No debugging object called '"+name+"'");
-	RDebug* old(obj->Debug);
-	obj->Debug=Data->Debug;
-	obj->DebugInfo(info);
-	obj->Debug=old;
 }
 
 
@@ -587,12 +542,36 @@ GClass* GSession::GetClass(size_t id,bool null)
 //------------------------------------------------------------------------------
 void GSession::AssignInfos(GClass* theclass,GWeightInfos& infos)
 {
-	theclass->Update(infos);
+	theclass->Update(this,infos);
 	if(SaveResults)
 	{
 		if(theclass->Vector)
 			SaveInfos(*theclass->Vector,otClass,theclass->BlockId,theclass->Id);
 		Storage->SaveClass(theclass);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+GObject* GSession::GetObject(size_t id,tObjType objtype)
+{
+	switch(objtype)
+	{
+		case otConcept:
+		case otConceptType:
+			return(GOntology::GetObject(id,objtype));
+		case otDoc:
+				return(GetDoc(id,false));
+		case otUser:
+			return(GetUser(id,false));
+		case otProfile:
+			return(GetProfile(id,false));
+		case otCommunity:
+				return(GetCommunity(id,false));
+		case otTopic:
+			return(GetTopic(id,false));
+		default:
+			ThrowGException(GetObjType(objtype,true,true)+" are not managed");
 	}
 }
 
@@ -618,7 +597,7 @@ size_t GSession::GetNbElements(tObjType type) const
 		case otTopic:
 			return(Data->Topics.GetNb());
 		default:
-			ThrowGException("GSession::GetNbElements : Type "+GetObjType(type)+" is not handled");
+			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
 
@@ -645,7 +624,7 @@ size_t GSession::GetMaxElementId(tObjType type) const
 				return(0);
 			return(Data->Topics[Data->Topics.GetMaxPos()]->GetId());
 		default:
-			ThrowGException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
+			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
 
@@ -664,7 +643,7 @@ void* GSession::GetElement(tObjType type,size_t id,bool null) const
 		case otTopic:
 			return(GetTopic(id,null));
 		default:
-			ThrowGException("GSession::GetMaxElementId : Type "+GetObjType(type)+" is not handled");
+			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
 
@@ -681,7 +660,7 @@ void GSession::ClearGroups(tObjType type)
 			ClearCommunities();
 			break;
 		default:
-			ThrowGException("GSession::ClearGroups : Type "+GetObjType(type)+" is not handled");
+			ThrowGException(GetObjType(type,true,true)+" are not groups");
 	}
 }
 
@@ -696,7 +675,7 @@ void* GSession::NewGroup(tObjType type,const RString& name)
 		case otCommunity:
 			return(new GCommunity(name));
 		default:
-			ThrowGException("GSession::NewGroup : Type "+GetObjType(type)+" is not handled");
+			ThrowGException(GetObjType(type,true,true)+" are not groups");
 	}
 }
 
@@ -713,7 +692,7 @@ void GSession::InsertGroup(void* ptr,tObjType type)
 			InsertCommunity(static_cast<GCommunity*>(ptr));
 			break;
 		default:
-			ThrowGException("GSession::InsertGroup : Type "+GetObjType(type)+" is not handled");
+			ThrowGException(GetObjType(type,true,true)+" are not groups");
 	}
 }
 
@@ -893,7 +872,7 @@ void GSession::AnalyzeDocs(bool ram,GSlot* rec)
 		// If no log file specified -> Propagate error
 		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()()+"("+RString::Number(Docs()->GetId())+"): ")
 	}
-	Flush(otDoc);   // Force to save all documents description
+	FlushDesc(otDoc);   // Force to save all documents description
 
 	// Launch post doc methods
 	DoPostDocs(rec);
@@ -945,7 +924,7 @@ void GSession::AnalyzeDoc(GDoc* doc,bool ram,GDocAnalyze* method,GSlot* rec)
 	}
 
 	// Set the information to the document
-	doc->Update(this,method->Lang,method->Infos,method->Struct,ram||(!Save),DelRef,IndexDocsInc);
+	doc->Update(this,method->Lang,method->Infos,method->Struct,ram||(!Save),DelRef);
 
 	// Save the information related to the document
 	if(Save)
@@ -1264,7 +1243,7 @@ void GSession::CalcProfiles(GSlot* rec)
 			cerr<<e.GetMsg()<<endl;
 		}
 	}
-	Flush(otProfile);   // Force to save all profiles description
+	FlushDesc(otProfile);   // Force to save all profiles description
 
 	DoPostProfiles(rec);
 }
@@ -1292,7 +1271,7 @@ void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* lin
 	method->Compute(profile);
 
 	// Set the Variable of the profile
-	profile->Update(method->Infos);
+	profile->Update(this,method->Infos);
 
 	if(Save)
 	{
@@ -1348,16 +1327,16 @@ void GSession::UpdateProfiles(size_t docid)
 
 
 //------------------------------------------------------------------------------
-void GSession::InsertFdbk(size_t profid,size_t docid,tDocAssessment assess,R::RDate date,R::RDate computed,bool newone)
+void GSession::AddFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate date,R::RDate computed,bool newone)
 {
 	GProfile* prof=GetProfile(profid,false);
 	if(prof)
-		prof->InsertFdbk(docid,assess,date,computed);
+		prof->AddFdbk(docid,fdbk,date,computed);
 	GDoc* doc=GetDoc(docid,false);
 	if(doc)
 		doc->InsertFdbk(profid);
 	if(newone&&((!Storage->IsAllInMemory())||(SaveResults)))
-		Storage->AddFdbk(profid,docid,assess,date,computed);
+		Storage->AddFdbk(profid,docid,fdbk,date,computed);
 }
 
 
@@ -1484,7 +1463,8 @@ void GSession::ClearCommunities(void)
 	if(SaveResults)
 	{
 		Storage->Clear(otCommunity);
-		ClearIndexFiles(otCommunity);
+		ClearDesc(otCommunity);
+		ClearIndex(otCommunity);
 	}
 }
 
@@ -1514,7 +1494,7 @@ void GSession::GroupProfiles(GSlot* rec)
 			if(CalcDesc)
 			{
 				CalcDesc->Compute(Groups());
-				Groups()->Update(CalcDesc->Infos);
+				Groups()->Update(this,CalcDesc->Infos);
 			}
 			if(SaveResults)
 			{
@@ -1525,7 +1505,7 @@ void GSession::GroupProfiles(GSlot* rec)
 			}
 		}
 	}
-	Flush(otCommunity);   // Force to save all communities description
+	FlushDesc(otCommunity);   // Force to save all communities description
 
 	DoPostCommunity(rec);
 }
@@ -1701,7 +1681,8 @@ void GSession::ClearTopics(void)
 	if(SaveResults)
 	{
 		Storage->Clear(otTopic);
-		ClearIndexFiles(otTopic);
+		ClearDesc(otTopic);
+		ClearIndex(otTopic);
 	}
 }
 
@@ -1731,7 +1712,7 @@ void GSession::GroupDocs(GSlot* rec)
 			if(CalcDesc)
 			{
 				CalcDesc->Compute(Groups());
-				Groups()->Update(CalcDesc->Infos);
+				Groups()->Update(this,CalcDesc->Infos);
 			}
 			if(SaveResults)
 			{
@@ -1742,7 +1723,7 @@ void GSession::GroupDocs(GSlot* rec)
 			}
 		}
 	}
-	Flush(otTopic);   // Force to save all topics description
+	FlushDesc(otTopic);   // Force to save all topics description
 
 	DoPostTopic(rec);
 }

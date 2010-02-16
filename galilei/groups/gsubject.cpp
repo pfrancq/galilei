@@ -6,7 +6,7 @@
 
 	Subject - Implementation.
 
-	Copyright 2002-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2004 by Julien Lamoral.
 	Copyright 2002-2004 by David Wartel.
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -279,7 +279,7 @@ size_t GSubject::GetNbIdealGroups(tObjType type) const
 				nb++;
 			break;
 		default:
-			throw GException("GSubject::GetNbIdealGroups(tObjType) doesn't support type"+GetObjType(type));
+			ThrowGException(GetObjType(type,true,true)+" are not assigned to subjects");
 	}
 	RCursor<GSubject> Cur(GetNodes());
 	for(Cur.Start();!Cur.End();Cur.Next())

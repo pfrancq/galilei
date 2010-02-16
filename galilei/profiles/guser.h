@@ -6,7 +6,7 @@
 
 	User - Header.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -35,7 +35,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <gobject.h>
 
 
 //------------------------------------------------------------------------------
@@ -49,18 +49,8 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short User.
 */
-class GUser : public R::RContainer<GProfile,false,true>
+class GUser : public GObject, public R::RContainer<GProfile,false,true>
 {
-	/**
-	* Identifier of the user.
-	*/
-	size_t Id;
-
-	/**
-	* Name of the user.
-	*/
-	R::RString Name;
-
 	/**
 	* FullName of the user.
 	*/
@@ -75,7 +65,7 @@ public:
 	* @param fullname       FullName of the user.
 	* @param nb             Number of profiles.
 	*/
-	GUser(size_t id,const R::RString name,const R::RString fullname,size_t nb=5);
+	GUser(size_t id,const R::RString& name,const R::RString& fullname,size_t nb=5);
 
 	/**
 	* Compare two users by comparing their identifier.
@@ -110,12 +100,6 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	* Get the identifier of the user.
-	* @return size_t.
-	*/
-	size_t GetId(void) const {return(Id);}
-
-	/**
 	* Set the identifier.
 	* @param id             Identifier.
 	*/
@@ -137,12 +121,6 @@ public:
 	 * Get the number of profiles.
 	 */
 	size_t GetNbProfiles(void) const;
-
-	/**
-	* Get the name of the user.
-	* @return RString.
-	*/
-	R::RString GetName(void) const;
 
 	/**
 	* Get the full name of the user.

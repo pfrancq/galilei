@@ -6,7 +6,7 @@
 
 	Document - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -39,6 +39,7 @@
 #include <gindexer.h>
 #include <gprofile.h>
 #include <gdocstruct.h>
+#include <gfdbk.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -285,7 +286,7 @@ double GDoc::GetAgreementRatio(const GDoc* doc,size_t nbmin) const
 		if(!f2) continue;
 
 		nbcommon+=1.0;  // A common document
-		if((f1->GetFdbk()==djOK)&&(f2->GetFdbk()==djOK))
+		if((f1->GetFdbk()==ftRelevant)&&(f2->GetFdbk()==ftRelevant))
 			nbagree+=1.0;
 	}
 	if(nbcommon<nbmin)
@@ -325,7 +326,7 @@ double GDoc::GetDisagreementRatio(const GDoc* doc,size_t nbmin) const
 		if(!f2) continue;
 
 		nbcommon+=1.0;  // A common document
-		if(((f1->GetFdbk()==djOK)&&(f2->GetFdbk()!=djOK))||((f1->GetFdbk()!=djOK)&&(f2->GetFdbk()==djOK)))
+		if(((f1->GetFdbk()==ftRelevant)&&(f2->GetFdbk()!=ftRelevant))||((f1->GetFdbk()!=ftRelevant)&&(f2->GetFdbk()==ftRelevant)))
 			nbdisagree+=1.0;
 	}
 	if(nbcommon<nbmin)
@@ -367,14 +368,13 @@ R::RCursor<GLink> GDoc::GetLinks(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref,bool index)
+void GDoc::Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref)
 {
 	// If document had a language -> remove its references
 	if(delref&&Lang&&(Id!=cNoRef))
 	{
 		DelRefs(otDoc);
-		if(index)
-			session->UpdateRefs(infos,otDoc,Id,false);
+		session->UpdateRefs(infos,otDoc,Id,false);
 	}
 
 	// Assign language and information
@@ -399,8 +399,7 @@ void GDoc::Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& 
 	if(Lang&&(Id!=cNoRef))
 	{
 		infos.AddRefs(otDoc);
-		if(index)
-			session->UpdateRefs(infos,otDoc,Id,true);
+		session->UpdateRefs(infos,otDoc,Id,true);
 	}
 
 	if(ram)

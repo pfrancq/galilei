@@ -6,7 +6,7 @@
 
 	Generic Group - Inline Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -259,10 +259,11 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::Update(GWeightInfos& infos)
+	void GALILEI::GGroup<cObj,cGroup,type>::Update(GSession* session,GWeightInfos& infos)
 {
 	// Remove its references
 	DelRefs(type);
+	session->UpdateRefs(infos,type,Id,false);
 
 	// Assign information
 	GWeightInfosObj::Clear();
@@ -275,6 +276,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 	// Update its references
 	AddRefs(type);
+	session->UpdateRefs(infos,type,Id,true);
 
 	// Emit an event that it was modified
 	if(Data)

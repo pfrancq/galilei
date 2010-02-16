@@ -6,7 +6,7 @@
 
 	GALILEI Header - Implementation.
 
-	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2005-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2005-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -45,201 +45,255 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-RString GALILEI::GetObjType(tObjType objtype)
+RString Str(const char* str,bool upper)
 {
-	switch(objtype)
+	RString string(*str);
+	if(upper)
+		string=string.ToUpper();
+	string+=(str+1);
+	return(string);
+}
+
+
+
+//------------------------------------------------------------------------------
+RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
+{
+	switch(type)
 	{
 		case otNoClass:
-			return(RString("unknown"));
+			return(Str("unknown",upper));
 		case otAnyClass:
-			return(RString("any class"));
+			return(Str("any class",upper));
 		case otSession:
-			return(RString("session"));
+			if(plural)
+				return(Str("sessions",upper));
+			return(Str("session",upper));
 		case otDoc:
-			return(RString("document"));
+			if(plural)
+				return(Str("documents",upper));
+			return(Str("document",upper));
 		case otUser:
-			return(RString("user"));
+			if(plural)
+				return(Str("users",upper));
+			return(Str("user",upper));
 		case otProfile:
-			return(RString("profile"));
+			if(plural)
+				return(Str("profiles",upper));
+			return(Str("profile",upper));
 		case otCommunity:
-			return(RString("community"));
+			if(plural)
+				return(Str("communities",upper));
+			return(Str("community",upper));
 		case otFdbk:
-			return(RString("assessment"));
+			if(plural)
+				return(Str("feedbacks",upper));
+			return(Str("feedback",upper));
 		case otLang:
-			return(RString("language"));
+			if(plural)
+				return(Str("languages",upper));
+			return(Str("language",upper));
 		case otHistory:
-			return(RString("history"));
+			if(plural)
+				return(Str("histories",upper));
+			return(Str("history",upper));
 		case otTopic:
-			return(RString("topic"));
+			if(plural)
+				return(Str("topics",upper));
+			return(Str("topic",upper));
 		case otSubject:
-			return(RString("subject"));
+			if(plural)
+				return(Str("subjects",upper));
+			return(Str("subject",upper));
 		case otEngine:
-			return(RString("search engine"));
+			if(plural)
+				return(Str("search engines",upper));
+			return(Str("search engine",upper));
 		case otEngineDoc:
-			return(RString("document proposed by a search engine"));
+			if(plural)
+				return(Str("documents proposed by a search engine",upper));
+			return(Str("document proposed by a search engine",upper));
 		case otConcept:
-			return(RString("concept"));
+			if(plural)
+				return(Str("concepts",upper));
+			return(Str("concept",upper));
 		case otConceptType:
-			return(RString("concept type"));
+			if(plural)
+				return(Str("concept types",upper));
+			return(Str("concept type",upper));
 		case otPredicate:
-			return(RString("predicate"));
+			if(plural)
+				return(Str("predicates",upper));
+			return(Str("predicate",upper));
 		case otStatement:
-			return(RString("statement"));
+			if(plural)
+				return(Str("statements",upper));
+			return(Str("statement",upper));
 		case otClass:
-			return(RString("class"));
+			if(plural)
+				return(Str("classes",upper));
+			return(Str("class",upper));
 		case otDocStruct:
-			return(RString("document structure"));
-		case otDocIndex:
-			return(RString("document index"));
+			if(plural)
+				return(Str("document structures",upper));
+			return(Str("document structure",upper));
 		case otSuggestion:
-			return(RString("suggestion"));
+			if(plural)
+				return(Str("suggestions",upper));
+			return(Str("suggestion",upper));
 		case otDocRanking:
-			return(RString("document ranking"));
+			if(plural)
+				return(Str("document rankings",upper));
+			return(Str("document ranking",upper));
 	}
-	return(RString("unknown"));
+	ThrowGException("'"+RString::Number(type)+"' is not a valid object type value");
 }
 
 
 //------------------------------------------------------------------------------
-RString GALILEI::GetState(tObjState state)
+RString GALILEI::GetState(tObjState state,bool upper)
 {
 	switch(state)
 	{
 		case osUnknow:
-			return(RString("unknown"));
+			return(Str("unknown",upper));
 		case osCreated:
-			return(RString("created"));
+			return(Str("created",upper));
 		case osNew:
-			return(RString("allocated"));
+			return(Str("allocated",upper));
 		case osUpToDate:
-			return(RString("up to date"));
+			return(Str("up to date",upper));
 		case osModified:
-			return(RString("modified"));
+			return(Str("modified",upper));
 		case osUpdated:
-			return(RString("updated"));
+			return(Str("updated",upper));
 		case osSaved:
-			return(RString("saved"));
+			return(Str("saved",upper));
 		case osDelete:
-			return(RString("deleted"));
+			return(Str("deleted",upper));
 		case osDestroyed:
-			return(RString("destroyed"));
+			return(Str("destroyed",upper));
 		case osOnDemand:
-			return(RString("demands information"));
+			return(Str("demands information",upper));
 		case osLoaded:
-			return(RString("information loaded"));
+			return(Str("information loaded",upper));
 		case osNeedLoad:
-			return(RString("must load information"));
+			return(Str("must load information",upper));
 	}
-	return(RString("unknown"));
+	ThrowGException("'"+RString::Number(state)+"' is not a valid state value");
 }
 
 
 //------------------------------------------------------------------------------
-RString GEvent::GetEvent(tEvent event)
+RString GEvent::GetEvent(tEvent event,bool upper)
 {
 	switch(event)
 	{
 		case eUnknow:
-			return(RString("Unknown"));
+			return(Str("unknown",upper));
 		case eObjNew:
-			return(RString("object created in memory"));
+			return(Str("object created in memory",upper));
 		case eObjCreated:
-			return(RString("object created in system"));
+			return(Str("object created in system",upper));
 		case eObjModified:
-			return(RString("object modified"));
+			return(Str("object modified",upper));
 		case eObjDelete:
-			return(RString("object deleted from memory"));
+			return(Str("object deleted from memory",upper));
 		case eObjDestroyed:
-			return(RString("object deleted from system"));
+			return(Str("object deleted from system",upper));
 	}
-	return(RString("unknown"));
+	ThrowGException("'"+RString::Number(event)+"' is not a valid event type value");
 }
 
 
 //------------------------------------------------------------------------------
-RString GALILEI::GetAssessment(tDocAssessment assessment)
+RString GALILEI::GetFdbkType(tFdbkType type,bool upper)
 {
-	switch(assessment)
+	switch(type)
 	{
-		case djUnknow:
-			return(RString("unknown"));
-		case djOK:
-			return(RString("relevant"));
-		case djKO:
-			return(RString("fuzzy relevant"));
-		case djOutScope:
-			return(RString("irrelevant"));
+		case ftUnknown:
+			return(Str("unknown",upper));
+		case ftRelevant:
+			return(Str("relevant",upper));
+		case ftFuzzyRelevant:
+			return(Str("fuzzy relevant",upper));
+		case ftIrrelevant:
+			return(Str("irrelevant",upper));
 	}
-	return(RString("unknown"));
+	ThrowGException("'"+RString::Number(type)+"' is not a valid feedback type value");
 }
 
 
 //------------------------------------------------------------------------------
-RString GALILEI::GetAssessmentCode(tDocAssessment assessment)
+tFdbkType GALILEI::GetFdbkType(unsigned int type)
 {
-	switch(assessment)
+	switch(type)
 	{
-		case djUnknow:
-			return(RString("?"));
-		case djOK:
-			return(RString("O"));
-		case djKO:
-			return(RString("K"));
-		case djOutScope:
-			return(RString("H"));
+		case 0 : return(ftUnknown);
+		case 1 : return(ftRelevant);
+		case 2 : return(ftFuzzyRelevant);
+		case 3 : return(ftIrrelevant);
+		default: ThrowGException("'"+RString::Number(type)+"' is not a valid feedback type value");
 	}
-	return(RString("?"));
+}
+
+
+//------------------------------------------------------------------------------
+RString GALILEI::GetProfileType(tProfileType type,bool upper,bool plural)
+{
+	switch(type)
+	{
+		case ptUnknown:
+			return(Str("unknown",upper));
+		case ptInterest:
+			if(plural)
+				return(Str("interests",upper));
+			return(Str("interest",upper));
+		case ptExpertise:
+			if(plural)
+				return(Str("expertise's",upper));
+			return(Str("expertise",upper));
+	}
+	ThrowGException("'"+RString::Number(type)+"' is not a valid profile type value");
+}
+
+
+//------------------------------------------return(RString::Null);------------------------------------
+tProfileType GALILEI::GetProfileType(unsigned int type)
+{
+	switch(type)
+	{
+		case 0 : return(ptUnknown);
+		case 1 : return(ptInterest);
+		case 2 : return(ptExpertise);
+		default: ThrowGException("'"+RString::Number(type)+"' is not a valid profile type value");
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-tDocAssessment GALILEI::GetAssessmentType(const RString& assessment)
-{
-	tDocAssessment jug;
-
-	// Normal assessment
-	switch(assessment[static_cast<size_t>(0)].Unicode())
-	{
-		case 'O':
-			jug=djOK;
-			break;
-		case 'K':
-			jug=djKO;
-			break;
-		case 'H':
-			jug= djOutScope;
-			break;
-		default:
-			jug=djUnknow;
-			break;
-	}
-	return(jug);
-}
-
-
-//-----------------------------------------------------------------------------
-RString GALILEI::GetMeasureType(tTypeMeasure type)
+RString GALILEI::GetMeasureType(tTypeMeasures type,bool upper)
 {
 	switch(type)
 	{
 		case tmUnknow :
-			return(RString("Unknown measure."));
+			return(Str("unknown measure.",upper));
 		case tmDoc :
-			return(RString("Measure(document,document)"));
+			return(Str("measure(document,document)",upper));
 		case tmProfile :
-			return(RString("Measure(profile,profile)"));
+			return(Str("measure(profile,profile)",upper));
 		case tmDocProfile :
-			return(RString("Measure(document,profile)"));
+			return(Str("measure(document,profile)",upper));
 		case tmCommunity :
-			return(RString("Measure(community,community)"));
+			return(Str("measure(community,community)",upper));
 		case tmDocCommunity :
-			return(RString("Measure(document,community)"));
+			return(Str("measure(document,community)",upper));
 		case tmProfileCommunity :
-			return(RString("Measure(profile,community)"));
+			return(Str("measure(profile,community)",upper));
 		case tmTopic :
-			return(RString("Measure(topic,topic)"));
+			return(Str("measure(topic,topic)",upper));
 		case tmDocTopic :
-			return(RString("Measure(document,topic)"));
+			return(Str("measure(document,topic)",upper));
 	}
-	return(RString::Null);
+	ThrowGException("'"+RString::Number(type)+"' is not a valid measure type value");
 }

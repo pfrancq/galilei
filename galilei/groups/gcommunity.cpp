@@ -6,7 +6,7 @@
 
 	Community - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -38,6 +38,7 @@
 #include <gcommunity.h>
 #include <gdoc.h>
 #include <gsuggestion.h>
+#include <gfdbk.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -101,7 +102,7 @@ void GCommunity::GetRelevantDocs(GCommunityDocs& docs)
 		for(Fdbks.Start();!Fdbks.End();Fdbks.Next())
 		{
 			// Verify if the document is relevant.
-			if(Fdbks()->GetFdbk()!=djOK) continue;
+			if(Fdbks()->GetFdbk()!=ftRelevant) continue;
 
 			// Insert the document in RelevantDocs
 			RelevantDocs.GetInsertPtr(Fdbks()->GetDocId());

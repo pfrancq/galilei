@@ -57,6 +57,15 @@ GObject::GObject(const GObject* obj)
 
 
 //------------------------------------------------------------------------------
+void GObject::SetId(size_t id)
+{
+	if(id!=cNoRef)
+		ThrowGException("Object '"+RString::Number(Id)+"' has already an identifier");
+	Id=id;
+}
+
+
+//------------------------------------------------------------------------------
 GObject::~GObject(void)
 {
 }

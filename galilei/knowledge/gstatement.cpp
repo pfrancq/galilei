@@ -6,7 +6,7 @@
 
 	Statement - Implementation.
 
-	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -45,8 +45,8 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GStatement::GStatement(size_t id,GObject* subject,GPredicate* predicate,GObject* object,double weight)
-	: Id(id), Subject(subject), Predicate(predicate), Object(object), Weight(weight)
+GStatement::GStatement(size_t id,GPredicate* predicate,GObject* xi,GObject* xj,double weight)
+	: Id(id), Predicate(predicate), Xi(xi), Xj(xj), Weight(weight)
 {
 }
 
@@ -54,10 +54,10 @@ GStatement::GStatement(size_t id,GObject* subject,GPredicate* predicate,GObject*
 //-----------------------------------------------------------------------------
 int GStatement::Compare(const GStatement& statement) const
 {
-	int i(CompareIds(Subject->GetId(),statement.Subject->GetId()));
+	int i(CompareIds(Xi->GetId(),statement.Xi->GetId()));
 	if(i)
 		return(i);
-	i=CompareIds(Object->GetId(),statement.Object->GetId());
+	i=CompareIds(Xj->GetId(),statement.Xj->GetId());
 	if(i)
 		return(i);
 	return(CompareIds(Predicate->GetId(),statement.Predicate->GetId()));

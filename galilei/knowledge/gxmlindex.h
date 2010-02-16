@@ -6,7 +6,7 @@
 
 	XML Index - Header.
 
-	Copyright 2007-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2007-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2007-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -123,14 +123,27 @@ public:
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	* @param refdocs         Number of documents referenced.
-	* @param indexdocs       Position in the inverted file related to the
-	*                        documents.
+	* @param idxdocs         Identifier of the block the inverted file related
+	*                        to the documents.
 	* @param refprofiles     Number of profiles referenced.
+	* @param idxprofiles     Identifier of the block the inverted file related
+	*                        to the profiles.
 	* @param refcommunities  Number of communities referenced.
+	* @param idxcommunities  Identifier of the block the inverted file related
+	*                        to the communities.
 	* @param reftopics       Number of topics referenced.
+	* @param idxtopics       Identifier of the block the inverted file related
+	*                        to the topics.
 	* @param refclasses      Number of classes referenced.
+	* @param idxclasses      Identifier of the block the inverted file related
+	*                        to the classes.
 	*/
-	GXMLIndex(size_t id,const R::RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics,size_t refclasses);
+	GXMLIndex(size_t id, const R::RString& name, GConceptType* type,
+			size_t refdocs, size_t idxdocs,
+			size_t refprofiles, size_t idxprofiles,
+			size_t refcommunities, size_t idxcommunities,
+			size_t reftopics, size_t idxtopics,
+			size_t refclasses,size_t idxclasses);
 
 protected:
 

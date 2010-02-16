@@ -6,7 +6,7 @@
 
 	User - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -45,9 +45,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GUser::GUser(size_t id,const R::RString name,const R::RString fullname,size_t nb)
- : RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1),Id(id),Name(name),
-   FullName(fullname)
+GUser::GUser(size_t id,const R::RString& name,const R::RString& fullname,size_t nb)
+ : GObject(id,name,otUser), RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1), FullName(fullname)
 {
 }
 
@@ -107,13 +106,6 @@ R::RCursor<GProfile> GUser::GetProfiles(void)
 size_t GUser::GetNbProfiles(void) const
 {
 	return(GetNb());
-}
-
-
-//------------------------------------------------------------------------------
-RString GUser::GetName(void) const
-{
-	return(Name);
 }
 
 

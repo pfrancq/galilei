@@ -6,7 +6,7 @@
 
 	Generic Post-Community Computing Method - Header.
 
-	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valéry Vandaele.
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 

@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -37,120 +37,10 @@
 #include <gweightinfo.h>
 #include <gstorage.h>
 #include <gcommunity.h>
+#include <gfdbk.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
-
-
-
-//------------------------------------------------------------------------------
-//
-// class GFdbk
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GFdbk::GFdbk(size_t docid,tDocAssessment fdbk,const RDate& when,const R::RDate& computed)
-  : DocId(docid), Fdbk(fdbk), When(when), Computed(computed)
-{
-}
-
-
-//------------------------------------------------------------------------------
-int GFdbk::Compare(const GFdbk& profdoc) const
-{
-	return(CompareIds(DocId,profdoc.DocId));
-}
-
-
-//------------------------------------------------------------------------------
-int GFdbk::Compare(const GFdbk* profdoc) const
-{
-	return(CompareIds(DocId,profdoc->DocId));
-}
-
-
-//------------------------------------------------------------------------------
-int GFdbk::Compare(const size_t id) const
-{
-	return(CompareIds(DocId,id));
-}
-
-
-//------------------------------------------------------------------------------
-void GFdbk::NewFdbk(tDocAssessment fdbk,const RDate& date)
-{
-	Fdbk=fdbk;
-	When=date;
-}
-
-
-//------------------------------------------------------------------------------
-RDate GFdbk::GetWhen(void) const
-{
-	return(When);
-}
-
-
-//------------------------------------------------------------------------------
-RDate GFdbk::GetComputed(void) const
-{
-	return(Computed);
-}
-
-
-//------------------------------------------------------------------------------
-bool GFdbk::MustUse(const GProfile* profile) const
-{
-	return((When>profile->GetComputed())||(Computed>profile->GetComputed()));
-}
-
-
-//------------------------------------------------------------------------------
-void GFdbk::HasUpdate(void)
-{
-	Computed.SetToday();
-}
-
-
-//------------------------------------------------------------------------------
-tDocAssessment GFdbk::ErrorJudgment(tDocAssessment fdbk,double PercErr,RRandom* rand)
-{
-	double random=rand->GetValue()*100+1.0;
-
-	// If there is Random change the judgment.
-	if(random<PercErr)
-	{
-		random=rand->GetValue()*100+1.0;;
-		switch(fdbk)
-		{
-			case djOK:
-				if(random<25.0)
-					return(djOutScope);
-				else
-					return(djKO);
-			case djKO:
-				if(random<50.0)
-					return(djOK);
-				else
-					return(djOutScope);
-			case djOutScope:
-				if(random<25.0)
-					return(djOK);
-				else
-					return(djKO);
-			default:
-				break;
-		}
-	}
-	return(fdbk);
-}
-
-
-//------------------------------------------------------------------------------
-GFdbk::~GFdbk(void)
-{
-}
 
 
 
@@ -161,8 +51,8 @@ GFdbk::~GFdbk(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,const R::RString name,bool s)
-  : GWeightInfosObj(cNoRef,0,otProfile,name,osNew), User(usr),
+GProfile::GProfile(GUser* usr,tProfileType type,const R::RString name,bool s)
+  : GWeightInfosObj(cNoRef,0,otProfile,name,osNew), User(usr), Type(type),
     Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null),
     GroupId(0), Attached(RDate::Null), Score(0.0), Level(0)
 {
@@ -181,8 +71,8 @@ GProfile::GProfile(GUser* usr,const R::RString name,bool s)
 
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,double score,char level,size_t nbf)
-  : GWeightInfosObj(id,blockid,otProfile,name,osNew), User(usr),
+GProfile::GProfile(GUser* usr,tProfileType type,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,double score,char level,size_t nbf)
+  : GWeightInfosObj(id,blockid,otProfile,name,osNew), User(usr), Type(type),
     Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c),
     GroupId(grpid), Attached(a), Score(score), Level(level)
 {
@@ -285,7 +175,7 @@ double GProfile::GetAgreementRatio(const GProfile* prof,size_t nbmin) const
 		if(!f2) continue;
 
 		nbcommon+=1.0;  // A common document
-		if((f1->GetFdbk()==djOK)&&(f2->GetFdbk()==djOK))
+		if((f1->GetFdbk()==ftRelevant)&&(f2->GetFdbk()==ftRelevant))
 			nbagree+=1.0;
 	}
 	if(nbcommon<nbmin)
@@ -309,7 +199,7 @@ double GProfile::GetDisagreementRatio(const GProfile* prof,size_t nbmin) const
 		if(!f2) continue;
 
 		nbcommon+=1.0;  // A common document
-		if(((f1->GetFdbk()==djOK)&&(f2->GetFdbk()!=djOK))||((f1->GetFdbk()!=djOK)&&(f2->GetFdbk()==djOK)))
+		if(((f1->GetFdbk()==ftRelevant)&&(f2->GetFdbk()!=ftRelevant))||((f1->GetFdbk()!=ftRelevant)&&(f2->GetFdbk()==ftRelevant)))
 			nbdisagree+=1.0;
 	}
 	if(nbcommon<nbmin)
@@ -333,9 +223,9 @@ RCursor<GFdbk> GProfile::GetFdbks(void) const
 
 
 //------------------------------------------------------------------------------
-void GProfile::InsertFdbk(size_t docid,tDocAssessment assess,const R::RDate& date,const R::RDate& update)
+void GProfile::AddFdbk(size_t docid,tFdbkType fdbk,const R::RDate& date,const R::RDate& update)
 {
-	Fdbks.InsertPtr(new GFdbk(docid,assess,date,update));
+	Fdbks.InsertPtr(new GFdbk(docid,fdbk,date,update));
 	// If the document assessed was computed after the last computation
 	// -> profile is considered as updated
 	if((Computed<date)||(Computed<update))
@@ -349,9 +239,11 @@ void GProfile::InsertFdbk(size_t docid,tDocAssessment assess,const R::RDate& dat
 //------------------------------------------------------------------------------
 void GProfile::DeleteFdbk(size_t docid)
 {
-	GFdbk* fdbk;
+	GFdbk* fdbk(Fdbks.GetPtr<size_t>(docid));
+	if(!fdbk)
+		return;
 
-	Fdbks.DeletePtr(fdbk=Fdbks.GetPtr<size_t>(docid));
+	Fdbks.DeletePtr(*fdbk);
 	State=osModified;
 
 	// If the document assessed was computed after the last computation
@@ -362,10 +254,11 @@ void GProfile::DeleteFdbk(size_t docid)
 
 
 //------------------------------------------------------------------------------
-void GProfile::Update(GWeightInfos& infos)
+void GProfile::Update(GSession* session,GWeightInfos& infos)
 {
 	// Remove its references
 	DelRefs(otProfile);
+	session->UpdateRefs(infos,otProfile,Id,false);
 
 	// Assign information
 	GWeightInfosObj::Clear();
@@ -382,6 +275,7 @@ void GProfile::Update(GWeightInfos& infos)
 
 	// Update its references
 	AddRefs(otProfile);
+	session->UpdateRefs(infos,otProfile,Id,true);
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);

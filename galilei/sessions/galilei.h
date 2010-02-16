@@ -6,7 +6,7 @@
 
 	GALILEI Header - Header.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -82,7 +82,6 @@ enum tObjType
 	otStatement 	         /** Statement.*/,
 	otClass                  /** Class.*/,
 	otDocStruct              /** Document structure. */,
-	otDocIndex               /** Document index. */,
 	otSuggestion             /** Suggestion.*/,
 	otDocRanking             /** Document ranking.*/
 };
@@ -90,10 +89,12 @@ enum tObjType
 
 //------------------------------------------------------------------------------
 /**
-* Get a string representing a type of objects.
-* @param objtype             Type.
-*/
-R::RString GetObjType(tObjType objtype);
+ * Get a string representing a type of objects.
+ * @param type               Type.
+ * @param upper              First letter in uppercase ?
+ * @param plural             Plural ?
+ */
+R::RString GetObjType(tObjType type,bool upper,bool plural);
 
 
 //------------------------------------------------------------------------------
@@ -103,7 +104,7 @@ R::RString GetObjType(tObjType objtype);
 */
 enum tObjState
 {
-	osUnknow                 /** Unknow state.*/,
+	osUnknow                 /** Unknown state.*/,
 	osCreated                /** Object created in the system.*/,
 	osNew                    /** Object was allocated in memory.*/,
 	osNeedLoad               /** Object must load information.*/,
@@ -120,52 +121,76 @@ enum tObjState
 
 //------------------------------------------------------------------------------
 /**
-* Get a string representing a state of objects.
-* @param state               State.
-*/
-R::RString GetState(tObjState state);
+ * Get a string representing a state of objects.
+ * @param state               State.
+ * @param upper               First letter in uppercase ?
+ */
+R::RString GetState(tObjState state,bool upper);
 
 
 //------------------------------------------------------------------------------
 /**
-* Assessment over a document.
-*
-* The 4 first bits are used to express the assessment of the Doc (OK,KO,N), the
-* 5th and 6th bits are used to express the status of the Doc (Hub, Authority ).
-*  The masks are used to separate the assessment and the status of a doc.
-* @short Document Assessment
+* Different types of feedbacks over a document.
+* @short Feedback Type
 */
-enum tDocAssessment
+enum tFdbkType
 {
-	djUnknow                 /** Unknown assessment.*/,
-	djOK                     /** Document is relevant.*/,
-	djKO                     /** Document is fuzzy relevant.*/,
-	djOutScope               /** Document is irrelevant.*/
+	ftUnknown                /** Unknown feedback type.*/,
+	ftRelevant               /** Document is assessed as relevant.*/,
+	ftFuzzyRelevant          /** Document is assessed as fuzzy relevant.*/,
+	ftIrrelevant             /** Document is assessed as irrelevant.*/
 };
 
 
 //------------------------------------------------------------------------------
 /**
-* Get a string representing an assessment.
-* @param assessment          Assessment.
-*/
-R::RString GetAssessment(tDocAssessment assessment);
+ * @return a string representing a feedback type.
+ * @param type                TYpe of the feedback.
+ * @param upper               First letter in uppercase ?
+ */
+R::RString GetFdbkType(tFdbkType type,bool upper);
 
 
 //------------------------------------------------------------------------------
 /**
-* Get a string representing the code of an assessment.
-* @param assessment          Assessment.
+* return a feedback type.
+* @param type                Feedback type.
 */
-R::RString GetAssessmentCode(tDocAssessment assessment);
+tFdbkType GetFdbkType(unsigned int type);
 
 
 //------------------------------------------------------------------------------
 /**
-* Get a string representing the code of an assessment.
-* @param assessment          Assessment.
+* Different types of profiles.
+* @short Profile Type
 */
-tDocAssessment GetAssessmentType(const R::RString& assessment);
+enum tProfileType
+{
+	ptUnknown                /** Unknown profile type.*/,
+	ptInterest               /** Profile representing an interest of a user
+	                             expressed through a set of feedbacks on
+	                             documents.*/,
+	ptExpertise              /** Profile representing a particular expertise of
+	                             a user.*/
+};
+
+
+//------------------------------------------------------------------------------
+/**
+* @return a string representing a profile type.
+* @param type                Profile type.
+* @param upper               First letter in uppercase ?
+* @param plural             Plural ?
+*/
+R::RString GetProfileType(tProfileType type,bool upper,bool plural);
+
+
+//------------------------------------------------------------------------------
+/**
+* return a profile type.
+* @param type                Profile type.
+*/
+tProfileType GetProfileType(unsigned int fdbk);
 
 
 //------------------------------------------------------------------------------
@@ -174,9 +199,9 @@ tDocAssessment GetAssessmentType(const R::RString& assessment);
  * only measure between two objects are computed.
  * @short Type of measures.
  */
-enum tTypeMeasure
+enum tTypeMeasures
 {
-	tmUnknow                 /** Unknow measure.*/,
+	tmUnknow                 /** Unknown measure.*/,
 	tmDoc                    /** Measure(document,document).*/,
 	tmProfile                /** Measure(profile,profile).*/,
 	tmDocProfile             /** Measure(document,profile).*/,
@@ -192,8 +217,9 @@ enum tTypeMeasure
 /**
  * Get a string representing the type of measure.
  * @param type               Type of the measure.
+ * @param upper               First letter in uppercase ?
  */
-R::RString GetMeasureType(tTypeMeasure type);
+R::RString GetMeasureType(tTypeMeasures type,bool upper);
 
 
 //------------------------------------------------------------------------------
@@ -307,7 +333,6 @@ class GCommunityCalc;
 //------------------------------------------------------------------------------
 // forward class declaration - Session Part
 class GObject;
-class GDebugObject;
 class GSession;
 class GSlot;
 class GStorage;
@@ -375,8 +400,9 @@ struct GEvent
 	/**
 	* Get a string representing a event.
 	* @param event               Event.
+	* @param upper               First letter in uppercase ?
 	*/
-	static R::RString GetEvent(tEvent event);
+	static R::RString GetEvent(tEvent event,bool upper);
 };
 
 

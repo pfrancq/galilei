@@ -90,6 +90,13 @@ public:
 	inline size_t GetId(void) const {return(Id);}
 
 	/**
+	 * Set the identifier of the object. It can only be called if the current
+	 * identifier is undefined.
+	 * @param id             Identifier.
+	 */
+	void SetId(size_t id);
+
+	/**
 	* @return the name of the object.
 	*/
 	inline R::RString GetName(void) const {return(Name);}

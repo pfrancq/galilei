@@ -6,7 +6,7 @@
 
 	Generic Group - Header.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -234,10 +234,11 @@ public:
 
 	/**
 	* Assign a new description to the group.
+	* @param session         Session.
 	* @param infos           Pointer to the information.
 	* \warning The container infos is cleared by this method.
 	*/
-	void Update(GWeightInfos& infos);
+	void Update(GSession* session,GWeightInfos& infos);
 
 	/**
 	* Compute the number of objects of a given group that are also in a

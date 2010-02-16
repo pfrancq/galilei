@@ -6,7 +6,7 @@
 
 	XML Index - Implementation.
 
-	Copyright 2007-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2007-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2007-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -85,8 +85,14 @@ GXMLIndex::GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang,RContai
 
 
 //-----------------------------------------------------------------------------
-GXMLIndex::GXMLIndex(size_t id,const RString& name,GConceptType* type,size_t refdocs,off_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics,size_t refclasses)
-	: GConcept(id,name,type,refdocs,indexdocs,refprofiles,refcommunities,reftopics,refclasses), XMLTag(0), Universal(10), Stems(10)
+GXMLIndex::GXMLIndex(size_t id, const R::RString& name, GConceptType* type,
+		size_t refdocs, size_t idxdocs,
+		size_t refprofiles, size_t idxprofiles,
+		size_t refcommunities, size_t idxcommunities,
+		size_t reftopics, size_t idxtopics,
+		size_t refclasses, size_t idxclasses)
+	: GConcept(id,name,type,refdocs,idxdocs,refprofiles,idxprofiles,refcommunities,idxcommunities,reftopics,idxtopics,refclasses,idxclasses),
+	  XMLTag(0), Universal(10), Stems(10)
 {
 	BuildDef();
 }

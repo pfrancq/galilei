@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Header.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -161,41 +161,6 @@ public:
 	*/
 	R::RDebug* GetDebug(void) const;
 
-private:
-
-	/**
-	 * Add a object given debugging information.
-	 * @param debug          Object.
-	 */
-	static void AddDebugObject(const GDebugObject* debug);
-
-	/**
-	 * Remove a object given debugging information.
-	 * @param debug          Object.
-	 */
-	static void RemoveDebugObject(const GDebugObject* debug);
-
-public:
-
-	/**
-	 * @return a cursor on all debug objects.
-	 */
-	R::RCursor<GDebugObject> GetDebugObjects(void) const;
-
-	/**
-	 * Set if a particular debug object should be activated.
-	 * @param name
-	 * @param active
-	 */
-	void SetActiveDebugObject(const R::RString& name,bool active);
-
-	/**
-	 * Build some debugging information concerning an object with a given name.
-	 * @param name           Name of the object.
-	 * @param info           Description of the information needed.
-	 */
-	virtual void DebugInfo(const R::RString& name,const R::RString& info);
-
 	/**
 	* Set The Current RandomSeed.
 	* @param rand            Current RandomSeed.
@@ -277,6 +242,15 @@ public:
 	 * @param infos          Vector to assign.
 	 */
 	void AssignInfos(GClass* theclass,GWeightInfos& infos);
+
+	/**
+	 * Find an object of a given type and with a particular identifier.
+	 * @param id             Identifier.
+	 * @param objtype        Type. Only the objects of the ontology are
+	 *                       managed.
+	 * @return Pointer to the object.
+	 */
+	virtual GObject* GetObject(size_t id,tObjType objtype);
 
 	//@} Knowledge methods
 
@@ -571,15 +545,15 @@ public:
 	void UpdateProfiles(size_t docid);
 
 	/**
-	* Insert a new Feedback.
+	* Add a new feedback of a given profile on a given document.
 	* @param profid          Identifier of the profile.
 	* @param docid           Identifier of the document.
-	* @param assess          Feedback.
+	* @param fdbk            Feedback type.
 	* @param date            Date on the last feedback.
 	* @param computed        Date on the last computation of the document.
 	* @param newone          New feedback in the system?
 	*/
-	void InsertFdbk(size_t profid,size_t docid,tDocAssessment assess,R::RDate date,R::RDate computed,bool newone=false);
+	void AddFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate date,R::RDate computed,bool newone=false);
 
 	/**
 	* Clear all the feedbacks.

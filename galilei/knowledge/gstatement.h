@@ -6,7 +6,7 @@
 
 	Statement - Header.
 
-	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -46,12 +46,14 @@ namespace GALILEI{
 //-----------------------------------------------------------------------------
 /**
 * The GStatement class provides a representation of a statement in the form of
-* subject-predicate-object where subject and object are concepts. A weight may
-* be associated with each statement.
+* \f$P(x_i,x_j,w_{i,j,p})\f$ where:
+* - \f$P\f$ is a GPredicate.
+* - \f$x_1\f$ and \f$x_2\f$ are any GObject (concept, concepts types, documents
+*   , profiles, etc.).
+* - \f$w_{i,j,p}\f$ is weight associated to that statement.
 *
-* A statement can be seen as a directed graph with a weighted edge representing a
-* predicate between a node representing the subject and a node representing the
-* object.
+* The statements can be seen as a directed graph with a weighted edge
+* representing a predicate between nodes representing the objects.
 * @author Pascal Francq
 * @short Statement
 */
@@ -63,19 +65,19 @@ class GStatement
 	size_t Id;
 
 	/**
-	* Subject of the statement.
-	*/
-	GObject* Subject;
-
-	/**
 	* Predicate of the statement.
 	*/
 	GPredicate* Predicate;
 
 	/**
-	* Object of the statement.
+	* Xi of the statement.
 	*/
-	GObject* Object;
+	GObject* Xi;
+
+	/**
+	* Xj of the statement.
+	*/
+	GObject* Xj;
 
 	/**
 	* Weight associated to the statement.
@@ -87,12 +89,12 @@ public:
 	/**
 	* Constructor of a statement.
 	* @param id              Identifier.
-	* @param subject         Subject.
 	* @param predicate       Predicate.
-	* @param object          Object.
+	* @param xi              \f$x_i\f$.
+	* @param xj              \f$x_j\f$.
 	* @param weight          Weight.
 	*/
-	GStatement(size_t id,GObject* subject,GPredicate* predicate,GObject* object,double weight);
+	GStatement(size_t id,GPredicate* predicate,GObject* xi,GObject* xj,double weight);
 
 	/**
 	* Compare two statements to classify them.
@@ -113,22 +115,22 @@ public:
 	size_t GetId(void) const {return(Id);}
 
 	/**
-	* Get the subject of the statement.
-	* @return Pointer to a GConcept.
-	*/
-	GObject* GetSubject(void) const {return(Subject);}
-
-	/**
 	* Get the predicate of the statement.
 	* @return Pointer to a GPredicate.
 	*/
 	GPredicate* GetPredicate(void) const {return(Predicate);}
 
 	/**
-	* Get the object of the statement.
+	* Get the \f$x_i\f$ of the statement.
 	* @return Pointer to a GConcept.
 	*/
-	GObject* GetObject(void) const {return(Object);}
+	GObject* GetXi(void) const {return(Xi);}
+
+	/**
+	* Get the \f$x_j\f$ of the statement.
+	* @return Pointer to a GConcept.
+	*/
+	GObject* GetXj(void) const {return(Xj);}
 
 	/**
 	* Get the weight of the statement.

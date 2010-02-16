@@ -6,7 +6,7 @@
 
 	Widget to manipulate a list of objects - Implementation.
 
-	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2010 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -27,13 +27,9 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for Qt/KDE
-#include <ui_qgobjectslist.h>
-
-
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
+#include <ui_qgobjectslist.h>
 #include <rqt.h>
 #include <rcontainer.h>
 #include <qgobjectslist.h>
@@ -50,6 +46,7 @@
 #include <gmetaengine.h>
 #include <gsugs.h>
 #include <gsuggestion.h>
+#include <gfdbk.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -131,21 +128,21 @@ public:
 	}
 
 	QGObject(QTreeWidgetItem* parent,GProfile* prof,const RDate& when)
-		: QTreeWidgetItem(parent, QStringList()<<ToQString(prof->GetName())+" ("+ToQString(prof->GetUser()->GetFullName())+")"<<ToQString(when)), Type(otProfile)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString(prof->GetName())+" ("+ToQString(GetProfileType(prof->GetProfileType(),true,false))+" of "+ToQString(prof->GetUser()->GetFullName())+")"<<ToQString(when)), Type(otProfile)
 	{
 		Obj.Profile=prof;
 		setIcon(0,KIconLoader::global()->loadIcon("personal",KIconLoader::Small));
 	}
 
 	QGObject(QTreeWidget* parent,GProfile* prof,const RDate& when)
-		: QTreeWidgetItem(parent, QStringList()<<ToQString(prof->GetName())+" ("+ToQString(prof->GetUser()->GetFullName())+")"<<ToQString(when)), Type(otProfile)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString(prof->GetName())+" ("+ToQString(GetProfileType(prof->GetProfileType(),true,false))+" of "+ToQString(prof->GetUser()->GetFullName())+")"<<ToQString(when)), Type(otProfile)
 	{
 		Obj.Profile=prof;
 		setIcon(0,KIconLoader::global()->loadIcon("personal",KIconLoader::Small));
 	}
 
 	QGObject(QTreeWidgetItem* parent,GProfile* prof)
-		: QTreeWidgetItem(parent, QStringList()<<ToQString(prof->GetName())<<ToQString(prof->GetUser()->GetFullName())), Type(otProfile)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString(prof->GetName())<<ToQString(GetProfileType(prof->GetProfileType(),true,false))+" of "+ToQString(prof->GetUser()->GetFullName())), Type(otProfile)
 	{
 		Obj.Profile=prof;
 		setIcon(0,KIconLoader::global()->loadIcon("edit-find-user",KIconLoader::Small));
@@ -186,21 +183,21 @@ public:
 		setIcon(0,KIconLoader::global()->loadIcon("group-user-new",KIconLoader::Small));
 	}
 
-	QGObject(QTreeWidget* parent,tDocAssessment assess)
+	QGObject(QTreeWidget* parent,tFdbkType fdbk)
 		: QTreeWidgetItem(parent), Type(otEngineDoc)
 	{
 		setText(1,"");
-		switch(assess)
+		switch(fdbk)
 		{
-			case djOK:
+			case ftRelevant:
 				setText(0,"Relevant Documents");
 				setIcon(0,KIconLoader::global()->loadIcon("folder-green",KIconLoader::Small));
 				break;
-			case djKO:
+			case ftFuzzyRelevant:
 				setText(0,"Fuzzy Relevant Documents");
 				setIcon(0,KIconLoader::global()->loadIcon("folder-orange",KIconLoader::Small));
 				break;
-			case djOutScope:
+			case ftIrrelevant:
 				setText(0,"Irrelevant Documents");
 				setIcon(0,KIconLoader::global()->loadIcon("folder-red",KIconLoader::Small));
 				break;
@@ -482,9 +479,9 @@ void QGObjectsList::Set(oType type,GDoc* doc)
 	List->clear();
 
 	// Init different Assessments
-	QGObject* ok= new QGObject(List,djOK);
-	QGObject* ko= new QGObject(List,djKO);
-	QGObject* hs= new QGObject(List,djOutScope);
+	QGObject* ok(new QGObject(List,ftRelevant));
+	QGObject* ko(new QGObject(List,ftFuzzyRelevant));
+	QGObject* hs(new QGObject(List,ftIrrelevant));
 
 	// Add Assessment
 	RNumContainer<size_t,true>* Profiles(doc->GetFdbks());
@@ -502,13 +499,13 @@ void QGObjectsList::Set(oType type,GDoc* doc)
 		QGObject *p(0);
 		switch(fdbk->GetFdbk())
 		{
-			case djOK:
+			case ftRelevant:
 				p=ok;
 				break;
-			case djKO:
+			case ftFuzzyRelevant:
 				p=ko;
 				break;
-			case djOutScope:
+			case ftIrrelevant:
 				p=hs;
 				break;
 			default:
@@ -516,7 +513,7 @@ void QGObjectsList::Set(oType type,GDoc* doc)
 				break;
 		}
 		if(!p) continue;
-		new QGObject(p,prof,fdbk->GetWhen());
+		new QGObject(p,prof,fdbk->GetDone());
 	}
 
 	List->resizeColumnToContents(0);
@@ -538,9 +535,9 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 		case Assessments:
 		{
 			// Init different Assessments
-			QGObject *ok(new QGObject(List,djOK));
-			QGObject *ko(new QGObject(List,djKO));
-			QGObject *hs(new QGObject(List,djOutScope));
+			QGObject* ok(new QGObject(List,ftRelevant));
+			QGObject* ko(new QGObject(List,ftFuzzyRelevant));
+			QGObject* hs(new QGObject(List,ftIrrelevant));
 
 			// Add Assessment
 			RCursor<GFdbk> Docs(profile->GetFdbks());
@@ -552,13 +549,13 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 				QGObject *p(0);
 				switch(Docs()->GetFdbk())
 				{
-					case djOK:
+					case ftRelevant:
 						p=ok;
 						break;
-					case djKO:
+					case ftFuzzyRelevant:
 						p=ko;
 						break;
-					case djOutScope:
+					case ftIrrelevant:
 						p=hs;
 						break;
 					default:
@@ -566,7 +563,7 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 						break;
 				}
 				if(!p) continue;
-				new QGObject(p,doc,Docs()->GetWhen());
+				new QGObject(p,doc,Docs()->GetDone());
 			}
 			break;
 		}

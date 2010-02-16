@@ -7,7 +7,6 @@ SET(galilei_sessions_INST_INCLUDES
     gslot.h
     gslotlog.h    
     ggalileiapp.h
-    gdebugobject.h
     gobject.h
     gsimulator.h
 )
@@ -15,8 +14,7 @@ SET(galilei_sessions_INST_INCLUDES
 
 SET(galilei_sessions_TARGET_SOURCES
 	galilei.cpp
-	gobject.cpp
-    gdebugobject.cpp        	
+	gobject.cpp       	
     gslot.cpp
     gslotlog.cpp
     gstorage.cpp          

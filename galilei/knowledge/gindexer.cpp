@@ -6,7 +6,7 @@
 
 	Indexer - Implementation.
 
-	Copyright 2004-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2004-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2004-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -36,7 +36,6 @@
 //------------------------------------------------------------------------------
 // include file for GALILEI
 #include <rdir.h>
-#include <rindexfile.h>
 using namespace R;
 using namespace std;
 
@@ -70,23 +69,22 @@ const size_t SizeT2=2*sizeof(size_t);
 
 //------------------------------------------------------------------------------
 //
-// class GIndexer::DescFile
+// class GIndexer::Type
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GIndexer::IndexFile : public RIndexFile
+class GIndexer::IndexType
 {
 public:
-
 	tObjType Type;
+	RString Name;
+	bool IndexInc;
+	RIndexFile* Desc;
+	RIndexFile* Index;
 
-	IndexFile(tObjType type,const RURI& uri,size_t blocksize,size_t nbcaches,size_t tolerance)
-	: RIndexFile(uri,blocksize,nbcaches,tolerance), Type(type)
-	{
-		Open();
-	}
-	int Compare(const IndexFile& file) const {return(Type-file.Type);}
+	IndexType(tObjType type,const RString& name) : Type(type), Name(name), IndexInc(false), Desc(0), Index(0) {}
+	int Compare(const IndexType& type) const {return(Type-type.Type);}
 	int Compare(tObjType type) const {return(Type-type);}
 };
 
@@ -100,87 +98,88 @@ public:
 
 //------------------------------------------------------------------------------
 GIndexer::GIndexer(void)
-	: IndexDocs(0), Desc(10), StructDoc(0), tmpRefs(5000), IndexDocsInc(false)
+	: StructDoc(0), tmpRefs(5000), Types(5), TypesNames(5)
 {
+	Types.InsertPtr(new IndexType(otDoc,"Documents"));
+	TypesNames.InsertPtr(new RString("Documents"));
+	Types.InsertPtr(new IndexType(otProfile,"Profiles"));
+	TypesNames.InsertPtr(new RString("Profiles"));
+	Types.InsertPtr(new IndexType(otCommunity,"Communities"));
+	TypesNames.InsertPtr(new RString("Communities"));
+	Types.InsertPtr(new IndexType(otTopic,"Topics"));
+	TypesNames.InsertPtr(new RString("Topics"));
+	Types.InsertPtr(new IndexType(otClass,"Classes"));
+	TypesNames.InsertPtr(new RString("Classes"));
 }
 
 
 //------------------------------------------------------------------------------
 void GIndexer::CreateConfig(RConfig* config)
 {
-	config->InsertParam(new RParamValue("IndexDocsInc",false),"Indexer");
+	// Parse all types
+	RCursor<IndexType> Type(Types);
+	for(Type.Start();!Type.End();Type.Next())
+	{
+		// Automatic indexing
+		config->InsertParam(new RParamValue("Index"+Type()->Name+"Inc",false),"Indexer");
 
-	// Documents descriptions
-	config->InsertParam(new RParamValue("DocsDescBlock",1024),"Indexer");
-	config->InsertParam(new RParamValue("DocsDescTolerance",10),"Indexer");
-	config->InsertParam(new RParamValue("DocsDescCache",20),"Indexer");
-	config->InsertParam(new RParamValue("DocsDescType",RBlockFile::WriteBack),"Indexer");
+		// Descriptions
+		config->InsertParam(new RParamValue(Type()->Name+"DescBlock",1024),"Indexer");
+		config->InsertParam(new RParamValue(Type()->Name+"DescTolerance",10),"Indexer");
+		config->InsertParam(new RParamValue(Type()->Name+"DescCache",20),"Indexer");
+		config->InsertParam(new RParamValue(Type()->Name+"DescType",RBlockFile::WriteBack),"Indexer");
+
+		// Inverted file
+		config->InsertParam(new RParamValue(Type()->Name+"IndexBlock",1024),"Indexer");
+		config->InsertParam(new RParamValue(Type()->Name+"IndexTolerance",10),"Indexer");
+		config->InsertParam(new RParamValue(Type()->Name+"IndexCache",20),"Indexer");
+		config->InsertParam(new RParamValue(Type()->Name+"IndexType",RBlockFile::WriteBack),"Indexer");
+
+	}
 
 	// Documents structures
-	config->InsertParam(new RParamValue("DocsStructBlock",4096),"Indexer");
-	config->InsertParam(new RParamValue("DocsStructTolerance",40),"Indexer");
-	config->InsertParam(new RParamValue("DocsStructCache",20),"Indexer");
-	config->InsertParam(new RParamValue("DocsStructType",RBlockFile::WriteBack),"Indexer");
-
-	// Documents inverted file
-	config->InsertParam(new RParamValue("DocsIndexBlock",1024),"Indexer");
-	config->InsertParam(new RParamValue("DocsIndexTolerance",10),"Indexer");
-	config->InsertParam(new RParamValue("DocsIndexCache",20),"Indexer");
-	config->InsertParam(new RParamValue("DocsIndexType",RBlockFile::WriteBack),"Indexer");
-
-	// Profiles descriptions
-	config->InsertParam(new RParamValue("ProfilesDescBlock",1024),"Indexer");
-	config->InsertParam(new RParamValue("ProfilesDescTolerance",10),"Indexer");
-	config->InsertParam(new RParamValue("ProfilesDescCache",20),"Indexer");
-	config->InsertParam(new RParamValue("ProfilesDescType",RBlockFile::WriteBack),"Indexer");
-
-	// Communities descriptions
-	config->InsertParam(new RParamValue("CommunitiesDescBlock",1024),"Indexer");
-	config->InsertParam(new RParamValue("CommunitiesDescTolerance",10),"Indexer");
-	config->InsertParam(new RParamValue("CommunitiesDescCache",20),"Indexer");
-	config->InsertParam(new RParamValue("CommunitiesDescType",RBlockFile::WriteBack),"Indexer");
-
-	// Topics descriptions
-	config->InsertParam(new RParamValue("TopicsDescBlock",1024),"Indexer");
-	config->InsertParam(new RParamValue("TopicsDescTolerance",20),"Indexer");
-	config->InsertParam(new RParamValue("TopicsDescCache",20),"Indexer");
-	config->InsertParam(new RParamValue("TopicsDescType",RBlockFile::WriteBack),"Indexer");
-
-	// Classes descriptions
-	config->InsertParam(new RParamValue("ClassesDescBlock",1024),"Indexer");
-	config->InsertParam(new RParamValue("ClassesDescTolerance",20),"Indexer");
-	config->InsertParam(new RParamValue("ClassesDescCache",20),"Indexer");
-	config->InsertParam(new RParamValue("ClassesDescType",RBlockFile::WriteBack),"Indexer");
+	config->InsertParam(new RParamValue("DocumentsStructBlock",4096),"Indexer");
+	config->InsertParam(new RParamValue("DocumentsStructTolerance",40),"Indexer");
+	config->InsertParam(new RParamValue("DocumentsStructCache",20),"Indexer");
+	config->InsertParam(new RParamValue("DocumentsStructType",RBlockFile::WriteBack),"Indexer");
 }
 
 
 //------------------------------------------------------------------------------
 void GIndexer::Apply(RConfig* config)
 {
-	// Apply the modifications
-	IndexDocsInc=config->GetBool("IndexDocsInc","Indexer");
-
 	// Create (if necessary) the directory corresponding to the name of the session
 	// Create all the index files
 	RString Dir(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Storage->GetWorld()+RFile::GetDirSeparator());
 	try
 	{
-		IndexFile* ptr;
 		RDir::CreateDirIfNecessary(Dir,true);
-		Desc.InsertPtr(ptr=new IndexFile(otDoc,Dir+"Documents.desc",config->GetUInt("DocsDescBlock","Indexer"),config->GetUInt("DocsDescCache","Indexer"),config->GetUInt("DocsDescTolerance","Indexer")));
-		ptr->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("DocsDescType","Indexer")));
-		Desc.InsertPtr(ptr=new IndexFile(otProfile,Dir+"Profiles.desc",config->GetUInt("ProfilesDescBlock","Indexer"),config->GetUInt("ProfilesDescCache","Indexer"),config->GetUInt("ProfilesDescTolerance","Indexer")));
-		ptr->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("ProfilesDescType","Indexer")));
-		Desc.InsertPtr(ptr=new IndexFile(otCommunity,Dir+"Communities.desc",config->GetUInt("CommunitiesDescBlock","Indexer"),config->GetUInt("CommunitiesDescCache","Indexer"),config->GetUInt("CommunitiesDescTolerance","Indexer")));
-		ptr->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("CommunitiesDescType","Indexer")));
-		Desc.InsertPtr(ptr=new IndexFile(otTopic,Dir+"Topics.desc",config->GetUInt("TopicsDescBlock","Indexer"),config->GetUInt("TopicsDescCache","Indexer"),config->GetUInt("TopicsDescTolerance","Indexer")));
-		ptr->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("TopicsDescType","Indexer")));
-		Desc.InsertPtr(ptr=new IndexFile(otClass,Dir+"Classes.desc",config->GetUInt("ClassesDescBlock","Indexer"),config->GetUInt("ClassesDescCache","Indexer"),config->GetUInt("ClassesDescTolerance","Indexer")));
-		ptr->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("ClassesDescType","Indexer")));
-		StructDoc=new IndexFile(otDoc,Dir+"Documents.struct",config->GetUInt("DocsStructBlock","Indexer"),config->GetUInt("DocsStructCache","Indexer"),config->GetUInt("DocsStructTolerance","Indexer"));
+
+		// Parse all types
+		RCursor<IndexType> Type(Types);
+		for(Type.Start();!Type.End();Type.Next())
+		{
+			Type()->IndexInc=config->GetBool("Index"+Type()->Name+"Inc","Indexer");
+			Type()->Desc=new RIndexFile(Dir+Type()->Name+".desc",
+					config->GetUInt(Type()->Name+"DescBlock","Indexer"),
+					config->GetUInt(Type()->Name+"DescCache","Indexer"),
+					config->GetUInt(Type()->Name+"DescTolerance","Indexer"));
+			Type()->Desc->Open();
+			Type()->Desc->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt(Type()->Name+"DescType","Indexer")));
+			Type()->Index=new RIndexFile(Dir+Type()->Name+".index",
+					config->GetUInt(Type()->Name+"IndexBlock","Indexer"),
+					config->GetUInt(Type()->Name+"IndexCache","Indexer"),
+					config->GetUInt(Type()->Name+"IndexTolerance","Indexer"));
+			Type()->Index->Open();
+			Type()->Index->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt(Type()->Name+"IndexType","Indexer")));
+		}
+
+		StructDoc=new RIndexFile(Dir+"Documents.struct",
+				config->GetUInt("DocsStructBlock","Indexer"),
+				config->GetUInt("DocsStructCache","Indexer"),
+				config->GetUInt("DocsStructTolerance","Indexer"));
+		StructDoc->Open();
 		StructDoc->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("DocsStructType","Indexer")));
-		IndexDocs=new IndexFile(otDoc,Dir+"Documents.index",config->GetUInt("DocsIndexBlock","Indexer"),config->GetUInt("DocsIndexCache","Indexer"),config->GetUInt("DocsIndexTolerance","Indexer"));
-		IndexDocs->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("DocsIndexType","Indexer")));
 	}
 	catch(...)
 	{
@@ -188,34 +187,40 @@ void GIndexer::Apply(RConfig* config)
 	}
 }
 
-
 //------------------------------------------------------------------------------
-void GIndexer::ClearIndexFiles(tObjType objtype)
+void GIndexer::ClearStruct(void)
 {
-	switch(objtype)
-	{
-		case otDocStruct:
-			StructDoc->Clear();
-			break;
-		case otDocIndex:
-			IndexDocs->Clear();
-			break;
-		default:
-			IndexFile* ptr(Desc.GetPtr(objtype));
-			if(!ptr)
-				throw GException("GIndexer::ClearIndexFiles(tObjType) : The objects of type '"+GetObjType(objtype)+"' do not have descriptions");
-			ptr->Clear();
-	}
+	StructDoc->Clear();
 }
 
 
 //------------------------------------------------------------------------------
-void GIndexer::Flush(tObjType objtype)
+void GIndexer::ClearDesc(tObjType objtype)
 {
-	IndexFile* ptr(Desc.GetPtr(objtype));
+	IndexType* ptr(Types.GetPtr(objtype));
 	if(!ptr)
-		throw GException("GIndexer::Flush(tObjType) : The objects of type '"+GetObjType(objtype)+"' do not have descriptions");
-	ptr->Flush();
+		ThrowGException(GetObjType(objtype,true,true)+" do not have descriptions");
+	ptr->Desc->Clear();
+}
+
+
+//------------------------------------------------------------------------------
+void GIndexer::ClearIndex(tObjType objtype)
+{
+	IndexType* ptr(Types.GetPtr(objtype));
+	if(!ptr)
+		ThrowGException(GetObjType(objtype,true,true)+" do not have index");
+	ptr->Index->Clear();
+}
+
+
+//------------------------------------------------------------------------------
+void GIndexer::FlushDesc(tObjType objtype)
+{
+	IndexType* ptr(Types.GetPtr(objtype));
+	if(!ptr)
+		ThrowGException(GetObjType(objtype,true,true)+" do not have descriptions");
+	ptr->Desc->Flush();
 }
 
 
@@ -224,30 +229,29 @@ void GIndexer::LoadInfos(GWeightInfos* &infos,tObjType type,size_t blockid,size_
 {
 	try
 	{
-		IndexFile* ptr(Desc.GetPtr(type));
+		IndexType* ptr(Types.GetPtr(type));
 		if(!ptr)
-			throw GException("GIndexer::LoadInfos : The objects of type '"+GetObjType(type)+"' do not have descriptions");
+			ThrowGException(GetObjType(type,true,true)+" do not have descriptions");
 
 		// Position the block file to the correct position and read the size
-		ptr->Seek(blockid,id);
+		ptr->Desc->Seek(blockid,id);
 		size_t size,concept;
 		double weight;
-		ptr->Read((char*)&size,sizeof(size_t));
+		ptr->Desc->Read((char*)&size,sizeof(size_t));
 		if(!infos)
 			infos=new GWeightInfos(size);
 		else
 			infos->Clear(size);
 		for(size_t i=0;i<size;i++)
 		{
-			ptr->Read((char*)&concept,sizeof(size_t));
-			ptr->Read((char*)&weight,sizeof(double));
+			ptr->Desc->Read((char*)&concept,sizeof(size_t));
+			ptr->Desc->Read((char*)&weight,sizeof(double));
 			infos->InsertPtrAt(new GWeightInfo(dynamic_cast<GSession*>(this)->GetConcept(concept),weight),i,false);
 		}
 	}
 	catch(RIOException e)
 	{
-		cerr<<e.GetMsg()<<endl;
-		throw GException(RString("GIndexer::LoadInfos: ")+e.GetMsg());
+		ThrowGException(e.GetMsg());
 	}
 }
 
@@ -262,20 +266,20 @@ void GIndexer::SaveInfos(const GWeightInfos& infos,tObjType type,size_t& blockid
 		if(!size)
 			return;
 
-		IndexFile* ptr(Desc.GetPtr(type));
+		IndexType* ptr(Types.GetPtr(type));
 		if(!ptr)
-			ThrowGException("The objects of type '"+GetObjType(type)+"' do not have descriptions");
+			ThrowGException(GetObjType(type,true,true)+" do not have descriptions");
 
 		// Position the block file to the correct position and write the size
-		ptr->Seek(blockid,id,sizeof(size_t)+size*SizeRecDesc);
-		ptr->Write((char*)&size,sizeof(size_t));
+		ptr->Desc->Seek(blockid,id,sizeof(size_t)+size*SizeRecDesc);
+		ptr->Desc->Write((char*)&size,sizeof(size_t));
 		RCursor<GWeightInfo> Cur(infos);
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
 			concept=Cur()->GetId();
 			weight=Cur()->GetWeight();
-			ptr->Write((char*)&concept,sizeof(size_t));
-			ptr->Write((char*)&weight,sizeof(double));
+			ptr->Desc->Write((char*)&concept,sizeof(size_t));
+			ptr->Desc->Write((char*)&weight,sizeof(double));
 		}
 	}
 	catch(RIOException e)
@@ -387,8 +391,11 @@ void GIndexer::SaveStruct(GDocStruct* docstruct,size_t& blockid,size_t id)
 //------------------------------------------------------------------------------
 void GIndexer::UpdateRefs(const GWeightInfos& infos,tObjType type,size_t id,bool add)
 {
-	if(type!=otDoc)
-		throw GException("GIndexer::UpdateRefs: Cannot find an index for "+GetObjType(type));
+	IndexType* ptr(Types.GetPtr(type));
+	if(!ptr)
+		ThrowGException(GetObjType(type,true,true)+" do not have index");
+	if(!ptr->IndexInc)
+		return;
 
 	// Update the index for all concepts
 	RCursor<GWeightInfo> Cur(infos);
@@ -396,8 +403,8 @@ void GIndexer::UpdateRefs(const GWeightInfos& infos,tObjType type,size_t id,bool
 	{
 		// Read the vector representing the current index
 		GConcept* Concept(Cur()->Concept);
-		if(Concept->IndexDocs)
-			IndexDocs->Read(Concept->IndexDocs,Concept->Id,tmpRefs);
+		if(Concept->GetIndex(type))
+			ptr->Index->Read(Concept->GetIndex(type),Concept->Id,tmpRefs);
 		else
 			tmpRefs.Clear();
 
@@ -410,7 +417,11 @@ void GIndexer::UpdateRefs(const GWeightInfos& infos,tObjType type,size_t id,bool
 
 		// If the size of vector has changed -> Save it back
 		if(oldsize!=tmpRefs.GetNb())
-			IndexDocs->Write(Concept->IndexDocs,Concept->Id,tmpRefs);
+		{
+			size_t idx(Concept->GetIndex(type));
+			ptr->Index->Write(idx,Concept->Id,tmpRefs);
+			Concept->SetIndex(type,idx);
+		}
 	}
 }
 
@@ -418,40 +429,45 @@ void GIndexer::UpdateRefs(const GWeightInfos& infos,tObjType type,size_t id,bool
 //------------------------------------------------------------------------------
 void GIndexer::LoadRefs(GConcept* concept,RNumContainer<size_t,true>& refs,tObjType type)
 {
-	if(type!=otDoc)
-		throw GException("GIndexer::LoadRefs: Cannot find an index for "+GetObjType(type));
+	IndexType* ptr(Types.GetPtr(type));
+	if(!ptr)
+		ThrowGException(GetObjType(type,true,true)+" do not have index");
 
-	if(!concept->IndexDocs)
+	size_t Refs(concept->GetIndex(type));
+	if(!Refs)
 	{
 		refs.Clear();
 		return;
 	}
-	IndexDocs->Read(concept->IndexDocs,concept->Id,refs);
+	ptr->Index->Read(Refs,concept->Id,refs);
 }
 
 
 //------------------------------------------------------------------------------
 void GIndexer::BuildRefs(tObjType type,GSlot* slot)
 {
-	if(type!=otDoc)
-		throw GException("GIndexer::LoadRefs: Cannot find an index for "+GetObjType(type));
-	IndexFile* ptr(Desc.GetPtr(type));
+	IndexType* ptr(Types.GetPtr(type));
 	if(!ptr)
-		throw GException("GIndexer::BuildRefs : Big problem");
+		ThrowGException(GetObjType(type,true,true)+" do not have index");
+
 	GSession* Session(dynamic_cast<GSession*>(this));
 
 	// Clear the file and put all block identifier of concepts to 0.
 	if(slot)
 		slot->WriteStr("Clear the index");
-	IndexDocs->Clear();
+	ptr->Index->Clear();
 	RCursor<GConcept> Concepts(Session->GetConcepts());
 	for(Concepts.Start();!Concepts.End();Concepts.Next())
 	{
-		Concepts()->IndexDocs=0;
+		Concepts()->SetIndex(type,0);
 
 		// If no cache is asked -> Save each time
-		if(IndexDocs->GetCacheType()==RBlockFile::WriteThrough)
-			Storage->SaveIndex(Concepts(),otDoc,Concepts()->IndexDocs);
+		if(ptr->Index->GetCacheType()==RBlockFile::WriteThrough)
+		{
+			size_t idx(0);
+			Storage->SaveIndex(Concepts(),otDoc,idx);
+			Concepts()->SetIndex(type,idx);
+		}
 	}
 
 	// Go trough each document
@@ -462,20 +478,20 @@ void GIndexer::BuildRefs(tObjType type,GSlot* slot)
 			slot->NextDoc(Cur());
 
 		// Position the block file to the correct position and read the size
-		ptr->Seek(Cur()->BlockId,Cur()->Id);
+		ptr->Desc->Seek(Cur()->BlockId,Cur()->Id);
 		size_t size,concept;
 		double weight;
-		ptr->Read((char*)&size,sizeof(size_t));
+		ptr->Desc->Read((char*)&size,sizeof(size_t));
 		for(size_t i=0;i<size;i++)
 		{
 			// Read concept identifier and weight
-			ptr->Read((char*)&concept,sizeof(size_t));
-			ptr->Read((char*)&weight,sizeof(double));
+			ptr->Desc->Read((char*)&concept,sizeof(size_t));
+			ptr->Desc->Read((char*)&weight,sizeof(double));
 
 			// Read the vector representing the current index
 			GConcept* Concept(Session->GetConcept(concept));
-			if(Concept->IndexDocs)
-				IndexDocs->Read(Concept->IndexDocs,Concept->Id,tmpRefs);
+			if(Concept->GetIndex(type))
+				ptr->Index->Read(Concept->GetIndex(type),Concept->Id,tmpRefs);
 			else
 				tmpRefs.Clear();
 
@@ -486,24 +502,26 @@ void GIndexer::BuildRefs(tObjType type,GSlot* slot)
 			// If the size of vector has changed -> Save it back
 			if(oldsize!=tmpRefs.GetNb())
 			{
-				IndexDocs->Write(Concept->IndexDocs,Concept->Id,tmpRefs);
+				size_t idx(Concept->GetIndex(type));
+				ptr->Index->Write(idx,Concept->Id,tmpRefs);
+				Concept->SetIndex(type,idx);
 
 				// If no cache is asked -> Save each time
-				if(IndexDocs->GetCacheType()==RBlockFile::WriteThrough)
-					Storage->SaveIndex(Concept,otDoc,Concept->IndexDocs);
+				if(ptr->Index->GetCacheType()==RBlockFile::WriteThrough)
+					Storage->SaveIndex(Concept,otDoc,Concept->GetIndex(type));
 			}
 		}
 	}
 
 	// If cache was asked, flush the cache and save the block identifier of the concepts
-	if(IndexDocs->GetCacheType()==RBlockFile::WriteBack)
+	if(ptr->Index->GetCacheType()==RBlockFile::WriteBack)
 	{
 		if(slot)
 			slot->WriteStr("Flush the index");
-		IndexDocs->Flush();
+		ptr->Index->Flush();
 		RCursor<GConcept> Concepts(Session->GetConcepts());
 		for(Concepts.Start();!Concepts.End();Concepts.Next())
-			Storage->SaveIndex(Concepts(),otDoc,Concepts()->IndexDocs);
+			Storage->SaveIndex(Concepts(),otDoc,Concepts()->GetIndex(type));
 	}
 }
 
@@ -512,6 +530,5 @@ void GIndexer::BuildRefs(tObjType type,GSlot* slot)
 //------------------------------------------------------------------------------
 GIndexer::~GIndexer(void)
 {
-	delete IndexDocs;
 	delete StructDoc;
 }

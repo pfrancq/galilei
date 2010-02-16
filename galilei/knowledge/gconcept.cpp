@@ -6,7 +6,7 @@
 
 	Concept - Implementation.
 
-	Copyright 2006-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -53,19 +53,22 @@ using namespace std;
 GConcept::GConcept(const GConcept* concept)
 	: GObject(concept), Type(concept->Type),
 	  NbRefDocs(concept->NbRefDocs), IfDocs(concept->IfDocs), IndexDocs(concept->IndexDocs),
-	  NbRefProfiles(concept->NbRefProfiles), IfProfiles(concept->IfProfiles),
-	  NbRefCommunities(concept->NbRefCommunities), IfCommunities(concept->IfCommunities),
-	  NbRefTopics(concept->NbRefTopics), IfTopics(concept->IfTopics),
-	  NbRefClasses(concept->NbRefClasses), IfClasses(concept->IfClasses)
+	  NbRefProfiles(concept->NbRefProfiles), IfProfiles(concept->IfProfiles), IndexProfiles(concept->IndexProfiles),
+	  NbRefCommunities(concept->NbRefCommunities), IfCommunities(concept->IfCommunities), IndexCommunities(concept->IndexCommunities),
+	  NbRefTopics(concept->NbRefTopics), IfTopics(concept->IfTopics), IndexTopics(concept->IndexTopics),
+	  NbRefClasses(concept->NbRefClasses), IfClasses(concept->IfClasses), IndexClasses(concept->IndexClasses)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GConcept::GConcept(const RString& name,GConceptType* type)
-	: GObject(cNoRef,name,otConcept), Type(type), NbRefDocs(0), IfDocs(NAN), IndexDocs(0),
-	  NbRefProfiles(0), IfProfiles(NAN), NbRefCommunities(0), IfCommunities(NAN),
-	  NbRefTopics(0), IfTopics(NAN), NbRefClasses(0), IfClasses(NAN)
+	: GObject(cNoRef,name,otConcept), Type(type),
+	  NbRefDocs(0), IfDocs(NAN), IndexDocs(0),
+	  NbRefProfiles(0), IfProfiles(NAN), IndexProfiles(0),
+	  NbRefCommunities(0), IfCommunities(NAN), IndexCommunities(0),
+	  NbRefTopics(0), IfTopics(NAN), IndexTopics(0),
+	  NbRefClasses(0), IfClasses(NAN), IndexClasses(0)
 {
 	if(!type)
 		ThrowGException("Cannot create a concept no type");
@@ -73,10 +76,18 @@ GConcept::GConcept(const RString& name,GConceptType* type)
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(size_t id,const RString& name,GConceptType* type,size_t refdocs,size_t indexdocs,size_t refprofiles,size_t refcommunities,size_t reftopics,size_t refclasses)
-	: GObject(id,name,otConcept), Type(type), NbRefDocs(refdocs), IfDocs(NAN), IndexDocs(indexdocs),
-	  NbRefProfiles(refprofiles), IfProfiles(NAN), NbRefCommunities(refcommunities), IfCommunities(NAN),
-	  NbRefTopics(reftopics), IfTopics(NAN), NbRefClasses(refclasses), IfClasses(NAN)
+GConcept::GConcept(size_t id, const R::RString& name, GConceptType* type,
+		size_t refdocs, size_t idxdocs,
+		size_t refprofiles, size_t idxprofiles,
+		size_t refcommunities, size_t idxcommunities,
+		size_t reftopics, size_t idxtopics,
+		size_t refclasses, size_t idxclasses)
+	: GObject(id,name,otConcept), Type(type),
+	  NbRefDocs(refdocs), IfDocs(NAN), IndexDocs(idxdocs),
+	  NbRefProfiles(refprofiles), IfProfiles(NAN), IndexProfiles(idxprofiles),
+	  NbRefCommunities(refcommunities), IfCommunities(NAN), IndexCommunities(idxcommunities),
+	  NbRefTopics(reftopics), IfTopics(NAN), IndexTopics(idxtopics),
+	  NbRefClasses(refclasses), IfClasses(NAN), IndexClasses(idxclasses)
 {
 }
 
@@ -106,6 +117,53 @@ GConcept* GConcept::DeepCopy(void) const
 void GConcept::SetId(size_t id)
 {
 	Id=id;
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GConcept::GetIndex(tObjType ObjType) const
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			return(IndexDocs);
+		case otProfile:
+			return(IndexProfiles);
+		case otCommunity:
+			return(IndexCommunities);
+		case otTopic:
+			return(IndexTopics);
+		case otClass:
+			return(IndexClasses);
+		default:
+			ThrowGException("Unknown type for concept "+RString::Number(Id));
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GConcept::SetIndex(tObjType ObjType,size_t index)
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			IndexDocs=index;
+			break;
+		case otProfile:
+			IndexProfiles=index;
+			break;
+		case otCommunity:
+			IndexCommunities=index;
+			break;
+		case otTopic:
+			IndexTopics=index;
+			break;
+		case otClass:
+			IndexClasses=index;
+			break;
+		default:
+			ThrowGException("Unknown type for concept "+RString::Number(Id));
+	}
 }
 
 
@@ -220,7 +278,7 @@ void GConcept::ClearRef(tObjType ObjType)
 			IfClasses=NAN;
 			break;
 		default:
-			ThrowGException("'"+GALILEI::GetObjType(ObjType)+"' is not a valid type");
+			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
 }
@@ -329,12 +387,16 @@ void GConcept::Clear(void)
 	IndexDocs=0;
 	NbRefProfiles=0;
 	IfProfiles=NAN;
+	IndexProfiles=0;
 	NbRefCommunities=0;
 	IfCommunities=NAN;
+	IndexCommunities=0;
 	NbRefTopics=0;
 	IfTopics=NAN;
+	IndexTopics=0;
 	NbRefClasses=0;
 	IfClasses=NAN;
+	IndexClasses=0;
 	Type=0;
 }
 

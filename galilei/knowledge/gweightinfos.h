@@ -6,7 +6,7 @@
 
 	List of weighted information entities - Header.
 
-	Copyright 2002-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or

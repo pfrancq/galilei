@@ -6,7 +6,7 @@
 
 	Subjects - Header.
 
-	Copyright 2002-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2004 by Julien Lamoral.
 	Copyright 2002-2004 by David Wartel.
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -43,7 +43,6 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gdebugobject.h>
 #include <gbasicsession.h>
 
 

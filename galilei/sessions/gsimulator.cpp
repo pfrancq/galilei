@@ -6,7 +6,7 @@
 
 	Simulator - Implementation.
 
-	Copyright 2002-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2004 by Julien Lamoral.
 	Copyright 2002-2004 by David Wartel.
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -51,6 +51,7 @@
 #include <gsugs.h>
 #include <gcommunitycalc.h>
 #include <gtopiccalc.h>
+#include <gfdbk.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -171,12 +172,15 @@ void GSimulator::StartSimulation(bool create)
 		// Clear the storages related to the current situation
 		Session->GetStorage()->Clear(otUser);
 		Session->GetStorage()->Clear(otProfile);
-		Session->ClearIndexFiles(otProfile);
+		Session->ClearDesc(otProfile);
+		Session->ClearIndex(otProfile);
 		Session->GetStorage()->Clear(otFdbk);
 		Session->GetStorage()->Clear(otCommunity);
-		Session->ClearIndexFiles(otCommunity);
+		Session->ClearDesc(otCommunity);
+		Session->ClearIndex(otCommunity);
 		Session->GetStorage()->Clear(otClass);
-		Session->ClearIndexFiles(otClass);
+		Session->ClearDesc(otClass);
+		Session->ClearIndex(otClass);
 
 		// Save the elements changed
 		RCursor<GSubject> Subjects(Session->GetSubjects());
@@ -305,19 +309,19 @@ void GSimulator::ShareDocuments(void)
 				// Look if 'OK'
 				if(Session->IsFromIdealGroup(Session->GetDoc(Cur()->GetDocId()),Session->GetIdealGroup(Profile())))
 				{
-					Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+					Session->AddFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftRelevant,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 				}
 				else
 				{
 					// Look If 'KO'
 					if(Session->IsFromParentIdealGroup(Session->GetDoc(Cur()->GetDocId()),Session->GetIdealGroup(Profile())))
 					{
-						Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						Session->AddFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftFuzzyRelevant,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 					}
 					else
 					{
 						// Must be H
-						Session->InsertFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
+						Session->AddFdbk(Profile()->GetId(),Cur()->GetDocId(),GFdbk::ErrorFdbk(ftIrrelevant,PercErr,Session->GetRandom()),RDate::GetToday(),doc->GetUpdated());
 					}
 				}
 			}
@@ -628,7 +632,7 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 	{
 		if(Cur()->GetPtr(subject->Name,false))
 			continue;
-		GProfile* prof(new GProfile(Cur(),subject->Name,nbsocial));
+		GProfile* prof(new GProfile(Cur(),ptInterest,subject->Name,nbsocial));
 		Session->AssignId(prof);
 		Session->InsertProfile(prof);
 		NewProfiles.InsertPtr(prof);
@@ -798,7 +802,7 @@ void GSimulator::ProfileAssess(GProfile* prof,GSubject* sub,size_t max,size_t ma
 			if(nbDocsOK)
 			{
 				nbDocsOK--;
-				Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOK,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+				Session->AddFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorFdbk(ftRelevant,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 			}
 		}
 		else
@@ -809,7 +813,7 @@ void GSimulator::ProfileAssess(GProfile* prof,GSubject* sub,size_t max,size_t ma
 				if(nbDocsKO)
 				{
 					nbDocsKO--;
-					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djKO,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+					Session->AddFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorFdbk(ftFuzzyRelevant,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 				}
 			}
 			else
@@ -818,7 +822,7 @@ void GSimulator::ProfileAssess(GProfile* prof,GSubject* sub,size_t max,size_t ma
 				if(nbDocsH)
 				{
 					nbDocsH--;
-					Session->InsertFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorJudgment(djOutScope,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
+					Session->AddFdbk(prof->GetId(),(*ptr)->GetId(),GFdbk::ErrorFdbk(ftIrrelevant,PercErr,Session->GetRandom()),RDate::GetToday(),(*ptr)->GetUpdated());
 				}
 			}
 		}
@@ -862,7 +866,7 @@ template<class cGroup,class cObj,class cCalc>
 		if(calc)
 		{
 			calc->Compute(grp);
-			grp->Update(calc->Infos);
+			grp->Update(Session,calc->Infos);
 		}
 	}
 }
@@ -958,7 +962,7 @@ void GSimulator::BuildIdealLeafTopics(void)
 		Grps()->AssignIdeal(grp);
 
 		// Update the topic.
-		grp->Update(Grps()->GetVector());
+		grp->Update(Session,Grps()->GetVector());
 
 		// Save the results if necessary
 		if(Session->MustSaveResults())

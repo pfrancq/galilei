@@ -6,7 +6,7 @@
 
 	Ontology - Header.
 
-	Copyright 2008-2009 by Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 2008-2010 by Pascal Francq (pfrancq@ulb.ac.be).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -98,10 +98,11 @@ public:
 	/**
 	 * Find an object of a given type and with a particular identifier.
 	 * @param id             Identifier.
-	 * @param objtype        Type.
+	 * @param objtype        Type. Only the objects of the ontology are
+	 *                       managed.
 	 * @return Pointer to the object.
 	 */
-	GObject* GetObject(size_t id,tObjType objtype);
+	virtual GObject* GetObject(size_t id,tObjType objtype);
 
 	/**
 	 * Clear the references of a given type of objects.
@@ -229,14 +230,14 @@ public:
 	/**
 	* Insert a new statement.
 	* @param id              Identifier of the statement.
-	* @param subject         Identifier of the subject.
-	* @param subjecttype     Type of the subject.
 	* @param predicate       Identifier of the predicate.
-	* @param object          Identifier of the object.
-	* @param objecttype      Type of the object.
+	* @param xi              Identifier of the \f$x_i\f$.
+	* @param xitype          Type of the \f$x_i\f$.
+	* @param xj              Identifier of the \f$x_j\f$.
+	* @param xjtype          Type of the \f$x_j\f$.
 	* @param weight          Weight of the statement.
 	*/
-	void InsertStatement(size_t id,size_t subject,tObjType subjecttype,size_t predicate,size_t object,tObjType objecttype,double weight);
+	void InsertStatement(size_t id,size_t predicate,size_t xi,tObjType xitype,size_t xj,tObjType xjtype,double weight);
 
 	/**
 	* Get a statement.
