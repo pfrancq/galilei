@@ -6,7 +6,7 @@
 
 	Compute Profiles and Documents Confidence - Implementation
 
-	Copyright 2005-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2005-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2005 by David Wartel.
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -53,6 +53,7 @@ using namespace std;
 #include <gstorage.h>
 #include <ggalileiapp.h>
 #include <gstorage.h>
+#include <gfdbk.h>
 
 
 
@@ -127,8 +128,8 @@ void SubsLevel::ComputeFdbks(size_t docid,GCommunity* group)
 		if(!fdbk) continue;
 		switch(fdbk->GetFdbk())
 		{
-			case djOK:
-				Fdbks.InsertPtr(new ProfileDoc(Profiles()->GetId(),fdbk->GetWhen()));
+			case ftRelevant:
+				Fdbks.InsertPtr(new ProfileDoc(Profiles()->GetId(),fdbk->GetDone()));
 			default:
 				break;
 		}
