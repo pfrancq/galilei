@@ -6,7 +6,7 @@
 
 	Class representing an instance of a HGA for GALILEI - Implementation
 
-	Copyright 1998-2009 by Pascal Francq (pfrancq@ulb.ac.be).
+	Copyright 1998-2010 by Pascal Francq (pfrancq@ulb.ac.be).
 	Copyright 1998-2008 by the Université Libre de Bruxelles.
 
 	This library is free software; you can redistribute it and/or
