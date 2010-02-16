@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Header.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -440,11 +440,11 @@ public:
 	* Add an assessment for a given profile and document.
 	* @param p               Identifier of the profile.
 	* @param d               Identifier of the document.
-	* @param assess          Feedback.
+	* @param fdbk            Feedback type.
 	* @param date            Date on the last feedback.
 	* @param computed        Date on the last computation of the document.
 	*/
-	virtual void AddFdbk(size_t p,size_t d,tDocAssessment assess,R::RDate date,R::RDate computed);
+	virtual void AddFdbk(size_t p,size_t d,tFdbkType fdbk,R::RDate date,R::RDate computed);
 
 
 	// @} Users/Profiles

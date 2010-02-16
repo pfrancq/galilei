@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database (KDE Part)- Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -79,7 +79,7 @@ void About(void)
 {
 	KAboutData aboutData("mysql", 0, ki18n("MySQL"),
 		"1.0",ki18n("This is a storage based on MySQL database."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2009 by Pascal Francq\n(C) 2001-2004 by Julien Lamoral, Valery Vandaele and David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2001-2010 by Pascal Francq\n(C) 2001-2004 by Julien Lamoral, Valery Vandaele and David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Developer"));

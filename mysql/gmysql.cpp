@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -62,6 +62,7 @@
 #include <gstatement.h>
 #include <gpredicate.h>
 #include <gclass.h>
+#include <gfdbk.h>
 
 
 
@@ -226,7 +227,7 @@ size_t GStorageMySQL::GetNbSaved(tObjType type)
 				return(GetCount("concepts"));
 
 			default:
-				throw GException("GStorageMySQL::GetNbSaved: '"+GetObjType(type)+"' not supported");
+				ThrowGException(GetObjType(type,true,true)+" are not supported");
 		}
 	}
 	catch(RDbException e)
@@ -484,7 +485,7 @@ void GStorageMySQL::Clear(tObjType objtype)
 				ResetAutoIncrement=true;
 				break;
 			default:
-				throw GException("Cannot clear "+GetObjType(objtype)+" from storage");
+				ThrowGException("Cannot clear "+GetObjType(objtype,false,true)+" from storage");
 		}
 
 		// Clear the table and reset eventually the auto-increment field
@@ -591,23 +592,34 @@ void GStorageMySQL::LoadConcepts(void)
 
 		// Create and insert the dictionary
 		// Load the dictionary from the database
-		RQuery dicts(Db,"SELECT conceptid,name,refdocs,refprofiles,refcommunities,reftopics,indexdocs,typeid,refclasses FROM concepts");
+		RQuery dicts(Db,"SELECT conceptid,name,typeid,"
+				"refdocs,indexdocs,"
+				"refprofiles,indexprofiles,"
+				"refcommunities,indexcommunities,"
+				"reftopics,indextopics,"
+				"refclasses,indexclasses FROM concepts");
 		for(dicts.Start();!dicts.End();dicts.Next())
 		{
-			size_t TypeId(dicts[7].ToSizeT());
+			size_t TypeId(dicts[2].ToSizeT());
 			GConceptType* Type(Session->GetConceptType(TypeId,false));
 			if(TypeId==XMLIndexId)
 			{
 				GXMLIndex w(dicts[0].ToSizeT(),dicts[1],Type,
-						dicts[2].ToSizeT(),dicts[6].ToOffT(),
-						dicts[3].ToSizeT(),dicts[4].ToSizeT(),dicts[5].ToSizeT(),dicts[8].ToSizeT());
+						dicts[3].ToSizeT(),dicts[4].ToSizeT(),
+						dicts[5].ToSizeT(),dicts[6].ToSizeT(),
+						dicts[7].ToSizeT(),dicts[8].ToSizeT(),
+						dicts[9].ToSizeT(),dicts[10].ToSizeT(),
+						dicts[11].ToSizeT(),dicts[12].ToSizeT());
 				Session->InsertConcept(&w);
 			}
 			else
 			{
 				GConcept w(dicts[0].ToSizeT(),dicts[1],Type,
-						dicts[2].ToSizeT(),dicts[6].ToOffT(),
-						dicts[3].ToSizeT(),dicts[4].ToSizeT(),dicts[5].ToSizeT(),dicts[8].ToSizeT());
+						dicts[3].ToSizeT(),dicts[4].ToSizeT(),
+						dicts[5].ToSizeT(),dicts[6].ToSizeT(),
+						dicts[7].ToSizeT(),dicts[8].ToSizeT(),
+						dicts[9].ToSizeT(),dicts[10].ToSizeT(),
+						dicts[11].ToSizeT(),dicts[12].ToSizeT());
 				Session->InsertConcept(&w);
 			}
 		}
@@ -925,11 +937,11 @@ void GStorageMySQL::LoadStatements(void)
 {
 	try
 	{
-		RQuery Statements(Db,"SELECT statementid,subject,subjecttype,predicate,object,objecttype,weight FROM statements");
+		RQuery Statements(Db,"SELECT statementid,predicate,xi,xitype,xj,xjtype,weight FROM statements");
 		for(Statements.Start();!Statements.End();Statements.Next())
 			Session->InsertStatement(Statements[0].ToSizeT(),
-					Statements[1].ToSizeT(),static_cast<tObjType>(Statements[2].ToInt()),
-					Statements[3].ToSizeT(),
+					Statements[1].ToSizeT(),
+					Statements[2].ToSizeT(),static_cast<tObjType>(Statements[3].ToInt()),
 					Statements[4].ToSizeT(),static_cast<tObjType>(Statements[5].ToInt()),
 					Statements[6].ToDouble());
 	}
@@ -947,15 +959,15 @@ void GStorageMySQL::AssignId(GStatement* statement)
 	try
 	{
 		// Init some strings
-		RString subject(Num(statement->GetSubject()->GetId()));
-		RString subjecttype(Num(statement->GetSubject()->GetObjType()));
 		RString predicate(Num(statement->GetPredicate()->GetId()));
-		RString object(Num(statement->GetObject()->GetId()));
-		RString objecttype(Num(statement->GetObject()->GetObjType()));
+		RString xi(Num(statement->GetXi()->GetId()));
+		RString xitype(Num(statement->GetXi()->GetObjType()));
+		RString xj(Num(statement->GetXj()->GetId()));
+		RString xjtype(Num(statement->GetXj()->GetObjType()));
 
 		// Verify that the statement didn't already exist.
-		RString sSql="SELECT statementid FROM statements WHERE subject="+subject+" AND subjecttype="+subjecttype+
-		             " AND predicate="+predicate+" AND object="+object+" AND objecttype="+objecttype;
+		RString sSql="SELECT statementid FROM statements WHERE xi="+xi+" AND xitype="+xitype+
+		             " AND predicate="+predicate+" AND xj="+xj+" AND xjtype="+xjtype;
 		RQuery find(Db,sSql);
 		find.Start();
 		if(!find.End())
@@ -965,8 +977,8 @@ void GStorageMySQL::AssignId(GStatement* statement)
 		}
 
 		// Insert the new statement
-		RQuery insert(Db,"INSERT INTO statements(subject,subjecttype,predicate,object,onjecttype,weight) VALUES("+
-				         subject+","+subjecttype+","+predicate+","+object+","+objecttype+","+Num(statement->GetWeight())+")");
+		RQuery insert(Db,"INSERT INTO statements(predicate,xi,xitype,xj,xjtype,weight) VALUES("+
+				         predicate+","+xi+","+xitype+","+xj+","+xjtype+","+Num(statement->GetWeight())+")");
 
 		// Get the next id
 		sSql=RString("SELECT statementid FROM statements WHERE statementid=LAST_INSERT_ID()");
@@ -1289,7 +1301,7 @@ void GStorageMySQL::LoadUsers(void)
 				Session->InsertUser(new GUser(atoi(Users[0]),Users[1],Users[2],10));
 
 			// Load profiles
-			RString Sql("SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level FROM profiles");
+			RString Sql("SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level,profiletype FROM profiles");
 			if(!LoadAll)
 				Sql+=" WHERE calculated<updated";
 			if(Filtering)
@@ -1305,16 +1317,16 @@ void GStorageMySQL::LoadUsers(void)
 			{
 				GUser* user=Session->GetUser(Profiles[3].ToSizeT());
 				size_t groupid(Profiles[5].ToSizeT());
-				Session->InsertProfile(prof=new GProfile(user,Profiles[0].ToSizeT(),Profiles[8].ToSizeT(),Profiles[1],groupid,
+				Session->InsertProfile(prof=new GProfile(user,GetProfileType(atoi(Profiles[11])),Profiles[0].ToSizeT(),Profiles[8].ToSizeT(),Profiles[1],groupid,
 						GetMySQLToDate(Profiles[4]),GetMySQLToDate(Profiles[6]),GetMySQLToDate(Profiles[7]),
 						Profiles[2].ToBool(false),Profiles[9].ToDouble(),Profiles[10].ToChar(),5));
 				prof->SetState(osNeedLoad);
 			}
 
 			// Load feedbacks
-			RQuery fdbks(Db,"SELECT docid,judgement,profileid,assessed,computed FROM docsbyprofiles");
+			RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done,computed FROM docsbyprofiles");
 			for(fdbks.Start();!fdbks.End();fdbks.Next())
-				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetAssessmentType(fdbks[1]),GetMySQLToDate(fdbks[3]),GetMySQLToDate(fdbks[4]));
+				Session->AddFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),GetMySQLToDate(fdbks[3]),GetMySQLToDate(fdbks[4]));
 		}
 	}
 	catch(RDbException& e)
@@ -1371,7 +1383,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		GPlugInManager* Langs=GALILEIApp->GetManager("Lang");
 
 		// Load Profile
-		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level "
+		RQuery Profile(Db,"SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level,profiletype "
 		                  "FROM profiles WHERE profileid="+Num(profileid));
 		Profile.Start();
 		if(Profile.End())
@@ -1382,22 +1394,22 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		size_t groupid=Profile[5].ToSizeT();
 
 		// Create the profile
-		GProfile* prof=new GProfile(user,Profile[0].ToSizeT(),Profile[8].ToSizeT(),Profile[1],groupid,
+		GProfile* prof=new GProfile(user,GetProfileType(Profile[11].ToUInt()),Profile[0].ToSizeT(),Profile[8].ToSizeT(),Profile[1],groupid,
 				GetMySQLToDate(Profile[4]),GetMySQLToDate(Profile[6]),GetMySQLToDate(Profile[7]),
 				Profile[2].ToBool(true),Profile[9].ToDouble(),Profile[10].ToChar(),5);
 		prof->SetState(osNeedLoad);
 
 		// Load Feedbacks
-		RQuery fdbks(Db,"SELECT docid,judgement,profileid,assessed,computed "
+		RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done,computed "
 		                "FROM docsbyprofiles WHERE profileid="+Num(profileid));
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
-			Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
+			Session->AddFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),RDate(fdbks[3]),RDate(fdbks[4]));
 			// Since the profile is not in the session -> we must manually insert the profile.
 			GLang* lang(Langs->GetPlugIn<GLang>(fdbks[5],false));
 			if(!lang)
 				continue;
-			prof->InsertFdbk(atoi(fdbks[0]),GetAssessmentType(fdbks[1]),RDate(fdbks[3]),RDate(fdbks[4]));
+			prof->AddFdbk(atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),RDate(fdbks[3]),RDate(fdbks[4]));
 		}
 		return(prof);
 	}
@@ -1531,11 +1543,12 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 		if(!atoi(Test[0]))
 		{
 			// Insert the profile (if subjects -> save topicid)
-			sSql="INSERT INTO profiles(profileid,description,social,userid,updated,calculated,attached,blockid,score,level,subjectid";
+			sSql="INSERT INTO profiles(profileid,description,social,userid,updated,calculated,attached,blockid,score,level,subjectid,profiletype";
 			sSql+=") VALUES("+Num(profid)+","+RQuery::SQLValue(prof->GetName())+","+
 			      Num(social)+","+Num(prof->GetUser()->GetId())+","+
 			      RQuery::SQLValue(prof->GetUpdated())+","+RQuery::SQLValue(prof->GetComputed())+","+RQuery::SQLValue(prof->GetAttached())+
-			      ","+Num(prof->GetBlockId())+","+Num(prof->GetConfidenceScore())+","+Num(prof->GetConfidenceLevel());
+			      ","+Num(prof->GetBlockId())+","+Num(prof->GetConfidenceScore())+","+Num(prof->GetConfidenceLevel())+","+
+			      Num(prof->GetProfileType())+")";
 			const GSubject* sub(Session->GetIdealGroup(prof));
 			if(sub)
 				sSql+=","+RString::Number(sub->GetId());
@@ -1550,7 +1563,8 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 			sSql="UPDATE profiles SET description="+RQuery::SQLValue(prof->GetName())+",social="+Num(social)+
 			     ",userid="+Num(prof->GetUser()->GetId())+",updated="+RQuery::SQLValue(prof->GetUpdated())+
 			     ",calculated="+RQuery::SQLValue(prof->GetComputed())+",attached="+RQuery::SQLValue(prof->GetAttached())+
-			     ",blockid="+Num(prof->GetBlockId())+",score="+Num(prof->GetConfidenceScore())+",level="+Num(prof->GetConfidenceLevel());
+			     ",blockid="+Num(prof->GetBlockId())+",score="+Num(prof->GetConfidenceScore())+",level="+Num(prof->GetConfidenceLevel())+
+			     ",profiletype="+Num(prof->GetProfileType());
 			const GSubject* sub(Session->GetIdealGroup(prof));
 			if(sub)
 				sSql+=",subjectid="+Num(sub->GetId());
@@ -1568,9 +1582,9 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 			RQuery Delete(Db,"DELETE FROM docsbyprofiles WHERE profileid="+Num(profid)+" AND docid="+Num(Fdbks()->GetDocId()));
 
 			// Re-Insert all the feedback
-			sSql="INSERT INTO docsbyprofiles(docid,judgement,profileid,assessed) "
-			     "VALUES("+Num(Fdbks()->GetDocId())+",'"+GetAssessmentCode(Fdbks()->GetFdbk())+"',"+
-			     Num(prof->GetId())+","+RQuery::SQLValue(Fdbks()->GetWhen())+")";
+			sSql="INSERT INTO docsbyprofiles(docid,fdbk,profileid,done) "
+			     "VALUES("+Num(Fdbks()->GetDocId())+",'"+RString::Number(Fdbks()->GetFdbk())+"',"+
+			     Num(prof->GetId())+","+RQuery::SQLValue(Fdbks()->GetDone())+")";
 			RQuery Insert(Db,sSql);
 		}
 
@@ -1591,13 +1605,13 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::AddFdbk(size_t p,size_t d,tDocAssessment assess,R::RDate date,R::RDate computed)
+void GStorageMySQL::AddFdbk(size_t p,size_t d,tFdbkType fdbk,R::RDate date,R::RDate computed)
 {
 	try
 	{
 		RString sSql;
-		sSql="INSERT INTO docsbyprofiles(docid,judgement,profileid,assessed,computed) "
-		     "VALUES("+Num(d)+",'"+GetAssessmentCode(assess)+"',"+Num(p)+","+RQuery::SQLValue(date)+
+		sSql="INSERT INTO docsbyprofiles(docid,fdbk,profileid,done,computed) "
+		     "VALUES("+Num(d)+",'"+RString::Number(fdbk)+"',"+Num(p)+","+RQuery::SQLValue(date)+
 		     ","+RQuery::SQLValue(computed)+")";
 		RQuery Insert(Db,sSql);
 	}
