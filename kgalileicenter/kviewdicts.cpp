@@ -6,7 +6,7 @@
 
 	Window to show all the dictionaries - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -80,7 +80,10 @@ public:
 	}
 
 	QGObject(QTreeWidget* parent,GConcept* concept,const QString& id)
-		: QTreeWidgetItem(parent,QStringList()<<id<<ToQString(concept->GetName())), Type(otConcept)
+		: QTreeWidgetItem(parent,QStringList()<<id<<ToQString(concept->GetName())
+			<<QString::number(concept->GetIF(otDoc))<<QString::number(concept->GetIF(otProfile))
+	        <<QString::number(concept->GetIF(otCommunity))<<QString::number(concept->GetIF(otTopic))
+	        <<QString::number(concept->GetIF(otClass))), Type(otConcept)
 	{
 		Obj.Concept=concept;
 		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));

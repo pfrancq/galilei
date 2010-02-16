@@ -6,7 +6,7 @@
 
 	Window for manipulating the users - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -127,7 +127,7 @@ void KViewUsers::slotAddProfile(void)
 	QString Name(QInputDialog::getText(this,"Add Profile to "+ToQString(usr->GetName()), "Enter the profile name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		GALILEIApp->GetSession()->InsertProfile(new GProfile(usr,FromQString(Name),true));
+		GALILEIApp->GetSession()->InsertProfile(new GProfile(usr,ptInterest,FromQString(Name),true));
 		GALILEIApp->GetSession()->GetStorage()->SaveUser(usr);
 		update();
 	}

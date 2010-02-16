@@ -6,7 +6,7 @@
 
 	Window for manipulating a specific document - Implementation.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -167,14 +167,14 @@ void KViewDoc::newFdbk(void)
 	AddFdbkDlg dlg(this);
 	if(dlg.exec())
 	{
-		tDocAssessment assess;
+		tFdbkType assess;
 		if(dlg.cbFdbk->currentText()=="Relevant")
-			assess=djOK;
+			assess=ftRelevant;
 		else if (dlg.cbFdbk->currentText()=="Fuzzy Relevant")
-			assess=djKO;
+			assess=ftFuzzyRelevant;
 		else
-			assess=djOutScope;
-		GALILEIApp->GetSession()->InsertFdbk(dlg.Prof->GetId(),Document->GetId(),assess,RDate::GetToday(),Document->GetComputed(),true);
+			assess=ftIrrelevant;
+		GALILEIApp->GetSession()->AddFdbk(dlg.Prof->GetId(),Document->GetId(),assess,RDate::GetToday(),Document->GetComputed(),true);
 		Assessments->Set(QGObjectsList::Assessments,Document);
 	}
 }

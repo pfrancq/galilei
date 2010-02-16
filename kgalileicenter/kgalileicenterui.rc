@@ -11,7 +11,6 @@
 		<Action name="programConsole"/>
 		<Action name="runProgram"/>
 		<Action name="sessionStats"/>
-		<Action name="sessionDebug"/>
 		<separator/>
 		<Action name="createDatabase"/>
 		<Action name="importDocs"/>

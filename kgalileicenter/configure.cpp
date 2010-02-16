@@ -6,7 +6,7 @@
 
 	Configure Dialog Box - Implementation.
 
-	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2010 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -55,6 +55,7 @@ using namespace std;
 #include <gsubjects.h>
 #include <gsubject.h>
 #include <gsimulator.h>
+#include <rcursor.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -119,13 +120,65 @@ public:
 
 //------------------------------------------------------------------------------
 //
+// class Configure::Type
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+Configure::Type::Type(const RString& name,GSession* Session)
+	: Name(name)
+{
+	DescBlock=Session->GetUInt(Name+"DescBlock","Indexer");
+	DescTolerance=Session->GetUInt(Name+"DescTolerance","Indexer");
+	DescCache=Session->GetUInt(Name+"DescCache","Indexer");
+	DescType=Session->GetInt(Name+"DescType","Indexer");
+	IndexBlock=Session->GetUInt(Name+"IndexBlock","Indexer");
+	IndexTolerance=Session->GetUInt(Name+"IndexTolerance","Indexer");
+	IndexCache=Session->GetUInt(Name+"IndexCache","Indexer");
+	IndexType=Session->GetInt(Name+"IndexType","Indexer");
+	IndexInc=Session->GetBool("Index"+Name+"Inc","Indexer");
+	if(Name=="Documents")
+	{
+		StructBlock=Session->GetUInt("DocumentsStructBlock","Indexer");
+		StructTolerance=Session->GetUInt("DocumentsStructTolerance","Indexer");
+		StructCache=Session->GetUInt("DocumentsStructCache","Indexer");
+		StructType=Session->GetInt("DocumentsStructDescType","Indexer");
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void Configure::Type::Apply(GSession* Session)
+{
+	Session->SetUInt(Name+"DescBlock",DescBlock,"Indexer");
+	Session->SetUInt(Name+"DescTolerance",DescTolerance,"Indexer");
+	Session->SetUInt(Name+"DescCache",DescCache,"Indexer");
+	Session->SetInt(Name+"DescType",DescType,"Indexer");
+	Session->SetUInt(Name+"IndexBlock",IndexBlock,"Indexer");
+	Session->SetUInt(Name+"IndexTolerance",IndexTolerance,"Indexer");
+	Session->SetUInt(Name+"IndexCache",IndexCache,"Indexer");
+	Session->SetInt(Name+"IndexType",IndexType,"Indexer");
+	Session->SetBool("Index"+Name+"Inc",IndexInc,"Indexer");
+	if(Name=="Documents")
+	{
+		Session->SetUInt("DocumentsStructBlock",StructBlock,"Indexer");
+		Session->SetUInt("DocumentsStructTolerance",StructTolerance,"Indexer");
+		Session->SetUInt("DocumentsStructCache",StructCache,"Indexer");
+		Session->SetInt("DocumentsStructDescType",StructType,"Indexer");
+	}
+}
+
+
+
+//------------------------------------------------------------------------------
+//
 // class Configure
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 Configure::Configure(QWidget* parent)
-	: KDialog(parent), Ui_Configure()
+	: KDialog(parent), Ui_Configure(), Types(10), CurType(0)
 {
 	setCaption("Preferences");
 	QWidget* widget=new QWidget(this);
@@ -291,34 +344,22 @@ void Configure::initIndexer(void)
 	// If no session -> No other Indexer Parameters
 	if(!Session)
 	{
-		DocsDesc->setEnabled(false);
+		Objects->setEnabled(false);
+		Desc->setEnabled(false);
 		DocsStruct->setEnabled(false);
-		DocsIndex->setEnabled(false);
-		ProfilesDesc->setEnabled(false);
-		CommunitiesDesc->setEnabled(false);
-		TopicsDesc->setEnabled(false);
-		ClassesDesc->setEnabled(false);
+		Index->setEnabled(false);
 		return;
 	}
 
-	IndexDocsInc->setChecked(Session->GetBool("IndexDocsInc","Indexer"));
-	QList<QString> Types;
-	Types << "DocsDesc" << "DocsStruct" << "DocsIndex" << "ProfilesDesc" << "CommunitiesDesc" << "TopicsDesc" << "ClassesDesc";
-	for(int i=0;i<Types.size();++i)
+	// Write the object types
+	connect(Objects,SIGNAL(currentIndexChanged(const QString&)),this,SLOT(objectChanged(const QString&)));
+	RCursor<RString> Cur(Session->GetTypesNames());
+	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		QString name(Types.at(i)+"Block");
-		KIntNumInput* Block(findChild<KIntNumInput*>(name));
-		Block->setValue(Session->GetUInt(FromQString(name),"Indexer"));
-		name=Types.at(i)+"Tolerance";
-		KIntNumInput* Tolerance(findChild<KIntNumInput*>(name));
-		Tolerance->setValue(Session->GetUInt(FromQString(name),"Indexer"));
-		name=Types.at(i)+"Cache";
-		KIntNumInput* Cache(findChild<KIntNumInput*>(name));
-		Cache->setValue(Session->GetUInt(FromQString(name),"Indexer"));
-		name=Types.at(i)+"Type";
-		QComboBox* Type(findChild<QComboBox*>(name));
-		Type->setCurrentIndex(Session->GetInt(FromQString(name),"Indexer"));
-	 }
+		Objects->addItem(ToQString(*Cur()));
+		Types.InsertPtr(new Type(*Cur(),Session));
+	}
+	Objects->setCurrentIndex(1);
 }
 
 
@@ -329,26 +370,9 @@ void Configure::applyIndexer(void)
 	App->SetIndexDir(FromQString(IndexDir->url().url()));
 	if(!Session)
 		return;
-
-	Session->SetBool("IndexDocsInc",IndexDocsInc->isChecked(),"Indexer");
-	QList<QString> Types;
-	Types << "DocsDesc" << "DocsStruct" << "DocsIndex" << "ProfilesDesc" << "CommunitiesDesc" << "TopicsDesc" << "ClassesDesc";
-	for(int i=0;i<Types.size();++i)
-	{
-		QString name(Types.at(i)+"Block");
-		KIntNumInput* Block(findChild<KIntNumInput*>(name));
-		Session->SetUInt(FromQString(name),Block->value(),"Indexer");
-		name=Types.at(i)+"Tolerance";
-		KIntNumInput* Tolerance(findChild<KIntNumInput*>(name));
-		Session->SetUInt(FromQString(name),Tolerance->value(),"Indexer");
-		name=Types.at(i)+"Cache";
-		KIntNumInput* Cache(findChild<KIntNumInput*>(name));
-		Session->SetUInt(FromQString(name),Cache->value(),"Indexer");
-		name=Types.at(i)+"Type";
-		QComboBox* Type(findChild<QComboBox*>(name));
-		Session->SetInt(FromQString(name),Type->currentIndex(),"Indexer");
-	 }
-
+	RCursor<Type> Cur(Types);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Apply(Session);
 }
 
 
@@ -578,3 +602,53 @@ void Configure::subjectClicked(QTreeWidgetItem* item, int column)
 	}
 }
 
+
+//-----------------------------------------------------------------------------
+void Configure::objectChanged(const QString& obj)
+{
+	// Save the current elements
+	if(CurType)
+	{
+		CurType->DescBlock=DescBlock->value();
+		CurType->DescTolerance=DescTolerance->value();
+		CurType->DescCache=DescCache->value();
+		CurType->DescType=DescType->currentIndex();
+		CurType->IndexBlock=IndexBlock->value();
+		CurType->IndexTolerance=IndexTolerance->value();
+		CurType->IndexCache=IndexCache->value();
+		CurType->IndexType=IndexType->currentIndex();
+		CurType->IndexInc=IndexInc->isChecked();
+		CurType->StructBlock=StructBlock->value();
+		CurType->StructTolerance=StructTolerance->value();
+		CurType->StructCache=StructCache->value();
+		CurType->StructType=StructType->currentIndex();
+	}
+
+	// Set the current element
+	CurType=Types.GetPtr(FromQString(obj));
+	if(!CurType)
+	{
+		DocsStruct->setVisible(false);
+		return;
+	}
+	DescBlock->setValue(CurType->DescBlock);
+	DescTolerance->setValue(CurType->DescTolerance);
+	DescCache->setValue(CurType->DescCache);
+	DescType->setCurrentIndex(CurType->DescType);
+	IndexBlock->setValue(CurType->IndexBlock);
+	IndexTolerance->setValue(CurType->IndexTolerance);
+	IndexCache->setValue(CurType->IndexCache);
+	IndexType->setCurrentIndex(CurType->IndexType);
+	IndexInc->setChecked(CurType->IndexInc);
+
+	if(CurType->Name=="Documents")
+	{
+		DocsStruct->setVisible(true);
+		StructBlock->setValue(CurType->StructBlock);
+		StructTolerance->setValue(CurType->StructTolerance);
+		StructCache->setValue(CurType->StructCache);
+		StructType->setCurrentIndex(CurType->StructType);
+	}
+	else
+		DocsStruct->setVisible(false);
+}

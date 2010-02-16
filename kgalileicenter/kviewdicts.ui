@@ -62,6 +62,31 @@
             <string>Name</string>
            </property>
           </column>
+          <column>
+           <property name="text">
+            <string>IDocsF</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>IProfilesF</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>IComF</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>ITopicsF</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>IClassesF</string>
+           </property>
+          </column>
          </widget>
         </item>
         <item>

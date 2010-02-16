@@ -6,7 +6,7 @@
 
 	Main Window - Implementation of the Slots Part.
 
-	Copyright 2001-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -77,7 +77,6 @@ using namespace GALILEI;
 #include <kviewprofile.h>
 #include <kviewdicts.h>
 #include <qcreatedatabase.h>
-#include <ui_qdebuginfo.h>
 #include <ui_qchooselist.h>
 #include <kprgconsole.h>
 
@@ -139,7 +138,6 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Import Documents","importDocs",SLOT(importDocs()),"tab-new"));
 	Actions.insert(Actions.size(),addAction("&Run Program","runProgram",SLOT(runProgram()),"fork","Ctrl+R"));
 	Actions.insert(Actions.size(),addAction("&Statistics","sessionStats",SLOT(sessionStats()),"view-statistics"));
-	Actions.insert(Actions.size(),addAction("&Debug Information","sessionDebug",SLOT(sessionDebug()),"help"));
 	addAction("E&xit","sessionQuit",SLOT(sessionQuit()),"window-close","Ctrl+Q");
 
 	// Menu "Knowledge"
@@ -216,6 +214,16 @@ void KGALILEICenter::initActions(void)
 
 
 //-----------------------------------------------------------------------------
+void KGALILEICenter::sessionConnected(bool connected)
+{
+	aSessionConnect->setEnabled(!connected);
+	aSessionSave->setEnabled(connected);
+	for(int i=0;i<Actions.count();i++)
+		Actions.at(i)->setEnabled(connected);
+}
+
+
+//-----------------------------------------------------------------------------
 void KGALILEICenter::readOptions(void)
 {
 	KConfig Config;
@@ -266,16 +274,6 @@ void KGALILEICenter::emitProfilesChanged(void)
 void KGALILEICenter::emitCommunitiesChanged(void)
 {
 	emit communitiesChanged();
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenter::sessionConnected(bool connected)
-{
-	aSessionConnect->setEnabled(!connected);
-	aSessionSave->setEnabled(connected);
-	for(int i=0;i<Actions.count();i++)
-		Actions.at(i)->setEnabled(connected);
 }
 
 
@@ -359,23 +357,6 @@ void KGALILEICenter::sessionCompute(void)
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
 	Dlg.Run(Task);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenter::sessionDebug(void)
-{
-	KDialog dlg(this);
-	dlg.setCaption("Choose debug information");
-	Ui_QDebugInfo Ui;
-	QWidget* widget=new QWidget(&dlg);
-	Ui.setupUi(widget);
-	dlg.setMainWidget(widget);
-	RCursor<GDebugObject> Objs(Doc->GetDebugObjects());
-	for(Objs.Start();!Objs.End();Objs.Next())
-		Ui.Object->addItem(ToQString(Objs()->GetName()));
-	if(dlg.exec())
-		Doc->DebugInfo(FromQString(Ui.Object->currentText()),FromQString(Ui.Info->text()));
 }
 
 
@@ -1150,6 +1131,7 @@ KGALILEICenter::~KGALILEICenter(void)
 {
 	try
 	{
+		delete Status;
 		delete Debug;
 	}
 	catch(GException& e)

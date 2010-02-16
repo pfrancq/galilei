@@ -6,7 +6,7 @@
 
 	Configure Dialog Box - Header.
 
-	Copyright 2008-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2010 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -54,10 +54,44 @@ class Configure : KDialog, Ui_Configure
 {
 	Q_OBJECT
 
+	class Type
+	{
+	public:
+		RString Name;
+		size_t DescBlock;
+		size_t DescTolerance;
+		size_t DescCache;
+		int DescType;
+		size_t IndexBlock;
+		size_t IndexTolerance;
+		size_t IndexCache;
+		int IndexType;
+		bool IndexInc;
+		size_t StructBlock;
+		size_t StructTolerance;
+		size_t StructCache;
+		size_t StructType;
+
+		Type(const RString& name,GSession* Session);
+		void Apply(GSession* Session);
+		int Compare(const Type& type) const {return(Name.Compare(type.Name));}
+		int Compare(const RString& type) const {return(Name.Compare(type));}
+	};
+
 	/**
 	 * Session (if any).
 	 */
 	GSession* Session;
+
+	/**
+	 * Object type.
+	 */
+	RContainer<Type,true,true> Types;
+
+	/**
+	 * Current type.
+	 */
+	Type* CurType;
 
 public:
 
@@ -156,6 +190,12 @@ public slots:
 	 * @param column         Column.
 	 */
 	void subjectClicked(QTreeWidgetItem* item, int column);
+
+	/**
+	 * Method called when the object is changed.
+	 * @param obj            Type of object changed.
+	 */
+	void objectChanged(const QString& text);
 };
 
 
