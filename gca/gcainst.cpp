@@ -6,7 +6,7 @@
 
 	Instance - Implementation
 
-	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -92,7 +92,7 @@ GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,RParamsSC* p,RDebug *debug,t
 	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Disagreements");
 
 	if((!Sims)||(!Agree)||(!Disagree))
-		throw GException("GCAInst::GCAInst : Type "+GetObjType(Type)+" not supported");
+		ThrowGException(GetObjType(Type,true,true)+" are not supported");
 }
 
 

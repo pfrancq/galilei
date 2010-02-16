@@ -6,7 +6,7 @@
 
 	Generic Plug-in for GCA - Template Implementation
 
-	Copyright 2003-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -182,7 +182,7 @@ template<class cObj,class cGroup>
 	size_t* tab;
 	size_t* ptr;
 	size_t i;
-	RString Label(GetObjType(GroupType).Mid(0,1).ToUpper()+GetObjType(GroupType).Mid(1)+" ");
+	RString Label(GetObjType(GroupType,true,false)+" ");
 
 
 	session->ClearGroups(GroupType);
@@ -206,7 +206,7 @@ template<class cObj,class cGroup>
 	double d;
 
 	if(Cout)
-		cout<<"Do GCA for "<<GetObjType(ObjType)<<"s"<<endl;
+		cout<<"Do GCA for "<<GetObjType(ObjType,false,true)<<endl;
 
 	// Init the GCA
 	if(Cout)
@@ -262,7 +262,7 @@ template<class cObj,class cGroup>
 template<class cObj,class cGroup>
 	void GCAPlugIn<cObj,cGroup>::DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
 {
-	cout<<"Do kMeans for "<<Objs.GetNb()<<" "<<GetObjType(ObjType)<<"s"<<endl;
+	cout<<"Do kMeans for "<<Objs.GetNb()<<" "<<GetObjType(ObjType,false,true)<<endl;
 	std::auto_ptr<RRandom> Rand(RRandom::Create(RRandom::Good,1));
 	if(InternalRandom)
 		Rand->Reset(12345);
