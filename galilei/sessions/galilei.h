@@ -190,7 +190,7 @@ R::RString GetProfileType(tProfileType type,bool upper,bool plural);
 * return a profile type.
 * @param type                Profile type.
 */
-tProfileType GetProfileType(unsigned int fdbk);
+tProfileType GetProfileType(unsigned int type);
 
 
 //------------------------------------------------------------------------------
