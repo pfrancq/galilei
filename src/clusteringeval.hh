@@ -6,7 +6,7 @@
 
 	Clustering Evaluation - Template Implementation
 
-	Copyright 2007-2009 by Pascal Francq (pascal@francq.info).
+	Copyright 2007-2010 by Pascal Francq (pascal@francq.info).
 	Copyright 2007-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -73,7 +73,7 @@ template<class cGroup,class cObj>
 
 	cGroup* Cluster(static_cast<cGroup*>(Session->GetElement(GroupType,id)));
 	if(!Cluster)
-		throw GException("ClusteringEval::Measure(size_t,...) : '"+RString::Number(id)+"' is not a valid "+GetObjType(GroupType));
+		ThrowGException("'"+RString::Number(id)+"' is not a valid "+GetObjType(GroupType,false,false));
 	ClusterScore<cGroup>* g(ClustersScore.GetPtr(Cluster));
 
 	switch(measure)
@@ -346,7 +346,7 @@ template<class cGroup,class cObj>
 			mes="Profiles";
 			break;
 		default:
-			throw GException("ClusteringEval<cGroup,cObj>::ComputeJ(void): '"+GetObjType(ObjType)+"' is not a valid type");
+			ThrowGException(GetObjType(ObjType,true,true)+" are not elements that are grouped");
 	}
 	GMeasure* Sim(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities"));
 
