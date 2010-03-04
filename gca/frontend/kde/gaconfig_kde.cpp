@@ -78,6 +78,7 @@ bool GAConfigDlg::Configure(RConfig* params)
 	Incremental->setChecked(params->GetBool("Incremental"));
 	LocalOptimisation->setChecked(params->GetBool("LocalOptimisation"));
 	Optimisation->setChecked(params->GetBool("Optimisation"));
+	GroupOptimization->setEnabled(Optimisation->isChecked());
 	InternalRandom->setChecked(params->GetBool("InternalRandom"));
 	Seed->setDisabled(params->GetBool("InternalRandom"));
 	Seed->setValue(params->GetInt("Seed"));
@@ -93,6 +94,7 @@ bool GAConfigDlg::Configure(RConfig* params)
 	Cout->setChecked(params->GetBool("Cout"));
 	NbMinObjs->setText(QString::number(params->GetULong("NbMinObjs")));
 	NbMaxObjs->setText(QString::number(params->GetULong("NbMaxObjs")));
+	AllMinSim->setChecked(params->GetBool("AllMinSim"));
 
 	// Execute and if 'OK' -> Apply changes
 	if(exec())
@@ -125,6 +127,7 @@ bool GAConfigDlg::Configure(RConfig* params)
 		params->SetBool("Cout",Cout->isChecked());
 		params->SetUInt("NbMinObjs",NbMinObjs->text().toULong());
 		params->SetUInt("NbMaxObjs",NbMaxObjs->text().toULong());
+		params->SetBool("AllMinSim",AllMinSim->isChecked());
 		return(true);
  	}
 

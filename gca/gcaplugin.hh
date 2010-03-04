@@ -127,6 +127,7 @@ template<class cObj,class cGroup>
 	Cout=factory->GetBool("Cout");
 	NbMinObjs=factory->GetUInt("NbMinObjs");
 	NbMaxObjs=factory->GetUInt("NbMaxObjs");
+	AllMinSim=factory->GetBool("AllMinSim");
 }
 
 
@@ -387,6 +388,7 @@ template<class cObj,class cGroup>
 	params->InsertParam(new RParamValue("Cout",false));
 	params->InsertParam(new RParamValue("NbMinObjs",0));
 	params->InsertParam(new RParamValue("NbMaxObjs",cNoRef));
+	params->InsertParam(new RParamValue("AllMinSim",true));
 }
 
 
