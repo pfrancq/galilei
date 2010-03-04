@@ -151,11 +151,11 @@ void GSimTypeCosinus::Done(void)
 	else
 	{
 		#if NormalizeVector
-			Num/=Max1*max2;
+			Num/=Max1*Max2;
 			Norm1/=Max1*Max1;
 			Norm2/=Max2*Max2;
 		#endif
-		Value=Num/(sqrt(Norm1*Norm2));
+		Value=Num/(sqrt(Norm1)*sqrt(Norm2));
 	}
 	if(Owner->Transform)
 		Value=(Value+1.0)/2.0;
@@ -357,7 +357,10 @@ bool GGenericSims::ComputeSimSpace(void)
 			Types[Info2()->GetConcept()->GetType()->GetId()]->AddObj2(Info2());
 
 		if((!Info2.End())&&(Info2()->GetId()==Info1()->GetId()))
+		{
 			Types[Info2()->GetConcept()->GetType()->GetId()]->Add(Info1(),Info2());
+			Info2.Next();
+		}
 		else
 			Types[Info1()->GetConcept()->GetType()->GetId()]->AddObj1(Info1());
 	}
@@ -496,78 +499,9 @@ double GGenericSims::SimilarityProduct(void)
 //------------------------------------------------------------------------------
 double GGenericSims::SimilarityLang(void)
 {
-	// If one vector is not defined -> the similarity must be null
-	if((!vec1->GetVector().GetNb())||(!vec2->GetVector().GetNb()))
+	if(!ComputeSimSpace())
 		return(0.0);
-
-	//-------------------------------------------------------
-	// Suppose the two vectors have only a language in common.
-	GLang* Lang(0);
-	CurType=0;
-
-	// Go trough all the information
-	RCursor<GWeightInfo> Info1(vec1->GetVector().GetInfos());
-	RCursor<GWeightInfo> Info2(vec2->GetVector().GetInfos());
-	for(Info1.Start(),Info2.Start();!Info1.End();Info1.Next())
-	{
-		// Skip all non language element
-		GLang* Act1(Info1()->GetConcept()->GetType()->GetLang());
-		if(!Act1)
-			continue;
-
-		// Verify Language
-		if(Lang)
-		{
-			// Only one language accepted
-			if(Lang!=Act1)
-				return(0.0);
-		}
-		else
-		{
-			Lang=Act1;
-			CurType=Types[Info1()->GetConcept()->GetType()->GetId()];
-			CurType->Init();
-		}
-
-		for(;(!Info2.End())&&(Info2()->GetId()<Info1()->GetId());Info2.Next())
-		{
-			// Skip all non language element
-			GLang* Act2(Info2()->GetConcept()->GetType()->GetLang());
-			if(!Act2)
-				continue;
-
-			// Only one language accepted
-			if(Lang!=Act2)
-				return(0.0);
-
-			CurType->AddObj2(Info2());
-		}
-
-		if((!Info2.End())&&(Info2()->GetId()==Info1()->GetId()))
-			CurType->Add(Info1(),Info2());
-		else
-			CurType->AddObj1(Info1());
-	}
-	for(;!Info2.End();Info2.Next())
-	{
-		// Skip all non language element
-		GLang* Act2(Info2()->GetConcept()->GetType()->GetLang());
-		if(!Act2)
-			continue;
-
-		// Only one language accepted
-		if(Lang!=Act2)
-			return(0.0);
-
-		CurType->AddObj2(Info2());
-	}
-
-	// Done the measure
-	if(!CurType)
-		return(0.0);
-	CurType->Done();
-
-	double d(CurType->Value);
+   	double d(SimSpaces[0]);
 	if(fabs(d)<GetCutoffFrequency())
 		return(0.0);
 	return(d);
@@ -587,7 +521,7 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 	switch(SimType)
 	{
 		case Undefined:
-			throw GException("No similarity model defined.");
+			ThrowGException("No similarity model defined.");
 			break;
 		case Product:
 			sim=SimilarityProduct();
