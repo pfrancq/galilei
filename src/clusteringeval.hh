@@ -159,7 +159,10 @@ template<class cGroup,class cObj>
 			throw GException("ClusteringEval<cGroup,cObj>::ComputeBestLocalRecallPrecision(cObj*,ClusterScore<cGroup>*,size_t): ThGrp cannot be null");
 		size_t InThGrp(ThGrp->GetNbObjs(ObjType));
 		if(InThGrp==1)
+		{
+			// Precision is null
 			grp->Recall+=1.0;
+		}
 		else
 		{
 			size_t ElseInThGrp(ThGrp->GetNbObjs(grp->Group)-1);
@@ -168,8 +171,6 @@ template<class cGroup,class cObj>
 			grp->Recall+=((double)(ElseInGrp))/((double)(InThGrp-1));
 		}
 	}
-	Precision+=grp->Precision;
-	Recall+=grp->Recall;
 }
 
 
@@ -202,15 +203,17 @@ template<class cGroup,class cObj>
 			if(IsObjAloneInIdealGroup(Objs()))
 				Grps()->Recall=1.0;
 			Grps()->Precision=1.0;
+			Precision+=Grps()->Precision;
+			Recall+=Grps()->Recall;
 		}
 		else
 		{
 			ComputeBestLocalRecallPrecision(Objs,Grps(),InGrp);
+			Precision+=Grps()->Precision;
+			Recall+=Grps()->Recall;
 			Grps()->Precision/=(double)InGrp;
 			Grps()->Recall/=(double)InGrp;
 		}
-		Precision+=Grps()->Precision;
-		Recall+=Grps()->Recall;
 	}
 	if(NbObjs)
 	{
