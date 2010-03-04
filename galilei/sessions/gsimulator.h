@@ -172,6 +172,11 @@ protected:
      */
 	double SwitchPerc;
 
+	/**
+	 * Create profiles.
+	 */
+	bool CreateProfiles;
+
 private:
 
     /**

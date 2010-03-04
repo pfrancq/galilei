@@ -175,11 +175,11 @@ void GIndexer::Apply(RConfig* config)
 		}
 
 		StructDoc=new RIndexFile(Dir+"Documents.struct",
-				config->GetUInt("DocsStructBlock","Indexer"),
-				config->GetUInt("DocsStructCache","Indexer"),
-				config->GetUInt("DocsStructTolerance","Indexer"));
+				config->GetUInt("DocumentsStructBlock","Indexer"),
+				config->GetUInt("DocumentsStructCache","Indexer"),
+				config->GetUInt("DocumentsStructTolerance","Indexer"));
 		StructDoc->Open();
-		StructDoc->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("DocsStructType","Indexer")));
+		StructDoc->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("DocumentsStructType","Indexer")));
 	}
 	catch(...)
 	{

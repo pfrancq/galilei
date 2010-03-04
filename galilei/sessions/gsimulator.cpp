@@ -109,6 +109,7 @@ void GSimulator::CreateConfig(RConfig *config)
 	config->InsertParam(new RParamValue("PercNbDocsPerSubject",true),"Simulator");
 	config->InsertParam(new RParamValue("ClusterSelectedDocs",false),"Simulator");
 	config->InsertParam(new RParamValue("MultipleSubjects",false),"Simulator");
+	config->InsertParam(new RParamValue("CreateProfiles",true),"Simulator");
 }
 
 
@@ -135,6 +136,7 @@ void GSimulator::Apply(void)
 	PercNbDocsPerSubject=Session->GetBool("PercNbDocsPerSubject","Simulator");
 	ManualSubjects=Session->GetBool("ManualSubjects","Simulator");
 	MultipleSubjects=Session->GetBool("MultipleSubjects","Simulator");
+	CreateProfiles=Session->GetBool("CreateProfiles","Simulator");
 }
 
 
@@ -156,7 +158,8 @@ void GSimulator::StartSimulation(bool create)
 	if(create)
 	{
 		SelectSubjects();
-		CreateAssessments();
+		if(CreateProfiles)
+			CreateAssessments();
 	}
 	else
 	{
@@ -181,17 +184,22 @@ void GSimulator::StartSimulation(bool create)
 		Session->GetStorage()->Clear(otClass);
 		Session->ClearDesc(otClass);
 		Session->ClearIndex(otClass);
+		Session->ClearDesc(otTopic);
+		Session->ClearIndex(otTopic);
 
 		// Save the elements changed
 		RCursor<GSubject> Subjects(Session->GetSubjects());
 		for(Subjects.Start();!Subjects.End();Subjects.Next())
 			Session->GetStorage()->SaveSubject(Subjects());
-		RCursor<GUser> Users(Session->GetUsers());
-		for(Users.Start();!Users.End();Users.Next())
-			Session->GetStorage()->SaveUser(Users());
-		RCursor<GProfile> Profiles(Session->GetProfiles());
-		for(Profiles.Start();!Profiles.End();Profiles.Next())
-			Session->GetStorage()->SaveProfile(Profiles());
+		if(CreateProfiles)
+		{
+			RCursor<GUser> Users(Session->GetUsers());
+			for(Users.Start();!Users.End();Users.Next())
+				Session->GetStorage()->SaveUser(Users());
+			RCursor<GProfile> Profiles(Session->GetProfiles());
+			for(Profiles.Start();!Profiles.End();Profiles.Next())
+				Session->GetStorage()->SaveProfile(Profiles());
+		}
 	}
 }
 
@@ -603,26 +611,37 @@ void GSimulator::SetManualUsed(GSubject* subject,bool used)
 void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 {
 	// Number of (social) profiles to create
-	size_t nbprof(Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin);
-	size_t nbsocial(static_cast<size_t>(static_cast<double>(nbprof)*PercSocial/100));
+	size_t nbprof;
+	size_t nbsocial;
+	if(CreateProfiles)
+	{
+		nbprof=Session->GetCurrentRandomValue(NbProfMax-NbProfMin+1)+NbProfMin;
+		nbsocial=static_cast<size_t>(static_cast<double>(nbprof)*PercSocial/100);
+	}
+	else
+		nbprof=nbsocial=0;
+
 
 	// Verify that they are enough users -> If not, create new ones
-	if(Session->GetNbUsers()<nbprof+subject->GetNbObjs(otProfile))
+	if(CreateProfiles)
 	{
-		size_t maxusers=sizeof(UserNames)/sizeof(char*);
-		size_t newusers=nbprof+subject->GetNbObjs(otProfile)-Session->GetNbUsers()+1;
-		for(size_t i=Session->GetNbUsers();(--newusers)&&(i<maxusers);i++)
+		if(Session->GetNbUsers()<nbprof+subject->GetNbObjs(otProfile))
 		{
-			GUser* user(new GUser(cNoRef,UserNames[i],UserNames[i],Session->GetNbSubjects()));
-			Session->AssignId(user);
-			Session->InsertUser(user);
-		}
-		for(newusers++;--newusers;)
-		{
-			RString Usr("User"+RString::Number(Session->GetNbUsers()+1));
-			GUser* user=new GUser(cNoRef,Usr,Usr,Session->GetNbSubjects());
-			Session->AssignId(user);
-			Session->InsertUser(user);
+			size_t maxusers=sizeof(UserNames)/sizeof(char*);
+			size_t newusers=nbprof+subject->GetNbObjs(otProfile)-Session->GetNbUsers()+1;
+			for(size_t i=Session->GetNbUsers();(--newusers)&&(i<maxusers);i++)
+			{
+				GUser* user(new GUser(cNoRef,UserNames[i],UserNames[i],Session->GetNbSubjects()));
+				Session->AssignId(user);
+				Session->InsertUser(user);
+			}
+			for(newusers++;--newusers;)
+			{
+				RString Usr("User"+RString::Number(Session->GetNbUsers()+1));
+				GUser* user=new GUser(cNoRef,Usr,Usr,Session->GetNbSubjects());
+				Session->AssignId(user);
+				Session->InsertUser(user);
+			}
 		}
 	}
 
@@ -723,7 +742,7 @@ void GSimulator::SelectSubjects(void)
 		delete[] tab;
 	}
 
-	// For each selected subject -> Select the number of necessary profiles and documents
+	// For each selected subject -> Select the number of necessary profiles and documents (if necessary)
 	RCursor<GSubject> Cur(Session->GetSubjects());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		if(Cur()->IsUsed())
