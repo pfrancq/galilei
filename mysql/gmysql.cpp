@@ -289,7 +289,7 @@ void GStorageMySQL::LoadSubjects(void)
 					CatId=UsedId=docs[1].ToSizeT();
 					break;
 				default:
-					throw GException("GStorageMySQL::LoadSubjects(void) : used cannot only takes 0,1 or 2");
+					ThrowGException("'used' field cannot only takes 0,1 or 2");
 			}
 			Session->Insert(d,CatId,UsedId);
 		}
@@ -1548,7 +1548,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 			      Num(social)+","+Num(prof->GetUser()->GetId())+","+
 			      RQuery::SQLValue(prof->GetUpdated())+","+RQuery::SQLValue(prof->GetComputed())+","+RQuery::SQLValue(prof->GetAttached())+
 			      ","+Num(prof->GetBlockId())+","+Num(prof->GetConfidenceScore())+","+Num(prof->GetConfidenceLevel())+","+
-			      Num(prof->GetProfileType())+")";
+			      Num(prof->GetProfileType());
 			const GSubject* sub(Session->GetIdealGroup(prof));
 			if(sub)
 				sSql+=","+RString::Number(sub->GetId());
