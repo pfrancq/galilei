@@ -558,6 +558,7 @@ void GTextAnalyze::Clear(void)
 	Struct.Clear();
 	IsTitle=false;
 	IsIdentifier=false;
+	LastInsertTag=0;
 }
 
 
@@ -628,7 +629,8 @@ void GTextAnalyze::ResolveNamespace(const RString& namespaceURI)
 	// Stopped the analyze if not necessary anymore
 	if(StopAnalyseTag())
 		return;
-	StructTokens.ChangeTokenNS(LastInsertTag,namespaceURI);
+	if(LastInsertTag)
+		StructTokens.ChangeTokenNS(LastInsertTag,namespaceURI);
 }
 
 
