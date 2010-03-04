@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>844</width>
-    <height>555</height>
+    <width>852</width>
+    <height>556</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="MainTab">
      <property name="currentIndex">
-      <number>1</number>
+      <number>3</number>
      </property>
      <widget class="QWidget" name="Widget8">
       <attribute name="title">
@@ -695,7 +695,7 @@ p, li { white-space: pre-wrap; }
        <item>
         <widget class="QTabWidget" name="SimulationTab">
          <property name="currentIndex">
-          <number>0</number>
+          <number>1</number>
          </property>
          <widget class="QWidget" name="tab_14">
           <attribute name="title">
@@ -976,7 +976,14 @@ p, li { white-space: pre-wrap; }
           </attribute>
           <layout class="QVBoxLayout" name="verticalLayout_8">
            <item>
-            <widget class="QGroupBox" name="groupBox8">
+            <widget class="QCheckBox" name="CreateProfiles">
+             <property name="text">
+              <string>Create users and profiles</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QGroupBox" name="grpProfilesCreated">
              <property name="title">
               <string>Profiles created</string>
              </property>
@@ -1084,7 +1091,7 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox5">
+            <widget class="QGroupBox" name="grpPercentage">
              <property name="title">
               <string>Percentage of documents assessed per profile</string>
              </property>
@@ -1213,7 +1220,7 @@ p, li { white-space: pre-wrap; }
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox7">
+            <widget class="QGroupBox" name="grpType">
              <property name="title">
               <string>Type of assessments</string>
              </property>
@@ -1674,12 +1681,12 @@ p, li { white-space: pre-wrap; }
    <slot>setCurrentIndex(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>95</x>
-     <y>137</y>
+     <x>81</x>
+     <y>128</y>
     </hint>
     <hint type="destinationlabel">
-     <x>128</x>
-     <y>137</y>
+     <x>101</x>
+     <y>128</y>
     </hint>
    </hints>
   </connection>
@@ -1690,12 +1697,12 @@ p, li { white-space: pre-wrap; }
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>79</x>
-     <y>85</y>
+     <x>91</x>
+     <y>129</y>
     </hint>
     <hint type="destinationlabel">
-     <x>24</x>
-     <y>480</y>
+     <x>36</x>
+     <y>321</y>
     </hint>
    </hints>
   </connection>
@@ -1706,12 +1713,60 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>87</x>
-     <y>75</y>
+     <x>99</x>
+     <y>129</y>
     </hint>
     <hint type="destinationlabel">
-     <x>200</x>
-     <y>115</y>
+     <x>212</x>
+     <y>206</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CreateProfiles</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>grpProfilesCreated</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>125</x>
+     <y>85</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>151</x>
+     <y>107</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CreateProfiles</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>grpPercentage</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>84</x>
+     <y>80</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>34</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CreateProfiles</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>grpType</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>106</x>
+     <y>76</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>114</x>
+     <y>403</y>
     </hint>
    </hints>
   </connection>

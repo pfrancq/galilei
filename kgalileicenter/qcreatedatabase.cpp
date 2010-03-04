@@ -138,7 +138,7 @@ QCreateDatabase::QCreateDatabase(QWidget* parent)
 //------------------------------------------------------------------------------
 void QCreateDatabase::run(void)
 {
-	URL->setUrl(KUrl("http://www.imrdp.org/NewDb.sql"));
+	URL->setUrl(KUrl("http://www.otlet-institute.org/NewDb.sql"));
 	if(!exec())
 		return;
 	try

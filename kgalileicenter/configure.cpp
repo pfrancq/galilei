@@ -142,7 +142,7 @@ Configure::Type::Type(const RString& name,GSession* Session)
 		StructBlock=Session->GetUInt("DocumentsStructBlock","Indexer");
 		StructTolerance=Session->GetUInt("DocumentsStructTolerance","Indexer");
 		StructCache=Session->GetUInt("DocumentsStructCache","Indexer");
-		StructType=Session->GetInt("DocumentsStructDescType","Indexer");
+		StructType=Session->GetInt("DocumentsStructType","Indexer");
 	}
 }
 
@@ -164,7 +164,7 @@ void Configure::Type::Apply(GSession* Session)
 		Session->SetUInt("DocumentsStructBlock",StructBlock,"Indexer");
 		Session->SetUInt("DocumentsStructTolerance",StructTolerance,"Indexer");
 		Session->SetUInt("DocumentsStructCache",StructCache,"Indexer");
-		Session->SetInt("DocumentsStructDescType",StructType,"Indexer");
+		Session->SetInt("DocumentsStructType",StructType,"Indexer");
 	}
 }
 
@@ -370,6 +370,8 @@ void Configure::applyIndexer(void)
 	App->SetIndexDir(FromQString(IndexDir->url().url()));
 	if(!Session)
 		return;
+	// Make sure the current tab is applied
+	objectChanged(Objects->currentText());
 	RCursor<Type> Cur(Types);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Apply(Session);
@@ -410,6 +412,10 @@ void Configure::initSimulation(void)
 	PercNbDocsPerSubject->setChecked(Session->GetBool("PercNbDocsPerSubject","Simulator"));
 	ClusterSelectedDocs->setChecked(Session->GetBool("ClusterSelectedDocs","Simulator"));
 	MultipleSubjects->setChecked(Session->GetBool("MultipleSubjects","Simulator"));
+	CreateProfiles->setChecked(Session->GetBool("CreateProfiles","Simulator"));
+	grpProfilesCreated->setEnabled(CreateProfiles->isChecked());
+	grpPercentage->setEnabled(CreateProfiles->isChecked());
+	grpType->setEnabled(CreateProfiles->isChecked());
 
 	// Read Subjects
 	Subjects->header()->setResizeMode(0,QHeaderView::ResizeToContents);
@@ -465,6 +471,8 @@ void Configure::applySimulation(void)
 	Session->SetBool("PercNbDocsPerSubject",PercNbDocsPerSubject->isChecked(),"Simulator");
 	Session->SetBool("ClusterSelectedDocs",ClusterSelectedDocs->isChecked(),"Simulator");
 	Session->SetBool("MultipleSubjects",MultipleSubjects->isChecked(),"Simulator");
+	Session->SetBool("CreateProfiles",CreateProfiles->isChecked(),"Simulator");
+
 	for(int i=0;i<Subjects->topLevelItemCount();i++)
 	{
 		QSubjectItem* item(dynamic_cast<QSubjectItem*>(Subjects->topLevelItem(i)));
