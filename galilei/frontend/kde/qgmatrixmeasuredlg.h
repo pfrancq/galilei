@@ -92,9 +92,9 @@ public:
 
 	/**
 	 * Launch the configuration.
-	 * @param params         Pointer to the factory.
+	 * @param factory        Factory.
 	 */
-	void Configure(GPlugInFactory* params);
+	bool Configure(GPlugInFactory* factory);
 
 	/**
 	 * Method called before the dialog box is initialized. By default, it hides
@@ -126,31 +126,31 @@ public:
 	 * (normally with the 'Panel' and 'Done' methods) to synchronized new
 	 * parameters and widgets.
 	 * @code
-	 * void MyDlg::Init(GFactoryMeasure* params)
+	 * void MyDlg::Init(GFactoryMeasure* factory)
 	 * {
-	 *    QGMatrixMeasureDlg::Init(params);
-	 *    MinDocs->setValue(params->GetUInt("MinDocs"));    // 'MinDocs' must be added to the class.
+	 *    QGMatrixMeasureDlg::Init(factory);
+	 *    MinDocs->setValue(factory->FindParam<RParamValue>("MinDocs")->GetUInt);    // 'MinDocs' must be added to the class.
 	 * }
 	 * @endcode
-	 * @param params         Pointer to the factory.
+	 * @param factory        Factory.
 	 */
-	virtual void Init(GPlugInFactory* params);
+	virtual void Init(GPlugInFactory* factory);
 
 	/**
 	 * Method called when the dialog box is closed with the 'OK' button. The
 	 * parameters are set based on the value of the dialog box. This method can
-	 * be overrided (normally with the 'Panel' and 'Init' methods) to
+	 * be overridden (normally with the 'Panel' and 'Init' methods) to
 	 * synchronized new parameters and widgets.
 	 * @code
-	 * void MyDlg::Done(GFactoryMeasure* params)
+	 * void MyDlg::Done(GFactoryMeasure* factory)
 	 * {
-	 *    params->SetUInt("MinDocs",MinDocs->value());    // 'MinDocs' must be added to the class.
-	 *    QGMatrixMeasureDlg::Done(params);
+	 *    factory->FindParam<RParamValue>("MinDocs")->SetUInt(MinDocs->value());    // 'MinDocs' was changed.
+	 *    QGMatrixMeasureDlg::Done(factory);
 	 * }
 	 * @endcode
-	 * @param params         Pointer to the factory.
+	 * @param factory        Factory.
 	 */
-	virtual void Done(GPlugInFactory* params);
+	virtual void Done(GPlugInFactory* factory);
 
 public slots:
 

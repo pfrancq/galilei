@@ -80,63 +80,73 @@ GSimulator::GSimulator(GSession* session)
 	: Session(session), TmpTopics(0), TmpDocs(0),
 	  NewDocs(100), SwitchRandom(0), NewProfiles(0)
 {
-	Apply();
+	ApplyParams();
 	Session->Simulator=this;
 }
 
 
 //------------------------------------------------------------------------------
-void GSimulator::CreateConfig(RConfig *config)
+void GSimulator::CreateConfig(RConfig* config)
 {
-	config->InsertParam(new RParamValue("NbOK",10.0),"Simulator");
-	config->InsertParam(new RParamValue("RelOK",true),"Simulator");
-	config->InsertParam(new RParamValue("NbKO",10.0),"Simulator");
-	config->InsertParam(new RParamValue("RelKO",true),"Simulator");
-	config->InsertParam(new RParamValue("NbH",50.0),"Simulator");
-	config->InsertParam(new RParamValue("RelH",true),"Simulator");
-	config->InsertParam(new RParamValue("PercErr",0.0),"Simulator");
-	config->InsertParam(new RParamValue("NbProfMin",2),"Simulator");
-	config->InsertParam(new RParamValue("NbProfMax",10),"Simulator");
-	config->InsertParam(new RParamValue("MaxDepth",0),"Simulator");
-	config->InsertParam(new RParamValue("PercSocial",100.0),"Simulator");
-	config->InsertParam(new RParamValue("NbSubjects",100.0),"Simulator");
-	config->InsertParam(new RParamValue("RelSubjects",true),"Simulator");
-	config->InsertParam(new RParamValue("NbMinDocsSubject",50),"Simulator");
-	config->InsertParam(new RParamValue("NbDocsAssess",30),"Simulator");
-	config->InsertParam(new RParamValue("SwitchPerc",5.0),"Simulator");
-	config->InsertParam(new RParamValue("ManualSubjects",false),"Simulator");
-	config->InsertParam(new RParamValue("NbDocsPerSubject",100.0),"Simulator");
-	config->InsertParam(new RParamValue("PercNbDocsPerSubject",true),"Simulator");
-	config->InsertParam(new RParamValue("ClusterSelectedDocs",false),"Simulator");
-	config->InsertParam(new RParamValue("MultipleSubjects",false),"Simulator");
-	config->InsertParam(new RParamValue("CreateProfiles",true),"Simulator");
+	// Subjects
+	config->InsertParam(new RParamValue("MaxDepth",0),"Simulator","Subjects");
+	config->InsertParam(new RParamValue("ManualSubjects",false),"Simulator","Subjects");
+	config->InsertParam(new RParamValue("Nb",100.0),"Simulator","Subjects","NbSubjects");
+	config->InsertParam(new RParamValue("Percentage",true),"Simulator","Subjects","NbSubjects");
+	config->InsertParam(new RParamValue("NbMinDocsSubject",50),"Simulator","Subjects");
+
+	// Documents
+	config->InsertParam(new RParamValue("Nb",100.0),"Simulator","Documents","DocsPerSubject");
+	config->InsertParam(new RParamValue("Percentage",true),"Simulator","Documents","DocsPerSubject");
+	config->InsertParam(new RParamValue("MultipleSubjects",false),"Simulator","Documents");
+	config->InsertParam(new RParamValue("ClusterSelectedDocs",false),"Simulator","Documents");		 // Parameter of GSession
+	config->InsertParam(new RParamValue("SwitchPerc",5.0),"Simulator","Documents");
+
+	// Profiles
+	config->InsertParam(new RParamValue("CreateProfiles",true),"Simulator","Profiles");
+	config->InsertParam(new RParamValue("NbProfMin",2),"Simulator","Profiles");
+	config->InsertParam(new RParamValue("NbProfMax",10),"Simulator","Profiles");
+	config->InsertParam(new RParamValue("PercSocial",100.0),"Simulator","Profiles");
+	config->InsertParam(new RParamValue("Nb",10.0),"Simulator","Profiles","Relevant");
+	config->InsertParam(new RParamValue("Percentage",true),"Simulator","Profiles","Relevant");
+	config->InsertParam(new RParamValue("Nb",10.0),"Simulator","Profiles","Fuzzy Relevant");
+	config->InsertParam(new RParamValue("Percentage",true),"Simulator","Profiles","Fuzzy Relevant");
+	config->InsertParam(new RParamValue("Nb",50.0),"Simulator","Profiles","Irrelevant");
+	config->InsertParam(new RParamValue("Percentage",true),"Simulator","Profiles","Irrelevant");
+	config->InsertParam(new RParamValue("PercErr",0.0),"Simulator","Profiles");
+	config->InsertParam(new RParamValue("NbDocsAssess",30),"Simulator","Profiles");
 }
 
 
 //------------------------------------------------------------------------------
-void GSimulator::Apply(void)
+void GSimulator::ApplyParams(void)
 {
-	NbOK=Session->GetDouble("NbOK","Simulator");
-	RelOK=Session->GetBool("RelOK","Simulator");
-	NbKO=Session->GetDouble("NbKO","Simulator");
-	RelKO=Session->GetBool("RelKO","Simulator");
-	NbH=Session->GetDouble("NbH","Simulator");
-	RelH=Session->GetBool("RelH","Simulator");
-	PercErr=Session->GetDouble("PercErr","Simulator");
-	NbProfMin=Session->GetUInt("NbProfMin","Simulator");
-	NbProfMax=Session->GetUInt("NbProfMax","Simulator");
-	MaxDepth=Session->GetUInt("MaxDepth","Simulator");
-	PercSocial=Session->GetDouble("PercSocial","Simulator");
-	NbSubjects=Session->GetDouble("NbSubjects","Simulator");
-	RelSubjects=Session->GetBool("RelSubjects","Simulator");
-	NbMinDocsSubject=Session->GetUInt("NbMinDocsSubject","Simulator");
-	NbDocsAssess=Session->GetUInt("NbDocsAssess","Simulator");
-	SwitchPerc=Session->GetDouble("SwitchPerc","Simulator");
-	NbDocsPerSubject=Session->GetDouble("NbDocsPerSubject","Simulator");
-	PercNbDocsPerSubject=Session->GetBool("PercNbDocsPerSubject","Simulator");
-	ManualSubjects=Session->GetBool("ManualSubjects","Simulator");
-	MultipleSubjects=Session->GetBool("MultipleSubjects","Simulator");
-	CreateProfiles=Session->GetBool("CreateProfiles","Simulator");
+	// Subjects
+	MaxDepth=Session->GetConfig()->GetUInt("MaxDepth","Simulator","Subjects");
+	ManualSubjects=Session->GetConfig()->GetBool("ManualSubjects","Simulator","Subjects");
+	NbSubjects=Session->GetConfig()->GetDouble("Nb","Simulator","Subjects","NbSubjects");
+	RelSubjects=Session->GetConfig()->GetBool("Percentage","Simulator","Subjects","NbSubjects");
+	NbMinDocsSubject=Session->GetConfig()->GetUInt("NbMinDocsSubject","Simulator","Subjects");
+
+	// Documents
+	NbDocsPerSubject=Session->GetConfig()->GetDouble("Nb","Simulator","Documents","DocsPerSubject");
+	PercNbDocsPerSubject=Session->GetConfig()->GetBool("Percentage","Simulator","Documents","DocsPerSubject");
+	MultipleSubjects=Session->GetConfig()->GetBool("MultipleSubjects","Simulator","Documents");
+	SwitchPerc=Session->GetConfig()->GetDouble("SwitchPerc","Simulator","Documents");
+
+	// Profiles
+	CreateProfiles=Session->GetConfig()->GetBool("CreateProfiles","Simulator","Profiles");
+	NbProfMin=Session->GetConfig()->GetUInt("NbProfMin","Simulator","Profiles");
+	NbProfMax=Session->GetConfig()->GetUInt("NbProfMax","Simulator","Profiles");
+	PercSocial=Session->GetConfig()->GetDouble("PercSocial","Simulator","Profiles");
+	NbOK=Session->GetConfig()->GetDouble("Nb","Simulator","Profiles","Relevant");
+	RelOK=Session->GetConfig()->GetBool("Percentage","Simulator","Profiles","Relevant");
+	NbKO=Session->GetConfig()->GetDouble("Nb","Simulator","Profiles","Fuzzy Relevant");
+	RelKO=Session->GetConfig()->GetBool("Percentage","Simulator","Profiles","Fuzzy Relevant");
+	NbH=Session->GetConfig()->GetDouble("Nb","Simulator","Profiles","Irrelevant");
+	RelH=Session->GetConfig()->GetBool("Percentage","Simulator","Profiles","Irrelevant");
+	PercErr=Session->GetConfig()->GetDouble("PercErr","Simulator","Profiles");
+	NbDocsAssess=Session->GetConfig()->GetUInt("NbDocsAssess","Simulator","Profiles");
 }
 
 
@@ -152,7 +162,7 @@ void GSimulator::StartSimulation(bool create)
 	NewProfiles.Clear();
 
 	// Apply Configuration
-	Apply();
+	ApplyParams();
 
 	// Select the subjects
 	if(create)
@@ -217,7 +227,7 @@ bool GSimulator::AddSubject(void)
 	NewProfiles.Clear();
 
 	// Apply Configuration
-	Apply();
+	ApplyParams();
 
 	// Randomly mix the subjects in tab
 	GSubject** tab(new GSubject*[Session->GetNbSubjects()]);
@@ -291,7 +301,7 @@ void GSimulator::ShareDocuments(void)
 	NewProfiles.Clear();
 
 	// Apply Configuration
-	Apply();
+	ApplyParams();
 
 	// Compute the enabled suggestions computing methods
 	Session->ComputeSugs();
@@ -353,7 +363,7 @@ void GSimulator::AddAssessments(void)
 	NewProfiles.Clear();
 
 	// Apply Configuration
-	Apply();
+	ApplyParams();
 
 	// Copy the selected documents in TmpDocs;
 	if(!TmpDocs)
@@ -403,7 +413,7 @@ size_t GSimulator::AddProfiles(void)
 	NewProfiles.Clear();
 
 	// Apply Configuration
-	Apply();
+	ApplyParams();
 
 	// Randomly mix the subjects in tab
 	GSubject** tab(new GSubject*[Session->GetNbSubjects()]);
@@ -477,7 +487,7 @@ void GSimulator::PerformDegradation(char what,int nb)
 	{
 		case 0:
 			// Apply Configuration
-			Apply();
+			ApplyParams();
 			if(SwitchRandom)
 			{
 				delete SwitchRandom;

@@ -56,9 +56,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GPostTopic(GPlugInFactory* fac);
+	GPostTopic(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Run the post-topic method.

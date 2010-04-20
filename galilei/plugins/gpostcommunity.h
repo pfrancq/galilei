@@ -58,9 +58,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GPostCommunity(GPlugInFactory* fac);
+	GPostCommunity(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Run the post-community method.

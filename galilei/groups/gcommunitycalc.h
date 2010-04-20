@@ -65,9 +65,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GCommunityCalc(GPlugInFactory* fac);
+	GCommunityCalc(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Compute a community.

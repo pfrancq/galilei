@@ -65,9 +65,10 @@ public:
 
 	/**
 	* Constructor of the profiles grouping method.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GGroupProfiles(GPlugInFactory* fac);
+	GGroupProfiles(GSession* session,GPlugInFactory* fac);
 
 protected:
 

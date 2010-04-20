@@ -61,24 +61,27 @@ class GEngine : public GPlugIn
 {
 protected:
 	/**
-	* Pointer to an instance of the library.
+	* Pointer to an instance of the CURL library.
 	*/
 	CURL* Lib;
 
 	/**
-	* The weigth associated to the engine
+	* The weight associated to the engine
 	*/
 	float Weight;
 
 public:
 
 	/**
-	* Construct the extractor for the Yahoo engine.
+	* Construct an engine plug-in.
+	* @param session         Session.
+	* @param fac             Factory.
 	*/
-	GEngine(GPlugInFactory* fac);
+	GEngine(GSession* session,GPlugInFactory* fac);
 
 	/**
-	* Process the Engine extraction. All results will be extracted, the url of the next page...
+	* Process the Engine extraction. All results will be extracted, the URL of
+	* the next page.
 	* @param keyWords        The set of keywords to be searched
 	*/
 	virtual void Process(R::RContainer<R::RString,false,false>& keyWords)=0;

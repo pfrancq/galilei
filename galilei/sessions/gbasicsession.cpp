@@ -46,18 +46,11 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 GBasicSession::GBasicSession(void)
-	: Storage(0), SaveResults(true)
+	: Storage(0), SaveResults(true), Config(0)
 {
 	GPlugInFactory* fac(GALILEIApp->GetCurrentFactory("Storage"));
 	if(!fac)
-		throw GException("No Storage");
-
-	// Delete the storage if necessary and re-create it
-	if(fac->GetPlugIn<GStorage>())
-		fac->Delete();
-	fac->Create();
-	Storage=fac->GetPlugIn<GStorage>();
-	Storage->InitAccess();
+		ThrowGException("No current storage");
 }
 
 
@@ -65,7 +58,7 @@ GBasicSession::GBasicSession(void)
 GStorage* GBasicSession::GetStorage(void) const
 {
 	if(!Storage)
-		throw GException("No storage");
+		ThrowGException("No storage");
 	return(Storage);
 }
 
@@ -73,6 +66,4 @@ GStorage* GBasicSession::GetStorage(void) const
 //------------------------------------------------------------------------------
 GBasicSession::~GBasicSession(void)
 {
-	// Delete the storage
-	Storage->GetFactory()->Delete();
 }

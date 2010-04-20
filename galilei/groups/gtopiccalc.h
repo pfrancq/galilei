@@ -64,9 +64,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GTopicCalc(GPlugInFactory* fac);
+	GTopicCalc(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Compute a topic.

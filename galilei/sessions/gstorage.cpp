@@ -44,14 +44,14 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GStorage::GStorage(GPlugInFactory* fac)
-	: GPlugIn(fac), LoadAll(true), Filter(RDate::GetToday()), Filtering(false),
+	: GPlugIn(0,fac), LoadAll(true), Filter(RDate::GetToday()), Filtering(false),
 	  AllMemory(true)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GStorage::ApplyConfig(void)
+void GStorage::ApplyParams(void)
 {
 	AllMemory=(LoadAll&&(!Filtering));
 }

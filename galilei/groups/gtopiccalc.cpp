@@ -42,8 +42,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GTopicCalc::GTopicCalc(GPlugInFactory* fac)
-	: GPlugIn(fac), Infos(5000)
+GTopicCalc::GTopicCalc(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac), Infos(5000)
 {
 }
 

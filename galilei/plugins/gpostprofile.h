@@ -57,9 +57,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GPostProfile(GPlugInFactory* fac);
+	GPostProfile(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Run the post-group method.

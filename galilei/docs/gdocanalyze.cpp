@@ -55,8 +55,8 @@ const size_t MaxWordLen=50;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocAnalyze::GDocAnalyze(GPlugInFactory* fac)
-	: GPlugIn(fac), RXMLParser(), Infos(5000), Struct()
+GDocAnalyze::GDocAnalyze(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac), RXMLParser(), Infos(5000), Struct()
 {
 	SetInvalidXMLCodes(true);
 }

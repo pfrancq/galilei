@@ -63,9 +63,10 @@ public:
 
 	/**
 	* Constructor of a measure.
+	* @param session         Session.
 	* @param fac             Plug-in factory.
 	*/
-	GMeasure(GPlugInFactory* fac);
+	GMeasure(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* The measure must be re-initialized, i.e. all values must be considered

@@ -64,9 +64,10 @@ public:
 
 	/**
 	* Constructor of the documents grouping method.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GGroupDocs(GPlugInFactory* fac);
+	GGroupDocs(GSession* session,GPlugInFactory* fac);
 
 protected:
 

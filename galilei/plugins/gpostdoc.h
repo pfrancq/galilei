@@ -57,9 +57,10 @@ public :
 
 	/**
 	* Constructor of the documents post-analysis method.
+	* @param session         Session.
 	* @param fac             Factory of the plugin.
 	*/
-	GPostDoc(GPlugInFactory* fac);
+	GPostDoc(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Run the method.

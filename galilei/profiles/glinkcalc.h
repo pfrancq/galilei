@@ -56,9 +56,10 @@ public:
 
 	/**
 	* Construct the computing method.
+	* @param session        Session.
 	* @param fac            Factory of the plug-in.
 	*/
-	GLinkCalc(GPlugInFactory* fac);
+	GLinkCalc(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Compute the links for a given profile.

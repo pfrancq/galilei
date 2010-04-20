@@ -117,40 +117,43 @@ GIndexer::GIndexer(void)
 void GIndexer::CreateConfig(RConfig* config)
 {
 	// Parse all types
-	RCursor<IndexType> Type(Types);
+	RContainer<R::RString,true,true> TypesNames(5);
+	TypesNames.InsertPtr(new RString("Documents"));
+	TypesNames.InsertPtr(new RString("Profiles"));
+	TypesNames.InsertPtr(new RString("Communities"));
+	TypesNames.InsertPtr(new RString("Topics"));
+	TypesNames.InsertPtr(new RString("Classes"));
+	RCursor<RString> Type(TypesNames);
 	for(Type.Start();!Type.End();Type.Next())
 	{
-		// Automatic indexing
-		config->InsertParam(new RParamValue("Index"+Type()->Name+"Inc",false),"Indexer");
-
 		// Descriptions
-		config->InsertParam(new RParamValue(Type()->Name+"DescBlock",1024),"Indexer");
-		config->InsertParam(new RParamValue(Type()->Name+"DescTolerance",10),"Indexer");
-		config->InsertParam(new RParamValue(Type()->Name+"DescCache",20),"Indexer");
-		config->InsertParam(new RParamValue(Type()->Name+"DescType",RBlockFile::WriteBack),"Indexer");
+		config->InsertParam(new RParamValue("BlockSize",1024),"Indexer",(*Type()),"Description");
+		config->InsertParam(new RParamValue("Tolerance",10),"Indexer",(*Type()),"Description");
+		config->InsertParam(new RParamValue("CacheSize",20),"Indexer",(*Type()),"Description");
+		config->InsertParam(new RParamValue("Type",RBlockFile::WriteBack),"Indexer",(*Type()),"Description");
 
 		// Inverted file
-		config->InsertParam(new RParamValue(Type()->Name+"IndexBlock",1024),"Indexer");
-		config->InsertParam(new RParamValue(Type()->Name+"IndexTolerance",10),"Indexer");
-		config->InsertParam(new RParamValue(Type()->Name+"IndexCache",20),"Indexer");
-		config->InsertParam(new RParamValue(Type()->Name+"IndexType",RBlockFile::WriteBack),"Indexer");
-
+		config->InsertParam(new RParamValue("Increment",false),"Indexer",(*Type()),"Index");
+		config->InsertParam(new RParamValue("BlockSize",1024),"Indexer",(*Type()),"Index");
+		config->InsertParam(new RParamValue("Tolerance",10),"Indexer",(*Type()),"Index");
+		config->InsertParam(new RParamValue("CacheSize",20),"Indexer",(*Type()),"Index");
+		config->InsertParam(new RParamValue("Type",RBlockFile::WriteBack),"Indexer",(*Type()),"Index");
 	}
 
 	// Documents structures
-	config->InsertParam(new RParamValue("DocumentsStructBlock",4096),"Indexer");
-	config->InsertParam(new RParamValue("DocumentsStructTolerance",40),"Indexer");
-	config->InsertParam(new RParamValue("DocumentsStructCache",20),"Indexer");
-	config->InsertParam(new RParamValue("DocumentsStructType",RBlockFile::WriteBack),"Indexer");
+	config->InsertParam(new RParamValue("BlockSize",4096),"Indexer","Documents","Structure");
+	config->InsertParam(new RParamValue("Tolerance",40),"Indexer","Documents","Structure");
+	config->InsertParam(new RParamValue("CacheSize",20),"Indexer","Documents","Structure");
+	config->InsertParam(new RParamValue("Type",RBlockFile::WriteBack),"Indexer","Documents","Structure");
 }
 
 
 //------------------------------------------------------------------------------
-void GIndexer::Apply(RConfig* config)
+void GIndexer::ApplyConfig(void)
 {
 	// Create (if necessary) the directory corresponding to the name of the session
 	// Create all the index files
-	RString Dir(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Storage->GetWorld()+RFile::GetDirSeparator());
+	RString Dir(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+GALILEIApp->GetSessionName()+RFile::GetDirSeparator());
 	try
 	{
 		RDir::CreateDirIfNecessary(Dir,true);
@@ -159,27 +162,27 @@ void GIndexer::Apply(RConfig* config)
 		RCursor<IndexType> Type(Types);
 		for(Type.Start();!Type.End();Type.Next())
 		{
-			Type()->IndexInc=config->GetBool("Index"+Type()->Name+"Inc","Indexer");
 			Type()->Desc=new RIndexFile(Dir+Type()->Name+".desc",
-					config->GetUInt(Type()->Name+"DescBlock","Indexer"),
-					config->GetUInt(Type()->Name+"DescCache","Indexer"),
-					config->GetUInt(Type()->Name+"DescTolerance","Indexer"));
+					Config->GetUInt("BlockSize","Indexer",Type()->Name,"Description"),
+					Config->GetUInt("CacheSize","Indexer",Type()->Name,"Description"),
+					Config->GetUInt("Tolerance","Indexer",Type()->Name,"Description"));
 			Type()->Desc->Open();
-			Type()->Desc->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt(Type()->Name+"DescType","Indexer")));
+			Type()->Desc->SetCacheType(static_cast<RBlockFile::CacheType>(Config->GetInt("Type","Indexer",Type()->Name,"Description")));
+			Type()->IndexInc=Config->GetBool("Increment","Indexer",Type()->Name,"Index");
 			Type()->Index=new RIndexFile(Dir+Type()->Name+".index",
-					config->GetUInt(Type()->Name+"IndexBlock","Indexer"),
-					config->GetUInt(Type()->Name+"IndexCache","Indexer"),
-					config->GetUInt(Type()->Name+"IndexTolerance","Indexer"));
+					Config->GetUInt("BlockSize","Indexer",Type()->Name,"Index"),
+					Config->GetUInt("CacheSize","Indexer",Type()->Name,"Index"),
+					Config->GetUInt("Tolerance","Indexer",Type()->Name,"Index"));
 			Type()->Index->Open();
-			Type()->Index->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt(Type()->Name+"IndexType","Indexer")));
+			Type()->Index->SetCacheType(static_cast<RBlockFile::CacheType>(Config->GetInt("Type","Indexer",Type()->Name,"Index")));
 		}
 
 		StructDoc=new RIndexFile(Dir+"Documents.struct",
-				config->GetUInt("DocumentsStructBlock","Indexer"),
-				config->GetUInt("DocumentsStructCache","Indexer"),
-				config->GetUInt("DocumentsStructTolerance","Indexer"));
+				Config->GetUInt("BlockSize","Indexer","Documents","Structure"),
+				Config->GetUInt("CacheSize","Indexer","Documents","Structure"),
+				Config->GetUInt("Tolerance","Indexer","Documents","Structure"));
 		StructDoc->Open();
-		StructDoc->SetCacheType(static_cast<RBlockFile::CacheType>(config->GetInt("DocumentsStructType","Indexer")));
+		StructDoc->SetCacheType(static_cast<RBlockFile::CacheType>(Config->GetInt("Type","Indexer","Documents","Structure")));
 	}
 	catch(...)
 	{

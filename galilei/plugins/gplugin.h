@@ -55,6 +55,7 @@
 //-----------------------------------------------------------------------------
 // include file for GALILEI
 #include <galilei.h>
+#include <gsession.h>
 
 
 //------------------------------------------------------------------------------
@@ -68,95 +69,7 @@ namespace GALILEI{
 
 
 //-----------------------------------------------------------------------------
-/**
-* Type of a function used to show the about box of a plug-in.
-*/
-typedef void (*About_t)();
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GPlugIn class provides a template for a generic plug-in.
-* @author Pascal Francq
-* @short Generic Plug-in.
-*/
-class GPlugIn
-{
-protected:
-
-	/**
-	* Pointer to the factory.
-	*/
-	GPlugInFactory* Factory;
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
-public:
-
-	/**
-	* Constructor of the plug-in.
-	* @param fac            Factory.
-	*/
-	GPlugIn(GPlugInFactory* fac);
-
-	/**
-	* Connect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect to the session.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Disconnect(GSession* session);
-
-	/**
-	* Configurations were applied from the factory.
-	*/
-	virtual void ApplyConfig(void);
-
-	/**
-	* Get the factory of the plug-in.
-	*/
-	GPlugInFactory* GetFactory(void) const {return(Factory);}
-
-	/**
-	* Comparison method needed by R::RContainer.
-	* @param plugin          Plug-in to compare.
-	*/
-	int Compare(const GPlugIn& plugin) const;
-
-	/**
-	* Comparison method needed by R::RContainer.
-	* @param plugin          Plug-in to compare.
-	*/
-	int Compare(const R::RString& plugin) const;
-
-	/**
-	* Get the name of the Plug-in
-	*/
-	R::RString GetName(void) const;
-
-	/**
-	* Get the description of the Plug-in
-	*/
-	R::RString GetDesc(void) const;
-
-	/**
-	 * Get the session associated with the plug-in.
-	 */
-	GSession* GetSession(void) const {return(Session);}
-
-	/**
-	* Destruct of the plug-in.
-	*/
-	virtual ~GPlugIn(void);
-};
 
 
 //-----------------------------------------------------------------------------
@@ -166,14 +79,19 @@ public:
 * @author Pascal Francq
 * @short Generic Plug-in Factory.
 */
-class GPlugInFactory : public R::RConfig
+class GPlugInFactory
 {
 public:
 
 	/**
+	* Type of a function used to show the about box of a plug-in.
+	*/
+	typedef void (*About_t)();
+
+	/**
 	* Type of a function used to show dialog box of a plug-in.
 	*/
-	typedef void* (*Configure_t)(GPlugInFactory*);
+	typedef bool* (*Configure_t)(GPlugInFactory*);
 
 protected:
 
@@ -322,34 +240,21 @@ public:
 	int Compare(const size_t level) const;
 
 	/**
-	* Create a new plug-in and eventually connect it to the session.
+	* Create the new plug-in.
+	* @param session         Session.
 	*/
-	virtual GPlugIn* NewPlugIn(void)=0;
-
-	/**
-	* Delete a plug-in and eventually disconnect it to the session.
-	*/
-	virtual void DeletePlugIn(GPlugIn* plug)=0;
+	virtual GPlugIn* NewPlugIn(GSession* session)=0;
 
 	/**
 	* Create a plug-in.
-	*/
-	void Create(void);
-
-	/**
-	* Create a plug-in.
-	*/
-	void Delete(void);
-
-	/**
-	* Create a plug-in.
+	* @param session         Session.
 	*/
 	void Create(GSession* session);
 
 	/**
 	* Delete a plug-in.
 	*/
-	void Delete(GSession* session);
+	void Delete(void);
 
 	/**
 	* Show 'about' information.
@@ -362,9 +267,23 @@ public:
 	void Configure(void);
 
 	/**
+	* Create the configuration parameters for the plug-in.In practice, the
+	* macro supposes that a particular static method CreateParams exist for
+	* each plug-in. Here is an example of an implementation:
+	* @code
+	* void MyPlugIn::CreateParams(GPlugInFactory* factory)
+	* {
+	*   factory->InsertParam(new RParamValue("EnableOption",true));
+	*   factory->InsertParam(new RParamValue("IntNumber",25));
+	* }
+	* @endcode
+	*/
+	virtual void CreateConfig(void);
+
+	/**
 	* Apply the configuration eventually to the plug-in.
 	*/
-	void Apply(void);
+	void ApplyConfig(void);
 
 	/**
 	* Specify if an about box exist.
@@ -390,7 +309,12 @@ public:
 	/**
 	* Get the plug-in of this factory.
 	*/
-	template<class plugin> plugin* GetPlugIn(void) const {return(static_cast<plugin*>(Plugin));}
+	GPlugIn* GetPlugIn(void) const {return(Plugin);}
+
+	/**
+	* Get the plug-in of this factory.
+	*/
+	template<class plugin> plugin* GetPlugIn(void) const {return(dynamic_cast<plugin*>(Plugin));}
 
 	/**
 	* Specify if the plug-in is created.
@@ -408,12 +332,143 @@ public:
 	const char* GetVersion(void) const {return("");}
 
 	/**
+	* Declare a new parameter. If it exist, the parameter passed as argument is
+	* deleted.
+	* @param param           Parameter.
+	*/
+	void InsertParam(R::RParam* param);
+
+private:
+
+	/**
+	* Find a given parameter.
+	* @param name            Name of the parameter.
+	* @return Pointer or null if not found.
+	*/
+	R::RParam* GetParam(const R::RString& name);
+
+public:
+
+	/**
+	* Find a given parameter (template version).
+	* @tparam T              Type of the parameter.
+	* @param name            Name of the parameter.
+	* @return Pointer or null if not found.
+	*/
+	template<class T> T* FindParam(const R::RString& name)
+	{
+		return(dynamic_cast<T*>(GetParam(name)));
+	}
+
+	/**
 	* Destruct the factory.
 	*/
 	virtual ~GPlugInFactory(void);
 
 	// friend class
-	friend class GPlugIn;
+	friend class GPlugInList;
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GPlugIn class provides a template for a generic plug-in.
+* @author Pascal Francq
+* @short Generic Plug-in.
+*/
+class GPlugIn
+{
+protected:
+
+	/**
+	* Pointer to the factory.
+	*/
+	GPlugInFactory* Factory;
+
+	/**
+	* Session.
+	*/
+	GSession* Session;
+
+public:
+
+	/**
+	* Constructor of the plug-in.
+	* @param session         Session.
+	* @param fac             Factory.
+	*/
+	GPlugIn(GSession* session,GPlugInFactory* fac);
+
+	/**
+	* Configuration parameters were changed (or loaded).
+	*
+	* It is the good place to get the parameters and store them in variables
+	* (it is faster than to use the FindParam method each time). Here is an
+	* example of an implementation.
+	* @code
+	* void MyPlugIn::ApplyConfig(void)
+	* {
+	*   bool a(Factory->FindParam<RParamValue>("EnableOption")->GetBool());
+	*   int b(Factory->FindParam<RParamValue>("IntNumber")->GetInt());
+	* }
+	* @endcode
+	*/
+	virtual void ApplyConfig(void);
+
+	/**
+	* Find a given parameter (template version).
+	* @tparam T              Type of the parameter.
+	* @param name            Name of the parameter.
+	* @return Pointer or null if not found.
+	*/
+	template<class T> T* FindParam(const R::RString& name)
+	{
+		return(Factory->FindParam<T>(name));
+	}
+
+	/**
+	 * Initialize the plug-in. This method is called after a first call to ApplyConfig.
+	 */
+	virtual void Init(void);
+
+	/**
+	* Get the factory of the plug-in.
+	*/
+	GPlugInFactory* GetFactory(void) const {return(Factory);}
+
+	/**
+	* Comparison method needed by R::RContainer.
+	* @param plugin          Plug-in to compare.
+	*/
+	int Compare(const GPlugIn& plugin) const;
+
+	/**
+	* Comparison method needed by R::RContainer.
+	* @param plugin          Plug-in to compare.
+	*/
+	int Compare(const R::RString& plugin) const;
+
+	/**
+	* Get the name of the Plug-in
+	*/
+	R::RString GetName(void) const;
+
+	/**
+	* Get the description of the Plug-in
+	*/
+	R::RString GetDesc(void) const;
+
+	/**
+	 * Get the session associated with the plug-in.
+	 */
+	GSession* GetSession(void) const {return(Session);}
+
+	/**
+	* Destruct of the plug-in.
+	*/
+	virtual ~GPlugIn(void);
+
+	friend class GPlugInList;
 };
 
 
@@ -424,9 +479,12 @@ class TheFactory : public GALILEI::GPlugInFactory                               
 	static GALILEI::GPlugInFactory* Inst;                                                          \
 	TheFactory(GALILEI::GPlugInManager* mng,const char* t) : GPlugInFactory(mng,name,desc,t,list)  \
 	{                                                                                              \
-		plugin::CreateParams(this);                                                                \
 	}                                                                                              \
 	virtual ~TheFactory(void) {}                                                                   \
+	virtual void CreateConfig(void)                                                                \
+	{                                                                                              \
+		plugin::CreateParams(this);                                                                \
+	}                                                                                              \
 public:                                                                                            \
 	static GALILEI::GPlugInFactory* CreateInst(GALILEI::GPlugInManager* mng,const char* t)         \
 	{                                                                                              \
@@ -437,14 +495,10 @@ public:                                                                         
 	virtual const char* GetAPIVersion(void) const                                                  \
 		{return(API_PLUG_IN_VERSION);}                                                             \
 		                                                                                           \
-	virtual GALILEI::GPlugIn* NewPlugIn(void)                                                      \
+	virtual GALILEI::GPlugIn* NewPlugIn(GSession* session)                                         \
 	{                                                                                              \
-		base* ptr(new plugin(this));                                                               \
+		base* ptr(new plugin(session,this));                                                       \
 		return(ptr);                                                                               \
-	}                                                                                              \
-	virtual void DeletePlugIn(GALILEI::GPlugIn* plug)                                              \
-	{                                                                                              \
-		delete plug;                                                                               \
 	}                                                                                              \
 };                                                                                                 \
 GALILEI::GPlugInFactory* TheFactory::Inst = 0;                                                     \

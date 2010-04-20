@@ -67,8 +67,8 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilter::GFilter(GPlugInFactory* fac)
-	: GPlugIn(fac), MetaDatas(20)
+GFilter::GFilter(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac), MetaDatas(20)
 {
 }
 

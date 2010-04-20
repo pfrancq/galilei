@@ -57,9 +57,10 @@ public:
 
 	/**
 	* Construct the statistics method.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GStatsCalc(GPlugInFactory* fac);
+	GStatsCalc(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Compute the statistics.
@@ -76,7 +77,7 @@ public:
 	* @param val             Value.
 	* @return a pointer to the tag created.
 	*/
-	R::RXMLTag* AddTag(R::RXMLStruct* xml,R::RXMLTag* parent,R::RString element,double val);
+	R::RXMLTag* AddTag(R::RXMLStruct* xml,R::RXMLTag* parent,R::RString element,double val,const char* fmt="%E");
 
 	/**
 	* Add a tag representing an element with a value.

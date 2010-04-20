@@ -427,6 +427,20 @@ double GSubjects::GetUpOperationsCost(const GSubject* u,const GSubject* v) const
 
 
 //------------------------------------------------------------------------------
+const GSubject* GSubjects::GetIdealGroup(GCommunity* com) const
+{
+	VerifyLoad();
+	RCursor<GSubject> Cur(GetSubjects());
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Cur()->Community==com)
+			return(Cur());
+	}
+	return(0);
+}
+
+
+//------------------------------------------------------------------------------
 GSubjects::~GSubjects(void)
 {
 }

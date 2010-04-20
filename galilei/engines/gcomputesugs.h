@@ -56,9 +56,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GComputeSugs(GPlugInFactory* fac);
+	GComputeSugs(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Run the suggestions computing method.

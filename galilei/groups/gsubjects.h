@@ -247,7 +247,7 @@ public:
 	size_t FillSelectedDocs(GDoc** docs);
 
 	/**
-	* Get the subject of a given document. If a selected document is part of
+	* Get the subject of a given document.
 	* @param doc             Pointer to the document.
 	*/
 	const GSubject* GetIdealGroup(GDoc* doc) const;
@@ -293,6 +293,12 @@ public:
 	 * @return Cost of the up operations.
 	 */
 	double GetUpOperationsCost(const GSubject* u,const GSubject* v) const;
+
+	/**
+	* Get the subject of a given community.
+	* @param com             Pointer to the community.
+	*/
+	const GSubject* GetIdealGroup(GCommunity* com) const;
 
 	/**
 	* Destruct the subjects.

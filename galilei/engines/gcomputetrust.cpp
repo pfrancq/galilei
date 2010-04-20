@@ -43,8 +43,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GComputeTrust::GComputeTrust(GPlugInFactory* fac)
-	: GPlugIn(fac)
+GComputeTrust::GComputeTrust(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac)
 {
 }
 

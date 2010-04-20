@@ -53,8 +53,21 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GALILEIApp class represents a generic application running a session.
-* @short GALILEI Application
+* The GGALILEIApp class represents a generic application running a session.
+*
+* Each application inheriting from GGALILEIApp manages three configuration
+* files:
+* -# Its own configuration which defines at least two parameters. The "GALILEI
+*    Config" parameter gives the name of the configuration file for the GALILEI
+*    library ("GALILEI" by default). The "Session" parameter defines the
+*    current session name.
+* -# A configuration file corresponding to the GALILEI library storing some
+*    global parameters (such as the directories of the plug-ins). Several
+*    applications may share this configuration file.
+* -# The configuration file corresponding to the current session (storing the
+*    parameters for the plug-ins, the log file, etc.). All the applications
+*    having the same current session share this configuration file.
+* @short Generic GALILEI Application
 * @author Pascal Francq
 */
 class GGALILEIApp : public R::RApplication, public R::RContainer<GPlugInManager,true,false>, public R::RDownload
@@ -90,9 +103,14 @@ protected:
 	R::RContainer<R::RString,true,false> PlugInsPath;
 
 	/**
-	* Name of the the configuration of the plug-ins.
+	* Name of the global configuration parameters.
 	*/
-	R::RString PlugInsConfigName;
+	R::RString GALILEIConfigName;
+
+	/**
+	* Name of the session.
+	*/
+	R::RString SessionName;
 
 	/**
 	* The Log file.
@@ -105,9 +123,14 @@ protected:
 	R::RString DebugFileName;
 
 	/**
-	* Main configuration of GALILEI.
+	* Global configuration file of the GALILEI library.
 	*/
 	R::RConfig GALILEIConfig;
+
+	/**
+	 * Configuration file of the session.
+	 */
+	R::RConfig* SessionConfig;
 
 	/**
 	 * Directory where to binary files of the index are stored.
@@ -146,9 +169,16 @@ public:
 	GGALILEIApp(const R::RString& name,int argc, char *argv[],bool dlg=false);
 
 	/**
-	* Get a pointer over the configuration of GALILEI.
+	* Get a pointer over the configuration of the GALILEI library.
 	*/
 	R::RConfig* GetGALILEIConfig(void) {return(&GALILEIConfig);}
+
+	/**
+	* Get a pointer over the configuration of the session.
+	*/
+	R::RConfig* GetSessionConfig(void) {return(SessionConfig);}
+
+protected:
 
 	/**
 	* Create the configuration structure. New parameters can be added by
@@ -160,6 +190,19 @@ public:
 	* Initialization of the application.
 	*/
 	virtual void Init(void);
+
+	/**
+	 * Delete the configuration of the session.
+	 */
+	void DeleteSessionConfig(void);
+
+public:
+
+	/**
+	 * Change the name of the current session.
+	 * @param name           Name of the session.
+	 */
+	void ChangeSessionName(const R::RString& name);
 
 	/**
 	* Create the session.
@@ -177,16 +220,20 @@ public:
 	void DeleteSession(void);
 
 	/**
-	* Get the name of the plug-ins configuration path. By default, it
-	* is 'default'.
+	* Get the name of the GALILEI library configuration file.
 	*/
-	R::RString GetPlugInsConfigName(void) const {return(PlugInsConfigName);}
+	inline R::RString GetGALILEIConfigName(void) const {return(GALILEIConfigName);}
+
+	/**
+	* Get the name of the session.
+	*/
+	inline R::RString GetSessionName(void) const {return(SessionName);}
 
 	/**
 	* Set the name of the plug-ins configuration path.
 	* @param name            Name of the path.
 	*/
-	void SetPlugInsConfigName(const R::RString& name) {PlugInsConfigName=name;}
+	void SetGALILEIConfigName(const R::RString& name) {GALILEIConfigName=name;}
 
 	/**
 	* Get the name of the log file.
@@ -197,7 +244,7 @@ public:
 	* Set the name of the log file.
 	* @param name            Name.
 	*/
-	void SetLogFileName(const R::RString& name) {LogFileName=name;}
+	void SetLogFileName(const R::RString& name);
 
 	/**
 	* @return the name of the debug file.
@@ -208,7 +255,7 @@ public:
 	* Set the name of the debug file.
 	* @param name            Name.
 	*/
-	void SetDebugFileName(const R::RString& name) {DebugFileName=name;}
+	void SetDebugFileName(const R::RString& name);
 
 	/**
 	* @return the name of the index directory.
@@ -314,6 +361,38 @@ public:
 	GPlugInFactory* GetFactory(const R::RString& mng,const R::RString& name,int need=1) const
 	{
 		return(GetFactory(mng,name,R::RString::Null,need));
+	}
+
+	/**
+	* Get a plug-in of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param name            Name of the plug-in.
+	* @param list            List.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	GPlugIn* GetPlugIn(const R::RString& mng,const R::RString& name,const R::RString& list,int need=1) const
+	{
+		GPlugInFactory* Factory(GetFactory(mng,name,list,need));
+		if(!Factory)
+			ThrowGException("'"+mng+"' is not a valid plug-in");
+		return(Factory->GetPlugIn());
+	}
+
+	/**
+	* Get a plug-in of a given manager.
+	* @param mng             Name of the manager to be found.
+	* @param name            Name of the plug-in.
+	* @param list            List.
+	* @param need            If the parameter is non-null and the plug-in
+	*                        doesn't exist, generate an exception.
+	*/
+	GPlugIn* GetPlugIn(const R::RString& mng,const R::RString& name,int need=1) const
+	{
+		GPlugInFactory* Factory(GetFactory(mng,name,need));
+		if(!Factory)
+			ThrowGException("'"+mng+"' is not a valid plug-in");
+		return(Factory->GetPlugIn());
 	}
 
 	/**
@@ -489,6 +568,8 @@ public:
 	* Destruct the application.
 	*/
 	virtual ~GGALILEIApp(void);
+
+	friend class GPlugInFactory;
 };
 
 

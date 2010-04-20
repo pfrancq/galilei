@@ -56,9 +56,10 @@ public:
 
 	/**
 	* Construct the tool.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GTool(GPlugInFactory* fac);
+	GTool(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Run the tool.

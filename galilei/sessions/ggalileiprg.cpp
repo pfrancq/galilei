@@ -632,7 +632,7 @@ public:
 		if(args.GetNb())
 			throw RPrgException(prg,"Method needs no parameters.");
 		o->WriteStr("Share Documents");
-		Owner->Simulator->Apply();
+		Owner->Simulator->ApplyParams();
 		Owner->Simulator->ShareDocuments();
 	}
 };
@@ -762,8 +762,8 @@ public:
 			throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSimulator'");
 		if(args.GetNb()!=2)
 			throw RPrgException(prg,"Method needs two parameters.");
-		Owner->Simulator->GetSession()->Set(args[0]->GetValue(prg),args[1]->GetValue(prg),"Simulator");
-		Owner->Simulator->Apply();
+		Owner->Simulator->FindParam<RParamValue>(args[0]->GetValue(prg))->Set(args[1]->GetValue(prg));
+		Owner->Simulator->ApplyParams();
 	}
 };
 
@@ -783,7 +783,7 @@ public:
 		if(args.GetNb())
 			throw RPrgException(prg,"Method needs no parameters.");
 		o->WriteStr("Create New Ideal Group");
-		Owner->Simulator->Apply();
+		Owner->Simulator->ApplyParams();
 		Owner->Simulator->AddSubject();
 	}
 };
@@ -804,7 +804,7 @@ public:
 		if(args.GetNb())
 			throw RPrgException(prg,"Method needs no parameters.");
 		o->WriteStr("Adding Profiles");
-		Owner->Simulator->Apply();
+		Owner->Simulator->ApplyParams();
 		o->WriteStr(RString::Number(Owner->Simulator->AddProfiles())+" new profiles created");
 	}
 };
@@ -880,17 +880,17 @@ public:
 
 		// Save the information related to the number of profiles created (here it is always 1,1
 		// Set the new parameters
-		size_t NbMinProf(Owner->Simulator->GetSession()->GetUInt("NbProfMin"));
-		size_t NbMaxProf(Owner->Simulator->GetSession()->GetUInt("NbProfMax"));
-		double PercSocial(Owner->Simulator->GetSession()->GetUInt("PercSocial"));
-		double NbSubjects(Owner->Simulator->GetSession()->GetUInt("NbSubjects"));
-		bool RelSubjects(Owner->Simulator->GetSession()->GetUInt("RelSubjects"));
-		Owner->Simulator->GetSession()->Set("NbProfMin","1");
-		Owner->Simulator->GetSession()->Set("NbProfMax","1");
-		Owner->Simulator->GetSession()->Set("PercSocial","0.0");
-		Owner->Simulator->GetSession()->Set("NbSubjects","1.0");
-		Owner->Simulator->GetSession()->Set("RelSubjectsl","false");
-		Owner->Simulator->Apply();
+		size_t NbMinProf(Owner->Simulator->FindParam<RParamValue>("NbProfMin")->GetUInt());
+		size_t NbMaxProf(Owner->Simulator->FindParam<RParamValue>("NbProfMax")->GetUInt());
+		double PercSocial(Owner->Simulator->FindParam<RParamValue>("PercSocial")->GetDouble());
+		double NbSubjects(Owner->Simulator->FindParam<RParamValue>("NbSubjects")->GetDouble());
+		bool RelSubjects(Owner->Simulator->FindParam<RParamValue>("RelSubjects")->GetBool());
+		Owner->Simulator->FindParam<RParamValue>("NbProfMin")->Set("1");
+		Owner->Simulator->FindParam<RParamValue>("NbProfMax")->Set("1");
+		Owner->Simulator->FindParam<RParamValue>("PercSocial")->Set("0.0");
+		Owner->Simulator->FindParam<RParamValue>("NbSubjects")->Set("1.0");
+		Owner->Simulator->FindParam<RParamValue>("RelSubjects")->Set("false");
+		Owner->Simulator->ApplyParams();
 
 		// Initialize the parameters
 		GSlot* rec(dynamic_cast<GSlot*>(o));
@@ -974,12 +974,12 @@ public:
 		}
 
 		// Restore the values saved
-		Owner->Simulator->GetSession()->SetUInt("NbProfMin",NbMinProf);
-		Owner->Simulator->GetSession()->SetUInt("NbProfMax",NbMaxProf);
-		Owner->Simulator->GetSession()->SetUInt("PercSocial",PercSocial);
-		Owner->Simulator->GetSession()->SetUInt("NbSubjects",NbSubjects);
-		Owner->Simulator->GetSession()->SetUInt("RelSubjects",RelSubjects);
-		Owner->Simulator->Apply();
+		Owner->Simulator->FindParam<RParamValue>("NbProfMin")->SetUInt(NbMinProf);
+		Owner->Simulator->FindParam<RParamValue>("NbProfMax")->SetUInt(NbMaxProf);
+		Owner->Simulator->FindParam<RParamValue>("PercSocial")->SetDouble(PercSocial);
+		Owner->Simulator->FindParam<RParamValue>("NbSubjects")->SetDouble(NbSubjects);
+		Owner->Simulator->FindParam<RParamValue>("RelSubjects")->SetBool(RelSubjects);
+		Owner->Simulator->ApplyParams();
 	}
 };
 
@@ -999,7 +999,7 @@ public:
 		if(args.GetNb())
 			throw RPrgException(prg,"Method needs no parameters.");
 		o->WriteStr("Adding Assessments");
-		Owner->Simulator->Apply();
+		Owner->Simulator->ApplyParams();
 		Owner->Simulator->AddAssessments();
 	}
 };
@@ -1153,11 +1153,11 @@ public:
 		ShowInst(this,prg,args);
 		if(args.GetNb()!=4)
 			throw RPrgException(prg,"Method needs four parameters.");
-		GPlugInFactory* Config(GALILEIApp->GetFactory(args[0]->GetValue(prg),args[1]->GetValue(prg)));
+		GPlugIn* Config(GALILEIApp->GetPlugIn(args[0]->GetValue(prg),args[1]->GetValue(prg)));
 		if(!Config)
 			throw RPrgException(prg,"'"+args[1]->GetValue(prg)+"' is not a plug-in for the manager '"+args[0]->GetValue(prg)+"'");
-		Config->Set(args[2]->GetValue(prg),args[3]->GetValue(prg));
-		Config->Apply();
+		Config->FindParam<RParamValue>(args[2]->GetValue(prg))->Set(args[3]->GetValue(prg));
+		Config->ApplyConfig();
 	}
 };
 
@@ -1188,11 +1188,11 @@ public:
 		ShowInst(this,prg,args);
 		if(args.GetNb()!=4)
 			throw RPrgException(prg,"Method needs four parameters.");
-		GPlugInFactory* Config(GALILEIApp->GetFactory("Measures",args[0]->GetValue(prg),args[1]->GetValue(prg)));
+		GPlugIn* Config(GALILEIApp->GetPlugIn("Measures",args[0]->GetValue(prg),args[1]->GetValue(prg)));
 		if(!Config)
 			throw RPrgException(prg,"'"+args[1]->GetValue(prg)+"' is not a measure for the type '"+args[0]->GetValue(prg)+"'");
-		Config->Set(args[2]->GetValue(prg),args[3]->GetValue(prg));
-		Config->Apply();
+		Config->FindParam<RParamValue>(args[2]->GetValue(prg))->Set(args[3]->GetValue(prg));
+		Config->ApplyConfig();
 	}
 };
 

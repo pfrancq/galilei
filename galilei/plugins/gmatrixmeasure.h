@@ -73,7 +73,10 @@ namespace GALILEI{
 * -# A list of nearest neighbors is maintained for each element (line). The
 *    class tries to compute, for each value \f$ i \f$, a given number of
 *    minimal values \f$ m_{i,\bullet} \f$. This type needs to have the matrix
-*    stored in memory or in a file.
+*    stored in memory or in a file. In this case, The Measure function returns
+*    the "on the fly" computed similarity between two objects. The Info method
+*    should be used to get a pointer to all nearest neighbors of a given
+*    object.
 *
 * The user may also specified if the matrix is maintained in memory, in a file
 * or both. In this latest mode, the matrix is loaded the first time and saved
@@ -100,7 +103,7 @@ public:
 	{
 		Full,              /** Full matrix.*/
 		Sparse,            /** Sparse matrix.*/
-		NearestNeighbors  /** Nearest neighbors matrix.*/
+		NearestNeighbors   /** Nearest neighbors matrix.*/
 	};
 
 private:
@@ -126,24 +129,29 @@ private:
 	R::RMatrixStorage Storage;
 
 	/**
-	 * Maximal identifier of new lines to created.
+	 * Maximal identifier of the lines.
 	 */
 	size_t MaxIdLine;
 
 	/**
-	 * Maximal identifier of new columns to created
+	 * Maximal identifier of the columns.
 	 */
 	size_t MaxIdCol;
 
 	/**
-	 * Matrix must be extended (in memory or in file).
+	 * Matrix size has changed (in memory or in file).
 	 */
-	bool MustExtend;
+	bool ChangeSize;
 
 	/**
-	 * Matrix is dirty (in memory or file).
+	 * Matrix must be recomputed in memory.
 	 */
-	bool Dirty;
+	bool DirtyMem;
+
+	/**
+	 * Matrix must be recomputed on file.
+	 */
+	bool DirtyFile;
 
 	/**
 	 * Mean of the measures.
@@ -179,11 +187,6 @@ private:
 	 * Compute automatically minimum of measure.
 	 */
 	bool AutomaticMinMeasure;
-
-	/**
-	 * Has a minimum for the measure a sense.
-	 */
-	bool MinMeasureSense;
 
 	/**
 	 * Measures in memory.
@@ -229,12 +232,13 @@ public:
 
 	/**
 	 * Constructor of the measures between two elements of different types.
+	 * @param session         Session.
 	 * @param fac             Factory of the plug-in.
 	 * @param lines           Type of the elements in the lines.
 	 * @param cols            Type of the elements in the columns.
 	 * @param sym             Symmetric measure?
 	 */
-	GMatrixMeasure(GPlugInFactory* fac,tObjType lines,tObjType cols,bool sym);
+	GMatrixMeasure(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols,bool sym);
 
 	/**
 	 * Virtual method inherits from R::RObject and that must be re-implemented
@@ -288,22 +292,11 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	* Connect to the session.
+	* Initialize the measure
 	*
 	* The storage of the matrix is opened (if necessary).
-	* @param session         Pointer to the session.
 	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect to the session.
-	*
-	* If the matrix was initialized and a storage exists, the matrix is saved.
-	* Then, the matrix is deallocated (if necessary) and the file is closed (if
-	* necessary). The statistical elements are eventually saved with the matrix.
-	* @param session         Pointer to the session.
-	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Init(void);
 
 	/**
 	* The measure must be re-initialized, i.e. all values must be considered
@@ -343,9 +336,17 @@ public:
 	*                    - case '0': The minimum value.
 	*                    - case '1': The mean value.
 	*                    - case '2': The deviation of the values.
+	*                    - case '3': The nearest neighbors of a given object.
 	*
-	* The class supposes that one more parameter is passed:
+	* For cases '0' to '2', The class supposes that one more parameter is
+	* passed:
 	* - A pointer to a variable of type double that will contain the result.
+	*
+	* For case '3', The class supposes that two more parameters are
+	* passed:
+	* - The identifier of the object.
+	* - A pointer to a pointer of type RSparseVector that will contain the
+	*   result.
 	*/
 	virtual void Info(size_t info,...);
 
@@ -364,11 +365,19 @@ public:
 	virtual double Compute(void* obj1,void* obj2)=0;
 
 	/**
+	 * Get the identifier of an object of a line or a colunn.
+	 * @param obj            Pointer to the object.
+	 * @param line           Object in a line ?
+	 * @return the identifier.
+	 */
+	virtual size_t GetId(void* obj,bool line)=0;
+
+	/**
 	 * Return the total number of different elements. If the measure is related
 	 * to one type only of elements (for example profiles), the implementation
 	 * of the method looks like:
 	 * @code
-	 * size_t MyMeasure::GetNbElements(void)
+	 * size_t MyMeasure::GetNbDiffElements(void)
 	 * {
 	 *    return(Session->GetNbProfiles());
 	 * }
@@ -376,7 +385,7 @@ public:
 	 * If the measure is related to two types of elements (for example profiles
 	 * and documents), the implementation of the method looks like:
 	 * @code
-	 * size_t MyMeasure::GetNbElements(void)
+	 * size_t MyMeasure::GetNbDiffElements(void)
 	 * {
 	 *    return(Session->GetNbDocs()+Session->GetNbProfiles());
 	 * }
@@ -393,18 +402,18 @@ private:
 	void InitMatrix(void);
 
 	/**
-	 * Extend the internal structure.
+	 * change the size in the internal structure.
 	 */
-	void ExtendMem(void);
+	void ChangeMemSize(void);
 
 	/**
-	 * Extend the storage.
+	 * change the size in the storage.
 	 */
-	void ExtendStorage(void);
+	void ChangeStorageSize(void);
 
 	/**
 	 * An element is added. Look and remember if the memory or the storage must
-	 * be extended. If the matrix is managed in memory, the storage is not
+	 * be changed. If the matrix is managed in memory, the storage is not
 	 * modified until the de-connection from the session.
 	 * @param id             Identifier of the element.
 	 * @param line           Element is a line or a column?
@@ -425,7 +434,7 @@ private:
 	void DirtyIdentificator(size_t id,bool line,bool file);
 
 	/**
-	 * An element is deleted and all the measure related to it are modified.
+	 * An element is deleted and all the measures related to it are modified.
 	 * In practice, it calls DirtyIdentificator.
 	 * @param id             Identifier of the element.
 	 * @param line           Element is a line?
@@ -456,8 +465,19 @@ private:
 	/**
 	 * Update the nearest neighbors. All the measures are re-computed and
 	 * stored either in memory or in files (depending the options).
+	 *
+	 * This method tries to limit the amount of RAM used to compute the nearest
+	 * neighbors.
 	 */
-	void UpdateNearestNeighbors(void);
+	void UpdateNearestNeighborsRAM(void);
+
+	/**
+	 * Update the nearest neighbors. All the measures are re-computed and
+	 * stored either in memory or in files (depending the options).
+	 *
+	 * This method tries to optimize the computation of the nearest neighbors.
+	 */
+	void UpdateNearestNeighborsFast(void);
 
 	/**
 	 * All the measures must be updated in memory. If the matrix is fully
@@ -490,9 +510,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
+	* @param fac             Factory.
 	*/
-	static void CreateParams(R::RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor.

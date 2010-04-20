@@ -32,8 +32,146 @@
 // include file for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class GPlugInFactory
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GPlugInFactory::GPlugInFactory(GPlugInManager* mng,const R::RString& name,const R::RString& desc,const R::RString& lib,const R::RString& list)
+		: Name(name), Desc(desc),Level(0), Mng(mng), Plugin(0), Lib(lib),
+	      AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0), List(list)
+{
+	RString Cat(mng->GetName());
+	Cat.Replace('/','-');
+}
+
+
+//-----------------------------------------------------------------------------
+int GPlugInFactory::Compare(const GPlugInFactory& f) const
+{
+	int a=Level-f.Level;
+	if(!a)
+		return(Name.Compare(f.Name));
+	return(a);
+}
+
+
+//-----------------------------------------------------------------------------
+int GPlugInFactory::Compare(const R::RString& name) const
+{
+	return(Name.Compare(name));
+}
+
+
+//-----------------------------------------------------------------------------
+int GPlugInFactory::Compare(const size_t level) const
+{
+	return(Level-level);
+}
+
+//-----------------------------------------------------------------------------
+void GPlugInFactory::Create(GSession* session)
+{
+	if(Plugin)
+		return;
+	Plugin=NewPlugIn(session);
+	Plugin->ApplyConfig();
+	Plugin->Init();
+	Mng->RegisterPlugIn(Plugin,true);
+}
+
+
+//-----------------------------------------------------------------------------
+void GPlugInFactory::Delete(void)
+{
+	if(!Plugin)
+		return;
+	Mng->RegisterPlugIn(Plugin,false);
+	delete Plugin;
+	Plugin=0;
+}
+
+
+//-----------------------------------------------------------------------------
+void GPlugInFactory::About(void)
+{
+	if(AboutDlg)
+		AboutDlg();
+}
+
+
+//-----------------------------------------------------------------------------
+void GPlugInFactory::Configure(void)
+{
+	if(ConfigDlg)
+	{
+		Configure_t config=reinterpret_cast<Configure_t>(reinterpret_cast<size_t>(ConfigDlg));
+		if(config(this)&&Plugin)
+			Plugin->ApplyConfig();
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GPlugInFactory::CreateConfig(void)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+void GPlugInFactory::ApplyConfig(void)
+{
+	if(Plugin)
+		Plugin->ApplyConfig();
+}
+
+
+//------------------------------------------------------------------------------
+void GPlugInFactory::InsertParam(RParam* param)
+{
+	// Configuration is the session
+	if(!GALILEIApp->GetSessionConfig())
+		ThrowGException("No current session");
+	if(Mng->GetPlugInType()==GPlugInManager::ptListSelect)
+		GALILEIApp->GetSessionConfig()->InsertParam(param,Mng->GetName(),List,Name);
+	else
+		GALILEIApp->GetSessionConfig()->InsertParam(param,Mng->GetName(),Name);
+}
+
+
+//------------------------------------------------------------------------------
+RParam* GPlugInFactory::GetParam(const R::RString& name)
+{
+	// Configuration is the session
+	if(!GALILEIApp->GetSessionConfig())
+		ThrowGException("No current session");
+	if(Mng->GetPlugInType()==GPlugInManager::ptListSelect)
+		return(GALILEIApp->GetSessionConfig()->FindParam<RParam>(name,Mng->GetName(),List,Name));
+	else
+		return(GALILEIApp->GetSessionConfig()->FindParam<RParam>(name,Mng->GetName(),Name));
+}
+
+
+//-----------------------------------------------------------------------------
+GPlugInFactory::~GPlugInFactory(void)
+{
+	delete Plugin;
+
+	if (Handle)
+		dlclose(Handle);
+
+	if (HandleDlg)
+		dlclose(HandleDlg);
+}
 
 
 
@@ -44,31 +182,11 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPlugIn::GPlugIn(GPlugInFactory* fac)
-  	: Factory(fac), Session(0)
+GPlugIn::GPlugIn(GSession* session,GPlugInFactory* fac)
+  	: Factory(fac), Session(session)
 {
 	if(!fac)
 		std::cout<<"Big Problem"<<std::endl;
-}
-
-
-//------------------------------------------------------------------------------
-void GPlugIn::Connect(GSession* session)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GPlugIn::Disconnect(GSession*)
-{
-	Session=0;
-}
-
-
-//------------------------------------------------------------------------------
-void GPlugIn::ApplyConfig(void)
-{
 }
 
 
@@ -101,147 +219,18 @@ RString GPlugIn::GetDesc(void) const
 
 
 //------------------------------------------------------------------------------
+void GPlugIn::ApplyConfig(void)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GPlugIn::Init(void)
+{
+}
+
+
+//------------------------------------------------------------------------------
 GPlugIn::~GPlugIn(void)
 {
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class GPlugInFactory
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GPlugInFactory::GPlugInFactory(GPlugInManager* mng,const R::RString& name,const R::RString& desc,const R::RString& lib,const R::RString& list)
-		: Name(name), Desc(desc),Level(0), Mng(mng), Plugin(0), Lib(lib),
-	      AboutDlg(0), ConfigDlg(0), Handle(0), HandleDlg(0), List(list)
-{
-	RString Cat(mng->GetName());
-	Cat.Replace('/','-');
-
-	if(mng->GetPlugInType()==GPlugInManager::ptListSelect)
-	{
-		RString ListName(List);
-		ListName.Replace('/','-');
-		SetConfigInfos("lib/galilei/plugins/"+Cat+"/"+ListName,lib.Mid(0,lib.GetLen()-3));
-	}
-	else
-	{
-		SetConfigInfos("lib/galilei/plugins/"+Cat,lib.Mid(0,lib.GetLen()-3));
-		InsertParam(new R::RParamValue("Enable",false));
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-int GPlugInFactory::Compare(const GPlugInFactory& f) const
-{
-	int a=Level-f.Level;
-	if(!a)
-		return(Name.Compare(f.Name));
-	return(a);
-}
-
-
-//-----------------------------------------------------------------------------
-int GPlugInFactory::Compare(const R::RString& name) const
-{
-	return(Name.Compare(name));
-}
-
-
-//-----------------------------------------------------------------------------
-int GPlugInFactory::Compare(const size_t level) const
-{
-	return(Level-level);
-}
-
-
-//-----------------------------------------------------------------------------
-void GPlugInFactory::Create(void)
-{
-	if(Plugin) return;
-	Plugin=NewPlugIn();
-	Plugin->ApplyConfig();
-	Mng->EnablePlugIn(Plugin);
-}
-
-
-//-----------------------------------------------------------------------------
-void GPlugInFactory::Delete(void)
-{
-	if(!Plugin) return;
-	Mng->DisablePlugIn(Plugin);
-	DeletePlugIn(Plugin);
-	Plugin=0;
-}
-
-//-----------------------------------------------------------------------------
-void GPlugInFactory::Create(GSession* session)
-{
-	if(!Plugin)
-	{
-		Plugin=NewPlugIn();
-		Plugin->ApplyConfig();
-		Mng->EnablePlugIn(Plugin);
-	}
-	if(session)
-		Plugin->Connect(session);
-}
-
-
-//-----------------------------------------------------------------------------
-void GPlugInFactory::Delete(GSession* session)
-{
-	if(!Plugin) return;
-	if(session)
-		Plugin->Disconnect(session);
-	Mng->DisablePlugIn(Plugin);
-	DeletePlugIn(Plugin);
-	Plugin=0;
-}
-
-
-//-----------------------------------------------------------------------------
-void GPlugInFactory::About(void)
-{
-	if(AboutDlg)
-		AboutDlg();
-}
-
-
-//-----------------------------------------------------------------------------
-void GPlugInFactory::Configure(void)
-{
-	if(ConfigDlg)
-	{
-		Configure_t config=reinterpret_cast<Configure_t>(reinterpret_cast<size_t>(ConfigDlg));
-		config(this);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GPlugInFactory::Apply(void)
-{
-	if(Plugin)
-		Plugin->ApplyConfig();
-}
-
-
-//-----------------------------------------------------------------------------
-GPlugInFactory::~GPlugInFactory(void)
-{
-	// Save configuration file
-	Save();
-
-	delete Plugin;
-
-	if (Handle)
-		dlclose(Handle);
-
-	if (HandleDlg)
-		dlclose(HandleDlg);
 }

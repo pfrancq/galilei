@@ -91,9 +91,16 @@ GProfile::GProfile(GUser* usr,tProfileType type,size_t id,size_t blockid,const R
 
 
 //------------------------------------------------------------------------------
-int GProfile::Compare(const GProfile &profile) const
+int GProfile::Compare(const GProfile& profile) const
 {
 	return(CompareIds(Id,profile.Id));
+}
+
+
+//------------------------------------------------------------------------------
+int GProfile::Compare(const GProfile* profile) const
+{
+	return(CompareIds(Id,profile->Id));
 }
 
 

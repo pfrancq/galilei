@@ -96,20 +96,9 @@ public:
 	// @{
 
 	/**
-	* Get a string representing the world stored. This string must be a valid
-	* directory name since it is used everywhere.
-	*/
-	virtual R::RString GetWorld(void) const=0;
-
-	/**
-	* Initialize the access to the storage.
-	*/
-	virtual void InitAccess(void)=0;
-
-	/**
 	* Configurations were applied from the factory.
 	*/
-	virtual void ApplyConfig(void);
+	virtual void ApplyParams(void);
 
 	/**
 	* Compute the number of objects of a given type which are saved.
@@ -534,8 +523,45 @@ public:
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_STORAGE_FACTORY(name,desc,plugin)\
-	CREATE_FACTORY(GALILEI::GStorage,plugin,"Storage",R::RString::Null,name,desc)
+#define CREATE_STORAGE_FACTORY(name,desc,plugin)                                                   \
+class TheFactory : public GALILEI::GPlugInFactory                                                  \
+{                                                                                                  \
+	static GALILEI::GPlugInFactory* Inst;                                                          \
+	TheFactory(GALILEI::GPlugInManager* mng,const char* t)                                         \
+		: GPlugInFactory(mng,name,desc,t,R::RString::Null)                                         \
+	{                                                                                              \
+	}                                                                                              \
+	virtual ~TheFactory(void) {}                                                                   \
+	virtual void CreateConfig(void)                                                                \
+	{                                                                                              \
+		plugin::CreateParams(this);                                                                \
+	}                                                                                              \
+public:                                                                                            \
+	static GALILEI::GPlugInFactory* CreateInst(GALILEI::GPlugInManager* mng,const char* t)         \
+	{                                                                                              \
+		if(!Inst)                                                                                  \
+			Inst = new TheFactory(mng,t);                                                          \
+		return(Inst);                                                                              \
+	}                                                                                              \
+	virtual const char* GetAPIVersion(void) const                                                  \
+		{return(API_PLUG_IN_VERSION);}                                                             \
+		                                                                                           \
+	virtual GALILEI::GPlugIn* NewPlugIn(GSession*)                                                 \
+	{                                                                                              \
+		GALILEI::GStorage* ptr(new plugin(this));                                                  \
+		return(ptr);                                                                               \
+	}                                                                                              \
+};                                                                                                 \
+GALILEI::GPlugInFactory* TheFactory::Inst = 0;                                                     \
+                                                                                                   \
+extern "C" GALILEI::GPlugInFactory* FactoryCreate(GALILEI::GPlugInManager* mng,const char* t)      \
+{                                                                                                  \
+	return(TheFactory::CreateInst(mng,t));                                                         \
+}                                                                                                  \
+extern "C" const char* LibType(void)                                                               \
+{                                                                                                  \
+	return("Storage");                                                                             \
+}
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

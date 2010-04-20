@@ -57,9 +57,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GPreProfile(GPlugInFactory* fac);
+	GPreProfile(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Run the pre-group method.

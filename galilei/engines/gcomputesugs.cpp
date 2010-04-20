@@ -42,8 +42,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GComputeSugs::GComputeSugs(GPlugInFactory* fac)
-	: GPlugIn(fac)
+GComputeSugs::GComputeSugs(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac)
 {
 }
 

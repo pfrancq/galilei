@@ -62,7 +62,7 @@ namespace GALILEI{
 * @author GALILEI Team
 * @short Generic Session.
 */
-class GSession : public R::RConfig, public GIndexer, public GOntology, public GSubjects
+class GSession : public GIndexer, public GOntology, public GSubjects
 {
 	class Intern;
 
@@ -90,16 +90,12 @@ public:
 
 	/**
 	* Constructor.
+	* @param config          Configuration structure.
+	* @param storage         Storage.
 	* @param slot            Pointer to the slot.
 	* @param debug           Pointer to a debugger structure.
-	* @param maxdocs         Maximum number of documents to allocate. If zero,
-	*                        everything is allocated.
-	* @param maxprofiles     Maximum number of profiles to allocate. If
-	*                        zero, everything is allocated.
-	* @param maxgroups       Maximum number of groups to allocate. If zero,
-	*                        everything is allocated.
 	*/
-	GSession(GSlot* slot=0,R::RDebug* debug=0,size_t maxdocs=0,size_t maxprofiles=0,size_t maxgroups=0);
+	GSession(R::RConfig* config,GStorage* storage,GSlot* slot=0,R::RDebug* debug=0);
 
 	//-----------------------------------------------------
 	/** @name General Methods
@@ -110,7 +106,7 @@ public:
 	 * Apply the internal configuration. This method must be called to take
 	 * changes in the configuration into account.
 	 */
-	void Apply(void);
+	void ApplyConfig(void);
 
 	/**
 	* Force some objects to be re-computed even if they are updated.
@@ -288,6 +284,15 @@ public:
 	*                        return 0, else an exception is generated.
 	*/
 	void* GetElement(tObjType type,size_t id,bool null=false) const;
+
+	/**
+	 * Fill an array of pointers with the elements of a given type.
+	 * @param type           Type of the elements.
+	 * @param tab            Array that will be filled.
+	 * @param alloc          Must the array be allocated.
+	 * @return number of elements in the array (including null pointers).
+	 */
+	size_t GetElements(tObjType type,void** &tab,bool alloc) const;
 
 	/**
 	 * Clear the groups containing a given type of elements.
@@ -804,6 +809,7 @@ public:
 
 	friend class GDebugObject;
 	friend class GSimulator;
+	friend class GPlugInFactory;
 };
 
 

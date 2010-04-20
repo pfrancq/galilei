@@ -65,9 +65,10 @@ public:
 
 	/**
 	* Construct the computing method.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GProfileCalc(GPlugInFactory* fac);
+	GProfileCalc(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Compute a profile.

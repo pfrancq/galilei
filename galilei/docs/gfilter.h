@@ -80,9 +80,10 @@ public:
 
 	/**
 	* Construct the filter.
+	* @param session        Session.
 	* @param fac            Factory.
 	*/
-	GFilter(GPlugInFactory* fac);
+	GFilter(GSession* session,GPlugInFactory* fac);
 
 protected:
 

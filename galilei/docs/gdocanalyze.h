@@ -84,9 +84,10 @@ public:
 
 	/**
 	* Constructor of the document analysis method.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GDocAnalyze(GPlugInFactory* fac);
+	GDocAnalyze(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Prepare the analyze of a document. The method is called by GSession

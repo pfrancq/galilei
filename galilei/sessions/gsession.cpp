@@ -172,7 +172,6 @@ public:
 class GSession::Intern
 {
 public:
-	//GSubjects* Subjects;                                              // Subjects.
 	int CurrentRandom;                                                // Current seek for this session.
 	R::RRandom* Random;                                               // Random number generator
 	static GSession* Session;                                         // Static pointer to the session
@@ -194,13 +193,13 @@ public:
 	size_t MaxGroups;                                                 // Maximum number of groups to handle in memory.
 	bool ClusterSelectedDocs;                                         // Limit the clustering of the documents to the selected ones.
 
-	Intern(size_t mdocs,size_t maxprof,size_t maxgroups,size_t d,size_t u,size_t p,size_t t,size_t c)
-		: /*Subjects(0),*/ Random(0),
+	Intern(size_t d,size_t u,size_t p,size_t t,size_t c)
+		: Random(0),
 		  Slot(0), Docs(d+(d/2),d/2), DocsLoaded(false), DocsRefUrl(d+(d/2),d/2),
 		  Users(u,u/2), UsersLoaded(false), Profiles(p,p/2),
 		  Communities(c+(c/2),c/2), CommunitiesLoaded(false),
 		  Topics(t+(t/2),t/2), TopicsLoaded(false),
-		  MaxDocs(mdocs), MaxProfiles(maxprof), MaxGroups(maxgroups)
+		  MaxDocs(0), MaxProfiles(0), MaxGroups(0)
 	{
 		CurrentRandom=0;
 		Random=RRandom::Create(RRandom::Good,CurrentRandom);
@@ -209,7 +208,6 @@ public:
 	~Intern(void)
 	{
 		delete Random;
-	//	delete Subjects;
 		Session=0;
 		ExternBreak=false;
 	}
@@ -231,14 +229,16 @@ bool GSession::Intern::ExternBreak=false;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofiles,size_t maxgroups)
-	: GIndexer(), GOntology(Storage->GetNbSaved(otConcept)), GSubjects(),
-	  Data(0),
-	  Classes(300,100), ClassesLoaded(false), Simulator(0)
+GSession::GSession(RConfig* config,GStorage* storage,GSlot* slot,R::RDebug* debug)
+	: GIndexer(), GOntology(storage->GetNbSaved(otConcept)), GSubjects(),
+	  Data(0), Classes(300,100), ClassesLoaded(false), Simulator(0)
 {
+	Config=config;
+	Storage=storage;
+	Storage->Session=this;
+
 	// Init Part
-	Data=new Intern(maxdocs,maxprofiles,maxgroups,
-			Storage->GetNbSaved(otDoc),
+	Data=new Intern(Storage->GetNbSaved(otDoc),
 			Storage->GetNbSaved(otUser),
 			Storage->GetNbSaved(otProfile),
 			Storage->GetNbSaved(otTopic),
@@ -249,12 +249,6 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 
 	if(!Intern::Session)
 		Intern::Session=this;
-
-	// Create the configurations
-	SetConfigInfos("lib/galilei/sessions",Storage->GetWorld());
-	GSimulator::CreateConfig(this);
-	GIndexer::CreateConfig(this);
-	Load(false);
 }
 
 
@@ -265,13 +259,15 @@ GSession::GSession(GSlot* slot,R::RDebug* debug,size_t maxdocs,size_t maxprofile
 //
 //------------------------------------------------------------------------------
 
+
 //------------------------------------------------------------------------------
-void GSession::Apply(void)
+void GSession::ApplyConfig(void)
 {
-	Data->ClusterSelectedDocs=GetBool("ClusterSelectedDocs","Subjects");
+	// Load the configuration of the  simulator and the indexer
 	if(Simulator)
-		Simulator->Apply();
-	GIndexer::Apply(this);
+		Simulator->ApplyParams();
+	Data->ClusterSelectedDocs=Config->GetBool("ClusterSelectedDocs","Simulator","Documents");
+	GIndexer::ApplyConfig();
 }
 
 
@@ -403,7 +399,7 @@ RString GSession::AnalyzeString(const RString& str)
 				if(Rem=="world")
 				{
 					if(Storage)
-						Res+=Storage->GetWorld();
+						Res+=GALILEIApp->GetSessionName();
 					else
 						Res+='%'+Rem+'%';
 				}
@@ -426,7 +422,7 @@ GSimulator* GSession::GetSimulator(void) const
 	if(!Simulator)
 	{
 		const_cast<GSession*>(this)->Simulator=new GSimulator(const_cast<GSession*>(this));
-		Simulator->Apply();
+		Simulator->ApplyParams();
 	}
 	return(Simulator);
 }
@@ -642,6 +638,33 @@ void* GSession::GetElement(tObjType type,size_t id,bool null) const
 			return(GetCommunity(id,null));
 		case otTopic:
 			return(GetTopic(id,null));
+		default:
+			ThrowGException(GetObjType(type,true,true)+" are not managed");
+	}
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSession::GetElements(tObjType type,void** &tab,bool alloc) const
+{
+	switch(type)
+	{
+		case otDoc:
+			if(alloc)
+				tab=new void*[Data->Docs.GetMaxPos()+1];
+			return(Data->Docs.GetTab(tab));
+		case otProfile:
+			if(alloc)
+				tab=new void*[Data->Profiles.GetMaxPos()+1];
+			return(Data->Profiles.GetTab(tab));
+		case otCommunity:
+			if(alloc)
+				tab=new void*[Data->Communities.GetMaxPos()+1];
+			return(Data->Communities.GetTab(tab));
+		case otTopic:
+			if(alloc)
+				tab=new void*[Data->Topics.GetMaxPos()+1];
+			return(Data->Topics.GetTab(tab));
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -1865,9 +1888,7 @@ void GSession::ResetBreak(void)
 //------------------------------------------------------------------------------
 GSession::~GSession(void)
 {
-	// Save the configurations
-	Save();
-
 	delete Data;
 	delete Simulator;
+	Storage->Session=0;
 }

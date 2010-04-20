@@ -66,8 +66,8 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GLang::GLang(GPlugInFactory* fac,const RString& lang,const char* code)
-	: RLang(lang,code), GPlugIn(fac), Stop(0), Dict(0),
+GLang::GLang(GSession* session,GPlugInFactory* fac,const RString& lang,const char* code)
+	: RLang(lang,code), GPlugIn(session,fac), Stop(0), Dict(0),
 	  SkipWords(50,20)
 {
 	SkipWords.InsertPtr(new SkipWord("min"));
@@ -99,20 +99,6 @@ GLang::GLang(GPlugInFactory* fac,const RString& lang,const char* code)
 	SkipWords.InsertPtr(new SkipWord("ft"));
 	SkipWords.InsertPtr(new SkipWord("yd"));
 	SkipWords.InsertPtr(new SkipWord("ml"));
-}
-
-
-//------------------------------------------------------------------------------
-void GLang::Connect(GSession* session)
-{
-	Session=session;
-}
-
-
-//------------------------------------------------------------------------------
-void GLang::Disconnect(GSession* /*session*/)
-{
-	Session=0;
 }
 
 

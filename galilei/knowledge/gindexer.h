@@ -103,15 +103,15 @@ public:
 
 	/**
 	 * Create the configuration.
-	 * @param config         Config file.
+	 * @param config         Configuration structure.
 	 */
-	void CreateConfig(R::RConfig* config);
+	static void CreateConfig(R::RConfig* config);
 
 	/**
 	 * Apply the configuration.
-	 * @param config         Config file.
+	 * @param config         Configuration structure.
 	 */
-	void Apply(R::RConfig* config);
+	void ApplyConfig(void);
 
 	/**
 	* Clear the structure file of documents.

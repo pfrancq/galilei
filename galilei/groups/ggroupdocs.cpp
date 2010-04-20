@@ -56,8 +56,8 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGroupDocs::GGroupDocs(GPlugInFactory* fac)
-	: GPlugIn(fac), Docs(100,50)
+GGroupDocs::GGroupDocs(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac), Docs(100,50)
 {
 }
 

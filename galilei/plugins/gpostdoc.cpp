@@ -43,8 +43,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GPostDoc::GPostDoc(GPlugInFactory* fac)
-	: GPlugIn(fac)
+GPostDoc::GPostDoc(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac)
 {
 }
 

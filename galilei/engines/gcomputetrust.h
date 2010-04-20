@@ -57,9 +57,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GComputeTrust(GPlugInFactory* fac);
+	GComputeTrust(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Run the trust computing method.

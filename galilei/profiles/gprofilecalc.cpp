@@ -42,8 +42,8 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfileCalc::GProfileCalc(GPlugInFactory* fac)
-	: GPlugIn(fac), Infos(5000)
+GProfileCalc::GProfileCalc(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac), Infos(5000)
 {
 }
 

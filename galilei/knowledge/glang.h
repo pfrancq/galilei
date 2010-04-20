@@ -88,11 +88,12 @@ public:
 
 	/**
 	* Constructor of a language.
+	* @param session        Session.
 	* @param fac            Factory.
 	* @param lang           Name of the language.
 	* @param code           Code of the language.
 	*/
-	GLang(GPlugInFactory* fac,const R::RString& lang,const char* code);
+	GLang(GSession* session,GPlugInFactory* fac,const R::RString& lang,const char* code);
 
 	/**
 	 * @return the name of the language.
@@ -103,18 +104,6 @@ public:
 	 * @return the name of the plug-in.
 	 */
 	R::RString GetPlugInName(void) const {return(GPlugIn::GetName());}
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compare two languages by comparing their code.

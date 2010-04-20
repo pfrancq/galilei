@@ -48,7 +48,7 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GMetaEngine class provides a representation for a generic results extractor
-* for differents Search Engines
+* for different Search Engines
 * @author Valery Vandaele
 * @short Generic results extractor for different search engines
 */
@@ -57,9 +57,11 @@ class GMetaEngine : public GPlugIn
 public:
 
 	/**
-	* Construct the extractor for the Yahoo engine.
+	* Construct a meta-engine.
+	* @param session         Session.
+	* @param fac             Factory.
 	*/
-	GMetaEngine(GPlugInFactory* fac);
+	GMetaEngine(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Send a query to the meta Search engine
@@ -70,15 +72,15 @@ public:
 	virtual void Query(R::RContainer<R::RString,true,false> &keyWords, bool useAllKwds)=0;
 
 	/**
-	* Retreive the results from the searches.
-	* The results are first sorted (using the gobal ranking)
+	* Retrieve the results from the searches.
+	* The results are first sorted (using the global ranking)
 	* and then stored in the RContainer
 	*/
 	virtual void Process(void)=0;
 
 	/**
 	* Add a result from the engine
-	* @param url             The url of the document
+	* @param url             The URL of the document
 	* @param title           The title of the document
 	* @param desc            The description of the document
 	* @param rank            The ranking of the document
@@ -100,7 +102,7 @@ public:
 public:
 
 	/**
-	* Destructor of the Yahoo engine.
+	* Destructor of the meta-engine.
 	*/
 	virtual ~GMetaEngine(void);
 };

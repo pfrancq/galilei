@@ -97,13 +97,19 @@ class GPlugInList
 	*/
 	GPlugInFactory* Current;
 
+	/**
+	 * The manager of the list.
+	 */
+	GPlugInManager* Mng;
+
 public:
 
 	/**
 	* Constructor for the list of plug-ins.
+	* @param mng             Manager of the list.
 	* @param name            Name of the list.
 	*/
-	GPlugInList(R::RString name);
+	GPlugInList(GPlugInManager* mng,R::RString name);
 
 	/**
 	* Get the name of the plug-in list.
@@ -151,16 +157,20 @@ public:
 private:
 
 	/**
-	* Connect to the session.
-	* @param session         Pointer to the session.
+	* Apply the configuration parameters.
 	*/
-	void Connect(GSession* session);
+	void CreateConfig(void);
 
 	/**
-	* Disconnect to the session.
+	* Create the plug-ins for a given session.
 	* @param session         Pointer to the session.
 	*/
-	void Disconnect(GSession* session);
+	void Create(GSession* session);
+
+	/**
+	* Delete the plug-ins.
+	*/
+	void Delete(void);
 
 	friend class GPlugInManager;
 };
@@ -235,7 +245,7 @@ public:
 	/**
 	* Get the type of the plug-ins.
 	*/
-	tPluginsType GetPlugInType(void) const {return(PluginsType);}
+	inline tPluginsType GetPlugInType(void) const {return(PluginsType);}
 
 	/**
 	* Comparison method needed by R::RContainer.
@@ -255,50 +265,50 @@ public:
 	*/
 	void ReOrder(void);
 
+private:
+
 	/**
 	* Load a plug-in and its dialog boxes.
 	* @param dll             Name of the dynamic link library.
 	* @param handle          Handle to the library of the plug-in.
 	* @param handleDlg       Handle to the library of the dialogs.
-	* @param config          Configuration structure.
 	*/
-	void Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config);
+	void Load(const R::RString& dll,void* handle,void* handleDlg);
 
 	/**
-	* Connect to the session.
+	* Create the plug-ins for a given session.
 	* @param session         Pointer to the session.
 	*/
-	void Connect(GSession* session);
+	void Create(GSession* session);
 
 	/**
-	* Disconnect to the session.
-	* @param session         Pointer to the session.
+	* Delete the plug-ins.
 	*/
-	void Disconnect(GSession* session);
+	void Delete(void);
 
 	/**
-	* Create the configuration parameters.
-	* @param config          Configuration structure.
+	* Create the configuration parameters in the configuration structure.
 	*/
-	void CreateConfig(R::RConfig* config);
+	void CreateConfig(void);
 
 	/**
-	* Read the configuration parameters of the manager.
-	* @param config          Configuration structure.
+	* Read the configuration parameters from the configuration structure.
 	*/
-	void ReadConfig(R::RConfig* config);
+	void ReadConfig(void);
 
 	/**
-	* @param config          Configuration structure.
+	* Save the configuration parameters in the configuration structure.
 	*/
-	void SaveConfig(R::RConfig* config);
+	void SaveConfig(void);
 
 	/**
-	* Register a factory of a plug-in.
-	* @param fac             Factory to register.
-	* @param config          Configuration structure.
-	*/
-	void RegisterFactory(GPlugInFactory* fac,R::RConfig* config);
+	 * Register a plug-in as enabled or not.
+	 * @param plugin         Plugin.
+	 * @param enable         Enabled ?
+	 */
+	void RegisterPlugIn(GPlugIn* plugin,bool enable);
+
+public:
 
 	/**
 	 * @return List of the plug-ins list if supported, or an empty cursor.
@@ -348,18 +358,6 @@ public:
 	* @param list            List.
 	*/
 	R::RCursor<GPlugInFactory> GetFactories(const R::RString& list=R::RString::Null) const;
-
-	/**
-	* Signal that a plug-in was enabled.
-	* @param plug            Plug-in enabled.
-	*/
-	void EnablePlugIn(GPlugIn* plug);
-
-	/**
-	* Signal that a plug-in was disabled.
-	* @param plug            Plug-in disabled.
-	*/
-	void DisablePlugIn(GPlugIn* plug);
 
 	/**
 	* Get the number of enabled plug-ins.
@@ -518,6 +516,10 @@ public:
 	 *  Destructor the plug-ins manager.
 	 */
 	virtual ~GPlugInManager(void);
+
+	friend class GGALILEIApp;
+	friend class GPlugInList;
+	friend class GPlugInFactory;
 };
 
 

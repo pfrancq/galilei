@@ -31,6 +31,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gpluginmanager.h>
+#include <ggalileiapp.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -44,8 +45,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GPlugInList::GPlugInList(R::RString name)
-	: Name(name), Factories(20,10), Plugins(20,10), Current(0)
+GPlugInList::GPlugInList(GPlugInManager* mng,R::RString name)
+	: Name(name), Factories(20,10), Plugins(20,10), Current(0), Mng(mng)
 {
 }
 
@@ -65,20 +66,47 @@ int GPlugInList::Compare(const R::RString& name) const
 
 
 //-----------------------------------------------------------------------------
-void GPlugInList::Connect(GSession* session)
+void GPlugInList::CreateConfig(void)
 {
-	R::RCursor<GPlugIn> Cur(Plugins);
+	R::RCursor<GPlugInFactory> Cur(Factories);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Connect(session);
+	{
+		Cur()->InsertParam(new RParamValue("Enable",false));
+		Cur()->CreateConfig();
+		if(Mng->PluginsType==GPlugInManager::ptOrdered)
+		{
+			Cur()->SetLevel(static_cast<int>(GetNbFactories()));
+			Cur()->InsertParam(new RParamValue("Level",static_cast<int>(GetNbFactories())));
+		}
+	}
+	if(Mng->PluginsType==GPlugInManager::ptOrdered)
+	{
+		Factories.ReOrder();
+		Plugins.ReOrder();
+	}
 }
 
 
 //-----------------------------------------------------------------------------
-void GPlugInList::Disconnect(GSession* session)
+void GPlugInList::Create(GSession* session)
 {
-	R::RCursor<GPlugIn> Cur(Plugins);
+	R::RCursor<GPlugInFactory> Cur(Factories);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Disconnect(session);
+	{
+		GPlugInFactory* Factory(Cur());
+		if(!Factory->FindParam<RParamValue>("Enable")->GetBool())
+			continue;
+		Factory->Create(session);
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+void GPlugInList::Delete(void)
+{
+	R::RCursor<GPlugInFactory> Cur(Factories);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Cur()->Delete();
 }
 
 
@@ -96,7 +124,7 @@ GPlugInManager::GPlugInManager(R::RString name,tPluginsType type)
 	if(PluginsType==ptListSelect)
 		Data.Lists=new R::RContainer<GPlugInList,true,true>(10,5);
 	else
-		Data.List=new GPlugInList(RString::Null);
+		Data.List=new GPlugInList(this,RString::Null);
 }
 
 
@@ -125,7 +153,7 @@ void GPlugInManager::ReOrder(void)
 
 
 //-----------------------------------------------------------------------------
-void GPlugInManager::Load(const R::RString& dll,void* handle,void* handleDlg,R::RConfig* config)
+void GPlugInManager::Load(const R::RString& dll,void* handle,void* handleDlg)
 {
 	typedef GPlugInFactory* FactoryInit(GPlugInManager*,const char*);
 
@@ -136,140 +164,153 @@ void GPlugInManager::Load(const R::RString& dll,void* handle,void* handleDlg,R::
 	error=dlerror();
 	if(error)
 	{
-		std::cerr<<error<<std::endl;
+		cerr<<error<<endl;
 		return;
 	}
-	GPlugInFactory *myGPlugInFactory= initFac(this,dll);
+	GPlugInFactory* Factory(initFac(this,dll));
 
 	// Verify the versions of the GPlugInFactory and the session
-	if(Version.Compare(myGPlugInFactory->GetAPIVersion()))
+	if(Version.Compare(Factory->GetAPIVersion()))
 		return;
 
-	// Register main plug-in
-	RegisterFactory(myGPlugInFactory,config);
+	// Insert the factory in the right plug-ins list
+	GPlugInList* List(0);
+	if(PluginsType==ptListSelect)
+	{
+		List=Data.Lists->GetPtr(Factory->GetList());
+		if(!List)
+			Data.Lists->InsertPtr(List=new GPlugInList(this,Factory->GetList()));
+	}
+	else
+	{
+		if(!Data.List)
+			Data.List=new GPlugInList(this,RString::Null);
+		List=Data.List;
+	}
+	List->Factories.InsertPtr(Factory);
 
 	// Try to create the dialogs if necessary
 	if(!handleDlg)
 		return;
-	About_t about=reinterpret_cast<About_t>(reinterpret_cast<size_t>(dlsym(handleDlg,"About")));
+	GPlugInFactory::About_t about=reinterpret_cast<GPlugInFactory::About_t>(reinterpret_cast<size_t>(dlsym(handleDlg,"About")));
 	error=dlerror();
 	if(!error)
-		myGPlugInFactory->SetAbout(about);
+		Factory->SetAbout(about);
 	void* configdll= dlsym(handleDlg,"Configure");
 	error=dlerror();
 	if(!error)
-		myGPlugInFactory->SetConfig(configdll);
+		Factory->SetConfig(configdll);
 }
 
 
 //-----------------------------------------------------------------------------
-void GPlugInManager::Connect(GSession* session)
+void GPlugInManager::Create(GSession* session)
 {
 	if(PluginsType==ptListSelect)
 	{
 		RCursor<GPlugInList> Cur(*Data.Lists);
 		for(Cur.Start();!Cur.End();Cur.Next())
-			Cur()->Connect(session);
+			Cur()->Create(session);
 	}
 	else
-		Data.List->Connect(session);
+		Data.List->Create(session);
 }
 
 
 //-----------------------------------------------------------------------------
-void GPlugInManager::Disconnect(GSession* session)
+void GPlugInManager::Delete(void)
 {
 	if(PluginsType==ptListSelect)
 	{
 		RCursor<GPlugInList> Cur(*Data.Lists);
 		for(Cur.Start();!Cur.End();Cur.Next())
-			Cur()->Disconnect(session);
+			Cur()->Delete();
 	}
 	else
-		Data.List->Disconnect(session);
+		Data.List->Delete();
 }
 
 
 //------------------------------------------------------------------------------
-void GPlugInManager::CreateConfig(R::RConfig* config)
+void GPlugInManager::CreateConfig(void)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
 	{
+		case ptList:
 		case ptOrdered:
-			config->InsertParam(new R::RParamList(Name),"Plugins");
+			Data.List->CreateConfig();
 			break;
 
 		case ptSelect:
-			config->InsertParam(new R::RParamValue(Name,"None"),"Plugins");
+			GALILEIApp->GetSessionConfig()->InsertParam(new R::RParamValue(Name,"None"),Name);
+			Data.List->CreateConfig();
 			break;
 
 		case ptListSelect:
-			config->InsertParam(new RParamStruct(Name),"Plugins");
+		{
+			RCursor<GPlugInList> Cur(*Data.Lists);
+			for(Cur.Start();!Cur.End();Cur.Next())
+			{
+				GALILEIApp->GetSessionConfig()->InsertParam(new R::RParamValue(Cur()->Name,"None"),Name,Cur()->Name);
+				Cur()->CreateConfig();
+			}
 			break;
-
-		default:
-			break;
+		}
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GPlugInManager::ReadConfig(R::RConfig* config)
+void GPlugInManager::ReadConfig(void)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
 	{
+		case ptList:
+			break;
+
 		case ptOrdered:
 		{
-			R::RParamList* param=config->FindParam<R::RParamList>(Name,"Plugins");
-			int pos;
-			R::RCursor<R::RString> Cur(param->GetList());
-			for(Cur.Start(),pos=0;!Cur.End();Cur.Next(),pos++)
-			{
-				GPlugInFactory* fac(Data.List->Factories.GetPtr(*Cur(),false));
-				if(fac)
-					fac->SetLevel(pos);
-			}
+			// Parse each factory to find its level and re-order them after
+			RCursor<GPlugInFactory> Factories(Data.List->Factories);
+			for(Factories.Start();!Factories.End();Factories.Next())
+				Factories()->SetLevel(Factories()->FindParam<R::RParamValue>("Level")->GetInt());
 			ReOrder();
 			break;
 		}
 
 		case ptSelect:
-			SetCurrentPlugIn(config->Get(Name,"Plugins"),RString::Null,false);
+			SetCurrentPlugIn(GALILEIApp->GetSessionConfig()->Get(Name,Name),RString::Null,false);
 			break;
 
 		case ptListSelect:
 		{
-			RParamStruct* ptr(config->FindParam<RParamStruct>("Measures","Plugins"));
-			RCursor<RParam> Cur(ptr->GetStruct());
-			for(Cur.Start();!Cur.End();Cur.Next())
-				SetCurrentPlugIn(dynamic_cast<RParamValue*>(Cur())->Get(),Cur()->GetName(),false);
+			// Parse each list to determine the current plug-in
+			RCursor<GPlugInList> Lists(*Data.Lists);
+			for(Lists.Start();!Lists.End();Lists.Next())
+				SetCurrentPlugIn(GALILEIApp->GetSessionConfig()->Get(Lists()->Name,Name,Lists()->Name),Lists()->Name,false);
 			break;
 		}
-
-		default:
-			break;
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GPlugInManager::SaveConfig(R::RConfig* config)
+void GPlugInManager::SaveConfig(void)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
 	{
+		case ptList:
+			break;
+
 		case ptOrdered:
 		{
-			R::RParamList* param=config->FindParam<R::RParamList>(Name,"Plugins");
-			if(param)
-			{
-				param->Reset();
-				R::RCursor<GPlugInFactory> Cur(Data.List->Factories);
-				for(Cur.Start();!Cur.End();Cur.Next())
-					param->Insert(Cur()->GetName());
-			}
+			// Parse each factory to find its level and re-order them after
+			RCursor<GPlugInFactory> Factories(Data.List->Factories);
+			for(Factories.Start();!Factories.End();Factories.Next())
+				Factories()->FindParam<R::RParamValue>("Level")->SetInt(Factories()->GetLevel());
 			break;
 		}
 
@@ -280,62 +321,50 @@ void GPlugInManager::SaveConfig(R::RConfig* config)
 				Default=Data.List->Current->GetName();
 			else
 				Default="None";
-			config->Set(Name,Default,"Plugins");
+			GALILEIApp->GetSessionConfig()->Set(Name,Default,Name);
 			break;
 		}
 
 		case ptListSelect:
 		{
-			RParamStruct* ptr=config->FindParam<RParamStruct>("Measures","Plugins");
-			RCursor<GPlugInList> Cur(*Data.Lists);
-			for(Cur.Start();!Cur.End();Cur.Next())
+			// Parse each list to determine the current plug-in
+			RCursor<GPlugInList> Lists(*Data.Lists);
+			for(Lists.Start();!Lists.End();Lists.Next())
 			{
-				RParamValue* param=ptr->Get<RParamValue>(Cur()->GetName());
-				RString Default;
-				if(Cur()->Current)
-					Default=Cur()->Current->GetName();
+				R::RString Default;
+				if(Lists()->Current)
+					Default=Lists()->Current->GetName();
 				else
 					Default="None";
-				param->Set(Default);
+				GALILEIApp->GetSessionConfig()->Set(Lists()->Name,Default,Name,Lists()->Name);
 			}
 			break;
 		}
-
-		default:
-			break;
 	}
 }
 
 
-//-----------------------------------------------------------------------------
-void GPlugInManager::RegisterFactory(GPlugInFactory* fac,R::RConfig* config)
+//------------------------------------------------------------------------------
+void GPlugInManager::RegisterPlugIn(GPlugIn* plugin,bool enable)
 {
-	// Find the correct list
-	GPlugInList* List;
+	// Insert the factory in the right plug-ins list
+	GPlugInList* List(0);
 	if(PluginsType==ptListSelect)
 	{
-		List=Data.Lists->GetInsertPtr(fac->GetList());
-
-		// Look if a param exist in the config structure
-		RParamStruct* param(config->FindParam<RParamStruct>("Measures","Plugins"));
-		RParam* Exist(param->Get<RParam>(fac->GetList()));
-		if(!Exist)
-			param->Insert(new RParamValue(fac->GetList(),"None"));
+		List=Data.Lists->GetPtr(plugin->GetFactory()->GetList());
+		if(!List)
+			ThrowGException("Invalid list of plug-ins '"+plugin->GetFactory()->GetList()+"' in '"+Name+"'");
 	}
 	else
+	{
+		if(!Data.List)
+			Data.List=new GPlugInList(this,RString::Null);
 		List=Data.List;
-
-	// Load and create the factory
-	fac->Load(false);
-	if(PluginsType==ptOrdered)
-		fac->SetLevel(static_cast<int>(List->GetNbFactories()));
-
-	// Create it
-	if(fac->GetBool("Enable"))
-		fac->Create();
+	}
+	if(enable)
+		List->Plugins.InsertPtr(plugin);
 	else
-		fac->Apply();
-	List->Factories.InsertPtr(fac);
+		List->Plugins.DeletePtr(*plugin);
 }
 
 
@@ -412,7 +441,7 @@ R::RCursor<GPlugInFactory> GPlugInManager::GetFactories(const R::RString& list) 
 	return(RCursor<GPlugInFactory>(List->Factories));
 }
 
-
+/*
 //-----------------------------------------------------------------------------
 void GPlugInManager::EnablePlugIn(GPlugIn* plug)
 {
@@ -453,7 +482,7 @@ void GPlugInManager::DisablePlugIn(GPlugIn* plug)
 	if(param)
 		param->SetBool(false);
 }
-
+*/
 
 //-----------------------------------------------------------------------------
 size_t GPlugInManager::GetNbPlugIns(const RString& list) const

@@ -51,8 +51,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngine::GEngine(GPlugInFactory* fac)
-	: GPlugIn(fac), Weight(1)
+GEngine::GEngine(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac), Weight(1)
 {
 }
 

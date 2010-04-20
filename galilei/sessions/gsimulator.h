@@ -42,7 +42,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <galilei.h>
+#include <gsession.h>
 
 
 //-----------------------------------------------------------------------------
@@ -231,12 +231,23 @@ public:
 	 * Create the configuration parameter related to the simulator.
 	 * @param config         Configuration file.
 	 */
-	static void CreateConfig(R::RConfig *config);
+	static void CreateConfig(R::RConfig* config);
 
 	/**
 	* Assign the values of the parameters to the corresponding variables.
 	*/
-	void Apply(void);
+	void ApplyParams(void);
+
+	/**
+	* Find a given parameter (template version).
+	* @tparam T              Type of the parameter.
+	* @param name            Name of the parameter.
+	* @return Pointer or null if not found.
+	*/
+	template<class T> T* FindParam(const R::RString& name)
+	{
+		return(Session->GetConfig()->FindParam<T>(name,"Simulator"));
+	}
 
 	/**
 	* Start a simulation. A given set of subjects is chosen, then the users

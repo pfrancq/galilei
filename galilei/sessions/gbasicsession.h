@@ -33,6 +33,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R Library
+#include <rconfig.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -63,6 +68,11 @@ protected:
 	 */
 	bool SaveResults;
 
+	/**
+	 * The configuration structure.
+	 */
+	R::RConfig* Config;
+
 public:
 
 	/**
@@ -74,6 +84,11 @@ public:
 	* @return Pointer to storage manager.
 	*/
 	GStorage* GetStorage(void) const;
+
+	/**
+	 * @return the configuration structure associated to the session.
+	 */
+	inline R::RConfig* GetConfig(void) const {return(Config);}
 
 	/**
 	* Verify if the results of the computations must be saved.

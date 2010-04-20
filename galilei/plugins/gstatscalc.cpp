@@ -49,18 +49,18 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsCalc::GStatsCalc(GPlugInFactory* fac)
-	: GPlugIn(fac)
+GStatsCalc::GStatsCalc(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac)
 {
 }
 
 
 //------------------------------------------------------------------------------
-RXMLTag* GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,double val)
+RXMLTag* GStatsCalc::AddTag(RXMLStruct* xml,RXMLTag* parent,RString element,double val,const char* fmt)
 {
 	RXMLTag* tag(new RXMLTag(element));
 	xml->AddTag(parent,tag);
-	tag->InsertAttr("Value",RString::Number(val));
+	tag->InsertAttr("Value",RString::Number(val,fmt));
 	return(tag);
 }
 

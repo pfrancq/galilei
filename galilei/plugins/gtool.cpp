@@ -42,8 +42,8 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GTool::GTool(GPlugInFactory* fac)
-	: GPlugIn(fac)
+GTool::GTool(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac)
 {
 }
 
