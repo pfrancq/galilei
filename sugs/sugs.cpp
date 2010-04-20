@@ -72,17 +72,17 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-Sugs::Sugs(GPlugInFactory* fac)
-	: GComputeSugs(fac), TheSugs(otProfile,0,30)
+Sugs::Sugs(GSession* session,GPlugInFactory* fac)
+	: GComputeSugs(session,fac), TheSugs(otProfile,0,30)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void Sugs::CreateParams(RConfig* params)
+void Sugs::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("NbSugs",50));
-	params->InsertParam(new RParamValue("UseLevels",false));
+	fac->InsertParam(new RParamValue("NbSugs",50));
+	fac->InsertParam(new RParamValue("UseLevels",false));
 }
 
 
@@ -90,8 +90,8 @@ void Sugs::CreateParams(RConfig* params)
 void Sugs::ApplyConfig(void)
 {
 	GComputeSugs::ApplyConfig();
-	NbSugs=Factory->GetUInt("NbSugs");
-	UseLevels=Factory->GetBool("UseLevels");
+	NbSugs=Factory->FindParam<RParamValue>("NbSugs")->GetUInt();
+	UseLevels=Factory->FindParam<RParamValue>("UseLevels")->GetBool();
 }
 
 

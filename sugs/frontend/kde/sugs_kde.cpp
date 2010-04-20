@@ -32,6 +32,7 @@
 // include files for GALILEI
 #include <gcomputesugs.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -78,18 +79,19 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
 	Config dlg;
 
-	dlg.NbSugs->setValue(params->GetInt("NbSugs"));
-	dlg.UseLevels->setChecked(params->GetBool("UseLevels"));
+	dlg.NbSugs->setValue(fac->FindParam<RParamValue>("NbSugs")->GetUInt());
+	dlg.UseLevels->setChecked(fac->FindParam<RParamValue>("UseLevels")->GetBool());
 	if (dlg.exec())
 	{
-		params->SetUInt("NbSugs", dlg.NbSugs->value());
-		params->SetBool("UseLevels", dlg.UseLevels->isChecked());
-		params->Apply();
+		fac->FindParam<RParamValue>("NbSugs")->SetUInt(dlg.NbSugs->value());
+		fac->FindParam<RParamValue>("UseLevels")->SetBool(dlg.UseLevels->isChecked());
+		return(true);
 	}
+	return(false);
 }
 
 

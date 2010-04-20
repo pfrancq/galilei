@@ -69,15 +69,15 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	Sugs(GPlugInFactory* fac);
+	Sugs(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
