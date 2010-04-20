@@ -32,6 +32,7 @@
 // include files for GALILEI
 #include <gprofilecalc.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -78,26 +79,27 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
  	Config dlg;
 
-	dlg.MaxSize->setValue(static_cast<int>(params->GetUInt("MaxSize")));
-	dlg.NegSize->setValue(static_cast<int>(params->GetUInt("NegSize")));
-	dlg.RelFactor->setValue(params->GetDouble("RelFactor"));
-	dlg.FuzzyFactor->setValue(params->GetDouble("FuzzyFactor"));
-	dlg.IrrelFactor->setValue(params->GetDouble("IrrelFactor"));
-	dlg.IncrementalMode->setChecked(params->GetBool("IncrementalMode"));
+	dlg.MaxSize->setValue(static_cast<int>(fac->FindParam<RParamValue>("MaxSize")->GetUInt()));
+	dlg.NegSize->setValue(static_cast<int>(fac->FindParam<RParamValue>("NegSize")->GetUInt()));
+	dlg.RelFactor->setValue(fac->FindParam<RParamValue>("RelFactor")->GetDouble());
+	dlg.FuzzyFactor->setValue(fac->FindParam<RParamValue>("FuzzyFactor")->GetDouble());
+	dlg.IrrelFactor->setValue(fac->FindParam<RParamValue>("IrrelFactor")->GetDouble());
+	dlg.IncrementalMode->setChecked(fac->FindParam<RParamValue>("IncrementalMode")->GetBool());
 	if(dlg.exec())
 	{
-		params->SetUInt("MaxSize",dlg.MaxSize->value());
-		params->SetUInt("NegSize",dlg.NegSize->value());
-		params->SetDouble("RelFactor",dlg.RelFactor->value());
-		params->SetDouble("FuzzyFactor",dlg.FuzzyFactor->value());
-		params->SetDouble("IrrelFactor",dlg.IrrelFactor->value());
-		params->SetBool("IncrementalMode",dlg.IncrementalMode->isChecked());
- 		params->Apply();
+		fac->FindParam<RParamValue>("MaxSize")->SetUInt(dlg.MaxSize->value());
+		fac->FindParam<RParamValue>("NegSize")->SetUInt(dlg.NegSize->value());
+		fac->FindParam<RParamValue>("RelFactor")->SetDouble(dlg.RelFactor->value());
+		fac->FindParam<RParamValue>("FuzzyFactor")->SetDouble(dlg.FuzzyFactor->value());
+		fac->FindParam<RParamValue>("IrrelFactor")->SetDouble(dlg.IrrelFactor->value());
+		fac->FindParam<RParamValue>("IncrementalMode")->SetBool(dlg.IncrementalMode->isChecked());
+ 		return(true);
  	}
+	return(false);
 }
 
 

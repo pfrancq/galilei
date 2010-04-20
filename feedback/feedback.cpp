@@ -63,8 +63,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GProfileCalcFeedback::GProfileCalcFeedback(GPlugInFactory* fac)
-	: GProfileCalc(fac), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
+GProfileCalcFeedback::GProfileCalcFeedback(GSession* session,GPlugInFactory* fac)
+	: GProfileCalc(session,fac), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
 	  FuzzyFactor(0.25), IrrelFactor(0.75),
 	  Vectors(5000), VectorsIrrel(5000), VectorsFuzzy(5000),
 	  NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
@@ -76,28 +76,14 @@ GProfileCalcFeedback::GProfileCalcFeedback(GPlugInFactory* fac)
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::ApplyConfig(void)
 {
-	MaxNonZero=Factory->GetUInt("MaxSize");
-	NegNonZero=Factory->GetUInt("NegSize");
+	MaxNonZero=Factory->FindParam<RParamValue>("MaxSize")->GetUInt();
+	NegNonZero=Factory->FindParam<RParamValue>("NegSize")->GetUInt();
 	if(NegNonZero>MaxNonZero)
 		MaxNonZero=NegNonZero;
-	RelFactor=Factory->GetDouble("RelFactor");
-	FuzzyFactor=Factory->GetDouble("FuzzyFactor");
-	IrrelFactor=Factory->GetDouble("IrrelFactor");
-	IncrementalMode=Factory->GetBool("IncrementalMode");
-}
-
-
-//-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Connect(GSession* session)
-{
-	GProfileCalc::Connect(session);
-}
-
-
-//-----------------------------------------------------------------------------
-void GProfileCalcFeedback::Disconnect(GSession* session)
-{
-	GProfileCalc::Disconnect(session);
+	RelFactor=Factory->FindParam<RParamValue>("RelFactor")->GetDouble();
+	FuzzyFactor=Factory->FindParam<RParamValue>("FuzzyFactor")->GetDouble();
+	IrrelFactor=Factory->FindParam<RParamValue>("IrrelFactor")->GetDouble();
+	IncrementalMode=Factory->FindParam<RParamValue>("IncrementalMode")->GetBool();
 }
 
 
@@ -306,14 +292,14 @@ void GProfileCalcFeedback::WriteFile(const RString& dir)
 
 
 //------------------------------------------------------------------------------
-void GProfileCalcFeedback::CreateParams(RConfig* params)
+void GProfileCalcFeedback::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("MaxSize",60));
-	params->InsertParam(new RParamValue("NegSize",0));
-	params->InsertParam(new RParamValue("RelFactor",1.0));
-	params->InsertParam(new RParamValue("FuzzyFactor",0.25));
-	params->InsertParam(new RParamValue("IrrelFactor",0.75));
-	params->InsertParam(new RParamValue("IncrementalMode",false));
+	fac->InsertParam(new RParamValue("MaxSize",60));
+	fac->InsertParam(new RParamValue("NegSize",0));
+	fac->InsertParam(new RParamValue("RelFactor",1.0));
+	fac->InsertParam(new RParamValue("FuzzyFactor",0.25));
+	fac->InsertParam(new RParamValue("IrrelFactor",0.75));
+	fac->InsertParam(new RParamValue("IncrementalMode",false));
 }
 
 
@@ -321,7 +307,7 @@ void GProfileCalcFeedback::CreateParams(RConfig* params)
 GProfileCalcFeedback::~GProfileCalcFeedback(void)
 {
 	// Clear Infos
-	// Rem: Since Infos is not responsible for allocation/desallocation
+	// Rem: Since Infos is not responsible for allocation/deallocation
 	//      -> parse it to prevent memory leaks
 	if(Order) delete[] Order;
 }

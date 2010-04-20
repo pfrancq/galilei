@@ -157,25 +157,14 @@ public:
 	/**
 	* Constructor.
 	* @param session        Session.
+	* @param fac            Factory.
 	*/
-	GProfileCalcFeedback(GPlugInFactory* fac);
+	GProfileCalcFeedback(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session);
 
 private:
 
@@ -206,9 +195,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
+	* @param fac             Factory.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor.
