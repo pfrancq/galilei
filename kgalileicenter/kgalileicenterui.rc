@@ -97,6 +97,9 @@
 		<Action name="helpProgram"/>
 		<Action name="runTool"/>
 	 </Menu>
+	 <Menu name="settings">
+	 	<Action name="configureSession"/>
+	 </Menu>
 </MenuBar>
 <ToolBar fullWidth="true" name="mainToolBar">
 	<Action name="sessionConnect"/>

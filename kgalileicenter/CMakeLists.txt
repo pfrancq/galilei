@@ -28,24 +28,25 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 KDE4_HANDLE_AUTOMOC(${KGALILEICENTER_SOURCES})
 
 KDE4_ADD_UI_FILES(KGALILEICENTER_SOURCES
-qpluginslist.ui
-configure.ui
-kviewdoc.ui
-addfdbkdlg.ui
-kviewmetaengine.ui
-kviewprg.ui
-qfilldatabase.ui
-kviewstats.ui
-kviewgroup.ui
-kviewusers.ui
-kviewgroups.ui
-kviewidealgroups.ui
-kviewprofile.ui
-qcreatedatabase.ui
-kviewdicts.ui
-kprgconsole.ui
-qchooselist.ui
-kviewclasses.ui
+	mainconfigure.ui
+	qpluginslist.ui
+	configure.ui
+	kviewdoc.ui
+	addfdbkdlg.ui
+	kviewmetaengine.ui
+	kviewprg.ui
+	qfilldatabase.ui
+	kviewstats.ui
+	kviewgroup.ui
+	kviewusers.ui
+	kviewgroups.ui
+	kviewidealgroups.ui
+	kviewprofile.ui
+	qcreatedatabase.ui
+	kviewdicts.ui
+	kprgconsole.ui
+	qchooselist.ui
+	kviewclasses.ui
 )
 
 

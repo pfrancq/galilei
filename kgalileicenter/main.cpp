@@ -95,7 +95,7 @@ int main(int argc, char *argv[])
 		}
 		else
 		{
-			Center->show();
+			Center->Execute();
 		}
 		return(app.exec());
 	}

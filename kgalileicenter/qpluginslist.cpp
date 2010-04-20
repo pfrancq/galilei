@@ -77,11 +77,11 @@ class QPlugIn : public QListWidgetItem
 {
 public:
 	GPlugInFactory* PlugIn;          // Plug-in Configuration.
-	bool Enable;                    // Must the plug-in be enabled?
-	bool WasEnable;                 // Was the plug-in enabled ?
+	bool Enable;                     // Must the plug-in be enabled?
+	bool WasEnable;                  // Was the plug-in enabled ?
 
-	QPlugIn(QListWidget* lst,GPlugInFactory* fac,const QString& desc)
-		: QListWidgetItem(desc,lst), PlugIn(fac), Enable(fac->IsCreated()), WasEnable(fac->IsCreated())	{}
+	QPlugIn(QListWidget* lst,GPlugInFactory* fac,const QString& desc,bool enable)
+		: QListWidgetItem(desc,lst), PlugIn(fac), Enable(enable), WasEnable(enable)	{}
 };
 
 
@@ -129,7 +129,7 @@ void QPlugInsList::init(const RString& mng,bool current,bool enable,bool updown,
 		str+=" [";
 		str+=ToQString(Cur()->GetLib());
 		str+="]";
-		cur=new QPlugIn(List,Cur(),str);
+		cur=new QPlugIn(List,Cur(),str,Cur()->FindParam<RParamValue>("Enable")->GetBool());
 		if(current)
 		{
 			Current->insertItem(idx,ToQString(Cur()->GetName()));
@@ -250,35 +250,23 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 
 
 //-----------------------------------------------------------------------------
-void QPlugInsList::apply(GSession* session)
+void QPlugInsList::apply(void)
 {
 	for(int i=0;i<List->count();i++)
 	{
 		QPlugIn* item=dynamic_cast<QPlugIn*>(List->item(i));
 		item->PlugIn->SetLevel(i);
 		if(HasUpDown)
-			item->PlugIn->SetInt("Level",i);
-		item->PlugIn->Apply();
+			item->PlugIn->FindParam<RParamValue>("Level")->SetInt(i);
+		item->PlugIn->FindParam<RParamValue>("Enable")->SetBool(item->Enable);
+		item->PlugIn->ApplyConfig();
 
-		if(session)
+		if(GALILEIApp->GetSession())
 		{
 			if(item->Enable)
 			{
 				if(!item->WasEnable)
-					item->PlugIn->Create(session);
-			}
-			else
-			{
-				if(item->WasEnable)
-					item->PlugIn->Delete(session);
-			}
-		}
-		else
-		{
-			if(item->Enable)
-			{
-				if(!item->WasEnable)
-					item->PlugIn->Create();
+					item->PlugIn->Create(GALILEIApp->GetSession());
 			}
 			else
 			{

@@ -139,10 +139,8 @@ public:
 
 	/**
 	 * Apply the configuration of the plug-ins.
-	 * @param session        Current session (needed to create or delete
-	 *                       plug-ins).
 	 */
-	void apply(GSession* session);
+	void apply(void);
 
 public slots:
 

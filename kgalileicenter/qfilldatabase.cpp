@@ -94,17 +94,16 @@ class QImportDocs : public QSessionThread
 {
 	QFillDatabase* Info;
 	GSession* Session;
-	int CurDepth;
 public:
 	QImportDocs(QFillDatabase* info);
 	virtual void DoIt(void);
-	void ParseDir(const RURI& uri,const RString& parent);
+	void ParseDir(const RURI& uri,const RString& parent,int depth);
 };
 
 
 //-----------------------------------------------------------------------------
 QImportDocs::QImportDocs(QFillDatabase* info)
-	: Info(info), Session(GALILEIApp->GetSession()), CurDepth(0)
+	: Info(info), Session(GALILEIApp->GetSession())
 {
 }
 
@@ -112,7 +111,7 @@ QImportDocs::QImportDocs(QFillDatabase* info)
 //-----------------------------------------------------------------------------
 void QImportDocs::DoIt(void)
 {
-	ParseDir(Info->Dir,Info->Parent);
+	ParseDir(Info->Dir,Info->Parent,0);
 	if(Info->Categorized)
 	{
 		RCursor<GSubject> Cur(Session->GetSubjects());
@@ -123,12 +122,12 @@ void QImportDocs::DoIt(void)
 
 
 //-----------------------------------------------------------------------------
-void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
+void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 {
 	bool InDir(true);
 
 	// Go through the directory
-	CurDepth++;
+	depth++;
 	RDir Dir(uri);
 	Dir.Open(RIO::Read);
 	Parent->setLabelText(ToQString(uri.GetPath()));
@@ -149,11 +148,13 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 					Subject=Session->GetSubject(parent);
 					cat=parent+"/"+cat;
 				}
-				if(CurDepth<=Info->Depth->value())
+				if(depth<=Info->Depth->value())
 					Session->InsertSubject(Subject,new GSubject(Session->GetNbSubjects()+1,cat,true));
+				else
+					cat=parent;
 			}
 
-			ParseDir(Files()->GetURI(),cat);
+			ParseDir(Files()->GetURI(),cat,depth);
 			InDir=false;
 		}
 		else
@@ -174,7 +175,6 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent)
 			}
 		}
 	}
-	CurDepth--;
 }
 
 

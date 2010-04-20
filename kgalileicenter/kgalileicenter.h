@@ -97,6 +97,11 @@ class KGALILEICenter : public KXmlGuiWindow, public GSlot, public GGALILEIApp
 	KAction* aSessionConnect;
 
 	/**
+	 * Menu for the session options.
+	 */
+	KAction* aSessionOptions;
+
+	/**
 	 * All available actions once a session is connected.
 	 */
 	QList<KAction*> Actions;
@@ -109,6 +114,16 @@ public:
 	* @param argv            Values of arguments.
 	*/
 	KGALILEICenter(int argc, char *argv[]);
+
+	/**
+	 * Initialize the application.
+	 */
+	virtual void Init(void);
+
+	/**
+	 * Run the application.
+	 */
+	virtual void Run(void);
 
 	/**
 	* Returns a pointer to the current session.
@@ -233,6 +248,11 @@ private slots:
 	 * Set the preferences.
 	 */
 	void optionsPreferences(void);
+
+	/**
+	 * Set the options for the session.
+	 */
+	void optionsSession(void);
 
 	/**
 	 * Show the dictionaries.

@@ -41,6 +41,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 // include files for current project
 #include <ui_configure.h>
+class KGALILEICenter;  // forward declaration
 
 
 //------------------------------------------------------------------------------
@@ -72,16 +73,11 @@ class Configure : KDialog, Ui_Configure
 		size_t StructCache;
 		size_t StructType;
 
-		Type(const RString& name,GSession* Session);
-		void Apply(GSession* Session);
+		Type(const RString& name);
+		void Apply(void);
 		int Compare(const Type& type) const {return(Name.Compare(type.Name));}
 		int Compare(const RString& type) const {return(Name.Compare(type));}
 	};
-
-	/**
-	 * Session (if any).
-	 */
-	GSession* Session;
 
 	/**
 	 * Object type.
@@ -93,19 +89,24 @@ class Configure : KDialog, Ui_Configure
 	 */
 	Type* CurType;
 
+	/**
+	 * The main application.
+	 */
+	KGALILEICenter* App;
+
 public:
 
 	/**
 	 * Construct the dialog box.
-	 * @param parent         Parent widget.
+	 * @param app            Application.
 	 */
-	Configure(QWidget* parent);
+	Configure(KGALILEICenter* app);
 
 	/**
 	 * Execute the dialog boxes. In practice, when the 'Apply' button is
 	 * pressed, the variables are applied.
 	 */
-	void exec(GSession* session);
+	void exec(void);
 
 	/**
 	 * Read the options of a configuration file.
@@ -130,14 +131,14 @@ private:
 	void applyGeneral(void);
 
 	/**
-	 * Initialize the indexer part.
+	 * Initialize the session part.
 	 */
-	void initIndexer(void);
+	void initSession(void);
 
 	/**
-	 * Apply the indexer part.
+	 * Apply the session part.
 	 */
-	void applyIndexer(void);
+	void applySession(void);
 
 	/**
 	 * Add a subject to the list of subjects.

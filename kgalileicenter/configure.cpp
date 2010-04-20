@@ -125,46 +125,46 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-Configure::Type::Type(const RString& name,GSession* Session)
+Configure::Type::Type(const RString& name)
 	: Name(name)
 {
-	DescBlock=Session->GetUInt(Name+"DescBlock","Indexer");
-	DescTolerance=Session->GetUInt(Name+"DescTolerance","Indexer");
-	DescCache=Session->GetUInt(Name+"DescCache","Indexer");
-	DescType=Session->GetInt(Name+"DescType","Indexer");
-	IndexBlock=Session->GetUInt(Name+"IndexBlock","Indexer");
-	IndexTolerance=Session->GetUInt(Name+"IndexTolerance","Indexer");
-	IndexCache=Session->GetUInt(Name+"IndexCache","Indexer");
-	IndexType=Session->GetInt(Name+"IndexType","Indexer");
-	IndexInc=Session->GetBool("Index"+Name+"Inc","Indexer");
+	DescBlock=GALILEIApp->GetSessionConfig()->GetUInt("BlockSize","Indexer",Name,"Description");
+	DescTolerance=GALILEIApp->GetSessionConfig()->GetUInt("Tolerance","Indexer",Name,"Description");
+	DescCache=GALILEIApp->GetSessionConfig()->GetUInt("CacheSize","Indexer",Name,"Description");
+	DescType=GALILEIApp->GetSessionConfig()->GetInt("Type","Indexer",Name,"Description");
+	IndexBlock=GALILEIApp->GetSessionConfig()->GetUInt("BlockSize","Indexer",Name,"Index");
+	IndexTolerance=GALILEIApp->GetSessionConfig()->GetUInt("Tolerance","Indexer",Name,"Index");
+	IndexCache=GALILEIApp->GetSessionConfig()->GetUInt("CacheSize","Indexer",Name,"Index");
+	IndexType=GALILEIApp->GetSessionConfig()->GetInt("Type","Indexer",Name,"Index");
+	IndexInc=GALILEIApp->GetSessionConfig()->GetBool("Increment","Indexer",Name,"Index");
 	if(Name=="Documents")
 	{
-		StructBlock=Session->GetUInt("DocumentsStructBlock","Indexer");
-		StructTolerance=Session->GetUInt("DocumentsStructTolerance","Indexer");
-		StructCache=Session->GetUInt("DocumentsStructCache","Indexer");
-		StructType=Session->GetInt("DocumentsStructType","Indexer");
+		StructBlock=GALILEIApp->GetSessionConfig()->GetUInt("BlockSize","Indexer","Documents","Structure");
+		StructTolerance=GALILEIApp->GetSessionConfig()->GetUInt("Tolerance","Indexer","Documents","Structure");
+		StructCache=GALILEIApp->GetSessionConfig()->GetUInt("CacheSize","Indexer","Documents","Structure");
+		StructType=GALILEIApp->GetSessionConfig()->GetInt("Type","Indexer","Documents","Structure");
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void Configure::Type::Apply(GSession* Session)
+void Configure::Type::Apply(void)
 {
-	Session->SetUInt(Name+"DescBlock",DescBlock,"Indexer");
-	Session->SetUInt(Name+"DescTolerance",DescTolerance,"Indexer");
-	Session->SetUInt(Name+"DescCache",DescCache,"Indexer");
-	Session->SetInt(Name+"DescType",DescType,"Indexer");
-	Session->SetUInt(Name+"IndexBlock",IndexBlock,"Indexer");
-	Session->SetUInt(Name+"IndexTolerance",IndexTolerance,"Indexer");
-	Session->SetUInt(Name+"IndexCache",IndexCache,"Indexer");
-	Session->SetInt(Name+"IndexType",IndexType,"Indexer");
-	Session->SetBool("Index"+Name+"Inc",IndexInc,"Indexer");
+	GALILEIApp->GetSessionConfig()->SetUInt("BlockSize",DescBlock,"Indexer",Name,"Description");
+	GALILEIApp->GetSessionConfig()->SetUInt("Tolerance",DescTolerance,"Indexer",Name,"Description");
+	GALILEIApp->GetSessionConfig()->SetUInt("CacheSize",DescCache,"Indexer",Name,"Description");
+	GALILEIApp->GetSessionConfig()->SetInt("Type",DescType,"Indexer",Name,"Description");
+	GALILEIApp->GetSessionConfig()->SetUInt("BlockSize",IndexBlock,"Indexer",Name,"Index");
+	GALILEIApp->GetSessionConfig()->SetUInt("Tolerance",IndexTolerance,"Indexer",Name,"Index");
+	GALILEIApp->GetSessionConfig()->SetUInt("CacheSize",IndexCache,"Indexer",Name,"Index");
+	GALILEIApp->GetSessionConfig()->SetInt("Type",IndexType,"Indexer",Name,"Index");
+	GALILEIApp->GetSessionConfig()->SetBool("Increment",IndexInc,"Indexer",Name,"Index");
 	if(Name=="Documents")
 	{
-		Session->SetUInt("DocumentsStructBlock",StructBlock,"Indexer");
-		Session->SetUInt("DocumentsStructTolerance",StructTolerance,"Indexer");
-		Session->SetUInt("DocumentsStructCache",StructCache,"Indexer");
-		Session->SetInt("DocumentsStructType",StructType,"Indexer");
+		GALILEIApp->GetSessionConfig()->SetUInt("BlockSize",StructBlock,"Indexer","Documents","Structure");
+		GALILEIApp->GetSessionConfig()->SetUInt("Tolerance",StructTolerance,"Indexer","Documents","Structure");
+		GALILEIApp->GetSessionConfig()->SetUInt("CacheSize",StructCache,"Indexer","Documents","Structure");
+		GALILEIApp->GetSessionConfig()->SetInt("Type",StructType,"Indexer","Documents","Structure");
 	}
 }
 
@@ -177,8 +177,8 @@ void Configure::Type::Apply(GSession* Session)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-Configure::Configure(QWidget* parent)
-	: KDialog(parent), Ui_Configure(), Types(10), CurType(0)
+Configure::Configure(KGALILEICenter* app)
+	: KDialog(app), Ui_Configure(), Types(10), CurType(0), App(app)
 {
 	setCaption("Preferences");
 	QWidget* widget=new QWidget(this);
@@ -192,12 +192,10 @@ Configure::Configure(QWidget* parent)
 
 
 //------------------------------------------------------------------------------
-void Configure::exec(GSession* session)
+void Configure::exec(void)
 {
-	Session=session;
-
 	initGeneral();
-	initIndexer();
+	initSession();
 	initSimulation();
 	initPlugIns();
 
@@ -213,11 +211,11 @@ void Configure::exec(GSession* session)
 	if(KDialog::exec())
 	{
 		applyGeneral();
-		applyIndexer();
+		applySession();
 		applySimulation();
 		applyPlugIns();
-		if(Session)
-			Session->Apply();
+		if(App->GetSession())
+			App->GetSession()->ApplyConfig();
 	}
 
 	MainTabIdx=MainTab->currentIndex();
@@ -268,19 +266,8 @@ void Configure::saveOptions(void)
 //------------------------------------------------------------------------------
 void Configure::initGeneral(void)
 {
-	KGALILEICenter* App=dynamic_cast<KGALILEICenter*>(parentWidget());
-
-	// General
-	PlugInsConfig->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
-	PlugInsConfig->setUrl(R::ToQString(App->GetPlugInsConfigName()));
-	LogFile->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
-	LogFile->setUrl(R::ToQString(App->GetLogFileName()));
-	DebugFile->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
-	DebugFile->setUrl(R::ToQString(App->GetDebugFileName()));
-	PrgPath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
-	PrgPath->setUrl(R::ToQString(App->PrgPath));
-
-	// Directories
+	// GALILEI Library
+	IndexDir->setUrl(ToQString(App->GetIndexDir()));
 	R::RCursor<R::RString> Cur(App->GetPlugInsPath());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Dirs->addItem(ToQString(*Cur()));
@@ -290,29 +277,8 @@ void Configure::initGeneral(void)
 //------------------------------------------------------------------------------
 void Configure::applyGeneral(void)
 {
-	KGALILEICenter* App=dynamic_cast<KGALILEICenter*>(parentWidget());
-
-	// General
-	App->SetPlugInsConfigName(R::FromQString(PlugInsConfig->url().url()));
-	App->SetLogFileName(R::FromQString(LogFile->url().url()));
-	App->SetDebugFileName(R::FromQString(DebugFile->url().url()));
-	App->PrgPath=R::FromQString(PrgPath->url().url());
-	QString debug=DebugFile->url().url();
-	if(!debug.isEmpty())
-	{
-		try
-		{
-			App->Debug=new R::RDebugXML(R::FromQString(debug));
-			if(App->GetSession())
-				App->GetSession()->SetDebug(App->Debug);
-		}
-		catch(...)
-		{
-			QMessageBox::critical(this,"KGALILEICenter","Error while creating '"+debug+"'");
-		}
-	}
-
-	// Directories
+	// // GALILEI Library
+	App->SetIndexDir(FromQString(IndexDir->url().url()));
 	App->ClearPlugInsPath();
 	for(int i=0;i<Dirs->count();i++)
 		App->AddPlugInsPath(R::FromQString(Dirs->item(i)->text()));
@@ -336,95 +302,89 @@ void Configure::addSubject(GSubject* subject,QTreeWidgetItem* parent)
 
 
 //------------------------------------------------------------------------------
-void Configure::initIndexer(void)
+void Configure::initSession(void)
 {
-	KGALILEICenter* App=dynamic_cast<KGALILEICenter*>(parentWidget());
-	IndexDir->setUrl(ToQString(App->GetIndexDir()));
+	// Information
+	LogFile->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
+	LogFile->setUrl(R::ToQString(App->GetLogFileName()));
+	DebugFile->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
+	DebugFile->setUrl(R::ToQString(App->GetDebugFileName()));
 
-	// If no session -> No other Indexer Parameters
-	if(!Session)
-	{
-		Objects->setEnabled(false);
-		Desc->setEnabled(false);
-		DocsStruct->setEnabled(false);
-		Index->setEnabled(false);
-		return;
-	}
-
-	// Write the object types
+	// Indexer
 	connect(Objects,SIGNAL(currentIndexChanged(const QString&)),this,SLOT(objectChanged(const QString&)));
-	RCursor<RString> Cur(Session->GetTypesNames());
+	RContainer<RString,true,false> TypesNames(10);
+	App->GetSessionConfig()->GetCategories(TypesNames,"Indexer");
+	RCursor<RString> Cur(TypesNames);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Objects->addItem(ToQString(*Cur()));
-		Types.InsertPtr(new Type(*Cur(),Session));
+		Types.InsertPtr(new Type(*Cur()));
 	}
 	Objects->setCurrentIndex(1);
 }
 
 
 //------------------------------------------------------------------------------
-void Configure::applyIndexer(void)
+void Configure::applySession(void)
 {
-	KGALILEICenter* App=dynamic_cast<KGALILEICenter*>(parentWidget());
-	App->SetIndexDir(FromQString(IndexDir->url().url()));
-	if(!Session)
-		return;
-	// Make sure the current tab is applied
+	// Information
+	App->SetLogFileName(R::FromQString(LogFile->url().url()));
+	App->SetDebugFileName(R::FromQString(DebugFile->url().url()));
+
+	// Indexer
 	objectChanged(Objects->currentText());
 	RCursor<Type> Cur(Types);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Apply(Session);
+		Cur()->Apply();
 }
 
 
 //------------------------------------------------------------------------------
 void Configure::initSimulation(void)
 {
-	// If no session -> No Simulation Parameters
-	if(!Session)
+	if(!App->GetSession())
 	{
-		SimulationTab->setEnabled(false);
-		return;
+		MaxDepth->setEnabled(false);
+		ManualSubjects->setEnabled(false);
+		Subjects->setEnabled(false);
 	}
 
 	// Read Values
-	NbOK->setValue(Session->GetDouble("NbOK","Simulator"));
-	RelOK->setChecked(Session->GetBool("RelOK","Simulator"));
-	NbKO->setValue(Session->GetDouble("NbKO","Simulator"));
-	RelKO->setChecked(Session->GetBool("RelKO","Simulator"));
-	NbH->setValue(Session->GetDouble("NbH","Simulator"));
-	RelH->setChecked(Session->GetBool("RelH","Simulator"));
-	PercErr->setValue(Session->GetDouble("PercErr","Simulator"));
-	NbProfMin->setValue(Session->GetInt("NbProfMin","Simulator"));
-	NbProfMax->setValue(Session->GetInt("NbProfMax","Simulator"));
-	MaxDepth->setValue(Session->GetInt("MaxDepth","Simulator"));
-	MaxDepth->setMaximum(Session->GetMaxDepth());
-	Depth->setText(QString::number(Session->GetMaxDepth()));
-	PercSocial->setValue(Session->GetDouble("PercSocial","Simulator"));
-	NbSubjects->setValue(Session->GetDouble("NbSubjects","Simulator"));
-	RelSubjects->setChecked(Session->GetBool("RelSubjects","Simulator"));
-	NbMinDocsSubject->setValue(Session->GetInt("NbMinDocsSubject","Simulator"));
-	NbDocsAssess->setValue(Session->GetInt("NbDocsAssess","Simulator"));
-	SwitchPerc->setValue(Session->GetDouble("SwitchPerc","Simulator"));
-	ManualSubjects->setChecked(Session->GetBool("ManualSubjects","Simulator"));
-	NbDocsPerSubject->setValue(Session->GetDouble("NbDocsPerSubject","Simulator"));
-	PercNbDocsPerSubject->setChecked(Session->GetBool("PercNbDocsPerSubject","Simulator"));
-	ClusterSelectedDocs->setChecked(Session->GetBool("ClusterSelectedDocs","Simulator"));
-	MultipleSubjects->setChecked(Session->GetBool("MultipleSubjects","Simulator"));
-	CreateProfiles->setChecked(Session->GetBool("CreateProfiles","Simulator"));
+	NbOK->setValue(App->GetSessionConfig()->GetDouble("Nb","Simulator","Profiles","Relevant"));
+	RelOK->setChecked(App->GetSessionConfig()->GetBool("Percentage","Simulator","Profiles","Relevant"));
+	NbKO->setValue(App->GetSessionConfig()->GetDouble("Nb","Simulator","Profiles","Fuzzy Relevant"));
+	RelKO->setChecked(App->GetSessionConfig()->GetBool("Percentage","Simulator","Profiles","Fuzzy Relevant"));
+	NbH->setValue(App->GetSessionConfig()->GetDouble("Nb","Simulator","Profiles","Irrelevant"));
+	RelH->setChecked(App->GetSessionConfig()->GetBool("Percentage","Simulator","Profiles","Irrelevant"));
+	PercErr->setValue(App->GetSessionConfig()->GetDouble("PercErr","Simulator","Profiles"));
+	NbProfMin->setValue(App->GetSessionConfig()->GetInt("NbProfMin","Simulator","Profiles"));
+	NbProfMax->setValue(App->GetSessionConfig()->GetInt("NbProfMax","Simulator","Profiles"));
+	MaxDepth->setValue(App->GetSessionConfig()->GetInt("MaxDepth","Simulator","Subjects"));
+	PercSocial->setValue(App->GetSessionConfig()->GetDouble("PercSocial","Simulator","Profiles"));
+	NbSubjects->setValue(App->GetSessionConfig()->GetDouble("Nb","Simulator","Subjects","NbSubjects"));
+	RelSubjects->setChecked(App->GetSessionConfig()->GetBool("Percentage","Simulator","Subjects","NbSubjects"));
+	NbMinDocsSubject->setValue(App->GetSessionConfig()->GetInt("NbMinDocsSubject","Simulator","Subjects"));
+	NbDocsAssess->setValue(App->GetSessionConfig()->GetInt("NbDocsAssess","Simulator","Profiles"));
+	SwitchPerc->setValue(App->GetSessionConfig()->GetDouble("SwitchPerc","Simulator","Documents"));
+	ManualSubjects->setChecked(App->GetSessionConfig()->GetBool("ManualSubjects","Simulator","Subjects"));
+	NbDocsPerSubject->setValue(App->GetSessionConfig()->GetDouble("Nb","Simulator","Documents","DocsPerSubject"));
+	PercNbDocsPerSubject->setChecked(App->GetSessionConfig()->GetBool("Percentage","Simulator","Documents","DocsPerSubject"));
+	ClusterSelectedDocs->setChecked(App->GetSessionConfig()->GetBool("ClusterSelectedDocs","Simulator","Documents"));
+	MultipleSubjects->setChecked(App->GetSessionConfig()->GetBool("MultipleSubjects","Simulator","Documents"));
+	CreateProfiles->setChecked(App->GetSessionConfig()->GetBool("CreateProfiles","Simulator","Profiles"));
 	grpProfilesCreated->setEnabled(CreateProfiles->isChecked());
 	grpPercentage->setEnabled(CreateProfiles->isChecked());
 	grpType->setEnabled(CreateProfiles->isChecked());
 
 	// Read Subjects
+	if(!App->GetSession())
+		return;
+	MaxDepth->setMaximum(App->GetSession()->GetMaxDepth());
+	Depth->setText(QString::number(App->GetSession()->GetMaxDepth()));
 	Subjects->header()->setResizeMode(0,QHeaderView::ResizeToContents);
 	Subjects->header()->setResizeMode(1,QHeaderView::Stretch);
 	connect(Subjects,SIGNAL(itemClicked(QTreeWidgetItem*,int)),this,SLOT(subjectClicked(QTreeWidgetItem*,int)));
-	Subjects->setEnabled(Session->GetBool("ManualSubjects","Subjects"));
-
-	if(!Session) return;
-	RCursor<GSubject> Cur(Session->GetTopSubjects());
+	RCursor<GSubject> Cur(App->GetSession()->GetTopSubjects());
 	for(Cur.Start();!Cur.End();Cur.Next())
 		addSubject(Cur(),0);
 }
@@ -438,7 +398,7 @@ void Configure::applySubSubjects(QTreeWidgetItem* parent)
 		QSubjectItem* item(dynamic_cast<QSubjectItem*>(parent->child(i)));
 		if(!item) continue;
 		if(item->Select)
-			Session->AddToList("SelectedSubjects",FromQString(item->text(1)),"Simulator");
+			App->GetSessionConfig()->AddToList("SelectedSubjects",FromQString(item->text(1)),"Simulator");
 		applySubSubjects(item);
 	}
 }
@@ -447,37 +407,37 @@ void Configure::applySubSubjects(QTreeWidgetItem* parent)
 //------------------------------------------------------------------------------
 void Configure::applySimulation(void)
 {
-	if(!Session)
+	App->GetSessionConfig()->SetDouble("Nb",NbOK->value(),"Simulator","Profiles","Relevant");
+	App->GetSessionConfig()->SetBool("Percentage",RelOK->isChecked(),"Simulator","Profiles","Relevant");
+	App->GetSessionConfig()->SetDouble("Nb",NbKO->value(),"Simulator","Profiles","Fuzzy Relevant");
+	App->GetSessionConfig()->SetBool("Percentage",RelKO->isChecked(),"Simulator","Profiles","Fuzzy Relevant");
+	App->GetSessionConfig()->SetDouble("Nb",NbH->value(),"Simulator","Profiles","Irrelevant");
+	App->GetSessionConfig()->SetBool("Percentage",RelH->isChecked(),"Simulator","Profiles","Irrelevant");
+	App->GetSessionConfig()->SetDouble("PercErr",PercErr->value(),"Simulator","Profiles");
+	App->GetSessionConfig()->SetUInt("NbProfMin",NbProfMin->value(),"Simulator","Profiles");
+	App->GetSessionConfig()->SetUInt("NbProfMax",NbProfMax->value(),"Simulator","Profiles");
+	App->GetSessionConfig()->SetUInt("MaxDepth",MaxDepth->value(),"Simulator","Subjects");
+	App->GetSessionConfig()->SetDouble("PercSocial",PercSocial->value(),"Simulator","Profiles");
+	App->GetSessionConfig()->SetDouble("Nb",NbSubjects->value(),"Simulator","Subjects","NbSubjects");
+	App->GetSessionConfig()->SetBool("Percentage",RelSubjects->isChecked(),"Simulator","Subjects","NbSubjects");
+	App->GetSessionConfig()->SetUInt("NbMinDocsSubject",NbMinDocsSubject->value(),"Simulator","Subjects");
+	App->GetSessionConfig()->SetUInt("NbDocsAssess",NbDocsAssess->value(),"Simulator","Profiles");
+	App->GetSessionConfig()->SetDouble("SwitchPerc",SwitchPerc->value(),"Simulator","Documents");
+	App->GetSessionConfig()->SetBool("ManualSubjects",ManualSubjects->isChecked(),"Simulator","Subjects");
+	App->GetSessionConfig()->SetDouble("Nb",NbDocsPerSubject->value(),"Simulator","Documents","DocsPerSubject");
+	App->GetSessionConfig()->SetBool("Percentage",PercNbDocsPerSubject->isChecked(),"Simulator","Documents","DocsPerSubject");
+	App->GetSessionConfig()->SetBool("ClusterSelectedDocs",ClusterSelectedDocs->isChecked(),"Simulator","Documents");
+	App->GetSessionConfig()->SetBool("MultipleSubjects",MultipleSubjects->isChecked(),"Simulator","Documents");
+	App->GetSessionConfig()->SetBool("CreateProfiles",CreateProfiles->isChecked(),"Simulator","Profiles");
+
+	// Apply subjects
+	if(!App->GetSession())
 		return;
-
-	Session->SetDouble("NbOK",NbOK->value(),"Simulator");
-	Session->SetBool("RelOK",RelOK->isChecked(),"Simulator");
-	Session->SetDouble("NbKO",NbKO->value(),"Simulator");
-	Session->SetBool("RelKO",RelKO->isChecked(),"Simulator");
-	Session->SetDouble("NbH",NbH->value(),"Simulator");
-	Session->SetBool("RelH",RelH->isChecked(),"Simulator");
-	Session->SetDouble("PercErr",PercErr->value(),"Simulator");
-	Session->SetUInt("NbProfMin",NbProfMin->value(),"Simulator");
-	Session->SetUInt("NbProfMax",NbProfMax->value(),"Simulator");
-	Session->SetUInt("MaxDepth",MaxDepth->value(),"Simulator");
-	Session->SetDouble("PercSocial",PercSocial->value(),"Simulator");
-	Session->SetDouble("NbSubjects",NbSubjects->value(),"Simulator");
-	Session->SetBool("RelSubjects",RelSubjects->isChecked(),"Simulator");
-	Session->SetUInt("NbMinDocsSubject",NbMinDocsSubject->value(),"Simulator");
-	Session->SetUInt("NbDocsAssess",NbDocsAssess->value(),"Simulator");
-	Session->SetDouble("SwitchPerc",SwitchPerc->value(),"Simulator");
-	Session->SetBool("ManualSubjects",ManualSubjects->isChecked(),"Simulator");
-	Session->SetDouble("NbDocsPerSubject",NbDocsPerSubject->value(),"Simulator");
-	Session->SetBool("PercNbDocsPerSubject",PercNbDocsPerSubject->isChecked(),"Simulator");
-	Session->SetBool("ClusterSelectedDocs",ClusterSelectedDocs->isChecked(),"Simulator");
-	Session->SetBool("MultipleSubjects",MultipleSubjects->isChecked(),"Simulator");
-	Session->SetBool("CreateProfiles",CreateProfiles->isChecked(),"Simulator");
-
 	for(int i=0;i<Subjects->topLevelItemCount();i++)
 	{
 		QSubjectItem* item(dynamic_cast<QSubjectItem*>(Subjects->topLevelItem(i)));
 		if(!item) continue;
-		Session->GetSimulator()->SetManualUsed(item->Subject,item->Select);
+		App->GetSession()->GetSimulator()->SetManualUsed(item->Subject,item->Select);
 		applySubSubjects(item);
 	}
 }
@@ -540,31 +500,31 @@ void Configure::initPlugIns(void)
 void Configure::applyPlugIns(void)
 {
 	// Apply plug-ins
-	Storages->apply(Session);
-	Filters->apply(Session);
-	ProfileCalcs->apply(Session);
-	GroupProfiles->apply(Session);
-	GroupDocs->apply(Session);
-	CommunityCalcs->apply(Session);
-	TopicCalcs->apply(Session);
-	StatsCalcs->apply(Session);
-	LinkCalcs->apply(Session);
-	PostDocs->apply(Session);
-	PreProfiles->apply(Session);
-	DocAnalyzes->apply(Session);
-	PostTopics->apply(Session);
-	Engines->apply(Session);
-	MetaEngines->apply(Session);
-	Langs->apply(Session);
-	PostProfiles->apply(Session);
-	PostCommunities->apply(Session);
-	ComputeSugs->apply(Session);
-	ComputeTrust->apply(Session);
-	Tools->apply(Session);
+	Storages->apply();
+	Filters->apply();
+	ProfileCalcs->apply();
+	GroupProfiles->apply();
+	GroupDocs->apply();
+	CommunityCalcs->apply();
+	TopicCalcs->apply();
+	StatsCalcs->apply();
+	LinkCalcs->apply();
+	PostDocs->apply();
+	PreProfiles->apply();
+	DocAnalyzes->apply();
+	PostTopics->apply();
+	Engines->apply();
+	MetaEngines->apply();
+	Langs->apply();
+	PostProfiles->apply();
+	PostCommunities->apply();
+	ComputeSugs->apply();
+	ComputeTrust->apply();
+	Tools->apply();
 
 	// Apply Measures
 	for(int row=0;row<Measures->count();row++)
-		dynamic_cast<QPlugInsList*>(Measures->widget(row))->apply(Session);
+		dynamic_cast<QPlugInsList*>(Measures->widget(row))->apply();
 
 	// Sort POST_X Managers;
 	GALILEIApp->GetManager("PostDoc")->ReOrder();

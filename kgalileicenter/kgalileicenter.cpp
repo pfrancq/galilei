@@ -77,8 +77,9 @@ using namespace GALILEI;
 #include <kviewprofile.h>
 #include <kviewdicts.h>
 #include <qcreatedatabase.h>
-#include <ui_qchooselist.h>
 #include <kprgconsole.h>
+#include <ui_qchooselist.h>
+#include <ui_mainconfigure.h>
 
 
 
@@ -103,9 +104,24 @@ KGALILEICenter::KGALILEICenter(int argc, char *argv[])
 	statusBar()->insertItem(i18n("Ready."),1);
     statusBar()->show();
     setupGUI();
-    Init();
     readOptions();
 	sessionConnected(false);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::Init(void)
+{
+	GGALILEIApp::Init();
+	if(!GetSessionConfig())
+		aSessionOptions->setEnabled(false);
+}
+
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::Run(void)
+{
+	show();
 }
 
 
@@ -192,6 +208,12 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Compare Ideal Topics","topicsCompare",SLOT(topicsCompare())));
 	Actions.insert(Actions.size(),addAction("Compare Ideal Classes","classesCompare",SLOT(classesCompare())));
 
+	// Menu "options"
+	aSessionOptions=new KAction("Configure Session",this);
+	actionCollection()->addAction(QLatin1String("configureSession"),aSessionOptions);
+	connect(aSessionOptions,SIGNAL(triggered(bool)),this,SLOT(optionsSession()));
+	KStandardAction::preferences(this,SLOT(optionsPreferences()),actionCollection());
+
 	// Menu "Window"
 	KAction* windowCloseAll(new KAction(i18n("&Close All"),this));
 	actionCollection()->addAction(QLatin1String("window_closeall"),windowCloseAll);
@@ -208,8 +230,6 @@ void KGALILEICenter::initActions(void)
 //	helpProgram = new KAction(i18n("List of all classes"), 0, 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
 //	helpProgram=new KAction("List of all classes",0,0,this,SLOT(slotHelpProgram()),this);
 //	menuBar()->insertItem ("&Help",helpProgram);*/
-
-    KStandardAction::preferences(this,SLOT(optionsPreferences()),actionCollection());
 }
 
 
@@ -448,8 +468,39 @@ void KGALILEICenter::saveModifier(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::optionsPreferences(void)
 {
+	// Create the dialog box
+	KDialog Dlg(this);
+	Dlg.setCaption("KGALILEICenter Preferences");
+	Ui_MainConfigure Ui;
+	QWidget* widget(new QWidget(&Dlg));
+	Ui.setupUi(widget);
+	Dlg.setMainWidget(widget);
+	Dlg.setButtons(KDialog::Cancel|KDialog::Apply);
+	connect(&Dlg,SIGNAL(applyClicked()),&Dlg,SLOT(accept()));
+
+	// Run it
+	Ui.GALILEIConfigName->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
+	Ui.GALILEIConfigName->setUrl(R::ToQString(GetGALILEIConfigName()));
+	Ui.SessionName->setText(R::ToQString(GetSessionName()));
+	Ui.PrgPath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
+	Ui.PrgPath->setUrl(R::ToQString(PrgPath));
+	if(Dlg.exec())
+	{
+		SetGALILEIConfigName(R::FromQString(Ui.GALILEIConfigName->url().url()));
+		PrgPath=R::FromQString(Ui.PrgPath->url().url());
+		ChangeSessionName(R::FromQString(Ui.SessionName->text()));
+		if(!GetSessionConfig())
+			aSessionOptions->setEnabled(false);
+		else
+			aSessionOptions->setEnabled(true);
+	}
+}
+
+//-----------------------------------------------------------------------------
+void KGALILEICenter::optionsSession(void)
+{
 	Configure Dlg(this);
-	Dlg.exec(Doc);
+	Dlg.exec();
 }
 
 
