@@ -64,6 +64,7 @@ public slots:
 
 	void toggleExtractStruct( bool toggle );
 	void toggleFullIndex(bool toggle );
+	void clickedMetadata(void);
 };
 
 

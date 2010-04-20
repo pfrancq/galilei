@@ -651,12 +651,12 @@ When the languages are not static, the language of a document is always determin
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>79</x>
-     <y>351</y>
+     <x>96</x>
+     <y>310</y>
     </hint>
     <hint type="destinationlabel">
-     <x>474</x>
-     <y>387</y>
+     <x>475</x>
+     <y>344</y>
     </hint>
    </hints>
   </connection>
@@ -667,76 +667,12 @@ When the languages are not static, the language of a document is always determin
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>79</x>
-     <y>351</y>
+     <x>96</x>
+     <y>310</y>
     </hint>
     <hint type="destinationlabel">
-     <x>474</x>
-     <y>424</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ExtractIndex</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>ChildTags</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>37</x>
-     <y>352</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>54</x>
-     <y>414</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ExtractIndex</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>DetectMetaTag</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>37</x>
-     <y>352</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>71</x>
-     <y>372</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ExtractIndex</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MaxDepth</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>37</x>
-     <y>352</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>474</x>
-     <y>485</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ExtractIndex</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MaxTerms</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>37</x>
-     <y>352</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>474</x>
-     <y>450</y>
+     <x>475</x>
+     <y>379</y>
     </hint>
    </hints>
   </connection>
@@ -801,54 +737,6 @@ When the languages are not static, the language of a document is always determin
     <hint type="destinationlabel">
      <x>210</x>
      <y>103</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ExtractIndex</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MaxOccurs</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>37</x>
-     <y>352</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>474</x>
-     <y>524</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>DetectMetaTag</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MetaTagFile</receiver>
-   <slot>setDisabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>33</x>
-     <y>383</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>350</x>
-     <y>386</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ExtractIndex</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MetaTagFile</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>341</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>388</x>
-     <y>372</y>
     </hint>
    </hints>
   </connection>

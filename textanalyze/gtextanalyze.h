@@ -551,9 +551,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GTextAnalyze(GPlugInFactory* fac);
+	GTextAnalyze(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
@@ -561,16 +562,9 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	* Connect to a Session.
-	* @param session         The session.
+	* Initialize the plug-in.
 	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session);
+	virtual void Init(void);
 
 	/**
 	* Do some cleaning operations before a analyze.
@@ -654,9 +648,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	 * @return true if the analyze of the current tag must be stopped.

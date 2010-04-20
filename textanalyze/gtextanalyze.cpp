@@ -437,8 +437,8 @@ inline RCursor<cNode> cDepths::GetNodes(void) const
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GTextAnalyze::GTextAnalyze(GPlugInFactory* fac)
-	: GDocAnalyze(fac), Words(), StructTokens(/*100*/), Depths(),
+GTextAnalyze::GTextAnalyze(GSession* session,GPlugInFactory* fac)
+	: GDocAnalyze(session,fac), Words(), StructTokens(/*100*/), Depths(),
 	  Sl(0), Sldiff(0), MetaTags(20), StructSpace(0), IndexSpace(0), IsTitle(false),
 	  IsIdentifier(false)
 {
@@ -448,28 +448,28 @@ GTextAnalyze::GTextAnalyze(GPlugInFactory* fac)
 //-----------------------------------------------------------------------------
 void GTextAnalyze::ApplyConfig(void)
 {
-	StaticLang=Factory->GetBool("StaticLang");
-	MinStopWords=Factory->GetDouble("MinStopWords");
-	MinWordSize=Factory->GetUInt("MinWordSize");
-	NonLetterWords=Factory->GetBool("NonLetterWords");
-	Filtering=Factory->GetBool("Filtering");
-	NbSameOccur=Factory->GetUInt("NbSameOccur");
-	NormalRatio=Factory->GetDouble("NormalRatio");
-	ExtractStruct=Factory->GetBool("ExtractStruct");
-	StructIsContent=Factory->GetBool("StructIsContent");
-	ExtractIndex=Factory->GetBool("ExtractIndex");
-	MaxTerms=Factory->GetUInt("MaxTerms");
-	MaxOccurs=Factory->GetUInt("MaxOccurs");
-	MaxDepth=static_cast<char>(Factory->GetUInt("MaxDepth"));
-	ChildTags=Factory->GetBool("ChildTags");
-	WeightStruct=Factory->GetDouble("WeightStruct");
-	ExtractValues=Factory->GetBool("ExtractValues");
-	WeightValues=Factory->GetDouble("WeightValues");
-	FullIndex=Factory->GetBool("FullIndex");
-	UseDefaultNamespace=Factory->GetBool("UseDefaultNamespace");
-	DefaultNamespace=Factory->Get("DefaultNamespace");
-	DetectMetaTag=Factory->GetBool("DetectMetaTag");
-	MetaTagFile=Factory->Get("MetaTagFile");
+	StaticLang=Factory->FindParam<RParamValue>("StaticLang")->GetBool();
+	MinStopWords=Factory->FindParam<RParamValue>("MinStopWords")->GetDouble();
+	MinWordSize=Factory->FindParam<RParamValue>("MinWordSize")->GetUInt();
+	NonLetterWords=Factory->FindParam<RParamValue>("NonLetterWords")->GetBool();
+	Filtering=Factory->FindParam<RParamValue>("Filtering")->GetBool();
+	NbSameOccur=Factory->FindParam<RParamValue>("NbSameOccur")->GetUInt();
+	NormalRatio=Factory->FindParam<RParamValue>("NormalRatio")->GetDouble();
+	ExtractStruct=Factory->FindParam<RParamValue>("ExtractStruct")->GetBool();
+	StructIsContent=Factory->FindParam<RParamValue>("StructIsContent")->GetBool();
+	ExtractIndex=Factory->FindParam<RParamValue>("ExtractIndex")->GetBool();
+	MaxTerms=Factory->FindParam<RParamValue>("MaxTerms")->GetUInt();
+	MaxOccurs=Factory->FindParam<RParamValue>("MaxOccurs")->GetUInt();
+	MaxDepth=static_cast<char>(Factory->FindParam<RParamValue>("MaxDepth")->GetUInt());
+	ChildTags=Factory->FindParam<RParamValue>("ChildTags")->GetBool();
+	WeightStruct=Factory->FindParam<RParamValue>("WeightStruct")->GetDouble();
+	ExtractValues=Factory->FindParam<RParamValue>("ExtractValues")->GetBool();
+	WeightValues=Factory->FindParam<RParamValue>("WeightValues")->GetDouble();
+	FullIndex=Factory->FindParam<RParamValue>("FullIndex")->GetBool();
+	UseDefaultNamespace=Factory->FindParam<RParamValue>("UseDefaultNamespace")->GetBool();
+	DefaultNamespace=Factory->FindParam<RParamValue>("DefaultNamespace")->Get();
+	DetectMetaTag=Factory->FindParam<RParamValue>("DetectMetaTag")->GetBool();
+	MetaTagFile=Factory->FindParam<RParamValue>("MetaTagFile")->Get();
 	MetaTags.Clear();
 	if(!DetectMetaTag)
 	{
@@ -493,12 +493,8 @@ void GTextAnalyze::ApplyConfig(void)
 
 
 //-----------------------------------------------------------------------------
-void GTextAnalyze::Connect(GSession* session)
+void GTextAnalyze::Init(void)
 {
-	// First initialization
-	if(Session) return;
-	GDocAnalyze::Connect(session);
-
 	// Create local structures
 	CurLangs=GALILEIApp->GetPlugIns<GLang>("Lang");
 	NbLangs=GALILEIApp->GetManager("Lang")->GetNbPlugIns();
@@ -514,30 +510,6 @@ void GTextAnalyze::Connect(GSession* session)
 	if(!IndexSpace)
 		throw GException("No XML Index types");
 
-}
-
-
-//-----------------------------------------------------------------------------
-void GTextAnalyze::Disconnect(GSession* session)
-{
-	// Spaces are null
-	StructSpace=0;
-	IndexSpace=0;
-
-	// Local Structures
-	if(Sldiff)
-	{
-		delete[] Sldiff;
-		Sldiff=0;
-	}
-	if(Sl)
-	{
-		delete[] Sl;
-		Sl=0;
-	}
-
-	if(Session)
-		GDocAnalyze::Disconnect(session);
 }
 
 
@@ -1165,37 +1137,47 @@ void GTextAnalyze::TerminateAnalyze(void)
 
 
 //------------------------------------------------------------------------------
-void GTextAnalyze::CreateParams(RConfig* params)
+void GTextAnalyze::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("StaticLang",false));
-	params->InsertParam(new RParamValue("MinStopWords",0.09));
-	params->InsertParam(new RParamValue("MinWordSize",3));
-	params->InsertParam(new RParamValue("NonLetterWords",true));
-	params->InsertParam(new RParamValue("Filtering",true));
-	params->InsertParam(new RParamValue("NbSameOccur",3));
-	params->InsertParam(new RParamValue("NormalRatio",0.3));
-	params->InsertParam(new RParamValue("ExtractStruct",false));
-	params->InsertParam(new RParamValue("StructIsContent",false));
-	params->InsertParam(new RParamValue("ExtractIndex",false));
-	params->InsertParam(new RParamValue("MaxTerms",10));
-	params->InsertParam(new RParamValue("MaxDepth",2));
-	params->InsertParam(new RParamValue("MaxOccurs",5));
-	params->InsertParam(new RParamValue("ChildTags",false));
-	params->InsertParam(new RParamValue("WeightStruct",2.0));
-	params->InsertParam(new RParamValue("ExtractValues",false));
-	params->InsertParam(new RParamValue("WeightValues",2.0));
-	params->InsertParam(new RParamValue("FullIndex",false));
-	params->InsertParam(new RParamValue("UseDefaultNamespace",false));
-	params->InsertParam(new RParamValue("DefaultNamespace",""));
-	params->InsertParam(new RParamValue("MetaTagFile",""));
-	params->InsertParam(new RParamValue("DetectMetaTag",true));
+	fac->InsertParam(new RParamValue("StaticLang",false));
+	fac->InsertParam(new RParamValue("MinStopWords",0.09));
+	fac->InsertParam(new RParamValue("MinWordSize",3));
+	fac->InsertParam(new RParamValue("NonLetterWords",true));
+	fac->InsertParam(new RParamValue("Filtering",true));
+	fac->InsertParam(new RParamValue("NbSameOccur",3));
+	fac->InsertParam(new RParamValue("NormalRatio",0.3));
+	fac->InsertParam(new RParamValue("ExtractStruct",false));
+	fac->InsertParam(new RParamValue("StructIsContent",false));
+	fac->InsertParam(new RParamValue("ExtractIndex",false));
+	fac->InsertParam(new RParamValue("MaxTerms",10));
+	fac->InsertParam(new RParamValue("MaxDepth",2));
+	fac->InsertParam(new RParamValue("MaxOccurs",5));
+	fac->InsertParam(new RParamValue("ChildTags",false));
+	fac->InsertParam(new RParamValue("WeightStruct",2.0));
+	fac->InsertParam(new RParamValue("ExtractValues",false));
+	fac->InsertParam(new RParamValue("WeightValues",2.0));
+	fac->InsertParam(new RParamValue("FullIndex",false));
+	fac->InsertParam(new RParamValue("UseDefaultNamespace",false));
+	fac->InsertParam(new RParamValue("DefaultNamespace",""));
+	fac->InsertParam(new RParamValue("MetaTagFile",""));
+	fac->InsertParam(new RParamValue("DetectMetaTag",true));
 }
 
 
 //-----------------------------------------------------------------------------
 GTextAnalyze::~GTextAnalyze(void)
 {
-	Disconnect(0);
+	// Local Structures
+	if(Sldiff)
+	{
+		delete[] Sldiff;
+		Sldiff=0;
+	}
+	if(Sl)
+	{
+		delete[] Sl;
+		Sl=0;
+	}
 }
 
 

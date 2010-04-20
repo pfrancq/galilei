@@ -52,6 +52,8 @@ Config::Config(void)
 	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
 	connect(ExtractStruct,SIGNAL(toggled(bool)),this,SLOT(toggleExtractStruct(bool)));
 	connect(FullIndex,SIGNAL(toggled(bool)),this,SLOT(toggleFullIndex(bool)));
+	connect(ExtractIndex,SIGNAL(clicked()),this,SLOT(clickedMetadata()));
+	connect(DetectMetaTag,SIGNAL(clicked()),this,SLOT(clickedMetadata()));
 	adjustSize();
 }
 
@@ -78,6 +80,16 @@ void Config::toggleFullIndex(bool toggle )
 		ExtractValues->setEnabled(true);
 }
 
+void Config::clickedMetadata(void)
+{
+	MaxTerms->setEnabled(DetectMetaTag->isChecked()&ExtractIndex->isChecked());
+	MaxDepth->setEnabled(DetectMetaTag->isChecked()&ExtractIndex->isChecked());
+	ChildTags->setEnabled(DetectMetaTag->isChecked()&ExtractIndex->isChecked());
+	MaxOccurs->setEnabled(DetectMetaTag->isChecked()&ExtractIndex->isChecked());
+	DetectMetaTag->setEnabled(ExtractIndex->isChecked());
+	MetaTagFile->setEnabled(DetectMetaTag->isChecked()&ExtractIndex->isChecked());
+	MetaTagFile->setEnabled((!DetectMetaTag->isChecked())&ExtractIndex->isChecked());
+}
 
 
 //------------------------------------------------------------------------------
@@ -100,82 +112,84 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
 	Config dlg;
 
 	// Stems
-	dlg.StaticLang->setChecked(params->GetBool("StaticLang"));
-	dlg.MinStopWords->setValue(params->GetDouble("MinStopWords"));
-	dlg.MinWordSize->setValue(params->GetInt("MinWordSize"));
-	dlg.NonLetterWords->setChecked(params->GetBool("NonLetterWords"));
-	dlg.Filtering->setChecked(params->GetBool("Filtering"));
-	dlg.NbSameOccur->setValue(params->GetInt("NbSameOccur"));
-	dlg.NormalRatio->setValue(params->GetDouble("NormalRatio"));
-	dlg.NbSameOccur->setEnabled(params->GetBool("Filtering"));
-	dlg.NormalRatio->setEnabled(params->GetBool("Filtering"));
-	dlg.groupFiltering->setEnabled(params->GetBool("NonLetterWords"));
+	dlg.StaticLang->setChecked(fac->FindParam<RParamValue>("StaticLang")->GetBool());
+	dlg.MinStopWords->setValue(fac->FindParam<RParamValue>("MinStopWords")->GetDouble());
+	dlg.MinWordSize->setValue(fac->FindParam<RParamValue>("MinWordSize")->GetInt());
+	dlg.NonLetterWords->setChecked(fac->FindParam<RParamValue>("NonLetterWords")->GetBool());
+	dlg.MaxTerms->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
+	dlg.MaxDepth->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
+	dlg.ChildTags->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
+	dlg.MaxOccurs->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
+	dlg.DetectMetaTag->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
+	dlg.MetaTagFile->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
+	dlg.MetaTagFile->setEnabled((!fac->FindParam<RParamValue>("DetectMetaTag")->GetBool())&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
+	dlg.Filtering->setChecked(fac->FindParam<RParamValue>("Filtering")->GetBool());
+	dlg.NbSameOccur->setValue(fac->FindParam<RParamValue>("NbSameOccur")->GetInt());
+	dlg.NormalRatio->setValue(fac->FindParam<RParamValue>("NormalRatio")->GetDouble());
+	dlg.NbSameOccur->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
+	dlg.NormalRatio->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
+	dlg.groupFiltering->setEnabled(fac->FindParam<RParamValue>("NonLetterWords")->GetBool());
 
 	// Structure - Tags and attributes
-	dlg.ExtractStruct->setChecked(params->GetBool("ExtractStruct"));
-	dlg.FullIndex->setChecked(params->GetBool("FullIndex"));
-	dlg.StructIsContent->setChecked(params->GetBool("StructIsContent"));
-	dlg.WeightStruct->setValue(params->GetDouble("WeightStruct"));
-	dlg.ExtractValues->setChecked(params->GetBool("ExtractValues"));
-	dlg.WeightValues->setValue(params->GetDouble("WeightValues"));
-	dlg.toggleExtractStruct(params->GetBool("ExtractStruct"));
+	dlg.ExtractStruct->setChecked(fac->FindParam<RParamValue>("ExtractStruct")->GetBool());
+	dlg.FullIndex->setChecked(fac->FindParam<RParamValue>("FullIndex")->GetBool());
+	dlg.StructIsContent->setChecked(fac->FindParam<RParamValue>("StructIsContent")->GetBool());
+	dlg.WeightStruct->setValue(fac->FindParam<RParamValue>("WeightStruct")->GetDouble());
+	dlg.ExtractValues->setChecked(fac->FindParam<RParamValue>("ExtractValues")->GetBool());
+	dlg.WeightValues->setValue(fac->FindParam<RParamValue>("WeightValues")->GetDouble());
+	dlg.toggleExtractStruct(fac->FindParam<RParamValue>("ExtractStruct")->GetBool());
 
 	// Structure - Declarative tags
-	dlg.UseDefaultNamespace->setChecked(params->GetBool("UseDefaultNamespace"));
-	dlg.DefaultNamespace->setEnabled(params->GetBool("UseDefaultNamespace"));
-	dlg.DefaultNamespace->setText(ToQString(params->Get("DefaultNamespace")));
-	dlg.ExtractIndex->setChecked(params->GetBool("ExtractIndex"));
-	dlg.DetectMetaTag->setChecked(params->GetBool("DetectMetaTag"));
-	dlg.MetaTagFile->setUrl(ToQString(params->Get("MetaTagFile")));
-	dlg.MaxTerms->setValue(params->GetInt("MaxTerms"));
-	dlg.MaxDepth->setValue(params->GetInt("MaxDepth"));
-	dlg.MaxOccurs->setValue(params->GetInt("MaxOccurs"));
-	dlg.ChildTags->setChecked(params->GetBool("ChildTags"));
-	dlg.MaxTerms->setEnabled(params->GetBool("ExtractIndex"));
-	dlg.MaxDepth->setEnabled(params->GetBool("ExtractIndex"));
-	dlg.ChildTags->setEnabled(params->GetBool("ExtractIndex"));
-	dlg.MaxOccurs->setEnabled(params->GetBool("ExtractIndex"));
-	dlg.DetectMetaTag->setEnabled(params->GetBool("ExtractIndex"));
-	dlg.MetaTagFile->setEnabled(params->GetBool("ExtractIndex"));
-	dlg.MetaTagFile->setEnabled(!params->GetBool("DetectMetaTag"));
+	dlg.UseDefaultNamespace->setChecked(fac->FindParam<RParamValue>("UseDefaultNamespace")->GetBool());
+	dlg.DefaultNamespace->setEnabled(fac->FindParam<RParamValue>("UseDefaultNamespace")->GetBool());
+	dlg.DefaultNamespace->setText(ToQString(fac->FindParam<RParamValue>("DefaultNamespace")->Get()));
+	dlg.ExtractIndex->setChecked(fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
+	dlg.DetectMetaTag->setChecked(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool());
+	dlg.MetaTagFile->setUrl(ToQString(fac->FindParam<RParamValue>("MetaTagFile")->Get()));
+	dlg.MaxTerms->setValue(fac->FindParam<RParamValue>("MaxTerms")->GetInt());
+	dlg.MaxDepth->setValue(fac->FindParam<RParamValue>("MaxDepth")->GetInt());
+	dlg.MaxOccurs->setValue(fac->FindParam<RParamValue>("MaxOccurs")->GetInt());
+	dlg.ChildTags->setChecked(fac->FindParam<RParamValue>("ChildTags")->GetBool());
+	dlg.clickedMetadata();
 
 	if(dlg.exec())
 	{
 		// Stems
-		params->SetBool("StaticLang",dlg.StaticLang->isChecked());
-		params->SetDouble("MinStopWords",dlg.MinStopWords->value());
-		params->SetUInt("MinWordSize",dlg.MinWordSize->value());
-		params->SetBool("NonLetterWords",dlg.NonLetterWords->isChecked());
-		params->SetBool("Filtering",dlg.Filtering->isChecked());
-		params->SetUInt("NbSameOccur",dlg.NbSameOccur->value());
-		params->SetDouble("NormalRatio",dlg.NormalRatio->value());
+		fac->FindParam<RParamValue>("StaticLang")->SetBool(dlg.StaticLang->isChecked());
+		fac->FindParam<RParamValue>("MinStopWords")->SetDouble(dlg.MinStopWords->value());
+		fac->FindParam<RParamValue>("MinWordSize")->SetUInt(dlg.MinWordSize->value());
+		fac->FindParam<RParamValue>("NonLetterWords")->SetBool(dlg.NonLetterWords->isChecked());
+		fac->FindParam<RParamValue>("Filtering")->SetBool(dlg.Filtering->isChecked());
+		fac->FindParam<RParamValue>("NbSameOccur")->SetUInt(dlg.NbSameOccur->value());
+		fac->FindParam<RParamValue>("NormalRatio")->SetDouble(dlg.NormalRatio->value());
 
 		// Structure - Tags and attributes
-		params->SetBool("ExtractStruct",dlg.ExtractStruct->isChecked());
-		params->SetBool("FullIndex",dlg.FullIndex->isChecked());
-		params->SetBool("StructIsContent",dlg.StructIsContent->isChecked());
-		params->SetDouble("WeightStruct",dlg.WeightStruct->value());
-		params->SetBool("ExtractValues",dlg.ExtractValues->isChecked());
-		params->SetDouble("WeightValues",dlg.WeightValues->value());
+		fac->FindParam<RParamValue>("ExtractStruct")->SetBool(dlg.ExtractStruct->isChecked());
+		fac->FindParam<RParamValue>("FullIndex")->SetBool(dlg.FullIndex->isChecked());
+		fac->FindParam<RParamValue>("StructIsContent")->SetBool(dlg.StructIsContent->isChecked());
+		fac->FindParam<RParamValue>("WeightStruct")->SetDouble(dlg.WeightStruct->value());
+		fac->FindParam<RParamValue>("ExtractValues")->SetBool(dlg.ExtractValues->isChecked());
+		fac->FindParam<RParamValue>("WeightValues")->SetDouble(dlg.WeightValues->value());
 
 		// Structure - Tags and attributes
-		params->SetBool("UseDefaultNamespace",dlg.UseDefaultNamespace->isChecked());
-		params->Set("DefaultNamespace",FromQString(dlg.DefaultNamespace->text()));
-		params->SetBool("ExtractIndex",dlg.ExtractIndex->isChecked());
-		params->SetUInt("MaxTerms",dlg.MaxTerms->value());
-		params->SetUInt("MaxDepth",dlg.MaxDepth->value());
-		params->SetBool("ChildTags",dlg.ChildTags->isChecked());
-		params->SetUInt("MaxOccurs",dlg.MaxOccurs->value());
-		params->SetBool("DetectMetaTag",dlg.DetectMetaTag->isChecked());
-		params->Set("MetaTagFile",FromQString(dlg.MetaTagFile->url().url()));
+		fac->FindParam<RParamValue>("UseDefaultNamespace")->SetBool(dlg.UseDefaultNamespace->isChecked());
+		fac->FindParam<RParamValue>("DefaultNamespace")->Set(FromQString(dlg.DefaultNamespace->text()));
+		fac->FindParam<RParamValue>("ExtractIndex")->SetBool(dlg.ExtractIndex->isChecked());
+		fac->FindParam<RParamValue>("MaxTerms")->SetUInt(dlg.MaxTerms->value());
+		fac->FindParam<RParamValue>("MaxDepth")->SetUInt(dlg.MaxDepth->value());
+		fac->FindParam<RParamValue>("ChildTags")->SetBool(dlg.ChildTags->isChecked());
+		fac->FindParam<RParamValue>("MaxOccurs")->SetUInt(dlg.MaxOccurs->value());
+		fac->FindParam<RParamValue>("DetectMetaTag")->SetBool(dlg.DetectMetaTag->isChecked());
+		fac->FindParam<RParamValue>("MetaTagFile")->Set(FromQString(dlg.MetaTagFile->url().url()));
 
-		params->Apply();
+		return(true);
 	}
+	return(false);
 }
 
 
