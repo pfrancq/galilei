@@ -32,6 +32,7 @@
 // include files for GALILEI
 #include <gcommunitycalc.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -78,16 +79,17 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
  	Config dlg;
 
-	dlg.MaxSize->setValue(params->GetInt("Max Size"));
+	dlg.MaxSize->setValue(fac->FindParam<RParamValue>("Max Size")->GetInt());
 	if(dlg.exec())
 	{
-		params->SetUInt("Max Size",dlg.MaxSize->value());
- 		params->Apply();
+		fac->FindParam<RParamValue>("Max Size")->SetUInt(dlg.MaxSize->value());
+ 		return(true);
  	}
+	return(false);
 }
 
 

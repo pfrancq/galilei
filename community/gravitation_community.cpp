@@ -58,8 +58,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCommunityCalcGravitation::GCommunityCalcGravitation(GPlugInFactory* fac)
-	: GCommunityCalc(fac), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
+GCommunityCalcGravitation::GCommunityCalcGravitation(GSession* session,GPlugInFactory* fac)
+	: GCommunityCalc(session,fac), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new const GWeightInfo*[MaxOrderSize];
 }
@@ -68,21 +68,7 @@ GCommunityCalcGravitation::GCommunityCalcGravitation(GPlugInFactory* fac)
 //-----------------------------------------------------------------------------
 void GCommunityCalcGravitation::ApplyConfig(void)
 {
-	MaxNonZero=Factory->GetUInt("Max Size");
-}
-
-
-//-----------------------------------------------------------------------------
-void GCommunityCalcGravitation::Connect(GSession* session)
-{
-	GCommunityCalc::Connect(session);
-}
-
-
-//-----------------------------------------------------------------------------
-void GCommunityCalcGravitation::Disconnect(GSession* session)
-{
-	GCommunityCalc::Disconnect(session);
+	MaxNonZero=Factory->FindParam<RParamValue>("Max Size")->GetUInt();
 }
 
 
@@ -144,9 +130,9 @@ void GCommunityCalcGravitation::Compute(const GCommunity* grp)
 
 
 //------------------------------------------------------------------------------
-void GCommunityCalcGravitation::CreateParams(RConfig* params)
+void GCommunityCalcGravitation::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("Max Size",60));
+	fac->InsertParam(new RParamValue("Max Size",60));
 }
 
 

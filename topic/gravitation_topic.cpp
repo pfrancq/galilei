@@ -57,8 +57,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GTopicCalcGravitation::GTopicCalcGravitation(GPlugInFactory* fac)
-	: GTopicCalc(fac), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
+GTopicCalcGravitation::GTopicCalcGravitation(GSession* session,GPlugInFactory* fac)
+	: GTopicCalc(session,fac), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
 {
 	Order=new const GWeightInfo*[MaxOrderSize];
 }
@@ -67,21 +67,7 @@ GTopicCalcGravitation::GTopicCalcGravitation(GPlugInFactory* fac)
 //-----------------------------------------------------------------------------
 void GTopicCalcGravitation::ApplyConfig(void)
 {
-	MaxNonZero=Factory->GetUInt("Max Size");
-}
-
-
-//-----------------------------------------------------------------------------
-void GTopicCalcGravitation::Connect(GSession* session)
-{
-	GTopicCalc::Connect(session);
-}
-
-
-//-----------------------------------------------------------------------------
-void GTopicCalcGravitation::Disconnect(GSession* session)
-{
-	GTopicCalc::Disconnect(session);
+	MaxNonZero=Factory->FindParam<RParamValue>("Max Size")->GetUInt();
 }
 
 
@@ -143,9 +129,9 @@ void GTopicCalcGravitation::Compute(const GTopic* grp)
 
 
 //------------------------------------------------------------------------------
-void GTopicCalcGravitation::CreateParams(RConfig* params)
+void GTopicCalcGravitation::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("Max Size",60));
+	fac->InsertParam(new RParamValue("Max Size",60));
 }
 
 

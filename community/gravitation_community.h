@@ -79,26 +79,15 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GCommunityCalcGravitation(GPlugInFactory* fac);
+	GCommunityCalcGravitation(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session);
 
 	/**
 	* Compute a group.
@@ -108,9 +97,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
+	* @param fac             Factory.
 	*/
-	static void CreateParams(R::RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destruct.
