@@ -90,16 +90,16 @@ public:
 
 	/**
 	* Construct the email filter for a specific email.
-	* @param fac            Factory.
-	* @param name           Name of the filter.
+	* @param session         Session.
+	* @param fac             Factory.
 	*/
-	GFilterEMail(GPlugInFactory* fac);
+	GFilterEMail(GSession* session,GPlugInFactory* fac);
 
 protected:
 
 	/**
 	* Try to extract the command and the info after.
-	* @param line           Line to analyze.
+	* @param line            Line to analyze.
 	* @return true if a command can be extracted, false if it is the end.
 	*/
 	bool ExtractCmd(const RString& line);
@@ -118,9 +118,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
+	* @param fac             Factory.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor of the email filter.

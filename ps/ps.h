@@ -81,10 +81,11 @@ class GFilterPS: public GFilter
 public:
 
 	/**
-	* Construct the HTML filter for a specific HTML document.
+	* Construct the PostScript filter.
+	* @param session        Session.
 	* @param fac            Factory.
 	*/
-	GFilterPS(GPlugInFactory* fac);
+	GFilterPS(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Analyze a document with a given URI for which a DocXML must be created.
@@ -113,9 +114,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
+	* @param fac             Factory.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor.

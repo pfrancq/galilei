@@ -87,11 +87,11 @@ class GFilterRTF: public GFilter
 public:
 
 	/**
-	* Construct the XML filter for a specific XML document.
+	* Construct the RTF filter.
+	* @param session         Session.
 	* @param fac            Factory.
-	* @param name           Name of the filter.
 	*/
-	GFilterRTF(GPlugInFactory* fac);
+	GFilterRTF(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Analyze a document with a given URI for which a DocXML must be created.
@@ -147,9 +147,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
+	* @param fac             Factory.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	*The destructor

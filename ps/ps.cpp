@@ -147,8 +147,8 @@ static int cleanup() {
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterPS::GFilterPS(GPlugInFactory* fac)
-	: GFilter(fac)
+GFilterPS::GFilterPS(GSession* session,GPlugInFactory* fac)
+	: GFilter(session,fac)
 {
 	AddMIME("application/x-postscript");
 	AddMIME("application/postscript");
@@ -365,7 +365,7 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 
 
 //------------------------------------------------------------------------------
-void GFilterPS::CreateParams(RConfig*)
+void GFilterPS::CreateParams(GPlugInFactory*)
 {
 }
 

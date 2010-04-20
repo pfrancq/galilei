@@ -59,8 +59,8 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterMSDoc::GFilterMSDoc(GPlugInFactory* fac)
-	: GFilter(fac)
+GFilterMSDoc::GFilterMSDoc(GSession* session,GPlugInFactory* fac)
+	: GFilter(session,fac)
 {
  	AddMIME("application/msword");
 }
@@ -363,7 +363,7 @@ void GFilterMSDoc::runOfText(const wvWare::UString& text, wvWare::SharedPtr<cons
 
 
 //------------------------------------------------------------------------------
-void GFilterMSDoc::CreateParams(RConfig*)
+void GFilterMSDoc::CreateParams(GPlugInFactory*)
 {
 }
 

@@ -151,8 +151,8 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterEMail::GFilterEMail(GPlugInFactory* fac)
-	: GFilter(fac), Cmds(20)
+GFilterEMail::GFilterEMail(GSession* session,GPlugInFactory* fac)
+	: GFilter(session,fac), Cmds(20)
 {
 	AddMIME("text/email");
 	AddMIME("message/rfc822");
@@ -271,7 +271,7 @@ void GFilterEMail::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 
 
 //------------------------------------------------------------------------------
-void GFilterEMail::CreateParams(RConfig*)
+void GFilterEMail::CreateParams(GPlugInFactory*)
 {
 }
 

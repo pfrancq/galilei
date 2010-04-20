@@ -61,10 +61,10 @@ public:
 
 	/**
 	* Construct the TXT filter for a specific TXT File.
+	* @param session         Session.
 	* @param fac            Factory.
-	* @param name           Name of the filter.
 	*/
-	GFilterTXT(GPlugInFactory* fac);
+	GFilterTXT(GSession* session,GPlugInFactory* fac);
 
 public:
 
@@ -80,9 +80,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
+	* @param fac             Factory.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor of the TXT filter.

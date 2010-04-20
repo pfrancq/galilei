@@ -49,8 +49,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GFilterTXT::GFilterTXT(GPlugInFactory* fac)
-	: GFilter(fac)
+GFilterTXT::GFilterTXT(GSession* session,GPlugInFactory* fac)
+	: GFilter(session,fac)
 {
 	AddMIME("text/plain");
 }
@@ -71,7 +71,7 @@ void GFilterTXT::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* )
 
 
 //------------------------------------------------------------------------------
-void GFilterTXT::CreateParams(RConfig*)
+void GFilterTXT::CreateParams(GPlugInFactory*)
 {
 }
 

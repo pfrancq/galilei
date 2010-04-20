@@ -53,8 +53,8 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterHTML::GFilterHTML(GPlugInFactory* fac)
-	: GFilter(fac)
+GFilterHTML::GFilterHTML(GSession* session,GPlugInFactory* fac)
+	: GFilter(session,fac)
 {
 	AddMIME("text/html");
 }
@@ -78,7 +78,7 @@ void GFilterHTML::Analyze(GDoc*,const RURI& uri,RXMLParser* parser,GSlot* rec)
 
 
 //------------------------------------------------------------------------------
-void GFilterHTML::CreateParams(RConfig*)
+void GFilterHTML::CreateParams(GPlugInFactory*)
 {
 }
 

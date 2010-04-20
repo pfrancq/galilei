@@ -42,9 +42,8 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterRTF::GFilterRTF(GPlugInFactory* fac)
-	: GFilter(fac), Tags(0),
-	 Chars(50,5)
+GFilterRTF::GFilterRTF(GSession* session,GPlugInFactory* fac)
+	: GFilter(session,fac), Tags(0), Chars(50,5)
 {
 	AddMIME("text/rtf");
 	AddMIME("application/rtf");
@@ -497,7 +496,7 @@ RString GFilterRTF::ReplaceCodes(RString str)
 
 
 //------------------------------------------------------------------------------
-void GFilterRTF::CreateParams(RConfig*)
+void GFilterRTF::CreateParams(GPlugInFactory*)
 {
 }
 

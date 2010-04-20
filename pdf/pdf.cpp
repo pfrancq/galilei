@@ -76,8 +76,8 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GFilterPDF::GFilterPDF(GPlugInFactory* fac)
-	: GFilter(fac)
+GFilterPDF::GFilterPDF(GSession* session,GPlugInFactory* fac)
+	: GFilter(session,fac)
 {
 	AddMIME("text/pdf");
 	AddMIME("text/x-pdf");
@@ -276,7 +276,7 @@ RString GFilterPDF::CreateDate(Dict* infoDict,const char* key)
 
 
 //------------------------------------------------------------------------------
-void GFilterPDF::CreateParams(RConfig*)
+void GFilterPDF::CreateParams(GPlugInFactory*)
 {
 }
 
