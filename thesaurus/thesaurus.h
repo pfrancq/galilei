@@ -121,26 +121,15 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         The session.
 	* @param fac             Factory.
 	*/
-	Thesaurus(GPlugInFactory* fac);
+	Thesaurus(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session);
 
 	/**
 	 * Build a particular node
@@ -173,9 +162,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destruct the plug-in.

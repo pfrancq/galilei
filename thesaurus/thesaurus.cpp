@@ -49,8 +49,8 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-Thesaurus::Thesaurus(GPlugInFactory* fac)
-		: GPostTopic(fac), Objs(100), Words(20000), WordsByIds(20000), Concepts(200)
+Thesaurus::Thesaurus(GSession* session,GPlugInFactory* fac)
+		: GPostTopic(session,fac), Objs(100), Words(20000), WordsByIds(20000), Concepts(200)
 {
 }
 
@@ -58,26 +58,11 @@ Thesaurus::Thesaurus(GPlugInFactory* fac)
 //------------------------------------------------------------------------------
 void Thesaurus::ApplyConfig(void)
 {
-	GPostTopic::ApplyConfig();
-	Heuristic=Factory->Get("GAHeuristic");
-	MaxGen=Factory->GetUInt("MaxGen");
-	PopSize=Factory->GetUInt("PopSize");
-	Verify=Factory->GetBool("Verify");
-	NumInfos=Factory->GetUInt("NumInfos");
-}
-
-
-//------------------------------------------------------------------------------
-void Thesaurus::Connect(GSession* session)
-{
-	GPostTopic::Connect(session);
-}
-
-
-//------------------------------------------------------------------------------
-void Thesaurus::Disconnect(GSession* session)
-{
-	GPostTopic::Disconnect(session);
+	Heuristic=Factory->FindParam<RParamValue>("GAHeuristic")->Get();
+	MaxGen=Factory->FindParam<RParamValue>("MaxGen")->GetUInt();
+	PopSize=Factory->FindParam<RParamValue>("PopSize")->GetUInt();
+	Verify=Factory->FindParam<RParamValue>("Verify")->GetBool();
+	NumInfos=Factory->FindParam<RParamValue>("NumInfos")->GetUInt();
 }
 
 
@@ -258,13 +243,13 @@ void Thesaurus::Gen(const R::RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void Thesaurus::CreateParams(RConfig* params)
+void Thesaurus::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("GAHeuristic","FirstFit"));
-	params->InsertParam(new RParamValue("MaxGen",50));
-	params->InsertParam(new RParamValue("PopSize",16));
-	params->InsertParam(new RParamValue("Verify",false));
-	params->InsertParam(new RParamValue("NumInfos",20));
+	fac->InsertParam(new RParamValue("GAHeuristic","FirstFit"));
+	fac->InsertParam(new RParamValue("MaxGen",50));
+	fac->InsertParam(new RParamValue("PopSize",16));
+	fac->InsertParam(new RParamValue("Verify",false));
+	fac->InsertParam(new RParamValue("NumInfos",20));
 }
 
 

@@ -80,11 +80,11 @@ void About(void)
 
 
  //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
  	Config dlg;
 
- 	RString Heuristic(params->Get("GAHeuristic"));
+ 	RString Heuristic(fac->FindParam<RParamValue>("GAHeuristic")->Get());
  	int i;
  	for(i=0;i<dlg.Heuristic->count();i++)
  	{
@@ -92,19 +92,20 @@ void Configure(GPlugInFactory* params)
  			break;
  	}
 	dlg.Heuristic->setCurrentIndex(i);
-	dlg.MaxGen->setValue(params->GetUInt("MaxGen"));
-	dlg.PopSize->setValue(params->GetUInt("PopSize"));
-	dlg.Verify->setChecked(params->GetBool("Verify"));
-	dlg.NumInfos->setValue(params->GetUInt("NumInfos"));
+	dlg.MaxGen->setValue(fac->FindParam<RParamValue>("MaxGen")->GetUInt());
+	dlg.PopSize->setValue(fac->FindParam<RParamValue>("PopSize")->GetUInt());
+	dlg.Verify->setChecked(fac->FindParam<RParamValue>("Verify")->GetBool());
+	dlg.NumInfos->setValue(fac->FindParam<RParamValue>("NumInfos")->GetUInt());
 	if(dlg.exec())
 	{
-		params->Set("Heuristic",FromQString(dlg.Heuristic->currentText()));
-		params->SetUInt("MaxGen",dlg.MaxGen->value());
-		params->SetUInt("PopSize",dlg.PopSize->value());
-		params->SetBool("Verify",dlg.Verify->isChecked());
-		params->SetUInt("NumInfos",dlg.NumInfos->value());
-		params->Apply();
+		fac->FindParam<RParamValue>("Heuristic")->Set(FromQString(dlg.Heuristic->currentText()));
+		fac->FindParam<RParamValue>("MaxGen")->SetUInt(dlg.MaxGen->value());
+		fac->FindParam<RParamValue>("PopSize")->SetUInt(dlg.PopSize->value());
+		fac->FindParam<RParamValue>("Verify")->SetBool(dlg.Verify->isChecked());
+		fac->FindParam<RParamValue>("NumInfos")->SetUInt(dlg.NumInfos->value());
+		return(true);
 	}
+	return(false);
 }
 
 
