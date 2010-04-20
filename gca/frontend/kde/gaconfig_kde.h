@@ -29,8 +29,9 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rconfig.h>
+#include <gplugin.h>
 using namespace R;
+using namespace GALILEI;
 
 
 //-----------------------------------------------------------------------------
@@ -43,5 +44,5 @@ class GAConfigDlg : public KDialog, public Ui_Config
 {
 public:
 	GAConfigDlg(void);
-	bool Configure(RConfig* params );
+	bool Configure(GPlugInFactory* fac);
 };

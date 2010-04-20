@@ -60,74 +60,74 @@ GAConfigDlg::GAConfigDlg(void)
 
 
 //------------------------------------------------------------------------------
-bool GAConfigDlg::Configure(RConfig* params)
+bool GAConfigDlg::Configure(GPlugInFactory* fac)
 {
 	//  Init dialog box
-	ClusteringMethod->setCurrentIndex(ClusteringMethod->findText(ToQString(params->Get("Clustering Method"))));
-	NbClusters->setValue(params->GetInt("NbClusters"));
-	PopSize->setValue(params->GetInt("Population Size"));
-	MaxGen->setValue(params->GetInt("Max Gen"));
-	Step->setChecked(params->GetBool("Step"));
-	StepGen->setValue(params->GetInt("Step Gen"));
-	StepGen->setEnabled(params->GetBool("Step"));
-	MaxKMeans->setValue(params->GetInt("Max kMeans"));
-	NbDivChromo->setValue(params->GetInt("NbDivChromos"));
-	MinAgreement->setValue(params->GetDouble("Min Agreement"));
-	Convergence->setValue(params->GetDouble("Convergence"));
-	MinDisagreement->setValue(params->GetDouble("Min Disagreement"));
-	Incremental->setChecked(params->GetBool("Incremental"));
-	LocalOptimisation->setChecked(params->GetBool("LocalOptimisation"));
-	Optimisation->setChecked(params->GetBool("Optimisation"));
+	ClusteringMethod->setCurrentIndex(ClusteringMethod->findText(ToQString(fac->FindParam<RParamValue>("Clustering Method")->Get())));
+	NbClusters->setValue(fac->FindParam<RParamValue>("NbClusters")->GetInt());
+	PopSize->setValue(fac->FindParam<RParamValue>("Population Size")->GetInt());
+	MaxGen->setValue(fac->FindParam<RParamValue>("Max Gen")->GetInt());
+	Step->setChecked(fac->FindParam<RParamValue>("Step")->GetBool());
+	StepGen->setValue(fac->FindParam<RParamValue>("Step Gen")->GetInt());
+	StepGen->setEnabled(fac->FindParam<RParamValue>("Step")->GetBool());
+	MaxKMeans->setValue(fac->FindParam<RParamValue>("Max kMeans")->GetInt());
+	NbDivChromo->setValue(fac->FindParam<RParamValue>("NbDivChromos")->GetInt());
+	MinAgreement->setValue(fac->FindParam<RParamValue>("Min Agreement")->GetDouble());
+	Convergence->setValue(fac->FindParam<RParamValue>("Convergence")->GetDouble());
+	MinDisagreement->setValue(fac->FindParam<RParamValue>("Min Disagreement")->GetDouble());
+	Incremental->setChecked(fac->FindParam<RParamValue>("Incremental")->GetBool());
+	LocalOptimisation->setChecked(fac->FindParam<RParamValue>("LocalOptimisation")->GetBool());
+	Optimisation->setChecked(fac->FindParam<RParamValue>("Optimisation")->GetBool());
 	GroupOptimization->setEnabled(Optimisation->isChecked());
-	InternalRandom->setChecked(params->GetBool("InternalRandom"));
-	Seed->setDisabled(params->GetBool("InternalRandom"));
-	Seed->setValue(params->GetInt("Seed"));
-	SimP->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->GetDouble());
-	SimQ->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->GetDouble());
-	SimWeight->setValue(params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->GetDouble());
-	AgreementP->setValue(params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("P")->GetDouble());
-	AgreementQ->setValue(params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Q")->GetDouble());
-	AgreementWeight->setValue(params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Weight")->GetDouble());
-	DisagreementP->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("P")->GetDouble());
-	DisagreementQ->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Q")->GetDouble());
-	DisagreementWeight->setValue(params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->GetDouble());
-	Cout->setChecked(params->GetBool("Cout"));
-	NbMinObjs->setText(QString::number(params->GetULong("NbMinObjs")));
-	NbMaxObjs->setText(QString::number(params->GetULong("NbMaxObjs")));
-	AllMinSim->setChecked(params->GetBool("AllMinSim"));
+	InternalRandom->setChecked(fac->FindParam<RParamValue>("InternalRandom")->GetBool());
+	Seed->setDisabled(fac->FindParam<RParamValue>("InternalRandom")->GetBool());
+	Seed->setValue(fac->FindParam<RParamValue>("Seed")->GetInt());
+	SimP->setValue(fac->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->GetDouble());
+	SimQ->setValue(fac->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->GetDouble());
+	SimWeight->setValue(fac->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->GetDouble());
+	AgreementP->setValue(fac->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("P")->GetDouble());
+	AgreementQ->setValue(fac->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Q")->GetDouble());
+	AgreementWeight->setValue(fac->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Weight")->GetDouble());
+	DisagreementP->setValue(fac->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("P")->GetDouble());
+	DisagreementQ->setValue(fac->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Q")->GetDouble());
+	DisagreementWeight->setValue(fac->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->GetDouble());
+	Cout->setChecked(fac->FindParam<RParamValue>("Cout")->GetBool());
+	NbMinObjs->setText(QString::number(fac->FindParam<RParamValue>("NbMinObjs")->GetULong()));
+	NbMaxObjs->setText(QString::number(fac->FindParam<RParamValue>("NbMaxObjs")->GetULong()));
+	AllMinSim->setChecked(fac->FindParam<RParamValue>("AllMinSim")->GetBool());
 
 	// Execute and if 'OK' -> Apply changes
 	if(exec())
 	{
-		params->Set("Clustering Method",FromQString(ClusteringMethod->currentText()));
-		params->SetUInt("NbClusters",NbClusters->value());
-		params->SetUInt("Population Size",PopSize->value());
-		params->SetUInt("Max Gen",MaxGen->value());
-		params->SetUInt("Max kMeans",MaxKMeans->value());
-		params->SetDouble("Convergence",Convergence->value());
-		params->SetUInt("NbDivChromos",NbDivChromo->value());
-		params->SetBool("Step",Step->isChecked());
-		params->SetUInt("Step Gen",StepGen->value());
-		params->SetDouble("Min Agreement",MinAgreement->value());
-		params->SetDouble("Min Disagreement",MinDisagreement->value());
-		params->SetBool("Incremental",Incremental->isChecked());
-		params->SetBool("LocalOptimisation",LocalOptimisation->isChecked());
-		params->SetBool("Optimisation",Optimisation->isChecked());
-		params->SetBool("InternalRandom",InternalRandom->isChecked());
-		params->SetUInt("Seed",Seed->value());
-		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->SetDouble(SimP->value());
-		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->SetDouble(SimQ->value());
-		params->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->SetDouble(SimWeight->value());
-		params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("P")->SetDouble(AgreementP->value());
-		params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Q")->SetDouble(AgreementQ->value());
-		params->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Weight")->SetDouble(AgreementWeight->value());
-		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("P")->SetDouble(DisagreementP->value());
-		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Q")->SetDouble(DisagreementQ->value());
-		params->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->SetDouble(DisagreementWeight->value());
-		params->SetBool("Cout",Cout->isChecked());
-		params->SetUInt("NbMinObjs",NbMinObjs->text().toULong());
-		params->SetUInt("NbMaxObjs",NbMaxObjs->text().toULong());
-		params->SetBool("AllMinSim",AllMinSim->isChecked());
+		fac->FindParam<RParamValue>("Clustering Method")->Set(FromQString(ClusteringMethod->currentText()));
+		fac->FindParam<RParamValue>("NbClusters")->SetUInt(NbClusters->value());
+		fac->FindParam<RParamValue>("Population Size")->SetUInt(PopSize->value());
+		fac->FindParam<RParamValue>("Max Gen")->SetUInt(MaxGen->value());
+		fac->FindParam<RParamValue>("Max kMeans")->SetUInt(MaxKMeans->value());
+		fac->FindParam<RParamValue>("Convergence")->SetDouble(Convergence->value());
+		fac->FindParam<RParamValue>("NbDivChromos")->SetUInt(NbDivChromo->value());
+		fac->FindParam<RParamValue>("Step")->SetBool(Step->isChecked());
+		fac->FindParam<RParamValue>("Step Gen")->SetUInt(StepGen->value());
+		fac->FindParam<RParamValue>("Min Agreement")->SetDouble(MinAgreement->value());
+		fac->FindParam<RParamValue>("Min Disagreement")->SetDouble(MinDisagreement->value());
+		fac->FindParam<RParamValue>("Incremental")->SetBool(Incremental->isChecked());
+		fac->FindParam<RParamValue>("LocalOptimisation")->SetBool(LocalOptimisation->isChecked());
+		fac->FindParam<RParamValue>("Optimisation")->SetBool(Optimisation->isChecked());
+		fac->FindParam<RParamValue>("InternalRandom")->SetBool(InternalRandom->isChecked());
+		fac->FindParam<RParamValue>("Seed")->SetUInt(Seed->value());
+		fac->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("P")->SetDouble(SimP->value());
+		fac->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Q")->SetDouble(SimQ->value());
+		fac->FindParam<RParamStruct>("Sim Criterion")->Get<RParamValue>("Weight")->SetDouble(SimWeight->value());
+		fac->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("P")->SetDouble(AgreementP->value());
+		fac->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Q")->SetDouble(AgreementQ->value());
+		fac->FindParam<RParamStruct>("Agreement Criterion")->Get<RParamValue>("Weight")->SetDouble(AgreementWeight->value());
+		fac->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("P")->SetDouble(DisagreementP->value());
+		fac->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Q")->SetDouble(DisagreementQ->value());
+		fac->FindParam<RParamStruct>("Disagreement Criterion")->Get<RParamValue>("Weight")->SetDouble(DisagreementWeight->value());
+		fac->FindParam<RParamValue>("Cout")->SetBool(Cout->isChecked());
+		fac->FindParam<RParamValue>("NbMinObjs")->SetUInt(NbMinObjs->text().toULong());
+		fac->FindParam<RParamValue>("NbMaxObjs")->SetUInt(NbMaxObjs->text().toULong());
+		fac->FindParam<RParamValue>("AllMinSim")->SetBool(AllMinSim->isChecked());
 		return(true);
  	}
 

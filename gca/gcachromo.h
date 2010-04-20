@@ -48,12 +48,12 @@ using namespace R;
 
 //-----------------------------------------------------------------------------
 /**
-* The GCAChromo class provides a representation for a chromosome for the IR
-* Problem.
+* The GCAChromoDoc class provides a representation for a chromosome for the
+* clustering the documents.
 * @author Pascal Francq
-* @short IR Chromosome.
+* @short Documents Chromosome.
 */
-class GCAChromo : public RChromoSC<GCAInst,GCAChromo,GCAThreadData,GCAGroup,GCAObj>
+class GCAChromoDoc : public RChromoSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>
 {
 public:
 
@@ -62,29 +62,59 @@ public:
 	* @param inst           The instance of the problem.
 	* @param id             The identifier of the chromosome.
 	*/
-	GCAChromo(GCAInst* inst,size_t id);
+	GCAChromoDoc(GCAInstDoc* inst,size_t id);
 
 	/**
 	* Construct the chromosome based on existing groups.
 	* @param groups          Cursor over the groups.
 	*/
-	template<class cObj,class cGroup> void ConstructChromo(R::RCursor<cGroup> groups);
+	void ConstructChromo(R::RCursor<GTopic> groups);
 
 	/**
 	* Construct a valid solution.
 	*/
 	virtual void RandomConstruct(void);
 
+	// friend classes
+	friend class GCAGroupDoc;
+	friend class GCAInstDoc;
+	friend class GCAHeuristicDoc;
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GCAChromoProfile class provides a representation for a chromosome for the
+* clustering the profiles.
+* @author Pascal Francq
+* @short Profiles Chromosome.
+*/
+class GCAChromoProfile : public RChromoSC<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>
+{
+public:
+
 	/**
-	* Destruct the chromosome.
+	* Construct the chromosome.
+	* @param inst           The instance of the problem.
+	* @param id             The identifier of the chromosome.
 	*/
-	virtual ~GCAChromo(void);
+	GCAChromoProfile(GCAInstProfile* inst,size_t id);
+
+	/**
+	* Construct the chromosome based on existing groups.
+	* @param groups          Cursor over the groups.
+	*/
+	void ConstructChromo(R::RCursor<GCommunity> groups);
+
+	/**
+	* Construct a valid solution.
+	*/
+	virtual void RandomConstruct(void);
 
 	// friend classes
-	friend class GCAGroup;
-	friend class GCAInst;
-	friend class GCAProm;
-	friend class GCAHeuristic;
+	friend class GCAGroupProfile;
+	friend class GCAInstProfile;
+	friend class GCAHeuristicProfile;
 };
 
 

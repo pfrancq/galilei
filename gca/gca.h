@@ -37,7 +37,6 @@
 #include <scga.h>
 #include <rparam.h>
 #include <rgroups.h>
-#include <robjsc.h>
 using namespace R;
 
 
@@ -49,102 +48,18 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 // Forward class declaration
-class GCAGroup;
-class GCAThreadData;
-class GCAChromo;
-class GCAInst;
-class GCAObj;
-class GCAHeuristic;
-
-
-//-----------------------------------------------------------------------------
-// forward declaration
-class CGroups;
-
-
-//-----------------------------------------------------------------------------
-/**
- * The Group provides a representation for a group holding GCAObj (used by
- * kMeans).
- * @author Pascal Francq
- * @short kMeans Group
- */
-class CGroup : public R::RGroup<CGroup,GCAObj,CGroups>
-{
-public:
-
-	/**
-	 * Constructor.
-	 * @param owner          Owner of the group.
-	 * @param id             Identifier of the group.
-	 */
-	CGroup(CGroups* owner,size_t id);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
- *
- */
-class CGroups : public R::RGroups<CGroup,GCAObj,CGroups>
-{
-public:
-	CGroups(R::RCursor<GCAObj> objs,size_t max);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GCAObj class provides a representation of a profile or a document to
-* group.
-* @author Pascal Francq
-* @short IR Object.
-*/
-class GCAObj : public RObjSC
-{
-protected:
-
-	/**
-	* Pointer to the element.
-	*/
-	void* Element;
-
-	/**
-	 * Identifier of the element.
-	 */
-	size_t ElementId;
-
-public:
-
-	/**
-	* Construct the object.
-	* @param id             Identifier.
-	* @param d              Corresponding document.
-	*/
-	GCAObj(size_t id,GDoc* d);
-
-	/**
-	* Construct the object.
-	* @param id             Identifier.
-	* @param p              Corresponding profile.
-	*/
-	GCAObj(size_t id,GProfile* p);
-
-	/**
-	* Return a pointer to the element.
-	*/
-	inline void* GetElement(void) const {return(Element);}
-
-	/**
-	 * Return the identifier of the element.
-	 */
-	inline size_t GetElementId(void) const {return(ElementId);}
-
-	/**
-	* Destruct the object.
-	*/
-	~GCAObj(void);
-};
+class GCAGroupDoc;
+class GCAThreadDataDoc;
+class GCAChromoDoc;
+class GCAInstDoc;
+class GCAHeuristicDoc;
+class GCAGroupProfile;
+class GCAThreadDataProfile;
+class GCAChromoProfile;
+class GCAInstProfile;
+class GCAHeuristicProfile;
+class CGroupsDoc;
+class CGroupsProfile;
 
 
 //-----------------------------------------------------------------------------

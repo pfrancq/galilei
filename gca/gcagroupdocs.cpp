@@ -33,6 +33,9 @@
 //-----------------------------------------------------------------------------
 // include files for GCA
 #include <gcaplugin.h>
+#include <gcainst.h>
+#include <gcagroup.h>
+#include <gcakmeans.h>
 using namespace GALILEI;
 
 
@@ -44,16 +47,17 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short GGA for Documents.
 */
-class GCAGroupDocs : public GCAPlugIn<GDoc,GTopic>, public GGroupDocs
+class GCAGroupDocs : public GCAPlugIn<GDoc,GTopic,GCAInstDoc,GCAGroupDoc,kMeansDoc,CGroupDoc,CGroupsDoc>, public GGroupDocs
 {
 public:
 
 	/**
 	* Constructor.
+	* @param session        Session.
 	* @param f              Factory.
 	*/
-	GCAGroupDocs(GPlugInFactory* fac)
-		: GCAPlugIn<GDoc,GTopic>("Documents Grouping",otDoc,otTopic), GGroupDocs(fac) {}
+	GCAGroupDocs(GSession* session,GPlugInFactory* fac)
+		: GCAPlugIn<GDoc,GTopic,GCAInstDoc,GCAGroupDoc,kMeansDoc,CGroupDoc,CGroupsDoc>("Documents Grouping",otDoc,otTopic), GGroupDocs(session,fac) {}
 
 	/**
 	 * Class name.
@@ -64,7 +68,7 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void)
-	{GCAPlugIn<GDoc,GTopic>::ApplyConfig(Factory);}
+	{GCAPlugIn<GDoc,GTopic,GCAInstDoc,GCAGroupDoc,kMeansDoc,CGroupDoc,CGroupsDoc>::ApplyConfig(Factory);}
 
 protected:
 
@@ -76,16 +80,15 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void) {RunGrouping(Session,"Documents",Session->GetTopics());}
+	virtual void Run(void) {RunGrouping(Session,"Documents",Session->GetTopics(),Session->GetDocs());}
 
 public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(R::RConfig* params)
-	{GCAPlugIn<GDoc,GTopic>::CreateParams(params);}
+	static void CreateParams(GPlugInFactory* fac)
+	{GCAPlugIn<GDoc,GTopic,GCAInstDoc,GCAGroupDoc,kMeansDoc,CGroupDoc,CGroupsDoc>::CreateParams(fac);}
 };
 
 

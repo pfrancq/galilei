@@ -34,64 +34,60 @@
 #include <gprofile.h>
 #include <guser.h>
 #include <gsession.h>
+#include <ggalileiapp.h>
+#include <gmeasure.h>
 
 
 //-----------------------------------------------------------------------------
 // includes files for GCA
-#include <gca.h>
+#include <gcakmeans.h>
 using namespace R;
 
 
 
+
 //-----------------------------------------------------------------------------
 //
-// class GCAObj
+// class kMeansDoc
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAObj::GCAObj(size_t id,GDoc* d)
-	: RObjSC(id,d->GetName()), Element(d), ElementId(d->GetId())
+kMeansDoc::kMeansDoc(const R::RString& n,R::RRandom* r,R::RCursor<GDoc> objs,R::RDebug* debug)
+	: R::RGroupingKMeans<CGroupDoc,GDoc,CGroupsDoc>(n,r,objs,debug)
 {
+	Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
 }
 
 
 //-----------------------------------------------------------------------------
-GCAObj::GCAObj(size_t id,GProfile* p)
-	: RObjSC(id,p->GetName(),p->IsSocial(),p->GetUser()->GetId()), Element(p), ElementId(p->GetId())
+double kMeansDoc::Similarity(const GDoc* obj1,const GDoc* obj2)
 {
-}
-
-
-//-----------------------------------------------------------------------------
-GCAObj::~GCAObj(void)
-{
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class CGroup
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-CGroup::CGroup(CGroups* owner,size_t id)
-	: R::RGroup<CGroup,GCAObj,CGroups>(owner,id)
-{
+	double d;
+	Measure->Measure(0,obj1->GetId(),obj2->GetId(),&d);
+	return(d);
 }
 
 
 
 //-----------------------------------------------------------------------------
 //
-// class CGroups
+// class kMeansProfile
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-CGroups::CGroups(R::RCursor<GCAObj> objs,size_t max)
-	: R::RGroups<CGroup,GCAObj,CGroups>(objs,max)
+kMeansProfile::kMeansProfile(const R::RString& n,R::RRandom* r,R::RCursor<GProfile> objs,R::RDebug* debug)
+	: R::RGroupingKMeans<CGroupProfile,GProfile,CGroupsProfile>(n,r,objs,debug)
 {
+	Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
+}
+
+
+//-----------------------------------------------------------------------------
+double kMeansProfile::Similarity(const GProfile* obj1,const GProfile* obj2)
+{
+	double d;
+	Measure->Measure(0,obj1->GetId(),obj2->GetId(),&d);
+	return(d);
 }

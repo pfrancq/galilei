@@ -60,96 +60,72 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-// class kMeans
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-kMeans::kMeans(const R::RString& n,R::RRandom* r,R::RCursor<GCAObj> objs,const R::RString& mes,R::RDebug* debug)
-	: R::RGroupingKMeans<CGroup,GCAObj,CGroups>(n,r,objs,debug)
-{
-	Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities");
-}
-
-
-//-----------------------------------------------------------------------------
-double kMeans::Similarity(const GCAObj* obj1,const GCAObj* obj2)
-{
-	double d;
-	Measure->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
-	return(d);
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
 //  class GCAPlugIn
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	GCAPlugIn<cObj,cGroup>::GCAPlugIn(const RString& name,tObjType objtype,tObjType grouptype)
-		: RObject(name), Objs(20), ObjType(objtype),GroupType(grouptype)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::GCAPlugIn(const RString& name,tObjType objtype,tObjType grouptype)
+		: RObject(name), ObjType(objtype), GroupType(grouptype)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	void GCAPlugIn<cObj,cGroup>::ApplyConfig(GPlugInFactory* factory)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	void GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::ApplyConfig(GPlugInFactory* factory)
 {
-	PopSize=factory->GetUInt("Population Size");
-	MaxGen=factory->GetUInt("Max Gen");
-	Step=factory->GetBool("Step");
-	StepGen=factory->GetUInt("Step Gen");
-	MinAgreement=factory->GetDouble("Min Agreement");
-	MinDisagreement=factory->GetDouble("Min Disagreement");
-	MaxKMeans=factory->GetUInt("Max kMeans");
-	Convergence=factory->GetDouble("Convergence");
-	NbDivChromo=factory->GetUInt("NbDivChromos");
-	LocalOptimisation=factory->GetBool("LocalOptimisation");
-	Optimisation=factory->GetBool("Optimisation");
-	Incremental=factory->GetBool("Incremental");
-	InternalRandom=factory->GetBool("InternalRandom");
-	Seed=factory->GetInt("Seed");
-	ParamsSim=factory->R::RConfig::FindParam<R::RParamStruct>("Sim Criterion");
-	ParamsAgreement=factory->R::RConfig::FindParam<R::RParamStruct>("Agreement Criterion");
-	ParamsDisagreement=factory->R::RConfig::FindParam<R::RParamStruct>("Disagreement Criterion");
-	RString what(factory->Get("Clustering Method"));
+	PopSize=factory->FindParam<RParamValue>("Population Size")->GetUInt();
+	MaxGen=factory->FindParam<RParamValue>("Max Gen")->GetUInt();
+	Step=factory->FindParam<RParamValue>("Step")->GetBool();
+	StepGen=factory->FindParam<RParamValue>("Step Gen")->GetUInt();
+	MinAgreement=factory->FindParam<RParamValue>("Min Agreement")->GetDouble();
+	MinDisagreement=factory->FindParam<RParamValue>("Min Disagreement")->GetDouble();
+	MaxKMeans=factory->FindParam<RParamValue>("Max kMeans")->GetUInt();
+	Convergence=factory->FindParam<RParamValue>("Convergence")->GetDouble();
+	NbDivChromo=factory->FindParam<RParamValue>("NbDivChromos")->GetUInt();
+	LocalOptimisation=factory->FindParam<RParamValue>("LocalOptimisation")->GetBool();
+	Optimisation=factory->FindParam<RParamValue>("Optimisation")->GetBool();
+	Incremental=factory->FindParam<RParamValue>("Incremental")->GetBool();
+	InternalRandom=factory->FindParam<RParamValue>("InternalRandom")->GetBool();
+	Seed=factory->FindParam<RParamValue>("Seed")->GetInt();
+	ParamsSim=factory->FindParam<R::RParamStruct>("Sim Criterion");
+	ParamsAgreement=factory->FindParam<R::RParamStruct>("Agreement Criterion");
+	ParamsDisagreement=factory->FindParam<R::RParamStruct>("Disagreement Criterion");
+	RString what(factory->FindParam<RParamValue>("Clustering Method")->Get());
 	ClusteringMethod=0;
 	if(what=="GA")
 		ClusteringMethod=1;
 	if(what=="k-Means")
 		ClusteringMethod=2;
-	NbClusters=factory->GetUInt("NbClusters");
-	Cout=factory->GetBool("Cout");
-	NbMinObjs=factory->GetUInt("NbMinObjs");
-	NbMaxObjs=factory->GetUInt("NbMaxObjs");
-	AllMinSim=factory->GetBool("AllMinSim");
+	NbClusters=factory->FindParam<RParamValue>("NbClusters")->GetUInt();
+	Cout=factory->FindParam<RParamValue>("Cout")->GetBool();
+	NbMinObjs=factory->FindParam<RParamValue>("NbMinObjs")->GetUInt();
+	NbMaxObjs=factory->FindParam<RParamValue>("NbMaxObjs")->GetUInt();
+	AllMinSim=factory->FindParam<RParamValue>("AllMinSim")->GetBool();
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	bool GCAPlugIn<cObj,cGroup>::IsCoherent(const cGroup* /*grp*/) const
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	bool GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::IsCoherent(const cGroup* /*grp*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	bool GCAPlugIn<cObj,cGroup>::IsCoherent(const cGroup* /*grp*/,const cObj* /*sub*/) const
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	bool GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::IsCoherent(const cGroup* /*grp*/,const cObj* /*sub*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	bool GCAPlugIn<cObj,cGroup>::IsValid(cGroup* /*grp*/)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	bool GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::IsValid(cGroup* /*grp*/)
 {
 //	GSubProfileCursor Cur1,Cur2;
 //	size_t i,j;
@@ -177,11 +153,9 @@ template<class cObj,class cGroup>
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	template<class cAlgoGroup> void GCAPlugIn<cObj,cGroup>::ConstructResults(GSession* session,R::RCursor<cAlgoGroup> Sol)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	template<class cAlgoGroup> void GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::ConstructResults(GSession* session,R::RCursor<cAlgoGroup> Sol)
 {
-	size_t* tab;
-	size_t* ptr;
 	size_t i;
 	RString Label(GetObjType(GroupType,true,false)+" ");
 
@@ -191,19 +165,25 @@ template<class cObj,class cGroup>
 	{
 		cGroup* g(static_cast<cGroup*>(session->NewGroup(GroupType,Label+RString::Number(i))));
 		session->AssignId(g);
-		ptr=tab=Sol()->GetObjectsId();
-		while((*ptr)!=cNoRef)
-			g->InsertObj(static_cast<cObj*>(Objs[*(ptr++)]->GetElement()));
-		delete[] tab;
+		RCursor<cObj> Cur(Sol()->GetObjs());
+		for(Cur.Start();!Cur.End();Cur.Next())
+			g->InsertObj(Cur());
 		session->InsertGroup(g,GroupType);
 	}
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	void GCAPlugIn<cObj,cGroup>::DoGCA(GSession* session,const R::RString& mes)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	void GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::DoGCA(GSession* session,const R::RString& mes,R::RCursor<cObj> Objs)
 {
+	const RMaxVector* Vec;
+	GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities")->Info(3,1,&Vec);
+	RCursor<RMaxValue> Cur(*Vec);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		cout<<"Sim (1,"<<Cur()->Id<<")="<<Cur()->Value<<endl;
+
+	return;
 	double d;
 
 	if(Cout)
@@ -219,13 +199,17 @@ template<class cObj,class cGroup>
 		cout<<"   Minimum Similarity="<<d<<endl;
 		double nb;
 		GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities")->Info(1,&nb);
-		cout<<"   Mean="<<nb<<endl;
+		cout<<"     Mean Similarity="<<nb<<endl;
 		GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities")->Info(2,&nb);
-		cout<<"   Deviation="<<nb<<endl;
+		cout<<"     Deviation Similarity="<<nb<<endl;
+		GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Agreements")->Info(0,&nb);
+		cout<<"   Minimum Agreement="<<nb<<endl;
+		GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Disagreements")->Info(0,&nb);
+		cout<<"   Minimum Disagreement="<<nb<<endl;
 		cout<<"New GCA"<<endl;
 	}
-	GCAInst Instance(session,Objs,this,session->GetDebug(),ObjType,mes);
-	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cObj,cGroup>::Gen),"RInst::Generation",&Instance);
+	cInst Instance(session,Objs,this,session->GetDebug(),ObjType);
+	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::Gen),"RInst::Generation",&Instance);
 	if(Cout)
 		cout<<"Init GCA"<<endl;
 //	Instance.SetVerify(true);
@@ -255,13 +239,13 @@ template<class cObj,class cGroup>
 	Instance.Run();
 	if(Cout)
 		cout<<"Build solutions"<<endl;
-	ConstructResults<GCAGroup>(session,Instance.BestChromosome->Used);
+	ConstructResults<cGAGroup>(session,Instance.BestChromosome->Used);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	void GCAPlugIn<cObj,cGroup>::DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	void GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::DokMeans(GSession* session,R::RCursor<cGroup> groups,R::RCursor<cObj> Objs)
 {
 	cout<<"Do kMeans for "<<Objs.GetNb()<<" "<<GetObjType(ObjType,false,true)<<endl;
 	std::auto_ptr<RRandom> Rand(RRandom::Create(RRandom::Good,1));
@@ -270,92 +254,53 @@ template<class cObj,class cGroup>
 	else
 		Rand->Reset(Seed);
 
-	kMeans kMeans("k-MeansObj",Rand.get(),Objs,mes);
-	kMeans::tInitial start;
+	cKMeans kMeans("k-MeansObj",Rand.get(),Objs);
+	typename cKMeans::tInitial start;
 
-	CGroups Sol(Objs,NbClusters);
+	cKMeansGrps Sol(Objs,NbClusters);
 	Sol.Init();
 	if(Incremental&&groups.GetNb())
 	{
 		cout<<"Prepare incremental kMeans"<<endl;
 		for(groups.Start();!groups.End();groups.Next())
 		{
-			CGroup* grp(0);
+			cKMeansGrp* grp(0);
 			RCursor<cObj> Cur(groups()->GetObjs());
 			if(Cur.GetNb())
 				grp=Sol.ReserveGroup();
 			for(Cur.Start();!Cur.End();Cur.Next())
-				grp->Insert(Objs.GetPtr(Cur()->GetId()-1));
+				grp->Insert(Cur());
 		}
-		start=kMeans::Incremental;
+		start=cKMeans::Incremental;
 	}
 	else
-		start=kMeans::kMeansPlusPlus;
+		start=cKMeans::kMeansPlusPlus;
 	cout<<"Run kMeans ("<<NbClusters<<" clusters)"<<endl;
 	kMeans.Run(&Sol,MaxKMeans,NbClusters,start);
 	cout<<"kMeans iterates "<<kMeans.GetNbIterations()<<" times (max="<<MaxKMeans<<")"<<endl;
-	ConstructResults<CGroup>(session,Sol);
+	ConstructResults<cKMeansGrp>(session,Sol);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	void GCAPlugIn<cObj,cGroup>::RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	void GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups,R::RCursor<cObj> Objs)
 {
-	// set the level of the MinSim
-	try
+	switch(ClusteringMethod)
 	{
-		// If no element to group -> skip it
-		RCursor<cObj> Cur(GetObjs());
-		if(!Cur.GetNb())
-			return;
-		Objs.Clear(Cur.GetNb());
-
-		// Create objects
-		if(Cout)
-			cout<<"Create objects...";
-		size_t i(0);
-		for(Cur.Start();!Cur.End();Cur.Next(),i++)
-			Objs.InsertPtr(new GCAObj(i,Cur()));
-		if(Cout)
-			cout<<" "<<i<<" created"<<endl;
-
-		switch(ClusteringMethod)
-		{
-			case 1:
-				DoGCA(session,mes);
-				break;
-			case 2:
-				DokMeans(session,mes,groups);
-				break;
-		}
-	}
-	catch(RGAException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(GException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(RException& e)
-	{
-		throw GException(e.GetMsg());
-	}
-	catch(exception& e)
-	{
-		throw GException(e.what());
-	}
-	catch(...)
-	{
-		throw GException("Unknown Problem");
+		case 1:
+			DoGCA(session,mes,Objs);
+			break;
+		case 2:
+			DokMeans(session,groups,Objs);
+			break;
 	}
 }
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	void GCAPlugIn<cObj,cGroup>::Gen(const R::RNotification& notification)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	void GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::Gen(const R::RNotification& notification)
 {
 	if(Cout)
 		cout<<"Gen "<<GetData<size_t>(notification)<<endl;
@@ -363,37 +308,37 @@ template<class cObj,class cGroup>
 
 
 //------------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	void GCAPlugIn<cObj,cGroup>::CreateParams(RConfig* params)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	void GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("Population Size",16));
-	params->InsertParam(new RParamValue("Max Gen",30));
-	params->InsertParam(new RParamValue("Step",false));
-	params->InsertParam(new RParamValue("Step Gen",0));
-	params->InsertParam(new RParamValue("Min Agreement",0.6));
-	params->InsertParam(new RParamValue("Min Disagreement",0.6));
-	params->InsertParam(new RParamValue("Max kMeans",30));
-	params->InsertParam(new RParamValue("Convergence",0.05));
-	params->InsertParam(new RParamValue("NbDivChromos",2));
-	params->InsertParam(new RParamValue("NbClusters",20));
-	params->InsertParam(new RParamValue("Clustering Method","GA"));
-	params->InsertParam(new RParamValue("LocalOptimisation",true));
-	params->InsertParam(new RParamValue("Optimisation",true));
-	params->InsertParam(new RParamValue("Incremental",true));
-	params->InsertParam(new RParamValue("InternalRandom",true));
-	params->InsertParam(new RParamValue("Seed",static_cast<int>(12345)));
-	params->InsertParam(RPromLinearCriterion::CreateParam("Sim Criterion"));
-	params->InsertParam(RPromLinearCriterion::CreateParam("Agreement Criterion"));
-	params->InsertParam(RPromLinearCriterion::CreateParam("Disagreement Criterion"));
-	params->InsertParam(new RParamValue("Cout",false));
-	params->InsertParam(new RParamValue("NbMinObjs",0));
-	params->InsertParam(new RParamValue("NbMaxObjs",cNoRef));
-	params->InsertParam(new RParamValue("AllMinSim",true));
+	fac->InsertParam(new RParamValue("Population Size",16));
+	fac->InsertParam(new RParamValue("Max Gen",30));
+	fac->InsertParam(new RParamValue("Step",false));
+	fac->InsertParam(new RParamValue("Step Gen",0));
+	fac->InsertParam(new RParamValue("Min Agreement",0.6));
+	fac->InsertParam(new RParamValue("Min Disagreement",0.6));
+	fac->InsertParam(new RParamValue("Max kMeans",30));
+	fac->InsertParam(new RParamValue("Convergence",0.05));
+	fac->InsertParam(new RParamValue("NbDivChromos",2));
+	fac->InsertParam(new RParamValue("NbClusters",20));
+	fac->InsertParam(new RParamValue("Clustering Method","GA"));
+	fac->InsertParam(new RParamValue("LocalOptimisation",true));
+	fac->InsertParam(new RParamValue("Optimisation",true));
+	fac->InsertParam(new RParamValue("Incremental",true));
+	fac->InsertParam(new RParamValue("InternalRandom",true));
+	fac->InsertParam(new RParamValue("Seed",static_cast<int>(12345)));
+	fac->InsertParam(RPromLinearCriterion::CreateParam("Sim Criterion"));
+	fac->InsertParam(RPromLinearCriterion::CreateParam("Agreement Criterion"));
+	fac->InsertParam(RPromLinearCriterion::CreateParam("Disagreement Criterion"));
+	fac->InsertParam(new RParamValue("Cout",false));
+	fac->InsertParam(new RParamValue("NbMinObjs",0));
+	fac->InsertParam(new RParamValue("NbMaxObjs",cNoRef));
+	fac->InsertParam(new RParamValue("AllMinSim",true));
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cObj,class cGroup>
-	GCAPlugIn<cObj,cGroup>::~GCAPlugIn(void)
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	GCAPlugIn<cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::~GCAPlugIn(void)
 {
 }

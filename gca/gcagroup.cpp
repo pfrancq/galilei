@@ -53,55 +53,40 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-// class SubProfileLocal
+// class GCAGroupDoc
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-/*class SubProfileLocal
-{
-public:
-	GCAObj* Prof;
-	double AvgSim;
-};
-
-
-//-----------------------------------------------------------------------------
-int sort_function(const void* a,const void* b)
-{
-	double af=(static_cast<const SubProfileLocal*>(a))->AvgSim;
-	double bf=(static_cast<const SubProfileLocal*>(b))->AvgSim;
-
-	if(af==bf) return(0);
-	if(af>bf)
-		return(-1);
-	else
-		return(1);
-}
-*/
-
-
-//-----------------------------------------------------------------------------
-//
-// class GCAGroup
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GCAGroup::GCAGroup(GCAGroup* grp)
-	: RGroupSC<GCAGroup,GCAObj,GCAChromo>(grp)
+GCAGroupDoc::GCAGroupDoc(GCAGroupDoc* grp)
+	: RGroupSC<GCAGroupDoc,GDoc,GCAChromoDoc>(grp)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-GCAGroup::GCAGroup(GCAChromo* owner,const size_t id)
-	: RGroupSC<GCAGroup,GCAObj,GCAChromo>(owner,id)
+GCAGroupDoc::GCAGroupDoc(GCAChromoDoc* owner,const size_t id)
+	: RGroupSC<GCAGroupDoc,GDoc,GCAChromoDoc>(owner,id)
 {
 }
 
 
-//---------------------------------------------------------------------------
-GCAGroup::~GCAGroup(void)
+
+//-----------------------------------------------------------------------------
+//
+// class GCAGroupProfile
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GCAGroupProfile::GCAGroupProfile(GCAGroupProfile* grp)
+	: RGroupSC<GCAGroupProfile,GProfile,GCAChromoProfile>(grp)
+{
+}
+
+
+//-----------------------------------------------------------------------------
+GCAGroupProfile::GCAGroupProfile(GCAChromoProfile* owner,const size_t id)
+	: RGroupSC<GCAGroupProfile,GProfile,GCAChromoProfile>(owner,id)
 {
 }

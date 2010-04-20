@@ -46,11 +46,11 @@
 
 //-----------------------------------------------------------------------------
 /**
-* The RGroupBP provides a representation for a group for the IR Problem.
+* The GCAGroupDoc provides a representation for a group of documents.
 * @author Pascal Francq
-* @short IR Group.
+* @short Documents Group.
 */
-class GCAGroup : public R::RGroupSC<GCAGroup,GCAObj,GCAChromo>
+class GCAGroupDoc : public R::RGroupSC<GCAGroupDoc,GDoc,GCAChromoDoc>
 {
 public:
 
@@ -58,7 +58,7 @@ public:
 	* Construct the group.
 	* @param grp            Group used as source.
 	*/
-	GCAGroup(GCAGroup* grp);
+	GCAGroupDoc(GCAGroupDoc* grp);
 
 	/**
 	* Construct the group.
@@ -66,12 +66,33 @@ public:
 	* @param id             Identifier of the group.
 	* @param data           Data needed for the group.
 	*/
-	GCAGroup(GCAChromo* owner,const size_t id);
+	GCAGroupDoc(GCAChromoDoc* owner,const size_t id);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GCAGroupProfile provides a representation for a group of profiles.
+* @author Pascal Francq
+* @short Profiles Group.
+*/
+class GCAGroupProfile : public R::RGroupSC<GCAGroupProfile,GProfile,GCAChromoProfile>
+{
+public:
 
 	/**
-	* Destruct the group.
+	* Construct the group.
+	* @param grp            Group used as source.
 	*/
-	virtual ~GCAGroup(void);
+	GCAGroupProfile(GCAGroupProfile* grp);
+
+	/**
+	* Construct the group.
+	* @param owner          Owner of the group.
+	* @param id             Identifier of the group.
+	* @param data           Data needed for the group.
+	*/
+	GCAGroupProfile(GCAChromoProfile* owner,const size_t id);
 };
 
 

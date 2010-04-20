@@ -36,7 +36,8 @@
 //------------------------------------------------------------------------------
 // include files for R project
 #include <robject.h>
-#include <rgroupingkmeans.h>
+#include <rsparsevector.h>
+#include <gcakmeans.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,17 +53,6 @@
 
 
 //-----------------------------------------------------------------------------
-class kMeans : public R::RGroupingKMeans<CGroup,GCAObj,CGroups>
-{
-	GMeasure* Measure;
-public:
-	kMeans(const R::RString& n,R::RRandom* r,R::RCursor<GCAObj> objs,const R::RString& mes,R::RDebug* debug=0);
-
-	double Similarity(const GCAObj* obj1,const GCAObj* obj2);
-};
-
-
-//-----------------------------------------------------------------------------
 /**
  * The GCAPlugIn class provides a representation for a generic plug-in
  * implementing a GCA for a specific kind of objects (profiles, documents,
@@ -70,15 +60,10 @@ public:
  * @author Pascal Francq
  * @short Generic GCA PlugIn
  */
-template<class cObj,class cGroup>
+template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
 	class GCAPlugIn : public R::RObject, public RParamsSC
 {
 protected:
-
-	/**
-	* GA Objects.
-	*/
-	R::RContainer<GCAObj,true,false> Objs;
 
 	/**
 	 * Current clustering method
@@ -171,17 +156,17 @@ protected:
 	/**
 	 * Do the GCA.
 	 */
-	void DoGCA(GSession* session,const R::RString& mes);
+	void DoGCA(GSession* session,const R::RString& mes,R::RCursor<cObj> Objs);
 
 	/**
 	 * Do the k-Means.
 	 */
-	void DokMeans(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups);
+	void DokMeans(GSession* session,R::RCursor<cGroup> groups,R::RCursor<cObj> Objs);
 
 	/**
 	* Make the grouping.
 	*/
-	void RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups);
+	void RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups,R::RCursor<cObj> Objs);
 
 	/**
 	 * Catch a best chromosome notification.
@@ -197,9 +182,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
+	* @param fac             Factory.
 	*/
-	static void CreateParams(R::RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destruct the GCA.

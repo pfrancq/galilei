@@ -64,11 +64,10 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
 	GAConfigDlg dlg;
-	if(dlg.Configure(params))
-			params->Apply();
+	return(dlg.Configure(fac));
 }
 
 

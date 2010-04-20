@@ -57,48 +57,90 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 //
-// GCAThreadData
+// GCAInstDoc
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAThreadData::GCAThreadData(GCAInst* owner)
-	: RThreadDataSC<GCAInst,GCAChromo,GCAThreadData,GCAGroup,GCAObj>(owner)
-{
-}
-
-
-//-----------------------------------------------------------------------------
-GCAThreadData::~GCAThreadData(void)
-{
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// GCAInst
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GCAInst::GCAInst(GSession* ses,RCursor<GCAObj> objs,RParamsSC* p,RDebug *debug,tObjType type,const R::RString& mes)
-	: RInstSC<GCAInst,GCAChromo,GCAThreadData,GCAGroup,GCAObj>(objs,p,debug),
+GCAInstDoc::GCAInstDoc(GSession* ses,RCursor<GDoc> objs,RParamsSC* p,RDebug *debug,tObjType type)
+	: RInstSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>(objs,p,debug),
 	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
 {
 	// Init measures
-	Sims=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities");
-	Agree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Agreements");
-	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Disagreements");
+	Sims=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
+	Agree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Agreements");
+	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Disagreements");
 
 	if((!Sims)||(!Agree)||(!Disagree))
 		ThrowGException(GetObjType(Type,true,true)+" are not supported");
 }
 
 
+//-----------------------------------------------------------------------------
+RGroupingHeuristic<GCAGroupDoc,GDoc,GCAChromoDoc>* GCAInstDoc::CreateHeuristic(void)
+{
+	return(new GCAHeuristicDoc(Random,Objs,Params,Debug));
+}
+
 
 //-----------------------------------------------------------------------------
-double GCAInst::GetDisagreementRatio(const GCAObj* obj1,const GCAObj* obj2) const
+const RMaxVector* GCAInstDoc::GetDisagreementRatios(const GDoc* obj) const
+{
+	const RMaxVector* Vec;
+	Disagree->Info(3,obj->GetId(),&Vec);
+	return(Vec);
+}
+
+
+//-----------------------------------------------------------------------------
+const RMaxVector* GCAInstDoc::GetAgreementRatios(const GDoc* obj) const
+{
+	const RMaxVector* Vec;
+	Agree->Info(3,obj->GetId(),&Vec);
+	return(Vec);
+}
+
+
+//-----------------------------------------------------------------------------
+const RMaxVector* GCAInstDoc::GetSims(const GDoc* obj) const
+{
+	const RMaxVector* Vec;
+	Sims->Info(3,obj->GetId(),&Vec);
+	return(Vec);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// GCAInstProfile
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GCAInstProfile::GCAInstProfile(GSession* ses,RCursor<GProfile> objs,RParamsSC* p,RDebug *debug,tObjType type)
+	: RInstSC<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>(objs,p,debug),
+	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
+{
+	// Init measures
+	Sims=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
+	Agree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Agreements");
+	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Disagreements");
+
+	if((!Sims)||(!Agree)||(!Disagree))
+		ThrowGException(GetObjType(Type,true,true)+" are not supported");
+}
+
+
+//-----------------------------------------------------------------------------
+RGroupingHeuristic<GCAGroupProfile,GProfile,GCAChromoProfile>* GCAInstProfile::CreateHeuristic(void)
+{
+	return(new GCAHeuristicProfile(Random,Objs,Params,Debug));
+}
+
+
+//-----------------------------------------------------------------------------
+/*double GCAInst::GetDisagreementRatio(const GCAObj* obj1,const GCAObj* obj2) const
 {
 	double d;
 	Disagree->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
@@ -121,10 +163,31 @@ double GCAInst::GetSim(const GCAObj* obj1,const GCAObj* obj2) const
 	double d;
 	Sims->Measure(0,obj1->GetElementId(),obj2->GetElementId(),&d);
 	return(d);
+}*/
+
+
+//-----------------------------------------------------------------------------
+const RMaxVector* GCAInstProfile::GetDisagreementRatios(const GProfile* obj) const
+{
+	const RMaxVector* Vec;
+	Disagree->Info(3,obj->GetId(),&Vec);
+	return(Vec);
 }
 
 
 //-----------------------------------------------------------------------------
-GCAInst::~GCAInst(void)
+const RMaxVector* GCAInstProfile::GetAgreementRatios(const GProfile* obj) const
 {
+	const RMaxVector* Vec;
+	Agree->Info(3,obj->GetId(),&Vec);
+	return(Vec);
+}
+
+
+//-----------------------------------------------------------------------------
+const RMaxVector* GCAInstProfile::GetSims(const GProfile* obj) const
+{
+	const RMaxVector* Vec;
+	Sims->Info(3,obj->GetId(),&Vec);
+	return(Vec);
 }

@@ -36,6 +36,7 @@
 //-----------------------------------------------------------------------------
 // include files for GCA
 #include <gcaplugin.h>
+#include <gcakmeans.h>
 using namespace GALILEI;
 
 
@@ -47,16 +48,17 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short GGA for Profiles.
 */
-class GCAGroupProfiles : public GCAPlugIn<GProfile,GCommunity>, public GGroupProfiles
+class GCAGroupProfiles : public GCAPlugIn<GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>, public GGroupProfiles
 {
 public:
 
 	/**
 	* Constructor.
+	* @param session        Session.
 	* @param f              Factory.
 	*/
-	GCAGroupProfiles(GPlugInFactory* fac)
-		: GCAPlugIn<GProfile,GCommunity>("Profiles Grouping",otProfile,otCommunity), GGroupProfiles(fac) {}
+	GCAGroupProfiles(GSession* session,GPlugInFactory* fac)
+		: GCAPlugIn<GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>("Profiles Grouping",otProfile,otCommunity), GGroupProfiles(session,fac) {}
 
 	/**
 	 * Class name.
@@ -67,7 +69,7 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void)
-	{GCAPlugIn<GProfile,GCommunity>::ApplyConfig(Factory);}
+	{GCAPlugIn<GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>::ApplyConfig(Factory);}
 
 protected:
 
@@ -79,16 +81,15 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void) {RunGrouping(Session,"Profiles",Session->GetCommunities());}
+	virtual void Run(void) {RunGrouping(Session,"Profiles",Session->GetCommunities(),Session->GetProfiles());}
 
 public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(R::RConfig* params)
-	{GCAPlugIn<GProfile,GCommunity>::CreateParams(params);}
+	static void CreateParams(GPlugInFactory* fac)
+	{GCAPlugIn<GProfile,GCommunity,GCAInstProfile,CGroupProfile,GCAGroupProfile,kMeansProfile,CGroupsProfile>::CreateParams(fac);}
 };
 
 
