@@ -61,10 +61,10 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
 	GGenericSimsDlg dlg("Similarities between profiles");
-	dlg.Configure(params);
+	return(dlg.Configure(fac));
 }
 
 

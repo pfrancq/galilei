@@ -44,6 +44,7 @@
 #include <qgmatrixmeasuredlg.h>
 #include <gmeasure.h>
 using namespace GALILEI;
+using namespace R;
 using namespace std;
 
 
@@ -63,8 +64,8 @@ public:
 
 	MyDlg(void) : QGMatrixMeasureDlg("Agreement ratios between profiles") {}
 	virtual void Panel(void);
-	virtual void Init(GPlugInFactory* params);
-	virtual void Done(GPlugInFactory* params);
+	virtual void Init(GPlugInFactory* fac);
+	virtual void Done(GPlugInFactory* fac);
 };
 
 
@@ -83,18 +84,18 @@ void MyDlg::Panel(void)
 
 
 //-----------------------------------------------------------------------------
-void MyDlg::Init(GPlugInFactory* params)
+void MyDlg::Init(GPlugInFactory* fac)
 {
-	QGMatrixMeasureDlg::Init(params);
-	MinDocs->setValue(params->GetInt("MinDocs"));
+	QGMatrixMeasureDlg::Init(fac);
+	MinDocs->setValue(fac->FindParam<RParamValue>("MinDocs")->GetInt());
 }
 
 
 //-----------------------------------------------------------------------------
-void MyDlg::Done(GPlugInFactory* params)
+void MyDlg::Done(GPlugInFactory* fac)
 {
-	params->SetUInt("MinDocs",MinDocs->value());
-	QGMatrixMeasureDlg::Done(params);
+	fac->FindParam<RParamValue>("MinDocs")->SetUInt(MinDocs->value());
+	QGMatrixMeasureDlg::Done(fac);
 }
 
 
@@ -117,11 +118,12 @@ void About(void)
 }
 
 
+
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
 	MyDlg dlg;
-	dlg.Configure(params);
+	return(dlg.Configure(fac));
 }
 
 

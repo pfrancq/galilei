@@ -136,32 +136,32 @@ void GGenericSimsDlg::Panel(void)
 
 
 //-----------------------------------------------------------------------------
-void GGenericSimsDlg::Init(GPlugInFactory* params)
+void GGenericSimsDlg::Init(GPlugInFactory* fac)
 {
-	QGMatrixMeasureDlg::Init(params);
-	SimType->setCurrentIndex(SimType->findText(ToQString(params->Get("SimType"))));
-	Factor->setValue(params->GetDouble("Factor"));
-	ContentCapacity->setValue(params->GetDouble("ContentCapacity"));
-	StructCapacity->setValue(params->GetDouble("StructCapacity"));
-	MetaCapacity->setValue(params->GetDouble("MetaCapacity"));
-	ContentStructCapacity->setValue(params->GetDouble("ContentStructCapacity"));
-	ContentMetaCapacity->setValue(params->GetDouble("ContentMetaCapacity"));
-	MetaStructCapacity->setValue(params->GetDouble("MetaStructCapacity"));
-	Transform->setChecked(params->GetBool("Transform"));
+	QGMatrixMeasureDlg::Init(fac);
+	SimType->setCurrentIndex(SimType->findText(ToQString(fac->FindParam<RParamValue>("SimType")->Get())));
+	Factor->setValue(fac->FindParam<RParamValue>("Factor")->GetDouble());
+	ContentCapacity->setValue(fac->FindParam<RParamValue>("ContentCapacity")->GetDouble());
+	StructCapacity->setValue(fac->FindParam<RParamValue>("StructCapacity")->GetDouble());
+	MetaCapacity->setValue(fac->FindParam<RParamValue>("MetaCapacity")->GetDouble());
+	ContentStructCapacity->setValue(fac->FindParam<RParamValue>("ContentStructCapacity")->GetDouble());
+	ContentMetaCapacity->setValue(fac->FindParam<RParamValue>("ContentMetaCapacity")->GetDouble());
+	MetaStructCapacity->setValue(fac->FindParam<RParamValue>("MetaStructCapacity")->GetDouble());
+	Transform->setChecked(fac->FindParam<RParamValue>("Transform")->GetBool());
 }
 
 
 //-----------------------------------------------------------------------------
-void GGenericSimsDlg::Done(GPlugInFactory* params)
+void GGenericSimsDlg::Done(GPlugInFactory* fac)
 {
-	params->Set("SimType",FromQString(SimType->currentText()));
-	params->SetDouble("Factor",Factor->value());
-	params->SetDouble("ContentCapacity",ContentCapacity->value());
-	params->SetDouble("StructCapacity",StructCapacity->value());
-	params->SetDouble("MetaCapacity",MetaCapacity->value());
-	params->SetDouble("ContentStructCapacity",ContentStructCapacity->value());
-	params->SetDouble("ContentMetaCapacity",ContentMetaCapacity->value());
-	params->SetDouble("MetaStructCapacity",MetaStructCapacity->value());
-	params->SetBool("Transform",Transform->isChecked());
-	QGMatrixMeasureDlg::Done(params);
+	fac->FindParam<RParamValue>("SimType")->Set(FromQString(SimType->currentText()));
+	fac->FindParam<RParamValue>("Factor")->SetDouble(Factor->value());
+	fac->FindParam<RParamValue>("ContentCapacity")->SetDouble(ContentCapacity->value());
+	fac->FindParam<RParamValue>("StructCapacity")->SetDouble(StructCapacity->value());
+	fac->FindParam<RParamValue>("MetaCapacity")->SetDouble(MetaCapacity->value());
+	fac->FindParam<RParamValue>("ContentStructCapacity")->SetDouble(ContentStructCapacity->value());
+	fac->FindParam<RParamValue>("ContentMetaCapacity")->SetDouble(ContentMetaCapacity->value());
+	fac->FindParam<RParamValue>("MetaStructCapacity")->SetDouble(MetaStructCapacity->value());
+	fac->FindParam<RParamValue>("Transform")->SetBool(Transform->isChecked());
+	QGMatrixMeasureDlg::Done(fac);
 }

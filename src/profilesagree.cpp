@@ -50,17 +50,21 @@ class GProfilesAgreement : public GMatrixMeasure
 {
 	size_t MinDocs;
 public:
-	GProfilesAgreement(GPlugInFactory* fac);
+	GProfilesAgreement(GSession* session,GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("GProfilesAgreement");}
 	virtual void ApplyConfig(void);
 	double Compute(void* obj1,void* obj2);
-	static void CreateParams(RConfig* params);
+	virtual size_t GetId(void* obj,bool)
+	{
+		return(static_cast<GWeightInfosObj*>(obj)->GetId());
+	}
+	static void CreateParams(GPlugInFactory* fac);
 };
 
 
 //------------------------------------------------------------------------------
-GProfilesAgreement::GProfilesAgreement(GPlugInFactory* fac)
-	: GMatrixMeasure(fac,otProfile,otProfile,true)
+GProfilesAgreement::GProfilesAgreement(GSession* session,GPlugInFactory* fac)
+	: GMatrixMeasure(session,fac,otProfile,otProfile,true)
 {
 }
 
@@ -69,7 +73,7 @@ GProfilesAgreement::GProfilesAgreement(GPlugInFactory* fac)
 void GProfilesAgreement::ApplyConfig(void)
 {
 	GMatrixMeasure::ApplyConfig();
-	MinDocs=Factory->GetUInt("MinDocs");
+	MinDocs=Factory->FindParam<RParamValue>("MinDocs")->GetUInt();
 }
 
 
@@ -81,10 +85,10 @@ double GProfilesAgreement::Compute(void* obj1,void* obj2)
 
 
 //------------------------------------------------------------------------------
-void GProfilesAgreement::CreateParams(RConfig* params)
+void GProfilesAgreement::CreateParams(GPlugInFactory* fac)
 {
-	GMatrixMeasure::CreateParams(params);
-	params->InsertParam(new RParamValue("MinDocs",7));
+	GMatrixMeasure::CreateParams(fac);
+	fac->InsertParam(new RParamValue("MinDocs",7));
 }
 
 

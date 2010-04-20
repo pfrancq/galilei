@@ -223,10 +223,10 @@ public:
 	/**
 	* Constructor of the similarities between two elements of the same type.
 	* @param fac             Factory of the plug-in.
-	 * @param lines           Type of the elements in the lines.
-	 * @param cols            Type of the elements in the columns.
+	* @param lines           Type of the elements in the lines.
+	* @param cols            Type of the elements in the columns.
 	*/
-	GGenericSims(GPlugInFactory* fac,tObjType lines,tObjType cols);
+	GGenericSims(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols);
 
 	/**
 	 * Virtual method inherits from R::RObject and that must be re-implemented
@@ -247,16 +247,9 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	 * Connect to the session.
-	 * * @param session        Session.
+	 * Initialize the measure.
 	 */
-	virtual void Connect(GSession* session);
-
-	/**
-	 * Disconnect from the session
-	 * @param session        Session.
-	 */
-	virtual void Disconnect(GSession* session);
+	virtual void Init(void);
 
 	/**
 	 * @return the inverse factor of a given concept. If the elements in the
@@ -303,12 +296,20 @@ public:
 	 * Compute the similarity between two objects that must inherits from the
 	 * class GWeightInfos.
 	 */
-	double Compute(void* obj1,void* obj2);
+	virtual double Compute(void* obj1,void* obj2);
+
+	/**
+	 * Get the identifier of an object of a line or a column.
+	 * @param obj            Pointer to the object.
+	 * @param line           Object in a line ?
+	 * @return the identifier.
+	 */
+	virtual size_t GetId(void* obj,bool line);
 
 	/**
 	 * Create the parameters.
 	 */
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	friend class GSimType;
 	friend class GSimTypeCosinus;

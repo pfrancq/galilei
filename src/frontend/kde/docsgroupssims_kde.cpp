@@ -48,8 +48,8 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "docsgroupssims", 0, ki18n("Documents/Groups Similarities"),
-		"1.0", ki18n("Method used to compute the similarities between groups and documents."), KAboutData::License_GPL,
+	KAboutData aboutData( "docsgroupssims", 0, ki18n("Documents/Communities Similarities"),
+		"1.0", ki18n("Method used to compute the similarities between communities and documents."), KAboutData::License_GPL,
 		ki18n("(C) 2003-2010 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
@@ -59,10 +59,10 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
 	GGenericSimsDlg dlg("Similarities between documents and communities");
-	dlg.Configure(params);
+	return(dlg.Configure(fac));
 }
 
 

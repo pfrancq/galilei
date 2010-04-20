@@ -76,8 +76,8 @@ public:
 
 	GGenericSimsDlg(const QString& title);
 	virtual void Panel(void);
-	virtual void Init(GPlugInFactory* params);
-	virtual void Done(GPlugInFactory* params);
+	virtual void Init(GPlugInFactory* fac);
+	virtual void Done(GPlugInFactory* fac);
 	void AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLayout* grid,int row,int col);
 };
 

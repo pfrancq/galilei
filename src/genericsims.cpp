@@ -247,8 +247,8 @@ void GSimTypeXMLIndex::Done(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GGenericSims::GGenericSims(GPlugInFactory* fac,tObjType lines,tObjType cols)
-	: GMatrixMeasure(fac,lines,cols,lines==cols), vec1(0), vec2(0), Types(30), Valid(30)
+GGenericSims::GGenericSims(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols)
+	: GMatrixMeasure(session,fac,lines,cols,lines==cols), vec1(0), vec2(0), Types(30), Valid(30)
 {
 }
 
@@ -264,15 +264,15 @@ RString GGenericSims::GetFilesName(void) const
 void GGenericSims::ApplyConfig(void)
 {
 	GMatrixMeasure::ApplyConfig();
-	RString type=Factory->Get("SimType");
-	Factor=Factory->GetDouble("Factor");
-	ContentCapacity=Factory->GetDouble("ContentCapacity");
-	StructCapacity=Factory->GetDouble("StructCapacity");
-	MetaCapacity=Factory->GetDouble("MetaCapacity");
-	ContentStructCapacity=Factory->GetDouble("ContentStructCapacity");
-	ContentMetaCapacity=Factory->GetDouble("ContentMetaCapacity");
-	MetaStructCapacity=Factory->GetDouble("MetaStructCapacity");
-	Transform=Factory->GetBool("Transform");
+	RString type=Factory->FindParam<RParamValue>("SimType")->Get();
+	Factor=Factory->FindParam<RParamValue>("Factor")->GetDouble();
+	ContentCapacity=Factory->FindParam<RParamValue>("ContentCapacity")->GetDouble();
+	StructCapacity=Factory->FindParam<RParamValue>("StructCapacity")->GetDouble();
+	MetaCapacity=Factory->FindParam<RParamValue>("MetaCapacity")->GetDouble();
+	ContentStructCapacity=Factory->FindParam<RParamValue>("ContentStructCapacity")->GetDouble();
+	ContentMetaCapacity=Factory->FindParam<RParamValue>("ContentMetaCapacity")->GetDouble();
+	MetaStructCapacity=Factory->FindParam<RParamValue>("MetaStructCapacity")->GetDouble();
+	Transform=Factory->FindParam<RParamValue>("Transform")->GetBool();
 	tSimType sim(Undefined);
 	if(type=="Product")
 		sim=Product;
@@ -293,10 +293,11 @@ void GGenericSims::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GGenericSims::Connect(GSession* session)
+void GGenericSims::Init(void)
 {
+	GMatrixMeasure::Init();
+
 	GSimType* ptr;
-	GMatrixMeasure::Connect(session);
 	MetaSpace=Session->GetConceptType("XMLIndex",false);
 	StructSpace=Session->GetConceptType("XMLStruct",false);
 	RCursor<GConceptType> Cur(Session->GetConceptTypes());
@@ -321,14 +322,6 @@ void GGenericSims::Connect(GSession* session)
 	}
 	CurLang=0;
 	CurType=0;
-}
-
-
-//------------------------------------------------------------------------------
-void GGenericSims::Disconnect(GSession* session)
-{
-	Types.Clear();
-	GMatrixMeasure::Disconnect(session);
 }
 
 
@@ -542,6 +535,13 @@ double GGenericSims::Compute(void* obj1,void* obj2)
 
 
 //------------------------------------------------------------------------------
+size_t GGenericSims::GetId(void* obj,bool)
+{
+	return(static_cast<GWeightInfosObj*>(obj)->GetId());
+}
+
+
+//------------------------------------------------------------------------------
 double GGenericSims::GetIF(GConcept* concept)
 {
 	double IF(concept->GetIF(GetLinesType()));
@@ -552,16 +552,16 @@ double GGenericSims::GetIF(GConcept* concept)
 
 
 //------------------------------------------------------------------------------
-void GGenericSims::CreateParams(RConfig* params)
+void GGenericSims::CreateParams(GPlugInFactory* fac)
 {
-	GMatrixMeasure::CreateParams(params);
-	params->InsertParam(new RParamValue("SimType","Integral of Choquet"));
-	params->InsertParam(new RParamValue("Factor",0.01));
-	params->InsertParam(new RParamValue("ContentCapacity",0.01));
-	params->InsertParam(new RParamValue("StructCapacity",0.01));
-	params->InsertParam(new RParamValue("MetaCapacity",0.01));
-	params->InsertParam(new RParamValue("ContentStructCapacity",0.01));
-	params->InsertParam(new RParamValue("ContentMetaCapacity",0.01));
-	params->InsertParam(new RParamValue("MetaStructCapacity",0.01));
-	params->InsertParam(new RParamValue("Transform",false));
+	GMatrixMeasure::CreateParams(fac);
+	fac->InsertParam(new RParamValue("SimType","Integral of Choquet"));
+	fac->InsertParam(new RParamValue("Factor",0.01));
+	fac->InsertParam(new RParamValue("ContentCapacity",0.01));
+	fac->InsertParam(new RParamValue("StructCapacity",0.01));
+	fac->InsertParam(new RParamValue("MetaCapacity",0.01));
+	fac->InsertParam(new RParamValue("ContentStructCapacity",0.01));
+	fac->InsertParam(new RParamValue("ContentMetaCapacity",0.01));
+	fac->InsertParam(new RParamValue("MetaStructCapacity",0.01));
+	fac->InsertParam(new RParamValue("Transform",false));
 }
