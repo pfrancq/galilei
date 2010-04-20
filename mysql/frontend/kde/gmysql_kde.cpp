@@ -91,31 +91,33 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
 	Config dlg;
 
-	dlg.txtDb->setText(ToQString(params->Get("Database")));
-	dlg.txtLogin->setText(ToQString(params->Get("User")));
-	dlg.txtPwd->setText(ToQString(params->Get("Password")));
-	dlg.txtHost->setText(ToQString(params->Get("Host")));
-	dlg.cbEncoding->setCurrentIndex(dlg.cbEncoding->findText(ToQString(params->Get("Encoding"))));
-	dlg.Filter->setDate(QDate::fromString(ToQString(params->Get("Filter")),Qt::ISODate));
-	dlg.Modified->setChecked(!params->GetBool("All"));
-	dlg.Filtering->setChecked(params->GetBool("Filtering"));
-	dlg.Filter->setEnabled(params->GetBool("Filtering"));
-	dlg.groupBox1_2->setEnabled(params->GetBool("Filtering"));
+	dlg.txtDb->setText(ToQString(fac->FindParam<RParamValue>("Database")->Get()));
+	dlg.txtLogin->setText(ToQString(fac->FindParam<RParamValue>("User")->Get()));
+	dlg.txtPwd->setText(ToQString(fac->FindParam<RParamValue>("Password")->Get()));
+	dlg.txtHost->setText(ToQString(fac->FindParam<RParamValue>("Host")->Get()));
+	dlg.cbEncoding->setCurrentIndex(dlg.cbEncoding->findText(ToQString(fac->FindParam<RParamValue>("Encoding")->Get())));
+	dlg.Filter->setDate(QDate::fromString(ToQString(fac->FindParam<RParamValue>("Filter")->Get()),Qt::ISODate));
+	dlg.Modified->setChecked(!fac->FindParam<RParamValue>("All")->GetBool());
+	dlg.Filtering->setChecked(fac->FindParam<RParamValue>("Filtering")->GetBool());
+	dlg.Filter->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
+	dlg.groupBox1_2->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
 	if(dlg.exec())
 	{
-		params->Set("Database",FromQString(dlg.txtDb->text()));
-		params->Set("Host",FromQString(dlg.txtHost->text()));
-		params->Set("User",FromQString(dlg.txtLogin->text()));
-		params->Set("Password",FromQString(dlg.txtPwd->text()));
-		params->Set("Encoding",FromQString(dlg.cbEncoding->currentText()));
-		params->SetBool("All",!dlg.Modified->isChecked());
-		params->Set("Filter",FromQString(dlg.Filter->date().toString(Qt::ISODate)));
-		params->SetBool("Filtering",dlg.Filtering->isChecked());
+		fac->FindParam<RParamValue>("Database")->Set(FromQString(dlg.txtDb->text()));
+		fac->FindParam<RParamValue>("Host")->Set(FromQString(dlg.txtHost->text()));
+		fac->FindParam<RParamValue>("User")->Set(FromQString(dlg.txtLogin->text()));
+		fac->FindParam<RParamValue>("Password")->Set(FromQString(dlg.txtPwd->text()));
+		fac->FindParam<RParamValue>("Encoding")->Set(FromQString(dlg.cbEncoding->currentText()));
+		fac->FindParam<RParamValue>("All")->SetBool(!dlg.Modified->isChecked());
+		fac->FindParam<RParamValue>("Filter")->Set(FromQString(dlg.Filter->date().toString(Qt::ISODate)));
+		fac->FindParam<RParamValue>("Filtering")->SetBool(dlg.Filtering->isChecked());
+		return(true);
 	}
+	return(false);
 }
 
 //------------------------------------------------------------------------------

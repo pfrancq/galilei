@@ -169,15 +169,9 @@ public:
 	// @{
 
 	/**
-	* Get a string representing the world stored. This string must be a valid
-	* directory name since it is used everywhere.
-	*/
-	virtual R::RString GetWorld(void) const;
-
-	/**
 	* Initialize the access to the storage.
 	*/
-	virtual void InitAccess(void);
+	virtual void Init(void);
 
 	/**
 	* Configurations were applied from the factory.
@@ -560,9 +554,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
+	* @param fac             Factory.
 	*/
-	static void CreateParams(R::RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destruct.

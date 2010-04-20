@@ -162,14 +162,7 @@ double GStorageMySQL::atof(const R::RString& str)
 //------------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-RString GStorageMySQL::GetWorld(void) const
-{
-	return(Database);
-}
-
-
-//-----------------------------------------------------------------------------
-void GStorageMySQL::InitAccess(void)
+void GStorageMySQL::Init(void)
 {
 	try
 	{
@@ -186,14 +179,14 @@ void GStorageMySQL::InitAccess(void)
 //-----------------------------------------------------------------------------
 void GStorageMySQL::ApplyConfig(void)
 {
-	Host=Factory->Get("Host");
-	User=Factory->Get("User");
-	Password=Factory->Get("Password");
-	Database=Factory->Get("Database");
-	Filter.SetDate(Factory->Get("Filter"));
-	LoadAll=Factory->GetBool("All");
-	Encoding=Factory->Get("Encoding").Latin1();
-	Filtering=Factory->GetBool("Filtering");
+	Host=Factory->FindParam<RParamValue>("Host")->Get();
+	User=Factory->FindParam<RParamValue>("User")->Get();
+	Password=Factory->FindParam<RParamValue>("Password")->Get();
+	Database=Factory->FindParam<RParamValue>("Database")->Get();
+	Filter.SetDate(Factory->FindParam<RParamValue>("Filter")->Get());
+	LoadAll=Factory->FindParam<RParamValue>("All")->GetBool();
+	Encoding=Factory->FindParam<RParamValue>("Encoding")->Get().Latin1();
+	Filtering=Factory->FindParam<RParamValue>("Filtering")->GetBool();
 	GStorage::ApplyConfig();
 }
 
@@ -2007,17 +2000,16 @@ void GStorageMySQL::LoadSugs(GSugs& sugs)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::CreateParams(RConfig* params)
+void GStorageMySQL::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("Host","127.0.0.1"));
-	params->InsertParam(new RParamValue("User","root"));
-	params->InsertParam(new RParamValue("Password",""));
-	params->InsertParam(new RParamValue("Database",""));
-	params->InsertParam(new RParamValue("Filtering",false));
-	params->InsertParam(new RParamValue("Filter",""));
-	params->InsertParam(new RParamValue("Encoding","Latin1"));
-	params->InsertParam(new RParamValue("Dir","/var/galilei"));
-	params->InsertParam(new RParamValue("All",true));
+	fac->InsertParam(new RParamValue("Host","127.0.0.1"));
+	fac->InsertParam(new RParamValue("User","root"));
+	fac->InsertParam(new RParamValue("Password",""));
+	fac->InsertParam(new RParamValue("Database",""));
+	fac->InsertParam(new RParamValue("Filtering",false));
+	fac->InsertParam(new RParamValue("Filter",""));
+	fac->InsertParam(new RParamValue("Encoding","utf8"));
+	fac->InsertParam(new RParamValue("All",true));
 }
 
 
