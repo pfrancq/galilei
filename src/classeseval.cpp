@@ -77,17 +77,16 @@ class ClassesEval : public R::RObject, public GMeasure
 	RContainer<ClassSubject,true,false> LeafNodes;
 
 public:
-	ClassesEval(GPlugInFactory* fac);
+	ClassesEval(GSession* session,GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("ClassesEval");}
 	void Handle(const R::RNotification& notification);
 
 	void Dirty(void);
 
 	/**
-	* Connect to the session.
-	* @param session         Pointer to the session.
+	* Initialize the measure.
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Init(void);
 
 	/**
 	* This methods returns zero.
@@ -111,13 +110,13 @@ public:
 	virtual void Info(size_t measure,...);
 
 	void ComputeRankTree(void);
-	static void CreateParams(R::RConfig*) {}
+	static void CreateParams(GPlugInFactory*) {}
 };
 
 
 //------------------------------------------------------------------------------
-ClassesEval::ClassesEval(GPlugInFactory* fac)
-	: GMeasure(fac), LeafNodes(3000)
+ClassesEval::ClassesEval(GSession* session,GPlugInFactory* fac)
+	: GMeasure(session,fac), LeafNodes(3000)
 {
 	InsertObserver(HANDLER(ClassesEval::Handle),"ObjectChanged");
 }
@@ -140,9 +139,8 @@ void ClassesEval::Dirty(void)
 
 
 //------------------------------------------------------------------------------
-void ClassesEval::Connect(GSession* session)
+void ClassesEval::Init(void)
 {
-	GMeasure::Connect(session);
 	Dirty();
 }
 

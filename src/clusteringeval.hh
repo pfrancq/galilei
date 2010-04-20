@@ -36,8 +36,8 @@
 
 //-----------------------------------------------------------------------------
 template<class cGroup,class cObj>
-	ClusteringEval<cGroup,cObj>::ClusteringEval(GPlugInFactory* fac,tObjType grouptype,tObjType objtype)
-		: GMeasure(fac), GroupType(grouptype), ObjType(objtype), ClustersScore(100,50)
+	ClusteringEval<cGroup,cObj>::ClusteringEval(GSession* session,GPlugInFactory* fac,tObjType grouptype,tObjType objtype)
+		: GMeasure(session,fac), GroupType(grouptype), ObjType(objtype), ClustersScore(100,50)
 {
 }
 
@@ -54,9 +54,8 @@ template<class cGroup,class cObj>
 
 //------------------------------------------------------------------------------
 template<class cGroup,class cObj>
-	void ClusteringEval<cGroup,cObj>::Connect(GSession* session)
+	void ClusteringEval<cGroup,cObj>::Init(void)
 {
-	GMeasure::Connect(session);
 	Dirty();
 }
 

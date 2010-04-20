@@ -46,17 +46,17 @@
 class CommunitiesEval : public ClusteringEval<GCommunity,GProfile>
 {
 public:
-	CommunitiesEval(GPlugInFactory* fac);
+	CommunitiesEval(GSession* session,GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("CommunitiesEval");}
 	void Handle(const R::RNotification& notification);
-	static void CreateParams(R::RConfig*) {}
+	static void CreateParams(GPlugInFactory*) {}
 	virtual RCursor<GCommunity> GetClusters(void) {return(Session->GetCommunities());}
 };
 
 
 //------------------------------------------------------------------------------
-CommunitiesEval::CommunitiesEval(GPlugInFactory* fac)
-	: ClusteringEval<GCommunity,GProfile>(fac,otCommunity,otProfile)
+CommunitiesEval::CommunitiesEval(GSession* session,GPlugInFactory* fac)
+	: ClusteringEval<GCommunity,GProfile>(session,fac,otCommunity,otProfile)
 {
 	InsertObserver(HANDLER(CommunitiesEval::Handle),"ObjectChanged");
 }

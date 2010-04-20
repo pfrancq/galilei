@@ -46,19 +46,19 @@
 class TopicsEval : public ClusteringEval<GTopic,GDoc>
 {
 public:
-	TopicsEval(GPlugInFactory* fac);
+	TopicsEval(GSession* session,GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("TopicsEval");}
 	virtual bool IsObjAloneInIdealGroup(GDoc* obj);
 	virtual void ComputeBestLocalRecallPrecision(RCursor<GDoc>& objs,ClusterScore<GTopic>* grp,size_t ingroup);
 	void Handle(const R::RNotification& notification);
-	static void CreateParams(R::RConfig*) {}
+	static void CreateParams(GPlugInFactory*) {}
 	virtual RCursor<GTopic> GetClusters(void) {return(Session->GetTopics());}
 };
 
 
 //------------------------------------------------------------------------------
-TopicsEval::TopicsEval(GPlugInFactory* fac)
-	: ClusteringEval<GTopic,GDoc>(fac,otTopic,otDoc)
+TopicsEval::TopicsEval(GSession* session,GPlugInFactory* fac)
+	: ClusteringEval<GTopic,GDoc>(session,fac,otTopic,otDoc)
 {
 	InsertObserver(HANDLER(TopicsEval::Handle),"ObjectChanged");
 }

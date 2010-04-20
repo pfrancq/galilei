@@ -154,11 +154,12 @@ public:
 
 	/**
 	 * Constructor of the measure.
+	 * @param session        Session.
 	 * @param fac            Factory.
 	 * @param grouptype      Type of the clusters.
 	 * @param objtype        Type of the objects grouped.
 	 */
-	ClusteringEval(GPlugInFactory* fac,tObjType grouptype,tObjType objtype);
+	ClusteringEval(GSession* session,GPlugInFactory* fac,tObjType grouptype,tObjType objtype);
 
 	/**
 	 * Virtual method inherits from R::RObject and that must be re-implemented
@@ -173,12 +174,10 @@ public:
 	void Dirty(void);
 
 	/**
-	* Connect to the session.
-	*
-	* The storage of the matrix is opened (if necessary).
-	* @param session         Pointer to the session.
+	* Initialize the plug-in. The storage of the matrix is opened (if
+	* necessary).
 	*/
-	virtual void Connect(GSession* session);
+	virtual void Init(void);
 
 	/**
 	* Access to several information related to the evaluation of a given
