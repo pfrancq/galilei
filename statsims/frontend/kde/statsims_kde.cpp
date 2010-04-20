@@ -86,41 +86,44 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
  	Config dlg;
 
-	dlg.Docs->setChecked(params->GetBool("Docs"));
-	dlg.ProfDoc->setChecked(params->GetBool("ProfDoc"));
-	dlg.GroupDoc->setChecked(params->GetBool("GroupDoc"));
-	dlg.Profiles->setChecked(params->GetBool("Profiles"));
-	dlg.SameDocProf->setChecked(params->GetBool("SameDocProf"));
-	dlg.GroupProf->setChecked(params->GetBool("GroupProf"));
-	dlg.SaveResults->setChecked(params->GetBool("SaveResults"));
-	dlg.Results->setUrl(ToQString(params->Get("Results")));
+	dlg.Docs->setChecked(fac->FindParam<RParamValue>("Docs")->GetBool());
+	dlg.ProfDoc->setChecked(fac->FindParam<RParamValue>("ProfDoc")->GetBool());
+	dlg.GroupDoc->setChecked(fac->FindParam<RParamValue>("GroupDoc")->GetBool());
+	dlg.Profiles->setChecked(fac->FindParam<RParamValue>("Profiles")->GetBool());
+	dlg.SameDocProf->setChecked(fac->FindParam<RParamValue>("SameDocProf")->GetBool());
+	dlg.GroupProf->setChecked(fac->FindParam<RParamValue>("GroupProf")->GetBool());
+	dlg.SaveResults->setChecked(fac->FindParam<RParamValue>("SaveResults")->GetBool());
+	dlg.Results->setUrl(ToQString(fac->FindParam<RParamValue>("Results")->Get()));
 	dlg.Results->setEnabled(dlg.SaveResults->isChecked());
-	dlg.ExportDocsSims->setChecked(params->GetBool("ExportDocsSims"));
-	dlg.DocsSims->setUrl(ToQString(params->Get("DocsSims")));
+	dlg.ExportDocsSims->setChecked(fac->FindParam<RParamValue>("ExportDocsSims")->GetBool());
+	dlg.DocsSims->setUrl(ToQString(fac->FindParam<RParamValue>("DocsSims")->Get()));
 	dlg.DocsSims->setEnabled(dlg.ExportDocsSims->isChecked());
-	dlg.ExportDocsIncs->setChecked(params->GetBool("ExportDocsIncs"));
-	dlg.DocsIncs->setUrl(ToQString(params->Get("DocsIncs")));
+	dlg.ExportDocsIncs->setChecked(fac->FindParam<RParamValue>("ExportDocsIncs")->GetBool());
+	dlg.DocsIncs->setUrl(ToQString(fac->FindParam<RParamValue>("DocsIncs")->Get()));
 	dlg.DocsIncs->setEnabled(dlg.ExportDocsIncs->isChecked());
+	dlg.MeasureType->setCurrentIndex(dlg.MeasureType->findText(ToQString(fac->FindParam<RParamValue>("MeasureType")->Get())));
 	if(dlg.exec())
 	{
-		params->SetBool("Docs",dlg.Docs->isChecked());
-		params->SetBool("ProfDoc",dlg.ProfDoc->isChecked());
-		params->SetBool("GroupDoc",dlg.GroupDoc->isChecked());
-		params->SetBool("Profiles",dlg.Profiles->isChecked());
-		params->SetBool("SameDocProf",dlg.SameDocProf->isChecked());
-		params->SetBool("GroupProf",dlg.GroupProf->isChecked());
-		params->SetBool("SaveResults",dlg.SaveResults->isChecked());
-		params->Set("Results",FromQString(dlg.Results->url().url()));
-		params->SetBool("ExportDocsSims",dlg.ExportDocsSims->isChecked());
-		params->Set("DocsSims",FromQString(dlg.DocsSims->url().url()));
-		params->SetBool("ExportDocsIncs",dlg.ExportDocsIncs->isChecked());
-		params->Set("DocsIncs",FromQString(dlg.DocsIncs->url().url()));
- 		params->Apply();
+		fac->FindParam<RParamValue>("Docs")->SetBool(dlg.Docs->isChecked());
+		fac->FindParam<RParamValue>("ProfDoc")->SetBool(dlg.ProfDoc->isChecked());
+		fac->FindParam<RParamValue>("GroupDoc")->SetBool(dlg.GroupDoc->isChecked());
+		fac->FindParam<RParamValue>("Profiles")->SetBool(dlg.Profiles->isChecked());
+		fac->FindParam<RParamValue>("SameDocProf")->SetBool(dlg.SameDocProf->isChecked());
+		fac->FindParam<RParamValue>("GroupProf")->SetBool(dlg.GroupProf->isChecked());
+		fac->FindParam<RParamValue>("SaveResults")->SetBool(dlg.SaveResults->isChecked());
+		fac->FindParam<RParamValue>("Results")->Set(FromQString(dlg.Results->url().url()));
+		fac->FindParam<RParamValue>("ExportDocsSims")->SetBool(dlg.ExportDocsSims->isChecked());
+		fac->FindParam<RParamValue>("DocsSims")->Set(FromQString(dlg.DocsSims->url().url()));
+		fac->FindParam<RParamValue>("ExportDocsIncs")->SetBool(dlg.ExportDocsIncs->isChecked());
+		fac->FindParam<RParamValue>("DocsIncs")->Set(FromQString(dlg.DocsIncs->url().url()));
+		fac->FindParam<RParamValue>("MeasureType")->Set(FromQString(dlg.MeasureType->currentText()));
+		return(true);
  	}
+	return(false);
 }
 
 

@@ -33,7 +33,8 @@
 #include <rcursor.h>
 #include <gcommunity.h>
 #include <ggalileiapp.h>
-#include <gstatscalc.h>
+#include <statsims.h>
+#include <rmaxvector.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -160,6 +161,12 @@ public:
 	 * Cursor over the first type of objects.
 	 * @param sub            Subject.
 	 */
+	virtual R::RCursor<E1> GetE1Cursor(void)=0;
+
+	/**
+	 * Cursor over the first type of objects.
+	 * @param sub            Subject.
+	 */
 	virtual R::RCursor<E1> GetE1Cursor(GSubject* sub)=0;
 
 	/**
@@ -168,17 +175,27 @@ public:
 	 */
 	virtual R::RCursor<E2> GetE2Cursor(GSubject* sub)=0;
 
-	/**
-	* Compute the similarities statistics.
-	*/
-	void Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag);
-
-	void AnalyzeObjs(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* parent,size_t id1,size_t id2);
+	void AnalyzeObjs(GStatsSims* calc,RXMLStruct* xml,RXMLTag* parent,size_t id1,size_t id2);
 
 	/**
 	 * Compute the similarities for a given subject.
 	 */
-	void ComputeSubject(GStatsCalc* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent);
+	void ComputeSubject(GStatsSims* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent);
+
+	/**
+	* Compute the similarities statistics.
+	*/
+	void RunComplete(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag);
+
+	/**
+	* Compute the similarities statistics.
+	*/
+	void RunNearestNeighbors(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag);
+
+	/**
+	* Compute the similarities statistics.
+	*/
+	void Run(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag);
 
 	/**
 	* Destruct.
@@ -206,7 +223,7 @@ template<class E1,class E2>
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::AnalyzeObjs(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* parent,size_t id1,size_t id2)
+	void GStatSimElements<E1,E2>::AnalyzeObjs(GStatsSims* calc,RXMLStruct* xml,RXMLTag* parent,size_t id1,size_t id2)
 {
 	GWeightInfosObj* Obj1(static_cast<GWeightInfosObj*>(Session->GetElement(ObjType1,id1)));
 	GWeightInfosObj* Obj2(static_cast<GWeightInfosObj*>(Session->GetElement(ObjType2,id2)));
@@ -248,7 +265,7 @@ template<class E1,class E2>
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::ComputeSubject(GStatsCalc* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent)
+	void GStatSimElements<E1,E2>::ComputeSubject(GStatsSims* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent)
 {
 	double SimIntra(0.0);         // Intra-similarity of the cluster
 	double SimExtra(0.0);         // Extra-similarity of the cluster
@@ -454,10 +471,9 @@ template<class E1,class E2>
 		xml->DeleteTag(Tag);
 }
 
-
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
+	void GStatSimElements<E1,E2>::RunComplete(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag)
 {
 	// Initialization
 	Neg=false;
@@ -567,4 +583,230 @@ template<class E1,class E2>
 			(*Results)<<"--------------"<<endl;
 		}
 	}
+}
+
+
+//------------------------------------------------------------------------------
+template<class E1,class E2>
+	void GStatSimElements<E1,E2>::RunNearestNeighbors(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag)
+{
+	// Global statistics
+	size_t NbLines(0);            // Number of "lines" elements.
+	double AvgIntra(0.0);         // Average percentage of nearest neighbors of the same subject.
+	double AvgInter(0.0);         // Average percentage of nearest neighbors of different subjects.
+	double AvgCols(0.0);          // Average number of nearest neighbors.
+	double AvgOverlap(0.0);       // Average overlap of the nearest neighbors between the elements of the same subject.
+	double AvgIntraOverlap(0.0);  // Average overlap of the nearest neighbors of a given subject between the elements of that subject.
+	bool Print(false);
+	RNumContainer<size_t,true> Neigbors(1000);
+
+	R::RCursor<GSubject> Sub(Session->GetSubjects());
+	for(Sub.Start();!Sub.End();Sub.Next())
+	{
+		// Local statistics
+		size_t LocalNbLines(0);          // Number of "lines" elements in Sub().
+		double LocalAvgIntra(0.0);       // Average percentage of nearest neighbors of in Sub().
+		double LocalAvgInter(0.0);       // Average percentage of nearest neighbors not in Sub().
+		double LocalAvgCols(0.0);        // Average number of nearest neighbors in Sub().
+		double LocalOverlap(0.0);        // Average overlap of the nearest neighbors between the elements in Sub().
+		double LocalIntraOverlap(0.0);   // Average overlap of the nearest neighbors in Sub() between the elements in Sub().
+
+		// Go through each element of Sub()
+		R::RCursor<E1> Lines(GetE1Cursor(Sub()));
+		for(Lines.Start();!Lines.End();Lines.Next())
+		{
+			// Increment the number of elements
+			NbLines++;
+			LocalNbLines++;
+
+			// Initialize the values
+			size_t NbCols(0);          // Number of nearest neighbors.
+			size_t Intra(0);           // Number of nearest neighbors in Sub().
+			size_t Inter(0);           // Number of nearest neighbors not in Sub().
+			double Overlap(0.0);       // Overlap of nearest neighbors in Lines() with the other elements of Sub()
+			double IntraOverlap(0.0);  // Overlap of nearest neighbors in Sub() in Lines() with the other elements of Sub()
+			Neigbors.Clear();
+			Neigbors.Insert(Lines()->GetId()); // The element is it own nearest neighbor for the overlap computing
+
+			// Compute the intra and inter of the nearest neighbors
+			if(Print)
+				cout<<Lines()->GetName()<<endl;
+			const RMaxVector* Vec;
+			Measure->Info(3,Lines()->GetId(),&Vec);
+			RCursor<RMaxValue> Cur(*Vec);
+			for(Cur.Start();!Cur.End();Cur.Next())
+			{
+				NbCols++;  // Increase the number of nearest neighbors
+
+				// Get the subject of Cur()
+				E2* Col(static_cast<E2*>(Session->GetElement(ObjType2,Cur()->Id)));
+				const GSubject* Subject2(Session->GetIdealGroup(Col));
+
+				if(Print)
+					cout<<"  "<<Col->GetName()<<endl;
+
+				if(Sub()==Subject2)
+					Intra++;
+				else
+					Inter++;
+
+				Neigbors.Insert(Cur()->Id);
+			}
+
+			// Compute overlap
+			size_t NbOtherLines(0);
+			size_t NbMaxOverlap(Neigbors.GetNb());
+			if(!NbMaxOverlap)
+				continue;
+			R::RCursor<E1> OtherLines(GetE1Cursor(Sub()));
+			for(OtherLines.Start();!OtherLines.End();OtherLines.Next())
+			{
+				if(Lines()==OtherLines())
+					continue;
+
+				NbOtherLines++;
+
+				size_t LocalOverlap(0);
+				size_t LocalIntraOverlap(0);
+
+				if(Neigbors.IsIn(OtherLines()->GetId()))
+				{
+					LocalOverlap++;
+					LocalIntraOverlap++;
+				}
+
+				const RMaxVector* Vec2;
+				Measure->Info(3,OtherLines()->GetId(),&Vec2);
+				RCursor<RMaxValue> Cur2(*Vec2);
+				for(Cur2.Start();!Cur2.End();Cur2.Next())
+				{
+					// Verify if the nearest neighbor of OtherLines() is in Lines()
+					if(!Neigbors.IsIn(Cur2()->Id))
+						continue;
+
+					LocalOverlap++;  // One common nearest neighbor
+
+					// Get the subject of Cur2()
+					E2* Col(static_cast<E2*>(Session->GetElement(ObjType2,Cur2()->Id)));
+					const GSubject* Subject2(Session->GetIdealGroup(Col));
+					if(Subject2==Sub())
+						LocalIntraOverlap++;
+				}
+				if((LocalOverlap>NbMaxOverlap)||(LocalIntraOverlap>NbMaxOverlap))
+					cout<<"Problem"<<endl;
+				Overlap+=static_cast<double>(LocalOverlap)/static_cast<double>(NbMaxOverlap);
+				IntraOverlap+=static_cast<double>(LocalIntraOverlap)/static_cast<double>(NbMaxOverlap);
+			}
+
+
+			if(Print)
+			{
+				cout<<"AvgIntra"<<static_cast<double>(Intra)/static_cast<double>(NbCols)<<endl;
+				cout<<"AvgInter"<<static_cast<double>(Inter)/static_cast<double>(NbCols)<<endl;
+			}
+			Print=false;
+
+			if(NbCols)
+			{
+				AvgIntra+=static_cast<double>(Intra)/static_cast<double>(NbCols);
+				AvgInter+=static_cast<double>(Inter)/static_cast<double>(NbCols);
+				AvgCols+=static_cast<double>(NbCols);
+				LocalAvgIntra+=static_cast<double>(Intra)/static_cast<double>(NbCols);
+				LocalAvgInter+=static_cast<double>(Inter)/static_cast<double>(NbCols);
+				LocalAvgCols+=static_cast<double>(NbCols);
+			}
+			if(NbOtherLines)
+			{
+				if((Overlap>NbOtherLines)||(IntraOverlap>NbOtherLines))
+					cout<<"Problem"<<endl;
+				AvgOverlap+=Overlap/static_cast<double>(NbOtherLines);
+				AvgIntraOverlap+=IntraOverlap/static_cast<double>(NbOtherLines);
+				LocalOverlap+=Overlap/static_cast<double>(NbOtherLines);
+				LocalIntraOverlap+=IntraOverlap/static_cast<double>(NbOtherLines);
+			}
+		}
+
+		if(LocalNbLines)
+		{
+			LocalAvgIntra/=static_cast<double>(LocalNbLines);
+			LocalAvgInter/=static_cast<double>(LocalNbLines);
+			LocalAvgCols/=static_cast<double>(LocalNbLines);
+			LocalOverlap/=static_cast<double>(LocalNbLines);
+			LocalIntraOverlap/=static_cast<double>(LocalNbLines);
+		}
+
+		RXMLTag* Tag=new RXMLTag(Sub()->GetName());
+		xml->AddTag(tag,Tag);
+		calc->AddTag(xml,Tag,"Mean Intra (%)",LocalAvgIntra*100.0,"%3.2f");
+		calc->AddTag(xml,Tag,"Mean Inter (%)",LocalAvgInter*100.0,"%3.2f");
+		calc->AddTag(xml,Tag,"Mean Overlap (%)",LocalOverlap*100.0,"%3.2f");
+		calc->AddTag(xml,Tag,"Mean Intra Overlap (%)",LocalIntraOverlap*100.0,"%3.2f");
+		calc->AddTag(xml,Tag,"Mean Nearest Neighbors",LocalAvgCols,"%3.2f");
+
+		// File
+		if(Results)
+		{
+			if(WriteTitle)
+			{
+				RString n1("Name");         n1.SetLen(25," ");
+				RString n2("Intra (%)");    n2.SetLen(15," ");
+				RString n3("Inter (%)");    n3.SetLen(15," ");
+				RString n4("Overlap (%)");  n4.SetLen(15," ");
+				RString n5("LOverlap (%)"); n5.SetLen(15," ");
+				RString n6("Nb NN");        n6.SetLen(15," ");
+				(*Results)<<n1+n2+n3+n4+n5+n6<<endl;
+				WriteTitle=false;
+			}
+
+			RString n1(Sub()->GetName());                                 n1.SetLen(25," ");
+			RString n2(RString::Number(LocalAvgIntra*100.0,"%3.2f"));     n2.SetLen(15," ");
+			RString n3(RString::Number(LocalAvgInter*100.0,"%3.2f"));     n3.SetLen(15," ");
+			RString n4(RString::Number(LocalOverlap*100.0,"%3.2f"));      n4.SetLen(15," ");
+			RString n5(RString::Number(LocalIntraOverlap*100.0,"%3.2f")); n5.SetLen(15," ");
+			RString n6(RString::Number(LocalAvgCols,"%5.1f"));            n6.SetLen(15," ");
+			(*Results)<<n1+n2+n3+n4+n5+n6<<endl;
+		}
+	}
+
+	if(NbLines)
+	{
+		AvgIntra/=static_cast<double>(NbLines);
+		AvgInter/=static_cast<double>(NbLines);
+		AvgCols/=static_cast<double>(NbLines);
+		AvgOverlap/=static_cast<double>(NbLines);
+		AvgIntraOverlap/=static_cast<double>(NbLines);
+	}
+
+
+	calc->AddTag(xml,tag,"Mean Intra (%)",AvgIntra*100.0,"%3.2f");
+	calc->AddTag(xml,tag,"Mean Inter (%)",AvgInter*100.0,"%3.2f");
+	calc->AddTag(xml,tag,"Mean Overlap (%)",AvgOverlap*100.0,"%3.2f");
+	calc->AddTag(xml,tag,"Mean Intra Overlap (%)",AvgIntraOverlap*100.0,"%3.2f");
+	calc->AddTag(xml,tag,"Mean Nearest Neighbors",AvgCols,"%5.1f");
+
+	if(Results)
+	{
+		RString n1("Global");                                       n1.SetLen(25," ");
+		RString n2(RString::Number(AvgIntra*100.0,"%3.2f"));        n2.SetLen(15," ");
+		RString n3(RString::Number(AvgInter*100.0,"%3.2f"));        n3.SetLen(15," ");
+		RString n4(RString::Number(AvgOverlap*100.0,"%3.2f"));      n4.SetLen(15," ");
+		RString n5(RString::Number(AvgIntraOverlap*100.0,"%3.2f")); n5.SetLen(15," ");
+		RString n6(RString::Number(AvgCols,"%5.1f"));               n6.SetLen(15," ");
+		(*Results)<<n1+n2+n3+n4+n5+n6<<endl;
+		(*Results)<<"--------------"<<endl;
+	}
+}
+
+
+//------------------------------------------------------------------------------
+template<class E1,class E2>
+	void GStatSimElements<E1,E2>::Run(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag)
+{
+	RString Type(calc->GetMeasureType());
+	if(Type=="Complete")
+		RunComplete(calc,xml,tag);
+	else if(Type=="Nearest Neighbors")
+		RunNearestNeighbors(calc,xml,tag);
+	else
+		ThrowGException("'"+Type+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
 }

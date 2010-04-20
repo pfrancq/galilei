@@ -1,39 +1,65 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>Config</class>
- <widget class="QWidget" name="Config" >
-  <property name="geometry" >
+ <widget class="QWidget" name="Config">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>464</width>
-    <height>451</height>
+    <width>467</width>
+    <height>486</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout_5" >
+  <layout class="QVBoxLayout" name="verticalLayout_5">
    <item>
-    <widget class="QGroupBox" name="groupBox" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
       <string>General</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout" >
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <layout class="QHBoxLayout" >
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
         <item>
-         <widget class="QCheckBox" name="SaveResults" >
-          <property name="toolTip" >
+         <widget class="QLabel" name="label">
+          <property name="text">
+           <string>Type of the Similarity Measure</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="MeasureType">
+          <item>
+           <property name="text">
+            <string>Complete</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Nearest Neighbors</string>
+           </property>
+          </item>
+         </widget>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <layout class="QHBoxLayout">
+        <item>
+         <widget class="QCheckBox" name="SaveResults">
+          <property name="toolTip">
            <string>Should the results be saved in a file [SaveResults].</string>
           </property>
-          <property name="text" >
+          <property name="text">
            <string>Save the results</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="KUrlRequester" name="Results" >
-          <property name="toolTip" >
+         <widget class="KUrlRequester" name="Results">
+          <property name="toolTip">
            <string>Name of the file where the results should be saved [Results].</string>
           </property>
          </widget>
@@ -44,36 +70,36 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_4" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
       <string>Export Matrixes</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4" >
+     <layout class="QVBoxLayout" name="verticalLayout_4">
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout" >
+       <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QCheckBox" name="ExportDocsSims" >
-          <property name="text" >
+         <widget class="QCheckBox" name="ExportDocsSims">
+          <property name="text">
            <string>Documents Similarities</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="KUrlRequester" name="DocsSims" />
+         <widget class="KUrlRequester" name="DocsSims"/>
         </item>
        </layout>
       </item>
       <item>
-       <layout class="QHBoxLayout" name="horizontalLayout_2" >
+       <layout class="QHBoxLayout" name="horizontalLayout_2">
         <item>
-         <widget class="QCheckBox" name="ExportDocsIncs" >
-          <property name="text" >
+         <widget class="QCheckBox" name="ExportDocsIncs">
+          <property name="text">
            <string>Documents Inclusions</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="KUrlRequester" name="DocsIncs" />
+         <widget class="KUrlRequester" name="DocsIncs"/>
         </item>
        </layout>
       </item>
@@ -81,28 +107,28 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_2" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
       <string>Documents</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2" >
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QCheckBox" name="Docs" >
-        <property name="text" >
+       <widget class="QCheckBox" name="Docs">
+        <property name="text">
          <string>Statistics on documents [Docs]</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="ProfDoc" >
-        <property name="text" >
+       <widget class="QCheckBox" name="ProfDoc">
+        <property name="text">
          <string>Statistics on profiles and documents [ProfDoc]</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="GroupDoc" >
-        <property name="text" >
+       <widget class="QCheckBox" name="GroupDoc">
+        <property name="text">
          <string>Statistics on groups and documents [GroupDoc]</string>
         </property>
        </widget>
@@ -111,28 +137,28 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox_3" >
-     <property name="title" >
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="title">
       <string>Profiles</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3" >
+     <layout class="QVBoxLayout" name="verticalLayout_3">
       <item>
-       <widget class="QCheckBox" name="Profiles" >
-        <property name="text" >
+       <widget class="QCheckBox" name="Profiles">
+        <property name="text">
          <string>Statistics on profiles [Profiles]</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="SameDocProf" >
-        <property name="text" >
+       <widget class="QCheckBox" name="SameDocProf">
+        <property name="text">
          <string>Statistics on documents assessed by several profiles [SameDocProf]</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="GroupProf" >
-        <property name="text" >
+       <widget class="QCheckBox" name="GroupProf">
+        <property name="text">
          <string>Statistics on groups and profiles [GroupProf]</string>
         </property>
        </widget>
@@ -157,11 +183,11 @@
    <receiver>DocsSims</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>72</x>
      <y>131</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>242</x>
      <y>139</y>
     </hint>
@@ -173,11 +199,11 @@
    <receiver>DocsIncs</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>117</x>
      <y>179</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>234</x>
      <y>171</y>
     </hint>
@@ -189,11 +215,11 @@
    <receiver>Results</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
-    <hint type="sourcelabel" >
+    <hint type="sourcelabel">
      <x>85</x>
      <y>61</y>
     </hint>
-    <hint type="destinationlabel" >
+    <hint type="destinationlabel">
      <x>210</x>
      <y>52</y>
     </hint>

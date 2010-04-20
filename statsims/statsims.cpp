@@ -78,6 +78,11 @@ public:
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
 	}
 
+	virtual R::RCursor<GDoc> GetE1Cursor(void)
+	{
+		return(Session->GetDocs());
+	}
+
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
 		return(R::RCursor<GDoc>(sub->GetObjs(static_cast<GDoc*>(0))));
@@ -99,6 +104,11 @@ public:
 	GStatSimProfiles(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GProfile>(ses,otProfile,otProfile,f)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
+	}
+
+	virtual R::RCursor<GProfile> GetE1Cursor(void)
+	{
+		return(Session->GetProfiles());
 	}
 
 	virtual R::RCursor<GProfile> GetE1Cursor(GSubject* sub)
@@ -126,6 +136,11 @@ public:
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Groups Similarities");
 	}
 
+	virtual R::RCursor<GDoc> GetE1Cursor(void)
+	{
+		return(Session->GetDocs());
+	}
+
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
 		return(sub->GetObjs(static_cast<GDoc*>(0)));
@@ -148,6 +163,11 @@ public:
 	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GProfile>(ses,otDoc,otProfile,f)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Profiles Similarities");
+	}
+
+	virtual R::RCursor<GDoc> GetE1Cursor(void)
+	{
+		return(Session->GetDocs());
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
@@ -175,6 +195,11 @@ public:
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles/Groups Similarities");
 	}
 
+	virtual R::RCursor<GProfile> GetE1Cursor(void)
+	{
+		return(Session->GetProfiles());
+	}
+
 	virtual R::RCursor<GProfile> GetE1Cursor(GSubject* sub)
 	{
 		return(sub->GetObjs(static_cast<GProfile*>(0)));
@@ -196,8 +221,8 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStatsSims::GStatsSims(GPlugInFactory* fac)
-	: GStatsCalc(fac), ResultsFile(0)
+GStatsSims::GStatsSims(GSession* session,GPlugInFactory* fac)
+	: GStatsCalc(session,fac), ResultsFile(0)
 {
 }
 
@@ -205,38 +230,28 @@ GStatsSims::GStatsSims(GPlugInFactory* fac)
 //------------------------------------------------------------------------------
 void GStatsSims::ApplyConfig(void)
 {
-	Docs=Factory->GetBool("Docs");
-	ProfDoc=Factory->GetBool("ProfDoc");
-	GroupDoc=Factory->GetBool("GroupDoc");
-	Profiles=Factory->GetBool("Profiles");
-	SameDocProf=Factory->GetBool("SameDocProf");
-	GroupProf=Factory->GetBool("GroupProf");
-	SaveResults=Factory->GetBool("SaveResults");
+	Docs=Factory->FindParam<RParamValue>("Docs")->GetBool();
+	ProfDoc=Factory->FindParam<RParamValue>("ProfDoc")->GetBool();
+	GroupDoc=Factory->FindParam<RParamValue>("GroupDoc")->GetBool();
+	Profiles=Factory->FindParam<RParamValue>("Profiles")->GetBool();
+	SameDocProf=Factory->FindParam<RParamValue>("SameDocProf")->GetBool();
+	GroupProf=Factory->FindParam<RParamValue>("GroupProf")->GetBool();
+	SaveResults=Factory->FindParam<RParamValue>("SaveResults")->GetBool();
 	RURI OldName(Results);
-	Results=Factory->Get("Results");
+	Results=Factory->FindParam<RParamValue>("Results")->Get();
 	if((OldName!=Results)&&ResultsFile)
 	{
 		delete ResultsFile;
 		ResultsFile=0;
 	}
-	ExportDocsSims=Factory->GetBool("ExportDocsSims");
-	DocsSims=Factory->Get("DocsSims");
-	ExportDocsIncs=Factory->GetBool("ExportDocsIncs");
-	DocsIncs=Factory->Get("DocsIncs");
-}
-
-
-//------------------------------------------------------------------------------
-void GStatsSims::Connect(GSession* session)
-{
-	GStatsCalc::Connect(session);
-}
-
-
-//------------------------------------------------------------------------------
-void GStatsSims::Disconnect(GSession* session)
-{
-	GStatsCalc::Disconnect(session);
+	ExportDocsSims=Factory->FindParam<RParamValue>("ExportDocsSims")->GetBool();
+	DocsSims=Factory->FindParam<RParamValue>("DocsSims")->Get();
+	ExportDocsIncs=Factory->FindParam<RParamValue>("ExportDocsIncs")->GetBool();
+	DocsIncs=Factory->FindParam<RParamValue>("DocsIncs")->Get();
+	RString Tmp(Factory->FindParam<RParamValue>("MeasureType")->Get());
+	if((Tmp!="Complete")&&(Tmp!="Nearest Neighbors"))
+		ThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
+	MeasureType=Tmp;
 }
 
 
@@ -401,20 +416,21 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::CreateParams(RConfig* params)
+void GStatsSims::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("Docs",false));
-	params->InsertParam(new RParamValue("ProfDoc",false));
-	params->InsertParam(new RParamValue("GroupDoc",false));
-	params->InsertParam(new RParamValue("Profiles",false));
-	params->InsertParam(new RParamValue("SameDocProf",false));
-	params->InsertParam(new RParamValue("GroupProf",false));
-	params->InsertParam(new RParamValue("SaveResults",false));
-	params->InsertParam(new RParamValue("Results",""));
-	params->InsertParam(new RParamValue("ExportDocsSims",false));
-	params->InsertParam(new RParamValue("DocsSims",""));
-	params->InsertParam(new RParamValue("ExportDocsIncs",false));
-	params->InsertParam(new RParamValue("DocsIncs",""));
+	fac->InsertParam(new RParamValue("Docs",false));
+	fac->InsertParam(new RParamValue("ProfDoc",false));
+	fac->InsertParam(new RParamValue("GroupDoc",false));
+	fac->InsertParam(new RParamValue("Profiles",false));
+	fac->InsertParam(new RParamValue("SameDocProf",false));
+	fac->InsertParam(new RParamValue("GroupProf",false));
+	fac->InsertParam(new RParamValue("SaveResults",false));
+	fac->InsertParam(new RParamValue("Results",""));
+	fac->InsertParam(new RParamValue("ExportDocsSims",false));
+	fac->InsertParam(new RParamValue("DocsSims",""));
+	fac->InsertParam(new RParamValue("ExportDocsIncs",false));
+	fac->InsertParam(new RParamValue("DocsIncs",""));
+	fac->InsertParam(new RParamValue("MeasureType","Complete"));
 }
 
 

@@ -113,7 +113,8 @@ class GStatsSims : public GStatsCalc
 	RURI DocsIncs;
 
 	/**
-	*/
+	 * Current measure used.
+	 */
 	GMeasure* Measure;
 
 	/**
@@ -121,30 +122,24 @@ class GStatsSims : public GStatsCalc
 	 */
 	RTextFile* ResultsFile;
 
+	/**
+	 * Type of the similarity measure ('Nearest Neighbors' or 'Complete').
+	 */
+	RString MeasureType;
+
 public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GStatsSims(GPlugInFactory* fac);
+	GStatsSims(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session);
-
-	/**
-	* Disconnect from a Session.
-	* @param session         The session.
-	*/
-	virtual void Disconnect(GSession* session);
 
 	/**
 	 * Export the documents similarities in a file.
@@ -164,9 +159,13 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
+
+	/**
+	 * @return the type of the measure.
+	 */
+	RString GetMeasureType(void) const {return(MeasureType);}
 
 public:
 
