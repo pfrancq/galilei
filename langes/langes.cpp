@@ -58,8 +58,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangES::GLangES(GPlugInFactory* fac)
-	: GLang(fac,"Spanish","es"), Stemmer(sb_stemmer_new("spanish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangES::GLangES(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Spanish","es"), Stemmer(sb_stemmer_new("spanish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
     	throw GException("GLangES : Spanish is not available for stemming");
@@ -394,7 +394,7 @@ RString GLangES::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangES::CreateParams(RConfig*)
+void GLangES::CreateParams(GPlugInFactory*)
 {
 }
 

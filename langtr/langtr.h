@@ -74,10 +74,11 @@ class GLangTR : public GLang
 public:
 
 	/**
-	* Constructor of the Hungarian language.
+	* Constructor of the Turkish language.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GLangTR(GPlugInFactory* fac);
+	GLangTR(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.
@@ -96,9 +97,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory*);
 
 	/**
 	* Destructor.

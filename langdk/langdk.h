@@ -76,10 +76,11 @@ class GLangDK : public GLang
 public:
 
 	/**
-	* Constructor of the danish language.
+	* Constructor of the Danish language.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GLangDK(GPlugInFactory* fac);
+	GLangDK(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.
@@ -98,9 +99,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor.

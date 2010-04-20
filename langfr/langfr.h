@@ -70,9 +70,10 @@ public:
 
 	/**
 	* Constructor of the French language.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GLangFR(GPlugInFactory* fac);
+	GLangFR(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.
@@ -124,9 +125,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(R::RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destruct.

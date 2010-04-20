@@ -51,8 +51,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLang00::GLang00(GPlugInFactory* fac)
-	: GLang(fac,"Universal","00")
+GLang00::GLang00(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Universal","00")
 {
 }
 
@@ -65,7 +65,7 @@ RString GLang00::GetStemming(const RString& _kwd)
 
 
 //------------------------------------------------------------------------------
-void GLang00::CreateParams(RConfig*)
+void GLang00::CreateParams(GPlugInFactory*)
 {
 }
 

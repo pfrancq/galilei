@@ -56,8 +56,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangHU::GLangHU(GPlugInFactory* fac)
-	: GLang(fac,"Hungarian","hu"), Stemmer(sb_stemmer_new("hungarian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangHU::GLangHU(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Hungarian","hu"), Stemmer(sb_stemmer_new("hungarian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
     	throw GException("GLangHU : Hungarian is not available for stemming");
@@ -277,7 +277,7 @@ RString GLangHU::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangHU::CreateParams(RConfig*)
+void GLangHU::CreateParams(GPlugInFactory*)
 {
 }
 

@@ -58,8 +58,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangDE::GLangDE(GPlugInFactory* fac)
-	: GLang(fac,"German","de"), Stemmer(sb_stemmer_new("german",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangDE::GLangDE(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"German","de"), Stemmer(sb_stemmer_new("german",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
     	throw GException("GLangDE : German is not available for stemming");
@@ -312,7 +312,7 @@ RString GLangDE::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangDE::CreateParams(RConfig*)
+void GLangDE::CreateParams(GPlugInFactory*)
 {
 }
 

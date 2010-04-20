@@ -58,8 +58,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangNO::GLangNO(GPlugInFactory* fac)
-	: GLang(fac,"Norwegian","no"), Stemmer(sb_stemmer_new("norwegian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangNO::GLangNO(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Norwegian","no"), Stemmer(sb_stemmer_new("norwegian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
     	throw GException("GLangNO : Norwegian is not available for stemming");
@@ -262,7 +262,7 @@ RString GLangNO::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangNO::CreateParams(RConfig*)
+void GLangNO::CreateParams(GPlugInFactory*)
 {
 }
 

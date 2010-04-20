@@ -73,8 +73,8 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangFR::GLangFR(GPlugInFactory* fac)
-	: GLang(fac,"French","fr"), Rules1(130), Rules2(10), Rules3(10)
+GLangFR::GLangFR(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"French","fr"), Rules1(130), Rules2(10), Rules3(10)
 {
 	// Rules 1
 	Rules1.InsertPtr(new FrenchPorterRule("issaient","",0));
@@ -1005,7 +1005,7 @@ RString GLangFR::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangFR::CreateParams(RConfig*)
+void GLangFR::CreateParams(GPlugInFactory*)
 {
 }
 

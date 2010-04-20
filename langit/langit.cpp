@@ -58,8 +58,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangIT::GLangIT(GPlugInFactory* fac)
-	: GLang(fac,"Italian","it"), Stemmer(sb_stemmer_new("italian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangIT::GLangIT(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Italian","it"), Stemmer(sb_stemmer_new("italian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
     	throw GException("GLangIT : Italian is not available for stemming");
@@ -360,7 +360,7 @@ RString GLangIT::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangIT::CreateParams(RConfig*)
+void GLangIT::CreateParams(GPlugInFactory*)
 {
 }
 

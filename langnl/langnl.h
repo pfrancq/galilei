@@ -103,9 +103,10 @@ public:
 
 	/**
 	* Constructor of the Dutch language.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GLangNL(GPlugInFactory* fac);
+	GLangNL(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.
@@ -192,9 +193,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(R::RConfig* params);
+	static void CreateParams(GPlugInFactory*);
 
 	/**
 	* Destruct.

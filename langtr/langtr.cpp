@@ -56,8 +56,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangTR::GLangTR(GPlugInFactory* fac)
-	: GLang(fac,"Turkish","tr"), Stemmer(sb_stemmer_new("turkish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangTR::GLangTR(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Turkish","tr"), Stemmer(sb_stemmer_new("turkish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
     	throw GException("GLangTR : Turkish is not available for stemming");
@@ -194,7 +194,7 @@ RString GLangTR::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangTR::CreateParams(RConfig*)
+void GLangTR::CreateParams(GPlugInFactory*)
 {
 }
 

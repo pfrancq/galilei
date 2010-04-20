@@ -58,8 +58,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangFI::GLangFI(GPlugInFactory* fac)
-	: GLang(fac,"Finnish","fi"), Stemmer(sb_stemmer_new("finnish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangFI::GLangFI(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Finnish","fi"), Stemmer(sb_stemmer_new("finnish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
 	if(!Stemmer)
 		throw GException("GLangSE : Swedish is not available for stemming");
@@ -828,7 +828,7 @@ RString GLangFI::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangFI::CreateParams(RConfig*)
+void GLangFI::CreateParams(GPlugInFactory*)
 {
 }
 

@@ -58,8 +58,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangDK::GLangDK(GPlugInFactory* fac)
-	: GLang(fac,"Danish","dk"), Stemmer(sb_stemmer_new("danish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangDK::GLangDK(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Danish","dk"), Stemmer(sb_stemmer_new("danish",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
     	throw GException("GLangDK : Danish is not available for stemming");
@@ -175,7 +175,7 @@ RString GLangDK::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangDK::CreateParams(RConfig*)
+void GLangDK::CreateParams(GPlugInFactory*)
 {
 }
 

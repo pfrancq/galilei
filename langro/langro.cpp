@@ -56,8 +56,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangRO::GLangRO(GPlugInFactory* fac)
-	: GLang(fac,"Romanian","ro"), Stemmer(sb_stemmer_new("romanian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangRO::GLangRO(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Romanian","ro"), Stemmer(sb_stemmer_new("romanian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
     	throw GException("GLangRO : Romanian is not available for stemming");
@@ -214,7 +214,7 @@ RString GLangRO::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangRO::CreateParams(RConfig*)
+void GLangRO::CreateParams(GPlugInFactory*)
 {
 }
 

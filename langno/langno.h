@@ -77,10 +77,11 @@ class GLangNO : public GLang
 public:
 
 	/**
-	* Constructor of the norwegian language.
+	* Constructor of the Norwegian language.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GLangNO(GPlugInFactory* fac);
+	GLangNO(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.
@@ -99,9 +100,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory*);
 
 	/**
 	* Destructor.

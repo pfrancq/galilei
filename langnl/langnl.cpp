@@ -77,8 +77,8 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangNL::GLangNL(GPlugInFactory* fac)
-	: GLang(fac,"Dutch","nl"), Rules1a(1), Rules1b(2), Rules1c(2), Rules2a(1),
+GLangNL::GLangNL(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Dutch","nl"), Rules1a(1), Rules1b(2), Rules1c(2), Rules2a(1),
 	  Rules2aa(20), Rules3a(1), Rules3b(6), Rules4(4), Rules5(1)
 {
 	// Rules 1a
@@ -1504,7 +1504,7 @@ RString GLangNL::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangNL::CreateParams(RConfig*)
+void GLangNL::CreateParams(GPlugInFactory*)
 {
 }
 

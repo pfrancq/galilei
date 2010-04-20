@@ -76,10 +76,11 @@ class GLangDE : public GLang
 public:
 
 	/**
-	* Constructor of the german language.
+	* Constructor of the German language.
+	* @param session         Session
 	* @param fac             Factory.
 	*/
-	GLangDE(GPlugInFactory* fac);
+	GLangDE(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.
@@ -98,9 +99,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor.

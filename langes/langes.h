@@ -76,10 +76,11 @@ class GLangES : public GLang
 public:
 
 	/**
-	* Constructor of the spanish language.
+	* Constructor of the Spanish language.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GLangES(GPlugInFactory* fac);
+	GLangES(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.
@@ -98,9 +99,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor.

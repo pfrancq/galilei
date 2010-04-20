@@ -76,10 +76,11 @@ class GLangIT : public GLang
 public:
 
 	/**
-	* Constructor of the italian language.
+	* Constructor of the Italian language.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	GLangIT(GPlugInFactory* fac);
+	GLangIT(GSession* session,GPlugInFactory* fac);
 
 	/**
 	 * Fill a container with all the stop words associated with the language.
@@ -98,9 +99,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory*);
 
 	/**
 	* Destructor.

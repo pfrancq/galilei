@@ -56,8 +56,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GLangRU::GLangRU(GPlugInFactory* fac)
-	: GLang(fac,"Russian","ru"), Stemmer(sb_stemmer_new("russian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
+GLangRU::GLangRU(GSession* session,GPlugInFactory* fac)
+	: GLang(session,fac,"Russian","ru"), Stemmer(sb_stemmer_new("russian",0)), StdCodec(RTextEncoding::GetTextEncoding("utf-8"))
 {
     if(!Stemmer)
     	throw GException("GLangRU : Russian is not available for stemming");
@@ -239,7 +239,7 @@ RString GLangRU::GetStemming(const RString& kwd)
 
 
 //------------------------------------------------------------------------------
-void GLangRU::CreateParams(RConfig*)
+void GLangRU::CreateParams(GPlugInFactory*)
 {
 }
 
