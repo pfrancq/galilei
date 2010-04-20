@@ -32,6 +32,7 @@
 // include files for GALILEI
 #include <gcomputetrust.h>
 using namespace GALILEI;
+using namespace R;
 
 
 //-----------------------------------------------------------------------------
@@ -79,17 +80,18 @@ void About(void)
 
 
  //------------------------------------------------------------------------------
-void Configure(GPlugInFactory* params)
+bool Configure(GPlugInFactory* fac)
 {
  	Config dlg;
 
-	dlg.NbLevels->setValue(params->GetInt("NbLevels"));
+	dlg.NbLevels->setValue(fac->FindParam<RParamValue>("NbLevels")->GetInt());
 
 	if (dlg.exec())
 	{
-		params->SetUInt("NbLevels", dlg.NbLevels->value());
-		params->Apply();
+		fac->FindParam<RParamValue>("NbLevels")->SetUInt(dlg.NbLevels->value());
+		return(true);
 	}
+	return(false);
 }
 
 

@@ -102,26 +102,20 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	SubsLevel(GPlugInFactory* fac);
+	SubsLevel(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Create the parameters.
-	* @param params          Parameters to configure.
 	*/
-	static void CreateParams(RConfig* params);
+	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
-
-	/**
-	* Connect to a Session.
-	* @param session         The session.
-	*/
-	virtual void Connect(GSession* session);
 
 	/**
 	* Static function used to order the feedbacks by date (the latest

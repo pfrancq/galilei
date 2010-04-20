@@ -70,16 +70,16 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-SubsLevel::SubsLevel(GPlugInFactory* fac)
-		: GComputeTrust(fac), Fdbks(0,200), Docs(), Scores(0,200)
+SubsLevel::SubsLevel(GSession* session,GPlugInFactory* fac)
+		: GComputeTrust(session,fac), Fdbks(2000,500), Docs(2000,500), Scores(500,200)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void SubsLevel::CreateParams(RConfig* params)
+void SubsLevel::CreateParams(GPlugInFactory* fac)
 {
-	params->InsertParam(new RParamValue("NbLevels",5));
+	fac->InsertParam(new RParamValue("NbLevels",5));
 }
 
 
@@ -87,18 +87,7 @@ void SubsLevel::CreateParams(RConfig* params)
 void SubsLevel::ApplyConfig(void)
 {
 	GComputeTrust::ApplyConfig();
-	NbLevels=Factory->GetUInt("NbLevels");
-}
-
-
-//------------------------------------------------------------------------------
-void SubsLevel::Connect(GSession* session)
-{
-	// Try to insert the command, eventually, delete it
-	GComputeTrust::Connect(session);
-	Fdbks.Clear(2000,500);
-	Docs.Clear(2000,500);
-	Scores.Clear(500,200);
+	NbLevels=Factory->FindParam<RParamValue>("NbLevels")->GetUInt();
 }
 
 
