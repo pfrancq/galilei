@@ -649,7 +649,7 @@ public:
 	/**
 	* Create the parameters.
 	*/
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 
 	/**
 	 * @return true if the analyze of the current tag must be stopped.

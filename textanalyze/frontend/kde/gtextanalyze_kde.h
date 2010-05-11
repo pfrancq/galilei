@@ -37,6 +37,7 @@
 // include files for R
 #include <rqt.h>
 using namespace R;
+using namespace std;
 
 
 //------------------------------------------------------------------------------
@@ -51,6 +52,7 @@ using namespace GALILEI;
 #include <kaboutapplicationdialog.h>
 #include <KDE/KLocale>
 #include <ui_config.h>
+#include <QtGui/QInputDialog>
 
 
 //------------------------------------------------------------------------------
@@ -65,6 +67,8 @@ public slots:
 	void toggleExtractStruct( bool toggle );
 	void toggleFullIndex(bool toggle );
 	void clickedMetadata(void);
+	void addTag(void);
+	void removeTag(void);
 };
 
 

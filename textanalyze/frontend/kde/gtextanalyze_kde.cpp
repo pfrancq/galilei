@@ -54,21 +54,25 @@ Config::Config(void)
 	connect(FullIndex,SIGNAL(toggled(bool)),this,SLOT(toggleFullIndex(bool)));
 	connect(ExtractIndex,SIGNAL(clicked()),this,SLOT(clickedMetadata()));
 	connect(DetectMetaTag,SIGNAL(clicked()),this,SLOT(clickedMetadata()));
+	connect(AddTag,SIGNAL(clicked()),this,SLOT(addTag()));
+	connect(RemoveTag,SIGNAL(clicked()),this,SLOT(removeTag()));
 	adjustSize();
 }
 
-void Config::toggleExtractStruct( bool toggle )
+
+//------------------------------------------------------------------------------
+void Config::toggleExtractStruct(bool toggle)
 {
 	StructIsContent->setEnabled(toggle);
 	WeightStruct->setEnabled(toggle && StructIsContent->isChecked());
 	ExtractValues->setEnabled(toggle);
 	WeightValues->setEnabled(toggle && ExtractValues->isChecked());
-	Indexes->setEnabled(toggle);
 	FullIndex->setEnabled(toggle);
 }
 
 
-void Config::toggleFullIndex(bool toggle )
+//------------------------------------------------------------------------------
+void Config::toggleFullIndex(bool toggle)
 {
 	if(toggle)
 	{
@@ -80,6 +84,8 @@ void Config::toggleFullIndex(bool toggle )
 		ExtractValues->setEnabled(true);
 }
 
+
+//------------------------------------------------------------------------------
 void Config::clickedMetadata(void)
 {
 	MaxTerms->setEnabled(DetectMetaTag->isChecked()&ExtractIndex->isChecked());
@@ -87,9 +93,38 @@ void Config::clickedMetadata(void)
 	ChildTags->setEnabled(DetectMetaTag->isChecked()&ExtractIndex->isChecked());
 	MaxOccurs->setEnabled(DetectMetaTag->isChecked()&ExtractIndex->isChecked());
 	DetectMetaTag->setEnabled(ExtractIndex->isChecked());
-	MetaTagFile->setEnabled(DetectMetaTag->isChecked()&ExtractIndex->isChecked());
-	MetaTagFile->setEnabled((!DetectMetaTag->isChecked())&ExtractIndex->isChecked());
+	IndexTags->setEnabled((!DetectMetaTag->isChecked())&ExtractIndex->isChecked());
+	AddTag->setEnabled((!DetectMetaTag->isChecked())&ExtractIndex->isChecked());
+	RemoveTag->setEnabled((!DetectMetaTag->isChecked())&ExtractIndex->isChecked());
 }
+
+
+//------------------------------------------------------------------------------
+void Config::addTag(void)
+{
+	bool ok;
+	QString tag(QInputDialog::getText(this,tr("Add a Meta Tag"),tr("Tag:"),QLineEdit::Normal,"",&ok));
+	if(ok&&(!tag.isEmpty()))
+	{
+		IndexTags->addItem(tag);
+		RemoveTag->setEnabled(true);
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void Config::removeTag(void)
+{
+	int row(IndexTags->currentRow());
+	if(row!=-1)
+	{
+		QListWidgetItem* item(IndexTags->takeItem(row));
+		delete item;
+	}
+	if(!IndexTags->count())
+		RemoveTag->setEnabled(false);
+}
+
 
 
 //------------------------------------------------------------------------------
@@ -112,7 +147,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugInFactory* fac)
+bool Configure(GPlugIn* fac)
 {
 	Config dlg;
 
@@ -126,8 +161,6 @@ bool Configure(GPlugInFactory* fac)
 	dlg.ChildTags->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
 	dlg.MaxOccurs->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
 	dlg.DetectMetaTag->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
-	dlg.MetaTagFile->setEnabled(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool()&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
-	dlg.MetaTagFile->setEnabled((!fac->FindParam<RParamValue>("DetectMetaTag")->GetBool())&&fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
 	dlg.Filtering->setChecked(fac->FindParam<RParamValue>("Filtering")->GetBool());
 	dlg.NbSameOccur->setValue(fac->FindParam<RParamValue>("NbSameOccur")->GetInt());
 	dlg.NormalRatio->setValue(fac->FindParam<RParamValue>("NormalRatio")->GetDouble());
@@ -150,11 +183,17 @@ bool Configure(GPlugInFactory* fac)
 	dlg.DefaultNamespace->setText(ToQString(fac->FindParam<RParamValue>("DefaultNamespace")->Get()));
 	dlg.ExtractIndex->setChecked(fac->FindParam<RParamValue>("ExtractIndex")->GetBool());
 	dlg.DetectMetaTag->setChecked(fac->FindParam<RParamValue>("DetectMetaTag")->GetBool());
-	dlg.MetaTagFile->setUrl(ToQString(fac->FindParam<RParamValue>("MetaTagFile")->Get()));
 	dlg.MaxTerms->setValue(fac->FindParam<RParamValue>("MaxTerms")->GetInt());
 	dlg.MaxDepth->setValue(fac->FindParam<RParamValue>("MaxDepth")->GetInt());
 	dlg.MaxOccurs->setValue(fac->FindParam<RParamValue>("MaxOccurs")->GetInt());
 	dlg.ChildTags->setChecked(fac->FindParam<RParamValue>("ChildTags")->GetBool());
+
+	// Index
+	RCursor<RString> Tags(fac->FindParam<RParamList>("IndexTags")->GetList());
+	for(Tags.Start();!Tags.End();Tags.Next())
+		dlg.IndexTags->addItem(ToQString(*Tags()));
+	if(!dlg.IndexTags->count())
+		dlg.RemoveTag->setEnabled(false);
 	dlg.clickedMetadata();
 
 	if(dlg.exec())
@@ -185,8 +224,16 @@ bool Configure(GPlugInFactory* fac)
 		fac->FindParam<RParamValue>("ChildTags")->SetBool(dlg.ChildTags->isChecked());
 		fac->FindParam<RParamValue>("MaxOccurs")->SetUInt(dlg.MaxOccurs->value());
 		fac->FindParam<RParamValue>("DetectMetaTag")->SetBool(dlg.DetectMetaTag->isChecked());
-		fac->FindParam<RParamValue>("MetaTagFile")->Set(FromQString(dlg.MetaTagFile->url().url()));
 
+		// Index
+		RParamList* IndexTags(fac->FindParam<RParamList>("IndexTags"));
+		IndexTags->Reset();
+		for(int i=0;i<dlg.IndexTags->count();i++)
+		{
+			QListWidgetItem* item(dlg.IndexTags->item(i));
+			if(!item) continue;
+			IndexTags->Insert(FromQString(item->text()));
+		}
 		return(true);
 	}
 	return(false);
