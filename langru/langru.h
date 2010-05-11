@@ -84,7 +84,7 @@ public:
 	 * Fill a container with all the stop words associated with the language.
 	 * @param stop           Container.
 	 */
-	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop);
+	static void GetStopWords(R::RContainer<R::RString,true,false>& stop);
 
 	/**
 	* Function that return stemming of a word.
