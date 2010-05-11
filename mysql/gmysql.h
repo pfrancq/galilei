@@ -98,9 +98,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GStorageMySQL(GPlugInFactory* fac);
+	GStorageMySQL(GSession* session,GPlugInFactory* fac);
 
 protected:
 
@@ -554,9 +555,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param fac             Factory.
 	*/
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 
 	/**
 	* Destruct.

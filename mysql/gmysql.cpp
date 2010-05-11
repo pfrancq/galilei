@@ -51,10 +51,8 @@
 #include <gslot.h>
 #include <gcommunity.h>
 #include <gtopic.h>
-#include <gsubjects.h>
 #include <gsubject.h>
 #include <gsession.h>
-#include <gindexer.h>
 #include <ggalileiapp.h>
 #include <gconcept.h>
 #include <gxmlindex.h>
@@ -73,8 +71,8 @@
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorageMySQL::GStorageMySQL(GPlugInFactory* fac)
-	: GStorage(fac), Db(0)
+GStorageMySQL::GStorageMySQL(GSession* session,GPlugInFactory* fac)
+	: GStorage(session,fac), Db(0)
 {
 }
 
@@ -179,14 +177,14 @@ void GStorageMySQL::Init(void)
 //-----------------------------------------------------------------------------
 void GStorageMySQL::ApplyConfig(void)
 {
-	Host=Factory->FindParam<RParamValue>("Host")->Get();
-	User=Factory->FindParam<RParamValue>("User")->Get();
-	Password=Factory->FindParam<RParamValue>("Password")->Get();
-	Database=Factory->FindParam<RParamValue>("Database")->Get();
-	Filter.SetDate(Factory->FindParam<RParamValue>("Filter")->Get());
-	LoadAll=Factory->FindParam<RParamValue>("All")->GetBool();
-	Encoding=Factory->FindParam<RParamValue>("Encoding")->Get().Latin1();
-	Filtering=Factory->FindParam<RParamValue>("Filtering")->GetBool();
+	Host=FindParam<RParamValue>("Host")->Get();
+	User=FindParam<RParamValue>("User")->Get();
+	Password=FindParam<RParamValue>("Password")->Get();
+	Database=FindParam<RParamValue>("Database")->Get();
+	Filter.SetDate(FindParam<RParamValue>("Filter")->Get());
+	LoadAll=FindParam<RParamValue>("All")->GetBool();
+	Encoding=FindParam<RParamValue>("Encoding")->Get().Latin1();
+	Filtering=FindParam<RParamValue>("Filtering")->GetBool();
 	GStorage::ApplyConfig();
 }
 
@@ -243,11 +241,8 @@ void GStorageMySQL::LoadSubjects(void)
 {
 	try
 	{
-		if(Session->GetSlot())
-			Session->GetSlot()->StartJob("Load subjects");
-
 		// Verify the subjects exist and clear them
-		Session->Clear(GetCount("subjects"),GetCount("docs"),GetCount("profiles"));
+		Session->Clear(otSubject);
 
 		// Load the subjects
 		RQuery sub(Db,"SELECT subjectid,name,used,parent FROM subjects");
@@ -257,7 +252,7 @@ void GStorageMySQL::LoadSubjects(void)
 			GSubject* Parent(0);
 			if(ParentId)
 				Parent=Session->GetSubject(ParentId);
-			Session->InsertSubject(Parent,new GSubject(sub[0].ToSizeT(),sub[1],sub[2].ToBool(true)));
+			Session->Insert(Parent,new GSubject(Session,sub[0].ToSizeT(),sub[1],sub[2].ToBool(true)));
 		}
 
 		//  Make Link between documents and subjects
@@ -295,14 +290,9 @@ void GStorageMySQL::LoadSubjects(void)
 			if(!prof) continue;
 			Session->Insert(prof,profiles[1].ToSizeT());
 		}
-
-		if(Session->GetSlot())
-			Session->GetSlot()->EndJob();
 	}
 	catch(RDbException e)
 	{
-		if(Session->GetSlot())
-			Session->GetSlot()->EndJob();
 		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
 	}
@@ -323,9 +313,6 @@ void GStorageMySQL::SaveSubject(GSubject* subject)
 		RQuery(Db,"DELETE FROM subjects WHERE subjectid="+Num(subject->GetId()));
 
 		RString sSql;
-
-		if(Session->GetSlot())
-			Session->GetSlot()->StartJob("Save subjects");
 
 		size_t parentid;
 		if(subject->GetParent())
@@ -380,8 +367,6 @@ void GStorageMySQL::SaveSubject(GSubject* subject)
 	}
 	catch(RDbException e)
 	{
-		if(Session->GetSlot())
-			Session->GetSlot()->EndJob();
 		cerr<<e.GetMsg()<<endl;
 		throw GException(e.GetMsg());
 	}
@@ -597,23 +582,23 @@ void GStorageMySQL::LoadConcepts(void)
 			GConceptType* Type(Session->GetConceptType(TypeId,false));
 			if(TypeId==XMLIndexId)
 			{
-				GXMLIndex w(dicts[0].ToSizeT(),dicts[1],Type,
+				GXMLIndex w(Session,dicts[0].ToSizeT(),dicts[1],Type,
 						dicts[3].ToSizeT(),dicts[4].ToSizeT(),
 						dicts[5].ToSizeT(),dicts[6].ToSizeT(),
 						dicts[7].ToSizeT(),dicts[8].ToSizeT(),
 						dicts[9].ToSizeT(),dicts[10].ToSizeT(),
 						dicts[11].ToSizeT(),dicts[12].ToSizeT());
-				Session->InsertConcept(&w);
+				Session->Insert(&w);
 			}
 			else
 			{
-				GConcept w(dicts[0].ToSizeT(),dicts[1],Type,
+				GConcept w(Session,dicts[0].ToSizeT(),dicts[1],Type,
 						dicts[3].ToSizeT(),dicts[4].ToSizeT(),
 						dicts[5].ToSizeT(),dicts[6].ToSizeT(),
 						dicts[7].ToSizeT(),dicts[8].ToSizeT(),
 						dicts[9].ToSizeT(),dicts[10].ToSizeT(),
 						dicts[11].ToSizeT(),dicts[12].ToSizeT());
-				Session->InsertConcept(&w);
+				Session->Insert(&w);
 			}
 		}
 	}
@@ -992,26 +977,19 @@ void GStorageMySQL::LoadClasses(void)
 {
 	try
 	{
-		if(Session->GetSlot())
-			Session->GetSlot()->StartJob("Load Classes");
-
 		// Load the classes
 		RQuery sub(Db,"SELECT classid,name,parent,blockid FROM classes");
 		for(sub.Start();!sub.End();sub.Next())
 		{
 			size_t ParentId();
 			GClass* Parent(Session->GetClass(sub[2].ToSizeT(),true));
-			GClass* Class(Session->InsertClass(Parent,sub[0].ToSizeT(),sub[3].ToSizeT(),sub[1]));
+			GClass* Class(new GClass(Session,sub[0].ToSizeT(),sub[3].ToSizeT(),sub[1]));
+			Session->Insert(Parent,Class);
 			Class->SetState(osNeedLoad);
 		}
-
-		if(Session->GetSlot())
-			Session->GetSlot()->EndJob();
 	}
 	catch(RDbException e)
 	{
-		if(Session->GetSlot())
-			Session->GetSlot()->EndJob();
 		throw GException(e.GetMsg());
 	}
 }
@@ -1141,7 +1119,7 @@ GDoc* GStorageMySQL::LoadDoc(size_t docid)
 		if((!lang)&&(!quer[4].IsEmpty()))
 			return(0);
 
-		doc=new GDoc(quer[1],quer[2],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
+		doc=new GDoc(Session,quer[1],quer[2],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
 				     quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8]));
 		doc->SetState(osNeedLoad);
 
@@ -1184,9 +1162,9 @@ void GStorageMySQL::LoadDocs(void)
 			if((!lang)&&(!quer[4].IsEmpty()))
 				continue;
 			size_t docid(quer[0].ToSizeT());
-			GDoc* doc(new GDoc(quer[1],quer[2],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
+			GDoc* doc(new GDoc(Session,quer[1],quer[2],docid,quer[9].ToSizeT(),quer[10].ToSizeT(),lang,
 					           quer[3],quer[7].ToSizeT(),GetMySQLToDate(quer[6]),GetMySQLToDate(quer[5]),GetMySQLToDate(quer[8])));
-			Session->InsertDoc(doc);
+			Session->Insert(doc);
 			doc->SetState(osNeedLoad);
 
 			// Load the links of the document loaded.
@@ -1291,7 +1269,7 @@ void GStorageMySQL::LoadUsers(void)
 			// Load users
 			RQuery Users(Db,"SELECT userid,user,fullname FROM users");
 			for(Users.Start();!Users.End();Users.Next())
-				Session->InsertUser(new GUser(atoi(Users[0]),Users[1],Users[2],10));
+				Session->Insert(new GUser(Session,atoi(Users[0]),Users[1],Users[2],10));
 
 			// Load profiles
 			RString Sql("SELECT profileid,description,social,userid,attached,communityid,updated,calculated,blockid,score,level,profiletype FROM profiles");
@@ -1310,7 +1288,7 @@ void GStorageMySQL::LoadUsers(void)
 			{
 				GUser* user=Session->GetUser(Profiles[3].ToSizeT());
 				size_t groupid(Profiles[5].ToSizeT());
-				Session->InsertProfile(prof=new GProfile(user,GetProfileType(atoi(Profiles[11])),Profiles[0].ToSizeT(),Profiles[8].ToSizeT(),Profiles[1],groupid,
+				Session->Insert(prof=new GProfile(Session,user,GetProfileType(atoi(Profiles[11])),Profiles[0].ToSizeT(),Profiles[8].ToSizeT(),Profiles[1],groupid,
 						GetMySQLToDate(Profiles[4]),GetMySQLToDate(Profiles[6]),GetMySQLToDate(Profiles[7]),
 						Profiles[2].ToBool(false),Profiles[9].ToDouble(),Profiles[10].ToChar(),5));
 				prof->SetState(osNeedLoad);
@@ -1319,7 +1297,7 @@ void GStorageMySQL::LoadUsers(void)
 			// Load feedbacks
 			RQuery fdbks(Db,"SELECT docid,fdbk,profileid,done,computed FROM docsbyprofiles");
 			for(fdbks.Start();!fdbks.End();fdbks.Next())
-				Session->AddFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),GetMySQLToDate(fdbks[3]),GetMySQLToDate(fdbks[4]));
+				Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),GetMySQLToDate(fdbks[3]),GetMySQLToDate(fdbks[4]));
 		}
 	}
 	catch(RDbException& e)
@@ -1339,7 +1317,7 @@ GUser* GStorageMySQL::LoadUser(size_t userid)
 		User.Start();
 		if(User.End())
 			return(0);
-		return(new GUser(atoi(User[0]),User[1],User[2],10));
+		return(new GUser(Session,atoi(User[0]),User[1],User[2],10));
 	}
 	catch(RDbException& e)
 	{
@@ -1358,7 +1336,7 @@ GUser* GStorageMySQL::LoadUser(const R::RString name)
 		User.Start();
 		if(User.End())
 			return(0);
-		return(new GUser(atoi(User[0]),User[1],User[2],10));
+		return(new GUser(Session,atoi(User[0]),User[1],User[2],10));
 	}
 	catch(RDbException& e)
 	{
@@ -1387,7 +1365,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		size_t groupid=Profile[5].ToSizeT();
 
 		// Create the profile
-		GProfile* prof=new GProfile(user,GetProfileType(Profile[11].ToUInt()),Profile[0].ToSizeT(),Profile[8].ToSizeT(),Profile[1],groupid,
+		GProfile* prof=new GProfile(Session,user,GetProfileType(Profile[11].ToUInt()),Profile[0].ToSizeT(),Profile[8].ToSizeT(),Profile[1],groupid,
 				GetMySQLToDate(Profile[4]),GetMySQLToDate(Profile[6]),GetMySQLToDate(Profile[7]),
 				Profile[2].ToBool(true),Profile[9].ToDouble(),Profile[10].ToChar(),5);
 		prof->SetState(osNeedLoad);
@@ -1397,7 +1375,7 @@ GProfile* GStorageMySQL::LoadProfile(size_t profileid)
 		                "FROM docsbyprofiles WHERE profileid="+Num(profileid));
 		for(fdbks.Start();!fdbks.End();fdbks.Next())
 		{
-			Session->AddFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),RDate(fdbks[3]),RDate(fdbks[4]));
+			Session->InsertFdbk(atoi(fdbks[2]),atoi(fdbks[0]),GetFdbkType(atoi(fdbks[1])),RDate(fdbks[3]),RDate(fdbks[4]));
 			// Since the profile is not in the session -> we must manually insert the profile.
 			GLang* lang(Langs->GetPlugIn<GLang>(fdbks[5],false));
 			if(!lang)
@@ -1542,7 +1520,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 			      RQuery::SQLValue(prof->GetUpdated())+","+RQuery::SQLValue(prof->GetComputed())+","+RQuery::SQLValue(prof->GetAttached())+
 			      ","+Num(prof->GetBlockId())+","+Num(prof->GetConfidenceScore())+","+Num(prof->GetConfidenceLevel())+","+
 			      Num(prof->GetProfileType());
-			const GSubject* sub(Session->GetIdealGroup(prof));
+			const GSubject* sub(Session->GetSubject(prof));
 			if(sub)
 				sSql+=","+RString::Number(sub->GetId());
 			else
@@ -1558,7 +1536,7 @@ void GStorageMySQL::SaveProfile(GProfile* prof)
 			     ",calculated="+RQuery::SQLValue(prof->GetComputed())+",attached="+RQuery::SQLValue(prof->GetAttached())+
 			     ",blockid="+Num(prof->GetBlockId())+",score="+Num(prof->GetConfidenceScore())+",level="+Num(prof->GetConfidenceLevel())+
 			     ",profiletype="+Num(prof->GetProfileType());
-			const GSubject* sub(Session->GetIdealGroup(prof));
+			const GSubject* sub(Session->GetSubject(prof));
 			if(sub)
 				sSql+=",subjectid="+Num(sub->GetId());
 			else
@@ -1645,9 +1623,9 @@ void GStorageMySQL::LoadCommunities(void)
 		RQuery Groups(Db,Sql);
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
-			group=new GCommunity(Groups[0].ToSizeT(),Groups[4].ToSizeT(),Groups[3],Groups[1],Groups[2]);
+			group=new GCommunity(Session,Groups[0].ToSizeT(),Groups[4].ToSizeT(),Groups[3],Groups[1],Groups[2]);
 			group->SetState(osNeedLoad);
-			Session->InsertCommunity(group);
+			Session->Insert(group);
 		}
 	}
 	catch(RDbException e)
@@ -1667,7 +1645,7 @@ GCommunity* GStorageMySQL::LoadCommunity(size_t communityid)
 		Group.Start();
 		if(Group.End())
 			return(0);
-		GCommunity* group=new GCommunity(Group[0].ToSizeT(),Group[4].ToSizeT(),Group[3],Group[1],Group[2]);
+		GCommunity* group=new GCommunity(Session,Group[0].ToSizeT(),Group[4].ToSizeT(),Group[3],Group[1],Group[2]);
 		group->SetState(osNeedLoad);
 
 		return(group);
@@ -1813,9 +1791,9 @@ void GStorageMySQL::LoadTopics(void)
 		RQuery Groups(Db,Sql);
 		for(Groups.Start();!Groups.End();Groups.Next())
 		{
-			group=new GTopic(Groups[0].ToSizeT(),Groups[4].ToSizeT(),Groups[3],Groups[1],Groups[2]);
+			group=new GTopic(Session,Groups[0].ToSizeT(),Groups[4].ToSizeT(),Groups[3],Groups[1],Groups[2]);
 			group->SetState(osNeedLoad);
-			Session->InsertTopic(group);
+			Session->Insert(group);
 		}
 	}
 	catch(RDbException e)
@@ -1835,7 +1813,7 @@ GTopic* GStorageMySQL::LoadTopic(size_t topicid)
 		Group.Start();
 		if(Group.End())
 			return(0);
-		GTopic* group=new GTopic(Group[0].ToSizeT(),Group[4].ToSizeT(),Group[3],Group[1],Group[2]);
+		GTopic* group=new GTopic(Session,Group[0].ToSizeT(),Group[4].ToSizeT(),Group[3],Group[1],Group[2]);
 		group->SetState(osNeedLoad);
 
 		return(group);
@@ -2000,16 +1978,16 @@ void GStorageMySQL::LoadSugs(GSugs& sugs)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::CreateParams(GPlugInFactory* fac)
+void GStorageMySQL::CreateConfig(void)
 {
-	fac->InsertParam(new RParamValue("Host","127.0.0.1"));
-	fac->InsertParam(new RParamValue("User","root"));
-	fac->InsertParam(new RParamValue("Password",""));
-	fac->InsertParam(new RParamValue("Database",""));
-	fac->InsertParam(new RParamValue("Filtering",false));
-	fac->InsertParam(new RParamValue("Filter",""));
-	fac->InsertParam(new RParamValue("Encoding","utf8"));
-	fac->InsertParam(new RParamValue("All",true));
+	InsertParam(new RParamValue("Host","127.0.0.1"));
+	InsertParam(new RParamValue("User","root"));
+	InsertParam(new RParamValue("Password",""));
+	InsertParam(new RParamValue("Database",""));
+	InsertParam(new RParamValue("Filtering",false));
+	InsertParam(new RParamValue("Filter",""));
+	InsertParam(new RParamValue("Encoding","utf8"));
+	InsertParam(new RParamValue("All",true));
 }
 
 
