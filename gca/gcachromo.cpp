@@ -45,7 +45,6 @@
 #include <gsession.h>
 #include <gprofile.h>
 #include <gdoc.h>
-#include <gsubjects.h>
 #include <guser.h>
 #include <gcommunity.h>
 #include <gtopic.h>
@@ -111,7 +110,7 @@ void GCAChromoDoc::ConstructChromo(R::RCursor<GTopic> groups)
 void GCAChromoDoc::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-	if((Instance->Params->Incremental)&&(Instance->Session->GetNbTopics()))
+	if((Instance->Params->Incremental)&&(Instance->Session->GetNbObjects(otTopic)))
 		ConstructChromo(Instance->Session->GetTopics());
 
 	// Call classical heuristic for non-assigned objects
@@ -170,7 +169,7 @@ void GCAChromoProfile::ConstructChromo(R::RCursor<GCommunity> groups)
 void GCAChromoProfile::RandomConstruct(void)
 {
 	// Look if already a solution in the session
-	if((Instance->Params->Incremental)&&(Instance->Session->GetNbCommunities()))
+	if((Instance->Params->Incremental)&&(Instance->Session->GetNbObjects(otCommunity)))
 		ConstructChromo(Instance->Session->GetCommunities());
 
 	// Call classical heuristic for non-assigned objects

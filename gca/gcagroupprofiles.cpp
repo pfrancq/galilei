@@ -36,6 +36,7 @@
 //-----------------------------------------------------------------------------
 // include files for GCA
 #include <gcaplugin.h>
+#include <gcaplugin.hh>
 #include <gcakmeans.h>
 using namespace GALILEI;
 
@@ -48,8 +49,10 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short GGA for Profiles.
 */
-class GCAGroupProfiles : public GCAPlugIn<GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>, public GGroupProfiles
+class GCAGroupProfiles : public GCAPlugIn<GGroupProfiles,GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>
 {
+	using GCAPlugIn<GGroupProfiles,GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>::FindParam;
+
 public:
 
 	/**
@@ -58,7 +61,7 @@ public:
 	* @param f              Factory.
 	*/
 	GCAGroupProfiles(GSession* session,GPlugInFactory* fac)
-		: GCAPlugIn<GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>("Profiles Grouping",otProfile,otCommunity), GGroupProfiles(session,fac) {}
+		: GCAPlugIn<GGroupProfiles,GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>(session,fac,"Profiles Grouping",otProfile,otCommunity) {}
 
 	/**
 	 * Class name.
@@ -69,7 +72,32 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void)
-	{GCAPlugIn<GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>::ApplyConfig(Factory);}
+	{
+		PopSize=FindParam<RParamValue>("Population Size")->GetUInt();
+		MaxGen=FindParam<RParamValue>("Max Gen")->GetUInt();
+		Step=FindParam<RParamValue>("Step")->GetBool();
+		StepGen=FindParam<RParamValue>("Step Gen")->GetUInt();
+		MinAgreement=FindParam<RParamValue>("Min Agreement")->GetDouble();
+		MinDisagreement=FindParam<RParamValue>("Min Disagreement")->GetDouble();
+		MaxKMeans=FindParam<RParamValue>("Max kMeans")->GetUInt();
+		Convergence=FindParam<RParamValue>("Convergence")->GetDouble();
+		Incremental=FindParam<RParamValue>("Incremental")->GetBool();
+		InternalRandom=FindParam<RParamValue>("InternalRandom")->GetBool();
+		Seed=FindParam<RParamValue>("Seed")->GetInt();
+		ParamsSim=FindParam<R::RParamStruct>("Sim Criterion");
+		ParamsAgreement=FindParam<R::RParamStruct>("Agreement Criterion");
+		ParamsDisagreement=FindParam<R::RParamStruct>("Disagreement Criterion");
+		RString what(FindParam<RParamValue>("Clustering Method")->Get());
+		ClusteringMethod=0;
+		if(what=="GA")
+			ClusteringMethod=1;
+		if(what=="k-Means")
+			ClusteringMethod=2;
+		NbClusters=FindParam<RParamValue>("NbClusters")->GetUInt();
+		Cout=FindParam<RParamValue>("Cout")->GetBool();
+		NbMinObjs=FindParam<RParamValue>("NbMinObjs")->GetUInt();
+		NbMaxObjs=FindParam<RParamValue>("NbMaxObjs")->GetUInt();
+	}
 
 protected:
 
@@ -82,14 +110,6 @@ protected:
 	* Make the grouping for a specific Language.
 	*/
 	virtual void Run(void) {RunGrouping(Session,"Profiles",Session->GetCommunities(),Session->GetProfiles());}
-
-public:
-
-	/**
-	* Create the parameters.
-	*/
-	static void CreateParams(GPlugInFactory* fac)
-	{GCAPlugIn<GProfile,GCommunity,GCAInstProfile,CGroupProfile,GCAGroupProfile,kMeansProfile,CGroupsProfile>::CreateParams(fac);}
 };
 
 

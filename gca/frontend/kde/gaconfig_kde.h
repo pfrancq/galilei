@@ -44,5 +44,5 @@ class GAConfigDlg : public KDialog, public Ui_Config
 {
 public:
 	GAConfigDlg(void);
-	bool Configure(GPlugInFactory* fac);
+	bool Configure(GPlugIn* fac);
 };

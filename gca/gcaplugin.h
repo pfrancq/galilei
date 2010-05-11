@@ -38,12 +38,14 @@
 #include <robject.h>
 #include <rsparsevector.h>
 #include <gcakmeans.h>
+#include <rparam.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI project
 #include <gcommunity.h>
 #include <gtopic.h>
+#include <gsession.h>
 
 
 //------------------------------------------------------------------------------
@@ -60,8 +62,8 @@
  * @author Pascal Francq
  * @short Generic GCA PlugIn
  */
-template<class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	class GCAPlugIn : public R::RObject, public RParamsSC
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+	class GCAPlugIn : public cPlugin, R::RObject, public RParamsSC
 {
 protected:
 
@@ -74,6 +76,16 @@ protected:
 	 * Number of clusters handled by the k-Means.
 	 */
 	size_t NbClusters;
+
+	/**
+	* Maximal Number of k-Means.
+	*/
+	size_t MaxKMeans;
+
+	/**
+	* Convergence ratio between two k-Means iterations.
+	*/
+	double Convergence;
 
 	/**
 	 * Type of objects.
@@ -105,17 +117,12 @@ public:
 	/**
 	* Constructor.
 	*/
-	GCAPlugIn(const R::RString& name,tObjType objtype,tObjType grouptype);
+	GCAPlugIn(GSession* session,GPlugInFactory* fac,const R::RString& name,tObjType objtype,tObjType grouptype);
 
 	/**
 	 * Class name.
 	 */
 	virtual R::RCString GetClassName(void) const {return("GCAPlugIn");}
-
-	/**
-	* Configurations were applied from the factory.
-	*/
-	void ApplyConfig(GPlugInFactory* factory);
 
 protected:
 
@@ -182,9 +189,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param fac             Factory.
 	*/
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 
 	/**
 	* Destruct the GCA.
@@ -194,7 +200,7 @@ public:
 
 
 //-----------------------------------------------------------------------------
-#include <gcaplugin.hh>
+
 
 //------------------------------------------------------------------------------
 #endif

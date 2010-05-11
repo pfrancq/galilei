@@ -41,7 +41,6 @@
 #include <ggalileiapp.h>
 #include <ggroup.h>
 #include <gsession.h>
-#include <gsubjects.h>
 #include <gmeasure.h>
 
 

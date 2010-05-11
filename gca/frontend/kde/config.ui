@@ -7,14 +7,14 @@
     <x>0</x>
     <y>0</y>
     <width>492</width>
-    <height>545</height>
+    <height>471</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>TabWidget</string>
   </property>
   <property name="currentIndex">
-   <number>1</number>
+   <number>0</number>
   </property>
   <widget class="QWidget" name="tab">
    <attribute name="title">
@@ -157,9 +157,9 @@
       </property>
       <layout class="QVBoxLayout" name="verticalLayout_4">
        <item>
-        <widget class="QCheckBox" name="AllMinSim">
+        <widget class="QCheckBox" name="Incremental">
          <property name="text">
-          <string>Minimum of Similarity must be true for all pairs of objects in a group.</string>
+          <string>Incremental Clustering</string>
          </property>
         </widget>
        </item>
@@ -341,11 +341,11 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="tab">
+  <widget class="QWidget" name="tab2">
    <attribute name="title">
     <string>Genetic Algorithms</string>
    </attribute>
-   <layout class="QVBoxLayout" name="verticalLayout_7">
+   <layout class="QVBoxLayout" name="verticalLayout_6">
     <item>
      <widget class="QGroupBox" name="groupBox_3">
       <property name="title">
@@ -443,75 +443,6 @@
           </widget>
          </item>
         </layout>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="Optimisation">
-         <property name="text">
-          <string>Perform an optimization (k-Means).</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="GroupOptimization">
-         <property name="title">
-          <string>k-Means Optimization</string>
-         </property>
-         <layout class="QVBoxLayout" name="verticalLayout_6">
-          <item>
-           <layout class="QHBoxLayout" name="_9">
-            <item>
-             <widget class="QLabel" name="textLabel1_2">
-              <property name="toolTip">
-               <string>Set the number of derived solutions to created from the original chromosome.</string>
-              </property>
-              <property name="whatsThis">
-               <string>The optimization process of a given chromosome is based on a &lt;b&gt;k-Means&lt;/b&gt; algorithm running on several solutions, where each solutions is obtained by deriving the chromosome and creating two solutions where one group is splited and one where two groups are merged.</string>
-              </property>
-              <property name="text">
-               <string>Number of derived solutions</string>
-              </property>
-              <property name="wordWrap">
-               <bool>false</bool>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="spacer22">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeType">
-               <enum>QSizePolicy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="KIntNumInput" name="NbDivChromo"/>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="LocalOptimisation">
-         <property name="text">
-          <string>Perform a local optimization (Martello &amp;&amp; Toth heuristic).</string>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="Incremental">
-         <property name="text">
-          <string>Perform an incremental clustering</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
@@ -1012,6 +943,19 @@
       </layout>
      </widget>
     </item>
+    <item>
+     <spacer name="verticalSpacer_3">
+      <property name="orientation">
+       <enum>Qt::Vertical</enum>
+      </property>
+      <property name="sizeHint" stdset="0">
+       <size>
+        <width>20</width>
+        <height>83</height>
+       </size>
+      </property>
+     </spacer>
+    </item>
    </layout>
   </widget>
   <widget class="QWidget" name="tab_2">
@@ -1067,6 +1011,9 @@
            <property name="whatsThis">
             <string>The GVCA uses a k-Means as an optimisation operator. The ratio of convergence between two iterations of this k-Means can be fixed.</string>
            </property>
+           <property name="decimals">
+            <number>5</number>
+           </property>
           </widget>
          </item>
         </layout>
@@ -1090,7 +1037,7 @@
           </widget>
          </item>
          <item>
-          <spacer name="spacer98_2_2">
+          <spacer name="spacer98_2_22">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
@@ -1198,18 +1145,18 @@
  <resources/>
  <connections>
   <connection>
-   <sender>Optimisation</sender>
+   <sender>InternalRandom</sender>
    <signal>toggled(bool)</signal>
-   <receiver>GroupOptimization</receiver>
-   <slot>setEnabled(bool)</slot>
+   <receiver>Seed</receiver>
+   <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>104</x>
-     <y>148</y>
+     <x>139</x>
+     <y>192</y>
     </hint>
     <hint type="destinationlabel">
-     <x>176</x>
-     <y>391</y>
+     <x>320</x>
+     <y>222</y>
     </hint>
    </hints>
   </connection>
