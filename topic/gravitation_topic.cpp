@@ -67,7 +67,7 @@ GTopicCalcGravitation::GTopicCalcGravitation(GSession* session,GPlugInFactory* f
 //-----------------------------------------------------------------------------
 void GTopicCalcGravitation::ApplyConfig(void)
 {
-	MaxNonZero=Factory->FindParam<RParamValue>("Max Size")->GetUInt();
+	MaxNonZero=FindParam<RParamValue>("Max Size")->GetUInt();
 }
 
 
@@ -129,9 +129,9 @@ void GTopicCalcGravitation::Compute(const GTopic* grp)
 
 
 //------------------------------------------------------------------------------
-void GTopicCalcGravitation::CreateParams(GPlugInFactory* fac)
+void GTopicCalcGravitation::CreateConfig(void)
 {
-	fac->InsertParam(new RParamValue("Max Size",60));
+	InsertParam(new RParamValue("Max Size",60));
 }
 
 

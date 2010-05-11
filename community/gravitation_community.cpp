@@ -68,7 +68,7 @@ GCommunityCalcGravitation::GCommunityCalcGravitation(GSession* session,GPlugInFa
 //-----------------------------------------------------------------------------
 void GCommunityCalcGravitation::ApplyConfig(void)
 {
-	MaxNonZero=Factory->FindParam<RParamValue>("Max Size")->GetUInt();
+	MaxNonZero=FindParam<RParamValue>("Max Size")->GetUInt();
 }
 
 
@@ -130,9 +130,9 @@ void GCommunityCalcGravitation::Compute(const GCommunity* grp)
 
 
 //------------------------------------------------------------------------------
-void GCommunityCalcGravitation::CreateParams(GPlugInFactory* fac)
+void GCommunityCalcGravitation::CreateConfig(void)
 {
-	fac->InsertParam(new RParamValue("Max Size",60));
+	InsertParam(new RParamValue("Max Size",60));
 }
 
 

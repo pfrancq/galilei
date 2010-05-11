@@ -97,9 +97,9 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param fac             Factory.
 	*/
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
+
 
 	/**
 	* Destruct.
