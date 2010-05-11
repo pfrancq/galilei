@@ -59,7 +59,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugInFactory* fac)
+bool Configure(GPlugIn* fac)
 {
 	GGenericSimsDlg dlg("Similarities between documents and communities");
 	return(dlg.Configure(fac));
@@ -67,5 +67,5 @@ bool Configure(GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-}     // end of extren
+}     // end of extern
 //------------------------------------------------------------------------------

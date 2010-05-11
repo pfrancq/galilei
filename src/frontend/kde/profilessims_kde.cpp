@@ -61,7 +61,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugInFactory* fac)
+bool Configure(GPlugIn* fac)
 {
 	GGenericSimsDlg dlg("Similarities between profiles");
 	return(dlg.Configure(fac));

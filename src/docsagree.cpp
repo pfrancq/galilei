@@ -53,12 +53,12 @@ public:
 	GDocsAgreement(GSession* session,GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("GDocsAgreement");}
 	virtual void ApplyConfig(void);
-	double Compute(void* obj1,void* obj2);
+	double Compute(GObject* obj1,GObject* obj2);
 	virtual size_t GetId(void* obj,bool)
 	{
 		return(static_cast<GWeightInfosObj*>(obj)->GetId());
 	}
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 };
 
 
@@ -73,22 +73,22 @@ GDocsAgreement::GDocsAgreement(GSession* session,GPlugInFactory* fac)
 void GDocsAgreement::ApplyConfig(void)
 {
 	GMatrixMeasure::ApplyConfig();
-	MinProfiles=Factory->FindParam<RParamValue>("MinProfiles")->GetUInt();
+	MinProfiles=FindParam<RParamValue>("MinProfiles")->GetUInt();
 }
 
 
 //------------------------------------------------------------------------------
-double GDocsAgreement::Compute(void* obj1,void* obj2)
+double GDocsAgreement::Compute(GObject* obj1,GObject* obj2)
 {
 	return(static_cast<GDoc*>(obj1)->GetAgreementRatio(static_cast<GDoc*>(obj2),MinProfiles));
 }
 
 
 //------------------------------------------------------------------------------
-void GDocsAgreement::CreateParams(GPlugInFactory* fac)
+void GDocsAgreement::CreateConfig(void)
 {
-	GMatrixMeasure::CreateParams(fac);
-	fac->InsertParam(new RParamValue("MinProfiles",7));
+	GMatrixMeasure::CreateConfig();
+	InsertParam(new RParamValue("MinProfiles",7));
 }
 
 

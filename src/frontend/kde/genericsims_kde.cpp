@@ -136,7 +136,7 @@ void GGenericSimsDlg::Panel(void)
 
 
 //-----------------------------------------------------------------------------
-void GGenericSimsDlg::Init(GPlugInFactory* fac)
+void GGenericSimsDlg::Init(GPlugIn* fac)
 {
 	QGMatrixMeasureDlg::Init(fac);
 	SimType->setCurrentIndex(SimType->findText(ToQString(fac->FindParam<RParamValue>("SimType")->Get())));
@@ -152,7 +152,7 @@ void GGenericSimsDlg::Init(GPlugInFactory* fac)
 
 
 //-----------------------------------------------------------------------------
-void GGenericSimsDlg::Done(GPlugInFactory* fac)
+void GGenericSimsDlg::Done(GPlugIn* fac)
 {
 	fac->FindParam<RParamValue>("SimType")->Set(FromQString(SimType->currentText()));
 	fac->FindParam<RParamValue>("Factor")->SetDouble(Factor->value());

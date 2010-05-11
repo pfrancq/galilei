@@ -53,12 +53,12 @@ public:
 	GProfilesDisagreement(GSession* session,GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("GProfilesDisagreement");}
 	virtual void ApplyConfig(void);
-	double Compute(void* obj1,void* obj2);
+	double Compute(GObject* obj1,GObject* obj2);
 	virtual size_t GetId(void* obj,bool)
 	{
 		return(static_cast<GWeightInfosObj*>(obj)->GetId());
 	}
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 };
 
 
@@ -73,22 +73,22 @@ GProfilesDisagreement::GProfilesDisagreement(GSession* session,GPlugInFactory* f
 void GProfilesDisagreement::ApplyConfig(void)
 {
 	GMatrixMeasure::ApplyConfig();
-	MinDocs=Factory->FindParam<RParamValue>("MinDocs")->GetUInt();
+	MinDocs=FindParam<RParamValue>("MinDocs")->GetUInt();
 }
 
 
 //------------------------------------------------------------------------------
-double GProfilesDisagreement::Compute(void* obj1,void* obj2)
+double GProfilesDisagreement::Compute(GObject* obj1,GObject* obj2)
 {
 	return(static_cast<GProfile*>(obj1)->GetDisagreementRatio(static_cast<GProfile*>(obj2),MinDocs));
 }
 
 
 //------------------------------------------------------------------------------
-void GProfilesDisagreement::CreateParams(GPlugInFactory* fac)
+void GProfilesDisagreement::CreateConfig(void)
 {
-	GMatrixMeasure::CreateParams(fac);
-	fac->InsertParam(new RParamValue("MinDocs",7));
+	GMatrixMeasure::CreateConfig();
+	InsertParam(new RParamValue("MinDocs",7));
 }
 
 

@@ -296,7 +296,7 @@ public:
 	 * Compute the similarity between two objects that must inherits from the
 	 * class GWeightInfos.
 	 */
-	virtual double Compute(void* obj1,void* obj2);
+	virtual double Compute(GObject* obj1,GObject* obj2);
 
 	/**
 	 * Get the identifier of an object of a line or a column.
@@ -309,7 +309,7 @@ public:
 	/**
 	 * Create the parameters.
 	 */
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 
 	friend class GSimType;
 	friend class GSimTypeCosinus;
