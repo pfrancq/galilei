@@ -80,7 +80,7 @@ void About(void)
 
 
  //------------------------------------------------------------------------------
-bool Configure(GPlugInFactory* fac)
+bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 

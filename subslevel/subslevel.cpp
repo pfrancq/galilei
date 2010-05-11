@@ -39,12 +39,12 @@ using namespace std;
 
 
 //------------------------------------------------------------------------------
-//include files for R
+// include files for R
 #include <rdbmysql.h>
 
 
 //------------------------------------------------------------------------------
-//include files for GALILEI
+// include files for GALILEI
 #include <gsession.h>
 #include <gprofile.h>
 #include <gdoc.h>
@@ -77,9 +77,9 @@ SubsLevel::SubsLevel(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-void SubsLevel::CreateParams(GPlugInFactory* fac)
+void SubsLevel::CreateConfig(void)
 {
-	fac->InsertParam(new RParamValue("NbLevels",5));
+	InsertParam(new RParamValue("NbLevels",5));
 }
 
 
@@ -87,7 +87,7 @@ void SubsLevel::CreateParams(GPlugInFactory* fac)
 void SubsLevel::ApplyConfig(void)
 {
 	GComputeTrust::ApplyConfig();
-	NbLevels=Factory->FindParam<RParamValue>("NbLevels")->GetUInt();
+	NbLevels=FindParam<RParamValue>("NbLevels")->GetUInt();
 }
 
 

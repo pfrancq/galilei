@@ -110,7 +110,7 @@ public:
 	/**
 	* Create the parameters.
 	*/
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 
 	/**
 	* Configurations were applied from the factory.
