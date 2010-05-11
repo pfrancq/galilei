@@ -50,7 +50,7 @@
 
 //------------------------------------------------------------------------------
 Thesaurus::Thesaurus(GSession* session,GPlugInFactory* fac)
-		: GPostTopic(session,fac), Objs(100), Words(20000), WordsByIds(20000), Concepts(200)
+		: GTool(session,fac), Objs(100), Words(20000), WordsByIds(20000), Concepts(200)
 {
 }
 
@@ -58,11 +58,11 @@ Thesaurus::Thesaurus(GSession* session,GPlugInFactory* fac)
 //------------------------------------------------------------------------------
 void Thesaurus::ApplyConfig(void)
 {
-	Heuristic=Factory->FindParam<RParamValue>("GAHeuristic")->Get();
-	MaxGen=Factory->FindParam<RParamValue>("MaxGen")->GetUInt();
-	PopSize=Factory->FindParam<RParamValue>("PopSize")->GetUInt();
-	Verify=Factory->FindParam<RParamValue>("Verify")->GetBool();
-	NumInfos=Factory->FindParam<RParamValue>("NumInfos")->GetUInt();
+	Heuristic=FindParam<RParamValue>("GAHeuristic")->Get();
+	MaxGen=FindParam<RParamValue>("MaxGen")->GetUInt();
+	PopSize=FindParam<RParamValue>("PopSize")->GetUInt();
+	Verify=FindParam<RParamValue>("Verify")->GetBool();
+	NumInfos=FindParam<RParamValue>("NumInfos")->GetUInt();
 }
 
 
@@ -93,7 +93,8 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 	}
 
 	// Create the class
-	GClass* Class(Session->InsertClass(parent,cNoRef,0,Name));
+	GClass* Class(new GClass(Session,Name));
+	Session->Insert(parent,Class);
 
 	// Build the vector representing its concepts
 	RNumCursor<size_t> List(node->GetAttr());
@@ -132,7 +133,7 @@ void Thesaurus::PrintObj(RObjH* obj)
 
 
 //------------------------------------------------------------------------------
-void Thesaurus::Run(void)
+void Thesaurus::Run(GSlot*)
 {
 	try
 	{
@@ -200,7 +201,7 @@ void Thesaurus::Run(void)
 
 		// Init the GCA
 		cout<<"New HCA"<<endl;
-		GInstH Instance(MaxGen,PopSize,Objs,Heuristic,Session->GetDebug());
+		GInstH Instance(MaxGen,PopSize,Objs,Heuristic,0);
 		InsertObserver(reinterpret_cast<tNotificationHandler>(&Thesaurus::Gen),"RInst::Generation",&Instance);
 		cout<<"Init HCA"<<endl;
 		Instance.SetVerify(Verify);
@@ -243,13 +244,13 @@ void Thesaurus::Gen(const R::RNotification& notification)
 
 
 //------------------------------------------------------------------------------
-void Thesaurus::CreateParams(GPlugInFactory* fac)
+void Thesaurus::CreateConfig(void)
 {
-	fac->InsertParam(new RParamValue("GAHeuristic","FirstFit"));
-	fac->InsertParam(new RParamValue("MaxGen",50));
-	fac->InsertParam(new RParamValue("PopSize",16));
-	fac->InsertParam(new RParamValue("Verify",false));
-	fac->InsertParam(new RParamValue("NumInfos",20));
+	InsertParam(new RParamValue("GAHeuristic","FirstFit"));
+	InsertParam(new RParamValue("MaxGen",50));
+	InsertParam(new RParamValue("PopSize",16));
+	InsertParam(new RParamValue("Verify",false));
+	InsertParam(new RParamValue("NumInfos",20));
 }
 
 
@@ -260,4 +261,4 @@ Thesaurus::~Thesaurus(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_POSTTOPIC_FACTORY("Thesaurus Creation","Thesaurus Creation",Thesaurus)
+CREATE_TOOL_FACTORY("Thesaurus Creation","Thesaurus Creation",Thesaurus)

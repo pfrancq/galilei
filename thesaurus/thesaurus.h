@@ -35,7 +35,7 @@
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <robject.h>
-#include <gposttopic.h>
+#include <gtool.h>
 #include <robjh.h>
 #include <rnotification.h>
 #include <gconcept.h>
@@ -52,8 +52,7 @@ using namespace R;
 /**
 * The class Word represents a word and an id.
 */
-class Word
-{
+class Word{
 public:
 	size_t Id;
 	GConcept* Concept;
@@ -70,7 +69,7 @@ public:
 * @author Pascal Francq
 * @short Thesaurus Creation.
 */
-class Thesaurus  : public RObject, public GPostTopic
+class Thesaurus : public RObject, public GTool
 {
 	/**
 	* HGA Objects.
@@ -153,7 +152,7 @@ public:
     /**
 	* Run the thesaurus creation.
 	*/
-	virtual void Run(void);
+	virtual void Run(GSlot* slot);
 
 	/**
 	 * Handle a generation
@@ -163,7 +162,7 @@ public:
 	/**
 	* Create the parameters.
 	*/
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 
 	/**
 	* Destruct the plug-in.

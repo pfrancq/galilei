@@ -29,7 +29,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
-#include <gposttopic.h>
+#include <gplugin.h>
 #include <rqt.h>
 using namespace R;
 using namespace GALILEI;
@@ -80,7 +80,7 @@ void About(void)
 
 
  //------------------------------------------------------------------------------
-bool Configure(GPlugInFactory* fac)
+bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 
