@@ -79,10 +79,10 @@ Sugs::Sugs(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-void Sugs::CreateParams(GPlugInFactory* fac)
+void Sugs::CreateConfig(void)
 {
-	fac->InsertParam(new RParamValue("NbSugs",50));
-	fac->InsertParam(new RParamValue("UseLevels",false));
+	InsertParam(new RParamValue("NbSugs",50));
+	InsertParam(new RParamValue("UseLevels",false));
 }
 
 
@@ -90,8 +90,8 @@ void Sugs::CreateParams(GPlugInFactory* fac)
 void Sugs::ApplyConfig(void)
 {
 	GComputeSugs::ApplyConfig();
-	NbSugs=Factory->FindParam<RParamValue>("NbSugs")->GetUInt();
-	UseLevels=Factory->FindParam<RParamValue>("UseLevels")->GetBool();
+	NbSugs=FindParam<RParamValue>("NbSugs")->GetUInt();
+	UseLevels=FindParam<RParamValue>("UseLevels")->GetBool();
 }
 
 
