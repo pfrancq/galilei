@@ -160,7 +160,7 @@ public:
 	/**
 	* Create the parameters.
 	*/
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 
 	/**
 	 * @return the type of the measure.

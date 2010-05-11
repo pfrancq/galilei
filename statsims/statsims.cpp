@@ -43,7 +43,6 @@
 #include <glang.h>
 #include <gsession.h>
 #include <gsubject.h>
-#include <gsubjects.h>
 #include <gdoc.h>
 #include <gprofile.h>
 #include <gmeasure.h>
@@ -230,25 +229,25 @@ GStatsSims::GStatsSims(GSession* session,GPlugInFactory* fac)
 //------------------------------------------------------------------------------
 void GStatsSims::ApplyConfig(void)
 {
-	Docs=Factory->FindParam<RParamValue>("Docs")->GetBool();
-	ProfDoc=Factory->FindParam<RParamValue>("ProfDoc")->GetBool();
-	GroupDoc=Factory->FindParam<RParamValue>("GroupDoc")->GetBool();
-	Profiles=Factory->FindParam<RParamValue>("Profiles")->GetBool();
-	SameDocProf=Factory->FindParam<RParamValue>("SameDocProf")->GetBool();
-	GroupProf=Factory->FindParam<RParamValue>("GroupProf")->GetBool();
-	SaveResults=Factory->FindParam<RParamValue>("SaveResults")->GetBool();
+	Docs=FindParam<RParamValue>("Docs")->GetBool();
+	ProfDoc=FindParam<RParamValue>("ProfDoc")->GetBool();
+	GroupDoc=FindParam<RParamValue>("GroupDoc")->GetBool();
+	Profiles=FindParam<RParamValue>("Profiles")->GetBool();
+	SameDocProf=FindParam<RParamValue>("SameDocProf")->GetBool();
+	GroupProf=FindParam<RParamValue>("GroupProf")->GetBool();
+	SaveResults=FindParam<RParamValue>("SaveResults")->GetBool();
 	RURI OldName(Results);
-	Results=Factory->FindParam<RParamValue>("Results")->Get();
+	Results=FindParam<RParamValue>("Results")->Get();
 	if((OldName!=Results)&&ResultsFile)
 	{
 		delete ResultsFile;
 		ResultsFile=0;
 	}
-	ExportDocsSims=Factory->FindParam<RParamValue>("ExportDocsSims")->GetBool();
-	DocsSims=Factory->FindParam<RParamValue>("DocsSims")->Get();
-	ExportDocsIncs=Factory->FindParam<RParamValue>("ExportDocsIncs")->GetBool();
-	DocsIncs=Factory->FindParam<RParamValue>("DocsIncs")->Get();
-	RString Tmp(Factory->FindParam<RParamValue>("MeasureType")->Get());
+	ExportDocsSims=FindParam<RParamValue>("ExportDocsSims")->GetBool();
+	DocsSims=FindParam<RParamValue>("DocsSims")->Get();
+	ExportDocsIncs=FindParam<RParamValue>("ExportDocsIncs")->GetBool();
+	DocsIncs=FindParam<RParamValue>("DocsIncs")->Get();
+	RString Tmp(FindParam<RParamValue>("MeasureType")->Get());
 	if((Tmp!="Complete")&&(Tmp!="Nearest Neighbors"))
 		ThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
 	MeasureType=Tmp;
@@ -323,7 +322,7 @@ void GStatsSims::DoExportDocsIncs(void)
 			if(Objs1()==Objs2())
 				Export<<"1.000000E+00";
 			else
-				Export<<Objs1()->GetVector().Inclusion(Objs2()->GetVector(),otDoc);
+				Export<<Objs1()->GetVector().Inclusion(Session,Objs2()->GetVector(),otDoc);
 			NewComma=true;
 		}
 		NewLine=true;
@@ -416,21 +415,21 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::CreateParams(GPlugInFactory* fac)
+void GStatsSims::CreateConfig(void)
 {
-	fac->InsertParam(new RParamValue("Docs",false));
-	fac->InsertParam(new RParamValue("ProfDoc",false));
-	fac->InsertParam(new RParamValue("GroupDoc",false));
-	fac->InsertParam(new RParamValue("Profiles",false));
-	fac->InsertParam(new RParamValue("SameDocProf",false));
-	fac->InsertParam(new RParamValue("GroupProf",false));
-	fac->InsertParam(new RParamValue("SaveResults",false));
-	fac->InsertParam(new RParamValue("Results",""));
-	fac->InsertParam(new RParamValue("ExportDocsSims",false));
-	fac->InsertParam(new RParamValue("DocsSims",""));
-	fac->InsertParam(new RParamValue("ExportDocsIncs",false));
-	fac->InsertParam(new RParamValue("DocsIncs",""));
-	fac->InsertParam(new RParamValue("MeasureType","Complete"));
+	InsertParam(new RParamValue("Docs",false));
+	InsertParam(new RParamValue("ProfDoc",false));
+	InsertParam(new RParamValue("GroupDoc",false));
+	InsertParam(new RParamValue("Profiles",false));
+	InsertParam(new RParamValue("SameDocProf",false));
+	InsertParam(new RParamValue("GroupProf",false));
+	InsertParam(new RParamValue("SaveResults",false));
+	InsertParam(new RParamValue("Results",""));
+	InsertParam(new RParamValue("ExportDocsSims",false));
+	InsertParam(new RParamValue("DocsSims",""));
+	InsertParam(new RParamValue("ExportDocsIncs",false));
+	InsertParam(new RParamValue("DocsIncs",""));
+	InsertParam(new RParamValue("MeasureType","Complete"));
 }
 
 

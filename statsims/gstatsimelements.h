@@ -225,8 +225,8 @@ template<class E1,class E2>
 template<class E1,class E2>
 	void GStatSimElements<E1,E2>::AnalyzeObjs(GStatsSims* calc,RXMLStruct* xml,RXMLTag* parent,size_t id1,size_t id2)
 {
-	GWeightInfosObj* Obj1(static_cast<GWeightInfosObj*>(Session->GetElement(ObjType1,id1)));
-	GWeightInfosObj* Obj2(static_cast<GWeightInfosObj*>(Session->GetElement(ObjType2,id2)));
+	GWeightInfosObj* Obj1(static_cast<GWeightInfosObj*>(Session->GetObject(ObjType1,id1)));
+	GWeightInfosObj* Obj2(static_cast<GWeightInfosObj*>(Session->GetObject(ObjType2,id2)));
 	calc->AddTag(xml,parent,"Intra",Obj1->GetName());
 	calc->AddTag(xml,parent,"Extra",Obj2->GetName());
 
@@ -639,8 +639,8 @@ template<class E1,class E2>
 				NbCols++;  // Increase the number of nearest neighbors
 
 				// Get the subject of Cur()
-				E2* Col(static_cast<E2*>(Session->GetElement(ObjType2,Cur()->Id)));
-				const GSubject* Subject2(Session->GetIdealGroup(Col));
+				E2* Col(static_cast<E2*>(Session->GetObject(ObjType2,Cur()->Id)));
+				const GSubject* Subject2(Session->GetSubject(Col));
 
 				if(Print)
 					cout<<"  "<<Col->GetName()<<endl;
@@ -687,8 +687,8 @@ template<class E1,class E2>
 					LocalOverlap++;  // One common nearest neighbor
 
 					// Get the subject of Cur2()
-					E2* Col(static_cast<E2*>(Session->GetElement(ObjType2,Cur2()->Id)));
-					const GSubject* Subject2(Session->GetIdealGroup(Col));
+					E2* Col(static_cast<E2*>(Session->GetObject(ObjType2,Cur2()->Id)));
+					const GSubject* Subject2(Session->GetSubject(Col));
 					if(Subject2==Sub())
 						LocalIntraOverlap++;
 				}
