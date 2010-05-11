@@ -66,25 +66,20 @@ void RunGALILEIProgram::Run(void)
 		// Execute a program
 		try
 		{
-			WriteLog("Running program "+Prg);
 			RunPrg(this,Prg);
-			WriteLog("End program "+Prg);
 			cout<<"Program finished"<<endl;
 		 }
 		catch(RException& e)
 		{
 			cout<<endl<<"Error: "<<e.GetMsg()<<endl;
-			WriteLog(RString("Error: ")+e.GetMsg());
 		}
 		catch(std::exception& e)
 		{
 			cout<<endl<<"Error: "<<e.what()<<endl;
-			WriteLog(RString("Error: ")+e.what());
 		}
 		catch(...)
 		{
 			cout<<endl<<"Error while processing"<<endl;
-			WriteLog("Error while processing");
 		}
 	}
 	else
@@ -131,16 +126,14 @@ void RunGALILEIProgram::Run(void)
 
 
 //------------------------------------------------------------------------------
-void RunGALILEIProgram::NextDoc(const GDoc* doc)
+void RunGALILEIProgram::NextDoc(const GDoc*)
 {
-	Log->NextDoc(doc);
 }
 
 
 //------------------------------------------------------------------------------
-void RunGALILEIProgram::NextProfile(const GProfile* prof)
+void RunGALILEIProgram::NextProfile(const GProfile*)
 {
-	Log->NextProfile(prof);
 }
 
 
@@ -152,9 +145,8 @@ void RunGALILEIProgram::WriteStr(const RString& str)
 
 
 //------------------------------------------------------------------------------
-void RunGALILEIProgram::StartJob(const R::RString job)
+void RunGALILEIProgram::StartJob(const R::RString)
 {
-	Log->StartJob(job);
 }
 
 
@@ -162,7 +154,6 @@ void RunGALILEIProgram::StartJob(const R::RString job)
 void RunGALILEIProgram::Warning(R::RString msg)
 {
 	cout<<"Warning: "<<msg<<endl;
-	Log->Warning(msg);
 }
 
 
@@ -170,7 +161,6 @@ void RunGALILEIProgram::Warning(R::RString msg)
 void RunGALILEIProgram::Error(R::RString msg)
 {
 	cout<<"Error: "<<msg<<endl;
-	Log->Error(msg);
 }
 
 
@@ -178,7 +168,6 @@ void RunGALILEIProgram::Error(R::RString msg)
 void RunGALILEIProgram::Alert(R::RString msg)
 {
 	cout<<"Alert: "<<msg<<endl;
-	Log->Alert(msg);
 }
 
 

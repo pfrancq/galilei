@@ -119,17 +119,21 @@ void CreateMySQL::Run(const RContainer<RString,true,false>& params)
  	cout<<"Dump Database model"<<endl;
  	Db.RunSQLFile("http://www.otlet-institute.org/NewDb.sql");
  	cout<<"Create Languages (terms and stopwords)"<<endl;
- 	RCastCursor<GPlugIn,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
+ 	RCastCursor<GPlugInFactory,GLangFactory> Langs(GALILEIApp->GetFactories("Lang"));
  	RContainer<RString,true,false> Stops(200);
  	for(Langs.Start();!Langs.End();Langs.Next())
  	{
- 		// Create the concept types
- 		RString Code(Langs()->GetCode());
- 		GetConceptType(Code+"Terms",Langs()->GetLangName()+" Terms",&Db);
- 		RString TypeId(GetConceptType(Code+"Stopwords",Langs()->GetLangName()+" Stopwords",&Db));
-
+ 		// Get the stop list and the code.
  		Stops.Clear();
- 		Langs()->GetStopWords(Stops);
+ 		RString Code;
+ 		RString Name;
+ 		GLangFactory* Factory(reinterpret_cast<GLangFactory*>(Langs()));
+ 		Factory->CreateStopWords(Stops,Code,Name);
+
+ 		// Create the concept types
+ 		GetConceptType(Code+"Terms",Name+" Terms",&Db);
+ 		RString TypeId(GetConceptType(Code+"Stopwords",Name+" Stopwords",&Db));
+
  		RCursor<RString> Cur(Stops);
  		for(Cur.Start();!Cur.End();Cur.Next())
  			RQuery InsertStopWord(&Db,"INSERT INTO concepts(name,typeid) VALUES("+RQuery::SQLValue(*Cur())+","+TypeId+")");
