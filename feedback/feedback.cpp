@@ -76,14 +76,14 @@ GProfileCalcFeedback::GProfileCalcFeedback(GSession* session,GPlugInFactory* fac
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::ApplyConfig(void)
 {
-	MaxNonZero=Factory->FindParam<RParamValue>("MaxSize")->GetUInt();
-	NegNonZero=Factory->FindParam<RParamValue>("NegSize")->GetUInt();
+	MaxNonZero=FindParam<RParamValue>("MaxSize")->GetUInt();
+	NegNonZero=FindParam<RParamValue>("NegSize")->GetUInt();
 	if(NegNonZero>MaxNonZero)
 		MaxNonZero=NegNonZero;
-	RelFactor=Factory->FindParam<RParamValue>("RelFactor")->GetDouble();
-	FuzzyFactor=Factory->FindParam<RParamValue>("FuzzyFactor")->GetDouble();
-	IrrelFactor=Factory->FindParam<RParamValue>("IrrelFactor")->GetDouble();
-	IncrementalMode=Factory->FindParam<RParamValue>("IncrementalMode")->GetBool();
+	RelFactor=FindParam<RParamValue>("RelFactor")->GetDouble();
+	FuzzyFactor=FindParam<RParamValue>("FuzzyFactor")->GetDouble();
+	IrrelFactor=FindParam<RParamValue>("IrrelFactor")->GetDouble();
+	IncrementalMode=FindParam<RParamValue>("IncrementalMode")->GetBool();
 }
 
 
@@ -292,14 +292,14 @@ void GProfileCalcFeedback::WriteFile(const RString& dir)
 
 
 //------------------------------------------------------------------------------
-void GProfileCalcFeedback::CreateParams(GPlugInFactory* fac)
+void GProfileCalcFeedback::CreateConfig(void)
 {
-	fac->InsertParam(new RParamValue("MaxSize",60));
-	fac->InsertParam(new RParamValue("NegSize",0));
-	fac->InsertParam(new RParamValue("RelFactor",1.0));
-	fac->InsertParam(new RParamValue("FuzzyFactor",0.25));
-	fac->InsertParam(new RParamValue("IrrelFactor",0.75));
-	fac->InsertParam(new RParamValue("IncrementalMode",false));
+	InsertParam(new RParamValue("MaxSize",60));
+	InsertParam(new RParamValue("NegSize",0));
+	InsertParam(new RParamValue("RelFactor",1.0));
+	InsertParam(new RParamValue("FuzzyFactor",0.25));
+	InsertParam(new RParamValue("IrrelFactor",0.75));
+	InsertParam(new RParamValue("IncrementalMode",false));
 }
 
 

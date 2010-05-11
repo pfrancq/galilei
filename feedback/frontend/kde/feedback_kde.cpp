@@ -68,7 +68,7 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "feedback", 0, ki18n("Feedback Subprofile Computing Method "),
+	KAboutData aboutData( "feedback", 0, ki18n("Feedback Profile Computing Method "),
 		"1.1",ki18n("This is the Feedback Profile Computing Method for GALILEI."), KAboutData::License_GPL,
 		ki18n("(C) 2001-2010 by Pascal Francq\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
@@ -79,7 +79,7 @@ void About(void)
 
 
 //------------------------------------------------------------------------------
-bool Configure(GPlugInFactory* fac)
+bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 
