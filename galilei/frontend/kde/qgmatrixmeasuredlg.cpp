@@ -74,28 +74,31 @@ QGMatrixMeasureDlg::QGMatrixMeasureDlg(const QString& title)
 }
 
 //-----------------------------------------------------------------------------
-QGroupBox* QGMatrixMeasureDlg::GetMeasureSpecific(void)
+QWidget* QGMatrixMeasureDlg::GetMeasureSpecific(void)
 {
 	return(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MeasureSpecific);
 }
 
 
 //-----------------------------------------------------------------------------
-QBoxLayout* QGMatrixMeasureDlg::GetMeasureSpecificLayout(void)
+QVBoxLayout* QGMatrixMeasureDlg::GetMeasureSpecificLayout(void)
 {
-	return(dynamic_cast<QBoxLayout*>(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MeasureSpecific->layout()));
+	//return(dynamic_cast<QBoxLayout*>(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MeasureSpecific->layout()));
+	//return(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MeasureSpecific->layout());
+	return(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MeasureSpecificLayout);
 }
 
 
 //-----------------------------------------------------------------------------
-bool QGMatrixMeasureDlg::Configure(GPlugInFactory* factory)
+bool QGMatrixMeasureDlg::Configure(GPlugIn* plugin)
 {
 	Panel();
-	Init(factory);
+	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->MeasureSpecificLayout->addItem(new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding));
+	Init(plugin);
 	resize(sizeHint());
 	if(exec())
 	{
-		Done(factory);
+		Done(plugin);
 		return(true);
  	}
 	return(false);
@@ -103,45 +106,43 @@ bool QGMatrixMeasureDlg::Configure(GPlugInFactory* factory)
 
 
 //-----------------------------------------------------------------------------
-void QGMatrixMeasureDlg::Init(GPlugInFactory* factory)
+void QGMatrixMeasureDlg::Init(GPlugIn* plugin)
 {
 	Ui_QGMatrixMeasureDlg* Dlg(static_cast<Ui_QGMatrixMeasureDlg*>(Ui));
 	Dlg->CutoffFrequency->setDecimals(10);
-	Dlg->CutoffFrequency->setValue(factory->FindParam<RParamValue>("Cutoff Frequency")->GetDouble());
-	Dlg->MinSim->setValue(factory->FindParam<RParamValue>("MinMeasure")->GetDouble());
-	Dlg->DeviationRate->setValue(factory->FindParam<RParamValue>("DeviationRate")->GetDouble());
-	Dlg->DeviationRate->setEnabled(factory->FindParam<RParamValue>("AutomaticMinMeasure")->GetBool());
-	Dlg->StaticMinSim->setChecked(!factory->FindParam<RParamValue>("AutomaticMinMeasure")->GetBool());
-	Dlg->MinSim->setEnabled(!factory->FindParam<RParamValue>("AutomaticMinMeasure")->GetBool());
-	Dlg->Memory->setChecked(factory->FindParam<RParamValue>("Memory")->GetBool());
-	Dlg->Memory->setEnabled(!GSession::IsConnected());
-	Dlg->File->setChecked(factory->FindParam<RParamValue>("Storage")->GetBool());
-	Dlg->File->setEnabled(!GSession::IsConnected());
-	Dlg->Dir->setUrl(ToQString(factory->FindParam<RParamValue>("Dir")->Get()));
-	Dlg->Dir->setEnabled(!GSession::IsConnected());
+	Dlg->CutoffFrequency->setValue(plugin->FindParam<RParamValue>("Cutoff Frequency")->GetDouble());
+	Dlg->MinSim->setValue(plugin->FindParam<RParamValue>("MinMeasure")->GetDouble());
+	Dlg->DeviationRate->setValue(plugin->FindParam<RParamValue>("DeviationRate")->GetDouble());
+	Dlg->DeviationRate->setEnabled(plugin->FindParam<RParamValue>("AutomaticMinMeasure")->GetBool());
+	Dlg->StaticMinSim->setChecked(!plugin->FindParam<RParamValue>("AutomaticMinMeasure")->GetBool());
+	Dlg->MinSim->setEnabled(!plugin->FindParam<RParamValue>("AutomaticMinMeasure")->GetBool());
+	Dlg->Memory->setChecked(plugin->FindParam<RParamValue>("Memory")->GetBool());
+	Dlg->File->setChecked(plugin->FindParam<RParamValue>("Storage")->GetBool());
+	Dlg->Dir->setUrl(ToQString(plugin->FindParam<RParamValue>("Dir")->Get()));
 	Dlg->Dir->setEnabled(Dlg->File->isChecked());
-	Dlg->Type->setCurrentIndex(factory->FindParam<RParamValue>("Type")->GetInt());
-	Dlg->Type->setEnabled(!GSession::IsConnected());
-	Dlg->NbNearest->setValue(factory->FindParam<RParamValue>("NbNearest")->GetUInt());
-	Dlg->NbSamples->setValue(factory->FindParam<RParamValue>("NbSamples")->GetUInt());
-	ChangeType(factory->FindParam<RParamValue>("Type")->GetInt());
+	Dlg->Type->setCurrentIndex(plugin->FindParam<RParamValue>("Type")->GetInt());
+	Dlg->NbNearest->setValue(plugin->FindParam<RParamValue>("NbNearest")->GetUInt());
+	Dlg->NbSamples->setValue(plugin->FindParam<RParamValue>("NbSamples")->GetUInt());
+	Dlg->FastNN->setChecked(plugin->FindParam<RParamValue>("FastNN")->GetBool());
+	ChangeType(plugin->FindParam<RParamValue>("Type")->GetInt());
 }
 
 
 //-----------------------------------------------------------------------------
-void QGMatrixMeasureDlg::Done(GPlugInFactory* factory)
+void QGMatrixMeasureDlg::Done(GPlugIn* plugin)
 {
 	Ui_QGMatrixMeasureDlg* Dlg(static_cast<Ui_QGMatrixMeasureDlg*>(Ui));
-	factory->FindParam<RParamValue>("Cutoff Frequency")->SetDouble(Dlg->CutoffFrequency->value());
-	factory->FindParam<RParamValue>("MinMeasure")->SetDouble(Dlg->MinSim->value());
-	factory->FindParam<RParamValue>("DeviationRate")->SetDouble(Dlg->DeviationRate->value());
-	factory->FindParam<RParamValue>("AutomaticMinMeasure")->SetBool(!Dlg->StaticMinSim->isChecked());
-	factory->FindParam<RParamValue>("NbNearest")->SetUInt(Dlg->NbNearest->value());
-	factory->FindParam<RParamValue>("NbSamples")->SetUInt(Dlg->NbSamples->value());
-	factory->FindParam<RParamValue>("Memory")->SetBool(Dlg->Memory->isChecked());
-	factory->FindParam<RParamValue>("Storage")->SetBool(Dlg->File->isChecked());
-	factory->FindParam<RParamValue>("Dir")->Set(FromQString(Dlg->Dir->url().url()));
-	factory->FindParam<RParamValue>("Type")->SetInt(Dlg->Type->currentIndex());
+	plugin->FindParam<RParamValue>("Cutoff Frequency")->SetDouble(Dlg->CutoffFrequency->value());
+	plugin->FindParam<RParamValue>("MinMeasure")->SetDouble(Dlg->MinSim->value());
+	plugin->FindParam<RParamValue>("DeviationRate")->SetDouble(Dlg->DeviationRate->value());
+	plugin->FindParam<RParamValue>("AutomaticMinMeasure")->SetBool(!Dlg->StaticMinSim->isChecked());
+	plugin->FindParam<RParamValue>("NbNearest")->SetUInt(Dlg->NbNearest->value());
+	plugin->FindParam<RParamValue>("NbSamples")->SetUInt(Dlg->NbSamples->value());
+	plugin->FindParam<RParamValue>("Memory")->SetBool(Dlg->Memory->isChecked());
+	plugin->FindParam<RParamValue>("Storage")->SetBool(Dlg->File->isChecked());
+	plugin->FindParam<RParamValue>("Dir")->Set(FromQString(Dlg->Dir->url().url()));
+	plugin->FindParam<RParamValue>("Type")->SetInt(Dlg->Type->currentIndex());
+	plugin->FindParam<RParamValue>("FastNN")->SetBool(Dlg->FastNN->isChecked());
 }
 
 
@@ -157,6 +158,7 @@ void QGMatrixMeasureDlg::ChangeType(int type)
 {
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->NbNearest->setEnabled(type==2);
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->NbSamples->setEnabled(type==2);
+	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->FastNN->setEnabled(type==2);
 }
 
 

@@ -60,12 +60,20 @@ class GClass : public R::RNode<GClasses,GClass,true>, public GWeightInfosObj
 public:
 
 	/**
+	* Construct a new class.
+	* @param session         Session.
+	* @param name            Name of the class.
+	*/
+	GClass(GSession* session,const R::RString& name);
+
+	/**
 	* Construct a class with a specific identifier.
+	* @param session         Session.
 	* @param id              Identifier.
 	* @param blockid         Identifier of the block.
 	* @param name            Name of the class.
 	*/
-	GClass(size_t id,size_t blockid,const R::RString& name);
+	GClass(GSession* session,size_t id,size_t blockid,const R::RString& name);
 
 	/**
 	 * Clear the node.

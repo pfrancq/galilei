@@ -71,7 +71,7 @@ void QGDocStruct::Set(GDoc* obj)
 
 	// Init
 	QTreeWidget* RecsList(static_cast<Ui_QGDocStruct*>(Ui)->RecsList);
-	GSession* Session=GALILEIApp->GetSession();
+	GSession* Session=obj->GetSession();
 	RecsList->clear();
 
 

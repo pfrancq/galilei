@@ -57,19 +57,21 @@ public:
 
 	/**
 	* Construct a new community group.
+	* @param session         Session.
 	* @param name            Name of the community.
 	*/
-	GCommunity(const R::RString& name);
+	GCommunity(GSession* session,const R::RString& name);
 
 	/**
 	* Construct a community with a specific identifier.
+	* @param session         Session.
 	* @param id              Identifier.
-	* @param blockid        Identifier of the block.
+	* @param blockid         Identifier of the block.
 	* @param name            Name of the community.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GCommunity(size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
+	GCommunity(GSession* session,size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
 	 * Get the similarity measure that must be used when computing the

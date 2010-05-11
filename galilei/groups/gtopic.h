@@ -55,19 +55,21 @@ public:
 
 	/**
 	* Construct a new topic.
+	* @param session         Session.
 	* @param name            Name of the topic.
 	*/
-	GTopic(const R::RString& name);
+	GTopic(GSession* session,const R::RString& name);
 
 	/**
 	* Construct a topic with a specific identifier.
+	* @param session         Session.
 	* @param id              Identifier.
-	* @param blockid        Identifier of the block.
+	* @param blockid         Identifier of the block.
 	* @param name            Name of the topic.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GTopic(size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
+	GTopic(GSession* session,size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
 	 * Get the similarity measure that must be used when computing the

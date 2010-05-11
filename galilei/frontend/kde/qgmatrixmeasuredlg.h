@@ -83,18 +83,18 @@ public:
 	/**
 	 * Get a pointer to the group box holding the specific part.
 	 */
-	QGroupBox* GetMeasureSpecific(void);
+	QWidget* GetMeasureSpecific(void);
 
 	/**
 	 * Get a pointer to the group box's layout holding the specific part.
 	 */
-	QBoxLayout* GetMeasureSpecificLayout(void);
+	QVBoxLayout* GetMeasureSpecificLayout(void);
 
 	/**
 	 * Launch the configuration.
-	 * @param factory        Factory.
+	 * @param plugin         Plug-in.
 	 */
-	bool Configure(GPlugInFactory* factory);
+	bool Configure(GPlugIn* plugin);
 
 	/**
 	 * Method called before the dialog box is initialized. By default, it hides
@@ -126,15 +126,15 @@ public:
 	 * (normally with the 'Panel' and 'Done' methods) to synchronized new
 	 * parameters and widgets.
 	 * @code
-	 * void MyDlg::Init(GFactoryMeasure* factory)
+	 * void MyDlg::Init(GPlugIn* plugin)
 	 * {
-	 *    QGMatrixMeasureDlg::Init(factory);
-	 *    MinDocs->setValue(factory->FindParam<RParamValue>("MinDocs")->GetUInt);    // 'MinDocs' must be added to the class.
+	 *    QGMatrixMeasureDlg::Init(plugin);
+	 *    MinDocs->setValue(plugin->FindParam<RParamValue>("MinDocs")->GetUInt);    // 'MinDocs' must be added to the class.
 	 * }
 	 * @endcode
-	 * @param factory        Factory.
+	 * @param plugin         Plug-in.
 	 */
-	virtual void Init(GPlugInFactory* factory);
+	virtual void Init(GPlugIn* plugin);
 
 	/**
 	 * Method called when the dialog box is closed with the 'OK' button. The
@@ -142,15 +142,15 @@ public:
 	 * be overridden (normally with the 'Panel' and 'Init' methods) to
 	 * synchronized new parameters and widgets.
 	 * @code
-	 * void MyDlg::Done(GFactoryMeasure* factory)
+	 * void MyDlg::Done(GPlugIn* plugin)
 	 * {
-	 *    factory->FindParam<RParamValue>("MinDocs")->SetUInt(MinDocs->value());    // 'MinDocs' was changed.
-	 *    QGMatrixMeasureDlg::Done(factory);
+	 *    plugin->FindParam<RParamValue>("MinDocs")->SetUInt(MinDocs->value());    // 'MinDocs' was changed.
+	 *    QGMatrixMeasureDlg::Done(plugin);
 	 * }
 	 * @endcode
-	 * @param factory        Factory.
+	 * @param plugin         Plug-in.
 	 */
-	virtual void Done(GPlugInFactory* factory);
+	virtual void Done(GPlugIn* plugin);
 
 public slots:
 

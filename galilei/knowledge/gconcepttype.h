@@ -41,6 +41,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <glang.h>
 #include <gobject.h>
 
 
@@ -63,11 +64,6 @@ namespace GALILEI{
 class GConceptType : public GObject, protected R::RDblHashContainer<GConcept,false>
 {
 private:
-
-	/**
-	 * Ontology.
-	 */
-	GOntology* Ontology;
 
 	/**
 	* Short description of the type.
@@ -109,14 +105,13 @@ public:
 
 	/**
 	* Construct a concept type.
+	* @param session         Session.
 	* @param id              Identifier of the type.
-	* @param ontology        Ontology.
 	* @param name            Name of the type.
 	* @param desc            Short description.
-	* @param lang            Language eventually associated to the concept type.
 	* @param s               Size of the second hash table.
 	*/
-	GConceptType(size_t id,GOntology* ontology,const R::RString& name,const R::RString& desc,GLang* lang,size_t s);
+	GConceptType(GSession* session,size_t id,const R::RString& name,const R::RString& desc,size_t s);
 
 	/**
 	* Set the references of a given language. This method is called when
@@ -151,23 +146,29 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
-	* Get the description.
+	 * @return the session.
+	 */
+	inline GSession* GetSession(void) const {return(Session);}
+
+	/**
+	* @return the description.
 	*/
 	R::RString GetDescription(void) const {return(Description);}
 
 	/**
 	 * Is the concept type universal.
+	 * @return true if yes.
 	 */
 	bool IsUniversal(void) const {return(Lang==0);}
 
 	/**
-	 * Get the language associated with this concept type. If the concept type
-	 * is universal, returns 0.
+	 * Get the language associated with this concept type.
+	 * @return If the concept type is universal, returns 0.
 	 */
-	GLang* GetLang(void) const {return(Lang);}
+	inline GLang* GetLang(void) const {return(Lang);}
 
 	/**
-	* Get a cursor over the main hash table.
+	* @return a cursor over the main hash table.
 	*/
 	R::RCursor<Hash> GetConcepts(void) const
 	{
@@ -247,8 +248,8 @@ public:
 
 	friend class GConcept;
 	friend class GWeightInfo;
-	friend class GIndexer;
-	friend class GOntology;
+	friend class GSession;
+	friend class GGALILEIApp;
 };
 
 

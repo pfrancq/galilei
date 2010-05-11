@@ -45,8 +45,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GUser::GUser(size_t id,const R::RString& name,const R::RString& fullname,size_t nb)
- : GObject(id,name,otUser), RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1), FullName(fullname)
+GUser::GUser(GSession* session,size_t id,const R::RString& name,const R::RString& fullname,size_t nb)
+ : GObject(session,id,name,otUser), RContainer<GProfile,false,true>(nb+nb/2+1,nb/2+1), FullName(fullname)
 {
 }
 

@@ -71,9 +71,10 @@ public:
 
 	/**
 	 * Set the current object to display. The widget is redraw.
+	 * @param session        Session.
 	 * @param obj            Object to display.
 	 */
-	void Set(const GWeightInfos& obj);
+	void Set(GSession* session,const GWeightInfos& obj);
 
 	/**
 	 * Destruct the widget.

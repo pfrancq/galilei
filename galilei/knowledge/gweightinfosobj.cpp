@@ -44,8 +44,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfosObj::GWeightInfosObj(size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state)
-	: GObject(id,name,objtype), State(state), Vector(0), BlockId(blockid)
+GWeightInfosObj::GWeightInfosObj(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state)
+	: GObject(session,id,name,objtype), State(state), Vector(0), BlockId(blockid)
 {
 	if(Id!=R::cNoRef)
 		Emit(GEvent::eObjNew);
@@ -60,9 +60,7 @@ const GWeightInfos& GWeightInfosObj::GetVector(void) const
 		if(BlockId)
 		{
 			const_cast<GWeightInfosObj*>(this)->State=osOnDemand;      // The object is on-demand of loading
-			GSession* session=GSession::Get();
-			if(session)
-				session->LoadInfos(const_cast<GWeightInfosObj*>(this)->Vector,ObjType,BlockId,Id); // Load the object
+			Session->LoadInfos(const_cast<GWeightInfosObj*>(this)->Vector,ObjType,BlockId,Id); // Load the object
 			const_cast<GWeightInfosObj*>(this)->State=osUpToDate;         // It is updated !
 		}
 		else
@@ -137,7 +135,7 @@ GWeightInfosObj::~GWeightInfosObj(void)
 	try
 	{
 		if(State==osDelete)  // The object has modified the references count but was not saved
-			GetVector().DelRefs(ObjType);
+			GetVector().DelRefs(Session,ObjType);
 	}
 	catch(...)
 	{

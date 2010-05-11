@@ -33,8 +33,6 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsubject.h>
-#include <gsubjects.h>
-#include <gsession.h>
 #include <gprofile.h>
 #include <guser.h>
 #include <glang.h>
@@ -55,8 +53,8 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GSubject::GSubject(size_t id,const RString& name,bool u)
-	 : RNode<GSubjects,GSubject,true>(),  Id(id), Name(name), Used(u),
+GSubject::GSubject(GSession* session,size_t id,const RString& name,bool u)
+	 : RNode<GSubjects,GSubject,true>(), Session(session), Id(id), Name(name), Used(u),
 	   CategorizedDocs(1000), Docs(1000), WhereDocs(1000), Profiles(10,5),
 	   Community(0), Topic(0), Vector(0)
 {
@@ -101,12 +99,10 @@ GWeightInfos& GSubject::GetVector(void) const
 	if(Vector)
 		return(*Vector);
 
-	GSession* Session(GSession::Get());
-
 	switch(Tree->DescType)
 	{
 		// Description is build based on the name of the subject and its parents
-		case GSubjects::dtNames:
+		case sdNames:
 		{
 			// Create the vector
 			const_cast<GSubject*>(this)->Vector=new GWeightInfos(30);
@@ -133,8 +129,8 @@ GWeightInfos& GSubject::GetVector(void) const
 				}
 				else
 					Name=cur->GetName();
-				GConcept concept(Name,Type);
-				GConcept* ptr(Session->InsertConcept(&concept));
+				GConcept concept(Session,Name,Type);
+				GConcept* ptr(Session->Insert(&concept));
 				GWeightInfo* ins(const_cast<GSubject*>(this)->Vector->GetInfo(ptr));
 				(*ins)+=1.0;
 			}
@@ -144,7 +140,7 @@ GWeightInfos& GSubject::GetVector(void) const
 		// Description is build:
 		// 1. If a leaf node : The center of gravitation of the documents.
 		// 2. If a non-leaf node : The center of gravitation of the children.
-		case GSubjects::dtDocs:
+		case sdDocs:
 		{
 			// Create the vector
 			const_cast<GSubject*>(this)->Vector=new GWeightInfos(30);
@@ -484,4 +480,19 @@ double GSubject::GetUpOperationCost(void) const
 GSubject::~GSubject(void)
 {
 	delete Vector;
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+//  GSubjects
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GSubjects::GSubjects(size_t max)
+	: RTree<GSubjects,GSubject,true>(max), Subjects(max), SelectedDocs(0), DocsSubjects(0),
+	  ProfilesSubject(0), SubjectsLoaded(false), DescType(sdNames)
+{
 }

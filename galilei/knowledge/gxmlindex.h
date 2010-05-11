@@ -86,39 +86,44 @@ public:
 	/**
 	* Constructor of a XML Index. The full definition of the concept is deduced
 	* from its name.
+	* @param session         Session.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	*/
-	GXMLIndex(const R::RString& name,GConceptType* type);
+	GXMLIndex(GSession* session,const R::RString& name,GConceptType* type);
 
 	/**
 	 * Constructor of a XML Index.
+	 * @param session        Session.
 	 * @param type           Type of the concept.
 	 * @param lang           Language of the stems.
 	 */
-	GXMLIndex(GConceptType* type,GConceptType* lang);
+	GXMLIndex(GSession* session,GConceptType* type,GConceptType* lang);
 
 	/**
 	 * Constructor of a XML Index.
+	 * @param session         Session.
 	 * @param type           Type of the concept.
 	 * @param tag            Pointer to the tag.
 	 * @param lang           Language of the stems.
 	 */
-	GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang);
+	GXMLIndex(GSession* session,GConceptType* type,GConcept* tag,GConceptType* lang);
 
 	/**
 	 * Constructor of a XML Index.
-	 * @param type            Type of the concept.
+	 * @param session         Session.
+	 * @param type           Type of the concept.
 	 * @param tag            Pointer to the tag.
 	 * @param lang           Language of the stems.
 	 * @param uni            Universal stems.
 	 * @param stems          Language-based stems.
 	 */
-	GXMLIndex(GConceptType* type,GConcept* tag,GConceptType* lang,R::RContainer<GConcept,false,true>& uni,R::RContainer<GConcept,false,true>& stems);
+	GXMLIndex(GSession* session,GConceptType* type,GConcept* tag,GConceptType* lang,R::RContainer<GConcept,false,true>& uni,R::RContainer<GConcept,false,true>& stems);
 
 	/**
 	* Constructor of a XML Index. The full definition of the concept is deduced
 	* from its name.
+	* @param session         Session.
 	* @param id              Identifier.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
@@ -138,7 +143,7 @@ public:
 	* @param idxclasses      Identifier of the block the inverted file related
 	*                        to the classes.
 	*/
-	GXMLIndex(size_t id, const R::RString& name, GConceptType* type,
+	GXMLIndex(GSession* session,size_t id, const R::RString& name, GConceptType* type,
 			size_t refdocs, size_t idxdocs,
 			size_t refprofiles, size_t idxprofiles,
 			size_t refcommunities, size_t idxcommunities,

@@ -62,8 +62,8 @@ GConcept::GConcept(const GConcept* concept)
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(const RString& name,GConceptType* type)
-	: GObject(cNoRef,name,otConcept), Type(type),
+GConcept::GConcept(GSession* session,const RString& name,GConceptType* type)
+	: GObject(session,cNoRef,name,otConcept), Type(type),
 	  NbRefDocs(0), IfDocs(NAN), IndexDocs(0),
 	  NbRefProfiles(0), IfProfiles(NAN), IndexProfiles(0),
 	  NbRefCommunities(0), IfCommunities(NAN), IndexCommunities(0),
@@ -76,13 +76,13 @@ GConcept::GConcept(const RString& name,GConceptType* type)
 
 
 //-----------------------------------------------------------------------------
-GConcept::GConcept(size_t id, const R::RString& name, GConceptType* type,
+GConcept::GConcept(GSession* session,size_t id, const R::RString& name, GConceptType* type,
 		size_t refdocs, size_t idxdocs,
 		size_t refprofiles, size_t idxprofiles,
 		size_t refcommunities, size_t idxcommunities,
 		size_t reftopics, size_t idxtopics,
 		size_t refclasses, size_t idxclasses)
-	: GObject(id,name,otConcept), Type(type),
+	: GObject(session,id,name,otConcept), Type(type),
 	  NbRefDocs(refdocs), IfDocs(NAN), IndexDocs(idxdocs),
 	  NbRefProfiles(refprofiles), IfProfiles(NAN), IndexProfiles(idxprofiles),
 	  NbRefCommunities(refcommunities), IfCommunities(NAN), IndexCommunities(idxcommunities),

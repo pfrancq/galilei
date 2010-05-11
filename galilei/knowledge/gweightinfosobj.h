@@ -79,13 +79,14 @@ public:
 
 	/**
 	 * Construct a object.
+	 * @param session        Session.
 	 * @param id             Identifier of the object.
 	 * @param blockid        Identifier of the block.
 	 * @param objtype        ObjType.
 	 * @param name           Name of the object.
 	 * @param state          State of the object.
 	 */
-	GWeightInfosObj(size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state);
+	GWeightInfosObj(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state);
 
 	/**
 	* @return True if the object is defined.
@@ -148,17 +149,17 @@ protected:
 	* Add the references for the information entities of the object type in a
 	* information entity space (language). This information is used for the
 	* inverse frequency factors.
-	* @param ObjType        Type of the reference.
+	* @param type            Type of the reference.
 	*/
-	inline void AddRefs(tObjType ObjType) const {GetVector().AddRefs(ObjType);}
+	inline void AddRefs(tObjType type) const {GetVector().AddRefs(Session,type);}
 
 	/**
 	* Delete the references for the information entities of the object type in a
 	* information entity space (language). This information is used for the
 	* inverse frequency factors.
-	* @param ObjType        Type of the reference.
+	* @param type            Type of the reference.
 	*/
-	inline void DelRefs(tObjType ObjType) const {GetVector().DelRefs(ObjType);}
+	inline void DelRefs(tObjType type) const {GetVector().DelRefs(Session,type);}
 
 	/**
 	 * Transfer the contain of a vector to the current object.
@@ -174,7 +175,6 @@ public:
 	virtual ~GWeightInfosObj(void);
 
 	friend class GSession;
-	friend class GIndexer;
 	friend class GSimulator;
 };
 

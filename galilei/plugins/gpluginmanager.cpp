@@ -1,4 +1,4 @@
-/*
+	/*
 
 	GALILEI Research Project
 
@@ -32,6 +32,7 @@
 // include files for GALILEI
 #include <gpluginmanager.h>
 #include <ggalileiapp.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -71,12 +72,14 @@ void GPlugInList::CreateConfig(void)
 	R::RCursor<GPlugInFactory> Cur(Factories);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		Cur()->InsertParam(new RParamValue("Enable",false));
-		Cur()->CreateConfig();
+		GPlugIn* PlugIn(Cur()->GetPlugIn());
+		if(!PlugIn)
+			return;
+		PlugIn->CreateConfig();
 		if(Mng->PluginsType==GPlugInManager::ptOrdered)
 		{
 			Cur()->SetLevel(static_cast<int>(GetNbFactories()));
-			Cur()->InsertParam(new RParamValue("Level",static_cast<int>(GetNbFactories())));
+			PlugIn->InsertParam(new RParamValue("Level",static_cast<int>(GetNbFactories()),"Position order of the plug-in"));
 		}
 	}
 	if(Mng->PluginsType==GPlugInManager::ptOrdered)
@@ -93,10 +96,16 @@ void GPlugInList::Create(GSession* session)
 	R::RCursor<GPlugInFactory> Cur(Factories);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		GPlugInFactory* Factory(Cur());
-		if(!Factory->FindParam<RParamValue>("Enable")->GetBool())
+		bool Enabled;
+		if(Cur()->Mng->GetPlugInType()==GPlugInManager::ptListSelect)
+			Enabled=GALILEIApp->GetConfig()->GetBool("Enable",Cur()->Mng->GetName(),Cur()->List,Cur()->Name);
+		else
+			Enabled=GALILEIApp->GetConfig()->GetBool("Enable",Cur()->Mng->GetName(),Cur()->Name);
+		if(!Enabled)
+			cout<<Cur()->Name<<" is not enabled"<<endl;
+		if(!Enabled)
 			continue;
-		Factory->Create(session);
+		Cur()->Create(session);
 	}
 }
 
@@ -188,6 +197,10 @@ void GPlugInManager::Load(const R::RString& dll,void* handle,void* handleDlg)
 		List=Data.List;
 	}
 	List->Factories.InsertPtr(Factory);
+	if(GetPlugInType()==GPlugInManager::ptListSelect)
+		GALILEIApp->GetConfig()->InsertParam(new RParamValue("Enable",true,"Is the plug-in enabled?"),GetName(),Factory->List,Factory->Name);
+	else
+		GALILEIApp->GetConfig()->InsertParam(new RParamValue("Enable",true,"Is the plug-in enabled?"),GetName(),Factory->Name);
 
 	// Try to create the dialogs if necessary
 	if(!handleDlg)
@@ -232,7 +245,7 @@ void GPlugInManager::Delete(void)
 
 
 //------------------------------------------------------------------------------
-void GPlugInManager::CreateConfig(void)
+void GPlugInManager::CreateConfig(GSession* session)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
@@ -243,7 +256,7 @@ void GPlugInManager::CreateConfig(void)
 			break;
 
 		case ptSelect:
-			GALILEIApp->GetSessionConfig()->InsertParam(new R::RParamValue(Name,"None"),Name);
+			session->InsertParam(new R::RParamValue(Name,"None","Current plug-in"),Name);
 			Data.List->CreateConfig();
 			break;
 
@@ -252,7 +265,7 @@ void GPlugInManager::CreateConfig(void)
 			RCursor<GPlugInList> Cur(*Data.Lists);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				GALILEIApp->GetSessionConfig()->InsertParam(new R::RParamValue(Cur()->Name,"None"),Name,Cur()->Name);
+				session->InsertParam(new R::RParamValue(Cur()->Name,"None","Current plug-in"),Name,Cur()->Name);
 				Cur()->CreateConfig();
 			}
 			break;
@@ -262,7 +275,7 @@ void GPlugInManager::CreateConfig(void)
 
 
 //------------------------------------------------------------------------------
-void GPlugInManager::ReadConfig(void)
+void GPlugInManager::ReadConfig(GSession* session)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
@@ -275,13 +288,18 @@ void GPlugInManager::ReadConfig(void)
 			// Parse each factory to find its level and re-order them after
 			RCursor<GPlugInFactory> Factories(Data.List->Factories);
 			for(Factories.Start();!Factories.End();Factories.Next())
-				Factories()->SetLevel(Factories()->FindParam<R::RParamValue>("Level")->GetInt());
+			{
+				if(GetPlugInType()==GPlugInManager::ptListSelect)
+					Factories()->SetLevel(session->GetInt("Level",Name,Factories()->List,Factories()->Name));
+				else
+					Factories()->SetLevel(session->GetInt("Level",Name,Factories()->Name));
+			}
 			ReOrder();
 			break;
 		}
 
 		case ptSelect:
-			SetCurrentPlugIn(GALILEIApp->GetSessionConfig()->Get(Name,Name),RString::Null,false);
+			SetCurrentPlugIn(session->Get(Name,Name),RString::Null,false);
 			break;
 
 		case ptListSelect:
@@ -289,15 +307,37 @@ void GPlugInManager::ReadConfig(void)
 			// Parse each list to determine the current plug-in
 			RCursor<GPlugInList> Lists(*Data.Lists);
 			for(Lists.Start();!Lists.End();Lists.Next())
-				SetCurrentPlugIn(GALILEIApp->GetSessionConfig()->Get(Lists()->Name,Name,Lists()->Name),Lists()->Name,false);
+				SetCurrentPlugIn(session->Get(Lists()->Name,Name,Lists()->Name),Lists()->Name,false);
 			break;
+		}
+	}
+
+	// Go trough each plug-in
+	if(PluginsType==ptListSelect)
+	{
+		RCursor<GPlugInList> Lists(*Data.Lists);
+		for(Lists.Start();!Lists.End();Lists.Next())
+		{
+			RCursor<GPlugIn> PlugIns(Lists()->Plugins);
+			for(PlugIns.Start();!PlugIns.End();PlugIns.Next())
+			{
+				PlugIns()->ApplyConfig();
+			}
+		}
+	}
+	else
+	{
+		RCursor<GPlugIn> PlugIns(Data.List->Plugins);
+		for(PlugIns.Start();!PlugIns.End();PlugIns.Next())
+		{
+			PlugIns()->ApplyConfig();
 		}
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GPlugInManager::SaveConfig(void)
+void GPlugInManager::SaveConfig(GSession* session)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
@@ -310,7 +350,12 @@ void GPlugInManager::SaveConfig(void)
 			// Parse each factory to find its level and re-order them after
 			RCursor<GPlugInFactory> Factories(Data.List->Factories);
 			for(Factories.Start();!Factories.End();Factories.Next())
-				Factories()->FindParam<R::RParamValue>("Level")->SetInt(Factories()->GetLevel());
+			{
+				if(GetPlugInType()==GPlugInManager::ptListSelect)
+					session->SetInt("Level",Factories()->GetLevel(),Name,Factories()->List,Factories()->Name);
+				else
+					session->SetInt("Level",Factories()->GetLevel(),Name,Factories()->Name);
+			}
 			break;
 		}
 
@@ -321,7 +366,7 @@ void GPlugInManager::SaveConfig(void)
 				Default=Data.List->Current->GetName();
 			else
 				Default="None";
-			GALILEIApp->GetSessionConfig()->Set(Name,Default,Name);
+			session->Set(Name,Default,Name);
 			break;
 		}
 
@@ -336,10 +381,33 @@ void GPlugInManager::SaveConfig(void)
 					Default=Lists()->Current->GetName();
 				else
 					Default="None";
-				GALILEIApp->GetSessionConfig()->Set(Lists()->Name,Default,Name,Lists()->Name);
+				session->Set(Lists()->Name,Default,Name,Lists()->Name);
 			}
 			break;
 		}
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GPlugInManager::InitPlugIns(GSession*)
+{
+	// Go trough each plug-in
+	if(PluginsType==ptListSelect)
+	{
+		RCursor<GPlugInList> Lists(*Data.Lists);
+		for(Lists.Start();!Lists.End();Lists.Next())
+		{
+			RCursor<GPlugIn> PlugIns(Lists()->Plugins);
+			for(PlugIns.Start();!PlugIns.End();PlugIns.Next())
+				PlugIns()->Init();
+		}
+	}
+	else
+	{
+		RCursor<GPlugIn> PlugIns(Data.List->Plugins);
+		for(PlugIns.Start();!PlugIns.End();PlugIns.Next())
+			PlugIns()->Init();
 	}
 }
 
@@ -441,48 +509,6 @@ R::RCursor<GPlugInFactory> GPlugInManager::GetFactories(const R::RString& list) 
 	return(RCursor<GPlugInFactory>(List->Factories));
 }
 
-/*
-//-----------------------------------------------------------------------------
-void GPlugInManager::EnablePlugIn(GPlugIn* plug)
-{
-	GPlugInList* List;
-	if(PluginsType==ptListSelect)
-	{
-		List=Data.Lists->GetPtr(plug->GetFactory()->GetList());
-		if(!List)
-			ThrowGException("No type '"+plug->GetFactory()->GetList()+"' available for '"+Name+"'");
-	}
-	else
-		List=Data.List;
-
-	List->Plugins.InsertPtr(plug);
-	R::RConfig* config(plug->GetFactory());
-	R::RParamValue* param(config->FindParam<R::RParamValue>("Enable"));
-	if(param)
-		param->SetBool(true);
-}
-
-
-//-----------------------------------------------------------------------------
-void GPlugInManager::DisablePlugIn(GPlugIn* plug)
-{
-	GPlugInList* List;
-	if(PluginsType==ptListSelect)
-	{
-		List=Data.Lists->GetPtr(plug->GetFactory()->GetList());
-		if(!List)
-			ThrowGException("No type '"+plug->GetFactory()->GetList()+"' available for '"+Name+"'");
-	}
-	else
-		List=Data.List;
-
-	List->Plugins.DeletePtr(*plug);
-	R::RConfig* config(plug->GetFactory());
-	R::RParamValue* param(config->FindParam<R::RParamValue>("Enable"));
-	if(param)
-		param->SetBool(false);
-}
-*/
 
 //-----------------------------------------------------------------------------
 size_t GPlugInManager::GetNbPlugIns(const RString& list) const

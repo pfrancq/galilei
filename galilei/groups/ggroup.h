@@ -88,13 +88,14 @@ public:
 
 	/**
 	* Construct a group with a specific identifier.
+	* @param session         Session.
 	* @param id              Identifier.
 	* @param blockid         Identifier of the block.
 	* @param name            Name of the group.
 	* @param u               Date of the last updated.
 	* @param c               Date of the last computation.
 	*/
-	GGroup(size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
+	GGroup(GSession* session,size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c);
 
 	/**
 	 * Get the data associated to the corresponding ideal subject.

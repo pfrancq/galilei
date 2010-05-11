@@ -75,6 +75,7 @@ public:
 	* @param parent          XML tag that will be hold the result.
 	* @param element         Name of the element.
 	* @param val             Value.
+	* @param fmt             Format to used to represent the number.
 	* @return a pointer to the tag created.
 	*/
 	R::RXMLTag* AddTag(R::RXMLStruct* xml,R::RXMLTag* parent,R::RString element,double val,const char* fmt="%E");

@@ -37,7 +37,6 @@
 #include <ggalileiapp.h>
 #include <gstorage.h>
 #include <gslot.h>
-#include <gsubjects.h>
 #include <gsubject.h>
 using namespace R;
 using namespace GALILEI;

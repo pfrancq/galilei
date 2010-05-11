@@ -57,7 +57,6 @@ using namespace std;
 // include files for GALILEI
 #include <ggalileiapp.h>
 #include <gsession.h>
-#include <gsubjects.h>
 #include <gsubject.h>
 #include <ggalileiprg.h>
 #include <gdoc.h>
@@ -69,19 +68,14 @@ using namespace GALILEI;
 #include <glang.h>
 #include <glinkcalc.h>
 #include <gdocanalyze.h>
-#include <gpostdoc.h>
 #include <gfilter.h>
 #include <gengine.h>
 #include <gmetaengine.h>
 #include <gcommunitycalc.h>
 #include <ggroupprofiles.h>
-#include <gpostcommunity.h>
 #include <gtopiccalc.h>
 #include <ggroupdocs.h>
-#include <gposttopic.h>
 #include <gprofilecalc.h>
-#include <gpostprofile.h>
-#include <gpreprofile.h>
 #include <gstatscalc.h>
 #include <gstorage.h>
 #include <gmeasure.h>
@@ -150,30 +144,27 @@ public:
 //------------------------------------------------------------------------------
 GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	: RApplication(name,argc,argv), RContainer<GPlugInManager,true,false>(20,10),
-	  RDownload(), Log(0), Debug(0), Session(0), LoadDialogs(dlg), PlugInsPath(10),
-	  GALILEIConfig(), SessionConfig(0), MIMES(50,25), Exts(50,25)
+	  RDownload(), Sessions(10), LoadDialogs(dlg), PlugInsPath(10), MIMES(50,25),
+	  Exts(50,25), Log("/var/log/galilei/galilei.log")
 {
+	Log.Open(RIO::Append);
+
 	// Create the managers of plug-ins
-	InsertPtr(new GPlugInManager("Storage",GPlugInManager::ptSelect));
+	InsertPtr(Storages=new GPlugInManager("Storage",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("LinkCalc",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("DocAnalyze",GPlugInManager::ptSelect));
-	InsertPtr(new GPlugInManager("PostDoc",GPlugInManager::ptOrdered));
 	InsertPtr(new GPlugInManager("Filter",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("Engine",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("MetaEngine",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("CommunityCalc",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("GroupProfiles",GPlugInManager::ptSelect));
-	InsertPtr(new GPlugInManager("PostCommunity",GPlugInManager::ptOrdered));
 	InsertPtr(new GPlugInManager("ProfileCalc",GPlugInManager::ptSelect));
-	InsertPtr(new GPlugInManager("PreProfile",GPlugInManager::ptOrdered));
-	InsertPtr(new GPlugInManager("PostProfile",GPlugInManager::ptOrdered));
 	InsertPtr(new GPlugInManager("StatsCalc",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("Measures",GPlugInManager::ptListSelect));
-	InsertPtr(new GPlugInManager("Lang",GPlugInManager::ptList));
+	InsertPtr(Langs=new GPlugInManager("Lang",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("Tool",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("TopicCalc",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("GroupDocs",GPlugInManager::ptSelect));
-	InsertPtr(new GPlugInManager("PostTopic",GPlugInManager::ptOrdered));
 	InsertPtr(new GPlugInManager("ComputeSugs",GPlugInManager::ptOrdered));
 	InsertPtr(new GPlugInManager("ComputeTrust",GPlugInManager::ptOrdered));
 
@@ -183,6 +174,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 		RXMLStruct xml;
 		RXMLFile File("/etc/galilei/galilei.mimes",&xml);
 		File.Open(R::RIO::Read);
+
 		// Go trough all MIME types
 		RXMLTag* Types=xml.GetTag("mimeTypes");
 		if(!Types)
@@ -209,13 +201,8 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 //-----------------------------------------------------------------------------
 void GGALILEIApp::CreateConfig(void)
 {
-	// Parameter of the application
-	Config.InsertParam(new RParamValue("GALILEI Config","GALILEI"));
-	Config.InsertParam(new RParamValue("Session",""));
-
-	// Parameters associated to GALILEI library
-	GALILEIConfig.InsertParam(new RParamList("PlugIns Path"));
-	GALILEIConfig.InsertParam(new RParamValue("IndexDir","/var/galilei"));
+	Config.InsertParam(new RParamList("PlugIns Path"));
+	Config.InsertParam(new RParamValue("IndexDir","/var/galilei"));
 }
 
 
@@ -226,124 +213,69 @@ void GGALILEIApp::Init(void)
 	RApplication::Init();
 
 	// Get the parameters linked to the GALILEI library parameters
-	GALILEIConfigName=Config.Get("GALILEI Config");
-	GALILEIConfig.SetConfigInfos("lib/galilei",GALILEIConfigName);
-	GALILEIConfig.Load();
-	IndexDir=GALILEIConfig.Get("IndexDir");
-	RCursor<RString> Cur(GALILEIConfig.GetList("PlugIns Path"));
+	IndexDir=Config.Get("IndexDir");
+	RCursor<RString> Cur(Config.GetList("PlugIns Path"));
 	for(Cur.Start();!Cur.End();Cur.Next())
 		PlugInsPath.InsertPtr(new RString(*Cur()));
 
-	// Load the plug-ins.
+	// Load the plug-in factories.
 	Load(PlugInsPath,LoadDialogs);
 
-	// Try to change the session name.
-	RString name(Config.Get("Session"));
-	ChangeSessionName(name);
-
-	// Initialize is OK
-	HasInitApp=true;
+	// Re-load the config (to take the factories into account).
+	Config.Load(true);
 }
 
 
 //------------------------------------------------------------------------------
-void GGALILEIApp::DeleteSessionConfig(void)
+GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 {
-	if(!SessionConfig)
-		return;
+	// If the session exist -> return it
+	GSession* Session(Sessions.GetPtr(name));
+	if(Session||(!created))
+		return(Session);
 
-	SessionConfig->Set("Log File",LogFileName);
-	SessionConfig->Set("Debug File",DebugFileName);
+	// A new session must be created and its configuration read
+	Session=new GSession(Sessions.GetNb(),name);
 	RCursor<GPlugInManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->SaveConfig();
-	SessionConfig->Save();
-	delete SessionConfig;
-	SessionConfig=0;
-}
+		Cur()->Create(Session);
+	Session->Init();
+	Log.WriteLog("Session '"+name+"' created");
 
+	// Initialize the storage and load the ontology
+	Storages->InitPlugIns(Session);
+	GStorage* Storage(Storages->GetCurrentPlugIn<GStorage>());
+	Session->Storage=Storage;
+	Storage->LoadConceptTypes();
+	Storage->LoadConcepts();
+	Storage->LoadPredicates();
+	Storage->LoadStatements();
+	Log.WriteLog("Storages for session '"+name+"' created");
 
-//------------------------------------------------------------------------------
-void GGALILEIApp::ChangeSessionName(const R::RString& name)
-{
-	if(Session)
-		ThrowGException("Cannot change the session name while another session one is opened");
-
-	// If empty name -> Nothing to do.
-	if((name.IsEmpty())||(name==SessionName))
-		return;
-
-	// Delete and re-create the SessionConfig
-	DeleteSessionConfig();
-	SessionName=name;
-	SessionConfig=new RConfig("lib/galilei/sessions",SessionName);
-
-	// Create the parameters
-	SessionConfig->InsertParam(new RParamValue("Log File","/var/log/galilei/galilei.log"));
-	SessionConfig->InsertParam(new RParamValue("Debug File","/home/pfrancq/debug-galilei.xml"));
-	GSimulator::CreateConfig(SessionConfig);
-	GIndexer::CreateConfig(SessionConfig);
-	R::RCursor<GPlugInManager> Managers(*this);
-	for(Managers.Start();!Managers.End();Managers.Next())
-		Managers()->CreateConfig();
-
-	// Load the file and the parameters
-	SessionConfig->Load(false);
-	LogFileName=SessionConfig->Get("Log File");
-	DebugFileName=SessionConfig->Get("Debug File");
-	for(Managers.Start();!Managers.End();Managers.Next())
-		Managers()->ReadConfig();
-}
-
-
-//------------------------------------------------------------------------------
-GSession* GGALILEIApp::CreateSession(void)
-{
-	if(!HasInitApp)
-		ThrowGException("Application not initialized");
-	if(Session)
-		ThrowGException("A session is already created");
-	if(!SessionConfig)
-		ThrowGException("Name '"+SessionName+"' is not a valid session name");
-
-	// Create the log file and debug file
-	try
+	// Initialize the languages
+	Langs->InitPlugIns(Session);
+	RCursor<GConceptType> Types(Session->ConceptTypes);
+	for(Types.Start();!Types.End();Types.Next())
 	{
-		// Create (if necessary) Log file
-		if(LogFileName!=RString::Null)
-		{
-			//cout<<"Create log file "<<LogFileName<<"...";
-			cout.flush();
-			Log=new GSlotLog(LogFileName);
-			//cout<<"OK"<<endl;
-		}
+		RString code(Types()->Name.Mid(0,2));
+		Types()->Lang=Langs->GetPlugIn<GLang>(code,false);
 	}
-	catch(...)
-	{
-		std::cerr<<"Error: Cannot create log file "<<LogFileName<<std::endl;
-	}
+	Log.WriteLog("Languages for session '"+name+"' created");
 
-	try
-	{
-		// Create (if necessary) the debug file
-		if(DebugFileName!=RString::Null)
-			Debug=new RDebugXML(DebugFileName);
-	}
-	catch(...)
-	{
-		std::cerr<<"Error: Cannot create debug file "<<DebugFileName<<std::endl;
-	}
+	// Initialize the rest of the plug-ins
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if((Cur()!=Storages)&&(Cur()!=Langs))
+			Cur()->InitPlugIns(Session);
+	Log.WriteLog("Plug-ins connected to session '"+name+"'");
 
 	// Create the storage and initialize session.
-	GPlugInFactory* fac(GetCurrentFactory("Storage"));
+/*	GPlugInFactory* fac(GetCurrentFactory("Storage"));
 	if(!fac)
 		ThrowGException("No current storage");
 	fac->Create(0);
 	GStorage* Storage(fac->GetPlugIn<GStorage>());
 	Storage->ApplyConfig();
 	Storage->Init();
-	Session=new GSession(SessionConfig,Storage,Log,Debug);
-	Session->ApplyConfig();
 
 	// Connect the current storage to the session and load the different elements
 	GPlugInManager* Mng(Storage->GetFactory()->GetMng());
@@ -351,88 +283,28 @@ GSession* GGALILEIApp::CreateSession(void)
 	Storage->LoadConcepts();
 	Storage->LoadPredicates();
 	Storage->LoadStatements();
-	WriteLog("Session created");
+	Log.WriteLog("Session '"+name+"' created");
 
 	// Connect the other plug-ins to the session
+	GPlugInManager* Langs(GetPtr("Lang"));
+	Langs->Create(Session);  // First connect the languages.
+	Session->AssignLangs();
 	RCursor<GPlugInManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		if(Cur()!=Mng)
+		if((Cur()!=Mng)&&(Cur()!=Langs))
 			Cur()->Create(Session);
-	WriteLog("Plug-ins connected to session");
+	Log.WriteLog("Plug-ins connected to session '"+name+"'");*/
 
 	return(Session);
 }
 
 
 //------------------------------------------------------------------------------
-void GGALILEIApp::DeleteSession(void)
+void GGALILEIApp::DeleteSession(GSession* session)
 {
-	if(!Session)
+	if(!session)
 		return;
-	RCursor<GPlugInManager> Cur(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Delete();
-	delete Session;
-	Session=0;
-	if(Log)
-		Log->WriteLog("Session deleted");
-	delete Debug;
-	Debug=0;
-	delete Log;
-	Log=0;
-}
-
-//------------------------------------------------------------------------------
-void GGALILEIApp::SetLogFileName(const R::RString& name)
-{
-	LogFileName=name;
-	if(Log)
-	{
-		delete Log;
-		Log=0;
-	}
-	if(LogFileName.IsEmpty())
-		return;
-	try
-	{
-		Log=new GSlotLog(LogFileName);
-	}
-	catch(...)
-	{
-		std::cerr<<"Error: Cannot create log file "<<LogFileName<<std::endl;
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GGALILEIApp::SetDebugFileName(const RString& name)
-{
-	DebugFileName=name;
-	if(Debug)
-	{
-		delete Debug;
-		Debug=0;
-	}
-	if(DebugFileName.IsEmpty())
-		return;
-	try
-	{
-		Debug=new RDebugXML(DebugFileName);
-		if(Session)
-			Session->SetDebug(Debug);
-	}
-	catch(...)
-	{
-		std::cerr<<"Error: Cannot create debug file "<<DebugFileName<<std::endl;
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GGALILEIApp::WriteLog(const RString& str)
-{
-	if(Log)
-		Log->WriteLog(str);
+	Sessions.DeletePtr(*session);
 }
 
 
@@ -623,25 +495,42 @@ GPlugInFactory* GGALILEIApp::GetCurrentFactory(const R::RString& mng,const R::RS
 //------------------------------------------------------------------------------
 void GGALILEIApp::Apply(void)
 {
-	Config.Set("GALILEI Config",GALILEIConfigName);
-	Config.Set("Session",SessionName);
-	GALILEIConfig.SetConfigInfos("lib/galilei",GALILEIConfigName);
-	if(SessionConfig)
-	{
-		SessionConfig->Set("Log File",LogFileName);
-		SessionConfig->Set("Debug File",DebugFileName);
-	}
-	GALILEIConfig.Set("IndexDir",IndexDir);
-	GALILEIConfig.Reset("PlugIns Path");
+	Config.Set("IndexDir",IndexDir);
+	Config.Reset("PlugIns Path");
 	RCursor<RString> Cur(PlugInsPath);
 	for(Cur.Start();!Cur.End();Cur.Next())
-		GALILEIConfig.AddToList("PlugIns Path",*Cur());
+		Config.AddToList("PlugIns Path",*Cur());
 }
 
 //------------------------------------------------------------------------------
 void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 {
-	GGALILEIPrg(rec).Run(filename);
+	try
+	{
+		Log.WriteLog("Running program '"+filename+"'");
+		GGALILEIPrg(rec).Run(filename);
+		Log.WriteLog("End program '"+filename+"'");
+	 }
+	catch(GException& e)
+	{
+		Log.WriteLog(RString("Error: ")+e.GetMsg());
+		ThrowGException(RString("Error: ")+e.GetMsg());
+	}
+	catch(RException& e)
+	{
+		Log.WriteLog(RString("Error: ")+e.GetMsg());
+		ThrowGException(RString("Error: ")+e.GetMsg());
+	}
+	catch(std::exception& e)
+	{
+		Log.WriteLog(RString("Error: ")+e.what());
+		ThrowGException(RString("Error: ")+e.what());
+	}
+	catch(...)
+	{
+		Log.WriteLog("Error while processing");
+		ThrowGException("Error while processing");
+	}
 }
 
 
@@ -747,25 +636,10 @@ void GGALILEIApp::DelMIMES(GFilter* f)
 
 
 //------------------------------------------------------------------------------
-void GGALILEIApp::RunTool(const R::RString& name,GSlot* slot,bool need)
-{
-	GTool* Tool(GetPlugIn<GTool>("Tool",name));
-	if((!Tool)&&need)
-		ThrowGException("Tool '"+name+"' does not exist");
-	Tool->Run(slot);
-}
-
-
-//------------------------------------------------------------------------------
 GGALILEIApp::~GGALILEIApp(void)
 {
-	// Delete the session if necessary
-	DeleteSession();
-
 	// Save the configuration structures
 	Apply();
-	DeleteSessionConfig(); // Force to save the session configuration if necessary
-	GALILEIConfig.Save();
 
 	// No more Application
 	GALILEIApp=0;

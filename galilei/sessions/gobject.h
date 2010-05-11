@@ -54,6 +54,11 @@ class GObject
 protected:
 
 	/**
+	 * Session of the object.
+	 */
+	GSession* Session;
+
+	/**
 	 * Identifier of the object.
 	 */
 	size_t Id;
@@ -72,17 +77,23 @@ public:
 
 	/**
 	 * Construct a object.
+	 * @param session        Session.
 	 * @param id             Identifier.
 	 * @param name           Name.
-	 * @param objtype        Type.
+	 * @param type           Type.
 	 */
-	GObject(size_t id,const R::RString& name,tObjType objtype);
+	GObject(GSession* session,size_t id,const R::RString& name,tObjType type);
 
 	/**
 	 * Copy constructor.
 	 * @param obj            Original object.
 	 */
 	GObject(const GObject* obj);
+
+	/**
+	* @return the session of the object.
+	*/
+	inline GSession* GetSession(void) const {return(Session);}
 
 	/**
 	* @return the identifier of the object.

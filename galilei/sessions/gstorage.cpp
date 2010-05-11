@@ -43,8 +43,8 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GStorage::GStorage(GPlugInFactory* fac)
-	: GPlugIn(0,fac), LoadAll(true), Filter(RDate::GetToday()), Filtering(false),
+GStorage::GStorage(GSession* session,GPlugInFactory* fac)
+	: GPlugIn(session,fac), LoadAll(true), Filter(RDate::GetToday()), Filtering(false),
 	  AllMemory(true)
 {
 }

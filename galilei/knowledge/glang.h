@@ -150,12 +150,6 @@ public:
 	void SkipSequence(const R::RString& word);
 
 	/**
-	 * Fill a container with all the stop words associated with the language.
-	 * @param stop           Container.
-	 */
-	virtual void GetStopWords(R::RContainer<R::RString,true,false>& stop)=0;
-
-	/**
 	* Function that computes the stem of a word. Of course, this method must be
 	* overloaded by the child classes.
 	* @param kwd            Word for which the stem must be computed.
@@ -203,9 +197,99 @@ public:
 };
 
 
-//------------------------------------------------------------------------------
-#define CREATE_LANG_FACTORY(name,desc,plugin)\
-	CREATE_FACTORY(GLang,plugin,"Lang",R::RString::Null,name,desc)
+//-------------------------------------------------------------------------------
+/**
+ * The GLangFactory is a factory for a language plug-in. The main element is a
+ * specific method to get the stopwords, the name and the code of the language.
+ *
+ * In practice, if the CREATE_LANG_FACTORY macro is used (which is the right
+ * thing to do), it is only necessary to create a static method GetStopWords in
+ * the created plugin. Here is an example:
+ * @code
+ * void MyLanguage::GetStopWords(RContainer<RString,true,false>& stop)
+ * {
+ *   stop.InsertPtr(new RString("a"));
+ *   stop.InsertPtr(new RString("able"));
+ *   stop.InsertPtr(new RString("about"));
+ * }
+ * @endcode
+ */
+class GLangFactory : public GPlugInFactory
+{
+public:
+
+	/**
+	* Constructor.
+	* @param mng             Manager of the plug-in.
+	* @param name            Name of the language (the code).
+	* @param desc            Description of the plug-in (the name of the
+	*                        language).
+	* @param lib             Library of the Factory/Plug-in.
+	*/
+	GLangFactory(GPlugInManager* mng,const R::RString& name,const R::RString& desc,const R::RString& lib)
+		: GPlugInFactory(mng,name,desc,lib,R::RString::Null)
+	{
+	}
+
+	/**
+	 * Fill a container with all the stop words associated with the language.
+	 * @param stop           Container.
+	 * @param code           Code of the language (must be filled by the
+	 *                       function.
+	 * @param name           Name of the language (must be filled by the
+	 *                       function.
+	 */
+	virtual void CreateStopWords(R::RContainer<R::RString,true,false>& stop,R::RString& code,R::RString& name)=0;
+};
+
+
+//-------------------------------------------------------------------------------
+#define CREATE_LANG_FACTORY(name,desc,plugin)                                                                         \
+class TheFactory : public GALILEI::GLangFactory                                                                       \
+{                                                                                                                     \
+	static GALILEI::GPlugInFactory* Inst;                                                                             \
+	TheFactory(GALILEI::GPlugInManager* mng,const char* t)                                                            \
+		: GALILEI::GLangFactory(mng,name,desc,t)                                                                      \
+	{                                                                                                                 \
+	}                                                                                                                 \
+	virtual ~TheFactory(void) {}                                                                                      \
+	virtual void CreateStopWords(R::RContainer<R::RString,true,false>& stop,R::RString& thecode,R::RString& thename)  \
+	{                                                                                                                 \
+		thecode=name;                                                                                                 \
+		thename=desc;                                                                                                 \
+		plugin::GetStopWords(stop);                                                                                   \
+	}                                                                                                                 \
+	virtual void CreateConfig(void)                                                                                   \
+	{                                                                                                                 \
+		plugin::CreateParams(this);                                                                                   \
+	}                                                                                                                 \
+public:                                                                                                               \
+	static GALILEI::GPlugInFactory* CreateInst(GALILEI::GPlugInManager* mng,const char* t)                            \
+	{                                                                                                                 \
+		if(!Inst)                                                                                                     \
+			Inst = new TheFactory(mng,t);                                                                             \
+		return(Inst);                                                                                                 \
+	}                                                                                                                 \
+	virtual const char* GetAPIVersion(void) const                                                                     \
+		{return(API_PLUG_IN_VERSION);}                                                                                \
+		                                                                                                              \
+	virtual GALILEI::GPlugIn* NewPlugIn(GSession* session)                                                            \
+	{                                                                                                                 \
+		GALILEI::GLang* ptr(new plugin(session,this));                                                                \
+		return(ptr);                                                                                                  \
+	}                                                                                                                 \
+};                                                                                                                    \
+GALILEI::GPlugInFactory* TheFactory::Inst = 0;                                                                        \
+                                                                                                                      \
+extern "C" GALILEI::GPlugInFactory* FactoryCreate(GALILEI::GPlugInManager* mng,const char* t)                         \
+{                                                                                                                     \
+	return(TheFactory::CreateInst(mng,t));                                                                            \
+}                                                                                                                     \
+extern "C" const char* LibType(void)                                                                                  \
+{                                                                                                                     \
+	return("Lang");                                                                                                   \
+}
+
 
 
 }  //-------- End of namespace GALILEI ----------------------------------------

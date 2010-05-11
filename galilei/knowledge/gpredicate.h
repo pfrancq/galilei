@@ -141,7 +141,7 @@ public:
 	*/
 	virtual ~GPredicate(void);
 
-	friend class GOntology;
+	friend class GSession;
 };
 
 

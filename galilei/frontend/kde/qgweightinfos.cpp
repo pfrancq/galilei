@@ -97,13 +97,12 @@ QGWeightInfos::QGWeightInfos(QWidget* parent)
 
 
 //------------------------------------------------------------------------------
-void QGWeightInfos::Set(const GWeightInfos& obj)
+void QGWeightInfos::Set(GSession* session,const GWeightInfos& obj)
 {
 	try
 	{
 		// Init
-		GSession* Session=GALILEIApp->GetSession();
-		GConceptType* IndexSpace=Session->GetInsertConceptType("XMLIndex","XML Index");
+		GConceptType* IndexSpace=session->GetConceptType("XMLIndex","XML Index");
 		QTreeWidget* Infos(static_cast<Ui_QGWeightInfos*>(Ui)->Infos);
 		Infos->clear();
 
@@ -115,7 +114,7 @@ void QGWeightInfos::Set(const GWeightInfos& obj)
 			if(Words()->GetType()==IndexSpace)
 			{
 				GXMLIndex* idx=dynamic_cast<GXMLIndex*>(Words()->GetConcept());
-				RString FullTagName(Session->GetStorage()->LoadConcept(idx->GetXMLTag()->GetId()));
+				RString FullTagName(session->GetStorage()->LoadConcept(idx->GetXMLTag()->GetId()));
 				RString TagName(FullTagName.Mid(FullTagName.Find(':',-1)+1));
 				name="<"+ToQString(TagName)+">";
 				bool SkipComma(true);
@@ -126,7 +125,7 @@ void QGWeightInfos::Set(const GWeightInfos& obj)
 						SkipComma=false;
 					else
 						name+=" ";
-					name+=ToQString(Session->GetStorage()->LoadConcept(Universal()->GetId()));
+					name+=ToQString(session->GetStorage()->LoadConcept(Universal()->GetId()));
 				}
 				RCursor<GConcept> Stems(idx->GetStems());
 				for(Stems.Start();!Stems.End();Stems.Next())
@@ -135,13 +134,13 @@ void QGWeightInfos::Set(const GWeightInfos& obj)
 						SkipComma=false;
 					else
 						name+=" ";
-					name+=ToQString(Session->GetStorage()->LoadConcept(Stems()->GetId()));
+					name+=ToQString(session->GetStorage()->LoadConcept(Stems()->GetId()));
 				}
 				name+="</"+ToQString(TagName)+">";
 			}
 			else
 			{
-				name=ToQString(Session->GetStorage()->LoadConcept(Words()->GetId()));
+				name=ToQString(session->GetStorage()->LoadConcept(Words()->GetId()));
 			}
 			QString type=ToQString(Words()->GetType()->GetDescription());
 			QString w(QString::number(Words()->GetWeight()));

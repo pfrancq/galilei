@@ -106,7 +106,7 @@ RString GMatrixMeasure::GetRootDir(void) const
 {
 	RString Cat(GetFactory()->GetList());
 	Cat.Replace('/','-');
-	return(RString(Dir+RFile::GetDirSeparator()+GALILEIApp->GetSessionName()+RFile::GetDirSeparator()+Cat));
+	return(RString(Dir+RFile::GetDirSeparator()+Session->GetName()+RFile::GetDirSeparator()+Cat));
 }
 
 
@@ -140,14 +140,14 @@ RString GMatrixMeasure::GetFilesName(void) const
 void GMatrixMeasure::ApplyConfig(void)
 {
 	// Parameters that can always be changed
-	DeviationRate=Factory->FindParam<RParamValue>("DeviationRate")->GetDouble();
-	MinMeasure=Factory->FindParam<RParamValue>("MinMeasure")->GetDouble();
-	AutomaticMinMeasure=Factory->FindParam<RParamValue>("AutomaticMinMeasure")->GetBool();
-	CutoffFrequency=Factory->FindParam<RParamValue>("Cutoff Frequency")->GetDouble();
+	DeviationRate=FindParam<RParamValue>("DeviationRate")->GetDouble();
+	MinMeasure=FindParam<RParamValue>("MinMeasure")->GetDouble();
+	AutomaticMinMeasure=FindParam<RParamValue>("AutomaticMinMeasure")->GetBool();
+	CutoffFrequency=FindParam<RParamValue>("Cutoff Frequency")->GetDouble();
 
 	// If matrix managed nearest neighbors and their number have changed -> matrix is dirty
-	size_t NewNbNearest(Factory->FindParam<RParamValue>("NbNearest")->GetUInt());
-	size_t NewNbSamples(Factory->FindParam<RParamValue>("NbSamples")->GetUInt());
+	size_t NewNbNearest(FindParam<RParamValue>("NbNearest")->GetUInt());
+	size_t NewNbSamples(FindParam<RParamValue>("NbSamples")->GetUInt());
 	if((Session)&&((Type==NearestNeighbors)&&((NewNbNearest!=NbNearest)||(NewNbSamples!=NbSamples))))
 	{
 		ChangeSize=true;
@@ -157,10 +157,10 @@ void GMatrixMeasure::ApplyConfig(void)
 	NbSamples=NewNbSamples;
 
 	// Parameters needing the reloading of the session
-	InMemory=Factory->FindParam<RParamValue>("Memory")->GetBool();
-	InStorage=Factory->FindParam<RParamValue>("Storage")->GetBool();
-	Dir=Factory->FindParam<RParamValue>("Dir")->Get();
-	switch(Factory->FindParam<RParamValue>("Type")->GetInt())
+	InMemory=FindParam<RParamValue>("Memory")->GetBool();
+	InStorage=FindParam<RParamValue>("Storage")->GetBool();
+	Dir=FindParam<RParamValue>("Dir")->Get();
+	switch(FindParam<RParamValue>("Type")->GetInt())
 	{
 		case Full:
 			Type=Full;
@@ -172,8 +172,9 @@ void GMatrixMeasure::ApplyConfig(void)
 			Type=NearestNeighbors;
 			break;
 		default:
-			ThrowGException("Type '"+Factory->FindParam<RParamValue>("Type")->Get()+"' is not a valid type");
+			ThrowGException("Type '"+FindParam<RParamValue>("Type")->Get()+"' is not a valid type");
 	}
+	FastNN=FindParam<RParamValue>("FastNN")->GetBool();
 }
 
 
@@ -288,8 +289,8 @@ void GMatrixMeasure::Measure(size_t measure,...)
 	if((Type==NearestNeighbors)||((!InMemory)&&(!InStorage)))
 	{
 		// Recompute the element if not in memory of not in storage, or if it a nearest neighbors matrix
-		void* obj1=Session->GetElement(Lines,id1);
-		void* obj2=Session->GetElement(Cols,id2);
+		GObject* obj1=Session->GetObject(Lines,id1);
+		GObject* obj2=Session->GetObject(Cols,id2);
 		(*res)=Compute(obj1,obj2);
 		if(abs(*res)<CutoffFrequency)
 			(*res)=0.0;         // High-pass filter
@@ -314,8 +315,8 @@ void GMatrixMeasure::Measure(size_t measure,...)
 		// If NAN -> Recomputing is necessary (Verification in the case of the full matrix)
 		if((*res)!=(*res))
 		{
-			void* obj1=Session->GetElement(Lines,id1);
-			void* obj2=Session->GetElement(Cols,id2);
+			GObject* obj1=Session->GetObject(Lines,id1);
+			GObject* obj2=Session->GetObject(Cols,id2);
 			(*res)=Compute(obj1,obj2);
 			(*Matrix)(id1-1,id2-1)=(*res);
 			if(fabs(*res)<CutoffFrequency)
@@ -343,8 +344,8 @@ void GMatrixMeasure::Measure(size_t measure,...)
 		// If NAN -> recomputing is necessary (Verification in the case of the full matrix)
 		if((*res)!=(*res))
 		{
-			void* obj1=Session->GetElement(Lines,id1);
-			void* obj2=Session->GetElement(Cols,id2);
+			GObject* obj1=Session->GetObject(Lines,id1);
+			GObject* obj2=Session->GetObject(Cols,id2);
 			(*res)=Compute(obj1,obj2);
 			if(abs(*res)<CutoffFrequency)
 				(*res)=0.0;     // High-pass filter
@@ -421,7 +422,7 @@ void GMatrixMeasure::Info(size_t info,...)
 			// Initialize
 			NbValues=0;
 			Mean=Deviation=0;
-			size_t nblines=Session->GetMaxElementId(Lines)+1;
+			size_t nblines=Session->GetMaxObjectId(Lines)+1;
 			if(nblines==1)
 			{
 				(*res)=0.0;
@@ -431,7 +432,7 @@ void GMatrixMeasure::Info(size_t info,...)
 			// Go through all elements
 			for(size_t i=1;i<nblines;i++)
 			{
-				void* obj1=Session->GetElement(Lines,i,true);
+				GObject* obj1=Session->GetObject(Lines,i,true);
 				if(!obj1)
 					continue;
 
@@ -440,11 +441,11 @@ void GMatrixMeasure::Info(size_t info,...)
 				if(Symmetric)
 					nbcols=i+1;
 				else
-					nbcols=Session->GetMaxElementId(Cols)+1;
+					nbcols=Session->GetMaxObjectId(Cols)+1;
 
 				for(size_t j=1;j<nbcols;j++)
 				{
-					void* obj2=Session->GetElement(Cols,j,true);
+					GObject* obj2=Session->GetObject(Cols,j,true);
 					if(!obj2)
 						continue;
 					NbValues+=1.0;
@@ -565,8 +566,8 @@ void GMatrixMeasure::ChangeStorageSize(void)
 size_t GMatrixMeasure::GetNbDiffElements(void)
 {
 	if(Lines==Cols)
-		return(Session->GetNbElements(Lines));
-	return(Session->GetNbElements(Lines)+Session->GetNbElements(Cols));
+		return(Session->GetNbObjects(Lines));
+	return(Session->GetNbObjects(Lines)+Session->GetNbObjects(Cols));
 }
 
 
@@ -788,7 +789,7 @@ void GMatrixMeasure::UpdateSparse(void)
 	// Recompute everything
 	for(size_t i=0;i<MaxIdLine;i++)
 	{
-		void* obj1=Session->GetElement(Lines,i+1,true);
+		GObject* obj1=Session->GetObject(Lines,i+1,true);
 		if(!obj1)
 			continue;
 		size_t max;
@@ -799,7 +800,7 @@ void GMatrixMeasure::UpdateSparse(void)
 
 		for(size_t j=0;j<max;j++)
 		{
-			void* obj2=Session->GetElement(Cols,j+1,true);
+			GObject* obj2=Session->GetObject(Cols,j+1,true);
 			if(!obj2)
 				continue;
 
@@ -925,8 +926,8 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 		throw GException("GMatrixMeasure::UpdateNearestNeighbors(void) : Not implemented to work with storage only");
 
 	// Get the elements
-	void** Elements;
-	size_t NbElements(Session->GetElements(Cols,Elements,true));
+	GObject** Elements;
+	size_t NbElements(Session->GetObjects(Cols,Elements,true));
 
 	// Compute the number of nearest neighbor to compute
 	if(NbNearest>NbElements-1)
@@ -949,7 +950,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 	for(Element.Start();!Element.End();Element.Next())
 	{
 		// Valid element ?
-		void* obj1=Session->GetElement(Lines,Element.GetPos()+1,false);
+		GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
 		if(!obj1)
 			continue;
 
@@ -960,7 +961,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 		// Fill the rest with randomly chosen elements
 		Fill(Neighbors,Element());
 		Session->GetRandom()->RandOrder(Elements,NbElements);
-		void** ptr;
+		GObject** ptr;
 		size_t i;
 		for(ptr=Elements,i=0;(Element()->GetNb()<NbNearest)&&(i<NbElements);i++,ptr++)
 		{
@@ -976,7 +977,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 				continue;
 
 			// Compute the measure, apply the high-pass filter.
-			void* obj2=Session->GetElement(Cols,Id,true);
+			GObject* obj2=Session->GetObject(Cols,Id,true);
 			double Mes(Compute(obj1,obj2));
 			if(abs(Mes)<CutoffFrequency)
 				Mes=0.0;
@@ -999,7 +1000,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 		for(Element.Start();!Element.End();Element.Next())
 		{
 			// Valid element ?
-			void* obj1=Session->GetElement(Lines,Element.GetPos()+1,false);
+			GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
 			if(!obj1)
 				continue;
 
@@ -1020,7 +1021,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 				{
 					Neighbors.Insert(Id);
 					CurSample->Id=Id;
-					void* obj2=Session->GetElement(Cols,Id,true);
+					GObject* obj2=Session->GetObject(Cols,Id,true);
 					CurSample->Value=Compute(obj1,obj2);
 					if(abs(CurSample->Value)<CutoffFrequency)
 						CurSample->Value=0.0;
@@ -1070,8 +1071,8 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 		throw GException("GMatrixMeasure::UpdateNearestNeighbors(void) : Not implemented to work with storage only");
 
 	// Get the elements
-	void** Elements;
-	size_t NbElements(Session->GetElements(Cols,Elements,true));
+	GObject** Elements;
+	size_t NbElements(Session->GetObjects(Cols,Elements,true));
 
 	// Compute the number of nearest neighbor to compute
 	if(NbNearest>NbElements-1)
@@ -1094,7 +1095,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 	for(Element.Start(),Sample.Start();!Element.End();Element.Next(),Sample.Next())
 	{
 		// Valid element ?
-		void* obj1=Session->GetElement(Lines,Element.GetPos()+1,false);
+		GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
 		if(!obj1)
 			continue;
 
@@ -1104,7 +1105,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 		// Fill the rest with randomly chosen elements
 		Fill(Neighbors,Sample());
 		Session->GetRandom()->RandOrder(Elements,NbElements);
-		void** ptr;
+		GObject** ptr;
 		size_t i;
 		for(ptr=Elements,i=0;(Sample()->GetNb()<NbSamples)&&(i<NbElements);i++,ptr++)
 		{
@@ -1120,7 +1121,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 				continue;
 
 			// Compute the measure, apply the high-pass filter.
-			void* obj2=Session->GetElement(Cols,Id,true);
+			GObject* obj2=Session->GetObject(Cols,Id,true);
 			double Mes(Compute(obj1,obj2));
 			if(abs(Mes)<CutoffFrequency)
 				Mes=0.0;
@@ -1144,7 +1145,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 		for(Element.Start();!Element.End();Element.Next())
 		{
 			// Valid element ?
-			void* obj1=Session->GetElement(Lines,Element.GetPos()+1,false);
+			GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
 			if(!obj1)
 				continue;
 
@@ -1163,7 +1164,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 				if(((Symmetric)&&(Id!=Element.GetPos()+1))&&(!Neighbors.IsIn(Id)))
 				{
 					// Compute the similarity
-					void* obj2=Session->GetElement(Cols,Id,true);
+					GObject* obj2=Session->GetObject(Cols,Id,true);
 					double Value(Compute(obj1,obj2));
 					if(abs(Value)<CutoffFrequency)
 						Value=0.0;
@@ -1203,7 +1204,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 		Element()->Clear();
 
 		// Valid element ?
-		void* obj1=Session->GetElement(Lines,Element.GetPos()+1,false);
+		GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
 		if(!obj1)
 			continue;
 
@@ -1238,7 +1239,7 @@ void GMatrixMeasure::UpdateMem(void)
 			RCursor<RMatrixLine> Cur(static_cast<RMatrix*>(Matrix)->GetLines());
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				void* obj1=Session->GetElement(Lines,Cur.GetPos()+1,true);
+				GObject* obj1=Session->GetObject(Lines,Cur.GetPos()+1,true);
 				if(!obj1)
 					continue;
 				size_t max;
@@ -1254,7 +1255,7 @@ void GMatrixMeasure::UpdateMem(void)
 						continue;
 
 					// Value must be recomputed
-					void* obj2=Session->GetElement(Cols,Cur2.GetPos()+1,true);
+					GObject* obj2=Session->GetObject(Cols,Cur2.GetPos()+1,true);
 					if(!obj2)
 						continue;
 
@@ -1274,7 +1275,10 @@ void GMatrixMeasure::UpdateMem(void)
 			UpdateSparse();
 			break;
 		case NearestNeighbors:
-			UpdateNearestNeighborsFast();
+			if(FastNN)
+				UpdateNearestNeighborsFast();
+			else
+				UpdateNearestNeighborsRAM();
 			break;
 	}
 	DirtyMem=false;
@@ -1294,7 +1298,7 @@ void GMatrixMeasure::UpdateStorage(void)
 			// Parse the file and re-compute all the elements that are dirty
 			for(size_t i=0;i<Storage.GetNbLines();i++)
 			{
-				void* obj1=Session->GetElement(Lines,i+1,true);
+				GObject* obj1=Session->GetObject(Lines,i+1,true);
 				if(!obj1)
 					continue;
 				size_t max;
@@ -1310,7 +1314,7 @@ void GMatrixMeasure::UpdateStorage(void)
 					if(res==res)
 						continue;  // Normal value
 
-					void* obj2=Session->GetElement(Cols,j+1,true);
+					GObject* obj2=Session->GetObject(Cols,j+1,true);
 					if(!obj2)
 						continue;
 
@@ -1328,7 +1332,10 @@ void GMatrixMeasure::UpdateStorage(void)
 			UpdateSparse();
 			break;
 		case NearestNeighbors:
-			UpdateNearestNeighborsFast();
+			if(FastNN)
+				UpdateNearestNeighborsFast();
+			else
+				UpdateNearestNeighborsRAM();
 			break;
 	}
 	DirtyFile=false;
@@ -1369,18 +1376,19 @@ void GMatrixMeasure::DeleteValue(double& val)
 
 
 //------------------------------------------------------------------------------
-void GMatrixMeasure::CreateParams(GPlugInFactory* fac)
+void GMatrixMeasure::CreateConfig(void)
 {
-	fac->InsertParam(new RParamValue("Cutoff Frequency",0.000001));
-	fac->InsertParam(new RParamValue("MinMeasure",0.05));
-	fac->InsertParam(new RParamValue("DeviationRate",1.5));
-	fac->InsertParam(new RParamValue("AutomaticMinMeasure",true));
-	fac->InsertParam(new RParamValue("Memory",true));
-	fac->InsertParam(new RParamValue("Storage",false));
-	fac->InsertParam(new RParamValue("Dir","/var/galilei"));
-	fac->InsertParam(new RParamValue("Type",static_cast<int>(Full)));
-	fac->InsertParam(new RParamValue("NbNearest",10));
-	fac->InsertParam(new RParamValue("NbSamples",20));
+	InsertParam(new RParamValue("Cutoff Frequency",0.000001,"Minimal value for a non-null measure"));
+	InsertParam(new RParamValue("MinMeasure",0.05,"Fixed minimal value of the measure"));
+	InsertParam(new RParamValue("DeviationRate",1.5,"Deviation rate used to compute automatically the minimal value of the measure"));
+	InsertParam(new RParamValue("AutomaticMinMeasure",true,"Should the minimum value of the measure be automatically computed?"));
+	InsertParam(new RParamValue("Memory",true,"The measures should be stored in memory?"));
+	InsertParam(new RParamValue("Storage",false,"The measures should be stored on disk?"));
+	InsertParam(new RParamValue("Dir","/var/galilei","Root directory to store the measures (in practice they are stored in sub-directory named after the session"));
+	InsertParam(new RParamValue("Type",static_cast<int>(Full),"Type of the measure"));
+	InsertParam(new RParamValue("NbNearest",10,"Number of nearest neighbors to store"));
+	InsertParam(new RParamValue("NbSamples",20,"Number of samples used to compute the nearest neighbors"));
+	InsertParam(new RParamValue("FastNN",true,"Use a fast computation method for the nearest neighbors (needs more memory)?"));
 }
 
 

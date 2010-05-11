@@ -43,15 +43,17 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GObject::GObject(size_t id,const RString& name,tObjType objtype)
-	: Id(id), Name(name), ObjType(objtype)
+GObject::GObject(GSession* session,size_t id,const RString& name,tObjType objtype)
+	: Session(session), Id(id), Name(name), ObjType(objtype)
 {
+	if(!Session)
+		ThrowGException("Cannot allocate an object without a session");
 }
 
 
 //------------------------------------------------------------------------------
 GObject::GObject(const GObject* obj)
-	: Id(obj->Id), Name(obj->Name), ObjType(obj->ObjType)
+	: Session(obj->Session), Id(obj->Id), Name(obj->Name), ObjType(obj->ObjType)
 {
 }
 

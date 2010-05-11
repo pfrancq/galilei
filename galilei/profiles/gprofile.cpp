@@ -51,19 +51,19 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,tProfileType type,const R::RString name,bool s)
-  : GWeightInfosObj(cNoRef,0,otProfile,name,osNew), User(usr), Type(type),
+GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,const R::RString name,bool s)
+  : GWeightInfosObj(session,cNoRef,0,otProfile,name,osNew), User(usr), Type(type),
     Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null),
     GroupId(0), Attached(RDate::Null), Score(0.0), Level(0)
 {
 	if(!User)
-		throw GException("New profile has no parent user");
+		ThrowGException("New profile has no parent user");
 	User->InsertPtr(this);
 
 	// Verify if the community exists in memory
-	if(GroupId&&(GSession::Get()))
+	if(GroupId)
 	{
-		GCommunity* grp=GSession::Get()->GetCommunity(GroupId,false,false);
+		GCommunity* grp=Session->GetCommunity(GroupId,false,false);
 		if(grp)
 			grp->InsertObj(this);
 	}
@@ -71,19 +71,19 @@ GProfile::GProfile(GUser* usr,tProfileType type,const R::RString name,bool s)
 
 
 //------------------------------------------------------------------------------
-GProfile::GProfile(GUser* usr,tProfileType type,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,double score,char level,size_t nbf)
-  : GWeightInfosObj(id,blockid,otProfile,name,osNew), User(usr), Type(type),
+GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,double score,char level,size_t nbf)
+  : GWeightInfosObj(session,id,blockid,otProfile,name,osNew), User(usr), Type(type),
     Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c),
     GroupId(grpid), Attached(a), Score(score), Level(level)
 {
 	if(!User)
-		throw GException("Profile "+RString::Number(id)+" has no parent user");
+		ThrowGException("Profile "+RString::Number(id)+" has no parent user");
 	User->InsertPtr(this);
 
 	// Verify if the community exists in memory
-	if(GroupId&&(GSession::Get()))
+	if(GroupId)
 	{
-		GCommunity* grp=GSession::Get()->GetCommunity(GroupId,false,false);
+		GCommunity* grp=Session->GetCommunity(GroupId,false,false);
 		if(grp)
 			grp->InsertObj(this);
 	}
@@ -273,8 +273,7 @@ void GProfile::Update(GSession* session,GWeightInfos& infos)
 	Computed.SetToday();
 
 	// Update the group were it belongs
-	if(GSession::Get())
-		GSession::Get()->UpdateCommunity(this);
+	Session->UpdateCommunity(this);
 	Transfer(infos);
 
 	// Clear infos
@@ -316,9 +315,9 @@ void GProfile::HasUpdate(size_t docid)
 GProfile::~GProfile(void)
 {
 	// Remove it from its group if necessary
-	if(GroupId&&(GSession::Get()))
+	if(GroupId)
 	{
-		GCommunity* grp=GSession::Get()->GetCommunity(GroupId);
+		GCommunity* grp=Session->GetCommunity(GroupId);
 		if(grp)
 			grp->DeleteObj(this);
 	}

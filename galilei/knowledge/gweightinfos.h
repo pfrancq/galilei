@@ -178,10 +178,11 @@ public:
 	 * @return the inclusion factor of the lists of weighted information
 	 * entities. The methods computes a ratio (weighted by the tf-idf factors)
 	 * of the elements of the first list being in the second one.
+	 * @param session         Session.
 	 * @param w              Pointer to a list of weighted information entities.
 	 * @param ObjType        Type of the object.
 	 */
-	double Inclusion(const GWeightInfos& w,tObjType ObjType) const;
+	double Inclusion(GSession* session,const GWeightInfos& w,tObjType ObjType) const;
 
 	/**
 	* Compute a boolean similarity between two lists of weighted information
@@ -209,26 +210,29 @@ protected:
 	* Add the references for the information entities of the object type in a
 	* information entity space (language). This information is used for the
 	* inverse frequency factors.
+	* @param session         Session.
 	* @param ObjType        Type of the reference.
 	*/
-	void AddRefs(tObjType ObjType) const;
+	void AddRefs(GSession* session,tObjType ObjType) const;
 
 	/**
 	* Delete the references for the information entities of the object type in a
 	* information entity space (language). This information is used for the
 	* inverse frequency factors.
+	* @param session         Session.
 	* @param ObjType        Type of the reference.
 	*/
-	void DelRefs(tObjType ObjType) const;
+	void DelRefs(GSession* session,tObjType ObjType) const;
 
 public:
 
 	/**
 	* Modify the list by applying for each information entity the Inverse
 	* Frequency Factor (IFF) of the object type (idf, isf or ivf).
+	* @param session         Session.
 	* @param ObjType        Type of the reference.
 	*/
-	void RecomputeIFF(tObjType ObjType);
+	void RecomputeIFF(GSession* session,tObjType ObjType);
 
 	/**
 	 * Print the vector to the standard output.
@@ -273,7 +277,7 @@ public:
 	*/
 	virtual ~GWeightInfos(void);
 
-	friend class GIndexer;
+	friend class GSession;
 	friend class GDoc;
 	friend class GWeightInfosObj;
 };

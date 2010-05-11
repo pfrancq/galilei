@@ -121,15 +121,17 @@ public:
 
 	/**
 	* Construct a new document.
+	* @param session         Session.
 	* @param url             URL of the document.
 	* @param name            Name of the document.
 	* @param lang            Language of the document.
 	* @param mime            MIME type of the document.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,GLang* lang,const R::RString& mime);
+	GDoc(GSession* session,const R::RURI& url,const R::RString& name,GLang* lang,const R::RString& mime);
 
 	/**
 	* Construct a document.
+	* @param session         Session.
 	* @param url             URL of the document.
 	* @param name            Name of the document.
 	* @param id              Identifier of the document.
@@ -142,7 +144,7 @@ public:
 	* @param u               Date of the last updated.
 	* @param a               Date of the last attached.
 	*/
-	GDoc(const R::RURI& url,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
+	GDoc(GSession* session,const R::RURI& url,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
 
 	/**
 	* Compare two documents by comparing their identifier.

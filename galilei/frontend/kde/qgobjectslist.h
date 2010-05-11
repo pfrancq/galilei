@@ -100,9 +100,10 @@ public:
 
 	/**
 	 * Set the list with a given type.
+	 * @param session        Session.
 	 * @param type           Type of the list.
 	 */
-	void Set(oType type);
+	void Set(GSession* session,oType type);
 
 	/**
 	 * Set the list with a given type for a given document.

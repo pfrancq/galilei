@@ -78,19 +78,19 @@ class GGALILEIApp : public R::RApplication, public R::RContainer<GPlugInManager,
 protected:
 
 	/**
-	* A log file.
+	* The Sessions.
 	*/
-	GSlotLog* Log;
+	R::RContainer<GSession,true,true> Sessions;
 
 	/**
-	* Debug file.
-	*/
-	R::RDebugXML* Debug;
+	 * The storages.
+	 */
+	GPlugInManager* Storages;
 
 	/**
-	* The Session.
-	*/
-	GSession* Session;
+	 * The languages.
+	 */
+	GPlugInManager* Langs;
 
 	/**
 	* Load the dialog boxes
@@ -101,36 +101,6 @@ protected:
 	* Path where to search for plug-ins
 	*/
 	R::RContainer<R::RString,true,false> PlugInsPath;
-
-	/**
-	* Name of the global configuration parameters.
-	*/
-	R::RString GALILEIConfigName;
-
-	/**
-	* Name of the session.
-	*/
-	R::RString SessionName;
-
-	/**
-	* The Log file.
-	*/
-	R::RString LogFileName;
-
-	/**
-	* The debug file.
-	*/
-	R::RString DebugFileName;
-
-	/**
-	* Global configuration file of the GALILEI library.
-	*/
-	R::RConfig GALILEIConfig;
-
-	/**
-	 * Configuration file of the session.
-	 */
-	R::RConfig* SessionConfig;
 
 	/**
 	 * Directory where to binary files of the index are stored.
@@ -157,6 +127,11 @@ protected:
 	 */
 	GDoc* Doc;
 
+	/**
+     * Log file for the application.
+     */
+	 R::RTextFile Log;
+
 public:
 
 	/**
@@ -167,16 +142,6 @@ public:
 	* @param dlg             Dialog boxes must be loaded too?
 	*/
 	GGALILEIApp(const R::RString& name,int argc, char *argv[],bool dlg=false);
-
-	/**
-	* Get a pointer over the configuration of the GALILEI library.
-	*/
-	R::RConfig* GetGALILEIConfig(void) {return(&GALILEIConfig);}
-
-	/**
-	* Get a pointer over the configuration of the session.
-	*/
-	R::RConfig* GetSessionConfig(void) {return(SessionConfig);}
 
 protected:
 
@@ -191,71 +156,21 @@ protected:
 	*/
 	virtual void Init(void);
 
-	/**
-	 * Delete the configuration of the session.
-	 */
-	void DeleteSessionConfig(void);
-
 public:
 
 	/**
-	 * Change the name of the current session.
-	 * @param name           Name of the session.
-	 */
-	void ChangeSessionName(const R::RString& name);
-
-	/**
-	* Create the session.
+	* Get the session with a given name.
+	* @param name            Name of the session.
+	* @param created         Determine if the session must be created if not
+	*                        existing.
 	*/
-	GSession* CreateSession(void);
+	GSession* GetSession(const R::RString& name,bool created=false);
 
 	/**
-	 * Get the session.
-	 */
-	GSession* GetSession(void) const {return(Session);}
-
-	/**
-	* Delete the session.
+	* Delete a session.
+	* @param session         Session.
 	*/
-	void DeleteSession(void);
-
-	/**
-	* Get the name of the GALILEI library configuration file.
-	*/
-	inline R::RString GetGALILEIConfigName(void) const {return(GALILEIConfigName);}
-
-	/**
-	* Get the name of the session.
-	*/
-	inline R::RString GetSessionName(void) const {return(SessionName);}
-
-	/**
-	* Set the name of the plug-ins configuration path.
-	* @param name            Name of the path.
-	*/
-	void SetGALILEIConfigName(const R::RString& name) {GALILEIConfigName=name;}
-
-	/**
-	* Get the name of the log file.
-	*/
-	R::RString GetLogFileName(void) const {return(LogFileName);}
-
-	/**
-	* Set the name of the log file.
-	* @param name            Name.
-	*/
-	void SetLogFileName(const R::RString& name);
-
-	/**
-	* @return the name of the debug file.
-	*/
-	R::RString GetDebugFileName(void) const {return(DebugFileName);}
-
-	/**
-	* Set the name of the debug file.
-	* @param name            Name.
-	*/
-	void SetDebugFileName(const R::RString& name);
+	void DeleteSession(GSession* session);
 
 	/**
 	* @return the name of the index directory.
@@ -283,11 +198,6 @@ public:
 	* @param path            Path to add.
 	*/
 	void AddPlugInsPath(const R::RString& path) {PlugInsPath.InsertPtr(new R::RString(path));}
-
-	/**
-	 * Write to the log file something (if a log file is defined).
-	 */
-	void WriteLog(const R::RString& str);
 
 protected:
 
@@ -383,7 +293,6 @@ public:
 	* Get a plug-in of a given manager.
 	* @param mng             Name of the manager to be found.
 	* @param name            Name of the plug-in.
-	* @param list            List.
 	* @param need            If the parameter is non-null and the plug-in
 	*                        doesn't exist, generate an exception.
 	*/
@@ -554,15 +463,6 @@ public:
 	* @param f              Pointer to the filter.
 	*/
 	void DelMIMES(GFilter* f);
-
-	/**
-	 * Run a specific tool.
-	 * @param name           Name of the tool.
-	 * @param slot           Slot.
-	 * @param need           If set to true and the tool doesn't exist, it
-	 *                       generates an exception.
-	 */
-	void RunTool(const R::RString& name,GSlot* slot=0,bool need=true);
 
 	/**
 	* Destruct the application.

@@ -33,6 +33,7 @@
 #include <gplugin.h>
 #include <gpluginmanager.h>
 #include <ggalileiapp.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -84,8 +85,6 @@ void GPlugInFactory::Create(GSession* session)
 	if(Plugin)
 		return;
 	Plugin=NewPlugIn(session);
-	Plugin->ApplyConfig();
-	Plugin->Init();
 	Mng->RegisterPlugIn(Plugin,true);
 }
 
@@ -115,15 +114,9 @@ void GPlugInFactory::Configure(void)
 	if(ConfigDlg)
 	{
 		Configure_t config=reinterpret_cast<Configure_t>(reinterpret_cast<size_t>(ConfigDlg));
-		if(config(this)&&Plugin)
+		if(Plugin&&config(Plugin))
 			Plugin->ApplyConfig();
 	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GPlugInFactory::CreateConfig(void)
-{
 }
 
 
@@ -132,32 +125,6 @@ void GPlugInFactory::ApplyConfig(void)
 {
 	if(Plugin)
 		Plugin->ApplyConfig();
-}
-
-
-//------------------------------------------------------------------------------
-void GPlugInFactory::InsertParam(RParam* param)
-{
-	// Configuration is the session
-	if(!GALILEIApp->GetSessionConfig())
-		ThrowGException("No current session");
-	if(Mng->GetPlugInType()==GPlugInManager::ptListSelect)
-		GALILEIApp->GetSessionConfig()->InsertParam(param,Mng->GetName(),List,Name);
-	else
-		GALILEIApp->GetSessionConfig()->InsertParam(param,Mng->GetName(),Name);
-}
-
-
-//------------------------------------------------------------------------------
-RParam* GPlugInFactory::GetParam(const R::RString& name)
-{
-	// Configuration is the session
-	if(!GALILEIApp->GetSessionConfig())
-		ThrowGException("No current session");
-	if(Mng->GetPlugInType()==GPlugInManager::ptListSelect)
-		return(GALILEIApp->GetSessionConfig()->FindParam<RParam>(name,Mng->GetName(),List,Name));
-	else
-		return(GALILEIApp->GetSessionConfig()->FindParam<RParam>(name,Mng->GetName(),Name));
 }
 
 
@@ -220,6 +187,55 @@ RString GPlugIn::GetDesc(void) const
 
 //------------------------------------------------------------------------------
 void GPlugIn::ApplyConfig(void)
+{
+}
+
+
+//------------------------------------------------------------------------------
+void GPlugIn::InsertParam(RParam* param)
+{
+	if(Factory->Mng->GetPlugInType()==GPlugInManager::ptListSelect)
+		Session->InsertParam(param,Factory->Mng->GetName(),Factory->List,Factory->Name);
+	else
+		Session->InsertParam(param,Factory->Mng->GetName(),Factory->Name);
+}
+
+
+//------------------------------------------------------------------------------
+RParam* GPlugIn::GetParam(const R::RString& name)
+{
+	// Configuration is the session
+	if(Factory->Mng->GetPlugInType()==GPlugInManager::ptListSelect)
+		return(Session->FindParam<RParam>(name,Factory->Mng->GetName(),Factory->List,Factory->Name));
+	else
+		return(Session->FindParam<RParam>(name,Factory->Mng->GetName(),Factory->Name));
+}
+
+
+//-----------------------------------------------------------------------------
+RCursor<RParam> GPlugIn::GetParams(const RString& cat)
+{
+	// Configuration is the session
+	if(Factory->Mng->GetPlugInType()==GPlugInManager::ptListSelect)
+		return(Session->GetParams(Factory->Mng->GetName(),Factory->List,Factory->Name));
+	else
+		return(Session->GetParams(Factory->Mng->GetName(),Factory->Name,cat));
+}
+
+
+//-----------------------------------------------------------------------------
+void GPlugIn::GetCategories(RContainer<RString,true,false>& cats)
+{
+	// Configuration is the session
+	if(Factory->Mng->GetPlugInType()==GPlugInManager::ptListSelect)
+		cats.Clear();
+	else
+		Session->GetCategories(cats,Factory->Mng->GetName(),Factory->Name);
+}
+
+
+//------------------------------------------------------------------------------
+void GPlugIn::CreateConfig(void)
 {
 }
 

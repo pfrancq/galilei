@@ -246,7 +246,7 @@ public:
 	*/
 	template<class T> T* FindParam(const R::RString& name)
 	{
-		return(Session->GetConfig()->FindParam<T>(name,"Simulator"));
+		return(Session->FindParam<T>(name,"Simulator"));
 	}
 
 	/**

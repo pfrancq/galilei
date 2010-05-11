@@ -86,9 +86,10 @@ public:
 
 	/**
 	* Constructor.
+	* @param session         Session.
 	* @param fac             Factory of the plug-in.
 	*/
-	GStorage(GPlugInFactory* fac);
+	GStorage(GSession* session,GPlugInFactory* fac);
 
 	//-----------------------------------------------------
 	/** @name General Methods
@@ -523,45 +524,8 @@ public:
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_STORAGE_FACTORY(name,desc,plugin)                                                   \
-class TheFactory : public GALILEI::GPlugInFactory                                                  \
-{                                                                                                  \
-	static GALILEI::GPlugInFactory* Inst;                                                          \
-	TheFactory(GALILEI::GPlugInManager* mng,const char* t)                                         \
-		: GPlugInFactory(mng,name,desc,t,R::RString::Null)                                         \
-	{                                                                                              \
-	}                                                                                              \
-	virtual ~TheFactory(void) {}                                                                   \
-	virtual void CreateConfig(void)                                                                \
-	{                                                                                              \
-		plugin::CreateParams(this);                                                                \
-	}                                                                                              \
-public:                                                                                            \
-	static GALILEI::GPlugInFactory* CreateInst(GALILEI::GPlugInManager* mng,const char* t)         \
-	{                                                                                              \
-		if(!Inst)                                                                                  \
-			Inst = new TheFactory(mng,t);                                                          \
-		return(Inst);                                                                              \
-	}                                                                                              \
-	virtual const char* GetAPIVersion(void) const                                                  \
-		{return(API_PLUG_IN_VERSION);}                                                             \
-		                                                                                           \
-	virtual GALILEI::GPlugIn* NewPlugIn(GSession*)                                                 \
-	{                                                                                              \
-		GALILEI::GStorage* ptr(new plugin(this));                                                  \
-		return(ptr);                                                                               \
-	}                                                                                              \
-};                                                                                                 \
-GALILEI::GPlugInFactory* TheFactory::Inst = 0;                                                     \
-                                                                                                   \
-extern "C" GALILEI::GPlugInFactory* FactoryCreate(GALILEI::GPlugInManager* mng,const char* t)      \
-{                                                                                                  \
-	return(TheFactory::CreateInst(mng,t));                                                         \
-}                                                                                                  \
-extern "C" const char* LibType(void)                                                               \
-{                                                                                                  \
-	return("Storage");                                                                             \
-}
+#define CREATE_STORAGE_FACTORY(name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GStorage,plugin,"Storage",R::RString::Null,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

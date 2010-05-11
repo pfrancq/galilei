@@ -113,15 +113,17 @@ public:
 
     /**
 	* Construct a new profile.
+	* @param session         Session.
 	* @param usr             User of the profile.
 	* @param type            Type of the profile.
 	* @param name            Name of the profile.
 	* @param s               Social?
 	*/
-	GProfile(GUser* usr,tProfileType type,const R::RString name,bool s);
+	GProfile(GSession* session,GUser* usr,tProfileType type,const R::RString name,bool s);
 
     /**
 	* Construct a profile.
+	* @param session         Session.
 	* @param usr             User of the profile.
 	* @param type            Type of the profile.
 	* @param id              Identifier of the profile.
@@ -136,7 +138,7 @@ public:
 	* @param level           Level of the profile.
 	* @param nbf             Number of Feedbacks.
 	*/
-	GProfile(GUser* usr,tProfileType type,size_t id,size_t blockid,const R::RString name,
+	GProfile(GSession* session,GUser* usr,tProfileType type,size_t id,size_t blockid,const R::RString name,
 			 size_t grpid,R::RDate a,R::RDate u,R::RDate c,bool s,double score,char level,size_t nbf);
 
 	/**

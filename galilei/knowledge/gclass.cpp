@@ -44,8 +44,15 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GClass::GClass(size_t id,size_t blockid,const R::RString& name)
-	: R::RNode<GClasses,GClass,true>(), GWeightInfosObj(id,blockid,otClass,name,osNew)
+GClass::GClass(GSession* session,const R::RString& name)
+	: R::RNode<GClasses,GClass,true>(), GWeightInfosObj(session,cNoRef,0,otClass,name,osNew)
+{
+}
+
+
+//------------------------------------------------------------------------------
+GClass::GClass(GSession* session,size_t id,size_t blockid,const R::RString& name)
+	: R::RNode<GClasses,GClass,true>(), GWeightInfosObj(session,id,blockid,otClass,name,osNew)
 {
 }
 

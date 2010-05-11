@@ -144,13 +144,15 @@ public:
 
 	/**
 	* Constructor of a generic concept.
+	* @param session         Session.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
 	*/
-	GConcept(const R::RString& name,GConceptType* type);
+	GConcept(GSession* session,const R::RString& name,GConceptType* type);
 
 	/**
 	* Constructor of a generic concept.
+	* @param session         Session.
 	* @param id              Identifier.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
@@ -170,7 +172,7 @@ public:
 	* @param idxclasses      Identifier of the block the inverted file related
 	*                        to the classes.
 	*/
-	GConcept(size_t id, const R::RString& name, GConceptType* type,
+	GConcept(GSession* session,size_t id, const R::RString& name, GConceptType* type,
 			size_t refdocs, size_t idxdocs,
 			size_t refprofiles, size_t idxprofiles,
 			size_t refcommunities, size_t idxcommunities,
@@ -294,8 +296,7 @@ public:
 
 	friend class GWeightInfo;
 	friend class GConceptType;
-	friend class GIndexer;
-	friend class GOntology;
+	friend class GSession;
 };
 
 

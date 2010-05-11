@@ -38,12 +38,11 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rnode.h>
-
+#include <rtree.h>
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gsubjects.h>
 
 
 //------------------------------------------------------------------------------
@@ -99,6 +98,11 @@ public:
 class GSubject : protected R::RNode<GSubjects,GSubject,true>
 {
 	/**
+	 * Session.
+	 */
+	GSession* Session;
+
+	/**
 	 * Identifier of the subject.
 	 */
 	size_t Id;
@@ -153,21 +157,22 @@ public:
 
 	/**
 	* Constructor of a subject.
+	* @param session         Session.
 	* @param id              Identifier of the subject.
 	* @param name            Name of the subject.
 	* @param u               Used?
 	*/
-	GSubject(size_t id,const R::RString& name,bool u);
+	GSubject(GSession* session,size_t id,const R::RString& name,bool u);
 
 	/**
 	* Get a cursor over all the child subjects.
 	*/
-	inline R::RCursor<GSubject> GetSubjects(void) const {return(Tree->GetSubjects(this));}
+	inline R::RCursor<GSubject> GetSubjects(void) const {return(GetNodes());}
 
 	/**
 	* @return number of child subjects.
 	*/
-	inline size_t GetNbSubjects(void) const {return(Tree->GetNbSubjects(this));}
+	inline size_t GetNbSubjects(void) const {return(GetNbNodes());}
 
 	/**
 	* Initialize the subject (reset all profiles assigned).
@@ -422,11 +427,66 @@ public:
 	*/
 	virtual ~GSubject(void);
 
-	friend class GSession;
 	friend class GSubjects;
+	friend class GSession;
 	friend class R::RTree<GSubjects,GSubject,true>;
 	friend class R::RNode<GSubjects,GSubject,true>;
 	friend class GSimulator;
+};
+
+
+//------------------------------------------------------------------------------
+/**
+ * The GSubjects provides just a tree of GSubject.
+ * @author Pascal Francq.
+ * @short Subjects
+ */
+class GSubjects : public R::RTree<GSubjects,GSubject,true>
+{
+	/**
+	 * Ordered container of subjects.
+	 */
+	R::RContainer<GSubject,false,true> Subjects;
+
+	/**
+	 * Container of selected documents.
+	 */
+	R::RContainer<GDoc,false,true> SelectedDocs;
+
+	/**
+	 * Subjects for the documents (the identifier of the document provides the
+	 * index in the container).
+	 */
+	R::RContainer<R::RContainer<GSubject,false,false>,true,false> DocsSubjects;
+
+	/**
+	 * Subjects for the profiles (the identifier of the profile provides the
+	 * index in the container).
+	 */
+	R::RContainer<GSubject,false,false> ProfilesSubject;
+
+	/**
+	 * Specify if the subjects are loaded or not.
+	 */
+	bool SubjectsLoaded;
+
+	/**
+	 * Type of the description.
+	 */
+	tSubjectDesc DescType;
+
+public:
+
+	/**
+	* Construct a tree of subjects.
+	* @param max            Initial size of the array of top nodes.
+	*/
+	GSubjects(size_t max);
+
+	friend class GSubject;
+	friend class GSession;
+	friend class R::RTree<GSession,GSubject,true>;
+	friend class R::RNode<GSession,GSubject,true>;
 };
 
 

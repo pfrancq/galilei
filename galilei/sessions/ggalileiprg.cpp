@@ -48,7 +48,6 @@
 #include <ggroupdocs.h>
 #include <gcommunitycalc.h>
 #include <gtopiccalc.h>
-#include <gsubjects.h>
 #include <gprofilecalc.h>
 #include <glinkcalc.h>
 #include <gstatscalc.h>
@@ -81,7 +80,6 @@ class GInstGALILEIApp;
 class GSessionClass : public R::RPrgClass
 {
 public:
-	bool Instance;
 	GInstGALILEIApp* App;
 
 	GSessionClass(GInstGALILEIApp* app);
@@ -97,6 +95,8 @@ public:
 	GGALILEIAppClass(void);
 	virtual R::RPrgVar* NewVar(R::RInterpreter* prg,RPrgOutput* o,const R::RString& name,R::RContainer<R::RPrgVar,true,false>& params);
 	virtual ~GGALILEIAppClass(void);
+
+	friend class GGALILEIPrg;
 };
 
 
@@ -126,6 +126,7 @@ public:
 class GInstGALILEIApp : public RPrgVarInst
 {
 public:
+	GSession* Session;      // Session associated to the application.
 	RString TestName;  		// Name of the current test.
 	RTextFile* OFile;  		// Output file.
 	RTextFile* GOFile;  	// Graph Output file.
@@ -140,7 +141,7 @@ public:
 
 //------------------------------------------------------------------------------
 GInstGALILEIApp::GInstGALILEIApp(const RString& name,RPrgClass* c)
-	: RPrgVarInst(name,c), OFile(0),GOFile(0), SOFile(0),DSOFile(0)
+	: RPrgVarInst(name,c), Session(0), OFile(0),GOFile(0), SOFile(0),DSOFile(0)
 {
 }
 
@@ -171,34 +172,21 @@ class GInstSession : public RPrgVarInst
 {
 public:
 	GSession* Session;		             // Session.
-	bool DelSession;                     // Must the session be destroyed?
 	GInstGALILEIApp* App;                // Application
 
-	GInstSession(const RString& name,GSessionClass* c,GSession* session,RInterpreter* prg,RContainer<R::RPrgVar,true,false>& args,GInstGALILEIApp* app);
+	GInstSession(const RString& name,GSessionClass* c,RInterpreter* prg,RContainer<R::RPrgVar,true,false>& args,GInstGALILEIApp* app);
 	virtual ~GInstSession(void);
 };
 
 
 //------------------------------------------------------------------------------
-GInstSession::GInstSession(const RString& name,GSessionClass* c,GSession* session,RInterpreter* prg,RContainer<R::RPrgVar,true,false>& args,GInstGALILEIApp* app)
- : RPrgVarInst(name,c), Session(session), App(app)
+GInstSession::GInstSession(const RString& name,GSessionClass* c,RInterpreter* prg,RContainer<R::RPrgVar,true,false>& args,GInstGALILEIApp* app)
+ : RPrgVarInst(name,c), Session(GALILEIApp->GetSession(args[0]->GetValue(prg),false)), App(app)
 {
-	if(args.GetNb()!=4)
-		throw RPrgException(prg,"Constructor needs four parameters");
-
-	if(!session)
-	{
-		GALILEIApp->CreateSession();
-		Session=GALILEIApp->GetSession();
-		DelSession=true;
-	}
-	else
-		DelSession=false;
-
-	bool DoDocs=args[0]->GetValue(prg)=="1";
-	bool DoProfiles=args[1]->GetValue(prg)=="1";
-	bool DoCommunities=args[2]->GetValue(prg)=="1";
-	bool DoTopics=args[3]->GetValue(prg)=="1";
+	bool DoDocs=args[1]->GetValue(prg)=="1";
+	bool DoProfiles=args[2]->GetValue(prg)=="1";
+	bool DoCommunities=args[3]->GetValue(prg)=="1";
+	bool DoTopics=args[4]->GetValue(prg)=="1";
 	if(DoTopics)
 		Session->LoadTopics();
 	if(DoDocs||DoProfiles||DoTopics)
@@ -213,11 +201,6 @@ GInstSession::GInstSession(const RString& name,GSessionClass* c,GSession* sessio
 //------------------------------------------------------------------------------
 GInstSession::~GInstSession(void)
 {
-	if(DelSession)
-	{
-		GALILEIApp->DeleteSession();
-		dynamic_cast<GSessionClass*>(GetClass())->Instance=false;
-	}
 }
 
 
@@ -434,26 +417,6 @@ public:
 			throw RPrgException(prg,"The method needs the name of the test.");
 		o->WriteStr("Current Test Name: "+args[0]->GetValue(prg));
 		Owner->TestName=args[0]->GetValue(prg);
-	}
-};
-
-
-//------------------------------------------------------------------------------
-class SetLog : public RPrgFunc
-{
-public:
-	SetLog(void) : RPrgFunc("SetLog","Specify a log file.") {}
-	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args)
-	{
-		ShowInst(this,prg,args);
-		GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
-		if(!Owner)
-			throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
-
-		if(args.GetNb()!=1)
-			throw RPrgException(prg,"The method needs the name of the log file.");
-		o->WriteStr("Create Log file: "+args[0]->GetValue(prg));
-		GALILEIApp->SetLogFileName(args[0]->GetValue(prg));
 	}
 };
 
@@ -813,10 +776,12 @@ public:
 //------------------------------------------------------------------------------
 class RealLife : public RPrgFunc
 {
+public:
+	GSession* Session;
 	char What[2];
 	GMeasure* Compare;
-public:
-	RealLife(void) : RPrgFunc("RealLife","Perform the simulation of a complete system running a given number of step times.") {}
+
+	RealLife(void) : RPrgFunc("RealLife","Perform the simulation of a complete system running a given number of step times."), Session(0) {}
 	void CommonTasks(RPrgOutput* o,GInstSimulator* Owner)
 	{
 		GSlot* rec=dynamic_cast<GSlot*>(o);
@@ -827,7 +792,7 @@ public:
 			rec->Interact();
 			rec->WriteStr("Compute Profiles: Current Method");
 		}
-		if(GSession::Break()) return;
+		if(Session->MustBreak()) return;
 		if(GALILEIApp->GetCurrentPlugIn<GLinkCalc>("LinkCalc",false))
 			GALILEIApp->GetCurrentPlugIn<GLinkCalc>("LinkCalc")->ApplyConfig();
 		GALILEIApp->GetCurrentPlugIn<GProfileCalc>("ProfileCalc")->ApplyConfig();
@@ -839,7 +804,7 @@ public:
 			rec->Interact();
 			rec->WriteStr("Group Profiles: Current Method");
 		}
-		if(GSession::Break()) return;
+		if(Session->MustBreak()) return;
 		GALILEIApp->GetCurrentPlugIn<GGroupProfiles>("GroupProfiles")->ApplyConfig();
 		GALILEIApp->GetCurrentPlugIn<GPlugIn>("CommunityCalc")->ApplyConfig();
 		Owner->Session->GroupProfiles(rec);
@@ -855,7 +820,7 @@ public:
 		Compare->Info(2,&Owner->AdjustedRandIndex);
 		if(rec)
 			o->WriteStr("Recall: "+RString::Number(Owner->Recall)+"  -  Precision: "+RString::Number(Owner->Precision)+"  -  Total: "+RString::Number(Owner->AdjustedRandIndex));
-		if(GSession::Break()) return;
+		if(Session->MustBreak()) return;
 		if(Owner->App->OFile)
 			(*Owner->App->OFile)<<Owner->App->TestName<<Owner->Recall<<Owner->Precision<<Owner->AdjustedRandIndex<<What<<endl;
 		if(Owner->App->GOFile)
@@ -876,7 +841,7 @@ public:
 		if(args.GetNb()!=4)
 			throw RPrgException(prg,"Method needs four parameters.");
 
-		if(GSession::Break()) return;
+		if(Session->MustBreak()) return;
 
 		// Save the information related to the number of profiles created (here it is always 1,1
 		// Set the new parameters
@@ -968,9 +933,9 @@ public:
 			}
 
 			// Compute, Group and Compare
-			if(GSession::Break()) return;
+			if(Session->MustBreak()) return;
 			CommonTasks(o,Owner);
-			if(GSession::Break()) return;
+			if(Session->MustBreak()) return;
 		}
 
 		// Restore the values saved
@@ -1147,9 +1112,14 @@ public:
 class SetPlugInParam : public RPrgFunc
 {
 public:
-	SetPlugInParam(void) : RPrgFunc("SetPlugInParam","Specify a value (4th argument) for a parameter (3rd argument) for a plug-in (with name=2nd argument and type=1st argument).") {}
+	GInstGALILEIApp* App;
+	SetPlugInParam(void)
+		: RPrgFunc("SetPlugInParam","Specify a value (4th argument) for a parameter (3rd argument) for a plug-in (with name=2nd argument and type=1st argument)."),
+		  App(0) {}
 	virtual void Run(R::RInterpreter* prg,R::RPrgOutput*,RPrgVarInst*,R::RContainer<R::RPrgVar,true,false>& args)
 	{
+		if(!App->Session)
+			throw RPrgException(prg,"Method needs a running session.");
 		ShowInst(this,prg,args);
 		if(args.GetNb()!=4)
 			throw RPrgException(prg,"Method needs four parameters.");
@@ -1166,7 +1136,8 @@ public:
 class SetCurrentPlugIn : public RPrgFunc
 {
 public:
-	SetCurrentPlugIn(void) : RPrgFunc("SetCurrentPlugIn","Specify the current plug-in (2th argument) for a given type(1st argument).") {}
+	SetCurrentPlugIn(void)
+		: RPrgFunc("SetCurrentPlugIn","Specify the current plug-in (2th argument) for a given type(1st argument).") {}
 	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst*,R::RContainer<R::RPrgVar,true,false>& args)
 	{
 		ShowInst(this,prg,args);
@@ -1182,9 +1153,14 @@ public:
 class SetMeasureParam : public RPrgFunc
 {
 public:
-	SetMeasureParam(void) : RPrgFunc("SetMeasureParam","Specify a value (4th argument) for a parameter (3rd argument) for a measure (with name=2nd argument and type=1st argument).") {}
+	GInstGALILEIApp* App;
+	SetMeasureParam(void) :
+		RPrgFunc("SetMeasureParam","Specify a value (4th argument) for a parameter (3rd argument) for a measure (with name=2nd argument and type=1st argument)."),
+		App(0) {}
 	virtual void Run(R::RInterpreter* prg,R::RPrgOutput*,RPrgVarInst*,R::RContainer<R::RPrgVar,true,false>& args)
 	{
+		if(!App->Session)
+			throw RPrgException(prg,"Method needs a running session.");
 		ShowInst(this,prg,args);
 		if(args.GetNb()!=4)
 			throw RPrgException(prg,"Method needs four parameters.");
@@ -1235,12 +1211,13 @@ class RunTool : public RPrgFunc
 {
 public:
 	RunTool(void) : RPrgFunc("RunTool","Run a specific tool (1st argument).") {}
-	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst*,R::RContainer<R::RPrgVar,true,false>& args)
+	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args)
 	{
 		ShowInst(this,prg,args);
+		GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
 		if(args.GetNb()!=1)
 			throw RPrgException(prg,"Method needs one parameters.");
-		GALILEIApp->RunTool(args[0]->GetValue(prg),dynamic_cast<GSlot*>(o));
+		Owner->Session->RunTool(args[0]->GetValue(prg),dynamic_cast<GSlot*>(o));
 	}
 };
 
@@ -1297,11 +1274,14 @@ GSimulatorClass::GSimulatorClass(GInstGALILEIApp* app)
 //------------------------------------------------------------------------------
 RPrgVar* GSimulatorClass::NewVar(RInterpreter* prg,RPrgOutput*,const RString& name,RContainer<RPrgVar,true,false>& params)
 {
+	if(!App->Session)
+		throw RPrgException(prg,"Session not declared in this program");
 	if(Instance)
 		throw RPrgException(prg,"Only one instance of 'GSimulator' may exist");
 	if(params.GetNb())
 		throw RPrgException(prg,"Constructor of 'GSimulator' has no parameter");
-	RPrgVar* Var=new GInstSimulator(name,this,GALILEIApp->GetSession(),App);
+	RPrgVar* Var=new GInstSimulator(name,this,App->Session,App);
+	dynamic_cast<RealLife*>(Methods.GetPtr("RealLife"))->Session=App->Session;
 	Instance=true;
 	return(Var);
 }
@@ -1322,7 +1302,7 @@ GSimulatorClass::~GSimulatorClass(void)
 
 //------------------------------------------------------------------------------
 GSessionClass::GSessionClass(GInstGALILEIApp* app)
-	: RPrgClass("GSession"), Instance(false), App(app)
+	: RPrgClass("GSession"), App(app)
 {
 	Methods.InsertPtr(new ExecSql());
 	Methods.InsertPtr(new AnalyzeDocs());
@@ -1336,18 +1316,19 @@ GSessionClass::GSessionClass(GInstGALILEIApp* app)
 	Methods.InsertPtr(new ResetMeasure());
 	Methods.InsertPtr(new ComputeSugs());
 	Methods.InsertPtr(new ComputeTrust());
+	Methods.InsertPtr(new RunTool());
 }
 
 
 //------------------------------------------------------------------------------
 RPrgVar* GSessionClass::NewVar(RInterpreter* prg,RPrgOutput*,const RString& name,RContainer<RPrgVar,true,false>& params)
 {
-	if(Instance)
-		throw RPrgException(prg,"Only one instance of 'GSession' may exist");
-	if(params.GetNb()!=4)
+	if(App->Session)
+		throw RPrgException(prg,"Session already declared in this program");
+	if(params.GetNb()!=5)
 		throw RPrgException(prg,"Constructor of 'GSession' has four parameters");
-	RPrgVar* Var=new GInstSession(name,this,GALILEIApp->GetSession(),prg,params,App);
-	Instance=true;
+	GInstSession* Var=new GInstSession(name,this,prg,params,App);
+	App->Session=Var->Session;
 	return(Var);
 }
 
@@ -1373,7 +1354,6 @@ GGALILEIAppClass::GGALILEIAppClass(void)
 	Methods.InsertPtr(new SetCurrentPlugIn());
 	Methods.InsertPtr(new SetMeasureParam());
 	Methods.InsertPtr(new SetCurrentMeasure());
-	Methods.InsertPtr(new SetLog());
 	Methods.InsertPtr(new SetOutput());
 	Methods.InsertPtr(new PrintOutput());
 	Methods.InsertPtr(new SetGraphOutput());
@@ -1381,7 +1361,6 @@ GGALILEIAppClass::GGALILEIAppClass(void)
 	Methods.InsertPtr(new SetTest());
 	Methods.InsertPtr(new ComputeTime());
 	Methods.InsertPtr(new ResetTime());
-	Methods.InsertPtr(new RunTool());
 }
 
 
@@ -1413,6 +1392,8 @@ GGALILEIPrg::GGALILEIPrg(RPrgOutput* o)
 	AddClass(ptr=new GGALILEIAppClass());
 	GInstGALILEIApp* App;
 	AddVar(App=new GInstGALILEIApp("GALILEIApp",ptr));
+	dynamic_cast<SetPlugInParam*>(ptr->GetMethod("SetPlugInParam"))->App=App;
+	dynamic_cast<SetMeasureParam*>(ptr->GetMethod("SetMeasureParam"))->App=App;
 	AddClass(new GSessionClass(App));
 	AddClass(new GSimulatorClass(App));
 }

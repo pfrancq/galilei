@@ -55,7 +55,6 @@
 //-----------------------------------------------------------------------------
 // include file for GALILEI
 #include <galilei.h>
-#include <gsession.h>
 
 
 //------------------------------------------------------------------------------
@@ -66,11 +65,6 @@
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
-
-
-//-----------------------------------------------------------------------------
-//-----------------------------------------------------------------------------
-
 
 //-----------------------------------------------------------------------------
 /**
@@ -91,7 +85,7 @@ public:
 	/**
 	* Type of a function used to show dialog box of a plug-in.
 	*/
-	typedef bool* (*Configure_t)(GPlugInFactory*);
+	typedef bool* (*Configure_t)(GPlugIn*);
 
 protected:
 
@@ -267,20 +261,6 @@ public:
 	void Configure(void);
 
 	/**
-	* Create the configuration parameters for the plug-in.In practice, the
-	* macro supposes that a particular static method CreateParams exist for
-	* each plug-in. Here is an example of an implementation:
-	* @code
-	* void MyPlugIn::CreateParams(GPlugInFactory* factory)
-	* {
-	*   factory->InsertParam(new RParamValue("EnableOption",true));
-	*   factory->InsertParam(new RParamValue("IntNumber",25));
-	* }
-	* @endcode
-	*/
-	virtual void CreateConfig(void);
-
-	/**
 	* Apply the configuration eventually to the plug-in.
 	*/
 	void ApplyConfig(void);
@@ -332,6 +312,68 @@ public:
 	const char* GetVersion(void) const {return("");}
 
 	/**
+	* Destruct the factory.
+	*/
+	virtual ~GPlugInFactory(void);
+
+	// friend class
+	friend class GPlugIn;
+	friend class GPlugInList;
+	friend class GPlugInManager;
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+* The GPlugIn class provides a template for a generic plug-in.
+* @author Pascal Francq
+* @short Generic Plug-in.
+*/
+class GPlugIn
+{
+protected:
+
+	/**
+	* Pointer to the factory.
+	*/
+	GPlugInFactory* Factory;
+
+	/**
+	* Session.
+	*/
+	GSession* Session;
+
+	/**
+	 * Identifier of the plug-in.
+	 */
+	size_t Id;
+
+public:
+
+	/**
+	* Constructor of the plug-in.
+	* @param session         Session.
+	* @param fac             Factory.
+	*/
+	GPlugIn(GSession* session,GPlugInFactory* fac);
+
+	/**
+	* Configuration parameters were changed (or loaded).
+	*
+	* It is the good place to get the parameters and store them in variables
+	* (it is faster than to use the FindParam method each time). Here is an
+	* example of an implementation.
+	* @code
+	* void MyPlugIn::ApplyConfig(void)
+	* {
+	*   bool a(FindParam<RParamValue>("EnableOption")->GetBool());
+	*   int b(FindParam<RParamValue>("IntNumber")->GetInt());
+	* }
+	* @endcode
+	*/
+	virtual void ApplyConfig(void);
+
+	/**
 	* Declare a new parameter. If it exist, the parameter passed as argument is
 	* deleted.
 	* @param param           Parameter.
@@ -361,75 +403,27 @@ public:
 	}
 
 	/**
-	* Destruct the factory.
+	* @return a cursor over the parameters of the plug-in.
+	* @param cat             Category of the parameter.
 	*/
-	virtual ~GPlugInFactory(void);
-
-	// friend class
-	friend class GPlugInList;
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* The GPlugIn class provides a template for a generic plug-in.
-* @author Pascal Francq
-* @short Generic Plug-in.
-*/
-class GPlugIn
-{
-protected:
+	R::RCursor<R::RParam> GetParams(const R::RString& cat=R::RString::Null);
 
 	/**
-	* Pointer to the factory.
+	* Fill a container with the categories.
+	* @param cats            Container that will be filled (it is emptied by
+	*                        the method).
 	*/
-	GPlugInFactory* Factory;
-
-	/**
-	* Session.
-	*/
-	GSession* Session;
-
-public:
-
-	/**
-	* Constructor of the plug-in.
-	* @param session         Session.
-	* @param fac             Factory.
-	*/
-	GPlugIn(GSession* session,GPlugInFactory* fac);
-
-	/**
-	* Configuration parameters were changed (or loaded).
-	*
-	* It is the good place to get the parameters and store them in variables
-	* (it is faster than to use the FindParam method each time). Here is an
-	* example of an implementation.
-	* @code
-	* void MyPlugIn::ApplyConfig(void)
-	* {
-	*   bool a(Factory->FindParam<RParamValue>("EnableOption")->GetBool());
-	*   int b(Factory->FindParam<RParamValue>("IntNumber")->GetInt());
-	* }
-	* @endcode
-	*/
-	virtual void ApplyConfig(void);
-
-	/**
-	* Find a given parameter (template version).
-	* @tparam T              Type of the parameter.
-	* @param name            Name of the parameter.
-	* @return Pointer or null if not found.
-	*/
-	template<class T> T* FindParam(const R::RString& name)
-	{
-		return(Factory->FindParam<T>(name));
-	}
+	void GetCategories(R::RContainer<R::RString,true,false>& cats);
 
 	/**
 	 * Initialize the plug-in. This method is called after a first call to ApplyConfig.
 	 */
 	virtual void Init(void);
+
+	/**
+	 * Create the configuration (attached to the session).
+	 */
+	virtual void CreateConfig(void);
 
 	/**
 	* Get the factory of the plug-in.
@@ -481,10 +475,6 @@ class TheFactory : public GALILEI::GPlugInFactory                               
 	{                                                                                              \
 	}                                                                                              \
 	virtual ~TheFactory(void) {}                                                                   \
-	virtual void CreateConfig(void)                                                                \
-	{                                                                                              \
-		plugin::CreateParams(this);                                                                \
-	}                                                                                              \
 public:                                                                                            \
 	static GALILEI::GPlugInFactory* CreateInst(GALILEI::GPlugInManager* mng,const char* t)         \
 	{                                                                                              \

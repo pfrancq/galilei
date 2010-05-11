@@ -59,10 +59,10 @@ namespace GALILEI{
 * is not created, it will be created and destroyed by the instance. If the
 * session is already created (for example if KGALILEICenter is already
 * connected), the session is not destroyed. The class defines several methods:
-* - 'GSession(YesDoc,YesProfiles,YesCommunities,YesTopics)': Constructor which
-*   may load the documents ('YesDocs'=="1"), the profiles ('YesProfiles'=="1"),
-*   the communities ('YesCommunities'=="1") and/or the topics
-*   ('YesTopics'=="1").
+* - 'GSession(Name,YesDoc,YesProfiles,YesCommunities,YesTopics)': Constructor
+*   for a given session which may load the documents ('YesDocs'=="1"), the
+*   profiles ('YesProfiles'=="1"), the communities ('YesCommunities'=="1")
+*   and/or the topics ('YesTopics'=="1").
 * -	'SetRand(Value)': Set the random generator to 'Value'.
 * - 'ExecSql(SQL)': Execute the 'SQL' command.
 * - 'ComputeProfiles()': Compute the profiles.
@@ -118,7 +118,6 @@ namespace GALILEI{
 *   to the parameter 'Name' of the measure 'PlugIn' of the type 'Type'.
 * - 'SetCurrentMeasure(Type,PlugIn)': Set the current measure 'PlugIn' for the
 *   type 'Type'.
-* - 'SetLog(FileName): The log file will be stored in 'FileName'.
 *
 * Is here an example of a program file used to set some parameters:
 * @code

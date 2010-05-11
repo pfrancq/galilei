@@ -214,9 +214,14 @@ private:
 	size_t NbNearest;
 
 	/**
-	 * Number of samples used to computed the neighbors.
+	 * Number of samples used to computed the nearest neighbors.
 	 */
 	size_t NbSamples;
+
+	/**
+	 * Fast computation of the nearest neighbors.
+	 */
+	bool FastNN;
 
 	/**
 	 * Type of the elements representing the lines.
@@ -362,10 +367,10 @@ public:
 	 * }
 	 * @endcode
 	 */
-	virtual double Compute(void* obj1,void* obj2)=0;
+	virtual double Compute(GObject* obj1,GObject* obj2)=0;
 
 	/**
-	 * Get the identifier of an object of a line or a colunn.
+	 * Get the identifier of an object of a line or a column.
 	 * @param obj            Pointer to the object.
 	 * @param line           Object in a line ?
 	 * @return the identifier.
@@ -510,9 +515,8 @@ public:
 
 	/**
 	* Create the parameters.
-	* @param fac             Factory.
 	*/
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 
 	/**
 	* Destructor.

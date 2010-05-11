@@ -74,15 +74,15 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GCommunity::GCommunity(const RString& name)
-	: GGroup<GProfile,GCommunity,otCommunity>(cNoRef,0,name,RDate::GetToday(),RDate::Null)
+GCommunity::GCommunity(GSession* session,const RString& name)
+	: GGroup<GProfile,GCommunity,otCommunity>(session,cNoRef,0,name,RDate::GetToday(),RDate::Null)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GCommunity::GCommunity(size_t id,size_t blockid,const RString& name,const RDate& u,const RDate& c)
-	: GGroup<GProfile,GCommunity,otCommunity>(id,blockid,name,u,c)
+GCommunity::GCommunity(GSession* session,size_t id,size_t blockid,const RString& name,const RDate& u,const RDate& c)
+	: GGroup<GProfile,GCommunity,otCommunity>(session,id,blockid,name,u,c)
 {
 }
 

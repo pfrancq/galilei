@@ -39,7 +39,6 @@
 #include <guser.h>
 #include <gdoc.h>
 #include <gsubject.h>
-#include <gsubjects.h>
 #include <gsession.h>
 #include <gtopic.h>
 #include <gcommunity.h>
@@ -314,11 +313,8 @@ void addClass(GClass* theclass,QTreeWidget* tree,QTreeWidgetItem* parent)
 
 
 //------------------------------------------------------------------------------
-void QGObjectsList::Set(oType type)
+void QGObjectsList::Set(GSession* session,oType type)
 {
-	GSession* Session(GALILEIApp->GetSession());
-	if(!Session)
-		return;
 	QTreeWidget* List(static_cast<Ui_QGObjectsList*>(Ui)->List);
 	List->clear();
 
@@ -334,14 +330,14 @@ void QGObjectsList::Set(oType type)
 				LangItems.InsertPtr(new LangItem(Langs(),new QGObject(List,Langs())));
 
 			// Go through the documents and attach to the item of the corresponding language.
-			RCursor<GDoc> Docs(Session->GetDocs());
+			RCursor<GDoc> Docs(session->GetDocs());
 			for(Docs.Start();!Docs.End();Docs.Next())
 				new QGObject(LangItems.GetPtr(Docs()->GetLang())->Item,Docs());
 			break;
 		}
 		case Topics:
 		{
-			RCursor<GTopic> Grps(Session->GetTopics());
+			RCursor<GTopic> Grps(session->GetTopics());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				QGObject* item(new QGObject(List,Grps()));
@@ -356,7 +352,7 @@ void QGObjectsList::Set(oType type)
 			GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Topics Evaluation"));
 			if(!Compare)
 				throw GException("'Topics Evaluation' is not a valid evaluation measure");
-			RCursor<GTopic> Grps(Session->GetTopics());
+			RCursor<GTopic> Grps(session->GetTopics());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				double precision,recall;
@@ -374,7 +370,7 @@ void QGObjectsList::Set(oType type)
 		case IdealTopics:
 		{
 			// Go through each subjects
-			R::RCursor<GSubject> Grps(Session->GetSubjects());
+			R::RCursor<GSubject> Grps(session->GetSubjects());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				if(!Grps()->GetNbObjs(otDoc))
@@ -388,7 +384,7 @@ void QGObjectsList::Set(oType type)
 		}
 		case Users:
 		{
-			RCursor<GUser> Cur(Session->GetUsers());
+			RCursor<GUser> Cur(session->GetUsers());
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
 				QGObject* item(new QGObject(List,Cur()));
@@ -400,7 +396,7 @@ void QGObjectsList::Set(oType type)
 		}
 		case Communities:
 		{
-			RCursor<GCommunity> Grps(Session->GetCommunities());
+			RCursor<GCommunity> Grps(session->GetCommunities());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				QGObject* item= new QGObject(List,Grps());
@@ -415,7 +411,7 @@ void QGObjectsList::Set(oType type)
 			GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Communities Evaluation"));
 			if(!Compare)
 				throw GException("'Communities Evaluation' is not a valid evaluation measure");
-			RCursor<GCommunity> Grps(Session->GetCommunities());
+			RCursor<GCommunity> Grps(session->GetCommunities());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				double recall,precision;
@@ -433,7 +429,7 @@ void QGObjectsList::Set(oType type)
 		case IdealCommunities:
 		{
 			// Go through each subjects
-			R::RCursor<GSubject> Grps(Session->GetSubjects());
+			R::RCursor<GSubject> Grps(session->GetSubjects());
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				if(!Grps()->GetNbObjs(otProfile))
@@ -447,14 +443,14 @@ void QGObjectsList::Set(oType type)
 		}
 		case Subjects:
 		{
-			RCursor<GSubject> Cur(Session->GetTopSubjects());
+			RCursor<GSubject> Cur(session->GetTopSubjects());
 			for(Cur.Start();!Cur.End();Cur.Next())
 				addSubject(Cur(),List,0);
 			break;
 		}
 		case Classes:
 		{
-			RCursor<GClass> Cur(GALILEIApp->GetSession()->GetTopClasses());
+			RCursor<GClass> Cur(session->GetTopClasses());
 			for(Cur.Start();!Cur.End();Cur.Next())
 				addClass(Cur(),List,0);
 			break;
@@ -474,7 +470,7 @@ void QGObjectsList::Set(oType type,GDoc* doc)
 {
 	if((!doc)||(type!=Assessments))
 		return;
-	GSession* Session(GALILEIApp->GetSession());
+	GSession* Session(doc->GetSession());
 	QTreeWidget* List(static_cast<Ui_QGObjectsList*>(Ui)->List);
 	List->clear();
 
@@ -526,7 +522,7 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 {
 	if((!profile)||((type!=Assessments)&&(type!=Links)))
 		return;
-	GSession* Session(GALILEIApp->GetSession());
+	GSession* Session(profile->GetSession());
 	QTreeWidget* List(static_cast<Ui_QGObjectsList*>(Ui)->List);
 	List->clear();
 

@@ -288,18 +288,27 @@ private:
 
 	/**
 	* Create the configuration parameters in the configuration structure.
+	* @param session         Pointer to the session.
 	*/
-	void CreateConfig(void);
+	void CreateConfig(GSession* session);
 
 	/**
 	* Read the configuration parameters from the configuration structure.
+	* @param session         Pointer to the session.
 	*/
-	void ReadConfig(void);
+	void ReadConfig(GSession* session);
 
 	/**
 	* Save the configuration parameters in the configuration structure.
+	* @param session         Pointer to the session.
 	*/
-	void SaveConfig(void);
+	void SaveConfig(GSession* session);
+
+	/**
+	* Initialize the different plug-ins.
+	* @param session         Pointer to the session.
+	*/
+	void InitPlugIns(GSession* session);
 
 	/**
 	 * Register a plug-in as enabled or not.
@@ -517,6 +526,7 @@ public:
 	 */
 	virtual ~GPlugInManager(void);
 
+	friend class GSession;
 	friend class GGALILEIApp;
 	friend class GPlugInList;
 	friend class GPlugInFactory;

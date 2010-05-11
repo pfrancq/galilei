@@ -39,7 +39,6 @@ using namespace std;
 #include <gconcepttype.h>
 #include <gconcept.h>
 #include <gsession.h>
-#include <gontology.h>
 #include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
@@ -54,9 +53,9 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConceptType::GConceptType(size_t id,GOntology* ontology,const RString& name,const RString& desc,GLang* lang,size_t s)
-	: GObject(id,name,otConceptType), RDblHashContainer<GConcept,false>(27,27,s,s/4),
-	  Ontology(ontology), Description(desc), Lang(lang), NbRefDocs(0), NbRefProfiles(0),
+GConceptType::GConceptType(GSession* session,size_t id,const RString& name,const RString& desc,size_t s)
+	: GObject(session,id,name,otConceptType), RDblHashContainer<GConcept,false>(27,27,s,s/4),
+	  Description(desc), Lang(0), NbRefDocs(0), NbRefProfiles(0),
 	  NbRefCommunities(0), NbRefTopics(0), NbRefClasses(0)
 {
 }
@@ -138,8 +137,8 @@ void GConceptType::IncRef(tObjType ObjType)
 			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
-	if(Ontology->SaveResults)
-		Ontology->Storage->SaveRefs(this,ObjType,nb);
+	if(Session->SaveResults)
+		Session->Storage->SaveRefs(this,ObjType,nb);
 }
 
 
@@ -184,8 +183,8 @@ void GConceptType::DecRef(tObjType ObjType)
 			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
-	if(Ontology->SaveResults)
-		Ontology->Storage->SaveRefs(this,ObjType,nb);
+	if(Session->SaveResults)
+		Session->Storage->SaveRefs(this,ObjType,nb);
 }
 
 
@@ -224,7 +223,7 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 void GConceptType::ClearRef(tObjType ObjType)
 {
 	// Look once if the results must be saved
-	bool Save(Ontology->MustSaveResults());
+	bool Save(Session->MustSaveResults());
 
     // Parse the double hash table
     RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(GetCursor());
@@ -263,7 +262,7 @@ void GConceptType::ClearRef(tObjType ObjType)
 
 	// If necessary, put the references to 0. The storage should also reset all the references for the concepts.
 	if(Save)
-		Ontology->Storage->SaveRefs(this,ObjType,0);
+		Session->Storage->SaveRefs(this,ObjType,0);
 }
 
 
@@ -271,8 +270,8 @@ void GConceptType::ClearRef(tObjType ObjType)
 size_t GConceptType::IncRef(GConcept* concept,tObjType ObjType)
 {
 	size_t nb(concept->IncRef(ObjType));
-	if(Ontology->SaveResults)
-		Ontology->Storage->SaveRefs(concept,ObjType,nb);
+	if(Session->SaveResults)
+		Session->Storage->SaveRefs(concept,ObjType,nb);
 	return(nb);
 }
 
@@ -281,8 +280,8 @@ size_t GConceptType::IncRef(GConcept* concept,tObjType ObjType)
 size_t GConceptType::DecRef(GConcept* concept,tObjType ObjType)
 {
 	size_t nb(concept->DecRef(ObjType));
-	if(Ontology->SaveResults)
-		Ontology->Storage->SaveRefs(concept,ObjType,nb);
+	if(Session->SaveResults)
+		Session->Storage->SaveRefs(concept,ObjType,nb);
 	return(nb);
 }
 

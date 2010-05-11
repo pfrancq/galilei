@@ -35,8 +35,8 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gconcept.h>
 #include <gconcepttype.h>
+#include <gconcept.h>
 
 
 //------------------------------------------------------------------------------
@@ -190,7 +190,7 @@ public:
 	*/
 	virtual ~GWeightInfo(void);
 
-	friend class GIndexer;
+	friend class GSession;
 	friend class GWeightInfos;
 };
 

@@ -44,7 +44,6 @@
 #include <glang.h>
 #include <gconcepttype.h>
 #include <gconcept.h>
-#include <gindexer.h>
 #include <gsession.h>
 using namespace GALILEI;
 using namespace R;
@@ -174,19 +173,19 @@ double GWeightInfos::GetMaxAbsWeight(GConceptType* type) const
 
 
 //------------------------------------------------------------------------------
-double GWeightInfos::Inclusion(const GWeightInfos& w,tObjType ObjType) const
+double GWeightInfos::Inclusion(GSession* session,const GWeightInfos& w,tObjType ObjType) const
 {
 	// if one list is empty -> the inclusion is null
 	if((!GetNb())||(!w.GetNb()))
 		return(0.0);
 
 	// Initialize
-	RVector Max(GSession::Get()->GetNbConceptTypes()+1);
-	RVector Num(GSession::Get()->GetNbConceptTypes()+1);
-	RVector Den(GSession::Get()->GetNbConceptTypes()+1);
-	Max.Init(GSession::Get()->GetNbConceptTypes()+1,-numeric_limits<double>().max());
-	Num.Init(GSession::Get()->GetNbConceptTypes()+1,0.0);
-	Den.Init(GSession::Get()->GetNbConceptTypes()+1,0.0);
+	RVector Max(session->GetNbObjects(otConceptType)+1);
+	RVector Num(session->GetNbObjects(otConceptType)+1);
+	RVector Den(session->GetNbObjects(otConceptType)+1);
+	Max.Init(session->GetNbObjects(otConceptType)+1,-numeric_limits<double>().max());
+	Num.Init(session->GetNbObjects(otConceptType)+1,0.0);
+	Den.Init(session->GetNbObjects(otConceptType)+1,0.0);
 
 	// Start the first list
 	RCursor<GWeightInfo> ptr(*this);
@@ -276,11 +275,11 @@ void GWeightInfos::Extract(GWeightInfos& dest,const GLang* lang,bool universal)
 
 
 //------------------------------------------------------------------------------
-void GWeightInfos::AddRefs(tObjType ObjType) const
+void GWeightInfos::AddRefs(GSession* session,tObjType ObjType) const
 {
 	if(!GetNb()) return;
-	RVectorBool Types(GSession::Get()->GetNbConceptTypes()+1);
-	Types.Init(GSession::Get()->GetNbConceptTypes()+1,true);
+	RVectorBool Types(session->GetNbObjects(otConceptType)+1);
+	Types.Init(session->GetNbObjects(otConceptType)+1,true);
 
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
@@ -301,11 +300,11 @@ void GWeightInfos::AddRefs(tObjType ObjType) const
 
 
 //------------------------------------------------------------------------------
-void GWeightInfos::DelRefs(tObjType ObjType) const
+void GWeightInfos::DelRefs(GSession* session,tObjType ObjType) const
 {
 	if(!GetNb()) return;
-	RVectorBool Types(GSession::Get()->GetNbConceptTypes()+1);
-	Types.Init(GSession::Get()->GetNbConceptTypes()+1,true);
+	RVectorBool Types(session->GetNbObjects(otConceptType)+1);
+	Types.Init(session->GetNbObjects(otConceptType)+1,true);
 
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())
@@ -326,15 +325,15 @@ void GWeightInfos::DelRefs(tObjType ObjType) const
 
 
 //------------------------------------------------------------------------------
-void GWeightInfos::RecomputeIFF(tObjType ObjType)
+void GWeightInfos::RecomputeIFF(GSession* session,tObjType ObjType)
 {
 	if(!GetNb()) return;
 
 	// Initialize
 	double max(0.0),iff,ref(0.0);
 	GConceptType* type(0);
-	RVector Max(GSession::Get()->GetNbConceptTypes()+1);
-	Max.Init(GSession::Get()->GetNbConceptTypes()+1,-numeric_limits<double>().max());
+	RVector Max(session->GetNbObjects(otConceptType)+1);
+	Max.Init(session->GetNbObjects(otConceptType)+1,-numeric_limits<double>().max());
 
 	RCursor<GWeightInfo> ptr(*this);
 	for(ptr.Start();!ptr.End();ptr.Next())

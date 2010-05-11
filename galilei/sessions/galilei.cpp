@@ -55,7 +55,6 @@ RString Str(const char* str,bool upper)
 }
 
 
-
 //------------------------------------------------------------------------------
 RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 {
@@ -93,10 +92,6 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 			if(plural)
 				return(Str("languages",upper));
 			return(Str("language",upper));
-		case otHistory:
-			if(plural)
-				return(Str("histories",upper));
-			return(Str("history",upper));
 		case otTopic:
 			if(plural)
 				return(Str("topics",upper));
@@ -145,6 +140,23 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 			if(plural)
 				return(Str("document rankings",upper));
 			return(Str("document ranking",upper));
+		case otDescFile:
+			if(plural)
+				return(Str("description files",upper));
+			return(Str("description file",upper));
+		case otStructFile:
+			if(plural)
+				return(Str("structure files",upper));
+			return(Str("structure file",upper));
+		case otIndexFile:
+			if(plural)
+				return(Str("index files",upper));
+			return(Str("index file",upper));
+		case otReference:
+			if(plural)
+				return(Str("references",upper));
+			return(Str("reference",upper));
+
 	}
 	ThrowGException("'"+RString::Number(type)+"' is not a valid object type value");
 }
@@ -268,32 +280,4 @@ tProfileType GALILEI::GetProfileType(unsigned int type)
 		case 2 : return(ptExpertise);
 		default: ThrowGException("'"+RString::Number(type)+"' is not a valid profile type value");
 	}
-}
-
-
-//-----------------------------------------------------------------------------
-RString GALILEI::GetMeasureType(tTypeMeasures type,bool upper)
-{
-	switch(type)
-	{
-		case tmUnknow :
-			return(Str("unknown measure.",upper));
-		case tmDoc :
-			return(Str("measure(document,document)",upper));
-		case tmProfile :
-			return(Str("measure(profile,profile)",upper));
-		case tmDocProfile :
-			return(Str("measure(document,profile)",upper));
-		case tmCommunity :
-			return(Str("measure(community,community)",upper));
-		case tmDocCommunity :
-			return(Str("measure(document,community)",upper));
-		case tmProfileCommunity :
-			return(Str("measure(profile,community)",upper));
-		case tmTopic :
-			return(Str("measure(topic,topic)",upper));
-		case tmDocTopic :
-			return(Str("measure(document,topic)",upper));
-	}
-	ThrowGException("'"+RString::Number(type)+"' is not a valid measure type value");
 }

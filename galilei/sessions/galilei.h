@@ -71,7 +71,6 @@ enum tObjType
 	otCommunity              /** Community.*/,
 	otFdbk                   /** Assessment of a document by a profile.*/,
 	otLang                   /** Language. */,
-	otHistory                /** History. */,
 	otTopic                  /** Topic. */,
 	otSubject                /** Subject (Theoretical topic of documents). */,
 	otEngine                 /** Search engine.*/,
@@ -83,7 +82,11 @@ enum tObjType
 	otClass                  /** Class.*/,
 	otDocStruct              /** Document structure. */,
 	otSuggestion             /** Suggestion.*/,
-	otDocRanking             /** Document ranking.*/
+	otDocRanking             /** Document ranking.*/,
+	otDescFile               /** Description file.*/,
+	otStructFile             /** Structure file.*/,
+	otIndexFile              /** Index file.*/,
+	otReference              /** Reference.*/
 };
 
 
@@ -193,33 +196,17 @@ R::RString GetProfileType(tProfileType type,bool upper,bool plural);
 tProfileType GetProfileType(unsigned int type);
 
 
+
 //------------------------------------------------------------------------------
 /**
- * Type of a given measure related to objects in GALILEI. It is supposed that
- * only measure between two objects are computed.
- * @short Type of measures.
+ * Descriptions for the subjects.
+ * @short Subject Description.
  */
-enum tTypeMeasures
+enum tSubjectDesc
 {
-	tmUnknow                 /** Unknown measure.*/,
-	tmDoc                    /** Measure(document,document).*/,
-	tmProfile                /** Measure(profile,profile).*/,
-	tmDocProfile             /** Measure(document,profile).*/,
-	tmCommunity              /** Measure(community,community).*/,
-	tmDocCommunity           /** Measure(document,community).*/,
-	tmProfileCommunity       /** Measure(profile,community).*/,
-	tmTopic                  /** Measure(topic,topic).*/,
-	tmDocTopic               /** Measure(document,topic).*/
+	sdNames                 /** Names of the subjects are used.*/,
+	sdDocs		            /** Selected documents are used.*/
 };
-
-
-//------------------------------------------------------------------------------
-/**
- * Get a string representing the type of measure.
- * @param type               Type of the measure.
- * @param upper               First letter in uppercase ?
- */
-R::RString GetMeasureType(tTypeMeasures type,bool upper);
 
 
 //------------------------------------------------------------------------------
@@ -276,7 +263,6 @@ class GLang;
 class GWeightInfo;
 class GWeightInfos;
 class GWeightInfosObj;
-class GOntology;
 class GClass;
 class GClasses;
 
@@ -301,7 +287,6 @@ class GFilter;
 // forward class declaration - Engines Part
 class GEngineDoc;
 class GRanking;
-class GIndexer;
 class GComputeSugs;
 class GComputeTrust;
 class GEngine;
@@ -349,11 +334,6 @@ class GPlugInManager;
 class GMeasure;
 class GMatrixMeasure;
 class GTool;
-class GPostDoc;
-class GPostTopic;
-class GPostCommunity;
-class GPreProfile;
-class GPostProfile;
 class GStatsCalc;
 
 

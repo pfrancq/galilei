@@ -36,7 +36,6 @@
 #include <glang.h>
 #include <gweightinfo.h>
 #include <gsession.h>
-#include <gindexer.h>
 #include <gprofile.h>
 #include <gdocstruct.h>
 #include <gfdbk.h>
@@ -52,16 +51,16 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RURI& url,const RString& name,GLang* lang,const RString& mime)
-	: GWeightInfosObj(cNoRef,0,otDoc,name,osNew), URL(url), Struct(0),
+GDoc::GDoc(GSession* session,const RURI& url,const RString& name,GLang* lang,const RString& mime)
+	: GWeightInfosObj(session,cNoRef,0,otDoc,name,osNew), URL(url), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
 	  Fdbks(0), LinkSet(5,2), GroupId(0), Attached(RDate::Null),
 	  StructId(0)
 {
 	// Verify if the topic exists in memory
-	if(GroupId&&(GSession::Get()))
+	if(GroupId)
 	{
-		GTopic* grp=GSession::Get()->GetTopic(GroupId,false,false);
+		GTopic* grp=Session->GetTopic(GroupId,false,false);
 		if(grp)
 			grp->InsertObj(this);
 	}
@@ -69,17 +68,17 @@ GDoc::GDoc(const RURI& url,const RString& name,GLang* lang,const RString& mime)
 
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(const RURI& url,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
-	: GWeightInfosObj(id,blockid,otDoc,name,osNew), URL(url), Struct(0),
+GDoc::GDoc(GSession* session,const RURI& url,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
+	: GWeightInfosObj(session,id,blockid,otDoc,name,osNew), URL(url), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), LinkSet(5,2), GroupId(grpid), Attached(a),
 	  StructId(structid)
 {
 	// Verify if the topic exists in memory
 	RAssert(GroupId!=cNoRef);
-	if(GroupId&&(GSession::Get()))
+	if(GroupId)
 	{
-		GTopic* grp=GSession::Get()->GetTopic(GroupId,false,false);
+		GTopic* grp=Session->GetTopic(GroupId,false,false);
 		if(grp)
 			grp->InsertObj(this);
 	}
@@ -152,9 +151,7 @@ GDocStruct* GDoc::GetStruct(void) const
 	if((!Struct)&&StructId)
 	{
 		GetVector();
-		GSession* session=GSession::Get();
-		if(session)
-			session->LoadStruct(const_cast<GDoc*>(this)->Struct,StructId,Id); // Load the object
+		Session->LoadStruct(const_cast<GDoc*>(this)->Struct,StructId,Id); // Load the object
 	}
 	return(Struct);
 }
@@ -260,11 +257,6 @@ double GDoc::GetAgreementRatio(const GDoc* doc,size_t nbmin) const
 {
 	double nbcommon(0.0), nbagree(0.0);
 
-	// Get the session
-	GSession* Session=GSession::Get();
-	if(!Session)
-		throw GException("No current session");
-
 	// If no feedback -> null ratio
 	if((!Fdbks)||(!doc->Fdbks))
 		return(0.0);
@@ -299,11 +291,6 @@ double GDoc::GetAgreementRatio(const GDoc* doc,size_t nbmin) const
 double GDoc::GetDisagreementRatio(const GDoc* doc,size_t nbmin) const
 {
 	double nbcommon(0.0), nbdisagree(0.0);
-
-	// Get the session
-	GSession* Session=GSession::Get();
-	if(!Session)
-		throw GException("No current session");
 
 	// If no feedback -> null ratio
 	if((!Fdbks)||(!doc->Fdbks))
@@ -398,7 +385,7 @@ void GDoc::Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& 
 	// If document has a language -> update its references
 	if(Lang&&(Id!=cNoRef))
 	{
-		infos.AddRefs(otDoc);
+		infos.AddRefs(Session,otDoc);
 		session->UpdateRefs(infos,otDoc,Id,true);
 	}
 

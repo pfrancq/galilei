@@ -60,12 +60,13 @@ public:
 
 	/**
 	* Construct a user.
+	* @param session        Session.
 	* @param id             Identifier.
 	* @param name           Name of the user.
 	* @param fullname       FullName of the user.
 	* @param nb             Number of profiles.
 	*/
-	GUser(size_t id,const R::RString& name,const R::RString& fullname,size_t nb=5);
+	GUser(GSession* session,size_t id,const R::RString& name,const R::RString& fullname,size_t nb=5);
 
 	/**
 	* Compare two users by comparing their identifier.
