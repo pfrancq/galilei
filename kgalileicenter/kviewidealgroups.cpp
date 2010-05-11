@@ -30,7 +30,6 @@
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI Projects
 #include <ggalileiapp.h>
-#include <gsubjects.h>
 
 
 //-----------------------------------------------------------------------------
@@ -95,8 +94,8 @@ void KViewIdealTopics::update(void)
 	               "Precision="+QString::number(precision)+
 	               " - Recall="+QString::number(recall)+
 	               " - Total="+QString::number(total));
-	Ideal->Set(QGObjectsList::IdealTopics);
-	Computed->Set(QGObjectsList::CompTopics);
+	Ideal->Set(KGALILEICenter::App->getSession(),QGObjectsList::IdealTopics);
+	Computed->Set(KGALILEICenter::App->getSession(),QGObjectsList::CompTopics);
 }
 
 
@@ -137,8 +136,8 @@ void KViewIdealCommunities::update(void)
 	               "Precision="+QString::number(precision)+
 	               " - Recall="+QString::number(recall)+
 	               " - Total="+QString::number(total));
-	Ideal->Set(QGObjectsList::IdealCommunities);
-	Computed->Set(QGObjectsList::CompCommunities);
+	Ideal->Set(KGALILEICenter::App->getSession(),QGObjectsList::IdealCommunities);
+	Computed->Set(KGALILEICenter::App->getSession(),QGObjectsList::CompCommunities);
 }
 
 
@@ -183,12 +182,12 @@ void KViewIdealClasses::update(void)
 	double treerank;
     Progress.setValue(0);
 	KApplication::kApplication()->processEvents();
-	Computed->Set(QGObjectsList::Classes);
+	Computed->Set(KGALILEICenter::App->getSession(),QGObjectsList::Classes);
     if(Progress.wasCanceled())
             return;
     Progress.setValue(1);
 	KApplication::kApplication()->processEvents();
-	Ideal->Set(QGObjectsList::Subjects);
+	Ideal->Set(KGALILEICenter::App->getSession(),QGObjectsList::Subjects);
 	Progress.setValue(2);
 	KApplication::kApplication()->processEvents();
     if(Progress.wasCanceled())

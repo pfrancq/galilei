@@ -37,6 +37,7 @@
 #include <gsession.h>
 using namespace GALILEI;
 using namespace R;
+using namespace std;
 
 
 //------------------------------------------------------------------------------
@@ -65,8 +66,6 @@ public:
 		Storages,                   /** Storage.*/
 		Filters,                    /** Filters.*/
 		Langs,                      /** Languages.*/
-		PostProfiles,               /** Post-profiles Computing Methods.*/
-		PostCommunities,            /** Post-communities Computing Methods.*/
 		ProfileCalcs,               /** Profile Computing Methods.*/
 		GroupProfiles,              /** Profiles Clustering Methods.*/
 		GroupDocs,                  /** Document Clustering Methods.*/
@@ -74,9 +73,6 @@ public:
 		TopicCalcs,                 /** Topic Computing Methods.*/
 		StatsCalcs,                 /** Statistics.*/
 		LinkCalcs,                  /** Link Analysis Methods.*/
-		PostDocs,                   /** Post-documents Computing Methods.*/
-		PreProfiles,                /** Pre-profiles Computing Methods.*/
-		PostTopics,                 /** Post-topics Computing Methods.*/
 		DocAnalyzes,                /** XML Document Analyzers.*/
 		Engines,                    /** Search Engines.*/
 		MetaEngines,                /** Meta-search Engines.*/
@@ -139,8 +135,9 @@ public:
 
 	/**
 	 * Apply the configuration of the plug-ins.
+	 * @param session        Session.
 	 */
-	void apply(void);
+	void apply(GSession* session);
 
 public slots:
 
@@ -176,6 +173,11 @@ public slots:
 	 * Slot called when the Down button is pressed.
 	 */
 	void slotDown(void);
+
+	/**
+	 * Slot called when the Push button is pressed.
+	 */
+	void slotParams(void);
 };
 
 

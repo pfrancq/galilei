@@ -30,7 +30,6 @@
 		<Action name="indexDocs"/>
 		<separator/>
 		<Action name="docsAnalyze"/>		
-		<Action name="postDocsAnalyze"/>
 		<Action name="docsIndexer"/>
 		<separator/>
 		<Action name="docAnalyze"/>
@@ -48,7 +47,6 @@
 		<separator/>
 		<Action name="showTopics"/>
 		<Action name="topicsCalc"/>
-		<Action name="postTopicsCalc"/>
 		<separator/>
 		<Action name="showClasses"/>
 	</Menu>
@@ -59,14 +57,12 @@
 		<Separator/>
 		<Action name="profileCalc"/>
 		<Action name="profilesCalc"/>
-		<Action name="postProfilesCalc"/>
 	</Menu>
 	<Menu name="Communities"><text>&amp;Communities</text>
 		<Action name="communitiesClear"/>
 		<Separator/>
 		<Action name="showCommunities"/>
 		<Action name="communitiesCalc"/>
-		<Action name="postCommunitiesCalc"/>
 	</Menu>
 	<Menu name="Debug"><text>S&amp;imulation</text>
 		<Action name="testSubjects"/>

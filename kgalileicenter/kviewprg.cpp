@@ -50,6 +50,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // application specific includes
 #include <kviewprg.h>
+#include <kgalileicenter.h>
 
 
 
@@ -85,10 +86,10 @@ void KViewPrg::MyThread::run(void)
 	try
 	{
 		GALILEIApp->RunPrg(Rec,Name);
-		if(GSession::Break())
+		if(KGALILEICenter::App->getSession()->MustBreak())
 		{
 			KMessageBox::information(Rec,"Program Aborded");
-			GSession::ResetBreak();
+			KGALILEICenter::App->getSession()->ResetBreak();
 		}
 		else
 		{
@@ -215,7 +216,7 @@ void KViewPrg::closeEvent(QCloseEvent *event)
 	else
 	{
 		// Ah ah, something runs -> ask to break it
-		GSession::SetBreak();
+		KGALILEICenter::App->getSession()->SetBreak();
 		event->ignore();
 	}
 }

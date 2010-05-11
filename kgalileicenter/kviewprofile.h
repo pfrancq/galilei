@@ -49,6 +49,7 @@ using namespace GALILEI;
 //---------------------------------------------------------------------------
 // include files for current application
 #include <ui_kviewprofile.h>
+#include <kgalileicenter.h>
 
 
 //-----------------------------------------------------------------------------
@@ -66,13 +67,19 @@ class KViewProfile : public QMdiSubWindow, public Ui_KViewProfile
 	*/
 	GProfile* Profile;
 
+	/**
+	 * Application.
+	 */
+	KGALILEICenter* App;
+
 public:
 
 	/**
 	* Construct the widget.
+	* @param app            Application.
 	* @param profile        Profile to show.
 	*/
-	KViewProfile(GProfile* profile);
+	KViewProfile(KGALILEICenter* app,GProfile* profile);
 
 public slots:
 

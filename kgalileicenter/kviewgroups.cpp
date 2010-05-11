@@ -31,7 +31,7 @@
 // include files for current application
 #include <kviewgroups.h>
 #include <kgalileicenter.h>
-
+#include <kapplication.h>
 
 
 //-----------------------------------------------------------------------------
@@ -69,14 +69,14 @@ KViewTopics::KViewTopics(void)
 	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(topicsChanged()),this,SLOT(update()));
 	connect(What,SIGNAL(returnPressed()),this,SLOT(FindNext()));
 	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));
-	Objects->Set(QGObjectsList::Topics);
+	Objects->Set(KGALILEICenter::App->getSession(),QGObjectsList::Topics);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewTopics::update(void)
 {
-	Objects->Set(QGObjectsList::Topics);
+	Objects->Set(KGALILEICenter::App->getSession(),QGObjectsList::Topics);
 }
 
 
@@ -104,14 +104,14 @@ KViewCommunities::KViewCommunities(void)
 	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(communitiesChanged()),this,SLOT(update()));
 	connect(What,SIGNAL(returnPressed()),this,SLOT(FindNext()));
 	connect(Search,SIGNAL(clicked()),this,SLOT(FindNext()));
-	Objects->Set(QGObjectsList::Communities);
+	Objects->Set(KGALILEICenter::App->getSession(),QGObjectsList::Communities);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewCommunities::update(void)
 {
-	Objects->Set(QGObjectsList::Communities);
+	Objects->Set(KGALILEICenter::App->getSession(),QGObjectsList::Communities);
 }
 
 

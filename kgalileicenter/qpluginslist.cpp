@@ -28,24 +28,24 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for Qt/KDE
+#include <QtGui/QTreeWidget>
+
+
+//-----------------------------------------------------------------------------
 // include files for R/GALILEI Project
 #include <ggalileiapp.h>
 #include <rqt.h>
 #include <gdocanalyze.h>
 #include <gfilter.h>
 #include <glinkcalc.h>
-#include <gpostdoc.h>
 #include <gengine.h>
 #include <gmetaengine.h>
 #include <gcommunitycalc.h>
 #include <gtopiccalc.h>
 #include <ggroupprofiles.h>
 #include <ggroupdocs.h>
-#include <gpostcommunity.h>
-#include <gposttopic.h>
 #include <glang.h>
-#include <gpostprofile.h>
-#include <gpreprofile.h>
 #include <gprofilecalc.h>
 #include <gstatscalc.h>
 #include <gstorage.h>
@@ -129,7 +129,12 @@ void QPlugInsList::init(const RString& mng,bool current,bool enable,bool updown,
 		str+=" [";
 		str+=ToQString(Cur()->GetLib());
 		str+="]";
-		cur=new QPlugIn(List,Cur(),str,Cur()->FindParam<RParamValue>("Enable")->GetBool());
+		bool Enabled;
+		if(Cur()->GetMng()->GetPlugInType()==GPlugInManager::ptListSelect)
+			Enabled=GALILEIApp->GetConfig()->GetBool("Enable",Cur()->GetMng()->GetName(),Cur()->GetList(),Cur()->GetName());
+		else
+			Enabled=GALILEIApp->GetConfig()->GetBool("Enable",Cur()->GetMng()->GetName(),Cur()->GetName());
+		cur=new QPlugIn(List,Cur(),str,Enabled);
 		if(current)
 		{
 			Current->insertItem(idx,ToQString(Cur()->GetName()));
@@ -168,14 +173,6 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 		case Langs:
 			setObjectName("Languages");
 			init("Lang",false,true,false);
-			break;
-		case PostProfiles:
-			setObjectName("PostProfiles");
-			init("PostProfile",false,true,true);
-			break;
-		case PostCommunities:
-			setObjectName("PostCommunities");
-			init("PostCommunity",false,true,true);
 			break;
 		case ComputeSugs:
 			setObjectName("ComputeSugs");
@@ -217,18 +214,6 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 			setObjectName("LinkCalcs");
 			init("LinkCalc",true,true,false);
 			break;
-		case PostDocs:
-			setObjectName("PostDocs");
-			init("PostDoc",false,true,true);
-			break;
-		case PreProfiles:
-			setObjectName("PreProfiles");
-			init("PreProfile",false,true,true);
-			break;
-		case PostTopics:
-			setObjectName("PostTopics");
-			init("PostTopic",false,true,true);
-			break;
 		case DocAnalyzes:
 			setObjectName("DocAnalyzes");
 			init("DocAnalyze",true,true,false);
@@ -250,29 +235,31 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 
 
 //-----------------------------------------------------------------------------
-void QPlugInsList::apply(void)
+void QPlugInsList::apply(GSession* session)
 {
 	for(int i=0;i<List->count();i++)
 	{
 		QPlugIn* item=dynamic_cast<QPlugIn*>(List->item(i));
 		item->PlugIn->SetLevel(i);
-		if(HasUpDown)
-			item->PlugIn->FindParam<RParamValue>("Level")->SetInt(i);
-		item->PlugIn->FindParam<RParamValue>("Enable")->SetBool(item->Enable);
-		item->PlugIn->ApplyConfig();
-
-		if(GALILEIApp->GetSession())
+		if(item->PlugIn->GetMng()->GetPlugInType()==GPlugInManager::ptListSelect)
+			GALILEIApp->GetConfig()->SetBool("Enable",item->Enable,item->PlugIn->GetMng()->GetName(),item->PlugIn->GetList(),item->PlugIn->GetName());
+		else
+			GALILEIApp->GetConfig()->SetBool("Enable",item->Enable,item->PlugIn->GetMng()->GetName(),item->PlugIn->GetName());
+		if(item->Enable)
 		{
-			if(item->Enable)
+			if(!item->WasEnable)
 			{
-				if(!item->WasEnable)
-					item->PlugIn->Create(GALILEIApp->GetSession());
+				item->PlugIn->Create(session);
+				item->PlugIn->GetPlugIn()->CreateConfig();
 			}
-			else
-			{
-				if(item->WasEnable)
-					item->PlugIn->Delete();
-			}
+			if(HasUpDown)
+				item->PlugIn->GetPlugIn()->FindParam<RParamValue>("Level")->SetInt(i);
+			item->PlugIn->GetPlugIn()->ApplyConfig();
+		}
+		else
+		{
+			if(item->WasEnable)
+				item->PlugIn->Delete();
 		}
 	}
 
@@ -343,9 +330,10 @@ void QPlugInsList::slotChange(QListWidgetItem* act,QListWidgetItem*)
 	if(!act) return;
 	QPlugIn* f=dynamic_cast<QPlugIn*>(act);
 	if(!f) return;
-	Configure->setEnabled(f->PlugIn->HasConfigure());
-	About->setEnabled(f->PlugIn->HasAbout());
+	Configure->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasConfigure());
+	About->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasAbout());
 	Enable->setChecked(f->Enable);
+	Params->setEnabled(f->PlugIn->GetPlugIn());
 }
 
 
@@ -356,6 +344,9 @@ void QPlugInsList::slotEnable(bool state)
 	QPlugIn* f=dynamic_cast<QPlugIn*>(List->currentItem());
 	if(!f) return;
 	f->Enable=state;
+	Configure->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasConfigure());
+	About->setEnabled(f->PlugIn->GetPlugIn()&&f->PlugIn->HasAbout());
+	Params->setEnabled(f->PlugIn->GetPlugIn());
 }
 
 
@@ -382,4 +373,46 @@ void QPlugInsList::slotDown(void)
 	if(pos==List->count()-1) return;
 	List->takeItem(pos);
 	List->insertItem(pos+1,f);
+}
+
+
+//-----------------------------------------------------------------------------
+void QPlugInsList::slotParams(void)
+{
+	if(!List->currentItem()) return;
+	QPlugIn* f=dynamic_cast<QPlugIn*>(List->currentItem());
+	if(!f) return;
+	KDialog Dlg(this);
+	Dlg.setCaption(ToQString("Parameters of "+f->PlugIn->GetName()));
+	QTreeWidget* widget(new QTreeWidget(&Dlg));
+	widget->setRootIsDecorated(false);
+	widget->setColumnCount(2);
+	widget->setHeaderLabels(QStringList()<<"Name"<<"Description");
+	widget->header()->setResizeMode(0,QHeaderView::ResizeToContents);
+	widget->header()->setResizeMode(1,QHeaderView::ResizeToContents);
+	RContainer<RString,true,false> Cats(10);
+	f->PlugIn->GetPlugIn()->GetCategories(Cats);
+	Cats.InsertPtr(new RString(RString::Null));
+	RCursor<RString> Cur(Cats);
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		QTreeWidgetItem* parent(0);
+		if((*Cur())!=RString::Null)
+			parent=new QTreeWidgetItem(widget,QStringList()<<ToQString(*Cur())<<"Category");
+		RCursor<RParam> Cur2(f->PlugIn->GetPlugIn()->GetParams(*Cur()));
+		for(Cur2.Start();!Cur2.End();Cur2.Next())
+		{
+			QTreeWidgetItem* item(0);
+			if(parent)
+				item=new QTreeWidgetItem(widget,parent);
+			else
+				item=new QTreeWidgetItem(widget);
+			item->setText(0,ToQString(Cur2()->GetName()));
+			item->setText(1,ToQString(Cur2()->GetDescription()));
+		}
+	}
+	Dlg.setMainWidget(widget);
+	Dlg.setButtons(KDialog::Ok);
+	Dlg.resize(sizeHint());
+	Dlg.exec();
 }

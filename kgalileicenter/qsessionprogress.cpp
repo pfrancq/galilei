@@ -47,7 +47,6 @@
 #include <gdoc.h>
 #include <glang.h>
 #include <gdocanalyze.h>
-#include <gpostdoc.h>
 #include <gdoc.h>
 #include <guser.h>
 #include <gsession.h>
@@ -55,13 +54,11 @@
 #include <gprofilecalc.h>
 #include <ggroupprofiles.h>
 #include <ggroup.h>
-#include <gsubjects.h>
 #include <gsubject.h>
 #include <ggalileiapp.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
 #include <gfilter.h>
-#include <gindexer.h>
 #include <gsimulator.h>
 using namespace GALILEI;
 using namespace R;
@@ -100,8 +97,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-QSessionThread::QSessionThread(void)
-	: QThread(), Parent(0)
+QSessionThread::QSessionThread(KGALILEICenter* app)
+	: QThread(), Parent(0), App(app)
 {
 }
 
@@ -119,7 +116,7 @@ void QSessionThread::run(void)
 	{
 		DoIt();
 		emit finish();
-		if(GSession::Break())
+		if(App->getSession()->MustBreak())
 			Parent->setLabelText("Canceled");
 		else
 			Parent->setLabelText("Finish");
@@ -149,25 +146,25 @@ void QSessionThread::run(void)
 void QCreateSession::DoIt(void)
 {
 	Parent->setLabelText("Load Concepts, Predicates and Statements ...");
-	Session=GALILEIApp->CreateSession();
-	if(GSession::Break())
+	Session=GALILEIApp->GetSession(Name,true);
+	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Classes ...");
-	GALILEIApp->GetSession()->LoadClasses();
+	App->getSession()->LoadClasses();
 	Parent->setLabelText("Load Topics ...");
-	GALILEIApp->GetSession()->LoadTopics();
-	if(GSession::Break())
+	App->getSession()->LoadTopics();
+	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Loading Documents ...");
-	GALILEIApp->GetSession()->LoadDocs();
-	if(GSession::Break())
+	App->getSession()->LoadDocs();
+	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Communities ...");
-	GALILEIApp->GetSession()->LoadCommunities();
-	if(GSession::Break())
+	App->getSession()->LoadCommunities();
+	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Users/Profiles/Feedbacks ...");
-	GALILEIApp->GetSession()->LoadUsers();
+	App->getSession()->LoadUsers();
 }
 
 
@@ -176,14 +173,14 @@ void QCreateDocXML::DoIt(void)
 {
 	Parent->setLabelText("Creating XML Structure ...");
 	bool Native;
-	GALILEIApp->GetSession()->GetXMLStruct(Doc,XML,Native);
+	App->getSession()->GetXMLStruct(Doc,XML,Native);
 }
 
 
 //-----------------------------------------------------------------------------
 void QAnalyzeXML::DoIt(void)
 {
-	GALILEIApp->GetSession()->AnalyzeDoc(Doc,true,0,Parent);
+	App->getSession()->AnalyzeDoc(Doc,true,0,Parent);
 }
 
 
@@ -191,15 +188,7 @@ void QAnalyzeXML::DoIt(void)
 void QAnalyzeDocs::DoIt(void)
 {
 	Parent->setLabelText("Analyze Documents ...");
-	GALILEIApp->GetSession()->AnalyzeDocs(false,Parent);
-}
-
-
-//-----------------------------------------------------------------------------
-void QPostAnalyzeDocs::DoIt(void)
-{
-	Parent->setLabelText("Do Post-Documents Methods ...");
-	GALILEIApp->GetSession()->DoPostDocs(Parent);
+	App->getSession()->AnalyzeDocs(false,Parent);
 }
 
 
@@ -207,15 +196,7 @@ void QPostAnalyzeDocs::DoIt(void)
 void QComputeProfiles::DoIt(void)
 {
 	Parent->setLabelText("Compute Profiles ...");
-	GALILEIApp->GetSession()->CalcProfiles(Parent);
-}
-
-
-//-----------------------------------------------------------------------------
-void QPostComputeProfiles::DoIt(void)
-{
-	Parent->setLabelText("Do Post-Profiles Methods ...");
-	GALILEIApp->GetSession()->DoPostProfiles(Parent);
+	App->getSession()->CalcProfiles(Parent);
 }
 
 
@@ -223,7 +204,7 @@ void QPostComputeProfiles::DoIt(void)
 void QComputeProfile::DoIt(void)
 {
 	Parent->setLabelText("Compute Profile ...");
-	GALILEIApp->GetSession()->CalcProfile(Profile,0,0,Parent);
+	App->getSession()->CalcProfile(Profile,0,0,Parent);
 }
 
 
@@ -231,15 +212,7 @@ void QComputeProfile::DoIt(void)
 void QGroupProfiles::DoIt(void)
 {
 	Parent->setLabelText("Groups Profiles ...");
-	GALILEIApp->GetSession()->GroupProfiles(Parent);
-}
-
-
-//-----------------------------------------------------------------------------
-void QPostGroupProfiles::DoIt(void)
-{
-	Parent->setLabelText("Do Post-Community Methods ...");
-	GALILEIApp->GetSession()->DoPostCommunity(Parent);
+	App->getSession()->GroupProfiles(Parent);
 }
 
 
@@ -247,15 +220,7 @@ void QPostGroupProfiles::DoIt(void)
 void QGroupDocs::DoIt(void)
 {
 	Parent->setLabelText("Groups Documents ...");
-	GALILEIApp->GetSession()->GroupDocs(Parent);
-}
-
-
-//-----------------------------------------------------------------------------
-void QPostGroupDocs::DoIt(void)
-{
-	Parent->setLabelText("Do Post-Topic Methods ...");
-	GALILEIApp->GetSession()->DoPostTopic(Parent);
+	App->getSession()->GroupDocs(Parent);
 }
 
 
@@ -263,7 +228,7 @@ void QPostGroupDocs::DoIt(void)
 void QCreateIdealSubjects::DoIt(void)
 {
 	Parent->setLabelText("Start a Simulation ...");
-	GALILEIApp->GetSession()->GetSimulator()->StartSimulation();
+	App->getSession()->GetSimulator()->StartSimulation();
 }
 
 
@@ -271,7 +236,7 @@ void QCreateIdealSubjects::DoIt(void)
 void QCreateIdealCommunities::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Communities ...");
-	GALILEIApp->GetSession()->GetSimulator()->BuildIdealCommunities();
+	App->getSession()->GetSimulator()->BuildIdealCommunities();
 }
 
 
@@ -279,7 +244,7 @@ void QCreateIdealCommunities::DoIt(void)
 void QCreateIdealTopics::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Topics ...");
-	GALILEIApp->GetSession()->GetSimulator()->BuildIdealTopics();
+	App->getSession()->GetSimulator()->BuildIdealTopics();
 }
 
 
@@ -287,7 +252,7 @@ void QCreateIdealTopics::DoIt(void)
 void QCreateIdealTopicsFromClasses::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Topics ...");
-	GALILEIApp->GetSession()->GetSimulator()->BuildIdealLeafTopics();
+	App->getSession()->GetSimulator()->BuildIdealLeafTopics();
 }
 
 
@@ -295,7 +260,7 @@ void QCreateIdealTopicsFromClasses::DoIt(void)
 void QCreateIdealClasses::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Classes ...");
-	GALILEIApp->GetSession()->GetSimulator()->BuildIdealClasses();
+	App->getSession()->GetSimulator()->BuildIdealClasses();
 }
 
 
@@ -303,7 +268,7 @@ void QCreateIdealClasses::DoIt(void)
 void QCreateIdealDocsClasses::DoIt(void)
 {
 	Parent->setLabelText("Create Ideal Classes ...");
-	GALILEIApp->GetSession()->GetSimulator()->BuildIdealDocsClasses();
+	App->getSession()->GetSimulator()->BuildIdealDocsClasses();
 }
 
 
@@ -311,7 +276,7 @@ void QCreateIdealDocsClasses::DoIt(void)
 void QTestSubjects::DoIt(void)
 {
 	Parent->setLabelText("Test Subjects ...");
-	GALILEIApp->GetSession()->TestSubjects();
+	App->getSession()->TestSubjects();
 }
 
 
@@ -319,7 +284,7 @@ void QTestSubjects::DoIt(void)
 void QMakeFdbks::DoIt(void)
 {
 	Parent->setLabelText("Make feedbacks ...");
-	GALILEIApp->GetSession()->GetSimulator()->ShareDocuments();
+	App->getSession()->GetSimulator()->ShareDocuments();
 }
 
 
@@ -327,7 +292,7 @@ void QMakeFdbks::DoIt(void)
 void QMakeAssessments::DoIt(void)
 {
 	Parent->setLabelText("Make assessments ...");
-	GALILEIApp->GetSession()->GetSimulator()->AddAssessments();
+	App->getSession()->GetSimulator()->AddAssessments();
 }
 
 
@@ -335,7 +300,7 @@ void QMakeAssessments::DoIt(void)
 void QComputeTrust::DoIt(void)
 {
 	Parent->setLabelText("Determine trust ...");
-	GALILEIApp->GetSession()->ComputeTrust();
+	App->getSession()->ComputeTrust();
 }
 
 
@@ -343,7 +308,7 @@ void QComputeTrust::DoIt(void)
 void QComputeSugs::DoIt(void)
 {
 	Parent->setLabelText("Make suggestions ...");
-	GALILEIApp->GetSession()->ComputeSugs();
+	App->getSession()->ComputeSugs();
 }
 
 
@@ -351,7 +316,7 @@ void QComputeSugs::DoIt(void)
 void QRunTool::DoIt(void)
 {
 	Parent->setLabelText("Run tool '"+ToQString(Tool)+"' ...");
-	GALILEIApp->RunTool(Tool,Parent);
+	App->getSession()->RunTool(Tool,Parent);
 }
 
 
@@ -359,17 +324,15 @@ void QRunTool::DoIt(void)
 void QComputeAll::DoIt(void)
 {
 	Parent->setLabelText("Analyze Documents ...");
-	GALILEIApp->GetSession()->AnalyzeDocs(Parent);
-	if(GSession::Break())
+	App->getSession()->AnalyzeDocs(Parent);
+	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Compute Profiles ...");
-	GALILEIApp->GetSession()->CalcProfiles(Parent);
-	if(GSession::Break())
-		return;
-	if(GSession::Break())
+	App->getSession()->CalcProfiles(Parent);
+	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Groups Profiles ...");
-	GALILEIApp->GetSession()->GroupProfiles(Parent);
+	App->getSession()->GroupProfiles(Parent);
 }
 
 
@@ -377,7 +340,7 @@ void QComputeAll::DoIt(void)
 void QIndexDocs::DoIt(void)
 {
 	Parent->setLabelText("Index Documents ...");
-	GALILEIApp->GetSession()->BuildRefs(otDoc,Parent);
+	App->getSession()->BuildRefs(otDoc,Parent);
 }
 
 
@@ -389,8 +352,8 @@ void QIndexDocs::DoIt(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-QSessionProgressDlg::QSessionProgressDlg(QWidget* parent,const QString& c,bool cancel)
-    : KProgressDialog(parent,c,""), GSlot(), Running(false)
+QSessionProgressDlg::QSessionProgressDlg(KGALILEICenter* parent,const QString& c,bool cancel)
+    : KProgressDialog(parent,c,""), GSlot(), Running(false), App(parent)
 {
 	showCancelButton(cancel);
 	setAllowCancel(cancel);
@@ -414,8 +377,8 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 	show();
 	task->start();
 	q.exec();
-	if(GSession::Break())
-		GSession::ResetBreak();
+	if(App->getSession()->MustBreak())
+		App->getSession()->ResetBreak();
 	delete task;
 	//return(res);
 	return(Ret);
@@ -496,10 +459,10 @@ void QSessionProgressDlg::Alert(const R::RString&)
 void QSessionProgressDlg::reject(void)
 {
 	if(Running)
-		GSession::SetBreak();
+		App->getSession()->SetBreak();
 	else
 	{
-		if(GSession::Break())
+		if(App->getSession()&&App->getSession()->MustBreak())
 			done(0);
 		else
 			done(1);

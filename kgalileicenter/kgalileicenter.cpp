@@ -49,6 +49,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QMdiSubWindow>
+#include <QInputDialog>
 #include <kstatusbar.h>
 #include <kactioncollection.h>
 #include <kstandardaction.h>
@@ -90,6 +91,9 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
+KGALILEICenter* KGALILEICenter::App(0);
+
+//-----------------------------------------------------------------------------
 KGALILEICenter::KGALILEICenter(int argc, char *argv[])
 	: KXmlGuiWindow(0), GGALILEIApp("KGALILEICenter",argc,argv,true),
 	  Desktop(new QMdiArea(this)), Status(new QLabel(statusBar())), Doc(0), Debug(0)
@@ -106,6 +110,7 @@ KGALILEICenter::KGALILEICenter(int argc, char *argv[])
     setupGUI();
     readOptions();
 	sessionConnected(false);
+	App=this;
 }
 
 
@@ -113,8 +118,6 @@ KGALILEICenter::KGALILEICenter(int argc, char *argv[])
 void KGALILEICenter::Init(void)
 {
 	GGALILEIApp::Init();
-	if(!GetSessionConfig())
-		aSessionOptions->setEnabled(false);
 }
 
 
@@ -154,6 +157,7 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Import Documents","importDocs",SLOT(importDocs()),"tab-new"));
 	Actions.insert(Actions.size(),addAction("&Run Program","runProgram",SLOT(runProgram()),"fork","Ctrl+R"));
 	Actions.insert(Actions.size(),addAction("&Statistics","sessionStats",SLOT(sessionStats()),"view-statistics"));
+	Actions.insert(Actions.size(),addAction("Run &Tool","runTool",SLOT(runTool())));
 	addAction("E&xit","sessionQuit",SLOT(sessionQuit()),"window-close","Ctrl+Q");
 
 	// Menu "Knowledge"
@@ -166,7 +170,6 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Index Documents","indexDocs",SLOT(indexDocs())));
 	Actions.insert(Actions.size(),addAction("Load and Analyze a Document","docAnalyze",SLOT(docAnalyze())));
 	Actions.insert(Actions.size(),addAction("&Analyze Documents","docsAnalyze",SLOT(docsAnalyze()),"kfind"));
-	Actions.insert(Actions.size(),addAction("Execute &Post-Documents Methods","postDocsAnalyze",SLOT(postDocsAnalyze())));
 	Actions.insert(Actions.size(),addAction("&Export Documents","docsIndexer",SLOT(docsIndexer())));
 	Actions.insert(Actions.size(),addAction("&Create XML Structure","createXML",SLOT(createXML())));
 	Actions.insert(Actions.size(),addAction("&Save XML Structure","saveXML",SLOT(saveXML())));
@@ -177,7 +180,6 @@ void KGALILEICenter::initActions(void)
 	// Menu "Topics"
 	Actions.insert(Actions.size(),addAction("Force Re-computing Topics","topicsClear",SLOT(topicsClear())));
 	Actions.insert(Actions.size(),addAction("Group Documents","topicsCalc",SLOT(topicsCalc())));
-	Actions.insert(Actions.size(),addAction("Execute Post-Topic Methods","postTopicsCalc",SLOT(postTopicsCalc())));
 	Actions.insert(Actions.size(),addAction("Show &Topics","showTopics",SLOT(showTopics()),"window_new"));
 	Actions.insert(Actions.size(),addAction("Show &Classes","showClasses",SLOT(showClasses()),"view-list-tree"));
 
@@ -185,14 +187,12 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("&Force Re-computing profiles","profilesClear",SLOT(profilesClear())));
 	Actions.insert(Actions.size(),addAction("&Show Users","showUsers",SLOT(showUsers()),"meeting-attending"));
 	Actions.insert(Actions.size(),addAction("&Compute Profiles","profilesCalc",SLOT(profilesCalc()),"media-playback-start"));
-	Actions.insert(Actions.size(),addAction("Execute &Post-Profiles Methods","postProfilesCalc",SLOT(postProfilesCalc())));
 	Actions.insert(Actions.size(),addAction("Compute &Profile","profileCalc",SLOT(profileCalc())));
 
 	// Menu "Communities"
 	Actions.insert(Actions.size(),addAction("&Force Re-computing Communities","communitiesClear",SLOT(communitiesClear())));
 	Actions.insert(Actions.size(),addAction("&Show Communities","showCommunities",SLOT(showCommunities()),"user-group-new"));
 	Actions.insert(Actions.size(),addAction("&Group Profiles","communitiesCalc",SLOT(communitiesCalc()),"media-seek-forward"));
-	Actions.insert(Actions.size(),addAction("Execute &Post-Communities Methods","postCommunitiesCalc",SLOT(postCommunities())));
 
 	// Menu "Debug"
 	Actions.insert(Actions.size(),addAction("Test Subjects","testSubjects",SLOT(testSubjects())));
@@ -209,9 +209,7 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Compare Ideal Classes","classesCompare",SLOT(classesCompare())));
 
 	// Menu "options"
-	aSessionOptions=new KAction("Configure Session",this);
-	actionCollection()->addAction(QLatin1String("configureSession"),aSessionOptions);
-	connect(aSessionOptions,SIGNAL(triggered(bool)),this,SLOT(optionsSession()));
+	Actions.insert(Actions.size(),addAction("Configure Session","configureSession",SLOT(optionsSession())));
 	KStandardAction::preferences(this,SLOT(optionsPreferences()),actionCollection());
 
 	// Menu "Window"
@@ -226,7 +224,6 @@ void KGALILEICenter::initActions(void)
 	connect(windowCascade,SIGNAL(triggered(bool)),Desktop,SLOT(cascadeSubWindows()));
 
 	// Help Menu
-	addAction("Run &Tool","runTool",SLOT(runTool()));
 //	helpProgram = new KAction(i18n("List of all classes"), 0, 0, this, SLOT(slotHelpProgram()), actionCollection(),"helpProgram");
 //	helpProgram=new KAction("List of all classes",0,0,this,SLOT(slotHelpProgram()),this);
 //	menuBar()->insertItem ("&Help",helpProgram);*/
@@ -316,9 +313,13 @@ void KGALILEICenter::sessionConnect(void)
 	statusMsg(i18n("Connecting..."));
 	try
 	{
+	    bool ok;
+	    QString session=QInputDialog::getText(this,tr("Connect to a session"),tr("Session name:"),QLineEdit::Normal,"",&ok);
+	    if((!ok)||(session.isEmpty()))
+	    	return;
 		DestroyDoc=true;
 		QSessionProgressDlg dlg(this,"Loading from Database");
-		if(dlg.Run(new QCreateSession(Doc)))
+		if(dlg.Run(new QCreateSession(this,Doc,FromQString(session))))
 		{
 			sessionConnected(true);
 			Status->setPixmap(QPixmap(KIconLoader::global()->loadIcon("network-connect",KIconLoader::Small)));
@@ -347,7 +348,7 @@ void KGALILEICenter::sessionConnect(void)
 	}
 	if(DestroyDoc)
 	{
-		DeleteSession();
+		DeleteSession(0);
 		Doc=0;
 	}
 }
@@ -358,7 +359,7 @@ void KGALILEICenter::sessionDisconnect(void)
 	if(Doc)
 	{
 		Desktop->closeAllSubWindows();
-		DeleteSession();
+		DeleteSession(0);
 		Doc=0;
 		sessionConnected(false);
 		statusMsg(i18n("Not Connected !"));
@@ -371,7 +372,7 @@ void KGALILEICenter::sessionDisconnect(void)
 void KGALILEICenter::sessionCompute(void)
 {
 	QSessionProgressDlg Dlg(this,"Compute Complete Session");
-	QComputeAll* Task(new QComputeAll());
+	QComputeAll* Task(new QComputeAll(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
@@ -479,20 +480,11 @@ void KGALILEICenter::optionsPreferences(void)
 	connect(&Dlg,SIGNAL(applyClicked()),&Dlg,SLOT(accept()));
 
 	// Run it
-	Ui.GALILEIConfigName->setMode(KFile::File|KFile::ExistingOnly|KFile::LocalOnly);
-	Ui.GALILEIConfigName->setUrl(R::ToQString(GetGALILEIConfigName()));
-	Ui.SessionName->setText(R::ToQString(GetSessionName()));
 	Ui.PrgPath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
 	Ui.PrgPath->setUrl(R::ToQString(PrgPath));
 	if(Dlg.exec())
 	{
-		SetGALILEIConfigName(R::FromQString(Ui.GALILEIConfigName->url().url()));
 		PrgPath=R::FromQString(Ui.PrgPath->url().url());
-		ChangeSessionName(R::FromQString(Ui.SessionName->text()));
-		if(!GetSessionConfig())
-			aSessionOptions->setEnabled(false);
-		else
-			aSessionOptions->setEnabled(true);
 	}
 }
 
@@ -507,7 +499,7 @@ void KGALILEICenter::optionsSession(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::showDicts(void)
 {
-	KViewDicts* ptr(new KViewDicts());
+	KViewDicts* ptr(new KViewDicts(this));
 	Desktop->addSubWindow(ptr);
 	ptr->adjustSize();
 	ptr->show();
@@ -530,7 +522,7 @@ void KGALILEICenter::showDocs(void)
 	connect(ptr,SIGNAL(Show(GDoc*)),this,SLOT(showDoc(GDoc*)));
 	ptr->setAttribute(Qt::WA_DeleteOnClose);
 	Desktop->addSubWindow(ptr)->setWindowTitle("Documents");
-	ptr->Set(QGObjectsList::Docs);
+	ptr->Set(Doc,QGObjectsList::Docs);
 	ptr->adjustSize();
 	ptr->show();
 }
@@ -585,7 +577,7 @@ void KGALILEICenter::exportDocs(void)
 void KGALILEICenter::indexDocs(void)
 {
 	QSessionProgressDlg Dlg(this,"Index documents");
-	QIndexDocs* Task(new QIndexDocs());
+	QIndexDocs* Task(new QIndexDocs(this));
 	Dlg.Run(Task);
 }
 
@@ -593,7 +585,7 @@ void KGALILEICenter::indexDocs(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::showDoc(GDoc* doc)
 {
-	KViewDoc* ptr(new KViewDoc(doc));
+	KViewDoc* ptr(new KViewDoc(this,doc));
 	Desktop->addSubWindow(ptr);
 	ptr->adjustSize();
 	ptr->show();
@@ -607,7 +599,7 @@ void KGALILEICenter::docAnalyze(void)
 	QString url(KFileDialog::getOpenFileName(KUrl("~"),"*.*",Desktop,"Document to Analyze"));
 	if(!url.isEmpty())
 	{
-		KViewDoc* ptr(new KViewDoc(FromQString(url),FromQString(KMimeType::findByPath(url)->name())));
+		KViewDoc* ptr(new KViewDoc(this,FromQString(url),FromQString(KMimeType::findByPath(url)->name())));
 		Desktop->addSubWindow(ptr);
 		ptr->adjustSize();
 		ptr->show();
@@ -640,17 +632,7 @@ void KGALILEICenter::docAnalyze(void)
 void KGALILEICenter::docsAnalyze(void)
 {
 	QSessionProgressDlg Dlg(this,"Analyze Documents");
-	QAnalyzeDocs* Task(new QAnalyzeDocs());
-	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
-	Dlg.Run(Task);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenter::postDocsAnalyze(void)
-{
-	QSessionProgressDlg Dlg(this,"Post-Documents Analyze");
-	QPostAnalyzeDocs* Task(new QPostAnalyzeDocs());
+	QAnalyzeDocs* Task(new QAnalyzeDocs(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
 	Dlg.Run(Task);
 }
@@ -738,7 +720,7 @@ void KGALILEICenter::queryMetaEngine(void)
 		QMessageBox::information(this," Error "," No Meta Engine Method selected!!");
 		return;
 	}
-	KViewMetaEngine* ptr(new KViewMetaEngine());
+	KViewMetaEngine* ptr(new KViewMetaEngine(this));
 	Desktop->addSubWindow(ptr);
 	ptr->adjustSize();
 	ptr->show();
@@ -757,17 +739,7 @@ void KGALILEICenter::topicsClear(void)
 void KGALILEICenter::topicsCalc(void)
 {
 	QSessionProgressDlg Dlg(this,"Compute Topics");
-	QGroupDocs* Task(new QGroupDocs());
-	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
-	Dlg.Run(Task);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenter::postTopicsCalc(void)
-{
-	QSessionProgressDlg Dlg(this,"Post-Topics Analyze");
-	QPostGroupDocs* Task(new QPostGroupDocs());
+	QGroupDocs* Task(new QGroupDocs(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
 }
@@ -814,7 +786,7 @@ void KGALILEICenter::showUsers(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::showProfile(GProfile* profile)
 {
-	KViewProfile* ptr(new KViewProfile(profile));
+	KViewProfile* ptr(new KViewProfile(this,profile));
 	Desktop->addSubWindow(ptr);
 	ptr->adjustSize();
 	ptr->show();
@@ -825,17 +797,7 @@ void KGALILEICenter::showProfile(GProfile* profile)
 void KGALILEICenter::profilesCalc(void)
 {
 	QSessionProgressDlg Dlg(this,"Compute Profiles");
-	QComputeProfiles* Task(new QComputeProfiles());
-	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
-	Dlg.Run(Task);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenter::postProfilesCalc(void)
-{
-	QSessionProgressDlg Dlg(this,"Post-Profiles Analyze");
-	QPostComputeProfiles* Task(new QPostComputeProfiles());
+	QComputeProfiles* Task(new QComputeProfiles(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
 	Dlg.Run(Task);
 }
@@ -882,17 +844,7 @@ void KGALILEICenter::showCommunity(GCommunity* community)
 void KGALILEICenter::communitiesCalc(void)
 {
 	QSessionProgressDlg Dlg(this,"Compute Communities");
-	QGroupProfiles* Task(new QGroupProfiles());
-	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
-	Dlg.Run(Task);
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenter::postCommunities(void)
-{
-	QSessionProgressDlg Dlg(this,"Post-Communities Analyze");
-	QPostGroupProfiles* Task(new QPostGroupProfiles());
+	QGroupProfiles* Task(new QGroupProfiles(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
 	Dlg.Run(Task);
 }
@@ -902,7 +854,7 @@ void KGALILEICenter::postCommunities(void)
 void KGALILEICenter::subjectsCreate(void)
 {
 	QSessionProgressDlg Dlg(this,"Create Ideal Subjects");
-	QCreateIdealSubjects* Task(new QCreateIdealSubjects());
+	QCreateIdealSubjects* Task(new QCreateIdealSubjects(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitDocsChanged()));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
@@ -915,7 +867,7 @@ void KGALILEICenter::subjectsCreate(void)
 void KGALILEICenter::topicsCreate(void)
 {
 	QSessionProgressDlg Dlg(this,"Create Ideal Topics");
-	QCreateIdealTopics* Task(new QCreateIdealTopics());
+	QCreateIdealTopics* Task(new QCreateIdealTopics(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
 }
@@ -925,7 +877,7 @@ void KGALILEICenter::topicsCreate(void)
 void KGALILEICenter::topicsClassesCreate(void)
 {
 	QSessionProgressDlg Dlg(this,"Create Ideal Topics");
-	QCreateIdealTopicsFromClasses* Task(new QCreateIdealTopicsFromClasses());
+	QCreateIdealTopicsFromClasses* Task(new QCreateIdealTopicsFromClasses(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
 }
@@ -935,7 +887,7 @@ void KGALILEICenter::topicsClassesCreate(void)
 void KGALILEICenter::classesCreate(void)
 {
 	QSessionProgressDlg Dlg(this,"Create Ideal Classes");
-	QCreateIdealClasses* Task(new QCreateIdealClasses());
+	QCreateIdealClasses* Task(new QCreateIdealClasses(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
 }
@@ -945,7 +897,7 @@ void KGALILEICenter::classesCreate(void)
 void KGALILEICenter::classesDocsCreate(void)
 {
 	QSessionProgressDlg Dlg(this,"Create Ideal Classes");
-	QCreateIdealDocsClasses* Task(new QCreateIdealDocsClasses());
+	QCreateIdealDocsClasses* Task(new QCreateIdealDocsClasses(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitTopicsChanged()));
 	Dlg.Run(Task);
 }
@@ -955,7 +907,7 @@ void KGALILEICenter::classesDocsCreate(void)
 void KGALILEICenter::communitiesCreate(void)
 {
 	QSessionProgressDlg Dlg(this,"Create Ideal Communities");
-	QCreateIdealCommunities* Task(new QCreateIdealCommunities());
+	QCreateIdealCommunities* Task(new QCreateIdealCommunities(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitCommunitiesChanged()));
 	Dlg.Run(Task);
 }
@@ -965,7 +917,7 @@ void KGALILEICenter::communitiesCreate(void)
 void KGALILEICenter::testSubjects(void)
 {
 	QSessionProgressDlg Dlg(this,"Test Subjects");
-	QTestSubjects* Task(new QTestSubjects());
+	QTestSubjects* Task(new QTestSubjects(this));
 	Dlg.Run(Task);
 }
 
@@ -974,7 +926,7 @@ void KGALILEICenter::testSubjects(void)
 void KGALILEICenter::doFdbks(void)
 {
 	QSessionProgressDlg Dlg(this,"Feedback Cycle");
-	QMakeFdbks* Task(new QMakeFdbks());
+	QMakeFdbks* Task(new QMakeFdbks(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
 	Dlg.Run(Task);
 }
@@ -984,7 +936,7 @@ void KGALILEICenter::doFdbks(void)
 void KGALILEICenter::doAssessments(void)
 {
 	QSessionProgressDlg Dlg(this,"Assessments Cycle");
-	QMakeAssessments* Task(new QMakeAssessments());
+	QMakeAssessments* Task(new QMakeAssessments(this));
 	connect(Task,SIGNAL(finish()),this,SLOT(emitProfilesChanged()));
 	Dlg.Run(Task);
 }
@@ -994,7 +946,7 @@ void KGALILEICenter::doAssessments(void)
 void KGALILEICenter::computeTrust(void)
 {
 	QSessionProgressDlg Dlg(this,"Compute Trust");
-	QComputeTrust* Task(new QComputeTrust());
+	QComputeTrust* Task(new QComputeTrust(this));
 	Dlg.Run(Task);
 }
 
@@ -1003,7 +955,7 @@ void KGALILEICenter::computeTrust(void)
 void KGALILEICenter::computeSugs(void)
 {
 	QSessionProgressDlg Dlg(this,"Compute Suggestions");
-	QComputeSugs* Task(new QComputeSugs());
+	QComputeSugs* Task(new QComputeSugs(this));
 	Dlg.Run(Task);
 }
 
@@ -1034,7 +986,7 @@ void KGALILEICenter::runTool(void)
 	if(Choose.exec())
 	{
 		QSessionProgressDlg Dlg(this,"Tool");
-		QRunTool* Task(new QRunTool(FromQString(Ui.List->item(Ui.List->currentRow())->text())));
+		QRunTool* Task(new QRunTool(this,FromQString(Ui.List->item(Ui.List->currentRow())->text())));
 		Dlg.Run(Task);
 	}
 }
@@ -1180,6 +1132,7 @@ void KGALILEICenter::showClass(GClass* /*theclass*/)
 //-----------------------------------------------------------------------------
 KGALILEICenter::~KGALILEICenter(void)
 {
+	App=0;
 	try
 	{
 		delete Status;

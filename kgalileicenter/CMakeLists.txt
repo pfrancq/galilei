@@ -4,8 +4,8 @@ INCLUDE_DIRECTORIES(.)
 SET (KGALILEICENTER_SOURCES
 main.cpp
 kgalileicenter.cpp
-qsessionprogress.cpp
 qpluginslist.cpp
+qsessionprogress.cpp
 configure.cpp
 kviewdoc.cpp
 kviewmetaengine.cpp

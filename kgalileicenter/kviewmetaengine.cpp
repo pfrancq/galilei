@@ -41,13 +41,6 @@
 #include <ggalileiapp.h>
 #include <gmetaengine.h>
 #include <gsession.h>
-/*
-#include <gstorage.h>
-
-#include <genginedoc.h>
-
-#include <rqt.h>
-#include <qlistviewitemtype.h>*/
 
 
 //-----------------------------------------------------------------------------
@@ -74,12 +67,12 @@ class QQuery : public QSessionThread
 	RString Query;
 
 public:
-	QQuery(const QString& query) : QSessionThread(), Query(FromQString(query)) {}
+	QQuery(KGALILEICenter* app,const QString& query) : QSessionThread(app), Query(FromQString(query)) {}
 	virtual void DoIt(void)
 	{
 		RContainer<RString,true,false> KeyWords(5,3);
 		Query.Split(KeyWords,' ');
-		GALILEIApp->GetSession()->QueryMetaEngine(KeyWords);
+		App->getSession()->QueryMetaEngine(KeyWords);
 	}
 };
 
@@ -92,8 +85,8 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewMetaEngine::KViewMetaEngine(void)
-	:  QMdiSubWindow(), Ui_KViewMetaEngine()
+KViewMetaEngine::KViewMetaEngine(KGALILEICenter* app)
+	:  QMdiSubWindow(), Ui_KViewMetaEngine(), App(app)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -126,9 +119,8 @@ void KViewMetaEngine::QueryEngine(void)
 		ResLabel->setText("<b> Enter first a query!</b>");
 		return;
 	}
-
-	QSessionProgressDlg Dlg(QMdiSubWindow::widget(),"Search: "+TxtQuery->text());
-	QQuery* Task(new QQuery(TxtQuery->text()));
+	QSessionProgressDlg Dlg(App,"Search: "+TxtQuery->text());
+	QQuery* Task(new QQuery(App,TxtQuery->text()));
 	connect(Task,SIGNAL(finish()),this,SLOT(showResults()));
 	Dlg.Run(Task);
 }

@@ -46,6 +46,7 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for current project
 #include <ui_qfilldatabase.h>
+#include <kgalileicenter.h>
 
 
 //------------------------------------------------------------------------------
@@ -82,13 +83,18 @@ class QFillDatabase : private KDialog, private Ui_QFillDatabase
 	 */
 	RString DefaultMIME;
 
+	/**
+	 * Application.
+	 */
+	KGALILEICenter* App;
+
 public:
 
 	/**
 	 * Constructor.
 	 * @param parent         Parent widget.
 	 */
-	QFillDatabase(QWidget* parent);
+	QFillDatabase(KGALILEICenter* parent);
 
 	/**
 	 * Show the dialog box. If the user clicks on the 'OK' button, the database

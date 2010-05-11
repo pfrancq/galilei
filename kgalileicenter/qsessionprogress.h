@@ -50,6 +50,7 @@ using namespace R;
 // include files for Qt/KDE
 #include <QtCore/QThread>
 #include <kprogressdialog.h>
+#include <kgalileicenter.h>
 
 
 //-----------------------------------------------------------------------------
@@ -74,9 +75,14 @@ protected:
 	QSessionProgressDlg* Parent;
 
 	/**
+	 * Application.
+	 */
+	KGALILEICenter* App;
+
+	/**
 	 * Constructor.
 	 */
-	QSessionThread(void);
+	QSessionThread(KGALILEICenter* app);
 
 	/**
 	 * Set the parent widget.
@@ -113,8 +119,9 @@ signals:
 class QCreateSession : public QSessionThread
 {
 	GSession* &Session;
+	RString Name;
 public:
-	QCreateSession(GSession* &session) : Session(session) {}
+	QCreateSession(KGALILEICenter* app,GSession* &session,const RString& name) : QSessionThread(app), Session(session), Name(name) {}
 	virtual void DoIt(void);
 };
 
@@ -130,7 +137,7 @@ class QCreateDocXML : public QSessionThread
 	RXMLStruct* &XML;
 	GDoc* Doc;
 public:
-	QCreateDocXML(RXMLStruct* &xml,GDoc* doc) : XML(xml), Doc(doc) {}
+	QCreateDocXML(KGALILEICenter* app,RXMLStruct* &xml,GDoc* doc) : QSessionThread(app), XML(xml), Doc(doc) {}
 	virtual void DoIt(void);
 };
 
@@ -145,7 +152,7 @@ class QAnalyzeXML : public QSessionThread
 {
 	GDoc* Doc;
 public:
-	QAnalyzeXML(GDoc* doc) : Doc(doc) {}
+	QAnalyzeXML(KGALILEICenter* app,GDoc* doc) : QSessionThread(app), Doc(doc) {}
 	virtual void DoIt(void);
 };
 
@@ -157,19 +164,7 @@ public:
 class QAnalyzeDocs : public QSessionThread
 {
 public:
-	QAnalyzeDocs(void) {}
-	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Post-analyze all documents.
-*/
-class QPostAnalyzeDocs : public QSessionThread
-{
-public:
-	QPostAnalyzeDocs(void) {}
+	QAnalyzeDocs(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -181,21 +176,10 @@ public:
 class QComputeProfiles : public QSessionThread
 {
 public:
-	QComputeProfiles(void) {}
+	QComputeProfiles(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
-
-//-----------------------------------------------------------------------------
-/**
-* Post-compute the profiles.
-*/
-class QPostComputeProfiles : public QSessionThread
-{
-public:
-	QPostComputeProfiles(void) {}
-	virtual void DoIt(void);
-};
 
 
 //-----------------------------------------------------------------------------
@@ -206,7 +190,7 @@ class QComputeProfile : public QSessionThread
 {
 	GProfile* Profile;
 public:
-	QComputeProfile(GProfile* profile) : Profile(profile) {}
+	QComputeProfile(KGALILEICenter* app,GProfile* profile) : QSessionThread(app), Profile(profile) {}
 	virtual void DoIt(void);
 };
 
@@ -218,21 +202,10 @@ public:
 class QGroupProfiles : public QSessionThread
 {
 public:
-	QGroupProfiles(void) {}
+	QGroupProfiles(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
-
-//-----------------------------------------------------------------------------
-/**
-* Post-Groups.
-*/
-class QPostGroupProfiles : public QSessionThread
-{
-public:
-	QPostGroupProfiles(void) {}
-	virtual void DoIt(void);
-};
 
 
 //-----------------------------------------------------------------------------
@@ -242,19 +215,7 @@ public:
 class QGroupDocs : public QSessionThread
 {
 public:
-	QGroupDocs(void) {}
-	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Post-Topics.
-*/
-class QPostGroupDocs : public QSessionThread
-{
-public:
-	QPostGroupDocs(void) {}
+	QGroupDocs(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -267,7 +228,7 @@ public:
 class QCreateIdealSubjects : public QSessionThread
 {
 public:
-	QCreateIdealSubjects(void) {}
+	QCreateIdealSubjects(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -280,7 +241,7 @@ public:
 class QCreateIdealCommunities : public QSessionThread
 {
 public:
-	QCreateIdealCommunities(void) {}
+	QCreateIdealCommunities(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -292,7 +253,7 @@ public:
 class QCreateIdealTopics : public QSessionThread
 {
 public:
-	QCreateIdealTopics(void) {}
+	QCreateIdealTopics(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -304,7 +265,7 @@ public:
 class QCreateIdealTopicsFromClasses : public QSessionThread
 {
 public:
-	QCreateIdealTopicsFromClasses(void) {}
+	QCreateIdealTopicsFromClasses(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -316,7 +277,7 @@ public:
 class QCreateIdealClasses : public QSessionThread
 {
 public:
-	QCreateIdealClasses(void) {}
+	QCreateIdealClasses(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -328,7 +289,7 @@ public:
 class QCreateIdealDocsClasses : public QSessionThread
 {
 public:
-	QCreateIdealDocsClasses(void) {}
+	QCreateIdealDocsClasses(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -340,7 +301,7 @@ public:
 class QTestSubjects : public QSessionThread
 {
 public:
-	QTestSubjects(void) {}
+	QTestSubjects(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -352,7 +313,7 @@ public:
 class QMakeFdbks : public QSessionThread
 {
 public:
-	QMakeFdbks(void) {}
+	QMakeFdbks(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -364,7 +325,7 @@ public:
 class QMakeAssessments : public QSessionThread
 {
 public:
-	QMakeAssessments(void) {}
+	QMakeAssessments(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -376,7 +337,7 @@ public:
 class QComputeTrust : public QSessionThread
 {
 public:
-	QComputeTrust(void) {}
+	QComputeTrust(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -388,7 +349,7 @@ public:
 class QComputeSugs : public QSessionThread
 {
 public:
-	QComputeSugs(void) {}
+	QComputeSugs(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -405,7 +366,7 @@ class QRunTool : public QSessionThread
 	RString Tool;
 
 public:
-	QRunTool(const RString& tool) : Tool(tool) {}
+	QRunTool(KGALILEICenter* app,const RString& tool) : QSessionThread(app), Tool(tool) {}
 	virtual void DoIt(void);
 };
 
@@ -417,7 +378,7 @@ public:
 class QComputeAll : public QSessionThread
 {
 public:
-	QComputeAll(void) {}
+	QComputeAll(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -429,7 +390,7 @@ public:
 class QIndexDocs : public QSessionThread
 {
 public:
-	QIndexDocs(void) {}
+	QIndexDocs(KGALILEICenter* app) : QSessionThread(app) {}
 	virtual void DoIt(void);
 };
 
@@ -460,6 +421,11 @@ class QSessionProgressDlg : public KProgressDialog, public GSlot
 	 */
 	int Ret;
 
+	/**
+	 * Application.
+	 */
+	KGALILEICenter* App;
+
 public:
 
 	/**
@@ -468,7 +434,7 @@ public:
 	* @param c              Caption of the dialog box.
 	* @param cancel         Cancel Button?
 	*/
-	QSessionProgressDlg(QWidget* parent,const QString& c,bool cancel=true);
+	QSessionProgressDlg(KGALILEICenter* parent,const QString& c,bool cancel=true);
 
 	/**
 	* Run a thread "in" this dialog box.

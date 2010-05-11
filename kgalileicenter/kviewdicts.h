@@ -51,6 +51,7 @@ using namespace GALILEI;
 //---------------------------------------------------------------------------
 // include files for current application
 #include <ui_kviewdicts.h>
+#include <kgalileicenter.h>
 
 
 //-----------------------------------------------------------------------------
@@ -68,12 +69,17 @@ class KViewDicts : public QMdiSubWindow, public Ui_KViewDicts
 	*/
 	GConceptType* CurDict;
 
+	/**
+	 * Application.
+	 */
+	KGALILEICenter* App;
+
 public:
 
 	/**
 	* Constructor for the view
 	*/
-	KViewDicts(void);
+	KViewDicts(KGALILEICenter* app);
 
 	/**
 	* Creates the list of dictionaries.

@@ -62,7 +62,7 @@ class QCreateDB : public QSessionThread
 {
 	QCreateDatabase* Info;
 public:
-	QCreateDB(QCreateDatabase* info) : Info(info) {}
+	QCreateDB(KGALILEICenter* app,QCreateDatabase* info) : QSessionThread(app), Info(info) {}
 	RString GetConceptType(const RString& name,const RString& desc,RDb* Db);
 	virtual void DoIt(void);
 };
@@ -95,17 +95,21 @@ void QCreateDB::DoIt(void)
  	Parent->setLabelText("Dump Database model");
  	Db.RunSQLFile(Info->DbSchema);
  	Parent->setLabelText("Create Languages (terms and stopwords)");
- 	RCastCursor<GPlugIn,GLang> Langs(GALILEIApp->GetPlugIns<GLang>("Lang"));
+ 	RCursor<GPlugInFactory> Langs(GALILEIApp->GetFactories("Lang"));
  	RContainer<RString,true,false> Stops(200);
  	for(Langs.Start();!Langs.End();Langs.Next())
  	{
- 		// Create the concept types
- 		RString Code(Langs()->GetCode());
- 		GetConceptType(Code+"Terms",Langs()->GetLangName()+" Terms",&Db);
- 		RString TypeId(GetConceptType(Code+"Stopwords",Langs()->GetLangName()+" Stopwords",&Db));
-
+ 		// Get the stop list and the code.
  		Stops.Clear();
- 		Langs()->GetStopWords(Stops);
+ 		RString Code;
+ 		RString Name;
+ 		GLangFactory* Factory(reinterpret_cast<GLangFactory*>(Langs()));
+ 		Factory->CreateStopWords(Stops,Code,Name);
+
+ 		// Create the concept types
+ 		GetConceptType(Code+"Terms",Name+" Terms",&Db);
+ 		RString TypeId(GetConceptType(Code+"Stopwords",Name+" Stopwords",&Db));
+
  		RCursor<RString> Cur(Stops);
  		for(Cur.Start();!Cur.End();Cur.Next())
  			RQuery InsertStopWord(&Db,"INSERT INTO concepts(name,typeid) VALUES("+RQuery::SQLValue(*Cur())+","+TypeId+")");
@@ -125,8 +129,8 @@ void QCreateDB::DoIt(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-QCreateDatabase::QCreateDatabase(QWidget* parent)
-	: KDialog(parent), Ui_QCreateDatabase()
+QCreateDatabase::QCreateDatabase(KGALILEICenter* parent)
+	: KDialog(parent), Ui_QCreateDatabase(), App(parent)
 {
 	setCaption("Fill Database");
 	QWidget* widget=new QWidget(this);
@@ -148,8 +152,8 @@ void QCreateDatabase::run(void)
 		User=FromQString(userName->text());
 		Pwd=FromQString(password->text());
 		DbSchema=FromQString(URL->url().url());
-		QSessionProgressDlg Dlg(this,"Create Database");
-		Dlg.Run(new QCreateDB(this));
+		QSessionProgressDlg Dlg(App,"Create Database");
+		Dlg.Run(new QCreateDB(App,this));
 	}
 	catch(GException& e)
 	{

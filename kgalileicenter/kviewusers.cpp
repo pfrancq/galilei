@@ -49,6 +49,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QInputDialog>
+#include <kapplication.h>
 
 
 //-----------------------------------------------------------------------------
@@ -78,14 +79,14 @@ KViewUsers::KViewUsers(void)
 	connect(NewProfile,SIGNAL(clicked()),this,SLOT(slotAddProfile()));
 	connect(ModifyProfile,SIGNAL(clicked()),this,SLOT(slotModifyProfile()));
 	connect(List,SIGNAL(Show(GProfile*)),dynamic_cast<KGALILEICenter*>(GALILEIApp),SLOT(showProfile(GProfile*)));
-	List->Set(QGObjectsList::Users);
+	List->Set(KGALILEICenter::App->getSession(),QGObjectsList::Users);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewUsers::update(void)
 {
-	List->Set(QGObjectsList::Users);
+	List->Set(KGALILEICenter::App->getSession(),QGObjectsList::Users);
 }
 
 
@@ -96,7 +97,7 @@ void KViewUsers::slotAddUser(void)
 	QString Name(QInputDialog::getText(this,"New User", "Enter the name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		GALILEIApp->GetSession()->InsertUser(new GUser(cNoRef,FromQString(Name),FromQString(Name)));
+		KGALILEICenter::App->getSession()->Insert(new GUser(KGALILEICenter::App->getSession(),cNoRef,FromQString(Name),FromQString(Name)));
 		update();
 	}
 }
@@ -112,7 +113,7 @@ void KViewUsers::slotModifyUser(void)
 	if(Ok&&!Name.isEmpty())
 	{
 		usr->SetName(FromQString(Name));
-		GALILEIApp->GetSession()->GetStorage()->SaveUser(usr);
+		KGALILEICenter::App->getSession()->GetStorage()->SaveUser(usr);
 		List->currentItem()->setText(0,Name);
 	}
 }
@@ -127,8 +128,8 @@ void KViewUsers::slotAddProfile(void)
 	QString Name(QInputDialog::getText(this,"Add Profile to "+ToQString(usr->GetName()), "Enter the profile name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		GALILEIApp->GetSession()->InsertProfile(new GProfile(usr,ptInterest,FromQString(Name),true));
-		GALILEIApp->GetSession()->GetStorage()->SaveUser(usr);
+		KGALILEICenter::App->getSession()->Insert(new GProfile(KGALILEICenter::App->getSession(),usr,ptInterest,FromQString(Name),true));
+		KGALILEICenter::App->getSession()->GetStorage()->SaveUser(usr);
 		update();
 	}
 }
@@ -144,7 +145,7 @@ void KViewUsers::slotModifyProfile(void)
 	if(Ok&&!Name.isEmpty())
 	{
 		prof->SetName(FromQString(Name));
-		GALILEIApp->GetSession()->GetStorage()->SaveProfile(prof);
+		KGALILEICenter::App->getSession()->GetStorage()->SaveProfile(prof);
 		List->currentItem()->setText(0,Name);
 	}
 }

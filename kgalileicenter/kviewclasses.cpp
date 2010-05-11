@@ -49,6 +49,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QInputDialog>
+#include <kapplication.h>
 
 
 //-----------------------------------------------------------------------------
@@ -142,7 +143,7 @@ void KViewClasses::buildClass(GClass* c,Item* parent)
 void KViewClasses::update(void)
 {
 	List->clear();
-	RCursor<GClass> Cur(GALILEIApp->GetSession()->GetTopClasses());
+	RCursor<GClass> Cur(KGALILEICenter::App->getSession()->GetTopClasses());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		Item* item(new Item(List,Cur(),buildDesc(Cur())));

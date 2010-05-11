@@ -50,6 +50,7 @@ using namespace GALILEI;
 // include files for current application
 #include <ui_kviewdoc.h>
 #include <ui_addfdbkdlg.h>
+#include <kgalileicenter.h>
 
 
 //---------------------------------------------------------------------------
@@ -61,6 +62,11 @@ using namespace GALILEI;
 class KViewDoc : public QMdiSubWindow, public Ui_KViewDoc
 {
 	Q_OBJECT
+
+	/**
+	 * Application.
+	 */
+	KGALILEICenter* App;
 
 	/**
 	* Document to describe.
@@ -81,16 +87,18 @@ public:
 
 	/**
 	* Constructor for the view
+	* @param app            Application.
 	* @param doc            Document to represent.
 	*/
-	KViewDoc(GDoc* doc);
+	KViewDoc(KGALILEICenter* app,GDoc* doc);
 
 	/**
 	* Constructor for the view
+	* @param app            Application.
 	* @param file           Document to represent.
 	* @param mime           Mime Type of the document.
 	*/
-	KViewDoc(const RURI& file,const RString& mime);
+	KViewDoc(KGALILEICenter* app,const RURI& file,const RString& mime);
 
 private:
 

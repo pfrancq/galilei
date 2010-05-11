@@ -33,7 +33,6 @@
 #include <rqt.h>
 #include <rdir.h>
 #include <glang.h>
-#include <gsubjects.h>
 #include <gsubject.h>
 #include <gdoc.h>
 #include <ggalileiapp.h>
@@ -47,6 +46,7 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <kmessagebox.h>
+#include <kapplication.h>
 
 
 //------------------------------------------------------------------------------
@@ -95,15 +95,15 @@ class QImportDocs : public QSessionThread
 	QFillDatabase* Info;
 	GSession* Session;
 public:
-	QImportDocs(QFillDatabase* info);
+	QImportDocs(KGALILEICenter* app,QFillDatabase* info);
 	virtual void DoIt(void);
 	void ParseDir(const RURI& uri,const RString& parent,int depth);
 };
 
 
 //-----------------------------------------------------------------------------
-QImportDocs::QImportDocs(QFillDatabase* info)
-	: Info(info), Session(GALILEIApp->GetSession())
+QImportDocs::QImportDocs(KGALILEICenter* app,QFillDatabase* info)
+	: QSessionThread(app), Info(info), Session(app->getSession())
 {
 }
 
@@ -116,7 +116,7 @@ void QImportDocs::DoIt(void)
 	{
 		RCursor<GSubject> Cur(Session->GetSubjects());
 		for(Cur.Start();!Cur.End();Cur.Next())
-			GALILEIApp->GetSession()->GetStorage()->SaveSubject(Cur());
+			App->getSession()->GetStorage()->SaveSubject(Cur());
 	}
 }
 
@@ -149,7 +149,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 					cat=parent+"/"+cat;
 				}
 				if(depth<=Info->Depth->value())
-					Session->InsertSubject(Subject,new GSubject(Session->GetNbSubjects()+1,cat,true));
+					Session->Insert(Subject,new GSubject(Session,Session->GetNbObjects(otSubject)+1,cat,true));
 				else
 					cat=parent;
 			}
@@ -165,13 +165,13 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 				Parent->setLabelText(ToQString(uri.GetPath()));
 			}
 			// Must be a normal document
-			GDoc* doc(new GDoc(Files()->GetURI(),Files()->GetURI()(),Info->Lang,Info->DefaultMIME));
-			GALILEIApp->GetSession()->InsertDoc(doc);
+			GDoc* doc(new GDoc(Session,Files()->GetURI(),Files()->GetURI()(),Info->Lang,Info->DefaultMIME));
+			App->getSession()->Insert(doc);
 			if(Info->Categorized)
 			{
 				GSubject* Subject(Session->GetSubject(parent));
 				if(Subject)
-					GALILEIApp->GetSession()->Insert(doc,Subject->GetId(),cNoRef);
+					App->getSession()->Insert(doc,Subject->GetId(),cNoRef);
 			}
 		}
 	}
@@ -186,8 +186,8 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-QFillDatabase::QFillDatabase(QWidget* parent)
-	: KDialog(parent), Ui_QFillDatabase()
+QFillDatabase::QFillDatabase(KGALILEICenter* parent)
+	: KDialog(parent), Ui_QFillDatabase(), App(parent)
 {
 	setCaption("Fill Database");
 	QWidget* widget=new QWidget(this);
@@ -231,8 +231,8 @@ void QFillDatabase::run(void)
 			Lang=theLangs.GetPtr(Language->currentText())->Lang;
 		DefaultMIME=FromQString(DefaultMIMEType->text());
 		Categorized=Topics->isChecked();
-		QSessionProgressDlg Dlg(this,"Fill Database");
-		Dlg.Run(new QImportDocs(this));
+		QSessionProgressDlg Dlg(App,"Fill Database");
+		Dlg.Run(new QImportDocs(App,this));
 	}
 }
 

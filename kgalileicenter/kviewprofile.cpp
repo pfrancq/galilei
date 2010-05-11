@@ -36,10 +36,14 @@
 
 
 //-----------------------------------------------------------------------------
+// include files for Qt/KDE
+#include <kapplication.h>
+
+
+//-----------------------------------------------------------------------------
 // include files for current application
 #include <kviewprofile.h>
 #include <qsessionprogress.h>
-#include <kgalileicenter.h>
 
 
 
@@ -50,8 +54,8 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewProfile::KViewProfile(GProfile* profile)
-	: QMdiSubWindow(), Ui_KViewProfile(), Profile(profile)
+KViewProfile::KViewProfile(KGALILEICenter* app, GProfile* profile)
+	: QMdiSubWindow(), Ui_KViewProfile(), Profile(profile), App(app)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -59,10 +63,10 @@ KViewProfile::KViewProfile(GProfile* profile)
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(profile->GetName())+" ("+ToQString(profile->GetUser()->GetFullName())+")");
 	Vars->Set(Profile);
-	Desc->Set(Profile->GetVector());
+	Desc->Set(App->getSession(),Profile->GetVector());
 	Assessments->Set(QGObjectsList::Assessments,Profile);
 	Links->Set(QGObjectsList::Links,Profile);
-	GCommunity* Group(GSession::Get()->GetCommunity(Profile->GetGroupId(),true,true));
+	GCommunity* Group(App->getSession()->GetCommunity(Profile->GetGroupId(),true,true));
 	if(Group)
 		Community->Set(QGObjectsList::Profiles,Group);
 	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(profilesChanged()),this,SLOT(updateProfile()));
@@ -75,14 +79,14 @@ KViewProfile::KViewProfile(GProfile* profile)
 void KViewProfile::updateProfile(void)
 {
 	Vars->Set(Profile);
-	Desc->Set(Profile->GetVector());
+	Desc->Set(App->getSession(),Profile->GetVector());
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewProfile::updateCommunity(void)
 {
-	GCommunity* Group(GSession::Get()->GetCommunity(Profile->GetGroupId(),true,true));
+	GCommunity* Group(App->getSession()->GetCommunity(Profile->GetGroupId(),true,true));
 	if(Group)
 		Community->Set(QGObjectsList::Profiles,Group);
 }
@@ -91,8 +95,8 @@ void KViewProfile::updateCommunity(void)
 //-----------------------------------------------------------------------------
 void KViewProfile::ComputeProfile(void)
 {
-	QSessionProgressDlg Dlg(this,"Compute Profile");
-	QComputeProfile* Task(new QComputeProfile(Profile));
+	QSessionProgressDlg Dlg(App,"Compute Profile");
+	QComputeProfile* Task(new QComputeProfile(App,Profile));
 	connect(Task,SIGNAL(finish()),this,SLOT(updateProfile()));
 	Dlg.Run(Task);
 }

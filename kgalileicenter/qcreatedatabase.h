@@ -35,6 +35,7 @@
 //------------------------------------------------------------------------------
 // include files for current project
 #include <ui_qcreatedatabase.h>
+#include <kgalileicenter.h>
 
 
 //------------------------------------------------------------------------------
@@ -70,13 +71,18 @@ class QCreateDatabase : private KDialog, private Ui_QCreateDatabase
 	 */
 	RString DbSchema;
 
+	/**
+	 * Application.
+	 */
+	KGALILEICenter* App;
+
 public:
 
 	/**
 	 * Constructor.
 	 * @param parent         Parent widget.
 	 */
-	QCreateDatabase(QWidget* parent);
+	QCreateDatabase(KGALILEICenter* parent);
 
 	/**
 	 * Show the dialog box. If the user clicks on the 'OK' button, the database

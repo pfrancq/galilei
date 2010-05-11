@@ -31,6 +31,7 @@
 // includes files for Qt/KDE
 #include <kfiledialog.h>
 #include <kmessagebox.h>
+#include <kapplication.h>
 
 
 //-----------------------------------------------------------------------------
@@ -68,7 +69,7 @@ template<class cGroup>
 	void KViewGroup<cGroup>::update(QGObjectsList::oType type)
 {
 	Vars->Set(Obj);
-	Desc->Set(Obj->GetVector());
+	Desc->Set(KGALILEICenter::App->getSession(),Obj->GetVector());
 	Objects->Set(type,Obj);
 }
 

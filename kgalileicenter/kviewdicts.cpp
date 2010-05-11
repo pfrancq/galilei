@@ -43,6 +43,7 @@
 // include files for Qt/KDE
 #include <QtGui/QInputDialog>
 #include <kmessagebox.h>
+#include <kapplication.h>
 
 
 //-----------------------------------------------------------------------------
@@ -111,11 +112,11 @@ private:
 	QTreeWidget* Dicts;
 
 public:
-	QLoadDicts(QTreeWidget* dicts) : Dicts(dicts) {}
+	QLoadDicts(KGALILEICenter* app,QTreeWidget* dicts) : QSessionThread(app), Dicts(dicts) {}
 	virtual void DoIt(void)
 	{
 		// Go trough each language and create a Item.
-		RCursor<GConceptType> Types(GALILEIApp->GetSession()->GetConceptTypes());
+		RCursor<GConceptType> Types(App->getSession()->GetConceptTypes());
 		for(Types.Start();!Types.End();Types.Next())
 			new QGObject(Dicts,Types());
 	}
@@ -130,8 +131,8 @@ public:
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-KViewDicts::KViewDicts(void)
-	: QMdiSubWindow(), Ui_KViewDicts(), CurDict(0)
+KViewDicts::KViewDicts(KGALILEICenter* app)
+	: QMdiSubWindow(), Ui_KViewDicts(), CurDict(0), App(app)
 {
 	QWidget* ptr=new QWidget();
 	setupUi(ptr);
@@ -150,8 +151,8 @@ KViewDicts::KViewDicts(void)
 //-----------------------------------------------------------------------------
 void KViewDicts::create(void)
 {
-	QSessionProgressDlg Dlg(this,"Load Dictionaries",true);
-	QLoadDicts* Task(new QLoadDicts(Dicts));
+	QSessionProgressDlg Dlg(App,"Load Dictionaries",true);
+	QLoadDicts* Task(new QLoadDicts(App,Dicts));
 	connect(Task,SIGNAL(finish()),this,SLOT(update()));
 	Dlg.Run(Task);
 }
@@ -228,8 +229,8 @@ void KViewDicts::newConcept(void)
 	QString text(QInputDialog::getText(this,"New concept", "Enter the name of the concept:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!text.isEmpty())
 	{
-		GConcept concept(FromQString(text),CurDict);
-		GConcept* ptr=GALILEIApp->GetSession()->InsertConcept(&concept);
+		GConcept concept(App->getSession(),FromQString(text),CurDict);
+		GConcept* ptr=App->getSession()->Insert(&concept);
 		QString w(QString::number(ptr->GetId()));
 		while(w.length()<10)
 			w.prepend(' ');
@@ -247,7 +248,7 @@ void KViewDicts::delConcept(void)
 	if(KMessageBox::warningYesNo(this,"Do you want to delete the concept "+BuildConcept(concept)+"?","Warning")==KMessageBox::No)
 		return;
 	delete ptr;
-	GALILEIApp->GetSession()->DeleteConcept(concept);
+	App->getSession()->Delete(concept);
 }
 
 

@@ -97,16 +97,16 @@ class KGALILEICenter : public KXmlGuiWindow, public GSlot, public GGALILEIApp
 	KAction* aSessionConnect;
 
 	/**
-	 * Menu for the session options.
-	 */
-	KAction* aSessionOptions;
-
-	/**
 	 * All available actions once a session is connected.
 	 */
 	QList<KAction*> Actions;
 
 public:
+
+	/**
+	 * The application.
+	 */
+	static KGALILEICenter* App;
 
 	/**
 	* Construct the KGALILEICenterApp
@@ -128,7 +128,7 @@ public:
 	/**
 	* Returns a pointer to the current session.
 	*/
-	GSession* getSession(void) const {return(Session);}
+	GSession* getSession(void) const {return(Doc);}
 
 private:
 
@@ -295,11 +295,6 @@ private slots:
 	void docsAnalyze(void);
 
 	/**
-	 * Post-analyze all the documents.
-	 */
-	void postDocsAnalyze(void);
-
-	/**
 	 * Create for each document a corresponding file containing the keywords in
 	 * order to index them with ht://Dig.
 	 */
@@ -329,11 +324,6 @@ private slots:
 	 * Compute the topics.
 	 */
 	void topicsCalc(void);
-
-	/**
-	 * Do a post topics.
-	 */
-	void postTopicsCalc(void);
 
 	/**
 	 * Show the topics.
@@ -368,11 +358,6 @@ private slots:
 	void profilesCalc(void);
 
 	/**
-	 * Perform post-profiles methods.
-	 */
-	void postProfilesCalc(void);
-
-	/**
 	 * Compute the current profile.
 	 */
 	void profileCalc(void);
@@ -397,11 +382,6 @@ private slots:
 	 * Compute the communities.
 	*/
 	void communitiesCalc(void);
-
-	/**
-	 * Perform post-communities methods.
-	 */
-	void postCommunities(void);
 
 	/**
 	 * Create ideal topics.
