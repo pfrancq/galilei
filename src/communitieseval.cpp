@@ -49,7 +49,6 @@ public:
 	CommunitiesEval(GSession* session,GPlugInFactory* fac);
 	virtual R::RCString GetClassName(void) const {return("CommunitiesEval");}
 	void Handle(const R::RNotification& notification);
-	static void CreateParams(GPlugInFactory*) {}
 	virtual RCursor<GCommunity> GetClusters(void) {return(Session->GetCommunities());}
 };
 

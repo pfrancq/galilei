@@ -43,7 +43,6 @@ using namespace R;
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gmeasure.h>
-#include <gsubjects.h>
 #include <gsubject.h>
 using namespace GALILEI;
 using namespace std;

@@ -51,7 +51,6 @@ public:
 	virtual bool IsObjAloneInIdealGroup(GDoc* obj);
 	virtual void ComputeBestLocalRecallPrecision(RCursor<GDoc>& objs,ClusterScore<GTopic>* grp,size_t ingroup);
 	void Handle(const R::RNotification& notification);
-	static void CreateParams(GPlugInFactory*) {}
 	virtual RCursor<GTopic> GetClusters(void) {return(Session->GetTopics());}
 };
 
@@ -67,7 +66,7 @@ TopicsEval::TopicsEval(GSession* session,GPlugInFactory* fac)
 //------------------------------------------------------------------------------
 bool TopicsEval::IsObjAloneInIdealGroup(GDoc* obj)
 {
-	RCursor<GSubject> ThGrp(Session->GetIdealGroups(obj));
+	RCursor<GSubject> ThGrp(Session->GetSubjects(obj));
 	for(ThGrp.Start();!ThGrp.End();ThGrp.Next())
 		if(ThGrp()->GetNbObjs(otDoc)==1)
 			return(true);
@@ -81,7 +80,7 @@ void TopicsEval::ComputeBestLocalRecallPrecision(RCursor<GDoc>& objs,ClusterScor
 	for(objs.Start();!objs.End();objs.Next())
 	{
 		double bestrecall(0.0),bestprecision(0.0),bestFMeasure(0.0);
-		RCursor<GSubject> ThGrp(Session->GetIdealGroups(objs()));
+		RCursor<GSubject> ThGrp(Session->GetSubjects(objs()));
 		for(ThGrp.Start();!ThGrp.End();ThGrp.Next())
 		{
 			double recall(0.0),precision(0.0);

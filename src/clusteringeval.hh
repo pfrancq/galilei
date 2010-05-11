@@ -70,7 +70,7 @@ template<class cGroup,class cObj>
 	double* res(va_arg(ap,double*));
 	va_end(ap);
 
-	cGroup* Cluster(static_cast<cGroup*>(Session->GetElement(GroupType,id)));
+	cGroup* Cluster(static_cast<cGroup*>(Session->GetObject(GroupType,id)));
 	if(!Cluster)
 		ThrowGException("'"+RString::Number(id)+"' is not a valid "+GetObjType(GroupType,false,false));
 	ClusterScore<cGroup>* g(ClustersScore.GetPtr(Cluster));
@@ -140,7 +140,7 @@ template<class cGroup,class cObj>
 template<class cGroup,class cObj>
 	bool ClusteringEval<cGroup,cObj>::IsObjAloneInIdealGroup(cObj* obj)
 {
-	const GSubject* ThGrp(Session->GetIdealGroup(obj));
+	const GSubject* ThGrp(Session->GetSubject(obj));
 	if(!ThGrp)
 		throw GException("ClusteringEval<cGroup,cObj>::IsObjAloneInIdealGroup(cObj*): ThGrp cannot be null");
 	return(ThGrp->GetNbObjs(ObjType)==1);
@@ -153,7 +153,7 @@ template<class cGroup,class cObj>
 {
 	for(objs.Start();!objs.End();objs.Next())
 	{
-		const GSubject* ThGrp(Session->GetIdealGroup(objs()));
+		const GSubject* ThGrp(Session->GetSubject(objs()));
 		if(!ThGrp)
 			throw GException("ClusteringEval<cGroup,cObj>::ComputeBestLocalRecallPrecision(cObj*,ClusterScore<cGroup>*,size_t): ThGrp cannot be null");
 		size_t InThGrp(ThGrp->GetNbObjs(ObjType));
@@ -240,7 +240,7 @@ template<class cGroup,class cObj>
 	double* ptr;
 
 	// If only one element and one group -> Adjusted Rand Index=1.
-	if((Session->GetNbElements(ObjType)==1)&&(Session->GetNbElements(GroupType)==1))
+	if((Session->GetNbObjects(ObjType)==1)&&(Session->GetNbObjects(GroupType)==1))
 	{
 		AdjustedRandIndex=1.0;
 		return;
@@ -252,7 +252,7 @@ template<class cGroup,class cObj>
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
 	NbRows=Session->GetNbIdealGroups(ObjType);
-	NbCols=Session->GetNbElements(GroupType);
+	NbCols=Session->GetNbObjects(GroupType);
 	if((!NbRows)||(!NbCols))
 		return;
 	if(NbRows>MaxRows) MaxRows=NbRows;
@@ -289,7 +289,7 @@ template<class cGroup,class cObj>
 				continue;
 			VectorRows[row]++;
 			NbTot++;
-			GroupComputed=static_cast<cGroup*>(Session->GetElement(GroupType,Prof()->GetGroupId()));
+			GroupComputed=static_cast<cGroup*>(Session->GetObject(GroupType,Prof()->GetGroupId()));
 			if(!GroupComputed)
 				continue;
 			position=ClustersId.GetPtr(GroupComputed->GetId())->position;
@@ -337,7 +337,7 @@ template<class cGroup,class cObj>
 	bool Neg(false);          // Correct negative similarities (a priori, no negative similarities)
 
 	// Init
-	R::RContainer<cObj,false,false> Centers(Session->GetNbElements(GroupType));
+	R::RContainer<cObj,false,false> Centers(Session->GetNbObjects(GroupType));
 	J=0;
 	switch(ObjType)
 	{

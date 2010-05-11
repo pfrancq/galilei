@@ -43,7 +43,6 @@ using namespace R;
 #include <gmeasure.h>
 #include <gclass.h>
 #include <gsubject.h>
-#include <gsubjects.h>
 #include <gsession.h>
 using namespace GALILEI;
 using namespace std;
@@ -110,7 +109,6 @@ public:
 	virtual void Info(size_t measure,...);
 
 	void ComputeRankTree(void);
-	static void CreateParams(GPlugInFactory*) {}
 };
 
 
