@@ -1,0 +1,5 @@
+IF(KDE4_FOUND)
+    SET(kmeans_profiles_AVAILABLE_FRONTENDS kde)
+    SET(kmeans_profiles_kde_DEPENDENCY rcorekde ${KDE4_KDEUI_LIBS} ${KDE4_KIO_LIBS})
+    ADD_FRONTEND_SOURCE_FILE(kmeans_profiles_frontend kmeans_profiles kde kmeans_profiles_INCLUDES)
+ENDIF(KDE4_FOUND)
