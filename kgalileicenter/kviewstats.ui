@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>KViewStats</class>
- <widget class="QWidget" name="KViewStats" >
-  <property name="geometry" >
+ <widget class="QWidget" name="KViewStats">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,22 +10,18 @@
     <height>300</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QTreeWidget" name="Results" >
-     <column>
-      <property name="text" >
-       <string>Element</string>
-      </property>
-     </column>
-     <column>
-      <property name="text" >
-       <string>Value</string>
-      </property>
-     </column>
+    <widget class="QPlainTextEdit" name="Results">
+     <property name="documentTitle">
+      <string/>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
     </widget>
    </item>
   </layout>

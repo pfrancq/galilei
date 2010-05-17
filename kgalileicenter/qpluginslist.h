@@ -71,7 +71,6 @@ public:
 		GroupDocs,                  /** Document Clustering Methods.*/
 		CommunityCalcs,             /** Community Computing Methods.*/
 		TopicCalcs,                 /** Topic Computing Methods.*/
-		StatsCalcs,                 /** Statistics.*/
 		LinkCalcs,                  /** Link Analysis Methods.*/
 		DocAnalyzes,                /** XML Document Analyzers.*/
 		Engines,                    /** Search Engines.*/

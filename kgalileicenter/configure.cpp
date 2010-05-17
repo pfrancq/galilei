@@ -71,6 +71,7 @@ static int ProfilesTabIdx;
 static int CommunitiesTabIdx;
 static int SearchTabIdx;
 static int MeasuresCatIdx;
+static int ToolsCatIdx;
 
 
 
@@ -201,6 +202,7 @@ void Configure::exec(void)
 	SearchTab->setCurrentIndex(SearchTabIdx);
 	SimulationTab->setCurrentIndex(SimulationTabIdx);
 	MeasuresCats->setCurrentRow(MeasuresCatIdx);
+	ToolsCats->setCurrentRow(ToolsCatIdx);
 
 	if(KDialog::exec())
 	{
@@ -219,6 +221,7 @@ void Configure::exec(void)
 	SearchTabIdx=SearchTab->currentIndex();
 	SimulationTabIdx=SimulationTab->currentIndex();
 	MeasuresCatIdx=MeasuresCats->currentRow();
+	ToolsCatIdx=ToolsCats->currentRow();
 }
 
 
@@ -236,6 +239,7 @@ void Configure::readOptions(void)
 	SearchTabIdx=General.readEntry("SearchTabIdx",0);
 	SimulationTabIdx=General.readEntry("SimulationTabIdx",0);
 	MeasuresCatIdx=General.readEntry("MeasuresCatIdx",0);
+	ToolsCatIdx=General.readEntry("ToolsCatIdx",0);
 }
 
 
@@ -253,6 +257,7 @@ void Configure::saveOptions(void)
 	General.writeEntry("SearchTabIdx",SearchTabIdx);
 	General.writeEntry("SimulationTabIdx",SimulationTabIdx);
 	General.writeEntry("MeasuresCatIdx",MeasuresCatIdx);
+	General.writeEntry("ToolsCatIdx",ToolsCatIdx);
 }
 
 
@@ -444,14 +449,12 @@ void Configure::initPlugIns(void)
 	GroupDocs->init(QPlugInsList::GroupDocs);
 	CommunityCalcs->init(QPlugInsList::CommunityCalcs);
 	TopicCalcs->init(QPlugInsList::TopicCalcs);
-	StatsCalcs->init(QPlugInsList::StatsCalcs);
 	LinkCalcs->init(QPlugInsList::LinkCalcs);
 	DocAnalyzes->init(QPlugInsList::DocAnalyzes);
 	Engines->init(QPlugInsList::Engines);
 	MetaEngines->init(QPlugInsList::MetaEngines);
 	ComputeSugs->init(QPlugInsList::ComputeSugs);
 	ComputeTrust->init(QPlugInsList::ComputeTrust);
-	Tools->init(QPlugInsList::Tools);
 
 	// Init Measures
 	GPlugInManager* Manager(GALILEIApp->GetManager("Measures"));
@@ -468,6 +471,22 @@ void Configure::initPlugIns(void)
 		ptr->init(QPlugInsList::Measures,Cur()->GetName());
 	}
 	MeasuresCats->setCurrentRow(0);
+
+	// Init Tools
+	GPlugInManager* Manager2(GALILEIApp->GetManager("Tools"));
+	RCursor<GPlugInList> Cur2(Manager2->GetPlugInLists());
+	int row2;
+	Tools->removeWidget(Tools->widget(0));
+	for(Cur2.Start(),row2=0;!Cur2.End();Cur2.Next(),row2++)
+	{
+		QListWidgetItem* item=new QListWidgetItem();
+		item->setText(ToQString(Cur2()->GetName()));
+		ToolsCats->insertItem(row,item);
+		QPlugInsList* ptr=new QPlugInsList(this);
+		Tools->insertWidget(row,ptr);
+		ptr->init(QPlugInsList::Tools,Cur2()->GetName());
+	}
+	ToolsCats->setCurrentRow(0);
 }
 
 
@@ -482,7 +501,6 @@ void Configure::applyPlugIns(void)
 	GroupDocs->apply(App->getSession());
 	CommunityCalcs->apply(App->getSession());
 	TopicCalcs->apply(App->getSession());
-	StatsCalcs->apply(App->getSession());
 	LinkCalcs->apply(App->getSession());
 	DocAnalyzes->apply(App->getSession());
 	Engines->apply(App->getSession());
@@ -490,11 +508,14 @@ void Configure::applyPlugIns(void)
 	Langs->apply(App->getSession());
 	ComputeSugs->apply(App->getSession());
 	ComputeTrust->apply(App->getSession());
-	Tools->apply(App->getSession());
 
 	// Apply Measures
 	for(int row=0;row<Measures->count();row++)
 		dynamic_cast<QPlugInsList*>(Measures->widget(row))->apply(App->getSession());
+
+	// Apply Tools
+	for(int row=0;row<Tools->count();row++)
+		dynamic_cast<QPlugInsList*>(Tools->widget(row))->apply(App->getSession());
 
 	// Sort POST_X Managers;
 	GALILEIApp->GetManager("ComputeSugs")->ReOrder();

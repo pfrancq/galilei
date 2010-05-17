@@ -1271,7 +1271,7 @@ p, li { white-space: pre-wrap; }
           <item>
            <widget class="QTabWidget" name="PlugInsTab">
             <property name="currentIndex">
-             <number>0</number>
+             <number>6</number>
             </property>
             <widget class="QWidget" name="TabPage_2">
              <attribute name="title">
@@ -1349,7 +1349,7 @@ p, li { white-space: pre-wrap; }
             </widget>
             <widget class="QWidget" name="tab_7">
              <attribute name="title">
-              <string>Linking</string>
+              <string>Links</string>
              </attribute>
              <layout class="QVBoxLayout" name="_47">
               <item>
@@ -1357,26 +1357,26 @@ p, li { white-space: pre-wrap; }
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="TabPage_8">
-             <attribute name="title">
-              <string>Profiles</string>
-             </attribute>
-             <layout class="QVBoxLayout" name="verticalLayout_19">
-              <item>
-               <widget class="QPlugInsList" name="ProfileCalcs" native="true"/>
-              </item>
-             </layout>
-            </widget>
             <widget class="QWidget" name="TabPage_9">
              <attribute name="title">
-              <string>Communities</string>
+              <string>Profiles</string>
              </attribute>
              <layout class="QVBoxLayout" name="_58">
               <item>
                <widget class="QTabWidget" name="CommunitiesTab">
                 <property name="currentIndex">
-                 <number>1</number>
+                 <number>0</number>
                 </property>
+                <widget class="QWidget" name="tab_8">
+                 <attribute name="title">
+                  <string>Profiles Computing</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_16">
+                  <item>
+                   <widget class="QPlugInsList" name="ProfileCalcs" native="true"/>
+                  </item>
+                 </layout>
+                </widget>
                 <widget class="QWidget" name="tab_10">
                  <attribute name="title">
                   <string>Profiles Grouping</string>
@@ -1475,16 +1475,6 @@ p, li { white-space: pre-wrap; }
               </item>
              </layout>
             </widget>
-            <widget class="QWidget" name="TabPage_13">
-             <attribute name="title">
-              <string>Statistics</string>
-             </attribute>
-             <layout class="QVBoxLayout" name="_80">
-              <item>
-               <widget class="QPlugInsList" name="StatsCalcs" native="true"/>
-              </item>
-             </layout>
-            </widget>
             <widget class="QWidget" name="tab_18">
              <attribute name="title">
               <string>Trust</string>
@@ -1511,7 +1501,19 @@ p, li { white-space: pre-wrap; }
              </attribute>
              <layout class="QVBoxLayout" name="verticalLayout_14">
               <item>
-               <widget class="QPlugInsList" name="Tools" native="true"/>
+               <layout class="QHBoxLayout" name="horizontalLayout_7">
+                <item>
+                 <widget class="QListWidget" name="ToolsCats"/>
+                </item>
+                <item>
+                 <widget class="QStackedWidget" name="Tools">
+                  <property name="currentIndex">
+                   <number>0</number>
+                  </property>
+                  <widget class="QWidget" name="page"/>
+                 </widget>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
@@ -1552,34 +1554,18 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections>
   <connection>
-   <sender>MeasuresCats</sender>
-   <signal>currentRowChanged(int)</signal>
-   <receiver>Measures</receiver>
-   <slot>setCurrentIndex(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>81</x>
-     <y>128</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>101</x>
-     <y>128</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>ManualSubjects</sender>
    <signal>toggled(bool)</signal>
    <receiver>groupBox9</receiver>
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>91</x>
-     <y>129</y>
+     <x>112</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
-     <x>36</x>
-     <y>321</y>
+     <x>57</x>
+     <y>510</y>
     </hint>
    </hints>
   </connection>
@@ -1590,12 +1576,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>125</x>
-     <y>85</y>
+     <x>111</x>
+     <y>73</y>
     </hint>
     <hint type="destinationlabel">
-     <x>151</x>
-     <y>107</y>
+     <x>111</x>
+     <y>78</y>
     </hint>
    </hints>
   </connection>
@@ -1606,8 +1592,8 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>99</x>
-     <y>129</y>
+     <x>120</x>
+     <y>165</y>
     </hint>
     <hint type="destinationlabel">
      <x>212</x>
@@ -1622,12 +1608,12 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>106</x>
-     <y>76</y>
+     <x>111</x>
+     <y>73</y>
     </hint>
     <hint type="destinationlabel">
-     <x>114</x>
-     <y>403</y>
+     <x>111</x>
+     <y>89</y>
     </hint>
    </hints>
   </connection>
@@ -1638,12 +1624,44 @@ p, li { white-space: pre-wrap; }
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>84</x>
-     <y>80</y>
+     <x>96</x>
+     <y>73</y>
     </hint>
     <hint type="destinationlabel">
-     <x>34</x>
-     <y>274</y>
+     <x>46</x>
+     <y>84</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>ToolsCats</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>Tools</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>192</x>
+     <y>192</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>547</x>
+     <y>278</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>MeasuresCats</sender>
+   <signal>currentRowChanged(int)</signal>
+   <receiver>Measures</receiver>
+   <slot>setCurrentIndex(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>81</x>
+     <y>128</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>521</x>
+     <y>229</y>
     </hint>
    </hints>
   </connection>

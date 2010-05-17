@@ -67,21 +67,10 @@ public:
 	*/
 	KViewStats(void);
 
-protected:
-
 	/**
-	* Construct a tag in the list view.
-	* @param t              Tag to construct.
-	* @param parent         Parent that holds the tag.
-	*/
-	void ConstructTag(RXMLTag* t,QTreeWidgetItem* parent);
-
-	/**
-	* Compute the statistics.
-	*/
+	 * Compute the statistics.
+	 */
 	void ComputeStats(void);
-
-public:
 
 	/**
 	* Destruct the view.

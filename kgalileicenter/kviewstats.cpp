@@ -30,17 +30,17 @@
 
 //-----------------------------------------------------------------------------
 // include file for R Project
-#include <rxmlstruct.h>
 #include <rstring.h>
 #include <rtextfile.h>
 #include <rqt.h>
 using namespace R;
+using namespace std;
 
 
 //-----------------------------------------------------------------------------
 // include file for GALILEI
 #include <gsession.h>
-#include <gstatscalc.h>
+#include <gtool.h>
 #include <ggalileiapp.h>
 using namespace GALILEI;
 
@@ -81,28 +81,10 @@ KViewStats::KViewStats(void)
 
 
 //-----------------------------------------------------------------------------
-void KViewStats::ConstructTag(RXMLTag* t,QTreeWidgetItem* parent)
-{
-	QTreeWidgetItem* ptr;
-	R::RCursor<RXMLTag> Cur(t->GetNodes());
- 	for(Cur.Start();!Cur.End();Cur.Next())
- 	{
-		ptr=new QTreeWidgetItem(parent,QStringList()<<ToQString(Cur()->GetName())<<ToQString(Cur()->GetAttrValue("Value")));
- 		if(!Cur()->GetContent().IsEmpty())
- 			ptr=new QTreeWidgetItem(parent,QStringList()<<ToQString(Cur()->GetContent())<<"");
- 		ConstructTag(Cur(),ptr);
- 	}
-}
-
-
-//-----------------------------------------------------------------------------
 void KViewStats::ComputeStats(void)
 {
-	RXMLStruct xml;
-	RXMLTag* Root;
-
 	int i;
-	GPlugInManager* Mng=GALILEIApp->GetManager("StatsCalc");
+	GPlugInManager* Mng=GALILEIApp->GetManager("Tools");
 
 	if(!Mng)
 	{
@@ -110,30 +92,48 @@ void KViewStats::ComputeStats(void)
 		return;
 	}
 	KProgressDialog Dlg(this,"Compute Statistics");
-	Dlg.progressBar()->setMaximum(static_cast<int>(Mng->GetNbPlugIns())+1);
 
-	// Create the root node
-	Root=new RXMLTag("Statistics");
-	xml.AddTag(0,Root);
+	// Look for the tools that are similarities
+	RContainer<GTool,false,false> Tools(10);
+	RCursor<GPlugInList> Cur(Mng->GetPlugInLists());
+	for(Cur.Start();!Cur.End();Cur.Next())
+	{
+		if(Cur()->GetName().FindStr("Statistics")==-1)
+			continue;
+
+		GTool* ptr(Mng->GetCurrentPlugIn<GTool>(Cur()->GetName(),0));
+		if(ptr)
+			Tools.InsertPtr(ptr);
+	}
+
+	// Set the progress bar correctly
+	Dlg.progressBar()->setMaximum(static_cast<int>(Tools.GetNb()+1));
 
 	// Compute the statistics
 	Dlg.setMinimumDuration(0);
 	Dlg.progressBar()->setValue(0);
 	KApplication::kApplication()->processEvents();
-	R::RCastCursor<GPlugIn,GStatsCalc> Cur(Mng->GetPlugIns<GStatsCalc>());
-	for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
+	R::RCursor<GTool> Tool(Tools);
+	for(Tool.Start(),i=1;!Tool.End();Tool.Next(),i++)
 	{
 		Dlg.progressBar()->setValue(i);
-		Dlg.setLabelText(ToQString(Cur()->GetName()));
+		Dlg.setLabelText(ToQString(Tool()->GetName()));
 		KApplication::kApplication()->processEvents();
 		if(Dlg.wasCancelled())
 			break;
-		Cur()->Compute(&xml,*Root);
+		Tool()->Run(0);
+
+		// Add the results to the text
+		RParamValue* FileName(Tool()->FindParam<RParamValue>("Results"));
+		if(!FileName)
+			continue;
+		RTextFile File(FileName->Get(),"utf-8");
+		File.Open(RIO::Read);
+		while(!File.End())
+			Results->appendPlainText(ToQString(File.GetLine(false)));
+		Results->appendPlainText("\n\n");
 	}
 	Dlg.progressBar()->setValue(i);
-
-	// Show the results
-	ConstructTag(Root,new QTreeWidgetItem(Results,QStringList()<<"Statistics"<<""));
 }
 
 

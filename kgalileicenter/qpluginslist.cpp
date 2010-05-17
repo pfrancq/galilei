@@ -47,7 +47,6 @@
 #include <ggroupdocs.h>
 #include <glang.h>
 #include <gprofilecalc.h>
-#include <gstatscalc.h>
 #include <gstorage.h>
 #include <gmeasure.h>
 #include <gtool.h>
@@ -202,13 +201,9 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 			setObjectName("TopicCalcs");
 			init("TopicCalc",true,true,false);
 			break;
-		case StatsCalcs:
-			setObjectName("StatsCalcs");
-			init("StatsCalc",false,true,false);
-			break;
 		case Tools:
-			setObjectName("Tools");
-			init("Tool",false,true,false);
+			setObjectName(ToQString(Cat));
+			init("Tools",true,true,false,Cat);
 			break;
 		case LinkCalcs:
 			setObjectName("LinkCalcs");
@@ -296,6 +291,9 @@ void QPlugInsList::apply(GSession* session)
 				break;
 			case Measures:
 				GALILEIApp->SetCurrentPlugIn("Measures",FromQString(Current->currentText()),Cat,false);
+				break;
+			case Tools:
+				GALILEIApp->SetCurrentPlugIn("Tools",FromQString(Current->currentText()),Cat,false);
 				break;
 			default:
 				std::cout<<objectName().toLatin1().data()<<" is not treated"<<std::endl;
