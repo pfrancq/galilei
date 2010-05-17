@@ -37,7 +37,6 @@
 // include files for R project
 #include <robject.h>
 #include <rsparsevector.h>
-#include <gcakmeans.h>
 #include <rparam.h>
 
 
@@ -62,30 +61,10 @@
  * @author Pascal Francq
  * @short Generic GCA PlugIn
  */
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
 	class GCAPlugIn : public cPlugin, R::RObject, public RParamsSC
 {
 protected:
-
-	/**
-	 * Current clustering method
-	 */
-	char ClusteringMethod;
-
-	/**
-	 * Number of clusters handled by the k-Means.
-	 */
-	size_t NbClusters;
-
-	/**
-	* Maximal Number of k-Means.
-	*/
-	size_t MaxKMeans;
-
-	/**
-	* Convergence ratio between two k-Means iterations.
-	*/
-	double Convergence;
 
 	/**
 	 * Type of objects.
@@ -161,19 +140,9 @@ protected:
 	virtual bool IsValid(cGroup* grp);
 
 	/**
-	 * Do the GCA.
-	 */
-	void DoGCA(GSession* session,const R::RString& mes,R::RCursor<cObj> Objs);
-
-	/**
-	 * Do the k-Means.
-	 */
-	void DokMeans(GSession* session,R::RCursor<cGroup> groups,R::RCursor<cObj> Objs);
-
-	/**
 	* Make the grouping.
 	*/
-	void RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups,R::RCursor<cObj> Objs);
+	void RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cObj> Objs);
 
 	/**
 	 * Catch a best chromosome notification.
@@ -191,11 +160,6 @@ public:
 	* Create the parameters.
 	*/
 	virtual void CreateConfig(void);
-
-	/**
-	* Destruct the GCA.
-	*/
-	virtual ~GCAPlugIn(void);
 };
 
 

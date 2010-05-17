@@ -50,7 +50,7 @@ using namespace R;
 GAConfigDlg::GAConfigDlg(void)
 {
 	setCaption("Configure GCA Plug-In");
-	QTabWidget* widget=new QTabWidget(this);
+	QWidget* widget=new QWidget(this);
 	setupUi(widget);
 	setMainWidget(widget);
 	setButtons(KDialog::Cancel|KDialog::Apply);
@@ -63,16 +63,12 @@ GAConfigDlg::GAConfigDlg(void)
 bool GAConfigDlg::Configure(GPlugIn* fac)
 {
 	//  Init dialog box
-	ClusteringMethod->setCurrentIndex(ClusteringMethod->findText(ToQString(fac->FindParam<RParamValue>("Clustering Method")->Get())));
-	NbClusters->setValue(fac->FindParam<RParamValue>("NbClusters")->GetInt());
 	PopSize->setValue(fac->FindParam<RParamValue>("Population Size")->GetInt());
 	MaxGen->setValue(fac->FindParam<RParamValue>("Max Gen")->GetInt());
 	Step->setChecked(fac->FindParam<RParamValue>("Step")->GetBool());
 	StepGen->setValue(fac->FindParam<RParamValue>("Step Gen")->GetInt());
 	StepGen->setEnabled(fac->FindParam<RParamValue>("Step")->GetBool());
-	MaxKMeans->setValue(fac->FindParam<RParamValue>("Max kMeans")->GetInt());
 	MinAgreement->setValue(fac->FindParam<RParamValue>("Min Agreement")->GetDouble());
-	Convergence->setValue(fac->FindParam<RParamValue>("Convergence")->GetDouble());
 	MinDisagreement->setValue(fac->FindParam<RParamValue>("Min Disagreement")->GetDouble());
 	Incremental->setChecked(fac->FindParam<RParamValue>("Incremental")->GetBool());
 	InternalRandom->setChecked(fac->FindParam<RParamValue>("InternalRandom")->GetBool());
@@ -94,12 +90,8 @@ bool GAConfigDlg::Configure(GPlugIn* fac)
 	// Execute and if 'OK' -> Apply changes
 	if(exec())
 	{
-		fac->FindParam<RParamValue>("Clustering Method")->Set(FromQString(ClusteringMethod->currentText()));
-		fac->FindParam<RParamValue>("NbClusters")->SetUInt(NbClusters->value());
 		fac->FindParam<RParamValue>("Population Size")->SetUInt(PopSize->value());
 		fac->FindParam<RParamValue>("Max Gen")->SetUInt(MaxGen->value());
-		fac->FindParam<RParamValue>("Max kMeans")->SetUInt(MaxKMeans->value());
-		fac->FindParam<RParamValue>("Convergence")->SetDouble(Convergence->value());
 		fac->FindParam<RParamValue>("Step")->SetBool(Step->isChecked());
 		fac->FindParam<RParamValue>("Step Gen")->SetUInt(StepGen->value());
 		fac->FindParam<RParamValue>("Min Agreement")->SetDouble(MinAgreement->value());

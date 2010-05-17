@@ -37,7 +37,6 @@
 // include files for GCA
 #include <gcaplugin.h>
 #include <gcaplugin.hh>
-#include <gcakmeans.h>
 using namespace GALILEI;
 
 
@@ -49,9 +48,9 @@ using namespace GALILEI;
 * @author Pascal Francq
 * @short GGA for Profiles.
 */
-class GCAGroupProfiles : public GCAPlugIn<GGroupProfiles,GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>
+class GCAGroupProfiles : public GCAPlugIn<GGroupProfiles,GProfile,GCommunity,GCAInstProfile,GCAGroupProfile>
 {
-	using GCAPlugIn<GGroupProfiles,GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>::FindParam;
+	using GCAPlugIn<GGroupProfiles,GProfile,GCommunity,GCAInstProfile,GCAGroupProfile>::FindParam;
 
 public:
 
@@ -61,7 +60,7 @@ public:
 	* @param f              Factory.
 	*/
 	GCAGroupProfiles(GSession* session,GPlugInFactory* fac)
-		: GCAPlugIn<GGroupProfiles,GProfile,GCommunity,GCAInstProfile,GCAGroupProfile,kMeansProfile,CGroupProfile,CGroupsProfile>(session,fac,"Profiles Grouping",otProfile,otCommunity) {}
+		: GCAPlugIn<GGroupProfiles,GProfile,GCommunity,GCAInstProfile,GCAGroupProfile>(session,fac,"Profiles Grouping",otProfile,otCommunity) {}
 
 	/**
 	 * Class name.
@@ -79,21 +78,12 @@ public:
 		StepGen=FindParam<RParamValue>("Step Gen")->GetUInt();
 		MinAgreement=FindParam<RParamValue>("Min Agreement")->GetDouble();
 		MinDisagreement=FindParam<RParamValue>("Min Disagreement")->GetDouble();
-		MaxKMeans=FindParam<RParamValue>("Max kMeans")->GetUInt();
-		Convergence=FindParam<RParamValue>("Convergence")->GetDouble();
 		Incremental=FindParam<RParamValue>("Incremental")->GetBool();
 		InternalRandom=FindParam<RParamValue>("InternalRandom")->GetBool();
 		Seed=FindParam<RParamValue>("Seed")->GetInt();
 		ParamsSim=FindParam<R::RParamStruct>("Sim Criterion");
 		ParamsAgreement=FindParam<R::RParamStruct>("Agreement Criterion");
 		ParamsDisagreement=FindParam<R::RParamStruct>("Disagreement Criterion");
-		RString what(FindParam<RParamValue>("Clustering Method")->Get());
-		ClusteringMethod=0;
-		if(what=="GA")
-			ClusteringMethod=1;
-		if(what=="k-Means")
-			ClusteringMethod=2;
-		NbClusters=FindParam<RParamValue>("NbClusters")->GetUInt();
 		Cout=FindParam<RParamValue>("Cout")->GetBool();
 		NbMinObjs=FindParam<RParamValue>("NbMinObjs")->GetUInt();
 		NbMaxObjs=FindParam<RParamValue>("NbMaxObjs")->GetUInt();
@@ -109,7 +99,7 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void) {RunGrouping(Session,"Profiles",Session->GetCommunities(),Session->GetProfiles());}
+	virtual void Run(void) {RunGrouping(Session,"Profiles",Session->GetProfiles());}
 };
 
 

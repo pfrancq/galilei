@@ -65,32 +65,32 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::GCAPlugIn(GSession* session,GPlugInFactory* fac,const RString& name,tObjType objtype,tObjType grouptype)
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
+	GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::GCAPlugIn(GSession* session,GPlugInFactory* fac,const RString& name,tObjType objtype,tObjType grouptype)
 		: cPlugin(session,fac), RObject(name), ObjType(objtype), GroupType(grouptype)
 {
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	bool GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::IsCoherent(const cGroup* /*grp*/) const
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
+	bool GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::IsCoherent(const cGroup* /*grp*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	bool GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::IsCoherent(const cGroup* /*grp*/,const cObj* /*sub*/) const
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
+	bool GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::IsCoherent(const cGroup* /*grp*/,const cObj* /*sub*/) const
 {
 	return(true);
 }
 
 
 //-----------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	bool GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::IsValid(cGroup* /*grp*/)
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
+	bool GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::IsValid(cGroup* /*grp*/)
 {
 //	GSubProfileCursor Cur1,Cur2;
 //	size_t i,j;
@@ -118,8 +118,8 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class 
 
 
 //-----------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	template<class cAlgoGroup> void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::ConstructResults(GSession* session,R::RCursor<cAlgoGroup> Sol)
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
+	template<class cAlgoGroup> void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::ConstructResults(GSession* session,R::RCursor<cAlgoGroup> Sol)
 {
 	size_t i;
 	RString Label(GetObjType(GroupType,true,false)+" ");
@@ -139,8 +139,8 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class 
 
 
 //-----------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::DoGCA(GSession* session,const R::RString& mes,R::RCursor<cObj> Objs)
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
+	void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cObj> Objs)
 {
 	const RMaxVector* Vec;
 	GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities")->Info(3,1,&Vec);
@@ -174,7 +174,7 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class 
 		cout<<"New GCA"<<endl;
 	}
 	cInst Instance(session,Objs,this,0,ObjType);
-	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::Gen),"RInst::Generation",&Instance);
+	InsertObserver(reinterpret_cast<tNotificationHandler>(&GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::Gen),"RInst::Generation",&Instance);
 	if(Cout)
 		cout<<"Init GCA"<<endl;
 //	Instance.SetVerify(true);
@@ -198,64 +198,9 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class 
 }
 
 
-//-----------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::DokMeans(GSession* session,R::RCursor<cGroup> groups,R::RCursor<cObj> Objs)
-{
-	cout<<"Do kMeans for "<<Objs.GetNb()<<" "<<GetObjType(ObjType,false,true)<<endl;
-	std::auto_ptr<RRandom> Rand(RRandom::Create(RRandom::Good,1));
-	if(InternalRandom)
-		Rand->Reset(12345);
-	else
-		Rand->Reset(Seed);
-
-	cKMeans kMeans("k-MeansObj",Rand.get(),Objs);
-	typename cKMeans::tInitial start;
-
-	cKMeansGrps Sol(Objs,NbClusters);
-	Sol.Init();
-	if(Incremental&&groups.GetNb())
-	{
-		cout<<"Prepare incremental kMeans"<<endl;
-		for(groups.Start();!groups.End();groups.Next())
-		{
-			cKMeansGrp* grp(0);
-			RCursor<cObj> Cur(groups()->GetObjs());
-			if(Cur.GetNb())
-				grp=Sol.ReserveGroup();
-			for(Cur.Start();!Cur.End();Cur.Next())
-				grp->Insert(Cur());
-		}
-		start=cKMeans::Incremental;
-	}
-	else
-		start=cKMeans::kMeansPlusPlus;
-	cout<<"Run kMeans ("<<NbClusters<<" clusters)"<<endl;
-	kMeans.Run(&Sol,MaxKMeans,NbClusters,start);
-	cout<<"kMeans iterates "<<kMeans.GetNbIterations()<<" times (max="<<MaxKMeans<<")"<<endl;
-	ConstructResults<cKMeansGrp>(session,Sol);
-}
-
-
-//-----------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::RunGrouping(GSession* session,const R::RString& mes,R::RCursor<cGroup> groups,R::RCursor<cObj> Objs)
-{
-	switch(ClusteringMethod)
-	{
-		case 1:
-			DoGCA(session,mes,Objs);
-			break;
-		case 2:
-			DokMeans(session,groups,Objs);
-			break;
-	}
-}
-
-
 //------------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::Gen(const R::RNotification& notification)
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
+	void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::Gen(const R::RNotification& notification)
 {
 	if(Cout)
 		cout<<"Gen "<<GetData<size_t>(notification)<<endl;
@@ -263,8 +208,8 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class 
 
 
 //------------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::CreateConfig(void)
+template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
+	void GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::CreateConfig(void)
 {
 	cPlugin::InsertParam(new RParamValue("Population Size",16,"Size of the population for the GA"));
 	cPlugin::InsertParam(new RParamValue("Max Gen",30,"Number of generations to run"));
@@ -272,10 +217,6 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class 
 	cPlugin::InsertParam(new RParamValue("Step Gen",0,"Number of generations to run for a step"));
 	cPlugin::InsertParam(new RParamValue("Min Agreement",0.6,"Minimum agreement ratio"));
 	cPlugin::InsertParam(new RParamValue("Min Disagreement",0.6,"Minimum disagreement ratio"));
-	cPlugin::InsertParam(new RParamValue("Max kMeans",30,"Maximal number of iterations"));
-	cPlugin::InsertParam(new RParamValue("Convergence",0.05,"The convergence level used"));
-	cPlugin::InsertParam(new RParamValue("NbClusters",20,"Number of clusters to determine by the kMeans"));
-	cPlugin::InsertParam(new RParamValue("Clustering Method","GA","Name of the clustering method ('GA' or 'k-Means')"));
 	cPlugin::InsertParam(new RParamValue("Incremental",true,"Should the algorithm be incremental"));
 	cPlugin::InsertParam(new RParamValue("InternalRandom",true,"Use an internal random number generator"));
 	cPlugin::InsertParam(new RParamValue("Seed",static_cast<int>(12345),"Internal random number generator seed"));
@@ -285,11 +226,4 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class 
 	cPlugin::InsertParam(new RParamValue("Cout",false,"Cout some information?"));
 	cPlugin::InsertParam(new RParamValue("NbMinObjs",0,"Minimum number of objects per cluster (0 means no minimum)"));
 	cPlugin::InsertParam(new RParamValue("NbMaxObjs",cNoRef,"Maximum number of objects per cluster"));
-}
-
-
-//-----------------------------------------------------------------------------
-template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup,class cKMeans,class cKMeansGrp,class cKMeansGrps>
-	GCAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup,cKMeans,cKMeansGrp,cKMeansGrps>::~GCAPlugIn(void)
-{
 }
