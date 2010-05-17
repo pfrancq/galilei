@@ -100,7 +100,7 @@ protected:
 	/**
 	* Statistics Output file.
 	*/
-	R::RTextFile* Results;
+	R::RTextFile& Results;
 
 	/**
 	*/
@@ -155,7 +155,7 @@ public:
 	* @param objtype2       Type of the second objects.
 	* @param f              File.
 	*/
-	GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,R::RTextFile* f);
+	GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,R::RTextFile& f);
 
 	/**
 	 * Cursor over the first type of objects.
@@ -175,31 +175,28 @@ public:
 	 */
 	virtual R::RCursor<E2> GetE2Cursor(GSubject* sub)=0;
 
-	void AnalyzeObjs(GStatsSims* calc,RXMLStruct* xml,RXMLTag* parent,size_t id1,size_t id2);
+	void AnalyzeObjs(size_t id1,size_t id2);
 
 	/**
 	 * Compute the similarities for a given subject.
 	 */
-	void ComputeSubject(GStatsSims* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent);
+	void ComputeSubject(GSubject* sub);
 
 	/**
 	* Compute the similarities statistics.
 	*/
-	void RunComplete(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag);
+	void RunComplete(void);
 
 	/**
 	* Compute the similarities statistics.
 	*/
-	void RunNearestNeighbors(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag);
+	void RunNearestNeighbors(void);
 
 	/**
 	* Compute the similarities statistics.
 	*/
-	void Run(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag);
+	void Run(const RString& type);
 
-	/**
-	* Destruct.
-	*/
 	virtual ~GStatSimElements(void) {}
 };
 
@@ -214,7 +211,7 @@ public:
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,RTextFile* f)
+	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,RTextFile& f)
 	: Session(ses), Results(f), Centers(50), SameObjects(objtype1==objtype2),
 	  ObjType1(objtype1), ObjType2(objtype2)
 {
@@ -223,12 +220,10 @@ template<class E1,class E2>
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::AnalyzeObjs(GStatsSims* calc,RXMLStruct* xml,RXMLTag* parent,size_t id1,size_t id2)
+	void GStatSimElements<E1,E2>::AnalyzeObjs(size_t id1,size_t id2)
 {
 	GWeightInfosObj* Obj1(static_cast<GWeightInfosObj*>(Session->GetObject(ObjType1,id1)));
 	GWeightInfosObj* Obj2(static_cast<GWeightInfosObj*>(Session->GetObject(ObjType2,id2)));
-	calc->AddTag(xml,parent,"Intra",Obj1->GetName());
-	calc->AddTag(xml,parent,"Extra",Obj2->GetName());
 
 	// See the common words
 	RCursor<GWeightInfo> Vec1(Obj1->GetVector().GetInfos());
@@ -254,7 +249,7 @@ template<class E1,class E2>
 				//Idf=","+Idf;
 			}
 
-			calc->AddTag(xml,parent,Vec1()->GetConcept()->GetName(),Value1+","+Value2+Idf);
+			Results<<Vec1()->GetConcept()->GetName()<<": "<<Value1+","+Value2+Idf<<endl;
 		}
 
 		// Next element of Vec1
@@ -265,7 +260,7 @@ template<class E1,class E2>
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::ComputeSubject(GStatsSims* calc,GSubject* sub,RXMLStruct* xml,RXMLTag* parent)
+	void GStatSimElements<E1,E2>::ComputeSubject(GSubject* sub)
 {
 	double SimIntra(0.0);         // Intra-similarity of the cluster
 	double SimExtra(0.0);         // Extra-similarity of the cluster
@@ -392,88 +387,69 @@ template<class E1,class E2>
 		J+=MaxSimIntra;
 	}
 
-	// Create tag
-	RXMLTag* Tag=new RXMLTag(sub->GetName());
-	xml->AddTag(parent,Tag);
-
 	// Compute indicators for current subject
 	if(nbIntra)
 	{
 		SimIntra/=static_cast<double>(nbIntra);
 		MeanIntra+=SimIntra;
-		calc->AddTag(xml,Tag,"Min Intra",MinIntra);
-		calc->AddTag(xml,Tag,"Mean Intra",SimIntra);
 	}
 
 	if(nbExtra)
 	{
 		SimExtra/=static_cast<double>(nbExtra);
 		MeanExtra+=SimExtra;
-		RXMLTag* max(calc->AddTag(xml,Tag,"Max Extra",MaxExtra));
-		AnalyzeObjs(calc,xml,max,IdIntraMax,IdExtraMax);
-		calc->AddTag(xml,Tag,"Mean Extra",SimExtra);
+		//AnalyzeObjs(IdIntraMax,IdExtraMax);
 	}
 
 	if(SimIntra!=0.0)
 	{
 		LRie=(SimIntra-SimExtra)/SimIntra;
-		calc->AddTag(xml,Tag,"Rie",LRie);
 	}
 	LLocalRie/=static_cast<double>(LNbElements);
-	calc->AddTag(xml,Tag,"LocalRie",LLocalRie);
 
 	if(SimIntra+SimExtra!=0.0)
 	{
 		LFrac=SimIntra/(SimIntra+SimExtra);
-		calc->AddTag(xml,Tag,"Frac",LFrac);
 	}
 	LLocalFrac/=static_cast<double>(LNbElements);
-	calc->AddTag(xml,Tag,"LocalFrac",LLocalFrac);
-
 	LOverlap/=static_cast<double>(LNbElements);
-	calc->AddTag(xml,Tag,"Overlap",LOverlap);
 
 	// File
-	if(Results)
+	if(WriteTitle)
 	{
-		if(WriteTitle)
-		{
-			RString n1("Name"); n1.SetLen(25," ");
-			RString n2("Min Intra"); n2.SetLen(15," ");
-			RString n3("Mean Intra"); n3.SetLen(15," ");
-			RString n4("Max Extra"); n4.SetLen(15," ");
-			RString n5("Mean Extra"); n5.SetLen(15," ");
-			RString n6("Rie"); n6.SetLen(15," ");
-			RString n7("LocalRie"); n7.SetLen(15," ");
-			RString n8("Frac"); n8.SetLen(15," ");
-			RString n9("LocalFrac"); n9.SetLen(15," ");
-			RString n10("Overlap"); n10.SetLen(15," ");
-			RString n11("J"); n11.SetLen(15," ");
-			(*Results)<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
-			WriteTitle=false;
-		}
-
-		RString n1(sub->GetName()); n1.SetLen(25," ");
-		RString n2(RString::Number(MinIntra,"%.5E")); n2.SetLen(15," ");
-		RString n3(RString::Number(SimIntra,"%.5E")); n3.SetLen(15," ");
-		RString n4(RString::Number(MaxExtra,"%.5E")); n4.SetLen(15," ");
-		RString n5(RString::Number(SimExtra,"%.5E")); n5.SetLen(15," ");
-		RString n6(RString::Number(LRie,"%.5E")); n6.SetLen(15," ");
-		RString n7(RString::Number(LLocalRie,"%.5E")); n7.SetLen(15," ");
-		RString n8(RString::Number(LFrac,"%.5E")); n8.SetLen(15," ");
-		RString n9(RString::Number(LLocalFrac,"%.5E")); n9.SetLen(15," ");
-		RString n10(RString::Number(LOverlap,"%.5E")); n10.SetLen(15," ");
-		RString n11("------"); n11.SetLen(15," ");
-		(*Results)<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
+		RString n1("Name"); n1.SetLen(25," ");
+		RString n2("Min Intra"); n2.SetLen(15," ");
+		RString n3("Mean Intra"); n3.SetLen(15," ");
+		RString n4("Max Extra"); n4.SetLen(15," ");
+		RString n5("Mean Extra"); n5.SetLen(15," ");
+		RString n6("Rie"); n6.SetLen(15," ");
+		RString n7("LocalRie"); n7.SetLen(15," ");
+		RString n8("Frac"); n8.SetLen(15," ");
+		RString n9("LocalFrac"); n9.SetLen(15," ");
+		RString n10("Overlap"); n10.SetLen(15," ");
+		RString n11("J"); n11.SetLen(15," ");
+		Results<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
+		WriteTitle=false;
 	}
 
-	if(Tag->IsEmpty())
-		xml->DeleteTag(Tag);
+	RString n1(sub->GetName()); n1.SetLen(25," ");
+	RString n2(RString::Number(MinIntra,"%.5E")); n2.SetLen(15," ");
+	RString n3(RString::Number(SimIntra,"%.5E")); n3.SetLen(15," ");
+	RString n4(RString::Number(MaxExtra,"%.5E")); n4.SetLen(15," ");
+	RString n5(RString::Number(SimExtra,"%.5E")); n5.SetLen(15," ");
+	RString n6(RString::Number(LRie,"%.5E")); n6.SetLen(15," ");
+	RString n7(RString::Number(LLocalRie,"%.5E")); n7.SetLen(15," ");
+	RString n8(RString::Number(LFrac,"%.5E")); n8.SetLen(15," ");
+	RString n9(RString::Number(LLocalFrac,"%.5E")); n9.SetLen(15," ");
+	RString n10(RString::Number(LOverlap,"%.5E")); n10.SetLen(15," ");
+	RString n11("------"); n11.SetLen(15," ");
+	Results<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
 }
+
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::RunComplete(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag)
+	void GStatSimElements<E1,E2>::RunComplete(void)
 {
 	// Initialization
 	Neg=false;
@@ -489,30 +465,24 @@ template<class E1,class E2>
 		Measure->Info(0,&minsim);
 		Measure->Info(1,&avgsim);
 		Measure->Info(2,&devsim);
-		calc->AddTag(xml,tag,"MinSim",minsim);
-		calc->AddTag(xml,tag,"AvgSim",avgsim);
-		calc->AddTag(xml,tag,"DevSim",devsim);
-		if(Results)
-		{
-			RString n1(""); n1.SetLen(25," ");
-			RString n2("Min Sim"); n2.SetLen(15," ");
-			RString n3("Avg Sim"); n3.SetLen(15," ");
-			RString n4("Dev Sim"); n4.SetLen(15," ");
-			(*Results)<<n1+n2+n3+n4<<endl;
-			n1="Global"; n1.SetLen(24," ");
-			n2=RString::Number(minsim,"%.5E"); n2.SetLen(15," ");
-			n3=RString::Number(avgsim,"%.5E"); n3.SetLen(15," ");
-			n4=RString::Number(devsim,"%.5E"); n4.SetLen(15," ");
-			(*Results)<<n1+n2+n3+n4<<endl;
-			(*Results)<<"--------------"<<endl;
-		}
+		RString n1(""); n1.SetLen(25," ");
+		RString n2("Min Sim"); n2.SetLen(15," ");
+		RString n3("Avg Sim"); n3.SetLen(15," ");
+		RString n4("Dev Sim"); n4.SetLen(15," ");
+		Results<<n1+n2+n3+n4<<endl;
+		n1="Global"; n1.SetLen(24," ");
+		n2=RString::Number(minsim,"%.5E"); n2.SetLen(15," ");
+		n3=RString::Number(avgsim,"%.5E"); n3.SetLen(15," ");
+		n4=RString::Number(devsim,"%.5E"); n4.SetLen(15," ");
+		Results<<n1+n2+n3+n4<<endl;
+		Results<<"--------------"<<endl;
 	}
 
 	// Go trough the subjects
 	Centers.Clear();
 	R::RCursor<GSubject> Sub(Session->GetSubjects());
 	for(Sub.Start();!Sub.End();Sub.Next())
-		ComputeSubject(calc,Sub(),xml,tag);
+		ComputeSubject(Sub());
 	if(SameObjects)
 	{
 		// Compute max inter-similarity and then J
@@ -557,38 +527,26 @@ template<class E1,class E2>
 		LocalRie/=static_cast<double>(NbElements);
 		LocalFrac/=static_cast<double>(NbElements);
 
-		calc->AddTag(xml,tag,"Mean Intra",MeanIntra);
-		calc->AddTag(xml,tag,"Mean Extra",MeanExtra);
-		calc->AddTag(xml,tag,"Rie",Rie);
-		calc->AddTag(xml,tag,"LocalRie",LocalRie);
-		calc->AddTag(xml,tag,"Frac",Frac);
-		calc->AddTag(xml,tag,"LocalFrac",LocalFrac);
-		calc->AddTag(xml,tag,"Overlap",Overlap);
-		calc->AddTag(xml,tag,"J",J);
-
-		if(Results)
-		{
-			RString n1("Global"); n1.SetLen(25," ");
-			RString n2("------"); n2.SetLen(15," ");
-			RString n3(RString::Number(MeanIntra,"%.5E")); n3.SetLen(15," ");
-			RString n4("------"); n4.SetLen(15," ");
-			RString n5(RString::Number(MeanExtra,"%.5E")); n5.SetLen(15," ");
-			RString n6(RString::Number(Rie)); n6.SetLen(15," ");
-			RString n7(RString::Number(LocalRie)); n7.SetLen(15," ");
-			RString n8(RString::Number(Frac)); n8.SetLen(15," ");
-			RString n9(RString::Number(LocalFrac)); n9.SetLen(15," ");
-			RString n10(RString::Number(Overlap,"%.5E")); n10.SetLen(15," ");
-			RString n11(RString::Number(J,"%.5E")); n11.SetLen(15," ");
-			(*Results)<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
-			(*Results)<<"--------------"<<endl;
-		}
+		RString n1("Global"); n1.SetLen(25," ");
+		RString n2("------"); n2.SetLen(15," ");
+		RString n3(RString::Number(MeanIntra,"%.5E")); n3.SetLen(15," ");
+		RString n4("------"); n4.SetLen(15," ");
+		RString n5(RString::Number(MeanExtra,"%.5E")); n5.SetLen(15," ");
+		RString n6(RString::Number(Rie)); n6.SetLen(15," ");
+		RString n7(RString::Number(LocalRie)); n7.SetLen(15," ");
+		RString n8(RString::Number(Frac)); n8.SetLen(15," ");
+		RString n9(RString::Number(LocalFrac)); n9.SetLen(15," ");
+		RString n10(RString::Number(Overlap,"%.5E")); n10.SetLen(15," ");
+		RString n11(RString::Number(J,"%.5E")); n11.SetLen(15," ");
+		Results<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
+		Results<<"--------------"<<endl;
 	}
 }
 
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::RunNearestNeighbors(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag)
+	void GStatSimElements<E1,E2>::RunNearestNeighbors(void)
 {
 	// Global statistics
 	size_t NbLines(0);            // Number of "lines" elements.
@@ -735,37 +693,26 @@ template<class E1,class E2>
 			LocalIntraOverlap/=static_cast<double>(LocalNbLines);
 		}
 
-		RXMLTag* Tag=new RXMLTag(Sub()->GetName());
-		xml->AddTag(tag,Tag);
-		calc->AddTag(xml,Tag,"Mean Intra (%)",LocalAvgIntra*100.0,"%3.2f");
-		calc->AddTag(xml,Tag,"Mean Inter (%)",LocalAvgInter*100.0,"%3.2f");
-		calc->AddTag(xml,Tag,"Mean Overlap (%)",LocalOverlap*100.0,"%3.2f");
-		calc->AddTag(xml,Tag,"Mean Intra Overlap (%)",LocalIntraOverlap*100.0,"%3.2f");
-		calc->AddTag(xml,Tag,"Mean Nearest Neighbors",LocalAvgCols,"%3.2f");
-
 		// File
-		if(Results)
+		if(WriteTitle)
 		{
-			if(WriteTitle)
-			{
-				RString n1("Name");         n1.SetLen(25," ");
-				RString n2("Intra (%)");    n2.SetLen(15," ");
-				RString n3("Inter (%)");    n3.SetLen(15," ");
-				RString n4("Overlap (%)");  n4.SetLen(15," ");
-				RString n5("LOverlap (%)"); n5.SetLen(15," ");
-				RString n6("Nb NN");        n6.SetLen(15," ");
-				(*Results)<<n1+n2+n3+n4+n5+n6<<endl;
-				WriteTitle=false;
-			}
-
-			RString n1(Sub()->GetName());                                 n1.SetLen(25," ");
-			RString n2(RString::Number(LocalAvgIntra*100.0,"%3.2f"));     n2.SetLen(15," ");
-			RString n3(RString::Number(LocalAvgInter*100.0,"%3.2f"));     n3.SetLen(15," ");
-			RString n4(RString::Number(LocalOverlap*100.0,"%3.2f"));      n4.SetLen(15," ");
-			RString n5(RString::Number(LocalIntraOverlap*100.0,"%3.2f")); n5.SetLen(15," ");
-			RString n6(RString::Number(LocalAvgCols,"%5.1f"));            n6.SetLen(15," ");
-			(*Results)<<n1+n2+n3+n4+n5+n6<<endl;
+			RString n1("Name");         n1.SetLen(25," ");
+			RString n2("Intra (%)");    n2.SetLen(15," ");
+			RString n3("Inter (%)");    n3.SetLen(15," ");
+			RString n4("Overlap (%)");  n4.SetLen(15," ");
+			RString n5("LOverlap (%)"); n5.SetLen(15," ");
+			RString n6("Nb NN");        n6.SetLen(15," ");
+			Results<<n1+n2+n3+n4+n5+n6<<endl;
+			WriteTitle=false;
 		}
+
+		RString n1(Sub()->GetName());                                 n1.SetLen(25," ");
+		RString n2(RString::Number(LocalAvgIntra*100.0,"%3.2f"));     n2.SetLen(15," ");
+		RString n3(RString::Number(LocalAvgInter*100.0,"%3.2f"));     n3.SetLen(15," ");
+		RString n4(RString::Number(LocalOverlap*100.0,"%3.2f"));      n4.SetLen(15," ");
+		RString n5(RString::Number(LocalIntraOverlap*100.0,"%3.2f")); n5.SetLen(15," ");
+		RString n6(RString::Number(LocalAvgCols,"%5.1f"));            n6.SetLen(15," ");
+		Results<<n1+n2+n3+n4+n5+n6<<endl;
 	}
 
 	if(NbLines)
@@ -778,35 +725,25 @@ template<class E1,class E2>
 	}
 
 
-	calc->AddTag(xml,tag,"Mean Intra (%)",AvgIntra*100.0,"%3.2f");
-	calc->AddTag(xml,tag,"Mean Inter (%)",AvgInter*100.0,"%3.2f");
-	calc->AddTag(xml,tag,"Mean Overlap (%)",AvgOverlap*100.0,"%3.2f");
-	calc->AddTag(xml,tag,"Mean Intra Overlap (%)",AvgIntraOverlap*100.0,"%3.2f");
-	calc->AddTag(xml,tag,"Mean Nearest Neighbors",AvgCols,"%5.1f");
-
-	if(Results)
-	{
-		RString n1("Global");                                       n1.SetLen(25," ");
-		RString n2(RString::Number(AvgIntra*100.0,"%3.2f"));        n2.SetLen(15," ");
-		RString n3(RString::Number(AvgInter*100.0,"%3.2f"));        n3.SetLen(15," ");
-		RString n4(RString::Number(AvgOverlap*100.0,"%3.2f"));      n4.SetLen(15," ");
-		RString n5(RString::Number(AvgIntraOverlap*100.0,"%3.2f")); n5.SetLen(15," ");
-		RString n6(RString::Number(AvgCols,"%5.1f"));               n6.SetLen(15," ");
-		(*Results)<<n1+n2+n3+n4+n5+n6<<endl;
-		(*Results)<<"--------------"<<endl;
-	}
+	RString n1("Global");                                       n1.SetLen(25," ");
+	RString n2(RString::Number(AvgIntra*100.0,"%3.2f"));        n2.SetLen(15," ");
+	RString n3(RString::Number(AvgInter*100.0,"%3.2f"));        n3.SetLen(15," ");
+	RString n4(RString::Number(AvgOverlap*100.0,"%3.2f"));      n4.SetLen(15," ");
+	RString n5(RString::Number(AvgIntraOverlap*100.0,"%3.2f")); n5.SetLen(15," ");
+	RString n6(RString::Number(AvgCols,"%5.1f"));               n6.SetLen(15," ");
+	Results<<n1+n2+n3+n4+n5+n6<<endl;
+	Results<<"--------------"<<endl;
 }
 
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::Run(GStatsSims* calc,RXMLStruct* xml,RXMLTag* tag)
+	void GStatSimElements<E1,E2>::Run(const RString& type)
 {
-	RString Type(calc->GetMeasureType());
-	if(Type=="Complete")
-		RunComplete(calc,xml,tag);
-	else if(Type=="Nearest Neighbors")
-		RunNearestNeighbors(calc,xml,tag);
+	if(type=="Complete")
+		RunComplete();
+	else if(type=="Nearest Neighbors")
+		RunNearestNeighbors();
 	else
-		ThrowGException("'"+Type+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
+		ThrowGException("'"+type+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
 }

@@ -58,7 +58,7 @@ protected :
 	GSession* Session;
 
 	/**
-	* The mean of the number of profiles which has juged a same document.
+	* The mean of the number of profiles which has assessed a same document.
 	*/
 	double MeanNbProf;
 
@@ -68,26 +68,18 @@ protected :
 	double MeanSame;
 
 	/**
-	* Mean of Desagreement Ratio between profiles.
+	* Mean of Disagreement Ratio between profiles.
 	*/
 	double MeanDiff;
 
 	/**
 	* Statistics Output file.
 	*/
-	R::RTextFile* File;
+	R::RTextFile& File;
 
 	/**
 	*/
 	GMeasure* Measure;
-
-
-public :
-
-	/**
-	* [param description]
-	*/
-	//[type] [param name];
 
 public :
 
@@ -96,12 +88,12 @@ public :
 	* @param ses            The  galilei session.
 	* @param f              File.
 	*/
-	GStatProfDoc(GSession* ses,R::RTextFile* f);
+	GStatProfDoc(GSession* ses,R::RTextFile& f);
 
 	/**
 	* Construct the Mean of number of profiles having juged common docs.
 	*/
-	void Run(GStatsCalc* calc,R::RXMLStruct* xml,R::RXMLTag* tag);
+	void Run(void);
 
 	/**
 	* Get The mean of number of profile having juged a same document.
@@ -122,13 +114,6 @@ public :
 	* Write a line to the output File.
 	*/
 	void WriteLine(void);
-
-
-	/**
-	* destructor of GStatProfDoc
-	* @param1 [param1 name]    [param1 description]
-	*/
-	~GStatProfDoc(void);
 };
 
 

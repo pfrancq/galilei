@@ -37,7 +37,7 @@
 // include files for R/GALILEI
 #include <ruri.h>
 #include <galilei.h>
-#include <gstatscalc.h>
+#include <gtool.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -50,7 +50,7 @@ using namespace std;
 * @author Pascal Francq
 * @short Groups Evaluation.
 */
-class GStatsSims : public GStatsCalc
+class GStatsSims : public GTool
 {
 	/**
 	* Statistics on Documents.
@@ -81,11 +81,6 @@ class GStatsSims : public GStatsCalc
 	* Statistics between groups and profiles.
 	*/
 	bool GroupProf;
-
-	/**
-	* Should the results of the computation be stored in a file.
-	*/
-	bool SaveResults;
 
 	/**
 	* Name of the file.
@@ -120,7 +115,7 @@ class GStatsSims : public GStatsCalc
 	/**
 	 * File containing the results.
 	 */
-	RTextFile* ResultsFile;
+	RTextFile File;
 
 	/**
 	 * Type of the similarity measure ('Nearest Neighbors' or 'Complete').
@@ -153,9 +148,8 @@ public:
 
 	/**
 	* Compute the statistics.
-	* @param res             XML tag that will be hold the results.
 	*/
-	virtual void Compute(R::RXMLStruct* xml,R::RXMLTag& res);
+	virtual void Run(GSlot* slot);
 
 	/**
 	* Create the parameters.
@@ -166,13 +160,6 @@ public:
 	 * @return the type of the measure.
 	 */
 	RString GetMeasureType(void) const {return(MeasureType);}
-
-public:
-
-	/**
-	* Destruct.
-	*/
-	virtual ~GStatsSims(void);
 };
 
 

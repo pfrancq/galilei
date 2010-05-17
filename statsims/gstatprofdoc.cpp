@@ -33,7 +33,6 @@
 #include <gdoc.h>
 #include <gprofile.h>
 #include <gsession.h>
-#include <gstatscalc.h>
 #include <ggalileiapp.h>
 
 
@@ -53,7 +52,7 @@ using namespace R;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GALILEI::GStatProfDoc::GStatProfDoc(GSession* ses,R::RTextFile* f)
+GStatProfDoc::GStatProfDoc(GSession* ses,R::RTextFile& f)
 	: Session(ses), File(f)
 {
 //	if(File)
@@ -70,15 +69,14 @@ GALILEI::GStatProfDoc::GStatProfDoc(GSession* ses,R::RTextFile* f)
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GStatProfDoc::WriteLine(void)
+void GStatProfDoc::WriteLine(void)
 {
-	if(File)
-		(*File)<<"-------------------------------------------------------------------------------------------------"<<endl<<endl;
+	File<<"-------------------------------------------------------------------------------------------------"<<endl<<endl;
 }
 
 
 //-----------------------------------------------------------------------------
-void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
+void GStatProfDoc::Run(void)
 {
 	R::RCursor<GProfile> Profs1,Profs2;
 	R::RCursor<GDoc> Docs;
@@ -115,7 +113,7 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 	if(nbDocs)
 	{
 		MeanNbProf=sum/static_cast<double>(nbDocs);
-		calc->AddTag(xml,tag,"MeanNbProfAssess",MeanNbProf);
+		File<<"MeanNbProfAssess="<<MeanNbProf<<endl;
 //	cout << " Mean of profiles juged doc "<<MeanNbProf <<endl;
 	}
 
@@ -137,18 +135,7 @@ void GALILEI::GStatProfDoc::Run(GStatsCalc* calc,RXMLStruct* xml,RXMLTag* tag)
 	{
 		MeanSame /= sum;
 		MeanDiff /=sum;
-		calc->AddTag(xml,tag,"MeanSameRatio",MeanSame);
-		calc->AddTag(xml,tag,"MeanDiffRatio",MeanDiff);
 	}
 
-	if(File)
-		(*File)<< MeanNbProf<<"		"<<MeanSame<<"		"<<MeanDiff<<endl;
+	File<< MeanNbProf<<"		"<<MeanSame<<"		"<<MeanDiff<<endl;
 }
-
-
-//-----------------------------------------------------------------------------
-GALILEI::GStatProfDoc::~GStatProfDoc(void)
-{
-}
-
-

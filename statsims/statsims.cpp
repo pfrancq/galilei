@@ -72,7 +72,7 @@ using namespace std;
 class GStatSimDocs : public GStatSimElements<GDoc,GDoc>
 {
 public:
-	GStatSimDocs(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GDoc>(ses,otDoc,otDoc,f)
+	GStatSimDocs(GSession* ses,R::RTextFile& f) : GStatSimElements<GDoc,GDoc>(ses,otDoc,otDoc,f)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
 	}
@@ -100,7 +100,7 @@ class GStatSimProfiles : public GStatSimElements<GProfile,GProfile>
 {
 public:
 
-	GStatSimProfiles(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GProfile>(ses,otProfile,otProfile,f)
+	GStatSimProfiles(GSession* ses,R::RTextFile& f) : GStatSimElements<GProfile,GProfile>(ses,otProfile,otProfile,f)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
 	}
@@ -130,7 +130,7 @@ class GStatSimDocGrp : public GStatSimElements<GDoc,GCommunity>
 
 public:
 
-	GStatSimDocGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GCommunity>(ses,otDoc,otCommunity,f), Com(1)
+	GStatSimDocGrp(GSession* ses,R::RTextFile& f) : GStatSimElements<GDoc,GCommunity>(ses,otDoc,otCommunity,f), Com(1)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Groups Similarities");
 	}
@@ -159,7 +159,7 @@ class GStatSimDocProf : public GStatSimElements<GDoc,GProfile>
 {
 public:
 
-	GStatSimDocProf(GSession* ses,R::RTextFile* f) : GStatSimElements<GDoc,GProfile>(ses,otDoc,otProfile,f)
+	GStatSimDocProf(GSession* ses,R::RTextFile& f) : GStatSimElements<GDoc,GProfile>(ses,otDoc,otProfile,f)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Profiles Similarities");
 	}
@@ -189,7 +189,7 @@ class GStatSimProfGrp : public GStatSimElements<GProfile,GCommunity>
 
 public:
 
-	GStatSimProfGrp(GSession* ses,R::RTextFile* f) : GStatSimElements<GProfile,GCommunity>(ses,otProfile,otCommunity,f), Com(1)
+	GStatSimProfGrp(GSession* ses,R::RTextFile& f) : GStatSimElements<GProfile,GCommunity>(ses,otProfile,otCommunity,f), Com(1)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles/Groups Similarities");
 	}
@@ -221,7 +221,7 @@ public:
 
 //------------------------------------------------------------------------------
 GStatsSims::GStatsSims(GSession* session,GPlugInFactory* fac)
-	: GStatsCalc(session,fac), ResultsFile(0)
+	: GTool(session,fac)
 {
 }
 
@@ -235,14 +235,8 @@ void GStatsSims::ApplyConfig(void)
 	Profiles=FindParam<RParamValue>("Profiles")->GetBool();
 	SameDocProf=FindParam<RParamValue>("SameDocProf")->GetBool();
 	GroupProf=FindParam<RParamValue>("GroupProf")->GetBool();
-	SaveResults=FindParam<RParamValue>("SaveResults")->GetBool();
 	RURI OldName(Results);
 	Results=FindParam<RParamValue>("Results")->Get();
-	if((OldName!=Results)&&ResultsFile)
-	{
-		delete ResultsFile;
-		ResultsFile=0;
-	}
 	ExportDocsSims=FindParam<RParamValue>("ExportDocsSims")->GetBool();
 	DocsSims=FindParam<RParamValue>("DocsSims")->Get();
 	ExportDocsIncs=FindParam<RParamValue>("ExportDocsIncs")->GetBool();
@@ -331,34 +325,10 @@ void GStatsSims::DoExportDocsIncs(void)
 
 
 //------------------------------------------------------------------------------
-void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
+void GStatsSims::Run(GSlot*)
 {
-	RXMLTag* tag;
-	RXMLTag* tag2;
-	RString str;
-
-	// Init Main XML Tag
-	tag=new RXMLTag(Factory->GetName());
-	xml->AddTag(&res,tag);
-
-	// Create Details File if necessary
-	if(SaveResults)
-	{
-		if(ResultsFile)
-			(*ResultsFile)<<endl<<"-----------------------------------------------------"<<endl<<endl;
-		else
-		{
-			try
-			{
-				ResultsFile=new RTextFile(Results);
-				ResultsFile->Open(RIO::Create);
-			}
-			catch(...)
-			{
-				ResultsFile=0;
-			}
-		}
-	}
+	// Initialize
+	File.Open(Results,RIO::Create,"utf-8");
 
 	// Verify if the ideal communities should be created
 	if(GroupDoc||GroupProf)
@@ -371,46 +341,48 @@ void GStatsSims::Compute(R::RXMLStruct* xml,R::RXMLTag& res)
 	// Compute Statistics
 	if(Docs)
 	{
-		tag2=new RXMLTag("Documents");
-		xml->AddTag(tag,tag2);
-		GStatSimDocs Stat(Session,ResultsFile);
-		Stat.Run(this,xml,tag2);
+		File<<"Documents"<<endl;
+		GStatSimDocs Stat(Session,File);
+		Stat.Run(GetMeasureType());
+		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 	if(ProfDoc)
 	{
-		tag2=new RXMLTag("Documents-Profiles");
-		xml->AddTag(tag,tag2);
-		GStatSimDocProf Stat(Session,ResultsFile);
-		Stat.Run(this,xml,tag2);
+		File<<"Documents-Profiles"<<endl;
+		GStatSimDocProf Stat(Session,File);
+		Stat.Run(GetMeasureType());
+		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 	if(GroupDoc)
 	{
-		tag2=new RXMLTag("Documents-Groups");
-		xml->AddTag(tag,tag2);
-		GStatSimDocGrp Stat(Session,ResultsFile);
-		Stat.Run(this,xml,tag2);
+		File<<"Documents-Groups"<<endl;
+		GStatSimDocGrp Stat(Session,File);
+		Stat.Run(GetMeasureType());
+		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 	if(Profiles)
 	{
-		tag2=new RXMLTag("Profiles");
-		xml->AddTag(tag,tag2);
-		GStatSimProfiles Stat(Session,ResultsFile);
-		Stat.Run(this,xml,tag2);
+		File<<"Profiles"<<endl;
+		GStatSimProfiles Stat(Session,File);
+		Stat.Run(GetMeasureType());
+		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 	if(SameDocProf)
 	{
-		tag2=new RXMLTag("Profiles-Common-Documents");
-		xml->AddTag(tag,tag2);
-		GStatProfDoc Stat(Session,ResultsFile);
-		Stat.Run(this,xml,tag2);
+		File<<"Profiles-Common-Documents"<<endl;
+		GStatProfDoc Stat(Session,File);
+		Stat.Run();
+		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 	if(GroupProf)
 	{
-		tag2=new RXMLTag("Profiles-Groups");
-		xml->AddTag(tag,tag2);
-		GStatSimProfGrp Stat(Session,ResultsFile);
-		Stat.Run(this,xml,tag2);
+		File<<"Profiles-Groups"<<endl;
+		GStatSimProfGrp Stat(Session,File);
+		Stat.Run(GetMeasureType());
+		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
+
+	File.Close();
 }
 
 
@@ -423,7 +395,6 @@ void GStatsSims::CreateConfig(void)
 	InsertParam(new RParamValue("Profiles",false));
 	InsertParam(new RParamValue("SameDocProf",false));
 	InsertParam(new RParamValue("GroupProf",false));
-	InsertParam(new RParamValue("SaveResults",false));
 	InsertParam(new RParamValue("Results",""));
 	InsertParam(new RParamValue("ExportDocsSims",false));
 	InsertParam(new RParamValue("DocsSims",""));
@@ -434,10 +405,4 @@ void GStatsSims::CreateConfig(void)
 
 
 //------------------------------------------------------------------------------
-GStatsSims::~GStatsSims(void)
-{
-}
-
-
-//------------------------------------------------------------------------------
-CREATE_STATSCALC_FACTORY("Similarity Statistics","Similarity Statistics",GStatsSims)
+CREATE_TOOL_FACTORY("Similarity Statistics","Multiple","Multiple Similarity Statistics",GStatsSims)

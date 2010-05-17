@@ -36,7 +36,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gstatscalc.h>
+#include <gplugin.h>
 using namespace GALILEI;
 
 
@@ -96,9 +96,7 @@ bool Configure(GPlugIn* fac)
 	dlg.Profiles->setChecked(fac->FindParam<RParamValue>("Profiles")->GetBool());
 	dlg.SameDocProf->setChecked(fac->FindParam<RParamValue>("SameDocProf")->GetBool());
 	dlg.GroupProf->setChecked(fac->FindParam<RParamValue>("GroupProf")->GetBool());
-	dlg.SaveResults->setChecked(fac->FindParam<RParamValue>("SaveResults")->GetBool());
 	dlg.Results->setUrl(ToQString(fac->FindParam<RParamValue>("Results")->Get()));
-	dlg.Results->setEnabled(dlg.SaveResults->isChecked());
 	dlg.ExportDocsSims->setChecked(fac->FindParam<RParamValue>("ExportDocsSims")->GetBool());
 	dlg.DocsSims->setUrl(ToQString(fac->FindParam<RParamValue>("DocsSims")->Get()));
 	dlg.DocsSims->setEnabled(dlg.ExportDocsSims->isChecked());
@@ -114,7 +112,6 @@ bool Configure(GPlugIn* fac)
 		fac->FindParam<RParamValue>("Profiles")->SetBool(dlg.Profiles->isChecked());
 		fac->FindParam<RParamValue>("SameDocProf")->SetBool(dlg.SameDocProf->isChecked());
 		fac->FindParam<RParamValue>("GroupProf")->SetBool(dlg.GroupProf->isChecked());
-		fac->FindParam<RParamValue>("SaveResults")->SetBool(dlg.SaveResults->isChecked());
 		fac->FindParam<RParamValue>("Results")->Set(FromQString(dlg.Results->url().url()));
 		fac->FindParam<RParamValue>("ExportDocsSims")->SetBool(dlg.ExportDocsSims->isChecked());
 		fac->FindParam<RParamValue>("DocsSims")->Set(FromQString(dlg.DocsSims->url().url()));
