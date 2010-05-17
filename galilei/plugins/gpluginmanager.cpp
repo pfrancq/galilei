@@ -102,8 +102,6 @@ void GPlugInList::Create(GSession* session)
 		else
 			Enabled=GALILEIApp->GetConfig()->GetBool("Enable",Cur()->Mng->GetName(),Cur()->Name);
 		if(!Enabled)
-			cout<<Cur()->Name<<" is not enabled"<<endl;
-		if(!Enabled)
 			continue;
 		Cur()->Create(session);
 	}

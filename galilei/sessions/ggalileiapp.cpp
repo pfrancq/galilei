@@ -235,7 +235,7 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 		return(Session);
 
 	// A new session must be created and its configuration read
-	Session=new GSession(Sessions.GetNb(),name);
+	Sessions.InsertPtr(Session=new GSession(Sessions.GetNb(),name));
 	RCursor<GPlugInManager> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Create(Session);
@@ -640,6 +640,9 @@ GGALILEIApp::~GGALILEIApp(void)
 {
 	// Save the configuration structures
 	Apply();
+
+	// Delete manually the session (since GALILEIApp is used by the destructor).
+	Sessions.Clear();
 
 	// No more Application
 	GALILEIApp=0;
