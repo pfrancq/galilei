@@ -50,7 +50,6 @@ using namespace R;
 #include <gsession.h>
 #include <gstorage.h>
 #include <gslot.h>
-#include <gstatscalc.h>
 #include <gdoc.h>
 #include <gdocstruct.h>
 #include <gdocanalyze.h>

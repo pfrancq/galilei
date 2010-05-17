@@ -75,8 +75,8 @@ public:
 
 
 //-------------------------------------------------------------------------------
-#define CREATE_TOOL_FACTORY(name,desc,plugin)\
-	CREATE_FACTORY(GALILEI::GTool,plugin,"Tool",R::RString::Null,name,desc)
+#define CREATE_TOOL_FACTORY(type,name,desc,plugin)\
+	CREATE_FACTORY(GALILEI::GTool,plugin,"Tools",type,name,desc)
 
 
 }  //-------- End of namespace GALILEI -----------------------------------------

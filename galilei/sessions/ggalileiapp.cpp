@@ -76,7 +76,6 @@ using namespace GALILEI;
 #include <gtopiccalc.h>
 #include <ggroupdocs.h>
 #include <gprofilecalc.h>
-#include <gstatscalc.h>
 #include <gstorage.h>
 #include <gmeasure.h>
 #include <gsimulator.h>
@@ -159,10 +158,9 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GPlugInManager("CommunityCalc",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("GroupProfiles",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("ProfileCalc",GPlugInManager::ptSelect));
-	InsertPtr(new GPlugInManager("StatsCalc",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("Measures",GPlugInManager::ptListSelect));
 	InsertPtr(Langs=new GPlugInManager("Lang",GPlugInManager::ptList));
-	InsertPtr(new GPlugInManager("Tool",GPlugInManager::ptList));
+	InsertPtr(new GPlugInManager("Tools",GPlugInManager::ptListSelect));
 	InsertPtr(new GPlugInManager("TopicCalc",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("GroupDocs",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("ComputeSugs",GPlugInManager::ptOrdered));

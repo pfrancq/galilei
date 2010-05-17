@@ -50,7 +50,6 @@
 #include <gtopiccalc.h>
 #include <gprofilecalc.h>
 #include <glinkcalc.h>
-#include <gstatscalc.h>
 #include <gsession.h>
 #include <gstorage.h>
 #include <gslot.h>
@@ -1012,52 +1011,6 @@ public:
 
 
 //------------------------------------------------------------------------------
-class RunStat: public RPrgFunc
-{
-public:
-	RunStat(void) : RPrgFunc("RunStat","Run all enabled statistics.") {}
-	void Print(R::RPrgOutput* o,RXMLTag* tag,int depth)
-	{
-		RString p;
-		for(int i=0;i<depth;i++)
-			p+="  ";
-		p+=tag->GetName();
-		RString v=tag->GetAttrValue("Value");
-		if(!v.IsEmpty())
-			p+="="+v;
-		o->WriteStr(p);
-		RCursor<RXMLTag> Cur(tag->GetNodes());
-		for(Cur.Start();!Cur.End();Cur.Next())
-			Print(o,Cur(),depth+1);
-	}
-
-	virtual void Run(R::RInterpreter* prg,R::RPrgOutput* o,RPrgVarInst* inst,R::RContainer<R::RPrgVar,true,false>& args)
-	{
-		ShowInst(this,prg,args);
-		GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
-		if(!Owner)
-			throw RPrgException(prg,"'"+inst->GetName()+"' is not an object 'GSession'");
-
-		if(args.GetNb())
-			throw RPrgException(prg,"Method needs no parameter");
-
-		// Create the root node
-		RXMLStruct xml;
-		RXMLTag* Root(new RXMLTag("Statistics"));
-		xml.AddTag(0,Root);
-
-		// Compute the statistics
-		int i;
-		R::RCastCursor<GPlugIn,GStatsCalc> Cur(GALILEIApp->GetPlugIns<GStatsCalc>("StatsCalc"));
-		for(Cur.Start(),i=1;!Cur.End();Cur.Next(),i++)
-			Cur()->Compute(&xml,*Root);
-		if(o)
-			Print(o,Root,0);
-	}
-};
-
-
-//------------------------------------------------------------------------------
 class ForceReCompute: public RPrgFunc
 {
 public:
@@ -1310,7 +1263,6 @@ GSessionClass::GSessionClass(GInstGALILEIApp* app)
 	Methods.InsertPtr(new GroupProfiles());
 	Methods.InsertPtr(new GroupDocs());
 	Methods.InsertPtr(new SetRand());
-	Methods.InsertPtr(new RunStat());
 	Methods.InsertPtr(new ForceReCompute());
 	Methods.InsertPtr(new SetSaveResults());
 	Methods.InsertPtr(new ResetMeasure());

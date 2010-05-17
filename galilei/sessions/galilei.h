@@ -334,7 +334,6 @@ class GPlugInManager;
 class GMeasure;
 class GMatrixMeasure;
 class GTool;
-class GStatsCalc;
 
 
 //------------------------------------------------------------------------------
