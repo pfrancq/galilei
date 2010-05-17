@@ -116,7 +116,7 @@ template<class cPlugin,class cObj,class cGroup,class cGrp,class cGrps,class kMea
 
 //------------------------------------------------------------------------------
 template<class cPlugin,class cObj,class cGroup,class cGrp,class cGrps,class kMeans,class KernelkMeans>
-	void PluginkMeans<cPlugin,cObj,cGroup,cGrp,cGrps,kMeans,KernelkMeans>::CreateConfig()
+	void PluginkMeans<cPlugin,cObj,cGroup,cGrp,cGrps,kMeans,KernelkMeans>::CreateConfig(void)
 {
 	InsertParam(new RParamValue("Alpha",0.9,"It is the parameter used to compute the kernel: D-αA"));
 	InsertParam(new RParamValue("Convergence",0.001,"The convergence level used"));
