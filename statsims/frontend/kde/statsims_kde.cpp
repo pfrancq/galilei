@@ -54,7 +54,7 @@ class Config : public KDialog, public Ui_Config
 public:
 	Config(void)
 	{
-		setCaption("Configure E-mail Plug-In");
+		setCaption("Configure Statistics Plug-In");
 		QWidget* widget=new QWidget(this);
 		setupUi(widget);
 		setMainWidget(widget);

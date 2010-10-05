@@ -50,7 +50,7 @@
         <item>
          <widget class="QLabel" name="label_2">
           <property name="text">
-           <string>File for the results</string>
+           <string>File containing the results</string>
           </property>
          </widget>
         </item>
@@ -181,12 +181,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>72</x>
-     <y>131</y>
+     <x>86</x>
+     <y>181</y>
     </hint>
     <hint type="destinationlabel">
-     <x>242</x>
-     <y>139</y>
+     <x>431</x>
+     <y>184</y>
     </hint>
    </hints>
   </connection>
@@ -197,12 +197,12 @@
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>117</x>
-     <y>179</y>
+     <x>131</x>
+     <y>216</y>
     </hint>
     <hint type="destinationlabel">
-     <x>234</x>
-     <y>171</y>
+     <x>414</x>
+     <y>219</y>
     </hint>
    </hints>
   </connection>

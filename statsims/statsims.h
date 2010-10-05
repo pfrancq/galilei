@@ -36,6 +36,7 @@
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <ruri.h>
+#include <rworksheet.h>
 #include <galilei.h>
 #include <gtool.h>
 using namespace R;
@@ -145,6 +146,14 @@ public:
 	 * Export the documents inclusions in a file.
 	 */
 	void DoExportDocsIncs(void);
+
+	/**
+	 * Add columns for a given statistics to compute.
+	 * @param stats          Statistics.
+	 * @param idx            Index of the first column.
+	 * @param name           Name of the columns.
+	 */
+	void AddColumns(RWorksheet& stats,size_t& idx,const RString& name);
 
 	/**
 	* Compute the statistics.

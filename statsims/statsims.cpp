@@ -72,7 +72,7 @@ using namespace std;
 class GStatSimDocs : public GStatSimElements<GDoc,GDoc>
 {
 public:
-	GStatSimDocs(GSession* ses,R::RTextFile& f) : GStatSimElements<GDoc,GDoc>(ses,otDoc,otDoc,f)
+	GStatSimDocs(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GDoc>(ses,otDoc,otDoc,stats,idx)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
 	}
@@ -100,7 +100,7 @@ class GStatSimProfiles : public GStatSimElements<GProfile,GProfile>
 {
 public:
 
-	GStatSimProfiles(GSession* ses,R::RTextFile& f) : GStatSimElements<GProfile,GProfile>(ses,otProfile,otProfile,f)
+	GStatSimProfiles(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GProfile,GProfile>(ses,otProfile,otProfile,stats,idx)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
 	}
@@ -130,7 +130,7 @@ class GStatSimDocGrp : public GStatSimElements<GDoc,GCommunity>
 
 public:
 
-	GStatSimDocGrp(GSession* ses,R::RTextFile& f) : GStatSimElements<GDoc,GCommunity>(ses,otDoc,otCommunity,f), Com(1)
+	GStatSimDocGrp(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GCommunity>(ses,otDoc,otCommunity,stats,idx), Com(1)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Groups Similarities");
 	}
@@ -159,7 +159,7 @@ class GStatSimDocProf : public GStatSimElements<GDoc,GProfile>
 {
 public:
 
-	GStatSimDocProf(GSession* ses,R::RTextFile& f) : GStatSimElements<GDoc,GProfile>(ses,otDoc,otProfile,f)
+	GStatSimDocProf(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GDoc,GProfile>(ses,otDoc,otProfile,stats,idx)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents/Profiles Similarities");
 	}
@@ -189,7 +189,7 @@ class GStatSimProfGrp : public GStatSimElements<GProfile,GCommunity>
 
 public:
 
-	GStatSimProfGrp(GSession* ses,R::RTextFile& f) : GStatSimElements<GProfile,GCommunity>(ses,otProfile,otCommunity,f), Com(1)
+	GStatSimProfGrp(GSession* ses,RWorksheet& stats,size_t idx) : GStatSimElements<GProfile,GCommunity>(ses,otProfile,otCommunity,stats,idx), Com(1)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles/Groups Similarities");
 	}
@@ -325,11 +325,33 @@ void GStatsSims::DoExportDocsIncs(void)
 
 
 //------------------------------------------------------------------------------
+void GStatsSims::AddColumns(RWorksheet& stats,size_t& idx,const RString& name)
+{
+	RString Type(" ("+name+")");
+
+	if(MeasureType=="Complete")
+	{
+		stats.AddCol(idx++,"Min ∈"+Type);       // 0
+		stats.AddCol(idx++,"Avg ∈"+Type);       // 1
+		stats.AddCol(idx++,"Max ∉"+Type);       // 2
+		stats.AddCol(idx++,"Avg ∉"+Type);       // 3
+		stats.AddCol(idx++,"Rie"+Type);         // 4
+		stats.AddCol(idx++,"In (%)"+Type);      // 5
+		stats.AddCol(idx++,"Ov (%)"+Type);      // 6
+		stats.AddCol(idx++,"J"+Type);           // 7
+	}
+	else if(MeasureType=="Nearest Neighbors")
+	{
+		stats.AddCol(idx++,"In (%)"+Type);        // 0
+		stats.AddCol(idx++,"Ov (%)"+Type);        // 1
+		stats.AddCol(idx++,"Nb NN"+Type);         // 2
+	}
+}
+
+
+//------------------------------------------------------------------------------
 void GStatsSims::Run(GSlot*)
 {
-	// Initialize
-	File.Open(Results,RIO::Create,"utf-8");
-
 	// Verify if the ideal communities should be created
 	if(GroupDoc||GroupProf)
 		Session->GetSimulator()->BuildIdealCommunities();
@@ -338,50 +360,58 @@ void GStatsSims::Run(GSlot*)
 	DoExportDocsSims();
 	DoExportDocsIncs();
 
+	// Create the statistics
+	RWorksheet Stats("Global","Name");
+	size_t Idx(0);
+
 	// Compute Statistics
 	if(Docs)
 	{
-		File<<"Documents"<<endl;
-		GStatSimDocs Stat(Session,File);
+		size_t First(Idx);
+		AddColumns(Stats,Idx,"Docs");
+		GStatSimDocs Stat(Session,Stats,First);
 		Stat.Run(GetMeasureType());
-		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 	if(ProfDoc)
 	{
-		File<<"Documents-Profiles"<<endl;
-		GStatSimDocProf Stat(Session,File);
+		size_t First(Idx);
+		AddColumns(Stats,Idx,"Documents/Profiles");
+		GStatSimDocProf Stat(Session,Stats,First);
 		Stat.Run(GetMeasureType());
-		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 	if(GroupDoc)
 	{
-		File<<"Documents-Groups"<<endl;
-		GStatSimDocGrp Stat(Session,File);
+		size_t First(Idx);
+		AddColumns(Stats,Idx,"Documents/Groups");
+		GStatSimDocGrp Stat(Session,Stats,First);
 		Stat.Run(GetMeasureType());
-		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 	if(Profiles)
 	{
-		File<<"Profiles"<<endl;
-		GStatSimProfiles Stat(Session,File);
+		size_t First(Idx);
+		AddColumns(Stats,Idx,"Profiles");
+		GStatSimProfiles Stat(Session,Stats,First);
 		Stat.Run(GetMeasureType());
-		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 	if(SameDocProf)
 	{
-		File<<"Profiles-Common-Documents"<<endl;
+/*		size_t First(Idx);
+		AddColumns(Stats,Idx,"Profiles/Common Documents");
 		GStatProfDoc Stat(Session,File);
 		Stat.Run();
-		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
+		File<<endl<<"-----------------------------------------------------"<<endl<<endl;*/
 	}
 	if(GroupProf)
 	{
-		File<<"Profiles-Groups"<<endl;
-		GStatSimProfGrp Stat(Session,File);
+		size_t First(Idx);
+		AddColumns(Stats,Idx,"Profiles/Groups");
+		GStatSimProfGrp Stat(Session,Stats,First);
 		Stat.Run(GetMeasureType());
-		File<<endl<<"-----------------------------------------------------"<<endl<<endl;
 	}
 
+	// Save the statistics
+	File.Open(Results,RIO::Create,"utf8");
+	Stats.Save(File);
 	File.Close();
 }
 

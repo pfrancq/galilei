@@ -58,83 +58,13 @@ protected:
 	GSession* Session;
 
 	/**
-	* The Mean of the Mean intra group similarity.
-	*/
-	double MeanIntra;
-
-	/**
-	* The Mean of the Mean extra group similarity.
-	*/
-	double MeanExtra;
-
-	/**
-	* Ratio Rie.
-	*/
-	double Rie;
-
-	/**
-	* Local Ratio Rie.
-	*/
-	double LocalRie;
-
-	/**
-	* Ratio Frac.
-	*/
-	double Frac;
-
-	/**
-	* Local Ratio Frac.
-	*/
-	double LocalFrac;
-
-	/**
-	* Overlap Factor.
-	*/
-	double Overlap;
-
-	/**
-	 * J Measure.
-	 */
-	double J;
-
-	/**
-	* Statistics Output file.
-	*/
-	R::RTextFile& Results;
-
-	/**
 	*/
 	GMeasure* Measure;
-
-	/**
-	 * Number of elements compared.
-	 */
-	size_t NbElements;
-
-	/**
-	 * Number of subjects containing elements compared.
-	 */
-	size_t NbSubjects;
-
-	/**
-	 * Was the tile written.
-	 */
-	bool WriteTitle;
-
-	/**
-	 * Centers of each subject (only if same objects).
-	 */
-	R::RContainer<E1,false,false> Centers;
 
 	/**
 	 * Are the objects compared from the same type?
 	 */
 	bool SameObjects;
-
-	/**
-	 * Negative values for similarities?
-	 */
-	bool Neg;
 
 	/**
 	 * Type of the first objects.
@@ -146,16 +76,27 @@ protected:
 	 */
 	tObjType ObjType2;
 
+	/**
+	 * Statistics.
+	 */
+	RWorksheet& Stats;
+
+	/**
+	 * First Index.
+	 */
+	size_t FirstIndex;
+
 public:
 
 	/**
 	* Constructor.
-	* @param ses            The GALILEI session.
+	* @param ses            The GALILEI sessi,RTextFile& fon.
 	* @param objtype1       Type of the first objects.
 	* @param objtype2       Type of the second objects.
-	* @param f              File.
+	* @param stats          Statistics.
+	* @param idx            First index.
 	*/
-	GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,R::RTextFile& f);
+	GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,RWorksheet& stats,size_t idx);
 
 	/**
 	 * Cursor over the first type of objects.
@@ -175,12 +116,13 @@ public:
 	 */
 	virtual R::RCursor<E2> GetE2Cursor(GSubject* sub)=0;
 
-	void AnalyzeObjs(size_t id1,size_t id2);
-
 	/**
-	 * Compute the similarities for a given subject.
+	 * Compare the vectors of two objects. In practice, each concept describing
+	 * the two objects is printed with the current weights and idf.
+	 * @param id1            Identifier of the first object.
+	 * @param id2            Identifier of the second object.
 	 */
-	void ComputeSubject(GSubject* sub);
+	void CompareVectors(size_t id1,size_t id2);
 
 	/**
 	* Compute the similarities statistics.
@@ -211,16 +153,16 @@ public:
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,RTextFile& f)
-	: Session(ses), Results(f), Centers(50), SameObjects(objtype1==objtype2),
-	  ObjType1(objtype1), ObjType2(objtype2)
+	GStatSimElements<E1,E2>::GStatSimElements(GSession* ses,tObjType objtype1,tObjType objtype2,RWorksheet& stats,size_t idx)
+	: Session(ses), SameObjects(objtype1==objtype2),
+	  ObjType1(objtype1), ObjType2(objtype2), Stats(stats), FirstIndex(idx)
 {
 }
 
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::AnalyzeObjs(size_t id1,size_t id2)
+	void GStatSimElements<E1,E2>::CompareVectors(size_t id1,size_t id2)
 {
 	GWeightInfosObj* Obj1(static_cast<GWeightInfosObj*>(Session->GetObject(ObjType1,id1)));
 	GWeightInfosObj* Obj2(static_cast<GWeightInfosObj*>(Session->GetObject(ObjType2,id2)));
@@ -249,7 +191,7 @@ template<class E1,class E2>
 				//Idf=","+Idf;
 			}
 
-			Results<<Vec1()->GetConcept()->GetName()<<": "<<Value1+","+Value2+Idf<<endl;
+			cout<<Vec1()->GetConcept()->GetName()<<": "<<Value1+","+Value2+Idf<<endl;
 		}
 
 		// Next element of Vec1
@@ -260,286 +202,215 @@ template<class E1,class E2>
 
 //------------------------------------------------------------------------------
 template<class E1,class E2>
-	void GStatSimElements<E1,E2>::ComputeSubject(GSubject* sub)
-{
-	double SimIntra(0.0);         // Intra-similarity of the cluster
-	double SimExtra(0.0);         // Extra-similarity of the cluster
-	double SimEIntra(0.0);        // Intra-similarity of the element
-	double SimEExtra(0.0);        // Extra-similarity of the element
-	double MaxSimIntra(-2.0);     // Maximal intra-similarity in the current cluster
-	double tmp;
-	double LRie(0.0),LLocalRie(0.0),LFrac(0.0),LLocalFrac(0.0);
-	size_t nbIntra(0);            // Number of element Intra of the cluster
-	size_t nbExtra(0);            // Number of element Extra of the cluster
-	size_t nbEIntra;              // Number of element Intra of the element
-	size_t nbEExtra;              // Number of element Extra of the element
-	double MinIntra(2.0);
-	double MaxExtra(-2.0);
-	size_t IdIntraMax;         // Name of the intra-element corresponding to the maximal extra-similarity.
-	size_t IdExtraMax;         // Name of the extra-element corresponding to the maximal extra-similarity.
-	double LOverlap(0.0);
-	size_t LNbElements(0);
-	E1* Center(0);                // Center of the subject
-
-	// Go through each element of this subject
-	R::RCursor<E1> Cur1(GetE1Cursor(sub));
-	for(Cur1.Start();!Cur1.End();Cur1.Next())
-	{
-		if(!Cur1()->IsDefined()) continue;
-
-		// Number of elements treated here
-		double min(1.1),max(-1.1);
-		NbElements++;
-		LNbElements++;
-		SimEIntra=SimEExtra=0.0;
-		nbEIntra=nbEExtra=0;
-
-		// Compute Intra-sim
-		R::RCursor<E2> Cur2(GetE2Cursor(sub));
-		for(Cur2.Start();!Cur2.End();Cur2.Next())
-		{
-			if(!Cur2()->IsDefined()) continue;
-			if(SameObjects&&(Cur1()->GetId()==Cur2()->GetId())) continue;
-			Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
-			if(tmp<0.0)
-				Neg=true;
-			nbIntra++;
-			nbEIntra++;
-			SimIntra+=tmp;
-			SimEIntra+=tmp;
-			if(tmp<MinIntra) MinIntra=tmp;
-			if(tmp<min) min=tmp;
-		}
-
-		// Compute Extra-sim
-		R::RCursor<GSubject> Subs2(Session->GetSubjects());
-		for(Subs2.Start();!Subs2.End();Subs2.Next())
-		{
-			// Look if Same topic
-			if(sub==Subs2()) continue;
-
-			// Go through to other elements
-			R::RCursor<E2> Cur2(GetE2Cursor(Subs2()));
-			for(Cur2.Start();!Cur2.End();Cur2.Next())
-			{
-				if(!Cur2()->IsDefined()) continue;
-				Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
-				if(tmp<0.0)
-					Neg=true;
-				nbExtra++;
-				nbEExtra++;
-				SimExtra+=tmp;
-				SimEExtra+=tmp;
-				if(tmp>MaxExtra)
-				{
-					MaxExtra=tmp;
-					IdIntraMax=Cur1()->GetId();
-					IdExtraMax=Cur2()->GetId();
-				}
-				if(tmp>max) max=tmp;
-			}
-		}
-
-		// Compute Overlap for current element
-		if(max>min)
-		{
-			LOverlap++;
-			Overlap++;
-		}
-
-		// Compute local means
-		if(nbEIntra)
-			SimEIntra/=static_cast<double>(nbEIntra);
-		if(nbEExtra)
-			SimEExtra/=static_cast<double>(nbEExtra);
-
-		// Verify if the actual element may be the center
-		if(SimEIntra>MaxSimIntra)
-		{
-			MaxSimIntra=SimEIntra;
-			Center=Cur1();
-		}
-
-		// Compute Rie local
-		if(SimEIntra!=0.0)
-		{
-			LocalRie+=((SimEIntra-SimEExtra)/SimEIntra);
-			LLocalRie+=((SimEIntra-SimEExtra)/SimEIntra);
-		}
-
-		// Compute MeanIntra/(MeanIntra+MeanExtra) local
-		if(SimEIntra+SimEExtra!=0.0)
-		{
-			LocalFrac+=(SimEIntra/(SimEExtra+SimEIntra));
-			LLocalFrac+=(SimEIntra/(SimEExtra+SimEIntra));
-		}
-
-	}
-
-	if(!LNbElements)
-		return;
-
-	// Subject contains compared elements
-	NbSubjects++;
-	if(SameObjects)
-	{
-		Centers.InsertPtr(Center);  // Add the center
-		J+=MaxSimIntra;
-	}
-
-	// Compute indicators for current subject
-	if(nbIntra)
-	{
-		SimIntra/=static_cast<double>(nbIntra);
-		MeanIntra+=SimIntra;
-	}
-
-	if(nbExtra)
-	{
-		SimExtra/=static_cast<double>(nbExtra);
-		MeanExtra+=SimExtra;
-		//AnalyzeObjs(IdIntraMax,IdExtraMax);
-	}
-
-	if(SimIntra!=0.0)
-	{
-		LRie=(SimIntra-SimExtra)/SimIntra;
-	}
-	LLocalRie/=static_cast<double>(LNbElements);
-
-	if(SimIntra+SimExtra!=0.0)
-	{
-		LFrac=SimIntra/(SimIntra+SimExtra);
-	}
-	LLocalFrac/=static_cast<double>(LNbElements);
-	LOverlap/=static_cast<double>(LNbElements);
-
-	// File
-	if(WriteTitle)
-	{
-		RString n1("Name"); n1.SetLen(25," ");
-		RString n2("Min Intra"); n2.SetLen(15," ");
-		RString n3("Mean Intra"); n3.SetLen(15," ");
-		RString n4("Max Extra"); n4.SetLen(15," ");
-		RString n5("Mean Extra"); n5.SetLen(15," ");
-		RString n6("Rie"); n6.SetLen(15," ");
-		RString n7("LocalRie"); n7.SetLen(15," ");
-		RString n8("Frac"); n8.SetLen(15," ");
-		RString n9("LocalFrac"); n9.SetLen(15," ");
-		RString n10("Overlap"); n10.SetLen(15," ");
-		RString n11("J"); n11.SetLen(15," ");
-		Results<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
-		WriteTitle=false;
-	}
-
-	RString n1(sub->GetName()); n1.SetLen(25," ");
-	RString n2(RString::Number(MinIntra,"%.5E")); n2.SetLen(15," ");
-	RString n3(RString::Number(SimIntra,"%.5E")); n3.SetLen(15," ");
-	RString n4(RString::Number(MaxExtra,"%.5E")); n4.SetLen(15," ");
-	RString n5(RString::Number(SimExtra,"%.5E")); n5.SetLen(15," ");
-	RString n6(RString::Number(LRie,"%.5E")); n6.SetLen(15," ");
-	RString n7(RString::Number(LLocalRie,"%.5E")); n7.SetLen(15," ");
-	RString n8(RString::Number(LFrac,"%.5E")); n8.SetLen(15," ");
-	RString n9(RString::Number(LLocalFrac,"%.5E")); n9.SetLen(15," ");
-	RString n10(RString::Number(LOverlap,"%.5E")); n10.SetLen(15," ");
-	RString n11("------"); n11.SetLen(15," ");
-	Results<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
-}
-
-
-//------------------------------------------------------------------------------
-template<class E1,class E2>
 	void GStatSimElements<E1,E2>::RunComplete(void)
 {
-	// Initialization
-	Neg=false;
-	WriteTitle=true;
-	NbElements=NbSubjects=0;
-	Overlap=MeanExtra=MeanIntra=0.0;
-	J=Rie=LocalRie=Frac=LocalFrac=0.0;
-
-	// Compute minimum similarity
-	if(SameObjects)
-	{
-		double minsim,avgsim,devsim;
-		Measure->Info(0,&minsim);
-		Measure->Info(1,&avgsim);
-		Measure->Info(2,&devsim);
-		RString n1(""); n1.SetLen(25," ");
-		RString n2("Min Sim"); n2.SetLen(15," ");
-		RString n3("Avg Sim"); n3.SetLen(15," ");
-		RString n4("Dev Sim"); n4.SetLen(15," ");
-		Results<<n1+n2+n3+n4<<endl;
-		n1="Global"; n1.SetLen(24," ");
-		n2=RString::Number(minsim,"%.5E"); n2.SetLen(15," ");
-		n3=RString::Number(avgsim,"%.5E"); n3.SetLen(15," ");
-		n4=RString::Number(devsim,"%.5E"); n4.SetLen(15," ");
-		Results<<n1+n2+n3+n4<<endl;
-		Results<<"--------------"<<endl;
-	}
+	size_t NbSubjects(0);                   // Number of subjects
+	double AvgMinIntra(0.0);                // Average minimum intra-cluster similarity
+	double AvgIntra(0.0);                   // Average intra-cluster similarity
+	double AvgMaxInter(0.0);                // Average maximum inter-cluster similarity
+	double AvgInter(0.0);                   // Average inter-cluster similarity
+	double AvgRie(0.0);                     // Average Rie
+	double AvgIn(0.0);                      // Average incoherence
+	double AvgOv(0.0);                      // Average overlap
+	double J(0.0);                          // J Measure
+	RContainer<E1,false,false> Centers(100);
 
 	// Go trough the subjects
-	Centers.Clear();
 	R::RCursor<GSubject> Sub(Session->GetSubjects());
-	for(Sub.Start();!Sub.End();Sub.Next())
-		ComputeSubject(Sub());
-	if(SameObjects)
+	size_t Line;
+	for(Sub.Start(),Line=0;!Sub.End();Sub.Next(),Line++)
 	{
-		// Compute max inter-similarity and then J
-		R::RCursor<E1> Cur1(Centers);
-		size_t nb=Centers.GetNb()-1;
-		double max(-2.0);
+		// Add line in the worksheet
+		Stats.AddLine(Line,Sub()->GetName());
+
+		size_t NbElements(0);                        // Number of elements in Sub()
+		double LocalAvgMinIntra(0.0);                // Average minimum intra-cluster similarity for Sub()
+		double LocalAvgIntra(0.0);                   // Average intra-cluster similarity for Sub()
+		double LocalAvgMaxInter(0.0);                // Average maximum inter-cluster similarity for Sub()
+		double LocalAvgInter(0.0);                   // Average inter-cluster similarity for Sub()
+		double LocalAvgRie(0.0);                     // Average Rie for Sub()
+		double LocalAvgIn(0.0);                      // Average incoherence for Sub()
+		double LocalAvgOv(0.0);                      // Average overlap for Sub()
+		double MaxIntra(-2.0);                       // Maximal intra-similarity
+		E1* Center(0);                               // Center of the subject
+		double tmp;
+
+		// Go through each element of this subject
+		R::RCursor<E1> Cur1(GetE1Cursor(Sub()));
 		for(Cur1.Start();!Cur1.End();Cur1.Next())
 		{
-			double avg(0.0);
-			R::RCursor<E1> Cur2(Centers);
+			if(!Cur1()->IsDefined()) continue;
+			NbElements++;
+
+			// Init measure for object
+			double MinIntra(2.0);                // Minimum intra-cluster similarity
+			double Intra(0.0);                   // Intra-cluster similarity
+			double MaxInter(-2.0);               // Maximum inter-cluster similarity
+			double Inter(0.0);                   // Inter-cluster similarity
+			double In(0.0);                      // Incoherence
+			size_t NbIntraElements(0);           // Number of elements inside the subject
+			size_t NbInterElements(0);           // Number of elements outside the subject
+
+			// Compute Extra-sim
+			R::RCursor<GSubject> Subs2(Session->GetSubjects());
+			for(Subs2.Start();!Subs2.End();Subs2.Next())
+			{
+				// Look if Same topic
+				if(Sub()==Subs2()) continue;
+
+				// Go through to other elements
+				R::RCursor<E2> Cur2(GetE2Cursor(Subs2()));
+				for(Cur2.Start();!Cur2.End();Cur2.Next())
+				{
+					// Verify if the object must be treated
+					if(!Cur2()->IsDefined()) continue;
+					NbInterElements++;
+
+					// Treat the similarity
+					Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
+					if(tmp<0.0)
+						ThrowGException("Negative similarity : Similarity ∈ [0,1]");
+
+					Inter+=tmp;
+					if(tmp>MaxInter)
+						MaxInter=tmp;
+				}
+			}
+
+			// Compute Intra-sim
+			R::RCursor<E2> Cur2(GetE2Cursor(Sub()));
 			for(Cur2.Start();!Cur2.End();Cur2.Next())
 			{
-				if(Cur1()==Cur2()) continue;
-				double tmp;
+				// Verify if the object must be treated
+				if(!Cur2()->IsDefined()) continue;
+				if(SameObjects&&(Cur1()->GetId()==Cur2()->GetId())) continue;
+				NbIntraElements++;
+
+				// Treat the similarity
 				Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
 				if(tmp<0.0)
-					Neg=true;
-				avg+=tmp;
+					ThrowGException("Negative similarity : Similarity ∈ [0,1]");
+
+				Intra+=tmp;
+				if(tmp<MinIntra)
+					MinIntra=tmp;
+				if(tmp<MaxInter)
+					In+=1.0;
 			}
-			avg/=static_cast<double>(nb);
-			if(avg>max)
-				max=avg;
+
+			if(NbIntraElements)
+			{
+				Intra/=static_cast<double>(NbIntraElements);
+				if(Intra>MaxIntra)
+				{
+					MaxIntra=Intra;
+					Center=Cur1();
+				}
+				In/=static_cast<double>(NbIntraElements);
+				LocalAvgIntra+=Intra;
+				LocalAvgIn+=In;
+				LocalAvgMinIntra+=MinIntra;
+			}
+
+			if(NbInterElements)
+			{
+				Inter/=static_cast<double>(NbInterElements);
+				LocalAvgInter+=Inter;
+				LocalAvgMaxInter+=MaxInter;
+			}
+
+			if((NbIntraElements)&&(NbInterElements))
+			{
+				LocalAvgRie+=(Intra-Inter)/Intra;
+				if(MinIntra<MaxInter)
+					LocalAvgOv+=1.0;
+			}
 		}
-		if(Neg)
+
+		// Subject contains compared elements
+		if(SameObjects)
 		{
-			J=(J+1.0)/2.0;
-			max=(max+1.0)/2.0;
+			Centers.InsertPtr(Center);  // Add the center
+			J+=MaxIntra;
 		}
-		J/=(static_cast<double>(NbSubjects)*max);
+
+		if(NbElements)
+		{
+			LocalAvgMinIntra/=static_cast<double>(NbElements);
+			LocalAvgIntra/=static_cast<double>(NbElements);
+			LocalAvgInter/=static_cast<double>(NbElements);
+			LocalAvgMaxInter/=static_cast<double>(NbElements);
+			LocalAvgIn/=static_cast<double>(NbElements);
+			LocalAvgOv/=static_cast<double>(NbElements);
+			LocalAvgRie/=static_cast<double>(NbElements);
+
+			NbSubjects++;
+			Stats.AddLine(Line,Sub()->GetName());
+			Stats.SetValue(FirstIndex,Line,LocalAvgMinIntra);
+			Stats.SetValue(FirstIndex+1,Line,LocalAvgIntra);
+			Stats.SetValue(FirstIndex+2,Line,LocalAvgMaxInter);
+			Stats.SetValue(FirstIndex+3,Line,LocalAvgInter);
+			Stats.SetValue(FirstIndex+4,Line,LocalAvgRie);
+			Stats.SetValue(FirstIndex+5,Line,LocalAvgIn*100.0);
+			Stats.SetValue(FirstIndex+6,Line,LocalAvgOv*100.0);
+			Stats.InvalidValue(FirstIndex+7,Line);
+
+			AvgMinIntra+=LocalAvgMinIntra;
+			AvgIntra+=LocalAvgIntra;
+			AvgInter+=LocalAvgInter;
+			AvgMaxInter+=LocalAvgMaxInter;
+			AvgIn+=LocalAvgIn;
+			AvgOv+=LocalAvgOv;
+			AvgRie+=LocalAvgRie;
+		}
 	}
 
 	// Compute elements statistics
-	if(NbElements)
+	if(NbSubjects)
 	{
-		MeanIntra/=static_cast<double>(NbSubjects);
-		MeanExtra/=static_cast<double>(NbSubjects);
-		if(MeanIntra!=0.0)
-			Rie=(MeanIntra-MeanExtra)/MeanIntra;
-		if(MeanIntra+MeanExtra!=0.0)
-			Frac=MeanIntra/(MeanExtra+MeanIntra);
-		Overlap/=static_cast<double>(NbElements);
-		LocalRie/=static_cast<double>(NbElements);
-		LocalFrac/=static_cast<double>(NbElements);
+		AvgMinIntra/=static_cast<double>(NbSubjects);
+		AvgIntra/=static_cast<double>(NbSubjects);
+		AvgInter/=static_cast<double>(NbSubjects);
+		AvgMaxInter/=static_cast<double>(NbSubjects);
+		AvgIn/=static_cast<double>(NbSubjects);
+		AvgOv/=static_cast<double>(NbSubjects);
+		AvgRie/=static_cast<double>(NbSubjects);
 
-		RString n1("Global"); n1.SetLen(25," ");
-		RString n2("------"); n2.SetLen(15," ");
-		RString n3(RString::Number(MeanIntra,"%.5E")); n3.SetLen(15," ");
-		RString n4("------"); n4.SetLen(15," ");
-		RString n5(RString::Number(MeanExtra,"%.5E")); n5.SetLen(15," ");
-		RString n6(RString::Number(Rie)); n6.SetLen(15," ");
-		RString n7(RString::Number(LocalRie)); n7.SetLen(15," ");
-		RString n8(RString::Number(Frac)); n8.SetLen(15," ");
-		RString n9(RString::Number(LocalFrac)); n9.SetLen(15," ");
-		RString n10(RString::Number(Overlap,"%.5E")); n10.SetLen(15," ");
-		RString n11(RString::Number(J,"%.5E")); n11.SetLen(15," ");
-		Results<<n1+n2+n3+n4+n5+n6+n7+n8+n9+n10+n11<<endl;
-		Results<<"--------------"<<endl;
+		// Compute max inter-similarity and then J
+		if(SameObjects)
+		{
+			R::RCursor<E1> Cur1(Centers);
+			size_t nb=Centers.GetNb()-1;
+			double max(-2.0);
+			for(Cur1.Start();!Cur1.End();Cur1.Next())
+			{
+				double avg(0.0);
+				R::RCursor<E1> Cur2(Centers);
+				for(Cur2.Start();!Cur2.End();Cur2.Next())
+				{
+					if(Cur1()==Cur2()) continue;
+					double tmp;
+					Measure->Measure(0,Cur1()->GetId(),Cur2()->GetId(),&tmp);
+					if(tmp<0.0)
+						ThrowGException("Negative similarity : Similarity ∈ [0,1]");
+					avg+=tmp;
+				}
+				avg/=static_cast<double>(nb);
+				if(avg>max)
+					max=avg;
+			}
+			J/=(static_cast<double>(NbSubjects)*max);
+		}
+
+		Stats.AddLine(Line,"Global");
+		Stats.SetValue(FirstIndex,Line,AvgMinIntra);
+		Stats.SetValue(FirstIndex+1,Line,AvgIntra);
+		Stats.SetValue(FirstIndex+2,Line,AvgMaxInter);
+		Stats.SetValue(FirstIndex+3,Line,AvgInter);
+		Stats.SetValue(FirstIndex+4,Line,AvgRie);
+		Stats.SetValue(FirstIndex+5,Line,AvgIn*100.0);
+		Stats.SetValue(FirstIndex+6,Line,AvgOv*100.0);
+		Stats.SetValue(FirstIndex+7,Line,J);
 	}
 }
 
@@ -549,46 +420,34 @@ template<class E1,class E2>
 	void GStatSimElements<E1,E2>::RunNearestNeighbors(void)
 {
 	// Global statistics
-	size_t NbLines(0);            // Number of "lines" elements.
-	double AvgIntra(0.0);         // Average percentage of nearest neighbors of the same subject.
-	double AvgInter(0.0);         // Average percentage of nearest neighbors of different subjects.
+	size_t NbSubjects(0);         // Number of subjects.
 	double AvgCols(0.0);          // Average number of nearest neighbors.
-	double AvgOverlap(0.0);       // Average overlap of the nearest neighbors between the elements of the same subject.
-	double AvgIntraOverlap(0.0);  // Average overlap of the nearest neighbors of a given subject between the elements of that subject.
-	bool Print(false);
-	RNumContainer<size_t,true> Neigbors(1000);
+	double AvgIn(0.0);            // Average incoherence (average percentage of nearest neighbors to be in the same subject).
+	double AvgOv(0.0);            // Average overlap (average number of elements having one nearest neighbor not from the same subject).
 
+	size_t Line;
 	R::RCursor<GSubject> Sub(Session->GetSubjects());
-	for(Sub.Start();!Sub.End();Sub.Next())
+	for(Sub.Start(),Line=0;!Sub.End();Sub.Next(),Line++)
 	{
 		// Local statistics
 		size_t LocalNbLines(0);          // Number of "lines" elements in Sub().
-		double LocalAvgIntra(0.0);       // Average percentage of nearest neighbors of in Sub().
-		double LocalAvgInter(0.0);       // Average percentage of nearest neighbors not in Sub().
 		double LocalAvgCols(0.0);        // Average number of nearest neighbors in Sub().
-		double LocalOverlap(0.0);        // Average overlap of the nearest neighbors between the elements in Sub().
-		double LocalIntraOverlap(0.0);   // Average overlap of the nearest neighbors in Sub() between the elements in Sub().
+		double LocalAvgIn(0.0);          // Average incoherence in Sub() (average percentage of nearest neighbors to be in the same subject).
+		double LocalAvgOv(0.0);          // Average overlap in Sub() (average number of elements having one nearest neighbor not from the same subject).
 
 		// Go through each element of Sub()
 		R::RCursor<E1> Lines(GetE1Cursor(Sub()));
 		for(Lines.Start();!Lines.End();Lines.Next())
 		{
 			// Increment the number of elements
-			NbLines++;
 			LocalNbLines++;
 
 			// Initialize the values
 			size_t NbCols(0);          // Number of nearest neighbors.
-			size_t Intra(0);           // Number of nearest neighbors in Sub().
-			size_t Inter(0);           // Number of nearest neighbors not in Sub().
-			double Overlap(0.0);       // Overlap of nearest neighbors in Lines() with the other elements of Sub()
-			double IntraOverlap(0.0);  // Overlap of nearest neighbors in Sub() in Lines() with the other elements of Sub()
-			Neigbors.Clear();
-			Neigbors.Insert(Lines()->GetId()); // The element is it own nearest neighbor for the overlap computing
+			double In(0.0);            // Incoherence.
+			bool Overlap(false);       // Suppose no overlap
 
-			// Compute the intra and inter of the nearest neighbors
-			if(Print)
-				cout<<Lines()->GetName()<<endl;
+			// Compute the nearest neighbors of the same subject
 			const RMaxVector* Vec;
 			Measure->Info(3,Lines()->GetId(),&Vec);
 			RCursor<RMaxValue> Cur(*Vec);
@@ -600,139 +459,46 @@ template<class E1,class E2>
 				E2* Col(static_cast<E2*>(Session->GetObject(ObjType2,Cur()->Id)));
 				const GSubject* Subject2(Session->GetSubject(Col));
 
-				if(Print)
-					cout<<"  "<<Col->GetName()<<endl;
-
 				if(Sub()==Subject2)
-					Intra++;
+					In+=1.0;
 				else
-					Inter++;
-
-				Neigbors.Insert(Cur()->Id);
+					Overlap=true;
 			}
-
-			// Compute overlap
-			size_t NbOtherLines(0);
-			size_t NbMaxOverlap(Neigbors.GetNb());
-			if(!NbMaxOverlap)
-				continue;
-			R::RCursor<E1> OtherLines(GetE1Cursor(Sub()));
-			for(OtherLines.Start();!OtherLines.End();OtherLines.Next())
-			{
-				if(Lines()==OtherLines())
-					continue;
-
-				NbOtherLines++;
-
-				size_t LocalOverlap(0);
-				size_t LocalIntraOverlap(0);
-
-				if(Neigbors.IsIn(OtherLines()->GetId()))
-				{
-					LocalOverlap++;
-					LocalIntraOverlap++;
-				}
-
-				const RMaxVector* Vec2;
-				Measure->Info(3,OtherLines()->GetId(),&Vec2);
-				RCursor<RMaxValue> Cur2(*Vec2);
-				for(Cur2.Start();!Cur2.End();Cur2.Next())
-				{
-					// Verify if the nearest neighbor of OtherLines() is in Lines()
-					if(!Neigbors.IsIn(Cur2()->Id))
-						continue;
-
-					LocalOverlap++;  // One common nearest neighbor
-
-					// Get the subject of Cur2()
-					E2* Col(static_cast<E2*>(Session->GetObject(ObjType2,Cur2()->Id)));
-					const GSubject* Subject2(Session->GetSubject(Col));
-					if(Subject2==Sub())
-						LocalIntraOverlap++;
-				}
-				if((LocalOverlap>NbMaxOverlap)||(LocalIntraOverlap>NbMaxOverlap))
-					cout<<"Problem"<<endl;
-				Overlap+=static_cast<double>(LocalOverlap)/static_cast<double>(NbMaxOverlap);
-				IntraOverlap+=static_cast<double>(LocalIntraOverlap)/static_cast<double>(NbMaxOverlap);
-			}
-
-
-			if(Print)
-			{
-				cout<<"AvgIntra"<<static_cast<double>(Intra)/static_cast<double>(NbCols)<<endl;
-				cout<<"AvgInter"<<static_cast<double>(Inter)/static_cast<double>(NbCols)<<endl;
-			}
-			Print=false;
-
 			if(NbCols)
-			{
-				AvgIntra+=static_cast<double>(Intra)/static_cast<double>(NbCols);
-				AvgInter+=static_cast<double>(Inter)/static_cast<double>(NbCols);
-				AvgCols+=static_cast<double>(NbCols);
-				LocalAvgIntra+=static_cast<double>(Intra)/static_cast<double>(NbCols);
-				LocalAvgInter+=static_cast<double>(Inter)/static_cast<double>(NbCols);
-				LocalAvgCols+=static_cast<double>(NbCols);
-			}
-			if(NbOtherLines)
-			{
-				if((Overlap>NbOtherLines)||(IntraOverlap>NbOtherLines))
-					cout<<"Problem"<<endl;
-				AvgOverlap+=Overlap/static_cast<double>(NbOtherLines);
-				AvgIntraOverlap+=IntraOverlap/static_cast<double>(NbOtherLines);
-				LocalOverlap+=Overlap/static_cast<double>(NbOtherLines);
-				LocalIntraOverlap+=IntraOverlap/static_cast<double>(NbOtherLines);
-			}
+				In/=NbCols;
+			LocalAvgIn+=In;
+			LocalAvgCols+=NbCols;
+			if(Overlap)
+				LocalAvgOv+=1.0;
 		}
 
 		if(LocalNbLines)
 		{
-			LocalAvgIntra/=static_cast<double>(LocalNbLines);
-			LocalAvgInter/=static_cast<double>(LocalNbLines);
+			LocalAvgIn/=static_cast<double>(LocalNbLines);
 			LocalAvgCols/=static_cast<double>(LocalNbLines);
-			LocalOverlap/=static_cast<double>(LocalNbLines);
-			LocalIntraOverlap/=static_cast<double>(LocalNbLines);
+			LocalAvgOv/=static_cast<double>(LocalNbLines);
+			AvgIn+=LocalAvgIn;
+			AvgOv+=LocalAvgOv;
+			AvgCols+=LocalAvgCols;
+			NbSubjects++;
+			Stats.AddLine(Line,Sub()->GetName());
+			Stats.SetValue(FirstIndex,Line,LocalAvgIn*100.0);
+			Stats.SetValue(FirstIndex+1,Line,LocalAvgOv*100.0);
+			Stats.SetValue(FirstIndex+2,Line,LocalAvgCols);
 		}
-
-		// File
-		if(WriteTitle)
-		{
-			RString n1("Name");         n1.SetLen(25," ");
-			RString n2("Intra (%)");    n2.SetLen(15," ");
-			RString n3("Inter (%)");    n3.SetLen(15," ");
-			RString n4("Overlap (%)");  n4.SetLen(15," ");
-			RString n5("LOverlap (%)"); n5.SetLen(15," ");
-			RString n6("Nb NN");        n6.SetLen(15," ");
-			Results<<n1+n2+n3+n4+n5+n6<<endl;
-			WriteTitle=false;
-		}
-
-		RString n1(Sub()->GetName());                                 n1.SetLen(25," ");
-		RString n2(RString::Number(LocalAvgIntra*100.0,"%3.2f"));     n2.SetLen(15," ");
-		RString n3(RString::Number(LocalAvgInter*100.0,"%3.2f"));     n3.SetLen(15," ");
-		RString n4(RString::Number(LocalOverlap*100.0,"%3.2f"));      n4.SetLen(15," ");
-		RString n5(RString::Number(LocalIntraOverlap*100.0,"%3.2f")); n5.SetLen(15," ");
-		RString n6(RString::Number(LocalAvgCols,"%5.1f"));            n6.SetLen(15," ");
-		Results<<n1+n2+n3+n4+n5+n6<<endl;
 	}
 
-	if(NbLines)
+	if(NbSubjects)
 	{
-		AvgIntra/=static_cast<double>(NbLines);
-		AvgInter/=static_cast<double>(NbLines);
-		AvgCols/=static_cast<double>(NbLines);
-		AvgOverlap/=static_cast<double>(NbLines);
-		AvgIntraOverlap/=static_cast<double>(NbLines);
+		AvgCols/=static_cast<double>(NbSubjects);
+		AvgOv/=static_cast<double>(NbSubjects);
+		AvgIn/=static_cast<double>(NbSubjects);
+
+		Stats.AddLine(Line,"Global");
+		Stats.SetValue(FirstIndex,Line,AvgIn*100.0);
+		Stats.SetValue(FirstIndex+1,Line,AvgOv*100.0);
+		Stats.SetValue(FirstIndex+2,Line,AvgCols);
 	}
-
-
-	RString n1("Global");                                       n1.SetLen(25," ");
-	RString n2(RString::Number(AvgIntra*100.0,"%3.2f"));        n2.SetLen(15," ");
-	RString n3(RString::Number(AvgInter*100.0,"%3.2f"));        n3.SetLen(15," ");
-	RString n4(RString::Number(AvgOverlap*100.0,"%3.2f"));      n4.SetLen(15," ");
-	RString n5(RString::Number(AvgIntraOverlap*100.0,"%3.2f")); n5.SetLen(15," ");
-	RString n6(RString::Number(AvgCols,"%5.1f"));               n6.SetLen(15," ");
-	Results<<n1+n2+n3+n4+n5+n6<<endl;
-	Results<<"--------------"<<endl;
 }
 
 
