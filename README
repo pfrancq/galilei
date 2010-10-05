@@ -1,0 +1,39 @@
+GALILEI PlugIn : StatData
+This plug-in computes several statistics concerning data extracting from documents. It is used to evaluate which data are the most relevant for the different categories.
+
+QUICK BUILD
+-----------
+1) How-to build (command-line):
+- create a build directory (by exemple /path/to/galilei/build)
+- cd /path/to/galilei/build
+- cmake .. [OPTIONS]
+- make or make VERBOSE=1
+
+2) How-to build (Ecplise):
+before the first build:
+- create a build directory (by exemple /path/to/galilei/build, and for Eclipse correct work, this place is very great)
+- cd /path/to/galilei/build
+- cmake .. [OPTIONS]
+- update Eclipse C++ project options:
+	--> C/C++ Build (click on title)
+		-> builder settings tab
+		-> disable 'use the default build command' (untick checkbox)
+		-> fill the 'build command' text field with 'make -C ${project_loc}/build VERBOSE=1'
+	--> C/C++ Build (click on title)
+		---> Settings
+			-> enable the good parser on the 'binary parsers' tab (ELF related for Linux)
+- configure a target for all in Ecplise
+
+ABOUT OPTIONS (when running cmake)
+-----------------------------------
+In CMake, options are in the form -D<option_name>=<option_value>, where <option_name> (case sensitive) and <option_value> are mandatory.
+When you set a value, it's stored in cache, until you provide a new value.
+
+So if you first configure with
+cmake .. -DCMAKE_BUILD_TYPE=Debugfull
+the first time, the project will be build with debug informations.  Future cmake invocation without paramater (like cmake ..)
+still prepare configuration for debug.  You need to set one time the new value for the configuration to update this setting
+cmake .. -DCMAKE_BUILD_TYPE=Release
+And again, until you didn't say it, cmake will keep this setting.
+
+This is false if you remove the content of your build directory (you must past again your options)...
