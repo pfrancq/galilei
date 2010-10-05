@@ -261,4 +261,4 @@ Thesaurus::~Thesaurus(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_TOOL_FACTORY("Thesaurs Creation","HGA","Hierarchical Genetic Algorithm",Thesaurus)
+CREATE_TOOL_FACTORY("Thesaurus Creation","HGA","Hierarchical Genetic Algorithm",Thesaurus)
