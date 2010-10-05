@@ -61,7 +61,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAInstDoc::GCAInstDoc(GSession* ses,RCursor<GDoc> objs,RParamsSC* p,RDebug *debug,tObjType type)
+GCAInstDoc::GCAInstDoc(GSession* ses,RCursor<GDoc> objs,RParamsSC* p,RDebug* debug,tObjType type)
 	: RInstSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>(objs,p,debug),
 	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
 {

@@ -148,7 +148,7 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
 	for(Cur.Start();!Cur.End();Cur.Next())
 		cout<<"Sim (1,"<<Cur()->Id<<")="<<Cur()->Value<<endl;
 
-	return;
+//	return;
 	double d;
 
 	if(Cout)

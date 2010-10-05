@@ -60,7 +60,7 @@ public:
 	* @param params          Parameters.
 	* @param debug           Debugger.
 	*/
-	GCAHeuristicDoc(R::RRandom* r,R::RCursor<GDoc> objs,R::RParamsSC* params,R::RDebug* debug=0)
+	GCAHeuristicDoc(R::RRandom& r,R::RCursor<GDoc> objs,R::RParamsSC* params,R::RDebug* debug=0)
 		: RHeuristicSC<GCAGroupDoc,GDoc,GCAChromoDoc>(r,objs,params,debug) {}
 
 };
@@ -176,7 +176,7 @@ public:
 	* @param params          Parameters.
 	* @param debug           Debugger.
 	*/
-	GCAHeuristicProfile(R::RRandom* r,R::RCursor<GProfile> objs,R::RParamsSC* params,R::RDebug* debug=0)
+	GCAHeuristicProfile(R::RRandom& r,R::RCursor<GProfile> objs,R::RParamsSC* params,R::RDebug* debug=0)
 		: RHeuristicSC<GCAGroupProfile,GProfile,GCAChromoProfile>(r,objs,params,debug) {}
 
 };
