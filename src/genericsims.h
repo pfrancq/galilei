@@ -64,13 +64,19 @@ protected:
 public:
 	GSimType(GGenericSims* owner,GConceptType* type);
 	virtual void Init(void)=0;
-	virtual void Add(GWeightInfo* info1,GWeightInfo* info2)=0;
-	virtual void AddObj1(GWeightInfo* info)=0;
-	virtual void AddObj2(GWeightInfo* info)=0;
-	virtual void Done(void)=0;
+	virtual void Add(GWeightInfo* info1,GWeightInfo* info2,GMeasure* mes)=0;
+	virtual void AddObj1(GWeightInfo* info,GMeasure* mes)=0;
+	virtual void AddObj2(GWeightInfo* info,GMeasure* mes)=0;
+	virtual void Done(GMeasure* mes)=0;
 	int Compare(const GSimType& t) const {return(Type->Compare(t.Type));}
 	int Compare(const GSimType* t) const {return(Type->Compare(t->Type));}
 	int Compare(const GConceptType* t) const {return(Type->Compare(t));}
+	inline double GetIF(GConcept* concept,GMeasure* mes)
+	{
+		double tmp;
+		mes->Measure(0,concept->GetId(),&tmp);
+		return(tmp);
+	}
 	virtual ~GSimType(void) {}
 
 	friend class GGenericSims;
@@ -88,10 +94,10 @@ public:
 	GSimTypeCosinus(GGenericSims* owner,GConceptType* type) :
 		GSimType(owner,type) {}
 	virtual void Init(void);
-	virtual void Add(GWeightInfo* info1,GWeightInfo* info2);
-	virtual void AddObj1(GWeightInfo* info);
-	virtual void AddObj2(GWeightInfo* info);
-	virtual void Done(void);
+	virtual void Add(GWeightInfo* info1,GWeightInfo* info2,GMeasure* mes);
+	virtual void AddObj1(GWeightInfo* info,GMeasure* mes);
+	virtual void AddObj2(GWeightInfo* info,GMeasure* mes);
+	virtual void Done(GMeasure* mes);
 };
 
 
@@ -105,10 +111,10 @@ public:
 	GSimTypeXMLIndex(GGenericSims* owner,GConceptType* type) :
 		GSimType(owner,type), Obj1(100), Obj2(100) {}
 	virtual void Init(void);
-	virtual void Add(GWeightInfo* info1,GWeightInfo* info2);
-	virtual void AddObj1(GWeightInfo* info);
-	virtual void AddObj2(GWeightInfo* info);
-	virtual void Done(void);
+	virtual void Add(GWeightInfo* info1,GWeightInfo* info2,GMeasure* mes);
+	virtual void AddObj1(GWeightInfo* info,GMeasure* mes);
+	virtual void AddObj2(GWeightInfo* info,GMeasure* mes);
+	virtual void Done(GMeasure* mes);
 };
 
 
@@ -217,6 +223,11 @@ protected:
 	 * Transform the similarity from [-1,+1] to [0,1].
 	 */
 	bool Transform;
+
+	/**
+	 * Feature evaluation.
+	 */
+	GMeasure* FeatureEval;
 
 public:
 

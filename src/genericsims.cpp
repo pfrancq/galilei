@@ -97,11 +97,11 @@ void GSimTypeCosinus::Init(void)
 
 
 //------------------------------------------------------------------------------
-void GSimTypeCosinus::Add(GWeightInfo* info1,GWeightInfo* info2)
+void GSimTypeCosinus::Add(GWeightInfo* info1,GWeightInfo* info2,GMeasure* mes)
 {
-	double w1(info1->GetWeight()*Owner->GetIF(info1->GetConcept()));
+	double w1(info1->GetWeight()*GetIF(info1->GetConcept(),mes));
 	Norm1+=w1*w1;
-	double w2(info2->GetWeight()*Owner->GetIF(info2->GetConcept()));
+	double w2(info2->GetWeight()*GetIF(info2->GetConcept(),mes));
 	Norm2+=w2*w2;
 	if((info1->GetWeight()>0)||(info2->GetWeight()>0))
 	{
@@ -119,9 +119,9 @@ void GSimTypeCosinus::Add(GWeightInfo* info1,GWeightInfo* info2)
 
 
 //------------------------------------------------------------------------------
-void GSimTypeCosinus::AddObj1(GWeightInfo* info)
+void GSimTypeCosinus::AddObj1(GWeightInfo* info,GMeasure* mes)
 {
-	double w1(info->GetWeight()*Owner->GetIF(info->GetConcept()));
+	double w1(info->GetWeight()*GetIF(info->GetConcept(),mes));
 	Norm1+=w1*w1;
 	#if NormalizeVector
 		if(info->GetWeight()>Max1)
@@ -131,9 +131,9 @@ void GSimTypeCosinus::AddObj1(GWeightInfo* info)
 
 
 //------------------------------------------------------------------------------
-void GSimTypeCosinus::AddObj2(GWeightInfo* info)
+void GSimTypeCosinus::AddObj2(GWeightInfo* info,GMeasure* mes)
 {
-	double w2(info->GetWeight()*Owner->GetIF(info->GetConcept()));
+	double w2(info->GetWeight()*GetIF(info->GetConcept(),mes));
 	Norm2+=w2*w2;
 	#if NormalizeVector
 		if(info->GetWeight()>Max2)
@@ -144,7 +144,7 @@ void GSimTypeCosinus::AddObj2(GWeightInfo* info)
 
 
 //------------------------------------------------------------------------------
-void GSimTypeCosinus::Done(void)
+void GSimTypeCosinus::Done(GMeasure*)
 {
 	if(Num==0.0)
 		Value=0.0;
@@ -178,7 +178,7 @@ void GSimTypeXMLIndex::Init(void)
 
 
 //------------------------------------------------------------------------------
-void GSimTypeXMLIndex::Add(GWeightInfo* info1,GWeightInfo* info2)
+void GSimTypeXMLIndex::Add(GWeightInfo* info1,GWeightInfo* info2,GMeasure*)
 {
 	Obj1.InsertPtr(info1);
 	Obj2.InsertPtr(info2);
@@ -186,21 +186,21 @@ void GSimTypeXMLIndex::Add(GWeightInfo* info1,GWeightInfo* info2)
 
 
 //------------------------------------------------------------------------------
-void GSimTypeXMLIndex::AddObj1(GWeightInfo* info)
+void GSimTypeXMLIndex::AddObj1(GWeightInfo* info,GMeasure*)
 {
 	Obj1.InsertPtr(info);
 }
 
 
 //------------------------------------------------------------------------------
-void GSimTypeXMLIndex::AddObj2(GWeightInfo* info)
+void GSimTypeXMLIndex::AddObj2(GWeightInfo* info,GMeasure*)
 {
 	Obj2.InsertPtr(info);
 }
 
 
 //------------------------------------------------------------------------------
-void GSimTypeXMLIndex::Done(void)
+void GSimTypeXMLIndex::Done(GMeasure* mes)
 {
 	double w1,w2;
 	double num(0.0);
@@ -210,7 +210,7 @@ void GSimTypeXMLIndex::Done(void)
 	RCursor<GWeightInfo> Cur2(Obj2);
 	for(Cur1.Start();!Cur1.End();Cur1.Next())
 	{
-		w1=Cur1()->GetWeight()*Owner->GetIF(Cur1()->GetConcept());
+		w1=Cur1()->GetWeight()*GetIF(Cur1()->GetConcept(),mes);
 
 		GXMLIndex* c1(dynamic_cast<GXMLIndex*>(Cur1()->GetConcept()));
 		for(Cur2.Start();!Cur2.End();Cur2.Next())
@@ -221,7 +221,7 @@ void GSimTypeXMLIndex::Done(void)
 			if(c1->GetXMLTag()!=c2->GetXMLTag())
 				continue;
 
-			w2=Cur2()->GetWeight()*Owner->GetIF(Cur2()->GetConcept());
+			w2=Cur2()->GetWeight()*GetIF(Cur2()->GetConcept(),mes);
 			den+=fabs(w1*w2);
 			if((w1<0.0)&&(w2<0.0))
 				continue;
@@ -248,7 +248,7 @@ void GSimTypeXMLIndex::Done(void)
 
 //------------------------------------------------------------------------------
 GGenericSims::GGenericSims(GSession* session,GPlugInFactory* fac,tObjType lines,tObjType cols)
-	: GMatrixMeasure(session,fac,lines,cols,lines==cols), vec1(0), vec2(0), Types(30), Valid(30)
+	: GMatrixMeasure(session,fac,lines,cols,lines==cols), vec1(0), vec2(0), Types(30), Valid(30), FeatureEval(0)
 {
 }
 
@@ -328,6 +328,8 @@ void GGenericSims::Init(void)
 //------------------------------------------------------------------------------
 bool GGenericSims::ComputeSimSpace(void)
 {
+	FeatureEval=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Features Evaluation");
+
 	// if one vector is not defined -> the similarity must be null
 	if((!vec1->GetVector().GetNb())||(!vec2->GetVector().GetNb()))
 		return(false);
@@ -347,22 +349,22 @@ bool GGenericSims::ComputeSimSpace(void)
 	for(Info1.Start(),Info2.Start();!Info1.End();Info1.Next())
 	{
 		for(;(!Info2.End())&&(Info2()->GetId()<Info1()->GetId());Info2.Next())
-			Types[Info2()->GetConcept()->GetType()->GetId()]->AddObj2(Info2());
+			Types[Info2()->GetConcept()->GetType()->GetId()]->AddObj2(Info2(),FeatureEval);
 
 		if((!Info2.End())&&(Info2()->GetId()==Info1()->GetId()))
 		{
-			Types[Info2()->GetConcept()->GetType()->GetId()]->Add(Info1(),Info2());
+			Types[Info2()->GetConcept()->GetType()->GetId()]->Add(Info1(),Info2(),FeatureEval);
 			Info2.Next();
 		}
 		else
-			Types[Info1()->GetConcept()->GetType()->GetId()]->AddObj1(Info1());
+			Types[Info1()->GetConcept()->GetType()->GetId()]->AddObj1(Info1(),FeatureEval);
 	}
 	for(;!Info2.End();Info2.Next())
-		Types[Info2()->GetConcept()->GetType()->GetId()]->AddObj2(Info2());
+		Types[Info2()->GetConcept()->GetType()->GetId()]->AddObj2(Info2(),FeatureEval);
 
 	// Done all the measures
 	for(Sims.Start();!Sims.End();Sims.Next())
-		Sims()->Done();
+		Sims()->Done(FeatureEval);
 
 	// Dispatch the measures
 	for(Sims.Start();!Sims.End();Sims.Next())
@@ -506,8 +508,8 @@ double GGenericSims::Compute(GObject* obj1,GObject* obj2)
 {
 	if(obj1==obj2)
 		return(1.0);
-	vec1=static_cast<GWeightInfosObj*>(obj1);
-	vec2=static_cast<GWeightInfosObj*>(obj2);
+	vec1=dynamic_cast<GWeightInfosObj*>(obj1);
+	vec2=dynamic_cast<GWeightInfosObj*>(obj2);
 	if((!vec1->GetVector().IsDefined())||(!vec2->GetVector().IsDefined()))
 		return(0.0);
 	double sim(0.0);
