@@ -306,9 +306,14 @@ public:
 class GTextAnalyze : public GDocAnalyze
 {
 	/**
+	 * Temporary array of informations.
+	 */
+	RContainer<GWeightInfo,false,false> TempInfos;
+
+	/**
 	* Cursor on the different languages defined in the system.
 	*/
-	R::RCastCursor<GPlugIn,GLang> CurLangs;
+	RCastCursor<GPlugIn,GLang> CurLangs;
 
 	/**
 	 * Words.
@@ -426,6 +431,11 @@ class GTextAnalyze : public GDocAnalyze
 	* considered as a valid.
 	*/
 	double NormalRatio;
+
+	/**
+	 * Minimum number of occurences of the word to be valid.
+	 */
+	size_t MinOccurs;
 
 	/**
 	 * Extract structure elements?

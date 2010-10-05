@@ -68,6 +68,8 @@ void Config::toggleExtractStruct(bool toggle)
 	ExtractValues->setEnabled(toggle);
 	WeightValues->setEnabled(toggle && ExtractValues->isChecked());
 	FullIndex->setEnabled(toggle);
+	UseDefaultNamespace->setEnabled(toggle);
+	DefaultNamespace->setEnabled(toggle&&UseDefaultNamespace->isChecked());
 }
 
 
@@ -164,8 +166,10 @@ bool Configure(GPlugIn* fac)
 	dlg.Filtering->setChecked(fac->FindParam<RParamValue>("Filtering")->GetBool());
 	dlg.NbSameOccur->setValue(fac->FindParam<RParamValue>("NbSameOccur")->GetInt());
 	dlg.NormalRatio->setValue(fac->FindParam<RParamValue>("NormalRatio")->GetDouble());
+	dlg.MinOccurs->setValue(fac->FindParam<RParamValue>("MinOccurs")->GetInt());
 	dlg.NbSameOccur->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
 	dlg.NormalRatio->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
+	dlg.MinOccurs->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
 	dlg.groupFiltering->setEnabled(fac->FindParam<RParamValue>("NonLetterWords")->GetBool());
 
 	// Structure - Tags and attributes
@@ -206,6 +210,7 @@ bool Configure(GPlugIn* fac)
 		fac->FindParam<RParamValue>("Filtering")->SetBool(dlg.Filtering->isChecked());
 		fac->FindParam<RParamValue>("NbSameOccur")->SetUInt(dlg.NbSameOccur->value());
 		fac->FindParam<RParamValue>("NormalRatio")->SetDouble(dlg.NormalRatio->value());
+		fac->FindParam<RParamValue>("MinOccurs")->SetUInt(dlg.MinOccurs->value());
 
 		// Structure - Tags and attributes
 		fac->FindParam<RParamValue>("ExtractStruct")->SetBool(dlg.ExtractStruct->isChecked());

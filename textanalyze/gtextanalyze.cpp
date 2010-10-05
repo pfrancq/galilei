@@ -438,7 +438,7 @@ inline RCursor<cNode> cDepths::GetNodes(void) const
 
 //-----------------------------------------------------------------------------
 GTextAnalyze::GTextAnalyze(GSession* session,GPlugInFactory* fac)
-	: GDocAnalyze(session,fac), Words(), StructTokens(/*100*/), Depths(),
+	: GDocAnalyze(session,fac), TempInfos(100), Words(), StructTokens(/*100*/), Depths(),
 	  Sl(0), Sldiff(0), MetaTags(20), StructSpace(0), IndexSpace(0), IsTitle(false),
 	  IsIdentifier(false)
 {
@@ -455,6 +455,7 @@ void GTextAnalyze::ApplyConfig(void)
 	Filtering=FindParam<RParamValue>("Filtering")->GetBool();
 	NbSameOccur=FindParam<RParamValue>("NbSameOccur")->GetUInt();
 	NormalRatio=FindParam<RParamValue>("NormalRatio")->GetDouble();
+	MinOccurs=FindParam<RParamValue>("MinOccurs")->GetUInt();
 	ExtractStruct=FindParam<RParamValue>("ExtractStruct")->GetBool();
 	StructIsContent=FindParam<RParamValue>("StructIsContent")->GetBool();
 	ExtractIndex=FindParam<RParamValue>("ExtractIndex")->GetBool();
@@ -921,6 +922,22 @@ void GTextAnalyze::ConstructInfos(void)
 		V+=Word()->Nb;
 		(*Occur)+=Word()->Weight;
 	}
+
+	// If the minimal number of occurrences is 1 or 0 -> nothing do to
+	if(MinOccurs<2)
+		return;
+
+	// Find all elements of Infos with an occurrence lower then MinOccurs
+	TempInfos.Clear();
+	RCursor<GWeightInfo> Cur(Infos.GetInfos());
+	for(Cur.Start();!Cur.End();Cur.Next())
+		if(Cur()->GetWeight()<MinOccurs)
+			TempInfos.InsertPtr(Cur());
+
+	// Delete them from Infos
+	Cur.Set(TempInfos);
+	for(Cur.Start();!Cur.End();Cur.Next())
+		Infos.DeleteInfo(Cur());
 }
 
 
@@ -1123,27 +1140,28 @@ void GTextAnalyze::TerminateAnalyze(void)
 void GTextAnalyze::CreateConfig(void)
 {
 	InsertParam(new RParamValue("StaticLang",false,"Should the language of the document be automatically re-analyzed?"));
-	InsertParam(new RParamValue("MinStopWords",0.09,"Minimum percentage of stop words needed to consider a language"));
-	InsertParam(new RParamValue("MinWordSize",3,"Minimum length of a word to be taken as information entity"));
+	InsertParam(new RParamValue("MinStopWords",0.09,"Minimum percentage of stop words needed to consider a language."));
+	InsertParam(new RParamValue("MinWordSize",3,"Minimum length of a word to be taken as information entity."));
 	InsertParam(new RParamValue("NonLetterWords",true,"Words containing non-letters can be information entities?"));
 	InsertParam(new RParamValue("Filtering",true,"Should the word be filtered?"));
-	InsertParam(new RParamValue("NbSameOccur",3,"Maximum number of times a same letter can be repeated in a row to consider the corresponding word as valid one"));
+	InsertParam(new RParamValue("NbSameOccur",3,"Maximum number of times a same letter can be repeated in a row to consider the corresponding word as valid one."));
 	InsertParam(new RParamValue("NormalRatio",0.3,"Minimum percentage of letters in a word to consider it as a valid one."));
+	InsertParam(new RParamValue("MinOccurs",1,"Minimal number of occurrences of a word to be considered as a valid one."));
 	InsertParam(new RParamValue("ExtractStruct",false,"Extract the structure elements?"));
 	InsertParam(new RParamValue("StructIsContent",false,"Must the structure elements be considered as content?"));
 	InsertParam(new RParamValue("ExtractIndex",false,"Extract metadata tags?"));
-	InsertParam(new RParamValue("MaxTerms",10,"Maximum number of terms of an automatically detected metadata tag"));
-	InsertParam(new RParamValue("MaxDepth",2,"Maximum depth of an automatically detected metadata tag"));
-	InsertParam(new RParamValue("MaxOccurs",5,"Maximum number of occurrences of an automatically detected metadata tag"));
+	InsertParam(new RParamValue("MaxTerms",10,"Maximum number of terms of an automatically detected metadata tag."));
+	InsertParam(new RParamValue("MaxDepth",2,"Maximum depth of an automatically detected metadata tag."));
+	InsertParam(new RParamValue("MaxOccurs",5,"Maximum number of occurrences of an automatically detected metadata tag."));
 	InsertParam(new RParamValue("ChildTags",false,"Can an automatically detected metadata tag have child?"));
-	InsertParam(new RParamValue("WeightStruct",2.0,"Weight associated to the structure elements when extracted"));
+	InsertParam(new RParamValue("WeightStruct",2.0,"Weight associated to the structure elements when extracted."));
 	InsertParam(new RParamValue("ExtractValues",false,"Should the content of attribute values be extracted?"));
-	InsertParam(new RParamValue("WeightValues",2.0,"Weight associated to the content of attribute values when extracted"));
-	InsertParam(new RParamValue("FullIndex",false,"Index the whole XML documents"));
-	InsertParam(new RParamValue("UseDefaultNamespace",false,"When tags have no namespace, must the default namespace be associated"));
-	InsertParam(new RParamValue("DefaultNamespace","","Default namespace for the tags"));
+	InsertParam(new RParamValue("WeightValues",2.0,"Weight associated to the content of attribute values when extracted."));
+	InsertParam(new RParamValue("FullIndex",false,"Index the whole XML documents."));
+	InsertParam(new RParamValue("UseDefaultNamespace",false,"When tags have no namespace, must the default namespace be associated."));
+	InsertParam(new RParamValue("DefaultNamespace","","Default namespace for the tags."));
 	InsertParam(new RParamValue("DetectMetaTag",true,"Should the metadata be detected automatically?"));
-	InsertParam(new RParamList("IndexTags","List of the tags (including their namespace) to be considered as metadata"));
+	InsertParam(new RParamList("IndexTags","List of the tags (including their namespace) to be considered as metadata."));
 }
 
 
