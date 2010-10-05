@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>523</width>
-    <height>300</height>
+    <width>530</width>
+    <height>345</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,7 +18,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QHBoxLayout" name="_26">
+    <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="textLabel1_2_3_2_2">
        <property name="toolTip">
@@ -33,22 +33,6 @@
       </widget>
      </item>
      <item>
-      <spacer name="spacer4_2_3_2_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
       <widget class="QComboBox" name="Current">
        <property name="enabled">
         <bool>false</bool>
@@ -57,6 +41,22 @@
         <string>Choose current method</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <spacer name="spacer4_2_3_2_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeType">
+        <enum>QSizePolicy::Expanding</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
      </item>
     </layout>
    </item>
@@ -159,7 +159,7 @@
         <bool>false</bool>
        </property>
        <property name="text">
-        <string>Enable method</string>
+        <string>Enable Plug-In</string>
        </property>
       </widget>
      </item>

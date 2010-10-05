@@ -116,7 +116,7 @@ void QSessionThread::run(void)
 	{
 		DoIt();
 		emit finish();
-		if(App->getSession()->MustBreak())
+		if(App->getSession()&&App->getSession()->MustBreak())
 			Parent->setLabelText("Canceled");
 		else
 			Parent->setLabelText("Finish");
@@ -315,8 +315,8 @@ void QComputeSugs::DoIt(void)
 //-----------------------------------------------------------------------------
 void QRunTool::DoIt(void)
 {
-	Parent->setLabelText("Run tool '"+ToQString(Tool)+"' ...");
-	App->getSession()->RunTool(Tool,Parent);
+	Parent->setLabelText("Run tool '"+ToQString(Tool)+"' of '"+ToQString(List)+"'...");
+	App->getSession()->RunTool(Tool,List,Parent);
 }
 
 
@@ -377,7 +377,7 @@ bool QSessionProgressDlg::Run(QSessionThread* task)
 	show();
 	task->start();
 	q.exec();
-	if(App->getSession()->MustBreak())
+	if(App->getSession()&&App->getSession()->MustBreak())
 		App->getSession()->ResetBreak();
 	delete task;
 	//return(res);

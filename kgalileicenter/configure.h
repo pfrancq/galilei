@@ -46,9 +46,9 @@ class KGALILEICenter;  // forward declaration
 
 //------------------------------------------------------------------------------
 /**
- * The Configure provides a dialog box for all preferences of KGALILEICenter,
- * GGALILEIApp et the different plug-ins.
- * @short Preference Dialog
+ * The Configure provides a dialog box to configure the different plug-ins for
+ * the current session.
+ * @short Configure Dialog.
  * @author Pascal Francq
  */
 class Configure : KDialog, Ui_Configure
@@ -121,16 +121,6 @@ public:
 private:
 
 	/**
-	 * Initialize the general part.
-	 */
-	void initGeneral(void);
-
-	/**
-	 * Apply the general part.
-	 */
-	void applyGeneral(void);
-
-	/**
 	 * Initialize the session part.
 	 */
 	void initSession(void);
@@ -174,16 +164,6 @@ private:
 	void applyPlugIns(void);
 
 public slots:
-
-	/**
-	 * Slot called when the button to add a directory was pressed.
-	 */
-	void slotAddDir(void);
-
-	/**
-	 * Slot called when the button to delete a directory was pressed.
-	 */
-	void slotDelDir(void);
 
 	/**
 	 * Slot called when a subject is clicked.

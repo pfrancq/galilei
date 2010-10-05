@@ -65,6 +65,7 @@ using namespace GALILEI;
 #include <kgalileicenter.h>
 #include <qsessionprogress.h>
 #include <configure.h>
+#include <preferences.h>
 #include <kviewdoc.h>
 #include <kviewmetaengine.h>
 #include <kviewprg.h>
@@ -149,15 +150,15 @@ void KGALILEICenter::initActions(void)
 	aSessionSave=new KToggleAction(i18n("Save Results"),this);
 	actionCollection()->addAction(QLatin1String("sessionSave"),aSessionSave);
 	connect(aSessionSave,SIGNAL(toggled(bool)),this,SLOT(saveModifier()));
-	aSessionConnect=addAction("&Connect","sessionConnect",SLOT(sessionConnect()),"network-connect");
+	aSessionConnect=addAction("&Connect","sessionConnect",SLOT(sessionConnect()),"network-connect","Ctrl+C");
 	Actions.insert(Actions.size(),addAction("&Disconnect","sessionDisconnect",SLOT(sessionDisconnect()),"network-disconnect"));
-	Actions.insert(Actions.size(),addAction("Compute &Session","sessionCompute",SLOT(sessionCompute()),"system-run"));
+	Actions.insert(Actions.size(),addAction("Compute Session","sessionCompute",SLOT(sessionCompute()),"system-run"));
 	addAction("&Console","programConsole",SLOT(programConsole()),"terminal","Ctrl+K");
-	addAction("Create &MySQL Database","createDatabase",SLOT(createDatabase()));
+	addAction("Create &Session","createDatabase",SLOT(createDatabase()));
 	Actions.insert(Actions.size(),addAction("Import Documents","importDocs",SLOT(importDocs()),"tab-new"));
-	Actions.insert(Actions.size(),addAction("&Run Program","runProgram",SLOT(runProgram()),"fork","Ctrl+R"));
+	Actions.insert(Actions.size(),addAction("&Run Script","runProgram",SLOT(runProgram()),"fork","Ctrl+R"));
 	Actions.insert(Actions.size(),addAction("&Statistics","sessionStats",SLOT(sessionStats()),"view-statistics"));
-	Actions.insert(Actions.size(),addAction("Run &Tool","runTool",SLOT(runTool())));
+	Actions.insert(Actions.size(),addAction("Run &Tool","runTool",SLOT(runTool()),"","Ctrl+T"));
 	addAction("E&xit","sessionQuit",SLOT(sessionQuit()),"window-close","Ctrl+Q");
 
 	// Menu "Knowledge"
@@ -348,7 +349,6 @@ void KGALILEICenter::sessionConnect(void)
 	}
 	if(DestroyDoc)
 	{
-		DeleteSession(0);
 		Doc=0;
 	}
 }
@@ -469,23 +469,8 @@ void KGALILEICenter::saveModifier(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::optionsPreferences(void)
 {
-	// Create the dialog box
-	KDialog Dlg(this);
-	Dlg.setCaption("KGALILEICenter Preferences");
-	Ui_MainConfigure Ui;
-	QWidget* widget(new QWidget(&Dlg));
-	Ui.setupUi(widget);
-	Dlg.setMainWidget(widget);
-	Dlg.setButtons(KDialog::Cancel|KDialog::Apply);
-	connect(&Dlg,SIGNAL(applyClicked()),&Dlg,SLOT(accept()));
-
-	// Run it
-	Ui.PrgPath->setMode(KFile::Directory|KFile::ExistingOnly|KFile::LocalOnly);
-	Ui.PrgPath->setUrl(R::ToQString(PrgPath));
-	if(Dlg.exec())
-	{
-		PrgPath=R::FromQString(Ui.PrgPath->url().url());
-	}
+	Preferences Dlg(this);
+	Dlg.exec();
 }
 
 //-----------------------------------------------------------------------------
@@ -963,12 +948,7 @@ void KGALILEICenter::computeSugs(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::runTool(void)
 {
-	GPlugInManager* Manager(GALILEIApp->GetManager("Tool"));
-	if((!Manager)||(!Manager->GetNbPlugIns()))
-	{
-		KMessageBox::error(this,"No tools are enabled","KGALILEICenter Error");
-		return;
-	}
+	GPlugInManager* Manager(GALILEIApp->GetManager("Tools"));
 
 	// Create the dialog box
 	KDialog Choose(this);
@@ -977,18 +957,28 @@ void KGALILEICenter::runTool(void)
 	Ui.setupUi(widget);
 	Choose.setMainWidget(widget);
 
-	// Init the dialog box
+	// Init the dialog box with the lists
 	Ui.Desc->setText("Choose the tool to run");
-	RCastCursor<GPlugIn,GTool> Tools(Manager->GetPlugIns<GTool>());
+	RCursor<GPlugInList> Lists(Manager->GetPlugInLists());
+	for(Lists.Start();!Lists.End();Lists.Next())
+		Ui.List->addItem(ToQString(Lists()->GetName()));
+	Ui.List->setCurrentRow(0);
+	if(!Choose.exec())
+		return;
+	RString List(FromQString(Ui.List->item(Ui.List->currentRow())->text()));
+
+	// Init the dialog box with the plug-ins
+	RCastCursor<GPlugIn,GTool> Tools(Manager->GetPlugIns<GTool>(List));
+	Ui.List->clear();
 	for(Tools.Start();!Tools.End();Tools.Next())
 		Ui.List->addItem(ToQString(Tools()->GetName()));
 	Ui.List->setCurrentRow(0);
-	if(Choose.exec())
-	{
-		QSessionProgressDlg Dlg(this,"Tool");
-		QRunTool* Task(new QRunTool(this,FromQString(Ui.List->item(Ui.List->currentRow())->text())));
-		Dlg.Run(Task);
-	}
+	if(!Choose.exec())
+		return;
+
+	QSessionProgressDlg Dlg(this,"Tool");
+	QRunTool* Task(new QRunTool(this,FromQString(Ui.List->item(Ui.List->currentRow())->text()),List));
+	Dlg.Run(Task);
 }
 
 

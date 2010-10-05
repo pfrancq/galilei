@@ -38,6 +38,7 @@
 #include <ggalileiapp.h>
 #include <gsession.h>
 #include <gslot.h>
+using namespace R;
 using namespace GALILEI;
 
 
@@ -509,6 +510,7 @@ public:
 	~KGALILEICenter(void);
 
 	friend class Configure;
+	friend class Preferences;
 };
 
 

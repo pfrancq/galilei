@@ -118,6 +118,27 @@ void QCreateDB::DoIt(void)
  	Parent->setLabelText("Create Other Concept Types");
  	GetConceptType("XMLStruct","XML Structure",&Db);
  	GetConceptType("XMLIndex","XML Index",&Db);
+
+ 	// Create the configuration file with MySQL as default storage
+ 	RTextFile Config(Info->ConfigDir+"/"+Info->Name+".config","utf-8");
+ 	Config.Open(RIO::Create);
+ 	Config<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
+ 	Config<<"<!DOCTYPE config>"<<endl;
+ 	Config<<"<config>"<<endl;
+ 	Config<<"	<category name=\"Storage\">"<<endl;
+ 	Config<<"		<param name=\"Storage\" value=\"MySQL\"/>"<<endl;
+ 	Config<<"		<category name=\"MySQL\">"<<endl;
+ 	Config<<"			<param name=\"All\" value=\"True\"/>"<<endl;
+ 	Config<<"			<param name=\"Database\" value=\""+Info->Name+"\"/>"<<endl;
+ 	Config<<"			<param name=\"Encoding\" value=\"utf8\"/>"<<endl;
+ 	Config<<"			<param name=\"Filter\"/>"<<endl;
+ 	Config<<"			<param name=\"Filtering\" value=\"False\"/>"<<endl;
+ 	Config<<"			<param name=\"Host\" value=\""+Info->Host+"\"/>"<<endl;
+ 	Config<<"			<param name=\"Password\" value=\""+Info->Pwd+"\"/>"<<endl;
+ 	Config<<"			<param name=\"User\" value=\""+Info->User+"\"/>"<<endl;
+ 	Config<<"		</category>"<<endl;
+ 	Config<<"	</category>"<<endl;
+ 	Config<<"</config>"<<endl;
 }
 
 
@@ -143,6 +164,7 @@ QCreateDatabase::QCreateDatabase(KGALILEICenter* parent)
 void QCreateDatabase::run(void)
 {
 	URL->setUrl(KUrl("http://www.otlet-institute.org/NewDb.sql"));
+	ConfigPath->setUrl(QString(getenv("HOME"))+"/.r/config/lib/galilei/sessions");
 	if(!exec())
 		return;
 	try
@@ -152,6 +174,7 @@ void QCreateDatabase::run(void)
 		User=FromQString(userName->text());
 		Pwd=FromQString(password->text());
 		DbSchema=FromQString(URL->url().url());
+		ConfigDir=R::FromQString(ConfigPath->url().url());
 		QSessionProgressDlg Dlg(App,"Create Database");
 		Dlg.Run(new QCreateDB(App,this));
 	}

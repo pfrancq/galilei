@@ -1,4 +1,4 @@
-/*
+	/*
 
 	GALILEI Research Project
 
@@ -71,6 +71,22 @@ public:
 	 * Compute the statistics.
 	 */
 	void ComputeStats(void);
+
+public slots:
+
+	/**
+	 * Slot called each time a tab is changed.
+	 * @param index          Index of the tab.
+	 */
+	void tabChanged(int index);
+
+	/**
+	 * The sorting check bow was checked.
+	 * @param state          State.
+	 */
+	void checkSorting(int state);
+
+public:
 
 	/**
 	* Destruct the view.

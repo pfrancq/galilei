@@ -31,7 +31,7 @@
 //-----------------------------------------------------------------------------
 // include file for R Project
 #include <rstring.h>
-#include <rtextfile.h>
+#include <rcsvfile.h>
 #include <rqt.h>
 using namespace R;
 using namespace std;
@@ -49,7 +49,9 @@ using namespace GALILEI;
 // include files for Qt/KDE
 #include <kprogressdialog.h>
 #include <QtGui/QMessageBox>
+#include <QtGui/QTableWidget>
 #include <kapplication.h>
+#include <kmessagebox.h>
 //#include <kiconloader.h>
 
 
@@ -74,8 +76,8 @@ KViewStats::KViewStats(void)
 	setWidget(ptr);
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("Statistics");
-
-	// Compute Statistics
+	connect(Stats,SIGNAL(currentChanged(int)),this,SLOT(tabChanged(int)));
+	connect(Sorting,SIGNAL(stateChanged(int)),this,SLOT(checkSorting(int)));
 	ComputeStats();
 }
 
@@ -121,19 +123,95 @@ void KViewStats::ComputeStats(void)
 		KApplication::kApplication()->processEvents();
 		if(Dlg.wasCancelled())
 			break;
-		Tool()->Run(0);
 
-		// Add the results to the text
-		RParamValue* FileName(Tool()->FindParam<RParamValue>("Results"));
-		if(!FileName)
-			continue;
-		RTextFile File(FileName->Get(),"utf-8");
-		File.Open(RIO::Read);
-		while(!File.End())
-			Results->appendPlainText(ToQString(File.GetLine(false)));
-		Results->appendPlainText("\n\n");
+		try
+		{
+			Tool()->Run(0);
+
+			// Add the results if there is a 'Results' file
+			RParamValue* FileName(Tool()->FindParam<RParamValue>("Results"));
+			if(!FileName)
+				continue;
+
+			// Create a new tab with a new QTableWidget
+			size_t line(0),maxline(100);
+			size_t col(0);
+			QTableWidget* Results(new QTableWidget(100,100));
+			Stats->addTab(Results,ToQString(Tool()->GetFactory()->GetList()));
+
+			RCSVFile File(FileName->Get(),';',"utf8");
+			File.Open();
+			bool Header(false);
+			while(!File.End())
+			{
+				File.Read();
+
+				if(col<File.GetNbValues())
+				{
+					col=File.GetNbValues();
+					Results->setColumnCount(col);
+				}
+
+				if(!Header)
+				{
+					for(size_t j=0;j<File.GetNbValues();j++)
+						Results->setHorizontalHeaderItem(j,new QTableWidgetItem(ToQString(File.Get(j))));
+					Header=true;
+					continue;
+				}
+
+				Results->setItem(line,0,new QTableWidgetItem(ToQString(File.Get(0))));
+				for(size_t j=1;j<File.GetNbValues();j++)
+				{
+					if(File.Get(j)!="NAN")
+						Results->setItem(line,j,new QTableWidgetItem(QString::number(File.Get(j).ToDouble())));
+					else
+						Results->setItem(line,j,new QTableWidgetItem("----"));
+				}
+
+				line++;
+				if(line>maxline)
+				{
+					maxline=line+100;
+					Results->setRowCount(maxline);
+				}
+			}
+
+			Results->setRowCount(line);
+			Results->setSortingEnabled(false);
+		}
+		catch(RException& e)
+		{
+			KMessageBox::error(this,e.GetMsg(),ToQString(Tool()->GetFactory()->GetList()));
+		}
+		catch(std::exception& e)
+		{
+			KMessageBox::error(this,e.what(),ToQString(Tool()->GetFactory()->GetList()));
+		}
+		catch(...)
+		{
+			KMessageBox::error(this,"Undefined Error");
+		}
 	}
 	Dlg.progressBar()->setValue(i);
+	Stats->setCurrentIndex(0);
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewStats::tabChanged(int)
+{
+	QTableWidget* Widget(dynamic_cast<QTableWidget*>(Stats->currentWidget()));
+	Sorting->setChecked(Widget&&Widget->isSortingEnabled());
+}
+
+
+//-----------------------------------------------------------------------------
+void KViewStats::checkSorting(int state)
+{
+	QTableWidget* Widget(dynamic_cast<QTableWidget*>(Stats->currentWidget()));
+	if(Widget)
+		Widget->setSortingEnabled(state);
 }
 
 

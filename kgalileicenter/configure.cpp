@@ -182,15 +182,12 @@ Configure::Configure(KGALILEICenter* app)
 	setMainWidget(widget);
 	setButtons(KDialog::Cancel|KDialog::Apply);
 	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
-	connect(buttonAdd,SIGNAL(pressed()),this,SLOT(slotAddDir()));
-	connect(buttonDel,SIGNAL(pressed()),this,SLOT(slotDelDir()));
 }
 
 
 //------------------------------------------------------------------------------
 void Configure::exec(void)
 {
-	initGeneral();
 	initSession();
 	initSimulation();
 	initPlugIns();
@@ -206,7 +203,6 @@ void Configure::exec(void)
 
 	if(KDialog::exec())
 	{
-		applyGeneral();
 		applySession();
 		applySimulation();
 		applyPlugIns();
@@ -258,28 +254,6 @@ void Configure::saveOptions(void)
 	General.writeEntry("SimulationTabIdx",SimulationTabIdx);
 	General.writeEntry("MeasuresCatIdx",MeasuresCatIdx);
 	General.writeEntry("ToolsCatIdx",ToolsCatIdx);
-}
-
-
-//------------------------------------------------------------------------------
-void Configure::initGeneral(void)
-{
-	// GALILEI Library
-	IndexDir->setUrl(ToQString(App->GetIndexDir()));
-	R::RCursor<R::RString> Cur(App->GetPlugInsPath());
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Dirs->addItem(ToQString(*Cur()));
-}
-
-
-//------------------------------------------------------------------------------
-void Configure::applyGeneral(void)
-{
-	// // GALILEI Library
-	App->SetIndexDir(FromQString(IndexDir->url().url()));
-	App->ClearPlugInsPath();
-	for(int i=0;i<Dirs->count();i++)
-		App->AddPlugInsPath(R::FromQString(Dirs->item(i)->text()));
 }
 
 
@@ -520,24 +494,6 @@ void Configure::applyPlugIns(void)
 	// Sort POST_X Managers;
 	GALILEIApp->GetManager("ComputeSugs")->ReOrder();
 	GALILEIApp->GetManager("ComputeTrust")->ReOrder();
-}
-
-
-//-----------------------------------------------------------------------------
-void Configure::slotAddDir(void)
-{
-	QString newdir=KFileDialog::getExistingDirectory(KUrl::fromPath("~"),this,"Add new directory for plug-ins");
-	if((!newdir.isEmpty())&&(!Dirs->findItems(newdir,Qt::MatchExactly).count()))
-		Dirs->addItem(newdir);
-}
-
-
-//-----------------------------------------------------------------------------
-void Configure::slotDelDir(void)
-{
-	int row=Dirs->currentRow();
-	if(row>-1)
-		delete Dirs->item(row);
 }
 
 

@@ -72,6 +72,11 @@ class QCreateDatabase : private KDialog, private Ui_QCreateDatabase
 	RString DbSchema;
 
 	/**
+	 * Directory where to store the configuration file.
+	 */
+	RString ConfigDir;
+
+	/**
 	 * Application.
 	 */
 	KGALILEICenter* App;

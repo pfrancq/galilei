@@ -2,25 +2,26 @@ PROJECT(kgalileicenter)
 INCLUDE_DIRECTORIES(.)
 
 SET (KGALILEICENTER_SOURCES
-main.cpp
-kgalileicenter.cpp
-qpluginslist.cpp
-qsessionprogress.cpp
-configure.cpp
-kviewdoc.cpp
-kviewmetaengine.cpp
-kviewprg.cpp
-qfilldatabase.cpp
-qcreatedatabase.cpp
-kviewstats.cpp
-kviewgroup.cpp
-kviewusers.cpp
-kviewgroups.cpp
-kviewidealgroups.cpp
-kviewprofile.cpp
-kviewdicts.cpp
-kprgconsole.cpp
-kviewclasses.cpp
+	main.cpp
+	kgalileicenter.cpp
+	qpluginslist.cpp
+	qsessionprogress.cpp
+	configure.cpp
+	preferences.cpp
+	kviewdoc.cpp
+	kviewmetaengine.cpp
+	kviewprg.cpp
+	qfilldatabase.cpp
+	qcreatedatabase.cpp
+	kviewstats.cpp
+	kviewgroup.cpp
+	kviewusers.cpp
+	kviewgroups.cpp
+	kviewidealgroups.cpp
+	kviewprofile.cpp
+	kviewdicts.cpp
+	kprgconsole.cpp
+	kviewclasses.cpp
 )
 
 INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
@@ -28,9 +29,9 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 KDE4_HANDLE_AUTOMOC(${KGALILEICENTER_SOURCES})
 
 KDE4_ADD_UI_FILES(KGALILEICENTER_SOURCES
-	mainconfigure.ui
 	qpluginslist.ui
 	configure.ui
+	preferences.ui
 	kviewdoc.ui
 	addfdbkdlg.ui
 	kviewmetaengine.ui

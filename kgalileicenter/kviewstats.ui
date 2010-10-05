@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
-    <height>300</height>
+    <width>563</width>
+    <height>537</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,12 +15,12 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QPlainTextEdit" name="Results">
-     <property name="documentTitle">
-      <string/>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
+    <widget class="QTabWidget" name="Stats"/>
+   </item>
+   <item>
+    <widget class="QCheckBox" name="Sorting">
+     <property name="text">
+      <string>Sorting</string>
      </property>
     </widget>
    </item>

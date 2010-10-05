@@ -365,8 +365,13 @@ class QRunTool : public QSessionThread
 	 */
 	RString Tool;
 
+	/**
+	 * List of the tool.
+	 */
+	RString List;
+
 public:
-	QRunTool(KGALILEICenter* app,const RString& tool) : QSessionThread(app), Tool(tool) {}
+	QRunTool(KGALILEICenter* app,const RString& tool,const RString& list) : QSessionThread(app), Tool(tool), List(list) {}
 	virtual void DoIt(void);
 };
 
