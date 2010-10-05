@@ -102,14 +102,14 @@ void GFdbk::HasUpdate(void)
 
 
 //------------------------------------------------------------------------------
-tFdbkType GFdbk::ErrorFdbk(tFdbkType fdbk,double PercErr,RRandom* rand)
+tFdbkType GFdbk::ErrorFdbk(tFdbkType fdbk,double PercErr,RRandom& rand)
 {
-	double random=rand->GetValue()*100+1.0;
+	double random=rand.GetValue()*100+1.0;
 
 	// If there is Random change the judgment.
 	if(random<PercErr)
 	{
-		random=rand->GetValue()*100+1.0;;
+		random=rand.GetValue()*100+1.0;;
 		switch(fdbk)
 		{
 			case ftRelevant:

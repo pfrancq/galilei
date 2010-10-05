@@ -193,7 +193,9 @@ public:
 
 //------------------------------------------------------------------------------
 GSession::GSession(size_t id,const RString& name)
-	: RConfig("lib/galilei/sessions",name), Id(id), Name(name), Storage(0), SaveResults(true), Log("/var/log/galilei/"+name+".log"), Simulator(0), Random(0),
+	: RConfig("lib/galilei/sessions",name), Id(id), Name(name), Storage(0),
+	  ValidConfigFile(false), SaveResults(true), Log("/var/log/galilei/"+name+".log"), Simulator(0),
+	  CurrentRandom(1), Random(RRandom::Good,1),
 	  ConceptTypes(20), ConceptTypesByIds(20), Concepts(50000,10000),
 	  Predicates(30), PredicatesByIds(30), Statements(5000,5000),
 	  StructDoc(0), tmpRefs(5000), Types(5), TypesNames(5),
@@ -207,10 +209,6 @@ GSession::GSession(size_t id,const RString& name)
 {
 	// Log files
 	Log.Open(RIO::Append);
-
-	// Random
-	CurrentRandom=0;
-	Random=RRandom::Create(RRandom::Good,CurrentRandom);
 
 	// Indexer
 	Types.InsertPtr(new IndexType(otDoc,"Documents"));
@@ -749,6 +747,13 @@ int GSession::Compare(const GSession& session) const
 
 
 //------------------------------------------------------------------------------
+int GSession::Compare(const GSession* session) const
+{
+	return(CompareIds(Id,session->Id));
+}
+
+
+//------------------------------------------------------------------------------
 int GSession::Compare(size_t id) const
 {
 	return(CompareIds(Id,id));
@@ -862,13 +867,13 @@ void GSession::ForceReCompute(tObjType type)
 		case otDoc:
 		{
 			// Clear the information of the documents -> Also profiles and groups and topics
-			RCursor<GDoc> Docs(Docs);
-			for(Docs.Start();!Docs.End();Docs.Next())
+			RCursor<GDoc> Doc(Docs);
+			for(Doc.Start();!Doc.End();Doc.Next())
 			{
-				Docs()->ClearInfos(SaveResults);
-				Docs()->ClearStruct(SaveResults);
+				Doc()->ClearInfos(SaveResults);
+				Doc()->ClearStruct(SaveResults);
 				if(SaveResults)
-					Storage->SaveDoc(Docs());
+					Storage->SaveDoc(Doc());
 			}
 			if(SaveResults)
 			{
@@ -1135,6 +1140,10 @@ size_t GSession::GetMaxObjectId(tObjType type) const
 {
 	switch(type)
 	{
+		case otConcept:
+			if(!Concepts.GetNb())
+				return(0);
+			return(Concepts[Concepts.GetMaxPos()]->GetId());
 		case otDoc:
 			if(!Docs.GetNb())
 				return(0);
@@ -1162,6 +1171,8 @@ size_t GSession::GetMaxObjectPos(tObjType type) const
 {
 	switch(type)
 	{
+		case otConcept:
+			return(Concepts.GetMaxPos());
 		case otDoc:
 			return(Docs.GetMaxPos());
 		case otTopic:
@@ -1191,6 +1202,8 @@ size_t GSession::GetNbObjects(tObjType type) const
 	{
 		case otUser:
 			return(Users.GetNb());
+		case otConcept:
+			return(Concepts.GetNb());
 		case otConceptType:
 			return(ConceptTypes.GetNb());
 		case otDoc:
@@ -1718,10 +1731,13 @@ void GSession::Init(void)
 		Managers()->CreateConfig(this);
 
 	// Load the configuration now
-	Load(false);
+	Load(false,true);
 	for(Managers.Start();!Managers.End();Managers.Next())
 		Managers()->ReadConfig(this);
 	ApplyConfig();
+
+	// This is valid configuration file
+	ValidConfigFile=true;
 }
 
 
@@ -2052,6 +2068,8 @@ void GSession::LoadDocs(void)
 //------------------------------------------------------------------------------
 void GSession::LoadInfos(GWeightInfos* &infos,tObjType type,size_t blockid,size_t id)
 {
+	size_t size,concept;
+
 	try
 	{
 		IndexType* ptr(Types.GetPtr(type));
@@ -2060,7 +2078,6 @@ void GSession::LoadInfos(GWeightInfos* &infos,tObjType type,size_t blockid,size_
 
 		// Position the block file to the correct position and read the size
 		ptr->Desc->Seek(blockid,id);
-		size_t size,concept;
 		double weight;
 		ptr->Desc->Read((char*)&size,sizeof(size_t));
 		if(!infos)
@@ -2077,6 +2094,10 @@ void GSession::LoadInfos(GWeightInfos* &infos,tObjType type,size_t blockid,size_
 	catch(RIOException e)
 	{
 		ThrowGException(e.GetMsg());
+	}
+	catch(bad_alloc)
+	{
+		ThrowGException("Cannot create a vector of size "+RString::Number(size)+" for "+GetObjType(type,false,false)+" "+RString::Number(id));
 	}
 }
 
@@ -2253,11 +2274,11 @@ void GSession::ResetBreak(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::RunTool(const R::RString& name,GSlot* slot,bool need)
+void GSession::RunTool(const RString& name,const RString& list,GSlot* slot,bool need)
 {
-	GTool* Tool(GALILEIApp->GetPlugIn<GTool>("Tool",name));
+	GTool* Tool(GALILEIApp->GetPlugIn<GTool>("Tools",name,list));
 	if((!Tool)&&need)
-		ThrowGException("Tool '"+name+"' does not exist");
+		ThrowGException("Tool '"+name+"' does not exist in '"+list+"'");
 	Tool->Run(slot);
 }
 
@@ -2356,7 +2377,7 @@ void GSession::SetBreak(void)
 void GSession::SetCurrentRandom(int rand)
 {
 	CurrentRandom=rand;
-	Random->Reset(CurrentRandom);
+	Random.Reset(CurrentRandom);
 }
 
 
@@ -2578,14 +2599,17 @@ void GSession::UpdateTopic(size_t docid)
 //------------------------------------------------------------------------------
 GSession::~GSession(void)
 {
-	// Save the configuration
-	RCursor<GPlugInManager> Cur(GALILEIApp->GetManagers());
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->SaveConfig(this);
-	Save();
+	// Save the configuration if there is a valid file
+	if(ValidConfigFile)
+	{
+		RCursor<GPlugInManager> Cur(GALILEIApp->GetManagers());
+		for(Cur.Start();!Cur.End();Cur.Next())
+			Cur()->SaveConfig(this);
+		Save();
+	}
 
-	delete Random;
 	delete Simulator;
 	delete StructDoc;
-	Storage->Session=0;
+	if(Storage)
+		Storage->Session=0;
 }

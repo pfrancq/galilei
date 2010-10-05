@@ -34,6 +34,11 @@
 
 
 //------------------------------------------------------------------------------
+// include files for R
+#include <rsparsevector.h>
+
+
+//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <gweightinfo.h>
@@ -46,14 +51,28 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GWeightInfos provides a representation for a list of information entities.
-* It implements multiple vectors (one vector per concepts space) representing a
-* document/profile/community in the extended vector Model.
+* The GWeightInfos provides a representation for a (sparse) vector of
+* information entities. Each element of the vector is represented by a
+* GWeightInfo class. The vector can be seen as a set of sub-vectors, each
+* sub-vector corresponds to one concepts space.
+*
+* In practice, such a vector represents the description of an object (document,
+* profile, community or class) in the extended vector Model.
 * @author Pascal Francq
-* @short Weighted Information Entities.
+* @short Information Entity Vector.
 */
 class GWeightInfos : private R::RContainer<GWeightInfo,true,true>
 {
+	/**
+	 * The maximal weight
+	 */
+	R::RSparseVector MaxWeight;
+
+	/**
+	 * The maximal absolute weight
+	 */
+	R::RSparseVector MaxAbsWeight;
+
 public:
 
 	/**
@@ -158,6 +177,16 @@ public:
 	*/
 	bool IsDefined(void) const {return(GetNb());}
 
+private:
+
+	/**
+	 * Analyze the weights to compute the maximum weights for the different
+	 * types.
+	 */
+	inline void AnalyzeWeights(void) const;
+
+public:
+
 	/**
 	* Compute the maximal weight of the information entities in the list for a
 	* given concept type. The list may not be empty.
@@ -227,12 +256,11 @@ protected:
 public:
 
 	/**
-	* Modify the list by applying for each information entity the Inverse
-	* Frequency Factor (IFF) of the object type (idf, isf or ivf).
-	* @param session         Session.
-	* @param ObjType        Type of the reference.
+	* Compute the Tf*Idf weights for all the elements of the vector. In
+	* practice, the classical formula is applied to each sub-vector.
+	* @param ObjType         Type of the reference (documents, profiles, etc.).
 	*/
-	void RecomputeIFF(GSession* session,tObjType ObjType);
+	void ComputeTfIdf(tObjType ObjType);
 
 	/**
 	 * Print the vector to the standard output.

@@ -54,6 +54,7 @@ using namespace std;
 const double Factor=0.5;
 
 
+
 //------------------------------------------------------------------------------
 //
 //  GWeightInfos
@@ -62,14 +63,14 @@ const double Factor=0.5;
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(size_t max)
-	: RContainer<GWeightInfo,true,true>(max,50)
+	: RContainer<GWeightInfo,true,true>(max,50), MaxWeight(5), MaxAbsWeight(5)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GWeightInfos::GWeightInfos(const GWeightInfos& w)
-	: RContainer<GWeightInfo,true,true>(w)
+	: RContainer<GWeightInfo,true,true>(w), MaxWeight(w.MaxWeight), MaxAbsWeight(w.MaxAbsWeight)
 {
 }
 
@@ -92,6 +93,10 @@ int GWeightInfos::SortOrder(const void* a,const void* b)
 void GWeightInfos::CopyInfos(const R::RContainer<GWeightInfo,false,true>& infos)
 {
 	RContainer<GWeightInfo,true,true>::operator=(infos);
+
+	// Invalid maximum weights
+	MaxWeight.SetExistingElements(NAN);
+	MaxAbsWeight.SetExistingElements(NAN);
 }
 
 
@@ -112,6 +117,19 @@ GWeightInfo* GWeightInfos::GetInfo(GConcept* concept)
 //------------------------------------------------------------------------------
 void GWeightInfos::InsertInfo(GWeightInfo* info)
 {
+	// If NAN -> Recomputing is necessary
+	if(const_cast<RSparseVector&>(MaxWeight)[info->GetTypeId()]!=const_cast<RSparseVector&>(MaxWeight)[info->GetTypeId()])
+	{
+		MaxWeight[info->GetTypeId()]=info->GetWeight();
+		MaxAbsWeight[info->GetTypeId()]=fabs(info->GetWeight());
+	}
+	else
+	{
+		if(info->GetWeight()>MaxWeight[info->GetTypeId()])
+			MaxWeight[info->GetTypeId()]=info->GetWeight();
+		if(fabs(info->GetWeight())>MaxAbsWeight[info->GetTypeId()])
+			MaxAbsWeight[info->GetTypeId()]=fabs(info->GetWeight());
+	}
 	InsertPtr(info);
 }
 
@@ -119,6 +137,10 @@ void GWeightInfos::InsertInfo(GWeightInfo* info)
 //------------------------------------------------------------------------------
 void GWeightInfos::DeleteInfo(GWeightInfo* info)
 {
+	// Invalid maximum weights
+	MaxWeight.SetExistingElements(NAN);
+	MaxAbsWeight.SetExistingElements(NAN);
+
 	DeletePtr(*info);
 }
 
@@ -126,49 +148,53 @@ void GWeightInfos::DeleteInfo(GWeightInfo* info)
 //------------------------------------------------------------------------------
 void GWeightInfos::DeleteInfo(GConcept* concept)
 {
+	// Invalid maximum weights
+	MaxWeight.SetExistingElements(NAN);
+	MaxAbsWeight.SetExistingElements(NAN);
+
 	DeletePtr(*concept);
 }
 
 
 //------------------------------------------------------------------------------
-double GWeightInfos::GetMaxWeight(GConceptType* type) const
+void GWeightInfos::AnalyzeWeights(void) const
 {
 	// If no profile, maximal weight is null.
 	if(!GetNb())
 		throw GException("GWeightInfos is empty for GetMaxHeight");
 
 	// Find the biggest weight
-	double max(-numeric_limits<double>().max());
+	const_cast<RSparseVector&>(MaxWeight).SetExistingElements(-numeric_limits<double>().max());
+	const_cast<RSparseVector&>(MaxAbsWeight).SetExistingElements(-numeric_limits<double>().max());
 	RCursor<GWeightInfo> Infos(*this);
 	for(Infos.Start();!Infos.End();Infos.Next())
 	{
-		if(Infos()->GetType()!=type)
-			continue;
-		if(Infos()->GetWeight()>max)
-			max=Infos()->GetWeight();
+		if(Infos()->GetWeight()>MaxWeight[Infos()->GetTypeId()])
+			const_cast<RSparseVector&>(MaxWeight)[Infos()->GetTypeId()]=Infos()->GetWeight();
+		if(fabs(Infos()->GetWeight())>MaxAbsWeight[Infos()->GetTypeId()])
+			const_cast<RSparseVector&>(MaxAbsWeight)[Infos()->GetTypeId()]=fabs(Infos()->GetWeight());
 	}
-	return(max);
+}
+
+
+//------------------------------------------------------------------------------
+double GWeightInfos::GetMaxWeight(GConceptType* type) const
+{
+	// If NAN -> Recomputing is necessary
+	if(const_cast<RSparseVector&>(MaxWeight)[type->GetId()]!=const_cast<RSparseVector&>(MaxWeight)[type->GetId()])
+		AnalyzeWeights();
+	return(MaxWeight[type->GetId()]);
 }
 
 
 //------------------------------------------------------------------------------
 double GWeightInfos::GetMaxAbsWeight(GConceptType* type) const
 {
-	// If no profile, maximal weight is null.
-	if(!GetNb())
-		throw GException("GWeightInfos is empty for GetMaxHeight");
+	// If NAN -> Recomputing is necessary
+	if(const_cast<RSparseVector&>(MaxAbsWeight)[type->GetId()]!=const_cast<RSparseVector&>(MaxAbsWeight)[type->GetId()])
+		AnalyzeWeights();
 
-	// Find the biggest absolute weight
-	double max(0);
-	RCursor<GWeightInfo> Infos(*this);
-	for(Infos.Start();!Infos.End();Infos.Next())
-	{
-		if(Infos()->GetType()!=type)
-			continue;
-		if(Infos()->GetWeight()>fabs(max))
-			max=fabs(Infos()->GetWeight());
-	}
-	return(max);
+	return(MaxAbsWeight[type->GetId()]);
 }
 
 
@@ -325,30 +351,13 @@ void GWeightInfos::DelRefs(GSession* session,tObjType ObjType) const
 
 
 //------------------------------------------------------------------------------
-void GWeightInfos::RecomputeIFF(GSession* session,tObjType ObjType)
+void GWeightInfos::ComputeTfIdf(tObjType ObjType)
 {
-	if(!GetNb()) return;
-
-	// Initialize
-	double max(0.0),iff,ref(0.0);
-	GConceptType* type(0);
-	RVector Max(session->GetNbObjects(otConceptType)+1);
-	Max.Init(session->GetNbObjects(otConceptType)+1,-numeric_limits<double>().max());
-
-	RCursor<GWeightInfo> ptr(*this);
-	for(ptr.Start();!ptr.End();ptr.Next())
+	RCursor<GWeightInfo> Infos(*this);
+	for(Infos.Start();!Infos.End();Infos.Next())
 	{
-		if(type!=ptr()->GetConcept()->GetType())
-		{
-			type=ptr()->GetConcept()->GetType();
-			size_t Id(ptr()->GetConcept()->GetType()->GetId());
-			if(Max[Id]==-numeric_limits<double>().max())
-				Max[Id]=GetMaxAbsWeight(type);
-			max=Max[Id];
-			ref=static_cast<double>(type->GetRef(ObjType));
-		}
-		iff=ref/static_cast<double>(ptr()->GetConcept()->GetRef(ObjType));
-		ptr()->SetWeight((ptr()->GetWeight()/max)*log(iff));
+		double iff(Infos()->GetType()->GetRef(ObjType)/static_cast<double>(Infos()->GetConcept()->GetRef(ObjType)));
+		Infos()->SetWeight((Infos()->GetWeight()/GetMaxAbsWeight(Infos()->GetType()))*log(iff));
 	}
 }
 
@@ -389,6 +398,10 @@ void GWeightInfos::Intersection(const GWeightInfos& infos)
 //------------------------------------------------------------------------------
 GWeightInfos& GWeightInfos::operator+=(const GWeightInfos& infos)
 {
+	// Invalid maximum weights
+	MaxWeight.SetExistingElements(NAN);
+	MaxAbsWeight.SetExistingElements(NAN);
+
 	RCursor<GWeightInfo> Cur(infos);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
@@ -402,6 +415,10 @@ GWeightInfos& GWeightInfos::operator+=(const GWeightInfos& infos)
 //------------------------------------------------------------------------------
 GWeightInfos& GWeightInfos::operator-=(const GWeightInfos& infos)
 {
+	// Invalid maximum weights
+	MaxWeight.SetExistingElements(NAN);
+	MaxAbsWeight.SetExistingElements(NAN);
+
 	RCursor<GWeightInfo> Cur(infos);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
@@ -415,6 +432,10 @@ GWeightInfos& GWeightInfos::operator-=(const GWeightInfos& infos)
 //------------------------------------------------------------------------------
 GWeightInfos& GWeightInfos::operator*=(const double nb)
 {
+	// Invalid maximum weights
+	MaxWeight.SetExistingElements(NAN);
+	MaxAbsWeight.SetExistingElements(NAN);
+
 	RCursor<GWeightInfo> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Weight*=nb;
@@ -425,6 +446,10 @@ GWeightInfos& GWeightInfos::operator*=(const double nb)
 //------------------------------------------------------------------------------
 GWeightInfos& GWeightInfos::operator/=(const double nb)
 {
+	// Invalid maximum weights
+	MaxWeight.SetExistingElements(NAN);
+	MaxAbsWeight.SetExistingElements(NAN);
+
 	RCursor<GWeightInfo> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Weight/=nb;

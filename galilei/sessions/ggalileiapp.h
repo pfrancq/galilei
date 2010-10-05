@@ -363,7 +363,12 @@ public:
 	{
 		GPlugInManager* ptr(GetPtr(mng));
 		if(!ptr)
-			ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+		{
+			if(need)
+				ThrowGException("'"+mng+"' is not a valid plug-ins manager");
+			else
+				return(0);
+		}
 		return(ptr->GetCurrentPlugIn<plugin>(list,need));
 	}
 

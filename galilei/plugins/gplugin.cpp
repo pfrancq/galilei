@@ -83,7 +83,10 @@ int GPlugInFactory::Compare(const size_t level) const
 void GPlugInFactory::Create(GSession* session)
 {
 	if(Plugin)
+	{
+		Plugin->Session=session;
 		return;
+	}
 	Plugin=NewPlugIn(session);
 	Mng->RegisterPlugIn(Plugin,true);
 }

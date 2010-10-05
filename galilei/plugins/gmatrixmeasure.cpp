@@ -62,7 +62,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // Debug dependent variable
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 	RTextFile DebugFile("/home/pfrancq/DebugMeasure.txt");
 #endif
@@ -960,7 +960,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 
 		// Fill the rest with randomly chosen elements
 		Fill(Neighbors,Element());
-		Session->GetRandom()->RandOrder(Elements,NbElements);
+		Session->GetRandom().RandOrder(Elements,NbElements);
 		GObject** ptr;
 		size_t i;
 		for(ptr=Elements,i=0;(Element()->GetNb()<NbNearest)&&(i<NbElements);i++,ptr++)
@@ -1104,7 +1104,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 
 		// Fill the rest with randomly chosen elements
 		Fill(Neighbors,Sample());
-		Session->GetRandom()->RandOrder(Elements,NbElements);
+		Session->GetRandom().RandOrder(Elements,NbElements);
 		GObject** ptr;
 		size_t i;
 		for(ptr=Elements,i=0;(Sample()->GetNb()<NbSamples)&&(i<NbElements);i++,ptr++)

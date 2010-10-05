@@ -219,7 +219,7 @@ void GGALILEIApp::Init(void)
 	// Load the plug-in factories.
 	Load(PlugInsPath,LoadDialogs);
 
-	// Re-load the config (to take the factories into account).
+	// Re-load the configuration files (to take the factories into account).
 	Config.Load(true);
 }
 
@@ -229,71 +229,69 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 {
 	// If the session exist -> return it
 	GSession* Session(Sessions.GetPtr(name));
-	if(Session||(!created))
+	if(Session)
 		return(Session);
+	else if(!created)
+		ThrowGException("Session '"+name+"' does not exist");
 
-	// A new session must be created and its configuration read
-	Sessions.InsertPtr(Session=new GSession(Sessions.GetNb(),name));
-	RCursor<GPlugInManager> Cur(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		Cur()->Create(Session);
-	Session->Init();
-	Log.WriteLog("Session '"+name+"' created");
-
-	// Initialize the storage and load the ontology
-	Storages->InitPlugIns(Session);
-	GStorage* Storage(Storages->GetCurrentPlugIn<GStorage>());
-	Session->Storage=Storage;
-	Storage->LoadConceptTypes();
-	Storage->LoadConcepts();
-	Storage->LoadPredicates();
-	Storage->LoadStatements();
-	Log.WriteLog("Storages for session '"+name+"' created");
-
-	// Initialize the languages
-	Langs->InitPlugIns(Session);
-	RCursor<GConceptType> Types(Session->ConceptTypes);
-	for(Types.Start();!Types.End();Types.Next())
+	// Create and load the session
+	try
 	{
-		RString code(Types()->Name.Mid(0,2));
-		Types()->Lang=Langs->GetPlugIn<GLang>(code,false);
-	}
-	Log.WriteLog("Languages for session '"+name+"' created");
-
-	// Initialize the rest of the plug-ins
-	for(Cur.Start();!Cur.End();Cur.Next())
-		if((Cur()!=Storages)&&(Cur()!=Langs))
-			Cur()->InitPlugIns(Session);
-	Log.WriteLog("Plug-ins connected to session '"+name+"'");
-
-	// Create the storage and initialize session.
-/*	GPlugInFactory* fac(GetCurrentFactory("Storage"));
-	if(!fac)
-		ThrowGException("No current storage");
-	fac->Create(0);
-	GStorage* Storage(fac->GetPlugIn<GStorage>());
-	Storage->ApplyConfig();
-	Storage->Init();
-
-	// Connect the current storage to the session and load the different elements
-	GPlugInManager* Mng(Storage->GetFactory()->GetMng());
-	Storage->LoadConceptTypes();
-	Storage->LoadConcepts();
-	Storage->LoadPredicates();
-	Storage->LoadStatements();
-	Log.WriteLog("Session '"+name+"' created");
-
-	// Connect the other plug-ins to the session
-	GPlugInManager* Langs(GetPtr("Lang"));
-	Langs->Create(Session);  // First connect the languages.
-	Session->AssignLangs();
-	RCursor<GPlugInManager> Cur(*this);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		if((Cur()!=Mng)&&(Cur()!=Langs))
+		// A new session must be created and its configuration read
+		Sessions.InsertPtr(Session=new GSession(Sessions.GetNb(),name));
+		RCursor<GPlugInManager> Cur(*this);
+		for(Cur.Start();!Cur.End();Cur.Next())
 			Cur()->Create(Session);
-	Log.WriteLog("Plug-ins connected to session '"+name+"'");*/
+		Session->Init();
+		Log.WriteLog("Session '"+name+"' created");
 
-	return(Session);
+		// Initialize the storage and load the ontology
+		Storages->InitPlugIns(Session);
+		GStorage* Storage(Storages->GetCurrentPlugIn<GStorage>());
+		Session->Storage=Storage;
+		Storage->LoadConceptTypes();
+		Storage->LoadConcepts();
+		Storage->LoadPredicates();
+		Storage->LoadStatements();
+		Log.WriteLog("Storages for session '"+name+"' created");
+
+		// Initialize the languages
+		Langs->InitPlugIns(Session);
+		RCursor<GConceptType> Types(Session->ConceptTypes);
+		for(Types.Start();!Types.End();Types.Next())
+		{
+			RString code(Types()->Name.Mid(0,2));
+			Types()->Lang=Langs->GetPlugIn<GLang>(code,false);
+		}
+		Log.WriteLog("Languages for session '"+name+"' created");
+
+		// Initialize the rest of the plug-ins
+		for(Cur.Start();!Cur.End();Cur.Next())
+			if((Cur()!=Storages)&&(Cur()!=Langs))
+				Cur()->InitPlugIns(Session);
+		Log.WriteLog("Plug-ins connected to session '"+name+"'");
+
+		// Return the session
+		return(Session);
+	}
+	catch(RException& e)
+	{
+		if(Session)
+			Sessions.DeletePtr(Session);
+		throw GException(e.GetMsg());
+	}
+	catch(std::exception& e)
+	{
+		if(Session)
+			Sessions.DeletePtr(Session);
+		throw GException(e.what());
+	}
+	catch(...)
+	{
+		if(Session)
+			Sessions.DeletePtr(Session);
+		throw GException("Undefined Error");
+	}
 }
 
 
@@ -302,7 +300,7 @@ void GGALILEIApp::DeleteSession(GSession* session)
 {
 	if(!session)
 		return;
-	Sessions.DeletePtr(*session);
+	Sessions.DeletePtr(session);
 }
 
 

@@ -467,13 +467,18 @@ public:
 		{
 			List=Data.Lists->GetPtr(list);
 			if(!List)
-				ThrowGException("No type '"+list+"' available for '"+Name+"'");
+				ThrowGException("No type '"+list+"' available for '"+Name+"' ("+list+")");
 		}
 		else
 			List=Data.List;
 
 		if((!List->Current)&&need)
-			ThrowGException("No current plug-in available for '"+Name+"'");
+		{
+			if(PluginsType==ptListSelect)
+				ThrowGException("No current plug-in available for '"+list+"' from '"+Name+"'");
+			else
+				ThrowGException("No current plug-in available for '"+Name+"'");
+		}
 		if(!List->Current)
 			return(0);
 		plugin* plug=List->Current->GetPlugIn<plugin>();

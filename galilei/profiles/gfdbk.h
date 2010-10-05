@@ -159,7 +159,7 @@ public:
 	* @param rand            Pointer to the random number generator to use.
 	* @return a feedback feedback type.
 	*/
-	static tFdbkType ErrorFdbk(tFdbkType fdbk,double PercErr,R::RRandom* rand);
+	static tFdbkType ErrorFdbk(tFdbkType fdbk,double PercErr,R::RRandom& rand);
 
 	/**
 	* Destruct the feedback.

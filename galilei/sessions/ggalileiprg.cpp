@@ -858,7 +858,7 @@ public:
 
 		// Initialize the parameters
 		GSlot* rec(dynamic_cast<GSlot*>(o));
-		RRandom* Random(Owner->Session->GetRandom());
+		RRandom& Random(Owner->Session->GetRandom());
 		size_t MaxStep(atoi(args[0]->GetValue(prg)));                  // Maximum number of steps.
 		size_t MinFBStep(atoi(args[1]->GetValue(prg)));                // Minimum number of feedbacks before a new profile is created.
 		size_t MaxFBStep(atoi(args[2]->GetValue(prg))-MinFBStep+1);    // Maximum number of feedbacks before a new profile is created.
@@ -905,7 +905,7 @@ public:
 
 				// Look if new topic or existing one
 				What[0]='-';   // Suppose no profile can be created
-				if(NbStep&&(Random->GetValue()<Proba))
+				if(NbStep&&(Random.GetValue()<Proba))
 				{
 					// Create One profile of an existing topic
 					if(Owner->Simulator->AddProfiles())
@@ -928,7 +928,7 @@ public:
 
 				// How much feedbacks now ?
 				if(NbStep)     // No feedback cycle alone
-					NbFdbks=Random->GetValue(MaxFBStep-MinFBStep+1)+MinFBStep;
+					NbFdbks=Random.GetValue(MaxFBStep-MinFBStep+1)+MinFBStep;
 			}
 
 			// Compute, Group and Compare
@@ -1168,9 +1168,9 @@ public:
 	{
 		ShowInst(this,prg,args);
 		GInstSession* Owner=dynamic_cast<GInstSession*>(inst);
-		if(args.GetNb()!=1)
-			throw RPrgException(prg,"Method needs one parameters.");
-		Owner->Session->RunTool(args[0]->GetValue(prg),dynamic_cast<GSlot*>(o));
+		if(args.GetNb()!=2)
+			throw RPrgException(prg,"Method needs two parameters.");
+		Owner->Session->RunTool(args[0]->GetValue(prg),args[1]->GetValue(prg),dynamic_cast<GSlot*>(o));
 	}
 };
 

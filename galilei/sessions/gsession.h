@@ -39,7 +39,6 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rconfig.h>
-#include <random.h>
 #include <rindexfile.h>
 #include <rtree.h>
 
@@ -84,6 +83,11 @@ class GSession : public R::RConfig
 	GStorage* Storage;
 
 	/**
+	 * Specify if the configuration file is a valid one.
+	 */
+	bool ValidConfigFile;
+
+	/**
 	 *  Must the results be saved after computed ?
 	 */
 	bool SaveResults;
@@ -106,7 +110,7 @@ class GSession : public R::RConfig
     /**
      * Random number generator.
      */
-	R::RRandom* Random;
+	R::RRandom Random;
 
 	/**
 	 *  Types of Concepts.
@@ -375,6 +379,13 @@ public:
 	int Compare(const GSession& session) const;
 
 	/**
+	 * Compare two session regarding their identifiers.
+	 * @param session        Session to compare with.
+	 * @return a value compatible with R::RContainer.
+	 */
+	int Compare(const GSession* session) const;
+
+	/**
 	 * Compare the identifier of the session with a given one.
 	 * @param id             Identifier to compare with.
 	 * @return a value compatible with R::RContainer.
@@ -556,7 +567,7 @@ public:
 	* @param max             Max Random Value.
 	* @return The current Random value * max.
 	*/
-	inline size_t GetCurrentRandomValue(size_t max) {return(Random->GetValue(max));}
+	inline size_t GetCurrentRandomValue(size_t max) {return(Random.GetValue(max));}
 
 	/**
 	* Get a document corresponding to a given identifier.
@@ -698,7 +709,7 @@ public:
 	* Get the random number generator.
 	* @returns Pointer to RMath::RRandom;
 	*/
-	inline R::RRandom* GetRandom(void) const {return(Random);}
+	inline R::RRandom& GetRandom(void) {return(Random);}
 
 	/**
 	 * @return Simulator associated with the session.
@@ -1096,11 +1107,12 @@ public:
 	/**
 	 * Run a specific tool.
 	 * @param name           Name of the tool.
+	 * @param list           List of the tool.
 	 * @param slot           Slot.
 	 * @param need           If set to true and the tool doesn't exist, it
 	 *                       generates an exception.
 	 */
-	void RunTool(const R::RString& name,GSlot* slot=0,bool need=true);
+	void RunTool(const R::RString& name,const R::RString& list,GSlot* slot=0,bool need=true);
 
 	/**
 	* Save the description of a given object.

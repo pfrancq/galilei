@@ -47,7 +47,8 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GWeightInfo class provides a representation for an information entity
-* associated with a weight.
+* associated with a weight. In fact, it represents an element of a sparse
+* vector implemented in the GWeightInfos class.
 * @author Pascal Francq
 * @short Weighted Information Entity.
 */

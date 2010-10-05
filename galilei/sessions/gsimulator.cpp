@@ -230,7 +230,7 @@ bool GSimulator::AddSubject(void)
 	// Randomly mix the subjects in tab
 	GSubject** tab(new GSubject*[Session->GetNbObjects(otSubject)]);
 	Session->FillSubjects(tab);
-	Session->GetRandom()->RandOrder<GSubject*>(tab,Session->GetNbObjects(otSubject));
+	Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjects(otSubject));
 
 	// Find the first not used subject having at least NbMinDocsSubject documents and the correct depth.
 	for(ptr=tab,i=Session->GetNbObjects(otSubject)+1,newSubject=0;--i;ptr++)
@@ -383,7 +383,7 @@ void GSimulator::AddAssessments(void)
 				continue;
 
 			// Mix the documents and assess the first NbDocsAssess one
-			Session->GetRandom()->RandOrder<GDoc*>(TmpDocs,NbTmpDocs);
+			Session->GetRandom().RandOrder<GDoc*>(TmpDocs,NbTmpDocs);
 			ProfileAssess(Prof(),Subs(),NbDocsAssess,cNoRef,cNoRef,cNoRef);
 		}
 	}
@@ -416,7 +416,7 @@ size_t GSimulator::AddProfiles(void)
 	// Randomly mix the subjects in tab
 	GSubject** tab(new GSubject*[Session->GetNbObjects(otSubject)]);
 	Session->FillSubjects(tab);
-	Session->GetRandom()->RandOrder<GSubject*>(tab,Session->GetNbObjects(otSubject));
+	Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjects(otSubject));
 
 	// Find the first used subject
 	for(ptr=tab,i=Session->GetNbObjects(otSubject)+1,usedSubject=0;--i;ptr++)
@@ -491,7 +491,7 @@ void GSimulator::PerformDegradation(char what,int nb)
 				delete SwitchRandom;
 				SwitchRandom=0;
 			}
-			SwitchRandom=RRandom::Create(RRandom::Good);
+			SwitchRandom=new RRandom(RRandom::Good);
 
 			// Initialize the elements
 			if(!TmpDocs)
@@ -692,7 +692,7 @@ void GSimulator::InitSubject(GSubject* subject,bool selectdocs)
 	if(nbdocs>NbTmpDocs)
 		nbdocs=NbTmpDocs;
 	else
-		Session->GetRandom()->RandOrder(TmpDocs,NbTmpDocs);  // Randomize the documents
+		Session->GetRandom().RandOrder(TmpDocs,NbTmpDocs);  // Randomize the documents
 
 	// Choose the first nbdocs documents
 	GDoc** ptr(TmpDocs);
@@ -717,7 +717,7 @@ void GSimulator::SelectSubjects(void)
 		// Randomly mix the subjects in tab
 		GSubject** tab(new GSubject*[Session->GetNbObjects(otSubject)]);
 		Session->FillSubjects(tab);
-		Session->GetRandom()->RandOrder<GSubject*>(tab,Session->GetNbObjects(otSubject));
+		Session->GetRandom().RandOrder<GSubject*>(tab,Session->GetNbObjects(otSubject));
 
 		// Compute the number of subjects to select
 		if(RelSubjects)
@@ -803,7 +803,7 @@ void GSimulator::ProfileAssess(GProfile* prof,GSubject* sub,size_t max,size_t ma
 	GDoc** ptr;
 
 	// Mix the documents
-	Session->GetRandom()->RandOrder<GDoc*>(TmpDocs,NbTmpDocs);
+	Session->GetRandom().RandOrder<GDoc*>(TmpDocs,NbTmpDocs);
 
 	// Go trough the documents to create the assessments
 	if(max>NbTmpDocs)

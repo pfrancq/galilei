@@ -45,7 +45,7 @@
 #include <rnumcursor.h>
 #include <rxmltag.h>
 #include <rtextfile.h>
-#include <random.h>
+#include <rrandom.h>
 #include <rdebug.h>
 #include <rnotificationcenter.h>
 

@@ -462,6 +462,7 @@ public:
 	*/
 	virtual ~GPlugIn(void);
 
+	friend class GPlugInFactory;
 	friend class GPlugInList;
 };
 
