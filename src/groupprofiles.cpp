@@ -93,7 +93,7 @@ class kMeansProfile : public R::RGroupingKMeans<GroupProfile,GProfile,GroupsProf
 {
 	GMeasure* Measure;
 public:
-	kMeansProfile(const R::RString& n,R::RRandom* r,R::RCursor<GProfile> objs,double convergence,R::RDebug* debug=0)
+	kMeansProfile(const R::RString& n,R::RRandom& r,R::RCursor<GProfile> objs,double convergence,R::RDebug* debug=0)
 		: R::RGroupingKMeans<GroupProfile,GProfile,GroupsProfile>(n,r,objs,convergence,debug)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
@@ -114,7 +114,7 @@ class kKernelMeansProfile : public RKernelkMeans<GroupProfile,GProfile,GroupsPro
 	GSession* Session;
 
 public:
-	kKernelMeansProfile(GSession* session,const R::RString& n,R::RRandom* r,R::RCursor<GProfile> objs,size_t maxid,double alpha,double convergence,R::RDebug* debug=0)
+	kKernelMeansProfile(GSession* session,const R::RString& n,R::RRandom& r,R::RCursor<GProfile> objs,size_t maxid,double alpha,double convergence,R::RDebug* debug=0)
 		: RKernelkMeans<GroupProfile,GProfile,GroupsProfile>(n,r,objs,maxid,alpha,convergence,debug), Session(session)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");

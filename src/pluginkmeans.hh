@@ -68,11 +68,11 @@ template<class cPlugin,class cObj,class cGroup,class cGrp,class cGrps,class kMea
 {
 	if(Cout)
 		cout<<"Do "<<kMeansType<<" kMeans for "<<Objs.GetNb()<<" "<<GetObjType(ObjType,false,true)<<endl;
-	std::auto_ptr<RRandom> Rand(RRandom::Create(RRandom::Good,1));
+	RRandom Rand(RRandom::Good,1);
 	if(InternalRandom)
-		Rand->Reset(12345);
+		Rand.Reset(12345);
 	else
-		Rand->Reset(Seed);
+		Rand.Reset(Seed);
 
 	typename kMeans::tInitial start;
 	cGrps Sol(Objs,NbClusters);
@@ -93,19 +93,19 @@ template<class cPlugin,class cObj,class cGroup,class cGrp,class cGrps,class kMea
 		start=kMeans::Incremental;
 	}
 	else
-		start=kMeans::kMeansPlusPlus;
+		start=kMeans::Random;//start=kMeans::kMeansPlusPlus;
 	if(Cout)
-		cout<<"Run "<<kMeansType<<" kMeans ("<<NbClusters<<" clusters)"<<endl;
+		cout<<"Run "<<kMeansType<<" kMeans ("<<NbClusters<<" clusters, convergence: "<<Convergence<<")"<<endl;
 	if(kMeansType=="Normal")
 	{
-		kMeans Instance("kMeansObj",Rand.get(),Objs,Convergence);
+		kMeans Instance("kMeansObj",Rand,Objs,Convergence);
 		Instance.Run(&Sol,MaxkMeans,NbClusters,start);
 		if(Cout)
 			cout<<kMeansType<<" kMeans iterates "<<Instance.GetNbIterations()<<" times (max="<<MaxkMeans<<")"<<endl;
 	}
 	else
 	{
-		KernelkMeans Instance(Session,"KernelkMeansObj",Rand.get(),Objs,maxid,Alpha,Convergence);
+		KernelkMeans Instance(Session,"KernelkMeansObj",Rand,Objs,maxid,Alpha,Convergence);
 		Instance.Run(&Sol,MaxkMeans,NbClusters,Spherical);
 		if(Cout)
 			cout<<kMeansType<<" kMeans iterates "<<Instance.GetNbIterations()<<" times (max="<<MaxkMeans<<")"<<endl;

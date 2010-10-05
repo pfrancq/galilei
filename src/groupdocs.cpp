@@ -93,7 +93,7 @@ class kMeansDoc : public R::RGroupingKMeans<GroupDoc,GDoc,GroupsDoc>
 {
 	GMeasure* Measure;
 public:
-	kMeansDoc(const R::RString& n,R::RRandom* r,R::RCursor<GDoc> objs,double convergence,R::RDebug* debug=0)
+	kMeansDoc(const R::RString& n,R::RRandom& r,R::RCursor<GDoc> objs,double convergence,R::RDebug* debug=0)
 		: R::RGroupingKMeans<GroupDoc,GDoc,GroupsDoc>(n,r,objs,convergence,debug)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
@@ -114,7 +114,7 @@ class kKernelMeansDoc : public RKernelkMeans<GroupDoc,GDoc,GroupsDoc>
 	GSession* Session;
 
 public:
-	kKernelMeansDoc(GSession* session,const R::RString& n,R::RRandom* r,R::RCursor<GDoc> objs,size_t maxid,double alpha,double convergence,R::RDebug* debug=0)
+	kKernelMeansDoc(GSession* session,const R::RString& n,R::RRandom& r,R::RCursor<GDoc> objs,size_t maxid,double alpha,double convergence,R::RDebug* debug=0)
 		: RKernelkMeans<GroupDoc,GDoc,GroupsDoc>(n,r,objs,maxid,alpha,convergence,debug), Session(session)
 	{
 		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
@@ -199,7 +199,7 @@ void kKernelMeansDoc::FillSimilarities(RSparseMatrix& sims)
 {
 	if(Kernel->MeasureType=="Complete")
 	{
-		// Fill the matrix with the nearest neighbors
+		// Fill the matrix with all documents
 		RCursor<GDoc> Doc(Session->GetDocs());
 		for(Doc.Start();!Doc.End();Doc.Next())
 		{
