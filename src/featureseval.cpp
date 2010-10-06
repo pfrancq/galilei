@@ -123,7 +123,6 @@ void FeaturesEval::BuildMutualInformation(void)
 	// Initialize the vector
 	MutualInfos.Init(Session->GetMaxObjectId(otConcept),0.0);
 	double InvPdj(static_cast<double>(Session->GetNbObjects(otDoc)));
-//	double SumWij(0.0);
 	RVector SumjWij(1);
 	SumjWij.Init(Session->GetMaxObjectId(otConcept),0.0);
 
@@ -135,7 +134,6 @@ void FeaturesEval::BuildMutualInformation(void)
 		RCursor<GWeightInfo> Words(Docs()->GetVector().GetInfos());
 		for(Words.Start();!Words.End();Words.Next())
 		{
-//			SumWij+=Words()->GetWeight();
 			SumjWij[Words()->GetConcept()->GetId()]+=Words()->GetWeight();
 		}
 	}
@@ -179,22 +177,6 @@ void FeaturesEval::Handle(const RNotification& notification)
 //------------------------------------------------------------------------------
 void FeaturesEval::ApplyConfig(void)
 {
-/*	Docs=FindParam<RParamValue>("Docs")->GetBool();
-	ProfDoc=FindParam<RParamValue>("ProfDoc")->GetBool();
-	GroupDoc=FindParam<RParamValue>("GroupDoc")->GetBool();
-	Profiles=FindParam<RParamValue>("Profiles")->GetBool();
-	SameDocProf=FindParam<RParamValue>("SameDocProf")->GetBool();
-	GroupProf=FindParam<RParamValue>("GroupProf")->GetBool();
-	RURI OldName(Results);
-	Results=FindParam<RParamValue>("Results")->Get();
-	ExportDocsSims=FindParam<RParamValue>("ExportDocsSims")->GetBool();
-	DocsSims=FindParam<RParamValue>("DocsSims")->Get();
-	ExportDocsIncs=FindParam<RParamValue>("ExportDocsIncs")->GetBool();
-	DocsIncs=FindParam<RParamValue>("DocsIncs")->Get();
-	RString Tmp(FindParam<RParamValue>("MeasureType")->Get());
-	if((Tmp!="Complete")&&(Tmp!="Nearest Neighbors"))
-		ThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
-	MeasureType=Tmp;*/
 	CurWeights=FindParam<RParamValue>("CurWeights")->GetUInt();
 }
 
@@ -202,22 +184,10 @@ void FeaturesEval::ApplyConfig(void)
 //------------------------------------------------------------------------------
 void FeaturesEval::CreateConfig(void)
 {
-/*	InsertParam(new RParamValue("Docs",false));
-	InsertParam(new RParamValue("ProfDoc",false));
-	InsertParam(new RParamValue("GroupDoc",false));
-	InsertParam(new RParamValue("Profiles",false));
-	InsertParam(new RParamValue("SameDocProf",false));
-	InsertParam(new RParamValue("GroupProf",false));
-	InsertParam(new RParamValue("Results",""));
-	InsertParam(new RParamValue("ExportDocsSims",false));
-	InsertParam(new RParamValue("DocsSims",""));
-	InsertParam(new RParamValue("ExportDocsIncs",false));
-	InsertParam(new RParamValue("DocsIncs",""));
-	InsertParam(new RParamValue("MeasureType","Complete"));*/
 	InsertParam(new RParamValue("CurWeights",0));
 	InsertParam(new RParamValue("MaxWeights",2));
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Features Evaluation","Mutual Information","Mutual Information",FeaturesEval)
+CREATE_MEASURE_FACTORY("Features Evaluation","Basic Measures","Basic Measures",FeaturesEval)
