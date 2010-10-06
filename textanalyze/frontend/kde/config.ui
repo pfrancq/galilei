@@ -489,7 +489,7 @@ When the languages are not static, the language of a document is always determin
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>Metadata Tags</string>
+       <string>Metadata</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_8">
        <item>
@@ -498,7 +498,7 @@ When the languages are not static, the language of a document is always determin
           <string>Index the metatags.</string>
          </property>
          <property name="text">
-          <string>Metadata Tags</string>
+          <string>Metadata</string>
          </property>
         </widget>
        </item>
