@@ -5,7 +5,7 @@
 # - ...
 
 #normaly all def in CMakeLists.txt
-PROJECT(statdata CXX)
+PROJECT(statfeatures CXX)
 
 R_LOAD_DEPENDENCY("R" "R_LIB" "r")
 R_LOAD_DEPENDENCY("GALILEI" "GALILEI_LIB" "galilei")
@@ -31,5 +31,5 @@ ELSE(disable-kde)
 ENDIF(disable-kde)
 
 
-SET(SUB_PROJECT statdata)
-ADD_SUBDIRECTORY(statdata)
+SET(SUB_PROJECT statfeatures)
+ADD_SUBDIRECTORY(statfeatures)

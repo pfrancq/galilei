@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	StatData.cpp
+	StatFeatures.cpp
 
-	Data Statistics - Implementation.
+	Features Statistics - Implementation.
 
 	Copyright 2010 by Pascal Francq (pascal@francq.info).
 
@@ -53,7 +53,7 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 // include statistics files
-#include <statdata.h>
+#include <statfeatures.h>
 
 
 //------------------------------------------------------------------------------
@@ -108,19 +108,19 @@ void ConceptData::Add(RWorksheet& stats,GMeasure* measure)
 
 //------------------------------------------------------------------------------
 //
-//  class StatData
+//  class StatFeatures
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-StatData::StatData(GSession* session,GPlugInFactory* fac)
+StatFeatures::StatFeatures(GSession* session,GPlugInFactory* fac)
 	: GTool(session,fac), Data(100000)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void StatData::ApplyConfig(void)
+void StatFeatures::ApplyConfig(void)
 {
 	RURI OldName(Results);
 	Results=FindParam<RParamValue>("Results")->Get();
@@ -128,7 +128,7 @@ void StatData::ApplyConfig(void)
 
 
 //------------------------------------------------------------------------------
-void StatData::Run(GSlot*)
+void StatFeatures::Run(GSlot*)
 {
 	// Clear the Data
 	Data.Clear();
@@ -172,11 +172,11 @@ void StatData::Run(GSlot*)
 
 
 //------------------------------------------------------------------------------
-void StatData::CreateConfig(void)
+void StatFeatures::CreateConfig(void)
 {
 	InsertParam(new RParamValue("Results",""));
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_TOOL_FACTORY("Data Statistics","Multiple","Multiple Data Statistics",StatData)
+CREATE_TOOL_FACTORY("Features Statistics","Multiple","Multiple Features Statistics",StatFeatures)

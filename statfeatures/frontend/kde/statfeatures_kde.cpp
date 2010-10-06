@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	StatData_KDE.cpp
+	StatFeatures_KDE.cpp
 
-	Data Statistics (KDE Part) - Implementation.
+	Features Statistics (KDE Part) - Implementation.
 
 	Copyright 2010 by Pascal Francq (pascal@francq.info).
 
@@ -72,8 +72,8 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "statdata", 0, ki18n("Data Statistics"),
-		"1.0", ki18n("This statistic computes several measures based on the data extracted from documents."), KAboutData::License_GPL,
+	KAboutData aboutData( "statfeatures", 0, ki18n("Features Statistics"),
+		"1.0", ki18n("This statistic computes several measures based on the features extracted from the documents."), KAboutData::License_GPL,
 		ki18n("(C) 2010 by Pascal Francq"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	StatData.h
+	StatFeatures.h
 
-	Data Statistics - Header.
+	Features Statistics - Header.
 
 	Copyright 2010 by Pascal Francq (pascal@francq.info).
 
@@ -28,8 +28,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef StatDataH
-#define StatDataH
+#ifndef StatFeaturesH
+#define StatFeaturesH
 
 
 //-----------------------------------------------------------------------------
@@ -115,10 +115,10 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The StatData class provides a method to compute different statistics.
+* The StatFeatures class provides a method to compute different statistics.
 * @author Pascal Francq
 */
-class StatData : public GTool
+class StatFeatures : public GTool
 {
 	/**
 	* Name of the file.
@@ -147,7 +147,7 @@ public:
 	* @param session         Session.
 	* @param fac             Factory.
 	*/
-	StatData(GSession* session,GPlugInFactory* fac);
+	StatFeatures(GSession* session,GPlugInFactory* fac);
 
 	/**
 	* Configurations were applied from the factory.
