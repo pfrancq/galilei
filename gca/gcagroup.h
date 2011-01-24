@@ -36,7 +36,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rgroupsc.h>
+#include <rgroupnn.h>
 
 
 //-----------------------------------------------------------------------------
@@ -50,7 +50,7 @@
 * @author Pascal Francq
 * @short Documents Group.
 */
-class GCAGroupDoc : public R::RGroupSC<GCAGroupDoc,GDoc,GCAChromoDoc>
+class GCAGroupDoc : public R::RGroupNN<GCAGroupDoc,GDoc,GCAChromoDoc>
 {
 public:
 
@@ -76,7 +76,7 @@ public:
 * @author Pascal Francq
 * @short Profiles Group.
 */
-class GCAGroupProfile : public R::RGroupSC<GCAGroupProfile,GProfile,GCAChromoProfile>
+class GCAGroupProfile : public R::RGroupNN<GCAGroupProfile,GProfile,GCAChromoProfile>
 {
 public:
 

@@ -68,7 +68,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GCAChromoDoc::GCAChromoDoc(GCAInstDoc* inst,size_t id)
-	: RChromoSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>(inst,id)
+	: RChromoNN<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>(inst,id)
 {
 }
 
@@ -114,7 +114,7 @@ void GCAChromoDoc::RandomConstruct(void)
 		ConstructChromo(Instance->Session->GetTopics());
 
 	// Call classical heuristic for non-assigned objects
-	RChromoSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>::RandomConstruct();
+	RChromoNN<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>::RandomConstruct();
 }
 
 
@@ -127,7 +127,7 @@ void GCAChromoDoc::RandomConstruct(void)
 
 //-----------------------------------------------------------------------------
 GCAChromoProfile::GCAChromoProfile(GCAInstProfile* inst,size_t id)
-	: RChromoSC<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>(inst,id)
+	: RChromoNN<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>(inst,id)
 {
 }
 
@@ -173,5 +173,5 @@ void GCAChromoProfile::RandomConstruct(void)
 		ConstructChromo(Instance->Session->GetCommunities());
 
 	// Call classical heuristic for non-assigned objects
-	RChromoSC<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>::RandomConstruct();
+	RChromoNN<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>::RandomConstruct();
 }

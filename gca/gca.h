@@ -34,7 +34,7 @@
 
 //-----------------------------------------------------------------------------
 // includes files for R Project
-#include <scga.h>
+#include <nngga.h>
 #include <rparam.h>
 #include <rgroups.h>
 using namespace R;

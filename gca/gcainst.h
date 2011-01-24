@@ -35,9 +35,9 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rinstsc.h>
+#include <rinstnn.h>
 #include <gdoc.h>
-#include <rheuristicsc.h>
+#include <rheuristicnn.h>
 
 
 //-----------------------------------------------------------------------------
@@ -49,7 +49,7 @@
 /**
  * This is the normal heuristic, this class is only there for debug purposes.
  */
-class GCAHeuristicDoc : public R::RHeuristicSC<GCAGroupDoc,GDoc,GCAChromoDoc>
+class GCAHeuristicDoc : public R::RHeuristicNN<GCAGroupDoc,GDoc,GCAChromoDoc>
 {
 public:
 
@@ -60,8 +60,8 @@ public:
 	* @param params          Parameters.
 	* @param debug           Debugger.
 	*/
-	GCAHeuristicDoc(R::RRandom& r,R::RCursor<GDoc> objs,R::RParamsSC* params,R::RDebug* debug=0)
-		: RHeuristicSC<GCAGroupDoc,GDoc,GCAChromoDoc>(r,objs,params,debug) {}
+	GCAHeuristicDoc(R::RRandom& r,R::RCursor<GDoc> objs,R::RParamsNN* params,R::RDebug* debug=0)
+		: RHeuristicNN<GCAGroupDoc,GDoc,GCAChromoDoc>(r,objs,params,debug) {}
 
 };
 
@@ -73,7 +73,7 @@ public:
 * @author Pascal Francq
 * @short Documents "thread-dependent" Data.
 */
-class GCAThreadDataDoc : public R::RThreadDataSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>
+class GCAThreadDataDoc : public R::RThreadDataNN<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>
 {
 public:
 	/**
@@ -81,7 +81,7 @@ public:
 	* @param owner          The instance of the problem.
 	*/
 	GCAThreadDataDoc(GCAInstDoc* owner)
-		: R::RThreadDataSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>(owner) {}
+		: R::RThreadDataNN<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>(owner) {}
 };
 
 
@@ -91,7 +91,7 @@ public:
 * @author Pascal Francq
 * @short Documents Instance.
 */
-class GCAInstDoc : public R::RInstSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>
+class GCAInstDoc : public R::RInstNN<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>
 {
 	/**
 	* Session.
@@ -128,7 +128,7 @@ public:
 	* @param debug          Debugger.
 	* @param type           Type of the element to group.
 	*/
-	GCAInstDoc(GSession* ses,R::RCursor<GDoc> objs,RParamsSC* p,R::RDebug* debug,tObjType type);
+	GCAInstDoc(GSession* ses,R::RCursor<GDoc> objs,RParamsNN* p,R::RDebug* debug,tObjType type);
 
 	/**
 	* Create a specific heuristic for the algorithm.
@@ -165,7 +165,7 @@ public:
 /**
  * This is the normal heuristic, this class is only there for debug purposes.
  */
-class GCAHeuristicProfile : public R::RHeuristicSC<GCAGroupProfile,GProfile,GCAChromoProfile>
+class GCAHeuristicProfile : public R::RHeuristicNN<GCAGroupProfile,GProfile,GCAChromoProfile>
 {
 public:
 
@@ -176,8 +176,8 @@ public:
 	* @param params          Parameters.
 	* @param debug           Debugger.
 	*/
-	GCAHeuristicProfile(R::RRandom& r,R::RCursor<GProfile> objs,R::RParamsSC* params,R::RDebug* debug=0)
-		: RHeuristicSC<GCAGroupProfile,GProfile,GCAChromoProfile>(r,objs,params,debug) {}
+	GCAHeuristicProfile(R::RRandom& r,R::RCursor<GProfile> objs,R::RParamsNN* params,R::RDebug* debug=0)
+		: RHeuristicNN<GCAGroupProfile,GProfile,GCAChromoProfile>(r,objs,params,debug) {}
 
 };
 
@@ -189,7 +189,7 @@ public:
 * @author Pascal Francq
 * @short Profiles "thread-dependent" Data.
 */
-class GCAThreadDataProfile : public R::RThreadDataSC<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>
+class GCAThreadDataProfile : public R::RThreadDataNN<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>
 {
 public:
 	/**
@@ -197,7 +197,7 @@ public:
 	* @param owner          The instance of the problem.
 	*/
 	GCAThreadDataProfile(GCAInstProfile* owner)
-		: R::RThreadDataSC<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>(owner) {}
+		: R::RThreadDataNN<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>(owner) {}
 };
 
 
@@ -207,7 +207,7 @@ public:
 * @author Pascal Francq
 * @short Profiles Instance.
 */
-class GCAInstProfile : public R::RInstSC<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>
+class GCAInstProfile : public R::RInstNN<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>
 {
 	/**
 	* Session.
@@ -244,7 +244,7 @@ public:
 	* @param debug          Debugger.
 	* @param type           Type of the element to group.
 	*/
-	GCAInstProfile(GSession* ses,R::RCursor<GProfile> objs,RParamsSC* p,R::RDebug* debug,tObjType type);
+	GCAInstProfile(GSession* ses,R::RCursor<GProfile> objs,RParamsNN* p,R::RDebug* debug,tObjType type);
 
 	/**
 	* Create a specific heuristic for the algorithm.

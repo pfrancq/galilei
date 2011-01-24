@@ -61,8 +61,8 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAInstDoc::GCAInstDoc(GSession* ses,RCursor<GDoc> objs,RParamsSC* p,RDebug* debug,tObjType type)
-	: RInstSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>(objs,p,debug),
+GCAInstDoc::GCAInstDoc(GSession* ses,RCursor<GDoc> objs,RParamsNN* p,RDebug *debug,tObjType type)
+	: RInstNN<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>(objs,p,debug),
 	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
 {
 	// Init measures
@@ -117,8 +117,8 @@ const RMaxVector* GCAInstDoc::GetSims(const GDoc* obj) const
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GCAInstProfile::GCAInstProfile(GSession* ses,RCursor<GProfile> objs,RParamsSC* p,RDebug *debug,tObjType type)
-	: RInstSC<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>(objs,p,debug),
+GCAInstProfile::GCAInstProfile(GSession* ses,RCursor<GProfile> objs,RParamsNN* p,RDebug *debug,tObjType type)
+	: RInstNN<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>(objs,p,debug),
 	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
 {
 	// Init measures

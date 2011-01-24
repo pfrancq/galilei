@@ -59,14 +59,14 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GCAGroupDoc::GCAGroupDoc(GCAGroupDoc* grp)
-	: RGroupSC<GCAGroupDoc,GDoc,GCAChromoDoc>(grp)
+	: RGroupNN<GCAGroupDoc,GDoc,GCAChromoDoc>(grp)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GCAGroupDoc::GCAGroupDoc(GCAChromoDoc* owner,const size_t id)
-	: RGroupSC<GCAGroupDoc,GDoc,GCAChromoDoc>(owner,id)
+	: RGroupNN<GCAGroupDoc,GDoc,GCAChromoDoc>(owner,id)
 {
 }
 
@@ -80,13 +80,13 @@ GCAGroupDoc::GCAGroupDoc(GCAChromoDoc* owner,const size_t id)
 
 //-----------------------------------------------------------------------------
 GCAGroupProfile::GCAGroupProfile(GCAGroupProfile* grp)
-	: RGroupSC<GCAGroupProfile,GProfile,GCAChromoProfile>(grp)
+	: RGroupNN<GCAGroupProfile,GProfile,GCAChromoProfile>(grp)
 {
 }
 
 
 //-----------------------------------------------------------------------------
 GCAGroupProfile::GCAGroupProfile(GCAChromoProfile* owner,const size_t id)
-	: RGroupSC<GCAGroupProfile,GProfile,GCAChromoProfile>(owner,id)
+	: RGroupNN<GCAGroupProfile,GProfile,GCAChromoProfile>(owner,id)
 {
 }

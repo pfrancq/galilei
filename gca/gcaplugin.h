@@ -62,7 +62,7 @@
  * @short Generic GCA PlugIn
  */
 template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
-	class GCAPlugIn : public cPlugin, R::RObject, public RParamsSC
+	class GCAPlugIn : public cPlugin, R::RObject, public RParamsNN
 {
 protected:
 

@@ -35,7 +35,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R Project
-#include <rchromosc.h>
+#include <rchromonn.h>
 using namespace R;
 
 
@@ -53,7 +53,7 @@ using namespace R;
 * @author Pascal Francq
 * @short Documents Chromosome.
 */
-class GCAChromoDoc : public RChromoSC<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>
+class GCAChromoDoc : public RChromoNN<GCAInstDoc,GCAChromoDoc,GCAThreadDataDoc,GCAGroupDoc,GDoc>
 {
 public:
 
@@ -89,7 +89,7 @@ public:
 * @author Pascal Francq
 * @short Profiles Chromosome.
 */
-class GCAChromoProfile : public RChromoSC<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>
+class GCAChromoProfile : public RChromoNN<GCAInstProfile,GCAChromoProfile,GCAThreadDataProfile,GCAGroupProfile,GProfile>
 {
 public:
 
