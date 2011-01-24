@@ -6,8 +6,8 @@
 
 	Norwegian language (KDE Part) - Implementation.
 
-	Copyright 2001-2010 by the Snowball Project.
-	Copyright 2001-2010 by Pascal Francq.
+	Copyright 2001-2011 by the Snowball Project.
+	Copyright 2001-2011 by Pascal Francq.
 	Copyright 2001 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -53,7 +53,7 @@ void About(void)
 {
 	KAboutData aboutData( "no", 0, ki18n("Norwegian Language"),
 		"1.5", ki18n("This is the Norwegian language plug-in using a stemming algorithm based on Snowball"), KAboutData::License_GPL,
-		ki18n("(C) 2001-2010 by the Snowball Project\n(C) 2001-2010 by Pascal Francq\n(C) 2001 by David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB"),
+		ki18n("(C) 2001-2011 by the Snowball Project\n(C) 2001-2011 by Pascal Francq\n(C) 2001 by David Wartel\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
 	aboutData.addAuthor(ki18n("Snowball Project"),ki18n("Stemming algorithm"));
