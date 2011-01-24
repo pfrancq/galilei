@@ -39,6 +39,7 @@
 //------------------------------------------------------------------------------
 // include files for R Project
 #include <rconfig.h>
+#include <rrandom.h>
 #include <rindexfile.h>
 #include <rtree.h>
 
