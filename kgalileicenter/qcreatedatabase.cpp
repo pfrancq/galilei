@@ -120,7 +120,7 @@ void QCreateDB::DoIt(void)
  	GetConceptType("XMLIndex","XML Index",&Db);
 
  	// Create the configuration file with MySQL as default storage
- 	RTextFile Config(Info->ConfigDir+"/"+Info->Name+".config","utf-8");
+ 	RTextFile Config(RString(getenv("HOME"))+"/.r/config/lib/galilei/sessions/"+Info->Name+".config","utf-8");
  	Config.Open(RIO::Create);
  	Config<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
  	Config<<"<!DOCTYPE config>"<<endl;
