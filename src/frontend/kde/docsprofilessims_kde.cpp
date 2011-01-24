@@ -6,7 +6,7 @@
 
 	Similarities between documents and profiles (KDE Part) - Implementation.
 
-	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -50,7 +50,7 @@ void About(void)
 {
 	KAboutData aboutData( "docsprofilessims", 0, ki18n("Documents/Profiles Similarities"),
 		"1.0", ki18n("Method used to compute the similarities between profiles and documents."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2010 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2003-2011 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);

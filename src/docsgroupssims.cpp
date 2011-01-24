@@ -6,7 +6,7 @@
 
 	Similarities between documents and groups - Implementation.
 
-	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
