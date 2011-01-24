@@ -6,7 +6,7 @@
 
 	A PDF filter - Implementation.
 
-	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 	Copyright 1996-2005 by Glyph & Cog, LLC.
 

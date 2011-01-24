@@ -6,7 +6,7 @@
 
 	A PostScript filter (KDE Part) - Implementation.
 
-	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 	Copyright 1995-1998 by Digital Equipment Corporation.
 	See the file pstotext.txt for a full description.
@@ -53,7 +53,7 @@ void About(void)
 {
 	KAboutData aboutData( "ps", 0, ki18n("PostScript Filter"),
 		"1.0", ki18n("This is the PostScript filter for GALILEI. It is based on the pstotext program."),KAboutData::License_GPL,
-		ki18n("(C) 2003-2010 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)\n(C) 1995-1998 by Digital Equipment Corporation"),
+		ki18n("(C) 2003-2011 by Pascal Francq\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)\n(C) 1995-1998 by Digital Equipment Corporation"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Paul McJones"),ki18n("pstotext author"), "mcjones@pa.dec.com");

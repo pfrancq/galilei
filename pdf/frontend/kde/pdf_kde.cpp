@@ -6,7 +6,7 @@
 
 	A PDF filter (KDE Part) - Implementation.
 
-	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 	Copyright 1996-2005 by Glyph & Cog, LLC.
 
@@ -52,7 +52,7 @@ void About(void)
 {
 	KAboutData aboutData( "pdf",0, ki18n("PDF Filter"),
 		"1.1",ki18n("This is the PDF filter for GALILEI.  It is highly based on the Xpdf project 3.01."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2010 by Pascal Francq\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)\n(C) 1996-2005 by Glyph & Cog, LLC"),
+		ki18n("(C) 2001-2011 by Pascal Francq\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)\n(C) 1996-2005 by Glyph & Cog, LLC"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Glyph & Cog, LLC"),ki18n("Xpdf Project"), "derekn@foolabs.com");

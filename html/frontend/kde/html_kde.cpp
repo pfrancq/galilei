@@ -6,7 +6,7 @@
 
 	A HTML filter (KDE Part) - Implementation.
 
-	Copyright 2001-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2003 by Valery Vandaele.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -47,7 +47,7 @@ void About(void)
 {
 	KAboutData aboutData("html",0, ki18n("HTML Filter"),
 		"2.0", ki18n("This is the HTML filter for GALILEI."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2010 by Pascal Francq\n(C) 2001-2003 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2001-2011 by Pascal Francq\n(C) 2001-2003 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Developer"));
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
