@@ -193,7 +193,7 @@ When the languages are not static, the language of a document is always determin
                <string>Maximum number of following occurences of same letter.</string>
               </property>
               <property name="text">
-               <string>Maximal Consecutive Letters</string>
+               <string>Maximal concecutive letters</string>
               </property>
               <property name="wordWrap">
                <bool>false</bool>
@@ -225,6 +225,16 @@ When the languages are not static, the language of a document is always determin
                </size>
               </property>
              </spacer>
+            </item>
+            <item>
+             <widget class="KIntNumInput" name="NbSameOccur">
+              <property name="toolTip">
+               <string>Maximum number of following occurences of same letter.</string>
+              </property>
+              <property name="whatsThis">
+               <string>Maximum number of following occurences of same letter.</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -277,15 +287,12 @@ When the languages are not static, the language of a document is always determin
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
             <item>
-             <widget class="QLabel" name="label">
+             <widget class="KDoubleNumInput" name="NormalRatio">
               <property name="toolTip">
-               <string>Minimal number of occurrences of the word in the document.</string>
+               <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
               </property>
               <property name="whatsThis">
-               <string>Minimal number of occurrences of the word in the document.</string>
-              </property>
-              <property name="text">
-               <string>Minimum Occurrences</string>
+               <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
               </property>
              </widget>
             </item>
@@ -311,6 +318,46 @@ When the languages are not static, the language of a document is always determin
                </size>
               </property>
              </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label">
+              <property name="toolTip">
+               <string>Minimal number of occurrences of the word in the document.</string>
+              </property>
+              <property name="whatsThis">
+               <string>Minimal number of occurrences of the word in the document.</string>
+              </property>
+              <property name="text">
+               <string>Minimal number of occurences</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="KIntNumInput" name="MinOccurs">
+              <property name="toolTip">
+               <string>Minimal number of occurrences of the word in the document.</string>
+              </property>
+              <property name="whatsThis">
+               <string>Minimal number of occurrences of the word in the document.</string>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -747,8 +794,8 @@ When the languages are not static, the language of a document is always determin
      <y>91</y>
     </hint>
     <hint type="destinationlabel">
-     <x>72</x>
-     <y>219</y>
+     <x>446</x>
+     <y>344</y>
     </hint>
    </hints>
   </connection>
@@ -763,8 +810,8 @@ When the languages are not static, the language of a document is always determin
      <y>219</y>
     </hint>
     <hint type="destinationlabel">
-     <x>235</x>
-     <y>222</y>
+     <x>446</x>
+     <y>379</y>
     </hint>
    </hints>
   </connection>
@@ -779,8 +826,8 @@ When the languages are not static, the language of a document is always determin
      <y>252</y>
     </hint>
     <hint type="destinationlabel">
-     <x>232</x>
-     <y>255</y>
+     <x>56</x>
+     <y>234</y>
     </hint>
    </hints>
   </connection>
@@ -791,12 +838,12 @@ When the languages are not static, the language of a document is always determin
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>38</x>
-     <y>100</y>
+     <x>56</x>
+     <y>234</y>
     </hint>
     <hint type="destinationlabel">
-     <x>210</x>
-     <y>103</y>
+     <x>266</x>
+     <y>237</y>
     </hint>
    </hints>
   </connection>
@@ -807,12 +854,12 @@ When the languages are not static, the language of a document is always determin
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>111</x>
-     <y>289</y>
+     <x>56</x>
+     <y>269</y>
     </hint>
     <hint type="destinationlabel">
-     <x>308</x>
-     <y>321</y>
+     <x>268</x>
+     <y>272</y>
     </hint>
    </hints>
   </connection>
@@ -839,28 +886,12 @@ When the languages are not static, the language of a document is always determin
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>67</x>
-     <y>289</y>
+     <x>52</x>
+     <y>299</y>
     </hint>
     <hint type="destinationlabel">
-     <x>267</x>
-     <y>387</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>ExtractStruct</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>UseDefaultNamespace</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>44</x>
-     <y>85</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>48</x>
-     <y>109</y>
+     <x>358</x>
+     <y>404</y>
     </hint>
    </hints>
   </connection>
