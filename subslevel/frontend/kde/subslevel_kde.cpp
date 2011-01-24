@@ -6,7 +6,7 @@
 
 	Compute Profiles and Documents Levels (KDE part) - Implementation.
 
-	Copyright 2005-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2005-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2005 by David Wartel.
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -70,7 +70,7 @@ void About(void)
 {
 	KAboutData aboutData( "subs", 0, ki18n("Profiles/Documents Trust Computation"),
 		"1.0", ki18n("This plug-in computes the level of each profiles (expert, normal,...)."), KAboutData::License_GPL,
-		ki18n("(C) 2005-2010 by Pascal Francq\n(C) 2003-2005 by David Wartel\n(C) 2003-2008 by Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2005-2011 by Pascal Francq\n(C) 2003-2005 by David Wartel\n(C) 2003-2008 by Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	aboutData.addAuthor(ki18n("David Wartel"),ki18n("Developer"));
