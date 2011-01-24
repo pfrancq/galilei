@@ -6,7 +6,7 @@
 
 	Community Description Computing Method (KDE Part) - Implementation.
 
-	Copyright 2002-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -70,7 +70,7 @@ void About(void)
 {
 	KAboutData aboutData( "gravitation_communities", 0, ki18n("Gravitation Method for Communities"),
 		"1.0", ki18n("Community Description Computing Method."), KAboutData::License_GPL,
-		ki18n("(C) 2002-2010 by Pascal Francq\n(C) 2002-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2002-2011 by Pascal Francq\n(C) 2002-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
