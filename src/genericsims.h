@@ -35,6 +35,12 @@
 
 
 //------------------------------------------------------------------------------
+// include files for ANSI C/C++
+#include <math.h>
+using namespace std;
+
+
+//------------------------------------------------------------------------------
 // include files for R Project
 #include <rtextfile.h>
 using namespace R;
@@ -44,89 +50,100 @@ using namespace R;
 // include files for GALILEI
 #include <gmatrixmeasure.h>
 #include <gconcepttype.h>
-#include <gweightinfo.h>
+#include <gconceptcat.h>
+#include <gconceptref.h>
+#include <gdescription.h>
+#include <glang.h>
+#include <gconcept.h>
+#include <gconceptref.h>
+#include <gprofile.h>
+#include <gdoc.h>
+#include <gtopic.h>
+#include <gcommunity.h>
+#include <gsession.h>
 using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-class GGenericSims;
+//class GGenericSims;
 
 //------------------------------------------------------------------------------
-class GSimType
-{
-protected:
-
-	GGenericSims* Owner;
-	GConceptType* Type;
-	size_t LastNbComps;  // Number of comparisons between information entities
-	double Value;
-
-public:
-	GSimType(GGenericSims* owner,GConceptType* type);
-	virtual void Init(void)=0;
-	virtual void Add(GWeightInfo* info1,GWeightInfo* info2,GMeasure* mes)=0;
-	virtual void AddObj1(GWeightInfo* info,GMeasure* mes)=0;
-	virtual void AddObj2(GWeightInfo* info,GMeasure* mes)=0;
-	virtual void Done(GMeasure* mes)=0;
-	int Compare(const GSimType& t) const {return(Type->Compare(t.Type));}
-	int Compare(const GSimType* t) const {return(Type->Compare(t->Type));}
-	int Compare(const GConceptType* t) const {return(Type->Compare(t));}
-	inline double GetIF(GConcept* concept,GMeasure* mes)
-	{
-		double tmp;
-		mes->Measure(0,concept->GetId(),&tmp);
-		return(tmp);
-	}
-	virtual ~GSimType(void) {}
-
-	friend class GGenericSims;
-};
-
-//------------------------------------------------------------------------------
-class GSimTypeCosinus : public GSimType
-{
-	double Norm1;
-	double Norm2;
-	double Num;
-	double Max1;
-	double Max2;
-public:
-	GSimTypeCosinus(GGenericSims* owner,GConceptType* type) :
-		GSimType(owner,type) {}
-	virtual void Init(void);
-	virtual void Add(GWeightInfo* info1,GWeightInfo* info2,GMeasure* mes);
-	virtual void AddObj1(GWeightInfo* info,GMeasure* mes);
-	virtual void AddObj2(GWeightInfo* info,GMeasure* mes);
-	virtual void Done(GMeasure* mes);
-};
-
+//class GSimType
+//{
+//protected:
+//
+//	GGenericSims* Owner;
+//	GConceptType* Type;
+//	size_t LastNbComps;  // Number of comparisons between concept references
+//	double Value;
+//
+//public:
+//	GSimType(GGenericSims* owner,GConceptType* type);
+//	virtual void Init(void)=0;
+//	virtual void Add(GConceptRef* info1,GConceptRef* info2,GMeasure* mes)=0;
+//	virtual void AddObj1(GConceptRef* info,GMeasure* mes)=0;
+//	virtual void AddObj2(GConceptRef* info,GMeasure* mes)=0;
+//	virtual void Done(GMeasure* mes)=0;
+//	int Compare(const GSimType& t) const {return(Type->Compare(t.Type));}
+//	int Compare(const GSimType* t) const {return(Type->Compare(t->Type));}
+//	int Compare(const GConceptType* t) const {return(Type->Compare(t));}
+//	inline double GetIF(GConcept* concept,GMeasure* mes)
+//	{
+//		double tmp;
+//		mes->Measure(0,concept->GetId(),&tmp);
+//		return(tmp);
+//	}
+//	virtual ~GSimType(void) {}
+//
+//	friend class GGenericSims;
+//};
 
 //------------------------------------------------------------------------------
-class GSimTypeXMLIndex : public GSimType
-{
-	RContainer<GWeightInfo,false,false> Obj1;
-	RContainer<GWeightInfo,false,false> Obj2;
-
-public:
-	GSimTypeXMLIndex(GGenericSims* owner,GConceptType* type) :
-		GSimType(owner,type), Obj1(100), Obj2(100) {}
-	virtual void Init(void);
-	virtual void Add(GWeightInfo* info1,GWeightInfo* info2,GMeasure* mes);
-	virtual void AddObj1(GWeightInfo* info,GMeasure* mes);
-	virtual void AddObj2(GWeightInfo* info,GMeasure* mes);
-	virtual void Done(GMeasure* mes);
-};
+//class GSimTypeCosinus : public GSimType
+//{
+//	double Norm1;
+//	double Norm2;
+//	double Num;
+//	double Max1;
+//	double Max2;
+//public:
+//	GSimTypeCosinus(GGenericSims* owner,GConceptType* type) :
+//		GSimType(owner,type) {}
+//	virtual void Init(void);
+//	virtual void Add(GConceptRef* info1,GConceptRef* info2,GMeasure* mes);
+//	virtual void AddObj1(GConceptRef* info,GMeasure* mes);
+//	virtual void AddObj2(GConceptRef* info,GMeasure* mes);
+//	virtual void Done(GMeasure* mes);
+//};
 
 
 //------------------------------------------------------------------------------
-class GGenericSims : public GMatrixMeasure
+//class GSimTypeXMLIndex : public GSimType
+//{
+//	RContainer<GConceptRef,false,false> Obj1;
+//	RContainer<GConceptRef,false,false> Obj2;
+//
+//public:
+//	GSimTypeXMLIndex(GGenericSims* owner,GConceptType* type) :
+//		GSimType(owner,type), Obj1(100), Obj2(100) {}
+//	virtual void Init(void);
+//	virtual void Add(GConceptRef* info1,GConceptRef* info2,GMeasure* mes);
+//	virtual void AddObj1(GConceptRef* info,GMeasure* mes);
+//	virtual void AddObj2(GConceptRef* info,GMeasure* mes);
+//	virtual void Done(GMeasure* mes);
+//};
+
+
+//------------------------------------------------------------------------------
+template<class cObj1,class cObj2>
+   class GGenericSims : public GMatrixMeasure
 {
 protected:
 
 	enum tSimType
 	{
 		Undefined            /** Unknown method.*/,
-		LanguageOnly         /** Based only on the languages.*/,
+		TextOnly             /** Based only on the text.*/,
 		Product              /** Product of the different similarities.*/,
 		Sum                  /** Weighted sum of the different similarities.*/,
 		Choquet              /** Use the integral of Choquet.*/
@@ -175,31 +192,36 @@ protected:
 	 */
 	double MetaStructCapacity;
 
+   /**
+	 * Text space.
+	 */
+	GConceptCat* TextSpace;
+
 	/**
 	 * Metadata space.
 	 */
-	GConceptType* MetaSpace;
+	GConceptCat* MetaSpace;
 
 	/**
 	 * Structure space.
 	 */
-	GConceptType* StructSpace;
+	GConceptCat* StructSpace;
 
 	/**
-	 * Vector corresponding to the first object.
+	 * First object.
 	 */
-	GWeightInfosObj* vec1;
+	cObj1* Desc1;
 
 	/**
-	 * Vector corresponding to the second object.
+	 * Second object.
 	 */
-	GWeightInfosObj* vec2;
+	cObj2* Desc2;
 
 	/**
 	 * Similarity to compute for the different spaces.
 	 */
-	RContainer<GSimType,true,false> Types;
-	RContainer<GSimType,false,false> Valid;
+//	RContainer<GSimType,true,false> Types;
+//	RContainer<GSimType,false,false> Valid;
 
 	/**
 	 * Current language used for the cosine measure.
@@ -209,7 +231,7 @@ protected:
 	/**
 	 * Current type used for the cosine measure.
 	 */
-	GSimType* CurType;
+//	GSimType* CurType;
 
 	/**
 	 * Similarity in the different spaces:
@@ -218,6 +240,14 @@ protected:
 	 * #- 2=Metadata.
 	 */
 	double SimSpaces[5];
+
+   /**
+	 * Number of different common elements for the different spaces.
+	 * #- 0=Content.
+	 * #- 1=Structure.
+	 * #- 2=Metadata.
+	 */
+	size_t NbSpaces[5];
 
 	/**
 	 * Transform the similarity from [-1,+1] to [0,1].
@@ -270,11 +300,27 @@ public:
 	 */
 	double GetIF(GConcept* concept);
 
+   /**
+    * Compute the similarity between two vectors based on the number of common
+    * concepts.
+    * @param vec1           First vector.
+    * @param vec2           Second vector.
+    */
+   void ComputeMetaSim(GVector* vec1,GVector* vec2);
+
+   /**
+    * Compute the similarity between two vectors based on cosine.
+    * @param vec1           First vector.
+    * @param vec2           Second vector.
+    * @param cat            Concept category of the vectors.
+    */
+   void ComputeCosineSim(GVector* vec1,GVector* vec2,GConceptCat* cat);
+
 	/**
 	 * Compute the similarity in each space and put them in 'SimSpaces'.
 	 * @return true if something could be computed.
 	 */
-	bool ComputeSimSpace(void);
+	bool ComputeSimSpaces(void);
 
 	/**
 	* Compute a similarity between two lists of weighted information entities.
@@ -305,7 +351,7 @@ public:
 
 	/**
 	 * Compute the similarity between two objects that must inherits from the
-	 * class GWeightInfos.
+	 * class GConceptRefs.
 	 */
 	virtual double Compute(GObject* obj1,GObject* obj2);
 
@@ -326,6 +372,11 @@ public:
 	friend class GSimTypeCosinus;
 	friend class GSimTypeXMLIndex;
 };
+
+
+//-----------------------------------------------------------------------------
+// Template implementation
+#include <genericsims.hh>
 
 
 //------------------------------------------------------------------------------

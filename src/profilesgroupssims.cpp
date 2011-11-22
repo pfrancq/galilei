@@ -42,10 +42,10 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GProfilesCommunitiesSims : public GGenericSims
+class GProfilesCommunitiesSims : public GGenericSims<GProfile,GCommunity>
 {
 public:
-	GProfilesCommunitiesSims(GSession* session,GPlugInFactory* fac) : GGenericSims(session,fac,otProfile,otCommunity) {}
+	GProfilesCommunitiesSims(GSession* session,GPlugInFactory* fac) : GGenericSims<GProfile,GCommunity>(session,fac,otProfile,otCommunity) {}
 	virtual R::RCString GetClassName(void) const {return("GProfilesCommunitiesSims");}
 };
 

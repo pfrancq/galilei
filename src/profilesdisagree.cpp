@@ -56,7 +56,7 @@ public:
 	double Compute(GObject* obj1,GObject* obj2);
 	virtual size_t GetId(void* obj,bool)
 	{
-		return(static_cast<GWeightInfosObj*>(obj)->GetId());
+		return(static_cast<GProfile*>(obj)->GetId());
 	}
 	virtual void CreateConfig(void);
 };

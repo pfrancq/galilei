@@ -96,7 +96,7 @@ void GGenericSimsDlg::Panel(void)
 	SimType->addItem("Integral of Choquet");
 	SimType->addItem("Product");
 	SimType->addItem("Sum");
-	SimType->addItem("Language only");
+	SimType->addItem("Text Only");
     layout->addWidget(SimType);
     SimType->setToolTip("Similarity measure can be the classical cosine between the vectors (Language) or an adapted one to manage multiple spaces (Multi-space)." );
     const char* simText="<p>Choose the <b>similarity measure</b> that will be used. <br/>"

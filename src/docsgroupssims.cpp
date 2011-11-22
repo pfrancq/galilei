@@ -41,10 +41,10 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GDocsCommunitiesSims : public GGenericSims
+class GDocsCommunitiesSims : public GGenericSims<GDoc,GCommunity>
 {
 public:
-	GDocsCommunitiesSims(GSession* session,GPlugInFactory* fac) : GGenericSims(session,fac,otDoc,otCommunity) {}
+	GDocsCommunitiesSims(GSession* session,GPlugInFactory* fac) : GGenericSims<GDoc,GCommunity>(session,fac,otDoc,otCommunity) {}
 	virtual R::RCString GetClassName(void) const {return("GDocsCommunitiesSims");}
 };
 
