@@ -82,8 +82,6 @@ class GFilterRTF: public GFilter
 	*/
 	RContainer<CodeToChar,true,true> Chars;
 
-	RXMLParser* Parser;
-
 public:
 
 	/**
@@ -94,14 +92,13 @@ public:
 	GFilterRTF(GSession* session,GPlugInFactory* fac);
 
 	/**
-	* Analyze a document with a given URI for which a DocXML must be created.
-	* This method must be re-implemented by all filters.
+	* Analyze a document with a given URI.
+	* @param analyzer        Analyzer.
 	* @param doc             Document to analyze.
-	* @param uri             URI of the file to analyze.
-	* @param parser          Current parser of the XML stream.
-	* @param rec             Receiver for the signals.
+	* @param file            File to analyze (eventually a local copy of a
+	*                        remote document).
 	*/
-	virtual void Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* rec);
+	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
 
 protected:
 
@@ -112,10 +109,11 @@ protected:
 
 	/**
 	* This function  parse every sub block of the string of the document(block = {...} )
+   * @param analyzer        Analyzer.
 	* @param str		the string to search
 	* @param text          if true ->text else metadatas
 	*/
-	void FindBlock(RString str,bool text=false);
+	void FindBlock(GDocAnalyze* analyzer,RString str,bool text=false);
 
 	/*
 	* Find the first tag in the string
@@ -124,17 +122,19 @@ protected:
 	Tag* FindTag(RString str);
 
 	/**
-	* Analyze the content of the string and save it in the right docxmlTag
+	* Analyze the content of a metadata.
+   * @param analyzer        Analyzer.
 	* @param str            the string to analyze
 	* @param t              Tag associated with the text to insert
 	*/
-	void AnalyzeMeta(RString str, Tag* t);
+	void AnalyzeMeta(GDocAnalyze* analyzer,RString str, Tag* t);
 
 	/**
-	* Analyze the content of the string and save it in the right docxmlTag
+	* Analyze the content of the string.
 	* @param str            the string to analyze
+   * @param analyzer        Analyzer.
 	*/
-	void AnalyzeText(RString str);
+	void AnalyzeText(GDocAnalyze* analyzer,RString str);
 
 	/*
 	* Replace codes from the srting

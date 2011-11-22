@@ -31,15 +31,12 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <txt.h>
-#include <rxmlfile.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI
+#include <gdocanalyze.h>
 #include <gdoc.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
+
 
 
 //-----------------------------------------------------------------------------
@@ -57,16 +54,16 @@ GFilterTXT::GFilterTXT(GSession* session,GPlugInFactory* fac)
 
 
 //-----------------------------------------------------------------------------
-void GFilterTXT::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* )
+void GFilterTXT::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
 {
-	// Init Part
-	StartStream(parser);
-	RTextFile Src(uri,"utf-8");
+	// Open the text document and the lines
+	RTextFile Src(file,"utf-8");
 	Src.Open(R::RIO::Read);
-	AddDublinCoreMetaData("identifier",doc->GetURL()());
-	WriteMetaDataStream(parser);
-	ExtractTextualContent(Src,parser);
-	EndStream(parser);
+	while(!Src.End())
+	{
+		size_t Pos(Src.GetPos());
+		analyzer->ExtractContent(Src.GetLine(false),Pos);
+	}
 }
 
 

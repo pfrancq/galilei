@@ -47,6 +47,7 @@
 #include <ps.h>
 #include <gdoc.h>
 #include <rdownload.h>
+#include <gdocanalyze.h>
 
 
 //------------------------------------------------------------------------------
@@ -176,7 +177,7 @@ void GFilterPS::StrToBuffer(const char* str)
 
 
 //------------------------------------------------------------------------------
-void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
+void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
 {
 	bool Paragraph;
 	char gs_cmdline[2*MAXPATHLEN];
@@ -184,28 +185,6 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 	#ifdef VMS
 		FILE *cfile;
 	#endif
-
-
-	// Create a local file if necessary
-	RIO::RSmartTempFile Tmp;
-	RString fileName;
-	if(uri.GetScheme()!="file")
-	{
-		fileName=Tmp.GetName().GetPath();
-		RDownload Dwn;
-		Dwn.DownloadFile(uri,Tmp.GetName().GetPath());
-	}
-	else
-		fileName=uri.GetPath();
-
-	// Init Part
-	StartStream(parser);
-
-	// Create the metaData tag and the first information
-	AddDublinCoreMetaData("identifier",doc->GetURL()());
-	WriteMetaDataStream(parser);
-
-	// Analyze Doc->GetFile()
 
 	ocr_path = make_temp(ocr);
 
@@ -226,7 +205,7 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 			(debugfilter ? "" : "-q"),
 			rotate_path,
 			ocr_path,
-			fileName.Latin1()
+			file().Latin1()
 			);
 	if (debugfilter)
 		cerr<<gs_cmdline<<endl;
@@ -253,7 +232,6 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 		if (gs==0)
 		{
 			perror(cmd);
-			EndStream(parser);
 			ThrowGException("Not valid PS file");
 		}
 	#endif
@@ -262,7 +240,6 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 	if (status)
 	{
 		cerr<<cmd<<": internal error "<<status<<endl;
-		EndStream(parser);
 		ThrowGException("Not valid PS file");
 	}
 	if (cork)
@@ -271,7 +248,6 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 		if (status)
 		{
 			cerr<<cmd<<": internal error "<<status<<endl;
-			EndStream(parser);
 			ThrowGException("Not valid PS file");
 		}
 	}
@@ -294,7 +270,6 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 		{
 			cerr<<cmd<<": internal error "<<status<<endl;
 			delete[] CharBuffer;
-			EndStream(parser);
 			ThrowGException("Not valid PS file");
 		}
 		if(word)
@@ -316,7 +291,6 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 	{
 		cerr<<cmd<<": internal error "<<status<<endl;
 		delete[] CharBuffer;
-		EndStream(parser);
 		ThrowGException("Not valid PS file");
 	}
 
@@ -326,7 +300,6 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 	Pos=Begin;
 	while(!Pos->IsNull())
 	{
-		StartParagraph(parser);
 		SkipSpaces();
 		Begin=Pos;
 		// Paragraph are supposed to be terminated by at least one blank line
@@ -349,8 +322,7 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 				Paragraph=false;
 			}
 		}
-		AnalyzeBlock(Begin,parser);
-		EndParagraph(parser);
+		analyzer->ExtractContent(Begin,0);
 	}
 
 	// Clean up
@@ -359,8 +331,6 @@ void GFilterPS::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 		free(instance);
 	}
 	delete[] CharBuffer;
-
-	EndStream(parser);
 }
 
 

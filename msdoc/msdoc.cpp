@@ -29,15 +29,6 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
-#include <stddef.h>
-#include <string.h>
-
-
-//------------------------------------------------------------------------------
 // include files for wvWare Project
 #include <wv2/ustring.h>
 #include <wv2/word97_generated.h>
@@ -49,6 +40,7 @@
 #include <gdoc.h>
 #include <rxmlfile.h>
 #include <rdownload.h>
+#include <gdocanalyze.h>
 
 
 
@@ -138,12 +130,12 @@ void GFilterMSDoc::AddField()
 {
 	switch(FieldType)
 	{
-		case 0:    AddDublinCoreMetaData("identifier",FieldValue); break; //Add filename
-		case 1:    AddDublinCoreMetaData("title",FieldValue); break;  // Add the title of the page.
-		case 2:    AddDublinCoreMetaData("creator",FieldValue); break; //Add the author of the page.
-		case 3:    AddDublinCoreMetaData("subject",FieldValue,GFilter::Keywords,','); break;  // Add keywords
-		case 4:    AddDublinCoreMetaData("date",FieldValue); break;  // Add the Date
-		case 5:    AddDublinCoreMetaData("identifier",FieldValue); break;
+		case 0:    Analyzer->ExtractDCMI("identifier",FieldValue,0); break; //Add filename
+		case 1:    Analyzer->ExtractDCMI("title",FieldValue,0); break;      // Add the title of the page.
+		case 2:    Analyzer->ExtractDCMI("creator",FieldValue,0); break;    //Add the author of the page.
+		case 3:    Analyzer->ExtractDCMI("subject",FieldValue,0); break;    // Add keywords
+		case 4:    Analyzer->ExtractDCMI("date",FieldValue,0); break;       // Add the Date
+		case 5:    Analyzer->ExtractDCMI("identifier",FieldValue,0); break;
 	}
 }
 
@@ -155,12 +147,12 @@ void GFilterMSDoc::ReadMetaData()
 	if (!strings.author().isNull())
 	{
 		RString str(ConvertChar(ConvertUtoRString(strings.author())));
-		AddDublinCoreMetaData("creator",str);
+		Analyzer->ExtractDCMI("creator",str,0);
 	}
 	if(!strings.title().isNull())
 	{
 		RString str(ConvertChar(ConvertUtoRString(strings.title())));
-		AddDublinCoreMetaData("title",str);
+		Analyzer->ExtractDCMI("title",str,0);
 	}
 }
 
@@ -176,26 +168,16 @@ void GFilterMSDoc::subDocFound(const wvWare::FunctorBase* functor, int data)
 //------------------------------------------------------------------------------
 void GFilterMSDoc::WriteParagraph(RString par)
 {
-	if ( !par.IsEmpty() )
-	{
-		StartParagraph(XMLParser);
-		AnalyzeBlock(par,XMLParser);
-		EndParagraph(XMLParser);
-	}
-
+	if(!par.IsEmpty())
+		Analyzer->ExtractContent(par,0);
 	Paragraph="";
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterMSDoc::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
+void GFilterMSDoc::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
 {
-	//RXMLTag* tag;
-	RString *fileName;
-
-	// Init Part*/
-	XMLParser=parser;
-	StartStream(parser);
+	// Init Part
 	bodyFound=false;
 	endNoteNumber=0;
 	footNoteNumber=0;
@@ -205,22 +187,9 @@ void GFilterMSDoc::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 	FieldAfterSeparator=false;
 	FieldType=0;
 
-	// Create the metaData tag and the first information
-	AddDublinCoreMetaData("identifier",doc->GetURL()());
-
-	// Create a local file if necessary
-	RIO::RSmartTempFile Tmp;
-	if(uri.GetScheme()!="file")
-	{
-		fileName = new RString(Tmp.GetName().GetPath());
-		RDownload Dwn;
-		Dwn.DownloadFile(uri,*fileName);
-	}
-	else
-		fileName = new RString(uri.GetPath());
-
 	// Init Parser
-	Parser = wvWare::ParserFactory::createParser(*fileName);
+	Analyzer=analyzer;
+	Parser = wvWare::ParserFactory::createParser(file());
 	TableHandler = new  wvWare::TableHandler();
 
 	if(!Parser)
@@ -230,7 +199,6 @@ void GFilterMSDoc::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 	Parser->setTextHandler(this);
 	Parser->setTableHandler(TableHandler);
 	ReadMetaData();
-	WriteMetaDataStream(parser);
 
 	if(!Parser->parse())
 		ThrowGException("An error occurs during file parsing");
@@ -248,8 +216,6 @@ void GFilterMSDoc::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 
 	// process tables ??
 
-
-	EndStream(parser);
 }
 
 

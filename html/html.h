@@ -37,7 +37,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilter.h>
-#include <rhtmlfile.h>
+#include <rxmlparser.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -50,28 +50,103 @@ using namespace std;
 * @author Pascal Francq
 * @short HTML's Filter.
 */
-class GFilterHTML: public GFilter
+class GFilterHTML : public GFilter, public RXMLParser
 {
+    /**
+     * The current analyzer.
+     */
+    GDocAnalyze* Analyzer;
+
+    /**
+     * Is the current tag 'META'
+     */
+    bool MetaTag;
+
+    /**
+     * Is the current tag 'TITLE'
+     */
+    bool TitleTag;
+
+    /**
+     * Has the Tag 'BODY' be parsed.
+     */
+    bool BodyTag;
+
+    /**
+     * Content attribute ?
+     */
+    bool Content;
+
+    /**
+     * Valid meta tag.
+     */
+    RString Meta;
+
 public:
 
 	/**
-	* Construct the HTML filter for a specific HTML document.
+	* Construct the HTML filter.
 	* @param session         Session.
 	* @param fac            Factory.
 	*/
 	GFilterHTML(GSession* session,GPlugInFactory* fac);
 
 	/**
-	* Analyze a document with a given URI for which a DocXML must be created.
-	* This method must be re-implemented by all filters.
+	* Analyze a document with a given URI.
+	* @param analyzer        Analyzer.
 	* @param doc             Document to analyze.
-	* @param uri             URI of the file to analyze.
-	* @param parser          Current parser of the XML stream.
-	* @param rec             Receiver for the signals.
+	* @param file            File to analyze (eventually a local copy of a
+	*                        remote document).
 	*/
-	virtual void Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* rec);
+	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
 
 	/**
+	* Function called each time a tag will be treated when reading a XML file.
+	* Actually, a XMLTag is created and inserted as child of the current tag. At
+	* the end, the current tag is set to the new created one.
+	* @param namespaceURI  Name of the namespace (if any).
+	* @param lName         Local name of the tag.
+	* @param name          Complete name of the tag.
+	* @remarks The namespace are not treated for the moment, so the namespaceURI
+	*          and lname parameters are always empty.
+	*/
+	virtual void BeginTag(const RString& namespaceURI, const RString& lName, const RString& name);
+
+	/**
+	* Method called each time an attribute will be treated when reading a XML
+	* file.
+	* @param namespaceURI    Namespace (if any).
+	* @param lName           Local name of the attribute.
+	* @param name            Complete name of the attribute.
+	 */
+	virtual void AddAttribute(const RString& namespaceURI,const RString& lName,const RString& name);
+
+	/**
+	* Method called each time some attribute value elements (words or spaces)
+	* are parsed when reading a XML file.
+	* @param value           Value processed.
+	 */
+	virtual void Value(const RString& value);
+
+	/**
+	* Function called each time a tag was treated when reading a XML file.
+	* Actually, the current tag is set its parent.
+	* @param namespaceURI  Name of the namespace (if any).
+	* @param lName         Local name of the tag.
+	* @param name          Complete name of the tag.
+	* @remarks The namespace are not treated for the moment, so the namespaceURI
+	*          and lname parameters are always empty.
+	*/
+	virtual void EndTag(const RString& namespaceURI, const RString& lName, const RString& name);
+
+	/**
+	* Function called each time a text is processed when reading a XML file.
+	* Actually, the text is added as content to the current tag.
+	* @param text          Text processed.
+	*/
+	virtual void Text(const RString& text);
+
+   /**
 	* Create the parameters.
 	* @param fac             Factory.
 	*/

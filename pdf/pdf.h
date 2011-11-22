@@ -71,21 +71,20 @@ class GFilterPDF : public GFilter
 public:
 
 	/**
-	* Construct the HTML filter for a specific HTML document.
+	* Construct the PDF filter.
 	* @param session         Session.
 	* @param fac            Factory.
 	*/
 	GFilterPDF(GSession* session,GPlugInFactory* fac);
 
 	/**
-	* Analyze a document with a given URI for which a DocXML must be created.
-	* This method must be re-implemented by all filters.
+	* Analyze a document with a given URI.
+	* @param analyzer        Analyzer.
 	* @param doc             Document to analyze.
-	* @param uri             URI of the file to analyze.
-	* @param parser          Current parser of the XML stream.
-	* @param rec             Receiver for the signals.
+	* @param file            File to analyze (eventually a local copy of a
+	*                        remote document).
 	*/
-	virtual void Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* rec);
+	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
 
 protected:
 

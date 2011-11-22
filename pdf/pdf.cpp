@@ -66,6 +66,7 @@
 #include <gdoc.h>
 #include <rxmlfile.h>
 #include <rdownload.h>
+#include <gdocanalyze.h>
 
 
 
@@ -86,36 +87,17 @@ GFilterPDF::GFilterPDF(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-void GFilterPDF::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
+void GFilterPDF::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
 {
 	PDFDoc *pdf;
-	GString *fileName;
+	GString *fileName(new GString(file()));
 	TextBufOutputDev *textOut;
 	Object info;
 	bool Paragraph;
 
-	// Init Part
-	StartStream(parser);
-
-	// Create the metaData tag and the first information
-	AddDublinCoreMetaData("identifier",doc->GetURL()());
-
-	// parse args
-	// Create a local file if necessary
-	RIO::RSmartTempFile Tmp;
-	if(uri.GetScheme()!="file")
-	{
-		fileName = new GString(Tmp.GetName().GetPath());
-		RDownload Dwn;
-		Dwn.DownloadFile(uri,Tmp.GetName().GetPath());
-	}
-	else
-		fileName = new GString(uri.GetPath());
-
 	// read config file
 	globalParams = new GlobalParams("");
-    globalParams->setTextPageBreaks(gFalse);
-
+	globalParams->setTextPageBreaks(gFalse);
 
 	// open PDF file
 	pdf = new PDFDoc(fileName,0,0);
@@ -123,8 +105,6 @@ void GFilterPDF::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 	{
 		delete globalParams;
 		delete pdf;
-		WriteMetaDataStream(parser);
-		EndStream(parser);
 		ThrowGException("Not valid PDF file");
 	}
 	TextBufOutputDev::Encoding=RTextEncoding::GetTextEncoding(globalParams->getTextEncodingName()->getCString());
@@ -136,22 +116,22 @@ void GFilterPDF::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 		RString str;
 		str=CreateString(info.getDict(),"Title");
 		if(!str.IsEmpty())
-			AddDublinCoreMetaData("title",str);
+			analyzer->ExtractDCMI("title",str,0);
 		str=CreateString(info.getDict(),"Subject");
 		if(!str.IsEmpty())
-			AddDublinCoreMetaData("subject",str);
+			analyzer->ExtractDCMI("subject",str,0);
 		str=CreateString(info.getDict(),"Keywords");
 		if(!str.IsEmpty())
-			AddDublinCoreMetaData("subject",str,GFilter::Keywords,',');
+			analyzer->ExtractDCMI("subject",str,0);
 		str=CreateString(info.getDict(),"Author");
 		if(!str.IsEmpty())
-			AddDublinCoreMetaData("creator",str);
+			analyzer->ExtractDCMI("creator",str,0);
 		str=CreateString(info.getDict(),"Creator");
 		if(!str.IsEmpty())
-			AddDublinCoreMetaData("creator",str);
+			analyzer->ExtractDCMI("creator",str,0);
 		str=CreateString(info.getDict(),"Producer");
 		if(!str.IsEmpty())
-			AddDublinCoreMetaData("publisher",str);
+			analyzer->ExtractDCMI("publisher",str,0);
 /*		str=CreateDate(info.getDict(),"CreationDate");
 		if(!str.IsEmpty())
 			Doc->AddDate(str);
@@ -160,7 +140,6 @@ void GFilterPDF::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 			Doc->AddDate(str);*/
 	}
 	info.free();
-	WriteMetaDataStream(parser);
 
 	// write text file
 	textOut = new TextBufOutputDev(false, false, false);
@@ -175,7 +154,6 @@ void GFilterPDF::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 	Pos=Begin;
 	while(Pos&&(!Pos->IsNull()))
 	{
-		StartParagraph(parser);
 		SkipSpaces();
 		Begin=Pos;
 		// Paragraph are supposed to be terminated by at least one blank line
@@ -198,16 +176,13 @@ void GFilterPDF::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 				Paragraph=false;
 			}
 		}
-		AnalyzeBlock(Begin,parser);
-		EndParagraph(parser);
+		analyzer->ExtractContent(Begin,0);
 	}
 
 	// Clean up
 	delete textOut;
 	delete pdf;
 	delete globalParams;
-
-	EndStream(parser);
 }
 
 

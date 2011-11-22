@@ -43,33 +43,10 @@ using namespace std;
 // include files for GALILEI
 #include <galilei.h>
 #include <gfilter.h>
+
 using namespace GALILEI;
 using namespace R;
 
-
-//-----------------------------------------------------------------------------
-// forward declaration
-class GFilterEMail;
-
-
-//-----------------------------------------------------------------------------
-/**
- * The EMailCmd class provides a representation for a given class of command.
- */
-class EMailCmd
-{
-protected:
-	RString Cmd;
-	GFilterEMail* Filter;
-public:
-
-	EMailCmd(GFilterEMail* filter,const RString& cmd) : Cmd(cmd),Filter(filter) {}
-	int Compare(const EMailCmd& cmd) const {return(Cmd.Compare(cmd.Cmd));}
-	int Compare(const EMailCmd* cmd) const {return(Cmd.Compare(cmd->Cmd));}
-	int Compare(const RString cmd) const {return(Cmd.Compare(cmd));}
-	virtual void DoIt(const RString&) {}
-	virtual ~EMailCmd(void) {}
-};
 
 
 //-----------------------------------------------------------------------------
@@ -81,6 +58,8 @@ public:
 */
 class GFilterEMail : public GFilter
 {
+    class EMailCmd;
+
 	/**
 	 * All available commands.
 	 */
@@ -89,7 +68,7 @@ class GFilterEMail : public GFilter
 public:
 
 	/**
-	* Construct the email filter for a specific email.
+	* Construct the email filter.
 	* @param session         Session.
 	* @param fac             Factory.
 	*/
@@ -98,23 +77,24 @@ public:
 protected:
 
 	/**
-	* Try to extract the command and the info after.
+   * Try to extract the command and the info after.
+   * @param analyzer        Analyzer.
 	* @param line            Line to analyze.
+   * @param pos             Position of the line.
 	* @return true if a command can be extracted, false if it is the end.
 	*/
-	bool ExtractCmd(const RString& line);
+	bool ExtractCmd(GDocAnalyze* analyzer,const RString& line,size_t pos);
 
 public:
 
 	/**
-	* Analyze a document with a given URI for which a DocXML must be created.
-	* This method must be re-implemented by all filters.
+	* Analyze a document with a given URI.
+	* @param analyzer        Analyzer.
 	* @param doc             Document to analyze.
-	* @param uri             URI of the file to analyze.
-	* @param parser          Current parser of the XML stream.
-	* @param rec             Receiver for the signals.
+	* @param file            File to analyze (eventually a local copy of a
+	*                        remote document).
 	*/
-	virtual void Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot* rec);
+	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
 
 	/**
 	* Create the parameters.

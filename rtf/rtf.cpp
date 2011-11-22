@@ -32,6 +32,7 @@
 // include files for GALILEI
 #include <rtf.h>
 #include <gdoc.h>
+#include <gdocanalyze.h>
 
 
 
@@ -138,7 +139,7 @@ GFilterRTF::Tag* GFilterRTF::FindTag(RString str)
 
 
 //------------------------------------------------------------------------------
-void GFilterRTF::AnalyzeMeta(RString str, Tag* t)
+void GFilterRTF::AnalyzeMeta(GDocAnalyze* analyzer,RString str, Tag* t)
 {
 	RString date("");
 
@@ -149,23 +150,23 @@ void GFilterRTF::AnalyzeMeta(RString str, Tag* t)
 	switch(t->Type)
 	{
 		case Tag::tTITLE :
-			AddDublinCoreMetaData("title",str.Mid(id));
+			analyzer->ExtractDCMI("title",str.Mid(id),0);
 			break;
 
 		case Tag::tAUTHOR :
-			AddDublinCoreMetaData("author",str.Mid(id));
+			analyzer->ExtractDCMI("author",str.Mid(id),0);
 			break;
 
 		case Tag::tSUBJECT :
-			AddDublinCoreMetaData("subject",str.Mid(id));
+			analyzer->ExtractDCMI("subject",str.Mid(id),0);
 			break;
 
 		case Tag::tPUBLI :
-			AddDublinCoreMetaData("publisher",str.Mid(id));
+			analyzer->ExtractDCMI("publisher",str.Mid(id),0);
 			break;
 
 		case Tag::tDESCRIPT :
-			AddDublinCoreMetaData("subject",str.Mid(id),GFilter::Keywords,' ');
+			analyzer->ExtractDCMI("subject",str.Mid(id),0);
 			break;
 
 		case Tag::tDATE :
@@ -186,7 +187,7 @@ void GFilterRTF::AnalyzeMeta(RString str, Tag* t)
 			idValD=str.FindStr("\\dy")+3;
 			idValE=str.Find('\\',idValD);
 			date+=str.Mid(idValD,idValE-idValD);
-			AddDublinCoreMetaData("date",str.Mid(id));
+			analyzer->ExtractDCMI("date",str.Mid(id),0);
 			break;
 
 		default:
@@ -196,7 +197,7 @@ void GFilterRTF::AnalyzeMeta(RString str, Tag* t)
 
 
 //------------------------------------------------------------------------------
-void GFilterRTF::AnalyzeText(RString str)
+void GFilterRTF::AnalyzeText(GDocAnalyze* analyzer,RString str)
 {
 	RString par("");
 	RString readTag("");
@@ -222,9 +223,7 @@ void GFilterRTF::AnalyzeText(RString str)
 				t=Tags->GetPtr<const RString>(readTag);
 				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
 				{
-					StartParagraph(Parser);
-					AnalyzeBlock(par,Parser);
-					EndParagraph(Parser);
+					analyzer->ExtractContent(par,0);
 					par="";
 				}
 			}
@@ -239,9 +238,7 @@ void GFilterRTF::AnalyzeText(RString str)
 				t=Tags->GetPtr<const RString>(readTag);
 				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
 				{
-					StartParagraph(Parser);
-					AnalyzeBlock(par,Parser);
-					EndParagraph(Parser);
+					analyzer->ExtractContent(par,0);
 					par="";
 				}
 			}
@@ -252,16 +249,12 @@ void GFilterRTF::AnalyzeText(RString str)
 
 	//test If some text has not been added yet to structure
 	if(!par.IsEmpty())
-	{
-		StartParagraph(Parser);
-		AnalyzeBlock(par,Parser);
-		EndParagraph(Parser);
-	}
+		analyzer->ExtractContent(par,0);
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterRTF::FindBlock(RString str,bool text)
+void GFilterRTF::FindBlock(GDocAnalyze* analyzer,RString str,bool text)
 {
 	Tag* t;
 	unsigned int openedPos,nbOpened,nbClosed;
@@ -297,16 +290,16 @@ void GFilterRTF::FindBlock(RString str,bool text)
 			if(text)
 			{
 				if(openedPos>1)
-					AnalyzeText(str.Mid(0,openedPos-1));
+					AnalyzeText(analyzer,str.Mid(0,openedPos-1));
 
-				FindBlock(str.Mid(openedPos+1,endPos-openedPos-1),true);
-				AnalyzeText(str.Mid(endPos+1));
+				FindBlock(analyzer,str.Mid(openedPos+1,endPos-openedPos-1),true);
+				AnalyzeText(analyzer,str.Mid(endPos+1));
 			}
 			//Recursif on the sub block
 			t=FindTag(str.Mid(openedPos+1,endPos-openedPos-1));
 			if(!t)
 			{
-				FindBlock(str.Mid(openedPos+1,endPos-openedPos-1));
+				FindBlock(analyzer,str.Mid(openedPos+1,endPos-openedPos-1));
 			}
 			else
 			{
@@ -314,15 +307,15 @@ void GFilterRTF::FindBlock(RString str,bool text)
 				{
 					if(t->Type==Tag::tTEXT)
 					{
-						FindBlock(str.Mid(openedPos+1,endPos-openedPos-1),true);
+						FindBlock(analyzer,str.Mid(openedPos+1,endPos-openedPos-1),true);
 					}
 					else
 					{
 						if((t->Type==Tag::tTITLE)||(t->Type==Tag::tAUTHOR)||(t->Type==Tag::tSUBJECT)||(t->Type==Tag::tPUBLI)||(t->Type==Tag::tDESCRIPT)||(t->Type==Tag::tDATE))
 						{
-							AnalyzeMeta(str.Mid(openedPos+1,endPos-openedPos-1),t);
+							AnalyzeMeta(analyzer,str.Mid(openedPos+1,endPos-openedPos-1),t);
 						}
-						FindBlock(str.Mid(openedPos+1,endPos-openedPos-1));
+						FindBlock(analyzer,str.Mid(openedPos+1,endPos-openedPos-1));
 					}
 				}
 			}
@@ -332,25 +325,16 @@ void GFilterRTF::FindBlock(RString str,bool text)
 	if((!found)&&(text))
 	{
 		//text has not been treated yet.
-		AnalyzeText(str);
+		AnalyzeText(analyzer,str);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterRTF::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
+void GFilterRTF::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
 {
-	// Init Part
-	StartStream(parser);
-	RTextFile Src(uri);
-	Src.Open(R::RIO::Read);
-
-	// Create the metaData tag and the first information
-	AddDublinCoreMetaData("identifier",doc->GetURL()());
-	WriteMetaDataStream(parser);
-	Parser=parser;
-	FindBlock(Src.GetUntilEnd());
-	EndStream(parser);
+	RTextFile Src(file);
+	FindBlock(analyzer,Src.GetUntilEnd());
 }
 
 

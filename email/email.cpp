@@ -29,117 +29,40 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rxmlfile.h>
-
-
-//-----------------------------------------------------------------------------
-// include files for GALILEI Plugins
-#include <email.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI
+#include <email.h>
 #include <gdoc.h>
+#include <gdocanalyze.h>
+
 
 
 //-----------------------------------------------------------------------------
 //
-// Command classes
+// EMailCmd
 //
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-class CmdSubject : public EMailCmd
+/**
+ * The EMailCmd class provides a representation for a given class of command.
+ */
+class GFilterEMail::EMailCmd
 {
+	RString Cmd;
+	RString Data;
 public:
-	CmdSubject(GFilterEMail* filter) : EMailCmd(filter,"subject") {}
-	virtual void DoIt(const RString& meta)
+
+	EMailCmd(const RString& cmd,const RString& data) : Cmd(cmd), Data(data) {}
+	int Compare(const EMailCmd& cmd) const {return(Cmd.Compare(cmd.Cmd));}
+	int Compare(const EMailCmd* cmd) const {return(Cmd.Compare(cmd->Cmd));}
+	int Compare(const RString cmd) const {return(Cmd.Compare(cmd));}
+	void DoIt(GDocAnalyze* analyzer,const RString& meta,size_t pos)
 	{
 		if(meta.IsEmpty())
 			return;
-		Filter->AddDublinCoreMetaData("title",meta,GFilter::Sentence);
+		analyzer->ExtractDCMI(Data,meta,pos,0);
 	}
-};
-
-
-//-----------------------------------------------------------------------------
-class CmdSummary : public EMailCmd
-{
-public:
-	CmdSummary(GFilterEMail* filter) : EMailCmd(filter,"summary") {}
-	virtual void DoIt(const RString& meta)
-	{
-		if(meta.IsEmpty())
-			return;
-		Filter->AddDublinCoreMetaData("subject",meta,GFilter::Sentence);
-	}
-};
-
-
-//-----------------------------------------------------------------------------
-class CmdFrom : public EMailCmd
-{
-public:
-	CmdFrom(GFilterEMail* filter) : EMailCmd(filter,"from") {}
-	virtual void DoIt(const RString& meta)
-	{
-		if(meta.IsEmpty())
-			return;
-		Filter->AddDublinCoreMetaData("creator",meta,GFilter::Sentence);
-	}
-};
-
-
-//-----------------------------------------------------------------------------
-class CmdOrganization : public EMailCmd
-{
-public:
-	CmdOrganization(GFilterEMail* filter) : EMailCmd(filter,"organization") {}
-	virtual void DoIt(const RString& meta)
-	{
-		if(meta.IsEmpty())
-			return;
-		Filter->AddDublinCoreMetaData("publisher",meta,GFilter::Sentence);
-	}
-};
-
-
-//-----------------------------------------------------------------------------
-class CmdDate : public EMailCmd
-{
-public:
-	CmdDate(GFilterEMail* filter) : EMailCmd(filter,"date") {}
-	virtual void DoIt(const RString& meta)
-	{
-		if(meta.IsEmpty())
-			return;
-		Filter->AddDublinCoreMetaData("date",meta,GFilter::Sentence);
-	}
-};
-
-
-//-----------------------------------------------------------------------------
-class CmdArchiveName : public EMailCmd
-{
-public:
-	CmdArchiveName(GFilterEMail* filter) : EMailCmd(filter,"archive-name") {}
-};
-
-
-//-----------------------------------------------------------------------------
-class CmdLastModified: public EMailCmd
-{
-public:
-	CmdLastModified(GFilterEMail* filter) : EMailCmd(filter,"last-modified") {}
-};
-
-
-//-----------------------------------------------------------------------------
-class CmdVersion : public EMailCmd
-{
-public:
-	CmdVersion(GFilterEMail* filter) : EMailCmd(filter,"version") {}
+	virtual ~EMailCmd(void) {}
 };
 
 
@@ -156,19 +79,16 @@ GFilterEMail::GFilterEMail(GSession* session,GPlugInFactory* fac)
 {
 	AddMIME("text/email");
 	AddMIME("message/rfc822");
-	Cmds.InsertPtr(new CmdSubject(this));
-	Cmds.InsertPtr(new CmdSummary(this));
-	Cmds.InsertPtr(new CmdFrom(this));
-	Cmds.InsertPtr(new CmdOrganization(this));
-	Cmds.InsertPtr(new CmdDate(this));
-	Cmds.InsertPtr(new CmdArchiveName(this));
-	Cmds.InsertPtr(new CmdLastModified(this));
-	Cmds.InsertPtr(new CmdVersion(this));
+	Cmds.InsertPtr(new EMailCmd("subject","title"));
+	Cmds.InsertPtr(new EMailCmd("summary","subject"));
+	Cmds.InsertPtr(new EMailCmd("from","creator"));
+	Cmds.InsertPtr(new EMailCmd("organization","publisher"));
+	Cmds.InsertPtr(new EMailCmd("date","date"));
 }
 
 
 //-----------------------------------------------------------------------------
-bool GFilterEMail::ExtractCmd(const RString& line)
+bool GFilterEMail::ExtractCmd(GDocAnalyze* analyzer,const RString& line,size_t pos)
 {
 	const RChar* ptr(line());
 	size_t len=0;
@@ -202,13 +122,13 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 	EMailCmd* cmd(Cmds.GetPtr(Cmd));
 	if(cmd)
 	{
-		cmd->DoIt(metaData);
+		cmd->DoIt(analyzer,metaData,pos);
 		return(true);
 	}
 	cmd=Cmds.GetPtr(Cmd.Mid(Cmd.GetLen()-12));
 	if(cmd)
 	{
-		cmd->DoIt(metaData);
+		cmd->DoIt(analyzer,metaData,pos);
 		return(true);
 	}
 	return(false);
@@ -216,40 +136,26 @@ bool GFilterEMail::ExtractCmd(const RString& line)
 
 
 //-----------------------------------------------------------------------------
-void GFilterEMail::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
+void GFilterEMail::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
 {
 	bool Header;
 	RString Line;
 
 	// Init Part
-	StartStream(parser);
-	RTextFile Src(uri);
+	RTextFile Src(file);
 	Src.SetRemStyle(RTextFile::NoComment);
 	Src.Open(R::RIO::Read);
-	if(Src.End())
-	{
-		EndStream(parser);
-		return;
-	}
 
-	// Create the metaData tag and the first information
-	AddDublinCoreMetaData("identifier",doc->GetURL()());
-
-	// Email have at the beginning information on each line.
-	Header=true;        // There headers to read.
+	// Read the headers of an e-mail
+	Header=true;        // Suppose there is some headers to read.
 	while((!Src.End())&&Header)
 	{
 		// Analyze the next no-empty line for a command.
+		size_t Pos(Src.GetPos());
 		Line=Src.GetLine(false);
 		if(Line.IsEmpty())
 			continue;
-		Header=ExtractCmd(Line);
-	}
-	WriteMetaDataStream(parser);
-	if(Src.End())
-	{
-		EndStream(parser);
-		return;
+		Header=ExtractCmd(analyzer,Line,Pos);
 	}
 
 	// Look if the email is signed.
@@ -265,8 +171,13 @@ void GFilterEMail::Analyze(GDoc* doc,const RURI& uri,RXMLParser* parser,GSlot*)
 		else
 			Begin[strlen(Begin)-1]='\n';*/
 
-	ExtractTextualContent(Src,parser,Line);
-	EndStream(parser);
+	//
+	while(!Src.End())
+	{
+		size_t Pos(Src.GetPos());
+		analyzer->ExtractContent(Src.GetLine(false),Pos);
+	}
+
 }
 
 

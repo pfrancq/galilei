@@ -30,20 +30,10 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <memory>
-
-
-//------------------------------------------------------------------------------
-// include files for R
-#include <rxmlfile.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <html.h>
-#include <gslot.h>
-
+#include <gdocanalyze.h>
+#include <gdoc.h>
 
 
 //------------------------------------------------------------------------------
@@ -54,26 +44,100 @@
 
 //------------------------------------------------------------------------------
 GFilterHTML::GFilterHTML(GSession* session,GPlugInFactory* fac)
-	: GFilter(session,fac)
+	: GFilter(session,fac), RXMLParser()
 {
 	AddMIME("text/html");
+	SetHTMLMode(true);
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterHTML::Analyze(GDoc*,const RURI& uri,RXMLParser* parser,GSlot* rec)
+void GFilterHTML::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
 {
-	try
+	Analyzer=analyzer;
+	BodyTag=TitleTag=MetaTag=false;
+	Open(file);
+	Close();
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterHTML::BeginTag(const RString&,const RString& lName,const RString&)
+{
+	// If the 'BODY' tag was parsed -> No interesting tags anymore
+	if(BodyTag)
+		return;
+
+	RString Tag(lName.ToUpper());
+	if(Tag=="META")
+		MetaTag=true;
+	else if(Tag=="TITLE")
+		TitleTag=true;
+	else if(Tag=="BODY")
+		BodyTag=true;
+	Meta.SetLen(0);
+	Content=false;
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterHTML::AddAttribute(const RString&,const RString& lName,const RString&)
+{
+	// If the 'BODY' tag was parsed -> No interesting attributes
+	if(BodyTag)
+		return;
+
+	// Parse some header elements
+	RString Attr(lName.ToLower());
+	if(Attr=="content")
 	{
-		parser->SetHTMLMode(true);
-		parser->Open(uri,RIO::Read,"iso-8859-1");
-		parser->Close();
+		Content=true;
 	}
-	catch(RIOException& e)
+	else if(Attr=="name")
 	{
-		if(rec)
-			rec->Warning(e.GetMsg());
+		Meta="author";
 	}
+	else if(Attr=="keywords")
+	{
+		Meta="description";
+	}
+	else if(Attr=="date")
+	{
+		Meta="date";
+	}
+	else if(Attr=="description")
+	{
+		Meta="description";
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterHTML::Value(const RString& value)
+{
+	if(Content&&(!Meta.IsEmpty()))
+		Analyzer->ExtractDCMI(Meta,value,GetLastTokenPos(),GetCurrentDepth());
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterHTML::EndTag(const RString&,const RString&,const RString&)
+{
+		// If the 'BODY' tag was parsed -> No interesting tags anymore
+	if(BodyTag)
+		return;
+
+	TitleTag=MetaTag=false;
+}
+
+
+//------------------------------------------------------------------------------
+void GFilterHTML::Text(const RString& text)
+{
+	if(TitleTag)
+		Analyzer->ExtractDCMI("title",text,GetLastTokenPos(),GetCurrentDepth());
+	else if(BodyTag)
+		Analyzer->ExtractContent(text,GetLastTokenPos(),GetCurrentDepth());
 }
 
 

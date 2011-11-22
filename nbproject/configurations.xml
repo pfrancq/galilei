@@ -1,0 +1,1350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="79">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df name="filters" root=".">
+      <df name="build">
+        <df name="CMakeFiles">
+          <df name="CMakeTmp">
+            <df name="CMakeFiles">
+              <df name="cmTryCompileExec.dir">
+              </df>
+            </df>
+          </df>
+          <df name="CompilerIdC">
+            <in>CMakeCCompilerId.c</in>
+          </df>
+          <df name="CompilerIdCXX">
+            <in>CMakeCXXCompilerId.cpp</in>
+          </df>
+          <df name="uninstall.dir">
+          </df>
+        </df>
+        <df name="CMakeTmp">
+          <in>check_qt_visibility.cpp</in>
+        </df>
+        <df name="email">
+          <df name="CMakeFiles">
+            <df name="email.dir">
+            </df>
+            <df name="emailkde.dir">
+              <df name="frontend">
+                <df name="kde">
+                </df>
+              </df>
+            </df>
+            <df name="emailkde_automoc.dir">
+            </df>
+          </df>
+          <in>emailkde_automoc.cpp</in>
+        </df>
+        <df name="html">
+          <df name="CMakeFiles">
+            <df name="html.dir">
+            </df>
+            <df name="htmlkde.dir">
+              <df name="frontend">
+                <df name="kde">
+                </df>
+              </df>
+            </df>
+            <df name="htmlkde_automoc.dir">
+            </df>
+          </df>
+          <in>htmlkde_automoc.cpp</in>
+        </df>
+        <df name="lib">
+        </df>
+        <df name="msdoc">
+          <df name="CMakeFiles">
+            <df name="msdoc.dir">
+            </df>
+            <df name="msdockde.dir">
+              <df name="frontend">
+                <df name="kde">
+                </df>
+              </df>
+            </df>
+            <df name="msdockde_automoc.dir">
+            </df>
+          </df>
+          <in>msdockde_automoc.cpp</in>
+        </df>
+        <df name="pdf">
+          <df name="CMakeFiles">
+            <df name="pdf.dir">
+              <df name="fofi">
+              </df>
+              <df name="goo">
+              </df>
+              <df name="xpdf">
+              </df>
+            </df>
+            <df name="pdfkde.dir">
+              <df name="frontend">
+                <df name="kde">
+                </df>
+              </df>
+            </df>
+            <df name="pdfkde_automoc.dir">
+            </df>
+          </df>
+          <in>pdfkde_automoc.cpp</in>
+        </df>
+        <df name="ps">
+          <df name="CMakeFiles">
+            <df name="ps.dir">
+            </df>
+            <df name="pskde.dir">
+              <df name="frontend">
+                <df name="kde">
+                </df>
+              </df>
+            </df>
+            <df name="pskde_automoc.dir">
+            </df>
+          </df>
+          <in>pskde_automoc.cpp</in>
+        </df>
+        <df name="rtf">
+          <df name="CMakeFiles">
+            <df name="rtf.dir">
+            </df>
+            <df name="rtfkde.dir">
+              <df name="frontend">
+                <df name="kde">
+                </df>
+              </df>
+            </df>
+            <df name="rtfkde_automoc.dir">
+            </df>
+          </df>
+          <in>rtfkde_automoc.cpp</in>
+        </df>
+        <df name="txt">
+          <df name="CMakeFiles">
+            <df name="txt.dir">
+            </df>
+            <df name="txtkde.dir">
+              <df name="frontend">
+                <df name="kde">
+                </df>
+              </df>
+            </df>
+            <df name="txtkde_automoc.dir">
+            </df>
+          </df>
+          <in>txtkde_automoc.cpp</in>
+        </df>
+      </df>
+      <df name="email">
+        <df name="frontend">
+          <df name="kde">
+            <in>email_kde.cpp</in>
+          </df>
+        </df>
+        <in>email.cpp</in>
+        <in>email.h</in>
+      </df>
+      <df name="html">
+        <df name="frontend">
+          <df name="kde">
+            <in>html_kde.cpp</in>
+          </df>
+        </df>
+        <in>html.cpp</in>
+        <in>html.h</in>
+      </df>
+      <df name="msdoc">
+        <df name="frontend">
+          <df name="kde">
+            <in>msdoc_kde.cpp</in>
+          </df>
+        </df>
+        <in>msdoc.cpp</in>
+        <in>msdoc.h</in>
+      </df>
+      <df name="pdf">
+        <df name="fofi">
+          <in>FoFiBase.cc</in>
+          <in>FoFiBase.h</in>
+          <in>FoFiEncodings.cc</in>
+          <in>FoFiEncodings.h</in>
+          <in>FoFiTrueType.cc</in>
+          <in>FoFiTrueType.h</in>
+          <in>FoFiType1.cc</in>
+          <in>FoFiType1.h</in>
+          <in>FoFiType1C.cc</in>
+          <in>FoFiType1C.h</in>
+        </df>
+        <df name="frontend">
+          <df name="kde">
+            <in>pdf_kde.cpp</in>
+          </df>
+        </df>
+        <df name="goo">
+          <in>GHash.cc</in>
+          <in>GHash.h</in>
+          <in>GList.cc</in>
+          <in>GList.h</in>
+          <in>GMutex.h</in>
+          <in>GString.cc</in>
+          <in>GString.h</in>
+          <in>gfile.cc</in>
+          <in>gfile.h</in>
+          <in>gmem.c</in>
+          <in>gmem.h</in>
+          <in>gmempp.cc</in>
+          <in>gtypes.h</in>
+          <in>vms_directory.c</in>
+          <in>vms_dirent.h</in>
+          <in>vms_sys_dirent.h</in>
+          <in>vms_unix_time.h</in>
+          <in>vms_unix_times.c</in>
+          <in>vms_unlink.c</in>
+        </df>
+        <df name="xpdf">
+          <in>Annot.cc</in>
+          <in>Annot.h</in>
+          <in>Array.cc</in>
+          <in>Array.h</in>
+          <in>BuiltinFont.cc</in>
+          <in>BuiltinFont.h</in>
+          <in>BuiltinFontTables.cc</in>
+          <in>BuiltinFontTables.h</in>
+          <in>CMap.cc</in>
+          <in>CMap.h</in>
+          <in>Catalog.cc</in>
+          <in>Catalog.h</in>
+          <in>CharCodeToUnicode.cc</in>
+          <in>CharCodeToUnicode.h</in>
+          <in>CharTypes.h</in>
+          <in>CompactFontTables.h</in>
+          <in>Decrypt.cc</in>
+          <in>Decrypt.h</in>
+          <in>Dict.cc</in>
+          <in>Dict.h</in>
+          <in>Error.cc</in>
+          <in>Error.h</in>
+          <in>ErrorCodes.h</in>
+          <in>FontEncodingTables.cc</in>
+          <in>FontEncodingTables.h</in>
+          <in>Function.cc</in>
+          <in>Function.h</in>
+          <in>Gfx.cc</in>
+          <in>Gfx.h</in>
+          <in>GfxFont.cc</in>
+          <in>GfxFont.h</in>
+          <in>GfxState.cc</in>
+          <in>GfxState.h</in>
+          <in>GlobalParams.cc</in>
+          <in>GlobalParams.h</in>
+          <in>JArithmeticDecoder.cc</in>
+          <in>JArithmeticDecoder.h</in>
+          <in>JBIG2Stream.cc</in>
+          <in>JBIG2Stream.h</in>
+          <in>JPXStream.cc</in>
+          <in>JPXStream.h</in>
+          <in>Lexer.cc</in>
+          <in>Lexer.h</in>
+          <in>Link.cc</in>
+          <in>Link.h</in>
+          <in>NameToCharCode.cc</in>
+          <in>NameToCharCode.h</in>
+          <in>NameToUnicodeTable.h</in>
+          <in>Object.cc</in>
+          <in>Object.h</in>
+          <in>Outline.cc</in>
+          <in>Outline.h</in>
+          <in>OutputDev.cc</in>
+          <in>OutputDev.h</in>
+          <in>PDFDoc.cc</in>
+          <in>PDFDoc.h</in>
+          <in>PDFDocEncoding.cc</in>
+          <in>PDFDocEncoding.h</in>
+          <in>PSTokenizer.cc</in>
+          <in>PSTokenizer.h</in>
+          <in>Page.cc</in>
+          <in>Page.h</in>
+          <in>Parser.cc</in>
+          <in>Parser.h</in>
+          <in>SFont.cc</in>
+          <in>SFont.h</in>
+          <in>SecurityHandler.cc</in>
+          <in>SecurityHandler.h</in>
+          <in>Stream-CCITT.h</in>
+          <in>Stream.cc</in>
+          <in>Stream.h</in>
+          <in>UTF8.h</in>
+          <in>UnicodeMap.cc</in>
+          <in>UnicodeMap.h</in>
+          <in>UnicodeMapTables.h</in>
+          <in>UnicodeTypeTable.cc</in>
+          <in>UnicodeTypeTable.h</in>
+          <in>XRef.cc</in>
+          <in>XRef.h</in>
+          <in>config.h</in>
+        </df>
+        <in>TextBufOutputDev.cc</in>
+        <in>TextBufOutputDev.h</in>
+        <in>aconf.h</in>
+        <in>pdf.cpp</in>
+        <in>pdf.h</in>
+      </df>
+      <df name="ps">
+        <df name="frontend">
+          <df name="kde">
+            <in>ps_kde.cpp</in>
+          </df>
+        </df>
+        <in>bundle.cpp</in>
+        <in>bundle.h</in>
+        <in>ocr.h</in>
+        <in>ps.cpp</in>
+        <in>ps.h</in>
+        <in>ptotdll.cpp</in>
+        <in>ptotdll.h</in>
+        <in>rot270.h</in>
+        <in>rot90.h</in>
+        <in>vms.h</in>
+      </df>
+      <df name="rtf">
+        <df name="frontend">
+          <df name="kde">
+            <in>rtf_kde.cpp</in>
+          </df>
+        </df>
+        <in>codetochar.cpp</in>
+        <in>codetochar.h</in>
+        <in>rtf.cpp</in>
+        <in>rtf.h</in>
+      </df>
+      <df name="txt">
+        <df name="frontend">
+          <df name="kde">
+            <in>txt_kde.cpp</in>
+          </df>
+        </df>
+        <in>txt.cpp</in>
+        <in>txt.h</in>
+      </df>
+      <df name="xml">
+        <df name="frontend">
+          <df name="kde">
+            <in>gxml_kde.cpp</in>
+            <in>gxml_kde.h</in>
+          </df>
+        </df>
+        <in>gxml.cpp</in>
+        <in>gxml.h</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>build/Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>build/Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>build</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool>
+            <incDir>
+              <pElem>pdf</pElem>
+              <pElem>build/pdf</pElem>
+              <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+              <pElem>pdf/goo</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>KDE4_CMAKE_TOPLEVEL_DIR_LENGTH=33</Elem>
+              <Elem>KDE_DEPRECATED_WARNINGS=1</Elem>
+              <Elem>PIC=1</Elem>
+              <Elem>QT_NO_CAST_TO_ASCII=1</Elem>
+              <Elem>QT_NO_STL=1</Elem>
+              <Elem>_BSD_SOURCE=1</Elem>
+              <Elem>_GNU_SOURCE=1</Elem>
+              <Elem>_LARGEFILE64_SOURCE=1</Elem>
+              <Elem>_REENTRANT=1</Elem>
+              <Elem>_XOPEN_SOURCE=500</Elem>
+              <Elem>__DBL_DENORM_MIN__=4.9406564584124654e-324</Elem>
+              <Elem>__DBL_EPSILON__=2.2204460492503131e-16</Elem>
+              <Elem>__DBL_MAX__=1.7976931348623157e+308</Elem>
+              <Elem>__DBL_MIN__=2.2250738585072014e-308</Elem>
+              <Elem>__EXCEPTIONS=1</Elem>
+              <Elem>__FLT_DENORM_MIN__=1.40129846e-45F</Elem>
+              <Elem>__FLT_EPSILON__=1.19209290e-7F</Elem>
+              <Elem>__FLT_MAX__=3.40282347e+38F</Elem>
+              <Elem>__FLT_MIN__=1.17549435e-38F</Elem>
+              <Elem>__GNUC_MINOR__=4</Elem>
+              <Elem>__GNUC_PATCHLEVEL__=5</Elem>
+              <Elem>__PIC__=2</Elem>
+              <Elem>__REGISTER_PREFIX__=</Elem>
+              <Elem>__STRICT_ANSI__=1</Elem>
+              <Elem>__USER_LABEL_PREFIX__=</Elem>
+              <Elem>__VERSION__="4.4.5"</Elem>
+              <Elem>__pic__=2</Elem>
+              <Elem>pdf_EXPORTS=1</Elem>
+            </preprocessorList>
+          </cTool>
+          <ccTool>
+            <preprocessorList>
+              <Elem>KDE4_CMAKE_TOPLEVEL_DIR_LENGTH=33</Elem>
+              <Elem>KDE_DEPRECATED_WARNINGS=1</Elem>
+              <Elem>PIC=1</Elem>
+              <Elem>QT_NO_CAST_TO_ASCII=1</Elem>
+              <Elem>QT_NO_EXCEPTIONS=1</Elem>
+              <Elem>QT_NO_STL=1</Elem>
+              <Elem>_BSD_SOURCE=1</Elem>
+              <Elem>_LARGEFILE64_SOURCE=1</Elem>
+              <Elem>_REENTRANT=1</Elem>
+              <Elem>_XOPEN_SOURCE=500</Elem>
+              <Elem>__DBL_DENORM_MIN__=4.9406564584124654e-324</Elem>
+              <Elem>__DBL_EPSILON__=2.2204460492503131e-16</Elem>
+              <Elem>__DBL_MAX__=1.7976931348623157e+308</Elem>
+              <Elem>__DBL_MIN__=2.2250738585072014e-308</Elem>
+              <Elem>__FLT_DENORM_MIN__=1.40129846e-45F</Elem>
+              <Elem>__FLT_EPSILON__=1.19209290e-7F</Elem>
+              <Elem>__FLT_MAX__=3.40282347e+38F</Elem>
+              <Elem>__FLT_MIN__=1.17549435e-38F</Elem>
+              <Elem>__GNUC_MINOR__=4</Elem>
+              <Elem>__GNUC_PATCHLEVEL__=5</Elem>
+              <Elem>__PIC__=2</Elem>
+              <Elem>__REGISTER_PREFIX__=</Elem>
+              <Elem>__STRICT_ANSI__=1</Elem>
+              <Elem>__USER_LABEL_PREFIX__=</Elem>
+              <Elem>__VERSION__="4.4.5"</Elem>
+              <Elem>__pic__=2</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <item path="email/email.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>../../r/rmath/matrix</pElem>
+            <pElem>email</pElem>
+            <pElem>../../galilei/galilei/knowledge</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>email_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <folder path="filters/email">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+            <pElem>../../galilei/galilei/docs</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>build/email</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>../../r/rcore/xml</pElem>
+            <pElem>../../r/rcore/io</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>../../galilei/galilei/plugins</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>../../galilei/galilei/sessions</pElem>
+            <pElem>../../r/rcore/app</pElem>
+            <pElem>/usr/include/curl</pElem>
+            <pElem>../../r/roptimization/ga</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="filters/email/frontend">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/qt4</pElem>
+            <pElem>/usr/include/qt4/QtGui</pElem>
+            <pElem>email/frontend/kde</pElem>
+            <pElem>/usr/include/qt4/QtCore</pElem>
+            <pElem>/usr/include/KDE</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>MAKE_EMAILKDE_LIB=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="filters/html">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>build/html</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="filters/html/frontend">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/KDE</pElem>
+            <pElem>/usr/include/qt4</pElem>
+            <pElem>/usr/include/qt4/QtGui</pElem>
+            <pElem>html/frontend/kde</pElem>
+            <pElem>/usr/include/qt4/QtCore</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>MAKE_HTMLKDE_LIB=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="filters/msdoc">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+            <pElem>../../galilei/galilei/docs</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>../../r/rcore/xml</pElem>
+            <pElem>../../r/rcore/io</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>../../galilei/galilei/plugins</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>../../galilei/galilei/sessions</pElem>
+            <pElem>../../r/rcore/app</pElem>
+            <pElem>build/msdoc</pElem>
+            <pElem>/usr/include/curl</pElem>
+            <pElem>../../r/roptimization/ga</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="filters/msdoc/frontend">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/qt4</pElem>
+            <pElem>/usr/include/qt4/QtGui</pElem>
+            <pElem>msdoc/frontend/kde</pElem>
+            <pElem>/usr/include/qt4/QtCore</pElem>
+            <pElem>/usr/include/KDE</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>MAKE_MSDOCKDE_LIB=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="filters/pdf/fofi">
+        <ccTool>
+          <incDir>
+            <pElem>pdf/fofi</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>pdf_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="filters/pdf/frontend">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>/usr/include/qt4</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>/usr/include/qt4/QtGui</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+            <pElem>../../galilei/galilei/docs</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>../../r/rcore/xml</pElem>
+            <pElem>build/pdf</pElem>
+            <pElem>../../r/rcore/io</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>../../galilei/galilei/plugins</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>../../galilei/galilei/sessions</pElem>
+            <pElem>/usr/include/qt4/QtCore</pElem>
+            <pElem>../../r/rcore/app</pElem>
+            <pElem>pdf/frontend/kde</pElem>
+            <pElem>/usr/include/KDE</pElem>
+            <pElem>/usr/include/curl</pElem>
+            <pElem>../../r/roptimization/ga</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>MAKE_PDFKDE_LIB=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="filters/pdf/goo">
+        <ccTool>
+          <incDir>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>pdf_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="filters/pdf/xpdf">
+        <ccTool>
+          <incDir>
+            <pElem>pdf/xpdf</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>pdf_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="filters/ps">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="filters/ps/frontend">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>ps/frontend/kde</pElem>
+            <pElem>/usr/include/qt4</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>/usr/include/qt4/QtGui</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>build/ps</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+            <pElem>../../galilei/galilei/docs</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>../../r/rcore/xml</pElem>
+            <pElem>../../r/rcore/io</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>../../galilei/galilei/plugins</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>../../galilei/galilei/sessions</pElem>
+            <pElem>/usr/include/qt4/QtCore</pElem>
+            <pElem>../../r/rcore/app</pElem>
+            <pElem>/usr/include/KDE</pElem>
+            <pElem>/usr/include/curl</pElem>
+            <pElem>../../r/roptimization/ga</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>MAKE_PSKDE_LIB=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="filters/rtf">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>build/rtf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="filters/rtf/frontend">
+        <ccTool>
+          <incDir>
+            <pElem>rtf/frontend/kde</pElem>
+            <pElem>/usr/include/KDE</pElem>
+            <pElem>/usr/include/qt4</pElem>
+            <pElem>/usr/include/qt4/QtGui</pElem>
+            <pElem>/usr/include/qt4/QtCore</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>MAKE_RTFKDE_LIB=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <folder path="filters/txt">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>build/txt</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+            <pElem>../../galilei/galilei/docs</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>../../r/rcore/xml</pElem>
+            <pElem>../../r/rcore/io</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>../../galilei/galilei/plugins</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>../../galilei/galilei/sessions</pElem>
+            <pElem>../../r/rcore/app</pElem>
+            <pElem>/usr/include/curl</pElem>
+            <pElem>../../r/roptimization/ga</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="filters/txt/frontend">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/qt4</pElem>
+            <pElem>/usr/include/qt4/QtGui</pElem>
+            <pElem>/usr/include/qt4/QtCore</pElem>
+            <pElem>txt/frontend/kde</pElem>
+            <pElem>/usr/include/KDE</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>MAKE_TXTKDE_LIB=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <item path="html/html.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>../../galilei/galilei/plugins</pElem>
+            <pElem>../../r/rcore/prg</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>../../galilei/galilei/sessions</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>../../r/rcore/app</pElem>
+            <pElem>../../galilei/galilei/docs</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>../../r/rcore/xml</pElem>
+            <pElem>html</pElem>
+            <pElem>/usr/include/curl</pElem>
+            <pElem>../../r/rcore/io</pElem>
+            <pElem>../../r/roptimization/ga</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>html_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="msdoc/msdoc.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>../../r/rmath/matrix</pElem>
+            <pElem>/usr/include/wv2</pElem>
+            <pElem>../../galilei/galilei/knowledge</pElem>
+            <pElem>msdoc</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>msdoc_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="pdf/TextBufOutputDev.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>pdf/xpdf</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>pdf_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="pdf/fofi/FoFiBase.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/fofi/FoFiTrueType.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/fofi/FoFiType1.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/fofi/FoFiType1C.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/goo/GHash.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/goo/GList.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/goo/GMutex.h" ex="true" tool="3" flavor="0">
+      </item>
+      <item path="pdf/goo/gfile.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/goo/gmempp.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/goo/vms_directory.c" ex="true" tool="0" flavor="0">
+      </item>
+      <item path="pdf/goo/vms_dirent.h" ex="true" tool="3" flavor="0">
+      </item>
+      <item path="pdf/goo/vms_sys_dirent.h" ex="true" tool="3" flavor="0">
+      </item>
+      <item path="pdf/goo/vms_unix_time.h" ex="true" tool="3" flavor="0">
+      </item>
+      <item path="pdf/goo/vms_unix_times.c" ex="true" tool="0" flavor="0">
+      </item>
+      <item path="pdf/goo/vms_unlink.c" ex="true" tool="0" flavor="0">
+      </item>
+      <item path="pdf/pdf.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>../../r/rmath/matrix</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>pdf/xpdf</pElem>
+            <pElem>../../galilei/galilei/plugins</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>../../galilei/galilei/sessions</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+            <pElem>../../galilei/galilei/docs</pElem>
+            <pElem>../../r/rcore/app</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>build/pdf</pElem>
+            <pElem>../../r/rcore/xml</pElem>
+            <pElem>../../galilei/galilei/knowledge</pElem>
+            <pElem>/usr/include/curl</pElem>
+            <pElem>pdf/goo</pElem>
+            <pElem>../../r/rcore/io</pElem>
+            <pElem>../../r/roptimization/ga</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>pdf_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Annot.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Array.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/BuiltinFont.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/BuiltinFontTables.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/CMap.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Catalog.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/CharCodeToUnicode.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/CompactFontTables.h" ex="true" tool="3" flavor="0">
+      </item>
+      <item path="pdf/xpdf/Decrypt.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Dict.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Error.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/FontEncodingTables.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Function.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Gfx.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/GfxFont.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>pdf/fofi</pElem>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/GfxState.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/GlobalParams.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/JArithmeticDecoder.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/JBIG2Stream.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/JPXStream.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Lexer.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Link.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/NameToCharCode.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Object.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Outline.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/OutputDev.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/PDFDoc.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/PSTokenizer.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Page.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Parser.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/SFont.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/SecurityHandler.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/Stream.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/UnicodeMap.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/UnicodeTypeTable.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="pdf/xpdf/XRef.cc" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/pdf</pElem>
+            <pElem>pdf</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include</pElem>
+            <pElem>pdf/goo</pElem>
+          </incDir>
+        </ccTool>
+      </item>
+      <item path="ps/bundle.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>build/ps</pElem>
+            <pElem>ps</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>ps_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="ps/ps.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu/bits</pElem>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>../../r/rmath/matrix</pElem>
+            <pElem>/usr/include/c++/4.4</pElem>
+            <pElem>../../galilei/galilei/plugins</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>../../galilei/galilei/sessions</pElem>
+            <pElem>build/ps</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>/usr/lib/gcc/x86_64-linux-gnu/4.4.5/include-fixed</pElem>
+            <pElem>../../galilei/galilei/docs</pElem>
+            <pElem>../../r/rcore/app</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>/usr/include/c++/4.4/x86_64-linux-gnu</pElem>
+            <pElem>../../r/rcore/xml</pElem>
+            <pElem>../../galilei/galilei/knowledge</pElem>
+            <pElem>/usr/include/curl</pElem>
+            <pElem>../../r/rcore/io</pElem>
+            <pElem>../../r/roptimization/ga</pElem>
+            <pElem>ps</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>ps_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="ps/ptotdll.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>ps</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>ps_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="ps/vms.h" ex="true" tool="3" flavor="0">
+      </item>
+      <item path="rtf/codetochar.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>rtf</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>rtf_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="rtf/rtf.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/c++/4.4/bits</pElem>
+            <pElem>../../r/rmath/matrix</pElem>
+            <pElem>../../galilei/galilei/plugins</pElem>
+            <pElem>/usr/include/c++/4.4/ext</pElem>
+            <pElem>/usr/include/c++/4.4/backward</pElem>
+            <pElem>../../galilei/galilei/sessions</pElem>
+            <pElem>/usr/include/c++/4.4/debug</pElem>
+            <pElem>rtf</pElem>
+            <pElem>../../galilei/galilei/docs</pElem>
+            <pElem>../../r/rcore/app</pElem>
+            <pElem>../../r/rcore/tools</pElem>
+            <pElem>../../r/rcore/xml</pElem>
+            <pElem>../../galilei/galilei/knowledge</pElem>
+            <pElem>/usr/include/curl</pElem>
+            <pElem>../../r/rcore/io</pElem>
+            <pElem>../../r/roptimization/ga</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>rtf_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="txt/txt.cpp" ex="false" tool="1" flavor="4">
+        <ccTool>
+          <incDir>
+            <pElem>../../r/rmath/matrix</pElem>
+            <pElem>txt</pElem>
+            <pElem>../../galilei/galilei/knowledge</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>txt_EXPORTS=1</Elem>
+          </preprocessorList>
+        </ccTool>
+      </item>
+      <item path="xml/frontend/kde/gxml_kde.cpp" ex="true" tool="1" flavor="0">
+      </item>
+      <item path="xml/frontend/kde/gxml_kde.h" ex="true" tool="3" flavor="0">
+      </item>
+      <item path="xml/gxml.cpp" ex="true" tool="1" flavor="0">
+      </item>
+      <item path="xml/gxml.h" ex="true" tool="3" flavor="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
