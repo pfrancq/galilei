@@ -50,7 +50,7 @@
 
 //------------------------------------------------------------------------------
 Thesaurus::Thesaurus(GSession* session,GPlugInFactory* fac)
-		: GTool(session,fac), Objs(100), Words(20000), WordsByIds(20000), Concepts(200)
+		: GTool(session,fac), Objs(100), Attributes(20000), AttributesByIds(20000), Tmp(200)
 {
 }
 
@@ -94,14 +94,17 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 
 	// Create the class
 	GClass* Class(new GClass(Session,Name));
-	Session->Insert(parent,Class);
+	Session->InsertObj(parent,Class);
 
 	// Build the vector representing its concepts
 	RNumCursor<size_t> List(node->GetAttr());
-	GWeightInfos Infos(List.GetNb());
+	RContainer<GVector,true,true> Vectors(10);
 	for(List.Start();!List.End();List.Next())
-		Infos.InsertInfo(new GWeightInfo(WordsByIds[List()]->Concept,1.0));
-	Session->AssignInfos(Class,Infos);
+	{
+		GVector* Vector(Vectors.GetInsertPtr(AttributesByIds[List()]->Vector));
+		Vector->InsertRef(new GConceptRef(AttributesByIds[List()]->Concept,1.0));
+	}
+	Session->AssignVectors(Class,Vectors);
 
 	// Create sub-classes
 	RCursor<GNodeInfos> Cur(node->GetNodes());
@@ -114,7 +117,7 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 void Thesaurus::ConstructResults(RCursor<GNodeInfos> Cur)
 {
 	// Clear the classes.
-	Session->ForceReCompute(otClass);
+	Session->Reset(otClass);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		BuildNode(Cur(),0);
 }
@@ -127,7 +130,7 @@ void Thesaurus::PrintObj(RObjH* obj)
 	RNumCursor<size_t> List(obj->GetAttr());
 	for(List.Start();!List.End();List.Next())
 	{
-		cout<<"    "<<List()<<" - "<<WordsByIds[List()]->Concept->GetName()<<endl;
+		cout<<"    "<<List()<<" - "<<AttributesByIds[List()]->Concept->GetName()<<endl;
 	}
 }
 
@@ -138,11 +141,12 @@ void Thesaurus::Run(GSlot*)
 	try
 	{
 		// If no element to group -> skip it
-		RCursor<GTopic> Topics(Session->GetTopics());
+		RCursor<GTopic> Topics(Session->GetObjs(pTopic));
 		if(!Topics.GetNb())
 			return;
 		Objs.Clear(Topics.GetNb());
-		Words.Clear();
+		Attributes.Clear();
+		AttributesByIds.Clear();
 
 		// Create objects
 		cout<<"Create objects...";
@@ -152,7 +156,7 @@ void Thesaurus::Run(GSlot*)
 		{
 			// Get the vector of the current topic -> if null, treat next object
 			GTopic* Topic(Topics());
-			if(!Topic->GetVector().GetNb())
+			if(!Topic->IsDefined())
 			{
 				cout<<"'"<<Topic->GetName()<<"' ("<<Topic->GetId()<<") skipped"<<endl;
 				continue;
@@ -161,43 +165,48 @@ void Thesaurus::Run(GSlot*)
 			// Order the vector by weight:
 			// 1. Multiply by the tf-idf factors of the topic
 			// 2. Order it.
-			const GWeightInfos& Desc(Topic->GetVector());
-			if(Desc.GetNb()>Concepts.GetNb())
+			const GDescription& Desc(*Topic);
+			size_t Total(0); // Total number of concepts
+			RCursor<GVector> Vector(Desc.GetVectors());
+			for(Vector.Start();!Vector.End();Vector.Next())
 			{
-				for(size_t nb=Desc.GetNb()-Concepts.GetNb()+20;--nb;)
-					Concepts.InsertPtr(new GWeightInfo(0));
+				Total+=Vector()->GetNb();
+				if(Total>Tmp.GetNb())
+				{
+					for(size_t nb=Total-Tmp.GetNb()+100;--nb;)
+						Tmp.InsertPtr(new Attribute());
+				}
+				RCursor<GConceptRef> Refs(Vector()->GetRefs());
+				RCursor<Attribute> Cur(Tmp);
+				for(Refs.Start(),Cur.Start();!Refs.End();Refs.Next(),Cur.Next())
+				{
+					Cur()->Concept=Refs()->GetConcept();
+					Cur()->Vector=Vector()->GetConcept();
+					Cur()->Weight=Refs()->GetWeight()*Refs()->GetConcept()->GetIF(otTopic);
+				}
 			}
-			RCursor<GWeightInfo> Infos(Desc.GetInfos());
-			RCursor<GWeightInfo> Cur(Concepts);
-			for(Infos.Start(),Cur.Start();!Infos.End();Infos.Next(),Cur.Next())
-			{
-				GWeightInfo Info(Infos()->GetConcept(),Infos()->GetWeight()*Infos()->GetConcept()->GetIF(otTopic));
-				(*Cur())=Info;
-			}
-			Concepts.ReOrder(GWeightInfos::SortOrder);
+			Tmp.ReOrder(Attribute::SortOrder,0,Total);
 
 			// Create the object
 			Objs.InsertPtr(obj=new RObjH(id,Topic->GetName(),NumInfos));
 			size_t j,k;
-			for(Cur.Start(),j=0,k=0;(k<NumInfos)&&(j<Desc.GetNb());Cur.Next(),j++)
+			RCursor<Attribute> Cur(Tmp);
+			for(Cur.Start(),j=0,k=0;(k<NumInfos)&&(j<Total);Cur.Next(),j++)
 			{
-				// Verify that it a word
-				GConcept* Concept(Cur()->GetConcept());
-				if(!Concept->GetType()->GetLang())
-					continue;
+				Attribute Search(Cur()->Vector,Cur()->Concept);
 				k++;
-				Word* w(Words.GetInsertPtr(Concept));
+				Attribute* w(Attributes.GetInsertPtr(Search));
 				if(w->Id==cNoRef)
 				{
-					w->Id=Words.GetNb()-1;
-					WordsByIds.InsertPtrAt(w,w->Id,false);
+					w->Id=Attributes.GetNb()-1;
+					AttributesByIds.InsertPtrAt(w,w->Id,false);
 				}
 				obj->AddAttribute(w->Id);
 			}
 			id++; // Increment the identifier
 			//PrintObj(obj);
 		}
-		cout<<" "<<id<<" created ("<<Words.GetNb()<<" different concepts)"<<endl;
+		cout<<" "<<id<<" created ("<<Attributes.GetNb()<<" different concepts)"<<endl;
 
 		// Init the GCA
 		cout<<"New HCA"<<endl;

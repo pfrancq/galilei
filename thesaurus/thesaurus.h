@@ -48,18 +48,41 @@ using namespace R;
 #include <gnodeinfos.h>
 
 
-//-----------------------------------------------------------------------------
+//------------------------------------------------------------------------------
 /**
-* The class Word represents a word and an id.
-*/
-class Word{
+ * The class represents a attribute, i.e. a combination of a vector concept and
+ * a concept.
+ */
+class Attribute
+{
 public:
-	size_t Id;
-	GConcept* Concept;
+   size_t Id;
+   GConcept* Vector;
+   GConcept* Concept;
+   double Weight;
 
-	Word(GConcept* concept) : Id(cNoRef), Concept(concept) {}
-	int Compare(const Word& concept) const {return(Concept->GetId()-concept.Concept->GetId());}
-	int Compare(const GConcept* concept) const {return(Concept->GetId()-concept->GetId());}
+   Attribute(void) : Id(cNoRef), Vector(0), Concept(0), Weight(0.0) {}
+   Attribute(GConcept* vector,GConcept* concept) : Id(cNoRef), Vector(vector), Concept(concept) {}
+   Attribute(const Attribute& attr) : Id(cNoRef), Vector(attr.Vector), Concept(attr.Concept) {}
+   int Compare(const Attribute& attr) const
+   {
+      int i(CompareIds(Vector->GetId(),attr.Vector->GetId()));
+      if(i)
+         return(i);
+      return(CompareIds(Concept->GetId(),attr.Concept->GetId()));
+   }
+
+   static int SortOrder(const void* a,const void* b)
+   {
+      double af=(*((Attribute**)(a)))->Weight;
+      double bf=(*((Attribute**)(b)))->Weight;
+
+      if(af==bf) return(0);
+      if(af>bf)
+         return(-1);
+      else
+         return(1);
+   }
 };
 
 
@@ -77,14 +100,14 @@ class Thesaurus : public RObject, public GTool
 	RContainer<RObjH,true,false> Objs;
 
 	/**
-	 * The words.
+	 * The attributes.
 	 */
-	RContainer<Word,true,true> Words;
+	RContainer<Attribute,true,true> Attributes;
 
 	/**
-	 * The words.
+	 * The attributes ordered by identifiers.
 	 */
-	RContainer<Word,false,false> WordsByIds;
+	RContainer<Attribute,false,false> AttributesByIds;
 
 	/**
 	* Heuristic to used for the GA.
@@ -112,9 +135,9 @@ class Thesaurus : public RObject, public GTool
 	size_t NumInfos;
 
 	/**
-	 * Array of concepts used.
+	 * Temporary array of concepts used.
 	 */
-	RContainer<GWeightInfo,true,false> Concepts;
+	RContainer<Attribute,true,false> Tmp;
 
 public:
 
