@@ -103,7 +103,7 @@ void Sugs::Run(void)
 	GCommunityDocs Docs;
 
 	// Go trough the communities
-	RCursor<GALILEI::GCommunity> Grps(Session->GetCommunities());
+	RCursor<GALILEI::GCommunity> Grps(Session->GetObjs(pCommunity));
 	for(Grps.Start();!Grps.End();Grps.Next())
 	{
 		// Prepare the relevant documents
