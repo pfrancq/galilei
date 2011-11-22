@@ -6,7 +6,7 @@
 
 	Features Evaluation - Implementation.
 
-	Copyright 2003-2010 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -121,20 +121,26 @@ void FeaturesEval::Info(size_t info,...)
 void FeaturesEval::BuildMutualInformation(void)
 {
 	// Initialize the vector
-	MutualInfos.Init(Session->GetMaxObjectId(otConcept),0.0);
-	double InvPdj(static_cast<double>(Session->GetNbObjects(otDoc)));
+	MutualInfos.Init(Session->GetMaxObjId(otConcept),0.0);
+	double InvPdj(static_cast<double>(Session->GetNbObjs(pDoc)));
+//	double SumWij(0.0);
 	RVector SumjWij(1);
-	SumjWij.Init(Session->GetMaxObjectId(otConcept),0.0);
+	SumjWij.Init(Session->GetMaxObjId(otConcept),0.0);
 
 	// Go through the documents to compute SumjWij and SumWij
-	R::RCursor<GDoc> Docs(Session->GetDocs());
+	R::RCursor<GDoc> Docs(Session->GetObjs(pDoc));
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// Go through each concepts
-		RCursor<GWeightInfo> Words(Docs()->GetVector().GetInfos());
-		for(Words.Start();!Words.End();Words.Next())
+		RCursor<GVector> Vector(Docs()->GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
 		{
-			SumjWij[Words()->GetConcept()->GetId()]+=Words()->GetWeight();
+			RCursor<GConceptRef> Words(Vector()->GetRefs());
+			for(Words.Start();!Words.End();Words.Next())
+			{
+	//			SumWij+=Words()->GetWeight();
+				SumjWij[Words()->GetConcept()->GetId()]+=Words()->GetWeight();
+			}
 		}
 	}
 
@@ -142,10 +148,14 @@ void FeaturesEval::BuildMutualInformation(void)
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		// Go through each concepts
-		RCursor<GWeightInfo> Words(Docs()->GetVector().GetInfos());
-		for(Words.Start();!Words.End();Words.Next())
+		RCursor<GVector> Vector(Docs()->GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
 		{
-			MutualInfos[Words()->GetConcept()->GetId()]+=log10(InvPdj*Words()->GetWeight()/(SumjWij[Words()->GetConcept()->GetId()]));
+			RCursor<GConceptRef> Words(Vector()->GetRefs());
+			for(Words.Start();!Words.End();Words.Next())
+			{
+				MutualInfos[Words()->GetConcept()->GetId()]+=log10(InvPdj*Words()->GetWeight()/(SumjWij[Words()->GetConcept()->GetId()]));
+			}
 		}
 	}
 
@@ -177,6 +187,22 @@ void FeaturesEval::Handle(const RNotification& notification)
 //------------------------------------------------------------------------------
 void FeaturesEval::ApplyConfig(void)
 {
+/*	Docs=FindParam<RParamValue>("Docs")->GetBool();
+	ProfDoc=FindParam<RParamValue>("ProfDoc")->GetBool();
+	GroupDoc=FindParam<RParamValue>("GroupDoc")->GetBool();
+	Profiles=FindParam<RParamValue>("Profiles")->GetBool();
+	SameDocProf=FindParam<RParamValue>("SameDocProf")->GetBool();
+	GroupProf=FindParam<RParamValue>("GroupProf")->GetBool();
+	RURI OldName(Results);
+	Results=FindParam<RParamValue>("Results")->Get();
+	ExportDocsSims=FindParam<RParamValue>("ExportDocsSims")->GetBool();
+	DocsSims=FindParam<RParamValue>("DocsSims")->Get();
+	ExportDocsIncs=FindParam<RParamValue>("ExportDocsIncs")->GetBool();
+	DocsIncs=FindParam<RParamValue>("DocsIncs")->Get();
+	RString Tmp(FindParam<RParamValue>("MeasureType")->Get());
+	if((Tmp!="Complete")&&(Tmp!="Nearest Neighbors"))
+		ThrowGException("'"+Tmp+"' is invalid : Only 'Complete' or 'Nearest Neighbors' are allowed for the type of measure");
+	MeasureType=Tmp;*/
 	CurWeights=FindParam<RParamValue>("CurWeights")->GetUInt();
 }
 
@@ -184,10 +210,22 @@ void FeaturesEval::ApplyConfig(void)
 //------------------------------------------------------------------------------
 void FeaturesEval::CreateConfig(void)
 {
+/*	InsertParam(new RParamValue("Docs",false));
+	InsertParam(new RParamValue("ProfDoc",false));
+	InsertParam(new RParamValue("GroupDoc",false));
+	InsertParam(new RParamValue("Profiles",false));
+	InsertParam(new RParamValue("SameDocProf",false));
+	InsertParam(new RParamValue("GroupProf",false));
+	InsertParam(new RParamValue("Results",""));
+	InsertParam(new RParamValue("ExportDocsSims",false));
+	InsertParam(new RParamValue("DocsSims",""));
+	InsertParam(new RParamValue("ExportDocsIncs",false));
+	InsertParam(new RParamValue("DocsIncs",""));
+	InsertParam(new RParamValue("MeasureType","Complete"));*/
 	InsertParam(new RParamValue("CurWeights",0));
 	InsertParam(new RParamValue("MaxWeights",2));
 }
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Features Evaluation","Basic Measures","Basic Measures",FeaturesEval)
+CREATE_MEASURE_FACTORY("Features Evaluation","Mutual Information","Mutual Information",FeaturesEval)
