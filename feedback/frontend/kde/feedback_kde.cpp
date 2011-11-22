@@ -83,20 +83,20 @@ bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 
-	dlg.MaxSize->setValue(static_cast<int>(fac->FindParam<RParamValue>("MaxSize")->GetUInt()));
-	dlg.NegSize->setValue(static_cast<int>(fac->FindParam<RParamValue>("NegSize")->GetUInt()));
-	dlg.RelFactor->setValue(fac->FindParam<RParamValue>("RelFactor")->GetDouble());
-	dlg.FuzzyFactor->setValue(fac->FindParam<RParamValue>("FuzzyFactor")->GetDouble());
-	dlg.IrrelFactor->setValue(fac->FindParam<RParamValue>("IrrelFactor")->GetDouble());
-	dlg.IncrementalMode->setChecked(fac->FindParam<RParamValue>("IncrementalMode")->GetBool());
+	dlg.MaxSize->setValue(static_cast<int>(fac->FindParam<RParamValue>("Max Size")->GetUInt()));
+	dlg.NegSize->setValue(static_cast<int>(fac->FindParam<RParamValue>("Negative Size")->GetUInt()));
+	dlg.RelFactor->setValue(fac->FindParam<RParamValue>("Relevant Factor")->GetDouble());
+	dlg.FuzzyFactor->setValue(fac->FindParam<RParamValue>("Fuzzy Factor")->GetDouble());
+	dlg.IrrelFactor->setValue(fac->FindParam<RParamValue>("Irrelevant Factor")->GetDouble());
+	dlg.IncrementalMode->setChecked(fac->FindParam<RParamValue>("Incremental Mode")->GetBool());
 	if(dlg.exec())
 	{
-		fac->FindParam<RParamValue>("MaxSize")->SetUInt(dlg.MaxSize->value());
-		fac->FindParam<RParamValue>("NegSize")->SetUInt(dlg.NegSize->value());
-		fac->FindParam<RParamValue>("RelFactor")->SetDouble(dlg.RelFactor->value());
-		fac->FindParam<RParamValue>("FuzzyFactor")->SetDouble(dlg.FuzzyFactor->value());
-		fac->FindParam<RParamValue>("IrrelFactor")->SetDouble(dlg.IrrelFactor->value());
-		fac->FindParam<RParamValue>("IncrementalMode")->SetBool(dlg.IncrementalMode->isChecked());
+		fac->FindParam<RParamValue>("Max Size")->SetUInt(dlg.MaxSize->value());
+		fac->FindParam<RParamValue>("Negative Size")->SetUInt(dlg.NegSize->value());
+		fac->FindParam<RParamValue>("Relevant Factor")->SetDouble(dlg.RelFactor->value());
+		fac->FindParam<RParamValue>("Fuzzy Factor")->SetDouble(dlg.FuzzyFactor->value());
+		fac->FindParam<RParamValue>("Irrelevant Factor")->SetDouble(dlg.IrrelFactor->value());
+		fac->FindParam<RParamValue>("Incremental Mode")->SetBool(dlg.IncrementalMode->isChecked());
  		return(true);
  	}
 	return(false);

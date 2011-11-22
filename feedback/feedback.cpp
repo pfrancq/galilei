@@ -48,8 +48,6 @@ using namespace R;
 #include <gprofile.h>
 #include <gconcept.h>
 #include <gconcepttype.h>
-#include <gweightinfo.h>
-#include <glang.h>
 #include <gsession.h>
 #include <gfdbk.h>
 using namespace GALILEI;
@@ -64,67 +62,81 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 GProfileCalcFeedback::GProfileCalcFeedback(GSession* session,GPlugInFactory* fac)
-	: GProfileCalc(session,fac), MaxNonZero(60), NegNonZero(0), RelFactor(1.0),
-	  FuzzyFactor(0.25), IrrelFactor(0.75),
-	  Vectors(5000), VectorsIrrel(5000), VectorsFuzzy(5000),
+	: GProfileCalc(session,fac), MaxNonZero(60), NegNonZero(0),
+	  RelFactor(1.0), FuzzyFactor(0.25), IrrelFactor(0.75),
+	  VectorsRel(20), VectorsIrrel(20), VectorsFuzzy(20), Internal(20),
 	  NbDocs(0), MaxOrderSize(5000), IncrementalMode(false)
 {
-	Order=new const GWeightInfo*[MaxOrderSize];
+	Order=new const GConceptRef*[MaxOrderSize];
 }
 
 
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::ApplyConfig(void)
 {
-	MaxNonZero=FindParam<RParamValue>("MaxSize")->GetUInt();
-	NegNonZero=FindParam<RParamValue>("NegSize")->GetUInt();
+	MaxNonZero=FindParam<RParamValue>("Max Size")->GetUInt();
+	NegNonZero=FindParam<RParamValue>("Negative Size")->GetUInt();
 	if(NegNonZero>MaxNonZero)
 		MaxNonZero=NegNonZero;
-	RelFactor=FindParam<RParamValue>("RelFactor")->GetDouble();
-	FuzzyFactor=FindParam<RParamValue>("FuzzyFactor")->GetDouble();
-	IrrelFactor=FindParam<RParamValue>("IrrelFactor")->GetDouble();
-	IncrementalMode=FindParam<RParamValue>("IncrementalMode")->GetBool();
+	RelFactor=FindParam<RParamValue>("Relevant Factor")->GetDouble();
+	FuzzyFactor=FindParam<RParamValue>("Fuzzy Factor")->GetDouble();
+	IrrelFactor=FindParam<RParamValue>("Irrelevant Factor")->GetDouble();
+	IncrementalMode=FindParam<RParamValue>("Incremental Mode")->GetBool();
+}
+
+
+//-----------------------------------------------------------------------------
+void GProfileCalcFeedback::AddVectors(R::RContainer<GVector,true,true>& vectors,double factor,double nbdocs)
+{
+	RCursor<GVector> Vector(vectors);
+	for(Vector.Start();!Vector.End();Vector.Next())
+	{
+		GVector* Ins(Internal.GetInsertPtr(Vector()->GetConcept()));
+		RCursor<GConceptRef> Cur(Vector()->GetRefs());
+		for(Cur.Start();!Cur.End();Cur.Next())
+		{
+			// Compute and add the frequency
+			GConceptRef* Ref(Ins->GetRef(Cur()));
+			(*Ref)+=Cur()->GetWeight()*factor/nbdocs;
+		}
+	}
 }
 
 
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::ComputeGlobal(void)
 {
-	RCursor<GWeightInfo> Words;
-	RCursor<GFdbk> Docs;
-	double MaxFreq(0.0);
-	double TotalRef(0);
-	GConceptType* type(0);
-	GWeightInfos* Cur;
+	RContainer<GVector,true,true>* Cur;
 
 	// Clear all containers before computing
-	Vectors.Clear();
+	VectorsRel.Clear();
 	VectorsIrrel.Clear();
 	VectorsFuzzy.Clear();
+	Internal.Clear();
 	NbDocsRel=NbDocsFuzzy=NbDocsIrrel=NbDocs=0;
 
 	// Go through all documents, add the frequencies of the words of "OK"
 	// documents and subtract the frequencies of the words of "KO" documents.
-	Docs=Profile->GetFdbks();
-	for(Docs.Start();!Docs.End();Docs.Next())
+	RCursor<GFdbk> Fdbk(Profile->GetFdbks());
+	for(Fdbk.Start();!Fdbk.End();Fdbk.Next())
 	{
 		// If the assessment of the document is not relevant
 		// -> don't treat for the profiles computing
-		if((IrrelFactor==0.0)&&(Docs()->GetFdbk() & ftIrrelevant)) continue;
+		if((IrrelFactor==0.0)&&(Fdbk()->GetFdbk() & ftIrrelevant)) continue;
 
 		// If incremental mode and document has no change -> continue
-		if(IncrementalMode&&(!Docs()->MustUse(Profile))) continue;
+		if(IncrementalMode&&(!Fdbk()->MustUse(Profile))) continue;
 
 		// Get the document : if it exists and is defined -> add it
-		GDoc* doc=Session->GetDoc(Docs()->GetDocId());
-		if((!doc)||(!doc->IsDefined())) continue;
+		GDoc* Doc(Session->GetObj(pDoc,Fdbk()->GetDocId()));
+		if((!Doc)||(!Doc->IsDefined())) continue;
 
 		// Find list in function of the feedback
-		switch(Docs()->GetFdbk())
+		switch(Fdbk()->GetFdbk())
 		{
 			case ftRelevant:
 				NbDocsRel++;
-				Cur=&Vectors;
+				Cur=&VectorsRel;
 				break;
 
 			case ftFuzzyRelevant:
@@ -138,99 +150,99 @@ void GProfileCalcFeedback::ComputeGlobal(void)
 				break;
 		}
 
-		// Add total number of words and the occurrences of each word of the current document.
-		Words=doc->GetVector().GetInfos();
-		type=0; // No current type
-		for(Words.Start();!Words.End();Words.Next())
+		// Add total number of concepts and the occurrences of each concept of the current document for each vector.
+		RCursor<GVector> Vector(Doc->GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
 		{
-			// Look if the type of the concept have changed since that the last concept treated
-			if(Words()->GetConcept()->GetType()!=type)
-			{
-				// Yes -> Get the total number of document analyzed.
-				type=Words()->GetConcept()->GetType();
-				TotalRef=static_cast<double>(type->GetRef(otDoc));
-				MaxFreq=doc->GetVector().GetMaxWeight(type);
-			}
+			GVector* Ins(Cur->GetInsertPtr(Vector()->GetConcept()));
 
-			// Compute and add the frequency
-			(*Cur->GetInfo(Words()))+=Words()->GetWeight()/MaxFreq;
+			// Go trough the concepts of the current vector
+			double MaxFreq(Vector()->GetMaxAbsWeight());
+			RCursor<GConceptRef> Cur(Vector()->GetRefs());
+			for(Cur.Start();!Cur.End();Cur.Next())
+			{
+				// Compute and add the frequency
+				GConceptRef* Ref(Ins->GetRef(Cur()));
+				(*Ref)+=Cur()->GetWeight()/MaxFreq;
+			}
+		}
+
+
+	// Add the vectors in Internal
+	AddVectors(VectorsRel,RelFactor,NbDocsRel);
+	AddVectors(VectorsFuzzy,FuzzyFactor,NbDocsFuzzy);
+	AddVectors(VectorsIrrel,IrrelFactor,NbDocsIrrel);
+
+	// Multiply by the idf factor
+	Vector.Set(Internal);
+	for(Vector.Start();!Vector.End();Vector.Next())
+	{
+		// Go trough the concepts of the current vector
+		RCursor<GConceptRef> Cur(Vector()->GetRefs());
+		for(Cur.Start();!Cur.End();Cur.Next())
+			(*Cur())*=Cur()->GetConcept()->GetIF(otDoc);
 		}
 	}
-
-	// Compute the vectors
-	Words=Vectors.GetInfos();
-	for(Words.Start();!Words.End();Words.Next())  // Divide the
-		(*Words())*=RelFactor/static_cast<double>(NbDocsRel);
-	Words=VectorsFuzzy.GetInfos();
-	for(Words.Start();!Words.End();Words.Next())
-		(*Vectors.GetInfo(Words()))+=Words()->GetWeight()*FuzzyFactor/static_cast<double>(NbDocsFuzzy);
-	Words=VectorsIrrel.GetInfos();
-	for(Words.Start();!Words.End();Words.Next())
-		(*Vectors.GetInfo(Words()))+=Words()->GetWeight()*IrrelFactor/static_cast<double>(NbDocsIrrel);
-
-	// Multiply by the idf factor and remove null weighted information (in VectorsIrrel).
-	Words=Vectors.GetInfos();
-	VectorsIrrel.Clear();
-	type=0; // No current type
-	for(Words.Start();!Words.End();Words.Next())
-	{
-		// Look if the type of the concept have changed since that the last concept treated
-		if(Words()->GetConcept()->GetType()!=type)
-			type=Words()->GetConcept()->GetType();
-		(*Words())*=Words()->GetConcept()->GetIF(otDoc);
-		if(fabs(Words()->GetWeight())<0.00001)
-			VectorsIrrel.GetInfo(Words());
-	}
-	Words=VectorsIrrel.GetInfos();
-	for(Words.Start();!Words.End();Words.Next())
-		Vectors.DeleteInfo(Words()->GetConcept());
 }
 
 
 //-----------------------------------------------------------------------------
 void GProfileCalcFeedback::ComputeProfile(void)
 {
-	const GWeightInfo** ptr;
-	size_t i,nb,nb2;
 
-	// Choose the elements to stay.
-	if(!Vectors.IsDefined())
-		return;
-
-	// Put in Order an ordered version of Global
-	if(Vectors.GetNb()+1>MaxOrderSize)
+	// Copy the information of the relevant profile to the community.
+	RCursor<GVector> Vector(Internal);
+	for(Vector.Start();!Vector.End();Vector.Next())
 	{
-		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<size_t>((static_cast<double>(Vectors.GetNb())+1)*1.1);
-		Order=new const GWeightInfo*[MaxOrderSize];
-	}
-	Vectors.GetTab(Order);
-	if(Vectors.GetNb())
-		qsort(static_cast<void*>(Order),Vectors.GetNb(),sizeof(GWeightInfo*),GWeightInfos::SortOrder);
+		if(!Vector()->GetNb())
+			continue;
 
-	//If MaxNonZero is null -> take all the words.
-	if(MaxNonZero)
-	{
-		nb=MaxNonZero-NegNonZero;
-		if(nb>Vectors.GetNb())
-			nb=Vectors.GetNb();
-		nb2=NegNonZero;
-		if(nb2>Vectors.GetNb()-nb)
-			nb2=Vectors.GetNb()-nb;
-	}
-	else
-	{
-		nb=Vectors.GetNb();
-		nb2=0;
-	}
+		// Reallocate Order if necessary, copy the elements and order it
+		if(Vector()->GetNb()+1>MaxOrderSize)
+		{
+			if(Order) delete[] Order;
+			MaxOrderSize=static_cast<size_t>((static_cast<double>(Vector()->GetNb())+1)*1.1);
+			Order=new const GConceptRef*[MaxOrderSize];
+		}
+		Vector()->GetTab(Order);
+		if(Vector()->GetNb())
+			qsort(static_cast<void*>(Order),Vector()->GetNb(),sizeof(GConceptRef*),GVector::SortOrder);
+		Order[Vector()->GetNb()]=0;
+                //WriteFile("/home/pfrancq/tmp/profile",Vector()->GetNb(),Vector()->GetConcept());
+		GVector* Ins(Vectors.GetInsertPtr(Vector()->GetConcept()));
 
-	// Copy the relevant entities
-	for(i=nb+1,ptr=Order;--i;ptr++)
-		Infos.InsertInfo(new GWeightInfo(**ptr));
+		//If MaxNonZero is null -> take all the words.
+		size_t i,nb,nb2;
+		const GConceptRef** ptr;
+		if(MaxNonZero)
+		{
+			nb=MaxNonZero-NegNonZero;
+			if(nb>Vector()->GetNb())
+				nb=Vector()->GetNb();
+			nb2=NegNonZero;
+			if(nb2>Vector()->GetNb()-nb)
+				nb2=Vector()->GetNb()-nb;
+		}
+		else
+		{
+			nb=Vector()->GetNb();
+			nb2=0;
+		}
 
-	// Copy the irrelevant entities
-	for(i=nb2+1,ptr=&Order[Vectors.GetNb()-1];--i;ptr--)
-		Infos.InsertInfo(new GWeightInfo(**ptr));
+		// Copy the most relevant concepts
+		for(i=nb+1,ptr=Order;--i;ptr++)
+		{
+			GConceptRef* Ref(Ins->GetRef((*ptr)->GetConcept()));
+			(*Ref)+=(*ptr)->GetWeight();
+		}
+
+		// Copy the most irrelevant concepts
+		for(i=nb2+1,ptr=&Order[Internal.GetNb()-1];--i;ptr--)
+		{
+			GConceptRef* Ref(Ins->GetRef((*ptr)->GetConcept()));
+			(*Ref)+=(*ptr)->GetWeight();
+		}
+	}
 }
 
 
@@ -238,31 +250,23 @@ void GProfileCalcFeedback::ComputeProfile(void)
 void GProfileCalcFeedback::Compute(const GProfile* profile)
 {
 	Profile=profile;
-	GWeightInfo* ptr;
-	GConceptType* type(0);
 
 	// Clear Infos
-	Infos.Clear();
+	Vectors.Clear();
 
-	// If incremental mode -> copy information of the profile in 'Vectors'.
+	// If incremental mode -> copy information of the profile in 'VectorsRel'.
 	if(IncrementalMode&&profile->IsDefined())
 	{
-		size_t i,TotalRef(0);
-		RCursor<GWeightInfo> Cur(profile->GetVector().GetInfos());
-		for(Cur.Start(),i=0;!Cur.End();Cur.Next(),i++)
+		RCursor<GVector> Vector(profile->GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
 		{
-			// Look if the type of the concept have changed since that the last concept treated
-			if(Cur()->GetConcept()->GetType()!=type)
+			GVector* Ins(Vectors.GetInsertPtr(Vector()->GetConcept()));
+			RCursor<GConceptRef> Cur(Vector()->GetRefs());
+			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				// Yes -> Get the total number of document analyzed.
-				type=Cur()->GetConcept()->GetType();
-				TotalRef=type->GetRef(otDoc);
-			}
-
-			Infos.InsertInfo(ptr=new GWeightInfo(*Cur()));
-			if(ptr)
-			{
-				(*ptr)/=Cur()->GetConcept()->GetIF(otDoc);
+				// Compute and add the frequency
+				GConceptRef* Ref(Ins->GetRef(Cur()));
+				(*Ref)+=Cur()->GetWeight();
 			}
 		}
 	}
@@ -272,21 +276,19 @@ void GProfileCalcFeedback::Compute(const GProfile* profile)
 
 	// Compute the vector for each profile
 	ComputeProfile();
-
-//	WriteFile("/home/pfrancq/tmp");
 }
 
 
 //------------------------------------------------------------------------------
-void GProfileCalcFeedback::WriteFile(const RString& dir)
+void GProfileCalcFeedback::WriteFile(const RString& dir,size_t nb,GConcept* concept)
 {
-	RString name("profile"+RString::Number(Profile->GetId()));
+	RString name("profile"+RString::Number(Profile->GetId())+"-"+RString::Number(concept->GetId())+".txt");
 	RDir::CreateDirIfNecessary(dir);
 	RTextFile Out(dir+RFile::GetDirSeparator()+name);
 	Out.Open(RIO::Create);
-	const GWeightInfo** ptr;
+	const GConceptRef** ptr;
 	size_t i;
-	for(i=Vectors.GetNb()+1,ptr=Order;--i;ptr++)
+	for(i=nb+1,ptr=Order;--i;ptr++)
 		Out<<(*ptr)->GetId()<<(*ptr)->GetType()<<(*ptr)->GetWeight()<<endl;
 }
 
@@ -294,12 +296,12 @@ void GProfileCalcFeedback::WriteFile(const RString& dir)
 //------------------------------------------------------------------------------
 void GProfileCalcFeedback::CreateConfig(void)
 {
-	InsertParam(new RParamValue("MaxSize",60));
-	InsertParam(new RParamValue("NegSize",0));
-	InsertParam(new RParamValue("RelFactor",1.0));
-	InsertParam(new RParamValue("FuzzyFactor",0.25));
-	InsertParam(new RParamValue("IrrelFactor",0.75));
-	InsertParam(new RParamValue("IncrementalMode",false));
+	InsertParam(new RParamValue("Max Size",60));
+	InsertParam(new RParamValue("Negative Size",0));
+	InsertParam(new RParamValue("Relevant Factor",1.0));
+	InsertParam(new RParamValue("Fuzzy Factor",0.25));
+	InsertParam(new RParamValue("Irrelevant Factor",0.75));
+	InsertParam(new RParamValue("Incremental Mode",false));
 }
 
 

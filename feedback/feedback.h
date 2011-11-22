@@ -37,7 +37,7 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gprofilecalc.h>
-#include <gweightinfos.h>
+#include <gprofile.h>
 
 
 //-----------------------------------------------------------------------------
@@ -103,19 +103,24 @@ protected:
 	double IrrelFactor;
 
 	/**
-	* Global vector computed.
+	* Relevant vectors gathered.
 	*/
-	GWeightInfos Vectors;
+	R::RContainer<GVector,true,true> VectorsRel;
 
 	/**
-	* Global vector computed.
+	* Irrelevant vectors gathered.
 	*/
-	GWeightInfos VectorsIrrel;
+	R::RContainer<GVector,true,true> VectorsIrrel;
 
 	/**
-	* Global vector computed.
+	* Fuzzy relevant vectors gathered.
 	*/
-	GWeightInfos VectorsFuzzy;
+	R::RContainer<GVector,true,true> VectorsFuzzy;
+
+   /**
+	 * Internal structure.
+	 */
+	R::RContainer<GVector,true,true> Internal;
 
 	/**
 	* Number of documents assessed by a profile used for the computing.
@@ -140,7 +145,7 @@ protected:
 	/**
 	* Ordered vector for current computed profile.
 	*/
-	const GWeightInfo** Order;
+	const GConceptRef** Order;
 
 	/**
 	* Maximal size allocate for a profile.
@@ -168,6 +173,14 @@ public:
 
 private:
 
+   /**
+    *  Add a series of vector to Internal.
+    * @param vectors        Vectors to add.
+    * @param factor         Factor.
+    * @param nbdocs         Number of documents used to compute vectors.
+    */
+   void AddVectors(R::RContainer<GVector,true,true>& vectors,double factor,double nbdocs);
+
 	/**
 	* Compute the global vectors.
 	*/
@@ -187,11 +200,14 @@ public:
 	virtual void Compute(const GProfile* profile);
 
 	/**
-	 * Write the content of the 'Order' vector in a file called 'subprofileX'
-	 * where X is the identifier of the profile in a directory.
+	 * Write the content of the 'Order' vector in a file called 'profileX-Y'
+	 * where X is the identifier of the profile and Y the identifier of the
+    * vector.
 	 * @param dir            Directory where to write.
+    * @param nb             Number of elements of order to write.
+    * @param concept        Concept associated to a vector.
 	 */
-	void WriteFile(const RString& dir);
+	void WriteFile(const RString& dir,size_t nb,GConcept* concept);
 
 	/**
 	* Create the parameters.
