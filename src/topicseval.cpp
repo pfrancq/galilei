@@ -51,7 +51,7 @@ public:
 	virtual bool IsObjAloneInIdealGroup(GDoc* obj);
 	virtual void ComputeBestLocalRecallPrecision(RCursor<GDoc>& objs,ClusterScore<GTopic>* grp,size_t ingroup);
 	void Handle(const R::RNotification& notification);
-	virtual RCursor<GTopic> GetClusters(void) {return(Session->GetTopics());}
+	virtual RCursor<GTopic> GetClusters(void) {return(Session->GetObjs(pTopic));}
 };
 
 

@@ -70,7 +70,7 @@ template<class cGroup,class cObj>
 	double* res(va_arg(ap,double*));
 	va_end(ap);
 
-	cGroup* Cluster(static_cast<cGroup*>(Session->GetObject(GroupType,id)));
+	cGroup* Cluster(static_cast<cGroup*>(Session->GetObj(GroupType,id)));
 	if(!Cluster)
 		ThrowGException("'"+RString::Number(id)+"' is not a valid "+GetObjType(GroupType,false,false));
 	ClusterScore<cGroup>* g(ClustersScore.GetPtr(Cluster));
@@ -240,7 +240,7 @@ template<class cGroup,class cObj>
 	double* ptr;
 
 	// If only one element and one group -> Adjusted Rand Index=1.
-	if((Session->GetNbObjects(ObjType)==1)&&(Session->GetNbObjects(GroupType)==1))
+	if((Session->GetNbObjs(ObjType)==1)&&(Session->GetNbObjs(GroupType)==1))
 	{
 		AdjustedRandIndex=1.0;
 		return;
@@ -252,7 +252,7 @@ template<class cGroup,class cObj>
 	// Go through the languages to define the maximal sizes and allocate the matrix
 	MaxRows=MaxCols=0;
 	NbRows=Session->GetNbIdealGroups(ObjType);
-	NbCols=Session->GetNbObjects(GroupType);
+	NbCols=Session->GetNbObjs(GroupType);
 	if((!NbRows)||(!NbCols))
 		return;
 	if(NbRows>MaxRows) MaxRows=NbRows;
@@ -289,7 +289,7 @@ template<class cGroup,class cObj>
 				continue;
 			VectorRows[row]++;
 			NbTot++;
-			GroupComputed=static_cast<cGroup*>(Session->GetObject(GroupType,Prof()->GetGroupId()));
+			GroupComputed=static_cast<cGroup*>(Session->GetObj(GroupType,Prof()->GetGroupId()));
 			if(!GroupComputed)
 				continue;
 			position=ClustersId.GetPtr(GroupComputed->GetId())->position;
@@ -337,7 +337,7 @@ template<class cGroup,class cObj>
 	bool Neg(false);          // Correct negative similarities (a priori, no negative similarities)
 
 	// Init
-	R::RContainer<cObj,false,false> Centers(Session->GetNbObjects(GroupType));
+	R::RContainer<cObj,false,false> Centers(Session->GetNbObjs(GroupType));
 	J=0;
 	switch(ObjType)
 	{

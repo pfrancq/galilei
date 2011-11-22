@@ -180,7 +180,7 @@ void ClassesEval::ComputeRankTree(void)
 {
 	// Look at all leaf class and the corresponding subject
 	LeafNodes.Clear();
-	RCursor<GClass> Classes(Session->GetClasses());
+	RCursor<GClass> Classes(Session->GetObjs(pClass));
 	for(Classes.Start();!Classes.End();Classes.Next())
 	{
 		if(Classes()->GetNbNodes()) continue;
