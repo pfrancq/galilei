@@ -49,7 +49,7 @@ template<class cPlugin,class cObj,class cGroup,class cGrp,class cGrps,class kMea
 	size_t i;
 	RString Label(GetObjType(GroupType,true,false)+" ");
 
-	session->Clear(GroupType);
+	session->Reset(GroupType);
 	for(Sol.Start(),i=1;!Sol.End();Sol.Next(),i++)
 	{
 		cGroup* g(new cGroup(session,Label+RString::Number(i)));
@@ -57,7 +57,7 @@ template<class cPlugin,class cObj,class cGroup,class cGrp,class cGrps,class kMea
 		RCursor<cObj> Cur(Sol()->GetObjs());
 		for(Cur.Start();!Cur.End();Cur.Next())
 			g->InsertObj(Cur());
-		session->Insert(g);
+		session->InsertObj(g);
 	}
 }
 

@@ -184,7 +184,7 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void) {RunGrouping(GetSession()->GetTopics(),Docs,GetSession()->GetMaxObjectId(otDoc));}
+	virtual void Run(void) {RunGrouping(GetSession()->GetObjs(pTopic),Docs,GetSession()->GetMaxObjId(pDoc));}
 
 public:
 
@@ -200,10 +200,10 @@ void kKernelMeansDoc::FillSimilarities(RSparseMatrix& sims)
 	if(Kernel->MeasureType=="Complete")
 	{
 		// Fill the matrix with all documents
-		RCursor<GDoc> Doc(Session->GetDocs());
+		RCursor<GDoc> Doc(Session->GetObjs(pDoc));
 		for(Doc.Start();!Doc.End();Doc.Next())
 		{
-			RCursor<GDoc> Doc2(Session->GetDocs());
+			RCursor<GDoc> Doc2(Session->GetObjs(pDoc));
 			for(Doc2.Start();!Doc2.End();Doc2.Next())
 			{
 				double mes;
@@ -215,7 +215,7 @@ void kKernelMeansDoc::FillSimilarities(RSparseMatrix& sims)
 	else
 	{
 		// Fill the matrix with the nearest neighbors
-		RCursor<GDoc> Doc(Session->GetDocs());
+		RCursor<GDoc> Doc(Session->GetObjs(pDoc));
 		for(Doc.Start();!Doc.End();Doc.Next())
 		{
 			const RMaxVector* Vec;
