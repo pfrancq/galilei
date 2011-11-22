@@ -37,7 +37,6 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gcommunitycalc.h>
-#include <gweightinfos.h>
 
 
 //-----------------------------------------------------------------------------
@@ -61,19 +60,19 @@ class GCommunityCalcGravitation : public GCommunityCalc
 	size_t MaxNonZero;
 
 	/**
-	* Ordered vector for current computed profile.
+	* Ordered vector for current computed community.
 	*/
-	const GWeightInfo** Order;
-
-	/**
-	* Internal vector.
-	*/
-	GWeightInfos Vector;
+	const GConceptRef** Order;
 
 	/**
 	* Maximal size allocate for a profile.
 	*/
 	size_t MaxOrderSize;
+
+   /**
+	 * Internal structure.
+	 */
+	R::RContainer<GVector,true,true> Internal;
 
 public:
 
@@ -90,8 +89,8 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	* Compute a group.
-	* @param grp            Group to compute.
+	* Compute a community description.
+	* @param grp            Community to compute.
 	*/
 	virtual void Compute(const GCommunity* grp);
 
@@ -99,7 +98,6 @@ public:
 	* Create the parameters.
 	*/
 	virtual void CreateConfig(void);
-
 
 	/**
 	* Destruct.

@@ -36,7 +36,6 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gtopiccalc.h>
-#include <gweightinfos.h>
 
 
 //-----------------------------------------------------------------------------
@@ -60,19 +59,19 @@ class GTopicCalcGravitation : public GTopicCalc
 	size_t MaxNonZero;
 
 	/**
-	* Ordered vector for current computed profile.
+	* Ordered vector for current computed topic.
 	*/
-	const GWeightInfo** Order;
+	const GConceptRef** Order;
 
 	/**
-	* Internal vector.
-	*/
-	GWeightInfos Vector;
-
-	/**
-	* Maximal size allocate for a profile.
+	* Maximal size allocated.
 	*/
 	size_t MaxOrderSize;
+
+   /**
+	 * Internal structure.
+	 */
+	R::RContainer<GVector,true,true> Internal;
 
 public:
 
@@ -89,7 +88,7 @@ public:
 	virtual void ApplyConfig(void);
 
 	/**
-	* Compute a group.
+	* Compute a topic.
 	* @param grp            Topic to compute.
 	*/
 	virtual void Compute(const GTopic* grp);

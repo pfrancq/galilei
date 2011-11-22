@@ -37,8 +37,7 @@
 #include <gtopic.h>
 #include <gsession.h>
 #include <gdoc.h>
-#include <gweightinfo.h>
-#include <gweightinfos.h>
+#include <gconceptref.h>
 
 
 //-----------------------------------------------------------------------------
@@ -58,9 +57,9 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GTopicCalcGravitation::GTopicCalcGravitation(GSession* session,GPlugInFactory* fac)
-	: GTopicCalc(session,fac), MaxNonZero(100), Order(0), Vector(5000), MaxOrderSize(5000)
+	: GTopicCalc(session,fac), MaxNonZero(100), Order(0), MaxOrderSize(5000), Internal(20)
 {
-	Order=new const GWeightInfo*[MaxOrderSize];
+	Order=new const GConceptRef*[MaxOrderSize];
 }
 
 
@@ -75,54 +74,66 @@ void GTopicCalcGravitation::ApplyConfig(void)
 void GTopicCalcGravitation::Compute(const GTopic* grp)
 {
 	size_t i;
-	GWeightInfo* ins;
-	const GWeightInfo** w;
+	GConceptRef* ins;
+	const GConceptRef** w;
 
-	// Clear the Vectors
-	Vector.Clear();
-	Infos.Clear();
+	// Clear the Vectors.
+	Vectors.Clear();
+	Internal.Clear();
 
 	// If no documents -> No relevant one.
 	if(!grp->GetNbObjs()) return;
 
 	// Go through the documents and sum the weights.
-	RCursor<GDoc> Prof(grp->GetObjs());
-	for(Prof.Start();!Prof.End();Prof.Next())
+	RCursor<GDoc> Doc(grp->GetObjs());
+	for(Doc.Start();!Doc.End();Doc.Next())
 	{
-		// Go trough the words of the current document
-		RCursor<GWeightInfo> Cur(Prof()->GetVector().GetInfos());
-		for(Cur.Start();!Cur.End();Cur.Next())
+		// Go to the vectors of each profile
+		RCursor<GVector> Vector(Doc()->GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
 		{
-			ins=Vector.GetInfo(Cur());
-			(*ins)+=Cur()->GetWeight();
+			GVector* Ins(Internal.GetInsertPtr(Vector()->GetConcept()));
+
+			// Go trough the concepts of the current vector
+			RCursor<GConceptRef> Cur(Vector()->GetRefs());
+			for(Cur.Start();!Cur.End();Cur.Next())
+			{
+				ins=Ins->GetRef(Cur()->GetConcept());
+				(*ins)+=Cur()->GetWeight();
+			}
 		}
 	}
 
-	// Copy the information of the relevant document to the topic.
-	if(Vector.GetNb()+1>MaxOrderSize)
+	// Copy the information of the relevant profile to the community.
+	RCursor<GVector> Vector(Internal);
+	for(Vector.Start();!Vector.End();Vector.Next())
 	{
-		if(Order) delete[] Order;
-		MaxOrderSize=static_cast<size_t>((static_cast<double>(Vector.GetNb())+1)*1.1);
-		Order=new const GWeightInfo*[MaxOrderSize];
-	}
-	Vector.GetTab(Order);
-	if(Vector.GetNb())
-		qsort(static_cast<void*>(Order),Vector.GetNb(),sizeof(GWeightInfo*),GWeightInfos::SortOrder);
-	Order[Vector.GetNb()]=0;
-	if(MaxNonZero)
-	{
-		for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
+		if(Vector()->GetNb()+1>MaxOrderSize)
 		{
-			if((*w)->GetWeight()>0)
-				Infos.InsertInfo(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/static_cast<double>(grp->GetNbObjs())));
+			if(Order) delete[] Order;
+			MaxOrderSize=static_cast<size_t>((static_cast<double>(Vector.GetNb())+1)*1.1);
+			Order=new const GConceptRef*[MaxOrderSize];
 		}
-	}
-	else
-	{
-		for(w=Order;(*w);w++)
+		Vector()->GetTab(Order);
+		if(Vector()->GetNb())
+			qsort(static_cast<void*>(Order),Vector()->GetNb(),sizeof(GConceptRef*),GVector::SortOrder);
+		Order[Vector()->GetNb()]=0;
+		GVector* Ins(Vectors.GetInsertPtr(Vector()->GetConcept()));
+		if(MaxNonZero)
 		{
-			if((*w)->GetWeight()>0)
-				Infos.InsertInfo(new GWeightInfo((*w)->GetConcept(),(*w)->GetWeight()/static_cast<double>(grp->GetNbObjs())));
+			for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
+			{
+				if((*w)->GetWeight()>0)
+					Ins->InsertRef(new GConceptRef((*w)->GetConcept(),(*w)->GetWeight()*(*w)->GetConcept()->GetIF(otDoc)/static_cast<double>(grp->GetNbObjs())));
+			}
+		}
+		else
+		{
+			for(w=Order;(*w);w++)
+			{
+				if((*w)->GetWeight()>0)
+					Ins->InsertRef(new GConceptRef((*w)->GetConcept(),(*w)->GetWeight()*(*w)->GetConcept()->GetIF(otDoc)/static_cast<double>(grp->GetNbObjs())));
+			}
 		}
 	}
 }
