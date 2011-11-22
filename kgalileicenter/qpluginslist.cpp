@@ -209,9 +209,13 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 			setObjectName("LinkCalcs");
 			init("LinkCalc",true,true,false);
 			break;
-		case DocAnalyzes:
-			setObjectName("DocAnalyzes");
-			init("DocAnalyze",true,true,false);
+		case Tokenizers:
+			setObjectName("Tokenizers");
+			init("Tokenizer",true,true,false);
+			break;
+		case Analyzers:
+			setObjectName("Analyzers");
+			init("Analyzer",false,true,true);
 			break;
 		case Engines:
 			setObjectName("Engines");
@@ -280,8 +284,11 @@ void QPlugInsList::apply(GSession* session)
 			case MetaEngines:
 				GALILEIApp->SetCurrentPlugIn("MetaEngine",FromQString(Current->currentText()),false);
 				break;
-			case DocAnalyzes:
-				GALILEIApp->SetCurrentPlugIn("DocAnalyze",FromQString(Current->currentText()),false);
+			case Tokenizers:
+				GALILEIApp->SetCurrentPlugIn("Tokenizer",FromQString(Current->currentText()),false);
+				break;
+			case Analyzers:
+				GALILEIApp->SetCurrentPlugIn("Analyzer",FromQString(Current->currentText()),false);
 				break;
 			case LinkCalcs:
 				GALILEIApp->SetCurrentPlugIn("LinkCalc",FromQString(Current->currentText()),false);

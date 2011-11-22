@@ -63,14 +63,15 @@ class QCreateDB : public QSessionThread
 	QCreateDatabase* Info;
 public:
 	QCreateDB(KGALILEICenter* app,QCreateDatabase* info) : QSessionThread(app), Info(info) {}
-	RString GetConceptType(const RString& name,const RString& desc,RDb* Db);
+	RString GetConceptType(const RString& cat,const RString& name,const RString& desc,RDb* Db);
 	virtual void DoIt(void);
 };
 
 
 //-----------------------------------------------------------------------------
-RString QCreateDB::GetConceptType(const RString& name,const RString& desc,RDb* Db)
+RString QCreateDB::GetConceptType(const RString& cat,const RString& name,const RString& desc,RDb* Db)
 {
+	// Look if the concept type exists
 	RQuery Select(Db,"SELECT typeid FROM concepttypes WHERE name='"+name+"'");
 	Select.Start();
 	if(!Select.End())
@@ -78,7 +79,23 @@ RString QCreateDB::GetConceptType(const RString& name,const RString& desc,RDb* D
 		return(Select[0]);
 	}
 
-	RQuery Insert(Db,"INSERT INTO concepttypes(name,description) VALUES('"+name+"','"+desc+"')");
+	// Look for the concept category
+	RString CatId;
+	RQuery Cat(Db,"SELECT catid FROM conceptcats WHERE name='"+cat+"'");
+	Cat.Start();
+	if(Cat.End())
+	{
+		// Create the category
+		RQuery Insert(Db,"INSERT INTO conceptcats(name) VALUES('"+cat+"')");
+		RQuery GetId(Db,"SELECT catid FROM conceptcats WHERE catid=LAST_INSERT_ID()");
+		GetId.Start();
+		CatId=GetId[0];
+	}
+	else
+		CatId=Cat[0];
+
+	// Create the type
+	RQuery Insert(Db,"INSERT INTO concepttypes(name,description,catid) VALUES('"+name+"','"+desc+"','"+CatId+"')");
 	RQuery GetId(Db,"SELECT typeid FROM concepttypes WHERE typeid=LAST_INSERT_ID()");
 	GetId.Start();
 	return(GetId[0]);
@@ -107,8 +124,7 @@ void QCreateDB::DoIt(void)
  		Factory->CreateStopWords(Stops,Code,Name);
 
  		// Create the concept types
- 		GetConceptType(Code+"Terms",Name+" Terms",&Db);
- 		RString TypeId(GetConceptType(Code+"Stopwords",Name+" Stopwords",&Db));
+ 		RString TypeId(GetConceptType("Text",Code+"Stopwords",Name+" Stopwords",&Db));
 
  		RCursor<RString> Cur(Stops);
  		for(Cur.Start();!Cur.End();Cur.Next())
@@ -116,8 +132,8 @@ void QCreateDB::DoIt(void)
  	}
 
  	Parent->setLabelText("Create Other Concept Types");
- 	GetConceptType("XMLStruct","XML Structure",&Db);
- 	GetConceptType("XMLIndex","XML Index",&Db);
+ 	GetConceptType("Structure","XMLStruct","XML Structure",&Db);
+ 	GetConceptType("MetaData","XMLIndex","XML Index",&Db);
 
  	// Create the configuration file with MySQL as default storage
  	RTextFile Config(RString(getenv("HOME"))+"/.r/config/lib/galilei/sessions/"+Info->Name+".config","utf-8");

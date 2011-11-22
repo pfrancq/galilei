@@ -74,11 +74,6 @@ class KViewDoc : public QMdiSubWindow, public Ui_KViewDoc
 	GDoc* Document;
 
 	/**
-	* XML structure representing the content of the document.
-	*/
-	RXMLStruct* XML;
-
-	/**
 	* Delete the document when deleting the window?
 	*/
 	bool bDelDoc;
@@ -119,29 +114,12 @@ public slots:
 	 */
 	void update(void);
 
-	/**
-	 * Update the view.
-	 */
-	void updateXML(void);
-
 public:
 
 	/**
-	* Create a GDocXML structure for the current document and show it in the
-	* corresponding tab.
+	* Analyze a document and show the results.
 	*/
-	void CreateDocXML(void);
-
-	/**
-	* Save the XML structure for the current document.
-	* @param name           File where to store the file.
-	*/
-	void SaveDocXML(const RURI& name);
-
-	/**
-	* Analyze a GDocXML structure of the current document and show the results.
-	*/
-	void AnalyzeDocXML(void);
+	void AnalyzeDoc(void);
 
 	/**
 	* Destruct the widget.

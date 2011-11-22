@@ -679,7 +679,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
           <item>
            <widget class="QTabWidget" name="PlugInsTab">
             <property name="currentIndex">
-             <number>0</number>
+             <number>1</number>
             </property>
             <widget class="QWidget" name="TabPage_2">
              <attribute name="title">
@@ -699,7 +699,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
               <item>
                <widget class="QTabWidget" name="DocsTab">
                 <property name="currentIndex">
-                 <number>2</number>
+                 <number>0</number>
                 </property>
                 <widget class="QWidget" name="tab_5">
                  <attribute name="title">
@@ -723,11 +723,21 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
                 </widget>
                 <widget class="QWidget" name="TabPage_3">
                  <attribute name="title">
-                  <string>Document Analysis</string>
+                  <string>Tokenizers</string>
                  </attribute>
                  <layout class="QVBoxLayout" name="_33">
                   <item>
-                   <widget class="QPlugInsList" name="DocAnalyzes" native="true"/>
+                   <widget class="QPlugInsList" name="Tokenizers" native="true"/>
+                  </item>
+                 </layout>
+                </widget>
+                <widget class="QWidget" name="TabPage4">
+                 <attribute name="title">
+                  <string>Analyzers</string>
+                 </attribute>
+                 <layout class="QVBoxLayout" name="verticalLayout_19">
+                  <item>
+                   <widget class="QPlugInsList" name="Analyzers" native="true"/>
                   </item>
                  </layout>
                 </widget>

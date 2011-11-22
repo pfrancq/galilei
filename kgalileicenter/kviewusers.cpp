@@ -97,7 +97,7 @@ void KViewUsers::slotAddUser(void)
 	QString Name(QInputDialog::getText(this,"New User", "Enter the name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		KGALILEICenter::App->getSession()->Insert(new GUser(KGALILEICenter::App->getSession(),cNoRef,FromQString(Name),FromQString(Name)));
+		KGALILEICenter::App->getSession()->InsertObj(new GUser(KGALILEICenter::App->getSession(),cNoRef,FromQString(Name),FromQString(Name)));
 		update();
 	}
 }
@@ -113,7 +113,7 @@ void KViewUsers::slotModifyUser(void)
 	if(Ok&&!Name.isEmpty())
 	{
 		usr->SetName(FromQString(Name));
-		KGALILEICenter::App->getSession()->GetStorage()->SaveUser(usr);
+		KGALILEICenter::App->getSession()->GetStorage()->SaveObj(usr);
 		List->currentItem()->setText(0,Name);
 	}
 }
@@ -128,8 +128,8 @@ void KViewUsers::slotAddProfile(void)
 	QString Name(QInputDialog::getText(this,"Add Profile to "+ToQString(usr->GetName()), "Enter the profile name:",QLineEdit::Normal,QString(),&Ok));
 	if(Ok&&!Name.isEmpty())
 	{
-		KGALILEICenter::App->getSession()->Insert(new GProfile(KGALILEICenter::App->getSession(),usr,ptInterest,FromQString(Name),true));
-		KGALILEICenter::App->getSession()->GetStorage()->SaveUser(usr);
+		KGALILEICenter::App->getSession()->InsertObj(new GProfile(KGALILEICenter::App->getSession(),usr,ptInterest,FromQString(Name),true));
+		KGALILEICenter::App->getSession()->GetStorage()->SaveObj(usr);
 		update();
 	}
 }
@@ -145,7 +145,7 @@ void KViewUsers::slotModifyProfile(void)
 	if(Ok&&!Name.isEmpty())
 	{
 		prof->SetName(FromQString(Name));
-		KGALILEICenter::App->getSession()->GetStorage()->SaveProfile(prof);
+		KGALILEICenter::App->getSession()->GetStorage()->SaveObj(prof);
 		List->currentItem()->setText(0,Name);
 	}
 }

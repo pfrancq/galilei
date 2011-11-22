@@ -128,31 +128,13 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* Create a XML structure.
-* @param xml            The structure that will hold the result.
-* @param doc            The corresponding document.
+* Analyze a document.
 */
-class QCreateDocXML : public QSessionThread
-{
-	RXMLStruct* &XML;
-	GDoc* Doc;
-public:
-	QCreateDocXML(KGALILEICenter* app,RXMLStruct* &xml,GDoc* doc) : QSessionThread(app), XML(xml), Doc(doc) {}
-	virtual void DoIt(void);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
-* Analyze a XML structure.
-* @param xml            The structure that will hold the result.
-* @param doc            The corresponding document.
-*/
-class QAnalyzeXML : public QSessionThread
+class QAnalyzeDoc : public QSessionThread
 {
 	GDoc* Doc;
 public:
-	QAnalyzeXML(KGALILEICenter* app,GDoc* doc) : QSessionThread(app), Doc(doc) {}
+	QAnalyzeDoc(KGALILEICenter* app,GDoc* doc) : QSessionThread(app), Doc(doc) {}
 	virtual void DoIt(void);
 };
 

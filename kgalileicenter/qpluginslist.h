@@ -72,7 +72,8 @@ public:
 		CommunityCalcs,             /** Community Computing Methods.*/
 		TopicCalcs,                 /** Topic Computing Methods.*/
 		LinkCalcs,                  /** Link Analysis Methods.*/
-		DocAnalyzes,                /** XML Document Analyzers.*/
+		Tokenizers,                 /** Tokenize Method.*/
+      Analyzers,                  /** Text Analyzers Methods. */
 		Engines,                    /** Search Engines.*/
 		MetaEngines,                /** Meta-search Engines.*/
 		Measures,                   /** Measures for a given Category.*/

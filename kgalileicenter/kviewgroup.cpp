@@ -69,7 +69,7 @@ template<class cGroup>
 	void KViewGroup<cGroup>::update(QGObjectsList::oType type)
 {
 	Vars->Set(Obj);
-	Desc->Set(KGALILEICenter::App->getSession(),Obj->GetVector());
+	Desc->Set(KGALILEICenter::App->getSession(),Obj);
 	Objects->Set(type,Obj);
 }
 

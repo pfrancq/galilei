@@ -33,6 +33,7 @@
 // include files for R/GALILEI
 #include <rqt.h>
 #include <guser.h>
+#include <gcommunity.h>
 
 
 //-----------------------------------------------------------------------------
@@ -63,10 +64,10 @@ KViewProfile::KViewProfile(KGALILEICenter* app, GProfile* profile)
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle(ToQString(profile->GetName())+" ("+ToQString(profile->GetUser()->GetFullName())+")");
 	Vars->Set(Profile);
-	Desc->Set(App->getSession(),Profile->GetVector());
+	Desc->Set(App->getSession(),Profile);
 	Assessments->Set(QGObjectsList::Assessments,Profile);
 	Links->Set(QGObjectsList::Links,Profile);
-	GCommunity* Group(App->getSession()->GetCommunity(Profile->GetGroupId(),true,true));
+	GCommunity* Group(App->getSession()->GetObj(static_cast<GCommunity*>(0),Profile->GetGroupId(),true,true));
 	if(Group)
 		Community->Set(QGObjectsList::Profiles,Group);
 	connect(dynamic_cast<KGALILEICenter*>(GALILEIApp),SIGNAL(profilesChanged()),this,SLOT(updateProfile()));
@@ -79,14 +80,14 @@ KViewProfile::KViewProfile(KGALILEICenter* app, GProfile* profile)
 void KViewProfile::updateProfile(void)
 {
 	Vars->Set(Profile);
-	Desc->Set(App->getSession(),Profile->GetVector());
+	Desc->Set(App->getSession(),Profile);
 }
 
 
 //-----------------------------------------------------------------------------
 void KViewProfile::updateCommunity(void)
 {
-	GCommunity* Group(App->getSession()->GetCommunity(Profile->GetGroupId(),true,true));
+	GCommunity* Group(App->getSession()->GetObj(static_cast<GCommunity*>(0),Profile->GetGroupId(),true,true));
 	if(Group)
 		Community->Set(QGObjectsList::Profiles,Group);
 }

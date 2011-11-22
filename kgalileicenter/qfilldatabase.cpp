@@ -149,7 +149,7 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 					cat=parent+"/"+cat;
 				}
 				if(depth<=Info->Depth->value())
-					Session->Insert(Subject,new GSubject(Session,Session->GetNbObjects(otSubject)+1,cat,true));
+					Session->Insert(Subject,new GSubject(Session,Session->GetNbObjs(otSubject)+1,cat,true));
 				else
 					cat=parent;
 			}
@@ -166,12 +166,12 @@ void QImportDocs::ParseDir(const RURI& uri,const RString& parent,int depth)
 			}
 			// Must be a normal document
 			GDoc* doc(new GDoc(Session,Files()->GetURI(),Files()->GetURI()(),Info->Lang,Info->DefaultMIME));
-			App->getSession()->Insert(doc);
+			App->getSession()->InsertObj(doc);
 			if(Info->Categorized)
 			{
 				GSubject* Subject(Session->GetSubject(parent));
 				if(Subject)
-					App->getSession()->Insert(doc,Subject->GetId(),cNoRef);
+					App->getSession()->Insert(doc,Subject->GetId(),Subject->GetId());
 			}
 		}
 	}

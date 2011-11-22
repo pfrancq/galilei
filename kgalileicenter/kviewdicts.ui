@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>932</width>
-    <height>537</height>
+    <width>971</width>
+    <height>533</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,6 +36,11 @@
           <column>
            <property name="text">
             <string>Dictionnary</string>
+           </property>
+          </column>
+          <column>
+           <property name="text">
+            <string>Category</string>
            </property>
           </column>
          </widget>
@@ -165,7 +170,7 @@
           </widget>
          </item>
          <item>
-          <spacer name="horizontalSpacer">
+          <spacer name="horizontalSpacer1">
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>

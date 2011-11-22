@@ -1,7 +1,8 @@
-<ui version="4.0" >
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
  <class>KViewProfile</class>
- <widget class="QWidget" name="KViewProfile" >
-  <property name="geometry" >
+ <widget class="QWidget" name="KViewProfile">
+  <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
@@ -9,37 +10,37 @@
     <height>459</height>
    </rect>
   </property>
-  <property name="windowTitle" >
+  <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" native="1" name="widget" >
-     <layout class="QVBoxLayout" name="verticalLayout_2" >
+    <widget class="QWidget" name="widget" native="true">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QTabWidget" name="Infos" >
-        <property name="currentIndex" >
+       <widget class="QTabWidget" name="Infos">
+        <property name="currentIndex">
          <number>0</number>
         </property>
-        <widget class="QWidget" name="tab" >
-         <attribute name="title" >
+        <widget class="QWidget" name="tab">
+         <attribute name="title">
           <string>General</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_3" >
+         <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QGObjectVars" native="1" name="Vars" />
+           <widget class="QGObjectVars" name="Vars" native="true"/>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_2" >
-         <attribute name="title" >
+        <widget class="QWidget" name="tab_2">
+         <attribute name="title">
           <string>Assessments</string>
          </attribute>
-         <layout class="QGridLayout" name="gridLayout" >
-          <item row="0" column="0" colspan="2" >
-           <widget class="QGObjectsList" native="1" name="Assessments" >
-            <property name="sizePolicy" >
-             <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+         <layout class="QGridLayout" name="gridLayout">
+          <item row="0" column="0" colspan="2">
+           <widget class="QGObjectsList" name="Assessments" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
@@ -48,33 +49,33 @@
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_3" >
-         <attribute name="title" >
+        <widget class="QWidget" name="tab_3">
+         <attribute name="title">
           <string>Description</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_4" >
+         <layout class="QVBoxLayout" name="verticalLayout_4">
           <item>
-           <widget class="QGWeightInfos" native="1" name="Desc" />
+           <widget class="QGDescription" name="Desc" native="true"/>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_4" >
-         <attribute name="title" >
+        <widget class="QWidget" name="tab_4">
+         <attribute name="title">
           <string>Community</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_5" >
+         <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
-           <widget class="QGObjectsList" native="1" name="Community" />
+           <widget class="QGObjectsList" name="Community" native="true"/>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="tab_5" >
-         <attribute name="title" >
+        <widget class="QWidget" name="tab_5">
+         <attribute name="title">
           <string>Proposed Documents</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout_6" >
+         <layout class="QVBoxLayout" name="verticalLayout_6">
           <item>
-           <widget class="QGObjectsList" native="1" name="Links" />
+           <widget class="QGObjectsList" name="Links" native="true"/>
           </item>
          </layout>
         </widget>
@@ -93,15 +94,15 @@
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QGWeightInfos</class>
-   <extends>QWidget</extends>
-   <header>qgweightinfos.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>QGObjectsList</class>
    <extends>QWidget</extends>
    <header>qgobjectslist.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QGDescription</class>
+   <extends>QWidget</extends>
+   <header>qgdescription.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

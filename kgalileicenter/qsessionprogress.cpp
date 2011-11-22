@@ -150,37 +150,28 @@ void QCreateSession::DoIt(void)
 	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Classes ...");
-	App->getSession()->LoadClasses();
+	App->getSession()->LoadObjs(static_cast<GClass*>(0));
 	Parent->setLabelText("Load Topics ...");
-	App->getSession()->LoadTopics();
+	App->getSession()->LoadObjs(static_cast<GTopic*>(0));
 	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Loading Documents ...");
-	App->getSession()->LoadDocs();
+	App->getSession()->LoadObjs(static_cast<GDoc*>(0));
 	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Communities ...");
-	App->getSession()->LoadCommunities();
+	App->getSession()->LoadObjs(static_cast<GCommunity*>(0));
 	if(App->getSession()->MustBreak())
 		return;
 	Parent->setLabelText("Load Users/Profiles/Feedbacks ...");
-	App->getSession()->LoadUsers();
+	App->getSession()->LoadObjs(static_cast<GUser*>(0));
 }
 
 
 //-----------------------------------------------------------------------------
-void QCreateDocXML::DoIt(void)
+void QAnalyzeDoc::DoIt(void)
 {
-	Parent->setLabelText("Creating XML Structure ...");
-	bool Native;
-	App->getSession()->GetXMLStruct(Doc,XML,Native);
-}
-
-
-//-----------------------------------------------------------------------------
-void QAnalyzeXML::DoIt(void)
-{
-	App->getSession()->AnalyzeDoc(Doc,true,0,Parent);
+	App->getSession()->AnalyzeDoc(Doc,true,Parent);
 }
 
 
@@ -340,7 +331,7 @@ void QComputeAll::DoIt(void)
 void QIndexDocs::DoIt(void)
 {
 	Parent->setLabelText("Index Documents ...");
-	App->getSession()->BuildRefs(otDoc,Parent);
+	App->getSession()->BuildIndex(static_cast<const GDoc*>(0));
 }
 
 

@@ -424,7 +424,8 @@ void Configure::initPlugIns(void)
 	CommunityCalcs->init(QPlugInsList::CommunityCalcs);
 	TopicCalcs->init(QPlugInsList::TopicCalcs);
 	LinkCalcs->init(QPlugInsList::LinkCalcs);
-	DocAnalyzes->init(QPlugInsList::DocAnalyzes);
+	Tokenizers->init(QPlugInsList::Tokenizers);
+	Analyzers->init(QPlugInsList::Analyzers);
 	Engines->init(QPlugInsList::Engines);
 	MetaEngines->init(QPlugInsList::MetaEngines);
 	ComputeSugs->init(QPlugInsList::ComputeSugs);
@@ -476,7 +477,8 @@ void Configure::applyPlugIns(void)
 	CommunityCalcs->apply(App->getSession());
 	TopicCalcs->apply(App->getSession());
 	LinkCalcs->apply(App->getSession());
-	DocAnalyzes->apply(App->getSession());
+	Tokenizers->apply(App->getSession());
+	Analyzers->apply(App->getSession());
 	Engines->apply(App->getSession());
 	MetaEngines->apply(App->getSession());
 	Langs->apply(App->getSession());

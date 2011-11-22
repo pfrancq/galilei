@@ -302,16 +302,6 @@ private slots:
 	void docsIndexer(void);
 
 	/**
-	 * Create a DocXML structure for the current document.
-	 */
-	void createXML(void);
-
-	/**
-	 * Save a DocXML structure in a document.
-	 */
-	void saveXML(void);
-
-	/**
 	 * Query the meta engine
 	 */
 	void queryMetaEngine(void);

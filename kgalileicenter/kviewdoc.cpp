@@ -65,7 +65,7 @@ AddFdbkDlg::AddFdbkDlg(QWidget* parent)
 	setMainWidget(widget);
 
 	connect(cbUsers,SIGNAL(activated(const QString&)),this,SLOT(slotChangeUser(const QString&)));
-	RCursor<GUser> Users(Session->GetUsers());
+	RCursor<GUser> Users(Session->GetObjs(static_cast<GUser*>(0)));
 	for(Users.Start();!Users.End();Users.Next())
 	{
 		if(!Users()->GetNbProfiles())
@@ -102,7 +102,7 @@ void AddFdbkDlg::FillProfiles(void)
 //-----------------------------------------------------------------------------
 void AddFdbkDlg::slotChangeUser(const QString& string)
 {
-	User=KGALILEICenter::App->getSession()->GetUser(FromQString(string));
+	User=KGALILEICenter::App->getSession()->GetObj(static_cast<GUser*>(0),FromQString(string));
 	FillProfiles();
 }
 
@@ -123,7 +123,7 @@ void AddFdbkDlg::slotChangeProfile(const QString& string)
 
 //-----------------------------------------------------------------------------
 KViewDoc::KViewDoc(KGALILEICenter* app,GDoc* doc)
-	: QMdiSubWindow(), Ui_KViewDoc(), App(app), Document(doc), XML(0), bDelDoc(false)
+	: QMdiSubWindow(), Ui_KViewDoc(), App(app), Document(doc), bDelDoc(false)
 {
 	setUp();
 }
@@ -131,7 +131,7 @@ KViewDoc::KViewDoc(KGALILEICenter* app,GDoc* doc)
 
 //-----------------------------------------------------------------------------
 KViewDoc::KViewDoc(KGALILEICenter* app,const RURI& file,const RString& mime)
-	: QMdiSubWindow(), Ui_KViewDoc(), App(app), Document(new GDoc(app->getSession(),file,file(),0,mime)), XML(0), bDelDoc(true)
+	: QMdiSubWindow(), Ui_KViewDoc(), App(app), Document(new GDoc(app->getSession(),file,file(),0,mime)), bDelDoc(true)
 {
 	setUp();
 }
@@ -148,7 +148,7 @@ void KViewDoc::setUp(void)
 	Vars->Set(Document);
 	try
 	{
-		Desc->Set(App->getSession(),Document->GetVector());
+		Desc->Set(App->getSession(),Document);
 	}
 	catch(GException& e)
 	{
@@ -184,45 +184,16 @@ void KViewDoc::newFdbk(void)
 void KViewDoc::update(void)
 {
 	Vars->Set(Document);
-	Desc->Set(App->getSession(),Document->GetVector());
+	Desc->Set(App->getSession(),Document);
 	Struct->Set(Document);
 }
 
 
 //-----------------------------------------------------------------------------
-void KViewDoc::updateXML(void)
-{
-	XMLStruct->Set(XML);
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewDoc::CreateDocXML(void)
-{
-	QSessionProgressDlg Dlg(App,"Create Doc XML");
-	if(!XML)
-		XML=new RXMLStruct();
-	QCreateDocXML* Task(new QCreateDocXML(App,XML,Document));
-	connect(Task,SIGNAL(finish()),this,SLOT(updateXML()));
-	if(!Dlg.Run(Task))
-		return;
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewDoc::SaveDocXML(const RURI& name)
-{
-	if(!XML) return;
-	RXMLFile f(name,XML);
-	f.Open(R::RIO::Create);
-}
-
-
-//-----------------------------------------------------------------------------
-void KViewDoc::AnalyzeDocXML(void)
+void KViewDoc::AnalyzeDoc(void)
 {
 	QSessionProgressDlg Dlg(App,ToQString("Analyze Document "+Document->GetName()));
-	QAnalyzeXML* Task(new QAnalyzeXML(App,Document));
+	QAnalyzeDoc* Task(new QAnalyzeDoc(App,Document));
 	connect(Task,SIGNAL(finish()),this,SLOT(update()));
 	Dlg.Run(Task);
 }
@@ -231,6 +202,5 @@ void KViewDoc::AnalyzeDocXML(void)
 //-----------------------------------------------------------------------------
 KViewDoc::~KViewDoc(void)
 {
-	if(XML) delete XML;
 	if(bDelDoc)	delete Document;
 }

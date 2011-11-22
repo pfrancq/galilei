@@ -113,17 +113,32 @@ QString KViewClasses::buildDesc(GClass* c)
 {
 	QString ret;
 
-	RCursor<GWeightInfo> Cur(c->GetVector().GetInfos());
-	bool Comma=false;
-	for(Cur.Start();!Cur.End();Cur.Next())
+	GClass* Parent(c->GetParent());
+	RCursor<GVector> Vector(c->GetVectors());
+	for(Vector.Start();!Vector.End();Vector.Next())
 	{
-		if((!AllDescriptors)&&(c->GetParent())&&(c->GetParent()->GetVector().IsIn(Cur()->GetConcept())))
-			continue;
+		QString Str(ToQString(Vector()->GetConcept()->GetName())+"@[");
+		bool Comma(false);
+		GVector* Vec(0);
+		if(Parent)
+			Vec=Parent->GetVector(Vector()->GetConcept());
+		RCursor<GConceptRef> Ref(Vector()->GetRefs());
+		for(Ref.Start();!Ref.End();Ref.Next())
+		{
+			if((!AllDescriptors)&&Vec)
+			{
+				// Look if the parent has the same concept in the same vector
+				if(Vec&&Vec->IsIn(Ref()->GetConcept()))
+					continue;
+			}
+			if(Comma)
+				Str+=",";
+			else
+				Comma=true;
+			Str+=ToQString(Ref()->GetConcept()->GetName());
+		}
 		if(Comma)
-			ret+=",";
-		else
-			Comma=true;
-		ret+=ToQString(Cur()->GetConcept()->GetName());
+			ret+=Str+"]";
 	}
 	return(ret);
 }

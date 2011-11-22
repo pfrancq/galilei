@@ -81,7 +81,7 @@ using namespace GALILEI;
 #include <qcreatedatabase.h>
 #include <kprgconsole.h>
 #include <ui_qchooselist.h>
-#include <ui_mainconfigure.h>
+//#include <ui_mainconfigure.h>
 
 
 
@@ -172,8 +172,6 @@ void KGALILEICenter::initActions(void)
 	Actions.insert(Actions.size(),addAction("Load and Analyze a Document","docAnalyze",SLOT(docAnalyze())));
 	Actions.insert(Actions.size(),addAction("&Analyze Documents","docsAnalyze",SLOT(docsAnalyze()),"kfind"));
 	Actions.insert(Actions.size(),addAction("&Export Documents","docsIndexer",SLOT(docsIndexer())));
-	Actions.insert(Actions.size(),addAction("&Create XML Structure","createXML",SLOT(createXML())));
-	Actions.insert(Actions.size(),addAction("&Save XML Structure","saveXML",SLOT(saveXML())));
 	Actions.insert(Actions.size(),addAction("&Query Meta Engine","queryMetaEngine",SLOT(queryMetaEngine()),"edit-find"));
 	Actions.insert(Actions.size(),addAction("Compute Suggestions","computeSugs",SLOT(computeSugs())));
 	Actions.insert(Actions.size(),addAction("Compute Trust","computeTrust",SLOT(computeTrust())));
@@ -516,45 +514,46 @@ void KGALILEICenter::showDocs(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::exportDocs(void)
 {
-	QString file(KFileDialog::getSaveFileName(KUrl(),"*.*",this,"Choose file where to export the files descriptions"));
-	if(!file.isEmpty())
-	{
-		RTextFile Export(FromQString(file),"utf-8");
-		Export.Open(RIO::Create);
-		Export<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
-		Export<<"<!DOCTYPE documents>"<<endl;
-		Export<<"<documents>"<<endl;
-		RCursor<GDoc> Docs(Doc->GetDocs());
-		for(Docs.Start();!Docs.End();Docs.Next())
-		{
-			Export<<"\t<document id=\""+RString::Number(Docs()->GetId())+"\" url=\""+Docs()->GetURL()()+"\">"<<endl;
-			R::RCursor<GWeightInfo> Infos(Docs()->GetVector().GetInfos());
-			GConceptType* type(0);
-			double norm(0.0),max(0.0);
-			for(Infos.Start();!Infos.End();Infos.Next())
-			{
-				if(type!=Infos()->GetType())
-				{
-					if(type)
-						Export<<"\t\t\t<norm>"<<RString::Number(sqrt(norm))<<"</norm>"<<endl<<"\t\t</vector>"<<endl;
-					type=Infos()->GetType();
-					norm=0.0;
-					max=Docs()->GetVector().GetMaxAbsWeight(type);
-					Export<<"\t\t<vector type=\""<<type->GetName()<<"\">"<<endl;
-				}
-				Export<<"\t\t\t"<<"\t"<<RString::Number(Infos()->GetId())<<"\t";
-				double w(Infos()->GetWeight());
-				double tfidf(Infos()->GetConcept()->GetIF(otDoc)*w/max);
-				Export<<RString::Number(w)<<"\t"<<RString::Number(tfidf);
-				norm+=tfidf*tfidf;
-				Export<<endl;
-			}
-			if(type)
-				Export<<"\t\t\t<norm>"<<RString::Number(sqrt(norm))<<"</norm>"<<endl<<"\t\t</vector>"<<endl;
-			Export<<"\t</document>"<<endl;
-		}
-		Export<<"</documents>"<<endl;
-	}
+	ThrowGException("Export documents is not implemented");
+//	QString file(KFileDialog::getSaveFileName(KUrl(),"*.*",this,"Choose file where to export the files descriptions"));
+//	if(!file.isEmpty())
+//	{
+//		RTextFile Export(FromQString(file),"utf-8");
+//		Export.Open(RIO::Create);
+//		Export<<"<?xml version=\"1.0\" encoding=\"UTF-8\"?>"<<endl;
+//		Export<<"<!DOCTYPE documents>"<<endl;
+//		Export<<"<documents>"<<endl;
+//		RCursor<GDoc> Docs(Doc->GetObjs(static_cast<GDoc*>(0)));
+//		for(Docs.Start();!Docs.End();Docs.Next())
+//		{
+//			Export<<"\t<document id=\""+RString::Number(Docs()->GetId())+"\" url=\""+Docs()->GetURL()()+"\">"<<endl;
+//			R::RCursor<GWeightInfo> Infos(Docs()->GetVector().GetInfos());
+//			GConceptType* type(0);
+//			double norm(0.0),max(0.0);
+//			for(Infos.Start();!Infos.End();Infos.Next())
+//			{
+//				if(type!=Infos()->GetType())
+//				{
+//					if(type)
+//						Export<<"\t\t\t<norm>"<<RString::Number(sqrt(norm))<<"</norm>"<<endl<<"\t\t</vector>"<<endl;
+//					type=Infos()->GetType();
+//					norm=0.0;
+//					max=Docs()->GetVector().GetMaxAbsWeight(type);
+//					Export<<"\t\t<vector type=\""<<type->GetName()<<"\">"<<endl;
+//				}
+//				Export<<"\t\t\t"<<"\t"<<RString::Number(Infos()->GetId())<<"\t";
+//				double w(Infos()->GetWeight());
+//				double tfidf(Infos()->GetConcept()->GetIF(otDoc)*w/max);
+//				Export<<RString::Number(w)<<"\t"<<RString::Number(tfidf);
+//				norm+=tfidf*tfidf;
+//				Export<<endl;
+//			}
+//			if(type)
+//				Export<<"\t\t\t<norm>"<<RString::Number(sqrt(norm))<<"</norm>"<<endl<<"\t\t</vector>"<<endl;
+//			Export<<"\t</document>"<<endl;
+//		}
+//		Export<<"</documents>"<<endl;
+//	}
 }
 
 
@@ -590,7 +589,7 @@ void KGALILEICenter::docAnalyze(void)
 		ptr->show();
 		try
 		{
-			ptr->AnalyzeDocXML();
+			ptr->AnalyzeDoc();
 		}
 		catch(GException& e)
 		{
@@ -626,74 +625,42 @@ void KGALILEICenter::docsAnalyze(void)
 //-----------------------------------------------------------------------------
 void KGALILEICenter::docsIndexer(void)
 {
-	QString dir(KFileDialog::getExistingDirectory(KUrl(),this,"Choose directory where to export the files"));
-	if(!dir.isEmpty())
-	{
-	 	KProgressDialog dlg(this,"Progress","Export documents");
-		dlg.show();
-		KApplication::kApplication()->processEvents();
-		RString pre(FromQString(dir));
-		pre+="/doc";
-		RCursor<GDoc> Docs(Doc->GetDocs());
-		size_t nb;
-		for(Docs.Start(),nb=0;!Docs.End();Docs.Next(),nb++)
-		{
-			if(dlg.wasCancelled())
-				break;
-			dlg.progressBar()->setValue(static_cast<int>((nb*100)/Docs.GetNb()));
-			KApplication::kApplication()->processEvents();
-			if(!Docs()->GetLang())
-				continue;
-			RString name(pre+RString::Number(Docs()->GetId())+".txt");
-			dlg.setLabelText(ToQString(name));
-			KApplication::kApplication()->processEvents();
-			RTextFile file(name);
-			file.Open(RIO::Create);
-			RCursor<GWeightInfo> Words(Docs()->GetVector().GetInfos());
-			for(Words.Start();!Words.End();Words.Next())
-			{
-				for(size_t i=lround(Words()->GetWeight())+1;--i;)
-				{
-					file<<Doc->GetStorage()->LoadConcept(Words()->GetId());
-				}
-				file<<endl;
-			}
-			file.Close();
-		}
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenter::createXML(void)
-{
-	KViewDoc* win(dynamic_cast<KViewDoc*>(Desktop->activeSubWindow()));
-	if(!win) return;
-	win->CreateDocXML();
-}
-
-
-//-----------------------------------------------------------------------------
-void KGALILEICenter::saveXML(void)
-{
-	KViewDoc* win(dynamic_cast<KViewDoc*>(Desktop->activeSubWindow()));
-	if(!win) return;
-	int dlg (KMessageBox::No);
-	KUrl url;
-	while(dlg!=KMessageBox::Yes)
-	{
-		url=KFileDialog::getSaveUrl(KUrl("~"),i18n("*.docxml"), this, i18n("Save DocXML File..."));
-		if(url.isEmpty()) return;
-		QFile Test(url.path());
-		if(Test.exists())
-		{
-			dlg=KMessageBox::warningYesNoCancel(this,"A Document with this Name exists.\nDo you want to overwrite it?","Warning");
-			if(dlg==KMessageBox::No) return;
-		}
-		else
-			dlg=KMessageBox::Yes;
-	}
-	win->SaveDocXML(FromQString(url.path()));
+	ThrowGException("docsIndexer not implemented");
+//	QString dir(KFileDialog::getExistingDirectory(KUrl(),this,"Choose directory where to export the files"));
+//	if(!dir.isEmpty())
+//	{
+//	 	KProgressDialog dlg(this,"Progress","Export documents");
+//		dlg.show();
+//		KApplication::kApplication()->processEvents();
+//		RString pre(FromQString(dir));
+//		pre+="/doc";
+//		RCursor<GDoc> Docs(Doc->GetDocs());
+//		size_t nb;
+//		for(Docs.Start(),nb=0;!Docs.End();Docs.Next(),nb++)
+//		{
+//			if(dlg.wasCancelled())
+//				break;
+//			dlg.progressBar()->setValue(static_cast<int>((nb*100)/Docs.GetNb()));
+//			KApplication::kApplication()->processEvents();
+//			if(!Docs()->GetLang())
+//				continue;
+//			RString name(pre+RString::Number(Docs()->GetId())+".txt");
+//			dlg.setLabelText(ToQString(name));
+//			KApplication::kApplication()->processEvents();
+//			RTextFile file(name);
+//			file.Open(RIO::Create);
+//			RCursor<GWeightInfo> Words(Docs()->GetVector().GetInfos());
+//			for(Words.Start();!Words.End();Words.Next())
+//			{
+//				for(size_t i=lround(Words()->GetWeight())+1;--i;)
+//				{
+//					file<<Doc->GetStorage()->LoadConcept(Words()->GetId());
+//				}
+//				file<<endl;
+//			}
+//			file.Close();
+//		}
+//	}
 }
 
 

@@ -74,7 +74,7 @@ public:
 	tObjType Type;
 
 	QGObject(QTreeWidget* parent,GConceptType* dict)
-		: QTreeWidgetItem(parent,QStringList()<<ToQString(dict->GetDescription())), Type(otConceptType)
+		: QTreeWidgetItem(parent,QStringList()<<ToQString(dict->GetDescription())<<ToQString(dict->GetCategory()->GetName())), Type(otConceptType)
 	{
 		Obj.Dict=dict;
 		//setIcon(0,KIconLoader::global()->loadIcon("dashboard-show",KIconLoader::Small));
@@ -153,6 +153,9 @@ void KViewDicts::create(void)
 {
 	QSessionProgressDlg Dlg(App,"Load Dictionaries",true);
 	QLoadDicts* Task(new QLoadDicts(App,Dicts));
+	Dicts->sortItems(0,Qt::AscendingOrder);
+	Dicts->resizeColumnToContents(0);
+	Dicts->resizeColumnToContents(1);
 	connect(Task,SIGNAL(finish()),this,SLOT(update()));
 	Dlg.Run(Task);
 }
@@ -230,7 +233,7 @@ void KViewDicts::newConcept(void)
 	if(Ok&&!text.isEmpty())
 	{
 		GConcept concept(App->getSession(),FromQString(text),CurDict);
-		GConcept* ptr=App->getSession()->Insert(&concept);
+		GConcept* ptr=App->getSession()->InsertConcept(&concept);
 		QString w(QString::number(ptr->GetId()));
 		while(w.length()<10)
 			w.prepend(' ');
@@ -248,7 +251,7 @@ void KViewDicts::delConcept(void)
 	if(KMessageBox::warningYesNo(this,"Do you want to delete the concept "+BuildConcept(concept)+"?","Warning")==KMessageBox::No)
 		return;
 	delete ptr;
-	App->getSession()->Delete(concept);
+	App->getSession()->DeleteConcept(concept);
 }
 
 
