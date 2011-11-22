@@ -143,7 +143,7 @@ void SubsLevel::ComputeProfilesConfidence(void)
 	double LevelWidth(100/NbLevels);
 
 	// Compute the confidence on a community basis
-	RCursor<GCommunity> Groups(Session->GetCommunities());
+	RCursor<GCommunity> Groups(Session->GetObjs(pCommunity));
 	for(Groups.Start();!Groups.End();Groups.Next())
 	{
 		// At least two profiles in the community is needed
@@ -167,7 +167,7 @@ void SubsLevel::ComputeProfilesConfidence(void)
 	}
 
 	// Compute the global score and level for the profiles (and save them eventually).
-	RCursor<GProfile> Profiles(Session->GetProfiles());
+	RCursor<GProfile> Profiles(Session->GetObjs(pProfile));
 	for(Profiles.Start();!Profiles.End();Profiles.Next())
 	{
 		ProfileScoring* ptr(Scores.GetPtr(Profiles()->GetId()));
@@ -179,7 +179,7 @@ void SubsLevel::ComputeProfilesConfidence(void)
 		else
 			Profiles()->SetConfidence(0,0);
 		if(Session->MustSaveResults())
-			Session->GetStorage()->SaveProfile(Profiles());
+			Session->GetStorage()->SaveObj(Profiles());
 	}
 }
 
@@ -188,7 +188,7 @@ void SubsLevel::ComputeProfilesConfidence(void)
 void SubsLevel::ComputeDocsConfidence(void)
 {
 	// Compute the confidence on a community basis
-	RCursor<GCommunity> Groups(Session->GetCommunities());
+	RCursor<GCommunity> Groups(Session->GetObjs(pCommunity));
 	for(Groups.Start();!Groups.End();Groups.Next())
 	{
 		// Get the list of relevant documents of the community
