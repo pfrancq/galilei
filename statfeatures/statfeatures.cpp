@@ -70,16 +70,15 @@ ConceptData::ConceptData(GConcept* concept)
 
 
 //------------------------------------------------------------------------------
-void ConceptData::Treat(GWeightInfo* info,const GWeightInfos& vector)
+void ConceptData::Treat(GConceptRef* ref)
 {
-	double maxabsweight(vector.GetMaxAbsWeight(info->GetType()));
-	double weight(info->GetWeight()/maxabsweight*Concept->GetIF(otDoc));
+	double weight(ref->GetWeight()*Concept->GetIF(otDoc));
 	if(weight>MaxWeight)
 		MaxWeight=weight;
 	AvgWeight+=weight;
-	AvgOccurs+=info->GetWeight();
-	if(info->GetWeight()>MaxOccurs)
-		MaxOccurs=info->GetWeight();
+	AvgOccurs+=ref->GetWeight();
+	if(ref->GetWeight()>MaxOccurs)
+		MaxOccurs=ref->GetWeight();
 }
 
 
@@ -108,7 +107,7 @@ void ConceptData::Add(RWorksheet& stats,GMeasure* measure)
 
 //------------------------------------------------------------------------------
 //
-//  class StatFeatures
+//  class StatData
 //
 //------------------------------------------------------------------------------
 
@@ -134,16 +133,20 @@ void StatFeatures::Run(GSlot*)
 	Data.Clear();
 
 	// Go through the documents.
-	R::RCursor<GDoc> Docs(Session->GetDocs());
+	R::RCursor<GDoc> Docs(Session->GetObjs(pDoc));
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
-		// Go through each concepts
-		const GWeightInfos& Infos(Docs()->GetVector());
-		RCursor<GWeightInfo> Words(Infos.GetInfos());
-		for(Words.Start();!Words.End();Words.Next())
+		// Go through each vectors
+		RCursor<GVector> Vector(Docs()->GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
 		{
-			ConceptData* Concept(Data.GetInsertPtrAt(Words()->GetConcept(),Words()->GetId()));
-			Concept->Treat(Words(),Infos);
+			// Go through each concepts
+			RCursor<GConceptRef> Words(Vector()->GetRefs());
+			for(Words.Start();!Words.End();Words.Next())
+			{
+				ConceptData* Concept(Data.GetInsertPtrAt(Words()->GetConcept(),Words()->GetId()));
+				Concept->Treat(Words());
+			}
 		}
 	}
 

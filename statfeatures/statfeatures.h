@@ -47,7 +47,7 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 /**
- * The ConcetData provides a representation for the data associated to a given
+ * The ConcetData provides a representation for the data associated to a
  * concept.
  * @author Pascal Francq
  */
@@ -78,11 +78,6 @@ class ConceptData
 	 */
 	double MaxOccurs;
 
-	/**
-	 * Average.
-	 */
-	double Ranking;
-
 public:
 
 	/**
@@ -99,11 +94,10 @@ public:
 	int Compare(const GConcept& concept) const {return(Concept->Compare(concept));}
 
 	/**
-	 * Treat an information entity.
-	 * @param info           Information to treat.
-	 * @param infos          Corresponding vector.
+	 * Treat an concept reference.
+	 * @param ref            Concept to treat.
 	 */
-	void Treat(GWeightInfo* info,const GWeightInfos& vector);
+	void Treat(GConceptRef* ref);
 
 	/**
 	 * Add the statistics related to the concept to a statistics matrix.
@@ -115,7 +109,7 @@ public:
 
 //-----------------------------------------------------------------------------
 /**
-* The StatFeatures class provides a method to compute different statistics.
+* The StatData class provides a method to compute different statistics.
 * @author Pascal Francq
 */
 class StatFeatures : public GTool
