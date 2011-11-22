@@ -228,7 +228,13 @@ public:
 	/**
 	* Load the concept types from the database.
 	*/
-	virtual void LoadConceptTypes(void);
+	virtual void LoadConceptCatsTypes(void);
+
+   /**
+	* Assign an identifier to a new concept category.
+	* @param cat             Concept category.
+	*/
+	virtual void AssignId(GConceptCat* cat);
 
 	/**
 	* Assign an identifier to a new concept type.
@@ -318,11 +324,18 @@ public:
 	*/
 	virtual void AssignId(GStatement* statement);
 
+  /**
+	* Method that load a class that is stored.
+	* @param classp          Pointer to the class that will be created.
+	* @param classid         Identifier of the class.
+	*/
+	virtual void LoadObj(GClass* &classp,size_t classid);
+
 	/**
 	* Method that load the classes from where they are stored. This method is
 	* called once by the session.
 	*/
-	void LoadClasses(void);
+	void LoadObjs(const GClass *obj);
 
 	/**
 	* Assign an identifier to a new class.
@@ -334,7 +347,7 @@ public:
 	 * Save a class.
 	 * @param theclass        Class.
 	 */
-	virtual void SaveClass(GClass* theclass);
+	virtual void SaveObj(GClass* theclass);
 
 	// @} Knowledge Methods
 
@@ -352,15 +365,23 @@ public:
 
 	/**
 	* Method that load a document that is stored.
-	* @param docid           Identifier of the document
+	* @param doc             Pointer to the document that will be created.
+	* @param docid           Identifier of the document.
 	*/
-	virtual GDoc* LoadDoc(size_t docid);
+	virtual void LoadObj(GDoc* &doc,size_t docid);
+
+   /**
+	* Method that load a document that is stored.
+	* @param doc             Pointer to the document to create.
+	* @param url             URL of the document
+	*/
+	virtual void LoadObj(GDoc* &doc,const R::RString& url);
 
 	/**
 	* Method that load the documents from where they are stored. This method
 	* must be overloaded.
 	*/
-	virtual void LoadDocs(void);
+	virtual void LoadObjs(const GDoc*);
 
 	/**
 	* Save a document where it is stored. This method is called after an
@@ -368,7 +389,7 @@ public:
 	* overloaded.
 	* @param doc             Document to save.
 	*/
-	virtual void SaveDoc(GDoc* doc);
+	virtual void SaveObj(GDoc* doc);
 
 	//@} Documents
 
@@ -381,25 +402,28 @@ public:
 	/**
 	* Load the profiles (and the profiles and the users).
 	*/
-	virtual void LoadUsers(void);
+	virtual void LoadObjs(const GUser*);
 
 	/**
 	* Method that load a user that is stored.
+	* @param user            Pointer to the user that will be created.
 	* @param userid          Identifier of the user.
 	*/
-	virtual GUser* LoadUser(size_t userid);
+	virtual void LoadObj(GUser* &user,size_t userid);
 
 	/**
 	* Method that load a user that is stored.
+	* @param user            Pointer to the user that will be created.
 	* @param name            Name of the user.
 	*/
-	virtual GUser* LoadUser(const R::RString name);
+	virtual void LoadObj(GUser* &user,const R::RString name);
 
 	/**
 	* Method that load a profile that is stored.
+	* @param profile         Pointer to the profile that will be created.
 	* @param profileid       Identifier of the profile.
 	*/
-	virtual GProfile* LoadProfile(size_t profileid);
+	virtual void LoadObj(GProfile* &profile,size_t profileid);
 
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
@@ -423,13 +447,13 @@ public:
 	* Save a user.
 	* @param user            User to save.
 	*/
-	virtual void SaveUser(GUser* user);
+	virtual void SaveObj(GUser* user);
 
 	/**
 	* Save a profile.
 	* @param prof            Profile to save.
 	*/
-	virtual void SaveProfile(GProfile* prof);
+	virtual void SaveObj(GProfile* prof);
 
 	/**
 	* Add an assessment for a given profile and document.
@@ -451,33 +475,35 @@ public:
 	// @{
 
 	/**
-	* Load the groups.
+	* Load the groups. This method is called once by the session.
+	* @param obj            Pseudo-parameter.
 	*/
-	virtual void LoadCommunities(void);
+	virtual void LoadObjs(const GCommunity* obj);
 
 	/**
 	* Method that load a group that is stored.
+	* @param community       Pointer to the community that will be created.
 	* @param groupid         Identifier of the group.
 	*/
-	virtual GCommunity* LoadCommunity(size_t groupid);
+	virtual void LoadObj(GCommunity* &community,size_t groupid);
 
 	/**
-	* A profile was updated and the corresponding groups must be updated.
-	* @param subid           Identifier of the profile.
+	* A profile was updated and the corresponding communities must be updated.
+	* @param profid          Identifier of the profile.
 	*/
-	virtual void UpdateCommunities(size_t subid);
+	virtual void UpdateCommunities(size_t profid);
 
 	/**
-	* Assign an identifier to a new group.
-	* @param grp            Group.
+	* Assign an identifier to a new community.
+	* @param grp            Community.
 	*/
 	virtual void AssignId(GCommunity* grp);
 
 	/**
 	* Save a community.
-	* @param grp            Group.
+	* @param grp            Community.
 	*/
-	virtual void SaveCommunity(GCommunity* grp);
+	virtual void SaveObj(GCommunity* grp);
 
 	/**
 	 * Save the relevant documents associated with a given community.
@@ -491,6 +517,7 @@ public:
 	 */
 	virtual void LoadDocs(GCommunityDocs& docs);
 
+
 	// @} Communities
 
 
@@ -500,15 +527,17 @@ public:
 	// @{
 
 	/**
-	* Load the topics.
+	* Load the topics. This method is called once by the session.
+	* @param topic           Topic to load.
 	*/
-	virtual void LoadTopics(void);
+	virtual void LoadObjs(const GTopic* topic);
 
 	/**
 	* Method that load a topic that is stored.
+	* @param topic           Pointer to the topic that will be created.
 	* @param topicid         Identifier of the topic.
 	*/
-	virtual GTopic* LoadTopic(size_t groupid);
+	virtual void LoadObj(GTopic* &topic,size_t topicid);
 
 	/**
 	* A document was updated and the corresponding topics must be updated.
@@ -518,15 +547,15 @@ public:
 
 	/**
 	* Assign an identifier to a new topic.
-	* @param topic            Topic.
+	* @param top            Topic.
 	*/
-	virtual void AssignId(GTopic* grp);
+	virtual void AssignId(GTopic* top);
 
 	/**
 	* Save a topic.
-	* @param grp            Group.
+	* @param grp            Topic.
 	*/
-	virtual void SaveTopic(GTopic* grp);
+	virtual void SaveObj(GTopic* grp);
 
 	// @} Topics
 
