@@ -47,7 +47,7 @@ ELSE(LIBWV2_LIB_PATH)
 	MESSAGE(FATAL_ERROR "libwv2 library cannot be found.")
 ENDIF(LIBWV2_LIB_PATH)
 
-SET(plugins email html msdoc pdf ps rtf txt)
+SET(plugins txt email html msdoc pdf ps rtf)
 FOREACH(plugin ${plugins})
     SET(SUB_PROJECT ${plugin})
     ADD_SUBDIRECTORY(${plugin})
