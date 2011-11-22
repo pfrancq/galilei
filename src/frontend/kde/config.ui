@@ -343,13 +343,13 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>KIntSpinBox</class>
-   <extends>QSpinBox</extends>
+   <class>KDoubleNumInput</class>
+   <extends>QWidget</extends>
    <header>knuminput.h</header>
   </customwidget>
   <customwidget>
-   <class>KDoubleNumInput</class>
-   <extends>QWidget</extends>
+   <class>KIntSpinBox</class>
+   <extends>QSpinBox</extends>
    <header>knuminput.h</header>
   </customwidget>
   <customwidget>
@@ -367,12 +367,12 @@
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>61</x>
-     <y>329</y>
+     <x>72</x>
+     <y>201</y>
     </hint>
     <hint type="destinationlabel">
-     <x>259</x>
-     <y>376</y>
+     <x>356</x>
+     <y>248</y>
     </hint>
    </hints>
   </connection>

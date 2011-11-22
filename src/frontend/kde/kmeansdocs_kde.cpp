@@ -87,7 +87,7 @@ bool Configure(GPlugIn* fac)
 	Ui.Incremental->setChecked(fac->FindParam<RParamValue>("Incremental")->GetBool());
 	Ui.Spherical->setChecked(fac->FindParam<RParamValue>("Spherical")->GetBool());
 	Ui.InternalRandom->setChecked(fac->FindParam<RParamValue>("InternalRandom")->GetBool());
-	Ui.Seed->setDisabled(fac->FindParam<RParamValue>("InternalRandom")->GetBool());
+	Ui.Seed->setEnabled(fac->FindParam<RParamValue>("InternalRandom")->GetBool());
 	Ui.Seed->setValue(fac->FindParam<RParamValue>("Seed")->GetInt());
 	Ui.Cout->setChecked(fac->FindParam<RParamValue>("Cout")->GetBool());
 	Ui.MeasureType->setCurrentIndex(Ui.MeasureType->findText(ToQString(fac->FindParam<RParamValue>("MeasureType")->Get())));
