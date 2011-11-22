@@ -78,21 +78,13 @@ void GStatProfDoc::WriteLine(void)
 //-----------------------------------------------------------------------------
 void GStatProfDoc::Run(void)
 {
-	R::RCursor<GProfile> Profs1,Profs2;
-	R::RCursor<GDoc> Docs;
-	size_t nbProfJugDoc,nbDocs;
-	size_t i,j;
-	double sum, tmp,nbSame,nbDiff;
-
 	//Initialization
-	nbProfJugDoc=nbDocs=0;
-	i=j=0;
-	sum=tmp=nbSame=nbDiff=0.0;
-	MeanNbProf=MeanSame=MeanDiff=0.0;
-
-	Docs = Session->GetDocs();
-	Profs1= Session->GetProfiles();
-	Profs2= Session->GetProfiles();
+	size_t nbProfJugDoc(0),nbDocs(0);
+	size_t i(0),j(0);
+	double sum(0.0);
+	R::RCursor<GDoc> Docs(Session->GetObjs(pDoc));
+	R::RCursor<GProfile> Profs1(Session->GetObjs(pProfile));
+	R::RCursor<GProfile> Profs2(Session->GetObjs(pProfile));
 
 	// Compute the average of number of profiles having juged the same doc.
 	for(Docs.Start();!Docs.End(); Docs.Next())

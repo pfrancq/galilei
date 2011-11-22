@@ -31,6 +31,7 @@
 //------------------------------------------------------------------------------
 // include files for ANSI C/C++
 #include <stdlib.h>
+#include <math.h>
 
 
 //------------------------------------------------------------------------------
@@ -79,17 +80,17 @@ public:
 
 	virtual R::RCursor<GDoc> GetE1Cursor(void)
 	{
-		return(Session->GetDocs());
+		return(Session->GetObjs(pDoc));
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GDoc>(sub->GetObjs(static_cast<GDoc*>(0))));
+		return(R::RCursor<GDoc>(sub->GetObjs(pDoc)));
 	}
 
 	virtual R::RCursor<GDoc> GetE2Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GDoc>(sub->GetObjs(static_cast<GDoc*>(0))));
+		return(R::RCursor<GDoc>(sub->GetObjs(pDoc)));
 	}
 };
 
@@ -107,17 +108,17 @@ public:
 
 	virtual R::RCursor<GProfile> GetE1Cursor(void)
 	{
-		return(Session->GetProfiles());
+		return(Session->GetObjs(pProfile));
 	}
 
 	virtual R::RCursor<GProfile> GetE1Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GProfile>(sub->GetObjs(static_cast<GProfile*>(0))));
+		return(R::RCursor<GProfile>(sub->GetObjs(pProfile)));
 	}
 
 	virtual R::RCursor<GProfile> GetE2Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GProfile>(sub->GetObjs(static_cast<GProfile*>(0))));
+		return(R::RCursor<GProfile>(sub->GetObjs(pProfile)));
 	}
 };
 
@@ -137,12 +138,12 @@ public:
 
 	virtual R::RCursor<GDoc> GetE1Cursor(void)
 	{
-		return(Session->GetDocs());
+		return(Session->GetObjs(pDoc));
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
-		return(sub->GetObjs(static_cast<GDoc*>(0)));
+		return(sub->GetObjs(pDoc));
 	}
 
 	virtual R::RCursor<GCommunity> GetE2Cursor(GSubject* sub)
@@ -166,17 +167,17 @@ public:
 
 	virtual R::RCursor<GDoc> GetE1Cursor(void)
 	{
-		return(Session->GetDocs());
+		return(Session->GetObjs(pDoc));
 	}
 
 	virtual R::RCursor<GDoc> GetE1Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GDoc>(sub->GetObjs(static_cast<GDoc*>(0))));
+		return(R::RCursor<GDoc>(sub->GetObjs(pDoc)));
 	}
 
 	virtual R::RCursor<GProfile> GetE2Cursor(GSubject* sub)
 	{
-		return(R::RCursor<GProfile>(sub->GetObjs(static_cast<GProfile*>(0))));
+		return(R::RCursor<GProfile>(sub->GetObjs(pProfile)));
 	}
 };
 
@@ -196,12 +197,12 @@ public:
 
 	virtual R::RCursor<GProfile> GetE1Cursor(void)
 	{
-		return(Session->GetProfiles());
+		return(Session->GetObjs(pProfile));
 	}
 
 	virtual R::RCursor<GProfile> GetE1Cursor(GSubject* sub)
 	{
-		return(sub->GetObjs(static_cast<GProfile*>(0)));
+		return(sub->GetObjs(pProfile));
 	}
 
 	virtual R::RCursor<GCommunity> GetE2Cursor(GSubject* sub)
@@ -265,8 +266,8 @@ void GStatsSims::DoExportDocsSims(void)
 	Export.Open(RIO::Create);
 
 	// Save the sims
-	R::RCursor<GDoc> Objs1(Session->GetDocs());
-	R::RCursor<GDoc> Objs2(Session->GetDocs());
+	R::RCursor<GDoc> Objs1(Session->GetObjs(pDoc));
+	R::RCursor<GDoc> Objs2(Session->GetObjs(pDoc));
 	for(Objs1.Start(),NewLine=false;!Objs1.End();Objs1.Next())
 	{
 		if(NewLine)
@@ -290,6 +291,62 @@ void GStatsSims::DoExportDocsSims(void)
 
 
 //------------------------------------------------------------------------------
+template<class cObj>
+	double GStatsSims::ComputeInclusion(GDescriptionObject<cObj>* obj1,GDescriptionObject<cObj>* obj2)
+{
+
+	// if one description is empty -> the inclusion is null
+	if((!obj1->IsDefined())||(!obj2->IsDefined()))
+		return(0.0);
+
+	// Parse the vector to found those associated wit the same concept
+	double Den(0.0), Num(0.0);
+   RCursor<GVector> Vec1(obj1->GetVectors());
+   RCursor<GVector> Vec2(obj2->GetVectors());
+	for(Vec1.Start(),Vec2.Start();!Vec1.End();Vec1.Next())
+	{
+		// Parse all the elements of Vec2 with an identifier lower than the current element of Vec1
+		while((!Vec2.End())&&(Vec2()->GetConcept()->GetId()<Vec1()->GetConcept()->GetId()))
+			Vec2.Next();
+
+		// Verify if both elements are identical
+		if((!Vec2.End())&&(Vec2()->GetConcept()->GetId()==Vec1()->GetConcept()->GetId()))
+		{
+			double LocalDen(0.0),LocalNum(0.0),Max(-numeric_limits<double>().max());
+			// Parse the concepts
+         RCursor<GConceptRef> Concept1(Vec1()->GetRefs());
+         RCursor<GConceptRef> Concept2(Vec2()->GetRefs());
+         for(Concept1.Start(),Concept2.Start();!Concept1.End();Concept1.Next())
+         {
+				// Maximum value and add denominator
+				if(fabs(Concept1()->GetWeight())>Max)
+					Max=fabs(Concept1()->GetWeight());
+				double tmp(Concept1()->GetWeight()*Concept1()->GetConcept()->GetIF(obj1->GetObjType()));
+				LocalDen+=tmp;
+
+				// Parse all the elements of Concept2 with an identifier lower than the current element of Concept1
+				while((!Concept2.End())&&(Concept2()->GetId()<Concept1()->GetId()))
+					Concept2.Next();
+
+				// Verify if both concepts are identical
+				if((!Concept2.End())&&(Concept2()->GetId()==Concept1()->GetId()))
+					LocalNum+=tmp;
+			}
+
+			if(Max==0.0)
+				continue;
+			Den+=LocalDen/Max;
+			Num+=LocalNum/Max;
+		}
+	}
+
+	if(Den==0.0)
+		return(0.0);
+	return(Num/Den);
+}
+
+
+//------------------------------------------------------------------------------
 void GStatsSims::DoExportDocsIncs(void)
 {
 	if(!ExportDocsIncs)
@@ -299,12 +356,12 @@ void GStatsSims::DoExportDocsIncs(void)
 	bool NewComma;
 
 	// Create the file
-	RTextFile Export(DocsIncs);
+	RTextFile Export(DocsIncs,"utf-8");
 	Export.Open(RIO::Create);
 
 	// Save the sims
-	R::RCursor<GDoc> Objs1(Session->GetDocs());
-	R::RCursor<GDoc> Objs2(Session->GetDocs());
+	R::RCursor<GDoc> Objs1(Session->GetObjs(pDoc));
+	R::RCursor<GDoc> Objs2(Session->GetObjs(pDoc));
 	for(Objs1.Start(),NewLine=false;!Objs1.End();Objs1.Next())
 	{
 		if(NewLine)
@@ -316,7 +373,7 @@ void GStatsSims::DoExportDocsIncs(void)
 			if(Objs1()==Objs2())
 				Export<<"1.000000E+00";
 			else
-				Export<<Objs1()->GetVector().Inclusion(Session,Objs2()->GetVector(),otDoc);
+				Export<<ComputeInclusion(Objs1(),Objs2());
 			NewComma=true;
 		}
 		NewLine=true;
@@ -395,11 +452,10 @@ void GStatsSims::Run(GSlot*)
 	}
 	if(SameDocProf)
 	{
-/*		size_t First(Idx);
+		size_t First(Idx);
 		AddColumns(Stats,Idx,"Profiles/Common Documents");
 		GStatProfDoc Stat(Session,File);
 		Stat.Run();
-		File<<endl<<"-----------------------------------------------------"<<endl<<endl;*/
 	}
 	if(GroupProf)
 	{
@@ -410,7 +466,7 @@ void GStatsSims::Run(GSlot*)
 	}
 
 	// Save the statistics
-	File.Open(Results,RIO::Create,"utf8");
+	File.Open(Results,RIO::Create,"utf-8");
 	Stats.Save(File);
 	File.Close();
 }

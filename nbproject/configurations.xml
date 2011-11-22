@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="79">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df name="statsims" root=".">
+      <df name="build">
+        <df name="CMakeFiles">
+          <df name="CMakeTmp">
+            <df name="CMakeFiles">
+              <df name="cmTryCompileExec.dir">
+              </df>
+            </df>
+          </df>
+          <df name="CompilerIdC">
+            <in>CMakeCCompilerId.c</in>
+          </df>
+          <df name="CompilerIdCXX">
+            <in>CMakeCXXCompilerId.cpp</in>
+          </df>
+          <df name="uninstall.dir">
+          </df>
+        </df>
+        <df name="CMakeTmp">
+          <in>check_qt_visibility.cpp</in>
+        </df>
+        <df name="lib">
+        </df>
+        <df name="statsims">
+          <df name="CMakeFiles">
+            <df name="statsims.dir">
+            </df>
+            <df name="statsimskde.dir">
+              <df name="frontend">
+                <df name="kde">
+                </df>
+              </df>
+            </df>
+            <df name="statsimskde_automoc.dir">
+            </df>
+          </df>
+          <in>statsimskde_automoc.cpp</in>
+          <in>ui_config.h</in>
+        </df>
+      </df>
+      <df name="statsims">
+        <df name="frontend">
+          <df name="kde">
+            <in>statsims_kde.cpp</in>
+          </df>
+        </df>
+        <in>gstatprofdoc.cpp</in>
+        <in>gstatprofdoc.h</in>
+        <in>gstatsimelements.h</in>
+        <in>statsims.cpp</in>
+        <in>statsims.h</in>
+      </df>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>CMakeLists.txt</itemPath>
+      <itemPath>build/Makefile</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>build/Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+      </toolsSet>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>build</buildCommandWorkingDir>
+          <buildCommand>make</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <ccTool>
+            <incDir>
+              <pElem>statsims/gstatprofdoc.cpp</pElem>
+              <pElem>../../r/rmath/matrix</pElem>
+              <pElem>statsims</pElem>
+              <pElem>../../galilei/galilei/plugins</pElem>
+              <pElem>../../r/rcore/prg</pElem>
+              <pElem>../../galilei/galilei/sessions</pElem>
+              <pElem>../../galilei/galilei/groups</pElem>
+              <pElem>build/statsims</pElem>
+              <pElem>../../r/rcore/app</pElem>
+              <pElem>../../galilei/galilei/docs</pElem>
+              <pElem>../../r/rcore/tools</pElem>
+              <pElem>../../r/rcore/xml</pElem>
+              <pElem>../../galilei/galilei/profiles</pElem>
+              <pElem>../../galilei/galilei/knowledge</pElem>
+              <pElem>/usr/include/curl</pElem>
+              <pElem>../../galilei/galilei/engines</pElem>
+              <pElem>../../r/rcore/io</pElem>
+              <pElem>../../r/roptimization/ga</pElem>
+            </incDir>
+            <preprocessorList>
+              <Elem>KDE4_CMAKE_TOPLEVEL_DIR_LENGTH=33</Elem>
+              <Elem>KDE_DEPRECATED_WARNINGS=1</Elem>
+              <Elem>PIC=1</Elem>
+              <Elem>QT_NO_CAST_TO_ASCII=1</Elem>
+              <Elem>QT_NO_EXCEPTIONS=1</Elem>
+              <Elem>QT_NO_STL=1</Elem>
+              <Elem>_BSD_SOURCE=1</Elem>
+              <Elem>_LARGEFILE64_SOURCE=1</Elem>
+              <Elem>_REENTRANT=1</Elem>
+              <Elem>_XOPEN_SOURCE=500</Elem>
+              <Elem>__PIC__=2</Elem>
+              <Elem>__REGISTER_PREFIX__=</Elem>
+              <Elem>__STRICT_ANSI__=1</Elem>
+              <Elem>__USER_LABEL_PREFIX__=</Elem>
+              <Elem>__pic__=2</Elem>
+              <Elem>statsims_EXPORTS=1</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <item path="build/CMakeFiles/CompilerIdC/CMakeCCompilerId.c"
+            ex="true"
+            tool="0"
+            flavor="0">
+      </item>
+      <item path="build/CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp"
+            ex="true"
+            tool="1"
+            flavor="0">
+      </item>
+      <item path="build/CMakeTmp/check_qt_visibility.cpp"
+            ex="true"
+            tool="1"
+            flavor="0">
+      </item>
+      <item path="statsims/frontend/kde/statsims_kde.cpp"
+            ex="true"
+            tool="1"
+            flavor="0">
+      </item>
+      <item path="statsims/gstatsimelements.h" ex="true" tool="3" flavor="0">
+      </item>
+      <item path="statsims/statsims.cpp" ex="true" tool="1" flavor="0">
+      </item>
+      <item path="statsims/statsims.h" ex="true" tool="3" flavor="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>

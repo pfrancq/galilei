@@ -164,39 +164,51 @@ template<class E1,class E2>
 template<class E1,class E2>
 	void GStatSimElements<E1,E2>::CompareVectors(size_t id1,size_t id2)
 {
-	GWeightInfosObj* Obj1(static_cast<GWeightInfosObj*>(Session->GetObject(ObjType1,id1)));
-	GWeightInfosObj* Obj2(static_cast<GWeightInfosObj*>(Session->GetObject(ObjType2,id2)));
+	GDescriptionObject<E1>* Obj1(dynamic_cast<GDescriptionObject<E1>*>(Session->GetObj(ObjType1,id1)));
+   if(!Obj1)
+       ThrowGException("No "+GetObjType(ObjType1,false,false)+" with identifier "+RString::Number(id1));
+	GDescriptionObject<E2>* Obj2(dynamic_cast<GDescriptionObject<E2>*>(Session->GetObj(ObjType2,id2)));
+   if(!Obj2)
+       ThrowGException("No "+GetObjType(ObjType2,false,false)+" with identifier "+RString::Number(id2));
 
-	// See the common words
-	RCursor<GWeightInfo> Vec1(Obj1->GetVector().GetInfos());
-	RCursor<GWeightInfo> Vec2(Obj2->GetVector().GetInfos());
-	Vec1.Start();
-	Vec2.Start();
-	while(!Vec1.End())
+	// See the common concepts : Parse the vector to found those associated wit the same concept
+   RCursor<GVector> Vec1(Obj1->GetVectors());
+   RCursor<GVector> Vec2(Obj2->GetVectors());
+	for(Vec1.Start(),Vec2.Start();!Vec1.End();Vec1.Next())
 	{
 		// Parse all the elements of Vec2 with an identifier lower than the current element of Vec1
-		while((!Vec2.End())&&(Vec2()->GetId()<Vec1()->GetId()))
+		while((!Vec2.End())&&(Vec2()->GetConcept()->GetId()<Vec1()->GetConcept()->GetId()))
 			Vec2.Next();
 
 		// Verify if both elements are identical
-		if((!Vec2.End())&&(Vec2()->GetId()==Vec1()->GetId()))
+		if((!Vec2.End())&&(Vec2()->GetConcept()->GetId()==Vec1()->GetConcept()->GetId()))
 		{
-			// Print the word
-			RString Value1(RString::Number(Vec1()->GetWeight()));
-			RString Value2(RString::Number(Vec2()->GetWeight()));
-			RString Idf;
-			if(SameObjects)
-			{
-				Idf=","+RString::Number(Vec1()->GetConcept()->GetIF(ObjType1));
-				//Idf=","+Idf;
-			}
+          // Parse the concepts
+          RCursor<GConceptRef> Concept1(Vec1()->GetRefs());
+          RCursor<GConceptRef> Concept2(Vec2()->GetRefs());
+          for(Concept1.Start(),Concept2.Start();!Concept1.End();Concept1.Next())
+          {
+               // Parse all the elements of Concept2 with an identifier lower than the current element of Concept1
+               while((!Concept2.End())&&(Concept2()->GetId()<Concept1()->GetId()))
+                  Concept2.Next();
 
-			cout<<Vec1()->GetConcept()->GetName()<<": "<<Value1+","+Value2+Idf<<endl;
-		}
-
-		// Next element of Vec1
-		Vec1.Next();
-	}
+              // Verify if both concepts are identical
+              if((!Concept2.End())&&(Concept2()->GetId()==Concept1()->GetId()))
+              {
+                 // Print the word
+                 RString Value1(RString::Number(Concept1()->GetWeight()));
+                 RString Value2(RString::Number(Concept2()->GetWeight()));
+                 RString Idf;
+                 if(SameObjects)
+                 {
+                    Idf=","+RString::Number(Concept1()->GetConcept()->GetIF(ObjType1));
+                    //Idf=","+Idf;
+                 }
+                 cout<<Concept1()->GetConcept()->GetName()<<": "<<Value1+","+Value2+Idf<<endl;
+              }
+          }
+      }
+   }
 }
 
 
@@ -456,7 +468,7 @@ template<class E1,class E2>
 				NbCols++;  // Increase the number of nearest neighbors
 
 				// Get the subject of Cur()
-				E2* Col(static_cast<E2*>(Session->GetObject(ObjType2,Cur()->Id)));
+				E2* Col(static_cast<E2*>(Session->GetObj(ObjType2,Cur()->Id)));
 				const GSubject* Subject2(Session->GetSubject(Col));
 
 				if(Sub()==Subject2)
