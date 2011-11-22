@@ -39,7 +39,7 @@
 #include <galilei.h>
 #include <gdocanalyze.h>
 #include <glang.h>
-#include <gxmlindex.h>
+#include <gconceptlist.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
@@ -569,7 +569,11 @@ public:
 	/**
 	* Configurations were applied from the factory.
 	*/
-	virtual void ApplyConfig(void);
+	virtual void ApplyConfig(void);	/**
+		* Configurations were applied from the factory.
+		*/
+		virtual void ApplyConfig(void);
+
 
 	/**
 	* Initialize the plug-in.

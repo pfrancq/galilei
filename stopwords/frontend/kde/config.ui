@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Config</class>
+ <widget class="QWidget" name="Config">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>334</width>
+    <height>58</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QCheckBox" name="StaticLang">
+     <property name="toolTip">
+      <string>Set if the languages are static.</string>
+     </property>
+     <property name="whatsThis">
+      <string>When the languages are static and when the content of a document is changed, the system supposes that the language of this document has not changed.&lt;br&gt;
+When the languages are not static, the language of a document is always determinewhen the document is analysed.</string>
+     </property>
+     <property name="text">
+      <string>Static Languages</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="_2">
+     <item>
+      <widget class="QLabel" name="textLabel1">
+       <property name="text">
+        <string>Stopwords Ratio to determine the language</string>
+       </property>
+       <property name="wordWrap">
+        <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="KDoubleNumInput" name="MinStopWords">
+       <property name="toolTip">
+        <string>Set the minimum stopword ratio.</string>
+       </property>
+       <property name="whatsThis">
+        <string>To determine the language of a document, the following method is used:
+&lt;ol&gt;
+&lt;li&gt; For each language defined in the system, the ratio of the number of different stopwords over the overall number of different words contained in the document is computed.&lt;/li&gt;
+&lt;li&gt; All the languages having this ratio lower than the &lt;b&gt;minimum stopword ratio&lt;/b&gt; are elminated.&lt;/li&gt;
+&lt;li&gt; The language with the highest number of occurences of stopwords is assigned to the document.&lt;li&gt;
+&lt;/ol&gt;</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+  </layout>
+  <zorder>StaticLang</zorder>
+  <zorder></zorder>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>KDoubleNumInput</class>
+   <extends>QWidget</extends>
+   <header>knuminput.h</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

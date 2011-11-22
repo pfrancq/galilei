@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>364</width>
-    <height>444</height>
+    <width>408</width>
+    <height>418</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -226,16 +226,6 @@ When the languages are not static, the language of a document is always determin
               </property>
              </spacer>
             </item>
-            <item>
-             <widget class="KIntNumInput" name="NbSameOccur">
-              <property name="toolTip">
-               <string>Maximum number of following occurences of same letter.</string>
-              </property>
-              <property name="whatsThis">
-               <string>Maximum number of following occurences of same letter.</string>
-              </property>
-             </widget>
-            </item>
            </layout>
           </item>
           <item>
@@ -273,43 +263,6 @@ When the languages are not static, the language of a document is always determin
               </property>
               <property name="sizeType">
                <enum>QSizePolicy::Expanding</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>0</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout">
-            <item>
-             <widget class="KDoubleNumInput" name="NormalRatio">
-              <property name="toolTip">
-               <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
-              </property>
-              <property name="whatsThis">
-               <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="KIntNumInput" name="MinOccurs">
-              <property name="toolTip">
-               <string>Minimal number of occurrences of the word in the document.</string>
-              </property>
-              <property name="whatsThis">
-               <string>Minimal number of occurrences of the word in the document.</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
               </property>
               <property name="sizeHint" stdset="0">
                <size>
@@ -876,22 +829,6 @@ When the languages are not static, the language of a document is always determin
     <hint type="destinationlabel">
      <x>182</x>
      <y>354</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Filtering</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MinOccurs</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>52</x>
-     <y>299</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>358</x>
-     <y>404</y>
     </hint>
    </hints>
   </connection>
