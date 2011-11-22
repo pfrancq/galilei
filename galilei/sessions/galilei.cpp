@@ -40,6 +40,22 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
+// Some null pointers
+//
+//------------------------------------------------------------------------------
+const GConcept* GALILEI::pConcept(0);
+const GConceptType* GALILEI::pConceptType(0);
+const GDoc* GALILEI::pDoc(0);
+const GClass* GALILEI::pClass(0);
+const GTopic* GALILEI::pTopic(0);
+const GUser* GALILEI::pUser(0);
+const GProfile* GALILEI::pProfile(0);
+const GCommunity* GALILEI::pCommunity(0);
+
+
+
+//------------------------------------------------------------------------------
+//
 // General functions
 //
 //------------------------------------------------------------------------------
@@ -116,6 +132,10 @@ RString GALILEI::GetObjType(tObjType type,bool upper,bool plural)
 			if(plural)
 				return(Str("concept types",upper));
 			return(Str("concept type",upper));
+		case otConceptCat:
+			if(plural)
+				return(Str("concept categories",upper));
+			return(Str("concept category",upper));
 		case otPredicate:
 			if(plural)
 				return(Str("predicates",upper));
@@ -270,7 +290,7 @@ RString GALILEI::GetProfileType(tProfileType type,bool upper,bool plural)
 }
 
 
-//------------------------------------------return(RString::Null);------------------------------------
+//------------------------------------------------------------------------------
 tProfileType GALILEI::GetProfileType(unsigned int type)
 {
 	switch(type)
@@ -278,6 +298,6 @@ tProfileType GALILEI::GetProfileType(unsigned int type)
 		case 0 : return(ptUnknown);
 		case 1 : return(ptInterest);
 		case 2 : return(ptExpertise);
-		default: ThrowGException("'"+RString::Number(type)+"' is not a valid profile type value");
+		default: return(ptUnknown);
 	}
 }

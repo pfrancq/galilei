@@ -265,8 +265,6 @@ public:
 	*/
 	void ReOrder(void);
 
-private:
-
 	/**
 	* Load a plug-in and its dialog boxes.
 	* @param dll             Name of the dynamic link library.
@@ -288,25 +286,25 @@ private:
 
 	/**
 	* Create the configuration parameters in the configuration structure.
-	* @param session         Pointer to the session.
+	* @param config          Configuration structure.
 	*/
-	void CreateConfig(GSession* session);
+	void CreateConfig(R::RConfig* config);
 
 	/**
 	* Read the configuration parameters from the configuration structure.
-	* @param session         Pointer to the session.
+	* @param config          Configuration structure.
 	*/
-	void ReadConfig(GSession* session);
+	void ReadConfig(R::RConfig* config);
 
 	/**
 	* Save the configuration parameters in the configuration structure.
-	* @param session         Pointer to the session.
+	* @param config          Configuration structure.
 	*/
-	void SaveConfig(GSession* session);
+	void SaveConfig(R::RConfig* config);
 
 	/**
 	* Initialize the different plug-ins.
-	* @param session         Pointer to the session.
+	* @param session         Session.
 	*/
 	void InitPlugIns(GSession* session);
 
@@ -316,8 +314,6 @@ private:
 	 * @param enable         Enabled ?
 	 */
 	void RegisterPlugIn(GPlugIn* plugin,bool enable);
-
-public:
 
 	/**
 	 * @return List of the plug-ins list if supported, or an empty cursor.

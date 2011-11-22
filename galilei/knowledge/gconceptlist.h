@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GXMLIndex.h
+	GConceptList.h
 
-	XML Index - Header.
+	Concept List - Header.
 
 	Copyright 2007-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2007-2008 by the Université Libre de Bruxelles (ULB).
@@ -29,8 +29,8 @@
 
 
 //-----------------------------------------------------------------------------
-#ifndef GXMLIndex_H
-#define GXMLIndex_H
+#ifndef GConceptList_H
+#define GConceptList_H
 
 
 //-----------------------------------------------------------------------------
@@ -45,80 +45,55 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GXMLIndex class provides a representation for a XML index. It is composed
-* of a XML structure element and a list of stems. Its "name" is defined by:
+* The GConceptList class provides a representation for a concept described as a
+* list of concept. Its "definition" is given by:
 * @code
-* xml_struct_id#stem_lang_code:stem1_id:stem2_id:stem3_id
+* stem1_id:stem2_id:stem3_id
 * @endcode
 * @author Pascal Francq
-* @short Concept
+* @short Concept List
 */
-class GXMLIndex : public GConcept
+class GConceptList : public GConcept
 {
 	/**
-	 * XML tag representing the first part of the index.
+	 * Concepts.
 	 */
-	GConcept* XMLTag;
-
-	/**
-	 * Dictionary of the stems.
-	 */
-	GConceptType* Lang;
-
-	/**
-	 * Universal terms representing the second part of the index.
-	 */
-	R::RContainer<GConcept,false,true> Universal;
-
-	/**
-	 * Stems representing the third part of the index.
-	 */
-	R::RContainer<GConcept,false,true> Stems;
+	R::RContainer<GConcept,false,true> Concepts;
 
 public:
 
 	/**
 	 * Copy constructor.
-	 * @param index          Original index.
+	 * @param list           Original list.
 	 */
-	GXMLIndex(const GXMLIndex* index);
+	GConceptList(const GConceptList* list);
 
 	/**
-	* Constructor of a XML Index. The full definition of the concept is deduced
-	* from its name.
+	* Constructor of a concept list. The full definition of the concept is
+	* deduced from its definition.
 	* @param session         Session.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
+	* @param def             Definition of the concept.
 	*/
-	GXMLIndex(GSession* session,const R::RString& name,GConceptType* type);
+	GConceptList(GSession* session,const R::RString& name,GConceptType* type,const R::RString& def);
 
 	/**
-	 * Constructor of a XML Index.
+	 * Constructor of a concept list.
 	 * @param session        Session.
 	 * @param type           Type of the concept.
-	 * @param lang           Language of the stems.
 	 */
-	GXMLIndex(GSession* session,GConceptType* type,GConceptType* lang);
+	GConceptList(GSession* session,GConceptType* type);
 
 	/**
-	 * Constructor of a XML Index.
-	 * @param session         Session.
+	 * Constructor of a concept list.
+	 * @param session        Session.
 	 * @param type           Type of the concept.
-	 * @param tag            Pointer to the tag.
-	 * @param lang           Language of the stems.
+	 * @param name           Name of the concept. If name is empty, the name is
+	 *                       associated to the definition.
+	 * @param concepts       Concepts.
 	 */
-	GXMLIndex(GSession* session,GConceptType* type,GConcept* tag,GConceptType* lang);
-
-	/**
-	 * Constructor of a XML Index.
-	 * @param session         Session.
-	 * @param type           Type of the concept.
-	 * @param tag            Pointer to the tag.
-	 * @param lang           Language of the stems.
-	 * @param uni            Universal stems.
-	 * @param stems          Language-based stems.
-	 */
-	GXMLIndex(GSession* session,GConceptType* type,GConcept* tag,GConceptType* lang,R::RContainer<GConcept,false,true>& uni,R::RContainer<GConcept,false,true>& stems);
+	GConceptList(GSession* session,GConceptType* type,const R::RString& name,R::RContainer<GConcept,false,true>& concepts);
 
 	/**
 	* Constructor of a XML Index. The full definition of the concept is deduced
@@ -127,6 +102,7 @@ public:
 	* @param id              Identifier.
 	* @param name            Name of the concept.
 	* @param type            Type of the concept.
+	* @param def             Definition of the concept.
 	* @param refdocs         Number of documents referenced.
 	* @param idxdocs         Identifier of the block the inverted file related
 	*                        to the documents.
@@ -143,7 +119,7 @@ public:
 	* @param idxclasses      Identifier of the block the inverted file related
 	*                        to the classes.
 	*/
-	GXMLIndex(GSession* session,size_t id, const R::RString& name, GConceptType* type,
+	GConceptList(GSession* session,size_t id, const R::RString& name, GConceptType* type,const R::RString& def,
 			size_t refdocs, size_t idxdocs,
 			size_t refprofiles, size_t idxprofiles,
 			size_t refcommunities, size_t idxcommunities,
@@ -154,15 +130,17 @@ protected:
 
 	/**
 	 * Build the full definition of the XML index based on its name.
+	 * @param def             Definition of the concept.
 	 */
-	void BuildDef(void);
-
-	/**
-	 * Build the name of the XML index based on its definition.
-	 */
-	void BuildName(void);
+	void BuildFromDef(const R::RString& def);
 
 public:
+
+	/**
+	 * Build the definition of the list by parsing all of its concepts.
+	 * @return the definition of the list.
+	 */
+	R::RString GetDef(void) const;
 
 	/**
 	 * Do a deep copy of the current concept.
@@ -176,74 +154,38 @@ public:
 	virtual void Clear(void);
 
 	/**
-	 * Set the concept types associated with the current index.
-	 * @param type           Type of the concept.
-	 * @param lang           Language of the stems.
+	 * Get the concepts.
 	 */
-	void SetConceptTypes(GConceptType* type,GConceptType* lang);
-
-	/**
-	 * Set the tag for the current index. The list of stems and universal
-	 * terms associated are emptied.
-	 * @param tag            Pointer to the tag.
-	 */
-	void SetTag(GConcept* tag);
-
-	/**
-	 * Get the tag implied in this index.
-	 */
-	GConcept* GetXMLTag(void) const {return(XMLTag);}
-
-	/**
-	 * Get the language associated with this stem.
-	 */
-	GConceptType* GetLangSpace(void) const {return(Lang);}
-
-	/**
-	 * Get the universal terms.
-	 */
-	R::RCursor<GConcept> GetUniversalTerms(void) const;
-
-	/**
-	 * Get the language-based stems.
-	 */
-	R::RCursor<GConcept> GetStems(void) const;
+	R::RCursor<GConcept> GetConcepts(void) const;
 
 	/**
 	 * Verify if the index is empty.
 	 */
-	bool IsEmpty(void) const;
+	inline bool IsEmpty(void) const {return(!Concepts.GetNb());}
 
 	/**
-	 * Get the number of words associated with the index.
+	 * Get the number of concepts in the list.
 	 */
-	size_t GetNbWords(void) const;
+	inline size_t GetNbConcepts(void) const {return(!Concepts.GetNb());}
 
 	/**
-	 * Add a universal term.
+	 * Add a concept.
 	 * @param concept        Concept to add.
 	 */
-	void AddUniversalTerm(GConcept* concept);
+	void AddConcept(GConcept* concept);
 
 	/**
-	 * Add a stem.
-	 * @param concept        Concept to add.
+	 * This method computes a similarity between two concept lists. A raw
+	 * comparison is done between the two lists of stems.
+	 * @param list           Second list.
+	 * @returns Number between 0 (nothing in common) and 1 (same list).
 	 */
-	void AddStem(GConcept* concept);
+	double GetSimilarity(const GConceptList* list) const;
 
 	/**
-	 * This method computes the similarity between two XML index. In practice,
-	 * both index must have the same tag. Than a raw comparison is done between
-	 * the two lists of stems.
-	 * @param index          Second XML index.
-	 * @returns Number between 0 (nothing in common) and 1 (same XML index).
-	 */
-	double GetSimilarity(const GXMLIndex* index) const;
-
-	/**
-	* Destruct the concept.
+	* Destruct the concept list.
 	*/
-	virtual ~GXMLIndex(void);
+	virtual ~GConceptList(void);
 };
 
 

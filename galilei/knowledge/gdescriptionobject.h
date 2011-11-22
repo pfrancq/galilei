@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GWeightInfosObj.h
+	GDescription.h
 
 	Object represented by a list of weighted information entities - Header.
 
@@ -28,13 +28,13 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GWeightInfosObjH
-#define GWeightInfosObjH
+#ifndef GDescriptionObjectH
+#define GDescriptionObjectH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gweightinfos.h>
+#include <gdescription.h>
 #include <gobject.h>
 
 
@@ -45,15 +45,14 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
- * The GWeightInfosObj provides a generic class for a object of a given type
- * with a specific identifier that is represented by a vector of information
- * entities.
- * @param cObj               Destination class.
- * @param type               Type of the object.
+ * The GDescriptionObject provides a generic class for a object of a given type
+ * with a specific identifier that is represented by a description.
+ * @tparam C                 Class of the object.
  * @author Pascal Francq
  * @short Generic Vector Object
  */
-class GWeightInfosObj : public GObject
+template<class C>
+	class GDescriptionObject : public GObject, public GDescription
 {
 protected:
 
@@ -63,11 +62,6 @@ protected:
 	tObjState State;
 
 private:
-
-	/**
-	 * Vector of the object. It is not allocated until GetVector() is called.
-	 */
-	GWeightInfos* Vector;
 
 	/**
 	 * Identifier of the block containing the description of the object. If
@@ -86,18 +80,37 @@ public:
 	 * @param name           Name of the object.
 	 * @param state          State of the object.
 	 */
-	GWeightInfosObj(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state);
+	GDescriptionObject(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state);
+
+protected:
 
 	/**
-	* @return True if the object is defined.
-	*/
-	bool IsDefined(void) const {return(BlockId);}
-
-	/**
-	 * @return Get the vector associated to the object. It is loaded if
-	 * necessary.
+	 * Load the vectors from the disk.
+	 * @return true if the vectors was loaded.
 	 */
-	const GWeightInfos& GetVector(void) const;
+	virtual bool LoadVectors(void);
+
+public:
+
+	/**
+	 * Defines if the objects have a description.
+	 * @return true.
+	 */
+	static inline bool HasDesc(void) {return(true);}
+
+	/**
+    * Verify if the object has a description in memory or on the disk.
+	 * @return true if the object is defined.
+    */
+	inline bool IsDefined(void) const
+   {
+       // Verify first in memory
+       if(GDescription::IsDefined())
+           return(true);
+
+       // If not in memory -> on the disk ?
+       return(BlockId);
+   }
 
 	/**
 	* @return the state of the object.
@@ -129,16 +142,15 @@ public:
 	 */
 	inline size_t GetBlockId(void) const {return(BlockId);}
 
-protected:
-
 	/**
-	* Copy the information to the object.
-	* @param infos           Source list of weighted information entities.
+	* Copy a list of object references to the object for a given concept.
+	* @param concept         Concept
+	* @param list             List of concept references.
 	*/
-	void CopyInfos(const R::RContainer<GWeightInfo,false,true>& infos);
+	void Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list);
 
 	/**
-	 * Clear the vector corresponding to the object. The corresponding file is
+	 * Clear the vectors corresponding to the object. The corresponding file is
 	 * not removed from the disk.
 	 * @param disk            Clear the reference to the corresponding block on
 	 *                        disk.
@@ -146,36 +158,18 @@ protected:
 	void Clear(bool disk=false);
 
 	/**
-	* Add the references for the information entities of the object type in a
-	* information entity space (language). This information is used for the
-	* inverse frequency factors.
-	* @param type            Type of the reference.
-	*/
-	inline void AddRefs(tObjType type) const {GetVector().AddRefs(Session,type);}
-
-	/**
-	* Delete the references for the information entities of the object type in a
-	* information entity space (language). This information is used for the
-	* inverse frequency factors.
-	* @param type            Type of the reference.
-	*/
-	inline void DelRefs(tObjType type) const {GetVector().DelRefs(Session,type);}
-
-	/**
-	 * Transfer the contain of a vector to the current object.
-	 * @param info           Original vector.
+	 * Save the description of the object.
 	 */
-	void Transfer(GWeightInfos& info);
-
-public:
+	void SaveDesc(void);
 
 	/**
 	 * Destruct the object.
 	 */
-	virtual ~GWeightInfosObj(void);
+	virtual ~GDescriptionObject(void);
 
+	friend class GObjects<C>;
 	friend class GSession;
-	friend class GSimulator;
+	friend class GDocAnalyze;
 };
 
 

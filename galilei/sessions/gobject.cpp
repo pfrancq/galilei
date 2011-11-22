@@ -53,7 +53,7 @@ GObject::GObject(GSession* session,size_t id,const RString& name,tObjType objtyp
 
 //------------------------------------------------------------------------------
 GObject::GObject(const GObject* obj)
-	: Session(obj->Session), Id(obj->Id), Name(obj->Name), ObjType(obj->ObjType)
+	: Session(obj->Session),Id(obj->Id), Name(obj->Name), ObjType(obj->ObjType)
 {
 }
 
@@ -61,9 +61,16 @@ GObject::GObject(const GObject* obj)
 //------------------------------------------------------------------------------
 void GObject::SetId(size_t id)
 {
-	if(id!=cNoRef)
+	if(Id!=cNoRef)
 		ThrowGException("Object '"+RString::Number(Id)+"' has already an identifier");
 	Id=id;
+}
+
+
+//------------------------------------------------------------------------------
+R::RString GObject::GetSearchStr(void) const
+{
+	return(Name);
 }
 
 

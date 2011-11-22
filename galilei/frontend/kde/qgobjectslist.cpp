@@ -46,6 +46,7 @@
 #include <gsugs.h>
 #include <gsuggestion.h>
 #include <gfdbk.h>
+#include <gclass.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -330,14 +331,14 @@ void QGObjectsList::Set(GSession* session,oType type)
 				LangItems.InsertPtr(new LangItem(Langs(),new QGObject(List,Langs())));
 
 			// Go through the documents and attach to the item of the corresponding language.
-			RCursor<GDoc> Docs(session->GetDocs());
+			RCursor<GDoc> Docs(session->GetObjs(pDoc));
 			for(Docs.Start();!Docs.End();Docs.Next())
 				new QGObject(LangItems.GetPtr(Docs()->GetLang())->Item,Docs());
 			break;
 		}
 		case Topics:
 		{
-			RCursor<GTopic> Grps(session->GetTopics());
+			RCursor<GTopic> Grps(session->GetObjs(pTopic));
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				QGObject* item(new QGObject(List,Grps()));
@@ -352,7 +353,7 @@ void QGObjectsList::Set(GSession* session,oType type)
 			GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Topics Evaluation"));
 			if(!Compare)
 				throw GException("'Topics Evaluation' is not a valid evaluation measure");
-			RCursor<GTopic> Grps(session->GetTopics());
+			RCursor<GTopic> Grps(session->GetObjs(pTopic));
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				double precision,recall;
@@ -384,7 +385,7 @@ void QGObjectsList::Set(GSession* session,oType type)
 		}
 		case Users:
 		{
-			RCursor<GUser> Cur(session->GetUsers());
+			RCursor<GUser> Cur(session->GetObjs(pUser));
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
 				QGObject* item(new QGObject(List,Cur()));
@@ -396,7 +397,7 @@ void QGObjectsList::Set(GSession* session,oType type)
 		}
 		case Communities:
 		{
-			RCursor<GCommunity> Grps(session->GetCommunities());
+			RCursor<GCommunity> Grps(session->GetObjs(pCommunity));
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				QGObject* item= new QGObject(List,Grps());
@@ -411,7 +412,7 @@ void QGObjectsList::Set(GSession* session,oType type)
 			GMeasure* Compare(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Communities Evaluation"));
 			if(!Compare)
 				throw GException("'Communities Evaluation' is not a valid evaluation measure");
-			RCursor<GCommunity> Grps(session->GetCommunities());
+			RCursor<GCommunity> Grps(session->GetObjs(pCommunity));
 			for(Grps.Start();!Grps.End();Grps.Next())
 			{
 				double recall,precision;
@@ -486,7 +487,7 @@ void QGObjectsList::Set(oType type,GDoc* doc)
 	RNumCursor<size_t> Cur(*Profiles);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		GProfile* prof(Session->GetProfile(Cur()));
+		GProfile* prof(Session->GetObj(pProfile,Cur()));
 		if(!prof)
 			continue;
 		GFdbk* fdbk=prof->GetFdbk(doc->GetId());
@@ -539,7 +540,7 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 			RCursor<GFdbk> Docs(profile->GetFdbks());
 			for(Docs.Start();!Docs.End();Docs.Next())
 			{
-				GDoc* doc(Session->GetDoc(Docs()->GetDocId()));
+				GDoc* doc(Session->GetObj(pDoc,Docs()->GetDocId()));
 				if(!doc)
 					continue;
 				QGObject *p(0);
@@ -571,7 +572,7 @@ void QGObjectsList::Set(oType type,GProfile* profile)
 			RCursor<GSuggestion> Cur(Sugs);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				GDoc* doc(Session->GetDoc(Cur()->GetDocId()));
+				GDoc* doc(Session->GetObj(pDoc,Cur()->GetDocId()));
 				if(!doc) continue;
 				new QGObject(List,doc,Cur()->GetInfo(),Cur()->GetRanking(),Cur()->GetProposed());
 			}
@@ -734,16 +735,16 @@ void QGObjectsList::FindNext(const QString& what,bool desc)
 				}
 				else if((desc)&&(item->HasDescription()))
 				{
-					GWeightInfos* Infos(0);
+//					GDescription* Infos(0);
 //					GDoc* sub=item->Obj.Doc;
 //					GConcept* find=sub->GetLang()->GetDict()->GetConcept(sub->GetLang()->GetStemming(str.latin1()));
 					GConcept* find(0);
 					RToDo("Find right concept");
-					if(find&&(Infos->IsIn(find)))
-					{
-						Cont=false;
-						List->setCurrentItem(item);
-					}
+//					if(find&&(Infos->IsIn(find)))
+//					{
+//						Cont=false;
+//						List->setCurrentItem(item);
+//					}
 				}
 			}
 			(++(*it));

@@ -66,7 +66,7 @@ GGroupProfiles::GGroupProfiles(GSession* session,GPlugInFactory* fac)
 void GGroupProfiles::Grouping(GSlot*)
 {
 	Profiles.Clear();
-	RCursor<GProfile> cur(Session->GetProfiles());
+	RCursor<GProfile> cur(Session->GetObjs(pProfile));
 	for(cur.Start();!cur.End();cur.Next())
 	{
 		#ifdef GROUP_PROFILES_NOT_DEFINED

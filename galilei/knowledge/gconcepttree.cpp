@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GDocStruct.cpp
+	GConceptTree.cpp
 
-	Structure of the document content - Implementation.
+	Concepts Tree - Implementation.
 
 	Copyright 2008-2011 by Pascal Francq (pascal@francq.info).
 
@@ -29,25 +29,12 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gdocstruct.h>
-#include <gweightinfo.h>
+#include <gconcepttree.h>
+#include <gconceptref.h>
 #include <gconcepttype.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
-
-
-//------------------------------------------------------------------------------
-//
-//  GVTDRec
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GVTDRec::GVTDRec(GConcept* concept,GVTDRec::RecType type,size_t pos,char depth)
-	: Concept(concept), Type(type), Pos(pos), Depth(depth)
-{
-}
 
 
 
@@ -61,9 +48,9 @@ GVTDRec::GVTDRec(GConcept* concept,GVTDRec::RecType type,size_t pos,char depth)
 class GLCEntry
 {
 public:
-	GVTDRec* Rec;
+	GConceptNode* Rec;
 	size_t Child;
-	GLCEntry(GVTDRec* rec,size_t child) : Rec(rec), Child(child) {}
+	GLCEntry(GConceptNode* rec,size_t child) : Rec(rec), Child(child) {}
 	int Compare(const GLCEntry&) const {return(-1);}
 };
 
@@ -76,7 +63,7 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-class GDocStruct::GLC : public RContainer<GLCEntry,true,false>
+class GConceptTree::GLC : public RContainer<GLCEntry,true,false>
 {
 public:
 
@@ -94,58 +81,58 @@ public:
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GDocStruct::GDocStruct(void)
-	: Recs(2000), LCs(10)
+GConceptTree::GConceptTree(void)
+	: Nodes(2000), LCs(10)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GDocStruct::GDocStruct(const GDocStruct& docstruct)
-	: Recs(docstruct.Recs.GetNb()), LCs(docstruct.LCs.GetNb())
+GConceptTree::GConceptTree(const GConceptTree& tree)
+	: Nodes(tree.Nodes.GetNb()), LCs(tree.LCs.GetNb())
 {
 	// Recreate correctly the structure
-	R::RCursor<GVTDRec> Recs(docstruct.Recs);
-	for(Recs.Start();!Recs.End();Recs.Next())
+	R::RCursor<GConceptNode> Node(tree.Nodes);
+	for(Node.Start();!Node.End();Node.Next())
 	{
-		size_t child=docstruct.GetFirstChild(Recs());
-		AddRecord(Recs()->GetConcept(),Recs()->GetType(),Recs()->GetPos(),Recs()->GetDepth(),child);
+		size_t child(tree.GetFirstChild(Node()));
+		AddNode(Node()->GetConcept(),Node()->GetPos(),Node()->GetDepth(),child);
 	}
 }
 
 
 //------------------------------------------------------------------------------
-GDocStruct::GDocStruct(size_t vtd,size_t lc)
-	: Recs(vtd), LCs(lc)
+GConceptTree::GConceptTree(size_t vtd,size_t lc)
+	: Nodes(vtd), LCs(lc)
 {
 }
 
 
 //------------------------------------------------------------------------------
-void GDocStruct::SetSizes(size_t vtd,size_t lc)
+void GConceptTree::SetSizes(size_t vtd,size_t lc)
 {
-	Recs.VerifyTab(vtd);
+	Nodes.VerifyTab(vtd);
 	LCs.VerifyTab(lc);
 }
 
 
 //------------------------------------------------------------------------------
-size_t GDocStruct::GetNbRecs(void) const
+size_t GConceptTree::GetNbNodes(void) const
 {
-	return(Recs.GetNb());
+	return(Nodes.GetNb());
 }
 
 
 
 //------------------------------------------------------------------------------
-size_t GDocStruct::GetNbLCs(void) const
+size_t GConceptTree::GetNbLCs(void) const
 {
 	return(LCs.GetNb());
 }
 
 
 //------------------------------------------------------------------------------
-size_t GDocStruct::GetNbLCEntries(size_t level) const
+size_t GConceptTree::GetNbLCEntries(size_t level) const
 {
 	if(level>=LCs.GetNb())
 		return(0);
@@ -154,34 +141,31 @@ size_t GDocStruct::GetNbLCEntries(size_t level) const
 
 
 //------------------------------------------------------------------------------
-void GDocStruct::SetNbLCEntries(size_t level,size_t size) const
+void GConceptTree::SetNbLCEntries(size_t level,size_t size) const
 {
 	if(!LCs.VerifyIndex(level))
-		const_cast<GDocStruct*>(this)->LCs.InsertPtrAt(new GLC(size),level);
+		const_cast<GConceptTree*>(this)->LCs.InsertPtrAt(new GLC(size),level);
 }
 
 
 //------------------------------------------------------------------------------
-GVTDRec* GDocStruct::AddRecord(GConcept* concept,GVTDRec::RecType type,size_t pos,char depth,size_t child,size_t nbrecs)
+GConceptNode* GConceptTree::AddNode(GConcept* concept,size_t pos,char depth,size_t child,size_t nbrecs)
 {
-	// Create the record and insert it
-	GVTDRec* ptr=new GVTDRec(concept,type,pos,depth);
-	Recs.InsertPtr(ptr);
+	// Create the node and insert it
+	GConceptNode* ptr=new GConceptNode(concept,pos,depth);
+	Nodes.InsertPtr(ptr);
 
 	// Insert it the location cache if necessary
-	if(type==GVTDRec::Tag)
+	GLC* Level;
+	if(LCs.VerifyIndex(depth))
+		Level=LCs[depth];
+	else
 	{
-		GLC* Level;
-		if(LCs.VerifyIndex(depth))
-			Level=LCs[depth];
-		else
-		{
-			if(!nbrecs)
-				nbrecs=200;
-			LCs.InsertPtrAt(Level=new GLC(nbrecs),depth);
-		}
-		Level->InsertPtr(new GLCEntry(ptr,child));
+		if(!nbrecs)
+			nbrecs=200;
+		LCs.InsertPtrAt(Level=new GLC(nbrecs),depth);
 	}
+	Level->InsertPtr(new GLCEntry(ptr,child));
 
 	// Return
 	return(ptr);
@@ -189,38 +173,50 @@ GVTDRec* GDocStruct::AddRecord(GConcept* concept,GVTDRec::RecType type,size_t po
 
 
 //------------------------------------------------------------------------------
-R::RCursor<GVTDRec> GDocStruct::GetRecs(void) const
+R::RCursor<GConceptNode> GConceptTree::GetNodes(void) const
 {
-	return(R::RCursor<GVTDRec>(Recs));
+	return(R::RCursor<GConceptNode>(Nodes));
 }
 
 
 //------------------------------------------------------------------------------
-size_t GDocStruct::GetFirstChild(GVTDRec* rec) const
+size_t GConceptTree::GetFirstChild(GConceptNode* rec) const
 {
-	if(rec->GetType()!=GVTDRec::Tag)
-		return(SIZE_MAX);
 	RCursor<GLCEntry> Cur(*LCs[rec->GetDepth()]);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		if(Cur()->Rec==rec)
 			return(Cur()->Child);
 	}
-	cerr<<"Big problem in GDocStruct::GetFirstChild"<<endl;
-	return(SIZE_MAX);
+	cerr<<"Big problem in GConceptTree::GetFirstChild"<<endl;
+	return(cNoRef);
 }
 
 
 
 //------------------------------------------------------------------------------
-void GDocStruct::Clear(void)
+void GConceptTree::Clear(void)
 {
-	Recs.Clear();
+	Nodes.Clear();
 	LCs.Clear();
 }
 
 
 //------------------------------------------------------------------------------
-GDocStruct::~GDocStruct(void)
+GConceptTree::~GConceptTree(void)
+{
+}
+
+
+
+//------------------------------------------------------------------------------
+//
+//  GConceptNode
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GConceptNode::GConceptNode(GConcept* concept,size_t pos,char depth)
+	: Concept(concept), Pos(pos), Depth(depth)
 {
 }

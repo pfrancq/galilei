@@ -34,11 +34,11 @@
 #include <gtopic.h>
 #include <glink.h>
 #include <glang.h>
-#include <gweightinfo.h>
 #include <gsession.h>
 #include <gprofile.h>
-#include <gdocstruct.h>
+#include <gconcepttree.h>
 #include <gfdbk.h>
+#include <gdescriptionobject.hh>
 using namespace GALILEI;
 using namespace R;
 
@@ -51,8 +51,18 @@ using namespace R;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+void GDoc::PrivateInit(void)
+{
+	SetState(osNew);
+	SaveDesc();
+	AddRefs(Session,otDoc);
+	SetId(cNoRef);
+}
+
+
+//------------------------------------------------------------------------------
 GDoc::GDoc(GSession* session,const RURI& url,const RString& name,GLang* lang,const RString& mime)
-	: GWeightInfosObj(session,cNoRef,0,otDoc,name,osNew), URL(url), Struct(0),
+	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name,osNew), URL(url), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
 	  Fdbks(0), LinkSet(5,2), GroupId(0), Attached(RDate::Null),
 	  StructId(0)
@@ -60,7 +70,7 @@ GDoc::GDoc(GSession* session,const RURI& url,const RString& name,GLang* lang,con
 	// Verify if the topic exists in memory
 	if(GroupId)
 	{
-		GTopic* grp=Session->GetTopic(GroupId,false,false);
+		GTopic* grp=Session->GetObj(pTopic,GroupId,false,false);
 		if(grp)
 			grp->InsertObj(this);
 	}
@@ -69,7 +79,7 @@ GDoc::GDoc(GSession* session,const RURI& url,const RString& name,GLang* lang,con
 
 //------------------------------------------------------------------------------
 GDoc::GDoc(GSession* session,const RURI& url,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
-	: GWeightInfosObj(session,id,blockid,otDoc,name,osNew), URL(url), Struct(0),
+	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name,osNew), URL(url), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), LinkSet(5,2), GroupId(grpid), Attached(a),
 	  StructId(structid)
@@ -78,11 +88,18 @@ GDoc::GDoc(GSession* session,const RURI& url,const RString& name,size_t id,size_
 	RAssert(GroupId!=cNoRef);
 	if(GroupId)
 	{
-		GTopic* grp=Session->GetTopic(GroupId,false,false);
+		GTopic* grp=Session->GetObj(pTopic,GroupId,false,false);
 		if(grp)
 			grp->InsertObj(this);
 	}
 	NotificationCenter.PostNotification<GDoc*>("DocChanged",this);
+}
+
+
+//------------------------------------------------------------------------------
+R::RString GDoc::GetSearchStr(void) const
+{
+	return(URL());
 }
 
 
@@ -127,7 +144,7 @@ int GDoc::Compare(const GLang* lang) const
 void GDoc::ClearInfos(bool disk)
 {
 	// Clear the information
-	GWeightInfosObj::Clear(disk);
+	GDescriptionObject<GDoc>::Clear(disk);
 
 	// Make sure that it will be re-computed
 	Computed=RDate::Null;
@@ -146,12 +163,12 @@ void GDoc::ClearStruct(bool disk)
 
 
 //------------------------------------------------------------------------------
-GDocStruct* GDoc::GetStruct(void) const
+GConceptTree* GDoc::GetStruct(void) const
 {
 	if((!Struct)&&StructId)
 	{
-		GetVector();
-		Session->LoadStruct(const_cast<GDoc*>(this)->Struct,StructId,Id); // Load the object
+		GetVectors();
+		Session->LoadStruct(pDoc,const_cast<GDoc*>(this)->Struct,StructId,Id); // Load the object
 	}
 	return(Struct);
 }
@@ -266,7 +283,7 @@ double GDoc::GetAgreementRatio(const GDoc* doc,size_t nbmin) const
 	for(fdbks.Start();!fdbks.End();fdbks.Next())
 	{
 		// Find the corresponding feedback (first find the profile)
-		GProfile* Profile(Session->GetProfile(fdbks(),true));
+		GProfile* Profile(Session->GetObj(pProfile,fdbks(),true));
 		if(!Profile)
 			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number(fdbks()));
 		GFdbk* f1(Profile->GetFdbk(Id));
@@ -301,7 +318,7 @@ double GDoc::GetDisagreementRatio(const GDoc* doc,size_t nbmin) const
 	for(fdbks.Start();!fdbks.End();fdbks.Next())
 	{
 		// Find the corresponding feedback (first find the profile)
-		GProfile* Profile(Session->GetProfile(fdbks(),true));
+		GProfile* Profile(Session->GetObj(pProfile,fdbks(),true));
 		if(!Profile)
 			throw GException("Document "+RString::Number(Id)+" was not assessed by profile "+RString::Number(fdbks()));
 		GFdbk* f1(Profile->GetFdbk(Id));
@@ -355,18 +372,21 @@ R::RCursor<GLink> GDoc::GetLinks(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref)
+void GDoc::Update(GLang* lang,R::RContainer<GVector,true,true>& vectors,GConceptTree& docstruct,bool ram,bool delref)
 {
-	// If document had a language -> remove its references
-	if(delref&&Lang&&(Id!=cNoRef))
+	// Look if the references must be modified
+	if(delref&&(!ram))
 	{
-		DelRefs(otDoc);
-		session->UpdateRefs(infos,otDoc,Id,false);
+		DelRefs(Session,otDoc);
+		if(Session->HasIndex(pDoc))
+			Session->UpdateIndex(pDoc,vectors,Id,false);
 	}
 
 	// Assign language and information
-	GWeightInfosObj::Clear();
+	GDescription::Clear();
 	Lang=lang;
+	Transfer(vectors);
+	vectors.Clear();
 
 	if(Id!=cNoRef)
 	{
@@ -377,28 +397,25 @@ void GDoc::Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& 
 		Computed.SetToday();
 
 		// Update the profiles that have assessed it.
-		session->UpdateProfiles(Id);
+		Session->UpdateProfiles(Id);
 	}
 	else
 		State=osUpToDate;
 
-	// If document has a language -> update its references
-	if(Lang&&(Id!=cNoRef))
+	// Look if the references must be modified
+	if(!ram)
 	{
-		infos.AddRefs(Session,otDoc);
-		session->UpdateRefs(infos,otDoc,Id,true);
+		AddRefs(Session,otDoc);
+		if(Session->HasIndex(pDoc))
+			Session->UpdateIndex(pDoc,vectors,Id,false);
 	}
 
 	if(ram)
 	{
-		Transfer(infos);
 		delete Struct;
 		Struct=0;
-		Struct=new GDocStruct(docstruct);
+		Struct=new GConceptTree(docstruct);
 	}
-
-	// Clear infos
-	infos.Clear();
 
 	// Emit an event that it was modified
 	if(Id!=cNoRef)

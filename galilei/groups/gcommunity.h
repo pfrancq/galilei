@@ -53,6 +53,11 @@ namespace GALILEI{
 */
 class GCommunity : public GGroup<GProfile,GCommunity,otCommunity>
 {
+	/**
+	 * Method used to correctly instantiate some template methods.
+	 */
+	void PrivateInit(void);
+
 public:
 
 	/**

@@ -41,7 +41,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gweightinfosobj.h>
+#include <gdescriptionobject.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,13 +52,15 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GDoc class provides a representation of a analyzed document. In fact, a
-* document is represented as a multi-space vector and its XML structure is also
-* indexed. Since the structure is memory consuming, it is not loaded by default
+* document is represented as a set of vectors and, eventually, its structure
+* (the positions and the depths of each concepts contained).
+*
+* @warning Since the structure is memory consuming, it is not loaded by default
 * and it is recommended it to release it when not used anymore.
 * @author Pascal Francq
 * @short Document.
 */
-class GDoc : public GWeightInfosObj
+class GDoc : public GDescriptionObject<GDoc>
 {
 protected:
 
@@ -70,7 +72,7 @@ protected:
 	/**
 	 * Structure of the document.
 	 */
-	GDocStruct* Struct;
+	GConceptTree* Struct;
 
 	/**
 	* Language of the description.
@@ -117,6 +119,11 @@ protected:
 	 */
 	size_t StructId;
 
+	/**
+	 * Method used to correctly instantiate some template methods.
+	 */
+	void PrivateInit(void);
+
 public:
 
 	/**
@@ -145,6 +152,19 @@ public:
 	* @param a               Date of the last attached.
 	*/
 	GDoc(GSession* session,const R::RURI& url,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
+
+	/**
+	 * Defines of the documents have a structure.
+	 * @return true.
+	 */
+	static inline bool HasStruct(void){return(true);}
+
+	/**
+	 * Get a string that represents the object when a search has to be
+	 * performed in the list. For the document, it is the URL.
+	 * @return the string used for searching an object.
+	 */
+	virtual R::RString GetSearchStr(void) const;
 
 	/**
 	* Compare two documents by comparing their identifier.
@@ -195,7 +215,7 @@ public:
 	/**
 	 * Get the structure of the document.
 	 */
-	GDocStruct* GetStruct(void) const;
+	GConceptTree* GetStruct(void) const;
 
 	/**
 	 * Release the structure of a document from the memory.
@@ -346,15 +366,14 @@ private:
 
 	/**
 	* Assign a new description to the document.
-	* @param session         Session.
 	* @param lang            Pointer to the language.
-	* @param infos           Pointer to the information.
+	* @param vectors         Vectors.
 	* @param ram             Must the information be maintained is RAM.
 	* @param delref          Delete the references (must be set to true if the
 	*                        document has already a description).
-	* \warning The container infos is cleared by this method.
+	* \warning The container vectors is cleared by this method.
 	*/
-	void Update(GSession* session,GLang* lang,GWeightInfos& infos,GDocStruct& docstruct,bool ram,bool delref);
+	void Update(GLang* lang,R::RContainer<GVector,true,true>& vectors,GConceptTree& docstruct,bool ram,bool delref);
 
 public:
 
@@ -365,6 +384,8 @@ public:
 
 	friend class GSession;
 	friend class GIndexer;
+	friend class GDocAnalyze;
+   friend class GObjects<GDoc>;
 };
 
 

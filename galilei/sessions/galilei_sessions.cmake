@@ -1,7 +1,13 @@
 SET(galilei_sessions_INST_INCLUDES
     galilei.h
-    gobject.h 
+	gobject.h
+	gobjects.h 
+	gobjects.hh
+	gobjectslist.h 
+	gobjectslist.hh	
     gsession.h
+    gsession.hh
+    gbasicsession.h
     ggalileiprg.h    
     gstorage.h
     gslot.h
@@ -13,8 +19,7 @@ SET(galilei_sessions_INST_INCLUDES
 
 SET(galilei_sessions_TARGET_SOURCES
 	galilei.cpp
-	gobject.cpp
-       	
+	gobject.cpp       	
     gslot.cpp
     gslotlog.cpp
     gstorage.cpp          

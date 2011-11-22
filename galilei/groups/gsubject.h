@@ -149,9 +149,9 @@ class GSubject : protected R::RNode<GSubjects,GSubject,true>
 	GTopic* Topic;
 
 	/**
-	 * Vector representing the description of the subject.
+	 * Vectors representing the description of the subject.
 	 */
-	GWeightInfos* Vector;
+	R::RContainer<GVector,true,true>* Vectors;
 
 public:
 
@@ -214,13 +214,32 @@ public:
 	*/
 	int Compare(const R::RString& name) const;
 
+private:
+
 	/**
-	 * Get the vector of weighted information entities representing the
-	 * subject. In practice, it is computed as name of the subject and its
-	 * parents, or as the gravitation center of the documents (for a leaf node)
-	 * or of the children (for a non-leaf node).
+	 * Create the vectors. In practice, it is computed as name of
+	 * the subject and its parents, or as the gravitation center of the
+	 * documents (for a leaf node) or of the children (for a non-leaf node).
 	 */
-	GWeightInfos& GetVector(void) const;
+	void CreateVectors(void);
+
+public:
+
+	/**
+	 * Get the vectors describing the subject. If necessary, the descriptions
+	 * are recomputed.
+	 * @return a cursor of GVector.
+	 */
+	R::RCursor<GVector> GetVectors(void) const;
+
+	/**
+	 * Get the vector describing the subject corresponding to a concept. If
+	 * necessary, the descriptions are recomputed.
+	 * @param concept        Concept.
+	 * @return a pointer to a GVector. The pointer is null if no vector exists
+	 * for that concept.
+	 */
+	const GVector* GetVector(GConcept* concept) const;
 
 	/**
 	* Verify if a profile is part of the subject.
@@ -342,10 +361,10 @@ public:
 	* @code
 	* GSubject* sub;
 	* ...
-	* R::RCursor<GProfile> Profiles(sub->GetObjs(static_cast<GProfile*>(0));
+	* R::RCursor<GProfile> Profiles(sub->GetObjs(pProfile);
 	* @endcode
 	*/
-	R::RCursor<GProfile> GetObjs(GProfile*) const;
+	R::RCursor<GProfile> GetObjs(const GProfile*) const;
 
 	/**
 	* Get a cursor over the documents contained in the subject.
@@ -355,10 +374,10 @@ public:
 	* @code
 	* GSubject* sub;
 	* ...
-	* R::RCursor<GDoc> Docs(sub->GetObjs(static_cast<GDoc*>(0));
+	* R::RCursor<GDoc> Docs(sub->GetObjs(pDoc);
 	* @endcode
 	*/
-	R::RCursor<GDoc> GetObjs(GDoc*) const;
+	R::RCursor<GDoc> GetObjs(const GDoc*) const;
 
 	/**
 	* Get the number of objects of a given type associated to this subject.
@@ -411,8 +430,11 @@ public:
 	GLang* GuessLang(bool lookparent=true) const;
 
 	/**
-	 * Get the cost of an Up operation of the current node. By default, the
-	 * cost equals to 1.
+	 * Get the cost of an Up operation of the current node. The method adds a
+	 * cost computed for each vector. The cost of one vector is :
+	 * -# The number of concept references if the class has no parent.
+	 * -# The difference of the number of concept references between the parent
+	 *    and the current class.
 	 *
 	 * In their paper <em>TreeRank: A Similarity Measure for Nearest Neighbor
 	 * Searching in Phylogenetic Databases</em>, Wang, Shan, Shasha and Piel
@@ -479,14 +501,12 @@ public:
 
 	/**
 	* Construct a tree of subjects.
-	* @param max            Initial size of the array of top nodes.
+	* @param max            Initial size of subjects.
 	*/
 	GSubjects(size_t max);
 
 	friend class GSubject;
 	friend class GSession;
-	friend class R::RTree<GSession,GSubject,true>;
-	friend class R::RNode<GSession,GSubject,true>;
 };
 
 

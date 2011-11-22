@@ -37,6 +37,7 @@
 #include <gtopic.h>
 #include <gdoc.h>
 #include <glang.h>
+#include <gdescriptionobject.hh>
 using namespace GALILEI;
 using namespace R;
 
@@ -47,6 +48,16 @@ using namespace R;
 //  GTopic
 //
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GTopic::PrivateInit(void)
+{
+	SetState(osNew);
+	SaveDesc();
+	AddRefs(Session,otTopic);
+	SetId(cNoRef);
+}
+
 
 //------------------------------------------------------------------------------
 GTopic::GTopic(GSession* session,const RString& name)

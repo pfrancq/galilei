@@ -1273,7 +1273,7 @@ SKIP_FUNCTION_MACROS   = YES
 # If a tag file is not located in the directory in which doxygen
 # is run, you must also specify the path to the tagfile here.
 
-TAGFILES               = /home/public/api/r/r.tags \
+TAGFILES               = /home/public/api/rcore/rcore.tags \
                          /home/public/api/rmath/rmath.tags \
                          /home/public/api/roptimization/roptimization.tags
 

@@ -89,6 +89,17 @@ public:
 	 * @param obj            Original object.
 	 */
 	GObject(const GObject* obj);
+	/**
+	 * Defines if the objects have a description.
+	 * @return false.
+	 */
+	static inline bool HasDesc(void) {return(false);}
+
+	/**
+	 * Defines of the objects have a structure.
+	 * @return false.
+	 */
+	static inline bool HasStruct(void){return(false);}
 
 	/**
 	* @return the session of the object.
@@ -113,6 +124,13 @@ public:
 	inline R::RString GetName(void) const {return(Name);}
 
 	/**
+	 * Get a string that represents the object when a search has to be
+	 * performed in the list. By default, it is its name.
+	 * @return the string used for searching an object.
+	 */
+	virtual R::RString GetSearchStr(void) const;
+
+	/**
 	* @return the type of the object.
 	*/
 	inline tObjType GetObjType(void) const {return(ObjType);}
@@ -130,6 +148,9 @@ public:
 	 * Destruct the object.
 	 */
 	virtual ~GObject(void);
+
+	friend class GObjects<GTopic>;
+	friend class GObjects<GCommunity>;
 };
 
 

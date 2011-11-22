@@ -34,13 +34,13 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rtree.h>
+#include <rnode.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gweightinfosobj.h>
+#include <gdescriptionobject.h>
 
 
 //------------------------------------------------------------------------------
@@ -55,8 +55,13 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Concepts Class.
 */
-class GClass : public R::RNode<GClasses,GClass,true>, public GWeightInfosObj
+class GClass : public R::RNode<GClasses,GClass,false>, public GDescriptionObject<GClass>
 {
+	/**
+	 * Method used to correctly instantiate some template methods.
+	 */
+	void PrivateInit(void);
+
 public:
 
 	/**
@@ -104,21 +109,19 @@ public:
 	*/
 	int Compare(const size_t id) const;
 
-private:
-
 	/**
-	* Assign a new description to the class.
-	* @param session         Session.
-	* @param infos           Pointer to the information.
-	* \warning The container infos is cleared by this method.
+	* Assign new vectors to the class.
+	* @param vectors         Vectors.
+	* \warning The vectors are cleared by this method.
 	*/
-	void Update(GSession* session,GWeightInfos& infos);
-
-public:
+	void Update(R::RContainer<GVector,true,true>& vectors);
 
 	/**
-	 * Get the cost of an Up operation of the current node. By default, the
-	 * cost equals to 1.
+	 * Get the cost of an Up operation of the current node. The method adds a
+	 * cost computed for each vector. The cost of one vector is :
+	 * -# The number of concept references if the class has no parent.
+	 * -# The difference of the number of concept references between the parent
+	 *    and the current class.
 	 *
 	 * In their paper <em>TreeRank: A Similarity Measure for Nearest Neighbor
 	 * Searching in Phylogenetic Databases</em>, Wang, Shan, Shasha and Piel
@@ -135,25 +138,6 @@ public:
 
 	friend class GOntlogy;
 	friend class GSession;
-};
-
-
-//------------------------------------------------------------------------------
-/**
- * The GClasses provides just a tree of GClass.
- * @author Pascal Francq.
- * @short Classes
- */
-class GClasses : public R::RTree<GClasses,GClass,true>
-{
-public:
-
-	/**
-	* Construct a tree of classes.
-	* @param max            Initial size of the array of top nodes.
-	* @param inc            Increment size of the array.
-	*/
-	GClasses(size_t max,size_t inc);
 };
 
 

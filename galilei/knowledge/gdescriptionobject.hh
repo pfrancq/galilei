@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GWeightInfosObj.hh
+	GDescription.hh
 
 	Object represented by a list of weighted information entities - Implementation.
 
@@ -27,25 +27,21 @@
 
 
 
-//-----------------------------------------------------------------------------
-// include files for GALILEI
-#include <gweightinfosobj.h>
-#include <gsession.h>
+//------------------------------------------------------------------------------
 using namespace GALILEI;
-using namespace R;
-using namespace std;
 
 
 
 //------------------------------------------------------------------------------
 //
-//  GWeightInfosObj
+//  GDescriptionObject
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfosObj::GWeightInfosObj(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state)
-	: GObject(session,id,name,objtype), State(state), Vector(0), BlockId(blockid)
+template<class C>
+	GDescriptionObject<C>::GDescriptionObject(GSession* session,size_t id,size_t blockid,tObjType objtype,const R::RString& name,tObjState state)
+	: GObject(session,id,name,objtype), GDescription(), State(state), BlockId(blockid)
 {
 	if(Id!=R::cNoRef)
 		Emit(GEvent::eObjNew);
@@ -53,36 +49,35 @@ GWeightInfosObj::GWeightInfosObj(GSession* session,size_t id,size_t blockid,tObj
 
 
 //------------------------------------------------------------------------------
-const GWeightInfos& GWeightInfosObj::GetVector(void) const
+template<class C>
+	bool GDescriptionObject<C>::LoadVectors(void)
 {
-	if(!Vector)
+	if(BlockId)
 	{
-		if(BlockId)
-		{
-			const_cast<GWeightInfosObj*>(this)->State=osOnDemand;      // The object is on-demand of loading
-			Session->LoadInfos(const_cast<GWeightInfosObj*>(this)->Vector,ObjType,BlockId,Id); // Load the object
-			const_cast<GWeightInfosObj*>(this)->State=osUpToDate;         // It is updated !
-		}
-		else
-			const_cast<GWeightInfosObj*>(this)->Vector=new GWeightInfos(1);
+		static_cast<C*>(this)->State=osOnDemand;                        // The object is on-demand of loading
+		Session->LoadDesc(static_cast<C*>(this),static_cast<C*>(this)->Vectors,BlockId,Id);  // Load the object
+		static_cast<C*>(this)->State=osUpToDate;                        // It is updated !
+		return(true);
 	}
-	return(*Vector);
+	return(false);
 }
 
 
 //------------------------------------------------------------------------------
-void GWeightInfosObj::SetState(tObjState state)
+template<class C>
+	void GDescriptionObject<C>::SetState(tObjState state)
 {
-	if((!Vector)&&(state==osDelete))
+	if((!Vectors)&&(state==osDelete))
 	{
-		GetVector();
+		GetVectors();
 	}
 	State=state;
 }
 
 
 //------------------------------------------------------------------------------
-void GWeightInfosObj::SetId(size_t id)
+template<class C>
+	void GDescriptionObject<C>::SetId(size_t id)
 {
 	if(id==R::cNoRef)
 		ThrowGException("Cannot assign cNoRef to a "+GALILEI::GetObjType(ObjType,false,false));
@@ -91,55 +86,48 @@ void GWeightInfosObj::SetId(size_t id)
 }
 
 
+
 //------------------------------------------------------------------------------
-void GWeightInfosObj::CopyInfos(const R::RContainer<GWeightInfo,false,true>& infos)
+template<class C>
+	void GDescriptionObject<C>::Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list)
 {
 	State=osUpToDate;
-	if(infos.GetNb())
-	{
-		if(!Vector)
-			Vector=new GWeightInfos(infos.GetNb());
-		Vector->CopyInfos(infos);
-	}
-	else
-	{
-		if(Vector)
-			Vector->Clear();
-	}
+	GDescription::Copy(concept,list);
 }
 
 
 //------------------------------------------------------------------------------
-void GWeightInfosObj::Clear(bool disk)
+template<class C>
+	void GDescriptionObject<C>::Clear(bool disk)
 {
-	if(Vector)
-		Vector->Clear();
+	GDescription::Clear();
 	if(disk)
 		BlockId=0;
 }
 
 
 //------------------------------------------------------------------------------
-void GWeightInfosObj::Transfer(GWeightInfos& info)
+template<class C>
+	void GDescriptionObject<C>::SaveDesc(void)
 {
-	GetVector();
-	Vector->Transfer(info);
+	if(!Vectors)
+		return;
+	Session->SaveDesc(static_cast<C*>(0),*Vectors,BlockId,Id);
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfosObj::~GWeightInfosObj(void)
+template<class C>
+	GDescriptionObject<C>::~GDescriptionObject(void)
 {
 	Emit(GEvent::eObjDelete);
 
 	try
 	{
 		if(State==osDelete)  // The object has modified the references count but was not saved
-			GetVector().DelRefs(Session,ObjType);
+			DelRefs(Session,ObjType);
 	}
 	catch(...)
 	{
 	}
-	delete Vector;
 }
-

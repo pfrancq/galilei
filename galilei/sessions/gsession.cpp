@@ -51,8 +51,7 @@ using namespace R;
 #include <gstorage.h>
 #include <gslot.h>
 #include <gdoc.h>
-#include <gdocstruct.h>
-#include <gdocanalyze.h>
+#include <gconcepttree.h>
 #include <glinkcalc.h>
 #include <glink.h>
 #include <gengine.h>
@@ -69,7 +68,6 @@ using namespace R;
 #include <gtopiccalc.h>
 #include <gsubject.h>
 #include <gfilter.h>
-#include <gweightinfo.h>
 #include <ggalileiapp.h>
 #include <gsimulator.h>
 #include <gcomputesugs.h>
@@ -77,6 +75,7 @@ using namespace R;
 #include <gtool.h>
 #include <gpredicate.h>
 #include <gstatement.h>
+#include <gclass.h>
 using namespace GALILEI;
 using namespace std;
 
@@ -144,94 +143,64 @@ const size_t SizeT2=2*sizeof(size_t);
 
 //------------------------------------------------------------------------------
 //
-// class GSession::Type
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-class GSession::IndexType
-{
-public:
-	tObjType Type;
-	RString Name;
-	bool IndexInc;
-	RIndexFile* Desc;
-	RIndexFile* Index;
-
-	IndexType(tObjType type,const RString& name) : Type(type), Name(name), IndexInc(false), Desc(0), Index(0) {}
-	int Compare(const IndexType& type) const {return(Type-type.Type);}
-	int Compare(tObjType type) const {return(Type-type);}
-};
-
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GSession::GDocRefURL
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-class GSession::GDocRefURL
-{
-public:
-	GDoc* Doc;
-
-	GDocRefURL(GDoc* d) : Doc(d) {}
-	int Compare(const GDocRefURL& doc) const {return(Doc->GetURL().Compare(doc.Doc->GetURL()));}
-	int Compare(const RString& url) const {return(Doc->GetURL().Compare(url));}
-};
-
-
-
-//------------------------------------------------------------------------------
-//
 // GSession
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
 GSession::GSession(size_t id,const RString& name)
-	: RConfig("lib/galilei/sessions",name), Id(id), Name(name), Storage(0),
-	  ValidConfigFile(false), SaveResults(true), Log("/var/log/galilei/"+name+".log"), Simulator(0),
+	: RConfig("lib/galilei/sessions",name),
+	  GObjects<GDoc>(20000,"Documents",otDoc),
+	  GObjects<GTopic>(200,"Topics",otTopic),
+	  GObjects<GUser>(1000,"Users",otUser),
+	  GObjects<GProfile>(5000,"Profiles",otProfile),
+	  GObjects<GCommunity>(100,"Communities",otCommunity),
+	  GClasses(300,100),
+	  Id(id), Name(name),
+	  ValidConfigFile(false), Log("/var/log/galilei/"+name+".log"),
 	  CurrentRandom(1), Random(RRandom::Good,1),
-	  ConceptTypes(20), ConceptTypesByIds(20), Concepts(50000,10000),
-	  Predicates(30), PredicatesByIds(30), Statements(5000,5000),
-	  StructDoc(0), tmpRefs(5000), Types(5), TypesNames(5),
-	  Docs(20000), DocsLoaded(false), DocsRefUrl(20000),
-	  Users(1000), UsersLoaded(false), Profiles(5000),
-	  Communities(100), CommunitiesLoaded(false),
-	  Topics(200), TopicsLoaded(false), Classes(300,100), ClassesLoaded(false),
-	  MaxDocs(0), MaxProfiles(0), MaxGroups(0),
-	  Subjects(200), ExternBreak(false)
+	  ExternBreak(false),
+	  Simulator(0), Subjects(200), DocAnalyze(this)
 
 {
 	// Log files
 	Log.Open(RIO::Append);
-
-	// Indexer
-	Types.InsertPtr(new IndexType(otDoc,"Documents"));
-	TypesNames.InsertPtr(new RString("Documents"));
-	Types.InsertPtr(new IndexType(otProfile,"Profiles"));
-	TypesNames.InsertPtr(new RString("Profiles"));
-	Types.InsertPtr(new IndexType(otCommunity,"Communities"));
-	TypesNames.InsertPtr(new RString("Communities"));
-	Types.InsertPtr(new IndexType(otTopic,"Topics"));
-	TypesNames.InsertPtr(new RString("Topics"));
-	Types.InsertPtr(new IndexType(otClass,"Classes"));
-	TypesNames.InsertPtr(new RString("Classes"));
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::AnalyzeDoc(GDoc* doc,bool ram,GDocAnalyze* method,GSlot* rec)
+bool GSession::MustBreak(void)
 {
-	// Verify that the document analysis method is selected
-	if(!method)
-		method=GALILEIApp->GetCurrentPlugIn<GDocAnalyze>("DocAnalyze");
+	return(ExternBreak);
+}
 
-	if(!doc->MustCompute()) return;
+
+
+//------------------------------------------------------------------------------
+void GSession::ResetBreak(void)
+{
+	ExternBreak=false;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetBreak(void)
+{
+	ExternBreak=true;
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::SetCurrentRandom(int rand)
+{
+	CurrentRandom=rand;
+	Random.Reset(CurrentRandom);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AnalyzeDoc(GDoc* doc,bool ram,GSlot* rec)
+{
 	if(rec)
 	{
 		rec->Interact();
@@ -239,45 +208,7 @@ void GSession::AnalyzeDoc(GDoc* doc,bool ram,GDocAnalyze* method,GSlot* rec)
 	}
 	if(ExternBreak) return;
 
-	//cout<<"Analyze "<<file.GetPath()<<endl;
-	R::RIO::RSmartTempFile TmpFile;
-	RURI File;
-	bool Save=(SaveResults&&(doc->GetId()!=cNoRef));
-	GFilter* Filter(GALILEIApp->FindMIMEType(doc,File,TmpFile));
-   	bool DelRef(doc->IsDefined());
-   	method->SetHTMLMode(false);
-	method->PrepareAnalyze(doc,Filter==0);
-	if(Filter)
-	{
-		Filter->Clear(method);
-		Filter->Analyze(doc,File,method,rec);
-	}
-	else
-	{
-		method->Open(File,RIO::Read,"UTF-8");
-		method->Close();
-	}
-	method->TerminateAnalyze();
-
-	// Save the description and the structure
-	if(Save)
-	{
-		if(method->Infos.IsDefined())
-			SaveInfos(method->Infos,otDoc,doc->BlockId,doc->Id);
-		if(method->Struct.GetNbRecs())
-			SaveStruct(&method->Struct,doc->StructId,doc->Id);
-	}
-
-	// Set the information to the document
-	doc->Update(this,method->Lang,method->Infos,method->Struct,ram||(!Save),DelRef);
-
-	// Save the information related to the document
-	if(Save)
-	{
-		Storage->SaveDoc(doc);
-		if(ram)
-			doc->SetState(osSaved);
-	}
+	DocAnalyze.Analyze(doc,ram);
 }
 
 
@@ -291,22 +222,22 @@ void GSession::AnalyzeDocs(bool ram,GSlot* rec)
 		rec->WriteStr("Analyze documents");
 	}
 
-	// Get the method
-	GDocAnalyze* Analyze(GALILEIApp->GetCurrentPlugIn<GDocAnalyze>("DocAnalyze"));
+	// Assign the current plug-ins
+	DocAnalyze.AssignPlugIns();
 
 	// Analyze the documents - Go through the existing documents
-	R::RCursor<GDoc> Docs=GetDocs();
+	R::RCursor<GDoc> Docs(GetObjs(pDoc));
 	for(Docs.Start();!Docs.End();Docs.Next())
 	{
 		try
 		{
-			AnalyzeDoc(Docs(),ram,Analyze,rec);
+			AnalyzeDoc(Docs(),ram,rec);
 		}
 		// If a log file specified -> write to it and it is OK
 		// If no log file specified -> Propagate error
 		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()()+"("+RString::Number(Docs()->GetId())+"): ")
 	}
-	FlushDesc(otDoc);   // Force to save all documents description
+	FlushDesc(pDoc);   // Force to save all documents description
 }
 
 
@@ -363,233 +294,12 @@ void GSession::ApplyConfig(void)
 	// Create (if necessary) the directory corresponding to the name of the session
 	// Create all the index files
 	RString Dir(GALILEIApp->GetIndexDir()+RFile::GetDirSeparator()+Name+RFile::GetDirSeparator());
-	try
-	{
-		RDir::CreateDirIfNecessary(Dir,true);
-
-		// Parse all types
-		RCursor<IndexType> Type(Types);
-		for(Type.Start();!Type.End();Type.Next())
-		{
-			Type()->Desc=new RIndexFile(Dir+Type()->Name+".desc",
-					GetUInt("BlockSize","Indexer",Type()->Name,"Description"),
-					GetUInt("CacheSize","Indexer",Type()->Name,"Description"),
-					GetUInt("Tolerance","Indexer",Type()->Name,"Description"));
-			Type()->Desc->Open();
-			Type()->Desc->SetCacheType(static_cast<RBlockFile::CacheType>(GetInt("Type","Indexer",Type()->Name,"Description")));
-			Type()->IndexInc=GetBool("Increment","Indexer",Type()->Name,"Index");
-			Type()->Index=new RIndexFile(Dir+Type()->Name+".index",
-					GetUInt("BlockSize","Indexer",Type()->Name,"Index"),
-					GetUInt("CacheSize","Indexer",Type()->Name,"Index"),
-					GetUInt("Tolerance","Indexer",Type()->Name,"Index"));
-			Type()->Index->Open();
-			Type()->Index->SetCacheType(static_cast<RBlockFile::CacheType>(GetInt("Type","Indexer",Type()->Name,"Index")));
-		}
-
-		StructDoc=new RIndexFile(Dir+"Documents.struct",
-				GetUInt("BlockSize","Indexer","Documents","Structure"),
-				GetUInt("CacheSize","Indexer","Documents","Structure"),
-				GetUInt("Tolerance","Indexer","Documents","Structure"));
-		StructDoc->Open();
-		StructDoc->SetCacheType(static_cast<RBlockFile::CacheType>(GetInt("Type","Indexer","Documents","Structure")));
-	}
-	catch(...)
-	{
-		cerr<<"GSession::Apply: Problems in creating directories in '"<<Dir<<"'"<<endl;
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignId(GCommunity* com)
-{
-	// If all groups are not in memory -> use the database
-	if(!Storage->IsAllInMemory())
-	{
-		Storage->AssignId(com);
-		return;
-	}
-
-	// The first group has the identifier 1
-	if(Communities.GetNb())
-		com->SetId(Communities[Communities.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first community has an identifier of 1
-	else
-		com->SetId(1);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignId(GDoc* doc)
-{
-	// If all documents are not in memory -> use the database
-	if(!Storage->IsAllInMemory())
-	{
-		Storage->AssignId(doc);
-		return;
-	}
-
-	// The first document has the identifier 1
-	if(Docs.GetNb())
-		doc->SetId(Docs[Docs.GetMaxPos()]->GetId()+1); // Not [GetNb()-1] because first doc has an identifier of 1
-	else
-		doc->SetId(1);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignId(GProfile* p)
-{
-	// If all profiles are not in memory -> use the database
-	if(!Storage->IsAllInMemory())
-	{
-		Storage->AssignId(p);
-		return;
-	}
-
-	// The first profile has the identifier 1
-	if(Profiles.GetNb())
-		p->SetId(Profiles[Profiles.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first profile has an identifier of 1
-	else
-		p->SetId(1);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignId(GTopic* top)
-{
-	// If all groups are not in memory -> use the database
-	if(!Storage->IsAllInMemory())
-	{
-		Storage->AssignId(top);
-		return;
-	}
-
-	// The first group has the identifier 1
-	if(Topics.GetNb())
-		top->SetId(Topics[Topics.GetMaxPos()]->GetId()+1);  // Not [GetNb()-1] because first topic has an identifier of 1
-	else
-		top->SetId(1);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignId(GUser* user)
-{
-	// If all users are not in memory -> use the database
-	if(!Storage->IsAllInMemory())
-	{
-		Storage->AssignId(user);
-		return;
-	}
-
-	// The first user has the identifier 1
-	if(Users.GetNb())
-		user->SetId(Users[Users.GetMaxPos()]->GetId()+1); // Not [GetNb()-1] because first user has an identifier of 1
-	else
-		user->SetId(1);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::AssignInfos(GClass* theclass,GWeightInfos& infos)
-{
-	theclass->Update(this,infos);
-	if(SaveResults)
-	{
-		if(theclass->Vector)
-			SaveInfos(*theclass->Vector,otClass,theclass->BlockId,theclass->Id);
-		Storage->SaveClass(theclass);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-bool GSession::MustBreak(void)
-{
-	return(ExternBreak);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::BuildRefs(tObjType type,GSlot* slot)
-{
-	IndexType* ptr(Types.GetPtr(type));
-	if(!ptr)
-		ThrowGException(GetObjType(type,true,true)+" do not have index");
-
-	GSession* Session(dynamic_cast<GSession*>(this));
-
-	// Clear the file and put all block identifier of concepts to 0.
-	if(slot)
-		slot->WriteStr("Clear the index");
-	ptr->Index->Clear();
-	RCursor<GConcept> Concepts(Session->GetConcepts());
-	for(Concepts.Start();!Concepts.End();Concepts.Next())
-	{
-		Concepts()->SetIndex(type,0);
-
-		// If no cache is asked -> Save each time
-		if(ptr->Index->GetCacheType()==RBlockFile::WriteThrough)
-		{
-			size_t idx(0);
-			Storage->SaveIndex(Concepts(),otDoc,idx);
-			Concepts()->SetIndex(type,idx);
-		}
-	}
-
-	// Go trough each document
-	R::RCursor<GDoc> Cur(dynamic_cast<GSession*>(this)->GetDocs());
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		if(slot)
-			slot->NextDoc(Cur());
-
-		// Position the block file to the correct position and read the size
-		ptr->Desc->Seek(Cur()->BlockId,Cur()->Id);
-		size_t size,concept;
-		double weight;
-		ptr->Desc->Read((char*)&size,sizeof(size_t));
-		for(size_t i=0;i<size;i++)
-		{
-			// Read concept identifier and weight
-			ptr->Desc->Read((char*)&concept,sizeof(size_t));
-			ptr->Desc->Read((char*)&weight,sizeof(double));
-
-			// Read the vector representing the current index
-			GConcept* Concept(Session->GetConcept(concept));
-			if(Concept->GetIndex(type))
-				ptr->Index->Read(Concept->GetIndex(type),Concept->Id,tmpRefs);
-			else
-				tmpRefs.Clear();
-
-			// Add the document to the index
-			size_t oldsize(tmpRefs.GetNb());
-			tmpRefs.Insert(Cur()->Id);
-
-			// If the size of vector has changed -> Save it back
-			if(oldsize!=tmpRefs.GetNb())
-			{
-				size_t idx(Concept->GetIndex(type));
-				ptr->Index->Write(idx,Concept->Id,tmpRefs);
-				Concept->SetIndex(type,idx);
-
-				// If no cache is asked -> Save each time
-				if(ptr->Index->GetCacheType()==RBlockFile::WriteThrough)
-					Storage->SaveIndex(Concept,otDoc,Concept->GetIndex(type));
-			}
-		}
-	}
-
-	// If cache was asked, flush the cache and save the block identifier of the concepts
-	if(ptr->Index->GetCacheType()==RBlockFile::WriteBack)
-	{
-		if(slot)
-			slot->WriteStr("Flush the index");
-		ptr->Index->Flush();
-		RCursor<GConcept> Concepts(Session->GetConcepts());
-		for(Concepts.Start();!Concepts.End();Concepts.Next())
-			Storage->SaveIndex(Concepts(),otDoc,Concepts()->GetIndex(type));
-	}
+	GObjects<GDoc>::OpenFiles(this,Name);
+	GObjects<GTopic>::OpenFiles(this,Name);
+	GObjects<GUser>::OpenFiles(this,Name);
+	GObjects<GProfile>::OpenFiles(this,Name);
+	GObjects<GCommunity>::OpenFiles(this,Name);
+	GClasses::OpenFiles(this,Name);
 }
 
 
@@ -612,16 +322,15 @@ void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* lin
 	if(ExternBreak) return;
 	if(!profile->MustCompute()) return;
 	bool Save(SaveResults&&(profile->GetId()!=cNoRef));
+	bool DelRefs(profile->IsDefined());
 	method->Compute(profile);
-
-	// Set the Variable of the profile
-	profile->Update(this,method->Infos);
-
+	profile->Update(this,method->Vectors,DelRefs);
 	if(Save)
 	{
-		if(profile->GetVector().GetNb())
-			SaveInfos(profile->GetVector(),otProfile,profile->BlockId,profile->Id);
-		Storage->SaveProfile(profile);
+		if(profile->IsDefined())
+			profile->SaveDesc();
+		Storage->SaveObj(profile);
+		profile->SetState(osSaved);
 	}
 }
 
@@ -632,7 +341,7 @@ void GSession::CalcProfiles(GSlot* rec)
 	GProfileCalc* Profiling(GALILEIApp->GetCurrentPlugIn<GProfileCalc>("ProfileCalc"));
 	GLinkCalc* LinkCalc(GALILEIApp->GetCurrentPlugIn<GLinkCalc>("LinkCalc",RString::Null,false));
 
-	R::RCursor<GProfile> Prof=GetProfiles();
+	R::RCursor<GProfile> Prof(GetObjs(pProfile));
 	for(Prof.Start();!Prof.End();Prof.Next())
 	{
 		if(ExternBreak) return;
@@ -645,96 +354,202 @@ void GSession::CalcProfiles(GSlot* rec)
 			cerr<<e.GetMsg()<<endl;
 		}
 	}
-	FlushDesc(otProfile);   // Force to save all profiles description
+	FlushDesc(pProfile);   // Force to save all profiles description
 }
 
 
 //------------------------------------------------------------------------------
-void GSession::Clear(tObjType type,tObjType meta)
+void GSession::Reset(tObjType type)
 {
-	switch(meta)
+	switch(type)
 	{
-		case otNoClass:
-		switch(type)
+		case otDoc:
+			GObjects<GDoc>::Clear(pDoc);
+			break;
+		case otFdbk:
 		{
-			case otDoc:
-				DocsRefUrl.Clear();
-				Docs.Clear();
-				break;
-			case otFdbk:
+			RCursor<GDoc> Docs(GetObjs(pDoc));
+			for(Docs.Start();!Docs.End();Docs.Next())
+				Docs()->ClearFdbks();
+			RCursor<GProfile> Profiles(GetObjs(pProfile));
+			for(Profiles.Start();!Profiles.End();Profiles.Next())
+				Profiles()->ClearFdbks();
+			if(SaveResults)
+				Storage->Clear(otFdbk);
+			break;
+		}
+		case otUser:
+		{
+			GObjects<GUser>::Clear(pUser);
+			if(SaveResults)
+				Storage->Clear(otUser);
+			break;
+		}
+		case otProfile:
+		{
+			GObjects<GProfile>::Clear(pProfile);
+			if(SaveResults)
 			{
-				RCursor<GDoc> Docs(GetDocs());
-				for(Docs.Start();!Docs.End();Docs.Next())
-				{
-					Docs()->ClearFdbks();
-				}
-				RCursor<GProfile> Profiles=GetProfiles();
-				for(Profiles.Start();!Profiles.End();Profiles.Next())
-				{
-					Profiles()->ClearFdbks();
-				}
-				break;
+				Storage->Clear(otProfile);
+				ResetFile(otProfile,otDescFile);
+				ResetFile(otProfile,otIndexFile);
 			}
-			case otCommunity:
-				Communities.Clear();
-				if(SaveResults)
-				{
-					Storage->Clear(otCommunity);
-					Clear(otCommunity,otDescFile);
-					Clear(otCommunity,otIndexFile);
-				}
-				break;
-			case otTopic:
-				Topics.Clear();
-				if(SaveResults)
-				{
-					Storage->Clear(otTopic);
-					Clear(otTopic,otDescFile);
-					Clear(otTopic,otIndexFile);
-				}
-				break;
-			case otSubject:
-				Subjects.Clear();
-				Subjects.ProfilesSubject.Clear();
-				Subjects.SelectedDocs.Clear();
-				Subjects.DocsSubjects.Clear();
-				Subjects.Clear();
-				Subjects.MaxDepth=0;
-				break;
-			default:
-				ThrowGException(GetObjType(type,true,true)+" are not managed");
-		}
-		break;
-		case otDescFile:
-		{
-			IndexType* ptr(Types.GetPtr(type));
-			if(!ptr)
-				ThrowGException(GetObjType(type,true,true)+" do not have descriptions");
-			ptr->Desc->Clear();
 			break;
 		}
-		case otStructFile:
-			if(type!=otDoc)
-				ThrowGException("Only documents have structure file");
-			StructDoc->Clear();
+		case otCommunity:
+			GObjects<GCommunity>::Clear(pCommunity);
+			if(SaveResults)
+			{
+				Storage->Clear(otCommunity);
+				ResetFile(otCommunity,otDescFile);
+				ResetFile(otCommunity,otIndexFile);
+			}
 			break;
-		case otIndexFile:
-		{
-			IndexType* ptr(Types.GetPtr(type));
-			if(!ptr)
-				ThrowGException(GetObjType(type,true,true)+" do not have index");
-			ptr->Index->Clear();
+		case otTopic:
+			GObjects<GTopic>::Clear(pTopic);
+			if(SaveResults)
+			{
+				Storage->Clear(otTopic);
+				ResetFile(otTopic,otDescFile);
+				ResetFile(otTopic,otIndexFile);
+			}
 			break;
-		}
-		case otReference:
-		{
-			RCursor<GConceptType> Types(ConceptTypes);
-			for(Types.Start();!Types.End();Types.Next())
-				Types()->ClearRef(type);
+		case otClass:
+			GObjects<GClass>::Clear(pClass);
+			RTree<GClasses,GClass,false>::Clear();
+			if(SaveResults)
+			{
+				Storage->Clear(otClass);
+				ResetFile(otClass,otDescFile);
+				ResetFile(otClass,otIndexFile);
+			}
 			break;
-		}
+		case otSubject:
+			Subjects.Clear();
+			Subjects.ProfilesSubject.Clear();
+			Subjects.SelectedDocs.Clear();
+			Subjects.DocsSubjects.Clear();
+			Subjects.Clear();
+			Subjects.MaxDepth=0;
+			break;
 		default:
-			ThrowGException(GetObjType(meta,true,true)+" is not a valid file type");
+			ThrowGException(GetObjType(type,true,true)+" are not managed");
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ResetFile(tObjType type,tObjType meta)
+{
+	switch(type)
+	{
+		case otDoc:
+			switch(meta)
+			{
+				case otDescFile:
+					if(GObjects<GDoc>::Desc)
+						GObjects<GDoc>::Desc->Clear();
+					break;
+				case otStructFile:
+					if(GObjects<GDoc>::Struct)
+						GObjects<GDoc>::Struct->Clear();
+					break;
+				case otIndexFile:
+					if(GObjects<GDoc>::Index)
+						GObjects<GDoc>::Index->Clear();
+					if(GObjects<GDoc>::Occurs)
+						GObjects<GDoc>::Occurs->Clear();
+					break;
+				default:
+					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for documents");
+			}
+			break;
+
+		case otProfile:
+			switch(meta)
+			{
+				case otDescFile:
+					if(GObjects<GProfile>::Desc)
+						GObjects<GProfile>::Desc->Clear();
+					break;
+				case otIndexFile:
+					if(GObjects<GProfile>::Index)
+						GObjects<GProfile>::Index->Clear();
+					if(GObjects<GProfile>::Occurs)
+						GObjects<GProfile>::Occurs->Clear();
+					break;
+				default:
+					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for profiles");
+			}
+			break;
+
+		case otCommunity:
+			switch(meta)
+			{
+				case otDescFile:
+					if(GObjects<GCommunity>::Desc)
+						GObjects<GCommunity>::Desc->Clear();
+					break;
+				case otIndexFile:
+					if(GObjects<GCommunity>::Index)
+						GObjects<GCommunity>::Index->Clear();
+					if(GObjects<GCommunity>::Occurs)
+						GObjects<GCommunity>::Occurs->Clear();
+					break;
+				default:
+					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for communities");
+			}
+			break;
+
+		case otTopic:
+			switch(meta)
+			{
+				case otDescFile:
+					if(GObjects<GTopic>::Desc)
+						GObjects<GTopic>::Desc->Clear();
+					break;
+				case otIndexFile:
+					if(GObjects<GTopic>::Index)
+						GObjects<GTopic>::Index->Clear();
+					if(GObjects<GTopic>::Occurs)
+						GObjects<GTopic>::Occurs->Clear();
+					break;
+				default:
+					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for topics");
+			}
+			break;
+
+		case otClass:
+			switch(meta)
+			{
+				case otDescFile:
+					if(GObjects<GClass>::Desc)
+						GObjects<GClass>::Desc->Clear();
+					break;
+				case otIndexFile:
+					if(GObjects<GClass>::Index)
+						GObjects<GClass>::Index->Clear();
+					if(GObjects<GClass>::Occurs)
+						GObjects<GClass>::Occurs->Clear();
+					break;
+				default:
+					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for classes");
+			}
+			break;
+
+		case otConcept:
+			if(meta==otReference)
+			{
+				RCursor<GConceptType> Types(ConceptTypes);
+				for(Types.Start();!Types.End();Types.Next())
+					Types()->ClearRef(type);
+			}
+			else
+				ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for concepts");
+			break;
+
+		default:
+			ThrowGException(GetObjType(type,true,true)+" have no files associatesd");
 	}
 }
 
@@ -801,38 +616,6 @@ void GSession::ComputeTrust(GSlot* rec)
 }
 
 
-//------------------------------------------------------------------------------
-void GSession::Delete(GCommunity* com)
-{
-	Communities.DeletePtr(com);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Delete(GConcept* concept)
-{
-	if((!concept)||(!concept->GetType()))
-		ThrowGException("Cannot delete concept");
-	Storage->DeleteConcept(concept);
-	concept->GetType()->DeletePtr(*concept);
-	Concepts.DeletePtrAt(concept->GetId(),false);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Delete(GTopic* top)
-{
-	Topics.DeletePtrAt(top->GetId(),false);
-}
-
-
-//-----------------------------------------------------------------------------
-size_t GSession::FillTopics(GTopic** topics)
-{
-	return(Topics.GetTab(topics,1,Topics.GetMaxPos()));
-}
-
-
 //-----------------------------------------------------------------------------
 size_t GSession::FillSelectedDocs(GDoc** docs)
 {
@@ -848,295 +631,120 @@ size_t GSession::FillSubjects(GSubject** subjects)
 
 
 //------------------------------------------------------------------------------
-void GSession::FlushDesc(tObjType type)
-{
-	IndexType* ptr(Types.GetPtr(type));
-	if(!ptr)
-		ThrowGException(GetObjType(type,true,true)+" do not have descriptions");
-	ptr->Desc->Flush();
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::ForceReCompute(tObjType type)
 {
-	bool Break(true);
+	ThrowGException(GetObjType(type,true,true)+" not implemented");
+//	bool Break(true);
+//
+//	switch(type)
+//	{
+//		case otDoc:
+//		{
+//			// Clear the information of the documents -> Also profiles and groups and topics
+//			RCursor<GDoc> Doc(GetObj(pDoc));
+//			for(Doc.Start();!Doc.End();Doc.Next())
+//			{
+//				Doc()->ClearInfos(SaveResults);
+//				Doc()->ClearStruct(SaveResults);
+//				if(SaveResults)
+//					Storage->SaveObj(Doc());
+//			}
+//			if(SaveResults)
+//			{
+//				Clear(otDoc,otDescFile);
+//				Clear(otDoc,otIndexFile);
+//				Clear(otDoc,otStructFile);
+//			}
+//			Break=false;
+//		}
+//		case otTopic:
+//		{
+//			// Delete the topics
+//			Clear(otTopic,otReference);
+//			Topics.Clear();
+//			if(SaveResults)
+//			{
+//				Clear(otTopic,otDescFile);
+//				Clear(otTopic,otIndexFile);
+//				Storage->Clear(otTopic);
+//			}
+//			if(Break)
+//				break;
+//		}
+//		case otProfile:
+//		{
+//			// Delete the profiles -> Also groups
+//			Clear(otProfile,otReference);
+//			Profiles.Clear();
+//			if(SaveResults)
+//			{
+//				Clear(otProfile,otDescFile);
+//				Clear(otProfile,otIndexFile);
+//				Storage->Clear(otProfile);
+//			}
+//		}
+//		case otCommunity:
+//		{
+//			// Delete the communities
+//			Clear(otCommunity,otReference);
+//			Communities.Clear();
+//			if(SaveResults)
+//			{
+//				Clear(otCommunity,otDescFile);
+//				Clear(otCommunity,otIndexFile);
+//				Storage->Clear(otCommunity);
+//			}
+//			break;
+//		}
+//		case otClass:
+//		{
+//			// Delete the classes
+//			Clear(otClass,otReference);
+//			Classes.Clear();
+//			if(SaveResults)
+//			{
+//				Clear(otClass,otDescFile);
+//				Clear(otClass,otIndexFile);
+//				Storage->Clear(otClass);
+//			}
+//			break;
+//		}
+//		default:
+//			ThrowGException(GetObjType(type,true,true)+" are not allowed");
+//	}
+}
 
+
+//------------------------------------------------------------------------------
+size_t GSession::GetNbObjs(tObjType type) const
+{
 	switch(type)
 	{
+		case otUser:
+			return(GObjects<GUser>::Objects.GetNb());
+		case otConcept:
+			return(Concepts.GetNb());
+		case otConceptType:
+			return(ConceptTypes.GetNb());
 		case otDoc:
-		{
-			// Clear the information of the documents -> Also profiles and groups and topics
-			RCursor<GDoc> Doc(Docs);
-			for(Doc.Start();!Doc.End();Doc.Next())
-			{
-				Doc()->ClearInfos(SaveResults);
-				Doc()->ClearStruct(SaveResults);
-				if(SaveResults)
-					Storage->SaveDoc(Doc());
-			}
-			if(SaveResults)
-			{
-				Clear(otDoc,otDescFile);
-				Clear(otDoc,otIndexFile);
-				Clear(otDoc,otStructFile);
-			}
-			Break=false;
-		}
-		case otTopic:
-		{
-			// Delete the topics
-			Clear(otTopic,otReference);
-			Topics.Clear();
-			if(SaveResults)
-			{
-				Clear(otTopic,otDescFile);
-				Clear(otTopic,otIndexFile);
-				Storage->Clear(otTopic);
-			}
-			if(Break)
-				break;
-		}
+			return(GObjects<GDoc>::Objects.GetNb());
 		case otProfile:
-		{
-			// Delete the profiles -> Also groups
-			Clear(otProfile,otReference);
-			Profiles.Clear();
-			if(SaveResults)
-			{
-				Clear(otProfile,otDescFile);
-				Clear(otProfile,otIndexFile);
-				Storage->Clear(otProfile);
-			}
-		}
+			return(GObjects<GProfile>::Objects.GetNb());
 		case otCommunity:
-		{
-			// Delete the communities
-			Clear(otCommunity,otReference);
-			Communities.Clear();
-			if(SaveResults)
-			{
-				Clear(otCommunity,otDescFile);
-				Clear(otCommunity,otIndexFile);
-				Storage->Clear(otCommunity);
-			}
-			break;
-		}
-		case otClass:
-		{
-			// Delete the classes
-			Clear(otClass,otReference);
-			Classes.Clear();
-			if(SaveResults)
-			{
-				Clear(otClass,otDescFile);
-				Clear(otClass,otIndexFile);
-				Storage->Clear(otClass);
-			}
-			break;
-		}
+			return(GObjects<GCommunity>::Objects.GetNb());
+		case otTopic:
+			return(GObjects<GTopic>::Objects.GetNb());
+		case otSubject:
+			LoadSubjects();
+			return(Subjects.GetNb());
 		default:
-			ThrowGException(GetObjType(type,true,true)+" are not allowed");
+			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
 }
 
 
 //------------------------------------------------------------------------------
-GClass* GSession::GetClass(size_t id,bool null)
-{
-	RCursor<GClass> Cur(Classes.GetNodes());
-	for(Cur.Start();!Cur.End();Cur.Next())
-		if(Cur()->GetId()==id)
-			return(Cur());
-	if(!null)
-		ThrowGException("GSession::GetClass(size_t,bool): Class '"+RString::Number(id)+"' not found");
-	return(0);
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GCommunity> GSession::GetCommunities(void)
-{
-	return(RCursor<GCommunity>(Communities));
-}
-
-
-//------------------------------------------------------------------------------
-GCommunity* GSession::GetCommunity(size_t id,bool load,bool null)
-{
-	if(id==cNoRef)
-	{
-		if(null)
-			return(0);
-		ThrowGException("Unknown community "+RString::Number(id));
-	}
-	GCommunity* grp=Communities.GetPtr(id);
-	if(grp)
-		return(grp);
-
-	if(!load)
-		return(0);
-	if(Storage->IsAllInMemory())
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown community "+RString::Number(id));
-	}
-	grp=Storage->LoadCommunity(id);
-	if(!grp)
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown community "+RString::Number(id));
-	}
-	Insert(grp);
-	return(grp);
-}
-
-
-//------------------------------------------------------------------------------
-GConcept* GSession::GetConcept(size_t id)
-{
-	if(id>Concepts.GetMaxPos())
-		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
-	GConcept* concept(Concepts[id]);
-	if(!concept)
-		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
-	return(concept);
-}
-
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GConcept> GSession::GetConcepts(void) const
-{
-	return(R::RCursor<GConcept>(Concepts));
-}
-
-
-//-----------------------------------------------------------------------------
-GConceptType* GSession::GetConceptType(char id,bool null)
-{
-	GConceptType* type(0);
-	try
-	{
-		type=ConceptTypesByIds[id];
-	}
-	catch(...)
-	{
-	}
-	if((!type)&&(!null))
-		ThrowGException("Unknown concept type "+RString::Number(id));
-	return(type);
-}
-
-
-//-----------------------------------------------------------------------------
-GConceptType* GSession::GetConceptType(const RString& name,const RString& desc)
-{
-	GConceptType* type(0);
-	try
-	{
-		type=ConceptTypes.GetPtr(name);
-	}
-	catch(...)
-	{
-	}
-	if(!type)
-	{
-		ConceptTypes.InsertPtr(type=new GConceptType(this,0,name,desc,5000));
-		Storage->AssignId(type);
-		ConceptTypesByIds.InsertPtrAt(type,type->GetId(),true);
-	}
-	return(type);
-}
-
-
-//-----------------------------------------------------------------------------
-GConceptType* GSession::GetConceptType(const RString& name,bool null)
-{
-	GConceptType* type(0);
-	try
-	{
-		type=ConceptTypes.GetPtr(name);
-	}
-	catch(...)
-	{
-	}
-	if((!type)&&(!null))
-		ThrowGException("Unknown concept type '"+name+"'");
-	return(type);
-}
-
-
-//-------------------------------------------------------------------------------
-GDoc* GSession::GetDoc(size_t id,bool load,bool null)
-{
-	GDoc* d;
-
-	if(id>Docs.GetMaxPos())
-		return(0);
-	d=Docs[id];
-	if(d)
-		return(d);
-	if(!load)
-		return(0);
-	if(Storage->IsAllInMemory())
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown document "+RString::Number(id));
-	}
-	d=Storage->LoadDoc(id);
-	if(!d)
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown document "+RString::Number(id));
-	}
-	Insert(d);
-	return(d);
-}
-
-
-//-------------------------------------------------------------------------------
-GDoc* GSession::GetDoc(const RString& url,bool,bool null) const
-{
-	GDocRefURL* ref;
-
-	ref=DocsRefUrl.GetPtr(url);
-	if(!ref)
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown document '"+RString(url)+"'");
-	}
-	return(ref->Doc);
-}
-
-
-//-----------------------------------------------------------------------------
-R::RCursor<GDoc> GSession::GetDocs(void) const
-{
-	return(R::RCursor<GDoc>(Docs));
-}
-
-
-//-----------------------------------------------------------------------------
-size_t GSession::GetMaxDepth(void) const
-{
-	LoadSubjects();
-	return(Subjects.MaxDepth);
-}
-
-
-//------------------------------------------------------------------------------
-size_t GSession::GetMaxObjectId(tObjType type) const
+size_t GSession::GetMaxObjId(tObjType type) const
 {
 	switch(type)
 	{
@@ -1145,21 +753,21 @@ size_t GSession::GetMaxObjectId(tObjType type) const
 				return(0);
 			return(Concepts[Concepts.GetMaxPos()]->GetId());
 		case otDoc:
-			if(!Docs.GetNb())
+			if(!GObjects<GDoc>::Objects.GetNb())
 				return(0);
-			return(Docs[Docs.GetMaxPos()]->GetId());
+			return(GObjects<GDoc>::Objects[GObjects<GDoc>::Objects.GetMaxPos()]->GetId());
 		case otProfile:
-			if(!Profiles.GetNb())
+			if(!GObjects<GProfile>::Objects.GetNb())
 				return(0);
-			return(Profiles[Profiles.GetMaxPos()]->GetId());
+			return(GObjects<GProfile>::Objects[GObjects<GProfile>::Objects.GetMaxPos()]->GetId());
 		case otCommunity:
-			if(!Communities.GetNb())
+			if(!GObjects<GCommunity>::Objects.GetNb())
 				return(0);
-			return(Communities[Communities.GetMaxPos()]->GetId());
+			return(GObjects<GCommunity>::Objects[GObjects<GCommunity>::Objects.GetMaxPos()]->GetId());
 		case otTopic:
-			if(!Topics.GetNb())
+			if(!GObjects<GTopic>::Objects.GetNb())
 				return(0);
-			return(Topics[Topics.GetMaxPos()]->GetId());
+			return(GObjects<GTopic>::Objects[GObjects<GTopic>::Objects.GetMaxPos()]->GetId());
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
@@ -1167,19 +775,79 @@ size_t GSession::GetMaxObjectId(tObjType type) const
 
 
 //-----------------------------------------------------------------------------
-size_t GSession::GetMaxObjectPos(tObjType type) const
+size_t GSession::GetMaxObjPos(tObjType type) const
 {
 	switch(type)
 	{
 		case otConcept:
 			return(Concepts.GetMaxPos());
 		case otDoc:
-			return(Docs.GetMaxPos());
+			return(GObjects<GDoc>::Objects.GetMaxPos());
 		case otTopic:
-			return(Topics.GetMaxPos());
+			return(GObjects<GTopic>::Objects.GetMaxPos());
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not managed");
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+GObject* GSession::GetObj(tObjType type,size_t id,bool null)
+{
+	switch(type)
+	{
+		case otConcept:
+			return(Concepts[id]);
+		case otConceptType:
+			return(GetConceptType(id,null));
+		case otDoc:
+			return(GetObj(pDoc,id,null));
+		case otUser:
+			return(GetObj(pUser,id,null));
+		case otProfile:
+			return(GetObj(pProfile,id,null));
+		case otCommunity:
+			return(GetObj(pCommunity,id,null));
+		case otTopic:
+			return(GetObj(pTopic,id,null));
+		default:
+			ThrowGException(GetObjType(type,true,true)+" are not managed");
+	}
+}
+
+
+//------------------------------------------------------------------------------
+size_t GSession::GetObjs(tObjType type,GObject** &tab,bool alloc)
+{
+	switch(type)
+	{
+		case otDoc:
+			if(alloc)
+				tab=new GObject*[GObjects<GDoc>::Objects.GetMaxPos()+1];
+			return(GObjects<GDoc>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+		case otProfile:
+			if(alloc)
+				tab=new GObject*[GObjects<GProfile>::Objects.GetMaxPos()+1];
+			return(GObjects<GProfile>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+		case otCommunity:
+			if(alloc)
+				tab=new GObject*[GObjects<GCommunity>::Objects.GetMaxPos()+1];
+			return(GObjects<GCommunity>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+		case otTopic:
+			if(alloc)
+				tab=new GObject*[GObjects<GTopic>::Objects.GetMaxPos()+1];
+			return(GObjects<GTopic>::Objects.GetTab(reinterpret_cast<void**>(tab)));
+		default:
+			ThrowGException(GetObjType(type,true,true)+" are not managed");
+	}
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GSession::GetMaxDepth(void) const
+{
+	LoadSubjects();
+	return(Subjects.MaxDepth);
 }
 
 
@@ -1192,34 +860,6 @@ size_t GSession::GetNbIdealGroups(tObjType type) const
 	for(Cur.Start();!Cur.End();Cur.Next())
 		nb+=Cur()->GetNbIdealGroups(type);
 	return(nb);
-}
-
-
-//------------------------------------------------------------------------------
-size_t GSession::GetNbObjects(tObjType type) const
-{
-	switch(type)
-	{
-		case otUser:
-			return(Users.GetNb());
-		case otConcept:
-			return(Concepts.GetNb());
-		case otConceptType:
-			return(ConceptTypes.GetNb());
-		case otDoc:
-			return(Docs.GetNb());
-		case otProfile:
-			return(Profiles.GetNb());
-		case otCommunity:
-			return(Communities.GetNb());
-		case otTopic:
-			return(Topics.GetNb());
-		case otSubject:
-			LoadSubjects();
-			return(Subjects.GetNb());
-		default:
-			ThrowGException(GetObjType(type,true,true)+" are not managed");
-	}
 }
 
 
@@ -1246,131 +886,6 @@ size_t GSession::GetNbTopicsDocs(void) const
 }
 
 
-//-----------------------------------------------------------------------------
-GObject* GSession::GetObject(tObjType type,size_t id,bool null)
-{
-	switch(type)
-	{
-		case otConcept:
-			return(Concepts[id]);
-		case otConceptType:
-			return(GetConceptType(id,null));
-		case otDoc:
-			return(GetDoc(id,null));
-		case otUser:
-			return(GetUser(id,null));
-		case otProfile:
-			return(GetProfile(id,null));
-		case otCommunity:
-			return(GetCommunity(id,null));
-		case otTopic:
-			return(GetTopic(id,null));
-		default:
-			ThrowGException(GetObjType(type,true,true)+" are not managed");
-	}
-}
-
-
-//------------------------------------------------------------------------------
-size_t GSession::GetObjects(tObjType type,GObject** &tab,bool alloc)
-{
-	switch(type)
-	{
-		case otDoc:
-			if(alloc)
-				tab=new GObject*[Docs.GetMaxPos()+1];
-			return(Docs.GetTab(reinterpret_cast<void**>(tab)));
-		case otProfile:
-			if(alloc)
-				tab=new GObject*[Profiles.GetMaxPos()+1];
-			return(Profiles.GetTab(reinterpret_cast<void**>(tab)));
-		case otCommunity:
-			if(alloc)
-				tab=new GObject*[Communities.GetMaxPos()+1];
-			return(Communities.GetTab(reinterpret_cast<void**>(tab)));
-		case otTopic:
-			if(alloc)
-				tab=new GObject*[Topics.GetMaxPos()+1];
-			return(Topics.GetTab(reinterpret_cast<void**>(tab)));
-		default:
-			ThrowGException(GetObjType(type,true,true)+" are not managed");
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-GPredicate* GSession::GetPredicate(size_t id,bool null)
-{
-	GPredicate* type=PredicatesByIds[id];
-	if(!type)
-	{
-		if(!null)
-			ThrowGException("Unknown relation type "+RString::Number(id));
-		return(0);
-	}
-	return(type);
-}
-
-
-//-----------------------------------------------------------------------------
-GPredicate* GSession::GetPredicate(const RString& name,bool null)
-{
-	GPredicate* type=Predicates.GetPtr(name,false);
-	if(!type)
-	{
-		if(!null)
-			ThrowGException("Unknown relation type "+name);
-		return(0);
-	}
-	return(type);
-}
-
-
-//-----------------------------------------------------------------------------
-RCursor<GPredicate> GSession::GetPredicates(void) const
-{
-	return(RCursor<GPredicate>(Predicates));
-}
-
-
-//------------------------------------------------------------------------------
-GProfile* GSession::GetProfile(size_t id,bool load,bool null)
-{
-	GProfile* p;
-
-	if(id>Profiles.GetMaxPos())
-		return(0);
-	p=Profiles[id];
-	if(p)
-		return(p);
-	if(!load)
-		return(0);
-	if(Storage->IsAllInMemory())
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown profile "+RString::Number(id)+" in memory");
-	}
-	p=Storage->LoadProfile(id);
-	if(!p)
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown profile "+RString::Number(id)+" in storage");
-	}
-	Insert(p);
-	return(p);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GProfile> GSession::GetProfiles(void) const
-{
-	return(R::RCursor<GProfile>(Profiles));
-}
-
 
 //------------------------------------------------------------------------------
 GSimulator* GSession::GetSimulator(void) const
@@ -1381,16 +896,6 @@ GSimulator* GSession::GetSimulator(void) const
 		Simulator->ApplyParams();
 	}
 	return(Simulator);
-}
-
-
-//-----------------------------------------------------------------------------
-GStatement* GSession::GetStatement(size_t id)
-{
-	GStatement* Statement(Statements[id]);
-	if(!Statement)
-		ThrowGException("'"+RString::Number(id)+"' is not a valid concept identifier");
-	return(Statement);
 }
 
 
@@ -1480,140 +985,9 @@ RCursor<GSubject> GSession::GetTopSubjects(void) const
 
 
 //------------------------------------------------------------------------------
-GTopic* GSession::GetTopic(size_t id,bool load,bool null)
-{
-	if(id==cNoRef)
-	{
-		if(null)
-			return(0);
-		ThrowGException("Unknown topic "+RString::Number(id));
-	}
-	GTopic* top=Topics[id];
-	if(top)
-		return(top);
-
-	if(!load)
-		return(0);
-	if(Storage->IsAllInMemory())
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown topic "+RString::Number(id));
-	}
-	top=Storage->LoadTopic(id);
-	if(!top)
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown topic "+RString::Number(id));
-	}
-	Insert(top);
-	return(top);
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GTopic> GSession::GetTopics(void)
-{
-	return(RCursor<GTopic>(Topics));
-}
-
-
-//------------------------------------------------------------------------------
 double GSession::GetUpOperationsCost(const GSubject* u,const GSubject* v) const
 {
 	return(Subjects.GetUpOperationsCost(u,v));
-}
-
-
-//------------------------------------------------------------------------------
-GUser* GSession::GetUser(size_t id,bool load,bool null)
-{
-	GUser* u;
-
-	if(id>Users.GetMaxPos())
-		return(0);
-	u=Users[id];
-	if(u)
-		return(u);
-	if(!load)
-		return(0);
-	if(Storage->IsAllInMemory())
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown user "+RString::Number(id));
-	}
-	u=Storage->LoadUser(id);
-	if(!u)
-	{
-		if(null)
-			return(0);
-		else
-			throw GException("Unknown user "+RString::Number(id));
-	}
-	Insert(u);
-	return(u);
-}
-
-
-//------------------------------------------------------------------------------
-GUser* GSession::GetUser(const RString name,bool load,bool null)
-{
-	GUser* u;
-
-	u=Users.GetPtr(name,false);
-	if(u)
-		return(u);
-	if(!load)
-		return(0);
-	if(Storage->IsAllInMemory())
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown user "+name);
-	}
-	u=Storage->LoadUser(name);
-	if(!u)
-	{
-		if(null)
-			return(0);
-		else
-			ThrowGException("Unknown user "+name);
-	}
-	Insert(u);
-	return(u);
-}
-
-
-//------------------------------------------------------------------------------
-R::RCursor<GUser> GSession::GetUsers(void) const
-{
-	return(R::RCursor<GUser>(Users));
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::GetXMLStruct(GDoc* doc,R::RXMLStruct* xml,bool& native,GSlot* rec)
-{
-	xml->Clear();
-	R::RIO::RSmartTempFile TmpFile;
-	RURI File;
-	GFilter* Filter(GALILEIApp->FindMIMEType(doc,File,TmpFile));
-	RXMLFile XML(File,xml);
-	XML.SetInvalidXMLCodes(true);
-	native=(Filter==0);
-	if(Filter)
-	{
-		Filter->Clear(&XML);
-		Filter->Analyze(doc,File,&XML,rec);
-	}
-	else
-		XML.Open(RIO::Read);
 }
 
 
@@ -1623,37 +997,32 @@ void GSession::GroupDocs(GSlot* rec)
 	// Verify that there is a method to cluster the documents
 	GGroupDocs* Grouping(GALILEIApp->GetCurrentPlugIn<GGroupDocs>("GroupDocs"));
 
-	// How to compute the groups
+	// How to compute the topic descriptions
 	GTopicCalc* CalcDesc(GALILEIApp->GetCurrentPlugIn<GTopicCalc>("TopicCalc"));
+	if(!CalcDesc)
+		ThrowGException("No current method to compute topic descriptions");
 
     // Group the documents
 	Grouping->Grouping(rec,ClusterSelectedDocs);
 
-	// If something to save to to compute -> Pass through the topics
-	if(SaveResults||CalcDesc)
+	// Update the topics
+	R::RCursor<GTopic> Topic(GetObjs(pTopic));
+	for(Topic.Start();!Topic.End();Topic.Next())
 	{
-		if(SaveResults)
-			Storage->Clear(otTopic);
+		// Compute the topic description
+		bool DelRefs(Topic()->IsDefined());
+		CalcDesc->Compute(Topic());
+		Topic()->Update(this,CalcDesc->Vectors,DelRefs);
 
-		// Compute the description of the groups and Save the information.
-		R::RCursor<GTopic> Groups(GetTopics());
-		for(Groups.Start();!Groups.End();Groups.Next())
+		if(SaveResults)
 		{
-			if(CalcDesc)
-			{
-				CalcDesc->Compute(Groups());
-				Groups()->Update(this,CalcDesc->Infos);
-			}
-			if(SaveResults)
-			{
-				if(CalcDesc&&CalcDesc->Infos.IsDefined())
-					SaveInfos(CalcDesc->Infos,otTopic,Groups()->BlockId,Groups()->Id);
-				Storage->SaveTopic(Groups());
-				Groups()->SetState(osSaved);
-			}
+			if(Topic()->IsDefined())
+				Topic()->SaveDesc();
+			Storage->SaveObj(Topic());
+			Topic()->SetState(osSaved);
 		}
 	}
-	FlushDesc(otTopic);   // Force to save all topics description
+	FlushDesc(pTopic);   // Force to save all topics description
 }
 
 
@@ -1663,37 +1032,30 @@ void GSession::GroupProfiles(GSlot* rec)
 	// Verify that there is a method to cluster the profiles
 	GGroupProfiles* Grouping(GALILEIApp->GetCurrentPlugIn<GGroupProfiles>("GroupProfiles"));
 
-	// How to compute the groups
+	// How to compute the community descriptions
 	GCommunityCalc* CalcDesc(GALILEIApp->GetCurrentPlugIn<GCommunityCalc>("CommunityCalc"));
 
     // Group the profiles
 	Grouping->Grouping(rec);
 
-	// If something to save to to compute -> Pass through the communities
-	if(SaveResults||CalcDesc)
+	// Update the communities
+	R::RCursor<GCommunity> Community(GetObjs(pCommunity));
+	for(Community.Start();!Community.End();Community.Next())
 	{
-		if(SaveResults)
-			Storage->Clear(otCommunity);
+		// Compute the community description
+		bool DelRefs(Community()->IsDefined());
+		CalcDesc->Compute(Community());
+		Community()->Update(this,CalcDesc->Vectors,DelRefs);
 
-		// Compute the description of the groups and Save the information.
-		R::RCursor<GCommunity> Groups(GetCommunities());
-		for(Groups.Start();!Groups.End();Groups.Next())
+		if(SaveResults)
 		{
-			if(CalcDesc)
-			{
-				CalcDesc->Compute(Groups());
-				Groups()->Update(this,CalcDesc->Infos);
-			}
-			if(SaveResults)
-			{
-				if(CalcDesc&&CalcDesc->Infos.IsDefined())
-					SaveInfos(CalcDesc->Infos,otCommunity,Groups()->BlockId,Groups()->Id);
-				Storage->SaveCommunity(Groups());
-				Groups()->SetState(osSaved);
-			}
+			if(Community()->IsDefined())
+				Community()->SaveDesc();
+			Storage->SaveObj(Community());
+			Community()->SetState(osSaved);
 		}
 	}
-	FlushDesc(otCommunity);   // Force to save all communities description
+	FlushDesc(pCommunity);   // Force to save all communities description
 }
 
 
@@ -1702,28 +1064,12 @@ void GSession::Init(void)
 {
 	// Create the configuration parameters
 	GSimulator::CreateConfig(this);
-	RCursor<RString> Type(TypesNames);
-	for(Type.Start();!Type.End();Type.Next())
-	{
-		// Descriptions
-		InsertParam(new RParamValue("BlockSize",1024),"Indexer",(*Type()),"Description");
-		InsertParam(new RParamValue("Tolerance",10),"Indexer",(*Type()),"Description");
-		InsertParam(new RParamValue("CacheSize",20),"Indexer",(*Type()),"Description");
-		InsertParam(new RParamValue("Type",RBlockFile::WriteBack),"Indexer",(*Type()),"Description");
-
-		// Inverted file
-		InsertParam(new RParamValue("Increment",false),"Indexer",(*Type()),"Index");
-		InsertParam(new RParamValue("BlockSize",1024),"Indexer",(*Type()),"Index");
-		InsertParam(new RParamValue("Tolerance",10),"Indexer",(*Type()),"Index");
-		InsertParam(new RParamValue("CacheSize",20),"Indexer",(*Type()),"Index");
-		InsertParam(new RParamValue("Type",RBlockFile::WriteBack),"Indexer",(*Type()),"Index");
-	}
-
-	// Documents structures
-	InsertParam(new RParamValue("BlockSize",4096),"Indexer","Documents","Structure");
-	InsertParam(new RParamValue("Tolerance",40),"Indexer","Documents","Structure");
-	InsertParam(new RParamValue("CacheSize",20),"Indexer","Documents","Structure");
-	InsertParam(new RParamValue("Type",RBlockFile::WriteBack),"Indexer","Documents","Structure");
+	GObjects<GDoc>::Init(this);
+	GObjects<GTopic>::Init(this);
+	GObjects<GUser>::Init(this);
+	GObjects<GProfile>::Init(this);
+	GObjects<GCommunity>::Init(this);
+	GObjects<GClass>::Init(this);
 
 	// Create the configuration parameters for the plug-ins
 	R::RCursor<GPlugInManager> Managers(GALILEIApp->GetManagers());
@@ -1742,134 +1088,30 @@ void GSession::Init(void)
 
 
 //------------------------------------------------------------------------------
-void GSession::Insert(GClass* parent,GClass* tclass)
-{
-	// Insert it in the tree
-	Classes.InsertNode(parent,tclass);
-
-	// Look if data has an identifier. If not, assign one.
-	if(tclass->GetId()==cNoRef)
-		Storage->AssignId(tclass);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Insert(GCommunity* com)
-{
-	Communities.InsertPtr(com);
-}
-
-
-//------------------------------------------------------------------------------
-GConcept* GSession::Insert(const GConcept* concept)
-{
-	GConceptType* Type;
-	if((!concept)||(!(Type=concept->GetType())))
-		ThrowGException("Cannot insert the concept");
-
-	bool InDirect(false);
-
-	// Invalid concept are not inserted
-	if(concept->IsEmpty())
-		ThrowGException("Empty concept cannot be inserted into a dictionary - id="+RString::Number(concept->GetId()));
-
-	// Look if the data exists in the dictionary. If not, create and insert it.
-	GConcept* ptr(Type->GetPtr(*concept));
-	if(!ptr)
-	{
-		ptr=concept->DeepCopy();
-		Type->InsertPtr(ptr);
-		InDirect=true;
-	}
-
-	// Look if data has an identifier. If not, assign one.
-	if(ptr->GetId()==cNoRef)
-	{
-		Storage->AssignId(ptr);
-		InDirect=true;
-	}
-
-	// Finally, if an identifier has been assigned and/or a new one -> Direct
-	if(InDirect)
-		Concepts.InsertPtrAt(ptr,ptr->GetId(),true);
-
-	return(ptr);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::Insert(GDoc* d)
-{
-	bool NewOne=false;
-
-	// Test if the document has an id
-	if(d->GetId()==cNoRef)
-	{
-		AssignId(d);
-		NewOne=true;
-	}
-
-	// Insert the document
-	Docs.InsertPtrAt(d,d->GetId());
-
-	// Insert the doc in the DocsRefUrl container.
-	DocsRefUrl.InsertPtr(new GDocRefURL(d));
-
-	if(NewOne)
-	{
-		// If new one and all documents are in memory -> store it in the database
-		if(Storage->IsAllInMemory())
-			Storage->SaveDoc(d);
-		d->Emit(GEvent::eObjCreated);
-	}
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::Insert(GDoc* doc,size_t subjectid,size_t usedid)
 {
 	LoadSubjects();
 	GSubject* subject(Subjects.GetNode(subjectid));
+//	if(!subject)
+//		ThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
 	if(subject)
 		subject->CategorizedDocs.InsertPtr(doc);
 	GSubject* used(Subjects.GetNode(usedid));
-	if(used)
-	{
-		R::RContainer<GSubject,false,false>* line(Subjects.DocsSubjects.GetPtrAt(doc->GetId()));
-		if(!line)
-			Subjects.DocsSubjects.InsertPtrAt(line=new R::RContainer<GSubject,false,false>(10,5),doc->GetId(),true);
-		bool Find;
-		size_t Index(line->GetIndex(*used,Find));
-		if(!Find)
-			line->InsertPtrAt(used,Index,false);
-		Index=used->Docs.GetIndex(*doc,Find);
-		if(!Find)
-			used->Docs.InsertPtrAt(doc,Index,false);
-		Index=Subjects.SelectedDocs.GetIndex(*doc,Find);
-		if(!Find)
-			Subjects.SelectedDocs.InsertPtrAt(doc,Index,false);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Insert(GProfile* p)
-{
-	bool NewOne=false;
-
-	if(p->GetId()==cNoRef)
-	{
-		AssignId(p);
-		NewOne=true;
-	}
-	Profiles.InsertPtrAt(p,p->GetId());
-	if(NewOne)
-	{
-		// If new one and all profiles are in memory -> store it in the database
-		if(Storage->IsAllInMemory())
-			Storage->SaveProfile(p);
-		p->Emit(GEvent::eObjCreated);
-	}
+	if(!used)
+		ThrowGException("No subject with identifier '"+RString::Number(usedid)+"'");
+	R::RContainer<GSubject,false,false>* line(Subjects.DocsSubjects.GetPtrAt(doc->GetId()));
+	if(!line)
+		Subjects.DocsSubjects.InsertPtrAt(line=new R::RContainer<GSubject,false,false>(10,5),doc->GetId(),true);
+	bool Find;
+	size_t Index(line->GetIndex(*used,Find));
+	if(!Find)
+		line->InsertPtrAt(used,Index,false);
+	Index=used->Docs.GetIndex(*doc,Find);
+	if(!Find)
+		used->Docs.InsertPtrAt(doc,Index,false);
+	Index=Subjects.SelectedDocs.GetIndex(*doc,Find);
+	if(!Find)
+		Subjects.SelectedDocs.InsertPtrAt(doc,Index,false);
 }
 
 
@@ -1878,7 +1120,8 @@ void GSession::Insert(GProfile* profile,size_t subjectid)
 {
 	LoadSubjects();
 	GSubject* subject(Subjects.Subjects.GetPtr(subjectid));
-	if(!subject) return;
+	if(!subject)
+		ThrowGException("No subject with identifier '"+RString::Number(subjectid)+"'");
 	Subjects.ProfilesSubject.InsertPtrAt(subject,profile->GetId(),true);
 	subject->Profiles.InsertPtr(profile);
 }
@@ -1894,117 +1137,16 @@ void GSession::Insert(GSubject* to,GSubject* subject)
 
 
 //------------------------------------------------------------------------------
-void GSession::Insert(GTopic* top)
-{
-	Topics.InsertPtrAt(top,top->GetId());
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::Insert(GUser* user)
-{
-	bool NewOne=false;
-
-	if(user->GetId()==cNoRef)
-	{
-		AssignId(user);
-		NewOne=true;
-	}
-	Users.InsertPtrAt(user,user->GetId(),true);
-	if(NewOne)
-	{
-		// If new one and all users are in memory -> store it in the database
-		if(Storage->IsAllInMemory())
-			Storage->SaveUser(user);
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::InsertConceptType(char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses)
-{
-	GConceptType* type=new GConceptType(this,id,name,desc,5000);
-	if(!id)
-		Storage->AssignId(type);
-
-	type->SetReferences(refdocs,refprofiles,refgroups,reftopics,refclasses);
-	ConceptTypes.InsertPtr(type);
-	ConceptTypesByIds.InsertPtrAt(type,type->GetId(),true);
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::InsertFdbk(size_t profid,size_t docid,tFdbkType fdbk,R::RDate date,R::RDate computed,bool newone)
 {
-	GProfile* prof=GetProfile(profid,false);
+	GProfile* prof(GetObj(pProfile,profid,false));
 	if(prof)
 		prof->AddFdbk(docid,fdbk,date,computed);
-	GDoc* doc=GetDoc(docid,false);
+	GDoc* doc(GetObj(pDoc,docid,false));
 	if(doc)
 		doc->InsertFdbk(profid);
 	if(newone&&((!Storage->IsAllInMemory())||(SaveResults)))
 		Storage->AddFdbk(profid,docid,fdbk,date,computed);
-}
-
-
-//-----------------------------------------------------------------------------
-GPredicate* GSession::InsertPredicate(size_t id,const R::RString& name,const R::RString& desc)
-{
-	bool InDirect(false);
-
-	GPredicate* ptr(Predicates.GetPtr(name));
-	if(!ptr)
-	{
-		ptr=new GPredicate(id,name,desc);
-		InDirect=true;
-		Predicates.InsertPtr(ptr);
-	}
-
-	if(ptr->GetId()==cNoRef)
-	{
-		Storage->AssignId(ptr);
-		InDirect=true;
-	}
-
-	if(InDirect)
-		PredicatesByIds.InsertPtrAt(ptr,ptr->GetId(),true);
-
-	return(ptr);
-}
-
-
-//-----------------------------------------------------------------------------
-void GSession::InsertStatement(size_t id,size_t predicate,size_t xi,tObjType xitype,size_t xj,tObjType xjtype,double weight)
-{
-	// Get the concept related to Xi
-	GObject* Xi(GetObject(xitype,xi));
-	if(!Xi)
-		ThrowGException("Object "+RString::Number(xi)+" is not a "+GetObjType(xitype,false,false));
-
-	// Get the concept related to the object
-	GObject* Xj(GetObject(xjtype,xj));
-	if(!Xj)
-		ThrowGException("Object "+RString::Number(xj)+" is not a "+GetObjType(xjtype,false,false));
-
-	// Find the predicate
-	GPredicate* Predicate(PredicatesByIds[predicate]);
-	if(!Predicate)
-		ThrowGException("Predicate "+RString::Number(predicate)+" does not exist");
-
-	// Insert the statement
-	bool InDirect(true);
-	GStatement* Statement(new GStatement(id,Predicate,Xi,Xj,weight));
-	Predicate->InsertStatement(Statement);
-
-	// Look if data has an identifier. If not, assign one.
-	if(Statement->GetId()==cNoRef)
-	{
-		Storage->AssignId(Statement);
-		InDirect=true;
-	}
-
-	if(InDirect)
-		Statements.InsertPtrAt(Statement,Statement->GetId(),true);
 }
 
 
@@ -2036,163 +1178,12 @@ bool GSession::IsFromSubject(GDoc* doc,const GSubject* s) const
 
 
 //------------------------------------------------------------------------------
-void GSession::LoadClasses(void)
-{
-	if(ClassesLoaded)
-		return;
-	Storage->LoadClasses();
-	ClassesLoaded=true;
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadCommunities(void)
-{
-	if(CommunitiesLoaded)
-		return;
-	Storage->LoadCommunities();
-	CommunitiesLoaded=true;
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadDocs(void)
-{
-	if(DocsLoaded)
-		return;
-	Storage->LoadDocs();
-	DocsLoaded=true;
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadInfos(GWeightInfos* &infos,tObjType type,size_t blockid,size_t id)
-{
-	size_t size,concept;
-
-	try
-	{
-		IndexType* ptr(Types.GetPtr(type));
-		if(!ptr)
-			ThrowGException(GetObjType(type,true,true)+" do not have descriptions");
-
-		// Position the block file to the correct position and read the size
-		ptr->Desc->Seek(blockid,id);
-		double weight;
-		ptr->Desc->Read((char*)&size,sizeof(size_t));
-		if(!infos)
-			infos=new GWeightInfos(size);
-		else
-			infos->Clear(size);
-		for(size_t i=0;i<size;i++)
-		{
-			ptr->Desc->Read((char*)&concept,sizeof(size_t));
-			ptr->Desc->Read((char*)&weight,sizeof(double));
-			infos->InsertPtrAt(new GWeightInfo(dynamic_cast<GSession*>(this)->GetConcept(concept),weight),i,false);
-		}
-	}
-	catch(RIOException e)
-	{
-		ThrowGException(e.GetMsg());
-	}
-	catch(bad_alloc)
-	{
-		ThrowGException("Cannot create a vector of size "+RString::Number(size)+" for "+GetObjType(type,false,false)+" "+RString::Number(id));
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadRefs(GConcept* concept,RNumContainer<size_t,true>& refs,tObjType type)
-{
-	IndexType* ptr(Types.GetPtr(type));
-	if(!ptr)
-		ThrowGException(GetObjType(type,true,true)+" do not have index");
-
-	size_t Refs(concept->GetIndex(type));
-	if(!Refs)
-	{
-		refs.Clear();
-		return;
-	}
-	ptr->Index->Read(Refs,concept->Id,refs);
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadStruct(GDocStruct* &docstruct,size_t blockid,size_t id)
-{
-	try
-	{
-		// Position the file to correct block
-		StructDoc->Seek(blockid,id);
-
-		// Read the number of records and number of local caches
-		size_t nbrecs,nblcs;
-		StructDoc->Seek(blockid,id);
-		StructDoc->Read((char*)&nbrecs,sizeof(size_t));
-		StructDoc->Read((char*)&nblcs,sizeof(size_t));
-		if(!docstruct)
-			docstruct=new GDocStruct(nbrecs,nblcs);
-		else
-			docstruct->SetSizes(nbrecs,nblcs);
-
-		// Read the LCs
-		for(size_t i=0;i<nblcs;i++)
-		{
-			size_t nb;
-			StructDoc->Read((char*)&nb,sizeof(size_t));
-			docstruct->SetNbLCEntries(i,nb);
-		}
-
-		// Read the records
-		for(size_t i=0;i<nbrecs;i++)
-		{
-			size_t concept,pos,nbchild;
-			char type,depth;
-			StructDoc->Read((char*)&concept,sizeof(size_t));
-			StructDoc->Read((char*)&type,sizeof(char));
-			StructDoc->Read((char*)&pos,sizeof(size_t));
-			StructDoc->Read((char*)&depth,sizeof(char));
-			StructDoc->Read((char*)&nbchild,sizeof(size_t));
-			docstruct->AddRecord(dynamic_cast<GSession*>(this)->GetConcept(concept),static_cast<GVTDRec::RecType>(type),pos,depth,nbchild);
-		}
-	}
-	catch(RIOException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		ThrowGException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::LoadSubjects(void) const
 {
 	if(Subjects.SubjectsLoaded)
 		return;
 	const_cast<GSession*>(this)->Subjects.SubjectsLoaded=true;
 	const_cast<GSession*>(this)->Storage->LoadSubjects();
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadTopics(void)
-{
-	if(TopicsLoaded)
-		return;
-	Storage->LoadTopics();
-	TopicsLoaded=true;
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::LoadUsers(void)
-{
-	if(UsersLoaded)
-		return;
-	Storage->LoadUsers();
-	UsersLoaded=true;
 }
 
 
@@ -2210,17 +1201,12 @@ void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
 void GSession::ReInit(void)
 {
 	// Clear feedbacks
-	Clear(otFdbk);
+	Reset(otFdbk);
 
-	Clear(otCommunity,otReference);
-	Clear(otProfile,otReference);
+	Reset(otCommunity);
+	Reset(otProfile);
+	Reset(otUser);
 
-	// Clear groups, profiles and users
-	Communities.Clear();
-	Profiles.Clear();
-	Users.Clear();
-
-	// Re-initialize the subjects
 	// Re-initialize the subjects
 	LoadSubjects();
 	RCursor<GSubject> Subject(Subjects.GetNodes());
@@ -2235,45 +1221,6 @@ void GSession::ReInit(void)
 
 
 //------------------------------------------------------------------------------
-GConcept* GSession::RenameConcept(GConcept* concept,const R::RString& name)
-{
-	if((!concept)||(!concept->GetType()))
-		ThrowGException("Cannot rename concept");
-
-	// Look if the new name is not  already in the dictionary
-	GConcept* ptr=concept->GetType()->GetPtr(name);
-	if(ptr==concept)
-		return(concept);
-	if(ptr)
-	{
-		// Both concept must be merge and the old one deleted
-		ptr->NbRefDocs+=concept->NbRefDocs;
-		ptr->NbRefProfiles+=concept->NbRefProfiles;
-		ptr->NbRefCommunities+=concept->NbRefCommunities;
-		ptr->NbRefTopics+=concept->NbRefTopics;
-		Delete(concept);
-		return(ptr);
-	}
-	else
-	{
-		// Rename really the concept
-		concept->GetType()->DeletePtr(*concept);
-		concept->Name=name;
-		concept->GetType()->InsertPtr(concept);
-		Storage->SaveConcept(concept);
-		return(concept);
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::ResetBreak(void)
-{
-	ExternBreak=false;
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::RunTool(const RString& name,const RString& list,GSlot* slot,bool need)
 {
 	GTool* Tool(GALILEIApp->GetPlugIn<GTool>("Tools",name,list));
@@ -2282,103 +1229,6 @@ void GSession::RunTool(const RString& name,const RString& list,GSlot* slot,bool 
 	Tool->Run(slot);
 }
 
-
-//------------------------------------------------------------------------------
-void GSession::SaveInfos(const GWeightInfos& infos,tObjType type,size_t& blockid,size_t id)
-{
-	try
-	{
-		size_t size(infos.GetNb()),concept;
-		double weight;
-		if(!size)
-			return;
-
-		IndexType* ptr(Types.GetPtr(type));
-		if(!ptr)
-			ThrowGException(GetObjType(type,true,true)+" do not have descriptions");
-
-		// Position the block file to the correct position and write the size
-		ptr->Desc->Seek(blockid,id,sizeof(size_t)+size*SizeRecDesc);
-		ptr->Desc->Write((char*)&size,sizeof(size_t));
-		RCursor<GWeightInfo> Cur(infos);
-		for(Cur.Start();!Cur.End();Cur.Next())
-		{
-			concept=Cur()->GetId();
-			weight=Cur()->GetWeight();
-			ptr->Desc->Write((char*)&concept,sizeof(size_t));
-			ptr->Desc->Write((char*)&weight,sizeof(double));
-		}
-	}
-	catch(RIOException e)
-	{
-		ThrowGException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::SaveStruct(GDocStruct* docstruct,size_t& blockid,size_t id)
-{
-	try
-	{
-	    if(!docstruct->GetNbRecs())
-			return;
-
-		// Position the file to correct block and announce that a given number of bytes will be written
-	    size_t nbrecs(docstruct->GetNbRecs()),nblcs(docstruct->GetNbLCs());
-	    size_t size(SizeT2+(nblcs*sizeof(size_t))+(nbrecs*SizeRecStruct));
-		StructDoc->Seek(blockid,id,size);
-
-		// Save the size of the number of records and the number of LCs
-		StructDoc->Write((char*)&nbrecs,sizeof(size_t));
-		StructDoc->Write((char*)&nblcs,sizeof(size_t));
-
-		// Save LCs
-		for(size_t i=0;i<nblcs;i++)
-		{
-			size_t nb(docstruct->GetNbLCEntries(i));
-			StructDoc->Write((char*)&nb,sizeof(size_t));
-		}
-
-		// Save the records
-		R::RCursor<GVTDRec> Recs(docstruct->GetRecs());
-		for(Recs.Start();!Recs.End();Recs.Next())
-		{
-			size_t nb;
-			char car;
-			nb=Recs()->GetConcept()->GetId();
-			StructDoc->Write((char*)&nb,sizeof(size_t));
-			car=static_cast<char>(Recs()->GetType());
-			StructDoc->Write((char*)&car,sizeof(char));
-			nb=Recs()->GetPos();
-			StructDoc->Write((char*)&nb,sizeof(size_t));
-			car=Recs()->GetDepth();
-			StructDoc->Write((char*)&car,sizeof(char));
-			nb=docstruct->GetFirstChild(Recs());
-			StructDoc->Write((char*)&nb,sizeof(size_t));
-		}
-	}
-	catch(RIOException e)
-	{
-		cerr<<e.GetMsg()<<endl;
-		ThrowGException(e.GetMsg());
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::SetBreak(void)
-{
-	ExternBreak=true;
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::SetCurrentRandom(int rand)
-{
-	CurrentRandom=rand;
-	Random.Reset(CurrentRandom);
-}
 
 
 //------------------------------------------------------------------------------
@@ -2390,10 +1240,10 @@ void GSession::SetDescType(tSubjectDesc type)
 		RCursor<GSubject> Cur(GetSubjects());
 		for(Cur.Start();!Cur.End();Cur.Next())
 		{
-			if(Cur()->Vector)
+			if(Cur()->Vectors)
 			{
-				delete Cur()->Vector;
-				Cur()->Vector=0;
+				delete Cur()->Vectors;
+				Cur()->Vectors=0;
 			}
 		}
 	}
@@ -2474,21 +1324,21 @@ void GSession::TestSubjects(void)
 			Storage->SaveSubject(Cur());
 	}
 
-	cout<<"There are "<<GetNbObjects(otSubject)<<" subjects:"<<endl;
+	cout<<"There are "<<GetNbObjs(otSubject)<<" subjects:"<<endl;
 	if(NbNoLeaf)
 		cout<<"  "<<NbNoLeaf<<" non-leaf subjects have some documents attached"<<endl;
 	if(NbLeaf)
 		cout<<"  "<<NbLeaf<<" leaf subjects have no documents attached"<<endl;
-	cout<<"  "<<static_cast<double>(NbNoLeaf+NbLeaf)*100.0/static_cast<double>(GetNbObjects(otSubject))<<"% of invalid subjects"<<endl;
+	cout<<"  "<<static_cast<double>(NbNoLeaf+NbLeaf)*100.0/static_cast<double>(GetNbObjs(otSubject))<<"% of invalid subjects"<<endl;
 }
 
 
 //------------------------------------------------------------------------------
 void GSession::UpdateCommunity(GProfile* prof)
 {
-	if(prof&&(prof->GetGroupId()!=cNoRef))
+	if(prof&&(prof->GetGroupId()!=cNoRef)&&(prof->GetGroupId()))
 	{
-		GCommunity* grp=GetCommunity(prof->GetGroupId(),false);
+		GCommunity* grp(GetObj(pCommunity,prof->GetGroupId(),false));
 		if(grp)
 			grp->HasUpdate(prof);
 	}
@@ -2502,7 +1352,7 @@ void GSession::UpdateCommunity(GProfile* prof)
 //------------------------------------------------------------------------------
 void GSession::UpdateCommunity(size_t profid)
 {
-	GProfile* prof=GetProfile(profid,false,false);
+	GProfile* prof(GetObj(pProfile,profid,false,false));
 	UpdateCommunity(prof);
 }
 
@@ -2511,16 +1361,16 @@ void GSession::UpdateCommunity(size_t profid)
 void GSession::UpdateProfiles(size_t docid)
 {
 	// If there are some profile -> propagate in memory
-	GDoc* doc=GetDoc(docid);
+	GDoc* doc(GetObj(pDoc,docid));
 	if(doc)
 	{
-		RNumContainer<size_t,true>* fdbks=doc->GetFdbks();
+		RNumContainer<size_t,true>* fdbks(doc->GetFdbks());
 		if(fdbks)
 		{
 			RNumCursor<size_t> Cur(*fdbks);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				GProfile* prof=GetProfile(Cur());
+				GProfile* prof=GetObj(pProfile,Cur());
 				if(!prof)
 					continue;
 				prof->HasUpdate(docid);
@@ -2535,49 +1385,11 @@ void GSession::UpdateProfiles(size_t docid)
 
 
 //------------------------------------------------------------------------------
-void GSession::UpdateRefs(const GWeightInfos& infos,tObjType type,size_t id,bool add)
-{
-	IndexType* ptr(Types.GetPtr(type));
-	if(!ptr)
-		ThrowGException(GetObjType(type,true,true)+" do not have index");
-	if(!ptr->IndexInc)
-		return;
-
-	// Update the index for all concepts
-	RCursor<GWeightInfo> Cur(infos);
-	for(Cur.Start();!Cur.End();Cur.Next())
-	{
-		// Read the vector representing the current index
-		GConcept* Concept(Cur()->Concept);
-		if(Concept->GetIndex(type))
-			ptr->Index->Read(Concept->GetIndex(type),Concept->Id,tmpRefs);
-		else
-			tmpRefs.Clear();
-
-		// Add or remove the document from the index
-		size_t oldsize(tmpRefs.GetNb());
-		if(add)
-			tmpRefs.Insert(id);
-		else
-			tmpRefs.Delete(id);
-
-		// If the size of vector has changed -> Save it back
-		if(oldsize!=tmpRefs.GetNb())
-		{
-			size_t idx(Concept->GetIndex(type));
-			ptr->Index->Write(idx,Concept->Id,tmpRefs);
-			Concept->SetIndex(type,idx);
-		}
-	}
-}
-
-
-//------------------------------------------------------------------------------
 void GSession::UpdateTopic(GDoc* doc)
 {
 	if(doc&&(doc->GetGroupId()!=cNoRef))
 	{
-		GTopic* top=GetTopic(doc->GetGroupId(),false);
+		GTopic* top(GetObj(pTopic,doc->GetGroupId(),false));
 		if(top)
 			top->HasUpdate(doc);
 	}
@@ -2591,8 +1403,31 @@ void GSession::UpdateTopic(GDoc* doc)
 //------------------------------------------------------------------------------
 void GSession::UpdateTopic(size_t docid)
 {
-	GDoc* doc=GetDoc(docid,false,false);
+	GDoc* doc(GetObj(pDoc,docid,false,false));
 	UpdateTopic(doc);
+}
+
+
+//------------------------------------------------------------------------------
+bool GSession::IsDefined(const RContainer<GVector,true,true>& vectors)
+{
+	RCursor<GVector> Vector(vectors);
+	for(Vector.Start();!Vector.End();Vector.Next())
+		if(Vector()->IsDefined())
+			return(true);
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::AssignVectors(GClass* theclass,R::RContainer<GVector,true,true>& vectors)
+{
+	theclass->Update(vectors);
+	if(SaveResults)
+	{
+		theclass->SaveDesc();
+		Storage->SaveObj(theclass);
+	}
 }
 
 
@@ -2609,7 +1444,6 @@ GSession::~GSession(void)
 	}
 
 	delete Simulator;
-	delete StructDoc;
 	if(Storage)
 		Storage->Session=0;
 }

@@ -187,13 +187,13 @@ GInstSession::GInstSession(const RString& name,GSessionClass* c,RInterpreter* pr
 	bool DoCommunities=args[3]->GetValue(prg)=="1";
 	bool DoTopics=args[4]->GetValue(prg)=="1";
 	if(DoTopics)
-		Session->LoadTopics();
+		Session->LoadObjs(pTopic);
 	if(DoDocs||DoProfiles||DoTopics)
-		Session->LoadDocs();
+		Session->LoadObjs(pDoc);
 	if(DoCommunities)
-		Session->LoadCommunities();
+		Session->LoadObjs(pCommunity);
 	if(DoProfiles||DoCommunities)
-		Session->LoadUsers();
+		Session->LoadObjs(pUser);
 }
 
 

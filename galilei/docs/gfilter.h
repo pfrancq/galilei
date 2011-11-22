@@ -53,17 +53,22 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GFilter class provides a representation of a generic filter that transform
-* a document of a given type into a DocXML document. Each filter is associated
-* with a given set of MIME types. This association is used to determine which
-* filter should analyze a document.
-* @author Pascal Francq
-* @short Generic Filter.
-*/
+ * The GFilter class provides a generic filter that extracts text from a
+ * document of a given type. In practice, the filter calls the methods Extract*
+ * from the GDocAnalyze class.
+ *
+ * Each filter is associated with a given set of MIME types. This association
+ * is used to determine which filter should extracts the text from a document.
+ * @author Pascal Francq
+ * @short Generic Filter.
+ */
 class GFilter : public GPlugIn
 {
 	class MetaData;
 
+	/**
+	 *
+	 */
 	R::RContainer<MetaData,true,false> MetaDatas;
 
 public:
@@ -126,7 +131,7 @@ public:
 	* @param block          Block containing the text.
 	* @param parser         Parser of the XML stream.
 	*/
-	void AnalyzeBlock(const R::RString& block,R::RXMLParser* parser);
+//	void AnalyzeBlock(const R::RString& block,R::RXMLParser* parser);
 
 	/**
 	* Analyze a list of keywords separating by a single character.
@@ -134,12 +139,12 @@ public:
 	* @param sep            Separator to use.
 	* @param parser         Parser of the XML stream.
 	*/
-	void AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLParser* parser);
+//	void AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLParser* parser);
 
 	/**
 	 * Clear local information.
 	 */
-	void Clear(R::RXMLParser* parser);
+//	void Clear(R::RXMLParser* parser);
 
 	//-----------------------------------------------------
 	/** @name DocXML Methods
@@ -150,7 +155,7 @@ public:
 	 * Start a DocXML stream.
 	 * @param parser         Parser of the XML stream.
 	 */
-	void StartStream(R::RXMLParser* parser);
+//	void StartStream(R::RXMLParser* parser);
 
 	/**
 	 * Add a given metadata defined by the Dublin core.
@@ -163,25 +168,25 @@ public:
 	 * @param type           Type of the metadata.
 	 * @param sep            Separator (only for keywords)
 	 */
-	void AddDublinCoreMetaData(const R::RString& name,const R::RString& value,MetaDataType type=RawText,R::RChar sep=',');
+//	void AddDublinCoreMetaData(const R::RString& name,const R::RString& value,MetaDataType type=RawText,R::RChar sep=',');
 
 	/**
 	 * Start a DocXML stream.
 	 * @param parser         Parser of the XML stream.
 	 */
-	void WriteMetaDataStream(R::RXMLParser* parser);
+//	void WriteMetaDataStream(R::RXMLParser* parser);
 
 	/**
 	 * Start a paragraph.
 	 * @param parser         Parser of the XML stream.
 	 */
-	void StartParagraph(R::RXMLParser* parser);
+//	void StartParagraph(R::RXMLParser* parser);
 
 	/**
 	 * End a paragraph.
 	 * @param parser         Parser of the XML stream.
 	 */
-	void EndParagraph(R::RXMLParser* parser);
+//	void EndParagraph(R::RXMLParser* parser);
 
 	/**
 	 * Extract textual content from a file.
@@ -189,30 +194,32 @@ public:
 	 * @param parser         Parser of the XML stream.
 	 * @param text           Text to add.
 	 */
-	void ExtractTextualContent(R::RTextFile& file,R::RXMLParser* parser,const R::RString& text=R::RString::Null);
+//	void ExtractTextualContent(R::RTextFile& file,R::RXMLParser* parser,const R::RString& text=R::RString::Null);
 
 	/**
 	 * End a DocXML stream.
 	 * @param parser         Parser of the XML stream.
 	 */
-	void EndStream(R::RXMLParser* parser);
+//	void EndStream(R::RXMLParser* parser);
 
 	//@} DocXML Methods
 
 	/**
-	* Analyze a document with a given URI for which a DocXML must be created.
-	* This method must be re-implemented by all filters.
+	* Analyze a document with a given URI. This method must be re-implemented by
+   * all filters.
+	* @param analyzer        Analyzer.
 	* @param doc             Document to analyze.
-	* @param uri             URI of the file to analyze.
-	* @param parser          Current parser of the XML stream.
-	* @param rec             Receiver for the signals.
+	* @param file            File to analyze (eventually a local copy of a
+	*                        remote document).
 	*/
-	virtual void Analyze(GDoc* doc,const R::RURI& uri,R::RXMLParser* parser,GSlot* rec)=0;
+	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)=0;
 
 	/**
 	* Destruct the filter.
 	*/
 	virtual ~GFilter(void);
+
+	friend class GDocAnalyze;
 };
 
 

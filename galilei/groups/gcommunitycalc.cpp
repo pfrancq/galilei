@@ -44,7 +44,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GCommunityCalc::GCommunityCalc(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), Infos(5000)
+	: GPlugIn(session,fac), Vectors(20)
 {
 }
 

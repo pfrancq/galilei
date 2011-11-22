@@ -31,7 +31,8 @@
 // include files for GALILEI
 #include <gclass.h>
 #include <gsession.h>
-using namespace GALILEI;
+#include <gclasses.h>
+#include <gdescriptionobject.hh>
 using namespace R;
 using namespace std;
 
@@ -44,15 +45,25 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+void GClass::PrivateInit(void)
+{
+	SetState(osNew);
+	SaveDesc();
+	AddRefs(Session,otClass);
+	SetId(cNoRef);
+}
+
+
+//------------------------------------------------------------------------------
 GClass::GClass(GSession* session,const R::RString& name)
-	: R::RNode<GClasses,GClass,true>(), GWeightInfosObj(session,cNoRef,0,otClass,name,osNew)
+	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass>(session,cNoRef,0,otClass,name,osNew)
 {
 }
 
 
 //------------------------------------------------------------------------------
 GClass::GClass(GSession* session,size_t id,size_t blockid,const R::RString& name)
-	: R::RNode<GClasses,GClass,true>(), GWeightInfosObj(session,id,blockid,otClass,name,osNew)
+	: R::RNode<GClasses,GClass,false>(), GDescriptionObject<GClass>(session,id,blockid,otClass,name,osNew)
 {
 }
 
@@ -60,8 +71,8 @@ GClass::GClass(GSession* session,size_t id,size_t blockid,const R::RString& name
 //------------------------------------------------------------------------------
 void GClass::Clear(void)
 {
-	RNode<GClasses,GClass,true>::Clear();
-	GWeightInfosObj::Clear();
+	RNode<GClasses,GClass,false>::Clear();
+	GDescriptionObject<GClass>::Clear();
 }
 
 
@@ -89,23 +100,25 @@ int GClass::Compare(const size_t id) const
 
 
 //------------------------------------------------------------------------------
-void GClass::Update(GSession* session,GWeightInfos& infos)
+void GClass::Update(R::RContainer<GVector,true,true>& vectors)
 {
 	// Remove its references
-	DelRefs(otClass);
-	session->UpdateRefs(infos,otClass,Id,false);
+	DelRefs(Session,otClass);
+	if(Session->HasIndex(pClass))
+		Session->UpdateIndex(pClass,vectors,Id,false);
 
 	// Assign information
-	GWeightInfosObj::Clear();
+	GDescription::Clear();
 	State=osUpdated;
-	Transfer(infos);
+	Transfer(vectors);
 
-	// Clear infos
-	infos.Clear();
+	// Clear vectors
+	vectors.Clear();
 
 	// Update its references
-	AddRefs(otClass);
-	session->UpdateRefs(infos,otClass,Id,true);
+	AddRefs(Session,otClass);
+	if(Session->HasIndex(pClass))
+		Session->UpdateIndex(pClass,vectors,Id,false);
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);
@@ -115,19 +128,32 @@ void GClass::Update(GSession* session,GWeightInfos& infos)
 //------------------------------------------------------------------------------
 double GClass::GetUpOperationCost(void) const
 {
-	double Cost;
+	double Cost(0.0);
 
 	if(Parent)
 	{
-		// The cost is the difference between the number of information entities of
-		// the current class with its parents (it is of course supposed that all the
-		// information entities of the parent are in the current class).
-		Cost=GetVector().GetNb()-Parent->GetVector().GetNb();
+		RCursor<GVector> Vector(GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
+		{
+			// Look if the parent has a vector for that concept
+			GVector* Correspondance(Parent->GetVector(Vector()->GetConcept()));
+			if(Correspondance)
+			{
+				// The cost is the difference between the number of information entities of
+				// the current class with its parents (it is of course supposed that all the
+				// information entities of the parent are in the current class).
+				Cost+=(Vector()->GetNb()-Correspondance->GetNb());
+			}
+			else
+				Cost+=Vector()->GetNb();
+		}
 	}
 	else
 	{
-		// No parent -> all the information entities are to be 'added'.
-		Cost=GetVector().GetNb();
+		// No parent -> all the concepts references are to be 'added'.
+		RCursor<GVector> Vector(GetVectors());
+		for(Vector.Start();!Vector.End();Vector.Next())
+			Cost+=Vector()->GetNb();
 	}
 
 	return(Cost);
@@ -138,18 +164,3 @@ double GClass::GetUpOperationCost(void) const
 GClass::~GClass(void)
 {
 }
-
-
-
-//------------------------------------------------------------------------------
-//
-//  GClasses
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GClasses::GClasses(size_t max,size_t inc)
-	: RTree<GClasses,GClass,true>(max,inc)
-{
-}
-

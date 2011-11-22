@@ -143,7 +143,7 @@ public:
 //------------------------------------------------------------------------------
 GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	: RApplication(name,argc,argv), RContainer<GPlugInManager,true,false>(20,10),
-	  RDownload(), Sessions(10), LoadDialogs(dlg), PlugInsPath(10), MIMES(50,25),
+	  Sessions(10), LoadDialogs(dlg), PlugInsPath(10), MIMES(50,25),
 	  Exts(50,25), Log("/var/log/galilei/galilei.log")
 {
 	Log.Open(RIO::Append);
@@ -151,7 +151,9 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	// Create the managers of plug-ins
 	InsertPtr(Storages=new GPlugInManager("Storage",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("LinkCalc",GPlugInManager::ptSelect));
-	InsertPtr(new GPlugInManager("DocAnalyze",GPlugInManager::ptSelect));
+	//InsertPtr(new GPlugInManager("DocAnalyze",GPlugInManager::ptSelect));
+	InsertPtr(new GPlugInManager("Analyzer",GPlugInManager::ptOrdered));
+	InsertPtr(new GPlugInManager("Tokenizer",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("Filter",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("Engine",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("MetaEngine",GPlugInManager::ptSelect));
@@ -249,7 +251,7 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 		Storages->InitPlugIns(Session);
 		GStorage* Storage(Storages->GetCurrentPlugIn<GStorage>());
 		Session->Storage=Storage;
-		Storage->LoadConceptTypes();
+		Storage->LoadConceptCatsTypes();
 		Storage->LoadConcepts();
 		Storage->LoadPredicates();
 		Storage->LoadStatements();
@@ -257,12 +259,6 @@ GSession* GGALILEIApp::GetSession(const R::RString& name,bool created)
 
 		// Initialize the languages
 		Langs->InitPlugIns(Session);
-		RCursor<GConceptType> Types(Session->ConceptTypes);
-		for(Types.Start();!Types.End();Types.Next())
-		{
-			RString code(Types()->Name.Mid(0,2));
-			Types()->Lang=Langs->GetPlugIn<GLang>(code,false);
-		}
 		Log.WriteLog("Languages for session '"+name+"' created");
 
 		// Initialize the rest of the plug-ins
@@ -531,76 +527,28 @@ void GGALILEIApp::RunPrg(GSlot* rec,const RString& filename)
 
 
 //------------------------------------------------------------------------------
-void GGALILEIApp::FindMIMEType(void)
+GFilter* GGALILEIApp::FindMIMEType(GDoc* doc)
 {
-	// If MIME type already exist -> return
-	RString MIME(Doc->GetMIMEType());
-	if(!MIME.IsEmpty())
-		return;
-
-	// Goes through all defined MIME types
-	RCursor<GMIMEExt> Cur(Exts);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		if(fnmatch(Cur()->Ext,Doc->GetURL()(),0)!=FNM_NOMATCH)
-		{
-			Doc->SetMIMEType(Cur()->Name);
-			return;
-		}
-}
-
-
-//------------------------------------------------------------------------------
-bool GGALILEIApp::IsValidContent(const R::RString& MIME)
-{
-	if(Doc->GetMIMEType().IsEmpty())
-		Doc->SetMIMEType(MIME);
-	GMIMEFilter* ptr(MIMES.GetPtr(Doc->GetMIMEType()));
-	if(!ptr)
-		return(false);
-	Filter=ptr->Filter;
-	return(true);
-}
-
-
-//------------------------------------------------------------------------------
-GFilter* GGALILEIApp::FindMIMEType(GDoc* doc,RURI& uri,RIO::RSmartTempFile& tmp)
-{
-	// Init Part;
-	Doc=doc;
-	Filter=0;
-	uri=Doc->GetURL();
-
 	// Guess the MIME type if necessary
-	FindMIMEType();
-
-	// If it is known to be a XML file -> file can directly analyzed.
-	if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
-		return(0);
-
-	// The file is perhaps not a XML file -> Try to transform it into DocXML
-
-	// If it is not a local	file -> Download it
-	if(Doc->GetURL().GetScheme()!="file")
+	if(doc->GetMIMEType().IsEmpty())
 	{
-		uri=tmp.GetName();
-		DownloadFile(Doc->GetURL(),uri);
-
-		// Perhaps the server holding the file has provide a MIME type which can be XML
-		if((Doc->GetMIMEType()=="application/xml")||(Doc->GetMIMEType()=="text/xml"))
-			return(0);
+		// Goes through all defined MIME types
+		RCursor<GMIMEExt> Cur(Exts);
+		for(Cur.Start();!Cur.End();Cur.Next())
+			if(fnmatch(Cur()->Ext,doc->GetURL()(),0)!=FNM_NOMATCH)
+			{
+				doc->SetMIMEType(Cur()->Name);
+				break;
+			}
 	}
-
-	// If no MIME type -> Exception
-	if(Doc->GetMIMEType().IsEmpty())
-		throw GException("Cannot find MIME type for "+doc->GetURL()());
+	if(doc->GetMIMEType().IsEmpty())
+		ThrowGException("Cannot find MIME type for "+doc->GetURL()());
 
 	// If no filter -> Exception
-	GMIMEFilter* ptr=MIMES.GetPtr(Doc->GetMIMEType());
-	if(ptr)
-		Filter=ptr->Filter;
-	if(!Filter)
+	GMIMEFilter* ptr=MIMES.GetPtr(doc->GetMIMEType());
+	if(!ptr)
 		ThrowGException("Cannot treat the MIME type '"+doc->GetMIMEType()+"'");
-	return(Filter);
+	return(ptr->Filter);
 }
 
 

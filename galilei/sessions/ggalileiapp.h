@@ -70,7 +70,7 @@ namespace GALILEI{
 * @short Generic GALILEI Application
 * @author Pascal Francq
 */
-class GGALILEIApp : public R::RApplication, public R::RContainer<GPlugInManager,true,false>, public R::RDownload
+class GGALILEIApp : public R::RApplication, public R::RContainer<GPlugInManager,true,false>
 {
 	class GMIMEFilter;
 	class GMIMEExt;
@@ -116,16 +116,6 @@ protected:
 	* List of all pairs (extension, MIME type) available.
 	*/
 	R::RContainer<GMIMEExt,true,true> Exts;
-
-	/**
-	 * Filter that should analyze the file.
-	 */
-	GFilter* Filter;
-
-	/**
-	 * Document to analyze.
-	 */
-	GDoc* Doc;
 
 	/**
      * Log file for the application.
@@ -423,38 +413,15 @@ public:
 	*/
 	void RunPrg(GSlot* rec,const R::RString& filename);
 
-
-protected:
-
 	/**
-	 * Find the MIME type of a file based on its extension (Ex. ".html" gives
-	 * "text/html").
-	 */
-	void FindMIMEType(void);
-
-	/**
-	 * If the protocol is HTTP and the server returns a content type for the
-	 * downloaded file. This function verifies that a filter exist for the
-	 * document to download.
-	 * @param MIME           MIME type send by the server.
-	 * @return true if the file should be downloaded.
-	 */
-	virtual bool IsValidContent(const R::RString& MIME);
-
-public:
-
-	/**
-	 * Pre-analyze a document to find the correct MIME type.
-	 * @return the filter needed to analyze the document, or null if the
-	 * document is a XML one.
+	 * Find the filter corresponding to a document based on the MIME type.
+	 *
+	 * An exception is generated if no filter was found (no MIME type, no
+	 * corresponding filter, ...).
 	 * @param doc             Document to analyze.
-	 * @param uri             File to analyze (can be a local copy of the
-	 *                        original file).
-	 * @param tmp             Necessary if a file must be downloaded.
-	 * @exception A GException is generated if the document could not be
-	 * analyzed (no MIME type, no filter, ...).
+	 * @return the filter needed to analyze the document.
 	 */
-	GFilter* FindMIMEType(GDoc* doc,R::RURI& uri,R::RIO::RSmartTempFile& tmp);
+	GFilter* FindMIMEType(GDoc* doc);
 
 	/**
 	* Add a pair (MIME type,filter).

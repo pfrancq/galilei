@@ -36,7 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gweightinfosobj.h>
+#include <gdescriptionobject.h>
 
 
 //------------------------------------------------------------------------------
@@ -54,7 +54,7 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Profile.
 */
-class GProfile : public GWeightInfosObj
+class GProfile : public GDescriptionObject<GProfile>
 {
 protected:
 
@@ -108,6 +108,11 @@ protected:
 	 * Confidence Level (to maximize).
 	 */
 	char Level;
+
+	/**
+	 * Method used to correctly instantiate some template methods.
+	 */
+	void PrivateInit(void);
 
 public:
 
@@ -307,10 +312,12 @@ public:
 	/**
 	* Assign a new description to the profile.
 	* @param session         Session.
-	* @param infos            Pointer to the information.
-	* \warning The container infos is cleared by this method.
+	* @param vectors         Vectors.
+   * @param delref          Delete the references (must be set to true if the
+	*                        profile has already a description).
+	* \warning The container vectors is cleared by this method.
 	*/
-	void Update(GSession* session,GWeightInfos& infos);
+	void Update(GSession* session,R::RContainer<GVector,true,true>& vectors,bool delref);
 
 	/**
 	* Clear the assessment of the profile.

@@ -37,7 +37,7 @@
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	GALILEI::GGroup<cObj,cGroup,type>::GGroup(GSession* session,size_t id,size_t blockid,const R::RString& name,const R::RDate& u,const R::RDate& c)
-	: R::RContainer<cObj,false,true>(20,10), GWeightInfosObj(session,id,blockid,type,name,osNew),
+	: R::RContainer<cObj,false,true>(20,10), GDescriptionObject<cGroup>(session,id,blockid,type,name,osNew),
 	  Updated(u), Computed(c), Data(0)
 {
 }
@@ -189,25 +189,25 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	}
 
 	// Suppose the first element is the most relevant.
-	R::RCursor<cObj> Prof(*this);
-	Prof.Start();
-	rel=Prof();
+	R::RCursor<cObj> Obj(*this);
+	Obj.Start();
+	rel=Obj();
 	if(R::RContainer<cObj,false,true>::GetNb()==1)
 	{
 		avgsim=1.0;
 		return(rel);
 	}
 	// Similarities
-	GMeasure* ProfilesSims=GetSimMeasure();
-	avgsim=ComputeSumSim(ProfilesSims,rel);
+	GMeasure* ObjsSims=GetSimMeasure();
+	avgsim=ComputeSumSim(ObjsSims,rel);
 
 	// Look if in the other objects, there is a better one
-	for(;!Prof.End();Prof.Next())
+	for(;!Obj.End();Obj.Next())
 	{
-		sum=ComputeSumSim(ProfilesSims,Prof());
+		sum=ComputeSumSim(ObjsSims,Obj());
 		if(sum>=avgsim)
 		{
-			rel=Prof();
+			rel=Obj();
 			avgsim=sum;
 		}
 	}
@@ -234,13 +234,13 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	double sum;
 
 	if(!measure)
-		throw GException("No profiles similarities");
-	R::RCursor<cObj> Prof(*this);
-	for(Prof.Start(),sum=0.0;!Prof.End();Prof.Next())
+		throw GException("No objects similarities");
+	R::RCursor<cObj> Obj(*this);
+	for(Obj.Start(),sum=0.0;!Obj.End();Obj.Next())
 	{
-		if(Prof()==obj) continue;
+		if(Obj()==obj) continue;
 		double res;
-		measure->Measure(0,obj->GetId(),Prof()->GetId(),&res);
+		measure->Measure(0,obj->GetId(),Obj()->GetId(),&res);
 		sum+=(res);
 	}
 	return(sum);
@@ -251,7 +251,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	void GALILEI::GGroup<cObj,cGroup,type>::Clear(void)
 {
-	GWeightInfosObj::Clear();
+	GDescription::Clear();
 	if(Data)
 		Data->Dirty();
 }
@@ -259,24 +259,29 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::Update(GSession* session,GWeightInfos& infos)
+	void GALILEI::GGroup<cObj,cGroup,type>::Update(GSession* session,R::RContainer<GVector,true,true>& vectors,bool delref)
 {
 	// Remove its references
-	DelRefs(type);
-	session->UpdateRefs(infos,type,Id,false);
+	if(delref)
+	{
+		DelRefs(session,type);
+		if(session->HasIndex(static_cast<cGroup*>(0)))
+			session->UpdateIndex(static_cast<cGroup*>(0),vectors,Id,false);
+	}
 
 	// Assign information
-	GWeightInfosObj::Clear();
+	GDescription::Clear();
 	State=osUpdated;
 	Computed.SetToday();
-	GWeightInfosObj::Transfer(infos);
+	GDescription::Transfer(vectors);
 
 	// Clear infos
-	infos.Clear();
+	vectors.Clear();
 
 	// Update its references
-	AddRefs(type);
-	session->UpdateRefs(infos,type,Id,true);
+	AddRefs(session,type);
+   if(session->HasIndex(static_cast<cGroup*>(0)))
+      session->UpdateIndex(static_cast<cGroup*>(0),vectors,Id,false);
 
 	// Emit an event that it was modified
 	if(Data)
@@ -290,9 +295,9 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	size_t GALILEI::GGroup<cObj,cGroup,type>::GetNbObjs(const GSubject* subject) const
 {
 	size_t tot;
-	R::RCursor<cObj> sub(*this);
-	for(sub.Start(),tot=0;!sub.End();sub.Next())
-		if(subject->IsIn(sub()))
+	R::RCursor<cObj> Obj(*this);
+	for(Obj.Start(),tot=0;!Obj.End();Obj.Next())
+		if(subject->IsIn(Obj()))
 			tot++;
 	return(tot);
 }
@@ -311,9 +316,9 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 template<class cObj,class cGroup,GALILEI::tObjType type>
 	GALILEI::GGroup<cObj,cGroup,type>::~GGroup(void)
 {
-	R::RCursor<cObj> Prof(*this);
-	for(Prof.Start();!Prof.End();Prof.Next())
-		Prof()->SetGroup(0);
+	R::RCursor<cObj> Obj(*this);
+	for(Obj.Start();!Obj.End();Obj.Next())
+		Obj()->SetGroup(0);
 	if(Data)
 		delete Data;
 }

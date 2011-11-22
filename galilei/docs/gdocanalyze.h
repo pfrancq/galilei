@@ -35,15 +35,16 @@
 
 //------------------------------------------------------------------------------
 // include files for R
-#include <rxmlparser.h>
+#include <rdblhashcontainer.h>
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
-#include <gweightinfos.h>
-#include <gdocstruct.h>
+#include <gvector.h>
+#include <gconcepttree.h>
+#include <gtexttoken.h>
 
 
 //------------------------------------------------------------------------------
@@ -53,55 +54,257 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
- * The GDocAnalyze class provides a generic method to analyze a document. The
- * internal structures, Infos and Struct, are used by GSession to manage the
- * results (saving, assign them to the documents, etc.). The plug-in is
- * responsible for their management (such as clearing them between two analysis
- * if necessary.
+ * The GDocAnalyze class analyzes a given document. In practice, it does the
+ * following steps:
+ * -# It determines the filter corresponding to the type of the document to
+ *    analyze.
+ * -# It uses the current tokenizer to extract the tokens from the text
+ *    provided by the filter (child classes of GFilter).
+ * -# The tokens are then passed to the analyzers in the order specified in the
+ *    configuration to be treated (stemming, filtering, etc.).
+ *
+ * @internal
+ * The class manages the list of tokens found in the current document, in the
+ * container OrderTokens (where they are ordered by name) and in Tokens, as well
+ * as their occurrences (Occurs).
+ *
+ * To avoid the allocation and deallocation of multiple chucks of memory, all
+ * tokens and occurrences are stored once created (in MemoryTokens and
+ * MemoryOccurs) and then reused during the next analyzes.
  * @author Pascal Francq
- * @short Generic Document Analysis.
+ * @short Document Analysis.
  */
-class GDocAnalyze : public GPlugIn, public R::RXMLParser
+class GDocAnalyze : public R::RDownload
 {
 protected:
 
 	/**
-	 * Vector that should contain the structure after the analyze.
+	 * Current document analyzed.
 	 */
-	GWeightInfos Infos;
+	GDoc* Doc;
 
 	/**
-	 * Structure that should contain the structure after the analyze.
+	 * Corresponding session.
 	 */
-	GDocStruct Struct;
+	GSession* Session;
+
+	/**
+	 * Vector that should contain the structure after the analyze.
+	 */
+	R::RContainer<GVector,true,true> Vectors;
+
+	/**
+	 * Concept Tree.
+	 */
+	GConceptTree Struct;
 
 	/**
 	 * Language associated to the document.
 	 */
 	GLang* Lang;
 
+	/**
+	 * The tokenizer.
+	 */
+	GTokenizer* Tokenizer;
+
+	/**
+	 * The analyzers.
+	 */
+	R::RCastCursor<GPlugIn,GAnalyzer> Analyzers;
+
+	/**
+	 * Concepts related to the Dublin Core Metadata Initiative.
+	 */
+	GConceptType* DCMI;
+
+   /**
+    * Concept representing the default content.
+    */
+   GConcept* DefaultContent;
+
+  	/**
+	 * Memory of tokens.
+	 */
+	R::RContainer<GTextToken,true,false> MemoryTokens;
+
+   /**
+    * Number of tokens from the memory used.
+    */
+   size_t NbMemoryTokensUsed;
+
+	/**
+	 * Memory of occurrences.
+	 */
+   R::RContainer<GTextToken::Occurrence,true,false> MemoryOccurs;
+
+   /**
+    * Number of occurrences from the memory used.
+    */
+   size_t NbMemoryOccursUsed;
+
+	/**
+	 * List of tokens currently added ordered.
+	 */
+	R::RDblHashContainer<GTextToken,false> OrderTokens;
+
+	/**
+	 * List of tokens currently added.
+	 */
+	R::RContainer<GTextToken,false,false> Tokens;
+
+	/**
+	 * The occurrences of the tokens.
+	 */
+	R::RContainer<GTextToken::Occurrence,false,false> Occurs;
+
+	/**
+	 * Vector for which new concepts should be added.
+	 */
+	GVector* CurVector;
+
+	/**
+	 * Current position.
+	 */
+	size_t CurPos;
+
+	/**
+	 * Current depth.
+	 */
+	size_t CurDepth;
+
 public:
 
 	/**
 	* Constructor of the document analysis method.
 	* @param session         Session.
-	* @param fac             Factory of the plug-in.
 	*/
-	GDocAnalyze(GSession* session,GPlugInFactory* fac);
+	GDocAnalyze(GSession* session);
 
 	/**
-	 * Prepare the analyze of a document. The method is called by GSession
-	 * before the XML document is read.
-	 * @param doc             Document to analyze.
-	 * @param native          Specify if the document is a native XML file.
+	 * Get the document currently analyzed.
+	 * @return pointer to the document.
 	 */
-	virtual void PrepareAnalyze(const GDoc* doc,bool native)=0;
+	GDoc* GetDoc(void) const {return(Doc);}
 
 	/**
-	* Terminate the analysis of a XML document. The method is called by
-	* GSession after the XML document is read.
+	 * Add a token to the current vector.
+    * @warning This method should only be called by child classes of
+    *          GTokenizer.
+	 * @param token          Token to add.
+	 */
+	void AddToken(const R::RString& token);
+
+	/**
+	 * Extract some tokens of a given text, and add them to a vector associated
+    * with a given concept.
+	 * @param text           Text to add.
+	 * @param concept        Concept of the vector associated to the text.
+	 * @param pos            Position of the text.
+	 * @param depth          Depth of the text.
+	 */
+	void ExtractText(const R::RString& text,GConcept* concept,size_t pos,size_t depth=0);
+
+	/**
+	 * Extract some tokens of a given text, and add them to a vector associated
+    * with a given metadata defined by the Dublin core. In practice, to each
+    * metadata corresponds one vector. Several contents associated with a given
+    * metadata are simply added.
+	 *
+	 * The only allowed elements are: contributor, coverage, creator, date,
+	 * description, format, identifier, language, publisher, relation, rights,
+	 * source, subject, title, type.
+	 *
+	 * Typically, this method is called from a filter.
+	 * @code
+	 * void MyFilter::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
+	 * {
+	 * 	...
+	 * 	analyzer->AddDCMI("title","This is the title of the document");
+	 * 	...
+	 * }
+	 * @endcode
+	 * @param element        Element of the DCMI (without namespace and/or
+	 *                       prefix).
+	 * @param value          Value of the metadata.
+	 * @param pos            Position of the value.
+	 * @param depth          Depth of the value.
+	 */
+	void ExtractDCMI(const R::RString& element,const R::RString& value,size_t pos,size_t depth=0);
+
+   /**
+    * Extract some tokens from a given text, and add them to the 'default'
+    * concept.
+    * @param content         Content.
+	 * @param pos            Position of the content.
+	 * @param depth          Depth of the content.
+    */
+   void ExtractContent(const R::RString& content,size_t pos,size_t depth=0);
+
+	/**
+	 * Assign the plug-ins. An exception is generated if no plug-ins are
+	 * defined.
+	 */
+	void AssignPlugIns(void);
+
+	/**
+	 * Get a cursor over the tokens extracted. The order of the container
+	 * reflects the order of the first occurrence of each token.
+	 * @return a cursor.
+	 */
+	R::RCursor<GTextToken> GetTokens(void) const {return(R::RCursor<GTextToken>(Tokens));}
+
+	/**
+	 * Get a cursor over the occurrences of the different tokens extracted
+	 * as they appear in the document.
+	 * @return a cursor.
+	 */
+	R::RCursor<GTextToken::Occurrence> GetOccurs(void) const {return(R::RCursor<GTextToken::Occurrence>(Occurs));}
+
+	/**
+	 * Delete a given token.
+	 * @warning This method may modified the cursor over the tokens.
+	 * @param token          Token to delete.
+	 */
+	void DeleteToken(GTextToken* token);
+
+	/**
+	 * Replace a given token by a given value (for example a word by its stem).
+	 * @warning This method may modified the cursor over the tokens.
+	 * @param token          Token to replace.
+	 * @param value          New value.
+	 * @return true if the current token was replaced and false if it was
+	 *         deleted (its occurrences being merge with an existing token).
+	 */
+	bool ReplaceToken(GTextToken* token,R::RString value);
+
+	/**
+	 * Get the language actually determined.
+	 */
+	GLang* GetLang(void) const {return(Lang);}
+
+	/**
+	 * Set the language for the document currently analyzed.
+	 * @param lang
+	 */
+	void SetLang(GLang* lang);
+
+private:
+
+    /**
+     * Create the vectors and the description
+     */
+    void PostAnalyze(void);
+
+public:
+
+	/**
+	* Analyze a document.
+	* @param doc             Pointer to the document to analyze.
+	* @param ram             Must the description of the document be maintained
+	*                        in RAM?
 	*/
-	virtual void TerminateAnalyze(void)=0;
+	void Analyze(GDoc* doc,bool ram=true);
 
 	/**
 	* Destruct the document analyzer.

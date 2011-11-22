@@ -35,8 +35,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <gweightinfosobj.h>
-#include <gweightinfo.h>
+#include <gdescriptionobject.h>
 #include <gsession.h>
 #include <ggalileiapp.h>
 #include <gmeasure.h>
@@ -59,13 +58,15 @@ namespace GALILEI{
 * @short Generic Group.
 */
 template<class cObj,class cGroup,tObjType type>
-	class GGroup : protected R::RContainer<cObj,false,true>, public GWeightInfosObj
+	class GGroup : protected R::RContainer<cObj,false,true>, public GDescriptionObject<cGroup>
 {
-	using GWeightInfosObj::Id;
-	using GWeightInfosObj::CopyInfos;
-	using GWeightInfosObj::AddRefs;
-	using GWeightInfosObj::DelRefs;
-	using GWeightInfosObj::State;
+public:
+	using GDescriptionObject<cGroup>::Id;
+	using GDescriptionObject<cGroup>::Copy;
+	using GDescriptionObject<cGroup>::AddRefs;
+	using GDescriptionObject<cGroup>::DelRefs;
+	using GDescriptionObject<cGroup>::State;
+	using GDescriptionObject<cGroup>::Emit;
 
 protected:
 
@@ -236,10 +237,12 @@ public:
 	/**
 	* Assign a new description to the group.
 	* @param session         Session.
-	* @param infos           Pointer to the information.
-	* \warning The container infos is cleared by this method.
+	* @param vectors         Vectors.
+   * @param delref          Delete the references (must be set to true if the
+	*                        group has already a description).
+	* \warning The container vectors is cleared by this method.
 	*/
-	void Update(GSession* session,GWeightInfos& infos);
+	void Update(GSession* session,R::RContainer<GVector,true,true>& vectors,bool delref);
 
 	/**
 	* Compute the number of objects of a given group that are also in a

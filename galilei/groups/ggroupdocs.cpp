@@ -79,7 +79,7 @@ void GGroupDocs::Grouping(GSlot*,bool debug)
 	}
 	else
 	{
-		RCursor<GDoc> cur(Session->GetDocs());
+		RCursor<GDoc> cur(Session->GetObjs(pDoc));
 		for(cur.Start();!cur.End();cur.Next())
 		{
 			#ifdef GROUP_DOCS_NOT_DEFINED

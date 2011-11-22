@@ -34,10 +34,10 @@
 #include <gsession.h>
 #include <guser.h>
 #include <gdoc.h>
-#include <gweightinfo.h>
 #include <gstorage.h>
 #include <gcommunity.h>
 #include <gfdbk.h>
+#include <gdescriptionobject.hh>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -51,8 +51,18 @@ using namespace std;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
+void GProfile::PrivateInit(void)
+{
+	SetState(osNew);
+	SaveDesc();
+	AddRefs(Session,otProfile);
+	SetId(cNoRef);
+}
+
+
+//------------------------------------------------------------------------------
 GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,const R::RString name,bool s)
-  : GWeightInfosObj(session,cNoRef,0,otProfile,name,osNew), User(usr), Type(type),
+  : GDescriptionObject<GProfile>(session,cNoRef,0,otProfile,name,osNew), User(usr), Type(type),
     Fdbks(100,50), Social(s), Updated(RDate::GetToday()), Computed(RDate::Null),
     GroupId(0), Attached(RDate::Null), Score(0.0), Level(0)
 {
@@ -63,7 +73,7 @@ GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,const R::RStri
 	// Verify if the community exists in memory
 	if(GroupId)
 	{
-		GCommunity* grp=Session->GetCommunity(GroupId,false,false);
+		GCommunity* grp=Session->GetObj(pCommunity,GroupId,false,false);
 		if(grp)
 			grp->InsertObj(this);
 	}
@@ -72,7 +82,7 @@ GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,const R::RStri
 
 //------------------------------------------------------------------------------
 GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,size_t id,size_t blockid,const R::RString name,size_t grpid,RDate a,RDate u,RDate c,bool s,double score,char level,size_t nbf)
-  : GWeightInfosObj(session,id,blockid,otProfile,name,osNew), User(usr), Type(type),
+  : GDescriptionObject<GProfile>(session,id,blockid,otProfile,name,osNew), User(usr), Type(type),
     Fdbks(nbf+nbf/2,nbf/2), Social(s), Updated(u), Computed(c),
     GroupId(grpid), Attached(a), Score(score), Level(level)
 {
@@ -83,7 +93,7 @@ GProfile::GProfile(GSession* session,GUser* usr,tProfileType type,size_t id,size
 	// Verify if the community exists in memory
 	if(GroupId)
 	{
-		GCommunity* grp=Session->GetCommunity(GroupId,false,false);
+		GCommunity* grp=Session->GetObj(pCommunity,GroupId,false,false);
 		if(grp)
 			grp->InsertObj(this);
 	}
@@ -261,27 +271,30 @@ void GProfile::DeleteFdbk(size_t docid)
 
 
 //------------------------------------------------------------------------------
-void GProfile::Update(GSession* session,GWeightInfos& infos)
+void GProfile::Update(GSession* session,R::RContainer<GVector,true,true>& vectors,bool delref)
 {
 	// Remove its references
-	DelRefs(otProfile);
-	session->UpdateRefs(infos,otProfile,Id,false);
+	if(delref)
+	{
+		DelRefs(Session,otProfile);
+		if(Session->HasIndex(pProfile))
+			session->UpdateIndex(pProfile,vectors,Id,false);
+	}
 
 	// Assign information
-	GWeightInfosObj::Clear();
+	GDescription::Clear();
 	State=osUpdated;
 	Computed.SetToday();
+	Transfer(vectors);
+	vectors.Clear();
 
 	// Update the group were it belongs
 	Session->UpdateCommunity(this);
-	Transfer(infos);
-
-	// Clear infos
-	infos.Clear();
 
 	// Update its references
-	AddRefs(otProfile);
-	session->UpdateRefs(infos,otProfile,Id,true);
+	AddRefs(Session,otProfile);
+	if(Session->HasIndex(pProfile))
+		session->UpdateIndex(pProfile,vectors,Id,false);
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);
@@ -317,7 +330,7 @@ GProfile::~GProfile(void)
 	// Remove it from its group if necessary
 	if(GroupId)
 	{
-		GCommunity* grp=Session->GetCommunity(GroupId);
+		GCommunity* grp=Session->GetObj(pCommunity,GroupId);
 		if(grp)
 			grp->DeleteObj(this);
 	}

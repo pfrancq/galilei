@@ -223,8 +223,6 @@ public:
 	*/
 	void SetId(size_t id);
 
-private:
-
 	/**
 	 * @return the index of the concept for a given object type.
 	 * @param ObjType        Type of the reference.
@@ -259,8 +257,6 @@ private:
 	*/
 	virtual void ClearRef(tObjType ObjType);
 
-public:
-
 	/**
 	* Get the number of references on this concept for a given object type.
 	* @param ObjType        Type of the reference. If otAnyType, the method
@@ -294,9 +290,11 @@ public:
 	*/
 	virtual ~GConcept(void);
 
-	friend class GWeightInfo;
+	friend class GConceptRef;
+	friend class GVector;
 	friend class GConceptType;
 	friend class GSession;
+	friend class GKB;
 };
 
 

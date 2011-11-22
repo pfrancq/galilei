@@ -39,6 +39,7 @@
 #include <gdoc.h>
 #include <gsuggestion.h>
 #include <gfdbk.h>
+#include <gdescriptionobject.hh>
 using namespace GALILEI;
 using namespace R;
 
@@ -72,6 +73,16 @@ public:
 //  GCommunity
 //
 //------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+void GCommunity::PrivateInit(void)
+{
+	SetState(osNew);
+	SaveDesc();
+	AddRefs(Session,otCommunity);
+	SetId(cNoRef);
+}
+
 
 //------------------------------------------------------------------------------
 GCommunity::GCommunity(GSession* session,const RString& name)

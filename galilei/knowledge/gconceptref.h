@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GWeightInfo.h
+	GConceptRef.h
 
-	Weighted information entity - Header.
+	Concept Reference - Header.
 
 	Copyright 2002-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -29,8 +29,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GWeightInfoH
-#define GWeightInfoH
+#ifndef GConceptRefH
+#define GConceptRefH
 
 
 //------------------------------------------------------------------------------
@@ -46,13 +46,13 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GWeightInfo class provides a representation for an information entity
-* associated with a weight. In fact, it represents an element of a sparse
-* vector implemented in the GWeightInfos class.
+* The GConceptRef class provides a representation for reference of a given
+* concept in a vector. In practice, it is composed from a concept and an
+* associated weight.
 * @author Pascal Francq
-* @short Weighted Information Entity.
+* @short Concept Reference.
 */
-class GWeightInfo
+class GConceptRef
 {
 protected:
 
@@ -69,36 +69,34 @@ protected:
 public:
 
 	/**
-	* Constructor of a weighed information entity.
-	* @param concept         Identifier of the information entity.
+	* Constructor of a concept reference.
+	* @param concept         Concept.
 	*/
-	GWeightInfo(GConcept* concept);
+	GConceptRef(GConcept* concept);
 
 	/**
-	* Constructor of a weighed information entity.
-	* @param concept         Identifier of the information entity.
-	* @param w               Weight of the information entity.
+	* Constructor of a concept reference.
+	* @param concept         Concept.
+	* @param w               Weight associated with the reference.
 	*/
-	GWeightInfo(GConcept* concept,double w);
+	GConceptRef(GConcept* concept,double w);
 
 	/**
-	* Copy constructor of a weighed information entity.
-	* @param w              Pointer to a weighted information entity.
+	* Copy constructor of a concept reference.
+	* @param ref             Concept reference.
 	*/
-	GWeightInfo(const GWeightInfo& w);
+	GConceptRef(const GConceptRef& ref);
 
 	/**
-	* Compare two weighted information entities by comparing their
-	* identifier and type.
+	* Compare two concept references related to their concept.
 	* @see R::RContainer
-	* @param calc           Weighted information entity.
+	* @param ref             Concept reference.
 	* @return int
 	*/
-	int Compare(const GWeightInfo& calc) const;
+	int Compare(const GConceptRef& ref) const;
 
 	/**
-	* Compare a weighted information entity and a concept by comparing their
-	* identifier and type.
+	* Compare a concept reference and a concept.
 	* @see R::RContainer
 	* @param concept         Concept.
 	* @return int
@@ -106,8 +104,7 @@ public:
 	int Compare(const GConcept& concept) const;
 
 	/**
-	* Compare a weighted information entity and a concept by comparing their
-	* identifier and type.
+	* Compare a concept reference and a concept.
 	* @see R::RContainer
 	* @param concept         Concept.
 	* @return int
@@ -135,64 +132,63 @@ public:
 	inline size_t GetTypeId(void) const {return(Concept->GetType()->GetId());}
 
 	/**
-	* Get the weight of the word.
+	* Get the weight of the concept reference.
 	* @return Weight as double.
 	*/
 	double GetWeight(void) const {return(Weight);}
 
 	/**
-	* Set the weight of the word.
+	* Set the weight of the concept reference.
 	* @param w              Weight.
 	*/
 	void SetWeight(double w);
 
 	/**
-	* Assignment operator for weighted information entities.
-	* @param i               Weighted information entity.
+	* Assignment operator for concept references.
+	* @param ref             Concept reference.
 	*/
-	GWeightInfo& operator=(const GWeightInfo& i);
+	GConceptRef& operator=(const GConceptRef& ref);
 
 	/**
 	* Add a weight to the current one.
 	* @param w              Weight to add.
 	*/
-	GWeightInfo& operator+=(double w);
+	GConceptRef& operator+=(double w);
 
 	/**
 	* Subtract a weight to the current one.
 	* @param w              Weight to subtract.
 	*/
-	GWeightInfo& operator-=(double w);
+	GConceptRef& operator-=(double w);
 
 	/**
 	* Multiply a weight to the current one.
 	* @param w              Weight to multiply.
 	*/
-	GWeightInfo& operator*=(double w);
+	GConceptRef& operator*=(double w);
 
 	/**
 	* Divide a weight to the current one.
 	* @param w              Weight to divide.
 	*/
-	GWeightInfo& operator/=(double w);
+	GConceptRef& operator/=(double w);
 
 	/**
-	* Compute the transformed weight of a given information entity using a
-	* inverse frequency factor of the object type (idf,isf or ivf). The inverse
-	* Frequency of an information entity is linked to a specific language.
+	* Compute the transformed weight of a given concept reference using a
+	* inverse frequency factor of the object type (idf,isf or ivf).
 	* @param ObjType        Type of the object.
-	* @param max            Maximal value of the vector containing the word.
-	* @return double.
+	* @param max            Maximal weight of the corresponding vector.
+	* @return a query weight computed for the concept reference.
 	*/
 	double GetQueryWeight(tObjType ObjType,double max) const;
 
 	/**
-	* Destructor of a weighted information entity.
+	* Destructor of a concept reference.
 	*/
-	virtual ~GWeightInfo(void);
+	virtual ~GConceptRef(void);
 
 	friend class GSession;
-	friend class GWeightInfos;
+	friend class GVector;
 };
 
 

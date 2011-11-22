@@ -165,9 +165,15 @@ public:
 	// @{
 
 	/**
-	* Load the concept types from the database.
+	* Load the concept categories and types from the database.
 	*/
-	virtual void LoadConceptTypes(void)=0;
+	virtual void LoadConceptCatsTypes(void)=0;
+
+   /**
+	* Assign an identifier to a new concept category.
+	* @param cat             Concept category.
+	*/
+	virtual void AssignId(GConceptCat* cat)=0;
 
 	/**
 	* Assign an identifier to a new concept type.
@@ -259,15 +265,19 @@ public:
 	*/
 	virtual void AssignId(GStatement* statement)=0;
 
-protected:
+   /**
+	* Method that load a class that is stored.
+	* @param classp          Pointer to the class that will be created.
+	* @param classid         Identifier of the class.
+	*/
+	virtual void LoadObj(GClass* &classp,size_t classid)=0;
 
 	/**
 	* Method that load the classes from where they are stored. This method is
 	* called once by the session.
+	* @param obj            Pseudo-parameter.
 	*/
-	virtual void LoadClasses(void)=0;
-
-public:
+	virtual void LoadObjs(const GClass* obj)=0;
 
 	/**
 	* Assign an identifier to a new class.
@@ -279,7 +289,7 @@ public:
 	 * Save a class.
 	 * @param theclass        Class.
 	 */
-	virtual void SaveClass(GClass* theclass)=0;
+	virtual void SaveObj(GClass* theclass)=0;
 
 	// @} Knowledge Methods
 
@@ -297,19 +307,24 @@ public:
 
 	/**
 	* Method that load a document that is stored.
-	* @param docid           Identifier of the document
+	* @param doc             Pointer to the document that will be created.
+	* @param docid           Identifier of the document.
 	*/
-	virtual GDoc* LoadDoc(size_t docid)=0;
+	virtual void LoadObj(GDoc* &doc,size_t docid)=0;
 
-protected:
+	/**
+	* Method that load a document that is stored.
+	* @param doc             Pointer to the document to create.
+	* @param url             URL of the document
+	*/
+	virtual void LoadObj(GDoc* &doc,const R::RString& url)=0;
 
 	/**
 	* Method that load the documents from where they are stored. This method is
 	* called once by the session.
+	* @param obj            Pseudo-parameter.
 	*/
-	virtual void LoadDocs(void)=0;
-
-public:
+	virtual void LoadObjs(const GDoc* obj)=0;
 
 	/**
 	* Save a document where it is stored. This method is called after an
@@ -317,7 +332,7 @@ public:
 	* overloaded.
 	* @param doc             Document to save.
 	*/
-	virtual void SaveDoc(GDoc* doc)=0;
+	virtual void SaveObj(GDoc* doc)=0;
 
 	//@} Documents
 
@@ -327,33 +342,33 @@ public:
 	*/
 	// @{
 
-protected:
-
 	/**
 	* Load the profiles and the users. This method is called once by the
 	* session.
+	* @param obj            Pseudo-parameter.
 	*/
-	virtual void LoadUsers(void)=0;
-
-public:
+	virtual void LoadObjs(const GUser* obj)=0;
 
 	/**
 	* Method that load a user that is stored.
+	* @param user            Pointer to the user that will be created.
 	* @param userid          Identifier of the user.
 	*/
-	virtual GUser* LoadUser(size_t userid)=0;
+	virtual void LoadObj(GUser* &user,size_t userid)=0;
 
 	/**
 	* Method that load a user that is stored.
+	* @param user            Pointer to the user that will be created.
 	* @param name            Name of the user.
 	*/
-	virtual GUser* LoadUser(const R::RString name)=0;
+	virtual void LoadObj(GUser* &user,const R::RString name)=0;
 
 	/**
 	* Method that load a profile that is stored.
+	* @param profile         Pointer to the profile that will be created.
 	* @param profileid       Identifier of the profile.
 	*/
-	virtual GProfile* LoadProfile(size_t profileid)=0;
+	virtual void LoadObj(GProfile* &profile,size_t profileid)=0;
 
 	/**
 	* A document was updated and the corresponding feedbacks must be updated.
@@ -377,13 +392,13 @@ public:
 	* Save a user.
 	* @param user            User to save.
 	*/
-	virtual void SaveUser(GUser* user)=0;
+	virtual void SaveObj(GUser* user)=0;
 
 	/**
 	* Save a profile.
 	* @param prof            Profile to save.
 	*/
-	virtual void SaveProfile(GProfile* prof)=0;
+	virtual void SaveObj(GProfile* prof)=0;
 
 	/**
 	* Add a feedback for a given profile and document.
@@ -404,20 +419,18 @@ public:
 	*/
 	// @{
 
-protected:
-
 	/**
 	* Load the groups. This method is called once by the session.
+	* @param obj            Pseudo-parameter.
 	*/
-	virtual void LoadCommunities(void)=0;
-
-public:
+	virtual void LoadObjs(const GCommunity* obj)=0;
 
 	/**
 	* Method that load a group that is stored.
+	* @param community       Pointer to the community that will be created.
 	* @param groupid         Identifier of the group.
 	*/
-	virtual GCommunity* LoadCommunity(size_t groupid)=0;
+	virtual void LoadObj(GCommunity* &community,size_t groupid)=0;
 
 	/**
 	* A profile was updated and the corresponding communities must be updated.
@@ -435,7 +448,7 @@ public:
 	* Save a community.
 	* @param grp            Community.
 	*/
-	virtual void SaveCommunity(GCommunity* grp)=0;
+	virtual void SaveObj(GCommunity* grp)=0;
 
 	/**
 	 * Save the relevant documents associated with a given community.
@@ -457,20 +470,18 @@ public:
 	*/
 	// @{
 
-protected:
-
 	/**
 	* Load the topics. This method is called once by the session.
+	* @param topic           Topic to load.
 	*/
-	virtual void LoadTopics(void)=0;
-
-public:
+	virtual void LoadObjs(const GTopic* topic)=0;
 
 	/**
 	* Method that load a topic that is stored.
+	* @param topic           Pointer to the topic that will be created.
 	* @param topicid         Identifier of the topic.
 	*/
-	virtual GTopic* LoadTopic(size_t topicid)=0;
+	virtual void LoadObj(GTopic* &topic,size_t topicid)=0;
 
 	/**
 	* A document was updated and the corresponding topics must be updated.
@@ -488,7 +499,7 @@ public:
 	* Save a topic.
 	* @param grp            Topic.
 	*/
-	virtual void SaveTopic(GTopic* grp)=0;
+	virtual void SaveObj(GTopic* grp)=0;
 
 	// @} Topics
 

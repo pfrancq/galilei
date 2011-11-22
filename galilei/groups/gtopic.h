@@ -51,6 +51,11 @@ namespace GALILEI{
 */
 class GTopic : public GGroup<GDoc,GTopic,otTopic>
 {
+	/**
+	 * Method used to correctly instantiate some template methods.
+	 */
+	void PrivateInit(void);
+
 public:
 
 	/**
@@ -82,6 +87,8 @@ public:
 	* Destructor of a group.
 	*/
 	virtual ~GTopic(void);
+
+   friend class GObjects<GTopic>;
 };
 
 

@@ -86,7 +86,7 @@ void GFilter::AddMIME(RString name)
 	GALILEIApp->AddMIME(name,this);
 }
 
-
+/*
 //------------------------------------------------------------------------------
 void GFilter::AnalyzeBlock(const RString& block,R::RXMLParser* parser)
 {
@@ -134,7 +134,9 @@ void GFilter::AnalyzeBlock(const RString& block,R::RXMLParser* parser)
 			}
 
 			// Verify if it is a correct end of sentence
-			if((!Cur.End())&&(Cur.GetPos()+1<Cur.GetNb())&&(!Cur[Cur.GetPos()+1].IsNull())&&/*((NbWords<1)||*/ (!Cur[Cur.GetPos()+1].IsSpace()))
+			if((!Cur.End())&&(Cur.GetPos()+1<Cur.GetNb())&&(!Cur[Cur.GetPos()+1].IsNull())&&
+			//((NbWords<1)||
+			(!Cur[Cur.GetPos()+1].IsSpace()))
 				Cur.Next(); // Skip the punctuation
 			else
 			{
@@ -331,7 +333,7 @@ void GFilter::EndStream(R::RXMLParser* parser)
 	parser->EndTag("http://www.otlet-institute.org/docxml","content","docxml:content");
 	parser->EndTag("http://www.w3.org/1999/02/22-rdf-syntax-ns#","RDF","rdf:RDF");
 }
-
+*/
 
 //------------------------------------------------------------------------------
 GFilter::~GFilter(void)

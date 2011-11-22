@@ -52,29 +52,31 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
-* The GConceptType provides a representation for a given type of concepts. Each
-* type can be universal (independent of a given language such as names) or
-* language-dependent (such as words or stems).
-*
-* It also manage a dictionary of concepts, each concept having its own
-* identifier and name.
+* The GConceptType provides a representation for a given type of concepts. It
+* also manage a dictionary of concepts, each concept having its own identifier.
+* The name of a concept is unique for a given type, while the identifiers are
+* unique for all concepts.
 * @param author Pascal Francq
 * @param short Concept Type.
 */
-class GConceptType : public GObject, protected R::RDblHashContainer<GConcept,false>
+class GConceptType : public GObject
 {
 private:
+
+    /**
+     * Category.
+     */
+    GConceptCat* Category;
+
+	/**
+	 * Concepts.
+	 */
+	R::RDblHashContainer<GConcept,false> Concepts;
 
 	/**
 	* Short description of the type.
 	*/
 	R::RString Description;
-
-	/**
-	 * If the type of concept is universal, i.e. independent of a given
-	 * language, it must be null.
-	 */
-	GLang* Lang;
 
 	/**
 	* Number of references in documents.
@@ -106,12 +108,13 @@ public:
 	/**
 	* Construct a concept type.
 	* @param session         Session.
+   * @param cat             Category.
 	* @param id              Identifier of the type.
 	* @param name            Name of the type.
 	* @param desc            Short description.
 	* @param s               Size of the second hash table.
 	*/
-	GConceptType(GSession* session,size_t id,const R::RString& name,const R::RString& desc,size_t s);
+	GConceptType(GSession* session,GConceptCat* cat,size_t id,const R::RString& name,const R::RString& desc,size_t s);
 
 	/**
 	* Set the references of a given language. This method is called when
@@ -139,16 +142,16 @@ public:
 	int Compare(const GConceptType* type) const;
 
 	/**
-	* Compare an object with a name.
+	* Compare a concept type with a name.
 	* @param name            Name used.
 	* @see R::RContainer.
 	*/
 	int Compare(const R::RString& name) const;
 
-	/**
-	 * @return the session.
-	 */
-	inline GSession* GetSession(void) const {return(Session);}
+   /**
+    * @return the category.
+    */
+   GConceptCat* GetCategory(void) const {return(Category);}
 
 	/**
 	* @return the description.
@@ -156,23 +159,11 @@ public:
 	R::RString GetDescription(void) const {return(Description);}
 
 	/**
-	 * Is the concept type universal.
-	 * @return true if yes.
-	 */
-	bool IsUniversal(void) const {return(Lang==0);}
-
-	/**
-	 * Get the language associated with this concept type.
-	 * @return If the concept type is universal, returns 0.
-	 */
-	inline GLang* GetLang(void) const {return(Lang);}
-
-	/**
 	* @return a cursor over the main hash table.
 	*/
-	R::RCursor<Hash> GetConcepts(void) const
+	R::RCursor<R::RDblHashContainer<GConcept,false>::Hash> GetConcepts(void) const
 	{
-		return(R::RCursor<Hash>(GetCursor()));
+		return(R::RCursor<R::RDblHashContainer<GConcept,false>::Hash>(Concepts.GetCursor()));
 	}
 
 	/**
@@ -183,6 +174,14 @@ public:
 	bool IsIn(const R::RString& name) const;
 
 	/**
+	* Get a given concept from the dictionary. If the concept does not exist, it
+   * is created.
+	* @param name            Name of the concept to look for.
+	* @return Pointer to the concept.
+	*/
+	GConcept* GetInsertConcept(const R::RString& name);
+
+   /**
 	* Get a given concept from the dictionary.
 	* @param name            Name of the concept to look for.
 	* @return Pointer to the concept.
@@ -190,9 +189,21 @@ public:
 	GConcept* GetConcept(const R::RString& name) const;
 
 	/**
+	* Insert a concept in the dictionary.
+	* @param concept         Concept.
+	*/
+	void InsertConcept(GConcept* concept);
+
+	/**
+	* Delete a concept from the dictionary.
+	* @param concept         Concept.
+	*/
+	void DeleteConcept(GConcept* concept);
+
+	/**
 	* Get the total number of concepts.
 	*/
-	size_t GetNbConcepts(void) const {return(GetNb());}
+	size_t GetNbConcepts(void) const {return(Concepts.GetNb());}
 
 	/**
 	* Increase the number of objects of a given type using the dictionary of the
@@ -249,6 +260,7 @@ public:
 	friend class GConcept;
 	friend class GWeightInfo;
 	friend class GSession;
+	friend class GKB;
 	friend class GGALILEIApp;
 };
 

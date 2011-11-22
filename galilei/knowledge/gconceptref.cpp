@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	GWeightInfo.cpp
+	GConceptRef.cpp
 
-	Weighted information entity - Implementation.
+	Concept Reference - Implementation.
 
 	Copyright 2002-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -30,7 +30,7 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gweightinfo.h>
+#include <gconceptref.h>
 #include <glang.h>
 #include <gsession.h>
 using namespace GALILEI;
@@ -40,70 +40,72 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 //
-//  GWeightInfo
+//  GConceptRef
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(GConcept* concept)
+GConceptRef::GConceptRef(GConcept* concept)
   : Concept(concept), Weight(0.0)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(GConcept* concept,double w)
+GConceptRef::GConceptRef(GConcept* concept,double w)
   : Concept(concept), Weight(w)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::GWeightInfo(const GWeightInfo& w)
-  : Concept(w.Concept), Weight(w.Weight)
+GConceptRef::GConceptRef(const GConceptRef& ref)
+  : Concept(ref.Concept), Weight(ref.Weight)
 {
 }
 
 
 //------------------------------------------------------------------------------
-int GWeightInfo::Compare(const GWeightInfo& calc) const
+int GConceptRef::Compare(const GConceptRef& ref) const
 {
-	return(CompareIds(Concept->Id,calc.Concept->Id));
+	return(CompareIds(Concept->Id,ref.Concept->Id));
 }
 
 
 //------------------------------------------------------------------------------
-int GWeightInfo::Compare(const GConcept& concept) const
+int GConceptRef::Compare(const GConcept& concept) const
 {
 	return(CompareIds(Concept->Id,concept.Id));
 }
 
 
 //------------------------------------------------------------------------------
-int GWeightInfo::Compare(const GConcept* concept) const
+int GConceptRef::Compare(const GConcept* concept) const
 {
+	if(!concept)
+		ThrowGException("null pointer");
 	return(CompareIds(Concept->Id,concept->Id));
 }
 
 
 //------------------------------------------------------------------------------
-void GWeightInfo::SetWeight(double w)
+void GConceptRef::SetWeight(double w)
 {
 	Weight=w;
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator=(const GWeightInfo& i)
+GConceptRef& GConceptRef::operator=(const GConceptRef& ref)
 {
-	Concept=i.Concept;
-	Weight=i.Weight;
+	Concept=ref.Concept;
+	Weight=ref.Weight;
 	return(*this);
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator+=(double w)
+GConceptRef& GConceptRef::operator+=(double w)
 {
 	Weight+=w;
 	return(*this);
@@ -111,7 +113,7 @@ GWeightInfo& GWeightInfo::operator+=(double w)
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator-=(double w)
+GConceptRef& GConceptRef::operator-=(double w)
 {
 	Weight-=w;
 	return(*this);
@@ -119,7 +121,7 @@ GWeightInfo& GWeightInfo::operator-=(double w)
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator*=(double w)
+GConceptRef& GConceptRef::operator*=(double w)
 {
 	Weight*=w;
 	return(*this);
@@ -127,7 +129,7 @@ GWeightInfo& GWeightInfo::operator*=(double w)
 
 
 //------------------------------------------------------------------------------
-GWeightInfo& GWeightInfo::operator/=(double w)
+GConceptRef& GConceptRef::operator/=(double w)
 {
 	Weight/=w;
 	return(*this);
@@ -135,13 +137,13 @@ GWeightInfo& GWeightInfo::operator/=(double w)
 
 
 //------------------------------------------------------------------------------
-double GWeightInfo::GetQueryWeight(tObjType ObjType,double max) const
+double GConceptRef::GetQueryWeight(tObjType ObjType,double max) const
 {
 	return((Weight/max)*Concept->GetIF(ObjType));
 }
 
 
 //------------------------------------------------------------------------------
-GWeightInfo::~GWeightInfo(void)
+GConceptRef::~GConceptRef(void)
 {
 }

@@ -2,9 +2,9 @@
 
 	GALILEI Research Project
 
-	QGWeightInfos.h
+	QGDescription.h
 
-	Widget to display the description of an object - Header.
+	Description Widget - Header.
 
 	Copyright 2008-2011 by Pascal Francq (pascal@francq.info).
 
@@ -28,18 +28,19 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef QGWeightInfosH
-#define QGWeightInfosH
+#ifndef QGDescriptionH
+#define QGDescriptionH
 
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <gweightinfos.h>
+#include <gdescription.h>
 
 
 //------------------------------------------------------------------------------
 // include files for Qt/KDE
 #include <QtGui/QWidget>
+#include <QtGui/QTreeWidgetItem>
 
 
 //-----------------------------------------------------------------------------
@@ -49,37 +50,55 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
- * The QGWeightInfos class provides a Qt Widget to display the description of a
- * GWeightInfos object. It shows the name of the different element.
+ * The QGDescription class provides a Qt Widget to display the description.
+ * It shows the name of the different elements.
  * @author Pascal Francq
- * @short Description Displayer
+ * @short Description Widget
  */
-class QGWeightInfos : public QWidget
+class QGDescription : public QWidget
 {
+    Q_OBJECT
+
 	/**
 	 * Pointer to the widget created by Qt.
 	 */
 	void* Ui;
 
+	/**
+	 * Description.
+	 */
+	const GDescription* Desc;
+
 public:
 
 	/**
-	 * Construct a widget that can display the description of an object.
+	 * Construct a widget that can display the description.
 	 * @param parent         Parent widget.
 	 */
-	QGWeightInfos(QWidget* parent);
+	QGDescription(QWidget* parent);
 
 	/**
-	 * Set the current object to display. The widget is redraw.
+	 * Set the current description to display. The widget is redraw.
 	 * @param session        Session.
-	 * @param obj            Object to display.
+	 * @param desc           Description to display.
 	 */
-	void Set(GSession* session,const GWeightInfos& obj);
+	void Set(GSession* session,const GDescription* desc);
+
+public slots:
+
+   /**
+    * Change the current vector.
+    * @param item           Item selected.
+    * @param column         Column clicked.
+    */
+   void ChangeVector(QTreeWidgetItem* item,int column);
+
+public:
 
 	/**
 	 * Destruct the widget.
 	 */
-	virtual ~QGWeightInfos(void);
+	virtual ~QGDescription(void);
 };
 
 

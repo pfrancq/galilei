@@ -4,8 +4,10 @@ SET(galilei_docs_INST_INCLUDES
 	gdoc.h
 	gsuggestion.h
 	gsugs.h
-	glink.h		
-	gdocstruct.h
+	glink.h
+	gtexttoken.h		
+	gtokenizer.h
+	ganalyzer.h
 	gdocanalyze.h
 	gfilter.h	
 )
@@ -18,7 +20,9 @@ SET(galilei_docs_TARGET_SOURCES
 	gsugs.cpp	
 	glink.cpp
 	glinks.cpp
-	gdocstruct.cpp
+	gtexttoken.cpp
+	gtokenizer.cpp
+	ganalyzer.cpp	
 	gdocanalyze.cpp
 	gfilter.cpp	
 )

@@ -289,8 +289,8 @@ void GMatrixMeasure::Measure(size_t measure,...)
 	if((Type==NearestNeighbors)||((!InMemory)&&(!InStorage)))
 	{
 		// Recompute the element if not in memory of not in storage, or if it a nearest neighbors matrix
-		GObject* obj1=Session->GetObject(Lines,id1);
-		GObject* obj2=Session->GetObject(Cols,id2);
+		GObject* obj1=Session->GetObj(Lines,id1);
+		GObject* obj2=Session->GetObj(Cols,id2);
 		(*res)=Compute(obj1,obj2);
 		if(abs(*res)<CutoffFrequency)
 			(*res)=0.0;         // High-pass filter
@@ -315,8 +315,8 @@ void GMatrixMeasure::Measure(size_t measure,...)
 		// If NAN -> Recomputing is necessary (Verification in the case of the full matrix)
 		if((*res)!=(*res))
 		{
-			GObject* obj1=Session->GetObject(Lines,id1);
-			GObject* obj2=Session->GetObject(Cols,id2);
+			GObject* obj1=Session->GetObj(Lines,id1);
+			GObject* obj2=Session->GetObj(Cols,id2);
 			(*res)=Compute(obj1,obj2);
 			(*Matrix)(id1-1,id2-1)=(*res);
 			if(fabs(*res)<CutoffFrequency)
@@ -344,8 +344,8 @@ void GMatrixMeasure::Measure(size_t measure,...)
 		// If NAN -> recomputing is necessary (Verification in the case of the full matrix)
 		if((*res)!=(*res))
 		{
-			GObject* obj1=Session->GetObject(Lines,id1);
-			GObject* obj2=Session->GetObject(Cols,id2);
+			GObject* obj1=Session->GetObj(Lines,id1);
+			GObject* obj2=Session->GetObj(Cols,id2);
 			(*res)=Compute(obj1,obj2);
 			if(abs(*res)<CutoffFrequency)
 				(*res)=0.0;     // High-pass filter
@@ -422,7 +422,7 @@ void GMatrixMeasure::Info(size_t info,...)
 			// Initialize
 			NbValues=0;
 			Mean=Deviation=0;
-			size_t nblines=Session->GetMaxObjectId(Lines)+1;
+			size_t nblines=Session->GetMaxObjId(Lines)+1;
 			if(nblines==1)
 			{
 				(*res)=0.0;
@@ -432,7 +432,7 @@ void GMatrixMeasure::Info(size_t info,...)
 			// Go through all elements
 			for(size_t i=1;i<nblines;i++)
 			{
-				GObject* obj1=Session->GetObject(Lines,i,true);
+				GObject* obj1=Session->GetObj(Lines,i,true);
 				if(!obj1)
 					continue;
 
@@ -441,11 +441,11 @@ void GMatrixMeasure::Info(size_t info,...)
 				if(Symmetric)
 					nbcols=i+1;
 				else
-					nbcols=Session->GetMaxObjectId(Cols)+1;
+					nbcols=Session->GetMaxObjId(Cols)+1;
 
 				for(size_t j=1;j<nbcols;j++)
 				{
-					GObject* obj2=Session->GetObject(Cols,j,true);
+					GObject* obj2=Session->GetObj(Cols,j,true);
 					if(!obj2)
 						continue;
 					NbValues+=1.0;
@@ -566,8 +566,8 @@ void GMatrixMeasure::ChangeStorageSize(void)
 size_t GMatrixMeasure::GetNbDiffElements(void)
 {
 	if(Lines==Cols)
-		return(Session->GetNbObjects(Lines));
-	return(Session->GetNbObjects(Lines)+Session->GetNbObjects(Cols));
+		return(Session->GetNbObjs(Lines));
+	return(Session->GetNbObjs(Lines)+Session->GetNbObjs(Cols));
 }
 
 
@@ -789,7 +789,7 @@ void GMatrixMeasure::UpdateSparse(void)
 	// Recompute everything
 	for(size_t i=0;i<MaxIdLine;i++)
 	{
-		GObject* obj1=Session->GetObject(Lines,i+1,true);
+		GObject* obj1=Session->GetObj(Lines,i+1,true);
 		if(!obj1)
 			continue;
 		size_t max;
@@ -800,7 +800,7 @@ void GMatrixMeasure::UpdateSparse(void)
 
 		for(size_t j=0;j<max;j++)
 		{
-			GObject* obj2=Session->GetObject(Cols,j+1,true);
+			GObject* obj2=Session->GetObj(Cols,j+1,true);
 			if(!obj2)
 				continue;
 
@@ -927,7 +927,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 
 	// Get the elements
 	GObject** Elements;
-	size_t NbElements(Session->GetObjects(Cols,Elements,true));
+	size_t NbElements(Session->GetObjs(Cols,Elements,true));
 
 	// Compute the number of nearest neighbor to compute
 	if(NbNearest>NbElements-1)
@@ -950,7 +950,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 	for(Element.Start();!Element.End();Element.Next())
 	{
 		// Valid element ?
-		GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
+		GObject* obj1=Session->GetObj(Lines,Element.GetPos()+1,false);
 		if(!obj1)
 			continue;
 
@@ -977,7 +977,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 				continue;
 
 			// Compute the measure, apply the high-pass filter.
-			GObject* obj2=Session->GetObject(Cols,Id,true);
+			GObject* obj2=Session->GetObj(Cols,Id,true);
 			double Mes(Compute(obj1,obj2));
 			if(abs(Mes)<CutoffFrequency)
 				Mes=0.0;
@@ -1000,7 +1000,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 		for(Element.Start();!Element.End();Element.Next())
 		{
 			// Valid element ?
-			GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
+			GObject* obj1=Session->GetObj(Lines,Element.GetPos()+1,false);
 			if(!obj1)
 				continue;
 
@@ -1021,7 +1021,7 @@ void GMatrixMeasure::UpdateNearestNeighborsRAM(void)
 				{
 					Neighbors.Insert(Id);
 					CurSample->Id=Id;
-					GObject* obj2=Session->GetObject(Cols,Id,true);
+					GObject* obj2=Session->GetObj(Cols,Id,true);
 					CurSample->Value=Compute(obj1,obj2);
 					if(abs(CurSample->Value)<CutoffFrequency)
 						CurSample->Value=0.0;
@@ -1072,7 +1072,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 
 	// Get the elements
 	GObject** Elements;
-	size_t NbElements(Session->GetObjects(Cols,Elements,true));
+	size_t NbElements(Session->GetObjs(Cols,Elements,true));
 
 	// Compute the number of nearest neighbor to compute
 	if(NbNearest>NbElements-1)
@@ -1095,7 +1095,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 	for(Element.Start(),Sample.Start();!Element.End();Element.Next(),Sample.Next())
 	{
 		// Valid element ?
-		GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
+		GObject* obj1=Session->GetObj(Lines,Element.GetPos()+1,false);
 		if(!obj1)
 			continue;
 
@@ -1121,7 +1121,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 				continue;
 
 			// Compute the measure, apply the high-pass filter.
-			GObject* obj2=Session->GetObject(Cols,Id,true);
+			GObject* obj2=Session->GetObj(Cols,Id,true);
 			double Mes(Compute(obj1,obj2));
 			if(abs(Mes)<CutoffFrequency)
 				Mes=0.0;
@@ -1145,7 +1145,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 		for(Element.Start();!Element.End();Element.Next())
 		{
 			// Valid element ?
-			GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
+			GObject* obj1=Session->GetObj(Lines,Element.GetPos()+1,false);
 			if(!obj1)
 				continue;
 
@@ -1164,7 +1164,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 				if(((Symmetric)&&(Id!=Element.GetPos()+1))&&(!Neighbors.IsIn(Id)))
 				{
 					// Compute the similarity
-					GObject* obj2=Session->GetObject(Cols,Id,true);
+					GObject* obj2=Session->GetObj(Cols,Id,true);
 					double Value(Compute(obj1,obj2));
 					if(abs(Value)<CutoffFrequency)
 						Value=0.0;
@@ -1204,7 +1204,7 @@ void GMatrixMeasure::UpdateNearestNeighborsFast(void)
 		Element()->Clear();
 
 		// Valid element ?
-		GObject* obj1=Session->GetObject(Lines,Element.GetPos()+1,false);
+		GObject* obj1=Session->GetObj(Lines,Element.GetPos()+1,false);
 		if(!obj1)
 			continue;
 
@@ -1239,7 +1239,7 @@ void GMatrixMeasure::UpdateMem(void)
 			RCursor<RMatrixLine> Cur(static_cast<RMatrix*>(Matrix)->GetLines());
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				GObject* obj1=Session->GetObject(Lines,Cur.GetPos()+1,true);
+				GObject* obj1=Session->GetObj(Lines,Cur.GetPos()+1,true);
 				if(!obj1)
 					continue;
 				size_t max;
@@ -1255,7 +1255,7 @@ void GMatrixMeasure::UpdateMem(void)
 						continue;
 
 					// Value must be recomputed
-					GObject* obj2=Session->GetObject(Cols,Cur2.GetPos()+1,true);
+					GObject* obj2=Session->GetObj(Cols,Cur2.GetPos()+1,true);
 					if(!obj2)
 						continue;
 
@@ -1298,7 +1298,7 @@ void GMatrixMeasure::UpdateStorage(void)
 			// Parse the file and re-compute all the elements that are dirty
 			for(size_t i=0;i<Storage.GetNbLines();i++)
 			{
-				GObject* obj1=Session->GetObject(Lines,i+1,true);
+				GObject* obj1=Session->GetObj(Lines,i+1,true);
 				if(!obj1)
 					continue;
 				size_t max;
@@ -1314,7 +1314,7 @@ void GMatrixMeasure::UpdateStorage(void)
 					if(res==res)
 						continue;  // Normal value
 
-					GObject* obj2=Session->GetObject(Cols,j+1,true);
+					GObject* obj2=Session->GetObj(Cols,j+1,true);
 					if(!obj2)
 						continue;
 

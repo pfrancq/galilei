@@ -37,7 +37,7 @@
 // include files for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
-#include <gweightinfos.h>
+#include <gvector.h>
 
 
 //------------------------------------------------------------------------------
@@ -57,9 +57,9 @@ class GProfileCalc : public GPlugIn
 protected:
 
 	/**
-	 * Container that should contain the structure after the analyze.
+	 * Vector that should contain the structure after the analyze.
 	 */
-	GWeightInfos Infos;
+	R::RContainer<GVector,true,true> Vectors;
 
 public:
 

@@ -37,12 +37,12 @@ using namespace std;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gconcepttype.h>
+#include <gconceptcat.h>
 #include <gconcept.h>
 #include <gsession.h>
 #include <gstorage.h>
 using namespace GALILEI;
 using namespace R;
-using namespace std;
 
 
 
@@ -53,11 +53,14 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GConceptType::GConceptType(GSession* session,size_t id,const RString& name,const RString& desc,size_t s)
-	: GObject(session,id,name,otConceptType), RDblHashContainer<GConcept,false>(27,27,s,s/4),
-	  Description(desc), Lang(0), NbRefDocs(0), NbRefProfiles(0),
+GConceptType::GConceptType(GSession* session,GConceptCat* cat,size_t id,const RString& name,const RString& desc,size_t s)
+	: GObject(session,id,name,otConceptType), Category(cat), Concepts(27,27,s,s/4),
+	  Description(desc), NbRefDocs(0), NbRefProfiles(0),
 	  NbRefCommunities(0), NbRefTopics(0), NbRefClasses(0)
 {
+	if(!Category)
+		ThrowGException("A concept type must have a category");
+	Category->InsertConceptType(this);
 }
 
 
@@ -96,14 +99,38 @@ int GConceptType::Compare(const R::RString& name) const
 //------------------------------------------------------------------------------
 bool GConceptType::IsIn(const RString& name) const
 {
-	return(RDblHashContainer<GConcept,false>::IsIn(name));
+	return(Concepts.IsIn(name));
+}
+
+
+//------------------------------------------------------------------------------
+GConcept* GConceptType::GetInsertConcept(const RString& name)
+{
+	GConcept* Concept(Concepts.GetPtr(name));
+	if(!Concept)
+		Concept=Session->InsertConcept(this,name);
+	return(Concept);
 }
 
 
 //------------------------------------------------------------------------------
 GConcept* GConceptType::GetConcept(const RString& name) const
 {
-	return(RDblHashContainer<GConcept,false>::GetPtr(name));
+	return(Concepts.GetPtr(name));
+}
+
+
+//------------------------------------------------------------------------------
+void GConceptType::InsertConcept(GConcept* concept)
+{
+	Concepts.InsertPtr(concept);
+}
+
+
+//------------------------------------------------------------------------------
+void GConceptType::DeleteConcept(GConcept* concept)
+{
+	Concepts.DeletePtr(*concept);
 }
 
 
@@ -133,6 +160,7 @@ void GConceptType::IncRef(tObjType ObjType)
 		case otClass:
 			NbRefClasses++;
 			nb=NbRefClasses;
+			break;
 		default:
 			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
@@ -222,11 +250,8 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 //------------------------------------------------------------------------------
 void GConceptType::ClearRef(tObjType ObjType)
 {
-	// Look once if the results must be saved
-	bool Save(Session->MustSaveResults());
-
     // Parse the double hash table
-    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(GetCursor());
+    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(Concepts.GetCursor());
     for(Cur.Start();!Cur.End();Cur.Next())
     {
        RCursor<RDblHashContainer<GConcept,false>::Hash2> Cur2(*Cur());
@@ -261,7 +286,7 @@ void GConceptType::ClearRef(tObjType ObjType)
 	}
 
 	// If necessary, put the references to 0. The storage should also reset all the references for the concepts.
-	if(Save)
+	if(Session->MustSaveResults())
 		Session->Storage->SaveRefs(this,ObjType,0);
 }
 
@@ -289,4 +314,5 @@ size_t GConceptType::DecRef(GConcept* concept,tObjType ObjType)
 //------------------------------------------------------------------------------
 GConceptType::~GConceptType(void)
 {
+	Category->DeleteConceptType(this);
 }

@@ -77,24 +77,22 @@ void QGDocStruct::Set(GDoc* obj)
 
 	// Show the information entities
 	QTreeWidgetItem* ptr(0);
-	GDocStruct* xml=obj->GetStruct();
+	GConceptTree* xml(obj->GetStruct());
 	if(!xml)
 		return;
-	R::RCursor<GVTDRec> Recs(xml->GetRecs());
-	for(Recs.Start();!Recs.End();Recs.Next())
+	R::RCursor<GConceptNode> Nodes(xml->GetNodes());
+	for(Nodes.Start();!Nodes.End();Nodes.Next())
 	{
 		QString name;
-		name=ToQString(Session->GetStorage()->LoadConcept(Recs()->GetConcept()->GetId()));
-		if(Recs()->GetType()==GVTDRec::Tag)
-			name="<"+name+">";
-		QString type=ToQString(Recs()->GetConcept()->GetType()->GetDescription());
+		name=ToQString(Session->GetStorage()->LoadConcept(Nodes()->GetConcept()->GetId()));
+		QString type=ToQString(Nodes()->GetConcept()->GetType()->GetDescription());
 		QString Child;
-		size_t child=xml->GetFirstChild(Recs());
-		if(child==SIZE_MAX)
+		size_t child(xml->GetFirstChild(Nodes()));
+		if(child==cNoRef)
 			Child="-1";
 		else
 			Child.setNum(child);
-		ptr=new QTreeWidgetItem(RecsList,QStringList()<<name<<type<<QString::number(Recs()->GetPos())<<QString::number(Recs()->GetDepth())<<Child);
+		ptr=new QTreeWidgetItem(RecsList,QStringList()<<name<<type<<QString::number(Nodes()->GetPos())<<QString::number(Nodes()->GetDepth())<<Child);
 	}
 	obj->ReleaseStruct();
 

@@ -77,6 +77,7 @@ enum tObjType
 	otEngineDoc              /** Document proposed by a search engine.*/,
 	otConcept                /** Concept.*/,
 	otConceptType            /** Concept Type.*/,
+   otConceptCat            /** Concept Category.*/,
 	otPredicate              /** Predicate.*/,
 	otStatement 	         /** Statement.*/,
 	otClass                  /** Class.*/,
@@ -250,26 +251,29 @@ public:
 
 //------------------------------------------------------------------------------
 // Macro to generate a GException
-#define ThrowGException(msg) throw GException(__PRETTY_FUNCTION__,__LINE__,msg)
+#define ThrowGException(msg) throw GALILEI::GException(__PRETTY_FUNCTION__,__LINE__,msg)
 
 
 //------------------------------------------------------------------------------
 // forward class declaration - Knowledge Part
 class GConcept;
+class GConceptCat;
 class GConceptType;
 class GPredicate;
 class GStatement;
 class GLang;
-class GWeightInfo;
-class GWeightInfos;
-class GWeightInfosObj;
+class GConceptRef;
+class GVector;
+class GDescription;
+class GConceptNode;
+class GConceptTree;
+template<class C> class GDescriptionObject;
 class GClass;
 class GClasses;
 
 
 //------------------------------------------------------------------------------
 // forward class declaration - Documents Part
-class GTopic;
 class GDoc;
 class GBalancedLinks;
 class GLink;
@@ -277,10 +281,11 @@ class GLinks;
 class GDocRanking;
 class GSuggestion;
 class GSugs;
-class GTVDRec;
-class GDocStruct;
 class GDocAnalyze;
 class GFilter;
+class GTokenizer;
+class GAnalyzer;
+class GTextToken;
 
 
 //------------------------------------------------------------------------------
@@ -318,6 +323,8 @@ class GCommunityCalc;
 //------------------------------------------------------------------------------
 // forward class declaration - Session Part
 class GObject;
+template<class C> class GObjects;
+class GBasicSession;
 class GSession;
 class GSlot;
 class GStorage;
@@ -334,6 +341,26 @@ class GPlugInManager;
 class GMeasure;
 class GMatrixMeasure;
 class GTool;
+
+
+//------------------------------------------------------------------------------
+// Some null pointers
+/** Null pointer for GConcept.*/
+extern const GConcept* pConcept;
+/** Null pointer for GConceptType.*/
+extern const GConceptType* pConceptType;
+/** Null pointer for GDoc.*/
+extern const GDoc* pDoc;
+/** Null pointer for GTopic.*/
+extern const GTopic* pTopic;
+/** Null pointer for GClass.*/
+extern const GClass* pClass;
+/** Null pointer for GUser.*/
+extern const GUser* pUser;
+/** Null pointer for GProfile.*/
+extern const GProfile* pProfile;
+/** Null pointer for GCommunity.*/
+extern const GCommunity* pCommunity;
 
 
 //------------------------------------------------------------------------------

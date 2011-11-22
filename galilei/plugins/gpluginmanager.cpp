@@ -243,7 +243,7 @@ void GPlugInManager::Delete(void)
 
 
 //------------------------------------------------------------------------------
-void GPlugInManager::CreateConfig(GSession* session)
+void GPlugInManager::CreateConfig(RConfig* config)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
@@ -254,7 +254,7 @@ void GPlugInManager::CreateConfig(GSession* session)
 			break;
 
 		case ptSelect:
-			session->InsertParam(new R::RParamValue(Name,"None","Current plug-in"),Name);
+			config->InsertParam(new R::RParamValue(Name,"None","Current plug-in"),Name);
 			Data.List->CreateConfig();
 			break;
 
@@ -263,7 +263,7 @@ void GPlugInManager::CreateConfig(GSession* session)
 			RCursor<GPlugInList> Cur(*Data.Lists);
 			for(Cur.Start();!Cur.End();Cur.Next())
 			{
-				session->InsertParam(new R::RParamValue(Cur()->Name,"None","Current plug-in"),Name,Cur()->Name);
+				config->InsertParam(new R::RParamValue(Cur()->Name,"None","Current plug-in"),Name,Cur()->Name);
 				Cur()->CreateConfig();
 			}
 			break;
@@ -273,7 +273,7 @@ void GPlugInManager::CreateConfig(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GPlugInManager::ReadConfig(GSession* session)
+void GPlugInManager::ReadConfig(RConfig* config)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
@@ -288,16 +288,16 @@ void GPlugInManager::ReadConfig(GSession* session)
 			for(Factories.Start();!Factories.End();Factories.Next())
 			{
 				if(GetPlugInType()==GPlugInManager::ptListSelect)
-					Factories()->SetLevel(session->GetInt("Level",Name,Factories()->List,Factories()->Name));
+					Factories()->SetLevel(config->GetInt("Level",Name,Factories()->List,Factories()->Name));
 				else
-					Factories()->SetLevel(session->GetInt("Level",Name,Factories()->Name));
+					Factories()->SetLevel(config->GetInt("Level",Name,Factories()->Name));
 			}
 			ReOrder();
 			break;
 		}
 
 		case ptSelect:
-			SetCurrentPlugIn(session->Get(Name,Name),RString::Null,false);
+			SetCurrentPlugIn(config->Get(Name,Name),RString::Null,false);
 			break;
 
 		case ptListSelect:
@@ -305,7 +305,7 @@ void GPlugInManager::ReadConfig(GSession* session)
 			// Parse each list to determine the current plug-in
 			RCursor<GPlugInList> Lists(*Data.Lists);
 			for(Lists.Start();!Lists.End();Lists.Next())
-				SetCurrentPlugIn(session->Get(Lists()->Name,Name,Lists()->Name),Lists()->Name,false);
+				SetCurrentPlugIn(config->Get(Lists()->Name,Name,Lists()->Name),Lists()->Name,false);
 			break;
 		}
 	}
@@ -335,7 +335,7 @@ void GPlugInManager::ReadConfig(GSession* session)
 
 
 //------------------------------------------------------------------------------
-void GPlugInManager::SaveConfig(GSession* session)
+void GPlugInManager::SaveConfig(RConfig* config)
 {
 	// For list and ordered plug-ins -> do nothing
 	switch(PluginsType)
@@ -350,9 +350,9 @@ void GPlugInManager::SaveConfig(GSession* session)
 			for(Factories.Start();!Factories.End();Factories.Next())
 			{
 				if(GetPlugInType()==GPlugInManager::ptListSelect)
-					session->SetInt("Level",Factories()->GetLevel(),Name,Factories()->List,Factories()->Name);
+					config->SetInt("Level",Factories()->GetLevel(),Name,Factories()->List,Factories()->Name);
 				else
-					session->SetInt("Level",Factories()->GetLevel(),Name,Factories()->Name);
+					config->SetInt("Level",Factories()->GetLevel(),Name,Factories()->Name);
 			}
 			break;
 		}
@@ -364,7 +364,7 @@ void GPlugInManager::SaveConfig(GSession* session)
 				Default=Data.List->Current->GetName();
 			else
 				Default="None";
-			session->Set(Name,Default,Name);
+			config->Set(Name,Default,Name);
 			break;
 		}
 
@@ -379,7 +379,7 @@ void GPlugInManager::SaveConfig(GSession* session)
 					Default=Lists()->Current->GetName();
 				else
 					Default="None";
-				session->Set(Lists()->Name,Default,Name,Lists()->Name);
+				config->Set(Lists()->Name,Default,Name,Lists()->Name);
 			}
 			break;
 		}
