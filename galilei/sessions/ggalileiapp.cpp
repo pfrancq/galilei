@@ -80,6 +80,7 @@ using namespace GALILEI;
 #include <gmeasure.h>
 #include <gsimulator.h>
 #include <gtool.h>
+#include <gfunction.h>
 #include <gcomputesugs.h>
 #include <gcomputetrust.h>
 
@@ -151,7 +152,6 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	// Create the managers of plug-ins
 	InsertPtr(Storages=new GPlugInManager("Storage",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("LinkCalc",GPlugInManager::ptSelect));
-	//InsertPtr(new GPlugInManager("DocAnalyze",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("Analyzer",GPlugInManager::ptOrdered));
 	InsertPtr(new GPlugInManager("Tokenizer",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("Filter",GPlugInManager::ptList));
@@ -163,6 +163,7 @@ GGALILEIApp::GGALILEIApp(const RString& name,int argc, char *argv[],bool dlg)
 	InsertPtr(new GPlugInManager("Measures",GPlugInManager::ptListSelect));
 	InsertPtr(Langs=new GPlugInManager("Lang",GPlugInManager::ptList));
 	InsertPtr(new GPlugInManager("Tools",GPlugInManager::ptListSelect));
+	InsertPtr(new GPlugInManager("Functions",GPlugInManager::ptListSelect));
 	InsertPtr(new GPlugInManager("TopicCalc",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("GroupDocs",GPlugInManager::ptSelect));
 	InsertPtr(new GPlugInManager("ComputeSugs",GPlugInManager::ptOrdered));
