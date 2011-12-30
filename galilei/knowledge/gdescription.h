@@ -66,6 +66,12 @@ public:
 	 */
 	GDescription(void);
 
+   /**
+	 * Copy constructor.
+    * @param src            Source description.
+	 */
+	GDescription(const GDescription& src);
+
 protected:
 
 	/**
@@ -76,6 +82,13 @@ protected:
 	virtual bool LoadVectors(void);
 
 public:
+
+    /**
+     * Compare method used by R::RContainer.
+     * @param desc          Description to compare with.
+     * @return always -1.
+     */
+    int Compare(const GDescription&) const {return(-1);}
 
 	/**
 	 * Get the vectors associated to the object. The whole description is loaded
@@ -116,6 +129,11 @@ public:
     */
    bool IsDefined(void) const;
 
+  	/**
+	 * Clear the vectors corresponding to the object.
+	 */
+	void Clear(void);
+
 protected:
 
 	/**
@@ -124,17 +142,6 @@ protected:
 	* @param list             List of concept references.
 	*/
 	void Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list);
-
-	/**
-	 * Clear the vectors corresponding to the object.
-	 */
-	void Clear(void);
-
-	/**
-	 * Transfer the contain of vectors to the current object.
-	 * @param vectors        Original vectors.
-	 */
-	void Transfer(R::RContainer<GVector,true,true>& vectors);
 
 	/**
 	* Add the references for the concepts for a given object type. This
@@ -153,6 +160,23 @@ protected:
 	void DelRefs(GSession* session,tObjType ObjType) const;
 
 public:
+
+    /**
+     * Normalize the vectors.
+     */
+    void Normalize(void);
+
+   /**
+    * Multiply each weight by its inverse frequency factor based on a given set.
+    * @param set            Document Set.
+    */
+    void MultiplyIF(GDescriptionSet& set);
+
+   /**
+	 * Assignment operator for the descriptions.
+	 * @param desc           Description to assign.
+	 */
+	GDescription& operator=(const GDescription& desc);
 
 	/**
 	 * Addition operator for the descriptions.

@@ -312,12 +312,12 @@ public:
 	/**
 	* Assign a new description to the profile.
 	* @param session         Session.
-	* @param vectors         Vectors.
+	* @param desc            Description.
    * @param delref          Delete the references (must be set to true if the
 	*                        profile has already a description).
-	* \warning The container vectors is cleared by this method.
+	* \warning The description is cleared by this method.
 	*/
-	void Update(GSession* session,R::RContainer<GVector,true,true>& vectors,bool delref);
+	void Update(GSession* session,GDescription& desc,bool delref);
 
 	/**
 	* Clear the assessment of the profile.

@@ -39,6 +39,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gconcept.h>
 #include <gconceptcat.h>
 #include <gconcepttype.h>
 
@@ -235,6 +236,19 @@ public:
 	* @param refclasses      Number of classes referenced.
 	*/
 	void InsertConceptType(GConceptCat* cat,char id,const R::RString& name,const R::RString& desc,size_t refdocs,size_t refprofiles,size_t refgroups,size_t reftopics,size_t refclasses);
+
+  	/**
+	 * Get the number of concept created in the system.
+    *
+    * In fact, it returns the highest identifier of a concept.
+	 * @return the number of concepts.
+	 */
+	inline size_t GetNbConcepts(void) const
+   {
+       if(!Concepts.GetNb())
+           return(0);
+       return(Concepts[Concepts.GetMaxPos()]->Id);
+   }
 
 	/**
 	* Get the concept with a specific identifier.

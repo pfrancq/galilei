@@ -367,13 +367,13 @@ private:
 	/**
 	* Assign a new description to the document.
 	* @param lang            Pointer to the language.
-	* @param vectors         Vectors.
+	* @param desc            Description.
 	* @param ram             Must the information be maintained is RAM.
 	* @param delref          Delete the references (must be set to true if the
 	*                        document has already a description).
-	* \warning The container vectors is cleared by this method.
+	* \warning The description is cleared by this method.
 	*/
-	void Update(GLang* lang,R::RContainer<GVector,true,true>& vectors,GConceptTree& docstruct,bool ram,bool delref);
+	void Update(GLang* lang,GDescription& desc,GConceptTree& docstruct,bool ram,bool delref);
 
 public:
 

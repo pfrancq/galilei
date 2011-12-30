@@ -53,11 +53,10 @@ namespace GALILEI{
 /**
 * The GVector provides a representation for a (sparse) vector of concept
 * references associated with a given concept. Each element of the vector is
-* represented by a GConceptRef class. The vector can also be seen as a set of
-* sub-vectors, where each sub-vector corresponds to one concepts space.
+* represented by a GConceptRef class.
 *
 * In practice, several vectors are used to describe the object (document,
-* profile, community or class) in the extended vector Model.
+* profile, community or class) in the tensor space model.
 * @author Pascal Francq
 * @short Concept Reference Vector.
 */
@@ -68,18 +67,13 @@ class GVector : private R::RContainer<GConceptRef,true,true>
 	 */
 	GConcept* Concept;
 
-   /**
-    * Weight of a vector.
-    */
-   double Weight;
-
 	/**
-	 * The maximal weight of each sub-vector.
+	 * The maximal weight of the vector.
 	 */
 	double MaxWeight;
 
 	/**
-	 * The maximal absolute weight of each sub-vector.
+	 * The maximal absolute weight the vector.
 	 */
 	double MaxAbsWeight;
 
@@ -88,28 +82,21 @@ public:
 	/**
 	* Constructor of a vector.
 	* @param concept         Concept associated with the vector.
-   * @param weight          Weight associated with the vector.
 	*/
-	GVector(GConcept* concept,double weight=1);
+	GVector(GConcept* concept);
 
 	/**
 	* Constructor of a vector.
 	* @param concept         Concept associated with the vector.
 	* @param max             Initial number of maximal references.
-   * @param weight          Weight associated with the vector.
 	*/
-	GVector(GConcept* concept,size_t max,double weight=1);
+	GVector(GConcept* concept,size_t max);
 
 	/**
 	* Copy constructor of a vector.
 	* @param vector          Vector.
 	*/
 	GVector(const GVector& vector);
-
-   /**
-    * @return the weight associated with the vector.
-    */
-   double GetWeight(void) const {return(Weight);}
 
 	/**
 	* Static function used to order the information entities by weights.
@@ -123,9 +110,8 @@ protected:
 	/**
 	* Assignment operator for vectors.
 	* @param vector          Source vector.
-   * @param weight          Weight associated with the vector.
 	*/
-	void Copy(const R::RContainer<GConceptRef,false,true>& vector,double weight=1);
+	void Copy(const R::RContainer<GConceptRef,false,true>& vector);
 
 public:
 
@@ -286,15 +272,23 @@ public:
 	 */
 	void Intersection(const GVector& vector);
 
+   /**
+	 * Assignment operator for the vectors.
+	 * @param vector         Vector to assign.
+	 */
+	GVector& operator=(const GVector& vector);
+
 	/**
 	 * Addition operator for the vectors.
 	 * @param vector         Vector to add.
+    * \warning Only vectors associated with the same concept can be added.
 	 */
 	GVector& operator+=(const GVector& vector);
 
 	/**
 	 * Subtraction operator for the vectors.
 	 * @param vector         Vector to subtract.
+    * \warning Only vectors associated with the same concept can be subtracted.
 	 */
 	GVector& operator-=(const GVector& vector);
 
@@ -340,6 +334,7 @@ public:
  * Addition operation for two vectors.
  * @param arg1               First vector.
  * @param arg2               Second vector.
+ * \warning Only vectors associated with the same concept can be added.
  */
 GVector operator+(const GVector &arg1,const GVector &arg2);
 
@@ -347,6 +342,7 @@ GVector operator+(const GVector &arg1,const GVector &arg2);
  * Subtraction operation for two vectors.
  * @param arg1               First vector.
  * @param arg2               Second vector.
+ * \warning Only vectors associated with the same concept can be subtracted.
  */
 GVector operator-(const GVector &arg1,const GVector &arg2);
 

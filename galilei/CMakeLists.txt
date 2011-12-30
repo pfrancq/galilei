@@ -8,6 +8,7 @@ ADD_SOURCE_FILE(galilei profiles galilei_INCLUDES)
 ADD_SOURCE_FILE(galilei groups galilei_INCLUDES)
 ADD_SOURCE_FILE(galilei sessions galilei_INCLUDES)
 ADD_SOURCE_FILE(galilei plugins galilei_INCLUDES)
+ADD_SOURCE_FILE(galilei tools galilei_INCLUDES)
 
 INCLUDE_DIRECTORIES(${galilei_INCLUDES})
 

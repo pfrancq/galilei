@@ -436,13 +436,13 @@ template<class C>
 
 //------------------------------------------------------------------------------
 template<class C>
-	void GObjects<C>::UpdateIndex(const C*,const R::RContainer<GVector,true,true>& vectors,size_t id,bool add)
+	void GObjects<C>::UpdateIndex(const C*,const GDescription& desc,size_t id,bool add)
 {
 	if(!Index)
 		ThrowGException(GetObjType(Type,true,true)+" do not have index");
 
 	// Go trough each vector
-	R::RCursor<GVector> Vector(vectors);
+	R::RCursor<GVector> Vector(desc.GetVectors());
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
 		// Update the index for all concepts

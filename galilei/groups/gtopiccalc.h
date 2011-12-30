@@ -36,7 +36,7 @@
 // include files for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
-#include <gvector.h>
+#include <gdescription.h>
 
 
 //------------------------------------------------------------------------------
@@ -56,9 +56,9 @@ class GTopicCalc : public GPlugIn
 protected:
 
 	/**
-	 * Vector that should contain the structure after the analyze.
+	 * Description to billed during the analyze.
 	 */
-	R::RContainer<GVector,true,true> Vectors;
+    GDescription Description;
 
 public:
 

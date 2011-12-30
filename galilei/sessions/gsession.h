@@ -719,9 +719,9 @@ public:
 	 * Assign a specific description to a given class. If necessary, the
 	 * description is saved.
 	 * @param theclass       The class.
-	 * @param vectors         Vectors.
+	 * @param desc           Description.
 	 */
-	void AssignVectors(GClass* theclass,R::RContainer<GVector,true,true>& vectors);
+	void Assign(GClass* theclass,GDescription& desc);
 
 	/**
 	* Destruct the session.

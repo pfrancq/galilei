@@ -271,22 +271,21 @@ void GProfile::DeleteFdbk(size_t docid)
 
 
 //------------------------------------------------------------------------------
-void GProfile::Update(GSession* session,R::RContainer<GVector,true,true>& vectors,bool delref)
+void GProfile::Update(GSession* session,GDescription& desc,bool delref)
 {
 	// Remove its references
 	if(delref)
 	{
 		DelRefs(Session,otProfile);
 		if(Session->HasIndex(pProfile))
-			session->UpdateIndex(pProfile,vectors,Id,false);
+			session->UpdateIndex(pProfile,desc,Id,false);
 	}
 
 	// Assign information
-	GDescription::Clear();
 	State=osUpdated;
 	Computed.SetToday();
-	Transfer(vectors);
-	vectors.Clear();
+	GDescription::operator=(desc);
+	desc.Clear();
 
 	// Update the group were it belongs
 	Session->UpdateCommunity(this);
@@ -294,7 +293,7 @@ void GProfile::Update(GSession* session,R::RContainer<GVector,true,true>& vector
 	// Update its references
 	AddRefs(Session,otProfile);
 	if(Session->HasIndex(pProfile))
-		session->UpdateIndex(pProfile,vectors,Id,false);
+		session->UpdateIndex(pProfile,desc,Id,false);
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);

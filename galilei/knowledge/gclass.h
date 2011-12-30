@@ -57,6 +57,8 @@ namespace GALILEI{
 */
 class GClass : public R::RNode<GClasses,GClass,false>, public GDescriptionObject<GClass>
 {
+    using R::RNode<GClasses,GClass,false>::Clear;
+
 	/**
 	 * Method used to correctly instantiate some template methods.
 	 */
@@ -110,11 +112,11 @@ public:
 	int Compare(const size_t id) const;
 
 	/**
-	* Assign new vectors to the class.
-	* @param vectors         Vectors.
+	* Assign a description to the class.
+	* @param desc            Description.
 	* \warning The vectors are cleared by this method.
 	*/
-	void Update(R::RContainer<GVector,true,true>& vectors);
+	void Update(GDescription& desc);
 
 	/**
 	 * Get the cost of an Up operation of the current node. The method adds a

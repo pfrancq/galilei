@@ -100,25 +100,22 @@ int GClass::Compare(const size_t id) const
 
 
 //------------------------------------------------------------------------------
-void GClass::Update(R::RContainer<GVector,true,true>& vectors)
+void GClass::Update(GDescription& desc)
 {
 	// Remove its references
 	DelRefs(Session,otClass);
 	if(Session->HasIndex(pClass))
-		Session->UpdateIndex(pClass,vectors,Id,false);
+		Session->UpdateIndex(pClass,desc,Id,false);
 
 	// Assign information
-	GDescription::Clear();
 	State=osUpdated;
-	Transfer(vectors);
-
-	// Clear vectors
-	vectors.Clear();
+	GDescription::operator=(desc);
+	desc.Clear();
 
 	// Update its references
 	AddRefs(Session,otClass);
 	if(Session->HasIndex(pClass))
-		Session->UpdateIndex(pClass,vectors,Id,false);
+		Session->UpdateIndex(pClass,desc,Id,false);
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);

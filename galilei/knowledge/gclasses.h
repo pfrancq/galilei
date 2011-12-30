@@ -58,6 +58,7 @@ class GClasses : public R::RTree<GClasses,GClass,false>, public GObjects<GClass>
 {
 	using GObjects<GClass>::InsertObj;
 	using GObjects<GClass>::DeleteObj;
+   //using R::RTree<GClasses,GClass,false>::Clear;
 
 public:
 
@@ -93,9 +94,19 @@ public:
 
    /**
 	* Clear the classes.
-	* @param obj            Pseudo-parameter.
 	*/
-   void Clear(const GClass* obj);
+  virtual void Clear(void);
+
+   /**
+	 * Clear the classes.
+	 */
+	virtual void Clear(size_t max,size_t inc=0);
+
+   /**
+	* Clear the classes.
+   * @param obj             pseudo-parameter.
+	*/
+  virtual void Clear(const GClass* obj);
 };
 
 

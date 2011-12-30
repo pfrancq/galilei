@@ -35,6 +35,7 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdescription.h>
+#include <gdescriptionset.h>
 #include <gsession.h>
 using namespace GALILEI;
 using namespace R;
@@ -56,6 +57,22 @@ GDescription::GDescription(void)
 
 
 //------------------------------------------------------------------------------
+GDescription::GDescription(const GDescription& src)
+	: Vectors(0)
+{
+	if(!src.Vectors)
+		return;
+	Vectors=new R::RContainer<GVector,true,true>(src.Vectors->GetNb());
+	RCursor<GVector> Vector(*src.Vectors);
+	for(Vector.Start();!Vector.End();Vector.Next())
+	{
+		GVector* MyVector(GetInsertVector(Vector()->GetConcept()));
+		(*MyVector)=(*Vector());
+	}
+}
+
+
+//------------------------------------------------------------------------------
 bool GDescription::LoadVectors(void)
 {
 	return(false);
@@ -68,7 +85,7 @@ RCursor<GVector> GDescription::GetVectors(void) const
 	if(!Vectors)
 	{
 		if(!const_cast<GDescription*>(this)->LoadVectors())
-			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(1);
+			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(5,20);
 	}
 	return(RCursor<GVector>(*Vectors));
 }
@@ -80,7 +97,7 @@ const GVector* GDescription::GetVector(GConcept* concept) const
 	if(!Vectors)
 	{
 		if(!const_cast<GDescription*>(this)->LoadVectors())
-			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(1);
+			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(5,20);
 
 	}
 	return(Vectors->GetPtr(concept));
@@ -93,7 +110,7 @@ GVector* GDescription::GetVector(GConcept* concept)
 	if(!Vectors)
 	{
 		if(!const_cast<GDescription*>(this)->LoadVectors())
-			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(1);
+			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(5,20);
 
 	}
 	return(Vectors->GetPtr(concept));
@@ -106,7 +123,7 @@ GVector* GDescription::GetInsertVector(GConcept* concept)
 	if(!Vectors)
 	{
 		if(!const_cast<GDescription*>(this)->LoadVectors())
-			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(1);
+			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(5,20);
 	}
 	return(Vectors->GetInsertPtr(concept));
 }
@@ -153,18 +170,6 @@ void GDescription::Clear(void)
 
 
 //------------------------------------------------------------------------------
-void GDescription::Transfer(R::RContainer<GVector,true,true>& vectors)
-{
-	RCursor<GVector> Vector(vectors);
-	for(Vector.Start();!Vector.End();Vector.Next())
-	{
-		GVector* MyVector(GetInsertVector(Vector()->GetConcept()));
-		MyVector->Transfer(*Vector());
-	}
-}
-
-
-//------------------------------------------------------------------------------
 void GDescription::AddRefs(GSession* session,tObjType ObjType) const
 {
 	// Get the vector (if necessary)
@@ -174,6 +179,8 @@ void GDescription::AddRefs(GSession* session,tObjType ObjType) const
 	// Init
 	RVectorBool Types(session->GetNbConceptTypes()+1);
 	Types.Init(session->GetNbConceptTypes()+1,true);
+	RVectorBool Concepts(session->GetNbConcepts()+1);
+	Concepts.Init(session->GetNbConcepts()+1,true);
 
 	// Parse the vectors
 	for(Vector.Start();!Vector.End();Vector.Next())
@@ -191,8 +198,14 @@ void GDescription::AddRefs(GSession* session,tObjType ObjType) const
 			Types[TypeId]=false;
 		}
 
-			// IncRef for the concept
+		// IncRef for the concept
+		size_t ConceptId(Vector()->GetConcept()->GetId());
+		if(Concepts[ConceptId])
+		{
+			// Yes -> A new object uses this concept.
 			type->IncRef(Vector()->GetConcept(),ObjType);
+			Concepts[ConceptId]=false;
+		}
 
 		for(ptr.Start();!ptr.End();ptr.Next())
 		{
@@ -206,7 +219,13 @@ void GDescription::AddRefs(GSession* session,tObjType ObjType) const
 			}
 
 			// IncRef for the concept
-			type->IncRef(ptr()->GetConcept(),ObjType);
+			size_t ConceptId(ptr()->GetConcept()->GetId());
+			if(Concepts[ConceptId])
+			{
+				// Yes -> A new object uses this concept.
+				type->IncRef(ptr()->GetConcept(),ObjType);
+				Concepts[ConceptId]=false;
+			}
 		}
 	}
 }
@@ -222,6 +241,8 @@ void GDescription::DelRefs(GSession* session,tObjType ObjType) const
 	// Init
 	RVectorBool Types(session->GetNbConceptTypes()+1);
 	Types.Init(session->GetNbConceptTypes()+1,true);
+	RVectorBool Concepts(session->GetNbConcepts()+1);
+	Concepts.Init(session->GetNbConcepts()+1,true);
 
 	// Parse the vectors
 	for(Vector.Start();!Vector.End();Vector.Next())
@@ -241,8 +262,13 @@ void GDescription::DelRefs(GSession* session,tObjType ObjType) const
 		}
 
 		// DecRef for the concept
-		type->DecRef(Vector()->GetConcept(),ObjType);
-
+		size_t ConceptId(Vector()->GetConcept()->GetId());
+		if(Concepts[ConceptId])
+		{
+			// Yes -> An old object uses this concept.
+			type->DecRef(Vector()->GetConcept(),ObjType);
+			Concepts[ConceptId]=false;
+		}
 
 		for(ptr.Start();!ptr.End();ptr.Next())
 		{
@@ -256,9 +282,64 @@ void GDescription::DelRefs(GSession* session,tObjType ObjType) const
 			}
 
 			// DecRef for the concept
-			type->DecRef(ptr()->GetConcept(),ObjType);
+			size_t ConceptId(ptr()->GetConcept()->GetId());
+			if(Concepts[ConceptId])
+			{
+				// Yes -> An old object uses this concept.
+				type->DecRef(ptr()->GetConcept(),ObjType);
+				Concepts[ConceptId]=false;
+			}
 		}
 	}
+}
+
+
+//------------------------------------------------------------------------------
+void GDescription::Normalize(void)
+{
+	RCursor<GVector> Vector(GetVectors());
+	for(Vector.Start();!Vector.End();Vector.Next())
+	{
+		(*Vector())/=Vector()->GetMaxAbsWeight();
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GDescription::MultiplyIF(GDescriptionSet& set)
+{
+	RCursor<GVector> Vector(GetVectors());
+	for(Vector.Start();!Vector.End();Vector.Next())
+	{
+		RCursor<GConceptRef> ptr(Vector()->GetRefs());
+		for(ptr.Start();!ptr.End();ptr.Next())
+			(*ptr())*=set.GetIF(ptr()->GetConcept()->GetId());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+GDescription& GDescription::operator=(const GDescription& desc)
+{
+	if(Vectors)
+	{
+		Vectors->Clear();
+		if(!desc.Vectors)
+			return(*this);
+	}
+	else
+	{
+		if(!desc.Vectors)
+			return(*this);
+		Vectors=new R::RContainer<GVector,true,true>(desc.Vectors->GetNb());
+	}
+	RCursor<GVector> Vector(*desc.Vectors);
+	for(Vector.Start();!Vector.End();Vector.Next())
+	{
+		GVector* MyVector(GetInsertVector(Vector()->GetConcept()));
+		(*MyVector)=(*Vector());
+	}
+	return(*this);
 }
 
 

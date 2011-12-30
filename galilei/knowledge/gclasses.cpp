@@ -80,6 +80,21 @@ void GClasses::DeleteObj(GClass* obj)
 	RTree<GClasses,GClass,false>::DeleteNode(obj,true);
 }
 
+//-----------------------------------------------------------------------------
+void GClasses::Clear(void)
+{
+	GObjects<GClass>::Clear(pClass);
+	RTree<GClasses,GClass,false>::Clear();
+}
+
+
+//-----------------------------------------------------------------------------
+void GClasses::Clear(size_t max,size_t inc)
+{
+	GObjects<GClass>::Clear(pClass);
+	RTree<GClasses,GClass,false>::Clear(max,inc);
+}
+
 
 //-----------------------------------------------------------------------------
 void GClasses::Clear(const GClass* obj)

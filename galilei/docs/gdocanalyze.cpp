@@ -67,7 +67,7 @@ const size_t MaxWordLen=50;
 
 //------------------------------------------------------------------------------
 GDocAnalyze::GDocAnalyze(GSession* session)
-	: RDownload(), Session(session), Vectors(20), Struct(), Tokenizer(0),
+	: RDownload(), Session(session), Description(), Struct(), Tokenizer(0),
 	 DCMI(0), DefaultContent(0), MemoryTokens(500), MemoryOccurs(20000),
 	  OrderTokens(27,27,50,20), Tokens(500), Occurs(20000)
 {
@@ -144,7 +144,7 @@ void GDocAnalyze::ExtractText(const R::RString& text,GConcept* concept,size_t po
 //	Tokens.Clear();
 
 	// Get the vector associated with the concept
-	CurVector=Vectors.GetInsertPtr(concept);
+	CurVector=Description.GetInsertVector(concept);
 	CurDepth=depth;
 	CurPos=pos;
 
@@ -346,7 +346,7 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 	bool DelRefs(doc->IsDefined());
 	if((!Tokenizer)||(!Analyzers.GetNb()))
 		AssignPlugIns();
-	Vectors.Clear();
+	Description.Clear();
 	Struct.Clear();
 	OrderTokens.Clear();
 	Tokens.Clear();
@@ -377,7 +377,7 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 
 	// Set the information to the document
 
-	doc->Update(Lang,Vectors,Struct,ram||(!Save),DelRefs);
+	doc->Update(Lang,Description,Struct,ram||(!Save),DelRefs);
 
 	// Save the information related to the object
 	if(Save&&(!ram))

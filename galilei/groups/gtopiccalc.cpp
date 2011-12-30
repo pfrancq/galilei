@@ -43,7 +43,7 @@ using namespace R;
 
 //------------------------------------------------------------------------------
 GTopicCalc::GTopicCalc(GSession* session,GPlugInFactory* fac)
-	: GPlugIn(session,fac), Vectors(20)
+	: GPlugIn(session,fac), Description()
 {
 }
 

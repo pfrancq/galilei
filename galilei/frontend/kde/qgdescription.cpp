@@ -116,7 +116,6 @@ void QGDescription::Set(GSession*,const GDescription* desc)
 			Item* The(new Item(Vectors,Vector(),QStringList()
 					  <<ToQString(Concept->GetName())
 					  <<ToQString(Concept->GetType()->GetName())
-					  <<QString::number(Vector()->GetWeight())
 					  <<QString::number(Concept->GetId())));
 			if(!Cur)
 				Cur=The;

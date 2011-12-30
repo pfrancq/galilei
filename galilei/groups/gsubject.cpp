@@ -56,7 +56,7 @@ using namespace std;
 GSubject::GSubject(GSession* session,size_t id,const RString& name,bool u)
 	 : RNode<GSubjects,GSubject,true>(), Session(session), Id(id), Name(name), Used(u),
 	   CategorizedDocs(1000), Docs(1000), WhereDocs(1000), Profiles(10,5),
-	   Community(0), Topic(0), Vectors(0)
+	   Community(0), Topic(0)
 {
 }
 
@@ -94,10 +94,11 @@ int GSubject::Compare(const RString& name) const
 
 
 //------------------------------------------------------------------------------
-void GSubject::CreateVectors(void)
+void GSubject::CreateDescription(void)
 {
-	// Create the main vector
-	Vectors=new R::RContainer<GVector,true,true>(30);
+	// If a description exists, leave it
+	if(IsDefined())
+		return;
 
 	switch(Tree->DescType)
 	{
@@ -148,8 +149,7 @@ void GSubject::CreateVectors(void)
 				// Compute the common information entities of all the children
 				RCursor<GSubject> Child(GetSubjects());
 				Child.Start();
-				if(!Child()->Vectors)
-					Child()->CreateVectors();
+				Child()->CreateDescription();
 				(*Vectors)=(*Child()->Vectors);
 				for(;!Child.End();Child.Next())
 				{
@@ -186,24 +186,6 @@ void GSubject::CreateVectors(void)
 			break;
 		}
 	}
-}
-
-
-//------------------------------------------------------------------------------
-RCursor<GVector> GSubject::GetVectors(void) const
-{
-	if(!Vectors)
-		const_cast<GSubject*>(this)->CreateVectors();
-	return(RCursor<GVector>(*Vectors));
-}
-
-
-//------------------------------------------------------------------------------
-const GVector* GSubject::GetVector(GConcept* concept) const
-{
-	if(!Vectors)
-		const_cast<GSubject*>(this)->CreateVectors();
-	return(Vectors->GetPtr(concept));
 }
 
 
@@ -252,6 +234,13 @@ size_t GSubject::GetMaxDocs(size_t maxdepth)
 bool GSubject::IsIn(GProfile* prof) const
 {
 	return(Profiles.IsIn(*prof));
+}
+
+
+//------------------------------------------------------------------------------
+void GSubject::Clear(void)
+{
+	R::RNode<GSubjects,GSubject,true>::Clear();
 }
 
 
@@ -536,4 +525,14 @@ GSubjects::GSubjects(size_t max)
 	: RTree<GSubjects,GSubject,true>(max), Subjects(max), SelectedDocs(0), DocsSubjects(0),
 	  ProfilesSubject(0), SubjectsLoaded(false), DescType(sdNames)
 {
+}
+
+//------------------------------------------------------------------------------
+void GSubjects::Clear(void)
+{
+	RTree<GSubjects,GSubject,true>::Clear();
+	ProfilesSubject.Clear();
+	SelectedDocs.Clear();
+	DocsSubjects.Clear();
+	MaxDepth=0;
 }

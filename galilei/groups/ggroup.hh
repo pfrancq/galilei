@@ -259,29 +259,26 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 //------------------------------------------------------------------------------
 template<class cObj,class cGroup,GALILEI::tObjType type>
-	void GALILEI::GGroup<cObj,cGroup,type>::Update(GSession* session,R::RContainer<GVector,true,true>& vectors,bool delref)
+	void GALILEI::GGroup<cObj,cGroup,type>::Update(GSession* session,GDescription& desc,bool delref)
 {
 	// Remove its references
 	if(delref)
 	{
 		DelRefs(session,type);
 		if(session->HasIndex(static_cast<cGroup*>(0)))
-			session->UpdateIndex(static_cast<cGroup*>(0),vectors,Id,false);
+			session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,false);
 	}
 
 	// Assign information
-	GDescription::Clear();
 	State=osUpdated;
 	Computed.SetToday();
-	GDescription::Transfer(vectors);
-
-	// Clear infos
-	vectors.Clear();
+	GDescription::operator=(desc);
+	desc.Clear();
 
 	// Update its references
 	AddRefs(session,type);
    if(session->HasIndex(static_cast<cGroup*>(0)))
-      session->UpdateIndex(static_cast<cGroup*>(0),vectors,Id,false);
+      session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,false);
 
 	// Emit an event that it was modified
 	if(Data)

@@ -310,14 +310,14 @@ public:
 	 */
 	void LoadIndex(const C* obj,GConcept* concept,R::RNumContainer<size_t,true>& refs);
 
-	/**
+   /**
 	 * Update the index of a given object.
 	 * @param obj            Pseudo-parameter.
-	 * @param vectors        Vectors.
+	 * @param desc           Description.
 	 * @param id             Identifier of the object.
 	 * @param add            Object must be added or removed from the index.
 	 */
-	void UpdateIndex(const C* obj,const R::RContainer<GVector,true,true>& vectors,size_t id,bool add);
+	void UpdateIndex(const C* obj,const GDescription& desc,size_t id,bool add);
 
 	/**
 	 * Build the idex of all the objects of a given type from scratch.

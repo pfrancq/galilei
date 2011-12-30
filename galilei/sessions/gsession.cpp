@@ -324,7 +324,7 @@ void GSession::CalcProfile(GProfile* profile,GProfileCalc* method,GLinkCalc* lin
 	bool Save(SaveResults&&(profile->GetId()!=cNoRef));
 	bool DelRefs(profile->IsDefined());
 	method->Compute(profile);
-	profile->Update(this,method->Vectors,DelRefs);
+	profile->Update(this,method->Description,DelRefs);
 	if(Save)
 	{
 		if(profile->IsDefined())
@@ -426,11 +426,6 @@ void GSession::Reset(tObjType type)
 			break;
 		case otSubject:
 			Subjects.Clear();
-			Subjects.ProfilesSubject.Clear();
-			Subjects.SelectedDocs.Clear();
-			Subjects.DocsSubjects.Clear();
-			Subjects.Clear();
-			Subjects.MaxDepth=0;
 			break;
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not managed");
@@ -1012,7 +1007,7 @@ void GSession::GroupDocs(GSlot* rec)
 		// Compute the topic description
 		bool DelRefs(Topic()->IsDefined());
 		CalcDesc->Compute(Topic());
-		Topic()->Update(this,CalcDesc->Vectors,DelRefs);
+		Topic()->Update(this,CalcDesc->Description,DelRefs);
 
 		if(SaveResults)
 		{
@@ -1045,7 +1040,7 @@ void GSession::GroupProfiles(GSlot* rec)
 		// Compute the community description
 		bool DelRefs(Community()->IsDefined());
 		CalcDesc->Compute(Community());
-		Community()->Update(this,CalcDesc->Vectors,DelRefs);
+		Community()->Update(this,CalcDesc->Description,DelRefs);
 
 		if(SaveResults)
 		{
@@ -1420,9 +1415,9 @@ bool GSession::IsDefined(const RContainer<GVector,true,true>& vectors)
 
 
 //------------------------------------------------------------------------------
-void GSession::AssignVectors(GClass* theclass,R::RContainer<GVector,true,true>& vectors)
+void GSession::Assign(GClass* theclass,GDescription& desc)
 {
-	theclass->Update(vectors);
+	theclass->Update(desc);
 	if(SaveResults)
 	{
 		theclass->SaveDesc();

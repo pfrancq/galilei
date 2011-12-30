@@ -372,21 +372,20 @@ R::RCursor<GLink> GDoc::GetLinks(void) const
 
 
 //------------------------------------------------------------------------------
-void GDoc::Update(GLang* lang,R::RContainer<GVector,true,true>& vectors,GConceptTree& docstruct,bool ram,bool delref)
+void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& docstruct,bool ram,bool delref)
 {
 	// Look if the references must be modified
 	if(delref&&(!ram))
 	{
 		DelRefs(Session,otDoc);
 		if(Session->HasIndex(pDoc))
-			Session->UpdateIndex(pDoc,vectors,Id,false);
+			Session->UpdateIndex(pDoc,desc,Id,false);
 	}
 
 	// Assign language and information
-	GDescription::Clear();
 	Lang=lang;
-	Transfer(vectors);
-	vectors.Clear();
+	GDescription::operator=(desc);
+	desc.Clear();
 
 	if(Id!=cNoRef)
 	{
@@ -407,7 +406,7 @@ void GDoc::Update(GLang* lang,R::RContainer<GVector,true,true>& vectors,GConcept
 	{
 		AddRefs(Session,otDoc);
 		if(Session->HasIndex(pDoc))
-			Session->UpdateIndex(pDoc,vectors,Id,false);
+			Session->UpdateIndex(pDoc,desc,Id,false);
 	}
 
 	if(ram)

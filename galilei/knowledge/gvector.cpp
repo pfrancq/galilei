@@ -62,8 +62,9 @@ const double Factor=0.5;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GVector::GVector(GConcept* concept,double weight)
-	: RContainer<GConceptRef,true,true>(100,50), Concept(concept), Weight(weight), MaxWeight(NAN), MaxAbsWeight(NAN)
+GVector::GVector(GConcept* concept)
+	: RContainer<GConceptRef,true,true>(100,50), Concept(concept), MaxWeight(NAN),
+	  MaxAbsWeight(NAN)
 {
 	if(!concept)
 		ThrowGException("cannot create a vector with an invalid concept");
@@ -71,8 +72,9 @@ GVector::GVector(GConcept* concept,double weight)
 
 
 //------------------------------------------------------------------------------
-GVector::GVector(GConcept* concept,size_t max,double weight)
-	: RContainer<GConceptRef,true,true>(max,50), Concept(concept), Weight(weight), MaxWeight(NAN), MaxAbsWeight(NAN)
+GVector::GVector(GConcept* concept,size_t max)
+	: RContainer<GConceptRef,true,true>(max,50), Concept(concept), MaxWeight(NAN),
+	  MaxAbsWeight(NAN)
 {
 	if(!concept)
 		ThrowGException("cannot create a vector with an invalid concept");
@@ -81,7 +83,8 @@ GVector::GVector(GConcept* concept,size_t max,double weight)
 
 //------------------------------------------------------------------------------
 GVector::GVector(const GVector& vector)
-	: RContainer<GConceptRef,true,true>(vector), Concept(vector.Concept), Weight(vector.Weight), MaxWeight(vector.MaxWeight), MaxAbsWeight(vector.MaxAbsWeight)
+	: RContainer<GConceptRef,true,true>(vector), Concept(vector.Concept),
+	  MaxWeight(vector.MaxWeight), MaxAbsWeight(vector.MaxAbsWeight)
 {
 }
 
@@ -101,12 +104,11 @@ int GVector::SortOrder(const void* a,const void* b)
 
 
 //------------------------------------------------------------------------------
-void GVector::Copy(const R::RContainer<GConceptRef,false,true>& vector,double weight)
+void GVector::Copy(const R::RContainer<GConceptRef,false,true>& vector)
 {
 	RContainer<GConceptRef,true,true>::operator=(vector);
 
 	// Invalid maximum weights
-	Weight=weight;
 	MaxWeight=NAN;
 	MaxAbsWeight=NAN;
 }
@@ -311,8 +313,22 @@ void GVector::Intersection(const GVector& vector)
 
 
 //------------------------------------------------------------------------------
+GVector& GVector::operator=(const GVector& vector)
+{
+	Concept=vector.Concept;
+	MaxWeight=vector.MaxWeight;
+	MaxAbsWeight=vector.MaxAbsWeight;
+	R::RContainer<GConceptRef,true,true>::Copy(vector);
+	return(*this);
+}
+
+
+//------------------------------------------------------------------------------
 GVector& GVector::operator+=(const GVector& vector)
 {
+	if(Concept!=vector.Concept)
+		ThrowGException("Operation does work only with vectors associated with the same concept");
+
 	// Invalid maximum weights
 	MaxWeight=NAN;
 	MaxAbsWeight=NAN;
@@ -330,6 +346,10 @@ GVector& GVector::operator+=(const GVector& vector)
 //------------------------------------------------------------------------------
 GVector& GVector::operator-=(const GVector& vector)
 {
+	if(Concept!=vector.Concept)
+		ThrowGException("Operation does work only with vectors associated with the same concept");
+
+
 	// Invalid maximum weights
 	MaxWeight=NAN;
 	MaxAbsWeight=NAN;
@@ -388,6 +408,9 @@ GVector::~GVector(void)
 //------------------------------------------------------------------------------
 GVector GALILEI::operator+(const GVector &arg1,const GVector &arg2)
 {
+	if(arg1.GetConcept()!=arg2.GetConcept())
+		ThrowGException("Operation does work only with vectors associated with the same concept");
+
 	GVector res(arg1);
 	res+=arg2;
 	return(res);
@@ -397,6 +420,9 @@ GVector GALILEI::operator+(const GVector &arg1,const GVector &arg2)
 //------------------------------------------------------------------------------
 GVector GALILEI::operator-(const GVector &arg1,const GVector &arg2)
 {
+	if(arg1.GetConcept()!=arg2.GetConcept())
+		ThrowGException("Operation does work only with vectors associated with the same concept");
+	
 	GVector res(arg1);
 	res-=arg2;
 	return(res);

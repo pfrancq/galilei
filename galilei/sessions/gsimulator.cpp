@@ -879,7 +879,7 @@ template<class cGroup,class cObj,class cCalc>
 		if(calc)
 		{
 			calc->Compute(grp);
-			grp->Update(Session,calc->Vectors,false);
+			grp->Update(Session,calc->Description,false);
 		}
 	}
 }
@@ -893,7 +893,7 @@ void GSimulator::BuildClass(GSubject* subject,GClass* parent)
 	Session->InsertObj(parent,Class);
 
 	// Build the vector representing its concepts
-	Session->AssignVectors(Class,*subject->Vectors);
+	Session->Assign(Class,*subject);
 
 	// Create sub-classes
 	RCursor<GSubject> Cur(subject->GetSubjects());
@@ -972,9 +972,8 @@ void GSimulator::BuildIdealLeafTopics(void)
 		Grps()->AssignIdeal(grp);
 
 		// Update the topic.
-		if(!Grps()->Vectors)
-			Grps()->CreateVectors();
-		grp->Update(Session,*Grps()->Vectors,false);
+		Grps()->CreateDescription();
+		grp->Update(Session,*Grps(),false);
 
 		// Save the results if necessary
 		if(Session->MustSaveResults())

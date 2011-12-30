@@ -40,9 +40,11 @@
 #include <rnode.h>
 #include <rtree.h>
 
+
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gdescription.h>
 
 
 //------------------------------------------------------------------------------
@@ -95,8 +97,10 @@ public:
 * @author Pascal Francq, Julien Lamoral and David Wartel.
 * @short Subject
 */
-class GSubject : protected R::RNode<GSubjects,GSubject,true>
+class GSubject : protected R::RNode<GSubjects,GSubject,true>, public GDescription
 {
+    using R::RNode<GSubjects,GSubject,true>::Clear;
+
 	/**
 	 * Session.
 	 */
@@ -147,11 +151,6 @@ class GSubject : protected R::RNode<GSubjects,GSubject,true>
 	 * Ideal topic.
 	 */
 	GTopic* Topic;
-
-	/**
-	 * Vectors representing the description of the subject.
-	 */
-	R::RContainer<GVector,true,true>* Vectors;
 
 public:
 
@@ -217,29 +216,13 @@ public:
 private:
 
 	/**
-	 * Create the vectors. In practice, it is computed as name of
+	 * Create a description. In practice, it is computed as name of
 	 * the subject and its parents, or as the gravitation center of the
 	 * documents (for a leaf node) or of the children (for a non-leaf node).
 	 */
-	void CreateVectors(void);
+	void CreateDescription(void);
 
 public:
-
-	/**
-	 * Get the vectors describing the subject. If necessary, the descriptions
-	 * are recomputed.
-	 * @return a cursor of GVector.
-	 */
-	R::RCursor<GVector> GetVectors(void) const;
-
-	/**
-	 * Get the vector describing the subject corresponding to a concept. If
-	 * necessary, the descriptions are recomputed.
-	 * @param concept        Concept.
-	 * @return a pointer to a GVector. The pointer is null if no vector exists
-	 * for that concept.
-	 */
-	const GVector* GetVector(GConcept* concept) const;
 
 	/**
 	* Verify if a profile is part of the subject.
@@ -281,6 +264,11 @@ public:
 	 * inserted.
 	 */
 	size_t GetMaxDocs(size_t maxdepth);
+
+   /**
+    * Clear the subject.
+    */
+   virtual void Clear(void);
 
 	/**
 	 * Clear the ideal group of a given type.
@@ -465,6 +453,8 @@ public:
  */
 class GSubjects : public R::RTree<GSubjects,GSubject,true>
 {
+    using R::RTree<GSubjects,GSubject,true>::Clear;
+
 	/**
 	 * Ordered container of subjects.
 	 */
@@ -504,6 +494,11 @@ public:
 	* @param max            Initial size of subjects.
 	*/
 	GSubjects(size_t max);
+
+   /**
+    * Clear the tree.
+    */
+   virtual void Clear(void);
 
 	friend class GSubject;
 	friend class GSession;

@@ -265,6 +265,7 @@ class GLang;
 class GConceptRef;
 class GVector;
 class GDescription;
+class GDescriptionSet;
 class GConceptNode;
 class GConceptTree;
 template<class C> class GDescriptionObject;
