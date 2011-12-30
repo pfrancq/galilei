@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>654</width>
+    <width>690</width>
     <height>566</height>
    </rect>
   </property>
@@ -17,7 +17,7 @@
    <item>
     <widget class="QTabWidget" name="MainTab">
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_15">
       <attribute name="title">
@@ -679,7 +679,7 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
           <item>
            <widget class="QTabWidget" name="PlugInsTab">
             <property name="currentIndex">
-             <number>1</number>
+             <number>8</number>
             </property>
             <widget class="QWidget" name="TabPage_2">
              <attribute name="title">
@@ -910,6 +910,24 @@ If the objects indexed are computed onece, the tolerance can be fixed to 0.</str
              <layout class="QVBoxLayout" name="verticalLayout_13">
               <item>
                <widget class="QPlugInsList" name="ComputeSugs" native="true"/>
+              </item>
+             </layout>
+            </widget>
+            <widget class="QWidget" name="tab_9">
+             <attribute name="title">
+              <string>Functions</string>
+             </attribute>
+             <layout class="QHBoxLayout" name="horizontalLayout_12">
+              <item>
+               <widget class="QListWidget" name="FunctionsCats"/>
+              </item>
+              <item>
+               <widget class="QStackedWidget" name="Functions">
+                <property name="currentIndex">
+                 <number>0</number>
+                </property>
+                <widget class="QWidget" name="page_3"/>
+               </widget>
               </item>
              </layout>
             </widget>

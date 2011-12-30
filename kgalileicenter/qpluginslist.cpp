@@ -50,6 +50,7 @@
 #include <gstorage.h>
 #include <gmeasure.h>
 #include <gtool.h>
+#include <gfunction.h>
 #include <gcomputesugs.h>
 #include <gcomputetrust.h>
 using namespace GALILEI;
@@ -229,6 +230,10 @@ void QPlugInsList::init(PlugInType type,const RString& cat)
 			setObjectName(ToQString(Cat));
 			init("Measures",true,true,false,Cat);
 			break;
+		case Functions:
+			setObjectName(ToQString(Cat));
+			init("Functions",true,true,false,Cat);
+			break;
 	}
 }
 
@@ -298,6 +303,9 @@ void QPlugInsList::apply(GSession* session)
 				break;
 			case Measures:
 				GALILEIApp->SetCurrentPlugIn("Measures",FromQString(Current->currentText()),Cat,false);
+				break;
+			case Functions:
+				GALILEIApp->SetCurrentPlugIn("Functions",FromQString(Current->currentText()),Cat,false);
 				break;
 			case Tools:
 				GALILEIApp->SetCurrentPlugIn("Tools",FromQString(Current->currentText()),Cat,false);

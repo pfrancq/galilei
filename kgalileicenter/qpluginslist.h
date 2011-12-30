@@ -79,7 +79,8 @@ public:
 		Measures,                   /** Measures for a given Category.*/
 		ComputeSugs,                /** Compute Suggestions.*/
 		ComputeTrust,               /** Compute Trust.*/
-		Tools                       /** Tools. */
+		Tools,                      /** Tools. */
+      Functions                   /** Functions.*/
 	};
 
 private:

@@ -72,6 +72,7 @@ static int CommunitiesTabIdx;
 static int SearchTabIdx;
 static int MeasuresCatIdx;
 static int ToolsCatIdx;
+static int FunctionsCatIdx;
 
 
 
@@ -200,6 +201,7 @@ void Configure::exec(void)
 	SimulationTab->setCurrentIndex(SimulationTabIdx);
 	MeasuresCats->setCurrentRow(MeasuresCatIdx);
 	ToolsCats->setCurrentRow(ToolsCatIdx);
+	FunctionsCats->setCurrentRow(FunctionsCatIdx);
 
 	if(KDialog::exec())
 	{
@@ -218,6 +220,7 @@ void Configure::exec(void)
 	SimulationTabIdx=SimulationTab->currentIndex();
 	MeasuresCatIdx=MeasuresCats->currentRow();
 	ToolsCatIdx=ToolsCats->currentRow();
+	FunctionsCatIdx=FunctionsCats->currentRow();
 }
 
 
@@ -236,6 +239,7 @@ void Configure::readOptions(void)
 	SimulationTabIdx=General.readEntry("SimulationTabIdx",0);
 	MeasuresCatIdx=General.readEntry("MeasuresCatIdx",0);
 	ToolsCatIdx=General.readEntry("ToolsCatIdx",0);
+	FunctionsCatIdx=General.readEntry("FunctionsCatIdx",0);
 }
 
 
@@ -254,6 +258,7 @@ void Configure::saveOptions(void)
 	General.writeEntry("SimulationTabIdx",SimulationTabIdx);
 	General.writeEntry("MeasuresCatIdx",MeasuresCatIdx);
 	General.writeEntry("ToolsCatIdx",ToolsCatIdx);
+	General.writeEntry("FunctionsCatIdx",FunctionsCatIdx);
 }
 
 
@@ -462,6 +467,22 @@ void Configure::initPlugIns(void)
 		ptr->init(QPlugInsList::Tools,Cur2()->GetName());
 	}
 	ToolsCats->setCurrentRow(0);
+
+		// Init Functions
+	GPlugInManager* Manager3(GALILEIApp->GetManager("Functions"));
+	RCursor<GPlugInList> Cur3(Manager3->GetPlugInLists());
+	int row3;
+	Functions->removeWidget(Functions->widget(0));
+	for(Cur3.Start(),row3=0;!Cur3.End();Cur3.Next(),row3++)
+	{
+		QListWidgetItem* item=new QListWidgetItem();
+		item->setText(ToQString(Cur3()->GetName()));
+		FunctionsCats->insertItem(row,item);
+		QPlugInsList* ptr=new QPlugInsList(this);
+		Functions->insertWidget(row,ptr);
+		ptr->init(QPlugInsList::Functions,Cur3()->GetName());
+	}
+	FunctionsCats->setCurrentRow(0);
 }
 
 
@@ -492,6 +513,10 @@ void Configure::applyPlugIns(void)
 	// Apply Tools
 	for(int row=0;row<Tools->count();row++)
 		dynamic_cast<QPlugInsList*>(Tools->widget(row))->apply(App->getSession());
+
+	// Apply Functions
+	for(int row=0;row<Functions->count();row++)
+		dynamic_cast<QPlugInsList*>(Functions->widget(row))->apply(App->getSession());
 
 	// Sort POST_X Managers;
 	GALILEIApp->GetManager("ComputeSugs")->ReOrder();
