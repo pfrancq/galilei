@@ -98,13 +98,13 @@ void Thesaurus::BuildNode(GNodeInfos* node,GClass* parent)
 
 	// Build the vector representing its concepts
 	RNumCursor<size_t> List(node->GetAttr());
-	RContainer<GVector,true,true> Vectors(10);
+	GDescription Desc;
 	for(List.Start();!List.End();List.Next())
 	{
-		GVector* Vector(Vectors.GetInsertPtr(AttributesByIds[List()]->Vector));
+		GVector* Vector(Desc.GetInsertVector(AttributesByIds[List()]->Vector));
 		Vector->InsertRef(new GConceptRef(AttributesByIds[List()]->Concept,1.0));
 	}
-	Session->AssignVectors(Class,Vectors);
+	Session->Assign(Class,Desc);
 
 	// Create sub-classes
 	RCursor<GNodeInfos> Cur(node->GetNodes());
