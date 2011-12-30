@@ -38,7 +38,6 @@
 #include <gcommunity.h>
 #include <gsession.h>
 #include <gprofile.h>
-#include <gconceptref.h>
 
 
 //-----------------------------------------------------------------------------
@@ -58,84 +57,75 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GCommunityCalcGravitation::GCommunityCalcGravitation(GSession* session,GPlugInFactory* fac)
-	: GCommunityCalc(session,fac), MaxNonZero(100), Order(0), MaxOrderSize(5000), Internal(20)
+	: GCommunityCalc(session,fac), GDescriptionFilter(),
+	  LMax(60), LMin(0), Method(0),
+	  Profiles(session)
 {
-	Order=new const GConceptRef*[MaxOrderSize];
 }
 
 
 //-----------------------------------------------------------------------------
 void GCommunityCalcGravitation::ApplyConfig(void)
 {
-	MaxNonZero=FindParam<RParamValue>("Max Size")->GetUInt();
+	LMax=FindParam<RParamValue>("LMax")->GetUInt();
+	LMin=FindParam<RParamValue>("LMin")->GetUInt();
+	RString MethodParam(FindParam<RParamValue>("Method")->Get());
+	if(MethodParam=="Centroid Method")
+		Method=1;
+	else if(MethodParam=="Prototype Method")
+		Method=2;
+	else
+		Method=0;
+}
+
+
+//-----------------------------------------------------------------------------
+void GCommunityCalcGravitation::ComputeCentroid(const GCommunity* grp)
+{
+	// Clear the descriptions
+	Description.Clear();
+	Profiles.Clear();
+	Internal.Clear();
+
+	// If no profiles -> No relevant one
+	if(!grp->GetNbObjs())
+		return;
+
+	// Go through the profiles and sum the description
+	RCursor<GProfile> Prof(grp->GetObjs());
+	for(Prof.Start();!Prof.End();Prof.Next())
+	{
+		Tmp=(*Prof());
+		Tmp.Normalize();
+		Internal+=Tmp;
+		Profiles.InsertDescription(Prof());
+	}
+
+	// Multiply by the if factors and divided by the number of profiles
+	Internal.MultiplyIF(Profiles);
+	Internal/=Profiles.GetNb();
+
+	// Compute the description
+	CopyFilter(Internal,Description,LMax,LMin);
+}
+
+
+//-----------------------------------------------------------------------------
+void GCommunityCalcGravitation::ComputePrototype(const GCommunity* grp)
+{
+	GProfile* Prototype(grp->RelevantObj());
+	Description=(*Prototype);
 }
 
 
 //-----------------------------------------------------------------------------
 void GCommunityCalcGravitation::Compute(const GCommunity* grp)
 {
-	size_t i;
-	GConceptRef* ins;
-	const GConceptRef** w;
-
-	// Clear the Vectors.
-	Vectors.Clear();
-	Internal.Clear();
-
-	// If no profiles -> No relevant one.
-	if(!grp->GetNbObjs()) return;
-
-	// Go through the profiles and sum the weights.
-	RCursor<GProfile> Prof(grp->GetObjs());
-	for(Prof.Start();!Prof.End();Prof.Next())
+	switch(Method)
 	{
-		// Go to the vectors of each profile
-		RCursor<GVector> Vector(Prof()->GetVectors());
-		for(Vector.Start();!Vector.End();Vector.Next())
-		{
-			GVector* Ins(Internal.GetInsertPtr(Vector()->GetConcept()));
-
-			// Go trough the concepts of the current vector
-			RCursor<GConceptRef> Cur(Vector()->GetRefs());
-			for(Cur.Start();!Cur.End();Cur.Next())
-			{
-				ins=Ins->GetRef(Cur()->GetConcept());
-				(*ins)+=Cur()->GetWeight();
-			}
-		}
-	}
-
-	// Copy the information of the relevant profile to the community.
-	RCursor<GVector> Vector(Internal);
-	for(Vector.Start();!Vector.End();Vector.Next())
-	{
-		if(Vector()->GetNb()+1>MaxOrderSize)
-		{
-			if(Order) delete[] Order;
-			MaxOrderSize=static_cast<size_t>((static_cast<double>(Vector.GetNb())+1)*1.1);
-			Order=new const GConceptRef*[MaxOrderSize];
-		}
-		Vector()->GetTab(Order);
-		if(Vector()->GetNb())
-			qsort(static_cast<void*>(Order),Vector()->GetNb(),sizeof(GConceptRef*),GVector::SortOrder);
-		Order[Vector()->GetNb()]=0;
-		GVector* Ins(Vectors.GetInsertPtr(Vector()->GetConcept()));
-		if(MaxNonZero)
-		{
-			for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
-			{
-				if((*w)->GetWeight()>0)
-					Ins->InsertRef(new GConceptRef((*w)->GetConcept(),(*w)->GetWeight()*(*w)->GetConcept()->GetIF(otProfile)/static_cast<double>(grp->GetNbObjs())));
-			}
-		}
-		else
-		{
-			for(w=Order;(*w);w++)
-			{
-				if((*w)->GetWeight()>0)
-					Ins->InsertRef(new GConceptRef((*w)->GetConcept(),(*w)->GetWeight()*(*w)->GetConcept()->GetIF(otProfile)/static_cast<double>(grp->GetNbObjs())));
-			}
-		}
+		case 1: ComputeCentroid(grp); break;
+		case 2: ComputePrototype(grp); break;
+		default: ThrowGException("No valid community description computing method");
 	}
 }
 
@@ -143,14 +133,15 @@ void GCommunityCalcGravitation::Compute(const GCommunity* grp)
 //------------------------------------------------------------------------------
 void GCommunityCalcGravitation::CreateConfig(void)
 {
-	InsertParam(new RParamValue("Max Size",60));
+	InsertParam(new RParamValue("LMax",60));
+	InsertParam(new RParamValue("LMin",0));
+	InsertParam(new RParamValue("Method","Centroid Method"));
 }
 
 
 //-----------------------------------------------------------------------------
 GCommunityCalcGravitation::~GCommunityCalcGravitation(void)
 {
-	if(Order) delete[] Order;
 }
 
 

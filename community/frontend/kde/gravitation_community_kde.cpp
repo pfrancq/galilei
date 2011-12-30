@@ -31,6 +31,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gcommunitycalc.h>
+#include <rqt.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -83,10 +84,18 @@ bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 
-	dlg.MaxSize->setValue(fac->FindParam<RParamValue>("Max Size")->GetInt());
+	dlg.LMax->setValue(static_cast<int>(fac->FindParam<RParamValue>("LMax")->GetUInt()));
+	dlg.LMin->setValue(static_cast<int>(fac->FindParam<RParamValue>("LMin")->GetUInt()));
+	RString Method(fac->FindParam<RParamValue>("Method")->Get());
+	if(Method=="Centroid Method")
+		dlg.Method->setCurrentIndex(0);
+	else if(Method=="Prototype Method")
+		dlg.Method->setCurrentIndex(1);
 	if(dlg.exec())
 	{
-		fac->FindParam<RParamValue>("Max Size")->SetUInt(dlg.MaxSize->value());
+		fac->FindParam<RParamValue>("LMax")->SetUInt(dlg.LMax->value());
+		fac->FindParam<RParamValue>("LMin")->SetUInt(dlg.LMin->value());
+		fac->FindParam<RParamValue>("Method")->Set(FromQString(dlg.Method->currentText()));
  		return(true);
  	}
 	return(false);

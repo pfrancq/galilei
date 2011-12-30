@@ -37,7 +37,6 @@
 #include <gtopic.h>
 #include <gsession.h>
 #include <gdoc.h>
-#include <gconceptref.h>
 
 
 //-----------------------------------------------------------------------------
@@ -57,84 +56,75 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 GTopicCalcGravitation::GTopicCalcGravitation(GSession* session,GPlugInFactory* fac)
-	: GTopicCalc(session,fac), MaxNonZero(100), Order(0), MaxOrderSize(5000), Internal(20)
+	: GTopicCalc(session,fac), GDescriptionFilter(),
+	  LMax(60), LMin(0), Method(0),
+	  Docs(session)
 {
-	Order=new const GConceptRef*[MaxOrderSize];
 }
 
 
 //-----------------------------------------------------------------------------
 void GTopicCalcGravitation::ApplyConfig(void)
 {
-	MaxNonZero=FindParam<RParamValue>("Max Size")->GetUInt();
+	LMax=FindParam<RParamValue>("LMax")->GetUInt();
+	LMin=FindParam<RParamValue>("LMin")->GetUInt();
+	RString MethodParam(FindParam<RParamValue>("Method")->Get());
+	if(MethodParam=="Centroid Method")
+		Method=1;
+	else if(MethodParam=="Prototype Method")
+		Method=2;
+	else
+		Method=0;
+}
+
+
+//-----------------------------------------------------------------------------
+void GTopicCalcGravitation::ComputeCentroid(const GTopic* grp)
+{
+	// Clear the descriptions
+	Description.Clear();
+	Docs.Clear();
+	Internal.Clear();
+
+	// If no documents -> No relevant one
+	if(!grp->GetNbObjs())
+		return;
+
+	// Go through the documents and sum the description
+	RCursor<GDoc> Doc(grp->GetObjs());
+	for(Doc.Start();!Doc.End();Doc.Next())
+	{
+		Tmp=(*Doc());
+		Tmp.Normalize();
+		Internal+=Tmp;
+		Docs.InsertDescription(Doc());
+	}
+
+	// Multiply by the if factors and divided by the number of documents
+	Internal.MultiplyIF(Docs);
+	Internal/=Docs.GetNb();
+
+	// Compute the description
+	CopyFilter(Internal,Description,LMax,LMin);
+}
+
+
+//-----------------------------------------------------------------------------
+void GTopicCalcGravitation::ComputePrototype(const GTopic* grp)
+{
+	GDoc* Prototype(grp->RelevantObj());
+	Description=(*Prototype);
 }
 
 
 //-----------------------------------------------------------------------------
 void GTopicCalcGravitation::Compute(const GTopic* grp)
 {
-	size_t i;
-	GConceptRef* ins;
-	const GConceptRef** w;
-
-	// Clear the Vectors.
-	Vectors.Clear();
-	Internal.Clear();
-
-	// If no documents -> No relevant one.
-	if(!grp->GetNbObjs()) return;
-
-	// Go through the documents and sum the weights.
-	RCursor<GDoc> Doc(grp->GetObjs());
-	for(Doc.Start();!Doc.End();Doc.Next())
+	switch(Method)
 	{
-		// Go to the vectors of each profile
-		RCursor<GVector> Vector(Doc()->GetVectors());
-		for(Vector.Start();!Vector.End();Vector.Next())
-		{
-			GVector* Ins(Internal.GetInsertPtr(Vector()->GetConcept()));
-
-			// Go trough the concepts of the current vector
-			RCursor<GConceptRef> Cur(Vector()->GetRefs());
-			for(Cur.Start();!Cur.End();Cur.Next())
-			{
-				ins=Ins->GetRef(Cur()->GetConcept());
-				(*ins)+=Cur()->GetWeight();
-			}
-		}
-	}
-
-	// Copy the information of the relevant profile to the community.
-	RCursor<GVector> Vector(Internal);
-	for(Vector.Start();!Vector.End();Vector.Next())
-	{
-		if(Vector()->GetNb()+1>MaxOrderSize)
-		{
-			if(Order) delete[] Order;
-			MaxOrderSize=static_cast<size_t>((static_cast<double>(Vector.GetNb())+1)*1.1);
-			Order=new const GConceptRef*[MaxOrderSize];
-		}
-		Vector()->GetTab(Order);
-		if(Vector()->GetNb())
-			qsort(static_cast<void*>(Order),Vector()->GetNb(),sizeof(GConceptRef*),GVector::SortOrder);
-		Order[Vector()->GetNb()]=0;
-		GVector* Ins(Vectors.GetInsertPtr(Vector()->GetConcept()));
-		if(MaxNonZero)
-		{
-			for(i=MaxNonZero+1,w=Order;(--i)&&(*w);w++)
-			{
-				if((*w)->GetWeight()>0)
-					Ins->InsertRef(new GConceptRef((*w)->GetConcept(),(*w)->GetWeight()*(*w)->GetConcept()->GetIF(otDoc)/static_cast<double>(grp->GetNbObjs())));
-			}
-		}
-		else
-		{
-			for(w=Order;(*w);w++)
-			{
-				if((*w)->GetWeight()>0)
-					Ins->InsertRef(new GConceptRef((*w)->GetConcept(),(*w)->GetWeight()*(*w)->GetConcept()->GetIF(otDoc)/static_cast<double>(grp->GetNbObjs())));
-			}
-		}
+		case 1: ComputeCentroid(grp); break;
+		case 2: ComputePrototype(grp); break;
+		default: ThrowGException("No valid topic description computing method");
 	}
 }
 
@@ -142,14 +132,15 @@ void GTopicCalcGravitation::Compute(const GTopic* grp)
 //------------------------------------------------------------------------------
 void GTopicCalcGravitation::CreateConfig(void)
 {
-	InsertParam(new RParamValue("Max Size",60));
+	InsertParam(new RParamValue("LMax",60));
+	InsertParam(new RParamValue("LMin",0));
+	InsertParam(new RParamValue("Method","Centroid Method"));
 }
 
 
 //-----------------------------------------------------------------------------
 GTopicCalcGravitation::~GTopicCalcGravitation(void)
 {
-	if(Order) delete[] Order;
 }
 
 

@@ -37,6 +37,8 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gcommunitycalc.h>
+#include <gdescriptionset.h>
+#include <gdescriptionfilter.h>
 
 
 //-----------------------------------------------------------------------------
@@ -52,27 +54,39 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Gravitational Point Group Description Computing Method.
 */
-class GCommunityCalcGravitation : public GCommunityCalc
+class GCommunityCalcGravitation : public GCommunityCalc, GDescriptionFilter
 {
-	/**
-	* Maximal number of the non-zero weights in the vector.
+   /**
+	* Maximal number of most weighted concepts to be taken.
 	*/
-	size_t MaxNonZero;
-
-	/**
-	* Ordered vector for current computed community.
-	*/
-	const GConceptRef** Order;
-
-	/**
-	* Maximal size allocate for a profile.
-	*/
-	size_t MaxOrderSize;
+	size_t LMax;
 
    /**
-	 * Internal structure.
+	* Maximal number of less weighted concepts to be taken.
+	*/
+   size_t LMin;
+
+   /**
+    * Method used :
+    * 1=Centroid
+    * 2=Prototype
+    */
+   size_t Method;
+
+	/**
+	* Set of profiles.
+	*/
+	GDescriptionSet Profiles;
+
+   /**
+	 * Internal description.
 	 */
-	R::RContainer<GVector,true,true> Internal;
+	GDescription Internal;
+
+   /**
+	* Temporary descriptions gathered.
+	*/
+	GDescription Tmp;
 
 public:
 
@@ -87,6 +101,18 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
+
+   /**
+	* Compute a community description with the centroid method.
+	* @param grp            Community to compute.
+	*/
+	virtual void ComputeCentroid(const GCommunity* grp);
+
+	/**
+	* Compute a community description with the prototype method.
+	* @param grp            Community to compute.
+	*/
+	virtual void ComputePrototype(const GCommunity* grp);
 
 	/**
 	* Compute a community description.

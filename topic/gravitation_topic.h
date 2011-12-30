@@ -36,6 +36,8 @@
 // include files for GALILEI
 #include <galilei.h>
 #include <gtopiccalc.h>
+#include <gdescriptionfilter.h>
+#include <gdescriptionset.h>
 
 
 //-----------------------------------------------------------------------------
@@ -51,27 +53,39 @@ namespace GALILEI{
 * @author Pascal Francq
 * @short Gravitational Point Topic Description Computing Method.
 */
-class GTopicCalcGravitation : public GTopicCalc
+class GTopicCalcGravitation : public GTopicCalc, GDescriptionFilter
 {
-	/**
-	* Maximal number of the non-zero weights in the vector.
+   /**
+	* Maximal number of most weighted concepts to be taken.
 	*/
-	size_t MaxNonZero;
-
-	/**
-	* Ordered vector for current computed topic.
-	*/
-	const GConceptRef** Order;
-
-	/**
-	* Maximal size allocated.
-	*/
-	size_t MaxOrderSize;
+	size_t LMax;
 
    /**
-	 * Internal structure.
+	* Maximal number of less weighted concepts to be taken.
+	*/
+   size_t LMin;
+
+   /**
+    * Method used :
+    * 1=Centroid
+    * 2=Prototype
+    */
+   size_t Method;
+
+	/**
+	* Set of documents.
+	*/
+	GDescriptionSet Docs;
+
+   /**
+	 * Internal description.
 	 */
-	R::RContainer<GVector,true,true> Internal;
+	GDescription Internal;
+
+   /**
+	* Temporary descriptions gathered.
+	*/
+	GDescription Tmp;
 
 public:
 
@@ -87,8 +101,20 @@ public:
 	*/
 	virtual void ApplyConfig(void);
 
+   /**
+	* Compute a topic description with the centroid method.
+	* @param grp            Topic to compute.
+	*/
+	virtual void ComputeCentroid(const GTopic* grp);
+
+   /**
+	* Compute a topic description with the prototype method.
+	* @param grp            Topic to compute.
+	*/
+	virtual void ComputePrototype(const GTopic* grp);
+
 	/**
-	* Compute a topic.
+	* Compute a topic description.
 	* @param grp            Topic to compute.
 	*/
 	virtual void Compute(const GTopic* grp);
