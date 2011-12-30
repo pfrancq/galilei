@@ -83,20 +83,23 @@ bool Configure(GPlugIn* fac)
 {
  	Config dlg;
 
-	dlg.MaxSize->setValue(static_cast<int>(fac->FindParam<RParamValue>("Max Size")->GetUInt()));
-	dlg.NegSize->setValue(static_cast<int>(fac->FindParam<RParamValue>("Negative Size")->GetUInt()));
+	dlg.LMax->setValue(static_cast<int>(fac->FindParam<RParamValue>("LMax")->GetUInt()));
+	dlg.LMin->setValue(static_cast<int>(fac->FindParam<RParamValue>("LMin")->GetUInt()));
 	dlg.RelFactor->setValue(fac->FindParam<RParamValue>("Relevant Factor")->GetDouble());
 	dlg.FuzzyFactor->setValue(fac->FindParam<RParamValue>("Fuzzy Factor")->GetDouble());
 	dlg.IrrelFactor->setValue(fac->FindParam<RParamValue>("Irrelevant Factor")->GetDouble());
-	dlg.IncrementalMode->setChecked(fac->FindParam<RParamValue>("Incremental Mode")->GetBool());
+	dlg.IncrementalMode->setChecked(fac->FindParam<RParamValue>("Incremental")->GetBool());
+	dlg.Alpha->setValue(fac->FindParam<RParamValue>("Alpha")->GetDouble());
+	dlg.Alpha->setEnabled(dlg.IncrementalMode->isChecked());
 	if(dlg.exec())
 	{
-		fac->FindParam<RParamValue>("Max Size")->SetUInt(dlg.MaxSize->value());
-		fac->FindParam<RParamValue>("Negative Size")->SetUInt(dlg.NegSize->value());
+		fac->FindParam<RParamValue>("LMax")->SetUInt(dlg.LMax->value());
+		fac->FindParam<RParamValue>("LMin")->SetUInt(dlg.LMin->value());
 		fac->FindParam<RParamValue>("Relevant Factor")->SetDouble(dlg.RelFactor->value());
 		fac->FindParam<RParamValue>("Fuzzy Factor")->SetDouble(dlg.FuzzyFactor->value());
 		fac->FindParam<RParamValue>("Irrelevant Factor")->SetDouble(dlg.IrrelFactor->value());
-		fac->FindParam<RParamValue>("Incremental Mode")->SetBool(dlg.IncrementalMode->isChecked());
+		fac->FindParam<RParamValue>("Incremental")->SetBool(dlg.IncrementalMode->isChecked());
+		fac->FindParam<RParamValue>("Alpha")->SetDouble(dlg.Alpha->value());
  		return(true);
  	}
 	return(false);

@@ -36,6 +36,8 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
+#include <gdescriptionset.h>
+#include <gdescriptionfilter.h>
 #include <gprofilecalc.h>
 #include <gprofile.h>
 
@@ -53,109 +55,65 @@ namespace GALILEI{
 * the vectors of documents judged by the profile.
 *
 * The different parameters of the method:
-* @param MaxNonZero         Maximal number of weights of the profile vector not
-*                           to be zero. If this parameter is null, all the
-*                           weights are left.
-* @param IdfFactor          Specify if for the weights of documents the idf
-*                           factor of the vector model theory must be computed.
-* @param Relfactor          Factor corresponding to the relevant documents
-*                           (OK+N).
-* @param Fuzzyfactor        Factor corresponding to the fuzzy documents (KO).
-* @param NoRelfactor        Factor corresponding to the no relevant documents
-*                           (H).
-* @param AddFuzzy           Specify if the fuzzy part must be added or
-*                           Subtract.
+* @param LMax               Maximal number of most weighted concepts to be
+*                           taken. If this parameter is null, all the weights
+*                           are left.
+* @param LMin               Maximal number of less weighted concepts to be
+*                           taken.
+* @param Relfactor          Factor corresponding to the relevant documents.
+* @param Fuzzyfactor        Factor corresponding to the fuzzy documents.
+* @param Irrelfactor        Factor corresponding to the irrelevant documents.
+* @param Incremental        Incremental Mode?
+* @param Alpha              Factor of the previous description.
 * @author Pascal Francq
-* @short "Feedbacks" Profile Computing Method.
+* @short Feedback Profile Computing Method.
 */
-class GProfileCalcFeedback : public GProfileCalc
+class GProfileCalcFeedback : public GProfileCalc, GDescriptionFilter
 {
-protected:
-
-	/**
-	 * Current profile computed.
-	 */
-	const GProfile* Profile;
-
-	/**
-	* Maximal number of the non-zero weights in the vector.
+   /**
+	* Maximal number of most weighted concepts to be taken.
 	*/
-	size_t MaxNonZero;
-
-	/**
-	* Number of the non-zero weights for irrelevant entities in the vector.
-	*/
-	size_t NegNonZero;
-
-	/**
-	* Factor of the vectors corresponding to the relevant part.
-	*/
-	double RelFactor;
-
-	/**
-	* Factor of the vectors corresponding to the fuzzy relevant part.
-	*/
-	double FuzzyFactor;
-
-	/**
-	* Factor of the vectors corresponding to the irrelevant part.
-	*/
-	double IrrelFactor;
-
-	/**
-	* Relevant vectors gathered.
-	*/
-	R::RContainer<GVector,true,true> VectorsRel;
-
-	/**
-	* Irrelevant vectors gathered.
-	*/
-	R::RContainer<GVector,true,true> VectorsIrrel;
-
-	/**
-	* Fuzzy relevant vectors gathered.
-	*/
-	R::RContainer<GVector,true,true> VectorsFuzzy;
+	size_t LMax;
 
    /**
-	 * Internal structure.
-	 */
-	R::RContainer<GVector,true,true> Internal;
-
-	/**
-	* Number of documents assessed by a profile used for the computing.
+	* Maximal number of less weighted concepts to be taken.
 	*/
-	size_t NbDocs;
-
-	/**
-	* Number of documents assessed as relevant by a profile used for the computing.
-	*/
-	size_t NbDocsRel;
-
-	/**
-	* Number of documents assessed as fuzzy relevant by a profile used for the computing.
-	*/
-	size_t NbDocsFuzzy;
-
-	/**
-	* Number of documents assessed as irrelevant by a profile used for the computing.
-	*/
-	size_t NbDocsIrrel;
-
-	/**
-	* Ordered vector for current computed profile.
-	*/
-	const GConceptRef** Order;
-
-	/**
-	* Maximal size allocate for a profile.
-	*/
-	size_t MaxOrderSize;
+   size_t LMin;
 
 	/**
 	* Incremental mode for the computing.
 	*/
 	bool IncrementalMode;
+
+   /**
+    * Factor used for the incremental mode.
+    */
+   double Alpha;
+
+	/**
+	* Factors of the descriptions.
+	*/
+	double Factors[4];
+
+	/**
+	* Set of descriptions.
+	*/
+	GDescriptionSet* Sets[4];
+
+   /**
+	* Descriptions computed.
+	*/
+	GDescription Desc[4];
+
+   /**
+	 * Internal description.
+	 */
+	GDescription Internal;
+
+   /**
+	* Temporary descriptions gathered.
+	*/
+	GDescription Tmp;
 
 public:
 
@@ -170,44 +128,11 @@ public:
 	* Configurations were applied from the factory.
 	*/
 	virtual void ApplyConfig(void);
-
-private:
-
-   /**
-    *  Add a series of vector to Internal.
-    * @param vectors        Vectors to add.
-    * @param factor         Factor.
-    * @param nbdocs         Number of documents used to compute vectors.
-    */
-   void AddVectors(R::RContainer<GVector,true,true>& vectors,double factor,double nbdocs);
-
-	/**
-	* Compute the global vectors.
-	*/
-	void ComputeGlobal(void);
-
-	/**
-	* Computes the profile.
-	*/
-	void ComputeProfile(void);
-
-public:
-
 	/**
 	* Compute a profile.
 	* @param profile        Profile to compute.
 	*/
 	virtual void Compute(const GProfile* profile);
-
-	/**
-	 * Write the content of the 'Order' vector in a file called 'profileX-Y'
-	 * where X is the identifier of the profile and Y the identifier of the
-    * vector.
-	 * @param dir            Directory where to write.
-    * @param nb             Number of elements of order to write.
-    * @param concept        Concept associated to a vector.
-	 */
-	void WriteFile(const RString& dir,size_t nb,GConcept* concept);
 
 	/**
 	* Create the parameters.
