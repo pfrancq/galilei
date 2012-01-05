@@ -81,7 +81,7 @@ public:
 	 * similarity between the documents grouped.
 	 */
 	 virtual GMeasure* GetSimMeasure(void) const
-	 	{return(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities"));}
+	 	{return(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Similarities"));}
 
 	/**
 	* Destructor of a group.

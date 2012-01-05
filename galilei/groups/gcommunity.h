@@ -83,7 +83,7 @@ public:
 	 * similarity between the profiles grouped.
 	 */
 	 virtual GMeasure* GetSimMeasure(void) const
-	 	{return(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities"));}
+	 	{return(GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile Similarities"));}
 
 	/**
 	 * Get the list of relevant documents, i.e. documents assessed as relevant

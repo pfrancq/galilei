@@ -66,7 +66,7 @@ QGMatrixMeasureDlg::QGMatrixMeasureDlg(const QString& title)
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->setupUi(widget);
 	setMainWidget(widget);
 	setButtons(KDialog::Cancel|KDialog::Apply);
-	connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+	connect(this,SIGNAL(applyClicked()),this,SLOT(ApplyDlg()));
 	connect(static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Type,SIGNAL(currentIndexChanged(int)),this,SLOT(ChangeType(int)));
 	setCaption(title);
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->Dir->setMode(KFile::Directory);
@@ -154,11 +154,26 @@ void QGMatrixMeasureDlg::Panel(void)
 
 
 //-----------------------------------------------------------------------------
+bool QGMatrixMeasureDlg::IsDlgOK(void)
+{
+	return(true);
+}
+
+
+//-----------------------------------------------------------------------------
 void QGMatrixMeasureDlg::ChangeType(int type)
 {
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->NbNearest->setEnabled(type==2);
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->NbSamples->setEnabled(type==2);
 	static_cast<Ui_QGMatrixMeasureDlg*>(Ui)->FastNN->setEnabled(type==2);
+}
+
+
+//-----------------------------------------------------------------------------
+void QGMatrixMeasureDlg::ApplyDlg(void)
+{
+	if(IsDlgOK())
+		accept();
 }
 
 

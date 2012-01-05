@@ -152,6 +152,13 @@ public:
 	 */
 	virtual void Done(GPlugIn* plugin);
 
+   /**
+    * This method should check if the parameters of the dialog box are
+    * acceptable. Eventually, it should show a error message.
+    * @return true if the dialog box can be applied.
+    */
+   virtual bool IsDlgOK(void);
+
 public slots:
 
 	/**
@@ -159,6 +166,11 @@ public slots:
 	 * @param type           Type.
 	 */
 	void ChangeType(int type);
+
+   /**
+    * Apply the dialog box if its values are OK.
+    */
+   void ApplyDlg(void);
 
 public:
 
