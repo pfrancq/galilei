@@ -4,7 +4,7 @@
 
 	GenericSims.h
 
-	Generic Similarity Measure - Header.
+	Generic Tensor Space Model Similarity Measure - Header.
 
 	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
@@ -65,81 +65,25 @@ using namespace GALILEI;
 
 
 //------------------------------------------------------------------------------
-//class GGenericSims;
-
-//------------------------------------------------------------------------------
-//class GSimType
-//{
-//protected:
-//
-//	GGenericSims* Owner;
-//	GConceptType* Type;
-//	size_t LastNbComps;  // Number of comparisons between concept references
-//	double Value;
-//
-//public:
-//	GSimType(GGenericSims* owner,GConceptType* type);
-//	virtual void Init(void)=0;
-//	virtual void Add(GConceptRef* info1,GConceptRef* info2,GMeasure* mes)=0;
-//	virtual void AddObj1(GConceptRef* info,GMeasure* mes)=0;
-//	virtual void AddObj2(GConceptRef* info,GMeasure* mes)=0;
-//	virtual void Done(GMeasure* mes)=0;
-//	int Compare(const GSimType& t) const {return(Type->Compare(t.Type));}
-//	int Compare(const GSimType* t) const {return(Type->Compare(t->Type));}
-//	int Compare(const GConceptType* t) const {return(Type->Compare(t));}
-//	inline double GetIF(GConcept* concept,GMeasure* mes)
-//	{
-//		double tmp;
-//		mes->Measure(0,concept->GetId(),&tmp);
-//		return(tmp);
-//	}
-//	virtual ~GSimType(void) {}
-//
-//	friend class GGenericSims;
-//};
-
-//------------------------------------------------------------------------------
-//class GSimTypeCosinus : public GSimType
-//{
-//	double Norm1;
-//	double Norm2;
-//	double Num;
-//	double Max1;
-//	double Max2;
-//public:
-//	GSimTypeCosinus(GGenericSims* owner,GConceptType* type) :
-//		GSimType(owner,type) {}
-//	virtual void Init(void);
-//	virtual void Add(GConceptRef* info1,GConceptRef* info2,GMeasure* mes);
-//	virtual void AddObj1(GConceptRef* info,GMeasure* mes);
-//	virtual void AddObj2(GConceptRef* info,GMeasure* mes);
-//	virtual void Done(GMeasure* mes);
-//};
-
-
-//------------------------------------------------------------------------------
-//class GSimTypeXMLIndex : public GSimType
-//{
-//	RContainer<GConceptRef,false,false> Obj1;
-//	RContainer<GConceptRef,false,false> Obj2;
-//
-//public:
-//	GSimTypeXMLIndex(GGenericSims* owner,GConceptType* type) :
-//		GSimType(owner,type), Obj1(100), Obj2(100) {}
-//	virtual void Init(void);
-//	virtual void Add(GConceptRef* info1,GConceptRef* info2,GMeasure* mes);
-//	virtual void AddObj1(GConceptRef* info,GMeasure* mes);
-//	virtual void AddObj2(GConceptRef* info,GMeasure* mes);
-//	virtual void Done(GMeasure* mes);
-//};
-
-
-//------------------------------------------------------------------------------
+/**
+ * The template class GGenericSims provides a generic implementation of the
+ * tensor space model similarity. It can use to compute the similarity between
+ * same type of objects (for example documents) or objects of different types
+ * (such as a profile and a community of interests).
+ * @tparam cObj1            First object class.
+ * @tparam cObj1            Second object class.
+ * @author Pascal Francq
+ * @short Tensor Space Model Similarity
+ */
 template<class cObj1,class cObj2>
    class GGenericSims : public GMatrixMeasure
 {
 protected:
 
+   /**
+    * Type of the aggregating function used to combine the category
+    * similarities.
+    */
 	enum tSimType
 	{
 		Undefined            /** Unknown method.*/,
@@ -149,63 +93,62 @@ protected:
 		Choquet              /** Use the integral of Choquet.*/
 	};
 
+   /**
+    * Concept categories taken into account to compute the object similarity.
+    */
+   enum tCat
+   {
+       Textual             /** Textual content.*/,
+       Metadata            /** Metadata content.*/,
+       Semantic            /** Semantic rules.*/,
+       NbCats              /** Number of different content categories.*/
+   };
+
+   /**
+    * The Cat structure represents all the information related to a particlar
+    * concept category.
+    */
+   struct Cat
+   {
+       double Capacity;    // The capacity of the integral of Choquet.
+       GConceptCat* Cat;   // The concept category.
+       double Sim;         // The similarity for that category.
+       double NbConcepts;  // Number of common concepts of two objects in the category.
+   };
+
 	/**
 	 * Type of similarity:
 	 */
 	tSimType SimType;
 
-	/**
-	 * Factor used for the computation of the global similarity.
-	 */
-	double Factor;
+   /**
+    * The different categories.
+    */
+   Cat Cats[NbCats];
 
 	/**
-	 * Capacity/Weight of the similarity in the content space.
+	 * Factor used for the computation of the similarity if the product is the
+    * aggregating function.
 	 */
-	double ContentCapacity;
+	double ProductFactor;
 
 	/**
-	 * Capacity/Weight of the similarity in the structure space.
-	 */
-	double StructCapacity;
-
-	/**
-	 * Capacity/Weight of the similarity in the metadata space.
-	 */
-	double MetaCapacity;
-
-	/**
-	 * Capacity of the combination of the content and structure criteria
+	 * Capacity of the combination of the textual and semantic criteria
 	 * (Choquet).
 	 */
-	double ContentStructCapacity;
+	double TextualSemanticCapacity;
 
 	/**
-	 * Capacity of the combination of the content and meta criteria
+	 * Capacity of the combination of the textual and meta criteria
 	 * (Choquet)
 	 */
-	double ContentMetaCapacity;
+	double TextualMetadataCapacity;
 
 	/**
-	 * Capacity of the combination of the metadata and structure criteria
+	 * Capacity of the combination of the semantic and metadata criteria
 	 * (Choquet)
 	 */
-	double MetaStructCapacity;
-
-   /**
-	 * Text space.
-	 */
-	GConceptCat* TextSpace;
-
-	/**
-	 * Metadata space.
-	 */
-	GConceptCat* MetaSpace;
-
-	/**
-	 * Structure space.
-	 */
-	GConceptCat* StructSpace;
+	double SemanticMetadataCapacity;
 
 	/**
 	 * First object.
@@ -216,48 +159,6 @@ protected:
 	 * Second object.
 	 */
 	cObj2* Desc2;
-
-	/**
-	 * Similarity to compute for the different spaces.
-	 */
-//	RContainer<GSimType,true,false> Types;
-//	RContainer<GSimType,false,false> Valid;
-
-	/**
-	 * Current language used for the cosine measure.
-	 */
-	GConceptType* CurLang;
-
-	/**
-	 * Current type used for the cosine measure.
-	 */
-//	GSimType* CurType;
-
-	/**
-	 * Similarity in the different spaces:
-	 * #- 0=Content.
-	 * #- 1=Structure.
-	 * #- 2=Metadata.
-	 */
-	double SimSpaces[5];
-
-   /**
-	 * Number of different common elements for the different spaces.
-	 * #- 0=Content.
-	 * #- 1=Structure.
-	 * #- 2=Metadata.
-	 */
-	size_t NbSpaces[5];
-
-	/**
-	 * Transform the similarity from [-1,+1] to [0,1].
-	 */
-	bool Transform;
-
-	/**
-	 * Feature evaluation.
-	 */
-	GMeasure* FeatureEval;
 
 public:
 
@@ -301,57 +202,56 @@ public:
 	double GetIF(GConcept* concept);
 
    /**
-    * Compute the similarity between two vectors based on the number of common
-    * concepts.
+    * Compute the "metadata" similarity between two vectors. It adds to
+    * Cats[Metadata] the weighted similarity and the number of common concept.
     * @param vec1           First vector.
     * @param vec2           Second vector.
     */
    void ComputeMetaSim(GVector* vec1,GVector* vec2);
 
    /**
-    * Compute the similarity between two vectors based on cosine.
+    * Compute the adapted vector space similarity between two vectors. It adds
+    * to cat the weighted similarity and the number of common concept.
     * @param vec1           First vector.
     * @param vec2           Second vector.
-    * @param cat            Concept category of the vectors.
+    * @param cat            Concept category.
     */
-   void ComputeCosineSim(GVector* vec1,GVector* vec2,GConceptCat* cat);
+   void ComputeCosineSim(GVector* vec1,GVector* vec2,Cat& cat);
 
 	/**
-	 * Compute the similarity in each space and put them in 'SimSpaces'.
+	 * Compute the similarity for each category.
+    * @param filter         Define a filter to limit the similarities to
+    *                       compute. If null, all the similarities are computed.
 	 * @return true if something could be computed.
 	 */
-	bool ComputeSimSpaces(void);
+	bool ComputeSims(GConceptCat* filter=0);
 
 	/**
-	* Compute a similarity between two lists of weighted information entities.
-	* A similarity is computed in each space (content,structure and metadata).
-	* The different similarities are aggregated with the integral of Choquet.
-	*/
+	 * Compute a similarity between description using the integral of Choquet as
+    * aggregating function.
+	 */
 	double SimilarityChoquet(void);
 
 	/**
-	* Compute a similarity between two lists of weighted information entities.
-	* A similarity is computed in each space (content,structure and metadata).
-	* The different similarities are aggregated with a weighted sum.
-	*/
+	 * Compute a similarity between description using the sum as aggregating
+    * function.
+	 */
 	double SimilaritySum(void);
 
 	/**
-	* Compute a similarity between two lists of weighted information entities.
-	* A similarity is computed in each space (content,structure and metadata).
-	* The different similarities are aggregated with a product.
-	*/
+	 * Compute a similarity between description using the product as aggregating
+    * function.
+	 */
 	double SimilarityProduct(void);
 
 	/**
-	* Compute a similarity between two lists of weighted information entities
-	* based on the content space only.
-	*/
-	double SimilarityLang(void);
+	 * Compute a similarity between description using only the textual content.
+	 */
+	double SimilarityTextOnly(void);
 
 	/**
 	 * Compute the similarity between two objects that must inherits from the
-	 * class GConceptRefs.
+	 * class GDescription.
 	 */
 	virtual double Compute(GObject* obj1,GObject* obj2);
 
@@ -367,10 +267,6 @@ public:
 	 * Create the parameters.
 	 */
 	virtual void CreateConfig(void);
-
-	friend class GSimType;
-	friend class GSimTypeCosinus;
-	friend class GSimTypeXMLIndex;
 };
 
 

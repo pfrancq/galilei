@@ -50,4 +50,4 @@ public:
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Documents/Profiles Similarities","Multi-vector","Multi-vector",GDocsProfilesSims)
+CREATE_MEASURE_FACTORY("Document/Profile Similarities","Tensor Space Model","Tensor Space Model",GDocsProfilesSims)

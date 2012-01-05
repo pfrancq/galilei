@@ -4,7 +4,7 @@
 
 	DocsGroupsSims.cpp
 
-	Similarities between documents and groups - Implementation.
+	Tensor Space Model Similarities for Documents and Groups - Implementation.
 
 	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -50,4 +50,4 @@ public:
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Documents/Communities Similarities","Multi-vector","Multi-vector",GDocsCommunitiesSims)
+CREATE_MEASURE_FACTORY("Document/Community Similarities","Tensor Space Model","Tensor Space Model",GDocsCommunitiesSims)

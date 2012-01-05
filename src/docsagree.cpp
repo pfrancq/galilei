@@ -4,7 +4,7 @@
 
 	DocsAgreement.cpp
 
-	Agreement between documents - Implementation.
+	Documents Agreements - Implementation.
 
 	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -93,4 +93,4 @@ void GDocsAgreement::CreateConfig(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Documents Agreements","Count Method","Count Method",GDocsAgreement)
+CREATE_MEASURE_FACTORY("Document Agreements","Count Method","Count Method",GDocsAgreement)

@@ -52,4 +52,4 @@ public:
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles Similarities","Multi-space","Multi-space",GProfilesSims)
+CREATE_MEASURE_FACTORY("Profile Similarities","Tensor Space Model","Tensor Space Model",GProfilesSims)

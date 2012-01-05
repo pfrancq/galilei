@@ -4,7 +4,7 @@
 
 	GenericSims_KDE.h
 
-	Generic Similarity Measure (KDE Part) - Implementation.
+	Generic Tensor Space Model Similarity Measure (KDE Part) - Implementation.
 
 	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
@@ -50,8 +50,8 @@ using namespace GALILEI;
 
 //-----------------------------------------------------------------------------
 /**
- * Dialog class to configure a plug-in implementing a Multi-space similarity
- * measure. It must called:
+ * Dialog class to configure a plug-in implementing a tensor space model
+ * similarity measure. It must called:
  * @code
  * void Configure(GFactoryMeasure* params)
  * {
@@ -62,23 +62,88 @@ using namespace GALILEI;
  */
 class GGenericSimsDlg : public QGMatrixMeasureDlg
 {
-    QComboBox* SimType;
+	/**
+	 * Similarity measure.
+	 */
+	QComboBox* SimType;
+
+	/**
+	 * Product factor.
+	 */
 	KDoubleNumInput* Factor;
-	KDoubleNumInput* ContentCapacity;
-	KDoubleNumInput* StructCapacity;
-	KDoubleNumInput* MetaCapacity;
-	KDoubleNumInput* ContentStructCapacity;
-	KDoubleNumInput* ContentMetaCapacity;
-	KDoubleNumInput* MetaStructCapacity;
-	QCheckBox* Transform;
+
+	/**
+	 * Textual Capacity/Weight.
+	 */
+	KDoubleNumInput* TextualCapacity;
+
+	/**
+	 * Semantic Capacity/Weight.
+	 */
+	KDoubleNumInput* SemanticCapacity;
+
+	/**
+	 * Metadata Capacity/Weight.
+	 */
+	KDoubleNumInput* MetadataCapacity;
+
+	/**
+	 * Capacity associated to the pair (Textual,Semantic).
+	 */
+	KDoubleNumInput* TextualSemanticCapacity;
+
+	/**
+	 * Capacity associated to the pair (Textual,Medatadata).
+	 */
+	KDoubleNumInput* TextualMetadataCapacity;
+
+	/**
+	 * Capacity associated to the pair (Semantic,Medatadata).
+	 */
+	KDoubleNumInput* SemanticMetadataCapacity;
 
 public:
 
+   /**
+    * Build the dialog box.
+    * @param title          Title of the dialog box.
+    */
 	GGenericSimsDlg(const QString& title);
-	virtual void Panel(void);
-	virtual void Init(GPlugIn* fac);
-	virtual void Done(GPlugIn* fac);
+
+   /**
+    * Add a particular weight/capacity to the dialog box.
+    * @param cap            The widget managing the weight/capacuty.
+    * @param str            Label.
+    * @param grid           The grid where it is placed.
+    * @param row            The row in the grid.
+    * @param col            The column in the grid.
+    */
 	void AddCapacity(KDoubleNumInput* &cap,const char* str,QGridLayout* grid,int row,int col);
+
+   /**
+    * Construct the panel with the parameters of the tensor space model
+    * similarity.
+    */
+	virtual void Panel(void);
+
+   /**
+    * Initialize the dialog box with the values of the parameters.
+    * @param plugin         Plug-in.
+    */
+	virtual void Init(GPlugIn* plugin);
+
+   /**
+    * Assign the values of the dialog box to the parameters.
+    * @param plugin         Plug-in.
+    */
+	virtual void Done(GPlugIn* plugin);
+
+	 /**
+    * This method should check if the parameters of the integral of Choquet are
+	 * OK.
+    * @return true if it is the case.
+    */
+   virtual bool IsDlgOK(void);
 };
 
 

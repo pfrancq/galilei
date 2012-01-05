@@ -4,7 +4,7 @@
 
 	DocsDisagree.cpp
 
-	Disagreement between documents - Implementation.
+	Document Disagreements - Implementation.
 
 	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -93,4 +93,4 @@ void GDocsDisagreement::CreateConfig(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Documents Disagreements","Count Method","Count Method",GDocsDisagreement)
+CREATE_MEASURE_FACTORY("Document Disagreements","Count Method","Count Method",GDocsDisagreement)

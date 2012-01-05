@@ -4,7 +4,7 @@
 
 	ProfilesDisagree.cpp
 
-	Disagreement between profiles - Implementation.
+	Profiles Disagreements - Implementation.
 
 	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -93,4 +93,4 @@ void GProfilesDisagreement::CreateConfig(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles Disagreements","Count Method","Count Method",GProfilesDisagreement)
+CREATE_MEASURE_FACTORY("Profile Disagreements","Count Method","Count Method",GProfilesDisagreement)

@@ -51,4 +51,4 @@ public:
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Documents Similarities","Multi-space","Multi-space",GDocsSims)
+CREATE_MEASURE_FACTORY("Document Similarities","Tensor Space Model","Tensor Space Model",GDocsSims)

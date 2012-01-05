@@ -51,4 +51,4 @@ public:
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles/Communities Similarities","Multi-vector","Multi-vector",GProfilesCommunitiesSims)
+CREATE_MEASURE_FACTORY("Profile/Community Similarities","Tensor Space Model","Tensor Space Model",GProfilesCommunitiesSims)

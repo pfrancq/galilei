@@ -4,7 +4,7 @@
 
 	ProfilesAgree.cpp
 
-	Agreement between profiles - Implementation.
+	Profiles Agreements - Implementation.
 
 	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
@@ -93,4 +93,4 @@ void GProfilesAgreement::CreateConfig(void)
 
 
 //------------------------------------------------------------------------------
-CREATE_MEASURE_FACTORY("Profiles Agreements","Count Method","Count Method",GProfilesAgreement)
+CREATE_MEASURE_FACTORY("Profile Agreements","Count Method","Count Method",GProfilesAgreement)
