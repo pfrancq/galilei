@@ -169,8 +169,7 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
 			cout<<"   Deviation="<<nb<<endl;
 			cout<<"New SGGA"<<endl;
 		}
-		RDebugXML Debug("/home/pfrancq/test.xml");
-		cInst Instance(session,session->GetObjs(static_cast<cObj*>(0)),this,&Debug,ObjType);
+		cInst Instance(session,session->GetObjs(static_cast<cObj*>(0)),this,0,ObjType);
 		InsertObserver(reinterpret_cast<tNotificationHandler>(&SGGAPlugIn<cPlugin,cObj,cGroup,cInst,cGAGroup>::Gen),"RInst::Generation",&Instance);
 		if(Cout)
 			cout<<"Init SGGA"<<endl;

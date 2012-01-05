@@ -100,7 +100,7 @@ protected:
 	/**
 	* Make the grouping for a specific Language.
 	*/
-	virtual void Run(void) {RunGrouping(Session,"Documents");}
+	virtual void Run(void) {RunGrouping(Session,"Document");}
 };
 
 

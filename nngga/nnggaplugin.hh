@@ -144,11 +144,7 @@ template<class cPlugin,class cObj,class cGroup,class cInst,class cGAGroup>
 {
 	const RMaxVector* Vec;
 	GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures",mes+" Similarities")->Info(3,1,&Vec);
-	RCursor<RMaxValue> Cur(*Vec);
-	for(Cur.Start();!Cur.End();Cur.Next())
-		cout<<"Sim (1,"<<Cur()->Id<<")="<<Cur()->Value<<endl;
 
-//	return;
 	double d;
 
 	if(Cout)

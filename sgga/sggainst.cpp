@@ -65,9 +65,9 @@ SGGAInstDoc::SGGAInstDoc(GSession* ses,RCursor<GDoc> objs,RParamsSG* p,RDebug *d
 	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
 {
 	// Init measures
-	Sims=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
-	Agree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Agreements");
-	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Disagreements");
+	Sims=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Similarities");
+	Agree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Agreements");
+	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Disagreements");
 
 	if((!Sims)||(!Agree)||(!Disagree))
 		ThrowGException(GetObjType(Type,true,true)+" are not supported");
@@ -121,9 +121,9 @@ SGGAInstProfile::SGGAInstProfile(GSession* ses,RCursor<GProfile> objs,RParamsSG*
 	  Session(ses), Sims(0),Agree(0), Disagree(0), Type(type)
 {
 	// Init measures
-	Sims=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
-	Agree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Agreements");
-	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Disagreements");
+	Sims=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile Similarities");
+	Agree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile Agreements");
+	Disagree=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile Disagreements");
 
 	if((!Sims)||(!Agree)||(!Disagree))
 		ThrowGException(GetObjType(Type,true,true)+" are not supported");
