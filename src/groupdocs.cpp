@@ -96,7 +96,7 @@ public:
 	kMeansDoc(const R::RString& n,R::RRandom& r,R::RCursor<GDoc> objs,double convergence,R::RDebug* debug=0)
 		: R::RGroupingKMeans<GroupDoc,GDoc,GroupsDoc>(n,r,objs,convergence,debug)
 	{
-		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Similarities");
 	}
 	double Similarity(const GDoc* obj1,const GDoc* obj2)
 	{
@@ -117,7 +117,7 @@ public:
 	kKernelMeansDoc(GSession* session,const R::RString& n,R::RRandom& r,R::RCursor<GDoc> objs,size_t maxid,double alpha,double convergence,R::RDebug* debug=0)
 		: RKernelkMeans<GroupDoc,GDoc,GroupsDoc>(n,r,objs,maxid,alpha,convergence,debug), Session(session)
 	{
-		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Documents Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Document Similarities");
 	}
 	void FillSimilarities(RSparseMatrix& sims);
 };

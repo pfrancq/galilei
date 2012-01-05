@@ -96,7 +96,7 @@ public:
 	kMeansProfile(const R::RString& n,R::RRandom& r,R::RCursor<GProfile> objs,double convergence,R::RDebug* debug=0)
 		: R::RGroupingKMeans<GroupProfile,GProfile,GroupsProfile>(n,r,objs,convergence,debug)
 	{
-		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile Similarities");
 	}
 	double Similarity(const GProfile* obj1,const GProfile* obj2)
 	{
@@ -117,7 +117,7 @@ public:
 	kKernelMeansProfile(GSession* session,const R::RString& n,R::RRandom& r,R::RCursor<GProfile> objs,size_t maxid,double alpha,double convergence,R::RDebug* debug=0)
 		: RKernelkMeans<GroupProfile,GProfile,GroupsProfile>(n,r,objs,maxid,alpha,convergence,debug), Session(session)
 	{
-		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profiles Similarities");
+		Measure=GALILEIApp->GetCurrentPlugIn<GMeasure>("Measures","Profile Similarities");
 	}
 	void FillSimilarities(RSparseMatrix& sims);
 };
