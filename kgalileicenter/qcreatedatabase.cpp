@@ -132,8 +132,8 @@ void QCreateDB::DoIt(void)
  	}
 
  	Parent->setLabelText("Create Other Concept Types");
- 	GetConceptType("Structure","XMLStruct","XML Structure",&Db);
- 	GetConceptType("MetaData","XMLIndex","XML Index",&Db);
+ 	GetConceptType("Semantic","XMLStruct","XML Structure",&Db);
+ 	GetConceptType("Metadata","XMLIndex","XML Index",&Db);
 
  	// Create the configuration file with MySQL as default storage
  	RTextFile Config(RString(getenv("HOME"))+"/.r/config/lib/galilei/sessions/"+Info->Name+".config","utf-8");
