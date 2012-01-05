@@ -114,7 +114,10 @@ void GCommunityCalcGravitation::ComputeCentroid(const GCommunity* grp)
 void GCommunityCalcGravitation::ComputePrototype(const GCommunity* grp)
 {
 	GProfile* Prototype(grp->RelevantObj());
-	Description=(*Prototype);
+	if(!Prototype)
+		Description.Clear();
+	else
+		Description=(*Prototype);
 }
 
 
