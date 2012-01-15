@@ -4,9 +4,9 @@
 
 	GStopWords.h
 
-	Stopwords Filter - Header.
+	Stopwords Treatment - Header.
 
-	Copyright 2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -38,6 +38,12 @@
 
 
 
+//-----------------------------------------------------------------------------
+// DEBUG Mode
+const bool Debug=false;
+
+
+
 //------------------------------------------------------------------------------
 //
 // class GStopWords
@@ -46,7 +52,7 @@
 
 //------------------------------------------------------------------------------
 GStopWords::GStopWords(GSession* session,GPlugInFactory* fac)
-	: GAnalyzer(session,fac), ToDelete(200), NbStops(300), NbDiffStops(300)
+	: GAnalyzer(session,fac), ToDelete(200), NbDiffStops(300)
 {
 }
 
@@ -54,6 +60,7 @@ GStopWords::GStopWords(GSession* session,GPlugInFactory* fac)
 //------------------------------------------------------------------------------
 void GStopWords::CreateConfig(void)
 {
+	InsertParam(new RParamValue("RemoveStopwords",true,"Should the stopwords of the document be removed?"));
 	InsertParam(new RParamValue("StaticLang",false,"Should the language of the document be automatically re-analyzed?"));
 	InsertParam(new RParamValue("MinStopWords",0.09,"Minimum percentage of stop words needed to consider a language."));
 }
@@ -62,6 +69,7 @@ void GStopWords::CreateConfig(void)
 //-----------------------------------------------------------------------------
 void GStopWords::ApplyConfig(void)
 {
+	RemoveStopwords=FindParam<RParamValue>("RemoveStopwords")->GetBool();
 	StaticLang=FindParam<RParamValue>("StaticLang")->GetBool();
 	MinStopWords=FindParam<RParamValue>("MinStopWords")->GetDouble();
 }
@@ -71,62 +79,71 @@ void GStopWords::ApplyConfig(void)
 //------------------------------------------------------------------------------
 void GStopWords::TreatTokens(GDocAnalyze* analyzer)
 {
+	bool NotGuessLang(analyzer->GetDoc()->GetLang()&&StaticLang);
+
+	// If Verify if something must be done
+	if((!RemoveStopwords)&&NotGuessLang)
+		return;
+
 	// Initialize
 	Langs=GALILEIApp->GetPlugIns<GLang>("Lang");
-
-	NbStops.Init(Langs.GetNb(),0);
-	R::RNumCursor<size_t> Stops(NbStops);
 	NbDiffStops.Init(Langs.GetNb(),0);
 	R::RNumCursor<size_t> DiffStops(NbDiffStops);
 	ToDelete.Clear();
+	size_t NbAlphaTokens(0);
 
 	// Parse the tokens
 	RCursor<GTextToken> Token(analyzer->GetTokens());
 	for(Token.Start();!Token.End();Token.Next())
 	{
+		if(Debug)
+			cout<<"Test: *"+Token()->GetToken()+"*"<<endl;
 		bool Leave(true);
 
+		// If not an alphabetic token -> not a stopword and not a word
+		if(!Token()->IsAlpha())
+			continue;
+		NbAlphaTokens++;
+
 		// Look for each language, if it is a stop word
-		for(Langs.Start(),Stops.Start(),DiffStops.Start();!Langs.End();Langs.Next(),Stops.Next(),DiffStops.Next())
+		for(Langs.Start(),DiffStops.Start();!Langs.End();Langs.Next(),DiffStops.Next())
 		{
 			if(Langs()->InStop(Token()->GetToken()))
 			{
 				// It is a stopword
 				if(Leave)
 				{
-					ToDelete.InsertPtr(Token());
+					if(RemoveStopwords)
+						ToDelete.InsertPtr(Token());
 					Leave=false;
 				}
-				Stops()++;
 				DiffStops()++;
 			}
 		}
 	}
 
 	// Delete the stopwords
-	RCursor<GTextToken> Delete(ToDelete);
-	for(Delete.Start();!Delete.End();Delete.Next())
-		analyzer->DeleteToken(Delete());
+	if(RemoveStopwords)
+	{
+		RCursor<GTextToken> Delete(ToDelete);
+		for(Delete.Start();!Delete.End();Delete.Next())
+			analyzer->DeleteToken(Delete());
+	}
 
 	// if the language should not be detect -> return
-	if(analyzer->GetDoc()->GetLang()&&StaticLang)
+	if(NotGuessLang)
 		return;
 
-	// Initialize some other variables
-	double Frac;
-	double NbTokens(analyzer->GetTokens().GetNb());
+	// Search for the language with the maximal number of stopwords
 	GLang* Lang(0);
 	size_t NbStops(0);
-
-	// Search for the language with the maximal number of stopwords
-	for(Langs.Start(),Stops.Start(),DiffStops.Start();!Langs.End();Langs.Next(),Stops.Next(),DiffStops.Next())
+	for(Langs.Start(),DiffStops.Start();!Langs.End();Langs.Next(),DiffStops.Next())
 	{
-		Frac=static_cast<double>(DiffStops())/NbTokens;
-//		cout<<"  "<<CurLangs()->GetCode()<<" : "<<Frac<<endl;
-		if((Stops()>NbStops)&&(Frac>=MinStopWords))
+		double Frac(static_cast<double>(DiffStops())/NbAlphaTokens);
+		if((DiffStops()>NbStops)&&(Frac>=MinStopWords))
 		{
 			Lang=Langs();
-			NbStops=Stops();
+			NbStops=DiffStops();
 		}
 	}
 	analyzer->SetLang(Lang);
@@ -134,4 +151,4 @@ void GStopWords::TreatTokens(GDocAnalyze* analyzer)
 
 
 //------------------------------------------------------------------------------
-CREATE_ANALYZER_FACTORY("Stopwords Filter","Stopwords Filter",GStopWords)
+CREATE_ANALYZER_FACTORY("Stopword Treatment","Stopword Treatment",GStopWords)

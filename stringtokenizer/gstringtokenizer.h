@@ -6,7 +6,7 @@
 
 	Classic String Tokenizer - Header.
 
-	Copyright 2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -52,10 +52,56 @@ using namespace std;
 class GStringTokenizer : public GTokenizer
 {
 	/**
-	 * State of the machine (start a new token, parsing a normal character,
-    * separation character or end of a token).
+	* Determine if the extracted tokens may contain other things than letters.
+	*/
+	bool ExtractNonLetter;
+
+	/**
+	* Filter the token extracted?
+	*/
+	bool Filtering;
+
+	/**
+	* Maximum consecutive occurrences of a same character in a token.
+	*/
+	size_t MaxConsecutiveOccurs;
+
+	/**
+	 * Maximum number of non-letter characters in a token.
 	 */
-	enum {Leading,Normal,Sep,End} State;
+	size_t MaxNonLetter;
+
+	/**
+	* Value of the ratio of normal letters on the total number of letters in a
+	* token.
+	*/
+	double NormalRatio;
+
+	/**
+	 * Number of non-letters actually treated.
+	 */
+	size_t NbNonLetters;
+
+	/**
+	 * Number of consecutive occurrences of the current character.
+	 */
+	size_t NbCurOccurs;
+
+	/**
+	 * Last character treated.
+	 */
+	RChar LastCar;
+
+	/**
+	 * Is the current token a valid one ?
+	 */
+	bool ValidToken;
+
+	/**
+	 * State of the finite-state machine (start a new token, parsing a normal
+	 * character, parsing a separation character or end the token).
+	 */
+	enum {StartToken,Normal,Sep,EndToken} State;
 
 	/**
 	 * Position of the first separation character to skip.
@@ -75,6 +121,16 @@ public:
 	* @param fac            Factory.
 	*/
 	GStringTokenizer(GSession* session,GPlugInFactory* fac);
+
+	/**
+	* Create the parameters.
+	*/
+	virtual void CreateConfig(void);
+
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
 
 	/**
 	 * Method call each time the tokenizer is started to analyze some text.

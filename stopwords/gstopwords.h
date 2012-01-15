@@ -4,9 +4,9 @@
 
 	GStopWords.h
 
-	Stopwords Filter - Header.
+	Stopwords Treatment - Header.
 
-	Copyright 2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -58,15 +58,15 @@ class GStopWords : public GAnalyzer
 	R::RContainer<GTextToken,false,false> ToDelete;
 
 	/**
-	* Number of stopwords for the different languages in the current document.
-	*/
-	R::RNumContainer<size_t,false> NbStops;
-
-	/**
 	* Number of different stopwords for the different languages in the current
 	* document.
 	*/
 	R::RNumContainer<size_t,false> NbDiffStops;
+
+	/**
+	 * Define if the stopwords must be removed from the document descriptions.
+	 */
+	bool RemoveStopwords;
 
 	/**
 	* Define if the language are static.

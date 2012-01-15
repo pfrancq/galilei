@@ -6,7 +6,7 @@
 
 	Classic String Tokenizer - Header.
 
-	Copyright 2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -33,6 +33,13 @@
 #include <gdocanalyze.h>
 
 
+
+//-----------------------------------------------------------------------------
+// DEBUG Mode
+const bool Debug=false;
+
+
+
 //------------------------------------------------------------------------------
 //
 // class GStringTokenizer
@@ -47,69 +54,137 @@ GStringTokenizer::GStringTokenizer(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
+void GStringTokenizer::CreateConfig(void)
+{
+	InsertParam(new RParamValue("ExtractNonLetter",true,"Tokens containing non-letters can be information entities?"));
+	InsertParam(new RParamValue("Filtering",true,"Should the word be filtered?"));
+	InsertParam(new RParamValue("MaxNonLetter",5,"Maximum number of non-letter characters to consider a token as valid."));
+	InsertParam(new RParamValue("MaxConsecutiveOccurs",3,"Maximum consecutive occurrences of a same character to consider a word valid."));
+	InsertParam(new RParamValue("NormalRatio",0.3,"Minimal ratio of the number of letters on the total number of characters to consider a token as a valid."));
+}
+
+
+//-----------------------------------------------------------------------------
+void GStringTokenizer::ApplyConfig(void)
+{
+	ExtractNonLetter=FindParam<RParamValue>("ExtractNonLetter")->GetBool();
+	Filtering=FindParam<RParamValue>("Filtering")->GetBool();
+	MaxConsecutiveOccurs=FindParam<RParamValue>("MaxConsecutiveOccurs")->GetUInt();
+	MaxNonLetter=FindParam<RParamValue>("MaxNonLetter")->GetUInt();
+	NormalRatio=FindParam<RParamValue>("NormalRatio")->GetDouble();
+}
+
+
+//------------------------------------------------------------------------------
 void GStringTokenizer::Start(void)
 {
 	GTokenizer::Start();
-	State=Leading;
+	State=StartToken;
 	SkipSep=FirstPos=cNoRef;
+	ValidToken=true;
+	NbNonLetters=0;
+	LastCar=0;
+	NbCurOccurs=0;
 }
 
 
 //------------------------------------------------------------------------------
 void GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 {
-	if(car.IsSpace())
+	if((!car)||(car.IsSpace()))
 	{
 		// if Leading -> skip it
-		if(State==Leading)
+		if(State==StartToken)
 		{
 			// Nothing to do
 		}
 		else if(State==Sep)
 		{
 			// The last character(s) was (were) a separation -> skip them
-			State=End;
+			State=EndToken;
 		}
 		else
 		{
 			// The space should be added
-			State=End;
+			State=EndToken;
 			SkipSep=GetPos();
-		}
-	}
-	else if	( (car=='\'') ||(car=='"')  ||
-			  (car=='/')  ||(car=='\\') || (car=='-') || (car=='+') || (car=='_') || (car=='<') || (car=='>') ||
-			  (car=='.')  ||(car==';')  || (car==',') || (car==':') || (car=='!') || (car=='?') || (car=='~') ||
-			  (car=='=')  ||(car=='+')  || (car=='-') || (car=='*') || (car=='#') || (car=='|') || (car=='&') ||
-			  (car=='(')  ||(car==')')  || (car=='[') || (car==']') || (car=='{') || (car=='}') )
-	{
-		// if Leading -> skip it
-		if(State==Leading)
-		{
-			// Nothing to do
-		}
-		else
-			AddChar(car);
-
-		if(State!=Sep)
-		{
-			// Mark the first separation character
-			State=Sep;
-			SkipSep=GetPos()-1;
 		}
 	}
 	else
 	{
-		// Other character
-		State=Normal;
-		if(FirstPos==cNoRef)
-			FirstPos=GetPos();
-		AddChar(car);
+		// Verify consecutive characters
+		if(LastCar==car)
+		{
+			NbCurOccurs++;
+
+			// Verify if the maximum number is exceeded ?
+			if(NbCurOccurs>MaxConsecutiveOccurs)
+				ValidToken=false;
+		}
+		else
+		{
+			LastCar=car;
+			NbCurOccurs=0;
+		}
+
+		if (car.IsPunct())
+		{
+			// if Leading -> skip it
+			if(State==StartToken)
+			{
+				// Nothing to do
+			}
+			else
+			{
+				AddChar(car);
+				NbNonLetters++;
+
+				// If  they aren't accepted -> not a valid token
+				if(!ExtractNonLetter)
+					ValidToken=false;
+			}
+
+			if(State!=Sep)
+			{
+				// Mark the first separation character
+				State=Sep;
+				SkipSep=GetPos()-1;
+			}
+		}
+		else
+		{
+			// Treat non-alphabetical characters
+			if(!car.IsAlpha())
+			{
+				NbNonLetters++;
+				// If  they aren't accepted -> not a valid token
+				if(!ExtractNonLetter)
+					ValidToken=false;
+			}
+
+			// Other character
+			State=Normal;
+			if(FirstPos==cNoRef)
+				FirstPos=GetPos();
+			AddChar(car);
+		}
 	}
 
-	if(State==End)
+	if(State==EndToken)
 	{
-		analyzer->AddToken(Extract(FirstPos,SkipSep).ToLower());
+		// Verify if it is a valid token
+		if(ValidToken&&(NbNonLetters<=MaxNonLetter))
+		{
+			// Verify the ratio
+			RString Token(Extract(FirstPos,SkipSep).ToLower());
+			double Size(SkipSep-FirstPos);
+			if(((Size-NbNonLetters)/Size)>=NormalRatio)
+			{
+				if(Debug)
+					cout<<"Add Token *"+Token+"*"<<endl;
+				analyzer->AddToken(Token);
+			}
+		}
 		Start();
 	}
 }

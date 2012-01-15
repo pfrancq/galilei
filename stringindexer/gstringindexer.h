@@ -6,7 +6,7 @@
 
 	String Indexer - Header.
 
-	Copyright 2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -43,44 +43,29 @@ using namespace std;
 
 //-----------------------------------------------------------------------------
 /**
- * The GStringIndexer class provides a way to stem the words.
+ * The GStringIndexer class provides a way to limit the tokens in a document
+ * and to associate a concept to it.
  * @short String Indexer
  */
 class GStringIndexer : public GAnalyzer
 {
 	/**
-	 * Space of the concepts representing terms (words, etc.).
+	 * Type of the concepts representing terms (words, etc.).
 	 */
 	GConceptType* TermsSpace;
 
 	/**
-	* Minimum number of characters to have a valid word.
-	*/
-	size_t MinWordSize;
+	 * Category of metadata concepts.
+	 */
+	GConceptCat* Metadata;
 
 	/**
-	* Determine if the extracted words may contain other things than letters.
+	* Minimum number of characters to have a valid token.
 	*/
-	bool NonLetterWords;
+	size_t MinSize;
 
 	/**
-	* Filter the word extracted?
-	*/
-	bool Filtering;
-
-	/**
-	* Maximal occurrences of a same word in a row to consider a word non-valid.
-	*/
-	size_t NbSameOccur;
-
-	/**
-	* Value of the ratio of normal letters on the total number of letters to be
-	* considered as a valid.
-	*/
-	double NormalRatio;
-
-	/**
-	 * Minimum number of occurrences of the word to be valid.
+	 * Minimum number of occurrences of the token to be valid.
 	 */
 	size_t MinOccurs;
 
@@ -105,8 +90,7 @@ public:
 
 	/**
 	 * Extract concepts from current tokens. It is the responsibility of the
-	 * analyzer to eventually delete some tokens (for example stopwords) or to
-	 * replace certain tokens by others (such as replacing a word by its stem).
+	 * analyzer to eventually filter some tokens.
 	 * @param analyzer       Analyzer.
 	 */
 	virtual void TreatTokens(GDocAnalyze* analyzer);

@@ -6,7 +6,7 @@
 
 	String Indexer - Implementation.
 
-	Copyright 2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -43,6 +43,7 @@ using namespace GALILEI;
 #include <kaboutapplicationdialog.h>
 #include <KDE/KLocale>
 
+
 //------------------------------------------------------------------------------
 // include files for KDE/Qt
 #include <kaboutdata.h>
@@ -77,9 +78,9 @@ extern "C" {
 //------------------------------------------------------------------------------
 void About(void)
 {
-	KAboutData aboutData( "txt", 0, ki18n("String Indexer"),
+	KAboutData aboutData( "String Indexer", 0, ki18n("String Indexer"),
 		"1.0", ki18n("This analyzer simply index the tokens as textual concepts."), KAboutData::License_GPL,
-		ki18n("(C) 2011 by Paul Otlet Institute"),
+		ki18n("(C) 2011-2012 by Paul Otlet Institute"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
@@ -93,25 +94,12 @@ bool Configure(GPlugIn* fac)
 	Config dlg;
 
 	// Stems
-	dlg.MinWordSize->setValue(fac->FindParam<RParamValue>("MinWordSize")->GetInt());
-	dlg.NonLetterWords->setChecked(fac->FindParam<RParamValue>("NonLetterWords")->GetBool());
-	dlg.Filtering->setChecked(fac->FindParam<RParamValue>("Filtering")->GetBool());
-	dlg.NbSameOccur->setValue(fac->FindParam<RParamValue>("NbSameOccur")->GetInt());
-	dlg.NormalRatio->setValue(fac->FindParam<RParamValue>("NormalRatio")->GetDouble());
+	dlg.MinSize->setValue(fac->FindParam<RParamValue>("MinSize")->GetInt());
 	dlg.MinOccurs->setValue(fac->FindParam<RParamValue>("MinOccurs")->GetInt());
-	dlg.NbSameOccur->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
-	dlg.NormalRatio->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
-	dlg.MinOccurs->setEnabled(fac->FindParam<RParamValue>("Filtering")->GetBool());
-	dlg.groupFiltering->setEnabled(fac->FindParam<RParamValue>("NonLetterWords")->GetBool());
-
 	if(dlg.exec())
 	{
 		// Stems
-		fac->FindParam<RParamValue>("MinWordSize")->SetUInt(dlg.MinWordSize->value());
-		fac->FindParam<RParamValue>("NonLetterWords")->SetBool(dlg.NonLetterWords->isChecked());
-		fac->FindParam<RParamValue>("Filtering")->SetBool(dlg.Filtering->isChecked());
-		fac->FindParam<RParamValue>("NbSameOccur")->SetUInt(dlg.NbSameOccur->value());
-		fac->FindParam<RParamValue>("NormalRatio")->SetDouble(dlg.NormalRatio->value());
+		fac->FindParam<RParamValue>("MinSize")->SetUInt(dlg.MinSize->value());
 		fac->FindParam<RParamValue>("MinOccurs")->SetUInt(dlg.MinOccurs->value());
 		return(true);
 	}

@@ -6,39 +6,26 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>310</width>
-    <height>244</height>
+    <width>330</width>
+    <height>99</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QGroupBox" name="groupBox_2">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Valid Words</string>
+      <string>Constraints for Tokens associated to textual content</string>
      </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QCheckBox" name="NonLetterWords">
-        <property name="toolTip">
-         <string>Should non letter words be used.</string>
-        </property>
-        <property name="whatsThis">
-         <string>When analysing a document, it is possible to use for the description only words containing letters.</string>
-        </property>
-        <property name="text">
-         <string>Non-letter Words</string>
-        </property>
-       </widget>
-      </item>
+     <layout class="QVBoxLayout" name="verticalLayout">
       <item>
        <layout class="QHBoxLayout" name="_2">
         <item>
          <widget class="QLabel" name="textLabel2">
           <property name="text">
-           <string>Minimum Size</string>
+           <string>Minimum token size</string>
           </property>
           <property name="wordWrap">
            <bool>false</bool>
@@ -62,126 +49,12 @@
          </spacer>
         </item>
         <item>
-         <widget class="KIntNumInput" name="MinWordSize">
+         <widget class="KIntNumInput" name="MinSize">
           <property name="toolTip">
-           <string>Specify the minimum size of words.</string>
+           <string>Specify the minimum size of tokens.</string>
           </property>
           <property name="whatsThis">
-           <string>When a word is contained in the document and its size is lower than this threshold, the word is not used.</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="groupFiltering">
-     <property name="title">
-      <string>Filtering</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QCheckBox" name="Filtering">
-        <property name="toolTip">
-         <string>Specify if the word filtering is enabled.</string>
-        </property>
-        <property name="whatsThis">
-         <string>The plug-in can filter the words that are used to index the documents based on several criteria.</string>
-        </property>
-        <property name="text">
-         <string>Word Filtering</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="_3">
-        <item>
-         <widget class="QLabel" name="textLabel1_2">
-          <property name="toolTip">
-           <string>Maximum number of following occurences of same letter.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Maximum number of following occurences of same letter.</string>
-          </property>
-          <property name="text">
-           <string>Maximal concecutive letters</string>
-          </property>
-          <property name="wordWrap">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="spacer6">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>0</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="KIntNumInput" name="NbSameOccur">
-          <property name="toolTip">
-           <string>Maximum number of following occurences of same letter.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Maximum number of following occurences of same letter.</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-      <item>
-       <layout class="QHBoxLayout" name="_4">
-        <item>
-         <widget class="QLabel" name="textLabel2_2">
-          <property name="toolTip">
-           <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
-          </property>
-          <property name="text">
-           <string>Normal Ratio</string>
-          </property>
-          <property name="wordWrap">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="spacer7">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeType">
-           <enum>QSizePolicy::Expanding</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>0</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="KDoubleNumInput" name="NormalRatio">
-          <property name="toolTip">
-           <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
-          </property>
-          <property name="whatsThis">
-           <string>Value of the ratio of normal letters on the total number of letters to be considered as a valid.</string>
+           <string>When a token is contained in the document and its size is lower than this threshold, it is not used for the description.</string>
           </property>
          </widget>
         </item>
@@ -192,10 +65,10 @@
         <item>
          <widget class="QLabel" name="label">
           <property name="toolTip">
-           <string>Minimal number of occurrences of the word in the document.</string>
+           <string/>
           </property>
           <property name="whatsThis">
-           <string>Minimal number of occurrences of the word in the document.</string>
+           <string/>
           </property>
           <property name="text">
            <string>Minimal number of occurences</string>
@@ -218,10 +91,10 @@
         <item>
          <widget class="KIntNumInput" name="MinOccurs">
           <property name="toolTip">
-           <string>Minimal number of occurrences of the word in the document.</string>
+           <string>Minimal number of occurrences of the token in the document.</string>
           </property>
           <property name="whatsThis">
-           <string>Minimal number of occurrences of the word in the document.</string>
+           <string>Minimal number of occurrences of the token in the document.</string>
           </property>
          </widget>
         </item>
@@ -234,65 +107,11 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>KDoubleNumInput</class>
-   <extends>QWidget</extends>
-   <header>knuminput.h</header>
-  </customwidget>
-  <customwidget>
    <class>KIntNumInput</class>
    <extends>QWidget</extends>
    <header>knuminput.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
- <connections>
-  <connection>
-   <sender>Filtering</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>NbSameOccur</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>82</x>
-     <y>140</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>211</x>
-     <y>169</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Filtering</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>NormalRatio</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>50</x>
-     <y>139</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>119</x>
-     <y>196</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>Filtering</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>MinOccurs</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>166</x>
-     <y>137</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>215</x>
-     <y>219</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>

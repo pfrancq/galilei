@@ -6,14 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>334</width>
-    <height>58</height>
+    <width>328</width>
+    <height>83</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QCheckBox" name="RemoveStopwords">
+     <property name="text">
+      <string>Remove Stopwords</string>
+     </property>
+    </widget>
+   </item>
    <item>
     <widget class="QCheckBox" name="StaticLang">
      <property name="toolTip">
@@ -33,7 +40,7 @@ When the languages are not static, the language of a document is always determin
      <item>
       <widget class="QLabel" name="textLabel1">
        <property name="text">
-        <string>Stopwords Ratio to determine the language</string>
+        <string>Stopword Ratio to determine the language</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
@@ -53,13 +60,16 @@ When the languages are not static, the language of a document is always determin
 &lt;li&gt; The language with the highest number of occurences of stopwords is assigned to the document.&lt;li&gt;
 &lt;/ol&gt;</string>
        </property>
+       <property name="maximum">
+        <double>1.000000000000000</double>
+       </property>
       </widget>
      </item>
     </layout>
    </item>
   </layout>
   <zorder>StaticLang</zorder>
-  <zorder></zorder>
+  <zorder>RemoveStopwords</zorder>
  </widget>
  <customwidgets>
   <customwidget>
