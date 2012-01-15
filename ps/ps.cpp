@@ -6,7 +6,7 @@
 
 	A PostScript filter - Implementation.
 
-	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 	Copyright 1995-1998 by Digital Equipment Corporation.
 	See the file pstotext.txt for a full description.
@@ -177,7 +177,7 @@ void GFilterPS::StrToBuffer(const char* str)
 
 
 //------------------------------------------------------------------------------
-void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
+void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 {
 	bool Paragraph;
 	char gs_cmdline[2*MAXPATHLEN];
@@ -322,7 +322,7 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& fil
 				Paragraph=false;
 			}
 		}
-		analyzer->ExtractContent(Begin,0);
+		analyzer->ExtractBody(Begin,0);
 	}
 
 	// Clean up
@@ -331,12 +331,6 @@ void GFilterPS::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& fil
 		free(instance);
 	}
 	delete[] CharBuffer;
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterPS::CreateParams(GPlugInFactory*)
-{
 }
 
 

@@ -6,7 +6,7 @@
 
 	A HTML filter - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2003 by Valery Vandaele.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -37,10 +37,87 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gfilter.h>
+#include <rstack.h>
 #include <rxmlparser.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The DivisionTag provides a reprsentation for tags representing document
+ * divisions. In practice, these tags are: <html>, <body>, <h1>, <h2>, <h3>,
+ * <h4>, <h5>, <h6> and <p>.
+ * @author Pascal Francq.
+ * @short HTML Division Tag.
+ */
+class DivisionTag
+{
+public:
+
+	 /**
+	  * The tag.
+	  */
+	 RString Tag;
+
+	 /**
+	  * The lowest division depth of the document that a tag can represent.
+     */
+	 size_t Depth;
+
+	 /**
+	  * Constructor.
+     * @param tag           Tag.
+     * @param depth         Depth.
+     */
+	 DivisionTag(const RString& tag,size_t depth) : Tag(tag), Depth(depth) {}
+
+	/**
+	 * Compare two tags using their name. This method is needed by R::RContainer.
+	 * @param tag            Tag to compare with.
+	 */
+	 int Compare(const DivisionTag& tag) const {return(Tag.Compare(tag.Tag));}
+
+	 /**
+	 * Compare the name of the tag with a given one. This method is needed by
+	 * R::RContainer.
+	 * @param tag            Tag name to compare with.
+	 */
+	 int Compare(const RString& tag) const {return(Tag.Compare(tag));}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The DocDvision provides a representation for a given division in a document.
+ */
+class DocDivision
+{
+public:
+
+	 /**
+	  * The corresponding tag.
+	  */
+	 DivisionTag* Tag;
+
+	 /**
+	  * The real depth of the division in the current document.
+	  */
+	 size_t Depth;
+
+	 /**
+	  * Constructor.
+     * @param tag           Tag.
+     * @param depth         Depth.
+     */
+	 DocDivision(DivisionTag* tag,size_t depth) : Tag(tag), Depth(depth) {}
+
+ 	 /**
+	  * Compare method needed by R::RContainer.
+	  */
+	 int Compare(const DocDivision&) const {return(-1);}
+};
 
 
 //-----------------------------------------------------------------------------
@@ -52,6 +129,11 @@ using namespace std;
 */
 class GFilterHTML : public GFilter, public RXMLParser
 {
+	 /**
+	  * Detect the document divisions.
+	  */
+	 bool DetectDivisions;
+
     /**
      * The current analyzer.
      */
@@ -82,6 +164,16 @@ class GFilterHTML : public GFilter, public RXMLParser
      */
     RString Meta;
 
+	 /**
+	  * The different division tags.
+	  */
+	 RContainer<DivisionTag,true,true> DivisionTags;
+
+	/**
+	 * Last-In - Last-Out stack of divisions.
+	 */
+	RStack<DocDivision,false,true,true> Divisions;
+
 public:
 
 	/**
@@ -90,6 +182,11 @@ public:
 	* @param fac            Factory.
 	*/
 	GFilterHTML(GSession* session,GPlugInFactory* fac);
+
+	/**
+	* Configurations were applied from the factory.
+	*/
+	virtual void ApplyConfig(void);
 
 	/**
 	* Analyze a document with a given URI.
@@ -146,11 +243,10 @@ public:
 	*/
 	virtual void Text(const RString& text);
 
-   /**
+	/**
 	* Create the parameters.
-	* @param fac             Factory.
 	*/
-	static void CreateParams(GPlugInFactory* fac);
+	virtual void CreateConfig(void);
 
 	/**
 	*The destructor

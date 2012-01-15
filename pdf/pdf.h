@@ -6,7 +6,7 @@
 
 	A PDF filter - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 	Copyright 1996-2005 by Glyph & Cog, LLC.
 
@@ -111,14 +111,6 @@ protected:
 	{while(Pos&&(!Pos->IsNull())&&(Pos->IsSpace())) Pos++;}
 
 public:
-
-public:
-
-	/**
-	* Create the parameters.
-	* @param fac             Factory.
-	*/
-	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor.

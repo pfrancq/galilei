@@ -169,13 +169,13 @@ void GFilterMSDoc::subDocFound(const wvWare::FunctorBase* functor, int data)
 void GFilterMSDoc::WriteParagraph(RString par)
 {
 	if(!par.IsEmpty())
-		Analyzer->ExtractContent(par,0);
+		Analyzer->ExtractBody(par,0);
 	Paragraph="";
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterMSDoc::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
+void GFilterMSDoc::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 {
 	// Init Part
 	bodyFound=false;
@@ -325,12 +325,6 @@ void GFilterMSDoc::runOfText(const wvWare::UString& text, wvWare::SharedPtr<cons
 	}
 
 	Paragraph += newTxt;
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterMSDoc::CreateParams(GPlugInFactory*)
-{
 }
 
 

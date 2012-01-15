@@ -223,7 +223,7 @@ void GFilterRTF::AnalyzeText(GDocAnalyze* analyzer,RString str)
 				t=Tags->GetPtr<const RString>(readTag);
 				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
 				{
-					analyzer->ExtractContent(par,0);
+					analyzer->ExtractBody(par,0);
 					par="";
 				}
 			}
@@ -238,7 +238,7 @@ void GFilterRTF::AnalyzeText(GDocAnalyze* analyzer,RString str)
 				t=Tags->GetPtr<const RString>(readTag);
 				if((t)&&(t->Type==Tag::tPAR)&&(!par.IsEmpty()))
 				{
-					analyzer->ExtractContent(par,0);
+					analyzer->ExtractBody(par,0);
 					par="";
 				}
 			}
@@ -249,7 +249,7 @@ void GFilterRTF::AnalyzeText(GDocAnalyze* analyzer,RString str)
 
 	//test If some text has not been added yet to structure
 	if(!par.IsEmpty())
-		analyzer->ExtractContent(par,0);
+		analyzer->ExtractBody(par,0);
 }
 
 
@@ -331,7 +331,7 @@ void GFilterRTF::FindBlock(GDocAnalyze* analyzer,RString str,bool text)
 
 
 //------------------------------------------------------------------------------
-void GFilterRTF::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
+void GFilterRTF::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 {
 	RTextFile Src(file);
 	FindBlock(analyzer,Src.GetUntilEnd());
@@ -476,12 +476,6 @@ RString GFilterRTF::ReplaceCodes(RString str)
 		}
 		curPos++;
 	}
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterRTF::CreateParams(GPlugInFactory*)
-{
 }
 
 

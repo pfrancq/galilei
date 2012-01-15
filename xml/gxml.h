@@ -6,7 +6,7 @@
 
 	Analyze a document - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -37,95 +37,322 @@
 // include files for R/GALILEI Projects
 #include <rxmlparser.h>
 #include <gfilter.h>
+#include <rstack.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
 
 
+//-----------------------------------------------------------------------------
+// forward declaration
+class XMLSchema;
+
 
 //-----------------------------------------------------------------------------
 /**
- * The GXML class provides a method to analyze a document. The plug-in
- * maintains several lists of elements through the analysis of a XML documents:
+ * The XMLTest class provides a representation for a sequence of characters
+ * associated to the content of tags.
+ * @author Pascal Francq
+ * @short XML Textual Content Unit
+ */
+class XMLText
+{
+public:
+
+	 /**
+	  * Text.
+	  */
+	 RString Text;
+
+	 /**
+	  * Position in the file.
+	  */
+	 size_t Pos;
+
+	 /**
+	  * Depth in the XML tree.
+	  */
+	 size_t Depth;
+
+	 /**
+	  * Constructor of the class.
+	  * @param txt           Text.
+	  * @param pos           Position.
+	  * @param depth         Depth.
+	  */
+	 XMLText(const RString& txt,size_t pos,size_t depth)
+		: Text(txt), Pos(pos), Depth(depth) {}
+
+	 /**
+	  * Compare method needed by R::RContainer.
+	  */
+	 int Compare(const XMLText&) const {return(-1);}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The XML Content class holds all the text associated with the content of a
+ * given tag occurrence.
+ * @author Pascal Francq
+ * @short XML Textual Content
+ */
+class XMLContent : public RContainer<XMLText,true,false>
+{
+public:
+
+	 /**
+	  * Constructor.
+	  */
+	 XMLContent(void) : RContainer<XMLText,true,false>(200) {}
+
+	 /**
+	  * Compare method needed by R::RContainer.
+	  */
+	 int Compare(const XMLContent&) const {return(-1);}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The XMLTag provides a representation for the a XML tag.
+ * @author Pascal.
+ * @short XML Tag.
+ */
+class XMLTag
+{
+	 /**
+	  * Concept associated to the tag.
+	  */
+	 GConcept* Concept;
+
+public:
+
+	/**
+	 * The tag.
+	 */
+	RString Tag;
+
+	/**
+	 * Number of occurrences of the tag in the document analyzed (must be reset
+	 * after each analyze).
+	 */
+	size_t NbOccurs;
+
+	/**
+	 * Corresponding XML Schema.
+	 */
+	XMLSchema* Schema;
+
+	/**
+	 * Type of the tag:
+	 * - Undefined: No information of what kind of tag it is.
+	 * - Text: The tag contains default textual content.
+	 * - Metadata: The tag is a metadata.
+	 * - Unknown: When the metadata tags are not fixed, the analyzed must be
+	 * done before to determine if the content is a default textual one or a
+	 * metadata.
+	 * - Exclude: The textual content of the tag should not be analyzed.
+	 */
+	enum {Undefined,Text,Metadata,Unknown,Exclude} Type;
+
+	/**
+	 * Its textual contents (must be reset after each analyze).
+	 */
+	RContainer<XMLContent,true,false> Content;
+
+	/**
+	 * Constructor.
+	 * @param atg            Tag.
+	 *
+	 */
+	XMLTag(const RString& tag);
+
+	/**
+	 * Compare two tags using their name. This method is needed by R::RContainer.
+	 * @param tag            Tag to compare with.
+	 */
+	int Compare(const XMLTag& tag) const;
+
+	/**
+	 * Compare the name of the tag with a given one. This method is needed by
+	 * R::RContainer.
+	 * @param tag            Tag name to compare with.
+	 */
+	int Compare(const RString& tag) const;
+
+	/**
+	 * Get the concept associated to the tag. In practice, it is create in the
+	 * corresponding dictionary if necessary.
+	 */
+	GConcept* GetConcept(void);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The XMLSchema provides a representation for a given XML Schema.
+ * @author Pascal Francq
+ * @short XML Schema.
+ */
+class XMLSchema
+{
+public:
+
+	/**
+	 * URI of the schema.
+	 */
+	RString URI;
+
+	/**
+	 * In the tensor space model, each XML schema is a concept type in the
+	 * category 'Semantic'.
+	 */
+	GConceptType* Type;
+
+	/**
+	 * When a vector of semantic information must be created, each XML schema
+	 * must also be associated with a meta-concept.
+	 */
+	GConcept* MetaConcept;
+
+	/**
+	 * Tags.
+	 */
+	RContainer<XMLTag,true,true> Tags;
+
+	/**
+	 * Constructor.
+	 * @param uri            URI representing the schema.
+	 */
+	XMLSchema(const RString& uri);
+
+	/**
+	 * Compare two XML schemas using their URI. This method is needed by
+	 * R::RContainer.
+	 * @param schema         Schema to compare with.
+	 */
+	int Compare(const XMLSchema& schema);
+
+	/**
+	 * Compare the uri of the XML schema with a given one. This method is needed
+	 * by R::RContainer.
+	 * @param uri            URI to compare with.
+	 */
+	int Compare(const RString& uri);
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The XMLTagOccur provides a representation of a particular occurrence of a
+ * given tag in the document analyzed.
+ * @author Pascal Francq
+ * @short XML Tag Occurrence
+ */
+class XMLTagOccur
+{
+public:
+
+	 /**
+	  * The tag.
+	  */
+	 XMLTag* Tag;
+
+	 /**
+	  * Its particular content.
+	  */
+	 XMLContent* Content;
+
+	 /**
+	  * The position of the tag occurrence in the document.
+	  */
+	 size_t Pos;
+
+	 /**
+	  * The depth of the tag occurrence in the XML tree.
+	  */
+	 size_t Depth;
+
+	 /**
+	  * Constructor.
+	  * @param tag           Tag.
+	  * @param content       Content.
+	  * @param pos           Position.
+	  * @param depth         Depth.
+	  */
+	 XMLTagOccur(XMLTag* tag,XMLContent* content,size_t pos,size_t depth)
+	 	: Tag(tag), Content(content), Pos(pos), Depth(depth) {}
+
+	 /**
+	  * Compare method needed by R::RContainer.
+	  */
+	 int Compare(const XMLTagOccur&) const {return(-1);}
+};
+
+
+//-----------------------------------------------------------------------------
+/**
+ * The GXML class provides a method to analyze a XML document. The plug-in
+ * extract:
  * - Words: The list of each word appearing in the document.
- * - StructTokens: The list of structural tokens appearing in the document.
- * - Depths: The different information associated to each depth of the
- *   document.
+ * - Semantic information: Structure information.
+ * - Metadata: The metadata (eventually detected).
  * @author Pascal Francq
  * @short XML Documents Analyze.
+ * @article Document_Description
  */
 class GXML : public GFilter, public RXMLParser
 {
 	/**
-	 * Specify if the current document must be full index. It is the case if
-	 * full indexing is asked, and the document is a native XML.
+	 * Analyzer that has called the XML filter.
 	 */
-	bool MustFullIndex;
+	GDocAnalyze* Analyzer;
 
 	/**
-	 * Extract structure elements?
+	 * Extract semantic information.
 	 */
-	bool ExtractStruct;
+	bool ExtractSemantic;
 
 	/**
-	 * Should the structure be considered as normal content (stems)?
+	 * Extract metadata?
 	 */
-	bool StructIsContent;
+	bool ExtractMetadata;
 
 	/**
-	 * Extract pairs (declarative tags,content)?
+	 * Maximum number of terms allowed in a metadata tag.
 	 */
-	bool ExtractIndex;
+	size_t MetadataMaxTerms;
 
 	/**
-	 * Maximum number of terms allowed for a declarative tag's content.
+	 * Maximum depth of a metadata tag.
 	 */
-	size_t MaxTerms;
+	size_t MetadataMaxDepth;
 
 	/**
-	 * Maximum depth of a declarative tag
+	 * Maximal number of occurrences of a metadata tag.
 	 */
-	char MaxDepth;
+	size_t MetadataMaxOccurs;
 
 	/**
-	 * Maximal number of occurrences of a tag to be considered as index.
+	 * May metadata tags have child tags?
 	 */
-	size_t MaxOccurs;
+	bool MetadataChildTags;
 
 	/**
-	 * May declarative tags have child tags?
+	 * Should the metadata tag be detected or must they be defined.
 	 */
-	bool ChildTags;
+	bool DetectMetadataTag;
 
 	/**
-	 * Should the meta-tag be detected or must they be defined.
+	 * Metadata tags.
 	 */
-	bool DetectMetaTag;
+	RContainer<RString,true,true> MetadataTags;
 
 	/**
-	 * Name of the file containing the meta-tags.
+	 * Tags which content is to exclude.
 	 */
-	RString MetaTagFile;
-
-	/**
-	 * Meta tags.
-	 */
-	RContainer<RString,true,true> MetaTags;
-
-	/**
-	 * Weight of each tag and parameter name when they are considered as stems.
-	 */
-	double WeightStruct;
-
-	/**
-	 * Must the attributes values be considered as stems?
-	 */
-	bool ExtractValues;
-
-	/**
-	 * Weight of each parameter value when they are considered as stems.
-	 */
-	double WeightValues;
+	RContainer<RString,true,true> ExcludeTags;
 
 	/**
 	 * Must a default namespace be used if tags are found with no namespace.
@@ -133,29 +360,24 @@ class GXML : public GFilter, public RXMLParser
 	bool UseDefaultNamespace;
 
 	/**
-	 * Default namespace to use.
+	 * Default namespace to use (if necessary).
 	 */
 	RString DefaultNamespace;
 
 	/**
-	 * Is the current tag a title?
+	 * All the XML schemas found during the analysis.
 	 */
-	bool IsTitle;
+	RContainer<XMLSchema,true,true> Schemas;
 
 	/**
-	 * Is the current tag an identifier ?
+	 * Last-In - Last-Out stack of tags.
 	 */
-	bool IsIdentifier;
+	RStack<XMLTagOccur,true,true,true> Tags;
 
 	/**
-	 * Temporary String;
+	 * Category of semantic concepts.
 	 */
-	RString tmpStr;
-
-	/**
-	 * Native XML file.
-	 */
-	bool Native;
+	GConceptCat* Semantic;
 
 public:
 
@@ -181,11 +403,25 @@ public:
 	*/
 	void Clear(void);
 
+	/**
+	 * Get the schema corresponding to an URI.
+    * @param uri            Schema.
+    * @return a pointer to the schema.
+    */
+	XMLSchema* GetSchema(const RString& uri);
+
+	/**
+	 * Get the concept corresponding to a XML schema (given by its URI). If it
+	 * doesn't exist, it is created.
+    * @param namespaceURI   URI of the XML schema.
+    * @param lName          Name of the tag/attribute.
+    * @return a pointer to concept.
+    */
+	XMLTag* GetXMLTag(const RString& namespaceURI,const RString& lName);
+
 	// Overload default function
 	virtual void BeginTag(const RString& namespaceURI,const RString& lName,const RString& name);
 	virtual void ResolveNamespace(const RString& namespaceURI);
-	virtual void AddAttribute(const RString& namespaceURI, const RString& lName, const RString& name);
-	virtual void Value(const RString& value);
 	virtual void EndTag(const RString& namespaceURI,const RString& lName,const RString& name);
 	virtual void Text(const RString& text);
 
@@ -198,22 +434,13 @@ public:
 	virtual RChar CodeToChar(RString& code);
 
 	/**
-	* Analyze a document with a given URI for which a DocXML must be created.
-	* This method must be re-implemented by all filters.
+	* Analyze a document with a given URI.
+	* @param analyzer        Analyzer.
 	* @param doc             Document to analyze.
-	* @param uri             URI of the file to analyze.
-	* @param parser          Current parser of the XML stream.
-	* @param rec             Receiver for the signals.
+	* @param file            File to analyze (eventually a local copy of a
+	*                        remote document).
 	*/
-	virtual void Analyze(GDoc* doc,const R::RURI& uri,R::RXMLParser* parser,GSlot* rec);
-
-	/**
-	 * @return true if the analyze of the current tag must be stopped.
-	 */
-	inline bool StopAnalyseTag(void) const
-	{
-		return((!Native) ||  ((!MustFullIndex)&&(   (!ExtractIndex)    || (    ExtractIndex&&(DetectMetaTag&&(GetCurrentDepth()>MaxDepth)) ) )) );
-	}
+	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
 
 	/**
 	* Create the parameters.

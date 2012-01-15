@@ -6,7 +6,7 @@
 
 	Analyze a document (KDE Part) - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@ using namespace GALILEI;
 #include <kaboutdata.h>
 #include <kaboutapplicationdialog.h>
 #include <KDE/KLocale>
-#include <ui_config.h>
+#include "ui_config.h"
 #include <QtGui/QInputDialog>
 
 
@@ -61,14 +61,17 @@ class Config : public KDialog, public Ui_Config
 	Q_OBJECT
 
 public:
-	Config(void);
+
+	 Config(void);
+
 public slots:
 
-	void toggleExtractStruct( bool toggle );
-	void toggleFullIndex(bool toggle );
 	void clickedMetadata(void);
-	void addTag(void);
-	void removeTag(void);
+	void addMetadataTag(void);
+	void removeMetadataTag(void);
+	void addExcludeTag(void);
+	void removeExcludeTag(void);
+	void importFile(void);
 };
 
 

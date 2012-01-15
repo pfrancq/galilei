@@ -54,7 +54,7 @@ GFilterTXT::GFilterTXT(GSession* session,GPlugInFactory* fac)
 
 
 //-----------------------------------------------------------------------------
-void GFilterTXT::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
+void GFilterTXT::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 {
 	// Open the text document and the lines
 	RTextFile Src(file,"utf-8");
@@ -62,14 +62,8 @@ void GFilterTXT::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& fi
 	while(!Src.End())
 	{
 		size_t Pos(Src.GetPos());
-		analyzer->ExtractContent(Src.GetLine(false),Pos);
+		analyzer->ExtractBody(Src.GetLine(false),Pos);
 	}
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterTXT::CreateParams(GPlugInFactory*)
-{
 }
 
 

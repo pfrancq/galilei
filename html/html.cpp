@@ -6,7 +6,7 @@
 
 	A HTML filter - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2003 by Valery Vandaele.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -44,16 +44,34 @@
 
 //------------------------------------------------------------------------------
 GFilterHTML::GFilterHTML(GSession* session,GPlugInFactory* fac)
-	: GFilter(session,fac), RXMLParser()
+	: GFilter(session,fac), RXMLParser(), DivisionTags(10), Divisions(30,20)
 {
 	AddMIME("text/html");
 	SetHTMLMode(true);
+	DivisionTags.InsertPtr(new DivisionTag("html",0));
+	DivisionTags.InsertPtr(new DivisionTag("body",1));
+	DivisionTags.InsertPtr(new DivisionTag("h1>",2));
+	DivisionTags.InsertPtr(new DivisionTag("h2",3));
+	DivisionTags.InsertPtr(new DivisionTag("h3",4));
+	DivisionTags.InsertPtr(new DivisionTag("h4",5));
+	DivisionTags.InsertPtr(new DivisionTag("h5",6));
+	DivisionTags.InsertPtr(new DivisionTag("h6",7));
+	DivisionTags.InsertPtr(new DivisionTag("p",8));
+}
+
+
+//-----------------------------------------------------------------------------
+void GFilterHTML::ApplyConfig(void)
+{
+	// Assign the parameters
+	DetectDivisions=FindParam<RParamValue>("DetectDivisions")->GetBool();
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterHTML::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
+void GFilterHTML::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 {
+	Divisions.Clear();
 	Analyzer=analyzer;
 	BodyTag=TitleTag=MetaTag=false;
 	Open(file);
@@ -64,6 +82,24 @@ void GFilterHTML::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& f
 //------------------------------------------------------------------------------
 void GFilterHTML::BeginTag(const RString&,const RString& lName,const RString&)
 {
+	// Find the depth (if any)
+	if(DetectDivisions)
+	{
+		DivisionTag* Find(DivisionTags.GetPtr(lName));
+		if(Find)
+		{
+			// Eliminate all the lower tags from the stack
+			while((Divisions.GetNb())&&(Divisions()->Tag->Depth>=Find->Depth))
+				Divisions.Pop();
+
+			// Create a new division
+			if(Divisions.GetNb())
+				Divisions.Push(new DocDivision(Find,Divisions()->Depth+1));
+			else
+				Divisions.Push(new DocDivision(Find,0));
+		}
+	}
+
 	// If the 'BODY' tag was parsed -> No interesting tags anymore
 	if(BodyTag)
 		return;
@@ -95,7 +131,7 @@ void GFilterHTML::AddAttribute(const RString&,const RString& lName,const RString
 	}
 	else if(Attr=="name")
 	{
-		Meta="author";
+		Meta="creator";
 	}
 	else if(Attr=="keywords")
 	{
@@ -115,7 +151,11 @@ void GFilterHTML::AddAttribute(const RString&,const RString& lName,const RString
 //------------------------------------------------------------------------------
 void GFilterHTML::Value(const RString& value)
 {
-	if(Content&&(!Meta.IsEmpty()))
+	if((!Content)||(Meta.IsEmpty()))
+		return;
+	if(DetectDivisions)
+		Analyzer->ExtractDCMI(Meta,value,GetLastTokenPos(),1);
+	else
 		Analyzer->ExtractDCMI(Meta,value,GetLastTokenPos(),GetCurrentDepth());
 }
 
@@ -123,7 +163,7 @@ void GFilterHTML::Value(const RString& value)
 //------------------------------------------------------------------------------
 void GFilterHTML::EndTag(const RString&,const RString&,const RString&)
 {
-		// If the 'BODY' tag was parsed -> No interesting tags anymore
+	// If the 'BODY' tag was parsed -> No interesting tags anymore
 	if(BodyTag)
 		return;
 
@@ -135,15 +175,26 @@ void GFilterHTML::EndTag(const RString&,const RString&,const RString&)
 void GFilterHTML::Text(const RString& text)
 {
 	if(TitleTag)
-		Analyzer->ExtractDCMI("title",text,GetLastTokenPos(),GetCurrentDepth());
+	{
+		if(DetectDivisions)
+			Analyzer->ExtractDCMI("title",text,GetLastTokenPos(),1);
+		else
+			Analyzer->ExtractDCMI("title",text,GetLastTokenPos(),GetCurrentDepth());
+	}
 	else if(BodyTag)
-		Analyzer->ExtractContent(text,GetLastTokenPos(),GetCurrentDepth());
+	{
+		if(DetectDivisions)
+			Analyzer->ExtractBody(text,GetLastTokenPos(),Divisions()->Depth);
+		else
+			Analyzer->ExtractBody(text,GetLastTokenPos(),GetCurrentDepth());
+	}
 }
 
 
 //------------------------------------------------------------------------------
-void GFilterHTML::CreateParams(GPlugInFactory*)
+void GFilterHTML::CreateConfig(void)
 {
+	InsertParam(new RParamValue("DetectDivisions",true,"Detect the document divisions?"));
 }
 
 

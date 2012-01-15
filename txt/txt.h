@@ -78,12 +78,6 @@ public:
 	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
 
 	/**
-	* Create the parameters.
-	* @param fac             Factory.
-	*/
-	static void CreateParams(GPlugInFactory* fac);
-
-	/**
 	* Destructor of the TXT filter.
 	*/
 	virtual ~GFilterTXT(void);

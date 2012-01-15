@@ -372,12 +372,6 @@ public:
 public:
 
 	/**
-	* Create the parameters.
-	* @param fac             Factory.
-	*/
-	static void CreateParams(GPlugInFactory* fac);
-
-	/**
 	* Destructor.
 	*/
 	virtual ~GFilterMSDoc(void);

@@ -6,7 +6,7 @@
 
 	Analyze a document - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -50,7 +50,87 @@ const bool Debug=false;
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gxml.h>
-#include <gslot.h>
+#include <gsession.h>
+#include <gdocanalyze.h>
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class XMLTag
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+XMLTag::XMLTag(const RString& tag)
+	: Concept(0), Tag(tag), NbOccurs(0), Schema(0), Type(XMLTag::Undefined), Content(200)
+{
+
+}
+
+//-----------------------------------------------------------------------------
+int XMLTag::Compare(const XMLTag& tag) const
+{
+	return(Tag.Compare(tag.Tag));
+}
+
+
+//-----------------------------------------------------------------------------
+int XMLTag::Compare(const RString& tag) const
+{
+	return(Tag.Compare(tag));
+}
+
+
+//-----------------------------------------------------------------------------
+GConcept* XMLTag::GetConcept(void)
+{
+	if(!Concept)
+		Concept=Schema->Type->GetInsertConcept(Tag);
+	return(Concept);
+}
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class XMLSchema
+//
+//-----------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+// Skip ending '/' if necessary
+RString AdaptNamespace(const RString& name)
+{
+	if(name[name.GetLen()-1]=='/')
+	{
+		return(name.Mid(0,name.GetLen()-1));
+	}
+	else
+		return(name);
+}
+
+
+//-----------------------------------------------------------------------------
+XMLSchema::XMLSchema(const RString& uri)
+	: URI(AdaptNamespace(uri)), Type(0), MetaConcept(0), Tags(200)
+{
+
+}
+
+
+//-----------------------------------------------------------------------------
+int XMLSchema::Compare(const XMLSchema& schema)
+{
+	return(URI.Compare(schema.URI));
+}
+
+
+//-----------------------------------------------------------------------------
+int XMLSchema::Compare(const RString& uri)
+{
+	return(URI.Compare(uri));
+}
 
 
 
@@ -62,34 +142,49 @@ const bool Debug=false;
 
 //-----------------------------------------------------------------------------
 GXML::GXML(GSession* session,GPlugInFactory* fac)
-	: GFilter(session,fac), RXMLParser(), MetaTags(20), IsTitle(false),
-	  IsIdentifier(false)
+	: GFilter(session,fac), RXMLParser(), MetadataTags(50), ExcludeTags(50), Schemas(50),
+	  Tags(30,20), Semantic(0)
 {
 	AddMIME("text/xml");
 	AddMIME("xml");
+	AddMIME("application/xml");
 }
 
 
 //-----------------------------------------------------------------------------
 void GXML::ApplyConfig(void)
 {
-	ExtractStruct=FindParam<RParamValue>("ExtractStruct")->GetBool();
-	StructIsContent=FindParam<RParamValue>("StructIsContent")->GetBool();
-	ExtractIndex=FindParam<RParamValue>("ExtractIndex")->GetBool();
-	MaxTerms=FindParam<RParamValue>("MaxTerms")->GetUInt();
-	MaxOccurs=FindParam<RParamValue>("MaxOccurs")->GetUInt();
-	MaxDepth=static_cast<char>(FindParam<RParamValue>("MaxDepth")->GetUInt());
-	ChildTags=FindParam<RParamValue>("ChildTags")->GetBool();
-	WeightStruct=FindParam<RParamValue>("WeightStruct")->GetDouble();
-	ExtractValues=FindParam<RParamValue>("ExtractValues")->GetBool();
-	WeightValues=FindParam<RParamValue>("WeightValues")->GetDouble();
+	// Assign the parameters
+	ExtractSemantic=FindParam<RParamValue>("ExtractSemantic")->GetBool();
+	ExtractMetadata=FindParam<RParamValue>("ExtractMetadata")->GetBool();
+	MetadataMaxTerms=FindParam<RParamValue>("MetadataMaxTerms")->GetUInt();
+	MetadataMaxOccurs=FindParam<RParamValue>("MetadataMaxOccurs")->GetUInt();
+	MetadataMaxDepth=static_cast<char>(FindParam<RParamValue>("MetadataMaxDepth")->GetUInt());
+	MetadataChildTags=FindParam<RParamValue>("MetadataChildTags")->GetBool();
 	UseDefaultNamespace=FindParam<RParamValue>("UseDefaultNamespace")->GetBool();
-	DefaultNamespace=FindParam<RParamValue>("DefaultNamespace")->Get();
-	DetectMetaTag=FindParam<RParamValue>("DetectMetaTag")->GetBool();
-	MetaTags.Clear();
-	RCursor<RString> Tags(FindParam<RParamList>("IndexTags")->GetList());
+	DefaultNamespace=AdaptNamespace(FindParam<RParamValue>("DefaultNamespace")->Get());
+	bool PreviousDetect(DetectMetadataTag);
+	DetectMetadataTag=FindParam<RParamValue>("DetectMetadataTag")->GetBool();
+	MetadataTags.Clear();
+	RCursor<RString> Tags(FindParam<RParamList>("MetadataTags")->GetList());
 	for(Tags.Start();!Tags.End();Tags.Next())
-		MetaTags.InsertPtr(new RString(*Tags()));
+		MetadataTags.InsertPtr(new RString(AdaptNamespace(*Tags())));
+	ExcludeTags.Clear();
+	Tags=FindParam<RParamList>("ExcludeTags")->GetList();
+	for(Tags.Start();!Tags.End();Tags.Next())
+		ExcludeTags.InsertPtr(new RString(AdaptNamespace(*Tags())));
+
+	// If the detection status has changed -> all the existing tags must be undefined
+	if(PreviousDetect!=DetectMetadataTag)
+	{
+		RCursor<XMLSchema> Schema(Schemas);
+		for(Schema.Start();!Schema.End();Schema.Next())
+		{
+			RCursor<XMLTag> Tag(Schema()->Tags);
+			for(Tag.Start();Tag.End();Tag.Next())
+				Tag()->Type=XMLTag::Undefined;
+		}
+	}
 }
 
 
@@ -102,125 +197,119 @@ void GXML::Init(void)
 //-----------------------------------------------------------------------------
 void GXML::Clear(void)
 {
-	IsTitle=false;
-	IsIdentifier=false;
+	Tags.Clear();
+}
+
+
+//------------------------------------------------------------------------------
+XMLSchema* GXML::GetSchema(const RString& uri)
+{
+	XMLSchema* Schema(Schemas.GetInsertPtr(uri));
+	if(!Schema->Type)
+	{
+		Schema->Type=Session->GetInsertConceptType(Semantic,uri,RString::Null);
+		Schema->MetaConcept=Schema->Type->GetInsertConcept(uri);
+	}
+	return(Schema);
+}
+
+
+//------------------------------------------------------------------------------
+XMLTag* GXML::GetXMLTag(const RString& namespaceURI,const RString& lName)
+{
+	// Look for the schema
+	if(Debug)
+		cout<<"Get "<<namespaceURI<<":"<<lName<<endl;
+	XMLSchema* Schema(0);
+	if(namespaceURI.IsEmpty())
+	{
+		if(UseDefaultNamespace)
+			Schema=GetSchema(DefaultNamespace);
+		else
+			Schema=GetSchema(URI());
+	}
+	else
+		Schema=GetSchema(namespaceURI);
+
+	// Look for the concept
+	XMLTag* Tag(Schema->Tags.GetInsertPtr(lName));
+	if(!Tag->Schema)
+		Tag->Schema=Schema;
+	if(Tag->Type==XMLTag::Undefined)
+	{
+		RString Name(Schema->Type->GetName()+":"+Tag->Tag);
+		if(Debug)
+			cout<<"  Determine status of "+Name<<endl;
+		if(ExcludeTags.IsIn(Name))
+		{
+			if(Debug)
+				cout<<"    Exclude it !"<<endl;
+			Tag->Type=XMLTag::Exclude;
+		}
+		else
+		{
+			if(DetectMetadataTag)
+			{
+				if(Debug)
+					cout<<"    Detect if Metadata !"<<endl;
+				Tag->Type=XMLTag::Unknown;
+			}
+			else
+			{
+				if(MetadataTags.IsIn(Name))
+				{
+				if(Debug)
+					cout<<"    Metadata for sure !"<<endl;
+					Tag->Type=XMLTag::Metadata;
+				}
+				else
+				{
+					if(Debug)
+						cout<<"    Textual for sure !"<<endl;
+					Tag->Type=XMLTag::Text;
+				}
+			}
+		}
+	}
+	return(Tag);
 }
 
 
 //-----------------------------------------------------------------------------
 void GXML::BeginTag(const RString& namespaceURI,const RString& lName,const RString&)
 {
-	if(!ExtractStruct) return;
-
-	// If tags are content -> add short name of the tag
-	if(StructIsContent)
-		ExtractValidWords(lName,WeightStruct,GVTDRec::Tag);
-
-	// Index the tag
-	if(GetSection()==RXMLParser::Body)
-	{
-		if(namespaceURI.IsEmpty())
-		{
-			if(UseDefaultNamespace)
-				tmpStr=DefaultNamespace+":"+lName;
-			else
-				tmpStr=URI()+":"+lName;
-		}
-		else
-			tmpStr=namespaceURI+":"+lName;
-	}
-	else
-		tmpStr=lName;
-	if(tmpStr=="http://purl.org/dc/elements/1.1:title")
-		IsTitle=true;
-	else if(tmpStr=="http://purl.org/dc/elements/1.1:identifier")
-		IsIdentifier=true;
-
-	// Stopped the analyze if not necessary anymore
-	if(Debug)
-		cout<<"Test: *"<<tmpStr<<"* ("<<(int)GetCurrentDepth()<<")"<<endl;
-	if(StopAnalyseTag())
+	if(GetSection()!=RXMLParser::Body)
 		return;
-
-	// Create the tag
-	if(Debug)
-		cout<<"\tIndex: *"<<tmpStr<<"*"<<endl;
-
-	// Get the node of the previous depth
-	cDepth* Depth=Depths.GetDepth(GetCurrentDepth());
-	cNode* CurNode=Depths.GetNewNode(Depth,true);
-	LastInsertTag=StructTokens.AddToken(StructSpace,tmpStr);
-	CurNode->SetTag(LastInsertTag,GetLastTokenPos(),Depth);
-
-	// Make the sibling if depth>0
-	if(GetCurrentDepth())
-	{
-		cNode* parent=Depths.GetDepth(GetCurrentDepth()-1)->GetCurTag();
-		if(parent&&parent->Obj.Tag)
-		{
-			if(Debug)
-				cout<<"Sibling between '"<<CurNode->Obj.Tag->GetName()<<"' and '"<<parent->Obj.Tag->GetName()<<"'"<<endl;
-			if(parent->Child==SIZE_MAX)
-				parent->Child=Depth->GetNbNodes()-1;
-			parent->Nb++;
-		}
-	}
+	// Get the tag and add a occurrences of it
+	XMLTag* Tag(GetXMLTag(namespaceURI,lName));
+	Tag->NbOccurs++;
+	XMLContent* Content(new XMLContent());
+	Tag->Content.InsertPtr(Content);
+	Tags.Push(new XMLTagOccur(Tag,Content,GetLastTokenPos(),GetCurrentDepth()));
 }
 
 
 //------------------------------------------------------------------------------
 void GXML::ResolveNamespace(const RString& namespaceURI)
 {
-	// Stopped the analyze if not necessary anymore
-	if(StopAnalyseTag())
-		return;
-	if(LastInsertTag)
-		StructTokens.ChangeTokenNS(LastInsertTag,namespaceURI);
-}
-
-
-//------------------------------------------------------------------------------
-void GXML::AddAttribute(const RString& namespaceURI,const RString& lName, const RString&)
-{
-	if(!ExtractStruct) return;
-
-	// If attributes names are content -> add short parameter name
-	if(StructIsContent)
-		ExtractValidWords(lName,WeightStruct,GVTDRec::Attribute);
-
-	// Stopped the analyze if not necessary anymore
-	if(StopAnalyseTag())
+	if(GetSection()!=RXMLParser::Body)
 		return;
 
-	// Compute the name of the tag
-	if(GetSection()==RXMLParser::Body)
+	// Get the current tag occurrence, and assign it a new XML Tag
+	if(Debug)
+		cout<<"Resolve namespace:" <<namespaceURI<<endl;
+	XMLTagOccur* Occur(Tags());
+	if(Occur)
 	{
-		if(namespaceURI.IsEmpty())
+		Occur->Tag->NbOccurs--;
+		XMLTag* Tag(GetXMLTag(namespaceURI,Occur->Tag->Tag));
+		if(Occur->Tag!=Tag)
 		{
-			if(UseDefaultNamespace)
-				tmpStr=DefaultNamespace+":"+lName;
-			else
-				tmpStr=URI()+":"+lName;
+			Occur->Tag=Tag;
+			XMLContent* Content(new XMLContent());
+			Tag->Content.InsertPtr(Content);
+			Tag->NbOccurs++;
 		}
-		else
-			tmpStr=namespaceURI+":"+lName;
-	}
-	else
-		tmpStr=lName;
-
-	cDepth* Depth=Depths.GetDepth(GetCurrentDepth());
-	cNode* CurNode=Depths.GetNewNode(Depth,false);
-	cStructToken* tag=StructTokens.AddToken(StructSpace,tmpStr);
-	CurNode->SetAttr(tag,GetLastTokenPos(),Depth);
-}
-
-
-//------------------------------------------------------------------------------
-void GXML::Value(const RString& text)
-{
-	if(ExtractValues)
-	{
-		ExtractValidWords(text,WeightValues,GVTDRec::Value);
 	}
 }
 
@@ -228,31 +317,58 @@ void GXML::Value(const RString& text)
 //-----------------------------------------------------------------------------
 void GXML::EndTag(const RString&, const RString& /*lName*/, const RString&)
 {
-	// Stopped the analyze if not necessary anymore
-/*	if((!MustFullIndex)&&((!ExtractIndex)||(ExtractIndex&&(GetCurrentDepth()>MaxDepth))))
-		return;*/
-/*	if(CurDepth)
-		CurNode=Depths.GetDepth(CurDepth-1)->GetCurTag();*/
+	if(GetSection()!=RXMLParser::Body)
+		return;
+
+	if(ExtractSemantic)
+	{
+		XMLTagOccur* Occur(Tags());
+		Analyzer->AddConcept(Occur->Tag->GetConcept(),1.0,Occur->Tag->Schema->MetaConcept,Occur->Pos,Occur->Depth);
+	}
+	Tags.Pop();
 }
 
 
 //-----------------------------------------------------------------------------
 void GXML::Text(const RString& text)
 {
-	if(IsIdentifier)
-	{
-		IsIdentifier=false;
+	if(GetSection()!=RXMLParser::Body)
 		return;
-	}
-	double w;
-	if(IsTitle)
+
+	XMLTagOccur* Occur(Tags());
+	switch(Occur->Tag->Type)
 	{
-		IsTitle=false;
-		w=2.0;
+		case XMLTag::Metadata:
+			if(ExtractMetadata)
+				if(Debug)
+					cout<<"    Add metadata "<<text<<endl;
+				Analyzer->ExtractTextual(text,Occur->Tag->GetConcept(),GetLastTokenPos(),GetCurrentDepth());
+			break;
+		case XMLTag::Text:
+				if(Debug)
+					cout<<"    Add textual "<<text<<endl;
+			Analyzer->ExtractBody(text,GetLastTokenPos(),GetCurrentDepth());
+			break;
+		case XMLTag::Unknown:
+			// We must guess if it is a metadata tag
+			if((GetCurrentDepth()>MetadataMaxDepth)||(Occur->Tag->NbOccurs>MetadataMaxOccurs))
+			{
+				if(Debug)
+					cout<<"    Add textual "<<text<<endl;
+				// We are sure that isn't a metadata -> Add normal text
+				Analyzer->ExtractBody(text,GetLastTokenPos(),GetCurrentDepth());
+			}
+			else
+			{
+				if(Debug)
+					cout<<"    delay "<<text<<endl;
+				// We must delay the decision
+				Occur->Content->InsertPtr(new XMLText(text,GetLastTokenPos(),GetCurrentDepth()));
+			}
+			break;
+		default:
+			break;
 	}
-	else
-		w=1.0;
-	ExtractValidWords(text,w,GVTDRec::Content);
 }
 
 
@@ -267,17 +383,51 @@ RChar GXML::CodeToChar(RString& str)
 
 
 //------------------------------------------------------------------------------
-void GXML::Analyze(GDoc*,const RURI& uri,RXMLParser*,GSlot* rec)
+void GXML::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 {
-	try
+	// Initialize the analyze
+	Clear();
+	if(!Semantic)
+		Semantic=Session->GetInsertConceptCat("Metadata");
+	Analyzer=analyzer;
+
+	// Read the XML file
+	Open(file,RIO::Read);
+	Close();
+
+	// Parse the tags to treat the unknown content
+	RCursor<XMLSchema> Schema(Schemas);
+	for(Schema.Start();!Schema.End();Schema.Next())
 	{
-		Open(uri,RIO::Read);
-		Close();
-	}
-	catch(RIOException& e)
-	{
-		if(rec)
-			rec->Warning(e.GetMsg());
+		RCursor<XMLTag> Tag(Schema()->Tags);
+		for(Tag.Start();!Tag.End();Tag.Next())
+		{
+			if(Debug)
+				cout<<"Treat "<<Schema()->URI<<":"<<Tag()->Tag<<endl;
+			if(DetectMetadataTag&&Tag()->Type==XMLTag::Unknown)
+			{
+				if(Debug)
+					cout<<"   Tag status is unknown"<<endl;
+				// If the tag appears more than MaxOccurs -> Is is certainly text
+				bool SureText(Tag()->NbOccurs>MetadataMaxOccurs);
+				RCursor<XMLContent> Content(Tag()->Content);
+				for(Content.Start();!Content.End();Content.Next())
+				{
+					// It is text if it appears too often or has too many terms
+					bool IsText(SureText||Content()->GetNb()>MetadataMaxTerms);
+					RCursor<XMLText> Text(*Content());
+					for(Text.Start();!Text.End();Text.Next())
+					{
+						if(IsText)
+							Analyzer->ExtractBody(Text()->Text,Text()->Pos,Text()->Depth);
+						else if(ExtractMetadata)
+							Analyzer->ExtractTextual(Text()->Text,Tag()->GetConcept(),Text()->Pos,Text()->Depth);
+					}
+				}
+			}
+			Tag()->Content.Clear();
+			Tag()->NbOccurs=0;
+		}
 	}
 }
 
@@ -285,20 +435,17 @@ void GXML::Analyze(GDoc*,const RURI& uri,RXMLParser*,GSlot* rec)
 //------------------------------------------------------------------------------
 void GXML::CreateConfig(void)
 {
-	InsertParam(new RParamValue("ExtractStruct",false,"Extract the structure elements?"));
-	InsertParam(new RParamValue("StructIsContent",false,"Must the structure elements be considered as content?"));
-	InsertParam(new RParamValue("ExtractIndex",false,"Extract metadata tags?"));
-	InsertParam(new RParamValue("MaxTerms",10,"Maximum number of terms of an automatically detected metadata tag."));
-	InsertParam(new RParamValue("MaxDepth",2,"Maximum depth of an automatically detected metadata tag."));
-	InsertParam(new RParamValue("MaxOccurs",5,"Maximum number of occurrences of an automatically detected metadata tag."));
-	InsertParam(new RParamValue("ChildTags",false,"Can an automatically detected metadata tag have child?"));
-	InsertParam(new RParamValue("WeightStruct",2.0,"Weight associated to the structure elements when extracted."));
-	InsertParam(new RParamValue("ExtractValues",false,"Should the content of attribute values be extracted?"));
-	InsertParam(new RParamValue("WeightValues",2.0,"Weight associated to the content of attribute values when extracted."));
+	InsertParam(new RParamValue("ExtractSemantic",true,"Extract the semantic information?"));
+	InsertParam(new RParamValue("ExtractMetadata",true,"Extract metadata tags?"));
+	InsertParam(new RParamValue("MetadataMaxTerms",10,"Maximum number of terms of an automatically detected metadata tag."));
+	InsertParam(new RParamValue("MetadataMaxDepth",3,"Maximum depth of an automatically detected metadata tag."));
+	InsertParam(new RParamValue("MetadataMaxOccurs",5,"Maximum number of occurrences of an automatically detected metadata tag."));
+	InsertParam(new RParamValue("MetadataChildTags",false,"Can an automatically detected metadata tag have child?"));
 	InsertParam(new RParamValue("UseDefaultNamespace",false,"When tags have no namespace, must the default namespace be associated."));
 	InsertParam(new RParamValue("DefaultNamespace","","Default namespace for the tags."));
-	InsertParam(new RParamValue("DetectMetaTag",true,"Should the metadata be detected automatically?"));
-	InsertParam(new RParamList("IndexTags","List of the tags (including their namespace) to be considered as metadata."));
+	InsertParam(new RParamValue("DetectMetadataTag",false,"Should the metadata tag be detected automatically?"));
+	InsertParam(new RParamList("MetadataTags","List of the tags (including their namespace) to be considered as metadata."));
+	InsertParam(new RParamList("ExcludeTags","List of the tags (including their namespace) which contents must be excluded."));
 }
 
 

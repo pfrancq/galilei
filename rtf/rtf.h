@@ -137,7 +137,7 @@ protected:
 	void AnalyzeText(GDocAnalyze* analyzer,RString str);
 
 	/*
-	* Replace codes from the srting
+	* Replace codes from the string.
 	* @param str            the ingoing string
 	* @return RString       the string with code replaced.
 	*/
@@ -146,13 +146,7 @@ protected:
 public:
 
 	/**
-	* Create the parameters.
-	* @param fac             Factory.
-	*/
-	static void CreateParams(GPlugInFactory* fac);
-
-	/**
-	*The destructor
+	* The destructor.
 	*/
 	virtual ~GFilterRTF(void);
 };

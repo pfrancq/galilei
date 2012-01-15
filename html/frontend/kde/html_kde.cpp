@@ -6,7 +6,7 @@
 
 	A HTML filter (KDE Part) - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2003 by Valery Vandaele.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -29,12 +29,38 @@
 
 
 
+//------------------------------------------------------------------------------
+// include files for GALILEI
+#include <gplugin.h>
+using namespace R;
+using namespace std;
+using namespace GALILEI;
+
 
 //-----------------------------------------------------------------------------
 // include files for KDE
 #include <kaboutdata.h>
 #include <kaboutapplicationdialog.h>
 #include <KDE/KLocale>
+#include <ui_config.h>
+
+
+
+//------------------------------------------------------------------------------
+class Config : public KDialog, public Ui_Config
+{
+public:
+	Config(void)
+	{
+		setCaption("Configure HTML Filter");
+		QWidget* widget=new QWidget(this);
+		setupUi(widget);
+		setMainWidget(widget);
+		setButtons(KDialog::Cancel|KDialog::Apply);
+		connect(this,SIGNAL(applyClicked()),this,SLOT(accept()));
+		adjustSize();
+	}
+};
 
 
 
@@ -47,12 +73,28 @@ void About(void)
 {
 	KAboutData aboutData("html",0, ki18n("HTML Filter"),
 		"2.0", ki18n("This is the HTML filter for GALILEI."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2011 by Pascal Francq\n(C) 2001-2003 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2001-2012 by Pascal Francq\n(C) 2001-2003 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Valery Vandaele"),ki18n("Developer"));
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
 	dlg.exec();
+}
+
+
+//------------------------------------------------------------------------------
+bool Configure(GPlugIn* fac)
+{
+	Config dlg;
+
+	// Stems
+	dlg.DetectDivisions->setChecked(fac->FindParam<RParamValue>("DetectDivisions")->GetBool());
+	if(dlg.exec())
+	{
+		fac->FindParam<RParamValue>("DetectDivisions")->SetBool(dlg.DetectDivisions->isChecked());
+		return(true);
+	}
+	return(false);
 }
 
 

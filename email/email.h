@@ -6,7 +6,7 @@
 
 	Filter for Mails - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -95,12 +95,6 @@ public:
 	*                        remote document).
 	*/
 	virtual void Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file);
-
-	/**
-	* Create the parameters.
-	* @param fac             Factory.
-	*/
-	static void CreateParams(GPlugInFactory* fac);
 
 	/**
 	* Destructor of the email filter.

@@ -6,7 +6,7 @@
 
 	Filter for Mails - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -136,7 +136,7 @@ bool GFilterEMail::ExtractCmd(GDocAnalyze* analyzer,const RString& line,size_t p
 
 
 //-----------------------------------------------------------------------------
-void GFilterEMail::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
+void GFilterEMail::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 {
 	bool Header;
 	RString Line;
@@ -175,15 +175,9 @@ void GFilterEMail::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& 
 	while(!Src.End())
 	{
 		size_t Pos(Src.GetPos());
-		analyzer->ExtractContent(Src.GetLine(false),Pos);
+		analyzer->ExtractBody(Src.GetLine(false),Pos);
 	}
 
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterEMail::CreateParams(GPlugInFactory*)
-{
 }
 
 

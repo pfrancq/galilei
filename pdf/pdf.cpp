@@ -6,7 +6,7 @@
 
 	A PDF filter - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 	Copyright 1996-2005 by Glyph & Cog, LLC.
 
@@ -87,7 +87,7 @@ GFilterPDF::GFilterPDF(GSession* session,GPlugInFactory* fac)
 
 
 //------------------------------------------------------------------------------
-void GFilterPDF::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
+void GFilterPDF::Analyze(GDocAnalyze* analyzer,const GDoc*,const R::RURI& file)
 {
 	PDFDoc *pdf;
 	GString *fileName(new GString(file()));
@@ -176,7 +176,7 @@ void GFilterPDF::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& fi
 				Paragraph=false;
 			}
 		}
-		analyzer->ExtractContent(Begin,0);
+		analyzer->ExtractBody(Begin,0);
 	}
 
 	// Clean up
@@ -247,12 +247,6 @@ RString GFilterPDF::CreateDate(Dict* infoDict,const char* key)
 	}
 	obj.free();
 	return(res);
-}
-
-
-//------------------------------------------------------------------------------
-void GFilterPDF::CreateParams(GPlugInFactory*)
-{
 }
 
 

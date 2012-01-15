@@ -51,7 +51,7 @@ void About(void)
 {
 	KAboutData aboutData("msdoc",0, ki18n("MSDoc Filter"),
 		"1.0",ki18n("This is the MSDoc filter for GALILEI. It is highly based on the wvWare project."), KAboutData::License_GPL,
-		ki18n("(C) 2001-2004 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2001-2012 by Valery Vandaele\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Vandaele Valery"),ki18n("Developer"), "vavdaele@ulb.ac.be");
 	aboutData.addAuthor(ki18n("Dom Lachowicz"),ki18n("wvWare Project"), "cinamod@hotmail.com");
