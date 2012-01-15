@@ -6,7 +6,7 @@
 
 	Object List - Inline implementation.
 
-	Copyright 2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -383,7 +383,7 @@ template<class C>
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
 			// Write the concept of the vector and the number of elements
-			size_t concept(Vector()->GetConcept()->GetId());
+			size_t concept(Vector()->GetMetaConcept()->GetId());
 			size_t size(Vector()->GetNb());
 			Desc->Write((char*)&concept,sizeof(size_t));
 			Desc->Write((char*)&size,sizeof(size_t));

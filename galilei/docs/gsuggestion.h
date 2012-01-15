@@ -6,7 +6,7 @@
 
 	Suggestion - Header.
 
-	Copyright 2008-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
 
 	Authors:
 		Pascal Francq (pfrancq@ulb.ac.be).

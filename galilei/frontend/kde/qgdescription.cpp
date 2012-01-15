@@ -6,7 +6,7 @@
 
 	Description Widget - Implementation.
 
-	Copyright 2008-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -112,7 +112,7 @@ void QGDescription::Set(GSession*,const GDescription* desc)
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
 			// Create an item
-			GConcept* Concept(Vector()->GetConcept());
+			GConcept* Concept(Vector()->GetMetaConcept());
 			Item* The(new Item(Vectors,Vector(),QStringList()
 					  <<ToQString(Concept->GetName())
 					  <<ToQString(Concept->GetType()->GetName())

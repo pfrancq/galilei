@@ -6,7 +6,7 @@
 
 	Document Token - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -66,7 +66,7 @@ public:
 			GTextToken* Token;
 
 			/**
-			 * The corresponding vector.
+			 * The corresponding meta-vector (meta-concept).
 			 */
 			GVector* Vector;
 
@@ -196,6 +196,25 @@ public:
 	 * @return a pointer to the occurrence added.
 	 */
 	Occurrence* AddOccur(GVector* vector,size_t pos,size_t depth);
+
+	/**
+	 * Look if the token contains alphabetic characters only.
+    * @return true if it is the cas.
+    */
+	bool IsAlpha(void) const;
+
+	/**
+	 * Look if the token is associated to a particular meta-concept.
+	 * @param metaconcept    Meta-concept to search for.
+	 */
+	bool IsUsed(GConcept* metaconcept) const;
+
+	/**
+	 * Look if the token is associated to a meta-concept of a particular
+	 * category.
+	 * @param cat            Category to search for.
+	 */
+	bool IsUsed(GConceptCat* cat) const;
 
 	/**
 	 * Get the number of occurrences of the token.

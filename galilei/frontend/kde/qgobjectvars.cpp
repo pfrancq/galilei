@@ -6,7 +6,7 @@
 
 	Widget to show the variables of a given object - Implementation.
 
-	Copyright 2008-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -62,7 +62,7 @@ void QGObjectVars::Set(GDoc* doc)
 	if(!doc) return;
 	static_cast<Ui_QGObjectVars*>(Ui)->Vars->clear();
 	AddVar("Identifier",doc->GetId());
-	AddVar("URL",doc->GetURL()());
+	AddVar("URI",doc->GetURI()());
 	AddVar("Name",doc->GetName());
 	AddVar("MIME",doc->GetMIMEType());
 	AddVar("Language",doc->GetLang());

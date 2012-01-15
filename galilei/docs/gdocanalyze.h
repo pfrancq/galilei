@@ -6,7 +6,7 @@
 
 	Generic Document Analysis - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -89,12 +89,12 @@ protected:
 	GSession* Session;
 
 	/**
-	 * Description to billed during the analyze.
+	 * Description to build during the analyze.
 	 */
     GDescription Description;
 
 	/**
-	 * Concept Tree.
+	 * Concept Tree corresponding to the document.
 	 */
 	GConceptTree Struct;
 
@@ -119,9 +119,9 @@ protected:
 	GConceptType* DCMI;
 
    /**
-    * Concept representing the default content.
+    * Meta-concept representing the default textual content.
     */
-   GConcept* DefaultContent;
+   GConcept* Body;
 
   	/**
 	 * Memory of tokens.
@@ -196,14 +196,26 @@ public:
 	void AddToken(const R::RString& token);
 
 	/**
+	 * Add a concept to a vector associated with a given meta-concept.  If the
+	 * vector already exists, the content is added.
+	 * @param concept        Concept to add.
+	 * @param weight         Weight associate to the concept.
+	 * @param metaconcept    Meta-concept of the vector associated to the concept.
+	 * @param pos            Position of the concept.
+	 * @param depth          Depth of the concept.
+	 */
+	void AddConcept(GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth=0);
+
+	/**
 	 * Extract some tokens of a given text, and add them to a vector associated
-    * with a given concept.
+    * with a given meta-concept.  If the vector already exists, the content is
+	 * added.
 	 * @param text           Text to add.
-	 * @param concept        Concept of the vector associated to the text.
+	 * @param metaconcept    Meta-concept of the vector associated to the text.
 	 * @param pos            Position of the text.
 	 * @param depth          Depth of the text.
 	 */
-	void ExtractText(const R::RString& text,GConcept* concept,size_t pos,size_t depth=0);
+	void ExtractTextual(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth=0);
 
 	/**
 	 * Extract some tokens of a given text, and add them to a vector associated
@@ -233,13 +245,14 @@ public:
 	void ExtractDCMI(const R::RString& element,const R::RString& value,size_t pos,size_t depth=0);
 
    /**
-    * Extract some tokens from a given text, and add them to the 'default'
-    * concept.
-    * @param content         Content.
+    * Extract some tokens from a given text, and add them to the 'body'
+    * meta-concept. Each time the method is called, the content is added to the
+	 * vector corresponding to the 'body' meta-concept.
+    * @param content        Content.
 	 * @param pos            Position of the content.
 	 * @param depth          Depth of the content.
     */
-   void ExtractContent(const R::RString& content,size_t pos,size_t depth=0);
+   void ExtractBody(const R::RString& content,size_t pos,size_t depth=0);
 
 	/**
 	 * Assign the plug-ins. An exception is generated if no plug-ins are

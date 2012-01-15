@@ -6,7 +6,7 @@
 
 	Generic GALILEI Session - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -235,7 +235,7 @@ void GSession::AnalyzeDocs(bool ram,GSlot* rec)
 		}
 		// If a log file specified -> write to it and it is OK
 		// If no log file specified -> Propagate error
-		HANDLEALLEXCEPTIONS(rec,Docs()->GetURL()()+"("+RString::Number(Docs()->GetId())+"): ")
+		HANDLEALLEXCEPTIONS(rec,Docs()->GetURI()()+"("+RString::Number(Docs()->GetId())+"): ")
 	}
 	FlushDesc(pDoc);   // Force to save all documents description
 }
@@ -415,8 +415,7 @@ void GSession::Reset(tObjType type)
 			}
 			break;
 		case otClass:
-			GObjects<GClass>::Clear(pClass);
-			RTree<GClasses,GClass,false>::Clear();
+			GClasses::Clear();
 			if(SaveResults)
 			{
 				Storage->Clear(otClass);
@@ -628,85 +627,69 @@ size_t GSession::FillSubjects(GSubject** subjects)
 //------------------------------------------------------------------------------
 void GSession::ForceReCompute(tObjType type)
 {
-	ThrowGException(GetObjType(type,true,true)+" not implemented");
-//	bool Break(true);
-//
-//	switch(type)
-//	{
-//		case otDoc:
-//		{
-//			// Clear the information of the documents -> Also profiles and groups and topics
-//			RCursor<GDoc> Doc(GetObj(pDoc));
-//			for(Doc.Start();!Doc.End();Doc.Next())
-//			{
-//				Doc()->ClearInfos(SaveResults);
-//				Doc()->ClearStruct(SaveResults);
-//				if(SaveResults)
-//					Storage->SaveObj(Doc());
-//			}
-//			if(SaveResults)
-//			{
-//				Clear(otDoc,otDescFile);
-//				Clear(otDoc,otIndexFile);
-//				Clear(otDoc,otStructFile);
-//			}
-//			Break=false;
-//		}
-//		case otTopic:
-//		{
-//			// Delete the topics
-//			Clear(otTopic,otReference);
-//			Topics.Clear();
-//			if(SaveResults)
-//			{
-//				Clear(otTopic,otDescFile);
-//				Clear(otTopic,otIndexFile);
-//				Storage->Clear(otTopic);
-//			}
-//			if(Break)
-//				break;
-//		}
-//		case otProfile:
-//		{
-//			// Delete the profiles -> Also groups
-//			Clear(otProfile,otReference);
-//			Profiles.Clear();
-//			if(SaveResults)
-//			{
-//				Clear(otProfile,otDescFile);
-//				Clear(otProfile,otIndexFile);
-//				Storage->Clear(otProfile);
-//			}
-//		}
-//		case otCommunity:
-//		{
-//			// Delete the communities
-//			Clear(otCommunity,otReference);
-//			Communities.Clear();
-//			if(SaveResults)
-//			{
-//				Clear(otCommunity,otDescFile);
-//				Clear(otCommunity,otIndexFile);
-//				Storage->Clear(otCommunity);
-//			}
-//			break;
-//		}
-//		case otClass:
-//		{
-//			// Delete the classes
-//			Clear(otClass,otReference);
-//			Classes.Clear();
-//			if(SaveResults)
-//			{
-//				Clear(otClass,otDescFile);
-//				Clear(otClass,otIndexFile);
-//				Storage->Clear(otClass);
-//			}
-//			break;
-//		}
-//		default:
-//			ThrowGException(GetObjType(type,true,true)+" are not allowed");
-//	}
+	switch(type)
+	{
+		case otDoc:
+		{
+			// Clear the description of the documents -> Also profiles and topics
+			RCursor<GDoc> Doc(GetObjs(pDoc));
+			for(Doc.Start();!Doc.End();Doc.Next())
+			{
+				Doc()->ClearInfos(SaveResults);
+				Doc()->ClearStruct(SaveResults);
+				if(SaveResults)
+					Storage->SaveObj(Doc());
+			}
+			if(SaveResults)
+			{
+				ResetFile(otDoc,otDescFile);
+				ResetFile(otDoc,otIndexFile);
+				ResetFile(otDoc,otStructFile);
+			}
+			ForceReCompute(otTopic);
+			ForceReCompute(otProfile);
+			ForceReCompute(otClass);
+			break;
+		}
+		case otTopic:
+		{
+			// Delete the topics
+			Reset(otTopic);
+			break;
+		}
+		case otProfile:
+		{
+			// Clear the description of the documents -> Also communities
+			RCursor<GProfile> Profile(GetObjs(pProfile));
+			for(Profile.Start();!Profile.End();Profile.Next())
+			{
+				Profile()->ClearInfos(SaveResults);
+				if(SaveResults)
+					Storage->SaveObj(Profile());
+			}
+			if(SaveResults)
+			{
+				ResetFile(otProfile,otDescFile);
+				ResetFile(otProfile,otIndexFile);
+			}
+			ForceReCompute(otCommunity);
+			break;
+		}
+		case otCommunity:
+		{
+			// Delete the communities
+			Reset(otCommunity);
+			break;
+		}
+		case otClass:
+		{
+			// Delete the classes
+			Reset(otClass);
+			break;
+		}
+		default:
+			ThrowGException(GetObjType(type,true,true)+" are not allowed");
+	}
 }
 
 

@@ -6,7 +6,7 @@
 
 	Description Set - Implementation.
 
-	Copyright 2006-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -79,7 +79,7 @@ void GDescriptionFilter::CopyFilter(const GDescription& src,GDescription& dest,s
 		Order[Vector()->GetNb()]=0;
 
 		// Create the vector in the destination vector
-		GVector* Ins(dest.GetInsertVector(Vector()->GetConcept()));
+		GVector* Ins(dest.GetInsertVector(Vector()->GetMetaConcept()));
 
 		// Compute the number of concepts to copy
 		size_t nb,nb2;

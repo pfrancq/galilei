@@ -6,7 +6,7 @@
 
 	Profile - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -177,6 +177,13 @@ public:
 	* @return int
 	*/
 	int Compare(const size_t id) const;
+
+	/**
+	 * Clear the information associated with the profile.
+	 * @param disk            Clear the reference to the corresponding block on
+	 *                        disk.
+	 */
+	void ClearInfos(bool disk);
 
 	/**
 	 * @return the type of the profile.

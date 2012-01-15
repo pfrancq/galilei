@@ -6,7 +6,7 @@
 
 	Generic Filter for documents - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -34,12 +34,6 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R
-#include <rxmlparser.h>
-#include <rtextfile.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 #include <gplugin.h>
@@ -64,24 +58,7 @@ namespace GALILEI{
  */
 class GFilter : public GPlugIn
 {
-	class MetaData;
-
-	/**
-	 *
-	 */
-	R::RContainer<MetaData,true,false> MetaDatas;
-
 public:
-
-	/**
-	 * Determine how the metadata should be analyzed.
-	 */
-	enum MetaDataType
-	{
-		RawText,             /** Raw text.*/
-		Sentence,            /** Sentences.*/
-		Keywords             /** Keywords.*/
-	};
 
 	/**
 	* Construct the filter.
@@ -90,119 +67,11 @@ public:
 	*/
 	GFilter(GSession* session,GPlugInFactory* fac);
 
-protected:
-
-	/**
-	* Add a specific MIME-Type for the filter.
-	* @param mime           Name of the MIME-Type.
-	*/
-	void AddMIME(const char* mime);
-
 	/**
 	* Add a specific MIME-Type for the filter.
 	* @param mime           Name of the MIME-Type.
 	*/
 	void AddMIME(R::RString mime);
-
-	/**
-	* Test if a given character represent the end of a sentence.
-	* @param c               8-bit character to test.
-	* @return true if it is a end sentence character.
-	*/
-	static inline bool IsEndSentence(char c)
-	{
-		return((c=='.')||(c=='!')||(c=='?')||(c==';')||(c==':'));
-	}
-
-	/**
-	* Test if a given character represent the end of a sentence.
-	* @param c               Unicode character to test.
-	* @return true if it is a end sentence character.
-	*/
-	static inline bool IsEndSentence(R::RChar c)
-	{
-		return((c.Latin1()=='.')||(c.Latin1()=='!')||(c.Latin1()=='?')||(c.Latin1()==';')||(c.Latin1()==':'));
-	}
-
-public:
-
-	/**
-	* Analyze a block of text and create a list of tags 'docxml:sentence'.
-	* @param block          Block containing the text.
-	* @param parser         Parser of the XML stream.
-	*/
-//	void AnalyzeBlock(const R::RString& block,R::RXMLParser* parser);
-
-	/**
-	* Analyze a list of keywords separating by a single character.
-	* @param list           List of keywords.
-	* @param sep            Separator to use.
-	* @param parser         Parser of the XML stream.
-	*/
-//	void AnalyzeKeywords(const R::RString& list,R::RChar sep,R::RXMLParser* parser);
-
-	/**
-	 * Clear local information.
-	 */
-//	void Clear(R::RXMLParser* parser);
-
-	//-----------------------------------------------------
-	/** @name DocXML Methods
-	*/
-	// @{
-
-	/**
-	 * Start a DocXML stream.
-	 * @param parser         Parser of the XML stream.
-	 */
-//	void StartStream(R::RXMLParser* parser);
-
-	/**
-	 * Add a given metadata defined by the Dublin core.
-	 * @code
-	 * parser->AddDublinCoreMetaData("title","This is the title of the document");
-	 * @endcode
-	 * @param name           Name of the metadata (without namespace and
-	 *                       prefix).
-	 * @param value          Value.
-	 * @param type           Type of the metadata.
-	 * @param sep            Separator (only for keywords)
-	 */
-//	void AddDublinCoreMetaData(const R::RString& name,const R::RString& value,MetaDataType type=RawText,R::RChar sep=',');
-
-	/**
-	 * Start a DocXML stream.
-	 * @param parser         Parser of the XML stream.
-	 */
-//	void WriteMetaDataStream(R::RXMLParser* parser);
-
-	/**
-	 * Start a paragraph.
-	 * @param parser         Parser of the XML stream.
-	 */
-//	void StartParagraph(R::RXMLParser* parser);
-
-	/**
-	 * End a paragraph.
-	 * @param parser         Parser of the XML stream.
-	 */
-//	void EndParagraph(R::RXMLParser* parser);
-
-	/**
-	 * Extract textual content from a file.
-	 * @param file           File.
-	 * @param parser         Parser of the XML stream.
-	 * @param text           Text to add.
-	 */
-//	void ExtractTextualContent(R::RTextFile& file,R::RXMLParser* parser,const R::RString& text=R::RString::Null);
-
-	/**
-	 * End a DocXML stream.
-	 * @param parser         Parser of the XML stream.
-	 */
-//	void EndStream(R::RXMLParser* parser);
-
-	//@} DocXML Methods
 
 	/**
 	* Analyze a document with a given URI. This method must be re-implemented by

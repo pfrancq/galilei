@@ -6,7 +6,7 @@
 
 	Description Set - Implementation.
 
-	Copyright 2006-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -102,7 +102,7 @@ double GDescriptionSet::GetIF(size_t conceptid)
 				if(!ptr.GetNb())
 					continue;
 
-				GConceptType* type(Vector()->GetConcept()->GetType());
+				GConceptType* type(Vector()->GetMetaConcept()->GetType());
 				size_t TypeId(type->GetId());
 				if(tmpTypes[TypeId])
 				{
@@ -112,7 +112,7 @@ double GDescriptionSet::GetIF(size_t conceptid)
 				}
 
 				// IncRef for the concept
-				size_t ConceptId(Vector()->GetConcept()->GetId());
+				size_t ConceptId(Vector()->GetMetaConcept()->GetId());
 				if(tmpConcepts[ConceptId])
 				{
 					// Yes -> A new object uses this concept.

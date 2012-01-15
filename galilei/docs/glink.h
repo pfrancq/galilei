@@ -133,10 +133,9 @@ public :
 	size_t GetOccurs(void) const {return(Occurs);}
 
 	/**
-	* Get the url of the document corresponding to the link.
-	* @return RString representing the URL.
+	* @return the URI of the document corresponding to the link.
 	*/
-	R::RURI GetURL(void) const {return(DocTO->GetURL());}
+	R::RURI GetURI(void) const {return(DocTO->GetURI());}
 
 	/**
 	* Get the document pointed by the link.

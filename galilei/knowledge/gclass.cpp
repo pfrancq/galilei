@@ -6,7 +6,7 @@
 
 	Class regrouping concepts - Implementation.
 
-	Copyright 2009-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -133,7 +133,7 @@ double GClass::GetUpOperationCost(void) const
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
 			// Look if the parent has a vector for that concept
-			GVector* Correspondance(Parent->GetVector(Vector()->GetConcept()));
+			GVector* Correspondance(Parent->GetVector(Vector()->GetMetaConcept()));
 			if(Correspondance)
 			{
 				// The cost is the difference between the number of information entities of

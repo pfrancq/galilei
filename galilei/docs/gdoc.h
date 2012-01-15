@@ -6,7 +6,7 @@
 
 	Document - Header.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -65,9 +65,9 @@ class GDoc : public GDescriptionObject<GDoc>
 protected:
 
 	/**
-	* URL of the document.
+	* URI of the document.
 	*/
-	R::RURI URL;
+	R::RURI URI;
 
 	/**
 	 * Structure of the document.
@@ -129,17 +129,17 @@ public:
 	/**
 	* Construct a new document.
 	* @param session         Session.
-	* @param url             URL of the document.
+	* @param uri             URI of the document.
 	* @param name            Name of the document.
 	* @param lang            Language of the document.
 	* @param mime            MIME type of the document.
 	*/
-	GDoc(GSession* session,const R::RURI& url,const R::RString& name,GLang* lang,const R::RString& mime);
+	GDoc(GSession* session,const R::RURI& uri,const R::RString& name,GLang* lang,const R::RString& mime);
 
 	/**
 	* Construct a document.
 	* @param session         Session.
-	* @param url             URL of the document.
+	* @param uri             URI of the document.
 	* @param name            Name of the document.
 	* @param id              Identifier of the document.
 	* @param blockid         Identifier of the block for the description.
@@ -151,7 +151,7 @@ public:
 	* @param u               Date of the last updated.
 	* @param a               Date of the last attached.
 	*/
-	GDoc(GSession* session,const R::RURI& url,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
+	GDoc(GSession* session,const R::RURI& uri,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
 
 	/**
 	 * Defines of the documents have a structure.
@@ -226,7 +226,7 @@ public:
 	* Get the URL.
 	* @returns RURI.
 	*/
-	R::RURI GetURL(void) const {return(URL);}
+	R::RURI GetURI(void) const {return(URI);}
 
 	/**
 	* @return Pointer to the Language.

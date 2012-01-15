@@ -6,7 +6,7 @@
 
 	Document - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -61,8 +61,8 @@ void GDoc::PrivateInit(void)
 
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(GSession* session,const RURI& url,const RString& name,GLang* lang,const RString& mime)
-	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name,osNew), URL(url), Struct(0),
+GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,GLang* lang,const RString& mime)
+	: GDescriptionObject<GDoc>(session,cNoRef,0,otDoc,name,osNew), URI(uri), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(RDate::GetToday()), Computed(RDate::Null),
 	  Fdbks(0), LinkSet(5,2), GroupId(0), Attached(RDate::Null),
 	  StructId(0)
@@ -78,8 +78,8 @@ GDoc::GDoc(GSession* session,const RURI& url,const RString& name,GLang* lang,con
 
 
 //------------------------------------------------------------------------------
-GDoc::GDoc(GSession* session,const RURI& url,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
-	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name,osNew), URL(url), Struct(0),
+GDoc::GDoc(GSession* session,const RURI& uri,const RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const RString& mime,size_t grpid,const RDate& c,const RDate& u,const RDate& a)
+	: GDescriptionObject<GDoc>(session,id,blockid,otDoc,name,osNew), URI(uri), Struct(0),
 	  Lang(lang),MIMEType(mime), Updated(u), Computed(c),
 	  Fdbks(0), LinkSet(5,2), GroupId(grpid), Attached(a),
 	  StructId(structid)
@@ -99,7 +99,7 @@ GDoc::GDoc(GSession* session,const RURI& url,const RString& name,size_t id,size_
 //------------------------------------------------------------------------------
 R::RString GDoc::GetSearchStr(void) const
 {
-	return(URL());
+	return(URI());
 }
 
 

@@ -6,7 +6,7 @@
 
 	Application handling a GALILEI Session - Implementing.
 
-	Copyright 2006-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2006-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2006-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -536,14 +536,14 @@ GFilter* GGALILEIApp::FindMIMEType(GDoc* doc)
 		// Goes through all defined MIME types
 		RCursor<GMIMEExt> Cur(Exts);
 		for(Cur.Start();!Cur.End();Cur.Next())
-			if(fnmatch(Cur()->Ext,doc->GetURL()(),0)!=FNM_NOMATCH)
+			if(fnmatch(Cur()->Ext,doc->GetURI()(),0)!=FNM_NOMATCH)
 			{
 				doc->SetMIMEType(Cur()->Name);
 				break;
 			}
 	}
 	if(doc->GetMIMEType().IsEmpty())
-		ThrowGException("Cannot find MIME type for "+doc->GetURL()());
+		ThrowGException("Cannot find MIME type for "+doc->GetURI()());
 
 	// If no filter -> Exception
 	GMIMEFilter* ptr=MIMES.GetPtr(doc->GetMIMEType());

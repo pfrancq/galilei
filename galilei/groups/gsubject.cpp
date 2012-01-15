@@ -6,7 +6,7 @@
 
 	Subject - Implementation.
 
-	Copyright 2002-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2004 by Julien Lamoral.
 	Copyright 2002-2004 by David Wartel.
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
@@ -155,7 +155,7 @@ void GSubject::CreateDescription(void)
 				{
 					RCursor<GVector> Vector(*Vectors);
 					for(Vector.Start();!Vector.End();Vector.End())
-						Vector()->Intersection(*Child()->GetVector(Vector()->GetConcept()));
+						Vector()->Intersection(*Child()->GetVector(Vector()->GetMetaConcept()));
 				}
 				RCursor<GVector> Vector(*Vectors);
 				for(Vector.Start();!Vector.End();Vector.End())
@@ -174,7 +174,7 @@ void GSubject::CreateDescription(void)
 					RCursor<GVector> Vector(Cur()->GetVectors());
 					for(Vector.Start();!Vector.End();Vector.End())
 					{
-						GVector* MyVector(Vectors->GetInsertPtr(Vector()->GetConcept()));
+						GVector* MyVector(Vectors->GetInsertPtr(Vector()->GetMetaConcept()));
 						(*MyVector)+=(*Vector());
 					};
 				}
@@ -482,7 +482,7 @@ double GSubject::GetUpOperationCost(void) const
 		for(Vector.Start();!Vector.End();Vector.Next())
 		{
 			// Look if the parent has a vector for that concept
-			const GVector* Correspondance(Parent->GetVector(Vector()->GetConcept()));
+			const GVector* Correspondance(Parent->GetVector(Vector()->GetMetaConcept()));
 			if(Correspondance)
 			{
 				// The cost is the difference between the number of information entities of

@@ -6,7 +6,7 @@
 
 	Document Token - Implementation.
 
-	Copyright 2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -31,6 +31,7 @@
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
 #include <gtexttoken.h>
+#include <gvector.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -88,4 +89,41 @@ int GTextToken::Compare(const R::RString& token) const
 size_t GTextToken::HashIndex(size_t idx) const
 {
 	return(Token.HashIndex(idx));
+}
+
+
+//------------------------------------------------------------------------------
+bool GTextToken::IsAlpha(void) const
+{
+	RCharCursor Cur(Token);
+   for(Cur.Start();!Cur.End();Cur.Next())
+      if(!Cur().IsAlpha())
+			return(false);
+	return(true);
+}
+
+
+//------------------------------------------------------------------------------
+bool GTextToken::IsUsed(GConcept* metaconcept) const
+{
+	if(!metaconcept)
+		return(false);
+	RCursor<Occurrence> Occur(Occurs);
+	for(Occur.Start();!Occur.End();Occur.Next())
+		if(Occur()->Vector->GetMetaConcept()==metaconcept)
+			return(true);
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+bool GTextToken::IsUsed(GConceptCat* cat) const
+{
+	if(!cat)
+		return(false);
+	RCursor<Occurrence> Occur(Occurs);
+	for(Occur.Start();!Occur.End();Occur.Next())
+		if(Occur()->Vector->GetMetaConcept()->GetType()->GetCategory()==cat)
+			return(true);
+	return(false);
 }

@@ -6,7 +6,7 @@
 
 	Concept Reference Vector - Header.
 
-	Copyright 2002-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -52,20 +52,20 @@ namespace GALILEI{
 //------------------------------------------------------------------------------
 /**
 * The GVector provides a representation for a (sparse) vector of concept
-* references associated with a given concept. Each element of the vector is
+* references associated with a given meta-concept. Each element of the vector is
 * represented by a GConceptRef class.
 *
 * In practice, several vectors are used to describe the object (document,
 * profile, community or class) in the tensor space model.
 * @author Pascal Francq
-* @short Concept Reference Vector.
+* @short Concept Vector.
 */
 class GVector : private R::RContainer<GConceptRef,true,true>
 {
 	/**
-	 * Concept associated to the vector.
+	 * Meta-concept associated to the vector.
 	 */
-	GConcept* Concept;
+	GConcept* MetaConcept;
 
 	/**
 	 * The maximal weight of the vector.
@@ -81,16 +81,16 @@ public:
 
 	/**
 	* Constructor of a vector.
-	* @param concept         Concept associated with the vector.
+	* @param metaconcept     Meta-concept associated with the vector.
 	*/
-	GVector(GConcept* concept);
+	GVector(GConcept* metaconcept);
 
 	/**
 	* Constructor of a vector.
-	* @param concept         Concept associated with the vector.
+	* @param metaconcept     Meta-concept associated with the vector.
 	* @param max             Initial number of maximal references.
 	*/
-	GVector(GConcept* concept,size_t max);
+	GVector(GConcept* metaconcept,size_t max);
 
 	/**
 	* Copy constructor of a vector.
@@ -99,7 +99,7 @@ public:
 	GVector(const GVector& vector);
 
 	/**
-	* Static function used to order the information entities by weights.
+	* Static function used to order the concept weights.
 	* @param a              Pointer to the first object.
 	* @param b              Pointer to the second object.
 	*/
@@ -108,7 +108,7 @@ public:
 protected:
 
 	/**
-	* Assignment operator for vectors.
+	* Copy method for the vectors.
 	* @param vector          Source vector.
 	*/
 	void Copy(const R::RContainer<GConceptRef,false,true>& vector);
@@ -116,7 +116,7 @@ protected:
 public:
 
 	/**
-	* Compare two vectors related to their concept.
+	* Compare two vectors using to their meta-concept.
 	* @see R::RContainer
 	* @param vector          Vector.
 	* @return int
@@ -124,20 +124,20 @@ public:
 	int Compare(const GVector& vector) const;
 
 	/**
-	* Compare a vector and a concept.
+	* Compare a vector and a meta-concept.
 	* @see R::RContainer
-	* @param concept         Concept.
+	* @param metaconcept     Meta-concept.
 	* @return int
 	*/
-	int Compare(const GConcept& concept) const;
+	int Compare(const GConcept& metaconcept) const;
 
 	/**
-	* Compare a vector and a concept.
+	* Compare a vector and a meta-concept.
 	* @see R::RContainer
-	* @param concept         Concept.
+	* @param metaconcept     Meta-concept.
 	* @return int
 	*/
-	int Compare(const GConcept* concept) const;
+	int Compare(const GConcept* metaconcept) const;
 
 	/**
 	* Get a cursor on the concept references.
@@ -146,15 +146,15 @@ public:
 	inline R::RCursor<GConceptRef> GetRefs(void) const {return(R::RCursor<GConceptRef>(*this));}
 
 	/**
-	 * Get the concept associated with the vector.
+	 * Get the meta-concept associated with the vector.
 	 * @return a pointer to a GConcept.
 	 */
-	inline GConcept* GetConcept(void) const {return(Concept);}
+	inline GConcept* GetMetaConcept(void) const {return(MetaConcept);}
 
    /**
-	 * @return the concept identifier associated with the vector.
+	 * @return the meta-concept identifier associated with the vector.
 	 */
-	inline size_t GetConceptId(void) const {return(Concept->GetId());}
+	inline size_t GetMetaConceptId(void) const {return(MetaConcept->GetId());}
 
 	/**
 	 * Get a concept reference based on a given one. If it is not found, it is
@@ -193,6 +193,7 @@ public:
 	/**
 	 * Verify if a given concept is in the vector.
 	 * @param concept        Concept.
+	 * @returns true if the concept is contained.
 	 */
 	bool IsIn(const GConcept* concept) const {return(R::RContainer<GConceptRef,true,true>::IsIn(concept));}
 
@@ -209,9 +210,8 @@ public:
 	*/
 	void Clear(size_t size=0) {R::RContainer<GConceptRef,true,true>::Clear(size);}
 
-	 /**
- 	* Get the number of elements in the container.
- 	* @return size_t.
+	/**
+ 	* @return the number of elements in the container.
  	*/
  	size_t GetNb(void) const {return(R::RContainer<GConceptRef,true,true>::GetNb());}
 
@@ -253,8 +253,7 @@ public:
 	void Extract(GVector& vector,const GConceptType* type);
 
 	/**
-	* Compute the Tf*Idf weights for all the elements of the vector. In
-	* practice, the classical formula is applied to each sub-vector.
+	* Compute the Tf*Idf weights for all the elements of the vector.
 	* @param ObjType         Type of the reference (documents, profiles, etc.).
 	*/
 	void ComputeTfIdf(tObjType ObjType);
@@ -269,6 +268,7 @@ public:
 	 * Build the intersection two vectors. In practice, the weight of the
 	 * concept references in both vectors are added, the rest is deleted.
 	 * @param vector         Vector to search for the intersection.
+	 * \warning Only vectors associated with the same meta-concept can be compared.
 	 */
 	void Intersection(const GVector& vector);
 
@@ -281,14 +281,14 @@ public:
 	/**
 	 * Addition operator for the vectors.
 	 * @param vector         Vector to add.
-    * \warning Only vectors associated with the same concept can be added.
+    * \warning Only vectors associated with the same meta-concept can be added.
 	 */
 	GVector& operator+=(const GVector& vector);
 
 	/**
 	 * Subtraction operator for the vectors.
 	 * @param vector         Vector to subtract.
-    * \warning Only vectors associated with the same concept can be subtracted.
+    * \warning Only vectors associated with the same meta-concept can be subtracted.
 	 */
 	GVector& operator-=(const GVector& vector);
 
@@ -334,7 +334,7 @@ public:
  * Addition operation for two vectors.
  * @param arg1               First vector.
  * @param arg2               Second vector.
- * \warning Only vectors associated with the same concept can be added.
+ * \warning Only vectors associated with the same meta-concept can be added.
  */
 GVector operator+(const GVector &arg1,const GVector &arg2);
 
@@ -342,7 +342,7 @@ GVector operator+(const GVector &arg1,const GVector &arg2);
  * Subtraction operation for two vectors.
  * @param arg1               First vector.
  * @param arg2               Second vector.
- * \warning Only vectors associated with the same concept can be subtracted.
+ * \warning Only vectors associated with the same meta-concept can be subtracted.
  */
 GVector operator-(const GVector &arg1,const GVector &arg2);
 

@@ -6,7 +6,7 @@
 
 	Profile - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -125,6 +125,17 @@ int GProfile::Compare(const RString& name) const
 int GProfile::Compare(const size_t id) const
 {
  	return(CompareIds(Id,id));
+}
+
+
+//------------------------------------------------------------------------------
+void GProfile::ClearInfos(bool disk)
+{
+	// Clear the information
+	GDescriptionObject<GProfile>::Clear(disk);
+
+	// Make sure that it will be re-computed
+	Computed=RDate::Null;
 }
 
 

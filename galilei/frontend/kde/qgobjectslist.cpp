@@ -6,7 +6,7 @@
 
 	Widget to manipulate a list of objects - Implementation.
 
-	Copyright 2008-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -100,7 +100,7 @@ public:
 	}
 
 	QGObject(QTreeWidgetItem* parent,GDoc* doc)
-		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetName())<<ToQString(doc->GetURL()())), Type(otDoc)
+		: QTreeWidgetItem(parent, QStringList()<<ToQString("["+RString::Number(doc->GetId())+"] "+doc->GetName())<<ToQString(doc->GetURI()())), Type(otDoc)
 	{
 		Obj.Doc=doc;
 		setIcon(0,KIconLoader::global()->loadIcon("text-xml",KIconLoader::Small));

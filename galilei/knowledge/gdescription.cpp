@@ -6,7 +6,7 @@
 
 	Description - Implementation.
 
-	Copyright 2009-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -66,7 +66,7 @@ GDescription::GDescription(const GDescription& src)
 	RCursor<GVector> Vector(*src.Vectors);
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
-		GVector* MyVector(GetInsertVector(Vector()->GetConcept()));
+		GVector* MyVector(GetInsertVector(Vector()->GetMetaConcept()));
 		(*MyVector)=(*Vector());
 	}
 }
@@ -92,7 +92,7 @@ RCursor<GVector> GDescription::GetVectors(void) const
 
 
 //------------------------------------------------------------------------------
-const GVector* GDescription::GetVector(GConcept* concept) const
+const GVector* GDescription::GetVector(GConcept* metaconcept) const
 {
 	if(!Vectors)
 	{
@@ -100,12 +100,12 @@ const GVector* GDescription::GetVector(GConcept* concept) const
 			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(5,20);
 
 	}
-	return(Vectors->GetPtr(concept));
+	return(Vectors->GetPtr(metaconcept));
 }
 
 
 //------------------------------------------------------------------------------
-GVector* GDescription::GetVector(GConcept* concept)
+GVector* GDescription::GetVector(GConcept* metaconcept)
 {
 	if(!Vectors)
 	{
@@ -113,19 +113,31 @@ GVector* GDescription::GetVector(GConcept* concept)
 			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(5,20);
 
 	}
-	return(Vectors->GetPtr(concept));
+	return(Vectors->GetPtr(metaconcept));
 }
 
 
 //------------------------------------------------------------------------------
-GVector* GDescription::GetInsertVector(GConcept* concept)
+GVector* GDescription::GetInsertVector(GConcept* metaconcept)
 {
 	if(!Vectors)
 	{
 		if(!const_cast<GDescription*>(this)->LoadVectors())
 			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(5,20);
 	}
-	return(Vectors->GetInsertPtr(concept));
+	return(Vectors->GetInsertPtr(metaconcept));
+}
+
+
+//------------------------------------------------------------------------------
+void GDescription::DeleteVector(GConcept* metaconcept)
+{
+	if(!Vectors)
+	{
+		if(!const_cast<GDescription*>(this)->LoadVectors())
+			const_cast<GDescription*>(this)->Vectors=new R::RContainer<GVector,true,true>(5,20);
+	}
+	Vectors->DeletePtr(metaconcept);
 }
 
 
@@ -141,20 +153,20 @@ bool GDescription::IsDefined(void) const
 
 
 //------------------------------------------------------------------------------
-void GDescription::Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list)
+void GDescription::Copy(GConcept* metaconcept,const R::RContainer<GConceptRef,false,true>& list)
 {
 	if(list.GetNb())
 	{
 		if(!Vectors)
 			Vectors=new R::RContainer<GVector,true,true>(1);
-		GVector* Vector(Vectors->GetInsertPtr(concept));
+		GVector* Vector(Vectors->GetInsertPtr(metaconcept));
 		Vector->Copy(list);
 	}
 	else
 	{
 		if(!Vectors)
 			return;
-		GVector* Vector(Vectors->GetPtr(concept));
+		GVector* Vector(Vectors->GetPtr(metaconcept));
 		if(Vector)
 			Vector->Clear();
 	}
@@ -189,7 +201,7 @@ void GDescription::AddRefs(GSession* session,tObjType ObjType) const
 		if(!ptr.GetNb())
 			continue;
 
-		GConceptType* type(Vector()->GetConcept()->GetType());
+		GConceptType* type(Vector()->GetMetaConcept()->GetType());
 		size_t TypeId(type->GetId());
 		if(Types[TypeId])
 		{
@@ -199,11 +211,11 @@ void GDescription::AddRefs(GSession* session,tObjType ObjType) const
 		}
 
 		// IncRef for the concept
-		size_t ConceptId(Vector()->GetConcept()->GetId());
+		size_t ConceptId(Vector()->GetMetaConcept()->GetId());
 		if(Concepts[ConceptId])
 		{
-			// Yes -> A new object uses this concept.
-			type->IncRef(Vector()->GetConcept(),ObjType);
+			// Yes -> A new object uses this meta-concept.
+			type->IncRef(Vector()->GetMetaConcept(),ObjType);
 			Concepts[ConceptId]=false;
 		}
 
@@ -252,7 +264,7 @@ void GDescription::DelRefs(GSession* session,tObjType ObjType) const
 			continue;
 
 		// Reference of the concept associated with the vector
-		GConceptType* type(Vector()->GetConcept()->GetType());
+		GConceptType* type(Vector()->GetMetaConcept()->GetType());
 		size_t TypeId(type->GetId());
 		if(Types[TypeId])
 		{
@@ -262,11 +274,11 @@ void GDescription::DelRefs(GSession* session,tObjType ObjType) const
 		}
 
 		// DecRef for the concept
-		size_t ConceptId(Vector()->GetConcept()->GetId());
+		size_t ConceptId(Vector()->GetMetaConcept()->GetId());
 		if(Concepts[ConceptId])
 		{
-			// Yes -> An old object uses this concept.
-			type->DecRef(Vector()->GetConcept(),ObjType);
+			// Yes -> An old object uses this meta-concept.
+			type->DecRef(Vector()->GetMetaConcept(),ObjType);
 			Concepts[ConceptId]=false;
 		}
 
@@ -336,7 +348,7 @@ GDescription& GDescription::operator=(const GDescription& desc)
 	RCursor<GVector> Vector(*desc.Vectors);
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
-		GVector* MyVector(GetInsertVector(Vector()->GetConcept()));
+		GVector* MyVector(GetInsertVector(Vector()->GetMetaConcept()));
 		(*MyVector)=(*Vector());
 	}
 	return(*this);
@@ -349,7 +361,7 @@ GDescription& GDescription::operator+=(const GDescription& desc)
 	RCursor<GVector> Cur(desc.GetVectors());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		GVector* Vector(GetInsertVector(Cur()->GetConcept()));
+		GVector* Vector(GetInsertVector(Cur()->GetMetaConcept()));
 		(*Vector)+=(*Cur());
 	}
 	return(*this);
@@ -362,7 +374,7 @@ GDescription& GDescription::operator-=(const GDescription& desc)
 	RCursor<GVector> Cur(desc.GetVectors());
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
-		GVector* Vector(GetInsertVector(Cur()->GetConcept()));
+		GVector* Vector(GetInsertVector(Cur()->GetMetaConcept()));
 		(*Vector)-=(*Cur());
 	}
 	return(*this);

@@ -6,7 +6,7 @@
 
 	Class regrouping concepts - Implementation.
 
-	Copyright 2009-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -76,29 +76,29 @@ void GClasses::InsertObj(GClass* parent,GClass* obj)
 //-----------------------------------------------------------------------------
 void GClasses::DeleteObj(GClass* obj)
 {
-	GObjects<GClass>::DeleteObj(obj);
 	RTree<GClasses,GClass,false>::DeleteNode(obj,true);
+	GObjects<GClass>::DeleteObj(obj);
 }
 
 //-----------------------------------------------------------------------------
 void GClasses::Clear(void)
 {
-	GObjects<GClass>::Clear(pClass);
 	RTree<GClasses,GClass,false>::Clear();
+	GObjects<GClass>::Clear(pClass);
 }
 
 
 //-----------------------------------------------------------------------------
 void GClasses::Clear(size_t max,size_t inc)
 {
-	GObjects<GClass>::Clear(pClass);
 	RTree<GClasses,GClass,false>::Clear(max,inc);
+	GObjects<GClass>::Clear(pClass);
 }
 
 
 //-----------------------------------------------------------------------------
 void GClasses::Clear(const GClass* obj)
 {
-	GObjects<GClass>::Clear(obj);
 	RTree<GClasses,GClass,false>::Clear();
+	GObjects<GClass>::Clear(obj);
 }

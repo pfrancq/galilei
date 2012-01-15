@@ -6,7 +6,7 @@
 
 	Description - Header.
 
-	Copyright 2009-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2009-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -98,29 +98,39 @@ public:
 	R::RCursor<GVector> GetVectors(void) const;
 
 	/**
-	 * Get the vector associated to the object and associated to a particular
-	 * concept. The whole description is loaded if necessary.
-	 * @param concept        Concept.
-	 * @return a pointer to a GVector (may be null if the concept is not found).
+	 * Get the vector associated to a meta-concept. The whole description is
+	 * loaded if necessary.
+	 * @param metaconcept    Meta-concept.
+	 * @return a pointer to a GVector (may be null if the meta-concept isn't
+	 * found).
 	 */
-	const GVector* GetVector(GConcept* concept) const;
+	const GVector* GetVector(GConcept* metaconcept) const;
 
 	/**
-	 * Get the vector associated to the object and associated to a particular
-	 * concept. The whole description is loaded if necessary.
-	 * @param concept        Concept.
-	 * @return a pointer to a GVector (may be null if the concept is not found).
+	 * Get the vector associated to a meta-concept. The whole description is
+	 * loaded if necessary.
+	 * @param metaconcept    Meta-concept.
+	 * @return a pointer to a GVector (may be null if the meta-concept isn't
+	 * found).
 	 */
-	GVector* GetVector(GConcept* concept);
+	GVector* GetVector(GConcept* metaconcept);
 
 	/**
-	 * Get the vector associated to the object and associated to a particular
-	 * concept. When not existing, the vector is created. The whole description
-	 * is loaded if necessary.
-	 * @param concept        Concept.
+	 * Get the vector associated to meta-concept. When not existing, the vector
+	 * is created. The whole description is loaded if necessary.
+	 * @param metaconcept    Meta-concept.
 	 * @return a pointer to a GVector.
 	 */
-	GVector* GetInsertVector(GConcept* concept);
+	GVector* GetInsertVector(GConcept* metaconcept);
+
+	/**
+	 * Delete a vector associated to a meta-concept.
+	 * \warning If it is called for a class inheriting from GDescriptionObject,
+	 * the references for that given object type are not deleted. The method
+	 * should therefore never be called in that context.
+    * @param metaconcept    Meta-concept.
+    */
+	void DeleteVector(GConcept* metaconcept);
 
    /**
     * Look if the description is defined : at least one of the vectors must be
@@ -137,11 +147,11 @@ public:
 protected:
 
 	/**
-	* Copy a list of object references to the object for a given concept.
-	* @param concept         Concept
+	* Copy a list of object references to the object for a given meta-concept.
+	* @param metaconcept    Meta-concept.
 	* @param list             List of concept references.
 	*/
-	void Copy(GConcept* concept,const R::RContainer<GConceptRef,false,true>& list);
+	void Copy(GConcept* metaconcept,const R::RContainer<GConceptRef,false,true>& list);
 
 	/**
 	* Add the references for the concepts for a given object type. This

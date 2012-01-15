@@ -6,7 +6,7 @@
 
 	AGeneric Document Analysis - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -56,6 +56,7 @@ using namespace GALILEI;
 //------------------------------------------------------------------------------
 // Constant
 const size_t MaxWordLen=50;
+const bool Debug=false;
 
 
 
@@ -68,7 +69,7 @@ const size_t MaxWordLen=50;
 //------------------------------------------------------------------------------
 GDocAnalyze::GDocAnalyze(GSession* session)
 	: RDownload(), Session(session), Description(), Struct(), Tokenizer(0),
-	 DCMI(0), DefaultContent(0), MemoryTokens(500), MemoryOccurs(20000),
+	 DCMI(0), Body(0), MemoryTokens(500), MemoryOccurs(20000),
 	  OrderTokens(27,27,50,20), Tokens(500), Occurs(20000)
 {
 	// Create some tokens and some occurrences
@@ -82,7 +83,6 @@ GDocAnalyze::GDocAnalyze(GSession* session)
 //------------------------------------------------------------------------------
 void GDocAnalyze::AddToken(const RString& token)
 {
-
 	// Verify that is not a null token
 	if(token==RString::Null)
 		return;
@@ -138,17 +138,34 @@ void GDocAnalyze::AddToken(const RString& token)
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::ExtractText(const R::RString& text,GConcept* concept,size_t pos,size_t depth)
+void GDocAnalyze::AddConcept(GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth)
 {
-	// Clear the previous tokens
-//	Tokens.Clear();
+	// Verify that is not a null concept
+	if(!concept)
+		return;
 
 	// Get the vector associated with the concept
-	CurVector=Description.GetInsertVector(concept);
+	CurVector=Description.GetInsertVector(metaconcept);
+	CurDepth=depth;
+	CurPos=pos;
+
+	// Get the concept
+	GConceptRef* Ref(CurVector->GetRef(concept));
+	(*Ref)+=weight;
+}
+
+
+//------------------------------------------------------------------------------
+void GDocAnalyze::ExtractTextual(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth)
+{
+	// Get the vector associated with the concept
+	CurVector=Description.GetInsertVector(metaconcept);
 	CurDepth=depth;
 	CurPos=pos;
 
 	// Parse the text to detect the tokens
+	if(Debug)
+		cout<<"Treat *"+text+"*"<<endl;
 	const RChar* Car(text());
 	Tokenizer->Start();  // Make sure previous stuff is cleaned
 	while(!Car->IsNull())
@@ -157,17 +174,18 @@ void GDocAnalyze::ExtractText(const R::RString& text,GConcept* concept,size_t po
 		Car++;
 		CurPos++;
 	}
+	Tokenizer->TreatChar(this,0); // Be sure to terminate with the zero character.
 }
 
 
 //------------------------------------------------------------------------------
 void GDocAnalyze::ExtractDCMI(const R::RString& element,const R::RString& value,size_t pos,size_t depth)
 {
-	// Search for the concept types corresponding to the CDMI
+	// Search for the concept types corresponding to the DMCI
 	if(!DCMI)
 	{
 		// Verify that all concepts are OK.
-		DCMI=Session->GetInsertConceptType(Session->GetInsertConceptCat("MetaData"),"DCMI","Dublin Core Metadata Initiative (http://purl.org/dc/elements/1.1)");
+		DCMI=Session->GetInsertConceptType(Session->GetInsertConceptCat("Metadata"),"http://purl.org/dc/elements/1.1","Dublin Core Metadata Initiative (DMCI)");
 		Session->InsertConcept(DCMI,"contributor");
 		Session->InsertConcept(DCMI,"coverage");
 		Session->InsertConcept(DCMI,"creator");
@@ -189,19 +207,19 @@ void GDocAnalyze::ExtractDCMI(const R::RString& element,const R::RString& value,
 	GConcept* Metadata(DCMI->GetConcept(element));
 	if(!Metadata)
 		ThrowGException("'"+element+"' is not a valid DCMI element");
-	ExtractText(value,Metadata,pos,depth);
+	ExtractTextual(value,Metadata,pos,depth);
 }
 
 
 //------------------------------------------------------------------------------
-void GDocAnalyze::ExtractContent(const R::RString& content,size_t pos,size_t depth)
+void GDocAnalyze::ExtractBody(const R::RString& content,size_t pos,size_t depth)
 {
-	// Search for the concept types corresponding to the CDMI
-	if(!DefaultContent)
-		DefaultContent=Session->InsertConcept(Session->GetInsertConceptType(Session->GetInsertConceptCat("Text"),"content","Raw content"),"default");
+	// Search for the meta-concept corresponding to the default textual content
+	if(!Body)
+		Body=Session->InsertConcept(Session->GetInsertConceptType(Session->GetInsertConceptCat("Text"),"content","Raw content"),"body");
 
 	// Find the vector corresponding to the concept
-	ExtractText(content,DefaultContent,pos,depth);
+	ExtractTextual(content,Body,pos,depth);
 }
 
 
@@ -328,6 +346,16 @@ void GDocAnalyze::PostAnalyze(void)
 		GConceptRef* Ref(Occur()->Vector->GetRef(Concept));
 		(*Ref)+=1.0;
 	}
+
+	// Verify that there is no empty vector
+	RContainer<GVector,false,false> ToDel(10);
+	RCursor<GVector> Vector(Description.GetVectors());
+	for(Vector.Start();!Vector.End();Vector.Next())
+		if(!Vector()->GetNb())
+			ToDel.InsertPtr(Vector());
+	Vector.Set(ToDel);
+	for(Vector.Start();!Vector.End();Vector.Next())
+		Description.DeleteVector(Vector()->GetMetaConcept());
 }
 
 
@@ -358,13 +386,13 @@ void GDocAnalyze::Analyze(GDoc* doc,bool ram)
 	GFilter* Filter(GALILEIApp->FindMIMEType(doc));
 
 	// If it is not a local	file -> Download it
-	if(doc->GetURL().GetScheme()!="file")
+	if(doc->GetURI().GetScheme()!="file")
 	{
 		File=TmpFile.GetName();
-		DownloadFile(doc->GetURL(),File);
+		DownloadFile(doc->GetURI(),File);
 	}
 	else
-		File=doc->GetURL();
+		File=doc->GetURI();
 
 	// Analyze it with the good filter
 	Filter->Analyze(this,doc,File);

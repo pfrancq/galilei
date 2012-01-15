@@ -6,7 +6,7 @@
 
 	Concept Reference Vector - Implementation.
 
-	Copyright 2002-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2002-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2002-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -62,28 +62,28 @@ const double Factor=0.5;
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GVector::GVector(GConcept* concept)
-	: RContainer<GConceptRef,true,true>(100,50), Concept(concept), MaxWeight(NAN),
+GVector::GVector(GConcept* metaconcept)
+	: RContainer<GConceptRef,true,true>(100,50), MetaConcept(metaconcept), MaxWeight(NAN),
 	  MaxAbsWeight(NAN)
 {
-	if(!concept)
+	if(!metaconcept)
 		ThrowGException("cannot create a vector with an invalid concept");
 }
 
 
 //------------------------------------------------------------------------------
-GVector::GVector(GConcept* concept,size_t max)
-	: RContainer<GConceptRef,true,true>(max,50), Concept(concept), MaxWeight(NAN),
+GVector::GVector(GConcept* metaconcept,size_t max)
+	: RContainer<GConceptRef,true,true>(max,50), MetaConcept(metaconcept), MaxWeight(NAN),
 	  MaxAbsWeight(NAN)
 {
-	if(!concept)
+	if(!metaconcept)
 		ThrowGException("cannot create a vector with an invalid concept");
 }
 
 
 //------------------------------------------------------------------------------
 GVector::GVector(const GVector& vector)
-	: RContainer<GConceptRef,true,true>(vector), Concept(vector.Concept),
+	: RContainer<GConceptRef,true,true>(vector), MetaConcept(vector.MetaConcept),
 	  MaxWeight(vector.MaxWeight), MaxAbsWeight(vector.MaxAbsWeight)
 {
 }
@@ -117,25 +117,24 @@ void GVector::Copy(const R::RContainer<GConceptRef,false,true>& vector)
 //------------------------------------------------------------------------------
 int GVector::Compare(const GVector& vector) const
 {
-	return(CompareIds(Concept->Id,vector.Concept->Id));
+	return(CompareIds(MetaConcept->Id,vector.MetaConcept->Id));
 }
 
 
 //------------------------------------------------------------------------------
-int GVector::Compare(const GConcept& concept) const
+int GVector::Compare(const GConcept& metaconcept) const
 {
-	return(CompareIds(Concept->Id,concept.Id));
+	return(CompareIds(MetaConcept->Id,metaconcept.Id));
 }
 
 
 //------------------------------------------------------------------------------
-int GVector::Compare(const GConcept* concept) const
+int GVector::Compare(const GConcept* metaconcept) const
 {
-	if(!concept)
+	if(!metaconcept)
 		ThrowGException("null pointer");
-	return(CompareIds(Concept->Id,concept->Id));
+	return(CompareIds(MetaConcept->Id,metaconcept->Id));
 }
-
 
 //------------------------------------------------------------------------------
 GConceptRef* GVector::GetRef(const GConceptRef* ref)
@@ -293,6 +292,9 @@ void GVector::Print(R::RString msg)
 //------------------------------------------------------------------------------
 void GVector::Intersection(const GVector& vector)
 {
+	if(MetaConcept!=vector.MetaConcept)
+		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
+
 	RContainer<GConceptRef,false,false> ToDel(20);
 	RCursor<GConceptRef> Cur(*this);
 	for(Cur.Start();!Cur.End();Cur.Next())
@@ -315,7 +317,7 @@ void GVector::Intersection(const GVector& vector)
 //------------------------------------------------------------------------------
 GVector& GVector::operator=(const GVector& vector)
 {
-	Concept=vector.Concept;
+	MetaConcept=vector.MetaConcept;
 	MaxWeight=vector.MaxWeight;
 	MaxAbsWeight=vector.MaxAbsWeight;
 	R::RContainer<GConceptRef,true,true>::Copy(vector);
@@ -326,9 +328,8 @@ GVector& GVector::operator=(const GVector& vector)
 //------------------------------------------------------------------------------
 GVector& GVector::operator+=(const GVector& vector)
 {
-	if(Concept!=vector.Concept)
-		ThrowGException("Operation does work only with vectors associated with the same concept");
-
+	if(MetaConcept!=vector.MetaConcept)
+		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
 	// Invalid maximum weights
 	MaxWeight=NAN;
 	MaxAbsWeight=NAN;
@@ -346,9 +347,8 @@ GVector& GVector::operator+=(const GVector& vector)
 //------------------------------------------------------------------------------
 GVector& GVector::operator-=(const GVector& vector)
 {
-	if(Concept!=vector.Concept)
-		ThrowGException("Operation does work only with vectors associated with the same concept");
-
+	if(MetaConcept!=vector.MetaConcept)
+		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
 
 	// Invalid maximum weights
 	MaxWeight=NAN;
@@ -408,8 +408,8 @@ GVector::~GVector(void)
 //------------------------------------------------------------------------------
 GVector GALILEI::operator+(const GVector &arg1,const GVector &arg2)
 {
-	if(arg1.GetConcept()!=arg2.GetConcept())
-		ThrowGException("Operation does work only with vectors associated with the same concept");
+	if(arg1.GetMetaConcept()!=arg2.GetMetaConcept())
+		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
 
 	GVector res(arg1);
 	res+=arg2;
@@ -420,9 +420,9 @@ GVector GALILEI::operator+(const GVector &arg1,const GVector &arg2)
 //------------------------------------------------------------------------------
 GVector GALILEI::operator-(const GVector &arg1,const GVector &arg2)
 {
-	if(arg1.GetConcept()!=arg2.GetConcept())
-		ThrowGException("Operation does work only with vectors associated with the same concept");
-	
+	if(arg1.GetMetaConcept()!=arg2.GetMetaConcept())
+		ThrowGException("Operation does work only with vectors associated with the same meta-concept");
+
 	GVector res(arg1);
 	res-=arg2;
 	return(res);

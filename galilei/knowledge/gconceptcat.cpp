@@ -6,7 +6,7 @@
 
 	Concept Category - Implementation.
 
-	Copyright 20011-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 20011-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
