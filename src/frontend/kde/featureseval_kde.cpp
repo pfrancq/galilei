@@ -74,7 +74,7 @@ void About(void)
 {
 	KAboutData aboutData( "FeaturesEval", 0, ki18n("Features Evaluation"),
 		"1.0", ki18n("Compute different measures evaluating the importance of the features"), KAboutData::License_GPL,
-		ki18n("(C) 2003-2010 by Pascal Francq"),
+		ki18n("(C) 2003-2012 by Pascal Francq"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
