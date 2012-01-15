@@ -6,7 +6,7 @@
 
 	Storage Manager using a MySQL Database - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by Julien Lamoral.
 	Copyright 2001-2004 by Valery Vandaele.
 	Copyright 2001-2004 by David Wartel.
@@ -606,7 +606,8 @@ void GStorageMySQL::LoadConcepts(void)
 {
 	try
 	{
-		size_t XMLIndexId(Session->GetConceptType("XMLIndex",false)->GetId());
+		GConceptCat* Cat(Session->GetConceptCat("Text",false));
+		size_t TermGroup(Session->GetInsertConceptType(Cat,"TermGroup","Group of terms")->GetId());
 
 		// Create and insert the dictionary
 		// Load the dictionary from the database
@@ -620,7 +621,7 @@ void GStorageMySQL::LoadConcepts(void)
 		{
 			size_t TypeId(dicts[2].ToSizeT());
 			GConceptType* Type(Session->GetConceptType(TypeId,false));
-			if(TypeId==XMLIndexId)
+			if(TypeId==TermGroup)
 			{
 				GConceptList w(Session,dicts[0].ToSizeT(),dicts[1],Type,dicts[3],
 						dicts[4].ToSizeT(),dicts[5].ToSizeT(),
@@ -1148,7 +1149,7 @@ void GStorageMySQL::AssignId(GDoc* doc)
 	{
 		// Reserved an identifier
 		RString sSql="INSERT INTO docs(doc,title,langid) "
-		             "VALUES("+RQuery::SQLValue(doc->GetURL()())+","+RQuery::SQLValue(doc->GetName())+","+Lang(doc->GetLang())+")";
+		             "VALUES("+RQuery::SQLValue(doc->GetURI()())+","+RQuery::SQLValue(doc->GetName())+","+Lang(doc->GetLang())+")";
 		RQuery Insert(Db,sSql);
 
 		// Get the id and assign it to the document
@@ -1319,7 +1320,7 @@ void GStorageMySQL::SaveObj(GDoc* doc)
 		{
 			// Insert the document
 			sSql="INSERT INTO docs(docid,doc,title,mimetype,langid,updated,calculated,topicid,attached,blockid,structid) "
-			     "VALUES("+Num(doc->GetId())+","+RQuery::SQLValue(doc->GetURL()())+","+
+			     "VALUES("+Num(doc->GetId())+","+RQuery::SQLValue(doc->GetURI()())+","+
 			     RQuery::SQLValue(doc->GetName())+","+f+","+l+","+RQuery::SQLValue(doc->GetUpdated())+
 			     ","+RQuery::SQLValue(doc->GetComputed())+","+Num(doc->GetGroupId())+","+RQuery::SQLValue(doc->GetAttached())+
 			     ","+Num(doc->GetBlockId())+","+Num(doc->GetStructId())+")";
@@ -1328,7 +1329,7 @@ void GStorageMySQL::SaveObj(GDoc* doc)
 		else
 		{
 			// Update the document
-			sSql="UPDATE docs SET doc="+RQuery::SQLValue(doc->GetURL()())+",title="+
+			sSql="UPDATE docs SET doc="+RQuery::SQLValue(doc->GetURI()())+",title="+
 			     RQuery::SQLValue(doc->GetName())+",mimetype="+f+",langid="+l+
 			     ",updated="+RQuery::SQLValue(doc->GetUpdated())+",calculated="+RQuery::SQLValue(doc->GetComputed())+
 			     ",topicid="+Num(doc->GetGroupId())+",attached="+RQuery::SQLValue(doc->GetAttached())+
