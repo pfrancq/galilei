@@ -6,7 +6,7 @@
 
 	Dialog Box to show the progress of the something done on a session  - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -406,10 +406,10 @@ void QSessionProgressDlg::NextDoc(const GDoc* doc)
 				DocName=ToQString(doc->GetName());
 			else
 			{
-				if(doc->GetURL()().GetLen()>80)
-					DocName=ToQString(doc->GetURL()().Mid(0,20))+"..."+ToQString(doc->GetURL()().Mid(doc->GetURL()().GetLen()-57,57));
+				if(doc->GetURI()().GetLen()>80)
+					DocName=ToQString(doc->GetURI()().Mid(0,20))+"..."+ToQString(doc->GetURI()().Mid(doc->GetURI()().GetLen()-57,57));
 				else
-					DocName=ToQString(doc->GetURL()());
+					DocName=ToQString(doc->GetURI()());
 			}
 		}
 		setLabelText("Treat document '"+DocName+"'");

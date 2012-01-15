@@ -4,7 +4,7 @@
 
 	Main program - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -65,7 +65,7 @@ int main(int argc, char *argv[])
 
     // Information about the application
 	KAboutData aboutData("kgalileicenter",0,ki18n("KGALILEICenter"),"1.89",ki18n(description),
-			KAboutData::License_GPL,ki18n("(C) 1998-2011 by Pascal Francq\n(C) 1998-2008 by the Université Libre de Bruxelles (ULB)"),
+			KAboutData::License_GPL,ki18n("(C) 1998-2012 by Pascal Francq\n(C) 1998-2008 by the Université Libre de Bruxelles (ULB)"),
 			KLocalizedString(),"http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Project Manager"),"pascal@francq.info");
 	aboutData.addCredit(ki18n("Faiza Gaultier"),ki18n("Senior Researcher"),"fabbaci@ulb.ac.be");

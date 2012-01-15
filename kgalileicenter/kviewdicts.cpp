@@ -6,7 +6,7 @@
 
 	Window to show all the dictionaries - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2004 by David Wartel.
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 

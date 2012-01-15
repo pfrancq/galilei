@@ -6,7 +6,7 @@
 
 	Window for manipulating the users - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -117,11 +117,11 @@ QString KViewClasses::buildDesc(GClass* c)
 	RCursor<GVector> Vector(c->GetVectors());
 	for(Vector.Start();!Vector.End();Vector.Next())
 	{
-		QString Str(ToQString(Vector()->GetConcept()->GetName())+"@[");
+		QString Str(ToQString(Vector()->GetMetaConcept()->GetName())+"@[");
 		bool Comma(false);
 		GVector* Vec(0);
 		if(Parent)
-			Vec=Parent->GetVector(Vector()->GetConcept());
+			Vec=Parent->GetVector(Vector()->GetMetaConcept());
 		RCursor<GConceptRef> Ref(Vector()->GetRefs());
 		for(Ref.Start();!Ref.End();Ref.Next())
 		{

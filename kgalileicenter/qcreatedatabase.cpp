@@ -6,7 +6,7 @@
 
 	Create a database- Implementation.
 
-	Copyright 2008-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -131,9 +131,8 @@ void QCreateDB::DoIt(void)
  			RQuery InsertStopWord(&Db,"INSERT INTO concepts(name,typeid) VALUES("+RQuery::SQLValue(*Cur())+","+TypeId+")");
  	}
 
- 	Parent->setLabelText("Create Other Concept Types");
- 	GetConceptType("Semantic","XMLStruct","XML Structure",&Db);
- 	GetConceptType("Metadata","XMLIndex","XML Index",&Db);
+//	Parent->setLabelText("Create Other Concept Types");
+//GetConceptType("Semantic","XML","XML Schema",&Db);
 
  	// Create the configuration file with MySQL as default storage
  	RTextFile Config(RString(getenv("HOME"))+"/.r/config/lib/galilei/sessions/"+Info->Name+".config","utf-8");
