@@ -6,7 +6,7 @@
 
 	k-Means Plug-in for Documents (KDE Part) - Implementation.
 
-	Copyright 2008-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -58,7 +58,7 @@ void About(void)
 {
 	KAboutData aboutData("kmeans_docs", 0, ki18n("k-Means Plug-in for Documents"),
 		"1.0", ki18n("This is a set of k-Means algorithms to cluster documents."),KAboutData::License_GPL,
-		ki18n("(C) 2010 by Pascal Francq"),
+		ki18n("(C) 2010-2012 by Pascal Francq"),
 		KLocalizedString(), "http://www.otlet-institute.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	KAboutApplicationDialog dlg(&aboutData);
