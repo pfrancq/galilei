@@ -6,7 +6,7 @@
 
 	Generic Tensor Space Model Similarity Measure - Inline Implementation.
 
-	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
 	Copyright 2003-2007 by the Université Libre de Bruxelles (ULB).
 
@@ -212,7 +212,7 @@ template<class cObj1,class cObj2>
 	for(Vec1.Start();!Vec1.End();Vec1.Next())
 	{
 		// Filter if necessary
-		GConceptCat* Cat1(Vec1()->GetConcept()->GetType()->GetCategory());
+		GConceptCat* Cat1(Vec1()->GetMetaConcept()->GetType()->GetCategory());
 		if(filter&&(Cat1!=filter))
 			continue;
 
@@ -223,7 +223,7 @@ template<class cObj1,class cObj2>
 		for(Vec2.Start();!Vec2.End();Vec2.Next())
 		{
 			// Filter if necessary
-			GConceptCat* Cat2(Vec2()->GetConcept()->GetType()->GetCategory());
+			GConceptCat* Cat2(Vec2()->GetMetaConcept()->GetType()->GetCategory());
 			if(filter&&(Cat2!=filter))
 				continue;
 
@@ -238,7 +238,7 @@ template<class cObj1,class cObj2>
 			else
 			{
 				// No -> Compare only with the same concept associated to the vector
-				if(Vec2()->GetConceptId()!=Vec1()->GetConceptId())
+				if(Vec2()->GetMetaConceptId()!=Vec1()->GetMetaConceptId())
 					continue;
 				if(Cat1==Cats[Metadata].Cat)
 					ComputeMetaSim(Vec1(),Vec2());

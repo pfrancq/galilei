@@ -6,7 +6,7 @@
 
 	Similarities between profiles (KDE part) - Implementation.
 
-	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
@@ -51,7 +51,7 @@ void About(void)
 {
 	KAboutData aboutData( "profilessims", 0, ki18n("Profiles Similarities"),
 		"1.0", ki18n("Method to compute the similarities between profiles."), KAboutData::License_GPL,
-		ki18n("(C) 2003-2011 by Pascal Francq\n(C) 2003 by Valery Vandaele\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2003-2012 by Pascal Francq\n(C) 2003 by Valery Vandaele\n(C) 2003-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.imrdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	aboutData.addCredit(ki18n("Valery Vandaele"),ki18n("Developer"));

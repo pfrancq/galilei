@@ -6,7 +6,7 @@
 
 	Similarities between profiles - Implementation.
 
-	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2003 by Valery Vandaele.
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
