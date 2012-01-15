@@ -6,7 +6,7 @@
 
 	English Language (KDE Part) - Implementation.
 
-	Copyright 2001-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2001-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -51,7 +51,7 @@ void About(void)
 {
 	KAboutData aboutData( "en", 0, ki18n("English Language"),
 		"1.5", ki18n("This is the English language plug-in using the Porter stemming algorithm"), KAboutData::License_GPL,
-		ki18n("(C) 2001-2011 by Pascal Francq\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
+		ki18n("(C) 2001-2012 by Pascal Francq\n(C) 2001-2008 by the Université Libre de Bruxelles (ULB)"),
 		KLocalizedString(), "http://www.irmdp.org", "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Pascal Francq"),ki18n("Maintainer"), "pascal@francq.info");
 	aboutData.addAuthor(ki18n("Julien Lamoral"),ki18n("Contributor"));
