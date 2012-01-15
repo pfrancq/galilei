@@ -6,7 +6,7 @@
 
 	Template for computing similarities statistics.
 
-	Copyright 2003-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2003-2012 by Pascal Francq (pascal@francq.info).
 	Copyright 2003-2008 by the Université Libre de Bruxelles (ULB).
 
 	This library is free software; you can redistribute it and/or
@@ -177,11 +177,11 @@ template<class E1,class E2>
 	for(Vec1.Start(),Vec2.Start();!Vec1.End();Vec1.Next())
 	{
 		// Parse all the elements of Vec2 with an identifier lower than the current element of Vec1
-		while((!Vec2.End())&&(Vec2()->GetConcept()->GetId()<Vec1()->GetConcept()->GetId()))
+		while((!Vec2.End())&&(Vec2()->GetMetaConcept()->GetId()<Vec1()->GetMetaConcept()->GetId()))
 			Vec2.Next();
 
 		// Verify if both elements are identical
-		if((!Vec2.End())&&(Vec2()->GetConcept()->GetId()==Vec1()->GetConcept()->GetId()))
+		if((!Vec2.End())&&(Vec2()->GetMetaConcept()->GetId()==Vec1()->GetMetaConcept()->GetId()))
 		{
           // Parse the concepts
           RCursor<GConceptRef> Concept1(Vec1()->GetRefs());
