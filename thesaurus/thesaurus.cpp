@@ -6,7 +6,7 @@
 
 	Thesaurus Creation - Implementation
 
-	Copyright 2008-2011 by Pascal Francq (pascal@francq.info).
+	Copyright 2008-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -181,7 +181,7 @@ void Thesaurus::Run(GSlot*)
 				for(Refs.Start(),Cur.Start();!Refs.End();Refs.Next(),Cur.Next())
 				{
 					Cur()->Concept=Refs()->GetConcept();
-					Cur()->Vector=Vector()->GetConcept();
+					Cur()->Vector=Vector()->GetMetaConcept();
 					Cur()->Weight=Refs()->GetWeight()*Refs()->GetConcept()->GetIF(otTopic);
 				}
 			}
