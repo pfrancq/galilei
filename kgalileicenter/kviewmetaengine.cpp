@@ -70,9 +70,7 @@ public:
 	QQuery(KGALILEICenter* app,const QString& query) : QSessionThread(app), Query(FromQString(query)) {}
 	virtual void DoIt(void)
 	{
-		RContainer<RString,true,false> KeyWords(5,3);
-		Query.Split(KeyWords,' ');
-		App->getSession()->QueryMetaEngine(KeyWords);
+		App->getSession()->RequestMetaEngine(Query);
 	}
 };
 
@@ -93,11 +91,7 @@ KViewMetaEngine::KViewMetaEngine(KGALILEICenter* app)
 	setWidget(ptr);
 	setAttribute(Qt::WA_DeleteOnClose);
 	setWindowTitle("Query meta engine");
-	size_t tmp=GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine")->GetNbResUsed();
-	if(!tmp)
-		NbRes->setValue(100);
-	else
-		NbRes->setValue(static_cast<int>(tmp));
+	NbRes->setValue(100);
 	connect(Search,SIGNAL(clicked()),this,SLOT(QueryEngine()));
 }
 

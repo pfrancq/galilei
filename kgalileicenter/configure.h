@@ -62,12 +62,13 @@ class Configure : KDialog, Ui_Configure
 		size_t DescBlock;
 		size_t DescTolerance;
 		size_t DescCache;
-		int DescType;
+		size_t DescType;
+		bool CreateIndex;
 		size_t IndexBlock;
 		size_t IndexTolerance;
 		size_t IndexCache;
-		int IndexType;
-		bool IndexInc;
+		size_t IndexType;
+		bool CreateStruct;
 		size_t StructBlock;
 		size_t StructTolerance;
 		size_t StructCache;

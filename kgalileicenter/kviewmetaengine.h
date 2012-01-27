@@ -41,7 +41,7 @@
 
 //-----------------------------------------------------------------------------
 // include files for R/GALILEI Project
-#include <genginedoc.h>
+#include <gmetaengine.h>
 using namespace R;
 using namespace GALILEI;
 
@@ -56,8 +56,7 @@ using namespace GALILEI;
 /**
 * The KViewMetaEngine class represents a window to manipulate a specific groups.
 * @author Pascal Francq.
-* @version $Revision$
-* @short Group' Window.
+* @short Search Window.
 */
 class KViewMetaEngine : public QMdiSubWindow, public Ui_KViewMetaEngine
 {

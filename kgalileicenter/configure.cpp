@@ -125,21 +125,27 @@ public:
 Configure::Type::Type(const RString& name)
 	: Name(name)
 {
+	// Descriptions
 	DescBlock=KGALILEICenter::App->getSession()->GetUInt("BlockSize","Indexer",Name,"Description");
 	DescTolerance=KGALILEICenter::App->getSession()->GetUInt("Tolerance","Indexer",Name,"Description");
 	DescCache=KGALILEICenter::App->getSession()->GetUInt("CacheSize","Indexer",Name,"Description");
-	DescType=KGALILEICenter::App->getSession()->GetInt("Type","Indexer",Name,"Description");
+	DescType=KGALILEICenter::App->getSession()->GetUInt("Type","Indexer",Name,"Description");
+
+	// Index
+	CreateIndex=KGALILEICenter::App->getSession()->GetBool("CreateIndex","Indexer",Name,"Index");
 	IndexBlock=KGALILEICenter::App->getSession()->GetUInt("BlockSize","Indexer",Name,"Index");
 	IndexTolerance=KGALILEICenter::App->getSession()->GetUInt("Tolerance","Indexer",Name,"Index");
 	IndexCache=KGALILEICenter::App->getSession()->GetUInt("CacheSize","Indexer",Name,"Index");
-	IndexType=KGALILEICenter::App->getSession()->GetInt("Type","Indexer",Name,"Index");
-	IndexInc=KGALILEICenter::App->getSession()->GetBool("Increment","Indexer",Name,"Index");
+	IndexType=KGALILEICenter::App->getSession()->GetUInt("Type","Indexer",Name,"Index");
+
+	// Structure (only for documents)
 	if(Name=="Documents")
 	{
+		CreateStruct=KGALILEICenter::App->getSession()->GetUInt("CreateStruct","Indexer","Documents","Structure");
 		StructBlock=KGALILEICenter::App->getSession()->GetUInt("BlockSize","Indexer","Documents","Structure");
 		StructTolerance=KGALILEICenter::App->getSession()->GetUInt("Tolerance","Indexer","Documents","Structure");
 		StructCache=KGALILEICenter::App->getSession()->GetUInt("CacheSize","Indexer","Documents","Structure");
-		StructType=KGALILEICenter::App->getSession()->GetInt("Type","Indexer","Documents","Structure");
+		StructType=KGALILEICenter::App->getSession()->GetUInt("Type","Indexer","Documents","Structure");
 	}
 }
 
@@ -147,17 +153,23 @@ Configure::Type::Type(const RString& name)
 //------------------------------------------------------------------------------
 void Configure::Type::Apply(void)
 {
+	// Descriptions
 	KGALILEICenter::App->getSession()->SetUInt("BlockSize",DescBlock,"Indexer",Name,"Description");
 	KGALILEICenter::App->getSession()->SetUInt("Tolerance",DescTolerance,"Indexer",Name,"Description");
 	KGALILEICenter::App->getSession()->SetUInt("CacheSize",DescCache,"Indexer",Name,"Description");
-	KGALILEICenter::App->getSession()->SetInt("Type",DescType,"Indexer",Name,"Description");
+	KGALILEICenter::App->getSession()->SetUInt("Type",DescType,"Indexer",Name,"Description");
+
+	// Index
+	KGALILEICenter::App->getSession()->SetBool("CreateIndex",CreateIndex,"Indexer",Name,"Index");
 	KGALILEICenter::App->getSession()->SetUInt("BlockSize",IndexBlock,"Indexer",Name,"Index");
 	KGALILEICenter::App->getSession()->SetUInt("Tolerance",IndexTolerance,"Indexer",Name,"Index");
 	KGALILEICenter::App->getSession()->SetUInt("CacheSize",IndexCache,"Indexer",Name,"Index");
-	KGALILEICenter::App->getSession()->SetInt("Type",IndexType,"Indexer",Name,"Index");
-	KGALILEICenter::App->getSession()->SetBool("Increment",IndexInc,"Indexer",Name,"Index");
+	KGALILEICenter::App->getSession()->SetUInt("Type",IndexType,"Indexer",Name,"Index");
+
+	// Structure (only for documents)
 	if(Name=="Documents")
 	{
+		KGALILEICenter::App->getSession()->SetBool("CreateStruct",CreateStruct,"Indexer","Documents","Structure");
 		KGALILEICenter::App->getSession()->SetUInt("BlockSize",StructBlock,"Indexer","Documents","Structure");
 		KGALILEICenter::App->getSession()->SetUInt("Tolerance",StructTolerance,"Indexer","Documents","Structure");
 		KGALILEICenter::App->getSession()->SetUInt("CacheSize",StructCache,"Indexer","Documents","Structure");
@@ -554,7 +566,8 @@ void Configure::objectChanged(const QString& obj)
 		CurType->IndexTolerance=IndexTolerance->value();
 		CurType->IndexCache=IndexCache->value();
 		CurType->IndexType=IndexType->currentIndex();
-		CurType->IndexInc=IndexInc->isChecked();
+		CurType->CreateIndex=CreateIndex->isChecked();
+		CurType->CreateStruct=CreateStruct->isChecked();
 		CurType->StructBlock=StructBlock->value();
 		CurType->StructTolerance=StructTolerance->value();
 		CurType->StructCache=StructCache->value();
@@ -576,11 +589,12 @@ void Configure::objectChanged(const QString& obj)
 	IndexTolerance->setValue(CurType->IndexTolerance);
 	IndexCache->setValue(CurType->IndexCache);
 	IndexType->setCurrentIndex(CurType->IndexType);
-	IndexInc->setChecked(CurType->IndexInc);
+	CreateIndex->setChecked(CurType->CreateIndex);
 
 	if(CurType->Name=="Documents")
 	{
 		DocsStruct->setVisible(true);
+		CreateStruct->setChecked(CurType->CreateStruct);
 		StructBlock->setValue(CurType->StructBlock);
 		StructTolerance->setValue(CurType->StructTolerance);
 		StructCache->setValue(CurType->StructCache);
