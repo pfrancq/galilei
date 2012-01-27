@@ -281,26 +281,38 @@ public:
 	/**
 	* Save the references of a given object type for a given concept.
 	* @param concept         Concept.
-	* @param what            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param what            Type of the object.
 	* @param refs            Number of references.
 	*/
 	virtual void SaveRefs(const GConcept* concept,tObjType what,size_t refs);
 
 	/**
 	 * Save the index information of a given object type for a given concept.
-	 * @param concept         Concept.
-	 * @param what            Type of the object.
-	 * @param indexdocs       Identifier of the block containing the index.
+	 * @param concept        Concept.
+	 * @param what           Type of the object.
+	 * @param index          Identifier of the block containing the index.
 	 */
-	virtual void SaveIndex(const GConcept* concept,tObjType what,size_t indexdocs);
+	virtual void SaveIndex(const GConcept* concept,tObjType what,size_t index);
+
+	/**
+	 * Clear all the index information of a given object type.
+	 * @param what            Type of the object.
+	 */
+	virtual void ClearIndex(tObjType what);
 
 	/**
 	* Save the references of a given object type for a given concept type.
 	* @param type            Type of the concept.
-	* @param what            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param what            Type of the object.
 	* @param refs            Number of references.
 	*/
 	virtual void SaveRefs(GConceptType* type,tObjType what,size_t refs);
+
+	/**
+	* Clear the references of a given object type.
+	* @param what            Type of the object.
+	*/
+	virtual void ClearRefs(tObjType what);
 
 	/**
 	* Load the predicates from the database.

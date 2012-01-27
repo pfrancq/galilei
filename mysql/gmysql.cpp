@@ -43,7 +43,6 @@
 // include files for GALILEI
 #include <glang.h>
 #include <glink.h>
-#include <gsuggestion.h>
 #include <gsugs.h>
 #include <guser.h>
 #include <gprofile.h>
@@ -808,7 +807,7 @@ void GStorageMySQL::SaveRefs(const GConcept* concept,tObjType what,size_t refs)
 
 
 //------------------------------------------------------------------------------
-void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,size_t indexdocs)
+void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,size_t index)
 {
 	try
 	{
@@ -817,20 +816,57 @@ void GStorageMySQL::SaveIndex(const GConcept* concept,tObjType what,size_t index
 		switch(what)
 		{
 			case otDoc:
-				sSql="UPDATE concepts SET indexdocs="+RString::Number(indexdocs)+" WHERE conceptid="+Num(concept->GetId());
+				sSql="UPDATE concepts SET indexdocs="+Num(index)+" WHERE conceptid="+Num(concept->GetId());
 				break;
-/*			case otProfile:
-				sSql="UPDATE concepts SET refprofiles="+Num(refs)+
-				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
+			case otProfile:
+				sSql="UPDATE concepts SET indexprofiles="+Num(index)+" WHERE conceptid="+Num(concept->GetId());
 				break;
 			case otCommunity:
-				sSql="UPDATE concepts SET refcommunities="+Num(refs)+
-				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
+				sSql="UPDATE concepts SET indexcommunities="+Num(index)+" WHERE conceptid="+Num(concept->GetId());
 				break;
 			case otTopic:
-				sSql="UPDATE concepts SET reftopics="+Num(refs)+
-				     " WHERE conceptid="+Num(concept->GetId())+" AND typeid="+Num(concept->GetType()->GetId());
-				break;*/
+				sSql="UPDATE concepts SET indextopics="+Num(index)+" WHERE conceptid="+Num(concept->GetId());
+				break;
+			case otClass:
+				sSql="UPDATE concepts SET indexclasses="+Num(index)+" WHERE conceptid="+Num(concept->GetId());
+				break;
+			default:
+				ThrowGException("This type of objects do not have index");
+		};
+		RQuery(Db,sSql);
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::ClearIndex(tObjType what)
+{
+	try
+	{
+		RString sSql;
+
+		switch(what)
+		{
+			case otDoc:
+				sSql="UPDATE concepts SET indexdocs='0'";
+				break;
+			case otProfile:
+				sSql="UPDATE concepts SET indexprofiles='0'";
+				break;
+			case otCommunity:
+				sSql="UPDATE concepts SET indexcommunities='0'";
+				break;
+			case otTopic:
+				sSql="UPDATE concepts SET indextopics='0'";
+				break;
+			case otClass:
+				sSql="UPDATE concepts SET indexclasses='0'";
+				break;
 			default:
 				ThrowGException("This type of objects do not have index");
 		};
@@ -854,36 +890,75 @@ void GStorageMySQL::SaveRefs(GConceptType* type,tObjType what,size_t refs)
 			case otDoc:
 			{
 				RQuery(Db,"UPDATE concepttypes SET refdocs="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
-				if(refs==0)
-					RQuery(Db,"UPDATE concepts SET refdocs=0 WHERE typeid="+Num(type->GetId()));
 				break;
 			}
 			case otProfile:
 			{
 				RQuery(Db,"UPDATE concepttypes SET refprofiles="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
-				if(refs==0)
-					RQuery(Db,"UPDATE concepts SET refcommunities=0 WHERE typeid="+Num(type->GetId()));
 				break;
 			}
 			case otCommunity:
 			{
 				RQuery(Db,"UPDATE concepttypes SET refcommunities="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
-				if(refs==0)
-					RQuery(Db,"UPDATE concepts SET refcommunities=0 WHERE typeid="+Num(type->GetId()));
 				break;
 			}
 			case otTopic:
 			{
 				RQuery(Db,"UPDATE concepttypes SET reftopics="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
-				if(refs==0)
-					RQuery(Db,"UPDATE concepts SET reftopics=0 WHERE typeid="+Num(type->GetId()));
 				break;
 			}
 			case otClass:
 			{
 				RQuery(Db,"UPDATE concepttypes SET refclasses="+Num(refs)+" WHERE typeid="+Num(type->GetId()));
-				if(refs==0)
-					RQuery(Db,"UPDATE concepts SET refclasses=0 WHERE typeid="+Num(type->GetId()));
+				break;
+			}
+			default:
+				ThrowGException("This type of objects do not have descriptions");
+		};
+	}
+	catch(RDbException e)
+	{
+		cerr<<e.GetMsg()<<endl;
+		throw GException(e.GetMsg());
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GStorageMySQL::ClearRefs(tObjType what)
+{
+	try
+	{
+		switch(what)
+		{
+			case otDoc:
+			{
+				RQuery(Db,"UPDATE concepttypes SET refdocs='0'");
+				RQuery(Db,"UPDATE concepts SET refdocs='0'");
+				break;
+			}
+			case otProfile:
+			{
+				RQuery(Db,"UPDATE concepttypes SET refprofiles='0'");
+				RQuery(Db,"UPDATE concepts SET refprofiles='0'");
+				break;
+			}
+			case otCommunity:
+			{
+				RQuery(Db,"UPDATE concepttypes SET refcommunities='0'");
+				RQuery(Db,"UPDATE concepts SET refcommunities='0'");
+				break;
+			}
+			case otTopic:
+			{
+				RQuery(Db,"UPDATE concepttypes SET reftopics='0'");
+				RQuery(Db,"UPDATE concepts SET reftopics='0'");
+				break;
+			}
+			case otClass:
+			{
+				RQuery(Db,"UPDATE concepttypes SET refclasses='0'");
+				RQuery(Db,"UPDATE concepts SET refclasses='0'");
 				break;
 			}
 			default:
