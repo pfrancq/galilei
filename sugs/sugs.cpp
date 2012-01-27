@@ -58,7 +58,6 @@ using namespace std;
 #include <ggalileiapp.h>
 #include <gmeasure.h>
 #include <gstorage.h>
-#include <gsuggestion.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
