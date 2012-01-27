@@ -323,7 +323,7 @@ void GXML::EndTag(const RString&, const RString& /*lName*/, const RString&)
 	if(ExtractSemantic)
 	{
 		XMLTagOccur* Occur(Tags());
-		Analyzer->AddConcept(Occur->Tag->GetConcept(),1.0,Occur->Tag->Schema->MetaConcept,Occur->Pos,Occur->Depth);
+		Analyzer->AddToken(Occur->Tag->Schema->URI+":"+Occur->Tag->Tag,ttXMLTag,Occur->Tag->GetConcept(),1.0,Occur->Tag->Schema->MetaConcept,Occur->Pos,Occur->Depth);
 	}
 	Tags.Pop();
 }
