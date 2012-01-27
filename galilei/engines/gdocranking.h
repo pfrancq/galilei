@@ -31,8 +31,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GSuggestionH
-#define GSuggestionH
+#ifndef GDocRankingH
+#define GDocRankingH
 
 
 //-----------------------------------------------------------------------------
@@ -47,9 +47,9 @@ namespace GALILEI{
 
 //-----------------------------------------------------------------------------
 /**
- * The GDocRanking class provides a pair (document,ranking) to represent the
- * ranking of a document in a given situation (suggestion,score for a
- * community, etc.).
+ * The GDocRanking class provides a triplet (document,ranking,info) that
+ * represents the ranking of a document in a given situation (search,
+ * suggestion, etc.).
  * @author Pascal Francq
  * @short Document Ranking
  */
@@ -58,7 +58,7 @@ class GDocRanking
 protected:
 
 	/**
-	 * Identifier of the document suggested.
+	 * Identifier of the document.
 	 */
 	size_t DocId;
 
@@ -67,14 +67,20 @@ protected:
 	 */
 	double Ranking;
 
+	/**
+	 * An information about the ranking.
+	 */
+	R::RString Info;
+
 public:
 
 	/**
 	 * Create a document ranking.
 	 * @param docid          Identifier of the document.
 	 * @param ranking        Ranking of the document.
+	 * @param info           Information.
 	 */
-	GDocRanking(size_t docid,double ranking=0.0);
+	GDocRanking(size_t docid,double ranking=0.0,const R::RString info=R::RString::Null);
 
 	/**
 	 * @return the identifier of the document.
@@ -82,9 +88,28 @@ public:
 	size_t GetDocId(void) const {return(DocId);}
 
 	/**
+	 * Get the URI of the document by using its identifier.
+    * @param session        Session.
+    * @return the document URI.
+    */
+	R::RURI GetURI(GSession* session) const;
+
+	/**
+	 * Get the name of the document by using its identifier.
+    * @param session        Session.
+    * @return the document name.
+    */
+	R::RString GetName(GSession* session) const;
+
+	/**
 	 * @return the ranking of the document.
 	 */
 	double GetRanking(void) {return(Ranking);}
+
+	/**
+	 * @return the information associated with a suggestion.
+	 */
+	R::RString GetInfo(void) const {return(Info);}
 
 	/**
 	 * Set the ranking of a document.
@@ -115,52 +140,6 @@ public:
 	* @param b              Pointer to the second object.
 	*/
 	static int SortOrderRanking(const void* a,const void* b);
-};
-
-
-//-----------------------------------------------------------------------------
-/**
- * The GSuggestion provides a representation for a suggestion of a given
- * document with a given rank.
- *
- * It is used with the GSugs class to suggest a given set of ranked documents
- * for a given profile or a given community.
- * @author Pascal Francq
- * @short Suggestion.
- */
-class GSuggestion : public GDocRanking
-{
-	/**
-	 * Date where the suggestion was proposed.
-	 */
-	R::RDate Proposed;
-
-	/**
-	 * An information about the suggestion.
-	 */
-	R::RString Info;
-
-public:
-
-	/**
-	 * Construct a suggestion.
-	 * @param docid          Identifier of the document.
-	 * @param ranking        Ranking of the document.
-	 * @param info           Information about the suggestion.
-	 * @param proposed       Date of the suggestion.
-	 * @return
-	 */
-	GSuggestion(size_t docid,double ranking,const R::RDate& proposed,const R::RString& info=R::RString::Null);
-
-	/**
-	 * @return the information associated with a suggestion.
-	 */
-	R::RString GetInfo(void) const {return(Info);}
-
-	/**
-	 * @return the date of the suggestion.
-	 */
-	R::RDate GetProposed(void) const {return(Proposed);}
 };
 
 

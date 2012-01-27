@@ -33,12 +33,6 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R Project
-#include <rnode.h>
-#include <rtree.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
 
@@ -83,12 +77,12 @@ class GConceptTree
 	/**
 	 * Nodes of the tree.
 	 */
-	R::RContainer<GConceptNode,true,false> Nodes;
+	R::RContainer<GConceptNode,true,true> Nodes;
 
 	/**
 	 * Location caches.
 	 */
-	R::RContainer<GLC,true,false> LCs;
+	R::RContainer<R::RContainer<GConceptNode,false,true>,true,false> LCs;
 
 public:
 
@@ -96,12 +90,6 @@ public:
 	 * Default constructor.
 	 */
 	GConceptTree(void);
-
-	/**
-	 * Copy constructor.
-	 * @param tree           Original structure.
-	 */
-	GConceptTree(const GConceptTree& tree);
 
 	/**
 	 * Constructor.
@@ -146,11 +134,9 @@ public:
 	 * @param pos            Position in the object.
 	 * @param depth          Depth of the concept.
 	 * @param child          Position of the first child in the next level.
-	 * @param nbrecs         An idea of the number of nodes to store to the
-	 *                       given level.
 	 * @return Pointer to a node created.
 	 */
-	GConceptNode* AddNode(GConcept* concept,size_t pos,char depth,size_t child=SIZE_MAX,size_t nbrecs=0);
+	GConceptNode* AddNode(GConcept* concept,size_t pos,size_t depth,size_t child=SIZE_MAX);
 
 	/**
 	 * Get a pointer to the nodes.
@@ -198,11 +184,20 @@ private:
 	size_t Pos;
 
 	/**
-	 * Depth and type of of the node. The first four bytes indicates the type,
-	 * the rest the depth (maximal depth of 63).
+	 * Depth and type of of the node.
 	 */
-	char Depth;
+	size_t Depth;
 
+	/**
+	 * Position of the first child.
+    */
+	size_t Child;
+
+	/**
+	 *  Number of children.
+    */
+	size_t NbChildren;
+	
 public:
 
 	/**
@@ -211,12 +206,14 @@ public:
 	 * @param pos            Position in the file.
 	 * @param depth          Depth of the record.
 	 */
-	GConceptNode(GConcept* concept,size_t pos,char depth);
+	GConceptNode(GConcept* concept,size_t pos,size_t depth);
 
 	/**
-	 * Compare method used by R::RContainer.
+	 * Compare method used by R::RContainer. In practice, it uses first the depth
+	 * and then the position to classify nodes.
+	 * @param node           Node to compare.
 	 */
-	int Compare(const GConceptNode&) const {return(-1);}
+	int Compare(const GConceptNode& node) const;
 
 	/**
 	 * Get the concept.

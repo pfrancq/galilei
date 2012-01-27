@@ -37,7 +37,6 @@
 // include files for GALILEI
 #include <gcommunity.h>
 #include <gdoc.h>
-#include <gsuggestion.h>
 #include <gfdbk.h>
 #include <gdescriptionobject.hh>
 using namespace GALILEI;

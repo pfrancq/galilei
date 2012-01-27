@@ -76,7 +76,6 @@ void QGDocStruct::Set(GDoc* obj)
 
 
 	// Show the information entities
-	QTreeWidgetItem* ptr(0);
 	GConceptTree* xml(obj->GetStruct());
 	if(!xml)
 		return;
@@ -92,7 +91,7 @@ void QGDocStruct::Set(GDoc* obj)
 			Child="-1";
 		else
 			Child.setNum(child);
-		ptr=new QTreeWidgetItem(RecsList,QStringList()<<name<<type<<QString::number(Nodes()->GetPos())<<QString::number(Nodes()->GetDepth())<<Child);
+		new QTreeWidgetItem(RecsList,QStringList()<<name<<type<<QString::number(Nodes()->GetPos())<<QString::number(Nodes()->GetDepth())<<Child);
 	}
 	obj->ReleaseStruct();
 

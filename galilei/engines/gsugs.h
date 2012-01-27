@@ -34,18 +34,50 @@
 
 
 //-----------------------------------------------------------------------------
-// include files for R Project
-#include <rnumcontainer.h>
-
-
-//-----------------------------------------------------------------------------
 // include files for GALILEI Project
-#include <galilei.h>
+#include <gdocranking.h>
 
 
 //-----------------------------------------------------------------------------
 namespace GALILEI{
 //-----------------------------------------------------------------------------
+
+	//-----------------------------------------------------------------------------
+/**
+ * The GSuggestion provides a representation for a suggestion of a given
+ * document with a given rank.
+ *
+ * It is used with the GSugs class to suggest a given set of ranked documents
+ * for a given profile or a given community.
+ * @author Pascal Francq
+ * @short Suggestion.
+ */
+class GSuggestion : public GDocRanking
+{
+	/**
+	 * Date where the suggestion was proposed.
+	 */
+	R::RDate Proposed;
+
+public:
+
+	/**
+	 * Construct a suggestion.
+	 * @param docid          Identifier of the document.
+	 * @param ranking        Ranking of the document.
+	 * @param info           Information about the suggestion.
+	 * @param proposed       Date of the suggestion.
+	 * @return
+	 */
+	GSuggestion(size_t docid,double ranking,const R::RDate& proposed,const R::RString& info=R::RString::Null);
+
+
+	/**
+	 * @return the date of the suggestion.
+	 */
+	R::RDate GetProposed(void) const {return(Proposed);}
+};
+
 
 //-----------------------------------------------------------------------------
 /**

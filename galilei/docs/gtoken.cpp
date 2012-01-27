@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GTextToken.h
+	GToken.h
 
 	Document Token - Implementation.
 
@@ -30,7 +30,7 @@
 
 //------------------------------------------------------------------------------
 // include files for R/GALILEI
-#include <gtexttoken.h>
+#include <gtoken.h>
 #include <gvector.h>
 using namespace GALILEI;
 using namespace R;
@@ -40,20 +40,20 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //
-// class GTextToken::Occurrence
+// class GToken::Occurrence
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GTextToken::Occurrence::Occurrence(void)
-	: Token(0), Vector(0), Pos(cNoRef), Depth(cNoRef), Index(cNoRef)
+GToken::Occurrence::Occurrence(size_t nb)
+	: Token(0), Vector(0), Children(nb,300), Pos(cNoRef), Depth(cNoRef), Index(cNoRef)
 {
 }
 
 
 //------------------------------------------------------------------------------
-GTextToken::Occurrence::Occurrence(GTextToken* token,GVector* vector,size_t pos,size_t depth)
-	: Token(token), Vector(vector), Pos(pos), Depth(depth), Index(cNoRef)
+GToken::Occurrence::Occurrence(GToken* token,GVector* vector,size_t pos,size_t depth,size_t spos,size_t nb)
+	: Token(token), Vector(vector), Children(nb,300), Pos(pos), Depth(depth), SyntacticPos(spos), Index(cNoRef)
 {
 }
 
@@ -61,39 +61,39 @@ GTextToken::Occurrence::Occurrence(GTextToken* token,GVector* vector,size_t pos,
 
 //------------------------------------------------------------------------------
 //
-// class GTextToken
+// class GToken
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GTextToken::GTextToken(const RString& token)
-	: Token(token), Concept(0), Occurs(20,20), Index(cNoRef)
+GToken::GToken(const RString& token)
+	: Token(token), Type(ttUnknown), Concept(0), Occurs(20,20), Index(cNoRef)
 {
 }
 
 
 //------------------------------------------------------------------------------
-int GTextToken::Compare(const GTextToken& token) const
+int GToken::Compare(const GToken& token) const
 {
 	return(Token.Compare(token.Token));
 }
 
 
 //------------------------------------------------------------------------------
-int GTextToken::Compare(const R::RString& token) const
+int GToken::Compare(const R::RString& token) const
 {
 	return(Token.Compare(token));
 }
 
 //------------------------------------------------------------------------------
-size_t GTextToken::HashIndex(size_t idx) const
+size_t GToken::HashIndex(size_t idx) const
 {
 	return(Token.HashIndex(idx));
 }
 
 
 //------------------------------------------------------------------------------
-bool GTextToken::IsAlpha(void) const
+bool GToken::IsAlpha(void) const
 {
 	RCharCursor Cur(Token);
    for(Cur.Start();!Cur.End();Cur.Next())
@@ -104,7 +104,7 @@ bool GTextToken::IsAlpha(void) const
 
 
 //------------------------------------------------------------------------------
-bool GTextToken::IsUsed(GConcept* metaconcept) const
+bool GToken::IsUsed(GConcept* metaconcept) const
 {
 	if(!metaconcept)
 		return(false);
@@ -117,7 +117,7 @@ bool GTextToken::IsUsed(GConcept* metaconcept) const
 
 
 //------------------------------------------------------------------------------
-bool GTextToken::IsUsed(GConceptCat* cat) const
+bool GToken::IsUsed(GConceptCat* cat) const
 {
 	if(!cat)
 		return(false);
@@ -126,4 +126,10 @@ bool GTextToken::IsUsed(GConceptCat* cat) const
 		if(Occur()->Vector->GetMetaConcept()->GetType()->GetCategory()==cat)
 			return(true);
 	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+GToken::~GToken(void)
+{
 }

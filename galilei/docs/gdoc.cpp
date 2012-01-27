@@ -36,9 +36,9 @@
 #include <glang.h>
 #include <gsession.h>
 #include <gprofile.h>
-#include <gconcepttree.h>
 #include <gfdbk.h>
 #include <gdescriptionobject.hh>
+#include <gconcepttree.h>
 using namespace GALILEI;
 using namespace R;
 
@@ -376,11 +376,7 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& docstruct,bool ra
 {
 	// Look if the references must be modified
 	if(delref&&(!ram))
-	{
 		DelRefs(Session,otDoc);
-		if(Session->HasIndex(pDoc))
-			Session->UpdateIndex(pDoc,desc,Id,false);
-	}
 
 	// Assign language and information
 	Lang=lang;
@@ -403,11 +399,7 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& docstruct,bool ra
 
 	// Look if the references must be modified
 	if(!ram)
-	{
 		AddRefs(Session,otDoc);
-		if(Session->HasIndex(pDoc))
-			Session->UpdateIndex(pDoc,desc,Id,false);
-	}
 
 	if(ram)
 	{
@@ -425,8 +417,7 @@ void GDoc::Update(GLang* lang,GDescription& desc,GConceptTree& docstruct,bool ra
 //------------------------------------------------------------------------------
 GDoc::~GDoc(void)
 {
-	if(Struct)
-		delete Struct;
+	delete Struct;
 
 	// Delete feedbacks vector
 	delete Fdbks;

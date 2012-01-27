@@ -90,19 +90,6 @@ namespace GALILEI{
 template<class C>
 	class GObjects : virtual GKB, protected R::RObjectContainer<C,true>
 {
-public:
-
-	/**
-	* Index type.
-	*/
-	enum tIndexType
-	{
-		itNoIndex                /** No index. */,
-		itIndex                  /** Simple index. */,
-		itFullIndex              /** Full index (including the occurrences of
-		                             each concept.*/
-	};
-
 protected:
 
 	/**
@@ -116,14 +103,14 @@ protected:
 	tObjType Type;
 
 	/**
-	 * Type of the index.
-	 */
-	tIndexType IndexType;
-
-	/**
 	 * Description of the objects.
 	 */
 	R::RIndexFile* Desc;
+
+	/**
+	 * Create the index ?
+	 */
+	bool CreateIndex;
 
 	/**
 	 * Index of the objects.
@@ -131,14 +118,14 @@ protected:
 	R::RIndexFile* Index;
 
 	/**
+	 * Create the structures?
+	 */
+	bool CreateStruct;
+
+	/**
 	 * Structures of the objects.
 	 */
 	R::RIndexFile* Struct;
-
-	/**
-	 * Occurrences of the concepts in the objects.
-	 */
-	R::RIndexFile* Occurs;
 
 	/**
 	 * Temporary vector of references.
@@ -179,6 +166,18 @@ public:
 	void OpenFiles(R::RConfig* config,R::RString subdir);
 
 	/**
+	 * @return if an index is create.
+    * @param obj            Pseudo-parameter.
+    */
+	inline bool DoCreateIndex(const C* obj) const;
+
+	 /**
+	 * @return if the structures are created.
+    * @param obj            Pseudo-parameter.
+    */
+	inline bool DoCreateStruct(const C* obj) const;
+
+	/**
 	* Insert an object.
 	* @param obj             object to insert.
 	* @param parent          Parent object. This parameter is only used by
@@ -197,20 +196,6 @@ public:
 	 * @param obj            Pseudo-parameter.
 	 */
 	virtual void Clear(const C* obj);
-
-   /**
-    * Look if an index is managed.
-    * @param obj            Pseudo-parameter.
-    * @return true if an index exists.
-    */
-   inline bool HasIndex(const C* obj) const;
-
-   /**
-    * Look if the structures of the objects are managed.
-    * @param obj            Pseudo-parameter.
-    * @return true if the structure exist.
-    */
-   inline bool HasStruct(const C* obj) const;
 
 	/**
 	 * Get the number of objects of a given type.
@@ -311,7 +296,8 @@ public:
 	void LoadIndex(const C* obj,GConcept* concept,R::RNumContainer<size_t,true>& refs);
 
    /**
-	 * Update the index of a given object.
+	 * Update the index of a given object that is only described by a
+	 * description. The methods generates an exception for documents.
 	 * @param obj            Pseudo-parameter.
 	 * @param desc           Description.
 	 * @param id             Identifier of the object.
@@ -320,7 +306,10 @@ public:
 	void UpdateIndex(const C* obj,const GDescription& desc,size_t id,bool add);
 
 	/**
-	 * Build the idex of all the objects of a given type from scratch.
+	 * Build the index of all the objects of a given type from scratch. Since
+	 * only the object descriptions are used, no occurrence information is
+	 * available. The methods generates an exception for documents.
+	 * The methods generates an exception for documents.
 	 * @param obj            Pseudo-parameter.
 	 */
 	void BuildIndex(const C* obj);
@@ -342,12 +331,22 @@ public:
 	 *                       block will be found).
 	 * @param id             Identifier of the object.
 	 */
-	void SaveStruct(const C* obj,GConceptTree* docstruct,size_t& blockid,size_t id);
+	void SaveStruct(const C* obj,const GConceptTree& docstruct,size_t& blockid,size_t id);
+
+	/**
+	 * Flush the structures of the objects of a given type.
+	 * @param obj            Pseudo-parameter.
+	 * The reason for this trick is that C++ does not managed methods with the
+	 * same name, the same parameters but different return types.
+	 */
+	void FlushStruct(const C* obj);
 
 	/**
 	 * Destructor.
 	 */
 	virtual ~GObjects(void);
+
+	friend class GDocAnalyze;
 };
 
 

@@ -294,6 +294,21 @@ public:
 	void DeleteConcept(GConcept* concept);
 
 	/**
+	 * Clear the block index of all the concepts for a given object type.
+	 * @param session        Session.
+    * @param type           Object type.
+    */
+	void ClearIndex(GSession* session,tObjType type);
+
+	/**
+	 * Clear the references of all the concepts and concept types for a given
+	 * object type.
+	 * @param session        Session.
+    * @param type           Object type.
+    */
+	void ClearRefs(GSession* session,tObjType type);
+
+	/**
 	* Get a predicate.
 	* @param id              Identifier of the type.
 	* @param null            If set to true, if the type does not exist,
@@ -342,8 +357,6 @@ public:
 	* @param weight          Weight of the statement.
 	*/
 	void InsertStatement(size_t id,size_t predicate,size_t xi,tObjType xitype,size_t xj,tObjType xjtype,double weight);
-
-	//@}
 
 	/**
 	* Destruct the session.

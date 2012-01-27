@@ -4,8 +4,9 @@
 
 	GEngine.h
 
-	Generic Engine for extraction of results from the a search engine - Header.
+	Generic Search Engine - Header.
 
+	Copyright 2003-2012 by Pascal Francq.
 	Copyright 2003-2004 by Valery Vandaele.
 	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 
@@ -42,7 +43,7 @@
 //include file for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
-#include <genginedoc.h>
+#include <gdocretrieved.h>
 
 
 //------------------------------------------------------------------------------
@@ -52,23 +53,29 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GEngine class provides a representation for a results extractor
-* for Search Engine
-* @author Valery Vandaele
-* @short Results extractor for search engine
+* The GEngine class provides a representation for a generic search engine. An
+* engine plug-in may :
+* -# Make a direct search in the actual corpus of the session.
+* -# Call an external engine (for example Google Search) and process the
+*    results.
+* Each time a engine wants to add a results, it must call the AddResult methods
+* of GMetaEngine calling the engine. One of the method adds an document already
+* known by the current session, the other one an unknown document.
+* @warning The ranking, \f$ranking\f$, associated by a given search engine must
+* respect the constraint: \f$0\leq ranking \leq 1\f$. Otherwise, an exception
+* is generated. This constraint ensures that each engine normalizes its
+* rankings. Without this normalization, rankings from different engines cannot
+*  be compared.
+* @short Generic Search Engine
 */
 class GEngine : public GPlugIn
 {
 protected:
-	/**
-	* Pointer to an instance of the CURL library.
-	*/
-	CURL* Lib;
 
 	/**
-	* The weight associated to the engine
+	* Weight associated to the engine.
 	*/
-	float Weight;
+	double Weight;
 
 public:
 
@@ -80,29 +87,17 @@ public:
 	GEngine(GSession* session,GPlugInFactory* fac);
 
 	/**
-	* Process the Engine extraction. All results will be extracted, the URL of
-	* the next page.
-	* @param keyWords        The set of keywords to be searched
+	* Request a query. It is the responsibility of the meta-search engine to
+	* build a syntactically correct query for the particular search engine.
+	* @param caller          Meta-engine calling the engine.
+	* @param query           Query.
 	*/
-	virtual void Process(R::RContainer<R::RString,false,false>& keyWords)=0;
+	virtual void Request(GMetaEngine* caller,const R::RString& query)=0;
 
 	/**
-	* Get the weight associated to this engine
-	*@return double         The weight.
+	* @return the weight associated to the engine
 	*/
-	virtual double GetEngineWeight(void)=0;
-
-	/**
-	* Get the weight associated to the engine
-	* @return float          The weight associated to the engine
-	*/
-	float GetEngineWeight(void) const {return Weight;};
-
-	/**
-	* Associate a new weight to the engine
-	* @param w               The weight to associate to the engine
-	*/
-	void SetEngineWeight(float w) {Weight=w;};
+	double GetWeight(void) const {return(Weight);}
 
 	/**
 	* Destructor of the search engine.

@@ -224,17 +224,23 @@ public:
 	void SetId(size_t id);
 
 	/**
-	 * @return the index of the concept for a given object type.
+	 * @return the block index of the concept for a given object type.
 	 * @param ObjType        Type of the reference.
 	 */
 	size_t GetIndex(tObjType ObjType) const;
 
 	/**
-	 * Set the index of the concept for a given object type.
+	 * Set the block index of the concept for a given object type.
 	 * @param ObjType        Type of the reference.
 	 * @param index          Index to set.
 	 */
 	void SetIndex(tObjType ObjType,size_t index);
+
+	/**
+	 * Clear the block index of the concept for a given object type.
+    * @param ObjType        Type of the reference.
+    */
+	void ClearIndex(tObjType type);
 
 	/**
 	* Increase the number of references on this concept for a given object
@@ -255,7 +261,7 @@ public:
 	* specific object.
 	* @param ObjType        Type of the object.
 	*/
-	virtual void ClearRef(tObjType ObjType);
+	virtual void ClearRefs(tObjType ObjType);
 
 	/**
 	* Get the number of references on this concept for a given object type.

@@ -46,7 +46,7 @@ using namespace std;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GPlugInList::GPlugInList(GPlugInManager* mng,R::RString name)
+GPlugInList::GPlugInList(GPlugInManager* mng,const RString& name)
 	: Name(name), Factories(20,10), Plugins(20,10), Current(0), Mng(mng)
 {
 }
@@ -69,7 +69,7 @@ int GPlugInList::Compare(const R::RString& name) const
 //-----------------------------------------------------------------------------
 void GPlugInList::CreateConfig(void)
 {
-	R::RCursor<GPlugInFactory> Cur(Factories);
+	RCursor<GPlugInFactory> Cur(Factories);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		GPlugIn* PlugIn(Cur()->GetPlugIn());
@@ -93,7 +93,7 @@ void GPlugInList::CreateConfig(void)
 //-----------------------------------------------------------------------------
 void GPlugInList::Create(GSession* session)
 {
-	R::RCursor<GPlugInFactory> Cur(Factories);
+	RCursor<GPlugInFactory> Cur(Factories);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		bool Enabled;
@@ -111,7 +111,7 @@ void GPlugInList::Create(GSession* session)
 //-----------------------------------------------------------------------------
 void GPlugInList::Delete(void)
 {
-	R::RCursor<GPlugInFactory> Cur(Factories);
+	RCursor<GPlugInFactory> Cur(Factories);
 	for(Cur.Start();!Cur.End();Cur.Next())
 		Cur()->Delete();
 }
@@ -125,7 +125,7 @@ void GPlugInList::Delete(void)
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GPlugInManager::GPlugInManager(R::RString name,tPluginsType type)
+GPlugInManager::GPlugInManager(const R::RString& name,tPluginsType type)
 	: Name(name), Version(API_PLUG_IN_VERSION), PluginsType(type)
 {
 	if(PluginsType==ptListSelect)

@@ -154,7 +154,7 @@ public:
 	GDoc(GSession* session,const R::RURI& uri,const R::RString& name,size_t id,size_t blockid,size_t structid,GLang* lang,const R::RString& mime,size_t grpid,const R::RDate& c,const R::RDate& u,const R::RDate& a);
 
 	/**
-	 * Defines of the documents have a structure.
+	 * Defines if the documents have a structure.
 	 * @return true.
 	 */
 	static inline bool HasStruct(void){return(true);}

@@ -32,7 +32,9 @@
 
 //-----------------------------------------------------------------------------
 // include files for GALILEI
-#include <gsuggestion.h>
+#include <gdocranking.h>
+#include <gsession.h>
+#include <gdoc.h>
 using namespace std;
 using namespace R;
 using namespace GALILEI;
@@ -46,8 +48,8 @@ using namespace GALILEI;
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-GDocRanking::GDocRanking(size_t docid,double ranking)
-	: DocId(docid), Ranking(ranking)
+GDocRanking::GDocRanking(size_t docid,double ranking,const R::RString info)
+	: DocId(docid), Ranking(ranking), Info(info)
 {
 }
 
@@ -67,28 +69,30 @@ int GDocRanking::Compare(size_t docid) const
 
 
 //------------------------------------------------------------------------------
+RURI GDocRanking::GetURI(GSession* session) const
+{
+	GDoc* Doc(session->GetObj(pDoc,DocId));
+	return(Doc->GetURI());
+}
+
+
+//------------------------------------------------------------------------------
+RString GDocRanking::GetName(GSession* session) const
+{
+	GDoc* Doc(session->GetObj(pDoc,DocId));
+	return(Doc->GetName());
+}
+
+
+//------------------------------------------------------------------------------
 int GDocRanking::SortOrderRanking(const void* a,const void* b)
 {
-	double af=(*((GSuggestion**)(a)))->Ranking;
-	double bf=(*((GSuggestion**)(b)))->Ranking;
+	double af=(*((GDocRanking**)(a)))->Ranking;
+	double bf=(*((GDocRanking**)(b)))->Ranking;
 
 	if(af==bf) return(0);
 	if(af>bf)
 		return(-1);
 	else
 		return(1);
-}
-
-
-
-//-----------------------------------------------------------------------------
-//
-// class GSuggestion
-//
-//-----------------------------------------------------------------------------
-
-//-----------------------------------------------------------------------------
-GSuggestion::GSuggestion(size_t docid,double ranking,const RDate& proposed,const RString& info)
-	: GDocRanking(docid,ranking), Proposed(proposed), Info(info)
-{
 }

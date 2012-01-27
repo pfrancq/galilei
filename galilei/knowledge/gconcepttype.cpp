@@ -248,21 +248,8 @@ size_t GConceptType::GetRef(tObjType ObjType) const
 
 
 //------------------------------------------------------------------------------
-void GConceptType::ClearRef(tObjType ObjType)
+void GConceptType::ClearRefs(tObjType ObjType)
 {
-    // Parse the double hash table
-    RCursor<RDblHashContainer<GConcept,false>::Hash> Cur(Concepts.GetCursor());
-    for(Cur.Start();!Cur.End();Cur.Next())
-    {
-       RCursor<RDblHashContainer<GConcept,false>::Hash2> Cur2(*Cur());
-       for(Cur2.Start();!Cur2.End();Cur2.Next())
-       {
-          RCursor<GConcept> Cur3(*Cur2());
-          for(Cur3.Start();!Cur3.End();Cur3.Next())
-        	  Cur3()->ClearRef(ObjType);
-       }
-    }
-
 	switch(ObjType)
 	{
 		case otDoc:
@@ -284,10 +271,6 @@ void GConceptType::ClearRef(tObjType ObjType)
 			ThrowGException(GALILEI::GetObjType(ObjType,true,true)+" have no references");
 			break;
 	}
-
-	// If necessary, put the references to 0. The storage should also reset all the references for the concepts.
-	if(Session->MustSaveResults())
-		Session->Storage->SaveRefs(this,ObjType,0);
 }
 
 

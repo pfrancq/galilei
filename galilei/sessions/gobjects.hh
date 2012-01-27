@@ -41,8 +41,8 @@ const size_t SizeT2=2*sizeof(size_t);
 //-----------------------------------------------------------------------------
 template<class C>
 	GObjects<C>::GObjects(size_t size,const R::RString& name,tObjType type)
-		: R::RObjectContainer<C,true>(1,size), ObjName(name), Type(type), IndexType(itNoIndex),
-		  Desc(0), Index(0), Struct(0), Occurs(0), tmpRefs(size/2),Loaded(false), MaxObjs(0)
+		: R::RObjectContainer<C,true>(1,size), ObjName(name), Type(type),
+		  Desc(0), Index(0), Struct(0), tmpRefs(size/2), Loaded(false), MaxObjs(0)
 {
 }
 
@@ -60,23 +60,16 @@ template<class C>
 		config->InsertParam(new R::RParamValue("Type",R::RBlockFile::WriteBack),"Indexer",ObjName,"Description");
 
 		// Index
-		config->InsertParam(new R::RParamValue("IndexType",0),"Indexer",ObjName,"Index");
+		config->InsertParam(new R::RParamValue("CreateIndex",false),"Indexer",ObjName,"Index");
 		config->InsertParam(new R::RParamValue("BlockSize",1024),"Indexer",ObjName,"Index");
 		config->InsertParam(new R::RParamValue("Tolerance",10),"Indexer",ObjName,"Index");
 		config->InsertParam(new R::RParamValue("CacheSize",20),"Indexer",ObjName,"Index");
 		config->InsertParam(new R::RParamValue("Type",R::RBlockFile::WriteBack),"Indexer",ObjName,"Index");
-      config->InsertParam(new R::RParamValue("Increment",false),"Indexer",ObjName,"Index");
-
-		// Occurs
-		config->InsertParam(new R::RParamValue("BlockSize",1024),"Indexer",ObjName,"Occurs");
-		config->InsertParam(new R::RParamValue("Tolerance",10),"Indexer",ObjName,"Occurs");
-		config->InsertParam(new R::RParamValue("CacheSize",20),"Indexer",ObjName,"Occurs");
-		config->InsertParam(new R::RParamValue("Type",R::RBlockFile::WriteBack),"Indexer",ObjName,"Occurs");
 	}
 
 	if(C::HasStruct())
 	{
-		config->InsertParam(new R::RParamValue("Struct",false),"Indexer",ObjName,"Structure");
+		config->InsertParam(new R::RParamValue("CreateStruct",false),"Indexer",ObjName,"Structure");
 		config->InsertParam(new R::RParamValue("BlockSize",4096),"Indexer",ObjName,"Structure");
 		config->InsertParam(new R::RParamValue("Tolerance",40),"Indexer",ObjName,"Structure");
 		config->InsertParam(new R::RParamValue("CacheSize",20),"Indexer",ObjName,"Structure");
@@ -105,19 +98,8 @@ template<class C>
 			Desc->SetCacheType(static_cast<R::RBlockFile::CacheType>(config->GetInt("Type","Indexer",ObjName,"Description")));
 
 			// Look if the index must be created
-			switch(config->GetInt("IndexType","Indexer",ObjName,"Index"))
-			{
-				case 0: IndexType=itNoIndex; break;
-				case 1: IndexType=itIndex; break;
-				case 2: if(Type==otDoc)
-							IndexType=itFullIndex;
-						else
-							IndexType=itIndex;
-						break;
-				default:
-					ThrowGException("Invalid index type for "+GetObjType(Type,true,true));
-			}
-			if(IndexType!=itNoIndex)
+			CreateIndex=config->GetBool("CreateIndex","Indexer",ObjName,"Index");
+			if(CreateIndex)
 			{
 				Index=new R::RIndexFile(Dir+ObjName+".index",
 						config->GetUInt("BlockSize","Indexer",ObjName,"Index"),
@@ -128,14 +110,13 @@ template<class C>
 			}
 		}
 		else
-			IndexType=itNoIndex;
+			CreateIndex=false;
 
 		// Look if the structure file must be created
-		bool ObjStruct(false);
 		if(C::HasStruct())
 		{
-			ObjStruct=config->GetBool("Struct","Indexer",ObjName,"Structure");
-			if(ObjStruct)
+			CreateStruct=config->GetBool("CreateStruct","Indexer",ObjName,"Structure");
+			if(CreateStruct)
 			{
 				Struct=new R::RIndexFile(Dir+"Documents.struct",
 						config->GetUInt("BlockSize","Indexer",ObjName,"Structure"),
@@ -145,17 +126,8 @@ template<class C>
 				Struct->SetCacheType(static_cast<R::RBlockFile::CacheType>(config->GetInt("Type","Indexer","Documents","Structure")));
 			}
 		}
-
-		// Look if the occurrences file must be created
-		if((IndexType==itFullIndex)||ObjStruct)
-		{
-			Occurs=new R::RIndexFile(Dir+ObjName+".occurs",
-					config->GetUInt("BlockSize","Indexer",ObjName,"Occurs"),
-					config->GetUInt("CacheSize","Indexer",ObjName,"Occurs"),
-					config->GetUInt("Tolerance","Indexer",ObjName,"Occurs"));
-			Occurs->Open();
-			Occurs->SetCacheType(static_cast<R::RBlockFile::CacheType>(config->GetInt("Type","Indexer",ObjName,"Occurs")));
-		}
+		else
+			CreateStruct=false;
 	}
 	catch(...)
 	{
@@ -166,25 +138,25 @@ template<class C>
 
 //-----------------------------------------------------------------------------
 template<class C>
+	bool GObjects<C>::DoCreateIndex(const C*) const
+{
+		return(CreateIndex);
+}
+
+
+//-----------------------------------------------------------------------------
+template<class C>
+	bool GObjects<C>::DoCreateStruct(const C*) const
+{
+	return(CreateStruct);
+}
+
+
+//-----------------------------------------------------------------------------
+template<class C>
 	void GObjects<C>::Clear(const C*)
 {
 	R::RObjectContainer<C,true>::Clear();
-}
-
-
-//-----------------------------------------------------------------------------
-template<class C>
-   bool GObjects<C>::HasIndex(const C*) const
-{
-    return(Index);
-}
-
-
-//-----------------------------------------------------------------------------
-template<class C>
-   bool GObjects<C>::HasStruct(const C*) const
-{
-    return(Struct);
 }
 
 
@@ -440,6 +412,8 @@ template<class C>
 {
 	if(!Index)
 		ThrowGException(GetObjType(Type,true,true)+" do not have index");
+	if(Type==otDoc)
+		ThrowGException("Method doesn't manage occurrence information");
 
 	// Go trough each vector
 	R::RCursor<GVector> Vector(desc.GetVectors());
@@ -481,6 +455,8 @@ template<class C>
 {
 	if(!Index)
 		ThrowGException(GetObjType(Type,true,true)+" do not have index");
+	if(Type==otDoc)
+		ThrowGException("Method doesn't manage occurrence information");
 
 	// Clear the file and put all block identifier of concepts to 0.
 	Index->Clear();
@@ -601,18 +577,21 @@ template<class C>
 
 //------------------------------------------------------------------------------
 template<class C>
-	void GObjects<C>::SaveStruct(const C*,GConceptTree* docstruct,size_t& blockid,size_t id)
+	void GObjects<C>::SaveStruct(const C*,const GConceptTree& docstruct,size_t& blockid,size_t id)
 {
+	if(!CreateStruct)
+		return;
+
 	if(!Struct)
 		ThrowGException(GetObjType(Type,true,true)+" do not have structures");
 
 	try
 	{
-	    if(!docstruct->GetNbNodes())
+	    if(!docstruct.GetNbNodes())
 			return;
 
 		// Position the file to correct block and announce that a given number of bytes will be written
-	    size_t nbrecs(docstruct->GetNbNodes()),nblcs(docstruct->GetNbLCs());
+	    size_t nbrecs(docstruct.GetNbNodes()),nblcs(docstruct.GetNbLCs());
 	    size_t size(SizeT2+(nblcs*sizeof(size_t))+(nbrecs*SizeRecStruct));
 	    Struct->Seek(blockid,id,size);
 
@@ -623,12 +602,12 @@ template<class C>
 		// Save LCs
 		for(size_t i=0;i<nblcs;i++)
 		{
-			size_t nb(docstruct->GetNbLCEntries(i));
+			size_t nb(docstruct.GetNbLCEntries(i));
 			Struct->Write((char*)&nb,sizeof(size_t));
 		}
 
 		// Save the nodes
-		R::RCursor<GConceptNode> Recs(docstruct->GetNodes());
+		R::RCursor<GConceptNode> Recs(docstruct.GetNodes());
 		for(Recs.Start();!Recs.End();Recs.Next())
 		{
 			size_t nb;
@@ -639,7 +618,7 @@ template<class C>
 			Struct->Write((char*)&nb,sizeof(size_t));
 			car=Recs()->GetDepth();
 			Struct->Write((char*)&car,sizeof(char));
-			nb=docstruct->GetFirstChild(Recs());
+			nb=docstruct.GetFirstChild(Recs());
 			Struct->Write((char*)&nb,sizeof(size_t));
 		}
 	}
@@ -648,6 +627,19 @@ template<class C>
 		std::cerr<<e.GetMsg()<<std::endl;
 		ThrowGException(e.GetMsg());
 	}
+}
+
+
+//------------------------------------------------------------------------------
+template<class C>
+	void GObjects<C>::FlushStruct(const C*)
+{
+	if(!CreateStruct)
+		return;
+
+	if(!Struct)
+		ThrowGException(GetObjType(Type,true,true)+" do not have descriptions");
+	Struct->Flush();
 }
 
 
@@ -681,5 +673,4 @@ template<class C>
 	delete Desc;
 	delete Index;
 	delete Struct;
-	delete Occurs;
 }

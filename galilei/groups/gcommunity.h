@@ -37,7 +37,7 @@
 // include files for GALILEI
 #include <ggroup.h>
 #include <gprofile.h>
-#include <gsuggestion.h>
+#include <gsugs.h>
 
 
 //------------------------------------------------------------------------------

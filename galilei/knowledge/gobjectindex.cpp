@@ -2,12 +2,11 @@
 
 	GALILEI Research Project
 
-	GRanking.cpp
+	GObjectIndex.h
 
-	Class to represent the ranking of results from a Search engine - Implementation.
+	Object Index - Implementation.
 
-	Copyright 2003-2004 by Valery Vandaele.
-	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
+	Copyright 2001-2012 by Pascal Francq (pascal@francq.info).
 
 	This library is free software; you can redistribute it and/or
 	modify it under the terms of the GNU Library General Public
@@ -29,34 +28,39 @@
 
 
 //------------------------------------------------------------------------------
-// include files for ANSI C/C++
-#include <stdio.h>
-#include <iostream>
-#include <cstdlib>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
-#include <granking.h>
-using namespace GALILEI;
+#include <gobjectindex.h>
+#include <gconcept.h>
+using namespace std;
 using namespace R;
+using namespace GALILEI;
 
-
-
-//------------------------------------------------------------------------------
-//
-// class GRanking
-//
-//------------------------------------------------------------------------------
-
-//------------------------------------------------------------------------------
-GRanking::GRanking(int rank,R::RString engine)
-	:Rank(rank), Engine(engine)
+GObjectSyntacticPos::GObjectSyntacticPos(void)
+	: Concept(0), Pos(30)
 {
+
+}
+//------------------------------------------------------------------------------
+int GObjectSyntacticPos::Compare(const GObjectSyntacticPos& obj) const
+{
+	return(CompareIds(Concept->GetId(),obj.Concept->GetId()));
+}
+
+//------------------------------------------------------------------------------
+//
+// class GObjectIndex
+//
+//------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------
+GObjectIndex::GObjectIndex(size_t nb)
+	: Objs(nb), SyntacticPos(1,10)
+{
+
 }
 
 
 //------------------------------------------------------------------------------
-GRanking::~GRanking(void)
+GObjectIndex::~GObjectIndex(void)
 {
 }

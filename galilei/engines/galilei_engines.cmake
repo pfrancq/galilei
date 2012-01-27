@@ -1,17 +1,19 @@
 SET(galilei_engines_INST_INCLUDES
-	genginedoc.h
-    granking.h
+	gdocranking.h
+	gdocretrieved.h
 	gengine.h
-    gmetaengine.h
-    gcomputesugs.h
-    gcomputetrust.h    
+	gmetaengine.h
+	gsugs.h
+	gcomputesugs.h
+	gcomputetrust.h
 )
-                              
+
 SET(galilei_engines_TARGET_SOURCES
-	genginedoc.cpp 
-    granking.cpp 
+	gdocranking.cpp
+	gdocretrieved.cpp
 	gengine.cpp
 	gmetaengine.cpp
+	gsugs.cpp
 	gcomputesugs.cpp
-	gcomputetrust.cpp    
+	gcomputetrust.cpp
 )

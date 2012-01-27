@@ -31,11 +31,24 @@
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gsugs.h>
-#include <gsuggestion.h>
 #include <gdoc.h>
 using namespace R;
 using namespace GALILEI;
 using namespace std;
+
+
+
+//-----------------------------------------------------------------------------
+//
+// class GSuggestion
+//
+//-----------------------------------------------------------------------------
+
+//-----------------------------------------------------------------------------
+GSuggestion::GSuggestion(size_t docid,double ranking,const RDate& proposed,const RString& info)
+	: GDocRanking(docid,ranking,info), Proposed(proposed)
+{
+}
 
 
 

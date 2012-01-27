@@ -134,6 +134,23 @@ R::RString GetState(tObjState state,bool upper);
 
 //------------------------------------------------------------------------------
 /**
+ * During the document analysis process, the filters extract tokens from the
+ * documents. Different sort of tokens are currently managed.
+ * @short Token Type
+ */
+enum tTokenType
+{
+	 ttUnknown               /** Unknown type.*/,
+	 ttDeleted               /** A deleted token.*/,
+	 ttText                  /** Text.*/,
+	 ttDivision              /** Document part, chapter, section, etc.*/,
+	 ttXMLTag                /** An XML tag.*/,
+	 ttXMLAttr               /** An XML attribute.*/
+};
+
+
+//------------------------------------------------------------------------------
+/**
 * Different types of feedbacks over a document.
 * @short Feedback Type
 */
@@ -195,7 +212,6 @@ R::RString GetProfileType(tProfileType type,bool upper,bool plural);
 * @param type                Profile type.
 */
 tProfileType GetProfileType(unsigned int type);
-
 
 
 //------------------------------------------------------------------------------
@@ -279,20 +295,19 @@ class GDoc;
 class GBalancedLinks;
 class GLink;
 class GLinks;
-class GDocRanking;
-class GSuggestion;
-class GSugs;
 class GDocAnalyze;
 class GFilter;
 class GTokenizer;
 class GAnalyzer;
-class GTextToken;
+class GToken;
 
 
 //------------------------------------------------------------------------------
 // forward class declaration - Engines Part
-class GEngineDoc;
-class GRanking;
+class GDocRetrieved;
+class GDocRanking;
+class GSuggestion;
+class GSugs;
 class GComputeSugs;
 class GComputeTrust;
 class GEngine;

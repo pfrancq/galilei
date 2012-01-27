@@ -229,10 +229,10 @@ public:
 	size_t GetRef(tObjType ObjType) const;
 
 	/**
-	* Clear the number of objects of a given type using the dictionary.
+	* Clear the number of objects of a given type for this concept type.
 	* @param ObjType        Type of the object.
 	*/
-	void ClearRef(tObjType ObjType);
+	void ClearRefs(tObjType ObjType);
 
 	/**
 	* Increase the number of objects of a given type that make a reference to a

@@ -109,7 +109,7 @@ public:
 	* @param mng             Manager of the list.
 	* @param name            Name of the list.
 	*/
-	GPlugInList(GPlugInManager* mng,R::RString name);
+	GPlugInList(GPlugInManager* mng,const R::RString& name);
 
 	/**
 	* Get the name of the plug-in list.
@@ -230,7 +230,7 @@ public:
 	* @param name            Name of the manager.
 	* @param type            Type of the manager.
 	*/
-	GPlugInManager(R::RString name,tPluginsType type);
+	GPlugInManager(const R::RString& name,tPluginsType type);
 
 	/**
 	* Get the name of the current Manager.

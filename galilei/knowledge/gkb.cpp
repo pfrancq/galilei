@@ -32,19 +32,6 @@
 
 
 //------------------------------------------------------------------------------
-/*// include files for ANSI C/C++
-#include <fstream>
-#include <math.h>*/
-
-
-//------------------------------------------------------------------------------
-// include files for R Project
-/*#include <rxmlfile.h>
-#include <rdir.h>*/
-//using namespace R;
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gkb.h>
 #include <gstorage.h>
@@ -57,58 +44,6 @@ using namespace GALILEI;
 using namespace R;
 using namespace std;
 
-
-
-//------------------------------------------------------------------------------
-// define
-#define HANDLEALLEXCEPTIONS(rec,msg) 	                                       \
-catch(GException& e)                                                           \
-{                                                                              \
-	if(rec)                                                                    \
-	{                                                                          \
-		cerr<<msg<<e.GetMsg()<<endl;                                           \
-		rec->WriteStr(msg+e.GetMsg());                                         \
-	}                                                                          \
-	else                                                                       \
-		throw GException(msg+e.GetMsg());                                      \
-}                                                                              \
-catch(RIOException& e)                                                         \
-{                                                                              \
-	if(rec)                                                                    \
-	{                                                                          \
-		cerr<<e.GetMsg()<<endl;                                                \
-		rec->WriteStr(e.GetMsg());                                             \
-	}                                                                          \
-	else                                                                       \
-		throw GException(e.GetMsg());                                          \
-}                                                                              \
-catch(RException& e)                                                           \
-{                                                                              \
-	if(rec)                                                                    \
-	{                                                                          \
-		cerr<<msg<<e.GetMsg()<<endl;                                           \
-		rec->WriteStr(msg+e.GetMsg());                                         \
-	}                                                                          \
-	else                                                                       \
-		throw GException(msg+e.GetMsg());                                      \
-}                                                                              \
-catch(exception& e)                                                            \
-{                                                                              \
-	if(rec)                                                                    \
-	{                                                                          \
-		cerr<<msg<<e.what()<<endl;                                             \
-		rec->WriteStr(msg+e.what());                                           \
-	}                                                                          \
-	else                                                                       \
-		throw GException(msg+e.what());                                        \
-}                                                                              \
-catch(...)                                                                     \
-{                                                                              \
-	if(rec)                                                                    \
-		rec->WriteStr(msg+"Undefined error");                                  \
-	else                                                                       \
-		throw GException(msg+"Undefined error");                               \
-}
 
 
 //------------------------------------------------------------------------------
@@ -279,7 +214,7 @@ GConcept* GKB::GetConcept(size_t id)
 //------------------------------------------------------------------------------
 R::RCursor<GConcept> GKB::GetConcepts(void) const
 {
-	return(R::RCursor<GConcept>(Concepts));
+	return(RCursor<GConcept>(Concepts));
 }
 
 
@@ -291,6 +226,34 @@ void GKB::DeleteConcept(GConcept* concept)
 	Storage->DeleteConcept(concept);
 	concept->GetType()->DeleteConcept(concept);
 	Concepts.DeletePtrAt(concept->GetId(),false);
+}
+
+
+//------------------------------------------------------------------------------
+void GKB::ClearIndex(GSession* session,tObjType type)
+{
+	RCursor<GConcept> Concept(Concepts);
+	for(Concept.Start();!Concept.End();Concept.Next())
+		Concept()->ClearIndex(type);
+	if(session->SaveResults)
+		session->GetStorage()->ClearIndex(type);
+}
+
+
+//------------------------------------------------------------------------------
+void GKB::ClearRefs(GSession* session,tObjType type)
+{
+	RCursor<GConcept> Concept(Concepts);
+	for(Concept.Start();!Concept.End();Concept.Next())
+		Concept()->ClearRefs(type);
+
+	RCursor<GConceptType> Types(ConceptTypes);
+	for(Types.Start();!Types.End();Types.Next())
+		Types()->ClearRefs(type);
+
+	// If necessary, put the references to 0.
+	if(session->MustSaveResults())
+		session->Storage->ClearRefs(type);
 }
 
 
@@ -407,7 +370,6 @@ GConcept* GKB::InsertConcept(const GConcept* concept)
 
 	return(ptr);
 }
-
 
 
 //-----------------------------------------------------------------------------

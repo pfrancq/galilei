@@ -2,10 +2,11 @@
 
 	GALILEI Research Project
 
-	GEngineDoc.h
+	GDocRetrieved.h
 
-	Class to store the results of the extraction from a search engine - Header.
+	Relevant Document for a Search - Header.
 
+	Copyright 2003-2012 by Pascal Francq.
 	Copyright 2003-2004 by Valery Vandaele.
 	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 
@@ -29,8 +30,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GEngineDocH
-#define GEngineDocH
+#ifndef GDocRetrievedH
+#define GDocRetrievedH
 
 
 //------------------------------------------------------------------------------
@@ -48,7 +49,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <granking.h>
+#include <gdocranking.h>
 
 
 //------------------------------------------------------------------------------
@@ -58,23 +59,28 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
-* The GEngineDoc class provides a representation for a document proposed by a
+* The GDocRetrieved class provides a representation for a document proposed by a
 * search engine (with its ranking).
-* @author Valery Vandaele
-* @short Search Engine Result
+* @short Document Retrieved
 */
-class GEngineDoc
+class GDocRetrieved
 {
 private:
 
 	/**
-	* The url of the resulting page.
+	* The identifier of the document (may be null for an unknown document by the
+	 * system).
 	*/
-	R::RString Url;
+	size_t DocId;
 
 	/**
-	* The title of the resulting page.
-	*/
+	 * URI of the document.
+	 */
+	R::RString URI;
+
+	/**
+	 * Title of the document.
+	 */
 	R::RString Title;
 
 	/**
@@ -85,38 +91,53 @@ private:
 	/**
 	* The global ranking for the current document
 	*/
-	size_t GlobalRank;
+	double Ranking;
 
 	/**
-	* The global ranking for the current document
+	* Container of all rankings associated to this document.
 	*/
-	size_t GlobalRank2;
-
-	/**
-	* Container of all rankings associated to this URL
-	*/
-	R::RContainer<GRanking,true,false> Rankings;
+	R::RContainer<GDocRanking,true,false> Rankings;
 
 public:
 
 	/**
-	* Constructor of the engine.
-	* @param url             URL of the document.
+	* Constructor of a document retrieved.
+	* @param docid           Identifier of the document.
+	* @param uri             URI of the document.
 	* @param title           Title of the document.
 	* @param description     Description of the document.
-	* @param rank            Ranking of the document.
+	* @param ranking         Ranking of the document.
 	* @param engine          Name of the engine that retrieves it.
 	*/
-	GEngineDoc(R::RString url,R::RString title,R::RString description,int rank, R::RString engine);
+	GDocRetrieved(size_t docid,const R::RString uri,const R::RString title,const R::RString description,double ranking,const R::RString engine);
 
 	/**
-	* Get the url of the document
+	* Method to compare document retrieved based on their URI.
+	* @param d               Document retrieved to compare with.
 	*/
-	R::RString GetUrl(void) const {return(Url);}
+	int Compare(const GDocRetrieved& d) const;
 
 	/**
-	* Get the Title of the document
+	* Method to a document retrieved with an URI.
+	* @param uri             URI to compare with.
 	*/
+	int Compare(const R::RString& uri) const;
+
+	/**
+	 * Get the identifier of the document. If it is null, the URI is considered
+	 * as unknown in the session
+	 * @return the identifier of the document.
+	 */
+	size_t GetDocId(void) const {return(DocId);}
+
+	/**
+    * @return the document URI.
+    */
+	R::RString GetURI(void) const {return(URI);}
+
+	/**
+    * @return the document title.
+    */
 	R::RString GetTitle(void) const {return(Title);}
 
 	/**
@@ -125,68 +146,28 @@ public:
 	R::RString GetDescription(void) const {return(Description);}
 
 	/**
-	* Get the global ranking associated to this document
+	* Get the global ranking associated to this document.
 	*/
-	size_t GetGlobalRanking(void) const {return(GlobalRank);}
+	double GetRanking(void) const {return(Ranking);}
 
 	/**
-	* Set the value of the global ranking
-	* @param r               New value of the global ranking
-	*/
-	void SetGlobalRanking(size_t r) {GlobalRank=r;}
-
-	/**
-	* Get the global ranking associated to this document
-	*/
-	size_t GetGlobalRanking2(void) const {return(GlobalRank2);}
-
-	/**
-	* Set the value of the global ranking
-	* @param r               New value of the global ranking
-	*/
-	void SetGlobalRanking2(size_t r) {GlobalRank2=r;}
-
-	/**
-	* Add new ranking for the current document
-	* @param r               Ranking
-	*/
-	void AddRanking(GRanking* r);
-
-	/**
-	* Add new ranking for the current document
-	* @param rank            Rank
+	* Add new ranking for the current document retrieved.
+	* @param ranking         Ranking
 	* @param engine          Engine
 	*/
-	void AddRanking(int rank,R::RString engine);
+	void AddRanking(double ranking,const R::RString engine);
 
 	/**
-	* Method to compare two GEngineDoc
-	* @param d               Element to compare
+	* @return a cursor on the rankings of the document retrieved.
 	*/
-	int Compare(const GEngineDoc& d) const;
-
-	/**
-	* Method to compare two GEngineDoc
-	* @param d               Element to compare
-	*/
-	int Compare(const GEngineDoc* d) const;
-
-	/**
-	* Method to compare GEngineDoc
-	* @param url             Url to compare
-	*/
-	int Compare(const R::RString url) const;
-
-	/**
-	* Get a cursor on the ranking of the engineDoc.
-	* @return GRankingCursor.
-	*/
-	R::RCursor<GRanking> GetRankings(void);
+	R::RCursor<GDocRanking> GetRankings(void) const;
 
 	/**
 	* Destruct.
 	*/
-	virtual ~GEngineDoc(void);
+	virtual ~GDocRetrieved(void);
+
+	friend class GMetaEngine;
 };
 
 

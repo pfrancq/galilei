@@ -45,8 +45,13 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
- * The GDescription provides a generic class for a description, i.e. a set of
- * vectors.
+ * The GDescription provides a representation for a tensor in the
+ * [article Tensor_Space_Model tensor space model]. In practice, it is
+ * implemented as a set of [code GALILEI_GVector vectors]. Such a tensor is
+ * used for computations or to describe objects.
+ *
+ * The GDescriptionObject class provides a generic class for an object described
+ * as a tensor.
  * @author Pascal Francq
  * @short Description.
  */
@@ -138,6 +143,13 @@ public:
     * @return true if defined.
     */
    bool IsDefined(void) const;
+
+	/**
+	 * Verify if a given concept is in one of the vectors.
+	 * @param concept        Concept.
+	 * @returns true if the concept is contained.
+	 */
+	bool IsIn(const GConcept* concept) const;
 
   	/**
 	 * Clear the vectors corresponding to the object.

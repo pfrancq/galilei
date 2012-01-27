@@ -46,7 +46,6 @@
 #include <gtopic.h>
 #include <guser.h>
 #include <glink.h>
-#include <gsuggestion.h>
 #include <gsugs.h>
 #include <gcommunitycalc.h>
 #include <gtopiccalc.h>

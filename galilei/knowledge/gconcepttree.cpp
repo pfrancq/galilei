@@ -67,7 +67,7 @@ class GConceptTree::GLC : public RContainer<GLCEntry,true,false>
 {
 public:
 
-	GLC(size_t max) : RContainer<GLCEntry,true,false>(max) {}
+	GLC(size_t size=2000) : RContainer<GLCEntry,true,false>(size) {}
 	int Compare(const GLC&) const {return(-1);}
 	~GLC(void) {}
 };
@@ -82,22 +82,8 @@ public:
 
 //------------------------------------------------------------------------------
 GConceptTree::GConceptTree(void)
-	: Nodes(2000), LCs(10)
+	: Nodes(20000), LCs(10)
 {
-}
-
-
-//------------------------------------------------------------------------------
-GConceptTree::GConceptTree(const GConceptTree& tree)
-	: Nodes(tree.Nodes.GetNb()), LCs(tree.LCs.GetNb())
-{
-	// Recreate correctly the structure
-	R::RCursor<GConceptNode> Node(tree.Nodes);
-	for(Node.Start();!Node.End();Node.Next())
-	{
-		size_t child(tree.GetFirstChild(Node()));
-		AddNode(Node()->GetConcept(),Node()->GetPos(),Node()->GetDepth(),child);
-	}
 }
 
 
@@ -127,45 +113,43 @@ size_t GConceptTree::GetNbNodes(void) const
 //------------------------------------------------------------------------------
 size_t GConceptTree::GetNbLCs(void) const
 {
-	return(LCs.GetNb());
+	return(0);
+	//return(LCs.GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 size_t GConceptTree::GetNbLCEntries(size_t level) const
 {
-	if(level>=LCs.GetNb())
-		return(0);
-	return(LCs[level]->GetNb());
+	return(0);
+//	if(level>=LCs.GetNb())
+//		return(0);
+//	return(LCs[level]->GetNb());
 }
 
 
 //------------------------------------------------------------------------------
 void GConceptTree::SetNbLCEntries(size_t level,size_t size) const
 {
-	if(!LCs.VerifyIndex(level))
-		const_cast<GConceptTree*>(this)->LCs.InsertPtrAt(new GLC(size),level);
+//	if(!LCs.VerifyIndex(level))
+//		const_cast<GConceptTree*>(this)->LCs.InsertPtrAt(new GLC(size),level);
 }
 
 
 //------------------------------------------------------------------------------
-GConceptNode* GConceptTree::AddNode(GConcept* concept,size_t pos,char depth,size_t child,size_t nbrecs)
+GConceptNode* GConceptTree::AddNode(GConcept* concept,size_t pos,size_t depth,size_t child)
 {
 	// Create the node and insert it
 	GConceptNode* ptr=new GConceptNode(concept,pos,depth);
 	Nodes.InsertPtr(ptr);
 
 	// Insert it the location cache if necessary
-	GLC* Level;
+	RContainer<GConceptNode,false,true>* Level;
 	if(LCs.VerifyIndex(depth))
 		Level=LCs[depth];
 	else
-	{
-		if(!nbrecs)
-			nbrecs=200;
-		LCs.InsertPtrAt(Level=new GLC(nbrecs),depth);
-	}
-	Level->InsertPtr(new GLCEntry(ptr,child));
+		LCs.InsertPtrAt(Level=new RContainer<GConceptNode,false,true>(200),depth);
+	Level->InsertPtr(ptr);//new GLCEntry(ptr,child));
 
 	// Return
 	return(ptr);
@@ -182,13 +166,13 @@ R::RCursor<GConceptNode> GConceptTree::GetNodes(void) const
 //------------------------------------------------------------------------------
 size_t GConceptTree::GetFirstChild(GConceptNode* rec) const
 {
-	RCursor<GLCEntry> Cur(*LCs[rec->GetDepth()]);
+/*	RCursor<GLCEntry> Cur(*LCs[rec->GetDepth()]);
 	for(Cur.Start();!Cur.End();Cur.Next())
 	{
 		if(Cur()->Rec==rec)
 			return(Cur()->Child);
 	}
-	cerr<<"Big problem in GConceptTree::GetFirstChild"<<endl;
+	cerr<<"Big problem in GConceptTree::GetFirstChild"<<endl;*/
 	return(cNoRef);
 }
 
@@ -198,7 +182,7 @@ size_t GConceptTree::GetFirstChild(GConceptNode* rec) const
 void GConceptTree::Clear(void)
 {
 	Nodes.Clear();
-	LCs.Clear();
+//	LCs.Clear();
 }
 
 
@@ -216,7 +200,27 @@ GConceptTree::~GConceptTree(void)
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GConceptNode::GConceptNode(GConcept* concept,size_t pos,char depth)
+GConceptNode::GConceptNode(GConcept* concept,size_t pos,size_t depth)
 	: Concept(concept), Pos(pos), Depth(depth)
 {
+}
+
+
+//------------------------------------------------------------------------------
+int GConceptNode::Compare(const GConceptNode& node) const
+{
+	if(Depth==node.Depth)
+	{
+		if(Pos==node.Pos)
+			return(0);
+		else if (Pos>node.Pos)
+			return(1);
+		else
+			return(-1);
+
+	}
+	else if(Depth>node.Depth)
+		return(1);
+	else
+		return(-1);
 }

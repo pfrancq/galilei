@@ -34,12 +34,6 @@
 
 
 //------------------------------------------------------------------------------
-// include files for R
-#include <rstring.h>
-#include <rxmltag.h>
-
-
-//------------------------------------------------------------------------------
 // include files for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
@@ -220,7 +214,7 @@ public:
 	/**
 	* Save the references of a given object type for a given concept.
 	* @param concept         Concept.
-	* @param what            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param what            Type of the object.
 	* @param refs            Number of references.
 	*/
 	virtual void SaveRefs(const GConcept* concept,tObjType what,size_t refs)=0;
@@ -228,20 +222,30 @@ public:
 	/**
 	 * Save the index information of a given object type for a given concept.
 	 * @param concept         Concept.
-	 * @param what            Type of the object (Only otDoc supported).
-	 * @param indexdocs       Identifier of the block containing the index.
+	 * @param what            Type of the object.
+	 * @param index           Identifier of the block containing the index.
 	 */
-	virtual void SaveIndex(const GConcept* concept,tObjType what,size_t indexdocs)=0;
+	virtual void SaveIndex(const GConcept* concept,tObjType what,size_t index)=0;
 
 	/**
-	* Save the references of a given object type for a given concept type. If
-	* the number of references is null, the method must reset all the
-	* references for the corresponding concepts.
+	 * Clear all the index information of a given object type.
+	 * @param what            Type of the object.
+	 */
+	virtual void ClearIndex(tObjType what)=0;
+
+	/**
+	* Save the references of a given object type for a given concept type.
 	* @param type            Type of the concept.
-	* @param what            Type of the object (otDoc,otSubProfile,otGroup).
+	* @param what            Type of the object.
 	* @param refs            Number of references.
 	*/
 	virtual void SaveRefs(GConceptType* type,tObjType what,size_t refs)=0;
+
+	/**
+	* Clear the references of a given object type.
+	* @param what            Type of the object.
+	*/
+	virtual void ClearRefs(tObjType what)=0;
 
 	/**
 	* Load the predicates from the database.

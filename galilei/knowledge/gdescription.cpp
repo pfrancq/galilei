@@ -31,7 +31,6 @@
 // include files for R
 #include <rindexfile.h>
 
-
 //-----------------------------------------------------------------------------
 // include files for GALILEI
 #include <gdescription.h>
@@ -147,6 +146,17 @@ bool GDescription::IsDefined(void) const
 	RCursor<GVector> Vector(GetVectors());
 	for(Vector.Start();!Vector.End();Vector.Next())
 		if(Vector()->IsDefined())
+			return(true);
+	return(false);
+}
+
+
+//------------------------------------------------------------------------------
+bool GDescription::IsIn(const GConcept* concept) const
+{
+	RCursor<GVector> Vector(GetVectors());
+	for(Vector.Start();!Vector.End();Vector.Next())
+		if(Vector()->IsIn(concept))
 			return(true);
 	return(false);
 }

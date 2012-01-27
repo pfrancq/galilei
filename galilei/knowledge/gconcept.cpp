@@ -37,6 +37,7 @@
 // include files for GALILEI
 #include <gconcept.h>
 #include <gconcepttype.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -164,6 +165,34 @@ void GConcept::SetIndex(tObjType ObjType,size_t index)
 		default:
 			ThrowGException("Unknown type for concept "+RString::Number(Id));
 	}
+	if(Session->MustSaveResults())
+		Session->GetStorage()->SaveIndex(this,ObjType,index);
+}
+
+
+//-----------------------------------------------------------------------------
+void GConcept::ClearIndex(tObjType ObjType)
+{
+	switch(ObjType)
+	{
+		case otDoc:
+			IndexDocs=0;
+			break;
+		case otProfile:
+			IndexProfiles=0;
+			break;
+		case otCommunity:
+			IndexCommunities=0;
+			break;
+		case otTopic:
+			IndexTopics=0;
+			break;
+		case otClass:
+			IndexClasses=0;
+			break;
+		default:
+			ThrowGException("Unknown type for concept "+RString::Number(Id));
+	}
 }
 
 
@@ -252,7 +281,7 @@ size_t GConcept::DecRef(tObjType ObjType)
 
 
 //-----------------------------------------------------------------------------
-void GConcept::ClearRef(tObjType ObjType)
+void GConcept::ClearRefs(tObjType ObjType)
 {
 	switch(ObjType)
 	{

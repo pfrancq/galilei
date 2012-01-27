@@ -2,7 +2,7 @@
 
 	GALILEI Research Project
 
-	GTextToken.h
+	GToken.h
 
 	Document Token - Header.
 
@@ -29,8 +29,8 @@
 
 
 //------------------------------------------------------------------------------
-#ifndef GTextTokenH
-#define GTextTokenH
+#ifndef GTokenH
+#define GTokenH
 
 
 //------------------------------------------------------------------------------
@@ -45,30 +45,36 @@ namespace GALILEI{
 
 //------------------------------------------------------------------------------
 /**
- * The GTextToken class represents a token extracted from a text document. It
- * is used when a document is analyzed : the tokenizer parses the text received
+ * The GToken class represents a token extracted from a document. It
+ * is used when a document is analyzed : the tokenizer parses the document
  * and create the corresponding tokens. These tokens are then treated by the
  * different analyzers in a specific order.
  * @short Document Token.
  */
-class GTextToken
+class GToken
 {
 public:
 
 		/**
 		 * This class represents an occurrence of a token.
+		 * @param Token Occurrence
 		 */
 		class Occurrence
 		{
 			/**
 			 * The corresponding token.
 			 */
-			GTextToken* Token;
+			GToken* Token;
 
 			/**
 			 * The corresponding meta-vector (meta-concept).
 			 */
 			GVector* Vector;
+
+			/**
+			* Children of the occurrence.
+			*/
+			R::RContainer<Occurrence,false,false> Children;
 
 			/**
 			 * Position of the occurrence in the document.
@@ -81,6 +87,11 @@ public:
 			size_t Depth;
 
 			/**
+			 * Syntactic position of the occurrence in the document.
+			 */
+			size_t SyntacticPos;
+
+			/**
 			 * Index of the occurrence in the main container.
 			 */
 			size_t Index;
@@ -89,17 +100,20 @@ public:
 
 			/**
 			 * Occurrence of a null token.
+			 * @param nb       Number of possible children.
 			 */
-			Occurrence(void);
+			Occurrence(size_t nb);
 
 			/**
 			 * Occurrence of a token.
-			 * @param token  Token associated.
-			 * @param vector Vector.
-			 * @param pos    Position.
-			 * @param depth  Depth.
+			 * @param token    Token associated.
+			 * @param vector   Vector.
+			 * @param pos      Position.
+			 * @param depth    Depth.
+			 * @param spos     Syntactic position.
+			 * @param nb       Number of possible children.
 			 */
-			Occurrence(GTextToken* token,GVector* vector,size_t pos,size_t depth);
+			Occurrence(GToken* token,GVector* vector,size_t pos,size_t depth,size_t spos,size_t nb);
 
 			/**
 			 * Method needed by R::RContainer. The occurrences are supposed to be
@@ -111,20 +125,25 @@ public:
 
 			/**
 			 * Get the token corresponding to this occurrence.
-			 * @return a pointer to GTextToken.
+			 * @return a pointer to GToken.
 			 */
-			GTextToken* GetToken(void) const {return(Token);}
+			GToken* GetToken(void) const {return(Token);}
 
-			friend class GTextToken;
+			friend class GToken;
 			friend class GDocAnalyze;
 		};
 
-private:
+protected:
 
 	/**
 	 * Token.
 	 */
 	R::RString Token;
+
+	/**
+	 * Type of the token.
+	 */
+	tTokenType Type;
 
 	/**
 	 * Concept associated with that token.
@@ -147,14 +166,14 @@ public:
 	 * Create a token.
 	 * @param token          String containing the token.
 	 */
-	GTextToken(const R::RString& token=R::RString::Null);
+	GToken(const R::RString& token=R::RString::Null);
 
 	/**
 	 * Compare two tokens.
 	 * @param token          Token to compare with.
 	 * @return a number usable by R::RContainer.
 	 */
-	int Compare(const GTextToken& token) const;
+	int Compare(const GToken& token) const;
 
 	/**
 	 * Compare a token with a string.
@@ -171,10 +190,14 @@ public:
 	size_t HashIndex(size_t idx) const;
 
 	/**
-	 * Get the token.
-	 * @return a R::RString.
+	 * @return a R::RString representing the token.
 	 */
 	R::RString GetToken(void) const {return(Token);}
+
+	/**
+    * @return the type of the token.
+    */
+	tTokenType GetType(void) const{return(Type);}
 
 	/**
 	 * Get the concept associated with the token (if any).
@@ -220,6 +243,11 @@ public:
 	 * Get the number of occurrences of the token.
 	 */
 	size_t GetNbOccurs(void) const {return(Occurs.GetNb());}
+
+	/**
+	 * Destructor.
+    */
+	virtual ~GToken(void);
 
 	friend class GDocAnalyze;
 };

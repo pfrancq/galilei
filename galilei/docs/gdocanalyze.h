@@ -36,6 +36,7 @@
 //------------------------------------------------------------------------------
 // include files for R
 #include <rdblhashcontainer.h>
+#include <rstack.h>
 
 
 //------------------------------------------------------------------------------
@@ -43,8 +44,8 @@
 #include <gplugin.h>
 #include <gpluginmanager.h>
 #include <gdescription.h>
+#include <gtoken.h>
 #include <gconcepttree.h>
-#include <gtexttoken.h>
 
 
 //------------------------------------------------------------------------------
@@ -63,6 +64,8 @@ namespace GALILEI{
  * -# The tokens are then passed to the analyzers in the order specified in the
  *    configuration to be treated (stemming, filtering, etc.).
  *
+ * It is supposed that each token of a document as an unique name. It is the
+ * responsibility of the filter to ensure it.
  * @internal
  * The class manages the list of tokens found in the current document, in the
  * container OrderTokens (where they are ordered by name) and in Tokens, as well
@@ -76,8 +79,6 @@ namespace GALILEI{
  */
 class GDocAnalyze : public R::RDownload
 {
-protected:
-
 	/**
 	 * Current document analyzed.
 	 */
@@ -91,7 +92,7 @@ protected:
 	/**
 	 * Description to build during the analyze.
 	 */
-    GDescription Description;
+   GDescription Description;
 
 	/**
 	 * Concept Tree corresponding to the document.
@@ -126,7 +127,7 @@ protected:
   	/**
 	 * Memory of tokens.
 	 */
-	R::RContainer<GTextToken,true,false> MemoryTokens;
+	R::RContainer<GToken,true,false> MemoryTokens;
 
    /**
     * Number of tokens from the memory used.
@@ -136,7 +137,7 @@ protected:
 	/**
 	 * Memory of occurrences.
 	 */
-   R::RContainer<GTextToken::Occurrence,true,false> MemoryOccurs;
+   R::RContainer<GToken::Occurrence,true,false> MemoryOccurs;
 
    /**
     * Number of occurrences from the memory used.
@@ -146,17 +147,27 @@ protected:
 	/**
 	 * List of tokens currently added ordered.
 	 */
-	R::RDblHashContainer<GTextToken,false> OrderTokens;
+	R::RDblHashContainer<GToken,false> OrderTokens;
 
 	/**
 	 * List of tokens currently added.
 	 */
-	R::RContainer<GTextToken,false,false> Tokens;
+	R::RContainer<GToken,false,false> Tokens;
 
 	/**
 	 * The occurrences of the tokens.
 	 */
-	R::RContainer<GTextToken::Occurrence,false,false> Occurs;
+	R::RContainer<GToken::Occurrence,false,false> Occurs;
+
+	/**
+	 * Top occurrences.
+	 */
+	R::RContainer<GToken::Occurrence,false,false> Top;
+
+	/**
+	 * A stack representing the "active" tokens at each depth.
+	 */
+	R::RStack<GToken::Occurrence,false,true,true> Depths;
 
 	/**
 	 * Vector for which new concepts should be added.
@@ -173,6 +184,21 @@ protected:
 	 */
 	size_t CurDepth;
 
+	/**
+	 * Current syntactic position.
+    */
+	size_t CurSyntacticPos;
+
+	/**
+	 * Container of identifier representing documents.
+	 */
+	R::RNumContainer<size_t,false> Docs;
+
+	/*
+	 * Container of syntactic positions in each document of a given concept.
+	 */
+	R::RContainer<R::RNumContainer<size_t,false>,true,false> SyntacticPos;
+
 public:
 
 	/**
@@ -188,23 +214,39 @@ public:
 	GDoc* GetDoc(void) const {return(Doc);}
 
 	/**
-	 * Add a token to the current vector.
+	 * Inform the document analysis process that a potential token is skipped. In
+	 * practice, it increments the current syntactic position.
+	 *
+	 * Typically, it is called by the current tokenizer to indicate that an
+	 * existing character sequence is not considered as a valid token.
+    */
+	void SkipToken(void);
+
+	/**
+	 * Add a token to the current vector. The current syntactic position is
+	 * incremented.
     * @warning This method should only be called by child classes of
     *          GTokenizer.
 	 * @param token          Token to add.
+	 * @param type           Token type.
 	 */
-	void AddToken(const R::RString& token);
+	void AddToken(const R::RString& token,tTokenType type);
 
 	/**
-	 * Add a concept to a vector associated with a given meta-concept.  If the
-	 * vector already exists, the content is added.
+	 * Add a token of a given type and representing a concept. It is added to a
+	 * vector associated with a given meta-concept.
+	 * @param token          Token to add. The name must be unique for a given
+	 *                       document whatever its type.
+	 * @param type           Token type.
 	 * @param concept        Concept to add.
 	 * @param weight         Weight associate to the concept.
 	 * @param metaconcept    Meta-concept of the vector associated to the concept.
 	 * @param pos            Position of the concept.
 	 * @param depth          Depth of the concept.
+	 * @param spos           Syntactic position. If SIZE_MAX, the token is
+	 *                       supposed to be next the previous one.
 	 */
-	void AddConcept(GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth=0);
+	void AddToken(const R::RString& token,tTokenType type,GConcept* concept,double weight,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
 	/**
 	 * Extract some tokens of a given text, and add them to a vector associated
@@ -214,8 +256,10 @@ public:
 	 * @param metaconcept    Meta-concept of the vector associated to the text.
 	 * @param pos            Position of the text.
 	 * @param depth          Depth of the text.
+	 * @param spos           Syntactic position. If SIZE_MAX, the token is
+	 *                       supposed to be next the previous one.
 	 */
-	void ExtractTextual(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth=0);
+	void ExtractTextual(const R::RString& text,GConcept* metaconcept,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
 	/**
 	 * Extract some tokens of a given text, and add them to a vector associated
@@ -226,23 +270,15 @@ public:
 	 * The only allowed elements are: contributor, coverage, creator, date,
 	 * description, format, identifier, language, publisher, relation, rights,
 	 * source, subject, title, type.
-	 *
-	 * Typically, this method is called from a filter.
-	 * @code
-	 * void MyFilter::Analyze(GDocAnalyze* analyzer,const GDoc* doc,const R::RURI& file)
-	 * {
-	 * 	...
-	 * 	analyzer->AddDCMI("title","This is the title of the document");
-	 * 	...
-	 * }
-	 * @endcode
 	 * @param element        Element of the DCMI (without namespace and/or
 	 *                       prefix).
 	 * @param value          Value of the metadata.
-	 * @param pos            Position of the value.
-	 * @param depth          Depth of the value.
+	 * @param pos            Position of the metadata.
+	 * @param depth          Depth of the metadata.
+	 * @param spos           Syntactic position. If SIZE_MAX, the token is
+	 *                       supposed to be next the previous one.
 	 */
-	void ExtractDCMI(const R::RString& element,const R::RString& value,size_t pos,size_t depth=0);
+	void ExtractDCMI(const R::RString& element,const R::RString& value,size_t pos,size_t depth=0,size_t spos=SIZE_MAX);
 
    /**
     * Extract some tokens from a given text, and add them to the 'body'
@@ -265,31 +301,31 @@ public:
 	 * reflects the order of the first occurrence of each token.
 	 * @return a cursor.
 	 */
-	R::RCursor<GTextToken> GetTokens(void) const {return(R::RCursor<GTextToken>(Tokens));}
+	R::RCursor<GToken> GetTokens(void) const {return(R::RCursor<GToken>(Tokens));}
 
 	/**
 	 * Get a cursor over the occurrences of the different tokens extracted
 	 * as they appear in the document.
 	 * @return a cursor.
 	 */
-	R::RCursor<GTextToken::Occurrence> GetOccurs(void) const {return(R::RCursor<GTextToken::Occurrence>(Occurs));}
+	R::RCursor<GToken::Occurrence> GetOccurs(void) const {return(R::RCursor<GToken::Occurrence>(Occurs));}
 
 	/**
-	 * Delete a given token.
+	 * Delete a given token. In practice, it modifies its type to ttDeleted.
 	 * @warning This method may modified the cursor over the tokens.
 	 * @param token          Token to delete.
 	 */
-	void DeleteToken(GTextToken* token);
+	void DeleteToken(GToken* token);
 
 	/**
 	 * Replace a given token by a given value (for example a word by its stem).
+	 * If it new value corresponds to an existing token, the occurrences are
+	 * merged and the type of the current token is set to ttDeleted.
 	 * @warning This method may modified the cursor over the tokens.
 	 * @param token          Token to replace.
 	 * @param value          New value.
-	 * @return true if the current token was replaced and false if it was
-	 *         deleted (its occurrences being merge with an existing token).
 	 */
-	bool ReplaceToken(GTextToken* token,R::RString value);
+	void ReplaceToken(GToken* token,R::RString value);
 
 	/**
 	 * Get the language actually determined.
@@ -305,9 +341,38 @@ public:
 private:
 
     /**
-     * Create the vectors and the description
+     * Create the descriptions.
      */
-    void PostAnalyze(void);
+    void BuildTensor(void);
+
+	 /**
+	  * Read the index of a given concept in Docs and SyntacticPos. In fact, the
+	  * information related to the current document is not added in these
+	  * structures.
+     * @param concept       Concept to search for.
+     * @param read          Number of bytes read.
+     * @return true if the current document was in the index.
+     */
+	 bool ReadIndex(GConcept* concept,size_t& read);
+
+	 /**
+	  * Write the index of a given concept stored in Docs and SyntacticPos.
+     * @param concept       Concept for which the index should be written.
+     * @param write         Number of bytes to write.
+     */
+	 void WriteIndex(GConcept* concept,size_t write);
+
+	 /**
+	  * Update the index for the current document analyzed.
+     */
+	 void UpdateIndex(void);
+
+    /**
+     * Build the structure for a given token.
+	  * @param parent        Parent node.
+	  * @param token         Token.
+     */
+    void BuildStruct(GConceptNode* parent,GToken::Occurrence* token);
 
 public:
 
@@ -325,6 +390,7 @@ public:
 	virtual ~GDocAnalyze(void);
 
 	friend class GSession;
+	friend class GObjects<GDoc>;
 };
 
 

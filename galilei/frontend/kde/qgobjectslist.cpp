@@ -44,7 +44,6 @@
 #include <gcommunity.h>
 #include <gmetaengine.h>
 #include <gsugs.h>
-#include <gsuggestion.h>
 #include <gfdbk.h>
 #include <gclass.h>
 using namespace std;
@@ -73,7 +72,7 @@ public:
 		GDoc* Doc;
 		GTopic* Topic;
 		GProfile* Profile;
-		GEngineDoc* EngineDoc;
+		GDocRetrieved* DocRetrieved;
 		GCommunity* Community;
 		GUser* User;
 		GSubject* Subject;
@@ -206,10 +205,10 @@ public:
 		}
 	}
 
-	QGObject(QTreeWidget* parent,GEngineDoc* doc)
-		: QTreeWidgetItem(parent,QStringList()<<ToQString(doc->GetTitle())<<ToQString(doc->GetUrl()))
+	QGObject(QTreeWidget* parent,GDocRetrieved* doc)
+		: QTreeWidgetItem(parent,QStringList()<<ToQString(doc->GetTitle())<<ToQString(doc->GetURI()()))
 	{
-		Obj.EngineDoc=doc;
+		Obj.DocRetrieved=doc;
 		setIcon(0,KIconLoader::global()->loadIcon("document",KIconLoader::Small));
 	}
 
@@ -624,11 +623,11 @@ void QGObjectsList::Set(oType type,GMetaEngine* engine,size_t nbres)
 	QTreeWidget* List(static_cast<Ui_QGObjectsList*>(Ui)->List);
 	List->clear();
 
-	RCursor<GEngineDoc> Cur(engine->GetEngineDocs());
+	RCursor<GDocRetrieved> Cur(engine->GetDocs());
 	size_t i;
 	for(Cur.Start(),i=0;(!Cur.End())&&(i<nbres);Cur.Next(),i++)
 	{
-		QTreeWidgetItem* ptr=new QGObject(List,Cur());
+		QTreeWidgetItem* ptr(new QGObject(List,Cur()));
 		new QTreeWidgetItem(ptr,QStringList()<<ToQString(Cur()->GetDescription())<<"");
 	}
 	List->resizeColumnToContents(0);
@@ -735,16 +734,13 @@ void QGObjectsList::FindNext(const QString& what,bool desc)
 				}
 				else if((desc)&&(item->HasDescription()))
 				{
-//					GDescription* Infos(0);
-//					GDoc* sub=item->Obj.Doc;
-//					GConcept* find=sub->GetLang()->GetDict()->GetConcept(sub->GetLang()->GetStemming(str.latin1()));
-					GConcept* find(0);
-					RToDo("Find right concept");
-//					if(find&&(Infos->IsIn(find)))
-//					{
-//						Cont=false;
-//						List->setCurrentItem(item);
-//					}
+					GDoc* Doc(item->Obj.Doc);
+					GConcept* find(Doc->GetLang()->GetDict()->GetConcept(Doc->GetLang()->GetStemming(FromQString(what))));
+					if(find&&(Doc->IsIn(find)))
+					{
+						Cont=false;
+						List->setCurrentItem(item);
+					}
 				}
 			}
 			(++(*it));

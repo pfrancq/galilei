@@ -288,8 +288,7 @@ void GProfile::Update(GSession* session,GDescription& desc,bool delref)
 	if(delref)
 	{
 		DelRefs(Session,otProfile);
-		if(Session->HasIndex(pProfile))
-			session->UpdateIndex(pProfile,desc,Id,false);
+		session->UpdateIndex(pProfile,desc,Id,false);
 	}
 
 	// Assign information
@@ -303,8 +302,7 @@ void GProfile::Update(GSession* session,GDescription& desc,bool delref)
 
 	// Update its references
 	AddRefs(Session,otProfile);
-	if(Session->HasIndex(pProfile))
-		session->UpdateIndex(pProfile,desc,Id,false);
+	session->UpdateIndex(pProfile,desc,Id,true);
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);

@@ -2,10 +2,11 @@
 
 	GALILEI Research Project
 
-	GEngineDoc.cpp
+	GDocRetrieved.cpp
 
-	Class to store the results of the extraction from a search engine - Implementation.
+	Relevant Document for a Search - Implementation.
 
+   Copyright 2003-2012 by Pascal Francq.
 	Copyright 2003-2004 by Valery Vandaele.
 	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 
@@ -37,7 +38,9 @@
 
 //------------------------------------------------------------------------------
 // include files for GALILEI
-#include <genginedoc.h>
+#include <gdocretrieved.h>
+#include <gdoc.h>
+#include <gsession.h>
 using namespace GALILEI;
 using namespace R;
 using namespace std;
@@ -46,61 +49,47 @@ using namespace std;
 
 //------------------------------------------------------------------------------
 //
-// class GEngineDoc
+// class GDocRetrieved
 //
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-GEngineDoc::GEngineDoc(RString url,RString title,RString description,int rank, RString engine)
-	:Url(url),Title(title),Description(description),GlobalRank(0),GlobalRank2(0),Rankings(10,5)
+GDocRetrieved::GDocRetrieved(size_t docid,const R::RString uri,const R::RString title,const RString description,double ranking,const RString engine)
+	: DocId(docid), URI(uri), Title(title), Description(description), Ranking(0), Rankings(10,5)
 {
-	Rankings.InsertPtr(new GRanking(rank,engine));
+	Rankings.InsertPtr(new GDocRanking(DocId,ranking,engine));
 }
 
 
 //------------------------------------------------------------------------------
-void GEngineDoc::AddRanking(GRanking* r)
+int GDocRetrieved::Compare(const GDocRetrieved& d) const
 {
-	Rankings.InsertPtr(r);
+	return(URI.Compare(d.URI));
 }
 
 
 //------------------------------------------------------------------------------
-void GEngineDoc::AddRanking(int rank,R::RString engine)
+int GDocRetrieved::Compare(const RString& uri) const
 {
-	Rankings.InsertPtr(new GRanking(rank,engine));
-}
-
-//------------------------------------------------------------------------------
-int GEngineDoc::Compare(const GEngineDoc* d) const
-{
-	return(Url.Compare(d->GetUrl()));
+	return(URI.Compare(uri));
 }
 
 
 //------------------------------------------------------------------------------
-int GEngineDoc::Compare(const R::RString url) const
+void GDocRetrieved::AddRanking(double ranking,const R::RString engine)
 {
-	return(Url.Compare(url));
-}
-
-
-//------------------------------------------------------------------------------
-int GEngineDoc::Compare(const GEngineDoc& d) const
-{
-	return(Url.Compare(d.GetUrl()));
+	Rankings.InsertPtr(new GDocRanking(DocId,ranking,engine));
 }
 
 
 //-----------------------------------------------------------------------------
-R::RCursor<GRanking> GEngineDoc::GetRankings(void)
+R::RCursor<GDocRanking> GDocRetrieved::GetRankings(void) const
 {
-	R::RCursor<GRanking> cur(Rankings);
-	return(cur);
+	return(R::RCursor<GDocRanking>(Rankings));
 }
 
 
 //------------------------------------------------------------------------------
-GEngineDoc::~GEngineDoc(void)
+GDocRetrieved::~GDocRetrieved(void)
 {
 }

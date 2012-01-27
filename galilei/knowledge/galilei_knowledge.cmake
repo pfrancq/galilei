@@ -15,6 +15,7 @@ SET(galilei_knowledge_INST_INCLUDES
     gclasses.h
     gdescriptionobject.h
     gdescriptionobject.hh
+	 gobjectindex.h
 )
 
 
@@ -33,4 +34,5 @@ SET(galilei_knowledge_TARGET_SOURCES
     gconcepttree.cpp
     gclass.cpp
     gclasses.cpp
+	 gobjectindex.cpp
 )

@@ -47,7 +47,7 @@
 //------------------------------------------------------------------------------
 // include files for GALILEI
 #include <galilei.h>
-#include <genginedoc.h>
+#include <gdocretrieved.h>
 #include <gsubject.h>
 #include <gobjects.h>
 #include <gclasses.h>
@@ -72,8 +72,8 @@ public:
 
 	// Explicit use of methods from GObjects<GDoc>
    using GObjects<GDoc>::Clear;
-	using GObjects<GDoc>::HasIndex;
-	using GObjects<GDoc>::HasStruct;
+	using GObjects<GDoc>::DoCreateIndex;
+	using GObjects<GDoc>::DoCreateStruct;
 	using GObjects<GDoc>::LoadObjs;
 	using GObjects<GDoc>::GetObj;
 	using GObjects<GDoc>::GetObjs;
@@ -87,12 +87,13 @@ public:
 	using GObjects<GDoc>::FlushDesc;
 	using GObjects<GDoc>::LoadStruct;
 	using GObjects<GDoc>::SaveStruct;
+	using GObjects<GDoc>::FlushStruct;
 	using GObjects<GDoc>::UpdateIndex;
+	using GObjects<GDoc>::LoadIndex;
    using GObjects<GDoc>::BuildIndex;
 
 	// Explicit use of methods from GObjects<GTopic>
    using GObjects<GTopic>::Clear;
-   using GObjects<GTopic>::HasIndex;
 	using GObjects<GTopic>::LoadObjs;
 	using GObjects<GTopic>::GetObj;
 	using GObjects<GTopic>::GetObjs;
@@ -120,7 +121,6 @@ public:
 
 	// Explicit use of methods from GObjects<GProfile>
    using GObjects<GProfile>::Clear;
-   using GObjects<GProfile>::HasIndex;
 	using GObjects<GProfile>::LoadObjs;
 	using GObjects<GProfile>::GetObj;
 	using GObjects<GProfile>::GetObjs;
@@ -137,7 +137,6 @@ public:
 
 	// Explicit use of methods from GObjects<GCommunity>
    using GObjects<GCommunity>::Clear;
-   using GObjects<GCommunity>::HasIndex;
 	using GObjects<GCommunity>::LoadObjs;
 	using GObjects<GCommunity>::GetObj;
 	using GObjects<GCommunity>::GetObjs;
@@ -154,7 +153,6 @@ public:
 
 	// Explicit use of methods from GClasses
    using GClasses::Clear;
-   using GClasses::HasIndex;
 	using GClasses::LoadObjs;
 	using GClasses::GetObj;
 	using GClasses::GetObjs;
@@ -377,21 +375,6 @@ public:
 	//@}
 
 	/**
-	 * Reset a type of objects.
-	 * @param type           Type of the objects.
-	 * @param meta           Meta-type (if any) of objects (may be files or
-	 *                       references).
-	 */
-	void Reset(tObjType type);
-
-   /**
-	 * Reset a file associated to a type of objects.
-	 * @param type           Type of the objects.
-	 * @param meta           Meta-type (may be index or references).
-	 */
-	void ResetFile(tObjType type,tObjType meta);
-
-	/**
 	 * Compare two session regarding their identifiers.
 	 * @param session        Session to compare with.
 	 * @return a value compatible with R::RContainer.
@@ -420,6 +403,26 @@ public:
 	int Compare(const R::RString& name) const;
 
 	/**
+	 * Reset a type of objects. In practice, the objects are destroyed, their
+	 * references removed and delete the corresponding files.
+	 * @param type           Type of the objects.
+	 */
+	void Reset(tObjType type);
+
+   /**
+	 * Reset a file associated with a type of objects.
+	 * @param type           Type of the objects.
+	 * @param meta           Meta-type (may be index or references).
+	 */
+	void ResetFile(tObjType type,tObjType meta);
+
+	/**
+	* Force some objects to be re-computed even if they are updated.
+	* @param type            Type of the objects.
+	*/
+	void ForceReCompute(tObjType type);
+
+	/**
 	* Fill a given array with all the subjects. The array must be created and
 	* must be large enough to hold all the subjects.
 	* @see This method is used in GSimulator to create assessments for
@@ -428,13 +431,6 @@ public:
 	* @returns Size of the data copied in the array.
 	*/
 	size_t FillSubjects(GSubject** subjects);
-
-	/**
-	* Force some objects to be re-computed even if they are updated.
-	* @param type            Type of the objects. Only 'otDocs', 'otUsers' and
-	*                        'otGroups' are allowed.
-	*/
-	void ForceReCompute(tObjType type);
 
 	/**
 	* Get the number of elements of a given type.
@@ -653,10 +649,11 @@ public:
 	void LoadSubjects(void) const;
 
 	/**
-	* Send a Query to the Meta engine selected. The pages are researched and ranked.
-	* @param keyWords        The set of keywords to form the query.
+	* Send a query to the meta-engine selected. The documents are researched and
+	* ranked.
+	* @param query           String representing the query.
 	*/
-	void QueryMetaEngine(R::RContainer<R::RString,true,false>& keyWords);
+	void RequestMetaEngine(const R::RString query);
 
 	/**
 	* Re-initialize the session (clear all containers).

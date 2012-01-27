@@ -1,28 +1,24 @@
 SET(galilei_docs_INST_INCLUDES
-	gbalancedlinks.h		
+	gbalancedlinks.h
 	glinks.h
 	gdoc.h
-	gsuggestion.h
-	gsugs.h
 	glink.h
-	gtexttoken.h		
+	gtoken.h
 	gtokenizer.h
 	ganalyzer.h
 	gdocanalyze.h
-	gfilter.h	
+	gfilter.h
 )
 
 
 SET(galilei_docs_TARGET_SOURCES
 	gbalancedlinks.cpp
 	gdoc.cpp
-	gsuggestion.cpp
-	gsugs.cpp	
 	glink.cpp
 	glinks.cpp
-	gtexttoken.cpp
+	gtoken.cpp
 	gtokenizer.cpp
-	ganalyzer.cpp	
+	ganalyzer.cpp
 	gdocanalyze.cpp
-	gfilter.cpp	
+	gfilter.cpp
 )

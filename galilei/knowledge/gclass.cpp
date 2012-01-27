@@ -104,8 +104,7 @@ void GClass::Update(GDescription& desc)
 {
 	// Remove its references
 	DelRefs(Session,otClass);
-	if(Session->HasIndex(pClass))
-		Session->UpdateIndex(pClass,desc,Id,false);
+	Session->UpdateIndex(pClass,desc,Id,false);
 
 	// Assign information
 	State=osUpdated;
@@ -114,8 +113,7 @@ void GClass::Update(GDescription& desc)
 
 	// Update its references
 	AddRefs(Session,otClass);
-	if(Session->HasIndex(pClass))
-		Session->UpdateIndex(pClass,desc,Id,false);
+	Session->UpdateIndex(pClass,desc,Id,true);
 
 	// Emit an event that it was modified
 	Emit(GEvent::eObjModified);

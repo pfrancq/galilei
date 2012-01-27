@@ -265,8 +265,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 	if(delref)
 	{
 		DelRefs(session,type);
-		if(session->HasIndex(static_cast<cGroup*>(0)))
-			session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,false);
+		session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,false);
 	}
 
 	// Assign information
@@ -277,8 +276,7 @@ template<class cObj,class cGroup,GALILEI::tObjType type>
 
 	// Update its references
 	AddRefs(session,type);
-   if(session->HasIndex(static_cast<cGroup*>(0)))
-      session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,false);
+   session->UpdateIndex(static_cast<cGroup*>(0),desc,Id,true);
 
 	// Emit an event that it was modified
 	if(Data)

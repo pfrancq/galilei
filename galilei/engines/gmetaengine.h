@@ -6,6 +6,7 @@
 
 	Meta Engine for extraction of results from different search engines - Header.
 
+	Copyright 2003-2012 by Pascal Francq.
 	Copyright 2003-2004 by Valery Vandaele.
 	Copyright 2003-2008 Université Libre de Bruxelles (ULB).
 
@@ -37,7 +38,7 @@
 // include file for GALILEI
 #include <gplugin.h>
 #include <gpluginmanager.h>
-#include <genginedoc.h>
+#include <gdocretrieved.h>
 
 
 //------------------------------------------------------------------------------
@@ -54,6 +55,13 @@ namespace GALILEI{
 */
 class GMetaEngine : public GPlugIn
 {
+protected:
+
+	/**
+	* Container of results (instance of class GDocRetrieved).
+	*/
+	R::RContainer<GDocRetrieved,true,true> Results;
+
 public:
 
 	/**
@@ -64,42 +72,62 @@ public:
 	GMetaEngine(GSession* session,GPlugInFactory* fac);
 
 	/**
-	* Send a query to the meta Search engine
-	* all the available search engines are processed with the query.
-	* @param keyWords        The set of keywords on witch the query will be based
-	* @param useAllKwds      Use all keywords?
+	* Add a known document as result to the meta-engine. In practice, it adds an
+	* entry to the container of results.
+	* @param docid           Identifier of the document.
+	* @param desc            Description of the document (such as an extract).
+	* @param ranking         Ranking of the document given by the engine
+	*                        (\f$0\leq ranking \leq 1\f$).
+	* @param engine          Engine from which the result come.
 	*/
-	virtual void Query(R::RContainer<R::RString,true,false> &keyWords, bool useAllKwds)=0;
+	virtual void AddResult(size_t DocId,const R::RString desc,double ranking,const GEngine* engine);
 
 	/**
-	* Retrieve the results from the searches.
-	* The results are first sorted (using the global ranking)
-	* and then stored in the RContainer
+	* Add an unknown document as result to the meta-engine. In practice, it adds
+	* an entry to the container of results.
+	* @param uri             URI of the document.
+	* @param title           Title of the document.
+	* @param desc            Description of the document (such as an extract).
+	* @param ranking         Ranking of the document given by the engine.
+	*                        (\f$0\leq ranking \leq 1\f$).
+	* @param engine          Engine from which the result come.
 	*/
-	virtual void Process(void)=0;
+	virtual void AddResult(const R::RString& uri,const R::RString& title,const R::RString desc,double ranking,const GEngine* engine);
 
 	/**
-	* Add a result from the engine
-	* @param url             The URL of the document
-	* @param title           The title of the document
-	* @param desc            The description of the document
-	* @param rank            The ranking of the document
-	* @param engine          The name of the engine from which the result come
+	* Send a query to the meta-search engine. It should:
+	* -# Analyse the query to identify the keywords and (eventually) operators.
+	* -# Call the different engines (or at least the most relevant ones).
+	* -# Produce a global ranking of all the documents retrieved by all engines.
+	* @param query           Query.
 	*/
-	virtual void AddResult(R::RString url,R::RString title, R::RString desc, int rank,R::RString engine)=0;
+	virtual void Request(const R::RString query)=0;
 
 	/**
-	* Get a cursor of the documents from the search engines
-	* @return GEngineDocCursor
+	* Set the global ranking for a document.
+	* @param doc                   Document retrieved.
+	* @param ranking               Global ranking.
 	*/
-	virtual R::RCursor<GEngineDoc> GetEngineDocs(void)=0;
+	void SetRanking(GDocRetrieved* doc,double ranking);
 
 	/**
-	* return the number of results that must be used
+	* Set the global ranking for a document.
+	* @param docid                 Identifier of the document retrieved.
+	* @param ranking               Global ranking.
 	*/
-	virtual size_t GetNbResUsed(void)=0;
+	void SetRanking(size_t docid,double ranking);
 
-public:
+	/**
+	* Set the global ranking for a document.
+	* @param uri                   URI of the document retrieved.
+	* @param ranking               Global ranking.
+	*/
+	void SetRanking(const R::RString& uri,double ranking);
+
+	/**
+	* @return a cursor of the documents retrieved by the meta-search engine.
+	*/
+	virtual R::RCursor<GDocRetrieved> GetDocs(void);
 
 	/**
 	* Destructor of the meta-engine.

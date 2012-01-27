@@ -56,7 +56,7 @@ using namespace R;
 #include <glink.h>
 #include <gengine.h>
 #include <gmetaengine.h>
-#include <genginedoc.h>
+#include <gdocretrieved.h>
 #include <guser.h>
 #include <gprofile.h>
 #include <gprofilecalc.h>
@@ -237,7 +237,10 @@ void GSession::AnalyzeDocs(bool ram,GSlot* rec)
 		// If no log file specified -> Propagate error
 		HANDLEALLEXCEPTIONS(rec,Docs()->GetURI()()+"("+RString::Number(Docs()->GetId())+"): ")
 	}
-	FlushDesc(pDoc);   // Force to save all documents description
+
+	 // Force to save all document descriptions and structures
+	FlushDesc(pDoc);
+	FlushStruct(pDoc);
 }
 
 
@@ -359,12 +362,78 @@ void GSession::CalcProfiles(GSlot* rec)
 
 
 //------------------------------------------------------------------------------
+void GSession::ComputeSugs(GSlot* rec)
+{
+	// Run all suggestions methods that are enabled
+	R::RCastCursor<GPlugIn,GComputeSugs> ComputeSugs(GALILEIApp->GetPlugIns<GComputeSugs>("ComputeSugs"));
+	for(ComputeSugs.Start();!ComputeSugs.End();ComputeSugs.Next())
+	{
+		if(rec)
+			rec->Interact();
+		if(ExternBreak) return;
+		if(rec)
+			rec->WriteStr("Suggestions computing method : "+ComputeSugs()->GetFactory()->GetName());
+		ComputeSugs()->Run();
+	}
+}
+
+
+//------------------------------------------------------------------------------
+void GSession::ComputeTrust(GSlot* rec)
+{
+	// Run all trust methods that are enabled
+	R::RCastCursor<GPlugIn,GComputeTrust> ComputeTrust(GALILEIApp->GetPlugIns<GComputeTrust>("ComputeTrust"));
+	for(ComputeTrust.Start();!ComputeTrust.End();ComputeTrust.Next())
+	{
+		if(rec)
+			rec->Interact();
+		if(ExternBreak) return;
+		if(rec)
+			rec->WriteStr("Trust computing method : "+ComputeTrust()->GetFactory()->GetName());
+		ComputeTrust()->Run();
+	}
+}
+
+
+//------------------------------------------------------------------------------
+int GSession::Compare(const GSession& session) const
+{
+	return(CompareIds(Id,session.Id));
+}
+
+
+//------------------------------------------------------------------------------
+int GSession::Compare(const GSession* session) const
+{
+	return(CompareIds(Id,session->Id));
+}
+
+
+//------------------------------------------------------------------------------
+int GSession::Compare(size_t id) const
+{
+	return(CompareIds(Id,id));
+}
+
+
+//------------------------------------------------------------------------------
+int GSession::Compare(const R::RString& name) const
+{
+	return(Name.Compare(name));
+}
+
+
+//------------------------------------------------------------------------------
 void GSession::Reset(tObjType type)
 {
 	switch(type)
 	{
 		case otDoc:
+			ClearRefs(this,otDoc);
+			ClearIndex(this,otDoc);
 			GObjects<GDoc>::Clear(pDoc);
+			if(SaveResults)
+				Storage->Clear(otDoc);
 			break;
 		case otFdbk:
 		{
@@ -387,6 +456,8 @@ void GSession::Reset(tObjType type)
 		}
 		case otProfile:
 		{
+			ClearRefs(this,otProfile);
+			ClearIndex(this,otProfile);
 			GObjects<GProfile>::Clear(pProfile);
 			if(SaveResults)
 			{
@@ -397,6 +468,8 @@ void GSession::Reset(tObjType type)
 			break;
 		}
 		case otCommunity:
+			ClearRefs(this,otCommunity);
+			ClearIndex(this,otCommunity);
 			GObjects<GCommunity>::Clear(pCommunity);
 			if(SaveResults)
 			{
@@ -406,6 +479,8 @@ void GSession::Reset(tObjType type)
 			}
 			break;
 		case otTopic:
+			ClearRefs(this,otTopic);
+			ClearIndex(this,otTopic);
 			GObjects<GTopic>::Clear(pTopic);
 			if(SaveResults)
 			{
@@ -415,6 +490,8 @@ void GSession::Reset(tObjType type)
 			}
 			break;
 		case otClass:
+			ClearRefs(this,otClass);
+			ClearIndex(this,otClass);
 			GClasses::Clear();
 			if(SaveResults)
 			{
@@ -451,8 +528,6 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 				case otIndexFile:
 					if(GObjects<GDoc>::Index)
 						GObjects<GDoc>::Index->Clear();
-					if(GObjects<GDoc>::Occurs)
-						GObjects<GDoc>::Occurs->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for documents");
@@ -469,8 +544,6 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 				case otIndexFile:
 					if(GObjects<GProfile>::Index)
 						GObjects<GProfile>::Index->Clear();
-					if(GObjects<GProfile>::Occurs)
-						GObjects<GProfile>::Occurs->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for profiles");
@@ -487,8 +560,6 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 				case otIndexFile:
 					if(GObjects<GCommunity>::Index)
 						GObjects<GCommunity>::Index->Clear();
-					if(GObjects<GCommunity>::Occurs)
-						GObjects<GCommunity>::Occurs->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for communities");
@@ -505,8 +576,6 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 				case otIndexFile:
 					if(GObjects<GTopic>::Index)
 						GObjects<GTopic>::Index->Clear();
-					if(GObjects<GTopic>::Occurs)
-						GObjects<GTopic>::Occurs->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for topics");
@@ -523,104 +592,15 @@ void GSession::ResetFile(tObjType type,tObjType meta)
 				case otIndexFile:
 					if(GObjects<GClass>::Index)
 						GObjects<GClass>::Index->Clear();
-					if(GObjects<GClass>::Occurs)
-						GObjects<GClass>::Occurs->Clear();
 					break;
 				default:
 					ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for classes");
 			}
 			break;
 
-		case otConcept:
-			if(meta==otReference)
-			{
-				RCursor<GConceptType> Types(ConceptTypes);
-				for(Types.Start();!Types.End();Types.Next())
-					Types()->ClearRef(type);
-			}
-			else
-				ThrowGException(GetObjType(meta,true,true)+" is not a valid file type for concepts");
-			break;
-
 		default:
-			ThrowGException(GetObjType(type,true,true)+" have no files associatesd");
+			ThrowGException(GetObjType(type,true,true)+" have no files associated");
 	}
-}
-
-
-//------------------------------------------------------------------------------
-int GSession::Compare(const GSession& session) const
-{
-	return(CompareIds(Id,session.Id));
-}
-
-
-//------------------------------------------------------------------------------
-int GSession::Compare(const GSession* session) const
-{
-	return(CompareIds(Id,session->Id));
-}
-
-
-//------------------------------------------------------------------------------
-int GSession::Compare(size_t id) const
-{
-	return(CompareIds(Id,id));
-}
-
-
-//------------------------------------------------------------------------------
-int GSession::Compare(const R::RString& name) const
-{
-	return(Name.Compare(name));
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::ComputeSugs(GSlot* rec)
-{
-	// Run all suggestions methods that are enabled
-	R::RCastCursor<GPlugIn,GComputeSugs> ComputeSugs(GALILEIApp->GetPlugIns<GComputeSugs>("ComputeSugs"));
-	for(ComputeSugs.Start();!ComputeSugs.End();ComputeSugs.Next())
-	{
-		if(rec)
-			rec->Interact();
-		if(ExternBreak) return;
-		if(rec)
-			rec->WriteStr("Suggestions computing method : "+ComputeSugs()->GetFactory()->GetName());
-		ComputeSugs()->Run();
-	}
-}
-
-
-//------------------------------------------------------------------------------
-void GSession::ComputeTrust(GSlot* rec)
-{
-	// Run all trust methods that are enabled
-	R::RCastCursor<GPlugIn,GComputeTrust> ComputeTrust(GALILEIApp->GetPlugIns<GComputeTrust>("ComputeTrust"));
-	for(ComputeTrust.Start();!ComputeTrust.End();ComputeTrust.Next())
-	{
-		if(rec)
-			rec->Interact();
-		if(ExternBreak) return;
-		if(rec)
-			rec->WriteStr("Trust computing method : "+ComputeTrust()->GetFactory()->GetName());
-		ComputeTrust()->Run();
-	}
-}
-
-
-//-----------------------------------------------------------------------------
-size_t GSession::FillSelectedDocs(GDoc** docs)
-{
-	return(Subjects.SelectedDocs.GetTab(docs,1,Subjects.SelectedDocs.GetMaxPos()));
-}
-
-
-//-----------------------------------------------------------------------------
-size_t GSession::FillSubjects(GSubject** subjects)
-{
-	return(Subjects.GetTab(subjects));
 }
 
 
@@ -646,6 +626,8 @@ void GSession::ForceReCompute(tObjType type)
 				ResetFile(otDoc,otIndexFile);
 				ResetFile(otDoc,otStructFile);
 			}
+			ClearRefs(this,otDoc);
+			ClearIndex(this,otDoc);
 			ForceReCompute(otTopic);
 			ForceReCompute(otProfile);
 			ForceReCompute(otClass);
@@ -672,6 +654,8 @@ void GSession::ForceReCompute(tObjType type)
 				ResetFile(otProfile,otDescFile);
 				ResetFile(otProfile,otIndexFile);
 			}
+			ClearRefs(this,otProfile);
+			ClearIndex(this,otProfile);
 			ForceReCompute(otCommunity);
 			break;
 		}
@@ -690,6 +674,20 @@ void GSession::ForceReCompute(tObjType type)
 		default:
 			ThrowGException(GetObjType(type,true,true)+" are not allowed");
 	}
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GSession::FillSelectedDocs(GDoc** docs)
+{
+	return(Subjects.SelectedDocs.GetTab(docs,1,Subjects.SelectedDocs.GetMaxPos()));
+}
+
+
+//-----------------------------------------------------------------------------
+size_t GSession::FillSubjects(GSubject** subjects)
+{
+	return(Subjects.GetTab(subjects));
 }
 
 
@@ -1166,12 +1164,10 @@ void GSession::LoadSubjects(void) const
 
 
 //------------------------------------------------------------------------------
-void GSession::QueryMetaEngine(RContainer<RString,true,false> &keyWords)
+void GSession::RequestMetaEngine(const R::RString query)
 {
-	// Verify that a meta engine is selected
-	GMetaEngine* metaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
-	metaEngine->Query(keyWords,true); //true ->Use all keywords passed to the meta engine
-	metaEngine->Process();
+	GMetaEngine* MetaEngine(GALILEIApp->GetCurrentPlugIn<GMetaEngine>("MetaEngine"));
+	MetaEngine->Request(query);
 }
 
 
