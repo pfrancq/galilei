@@ -34,7 +34,7 @@
 #include <glang.h>
 #include <gdoc.h>
 #include <gdocanalyze.h>
-#include <gtexttoken.h>
+#include <gtoken.h>
 
 
 
@@ -93,9 +93,12 @@ void GStopWords::TreatTokens(GDocAnalyze* analyzer)
 	size_t NbAlphaTokens(0);
 
 	// Parse the tokens
-	RCursor<GTextToken> Token(analyzer->GetTokens());
+	RCursor<GToken> Token(analyzer->GetTokens());
 	for(Token.Start();!Token.End();Token.Next())
 	{
+		if(Token()->GetType()!=ttText)
+			continue;
+
 		if(Debug)
 			cout<<"Test: *"+Token()->GetToken()+"*"<<endl;
 		bool Leave(true);
@@ -125,7 +128,7 @@ void GStopWords::TreatTokens(GDocAnalyze* analyzer)
 	// Delete the stopwords
 	if(RemoveStopwords)
 	{
-		RCursor<GTextToken> Delete(ToDelete);
+		RCursor<GToken> Delete(ToDelete);
 		for(Delete.Start();!Delete.End();Delete.Next())
 			analyzer->DeleteToken(Delete());
 	}

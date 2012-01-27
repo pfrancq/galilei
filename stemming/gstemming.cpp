@@ -57,22 +57,15 @@ void GStemming::TreatTokens(GDocAnalyze* analyzer)
 
 	if(Lang)
 	{
-		RCursor<GTextToken> Token(analyzer->GetTokens());
-		for(Token.Start();!Token.End();)
+		RCursor<GToken> Token(analyzer->GetTokens());
+		for(Token.Start();!Token.End();Token.Next())
 		{
+			if(Token()->GetType()!=ttText)
+				continue;
+
 			size_t Pos(Token.GetPos());
 			RString Stem(Lang->GetStemming(Token()->GetToken()));
-			if(analyzer->ReplaceToken(Token(),Stem))
-				Token.Next();   // Only increase the cursor if it was deleted
-			else
-			{
-				// Cursor must be reaffected.
-				Token=analyzer->GetTokens();
-				if(Pos<Token.GetMaxPos())
-					Token.GoTo(Pos);
-				else
-					Token.StartFromEnd();
-			}
+			analyzer->ReplaceToken(Token(),Stem);
 		}
 	}
 }

@@ -182,9 +182,13 @@ void GStringTokenizer::TreatChar(GDocAnalyze* analyzer,const R::RChar& car)
 			{
 				if(Debug)
 					cout<<"Add Token *"+Token+"*"<<endl;
-				analyzer->AddToken(Token);
+				analyzer->AddToken(Token,ttText);
 			}
+			else
+				analyzer->SkipToken();
 		}
+		else
+			analyzer->SkipToken();
 		Start();
 	}
 }

@@ -55,7 +55,7 @@ class GStopWords : public GAnalyzer
 	/**
 	 * Stopwords to delete.
 	 */
-	R::RContainer<GTextToken,false,false> ToDelete;
+	R::RContainer<GToken,false,false> ToDelete;
 
 	/**
 	* Number of different stopwords for the different languages in the current

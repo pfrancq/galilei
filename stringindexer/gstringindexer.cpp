@@ -76,9 +76,12 @@ void GStringIndexer::TreatTokens(GDocAnalyze* analyzer)
 	if(!Metadata)
 		Metadata=Session->GetInsertConceptCat("Metadata");
 
-	RCursor<GTextToken> Token(analyzer->GetTokens());
+	RCursor<GToken> Token(analyzer->GetTokens());
 	for(Token.Start();!Token.End();Token.Next())
 	{
+		if(Token()->GetType()!=ttText)
+			continue;
+
 		// Get the term
 		RString Term(Token()->GetToken());
 
